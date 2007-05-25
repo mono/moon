@@ -75,29 +75,45 @@ This is not likely the final version of this code.
 	requires an FFmpeg installation from SVN (the only available
 	one). 
 
-	The video also has a video hardcoded for now.
-
 	Currently this is very basic, it merely does video frame decoding, and
 	makes no attempt to keep track of the clock (as it should) nor to do any
 	kind of audio output (yet).
 
 	The video is also busted, I do not know why, but the "decoded"
 	video is incorrect, it has the wrong colors.
-	
-	The caching is substandard and we create new surfaces when we do not need
-	to create them.  We could create the RGB buffer and the
-	surface just once and reuse these.
 
-	We are using cairo_paint, which renders without an affine
-	transformation applied, which means that item_apply_transform
-	is a no-op, this is broken and must be fixed. 
+	The video thread currently sends "messages" to the main thread
+	to do two things: 
+
+		* To inform the main thread that the video has been
+		  initialized and that the video bounds can be computed.
+
+		* To request an invalidate (when a new frame is ready)
+
+	The invalidate request could *perhaps* be done by taking the
+	Gdk lock and issuing the invalidate directly.
+
+	The issue is that we might need to lock also on the
+	(Item *) structures in case the user-code is making changes to the
+	affine transform and hence the bounding box as we are trying
+	to access those from the Gdk lock. 
 
 * Rendering
 
 	Currently we are creating a bitmap surface and we always copy
-	it to the screen.  
+	it to the screen.  This approach is fine for non-compositing
+	managers as this serves as our double-buffering primitive.
 
-	We probably should move to cairo surfaces directly.
+	David Reveman has some suggestions for the future:
+
+		* We could create an xlib surface for the backing
+		  store of the videos, this would help if we need
+		  later to do video rendering in a separate process
+		  or thread (for the compiz integration).
+
+		* With a compositing manager we could use the xlib	
+		  surface as this would properly synchornize and 
+	 	  not require the client side double buffering. 
 
 * Expose
 
@@ -119,3 +135,8 @@ This is not likely the final version of this code.
 
 	Followed by uses of graphics in that way, there is probably a
 	better way.
+
+* Demo
+
+	The demo has a couple of hardcoded videos for now.
+
