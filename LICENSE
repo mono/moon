@@ -1,0 +1,8 @@
+This code is licensed under the terms of the GNU LGPL 2 license.
+
+In addition to the GNU LGPL, this code is available for relicensing
+for non-LGPL use, contact Novell for details (mono@novell.com)
+
+This code might contain code that optionally links to LGPL and
+GPL code, in those cases, if the library is built with those 
+bits the code is covered under those licenses.

@@ -1,0 +1,121 @@
+This contains a minimal runtime in C for trying out some ideas for the
+Moonlight binding.   It is not designed to be our final implementation. 
+
+The C++ file here was merely to test Agg, but the public API is pure C
+and without agg (which is currently disabled due to laziness on my
+part) it should build with a C compiler
+
+This is not likely the final version of this code.
+
+* Object System
+
+	This contains a poor man's object system.
+
+	The vtable is the first field in the base object (Item in 
+	this case) and is encoded as a void *.   You must cast this
+	to ItemVtable to be able to call methods.   I do not remember
+	why I did not just go for the hardcoded ItemVtable there.
+
+	Should be fixed perhaps.
+
+	The various XXX_init() methods are here merely to initialize the
+	vtable: they should call into the parent, and then overwrite th
+	vtable if they need to.
+
+* Items
+
+	Items for the base class for all the objects that are rendered,
+	items contain a bounding box (double x1, y1, x2, y2) which must
+	be updated when the virtual method ->getbounds is called.
+
+	In addition each item can contain an affine transformation, the 
+	affine transformation is relative.  This means that the affine
+	is relative to the parent.  
+
+	I chose relative vs absolute for the items as changing an affine
+	in the managed world for a parent would have to change all the
+	affines for all the children contained.  With this approach,
+	we can change the affine for a parent, and all the children
+	will get the new affine transformation.
+
+	The encoding of the affine transformation is done with a
+	"double *" which, if not-NULL should point to six doubles in 
+	the format expected by cairo_matrix_t (and libart).
+
+	The double [6] can be casted into a cairo_matrix_t, which is why
+	this appers like that in the source code.  This was done in
+	case we want to switch to AGG.
+
+	A method to obtain the actual affine that applies to this object is:
+
+	double  *item_get_affine    (double *container, double *affine, double *result);
+
+	The "container" should be the affine passed by the parent, the "affine" is the
+	item affine (either one can be null) and the compound affine transform is
+	left in "result".
+
+	The "result" has to be allocated by the parent, if both container and affine
+	are null, the NULL value is returned from item_get_affine, so a common
+	code pattern used is:
+
+	double actual [6];
+	double *use_affine = item_get_affine (affine, item->xform, actual);
+
+	And then `use_affine' is used. 
+
+* Rendering in Items
+
+	Rendering currently passes the parent affine, but it might be possible to
+	avoid this if we end up using Cairo: just use the affine that is part of 
+	the cairo context at the time of the rendering.
+
+* Video
+
+	The video stuff is *incredibly* early at this point and
+	requires an FFmpeg installation from SVN (the only available
+	one). 
+
+	The video also has a video hardcoded for now.
+
+	Currently this is very basic, it merely does video frame decoding, and
+	makes no attempt to keep track of the clock (as it should) nor to do any
+	kind of audio output (yet).
+
+	The video is also busted, I do not know why, but the "decoded"
+	video is incorrect, it has the wrong colors.
+	
+	The caching is substandard and we create new surfaces when we do not need
+	to create them.  We could create the RGB buffer and the
+	surface just once and reuse these.
+
+	We are using cairo_paint, which renders without an affine
+	transformation applied, which means that item_apply_transform
+	is a no-op, this is broken and must be fixed. 
+
+* Rendering
+
+	Currently we are creating a bitmap surface and we always copy
+	it to the screen.  
+
+	We probably should move to cairo surfaces directly.
+
+* Expose
+
+	Currently repaints happen with an item_invalidate, I need to
+	research if this clears the background before repainting.
+
+* Usage of C++
+
+	I do not know how to initialize instance fields in a structure
+	with the contructor, so there is code like this:
+
+	    struct {
+		Agg2D *graphics;
+	    }
+
+	Then:
+
+		something->graphics = new Agg2D ()
+
+	Followed by uses of graphics in that way, there is probably a
+	better way.

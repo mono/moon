@@ -1,0 +1,22 @@
+SOURCES = runtime.cpp
+OBJS = runtime.o video.o 
+
+HEADERS=`pkg-config --libs gtk+-2.0 libagg libavcodec libavformat gthread-2.0 libswscale`
+LIBS=`pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale freetype2`
+
+CXX=c++ -Wall
+
+demo: runtime.o video.o 
+	$(CXX) -g -o demo $(OBJS) $(HEADERS) 
+
+demoagg: runtime.o video.o Agg2D.o
+	$(CXX) -g -o demo $(OBJS) $(HEADERS) -laggfontfreetype `pkg-config --libs libagg`
+
+runtime.o: runtime.cpp runtime.h Agg2D.h
+	$(CXX) -g -c runtime.cpp $(LIBS)
+
+video.o: video.c runtime.h Agg2D.h
+	$(CC) -g -c video.c $(LIBS)
+
+Agg2D.o: Agg2D.h Agg2D.cpp
+	$(CXX) -g -c Agg2D.cpp `pkg-config --cflags libagg freetype2`
