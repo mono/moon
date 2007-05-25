@@ -8,6 +8,26 @@ typedef struct _Item Item;
 typedef struct _Surface Surface;
 
 typedef struct {
+	void (*nothing) ();
+} ObjectVtable;
+	
+typedef struct {
+	void *vtable;
+} Object;
+
+void object_init (Object *object);
+		
+typedef struct {
+	double opacity;
+	double *relative_transform;
+	double *transform;
+
+	GList *listeners;
+} Brush;
+	
+typedef struct {
+	ObjectVtable object_vtable;
+	
 	//
 	// render: 
 	//   Renders the given @item on the @surface.  The parent affine transformation is in
@@ -30,7 +50,7 @@ typedef struct {
 } ItemVtable;
 
 struct _Item {
-	void *vtable;
+	Object object;
 
         // OpacityProperty;
         // ClipProperty;
@@ -128,6 +148,12 @@ void     surface_clear     (Surface *s, int x, int y, int width, int height);
 void     surface_clear_all (Surface *s);
 void     surface_destroy   (Surface *s);
 void     surface_repaint   (Surface *s, int x, int y, int width, int height);
+
+// Vtables
+extern ItemVtable item_vtable;
+
+// External class init
+void video_class_init ();
 
 #ifdef __cplusplus
 };

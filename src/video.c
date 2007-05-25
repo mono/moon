@@ -83,7 +83,7 @@ struct _Video {
 static GMutex *video_lock;
 
 static void
-video_getbounds (Item *item)
+vt_video_getbounds (Item *item)
 {
 	Video *video = (Video *) item;
 	double res [6];
@@ -114,16 +114,17 @@ video_getbounds (Item *item)
 	cairo_restore (s->cairo);
 }
 
-static void video_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height);
+static void vt_video_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height);
 static int video_inited;
-static ItemVtable video_vtable = { &video_render, &video_getbounds };
+
+ItemVtable video_vtable;
 
 void
 video_init (Video *video)
 {
 	Item *item = &video->item;
 	item_init (item);
-	item->vtable = &video_vtable;
+	item->object.vtable = &video_vtable;
 
 	if (!video_inited){
 		video_lock = g_mutex_new ();
@@ -326,7 +327,7 @@ update_frame (Video *video)
 }
 
 static void
-video_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height)
+vt_video_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height)
 {
 	Video *video = (Video *) item;
 	double actual [6];
@@ -395,4 +396,11 @@ video_destroy (Video *video)
 	g_free (video);
 }
 
+void
+video_class_init ()
+{
+	video_vtable = item_vtable;
+	video_vtable.render = &vt_video_render;
+	video_vtable.getbounds = &vt_video_getbounds;
+}
 
