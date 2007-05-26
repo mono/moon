@@ -4,19 +4,8 @@ extern "C" {
 	
 #include <cairo.h>
 
-typedef struct _Item Item;
-typedef struct _Surface Surface;
-
-typedef struct {
-	void (*nothing) ();
-} ObjectVtable;
+class Surface;
 	
-typedef struct {
-	void *vtable;
-} Object;
-
-void object_init (Object *object);
-		
 typedef struct {
 	double opacity;
 	double *relative_transform;
@@ -24,57 +13,44 @@ typedef struct {
 
 	GList *listeners;
 } Brush;
+
+class Item {
+ public:
+	Item () : parent(NULL), flags (0), xform (NULL), x1 (0), y1(0), x2(0), y2(0) {}
 	
-typedef struct {
-	ObjectVtable object_vtable;
+	Item *parent;
+
+	enum ItemFlags {
+		IS_SURFACE = 1
+	};
 	
+	int flags;
+	
+	// The computed bounding box
+	double x1, y1, x2, y2;
+
+	// If null, identity, otherwise affine transformation.
+	double *xform;
+
 	//
 	// render: 
 	//   Renders the given @item on the @surface.  The parent affine transformation is in
 	//   @affine, and the area that is exposed is delimited by x, y, width, height
 	//
-	void (*render)    (Item *item, Surface *surface, double *affine, int x, int y, int width, int height);
+	virtual void render (Surface *surface, double *affine, int x, int y, int width, int height) = 0;
 
 	// 
 	// getbounds:
 	//   Updates the bounding box for the given item, this uses the parent
 	//   chain to compute the composite affine.
 	//
-	// Input parameters: 
-	//   @item:   the item
-	//
 	// Output:
 	//   the item->x1,y1,x2,y2 values are updated.
 	// 
-	void (*getbounds) (Item *item);
-} ItemVtable;
-
-struct _Item {
-	Object object;
-
-        // OpacityProperty;
-        // ClipProperty;
-        // RenderTransformProperty;
-        // TriggersProperty;
-        // OpacityMaskProperty;
-        // RenderTransformOriginProperty;
-        // CursorProperty;
-        // IsHitTestVisibleProperty;
-        // VisibilityProperty;
-        // ResourcesProperty;
-        // ZIndexProperty;
-
-	Item *parent;
-
-	// The computed bounding box
-	double x1, y1, x2, y2;
-
-	// If null, identity, otherwise affine transformation.
-	double *xform;
+	virtual void getbounds () = 0;
 };
 
 Surface *item_surface_get   (Item *item);
-void     item_init          (Item *item);
 void     item_destroy       (Item *item);
 void     item_invalidate    (Item *item);
 void     item_update_bounds (Item *item);
@@ -83,43 +59,58 @@ double  *item_get_affine    (double *container, double *affine, double *result);
 Surface *item_surface_get   (Item *item);
 double  *item_affine_get_absolute (Item *item, double *result);
 
-typedef struct {
-	Item item;
-
+class Group : public Item {
+ public:
 	GSList *items;
-} Group;
 
-void group_init     (Group *group);
+	Group () : items (NULL) {}
+	
+	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
+	virtual void getbounds ();
+};
+
 void group_item_add (Group *group, Item *item);
 
-typedef struct {
-	Item item;
-
+class Shape : public Item {
 	// Brush: Fill, Stroke
-} Shape;
+};
 
-void shape_init (Shape *shape);
-
-typedef struct {
-	Shape shape;
+class Rectangle : public Shape {
+ public:
 	double x, y, w, h;
-} Rectangle;
 
-void  rectangle_init (Rectangle *rectangle);
-Item *rectangle_new  (double x, double y, double w, double h);
+	Rectangle (double ix, double iy, double iw, double ih) : x(ix), y(iy), w(iw), h(ih) {};
+	Rectangle () : x(0), y(0), w(0), h(0) {};
+	
+	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
+	virtual void getbounds ();
+};
 
+Rectangle *rectangle_new  (double x, double y, double w, double h);
+
+typedef struct _VideoPrivate VideoPrivate;
+	
 // A video is an Item
-typedef struct _Video Video;
+class Video : public Item {
+	enum { VIDEO_OK, VIDEO_ERROR_OPEN, VIDEO_ERROR_STREAM_INFO } VideoError;
+ public:
+	double x, y;
+	char  *filename;
+	int    error;
 
-void  video_init    (Video *video);
-Item *video_new     (const char *filename, double x, double y);
-void  video_destroy (Video *video);
+	Video (const char *filename, double x, double y);
+	~Video ();
+};
+
+Video *video_new     (const char *filename, double x, double y);
+void  video_destroy  (Video *video);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 	
-struct _Surface {
-	Group group;
-
+class Surface : public Group {
+ public:
+	Surface () : width (0), height (0), buffer (0), pixbuf (NULL), cairo_surface (NULL), cairo (NULL), data(NULL) {}
+	
 	int width, height;
 
 	// The data lives here
@@ -148,12 +139,6 @@ void     surface_clear     (Surface *s, int x, int y, int width, int height);
 void     surface_clear_all (Surface *s);
 void     surface_destroy   (Surface *s);
 void     surface_repaint   (Surface *s, int x, int y, int width, int height);
-
-// Vtables
-extern ItemVtable item_vtable;
-
-// External class init
-void video_class_init ();
 
 #ifdef __cplusplus
 };

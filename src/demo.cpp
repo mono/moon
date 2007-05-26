@@ -63,7 +63,6 @@ main (int argc, char *argv [])
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
 	gdk_threads_init ();
-	runtime_init ();
 	
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	da = gtk_drawing_area_new ();

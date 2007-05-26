@@ -31,41 +31,6 @@ struct _SurfacePrivate {
 };
 #endif
 
-ObjectVtable object_vtable = { NULL } ;
-
-void
-object_init (Object *obj)
-{
-	obj->vtable = &object_vtable;
-}
-
-void
-object_class_init ()
-{
-	// Nothing.
-}
-
-static void
-vt_item_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height)
-{
-	fprintf (stderr, "vt_item_render called, you must implement this method");
-}
-
-static void
-vt_item_getbounds (Item *item)
-{
-	fprintf (stderr, "vt_item_getbounds called, you must implement this method");
-}
-
-ItemVtable item_vtable;
-
-item_class_init ()
-{
-	item_vtable.object_vtable = object_vtable;
-	item_vtable.render = vt_item_render;
-	item_vtable.getbounds = vt_item_getbounds;
-}
-
 /**
  * item_getbounds:
  * @item: the item to update the bounds of
@@ -80,8 +45,7 @@ item_update_bounds (Item *item)
 	double cx2 = item->x2;
 	double cy2 = item->y2;
 	
-	ItemVtable *vt = (ItemVtable *) item->object.vtable;
-	vt->getbounds (item);
+	item->getbounds ();
 
 	//
 	// If we changed, notify the parent to recompute its bounds
@@ -90,13 +54,6 @@ item_update_bounds (Item *item)
 		if (item->parent != NULL)
 			item_update_bounds (item->parent);
 	}
-}
-
-void
-item_init (Item *item)
-{
-	object_init (&item->object);
-	item->object.vtable = &item_vtable;
 }
 
 /*
@@ -210,48 +167,28 @@ item_transform_set (Item *item, double *transform)
 		
 		item->xform = d;
 	}
-	ItemVtable *vt = (ItemVtable *) item->object.vtable;
-	vt->getbounds (item);
+	item->getbounds ();
 	item_invalidate (item);
 }
 
-static void 
-vt_group_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height)
+void
+Group::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
-	Group *group = (Group *) item; 
 	GSList *il;
 	double actual [6];
-	double *use_affine = item_get_affine (affine, item->xform, actual);
+	double *use_affine = item_get_affine (affine, xform, actual);
 	
-	for (il = group->items; il != NULL; il = il->next){
+	for (il = items; il != NULL; il = il->next){
 		Item *item = (Item *) il->data;
-		ItemVtable *vt = (ItemVtable *) item->object.vtable;
 
-		vt->render (item, s, use_affine, x, y, width, height);
+		item->render (s, use_affine, x, y, width, height);
 	}
 }
 
-static void
-vt_group_getbounds (Item *item)
+void
+Group::getbounds ()
 {
 	
-}
-
-static ItemVtable group_vtable;
-
-static void
-group_class_init ()
-{
-	group_vtable.object_vtable = object_vtable;
-	group_vtable.render = vt_group_render;
-	group_vtable.getbounds = vt_group_getbounds;
-}
-
-void 
-group_init (Group *group)
-{
-	item_init (&group->item);
-	group->item.object.vtable = &group_vtable;
 }
 
 void 
@@ -260,28 +197,14 @@ group_item_add (Group *group, Item *item)
 	group->items = g_slist_append (group->items, item);
 	item->parent = (Item *) group;
 
-	ItemVtable *vt = (ItemVtable *) item->object.vtable;
-	vt->getbounds (item);
-}
-
-void
-shape_class_init ()
-{
-	// Nothing, this is pure abstract
-}
-
-void 
-shape_init (Shape *shape)
-{
-	item_init (&shape->item);
+	item->getbounds ();
 }
 
 static void
-rectangle_draw (Item *item, Surface *s, double *affine)
+rectangle_draw (Rectangle *r, Surface *s, double *affine)
 {
-	Rectangle *r = (Rectangle *) item;
 	double result [6];
-	double *matrix = item_get_affine (affine, item->xform, result);
+	double *matrix = item_get_affine (affine, r->xform, result);
 
 	cairo_save (s->cairo);
 	if (matrix != NULL)
@@ -291,30 +214,23 @@ rectangle_draw (Item *item, Surface *s, double *affine)
 	cairo_restore (s->cairo);
 }
 
-static ItemVtable surface_vtable;
-
-static void
-surface_class_init ()
-{
-	surface_vtable = group_vtable;
-}
-
 Surface *
 item_surface_get (Item *item)
 {
-	if (item->object.vtable == &surface_vtable)
+	if (item->flags & Video::IS_SURFACE)
 		return (Surface *) item;
+
 	if (item->parent != NULL)
 		return item_surface_get (item->parent);
 
 	return NULL;
 }
 
-static void 
-vt_rectangle_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height)
+void 
+Rectangle::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
 #if CAIRO
-	rectangle_draw (item, s, affine);
+	rectangle_draw (this, s, affine);
 	cairo_stroke (s->cairo);
 #else
 	Rectangle *r = (Rectangle *) item;
@@ -336,55 +252,31 @@ vt_rectangle_render (Item *item, Surface *s, double *affine, int x, int y, int w
 #endif
 }
 
-static void
-vt_rectangle_getbounds (Item *item)
+void
+Rectangle::getbounds ()
 {
 	double res [6];
-	double *affine = item_affine_get_absolute (item, res);
+	double *affine = item_affine_get_absolute (this, res);
 
-	Surface *s = item_surface_get (item);
+	Surface *s = item_surface_get (this);
 	if (s == NULL){
 		// not yet attached
 		return;
 	}
 #if CAIRO
-	rectangle_draw (item, s, affine);
-	cairo_stroke_extents (s->cairo, &item->x1, &item->y1, &item->x2, &item->y2);
+	rectangle_draw (this, s, affine);
+	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 #else
 #endif
 }
 
-static ItemVtable rectangle_vtable;
-
-void
-rectangle_class_init ()
-{
-	rectangle_vtable.object_vtable = object_vtable;
-	rectangle_vtable.render = vt_rectangle_render;
-	rectangle_vtable.getbounds = vt_rectangle_getbounds;
-}
-
-void
-rectangle_init (Rectangle *rectangle)
-{
-	shape_init (&rectangle->shape);
-	Item *i = &rectangle->shape.item;
-	i->object.vtable = &rectangle_vtable;
-}
-
-Item *
+Rectangle *
 rectangle_new (double x, double y, double w, double h)
 {
-	Rectangle *rect = g_new0 (Rectangle, 1);
-	rectangle_init (rect);
+	Rectangle *rect = new Rectangle (x, y, w, h);
 
-	rect->x = x;
-	rect->y = y;
-	rect->w = w;
-	rect->h = h;
-
-	return (Item*)rect;
+	return rect;
 }
 
 void 
@@ -454,29 +346,23 @@ surface_realloc (Surface *s)
 #endif
 }
 
-void
-surface_init (Surface *s, int width, int height)
-{
-	group_init (&s->group);
-	s->group.item.object.vtable = &surface_vtable;
-	s->width = width;
-	s->height = height;
-	surface_realloc (s);
-}
-
 void 
 surface_destroy (Surface *s)
 {
 	cairo_surface_destroy (s->cairo_surface);
-	free (s);
+	delete s;
 }
 
 Surface *
 surface_new (int width, int height)
 {
-	Surface *s = g_new0 (Surface, 1);
+	Surface *s = new Surface ();
 
-	surface_init (s, width, height);
+	s->buffer = NULL;
+	s->flags |= Item::IS_SURFACE;
+	s->width = width;
+	s->height = height;
+	surface_realloc (s);
 
 	return s;
 }
@@ -485,17 +371,6 @@ void
 surface_repaint (Surface *s, int x, int y, int width, int height)
 {
 	surface_clear (s, x, y, width, height);
-	vt_group_render ((Item *) s, s, NULL, x, y, width, height);
+	s->render (s, NULL, x, y, width, height);
 }
 
-void
-runtime_init ()
-{
-	object_class_init ();
-	item_class_init ();
-	group_class_init ();
-	shape_class_init ();
-	rectangle_class_init ();
-	surface_class_init ();
-	video_class_init ();
-}

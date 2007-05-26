@@ -3,12 +3,12 @@ bin_PROGRAMS = demo
 lib_LTLIBRARIES = libmoon.la
 
 libmoon_la_SOURCES = \
-	runtime.c	\
+	runtime.cpp	\
 	runtime.h	\
-	video.c		\
+	video.cpp	\
 	video.h
 
 demo_SOURCES = \
-	demo.c
+	demo.cpp
 
 demo_LDADD = -lmoon

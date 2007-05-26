@@ -9,6 +9,8 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+#define __STDC_CONSTANT_MACROS
+#include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <cairo.h>
@@ -23,16 +25,22 @@
 #include <fcntl.h>
 
 // video specific 
+#include <avformat.h>
 #include <stdint.h>
 #include <avcodec.h>
-#include <avformat.h>
 #include <swscale.h>
 
-typedef enum  {
-	VIDEO_OK,
-	VIDEO_ERROR_OPEN,
-	VIDEO_ERROR_STREAM_INFO
-} VideoError;
+Video::Video (const char *filename, double x, double y)
+{
+	this->filename = g_strdup (filename);
+	this->x = x;
+	this->y = y;
+}
+
+Video::~Video ()
+{
+	g_free (filename);
+}
 
 typedef enum {
 	// When a new frame is ready
@@ -42,15 +50,16 @@ typedef enum {
 	CMD_INITED
 } GuiCommand;
 
-struct _Video {
-	Item   item;
-	double x, y, w, h;
-	char   *filename;
+class VideoFfmpeg : public Video {
+public:
+	int w, h;
 
-	int     error;
+	VideoFfmpeg (const char *filename, double x, double y);
+	~VideoFfmpeg ();
 
-	GThread *decode_thread_id;
-	int      pipe [2];
+	GThread    *decode_thread_id;
+	int         pipes [2];
+	GIOChannel *pipe_channel;
 	
 	//
 	// AV Fields
@@ -58,10 +67,10 @@ struct _Video {
 	AVFormatContext *av_format_context;
 
 	// Video
-	AVCodec  *video_codec;
-	AVStream *video_stream;
-	int       video_stream_idx;
-	GMutex   *video_mutex;
+	AVCodec     *video_codec;
+	AVStream    *video_stream;
+	int          video_stream_idx;
+	GMutex      *video_mutex;
 
 	GAsyncQueue *video_frames;
 
@@ -70,78 +79,60 @@ struct _Video {
 	//
 
 	// The buffer where we store the RGB data
-	void *video_rgb_buffer;
+	unsigned char *video_rgb_buffer;
 
 	// The cairo surface that represents video_rgb_buffer
 	cairo_surface_t *video_cairo_surface;
 
 	// The SwsContext image convertor
 	struct SwsContext *video_scale_context;
-	
+
+	// Virtual method overrides
+	void getbounds ();
+	void render (Surface *s, double *affine, int x, int y, int width, int height);
+
 };
 
 static GMutex *video_lock;
 
-static void
-vt_video_getbounds (Item *item)
+void
+VideoFfmpeg::getbounds ()
 {
-	Video *video = (Video *) item;
 	double res [6];
-	double *affine = item_affine_get_absolute (item, res);
+	double *affine = item_affine_get_absolute (this, res);
 	AVCodecContext *cc;
 	
-	Surface *s = item_surface_get (item);
+	Surface *s = item_surface_get (this);
 	if (s == NULL){
 		// not yet attached
 		return;
 	}
 
 	// If we have not been initialized yet, we cant compute the bounds
-	if (video->video_stream == NULL || video->video_stream->codec == NULL){
-		item->x1 = item->y1 = item->x2 = item->y2 = 0;
+	if (video_stream == NULL || video_stream->codec == NULL){
+		x1 = y1 = x2 = y2 = 0;
 		return;
 	}
-	cc = video->video_stream->codec;
+	cc = video_stream->codec;
 
 	cairo_save (s->cairo);
 	if (affine != NULL)
 		cairo_set_matrix (s->cairo, (cairo_matrix_t *) affine);
 
-	cairo_rectangle (s->cairo, video->x, video->y, video->x + cc->width, video->y + cc->height);
-	cairo_fill_extents (s->cairo, &item->x1, &item->y1, &item->x2, &item->y2);
+	cairo_rectangle (s->cairo, x, y, x + cc->width, y + cc->height);
+	cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
 
-	printf ("New video bounds: %g %g %g %g\n", item->x1, item->y1, item->x2, item->y2);
+	printf ("New video bounds: %g %g %g %g\n", x1, y1, x2, y2);
 	cairo_restore (s->cairo);
 }
 
-static void vt_video_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height);
-static int video_inited;
-
-ItemVtable video_vtable;
-
-void
-video_init (Video *video)
-{
-	Item *item = &video->item;
-	item_init (item);
-	item->object.vtable = &video_vtable;
-
-	if (!video_inited){
-		video_lock = g_mutex_new ();
-		avcodec_init ();
-		av_register_all ();
-		avcodec_register_all ();
-		video_inited = TRUE;
-	}
-}
-
 static void
-send_command (Video *video, uint8_t cmd)
+send_command (VideoFfmpeg *video, uint8_t cmd)
 {
 	int ret;
 	
 	do {
-		ret = write (video->pipe [1], &cmd, 1);
+		ret = write (video->pipes [1], &cmd, 1);
 	} while (ret == -1 && errno == EINTR);
 }
 
@@ -151,7 +142,7 @@ send_command (Video *video, uint8_t cmd)
 static gpointer
 decoder (gpointer data)
 {
-	Video *video = data;
+	VideoFfmpeg *video = (VideoFfmpeg *) data;
 	AVFrame *video_frame;
 	int i;
 	int video_stream_idx;
@@ -192,7 +183,7 @@ decoder (gpointer data)
 			// Allocate our rendering buffer and cairo surface
 			//
 			cc = video->video_stream->codec;
-			video->video_rgb_buffer = malloc (cc->width * cc->height * 4);
+			video->video_rgb_buffer = (unsigned char *) malloc (cc->width * cc->height * 4);
 
 			video->video_cairo_surface = cairo_image_surface_create_for_data (
 				video->video_rgb_buffer, CAIRO_FORMAT_ARGB32,
@@ -249,7 +240,7 @@ decoder (gpointer data)
 // Convert the AVframe into an RGB buffer we can render
 //
 void
-convert_to_rgb (Video *video, AVFrame *frame)
+convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 {
 	static struct SwsContext *img_convert_ctx;
 	AVCodecContext *cc = video->video_stream->codec;
@@ -267,13 +258,13 @@ convert_to_rgb (Video *video, AVFrame *frame)
 gboolean
 video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 {
-	Video *video = (Video *) data;
+	VideoFfmpeg *video = (VideoFfmpeg *) data;
 	AVFrame *frame;
 	int8_t commands [32];
 	int ret, i;
 
 	do {
-		ret = read (video->pipe [0], &commands, sizeof (commands));
+		ret = read (video->pipes [0], &commands, sizeof (commands));
 	} while ((ret == -1 && ret == EINTR));
 
 	// Nothing.
@@ -288,6 +279,8 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 			
 		case CMD_INITED:
 			item_update_bounds ((Item *) video);
+			video->w = video->video_stream->codec->width;
+			video->h = video->video_stream->codec->height;
 			break;
 
 		default:
@@ -299,7 +292,7 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 }
 
 static void
-update_frame (Video *video)
+update_frame (VideoFfmpeg *video)
 {
 	AVFrame *frame = NULL;
 
@@ -326,28 +319,89 @@ update_frame (Video *video)
 	}
 }
 
-static void
-vt_video_render (Item *item, Surface *s, double *affine, int x, int y, int width, int height)
+void
+VideoFfmpeg::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
-	Video *video = (Video *) item;
 	double actual [6];
-	double *use_affine = item_get_affine (affine, item->xform, actual);
+	double *use_affine = item_get_affine (affine, xform, actual);
 	cairo_pattern_t *pattern, *old_pattern;
 
-	update_frame (video);
+	update_frame (this);
 	
 	cairo_save (s->cairo);
 	if (use_affine != NULL)
 		cairo_set_matrix (s->cairo, (cairo_matrix_t *) use_affine);
 
-	cairo_translate (s->cairo, video->x, video->y);
-	cairo_set_source_surface (s->cairo, video->video_cairo_surface, 0, 0);
+	cairo_translate (s->cairo, this->x, this->y);
+	cairo_set_source_surface (s->cairo, video_cairo_surface, 0, 0);
 	cairo_paint (s->cairo);
 
-	cairo_rectangle (s->cairo, video->x, video->y, video->w, video->h);
+	cairo_rectangle (s->cairo, x, y, w, h);
 
 	cairo_restore (s->cairo);
 }
+
+static int ffmpeg_inited;
+
+static void
+ffmpeg_init ()
+{
+	if (!ffmpeg_inited){
+		video_lock = g_mutex_new ();
+		avcodec_init ();
+		av_register_all ();
+		avcodec_register_all ();
+		ffmpeg_inited = TRUE;
+	}
+}
+Video *
+video_ffmpeg_new (const char *filename, double x, double y)
+{
+	VideoFfmpeg *video;
+
+	ffmpeg_init ();
+
+	video = new VideoFfmpeg (filename, x, y);
+	
+	return (Video *) video;
+}
+
+VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (filename, x, y)
+{
+	video_codec = NULL;
+	video_stream = NULL;
+	video_rgb_buffer = NULL;
+	video_cairo_surface = NULL;
+	video_scale_context = NULL;
+	av_format_context = NULL;
+	
+	pipe (pipes);
+	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
+	
+	video_mutex = g_mutex_new ();
+	video_frames = g_async_queue_new ();
+	pipe_channel = g_io_channel_unix_new (pipes [0]);
+	g_io_add_watch (pipe_channel, G_IO_IN, video_ready, this);
+
+	decode_thread_id = g_thread_create (decoder, this, TRUE, NULL);
+}
+
+VideoFfmpeg::~VideoFfmpeg ()
+{
+	// TODO:
+	//    * Ask our thread to shutdown nicely.
+	//
+	fprintf (stderr, "We should stop the thread");
+
+	g_async_queue_unref (video_frames);
+	g_mutex_free (video_mutex);
+	close (pipes [0]);
+	close (pipes [1]);
+	g_io_channel_close (pipe_channel);
+	g_free (video_rgb_buffer);
+	cairo_surface_destroy (video_cairo_surface);
+}
+
 
 /*
  * video_new:
@@ -355,52 +409,9 @@ vt_video_render (Item *item, Surface *s, double *affine, int x, int y, int width
  * @x, @y: Position where to position the video
  *
  */
-Item *
+Video *
 video_new (const char *filename, double x, double y)
 {
-	Video *video = g_new0 (Video, 1);
-	AVFormatParameters *ap;
-	
-	video_init (video);
-
-	video->filename = g_strdup (filename);
-	video->x = x;
-	video->y = y;
-	video->video_frames = g_async_queue_new ();
-	
-	//
-	// Prepare separate thread
-	//
-	video->video_mutex = g_mutex_new ();
-	pipe (video->pipe);
-	fcntl (video->pipe [0], F_SETFL, O_NONBLOCK);
-	
-	g_io_add_watch (g_io_channel_unix_new (video->pipe [0]),
-			G_IO_IN,
-			video_ready,
-			video);
-
-	// Start decoding thread
-	video->decode_thread_id = g_thread_create (decoder, video, TRUE, NULL);
-	
-	return (Item *) video;
-}
-
-void 
-video_destroy (Video *video)
-{
-	g_free (video->video_rgb_buffer);
-	cairo_surface_destroy (video->video_cairo_surface);
-
-	g_free (video->filename);
-	g_free (video);
-}
-
-void
-video_class_init ()
-{
-	video_vtable = item_vtable;
-	video_vtable.render = &vt_video_render;
-	video_vtable.getbounds = &vt_video_getbounds;
+	return video_ffmpeg_new (filename, x, y);
 }
 

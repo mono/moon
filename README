@@ -7,20 +7,23 @@ part) it should build with a C compiler
 
 This is not likely the final version of this code.
 
-* Object System
+* Use of C++
 
-	This contains a poor man's object system.
+	C++ is only used for the class hierarchy and API entry points
+	are not exposed as C++ member methods but instead they are exposed
+	as regular C-callable methods that have access to the C++
+	public fields or any other public inline declarations.
 
-	The vtable is the first field in the base object (Item in 
-	this case) and is encoded as a void *.   You must cast this
-	to ItemVtable to be able to call methods.   I do not remember
-	why I did not just go for the hardcoded ItemVtable there.
+	Object creation uses the gtk-like naming scheme for constructors:
 
-	Should be fixed perhaps.
+		ClassName *class_name_new ();
 
-	The various XXX_init() methods are here merely to initialize the
-	vtable: they should call into the parent, and then overwrite th
-	vtable if they need to.
+	Destruction of these objects is also done in the C-like way:
+
+		class_name_destroy (ClassName *object)
+
+	This is done so that our public API can be easily P/Invoked
+	from the managed side. 
 
 * Items
 
