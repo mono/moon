@@ -66,6 +66,15 @@ This is not likely the final version of this code.
 
 	And then `use_affine' is used. 
 
+* Class Hierarchy
+
+	I tried to simplify the class hierarchy from the one found in:
+
+		www.mono-project.com/WPFNotes
+
+	We will likely have to introudce some of the same classes to mirror
+	the hierarchy as my over-simplification left a few things out.
+
 * Rendering in Items
 
 	Rendering currently passes the parent affine, but it might be possible to

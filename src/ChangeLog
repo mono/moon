@@ -1,0 +1,12 @@
+2007-05-26  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Brush, SolidBrush): Introduce brushes. 
+
+	(Shape): introduce reusable drawing framework for shapes, not
+	complete. 
+	
+	(Line): introduce second user besides rectangles. 
+
+	Remove agg test code.
+
+	(Group::getbounds): implement.

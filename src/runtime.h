@@ -1,19 +1,66 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
+G_BEGIN_DECLS
 	
 #include <cairo.h>
 
 class Surface;
+class Brush;
 	
-typedef struct {
+typedef void (*BrushChangedNotify)(Brush *brush, void *data);
+
+struct Color {
+	double r, g, b, a;
+ public:
+	Color () : r(0), g(0), b(0), a(0) {}
+	
+	Color (double r, double g, double b, double a)
+	{
+		this->r = r;
+		this->g = g;
+		this->b = b;
+		this->a = a;
+	};
+};
+
+class Brush {
+	GSList *listeners;
+ public:
+	int refcount;
+	Brush () : opacity(0), relative_transform(NULL), transform(NULL), listeners(NULL), refcount(1) {}
+	
 	double opacity;
 	double *relative_transform;
 	double *transform;
 
-	GList *listeners;
-} Brush;
+	void *AddListener    (BrushChangedNotify notify, void *data);
+	void  RemoveListener (void *key);
 
+	virtual void SetupBrush (cairo_t *cairo) = 0;
+};
+
+Brush *brush_ref   (Brush *brush);
+void   brush_unref (Brush *brush);
+	
+class SolidColorBrush : public Brush {
+	Color color;
+ public:
+	SolidColorBrush (Color c) { color; } 
+
+	virtual void SetupBrush (cairo_t *cairo);
+};
+
+class GradientBrush : public Brush {
+ public:
+	GradientBrush ();
+	// ColorInterpolationMode{ScRgbLinearInterpolation, SRgbLinearInterpolation} mode;
+	// GradientStopCollection stops
+	// BrushMappingMode{Absolute,RelativeToBoundingBox} MappingMode
+	// GradientSpreadMethod{Pad, Reflect, Repeat} SpreadMethod
+	virtual void SetupBrush (cairo_t *cairo);
+};
+
+//
+// Item class
+//
 class Item {
  public:
 	Item () : parent(NULL), flags (0), xform (NULL), x1 (0), y1(0), x2(0), y2(0) {}
@@ -59,6 +106,9 @@ double  *item_get_affine    (double *container, double *affine, double *result);
 Surface *item_surface_get   (Item *item);
 double  *item_affine_get_absolute (Item *item, double *result);
 
+//
+// Group Class
+//
 class Group : public Item {
  public:
 	GSList *items;
@@ -68,28 +118,71 @@ class Group : public Item {
 	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
 	virtual void getbounds ();
 };
-
 void group_item_add (Group *group, Item *item);
 
+//
+// Shape class 
+// 
 class Shape : public Item {
-	// Brush: Fill, Stroke
+	void DoDraw (Surface *s, bool do_op);
+ public: 
+	Brush *fill, *stroke;
+
+	Shape () : fill (NULL), stroke (NULL) {}
+
+	//
+	// Overrides from Item.
+	//
+	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
+	virtual void getbounds ();
+
+	//
+	// new virtual methods for shapes
+	//
+	
+	//
+	// Draw: draws the Shape on the surface (affine transforms are set before this
+	// is called). 
+	//
+	// This is called multiple times: one for fills, one for strokes
+	// if they are both set.   It will also be called to compute the bounding box.
+	//
+	virtual void Draw (Surface *s) = 0;
 };
 
+void shape_set_fill   (Shape *shape, Brush *brush);
+void shape_set_stroke (Shape *shape, Brush *brush);
+
+//
+// Rectangle class 
+// 
 class Rectangle : public Shape {
  public:
 	double x, y, w, h;
 
 	Rectangle (double ix, double iy, double iw, double ih) : x(ix), y(iy), w(iw), h(ih) {};
 	Rectangle () : x(0), y(0), w(0), h(0) {};
-	
-	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
-	virtual void getbounds ();
-};
 
+	void Draw (Surface *s);
+};
 Rectangle *rectangle_new  (double x, double y, double w, double h);
 
-typedef struct _VideoPrivate VideoPrivate;
+//
+// Line class 
+// 
+class Line : public Shape {
+ public:
+	double line_x1, line_y1, line_x2, line_y2;
+
+	Line (double px1, double py1, double px2, double py2) :
+		line_x1(px1), line_y1(py1), line_x2(px2), line_y2(py2) {};
 	
+	void Draw (Surface *s);
+};
+Line *line_new  (double x1, double y1, double x2, double y2);
+
+
+
 // A video is an Item
 class Video : public Item {
 	enum { VIDEO_OK, VIDEO_ERROR_OPEN, VIDEO_ERROR_STREAM_INFO } VideoError;
@@ -140,6 +233,4 @@ void     surface_clear_all (Surface *s);
 void     surface_destroy   (Surface *s);
 void     surface_repaint   (Surface *s, int x, int y, int width, int height);
 
-#ifdef __cplusplus
-};
-#endif
+G_END_DECLS

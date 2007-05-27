@@ -1,4 +1,4 @@
-#define VIDEO_DEMO
+//#define VIDEO_DEMO
 #include <string.h>
 #include <gtk/gtk.h>
 #include <malloc.h>
@@ -7,7 +7,8 @@
 
 #include "runtime.h"
 
-static Item *r, *v;
+static Item *v;
+static Rectangle *r;
 
 gboolean
 expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
@@ -72,6 +73,7 @@ main (int argc, char *argv [])
 	Surface *t = surface_new (600, 600);
 	t->data = w;
 	r = rectangle_new (100, 100, 100, 100);
+	shape_set_stroke (r, new SolidColorBrush (Color (1.0, 0.0, 0.5, 0.5)));
 	cairo_matrix_init_rotate (&trans, 0.4);
 	item_transform_set (r, (double *) (&trans));
 	surface_repaint (t, 0, 0, 300, 300);

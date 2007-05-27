@@ -2,7 +2,8 @@ bin_PROGRAMS = demo
 
 lib_LTLIBRARIES = libmoon.la
 
-libmoon_la_SOURCES = \
+libmoon_la_SOURCES = 	\
+	brush.cpp	\
 	runtime.cpp	\
 	runtime.h	\
 	video.cpp	\

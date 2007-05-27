@@ -171,6 +171,18 @@ item_transform_set (Item *item, double *transform)
 	item_invalidate (item);
 }
 
+Surface *
+item_surface_get (Item *item)
+{
+	if (item->flags & Video::IS_SURFACE)
+		return (Surface *) item;
+
+	if (item->parent != NULL)
+		return item_surface_get (item->parent);
+
+	return NULL;
+}
+
 void
 Group::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
@@ -188,7 +200,36 @@ Group::render (Surface *s, double *affine, int x, int y, int width, int height)
 void
 Group::getbounds ()
 {
-	
+	bool first = TRUE;
+	GSList *il;
+
+	for (il = items; il != NULL; il = il->next){
+		Item *item = (Item *) il->data;
+
+		item->getbounds ();
+		if (first){
+			x1 = item->x1;
+			x2 = item->x2;
+			y1 = item->y1;
+			y2 = item->y2;
+			first = FALSE;
+			continue;
+		} 
+
+		if (item->x1 < x1)
+			x1 = item->x1;
+		if (item->x2 > x2)
+			x2 = item->x2;
+		if (item->y1 < y1)
+			y1 = item->y1;
+		if (item->y2 > y2)
+			y2 = item->y2;
+	}
+
+	// If we found nothing.
+	if (first){
+		x1 = y1 = x2 = y2 = 0;
+	}
 }
 
 void 
@@ -200,60 +241,42 @@ group_item_add (Group *group, Item *item)
 	item->getbounds ();
 }
 
-static void
-rectangle_draw (Rectangle *r, Surface *s, double *affine)
+void 
+Shape::DoDraw (Surface *s, bool do_op)
+{
+	if (fill){
+		//fill->SetupBrush (s->cairo);
+		Draw (s);
+		if (do_op)
+			cairo_fill (s->cairo);
+	}
+
+	if (stroke){
+		stroke->SetupBrush (s->cairo);
+		Draw (s);
+		if (do_op)
+			cairo_stroke (s->cairo);
+	}
+
+}
+
+void
+Shape::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
 	double result [6];
-	double *matrix = item_get_affine (affine, r->xform, result);
+	double *matrix = item_get_affine (affine, xform, result);
 
 	cairo_save (s->cairo);
 	if (matrix != NULL)
 		cairo_set_matrix (s->cairo, (cairo_matrix_t *) matrix);
 
-	cairo_rectangle (s->cairo, r->x, r->y, r->w, r->h);
+	DoDraw (s, TRUE);
+
 	cairo_restore (s->cairo);
 }
 
-Surface *
-item_surface_get (Item *item)
-{
-	if (item->flags & Video::IS_SURFACE)
-		return (Surface *) item;
-
-	if (item->parent != NULL)
-		return item_surface_get (item->parent);
-
-	return NULL;
-}
-
 void 
-Rectangle::render (Surface *s, double *affine, int x, int y, int width, int height)
-{
-#if CAIRO
-	rectangle_draw (this, s, affine);
-	cairo_stroke (s->cairo);
-#else
-	Rectangle *r = (Rectangle *) item;
-	Agg2D *g = s->priv->graphics;
-
-	double result[6];
-	double *matrix = item_get_affine (affine, item->xform, result);
-
-	if (matrix != NULL){
-		Agg2D::Affine a (matrix [0], matrix [1], matrix [2], matrix [3], matrix [4], matrix [5]);
-		
-		g->affine (a);
-	}
-        g->lineColor (0, 0, 0);
-        g->noFill ();
-        g->rectangle (r->x, r->y, r->x + r->w, r->y + r->h);
-	if (matrix != NULL)
-		g->resetTransformations ();
-#endif
-}
-
-void
-Rectangle::getbounds ()
+Shape::getbounds ()
 {
 	double res [6];
 	double *affine = item_affine_get_absolute (this, res);
@@ -263,12 +286,35 @@ Rectangle::getbounds ()
 		// not yet attached
 		return;
 	}
-#if CAIRO
-	rectangle_draw (this, s, affine);
+
+	DoDraw (s, FALSE);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
-#else
-#endif
+}
+
+void 
+shape_set_fill (Shape *shape, Brush *fill)
+{
+	if (shape->fill != NULL)
+		brush_unref (shape->fill);
+
+	shape->fill = brush_ref (fill);
+}
+
+void 
+shape_set_stroke (Shape *shape, Brush *stroke)
+{
+	if (shape->stroke != NULL)
+		brush_unref (shape->stroke);
+
+	shape->stroke = brush_ref (stroke);
+}
+
+void
+Rectangle::Draw (Surface *s)
+{
+	printf ("here\n");
+	cairo_rectangle (s->cairo, x, y, w, h);
 }
 
 Rectangle *
@@ -277,6 +323,19 @@ rectangle_new (double x, double y, double w, double h)
 	Rectangle *rect = new Rectangle (x, y, w, h);
 
 	return rect;
+}
+
+void
+Line::Draw (Surface *s)
+{
+	cairo_move_to (s->cairo, line_x1, line_x2);
+	cairo_line_to (s->cairo, line_x2, line_y2);
+}
+
+Line *
+line_new (double x1, double y1, double x2, double y2)
+{
+	return new Line (x1, y1, x2, y2);
 }
 
 void 
@@ -321,29 +380,13 @@ surface_realloc (Surface *s)
 	s->buffer = (unsigned char *) malloc (size);
 	surface_clear_all (s);
        
-	//
-	// Hook up our surfaces
-	//
-
 	s->pixbuf = gdk_pixbuf_new_from_data (s->buffer, GDK_COLORSPACE_RGB, TRUE, 8, 
 					      s->width, s->height, s->width * 4, NULL, NULL);
 
-#if AGG
-	s->priv = g_new0 (SurfacePrivate, 1);
-	s->priv->rbuf =  agg::rendering_buffer ();
-	s->priv->rbuf.attach  (s->buffer, s->width, s->height, s->width * 4);
-	s->priv->graphics = new Agg2D();
-	s->priv->graphics->attach (s->buffer, s->width, s->height, s->width * 4);
-	s->priv->graphics->viewport (0, 0, s->width, s->height, 0, 0, s->width, s->height, Agg2D::XMidYMid);
-#else
+	s->cairo_surface = cairo_image_surface_create_for_data (
+		s->buffer, CAIRO_FORMAT_ARGB32, s->width, s->height, s->width * 4);
 
-	s->cairo_surface = cairo_image_surface_create_for_data (s->buffer, CAIRO_FORMAT_ARGB32, s->width, s->height, s->width * 4);
 	s->cairo = cairo_create (s->cairo_surface);
-	//cairo_set_operator (s->cairo, CAIRO_OPERATOR_SOURCE);
-	//cairo_paint (s->cairo);
-	//cairo_set_operator (s->cairo, CAIRO_OPERATOR_SOURCE);
-	//cairo_set_source_rgb (s->cairo, 0, 1, 0);
-#endif
 }
 
 void 
