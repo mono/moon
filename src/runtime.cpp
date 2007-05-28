@@ -245,7 +245,7 @@ void
 Shape::DoDraw (Surface *s, bool do_op)
 {
 	if (fill){
-		//fill->SetupBrush (s->cairo);
+		fill->SetupBrush (s->cairo);
 		Draw (s);
 		if (do_op)
 			cairo_fill (s->cairo);
