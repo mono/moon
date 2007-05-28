@@ -212,7 +212,9 @@ decoder (gpointer data)
 
 		if (pkt->stream_index == video_stream_idx){
 			int got_picture, n;
-			
+
+			printf ("Decoding frame for time %7.2f\r", pkt->pts);
+			fflush (stdout);
 			video_frame = avcodec_alloc_frame ();
 
 			while (g_async_queue_length (video->video_frames) > 10)

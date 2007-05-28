@@ -1,4 +1,4 @@
-//#define VIDEO_DEMO
+#define VIDEO_DEMO
 #include <string.h>
 #include <gtk/gtk.h>
 #include <malloc.h>
@@ -78,7 +78,7 @@ main (int argc, char *argv [])
 	item_transform_set (r, (double *) (&trans));
 	surface_repaint (t, 0, 0, 300, 300);
 	
-#ifdef VIDEO_DEMO
+#ifdef VIDEO_DEMO1
 	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);
 	//printf ("Got %d\n", v);
 	item_transform_set (v, (double *) (&trans));
