@@ -150,5 +150,26 @@ This is not likely the final version of this code.
 
 * Demo
 
-	The demo has a couple of hardcoded videos for now.
+	The demo has a couple of hardcoded videos for now, you must
+	edit the filenames hardcoded inside of it.
 
+	Sometimes you might also have to define VIDEO_DEMO at the top,
+	as every once in a while I will disable them.
+
+	There is currently a race condition in the rendering engine,
+	I have not yet been able to find out what it is, so sometimes
+	the engine will not display anything, restart it in those cases.
+
+* Debugging
+
+	It is recommended that for now you do not `make install' as there
+	is not much to use.
+
+	To debug, use:
+
+		export LD_LIBRARY_PATH=`pwd`/src/.libs
+		gdb src/.libs/demo
+
+	Or if you are in the src directory:
+
+		LD_LIBRARY_PATH=.libs gdb .libs/demo
