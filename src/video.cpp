@@ -25,10 +25,12 @@
 #include <fcntl.h>
 
 // video specific 
+G_BEGIN_DECLS
 #include <avformat.h>
 #include <stdint.h>
 #include <avcodec.h>
 #include <swscale.h>
+G_END_DECLS
 
 Video::Video (const char *filename, double x, double y)
 {
