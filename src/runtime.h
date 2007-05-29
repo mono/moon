@@ -220,6 +220,8 @@ class Surface : public Group {
 	cairo_surface_t *cairo_surface;
 	cairo_t *cairo;
 
+	GtkWidget *drawing_area;
+					
 	//
 	// Consumer-defined data, we use it to pass the handle to invalidate
 	//

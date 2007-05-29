@@ -13,3 +13,6 @@ demo_SOURCES = \
 	demo.cpp
 
 demo_LDADD = -lmoon
+
+debug:
+	LD_LIBRARY_PATH=.libs gdb .libs/demo

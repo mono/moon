@@ -138,7 +138,11 @@ item_invalidate (Item *item)
 				    (int) item->x1, (int)item->y1, 
 				    (int)(item->x2-item->x1), (int)(item->y2-item->y1));
 #endif
-	gtk_widget_queue_draw_area ((GtkWidget *)s->data, 
+	// 
+	// Note: this is buggy: why do we need to queue the redraw on the toplevel
+	// widget (s->data) and does not work with the drawing area?
+	//
+	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
 				    (int) item->x1, (int)item->y1, 
 				    (int)(item->x2-item->x1), (int)(item->y2-item->y1));
 }
@@ -313,7 +317,6 @@ shape_set_stroke (Shape *shape, Brush *stroke)
 void
 Rectangle::Draw (Surface *s)
 {
-	printf ("here\n");
 	cairo_rectangle (s->cairo, x, y, w, h);
 }
 
@@ -396,16 +399,44 @@ surface_destroy (Surface *s)
 	delete s;
 }
 
+gboolean
+expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (event->area.x > s->width || event->area.y > s->height)
+		return TRUE;
+
+	//printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
+	surface_repaint (s, event->area.x, event->area.y, event->area.width, event->area.height);
+	gdk_draw_pixbuf (widget->window,
+			 NULL, 
+			 s->pixbuf,
+			 event->area.x, event->area.y, // gint src_x, gint src_y,
+			 event->area.x, event->area.y, // gint dest_x, gint dest_y,
+			 MIN (event->area.width, s->width),
+			 MIN (event->area.height, s->height),
+			 GDK_RGB_DITHER_NORMAL,
+			 0, 0 // gint x_dither, gint y_dither
+			 );
+	return TRUE;
+}
+
 Surface *
 surface_new (int width, int height)
 {
 	Surface *s = new Surface ();
 
+	s->drawing_area = gtk_drawing_area_new ();
+	gtk_widget_show (s->drawing_area);
 	s->buffer = NULL;
 	s->flags |= Item::IS_SURFACE;
 	s->width = width;
 	s->height = height;
 	surface_realloc (s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "expose_event",
+			    G_CALLBACK (expose_event_callback), s);
 
 	return s;
 }

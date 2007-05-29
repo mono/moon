@@ -1,3 +1,24 @@
+2007-05-29  Miguel de Icaza  <miguel@novell.com>
+
+	* video.cpp (load_next_frame): reimplement the video play back
+	logic so that it will now properly paint the proper frame on the
+	screen as needed.
+
+	Add logic to skip frames if video is playing back too slowly, and
+	to resume playback when new frames are ready.
+
+	Currently its computing the delay using the n_frame_rate field
+	(which no sample uses, but I could not find any other way of
+	estimating the frame rate other than this.
+
+	It works at least with some sample streams that I have with 30 fps
+	and 15 fps.
+
+	* runtime.cpp: Move the GtkDrawingArea widget into the Surface,
+	and handle exposes in the runtime, not in the demo.   Show the
+	widget (thats why I was not getting the expose events on the
+	widget, duh). 
+
 2007-05-26  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (Brush, SolidBrush): Introduce brushes. 

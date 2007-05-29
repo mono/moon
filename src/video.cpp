@@ -32,6 +32,8 @@ G_BEGIN_DECLS
 #include <swscale.h>
 G_END_DECLS
 
+#include <sys/time.h>
+
 Video::Video (const char *filename, double x, double y)
 {
 	this->filename = g_strdup (filename);
@@ -59,6 +61,11 @@ public:
 	VideoFfmpeg (const char *filename, double x, double y);
 	~VideoFfmpeg ();
 
+	// Virtual method overrides
+	void getbounds ();
+	void render (Surface *s, double *affine, int x, int y, int width, int height);
+
+
 	GThread    *decode_thread_id;
 	int         pipes [2];
 	GIOChannel *pipe_channel;
@@ -74,7 +81,20 @@ public:
 	int          video_stream_idx;
 	GMutex      *video_mutex;
 
+	// The decoding thread will wait until the main thread reads our CMD_INITED
+	// command
+	GCond       *cond_decode_thread_proceed;
+
 	GAsyncQueue *video_frames;
+
+	//
+	// Timing components, the next time to display.
+	//
+	double   micro_to_pts;          // how to convert microseconds to pts (pts units are in video_stream->time_base units)
+	uint64_t play_start_time;   	// Playback starts at this host time.
+	uint64_t initial_pts;		// The PTS of the first frame when we started playing
+	int      frame_size;            // microseconds between frames.
+	guint    timeout_handle;
 
 	//
 	// The components used to render the buffer
@@ -88,10 +108,6 @@ public:
 
 	// The SwsContext image convertor
 	struct SwsContext *video_scale_context;
-
-	// Virtual method overrides
-	void getbounds ();
-	void render (Surface *s, double *affine, int x, int y, int width, int height);
 
 };
 
@@ -124,7 +140,6 @@ VideoFfmpeg::getbounds ()
 	cairo_rectangle (s->cairo, x, y, x + cc->width, y + cc->height);
 	cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
 
-	printf ("New video bounds: %g %g %g %g\n", x1, y1, x2, y2);
 	cairo_restore (s->cairo);
 }
 
@@ -148,6 +163,7 @@ decoder (gpointer data)
 	AVFrame *video_frame;
 	int i;
 	int video_stream_idx;
+	AVFormatParameters pars;
 	
 	printf ("Video THREAD STARTS\n");
 
@@ -156,9 +172,11 @@ decoder (gpointer data)
 	//   auto-detect format
 	//   default buffer size
 	//   no additional parameters
+	memset (&pars, 0, sizeof (pars));
+	
 	if (av_open_input_file (&video->av_format_context, video->filename, NULL, 0, NULL) < 0){
 		g_error ("ERROR: open input file\n");
-	} 
+	}
 	if (video->av_format_context == (void *) &rtsp_demuxer){
 		g_error ("ERROR: stream info\n");
 	}
@@ -180,8 +198,7 @@ decoder (gpointer data)
 			avcodec_open (video->video_stream->codec, video->video_codec);
 			video->video_stream_idx = i;
 			video_stream_idx = i;
-
-			//
+			
 			// Allocate our rendering buffer and cairo surface
 			//
 			cc = video->video_stream->codec;
@@ -192,14 +209,21 @@ decoder (gpointer data)
 				cc->width, cc->height, cc->width * 4);
 
 			// The YUB to RGB scaleter/translator
-			video->video_scale_context = sws_getContext (cc->width, cc->height, cc->pix_fmt, cc->width, cc->height,
-								     PIX_FMT_RGB32, SWS_BICUBIC, NULL, NULL, NULL);
+			printf ("Pix_fmt=%d\n", cc->pix_fmt);
+			video->video_scale_context = sws_getContext (
+				cc->width, cc->height, cc->pix_fmt, cc->width, cc->height,
+				PIX_FMT_RGB32, SWS_BICUBIC, NULL, NULL, NULL);
 			break;
 		}
 	}
-	g_mutex_unlock (video_lock);
 
+	//
+	// Notify the main thread that we are done loading the video, and that it
+	// can pull the width/height information out of this video
+	//
 	send_command (video, CMD_INITED);
+	g_cond_wait (video->cond_decode_thread_proceed, video_lock);
+	g_mutex_unlock (video_lock);
 
 	while (TRUE){
 		AVPacket packet, *pkt = &packet;
@@ -214,18 +238,23 @@ decoder (gpointer data)
 
 		if (pkt->stream_index == video_stream_idx){
 			int got_picture, n;
-
-			printf ("Decoding frame for time %7.2f\r", pkt->pts);
-			fflush (stdout);
+			static int count;
+			
 			video_frame = avcodec_alloc_frame ();
 
 			while (g_async_queue_length (video->video_frames) > 10)
 				g_usleep (1000);
 
-			printf ("pkt=%ld\r", pkt->pts);
+			//printf ("pkt=%7.2f %8d\r\n", (double) pkt->pts, count++);
+			//fflush (stdout);
 			avcodec_decode_video (video->video_stream->codec, video_frame, &got_picture, pkt->data, pkt->size);
 			
 			if (got_picture){
+				// Copy the PTS here, dont know why decode video does not set it
+				if (video_frame->pts == 0)
+					video_frame->pts = pkt->pts;
+
+				//printf ("Adding PTS=%ld\n", video_frame->pts);
 				g_mutex_lock (video->video_mutex);
 				send_command (video, CMD_NEWFRAME);
 				g_async_queue_push (video->video_frames, video_frame);
@@ -256,6 +285,72 @@ convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 		   video->video_stream->codec->height,  rgb_dest, rgb_stride);
 }
 
+static gboolean
+load_next_frame (gpointer data)
+{
+	VideoFfmpeg *video = (VideoFfmpeg *) data;
+	uint64_t target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
+	gboolean cont = TRUE;
+	AVFrame *frame = NULL;
+
+	g_mutex_lock (video->video_mutex);
+
+	while (g_async_queue_length (video->video_frames) != 0){
+		void *rgb;
+		uint64_t diff;
+
+		frame = (AVFrame *) g_async_queue_pop (video->video_frames);
+
+		if (frame->pts + video->frame_size < target_pts){
+			
+			// We got more stuff on the queue, discard this one
+			if (g_async_queue_length (video->video_frames) > 1){
+				printf ("discarding frame at time=%g seconds because it is late\n", 
+					(frame->pts - video->video_stream->start_time) *
+					av_q2d (video->video_stream->time_base));
+				av_free (frame);
+			} else {
+				printf ("Going to use the frame, and stopping stop\n");
+
+				// We do not have anything else, render this last frame, and
+				// stop the timer.
+				cont = FALSE;
+				video->timeout_handle = 0;
+				break;
+			}
+		} else {
+			// Got a frame in the proper time, break the loop, and continue.
+			break;
+		}
+			
+	}
+	g_mutex_unlock (video->video_mutex);
+
+	if (frame != NULL){
+		convert_to_rgb (video, frame);
+		av_free (frame);
+	}
+
+	item_invalidate ((Item *) video);
+
+	//gdk_window_process_updates (get_surface (video)->drawing_area->window, FALSE);
+	
+	return cont;
+}
+
+void
+restart_timer (VideoFfmpeg *video)
+{
+	//video->frame_size = (int) (1000 * av_q2d (video->video_stream->time_base) * av_q2d (video->video_stream->r_frame_rate));
+
+	// microseconds it takes to advance to the next frame
+	video->frame_size = 1000 / av_q2d (video->video_stream->r_frame_rate);
+
+	video->play_start_time = av_gettime ();
+	printf ("Adding timer for %d\n", video->frame_size);
+	video->timeout_handle = g_timeout_add (video->frame_size, load_next_frame, video);
+}
+
 //
 // Called on the GUI thread when we got a frame to render.
 //
@@ -278,10 +373,20 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 	for (i = 0; i < ret; i++){
 		switch (commands [i]){
 		case CMD_NEWFRAME:
-			item_invalidate ((Item *) video);
+			if (video->timeout_handle == 0)
+				restart_timer (video);
 			break;
 			
-		case CMD_INITED:
+		case CMD_INITED: 
+			// Track where we are at now
+			video->initial_pts = video->video_stream->start_time;
+			restart_timer (video);
+
+			//
+			// Poor man's [play] command.
+			//
+			g_cond_signal (video->cond_decode_thread_proceed);
+			
 			item_update_bounds ((Item *) video);
 			video->w = video->video_stream->codec->width;
 			video->h = video->video_stream->codec->height;
@@ -295,34 +400,6 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 	return TRUE;
 }
 
-static void
-update_frame (VideoFfmpeg *video)
-{
-	AVFrame *frame = NULL;
-
-	//
-	// Experimental strategy: the strategy needs to be entirely redone
-	// for now I just pull the last frame and discard all the other
-	// intermediate frames that we already decoded.
-	//
-	//
-	g_mutex_lock (video->video_mutex);
-	while (g_async_queue_length (video->video_frames) != 0){
-		void *rgb;
-
-		if (frame != NULL)
-			av_free (frame);
-		
-		frame = (AVFrame *) g_async_queue_pop (video->video_frames);
-	}
-	g_mutex_unlock (video->video_mutex);
-
-	if (frame != NULL){
-		convert_to_rgb (video, frame);
-		av_free (frame);
-	}
-}
-
 void
 VideoFfmpeg::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
@@ -330,8 +407,6 @@ VideoFfmpeg::render (Surface *s, double *affine, int x, int y, int width, int he
 	double *use_affine = item_get_affine (affine, xform, actual);
 	cairo_pattern_t *pattern, *old_pattern;
 
-	update_frame (this);
-	
 	cairo_save (s->cairo);
 	if (use_affine != NULL)
 		cairo_set_matrix (s->cairo, (cairo_matrix_t *) use_affine);
@@ -378,6 +453,12 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	video_cairo_surface = NULL;
 	video_scale_context = NULL;
 	av_format_context = NULL;
+
+	timeout_handle = 0;
+	initial_pts = 0;
+	play_start_time = 0;
+	frame_size = 0;
+
 	
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
@@ -387,6 +468,8 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	pipe_channel = g_io_channel_unix_new (pipes [0]);
 	g_io_add_watch (pipe_channel, G_IO_IN, video_ready, this);
 
+	cond_decode_thread_proceed = g_cond_new ();
+	
 	decode_thread_id = g_thread_create (decoder, this, TRUE, NULL);
 }
 
