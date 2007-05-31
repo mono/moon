@@ -6,8 +6,9 @@ libmoon_la_SOURCES = 	\
 	brush.cpp	\
 	runtime.cpp	\
 	runtime.h	\
+	shape.cpp	\
 	video.cpp	\
-	video.h
+	videoff.cpp
 
 demo_SOURCES = \
 	demo.cpp
