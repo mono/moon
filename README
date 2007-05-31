@@ -192,9 +192,6 @@ This is not likely the final version of this code.
 
 	To debug, use:
 
-		export LD_LIBRARY_PATH=`pwd`/src/.libs
-		gdb src/.libs/demo
+		cd src
 
-	Or if you are in the src directory:
-
-		LD_LIBRARY_PATH=.libs gdb .libs/demo
+		make debug
