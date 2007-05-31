@@ -9,7 +9,7 @@ AC_HEADER_STDC
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
-LIBS_TO_CHECK="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale"
+LIBS_TO_CHECK="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa"
 
 if pkg-config gtk+-2.0; then
    echo Gtk+ 2.0 found
@@ -29,9 +29,17 @@ else
    exit 1
 fi
 
-CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale`"
-CXXFLAGS="$CXXFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale`"
-LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale`"
+if pkg-config alsa; then
+   echo Found Alsa
+else
+   echo You are missing ALSA
+   echo looking for the alsa.pc file through pkgconfig.
+   exit 1
+fi
+
+CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`"
+CXXFLAGS="$CXXFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`"
+LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`"
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)

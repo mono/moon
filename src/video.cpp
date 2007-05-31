@@ -34,6 +34,9 @@ G_END_DECLS
 
 #include <sys/time.h>
 
+// Alsa
+#include <asoundlib.h>
+
 Video::Video (const char *filename, double x, double y)
 {
 	this->filename = g_strdup (filename);
@@ -80,6 +83,10 @@ public:
 	AVStream    *video_stream;
 	int          video_stream_idx;
 	GMutex      *video_mutex;
+	AVStream    *audio_stream;
+	int          audio_stream_idx;
+
+	snd_pcm_t   *pcm;
 
 	// The decoding thread will wait until the main thread reads our CMD_INITED
 	// command
@@ -162,7 +169,7 @@ decoder (gpointer data)
 	VideoFfmpeg *video = (VideoFfmpeg *) data;
 	AVFrame *video_frame;
 	int i;
-	int video_stream_idx;
+	int video_stream_idx, audio_stream_idx;
 	AVFormatParameters pars;
 	
 	printf ("Video THREAD STARTS\n");
@@ -190,8 +197,28 @@ decoder (gpointer data)
 	for (i = 0; i < video->av_format_context->nb_streams; i++){
 		AVStream *stream = video->av_format_context->streams [i];
 		AVCodecContext *cc;
+		int n;
 
 		switch (stream->codec->codec_type){
+		case CODEC_TYPE_AUDIO:
+			video->audio_stream_idx = i;
+			video->audio_stream = video->av_format_context->streams [i];
+			audio_stream_idx = video->audio_stream_idx;
+			cc = video->audio_stream->codec;
+			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+			if (n < 0)
+				printf ("Error, can not initialize audio\n");				
+			else {
+				snd_pcm_set_params (
+					video->pcm, 
+					SND_PCM_FORMAT_S16, 
+					SND_PCM_ACCESS_RW_INTERLEAVED,
+					cc->channels,
+					cc->sample_rate,
+					1, 0);
+			}
+			break;
+
 		case CODEC_TYPE_VIDEO:
 			video->video_codec = avcodec_find_decoder (stream->codec->codec_id);
 			video->video_stream = video->av_format_context->streams [i];
@@ -234,6 +261,10 @@ decoder (gpointer data)
 		if (ret == -1){
 			printf ("Failed to read frame, terminating\n");
 			break;
+		}
+
+		if (pkt->stream_index == audio_stream_idx){
+			//snd_pcm_writei (video->pcm, 
 		}
 
 		if (pkt->stream_index == video_stream_idx){
@@ -421,11 +452,13 @@ VideoFfmpeg::render (Surface *s, double *affine, int x, int y, int width, int he
 }
 
 static int ffmpeg_inited;
+static snd_pcm_t *pcm;
 
 static void
 ffmpeg_init ()
 {
 	if (!ffmpeg_inited){
+
 		video_lock = g_mutex_new ();
 		avcodec_init ();
 		av_register_all ();
