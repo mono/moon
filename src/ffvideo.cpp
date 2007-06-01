@@ -161,7 +161,7 @@ callback_video_inited (gpointer data)
 	
 	// Track where we are at now
 	video->initial_pts = video->video_stream->start_time;
-	video->micro_to_pts = 0.001;
+	video->micro_to_pts = av_q2d (video->video_stream->codec->time_base);
 
 	restart_timer (video);
 
@@ -385,7 +385,7 @@ restart_timer (VideoFfmpeg *video)
 	//video->frame_size = (int) (1000 * av_q2d (video->video_stream->time_base) * av_q2d (video->video_stream->r_frame_rate));
 
 	// microseconds it takes to advance to the next frame
-	video->frame_size = 1000 / av_q2d (video->video_stream->r_frame_rate);
+	video->frame_size = (int) (1000 / av_q2d (video->video_stream->r_frame_rate));
 
 	video->play_start_time = av_gettime ();
 	printf ("Adding timer for %d\n", video->frame_size);
