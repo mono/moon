@@ -329,6 +329,15 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	if (event->area.x > s->width || event->area.y > s->height)
 		return TRUE;
 
+	
+	//
+	// BIG DEBUG BLOB
+	// 
+	if (cairo_status (s->cairo) != CAIRO_STATUS_SUCCESS){
+		printf ("expose event: the cairo context has an error condition and refuses to paint: %s\n", 
+			cairo_status_to_string (cairo_status (s->cairo)));
+	}
+
 	//printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 	surface_repaint (s, event->area.x, event->area.y, event->area.width, event->area.height);
 	gdk_draw_pixbuf (widget->window,

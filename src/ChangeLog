@@ -1,3 +1,15 @@
+2007-06-01  Miguel de Icaza  <miguel@novell.com>
+
+	* ffvideo.cpp: No longer use CMD_INITED, instead use g_idle_add to
+	notify a special function (callback_video_inited).  Makes me
+	wonder if I should do the same for the new-frame call
+
+	Initialize the cairo surface on the callback_video_inited routine
+	instead of doing this on the decoder thread (that was a mistake).
+
+	This solves the misterious case of the video that randomly did not
+	show up.
+
 2007-05-29  Miguel de Icaza  <miguel@novell.com>
 
 	* video.cpp (load_next_frame): reimplement the video play back
