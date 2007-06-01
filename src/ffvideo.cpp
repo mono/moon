@@ -161,6 +161,8 @@ callback_video_inited (gpointer data)
 	
 	// Track where we are at now
 	video->initial_pts = video->video_stream->start_time;
+	video->micro_to_pts = 0.001;
+
 	restart_timer (video);
 
 	return FALSE;
@@ -482,12 +484,13 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	video_cairo_surface = NULL;
 	video_scale_context = NULL;
 	av_format_context = NULL;
-
+	
 	timeout_handle = 0;
 	initial_pts = 0;
 	play_start_time = 0;
 	frame_size = 0;
-	
+	micro_to_pts = 0;
+
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
 	
