@@ -337,6 +337,10 @@ load_next_frame (gpointer data)
 			
 			// We got more stuff on the queue, discard this one
 			if (g_async_queue_length (video->video_frames) > 1){
+				printf ("Initial PTS=%ld\n", video->initial_pts);
+				printf ("Video Play Start: %ld\n", video->play_start_time);
+				printf ("Current time: %ld\n", av_gettime ());
+				printf ("micro to pts: %g\n", video->micro_to_pts);
 				printf ("Frame PTS=%ld\n", frame->pts);
 				printf ("Target PTS=%ld\n", target_pts);
 				printf ("frame size=%d\n", video->frame_size);
