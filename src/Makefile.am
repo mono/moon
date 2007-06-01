@@ -8,7 +8,7 @@ libmoon_la_SOURCES = 	\
 	runtime.h	\
 	shape.cpp	\
 	video.cpp	\
-	videoff.cpp
+	ffvideo.cpp
 
 demo_SOURCES = \
 	demo.cpp

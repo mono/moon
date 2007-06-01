@@ -70,7 +70,7 @@ main (int argc, char *argv [])
 
 	panel_child_add (t, r);
 
-#ifdef VIDEO_DEMO
+#ifdef VIDEO_DEMO1
 	Item *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
 	//Item *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
 	panel_child_add (t, v2);
