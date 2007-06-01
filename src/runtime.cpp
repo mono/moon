@@ -351,6 +351,7 @@ surface_new (int width, int height)
 
 	s->drawing_area = gtk_drawing_area_new ();
 	gtk_widget_show (s->drawing_area);
+	gtk_widget_set_usize (s->drawing_area, width, height);
 	s->buffer = NULL;
 	s->flags |= Item::IS_SURFACE;
 	s->width = width;

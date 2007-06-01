@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "runtime.h"
 
@@ -51,10 +52,9 @@ main (int argc, char *argv [])
 
 	// Create our objects
 	Surface *t = surface_new (600, 600);
-	gtk_widget_set_usize (t->drawing_area, 400, 400);
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 
-	r = rectangle_new (100, 100, 100, 100);
+	r = rectangle_new (50, 50, 100, 100);
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 	cairo_matrix_init_rotate (&trans, 0.4);
@@ -70,7 +70,7 @@ main (int argc, char *argv [])
 
 	panel_child_add (t, r);
 
-#ifdef VIDEO_DEMO1
+#ifdef VIDEO_DEMO
 	Item *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
 	//Item *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
 	panel_child_add (t, v2);

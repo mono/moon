@@ -17,6 +17,10 @@
 #include <stdlib.h>
 #include "runtime.h"
 
+//
+// This routine is useful for Shape derivatives: it can be used
+// to either get the bounding box from cairo, or to paint it
+//
 void 
 Shape::DoDraw (Surface *s, double *affine, bool do_op)
 {

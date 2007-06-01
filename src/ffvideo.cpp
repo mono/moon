@@ -41,9 +41,6 @@ G_END_DECLS
 typedef enum {
 	// When a new frame is ready
 	CMD_NEWFRAME,
-
-	// When the video has been loaded, this updates the bounding box in the Gtk+ GUI thread.
-	CMD_INITED
 } GuiCommand;
 
 class VideoFfmpeg : public Video {
@@ -76,10 +73,6 @@ public:
 	int          audio_stream_idx;
 
 	snd_pcm_t   *pcm;
-
-	// The decoding thread will wait until the main thread reads our CMD_INITED
-	// command
-	GCond       *cond_decode_thread_proceed;
 
 	GAsyncQueue *video_frames;
 
@@ -133,11 +126,13 @@ VideoFfmpeg::getbounds ()
 	if (affine != NULL)
 		cairo_set_matrix (s->cairo, (cairo_matrix_t *) affine);
 
-	cairo_rectangle (s->cairo, x, y, x + cc->width, y + cc->height);
+	cairo_rectangle (s->cairo, x, y, cc->width, cc->height);
 	cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
 
 	cairo_restore (s->cairo);
 }
+
+static void restart_timer (VideoFfmpeg *video);
 
 static void
 send_command (VideoFfmpeg *video, uint8_t cmd)
@@ -147,6 +142,28 @@ send_command (VideoFfmpeg *video, uint8_t cmd)
 	do {
 		ret = write (video->pipes [1], &cmd, 1);
 	} while (ret == -1 && errno == EINTR);
+}
+
+gboolean
+callback_video_inited (gpointer data)
+{
+	VideoFfmpeg *video = (VideoFfmpeg *) data;
+	AVCodecContext *cc;
+
+	cc = video->video_stream->codec;
+	video->video_cairo_surface = cairo_image_surface_create_for_data (
+		video->video_rgb_buffer, CAIRO_FORMAT_ARGB32,
+		cc->width, cc->height, cc->width * 4);
+	
+	item_update_bounds ((Item *) video);
+	video->w = video->video_stream->codec->width;
+	video->h = video->video_stream->codec->height;
+	
+	// Track where we are at now
+	video->initial_pts = video->video_stream->start_time;
+	restart_timer (video);
+
+	return FALSE;
 }
 
 //
@@ -220,10 +237,6 @@ decoder (gpointer data)
 			cc = video->video_stream->codec;
 			video->video_rgb_buffer = (unsigned char *) malloc (cc->width * cc->height * 4);
 
-			video->video_cairo_surface = cairo_image_surface_create_for_data (
-				video->video_rgb_buffer, CAIRO_FORMAT_ARGB32,
-				cc->width, cc->height, cc->width * 4);
-
 			// The YUB to RGB scaleter/translator
 			printf ("Pix_fmt=%d\n", cc->pix_fmt);
 			video->video_scale_context = sws_getContext (
@@ -232,14 +245,13 @@ decoder (gpointer data)
 			break;
 		}
 	}
+	g_mutex_unlock (video_lock);
 
 	//
-	// Notify the main thread that we are done loading the video, and that it
+	// notify the main thread that we are done loading the video, and that it
 	// can pull the width/height information out of this video
 	//
-	send_command (video, CMD_INITED);
-	g_cond_wait (video->cond_decode_thread_proceed, video_lock);
-	g_mutex_unlock (video_lock);
+	g_idle_add (callback_video_inited, video);
 
 	while (TRUE){
 		AVPacket packet, *pkt = &packet;
@@ -251,7 +263,6 @@ decoder (gpointer data)
 			printf ("Failed to read frame, terminating\n");
 			break;
 		}
-
 		if (pkt->stream_index == audio_stream_idx){
 			//snd_pcm_writei (video->pcm, 
 		}
@@ -268,7 +279,7 @@ decoder (gpointer data)
 			//printf ("pkt=%7.2f %8d\r\n", (double) pkt->pts, count++);
 			//fflush (stdout);
 			avcodec_decode_video (video->video_stream->codec, video_frame, &got_picture, pkt->data, pkt->size);
-			
+
 			if (got_picture){
 				// Copy the PTS here, dont know why decode video does not set it
 				if (video_frame->pts == 0)
@@ -276,9 +287,10 @@ decoder (gpointer data)
 
 				//printf ("Adding PTS=%ld\n", video_frame->pts);
 				g_mutex_lock (video->video_mutex);
-				send_command (video, CMD_NEWFRAME);
 				g_async_queue_push (video->video_frames, video_frame);
 				g_mutex_unlock (video->video_mutex);
+
+				send_command (video, CMD_NEWFRAME);
 			}
 		}
 		av_free_packet (pkt);
@@ -358,7 +370,7 @@ load_next_frame (gpointer data)
 	return cont;
 }
 
-void
+static void
 restart_timer (VideoFfmpeg *video)
 {
 	//video->frame_size = (int) (1000 * av_q2d (video->video_stream->time_base) * av_q2d (video->video_stream->r_frame_rate));
@@ -381,6 +393,7 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 	AVFrame *frame;
 	int8_t commands [32];
 	int ret, i;
+	AVCodecContext *cc;
 
 	do {
 		ret = read (video->pipes [0], &commands, sizeof (commands));
@@ -397,21 +410,6 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 				restart_timer (video);
 			break;
 			
-		case CMD_INITED: 
-			// Track where we are at now
-			video->initial_pts = video->video_stream->start_time;
-			restart_timer (video);
-
-			//
-			// Poor man's [play] command.
-			//
-			g_cond_signal (video->cond_decode_thread_proceed);
-			
-			item_update_bounds ((Item *) video);
-			video->w = video->video_stream->codec->width;
-			video->h = video->video_stream->codec->height;
-			break;
-
 		default:
 			fprintf (stderr, "video_ready: unknown command from decoding thread (%d)\n", commands [i]);
 		}
@@ -427,6 +425,10 @@ VideoFfmpeg::render (Surface *s, double *affine, int x, int y, int width, int he
 	double *use_affine = item_get_affine (affine, xform, actual);
 	cairo_pattern_t *pattern, *old_pattern;
 
+	// If we are not initialized yet, return.
+	if (video_cairo_surface == NULL)
+		return;
+
 	cairo_save (s->cairo);
 	if (use_affine != NULL)
 		cairo_set_matrix (s->cairo, (cairo_matrix_t *) use_affine);
@@ -434,8 +436,6 @@ VideoFfmpeg::render (Surface *s, double *affine, int x, int y, int width, int he
 	cairo_translate (s->cairo, this->x, this->y);
 	cairo_set_source_surface (s->cairo, video_cairo_surface, 0, 0);
 	cairo_paint (s->cairo);
-
-	cairo_rectangle (s->cairo, x, y, w, h);
 
 	cairo_restore (s->cairo);
 }
@@ -463,7 +463,7 @@ video_ffmpeg_new (const char *filename, double x, double y)
 	ffmpeg_init ();
 
 	video = new VideoFfmpeg (filename, x, y);
-	
+
 	return (Video *) video;
 }
 
@@ -480,7 +480,6 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	initial_pts = 0;
 	play_start_time = 0;
 	frame_size = 0;
-
 	
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
@@ -490,8 +489,6 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	pipe_channel = g_io_channel_unix_new (pipes [0]);
 	g_io_add_watch (pipe_channel, G_IO_IN, video_ready, this);
 
-	cond_decode_thread_proceed = g_cond_new ();
-	
 	decode_thread_id = g_thread_create (decoder, this, TRUE, NULL);
 }
 
