@@ -109,7 +109,7 @@ rectangle_new (double x, double y, double w, double h)
 void
 Line::Draw (Surface *s)
 {
-	cairo_move_to (s->cairo, line_x1, line_x2);
+	cairo_move_to (s->cairo, line_x1, line_y1);
 	cairo_line_to (s->cairo, line_x2, line_y2);
 }
 
