@@ -337,6 +337,9 @@ load_next_frame (gpointer data)
 			
 			// We got more stuff on the queue, discard this one
 			if (g_async_queue_length (video->video_frames) > 1){
+				printf ("Frame PTS=%ld\n", frame->pts);
+				printf ("Target PTS=%ld\n", target_pts);
+				printf ("frame size=%d\n", video->frame_size);
 				printf ("discarding frame at time=%g seconds because it is late\n", 
 					(frame->pts - video->video_stream->start_time) *
 					av_q2d (video->video_stream->time_base));
