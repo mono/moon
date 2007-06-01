@@ -61,7 +61,7 @@ main (int argc, char *argv [])
 	item_transform_set (r, (double *) (&trans));
 	surface_repaint (t, 0, 0, 300, 300);
 	
-#ifdef VIDEO_DEMO
+#ifdef VIDEO_DEMO1
 	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);
 	//printf ("Got %d\n", v);
 	item_transform_set (v, (double *) (&trans));
@@ -72,6 +72,7 @@ main (int argc, char *argv [])
 
 #ifdef VIDEO_DEMO
 	Item *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
+	//Item *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
 	//Item *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
 	panel_child_add (t, v2);
 #endif

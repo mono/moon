@@ -163,7 +163,8 @@ callback_video_inited (gpointer data)
 	video->initial_pts = video->video_stream->start_time;
 	video->micro_to_pts = av_q2d (video->video_stream->codec->time_base);
 
-	restart_timer (video);
+	if (video->timeout_handle == 0)
+		restart_timer (video);
 
 	return FALSE;
 }
@@ -317,6 +318,27 @@ convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 
 	sws_scale (video->video_scale_context, frame->data, frame->linesize,  0,
 		   video->video_stream->codec->height,  rgb_dest, rgb_stride);
+
+	// 
+	// This is horrible, the ffmpeg scaler wont produce a usable
+	// format (RGB32_1, BGR32_1 hang), so we have to manually swap
+	// some values here
+	//
+	unsigned char *p = video->video_rgb_buffer;
+
+// the stupid scaler gives us RGBA
+// we need BGRA (CAIRO_FORMAT_ARGB32)
+
+	for (int l = 0; l < cc->height; l++){
+		for (int c = 0; c < cc->width; c += 1){
+			unsigned char t;
+
+			t = p [2];
+			p [2] = p [0];
+			p [0] = t;
+			p += 4;
+		}
+	}
 }
 
 static gboolean
@@ -339,6 +361,7 @@ load_next_frame (gpointer data)
 			
 			// We got more stuff on the queue, discard this one
 			if (g_async_queue_length (video->video_frames) > 1){
+#ifdef DEBUG
 				printf ("Initial PTS=%ld\n", video->initial_pts);
 				printf ("Video Play Start: %ld\n", video->play_start_time);
 				printf ("Current time: %ld\n", av_gettime ());
@@ -346,6 +369,7 @@ load_next_frame (gpointer data)
 				printf ("Frame PTS=%ld\n", frame->pts);
 				printf ("Target PTS=%ld\n", target_pts);
 				printf ("frame size=%d\n", video->frame_size);
+#endif
 				printf ("discarding frame at time=%g seconds because it is late\n", 
 					(frame->pts - video->video_stream->start_time) *
 					av_q2d (video->video_stream->time_base));
