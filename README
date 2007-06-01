@@ -38,6 +38,9 @@ This is not likely the final version of this code.
 	Without having to manually decrement the reference count for 
 	the SolidBrush immediately following it.
 
+	When an object is exposed to the managed world, it must be
+	referenced.
+
 * Items
 
 	Items for the base class for all the objects that are rendered,
