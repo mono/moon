@@ -21,20 +21,6 @@
 #include <errno.h>
 #include "runtime.h"
 
-Brush *
-brush_ref (Brush *brush)
-{
-	brush->refcount++;
-	return brush;
-}
-
-void 
-brush_unref (Brush *brush)
-{
-	if (--brush->refcount == 0)
-		delete brush;
-}
-
 struct Consumer {
 	BrushChangedNotify notify;
 	void *data;

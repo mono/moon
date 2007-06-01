@@ -1,5 +1,6 @@
 G_BEGIN_DECLS
-	
+
+#include <stdint.h>
 #include <cairo.h>
 
 class Surface;
@@ -10,7 +11,7 @@ typedef void (*BrushChangedNotify)(Brush *brush, void *data);
 struct Color {
 	double r, g, b, a;
  public:
-	Color () : r(0), g(0), b(0), a(0) {}
+	Color () {}
 	
 	Color (double r, double g, double b, double a)
 	{
@@ -21,11 +22,24 @@ struct Color {
 	};
 };
 
-class Brush {
+//
+// This guy provide reference counting
+//
+#define BASE_FLOATS 0x80000000
+
+class Base {
+ public:	
+	uint32_t refcount;
+	Base () : refcount(BASE_FLOATS) {}
+};
+
+void base_ref   (Base *base);
+void base_unref (Base *base);
+
+class Brush : public Base {
 	GSList *listeners;
  public:
-	int refcount;
-	Brush () : opacity(0), relative_transform(NULL), transform(NULL), listeners(NULL), refcount(1) {}
+	Brush () : opacity(0), relative_transform(NULL), transform(NULL), listeners(NULL) {}
 	
 	double opacity;
 	double *relative_transform;
@@ -37,13 +51,10 @@ class Brush {
 	virtual void SetupBrush (cairo_t *cairo) = 0;
 };
 
-Brush *brush_ref   (Brush *brush);
-void   brush_unref (Brush *brush);
-	
 class SolidColorBrush : public Brush {
 	Color color;
  public:
-	SolidColorBrush (Color c) { color; } 
+	SolidColorBrush (Color c) { color = c; } 
 
 	virtual void SetupBrush (cairo_t *cairo);
 };
@@ -107,24 +118,25 @@ Surface *item_surface_get   (Item *item);
 double  *item_affine_get_absolute (Item *item, double *result);
 
 //
-// Group Class
+// Panel Class
 //
-class Group : public Item {
+class Panel : public Item {
  public:
-	GSList *items;
+	GSList *children;
 
-	Group () : items (NULL) {}
+	Panel () : children (NULL) {}
 	
 	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
 	virtual void getbounds ();
 };
-void group_item_add (Group *group, Item *item);
+
+void panel_child_add (Panel *group, Item *item);
 
 //
 // Shape class 
 // 
 class Shape : public Item {
-	void DoDraw (Surface *s, bool do_op);
+	void DoDraw (Surface *s, double *affine, bool do_op);
  public: 
 	Brush *fill, *stroke;
 
@@ -200,7 +212,7 @@ void  video_destroy  (Video *video);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 	
-class Surface : public Group {
+class Surface : public Panel {
  public:
 	Surface () : width (0), height (0), buffer (0), pixbuf (NULL), cairo_surface (NULL), cairo (NULL), data(NULL) {}
 	

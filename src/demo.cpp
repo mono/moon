@@ -34,7 +34,7 @@ repaint (gpointer data)
 int
 main (int argc, char *argv [])
 {
-	GtkWidget *w;
+	GtkWidget *w, *box, *button;
 	cairo_matrix_t trans;
 
 	gtk_init (&argc, &argv);
@@ -43,13 +43,20 @@ main (int argc, char *argv [])
 	
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
+	box = gtk_hbox_new (FALSE, 0);
+	button = gtk_button_new_with_label ("dingus");
+	gtk_container_add (GTK_CONTAINER (box), button);
+	gtk_widget_show_all (box);
+	//gtk_container_add (GTK_CONTAINER (w), box);
 
 	// Create our objects
 	Surface *t = surface_new (600, 600);
-	gtk_container_add (GTK_CONTAINER (w), t->drawing_area);
-	t->data = w;
+	gtk_widget_set_usize (t->drawing_area, 400, 400);
+	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
+
 	r = rectangle_new (100, 100, 100, 100);
-	shape_set_stroke (r, new SolidColorBrush (Color (1.0, 0.0, 0.5, 0.5)));
+	Color c = Color (1.0, 0.0, 0.5, 0.5);
+	shape_set_stroke (r, new SolidColorBrush (c));
 	cairo_matrix_init_rotate (&trans, 0.4);
 	item_transform_set (r, (double *) (&trans));
 	surface_repaint (t, 0, 0, 300, 300);
@@ -58,20 +65,24 @@ main (int argc, char *argv [])
 	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);
 	//printf ("Got %d\n", v);
 	item_transform_set (v, (double *) (&trans));
-	group_item_add ((Group *) t, v);
+	panel_child_add (t, v);
 #endif
 
-	group_item_add ((Group *) t, r);
+	panel_child_add (t, r);
 
 #ifdef VIDEO_DEMO
 	Item *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
 	//Item *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
-	group_item_add ((Group *) t, v2);
+	panel_child_add (t, v2);
 #endif
 
-	gtk_widget_set_usize (w, 400, 400);
-	gtk_widget_show (w);
+	printf ("set usize\n");
+	gtk_widget_set_usize (w, 600, 400);
+	printf ("show\n");
+	gtk_widget_show_all (w);
 	gtk_timeout_add (60, repaint, w);
+	printf ("timeout set\n");
 	//g_idle_add (repaint, w);
+	printf ("entering main\n");
 	gtk_main ();
 }

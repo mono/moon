@@ -25,6 +25,19 @@ This is not likely the final version of this code.
 	This is done so that our public API can be easily P/Invoked
 	from the managed side. 
 
+* Base and Reference Counting
+
+	Base objects use a system similar to Gtk's object reference
+	counting.  Objets are born in "floating" mode, which when
+	first refed turn into "refcount = 1".
+
+	This allows code like this:
+
+		shape_set_brush (rect, new SolidBrush ());
+
+	Without having to manually decrement the reference count for 
+	the SolidBrush immediately following it.
+
 * Items
 
 	Items for the base class for all the objects that are rendered,
@@ -184,6 +197,9 @@ This is not likely the final version of this code.
 	There is currently a race condition in the rendering engine,
 	I have not yet been able to find out what it is, so sometimes
 	the engine will not display anything, restart it in those cases.
+
+	You will notice some rectangles painting, thats where the
+	video should be, it is also not clear why those move
 
 * Debugging
 

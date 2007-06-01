@@ -31,6 +31,24 @@ struct _SurfacePrivate {
 };
 #endif
 
+void 
+base_ref (Base *base)
+{
+	if (base->refcount & BASE_FLOATS)
+		base->refcount = 1;
+	else
+		base->refcount++;
+}
+
+void
+base_unref (Base *base)
+{
+	if (base->refcount == BASE_FLOATS || base->refcount == 1){
+		delete base;
+	} else
+		base->refcount--;
+}
+
 /**
  * item_getbounds:
  * @item: the item to update the bounds of
@@ -188,13 +206,13 @@ item_surface_get (Item *item)
 }
 
 void
-Group::render (Surface *s, double *affine, int x, int y, int width, int height)
+Panel::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
 	GSList *il;
 	double actual [6];
 	double *use_affine = item_get_affine (affine, xform, actual);
 	
-	for (il = items; il != NULL; il = il->next){
+	for (il = children; il != NULL; il = il->next){
 		Item *item = (Item *) il->data;
 
 		item->render (s, use_affine, x, y, width, height);
@@ -202,12 +220,12 @@ Group::render (Surface *s, double *affine, int x, int y, int width, int height)
 }
 
 void
-Group::getbounds ()
+Panel::getbounds ()
 {
 	bool first = TRUE;
 	GSList *il;
 
-	for (il = items; il != NULL; il = il->next){
+	for (il = children; il != NULL; il = il->next){
 		Item *item = (Item *) il->data;
 
 		item->getbounds ();
@@ -237,9 +255,9 @@ Group::getbounds ()
 }
 
 void 
-group_item_add (Group *group, Item *item)
+panel_child_add (Panel *group, Item *item)
 {
-	group->items = g_slist_append (group->items, item);
+	group->children = g_slist_append (group->children, item);
 	item->parent = (Item *) group;
 
 	item->getbounds ();

@@ -18,8 +18,15 @@
 #include "runtime.h"
 
 void 
-Shape::DoDraw (Surface *s, bool do_op)
+Shape::DoDraw (Surface *s, double *affine, bool do_op)
 {
+	double result [6];
+	double *matrix = item_get_affine (affine, xform, result);
+
+	cairo_save (s->cairo);
+	if (matrix != NULL)
+		//cairo_set_matrix (s->cairo, (cairo_matrix_t *) matrix);
+
 	if (fill){
 		fill->SetupBrush (s->cairo);
 		Draw (s);
@@ -33,22 +40,13 @@ Shape::DoDraw (Surface *s, bool do_op)
 		if (do_op)
 			cairo_stroke (s->cairo);
 	}
-
+	cairo_restore (s->cairo);
 }
 
 void
 Shape::render (Surface *s, double *affine, int x, int y, int width, int height)
 {
-	double result [6];
-	double *matrix = item_get_affine (affine, xform, result);
-
-	cairo_save (s->cairo);
-	if (matrix != NULL)
-		cairo_set_matrix (s->cairo, (cairo_matrix_t *) matrix);
-
-	DoDraw (s, TRUE);
-
-	cairo_restore (s->cairo);
+	DoDraw (s, affine, TRUE);
 }
 
 void 
@@ -58,12 +56,12 @@ Shape::getbounds ()
 	double *affine = item_affine_get_absolute (this, res);
 
 	Surface *s = item_surface_get (this);
-	if (s == NULL){
-		// not yet attached
-		return;
-	}
 
-	DoDraw (s, FALSE);
+	// not yet attached
+	if (s == NULL)
+		return;
+
+	DoDraw (s, affine, FALSE);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 }
@@ -72,23 +70,27 @@ void
 shape_set_fill (Shape *shape, Brush *fill)
 {
 	if (shape->fill != NULL)
-		brush_unref (shape->fill);
+		base_unref (shape->fill);
 
-	shape->fill = brush_ref (fill);
+	base_ref (fill);
+	shape->fill = fill;
 }
 
 void 
 shape_set_stroke (Shape *shape, Brush *stroke)
 {
 	if (shape->stroke != NULL)
-		brush_unref (shape->stroke);
+		base_unref (shape->stroke);
 
-	shape->stroke = brush_ref (stroke);
+	base_ref (stroke);
+	shape->stroke = stroke;
 }
 
 void
 Rectangle::Draw (Surface *s)
 {
+	static int n;
+	
 	cairo_rectangle (s->cairo, x, y, w, h);
 }
 
