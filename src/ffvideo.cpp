@@ -60,8 +60,8 @@ public:
 
 	// Virtual method overrides
 	void getbounds ();
-	void render (Surface *s, double *affine, int x, int y, int width, int height);
-
+	void render (Surface *s, int x, int y, int width, int height);
+	virtual Point getxformorigin ();
 
 	GThread    *decode_thread_id;
 	int         pipes [2];
@@ -124,10 +124,9 @@ void
 VideoFfmpeg::getbounds ()
 {
 	double res [6];
-	double *affine = item_affine_get_absolute (this, res);
 	AVCodecContext *cc;
 	
-	Surface *s = item_surface_get (this);
+	Surface *s = item_get_surface (this);
 	if (s == NULL){
 		// not yet attached
 		return;
@@ -141,8 +140,8 @@ VideoFfmpeg::getbounds ()
 	cc = video_stream->codec;
 
 	cairo_save (s->cairo);
-	if (affine != NULL)
-		cairo_set_matrix (s->cairo, (cairo_matrix_t *) affine);
+	if (absolute_xform != NULL)
+		cairo_set_matrix (s->cairo, (cairo_matrix_t *) absolute_xform);
 
 	cairo_rectangle (s->cairo, x, y, cc->width, cc->height);
 	cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
@@ -234,7 +233,8 @@ decoder (gpointer data)
 			audio_stream_idx = video->audio_stream_idx;
 
 			cc = video->audio_stream->codec;
-			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+			n = -1;
+			//snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
 			if (n < 0)
 				printf ("Error, can not initialize audio %d\n", video->pcm);
 			else {
@@ -299,7 +299,7 @@ decoder (gpointer data)
 
 		frame++;
 		g_mutex_lock (video->video_mutex);
-		if (pkt->stream_index == audio_stream_idx){
+		if (video->pcm != NULL && pkt->stream_index == audio_stream_idx){
 			int frame_size_ptr = sizeof (video->audio_buffer);
 			int decoded_bytes;
 
@@ -405,11 +405,11 @@ load_next_frame (gpointer data)
 				printf ("Frame PTS=%ld\n", frame->pts);
 				printf ("Target PTS=%ld\n", target_pts);
 				printf ("frame size=%d\n", video->frame_size);
-#endif
+
 				printf ("discarding packet at time=%g seconds because it is late\n", 
 					(pkt_pts - video->video_stream->start_time) *
 					av_q2d (video->video_stream->time_base));
-
+#endif
 				// Remove this to discard
 				av_free (frame);
 				frame = NULL;
@@ -493,23 +493,26 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 }
 
 void
-VideoFfmpeg::render (Surface *s, double *affine, int x, int y, int width, int height)
+VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
 {
-	double actual [6];
-	double *use_affine = item_get_affine (affine, xform, actual);
 	cairo_pattern_t *pattern, *old_pattern;
 
 	// If we are not initialized yet, return.
 	if (video_cairo_surface == NULL)
 		return;
 
+	if (video_stream == NULL || video_stream->codec == NULL){
+		// FIXME: Draw something, some black box or something
+		return;
+	}
 	cairo_save (s->cairo);
-	if (use_affine != NULL)
-		cairo_set_matrix (s->cairo, (cairo_matrix_t *) use_affine);
+	if (absolute_xform != NULL)
+		cairo_set_matrix (s->cairo, (cairo_matrix_t *) absolute_xform);
+   
+	cairo_set_source_surface (s->cairo, video_cairo_surface, this->x, this->y);
 
-	cairo_translate (s->cairo, this->x, this->y);
-	cairo_set_source_surface (s->cairo, video_cairo_surface, 0, 0);
-	cairo_paint (s->cairo);
+	cairo_rectangle (s->cairo, this->x, this->y, this->w, this->h);
+	cairo_fill (s->cairo);
 
 	cairo_restore (s->cairo);
 }
@@ -550,6 +553,7 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	video_scale_context = NULL;
 	av_format_context = NULL;
 	
+	w = h = 0;
 	timeout_handle = 0;
 	initial_pts = 0;
 	play_start_time = 0;
@@ -566,6 +570,12 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	g_io_add_watch (pipe_channel, G_IO_IN, video_ready, this);
 
 	decode_thread_id = g_thread_create (decoder, this, TRUE, NULL);
+}
+
+Point
+VideoFfmpeg::getxformorigin ()
+{
+	return Point (x + user_xform_origin.x * w, y + user_xform_origin.y * h);
 }
 
 VideoFfmpeg::~VideoFfmpeg ()

@@ -22,14 +22,11 @@
 // to either get the bounding box from cairo, or to paint it
 //
 void 
-Shape::DoDraw (Surface *s, double *affine, bool do_op)
+Shape::DoDraw (Surface *s, bool do_op)
 {
-	double result [6];
-	double *matrix = item_get_affine (affine, xform, result);
-
 	cairo_save (s->cairo);
-	if (matrix != NULL)
-		//cairo_set_matrix (s->cairo, (cairo_matrix_t *) matrix);
+	if (absolute_xform != NULL)
+		cairo_set_matrix (s->cairo, (cairo_matrix_t *) absolute_xform);
 
 	if (fill){
 		fill->SetupBrush (s->cairo);
@@ -48,25 +45,25 @@ Shape::DoDraw (Surface *s, double *affine, bool do_op)
 }
 
 void
-Shape::render (Surface *s, double *affine, int x, int y, int width, int height)
+Shape::render (Surface *s, int x, int y, int width, int height)
 {
-	DoDraw (s, affine, TRUE);
+	DoDraw (s, TRUE);
 }
 
 void 
 Shape::getbounds ()
 {
 	double res [6];
-	double *affine = item_affine_get_absolute (this, res);
 
-	Surface *s = item_surface_get (this);
+	Surface *s = item_get_surface (this);
 
 	// not yet attached
 	if (s == NULL)
 		return;
 
-	DoDraw (s, affine, FALSE);
+	DoDraw (s, FALSE);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
+
 	cairo_new_path (s->cairo);
 }
 
@@ -98,6 +95,12 @@ Rectangle::Draw (Surface *s)
 	cairo_rectangle (s->cairo, x, y, w, h);
 }
 
+Point
+Rectangle::getxformorigin ()
+{
+	return Point (x + w * user_xform_origin.x, y + h * user_xform_origin.y);
+}
+
 Rectangle *
 rectangle_new (double x, double y, double w, double h)
 {
@@ -111,6 +114,13 @@ Line::Draw (Surface *s)
 {
 	cairo_move_to (s->cairo, line_x1, line_y1);
 	cairo_line_to (s->cairo, line_x2, line_y2);
+}
+
+Point
+Line::getxformorigin ()
+{
+	return Point (line_x1 + (line_x2-line_x1) * user_xform_origin.x, 
+		      line_y1 + (line_y2-line_y1) * user_xform_origin.y);
 }
 
 Line *

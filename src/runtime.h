@@ -8,6 +8,19 @@ class Brush;
 	
 typedef void (*BrushChangedNotify)(Brush *brush, void *data);
 
+struct Point {
+public:
+	double x, y;
+
+	Point () : x(0), y(0) {}
+
+	Point (double x, double y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+};
+
 struct Color {
 	double r, g, b, a;
  public:
@@ -74,7 +87,13 @@ class GradientBrush : public Brush {
 //
 class UIElement {
  public:
-	UIElement () : parent(NULL), flags (0), xform (NULL), x1 (0), y1(0), x2(0), y2(0) {}
+	UIElement () :
+		parent(NULL), flags (0),
+		absolute_xform (NULL),
+		user_xform (NULL),
+		user_xform_origin(0,0),
+		x1 (0), y1(0), x2(0), y2(0)
+		{}
 	
 	UIElement *parent;
 
@@ -87,15 +106,27 @@ class UIElement {
 	// The computed bounding box
 	double x1, y1, x2, y2;
 
-	// If null, identity, otherwise affine transformation.
-	double *xform;
+	//
+	// Affine transformations:
+	// 
+	Point   user_xform_origin;	// transformation origin, user set
+	double *user_xform;		// If null, identity, otherwise affine xform, user set
+
+	// Absolute affine transform
+	double *absolute_xform;
 
 	//
-	// render: 
-	//   Renders the given @item on the @surface.  The parent affine transformation is in
-	//   @affine, and the area that is exposed is delimited by x, y, width, height
+	// update_xform:
+	//   Updates the absolute_xform for this item
 	//
-	virtual void render (Surface *surface, double *affine, int x, int y, int width, int height) = 0;
+	virtual void update_xform ();
+	
+	//
+	// render: 
+	//   Renders the given @item on the @surface.  the area that is
+	//   exposed is delimited by x, y, width, height
+	//
+	virtual void render (Surface *surface, int x, int y, int width, int height) = 0;
 
 	// 
 	// getbounds:
@@ -106,17 +137,24 @@ class UIElement {
 	//   the item->x1,y1,x2,y2 values are updated.
 	// 
 	virtual void getbounds () = 0;
+
+	//
+	// gencenter:
+	//   Returns the transformation origin based on  of the item and the
+	//   xform_origin
+	virtual Point getxformorigin () {
+		return Point (0, 0);
+	}
+
+	~UIElement ();
 };
 
-Surface *item_surface_get   (UIElement *item);
-void     item_destroy       (UIElement *item);
-void     item_invalidate    (UIElement *item);
-void     item_update_bounds (UIElement *item);
-void     item_transform_set (UIElement *item, double *transform);
-double  *item_get_affine    (double *container, double *affine, double *result);
-Surface *item_surface_get   (UIElement *item);
-double  *item_affine_get_absolute (UIElement *item, double *result);
-
+Surface *item_get_surface          (UIElement *item);
+void     item_destroy              (UIElement *item);
+void     item_invalidate           (UIElement *item);
+void     item_update_bounds        (UIElement *item);
+void     item_set_transform        (UIElement *item, double *transform);
+void     item_set_transform_origin (UIElement *item, Point p);
 //
 // Panel Class
 //
@@ -126,8 +164,9 @@ class Panel : public UIElement {
 
 	Panel () : children (NULL) {}
 	
-	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
+	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
+	virtual void update_xform ();
 };
 
 void panel_child_add (Panel *group, UIElement *item);
@@ -137,13 +176,16 @@ void panel_child_add (Panel *group, UIElement *item);
 // children can use
 //
 class Canvas : public Panel {
+ public:
+	virtual Point getxformorigin () { return Point (0, 0); } 
+	
 };
 
 //
 // Shape class 
 // 
 class Shape : public UIElement {
-	void DoDraw (Surface *s, double *affine, bool do_op);
+	void DoDraw (Surface *s, bool do_op);
  public: 
 	Brush *fill, *stroke;
 
@@ -152,7 +194,7 @@ class Shape : public UIElement {
 	//
 	// Overrides from UIElement.
 	//
-	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
+	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
 
 	//
@@ -183,6 +225,8 @@ class Rectangle : public Shape {
 	Rectangle () : x(0), y(0), w(0), h(0) {};
 
 	void Draw (Surface *s);
+
+	virtual Point getxformorigin ();
 };
 Rectangle *rectangle_new  (double x, double y, double w, double h);
 
@@ -197,6 +241,8 @@ class Line : public Shape {
 		line_x1(px1), line_y1(py1), line_x2(px2), line_y2(py2) {};
 	
 	void Draw (Surface *s);
+
+	virtual Point getxformorigin ();
 };
 Line *line_new  (double x1, double y1, double x2, double y2);
 
@@ -210,6 +256,8 @@ class Video : public UIElement {
 	char  *filename;
 	int    error;
 
+	virtual Point getxformorigin () = 0;
+	
 	Video (const char *filename, double x, double y);
 	~Video ();
 };

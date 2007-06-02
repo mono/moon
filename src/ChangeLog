@@ -1,5 +1,14 @@
 2007-06-02  Miguel de Icaza  <miguel@novell.com>
 
+	Implement support for the render origin.
+	
+	* runtime.cpp (item_invalidate): add one to cope with the rouding
+	from floats to ints (fixes some trailing junk).
+
+	Item: redo the affine transformation setup to support both the
+	render_transform_origin property and avoid recomputing all of this
+	on each repaint request.
+
 	* ffvideo.cpp: Changed the code to do the actual video decoding on
 	the main thread so we can put all the video and audio in the
 	queues before we start rendering.

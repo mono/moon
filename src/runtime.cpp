@@ -74,79 +74,19 @@ item_update_bounds (UIElement *item)
 	}
 }
 
-/*
- * item_get_affine:
- * @container: the affine transform from the container
- * @affine: the affine transform for this item
- * @result: a place that can contain 6 doubles where the data is saved
- * 
- * Composites the container affine transformation with the item affine
- * transformation.
- *
- * Returns the pointer to result if the caller must apply affine
- * transformations, or NULL if the affine should not be used.
- */
-double *
-item_get_affine (double *container, double *affine, double *result)
+UIElement::~UIElement ()
 {
-	int i;
-
-	if (container == NULL){
-		if (affine == NULL)
-			return FALSE;
-		for (i = 0; i < 6; i++)
-			result [i] = affine [i];
-		return result;
-	} 
-	if (affine == NULL){
-		for (i = 0; i < 6; i++)
-			result [i] = container [i];
-		return result;
-	}
-	
-	result [0] = container [0] * affine [0] + container [1] * affine [2];
-	result [1] = container [0] * affine [1] + container [1] * affine [3];
-	result [2] = container [2] * affine [0] + container [3] * affine [2];
-	result [3] = container [2] * affine [1] + container [3] * affine [3];
-	result [4] = container [4] * affine [0] + container [5] * affine [2] + affine [4];
-	result [5] = container [4] * affine [1] + container [5] * affine [3] + affine [5];
-	
-	return result;
-}
-
-void 
-item_destroy (UIElement *item)
-{
-	if (item->xform)
-		free (item->xform);
-}
-
-//
-// item_affine_get_absolute:
-//
-//   Returns the absolute affine transformation for this given item
-//   (composing the full chain from the top to this item)
-//
-double *
-item_affine_get_absolute (UIElement *item, double *result)
-{
-	double res [6];
-	double *ret;
-
-	if (item->parent == NULL){
-		return item_get_affine (NULL, item->xform, result);
-	}
-
-	ret = item_affine_get_absolute (item->parent, res);
-	return item_get_affine (ret, item->xform, result);
+	if (absolute_xform)
+		g_free (absolute_xform);
+	if (user_xform)
+		g_free (user_xform);
 }
 
 void 
 item_invalidate (UIElement *item)
 {
 	double res [6];
-	double *affine = item_affine_get_absolute (item, res);
-	Surface *s = item_surface_get (item);
+	Surface *s = item_get_surface (item);
 
 	if (s == NULL)
 		return;
@@ -162,60 +102,124 @@ item_invalidate (UIElement *item)
 	//
 	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
 				    (int) item->x1, (int)item->y1, 
-				    (int)(item->x2-item->x1), (int)(item->y2-item->y1));
+				    (int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
 }
 
 void
-item_transform_set (UIElement *item, double *transform)
+item_set_transform (UIElement *item, double *transform)
 {
-	double *d;
-
 	item_invalidate (item);
 
-	if (item->xform)
-		free (item->xform);
-
-	if (transform == NULL)
-		item->xform = transform;
-	else {
-		d = (double *) malloc (sizeof (double) * 6);
+	if (transform == NULL){
+		if (item->user_xform)
+			free (item->user_xform);
+		item->user_xform = NULL;
+	} else {
+		if (item->user_xform == NULL)
+			item->user_xform = g_new (double, 6);
 		
-		d [0] = transform [0];
-		d [1] = transform [1];
-		d [2] = transform [2];
-		d [3] = transform [3];
-		d [4] = transform [4];
-		d [5] = transform [5];
-		
-		item->xform = d;
+		memcpy (item->user_xform, transform, sizeof (double) * 6);
 	}
+
+	item->update_xform ();
+
 	item->getbounds ();
 	item_invalidate (item);
 }
 
+void 
+item_set_transform_origin (UIElement *item, Point p)
+{
+	item_invalidate (item);
+	
+	item->user_xform_origin = p;
+
+	item->update_xform ();
+	item->getbounds ();
+
+	item_invalidate (item);
+}
+
+void
+UIElement::update_xform ()
+{
+	cairo_matrix_t *cairo_mat;
+
+	if (parent == NULL || parent->absolute_xform == NULL) {
+		if (user_xform == NULL){
+			if (absolute_xform != NULL){
+				g_free (absolute_xform);
+				absolute_xform = NULL;
+			}
+		} else {
+			//
+			// If there is a rotation, we need the transform origin
+			//
+			if (absolute_xform == NULL)
+				absolute_xform = g_new (double, 6);
+
+			cairo_mat = (cairo_matrix_t *) absolute_xform;
+
+			if (user_xform [1] != 0 || user_xform [2] != 0){
+				Point p = getxformorigin ();
+
+				cairo_matrix_init_translate (cairo_mat, p.x, p.y);
+				cairo_matrix_multiply (cairo_mat, (cairo_matrix_t *) user_xform, cairo_mat);
+				cairo_matrix_translate (cairo_mat, -p.x, -p.y);
+			} else {
+				memcpy (absolute_xform, user_xform, sizeof (double) * 6);
+			}
+		}
+	} else {
+		// parent has an absolute xform
+
+		if (absolute_xform == NULL)
+			absolute_xform = g_new (double, 6);
+		cairo_mat = (cairo_matrix_t *) absolute_xform;
+
+		memcpy (absolute_xform, parent->absolute_xform, sizeof (double) * 6);
+		Point p = getxformorigin ();
+		cairo_matrix_translate (cairo_mat, p.x, p.y);
+		cairo_matrix_multiply (cairo_mat, (cairo_matrix_t *) user_xform, cairo_mat);
+		cairo_matrix_translate (cairo_mat, -p.x, -p.y);
+	}
+}
+
 Surface *
-item_surface_get (UIElement *item)
+item_get_surface (UIElement *item)
 {
 	if (item->flags & Video::IS_SURFACE)
 		return (Surface *) item;
 
 	if (item->parent != NULL)
-		return item_surface_get (item->parent);
+		return item_get_surface (item->parent);
 
 	return NULL;
 }
 
 void
-Panel::render (Surface *s, double *affine, int x, int y, int width, int height)
+Panel::render (Surface *s, int x, int y, int width, int height)
 {
 	GSList *il;
 	double actual [6];
-	double *use_affine = item_get_affine (affine, xform, actual);
 	
 	for (il = children; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
-		item->render (s, use_affine, x, y, width, height);
+		item->render (s, x, y, width, height);
+	}
+}
+
+void
+Panel::update_xform ()
+{
+	UIElement::update_xform ();
+	GSList *il;
+
+	for (il = children; il != NULL; il = il->next){
+		UIElement *item = (UIElement *) il->data;
+
+		item->update_xform ();
 	}
 }
 
@@ -266,6 +270,8 @@ panel_child_add (Panel *group, UIElement *item)
 void 
 surface_clear (Surface *s, int x, int y, int width, int height)
 {
+	static unsigned char n;
+
 	if (x < 0){
 		width -= x;
 		x = 0;
@@ -282,7 +288,7 @@ surface_clear (Surface *s, int x, int y, int width, int height)
 	unsigned char *dest = s->buffer + (y * stride) + (x * 4);
 
 	while (height--){
-		memset (dest, 14, width * 4);
+		memset (dest, 70, width * 4);
 		dest += stride;
 	}
 }
@@ -290,7 +296,7 @@ surface_clear (Surface *s, int x, int y, int width, int height)
 void
 surface_clear_all (Surface *s)
 {
-	memset (s->buffer, 14, s->width * s->height * 4);
+	memset (s->buffer, 0, s->width * s->height * 4);
 }
 
 static void
@@ -329,7 +335,6 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	if (event->area.x > s->width || event->area.y > s->height)
 		return TRUE;
 
-	
 	//
 	// BIG DEBUG BLOB
 	// 
@@ -338,7 +343,9 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 			cairo_status_to_string (cairo_status (s->cairo)));
 	}
 
-	//printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
+#ifdef DEBUG_INVALIDATE
+	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
+#endif
 	surface_repaint (s, event->area.x, event->area.y, event->area.width, event->area.height);
 	gdk_draw_pixbuf (widget->window,
 			 NULL, 
@@ -377,6 +384,6 @@ void
 surface_repaint (Surface *s, int x, int y, int width, int height)
 {
 	surface_clear (s, x, y, width, height);
-	s->render (s, NULL, x, y, width, height);
+	s->render (s, x, y, width, height);
 }
 

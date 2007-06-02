@@ -47,16 +47,10 @@ This is not likely the final version of this code.
 	items contain a bounding box (double x1, y1, x2, y2) which must
 	be updated when the virtual method ->getbounds is called.
 
-	In addition each item can contain an affine transformation, the 
-	affine transformation is relative.  This means that the affine
-	is relative to the parent.  
-
-	I chose relative vs absolute for the items as changing an affine
-	in the managed world for a parent would have to change all the
-	affines for all the children contained.  With this approach,
-	we can change the affine for a parent, and all the children
-	will get the new affine transformation.
-
+	In addition each item can contain an affine transformation,
+	the code tracks the user set values as well as an absolute
+	affine transformation.
+	
 	The encoding of the affine transformation is done with a
 	"double *" which, if not-NULL should point to six doubles in 
 	the format expected by cairo_matrix_t (and libart).
@@ -64,23 +58,6 @@ This is not likely the final version of this code.
 	The double [6] can be casted into a cairo_matrix_t, which is why
 	this appers like that in the source code.  This was done in
 	case we want to switch to AGG.
-
-	A method to obtain the actual affine that applies to this object is:
-
-	double  *item_get_affine    (double *container, double *affine, double *result);
-
-	The "container" should be the affine passed by the parent, the "affine" is the
-	item affine (either one can be null) and the compound affine transform is
-	left in "result".
-
-	The "result" has to be allocated by the parent, if both container and affine
-	are null, the NULL value is returned from item_get_affine, so a common
-	code pattern used is:
-
-	double actual [6];
-	double *use_affine = item_get_affine (affine, item->xform, actual);
-
-	And then `use_affine' is used. 
 
 * Class Hierarchy
 
