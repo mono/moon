@@ -42,6 +42,8 @@ static NPWindow windowlessWindow;
 #define DEBUG(msg)
 #endif
 
+G_BEGIN_DECLS
+
 typedef struct {
 
     uint16 mode;
@@ -80,9 +82,12 @@ void moon_plugin_url_notify (NPP instance, const char* url, NPReason reason, voi
 void moon_plugin_print (NPP instance, NPPrint* platformPrint);
 int16 moon_plugin_handle_event (NPP instance, void* event);
 gboolean moon_plugin_canvas_event (GtkWidget *widget, GdkEvent *event, gpointer user_data);
-gboolean moon_plugin_show_menu ();
 
+gboolean moon_plugin_show_menu (PluginInstance *plugin);
 
 static void moon_plugin_menu_about (PluginInstance *plugin);
 
+G_END_DECLS
+
 #endif /* MOON_PLUGIN */
+

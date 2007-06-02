@@ -62,7 +62,7 @@ main (int argc, char *argv [])
 	surface_repaint (t, 0, 0, 300, 300);
 	
 #ifdef VIDEO_DEMO1
-	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);
+	v = video_new ("BoxerSmacksdownInhoffe.wmv", 0, 0);
 	//printf ("Got %d\n", v);
 	item_transform_set (v, (double *) (&trans));
 	panel_child_add (t, v);

@@ -10,12 +10,12 @@ INCLUDES = \
 
 libmoonplugin_la_LDFLAGS = \
 	`pkg-config --libs gtk+-2.0` \
-	`pkg-config --libs nspr`
+	`pkg-config --libs nspr` -lmoon
 
 libmoonplugin_la_SOURCES = \
-	moon-plugin.c \
+	moon-plugin.cpp \
 	moon-plugin.h \
-	moon-plugin-glue.c
+	moon-plugin-glue.cpp
 
 # custom install rule
 install-plugin:

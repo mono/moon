@@ -12,17 +12,29 @@
 
 
 #include "moon-plugin.h"
-//#include "runtime.h"
+#include "runtime.h"
 
-static NPWindow windowlessWindow;
+
 
 static void moon_plugin_demo (PluginInstance *plugin)
 {
-	/*Rectangle *r;
+	DEBUG ("*** moon_plugin_demo");
+
+	GtkWidget *w, *box, *button;
+	cairo_matrix_t trans;
+
+	Rectangle *r;
+
+	box = gtk_hbox_new (FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (plugin->container), box);
+	gtk_widget_show_all (box);
+
+	//button = gtk_button_new_with_label ("dingus");
+	//gtk_container_add (GTK_CONTAINER (box), button);
 
 	// Create our objects
-	Surface *t = surface_new (600, 600);
-	gtk_container_add (GTK_CONTAINER (plugin->container), t->drawing_area);
+	Surface *t = surface_new (300, 600);
+	gtk_container_add (GTK_CONTAINER (box), t->drawing_area);
 
 	r = rectangle_new (50, 50, 100, 100);
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
@@ -30,8 +42,21 @@ static void moon_plugin_demo (PluginInstance *plugin)
 	cairo_matrix_init_rotate (&trans, 0.4);
 	item_transform_set (r, (double *) (&trans));
 	surface_repaint (t, 0, 0, 300, 300);
-	
-	panel_child_add (t, r);*/
+
+#if VIDEO_DEMO
+	Item *v; *v2
+
+	v = video_new ("/home/everaldo/BoxerSmacksdownInhoffe.wmv", 0, 0);
+	item_transform_set (v, (double *) (&trans));
+	panel_child_add (t, v);
+
+	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
+	panel_child_add (t, v2);
+#endif	
+	panel_child_add (t, r);
+
+	gtk_widget_show_all (box);
+	//gtk_timeout_add (60, repaint, w);
 }
 
 
@@ -195,7 +220,7 @@ moon_plugin_create_window (NPP instance, NPWindow* window)
     Instance->container = gtk_plug_new ((GdkNativeWindow) window->window);
     Instance->canvas = gtk_drawing_area_new ();
 
-	gtk_container_add (GTK_CONTAINER (Instance->container), Instance->canvas);
+	//gtk_container_add (GTK_CONTAINER (Instance->container), Instance->canvas);
 
     GTK_WIDGET_SET_FLAGS (GTK_WIDGET (Instance->canvas), GTK_CAN_FOCUS);
 
@@ -331,7 +356,7 @@ moon_plugin_canvas_event (GtkWidget *widget, GdkEvent *event, gpointer user_data
     case GDK_BUTTON_PRESS:
         button = (GdkEventButton *) event;
         if (button->button == 3) {
-			moon_plugin_show_menu ();
+			moon_plugin_show_menu (plugin);
 		}
         handled = 1;
         break;
@@ -374,6 +399,6 @@ moon_plugin_show_menu (PluginInstance *plugin)
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {
 	DEBUG ("moon_plugin_menu_about Clicked!");
-
+	// TODO: Implement an about Window.
 }
 
