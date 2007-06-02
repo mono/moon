@@ -40,7 +40,7 @@ static void moon_plugin_demo (PluginInstance *plugin)
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 	cairo_matrix_init_rotate (&trans, 0.4);
-	item_transform_set (r, (double *) (&trans));
+	item_set_transform (r, (double *) (&trans));
 	surface_repaint (t, 0, 0, 300, 300);
 
 #if VIDEO_DEMO
