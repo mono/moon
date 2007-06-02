@@ -8,7 +8,7 @@
 
 #include "runtime.h"
 
-static Item *v;
+static UIElement *v;
 static Rectangle *r;
 
 static gboolean
@@ -71,9 +71,9 @@ main (int argc, char *argv [])
 	panel_child_add (t, r);
 
 #ifdef VIDEO_DEMO
-	Item *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
-	//Item *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
-	//Item *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
+	UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
+	//UIElement *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
+	//UIElement *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
 	panel_child_add (t, v2);
 #endif
 

@@ -72,13 +72,13 @@ class GradientBrush : public Brush {
 //
 // Item class
 //
-class Item {
+class UIElement {
  public:
-	Item () : parent(NULL), flags (0), xform (NULL), x1 (0), y1(0), x2(0), y2(0) {}
+	UIElement () : parent(NULL), flags (0), xform (NULL), x1 (0), y1(0), x2(0), y2(0) {}
 	
-	Item *parent;
+	UIElement *parent;
 
-	enum ItemFlags {
+	enum UIElementFlags {
 		IS_SURFACE = 1
 	};
 	
@@ -108,19 +108,19 @@ class Item {
 	virtual void getbounds () = 0;
 };
 
-Surface *item_surface_get   (Item *item);
-void     item_destroy       (Item *item);
-void     item_invalidate    (Item *item);
-void     item_update_bounds (Item *item);
-void     item_transform_set (Item *item, double *transform);
+Surface *item_surface_get   (UIElement *item);
+void     item_destroy       (UIElement *item);
+void     item_invalidate    (UIElement *item);
+void     item_update_bounds (UIElement *item);
+void     item_transform_set (UIElement *item, double *transform);
 double  *item_get_affine    (double *container, double *affine, double *result);
-Surface *item_surface_get   (Item *item);
-double  *item_affine_get_absolute (Item *item, double *result);
+Surface *item_surface_get   (UIElement *item);
+double  *item_affine_get_absolute (UIElement *item, double *result);
 
 //
 // Panel Class
 //
-class Panel : public Item {
+class Panel : public UIElement {
  public:
 	GSList *children;
 
@@ -130,12 +130,19 @@ class Panel : public Item {
 	virtual void getbounds ();
 };
 
-void panel_child_add (Panel *group, Item *item);
+void panel_child_add (Panel *group, UIElement *item);
+
+//
+// Canvas Class, the only purpose is to have the Left/Top properties that
+// children can use
+//
+class Canvas : public Panel {
+};
 
 //
 // Shape class 
 // 
-class Shape : public Item {
+class Shape : public UIElement {
 	void DoDraw (Surface *s, double *affine, bool do_op);
  public: 
 	Brush *fill, *stroke;
@@ -143,7 +150,7 @@ class Shape : public Item {
 	Shape () : fill (NULL), stroke (NULL) {}
 
 	//
-	// Overrides from Item.
+	// Overrides from UIElement.
 	//
 	virtual void render (Surface *s, double *affine, int x, int y, int width, int height);
 	virtual void getbounds ();
@@ -195,8 +202,8 @@ Line *line_new  (double x1, double y1, double x2, double y2);
 
 
 
-// A video is an Item
-class Video : public Item {
+// A video is an UIElement
+class Video : public UIElement {
 	enum { VIDEO_OK, VIDEO_ERROR_OPEN, VIDEO_ERROR_STREAM_INFO } VideoError;
  public:
 	double x, y;
@@ -211,8 +218,12 @@ Video *video_new     (const char *filename, double x, double y);
 void  video_destroy  (Video *video);
 
 typedef struct _SurfacePrivate SurfacePrivate;
-	
-class Surface : public Panel {
+
+//
+// We probably should make the Surface not derive from Canvas, but for now
+// it will do.
+//
+class Surface : public Canvas {
  public:
 	Surface () : width (0), height (0), buffer (0), pixbuf (NULL), cairo_surface (NULL), cairo (NULL), data(NULL) {}
 	

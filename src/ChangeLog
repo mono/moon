@@ -1,3 +1,14 @@
+2007-06-02  Miguel de Icaza  <miguel@novell.com>
+
+	* ffvideo.cpp: Changed the code to do the actual video decoding on
+	the main thread so we can put all the video and audio in the
+	queues before we start rendering.
+
+	Failed attempts at getting audio to work.
+
+	* Everywhere: renamed Item to UIElement to better match the actual
+	class hierarchy that we will be exposing.
+
 2007-06-01  Jackson Harper  <jackson@ximian.com>
 
 	* shape.cpp: Fix typo.

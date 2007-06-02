@@ -56,7 +56,7 @@ base_unref (Base *base)
  * Does this by requesting bounds update to all of its parents. 
  */
 void
-item_update_bounds (Item *item)
+item_update_bounds (UIElement *item)
 {
 	double cx1 = item->x1;
 	double cy1 = item->y1;
@@ -115,7 +115,7 @@ item_get_affine (double *container, double *affine, double *result)
 }
 
 void 
-item_destroy (Item *item)
+item_destroy (UIElement *item)
 {
 	if (item->xform)
 		free (item->xform);
@@ -128,7 +128,7 @@ item_destroy (Item *item)
 //   (composing the full chain from the top to this item)
 //
 double *
-item_affine_get_absolute (Item *item, double *result)
+item_affine_get_absolute (UIElement *item, double *result)
 {
 	double res [6];
 	double *ret;
@@ -142,7 +142,7 @@ item_affine_get_absolute (Item *item, double *result)
 }
 
 void 
-item_invalidate (Item *item)
+item_invalidate (UIElement *item)
 {
 	double res [6];
 	double *affine = item_affine_get_absolute (item, res);
@@ -166,7 +166,7 @@ item_invalidate (Item *item)
 }
 
 void
-item_transform_set (Item *item, double *transform)
+item_transform_set (UIElement *item, double *transform)
 {
 	double *d;
 
@@ -194,7 +194,7 @@ item_transform_set (Item *item, double *transform)
 }
 
 Surface *
-item_surface_get (Item *item)
+item_surface_get (UIElement *item)
 {
 	if (item->flags & Video::IS_SURFACE)
 		return (Surface *) item;
@@ -213,7 +213,7 @@ Panel::render (Surface *s, double *affine, int x, int y, int width, int height)
 	double *use_affine = item_get_affine (affine, xform, actual);
 	
 	for (il = children; il != NULL; il = il->next){
-		Item *item = (Item *) il->data;
+		UIElement *item = (UIElement *) il->data;
 
 		item->render (s, use_affine, x, y, width, height);
 	}
@@ -226,7 +226,7 @@ Panel::getbounds ()
 	GSList *il;
 
 	for (il = children; il != NULL; il = il->next){
-		Item *item = (Item *) il->data;
+		UIElement *item = (UIElement *) il->data;
 
 		item->getbounds ();
 		if (first){
@@ -255,10 +255,10 @@ Panel::getbounds ()
 }
 
 void 
-panel_child_add (Panel *group, Item *item)
+panel_child_add (Panel *group, UIElement *item)
 {
 	group->children = g_slist_append (group->children, item);
-	item->parent = (Item *) group;
+	item->parent = (UIElement *) group;
 
 	item->getbounds ();
 }
@@ -362,7 +362,7 @@ surface_new (int width, int height)
 	gtk_widget_show (s->drawing_area);
 	gtk_widget_set_usize (s->drawing_area, width, height);
 	s->buffer = NULL;
-	s->flags |= Item::IS_SURFACE;
+	s->flags |= UIElement::IS_SURFACE;
 	s->width = width;
 	s->height = height;
 	surface_realloc (s);
