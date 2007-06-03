@@ -1,5 +1,9 @@
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin-glue.h: Some comments and stetic changes.
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.h: Mime type description chage to 'WPFe Plug-In' to handle 
 	SilverLight objects.
 

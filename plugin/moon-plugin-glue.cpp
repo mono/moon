@@ -10,13 +10,16 @@
  * 
  */
 
-#define XP_UNIX 1
-
+#include <stdio.h>
+#include "npapi.h"
+#include "npupp.h"
 #include "moon-plugin.h"
 
-/* Global function table */
-static NPNetscapeFuncs MozillaFuncs;
+static NPNetscapeFuncs MozillaFuncs; // Global function table
 
+/**
+ * Wrapper functions
+ */
 void
 NPN_Version (int* plugin_major, int* plugin_minor, int* netscape_major, int* netscape_minor)
 {
@@ -148,9 +151,9 @@ void NPN_PopPopupsEnabledState (NPP instance)
 	CallNPN_PopPopupsEnabledStateProc (MozillaFuncs.poppopupsenabledstate, instance);
 }
 
-
-/********** These functions are located automagically by netscape *************/
-
+/**
+ * These functions are located automagically by mozilla
+ */
 NPError
 NP_GetValue (void* future, NPPVariable variable, void *value)
 {
