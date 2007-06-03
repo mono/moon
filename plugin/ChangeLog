@@ -1,0 +1,17 @@
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin-glue.c:
+	* moon-plugin.c:
+	* moon-plugin.h: Rename initialise to initialize.
+
+	* Makefile.am: Add libmoon to link and install it on plugin dir.
+
+2007-06-02  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin-glue.c: Renamed to moon-plugin-glue.cpp.
+	* moon-plugin.c: Renamed to moon-plugin.cpp.
+	* Changelog: Create a separated change log for plugin.
+	* Makefile.am: Renamed to moon-plugin.cpp.
+	* moon-plugin.h: Renamed to moon-plugin.cpp.
+	
+	[Also add a sample to show libmoon features in browser]

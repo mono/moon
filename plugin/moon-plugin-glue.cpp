@@ -244,7 +244,7 @@ NP_Initialize (NPNetscapeFuncs * mozilla_funcs, NPPluginFuncs * plugin_funcs)
 	plugin_funcs->javaClass     = NULL;
 
 	DEBUG ("NP_Initialize succeeded");
-	return moon_plugin_initialise ();
+	return moon_plugin_initialize ();
 }
 
 NPError

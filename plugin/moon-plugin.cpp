@@ -61,7 +61,7 @@ static void moon_plugin_demo (PluginInstance *plugin)
 
 
 NPError 
-moon_plugin_initialise ()
+moon_plugin_initialize ()
 {
 	gtk_init (0, 0);
 

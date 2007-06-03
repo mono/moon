@@ -10,7 +10,8 @@ INCLUDES = \
 
 libmoonplugin_la_LDFLAGS = \
 	`pkg-config --libs gtk+-2.0` \
-	`pkg-config --libs nspr` -lmoon
+	`pkg-config --libs nspr` \
+	$(top_srcdir)/src/.libs/libmoon.so
 
 libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \
@@ -21,3 +22,4 @@ libmoonplugin_la_SOURCES = \
 install-plugin:
 	mkdir -p ~/.mozilla/plugins
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
+	cp $(top_srcdir)/src/.libs/libmoon.so ~/.mozilla/plugins

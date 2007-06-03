@@ -66,7 +66,7 @@ typedef struct {
 
 } PluginInstance;
 
-NPError moon_plugin_initialise ();
+NPError moon_plugin_initialize ();
 NPError moon_plugin_shutdown ();
 NPError moon_plugin_get_value (void *instance, NPPVariable variable, void *result);
 NPError moon_plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved);
