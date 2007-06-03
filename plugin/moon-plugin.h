@@ -28,7 +28,7 @@
 #define PLUGIN_NAME         "Novell MoonLight"
 #define PLUGIN_DESCRIPTION  "Novell MoonLight is a Free Unix implementation of SilverLight";
 #define PLUGIN_VERSION      "0.1"
-#define MIME_TYPES_HANDLED  "application/ag-plugin:scr:Novell MoonLight"
+#define MIME_TYPES_HANDLED  "application/ag-plugin:scr:WPFe Plug-In"
 
 #ifdef DEBUG_PLUGIN
 #ifdef G_LOG_DOMAIN

@@ -1,5 +1,10 @@
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.h: Mime type description chage to 'WPFe Plug-In' to handle 
+	SilverLight objects.
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.c:
 	* moon-plugin.h: Remove unused members to provide a clean code.
 
