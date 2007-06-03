@@ -23,8 +23,6 @@
 #include "glib.h"
 #include "gtk/gtk.h"
 
-static NPWindow windowlessWindow;
-
 #define DEBUG_PLUGIN
 
 #define PLUGIN_NAME         "Novell MoonLight"
@@ -52,17 +50,9 @@ typedef struct {
     uint32 width, height;
 
     NPP instance;
-    NPBool pluginsHidden;
 
     GtkWidget *container;
     GtkWidget *canvas;
-    guchar *four_quads;
-    gboolean dialog_up;
-
-    gboolean windowless;
-
-    /* when we have to go raw */
-    XImage *ximage;
 
 } PluginInstance;
 

@@ -119,8 +119,6 @@ moon_plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, c
     /* mode is NP_EMBED, NP_FULL, or NP_BACKGROUND (see npapi.h) */
     This->mode = mode;
     This->instance = instance;
-    This->dialog_up = 0;
-    This->windowless = FALSE;
 
 	return NPERR_NO_ERROR;
 }
@@ -313,29 +311,7 @@ moon_plugin_print (NPP instance, NPPrint* platformPrint)
 int16 
 moon_plugin_handle_event (NPP instance, void* event)
 {
-	XGraphicsExposeEvent exposeEvent;
-	XEvent *nsEvent;
-
-	nsEvent = (XEvent *)event;
-	exposeEvent = nsEvent->xgraphicsexpose;
-
-	DEBUG ("event: x, y, w, h = %d, %d, %d, %d; display @ %p, window/drawable = %d\n",
-			exposeEvent.x,
-			exposeEvent.y,
-			exposeEvent.width,
-			exposeEvent.height,
-			exposeEvent.display,
-			exposeEvent.drawable);
-
-	windowlessWindow.window = exposeEvent.display;
-	windowlessWindow.x = exposeEvent.x;
-	windowlessWindow.y = exposeEvent.y;
-	windowlessWindow.width = exposeEvent.width;
-	windowlessWindow.height = exposeEvent.height;
-	windowlessWindow.ws_info = (void *) exposeEvent.drawable;
-
-	moon_plugin_set_window (instance, &windowlessWindow);
-
+	/* Our plugin is a windowed so we dont need the windowless code */
 	return 0;
 }
 
