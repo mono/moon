@@ -14,8 +14,6 @@
 #include "moon-plugin.h"
 #include "runtime.h"
 
-
-
 static void moon_plugin_demo (PluginInstance *plugin)
 {
 	DEBUG ("*** moon_plugin_demo");

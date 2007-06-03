@@ -11,7 +11,9 @@ INCLUDES = \
 libmoonplugin_la_LDFLAGS = \
 	`pkg-config --libs gtk+-2.0` \
 	`pkg-config --libs nspr` \
-	$(top_srcdir)/src/.libs/libmoon.so
+	-L$(top_srcdir)/src/.libs
+
+libmoonplugin_la_LIBADD = -lmoon
 
 libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \

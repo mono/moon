@@ -1,5 +1,9 @@
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile.am: Fix link options.
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin-glue.c:
 	* moon-plugin.c:
 	* moon-plugin.h: Rename initialise to initialize.
