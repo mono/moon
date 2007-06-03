@@ -1,3 +1,22 @@
+2007-06-03  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Collection, Panel): The beginning of an API to
+	encapsulate collections that we will expose to the unmanaged
+	world.  
+
+	This should be the backend for the base collection class in agclr
+	for the strongly typed types.   
+
+	The idea is to have the MS.Internal.Collection<T> be a proxy that
+	contains an IntPtr pointer to the C++ Collection instance and map
+	the various add/remove methods to it.
+
+	The immediate goal is to be able to do from C#:
+
+	        Rectangle r = new Rectangle ();
+		r.Brush = new SolidColorBrush (new Color (1, 0, 0));
+		Canvas.Children.Add (r);
+
 2007-06-02  Miguel de Icaza  <miguel@novell.com>
 
 	Implement support for the render origin.

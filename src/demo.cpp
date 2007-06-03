@@ -58,7 +58,7 @@ main (int argc, char *argv [])
 	panel_child_add (t, r2);
 
 #ifdef VIDEO_DEMO
-	v = video_new ("BoxerSmacksdownInhoffe.wmv", 0, 0);
+	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);
 	item_set_transform_origin (v, Point (1, 1));
 	printf ("Got %d\n", v);
 	panel_child_add (t, v);

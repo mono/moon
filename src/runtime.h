@@ -36,6 +36,44 @@ struct Color {
 };
 
 //
+// Collection: provides a collection that we can monitor for
+// changes.   We expose this collection in a few classes to
+// the managed world, and when a change happens we get a
+// chance to reflect the changes
+//
+class Collection;
+
+typedef void (*collection_item_add)    (Collection *col, void *datum); 
+typedef void (*collection_item_remove) (Collection *col, void *datum);
+
+class Collection {
+ public:
+	collection_item_add     add_fn;
+	collection_item_remove  remove_fn;
+	
+	GSList *list;
+	void *closure;
+
+	Collection () { Setup (NULL, NULL, NULL); }
+	
+	Collection (collection_item_add add, collection_item_remove remove, void *data)
+	{
+		Setup (add, remove, data);
+	}
+
+	void Setup (collection_item_add add, collection_item_remove remove, void *data)
+	{
+		list = NULL;
+		add_fn = add;
+		remove_fn = remove;
+		closure = data;
+	}
+};
+
+void collection_add    (Collection *collection, void *data);
+void collection_remove (Collection *collection, void *data);
+
+//
 // This guy provide reference counting
 //
 #define BASE_FLOATS 0x80000000
@@ -150,26 +188,30 @@ class UIElement {
 };
 
 Surface *item_get_surface          (UIElement *item);
-void     item_destroy              (UIElement *item);
 void     item_invalidate           (UIElement *item);
 void     item_update_bounds        (UIElement *item);
 void     item_set_transform        (UIElement *item, double *transform);
 void     item_set_transform_origin (UIElement *item, Point p);
+
 //
 // Panel Class
 //
 class Panel : public UIElement {
  public:
-	GSList *children;
+	Collection children;
 
-	Panel () : children (NULL) {}
-	
+	Panel ();
+
 	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual void update_xform ();
 };
 
-void panel_child_add (Panel *group, UIElement *item);
+// panel_get_collection, exposed to the managed world so it can manipulate the collection
+void *panel_get_collection (Panel *panel);
+
+// For C API usage.
+void  panel_child_add      (Panel *panel, UIElement *item);
 
 //
 // Canvas Class, the only purpose is to have the Left/Top properties that

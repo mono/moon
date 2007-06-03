@@ -49,6 +49,23 @@ base_unref (Base *base)
 		base->refcount--;
 }
 
+void 
+collection_add (Collection *collection, void *data)
+{
+	if (collection->add_fn)
+		collection->add_fn (collection, data);
+	collection->list = g_slist_append (collection->list, data);
+}
+
+void 
+collection_remove (Collection *collection, void *data)
+{
+	if (collection->remove_fn)
+		collection->remove_fn (collection, data);
+
+	collection->list = g_slist_remove (collection->list, data);
+}
+
 /**
  * item_getbounds:
  * @item: the item to update the bounds of
@@ -197,13 +214,38 @@ item_get_surface (UIElement *item)
 	return NULL;
 }
 
+static void
+panel_child_add (Collection *col, void *datum)
+{
+	Panel *panel = (Panel *) col->closure;
+	UIElement *item = (UIElement *) datum;
+
+	item->parent = panel;
+	panel->getbounds ();
+	item_invalidate (panel);
+}
+
+static void
+panel_child_remove (Collection *col, void *datum)
+{
+	Panel *panel = (Panel *) col->closure;
+	
+	item_invalidate (panel);
+	panel->getbounds ();
+}
+
+Panel::Panel ()
+{
+	children.Setup (panel_child_add, panel_child_remove, this);
+}
+
 void
 Panel::render (Surface *s, int x, int y, int width, int height)
 {
 	GSList *il;
 	double actual [6];
 	
-	for (il = children; il != NULL; il = il->next){
+	for (il = children.list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->render (s, x, y, width, height);
@@ -216,7 +258,7 @@ Panel::update_xform ()
 	UIElement::update_xform ();
 	GSList *il;
 
-	for (il = children; il != NULL; il = il->next){
+	for (il = children.list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->update_xform ();
@@ -229,7 +271,7 @@ Panel::getbounds ()
 	bool first = TRUE;
 	GSList *il;
 
-	for (il = children; il != NULL; il = il->next){
+	for (il = children.list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->getbounds ();
@@ -259,12 +301,9 @@ Panel::getbounds ()
 }
 
 void 
-panel_child_add (Panel *group, UIElement *item)
+panel_child_add (Panel *panel, UIElement *item)
 {
-	group->children = g_slist_append (group->children, item);
-	item->parent = (UIElement *) group;
-
-	item->getbounds ();
+	collection_add (&panel->children, item);
 }
 
 void 
