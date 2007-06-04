@@ -157,7 +157,7 @@ PluginInstance::CreateControls ()
 {
 	DEBUG ("creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
-	box = gtk_hbox_new (FALSE, 0);
+	//box = gtk_hbox_new (FALSE, 0);
 	
 	/*  GtkPlug container and drawing canvas inside */
 	this->container = gtk_plug_new ((GdkNativeWindow) window->window);
