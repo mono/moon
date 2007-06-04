@@ -1,5 +1,5 @@
 /*
- * moon-plugin.c: MoonLight browser plugin.
+ * moon-plugin.cpp: MoonLight browser plugin.
  *
  * Author:
  *   Everaldo Canuto (everaldo@novell.com)
@@ -118,6 +118,22 @@ PluginInstance::~PluginInstance ()
 NPError 
 PluginInstance::GetValue (NPPVariable variable, void *result)
 {
+	NPError err = NPERR_NO_ERROR;
+	switch (variable) {
+		case NPPVpluginNeedsXEmbed:
+			*((PRBool *)result) = PR_TRUE;
+			break;
+
+		default:
+			err = NPERR_INVALID_PARAM;
+	}
+
+	return err;
+}
+
+NPError
+PluginInstance::SetValue (NPPVariable variable, void *value)
+{
 	return NPERR_NO_ERROR;
 }
 
@@ -183,16 +199,16 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 	return NPERR_NO_ERROR;
 }
 
-void
-PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
-{
-	// nothing to do.
-}
-
 NPError
 PluginInstance::DestroyStream (NPStream* stream, NPError reason)
 {
 	return NPERR_NO_ERROR;
+}
+
+void
+PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
+{
+	// nothing to do.
 }
 
 int32

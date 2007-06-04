@@ -56,10 +56,11 @@ class PluginInstance {
 	~PluginInstance ();
 
 	NPError GetValue (NPPVariable variable, void *result);
+	NPError SetValue (NPPVariable variable, void *value);
 	NPError SetWindow (NPWindow* window);
 	NPError NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype);
-	void StreamAsFile (NPStream* stream, const char* fname);
 	NPError DestroyStream (NPStream* stream, NPError reason);
+	void StreamAsFile (NPStream* stream, const char* fname);
 	int32 WriteReady (NPStream* stream);
 	int32 Write (NPStream* stream, int32 offset, int32 len, void* buffer);
 	void UrlNotify (const char* url, NPReason reason, void* notifyData);

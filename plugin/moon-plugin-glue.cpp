@@ -1,5 +1,5 @@
 /*
- * moon-plugin-glue.c: MoonLight browser plugin.
+ * moon-plugin-glue.cpp: MoonLight browser plugin.
  *
  * Author:
  *   Everaldo Canuto (everaldo@novell.com)
@@ -199,28 +199,24 @@ NPError
 plugin_get_value (NPP instance, NPPVariable variable, void *result)
 {
 	DEBUG ("plugin_get_value %d (%x)", variable, variable);
-	
-	NPError err;
 
-	switch (variable) {
-		case NPPVpluginNameString:
-			*((char **)result) = PLUGIN_NAME;
-			break;
-		case NPPVpluginDescriptionString:
-			*((char **)result) = PLUGIN_DESCRIPTION;
-			break;
-		case NPPVpluginNeedsXEmbed:
-			*((PRBool *)result) = PR_TRUE;
-			break;
-		default:
-			if (instance != NULL) {
-				PluginInstance *plugin = (PluginInstance *) instance->pdata;
-				err = plugin->GetValue (variable, result);
-			} else {
-				err = NPERR_GENERIC_ERROR;
-			}
-	}
-	return err;
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->GetValue (variable, result);
+}
+
+NPError 
+plugin_set_value (NPP instance, NPPVariable variable, void *value)
+{
+	DEBUG ("plugin_set_value %d (%x)", variable, value);
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->SetValue (variable, value);
 }
 
 NPError 
@@ -339,11 +335,27 @@ plugin_handle_event (NPP instance, void* event)
  * These functions are located automagically by mozilla
  */
 NPError
-NP_GetValue (void* future, NPPVariable variable, void *value)
+NP_GetValue (void* future, NPPVariable variable, void *result)
 {
 	DEBUG ("NP_GetValue %d (%x)", variable, variable);
 
-	return plugin_get_value (NULL, variable, value);
+	NPError err = NPERR_NO_ERROR;
+
+	switch (variable) {
+		case NPPVpluginNameString:
+			*((char **)result) = PLUGIN_NAME;
+			break;
+		case NPPVpluginDescriptionString:
+			*((char **)result) = PLUGIN_DESCRIPTION;
+			break;
+		case NPPVpluginNeedsXEmbed:
+			*((PRBool *)result) = PR_TRUE;
+			break;
+		default:
+			err = NPERR_GENERIC_ERROR;
+	}
+
+	return err;
 }
 
 char *
@@ -419,6 +431,7 @@ NP_Initialize (NPNetscapeFuncs * mozilla_funcs, NPPluginFuncs * plugin_funcs)
 	plugin_funcs->newp          = NewNPP_NewProc (plugin_new);
 	plugin_funcs->destroy       = NewNPP_DestroyProc (plugin_destroy);
 	plugin_funcs->getvalue      = NewNPP_GetValueProc (plugin_get_value);
+	plugin_funcs->setvalue      = NewNPP_SetValueProc (plugin_set_value);
 	plugin_funcs->setwindow     = NewNPP_SetWindowProc (plugin_set_window);
 	plugin_funcs->newstream     = NewNPP_NewStreamProc (plugin_new_stream);
 	plugin_funcs->asfile        = NewNPP_StreamAsFileProc (plugin_stream_as_file);
