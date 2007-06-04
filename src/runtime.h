@@ -6,6 +6,21 @@ G_BEGIN_DECLS
 #include <stdint.h>
 #include <cairo.h>
 
+typedef void (*EventHandler) (gpointer data);
+
+class EventObject {
+ public:
+  EventObject ();
+  ~EventObject ();
+
+  void AddEventHandler (char *event_name, EventHandler handler, gpointer data);
+  void RemoveEventHandler (char *event_name, EventHandler handler, gpointer data);
+
+  void EmitEvent (char *event_name);
+ private:
+  GHashTable *event_hash;
+};
+
 class Surface;
 class Brush;
 	

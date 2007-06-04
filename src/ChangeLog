@@ -1,3 +1,8 @@
+2007-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp, runtime.h: add EventObject, a c++ only base class
+	for managing events.
+
 2007-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.h: Remove Ellipse::set_prop_from_str, it's "virtually" empty

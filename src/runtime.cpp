@@ -446,3 +446,90 @@ surface_get_drawing_area (Surface *s)
 {
 	return s->drawing_area;
 }
+
+
+// event handlers for c++
+typedef struct {
+  EventHandler func;
+  gpointer data;
+} EventClosure;
+
+EventObject::EventObject ()
+{
+	event_hash = g_hash_table_new (g_str_hash, g_str_equal);
+}
+
+static void
+free_closure_list (gpointer key, gpointer data, gpointer userdata)
+{
+	g_free (key);
+	g_list_foreach ((GList*)data, (GFunc)g_free, NULL);
+}
+
+EventObject::~EventObject ()
+{
+	g_hash_table_foreach (event_hash, free_closure_list, NULL);
+}
+
+void
+EventObject::AddEventHandler (char *event_name, EventHandler handler, gpointer data)
+{
+  GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
+
+  EventClosure *closure = new EventClosure ();
+  closure->func = handler;
+  closure->data = data;
+
+  if (events == NULL) {
+    g_hash_table_insert (event_hash, g_strdup (event_name), g_list_prepend (NULL, closure));
+  }
+  else {
+    g_list_append (events, closure); // not prepending means we don't need to g_hash_table_replace
+  }
+}
+
+void
+EventObject::RemoveEventHandler (char *event_name, EventHandler handler, gpointer data)
+{
+  GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
+
+  if (events == NULL)
+    return;
+
+  GList *l;
+  for (l = events; l; l = l->next) {
+    EventClosure *closure = (EventClosure*)l->data;
+    if (closure->func == handler && closure->data == data)
+      break;
+  }
+
+  if (l == NULL) /* we didn't find it */
+    return;
+
+  g_free (l->data);
+  events = g_list_delete_link (events, l);
+
+  if (events == NULL) {
+    /* delete the event */
+    gpointer key, value;
+    g_hash_table_lookup_extended (event_hash, event_name, &key, &value);
+    g_free (key);
+  }
+  else {
+    g_hash_table_replace (event_hash, event_name, events);
+  }
+}
+
+void
+EventObject::EmitEvent (char *event_name)
+{
+  GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
+
+  if (events == NULL)
+    return;
+
+  for (GList *l = events; l; l = l->next) {
+    EventClosure *closure = (EventClosure*)l->data;
+    closure->func (closure->data);
+  }
+}
