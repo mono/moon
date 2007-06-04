@@ -18,6 +18,7 @@
 #include <expat.h>
 
 #include "runtime.h"
+#include "shape.h"
 
 #define READ_BUFFER 1024
 

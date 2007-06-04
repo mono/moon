@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "runtime.h"
+#include "shape.h"
 
 static UIElement *v;
 static Rectangle *r;
@@ -51,6 +52,8 @@ main (int argc, char *argv [])
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 
 	r = rectangle_new (50, 50, 50, 50);
+	r->radius_x = 10;
+	r->radius_y = 20;
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 

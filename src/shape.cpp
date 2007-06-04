@@ -1,5 +1,5 @@
 /*
- * runtime.cpp: Core surface and canvas definitions.
+ * shape.cpp: This match the classes inside System.Windows.Shapes
  *
  * Author:
  *   Miguel de Icaza (miguel@novell.com)
@@ -15,8 +15,8 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
-#include "runtime.h"
 
+#include "shape.h"
 
 void
 FrameworkElement::set_prop_from_str (const char *prop, const char *value)
@@ -249,3 +249,31 @@ line_new (double x1, double y1, double x2, double y2)
 	return new Line (x1, y1, x2, y2);
 }
 
+
+void
+polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule)
+{
+	polygon->fill_rule = fill_rule;
+}
+
+void
+polygon_set_points (Polygon *polygon, Point* points, int count)
+{
+	// FIXME - should we do a copy of them ?
+	polygon->points = points;
+	polygon->count = count;
+}
+
+void
+polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule)
+{
+	polyline->fill_rule = fill_rule;
+}
+
+void
+polyline_set_points (Polyline *polyline, Point* points, int count)
+{
+	// FIXME - should we do a copy of them ?
+	polyline->points = points;
+	polyline->count = count;
+}
