@@ -69,6 +69,7 @@ class Ellipse : public Shape {
 
 	void Draw (Surface *s);
 };
+Ellipse *ellipse_new ();
 
 //
 // Rectangle class 

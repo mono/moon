@@ -1,5 +1,9 @@
 2007-06-04  Jackson Harper  <jackson@ximian.com>
 
+	* shape.cpp/h: add ellipse_new
+
+2007-06-04  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: put in character data functionality, eventually we
 	will need to add FrameworkElement methods for setting the default
 	content element. See

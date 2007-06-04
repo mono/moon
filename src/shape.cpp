@@ -178,6 +178,12 @@ Ellipse::Draw (Surface *s)
 	// TODO
 }
 
+Ellipse *
+ellipse_new ()
+{
+	return new Ellipse ();
+}
+
 void
 Rectangle::Draw (Surface *s)
 {
