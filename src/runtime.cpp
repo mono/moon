@@ -441,3 +441,8 @@ surface_repaint (Surface *s, int x, int y, int width, int height)
 	s->render (s, x, y, width, height);
 }
 
+void *
+surface_get_drawing_area (Surface *s)
+{
+	return s->drawing_area;
+}

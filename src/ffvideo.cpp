@@ -512,6 +512,7 @@ VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
 	cairo_set_source_surface (s->cairo, video_cairo_surface, this->x, this->y);
 
 	cairo_rectangle (s->cairo, this->x, this->y, this->w, this->h);
+
 	cairo_fill (s->cairo);
 
 	cairo_restore (s->cairo);

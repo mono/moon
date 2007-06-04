@@ -363,6 +363,8 @@ void     surface_clear_all (Surface *s);
 void     surface_destroy   (Surface *s);
 void     surface_repaint   (Surface *s, int x, int y, int width, int height);
 
+void    *surface_get_drawing_area (Surface *s);
+
 
 
 UIElement  *xaml_create_from_file     (const char *filename);

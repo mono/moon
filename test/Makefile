@@ -1,2 +1,2 @@
 demo.exe: demo.cs
-	gmcs demo.cs -pkg:gtk-sharp-2.0
+	gmcs demo.cs -pkg:gtk-sharp-2.0 -pkg:silver
