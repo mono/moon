@@ -1,4 +1,5 @@
 #define VIDEO_DEMO
+#define XAML_DEMO
 #include <string.h>
 #include <gtk/gtk.h>
 #include <malloc.h>
@@ -56,6 +57,10 @@ main (int argc, char *argv [])
 	Rectangle *r2 = new Rectangle (50, 50, 50, 50);
 	shape_set_stroke (r2, new SolidColorBrush (c));
 	panel_child_add (t, r2);
+
+#ifdef XAML_DEMO
+	panel_child_add (t, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />"));;
+#endif
 
 #ifdef VIDEO_DEMO
 	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);

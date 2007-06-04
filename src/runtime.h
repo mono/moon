@@ -368,6 +368,7 @@ void    *surface_get_drawing_area (Surface *s);
 
 
 UIElement  *xaml_create_from_file     (const char *filename);
+UIElement  *xaml_create_from_str      (const char *xaml);
 
 
 G_END_DECLS

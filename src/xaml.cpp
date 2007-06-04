@@ -74,11 +74,14 @@ start_element_handler (void *data, const char *el, const char **attr)
 			info->top_element = item;
 		} else {
 			item->parent = info->current_element;
-			info->current_element->children = g_list_append (info->current_element->children, item);
+			info->current_element->children = g_list_prepend (info->current_element->children, item);
 
 			
-			if (info->current_element->is_panel) 
+			if (info->current_element->is_panel) {
+				printf ("adding:  %s to %s\n", item->element_name,
+						info->current_element->element_name);
 				panel_child_add ((Panel *) info->current_element->item, item->item);
+			}
 		}
 
 		info->current_element = item;
@@ -176,7 +179,58 @@ xaml_create_from_file (const char *xaml_file)
 		}
 	}
 
+#if DEBUG_XAML
 	print_tree (parser_info->top_element, 0);
+#endif
+
+	if (parser_info->top_element) {
+		UIElement *res = (UIElement *) parser_info->top_element->item;
+		free_recursive (parser_info->top_element);
+		return res;
+	}
+
+	return NULL;
+}
+
+UIElement *
+xaml_create_from_str (const char *xaml)
+{
+	XML_Parser p = XML_ParserCreate (NULL);
+	XamlParserInfo *parser_info;
+	
+	if (!p) {
+#ifdef DEBUG_XAML
+		printf ("can not create parser\n");
+#endif
+		return NULL;
+	}
+
+	parser_info = new XamlParserInfo (p);
+	XML_SetUserData (p, parser_info);
+
+	XML_SetElementHandler (p, start_element_handler, end_element_handler);
+	XML_SetCharacterDataHandler (p, char_data_handler);
+
+	/*
+	XML_SetProcessingInstructionHandler (p, proc_handler);
+	*/
+
+	if (!element_table)
+		xaml_init_element_table ();
+
+	if (!XML_Parse (p, xaml, strlen (xaml), TRUE)) {
+#ifdef DEBUG_XAML
+		printf("Parse error at line %d:\n%s\n",
+				XML_GetCurrentLineNumber (p),
+				XML_ErrorString (XML_GetErrorCode (p)));
+		printf ("can not parse xaml\n");
+#endif
+		return NULL;
+	}
+
+#if DEBUG_XAML
+	print_tree (parser_info->top_element, 0);
+#endif
 
 	if (parser_info->top_element) {
 		UIElement *res = (UIElement *) parser_info->top_element->item;
