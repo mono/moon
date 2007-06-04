@@ -2,6 +2,7 @@
 
 	* xaml.cpp: remove old no longer used function.
 	- track whether or not we are adding to a panel instead of surface
+	* shape.cpp: Fix typo, need to set line_* not x1, x2, etc.
 
 2007-06-04  Jackson Harper  <jackson@ximian.com>
 

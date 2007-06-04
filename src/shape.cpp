@@ -150,13 +150,13 @@ void
 Line::set_prop_from_str (const char *prop, const char *value)
 {
 	if (!g_strcasecmp (prop, "x1"))
-		x1 = (int) strtod (value, NULL);
+		line_x1 = (int) strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "y1"))
-		y1 = (int) strtod (value, NULL);
+		line_y1 = (int) strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "x2"))
-		x2 = (int) strtod (value, NULL);
+		line_x2 = (int) strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "y2"))
-		y2 = (int) strtod (value, NULL);
+		line_y2 = (int) strtod (value, NULL);
 	else
 		Shape::set_prop_from_str (prop, value);
 }
