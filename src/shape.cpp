@@ -114,13 +114,13 @@ void
 Rectangle::set_prop_from_str (const char *prop, const char *value)
 {
 	if (!g_strcasecmp (prop, "canvas.left"))
-		x = (int) strtod (value, NULL);
+		x = strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "canvas.top"))
-		y = (int) strtod (value, NULL);
+		y = strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "width"))
-		w = (int) strtod (value, NULL);
+		w = strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "height"))
-		h = (int) strtod (value, NULL);
+		h = strtod (value, NULL);
 	else
 		Shape::set_prop_from_str (prop, value);
 }
@@ -150,13 +150,13 @@ void
 Line::set_prop_from_str (const char *prop, const char *value)
 {
 	if (!g_strcasecmp (prop, "x1"))
-		line_x1 = (int) strtod (value, NULL);
+		line_x1 = strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "y1"))
-		line_y1 = (int) strtod (value, NULL);
+		line_y1 = strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "x2"))
-		line_x2 = (int) strtod (value, NULL);
+		line_x2 = strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "y2"))
-		line_y2 = (int) strtod (value, NULL);
+		line_y2 = strtod (value, NULL);
 	else
 		Shape::set_prop_from_str (prop, value);
 }
