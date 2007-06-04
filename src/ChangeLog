@@ -1,5 +1,10 @@
 2007-06-04  Chris Toshok  <toshok@ximian.com>
 
+	* animation.h, animation.cpp: initial pass at some of the
+	animation stuff.  doesn't build yet.
+
+2007-06-04  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp, runtime.h: add EventObject, a c++ only base class
 	for managing events.
 
