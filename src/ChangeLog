@@ -1,3 +1,11 @@
+2007-06-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: put in character data functionality, eventually we
+	will need to add FrameworkElement methods for setting the default
+	content element. See
+	http://msdn2.microsoft.com/en-us/library/ms752059.aspx#contentmodels
+	for more info on content properties.
+
 2007-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* demo.cpp: Include shape.h and use a rounded-rectangle

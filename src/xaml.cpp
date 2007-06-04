@@ -52,7 +52,9 @@ class XamlParserInfo {
 	XamlElementInfo *top_element;
 	XamlElementInfo *current_element;
 
-	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL), current_element (NULL)
+	GString *char_data_buffer;
+
+	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL), current_element (NULL), char_data_buffer (NULL)
 	{
 	}
 
@@ -77,10 +79,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 			item->parent = info->current_element;
 			info->current_element->children = g_list_prepend (info->current_element->children, item);
 
-			
 			if (info->current_element->is_panel) {
-				printf ("adding:  %s to %s\n", item->element_name,
-						info->current_element->element_name);
 				panel_child_add ((Panel *) info->current_element->item, item->item);
 			}
 		}
@@ -93,15 +92,33 @@ start_element_handler (void *data, const char *el, const char **attr)
 void
 end_element_handler (void *data, const char *el)
 {
-	XamlParserInfo *info = (XamlParserInfo *) data;	
+	XamlParserInfo *info = (XamlParserInfo *) data;
 
+	if (info->char_data_buffer && info->char_data_buffer->len) {
+		/*
+		 * TODO: set content property
+
+		 info->current_element->set_content_prop (info->char_data_buffer->str);
+		*/
+		printf ("setting content property:  %s\n", info->char_data_buffer->str);
+		g_string_free (info->char_data_buffer, FALSE);
+		info->char_data_buffer = NULL;
+	}
+		
 	info->current_element = info->current_element->parent;
 }
 
 void
 char_data_handler (void *data, const char *txt, int len)
 {
-	
+	XamlParserInfo *info = (XamlParserInfo *) data;
+
+	if (info->char_data_buffer == NULL) {
+		info->char_data_buffer = g_string_new_len (txt, len);
+		return;
+	}
+
+	info->char_data_buffer = g_string_append_len (info->char_data_buffer, txt, len);
 }
 
 void
