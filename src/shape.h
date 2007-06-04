@@ -8,6 +8,9 @@ G_BEGIN_DECLS
 
 #include "runtime.h"
 
+// http://graphics.stanford.edu/courses/cs248-98-fall/Final/q1.html
+#define ARC_TO_BEZIER	0.55228475
+
 //
 // Shape class 
 // 
@@ -68,8 +71,6 @@ class Ellipse : public Shape {
 	Ellipse () { };
 
 	void Draw (Surface *s);
-
-	virtual void set_prop_from_str (const char *prop, const char *value);
 };
 Ellipse *ellipse_new ();
 
@@ -118,6 +119,8 @@ class Polygon : public Shape {
 	int count;
 
 	Polygon () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) {};
+
+	void Draw (Surface *s);
 };
 void polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule);
 void polygon_set_points (Polygon *polygon, Point* points, int count);
@@ -132,6 +135,8 @@ class Polyline : public Shape {
 	int count;
 
 	Polyline () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) {};
+
+	void Draw (Surface *s);
 };
 void polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule);
 void polyline_set_points (Polyline *polyline, Point* points, int count);

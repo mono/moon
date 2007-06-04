@@ -219,17 +219,25 @@ ellipse_new ()
 }
 
 void
-Ellipse::set_prop_from_str (const char *prop, const char *value)
-{
-	Shape::set_prop_from_str (prop, value);
-}
-
-void
 Rectangle::Draw (Surface *s)
 {
-//	static int n;
-	// TODO - check radius_x and radius_y for rounded-corner rectangles
-	cairo_rectangle (s->cairo, x, y, w, h);
+	if ((radius_x != 0) && (radius_y != 0)) {
+		// approximate (quite close) the arc using a bezier curve
+		double c1 = ARC_TO_BEZIER * radius_x;
+		double c2 = ARC_TO_BEZIER * radius_y;
+		cairo_move_to (s->cairo, x + radius_x, y);
+		cairo_rel_line_to (s->cairo, w - 2 * radius_x, 0.0);
+		cairo_rel_curve_to (s->cairo, c1, 0.0, radius_x, c2, radius_x, radius_y);
+		cairo_rel_line_to (s->cairo, 0, h - 2 * radius_y);
+		cairo_rel_curve_to (s->cairo, 0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
+		cairo_rel_line_to (s->cairo, -w + 2 * radius_x, 0);
+		cairo_rel_curve_to (s->cairo, -c1, 0, -radius_x, -c2, -radius_x, -radius_y);
+		cairo_rel_line_to (s->cairo, 0, -h + 2 * radius_y);
+		cairo_rel_curve_to (s->cairo, 0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
+		cairo_close_path (s->cairo);
+	} else {
+		cairo_rectangle (s->cairo, x, y, w, h);
+	}
 }
 
 void
@@ -295,6 +303,10 @@ line_new (double x1, double y1, double x2, double y2)
 	return new Line (x1, y1, x2, y2);
 }
 
+void
+Polygon::Draw (Surface *s)
+{
+}
 
 void
 polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule)
@@ -308,6 +320,11 @@ polygon_set_points (Polygon *polygon, Point* points, int count)
 	// FIXME - should we do a copy of them ?
 	polygon->points = points;
 	polygon->count = count;
+}
+
+void
+Polyline::Draw (Surface *s)
+{
 }
 
 void

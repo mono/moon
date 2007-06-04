@@ -1,3 +1,10 @@
+2007-06-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.h: Remove Ellipse::set_prop_from_str, it's "virtually" empty
+	and added Draw methods to Polygon and Polyline.
+	* shape.cpp: Added round-corner rectangle support (RadiusX, RadiusY)
+	and match changes in header file.
+
 2007-06-04  Jackson Harper  <jackson@ximian.com>
 
 	* shape.cpp/h: width and height are properties of the
