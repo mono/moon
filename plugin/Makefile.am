@@ -28,9 +28,9 @@ libmoonplugin_la_SOURCES = \
 # custom install rule
 idl:
 	$(XPIDL) -m header $(XPFLAGS) nsIScriptableMoonPlugin.idl
-	$(XPIDL) -m typelib $(XPFLAGS) nsIScriptableMoonPlugin.idl
 
 install-plugin: libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp $(top_srcdir)/src/.libs/libmoon.so ~/.mozilla/plugins
+	$(XPIDL) -m typelib $(XPFLAGS) -o ~/.mozilla/plugins/libmoonplugin nsIScriptableMoonPlugin.idl

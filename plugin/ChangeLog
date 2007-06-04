@@ -1,5 +1,9 @@
 2007-06-04  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin/Makefile.am: Generate and install .xpt for install-plugin target.
+
+2007-06-04  Everaldo Canuto  <ecanuto@novell.com>
+
 	[Implement scriptable to plugin]
 
 	* plugin/test/index.html: Sample jscript included.
