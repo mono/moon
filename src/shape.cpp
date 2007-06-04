@@ -175,9 +175,6 @@ shape_set_stroke_dash_array (Shape *shape, double* dashes)
 void
 Ellipse::Draw (Surface *s)
 {
-
-#define C1 0.552285
-
 	double rx, ry, cx, cy;
 
 	rx = w / 2;
@@ -190,23 +187,23 @@ Ellipse::Draw (Surface *s)
 	/* an approximate of the ellipse by drawing a curve in each
 	 * quadrants */
 	cairo_curve_to (s->cairo,
-			cx + rx, cy - C1 * ry,
-			cx + C1 * rx, cy - ry,
+			cx + rx, cy - ARC_TO_BEZIER * ry,
+			cx + ARC_TO_BEZIER * rx, cy - ry,
 			cx, cy - ry);
         
 	cairo_curve_to (s->cairo,
-			cx - C1 * rx, cy - ry,
-			cx - rx, cy - C1 * ry,
+			cx - ARC_TO_BEZIER * rx, cy - ry,
+			cx - rx, cy - ARC_TO_BEZIER * ry,
 			cx - rx, cy);
 
 	cairo_curve_to (s->cairo,
-			cx - rx, cy + C1 * ry,
-			cx - C1 * rx, cy + ry,
+			cx - rx, cy + ARC_TO_BEZIER * ry,
+			cx - ARC_TO_BEZIER * rx, cy + ry,
 			cx, cy + ry);
                 
 	cairo_curve_to (s->cairo,
-			cx + C1 * rx, cy + ry,
-			cx + rx, cy + C1 * ry,
+			cx + ARC_TO_BEZIER * rx, cy + ry,
+			cx + rx, cy + ARC_TO_BEZIER * ry,
 			cx + rx, cy);
 
 	cairo_close_path (s->cairo);
@@ -306,6 +303,23 @@ line_new (double x1, double y1, double x2, double y2)
 void
 Polygon::Draw (Surface *s)
 {
+	int i;
+
+	if (!points || (count < 1))
+		return;
+
+	cairo_move_to (s->cairo, points [0].x, points [0].y);
+
+	for (i = 1; i < count; i++) {
+		cairo_line_to (s->cairo, points [i].x, points [i].y);
+	}
+
+	// Draw a line from the last point back to the first point if they're not the same
+	if ((points [0].x != points [count-1].x) && (points [0].y != points [count-1].y)) {
+		cairo_line_to (s->cairo, points [0].x, points [0].y);
+	}
+
+	cairo_close_path (s->cairo);
 }
 
 void
@@ -322,9 +336,26 @@ polygon_set_points (Polygon *polygon, Point* points, int count)
 	polygon->count = count;
 }
 
+Polygon *
+polygon_new ()
+{
+	return new Polygon ();
+}
+
+
 void
 Polyline::Draw (Surface *s)
 {
+	int i;
+
+	if (!points || (count < 1))
+		return;
+
+	cairo_move_to (s->cairo, points [0].x, points [0].y);
+
+	for (i = 1; i < count; i++) {
+		cairo_line_to (s->cairo, points [i].x, points [i].y);
+	}
 }
 
 void
@@ -339,4 +370,10 @@ polyline_set_points (Polyline *polyline, Point* points, int count)
 	// FIXME - should we do a copy of them ?
 	polyline->points = points;
 	polyline->count = count;
+}
+
+Polyline *
+polyline_new ()
+{
+	return new Polyline ();
 }

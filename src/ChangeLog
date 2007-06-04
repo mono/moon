@@ -1,3 +1,9 @@
+2007-06-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Add Poly[line|gon] drawing code and C helper functions 
+	to create them. Replace the "old" C1 constant in Ellipse::Draw with 
+	ARC_TO_BEZIER (now that I know where it comes from ;-)
+
 2007-06-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ffvideo.cpp (queue_data): Got sound kinda sorta working...

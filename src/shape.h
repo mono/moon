@@ -122,6 +122,7 @@ class Polygon : public Shape {
 
 	void Draw (Surface *s);
 };
+Polygon *polygon_new ();
 void polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule);
 void polygon_set_points (Polygon *polygon, Point* points, int count);
 
@@ -138,6 +139,7 @@ class Polyline : public Shape {
 
 	void Draw (Surface *s);
 };
+Polyline *polyline_new ();
 void polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule);
 void polyline_set_points (Polyline *polyline, Point* points, int count);
 
