@@ -1,0 +1,20 @@
+/*
+ * nsIScriptableMoonPlugin.idl: MoonLight browser plugin.
+ *
+ * Author:
+ *   Everaldo Canuto (everaldo@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
+#include "nsISupports.idl"
+
+[scriptable, uuid(d2d536a0-b6fc-11d5-9d10-0060b0fbd8ac)]
+interface nsIScriptableMoonPlugin : nsISupports {
+  readonly attribute string version;
+  void showVersion();
+  void clear();
+};

@@ -19,6 +19,7 @@
 
 #include "npapi.h"
 #include "npupp.h"
+#include "nsScriptablePeer.h"
 
 #include "glib.h"
 #include "gtk/gtk.h"
@@ -51,10 +52,15 @@ class PluginInstance {
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
 	bool xembed_supported; // XEmbed Extension supported
- 
+
+	nsScriptablePeer* mScriptablePeer;
+	
+
  public:	
 	PluginInstance (NPP instance, uint16 mode);
 	~PluginInstance ();
+
+    static _NPNetscapeFuncs sNPN;
 
 	NPError GetValue (NPPVariable variable, void *result);
 	NPError SetValue (NPPVariable variable, void *value);
@@ -71,6 +77,14 @@ class PluginInstance {
 	GtkWidget *container;  // plugin container object
 	GtkWidget *canvas;     // plugin canvas object
  	Surface *surface;      // plugin surface object
-};
+
+	char mString[128];
+	nsScriptablePeer* getScriptablePeer();
+
+	// locals
+	void getVersion(char* *aVersion);
+ 	void showVersion();
+ 	void clear();
+ };
 
 #endif /* MOON_PLUGIN */

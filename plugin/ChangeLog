@@ -1,3 +1,20 @@
+2007-06-04  Everaldo Canuto  <ecanuto@novell.com>
+
+	[Implement scriptable to plugin]
+
+	* plugin/test/index.html: Sample jscript included.
+
+	* plugin/Makefile.am: Generates .h from idl file use xpidl.
+
+	* plugin/moon-plugin.h,
+	* plugin/moon-plugin.cpp,
+	* plugin/moon-plugin-glue.cpp: Implement scriptable and some clean up.
+
+	* plugin/nsIScriptableMoonPlugin.h,
+	* plugin/nsIScriptableMoonPlugin.idl,
+	* plugin/nsScriptablePeer.cpp,
+	* plugin/nsScriptablePeer.h: New scriptable classes.
+
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
 	* moon-plugin-glue.cpp,

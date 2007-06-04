@@ -1,4 +1,7 @@
 
+XPIDL=`pkg-config --variable=libdir xulrunner-xpcom`/xpidl
+XPFLAGS=-I `pkg-config --variable=includedir xulrunner-xpcom`
+
 lib_LTLIBRARIES = libmoonplugin.la
 
 INCLUDES = \
@@ -18,9 +21,15 @@ libmoonplugin_la_LIBADD = -lmoon
 libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \
 	moon-plugin.h \
-	moon-plugin-glue.cpp
+	moon-plugin-glue.cpp \
+	nsScriptablePeer.cpp \
+	nsScriptablePeer.h
 
 # custom install rule
+idl:
+	$(XPIDL) -m header $(XPFLAGS) nsIScriptableMoonPlugin.idl
+	$(XPIDL) -m typelib $(XPFLAGS) nsIScriptableMoonPlugin.idl
+
 install-plugin: libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins

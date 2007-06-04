@@ -152,6 +152,170 @@ void NPN_PopPopupsEnabledState (NPP instance)
 }
 
 /**
+ * NPRuntime support
+ */
+NPIdentifier NPN_GetStringIdentifier (const NPUTF8 *name)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_GetStringIdentifierProc (MozillaFuncs.getstringidentifier, name);
+
+    return NULL;
+}
+
+void NPN_GetStringIdentifiers (const NPUTF8 **names, int32_t nameCount, NPIdentifier *identifiers)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		CallNPN_GetStringIdentifiersProc (MozillaFuncs.getstringidentifiers, names, nameCount, identifiers);
+}
+
+NPIdentifier NPN_GetIntIdentifier (int32_t intid)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_GetIntIdentifierProc (MozillaFuncs.getintidentifier, intid);
+
+    return NULL;
+}
+
+bool NPN_IdentifierIsString (NPIdentifier identifier)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_IdentifierIsStringProc (MozillaFuncs.identifierisstring, identifier);
+
+    return false;
+}
+
+NPUTF8 *NPN_UTF8FromIdentifier (NPIdentifier identifier)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_UTF8FromIdentifierProc (MozillaFuncs.utf8fromidentifier, identifier);
+
+    return NULL;
+}
+
+int32_t NPN_IntFromIdentifier (NPIdentifier identifier)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_IntFromIdentifierProc (MozillaFuncs.intfromidentifier, identifier);
+
+    return 0;
+}
+
+NPObject *NPN_CreateObject (NPP instance, NPClass *aClass)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_CreateObjectProc (MozillaFuncs.createobject, instance, aClass);
+	return NULL;
+}
+
+NPObject *NPN_RetainObject (NPObject *npobj)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_RetainObjectProc (MozillaFuncs.retainobject, npobj);
+	return NULL;
+}
+
+void NPN_ReleaseObject (NPObject *npobj)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		CallNPN_ReleaseObjectProc (MozillaFuncs.releaseobject, npobj);
+}
+
+bool NPN_Invoke (NPP instance, NPObject *npobj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_InvokeProc (MozillaFuncs.invoke, instance, npobj, methodName, args, argCount, result);
+
+    return false;
+}
+
+bool NPN_InvokeDefault (NPP instance, NPObject *npobj, const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_InvokeDefaultProc (MozillaFuncs.invokeDefault, instance, npobj, args, argCount, result);
+
+    return false;
+}
+
+bool NPN_Evaluate (NPP instance, NPObject *npobj, NPString *script, NPVariant *result)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_EvaluateProc (MozillaFuncs.evaluate, instance, npobj, script, result);
+
+    return false;
+}
+
+bool NPN_GetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, NPVariant *result)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_GetPropertyProc (MozillaFuncs.getproperty, instance, npobj, propertyName, result);
+
+    return false;
+}
+
+bool NPN_SetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, const NPVariant *value)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_SetPropertyProc (MozillaFuncs.setproperty, instance, npobj, propertyName, value);
+
+    return false;
+}
+
+bool NPN_RemoveProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_RemovePropertyProc (MozillaFuncs.removeproperty, instance, npobj, propertyName);
+
+    return false;
+}
+
+bool NPN_HasProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_HasPropertyProc (MozillaFuncs.hasproperty, instance, npobj, propertyName);
+
+    return false;
+}
+
+bool NPN_HasMethod (NPP instance, NPObject *npobj, NPIdentifier methodName)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		return CallNPN_HasMethodProc (MozillaFuncs.hasmethod, instance, npobj, methodName);
+
+    return false;
+}
+
+void NPN_ReleaseVariantValue (NPVariant *variant)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		CallNPN_ReleaseVariantValueProc (MozillaFuncs.releasevariantvalue, variant);
+}
+
+void NPN_SetException (NPObject *npobj, const NPUTF8 *message)
+{
+	int navMinorVers = MozillaFuncs.version & 0xFF;
+	if (navMinorVers >= 14)
+		CallNPN_SetExceptionProc (MozillaFuncs.setexception, npobj, message);
+}
+
+/**
  * Plugin functions
  */
 NPError 
@@ -164,19 +328,14 @@ plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-    instance->pdata = NPN_MemAlloc (sizeof (PluginInstance));
+	instance->pdata = NPN_MemAlloc (sizeof (PluginInstance));
 
-    plugin = (PluginInstance*) instance->pdata;
+	plugin = (PluginInstance*) instance->pdata;
 
-    if (plugin == NULL) 
-    {
-        return NPERR_OUT_OF_MEMORY_ERROR;
-    }
+	if (plugin == NULL) 
+		return NPERR_OUT_OF_MEMORY_ERROR;
 
-    memset (plugin, 0, sizeof (PluginInstance));
-
-    //plugin->mode = mode;
-    //plugin->instance = instance;
+	memset (plugin, 0, sizeof (PluginInstance));
 
 	return NPERR_NO_ERROR;
 }
@@ -424,6 +583,32 @@ NP_Initialize (NPNetscapeFuncs * mozilla_funcs, NPPluginFuncs * plugin_funcs)
 	MozillaFuncs.setvalue               = mozilla_funcs->setvalue;
 	MozillaFuncs.pushpopupsenabledstate = mozilla_funcs->pushpopupsenabledstate;
 	MozillaFuncs.poppopupsenabledstate  = mozilla_funcs->poppopupsenabledstate;
+
+	int navMinorVers = mozilla_funcs->version & 0xFF;
+
+	if (navMinorVers >= 14 )
+	{   
+		// NPRuntime support
+		MozillaFuncs.getstringidentifier  = mozilla_funcs->getstringidentifier;
+		MozillaFuncs.getstringidentifiers = mozilla_funcs->getstringidentifiers;
+		MozillaFuncs.getintidentifier     = mozilla_funcs->getintidentifier;
+		MozillaFuncs.identifierisstring   = mozilla_funcs->identifierisstring;
+		MozillaFuncs.utf8fromidentifier   = mozilla_funcs->utf8fromidentifier;
+		MozillaFuncs.intfromidentifier    = mozilla_funcs->intfromidentifier;
+		MozillaFuncs.createobject         = mozilla_funcs->createobject;
+		MozillaFuncs.retainobject         = mozilla_funcs->retainobject;
+		MozillaFuncs.releaseobject        = mozilla_funcs->releaseobject;
+		MozillaFuncs.invoke               = mozilla_funcs->invoke;
+		MozillaFuncs.invokeDefault        = mozilla_funcs->invokeDefault;
+		MozillaFuncs.evaluate             = mozilla_funcs->evaluate;
+		MozillaFuncs.getproperty          = mozilla_funcs->getproperty;
+		MozillaFuncs.setproperty          = mozilla_funcs->setproperty;
+		MozillaFuncs.removeproperty       = mozilla_funcs->removeproperty;
+		MozillaFuncs.hasproperty          = mozilla_funcs->hasproperty;
+		MozillaFuncs.hasmethod            = mozilla_funcs->hasmethod;
+		MozillaFuncs.releasevariantvalue  = mozilla_funcs->releasevariantvalue;
+		MozillaFuncs.setexception         = mozilla_funcs->setexception;
+	}
 
 	/* Set up the plugin function table */
 	plugin_funcs->size          = sizeof (NPPluginFuncs);
