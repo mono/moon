@@ -59,7 +59,7 @@ main (int argc, char *argv [])
 	panel_child_add (t, r2);
 
 #ifdef XAML_DEMO
-	panel_child_add (t, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />"));;
+	panel_child_add (t, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />"));
 #endif
 
 #ifdef VIDEO_DEMO
