@@ -24,8 +24,6 @@
 GHashTable *element_table = NULL;
 void xaml_init_element_table ();
 
-int id_count = 0;
-
 class XamlElementInfo {
 
  public:
@@ -34,12 +32,12 @@ class XamlElementInfo {
 
 	XamlElementInfo *parent;
 	GList *children;
-
+	gboolean is_panel;
+	
 	UIElement *item;
 
-	int id;
 
-	XamlElementInfo () : element_name (NULL), instance_name (NULL), parent (NULL), children (NULL), id (id_count++)
+	XamlElementInfo () : element_name (NULL), instance_name (NULL), parent (NULL), children (NULL), is_panel (FALSE)
 	{
 	}
 
@@ -78,7 +76,8 @@ start_element_handler (void *data, const char *el, const char **attr)
 			item->parent = info->current_element;
 			info->current_element->children = g_list_append (info->current_element->children, item);
 
-			if (info->current_element->item->flags & UIElement::IS_SURFACE != 0)
+			
+			if (info->current_element->is_panel) 
 				panel_child_add ((Panel *) info->current_element->item, item->item);
 		}
 
@@ -196,7 +195,8 @@ create_canvas_from_element (XamlParserInfo *info, const char *el, const char **a
 
 	res->item = canvas;
 	res->element_name = el;
-	res->instance_name = NULL;	
+	res->instance_name = NULL;
+	res->is_panel = TRUE;
 
 	int count = XML_GetSpecifiedAttributeCount (info->parser);
 	for (int i = 0; attr [i]; i += 2)
