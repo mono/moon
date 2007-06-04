@@ -399,6 +399,21 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	return TRUE;
 }
 
+void
+UIElement::set_prop_from_str (const char *prop, const char *value)
+{
+
+}
+
+/**
+ * This is just a temp setup for debugging/demoing
+ **/
+void
+Canvas::set_prop_from_str (const char *prop, const char *value)
+{
+
+}
+	
 Surface *
 surface_new (int width, int height)
 {

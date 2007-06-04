@@ -120,6 +120,8 @@ class GradientBrush : public Brush {
 	virtual void SetupBrush (cairo_t *cairo);
 };
 
+SolidColorBrush  *solid_brush_from_str (const char *name);
+
 //
 // Item class
 //
@@ -177,6 +179,12 @@ class UIElement {
 	virtual void getbounds () = 0;
 
 	//
+	// set_prop_from_str
+	//  takes a string value for a XAML property name and a string
+	//  representing the value.
+	virtual void set_prop_from_str (const char *pname, const char *vname);
+
+	//
 	// gencenter:
 	//   Returns the transformation origin based on  of the item and the
 	//   xform_origin
@@ -219,8 +227,9 @@ void  panel_child_add      (Panel *panel, UIElement *item);
 //
 class Canvas : public Panel {
  public:
-	virtual Point getxformorigin () { return Point (0, 0); } 
-	
+	virtual Point getxformorigin () { return Point (0, 0); }
+
+	virtual void set_prop_from_str (const char *pname, const char *vname);	
 };
 
 //
@@ -251,6 +260,8 @@ class Shape : public UIElement {
 	// if they are both set.   It will also be called to compute the bounding box.
 	//
 	virtual void Draw (Surface *s) = 0;
+
+	virtual void set_prop_from_str (const char *prop, const char *value);
 };
 
 void shape_set_fill   (Shape *shape, Brush *brush);
@@ -268,6 +279,8 @@ class Rectangle : public Shape {
 
 	void Draw (Surface *s);
 
+	virtual void set_prop_from_str (const char *prop, const char *value);
+
 	virtual Point getxformorigin ();
 };
 Rectangle *rectangle_new  (double x, double y, double w, double h);
@@ -283,6 +296,8 @@ class Line : public Shape {
 		line_x1(px1), line_y1(py1), line_x2(px2), line_y2(py2) {};
 	
 	void Draw (Surface *s);
+
+	virtual void set_prop_from_str (const char *prop, const char *value);
 
 	virtual Point getxformorigin ();
 };
@@ -347,5 +362,10 @@ void     surface_clear     (Surface *s, int x, int y, int width, int height);
 void     surface_clear_all (Surface *s);
 void     surface_destroy   (Surface *s);
 void     surface_repaint   (Surface *s, int x, int y, int width, int height);
+
+
+
+UIElement  *xaml_create_from_file     (const char *filename);
+
 
 G_END_DECLS

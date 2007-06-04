@@ -1,3 +1,19 @@
+2007-06-04  Jackson Harper  <jackson@ximian.com>
+
+	* shape.cpp: Add new methods to allow shapes to have their
+	properties filled in from text values.
+
+	* brush.cpp: Start work on allowing solid color brushes to be
+	created from strings.
+
+	* runtime.cpp: stub in methods for setting properties on canvas
+	and UIElements (these had some meat but I am removing it now that
+	some of the names are updated, will put back later).
+
+	* runtime.h: add some methods and functions for XAML parsing.
+
+	* xaml.cpp: Initial implementation of the XAML parser.
+
 2007-06-03  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (Collection, Panel): The beginning of an API to

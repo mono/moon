@@ -67,6 +67,21 @@ Shape::getbounds ()
 	cairo_new_path (s->cairo);
 }
 
+void
+Shape::set_prop_from_str (const char *prop, const char *value)
+{
+	if (!g_strcasecmp ("fill", prop)) {
+		SolidColorBrush *fill = solid_brush_from_str (value);
+		if (fill)
+			shape_set_fill (this, fill);
+
+	} else if (!g_strcasecmp ("stroke", prop)) {
+		SolidColorBrush *stroke = solid_brush_from_str (value);
+		if (stroke)
+			shape_set_stroke (this, stroke);
+	}
+}
+
 void 
 shape_set_fill (Shape *shape, Brush *fill)
 {
@@ -95,6 +110,21 @@ Rectangle::Draw (Surface *s)
 	cairo_rectangle (s->cairo, x, y, w, h);
 }
 
+void
+Rectangle::set_prop_from_str (const char *prop, const char *value)
+{
+	if (!g_strcasecmp (prop, "canvas.left"))
+		x = (int) strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "canvas.top"))
+		y = (int) strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "width"))
+		w = (int) strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "height"))
+		h = (int) strtod (value, NULL);
+	else
+		Shape::set_prop_from_str (prop, value);
+}
+
 Point
 Rectangle::getxformorigin ()
 {
@@ -114,6 +144,21 @@ Line::Draw (Surface *s)
 {
 	cairo_move_to (s->cairo, line_x1, line_y1);
 	cairo_line_to (s->cairo, line_x2, line_y2);
+}
+
+void
+Line::set_prop_from_str (const char *prop, const char *value)
+{
+	if (!g_strcasecmp (prop, "x1"))
+		x1 = (int) strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "y1"))
+		y1 = (int) strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "x2"))
+		x2 = (int) strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "y2"))
+		y2 = (int) strtod (value, NULL);
+	else
+		Shape::set_prop_from_str (prop, value);
 }
 
 Point
