@@ -1,3 +1,12 @@
+2007-06-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* demo.cpp: Fix for API changes.
+	* runtime.h: Add FrameworkElement, other Shape properties and move
+	around some properties to match the managed definitions.
+	* shape.cpp: Add setters for new Shape properties and move properties
+	parsing to match managed definitions.
+	* xaml.cpp: Fix for API changes.
+
 2007-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Don't typecast doubles into ints.

@@ -17,6 +17,22 @@
 #include <stdlib.h>
 #include "runtime.h"
 
+
+void
+FrameworkElement::set_prop_from_str (const char *prop, const char *value)
+{
+	if (!g_strcasecmp (prop, "canvas.left"))
+		x = strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "canvas.top"))
+		y = strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "width"))
+		w = strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "height"))
+		h = strtod (value, NULL);
+
+	// FIXME: else ignore ? or keep somewhere in a collection ?
+}
+
 //
 // This routine is useful for Shape derivatives: it can be used
 // to either get the bounding box from cairo, or to paint it
@@ -74,12 +90,12 @@ Shape::set_prop_from_str (const char *prop, const char *value)
 		SolidColorBrush *fill = solid_brush_from_str (value);
 		if (fill)
 			shape_set_fill (this, fill);
-
 	} else if (!g_strcasecmp ("stroke", prop)) {
 		SolidColorBrush *stroke = solid_brush_from_str (value);
 		if (stroke)
 			shape_set_stroke (this, stroke);
-	}
+	} else
+		FrameworkElement::set_prop_from_str (prop, value);
 }
 
 void 
@@ -103,24 +119,80 @@ shape_set_stroke (Shape *shape, Brush *stroke)
 }
 
 void
+shape_set_stretch (Shape *shape, Stretch stretch)
+{
+	shape->stretch = stretch;
+}
+
+void
+shape_set_stroke_dash_cap (Shape *shape, PenLineCap cap)
+{
+	shape->stroke_dash_cap = cap;
+}
+
+void
+shape_set_stroke_start_line_cap (Shape *shape, PenLineCap cap)
+{
+	shape->stroke_start_line_cap = cap;
+}
+
+void
+shape_set_stroke_end_line_cap (Shape *shape, PenLineCap cap)
+{
+	shape->stroke_end_line_cap = cap;
+}
+
+void
+shape_set_stroke_dash_offset (Shape *shape, double offset)
+{
+	shape->stroke_dash_offset = offset;
+}
+
+void
+shape_set_stroke_miter_limit (Shape *shape, double limit)
+{
+	shape->stroke_miter_limit = limit;
+}
+
+void
+shape_set_stroke_thickness (Shape *shape, double thickness)
+{
+	shape->stroke_thickness = thickness;
+}
+
+void
+shape_set_stroke_line_join (Shape *shape, PenLineJoin join)
+{
+	shape->stroke_line_join = join;
+}
+
+void
+shape_set_stroke_dash_array (Shape *shape, double* dashes)
+{
+	shape->stroke_dash_array = dashes;
+}
+
+void
+Ellipse::Draw (Surface *s)
+{
+	// TODO
+}
+
+void
 Rectangle::Draw (Surface *s)
 {
-	static int n;
-	
+//	static int n;
+	// TODO - check radius_x and radius_y for rounded-corner rectangles
 	cairo_rectangle (s->cairo, x, y, w, h);
 }
 
 void
 Rectangle::set_prop_from_str (const char *prop, const char *value)
 {
-	if (!g_strcasecmp (prop, "canvas.left"))
-		x = strtod (value, NULL);
-	else if (!g_strcasecmp (prop, "canvas.top"))
-		y = strtod (value, NULL);
-	else if (!g_strcasecmp (prop, "width"))
-		w = strtod (value, NULL);
-	else if (!g_strcasecmp (prop, "height"))
-		h = strtod (value, NULL);
+	if (!g_strcasecmp (prop, "radiusx"))
+		radius_x = strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "radiusy"))
+		radius_y = strtod (value, NULL);
 	else
 		Shape::set_prop_from_str (prop, value);
 }
@@ -134,8 +206,11 @@ Rectangle::getxformorigin ()
 Rectangle *
 rectangle_new (double x, double y, double w, double h)
 {
-	Rectangle *rect = new Rectangle (x, y, w, h);
-
+	Rectangle *rect = new Rectangle ();
+	rect->x = x;
+	rect->y = y;
+	rect->w = w;
+	rect->h = h;
 	return rect;
 }
 

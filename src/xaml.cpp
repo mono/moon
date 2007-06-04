@@ -262,7 +262,7 @@ create_canvas_from_element (XamlParserInfo *info, const char *el, const char **a
 XamlElementInfo *
 create_rectangle_from_element (XamlParserInfo *info, const char *el, const char **attr)
 {
-	Rectangle *rectangle = rectangle_new (0, 0, 0, 0);
+	Rectangle *rectangle = new Rectangle ();
 	XamlElementInfo *res = new XamlElementInfo ();
 
 	res->item = rectangle;

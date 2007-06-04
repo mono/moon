@@ -54,7 +54,7 @@ main (int argc, char *argv [])
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 
-	Rectangle *r2 = new Rectangle (50, 50, 50, 50);
+	Rectangle *r2 = rectangle_new (50, 50, 50, 50);
 	shape_set_stroke (r2, new SolidColorBrush (c));
 	panel_child_add (t, r2);
 
