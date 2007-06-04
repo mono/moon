@@ -65,9 +65,7 @@ void shape_set_stroke_dash_array (Shape *shape, double* dashes);
 //
 class Ellipse : public Shape {
  public:
-	double width, height;
-
-	Ellipse () : width (0), height (0) { };
+	Ellipse () { };
 
 	void Draw (Surface *s);
 

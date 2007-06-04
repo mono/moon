@@ -180,8 +180,8 @@ Ellipse::Draw (Surface *s)
 
 	double rx, ry, cx, cy;
 
-	rx = width / 2;
-	ry = height / 2;
+	rx = w / 2;
+	ry = h / 2;
 	cx = x + rx;
 	cy = y + ry;
 
@@ -221,12 +221,7 @@ ellipse_new ()
 void
 Ellipse::set_prop_from_str (const char *prop, const char *value)
 {
-	if (!g_strcasecmp (prop, "width"))
-		width = strtod (value, NULL);
-	else if (!g_strcasecmp (prop, "height"))
-		height = strtod (value, NULL);
-	else
-		Shape::set_prop_from_str (prop, value);
+	Shape::set_prop_from_str (prop, value);
 }
 
 void
