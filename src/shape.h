@@ -65,9 +65,13 @@ void shape_set_stroke_dash_array (Shape *shape, double* dashes);
 //
 class Ellipse : public Shape {
  public:
-	Ellipse () {};
+	double width, height;
+
+	Ellipse () : width (0), height (0) { };
 
 	void Draw (Surface *s);
+
+	virtual void set_prop_from_str (const char *prop, const char *value);
 };
 Ellipse *ellipse_new ();
 

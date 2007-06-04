@@ -175,13 +175,58 @@ shape_set_stroke_dash_array (Shape *shape, double* dashes)
 void
 Ellipse::Draw (Surface *s)
 {
-	// TODO
+
+#define C1 0.552285
+
+	double rx, ry, cx, cy;
+
+	rx = width / 2;
+	ry = height / 2;
+	cx = x + rx;
+	cy = y + ry;
+
+	cairo_move_to (s->cairo, cx + rx, cy);
+
+	/* an approximate of the ellipse by drawing a curve in each
+	 * quadrants */
+	cairo_curve_to (s->cairo,
+			cx + rx, cy - C1 * ry,
+			cx + C1 * rx, cy - ry,
+			cx, cy - ry);
+        
+	cairo_curve_to (s->cairo,
+			cx - C1 * rx, cy - ry,
+			cx - rx, cy - C1 * ry,
+			cx - rx, cy);
+
+	cairo_curve_to (s->cairo,
+			cx - rx, cy + C1 * ry,
+			cx - C1 * rx, cy + ry,
+			cx, cy + ry);
+                
+	cairo_curve_to (s->cairo,
+			cx + C1 * rx, cy + ry,
+			cx + rx, cy + C1 * ry,
+			cx + rx, cy);
+
+	cairo_close_path (s->cairo);
 }
 
 Ellipse *
 ellipse_new ()
 {
 	return new Ellipse ();
+}
+
+void
+Ellipse::set_prop_from_str (const char *prop, const char *value)
+{
+	if (!g_strcasecmp (prop, "width"))
+		width = strtod (value, NULL);
+	else if (!g_strcasecmp (prop, "height"))
+		height = strtod (value, NULL);
+	else
+		Shape::set_prop_from_str (prop, value);
 }
 
 void
