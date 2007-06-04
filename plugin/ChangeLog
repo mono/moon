@@ -1,5 +1,10 @@
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.h: Change plugin name, version and description to mimic 
+	SilverLight and can be recognize as a valid plugin.
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.c: Destroy objects on class destructor to prevent browser
 	crashes.
 
