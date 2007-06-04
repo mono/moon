@@ -23,6 +23,8 @@
 #include "glib.h"
 #include "gtk/gtk.h"
 
+#include "runtime.h"
+
 #define DEBUG_PLUGIN
 
 #define PLUGIN_NAME         "Novell MoonLight"
@@ -44,8 +46,13 @@ class PluginInstance {
  private:
 	void CreateControls ();
 
+  	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
+	NPWindow *window;      // Mozilla window object
+	NPP instance;          // Mozilla instance object
+	bool xembed_supported; // XEmbed Extension supported
+
  public:	
-	PluginInstance ();
+	PluginInstance (NPP instance, uint16 mode);
 	~PluginInstance ();
 
 	NPError GetValue (NPPVariable variable, void *result);
@@ -59,13 +66,9 @@ class PluginInstance {
 	void Print (NPPrint* platformPrint);
 	int16 EventHandle (void* event);
 
-	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
-	NPWindow *window;      // Mozilla window object
-	NPP instance;          // Mozilla instance object
-	bool xembed_supported; // XEmbed Extension supported
-
 	GtkWidget *container;  // plugin container object
 	GtkWidget *canvas;     // plugin canvas object
+ 	Surface *surface;      // plugin surface object
 };
 
 #endif /* MOON_PLUGIN */

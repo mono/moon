@@ -1,5 +1,14 @@
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
+	[Clean up demo and make some class fields private ]
+
+	* moon-plugin-glue.c,
+	* moon-plugin.h,
+	* moon-plugin.c: Now just a surface control is added to plugn container,
+	some field is now private demo was refactored.
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
 	* Makefile.am: Compile if needed for install-plugin target.
 
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>

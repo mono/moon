@@ -159,7 +159,7 @@ plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* 
 {
 	DEBUG ("plugin_new");
 
-	PluginInstance *plugin = new PluginInstance ();
+	PluginInstance *plugin = new PluginInstance (instance, mode);
 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -175,8 +175,8 @@ plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* 
 
     memset (plugin, 0, sizeof (PluginInstance));
 
-    plugin->mode = mode;
-    plugin->instance = instance;
+    //plugin->mode = mode;
+    //plugin->instance = instance;
 
 	return NPERR_NO_ERROR;
 }

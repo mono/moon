@@ -10,50 +10,35 @@
  * 
  */
 
-
 #include "moon-plugin.h"
-#include "runtime.h"
 
-static void moon_plugin_demo (PluginInstance *plugin)
+static void moon_plugin_demo (Surface *surface)
 {
 	DEBUG ("*** moon_plugin_demo");
 
-	GtkWidget *w, *box, *button;
 	cairo_matrix_t trans;
 
 	Rectangle *r;
-
-	box = gtk_hbox_new (FALSE, 0);
-	gtk_container_add (GTK_CONTAINER (plugin->container), box);
-	gtk_widget_show_all (box);
-
-	//button = gtk_button_new_with_label ("dingus");
-	//gtk_container_add (GTK_CONTAINER (box), button);
-
-	// Create our objects
-	Surface *t = surface_new (300, 600);
-	gtk_container_add (GTK_CONTAINER (box), t->drawing_area);
 
 	r = rectangle_new (50, 50, 100, 100);
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 	cairo_matrix_init_rotate (&trans, 0.4);
-	//item_set_transform (r, (double *) (&trans));
-	surface_repaint (t, 0, 0, 300, 300);
+	item_set_transform (r, (double *) (&trans));
+	surface_repaint (surface, 0, 0, 300, 300);
 
 #if VIDEO_DEMO
 	UIElement *v, *v2;
 
 	v = video_new ("/home/everaldo/BoxerSmacksdownInhoffe.wmv", 0, 0);
-	//item_transform_set (v, (double *) (&trans));
-	panel_child_add (t, v);
+	item_set_transform (v, (double *) (&trans));
+	panel_child_add (surface, v);
 
 	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
-	panel_child_add (t, v2);
+	panel_child_add (surface, v2);
 #endif	
-	panel_child_add (t, r);
+	panel_child_add (surface, r);
 
-	gtk_widget_show_all (box);
 	//gtk_timeout_add (60, repaint, w);
 }
 
@@ -115,8 +100,10 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	return handled;
 }
 
-PluginInstance::PluginInstance ()
+PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {
+    this->mode = mode;
+    this->instance = instance;
 }
 
 PluginInstance::~PluginInstance ()
@@ -147,8 +134,6 @@ PluginInstance::SetWindow (NPWindow* window)
 	this->window = window;
 	this->CreateControls ();
 
-	//moon_plugin_create_window (this->instance, window);
-
 	return NPERR_NO_ERROR;
 }
 
@@ -157,18 +142,16 @@ PluginInstance::CreateControls ()
 {
 	DEBUG ("creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
-	//box = gtk_hbox_new (FALSE, 0);
-	
-	/*  GtkPlug container and drawing canvas inside */
+	//  GtkPlug container and surface inside
 	this->container = gtk_plug_new ((GdkNativeWindow) window->window);
-	this->canvas = gtk_drawing_area_new ();
-
-	gtk_container_add (GTK_CONTAINER (this->container), this->canvas);
-
-	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->canvas), GTK_CAN_FOCUS);
+	this->surface = surface_new (window->width, window->height);
+	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+	
+	// Connect signals to container
+	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
 
 	gtk_widget_add_events (
-		this->canvas,
+		this->container,
 		GDK_BUTTON_PRESS_MASK | 
 		GDK_BUTTON_RELEASE_MASK |
 		GDK_KEY_PRESS_MASK | 
@@ -182,12 +165,11 @@ PluginInstance::CreateControls ()
 		GDK_FOCUS_CHANGE_MASK
 	);
 
-	g_signal_connect (G_OBJECT(this->canvas), "event", G_CALLBACK (plugin_event_callback), this);
+	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
-	//moon_plugin_demo (Instance);
+	moon_plugin_demo (this->surface);
 
-	gtk_widget_show (this->canvas);
-	gtk_widget_show (this->container);
+	gtk_widget_show_all (this->container);
 }
 
 NPError
