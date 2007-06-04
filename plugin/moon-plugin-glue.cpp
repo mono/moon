@@ -152,6 +152,190 @@ void NPN_PopPopupsEnabledState (NPP instance)
 }
 
 /**
+ * Plugin functions
+ */
+NPError 
+plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
+{
+	DEBUG ("plugin_new");
+
+	PluginInstance *plugin = new PluginInstance ();
+
+	if (!instance)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+    instance->pdata = NPN_MemAlloc (sizeof (PluginInstance));
+
+    plugin = (PluginInstance*) instance->pdata;
+
+    if (plugin == NULL) 
+    {
+        return NPERR_OUT_OF_MEMORY_ERROR;
+    }
+
+    memset (plugin, 0, sizeof (PluginInstance));
+
+    plugin->mode = mode;
+    plugin->instance = instance;
+
+	return NPERR_NO_ERROR;
+}
+
+NPError 
+plugin_destroy (NPP instance, NPSavedData** save)
+{
+	DEBUG ("plugin_destroy");
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	delete plugin;
+
+	return NPERR_NO_ERROR;
+}
+
+NPError 
+plugin_get_value (NPP instance, NPPVariable variable, void *result)
+{
+	DEBUG ("plugin_get_value %d (%x)", variable, variable);
+	
+	NPError err;
+
+	switch (variable) {
+		case NPPVpluginNameString:
+			*((char **)result) = PLUGIN_NAME;
+			break;
+		case NPPVpluginDescriptionString:
+			*((char **)result) = PLUGIN_DESCRIPTION;
+			break;
+		case NPPVpluginNeedsXEmbed:
+			*((PRBool *)result) = PR_TRUE;
+			break;
+		default:
+			if (instance != NULL) {
+				PluginInstance *plugin = (PluginInstance *) instance->pdata;
+				err = plugin->GetValue (variable, result);
+			} else {
+				err = NPERR_GENERIC_ERROR;
+			}
+	}
+	return err;
+}
+
+NPError 
+plugin_set_window (NPP instance, NPWindow* window)
+{
+	DEBUG ("plugin_set_window %d %d", window->width, window->height);
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->SetWindow (window);
+}
+
+NPError
+plugin_new_stream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
+{
+	DEBUG ("plugin_new_stream");
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->NewStream (type, stream, seekable, stype);
+}
+
+void
+plugin_stream_as_file (NPP instance, NPStream* stream, const char* fname)
+{
+	DEBUG ("plugin_stream_as_file");
+
+	if (instance == NULL)
+		return;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	plugin->StreamAsFile (stream, fname);
+}
+
+NPError
+plugin_destroy_stream (NPP instance, NPStream* stream, NPError reason)
+{
+	DEBUG ("plugin_destroy_stream");
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->DestroyStream (stream, reason);
+}
+
+int32
+plugin_write_ready (NPP instance, NPStream* stream)
+{
+	DEBUG ("plugin_write_ready");
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	NPN_DestroyStream (instance, stream, NPRES_DONE);
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->WriteReady (stream);
+}
+
+int32
+plugin_write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer)
+{
+	DEBUG ("plugin_write");
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	NPN_DestroyStream (instance, stream, NPRES_DONE);
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->Write (stream, offset, len, buffer);
+}
+
+void
+plugin_url_notify (NPP instance, const char* url, NPReason reason, void* notifyData)
+{
+	DEBUG ("plugin_url_notify");
+
+	if (instance == NULL)
+		return;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	plugin->UrlNotify (url, reason, notifyData);
+}
+
+void
+plugin_print (NPP instance, NPPrint* platformPrint)
+{
+	DEBUG ("plugin_print");
+
+	if (instance == NULL)
+		return;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	plugin->Print (platformPrint);
+}
+
+int16 
+plugin_handle_event (NPP instance, void* event)
+{
+	DEBUG ("*** plugin_handle_event (not implemented)");
+
+	if (instance == NULL)
+		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	return plugin->EventHandle (event);
+}
+
+/**
  * These functions are located automagically by mozilla
  */
 NPError
@@ -159,7 +343,7 @@ NP_GetValue (void* future, NPPVariable variable, void *value)
 {
 	DEBUG ("NP_GetValue %d (%x)", variable, variable);
 
-	return moon_plugin_get_value (NULL, variable, value);
+	return plugin_get_value (NULL, variable, value);
 }
 
 char *
@@ -232,27 +416,30 @@ NP_Initialize (NPNetscapeFuncs * mozilla_funcs, NPPluginFuncs * plugin_funcs)
 	/* Set up the plugin function table */
 	plugin_funcs->size          = sizeof (NPPluginFuncs);
 	plugin_funcs->version       = (NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR;
-	plugin_funcs->newp          = NewNPP_NewProc (moon_plugin_new);
-	plugin_funcs->destroy       = NewNPP_DestroyProc (moon_plugin_destroy);
-	plugin_funcs->getvalue      = NewNPP_GetValueProc (moon_plugin_get_value);
-	plugin_funcs->setwindow     = NewNPP_SetWindowProc (moon_plugin_set_window);
-	plugin_funcs->newstream     = NewNPP_NewStreamProc (moon_plugin_new_stream);
-	plugin_funcs->asfile        = NewNPP_StreamAsFileProc (moon_plugin_stream_as_file);
-	plugin_funcs->destroystream = NewNPP_DestroyStreamProc (moon_plugin_destroy_stream);
-	plugin_funcs->writeready    = NewNPP_WriteReadyProc (moon_plugin_write_ready);
-	plugin_funcs->write         = NewNPP_WriteProc (moon_plugin_write);
-	plugin_funcs->print         = NewNPP_PrintProc (moon_plugin_print);
-	plugin_funcs->urlnotify     = NewNPP_URLNotifyProc (moon_plugin_url_notify);
-	plugin_funcs->event         = NewNPP_HandleEventProc (moon_plugin_handle_event);
+	plugin_funcs->newp          = NewNPP_NewProc (plugin_new);
+	plugin_funcs->destroy       = NewNPP_DestroyProc (plugin_destroy);
+	plugin_funcs->getvalue      = NewNPP_GetValueProc (plugin_get_value);
+	plugin_funcs->setwindow     = NewNPP_SetWindowProc (plugin_set_window);
+	plugin_funcs->newstream     = NewNPP_NewStreamProc (plugin_new_stream);
+	plugin_funcs->asfile        = NewNPP_StreamAsFileProc (plugin_stream_as_file);
+	plugin_funcs->destroystream = NewNPP_DestroyStreamProc (plugin_destroy_stream);
+	plugin_funcs->writeready    = NewNPP_WriteReadyProc (plugin_write_ready);
+	plugin_funcs->write         = NewNPP_WriteProc (plugin_write);
+	plugin_funcs->print         = NewNPP_PrintProc (plugin_print);
+	plugin_funcs->urlnotify     = NewNPP_URLNotifyProc (plugin_url_notify);
+	plugin_funcs->event         = NewNPP_HandleEventProc (plugin_handle_event);
 	plugin_funcs->javaClass     = NULL;
 
+	gtk_init (0, 0);
+
 	DEBUG ("NP_Initialize succeeded");
-	return moon_plugin_initialize ();
+
+	return NPERR_NO_ERROR;
 }
 
 NPError
 NP_Shutdown (void)
 {
 	DEBUG ("NP_Shutdown");
-	return moon_plugin_shutdown ();
+	return NPERR_NO_ERROR;
 }

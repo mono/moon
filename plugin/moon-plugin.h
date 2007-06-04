@@ -40,44 +40,32 @@
 #define DEBUG(msg)
 #endif
 
-G_BEGIN_DECLS
+class PluginInstance {
+ private:
+	void CreateControls ();
 
-typedef struct {
+ public:	
+	PluginInstance ();
+	~PluginInstance ();
 
-    uint16 mode;
-    NPWindow *window;
-    uint32 x, y;
-    uint32 width, height;
+	NPError GetValue (NPPVariable variable, void *result);
+	NPError SetWindow (NPWindow* window);
+	NPError NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype);
+	void StreamAsFile (NPStream* stream, const char* fname);
+	NPError DestroyStream (NPStream* stream, NPError reason);
+	int32 WriteReady (NPStream* stream);
+	int32 Write (NPStream* stream, int32 offset, int32 len, void* buffer);
+	void UrlNotify (const char* url, NPReason reason, void* notifyData);
+	void Print (NPPrint* platformPrint);
+	int16 EventHandle (void* event);
 
-    NPP instance;
+	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
+	NPWindow *window;      // Mozilla window object
+	NPP instance;          // Mozilla instance object
+	bool xembed_supported; // XEmbed Extension supported
 
-    GtkWidget *container;
-    GtkWidget *canvas;
-
-} PluginInstance;
-
-NPError moon_plugin_initialize ();
-NPError moon_plugin_shutdown ();
-NPError moon_plugin_get_value (void *instance, NPPVariable variable, void *result);
-NPError moon_plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved);
-NPError moon_plugin_destroy (NPP instance, NPSavedData** save);
-NPError moon_plugin_set_window (NPP instance, NPWindow* window);
-NPError moon_plugin_create_window (NPP instance, NPWindow* window);
-NPError moon_plugin_new_stream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype);
-void moon_plugin_stream_as_file (NPP instance, NPStream* stream, const char* fname);
-NPError moon_plugin_destroy_stream (NPP instance, NPStream* stream, NPError reason);
-int32 moon_plugin_write_ready (NPP instance, NPStream* stream);
-int32 moon_plugin_write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer);
-void moon_plugin_url_notify (NPP instance, const char* url, NPReason reason, void* notifyData);
-void moon_plugin_print (NPP instance, NPPrint* platformPrint);
-int16 moon_plugin_handle_event (NPP instance, void* event);
-gboolean moon_plugin_canvas_event (GtkWidget *widget, GdkEvent *event, gpointer user_data);
-
-gboolean moon_plugin_show_menu (PluginInstance *plugin);
-
-static void moon_plugin_menu_about (PluginInstance *plugin);
-
-G_END_DECLS
+	GtkWidget *container;  // plugin container object
+	GtkWidget *canvas;     // plugin canvas object
+};
 
 #endif /* MOON_PLUGIN */
-

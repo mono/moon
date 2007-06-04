@@ -1,6 +1,25 @@
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
-	* moon-plugin-glue.h: Some comments and stetic changes.
+	[Move to c++ based classes ]
+	
+	* moon-plugin-glue.c: Fix getvalue to return error when no instance 
+	available.
+
+	* moon-plugin.h,
+	* moon-plugin.c: Change all function to class methods, also move wrapper
+	functions to moon-plugin-glue.
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin.h,
+	* moon-plugin.c,
+	* moon-plugin-glue.c: Remove moon_plugin_initialize and moon_plugin_shutdown
+	since whe alread have NP_Initialize and NP_Shutdown. Also change 
+	PluginInstance structure to class (complete class suppont comming soon).
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin-glue.c: Some comments and stetic changes.
 
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
