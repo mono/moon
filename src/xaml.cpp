@@ -1,3 +1,6 @@
+
+#define DEBUG_XAML
+
 /*
  * xaml.cpp: xaml parser
  *
@@ -33,12 +36,20 @@ class XamlElementInfo {
 
 	XamlElementInfo *parent;
 	GList *children;
-	gboolean is_panel;
-	
+
+	enum ElementType {
+		ELEMENT,
+		PANEL,
+		PROPERTY,
+		UNKNOWN
+	};
+
+	int element_type;
 	UIElement *item;
 
 
-	XamlElementInfo () : element_name (NULL), instance_name (NULL), parent (NULL), children (NULL), is_panel (FALSE)
+	XamlElementInfo () : element_name (NULL), instance_name (NULL),
+			     parent (NULL), children (NULL), element_type (PANEL)
 	{
 	}
 
@@ -54,7 +65,12 @@ class XamlParserInfo {
 
 	GString *char_data_buffer;
 
-	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL), current_element (NULL), char_data_buffer (NULL)
+	int state;
+	
+
+	
+	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL),
+					     current_element (NULL), char_data_buffer (NULL)
 	{
 	}
 
@@ -79,7 +95,8 @@ start_element_handler (void *data, const char *el, const char **attr)
 			item->parent = info->current_element;
 			info->current_element->children = g_list_append (info->current_element->children, item);
 
-			if (info->current_element->is_panel) {
+			if (info->current_element->element_type & XamlElementInfo::PANEL &&
+					item->element_type <= XamlElementInfo::PANEL) {
 				panel_child_add ((Panel *) info->current_element->item, item->item);
 			}
 		}
@@ -87,13 +104,31 @@ start_element_handler (void *data, const char *el, const char **attr)
 		info->current_element = item;
 		return;
 	}
+
+	char *elem = g_strdup (el);
+	char **ep = g_strsplit (el, ".", -1);
+	if (ep [0] && ep [1]) {
+
+		item = new XamlElementInfo ();
+
+		item->element_name = g_strdup (elem);
+		item->element_type = XamlElementInfo::PROPERTY;
+
+		item->parent = info->current_element;
+		info->current_element->children = g_list_append (info->current_element->children, item);
+
+		info->current_element = item;
+		return;
+	}
+
+//	printf ("making an unknown item\n");
+//	item = new XamlElementInfo ();
+//	item->element_type = XamlElementInfo::UNKNOWN;
+//	info->current_element = item;
 }
 
-void
-end_element_handler (void *data, const char *el)
+void end_element (XamlParserInfo *info, const char *el)
 {
-	XamlParserInfo *info = (XamlParserInfo *) data;
-
 	if (info->char_data_buffer && info->char_data_buffer->len) {
 		/*
 		 * TODO: set content property
@@ -104,8 +139,36 @@ end_element_handler (void *data, const char *el)
 		g_string_free (info->char_data_buffer, FALSE);
 		info->char_data_buffer = NULL;
 	}
-		
+
 	info->current_element = info->current_element->parent;
+}
+
+void end_property (XamlParserInfo *info, const char *el)
+{
+	info->current_element = info->current_element->parent;
+}
+
+void end_unknown (XamlParserInfo *info, const char *el)
+{
+//	info->current_element = info->current_element->parent;
+}
+
+void
+end_element_handler (void *data, const char *el)
+{
+	XamlParserInfo *info = (XamlParserInfo *) data;
+
+	switch (info->current_element->element_type) {
+	case XamlElementInfo::ELEMENT:
+		end_element (info, el);
+		break;
+	case XamlElementInfo::PROPERTY:
+		end_property (info, el);
+		break;
+	case XamlElementInfo::UNKNOWN:
+		end_unknown (info, el);
+		break;
+	}
 }
 
 void
@@ -148,7 +211,6 @@ xaml_create_from_file (const char *xaml_file)
 	int len, done;
 	XamlParserInfo *parser_info;
 
-	printf ("parsing xaml file:  %s\n", xaml_file);
 	fp = fopen (xaml_file, "r+");
 
 	if (!fp) {
@@ -197,7 +259,7 @@ xaml_create_from_file (const char *xaml_file)
 		}
 	}
 
-#if DEBUG_XAML
+#ifdef DEBUG_XAML
 	print_tree (parser_info->top_element, 0);
 #endif
 
@@ -246,7 +308,7 @@ xaml_create_from_str (const char *xaml)
 		return NULL;
 	}
 
-#if DEBUG_XAML
+#ifdef DEBUG_XAML
 	print_tree (parser_info->top_element, 0);
 #endif
 
@@ -266,9 +328,9 @@ create_canvas_from_element (XamlParserInfo *info, const char *el, const char **a
 	XamlElementInfo *res = new XamlElementInfo ();
 
 	res->item = canvas;
-	res->element_name = el;
+	res->element_name = g_strdup (el);
 	res->instance_name = NULL;
-	res->is_panel = TRUE;
+	res->element_type = XamlElementInfo::PANEL;
 
 	int count = XML_GetSpecifiedAttributeCount (info->parser);
 	for (int i = 0; attr [i]; i += 2)
@@ -284,8 +346,9 @@ create_rectangle_from_element (XamlParserInfo *info, const char *el, const char 
 	XamlElementInfo *res = new XamlElementInfo ();
 
 	res->item = rectangle;
-	res->element_name = el;
+	res->element_name = g_strdup (el);
 	res->instance_name = NULL;
+	res->element_type = XamlElementInfo::ELEMENT;
 
 	int count = XML_GetSpecifiedAttributeCount (info->parser);
 	for (int i = 0; attr [i]; i += 2)
@@ -301,8 +364,9 @@ create_line_from_element (XamlParserInfo *info, const char *el, const char **att
 	XamlElementInfo *res = new XamlElementInfo ();
 
 	res->item = line;
-	res->element_name = el;
+	res->element_name = g_strdup (el);
 	res->instance_name = NULL;
+	res->element_type = XamlElementInfo::ELEMENT;
 
 	int count = XML_GetSpecifiedAttributeCount (info->parser);
 	for (int i = 0; attr [i]; i += 2)
@@ -318,8 +382,9 @@ create_ellipse_from_element (XamlParserInfo *info, const char *el, const char **
 	XamlElementInfo *res = new XamlElementInfo ();
 
 	res->item = ellipse;
-	res->element_name = el;
+	res->element_name = g_strdup (el);
 	res->instance_name = NULL;
+	res->element_type = XamlElementInfo::ELEMENT;
 
 	int count = XML_GetSpecifiedAttributeCount (info->parser);
 	for (int i = 0; attr [i]; i += 2)

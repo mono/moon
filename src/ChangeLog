@@ -1,3 +1,7 @@
+2007-06-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Give elements a type
+
 2007-06-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp, runtime.h: implemented DependencyProperty and DependencyObject.
