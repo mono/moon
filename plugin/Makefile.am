@@ -21,7 +21,7 @@ libmoonplugin_la_SOURCES = \
 	moon-plugin-glue.cpp
 
 # custom install rule
-install-plugin:
+install-plugin: libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp $(top_srcdir)/src/.libs/libmoon.so ~/.mozilla/plugins
