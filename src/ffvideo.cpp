@@ -21,6 +21,7 @@
 #include <cairo.h>
 #include <malloc.h>
 #include <glib.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
@@ -102,8 +103,8 @@ public:
 	guint    timeout_handle;
 
 	// The constant is in bytes, so we get 2 full seconds.
-	uint16_t  audio_buffer [AVCODEC_MAX_AUDIO_FRAME_SIZE];
-
+	uint16_t audio_buffer [AVCODEC_MAX_AUDIO_FRAME_SIZE];
+	
 	//
 	// The components used to render the buffer
 	//
@@ -186,10 +187,10 @@ callback_video_inited (gpointer data)
 }
 
 //
-// The decoder thread, runs until complete
+// The queue-data thread, runs until complete
 //
 static gpointer
-decoder (gpointer data)
+queue_data (gpointer data)
 {
 	VideoFfmpeg *video = (VideoFfmpeg *) data;
 	AVFrame *video_frame;
@@ -207,7 +208,7 @@ decoder (gpointer data)
 	memset (&pars, 0, sizeof (pars));
 	
 	if (av_open_input_file (&video->av_format_context, video->filename, NULL, 0, NULL) < 0){
-		g_error ("ERROR: open input file\n");
+		g_error ("ERROR: open input file `%s'\n", video->filename);
 	}
 	if (video->av_format_context == (void *) &rtsp_demuxer){
 		g_error ("ERROR: stream info\n");
@@ -233,8 +234,7 @@ decoder (gpointer data)
 			audio_stream_idx = video->audio_stream_idx;
 
 			cc = video->audio_stream->codec;
-			n = -1;
-			//snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0 /*SND_PCM_NONBLOCK*/);
 			if (n < 0)
 				printf ("Error, can not initialize audio %d\n", video->pcm);
 			else {
@@ -276,7 +276,10 @@ decoder (gpointer data)
 	//
 	g_idle_add (callback_video_inited, video);
 	int frame = 0;
-
+	
+	int audio_left = 0;
+	//int audio_fd = open ("audio.out", O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	
 	while (TRUE){
 		AVPacket *pkt;
 		int ret;
@@ -299,21 +302,56 @@ decoder (gpointer data)
 
 		frame++;
 		g_mutex_lock (video->video_mutex);
-		if (video->pcm != NULL && pkt->stream_index == audio_stream_idx){
-			int frame_size_ptr = sizeof (video->audio_buffer);
-			int decoded_bytes;
-
-			//.	printf ("AUDIO at %d\n", frame);
-			decoded_bytes = avcodec_decode_audio2 (
-				video->audio_stream->codec, (int16_t *) video->audio_buffer, &frame_size_ptr,
-				pkt->data, pkt->size);
-
-			if (decoded_bytes > 0){
-				printf ("Sending the video buffer with %d\n", decoded_bytes);
-				int n = snd_pcm_writei (video->pcm, video->audio_buffer, decoded_bytes);
-				printf ("n=%d %d %d %d\n", n, EBADFD, EPIPE, ESTRPIPE);
-			} else {
-				printf ("decoded bytes=%d\n", decoded_bytes);
+		if (video->pcm != NULL && pkt->stream_index == audio_stream_idx) {
+			int align = audio_left & 0x1;
+			char *audio_buffer = ((char *) video->audio_buffer) + audio_left;
+			int16_t *decode_buffer = (int16_t *) (audio_buffer + align);
+			int decode_size = sizeof (video->audio_buffer) - (audio_left + align);
+			AVCodecContext *audio_codec = video->audio_stream->codec;
+			int ndecoded = 0;
+			
+			if (decode_size >= AVCODEC_MAX_AUDIO_FRAME_SIZE) {
+				ndecoded = avcodec_decode_audio2 (audio_codec, decode_buffer, &decode_size,
+								  pkt->data, pkt->size);
+				printf ("decoded %d bytes\n", ndecoded);
+			}
+			
+			if (ndecoded > 0) {
+				// append the newly decoded buffer to the end of the remining audio
+				// buffer from our previous loop (if re-alignment was required).
+				if ((char *) decode_buffer > audio_buffer)
+					memmove (audio_buffer, decode_buffer, ndecoded);
+				audio_left += ndecoded;
+			}
+			
+			printf ("%d bytes in audio queue\n", audio_left);
+			
+			if (audio_left > 0) {
+				int size = audio_left;// / audio_codec->channels;
+				printf ("playing the audio buffer with %d bytes (%d bytes per channel)\n", audio_left, size);
+				int n = snd_pcm_writei (video->pcm, (int16_t *) video->audio_buffer, size);
+				
+				printf ("n=%d %s\n", n, n < 0 ? strerror (-n) : "");
+				
+				if (n > 0) {
+					//n *= audio_codec->channels;
+					
+					//write (audio_fd, video->audio_buffer, n);
+					
+					audio_left -= n;
+					
+					if (audio_left > 0) {
+						// didn't manage to queue all sound data, save remainder for next iteration
+						memmove (video->audio_buffer, ((char *) video->audio_buffer) + n, audio_left);
+					}
+				} else if (n == -ESTRPIPE) {
+					while ((n = snd_pcm_resume (video->pcm)) == -EAGAIN)
+						sleep (1);
+					if (n < 0)
+						snd_pcm_prepare (video->pcm);
+				} else if (n == -EPIPE) {
+					snd_pcm_prepare (video->pcm);
+				}
 			}
 		} if (pkt->stream_index == video_stream_idx){
 			g_async_queue_push (video->video_frames, pkt);
@@ -546,6 +584,8 @@ video_ffmpeg_new (const char *filename, double x, double y)
 
 VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (filename, x, y)
 {
+	printf ("VideoFfmpeg .ctor. filename = %s\n", filename);
+	
 	video_codec = NULL;
 	video_stream = NULL;
 	audio_stream = NULL;
@@ -570,7 +610,7 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	pipe_channel = g_io_channel_unix_new (pipes [0]);
 	g_io_add_watch (pipe_channel, G_IO_IN, video_ready, this);
 
-	decode_thread_id = g_thread_create (decoder, this, TRUE, NULL);
+	decode_thread_id = g_thread_create (queue_data, this, TRUE, NULL);
 }
 
 Point
