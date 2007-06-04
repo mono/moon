@@ -1,5 +1,9 @@
 2007-06-04  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: remove old no longer used function.
+
+2007-06-04  Jackson Harper  <jackson@ximian.com>
+
 	* shape.cpp: Add new methods to allow shapes to have their
 	properties filled in from text values.
 

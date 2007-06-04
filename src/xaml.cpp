@@ -188,19 +188,6 @@ xaml_create_from_file (const char *xaml_file)
 	return NULL;
 }
 
-int
-xaml_attribute_as_int (const char **attr, const char *name, int def)
-{
-	int i;
-
-	for (i = 0; attr [i]; i += 2) {
-		if (!g_strcasecmp (attr [i], name)) {
-			return (int) strtoll (attr [i + 1], NULL, 10);
-		}
-	}
-	return def;
-}
-
 XamlElementInfo *
 create_canvas_from_element (XamlParserInfo *info, const char *el, const char **attr)
 {
