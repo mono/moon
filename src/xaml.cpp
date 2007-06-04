@@ -77,7 +77,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 			info->top_element = item;
 		} else {
 			item->parent = info->current_element;
-			info->current_element->children = g_list_prepend (info->current_element->children, item);
+			info->current_element->children = g_list_append (info->current_element->children, item);
 
 			if (info->current_element->is_panel) {
 				panel_child_add ((Panel *) info->current_element->item, item->item);
@@ -97,10 +97,10 @@ end_element_handler (void *data, const char *el)
 	if (info->char_data_buffer && info->char_data_buffer->len) {
 		/*
 		 * TODO: set content property
-
+		         - Make sure we aren't just white space
 		 info->current_element->set_content_prop (info->char_data_buffer->str);
 		*/
-		printf ("setting content property:  %s\n", info->char_data_buffer->str);
+		
 		g_string_free (info->char_data_buffer, FALSE);
 		info->char_data_buffer = NULL;
 	}
@@ -311,6 +311,23 @@ create_line_from_element (XamlParserInfo *info, const char *el, const char **att
 	return res;
 }
 
+XamlElementInfo *
+create_ellipse_from_element (XamlParserInfo *info, const char *el, const char **attr)
+{
+	Ellipse *ellipse = ellipse_new ();
+	XamlElementInfo *res = new XamlElementInfo ();
+
+	res->item = ellipse;
+	res->element_name = el;
+	res->instance_name = NULL;
+
+	int count = XML_GetSpecifiedAttributeCount (info->parser);
+	for (int i = 0; attr [i]; i += 2)
+		ellipse->set_prop_from_str (attr [i], attr [i + 1]);
+
+	return res;
+}
+
 void
 xaml_init_element_table ()
 {
@@ -319,5 +336,6 @@ xaml_init_element_table ()
 	g_hash_table_insert (element_table, (char *) "Canvas", GINT_TO_POINTER (create_canvas_from_element));
 	g_hash_table_insert (element_table, (char *) "Rectangle", GINT_TO_POINTER (create_rectangle_from_element));
 	g_hash_table_insert (element_table, (char *) "Line", GINT_TO_POINTER (create_line_from_element));
+	g_hash_table_insert (element_table, (char *) "Ellipse", GINT_TO_POINTER (create_ellipse_from_element));
 	
 }

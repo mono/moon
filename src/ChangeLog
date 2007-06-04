@@ -1,7 +1,8 @@
 2007-06-04  Jackson Harper  <jackson@ximian.com>
 
 	* shape.cpp/h: add ellipse_new
-	- set width/height on ellipse's (ellipsi ?) and draw them.
+	- set width/height on ellipses (ellipsi ?) and draw them.
+	* xaml.cpp: create ellipses, get zorder correct
 
 2007-06-04  Jackson Harper  <jackson@ximian.com>
 
