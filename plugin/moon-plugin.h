@@ -24,6 +24,7 @@
 #include "gtk/gtk.h"
 
 #include "runtime.h"
+#include "shape.h"
 
 #define DEBUG_PLUGIN
 
