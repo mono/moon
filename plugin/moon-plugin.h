@@ -50,7 +50,7 @@ class PluginInstance {
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
 	bool xembed_supported; // XEmbed Extension supported
-
+ 
  public:	
 	PluginInstance (NPP instance, uint16 mode);
 	~PluginInstance ();

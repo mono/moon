@@ -108,6 +108,11 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
+	if (this->container != NULL)
+		gtk_widget_destroy (this->container);
+
+	if (this->surface != NULL)
+		surface_destroy (this->surface);
 }
 
 NPError 

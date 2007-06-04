@@ -1,5 +1,10 @@
 2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.c: Destroy objects on class destructor to prevent browser
+	crashes.
+
+2007-06-03  Everaldo Canuto  <ecanuto@novell.com>
+
 	[Clean up demo and make some class fields private ]
 
 	* moon-plugin-glue.c,
