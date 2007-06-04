@@ -1,3 +1,7 @@
+2007-06-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp, runtime.h: implemented DependencyProperty and DependencyObject.
+
 2007-06-04  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h, animation.cpp: initial pass at some of the

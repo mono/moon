@@ -23,6 +23,8 @@ class EventObject {
 
 class Surface;
 class Brush;
+class DependencyObject;
+class DependencyProperty;
 	
 typedef void (*BrushChangedNotify)(Brush *brush, void *data);
 
@@ -90,6 +92,36 @@ class Collection {
 
 void collection_add    (Collection *collection, void *data);
 void collection_remove (Collection *collection, void *data);
+
+//
+// DependencyObject
+// 
+
+class DependencyObject {
+ public:
+	DependencyObject ();
+	~DependencyObject ();
+	static DependencyProperty* Register (int type, char *name, void *default_value);
+	void SetValue (DependencyProperty *property, void *value);
+	void* GetValue (DependencyProperty *property);
+
+ private:
+	static GHashTable *default_values;
+	GHashTable *current_values;
+};
+
+//
+// DependencyProperty
+//
+class DependencyProperty {
+ public:
+	DependencyProperty () {} ;
+	~DependencyProperty ();
+	DependencyProperty (char *name, void *default_value);
+	char *Name;
+	void *DefaultValue;
+	int Type;
+};
 
 //
 // This guy provide reference counting

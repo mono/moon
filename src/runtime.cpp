@@ -447,6 +447,89 @@ surface_get_drawing_area (Surface *s)
 	return s->drawing_area;
 }
 
+/*
+	DependencyObject
+*/
+
+GHashTable *DependencyObject::default_values = NULL;
+
+void
+DependencyObject::SetValue (DependencyProperty *Property, void *Value)
+{
+	g_hash_table_insert (current_values, Property->Name, Value);
+}
+
+void *
+DependencyObject::GetValue (DependencyProperty *Property)
+{
+	void *value = NULL;
+	GHashTable * table = NULL;
+
+	value = g_hash_table_lookup (current_values, Property->Name);
+
+	if (NULL != value)
+		return value;
+
+	if (NULL == default_values)
+		return NULL;
+
+	table = (GHashTable*) g_hash_table_lookup (default_values, &Property->Type);
+	
+	if (NULL == table)
+		return NULL;
+
+	value = g_hash_table_lookup (table, Property->Name);
+
+	return value;
+}
+
+DependencyObject::DependencyObject ()
+{
+	current_values = g_hash_table_new (g_str_hash, g_str_equal);
+}
+
+DependencyObject::~DependencyObject ()
+{
+	g_hash_table_destroy (current_values);
+}
+
+DependencyProperty *
+DependencyObject::Register (int type, char *name, void *default_value)
+{
+	if (NULL == default_values)
+		default_values = g_hash_table_new (g_int_hash, g_int_equal);
+
+	DependencyProperty *property = new DependencyProperty (name, default_value);
+	property->Type = type;
+	
+	GHashTable *table;
+
+	table = (GHashTable*) g_hash_table_lookup (default_values, &property->Type);
+
+	if (NULL == table) {
+		table = g_hash_table_new (g_str_hash, g_str_equal);
+		g_hash_table_insert (default_values, &property->Type, table);
+	}
+
+	g_hash_table_insert (table, property->Name, property->DefaultValue);
+
+	return property;
+}
+
+/*
+	DependencyProperty
+*/
+DependencyProperty::DependencyProperty (char *name, void *default_value)
+{
+	this->Name = g_strdup (name);
+	this->DefaultValue = default_value;
+}
+
+DependencyProperty::~DependencyProperty ()
+{
+	g_free (Name);
+}
+
 
 // event handlers for c++
 typedef struct {
