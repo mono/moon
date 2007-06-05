@@ -559,7 +559,7 @@ shape_init ()
 {
 	/* Shape fields */
 	Shape::FillProperty = DependencyObject::Register (DependencyObject::SHAPE, "Fill", new Value (0.0));
-	Shape::StretchProperty = DependencyObject::Register (DependencyObject::SHAPE, "tretch", new Value (0.0));
+	Shape::StretchProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stretch", new Value (0.0));
 	Shape::StrokeProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stroke", new Value (0.0));
 	Shape::StrokeDashArrayProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashArray", new Value (0.0));
 	Shape::StrokeDashCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashCap", new Value (0.0));
