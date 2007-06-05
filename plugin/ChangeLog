@@ -1,6 +1,10 @@
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
-	* moon-plugin.cppm: Add runtime init to demo code.
+	* test/index.html: Add script to demo html page.
+
+2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin.cpp: Add runtime init to demo code.
 
 2007-06-04  Everaldo Canuto  <ecanuto@novell.com>
 
