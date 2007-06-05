@@ -264,6 +264,7 @@ class DependencyObject : public Base {
 	DependencyObject ();
 	~DependencyObject ();
 	static DependencyProperty* Register (Type type, char *name, Value *default_value);
+	static DependencyProperty* GetDependencyProperty (Type type, char *name);
 	void SetValue (DependencyProperty *property, Value value);
 	Value *GetValue (DependencyProperty *property);
 

@@ -575,12 +575,32 @@ DependencyObject::DependencyObject ()
 {
 	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
 	events = new EventObject ();
+	this->attached_list = NULL;
 }
 
 DependencyObject::~DependencyObject ()
 {
 	g_hash_table_destroy (current_values);
 	delete events;
+}
+
+DependencyProperty *
+DependencyObject::GetDependencyProperty (DependencyObject::Type type, char *name)
+{
+	GHashTable *table;
+	DependencyProperty *property;
+
+	if (default_values == NULL)
+		return NULL;
+
+	table = (GHashTable*) g_hash_table_lookup (default_values, &type);
+
+	if (table == NULL)
+		return NULL;
+
+	property = (DependencyProperty*) g_hash_table_lookup (table, name);
+
+	return property;	
 }
 
 //
