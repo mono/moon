@@ -1,3 +1,7 @@
+2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin.cppm: Add runtime init to demo code.
+
 2007-06-04  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin/Makefile.am: Generate and install .xpt for install-plugin target.

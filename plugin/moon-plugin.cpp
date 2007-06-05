@@ -23,6 +23,8 @@ static void moon_plugin_demo (Surface *surface)
 {
 	DEBUG ("*** moon_plugin_demo");
 
+	runtime_init ();
+
 	cairo_matrix_t trans;
 
 	Rectangle *r;
