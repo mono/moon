@@ -1,3 +1,25 @@
+2007-06-04  Miguel de Icaza  <miguel@novell.com>
+
+	* ffvideo.cpp: Set audio initialization to zero for now, so we can
+	continue debugging.
+
+	* runtime.cpp (Canvas): override render, in preparation for using
+	attached properties.   I get the feeling am going to regret not
+	keeping the top/left attached properties somewhere else.
+
+	(Value): introduce the discriminating union for values as
+	discussed on irc.
+	
+	(DependencyObject): use lower case name for properties.
+	Take Value * instead of void *, this is so we can represent NULL
+	values (is this a good idea Chris, or do we want to have a
+	Value.Type.NULL enumeration value?
+
+	Update hash table creation to g_free the result on hash table
+	update and removal.
+
+	(Event): Update indentation to be Linux-like instead of GNU like.
+
 2007-06-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Add Poly[line|gon] drawing code and C helper functions 

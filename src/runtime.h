@@ -10,15 +10,15 @@ typedef void (*EventHandler) (gpointer data);
 
 class EventObject {
  public:
-  EventObject ();
-  ~EventObject ();
-
-  void AddEventHandler (char *event_name, EventHandler handler, gpointer data);
-  void RemoveEventHandler (char *event_name, EventHandler handler, gpointer data);
-
-  void EmitEvent (char *event_name);
+	EventObject ();
+	~EventObject ();
+	
+	void AddEventHandler (char *event_name, EventHandler handler, gpointer data);
+	void RemoveEventHandler (char *event_name, EventHandler handler, gpointer data);
+	
+	void EmitEvent (char *event_name);
  private:
-  GHashTable *event_hash;
+	GHashTable *event_hash;
 };
 
 class Surface;
@@ -93,17 +93,43 @@ class Collection {
 void collection_add    (Collection *collection, void *data);
 void collection_remove (Collection *collection, void *data);
 
+struct Value {
+public:
+	enum Kind {
+		INVALID = 0,
+		DOUBLE = 1
+	};
+
+	Kind k;
+	union {
+		double d;
+	} u;
+
+	Value () : k (INVALID) {}
+	
+	Value (double d)
+	{
+		k = DOUBLE;
+		u.d = d;
+	}
+};
+
 //
 // DependencyObject
 // 
 
 class DependencyObject {
  public:
+	enum Type {
+		INVALID = 0,
+		CANVAS,
+	};
+	
 	DependencyObject ();
 	~DependencyObject ();
-	static DependencyProperty* Register (int type, char *name, void *default_value);
-	void SetValue (DependencyProperty *property, void *value);
-	void* GetValue (DependencyProperty *property);
+	static DependencyProperty* Register (Type type, char *name, Value *default_value);
+	void SetValue (DependencyProperty *property, Value value);
+	Value *GetValue (DependencyProperty *property);
 
  private:
 	static GHashTable *default_values;
@@ -117,10 +143,11 @@ class DependencyProperty {
  public:
 	DependencyProperty () {} ;
 	~DependencyProperty ();
-	DependencyProperty (char *name, void *default_value);
-	char *Name;
-	void *DefaultValue;
-	int Type;
+	DependencyProperty (char *name, Value *default_value);
+
+	char *name;
+	Value *default_value;
+	DependencyObject::Type type;
 };
 
 //
@@ -305,7 +332,10 @@ class Canvas : public Panel {
  public:
 	virtual Point getxformorigin () { return Point (0, 0); }
 
-	virtual void set_prop_from_str (const char *pname, const char *vname);	
+	virtual void set_prop_from_str (const char *pname, const char *vname);
+
+	virtual void render (Surface *s, int x, int y, int width, int height);
+	virtual void getbounds ();
 };
 
 //
@@ -316,7 +346,7 @@ class FrameworkElement : public UIElement {
 	double x, y;		// Canvas.TopProperty, Canvas.LeftProperty
 	double w, h;
 
-	FrameworkElement () : x(0), y(0), w(0), h(0) {} 
+	FrameworkElement () : w(0), h(0) {} 
 
 	virtual void set_prop_from_str (const char *prop, const char *value);
 };
@@ -381,7 +411,9 @@ void     surface_repaint   (Surface *s, int x, int y, int width, int height);
 
 void    *surface_get_drawing_area (Surface *s);
 
-
+//
+// XAML
+//
 
 UIElement  *xaml_create_from_file     (const char *filename);
 UIElement  *xaml_create_from_str      (const char *xaml);

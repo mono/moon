@@ -235,6 +235,10 @@ queue_data (gpointer data)
 
 			cc = video->audio_stream->codec;
 			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0 /*SND_PCM_NONBLOCK*/);
+
+			// Set this to NULL to disable audio for now.
+			video->pcm = NULL;
+			n = -1;
 			if (n < 0)
 				printf ("Error, can not initialize audio %d\n", video->pcm);
 			else {

@@ -413,7 +413,27 @@ Canvas::set_prop_from_str (const char *prop, const char *value)
 {
 
 }
+
+void
+Canvas::render (Surface *s, int x, int y, int width, int height)
+{
+	GSList *il;
+	double actual [6];
 	
+	for (il = children.list; il != NULL; il = il->next){
+		UIElement *item = (UIElement *) il->data;
+
+		
+		item->render (s, x, y, width, height);
+	}
+}
+
+void 
+Canvas::getbounds ()
+{
+	Panel::getbounds ();
+}
+
 Surface *
 surface_new (int width, int height)
 {
@@ -454,38 +474,41 @@ surface_get_drawing_area (Surface *s)
 GHashTable *DependencyObject::default_values = NULL;
 
 void
-DependencyObject::SetValue (DependencyProperty *Property, void *Value)
+DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
-	g_hash_table_insert (current_values, Property->Name, Value);
+	Value *copy = g_new (Value, 1);
+	*copy = value;
+
+	g_hash_table_insert (current_values, property->name, copy);
 }
 
-void *
-DependencyObject::GetValue (DependencyProperty *Property)
+Value *
+DependencyObject::GetValue (DependencyProperty *property)
 {
-	void *value = NULL;
+	Value *value = NULL;
 	GHashTable * table = NULL;
 
-	value = g_hash_table_lookup (current_values, Property->Name);
+	value = (Value *) g_hash_table_lookup (current_values, property->name);
 
-	if (NULL != value)
+	if (value != NULL)
 		return value;
 
-	if (NULL == default_values)
+	if (default_values != NULL)
 		return NULL;
 
-	table = (GHashTable*) g_hash_table_lookup (default_values, &Property->Type);
+	table = (GHashTable*) g_hash_table_lookup (default_values, &property->type);
 	
-	if (NULL == table)
+	if (table == NULL)
 		return NULL;
 
-	value = g_hash_table_lookup (table, Property->Name);
+	value = (Value *) g_hash_table_lookup (table, property->name);
 
 	return value;
 }
 
 DependencyObject::DependencyObject ()
 {
-	current_values = g_hash_table_new (g_str_hash, g_str_equal);
+	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
 }
 
 DependencyObject::~DependencyObject ()
@@ -493,25 +516,28 @@ DependencyObject::~DependencyObject ()
 	g_hash_table_destroy (current_values);
 }
 
+//
+// DependencyObject takes ownership of the Value * for default_value
+//
 DependencyProperty *
-DependencyObject::Register (int type, char *name, void *default_value)
+DependencyObject::Register (DependencyObject::Type type, char *name, Value *default_value)
 {
 	if (NULL == default_values)
 		default_values = g_hash_table_new (g_int_hash, g_int_equal);
 
 	DependencyProperty *property = new DependencyProperty (name, default_value);
-	property->Type = type;
+	property->type = type;
 	
 	GHashTable *table;
 
-	table = (GHashTable*) g_hash_table_lookup (default_values, &property->Type);
+	table = (GHashTable*) g_hash_table_lookup (default_values, &property->type);
 
-	if (NULL == table) {
+	if (table == NULL) {
 		table = g_hash_table_new (g_str_hash, g_str_equal);
-		g_hash_table_insert (default_values, &property->Type, table);
+		g_hash_table_insert (default_values, &property->type, table);
 	}
 
-	g_hash_table_insert (table, property->Name, property->DefaultValue);
+	g_hash_table_insert (table, property->name, property->default_value);
 
 	return property;
 }
@@ -519,22 +545,23 @@ DependencyObject::Register (int type, char *name, void *default_value)
 /*
 	DependencyProperty
 */
-DependencyProperty::DependencyProperty (char *name, void *default_value)
+DependencyProperty::DependencyProperty (char *name, Value *default_value)
 {
-	this->Name = g_strdup (name);
-	this->DefaultValue = default_value;
+	this->name = g_strdup (name);
+	this->default_value = default_value;
 }
 
 DependencyProperty::~DependencyProperty ()
 {
-	g_free (Name);
+	g_free (name);
+	if (default_value != NULL)
+		g_free (default_value);
 }
-
 
 // event handlers for c++
 typedef struct {
-  EventHandler func;
-  gpointer data;
+	EventHandler func;
+	gpointer data;
 } EventClosure;
 
 EventObject::EventObject ()
@@ -557,62 +584,75 @@ EventObject::~EventObject ()
 void
 EventObject::AddEventHandler (char *event_name, EventHandler handler, gpointer data)
 {
-  GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
+	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 
-  EventClosure *closure = new EventClosure ();
-  closure->func = handler;
-  closure->data = data;
+	EventClosure *closure = new EventClosure ();
+	closure->func = handler;
+	closure->data = data;
 
-  if (events == NULL) {
-    g_hash_table_insert (event_hash, g_strdup (event_name), g_list_prepend (NULL, closure));
-  }
-  else {
-    g_list_append (events, closure); // not prepending means we don't need to g_hash_table_replace
-  }
+	if (events == NULL) {
+		g_hash_table_insert (event_hash, g_strdup (event_name), g_list_prepend (NULL, closure));
+	}
+	else {
+		g_list_append (events, closure); // not prepending means we don't need to g_hash_table_replace
+	}
 }
 
 void
 EventObject::RemoveEventHandler (char *event_name, EventHandler handler, gpointer data)
 {
-  GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
+	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 
-  if (events == NULL)
-    return;
+	if (events == NULL)
+		return;
 
-  GList *l;
-  for (l = events; l; l = l->next) {
-    EventClosure *closure = (EventClosure*)l->data;
-    if (closure->func == handler && closure->data == data)
-      break;
-  }
+	GList *l;
+	for (l = events; l; l = l->next) {
+		EventClosure *closure = (EventClosure*)l->data;
+		if (closure->func == handler && closure->data == data)
+			break;
+	}
 
-  if (l == NULL) /* we didn't find it */
-    return;
+	if (l == NULL) /* we didn't find it */
+		return;
 
-  g_free (l->data);
-  events = g_list_delete_link (events, l);
+	g_free (l->data);
+	events = g_list_delete_link (events, l);
 
-  if (events == NULL) {
-    /* delete the event */
-    gpointer key, value;
-    g_hash_table_lookup_extended (event_hash, event_name, &key, &value);
-    g_free (key);
-  }
-  else {
-    g_hash_table_replace (event_hash, event_name, events);
-  }
+	if (events == NULL) {
+		/* delete the event */
+		gpointer key, value;
+		g_hash_table_lookup_extended (event_hash, event_name, &key, &value);
+		g_free (key);
+	}
+	else {
+		g_hash_table_replace (event_hash, event_name, events);
+	}
 }
 
 void
 EventObject::EmitEvent (char *event_name)
 {
-  GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
+	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 
-  if (events == NULL)
-    return;
+	if (events == NULL)
+		return;
+	
+	for (GList *l = events; l; l = l->next) {
+		EventClosure *closure = (EventClosure*)l->data;
+		closure->func (closure->data);
+	}
+}
 
-  for (GList *l = events; l; l = l->next) {
-    EventClosure *closure = (EventClosure*)l->data;
-    closure->func (closure->data);
-  }
+void 
+canvas_init ()
+{
+	DependencyObject::Register (DependencyObject::CANVAS, "Top", new Value (0.0));
+	DependencyObject::Register (DependencyObject::CANVAS, "Left", new Value (0.0));
+}
+
+void
+runtime_init ()
+{
+	canvas_init ();
 }
