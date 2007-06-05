@@ -1,3 +1,6 @@
+#ifndef __TRANSFORM_H__
+#define __TRANSFORM_H__
+
 G_BEGIN_DECLS
 
 #include <stdint.h>
@@ -96,3 +99,5 @@ void           matrix_transform_set_matrix (MatrixTransform *t, cairo_matrix_t m
 cairo_matrix_t matrix_transform_get_matrix (MatrixTransform *t);
 
 G_END_DECLS
+
+#endif
