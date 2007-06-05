@@ -1,3 +1,11 @@
+2007-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h: call SetObjectType where we need it.
+
+	* shape.h: same.
+	
+	* geometry.h: same.
+
 2007-06-05  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (item_set_transform): This routine was doing nothing

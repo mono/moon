@@ -279,7 +279,7 @@ class DependencyObject : public Base {
 	void SetObjectType (Type objectType);
 
  private:
-	Type               objectType;
+	Type objectType;
 	static GHashTable *default_values;
 	GHashTable        *current_values;
 
@@ -367,6 +367,7 @@ class UIElement : public DependencyObject {
 		user_xform_origin(0,0),
 		x1 (0), y1(0), x2(0), y2(0)
 		{
+			SetObjectType (DependencyObject::UIELEMENT);
 			cairo_matrix_init_identity (&absolute_xform);
 		}
 	

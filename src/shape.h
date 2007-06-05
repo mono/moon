@@ -40,7 +40,7 @@ class Shape : public FrameworkElement {
 	Shape () : fill (NULL), stroke (NULL), stretch (StretchFill), stroke_dash_cap (PenLineCapFlat), 
 		stroke_dash_offset (0), stroke_end_line_cap (PenLineCapFlat), stroke_line_join (PenLineJoinMiter),
 		stroke_miter_limit (0), stroke_start_line_cap (PenLineCapFlat), stroke_thickness (1), 
-		stroke_dash_array (NULL) {}
+		stroke_dash_array (NULL) { SetObjectType (DependencyObject::SHAPE); }
 
 	//
 	// Overrides from UIElement.
@@ -81,7 +81,7 @@ void shape_set_stroke_dash_array (Shape *shape, double* dashes);
 //
 class Ellipse : public Shape {
  public:
-	Ellipse () { };
+	Ellipse () { SetObjectType (DependencyObject::ELLIPSE); };
 
 	void Draw (Surface *s);
 };
@@ -95,7 +95,7 @@ class Rectangle : public Shape {
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
-	Rectangle () {};
+	Rectangle () { SetObjectType (DependencyObject::RECTANGLE); };
 
 	void Draw (Surface *s);
 
@@ -121,7 +121,7 @@ class Line : public Shape {
 	static DependencyProperty* X2Property;
 	static DependencyProperty* Y2Property;
 
-	Line () : line_x1(0), line_y1(0), line_x2(0), line_y2(0) {};
+	Line () : line_x1(0), line_y1(0), line_x2(0), line_y2(0) { SetObjectType(DependencyObject::LINE); };
 	
 	void Draw (Surface *s);
 
@@ -151,7 +151,7 @@ class Polygon : public Shape {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polygon () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) {};
+	Polygon () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (DependencyObject::POLYGON); };
 
 	void Draw (Surface *s);
 };
@@ -172,7 +172,7 @@ class Polyline : public Shape {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polyline () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) {};
+	Polyline () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (DependencyObject::POLYLINE); };
 
 	void Draw (Surface *s);
 };

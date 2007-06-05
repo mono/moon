@@ -10,12 +10,12 @@ G_BEGIN_DECLS
 //
 // Geometry
 //
-class Geometry {
+class Geometry : public DependencyObject {
  public:
 	FillRule fill_rule;
 	Transform *transform;
 
-	Geometry () : fill_rule (FillRuleEvenOdd) {};
+	Geometry () : fill_rule (FillRuleEvenOdd) { SetObjectType (DependencyObject::GEOMETRY); };
 };
 
 //
@@ -25,7 +25,7 @@ class GeometryGroup : public Geometry {
  public:
 	// GeometryCollection
 
-	GeometryGroup () {};
+	GeometryGroup () { SetObjectType (DependencyObject::GEOMETRYGROUP); };
 };
 GeometryGroup* geometry_group_new ();
 
@@ -37,7 +37,7 @@ class EllipseGeometry : public Geometry {
 	Point center;
 	double radius_x, radius_y;
 
-	EllipseGeometry () {};
+	EllipseGeometry () { SetObjectType (DependencyObject::ELLIPSEGEOMETRY); };
 };
 EllipseGeometry* ellipse_geometry_new ();
 
@@ -48,7 +48,7 @@ class LineGeometry : public Geometry {
  public:
 	Point end, start;
 
-	LineGeometry () {};
+	LineGeometry () { SetObjectType (DependencyObject::LINEGEOMETRY); };
 };
 LineGeometry* line_geometry_new ();
 
@@ -59,7 +59,7 @@ class PathGeometry : public Geometry {
  public:
 	// PathFigureCollection
 
-	PathGeometry () {};
+	PathGeometry () { SetObjectType (DependencyObject::PATHGEOMETRY); };
 };
 PathGeometry* path_geometry_new ();
 
@@ -71,7 +71,7 @@ class RectangleGeometry : public Geometry {
 	double radius_x, radius_y;
 	Rect *rect;
 
-	RectangleGeometry () : radius_x (0), radius_y (0) {};
+	RectangleGeometry () : radius_x (0), radius_y (0) { SetObjectType (DependencyObject::RECTANGLEGEOMETRY); };
 };
 RectangleGeometry* rectangle_geometry_new ();
 
