@@ -56,7 +56,7 @@ class VideoFfmpeg : public Video {
 public:
 	int w, h;
 
-	VideoFfmpeg (const char *filename, double x, double y);
+	VideoFfmpeg (const char *filename);
 	~VideoFfmpeg ();
 
 	// Virtual method overrides
@@ -143,7 +143,7 @@ VideoFfmpeg::getbounds ()
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 
-	cairo_rectangle (s->cairo, x, y, cc->width, cc->height);
+	cairo_rectangle (s->cairo, 0, 0, cc->width, cc->height);
 	cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
 
 	cairo_restore (s->cairo);
@@ -552,9 +552,9 @@ VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
    
-	cairo_set_source_surface (s->cairo, video_cairo_surface, this->x, this->y);
+	cairo_set_source_surface (s->cairo, video_cairo_surface, 0, 0);
 
-	cairo_rectangle (s->cairo, this->x, this->y, this->w, this->h);
+	cairo_rectangle (s->cairo, 0, 0, this->w, this->h);
 
 	cairo_fill (s->cairo);
 
@@ -576,18 +576,18 @@ ffmpeg_init ()
 	}
 }
 Video *
-video_ffmpeg_new (const char *filename, double x, double y)
+video_ffmpeg_new (const char *filename)
 {
 	VideoFfmpeg *video;
 
 	ffmpeg_init ();
 
-	video = new VideoFfmpeg (filename, x, y);
+	video = new VideoFfmpeg (filename);
 
 	return (Video *) video;
 }
 
-VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (filename, x, y)
+VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 {
 	printf ("VideoFfmpeg .ctor. filename = %s\n", filename);
 	
@@ -608,6 +608,7 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	frame_size = 0;
 	micro_to_pts = 0;
 	video_frames_size = 0;
+	audio_frames_size = 0;
 
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
@@ -623,7 +624,7 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 Point
 VideoFfmpeg::getxformorigin ()
 {
-	return Point (x + user_xform_origin.x * w, y + user_xform_origin.y * h);
+	return Point (user_xform_origin.x * w, user_xform_origin.y * h);
 }
 
 VideoFfmpeg::~VideoFfmpeg ()
@@ -650,8 +651,8 @@ VideoFfmpeg::~VideoFfmpeg ()
  *
  */
 Video *
-video_new (const char *filename, double x, double y)
+video_new (const char *filename)
 {
-	return video_ffmpeg_new (filename, x, y);
+	return video_ffmpeg_new (filename);
 }
 

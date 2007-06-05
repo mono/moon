@@ -17,11 +17,9 @@
 #include <stdlib.h>
 #include "runtime.h"
 
-Video::Video (const char *filename, double x, double y)
+Video::Video (const char *filename)
 {
 	this->filename = g_strdup (filename);
-	this->x = x;
-	this->y = y;
 }
 
 Video::~Video ()

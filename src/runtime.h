@@ -387,7 +387,7 @@ class UIElement : public DependencyObject {
 	// 
 	Point   user_xform_origin;	// transformation origin, user set
 
-	// Absolute affine transform
+	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
 
 	//
@@ -420,6 +420,13 @@ class UIElement : public DependencyObject {
 	virtual void set_prop_from_str (const char *pname, const char *vname);
 
 	//
+	// get_xform_for
+	//   Obtains the affine transform for the given child, this is
+	//   implemented by containers
+
+	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
+	
+	//
 	// gencenter:
 	//   Returns the transformation origin based on  of the item and the
 	//   xform_origin
@@ -451,10 +458,6 @@ class Panel : public UIElement {
 	Collection children;
 
 	Panel ();
-
-	virtual void render (Surface *s, int x, int y, int width, int height);
-	virtual void getbounds ();
-	virtual void update_xform ();
 };
 
 // panel_get_collection, exposed to the managed world so it can manipulate the collection
@@ -475,6 +478,8 @@ class Canvas : public Panel {
 
 	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
+	virtual void update_xform ();
+	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
 
 	static DependencyProperty* TopProperty;
 	static DependencyProperty* LeftProperty;
@@ -485,7 +490,6 @@ class Canvas : public Panel {
 //
 class FrameworkElement : public UIElement {
  public:
-	double x, y;		// Canvas.TopProperty, Canvas.LeftProperty
 	double w, h;
 
 	FrameworkElement () : w(0), h(0) {} 
@@ -497,18 +501,17 @@ class FrameworkElement : public UIElement {
 class Video : public UIElement {
 	enum { VIDEO_OK, VIDEO_ERROR_OPEN, VIDEO_ERROR_STREAM_INFO } VideoError;
  public:
-	double x, y;
 	char  *filename;
 	int    error;
 
 	virtual Point getxformorigin () = 0;
 	
-	Video (const char *filename, double x, double y);
+	Video (const char *filename);
 	~Video ();
 };
 
-Video *video_new     (const char *filename, double x, double y);
-void  video_destroy  (Video *video);
+Video *video_new     (const char *filename);
+void   video_destroy (Video *video);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 

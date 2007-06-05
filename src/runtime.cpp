@@ -97,6 +97,13 @@ UIElement::~UIElement ()
 	printf ("FIXME: We should go through all of the attached properties and unref them\n");
 }
 
+void
+UIElement::get_xform_for (UIElement *item, cairo_matrix_t *result)
+{
+	printf ("get_xform_for called on a non-container, you must implement this in your container\n");
+	exit (1);
+}
+
 void 
 item_invalidate (UIElement *item)
 {
@@ -150,8 +157,18 @@ UIElement::update_xform ()
 {
 	cairo_matrix_t user_transform;
 
+	//
+	// What is more important, the space used by 6 doubles,
+	// or the time spent calling the parent (that will call
+	// DependencyObject->GetProperty to get the positions?
+	//
+	// Currently we go for thiner, but if we decide to go
+	// for reduced computation, we should introduce the 
+	// base transform in UIElement that will be updated by the
+	// container on demand
+	//
 	if (parent != NULL)
-		absolute_xform = parent->absolute_xform;
+		parent->get_xform_for (this, &absolute_xform);
 	else
 		cairo_matrix_init_identity (&absolute_xform);
 
@@ -213,26 +230,34 @@ panel_child_remove (Collection *col, void *datum)
 	panel->getbounds ();
 }
 
+void 
+panel_child_add (Panel *panel, UIElement *item)
+{
+	collection_add (&panel->children, item);
+}
+
 Panel::Panel ()
 {
 	children.Setup (panel_child_add, panel_child_remove, this);
 }
 
 void
-Panel::render (Surface *s, int x, int y, int width, int height)
+Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 {
-	GSList *il;
-	double actual [6];
-	
-	for (il = children.list; il != NULL; il = il->next){
-		UIElement *item = (UIElement *) il->data;
+	*result = absolute_xform;
 
-		item->render (s, x, y, width, height);
-	}
+	// Compute left/top if its attached to the item
+	Value *val_top = item->GetValue (Canvas::TopProperty);
+	double top = val_top == NULL ? 0.0 : val_top->u.d;
+
+	Value *val_left = item->GetValue (Canvas::LeftProperty);
+	double left = val_left == NULL ? 0.0 : val_left->u.d;
+		
+	cairo_matrix_translate (result, left, top);
 }
 
 void
-Panel::update_xform ()
+Canvas::update_xform ()
 {
 	UIElement::update_xform ();
 	GSList *il;
@@ -245,7 +270,7 @@ Panel::update_xform ()
 }
 
 void
-Panel::getbounds ()
+Canvas::getbounds ()
 {
 	bool first = TRUE;
 	GSList *il;
@@ -277,12 +302,6 @@ Panel::getbounds ()
 	if (first){
 		x1 = y1 = x2 = y2 = 0;
 	}
-}
-
-void 
-panel_child_add (Panel *panel, UIElement *item)
-{
-	collection_add (&panel->children, item);
 }
 
 void 
@@ -406,12 +425,6 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	}
 }
 
-void 
-Canvas::getbounds ()
-{
-	Panel::getbounds ();
-}
-
 Surface *
 surface_new (int width, int height)
 {
@@ -452,8 +465,8 @@ surface_get_drawing_area (Surface *s)
 GHashTable *DependencyObject::default_values = NULL;
 
 typedef struct {
-  DependencyObject *dob;
-  DependencyProperty *prop;
+	DependencyObject *dob;
+	DependencyProperty *prop;
 } Attachee;
 
 void

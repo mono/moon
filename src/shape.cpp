@@ -21,11 +21,7 @@
 void
 FrameworkElement::set_prop_from_str (const char *prop, const char *value)
 {
-	if (!g_strcasecmp (prop, "canvas.left"))
-		x = strtod (value, NULL);
-	else if (!g_strcasecmp (prop, "canvas.top"))
-		y = strtod (value, NULL);
-	else if (!g_strcasecmp (prop, "width"))
+	if (!g_strcasecmp (prop, "width"))
 		w = strtod (value, NULL);
 	else if (!g_strcasecmp (prop, "height"))
 		h = strtod (value, NULL);
@@ -198,8 +194,8 @@ Ellipse::Draw (Surface *s)
 
 	rx = w / 2;
 	ry = h / 2;
-	cx = x + rx;
-	cy = y + ry;
+	cx = rx;
+	cy = ry;
 
 	cairo_move_to (s->cairo, cx + rx, cy);
 
@@ -251,7 +247,7 @@ Rectangle::Draw (Surface *s)
 			// approximate (quite close) the arc using a bezier curve
 			double c1 = ARC_TO_BEZIER * radius_x;
 			double c2 = ARC_TO_BEZIER * radius_y;
-			cairo_move_to (s->cairo, x + radius_x, y);
+			cairo_move_to (s->cairo, radius_x, 0);
 			cairo_rel_line_to (s->cairo, w - 2 * radius_x, 0.0);
 			cairo_rel_curve_to (s->cairo, c1, 0.0, radius_x, c2, radius_x, radius_y);
 			cairo_rel_line_to (s->cairo, 0, h - 2 * radius_y);
@@ -266,7 +262,7 @@ Rectangle::Draw (Surface *s)
 	}
 
 	// normal rectangle
-	cairo_rectangle (s->cairo, x, y, w, h);
+	cairo_rectangle (s->cairo, 0, 0, w, h);
 }
 
 void
@@ -283,7 +279,7 @@ Rectangle::set_prop_from_str (const char *prop, const char *value)
 Point
 Rectangle::getxformorigin ()
 {
-	return Point (x + w * user_xform_origin.x, y + h * user_xform_origin.y);
+	return Point (w * user_xform_origin.x, h * user_xform_origin.y);
 }
 
 double
@@ -311,11 +307,9 @@ rectangle_set_radius_y (Rectangle *rectangle, double value)
 }
 
 Rectangle *
-rectangle_new (double x, double y, double w, double h)
+rectangle_new (double w, double h)
 {
 	Rectangle *rect = new Rectangle ();
-	rect->x = x;
-	rect->y = y;
 	rect->w = w;
 	rect->h = h;
 	return rect;

@@ -17,6 +17,7 @@ static Rectangle *r;
 static RotateTransform *r_trans;
 static RotateTransform *v_trans;
 static ScaleTransform *s_trans;
+static TranslateTransform *t_trans;
 
 static gboolean
 animate (gpointer data)
@@ -26,7 +27,6 @@ animate (gpointer data)
 
 	rotate_transform_set_angle (r_trans,
 				    rotate_transform_get_angle (r_trans) - 3);
-
 	static double scale_change = -0.02;
 
 	scale_transform_set_scale_x (s_trans,
@@ -38,7 +38,7 @@ animate (gpointer data)
 	    || (scale_change > 0 && scale_transform_get_scale_x (s_trans) > 0.75)) {
 	    scale_change = -scale_change;
 	}
-	
+
 	return TRUE;
 }
 
@@ -67,18 +67,24 @@ main (int argc, char *argv [])
 	r_trans = new RotateTransform ();
 	v_trans = new RotateTransform ();
 	s_trans = new ScaleTransform ();
+	t_trans = new TranslateTransform ();
 
 	Surface *t = surface_new (600, 600);
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 
-	r = rectangle_new (50, 50, 50, 50);
+	r = rectangle_new (50, 50);
+	r->SetValue (Canvas::LeftProperty, Value (50.0));
+	r->SetValue (Canvas::TopProperty, Value (50.0));
+
 	rectangle_set_radius_x (r, 10);
 	rectangle_set_radius_y (r, 20);
 	item_set_render_transform (r, s_trans);
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 
-	Rectangle *r2 = rectangle_new (50, 50, 50, 50);
+	Rectangle *r2 = rectangle_new (50, 50);
+	r2->SetValue (Canvas::LeftProperty, Value (50.0));
+	r2->SetValue (Canvas::TopProperty, Value (50.0));
 	item_set_render_transform (r2, r_trans);
 	shape_set_stroke (r2, new SolidColorBrush (c));
 	panel_child_add (t, r2);
@@ -88,7 +94,7 @@ main (int argc, char *argv [])
 #endif
 
 #ifdef VIDEO_DEMO
-	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);
+	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
 	item_set_render_transform (v, v_trans);
 	item_set_transform_origin (v, Point (1, 1));
 	printf ("Got %d\n", v);
@@ -100,7 +106,9 @@ main (int argc, char *argv [])
 #ifdef VIDEO_DEMO
 	//UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
 	//UIElement *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
-	UIElement *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
+	UIElement *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
+	v2->SetValue (Canvas::LeftProperty, Value (100.0));
+	v2->SetValue (Canvas::TopProperty, Value (100.0));
 	item_set_render_transform (v2, s_trans);
 	panel_child_add (t, v2);
 #endif

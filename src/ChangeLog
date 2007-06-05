@@ -1,3 +1,11 @@
+2007-06-05  Miguel de Icaza  <miguel@novell.com>
+
+	* shape.cpp, ffvideo.cpp, video.cpp: Do not use x, y anymore, we
+	now have an absolute affine set for us beforehand.
+
+	* runtim.cpp: on update_xform call the parent ::get_xform_for to
+	obtain the base affine transform to use.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Use DependencyProperty for properties.
@@ -12,6 +20,9 @@
 	* geometry.h: same.
 
 2007-06-05  Miguel de Icaza  <miguel@novell.com>
+
+	* ffvideo.cpp (VideoFfmpeg): Initialize audio_frames_size, caught
+	by valgrind
 
 	* runtime.cpp (item_set_transform): This routine was doing nothing
 	but doing an invalidate of the region, updating the transform,

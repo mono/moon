@@ -103,11 +103,11 @@ class Rectangle : public Shape {
 
 	virtual Point getxformorigin ();
 };
-Rectangle *rectangle_new  (double x, double y, double w, double h);
-double rectangle_get_radius_x (Rectangle *rectangle);
-void rectangle_set_radius_x (Rectangle *rectangle, double value);
-double rectangle_get_radius_y (Rectangle *rectangle);
-void rectangle_set_radius_y (Rectangle *rectangle, double value);
+Rectangle *rectangle_new          (double w, double h);
+double     rectangle_get_radius_x (Rectangle *rectangle);
+void       rectangle_set_radius_x (Rectangle *rectangle, double value);
+double     rectangle_get_radius_y (Rectangle *rectangle);
+void       rectangle_set_radius_y (Rectangle *rectangle, double value);
 
 //
 // Line class 
