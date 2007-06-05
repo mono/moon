@@ -42,6 +42,13 @@ animate (gpointer data)
 	return TRUE;
 }
 
+static gboolean
+delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
+{
+	gtk_main_quit ();
+	return 1;
+}
+
 int
 main (int argc, char *argv [])
 {
@@ -54,6 +61,7 @@ main (int argc, char *argv [])
 	runtime_init ();
 
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), NULL);
 
 	// Create our objects
 	r_trans = new RotateTransform ();
