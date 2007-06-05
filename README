@@ -7,6 +7,21 @@ part) it should build with a C compiler
 
 This is not likely the final version of this code.
 
+* Dependencies
+
+	ffmpeg, from:
+
+		svn://svn.mplayerhq.hu/ffmpeg/trunk
+		Revision: 9167 is known to work
+
+		svn co -r 9167 svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg
+
+		Then configure/make/make install
+
+	alsa-devel
+		For Audio
+
+	
 * Use of C++
 
 	C++ is only used for the class hierarchy and API entry points
