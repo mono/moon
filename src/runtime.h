@@ -439,8 +439,8 @@ void     item_update_bounds        (UIElement *item);
 void     item_set_transform        (UIElement *item, double *transform);
 void     item_set_transform_origin (UIElement *item, Point p);
 
-void       item_set_render_transform (UIElement *item, Transform *transform);
-Transform *item_get_render_transform (UIElement *item);
+void     item_set_render_transform (UIElement *item, Transform *transform);
+void     item_get_render_affine    (UIElement *item, cairo_matrix_t *result);
 
 //
 // Panel Class

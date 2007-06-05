@@ -120,17 +120,6 @@ item_invalidate (UIElement *item)
 				    (int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
 }
 
-void
-item_set_transform (UIElement *item, double *transform)
-{
-	item_invalidate (item);
-
-	item->update_xform ();
-	item->getbounds ();
-
-	item_invalidate (item);
-}
-
 void 
 item_set_transform_origin (UIElement *item, Point p)
 {
@@ -178,10 +167,10 @@ void
 UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == UIElement::RenderTransformProperty) {
-		cairo_matrix_t trans;
-		Transform *t = item_get_render_transform (this);
-		t->GetTransform (&trans);
-		item_set_transform (this, (double*)&trans);
+		item_invalidate (this);
+		update_xform ();
+		getbounds ();
+		item_invalidate (this);
 	}
 }
 
@@ -189,13 +178,6 @@ void
 item_set_render_transform (UIElement *item, Transform *transform)
 {
 	item->SetValue (UIElement::RenderTransformProperty, transform);
-}
-
-Transform *
-item_get_render_transform (UIElement *item)
-{
-	Value* v = item->GetValue (UIElement::RenderTransformProperty);
-	return v == NULL ? NULL : (Transform*)v->u.dependency_object;
 }
 
 Surface *

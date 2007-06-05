@@ -1,5 +1,11 @@
 2007-06-05  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp (item_set_transform): This routine was doing nothing
+	but doing an invalidate of the region, updating the transform,
+	updating the bounding box and re-invalidating the new area.   Move
+	that logic elsewhere (it was also ignoring the affine parameter
+	anyways). 
+
 	Unify user_xform with the RenderTransform dependency property, now
 	we always have a static absolute transformation in the UIElement. 
 
