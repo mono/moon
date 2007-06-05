@@ -115,10 +115,24 @@ public:
 };
 
 //
+// This guy provide reference counting
+//
+#define BASE_FLOATS 0x80000000
+
+class Base {
+ public:	
+	uint32_t refcount;
+	Base () : refcount(BASE_FLOATS) {}
+};
+
+void base_ref   (Base *base);
+void base_unref (Base *base);
+
+//
 // DependencyObject
 // 
 
-class DependencyObject {
+class DependencyObject : public Base {
  public:
 	enum Type {
 		INVALID = 0,
@@ -149,20 +163,6 @@ class DependencyProperty {
 	Value *default_value;
 	DependencyObject::Type type;
 };
-
-//
-// This guy provide reference counting
-//
-#define BASE_FLOATS 0x80000000
-
-class Base {
- public:	
-	uint32_t refcount;
-	Base () : refcount(BASE_FLOATS) {}
-};
-
-void base_ref   (Base *base);
-void base_unref (Base *base);
 
 class Brush : public Base {
 	GSList *listeners;
@@ -419,6 +419,7 @@ UIElement  *xaml_create_from_file     (const char *filename);
 UIElement  *xaml_create_from_str      (const char *xaml);
 
 
+void runtime_init ();
 G_END_DECLS
 
 #endif

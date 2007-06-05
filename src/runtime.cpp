@@ -423,7 +423,6 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	for (il = children.list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
-		
 		item->render (s, x, y, width, height);
 	}
 }

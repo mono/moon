@@ -1,5 +1,8 @@
 2007-06-04  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.h: Make the "Base" refcounting class the base for
+	DependencyObject. 
+
 	* ffvideo.cpp: Set audio initialization to zero for now, so we can
 	continue debugging.
 
