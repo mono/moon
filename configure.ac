@@ -100,7 +100,6 @@ MOON_CFLAGS=`pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 lib
 MOON_LIBS=`pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`
 
 AC_SUBST(MOON_CFLAGS)
-AC_SUBST(MOON_CXXFLAGS)
 AC_SUBST(MOON_LIBS)
 
 #CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
