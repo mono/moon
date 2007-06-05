@@ -6,15 +6,12 @@ lib_LTLIBRARIES = libmoonplugin.la
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
-	`pkg-config --cflags gtk+-2.0` \
-	`pkg-config --cflags nspr` \
-	`pkg-config --cflags xulrunner-xpcom` \
-	-I/usr/include/X11
+	-I/usr/include/X11 \
+	$(PLUGIN_CFLAGS)
 
 libmoonplugin_la_LDFLAGS = \
-	`pkg-config --libs gtk+-2.0` \
-	`pkg-config --libs nspr` \
-	-L$(top_srcdir)/src/.libs
+	-L$(top_srcdir)/src/.libs \
+	$(PLUGIN_LIBS)
 
 libmoonplugin_la_LIBADD = -lmoon
 

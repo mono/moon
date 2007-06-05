@@ -69,8 +69,29 @@ if test -z $mozilla_nss; then
    exit 1
 fi
 
-CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-CXXFLAGS="$CXXFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+AC_MSG_CHECKING(Mozilla XPCOM pkg-config module name)
+mozilla_xpcom_pcs="xpcom mozilla-xpcom firefox-xpcom xulrunner-xpcom"
+for pc in $mozilla_xpcom_pcs; do
+	if $PKG_CONFIG --exists $pc; then
+		AC_MSG_RESULT($pc)
+		mozilla_xpcom=$pc
+		break;
+	fi
+done
+
+if test -z $mozilla_xpcom; then
+   echo You need to install the Mozilla XPCOM development package.
+   exit 1
+fi
+
+PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
+PLUGIN_LIBS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
+
+AC_SUBST(PLUGIN_CFLAGS)
+AC_SUBST(PLUGIN_LIBS)
+
+CFLAGS="$CFLAGS `pkg-config --cflags x11 gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+CXXFLAGS="$CXXFLAGS `pkg-config --libs x11 gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 
 AC_SUBST(CFLAGS)

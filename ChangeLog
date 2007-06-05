@@ -1,3 +1,11 @@
+2007-06-05  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* configure.ac: Added checks to see which mozilla xpcom .pc file
+	to use and to collect the needed CFLAGS and LIBS for the plugin.
+
+	* plugin/Makefile.am: DOn't reference nspr nor xulrunner-xpcom
+	directly, rely on AB_SUBST() variables from configure.ac
+
 2007-06-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Do proper checks for Mozilla nspr/nss pkg-config
