@@ -1,5 +1,9 @@
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile.am: Add some linker flags, it prevents crash on Epiphany.
+
+2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
+
 	* test/index.html: Add script to demo html page.
 
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>

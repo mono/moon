@@ -6,10 +6,12 @@ INCLUDES = \
 	$(PLUGIN_CFLAGS)
 
 libmoonplugin_la_LDFLAGS = \
+	-avoid-version \
+	-module \
 	-L$(top_srcdir)/src/.libs \
 	$(PLUGIN_LIBS)
 
-libmoonplugin_la_LIBADD = -lmoon
+libmoonplugin_la_LIBADD = -lpthread -lmoon
 
 libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \
