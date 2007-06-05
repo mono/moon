@@ -1,3 +1,9 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.h: Add new ctor for Color(uint). Change UIElement to inherit
+	from DependencyObject.
+	* brush.cpp: Complete named colors (wrt System.Windows.Media.Colors)
+
 2007-06-05  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* ffvideo.cpp (queue_data): If we fail to get an audio codec, then

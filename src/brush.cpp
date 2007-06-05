@@ -27,17 +27,29 @@ SolidColorBrush::SetupBrush (cairo_t *target)
 	cairo_set_source_rgba (target, color.r, color.g, color.b, color.a);
 }
 
+// match System.Windows.Media.Colors properties
 typedef struct {
 	const char *name;
-	const long color;
-} named_brush_t;
+	const unsigned int color;
+} named_colors_t;
 
-named_brush_t named_brushes [] = {
-	{ "red", 0xFFFF0000 },
-	{ "green", 0xFF00FF00 },
-	{ "blue", 0xFF0000FF },
-	{ "black", 0xFF000000 },
-	{ "white", 0xFFFFFFFF },
+named_colors_t named_colors [] = {
+
+	{ "black",		0xFF000000 },
+	{ "blue",		0xFF0000FF },
+	{ "brown",		0xFFA52A2A },
+	{ "cyan",		0xFF00FFFF },
+	{ "darkgray",		0xFFA9A9A9 },
+	{ "gray",		0xFF808080 },
+	{ "green",		0xFF00FF00 },
+	{ "lightgray",		0xFFD3D3D3 },
+	{ "magenta",		0xFFFF00FF },
+	{ "orange",		0xFFFFA500 },
+	{ "purple",		0xFF800080 },
+	{ "red",		0xFFFF0000 },
+	{ "transparent",	0x00FFFFFF },
+	{ "white",		0xFFFFFFFF },
+	{ "yellow",		0xFFFFFF00 },
 	{ NULL, 0 }
 };
 
@@ -95,12 +107,9 @@ solid_brush_from_str (const char *name)
 		/* TODO */
 	}
 
-	for (int i = 0; named_brushes [i].name; i++) {
-		if (!g_strcasecmp (named_brushes [i].name, name)) {
-			Color c = Color (((named_brushes [i].color >> 16) & 0x00FF) / 255.0F,
-					 ((named_brushes [i].color >> 8) & 0x0000FF) / 255.0F,
-					 ((named_brushes [i].color) & 0x000000FF) / 255.0F,
-					 ((named_brushes [i].color >> 24) & 0xFF) / 255.0F);
+	for (int i = 0; named_colors [i].name; i++) {
+		if (!g_strcasecmp (named_colors [i].name, name)) {
+			Color c = Color (named_colors [i].color);
 			return new SolidColorBrush (c);
 		}
 	}

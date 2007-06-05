@@ -58,7 +58,15 @@ struct Rect {
 struct Color {
 	double r, g, b, a;
  public:
-	Color () {}
+	Color () : a(0.0), r(0.0), g(0.0), b(0.0) {}
+
+	Color (unsigned int argb)
+	{
+		a = (argb >> 24) / 255.0f;
+		r = ((argb >> 16) & 0xFF) / 255.0f;
+		g = ((argb >> 8) & 0xFF) / 255.0f;
+		b = (argb & 0xFF) / 255.0f;
+	}
 	
 	Color (double r, double g, double b, double a)
 	{
@@ -342,7 +350,7 @@ enum FillRule {
 //
 // Item class
 //
-class UIElement {
+class UIElement : public DependencyObject {
  public:
 	UIElement () :
 		parent(NULL), flags (0),
