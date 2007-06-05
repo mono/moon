@@ -227,21 +227,22 @@ queue_data (gpointer data)
 
 		switch (stream->codec->codec_type){
 		case CODEC_TYPE_AUDIO:
-			video->audio_codec = avcodec_find_decoder (stream->codec->codec_id);
+			video->audio_stream_idx = i;
+			audio_stream_idx = i;
+			
+#ifdef ENABLE_AUDIO
+			if (!(video->audio_codec = avcodec_find_decoder (stream->codec->codec_id)))
+				break;
+			
 			video->audio_stream = video->av_format_context->streams [i];
 			avcodec_open (video->audio_stream->codec, video->audio_codec);
-			video->audio_stream_idx = i;
-			audio_stream_idx = video->audio_stream_idx;
-
+			
 			cc = video->audio_stream->codec;
-			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0 /*SND_PCM_NONBLOCK*/);
-
-			// Set this to NULL to disable audio for now.
-			video->pcm = NULL;
-			n = -1;
-			if (n < 0)
+			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+			
+			if (n < 0) {
 				printf ("Error, can not initialize audio %d\n", video->pcm);
-			else {
+			} else {
 				snd_pcm_set_params (
 					video->pcm, 
 					SND_PCM_FORMAT_S16, 
@@ -251,7 +252,9 @@ queue_data (gpointer data)
 					1, 0);
 			}
 			break;
-
+#else
+			break;
+#endif /* ENABLE_AUDIO */
 		case CODEC_TYPE_VIDEO:
 			video->video_codec = avcodec_find_decoder (stream->codec->codec_id);
 			video->video_stream = video->av_format_context->streams [i];
@@ -592,7 +595,9 @@ VideoFfmpeg::VideoFfmpeg (const char *filename, double x, double y) : Video (fil
 	
 	video_codec = NULL;
 	video_stream = NULL;
+	audio_codec = NULL;
 	audio_stream = NULL;
+	pcm = NULL;
 	video_rgb_buffer = NULL;
 	video_cairo_surface = NULL;
 	video_scale_context = NULL;
