@@ -2,6 +2,8 @@ bin_PROGRAMS = demo
 
 lib_LTLIBRARIES = libmoon.la
 
+INCLUDES = $(MOON_CFLAGS)
+
 libmoon_la_SOURCES = 	\
 	brush.cpp	\
 	animation.cpp	\
@@ -21,7 +23,7 @@ libmoon_la_SOURCES = 	\
 demo_SOURCES = \
 	demo.cpp
 
-demo_LDADD = -lmoon
+demo_LDADD = -lmoon $(MOON_LIBS)
 
 debug:
 	LD_LIBRARY_PATH=.libs gdb .libs/demo

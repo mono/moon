@@ -90,13 +90,26 @@ PLUGIN_LIBS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
 
-CFLAGS="$CFLAGS `pkg-config --cflags x11 gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-CXXFLAGS="$CXXFLAGS `pkg-config --libs x11 gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+XPIDL=`pkg-config --variable=libdir $mozilla_xpcom`/xpidl
+XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 
-AC_SUBST(CFLAGS)
-AC_SUBST(CXXFLAGS)
-AC_SUBST(LIBS)
+AC_SUBST(XPIDL)
+AC_SUBST(XPFLAGS)
+
+MOON_CFLAGS=`pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`
+MOON_LIBS=`pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`
+
+AC_SUBST(MOON_CFLAGS)
+AC_SUBST(MOON_CXXFLAGS)
+AC_SUBST(MOON_LIBS)
+
+#CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+#CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+#LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+
+#AC_SUBST(CFLAGS)
+#AC_SUBST(CXXFLAGS)
+#AC_SUBST(LIBS)
 
 AC_OUTPUT([
 Makefile

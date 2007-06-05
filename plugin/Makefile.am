@@ -1,7 +1,3 @@
-
-XPIDL=`pkg-config --variable=libdir xulrunner-xpcom`/xpidl
-XPFLAGS=-I `pkg-config --variable=includedir xulrunner-xpcom`
-
 lib_LTLIBRARIES = libmoonplugin.la
 
 INCLUDES = \
