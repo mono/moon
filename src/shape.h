@@ -92,12 +92,10 @@ Ellipse *ellipse_new ();
 // 
 class Rectangle : public Shape {
  public:
-	double radius_x, radius_y;	// for rounded-corner rectangles
-
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
-	Rectangle () : radius_x(0), radius_y(0) {};
+	Rectangle () {};
 
 	void Draw (Surface *s);
 
@@ -106,6 +104,10 @@ class Rectangle : public Shape {
 	virtual Point getxformorigin ();
 };
 Rectangle *rectangle_new  (double x, double y, double w, double h);
+double rectangle_get_radius_x (Rectangle *rectangle);
+void rectangle_set_radius_x (Rectangle *rectangle, double value);
+double rectangle_get_radius_y (Rectangle *rectangle);
+void rectangle_set_radius_y (Rectangle *rectangle, double value);
 
 //
 // Line class 
@@ -119,8 +121,7 @@ class Line : public Shape {
 	static DependencyProperty* X2Property;
 	static DependencyProperty* Y2Property;
 
-	Line (double px1, double py1, double px2, double py2) :
-		line_x1(px1), line_y1(py1), line_x2(px2), line_y2(py2) {};
+	Line () : line_x1(0), line_y1(0), line_x2(0), line_y2(0) {};
 	
 	void Draw (Surface *s);
 
@@ -128,7 +129,15 @@ class Line : public Shape {
 
 	virtual Point getxformorigin ();
 };
-Line *line_new  (double x1, double y1, double x2, double y2);
+Line *line_new  ();
+double line_get_x1 (Line *line);
+void line_set_x1 (Line *line, double value);
+double line_get_y1 (Line *line);
+void line_set_y1 (Line *line, double value);
+double line_get_x2 (Line *line);
+void line_set_x2 (Line *line, double value);
+double line_get_y2 (Line *line);
+void line_set_y2 (Line *line, double value);
 
 //
 // Polygon
@@ -147,6 +156,7 @@ class Polygon : public Shape {
 	void Draw (Surface *s);
 };
 Polygon *polygon_new ();
+FillRule polygon_get_fill_rule (Polygon *polygon);
 void polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule);
 void polygon_set_points (Polygon *polygon, Point* points, int count);
 
@@ -167,6 +177,7 @@ class Polyline : public Shape {
 	void Draw (Surface *s);
 };
 Polyline *polyline_new ();
+FillRule polyline_get_fill_rule (Polyline *polyline);
 void polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule);
 void polyline_set_points (Polyline *polyline, Point* points, int count);
 

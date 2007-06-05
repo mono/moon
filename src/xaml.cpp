@@ -360,7 +360,7 @@ create_rectangle_from_element (XamlParserInfo *info, const char *el, const char 
 XamlElementInfo *
 create_line_from_element (XamlParserInfo *info, const char *el, const char **attr)
 {
-	Line *line = line_new (0, 0, 0, 0);
+	Line *line = line_new ();
 	XamlElementInfo *res = new XamlElementInfo ();
 
 	res->item = line;

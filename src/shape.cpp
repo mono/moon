@@ -245,32 +245,38 @@ DependencyProperty* Rectangle::RadiusYProperty;
 void
 Rectangle::Draw (Surface *s)
 {
-	if ((radius_x != 0) && (radius_y != 0)) {
-		// approximate (quite close) the arc using a bezier curve
-		double c1 = ARC_TO_BEZIER * radius_x;
-		double c2 = ARC_TO_BEZIER * radius_y;
-		cairo_move_to (s->cairo, x + radius_x, y);
-		cairo_rel_line_to (s->cairo, w - 2 * radius_x, 0.0);
-		cairo_rel_curve_to (s->cairo, c1, 0.0, radius_x, c2, radius_x, radius_y);
-		cairo_rel_line_to (s->cairo, 0, h - 2 * radius_y);
-		cairo_rel_curve_to (s->cairo, 0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
-		cairo_rel_line_to (s->cairo, -w + 2 * radius_x, 0);
-		cairo_rel_curve_to (s->cairo, -c1, 0, -radius_x, -c2, -radius_x, -radius_y);
-		cairo_rel_line_to (s->cairo, 0, -h + 2 * radius_y);
-		cairo_rel_curve_to (s->cairo, 0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
-		cairo_close_path (s->cairo);
-	} else {
-		cairo_rectangle (s->cairo, x, y, w, h);
+	double radius_x = rectangle_get_radius_x (this);
+	if (radius_x != 0) {
+		double radius_y = rectangle_get_radius_y (this);
+		if (radius_y != 0) {
+			// approximate (quite close) the arc using a bezier curve
+			double c1 = ARC_TO_BEZIER * radius_x;
+			double c2 = ARC_TO_BEZIER * radius_y;
+			cairo_move_to (s->cairo, x + radius_x, y);
+			cairo_rel_line_to (s->cairo, w - 2 * radius_x, 0.0);
+			cairo_rel_curve_to (s->cairo, c1, 0.0, radius_x, c2, radius_x, radius_y);
+			cairo_rel_line_to (s->cairo, 0, h - 2 * radius_y);
+			cairo_rel_curve_to (s->cairo, 0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
+			cairo_rel_line_to (s->cairo, -w + 2 * radius_x, 0);
+			cairo_rel_curve_to (s->cairo, -c1, 0, -radius_x, -c2, -radius_x, -radius_y);
+			cairo_rel_line_to (s->cairo, 0, -h + 2 * radius_y);
+			cairo_rel_curve_to (s->cairo, 0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
+			cairo_close_path (s->cairo);
+			return;
+		}
 	}
+
+	// normal rectangle
+	cairo_rectangle (s->cairo, x, y, w, h);
 }
 
 void
 Rectangle::set_prop_from_str (const char *prop, const char *value)
 {
 	if (!g_strcasecmp (prop, "radiusx"))
-		radius_x = strtod (value, NULL);
+		rectangle_set_radius_x (this, strtod (value, NULL));
 	else if (!g_strcasecmp (prop, "radiusy"))
-		radius_y = strtod (value, NULL);
+		rectangle_set_radius_y (this, strtod (value, NULL));
 	else
 		Shape::set_prop_from_str (prop, value);
 }
@@ -279,6 +285,30 @@ Point
 Rectangle::getxformorigin ()
 {
 	return Point (x + w * user_xform_origin.x, y + h * user_xform_origin.y);
+}
+
+double
+rectangle_get_radius_x (Rectangle *rectangle)
+{
+	return rectangle->GetValue (Rectangle::RadiusXProperty)->u.d;
+}
+
+void
+rectangle_set_radius_x (Rectangle *rectangle, double value)
+{
+	rectangle->SetValue (Rectangle::RadiusXProperty, Value (value));
+}
+
+double
+rectangle_get_radius_y (Rectangle *rectangle)
+{
+	return rectangle->GetValue (Rectangle::RadiusYProperty)->u.d;
+}
+
+void
+rectangle_set_radius_y (Rectangle *rectangle, double value)
+{
+	rectangle->SetValue (Rectangle::RadiusYProperty, Value (value));
 }
 
 Rectangle *
@@ -304,21 +334,21 @@ DependencyProperty* Line::Y2Property;
 void
 Line::Draw (Surface *s)
 {
-	cairo_move_to (s->cairo, line_x1, line_y1);
-	cairo_line_to (s->cairo, line_x2, line_y2);
+	cairo_move_to (s->cairo, line_get_x1 (this), line_get_y1 (this));
+	cairo_line_to (s->cairo, line_get_x2 (this), line_get_y2 (this));
 }
 
 void
 Line::set_prop_from_str (const char *prop, const char *value)
 {
 	if (!g_strcasecmp (prop, "x1"))
-		line_x1 = strtod (value, NULL);
+		line_set_x1 (this, strtod (value, NULL));
 	else if (!g_strcasecmp (prop, "y1"))
-		line_y1 = strtod (value, NULL);
+		line_set_y1 (this, strtod (value, NULL));
 	else if (!g_strcasecmp (prop, "x2"))
-		line_x2 = strtod (value, NULL);
+		line_set_x2 (this, strtod (value, NULL));
 	else if (!g_strcasecmp (prop, "y2"))
-		line_y2 = strtod (value, NULL);
+		line_set_y2 (this, strtod (value, NULL));
 	else
 		Shape::set_prop_from_str (prop, value);
 }
@@ -326,14 +356,64 @@ Line::set_prop_from_str (const char *prop, const char *value)
 Point
 Line::getxformorigin ()
 {
-	return Point (line_x1 + (line_x2-line_x1) * user_xform_origin.x, 
-		      line_y1 + (line_y2-line_y1) * user_xform_origin.y);
+	double x1 = line_get_x1 (this);
+	double y1 = line_get_y1 (this);
+	return Point (x1 + (line_get_x2 (this)- x1) * user_xform_origin.x, 
+		      y1 + (line_get_y2 (this) - y1) * user_xform_origin.y);
+}
+
+double
+line_get_x1 (Line *line)
+{
+	return line->GetValue (Line::X1Property)->u.d;
+}
+
+void
+line_set_x1 (Line *line, double value)
+{
+	line->SetValue (Line::X1Property, Value (value));
+}
+
+double
+line_get_y1 (Line *line)
+{
+	return line->GetValue (Line::Y1Property)->u.d;
+}
+
+void
+line_set_y1 (Line *line, double value)
+{
+	line->SetValue (Line::Y1Property, Value (value));
+}
+
+double
+line_get_x2 (Line *line)
+{
+	return line->GetValue (Line::X2Property)->u.d;
+}
+
+void
+line_set_x2 (Line *line, double value)
+{
+	line->SetValue (Line::X2Property, Value (value));
+}
+
+double
+line_get_y2 (Line *line)
+{
+	return line->GetValue (Line::Y2Property)->u.d;
+}
+
+void
+line_set_y2 (Line *line, double value)
+{
+	line->SetValue (Line::Y2Property, Value (value));
 }
 
 Line *
-line_new (double x1, double y1, double x2, double y2)
+line_new ()
 {
-	return new Line (x1, y1, x2, y2);
+	return new Line ();
 }
 
 //
@@ -365,10 +445,16 @@ Polygon::Draw (Surface *s)
 	cairo_close_path (s->cairo);
 }
 
+FillRule
+polygon_get_fill_rule (Polygon *polygon)
+{
+	return (FillRule) polygon->GetValue (Polygon::FillRuleProperty)->u.i32;
+}
+
 void
 polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule)
 {
-	polygon->fill_rule = fill_rule;
+	polygon->SetValue (Polygon::FillRuleProperty, Value (fill_rule));
 }
 
 void
@@ -407,10 +493,16 @@ Polyline::Draw (Surface *s)
 	}
 }
 
+FillRule
+polyline_get_fill_rule (Polyline *polyline)
+{
+	return (FillRule) polyline->GetValue (Polyline::FillRuleProperty)->u.i32;
+}
+
 void
 polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule)
 {
-	polyline->fill_rule = fill_rule;
+	polyline->SetValue (Polyline::FillRuleProperty, Value (fill_rule));
 }
 
 void
@@ -485,17 +577,17 @@ shape_init ()
 	/* Line fields */
 	Line::X1Property = DependencyObject::Register (DependencyObject::LINE, "X1", new Value (0.0));
 	Line::Y1Property = DependencyObject::Register (DependencyObject::LINE, "Y1", new Value (0.0));
-	Line::X2Property = DependencyObject::Register (DependencyObject::LINE, "X1", new Value (0.0));
-	Line::Y2Property = DependencyObject::Register (DependencyObject::LINE, "Y1", new Value (0.0));
+	Line::X2Property = DependencyObject::Register (DependencyObject::LINE, "X2", new Value (0.0));
+	Line::Y2Property = DependencyObject::Register (DependencyObject::LINE, "Y2", new Value (0.0));
 
 	/* Polygon fields */
 	Polygon::FillRuleProperty = DependencyObject::Register (DependencyObject::POLYGON, "Fill", new Value (FillRuleEvenOdd));
-	Polygon::PointsProperty = DependencyObject::Register (DependencyObject::POLYGON, "Points", new Value (NULL));
+	Polygon::PointsProperty = DependencyObject::Register (DependencyObject::POLYGON, "Points", new Value ());
 
 	/* Polyline fields */
 	Polyline::FillRuleProperty = DependencyObject::Register (DependencyObject::POLYLINE, "Fill", new Value (FillRuleEvenOdd));
-	Polyline::PointsProperty = DependencyObject::Register (DependencyObject::POLYLINE, "Points", new Value (NULL));
+	Polyline::PointsProperty = DependencyObject::Register (DependencyObject::POLYLINE, "Points", new Value ());
 
 	/* Path fields */
-	Path::DataProperty = DependencyObject::Register (DependencyObject::PATH, "DATA", new Value (NULL));
+	Path::DataProperty = DependencyObject::Register (DependencyObject::PATH, "Data", new Value ());
 }

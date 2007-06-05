@@ -1,3 +1,9 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* demo.cpp: Updated to use rectangle_set_radius_[x|y]
+	* shape.cpp|h: Add [get|set]ter functions for Line and Rectangle
+	* xaml.cpp: Updated for API change.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.h: Add new ctor for Color(uint). Change UIElement to inherit

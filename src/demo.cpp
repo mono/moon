@@ -72,8 +72,8 @@ main (int argc, char *argv [])
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 
 	r = rectangle_new (50, 50, 50, 50);
-	r->radius_x = 10;
-	r->radius_y = 20;
+	rectangle_set_radius_x (r, 10);
+	rectangle_set_radius_y (r, 20);
 	item_set_render_transform (r, s_trans);
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
