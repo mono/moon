@@ -29,7 +29,9 @@ static void moon_plugin_demo (Surface *surface)
 
 	Rectangle *r;
 
-	r = rectangle_new (50, 50, 100, 100);
+	r = rectangle_new (100, 100);
+	r->SetValue (Canvas::LeftProperty, Value (50.0));
+	r->SetValue (Canvas::TopProperty, Value (50.0));
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 	cairo_matrix_init_rotate (&trans, 0.4);

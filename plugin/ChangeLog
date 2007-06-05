@@ -1,3 +1,7 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* moon-plugin.cpp: Fix API change for Rectangle.
+
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
 	* moon-plugin-glue.cpp: Splited in plugin-glue.cpp and plugin-entry.cpp.
