@@ -1,5 +1,10 @@
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin-glue.cpp: Splited in plugin-glue.cpp and plugin-entry.cpp.
+	* plugin-glue.cpp: Fix 'undefined symbol' creating NPP_SetValueX.
+
+2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
+
 	* Makefile.am: Add some linker flags, it prevents crash on Epiphany.
 
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>

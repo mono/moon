@@ -1,5 +1,5 @@
 /*
- * moon-plugin-glue.cpp: MoonLight browser plugin.
+ * plugin-entry.cpp: MoonLight browser plugin.
  *
  * Author:
  *   Everaldo Canuto (everaldo@novell.com)
@@ -13,21 +13,22 @@
 #include <stdio.h>
 #include "npapi.h"
 #include "npupp.h"
-#include "moon-plugin.h"
 
 static NPNetscapeFuncs MozillaFuncs; // Global function table
 
-/**
- * Wrapper functions
- */
+// TODO: Just to fix NPN->NPP issue, must be checked later.
+NPError NPP_SetValueX (NPP instance, NPPVariable variable, void *value);
+
+/*** Wrapper functions ********************************************************/
+
 void
 NPN_Version (int* plugin_major, int* plugin_minor, int* netscape_major, int* netscape_minor)
 {
-    *plugin_major = NP_VERSION_MAJOR;
-    *plugin_minor = NP_VERSION_MINOR;
+	*plugin_major = NP_VERSION_MAJOR;
+	*plugin_minor = NP_VERSION_MINOR;
 
-    *netscape_major = MozillaFuncs.version >> 8;
-    *netscape_minor = MozillaFuncs.version & 0xFF;
+	*netscape_major = MozillaFuncs.version >> 8;
+	*netscape_minor = MozillaFuncs.version & 0xFF;
 }
 
 NPError
@@ -108,17 +109,20 @@ NPN_MemAlloc (uint32 size)
 	return CallNPN_MemAllocProc (MozillaFuncs.memalloc, size);
 }
 
-void NPN_MemFree (void* ptr)
+void
+NPN_MemFree (void* ptr)
 {
 	CallNPN_MemFreeProc (MozillaFuncs.memfree, ptr);
 }
 
-uint32 NPN_MemFlush (uint32 size)
+uint32
+NPN_MemFlush (uint32 size)
 {
 	return CallNPN_MemFlushProc (MozillaFuncs.memflush, size);
 }
 
-void NPN_ReloadPlugins (NPBool reloadPages)
+void
+NPN_ReloadPlugins (NPBool reloadPages)
 {
 	CallNPN_ReloadPluginsProc (MozillaFuncs.reloadplugins, reloadPages);
 }
@@ -141,20 +145,22 @@ NPN_ForceRedraw (NPP instance)
 	CallNPN_ForceRedrawProc (MozillaFuncs.forceredraw, instance);
 }
 
-void NPN_PushPopupsEnabledState (NPP instance, NPBool enabled)
+void
+NPN_PushPopupsEnabledState (NPP instance, NPBool enabled)
 {
 	CallNPN_PushPopupsEnabledStateProc (MozillaFuncs.pushpopupsenabledstate, instance, enabled);
 }
 
-void NPN_PopPopupsEnabledState (NPP instance)
+void
+NPN_PopPopupsEnabledState (NPP instance)
 {
 	CallNPN_PopPopupsEnabledStateProc (MozillaFuncs.poppopupsenabledstate, instance);
 }
 
-/**
- * NPRuntime support
- */
-NPIdentifier NPN_GetStringIdentifier (const NPUTF8 *name)
+/*** NPRuntime support ********************************************************/
+
+NPIdentifier
+NPN_GetStringIdentifier (const NPUTF8 *name)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -163,14 +169,16 @@ NPIdentifier NPN_GetStringIdentifier (const NPUTF8 *name)
     return NULL;
 }
 
-void NPN_GetStringIdentifiers (const NPUTF8 **names, int32_t nameCount, NPIdentifier *identifiers)
+void
+NPN_GetStringIdentifiers (const NPUTF8 **names, int32_t nameCount, NPIdentifier *identifiers)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
 		CallNPN_GetStringIdentifiersProc (MozillaFuncs.getstringidentifiers, names, nameCount, identifiers);
 }
 
-NPIdentifier NPN_GetIntIdentifier (int32_t intid)
+NPIdentifier
+NPN_GetIntIdentifier (int32_t intid)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -179,7 +187,8 @@ NPIdentifier NPN_GetIntIdentifier (int32_t intid)
     return NULL;
 }
 
-bool NPN_IdentifierIsString (NPIdentifier identifier)
+bool
+NPN_IdentifierIsString (NPIdentifier identifier)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -188,7 +197,8 @@ bool NPN_IdentifierIsString (NPIdentifier identifier)
     return false;
 }
 
-NPUTF8 *NPN_UTF8FromIdentifier (NPIdentifier identifier)
+NPUTF8
+*NPN_UTF8FromIdentifier (NPIdentifier identifier)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -197,7 +207,8 @@ NPUTF8 *NPN_UTF8FromIdentifier (NPIdentifier identifier)
     return NULL;
 }
 
-int32_t NPN_IntFromIdentifier (NPIdentifier identifier)
+int32_t
+NPN_IntFromIdentifier (NPIdentifier identifier)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -206,7 +217,8 @@ int32_t NPN_IntFromIdentifier (NPIdentifier identifier)
     return 0;
 }
 
-NPObject *NPN_CreateObject (NPP instance, NPClass *aClass)
+NPObject
+*NPN_CreateObject (NPP instance, NPClass *aClass)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -214,7 +226,8 @@ NPObject *NPN_CreateObject (NPP instance, NPClass *aClass)
 	return NULL;
 }
 
-NPObject *NPN_RetainObject (NPObject *npobj)
+NPObject
+*NPN_RetainObject (NPObject *npobj)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -222,14 +235,16 @@ NPObject *NPN_RetainObject (NPObject *npobj)
 	return NULL;
 }
 
-void NPN_ReleaseObject (NPObject *npobj)
+void
+NPN_ReleaseObject (NPObject *npobj)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
 		CallNPN_ReleaseObjectProc (MozillaFuncs.releaseobject, npobj);
 }
 
-bool NPN_Invoke (NPP instance, NPObject *npobj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result)
+bool
+NPN_Invoke (NPP instance, NPObject *npobj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -238,7 +253,8 @@ bool NPN_Invoke (NPP instance, NPObject *npobj, NPIdentifier methodName, const N
     return false;
 }
 
-bool NPN_InvokeDefault (NPP instance, NPObject *npobj, const NPVariant *args, uint32_t argCount, NPVariant *result)
+bool
+NPN_InvokeDefault (NPP instance, NPObject *npobj, const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -247,7 +263,8 @@ bool NPN_InvokeDefault (NPP instance, NPObject *npobj, const NPVariant *args, ui
     return false;
 }
 
-bool NPN_Evaluate (NPP instance, NPObject *npobj, NPString *script, NPVariant *result)
+bool
+NPN_Evaluate (NPP instance, NPObject *npobj, NPString *script, NPVariant *result)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -256,7 +273,8 @@ bool NPN_Evaluate (NPP instance, NPObject *npobj, NPString *script, NPVariant *r
     return false;
 }
 
-bool NPN_GetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, NPVariant *result)
+bool
+NPN_GetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, NPVariant *result)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -265,7 +283,8 @@ bool NPN_GetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, 
     return false;
 }
 
-bool NPN_SetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, const NPVariant *value)
+bool
+NPN_SetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, const NPVariant *value)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -274,7 +293,8 @@ bool NPN_SetProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName, 
     return false;
 }
 
-bool NPN_RemoveProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName)
+bool
+NPN_RemoveProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -283,7 +303,8 @@ bool NPN_RemoveProperty (NPP instance, NPObject *npobj, NPIdentifier propertyNam
     return false;
 }
 
-bool NPN_HasProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName)
+bool
+NPN_HasProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -292,7 +313,8 @@ bool NPN_HasProperty (NPP instance, NPObject *npobj, NPIdentifier propertyName)
     return false;
 }
 
-bool NPN_HasMethod (NPP instance, NPObject *npobj, NPIdentifier methodName)
+bool
+NPN_HasMethod (NPP instance, NPObject *npobj, NPIdentifier methodName)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
@@ -301,227 +323,34 @@ bool NPN_HasMethod (NPP instance, NPObject *npobj, NPIdentifier methodName)
     return false;
 }
 
-void NPN_ReleaseVariantValue (NPVariant *variant)
+void
+NPN_ReleaseVariantValue (NPVariant *variant)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
 		CallNPN_ReleaseVariantValueProc (MozillaFuncs.releasevariantvalue, variant);
 }
 
-void NPN_SetException (NPObject *npobj, const NPUTF8 *message)
+void
+NPN_SetException (NPObject *npobj, const NPUTF8 *message)
 {
 	int navMinorVers = MozillaFuncs.version & 0xFF;
 	if (navMinorVers >= 14)
 		CallNPN_SetExceptionProc (MozillaFuncs.setexception, npobj, message);
 }
 
-/**
- * Plugin functions
- */
-NPError 
-plugin_new (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
-{
-	DEBUG ("plugin_new");
+/*** These functions are located automagically by mozilla *********************/
 
-	PluginInstance *plugin = new PluginInstance (instance, mode);
-
-	if (!instance)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	instance->pdata = NPN_MemAlloc (sizeof (PluginInstance));
-
-	plugin = (PluginInstance*) instance->pdata;
-
-	if (plugin == NULL) 
-		return NPERR_OUT_OF_MEMORY_ERROR;
-
-	memset (plugin, 0, sizeof (PluginInstance));
-
-	return NPERR_NO_ERROR;
-}
-
-NPError 
-plugin_destroy (NPP instance, NPSavedData** save)
-{
-	DEBUG ("plugin_destroy");
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	delete plugin;
-
-	return NPERR_NO_ERROR;
-}
-
-NPError 
-plugin_get_value (NPP instance, NPPVariable variable, void *result)
-{
-	DEBUG ("plugin_get_value %d (%x)", variable, variable);
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->GetValue (variable, result);
-}
-
-NPError 
-plugin_set_value (NPP instance, NPPVariable variable, void *value)
-{
-	DEBUG ("plugin_set_value %d (%x)", variable, value);
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->SetValue (variable, value);
-}
-
-NPError 
-plugin_set_window (NPP instance, NPWindow* window)
-{
-	DEBUG ("plugin_set_window %d %d", window->width, window->height);
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->SetWindow (window);
-}
-
-NPError
-plugin_new_stream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
-{
-	DEBUG ("plugin_new_stream");
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->NewStream (type, stream, seekable, stype);
-}
-
-void
-plugin_stream_as_file (NPP instance, NPStream* stream, const char* fname)
-{
-	DEBUG ("plugin_stream_as_file");
-
-	if (instance == NULL)
-		return;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	plugin->StreamAsFile (stream, fname);
-}
-
-NPError
-plugin_destroy_stream (NPP instance, NPStream* stream, NPError reason)
-{
-	DEBUG ("plugin_destroy_stream");
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->DestroyStream (stream, reason);
-}
-
-int32
-plugin_write_ready (NPP instance, NPStream* stream)
-{
-	DEBUG ("plugin_write_ready");
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	NPN_DestroyStream (instance, stream, NPRES_DONE);
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->WriteReady (stream);
-}
-
-int32
-plugin_write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer)
-{
-	DEBUG ("plugin_write");
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	NPN_DestroyStream (instance, stream, NPRES_DONE);
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->Write (stream, offset, len, buffer);
-}
-
-void
-plugin_url_notify (NPP instance, const char* url, NPReason reason, void* notifyData)
-{
-	DEBUG ("plugin_url_notify");
-
-	if (instance == NULL)
-		return;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	plugin->UrlNotify (url, reason, notifyData);
-}
-
-void
-plugin_print (NPP instance, NPPrint* platformPrint)
-{
-	DEBUG ("plugin_print");
-
-	if (instance == NULL)
-		return;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	plugin->Print (platformPrint);
-}
-
-int16 
-plugin_handle_event (NPP instance, void* event)
-{
-	DEBUG ("*** plugin_handle_event (not implemented)");
-
-	if (instance == NULL)
-		return NPERR_INVALID_INSTANCE_ERROR;
-
-	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	return plugin->EventHandle (event);
-}
-
-/**
- * These functions are located automagically by mozilla
- */
 NPError
 NP_GetValue (void* future, NPPVariable variable, void *result)
 {
-	DEBUG ("NP_GetValue %d (%x)", variable, variable);
-
-	NPError err = NPERR_NO_ERROR;
-
-	switch (variable) {
-		case NPPVpluginNameString:
-			*((char **)result) = PLUGIN_NAME;
-			break;
-		case NPPVpluginDescriptionString:
-			*((char **)result) = PLUGIN_DESCRIPTION;
-			break;
-		case NPPVpluginNeedsXEmbed:
-			*((PRBool *)result) = PR_TRUE;
-			break;
-		default:
-			err = NPERR_GENERIC_ERROR;
-	}
-
-	return err;
+	return NPP_GetValue (NULL, variable, result);
 }
 
 char *
 NP_GetMIMEDescription (void)
 {
-	DEBUG ("NP_GetMIMEDescription");
-    return (MIME_TYPES_HANDLED);
+	return NPP_GetMIMEDescription ();
 }
 
 NPError
@@ -530,8 +359,6 @@ NP_Initialize (NPNetscapeFuncs * mozilla_funcs, NPPluginFuncs * plugin_funcs)
 	NPError err = NPERR_NO_ERROR;
 	NPBool supportsXEmbed = PR_FALSE;
 	NPNToolkitType toolkit = (NPNToolkitType) 0;
-
-	DEBUG ("NP_Initialize");
 
 	/* XEMBED? */
 	err = CallNPN_GetValueProc (mozilla_funcs->getvalue, NULL,
@@ -584,9 +411,7 @@ NP_Initialize (NPNetscapeFuncs * mozilla_funcs, NPPluginFuncs * plugin_funcs)
 	MozillaFuncs.pushpopupsenabledstate = mozilla_funcs->pushpopupsenabledstate;
 	MozillaFuncs.poppopupsenabledstate  = mozilla_funcs->poppopupsenabledstate;
 
-	int navMinorVers = mozilla_funcs->version & 0xFF;
-
-	if (navMinorVers >= 14 )
+	if ((mozilla_funcs->version & 0xFF) >= 14 )
 	{   
 		// NPRuntime support
 		MozillaFuncs.getstringidentifier  = mozilla_funcs->getstringidentifier;
@@ -611,33 +436,29 @@ NP_Initialize (NPNetscapeFuncs * mozilla_funcs, NPPluginFuncs * plugin_funcs)
 	}
 
 	/* Set up the plugin function table */
-	plugin_funcs->size          = sizeof (NPPluginFuncs);
 	plugin_funcs->version       = (NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR;
-	plugin_funcs->newp          = NewNPP_NewProc (plugin_new);
-	plugin_funcs->destroy       = NewNPP_DestroyProc (plugin_destroy);
-	plugin_funcs->getvalue      = NewNPP_GetValueProc (plugin_get_value);
-	plugin_funcs->setvalue      = NewNPP_SetValueProc (plugin_set_value);
-	plugin_funcs->setwindow     = NewNPP_SetWindowProc (plugin_set_window);
-	plugin_funcs->newstream     = NewNPP_NewStreamProc (plugin_new_stream);
-	plugin_funcs->asfile        = NewNPP_StreamAsFileProc (plugin_stream_as_file);
-	plugin_funcs->destroystream = NewNPP_DestroyStreamProc (plugin_destroy_stream);
-	plugin_funcs->writeready    = NewNPP_WriteReadyProc (plugin_write_ready);
-	plugin_funcs->write         = NewNPP_WriteProc (plugin_write);
-	plugin_funcs->print         = NewNPP_PrintProc (plugin_print);
-	plugin_funcs->urlnotify     = NewNPP_URLNotifyProc (plugin_url_notify);
-	plugin_funcs->event         = NewNPP_HandleEventProc (plugin_handle_event);
+	plugin_funcs->size          = sizeof (NPPluginFuncs);
+	plugin_funcs->newp          = NewNPP_NewProc(NPP_New);
+	plugin_funcs->destroy       = NewNPP_DestroyProc(NPP_Destroy);
+	plugin_funcs->setwindow     = NewNPP_SetWindowProc(NPP_SetWindow);
+	plugin_funcs->newstream     = NewNPP_NewStreamProc(NPP_NewStream);
+	plugin_funcs->destroystream = NewNPP_DestroyStreamProc(NPP_DestroyStream);
+	plugin_funcs->asfile        = NewNPP_StreamAsFileProc(NPP_StreamAsFile);
+	plugin_funcs->writeready    = NewNPP_WriteReadyProc(NPP_WriteReady);
+	plugin_funcs->write         = NewNPP_WriteProc(NPP_Write);
+	plugin_funcs->print         = NewNPP_PrintProc(NPP_Print);
+	plugin_funcs->urlnotify     = NewNPP_URLNotifyProc(NPP_URLNotify);
+	plugin_funcs->event         = NewNPP_HandleEventProc (NPP_HandleEvent);
 	plugin_funcs->javaClass     = NULL;
+	plugin_funcs->getvalue      = NewNPP_GetValueProc(NPP_GetValue);
+	plugin_funcs->setvalue      = NewNPP_SetValueProc(NPP_SetValueX);
 
-	gtk_init (0, 0);
-
-	DEBUG ("NP_Initialize succeeded");
-
-	return NPERR_NO_ERROR;
+	return NPP_Initialize ();
 }
 
 NPError
 NP_Shutdown (void)
 {
-	DEBUG ("NP_Shutdown");
+	NPP_Shutdown ();
 	return NPERR_NO_ERROR;
 }

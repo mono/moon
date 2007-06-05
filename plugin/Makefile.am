@@ -16,7 +16,8 @@ libmoonplugin_la_LIBADD = -lpthread -lmoon
 libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \
 	moon-plugin.h \
-	moon-plugin-glue.cpp \
+	plugin-entry.cpp \
+	plugin-glue.cpp \
 	nsScriptablePeer.cpp \
 	nsScriptablePeer.h
 
