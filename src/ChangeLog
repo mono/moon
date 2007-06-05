@@ -1,3 +1,8 @@
+2007-06-05  Miguel de Icaza  <miguel@novell.com>
+
+	Unify user_xform with the RenderTransform dependency property, now
+	we always have a static absolute transformation in the UIElement. 
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp|h: Update shape_init with correct values and implement

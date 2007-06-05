@@ -57,8 +57,7 @@ void
 Shape::DoDraw (Surface *s, bool do_op)
 {
 	cairo_save (s->cairo);
-	if (absolute_xform != NULL)
-		cairo_set_matrix (s->cairo, (cairo_matrix_t *) absolute_xform);
+	cairo_set_matrix (s->cairo, &absolute_xform);
 
 	if (fill){
 		fill->SetupBrush (s->cairo);

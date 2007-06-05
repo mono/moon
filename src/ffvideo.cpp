@@ -141,8 +141,7 @@ VideoFfmpeg::getbounds ()
 	cc = video_stream->codec;
 
 	cairo_save (s->cairo);
-	if (absolute_xform != NULL)
-		cairo_set_matrix (s->cairo, (cairo_matrix_t *) absolute_xform);
+	cairo_set_matrix (s->cairo, &absolute_xform);
 
 	cairo_rectangle (s->cairo, x, y, cc->width, cc->height);
 	cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
@@ -551,8 +550,7 @@ VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
 		return;
 	}
 	cairo_save (s->cairo);
-	if (absolute_xform != NULL)
-		cairo_set_matrix (s->cairo, (cairo_matrix_t *) absolute_xform);
+	cairo_set_matrix (s->cairo, &absolute_xform);
    
 	cairo_set_source_surface (s->cairo, video_cairo_surface, this->x, this->y);
 

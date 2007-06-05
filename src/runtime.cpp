@@ -94,10 +94,7 @@ item_update_bounds (UIElement *item)
 
 UIElement::~UIElement ()
 {
-	if (absolute_xform)
-		g_free (absolute_xform);
-	if (user_xform)
-		g_free (user_xform);
+	printf ("FIXME: We should go through all of the attached properties and unref them\n");
 }
 
 void 
@@ -128,20 +125,9 @@ item_set_transform (UIElement *item, double *transform)
 {
 	item_invalidate (item);
 
-	if (transform == NULL){
-		if (item->user_xform)
-			free (item->user_xform);
-		item->user_xform = NULL;
-	} else {
-		if (item->user_xform == NULL)
-			item->user_xform = g_new (double, 6);
-		
-		memcpy (item->user_xform, transform, sizeof (double) * 6);
-	}
-
 	item->update_xform ();
-
 	item->getbounds ();
+
 	item_invalidate (item);
 }
 
@@ -159,48 +145,33 @@ item_set_transform_origin (UIElement *item, Point p)
 }
 
 void
+item_get_render_affine (UIElement *item, cairo_matrix_t *result)
+{
+	Value* v = item->GetValue (UIElement::RenderTransformProperty);
+	if (v == NULL)
+		cairo_matrix_init_identity (result);
+	else {
+		Transform *t = (Transform*)v->u.dependency_object;
+		t->GetTransform (result);
+	}
+}
+
+void
 UIElement::update_xform ()
 {
-	cairo_matrix_t *cairo_mat;
+	cairo_matrix_t user_transform;
 
-	if (parent == NULL || parent->absolute_xform == NULL) {
-		if (user_xform == NULL){
-			if (absolute_xform != NULL){
-				g_free (absolute_xform);
-				absolute_xform = NULL;
-			}
-		} else {
-			//
-			// If there is a rotation, we need the transform origin
-			//
-			if (absolute_xform == NULL)
-				absolute_xform = g_new (double, 6);
+	if (parent != NULL)
+		absolute_xform = parent->absolute_xform;
+	else
+		cairo_matrix_init_identity (&absolute_xform);
 
-			cairo_mat = (cairo_matrix_t *) absolute_xform;
+	item_get_render_affine (this, &user_transform);
 
-			if (user_xform [1] != 0 || user_xform [2] != 0){
-				Point p = getxformorigin ();
-
-				cairo_matrix_init_translate (cairo_mat, p.x, p.y);
-				cairo_matrix_multiply (cairo_mat, (cairo_matrix_t *) user_xform, cairo_mat);
-				cairo_matrix_translate (cairo_mat, -p.x, -p.y);
-			} else {
-				memcpy (absolute_xform, user_xform, sizeof (double) * 6);
-			}
-		}
-	} else {
-		// parent has an absolute xform
-
-		if (absolute_xform == NULL)
-			absolute_xform = g_new (double, 6);
-		cairo_mat = (cairo_matrix_t *) absolute_xform;
-
-		memcpy (absolute_xform, parent->absolute_xform, sizeof (double) * 6);
-		Point p = getxformorigin ();
-		cairo_matrix_translate (cairo_mat, p.x, p.y);
-		cairo_matrix_multiply (cairo_mat, (cairo_matrix_t *) user_xform, cairo_mat);
-		cairo_matrix_translate (cairo_mat, -p.x, -p.y);
-	}
+	Point p = getxformorigin ();
+	cairo_matrix_translate (&absolute_xform, p.x, p.y);
+	cairo_matrix_multiply (&absolute_xform, &user_transform, &absolute_xform);
+	cairo_matrix_translate (&absolute_xform, -p.x, -p.y);
 }
 
 void
@@ -246,6 +217,7 @@ panel_child_add (Collection *col, void *datum)
 	UIElement *item = (UIElement *) datum;
 
 	item->parent = panel;
+	item->update_xform ();
 	panel->getbounds ();
 	item_invalidate (panel);
 }

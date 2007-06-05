@@ -364,11 +364,11 @@ class UIElement : public DependencyObject {
  public:
 	UIElement () :
 		parent(NULL), flags (0),
-		absolute_xform (NULL),
-		user_xform (NULL),
 		user_xform_origin(0,0),
 		x1 (0), y1(0), x2(0), y2(0)
-		{}
+		{
+			cairo_matrix_init_identity (&absolute_xform);
+		}
 	
 	UIElement *parent;
 
@@ -385,10 +385,9 @@ class UIElement : public DependencyObject {
 	// Affine transformations:
 	// 
 	Point   user_xform_origin;	// transformation origin, user set
-	double *user_xform;		// If null, identity, otherwise affine xform, user set
 
 	// Absolute affine transform
-	double *absolute_xform;
+	cairo_matrix_t absolute_xform;
 
 	//
 	// update_xform:
