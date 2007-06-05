@@ -116,26 +116,35 @@ public:
 
 	Value () : k (INVALID) {}
 	
+	void Init ()
+	{
+		memset (&u, 0, sizeof (u));
+	}
+
 	Value (bool z)
 	{
+		Init ();
 		k = BOOL;
 		u.z = z;
 	}
 
 	Value (double d)
 	{
+		Init ();
 		k = DOUBLE;
 		u.d = d;
 	}
 
 	Value (gint64 i)
 	{
+		Init ();
 		k = INT64;
 		u.i64 = i;
 	}
 
 	Value (gint32 i)
 	{
+		Init ();
 		k = INT32;
 		u.i32 = i;
 	}
@@ -162,6 +171,7 @@ public:
 
 	Value (const char* s)
 	{
+		Init ();
 		k = STRING;
 		u.s= g_strdup (s);
 	}
