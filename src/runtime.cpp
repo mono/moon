@@ -731,11 +731,14 @@ EventObject::Emit (char *event_name)
 	}
 }
 
+DependencyProperty* Canvas::TopProperty;
+DependencyProperty* Canvas::LeftProperty;
+
 void 
 canvas_init ()
 {
-	DependencyObject::Register (DependencyObject::CANVAS, "Top", new Value (0.0));
-	DependencyObject::Register (DependencyObject::CANVAS, "Left", new Value (0.0));
+	Canvas::TopProperty = DependencyObject::Register (DependencyObject::CANVAS, "Top", new Value (0.0));
+	Canvas::LeftProperty = DependencyObject::Register (DependencyObject::CANVAS, "Left", new Value (0.0));
 }
 
 DependencyProperty* UIElement::RenderTransformProperty;

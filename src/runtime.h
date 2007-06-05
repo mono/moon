@@ -472,6 +472,9 @@ class Canvas : public Panel {
 
 	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
+
+	static DependencyProperty* TopProperty;
+	static DependencyProperty* LeftProperty;
 };
 
 //

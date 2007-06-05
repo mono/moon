@@ -1,3 +1,9 @@
+2007-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (Canvas): declare our dependencyproperties here.
+
+	* runtime.cpp (canvas_init): actually assign the properties.
+
 2007-06-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 	
 	* runtime.cpp, runtime.h: Implement a DependencyProperty::
