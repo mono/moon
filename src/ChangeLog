@@ -1,3 +1,7 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Remove (now) useless properties in Line.
+
 2007-06-05  Miguel de Icaza  <miguel@novell.com>
 
 	* shape.cpp, ffvideo.cpp, video.cpp: Do not use x, y anymore, we

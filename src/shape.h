@@ -114,14 +114,12 @@ void       rectangle_set_radius_y (Rectangle *rectangle, double value);
 // 
 class Line : public Shape {
  public:
-	double line_x1, line_y1, line_x2, line_y2;
-
 	static DependencyProperty* X1Property;
 	static DependencyProperty* Y1Property;
 	static DependencyProperty* X2Property;
 	static DependencyProperty* Y2Property;
 
-	Line () : line_x1(0), line_y1(0), line_x2(0), line_y2(0) { SetObjectType(DependencyObject::LINE); };
+	Line () { SetObjectType(DependencyObject::LINE); };
 	
 	void Draw (Surface *s);
 
