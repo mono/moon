@@ -681,7 +681,7 @@ EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
 		g_hash_table_insert (event_hash, g_strdup (event_name), g_list_prepend (NULL, closure));
 	}
 	else {
-		g_list_append (events, closure); // not prepending means we don't need to g_hash_table_replace
+		events = g_list_append (events, closure); // not prepending means we don't need to g_hash_table_replace
 	}
 }
 

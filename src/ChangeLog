@@ -1,5 +1,9 @@
 2007-06-05  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (AddHandler): oops, g_list_append requires an assignment.
+
+2007-06-05  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h (Canvas): declare our dependencyproperties here.
 
 	* runtime.cpp (canvas_init): actually assign the properties.
