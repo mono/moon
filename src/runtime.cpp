@@ -204,34 +204,27 @@ UIElement::update_xform ()
 }
 
 void
-UIElement::render_transform_changed (gpointer data)
+UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	UIElement *item = (UIElement*)data;
-
-	cairo_matrix_t trans;
-	item->render_xform->GetTransform (&trans);
-	item_set_transform (item, (double*)&trans);
+	if (prop == UIElement::RenderTransformProperty) {
+		cairo_matrix_t trans;
+		Transform *t = item_get_render_transform (this);
+		t->GetTransform (&trans);
+		item_set_transform (this, (double*)&trans);
+	}
 }
 
 void
 item_set_render_transform (UIElement *item, Transform *transform)
 {
-	if (item->render_xform) {
-		item->render_xform->events->RemoveHandler ("TransformChanged", 
-							   UIElement::render_transform_changed, item);
-		base_unref (item->render_xform);
-	}
+	item->SetValue (UIElement::RenderTransformProperty, transform);
+}
 
-	item->render_xform = transform;
-	if (item->render_xform != NULL) {
-		item->render_xform->events->AddHandler ("TransformChanged",
-							UIElement::render_transform_changed, item);
-		base_ref (item->render_xform);
-
-		cairo_matrix_t trans;
-		transform->GetTransform (&trans);
-		item_set_transform (item, (double*)&trans);
-	}
+Transform *
+item_get_render_transform (UIElement *item)
+{
+	Value* v = item->GetValue (UIElement::RenderTransformProperty);
+	return v == NULL ? NULL : (Transform*)v->u.dependency_object;
 }
 
 Surface *
@@ -504,6 +497,21 @@ surface_get_drawing_area (Surface *s)
 
 GHashTable *DependencyObject::default_values = NULL;
 
+typedef struct {
+  DependencyObject *dob;
+  DependencyProperty *prop;
+} Attachee;
+
+void
+DependencyObject::NotifyAttacheesOfPropertyChange (DependencyProperty *subproperty)
+{
+	for (GSList *l = attached_list; l != NULL; l = l->next){
+		Attachee *att = (Attachee*)l->data;
+
+		att->dob->OnSubPropertyChanged (att->prop, subproperty);
+	}
+}
+
 void
 DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
@@ -516,21 +524,26 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 		if (current_value != NULL && current_value->k == Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->u.dependency_object;
 
-			dob->attached_list = g_slist_remove (dob->attached_list, this);
+			for (GSList *l = dob->attached_list; l; l = l->next) {
+				Attachee *att = (Attachee*)l->data;
+				if (att->dob == this && att->prop == property) {
+					dob->attached_list = g_slist_remove_link (dob->attached_list, l);
+					delete att;
+					break;
+				}
+			}
 		}
 
 		if (value.k == Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = value.u.dependency_object;
-
-			dob->attached_list = g_slist_append (dob->attached_list, this);
+			Attachee *att = new Attachee ();
+			att->dob = this;
+			att->prop = property;
+			dob->attached_list = g_slist_append (dob->attached_list, att);
 		}
 		g_hash_table_insert (current_values, property->name, copy);
 
-		for (GSList *l = attached_list; l != NULL; l = l->next){
-			DependencyObject *dob = (DependencyObject *) l->data;
-
-			dob->OnPropertyChanged (property);
-		}
+		OnPropertyChanged (property);
 	}
 }
 
@@ -705,9 +718,18 @@ canvas_init ()
 	DependencyObject::Register (DependencyObject::CANVAS, "Left", new Value (0.0));
 }
 
+DependencyProperty* UIElement::RenderTransformProperty;
+
+void
+item_init ()
+{
+	UIElement::RenderTransformProperty = DependencyObject::Register (DependencyObject::UIELEMENT, "RenderTransform", NULL);
+}
+
 void
 runtime_init ()
 {
+	item_init ();
 	canvas_init ();
 	transform_init ();
 	animation_init ();

@@ -237,6 +237,7 @@ class DependencyObject : public Base {
  public:
 	enum Type {
 		INVALID = 0,
+		UIELEMENT,
 		CANVAS,
 		TIMELINE,
 		ROTATETRANSFORM,
@@ -269,6 +270,11 @@ class DependencyObject : public Base {
 	EventObject *events;
 
 	virtual void OnPropertyChanged (DependencyProperty *property) { }
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
+
+ protected:
+	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
+
  private:
 	static GHashTable *default_values;
 	GHashTable        *current_values;
@@ -354,7 +360,6 @@ class UIElement : public DependencyObject {
  public:
 	UIElement () :
 		parent(NULL), flags (0),
-		render_xform (NULL),
 		absolute_xform (NULL),
 		user_xform (NULL),
 		user_xform_origin(0,0),
@@ -368,8 +373,6 @@ class UIElement : public DependencyObject {
 	};
 	
 	int flags;
-
-	Transform *render_xform;
 
 	// The computed bounding box
 	double x1, y1, x2, y2;
@@ -422,7 +425,9 @@ class UIElement : public DependencyObject {
 
 	~UIElement ();
 
-	static void render_transform_changed (gpointer data);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+
+	static DependencyProperty* RenderTransformProperty;
 };
 
 Surface *item_get_surface          (UIElement *item);
@@ -431,7 +436,8 @@ void     item_update_bounds        (UIElement *item);
 void     item_set_transform        (UIElement *item, double *transform);
 void     item_set_transform_origin (UIElement *item, Point p);
 
-void     item_set_render_transform (UIElement *item, Transform *transform);
+void       item_set_render_transform (UIElement *item, Transform *transform);
+Transform *item_get_render_transform (UIElement *item);
 
 //
 // Panel Class

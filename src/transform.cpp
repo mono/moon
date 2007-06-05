@@ -9,9 +9,9 @@
 #include "math.h"
 
 void
-Transform::OnPropertyChanged (DependencyProperty *)
+Transform::OnPropertyChanged (DependencyProperty *prop)
 {
-	events->Emit ("TransformChanged");
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -39,13 +39,13 @@ RotateTransform::GetTransform (cairo_matrix_t *value)
 	radians = angle / 180.0 * M_PI;
 
 	if (center_x == 0.0 && center_y == 0.0) {
-	  cairo_matrix_init_rotate (value, radians);
+		cairo_matrix_init_rotate (value, radians);
 	}
 	else {
-	  cairo_matrix_init_identity (value);
-	  cairo_matrix_translate (value, -center_x, -center_y);
-	  cairo_matrix_rotate (value, radians);
-	  cairo_matrix_translate (value, center_x, center_y);
+		cairo_matrix_init_identity (value);
+		cairo_matrix_translate (value, -center_x, -center_y);
+		cairo_matrix_rotate (value, radians);
+		cairo_matrix_translate (value, center_x, center_y);
 	}
 }
 
@@ -94,10 +94,10 @@ DependencyProperty* TranslateTransform::YProperty;
 void
 TranslateTransform::GetTransform (cairo_matrix_t *value)
 {
-  double x = translate_transform_get_x (this);
-  double y = translate_transform_get_y (this);
+	double x = translate_transform_get_x (this);
+	double y = translate_transform_get_y (this);
 
-  cairo_matrix_init_translate (value, x, y);
+	cairo_matrix_init_translate (value, x, y);
 }
 
 void
@@ -141,13 +141,13 @@ ScaleTransform::GetTransform (cairo_matrix_t *value)
 	double cy = scale_transform_get_center_y (this);
 
 	if (cx == 0.0 && cy == 0.0) {
-	  cairo_matrix_init_scale (value, sx, sy);
+		cairo_matrix_init_scale (value, sx, sy);
 	}
 	else {
-	  cairo_matrix_init_identity (value);
-	  cairo_matrix_translate (value, -cx, -cy);
-	  cairo_matrix_scale (value, sx, sy);
-	  cairo_matrix_scale (value, cx, cy);
+		cairo_matrix_init_identity (value);
+		cairo_matrix_translate (value, -cx, -cy);
+		cairo_matrix_scale (value, sx, sy);
+		cairo_matrix_scale (value, cx, cy);
 	}
 }
 

@@ -1,3 +1,25 @@
+2007-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (OnSubPropertyChanged): remove the event handler for
+	the render transform and use OnSubPropertyChange instead.
+	(item_set_render_transform): clean this up substantially - the
+	property system handles all the "event" stuff now.
+	(item_get_render_transform): we need a getter now that this uses
+	the depprop stuff.
+	(NotifyAttacheesOfPropertyChange): new method, call
+	OnSubPropertyChanged with both the attachee's property (the thing
+	storing 'this') and the subproperty that changed.
+	(SetValue): complicate the attachee stuff a bit, since we need to
+	store both the object and the property it's storing the value in.
+	(item_init): initialize RenderTransformProperty.
+
+	* runtime.h: make UIElement subclass from DependencyObject. This
+	flattens the hierarchy some from SL (which has Visual in between,
+	but we have no Visual.)
+
+	* transform.cpp (OnPropertyChanged): call
+	NotifyAttacheesOfPropertyChange.  Also, reindent some stuff.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* demo.cpp: Updated to use rectangle_set_radius_[x|y]
