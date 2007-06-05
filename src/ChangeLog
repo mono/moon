@@ -1,3 +1,25 @@
+2007-06-05  Miguel de Icaza  <miguel@novell.com>
+
+	Implement the OnPropertySet stuff, builds on Toshok's first pass.
+
+	Next stage: discuss with Toshok the migration to this awesome
+	framework from Events ;-)
+	
+	* runtime.cpp (SetValue): when adding dependencyobjects track on
+	the attached object the ownership.
+
+	Notify all containers of a property change.
+
+	* brush.cpp (Brush): Remove AddListener, RemoveListener, we can
+	use the property notification system for these.
+
+	* runtime.h (DependencyObject): Add a "attached_list" gslist to
+	keep track of all the objects where this particular
+	DependencyObject has been attached to, to provide OnPropertyChange
+	notifications (not hooked up yet).
+
+	(Value): Introduce DependencyObject constructor.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Started moving properties to DependencyObject. Added

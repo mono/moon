@@ -27,8 +27,6 @@ class Brush;
 class DependencyObject;
 class DependencyProperty;
 	
-typedef void (*BrushChangedNotify)(Brush *brush, void *data);
-
 struct Point {
 public:
 	double x, y;
@@ -117,7 +115,8 @@ public:
 		DOUBLE = 2,
 		INT64 = 3,
 		INT32 = 4,
-		STRING = 5
+		STRING = 5,
+		DEPENDENCY_OBJECT = 6
 	};
 
 	Kind k;
@@ -127,6 +126,7 @@ public:
 		gint64 i64;
 		gint32 i32;
 		char *s;
+		DependencyObject *dependency_object;
 	} u;
 
 	Value () : k (INVALID) {}
@@ -164,6 +164,15 @@ public:
 		u.i32 = i;
 	}
 
+	Value (DependencyObject *obj)
+	{
+		g_assert (obj != NULL);
+		
+		Init ();
+		k = DEPENDENCY_OBJECT;
+		u.dependency_object = obj;
+	}
+	
 	bool operator!= (const Value &v) const
 	{
 		return !(*this == v);
@@ -254,7 +263,9 @@ class DependencyObject : public Base {
 	virtual void OnPropertyChanged (DependencyProperty *property) { }
  private:
 	static GHashTable *default_values;
-	GHashTable *current_values;
+	GHashTable        *current_values;
+
+	GSList            *attached_list;
 };
 
 //
@@ -272,16 +283,12 @@ class DependencyProperty {
 };
 
 class Brush : public Base {
-	GSList *listeners;
  public:
-	Brush () : opacity(0), relative_transform(NULL), transform(NULL), listeners(NULL) {}
+	Brush () : opacity(0), relative_transform(NULL), transform(NULL) {}
 	
 	double opacity;
 	double *relative_transform;
 	double *transform;
-
-	void *AddListener    (BrushChangedNotify notify, void *data);
-	void  RemoveListener (void *key);
 
 	virtual void SetupBrush (cairo_t *cairo) = 0;
 };

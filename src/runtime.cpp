@@ -513,9 +513,24 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 		Value *copy = g_new (Value, 1);
 		*copy = value;
 
+		if (current_value != NULL && current_value->k == Value::DEPENDENCY_OBJECT){
+			DependencyObject *dob = current_value->u.dependency_object;
+
+			dob->attached_list = g_slist_remove (dob->attached_list, this);
+		}
+
+		if (value.k == Value::DEPENDENCY_OBJECT){
+			DependencyObject *dob = value.u.dependency_object;
+
+			dob->attached_list = g_slist_append (dob->attached_list, this);
+		}
 		g_hash_table_insert (current_values, property->name, copy);
 
-		OnPropertyChanged (property);
+		for (GSList *l = attached_list; l != NULL; l = l->next){
+			DependencyObject *dob = (DependencyObject *) l->data;
+
+			dob->OnPropertyChanged (property);
+		}
 	}
 }
 
