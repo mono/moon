@@ -6,7 +6,7 @@ class Timeline;
 class DependencyObject;
 
 /* this merges WPF's Clock and ClockController */
-class Clock : public EventObject {
+class Clock : public DependencyObject {
  public:
 	Clock (Timeline *timeline);
 	Clock (Timeline *timeline, Clock *clock);

@@ -1,3 +1,37 @@
+2007-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp: abstract the cairo transformations away by using
+	RotateTransforms.. and this is probably going to annoy some
+	people, but make the normally stationary elements bounce between
+	smaller and larger.
+
+	* animation.h: make Clock subclass from DependencyObject.
+
+	* animation.cpp (animation_init): assign the properties, don't
+	just call Register.
+
+	also, track the EventObject method name change.
+
+	* runtime.cpp (item_set_render_transform): new method.  unhook the
+	old transform and hook up the new one.  also, explicit set our
+	transformation here.
+	(SetValue): make this only do the work (and more importantly only
+	call OnPropertyChanged) if the value is different.
+
+	* runtime.h: shorten the names of the EventObject methods.  Add
+	operator== and operator!= to Value.  Add an EventObject to
+	DependencyObject to give us rudimentary event handlers.  Add the
+	render_transform "higher-level" transform into to UIElement.
+
+	* transform.h: add the OnPropertyChanged override and rename
+	transform_get_value to transform_get_transform.
+
+	* transform.cpp (transform_init): oops.  we need to actually
+	assign the properties.
+	(transform_get_transform): indent.
+	(OnPropertyChanged): override this method to emit
+	"TransformChanged".
+
 2007-06-04  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmoon_la_SOURCES): add animation and transform to

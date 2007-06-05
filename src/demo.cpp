@@ -8,29 +8,37 @@
 #include <unistd.h>
 
 #include "runtime.h"
+#include "transform.h"
 #include "shape.h"
 
 static UIElement *v;
 static Rectangle *r;
 
+static RotateTransform *r_trans;
+static RotateTransform *v_trans;
+static ScaleTransform *s_trans;
+
 static gboolean
 animate (gpointer data)
 {
-	static double degree = 0;
-	static double degree2 = 0;
-	double trans [6];
-	double trans2 [6];
+	rotate_transform_set_angle (v_trans,
+				    rotate_transform_get_angle (v_trans) + 3);
 
-	cairo_matrix_init_rotate ((cairo_matrix_t *)&trans, degree);
-	degree += 0.01;
+	rotate_transform_set_angle (r_trans,
+				    rotate_transform_get_angle (r_trans) - 3);
 
-	if (v != NULL)
-		item_set_transform (v, (double *) trans);
+	static double scale_change = -0.02;
 
-	cairo_matrix_init_rotate ((cairo_matrix_t *)&trans2, degree2);
-	degree2 -= 0.1;
-	item_set_transform (r, (double *) trans2);
+	scale_transform_set_scale_x (s_trans,
+				     scale_transform_get_scale_x (s_trans) + scale_change);
+	scale_transform_set_scale_y (s_trans,
+				     scale_transform_get_scale_y (s_trans) + scale_change);
 
+	if ((scale_change < 0 && scale_transform_get_scale_x (s_trans) < 0.3)
+	    || (scale_change > 0 && scale_transform_get_scale_x (s_trans) > 0.75)) {
+	    scale_change = -scale_change;
+	}
+	
 	return TRUE;
 }
 
@@ -48,16 +56,22 @@ main (int argc, char *argv [])
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
 	// Create our objects
+	r_trans = new RotateTransform ();
+	v_trans = new RotateTransform ();
+	s_trans = new ScaleTransform ();
+
 	Surface *t = surface_new (600, 600);
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 
 	r = rectangle_new (50, 50, 50, 50);
 	r->radius_x = 10;
 	r->radius_y = 20;
+	item_set_render_transform (r, s_trans);
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 
 	Rectangle *r2 = rectangle_new (50, 50, 50, 50);
+	item_set_render_transform (r2, r_trans);
 	shape_set_stroke (r2, new SolidColorBrush (c));
 	panel_child_add (t, r2);
 
@@ -67,6 +81,7 @@ main (int argc, char *argv [])
 
 #ifdef VIDEO_DEMO
 	v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 0, 0);
+	item_set_render_transform (v, v_trans);
 	item_set_transform_origin (v, Point (1, 1));
 	printf ("Got %d\n", v);
 	panel_child_add (t, v);
@@ -78,6 +93,7 @@ main (int argc, char *argv [])
 	//UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
 	//UIElement *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
 	UIElement *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv", 100, 100);
+	item_set_render_transform (v2, s_trans);
 	panel_child_add (t, v2);
 #endif
 

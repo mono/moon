@@ -63,7 +63,7 @@ Clock::Begin ()
 	}
     
 	start_time = get_now();
-	EmitEvent ("CurrentTimeInvalidated");
+	events->Emit ("CurrentTimeInvalidated");
 
 	tick_id = gtk_timeout_add (50 /* something suitably small */, Clock::tick_timeout, this);
 
@@ -86,7 +86,7 @@ Clock::Tick ()
 		((Clock*)l->data)->Tick();
 	}
 
-	EmitEvent ("CurrentTimeInvalidated");
+	events->Emit ("CurrentTimeInvalidated");
 }
 
 void
@@ -124,7 +124,7 @@ Clock::Seek (/*Timespan*/gint64 timespan)
 		return;
 	}
 
-	EmitEvent ("CurrentTimeInvalidated");
+	events->Emit ("CurrentTimeInvalidated");
 }
 
 void
@@ -135,7 +135,7 @@ Clock::SeekAlignedToLastTick ()
 		return;
 	}
 
-	EmitEvent ("CurrentTimeInvalidated");
+	events->Emit ("CurrentTimeInvalidated");
 }
 
 void
@@ -146,7 +146,7 @@ Clock::SkipToFill ()
 		return;
 	}
 
-	EmitEvent ("CurrentTimeInvalidated");
+	events->Emit ("CurrentTimeInvalidated");
 }
 
 void
@@ -158,7 +158,7 @@ Clock::Stop ()
 	}
 
 	g_source_remove (tick_id);
-	EmitEvent ("CurrentTimeInvalidated");
+	events->Emit ("CurrentTimeInvalidated");
 }
 
 double
@@ -199,14 +199,14 @@ void
 Timeline::SetClock (Clock *new_clock)
 {
 	if (clock != NULL) {
-		clock->RemoveEventHandler ("CurrentTimeInvalidated", Timeline::clock_time_changed, this);
+		clock->events->RemoveHandler ("CurrentTimeInvalidated", Timeline::clock_time_changed, this);
 		delete clock;
 	}
 
 	clock = new_clock;
 
 	if (clock != NULL)
-		clock->AddEventHandler ("CurrentTimeInvalidated", Timeline::clock_time_changed, this);
+		clock->events->AddHandler ("CurrentTimeInvalidated", Timeline::clock_time_changed, this);
 }
 
 void
@@ -405,21 +405,21 @@ void
 animation_init ()
 {
 	/* Timeline properties */
-	DependencyObject::Register (DependencyObject::TIMELINE, "AutoReverse", new Value (false));
-	DependencyObject::Register (DependencyObject::TIMELINE, "BeginTime", new Value (0));
-	DependencyObject::Register (DependencyObject::TIMELINE, "Duration", new Value (0));
+	Timeline::AutoReverseProperty = DependencyObject::Register (DependencyObject::TIMELINE, "AutoReverse", new Value (false));
+	Timeline::BeginTimeProperty = DependencyObject::Register (DependencyObject::TIMELINE, "BeginTime", new Value (0));
+	Timeline::DurationProperty = DependencyObject::Register (DependencyObject::TIMELINE, "Duration", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "FillBehavior", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "RepeatBehavior", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "SpeedRatio", new Value (0));
 
 
 	/* DoubleAnimation properties */
-	DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "By", new Value (0.0));
-	DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "From", new Value (0.0));
-	DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "To", new Value (0.0));
+	DoubleAnimation::ByProperty   = DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "By", new Value (0.0));
+	DoubleAnimation::FromProperty = DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "From", new Value (0.0));
+	DoubleAnimation::ToProperty   = DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "To", new Value (0.0));
 
 	/* Storyboard properties */
-	DependencyObject::Register (DependencyObject::STORYBOARD, "TargetProperty", NULL);
-	DependencyObject::Register (DependencyObject::STORYBOARD, "TargetName", NULL);
+	Storyboard::TargetPropertyProperty = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetProperty", NULL);
+	Storyboard::TargetNameProperty     = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetName", NULL);
 	
 }

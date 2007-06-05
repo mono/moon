@@ -13,14 +13,15 @@ class EventObject {
 	EventObject ();
 	~EventObject ();
 	
-	void AddEventHandler (char *event_name, EventHandler handler, gpointer data);
-	void RemoveEventHandler (char *event_name, EventHandler handler, gpointer data);
+	void AddHandler (char *event_name, EventHandler handler, gpointer data);
+	void RemoveHandler (char *event_name, EventHandler handler, gpointer data);
 	
-	void EmitEvent (char *event_name);
+	void Emit (char *event_name);
  private:
 	GHashTable *event_hash;
 };
 
+class Transform;
 class Surface;
 class Brush;
 class DependencyObject;
@@ -139,6 +140,26 @@ public:
 		u.i32 = i;
 	}
 
+	bool operator!= (const Value &v) const
+	{
+		return !(*this == v);
+	}
+
+	bool operator== (const Value &v) const
+	{
+		if (k != v.k)
+			return false;
+
+		if (k == STRING) {
+			return !strcmp (u.s, v.u.s);
+		}
+		else {
+			return !memcmp (&u, &v.u, sizeof (u));
+		}
+
+		return true;
+	}
+
 	Value (const char* s)
 	{
 		k = STRING;
@@ -190,6 +211,9 @@ class DependencyObject : public Base {
 	void SetValue (DependencyProperty *property, Value value);
 	Value *GetValue (DependencyProperty *property);
 
+	EventObject *events;
+
+	virtual void OnPropertyChanged (DependencyProperty *property) { }
  private:
 	static GHashTable *default_values;
 	GHashTable *current_values;
@@ -277,6 +301,7 @@ class UIElement {
  public:
 	UIElement () :
 		parent(NULL), flags (0),
+		render_xform (NULL),
 		absolute_xform (NULL),
 		user_xform (NULL),
 		user_xform_origin(0,0),
@@ -290,7 +315,9 @@ class UIElement {
 	};
 	
 	int flags;
-	
+
+	Transform *render_xform;
+
 	// The computed bounding box
 	double x1, y1, x2, y2;
 
@@ -341,6 +368,8 @@ class UIElement {
 	}
 
 	~UIElement ();
+
+	static void render_transform_changed (gpointer data);
 };
 
 Surface *item_get_surface          (UIElement *item);
@@ -348,6 +377,8 @@ void     item_invalidate           (UIElement *item);
 void     item_update_bounds        (UIElement *item);
 void     item_set_transform        (UIElement *item, double *transform);
 void     item_set_transform_origin (UIElement *item, Point p);
+
+void     item_set_render_transform (UIElement *item, Transform *transform);
 
 //
 // Panel Class

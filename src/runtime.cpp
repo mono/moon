@@ -23,6 +23,7 @@
 #endif
 
 #include "runtime.h"
+#include "transform.h"
 
 #if AGG
 struct _SurfacePrivate {
@@ -199,6 +200,37 @@ UIElement::update_xform ()
 		cairo_matrix_translate (cairo_mat, p.x, p.y);
 		cairo_matrix_multiply (cairo_mat, (cairo_matrix_t *) user_xform, cairo_mat);
 		cairo_matrix_translate (cairo_mat, -p.x, -p.y);
+	}
+}
+
+void
+UIElement::render_transform_changed (gpointer data)
+{
+	UIElement *item = (UIElement*)data;
+
+	cairo_matrix_t trans;
+	item->render_xform->GetTransform (&trans);
+	item_set_transform (item, (double*)&trans);
+}
+
+void
+item_set_render_transform (UIElement *item, Transform *transform)
+{
+	if (item->render_xform) {
+		item->render_xform->events->RemoveHandler ("TransformChanged", 
+							   UIElement::render_transform_changed, item);
+		base_unref (item->render_xform);
+	}
+
+	item->render_xform = transform;
+	if (item->render_xform != NULL) {
+		item->render_xform->events->AddHandler ("TransformChanged",
+							UIElement::render_transform_changed, item);
+		base_ref (item->render_xform);
+
+		cairo_matrix_t trans;
+		transform->GetTransform (&trans);
+		item_set_transform (item, (double*)&trans);
 	}
 }
 
@@ -475,10 +507,16 @@ GHashTable *DependencyObject::default_values = NULL;
 void
 DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
-	Value *copy = g_new (Value, 1);
-	*copy = value;
+	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
-	g_hash_table_insert (current_values, property->name, copy);
+	if (current_value == NULL || *current_value != value.k) {
+		Value *copy = g_new (Value, 1);
+		*copy = value;
+
+		g_hash_table_insert (current_values, property->name, copy);
+
+		OnPropertyChanged (property);
+	}
 }
 
 Value *
@@ -492,7 +530,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 	if (value != NULL)
 		return value;
 
-	if (default_values != NULL)
+	if (default_values == NULL)
 		return NULL;
 
 	table = (GHashTable*) g_hash_table_lookup (default_values, &property->type);
@@ -508,11 +546,13 @@ DependencyObject::GetValue (DependencyProperty *property)
 DependencyObject::DependencyObject ()
 {
 	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
+	events = new EventObject ();
 }
 
 DependencyObject::~DependencyObject ()
 {
 	g_hash_table_destroy (current_values);
+	delete events;
 }
 
 //
@@ -581,7 +621,7 @@ EventObject::~EventObject ()
 }
 
 void
-EventObject::AddEventHandler (char *event_name, EventHandler handler, gpointer data)
+EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
 {
 	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 
@@ -598,7 +638,7 @@ EventObject::AddEventHandler (char *event_name, EventHandler handler, gpointer d
 }
 
 void
-EventObject::RemoveEventHandler (char *event_name, EventHandler handler, gpointer data)
+EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer data)
 {
 	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 
@@ -630,7 +670,7 @@ EventObject::RemoveEventHandler (char *event_name, EventHandler handler, gpointe
 }
 
 void
-EventObject::EmitEvent (char *event_name)
+EventObject::Emit (char *event_name)
 {
 	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 

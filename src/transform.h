@@ -9,10 +9,11 @@ class Transform : public DependencyObject {
  	Transform () { }
 
  public:
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void GetTransform (cairo_matrix_t *value) = 0;
 };
 
-void   transform_get_value (Transform *t, cairo_matrix_t *value);
+void   transform_get_transform (Transform *t, cairo_matrix_t *value);
 
 class RotateTransform : public Transform {
  public:
