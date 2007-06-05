@@ -1,3 +1,8 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp|h: Update shape_init with correct values and implement
+	 path_[g|s]et_data.
+
 2007-06-05  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp (ClockTimeChanged): use the instance variety of

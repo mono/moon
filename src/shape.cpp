@@ -533,14 +533,13 @@ Path::Draw (Surface *s)
 Geometry*
 path_get_data (Path *path)
 {
-//	return path->GetValue (Path::DataProperty)->u.d;
-	return NULL;
+	return (Geometry*) path->GetValue (Path::DataProperty)->u.dependency_object;
 }
 
 void
 path_set_data (Path *path, Geometry* data)
 {
-//	path->SetValue (Path::DataProperty, Value(data));
+	path->SetValue (Path::DataProperty, Value (data));
 }
 
 Path*
@@ -558,17 +557,17 @@ void
 shape_init ()
 {
 	/* Shape fields */
-	Shape::FillProperty = DependencyObject::Register (DependencyObject::SHAPE, "Fill", new Value (0.0));
-	Shape::StretchProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stretch", new Value (0.0));
-	Shape::StrokeProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stroke", new Value (0.0));
-	Shape::StrokeDashArrayProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashArray", new Value (0.0));
-	Shape::StrokeDashCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashCap", new Value (0.0));
+	Shape::FillProperty = DependencyObject::Register (DependencyObject::SHAPE, "Fill", new Value ());
+	Shape::StretchProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stretch", new Value (StretchFill));
+	Shape::StrokeProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stroke", new Value ());
+	Shape::StrokeDashArrayProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashArray", new Value ());
+	Shape::StrokeDashCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
 	Shape::StrokeDashOffsetProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashOffset", new Value (0.0));
-	Shape::StrokeEndLineCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeEndLineCap", new Value (0.0));
-	Shape::StrokeLineJoinProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeLineJoin", new Value (0.0));
-	Shape::StrokeMiterLimitProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeMiterLimit", new Value (0.0));
-	Shape::StrokeStartLineCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeStartLineCap", new Value (0.0));
-	Shape::StrokeThicknessProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeThickness", new Value (0.0));
+	Shape::StrokeEndLineCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat));
+	Shape::StrokeLineJoinProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeLineJoin", new Value (PenLineJoinMiter));
+	Shape::StrokeMiterLimitProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeMiterLimit", new Value (10.0));
+	Shape::StrokeStartLineCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeStartLineCap", new Value (PenLineCapFlat));
+	Shape::StrokeThicknessProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeThickness", new Value (1.0));
 
 	/* Rectangle fields */
 	Rectangle::RadiusXProperty = DependencyObject::Register (DependencyObject::RECTANGLE, "RadiusX", new Value (0.0));
