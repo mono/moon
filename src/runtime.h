@@ -42,6 +42,21 @@ public:
 	}
 };
 
+// map to System.Windows.Rect
+struct Rect {
+ public:
+	double x, y, w, h;
+
+	Rect () : x (0), y (0), w (0), h (0) {}
+	Rect (double x, double y, double width, double height)
+	{
+		this->x = x;
+		this->y = y;
+		w = width;
+		h = height;
+	};
+};
+
 struct Color {
 	double r, g, b, a;
  public:
@@ -212,7 +227,20 @@ class DependencyObject : public Base {
 		TRANSLATETRANSFORM,
 		MATRIXTRANSFORM,
 		STORYBOARD,
-		DOUBLEANIMATION
+		DOUBLEANIMATION,
+		SHAPE,
+		ELLIPSE,
+		LINE,
+		PATH,
+		POLYGON,
+		POLYLINE,
+		RECTANGLE,
+		GEOMETRY,
+		GEOMETRYGROUP,
+		ELLIPSEGEOMETRY,
+		LINEGEOMETRY,
+		PATHGEOMETRY,
+		RECTANGLEGEOMETRY
 	};
 	
 	DependencyObject ();
@@ -508,6 +536,8 @@ UIElement  *xaml_create_from_str      (const char *xaml);
 void runtime_init ();
 void animation_init ();
 void transform_init ();
+void shape_init ();
+void geometry_init ();
 
 G_END_DECLS
 

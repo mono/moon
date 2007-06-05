@@ -696,4 +696,6 @@ runtime_init ()
 	canvas_init ();
 	transform_init ();
 	animation_init ();
+	shape_init ();
+	geometry_init ();
 }

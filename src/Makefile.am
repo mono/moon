@@ -6,6 +6,8 @@ libmoon_la_SOURCES = 	\
 	brush.cpp	\
 	animation.cpp	\
 	animation.h	\
+	geometry.cpp	\
+	geometry.h	\
 	runtime.cpp	\
 	runtime.h	\
 	transform.cpp	\

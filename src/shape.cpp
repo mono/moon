@@ -34,6 +34,22 @@ FrameworkElement::set_prop_from_str (const char *prop, const char *value)
 }
 
 //
+// Shape
+//
+
+DependencyProperty* Shape::FillProperty;
+DependencyProperty* Shape::StretchProperty;
+DependencyProperty* Shape::StrokeProperty;
+DependencyProperty* Shape::StrokeDashArrayProperty;
+DependencyProperty* Shape::StrokeDashCapProperty;
+DependencyProperty* Shape::StrokeDashOffsetProperty;
+DependencyProperty* Shape::StrokeEndLineCapProperty;
+DependencyProperty* Shape::StrokeLineJoinProperty;
+DependencyProperty* Shape::StrokeMiterLimitProperty;
+DependencyProperty* Shape::StrokeStartLineCapProperty;
+DependencyProperty* Shape::StrokeThicknessProperty;
+
+//
 // This routine is useful for Shape derivatives: it can be used
 // to either get the bounding box from cairo, or to paint it
 //
@@ -172,6 +188,10 @@ shape_set_stroke_dash_array (Shape *shape, double* dashes)
 	shape->stroke_dash_array = dashes;
 }
 
+//
+// Ellipse
+//
+
 void
 Ellipse::Draw (Surface *s)
 {
@@ -214,6 +234,13 @@ ellipse_new ()
 {
 	return new Ellipse ();
 }
+
+//
+// Rectangle
+//
+
+DependencyProperty* Rectangle::RadiusXProperty;
+DependencyProperty* Rectangle::RadiusYProperty;
 
 void
 Rectangle::Draw (Surface *s)
@@ -265,6 +292,15 @@ rectangle_new (double x, double y, double w, double h)
 	return rect;
 }
 
+//
+// Line
+//
+
+DependencyProperty* Line::X1Property;
+DependencyProperty* Line::Y1Property;
+DependencyProperty* Line::X2Property;
+DependencyProperty* Line::Y2Property;
+
 void
 Line::Draw (Surface *s)
 {
@@ -299,6 +335,13 @@ line_new (double x1, double y1, double x2, double y2)
 {
 	return new Line (x1, y1, x2, y2);
 }
+
+//
+// Polygon
+//
+
+DependencyProperty* Polygon::FillRuleProperty;
+DependencyProperty* Polygon::PointsProperty;
 
 void
 Polygon::Draw (Surface *s)
@@ -342,6 +385,12 @@ polygon_new ()
 	return new Polygon ();
 }
 
+//
+// Polyline
+//
+
+DependencyProperty* Polyline::FillRuleProperty;
+DependencyProperty* Polyline::PointsProperty;
 
 void
 Polyline::Draw (Surface *s)
@@ -376,4 +425,77 @@ Polyline *
 polyline_new ()
 {
 	return new Polyline ();
+}
+
+//
+// Path
+//
+
+DependencyProperty* Path::DataProperty;
+
+void
+Path::Draw (Surface *s)
+{
+}
+
+Geometry*
+path_get_data (Path *path)
+{
+//	return path->GetValue (Path::DataProperty)->u.d;
+	return NULL;
+}
+
+void
+path_set_data (Path *path, Geometry* data)
+{
+//	path->SetValue (Path::DataProperty, Value(data));
+}
+
+Path*
+path_new ()
+{
+	return new Path ();
+}
+
+
+//
+// 
+//
+
+void
+shape_init ()
+{
+	/* Shape fields */
+	Shape::FillProperty = DependencyObject::Register (DependencyObject::SHAPE, "Fill", new Value (0.0));
+	Shape::StretchProperty = DependencyObject::Register (DependencyObject::SHAPE, "tretch", new Value (0.0));
+	Shape::StrokeProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stroke", new Value (0.0));
+	Shape::StrokeDashArrayProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashArray", new Value (0.0));
+	Shape::StrokeDashCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashCap", new Value (0.0));
+	Shape::StrokeDashOffsetProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashOffset", new Value (0.0));
+	Shape::StrokeEndLineCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeEndLineCap", new Value (0.0));
+	Shape::StrokeLineJoinProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeLineJoin", new Value (0.0));
+	Shape::StrokeMiterLimitProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeMiterLimit", new Value (0.0));
+	Shape::StrokeStartLineCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeStartLineCap", new Value (0.0));
+	Shape::StrokeThicknessProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeThickness", new Value (0.0));
+
+	/* Rectangle fields */
+	Rectangle::RadiusXProperty = DependencyObject::Register (DependencyObject::RECTANGLE, "RadiusX", new Value (0.0));
+	Rectangle::RadiusYProperty = DependencyObject::Register (DependencyObject::RECTANGLE, "RadiusY", new Value (0.0));
+
+	/* Line fields */
+	Line::X1Property = DependencyObject::Register (DependencyObject::LINE, "X1", new Value (0.0));
+	Line::Y1Property = DependencyObject::Register (DependencyObject::LINE, "Y1", new Value (0.0));
+	Line::X2Property = DependencyObject::Register (DependencyObject::LINE, "X1", new Value (0.0));
+	Line::Y2Property = DependencyObject::Register (DependencyObject::LINE, "Y1", new Value (0.0));
+
+	/* Polygon fields */
+	Polygon::FillRuleProperty = DependencyObject::Register (DependencyObject::POLYGON, "Fill", new Value (FillRuleEvenOdd));
+	Polygon::PointsProperty = DependencyObject::Register (DependencyObject::POLYGON, "Points", new Value (NULL));
+
+	/* Polyline fields */
+	Polyline::FillRuleProperty = DependencyObject::Register (DependencyObject::POLYLINE, "Fill", new Value (FillRuleEvenOdd));
+	Polyline::PointsProperty = DependencyObject::Register (DependencyObject::POLYLINE, "Points", new Value (NULL));
+
+	/* Path fields */
+	Path::DataProperty = DependencyObject::Register (DependencyObject::PATH, "DATA", new Value (NULL));
 }

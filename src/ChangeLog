@@ -1,3 +1,13 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Started moving properties to DependencyObject. Added
+	Path.
+	* geometry.cpp|h: New. System.Windows.Media.Geometry related classes
+	* runtime.cpp: Added calls to shape_init and geometry_init
+	* runtime.h: Added Rect structure and new DependencyObject types for
+	shapes and geometry.
+	* Makefile.am: Added geometry.cpp|h to source files.
+
 2007-06-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.h: initialize Value to zero on construction.
