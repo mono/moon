@@ -1,3 +1,19 @@
+2007-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_la_SOURCES): add animation and transform to
+	the build.
+
+	* runtime.h: flesh out Value some, adding BOOL (has to be C++
+	bool, not gboolean, or else it conflicts with int32), INT32,
+	INT64, and STRING (char*).
+
+	* runtime.cpp (runtime_init): call animation_init and
+	transform_init.
+
+	* animation.cpp, animation.h, transform.h, transform.cpp: get
+	these using the new dependency object/value foo, and get them
+	compiling.
+
 2007-06-04  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.h: Make the "Base" refcounting class the base for

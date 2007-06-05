@@ -9,7 +9,7 @@ class Transform : public DependencyObject {
  	Transform () { }
 
  public:
-	virtual void GetValue (cairo_matrix_t *value) = 0;
+	virtual void GetTransform (cairo_matrix_t *value) = 0;
 };
 
 void   transform_get_value (Transform *t, cairo_matrix_t *value);
@@ -19,13 +19,11 @@ class RotateTransform : public Transform {
 
 	RotateTransform () { }
 
-	/* these are dependency properties
-	   double angle;
-	   double center_x;
-	   double center_y;
-	*/
+	static DependencyProperty* AngleProperty;
+	static DependencyProperty* CenterXProperty;
+	static DependencyProperty* CenterYProperty;
 
-	virtual void GetValue (cairo_matrix_t *value);
+	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 void   rotate_transform_set_angle (RotateTransform *t, double angle);
@@ -42,19 +40,17 @@ class TranslateTransform : public Transform {
 
 	TranslateTransform () { }
 
-	/* these are dependency properties
-	   double x;
-	   double y;
-	*/
+	static DependencyProperty* XProperty;
+	static DependencyProperty* YProperty;
 
-	virtual void GetValue (cairo_matrix_t *value);
+	virtual void GetTransform (cairo_matrix_t *value);
 };
 
-void   translate_transform_set_x (RotateTransform *t, double x);
-double translate_transform_get_x (RotateTransform *t);
+void   translate_transform_set_x (TranslateTransform *t, double x);
+double translate_transform_get_x (TranslateTransform *t);
 
-void   translate_transform_set_y (RotateTransform *t, double y);
-double translate_transform_get_y (RotateTransform *t);
+void   translate_transform_set_y (TranslateTransform *t, double y);
+double translate_transform_get_y (TranslateTransform *t);
 
 
 class ScaleTransform : public Transform {
@@ -62,14 +58,12 @@ public:
 
 	ScaleTransform () { }
 
-	/* these are dependency properties
-	   double scale_x;
-	   double scale_y;
-	   double center_x;
-	   double center_y;
-	*/
+	static DependencyProperty* ScaleXProperty;
+	static DependencyProperty* ScaleYProperty;
+	static DependencyProperty* CenterXProperty;
+	static DependencyProperty* CenterYProperty;
 
-	virtual void GetValue (cairo_matrix_t *value);
+	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 void   scale_transform_set_scale_x (ScaleTransform *t, double scaleX);
@@ -94,7 +88,7 @@ class MatrixTransform : public Transform {
 	   Matrix matrix;
 	*/
 
-	virtual void GetValue (cairo_matrix_t *value);
+	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 void           matrix_transform_set_matrix (MatrixTransform *t, cairo_matrix_t matrix);

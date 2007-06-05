@@ -97,20 +97,58 @@ struct Value {
 public:
 	enum Kind {
 		INVALID = 0,
-		DOUBLE = 1
+		BOOL = 1,
+		DOUBLE = 2,
+		INT64 = 3,
+		INT32 = 4,
+		STRING = 5
 	};
 
 	Kind k;
 	union {
+		bool z;
 		double d;
+		gint64 i64;
+		gint32 i32;
+		char *s;
 	} u;
 
 	Value () : k (INVALID) {}
 	
+	Value (bool z)
+	{
+		k = BOOL;
+		u.z = z;
+	}
+
 	Value (double d)
 	{
 		k = DOUBLE;
 		u.d = d;
+	}
+
+	Value (gint64 i)
+	{
+		k = INT64;
+		u.i64 = i;
+	}
+
+	Value (gint32 i)
+	{
+		k = INT32;
+		u.i32 = i;
+	}
+
+	Value (const char* s)
+	{
+		k = STRING;
+		u.s= g_strdup (s);
+	}
+
+	~Value ()
+	{
+		if (k == STRING)
+			g_free (u.s);
 	}
 };
 
@@ -137,6 +175,13 @@ class DependencyObject : public Base {
 	enum Type {
 		INVALID = 0,
 		CANVAS,
+		TIMELINE,
+		ROTATETRANSFORM,
+		SCALETRANSFORM,
+		TRANSLATETRANSFORM,
+		MATRIXTRANSFORM,
+		STORYBOARD,
+		DOUBLEANIMATION
 	};
 	
 	DependencyObject ();
@@ -420,6 +465,9 @@ UIElement  *xaml_create_from_str      (const char *xaml);
 
 
 void runtime_init ();
+void animation_init ();
+void transform_init ();
+
 G_END_DECLS
 
 #endif
