@@ -306,7 +306,7 @@ Storyboard::ClockTimeChanged ()
 		if (!o)
 			continue;
 
-		DependencyProperty *prop = o->FindProperty (targetProperty);
+		DependencyProperty *prop = o->GetDependencyProperty (targetProperty);
 		if (!prop)
 			continue;
 

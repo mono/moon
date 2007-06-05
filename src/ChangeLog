@@ -1,5 +1,20 @@
 2007-06-05  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp (ClockTimeChanged): use the instance variety of
+	GetDependencyProperty.
+
+	* runtime.cpp (GetDependencyProperty): just call the static
+	variety with our objectType.
+	(SetObjectType): method to enable subclasses to set the object
+	type.
+
+	* runtime.h: add DependencyObject::SetObjectType, as well as the
+	instance version of DependencyObject::GetDependencyProperty.
+
+	* transform.h: call SetObjectType to identify this object.
+
+2007-06-05  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (AddHandler): oops, g_list_append requires an assignment.
 
 2007-06-05  Chris Toshok  <toshok@ximian.com>

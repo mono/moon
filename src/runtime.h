@@ -267,6 +267,7 @@ class DependencyObject : public Base {
 	static DependencyProperty* GetDependencyProperty (Type type, char *name);
 	void SetValue (DependencyProperty *property, Value value);
 	Value *GetValue (DependencyProperty *property);
+	DependencyProperty* GetDependencyProperty (char *name);
 
 	EventObject *events;
 
@@ -275,8 +276,10 @@ class DependencyObject : public Base {
 
  protected:
 	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
+	void SetObjectType (Type objectType);
 
  private:
+	Type               objectType;
 	static GHashTable *default_values;
 	GHashTable        *current_values;
 

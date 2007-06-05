@@ -573,6 +573,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 
 DependencyObject::DependencyObject ()
 {
+	this->objectType = INVALID;
 	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
 	events = new EventObject ();
 	this->attached_list = NULL;
@@ -582,6 +583,18 @@ DependencyObject::~DependencyObject ()
 {
 	g_hash_table_destroy (current_values);
 	delete events;
+}
+
+void
+DependencyObject::SetObjectType (Type objectType)
+{
+	this->objectType = objectType;
+}
+
+DependencyProperty *
+DependencyObject::GetDependencyProperty (char *name)
+{
+	return DependencyObject::GetDependencyProperty (objectType, name);
 }
 
 DependencyProperty *
