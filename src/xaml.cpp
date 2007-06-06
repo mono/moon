@@ -355,7 +355,8 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 
 	return inst;
 }
-		
+
+
 ///
 /// Add Child funcs
 ///
@@ -399,12 +400,6 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	g_strfreev (prop_name);
 }
 
-void
-solid_color_brush_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
-{
-
-}
-
 ///
 /// set attributes funcs
 ///
@@ -420,7 +415,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 {
 	DependencyObject *dep = (DependencyObject *) item->item;
 
-	for (int i = 0; attr [i]; i++) {
+	
+
+	for (int i = 0; attr [i]; i += 2) {
 		DependencyProperty *prop = NULL;
 		XamlElementInfo *walk = item->info;
 		while (walk) {
@@ -433,6 +430,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		if (prop) {
 			/// This should be replaced soon, just stuck it in here for debugging
 			Value v;
+			
 			switch (prop->value_type) {
 			case Value::BOOL:
 				v = Value ((bool) !g_strcasecmp ("true", attr [i + 1]));
@@ -449,10 +447,18 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			case Value::STRING:
 				v = Value (attr [i + 1]);
 				break;
-			default:
-				continue;
+			case Value::BRUSH:
+			case Value::SOLIDCOLORBRUSH:
+				// Only solid color brushes can be specified using attribute syntax
+				SolidColorBrush *scb = solid_color_brush_new ();
+				solid_color_brush_set_color (scb, color_from_str (attr [i + 1]));
+				v = Value (scb);
+				break;
 			}
+
 			dep->SetValue (prop, v);
+		} else {
+			printf ("can not find property:  %s  %s\n", attr [i], attr [i + 1]);
 		}
 	}
 }

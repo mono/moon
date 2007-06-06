@@ -1,5 +1,9 @@
 2007-06-06  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Set brush attributes.
+
+2007-06-06  Jackson Harper  <jackson@ximian.com>
+
 	* runtime.h:
 	* transform.h: Need to register this base DependencyObject for the
 	xaml parser.
