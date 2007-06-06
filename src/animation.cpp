@@ -315,6 +315,12 @@ Storyboard::ClockTimeChanged ()
 	}
 }
 
+Storyboard *
+storyboard_new ()
+{
+	return new Storyboard ();
+}
+
 void
 storyboard_begin (Storyboard *sb)
 {
@@ -384,6 +390,12 @@ DependencyProperty* DoubleAnimation::ToProperty;
 
 DoubleAnimation::DoubleAnimation ()
 {
+}
+
+DoubleAnimation *
+double_animation_new ()
+{
+	return new DoubleAnimation ();
 }
 
 void

@@ -468,6 +468,12 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	}
 }
 
+Canvas *
+canvas_new ()
+{
+	return new Canvas ();
+}
+
 Surface *
 surface_new (int width, int height)
 {
@@ -900,4 +906,5 @@ runtime_init ()
 	animation_init ();
 	shape_init ();
 	geometry_init ();
+	xaml_init ();
 }

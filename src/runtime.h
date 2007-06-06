@@ -77,6 +77,10 @@ struct Color {
 	};
 };
 
+
+Color color_from_str (const char *name);
+
+
 //
 // Collection: provides a collection that we can monitor for
 // changes.   We expose this collection in a few classes to
@@ -247,6 +251,7 @@ class DependencyObject : public Base {
 	enum Type {
 		INVALID = 0,
 		UIELEMENT,
+		PANEL,
 		CANVAS,
 		TIMELINE,
 		ROTATETRANSFORM,
@@ -351,8 +356,9 @@ class Brush : public Base {
 };
 
 class SolidColorBrush : public Brush {
-	Color color;
+
  public:
+	Color color;
 	SolidColorBrush (Color c) { color = c; } 
 
 	virtual void SetupBrush (cairo_t *cairo);
@@ -368,7 +374,6 @@ class GradientBrush : public Brush {
 	virtual void SetupBrush (cairo_t *cairo);
 };
 
-SolidColorBrush  *solid_brush_from_str (const char *name);
 
 
 enum Stretch {
@@ -526,6 +531,9 @@ class Canvas : public Panel {
 	static DependencyProperty* LeftProperty;
 };
 
+Canvas * canvas_new ();
+
+
 //
 // FrameworkElement class
 //
@@ -616,6 +624,7 @@ void animation_init ();
 void transform_init ();
 void shape_init ();
 void geometry_init ();
+void xaml_init ();
 
 G_END_DECLS
 

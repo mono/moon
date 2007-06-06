@@ -30,6 +30,8 @@ class RotateTransform : public Transform {
 	virtual void GetTransform (cairo_matrix_t *value);
 };
 
+RotateTransform * rotate_transform_new ();
+
 void   rotate_transform_set_angle (RotateTransform *t, double angle);
 double rotate_transform_get_angle (RotateTransform *t);
 
@@ -50,6 +52,7 @@ class TranslateTransform : public Transform {
 	virtual void GetTransform (cairo_matrix_t *value);
 };
 
+TranslateTransform *translate_transform_new ();
 void   translate_transform_set_x (TranslateTransform *t, double x);
 double translate_transform_get_x (TranslateTransform *t);
 
@@ -70,6 +73,7 @@ public:
 	virtual void GetTransform (cairo_matrix_t *value);
 };
 
+ScaleTransform * scale_transform_new ();
 void   scale_transform_set_scale_x (ScaleTransform *t, double scaleX);
 double scale_transform_get_scale_x (ScaleTransform *t);
 
@@ -95,6 +99,7 @@ class MatrixTransform : public Transform {
 	virtual void GetTransform (cairo_matrix_t *value);
 };
 
+MatrixTransform *matrix_transform_new ();
 void           matrix_transform_set_matrix (MatrixTransform *t, cairo_matrix_t matrix);
 cairo_matrix_t matrix_transform_get_matrix (MatrixTransform *t);
 

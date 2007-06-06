@@ -49,6 +49,12 @@ RotateTransform::GetTransform (cairo_matrix_t *value)
 	}
 }
 
+RotateTransform *
+rotate_transform_new ()
+{
+	return new RotateTransform ();
+}
+
 void
 rotate_transform_set_angle (RotateTransform *t, double angle)
 {
@@ -100,6 +106,12 @@ TranslateTransform::GetTransform (cairo_matrix_t *value)
 	cairo_matrix_init_translate (value, x, y);
 }
 
+TranslateTransform *
+translate_transform_new ()
+{
+	return new TranslateTransform ();
+}
+
 void
 translate_transform_set_x (TranslateTransform *t, double x)
 {
@@ -149,6 +161,12 @@ ScaleTransform::GetTransform (cairo_matrix_t *value)
 		cairo_matrix_scale (value, sx, sy);
 		cairo_matrix_scale (value, cx, cy);
 	}
+}
+
+ScaleTransform *
+scale_transform_new ()
+{
+	return new ScaleTransform ();
 }
 
 void
@@ -211,6 +229,11 @@ MatrixTransform::GetTransform (cairo_matrix_t *value)
 #endif
 }
 
+MatrixTransform *
+matrix_transform_new ()
+{
+	return new MatrixTransform ();
+}
 
 void
 transform_init ()

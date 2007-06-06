@@ -109,6 +109,7 @@ class Storyboard : public ParallelTimeline {
 	static gboolean storyboard_tick (gpointer data);
 };
 
+Storyboard *storyboard_new ();
 void storyboard_begin (Storyboard *sb);
 void storyboard_pause (Storyboard *sb);
 void storyboard_resume (Storyboard *sb);
@@ -138,6 +139,8 @@ class DoubleAnimation : public Animation {
 	static DependencyProperty* FromProperty;
 	static DependencyProperty* ToProperty;
 };
+
+DoubleAnimation * double_animation_new ();
 
 void   double_animation_set_by (DoubleAnimation *da, double by);
 double double_animation_get_by (DoubleAnimation *da);

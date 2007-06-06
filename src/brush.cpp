@@ -55,9 +55,11 @@ named_colors_t named_colors [] = {
 
 /**
  * see: http://msdn2.microsoft.com/en-us/library/system.windows.media.solidcolorbrush.aspx
+ *
+ * If no color is found, Color.Transparent is returned.
  */
-SolidColorBrush *
-solid_brush_from_str (const char *name)
+Color
+color_from_str (const char *name)
 {
 	if (!name)
 		return NULL;
@@ -97,10 +99,8 @@ solid_brush_from_str (const char *name)
 			break;			
 		}
 
-		return new SolidColorBrush (Color (strtol (r, NULL, 16) / 255.0F,
-							    strtol (g, NULL, 16) / 255.0F,
-							    strtol (b, NULL, 16) / 255.0F,
-							    strtol (a, NULL, 16) / 255.0F));
+		return Color (strtol (r, NULL, 16) / 255.0F, strtol (g, NULL, 16) / 255.0F,
+				strtol (b, NULL, 16) / 255.0F, strtol (a, NULL, 16) / 255.0F);
 	}
 
 	if (name [0] == 's' && name [1] == 'c' && name [2] == '#') {
@@ -109,9 +109,9 @@ solid_brush_from_str (const char *name)
 
 	for (int i = 0; named_colors [i].name; i++) {
 		if (!g_strcasecmp (named_colors [i].name, name)) {
-			Color c = Color (named_colors [i].color);
-			return new SolidColorBrush (c);
+			return Color (named_colors [i].color);
 		}
 	}
-	return NULL;
+
+	return Color (0x00FFFFFF);
 }

@@ -1,3 +1,18 @@
+2007-06-06  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp/h: initialize xaml
+	- Add canvas C style constructor
+	- Make SolidColorBrush's Color public
+	* shape.cpp: Comment out the set_prop... stuff, this code won't be
+	used anymore, now that the xaml parser is using dependency objects
+	to set properties.
+	* animation.cpp|h:
+	* transform.cpp|h: Add some C style constructors
+	* brush.cpp: Create colors from a string instead of solid brushes
+	* xaml.cpp: Add in a known element tree, and move property setting
+	into the xaml code, also added code for setting properties with
+	property element syntax
+	
 2007-06-05  Miguel de Icaza  <miguel@novell.com>
 
 	Add type checking on SetValue, RegisterProperty to avoid

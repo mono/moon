@@ -91,6 +91,7 @@ Shape::getbounds ()
 void
 Shape::set_prop_from_str (const char *prop, const char *value)
 {
+	/*
 	if (!g_strcasecmp ("fill", prop)) {
 		SolidColorBrush *fill = solid_brush_from_str (value);
 		if (fill)
@@ -101,6 +102,7 @@ Shape::set_prop_from_str (const char *prop, const char *value)
 			shape_set_stroke (this, stroke);
 	} else
 		FrameworkElement::set_prop_from_str (prop, value);
+	*/
 }
 
 void 
