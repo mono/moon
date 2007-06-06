@@ -39,6 +39,12 @@ public:
 		this->x = x;
 		this->y = y;
 	}
+
+	Point (Point *point)
+	{
+		x = point->x;
+		y = point->y;
+	}
 };
 
 // map to System.Windows.Rect
@@ -53,7 +59,15 @@ struct Rect {
 		this->y = y;
 		w = width;
 		h = height;
-	};
+	}
+
+	Rect (Rect *rect)
+	{
+		x = rect->x;
+		y = rect->y;
+		w = rect->w;
+		h = rect->h;
+	}
 };
 
 struct Color {
@@ -85,7 +99,7 @@ struct Color {
 			b = color->b;
 			a = color->a;
 		} else {
-			r = 1.0; g = 0.0; b = 0.0;
+			r = g = b = 1.0;
 			a = 0.0;
 		}
 	}
@@ -144,7 +158,9 @@ public:
 		INT32 = 4,
 		STRING = 5,
 		DEPENDENCY_OBJECT = 6,
-		COLOR = 7
+		COLOR = 7,
+		POINT = 8,
+		RECT = 9
 	};
 
 	Kind k;
@@ -157,6 +173,8 @@ public:
 		char *s;
 		DependencyObject *dependency_object;
 		Color *color;
+		Point *point;
+		Rect *rect;
 	} u;
 
 	Value () : k (INVALID) {}
@@ -215,6 +233,24 @@ public:
 		Init ();
 		k = DEPENDENCY_OBJECT;
 		u.dependency_object = obj;
+	}
+
+	Value (Point *pt)
+	{
+		g_assert (pt != NULL);
+
+		Init ();
+		k = POINT;
+		u.point = new Point (pt);
+	}
+
+	Value (Rect *rect)
+	{
+		g_assert (rect != NULL);
+
+		Init ();
+		k = RECT;
+		u.rect = new Rect (rect);
 	}
 	
 	bool operator!= (const Value &v) const

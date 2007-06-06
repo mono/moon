@@ -73,11 +73,14 @@ DependencyProperty* EllipseGeometry::RadiusYProperty;
 Point*
 ellipse_geometry_get_center (EllipseGeometry *ellipse_geometry)
 {
+	Value *value = ellipse_geometry->GetValue (EllipseGeometry::CenterProperty);
+	return (value ? value->u.point : NULL);
 }
 
 void
 ellipse_geometry_set_center (EllipseGeometry *ellipse_geometry, Point *point)
 {
+	ellipse_geometry->SetValue (EllipseGeometry::CenterProperty, Value (point));
 }
 
 double
@@ -120,21 +123,27 @@ DependencyProperty* LineGeometry::StartPointProperty;
 Point*
 line_geometry_get_end_point (LineGeometry* line_geometry)
 {
+	Value *value = line_geometry->GetValue (LineGeometry::EndPointProperty);
+	return (value ? value->u.point : NULL);
 }
 
 void
 line_geometry_set_end_point (LineGeometry* line_geometry, Point *end_point)
 {
+	line_geometry->SetValue (LineGeometry::EndPointProperty, Value (end_point));
 }
 
 Point*
 line_geometry_get_start_point (LineGeometry* line_geometry)
 {
+	Value *value = line_geometry->GetValue (LineGeometry::StartPointProperty);
+	return (value ? value->u.point : NULL);
 }
 
 void
 line_geometry_set_start_point (LineGeometry* line_geometry, Point *start_point)
 {
+	line_geometry->SetValue (LineGeometry::StartPointProperty, Value (start_point));
 }
 
 LineGeometry*
@@ -190,11 +199,14 @@ geometry_set_radius_y (RectangleGeometry *rectangle_geometry, double radius_y)
 Rect*
 rectangle_geometry_get_rect (RectangleGeometry *rectangle_geometry)
 {
+	Value *value = rectangle_geometry->GetValue (RectangleGeometry::RectProperty);
+	return (value ? value->u.rect : NULL);
 }
 
 void
 rectangle_geometry_set_rect (RectangleGeometry *rectangle_geometry, Rect *rect)
 {
+	rectangle_geometry->SetValue (RectangleGeometry::RectProperty, Value (rect));
 }
 
 RectangleGeometry*
@@ -211,26 +223,26 @@ void
 geometry_init ()
 {
 	/* Geometry fields */
-	Geometry::FillRuleProperty = DependencyObject::Register (DependencyObject::GEOMETRY, "FillRule", new Value (0.0));
-	Geometry::TransformProperty = DependencyObject::Register (DependencyObject::GEOMETRY, "Transform", new Value ());
+	Geometry::FillRuleProperty = DependencyObject::Register (DependencyObject::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
+	Geometry::TransformProperty = DependencyObject::Register (DependencyObject::GEOMETRY, "Transform", Value::DEPENDENCY_OBJECT);
 
 	/* GeometryGroup fields */
-	GeometryGroup::ChildrenProperty = DependencyObject::Register (DependencyObject::GEOMETRYGROUP, "Children", new Value ());
+	GeometryGroup::ChildrenProperty = DependencyObject::Register (DependencyObject::GEOMETRYGROUP, "Children", Value::DEPENDENCY_OBJECT);
 
 	/* EllipseGeometry fields */
-	EllipseGeometry::CenterProperty = DependencyObject::Register (DependencyObject::ELLIPSEGEOMETRY, "Center", new Value ());
+	EllipseGeometry::CenterProperty = DependencyObject::Register (DependencyObject::ELLIPSEGEOMETRY, "Center", Value::POINT);
 	EllipseGeometry::RadiusXProperty = DependencyObject::Register (DependencyObject::ELLIPSEGEOMETRY, "RadiusX", new Value (0.0));
 	EllipseGeometry::RadiusYProperty = DependencyObject::Register (DependencyObject::ELLIPSEGEOMETRY, "RadiusY", new Value (0.0));
 
 	/* LineGeometry fields */
-	LineGeometry::EndPointProperty = DependencyObject::Register (DependencyObject::LINEGEOMETRY, "EndPoint", new Value ());
-	LineGeometry::StartPointProperty = DependencyObject::Register (DependencyObject::LINEGEOMETRY, "StartPoint", new Value ());
+	LineGeometry::EndPointProperty = DependencyObject::Register (DependencyObject::LINEGEOMETRY, "EndPoint", Value::POINT);
+	LineGeometry::StartPointProperty = DependencyObject::Register (DependencyObject::LINEGEOMETRY, "StartPoint", Value::POINT);
 
 	/* PathGeometry */
-	PathGeometry::FiguresProperty = DependencyObject::Register (DependencyObject::PATHGEOMETRY, "Figures", new Value ());
+	PathGeometry::FiguresProperty = DependencyObject::Register (DependencyObject::PATHGEOMETRY, "Figures", Value::DEPENDENCY_OBJECT);
 
 	/* RectangleGeometry fields */
 	RectangleGeometry::RadiusXProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0));
 	RectangleGeometry::RadiusYProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0));
-	RectangleGeometry::RectProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "Rect", new Value ());
+	RectangleGeometry::RectProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "Rect", Value::RECT);
 }
