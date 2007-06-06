@@ -1,3 +1,18 @@
+2007-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp: we need to maintain another hash table for
+	DependencyProperties so we can return the actual property, not the
+	default value, which is what GetDependencyProperty needs to do.
+	(DependencyObject::FindName): implement this by either trying to
+	use the namescope on this object or the global_NameScope (rather
+	suboptimal, it's supposed to 'walk the logical tree' according to
+	msdn).
+
+	partially implement NameScope.
+
+	* runtime.h: add NameScope, and add a uint64 Value.  Also add
+	FindName on DependencyObject.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Add Shape's thickness and some dash support. Add more

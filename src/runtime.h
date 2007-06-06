@@ -26,7 +26,7 @@ class Surface;
 class Brush;
 class DependencyObject;
 class DependencyProperty;
-	
+
 struct Point {
 public:
 	double x, y;
@@ -121,6 +121,7 @@ public:
 		INVALID = 0,
 		BOOL = 1,
 		DOUBLE = 2,
+		UINT64 = 3,
 		INT64 = 3,
 		INT32 = 4,
 		STRING = 5,
@@ -131,6 +132,7 @@ public:
 	union {
 		bool z;
 		double d;
+		guint64 ui64;
 		gint64 i64;
 		gint32 i32;
 		char *s;
@@ -156,6 +158,13 @@ public:
 		Init ();
 		k = DOUBLE;
 		u.d = d;
+	}
+
+	Value (guint64 i)
+	{
+		Init ();
+		k = UINT64;
+		u.ui64 = i;
 	}
 
 	Value (gint64 i)
@@ -260,6 +269,8 @@ class DependencyObject : public Base {
 		PATHGEOMETRY,
 		RECTANGLEGEOMETRY,
 		FRAMEWORKELEMENT
+		NAMESCOPE,
+		CLOCK
 	};
 	
 	DependencyObject ();
@@ -269,6 +280,8 @@ class DependencyObject : public Base {
 	void SetValue (DependencyProperty *property, Value value);
 	Value *GetValue (DependencyProperty *property);
 	DependencyProperty* GetDependencyProperty (char *name);
+
+	DependencyObject* FindName (char *name);
 
 	EventObject *events;
 
@@ -281,6 +294,7 @@ class DependencyObject : public Base {
 
  private:
 	Type objectType;
+	static GHashTable *properties;
 	static GHashTable *default_values;
 	GHashTable        *current_values;
 
@@ -300,6 +314,26 @@ class DependencyProperty {
 	Value *default_value;
 	DependencyObject::Type type;
 };
+
+class NameScope : public DependencyObject {
+ public:
+	NameScope ();
+	~NameScope ();
+
+	void RegisterName (const char *name, DependencyObject *object);
+	void UnregisterName (const char *name);
+
+	DependencyObject* FindName (const char *name);
+
+	static NameScope* GetNameScope (DependencyObject *obj);
+	static void SetNameScope (DependencyObject *obj, NameScope *scope);
+
+	static DependencyProperty *NameScopeProperty;
+	
+ private:
+	GHashTable *names;
+};
+
 
 class Brush : public Base {
  public:

@@ -32,6 +32,8 @@ struct _SurfacePrivate {
 };
 #endif
 
+NameScope *global_NameScope;
+
 void 
 base_ref (Base *base)
 {
@@ -498,6 +500,7 @@ surface_get_drawing_area (Surface *s)
 */
 
 GHashTable *DependencyObject::default_values = NULL;
+GHashTable *DependencyObject::properties = NULL;
 
 typedef struct {
 	DependencyObject *dob;
@@ -522,6 +525,9 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 	if (current_value == NULL || *current_value != value.k) {
 		Value *copy = g_new (Value, 1);
 		*copy = value;
+
+		if (value.k == Value::STRING)
+		  copy->u.s = g_strdup (value.u.s);
 
 		if (current_value != NULL && current_value->k == Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->u.dependency_object;
@@ -605,10 +611,10 @@ DependencyObject::GetDependencyProperty (DependencyObject::Type type, char *name
 	GHashTable *table;
 	DependencyProperty *property;
 
-	if (default_values == NULL)
+	if (properties == NULL)
 		return NULL;
 
-	table = (GHashTable*) g_hash_table_lookup (default_values, &type);
+	table = (GHashTable*) g_hash_table_lookup (properties, &type);
 
 	if (table == NULL)
 		return NULL;
@@ -618,19 +624,44 @@ DependencyObject::GetDependencyProperty (DependencyObject::Type type, char *name
 	return property;	
 }
 
+DependencyObject*
+DependencyObject::FindName (char *name)
+{
+	NameScope *scope = NameScope::GetNameScope (this);
+	if (!scope)
+		scope = global_NameScope;
+
+	return scope->FindName (name);
+}
+
 //
 // DependencyObject takes ownership of the Value * for default_value
 //
 DependencyProperty *
 DependencyObject::Register (DependencyObject::Type type, char *name, Value *default_value)
 {
-	if (NULL == default_values)
-		default_values = g_hash_table_new (g_int_hash, g_int_equal);
+	GHashTable *table;
 
 	DependencyProperty *property = new DependencyProperty (name, default_value);
 	property->type = type;
 	
-	GHashTable *table;
+	/* first add the property to the global 2 level property hash */
+	if (NULL == properties)
+		properties = g_hash_table_new (g_int_hash, g_int_equal);
+
+	table = (GHashTable*) g_hash_table_lookup (properties, &property->type);
+
+	if (table == NULL) {
+		table = g_hash_table_new (g_str_hash, g_str_equal);
+		g_hash_table_insert (properties, &property->type, table);
+	}
+
+	g_hash_table_insert (table, property->name, property);
+
+
+	// now take care of inserting the default value
+	if (NULL == default_values)
+		default_values = g_hash_table_new (g_int_hash, g_int_equal);
 
 	table = (GHashTable*) g_hash_table_lookup (default_values, &property->type);
 
@@ -746,6 +777,55 @@ EventObject::Emit (char *event_name)
 	}
 }
 
+NameScope::NameScope ()
+{
+	names = g_hash_table_new (g_str_hash, g_str_equal);
+}
+
+NameScope::~NameScope ()
+{
+  //	g_hash_table_foreach (/* XXX */);
+}
+
+void
+NameScope::RegisterName (const char *name, DependencyObject *object)
+{
+	g_hash_table_insert (names, g_strdup (name) ,object);
+}
+
+void
+NameScope::UnregisterName (const char *name)
+{
+}
+
+DependencyObject*
+NameScope::FindName (const char *name)
+{
+	return (DependencyObject*)g_hash_table_lookup (names, name);
+}
+
+NameScope*
+NameScope::GetNameScope (DependencyObject *obj)
+{
+	Value *v = obj->GetValue (NameScope::NameScopeProperty);
+	return v == NULL ? NULL : (NameScope*)v->u.dependency_object;
+}
+
+void
+SetNameScope (DependencyObject *obj, NameScope *scope)
+{
+	obj->SetValue (NameScope::NameScopeProperty, scope);
+}
+
+DependencyProperty *NameScope::NameScopeProperty;
+
+void
+namescope_init ()
+{
+	global_NameScope = new NameScope ();
+	NameScope::NameScopeProperty = DependencyObject::Register (DependencyObject::NAMESCOPE, "NameScope", NULL);
+}
+
 DependencyProperty* FrameworkElement::HeightProperty;
 DependencyProperty* FrameworkElement::WidthProperty;
 
@@ -777,6 +857,7 @@ item_init ()
 void
 runtime_init ()
 {
+	namescope_init ();
 	item_init ();
 	framework_element_init ();
 	canvas_init ();
