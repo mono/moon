@@ -21,8 +21,6 @@ static void moon_plugin_demo (Surface *surface)
 
 	runtime_init ();
 
-	cairo_matrix_t trans;
-
 	Rectangle *r;
 
 	r = rectangle_new ();
@@ -32,15 +30,12 @@ static void moon_plugin_demo (Surface *surface)
 	r->SetValue (Canvas::TopProperty, Value (50.0));
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
-	cairo_matrix_init_rotate (&trans, 0.4);
-	item_set_transform (r, (double *) (&trans));
 	surface_repaint (surface, 0, 0, 300, 300);
 
 #if VIDEO_DEMO
 	UIElement *v, *v2;
 
 	v = video_new ("/home/everaldo/BoxerSmacksdownInhoffe.wmv", 0, 0);
-	item_set_transform (v, (double *) (&trans));
 	panel_child_add (surface, v);
 
 	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
@@ -126,6 +121,13 @@ PluginInstance::~PluginInstance ()
 
 	if (this->surface != NULL)
 		surface_destroy (this->surface);
+}
+
+void 
+PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
+{
+
+
 }
 
 NPError 

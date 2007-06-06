@@ -57,6 +57,7 @@ class PluginInstance {
  public:	
 	PluginInstance (NPP instance, uint16 mode);
 	~PluginInstance ();
+	void Initialize (int argc, char* const argn[], char* const argv[]);
 
 	// Mozilla plugin related methods
 	NPError GetValue (NPPVariable variable, void *result);

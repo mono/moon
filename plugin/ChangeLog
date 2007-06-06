@@ -1,5 +1,11 @@
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-glue.cpp,
+	* moon-plugin.cpp,
+	* moon-plugin.cpp.h: Add initialization and remove demo transformation.
+
+2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
+
 	[Remover ScriptablePeer code]
 
 	* nsScriptablePeer.h, nsScriptablePeer.cpp: Removed.
