@@ -660,6 +660,12 @@ DependencyObject::RegisterFull (DependencyObject::Type type, char *name, Value *
 	return property;
 }
 
+DependencyObject::Type
+DependencyObject::GetObjectType ()
+{
+	return objectType;
+}
+
 /*
 	DependencyProperty
 */

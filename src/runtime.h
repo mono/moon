@@ -313,6 +313,7 @@ class DependencyObject : public Base {
 	void SetValue (DependencyProperty *property, Value value);
 	Value *GetValue (DependencyProperty *property);
 	DependencyProperty *GetDependencyProperty (char *name);
+	Type GetObjectType ();
 
 	DependencyObject* FindName (char *name);
 
