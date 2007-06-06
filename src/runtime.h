@@ -328,9 +328,7 @@ class DependencyObject : public Base {
  private:
 	Type objectType;
 	static GHashTable *properties;
-	static GHashTable *default_values;
 	GHashTable        *current_values;
-
 	GSList            *attached_list;
 };
 

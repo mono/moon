@@ -1,3 +1,9 @@
+2007-06-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp, runtime.h: Remove the default_values hashtable
+	from DependencyObject, it's redundant since the default value
+	is stored inside the DependencyProperty anyway.
+
 2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* demo.cpp: Adapted to API changes.
