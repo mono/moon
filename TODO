@@ -1,0 +1,36 @@
+
+Feel free to add items to this TODO list
+
+* DependecyProperty-fication
+
+	A few components still have instance properties that
+	should be handled as dependencyproperties, look into that.
+
+* DependencyProperty:
+
+	When we register a property we should specify the type for
+	the property, and validate in SetValue that the value.Kind is
+	of the same type as the DependencyProperty
+
+* Video Player:
+
+	Add support for seeking, stopping, shutdown.
+
+	Fix the memory leak that it currently has that brings the 
+	system down.
+
+* Reference counting and destruction
+
+	Need to properly shut down the runtime.
+
+* XAML Support
+
+	Add support to each element to be created from a xaml string.
+
+	Need to support attached properties
+
+	XAML needs to be case sensitive
+
+* Paths
+
+	Sam Ruby had some path tests, we could use that as test cases.
