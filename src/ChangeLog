@@ -1,3 +1,9 @@
+2007-06-06  Jackson Harper  <jackson@ximian.com>
+
+	* animation.cpp|h:
+	* runtime.h: Staring to add triggers
+	* shape.cpp: Use brush as our property kind
+	
 2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.h: Add new types and SweepDirection enum.

@@ -198,7 +198,9 @@ public:
 		LINESEGMENT,
 		POLYBEZIERSEGMENT,
 		POLYQUADRATICBEZIERSEGMENT,
-		QUADRATICBEZIERSEGMENT
+		QUADRATICBEZIERSEGMENT,
+		TRIGGERACTION,
+		BEGINSTORYBOARD,
 	};
 
 	Kind k;
@@ -489,6 +491,18 @@ enum SweepDirection {
 	SweepDirectionCounterclockwise,
 	SweepDirectionClockwise
 };
+
+
+class TriggerAction : public DependencyObject {
+
+ public:
+       TriggerAction ()
+       {
+               SetObjectType (Value::TRIGGERACTION);
+       }
+};
+
+
 
 //
 // Item class

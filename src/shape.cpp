@@ -624,9 +624,9 @@ void
 shape_init ()
 {
 	/* Shape fields */
-	Shape::FillProperty = DependencyObject::Register (Value::SHAPE, "Fill", Value::DEPENDENCY_OBJECT);
+	Shape::FillProperty = DependencyObject::Register (Value::SHAPE, "Fill", Value::BRUSH);
 	Shape::StretchProperty = DependencyObject::Register (Value::SHAPE, "Stretch", new Value (StretchFill));
-	Shape::StrokeProperty = DependencyObject::Register (Value::SHAPE, "Stroke", Value::DEPENDENCY_OBJECT);
+	Shape::StrokeProperty = DependencyObject::Register (Value::SHAPE, "Stroke", Value::BRUSH);
 	Shape::StrokeDashArrayProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashArray", new Value ());
 	Shape::StrokeDashCapProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
 	Shape::StrokeDashOffsetProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashOffset", new Value (0.0));
@@ -655,5 +655,5 @@ shape_init ()
 	Polyline::PointsProperty = DependencyObject::Register (Value::POLYLINE, "Points", new Value ());
 
 	/* Path fields */
-	Path::DataProperty = DependencyObject::Register (Value::PATH, "Data", Value::DEPENDENCY_OBJECT);
+	Path::DataProperty = DependencyObject::Register (Value::PATH, "Data", Value::GEOMETRY);
 }
