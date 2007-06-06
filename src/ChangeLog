@@ -1,5 +1,8 @@
 2007-06-06  Miguel de Icaza  <miguel@novell.com>
 
+	* demo.cpp (main): Allow loading a XAML file from the command
+	line, for your testing pleasure.
+
 	* ffvideo.cpp (convert_to_rgb): We no longer need the loop to swap
 	channels.
 
