@@ -18,7 +18,6 @@ G_BEGIN_DECLS
 class Shape : public FrameworkElement {
 	void DoDraw (Surface *s, bool do_op);
  public: 
-	Brush *fill, *stroke;
 	double *stroke_dash_array;
 	int stroke_dash_array_count;
 
@@ -34,7 +33,7 @@ class Shape : public FrameworkElement {
 	static DependencyProperty* StrokeStartLineCapProperty;
 	static DependencyProperty* StrokeThicknessProperty;
 
-	Shape () : fill (NULL), stroke (NULL), stroke_dash_array (NULL), stroke_dash_array_count (0)
+	Shape () : stroke_dash_array (NULL), stroke_dash_array_count (0)
 	{
 		SetObjectType (DependencyObject::SHAPE);
 	}
@@ -61,7 +60,9 @@ class Shape : public FrameworkElement {
 	virtual void set_prop_from_str (const char *prop, const char *value);
 };
 
+Brush		*shape_get_fill			(Shape *shape);
 void		shape_set_fill			(Shape *shape, Brush *brush);
+Brush		*shape_get_stroke		(Shape *shape);
 void		shape_set_stroke		(Shape *shape, Brush *brush);
 Stretch		shape_get_stretch		(Shape *shape);
 void		shape_set_stretch		(Shape *shape, Stretch stretch);

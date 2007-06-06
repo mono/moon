@@ -88,6 +88,7 @@ Shape::DoDraw (Surface *s, bool do_op)
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 
+	Brush *fill = shape_get_fill (this);
 	if (fill){
 		fill->SetupBrush (s->cairo);
 		Draw (s);
@@ -95,6 +96,7 @@ Shape::DoDraw (Surface *s, bool do_op)
 			cairo_fill (s->cairo);
 	}
 
+	Brush *stroke = shape_get_stroke (this);
 	if (stroke){
 		cairo_set_line_width (s->cairo, shape_get_stroke_thickness (this));
 		if (stroke_dash_array) {
@@ -151,24 +153,40 @@ Shape::set_prop_from_str (const char *prop, const char *value)
 		FrameworkElement::set_prop_from_str (prop, value);
 }
 
+Brush*
+shape_get_fill (Shape *shape)
+{
+	Value *value = shape->GetValue (Shape::FillProperty);
+	return (Brush*) (value ? value->u.dependency_object : NULL);
+}
+
 void 
 shape_set_fill (Shape *shape, Brush *fill)
 {
-	if (shape->fill != NULL)
-		base_unref (shape->fill);
+	Brush *current_fill = shape_get_fill (shape);
+	if (current_fill != NULL)
+		base_unref (current_fill);
 
 	base_ref (fill);
-	shape->fill = fill;
+	shape->SetValue (Shape::FillProperty, Value (fill));
+}
+
+Brush*
+shape_get_stroke (Shape *shape)
+{
+	Value *value = shape->GetValue (Shape::StrokeProperty);
+	return (Brush*) (value ? value->u.dependency_object : NULL);
 }
 
 void 
 shape_set_stroke (Shape *shape, Brush *stroke)
 {
-	if (shape->stroke != NULL)
-		base_unref (shape->stroke);
+	Brush *current_stroke = shape_get_stroke (shape);
+	if (current_stroke != NULL)
+		base_unref (current_stroke);
 
 	base_ref (stroke);
-	shape->stroke = stroke;
+	shape->SetValue (Shape::StrokeProperty, Value (stroke));
 }
 
 Stretch
@@ -647,9 +665,9 @@ void
 shape_init ()
 {
 	/* Shape fields */
-	Shape::FillProperty = DependencyObject::Register (DependencyObject::SHAPE, "Fill", new Value ());
+	Shape::FillProperty = DependencyObject::Register (DependencyObject::SHAPE, "Fill", Value::DEPENDENCY_OBJECT);
 	Shape::StretchProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stretch", new Value (StretchFill));
-	Shape::StrokeProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stroke", new Value ());
+	Shape::StrokeProperty = DependencyObject::Register (DependencyObject::SHAPE, "Stroke", Value::DEPENDENCY_OBJECT);
 	Shape::StrokeDashArrayProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashArray", new Value ());
 	Shape::StrokeDashCapProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
 	Shape::StrokeDashOffsetProperty = DependencyObject::Register (DependencyObject::SHAPE, "StrokeDashOffset", new Value (0.0));
@@ -678,5 +696,5 @@ shape_init ()
 	Polyline::PointsProperty = DependencyObject::Register (DependencyObject::POLYLINE, "Points", new Value ());
 
 	/* Path fields */
-	Path::DataProperty = DependencyObject::Register (DependencyObject::PATH, "Data", new Value ());
+	Path::DataProperty = DependencyObject::Register (DependencyObject::PATH, "Data", Value::DEPENDENCY_OBJECT);
 }
