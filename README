@@ -206,3 +206,24 @@ This is not likely the final version of this code.
 		cd src
 
 		make debug
+
+* Cairo Considerations
+
+	surface_clear: should we use something like this?
+
+        cairo_set_source_rgba (s->cairo, 1.0, 1.0, 1.0, 1.0);
+        cairo_set_operator (s->cairo, CAIRO_OPERATOR_SOURCE);
+        cairo_paint (s->cairo);
+
+	But with a rectangle to set the region to clear?
+
+* Rendering Considerations
+
+	Currently we draw in an off-screen cairo surface when the
+	widget is not realized, seems like a waste of power, but its	
+	used for bounding box computations.
+
+	Should we have a if (!realized) return in those places and
+	merely have a single cairo context that we paint to?
+
+

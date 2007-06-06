@@ -15,6 +15,7 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <gdk/gdkx.h>
 #if AGG
 #    include <agg_rendering_buffer.h>
 #    include "Agg2D.h"
@@ -22,6 +23,7 @@
 #    define CAIRO 1
 #endif
 
+#include <cairo-xlib.h>
 #include "runtime.h"
 #include "transform.h"
 
@@ -340,28 +342,17 @@ void
 surface_clear (Surface *s, int x, int y, int width, int height)
 {
 	static unsigned char n;
+	cairo_matrix_t identity;
 
-	if (x < 0){
-		width -= x;
-		x = 0;
-	}
+	cairo_matrix_init_identity (&identity);
 
-	if (y < 0){
-		height -= y;
-		y = 0;
-	}
-	width = MAX (0, MIN (width, s->width));
-	height = MAX (0, MIN (height, s->height));
+	cairo_set_matrix (s->cairo, &identity);
 
-	int stride = s->width * 4;
-	unsigned char *dest = s->buffer + (y * stride) + (x * 4);
-
-	while (height--){
-		memset (dest, 70, width * 4);
-		dest += stride;
-	}
+	cairo_set_source_rgb (s->cairo, 1.0, 1.0, 1.0);
+	cairo_rectangle (s->cairo, 0, 0, 1000, 1000);
+	cairo_fill (s->cairo);
 }
-
+	
 void
 surface_clear_all (Surface *s)
 {
@@ -371,29 +362,72 @@ surface_clear_all (Surface *s)
 static void
 surface_realloc (Surface *s)
 {
-	if (s->buffer){
+	if (s->buffer)
 		free (s->buffer);
-		gdk_pixbuf_unref (s->pixbuf);
-	}
 
 	int size = s->width * s->height * 4;
 	s->buffer = (unsigned char *) malloc (size);
 	surface_clear_all (s);
        
-	s->pixbuf = gdk_pixbuf_new_from_data (s->buffer, GDK_COLORSPACE_RGB, TRUE, 8, 
-					      s->width, s->height, s->width * 4, NULL, NULL);
-
-	s->cairo_surface = cairo_image_surface_create_for_data (
+	s->cairo_buffer_surface = cairo_image_surface_create_for_data (
 		s->buffer, CAIRO_FORMAT_ARGB32, s->width, s->height, s->width * 4);
 
-	s->cairo = cairo_create (s->cairo_surface);
+	s->cairo_buffer = cairo_create (s->cairo_buffer_surface);
+	s->cairo = s->cairo_buffer;
 }
 
 void 
 surface_destroy (Surface *s)
 {
-	cairo_surface_destroy (s->cairo_surface);
+	cairo_destroy (s->cairo_buffer);
+	if (s->cairo_xlib)
+		cairo_destroy (s->cairo_xlib);
+
+	if (s->pixmap != NULL)
+		gdk_pixmap_unref (s->pixmap);
+	
+	cairo_surface_destroy (s->cairo_buffer_surface);
+	if (s->xlib_surface)
+		cairo_surface_destroy (s->xlib_surface);
+
+	// TODO: add everything
 	delete s;
+}
+
+void
+create_xlib (Surface *s, GtkWidget *widget)
+{
+	s->pixmap = gdk_pixmap_new (GDK_DRAWABLE (widget->window), s->width, s->height, -1);
+
+	s->xlib_surface = cairo_xlib_surface_create (
+		GDK_WINDOW_XDISPLAY(widget->window),
+		GDK_WINDOW_XWINDOW(GDK_DRAWABLE (s->pixmap)),
+		GDK_VISUAL_XVISUAL (gdk_window_get_visual(widget->window)),
+		s->width, s->height);
+
+	s->cairo_xlib = cairo_create (s->xlib_surface);
+}
+
+gboolean
+realized_callback (GtkWidget *widget, gpointer data)
+{
+	Surface *s = (Surface *) data;
+	cairo_surface_t *xlib;
+
+	create_xlib (s, widget);
+
+	s->cairo = s->cairo_xlib;
+}
+
+gboolean
+unrealized_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	cairo_surface_destroy(s->xlib_surface);
+	s->xlib_surface = NULL;
+
+	s->cairo = s->cairo_buffer;
 }
 
 gboolean
@@ -412,20 +446,19 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 			cairo_status_to_string (cairo_status (s->cairo)));
 	}
 
+//#define DEBUG_INVALIDATE
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
+
 	surface_repaint (s, event->area.x, event->area.y, event->area.width, event->area.height);
-	gdk_draw_pixbuf (widget->window,
-			 NULL, 
-			 s->pixbuf,
-			 event->area.x, event->area.y, // gint src_x, gint src_y,
-			 event->area.x, event->area.y, // gint dest_x, gint dest_y,
-			 MIN (event->area.width, s->width),
-			 MIN (event->area.height, s->height),
-			 GDK_RGB_DITHER_NORMAL,
-			 0, 0 // gint x_dither, gint y_dither
-			 );
+	gdk_draw_drawable (
+		widget->window, gtk_widget_get_style (widget)->white_gc, s->pixmap, 
+		event->area.x, event->area.y, // gint src_x, gint src_y,
+		event->area.x, event->area.y, // gint dest_x, gint dest_y,
+		MIN (event->area.width, s->width),
+		MIN (event->area.height, s->height));
+
 	return TRUE;
 }
 
@@ -454,7 +487,10 @@ surface_new (int width, int height)
 	Surface *s = new Surface ();
 
 	s->drawing_area = gtk_drawing_area_new ();
+	gtk_widget_set_double_buffered (s->drawing_area, FALSE);
+
 	gtk_widget_show (s->drawing_area);
+
 	gtk_widget_set_usize (s->drawing_area, width, height);
 	s->buffer = NULL;
 	s->flags |= UIElement::IS_SURFACE;
@@ -464,6 +500,12 @@ surface_new (int width, int height)
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "expose_event",
 			    G_CALLBACK (expose_event_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "realize",
+			    G_CALLBACK (realized_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "unrealize",
+			    G_CALLBACK (unrealized_callback), s);
 
 	return s;
 }

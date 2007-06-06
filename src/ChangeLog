@@ -1,3 +1,22 @@
+2007-06-06  Miguel de Icaza  <miguel@novell.com>
+
+	* ffvideo.cpp (convert_to_rgb): We no longer need the loop to swap
+	channels.
+
+	Move to cairo to render to the screen the contents
+	of the buffer.   ffmpeg and cairo do have the same RGBA format, it
+	was actually the copy from this format to the screen using
+	gdk_draw_pixbuf that failed: pixbuf expected the data in another
+	format and there is no way to configure it.
+	
+	* runtime.cpp (surface_clear): use the cairo api as the surface is
+	no longer living on the client buffer. 
+
+	(surface_destroy): update
+
+	(create_xlib, realized_callback, unrealized_callback): When the
+	widget is realized, create a cairo context
+
 2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.h: Add Value support for Point and Rect

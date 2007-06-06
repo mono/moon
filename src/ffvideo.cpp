@@ -389,27 +389,6 @@ convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 	
 	sws_scale (video->video_scale_context, frame->data, frame->linesize,  0,
 		   video->video_stream->codec->height,  rgb_dest, rgb_stride);
-
-	// 
-	// This is horrible, the ffmpeg scaler wont produce a usable
-	// format (RGB32_1, BGR32_1 hang), so we have to manually swap
-	// some values here
-	//
-	unsigned char *p = video->video_rgb_buffer;
-
-// the stupid scaler gives us RGBA
-// we need BGRA (CAIRO_FORMAT_ARGB32)
-
-	for (int l = 0; l < cc->height; l++){
-		for (int c = 0; c < cc->width; c += 1){
-			unsigned char t;
-
-			t = p [2];
-			p [2] = p [0];
-			p [0] = t;
-			p += 4;
-		}
-	}
 }
 
 static gboolean

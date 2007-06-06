@@ -643,30 +643,38 @@ typedef struct _SurfacePrivate SurfacePrivate;
 //
 class Surface : public Canvas {
  public:
-	Surface () : width (0), height (0), buffer (0), pixbuf (NULL), cairo_surface (NULL), cairo (NULL), data(NULL) {}
+	Surface () : width (0), height (0), buffer (0), 
+		cairo_buffer_surface (NULL), cairo_buffer(NULL),
+		xlib_surface(NULL), cairo_xlib(NULL), pixmap(NULL),
+		cairo (NULL) {}
 	
 	int width, height;
 
 	// The data lives here
 	unsigned char *buffer;
 
-	// Representations:
-
-	SurfacePrivate *priv;
+	cairo_surface_t *cairo_buffer_surface;
+	cairo_t         *cairo_buffer;
+	cairo_surface_t *xlib_surface;
+	cairo_t         *cairo_xlib;
 	
-	// The same buffer, but this one is the pixbuf representation.
-	GdkPixbuf *pixbuf;
+	//
+	// This is what code uses, and its equal to either:
+	//    cairo_buffer: when the widget has not been realized
+	//    cairo_xlib:   when the widget has been realized
+	//
+	cairo_t *cairo;		
 
-	// The same buffer, but this one is for cairo.
-	cairo_surface_t *cairo_surface;
-	cairo_t *cairo;
+	// The pixmap used for the backing storage for xlib_surface
+	GdkPixmap *pixmap;
 
+	// The widget where we draw.
 	GtkWidget *drawing_area;
 					
 	//
 	// Consumer-defined data, we use it to pass the handle to invalidate
 	//
-	void *data;
+//	void *data;
 };
 
 Surface *surface_new       (int width, int height);
