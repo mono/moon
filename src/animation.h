@@ -130,6 +130,19 @@ void storyboard_child_set_target_name (Storyboard *sb,
 char* storyboard_child_get_target_name (Storyboard *sb,
 					DependencyObject *o);
 
+class BeginStoryboard : public TriggerAction {
+
+ public:
+	BeginStoryboard ()
+	{
+		SetObjectType (Value::BEGINSTORYBOARD);
+	}
+
+	static DependencyProperty* StoryboardProperty;
+};
+
+BeginStoryboard *begin_storyboard_new ();
+
 class DoubleAnimation : public Animation {
  public:
 

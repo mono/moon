@@ -384,6 +384,14 @@ storyboard_child_get_target_name (Storyboard *sb,
 }
 
 
+DependencyProperty* BeginStoryboard::StoryboardProperty;
+
+BeginStoryboard *
+begin_storyboard_new ()
+{
+	return new BeginStoryboard ();
+}
+
 DependencyProperty* DoubleAnimation::ByProperty;
 DependencyProperty* DoubleAnimation::FromProperty;
 DependencyProperty* DoubleAnimation::ToProperty;
@@ -435,5 +443,7 @@ animation_init ()
 									 Value::STRING);
 	Storyboard::TargetNameProperty     = DependencyObject::Register (Value::STORYBOARD, "TargetName", 
 									 Value::STRING);
-	
+
+	/* BeginStoryboard properties */
+	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Value::BEGINSTORYBOARD, "Storyboard",	Value::STORYBOARD);
 }
