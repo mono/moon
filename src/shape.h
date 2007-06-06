@@ -56,8 +56,6 @@ class Shape : public FrameworkElement {
 	// if they are both set.   It will also be called to compute the bounding box.
 	//
 	virtual void Draw (Surface *s) = 0;
-
-	virtual void set_prop_from_str (const char *prop, const char *value);
 };
 
 Brush		*shape_get_fill			(Shape *shape);
@@ -105,8 +103,6 @@ class Rectangle : public Shape {
 
 	void Draw (Surface *s);
 
-	virtual void set_prop_from_str (const char *prop, const char *value);
-
 	virtual Point getxformorigin ();
 };
 Rectangle *rectangle_new          ();
@@ -128,8 +124,6 @@ class Line : public Shape {
 	Line () { SetObjectType(DependencyObject::LINE); };
 	
 	void Draw (Surface *s);
-
-	virtual void set_prop_from_str (const char *prop, const char *value);
 
 	virtual Point getxformorigin ();
 };

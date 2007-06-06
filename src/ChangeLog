@@ -1,3 +1,9 @@
+2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h, runtime.cpp|h: Remove the (now) useless 
+	set_prop_from_str methods since everything they handled is now
+	moved into DependencyProperty.
+
 2007-06-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp|h: Use DependencyProperty for Shape Fill and Stroke 

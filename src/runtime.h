@@ -498,12 +498,6 @@ class UIElement : public DependencyObject {
 	virtual void getbounds () = 0;
 
 	//
-	// set_prop_from_str
-	//  takes a string value for a XAML property name and a string
-	//  representing the value.
-	virtual void set_prop_from_str (const char *pname, const char *vname);
-
-	//
 	// get_xform_for
 	//   Obtains the affine transform for the given child, this is
 	//   implemented by containers
@@ -558,8 +552,6 @@ class Canvas : public Panel {
  public:
 	virtual Point getxformorigin () { return Point (0, 0); }
 
-	virtual void set_prop_from_str (const char *pname, const char *vname);
-
 	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual void update_xform ();
@@ -583,8 +575,6 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty* WidthProperty;
 
 	FrameworkElement () {} 
-
-	virtual void set_prop_from_str (const char *prop, const char *value);
 };
 
 double	framework_element_get_height	(FrameworkElement *framework_element);

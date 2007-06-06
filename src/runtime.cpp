@@ -199,17 +199,6 @@ item_set_render_transform (UIElement *item, Transform *transform)
 	item->SetValue (UIElement::RenderTransformProperty, transform);
 }
 
-void
-FrameworkElement::set_prop_from_str (const char *prop, const char *value)
-{
-	if (!g_strcasecmp (prop, "width"))
-		framework_element_set_width (this, strtod (value, NULL));
-	else if (!g_strcasecmp (prop, "height"))
-		framework_element_set_height (this, strtod (value, NULL));
-
-	// FIXME: call UIElement::set_prop_from_str
-}
-
 double
 framework_element_get_height (FrameworkElement *framework_element)
 {
@@ -438,21 +427,6 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 			 0, 0 // gint x_dither, gint y_dither
 			 );
 	return TRUE;
-}
-
-void
-UIElement::set_prop_from_str (const char *prop, const char *value)
-{
-
-}
-
-/**
- * This is just a temp setup for debugging/demoing
- **/
-void
-Canvas::set_prop_from_str (const char *prop, const char *value)
-{
-
 }
 
 void
