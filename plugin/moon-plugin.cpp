@@ -29,7 +29,9 @@ static void moon_plugin_demo (Surface *surface)
 
 	Rectangle *r;
 
-	r = rectangle_new (100, 100);
+	r = rectangle_new ();
+	framework_element_set_width (r, 100.0);
+	framework_element_set_height (r, 100.0);
 	r->SetValue (Canvas::LeftProperty, Value (50.0));
 	r->SetValue (Canvas::TopProperty, Value (50.0));
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
