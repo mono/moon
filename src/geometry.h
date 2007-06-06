@@ -28,7 +28,7 @@ class Geometry : public DependencyObject {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* TransformProperty;
 
-	Geometry () { SetObjectType (DependencyObject::GEOMETRY); };
+	Geometry () { SetObjectType (Value::GEOMETRY); };
 };
 FillRule geometry_get_fill_rule (Geometry *geometry);
 void geometry_set_fill_rule (Geometry *geometry, FillRule fill_rule);
@@ -42,7 +42,7 @@ class GeometryGroup : public Geometry {
  public:
 	static DependencyProperty* ChildrenProperty;
 
-	GeometryGroup () { SetObjectType (DependencyObject::GEOMETRYGROUP); };
+	GeometryGroup () { SetObjectType (Value::GEOMETRYGROUP); };
 };
 GeometryGroup* geometry_group_new ();
 // TODO get|set GeometryCollection
@@ -56,7 +56,7 @@ class EllipseGeometry : public Geometry {
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
-	EllipseGeometry () { SetObjectType (DependencyObject::ELLIPSEGEOMETRY); };
+	EllipseGeometry () { SetObjectType (Value::ELLIPSEGEOMETRY); };
 };
 EllipseGeometry* ellipse_geometry_new ();
 Point* ellipse_geometry_get_center (EllipseGeometry *ellipse_geometry);
@@ -74,7 +74,7 @@ class LineGeometry : public Geometry {
 	static DependencyProperty* EndPointProperty;
 	static DependencyProperty* StartPointProperty;
 
-	LineGeometry () { SetObjectType (DependencyObject::LINEGEOMETRY); };
+	LineGeometry () { SetObjectType (Value::LINEGEOMETRY); };
 };
 LineGeometry* line_geometry_new ();
 Point* line_geometry_get_end_point (LineGeometry* line_geometry);
@@ -89,7 +89,7 @@ class PathGeometry : public Geometry {
  public:
 	static DependencyProperty* FiguresProperty;
 
-	PathGeometry () { SetObjectType (DependencyObject::PATHGEOMETRY); };
+	PathGeometry () { SetObjectType (Value::PATHGEOMETRY); };
 };
 PathGeometry* path_geometry_new ();
 // TODO get|set PathFigureCollection
@@ -103,7 +103,7 @@ class RectangleGeometry : public Geometry {
 	static DependencyProperty* RadiusYProperty;
 	static DependencyProperty* RectProperty;
 
-	RectangleGeometry () { SetObjectType (DependencyObject::RECTANGLEGEOMETRY); };
+	RectangleGeometry () { SetObjectType (Value::RECTANGLEGEOMETRY); };
 };
 RectangleGeometry* rectangle_geometry_new ();
 double rectangle_geometry_get_radius_x (RectangleGeometry *rectangle_geometry);
@@ -125,7 +125,7 @@ class PathFigure : public DependencyObject {
 
 	PathFigure ()
 	{
-		SetObjectType (DependencyObject::PATHFIGURE);
+		SetObjectType (Value::PATHFIGURE);
 	}
 };
 PathFigure* path_figure_new ();
@@ -155,7 +155,7 @@ class ArcSegment : public PathSegment {
 
 	ArcSegment ()
 	{
-		SetObjectType (DependencyObject::ARCSEGMENT);
+		SetObjectType (Value::ARCSEGMENT);
 	}
 };
 ArcSegment	*arc_segment_new		();
@@ -181,7 +181,7 @@ class BezierSegment : public PathSegment {
 
 	BezierSegment ()
 	{
-		SetObjectType (DependencyObject::BEZIERSEGMENT);
+		SetObjectType (Value::BEZIERSEGMENT);
 	}
 };
 BezierSegment	*bezier_segment_new		();
@@ -201,7 +201,7 @@ class LineSegment : public PathSegment {
 
 	LineSegment ()
 	{
-		SetObjectType (DependencyObject::LINESEGMENT);
+		SetObjectType (Value::LINESEGMENT);
 	}
 };
 LineSegment	*line_segment_new	();

@@ -35,7 +35,7 @@ class Shape : public FrameworkElement {
 
 	Shape () : stroke_dash_array (NULL), stroke_dash_array_count (0)
 	{
-		SetObjectType (DependencyObject::SHAPE);
+		SetObjectType (Value::SHAPE);
 	}
 
 	//
@@ -85,7 +85,7 @@ void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 //
 class Ellipse : public Shape {
  public:
-	Ellipse () { SetObjectType (DependencyObject::ELLIPSE); };
+	Ellipse () { SetObjectType (Value::ELLIPSE); };
 
 	void Draw (Surface *s);
 };
@@ -99,7 +99,7 @@ class Rectangle : public Shape {
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
-	Rectangle () { SetObjectType (DependencyObject::RECTANGLE); };
+	Rectangle () { SetObjectType (Value::RECTANGLE); };
 
 	void Draw (Surface *s);
 
@@ -121,7 +121,7 @@ class Line : public Shape {
 	static DependencyProperty* X2Property;
 	static DependencyProperty* Y2Property;
 
-	Line () { SetObjectType(DependencyObject::LINE); };
+	Line () { SetObjectType(Value::LINE); };
 	
 	void Draw (Surface *s);
 
@@ -149,7 +149,7 @@ class Polygon : public Shape {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polygon () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (DependencyObject::POLYGON); };
+	Polygon () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (Value::POLYGON); };
 
 	void Draw (Surface *s);
 };
@@ -170,7 +170,7 @@ class Polyline : public Shape {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polyline () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (DependencyObject::POLYLINE); };
+	Polyline () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (Value::POLYLINE); };
 
 	void Draw (Surface *s);
 };

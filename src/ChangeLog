@@ -6,6 +6,9 @@
 
 2007-06-06  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.h: Move all the types into the Value::Kind enumeration
+	so that we can have a shared type system.
+
 	* demo.cpp (main): Allow loading a XAML file from the command
 	line, for your testing pleasure.
 

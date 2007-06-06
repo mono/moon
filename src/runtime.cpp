@@ -602,7 +602,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 
 DependencyObject::DependencyObject ()
 {
-	this->objectType = INVALID;
+	this->objectType = Value::INVALID;
 	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
 	events = new EventObject ();
 	this->attached_list = NULL;
@@ -615,7 +615,7 @@ DependencyObject::~DependencyObject ()
 }
 
 void
-DependencyObject::SetObjectType (Type objectType)
+DependencyObject::SetObjectType (Value::Kind objectType)
 {
 	this->objectType = objectType;
 }
@@ -627,7 +627,7 @@ DependencyObject::GetDependencyProperty (char *name)
 }
 
 DependencyProperty *
-DependencyObject::GetDependencyProperty (DependencyObject::Type type, char *name)
+DependencyObject::GetDependencyProperty (Value::Kind type, char *name)
 {
 	GHashTable *table;
 	DependencyProperty *property;
@@ -659,7 +659,7 @@ DependencyObject::FindName (char *name)
 // Use this for values that can be null
 //
 DependencyProperty *
-DependencyObject::Register (DependencyObject::Type type, char *name, Value::Kind vtype)
+DependencyObject::Register (Value::Kind type, char *name, Value::Kind vtype)
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
@@ -670,7 +670,7 @@ DependencyObject::Register (DependencyObject::Type type, char *name, Value::Kind
 // DependencyObject takes ownership of the Value * for default_value
 //
 DependencyProperty *
-DependencyObject::Register (DependencyObject::Type type, char *name, Value *default_value)
+DependencyObject::Register (Value::Kind type, char *name, Value *default_value)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
@@ -679,7 +679,7 @@ DependencyObject::Register (DependencyObject::Type type, char *name, Value *defa
 }
 
 DependencyProperty *
-DependencyObject::RegisterFull (DependencyObject::Type type, char *name, Value *default_value, Value::Kind vtype)
+DependencyObject::RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype)
 {
 	GHashTable *table;
 
@@ -702,7 +702,7 @@ DependencyObject::RegisterFull (DependencyObject::Type type, char *name, Value *
 	return property;
 }
 
-DependencyObject::Type
+Value::Kind
 DependencyObject::GetObjectType ()
 {
 	return objectType;
@@ -857,7 +857,7 @@ void
 namescope_init ()
 {
 	global_NameScope = new NameScope ();
-	NameScope::NameScopeProperty = DependencyObject::Register (DependencyObject::NAMESCOPE, "NameScope", Value::DEPENDENCY_OBJECT);
+	NameScope::NameScopeProperty = DependencyObject::Register (Value::NAMESCOPE, "NameScope", Value::DEPENDENCY_OBJECT);
 }
 
 DependencyProperty* FrameworkElement::HeightProperty;
@@ -866,8 +866,8 @@ DependencyProperty* FrameworkElement::WidthProperty;
 void
 framework_element_init ()
 {
-	FrameworkElement::HeightProperty = DependencyObject::Register (DependencyObject::FRAMEWORKELEMENT, "Height", new Value (0.0));
-	FrameworkElement::WidthProperty = DependencyObject::Register (DependencyObject::FRAMEWORKELEMENT, "Width", new Value (0.0));
+	FrameworkElement::HeightProperty = DependencyObject::Register (Value::FRAMEWORKELEMENT, "Height", new Value (0.0));
+	FrameworkElement::WidthProperty = DependencyObject::Register (Value::FRAMEWORKELEMENT, "Width", new Value (0.0));
 }
 
 DependencyProperty* Canvas::TopProperty;
@@ -876,8 +876,8 @@ DependencyProperty* Canvas::LeftProperty;
 void 
 canvas_init ()
 {
-	Canvas::TopProperty = DependencyObject::Register (DependencyObject::CANVAS, "Top", new Value (0.0));
-	Canvas::LeftProperty = DependencyObject::Register (DependencyObject::CANVAS, "Left", new Value (0.0));
+	Canvas::TopProperty = DependencyObject::Register (Value::CANVAS, "Top", new Value (0.0));
+	Canvas::LeftProperty = DependencyObject::Register (Value::CANVAS, "Left", new Value (0.0));
 }
 
 DependencyProperty* UIElement::RenderTransformProperty;
@@ -885,7 +885,7 @@ DependencyProperty* UIElement::RenderTransformProperty;
 void
 item_init ()
 {
-	UIElement::RenderTransformProperty = DependencyObject::Register (DependencyObject::UIELEMENT, "RenderTransform", Value::DEPENDENCY_OBJECT);
+	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::DEPENDENCY_OBJECT);
 }
 
 void

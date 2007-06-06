@@ -93,7 +93,7 @@ class XamlElementInfo {
  public:
 	const char *name;
 	XamlElementInfo *parent;
-	DependencyObject::Type dependency_type;
+	Value::Kind dependency_type;
 
 	create_item_func create_item;
 	create_element_instance_func create_element;
@@ -101,7 +101,7 @@ class XamlElementInfo {
 	set_property_func set_property;
 	set_attributes_func set_attributes;
 
-	XamlElementInfo (const char *name, XamlElementInfo *parent, DependencyObject::Type dependency_type) :
+	XamlElementInfo (const char *name, XamlElementInfo *parent, Value::Kind dependency_type) :
 		name (name), parent (parent), dependency_type (dependency_type),
 		create_item (NULL), create_element (NULL), add_child (NULL), set_property (NULL), set_attributes (NULL)
 	{
@@ -459,13 +459,13 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 // We still use a name for ghost elements to make debugging easier
 XamlElementInfo *
-register_ghost_element (const char *name, XamlElementInfo *parent, DependencyObject::Type dt)
+register_ghost_element (const char *name, XamlElementInfo *parent, Value::Kind dt)
 {
 	return new XamlElementInfo (name, parent, dt);
 }
 
 XamlElementInfo *
-register_dependency_object_element (const char *name, XamlElementInfo *parent, DependencyObject::Type dt,
+register_dependency_object_element (const char *name, XamlElementInfo *parent, Value::Kind dt,
 		create_item_func create_item)
 {
 	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
@@ -482,7 +482,7 @@ register_dependency_object_element (const char *name, XamlElementInfo *parent, D
 }
 
 XamlElementInfo *
-register_element_full (const char *name, XamlElementInfo *parent, DependencyObject::Type dt,
+register_element_full (const char *name, XamlElementInfo *parent, Value::Kind dt,
 		create_item_func create_item, create_element_instance_func create_element, add_child_func add_child,
 		set_property_func set_property, set_attributes_func set_attributes)
 {
@@ -507,42 +507,42 @@ xaml_init ()
 	//
 	// ui element ->
 	//
-	XamlElementInfo *ui = register_ghost_element ("UIElement", NULL, DependencyObject::UIELEMENT);
-	XamlElementInfo *fw = register_ghost_element ("FrameworkElement", ui, DependencyObject::FRAMEWORKELEMENT);
-	XamlElementInfo *shape = register_ghost_element ("Shape", fw, DependencyObject::SHAPE);
+	XamlElementInfo *ui = register_ghost_element ("UIElement", NULL, Value::UIELEMENT);
+	XamlElementInfo *fw = register_ghost_element ("FrameworkElement", ui, Value::FRAMEWORKELEMENT);
+	XamlElementInfo *shape = register_ghost_element ("Shape", fw, Value::SHAPE);
 
 	
 	///
 	/// Shapes
 	///
 	
-	register_dependency_object_element ("Ellipse", shape, DependencyObject::ELLIPSE, (create_item_func) ellipse_new);
-	register_dependency_object_element ("Line", shape, DependencyObject::LINE, (create_item_func) line_new);
-	register_dependency_object_element ("Path", shape, DependencyObject::PATH, (create_item_func) path_new);
-	register_dependency_object_element ("Polygon", shape, DependencyObject::POLYGON, (create_item_func) polygon_new);
-	register_dependency_object_element ("Polyline", shape, DependencyObject::POLYLINE, (create_item_func) polyline_new);
-	register_dependency_object_element ("Rectangle", shape, DependencyObject::RECTANGLE, (create_item_func) rectangle_new);
+	register_dependency_object_element ("Ellipse", shape, Value::ELLIPSE, (create_item_func) ellipse_new);
+	register_dependency_object_element ("Line", shape, Value::LINE, (create_item_func) line_new);
+	register_dependency_object_element ("Path", shape, Value::PATH, (create_item_func) path_new);
+	register_dependency_object_element ("Polygon", shape, Value::POLYGON, (create_item_func) polygon_new);
+	register_dependency_object_element ("Polyline", shape, Value::POLYLINE, (create_item_func) polyline_new);
+	register_dependency_object_element ("Rectangle", shape, Value::RECTANGLE, (create_item_func) rectangle_new);
 
 	///
 	/// Geometry
 	///
 
-	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, DependencyObject::GEOMETRY);
-	register_dependency_object_element ("GeometryGroup", geo, DependencyObject::GEOMETRYGROUP, (create_item_func) geometry_group_new);
-	register_dependency_object_element ("EllipseGeometry", geo, DependencyObject::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
-//	register_dependency_object_element ("CombinedGeometry", geo, DependencyObject::COMBINEDGEOMETRY, (create_item_func) combined_geometry_new);
-	register_dependency_object_element ("LineGeometry", geo, DependencyObject::LINEGEOMETRY, (create_item_func) line_geometry_new);
-	register_dependency_object_element ("PathGeometry", geo, DependencyObject::PATHGEOMETRY, (create_item_func) path_geometry_new);
-	register_dependency_object_element ("RectangleGeometry", geo, DependencyObject::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
-//	register_dependency_object_element ("StreamGeometry", geo, DependencyObject::STREAMGEOMETRY, (create_item_func) stream_geometry_new);
+	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, Value::GEOMETRY);
+	register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
+	register_dependency_object_element ("EllipseGeometry", geo, Value::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
+//	register_dependency_object_element ("CombinedGeometry", geo, Value::COMBINEDGEOMETRY, (create_item_func) combined_geometry_new);
+	register_dependency_object_element ("LineGeometry", geo, Value::LINEGEOMETRY, (create_item_func) line_geometry_new);
+	register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
+	register_dependency_object_element ("RectangleGeometry", geo, Value::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
+//	register_dependency_object_element ("StreamGeometry", geo, Value::STREAMGEOMETRY, (create_item_func) stream_geometry_new);
 
 
 	///
 	/// Panels
 	///
 	
-	XamlElementInfo *panel = register_ghost_element ("Panel", fw, DependencyObject::PANEL);
-	XamlElementInfo *canvas = register_dependency_object_element ("Canvas", panel, DependencyObject::CANVAS, (create_item_func) canvas_new);
+	XamlElementInfo *panel = register_ghost_element ("Panel", fw, Value::PANEL);
+	XamlElementInfo *canvas = register_dependency_object_element ("Canvas", panel, Value::CANVAS, (create_item_func) canvas_new);
 	canvas->add_child = panel_add_child;
 
 
@@ -550,25 +550,25 @@ xaml_init ()
 	/// Animation
 	///
 	
-	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, DependencyObject::TIMELINE);
-	register_dependency_object_element ("DoubleAnimation", tl, DependencyObject::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	register_dependency_object_element ("StoryBoard", tl, DependencyObject::STORYBOARD, (create_item_func) storyboard_new);
+	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
+	register_dependency_object_element ("DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
+	register_dependency_object_element ("StoryBoard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
 
 
 	///
 	/// Transforms
 	///
 	
-	register_dependency_object_element ("RotateTransform", NULL, DependencyObject::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
-	register_dependency_object_element ("ScaleTransform", NULL, DependencyObject::SCALETRANSFORM, (create_item_func) scale_transform_new);
-	register_dependency_object_element ("TranslateTransform", NULL, DependencyObject::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
-	register_dependency_object_element ("MatrixTransform", NULL, DependencyObject::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
+	register_dependency_object_element ("RotateTransform", NULL, Value::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
+	register_dependency_object_element ("ScaleTransform", NULL, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
+	register_dependency_object_element ("TranslateTransform", NULL, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
+	register_dependency_object_element ("MatrixTransform", NULL, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
 
 
 	///
 	/// Brushes
 	///
 
-	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, DependencyObject::BRUSH);
-	register_dependency_object_element ("SolidColorBrush", brush, DependencyObject::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
+	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, Value::BRUSH);
+	register_dependency_object_element ("SolidColorBrush", brush, Value::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
 }

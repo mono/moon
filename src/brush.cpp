@@ -194,10 +194,10 @@ void
 brush_init ()
 {
 	/* Brush fields */
-	Brush::OpacityProperty = DependencyObject::Register (DependencyObject::BRUSH, "Opacity", new Value (1.0));
-	Brush::RelativeTransformProperty = DependencyObject::Register (DependencyObject::BRUSH, "RelativeTransform", new Value ());
-	Brush::TransformProperty = DependencyObject::Register (DependencyObject::BRUSH, "TransformProperty", new Value ());
+	Brush::OpacityProperty = DependencyObject::Register (Value::BRUSH, "Opacity", new Value (1.0));
+	Brush::RelativeTransformProperty = DependencyObject::Register (Value::BRUSH, "RelativeTransform", new Value ());
+	Brush::TransformProperty = DependencyObject::Register (Value::BRUSH, "TransformProperty", new Value ());
 
 	/* SolidColorBrush fields */
-	SolidColorBrush::ColorProperty = DependencyObject::Register (DependencyObject::SOLIDCOLORBRUSH, "Color", new Value (new Color (0x00FFFFFF)));
+	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (new Color (0x00FFFFFF)));
 }

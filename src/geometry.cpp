@@ -433,47 +433,47 @@ void
 geometry_init ()
 {
 	/* Geometry fields */
-	Geometry::FillRuleProperty = DependencyObject::Register (DependencyObject::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
-	Geometry::TransformProperty = DependencyObject::Register (DependencyObject::GEOMETRY, "Transform", Value::DEPENDENCY_OBJECT);
+	Geometry::FillRuleProperty = DependencyObject::Register (Value::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
+	Geometry::TransformProperty = DependencyObject::Register (Value::GEOMETRY, "Transform", Value::DEPENDENCY_OBJECT);
 
 	/* GeometryGroup fields */
-	GeometryGroup::ChildrenProperty = DependencyObject::Register (DependencyObject::GEOMETRYGROUP, "Children", Value::DEPENDENCY_OBJECT);
+	GeometryGroup::ChildrenProperty = DependencyObject::Register (Value::GEOMETRYGROUP, "Children", Value::DEPENDENCY_OBJECT);
 
 	/* EllipseGeometry fields */
-	EllipseGeometry::CenterProperty = DependencyObject::Register (DependencyObject::ELLIPSEGEOMETRY, "Center", Value::POINT);
-	EllipseGeometry::RadiusXProperty = DependencyObject::Register (DependencyObject::ELLIPSEGEOMETRY, "RadiusX", new Value (0.0));
-	EllipseGeometry::RadiusYProperty = DependencyObject::Register (DependencyObject::ELLIPSEGEOMETRY, "RadiusY", new Value (0.0));
+	EllipseGeometry::CenterProperty = DependencyObject::Register (Value::ELLIPSEGEOMETRY, "Center", Value::POINT);
+	EllipseGeometry::RadiusXProperty = DependencyObject::Register (Value::ELLIPSEGEOMETRY, "RadiusX", new Value (0.0));
+	EllipseGeometry::RadiusYProperty = DependencyObject::Register (Value::ELLIPSEGEOMETRY, "RadiusY", new Value (0.0));
 
 	/* LineGeometry fields */
-	LineGeometry::EndPointProperty = DependencyObject::Register (DependencyObject::LINEGEOMETRY, "EndPoint", Value::POINT);
-	LineGeometry::StartPointProperty = DependencyObject::Register (DependencyObject::LINEGEOMETRY, "StartPoint", Value::POINT);
+	LineGeometry::EndPointProperty = DependencyObject::Register (Value::LINEGEOMETRY, "EndPoint", Value::POINT);
+	LineGeometry::StartPointProperty = DependencyObject::Register (Value::LINEGEOMETRY, "StartPoint", Value::POINT);
 
 	/* PathGeometry */
-	PathGeometry::FiguresProperty = DependencyObject::Register (DependencyObject::PATHGEOMETRY, "Figures", Value::DEPENDENCY_OBJECT);
+	PathGeometry::FiguresProperty = DependencyObject::Register (Value::PATHGEOMETRY, "Figures", Value::DEPENDENCY_OBJECT);
 
 	/* RectangleGeometry fields */
-	RectangleGeometry::RadiusXProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0));
-	RectangleGeometry::RadiusYProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0));
-	RectangleGeometry::RectProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "Rect", Value::RECT);
+	RectangleGeometry::RadiusXProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0));
+	RectangleGeometry::RadiusYProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0));
+	RectangleGeometry::RectProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "Rect", Value::RECT);
 
 	/* PathFigure fields */
-	PathFigure::IsClosedProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "IsClosed", new Value (true));
-	PathFigure::IsFilledProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "IsFilled", new Value (true));
-	PathFigure::SegmentsProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "Segments", Value::DEPENDENCY_OBJECT);
-	PathFigure::StartPointProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "StartPoint", Value::POINT);
+	PathFigure::IsClosedProperty = DependencyObject::Register (Value::PATHFIGURE, "IsClosed", new Value (true));
+	PathFigure::IsFilledProperty = DependencyObject::Register (Value::PATHFIGURE, "IsFilled", new Value (true));
+	PathFigure::SegmentsProperty = DependencyObject::Register (Value::PATHFIGURE, "Segments", Value::DEPENDENCY_OBJECT);
+	PathFigure::StartPointProperty = DependencyObject::Register (Value::PATHFIGURE, "StartPoint", Value::POINT);
 
 	/* ArcSegment fields */
-	ArcSegment::IsLargeArcProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "IsLargeArc", new Value (true));
-	ArcSegment::PointProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "Point", Value::POINT);
-	ArcSegment::RotationAngleProperty  = DependencyObject::Register (DependencyObject::ARCSEGMENT, "RadiusY", new Value (0.0));
-	ArcSegment::SizeProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "RotationAngle", Value::POINT);
-	ArcSegment::SweepDirectionProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
+	ArcSegment::IsLargeArcProperty = DependencyObject::Register (Value::ARCSEGMENT, "IsLargeArc", new Value (true));
+	ArcSegment::PointProperty = DependencyObject::Register (Value::ARCSEGMENT, "Point", Value::POINT);
+	ArcSegment::RotationAngleProperty  = DependencyObject::Register (Value::ARCSEGMENT, "RadiusY", new Value (0.0));
+	ArcSegment::SizeProperty = DependencyObject::Register (Value::ARCSEGMENT, "RotationAngle", Value::POINT);
+	ArcSegment::SweepDirectionProperty = DependencyObject::Register (Value::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
 
 	/* BezierSegment fields */
-	BezierSegment::Point1Property = DependencyObject::Register (DependencyObject::BEZIERSEGMENT, "Point1", Value::POINT);
-	BezierSegment::Point2Property = DependencyObject::Register (DependencyObject::BEZIERSEGMENT, "Point2", Value::POINT);
-	BezierSegment::Point3Property = DependencyObject::Register (DependencyObject::BEZIERSEGMENT, "Point3", Value::POINT);
+	BezierSegment::Point1Property = DependencyObject::Register (Value::BEZIERSEGMENT, "Point1", Value::POINT);
+	BezierSegment::Point2Property = DependencyObject::Register (Value::BEZIERSEGMENT, "Point2", Value::POINT);
+	BezierSegment::Point3Property = DependencyObject::Register (Value::BEZIERSEGMENT, "Point3", Value::POINT);
 
 	/* LineSegment fields */
-	LineSegment::PointProperty = DependencyObject::Register (DependencyObject::LINESEGMENT, "Point", Value::POINT);
+	LineSegment::PointProperty = DependencyObject::Register (Value::LINESEGMENT, "Point", Value::POINT);
 }

@@ -417,23 +417,23 @@ void
 animation_init ()
 {
 	/* Timeline properties */
-	Timeline::AutoReverseProperty = DependencyObject::Register (DependencyObject::TIMELINE, "AutoReverse", new Value (false));
-	Timeline::BeginTimeProperty = DependencyObject::Register (DependencyObject::TIMELINE, "BeginTime", new Value (0));
-	Timeline::DurationProperty = DependencyObject::Register (DependencyObject::TIMELINE, "Duration", new Value (0));
+	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
+	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", new Value (0));
+	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "FillBehavior", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "RepeatBehavior", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "SpeedRatio", new Value (0));
 
 
 	/* DoubleAnimation properties */
-	DoubleAnimation::ByProperty   = DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "By", new Value (0.0));
-	DoubleAnimation::FromProperty = DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "From", new Value (0.0));
-	DoubleAnimation::ToProperty   = DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "To", new Value (0.0));
+	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By", new Value (0.0));
+	DoubleAnimation::FromProperty = DependencyObject::Register (Value::DOUBLEANIMATION, "From", new Value (0.0));
+	DoubleAnimation::ToProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "To", new Value (0.0));
 
 	/* Storyboard properties */
-	Storyboard::TargetPropertyProperty = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetProperty", 
+	Storyboard::TargetPropertyProperty = DependencyObject::Register (Value::STORYBOARD, "TargetProperty", 
 									 Value::STRING);
-	Storyboard::TargetNameProperty     = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetName", 
+	Storyboard::TargetNameProperty     = DependencyObject::Register (Value::STORYBOARD, "TargetName", 
 									 Value::STRING);
 	
 }

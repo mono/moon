@@ -21,7 +21,7 @@ void   transform_get_transform (Transform *t, cairo_matrix_t *value);
 class RotateTransform : public Transform {
  public:
 
-	RotateTransform () { SetObjectType (DependencyObject::ROTATETRANSFORM); }
+	RotateTransform () { SetObjectType (Value::ROTATETRANSFORM); }
 
 	static DependencyProperty* AngleProperty;
 	static DependencyProperty* CenterXProperty;
@@ -44,7 +44,7 @@ double rotate_transform_get_center_y (RotateTransform *t);
 class TranslateTransform : public Transform {
  public:
 
-	TranslateTransform () { SetObjectType (DependencyObject::TRANSLATETRANSFORM); }
+	TranslateTransform () { SetObjectType (Value::TRANSLATETRANSFORM); }
 
 	static DependencyProperty* XProperty;
 	static DependencyProperty* YProperty;
@@ -63,7 +63,7 @@ double translate_transform_get_y (TranslateTransform *t);
 class ScaleTransform : public Transform {
 public:
 
-	ScaleTransform () { SetObjectType (DependencyObject::SCALETRANSFORM); }
+	ScaleTransform () { SetObjectType (Value::SCALETRANSFORM); }
 
 	static DependencyProperty* ScaleXProperty;
 	static DependencyProperty* ScaleYProperty;
@@ -90,7 +90,7 @@ double scale_transform_get_center_y (ScaleTransform *t);
 class MatrixTransform : public Transform {
  public:
 
-	MatrixTransform () { SetObjectType (DependencyObject::MATRIXTRANSFORM); }
+	MatrixTransform () { SetObjectType (Value::MATRIXTRANSFORM); }
 
 	/* these are dependency properties
 	   Matrix matrix;

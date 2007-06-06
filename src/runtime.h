@@ -157,10 +157,48 @@ public:
 		INT64 = 3,
 		INT32 = 4,
 		STRING = 5,
-		DEPENDENCY_OBJECT = 6,
 		COLOR = 7,
 		POINT = 8,
-		RECT = 9
+		RECT = 9,
+
+		DEPENDENCY_OBJECT = 1000,
+
+		// These are dependency objects
+		UIELEMENT,
+		PANEL,
+		CANVAS,
+		TIMELINE,
+		ROTATETRANSFORM,
+		SCALETRANSFORM,
+		TRANSLATETRANSFORM,
+		MATRIXTRANSFORM,
+		STORYBOARD,
+		DOUBLEANIMATION,
+		SHAPE,
+		ELLIPSE,
+		LINE,
+		PATH,
+		POLYGON,
+		POLYLINE,
+		RECTANGLE,
+		GEOMETRY,
+		GEOMETRYGROUP,
+		ELLIPSEGEOMETRY,
+		LINEGEOMETRY,
+		PATHGEOMETRY,
+		RECTANGLEGEOMETRY,
+		FRAMEWORKELEMENT,
+		NAMESCOPE,
+		CLOCK,
+		BRUSH,
+		SOLIDCOLORBRUSH,
+		PATHFIGURE,
+		ARCSEGMENT,
+		BEZIERSEGMENT,
+		LINESEGMENT,
+		POLYBEZIERSEGMENT,
+		POLYQUADRATICBEZIERSEGMENT,
+		QUADRATICBEZIERSEGMENT
 	};
 
 	Kind k;
@@ -307,56 +345,18 @@ void base_unref (Base *base);
 
 class DependencyObject : public Base {
  public:
-	enum Type {
-		INVALID = 0,
-		UIELEMENT,
-		PANEL,
-		CANVAS,
-		TIMELINE,
-		ROTATETRANSFORM,
-		SCALETRANSFORM,
-		TRANSLATETRANSFORM,
-		MATRIXTRANSFORM,
-		STORYBOARD,
-		DOUBLEANIMATION,
-		SHAPE,
-		ELLIPSE,
-		LINE,
-		PATH,
-		POLYGON,
-		POLYLINE,
-		RECTANGLE,
-		GEOMETRY,
-		GEOMETRYGROUP,
-		ELLIPSEGEOMETRY,
-		LINEGEOMETRY,
-		PATHGEOMETRY,
-		RECTANGLEGEOMETRY,
-		FRAMEWORKELEMENT,
-		NAMESCOPE,
-		CLOCK,
-		BRUSH,
-		SOLIDCOLORBRUSH,
-		PATHFIGURE,
-		ARCSEGMENT,
-		BEZIERSEGMENT,
-		LINESEGMENT,
-		POLYBEZIERSEGMENT,
-		POLYQUADRATICBEZIERSEGMENT,
-		QUADRATICBEZIERSEGMENT
-	};
-	
+
 	DependencyObject ();
 	~DependencyObject ();
-	static DependencyProperty *Register (Type type, char *name, Value *default_value);
-	static DependencyProperty *Register (DependencyObject::Type type, char *name, Value::Kind vtype);
-	static DependencyProperty *RegisterFull (DependencyObject::Type type, char *name, Value *default_value, Value::Kind vtype);
+	static DependencyProperty *Register (Value::Kind type, char *name, Value *default_value);
+	static DependencyProperty *Register (Value::Kind type, char *name, Value::Kind vtype);
+	static DependencyProperty *RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype);
 	
-	static DependencyProperty *GetDependencyProperty (Type type, char *name);
+	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name);
 	void SetValue (DependencyProperty *property, Value value);
 	Value *GetValue (DependencyProperty *property);
 	DependencyProperty *GetDependencyProperty (char *name);
-	Type GetObjectType ();
+	Value::Kind GetObjectType ();
 
 	DependencyObject* FindName (char *name);
 
@@ -367,10 +367,10 @@ class DependencyObject : public Base {
 
  protected:
 	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
-	void SetObjectType (Type objectType);
+	void SetObjectType (Value::Kind objectType);
 
  private:
-	Type objectType;
+	Value::Kind objectType;
 	static GHashTable *properties;
 	GHashTable        *current_values;
 	GSList            *attached_list;
@@ -387,7 +387,7 @@ class DependencyProperty {
 
 	char *name;
 	Value *default_value;
-	DependencyObject::Type type;
+	Value::Kind type;
 	Value::Kind value_type;
 };
 
@@ -419,7 +419,7 @@ class Brush : public DependencyObject {
 
 	Brush ()
 	{
-		SetObjectType (DependencyObject::BRUSH);
+		SetObjectType (Value::BRUSH);
 	}
 	
 	virtual void SetupBrush (cairo_t *cairo) = 0;
@@ -439,7 +439,7 @@ class SolidColorBrush : public Brush {
 
 	SolidColorBrush ()
 	{
-		SetObjectType (DependencyObject::SOLIDCOLORBRUSH);
+		SetObjectType (Value::SOLIDCOLORBRUSH);
 	}
 
 	virtual void SetupBrush (cairo_t *cairo);
@@ -500,7 +500,7 @@ class UIElement : public DependencyObject {
 		user_xform_origin(0,0),
 		x1 (0), y1(0), x2(0), y2(0)
 		{
-			SetObjectType (DependencyObject::UIELEMENT);
+			SetObjectType (Value::UIELEMENT);
 			cairo_matrix_init_identity (&absolute_xform);
 		}
 	

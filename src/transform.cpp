@@ -239,19 +239,19 @@ void
 transform_init ()
 {
 	/* RotateTransform fields */
-	RotateTransform::AngleProperty   = DependencyObject::Register (DependencyObject::ROTATETRANSFORM, "Angle", new Value (0.0));
-	RotateTransform::CenterXProperty = DependencyObject::Register (DependencyObject::ROTATETRANSFORM, "CenterX", new Value (0.0));
-	RotateTransform::CenterYProperty = DependencyObject::Register (DependencyObject::ROTATETRANSFORM, "CenterY", new Value (0.0));
+	RotateTransform::AngleProperty   = DependencyObject::Register (Value::ROTATETRANSFORM, "Angle", new Value (0.0));
+	RotateTransform::CenterXProperty = DependencyObject::Register (Value::ROTATETRANSFORM, "CenterX", new Value (0.0));
+	RotateTransform::CenterYProperty = DependencyObject::Register (Value::ROTATETRANSFORM, "CenterY", new Value (0.0));
   
 	/* TranslateTransform fields */
-	TranslateTransform::XProperty = DependencyObject::Register (DependencyObject::TRANSLATETRANSFORM, "X", new Value (0.0));
-	TranslateTransform::YProperty = DependencyObject::Register (DependencyObject::TRANSLATETRANSFORM, "Y", new Value (0.0));
+	TranslateTransform::XProperty = DependencyObject::Register (Value::TRANSLATETRANSFORM, "X", new Value (0.0));
+	TranslateTransform::YProperty = DependencyObject::Register (Value::TRANSLATETRANSFORM, "Y", new Value (0.0));
 
 	/* ScaleTransform fields */
-	ScaleTransform::ScaleXProperty = DependencyObject::Register (DependencyObject::SCALETRANSFORM, "ScaleX", new Value (1.0));
-	ScaleTransform::ScaleYProperty = DependencyObject::Register (DependencyObject::SCALETRANSFORM, "ScaleY", new Value (1.0));
-	ScaleTransform::CenterXProperty = DependencyObject::Register (DependencyObject::SCALETRANSFORM, "CenterX", new Value (0.0));
-	ScaleTransform::CenterYProperty = DependencyObject::Register (DependencyObject::SCALETRANSFORM, "CenterY", new Value (0.0));
+	ScaleTransform::ScaleXProperty = DependencyObject::Register (Value::SCALETRANSFORM, "ScaleX", new Value (1.0));
+	ScaleTransform::ScaleYProperty = DependencyObject::Register (Value::SCALETRANSFORM, "ScaleY", new Value (1.0));
+	ScaleTransform::CenterXProperty = DependencyObject::Register (Value::SCALETRANSFORM, "CenterX", new Value (0.0));
+	ScaleTransform::CenterYProperty = DependencyObject::Register (Value::SCALETRANSFORM, "CenterY", new Value (0.0));
 
 	/* XXX MatrixTransform fields */
 }
