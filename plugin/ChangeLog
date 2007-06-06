@@ -1,8 +1,20 @@
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.h: Add PLUGIN_OURNAME and PLUGIN_OURVERSION constants to 
+	specify our internal name and version that differs from plugin version 
+	detected by browser. SilverLight javascripts checks for WPF plugin and
+	0.8.5.0 version.
+
+	* moon-plugin.cpp: Change runtime initialization to CreateControls, before
+	show demo.
+
+	* plugin-glue.cpp: Fix memory allocation problems in NPP_New.
+
+2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-glue.cpp,
 	* moon-plugin.cpp,
-	* moon-plugin.cpp.h: Add initialization and remove demo transformation.
+	* moon-plugin.h: Add initialization and remove demo transformation.
 
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
@@ -14,7 +26,7 @@
 
 	* Makefile.am, 
 	* moon-plugin.cpp,
-	* moon-plugin.cpp.h: Remove ScriptablePeer code since now Mozilla use
+	* moon-plugin.h: Remove ScriptablePeer code since now Mozilla use
 	another aproach.
 
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 

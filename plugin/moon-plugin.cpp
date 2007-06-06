@@ -19,8 +19,6 @@ static void moon_plugin_demo (Surface *surface)
 {
 	DEBUG ("*** moon_plugin_demo");
 
-	runtime_init ();
-
 	Rectangle *r;
 
 	r = rectangle_new ();
@@ -70,7 +68,7 @@ moon_plugin_show_menu (PluginInstance *plugin)
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	gtk_widget_show (menu_item);
 
-	menu_item = gtk_menu_item_new_with_label (g_strdup_printf ("%s %s", PLUGIN_NAME, PLUGIN_VERSION));
+	menu_item = gtk_menu_item_new_with_label (g_strdup_printf ("%s %s", PLUGIN_OURNAME, PLUGIN_OURVERSION));
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (moon_plugin_menu_about), plugin);
 	gtk_widget_show (menu_item);
@@ -126,7 +124,6 @@ PluginInstance::~PluginInstance ()
 void 
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
-
 
 }
 
@@ -212,6 +209,10 @@ PluginInstance::CreateControls ()
 
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
+	// MoonLight runtime initialization
+	runtime_init ();
+
+	// Call plugin demo
 	moon_plugin_demo (this->surface);
 
 	gtk_widget_show_all (this->container);
