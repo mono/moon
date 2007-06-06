@@ -19,11 +19,8 @@ class Shape : public FrameworkElement {
 	void DoDraw (Surface *s, bool do_op);
  public: 
 	Brush *fill, *stroke;
-	Stretch stretch;
-	PenLineCap stroke_dash_cap, stroke_start_line_cap, stroke_end_line_cap;
-	double stroke_dash_offset, stroke_miter_limit, stroke_thickness;
-	PenLineJoin stroke_line_join;
 	double *stroke_dash_array;
+	int stroke_dash_array_count;
 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;
@@ -37,10 +34,10 @@ class Shape : public FrameworkElement {
 	static DependencyProperty* StrokeStartLineCapProperty;
 	static DependencyProperty* StrokeThicknessProperty;
 
-	Shape () : fill (NULL), stroke (NULL), stretch (StretchFill), stroke_dash_cap (PenLineCapFlat), 
-		stroke_dash_offset (0), stroke_end_line_cap (PenLineCapFlat), stroke_line_join (PenLineJoinMiter),
-		stroke_miter_limit (0), stroke_start_line_cap (PenLineCapFlat), stroke_thickness (1), 
-		stroke_dash_array (NULL) { SetObjectType (DependencyObject::SHAPE); }
+	Shape () : fill (NULL), stroke (NULL), stroke_dash_array (NULL), stroke_dash_array_count (0)
+	{
+		SetObjectType (DependencyObject::SHAPE);
+	}
 
 	//
 	// Overrides from UIElement.
@@ -64,17 +61,25 @@ class Shape : public FrameworkElement {
 	virtual void set_prop_from_str (const char *prop, const char *value);
 };
 
-void shape_set_fill   (Shape *shape, Brush *brush);
-void shape_set_stroke (Shape *shape, Brush *brush);
-void shape_set_stretch (Shape *shape, Stretch stretch);
-void shape_set_stroke_dash_cap (Shape *shape, PenLineCap cap);
-void shape_set_stroke_start_line_cap (Shape *shape, PenLineCap cap);
-void shape_set_stroke_end_line_cap (Shape *shape, PenLineCap cap);
-void shape_set_stroke_dash_offset (Shape *shape, double offset);
-void shape_set_stroke_miter_limit (Shape *shape, double limit);
-void shape_set_stroke_thickness (Shape *shape, double thickness);
-void shape_set_stroke_line_join (Shape *shape, PenLineJoin join);
-void shape_set_stroke_dash_array (Shape *shape, double* dashes);
+void		shape_set_fill			(Shape *shape, Brush *brush);
+void		shape_set_stroke		(Shape *shape, Brush *brush);
+Stretch		shape_get_stretch		(Shape *shape);
+void		shape_set_stretch		(Shape *shape, Stretch stretch);
+PenLineCap	shape_get_stroke_dash_cap	(Shape *shape);
+void		shape_set_stroke_dash_cap	(Shape *shape, PenLineCap cap);
+PenLineCap	shape_get_stroke_start_line_cap	(Shape *shape);
+void		shape_set_stroke_start_line_cap	(Shape *shape, PenLineCap cap);
+PenLineCap	shape_get_stroke_end_line_cap	(Shape *shape);
+void		shape_set_stroke_end_line_cap	(Shape *shape, PenLineCap cap);
+double		shape_get_stroke_dash_offset	(Shape *shape);
+void		shape_set_stroke_dash_offset	(Shape *shape, double offset);
+double		shape_get_stroke_miter_limit	(Shape *shape);
+void		shape_set_stroke_miter_limit	(Shape *shape, double limit);
+double		shape_get_stroke_thickness	(Shape *shape);
+void		shape_set_stroke_thickness	(Shape *shape, double thickness);
+PenLineJoin	shape_get_stroke_line_join	(Shape *shape);
+void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin join);
+void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 
 //
 // Ellipse

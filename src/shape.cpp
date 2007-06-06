@@ -52,6 +52,11 @@ Shape::DoDraw (Surface *s, bool do_op)
 	}
 
 	if (stroke){
+		cairo_set_line_width (s->cairo, shape_get_stroke_thickness (this));
+		if (stroke_dash_array) {
+			double offset = shape_get_stroke_dash_offset (this);
+	                cairo_set_dash (s->cairo, stroke_dash_array, stroke_dash_array_count, offset);
+		}
 		stroke->SetupBrush (s->cairo);
 		Draw (s);
 		if (do_op)
@@ -118,58 +123,108 @@ shape_set_stroke (Shape *shape, Brush *stroke)
 	shape->stroke = stroke;
 }
 
+Stretch
+shape_get_stretch (Shape *shape)
+{
+	return (Stretch) shape->GetValue (Shape::StretchProperty)->u.i32;
+}
+
 void
 shape_set_stretch (Shape *shape, Stretch stretch)
 {
-	shape->stretch = stretch;
+	shape->SetValue (Shape::StretchProperty, Value (stretch));
+}
+
+PenLineCap
+shape_get_stroke_dash_cap (Shape *shape)
+{
+	return (PenLineCap) shape->GetValue (Shape::StrokeDashCapProperty)->u.i32;
 }
 
 void
 shape_set_stroke_dash_cap (Shape *shape, PenLineCap cap)
 {
-	shape->stroke_dash_cap = cap;
+	shape->SetValue (Shape::StrokeDashCapProperty, Value (cap));
+}
+
+PenLineCap
+shape_get_stroke_start_line_cap (Shape *shape)
+{
+	return (PenLineCap) shape->GetValue (Shape::StrokeStartLineCapProperty)->u.i32;
 }
 
 void
 shape_set_stroke_start_line_cap (Shape *shape, PenLineCap cap)
 {
-	shape->stroke_start_line_cap = cap;
+	shape->SetValue (Shape::StrokeStartLineCapProperty, Value (cap));
+}
+
+PenLineCap
+shape_get_stroke_end_line_cap (Shape *shape)
+{
+	return (PenLineCap) shape->GetValue (Shape::StrokeEndLineCapProperty)->u.i32;
 }
 
 void
 shape_set_stroke_end_line_cap (Shape *shape, PenLineCap cap)
 {
-	shape->stroke_end_line_cap = cap;
+	shape->SetValue (Shape::StrokeEndLineCapProperty, Value (cap));
+}
+
+double
+shape_get_stroke_dash_offset (Shape *shape)
+{
+	return shape->GetValue (Shape::StrokeDashOffsetProperty)->u.d;
 }
 
 void
 shape_set_stroke_dash_offset (Shape *shape, double offset)
 {
-	shape->stroke_dash_offset = offset;
+	shape->SetValue (Shape::StrokeDashOffsetProperty, Value (offset));
+}
+
+double
+shape_get_stroke_miter_limit (Shape *shape)
+{
+	return shape->GetValue (Shape::StrokeMiterLimitProperty)->u.d;
 }
 
 void
 shape_set_stroke_miter_limit (Shape *shape, double limit)
 {
-	shape->stroke_miter_limit = limit;
+	shape->SetValue (Shape::StrokeMiterLimitProperty, Value (limit));
+}
+
+double
+shape_get_stroke_thickness (Shape *shape)
+{
+	return shape->GetValue (Shape::StrokeThicknessProperty)->u.d;
 }
 
 void
 shape_set_stroke_thickness (Shape *shape, double thickness)
 {
-	shape->stroke_thickness = thickness;
+	shape->SetValue (Shape::StrokeThicknessProperty, Value (thickness));
+}
+
+PenLineJoin
+shape_get_stroke_line_join (Shape *shape)
+{
+	return (PenLineJoin) shape->GetValue (Shape::StrokeLineJoinProperty)->u.i32;
 }
 
 void
 shape_set_stroke_line_join (Shape *shape, PenLineJoin join)
 {
-	shape->stroke_line_join = join;
+	shape->SetValue (Shape::StrokeLineJoinProperty, Value (join));
 }
 
 void
-shape_set_stroke_dash_array (Shape *shape, double* dashes)
+shape_set_stroke_dash_array (Shape *shape, double* dashes, int count)
 {
+	// FIXME - move to DependencyObject
 	shape->stroke_dash_array = dashes;
+	shape->stroke_dash_array_count = count;
 }
 
 //

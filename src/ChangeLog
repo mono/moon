@@ -1,3 +1,9 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Add Shape's thickness and some dash support. Add more
+	[g|s]etters for Shape using DependencyProperty.
+	* demo.cpp: Add thickness and dashes to the rectangles.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp|h: Move FrameworkElement stuff into runtime.cpp|h. Use

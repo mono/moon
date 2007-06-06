@@ -54,6 +54,7 @@ main (int argc, char *argv [])
 {
 	GtkWidget *w, *w2, *box, *button;
 	cairo_matrix_t trans;
+	double dash = 3.5;
 
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
@@ -75,6 +76,7 @@ main (int argc, char *argv [])
 	r = rectangle_new ();
 	framework_element_set_width (r, 50.0);
 	framework_element_set_height (r, 50.0);
+	shape_set_stroke_thickness (r, 5.0);
 	r->SetValue (Canvas::LeftProperty, Value (50.0));
 	r->SetValue (Canvas::TopProperty, Value (50.0));
 
@@ -87,6 +89,7 @@ main (int argc, char *argv [])
 	Rectangle *r2 = rectangle_new ();
 	framework_element_set_width (r2, 50.0);
 	framework_element_set_height (r2, 50.0);
+	shape_set_stroke_dash_array (r2, &dash, 1);
 	r2->SetValue (Canvas::LeftProperty, Value (50.0));
 	r2->SetValue (Canvas::TopProperty, Value (50.0));
 	item_set_render_transform (r2, r_trans);
