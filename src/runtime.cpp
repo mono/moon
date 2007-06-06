@@ -858,7 +858,7 @@ void
 namescope_init ()
 {
 	global_NameScope = new NameScope ();
-	NameScope::NameScopeProperty = DependencyObject::Register (DependencyObject::NAMESCOPE, "NameScope", NULL);
+	NameScope::NameScopeProperty = DependencyObject::Register (DependencyObject::NAMESCOPE, "NameScope", Value::DEPENDENCY_OBJECT);
 }
 
 DependencyProperty* FrameworkElement::HeightProperty;

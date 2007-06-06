@@ -64,6 +64,7 @@ main (int argc, char *argv [])
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), NULL);
 
+	printf ("ac=%d\n", argc);
 	// Create our objects
 	r_trans = new RotateTransform ();
 	v_trans = new RotateTransform ();
