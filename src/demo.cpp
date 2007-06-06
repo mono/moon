@@ -72,7 +72,9 @@ main (int argc, char *argv [])
 	Surface *t = surface_new (600, 600);
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 
-	r = rectangle_new (50, 50);
+	r = rectangle_new ();
+	framework_element_set_width (r, 50.0);
+	framework_element_set_height (r, 50.0);
 	r->SetValue (Canvas::LeftProperty, Value (50.0));
 	r->SetValue (Canvas::TopProperty, Value (50.0));
 
@@ -82,7 +84,9 @@ main (int argc, char *argv [])
 	Color c = Color (1.0, 0.0, 0.5, 0.5);
 	shape_set_stroke (r, new SolidColorBrush (c));
 
-	Rectangle *r2 = rectangle_new (50, 50);
+	Rectangle *r2 = rectangle_new ();
+	framework_element_set_width (r2, 50.0);
+	framework_element_set_height (r2, 50.0);
 	r2->SetValue (Canvas::LeftProperty, Value (50.0));
 	r2->SetValue (Canvas::TopProperty, Value (50.0));
 	item_set_render_transform (r2, r_trans);

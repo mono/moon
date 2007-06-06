@@ -1,3 +1,12 @@
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp|h: Move FrameworkElement stuff into runtime.cpp|h. Use
+	functions to retrieve the height and width of shapes (values defined
+	in FrameworkElement).
+	* runtime.cpp|h: Use DependencyProperty for FrameworkElement Height 
+	and Width properties.
+	* demo.cpp: Adjust to API changes.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Remove (now) useless properties in Line.

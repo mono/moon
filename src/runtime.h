@@ -258,7 +258,8 @@ class DependencyObject : public Base {
 		ELLIPSEGEOMETRY,
 		LINEGEOMETRY,
 		PATHGEOMETRY,
-		RECTANGLEGEOMETRY
+		RECTANGLEGEOMETRY,
+		FRAMEWORKELEMENT
 	};
 	
 	DependencyObject ();
@@ -490,12 +491,18 @@ class Canvas : public Panel {
 //
 class FrameworkElement : public UIElement {
  public:
-	double w, h;
+	static DependencyProperty* HeightProperty;
+	static DependencyProperty* WidthProperty;
 
-	FrameworkElement () : w(0), h(0) {} 
+	FrameworkElement () {} 
 
 	virtual void set_prop_from_str (const char *prop, const char *value);
 };
+
+double	framework_element_get_height	(FrameworkElement *framework_element);
+void	framework_element_set_height	(FrameworkElement *framework_element, double height);
+double	framework_element_get_width	(FrameworkElement *framework_element);
+void	framework_element_set_width	(FrameworkElement *framework_element, double width);
 
 // A video is an UIElement
 class Video : public UIElement {

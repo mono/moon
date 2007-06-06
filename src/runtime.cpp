@@ -197,6 +197,41 @@ item_set_render_transform (UIElement *item, Transform *transform)
 	item->SetValue (UIElement::RenderTransformProperty, transform);
 }
 
+void
+FrameworkElement::set_prop_from_str (const char *prop, const char *value)
+{
+	if (!g_strcasecmp (prop, "width"))
+		framework_element_set_width (this, strtod (value, NULL));
+	else if (!g_strcasecmp (prop, "height"))
+		framework_element_set_height (this, strtod (value, NULL));
+
+	// FIXME: call UIElement::set_prop_from_str
+}
+
+double
+framework_element_get_height (FrameworkElement *framework_element)
+{
+	return framework_element->GetValue (FrameworkElement::HeightProperty)->u.d;
+}
+
+void
+framework_element_set_height (FrameworkElement *framework_element, double height)
+{
+	framework_element->SetValue (FrameworkElement::HeightProperty, Value (height));
+}
+
+double
+framework_element_get_width (FrameworkElement *framework_element)
+{
+	return framework_element->GetValue (FrameworkElement::WidthProperty)->u.d;
+}
+
+void
+framework_element_set_width (FrameworkElement *framework_element, double width)
+{
+	framework_element->SetValue (FrameworkElement::WidthProperty, Value (width));
+}
+
 Surface *
 item_get_surface (UIElement *item)
 {
@@ -711,6 +746,16 @@ EventObject::Emit (char *event_name)
 	}
 }
 
+DependencyProperty* FrameworkElement::HeightProperty;
+DependencyProperty* FrameworkElement::WidthProperty;
+
+void
+framework_element_init ()
+{
+	FrameworkElement::HeightProperty = DependencyObject::Register (DependencyObject::FRAMEWORKELEMENT, "Height", new Value (0.0));
+	FrameworkElement::WidthProperty = DependencyObject::Register (DependencyObject::FRAMEWORKELEMENT, "Width", new Value (0.0));
+}
+
 DependencyProperty* Canvas::TopProperty;
 DependencyProperty* Canvas::LeftProperty;
 
@@ -733,6 +778,7 @@ void
 runtime_init ()
 {
 	item_init ();
+	framework_element_init ();
 	canvas_init ();
 	transform_init ();
 	animation_init ();

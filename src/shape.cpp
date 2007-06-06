@@ -18,17 +18,6 @@
 
 #include "shape.h"
 
-void
-FrameworkElement::set_prop_from_str (const char *prop, const char *value)
-{
-	if (!g_strcasecmp (prop, "width"))
-		w = strtod (value, NULL);
-	else if (!g_strcasecmp (prop, "height"))
-		h = strtod (value, NULL);
-
-	// FIXME: else ignore ? or keep somewhere in a collection ?
-}
-
 //
 // Shape
 //
@@ -192,8 +181,8 @@ Ellipse::Draw (Surface *s)
 {
 	double rx, ry, cx, cy;
 
-	rx = w / 2;
-	ry = h / 2;
+	rx = framework_element_get_width (this) / 2;
+	ry = framework_element_get_height (this) / 2;
 	cx = rx;
 	cy = ry;
 
@@ -240,6 +229,8 @@ DependencyProperty* Rectangle::RadiusYProperty;
 void
 Rectangle::Draw (Surface *s)
 {
+	double w = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
 	double radius_x = rectangle_get_radius_x (this);
 	if (radius_x != 0) {
 		double radius_y = rectangle_get_radius_y (this);
@@ -279,7 +270,8 @@ Rectangle::set_prop_from_str (const char *prop, const char *value)
 Point
 Rectangle::getxformorigin ()
 {
-	return Point (w * user_xform_origin.x, h * user_xform_origin.y);
+	return Point (framework_element_get_width (this) * user_xform_origin.x, 
+		framework_element_get_height (this) * user_xform_origin.y);
 }
 
 double
@@ -307,12 +299,9 @@ rectangle_set_radius_y (Rectangle *rectangle, double value)
 }
 
 Rectangle *
-rectangle_new (double w, double h)
+rectangle_new ()
 {
-	Rectangle *rect = new Rectangle ();
-	rect->w = w;
-	rect->h = h;
-	return rect;
+	return new Rectangle ();
 }
 
 //
