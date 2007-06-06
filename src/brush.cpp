@@ -20,11 +20,81 @@
 #include <stdint.h>
 #include <errno.h>
 #include "runtime.h"
+#include "transform.h"
+
+//
+// Brush
+//
+
+DependencyProperty* Brush::OpacityProperty;
+DependencyProperty* Brush::RelativeTransformProperty;
+DependencyProperty* Brush::TransformProperty;
+
+double
+brush_get_opacity (Brush *brush)
+{
+	return brush->GetValue (Brush::OpacityProperty)->u.d;
+}
+
+void
+brush_set_opacity (Brush *brush, double opacity)
+{
+	brush->SetValue (Brush::OpacityProperty, Value (opacity));
+}
+
+TransformGroup*
+brush_get_relative_transform (Brush *brush)
+{
+	return (TransformGroup*) brush->GetValue (Brush::RelativeTransformProperty)->u.dependency_object;
+}
+
+void
+brush_set_relative_transform (Brush *brush, TransformGroup* transform_group)
+{
+	brush->SetValue (Brush::RelativeTransformProperty, Value (transform_group));
+}
+
+TransformGroup*
+brush_get_transform (Brush *brush)
+{
+	return (TransformGroup*) brush->GetValue (Brush::TransformProperty)->u.dependency_object;
+}
+
+void
+brush_set_transform (Brush *brush, TransformGroup* transform_group)
+{
+	brush->SetValue (Brush::TransformProperty, Value (transform_group));
+}
+
+//
+// SolidColorBrush
+//
+
+DependencyProperty* SolidColorBrush::ColorProperty;
 
 void
 SolidColorBrush::SetupBrush (cairo_t *target)
 {
-	cairo_set_source_rgba (target, color.r, color.g, color.b, color.a);
+	Color *color = solid_color_brush_get_color (this);
+	cairo_set_source_rgba (target, color->r, color->g, color->b, color->a);
+}
+
+Color*
+solid_color_brush_get_color (SolidColorBrush *solid_color_brush)
+{
+	return solid_color_brush->GetValue (SolidColorBrush::ColorProperty)->u.color;
+}
+
+void
+solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color)
+{
+	solid_color_brush->SetValue (SolidColorBrush::ColorProperty, Value (color));
+}
+
+SolidColorBrush*
+solid_color_brush_new ()
+{
+	return new SolidColorBrush ();
 }
 
 // match System.Windows.Media.Colors properties
@@ -58,11 +128,11 @@ named_colors_t named_colors [] = {
  *
  * If no color is found, Color.Transparent is returned.
  */
-Color
+Color*
 color_from_str (const char *name)
 {
 	if (!name)
-		return Color (0x00FFFFFF);
+		return new Color (0x00FFFFFF);
 
 	if (name [0] == '#') {
 		char a [3] = "FF";
@@ -99,7 +169,7 @@ color_from_str (const char *name)
 			break;			
 		}
 
-		return Color (strtol (r, NULL, 16) / 255.0F, strtol (g, NULL, 16) / 255.0F,
+		return new Color (strtol (r, NULL, 16) / 255.0F, strtol (g, NULL, 16) / 255.0F,
 				strtol (b, NULL, 16) / 255.0F, strtol (a, NULL, 16) / 255.0F);
 	}
 
@@ -109,9 +179,25 @@ color_from_str (const char *name)
 
 	for (int i = 0; named_colors [i].name; i++) {
 		if (!g_strcasecmp (named_colors [i].name, name)) {
-			return Color (named_colors [i].color);
+			return new Color (named_colors [i].color);
 		}
 	}
 
-	return Color (0x00FFFFFF);
+	return new Color (0x00FFFFFF);
+}
+
+//
+//
+//
+
+void
+brush_init ()
+{
+	/* Brush fields */
+	Brush::OpacityProperty = DependencyObject::Register (DependencyObject::BRUSH, "Opacity", new Value (1.0));
+	Brush::RelativeTransformProperty = DependencyObject::Register (DependencyObject::BRUSH, "RelativeTransform", new Value ());
+	Brush::TransformProperty = DependencyObject::Register (DependencyObject::BRUSH, "TransformProperty", new Value ());
+
+	/* SolidColorBrush fields */
+	SolidColorBrush::ColorProperty = DependencyObject::Register (DependencyObject::SOLIDCOLORBRUSH, "Color", new Value (new Color (0x00FFFFFF)));
 }

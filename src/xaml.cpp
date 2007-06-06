@@ -457,24 +457,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 	}
 }
 
-void
-solid_color_brush_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
-{
-	SolidColorBrush *brush = (SolidColorBrush *) item->item;
-
-	for (int i = 0; attr [i]; i++) {
-		if (!strcmp ("Color", attr [i])) {
-			brush->color = color_from_str (attr [i + 1]);
-		}
-	}
-}
-
-void *
-create_solid_color_brush ()
-{
-	return new SolidColorBrush (color_from_str ("Transparent"));
-}
-
 // We still use a name for ghost elements to make debugging easier
 XamlElementInfo *
 register_ghost_element (const char *name, XamlElementInfo *parent, DependencyObject::Type dt)
@@ -587,7 +569,6 @@ xaml_init ()
 	/// Brushes
 	///
 
-	register_element_full ("SolidColorBrush", NULL, DependencyObject::INVALID,
-			create_solid_color_brush, default_create_element_instance, nonpanel_add_child,
-			solid_color_brush_set_property, solid_color_brush_set_attributes);
+	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, DependencyObject::BRUSH);
+	register_dependency_object_element ("SolidColorBrush", brush, DependencyObject::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
 }

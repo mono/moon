@@ -1,9 +1,20 @@
+2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* demo.cpp: Adapted to API changes.
+	* brush.cpp: Add [g|s]etters for Brush and SolidColorBrush using
+	DependencyProperty. Add brush initialization code.
+	* runtime.cpp|h: Change Brush to inherit from DependencyObject. 
+	Add Color support to Value. Call brush initialization.
+	* shape.cpp: Add miter, pen join|cap and fill rule drawing support.
+	* xaml.cpp: Adapted to API changes since SolidColorBrush now inherits
+	from DependencyObject.
+
 2007-06-06  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* ffvideo.cpp (convert_to_rgb): Make sure the frame->data is
 	non-NULL before trying to scale.
 
-2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Fix compiler warning.
 

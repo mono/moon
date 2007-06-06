@@ -22,6 +22,7 @@ class EventObject {
 };
 
 class Transform;
+class TransformGroup;
 class Surface;
 class Brush;
 class DependencyObject;
@@ -74,11 +75,24 @@ struct Color {
 		this->g = g;
 		this->b = b;
 		this->a = a;
-	};
+	}
+
+	Color (Color *color)
+	{
+		if (color) {
+			r = color->r;
+			g = color->g;
+			b = color->b;
+			a = color->a;
+		} else {
+			r = 1.0; g = 0.0; b = 0.0;
+			a = 0.0;
+		}
+	}
 };
 
 
-Color color_from_str (const char *name);
+Color *color_from_str (const char *name);
 
 
 //
@@ -129,7 +143,8 @@ public:
 		INT64 = 3,
 		INT32 = 4,
 		STRING = 5,
-		DEPENDENCY_OBJECT = 6
+		DEPENDENCY_OBJECT = 6,
+		COLOR = 7
 	};
 
 	Kind k;
@@ -141,6 +156,7 @@ public:
 		gint32 i32;
 		char *s;
 		DependencyObject *dependency_object;
+		Color *color;
 	} u;
 
 	Value () : k (INVALID) {}
@@ -183,6 +199,13 @@ public:
 		Init ();
 		k = INT32;
 		u.i32 = i;
+	}
+
+	Value (Color *c)
+	{
+		Init ();
+		k = COLOR;
+		u.color = new Color (c);
 	}
 
 	Value (DependencyObject *obj)
@@ -275,7 +298,9 @@ class DependencyObject : public Base {
 		RECTANGLEGEOMETRY,
 		FRAMEWORKELEMENT,
 		NAMESCOPE,
-		CLOCK
+		CLOCK,
+		BRUSH,
+		SOLIDCOLORBRUSH
 	};
 	
 	DependencyObject ();
@@ -344,25 +369,36 @@ class NameScope : public DependencyObject {
 };
 
 
-class Brush : public Base {
+class Brush : public DependencyObject {
  public:
-	Brush () : opacity(0), relative_transform(NULL), transform(NULL) {}
-	
-	double opacity;
-	double *relative_transform;
-	double *transform;
+	static DependencyProperty* OpacityProperty;
+	static DependencyProperty* RelativeTransformProperty;
+	static DependencyProperty* TransformProperty;
 
+	Brush () {}
+	
 	virtual void SetupBrush (cairo_t *cairo) = 0;
 };
+double		brush_get_opacity		(Brush *brush);
+void		brush_set_opacity		(Brush *brush, double opacity);
+TransformGroup	*brush_get_relative_transform	(Brush *brush);
+void		brush_set_relative_transform	(Brush *brush, TransformGroup* transform_group);
+TransformGroup	*brush_get_transform		(Brush *brush);
+void		brush_set_transform		(Brush *brush, TransformGroup* transform_group);
+
 
 class SolidColorBrush : public Brush {
 
  public:
-	Color color;
-	SolidColorBrush (Color c) { color = c; } 
+	static DependencyProperty* ColorProperty;
+
+	SolidColorBrush () {} 
 
 	virtual void SetupBrush (cairo_t *cairo);
 };
+SolidColorBrush	*solid_color_brush_new ();
+Color		*solid_color_brush_get_color (SolidColorBrush *solid_color_brush);
+void		solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color);
 
 class GradientBrush : public Brush {
  public:
@@ -621,6 +657,7 @@ UIElement  *xaml_create_from_str      (const char *xaml);
 
 void runtime_init ();
 void animation_init ();
+void brush_init ();
 void transform_init ();
 void shape_init ();
 void geometry_init ();

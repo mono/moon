@@ -84,8 +84,14 @@ main (int argc, char *argv [])
 	rectangle_set_radius_x (r, 10);
 	rectangle_set_radius_y (r, 20);
 	item_set_render_transform (r, s_trans);
-	Color c = Color (1.0, 0.0, 0.5, 0.5);
-	shape_set_stroke (r, new SolidColorBrush (c));
+	Color *c = new Color (1.0, 0.0, 0.5, 0.5);
+	SolidColorBrush *scb = new SolidColorBrush ();
+	solid_color_brush_set_color (scb, c);
+	shape_set_stroke (r, scb);
+	Color *c2 = new Color (0.5, 0.5, 0.0, 0.25);
+	SolidColorBrush *scb2 = new SolidColorBrush ();
+	solid_color_brush_set_color (scb2, c2);
+	shape_set_fill (r, scb2);
 
 	Rectangle *r2 = rectangle_new ();
 	framework_element_set_width (r2, 50.0);
@@ -94,7 +100,7 @@ main (int argc, char *argv [])
 	r2->SetValue (Canvas::LeftProperty, Value (50.0));
 	r2->SetValue (Canvas::TopProperty, Value (50.0));
 	item_set_render_transform (r2, r_trans);
-	shape_set_stroke (r2, new SolidColorBrush (c));
+	shape_set_stroke (r2, scb);
 	panel_child_add (t, r2);
 
 #ifdef XAML_DEMO

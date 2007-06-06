@@ -15,8 +15,52 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <cairo.h>
 
 #include "shape.h"
+
+//
+// SL-Cairo convertion routines
+//
+
+static cairo_line_join_t
+convert_line_join (PenLineJoin pen_line_join)
+{
+	switch (pen_line_join) {
+	case PenLineJoinMiter:
+		return CAIRO_LINE_JOIN_MITER;
+	case PenLineJoinBevel:
+		return CAIRO_LINE_JOIN_BEVEL;
+	case PenLineJoinRound:
+		return CAIRO_LINE_JOIN_ROUND;
+	}
+}
+
+static cairo_line_cap_t
+convert_line_cap (PenLineCap pen_line_cap)
+{
+	switch (pen_line_cap) {
+	case PenLineCapFlat:
+		return CAIRO_LINE_CAP_BUTT;
+	case PenLineCapSquare:
+		return CAIRO_LINE_CAP_SQUARE;
+	case PenLineCapRound:
+	case PenLineCapTriangle: 		/* FIXME: Triangle doesn't exist in Cairo */
+		return CAIRO_LINE_CAP_ROUND;
+	}
+}
+
+static cairo_fill_rule_t
+convert_fill_rule (FillRule fill_rule)
+{
+	switch (fill_rule) {
+	case FillRuleEvenOdd:
+		return CAIRO_FILL_RULE_EVEN_ODD;
+	case FileRuleNonzero:
+		return CAIRO_FILL_RULE_WINDING;
+	}
+}
+
 
 //
 // Shape
@@ -55,8 +99,12 @@ Shape::DoDraw (Surface *s, bool do_op)
 		cairo_set_line_width (s->cairo, shape_get_stroke_thickness (this));
 		if (stroke_dash_array) {
 			double offset = shape_get_stroke_dash_offset (this);
-	                cairo_set_dash (s->cairo, stroke_dash_array, stroke_dash_array_count, offset);
+			cairo_set_dash (s->cairo, stroke_dash_array, stroke_dash_array_count, offset);
 		}
+		cairo_set_miter_limit (s->cairo, shape_get_stroke_miter_limit (this));
+		cairo_set_line_join (s->cairo, convert_line_join (shape_get_stroke_line_join (this)));
+		/* FIXME: cairo doesn't have separate line cap for the start and end */
+		cairo_set_line_cap (s->cairo, convert_line_cap (shape_get_stroke_start_line_cap (this)));
 		stroke->SetupBrush (s->cairo);
 		Draw (s);
 		if (do_op)
@@ -91,18 +139,16 @@ Shape::getbounds ()
 void
 Shape::set_prop_from_str (const char *prop, const char *value)
 {
-	/*
 	if (!g_strcasecmp ("fill", prop)) {
-		SolidColorBrush *fill = solid_brush_from_str (value);
-		if (fill)
-			shape_set_fill (this, fill);
+		SolidColorBrush *fill = new SolidColorBrush ();
+		solid_color_brush_set_color (fill, color_from_str (value));
+		shape_set_fill (this, fill);
 	} else if (!g_strcasecmp ("stroke", prop)) {
-		SolidColorBrush *stroke = solid_brush_from_str (value);
-		if (stroke)
-			shape_set_stroke (this, stroke);
+		SolidColorBrush *stroke =  new SolidColorBrush ();
+		solid_color_brush_set_color (stroke, color_from_str (value));
+		shape_set_stroke (this, stroke);
 	} else
 		FrameworkElement::set_prop_from_str (prop, value);
-	*/
 }
 
 void 
@@ -470,6 +516,7 @@ Polygon::Draw (Surface *s)
 	if (!points || (count < 1))
 		return;
 
+	cairo_set_fill_rule (s->cairo, convert_fill_rule (polygon_get_fill_rule (this)));
 	cairo_move_to (s->cairo, points [0].x, points [0].y);
 
 	for (i = 1; i < count; i++) {
@@ -525,6 +572,7 @@ Polyline::Draw (Surface *s)
 	if (!points || (count < 1))
 		return;
 
+	cairo_set_fill_rule (s->cairo, convert_fill_rule (polyline_get_fill_rule (this)));
 	cairo_move_to (s->cairo, points [0].x, points [0].y);
 
 	for (i = 1; i < count; i++) {
@@ -567,6 +615,9 @@ DependencyProperty* Path::DataProperty;
 void
 Path::Draw (Surface *s)
 {
+	Geometry* data = path_get_data (this);
+	cairo_set_fill_rule (s->cairo, convert_fill_rule (geometry_get_fill_rule (data)));
+	/* TODO */
 }
 
 Geometry*
