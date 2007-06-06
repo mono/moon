@@ -18,12 +18,12 @@
 NPError 
 NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
 {
-	DEBUG ("plugin_new");
-
-	PluginInstance *plugin = new PluginInstance (instance, mode);
+	DEBUG ("NPP_New");
 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
+
+	PluginInstance *plugin = new PluginInstance (instance, mode);
 
 	instance->pdata = NPN_MemAlloc (sizeof (PluginInstance));
 
@@ -40,7 +40,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 NPError 
 NPP_Destroy (NPP instance, NPSavedData** save)
 {
-	DEBUG ("plugin_destroy");
+	DEBUG ("NPP_Destroy");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -54,7 +54,7 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 NPError 
 NPP_SetWindow (NPP instance, NPWindow* window)
 {
-	DEBUG ("plugin_set_window %d %d", window->width, window->height);
+	DEBUG ("NPP_SetWindow %d %d", window->width, window->height);
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -66,7 +66,7 @@ NPP_SetWindow (NPP instance, NPWindow* window)
 NPError
 NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {
-	DEBUG ("plugin_new_stream");
+	DEBUG ("NPP_NewStream");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -78,7 +78,7 @@ NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable,
 NPError
 NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
 {
-	DEBUG ("plugin_destroy_stream");
+	DEBUG ("NPP_DestroyStream");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -90,7 +90,7 @@ NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
 void
 NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 {
-	DEBUG ("plugin_stream_as_file");
+	DEBUG ("NPP_StreamAsFile");
 
 	if (instance == NULL)
 		return;
@@ -102,7 +102,7 @@ NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 int32
 NPP_WriteReady (NPP instance, NPStream* stream)
 {
-	DEBUG ("plugin_write_ready");
+	DEBUG ("NPP_WriteReady");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -215,9 +215,6 @@ NPError
 NPP_Initialize (void)
 {
 	DEBUG ("NP_Initialize");
-
-	gtk_init (0, 0);
-
 	return NPERR_NO_ERROR;
 }
 

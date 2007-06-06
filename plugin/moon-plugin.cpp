@@ -11,13 +11,9 @@
  */
 
 #include "moon-plugin.h"
-#include "nsIServiceManager.h"
-#include "nsISupportsUtils.h"
-#include "nsIMemory.h"
-
-NPNetscapeFuncs PluginInstance::sNPN;
-
-nsIServiceManager * gServiceManager = NULL;
+#include "npapi.h"
+#include "npupp.h"
+#include "npruntime.h"
 
 static void moon_plugin_demo (Surface *surface)
 {
@@ -57,14 +53,14 @@ static void moon_plugin_demo (Surface *surface)
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {
-	DEBUG ("moon_plugin_menu_about Clicked!");
+	DEBUG ("*** moon_plugin_menu_about Clicked!");
 	// TODO: Implement an about Window.
 }
 
 gboolean
 moon_plugin_show_menu (PluginInstance *plugin)
 {
-	DEBUG ("moon_plugin_show_menu");
+	DEBUG ("*** moon_plugin_show_menu");
 
 	GtkWidget *menu;
 	GtkWidget *menu_item;
@@ -113,31 +109,18 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	return handled;
 }
 
+/*** PluginInstance:: *********************************************************/
+
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {
     this->mode = mode;
     this->instance = instance;
     this->window = NULL;
-
-	this->mScriptablePeer = NULL;
-
-	nsISupports * sm = NULL;
-	NPN_GetValue(NULL, NPNVserviceManager, &sm);
-
-	if(sm) {
-		sm->QueryInterface(NS_GET_IID(nsIServiceManager), (void**)&gServiceManager);
-		NS_RELEASE(sm);
-	}
+    this->scriptclass = NULL;
 }
 
 PluginInstance::~PluginInstance ()
 {
-	this->mScriptablePeer->SetInstance(NULL);
-	NS_IF_RELEASE(mScriptablePeer);
-
-	NS_IF_RELEASE(gServiceManager);
-	gServiceManager = NULL;
-
 	if (this->container != NULL)
 		gtk_widget_destroy (this->container);
 
@@ -155,27 +138,13 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 			*((PRBool *)result) = PR_TRUE;
 			break;
 
-		case NPPVpluginScriptableInstance: {
-			nsIScriptableMoonPlugin * scriptablePeer = this->getScriptablePeer();
-			if (scriptablePeer)
-				*(nsISupports **)result = scriptablePeer;
+		case NPPVpluginScriptableNPObject:
+			if (this->scriptclass)
+				*(NPObject**)result = NPN_CreateObject (this->instance, this->scriptclass);
 			else
-				err = NPERR_OUT_OF_MEMORY_ERROR;
+				err = NPERR_GENERIC_ERROR;
 
 			break;
-		}
-
-		case NPPVpluginScriptableIID: {
-			static nsIID scriptableIID =  NS_ISCRIPTABLEMOONPLUGIN_IID;
-			nsIID* ptr = (nsIID *)NPN_MemAlloc(sizeof(nsIID));
-			if (ptr) {
-				*ptr = scriptableIID;
-				*(nsIID **)result = ptr;
-			} else
-				err = NPERR_OUT_OF_MEMORY_ERROR;
-
-			break;
-		}
 
 		default:
 			err = NPERR_INVALID_PARAM;
@@ -214,7 +183,7 @@ PluginInstance::SetWindow (NPWindow* window)
 void 
 PluginInstance::CreateControls ()
 {
-	DEBUG ("creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
+	DEBUG ("*** creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
 	//  GtkPlug container and surface inside
 	this->container = gtk_plug_new ((GdkNativeWindow) window->window);
@@ -293,55 +262,4 @@ PluginInstance::EventHandle (void* event)
 {
 	/* Our plugin is a windowed so we dont need the windowless code */
 	return 0;
-}
-
-void 
-PluginInstance::getVersion(char* *aVersion)
-{
-	const char *ua = NPN_UserAgent(this->instance);
-	char*& version = *aVersion;
-
-	nsIMemory * nsMemoryService = NULL;
-
-	if (gServiceManager) {
-		gServiceManager->GetServiceByContractID("@mozilla.org/xpcom/memory-service;1", NS_GET_IID(nsIMemory), (void **)&nsMemoryService);
-		if(nsMemoryService)
-			version = (char *)nsMemoryService->Alloc(strlen(ua) + 1);
-	}
-
-	if (version)
-		strcpy(version, ua);
-
-	NS_IF_RELEASE(nsMemoryService);
-}
-
-void
-PluginInstance::showVersion()
-{
-	DEBUG ("====> showVersion");
-	const char *ua = NPN_UserAgent(this->instance);
-	strcpy(mString, ua);
-}
-
-void
-PluginInstance::clear()
-{
-	DEBUG ("====> clear");
-	strcpy(mString, "");
-}
-
-nsScriptablePeer* 
-PluginInstance::getScriptablePeer()
-{
-	if (!mScriptablePeer) {
-		mScriptablePeer = new nsScriptablePeer(this);
-
-		if(!mScriptablePeer)
-			return NULL;
-
-		NS_ADDREF(mScriptablePeer);
-	}
-
-	NS_ADDREF(mScriptablePeer);
-	return mScriptablePeer;
 }

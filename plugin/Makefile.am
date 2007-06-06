@@ -17,9 +17,7 @@ libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \
 	moon-plugin.h \
 	plugin-entry.cpp \
-	plugin-glue.cpp \
-	nsScriptablePeer.cpp \
-	nsScriptablePeer.h
+	plugin-glue.cpp
 
 # custom install rule
 idl:
