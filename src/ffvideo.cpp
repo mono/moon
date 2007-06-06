@@ -383,7 +383,10 @@ convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 	AVCodecContext *cc = video->video_stream->codec;
 	uint8_t *rgb_dest[3] = { video->video_rgb_buffer, NULL, NULL};
 	int rgb_stride [3] = { cc->width * 4, 0, 0 };
-
+	
+	if (frame->data == NULL)
+		return;
+	
 	sws_scale (video->video_scale_context, frame->data, frame->linesize,  0,
 		   video->video_stream->codec->height,  rgb_dest, rgb_stride);
 

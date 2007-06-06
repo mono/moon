@@ -1,3 +1,8 @@
+2007-06-06  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* ffvideo.cpp (convert_to_rgb): Make sure the frame->data is
+	non-NULL before trying to scale.
+
 2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Fix compiler warning.
