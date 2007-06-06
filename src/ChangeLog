@@ -1,3 +1,7 @@
+2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.h: Call SetObjectType on Brush and SolidColorBrush
+
 2007-06-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp, runtime.h: Remove the default_values hashtable

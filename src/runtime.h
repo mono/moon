@@ -373,7 +373,10 @@ class Brush : public DependencyObject {
 	static DependencyProperty* RelativeTransformProperty;
 	static DependencyProperty* TransformProperty;
 
-	Brush () {}
+	Brush ()
+	{
+		SetObjectType (DependencyObject::BRUSH);
+	}
 	
 	virtual void SetupBrush (cairo_t *cairo) = 0;
 };
@@ -390,7 +393,10 @@ class SolidColorBrush : public Brush {
  public:
 	static DependencyProperty* ColorProperty;
 
-	SolidColorBrush () {} 
+	SolidColorBrush ()
+	{
+		SetObjectType (DependencyObject::SOLIDCOLORBRUSH);
+	}
 
 	virtual void SetupBrush (cairo_t *cairo);
 };
