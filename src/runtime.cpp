@@ -349,7 +349,7 @@ surface_clear (Surface *s, int x, int y, int width, int height)
 	cairo_set_matrix (s->cairo, &identity);
 
 	cairo_set_source_rgb (s->cairo, 1.0, 1.0, 1.0);
-	cairo_rectangle (s->cairo, 0, 0, 1000, 1000);
+	cairo_rectangle (s->cairo, x, y, width, height);
 	cairo_fill (s->cairo);
 }
 	
