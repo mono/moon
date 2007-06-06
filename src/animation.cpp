@@ -419,7 +419,9 @@ animation_init ()
 	DoubleAnimation::ToProperty   = DependencyObject::Register (DependencyObject::DOUBLEANIMATION, "To", new Value (0.0));
 
 	/* Storyboard properties */
-	Storyboard::TargetPropertyProperty = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetProperty", NULL);
-	Storyboard::TargetNameProperty     = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetName", NULL);
+	Storyboard::TargetPropertyProperty = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetProperty", 
+									 Value::STRING);
+	Storyboard::TargetNameProperty     = DependencyObject::Register (DependencyObject::STORYBOARD, "TargetName", 
+									 Value::STRING);
 	
 }

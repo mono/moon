@@ -275,17 +275,20 @@ class DependencyObject : public Base {
 	
 	DependencyObject ();
 	~DependencyObject ();
-	static DependencyProperty* Register (Type type, char *name, Value *default_value);
-	static DependencyProperty* GetDependencyProperty (Type type, char *name);
+	static DependencyProperty *Register (Type type, char *name, Value *default_value);
+	static DependencyProperty *Register (DependencyObject::Type type, char *name, Value::Kind vtype);
+	static DependencyProperty *RegisterFull (DependencyObject::Type type, char *name, Value *default_value, Value::Kind vtype);
+	
+	static DependencyProperty *GetDependencyProperty (Type type, char *name);
 	void SetValue (DependencyProperty *property, Value value);
 	Value *GetValue (DependencyProperty *property);
-	DependencyProperty* GetDependencyProperty (char *name);
+	DependencyProperty *GetDependencyProperty (char *name);
 
 	DependencyObject* FindName (char *name);
 
 	EventObject *events;
 
-	virtual void OnPropertyChanged (DependencyProperty *property) { }
+	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
 
  protected:
@@ -308,11 +311,12 @@ class DependencyProperty {
  public:
 	DependencyProperty () {} ;
 	~DependencyProperty ();
-	DependencyProperty (char *name, Value *default_value);
+	DependencyProperty (char *name, Value *default_value, Value::Kind kind);
 
 	char *name;
 	Value *default_value;
 	DependencyObject::Type type;
+	Value::Kind value_type;
 };
 
 class NameScope : public DependencyObject {
@@ -515,6 +519,8 @@ class Canvas : public Panel {
 	virtual void getbounds ();
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
+	
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
 	static DependencyProperty* TopProperty;
 	static DependencyProperty* LeftProperty;

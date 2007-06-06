@@ -342,6 +342,12 @@ Canvas::getbounds ()
 }
 
 void 
+Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	printf ("Prop %s changed in %s\n", prop->name, subprop->name);
+}
+
+void 
 surface_clear (Surface *s, int x, int y, int width, int height)
 {
 	static unsigned char n;
@@ -520,6 +526,9 @@ DependencyObject::NotifyAttacheesOfPropertyChange (DependencyProperty *subproper
 void
 DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
+	g_return_if_fail (property != NULL);
+	g_return_if_fail (property->value_type == value.k);
+
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
 	if (current_value == NULL || *current_value != value.k) {
@@ -551,6 +560,8 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 		}
 		g_hash_table_insert (current_values, property->name, copy);
 
+		// 
+		//NotifyAttacheesOfPropertyChange (property);
 		OnPropertyChanged (property);
 	}
 }
@@ -635,14 +646,37 @@ DependencyObject::FindName (char *name)
 }
 
 //
+// Use this for values that can be null
+//
+DependencyProperty *
+DependencyObject::Register (DependencyObject::Type type, char *name, Value::Kind vtype)
+{
+	g_return_val_if_fail (name != NULL, NULL);
+
+	return RegisterFull (type, name, NULL, vtype);
+}
+
+//
 // DependencyObject takes ownership of the Value * for default_value
 //
 DependencyProperty *
 DependencyObject::Register (DependencyObject::Type type, char *name, Value *default_value)
 {
+	g_return_val_if_fail (default_value != NULL, NULL);
+	g_return_val_if_fail (name != NULL, NULL);
+
+	return RegisterFull (type, name, default_value, default_value->k);
+}
+
+DependencyProperty *
+DependencyObject::RegisterFull (DependencyObject::Type type, char *name, Value *default_value, Value::Kind vtype)
+{
 	GHashTable *table;
 
-	DependencyProperty *property = new DependencyProperty (name, default_value);
+	if (NULL == default_values)
+		default_values = g_hash_table_new (g_int_hash, g_int_equal);
+
+	DependencyProperty *property = new DependencyProperty (name, default_value, vtype);
 	property->type = type;
 	
 	/* first add the property to the global 2 level property hash */
@@ -678,10 +712,11 @@ DependencyObject::Register (DependencyObject::Type type, char *name, Value *defa
 /*
 	DependencyProperty
 */
-DependencyProperty::DependencyProperty (char *name, Value *default_value)
+DependencyProperty::DependencyProperty (char *name, Value *default_value, Value::Kind kind)
 {
 	this->name = g_strdup (name);
 	this->default_value = default_value;
+	this->value_type = kind;
 }
 
 DependencyProperty::~DependencyProperty ()
@@ -851,7 +886,7 @@ DependencyProperty* UIElement::RenderTransformProperty;
 void
 item_init ()
 {
-	UIElement::RenderTransformProperty = DependencyObject::Register (DependencyObject::UIELEMENT, "RenderTransform", NULL);
+	UIElement::RenderTransformProperty = DependencyObject::Register (DependencyObject::UIELEMENT, "RenderTransform", Value::DEPENDENCY_OBJECT);
 }
 
 void

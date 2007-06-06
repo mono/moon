@@ -1,3 +1,13 @@
+2007-06-05  Miguel de Icaza  <miguel@novell.com>
+
+	Add type checking on SetValue, RegisterProperty to avoid
+	mistakes. 
+	
+	* runtime.cpp (SetValue): Add simple type checking
+	(Register): Ensure that no empty values are passed. 
+
+	* runtime.h (DependencyObject): events, remove unused field.
+
 2007-06-05  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp: we need to maintain another hash table for
