@@ -62,7 +62,7 @@ Color
 color_from_str (const char *name)
 {
 	if (!name)
-		return NULL;
+		return Color (0x00FFFFFF);
 
 	if (name [0] == '#') {
 		char a [3] = "FF";
