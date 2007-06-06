@@ -1,5 +1,17 @@
 2007-06-06  Jackson Harper  <jackson@ximian.com>
 
+	* runtime.h:
+	* transform.h: Need to register this base DependencyObject for the
+	xaml parser.
+	* geometry.cpp: use correct value kind for registering properties
+	* runtime.cpp: Don't be strict about the type with properties that
+	derive from DependencyObject, we can't be too strict here, because
+	of inheritance the registered type BRUSH could be set to
+	SOLIDCOLORBRUSH
+	- register some properties with the correct type
+	
+2007-06-06  Jackson Harper  <jackson@ximian.com>
+
 	* animation.cpp|h:
 	* runtime.h: Staring to add triggers
 	* shape.cpp: Use brush as our property kind

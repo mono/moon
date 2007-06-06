@@ -9,7 +9,7 @@ G_BEGIN_DECLS
 
 class Transform : public DependencyObject {
  protected:
- 	Transform () { }
+ 	Transform () { SetObjectType (Value::TRANSFORM); }
 
  public:
 	virtual void OnPropertyChanged (DependencyProperty *prop);

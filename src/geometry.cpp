@@ -434,7 +434,7 @@ geometry_init ()
 {
 	/* Geometry fields */
 	Geometry::FillRuleProperty = DependencyObject::Register (Value::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
-	Geometry::TransformProperty = DependencyObject::Register (Value::GEOMETRY, "Transform", Value::DEPENDENCY_OBJECT);
+	Geometry::TransformProperty = DependencyObject::Register (Value::GEOMETRY, "Transform", Value::TRANSFORM);
 
 	/* GeometryGroup fields */
 	GeometryGroup::ChildrenProperty = DependencyObject::Register (Value::GEOMETRYGROUP, "Children", Value::DEPENDENCY_OBJECT);

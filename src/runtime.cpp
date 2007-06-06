@@ -548,7 +548,9 @@ void
 DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
 	g_return_if_fail (property != NULL);
-	g_return_if_fail (property->value_type == value.k);
+
+	if (property->value_type < Value::DEPENDENCY_OBJECT)
+		g_return_if_fail (property->value_type == value.k);
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
@@ -559,7 +561,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 		if (value.k == Value::STRING)
 		  copy->u.s = g_strdup (value.u.s);
 
-		if (current_value != NULL && current_value->k == Value::DEPENDENCY_OBJECT){
+		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->u.dependency_object;
 
 			for (GSList *l = dob->attached_list; l; l = l->next) {
@@ -572,7 +574,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 			}
 		}
 
-		if (value.k == Value::DEPENDENCY_OBJECT){
+		if (value.k >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = value.u.dependency_object;
 			Attachee *att = new Attachee ();
 			att->dob = this;
@@ -857,7 +859,7 @@ void
 namescope_init ()
 {
 	global_NameScope = new NameScope ();
-	NameScope::NameScopeProperty = DependencyObject::Register (Value::NAMESCOPE, "NameScope", Value::DEPENDENCY_OBJECT);
+	NameScope::NameScopeProperty = DependencyObject::Register (Value::NAMESCOPE, "NameScope", Value::NAMESCOPE);
 }
 
 DependencyProperty* FrameworkElement::HeightProperty;
@@ -885,7 +887,7 @@ DependencyProperty* UIElement::RenderTransformProperty;
 void
 item_init ()
 {
-	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::DEPENDENCY_OBJECT);
+	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
 }
 
 void
