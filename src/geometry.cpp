@@ -216,6 +216,216 @@ rectangle_geometry_new ()
 }
 
 //
+// PathFigure
+//
+
+DependencyProperty* PathFigure::IsClosedProperty;
+DependencyProperty* PathFigure::IsFilledProperty;
+DependencyProperty* PathFigure::SegmentsProperty;
+DependencyProperty* PathFigure::StartPointProperty;
+
+PathFigure*
+path_figure_new ()
+{
+	return new PathFigure ();
+}
+
+bool
+path_figure_get_is_closed (PathFigure *path_figure)
+{
+	return path_figure->GetValue (PathFigure::IsClosedProperty)->u.z;
+}
+
+void
+path_figure_set_is_closed (PathFigure *path_figure, bool closed)
+{
+	path_figure->SetValue (PathFigure::IsClosedProperty, Value (closed));
+}
+
+bool
+path_figure_get_is_filled (PathFigure *path_figure)
+{
+	return path_figure->GetValue (PathFigure::IsFilledProperty)->u.z;
+}
+
+void
+path_figure_set_is_filled (PathFigure *path_figure, bool filled)
+{
+	path_figure->SetValue (PathFigure::IsFilledProperty, Value (filled));
+}
+
+// TODO Segments
+
+Point*
+path_figure_get_start_point (PathFigure *path_figure)
+{
+	Value *value = path_figure->GetValue (PathFigure::StartPointProperty);
+	return (value ? value->u.point : NULL);
+}
+
+void
+path_figure_set_start_point (PathFigure *path_figure, Point *point)
+{
+	path_figure->SetValue (PathFigure::StartPointProperty, Value (point));
+}
+
+//
+// ArcSegment
+//
+
+DependencyProperty* ArcSegment::IsLargeArcProperty;
+DependencyProperty* ArcSegment::PointProperty;
+DependencyProperty* ArcSegment::RotationAngleProperty;
+DependencyProperty* ArcSegment::SizeProperty;
+DependencyProperty* ArcSegment::SweepDirectionProperty;
+
+ArcSegment*
+arc_segment_new ()
+{
+	return new ArcSegment ();
+}
+
+bool
+arc_segment_get_is_large_arc (ArcSegment *segment)
+{
+	return segment->GetValue (ArcSegment::IsLargeArcProperty)->u.z;
+}
+
+void
+arc_segment_set_is_large_arc (ArcSegment *segment, bool large)
+{
+	segment->SetValue (ArcSegment::IsLargeArcProperty, Value (large));
+}
+
+Point*
+arc_segment_get_point (ArcSegment *segment)
+{
+	Value *value = segment->GetValue (ArcSegment::PointProperty);
+	return (value ? value->u.point : NULL);
+}
+
+void
+arc_segment_set_point (ArcSegment *segment, Point *point)
+{
+	segment->SetValue (ArcSegment::PointProperty, Value (point));
+}
+
+double
+arc_segment_get_rotation_angle (ArcSegment *segment)
+{
+	return segment->GetValue (ArcSegment::RotationAngleProperty)->u.d;
+}
+
+void
+arc_segment_set_rotation_angle (ArcSegment *segment, double angle)
+{
+	segment->SetValue (ArcSegment::RotationAngleProperty, Value (angle));
+}
+
+Point*
+arc_segment_get_size (ArcSegment *segment)
+{
+	Value *value = segment->GetValue (ArcSegment::SizeProperty);
+	return (value ? value->u.point : NULL);
+}
+
+void
+arc_segment_set_size (ArcSegment *segment, Point *size)
+{
+	segment->SetValue (ArcSegment::SizeProperty, Value (size));
+}
+
+SweepDirection
+arc_segment_get_sweep_direction (ArcSegment *segment)
+{
+	return (SweepDirection) segment->GetValue (ArcSegment::SweepDirectionProperty)->u.i32;
+}
+
+void
+arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
+{
+	segment->SetValue (ArcSegment::SweepDirectionProperty, Value (direction));
+}
+
+//
+// BezierSegment
+//
+
+DependencyProperty* BezierSegment::Point1Property;
+DependencyProperty* BezierSegment::Point2Property;
+DependencyProperty* BezierSegment::Point3Property;
+
+BezierSegment*
+bezier_segment_new ()
+{
+	return new BezierSegment ();
+}
+
+Point*
+bezier_segment_get_point1 (BezierSegment *segment)
+{
+	Value *value = segment->GetValue (BezierSegment::Point1Property);
+	return (value ? value->u.point : NULL);
+}
+
+void
+bezier_segment_set_point1 (BezierSegment *segment, Point *point)
+{
+	segment->SetValue (BezierSegment::Point1Property, Value (point));
+}
+
+Point*
+bezier_segment_get_point2 (BezierSegment *segment)
+{
+	Value *value = segment->GetValue (BezierSegment::Point2Property);
+	return (value ? value->u.point : NULL);
+}
+
+void
+bezier_segment_set_point2 (BezierSegment *segment, Point *point)
+{
+	segment->SetValue (BezierSegment::Point2Property, Value (point));
+}
+
+Point*
+bezier_segment_get_point3 (BezierSegment *segment)
+{
+	Value *value = segment->GetValue (BezierSegment::Point3Property);
+	return (value ? value->u.point : NULL);
+}
+
+void
+bezier_segment_set_point3 (BezierSegment *segment, Point *point)
+{
+	segment->SetValue (BezierSegment::Point3Property, Value (point));
+}
+
+//
+// LineSegment
+//
+
+DependencyProperty* LineSegment::PointProperty;
+
+LineSegment*
+line_segment_new ()
+{
+	return new LineSegment ();
+}
+
+Point*
+line_segment_get_point (LineSegment *segment)
+{
+	Value *value = segment->GetValue (LineSegment::PointProperty);
+	return (value ? value->u.point : NULL);
+}
+
+void
+line_segment_set_point (LineSegment *segment, Point *point)
+{
+	segment->SetValue (LineSegment::PointProperty, Value (point));
+}
+
+//
 // 
 //
 
@@ -245,4 +455,25 @@ geometry_init ()
 	RectangleGeometry::RadiusXProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0));
 	RectangleGeometry::RadiusYProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0));
 	RectangleGeometry::RectProperty = DependencyObject::Register (DependencyObject::RECTANGLEGEOMETRY, "Rect", Value::RECT);
+
+	/* PathFigure fields */
+	PathFigure::IsClosedProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "IsClosed", new Value (true));
+	PathFigure::IsFilledProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "IsFilled", new Value (true));
+	PathFigure::SegmentsProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "Segments", Value::DEPENDENCY_OBJECT);
+	PathFigure::StartPointProperty = DependencyObject::Register (DependencyObject::PATHFIGURE, "StartPoint", Value::POINT);
+
+	/* ArcSegment fields */
+	ArcSegment::IsLargeArcProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "IsLargeArc", new Value (true));
+	ArcSegment::PointProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "Point", Value::POINT);
+	ArcSegment::RotationAngleProperty  = DependencyObject::Register (DependencyObject::ARCSEGMENT, "RadiusY", new Value (0.0));
+	ArcSegment::SizeProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "RotationAngle", Value::POINT);
+	ArcSegment::SweepDirectionProperty = DependencyObject::Register (DependencyObject::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
+
+	/* BezierSegment fields */
+	BezierSegment::Point1Property = DependencyObject::Register (DependencyObject::BEZIERSEGMENT, "Point1", Value::POINT);
+	BezierSegment::Point2Property = DependencyObject::Register (DependencyObject::BEZIERSEGMENT, "Point2", Value::POINT);
+	BezierSegment::Point3Property = DependencyObject::Register (DependencyObject::BEZIERSEGMENT, "Point3", Value::POINT);
+
+	/* LineSegment fields */
+	LineSegment::PointProperty = DependencyObject::Register (DependencyObject::LINESEGMENT, "Point", Value::POINT);
 }

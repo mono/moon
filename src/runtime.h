@@ -336,7 +336,14 @@ class DependencyObject : public Base {
 		NAMESCOPE,
 		CLOCK,
 		BRUSH,
-		SOLIDCOLORBRUSH
+		SOLIDCOLORBRUSH,
+		PATHFIGURE,
+		ARCSEGMENT,
+		BEZIERSEGMENT,
+		LINESEGMENT,
+		POLYBEZIERSEGMENT,
+		POLYQUADRATICBEZIERSEGMENT,
+		QUADRATICBEZIERSEGMENT
 	};
 	
 	DependencyObject ();
@@ -476,6 +483,11 @@ enum PenLineJoin {
 enum FillRule {
 	FillRuleEvenOdd,
 	FileRuleNonzero
+};
+
+enum SweepDirection {
+	SweepDirectionCounterclockwise,
+	SweepDirectionClockwise
 };
 
 //

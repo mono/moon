@@ -1,3 +1,9 @@
+2007-06-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.h: Add new types and SweepDirection enum.
+	* geometry.cpp|h: Add PathFigure, ArcSegment, BezierSegment and 
+	LineSegment classes and [g|s]etter functions.
+
 2007-06-06  Miguel de Icaza  <miguel@novell.com>
 
 	* demo.cpp (main): Allow loading a XAML file from the command
