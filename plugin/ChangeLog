@@ -1,3 +1,7 @@
+2007-06-06  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* moon-plugin.cpp: Fix API change for SolidColorBrush.
+
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
 	* moon-plugin.h: Add PLUGIN_OURNAME and PLUGIN_OURVERSION constants to 

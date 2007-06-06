@@ -26,8 +26,10 @@ static void moon_plugin_demo (Surface *surface)
 	framework_element_set_height (r, 100.0);
 	r->SetValue (Canvas::LeftProperty, Value (50.0));
 	r->SetValue (Canvas::TopProperty, Value (50.0));
-	Color c = Color (1.0, 0.0, 0.5, 0.5);
-	shape_set_stroke (r, new SolidColorBrush (c));
+	Color *c = new Color (1.0, 0.0, 0.5, 0.5);
+	SolidColorBrush *scb = new SolidColorBrush ();
+	solid_color_brush_set_color (scb, c);
+	shape_set_stroke (r, scb);
 	surface_repaint (surface, 0, 0, 300, 300);
 
 #if VIDEO_DEMO
