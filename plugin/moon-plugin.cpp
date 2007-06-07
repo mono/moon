@@ -15,7 +15,7 @@
 #include "npupp.h"
 #include "npruntime.h"
 
-static void moon_plugin_demo (Surface *surface)
+static void moon_plugin_demo (Canvas *canvas)
 {
 	DEBUG ("*** moon_plugin_demo");
 
@@ -30,18 +30,17 @@ static void moon_plugin_demo (Surface *surface)
 	SolidColorBrush *scb = new SolidColorBrush ();
 	solid_color_brush_set_color (scb, c);
 	shape_set_stroke (r, scb);
-	surface_repaint (surface, 0, 0, 300, 300);
 
 #if VIDEO_DEMO
 	UIElement *v, *v2;
 
 	v = video_new ("/home/everaldo/BoxerSmacksdownInhoffe.wmv", 0, 0);
-	panel_child_add (surface, v);
+	panel_child_add (canvas, v);
 
 	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
-	panel_child_add (surface, v2);
+	panel_child_add (canvas, v2);
 #endif	
-	panel_child_add (surface, r);
+	panel_child_add (canvas, r);
 
 	//gtk_timeout_add (60, repaint, w);
 }
@@ -116,6 +115,9 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
+	if (this->canvas != NULL)
+		delete (this->canvas);
+
 	if (this->container != NULL)
 		gtk_widget_destroy (this->container);
 
@@ -188,9 +190,11 @@ PluginInstance::CreateControls ()
 
 	//  GtkPlug container and surface inside
 	this->container = gtk_plug_new ((GdkNativeWindow) window->window);
+	this->canvas = canvas_new ();
 	this->surface = surface_new (window->width, window->height);
+	surface_attach (this->surface, this->canvas);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
-	
+
 	// Connect signals to container
 	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
 
@@ -215,7 +219,7 @@ PluginInstance::CreateControls ()
 	runtime_init ();
 
 	// Call plugin demo
-	moon_plugin_demo (this->surface);
+	moon_plugin_demo (this->canvas);
 
 	gtk_widget_show_all (this->container);
 }
