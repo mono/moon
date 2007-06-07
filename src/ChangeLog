@@ -1,3 +1,8 @@
+2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Fix comment.
+	* shape.cpp: Reduce duplication.
+
 2007-06-07  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.h: Store Value.BOOL in an int32, simplifies my life. 

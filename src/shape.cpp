@@ -341,38 +341,9 @@ shape_set_stroke_dash_array (Shape *shape, double* dashes, int count)
 void
 Ellipse::Draw (Surface *s)
 {
-	double rx, ry, cx, cy;
-
-	rx = framework_element_get_width (this) / 2;
-	ry = framework_element_get_height (this) / 2;
-	cx = rx;
-	cy = ry;
-
-	cairo_move_to (s->cairo, cx + rx, cy);
-
-	/* an approximate of the ellipse by drawing a curve in each
-	 * quadrants */
-	cairo_curve_to (s->cairo,
-			cx + rx, cy - ARC_TO_BEZIER * ry,
-			cx + ARC_TO_BEZIER * rx, cy - ry,
-			cx, cy - ry);
-        
-	cairo_curve_to (s->cairo,
-			cx - ARC_TO_BEZIER * rx, cy - ry,
-			cx - rx, cy - ARC_TO_BEZIER * ry,
-			cx - rx, cy);
-
-	cairo_curve_to (s->cairo,
-			cx - rx, cy + ARC_TO_BEZIER * ry,
-			cx - ARC_TO_BEZIER * rx, cy + ry,
-			cx, cy + ry);
-                
-	cairo_curve_to (s->cairo,
-			cx + ARC_TO_BEZIER * rx, cy + ry,
-			cx + rx, cy + ARC_TO_BEZIER * ry,
-			cx + rx, cy);
-
-	cairo_close_path (s->cairo);
+	double w = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
+	moon_ellipse (s->cairo, 0, 0, w, h);
 }
 
 Ellipse *

@@ -163,7 +163,7 @@ color_from_str (const char *name)
 			b [0] = name [5]; b [1] = name [6];
 			break;
 		case 8:
-			// rrggbb
+			// aarrggbb
 			a [0] = name [1]; a [1] = name [2];
 			r [0] = name [3]; r [1] = name [4];
 			g [0] = name [5]; g [1] = name [6];
