@@ -472,18 +472,6 @@ TimelineGroup::RemoveChild (Timeline *child)
 	child_timelines = g_list_remove (child_timelines, child);
 }
 
-void
-timeline_group_add_child (TimelineGroup *group, Timeline *child)
-{
-	group->AddChild (child);
-}
-
-void
-timeline_group_remove_child (TimelineGroup *group, Timeline *child)
-{
-	group->RemoveChild (child);
-}
-
 
 
 /* storyboard */
@@ -492,6 +480,7 @@ DependencyProperty* Storyboard::TargetNameProperty;
 DependencyProperty* Storyboard::TargetPropertyProperty;
 
 Storyboard::Storyboard ()
+  : root_clock (NULL)
 {
 	SetObjectType (Value::STORYBOARD);
 }
@@ -503,11 +492,11 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 	case Value::ANIMATIONCLOCK: {
 		AnimationClock *ac = (AnimationClock*)clock;
 
-		char *targetProperty = storyboard_child_get_target_property (this, ac->GetTimeline());
+		char *targetProperty = Storyboard::GetTargetProperty (ac->GetTimeline());
 		if (!targetProperty)
 			return;
 
-		char *targetName = storyboard_child_get_target_name (this, ac->GetTimeline());
+		char *targetName = Storyboard::GetTargetName (ac->GetTimeline());
 		if (!targetName)
 			return;
 
@@ -536,6 +525,10 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 void
 Storyboard::Begin ()
 {
+	// we shouldn't begin again, I'd imagine..
+	if (root_clock)
+		return;
+
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
@@ -576,73 +569,41 @@ Storyboard::Stop ()
 	root_clock->Stop ();
 }
 
-Storyboard *
-storyboard_new ()
-{
-	return new Storyboard ();
-}
-
 void
-storyboard_begin (Storyboard *sb)
-{
-	sb->Begin ();
-}
-
-void
-storyboard_pause (Storyboard *sb)
-{
-	sb->Pause ();
-}
-
-void
-storyboard_resume (Storyboard *sb)
-{
-	sb->Resume ();
-}
-
-void
-storyboard_seek (Storyboard *sb, /*Timespan*/guint64 timespan)
-{
-	sb->Seek (timespan);
-}
-
-void
-storyboard_stop (Storyboard *sb)
-{
-	sb->Stop ();
-}
-
-void
-storyboard_child_set_target_property (Storyboard *sb,
-				      DependencyObject *o,
-				      char *targetProperty)
+Storyboard::SetTargetProperty (DependencyObject *o,
+			       char *targetProperty)
 {
 	o->SetValue (Storyboard::TargetPropertyProperty, Value (targetProperty));
 }
 
 char*
-storyboard_child_get_target_property (Storyboard *sb,
-				      DependencyObject *o)
+Storyboard::GetTargetProperty (DependencyObject *o)
 {
 	Value *v = o->GetValue (Storyboard::TargetPropertyProperty);
 	return v == NULL ? NULL : v->u.s;
 }
 
 void
-storyboard_child_set_target_name (Storyboard *sb,
-				  DependencyObject *o,
-				  char *targetName)
+Storyboard::SetTargetName (DependencyObject *o,
+			   char *targetName)
 {
 	o->SetValue (Storyboard::TargetNameProperty, Value (targetName));
 }
 
 char*
-storyboard_child_get_target_name (Storyboard *sb,
-				  DependencyObject *o)
+Storyboard::GetTargetName (DependencyObject *o)
 {
 	Value *v = o->GetValue (Storyboard::TargetNameProperty);
 	return v == NULL ? NULL : v->u.s;
 }
+
+Storyboard *
+storyboard_new ()
+{
+	return new Storyboard ();
+}
+
+
 
 
 DependencyProperty* BeginStoryboard::StoryboardProperty;
@@ -652,6 +613,10 @@ begin_storyboard_new ()
 {
 	return new BeginStoryboard ();
 }
+
+
+
+
 
 DependencyProperty* DoubleAnimation::ByProperty;
 DependencyProperty* DoubleAnimation::FromProperty;
@@ -697,6 +662,8 @@ double_animation_new ()
 {
 	return new DoubleAnimation ();
 }
+
+
 
 
 DependencyProperty* ColorAnimation::ByProperty;

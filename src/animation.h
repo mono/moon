@@ -1,5 +1,7 @@
 #include "runtime.h"
 
+G_BEGIN_DECLS
+
 // misc types
 struct Duration {
  public:
@@ -295,10 +297,6 @@ class TimelineGroup : public Timeline {
 	GList *child_timelines;
 };
 
-void timeline_group_add_child (TimelineGroup *group, Timeline *child);
-void timeline_group_remove_child (TimelineGroup *group, Timeline *child);
-
-
 
 
 
@@ -373,6 +371,8 @@ class Animation/*Timeline*/ : public Timeline {
 
 
 
+#if YAY_NULLABLE
+
 template<class T>
 class Nullable {
   bool is_null;
@@ -385,6 +385,8 @@ class Nullable {
 
   T GetValue () { return value; }
 };
+
+#endif
 
 #define NULLABLE_GETSET_DECL(prop, t) \
 void Set##prop (t v); \
@@ -490,7 +492,10 @@ class Storyboard : public ParallelTimeline {
 
 	// XXX event Completed
 
-/* 	virtual void ClockTimeChanged (); */
+	static void SetTargetName (DependencyObject *o, char *targetName);
+	static char* GetTargetName (DependencyObject *o);
+	static void SetTargetProperty (DependencyObject *o, char *targetProperty);
+	static char* GetTargetProperty (DependencyObject *o);
 
  private:
 	void HookupAnimationsRecurse (Clock *clock);
@@ -501,25 +506,6 @@ class Storyboard : public ParallelTimeline {
 };
 
 Storyboard *storyboard_new ();
-void storyboard_begin (Storyboard *sb);
-void storyboard_pause (Storyboard *sb);
-void storyboard_resume (Storyboard *sb);
-void storyboard_seek (Storyboard *sb, /*Timespan*/guint64 timespan);
-void storyboard_stop (Storyboard *sb);
-
-void storyboard_child_set_target_property (Storyboard *sb,
-					   DependencyObject *o,
-					   char *targetProperty);
-
-char* storyboard_child_get_target_property (Storyboard *sb,
-					    DependencyObject *o);
-
-void storyboard_child_set_target_name (Storyboard *sb,
-				       DependencyObject *o,
-				       char *targetName);
-
-char* storyboard_child_get_target_name (Storyboard *sb,
-					DependencyObject *o);
 
 
 
@@ -537,3 +523,5 @@ class BeginStoryboard : public TriggerAction {
 };
 
 BeginStoryboard *begin_storyboard_new ();
+
+G_END_DECLS
