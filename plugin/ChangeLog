@@ -1,5 +1,12 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile.am: Remove idl related code, new object system dont need idl or
+	xpi files. 
+	* nsIScriptableMoonPlugin.h: deleted.
+	* nsIScriptableMoonPlugin.idl: deleted.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-glue.cpp: Fix the instance initialization problems, the object 
 	instance was empty after creation.
 

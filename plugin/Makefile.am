@@ -20,11 +20,7 @@ libmoonplugin_la_SOURCES = \
 	plugin-glue.cpp
 
 # custom install rule
-idl:
-	$(XPIDL) -m header $(XPFLAGS) nsIScriptableMoonPlugin.idl
-
 install-plugin: libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp $(top_srcdir)/src/.libs/libmoon.so ~/.mozilla/plugins
-	$(XPIDL) -m typelib $(XPFLAGS) -o ~/.mozilla/plugins/libmoonplugin nsIScriptableMoonPlugin.idl
