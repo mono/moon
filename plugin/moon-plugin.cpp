@@ -15,6 +15,9 @@
 #include "npupp.h"
 #include "npruntime.h"
 
+//#define SCRIPTING
+//#define DEMO
+
 static void moon_plugin_demo (Canvas *canvas)
 {
 	DEBUG ("*** moon_plugin_demo");
@@ -119,6 +122,7 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
+#ifdef DEMO
 	if (this->canvas != NULL)
 		delete (this->canvas);
 
@@ -127,6 +131,7 @@ PluginInstance::~PluginInstance ()
 
 	//if (this->container != NULL)
 	//	gtk_widget_destroy (this->container);
+#endif
 }
 
 void 
@@ -145,6 +150,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 			*((PRBool *)result) = PR_TRUE;
 			break;
 
+#ifdef SCRIPTING
 		case NPPVpluginScriptableNPObject:
 			if (!this->object)
 				this->object = NPN_CreateObject (this->instance, this);
@@ -155,7 +161,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 				*((NPObject **) result) = NPN_RetainObject (this->object);
 
 			break;
-
+#endif
 		default:
 			err = NPERR_INVALID_PARAM;
 	}
@@ -196,12 +202,14 @@ PluginInstance::CreateControls ()
 	DEBUG ("*** creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
 	//  GtkPlug container and surface inside
-	//this->container = gtk_plug_new ((GdkNativeWindow) window->window);
 	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
+
+#ifdef DEMO
 	this->canvas = canvas_new ();
 	this->surface = surface_new (window->width, window->height);
 	surface_attach (this->surface, this->canvas);
-	//gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+#endif
 
 	// Connect signals to container
 	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
@@ -226,8 +234,10 @@ PluginInstance::CreateControls ()
 	// MoonLight runtime initialization
 	runtime_init ();
 
+#ifdef DEMO
 	// Call plugin demo
 	moon_plugin_demo (this->canvas);
+#endif
 
 	gtk_widget_show_all (this->container);
 }

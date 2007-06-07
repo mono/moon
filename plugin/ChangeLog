@@ -1,5 +1,11 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.cpp: Add SCRIPTING and DEMO macros to make available only
+	tested features, it mean that developers must uncomment this MACRO lines
+	before work on scripting and libmoon stuff.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp: Fix gtkplug creation fro 64bit systems. 
 
 	* Makefile.am: Add -lavformat to link options.
