@@ -1,5 +1,12 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.h: Change version number 0.99.0, SilverLight scripts searchs 
+	for version > 0.95.1.
+
+	* test/index.html: Small fixes in test page.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* test/index.html: Add javascript settings test.
 
 	* moon-plugin.cpp,

@@ -30,7 +30,7 @@
 #define DEBUG_PLUGIN
 
 #define PLUGIN_NAME         "WPFe Plug-In"
-#define PLUGIN_VERSION      "0.8.5.0"
+#define PLUGIN_VERSION      "0.99.0"
 #define PLUGIN_OURNAME      "Novell MoonLight"
 #define PLUGIN_OURVERSION   "0.1"
 #define PLUGIN_DESCRIPTION  "Novell MoonLight is a Free Unix implementation of SilverLight";
