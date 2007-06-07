@@ -129,7 +129,7 @@ item_invalidate (UIElement *item)
 	//
 	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
 				    (int) item->x1, (int)item->y1, 
-				    (int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
+				    (int)(item->x2-item->x1+2), (int)(item->y2-item->y1+2));
 }
 
 void 
