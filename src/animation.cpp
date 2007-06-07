@@ -412,7 +412,7 @@ timeline_set_autoreverse (Timeline *timeline, bool autoreverse)
 bool
 timeline_get_autoreverse (Timeline *timeline)
 {
-	return timeline->GetValue (Timeline::AutoReverseProperty)->u.z;
+	return (bool) timeline->GetValue (Timeline::AutoReverseProperty)->u.i32;
 }
 
 void

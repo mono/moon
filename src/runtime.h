@@ -216,7 +216,6 @@ public:
 
 	Kind k;
 	union {
-		bool z;
 		double d;
 		guint64 ui64;
 		gint64 i64;

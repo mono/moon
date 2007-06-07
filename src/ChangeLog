@@ -1,5 +1,7 @@
 2007-06-07  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.h: Store Value.BOOL in an int32, simplifies my life. 
+
 	* runtime.cpp (dependency_object_set_value,
 	dependency_object_get_value): Add C# callable method calls to
 	control the properties.

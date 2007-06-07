@@ -139,7 +139,7 @@ Value::Value(bool z)
 {
 	Init ();
 	k = BOOL;
-	u.z = z;
+	u.i32 = z;
 }
 
 Value::Value (double d)

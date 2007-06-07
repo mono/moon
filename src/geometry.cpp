@@ -289,7 +289,7 @@ path_figure_new ()
 bool
 path_figure_get_is_closed (PathFigure *path_figure)
 {
-	return path_figure->GetValue (PathFigure::IsClosedProperty)->u.z;
+	return (bool) path_figure->GetValue (PathFigure::IsClosedProperty)->u.i32;
 }
 
 void
@@ -301,7 +301,7 @@ path_figure_set_is_closed (PathFigure *path_figure, bool closed)
 bool
 path_figure_get_is_filled (PathFigure *path_figure)
 {
-	return path_figure->GetValue (PathFigure::IsFilledProperty)->u.z;
+	return (bool) path_figure->GetValue (PathFigure::IsFilledProperty)->u.i32;
 }
 
 void
@@ -344,7 +344,7 @@ arc_segment_new ()
 bool
 arc_segment_get_is_large_arc (ArcSegment *segment)
 {
-	return segment->GetValue (ArcSegment::IsLargeArcProperty)->u.z;
+	return (bool) segment->GetValue (ArcSegment::IsLargeArcProperty)->u.i32;
 }
 
 void
