@@ -1,3 +1,9 @@
+2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Restore alpha support. Don't call cairo_set_operator
+	without a cairo_save|restore pair (or without resetting it's original
+	value). Anyway right now it works without any of that :)
+
 2007-06-07  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: add event triggers.
