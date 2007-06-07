@@ -643,7 +643,8 @@ Path::Draw (Surface *s)
 Geometry*
 path_get_data (Path *path)
 {
-	return (Geometry*) path->GetValue (Path::DataProperty)->u.dependency_object;
+	Value *value = path->GetValue (Path::DataProperty);
+	return (Geometry*) (value ? value->u.dependency_object : NULL);
 }
 
 void

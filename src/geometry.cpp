@@ -42,7 +42,8 @@ geometry_set_fill_rule (Geometry *geometry, FillRule fill_rule)
 Transform*
 geometry_get_transform (Geometry *geometry)
 {
-	return (Transform*) geometry->GetValue (Geometry::TransformProperty)->u.dependency_object;
+	Value *value = geometry->GetValue (Geometry::TransformProperty);
+	return (Transform*) (value ? value->u.dependency_object : NULL);
 }
 
 void
@@ -55,14 +56,12 @@ void
 Geometry::Draw (Surface *s)
 {
 	cairo_set_fill_rule (s->cairo, convert_fill_rule (geometry_get_fill_rule (this)));
-#if false
 	Transform* transform = geometry_get_transform (this);
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
 		cairo_transform (s->cairo, &matrix);
 	}
-#endif
 }
 
 //

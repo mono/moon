@@ -45,7 +45,8 @@ brush_set_opacity (Brush *brush, double opacity)
 TransformGroup*
 brush_get_relative_transform (Brush *brush)
 {
-	return (TransformGroup*) brush->GetValue (Brush::RelativeTransformProperty)->u.dependency_object;
+	Value *value = brush->GetValue (Brush::RelativeTransformProperty);
+	return (TransformGroup*) (value ? value->u.dependency_object : NULL);
 }
 
 void
@@ -57,7 +58,8 @@ brush_set_relative_transform (Brush *brush, TransformGroup* transform_group)
 TransformGroup*
 brush_get_transform (Brush *brush)
 {
-	return (TransformGroup*) brush->GetValue (Brush::TransformProperty)->u.dependency_object;
+	Value *value = brush->GetValue (Brush::TransformProperty);
+	return (TransformGroup*) (value ? value->u.dependency_object : NULL);
 }
 
 void

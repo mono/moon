@@ -1,3 +1,7 @@
+2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp, geometry.cpp, shape.cpp: Protect against NULL properties.
+
 2007-06-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: #if-out transforms, it crash the xaml samples
