@@ -191,6 +191,8 @@ public:
 		FRAMEWORKELEMENT,
 		NAMESCOPE,
 		CLOCK,
+		ANIMATIONCLOCK,
+		CLOCKGROUP,
 		BRUSH,
 		SOLIDCOLORBRUSH,
 		PATHFIGURE,
@@ -218,82 +220,22 @@ public:
 		Rect *rect;
 	} u;
 
-	Value () : k (INVALID) {}
+	void Init ();
+
+	Value ();
+	Value (bool z);
+	Value (double d);
+	Value (guint64 i);
+	Value (gint64 i);
+	Value (gint32 i);
+	Value (Color *c);
+	Value (DependencyObject *obj);
+	Value (Point *pt);
+	Value (Rect *rect);
+	Value (const char* s);
 	
-	void Init ()
-	{
-		memset (&u, 0, sizeof (u));
-	}
+	~Value ();
 
-	Value (bool z)
-	{
-		Init ();
-		k = BOOL;
-		u.z = z;
-	}
-
-	Value (double d)
-	{
-		Init ();
-		k = DOUBLE;
-		u.d = d;
-	}
-
-	Value (guint64 i)
-	{
-		Init ();
-		k = UINT64;
-		u.ui64 = i;
-	}
-
-	Value (gint64 i)
-	{
-		Init ();
-		k = INT64;
-		u.i64 = i;
-	}
-
-	Value (gint32 i)
-	{
-		Init ();
-		k = INT32;
-		u.i32 = i;
-	}
-
-	Value (Color *c)
-	{
-		Init ();
-		k = COLOR;
-		u.color = new Color (c);
-	}
-
-	Value (DependencyObject *obj)
-	{
-		g_assert (obj != NULL);
-		
-		Init ();
-		k = DEPENDENCY_OBJECT;
-		u.dependency_object = obj;
-	}
-
-	Value (Point *pt)
-	{
-		g_assert (pt != NULL);
-
-		Init ();
-		k = POINT;
-		u.point = new Point (pt);
-	}
-
-	Value (Rect *rect)
-	{
-		g_assert (rect != NULL);
-
-		Init ();
-		k = RECT;
-		u.rect = new Rect (rect);
-	}
-	
 	bool operator!= (const Value &v) const
 	{
 		return !(*this == v);
@@ -312,19 +254,6 @@ public:
 		}
 
 		return true;
-	}
-
-	Value (const char* s)
-	{
-		Init ();
-		k = STRING;
-		u.s= g_strdup (s);
-	}
-
-	~Value ()
-	{
-		if (k == STRING)
-			g_free (u.s);
 	}
 };
 

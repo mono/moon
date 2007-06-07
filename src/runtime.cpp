@@ -71,6 +71,107 @@ collection_remove (Collection *collection, void *data)
 	collection->list = g_slist_remove (collection->list, data);
 }
 
+
+
+/**
+ * Value implementation
+ */
+
+void
+Value::Init ()
+{
+	memset (&u, 0, sizeof (u));
+}
+
+Value::Value()
+  : k (INVALID)
+{
+}
+
+Value::Value(bool z)
+{
+	Init ();
+	k = BOOL;
+	u.z = z;
+}
+
+Value::Value (double d)
+{
+	Init ();
+	k = DOUBLE;
+	u.d = d;
+}
+
+Value::Value (guint64 i)
+{
+	Init ();
+	k = UINT64;
+	u.ui64 = i;
+}
+
+Value::Value (gint64 i)
+{
+	Init ();
+	k = INT64;
+	u.i64 = i;
+}
+
+Value::Value (gint32 i)
+{
+	Init ();
+	k = INT32;
+	u.i32 = i;
+}
+
+Value::Value (Color* c)
+{
+	Init ();
+	k = COLOR;
+	u.color = new Color (c);
+}
+
+Value::Value (DependencyObject *obj)
+{
+	g_assert (obj != NULL);
+		
+	Init ();
+	k = DEPENDENCY_OBJECT;
+	u.dependency_object = obj;
+}
+
+Value::Value (Point *pt)
+{
+	g_assert (pt != NULL);
+
+	Init ();
+	k = POINT;
+	u.point = new Point (pt);
+}
+
+Value::Value (Rect *rect)
+{
+	g_assert (rect != NULL);
+
+	Init ();
+	k = RECT;
+	u.rect = new Rect (rect);
+}
+
+Value::Value (const char* s)
+{
+	Init ();
+	k = STRING;
+	u.s= g_strdup (s);
+}
+
+Value::~Value ()
+{
+	if (k == STRING)
+		g_free (u.s);
+}
+
+
+
 /**
  * item_getbounds:
  * @item: the item to update the bounds of

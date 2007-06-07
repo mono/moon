@@ -1,3 +1,8 @@
+2007-06-06  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: move the Value implementation (for
+	everything but the operators) to the .cpp file.
+
 2007-06-06  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.h, runtime.cpp: Surface is no longer derived from
