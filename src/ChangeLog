@@ -1,3 +1,7 @@
+2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.h: Fix hierarchy. Panel inherits from FrameworkElement.
+
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp: switch all the various linear interpolation

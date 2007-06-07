@@ -558,9 +558,25 @@ void     item_set_render_transform (UIElement *item, Transform *transform);
 void     item_get_render_affine    (UIElement *item, cairo_matrix_t *result);
 
 //
+// FrameworkElement class
+//
+class FrameworkElement : public UIElement {
+ public:
+	static DependencyProperty* HeightProperty;
+	static DependencyProperty* WidthProperty;
+
+	FrameworkElement () {} 
+};
+
+double	framework_element_get_height	(FrameworkElement *framework_element);
+void	framework_element_set_height	(FrameworkElement *framework_element, double height);
+double	framework_element_get_width	(FrameworkElement *framework_element);
+void	framework_element_set_width	(FrameworkElement *framework_element, double width);
+
+//
 // Panel Class
 //
-class Panel : public UIElement {
+class Panel : public FrameworkElement {
  public:
 	Collection children;
 
@@ -597,22 +613,6 @@ class Canvas : public Panel {
 
 Canvas *canvas_new ();
 
-
-//
-// FrameworkElement class
-//
-class FrameworkElement : public UIElement {
- public:
-	static DependencyProperty* HeightProperty;
-	static DependencyProperty* WidthProperty;
-
-	FrameworkElement () {} 
-};
-
-double	framework_element_get_height	(FrameworkElement *framework_element);
-void	framework_element_set_height	(FrameworkElement *framework_element, double height);
-double	framework_element_get_width	(FrameworkElement *framework_element);
-void	framework_element_set_width	(FrameworkElement *framework_element, double width);
 
 // A video is an UIElement
 class Video : public UIElement {
