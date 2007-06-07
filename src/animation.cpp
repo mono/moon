@@ -11,6 +11,8 @@
 
 #include "animation.h"
 
+#define LERP(f,t,p) ((f) + (p) * ((t) - (f)))
+
 static guint64
 get_now ()
 {
@@ -669,7 +671,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (from + (to-from) * progress);
+	Value *v = new Value (LERP (from, to, progress));
 	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
 	return v;
 }
@@ -742,10 +744,10 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (Color (from->r + (to->r - from->r) * progress,
-				     from->g + (to->g - from->g) * progress,
-				     from->b + (to->b - from->b) * progress,
-				     from->a + (to->a - from->a) * progress));
+	Value *v = new Value (Color (LERP (from->r, to->r, progress),
+				     LERP (from->g, to->g, progress),
+				     LERP (from->b, to->b, progress),
+				     LERP (from->a, to->a, progress)));
 
 	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
 	return v;
@@ -800,6 +802,80 @@ color_animation_get_to (ColorAnimation *da)
 
 
 
+DependencyProperty* PointAnimation::ByProperty;
+DependencyProperty* PointAnimation::FromProperty;
+DependencyProperty* PointAnimation::ToProperty;
+
+PointAnimation::PointAnimation ()
+{
+	SetObjectType (Value::POINTANIMATION);
+}
+
+Value*
+PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+				 AnimationClock* animationClock)
+{
+	Point *by = point_animation_get_by (this);
+	Point *from = point_animation_get_from (this);
+	Point *to = point_animation_get_to (this);
+
+	double progress = animationClock->GetCurrentProgress ();
+
+	Value *v = new Value (Point (LERP (from->x, to->x, progress),
+				     LERP (from->y, to->y, progress)));
+
+	return v;
+}
+
+PointAnimation *
+point_animation_new ()
+{
+	return new PointAnimation ();
+}
+
+void
+point_animation_set_by (PointAnimation *da, Point by)
+{
+	da->SetValue (PointAnimation::ByProperty, Value(by));
+}
+
+Point*
+point_animation_get_by (PointAnimation *da)
+{
+	Value *v = da->GetValue (PointAnimation::ByProperty);
+	return v == NULL ? NULL : v->u.point;
+}
+
+void
+point_animation_set_from (PointAnimation *da, Point from)
+{
+	da->SetValue (PointAnimation::FromProperty, Value(from));
+}
+
+Point*
+point_animation_get_from (PointAnimation *da)
+{
+	Value *v = da->GetValue (PointAnimation::FromProperty);
+	return v == NULL ? NULL : v->u.point;
+}
+
+void
+point_animation_set_to (PointAnimation *da, Point to)
+{
+	da->SetValue (PointAnimation::ToProperty, Value(to));
+}
+
+Point*
+point_animation_get_to (PointAnimation *da)
+{
+	Value *v = da->GetValue (PointAnimation::ToProperty);
+	return v == NULL ? NULL : v->u.point;
+}
+
+
+
+
+
 RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
 Duration Duration::Automatic (Duration::AUTOMATIC);
 Duration Duration::Forever (Duration::FOREVER);
@@ -826,6 +902,11 @@ animation_init ()
 	ColorAnimation::ByProperty   = DependencyObject::Register (Value::COLORANIMATION, "By",   new Value (Value::COLOR)); // null defaults
 	ColorAnimation::FromProperty = DependencyObject::Register (Value::COLORANIMATION, "From", new Value (Value::COLOR));
 	ColorAnimation::ToProperty   = DependencyObject::Register (Value::COLORANIMATION, "To",   new Value (Value::COLOR));
+
+	/* PointAnimation properties */
+	PointAnimation::ByProperty   = DependencyObject::Register (Value::POINTANIMATION, "By",   new Value (Value::POINT)); // null defaults
+	PointAnimation::FromProperty = DependencyObject::Register (Value::POINTANIMATION, "From", new Value (Value::POINT));
+	PointAnimation::ToProperty   = DependencyObject::Register (Value::POINTANIMATION, "To",   new Value (Value::POINT));
 
 	/* Storyboard properties */
 	Storyboard::TargetPropertyProperty = DependencyObject::Register (Value::STORYBOARD, "TargetProperty", 

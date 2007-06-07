@@ -1,5 +1,15 @@
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp: switch all the various linear interpolation
+	expressions to using the LERP macro, and add the PointAnimation
+	implementation.
+
+	* animation.h: add PointAnimation.
+
+	* runtime.h: add Value::POINTANIMATION.
+
+2007-06-07  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h (Value): add COLORANIMATION to the list of types.
 	Also, add a Kind constructor so we can use that for nullable type
 	default values in the ::RegisterProperty calls.  That is,

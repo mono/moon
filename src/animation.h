@@ -432,6 +432,34 @@ Color* color_animation_get_to (ColorAnimation *da);
 
 
 
+class PointAnimation : public Animation/*Timeline*/ {
+ public:
+
+	PointAnimation ();
+
+	static DependencyProperty* ByProperty;
+	static DependencyProperty* FromProperty;
+	static DependencyProperty* ToProperty;
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+};
+
+PointAnimation * point_animation_new ();
+
+void   point_animation_set_by (PointAnimation *da, Point by);
+Point* point_animation_get_by (PointAnimation *da);
+
+void   point_animation_set_from (PointAnimation *da, Point from);
+Point* point_animation_get_from (PointAnimation *da);
+
+void   point_animation_set_to (PointAnimation *da, Point to);
+Point* point_animation_get_to (PointAnimation *da);
+
+
+
+
+
 class Storyboard : public ParallelTimeline {
  public:
 	Storyboard ();
