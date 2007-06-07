@@ -1,5 +1,9 @@
 2007-06-07  Jackson Harper  <jackson@ximian.com>
 
+	* runtime.cpp|h: Some pieces of the triggers framework.
+
+2007-06-07  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Handle repeat behaviors, lookup attached properties.
 
 2007-06-06  Chris Toshok  <toshok@ximian.com>

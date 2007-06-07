@@ -1029,6 +1029,16 @@ item_init ()
 	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
 }
 
+DependencyProperty* EventTrigger::ActionsProperty;
+DependencyProperty* EventTrigger::RoutedEventProperty;
+
+void
+event_trigger_init ()
+{
+//	EventTrigger::ActionsProperty = DependencyObject::Register (Value::EVENTTRIGGER, "Actions", Value::TRIGGERACTIONCOLLECTION);
+//	EventTrigger::RoutedEventProperty = DependencyObject::Register (Value::EVENTTRIGGER, "RoutedEvent", Value::ROUTEDEVENT);
+}
+
 void
 runtime_init ()
 {
@@ -1036,6 +1046,7 @@ runtime_init ()
 	item_init ();
 	framework_element_init ();
 	canvas_init ();
+	event_trigger_init ();
 	transform_init ();
 	animation_init ();
 	brush_init ();

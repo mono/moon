@@ -201,6 +201,7 @@ public:
 		QUADRATICBEZIERSEGMENT,
 		TRIGGERACTION,
 		BEGINSTORYBOARD,
+		EVENTTRIGGER,
 	};
 
 	Kind k;
@@ -438,7 +439,34 @@ class TriggerAction : public DependencyObject {
        }
 };
 
+struct RoutedEvent {
 
+ public:
+	const char *name;
+
+	RoutedEvent () : name (NULL) { }
+	RoutedEvent (const char *name) : name (name) { }
+	
+};
+
+class EventTrigger : public DependencyObject {
+
+ public:
+	EventTrigger ()
+	{
+		SetObjectType (Value::EVENTTRIGGER);
+	}
+
+	static DependencyProperty* ActionsProperty;
+	static DependencyProperty* RoutedEventProperty;
+};
+
+void event_trigger_init ();
+
+class TriggerActionCollection : Collection {
+
+
+};
 
 //
 // Item class
