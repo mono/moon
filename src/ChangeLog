@@ -1,5 +1,16 @@
 2007-06-06  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h: make the point/color/rect copy constructors take a
+	ref, not a pointer.  also, make the value contructors for struct
+	types by-value.
+
+	* runtime.cpp: make the value constructors for struct types
+	by-value.
+
+	* brush.cpp (brush_init): pass the Color by value.
+
+2007-06-06  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h, runtime.cpp: move the Value implementation (for
 	everything but the operators) to the .cpp file.
 

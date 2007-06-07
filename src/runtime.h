@@ -21,6 +21,7 @@ class EventObject {
 	GHashTable *event_hash;
 };
 
+struct RepeatBehavior;
 class Transform;
 class TransformGroup;
 class Surface;
@@ -40,10 +41,10 @@ public:
 		this->y = y;
 	}
 
-	Point (Point *point)
+	Point (const Point &point)
 	{
-		x = point->x;
-		y = point->y;
+		x = point.x;
+		y = point.y;
 	}
 };
 
@@ -61,12 +62,12 @@ struct Rect {
 		h = height;
 	}
 
-	Rect (Rect *rect)
+	Rect (const Rect &rect)
 	{
-		x = rect->x;
-		y = rect->y;
-		w = rect->w;
-		h = rect->h;
+		x = rect.x;
+		y = rect.y;
+		w = rect.w;
+		h = rect.h;
 	}
 };
 
@@ -91,17 +92,12 @@ struct Color {
 		this->a = a;
 	}
 
-	Color (Color *color)
+	Color (const Color &color)
 	{
-		if (color) {
-			r = color->r;
-			g = color->g;
-			b = color->b;
-			a = color->a;
-		} else {
-			r = g = b = 1.0;
-			a = 0.0;
-		}
+		r = color.r;
+		g = color.g;
+		b = color.b;
+		a = color.a;
 	}
 };
 
@@ -228,10 +224,10 @@ public:
 	Value (guint64 i);
 	Value (gint64 i);
 	Value (gint32 i);
-	Value (Color *c);
+	Value (Color c);
 	Value (DependencyObject *obj);
-	Value (Point *pt);
-	Value (Rect *rect);
+	Value (Point pt);
+	Value (Rect rect);
 	Value (const char* s);
 	
 	~Value ();

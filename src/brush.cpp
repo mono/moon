@@ -199,5 +199,5 @@ brush_init ()
 	Brush::TransformProperty = DependencyObject::Register (Value::BRUSH, "TransformProperty", new Value ());
 
 	/* SolidColorBrush fields */
-	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (new Color (0x00FFFFFF)));
+	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00FFFFFF)));
 }

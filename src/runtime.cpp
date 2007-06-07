@@ -26,6 +26,7 @@
 #include <cairo-xlib.h>
 #include "runtime.h"
 #include "transform.h"
+#include "animation.h"
 
 #if AGG
 struct _SurfacePrivate {
@@ -123,7 +124,7 @@ Value::Value (gint32 i)
 	u.i32 = i;
 }
 
-Value::Value (Color* c)
+Value::Value (Color c)
 {
 	Init ();
 	k = COLOR;
@@ -139,19 +140,15 @@ Value::Value (DependencyObject *obj)
 	u.dependency_object = obj;
 }
 
-Value::Value (Point *pt)
+Value::Value (Point pt)
 {
-	g_assert (pt != NULL);
-
 	Init ();
 	k = POINT;
 	u.point = new Point (pt);
 }
 
-Value::Value (Rect *rect)
+Value::Value (Rect rect)
 {
-	g_assert (rect != NULL);
-
 	Init ();
 	k = RECT;
 	u.rect = new Rect (rect);
