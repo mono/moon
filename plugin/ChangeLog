@@ -1,5 +1,10 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.cpp: Add some initialization code to prevent some segmentation
+	fault.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp: Add SCRIPTING and DEMO macros to make available only
 	tested features, it mean that developers must uncomment this MACRO lines
 	before work on scripting and libmoon stuff.

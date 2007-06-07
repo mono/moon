@@ -115,23 +115,24 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
     this->window = NULL;
 	this->object = NULL;
 
-	this->settings = new PluginSettings ();
+	this->container = NULL;
+	this->canvas = NULL;
+	this->surface = NULL;
 
+	this->settings = new PluginSettings ();
 	this->obj_settings = NPN_CreateObject (this->instance, this->settings);
 }
 
 PluginInstance::~PluginInstance ()
 {
-#ifdef DEMO
 	if (this->canvas != NULL)
 		delete (this->canvas);
 
 	if (this->surface != NULL)
 		surface_destroy (this->surface);
 
-	//if (this->container != NULL)
-	//	gtk_widget_destroy (this->container);
-#endif
+	if (this->container != NULL)
+		gtk_widget_destroy (this->container);
 }
 
 void 
