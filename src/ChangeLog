@@ -1,3 +1,7 @@
+2007-06-07  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Get object element property setting working.
+
 2007-06-06  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: add a special void* ctor to value so
