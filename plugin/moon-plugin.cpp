@@ -118,11 +118,11 @@ PluginInstance::~PluginInstance ()
 	if (this->canvas != NULL)
 		delete (this->canvas);
 
-	if (this->container != NULL)
-		gtk_widget_destroy (this->container);
-
 	if (this->surface != NULL)
 		surface_destroy (this->surface);
+
+	//if (this->container != NULL)
+	//	gtk_widget_destroy (this->container);
 }
 
 void 
