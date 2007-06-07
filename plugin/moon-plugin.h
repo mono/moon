@@ -63,7 +63,7 @@ class PluginInstance {
 
 	// Mozilla plugin related methods
 	NPError GetValue (NPPVariable variable, void *result);
-	NPError SetValue (NPPVariable variable, void *value);
+	NPError SetValue (NPNVariable variable, void *value);
 	NPError SetWindow (NPWindow* window);
 	NPError NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype);
 	NPError DestroyStream (NPStream* stream, NPError reason);

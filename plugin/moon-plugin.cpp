@@ -157,7 +157,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 }
 
 NPError
-PluginInstance::SetValue (NPPVariable variable, void *value)
+PluginInstance::SetValue (NPNVariable variable, void *value)
 {
 	return NPERR_NO_ERROR;
 }

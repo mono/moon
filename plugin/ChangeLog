@@ -1,3 +1,12 @@
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin.cpp, 
+	* moon-plugin.h,
+	* plugin-glue.cpp: Fix SetValue declaration.
+
+	* plugin-entry.cpp: Fix a lot of declarations, support for win and mac,
+	support for runtime version checking and some other minor fixes.
+
 2007-06-06  Everaldo Canuto  <ecanuto@novell.com>
 
 	* moon-plugin.cpp: Comment container destructor to prevent segfault.

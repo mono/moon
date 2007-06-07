@@ -195,7 +195,7 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 }
 
 NPError 
-NPP_SetValueX (NPP instance, NPPVariable variable, void *value)
+NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 {
 	DEBUG ("NPP_SetValue %d (%x)", variable, value);
 
