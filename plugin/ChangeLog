@@ -1,5 +1,18 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	[PluginClass added to handle script objects]
+
+	* plugin-class.cpp,
+	* plugin-class.h,
+	* Makefile.am: PluginClass added.
+
+	* moon-plugin.cpp, 
+	* moon-plugin.h: PluginInstance now inherit from PluginClass, also 
+	scriptclass was removed and "this" is used in NPN_CreateObject. For
+	NPN_CreateObject we can now always use classes inherited by PluginClass.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* Makefile.am: Remove idl related code, new object system dont need idl or
 	xpi files. 
 	* nsIScriptableMoonPlugin.h: deleted.

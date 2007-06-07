@@ -23,6 +23,7 @@
 #include "glib.h"
 #include "gtk/gtk.h"
 
+#include "plugin-class.h"
 #include "runtime.h"
 #include "shape.h"
 
@@ -45,7 +46,7 @@
 #define DEBUG(msg)
 #endif
 
-class PluginInstance {
+class PluginInstance : public PluginClass {
  private:
 	void CreateControls ();
 
@@ -53,8 +54,6 @@ class PluginInstance {
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
 	bool xembed_supported; // XEmbed Extension supported
-
-    NPClass *scriptclass;  // JavaScript class
 	NPObject *object;      // JavaScript object
 
  public:	

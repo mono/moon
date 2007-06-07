@@ -17,7 +17,9 @@ libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \
 	moon-plugin.h \
 	plugin-entry.cpp \
-	plugin-glue.cpp
+	plugin-glue.cpp \
+	plugin-class.cpp \
+	plugin-class.h
 
 # custom install rule
 install-plugin: libmoonplugin.la

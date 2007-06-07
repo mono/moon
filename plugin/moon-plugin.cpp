@@ -110,7 +110,6 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
     this->mode = mode;
     this->instance = instance;
     this->window = NULL;
-    this->scriptclass = NULL;
 	this->object = NULL;
 }
 
@@ -144,7 +143,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 
 		case NPPVpluginScriptableNPObject:
 			if (!this->object)
-				this->object = NPN_CreateObject (this->instance, scriptclass);
+				this->object = NPN_CreateObject (this->instance, this);
 
 			if (!this->object)
 				err = NPERR_OUT_OF_MEMORY_ERROR;
