@@ -1,5 +1,9 @@
 2007-06-06  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp, animation.h: add timeline_set_autoreverse.
+
+2007-06-06  Chris Toshok  <toshok@ximian.com>
+
 	* animation.h: add prototype for timeline_set_repeat_behavior.
 	
 	* animation.cpp (animation_init): register the RepeatBehavior

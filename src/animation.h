@@ -193,6 +193,7 @@ class Timeline : public DependencyObject {
 	virtual Clock* AllocateClock () { return new Clock (this); }
 };
 
+void timeline_set_autoreverse (Timeline *timeline, bool autoreverse);
 void timeline_set_duration (Timeline *timeline, guint64 duration);
 void timeline_set_repeat_behavior (Timeline *timeline, RepeatBehavior behavior);
 

@@ -325,6 +325,12 @@ Timeline::Timeline ()
 
 
 void
+timeline_set_autoreverse (Timeline *timeline, bool autoreverse)
+{
+	timeline->SetValue (Timeline::AutoReverseProperty, Value(autoreverse));
+}
+
+void
 timeline_set_duration (Timeline *timeline, guint64 duration)
 {
 	timeline->SetValue (Timeline::DurationProperty, Value(duration));
