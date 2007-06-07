@@ -1,3 +1,4 @@
+#define DEBUG_XAML
 /*
  * xaml.cpp: xaml parser
  *
@@ -50,7 +51,6 @@ class XamlElementInstance {
 
 	enum ElementType {
 		ELEMENT,
-		PANEL,
 		PROPERTY,
 		UNKNOWN
 	};
@@ -60,7 +60,7 @@ class XamlElementInstance {
 
 
 	XamlElementInstance (XamlElementInfo *info) : info (info), element_name (NULL), instance_name (NULL),
-			     parent (NULL), children (NULL), element_type (PANEL)
+			     parent (NULL), children (NULL), element_type (UNKNOWN)
 	{
 	}
 
@@ -218,7 +218,7 @@ print_tree (XamlElementInstance *el, int depth)
 {
 	for (int i = 0; i < depth; i++)
 		printf ("\t");
-	printf ("%s  (%d)\n", el->element_name, g_list_length (el->children));
+	printf ("%s  (%d)\n", el->element_name, el->element_type);
 
 	for (GList *walk = el->children; walk != NULL; walk = walk->next) {
 		XamlElementInstance *el = (XamlElementInstance *) walk->data;
@@ -340,6 +340,14 @@ xaml_create_from_str (const char *xaml)
 }
 
 
+RepeatBehavior
+repeat_behavior_from_str (const char *str)
+{
+	if (!g_strcasecmp ("Forever", str))
+		return RepeatBehavior::Forever;
+	// It's late at night and I don't want to parse timespans
+	return RepeatBehavior (strtod (str, NULL));
+}
 
 XamlElementInstance *
 default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
@@ -405,48 +413,65 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 ///
 
 void
-default_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
-{
-	
-}
-
-void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
 	DependencyObject *dep = (DependencyObject *) item->item;
 
 	for (int i = 0; attr [i]; i += 2) {
+
+		if (!strcmp ("x:Name", attr [i])) {
+			// 	global_NameScope->RegisterName (attr [i + 1], dep);
+			continue;
+		}
+
+		const char *pname = attr [i];
+		char *atchname = NULL;
+		for (int a = 0; attr [i][a]; a++) {
+			if (attr [i][a] != '.')
+				continue;
+			atchname = g_strndup (attr [i], a);
+			pname = atchname;
+			break;
+		}
+
 		DependencyProperty *prop = NULL;
 		XamlElementInfo *walk = item->info;
+
+		if (atchname) {
+			XamlElementInfo *attached = (XamlElementInfo *) g_hash_table_lookup (element_map, atchname);
+			walk = attached;
+		}
+
 		while (walk) {
-			prop = DependencyObject::GetDependencyProperty (walk->dependency_type, (char *) attr [i]);
+			prop = DependencyObject::GetDependencyProperty (walk->dependency_type, (char *) pname);
 			if (prop)
 				break;
 			walk = walk->parent;
 		}
 
 		if (prop) {
-			/// This should be replaced soon, just stuck it in here for debugging
-			Value v;
-			
+
 			switch (prop->value_type) {
 			case Value::BOOL:
-				v = Value ((bool) !g_strcasecmp ("true", attr [i + 1]));
+				dep->SetValue (prop, Value ((bool) !g_strcasecmp ("true", attr [i + 1])));
 				break;
 			case Value::DOUBLE:
-				v = Value ((double) strtod (attr [i + 1], NULL));
+				dep->SetValue (prop, Value ((double) strtod (attr [i + 1], NULL)));
 				break;
 			case Value::INT64:
-				v = Value ((gint64) strtol (attr [i + 1], NULL, 10));
+				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10)));
 				break;
 			case Value::INT32:
-				v = Value ((int) strtol (attr [i + 1], NULL, 10));
+				dep->SetValue (prop, Value ((int) strtol (attr [i + 1], NULL, 10)));
 				break;
 			case Value::STRING:
-				v = Value (attr [i + 1]);
+				dep->SetValue (prop, Value (attr [i + 1]));
 				break;
 			case Value::COLOR:
-				v = Value (*color_from_str (attr [i + 1]));
+				dep->SetValue (prop, Value (*color_from_str (attr [i + 1])));
+				break;
+			case Value::REPEATBEHAVIOR:
+				dep->SetValue (prop, Value (repeat_behavior_from_str (attr [i + 1])));
 				break;
 			case Value::BRUSH:
 			case Value::SOLIDCOLORBRUSH:
@@ -454,22 +479,24 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				// Only solid color brushes can be specified using attribute syntax
 				SolidColorBrush *scb = solid_color_brush_new ();
 				solid_color_brush_set_color (scb, color_from_str (attr [i + 1]));
-				v = Value (scb);
+				dep->SetValue (prop, Value (scb));
 			}
 				break;
 			default:
 #ifdef XAML_DEBUG
-				printf ("could not find value type for: %s::%s\n", attr [i], attr [i + 1]);
+				printf ("could not find value type for: %s::%s %d\n", pname, attr [i + 1], prop->value_type);
 #endif
 				continue;
 			}
 
-			dep->SetValue (prop, v);
 		} else {
 #ifdef XAML_DEBUG
-			printf ("can not find property:  %s  %s\n", attr [i], attr [i + 1]);
+			printf ("can not find property:  %s  %s\n", pname, attr [i + 1]);
 #endif
 		}
+
+		if (atchname)
+			g_free (atchname);
 	}
 }
 
@@ -568,7 +595,14 @@ xaml_init ()
 	
 	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
 	register_dependency_object_element ("DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	register_dependency_object_element ("StoryBoard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
+	register_dependency_object_element ("Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
+
+
+	///
+	/// Triggers
+	///
+	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Value::TRIGGERACTION);
+	register_dependency_object_element ("BeginStoryboard", trg, Value::BEGINSTORYBOARD, (create_item_func) begin_storyboard_new);
 
 
 	///
