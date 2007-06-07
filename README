@@ -227,3 +227,22 @@ This is not likely the final version of this code.
 	merely have a single cairo context that we paint to?
 
 
+* Mozilla plugin
+
+	It is recommended that for now you do not `make install' as there
+	is not much to use.
+
+	To browser plugin installation, use:
+
+		make
+
+		make install-plugin
+
+	It will install all need stuff to your local plugin folder at
+	~/.mozilla/plugins. In plugin/test folder theres a file 
+	index.html that can be use to see plugin in action. Since plugin
+	is under development, if you have any problems with it try to 
+	execute your browser from command line and check log messsages, 
+	this information can be useful to help us fix the problem.
+
+	

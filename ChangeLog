@@ -1,3 +1,7 @@
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
+	* README: Update file to include plugin install information.
+
 2007-06-05  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* configure.ac: Added checks to see which mozilla xpcom .pc file
