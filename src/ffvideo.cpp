@@ -42,6 +42,7 @@ G_END_DECLS
 
 // Alsa
 #include <asoundlib.h>
+#include "cutil.h"
 
 typedef enum {
 	// When a new frame is ready
@@ -121,6 +122,7 @@ public:
 
 static GMutex *video_lock;
 
+
 void
 VideoFfmpeg::getbounds ()
 {
@@ -144,7 +146,10 @@ VideoFfmpeg::getbounds ()
 	cairo_set_matrix (s->cairo, &absolute_xform);
 
 	cairo_rectangle (s->cairo, 0, 0, cc->width, cc->height);
-	cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
+	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
+
+	// The extents are in the coordinates of the transform, translate to device coordinates
+	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
 
 	cairo_restore (s->cairo);
 }
@@ -308,7 +313,14 @@ queue_data (gpointer data)
 
 		frame++;
 		g_mutex_lock (video->video_mutex);
-		if (video->pcm != NULL && pkt->stream_index == audio_stream_idx) {
+		if (pkt->stream_index == video_stream_idx){
+			g_async_queue_push (video->video_frames, pkt);
+			video->video_frames_size += pkt->size;
+			if (g_async_queue_length (video->video_frames) == 1)
+				send_command (video, CMD_NEWFRAME);
+			pkt = NULL;
+
+		} else if (video->pcm != NULL && pkt->stream_index == audio_stream_idx) {
 			int align = audio_left & 0x1;
 			char *audio_buffer = ((char *) video->audio_buffer) + audio_left;
 			int16_t *decode_buffer = (int16_t *) (audio_buffer + align);
@@ -320,6 +332,8 @@ queue_data (gpointer data)
 				ndecoded = avcodec_decode_audio2 (audio_codec, decode_buffer, &decode_size,
 								  pkt->data, pkt->size);
 				printf ("decoded %d bytes\n", ndecoded);
+				g_free (pkt);
+				pkt = NULL;
 			}
 			
 			if (ndecoded > 0) {
@@ -359,12 +373,9 @@ queue_data (gpointer data)
 					snd_pcm_prepare (video->pcm);
 				}
 			}
-		} if (pkt->stream_index == video_stream_idx){
-			g_async_queue_push (video->video_frames, pkt);
-			video->video_frames_size += pkt->size;
-			if (g_async_queue_length (video->video_frames) == 1)
-				send_command (video, CMD_NEWFRAME);
-		}
+		} 
+		if (pkt != NULL)
+			g_free (pkt);
 		g_mutex_unlock (video->video_mutex);
 	}
 

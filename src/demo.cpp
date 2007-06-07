@@ -87,7 +87,7 @@ main (int argc, char *argv [])
 		r = rectangle_new ();
 		framework_element_set_width (r, 50.0);
 		framework_element_set_height (r, 50.0);
-		shape_set_stroke_thickness (r, 5.0);
+		shape_set_stroke_thickness (r, 10.0);
 		r->SetValue (Canvas::LeftProperty, Value (50.0));
 		r->SetValue (Canvas::TopProperty, Value (50.0));
 		
@@ -135,8 +135,8 @@ main (int argc, char *argv [])
 		v2->SetValue (Canvas::TopProperty, Value (100.0));
 		item_set_render_transform (v2, s_trans);
 		panel_child_add (t, v2);
-		gtk_timeout_add (60, animate, NULL);
 #endif
+		gtk_timeout_add (60, animate, NULL);
 	}		
 	gtk_widget_set_usize (w, 600, 400);
 	gtk_widget_show_all (w);

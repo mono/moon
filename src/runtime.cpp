@@ -117,10 +117,11 @@ item_invalidate (UIElement *item)
 	if (s == NULL)
 		return;
 
+//#define DEBUG_INVALIDATE
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for %d %d %d %d\n", 
 				    (int) item->x1, (int)item->y1, 
-				    (int)(item->x2-item->x1), (int)(item->y2-item->y1));
+				    (int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
 #endif
 	// 
 	// Note: this is buggy: why do we need to queue the redraw on the toplevel

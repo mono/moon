@@ -18,6 +18,7 @@
 #include <cairo.h>
 
 #include "shape.h"
+#include "cutil.h"
 
 //
 // SL-Cairo convertion routines
@@ -85,7 +86,6 @@ DependencyProperty* Shape::StrokeThicknessProperty;
 void 
 Shape::DoDraw (Surface *s, bool do_op)
 {
-	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 
 	Brush *fill = shape_get_fill (this);
@@ -112,30 +112,33 @@ Shape::DoDraw (Surface *s, bool do_op)
 		if (do_op)
 			cairo_stroke (s->cairo);
 	}
-	cairo_restore (s->cairo);
 }
 
 void
 Shape::render (Surface *s, int x, int y, int width, int height)
 {
+	cairo_save (s->cairo);
 	DoDraw (s, TRUE);
+	cairo_restore (s->cairo);
 }
 
 void 
 Shape::getbounds ()
 {
-	double res [6];
-
 	Surface *s = item_get_surface (this);
 
 	// not yet attached
 	if (s == NULL)
 		return;
 
+	cairo_save (s->cairo);
 	DoDraw (s, FALSE);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
-
 	cairo_new_path (s->cairo);
+	cairo_restore (s->cairo);
+
+	// The extents are in the coordinates of the transform, translate to device coordinates
+	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
 }
 
 Brush*

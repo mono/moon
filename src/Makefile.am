@@ -5,6 +5,7 @@ lib_LTLIBRARIES = libmoon.la
 INCLUDES = $(MOON_CFLAGS)
 
 libmoon_la_SOURCES = 	\
+	cutil.cpp	\
 	brush.cpp	\
 	animation.cpp	\
 	animation.h	\

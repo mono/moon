@@ -1,3 +1,20 @@
+2007-06-06  Miguel de Icaza  <miguel@novell.com>
+
+	Correct computation of the bounding box for shapes and videos.
+
+	* shape.cpp: Do not pop the cairo state after draw and then call
+	extents as the computation on extents is done with the current
+	cairo context, not the cairo context that drew the data before
+	popping (this would show up with thick brushes).
+
+	* runtime.cpp: Add 2 instead of 1, as double to integer rounding
+	can take two values (negative and positive).
+
+	* cutil.cpp: Cut and paste cairo code here, it computes the proper
+	bounding box from the extents using the current absolute matrix. 
+
+	* ffvideo.cpp (queue_data): Memory leak gone.
+
 2007-06-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Set brush attributes.
