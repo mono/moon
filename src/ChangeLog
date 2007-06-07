@@ -1,5 +1,14 @@
 2007-06-06  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h, runtime.cpp: add a special void* ctor to value so
+	pointers aren't silently converted to bool (bad c++, bad!), and
+	have that ctor output a warning message to the console, along with
+	the likely cause.
+
+	* brush.cpp: need to deref the Color* in the Value ctor.
+
+2007-06-06  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp: new dump of the animation stuff.  this is much
 	closer in spirit and implementation to that of WPF's
 	timing/animation system.  it's not perfect yet, but it's much,

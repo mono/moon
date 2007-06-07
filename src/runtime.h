@@ -229,6 +229,7 @@ public:
 	Value (Point pt);
 	Value (Rect rect);
 	Value (const char* s);
+	Value (void* v); // this is for finding improper uses of the Value ctors - do NOT use this.
 	
 	~Value ();
 

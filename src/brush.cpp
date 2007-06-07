@@ -88,7 +88,7 @@ solid_color_brush_get_color (SolidColorBrush *solid_color_brush)
 void
 solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color)
 {
-	solid_color_brush->SetValue (SolidColorBrush::ColorProperty, Value (color));
+	solid_color_brush->SetValue (SolidColorBrush::ColorProperty, Value (*color));
 }
 
 SolidColorBrush*

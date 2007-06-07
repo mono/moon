@@ -161,6 +161,11 @@ Value::Value (const char* s)
 	u.s= g_strdup (s);
 }
 
+Value::Value (void*)
+{
+	g_warning ("This is not what you want to do here.  You're passing an unrecognized pointer type to Value.  usually this means you need to deref a structured type and hitting the void* ctor");
+}
+
 Value::~Value ()
 {
 	if (k == STRING)
