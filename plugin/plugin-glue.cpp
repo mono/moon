@@ -28,13 +28,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 		return NPERR_OUT_OF_MEMORY_ERROR;
 
 	plugin->Initialize (argc, argn, argv);
-	instance->pdata = NPN_MemAlloc (sizeof (PluginInstance));
-
-	plugin = (PluginInstance*) instance->pdata;
-	if (plugin == NULL)
-		return NPERR_OUT_OF_MEMORY_ERROR;
-
-	memset (plugin, 0, sizeof (PluginInstance));
+	instance->pdata = plugin;
 
 	return NPERR_NO_ERROR;
 }

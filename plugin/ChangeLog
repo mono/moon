@@ -1,5 +1,10 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-glue.cpp: Fix the instance initialization problems, the object 
+	instance was empty after creation.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp, 
 	* moon-plugin.h,
 	* plugin-glue.cpp: Fix SetValue declaration.
