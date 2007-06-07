@@ -734,7 +734,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 		*copy = value;
 
 		if (value.k == Value::STRING)
-		  copy->u.s = g_strdup (value.u.s);
+			copy->u.s = g_strdup (value.u.s);
 
 		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->u.dependency_object;

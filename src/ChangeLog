@@ -1,3 +1,15 @@
+2007-06-07  Miguel de Icaza  <miguel@novell.com>
+
+	* animation.cpp (get_now): The time computation was wrong, there
+	was an extra "10" in there that made all computations go astray
+	and in particular cause the large values for ScaleY, which made
+	getboundingbox ridiculously slow.
+
+	For debugging purposes: ScaleY was being set to
+	131472940552.95215, which came from
+	DoubleAnimation:GetCurrentValue which was computing this value
+	from a busted clock.
+
 2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Add drawing for [Ellipse|Line|Rectangle] geometry.

@@ -18,7 +18,7 @@ get_now ()
         guint64 res;
 
         if (gettimeofday (&tv, NULL) == 0) {
-                res = ((guint64)tv.tv_sec * 1000000 + tv.tv_usec)*10;
+                res = (guint64)tv.tv_sec * 1000000 + tv.tv_usec;
                 return res;
         }
 
@@ -109,7 +109,9 @@ Clock::Clock (Timeline *tl)
 
 	autoreverse = timeline_get_autoreverse (timeline);
 	completed_iterations = 0.0;
-
+	current_progress = 0.0;
+	current_time = 0;
+	start_time = 0;
 	Duration *duration = timeline_get_duration (timeline);
 }
 
@@ -148,6 +150,10 @@ Clock::TimeUpdated (guint64 parent_clock_time)
 				completed_iterations += 0.5;
 
 				current_progress = new_progress - 1.0;
+				guint64 diff = current_time - start_time;
+				printf ("current_time=%llu start_time=%llu diff=%llu\n", current_time, start_time, diff);
+				printf ("completed_iter=%g autoreverse=%d duration=%llu\n", completed_iterations, autoreverse, duration_timespan);
+				printf ("Assigning=%g\n", current_progress);
 
 				if (remaining_iterations > 0)
 					remaining_iterations --;
@@ -222,6 +228,7 @@ Clock::GetCurrentProgress ()
 void
 Clock::Begin (guint64 start_time)
 {
+	printf ("Starting %llu\n", start_time);
 	this->start_time = start_time;
 	current_state = RUNNING; /* should we invalidate the state here? */
 	QueueEvent (CURRENT_STATE_INVALIDATED);
@@ -503,6 +510,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		if (!targetName)
 			return;
 
+		printf ("Got %s %s\n", targetProperty, targetName);
 		DependencyObject *o = FindName (targetName);
 		if (!o)
 			return;
@@ -663,7 +671,9 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	return new Value (from + (to-from) * progress);
+	Value *v = new Value (from + (to-from) * progress);
+	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
+	return v;
 }
 
 DoubleAnimation *

@@ -47,6 +47,7 @@ RotateTransform::GetTransform (cairo_matrix_t *value)
 		cairo_matrix_rotate (value, radians);
 		cairo_matrix_translate (value, center_x, center_y);
 	}
+	//printf ("Returning2 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 RotateTransform *
@@ -104,6 +105,7 @@ TranslateTransform::GetTransform (cairo_matrix_t *value)
 	double y = translate_transform_get_y (this);
 
 	cairo_matrix_init_translate (value, x, y);
+	//printf ("Returning3 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 TranslateTransform *
@@ -161,6 +163,8 @@ ScaleTransform::GetTransform (cairo_matrix_t *value)
 		cairo_matrix_scale (value, sx, sy);
 		cairo_matrix_scale (value, cx, cy);
 	}
+	//printf ("translate to %g %g -- %g %g\n", -cx, -cy, sx, sy);
+	//printf ("Returning4 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 ScaleTransform *
@@ -184,6 +188,7 @@ scale_transform_get_scale_x (ScaleTransform *t)
 void
 scale_transform_set_scale_y (ScaleTransform *t, double scaleY)
 {
+	printf ("Setting to %g\n", scaleY);
 	t->SetValue (ScaleTransform::ScaleYProperty, Value(scaleY));
 }
 
@@ -222,11 +227,14 @@ scale_transform_get_center_y (ScaleTransform *t)
 void
 MatrixTransform::GetTransform (cairo_matrix_t *value)
 {
+	fprintf (stderr, "Error\n");
+	exit (1);
 #if notyet
   cairo_matrix_t matrix = matrix_transform_get_matrix (this);
 
   memcpy (value, &matrix, sizeof (cairo_matrix_t));
 #endif
+	printf ("Returning1 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 MatrixTransform *
