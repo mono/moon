@@ -40,6 +40,16 @@ This is not likely the final version of this code.
 	This is done so that our public API can be easily P/Invoked
 	from the managed side. 
 
+	Notice that the majority of property setters and getters for
+	DependencyProperties will be done through two calls:
+
+		dependency_object_set_value
+		dependency_object_get_value
+
+	So there is no need to bind much more than that for
+	getting/setting, unless those setting/getting are useful to
+	develop/debug the C++ code.
+
 * Base and Reference Counting
 
 	Base objects use a system similar to Gtk's object reference
@@ -260,3 +270,10 @@ This is not likely the final version of this code.
 	this information can be useful to help us fix the problem.
 
 	
+* Value and Kinds
+
+	I wonder if we should move instead to use as keys not the enum
+	values that we have, but instead the void * to the managed "Type"
+	as the key for the various types.
+
+	That would further unify the managed and native code
