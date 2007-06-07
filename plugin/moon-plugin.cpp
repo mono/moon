@@ -232,9 +232,6 @@ PluginInstance::CreateControls ()
 
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
-	// MoonLight runtime initialization
-	runtime_init ();
-
 #ifdef DEMO
 	// Call plugin demo
 	moon_plugin_demo (this->canvas);

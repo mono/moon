@@ -211,6 +211,10 @@ NPError
 NPP_Initialize (void)
 {
 	DEBUG ("NP_Initialize");
+
+	gtk_init (0, 0);
+	runtime_init ();
+
 	return NPERR_NO_ERROR;
 }
 

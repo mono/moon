@@ -1,5 +1,10 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.cpp: Remove runtime initialization because it is wrong place.
+	* plugin-glue.cpp: Add gtk and runtime initialization to NPP_Initialize.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp: Add some initialization code to prevent some segmentation
 	fault.
 
