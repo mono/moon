@@ -1,5 +1,11 @@
 2007-06-06  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.h, runtime.cpp: Surface is no longer derived from
+	Canvas, it now instead hosts a canvas, should avoid having two
+	nested canvases for loading XAML files.
+
+	demo.cpp: update.
+
 	Correct computation of the bounding box for shapes and videos.
 
 	* shape.cpp: Do not pop the cairo state after draw and then call

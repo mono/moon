@@ -75,9 +75,12 @@ main (int argc, char *argv [])
 			printf ("Was not able to load the file\n");
 		}
 
-		panel_child_add (t, e);
+		surface_attach (t, e);
 		
 	} else {
+		Canvas *canvas = new Canvas ();
+		surface_attach (t, canvas);
+
 		// Create our objects
 		r_trans = new RotateTransform ();
 		v_trans = new RotateTransform ();
@@ -111,10 +114,10 @@ main (int argc, char *argv [])
 		r2->SetValue (Canvas::TopProperty, Value (50.0));
 		item_set_render_transform (r2, r_trans);
 		shape_set_stroke (r2, scb);
-		panel_child_add (t, r2);
+		panel_child_add (canvas, r2);
 		
 #ifdef XAML_DEMO
-		panel_child_add (t, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />"));
+		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />"));
 #endif
 		
 #ifdef VIDEO_DEMO
@@ -122,10 +125,10 @@ main (int argc, char *argv [])
 		item_set_render_transform (v, v_trans);
 		item_set_transform_origin (v, Point (1, 1));
 		printf ("Got %d\n", v);
-		panel_child_add (t, v);
+		panel_child_add (canvas, v);
 #endif
 		
-		panel_child_add (t, r);
+		panel_child_add (canvas, r);
 		
 #ifdef VIDEO_DEMO
 		//UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
@@ -134,7 +137,7 @@ main (int argc, char *argv [])
 		v2->SetValue (Canvas::LeftProperty, Value (100.0));
 		v2->SetValue (Canvas::TopProperty, Value (100.0));
 		item_set_render_transform (v2, s_trans);
-		panel_child_add (t, v2);
+		panel_child_add (canvas, v2);
 #endif
 		gtk_timeout_add (60, animate, NULL);
 	}		

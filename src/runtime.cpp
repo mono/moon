@@ -229,8 +229,11 @@ framework_element_set_width (FrameworkElement *framework_element, double width)
 Surface *
 item_get_surface (UIElement *item)
 {
-	if (item->flags & Video::IS_SURFACE)
-		return (Surface *) item;
+	if (item->flags & Video::IS_CANVAS){
+		Canvas *canvas = (Canvas *) item;
+		if (canvas->surface)
+			return canvas->surface;
+	}
 
 	if (item->parent != NULL)
 		return item_get_surface (item->parent);
@@ -268,6 +271,11 @@ panel_child_add (Panel *panel, UIElement *item)
 Panel::Panel ()
 {
 	children.Setup (panel_child_add, panel_child_remove, this);
+}
+
+Canvas::Canvas ()
+{
+	flags |= IS_CANVAS;
 }
 
 void
@@ -494,9 +502,10 @@ surface_new (int width, int height)
 
 	gtk_widget_set_usize (s->drawing_area, width, height);
 	s->buffer = NULL;
-	s->flags |= UIElement::IS_SURFACE;
 	s->width = width;
 	s->height = height;
+	s->toplevel = NULL;
+
 	surface_realloc (s);
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "expose_event",
@@ -512,10 +521,26 @@ surface_new (int width, int height)
 }
 
 void
+surface_attach (Surface *surface, UIElement *toplevel)
+{
+	if (!(toplevel->flags & UIElement::IS_CANVAS)){
+		printf ("Unsupported toplevel\n");
+		return;
+	}
+	if (surface->toplevel)
+		base_unref (surface->toplevel);
+
+	Canvas *canvas = (Canvas *) toplevel;
+	base_ref (canvas);
+	canvas->surface = surface;
+	surface->toplevel = canvas;
+}
+
+void
 surface_repaint (Surface *s, int x, int y, int width, int height)
 {
 	surface_clear (s, x, y, width, height);
-	s->render (s, x, y, width, height);
+	s->toplevel->render (s, x, y, width, height);
 }
 
 void *

@@ -522,7 +522,7 @@ class UIElement : public DependencyObject {
 	UIElement *parent;
 
 	enum UIElementFlags {
-		IS_SURFACE = 1
+		IS_CANVAS = 1
 	};
 	
 	int flags;
@@ -614,6 +614,9 @@ void  panel_child_add      (Panel *panel, UIElement *item);
 //
 class Canvas : public Panel {
  public:
+	Canvas ();
+	Surface *surface;
+	
 	virtual Point getxformorigin () { return Point (0, 0); }
 
 	virtual void render (Surface *s, int x, int y, int width, int height);
@@ -627,7 +630,7 @@ class Canvas : public Panel {
 	static DependencyProperty* LeftProperty;
 };
 
-Canvas * canvas_new ();
+Canvas *canvas_new ();
 
 
 //
@@ -668,7 +671,7 @@ typedef struct _SurfacePrivate SurfacePrivate;
 // We probably should make the Surface not derive from Canvas, but for now
 // it will do.
 //
-class Surface : public Canvas {
+class Surface {
  public:
 	Surface () : width (0), height (0), buffer (0), 
 		cairo_buffer_surface (NULL), cairo_buffer(NULL),
@@ -697,14 +700,13 @@ class Surface : public Canvas {
 
 	// The widget where we draw.
 	GtkWidget *drawing_area;
-					
-	//
-	// Consumer-defined data, we use it to pass the handle to invalidate
-	//
-//	void *data;
+
+	// This currently can only be a canvas.
+	UIElement *toplevel;
 };
 
 Surface *surface_new       (int width, int height);
+void     surface_attach    (Surface *s, UIElement *element);
 void     surface_init      (Surface *s, int width, int height);
 void     surface_clear     (Surface *s, int x, int y, int width, int height);
 void     surface_clear_all (Surface *s);
