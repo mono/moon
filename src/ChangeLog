@@ -1,3 +1,7 @@
+2007-06-07  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: add event triggers.
+
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp/.h (Clock): initialize duration here.

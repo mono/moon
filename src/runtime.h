@@ -448,34 +448,24 @@ class TriggerAction : public DependencyObject {
        }
 };
 
-struct RoutedEvent {
-
- public:
-	const char *name;
-
-	RoutedEvent () : name (NULL) { }
-	RoutedEvent (const char *name) : name (name) { }
-	
-};
 
 class EventTrigger : public DependencyObject {
 
  public:
-	EventTrigger ()
+	char *routed_event;
+	GSList *actions;
+
+	EventTrigger () : routed_event (NULL), actions (NULL)
 	{
 		SetObjectType (Value::EVENTTRIGGER);
 	}
 
-	static DependencyProperty* ActionsProperty;
-	static DependencyProperty* RoutedEventProperty;
-};
-
-void event_trigger_init ();
-
-class TriggerActionCollection : Collection {
-
+	void AddAction (TriggerAction *action);
 
 };
+
+EventTrigger  *event_trigger_new ();
+void          event_trigger_add_action (EventTrigger *trigger, TriggerAction *action);
 
 //
 // Item class
