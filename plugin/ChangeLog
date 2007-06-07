@@ -1,5 +1,11 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.cpp,
+	* moon-plugin.h: Implement runtime properties structure and 'version'
+	property.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	[PluginClass added to handle script objects]
 
 	* plugin-class.cpp,

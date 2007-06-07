@@ -78,6 +78,11 @@ class PluginInstance : public PluginClass {
 	GtkWidget *container;  // plugin container object
 	Canvas *canvas;        // plugin canvas object
  	Surface *surface;      // plugin surface object
+
+	// Runtime related
+	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+
  };
 
 #endif /* MOON_PLUGIN */

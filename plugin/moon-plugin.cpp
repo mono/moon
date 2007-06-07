@@ -272,6 +272,38 @@ PluginInstance::Print (NPPrint* platformPrint)
 int16
 PluginInstance::EventHandle (void* event)
 {
-	/* Our plugin is a windowed so we dont need the windowless code */
 	return 0;
+}
+
+/*** Runtime related **********************************************************/
+
+bool
+PluginInstance::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+{
+	if (name == NPN_GetStringIdentifier ("settings")  ||
+		name == NPN_GetStringIdentifier ("version"))
+		return true;
+
+	return false;
+}
+
+bool
+PluginInstance::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	if (name == NPN_GetStringIdentifier ("settings")) 
+	{
+		// todo!
+		return false;
+	} 
+	else if (name == NPN_GetStringIdentifier ("version")) 
+	{
+		int len = strlen (PLUGIN_VERSION);
+		char *version = (char *) NPN_MemAlloc (len + 1);
+		memcpy (version, PLUGIN_VERSION, len + 1);
+		STRINGN_TO_NPVARIANT (version, len, *result);
+
+		return true;
+	}
+
+	return false;
 }
