@@ -1,4 +1,3 @@
-#define DEBUG_XAML
 /*
  * xaml.cpp: xaml parser
  *
