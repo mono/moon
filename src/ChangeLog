@@ -1,3 +1,8 @@
+2007-06-07  Jackson Harper  <jackson@ximian.com>
+
+	* xamp.cpp: Oops, not sure how that happened.  Set the property
+	name correctly, not to the type name.
+
 2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Apply transform. Fix default values.

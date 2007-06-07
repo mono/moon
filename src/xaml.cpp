@@ -429,7 +429,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			if (attr [i][a] != '.')
 				continue;
 			atchname = g_strndup (attr [i], a);
-			pname = atchname;
+			pname = attr [i] + a + 1;
 			break;
 		}
 
