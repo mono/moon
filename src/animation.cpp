@@ -108,12 +108,12 @@ Clock::Clock (Timeline *tl)
 	}
 
 	autoreverse = timeline_get_autoreverse (timeline);
+	duration = timeline_get_duration (timeline);
 	completed_iterations = 0.0;
 	current_progress = 0.0;
 	current_time = 0;
 	reversed = false;
 	start_time = 0;
-	Duration *duration = timeline_get_duration (timeline);
 }
 
 void
@@ -124,9 +124,6 @@ Clock::TimeUpdated (guint64 parent_clock_time)
 
 	current_time = parent_clock_time - start_time;
 	QueueEvent (CURRENT_TIME_INVALIDATED);
-
-	// update our progress
-	Duration *duration = timeline_get_duration (timeline);
 
 	if (*duration == Duration::Automatic  /* useful only on clock groups, means the clock stops when all child clocks have stopped. */
 	    || *duration == Duration::Forever /* for Forever duration timelines, progress is always 0.0 */) {

@@ -222,6 +222,7 @@ class Clock : public DependencyObject {
 	bool autoreverse;
 	int remaining_iterations;
 	double completed_iterations;
+	Duration *duration;
 
 	ClockState current_state;
 };

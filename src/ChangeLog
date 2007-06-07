@@ -1,5 +1,11 @@
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp/.h (Clock): initialize duration here.
+	(TimeUpdated): instead of getting it every time through this
+	function.
+
+2007-06-07  Chris Toshok  <toshok@ximian.com>
+
 	* animation.h: make Duration::FromSeconds return numbers of the
 	same magnitude as get_now().
 
