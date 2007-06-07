@@ -1,3 +1,17 @@
+2007-06-07  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp: make all the animation stuff work declaratively, and
+	test some of the different repeatbehavior and autoreverse
+	settings.
+	
+	* animation.cpp: huge block of nasty code to determine our
+	progress given the combinations of autoreverse and repeatbehavior.
+
+	* animation.h: Add Duration stucture, add a few C api calls for
+	getting/setting timeline properties.
+
+	* runtime.h, runtime.cpp: add DURATION support to Value.
+	
 2007-06-07  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: Some pieces of the triggers framework.

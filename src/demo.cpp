@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include "runtime.h"
 #include "transform.h"
+#include "animation.h"
 #include "shape.h"
 
 static UIElement *v;
@@ -18,6 +19,8 @@ static RotateTransform *r_trans;
 static RotateTransform *v_trans;
 static ScaleTransform *s_trans;
 static TranslateTransform *t_trans;
+
+extern NameScope *global_NameScope;
 
 static int do_fps = FALSE;
 static uint64_t last_time;
@@ -62,29 +65,6 @@ invalidator (gpointer data)
 }
 
 static gboolean
-animate (gpointer data)
-{
-	rotate_transform_set_angle (v_trans,
-				    rotate_transform_get_angle (v_trans) + 3);
-
-	rotate_transform_set_angle (r_trans,
-				    rotate_transform_get_angle (r_trans) - 3);
-	static double scale_change = -0.02;
-
-	scale_transform_set_scale_x (s_trans,
-				     scale_transform_get_scale_x (s_trans) + scale_change);
-	scale_transform_set_scale_y (s_trans,
-				     scale_transform_get_scale_y (s_trans) + scale_change);
-
-	if ((scale_change < 0 && scale_transform_get_scale_x (s_trans) < 0.3)
-	    || (scale_change > 0 && scale_transform_get_scale_x (s_trans) > 0.75)) {
-	    scale_change = -scale_change;
-	}
-
-	return TRUE;
-}
-
-static gboolean
 delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 {
 	gtk_main_quit ();
@@ -103,6 +83,8 @@ main (int argc, char *argv [])
 	g_thread_init (NULL);
 	gdk_threads_init ();
 	runtime_init ();
+
+	TimeManager::Instance()->Start();
 
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), NULL);
@@ -191,7 +173,58 @@ main (int argc, char *argv [])
 		item_set_render_transform (v2, s_trans);
 		panel_child_add (canvas, v2);
 #endif
-		gtk_timeout_add (60, animate, NULL);
+
+		Storyboard *sb = new Storyboard ();
+
+		DoubleAnimation *r_anim = new DoubleAnimation ();
+		DoubleAnimation *v_anim = new DoubleAnimation ();
+		DoubleAnimation *sx_anim = new DoubleAnimation ();
+		DoubleAnimation *sy_anim = new DoubleAnimation ();
+
+		// The rectangle rotates completely around every 4
+		// seconds, and stops after the second time around
+		global_NameScope->RegisterName ("rect-transform", r_trans);
+		double_animation_set_to (r_anim, -360.0);
+		timeline_set_repeat_behavior (r_anim, RepeatBehavior(2.0));
+		timeline_set_duration (r_anim, Duration::FromSeconds (4));
+		timeline_group_add_child (sb, r_anim);
+		storyboard_child_set_target_name (sb, r_anim, "rect-transform");
+		storyboard_child_set_target_property (sb, r_anim, "Angle");
+
+		// The rotating video takes 5 seconds to complete the rotation
+		global_NameScope->RegisterName ("video-transform", v_trans);
+		double_animation_set_to (v_anim, 360.0);
+		timeline_set_repeat_behavior (v_anim, RepeatBehavior::Forever);
+		timeline_set_duration (v_anim, Duration::FromSeconds (5));
+		timeline_group_add_child (sb, v_anim);
+		storyboard_child_set_target_name (sb, v_anim, "video-transform");
+		storyboard_child_set_target_property (sb, v_anim, "Angle");
+
+
+		// for the scaled items, we scale X and Y differently,
+		// the X scaling is completed in 6 seconds, and the y
+		// in 7.
+		global_NameScope->RegisterName ("scale-transform", s_trans);
+
+		double_animation_set_from (sx_anim, 1.0);
+		double_animation_set_to (sx_anim, 0.0);
+		timeline_set_repeat_behavior (sx_anim, RepeatBehavior::Forever);
+		timeline_set_duration (sx_anim, Duration::FromSeconds (6));
+		timeline_set_autoreverse (sx_anim, true);
+		timeline_group_add_child (sb, sx_anim);
+		storyboard_child_set_target_name (sb, sx_anim, "scale-transform");
+		storyboard_child_set_target_property (sb, sx_anim, "ScaleX");
+
+		double_animation_set_from (sy_anim, 1.0);
+		double_animation_set_to (sy_anim, 0.0);
+		timeline_set_repeat_behavior (sy_anim, RepeatBehavior::Forever);
+		timeline_set_duration (sy_anim, Duration::FromSeconds (7));
+		timeline_set_autoreverse (sy_anim, true);
+		timeline_group_add_child (sb, sy_anim);
+		storyboard_child_set_target_name (sb, sy_anim, "scale-transform");
+		storyboard_child_set_target_property (sb, sy_anim, "ScaleY");
+
+		sb->Begin ();
 	}		
 	if (do_fps){
 		t->frames = 0;

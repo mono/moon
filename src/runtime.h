@@ -21,6 +21,7 @@ class EventObject {
 	GHashTable *event_hash;
 };
 
+struct Duration;
 struct RepeatBehavior;
 class Transform;
 class TransformGroup;
@@ -157,6 +158,7 @@ public:
 		POINT = 8,
 		RECT = 9,
 		REPEATBEHAVIOR = 10,
+		DURATION = 11,
 
 		DEPENDENCY_OBJECT = 1000,
 
@@ -217,6 +219,7 @@ public:
 		Point *point;
 		Rect *rect;
 		RepeatBehavior *repeat;
+		Duration *duration;
 	} u;
 
 	void Init ();
@@ -232,6 +235,7 @@ public:
 	Value (Point pt);
 	Value (Rect rect);
 	Value (RepeatBehavior repeat);
+	Value (Duration duration);
 	Value (const char* s);
 	
 	~Value ();

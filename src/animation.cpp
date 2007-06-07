@@ -92,24 +92,103 @@ TimeManager::RemoveChild (Clock *child)
 
 Clock::Clock (Timeline *tl)
   : timeline (tl),
+    current_state (STOPPED),
     queued_events (0)
 {
 	SetObjectType (Value::CLOCK);
+
+	RepeatBehavior *repeat = timeline_get_repeat_behavior (timeline);
+	if (repeat->HasCount ()) {
+		// remaining_iterations is an int.. GetCount returns a double.  badness?
+		remaining_iterations = (int)repeat->GetCount ();
+	}
+	else {
+		// XXX treat both Forever and Duration as Forever.
+		remaining_iterations = -1;
+	}
+
+	autoreverse = timeline_get_autoreverse (timeline);
+	completed_iterations = 0.0;
+
+	Duration *duration = timeline_get_duration (timeline);
 }
 
 void
 Clock::TimeUpdated (guint64 parent_clock_time)
 {
+	if ((current_state & (STOPPED | PAUSED)) != 0)
+		return;
+
 	current_time = parent_clock_time - start_time;
-	//printf ("queueing  CURRENT_TIME_INVALIDATED!\n");
 	QueueEvent (CURRENT_TIME_INVALIDATED);
+
+	// update our progress
+	Duration *duration = timeline_get_duration (timeline);
+
+	if (*duration == Duration::Automatic  /* useful only on clock groups, means the clock stops when all child clocks have stopped. */
+	    || *duration == Duration::Forever /* for Forever duration timelines, progress is always 0.0 */) {
+		current_progress = 0.0;
+	}
+	else {
+		// we've got a timespan, so our progress will have changed
+		guint64 duration_timespan = duration->GetTimeSpan();
+
+		double new_progress;
+
+		new_progress = (double)(current_time - start_time - completed_iterations * (autoreverse ? 2 : 1) * duration_timespan) / duration_timespan;
+
+		if (new_progress >= 1.0) {
+			if (reversed) {
+				reversed = false;
+
+				/* we were heading from 1.0 to 0.0 and
+				   passed it.  decrement our
+				   remaining-iteration count (if we have
+				   one) */
+				completed_iterations += 0.5;
+
+				current_progress = new_progress - 1.0;
+
+				if (remaining_iterations > 0)
+					remaining_iterations --;
+
+				if (remaining_iterations == 0) {
+					current_progress = 0.0;
+					Stop ();
+				}
+			}
+			else {
+				if (autoreverse) {
+					reversed = true;
+					completed_iterations += 0.5;
+					current_progress = 1.0 - (new_progress - 1.0);
+				}
+				else {
+
+					completed_iterations += 1.0;
+
+					current_progress = new_progress - 1.0;
+
+					if (remaining_iterations > 0)
+						remaining_iterations --;
+
+					if (remaining_iterations == 0) {
+						current_progress = 1.0;
+						Stop ();
+					}
+				}
+			}
+		}
+		else {
+			current_progress = reversed ? 1.0 - new_progress : new_progress;
+		}
+	}
 }
 
 void
 Clock::RaiseAccumulatedEvents ()
 {
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
-// 	  printf ("EMITTING CURRENT_TIME_INVALIDATED\n");
 	  events->Emit (/*this,*/ "CurrentTimeInvalidated");
 	}
 
@@ -137,28 +216,21 @@ Clock::GetCurrentTime ()
 double
 Clock::GetCurrentProgress ()
 {
-	// XXX this is wrong - we shouldn't call GetCurrentTime() here since it calls get_now().
-
-//   if (current_state == ClockStopped)
-//     return 0.0;
-
-	guint64/*TimeSpan*/ current_time = GetCurrentTime ();
-	guint64 duration = timeline->GetValue (Timeline::DurationProperty)->u.ui64;
-
-// 	printf ("Clock::GetCurrentProgress (), current_time = %llu, start_time = %llu, current_time - start_time = %llu, duration = %llu\n", current_time, start_time, current_time - start_time, duration);
-	
-	return (double)(current_time - start_time) / duration;
+	return current_progress;
 }
 
 void
 Clock::Begin (guint64 start_time)
 {
 	this->start_time = start_time;
+	current_state = RUNNING; /* should we invalidate the state here? */
+	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
 
 void
 Clock::Pause ()
 {
+	current_state = (ClockState)(current_state | PAUSED);
 }
 
 void
@@ -169,6 +241,7 @@ Clock::Remove ()
 void
 Clock::Resume ()
 {
+	current_state = (ClockState)(current_state & ~PAUSED);
 }
 
 void
@@ -189,6 +262,8 @@ Clock::SkipToFill ()
 void
 Clock::Stop ()
 {
+	current_state = STOPPED;
+	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
 
 
@@ -226,12 +301,10 @@ ClockGroup::Begin (guint64 start_time)
 void
 ClockGroup::TimeUpdated (guint64 parent_clock_time)
 {
-//   printf ("ClockGroup::TimeUpdated\n");
 	/* recompute our current_time */
 	this->Clock::TimeUpdated (parent_clock_time);
 
 	for (GList *l = child_clocks; l; l = l->next) {
-// 	  printf ("+ Calling child TimeUpdated\n");
 		((Clock*)l->data)->TimeUpdated (current_time);
 	}
 }
@@ -244,7 +317,6 @@ ClockGroup::RaiseAccumulatedEvents ()
 
 	/* now cause our children to raise theirs*/
 	for (GList *l = child_clocks; l; l = l->next) {
-// 		printf ("+ Calling child RaiseAccumulatedEvents\n");
 		((Clock*)l->data)->RaiseAccumulatedEvents ();
 	}
 }
@@ -330,10 +402,22 @@ timeline_set_autoreverse (Timeline *timeline, bool autoreverse)
 	timeline->SetValue (Timeline::AutoReverseProperty, Value(autoreverse));
 }
 
+bool
+timeline_get_autoreverse (Timeline *timeline)
+{
+	return timeline->GetValue (Timeline::AutoReverseProperty)->u.z;
+}
+
 void
-timeline_set_duration (Timeline *timeline, guint64 duration)
+timeline_set_duration (Timeline *timeline, Duration duration)
 {
 	timeline->SetValue (Timeline::DurationProperty, Value(duration));
+}
+
+Duration*
+timeline_get_duration (Timeline *timeline)
+{
+	return timeline->GetValue (Timeline::DurationProperty)->u.duration;
 }
 
 void
@@ -341,6 +425,14 @@ timeline_set_repeat_behavior (Timeline *timeline, RepeatBehavior behavior)
 {
 	timeline->SetValue (Timeline::RepeatBehaviorProperty, Value(behavior));
 }
+
+RepeatBehavior *
+timeline_get_repeat_behavior (Timeline *timeline)
+{
+	return timeline->GetValue (Timeline::RepeatBehaviorProperty)->u.repeat;
+}
+
+
 
 /* timeline group */
 
@@ -435,12 +527,17 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 void
 Storyboard::Begin ()
 {
+	// This creates the clock tree for the hierarchy.  if a
+	// Timeline A is a child of TimelineGroup B, then Clock cA
+	// will be a child of ClockGroup cB.
 	root_clock = CreateClock ();
 
-	// walk the clock tree hooking up the correct properties and creating AnimationStorage's
+	// walk the clock tree hooking up the correct properties and
+	// creating AnimationStorage's for AnimationClocks.
 	HookupAnimationsRecurse (root_clock);
 
-	/* hack to make storyboards work..  we need to attach them to TimeManager's list of clocks */
+	// hack to make storyboards work..  we need to attach them to
+	// TimeManager's list of clocks
 	TimeManager::Instance()->AddChild (root_clock);
 
 	root_clock->Begin (TimeManager::GetCurrentGlobalTime());
@@ -566,11 +663,6 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	double progress = animationClock->GetCurrentProgress ();
 
-// 	printf ("in GetCurrentValue, by = %f, from = %f, to = %f\n", by, from, to);
-//  	printf ("Progress = %lf\n", progress);
-
-// 	// XXX we should really use "by" here...
-// 	printf ("returning %f\n", from + (to-from) * progress);
 	return new Value (from + (to-from) * progress);
 }
 
@@ -620,13 +712,12 @@ double_animation_get_to (DoubleAnimation *da)
 }
 
 
-guint64
-duration_from_seconds (int seconds)
-{
-	return (guint64)seconds * 10000000;
-}
+
+
 
 RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
+Duration Duration::Automatic (Duration::AUTOMATIC);
+Duration Duration::Forever (Duration::FOREVER);
 
 void 
 animation_init ()
@@ -634,7 +725,7 @@ animation_init ()
 	/* Timeline properties */
 	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
 	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", new Value ((guint64)0));
-	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value ((guint64)0));
+	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value (Duration::Automatic));
 	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "FillBehavior", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "SpeedRatio", new Value (0));

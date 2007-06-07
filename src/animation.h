@@ -3,23 +3,87 @@
 G_BEGIN_DECLS
 
 // misc types
+struct Duration {
+ public:
+	enum DurationKind {
+		TIMESPAN,
+		AUTOMATIC,
+		FOREVER
+	};
+
+	Duration (guint64/*TimeSpan*/ duration)
+	  : k (TIMESPAN),
+	    timespan (duration) { }
+
+	Duration (const Duration &duration)
+	{
+		k = duration.k;
+		timespan = duration.timespan;
+	}
+
+	Duration (DurationKind kind) : k(kind) { };
+
+	bool HasTimeSpan () { return k == TIMESPAN; }
+	guint64/*TimeSpan*/ GetTimeSpan() { return timespan; }
+
+	static Duration Automatic;
+	static Duration Forever;
+
+	// XXX tons more operators here
+	bool operator!= (const Duration &v) const
+	{
+		return !(*this == v);
+	}
+
+	bool operator== (const Duration &v) const
+	{
+		if (v.k != k)
+			return false;
+
+		if (v.k == TIMESPAN)
+			return timespan == v.timespan;
+
+		return true;
+	}
+
+
+	// This should live in a TimeSpan class, but oh well.. */
+	static Duration FromSeconds (int seconds) { return (guint64)seconds * 10000000; }
+
+	DurationKind k;
+ private:
+	guint64/*TimeSpan*/ timespan;
+};
+
+
+
+
+
 struct RepeatBehavior {
   public:
-	RepeatBehavior (RepeatBehavior *repeat)
-	  : k (repeat->k),
-	    duration (repeat->duration),
-	    count (repeat->count)
+	enum RepeatKind {
+		COUNT,
+		DURATION,
+		FOREVER
+	};
+
+	RepeatBehavior (const RepeatBehavior &repeat)
 	{
+		k = repeat.k;
+		duration = repeat.duration;
+		count = repeat.count;
 	}
 
 	RepeatBehavior (double count)
-	{
-		k = COUNT;
-	}
+	  : k (COUNT),
+	    count (count) { }
+
+	RepeatBehavior (RepeatKind kind) : k(kind) { }
 
 	RepeatBehavior (guint64/*TimeSpan*/ duration)
+	  : k (DURATION),
+	    duration (duration)
 	{
-		k = DURATION;
 	}
 
 	static RepeatBehavior Forever;
@@ -47,18 +111,10 @@ struct RepeatBehavior {
 	bool HasCount() { return k == COUNT; }
 	bool HasDuration () { return k == DURATION; }
 
-  private:
-	enum RepeatKind {
-		COUNT,
-		DURATION,
-		FOREVER
-	};
-
 	RepeatKind k;
+  private:
 	double count;
 	guint64/*TimeSpan*/ duration;
-
-	RepeatBehavior (RepeatKind kind) : k(kind) { };
 };
 
 
@@ -114,12 +170,21 @@ class TimelineGroup;
 
 class Clock : public DependencyObject {
  public:
+	// events to queue up
 	enum {
 		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,
 		CURRENT_STATE_INVALIDATED        = 0x02,
 		CURRENT_TIME_INVALIDATED         = 0x04,
 		REMOVE_REQUESTED                 = 0x08,
 		SPEED_CHANGED                    = 0x10
+	};
+
+	// states
+	enum ClockState {
+		RUNNING = 0x00,
+		STOPPED = 0x01,
+
+		PAUSED  = 0x80
 	};
 
 	Clock (Timeline *timeline);
@@ -143,14 +208,22 @@ class Clock : public DependencyObject {
 	virtual void TimeUpdated (guint64 parent_time);
 
  protected:
+	double current_progress;
 	guint64/*TimeSpan*/ current_time;
 	guint64/*TimeSpan*/ start_time; /* the time we actually started.  used for computing CurrentTime */
+
 	void QueueEvent (int event);
 
  private:
 	Timeline *timeline;
 	int queued_events;
-	Clock *parent_clock;
+
+	bool reversed;  // if we're presently working our way from 1.0 progress to 0.0
+	bool autoreverse;
+	int remaining_iterations;
+	double completed_iterations;
+
+	ClockState current_state;
 };
 
 
@@ -194,8 +267,13 @@ class Timeline : public DependencyObject {
 };
 
 void timeline_set_autoreverse (Timeline *timeline, bool autoreverse);
-void timeline_set_duration (Timeline *timeline, guint64 duration);
+bool timeline_get_autoreverse (Timeline *timeline);
+
+void timeline_set_duration (Timeline *timeline, Duration duration);
+Duration* timeline_get_duration (Timeline *timeline);
+
 void timeline_set_repeat_behavior (Timeline *timeline, RepeatBehavior behavior);
+RepeatBehavior* timeline_get_repeat_behavior (Timeline *timeline);
 
 
 
@@ -387,9 +465,5 @@ class BeginStoryboard : public TriggerAction {
 };
 
 BeginStoryboard *begin_storyboard_new ();
-
-
-// XXX this should instead be TimeSpan.FromSeconds, or something.
-guint64 duration_from_seconds (int seconds);
 
 G_END_DECLS

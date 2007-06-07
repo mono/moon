@@ -161,6 +161,13 @@ Value::Value (RepeatBehavior repeat)
 	u.repeat = new RepeatBehavior (repeat);
 }
 
+Value::Value (Duration duration)
+{
+	Init();
+	k = DURATION;
+	u.duration = new Duration (duration);
+}
+
 Value::Value (const char* s)
 {
 	Init ();
