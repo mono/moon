@@ -224,17 +224,7 @@ main (int argc, char *argv [])
 		timeline_group_add_child (sb, sy_anim);
 		storyboard_child_set_target_name (sb, sy_anim, "scale-transform");
 		storyboard_child_set_target_property (sb, sy_anim, "ScaleY");
-#if ANIMATION_DEMO
-		// 
-		// The animation is currently broken as ScaleY is being set
-		// to an insane value 131472940552.95215, this is set in
-		// DoubleAnimation::GetCurrentValue
-		//
-		// I also updated the get_now routine in animation to compute
-		// microseconds correctly, it was multiplying by 10 too much
-
 		sb->Begin ();
-#endif
 	}		
 	if (do_fps){
 		t->frames = 0;
