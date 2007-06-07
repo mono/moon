@@ -227,6 +227,20 @@ This is not likely the final version of this code.
 	merely have a single cairo context that we paint to?
 
 
+* Optimization Ideas
+
+	The GSList that we use to keep track of attached objects could
+	actually be abused to store the values there, we can use the
+	bottom bit to track this info:
+
+		If bottom bit is set, the pointer to the value stored
+		there is:
+
+			->value & ~1
+
+		If the bit is not set, we got a regular pointer to a
+		GSList.
+
 * Mozilla plugin
 
 	It is recommended that for now you do not `make install' as there
