@@ -55,7 +55,13 @@ void
 Geometry::Draw (Surface *s)
 {
 	cairo_set_fill_rule (s->cairo, convert_fill_rule (geometry_get_fill_rule (this)));
-	/* TODO - apply transform */
+
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		cairo_transform (s->cairo, &matrix);
+	}
 }
 
 //
@@ -598,13 +604,13 @@ geometry_init ()
 	RectangleGeometry::RectProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "Rect", Value::RECT);
 
 	/* PathFigure fields */
-	PathFigure::IsClosedProperty = DependencyObject::Register (Value::PATHFIGURE, "IsClosed", new Value (true));
+	PathFigure::IsClosedProperty = DependencyObject::Register (Value::PATHFIGURE, "IsClosed", new Value (false));
 	PathFigure::IsFilledProperty = DependencyObject::Register (Value::PATHFIGURE, "IsFilled", new Value (true));
 	PathFigure::SegmentsProperty = DependencyObject::Register (Value::PATHFIGURE, "Segments", Value::DEPENDENCY_OBJECT);
 	PathFigure::StartPointProperty = DependencyObject::Register (Value::PATHFIGURE, "StartPoint", Value::POINT);
 
 	/* ArcSegment fields */
-	ArcSegment::IsLargeArcProperty = DependencyObject::Register (Value::ARCSEGMENT, "IsLargeArc", new Value (true));
+	ArcSegment::IsLargeArcProperty = DependencyObject::Register (Value::ARCSEGMENT, "IsLargeArc", new Value (false));
 	ArcSegment::PointProperty = DependencyObject::Register (Value::ARCSEGMENT, "Point", Value::POINT);
 	ArcSegment::RotationAngleProperty  = DependencyObject::Register (Value::ARCSEGMENT, "RadiusY", new Value (0.0));
 	ArcSegment::SizeProperty = DependencyObject::Register (Value::ARCSEGMENT, "RotationAngle", Value::POINT);
