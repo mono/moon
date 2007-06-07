@@ -723,6 +723,83 @@ double_animation_get_to (DoubleAnimation *da)
 
 
 
+DependencyProperty* ColorAnimation::ByProperty;
+DependencyProperty* ColorAnimation::FromProperty;
+DependencyProperty* ColorAnimation::ToProperty;
+
+ColorAnimation::ColorAnimation ()
+{
+	SetObjectType (Value::COLORANIMATION);
+}
+
+Value*
+ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+				 AnimationClock* animationClock)
+{
+	Color *by = color_animation_get_by (this);
+	Color *from = color_animation_get_from (this);
+	Color *to = color_animation_get_to (this);
+
+	double progress = animationClock->GetCurrentProgress ();
+
+	Value *v = new Value (Color (from->r + (to->r - from->r) * progress,
+				     from->g + (to->g - from->g) * progress,
+				     from->b + (to->b - from->b) * progress,
+				     from->a + (to->a - from->a) * progress));
+
+	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
+	return v;
+}
+
+ColorAnimation *
+color_animation_new ()
+{
+	return new ColorAnimation ();
+}
+
+void
+color_animation_set_by (ColorAnimation *da, Color by)
+{
+	da->SetValue (ColorAnimation::ByProperty, Value(by));
+}
+
+Color*
+color_animation_get_by (ColorAnimation *da)
+{
+	Value *v = da->GetValue (ColorAnimation::ByProperty);
+	return v == NULL ? NULL : v->u.color;
+}
+
+void
+color_animation_set_from (ColorAnimation *da, Color from)
+{
+	da->SetValue (ColorAnimation::FromProperty, Value(from));
+}
+
+Color*
+color_animation_get_from (ColorAnimation *da)
+{
+	Value *v = da->GetValue (ColorAnimation::FromProperty);
+	return v == NULL ? NULL : v->u.color;
+}
+
+void
+color_animation_set_to (ColorAnimation *da, Color to)
+{
+	da->SetValue (ColorAnimation::ToProperty, Value(to));
+}
+
+Color*
+color_animation_get_to (ColorAnimation *da)
+{
+	Value *v = da->GetValue (ColorAnimation::ToProperty);
+	return v == NULL ? NULL : v->u.color;
+}
+
+
+
+
+
 RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
 Duration Duration::Automatic (Duration::AUTOMATIC);
 Duration Duration::Forever (Duration::FOREVER);
@@ -740,9 +817,15 @@ animation_init ()
 
 
 	/* DoubleAnimation properties */
-	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By", new Value (0.0));
+	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By",   new Value (0.0));
 	DoubleAnimation::FromProperty = DependencyObject::Register (Value::DOUBLEANIMATION, "From", new Value (0.0));
-	DoubleAnimation::ToProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "To", new Value (0.0));
+	DoubleAnimation::ToProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "To",   new Value (0.0));
+
+
+	/* ColorAnimation properties */
+	ColorAnimation::ByProperty   = DependencyObject::Register (Value::COLORANIMATION, "By",   new Value (Value::COLOR)); // null defaults
+	ColorAnimation::FromProperty = DependencyObject::Register (Value::COLORANIMATION, "From", new Value (Value::COLOR));
+	ColorAnimation::ToProperty   = DependencyObject::Register (Value::COLORANIMATION, "To",   new Value (Value::COLOR));
 
 	/* Storyboard properties */
 	Storyboard::TargetPropertyProperty = DependencyObject::Register (Value::STORYBOARD, "TargetProperty", 

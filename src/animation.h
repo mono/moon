@@ -404,6 +404,34 @@ double double_animation_get_to (DoubleAnimation *da);
 
 
 
+class ColorAnimation : public Animation/*Timeline*/ {
+ public:
+
+	ColorAnimation ();
+
+	static DependencyProperty* ByProperty;
+	static DependencyProperty* FromProperty;
+	static DependencyProperty* ToProperty;
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+};
+
+ColorAnimation * color_animation_new ();
+
+void   color_animation_set_by (ColorAnimation *da, Color by);
+Color* color_animation_get_by (ColorAnimation *da);
+
+void   color_animation_set_from (ColorAnimation *da, Color from);
+Color* color_animation_get_from (ColorAnimation *da);
+
+void   color_animation_set_to (ColorAnimation *da, Color to);
+Color* color_animation_get_to (ColorAnimation *da);
+
+
+
+
+
 class Storyboard : public ParallelTimeline {
  public:
 	Storyboard ();

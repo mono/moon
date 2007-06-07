@@ -1,3 +1,18 @@
+2007-06-07  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (Value): add COLORANIMATION to the list of types.
+	Also, add a Kind constructor so we can use that for nullable type
+	default values in the ::RegisterProperty calls.  That is,
+	initializing the default to Value(Value::COLOR) gives you a null
+	default value with the COLOR type.
+
+	* runtime.cpp (Value): new Kind ctor.
+
+	* animation.cpp/.h: add ColorAnimation.
+
+	* demo.cpp (main): add a color animation that interpolates between
+	Red and Blue for the SolidColorBrush.
+
 2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp: Restore alpha support. Don't call cairo_set_operator

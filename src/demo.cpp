@@ -181,6 +181,20 @@ main (int argc, char *argv [])
 		DoubleAnimation *v_anim = new DoubleAnimation ();
 		DoubleAnimation *sx_anim = new DoubleAnimation ();
 		DoubleAnimation *sy_anim = new DoubleAnimation ();
+		ColorAnimation *c_anim = new ColorAnimation ();
+
+		// the scaled rectangle changes smoothly from Red to
+		// Blue and back again
+		global_NameScope->RegisterName ("solid-color-brush", scb);
+
+		color_animation_set_from (c_anim, Color (1.0, 0.0, 0.0, 0.5));
+		color_animation_set_to (c_anim, Color (0.0, 0.0, 1.0, 0.5));
+		timeline_set_repeat_behavior (c_anim, RepeatBehavior::Forever);
+		timeline_set_duration (c_anim, Duration::FromSeconds (5));
+		timeline_set_autoreverse (c_anim, true);
+		timeline_group_add_child (sb, c_anim);
+		storyboard_child_set_target_name (sb, c_anim, "solid-color-brush");
+		storyboard_child_set_target_property (sb, c_anim, "Color");
 
 		// The rectangle rotates completely around every 4
 		// seconds, and stops after the second time around

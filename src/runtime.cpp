@@ -116,6 +116,13 @@ Value::Init ()
 Value::Value()
   : k (INVALID)
 {
+	Init ();
+}
+
+Value::Value (Kind k)
+{
+	Init();
+	this->k = k;
 }
 
 Value::Value(bool z)

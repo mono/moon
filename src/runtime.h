@@ -178,6 +178,7 @@ public:
 		MATRIXTRANSFORM,
 		STORYBOARD,
 		DOUBLEANIMATION,
+		COLORANIMATION,
 		SHAPE,
 		ELLIPSE,
 		LINE,
@@ -230,6 +231,7 @@ public:
 	void Init ();
 
 	Value ();
+	Value (Kind k);
 	Value (bool z);
 	Value (double d);
 	Value (guint64 i);
