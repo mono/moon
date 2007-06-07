@@ -1,0 +1,5 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Ellipse Fill="#FF0000" Stroke="Green" StrokeThickness="1" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" />
+	<Ellipse Fill="#770000FF" Stroke="#7722BB22" StrokeThickness="2" Canvas.Left="20" Canvas.Top="20" Width="40" Height="20" />              
+	<Ellipse Fill="#3300FF00" Stroke="#33333333" StrokeThickness="3" Canvas.Left="30" Canvas.Top="30" Width="40" Height="80" />              
+</Canvas>

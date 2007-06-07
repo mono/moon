@@ -1,0 +1,10 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Fill="#FFFFFFFF" Stroke="#11111111" StrokeThickness="1" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" />
+	<Rectangle Fill="#DDDDDDDD" Stroke="#33333333" StrokeThickness="2" Canvas.Left="20" Canvas.Top="20" Width="110" Height="110" RadiusX="10" RadiusY="10" />
+	<Rectangle Fill="#BBBBBBBB" Stroke="#55555555" StrokeThickness="3" Canvas.Left="30" Canvas.Top="30" Width="120" Height="120" />
+	<Rectangle Fill="#99999999" Stroke="#77777777" StrokeThickness="4" Canvas.Left="40" Canvas.Top="40" Width="130" Height="130" RadiusX="20" RadiusY="10"  />
+	<Rectangle Fill="#77777777" Stroke="#99999999" StrokeThickness="5" Canvas.Left="50" Canvas.Top="50" Width="140" Height="140" />
+	<Rectangle Fill="#55555555" Stroke="#BBBBBBBB" StrokeThickness="6" Canvas.Left="60" Canvas.Top="60" Width="150" Height="150" RadiusX="10" RadiusY="20"  />
+	<Rectangle Fill="#33333333" Stroke="#DDDDDDDD" StrokeThickness="7" Canvas.Left="70" Canvas.Top="70" Width="160" Height="160" />
+	<Rectangle Fill="#11111111" Stroke="#FFFFFFFF" StrokeThickness="8" Canvas.Left="80" Canvas.Top="80" Width="170" Height="170" RadiusX="20" RadiusY="20"  />
+</Canvas>
