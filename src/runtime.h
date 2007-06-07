@@ -150,12 +150,12 @@ void collection_remove (Collection *collection, void *data);
 
 struct Value {
 public:
+		// Keep these values in sync with the Value.cs in olive.
 	enum Kind {
 		INVALID = 0,
 		BOOL = 1,
 		DOUBLE = 2,
 		UINT64 = 3,
-		INT64 = 3,
 		INT32 = 4,
 		STRING = 5,
 		COLOR = 7,
@@ -163,6 +163,7 @@ public:
 		RECT = 9,
 		REPEATBEHAVIOR = 10,
 		DURATION = 11,
+		INT64 = 12,
 
 		DEPENDENCY_OBJECT = 1000,
 
@@ -313,6 +314,7 @@ class DependencyObject : public Base {
 	DependencyObject* FindName (char *name);
 
 	EventObject *events;
+	static GHashTable *properties;
 
 	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
@@ -323,10 +325,12 @@ class DependencyObject : public Base {
 
  private:
 	Value::Kind objectType;
-	static GHashTable *properties;
 	GHashTable        *current_values;
 	GSList            *attached_list;
 };
+
+Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);
+void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value val);
 
 //
 // DependencyProperty
@@ -335,13 +339,15 @@ class DependencyProperty {
  public:
 	DependencyProperty () {} ;
 	~DependencyProperty ();
-	DependencyProperty (char *name, Value *default_value, Value::Kind kind);
+	DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type);
 
 	char *name;
 	Value *default_value;
 	Value::Kind type;
 	Value::Kind value_type;
 };
+
+DependencyProperty *dependency_property_lookup (Value::Kind type, char *name);
 
 class NameScope : public DependencyObject {
  public:

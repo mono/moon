@@ -867,13 +867,17 @@ DependencyObject::Register (Value::Kind type, char *name, Value *default_value)
 	return RegisterFull (type, name, default_value, default_value->k);
 }
 
+//
+// Register the dependency property that belongs to @type with the name @name
+// The default value is @default_value (if provided) and the type that can be
+// stored in the dependency property is of type @vtype
+//
 DependencyProperty *
 DependencyObject::RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype)
 {
 	GHashTable *table;
 
-	DependencyProperty *property = new DependencyProperty (name, default_value, vtype);
-	property->type = type;
+	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype);
 	
 	/* first add the property to the global 2 level property hash */
 	if (NULL == properties)
@@ -897,14 +901,27 @@ DependencyObject::GetObjectType ()
 	return objectType;
 }
 
-/*
-	DependencyProperty
-*/
-DependencyProperty::DependencyProperty (char *name, Value *default_value, Value::Kind kind)
+Value *
+dependency_object_get_value (DependencyObject *object, DependencyProperty *prop)
 {
+	return object->GetValue (prop);
+}
+
+void
+dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value val)
+{
+	object->SetValue (prop, val);
+}
+
+/*
+ *	DependencyProperty
+ */
+DependencyProperty::DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type)
+{
+	this->type = type;
 	this->name = g_strdup (name);
 	this->default_value = default_value;
-	this->value_type = kind;
+	this->value_type = value_type;
 }
 
 DependencyProperty::~DependencyProperty ()
@@ -912,6 +929,15 @@ DependencyProperty::~DependencyProperty ()
 	g_free (name);
 	if (default_value != NULL)
 		g_free (default_value);
+}
+
+DependencyProperty *dependency_property_lookup (Value::Kind type, char *name)
+{
+	GHashTable *table = (GHashTable *) g_hash_table_lookup (DependencyObject::properties, &type);
+	if (table == NULL)
+		return NULL;
+
+	return (DependencyProperty *) g_hash_table_lookup (table, name);
 }
 
 // event handlers for c++

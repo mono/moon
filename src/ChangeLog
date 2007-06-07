@@ -1,3 +1,12 @@
+2007-06-07  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (dependency_object_set_value,
+	dependency_object_get_value): Add C# callable method calls to
+	control the properties.
+
+	(dependency_property_lookup): Add a way of find dependency
+	properties.
+
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp (TimeUpdated): comment out some spew.
