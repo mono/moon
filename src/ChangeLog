@@ -1,5 +1,12 @@
 2007-06-06  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp: new dump of the animation stuff.  this is much
+	closer in spirit and implementation to that of WPF's
+	timing/animation system.  it's not perfect yet, but it's much,
+	much closer.
+
+2007-06-06  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h: make the point/color/rect copy constructors take a
 	ref, not a pointer.  also, make the value contructors for struct
 	types by-value.

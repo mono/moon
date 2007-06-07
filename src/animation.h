@@ -2,47 +2,186 @@
 
 G_BEGIN_DECLS
 
-class Timeline;
-class DependencyObject;
+// misc types
+struct RepeatBehavior {
+  public:
+	RepeatBehavior (RepeatBehavior *repeat)
+	  : k (repeat->k),
+	    duration (repeat->duration),
+	    count (repeat->count)
+	{
+	}
 
-/* this merges WPF's Clock and ClockController */
+	RepeatBehavior (double count)
+	{
+		k = COUNT;
+	}
+
+	RepeatBehavior (guint64/*TimeSpan*/ duration)
+	{
+		k = DURATION;
+	}
+
+	static RepeatBehavior Forever;
+
+	bool operator!= (const RepeatBehavior &v) const
+	{
+		return !(*this == v);
+	}
+
+	bool operator== (const RepeatBehavior &v) const
+	{
+		if (v.k != k)
+			return false;
+
+		switch (k) {
+		case DURATION: return duration == v.duration;
+		case COUNT: return count == v.count;
+		case FOREVER: return true;
+		}
+	}
+
+	double GetCount () { return count; }
+	guint64/*TimeSpan*/ GetDuration() { return duration; }
+
+	bool HasCount() { return k == COUNT; }
+	bool HasDuration () { return k == DURATION; }
+
+  private:
+	enum RepeatKind {
+		COUNT,
+		DURATION,
+		FOREVER
+	};
+
+	RepeatKind k;
+	double count;
+	guint64/*TimeSpan*/ duration;
+
+	RepeatBehavior (RepeatKind kind) : k(kind) { };
+};
+
+
+
+
+
+// our root level time manager (basically the object that registers
+// the gtk_timeout and drives all Clock objects
+class Clock;
+
+class TimeManager {
+ public:
+	void Start ();
+
+	void Tick ();
+
+	static TimeManager* Instance()
+	{
+		if (_instance == NULL) _instance = new TimeManager ();
+		return _instance;
+	}
+
+	static guint64 GetCurrentGlobalTime () { return Instance()->current_global_time; }
+
+	void AddChild (Clock *clock);
+	void RemoveChild (Clock *clock);
+
+ private:
+	TimeManager ();
+
+	void RaiseEnqueuedEvents ();
+
+	static TimeManager *_instance;
+
+	GList *child_clocks; // XXX should we just have a ClockGroup?
+
+	guint64 current_global_time;
+	static gboolean tick_timeout (gpointer data);
+	gint tick_id;
+};
+
+
+
+
+
+//
+// Clocks and timelines
+//
+
+
+class Timeline;
+class TimelineGroup;
+
 class Clock : public DependencyObject {
  public:
-	Clock (Timeline *timeline);
-	Clock (Timeline *timeline, Clock *clock);
+	enum {
+		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,
+		CURRENT_STATE_INVALIDATED        = 0x02,
+		CURRENT_TIME_INVALIDATED         = 0x04,
+		REMOVE_REQUESTED                 = 0x08,
+		SPEED_CHANGED                    = 0x10
+	};
 
-	void Begin ();
+	Clock (Timeline *timeline);
+
+	virtual void SpeedChanged () { };
+
+	virtual void Begin (guint64 parent_time);
 	void Pause ();
 	void Remove ();
 	void Resume ();
-	void Seek (gint64/*TimeSpan*/ timespan);
+	void Seek (guint64/*TimeSpan*/ timespan);
 	void SeekAlignedToLastTick ();
 	void SkipToFill ();
 	void Stop ();
 
 	double GetCurrentProgress ();
-	gint64 GetCurrentTime ();
+	guint64 GetCurrentTime ();
+	Timeline *GetTimeline () { return timeline; }
 
-	static long current_global_time;
+	virtual void RaiseAccumulatedEvents ();
+	virtual void TimeUpdated (guint64 parent_time);
 
+ protected:
+	guint64/*TimeSpan*/ current_time;
+	guint64/*TimeSpan*/ start_time; /* the time we actually started.  used for computing CurrentTime */
+	void QueueEvent (int event);
 
+ private:
+	Timeline *timeline;
+	int queued_events;
 	Clock *parent_clock;
+};
+
+
+
+
+
+class ClockGroup : public Clock {
+ public:
+	ClockGroup (TimelineGroup *timeline);
+
+	virtual void Begin (guint64 parent_time);
+
+	void AddChild (Clock *clock);
+	void RemoveChild (Clock *clock);
+
+	virtual void RaiseAccumulatedEvents ();
+	virtual void TimeUpdated (guint64 parent_time);
+
 	GList *child_clocks;
 
-	gint tick_id;
-	void Tick ();
-	static gboolean tick_timeout (gpointer data);
-
-
-	Timeline *timeline;
-	gint64/*TimeSpan*/ start_time; /* the time we actually started.  used for computing CurrentTime */
+ private:
+	TimelineGroup *timeline;
 };
+
+
+
+
 
 class Timeline : public DependencyObject {
  public:
 	Timeline ();
-
-	void SetClock (Clock *new_clock);
 
 	static DependencyProperty* AutoReverseProperty;
 	static DependencyProperty* BeginTimeProperty;
@@ -51,20 +190,22 @@ class Timeline : public DependencyObject {
 	static DependencyProperty* RepeatBehaviorProperty;
 	static DependencyProperty* SpeedRatioProperty;
 
- protected:
-	virtual void ClockTimeChanged () { }
-
-	static void clock_time_changed (gpointer data);
-	Clock *clock;
+	virtual Clock* AllocateClock () { return new Clock (this); }
 };
 
+void timeline_set_duration (Timeline *timeline, guint64 duration);
 
-class Animation : public Timeline {
-};
+
+
+
 
 class TimelineGroup : public Timeline {
  public:
 	TimelineGroup ();
+
+	virtual Clock *AllocateClock () { return new ClockGroup (this); }
+
+	ClockGroup *CreateClock ();
 
 	/* we use these dependency properties:
 	   Timeline Children - XXX shouldn't that be TimelineCollection?
@@ -80,10 +221,105 @@ void timeline_group_remove_child (TimelineGroup *group, Timeline *child);
 
 
 
+
+
+
 class ParallelTimeline : public TimelineGroup {
  public:
 	ParallelTimeline () { }
 };
+
+
+
+
+
+//
+// Animations (more specialized clocks and timelines) and their subclasses
+//
+class Animation;
+class AnimationClock;
+
+// internal WPF class gleaned from stack traces
+class AnimationStorage {
+ public:
+	AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
+			  DependencyObject *targetobj, DependencyProperty *targetprop);
+
+ private:
+	void UpdatePropertyValue ();
+	static void update_property_value (gpointer data);
+
+	AnimationClock *clock;
+	Animation/*Timeline*/* timeline;
+	DependencyObject *targetobj;
+	DependencyProperty *targetprop;
+};
+
+
+
+
+
+class Animation/*Timeline*/;
+
+class AnimationClock : public Clock {
+ public:
+	AnimationClock (Animation/*Timeline*/ *timeline);
+
+	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
+
+	void HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+ private:
+	Animation/*Timeline*/ *timeline;
+	AnimationStorage *storage;
+};
+
+
+
+
+
+/* this is called AnimationTimeline in wpf */
+class Animation/*Timeline*/ : public Timeline {
+ public:
+
+	Animation/*Timeline*/ () { };
+
+	virtual Clock *AllocateClock () { return new AnimationClock (this); }
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+
+	//	Duration GetNaturalDurationCore (Clock* clock);
+};
+
+
+
+
+
+class DoubleAnimation : public Animation/*Timeline*/ {
+ public:
+
+	DoubleAnimation ();
+
+	static DependencyProperty* ByProperty;
+	static DependencyProperty* FromProperty;
+	static DependencyProperty* ToProperty;
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+};
+
+DoubleAnimation * double_animation_new ();
+
+void   double_animation_set_by (DoubleAnimation *da, double by);
+double double_animation_get_by (DoubleAnimation *da);
+
+void   double_animation_set_from (DoubleAnimation *da, double from);
+double double_animation_get_from (DoubleAnimation *da);
+
+void   double_animation_set_to (DoubleAnimation *da, double to);
+double double_animation_get_to (DoubleAnimation *da);
+
+
 
 
 
@@ -94,7 +330,7 @@ class Storyboard : public ParallelTimeline {
 	void Begin ();
 	void Pause ();
 	void Resume ();
-	void Seek (/*Timespan*/gint64 timespan);
+	void Seek (/*Timespan*/guint64 timespan);
 	void Stop ();
 
 	static DependencyProperty* TargetNameProperty;
@@ -102,9 +338,12 @@ class Storyboard : public ParallelTimeline {
 
 	// XXX event Completed
 
-	virtual void ClockTimeChanged ();
+/* 	virtual void ClockTimeChanged (); */
 
  private:
+	void HookupAnimationsRecurse (Clock *clock);
+	Clock *root_clock;
+
 	gboolean Tick ();
 	static gboolean storyboard_tick (gpointer data);
 };
@@ -113,7 +352,7 @@ Storyboard *storyboard_new ();
 void storyboard_begin (Storyboard *sb);
 void storyboard_pause (Storyboard *sb);
 void storyboard_resume (Storyboard *sb);
-void storyboard_seek (Storyboard *sb, /*Timespan*/gint64 timespan);
+void storyboard_seek (Storyboard *sb, /*Timespan*/guint64 timespan);
 void storyboard_stop (Storyboard *sb);
 
 void storyboard_child_set_target_property (Storyboard *sb,
@@ -130,6 +369,10 @@ void storyboard_child_set_target_name (Storyboard *sb,
 char* storyboard_child_get_target_name (Storyboard *sb,
 					DependencyObject *o);
 
+
+
+
+
 class BeginStoryboard : public TriggerAction {
 
  public:
@@ -143,25 +386,8 @@ class BeginStoryboard : public TriggerAction {
 
 BeginStoryboard *begin_storyboard_new ();
 
-class DoubleAnimation : public Animation {
- public:
 
-	DoubleAnimation ();
-
-	static DependencyProperty* ByProperty;
-	static DependencyProperty* FromProperty;
-	static DependencyProperty* ToProperty;
-};
-
-DoubleAnimation * double_animation_new ();
-
-void   double_animation_set_by (DoubleAnimation *da, double by);
-double double_animation_get_by (DoubleAnimation *da);
-
-void   double_animation_set_from (DoubleAnimation *da, double from);
-double double_animation_get_from (DoubleAnimation *da);
-
-void   double_animation_set_to (DoubleAnimation *da, double to);
-double double_animation_get_to (DoubleAnimation *da);
+// XXX this should instead be TimeSpan.FromSeconds, or something.
+guint64 duration_from_seconds (int seconds);
 
 G_END_DECLS
