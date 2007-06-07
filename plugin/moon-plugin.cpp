@@ -111,6 +111,10 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
     this->instance = instance;
     this->window = NULL;
 	this->object = NULL;
+
+	this->settings = new PluginSettings ();
+
+	this->obj_settings = NPN_CreateObject (this->instance, this->settings);
 }
 
 PluginInstance::~PluginInstance ()
@@ -196,7 +200,7 @@ PluginInstance::CreateControls ()
 	this->canvas = canvas_new ();
 	this->surface = surface_new (window->width, window->height);
 	surface_attach (this->surface, this->canvas);
-	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+	//gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 
 	// Connect signals to container
 	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
@@ -292,10 +296,39 @@ PluginInstance::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant 
 {
 	if (name == NPN_GetStringIdentifier ("settings")) 
 	{
-		// todo!
-		return false;
+		NPN_RetainObject (this->obj_settings);
+		OBJECT_TO_NPVARIANT (this->obj_settings, *result);
+
+		return true;
 	} 
 	else if (name == NPN_GetStringIdentifier ("version")) 
+	{
+		int len = strlen (PLUGIN_VERSION);
+		char *version = (char *) NPN_MemAlloc (len + 1);
+		memcpy (version, PLUGIN_VERSION, len + 1);
+		STRINGN_TO_NPVARIANT (version, len, *result);
+
+		return true;
+	}
+
+	return false;
+}
+
+/*** PluginSettings class *****************************************************/
+
+bool
+PluginSettings::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+{
+	if (name == NPN_GetStringIdentifier ("version"))
+		return true;
+
+	return false;
+}
+
+bool
+PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	if (name == NPN_GetStringIdentifier ("version")) 
 	{
 		int len = strlen (PLUGIN_VERSION);
 		char *version = (char *) NPN_MemAlloc (len + 1);

@@ -46,7 +46,15 @@
 #define DEBUG(msg)
 #endif
 
-class PluginInstance : public PluginClass {
+class PluginSettings : public PluginClass
+{
+ public:
+	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+};
+
+class PluginInstance : public PluginClass
+{
  private:
 	void CreateControls ();
 
@@ -55,6 +63,10 @@ class PluginInstance : public PluginClass {
 	NPP instance;          // Mozilla instance object
 	bool xembed_supported; // XEmbed Extension supported
 	NPObject *object;      // JavaScript object
+
+	// Settings
+	PluginSettings *settings;
+	NPObject *obj_settings;
 
  public:	
 	PluginInstance (NPP instance, uint16 mode);
