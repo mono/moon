@@ -1,3 +1,13 @@
+2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp|h: Add drawing for [Ellipse|Line|Rectangle] geometry.
+	Add basic code for the other geometry types.
+	* runtime.cpp|h: Add basic implementation for point_from_str and 
+	rect_from_str 
+	* shape.h: Export some cairo helpers.
+	* shape.cpp: Refactor drawing to reuse the code from geometry.
+	* xaml.cpp: Add Point and Rect parsing.
+
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp: make all the animation stuff work declaratively, and

@@ -21,7 +21,7 @@
 #include "cutil.h"
 
 //
-// SL-Cairo convertion routines
+// SL-Cairo convertion and helper routines
 //
 
 static cairo_line_join_t
@@ -51,7 +51,7 @@ convert_line_cap (PenLineCap pen_line_cap)
 	}
 }
 
-static cairo_fill_rule_t
+cairo_fill_rule_t
 convert_fill_rule (FillRule fill_rule)
 {
 	switch (fill_rule) {
@@ -62,6 +62,59 @@ convert_fill_rule (FillRule fill_rule)
 	}
 }
 
+void
+moon_ellipse (cairo_t *cr, double x, double y, double w, double h)
+{
+	double rx = w / 2;
+	double ry = h / 2;
+	double cx = x + rx;
+	double cy = y + ry;
+
+	cairo_move_to (cr, cx + rx, cy);
+
+	/* an approximate of the ellipse by drawing a curve in each
+	 * quadrants */
+	cairo_curve_to (cr,
+			cx + rx, cy - ARC_TO_BEZIER * ry,
+			cx + ARC_TO_BEZIER * rx, cy - ry,
+			cx, cy - ry);
+        
+	cairo_curve_to (cr,
+			cx - ARC_TO_BEZIER * rx, cy - ry,
+			cx - rx, cy - ARC_TO_BEZIER * ry,
+			cx - rx, cy);
+
+	cairo_curve_to (cr,
+			cx - rx, cy + ARC_TO_BEZIER * ry,
+			cx - ARC_TO_BEZIER * rx, cy + ry,
+			cx, cy + ry);
+                
+	cairo_curve_to (cr,
+			cx + ARC_TO_BEZIER * rx, cy + ry,
+			cx + rx, cy + ARC_TO_BEZIER * ry,
+			cx + rx, cy);
+
+	cairo_close_path (cr);
+}
+
+void
+moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, double radius_x, double radius_y)
+{
+	// approximate (quite close) the arc using a bezier curve
+	double c1 = ARC_TO_BEZIER * radius_x;
+	double c2 = ARC_TO_BEZIER * radius_y;
+
+	cairo_move_to (cr, x + radius_x, y);
+	cairo_rel_line_to (cr, w - 2 * radius_x, 0.0);
+	cairo_rel_curve_to (cr, c1, 0.0, radius_x, c2, radius_x, radius_y);
+	cairo_rel_line_to (cr, 0, h - 2 * radius_y);
+	cairo_rel_curve_to (cr, 0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
+	cairo_rel_line_to (cr, -w + 2 * radius_x, 0);
+	cairo_rel_curve_to (cr, -c1, 0, -radius_x, -c2, -radius_x, -radius_y);
+	cairo_rel_line_to (cr, 0, -h + 2 * radius_y);
+	cairo_rel_curve_to (cr, 0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
+	cairo_close_path (cr);
+}
 
 //
 // Shape
@@ -344,23 +397,10 @@ Rectangle::Draw (Surface *s)
 	if (radius_x != 0) {
 		double radius_y = rectangle_get_radius_y (this);
 		if (radius_y != 0) {
-			// approximate (quite close) the arc using a bezier curve
-			double c1 = ARC_TO_BEZIER * radius_x;
-			double c2 = ARC_TO_BEZIER * radius_y;
-			cairo_move_to (s->cairo, radius_x, 0);
-			cairo_rel_line_to (s->cairo, w - 2 * radius_x, 0.0);
-			cairo_rel_curve_to (s->cairo, c1, 0.0, radius_x, c2, radius_x, radius_y);
-			cairo_rel_line_to (s->cairo, 0, h - 2 * radius_y);
-			cairo_rel_curve_to (s->cairo, 0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
-			cairo_rel_line_to (s->cairo, -w + 2 * radius_x, 0);
-			cairo_rel_curve_to (s->cairo, -c1, 0, -radius_x, -c2, -radius_x, -radius_y);
-			cairo_rel_line_to (s->cairo, 0, -h + 2 * radius_y);
-			cairo_rel_curve_to (s->cairo, 0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
-			cairo_close_path (s->cairo);
+			moon_rounded_rectangle (s->cairo, 0, 0, w, h, radius_x, radius_y);
 			return;
 		}
 	}
-
 	// normal rectangle
 	cairo_rectangle (s->cairo, 0, 0, w, h);
 }
@@ -596,8 +636,8 @@ void
 Path::Draw (Surface *s)
 {
 	Geometry* data = path_get_data (this);
-	cairo_set_fill_rule (s->cairo, convert_fill_rule (geometry_get_fill_rule (data)));
-	/* TODO */
+	if (data)
+		data->Draw (s);
 }
 
 Geometry*

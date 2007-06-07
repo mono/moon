@@ -49,6 +49,8 @@ public:
 	}
 };
 
+Point point_from_str (const char *s);
+
 // map to System.Windows.Rect
 struct Rect {
  public:
@@ -71,6 +73,8 @@ struct Rect {
 		h = rect.h;
 	}
 };
+
+Rect rect_from_str (const char *s);
 
 struct Color {
 	double r, g, b, a;
@@ -199,6 +203,7 @@ public:
 		BEZIERSEGMENT,
 		LINESEGMENT,
 		POLYBEZIERSEGMENT,
+		POLYLINESEGMENT,
 		POLYQUADRATICBEZIERSEGMENT,
 		QUADRATICBEZIERSEGMENT,
 		TRIGGERACTION,

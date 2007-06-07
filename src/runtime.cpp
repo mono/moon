@@ -73,6 +73,35 @@ collection_remove (Collection *collection, void *data)
 }
 
 
+Point
+point_from_str (const char *s)
+{
+	// FIXME - not robust enough for production
+	char *next = NULL;
+	double x = strtod (s, &next);
+	double y = 0.0;
+	if (next)
+		y = strtod (++next, NULL);
+	return Point (x, y);
+}
+
+Rect
+rect_from_str (const char *s)
+{
+	// FIXME - not robust enough for production
+	char *next = NULL;
+	double x = strtod (s, &next);
+	double y = 0.0;
+	if (next)
+		y = strtod (++next, &next);
+	double w = 0.0;
+	if (next)
+		w = strtod (++next, &next);
+	double h = 0.0;
+	if (next)
+		h = strtod (++next, &next);
+	return Rect (x, y, w, h);
+}
 
 /**
  * Value implementation

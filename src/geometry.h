@@ -29,6 +29,8 @@ class Geometry : public DependencyObject {
 	static DependencyProperty* TransformProperty;
 
 	Geometry () { SetObjectType (Value::GEOMETRY); };
+
+	virtual void Draw (Surface *s);
 };
 FillRule geometry_get_fill_rule (Geometry *geometry);
 void geometry_set_fill_rule (Geometry *geometry, FillRule fill_rule);
@@ -57,6 +59,8 @@ class EllipseGeometry : public Geometry {
 	static DependencyProperty* RadiusYProperty;
 
 	EllipseGeometry () { SetObjectType (Value::ELLIPSEGEOMETRY); };
+
+	virtual void Draw (Surface *s);
 };
 EllipseGeometry* ellipse_geometry_new ();
 Point* ellipse_geometry_get_center (EllipseGeometry *ellipse_geometry);
@@ -75,6 +79,8 @@ class LineGeometry : public Geometry {
 	static DependencyProperty* StartPointProperty;
 
 	LineGeometry () { SetObjectType (Value::LINEGEOMETRY); };
+
+	virtual void Draw (Surface *s);
 };
 LineGeometry* line_geometry_new ();
 Point* line_geometry_get_end_point (LineGeometry* line_geometry);
@@ -104,6 +110,8 @@ class RectangleGeometry : public Geometry {
 	static DependencyProperty* RectProperty;
 
 	RectangleGeometry () { SetObjectType (Value::RECTANGLEGEOMETRY); };
+
+	virtual void Draw (Surface *s);
 };
 RectangleGeometry* rectangle_geometry_new ();
 double rectangle_geometry_get_radius_x (RectangleGeometry *rectangle_geometry);
@@ -207,6 +215,76 @@ class LineSegment : public PathSegment {
 LineSegment	*line_segment_new	();
 Point*		line_segment_get_point	(LineSegment *segment);
 void		line_segment_set_point	(LineSegment *segment, Point *point);
+
+//
+// PolyBezierSegment
+//
+
+class PolyBezierSegment : public PathSegment {
+ public:
+	static DependencyProperty* PointsProperty;
+
+	PolyBezierSegment ()
+	{
+		SetObjectType (Value::POLYBEZIERSEGMENT);
+	}
+};
+PolyBezierSegment	*poly_bezier_segment_new	();
+// there is no managed get for points, do we want one ?
+void			poly_bezier_segment_set_points	(PolyBezierSegment *segment, Point *points, int count);
+
+//
+// PolyLineSegment
+//
+
+class PolyLineSegment : public PathSegment {
+ public:
+	static DependencyProperty* PointsProperty;
+
+	PolyLineSegment ()
+	{
+		SetObjectType (Value::POLYLINESEGMENT);
+	}
+};
+PolyLineSegment	*poly_line_segment_new	();
+void		poly_line_segment_set_points	(PolyLineSegment *segment, Point *points, int count);
+
+//
+// PolyQuadraticBezierSegment
+//
+
+class PolyQuadraticBezierSegment : public PathSegment {
+ public:
+	static DependencyProperty* PointsProperty;
+
+	PolyQuadraticBezierSegment ()
+	{
+		SetObjectType (Value::POLYBEZIERSEGMENT);
+	}
+};
+PolyQuadraticBezierSegment	*poly_quadratic_segment_new	();
+// there is no managed get for points, do we want one ?
+void	poly_quadratic_segment_set_points	(PolyQuadraticBezierSegment *segment, Point *points, int count);
+
+//
+// QuadraticBezierSegment
+//
+
+class QuadraticBezierSegment : public PathSegment {
+ public:
+	static DependencyProperty* Point1Property;
+	static DependencyProperty* Point2Property;
+
+	QuadraticBezierSegment ()
+	{
+		SetObjectType (Value::QUADRATICBEZIERSEGMENT);
+	}
+};
+QuadraticBezierSegment	*quadratic_bezier_segment_new	();
+Point*	quadratic_bezier_segment_get_point1	(QuadraticBezierSegment *segment);
+void	quadratic_bezier_segment_set_point1	(QuadraticBezierSegment *segment, Point *point);
+Point*	quadratic_bezier_segment_get_point2	(QuadraticBezierSegment *segment);
+void	quadratic_bezier_segment_set_point2	(QuadraticBezierSegment *segment, Point *point);
 
 G_END_DECLS
 

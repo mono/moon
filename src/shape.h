@@ -13,6 +13,16 @@ G_BEGIN_DECLS
 #define ARC_TO_BEZIER	0.55228475
 
 //
+// Helpers
+//
+
+cairo_fill_rule_t convert_fill_rule (FillRule fill_rule);
+
+void moon_ellipse (cairo_t *cr, double x, double y, double w, double h);
+
+void moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, double radius_x, double radius_y);
+
+//
 // Shape class 
 // 
 class Shape : public FrameworkElement {

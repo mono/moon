@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "geometry.h"
+#include "shape.h"
 
 //
 // Geometry
@@ -48,6 +49,13 @@ void
 geometry_set_transform (Geometry *geometry, Transform *transform)
 {
 	geometry->SetValue (Geometry::TransformProperty, Value (transform));
+}
+
+void
+Geometry::Draw (Surface *s)
+{
+	cairo_set_fill_rule (s->cairo, convert_fill_rule (geometry_get_fill_rule (this)));
+	/* TODO - apply transform */
 }
 
 //
@@ -113,6 +121,18 @@ ellipse_geometry_new ()
 	return new EllipseGeometry ();
 }
 
+void
+EllipseGeometry::Draw (Surface *s)
+{
+	Geometry::Draw (s);
+
+	Point *pt = ellipse_geometry_get_center (this);
+	double rx = ellipse_geometry_get_radius_x (this);
+	double ry = ellipse_geometry_get_radius_y (this);
+
+	moon_ellipse (s->cairo, pt->x - rx, pt->y - ry, rx * 2, ry * 2);
+}
+
 //
 // LineGeometry
 //
@@ -124,7 +144,7 @@ Point*
 line_geometry_get_end_point (LineGeometry* line_geometry)
 {
 	Value *value = line_geometry->GetValue (LineGeometry::EndPointProperty);
-	return (value ? value->u.point : NULL);
+	return (value ? value->u.point : new Point ());
 }
 
 void
@@ -137,7 +157,7 @@ Point*
 line_geometry_get_start_point (LineGeometry* line_geometry)
 {
 	Value *value = line_geometry->GetValue (LineGeometry::StartPointProperty);
-	return (value ? value->u.point : NULL);
+	return (value ? value->u.point : new Point ());
 }
 
 void
@@ -150,6 +170,18 @@ LineGeometry*
 line_geometry_new ()
 {
 	return new LineGeometry ();
+}
+
+void
+LineGeometry::Draw (Surface *s)
+{
+	Geometry::Draw (s);
+
+	Point *p1 = line_geometry_get_start_point (this);
+	Point *p2 = line_geometry_get_end_point (this);
+
+	cairo_move_to (s->cairo, p1->x, p1->y);
+	cairo_line_to (s->cairo, p2->x, p2->y);
 }
 
 //
@@ -213,6 +245,24 @@ RectangleGeometry*
 rectangle_geometry_new ()
 {
 	return new RectangleGeometry ();
+}
+
+void
+RectangleGeometry::Draw (Surface *s)
+{
+	Geometry::Draw (s);
+
+	Rect *rect = rectangle_geometry_get_rect (this);
+	double radius_x = rectangle_geometry_get_radius_x  (this);
+	if (radius_x != 0) {
+		double radius_y = rectangle_geometry_get_radius_y (this);
+		if (radius_y != 0) {
+			moon_rounded_rectangle (s->cairo, rect->x, rect->y, rect->w, rect->h, radius_x, radius_y);
+			return;
+		}
+	}
+	// normal rectangle
+	cairo_rectangle (s->cairo, rect->x, rect->y, rect->w, rect->h);
 }
 
 //
@@ -426,6 +476,97 @@ line_segment_set_point (LineSegment *segment, Point *point)
 }
 
 //
+// PolyBezierSegment
+//
+
+DependencyProperty* PolyBezierSegment::PointsProperty;
+
+PolyBezierSegment*
+poly_bezier_segment_new ()
+{
+	return new PolyBezierSegment ();
+}
+
+void
+poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int count)
+{
+}
+
+//
+// PolyLineSegment
+//
+
+DependencyProperty* PolyLineSegment::PointsProperty;
+
+PolyLineSegment*
+poly_line_segment_new ()
+{
+	return new PolyLineSegment ();
+}
+
+void
+poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int count)
+{
+}
+
+//
+// PolyQuadraticBezierSegment
+//
+
+DependencyProperty* PolyQuadraticBezierSegment::PointsProperty;
+
+PolyQuadraticBezierSegment*
+poly_quadratic_segment_new ()
+{
+	return new PolyQuadraticBezierSegment ();
+}
+
+// there is no managed get for points, do we want one ?
+void
+poly_quadratic_segment_set_points (PolyQuadraticBezierSegment *segment, Point *points, int count)
+{
+}
+
+//
+// QuadraticBezierSegment
+//
+
+DependencyProperty* QuadraticBezierSegment::Point1Property;
+DependencyProperty* QuadraticBezierSegment::Point2Property;
+
+QuadraticBezierSegment*
+quadratic_bezier_segment_new ()
+{
+	return new QuadraticBezierSegment ();
+}
+
+Point*
+quadratic_bezier_segment_get_point1 (QuadraticBezierSegment *segment)
+{
+	Value *value = segment->GetValue (QuadraticBezierSegment::Point1Property);
+	return (value ? value->u.point : NULL);
+}
+
+void
+quadratic_bezier_segment_set_point1 (QuadraticBezierSegment *segment, Point *point)
+{
+	segment->SetValue (QuadraticBezierSegment::Point1Property, Value (*point));
+}
+
+Point*
+quadratic_bezier_segment_get_point2 (QuadraticBezierSegment *segment)
+{
+	Value *value = segment->GetValue (QuadraticBezierSegment::Point2Property);
+	return (value ? value->u.point : NULL);
+}
+
+void
+quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *point)
+{
+	segment->SetValue (QuadraticBezierSegment::Point2Property, Value (*point));
+}
+
+//
 // 
 //
 
@@ -476,4 +617,17 @@ geometry_init ()
 
 	/* LineSegment fields */
 	LineSegment::PointProperty = DependencyObject::Register (Value::LINESEGMENT, "Point", Value::POINT);
+
+	/* PolyBezierSegment fields */
+	PolyBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYBEZIERSEGMENT, "Point", Value::POINT);
+
+	/* PolyLineSegment fields */
+	PolyLineSegment::PointsProperty = DependencyObject::Register (Value::POLYLINESEGMENT, "Point", Value::POINT);
+
+	/* PolyQuadraticBezierSegment field */
+	PolyQuadraticBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYQUADRATICBEZIERSEGMENT, "Point", Value::POINT);
+
+	/* QuadraticBezierSegment field */
+	QuadraticBezierSegment::Point1Property = DependencyObject::Register (Value::QUADRATICBEZIERSEGMENT, "Point1", Value::POINT);
+	QuadraticBezierSegment::Point2Property = DependencyObject::Register (Value::QUADRATICBEZIERSEGMENT, "Point2", Value::POINT);
 }

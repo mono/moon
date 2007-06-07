@@ -481,6 +481,12 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				dep->SetValue (prop, Value (scb));
 			}
 				break;
+			case Value::POINT:
+				dep->SetValue (prop, Value (point_from_str (attr [i + 1])));
+				break;
+			case Value::RECT:
+				dep->SetValue (prop, Value (rect_from_str (attr [i + 1])));
+				break;
 			default:
 #ifdef XAML_DEBUG
 				printf ("could not find value type for: %s::%s %d\n", pname, attr [i + 1], prop->value_type);
