@@ -232,6 +232,7 @@ public:
 	void Init ();
 
 	Value ();
+	Value (const Value& v);
 	Value (Kind k);
 	Value (bool z);
 	Value (double d);

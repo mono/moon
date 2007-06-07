@@ -119,6 +119,16 @@ Value::Value()
 	Init ();
 }
 
+Value::Value (const Value& v)
+{
+	k = v.k;
+	u = v.u;
+
+	/* make a copy of the string instead of just the pointer */
+	if (k == STRING)
+		u.s = g_strdup (v.u.s);
+}
+
 Value::Value (Kind k)
 {
 	Init();
@@ -735,12 +745,8 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
-	if (current_value == NULL || *current_value != value.k) {
-		Value *copy = g_new (Value, 1);
-		*copy = value;
-
-		if (value.k == Value::STRING)
-			copy->u.s = g_strdup (value.u.s);
+	if (current_value == NULL || *current_value != value) {
+		Value *copy = new Value (value);
 
 		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->u.dependency_object;

@@ -151,9 +151,9 @@ Clock::TimeUpdated (guint64 parent_clock_time)
 
 				current_progress = new_progress - 1.0;
 				guint64 diff = current_time - start_time;
-				printf ("current_time=%llu start_time=%llu diff=%llu\n", current_time, start_time, diff);
-				printf ("completed_iter=%g autoreverse=%d duration=%llu\n", completed_iterations, autoreverse, duration_timespan);
-				printf ("Assigning=%g\n", current_progress);
+// 				printf ("current_time=%llu start_time=%llu diff=%llu\n", current_time, start_time, diff);
+// 				printf ("completed_iter=%g autoreverse=%d duration=%llu\n", completed_iterations, autoreverse, duration_timespan);
+// 				printf ("Assigning=%g\n", current_progress);
 
 				if (remaining_iterations > 0)
 					remaining_iterations --;

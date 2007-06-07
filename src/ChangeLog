@@ -1,3 +1,14 @@
+2007-06-07  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (TimeUpdated): comment out some spew.
+
+	* runtime.cpp (SetValue): use the copy ctor, and fix != check for
+	current_value and value.
+	(Value::Value): add a copy ctor, which takes care of the g_strdup
+	for us.
+
+	* runtime.h: add copy ctor for Value.
+
 2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp, geometry.cpp, shape.cpp: Protect against NULL properties.
