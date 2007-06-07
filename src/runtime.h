@@ -603,14 +603,14 @@ void   video_destroy (Video *video);
 typedef struct _SurfacePrivate SurfacePrivate;
 
 //
-// We probably should make the Surface not derive from Canvas, but for now
-// it will do.
+// Surface:
 //
 class Surface {
  public:
 	Surface () : width (0), height (0), buffer (0), 
 		cairo_buffer_surface (NULL), cairo_buffer(NULL),
 		xlib_surface(NULL), cairo_xlib(NULL), pixmap(NULL),
+		using_cairo_xlib_surface(0), pixbuf(NULL),
 		cairo (NULL) {}
 	
 	int width, height;
@@ -618,6 +618,11 @@ class Surface {
 	// The data lives here
 	unsigned char *buffer;
 
+	// The above buffer, as a pixbuf, for the software mode
+	GdkPixbuf *pixbuf;
+	
+	bool using_cairo_xlib_surface;
+	
 	cairo_surface_t *cairo_buffer_surface;
 	cairo_t         *cairo_buffer;
 	cairo_surface_t *xlib_surface;
@@ -638,6 +643,8 @@ class Surface {
 
 	// This currently can only be a canvas.
 	UIElement *toplevel;
+
+	int frames;
 };
 
 Surface *surface_new       (int width, int height);

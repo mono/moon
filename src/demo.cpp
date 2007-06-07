@@ -6,7 +6,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <sys/time.h>
 #include "runtime.h"
 #include "transform.h"
 #include "shape.h"
@@ -18,6 +18,48 @@ static RotateTransform *r_trans;
 static RotateTransform *v_trans;
 static ScaleTransform *s_trans;
 static TranslateTransform *t_trans;
+
+static int do_fps = FALSE;
+static uint64_t last_time;
+
+static GtkWidget *w;
+
+static int64_t
+gettime ()
+{
+    struct timeval tv;
+
+    gettimeofday (&tv, NULL);
+
+    return (int64_t) tv.tv_sec * 1000000 + tv.tv_usec;
+}
+
+static gboolean
+my_expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+}
+
+static gboolean
+invalidator (gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	gtk_widget_queue_draw (s->drawing_area);
+
+	int64_t now = gettime ();
+
+	int64_t diff = now - last_time;
+	if ((now - last_time) > 1000000){
+		last_time = now;
+		char *res = g_strdup_printf ("%d fps", s->frames);
+
+		gtk_window_set_title (GTK_WINDOW (w), res);
+		g_free (res);
+		s->frames = 0;
+	}
+
+	return TRUE;
+}
 
 static gboolean
 animate (gpointer data)
@@ -52,9 +94,10 @@ delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 int
 main (int argc, char *argv [])
 {
-	GtkWidget *w, *w2, *box, *button;
+	GtkWidget *w2, *box, *button;
 	cairo_matrix_t trans;
 	double dash = 3.5;
+	char *file = NULL;
 
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
@@ -66,11 +109,20 @@ main (int argc, char *argv [])
 	Surface *t = surface_new (600, 600);
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 		
+	for (int i = 1; i < argc; i++){
+		if (strcmp (argv [i], "-h") == 0){
+			printf ("usage is: demo [-fps] [file.xaml]\n");
+			return 0;
+		} else if (strcmp (argv [i], "-fps")== 0){
+			do_fps = TRUE;
+		}else
+			file = argv [i];
+	}
 
-	if (argc == 2){
-		gtk_window_set_title (GTK_WINDOW (w), argv [1]);
+	if (file){
+		gtk_window_set_title (GTK_WINDOW (w), file);
 
-		UIElement *e = xaml_create_from_file (argv [1]);
+		UIElement *e = xaml_create_from_file (file);
 		if (e == NULL){
 			printf ("Was not able to load the file\n");
 		}
@@ -131,7 +183,7 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, r);
 		
 #ifdef VIDEO_DEMO
-		//UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv", 100, 100);
+		//UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv");
 		//UIElement *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
 		UIElement *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
 		v2->SetValue (Canvas::LeftProperty, Value (100.0));
@@ -141,6 +193,11 @@ main (int argc, char *argv [])
 #endif
 		gtk_timeout_add (60, animate, NULL);
 	}		
+	if (do_fps){
+		t->frames = 0;
+		last_time = gettime ();
+		gtk_idle_add (invalidator, t);
+	}
 	gtk_widget_set_usize (w, 600, 400);
 	gtk_widget_show_all (w);
 	gtk_main ();

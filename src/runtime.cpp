@@ -495,6 +495,8 @@ surface_realloc (Surface *s)
 void 
 surface_destroy (Surface *s)
 {
+	base_unref (s->toplevel);
+
 	cairo_destroy (s->cairo_buffer);
 	if (s->cairo_xlib)
 		cairo_destroy (s->cairo_xlib);
@@ -505,6 +507,8 @@ surface_destroy (Surface *s)
 	cairo_surface_destroy (s->cairo_buffer_surface);
 	if (s->xlib_surface)
 		cairo_surface_destroy (s->xlib_surface);
+
+	gtk_widget_destroy (s->drawing_area);
 
 	// TODO: add everything
 	delete s;
@@ -550,6 +554,8 @@ gboolean
 expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
+
+	s->frames++;
 
 	if (event->area.x > s->width || event->area.y > s->height)
 		return TRUE;
