@@ -99,7 +99,7 @@ Clock::Clock (Timeline *tl)
 {
 	SetObjectType (Value::CLOCK);
 
-	RepeatBehavior *repeat = timeline_get_repeat_behavior (timeline);
+	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
 		// remaining_iterations is an int.. GetCount returns a double.  badness?
 		remaining_iterations = (int)repeat->GetCount ();
@@ -109,8 +109,8 @@ Clock::Clock (Timeline *tl)
 		remaining_iterations = -1;
 	}
 
-	autoreverse = timeline_get_autoreverse (timeline);
-	duration = timeline_get_duration (timeline);
+	autoreverse = timeline->GetAutoReverse ();
+	duration = timeline->GetDuration();
 	completed_iterations = 0.0;
 	current_progress = 0.0;
 	current_time = 0;
@@ -339,18 +339,20 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
   
 {
 	clock->events->AddHandler ("CurrentTimeInvalidated", update_property_value, this);
+
+	baseValue = targetobj->GetValue (targetprop);
 }
 
 void
 AnimationStorage::update_property_value (gpointer data)
 {
-  ((AnimationStorage*)data)->UpdatePropertyValue ();
+	((AnimationStorage*)data)->UpdatePropertyValue ();
 }
 
 void
 AnimationStorage::UpdatePropertyValue ()
 {
-	Value *current_value = clock->GetCurrentValue (NULL/*XXX*/, NULL/*XXX*/);
+	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
 	targetobj->SetValue (targetprop, *current_value);
 }
 
@@ -402,41 +404,40 @@ Timeline::Timeline ()
 {
 }
 
-
 void
-timeline_set_autoreverse (Timeline *timeline, bool autoreverse)
+Timeline::SetRepeatBehavior (RepeatBehavior behavior)
 {
-	timeline->SetValue (Timeline::AutoReverseProperty, Value(autoreverse));
-}
-
-bool
-timeline_get_autoreverse (Timeline *timeline)
-{
-	return (bool) timeline->GetValue (Timeline::AutoReverseProperty)->u.i32;
-}
-
-void
-timeline_set_duration (Timeline *timeline, Duration duration)
-{
-	timeline->SetValue (Timeline::DurationProperty, Value(duration));
-}
-
-Duration*
-timeline_get_duration (Timeline *timeline)
-{
-	return timeline->GetValue (Timeline::DurationProperty)->u.duration;
-}
-
-void
-timeline_set_repeat_behavior (Timeline *timeline, RepeatBehavior behavior)
-{
-	timeline->SetValue (Timeline::RepeatBehaviorProperty, Value(behavior));
+	SetValue (Timeline::RepeatBehaviorProperty, Value(behavior));
 }
 
 RepeatBehavior *
-timeline_get_repeat_behavior (Timeline *timeline)
+Timeline::GetRepeatBehavior ()
 {
-	return timeline->GetValue (Timeline::RepeatBehaviorProperty)->u.repeat;
+	return GetValue (Timeline::RepeatBehaviorProperty)->u.repeat;
+}
+
+void
+Timeline::SetAutoReverse (bool autoreverse)
+{
+	SetValue (Timeline::AutoReverseProperty, Value(autoreverse));
+}
+
+bool
+Timeline::GetAutoReverse ()
+{
+	return (bool) GetValue (Timeline::AutoReverseProperty)->u.i32;
+}
+
+void
+Timeline::SetDuration (Duration duration)
+{
+	SetValue (Timeline::DurationProperty, Value(duration));
+}
+
+Duration*
+Timeline::GetDuration ()
+{
+	return GetValue (Timeline::DurationProperty)->u.duration;
 }
 
 
@@ -665,13 +666,28 @@ Value*
 DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				  AnimationClock* animationClock)
 {
-	double by = double_animation_get_by (this);
-	double from = double_animation_get_from (this);
-	double to = double_animation_get_to (this);
+	// we should cache these in the clock, probably, instead of
+	// using the getters at every iteration
+	double* from = GetFrom ();
+	double* to = GetTo ();
+	double* by = GetBy ();
+
+	double start = from ? *from : defaultOriginValue->u.d;
+	double end;
+
+	if (to) {
+		end = *to;
+	}
+	else if (by) {
+		end = start + *by;
+	}
+	else {
+		end = start;
+	}
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (LERP (from, to, progress));
+	Value *v = new Value (LERP (start, end, progress));
 	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
 	return v;
 }
@@ -681,48 +697,6 @@ double_animation_new ()
 {
 	return new DoubleAnimation ();
 }
-
-void
-double_animation_set_by (DoubleAnimation *da, double by)
-{
-	da->SetValue (DoubleAnimation::ByProperty, Value(by));
-}
-
-double
-double_animation_get_by (DoubleAnimation *da)
-{
-	Value *v = da->GetValue (DoubleAnimation::ByProperty);
-	return v == NULL ? 0.0 : v->u.d;
-}
-
-void
-double_animation_set_from (DoubleAnimation *da, double by)
-{
-	da->SetValue (DoubleAnimation::FromProperty, Value(by));
-}
-
-double
-double_animation_get_from (DoubleAnimation *da)
-{
-	Value *v = da->GetValue (DoubleAnimation::FromProperty);
-	return v == NULL ? 0.0 : v->u.d;
-}
-
-void
-double_animation_set_to (DoubleAnimation *da, double by)
-{
-	da->SetValue (DoubleAnimation::ToProperty, Value(by));
-}
-
-double
-double_animation_get_to (DoubleAnimation *da)
-{
-	Value *v = da->GetValue (DoubleAnimation::ToProperty);
-	return v == NULL ? 0.0 : v->u.d;
-}
-
-
-
 
 
 DependencyProperty* ColorAnimation::ByProperty;
@@ -738,9 +712,25 @@ Value*
 ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				 AnimationClock* animationClock)
 {
-	Color *by = color_animation_get_by (this);
-	Color *from = color_animation_get_from (this);
-	Color *to = color_animation_get_to (this);
+	Color *by = GetBy ();
+	Color *from = GetFrom ();
+	Color *to = GetTo ();
+
+	Color *start = from ? from : defaultOriginValue->u.color;
+	Color *end;
+
+	if (to) {
+		end = to;
+	}
+	else if (by) {
+		end = new Color (from->r + by->r,
+				 from->g + by->g,
+				 from->b + by->b,
+				 from->a + by->a);
+	}
+	else {
+		end = start;
+	}
 
 	double progress = animationClock->GetCurrentProgress ();
 
@@ -815,9 +805,23 @@ Value*
 PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				 AnimationClock* animationClock)
 {
-	Point *by = point_animation_get_by (this);
-	Point *from = point_animation_get_from (this);
-	Point *to = point_animation_get_to (this);
+	Point *by = GetBy ();
+	Point *from = GetFrom ();
+	Point *to = GetTo ();
+
+	Point *start = from ? from : defaultOriginValue->u.point;
+	Point *end;
+
+	if (to) {
+		end = to;
+	}
+	else if (by) {
+		end = new Point (from->x + by->x,
+				 from->y + by->y);
+	}
+	else {
+		end = start;
+	}
 
 	double progress = animationClock->GetCurrentProgress ();
 
@@ -893,20 +897,20 @@ animation_init ()
 
 
 	/* DoubleAnimation properties */
-	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By",   new Value (0.0));
-	DoubleAnimation::FromProperty = DependencyObject::Register (Value::DOUBLEANIMATION, "From", new Value (0.0));
-	DoubleAnimation::ToProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "To",   new Value (0.0));
+	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By",   Value::DOUBLE);
+	DoubleAnimation::FromProperty = DependencyObject::Register (Value::DOUBLEANIMATION, "From", Value::DOUBLE);
+	DoubleAnimation::ToProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "To",   Value::DOUBLE);
 
 
 	/* ColorAnimation properties */
-	ColorAnimation::ByProperty   = DependencyObject::Register (Value::COLORANIMATION, "By",   new Value (Value::COLOR)); // null defaults
-	ColorAnimation::FromProperty = DependencyObject::Register (Value::COLORANIMATION, "From", new Value (Value::COLOR));
-	ColorAnimation::ToProperty   = DependencyObject::Register (Value::COLORANIMATION, "To",   new Value (Value::COLOR));
+	ColorAnimation::ByProperty   = DependencyObject::Register (Value::COLORANIMATION, "By",   Value::COLOR); // null defaults
+	ColorAnimation::FromProperty = DependencyObject::Register (Value::COLORANIMATION, "From", Value::COLOR);
+	ColorAnimation::ToProperty   = DependencyObject::Register (Value::COLORANIMATION, "To",   Value::COLOR);
 
 	/* PointAnimation properties */
-	PointAnimation::ByProperty   = DependencyObject::Register (Value::POINTANIMATION, "By",   new Value (Value::POINT)); // null defaults
-	PointAnimation::FromProperty = DependencyObject::Register (Value::POINTANIMATION, "From", new Value (Value::POINT));
-	PointAnimation::ToProperty   = DependencyObject::Register (Value::POINTANIMATION, "To",   new Value (Value::POINT));
+	PointAnimation::ByProperty   = DependencyObject::Register (Value::POINTANIMATION, "By",   Value::POINT); // null defaults
+	PointAnimation::FromProperty = DependencyObject::Register (Value::POINTANIMATION, "From", Value::POINT);
+	PointAnimation::ToProperty   = DependencyObject::Register (Value::POINTANIMATION, "To",   Value::POINT);
 
 	/* Storyboard properties */
 	Storyboard::TargetPropertyProperty = DependencyObject::Register (Value::STORYBOARD, "TargetProperty", 
@@ -917,3 +921,21 @@ animation_init ()
 	/* BeginStoryboard properties */
 	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Value::BEGINSTORYBOARD, "Storyboard",	Value::STORYBOARD);
 }
+
+
+/* The nullable setters/getters for the various animation types */
+SET_NULLABLE_FUNC(double)
+SET_NULLABLE_FUNC(Color)
+SET_NULLABLE_FUNC(Point)
+
+NULLABLE_GETSET_IMPL (DoubleAnimation, By, double, Double, &v->u.d)
+NULLABLE_GETSET_IMPL (DoubleAnimation, To, double, Double, &v->u.d)
+NULLABLE_GETSET_IMPL (DoubleAnimation, From, double, Double, &v->u.d)
+
+NULLABLE_GETSET_IMPL (ColorAnimation, By, Color, Color, v->u.color)
+NULLABLE_GETSET_IMPL (ColorAnimation, To, Color, Color, v->u.color)
+NULLABLE_GETSET_IMPL (ColorAnimation, From, Color, Color, v->u.color)
+
+NULLABLE_GETSET_IMPL (PointAnimation, By, Point, Point, v->u.point)
+NULLABLE_GETSET_IMPL (PointAnimation, To, Point, Point, v->u.point)
+NULLABLE_GETSET_IMPL (PointAnimation, From, Point, Point, v->u.point)

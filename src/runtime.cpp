@@ -358,7 +358,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 void
 item_set_render_transform (UIElement *item, Transform *transform)
 {
-	item->SetValue (UIElement::RenderTransformProperty, transform);
+	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
 }
 
 double
@@ -736,17 +736,18 @@ DependencyObject::NotifyAttacheesOfPropertyChange (DependencyProperty *subproper
 }
 
 void
-DependencyObject::SetValue (DependencyProperty *property, Value value)
+DependencyObject::SetValue (DependencyProperty *property, Value *value)
 {
 	g_return_if_fail (property != NULL);
 
 	if (property->value_type < Value::DEPENDENCY_OBJECT)
-		g_return_if_fail (property->value_type == value.k);
+		g_return_if_fail (property->value_type == value->k);
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
-	if (current_value == NULL || *current_value != value) {
-		Value *copy = new Value (value);
+	if ((current_value == NULL && value != NULL) ||
+	    (current_value != NULL && value == NULL) ||
+	    (current_value != NULL && value != NULL && *current_value != *value)) {
 
 		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->u.dependency_object;
@@ -761,19 +762,31 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 			}
 		}
 
-		if (value.k >= Value::DEPENDENCY_OBJECT){
-			DependencyObject *dob = value.u.dependency_object;
-			Attachee *att = new Attachee ();
-			att->dob = this;
-			att->prop = property;
-			dob->attached_list = g_slist_append (dob->attached_list, att);
-		}
-		g_hash_table_insert (current_values, property->name, copy);
+		Value *store = value ? new Value (*value) : NULL;
 
-		// 
-		//NotifyAttacheesOfPropertyChange (property);
+		g_hash_table_insert (current_values, property->name, store);
+
+		if (value) {
+			if (value->k >= Value::DEPENDENCY_OBJECT){
+				DependencyObject *dob = value->u.dependency_object;
+				Attachee *att = new Attachee ();
+				att->dob = this;
+				att->prop = property;
+				dob->attached_list = g_slist_append (dob->attached_list, att);
+			}
+
+			// 
+			//NotifyAttacheesOfPropertyChange (property);
+		}
+
 		OnPropertyChanged (property);
 	}
+}
+
+void
+DependencyObject::SetValue (DependencyProperty *property, Value value)
+{
+	SetValue (property, &value);
 }
 
 Value *

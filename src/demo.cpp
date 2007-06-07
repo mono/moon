@@ -187,11 +187,11 @@ main (int argc, char *argv [])
 		// Blue and back again
 		global_NameScope->RegisterName ("solid-color-brush", scb);
 
-		color_animation_set_from (c_anim, Color (1.0, 0.0, 0.0, 0.5));
-		color_animation_set_to (c_anim, Color (0.0, 0.0, 1.0, 0.5));
-		timeline_set_repeat_behavior (c_anim, RepeatBehavior::Forever);
-		timeline_set_duration (c_anim, Duration::FromSeconds (5));
-		timeline_set_autoreverse (c_anim, true);
+		c_anim->SetFrom (Color (1.0, 0.0, 0.0, 0.5));
+		c_anim->SetTo (Color (0.0, 0.0, 1.0, 0.5));
+		c_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		c_anim->SetDuration (Duration::FromSeconds (5));
+		c_anim->SetAutoReverse (true);
 		timeline_group_add_child (sb, c_anim);
 		storyboard_child_set_target_name (sb, c_anim, "solid-color-brush");
 		storyboard_child_set_target_property (sb, c_anim, "Color");
@@ -199,18 +199,18 @@ main (int argc, char *argv [])
 		// The rectangle rotates completely around every 4
 		// seconds, and stops after the second time around
 		global_NameScope->RegisterName ("rect-transform", r_trans);
-		double_animation_set_to (r_anim, -360.0);
-		timeline_set_repeat_behavior (r_anim, RepeatBehavior(2.0));
-		timeline_set_duration (r_anim, Duration::FromSeconds (4));
+		r_anim->SetTo (-360.0);
+		r_anim->SetRepeatBehavior (RepeatBehavior(2.0));
+		r_anim->SetDuration (Duration::FromSeconds (4));
 		timeline_group_add_child (sb, r_anim);
 		storyboard_child_set_target_name (sb, r_anim, "rect-transform");
 		storyboard_child_set_target_property (sb, r_anim, "Angle");
 
 		// The rotating video takes 5 seconds to complete the rotation
 		global_NameScope->RegisterName ("video-transform", v_trans);
-		double_animation_set_to (v_anim, 360.0);
-		timeline_set_repeat_behavior (v_anim, RepeatBehavior::Forever);
-		timeline_set_duration (v_anim, Duration::FromSeconds (5));
+		v_anim->SetTo (360.0);
+		v_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		v_anim->SetDuration (Duration::FromSeconds (5));
 		timeline_group_add_child (sb, v_anim);
 		storyboard_child_set_target_name (sb, v_anim, "video-transform");
 		storyboard_child_set_target_property (sb, v_anim, "Angle");
@@ -221,20 +221,20 @@ main (int argc, char *argv [])
 		// in 7.
 		global_NameScope->RegisterName ("scale-transform", s_trans);
 
-		double_animation_set_from (sx_anim, 1.0);
-		double_animation_set_to (sx_anim, 0.0);
-		timeline_set_repeat_behavior (sx_anim, RepeatBehavior::Forever);
-		timeline_set_duration (sx_anim, Duration::FromSeconds (6));
-		timeline_set_autoreverse (sx_anim, true);
+		sx_anim->SetFrom (1.0);
+		sx_anim->SetBy (-0.5);
+		sx_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		sx_anim->SetDuration (Duration::FromSeconds (6));
+		sx_anim->SetAutoReverse (true);
 		timeline_group_add_child (sb, sx_anim);
 		storyboard_child_set_target_name (sb, sx_anim, "scale-transform");
 		storyboard_child_set_target_property (sb, sx_anim, "ScaleX");
 
-		double_animation_set_from (sy_anim, 1.0);
-		double_animation_set_to (sy_anim, 0.0);
-		timeline_set_repeat_behavior (sy_anim, RepeatBehavior::Forever);
-		timeline_set_duration (sy_anim, Duration::FromSeconds (7));
-		timeline_set_autoreverse (sy_anim, true);
+		sy_anim->SetFrom (1.0);
+		sy_anim->SetTo (0.0);
+		sy_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		sy_anim->SetDuration (Duration::FromSeconds (7));
+		sy_anim->SetAutoReverse (true);
 		timeline_group_add_child (sb, sy_anim);
 		storyboard_child_set_target_name (sb, sy_anim, "scale-transform");
 		storyboard_child_set_target_property (sb, sy_anim, "ScaleY");

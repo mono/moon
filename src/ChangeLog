@@ -1,3 +1,27 @@
+2007-06-07  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp: track all the animation changes away from the C api,
+	and also test out the from/by animation combination by making the
+	X scaling only go From 1.0 By -0.5 (so it animates in the range of
+	[1.0..0.5].
+	
+	* animation.h, animation.cpp: lots of changes - get rid of many of
+	the animation/timeline C api calls, since they're unnecessary for
+	the binding.  Implement the nullable property getter/setters as
+	#defines since I didn't want to c&p all of them and make the
+	obvious mistakes.  While I'm at it, implement the thing I needed
+	nullable typed values for - "by" animation support.  Now you can
+	specify any of the following combinations and get a usable
+	animation: From+By, From+To, By, To.  You can actually just put
+	From as well, but it won't animate (since both start end end will
+	be the same).  The To property overrides the By property, if both
+	are present.
+
+	* runtime.h, runtime.cpp: add an overload of
+	DependencyProperty::SetValue which takes a Value*, to enable
+	nullable types to be set.  the existing SetValue method calls the
+	new one with &value.
+
 2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Fix comment.

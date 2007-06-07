@@ -306,6 +306,7 @@ class DependencyObject : public Base {
 	
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name);
 	void SetValue (DependencyProperty *property, Value value);
+	void SetValue (DependencyProperty *property, Value *value);
 	Value *GetValue (DependencyProperty *property);
 	DependencyProperty *GetDependencyProperty (char *name);
 	Value::Kind GetObjectType ();

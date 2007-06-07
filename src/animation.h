@@ -1,7 +1,5 @@
 #include "runtime.h"
 
-G_BEGIN_DECLS
-
 // misc types
 struct Duration {
  public:
@@ -264,17 +262,17 @@ class Timeline : public DependencyObject {
 	static DependencyProperty* RepeatBehaviorProperty;
 	static DependencyProperty* SpeedRatioProperty;
 
+	void SetRepeatBehavior (RepeatBehavior behavior);
+	RepeatBehavior *GetRepeatBehavior ();
+
+	void SetAutoReverse (bool autoreverse);
+	bool GetAutoReverse ();
+
+	void SetDuration (Duration duration);
+	Duration* GetDuration ();
+
 	virtual Clock* AllocateClock () { return new Clock (this); }
 };
-
-void timeline_set_autoreverse (Timeline *timeline, bool autoreverse);
-bool timeline_get_autoreverse (Timeline *timeline);
-
-void timeline_set_duration (Timeline *timeline, Duration duration);
-Duration* timeline_get_duration (Timeline *timeline);
-
-void timeline_set_repeat_behavior (Timeline *timeline, RepeatBehavior behavior);
-RepeatBehavior* timeline_get_repeat_behavior (Timeline *timeline);
 
 
 
@@ -334,6 +332,7 @@ class AnimationStorage {
 	Animation/*Timeline*/* timeline;
 	DependencyObject *targetobj;
 	DependencyProperty *targetprop;
+	Value *baseValue;
 };
 
 
@@ -374,6 +373,37 @@ class Animation/*Timeline*/ : public Timeline {
 
 
 
+template<class T>
+class Nullable {
+  bool is_null;
+  T value;
+ public:
+  Nullable (T v) : value(v) { is_null = false; }
+  Nullable (T* p) { if (!p) is_null = true; else /* XXX */; }
+  
+  bool IsNull () { return is_null; }
+
+  T GetValue () { return value; }
+};
+
+#define NULLABLE_GETSET_DECL(prop, t) \
+void Set##prop (t v); \
+void Set##prop (t* pv); \
+t* Get##prop ()
+
+#define SET_NULLABLE_FUNC(t) \
+static void SetNullable##t##Prop (DependencyObject *obj, DependencyProperty *prop, t *pv) \
+{ \
+  if (!pv) \
+    obj->SetValue (prop, NULL); \
+  else \
+    obj->SetValue (prop, Value(*pv)); \
+}
+
+#define NULLABLE_GETSET_IMPL(klass,prop,t,T,umem) \
+void klass::Set##prop (t v) { Set##prop (&v); } \
+void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
+t* klass::Get##prop () { Value* v = GetValue (klass::prop##Property);  return v ? (umem) : NULL; }
 
 
 class DoubleAnimation : public Animation/*Timeline*/ {
@@ -385,20 +415,15 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty* FromProperty;
 	static DependencyProperty* ToProperty;
 
+	NULLABLE_GETSET_DECL(By, double);
+	NULLABLE_GETSET_DECL(From, double);
+	NULLABLE_GETSET_DECL(To, double);
+
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 };
 
 DoubleAnimation * double_animation_new ();
-
-void   double_animation_set_by (DoubleAnimation *da, double by);
-double double_animation_get_by (DoubleAnimation *da);
-
-void   double_animation_set_from (DoubleAnimation *da, double from);
-double double_animation_get_from (DoubleAnimation *da);
-
-void   double_animation_set_to (DoubleAnimation *da, double to);
-double double_animation_get_to (DoubleAnimation *da);
 
 
 
@@ -413,20 +438,15 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty* FromProperty;
 	static DependencyProperty* ToProperty;
 
+	NULLABLE_GETSET_DECL(By, Color);
+	NULLABLE_GETSET_DECL(From, Color);
+	NULLABLE_GETSET_DECL(To, Color);
+
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 };
 
 ColorAnimation * color_animation_new ();
-
-void   color_animation_set_by (ColorAnimation *da, Color by);
-Color* color_animation_get_by (ColorAnimation *da);
-
-void   color_animation_set_from (ColorAnimation *da, Color from);
-Color* color_animation_get_from (ColorAnimation *da);
-
-void   color_animation_set_to (ColorAnimation *da, Color to);
-Color* color_animation_get_to (ColorAnimation *da);
 
 
 
@@ -441,20 +461,15 @@ class PointAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty* FromProperty;
 	static DependencyProperty* ToProperty;
 
+	NULLABLE_GETSET_DECL(By, Point);
+	NULLABLE_GETSET_DECL(From, Point);
+	NULLABLE_GETSET_DECL(To, Point);
+
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 };
 
 PointAnimation * point_animation_new ();
-
-void   point_animation_set_by (PointAnimation *da, Point by);
-Point* point_animation_get_by (PointAnimation *da);
-
-void   point_animation_set_from (PointAnimation *da, Point from);
-Point* point_animation_get_from (PointAnimation *da);
-
-void   point_animation_set_to (PointAnimation *da, Point to);
-Point* point_animation_get_to (PointAnimation *da);
 
 
 
@@ -522,5 +537,3 @@ class BeginStoryboard : public TriggerAction {
 };
 
 BeginStoryboard *begin_storyboard_new ();
-
-G_END_DECLS
