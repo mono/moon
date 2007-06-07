@@ -7,6 +7,7 @@
 2007-06-07  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: add event triggers.
+	* xaml.cpp: parse event triggers.
 
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 

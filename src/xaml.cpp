@@ -378,6 +378,12 @@ panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInst
 	panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
 }
 
+void
+event_trigger_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	event_trigger_action_add ((EventTrigger *) parent->item, (TriggerAction *) child->item);
+}
+
 
 ///
 /// set property funcs
@@ -488,14 +494,14 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				dep->SetValue (prop, Value (rect_from_str (attr [i + 1])));
 				break;
 			default:
-#ifdef XAML_DEBUG
+#ifdef DEBUG_XAML
 				printf ("could not find value type for: %s::%s %d\n", pname, attr [i + 1], prop->value_type);
 #endif
 				continue;
 			}
 
 		} else {
-#ifdef XAML_DEBUG
+#ifdef DEBUG_XAML
 			printf ("can not find property:  %s  %s\n", pname, attr [i + 1]);
 #endif
 		}
@@ -503,6 +509,20 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		if (atchname)
 			g_free (atchname);
 	}
+}
+
+void
+event_trigger_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
+{
+	EventTrigger *et = (EventTrigger *) item->item;
+
+	for (int i = 0; attr [i]; i += 2) {
+		if (!strcmp (attr [i], "RoutedEvent")) {
+			et->routed_event = g_strdup (attr [i + 1]);
+		}
+	}
+
+	dependency_object_set_attributes (p, item, attr);
 }
 
 // We still use a name for ghost elements to make debugging easier
@@ -609,6 +629,9 @@ xaml_init ()
 	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Value::TRIGGERACTION);
 	register_dependency_object_element ("BeginStoryboard", trg, Value::BEGINSTORYBOARD, (create_item_func) begin_storyboard_new);
 
+	register_element_full ("EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new,
+			default_create_element_instance, event_trigger_add_child, dependency_object_set_property,
+			event_trigger_set_attributes);
 
 	///
 	/// Transforms
@@ -626,4 +649,5 @@ xaml_init ()
 
 	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, Value::BRUSH);
 	register_dependency_object_element ("SolidColorBrush", brush, Value::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
+
 }

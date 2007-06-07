@@ -465,7 +465,7 @@ class EventTrigger : public DependencyObject {
 };
 
 EventTrigger  *event_trigger_new ();
-void          event_trigger_add_action (EventTrigger *trigger, TriggerAction *action);
+void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
 
 //
 // Item class

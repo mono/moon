@@ -1042,7 +1042,7 @@ event_trigger_new ()
 }
 
 void
-event_trigger_add_action (EventTrigger *trigger, TriggerAction *action)
+event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {
 	g_return_if_fail (trigger);
 	g_return_if_fail (action);
