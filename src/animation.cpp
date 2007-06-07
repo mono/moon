@@ -330,6 +330,12 @@ timeline_set_duration (Timeline *timeline, guint64 duration)
 	timeline->SetValue (Timeline::DurationProperty, Value(duration));
 }
 
+void
+timeline_set_repeat_behavior (Timeline *timeline, RepeatBehavior behavior)
+{
+	timeline->SetValue (Timeline::RepeatBehaviorProperty, Value(behavior));
+}
+
 /* timeline group */
 
 TimelineGroup::TimelineGroup ()
@@ -623,8 +629,8 @@ animation_init ()
 	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
 	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", new Value ((guint64)0));
 	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value ((guint64)0));
+	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "FillBehavior", new Value (0));
-	//DependencyObject::Register (DependencyObject::TIMELINE, "RepeatBehavior", new Value (0));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "SpeedRatio", new Value (0));
 
 

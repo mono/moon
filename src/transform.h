@@ -103,6 +103,10 @@ MatrixTransform *matrix_transform_new ();
 void           matrix_transform_set_matrix (MatrixTransform *t, cairo_matrix_t matrix);
 cairo_matrix_t matrix_transform_get_matrix (MatrixTransform *t);
 
+
+class TransformGroup : public Transform {
+};
+
 G_END_DECLS
 
 #endif

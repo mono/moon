@@ -194,6 +194,7 @@ class Timeline : public DependencyObject {
 };
 
 void timeline_set_duration (Timeline *timeline, guint64 duration);
+void timeline_set_repeat_behavior (Timeline *timeline, RepeatBehavior behavior);
 
 
 

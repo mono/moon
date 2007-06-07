@@ -1,3 +1,25 @@
+2007-06-06  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h: add prototype for timeline_set_repeat_behavior.
+	
+	* animation.cpp (animation_init): register the RepeatBehavior
+	property.
+	(timeline_set_repeat_behavior): new function.
+
+	* runtime.h: a better solution to enforcing types in the Value
+	ctors - make Value (void*) private.  this gives compilation errors
+	at all usage points where you're passing an unrecognized pointer
+	type.  Also, add RepeatBehavior support to Value.
+
+	* runtime.cpp: add repeatbehavior support to Value.
+	
+	* geometry.cpp: change all Value(pointer-to-struct) calls to
+	Value(struct) calls.
+
+	* transform.h: we need do define TransformGroup as a subclass of
+	Transform, or the functions that SetValue a transformgroup fail to
+	compile (since it's not a descendent of DependencyObject.)
+
 2007-06-07  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Get object element property setting working.

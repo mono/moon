@@ -154,6 +154,13 @@ Value::Value (Rect rect)
 	u.rect = new Rect (rect);
 }
 
+Value::Value (RepeatBehavior repeat)
+{
+	Init();
+	k = REPEATBEHAVIOR;
+	u.repeat = new RepeatBehavior (repeat);
+}
+
 Value::Value (const char* s)
 {
 	Init ();
@@ -161,10 +168,6 @@ Value::Value (const char* s)
 	u.s= g_strdup (s);
 }
 
-Value::Value (void*)
-{
-	g_warning ("This is not what you want to do here.  You're passing an unrecognized pointer type to Value.  usually this means you need to deref a structured type and hitting the void* ctor");
-}
 
 Value::~Value ()
 {

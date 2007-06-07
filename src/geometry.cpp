@@ -80,7 +80,7 @@ ellipse_geometry_get_center (EllipseGeometry *ellipse_geometry)
 void
 ellipse_geometry_set_center (EllipseGeometry *ellipse_geometry, Point *point)
 {
-	ellipse_geometry->SetValue (EllipseGeometry::CenterProperty, Value (point));
+	ellipse_geometry->SetValue (EllipseGeometry::CenterProperty, Value (*point));
 }
 
 double
@@ -130,7 +130,7 @@ line_geometry_get_end_point (LineGeometry* line_geometry)
 void
 line_geometry_set_end_point (LineGeometry* line_geometry, Point *end_point)
 {
-	line_geometry->SetValue (LineGeometry::EndPointProperty, Value (end_point));
+	line_geometry->SetValue (LineGeometry::EndPointProperty, Value (*end_point));
 }
 
 Point*
@@ -143,7 +143,7 @@ line_geometry_get_start_point (LineGeometry* line_geometry)
 void
 line_geometry_set_start_point (LineGeometry* line_geometry, Point *start_point)
 {
-	line_geometry->SetValue (LineGeometry::StartPointProperty, Value (start_point));
+	line_geometry->SetValue (LineGeometry::StartPointProperty, Value (*start_point));
 }
 
 LineGeometry*
@@ -206,7 +206,7 @@ rectangle_geometry_get_rect (RectangleGeometry *rectangle_geometry)
 void
 rectangle_geometry_set_rect (RectangleGeometry *rectangle_geometry, Rect *rect)
 {
-	rectangle_geometry->SetValue (RectangleGeometry::RectProperty, Value (rect));
+	rectangle_geometry->SetValue (RectangleGeometry::RectProperty, Value (*rect));
 }
 
 RectangleGeometry*
@@ -266,7 +266,7 @@ path_figure_get_start_point (PathFigure *path_figure)
 void
 path_figure_set_start_point (PathFigure *path_figure, Point *point)
 {
-	path_figure->SetValue (PathFigure::StartPointProperty, Value (point));
+	path_figure->SetValue (PathFigure::StartPointProperty, Value (*point));
 }
 
 //
@@ -307,7 +307,7 @@ arc_segment_get_point (ArcSegment *segment)
 void
 arc_segment_set_point (ArcSegment *segment, Point *point)
 {
-	segment->SetValue (ArcSegment::PointProperty, Value (point));
+	segment->SetValue (ArcSegment::PointProperty, Value (*point));
 }
 
 double
@@ -332,7 +332,7 @@ arc_segment_get_size (ArcSegment *segment)
 void
 arc_segment_set_size (ArcSegment *segment, Point *size)
 {
-	segment->SetValue (ArcSegment::SizeProperty, Value (size));
+	segment->SetValue (ArcSegment::SizeProperty, Value (*size));
 }
 
 SweepDirection
@@ -371,7 +371,7 @@ bezier_segment_get_point1 (BezierSegment *segment)
 void
 bezier_segment_set_point1 (BezierSegment *segment, Point *point)
 {
-	segment->SetValue (BezierSegment::Point1Property, Value (point));
+	segment->SetValue (BezierSegment::Point1Property, Value (*point));
 }
 
 Point*
@@ -384,7 +384,7 @@ bezier_segment_get_point2 (BezierSegment *segment)
 void
 bezier_segment_set_point2 (BezierSegment *segment, Point *point)
 {
-	segment->SetValue (BezierSegment::Point2Property, Value (point));
+	segment->SetValue (BezierSegment::Point2Property, Value (*point));
 }
 
 Point*
@@ -397,7 +397,7 @@ bezier_segment_get_point3 (BezierSegment *segment)
 void
 bezier_segment_set_point3 (BezierSegment *segment, Point *point)
 {
-	segment->SetValue (BezierSegment::Point3Property, Value (point));
+	segment->SetValue (BezierSegment::Point3Property, Value (*point));
 }
 
 //
@@ -422,7 +422,7 @@ line_segment_get_point (LineSegment *segment)
 void
 line_segment_set_point (LineSegment *segment, Point *point)
 {
-	segment->SetValue (LineSegment::PointProperty, Value (point));
+	segment->SetValue (LineSegment::PointProperty, Value (*point));
 }
 
 //

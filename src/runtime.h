@@ -156,6 +156,7 @@ public:
 		COLOR = 7,
 		POINT = 8,
 		RECT = 9,
+		REPEATBEHAVIOR = 10,
 
 		DEPENDENCY_OBJECT = 1000,
 
@@ -214,6 +215,7 @@ public:
 		Color *color;
 		Point *point;
 		Rect *rect;
+		RepeatBehavior *repeat;
 	} u;
 
 	void Init ();
@@ -228,8 +230,8 @@ public:
 	Value (DependencyObject *obj);
 	Value (Point pt);
 	Value (Rect rect);
+	Value (RepeatBehavior repeat);
 	Value (const char* s);
-	Value (void* v); // this is for finding improper uses of the Value ctors - do NOT use this.
 	
 	~Value ();
 
@@ -252,6 +254,13 @@ public:
 
 		return true;
 	}
+  private:
+	// You don't want to be using this ctor.  it's here to help
+	// c++ recognize bad unspecified pointer args to Value ctors
+	// (it normally converts them to bool, which we handle, so you
+	// never see the error of your ways).  So do the world a
+	// favor, and don't expose this ctor. :)
+	Value (void* v) { }
 };
 
 //
