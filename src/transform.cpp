@@ -105,7 +105,7 @@ TranslateTransform::GetTransform (cairo_matrix_t *value)
 	double y = translate_transform_get_y (this);
 
 	cairo_matrix_init_translate (value, x, y);
-	printf ("Returning3 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
+	//printf ("Returning3 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 TranslateTransform *
@@ -117,7 +117,6 @@ translate_transform_new ()
 void
 translate_transform_set_x (TranslateTransform *t, double x)
 {
-g_warning ("translate_transform_set_x %g", x);
 	t->SetValue (TranslateTransform::XProperty, Value(x));
 }
 
@@ -130,7 +129,6 @@ translate_transform_get_x (TranslateTransform *t)
 void
 translate_transform_set_y (TranslateTransform *t, double y)
 {
-g_warning ("translate_transform_set_y %g", y);
 	t->SetValue (TranslateTransform::YProperty, Value(y));
 }
 
