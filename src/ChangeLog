@@ -1,3 +1,10 @@
+2007-06-07  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h: make Duration::FromSeconds return numbers of the
+	same magnitude as get_now().
+
+	* animation.cpp (Clock): fix UMR.
+
 2007-06-07  Jackson Harper  <jackson@ximian.com>
 
 	* xamp.cpp: Oops, not sure how that happened.  Set the property

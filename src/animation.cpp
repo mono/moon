@@ -111,6 +111,7 @@ Clock::Clock (Timeline *tl)
 	completed_iterations = 0.0;
 	current_progress = 0.0;
 	current_time = 0;
+	reversed = false;
 	start_time = 0;
 	Duration *duration = timeline_get_duration (timeline);
 }

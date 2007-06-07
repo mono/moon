@@ -48,7 +48,7 @@ struct Duration {
 
 
 	// This should live in a TimeSpan class, but oh well.. */
-	static Duration FromSeconds (int seconds) { return (guint64)seconds * 10000000; }
+	static Duration FromSeconds (int seconds) { return (guint64)seconds * 1000000; }
 
 	DurationKind k;
  private:
