@@ -55,6 +55,7 @@ class PluginInstance {
 	bool xembed_supported; // XEmbed Extension supported
 
     NPClass *scriptclass;  // JavaScript class
+	NPObject *object;      // JavaScript object
 
  public:	
 	PluginInstance (NPP instance, uint16 mode);
