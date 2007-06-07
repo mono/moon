@@ -1,5 +1,6 @@
-2007-06-07  Sebastien Pouliot  <sebastien@ximian.com>
+2007-06-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
+	* geometry.cpp: #if-out transforms, it crash the xaml samples
 	* runtime.h: Fix hierarchy. Panel inherits from FrameworkElement.
 
 2007-06-07  Chris Toshok  <toshok@ximian.com>
