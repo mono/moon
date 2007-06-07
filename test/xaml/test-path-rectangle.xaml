@@ -1,0 +1,12 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#FF0000" Stroke="Green" StrokeThickness="2">
+		<Path.Data>
+			<RectangleGeometry Rect="20,40 200 200" />
+		</Path.Data>
+	</Path>
+	<Path Fill="#770000FF" Stroke="#77777777" StrokeThickness="5">
+		<Path.Data>
+			<RectangleGeometry Rect="50,20,100,100" RadiusX="20" RadiusY="20" />
+		</Path.Data>
+	</Path>
+</Canvas>

@@ -1,0 +1,12 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#FF0000" Stroke="Green" StrokeThickness="2">
+		<Path.Data>
+			<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />              
+		</Path.Data>
+	</Path>
+	<Path Fill="#770000FF" Stroke="#77777777" StrokeThickness="5">
+		<Path.Data>
+			<EllipseGeometry Center="130,200" RadiusX="30" RadiusY="100" />              
+		</Path.Data>
+	</Path>
+</Canvas>
