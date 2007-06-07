@@ -1,5 +1,13 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.cpp: Fix gtkplug creation fro 64bit systems. 
+
+	* Makefile.am: Add -lavformat to link options.
+
+	Thanks Grendel for this patches.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.h: Change version number 0.99.0, SilverLight scripts searchs 
 	for version > 0.95.1.
 

@@ -214,9 +214,9 @@ queue_data (gpointer data)
 	if (av_open_input_file (&video->av_format_context, video->filename, NULL, 0, NULL) < 0){
 		g_error ("ERROR: open input file `%s'\n", video->filename);
 	}
-	if (video->av_format_context == (void *) &rtsp_demuxer){
-		g_error ("ERROR: stream info\n");
-	}
+	//if (video->av_format_context == (void *) &rtsp_demuxer){
+	//	g_error ("ERROR: stream info\n");
+	//}
 
 	av_read_play (video->av_format_context);
 

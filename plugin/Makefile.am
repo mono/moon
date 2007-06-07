@@ -11,7 +11,7 @@ libmoonplugin_la_LDFLAGS = \
 	-L$(top_srcdir)/src/.libs \
 	$(PLUGIN_LIBS)
 
-libmoonplugin_la_LIBADD = -lpthread -lmoon
+libmoonplugin_la_LIBADD = -lpthread -lmoon -lavformat
 
 libmoonplugin_la_SOURCES = \
 	moon-plugin.cpp \

@@ -196,7 +196,8 @@ PluginInstance::CreateControls ()
 	DEBUG ("*** creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
 	//  GtkPlug container and surface inside
-	this->container = gtk_plug_new ((GdkNativeWindow) window->window);
+	//this->container = gtk_plug_new ((GdkNativeWindow) window->window);
+	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
 	this->canvas = canvas_new ();
 	this->surface = surface_new (window->width, window->height);
 	surface_attach (this->surface, this->canvas);
