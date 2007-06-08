@@ -304,3 +304,13 @@ Issues
 		If the bit is not set, we got a regular pointer to a
 		GSList.
 
+
+* Adding a new class
+
+	There are three things you must do when adding a new
+	class for use in moon.
+
+	1.  Add a Value::Kind entry for it.
+	2.  if it's a DependencyObject, override GetObjectType() to return that type.
+	3.  add line(s) to types_init in runtime.cpp registering the
+	    type and its parent type (if there is one.)
