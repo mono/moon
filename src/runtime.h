@@ -6,6 +6,8 @@ G_BEGIN_DECLS
 #include <stdint.h>
 #include <cairo.h>
 
+#include "value.h"
+
 typedef void (*EventHandler) (gpointer data);
 
 class EventObject {
@@ -20,16 +22,6 @@ class EventObject {
  private:
 	GHashTable *event_hash;
 };
-
-struct KeyTime;
-struct Duration;
-struct RepeatBehavior;
-class Transform;
-class TransformGroup;
-class Surface;
-class Brush;
-class DependencyObject;
-class DependencyProperty;
 
 struct Point {
 public:
@@ -194,173 +186,6 @@ struct DoubleArray {
 };
 
 double* double_array_from_str (const char *s, int* count);
-
-struct Value {
-public:
-	// Keep these values in sync with the Value.cs in olive.
-	// Also keep in sync within types_init.
-	enum Kind {
-		INVALID = 0,
-		BOOL = 1,
-		DOUBLE = 2,
-		UINT64 = 3,
-		INT32 = 4,
-		STRING = 5,
-		COLOR = 7,
-		POINT = 8,
-		RECT = 9,
-		REPEATBEHAVIOR = 10,
-		DURATION = 11,
-		INT64 = 12,
-		DOUBLE_ARRAY = 13,
-		POINT_ARRAY = 14,
-		KEYTIME = 15,
-
-		DEPENDENCY_OBJECT,
-
-		// These are dependency objects
-		UIELEMENT,
-		PANEL,
-		CANVAS,
-		TIMELINE,
-		TIMELINEGROUP,
-		PARALLELTIMELINE,
-		TRANSFORM,
-		ROTATETRANSFORM,
-		SCALETRANSFORM,
-		TRANSLATETRANSFORM,
-		MATRIXTRANSFORM,
-		STORYBOARD,
-		ANIMATION,
-		DOUBLEANIMATION,
-		COLORANIMATION,
-		POINTANIMATION,
-		SHAPE,
-		ELLIPSE,
-		LINE,
-		PATH,
-		POLYGON,
-		POLYLINE,
-		RECTANGLE,
-		GEOMETRY,
-		GEOMETRYGROUP,
-		ELLIPSEGEOMETRY,
-		LINEGEOMETRY,
-		PATHGEOMETRY,
-		RECTANGLEGEOMETRY,
-		FRAMEWORKELEMENT,
-		NAMESCOPE,
-		CLOCK,
-		ANIMATIONCLOCK,
-		CLOCKGROUP,
-		BRUSH,
-		SOLIDCOLORBRUSH,
-		PATHFIGURE,
-		PATHSEGMENT,
-		ARCSEGMENT,
-		BEZIERSEGMENT,
-		LINESEGMENT,
-		POLYBEZIERSEGMENT,
-		POLYLINESEGMENT,
-		POLYQUADRATICBEZIERSEGMENT,
-		QUADRATICBEZIERSEGMENT,
-		TRIGGERACTION,
-		BEGINSTORYBOARD,
-		EVENTTRIGGER,
-		KEYFRAME,
-		POINTKEYFRAME,
-		POINTANIMATIONUSINGKEYFRAMES,
-
-		// The collections
-		COLLECTION,
-		STROKE_COLLECTION,
-		INLINES,
-		STYLUSPOINT_COLLECTION,
-		KEYFRAME_COLLECTION,
-		TIMELINEMARKER_COLLECTION,
-		GEOMETRY_COLLECTION,
-		GRADIENTSTOP_COLLECTION,
-		MEDIAATTRIBUTE_COLLECTION,
-		PATHFIGURE_COLLECTION,
-		PATHSEGMENT_COLLECTION,
-		TIMELINE_COLLECTION,
-		TRANSFORM_COLLECTION,
-		VISUAL_COLLECTION,
-		RESOURCE_COLLECTION,
-		TRIGGERACTION_COLLECTION,
-		TRIGGER_COLLECTION,
-
-		LASTTYPE
-	};
-
-	Kind k;
-	union {
-		double d;
-		guint64 ui64;
-		gint64 i64;
-		gint32 i32;
-		char *s;
-		DependencyObject *dependency_object;
-		Color *color;
-		Point *point;
-		Rect *rect;
-		RepeatBehavior *repeat;
-		Duration *duration;
-		KeyTime *keytime;
-		PointArray *point_array;
-		DoubleArray *double_array;
-	} u;
-
-	void Init ();
-
-	Value ();
-	Value (const Value& v);
-	Value (Kind k);
-	Value (bool z);
-	Value (double d);
-	Value (guint64 i);
-	Value (gint64 i);
-	Value (gint32 i);
-	Value (Color c);
-	Value (DependencyObject *obj);
-	Value (Point pt);
-	Value (Rect rect);
-	Value (RepeatBehavior repeat);
-	Value (Duration duration);
-	Value (KeyTime keytime);
-	Value (const char* s);
-	Value (Point *points, int count);
-	Value (double *values, int count);
-	
-	~Value ();
-
-	bool operator!= (const Value &v) const
-	{
-		return !(*this == v);
-	}
-
-	bool operator== (const Value &v) const
-	{
-		if (k != v.k)
-			return false;
-
-		if (k == STRING) {
-			return !strcmp (u.s, v.u.s);
-		}
-		else {
-			return !memcmp (&u, &v.u, sizeof (u));
-		}
-
-		return true;
-	}
-  private:
-	// You don't want to be using this ctor.  it's here to help
-	// c++ recognize bad unspecified pointer args to Value ctors
-	// (it normally converts them to bool, which we handle, so you
-	// never see the error of your ways).  So do the world a
-	// favor, and don't expose this ctor. :)
-	Value (void* v) { }
-};
 
 class Type {
 public:

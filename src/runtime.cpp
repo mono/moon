@@ -25,6 +25,7 @@
 
 #include <cairo-xlib.h>
 #include "runtime.h"
+#include "shape.h"
 #include "transform.h"
 #include "animation.h"
 
@@ -311,6 +312,83 @@ Value::~Value ()
 	if (k == STRING)
 		free (u.s);
 }
+
+
+#define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
+#define checked_get_subclass(kind, castas)  g_return_val_if_fail (Type::Find((kind))->IsSubclassOf(k) || Type::Find(k)->IsSubclassOf((kind)), NULL); return (castas*)u.dependency_object;
+      
+
+#define AS_DEP_SUBCLASS_IMPL(kind, castas) \
+castas* Value::As##castas () { checked_get_subclass (kind, castas); }
+
+bool            Value::AsBool () { checked_get_exact (BOOL, false, (bool)u.i32); }
+double          Value::AsDouble () { checked_get_exact (DOUBLE, 0.0, u.d); }
+guint64         Value::AsUint64 () { checked_get_exact (UINT64, 0, u.ui64); }
+gint64          Value::AsInt64 () { checked_get_exact (INT64, 0, u.i64); }
+gint32          Value::AsInt32 () { checked_get_exact (INT32, 0, u.i32); }
+Color*          Value::AsColor () { checked_get_exact (COLOR, NULL, u.color); }
+Point*          Value::AsPoint () { checked_get_exact (POINT, NULL, u.point); }
+Rect*           Value::AsRect  () { checked_get_exact (RECT, NULL, u.rect); }
+RepeatBehavior* Value::AsRepeatBehavior () { checked_get_exact (REPEATBEHAVIOR, NULL, u.repeat); }
+Duration*       Value::AsDuration () { checked_get_exact (DURATION, NULL, u.duration); }
+KeyTime*        Value::AsKeyTime () { checked_get_exact (KEYTIME, NULL, u.keytime); }
+
+AS_DEP_SUBCLASS_IMPL(DEPENDENCY_OBJECT, DependencyObject)
+AS_DEP_SUBCLASS_IMPL(UIELEMENT, UIElement)
+AS_DEP_SUBCLASS_IMPL(PANEL, Panel)
+AS_DEP_SUBCLASS_IMPL(CANVAS, Canvas)
+AS_DEP_SUBCLASS_IMPL(TIMELINE, Timeline)
+AS_DEP_SUBCLASS_IMPL(TIMELINEGROUP, TimelineGroup)
+AS_DEP_SUBCLASS_IMPL(PARALLELTIMELINE, ParallelTimeline)
+AS_DEP_SUBCLASS_IMPL(TRANSFORM, Transform)
+AS_DEP_SUBCLASS_IMPL(ROTATETRANSFORM, RotateTransform)
+AS_DEP_SUBCLASS_IMPL(SCALETRANSFORM, ScaleTransform)
+AS_DEP_SUBCLASS_IMPL(TRANSLATETRANSFORM, TranslateTransform)
+AS_DEP_SUBCLASS_IMPL(MATRIXTRANSFORM, MatrixTransform)
+AS_DEP_SUBCLASS_IMPL(STORYBOARD, Storyboard)
+AS_DEP_SUBCLASS_IMPL(ANIMATION, Animation)
+AS_DEP_SUBCLASS_IMPL(DOUBLEANIMATION, DoubleAnimation)
+AS_DEP_SUBCLASS_IMPL(COLORANIMATION, ColorAnimation)
+AS_DEP_SUBCLASS_IMPL(POINTANIMATION, PointAnimation)
+AS_DEP_SUBCLASS_IMPL(SHAPE, Shape)
+AS_DEP_SUBCLASS_IMPL(ELLIPSE, Ellipse)
+AS_DEP_SUBCLASS_IMPL(LINE, Line)
+AS_DEP_SUBCLASS_IMPL(PATH, Path)
+AS_DEP_SUBCLASS_IMPL(POLYGON, Polygon)
+AS_DEP_SUBCLASS_IMPL(POLYLINE, Polyline)
+AS_DEP_SUBCLASS_IMPL(RECTANGLE, Rectangle)
+AS_DEP_SUBCLASS_IMPL(GEOMETRY, Geometry)
+AS_DEP_SUBCLASS_IMPL(GEOMETRYGROUP, GeometryGroup)
+AS_DEP_SUBCLASS_IMPL(ELLIPSEGEOMETRY, EllipseGeometry)
+AS_DEP_SUBCLASS_IMPL(LINEGEOMETRY, LineGeometry)
+AS_DEP_SUBCLASS_IMPL(PATHGEOMETRY, PathGeometry)
+AS_DEP_SUBCLASS_IMPL(RECTANGLEGEOMETRY, RectangleGeometry)
+AS_DEP_SUBCLASS_IMPL(FRAMEWORKELEMENT, FrameworkElement)
+AS_DEP_SUBCLASS_IMPL(NAMESCOPE, NameScope)
+AS_DEP_SUBCLASS_IMPL(CLOCK, Clock)
+AS_DEP_SUBCLASS_IMPL(ANIMATIONCLOCK, AnimationClock)
+AS_DEP_SUBCLASS_IMPL(CLOCKGROUP, ClockGroup)
+AS_DEP_SUBCLASS_IMPL(BRUSH, Brush)
+AS_DEP_SUBCLASS_IMPL(SOLIDCOLORBRUSH, SolidColorBrush)
+AS_DEP_SUBCLASS_IMPL(PATHFIGURE, PathFigure)
+AS_DEP_SUBCLASS_IMPL(PATHSEGMENT, PathSegment)
+AS_DEP_SUBCLASS_IMPL(ARCSEGMENT, ArcSegment)
+AS_DEP_SUBCLASS_IMPL(BEZIERSEGMENT, BezierSegment)
+AS_DEP_SUBCLASS_IMPL(LINESEGMENT, LineSegment)
+AS_DEP_SUBCLASS_IMPL(POLYBEZIERSEGMENT, PolyBezierSegment)
+AS_DEP_SUBCLASS_IMPL(POLYLINESEGMENT, PolyLineSegment)
+AS_DEP_SUBCLASS_IMPL(POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment)
+AS_DEP_SUBCLASS_IMPL(QUADRATICBEZIERSEGMENT, QuadraticBezierSegment)
+AS_DEP_SUBCLASS_IMPL(TRIGGERACTION, TriggerAction)
+AS_DEP_SUBCLASS_IMPL(BEGINSTORYBOARD, BeginStoryboard)
+AS_DEP_SUBCLASS_IMPL(EVENTTRIGGER, EventTrigger)
+AS_DEP_SUBCLASS_IMPL(KEYFRAME, KeyFrame)
+AS_DEP_SUBCLASS_IMPL(POINTKEYFRAME, PointKeyFrame)
+AS_DEP_SUBCLASS_IMPL(POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames)
+
+AS_DEP_SUBCLASS_IMPL(COLLECTION, Collection)
+AS_DEP_SUBCLASS_IMPL(VISUAL_COLLECTION, VisualCollection)
+
 
 
 

@@ -20,6 +20,7 @@ libmoon_la_SOURCES = 	\
 	shape.h		\
 	transform.cpp	\
 	transform.h	\
+	value.h		\
 	video.cpp	\
 	xaml.cpp
 

@@ -1,3 +1,12 @@
+2007-06-08  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_la_SOURCES): add value.h
+
+	* runtime.h, value.h: move the Value structure to value.h, since
+	it (and its required forward decls) have grown huge.
+	
+	* runtime.cpp: add all the Value::As* methods, yay for CPP.
+
 2007-06-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ffvideo.cpp (queue_data): Replaced the sound code with my newest
