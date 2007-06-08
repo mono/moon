@@ -11,7 +11,7 @@
 
 #include "animation.h"
 
-#define LERP(f,t,p) ((f) + (p) * ((t) - (f)))
+#define LERP(f,t,p) ((f) + ((t) - (f)) * (p))
 
 static guint64
 get_now ()
@@ -693,17 +693,17 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	Color *from = GetFrom ();
 	Color *to = GetTo ();
 
-	Color *start = from ? from : defaultOriginValue->u.color;
-	Color *end;
+	Color start = from ? *from : *defaultOriginValue->u.color;
+	Color end;
 
 	if (to) {
-		end = to;
+		end = *to;
 	}
 	else if (by) {
-		end = new Color (from->r + by->r,
-				 from->g + by->g,
-				 from->b + by->b,
-				 from->a + by->a);
+		end = Color (from->r + by->r,
+			     from->g + by->g,
+			     from->b + by->b,
+			     from->a + by->a);
 	}
 	else {
 		end = start;
@@ -711,10 +711,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (Color (LERP (from->r, to->r, progress),
-				     LERP (from->g, to->g, progress),
-				     LERP (from->b, to->b, progress),
-				     LERP (from->a, to->a, progress)));
+	Value *v = new Value (LERP (start, end, progress));
 
 	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
 	return v;
@@ -781,15 +778,15 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	Point *from = GetFrom ();
 	Point *to = GetTo ();
 
-	Point *start = from ? from : defaultOriginValue->u.point;
-	Point *end;
+	Point start = from ? *from : *defaultOriginValue->u.point;
+	Point end;
 
 	if (to) {
-		end = to;
+		end = *to;
 	}
 	else if (by) {
-		end = new Point (from->x + by->x,
-				 from->y + by->y);
+		end = Point (from->x + by->x,
+			     from->y + by->y);
 	}
 	else {
 		end = start;
@@ -797,8 +794,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (Point (LERP (from->x, to->x, progress),
-				     LERP (from->y, to->y, progress)));
+	Value *v = new Value (LERP (start, end, progress));
 
 	return v;
 }
@@ -850,11 +846,102 @@ point_animation_get_to (PointAnimation *da)
 
 
 
+DependencyProperty* KeyFrame::KeyTimeProperty;
+
+KeyFrame::KeyFrame ()
+{
+}
+
+KeyTime*
+KeyFrame::GetKeyTime()
+{
+	return GetValue (KeyFrame::KeyTimeProperty)->u.keytime;
+}
+
+void
+KeyFrame::SetKeyTime (KeyTime keytime)
+{
+	SetValue (KeyFrame::KeyTimeProperty, Value(keytime));
+}
+
+
+DependencyProperty* PointKeyFrame::ValueProperty;
+
+PointKeyFrame::PointKeyFrame ()
+{
+}
+
+PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
+{
+	key_frames = NULL;
+}
+
+void
+PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
+{
+	key_frames = g_list_append (key_frames, frame);
+}
+
+void
+PointAnimationUsingKeyFrames::RemoveKeyFrame (PointKeyFrame *frame)
+{
+}
+
+Value*
+PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					       AnimationClock* animationClock)
+{
+#if false
+	/* current segment info */
+	PointKeyFrame *current_target;
+	Value *start;
+	guint64/*TimeSpan*/ start_time;
+
+	/* figure out what segment to use (this list needs to be sorted) */
+	for (GList *l = key_frames; l; l = l->next) {
+		PointKeyFrame *keyframe = (PointKeyFrame*)l->data;
+
+		if (true/*keyframe is the right one*/) {
+			GList *prev = l->prev;
+
+			current_target = keyframe;
+			if (prev == NULL) {
+				/* the first keyframe, start at the animation's base value */
+				start = defaultOriginValue;
+			}
+			else {
+				/* start at the previous keyframe's target value */
+				start = keyframe->GetValue ();
+				/* XXX PointKeyFrame::Value is nullable */
+			}
+
+			break;
+		}
+	}
+
+	/* get the current value out of that segment */
+
+	return current_target->GetCurrentValue (start, NULL, /* XXX */
+						animationClock)
+#endif
+	  return NULL;
+}
+
+
+
+PointAnimationUsingKeyFrames*
+point_animation_using_key_frames_new ()
+{
+	return new PointAnimationUsingKeyFrames ();
+}
+
 
 
 RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
 Duration Duration::Automatic (Duration::AUTOMATIC);
 Duration Duration::Forever (Duration::FOREVER);
+KeyTime KeyTime::Paced (KeyTime::PACED);
+KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
 void 
 animation_init ()
@@ -892,6 +979,13 @@ animation_init ()
 
 	/* BeginStoryboard properties */
 	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Value::BEGINSTORYBOARD, "Storyboard",	Value::STORYBOARD);
+
+	/* KeyFrame properties */
+ 	KeyFrame::KeyTimeProperty = DependencyObject::Register (Value::KEYFRAME, "KeyTime", new Value(KeyTime::Uniform));
+ 	PointKeyFrame::ValueProperty = DependencyObject::Register (Value::POINTKEYFRAME, "Value", Value::POINT);
+
+	/* KeyFrame animation properties */
+	//PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::KEYFRAME, "KeyFrames", new Value(KeyTime::Uniform));
 }
 
 

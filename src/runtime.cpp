@@ -278,6 +278,13 @@ Value::Value (Duration duration)
 	u.duration = new Duration (duration);
 }
 
+Value::Value (KeyTime keytime)
+{
+	Init ();
+	k = KEYTIME;
+	u.keytime = new KeyTime (keytime);
+}
+
 Value::Value (const char* s)
 {
 	Init ();
@@ -1405,6 +1412,7 @@ types_init ()
 	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR);
 	Type::RegisterType ("Duration", Value::DURATION);
 	Type::RegisterType ("int64", Value::INT64);
+	Type::RegisterType ("KeyTime", Value::KEYTIME);
 	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
 	Type::RegisterType ("Point*", Value::POINT_ARRAY);
 
@@ -1459,6 +1467,10 @@ types_init ()
 	Type::RegisterType ("TriggerAction", Value::TRIGGERACTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("BeginStoryboard", Value::BEGINSTORYBOARD, Value::TRIGGERACTION);
 	Type::RegisterType ("EventTrigger", Value::EVENTTRIGGER, Value::DEPENDENCY_OBJECT);
+
+	Type::RegisterType ("KeyFrame", Value::KEYFRAME, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("PointKeyFrame", Value::POINTKEYFRAME, Value::KEYFRAME);
+	Type::RegisterType ("PointAnimationUsingKeyFrames", Value::POINTANIMATIONUSINGKEYFRAMES, Value::POINTANIMATION);
 
 	// The collections
 	Type::RegisterType ("Collection", Value::COLLECTION, Value::DEPENDENCY_OBJECT);

@@ -120,6 +120,68 @@ struct RepeatBehavior {
 
 
 
+struct KeyTime {
+  public:
+	enum KeyTimeType {
+		UNIFORM,
+		PACED,
+		PERCENT,
+		TIMESPAN
+	};
+
+	KeyTime (const KeyTime &keytime)
+	{
+		k = keytime.k;
+		percent = keytime.percent;
+		timespan = keytime.timespan;
+	}
+
+	KeyTime (double percent)
+	  : k (PERCENT),
+            percent (percent) { }
+
+	KeyTime (guint64/*TimeSpan*/ timeSpan)
+	  : k (TIMESPAN),
+            timespan (timespan) { }
+
+
+	KeyTime (KeyTimeType kind) : k(kind) { }
+
+	static KeyTime FromPercent (double percent) { return KeyTime (percent); }
+	static KeyTime FromTimeSpan (guint64/*TimeSpan*/ timeSpan) { return KeyTime (timeSpan); }
+
+	static KeyTime Paced;
+	static KeyTime Uniform;
+
+	bool operator!= (const KeyTime &v) const
+	{
+		return !(*this == v);
+	}
+
+	bool operator== (const KeyTime &v) const
+	{
+		if (v.k != k)
+			return false;
+
+		switch (k) {
+		case PERCENT: return percent == v.percent;
+		case TIMESPAN: return timespan == v.timespan;
+		default: return true;
+		}
+	}
+
+	double GetPercent () { return percent; }
+	guint64/*TimeSpan*/ GetTimeSpan () { return timespan; }
+
+  private:
+	KeyTimeType k;
+	double percent;
+	guint64/*TimeSpan*/ timespan;
+};
+
+
+
+
 
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
@@ -486,6 +548,49 @@ PointAnimation * point_animation_new ();
 
 
 
+
+class KeyFrame /* abstract in C# */ : public DependencyObject {
+ public:
+	KeyFrame ();
+	Value::Kind GetObjectType () { return Value::POINTKEYFRAME; };
+
+	KeyTime *GetKeyTime();
+	void SetKeyTime (KeyTime keytime);
+
+	static DependencyProperty *KeyTimeProperty;
+};
+
+
+
+
+class PointKeyFrame /* abstract in C# */ : public KeyFrame {
+ public:
+	PointKeyFrame ();
+	Value::Kind GetObjectType () { return Value::POINTKEYFRAME; };
+
+	static DependencyProperty *ValueProperty;
+};
+
+
+
+class PointAnimationUsingKeyFrames : PointAnimation {
+ public:
+	PointAnimationUsingKeyFrames ();
+	Value::Kind GetObjectType () { return Value::POINTANIMATIONUSINGKEYFRAMES; };
+
+	void AddKeyFrame (PointKeyFrame *frame);
+	void RemoveKeyFrame (PointKeyFrame *frame);
+
+	static DependencyProperty *KeyFramesProperty;
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+
+ private:
+	GList *key_frames;
+};
+
+PointAnimationUsingKeyFrames* point_animation_using_key_frames_new ();
 
 class Storyboard : public ParallelTimeline {
  public:

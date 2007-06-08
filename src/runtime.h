@@ -21,6 +21,7 @@ class EventObject {
 	GHashTable *event_hash;
 };
 
+struct KeyTime;
 struct Duration;
 struct RepeatBehavior;
 class Transform;
@@ -46,6 +47,23 @@ public:
 	{
 		x = point.x;
 		y = point.y;
+	}
+
+	Point operator+ (const Point &point)
+	{
+		return Point (x + point.x,
+			      y + point.y);
+	}
+
+	Point operator- (const Point &point)
+	{
+		return Point (x - point.x,
+			      y - point.y);
+	}
+
+	Point operator* (double v)
+	{
+		return Point (x * v, y * v);
 	}
 };
 
@@ -126,6 +144,30 @@ struct Color {
 		b = color.b;
 		a = color.a;
 	}
+
+	Color operator+ (const Color &color)
+	{
+		return Color (r + color.r,
+			      g + color.g,
+			      b + color.b,
+			      a + color.a);
+	}
+
+	Color operator- (const Color &color)
+	{
+		return Color (r - color.r,
+			      g - color.g,
+			      b - color.b,
+			      a - color.a);
+	}
+
+	Color operator* (double v)
+	{
+		return Color (r * v,
+			      g * v,
+			      b * v,
+			      a * v);
+	}
 };
 
 
@@ -172,6 +214,7 @@ public:
 		INT64 = 12,
 		DOUBLE_ARRAY = 13,
 		POINT_ARRAY = 14,
+		KEYTIME = 15,
 
 		DEPENDENCY_OBJECT,
 
@@ -224,6 +267,9 @@ public:
 		TRIGGERACTION,
 		BEGINSTORYBOARD,
 		EVENTTRIGGER,
+		KEYFRAME,
+		POINTKEYFRAME,
+		POINTANIMATIONUSINGKEYFRAMES,
 
 		// The collections
 		COLLECTION,
@@ -260,6 +306,7 @@ public:
 		Rect *rect;
 		RepeatBehavior *repeat;
 		Duration *duration;
+		KeyTime *keytime;
 		PointArray *point_array;
 		DoubleArray *double_array;
 	} u;
@@ -280,6 +327,7 @@ public:
 	Value (Rect rect);
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
+	Value (KeyTime keytime);
 	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);

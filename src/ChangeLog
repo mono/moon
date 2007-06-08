@@ -1,3 +1,19 @@
+2007-06-08  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp: add some skeleton code for point keyframe
+	animations, and reduce all the Double/Point/Color Animation
+	GetCurrentValue() methods to much the same, using LERP and the
+	operators defined in runtime.h.
+
+	* runtime.cpp (types_init): register the new keyframe types.
+
+	* runtime.h: add some new animation types to Value, and add
+	operators for +, -, and * (scalar) for Color and Point to make the
+	animation code a little more concise.
+
+	* animation.h: add some new classes/structs for use in keyframe
+	animations.
+
 2007-06-08  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp, runtime.h (Collection): Rework the collection to
