@@ -358,12 +358,53 @@ is_instance_of (XamlElementInstance *item, Value::Kind kind)
 	return false;
 }
 
+guint64
+timespan_from_str (const char *str)    
+{
+	char *next = NULL;
+	guint64 res = 0;
+	bool negative = false;
+	int digit;
+	int digits [5] = { 0, 0, 0, 0, 0 };
+	int di = 0;
+
+	digit = strtol (str, &next, 10);
+
+	if (!next)
+		return digit * 36000000;
+
+	if (next [0] == '.') {
+		digits [0] = digit;
+		di = 1;
+	} else {
+		digits [1] = digit;
+		di = 2;
+	}
+
+	next++;
+	while (next && di < 5) {
+		int d =  strtol (next, &next, 10);
+		digits [di++] = d;
+		if (next)
+			next++;
+	}
+
+// 	printf ("%d.%d:%d:%d.%d\n", digits [0], digits [1], digits [2], digits [3], digits [4]);  
+
+	// Convert to seconds, then to ticks
+	// TODO: This could overflow?
+	res = ((digits [0] * 86400) + (digits [1] * 3600) + (digits [2] * 60) + digits [3]);
+	res *= 10000L;
+	res += digits [5];
+
+	return res;
+}
+
 RepeatBehavior
 repeat_behavior_from_str (const char *str)
 {
 	if (!g_strcasecmp ("Forever", str))
 		return RepeatBehavior::Forever;
-	// It's late at night and I don't want to parse timespans
 	return RepeatBehavior (strtod (str, NULL));
 }
 
@@ -374,7 +415,7 @@ duration_from_str (const char *str)
 		return Duration::Automatic;
 	if (!g_strcasecmp ("Forever", str))
 		return Duration::Forever;
-	return Duration::FromSeconds ((int) strtod (str, NULL));
+	return Duration (timespan_from_str (str));
 }
 
 XamlElementInstance *
