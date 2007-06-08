@@ -6,12 +6,6 @@ Feel free to add items to this TODO list
 	A few components still have instance properties that
 	should be handled as dependencyproperties, look into that.
 
-* DependencyProperty:
-
-	When we register a property we should specify the type for
-	the property, and validate in SetValue that the value.Kind is
-	of the same type as the DependencyProperty
-
 * Video Player:
 
 	Add support for seeking, stopping, shutdown.
@@ -23,7 +17,21 @@ Feel free to add items to this TODO list
 
 	Need to properly shut down the runtime.
 
+	Need managed runtime to:
+
+		* Take a ref on creation (to sink the object)
+		* Finalizer, to queue unrefs like Gtk#
+		* Something to release the queued refs
+
+		* Use SafeFileHandle to prevent queueing of
+	  	  a destruction when we pass an object to unmanaged
+		  land during a P/Invoke
+
 * XAML Support
+
+	For panel_child_add, we need as precise type information
+	as possible, so when these objects are exposed to the managed
+	side we can create the proper managed wrapper for it.
 
 	Add support to each element to be created from a xaml string.
 
