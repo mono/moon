@@ -1,3 +1,8 @@
+2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin-glue.cpp: Fix plugin destruction.
+	* moon-plugin.cpp: Change button to gtk label with plugin name and version.
+
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-glue.cpp: Set instance data to NULL to prevent error when browser

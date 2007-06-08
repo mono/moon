@@ -15,7 +15,7 @@
 #include "npupp.h"
 #include "npruntime.h"
 
-#define SCRIPTING
+//#define SCRIPTING
 //#define DEMO
 
 static void moon_plugin_demo (Canvas *canvas)
@@ -238,8 +238,9 @@ PluginInstance::CreateControls ()
 	this->surface = surface_new (window->width, window->height);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 #else
-	GtkWidget *button = gtk_button_new_with_label ("MoonLight");
-	gtk_container_add (GTK_CONTAINER (container), button);
+	GtkWidget *label = gtk_label_new (PLUGIN_OURNAME" "PLUGIN_OURVERSION);
+	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
+	gtk_container_add (GTK_CONTAINER (container), label);
 #endif
 
 	gtk_widget_show_all (this->container);

@@ -41,10 +41,9 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	instance->pdata = NULL;
-
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
 	delete plugin;
+	instance->pdata = NULL;
 
 	return NPERR_NO_ERROR;
 }
