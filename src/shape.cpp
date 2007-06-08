@@ -141,12 +141,15 @@ Shape::DoDraw (Surface *s, bool do_op)
 {
 	cairo_set_matrix (s->cairo, &absolute_xform);
 
-	Brush *fill = shape_get_fill (this);
-	if (fill){
-		fill->SetupBrush (s->cairo);
-		Draw (s);
-		if (do_op)
-			cairo_fill (s->cairo);
+	// not every shapes can be filled, e.g. polylines
+	if (CanFill ()) {
+		Brush *fill = shape_get_fill (this);
+		if (fill) {
+			fill->SetupBrush (s->cairo);
+			Draw (s);
+			if (do_op)
+				cairo_fill (s->cairo);
+		}
 	}
 
 	Brush *stroke = shape_get_stroke (this);

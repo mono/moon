@@ -55,6 +55,8 @@ class Shape : public FrameworkElement {
 	// new virtual methods for shapes
 	//
 	
+	virtual bool CanFill () { return true; }
+
 	//
 	// Draw: draws the Shape on the surface (affine transforms are set before this
 	// is called). 
@@ -174,6 +176,8 @@ class Polyline : public Shape {
 	Polyline () { SetObjectType (Value::POLYLINE); };
 
 	void Draw (Surface *s);
+
+	virtual bool CanFill () { return false; }
 };
 Polyline	*polyline_new		();
 FillRule	polyline_get_fill_rule	(Polyline *polyline);

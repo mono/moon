@@ -1,3 +1,7 @@
+2007-06-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Some shapes, like polylines, don't supports Fill.
+
 2007-06-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp|h: Implement Polygon::Points aad Polyline:Points 
