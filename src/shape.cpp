@@ -220,7 +220,7 @@ shape_set_fill (Shape *shape, Brush *fill)
 		base_unref (current_fill);
 
 	base_ref (fill);
-	shape->SetValue (Shape::FillProperty, Value (fill, Value::BRUSH));
+	shape->SetValue (Shape::FillProperty, Value (fill));
 }
 
 Brush*
@@ -238,7 +238,7 @@ shape_set_stroke (Shape *shape, Brush *stroke)
 		base_unref (current_stroke);
 
 	base_ref (stroke);
-	shape->SetValue (Shape::StrokeProperty, Value (stroke, Value::BRUSH));
+	shape->SetValue (Shape::StrokeProperty, Value (stroke));
 }
 
 Stretch
@@ -683,7 +683,7 @@ path_get_data (Path *path)
 void
 path_set_data (Path *path, Geometry* data)
 {
-	path->SetValue (Path::DataProperty, Value (data, Value::GEOMETRY));
+	path->SetValue (Path::DataProperty, Value (data));
 }
 
 Path*

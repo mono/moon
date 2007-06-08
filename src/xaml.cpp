@@ -497,7 +497,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 
 	if (prop) {
 		if (prop->value_type >= Value::DEPENDENCY_OBJECT) {
-			dep->SetValue (prop, Value ((DependencyObject *) value->item, value->info->dependency_type));
+			dep->SetValue (prop, Value ((DependencyObject *) value->item));
 		}
 	} else {
 		dependency_object_missed_property (item, property, value, prop_name);
@@ -579,7 +579,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				// Only solid color brushes can be specified using attribute syntax
 				SolidColorBrush *scb = solid_color_brush_new ();
 				solid_color_brush_set_color (scb, color_from_str (attr [i + 1]));
-				dep->SetValue (prop, Value (scb, prop->value_type));
+				dep->SetValue (prop, Value (scb));
 			}
 				break;
 			case Value::POINT:

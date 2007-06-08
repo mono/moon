@@ -233,16 +233,6 @@ Value::Value (Color c)
 	u.color = new Color (c);
 }
 
-Value::Value (DependencyObject *obj, Value::Kind kind)
-{
-	g_assert (obj != NULL);
-	g_assert (kind > DEPENDENCY_OBJECT);
-
-	Init ();
-	k = kind;
-	u.dependency_object = obj;
-}
-
 Value::Value (DependencyObject *obj)
 {
 	g_assert (obj != NULL);
@@ -520,7 +510,7 @@ Panel::Panel ()
 {
 	children = NULL;
 	Collection *c = new Collection (panel_child_add, panel_child_remove, this);
-	this->SetValue (Panel::ChildrenProperty, Value (c, Value::VISUAL_COLLECTION));
+	this->SetValue (Panel::ChildrenProperty, Value (c));
 
 	// Ensure that the callback OnPropertyChanged was called.
 	g_assert (c == children);

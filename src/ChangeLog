@@ -1,5 +1,13 @@
 2007-06-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.h, runtime.cpp, shape.cpp, xaml.cpp:
+	Remove the Value (DependencyObject, Kind) constructor,
+	the type of the DependencyObject can be obtained directly 
+	from the DependencyObject itself now, and update all uses
+	to the Value (DependencyObject) constructor.
+
+2007-06-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* *.h, *.cpp: Remove objectType and SetObjectType from 
 	DependencyObject, make DependencyObject::GetObjectType virtual, 
 	and update all inheritors of DependencyObject to not use 

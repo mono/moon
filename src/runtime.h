@@ -273,7 +273,6 @@ public:
 	Value (gint32 i);
 	Value (Color c);
 	Value (DependencyObject *obj);
-	Value (DependencyObject *obj, Value::Kind kind);
 	Value (Point pt);
 	Value (Rect rect);
 	Value (RepeatBehavior repeat);
