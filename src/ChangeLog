@@ -1,3 +1,8 @@
+2007-06-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ffvideo.cpp (queue_data): Replaced the sound code with my newest
+	implementation, seems to play sound correctly now.
+
 2007-06-08  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: move all the TimeManager/Clock/Timeline

@@ -44,6 +44,8 @@ G_END_DECLS
 #include <asoundlib.h>
 #include "cutil.h"
 
+#define ALIGN(addr,size) (uint8_t *) (((uint32_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
+
 typedef enum {
 	// When a new frame is ready
 	CMD_NEWFRAME,
@@ -83,9 +85,11 @@ public:
 	AVCodec     *audio_codec;
 	AVStream    *audio_stream;
 	int          audio_stream_idx;
-
+	
 	snd_pcm_t   *pcm;
-
+	snd_pcm_uframes_t pcm_buffer_size;
+	snd_pcm_uframes_t pcm_period_size;
+	
 	//
 	// Video and audio frames + usage of the queues
 	//
@@ -104,7 +108,10 @@ public:
 	guint    timeout_handle;
 
 	// The constant is in bytes, so we get 2 full seconds.
-	uint16_t audio_buffer [AVCODEC_MAX_AUDIO_FRAME_SIZE];
+#define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
+	uint8_t audio_buffer[AUDIO_BUFLEN + 1];
+	uint8_t *audio_outbuf;
+	uint8_t *audio_outptr;
 	
 	//
 	// The components used to render the buffer
@@ -190,6 +197,21 @@ callback_video_inited (gpointer data)
 	return FALSE;
 }
 
+static int
+pcm_poll (snd_pcm_t *pcm, struct pollfd *ufds, int nfds)
+{
+	unsigned short revents;
+	
+	while (1) {
+		poll (ufds, nfds, -1);
+		snd_pcm_poll_descriptors_revents (pcm, ufds, nfds, &revents);
+		if (revents & POLLERR)
+			return -1;
+		if (revents & POLLOUT)
+			return 0;
+	}
+}
+
 //
 // The queue-data thread, runs until complete
 //
@@ -201,6 +223,8 @@ queue_data (gpointer data)
 	int i;
 	int video_stream_idx, audio_stream_idx;
 	AVFormatParameters pars;
+	struct pollfd *ufds = NULL;
+	int nfds;
 	
 	printf ("Video THREAD STARTS\n");
 
@@ -228,12 +252,13 @@ queue_data (gpointer data)
 		AVStream *stream = video->av_format_context->streams [i];
 		AVCodecContext *cc;
 		int n;
-
+		
 		switch (stream->codec->codec_type){
 		case CODEC_TYPE_AUDIO:
 			video->audio_stream_idx = i;
 			audio_stream_idx = i;
 			
+//#define ENABLE_AUDIO
 #ifdef ENABLE_AUDIO
 			if (!(video->audio_codec = avcodec_find_decoder (stream->codec->codec_id)))
 				break;
@@ -242,18 +267,31 @@ queue_data (gpointer data)
 			avcodec_open (video->audio_stream->codec, video->audio_codec);
 			
 			cc = video->audio_stream->codec;
-			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
 			
-			if (n < 0) {
-				printf ("Error, can not initialize audio %d\n", video->pcm);
+			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+			if (n == 0) {
+				snd_pcm_set_params (video->pcm, SND_PCM_FORMAT_S16, 
+						    SND_PCM_ACCESS_RW_INTERLEAVED,
+						    cc->channels, cc->sample_rate,
+						    1, 0);
+				
+				snd_pcm_get_params (video->pcm, &video->pcm_buffer_size, &video->pcm_period_size);
+				
+				if ((nfds = snd_pcm_poll_descriptors_count (video->pcm)) <= 0) {
+					snd_pcm_close (video->pcm);
+					video->pcm = NULL;
+					break;
+				}
+				
+				ufds = (struct pollfd *) g_malloc (sizeof (struct pollfd) * nfds);
+				
+				if (snd_pcm_poll_descriptors (video->pcm, ufds, nfds) < 0) {
+					snd_pcm_close (video->pcm);
+					video->pcm = NULL;
+					break;
+				}
 			} else {
-				snd_pcm_set_params (
-					video->pcm, 
-					SND_PCM_FORMAT_S16, 
-					SND_PCM_ACCESS_RW_INTERLEAVED,
-					cc->channels,
-					cc->sample_rate,
-					1, 0);
+				printf ("Error, can not initialize audio %d\n", n);
 			}
 			break;
 #else
@@ -288,7 +326,6 @@ queue_data (gpointer data)
 	g_idle_add (callback_video_inited, video);
 	int frame = 0;
 	
-	int audio_left = 0;
 	//int audio_fd = open ("audio.out", O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	
 	while (TRUE){
@@ -321,64 +358,93 @@ queue_data (gpointer data)
 			pkt = NULL;
 
 		} else if (video->pcm != NULL && pkt->stream_index == audio_stream_idx) {
-			int align = audio_left & 0x1;
-			char *audio_buffer = ((char *) video->audio_buffer) + audio_left;
-			int16_t *decode_buffer = (int16_t *) (audio_buffer + align);
-			int decode_size = sizeof (video->audio_buffer) - (audio_left + align);
 			AVCodecContext *audio_codec = video->audio_stream->codec;
-			int ndecoded = 0;
+			uint8_t *outbuf;
+			int outlen, n;
 			
-			if (decode_size >= AVCODEC_MAX_AUDIO_FRAME_SIZE) {
-				ndecoded = avcodec_decode_audio2 (audio_codec, decode_buffer, &decode_size,
-								  pkt->data, pkt->size);
-				printf ("decoded %d bytes\n", ndecoded);
-				g_free (pkt);
-				pkt = NULL;
-			}
+			/* avcodec_decode_audio2() requires that the outbuf be 16bit word aligned */
+			outbuf = ALIGN (video->audio_outptr, 2);
+			outlen = (video->audio_outbuf + AUDIO_BUFLEN) - outbuf;
 			
-			if (ndecoded > 0) {
-				// append the newly decoded buffer to the end of the remining audio
+			n = avcodec_decode_audio2 (audio_codec, (int16_t *) outbuf, &outlen, pkt->data, pkt->size);
+			
+			if (n > 0) {
+				// append the newly decoded buffer to the end of the remaining audio
 				// buffer from our previous loop (if re-alignment was required).
-				if ((char *) decode_buffer > audio_buffer)
-					memmove (audio_buffer, decode_buffer, ndecoded);
-				audio_left += ndecoded;
+				if (outbuf > video->audio_outptr)
+					memmove (video->audio_outptr, outbuf, n);
+				video->audio_outptr += n;
+				
+				if (n < video->pcm_period_size) {
+					n = video->pcm_period_size - n;
+					memset (video->audio_outptr, 0, n);
+					video->audio_outptr += n;
+				} else if (n > video->pcm_period_size) {
+					n = n % video->pcm_period_size;
+					memset (video->audio_outptr, 0, n);
+					video->audio_outptr += n;
+				}
+			} else {
+				printf ("error decode: %d\n", n);
 			}
 			
-			printf ("%d bytes in audio queue\n", audio_left);
+			outlen = video->audio_outptr - video->audio_outbuf;
 			
-			if (audio_left > 0) {
-				int size = audio_left;// / audio_codec->channels;
-				printf ("playing the audio buffer with %d bytes (%d bytes per channel)\n", audio_left, size);
-				int n = snd_pcm_writei (video->pcm, (int16_t *) video->audio_buffer, size);
-				
-				printf ("n=%d %s\n", n, n < 0 ? strerror (-n) : "");
-				
-				if (n > 0) {
-					//n *= audio_codec->channels;
-					
-					//write (audio_fd, video->audio_buffer, n);
-					
-					audio_left -= n;
-					
-					if (audio_left > 0) {
-						// didn't manage to queue all sound data, save remainder for next iteration
-						memmove (video->audio_buffer, ((char *) video->audio_buffer) + n, audio_left);
+			while (outlen > 0) {
+				if (pcm_poll (video->pcm, ufds, nfds) != 0) {
+					switch (snd_pcm_state (video->pcm)) {
+					case SND_PCM_STATE_XRUN:
+						//printf ("SND_PCM_STATE_XRUN\n");
+						snd_pcm_prepare (video->pcm);
+						break;
+					case SND_PCM_STATE_SUSPENDED:
+						//printf ("SND_PCM_STATE_SUSPENDED\n");
+						while ((n = snd_pcm_resume (video->pcm)) == -EAGAIN)
+							sleep (1);
+						if (n < 0)
+							snd_pcm_prepare (video->pcm);
+						break;
+					default:
+						break;
 					}
+				}
+				
+				n = outlen < video->pcm_period_size ? outlen : video->pcm_period_size;
+				n = snd_pcm_writei (video->pcm, video->audio_outbuf, n);
+				//printf ("%d out of %d bytes written\n", n, outlen);
+				if (n > 0) {
+					if (n < outlen) {
+						memmove (video->audio_outbuf, video->audio_outbuf + n, outlen - n);
+						video->audio_outptr -= n;
+					} else {
+						video->audio_outptr = video->audio_outbuf;
+					}
+					
+					outlen -= n;
 				} else if (n == -ESTRPIPE) {
+					//printf ("snd_pcm_writei() returned -ESTRPIPE\n");
 					while ((n = snd_pcm_resume (video->pcm)) == -EAGAIN)
 						sleep (1);
-					if (n < 0)
+					
+					if (n < 0) {
 						snd_pcm_prepare (video->pcm);
+						snd_pcm_start (video->pcm);
+					}
 				} else if (n == -EPIPE) {
+					//printf ("snd_pcm_writei() returned -EPIPE\n");
 					snd_pcm_prepare (video->pcm);
+					snd_pcm_start (video->pcm);
 				}
 			}
-		} 
+		}
+		
 		if (pkt != NULL)
 			g_free (pkt);
 		g_mutex_unlock (video->video_mutex);
 	}
-
+	
+	g_free (ufds);
+	
 	printf ("THREAD COMPLETES\n");
 	
 	return NULL;
@@ -582,8 +648,6 @@ video_ffmpeg_new (const char *filename)
 
 VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 {
-	printf ("VideoFfmpeg .ctor. filename = %s\n", filename);
-	
 	video_codec = NULL;
 	video_stream = NULL;
 	audio_codec = NULL;
@@ -593,6 +657,9 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	video_cairo_surface = NULL;
 	video_scale_context = NULL;
 	av_format_context = NULL;
+	
+	audio_outbuf = ALIGN (audio_buffer, 2);
+	audio_outptr = audio_outbuf;
 	
 	w = h = 0;
 	timeout_handle = 0;
