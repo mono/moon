@@ -15,8 +15,8 @@
 #include "npupp.h"
 #include "npruntime.h"
 
-//#define SCRIPTING
-#define DEMO
+#define SCRIPTING
+//#define DEMO
 
 static void moon_plugin_demo (Canvas *canvas)
 {
@@ -136,6 +136,12 @@ PluginInstance::~PluginInstance ()
 	if (this->container != NULL)
 		gtk_widget_destroy (this->container);
 	DEBUG ("destructor point 4 (end)");
+
+#ifdef SCRIPTING 
+	DEBUG ("destructor point object (%x) (%d)", this->object, this->object->referenceCount);
+	if (this->object)
+		NPN_ReleaseObject (this->object);
+#endif
 }
 
 void 
@@ -162,7 +168,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 			if (!this->object)
 				err = NPERR_OUT_OF_MEMORY_ERROR;
 			else
-				*((NPObject **) result) = NPN_RetainObject (this->object);
+				*((NPObject **) result) =  this->object;
 
 			break;
 #endif
@@ -304,7 +310,6 @@ PluginInstance::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant 
 {
 	if (name == NPN_GetStringIdentifier ("settings")) 
 	{
-		NPN_RetainObject (this->obj_settings);
 		OBJECT_TO_NPVARIANT (this->obj_settings, *result);
 
 		return true;

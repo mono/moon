@@ -1,5 +1,17 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-glue.cpp: Set instance data to NULL to prevent error when browser
+	closes.
+
+	* moon-plugin.cpp: 
+	- Disabled demo mode.
+	- Enabled Scripting mode.
+	- Fix runtime object creation, dont user NPN_RetainObject anymore.
+	- Fix also object properties creation (settings).
+	- Release object on class destructor.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp: Simplify controls creation and add a button when you are
 	not in demo mode. It is just for now to made some tests.
 
@@ -113,7 +125,7 @@
 
 2007-06-05  Everaldo Canuto  <ecanuto@novell.com>
 
-	[Remover ScriptablePeer code]
+	[Remove ScriptablePeer code]
 
 	* nsScriptablePeer.h, nsScriptablePeer.cpp: Removed.
 
