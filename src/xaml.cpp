@@ -71,6 +71,7 @@ class XamlParserInfo {
 	XML_Parser parser;
 
 	XamlElementInstance *top_element;
+	Value::Kind          top_kind;
 	XamlElementInstance *current_element;
 
 	GString *char_data_buffer;
@@ -78,7 +79,7 @@ class XamlParserInfo {
 	int state;
 	
 	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL),
-					     current_element (NULL), char_data_buffer (NULL)
+					     current_element (NULL), char_data_buffer (NULL), top_kind(Value::INVALID)
 	{
 	}
 
@@ -123,6 +124,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 
 		if (!p->top_element) {
 			p->top_element = inst;
+			p->top_kind = elem->dependency_type;
 			p->current_element = inst;
 			return;
 		}
@@ -226,7 +228,7 @@ print_tree (XamlElementInstance *el, int depth)
 }
 
 UIElement *
-xaml_create_from_file (const char *xaml_file)
+xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 {
 	FILE *fp;
 	char buffer [READ_BUFFER];
@@ -284,6 +286,8 @@ xaml_create_from_file (const char *xaml_file)
 
 	if (parser_info->top_element) {
 		UIElement *res = (UIElement *) parser_info->top_element->item;
+		if (element_type)
+			*element_type = parser_info->top_kind;
 		free_recursive (parser_info->top_element);
 		return res;
 	}
@@ -292,7 +296,7 @@ xaml_create_from_file (const char *xaml_file)
 }
 
 UIElement *
-xaml_create_from_str (const char *xaml)
+xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreate (NULL);
 	XamlParserInfo *parser_info;
@@ -331,6 +335,9 @@ xaml_create_from_str (const char *xaml)
 
 	if (parser_info->top_element) {
 		UIElement *res = (UIElement *) parser_info->top_element->item;
+		if (element_type)
+			*element_type = parser_info->top_kind;
+
 		free_recursive (parser_info->top_element);
 		return res;
 	}

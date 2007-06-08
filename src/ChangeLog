@@ -1,5 +1,14 @@
 2007-06-07  Miguel de Icaza  <miguel@novell.com>
 
+	* xaml.cpp (start_element_handler): For the top element, track the
+	type that we loaded, so we can return this to our caller (needed
+	for the managed interface).
+
+	(XamlParserInfo): track also the Value::Kind of the top_element. 
+
+	(xaml_create_from_file, xaml_create_from_str): Both now can
+	optionally return the type of the toplevel element.
+
 	* runtime.cpp (Value): Switch Value to strdup/free.
 
 	Use inited to prevent multiple initializations.

@@ -698,8 +698,8 @@ void    *surface_get_drawing_area (Surface *s);
 // XAML
 //
 
-UIElement  *xaml_create_from_file     (const char *filename);
-UIElement  *xaml_create_from_str      (const char *xaml);
+UIElement  *xaml_create_from_file     (const char *filename, Value::Kind *element_type);
+UIElement  *xaml_create_from_str      (const char *xaml, Value::Kind *element_type);
 
 
 void runtime_init ();

@@ -102,11 +102,17 @@ main (int argc, char *argv [])
 	}
 
 	if (file){
-		gtk_window_set_title (GTK_WINDOW (w), file);
+		Value::Kind kind;
 
-		UIElement *e = xaml_create_from_file (file);
+		gtk_window_set_title (GTK_WINDOW (w), file);
+		
+		UIElement *e = xaml_create_from_file (file, &kind);
 		if (e == NULL){
 			printf ("Was not able to load the file\n");
+			return 1;
+		}
+		if (kind != Value::CANVAS){
+			printf ("Currently we only support Canvas toplevel elements\n");
 			return 1;
 		}
 
@@ -152,7 +158,7 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, r2);
 		
 #ifdef XAML_DEMO
-		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />"));
+		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", NULL));
 #endif
 		
 #ifdef VIDEO_DEMO
