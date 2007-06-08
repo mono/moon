@@ -112,7 +112,8 @@ Color *color_from_str (const char *name);
 
 struct Value {
 public:
-		// Keep these values in sync with the Value.cs in olive.
+	// Keep these values in sync with the Value.cs in olive.
+	// Also keep in sync within types_init.
 	enum Kind {
 		INVALID = 0,
 		BOOL = 1,
@@ -134,12 +135,15 @@ public:
 		PANEL,
 		CANVAS,
 		TIMELINE,
+		TIMELINEGROUP,
+		PARALLELTIMELINE,
 		TRANSFORM,
 		ROTATETRANSFORM,
 		SCALETRANSFORM,
 		TRANSLATETRANSFORM,
 		MATRIXTRANSFORM,
 		STORYBOARD,
+		ANIMATION,
 		DOUBLEANIMATION,
 		COLORANIMATION,
 		POINTANIMATION,
@@ -164,6 +168,7 @@ public:
 		BRUSH,
 		SOLIDCOLORBRUSH,
 		PATHFIGURE,
+		PATHSEGMENT,
 		ARCSEGMENT,
 		BEZIERSEGMENT,
 		LINESEGMENT,
@@ -256,6 +261,25 @@ public:
 	// never see the error of your ways).  So do the world a
 	// favor, and don't expose this ctor. :)
 	Value (void* v) { }
+};
+
+class Type {
+public:
+	static Type* RegisterType (char *name, Value::Kind type, Value::Kind parent);
+	static Type* RegisterType (char *name, Value::Kind type);
+	static Type* Find (char *name);
+	static Type* Find (Value::Kind type);
+	
+	bool IsSubclassOf (Value::Kind super);	
+	
+	Value::Kind parent;
+	Value::Kind type;
+	char *name;
+
+private:
+	Type () {};
+	static GHashTable *types;
+	static GHashTable *types_by_name;
 };
 
 //
@@ -741,6 +765,7 @@ void transform_init ();
 void shape_init ();
 void geometry_init ();
 void xaml_init ();
+void types_init ();
 
 G_END_DECLS
 

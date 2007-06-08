@@ -901,7 +901,20 @@ DependencyObject::GetDependencyProperty (Value::Kind type, char *name)
 
 	property = (DependencyProperty*) g_hash_table_lookup (table, name);
 
-	return property;	
+	if (property != NULL)
+		return property;
+
+	// Look in the parent type
+	Type *current_type;
+	current_type = Type::Find (type);
+	
+	if (current_type == NULL)
+		return NULL;
+	
+	if (current_type->parent == Value::INVALID)
+		return NULL;
+
+	return GetDependencyProperty (current_type->parent, name);
 }
 
 DependencyObject*
@@ -1218,10 +1231,170 @@ canvas_init ()
 
 DependencyProperty* UIElement::RenderTransformProperty;
 
+GHashTable* Type::types = NULL;
+GHashTable* Type::types_by_name = NULL;
+
+Type *
+Type::RegisterType (char *name, Value::Kind type)
+{
+	return RegisterType (name, type, Value::INVALID);
+}
+
+Type *
+Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
+{
+	if (types == NULL) {
+		types = g_hash_table_new (g_int_hash, g_int_equal);
+	}
+	if (types_by_name == NULL) {
+		types_by_name = g_hash_table_new (g_str_hash, g_str_equal);
+	}
+
+	Type *result = new Type ();
+	result->name = g_strdup (name);
+	result->type = type;
+	result->parent = parent;
+
+	g_hash_table_insert (types, result, &result->type);
+	g_hash_table_insert (types_by_name, result, result->name);
+
+	return result;
+}
+
+bool 
+Type::IsSubclassOf (Value::Kind super)
+{
+	if (parent == super)
+		return true;
+
+	if (parent == Value::INVALID)
+		return false;
+
+	Type *parent_type = Find (parent);
+	
+	if (parent_type == NULL)
+		return false;
+	
+	return parent_type->IsSubclassOf (super);
+}
+
+Type *
+Type::Find (char *name)
+{
+	Type *result;
+
+	if (types == NULL)
+		return NULL;
+
+	result = (Type*) g_hash_table_lookup (types_by_name, &name);
+
+	return result;
+}
+
+Type *
+Type::Find (Value::Kind type)
+{
+	Type *result;
+	
+	if (types == NULL)
+		return NULL;
+
+	result = (Type*) g_hash_table_lookup (types, &type);
+
+	return result;
+}
+
 void
 item_init ()
 {
 	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
+}
+
+void 
+types_init ()
+{
+	//Type::RegisterType ("Invalid", Value::INVALID, Value::INVALID);
+	Type::RegisterType ("bool", Value::BOOL);
+	Type::RegisterType ("double", Value::DOUBLE);
+	Type::RegisterType ("uint64", Value::UINT64);
+	Type::RegisterType ("int", Value::INT32);
+	Type::RegisterType ("string", Value::STRING);
+	Type::RegisterType ("Color", Value::COLOR);
+	Type::RegisterType ("Point", Value::POINT);
+	Type::RegisterType ("Rect", Value::RECT);
+	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR);
+	Type::RegisterType ("Duration", Value::DURATION);
+	Type::RegisterType ("int64", Value::INT64);
+
+	Type::RegisterType ("DependencyObject", Value::DEPENDENCY_OBJECT);
+
+	// These are dependency objects
+	Type::RegisterType ("UIElement", Value::UIELEMENT, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Panel", Value::PANEL, Value::FRAMEWORKELEMENT);
+	Type::RegisterType ("Canvas", Value::CANVAS, Value::PANEL);
+	Type::RegisterType ("Timeline", Value::TIMELINE, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("TimelineGroup", Value::TIMELINEGROUP, Value::TIMELINE);
+	Type::RegisterType ("ParallelTimeline", Value::PARALLELTIMELINE, Value::TIMELINEGROUP);
+	Type::RegisterType ("Transform", Value::TRANSFORM, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("RotateTransform", Value::ROTATETRANSFORM, Value::TRANSFORM);
+	Type::RegisterType ("ScaleTransform", Value::SCALETRANSFORM, Value::TRANSFORM);
+	Type::RegisterType ("TranslateTransform", Value::TRANSLATETRANSFORM, Value::TRANSFORM);
+	Type::RegisterType ("MatrixTransform", Value::MATRIXTRANSFORM, Value::TRANSFORM);
+	Type::RegisterType ("Storyboard", Value::STORYBOARD, Value::PARALLELTIMELINE);
+	Type::RegisterType ("Animation", Value::ANIMATION, Value::TIMELINE);
+	Type::RegisterType ("DoubleAnimation", Value::DOUBLEANIMATION, Value::ANIMATION);
+	Type::RegisterType ("ColorAnimation", Value::COLORANIMATION, Value::ANIMATION);
+	Type::RegisterType ("PointAnimation", Value::POINTANIMATION, Value::ANIMATION);
+	Type::RegisterType ("Shape", Value::SHAPE, Value::FRAMEWORKELEMENT);
+	Type::RegisterType ("Ellipse", Value::ELLIPSE, Value::SHAPE);
+	Type::RegisterType ("Line", Value::LINE, Value::SHAPE);
+	Type::RegisterType ("Path", Value::PATH, Value::SHAPE);
+	Type::RegisterType ("Polygon", Value::POLYGON, Value::SHAPE);
+	Type::RegisterType ("Polyline", Value::POLYLINE, Value::SHAPE);
+	Type::RegisterType ("Rectangle", Value::RECTANGLE, Value::SHAPE);
+	Type::RegisterType ("Geometry", Value::GEOMETRY, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("GeometryGroup", Value::GEOMETRYGROUP, Value::GEOMETRY);
+	Type::RegisterType ("EllipseGeometry", Value::ELLIPSEGEOMETRY, Value::GEOMETRY);
+	Type::RegisterType ("LineGeometry", Value::LINEGEOMETRY, Value::GEOMETRY);
+	Type::RegisterType ("PathGeometry", Value::PATHGEOMETRY, Value::GEOMETRY);
+	Type::RegisterType ("RectangleGeometry", Value::RECTANGLEGEOMETRY, Value::GEOMETRY);
+	Type::RegisterType ("FrameworkElement", Value::FRAMEWORKELEMENT, Value::UIELEMENT);
+	Type::RegisterType ("Namescope", Value::NAMESCOPE, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Clock", Value::CLOCK, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("AnimationClock", Value::ANIMATIONCLOCK, Value::CLOCK);
+	Type::RegisterType ("ClockGroup", Value::CLOCKGROUP, Value::CLOCK);
+	Type::RegisterType ("Brush", Value::BRUSH, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("SolidColorBrush", Value::SOLIDCOLORBRUSH, Value::BRUSH);
+	Type::RegisterType ("PathFigure", Value::PATHFIGURE, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("PathSegment", Value::PATHSEGMENT, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("ArcSegment", Value::ARCSEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("BezierSegment", Value::BEZIERSEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("LineSegment", Value::LINESEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("PolyBezierSegment", Value::POLYBEZIERSEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("PolylineSegment", Value::POLYLINESEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("PolyquadraticBezierSegment", Value::POLYQUADRATICBEZIERSEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("QuadraticBezierSegment", Value::QUADRATICBEZIERSEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("TriggerAction", Value::TRIGGERACTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("BeginStoryboard", Value::BEGINSTORYBOARD, Value::TRIGGERACTION);
+	Type::RegisterType ("EventTrigger", Value::EVENTTRIGGER, Value::DEPENDENCY_OBJECT);
+
+	// The collections
+	Type::RegisterType ("Stroke_Collection", Value::STROKE_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Inlines", Value::INLINES, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Styluspoint_Collection", Value::STYLUSPOINT_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Keyframe_Collection", Value::KEYFRAME_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("TimelineMarker_Collection", Value::TIMELINEMARKER_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Geometry_Collection", Value::GEOMETRY_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("GradientStop_Collection", Value::GRADIENTSTOP_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("MediaAttribute_Collection", Value::MEDIAATTRIBUTE_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("PathFigure_Collection", Value::PATHFIGURE_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("PathSegment_Collection", Value::PATHSEGMENT_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Timeline_Collection", Value::TIMELINE_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Transform_Collection", Value::TRANSFORM_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Visual_Collection", Value::VISUAL_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Resource_Collection", Value::RESOURCE_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("TriggerAction_Collection", Value::TRIGGERACTION_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Trigger_Collection", Value::TRIGGER_COLLECTION, Value::DEPENDENCY_OBJECT);
 }
 
 static bool inited = FALSE;
@@ -1233,6 +1406,7 @@ runtime_init ()
 		return;
 	inited = TRUE;
 
+	types_init ();
 	namescope_init ();
 	item_init ();
 	framework_element_init ();
