@@ -1,3 +1,19 @@
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.h (UIElement): Remove user_xform_origin as a field, now
+	we pull this from the DependencyObject as it should be. 
+
+	* runtime.cpp (UIElement::OnSubPropertyChanged): Catch a bunch of
+	other properties that would trigger an invalidate/bounds
+	recomputation. 
+
+	(item_init): initialize the other properties that the managed code
+	needs. 
+	
+	* shape.cpp, ffvideo.cpp: updated to use the
+	RenderTransformOriginProperty in the computation of the center for
+	the transformation.
+
 2007-06-08  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmoon_la_SOURCES): add value.h

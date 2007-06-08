@@ -449,7 +449,6 @@ class UIElement : public DependencyObject {
  public:
 	UIElement () :
 		parent(NULL), flags (0),
-		user_xform_origin(0,0),
 		x1 (0), y1(0), x2(0), y2(0)
 		{
 			cairo_matrix_init_identity (&absolute_xform);
@@ -468,11 +467,6 @@ class UIElement : public DependencyObject {
 
 	// The computed bounding box
 	double x1, y1, x2, y2;
-
-	//
-	// Affine transformations:
-	// 
-	Point   user_xform_origin;	// transformation origin, user set
 
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
@@ -519,7 +513,23 @@ class UIElement : public DependencyObject {
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
+	Point GetRenderTransformOrigin () {
+		Value *vu = GetValue (UIElement::RenderTransformOriginProperty);
+		if (vu)
+			return *vu->AsPoint ();
+		return Point (0, 0);
+	}
+
 	static DependencyProperty* RenderTransformProperty;
+	static DependencyProperty* OpacityProperty;
+	static DependencyProperty* ClipProperty;
+	static DependencyProperty* TriggersProperty;
+	static DependencyProperty* OpacityMaskProperty;
+	static DependencyProperty* RenderTransformOriginProperty;
+	static DependencyProperty* CursorProperty;
+	static DependencyProperty* IsHitTestVisibleProperty;
+	static DependencyProperty* VisibilityProperty;
+	static DependencyProperty* ResourcesProperty;
 };
 
 Surface *item_get_surface          (UIElement *item);
@@ -560,6 +570,7 @@ class Panel : public FrameworkElement {
 	Panel ();
 
 	static DependencyProperty* ChildrenProperty;
+	static DependencyProperty* BackgroundProperty;
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };

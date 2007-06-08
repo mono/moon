@@ -684,6 +684,7 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 Point
 VideoFfmpeg::getxformorigin ()
 {
+	Point user_xform_origin = GetRenderTransformOrigin ();
 	return Point (user_xform_origin.x * w, user_xform_origin.y * h);
 }
 

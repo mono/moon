@@ -456,14 +456,7 @@ item_invalidate (UIElement *item)
 void 
 item_set_transform_origin (UIElement *item, Point p)
 {
-	item_invalidate (item);
-	
-	item->user_xform_origin = p;
-
-	item->update_xform ();
-	item->getbounds ();
-
-	item_invalidate (item);
+	item->SetValue (UIElement::RenderTransformOriginProperty, p);
 }
 
 void
@@ -509,7 +502,12 @@ UIElement::update_xform ()
 void
 UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	if (prop == UIElement::RenderTransformProperty) {
+	if (prop == UIElement::RenderTransformProperty ||
+	    prop == UIElement::OpacityProperty ||
+	    prop == UIElement::ClipProperty ||
+	    prop == UIElement::OpacityMaskProperty ||
+	    prop == UIElement::RenderTransformOriginProperty ||
+	    prop == UIElement::VisibilityProperty){
 		item_invalidate (this);
 		update_xform ();
 		getbounds ();
@@ -1186,11 +1184,7 @@ DependencyProperty::~DependencyProperty ()
 
 DependencyProperty *dependency_property_lookup (Value::Kind type, char *name)
 {
-	GHashTable *table = (GHashTable *) g_hash_table_lookup (DependencyObject::properties, &type);
-	if (table == NULL)
-		return NULL;
-
-	return (DependencyProperty *) g_hash_table_lookup (table, name);
+	return DependencyObject::GetDependencyProperty (type, name);
 }
 
 // event handlers for c++
@@ -1362,6 +1356,40 @@ event_trigger_fire_actions (EventTrigger *trigger)
 	}
 }
 
+//
+// UIElement
+//
+DependencyProperty* UIElement::RenderTransformProperty;
+DependencyProperty* UIElement::OpacityProperty;
+DependencyProperty* UIElement::ClipProperty;
+DependencyProperty* UIElement::TriggersProperty;
+DependencyProperty* UIElement::OpacityMaskProperty;
+DependencyProperty* UIElement::RenderTransformOriginProperty;
+DependencyProperty* UIElement::CursorProperty;
+DependencyProperty* UIElement::IsHitTestVisibleProperty;
+DependencyProperty* UIElement::VisibilityProperty;
+DependencyProperty* UIElement::ResourcesProperty;
+
+void
+item_init ()
+{
+	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
+	UIElement::OpacityProperty = DependencyObject::Register (Value::UIELEMENT, "Opacity", Value::BRUSH);
+	UIElement::ClipProperty = DependencyObject::Register (Value::UIELEMENT, "Clip", Value::GEOMETRY);
+	UIElement::TriggersProperty = DependencyObject::Register (Value::UIELEMENT, "Triggers", Value::TRIGGER_COLLECTION);
+	UIElement::OpacityMaskProperty = DependencyObject::Register (Value::UIELEMENT, "OpacityMask", Value::BRUSH);
+	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransformOrigin", Value::POINT);
+
+	printf ("REMINDER: how do we handle enums, with a type, or with an int? Cursor and Visibiliy as int for now\n");
+	UIElement::CursorProperty = DependencyObject::Register (Value::UIELEMENT, "Cursor", Value::INT32);
+	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Value::UIELEMENT, "IsHitTestVisible", Value::BOOL);
+	UIElement::VisibilityProperty = DependencyObject::Register (Value::UIELEMENT, "Visibility", Value::INT32);
+	UIElement::ResourcesProperty = DependencyObject::Register (Value::UIELEMENT, "Resources", Value::RESOURCE_COLLECTION);
+}
+
+//
+// Namescope
+//
 DependencyProperty *NameScope::NameScopeProperty;
 
 void
@@ -1382,11 +1410,13 @@ framework_element_init ()
 }
 
 DependencyProperty* Panel::ChildrenProperty;
+DependencyProperty* Panel::BackgroundProperty;
 
 void 
 panel_init ()
 {
 	Panel::ChildrenProperty = DependencyObject::Register (Value::PANEL, "Children", Value::VISUAL_COLLECTION);
+	Panel::BackgroundProperty = DependencyObject::Register (Value::PANEL, "Background", Value::BRUSH);
 }
 
 DependencyProperty* Canvas::TopProperty;
@@ -1398,8 +1428,6 @@ canvas_init ()
 	Canvas::TopProperty = DependencyObject::Register (Value::CANVAS, "Top", new Value (0.0));
 	Canvas::LeftProperty = DependencyObject::Register (Value::CANVAS, "Left", new Value (0.0));
 }
-
-DependencyProperty* UIElement::RenderTransformProperty;
 
 Type* Type::types [];
 GHashTable* Type::types_by_name = NULL;
@@ -1467,12 +1495,6 @@ Type *
 Type::Find (Value::Kind type)
 {
 	return types [type];
-}
-
-void
-item_init ()
-{
-	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
 }
 
 void 

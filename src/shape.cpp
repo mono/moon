@@ -406,6 +406,8 @@ Rectangle::Draw (Surface *s)
 Point
 Rectangle::getxformorigin ()
 {
+	Point user_xform_origin = GetRenderTransformOrigin ();
+
 	return Point (framework_element_get_width (this) * user_xform_origin.x, 
 		framework_element_get_height (this) * user_xform_origin.y);
 }
@@ -459,6 +461,8 @@ Line::Draw (Surface *s)
 Point
 Line::getxformorigin ()
 {
+	Point user_xform_origin = GetRenderTransformOrigin ();
+
 	double x1 = line_get_x1 (this);
 	double y1 = line_get_y1 (this);
 	return Point (x1 + (line_get_x2 (this)- x1) * user_xform_origin.x, 
