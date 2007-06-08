@@ -218,14 +218,14 @@ Value::Value (const char* s)
 {
 	Init ();
 	k = STRING;
-	u.s= g_strdup (s);
+	u.s= strdup (s);
 }
 
 
 Value::~Value ()
 {
 	if (k == STRING)
-		g_free (u.s);
+		free (u.s);
 }
 
 
@@ -1139,9 +1139,15 @@ item_init ()
 	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
 }
 
+static bool inited = FALSE;
+
 void
 runtime_init ()
 {
+	if (inited)
+		return;
+	inited = TRUE;
+
 	namescope_init ();
 	item_init ();
 	framework_element_init ();

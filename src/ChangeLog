@@ -1,3 +1,9 @@
+2007-06-07  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Value): Switch Value to strdup/free.
+
+	Use inited to prevent multiple initializations.
+
 2007-06-07  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp (main): track more of the api axing.
