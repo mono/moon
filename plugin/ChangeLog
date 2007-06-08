@@ -1,5 +1,10 @@
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.cpp: Simplify controls creation and add a button when you are
+	not in demo mode. It is just for now to made some tests.
+
+2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp: Remove runtime initialization because it is wrong place.
 	* plugin-glue.cpp: Add gtk and runtime initialization to NPP_Initialize.
 

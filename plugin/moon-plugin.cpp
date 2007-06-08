@@ -16,7 +16,7 @@
 #include "npruntime.h"
 
 //#define SCRIPTING
-//#define DEMO
+#define DEMO
 
 static void moon_plugin_demo (Canvas *canvas)
 {
@@ -125,14 +125,17 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
+	DEBUG ("destructor point 1");
+	if (this->surface != NULL)
+		//gtk_container_remove (GTK_CONTAINER (container), this->surface->drawing_area);
+		surface_destroy (this->surface);
+	DEBUG ("destructor point 2");
 	if (this->canvas != NULL)
 		delete (this->canvas);
-
-	if (this->surface != NULL)
-		surface_destroy (this->surface);
-
+	DEBUG ("destructor point 3");
 	if (this->container != NULL)
 		gtk_widget_destroy (this->container);
+	DEBUG ("destructor point 4 (end)");
 }
 
 void 
@@ -205,13 +208,6 @@ PluginInstance::CreateControls ()
 	//  GtkPlug container and surface inside
 	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
 
-#ifdef DEMO
-	this->canvas = canvas_new ();
-	this->surface = surface_new (window->width, window->height);
-	surface_attach (this->surface, this->canvas);
-	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
-#endif
-
 	// Connect signals to container
 	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
 
@@ -233,8 +229,11 @@ PluginInstance::CreateControls ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 #ifdef DEMO
-	// Call plugin demo
-	moon_plugin_demo (this->canvas);
+	this->surface = surface_new (window->width, window->height);
+	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+#else
+	GtkWidget *button = gtk_button_new_with_label ("MoonLight");
+	gtk_container_add (GTK_CONTAINER (container), button);
 #endif
 
 	gtk_widget_show_all (this->container);
