@@ -716,11 +716,11 @@ shape_init ()
 	Line::Y2Property = DependencyObject::Register (Value::LINE, "Y2", new Value (0.0));
 
 	/* Polygon fields */
-	Polygon::FillRuleProperty = DependencyObject::Register (Value::POLYGON, "Fill", new Value (FillRuleEvenOdd));
+	Polygon::FillRuleProperty = DependencyObject::Register (Value::POLYGON, "FillRule", new Value (FillRuleEvenOdd));
 	Polygon::PointsProperty = DependencyObject::Register (Value::POLYGON, "Points", Value::POINT_ARRAY);
 
 	/* Polyline fields */
-	Polyline::FillRuleProperty = DependencyObject::Register (Value::POLYLINE, "Fill", new Value (FillRuleEvenOdd));
+	Polyline::FillRuleProperty = DependencyObject::Register (Value::POLYLINE, "FillRule", new Value (FillRuleEvenOdd));
 	Polyline::PointsProperty = DependencyObject::Register (Value::POLYLINE, "Points", Value::POINT_ARRAY);
 
 	/* Path fields */
