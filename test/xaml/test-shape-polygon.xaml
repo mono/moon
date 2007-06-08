@@ -1,0 +1,4 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polygon Stroke="Blue" StrokeThickness="2" Points="10,10 110,10 110,110 10,110" />
+	<Polygon Stroke="Purple" StrokeDashArray="2" Fill="Red" Points="110,110 210,110 210,210 110,210 110,110" />
+</Canvas>

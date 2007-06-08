@@ -1,0 +1,5 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polyline Stroke="Blue" Points="10,10 110,10 110,110 10,110" />
+	<!-- polyline, even if closed, aren't fillable -->
+	<Polyline Stroke="Purple" Fill="Red" Points="110,110 210,110 210,210 110,210 110,110" />
+</Canvas>
