@@ -304,10 +304,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 		end = *to;
 	}
 	else if (by) {
-		end = Color (from->r + by->r,
-			     from->g + by->g,
-			     from->b + by->b,
-			     from->a + by->a);
+		end = start + *by;
 	}
 	else {
 		end = start;
@@ -389,8 +386,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 		end = *to;
 	}
 	else if (by) {
-		end = Point (from->x + by->x,
-			     from->y + by->y);
+		end = start + *by;
 	}
 	else {
 		end = start;
@@ -409,44 +405,6 @@ point_animation_new ()
 	return new PointAnimation ();
 }
 
-void
-point_animation_set_by (PointAnimation *da, Point by)
-{
-	da->SetValue (PointAnimation::ByProperty, Value(by));
-}
-
-Point*
-point_animation_get_by (PointAnimation *da)
-{
-	Value *v = da->GetValue (PointAnimation::ByProperty);
-	return v == NULL ? NULL : v->AsPoint();
-}
-
-void
-point_animation_set_from (PointAnimation *da, Point from)
-{
-	da->SetValue (PointAnimation::FromProperty, Value(from));
-}
-
-Point*
-point_animation_get_from (PointAnimation *da)
-{
-	Value *v = da->GetValue (PointAnimation::FromProperty);
-	return v == NULL ? NULL : v->AsPoint();
-}
-
-void
-point_animation_set_to (PointAnimation *da, Point to)
-{
-	da->SetValue (PointAnimation::ToProperty, Value(to));
-}
-
-Point*
-point_animation_get_to (PointAnimation *da)
-{
-	Value *v = da->GetValue (PointAnimation::ToProperty);
-	return v == NULL ? NULL : v->AsPoint();
-}
 
 
 

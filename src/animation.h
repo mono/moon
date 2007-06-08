@@ -67,14 +67,6 @@ struct KeyTime {
 };
 
 
-
-
-
-
-
-
-
-
 //
 // Animations (more specialized clocks and timelines) and their subclasses
 //
@@ -136,24 +128,6 @@ class Animation/*Timeline*/ : public Timeline {
 	//	Duration GetNaturalDurationCore (Clock* clock);
 };
 
-
-
-#if YAY_NULLABLE
-
-template<class T>
-class Nullable {
-  bool is_null;
-  T value;
- public:
-  Nullable (T v) : value(v) { is_null = false; }
-  Nullable (T* p) { if (!p) is_null = true; else /* XXX */; }
-  
-  bool IsNull () { return is_null; }
-
-  T GetValue () { return value; }
-};
-
-#endif
 
 #define NULLABLE_GETSET_DECL(prop, t) \
 void Set##prop (t v); \

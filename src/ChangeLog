@@ -1,5 +1,15 @@
 2007-06-08  Chris Toshok  <toshok@ximian.com>
 
+	* animation.h: remove the huge whitespace gap after KeyTime, and
+	remove the ifdef'ed out Nullable<T> template.
+	
+	* animation.cpp: remove the unused point_animation C api, and use
+	the overloaded + operator on Color and Point when initializing
+	"end" in GetCurrentValue for those animations.  They're looking
+	more and more similar.
+
+2007-06-08  Chris Toshok  <toshok@ximian.com>
+
 	* globally: move away from all uses of Value::u union.  switch
 	everything to using Value::As* methods, which do typechecking and
 	safe downcasting.
