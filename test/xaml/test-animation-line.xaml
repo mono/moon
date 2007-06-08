@@ -1,0 +1,30 @@
+<Canvas>
+
+    <Line
+	x:Name="TheAmazingMovingLine"
+	X1="10" Y1="10"
+	X2="10" Y2="200" Stroke="Black">
+
+    <Line.Triggers>
+      <EventTrigger RoutedEvent="Line.Loaded">
+        <BeginStoryboard>
+          <Storyboard>
+            <DoubleAnimation
+              Storyboard.TargetName="TheAmazingMovingLine"
+              Storyboard.TargetProperty="X1"
+              From="10" To="300" By="25" Duration="2"
+	      AutoReverse="True" RepeatBehavior="Forever" />
+
+	    <DoubleAnimation
+              Storyboard.TargetName="TheAmazingMovingLine"
+              Storyboard.TargetProperty="X2"
+              From="10" To="300" By="25" Duration="2"
+              AutoReverse="True" RepeatBehavior="Forever" />
+	      
+          </Storyboard>
+        </BeginStoryboard>
+      </EventTrigger>
+    </Line.Triggers>
+
+  </Line>
+</Canvas>
