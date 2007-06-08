@@ -97,8 +97,6 @@ Clock::Clock (Timeline *tl)
     current_state (STOPPED),
     queued_events (0)
 {
-	SetObjectType (Value::CLOCK);
-
 	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
 		// remaining_iterations is an int.. GetCount returns a double.  badness?
@@ -280,7 +278,6 @@ ClockGroup::ClockGroup (TimelineGroup *timeline)
     Clock (timeline),
     child_clocks (NULL)
 {
-	SetObjectType (Value::CLOCKGROUP);
 }
 
 void
@@ -361,7 +358,6 @@ AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
   : timeline(timeline),
     Clock (timeline)
 {
-	SetObjectType (Value::ANIMATIONCLOCK);
 }
 
 void
@@ -482,7 +478,6 @@ DependencyProperty* Storyboard::TargetPropertyProperty;
 Storyboard::Storyboard ()
   : root_clock (NULL)
 {
-	SetObjectType (Value::STORYBOARD);
 }
 
 void
@@ -641,7 +636,6 @@ DependencyProperty* DoubleAnimation::ToProperty;
 
 DoubleAnimation::DoubleAnimation ()
 {
-	SetObjectType (Value::DOUBLEANIMATION);
 }
 
 Value*
@@ -689,7 +683,6 @@ DependencyProperty* ColorAnimation::ToProperty;
 
 ColorAnimation::ColorAnimation ()
 {
-	SetObjectType (Value::COLORANIMATION);
 }
 
 Value*
@@ -779,11 +772,6 @@ color_animation_get_to (ColorAnimation *da)
 DependencyProperty* PointAnimation::ByProperty;
 DependencyProperty* PointAnimation::FromProperty;
 DependencyProperty* PointAnimation::ToProperty;
-
-PointAnimation::PointAnimation ()
-{
-	SetObjectType (Value::POINTANIMATION);
-}
 
 Value*
 PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,

@@ -28,7 +28,8 @@ class Geometry : public DependencyObject {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* TransformProperty;
 
-	Geometry () { SetObjectType (Value::GEOMETRY); };
+	Geometry () { };
+	Value::Kind GetObjectType () { return Value::GEOMETRY; };
 
 	virtual void Draw (Surface *s);
 };
@@ -44,7 +45,8 @@ class GeometryGroup : public Geometry {
  public:
 	static DependencyProperty* ChildrenProperty;
 
-	GeometryGroup () { SetObjectType (Value::GEOMETRYGROUP); };
+	GeometryGroup () { };
+	Value::Kind GetObjectType () { return Value::GEOMETRYGROUP; };
 };
 GeometryGroup* geometry_group_new ();
 // TODO get|set GeometryCollection
@@ -58,7 +60,8 @@ class EllipseGeometry : public Geometry {
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
-	EllipseGeometry () { SetObjectType (Value::ELLIPSEGEOMETRY); };
+	EllipseGeometry () { };
+	Value::Kind GetObjectType () { return Value::ELLIPSEGEOMETRY; };
 
 	virtual void Draw (Surface *s);
 };
@@ -78,7 +81,8 @@ class LineGeometry : public Geometry {
 	static DependencyProperty* EndPointProperty;
 	static DependencyProperty* StartPointProperty;
 
-	LineGeometry () { SetObjectType (Value::LINEGEOMETRY); };
+	LineGeometry () { };
+	Value::Kind GetObjectType () { return Value::LINEGEOMETRY; };
 
 	virtual void Draw (Surface *s);
 };
@@ -95,7 +99,8 @@ class PathGeometry : public Geometry {
  public:
 	static DependencyProperty* FiguresProperty;
 
-	PathGeometry () { SetObjectType (Value::PATHGEOMETRY); };
+	PathGeometry () { };
+	Value::Kind GetObjectType () { return Value::PATHGEOMETRY; };
 };
 PathGeometry* path_geometry_new ();
 // TODO get|set PathFigureCollection
@@ -109,7 +114,8 @@ class RectangleGeometry : public Geometry {
 	static DependencyProperty* RadiusYProperty;
 	static DependencyProperty* RectProperty;
 
-	RectangleGeometry () { SetObjectType (Value::RECTANGLEGEOMETRY); };
+	RectangleGeometry () { };
+	Value::Kind GetObjectType () { return Value::RECTANGLEGEOMETRY; };
 
 	virtual void Draw (Surface *s);
 };
@@ -131,10 +137,8 @@ class PathFigure : public DependencyObject {
 	static DependencyProperty* SegmentsProperty;
 	static DependencyProperty* StartPointProperty;
 
-	PathFigure ()
-	{
-		SetObjectType (Value::PATHFIGURE);
-	}
+	PathFigure () { }
+	Value::Kind GetObjectType () { return Value::PATHFIGURE; };
 };
 PathFigure* path_figure_new ();
 bool	path_figure_get_is_closed	(PathFigure *path_figure);
@@ -161,10 +165,8 @@ class ArcSegment : public PathSegment {
 	static DependencyProperty* SizeProperty;
 	static DependencyProperty* SweepDirectionProperty;
 
-	ArcSegment ()
-	{
-		SetObjectType (Value::ARCSEGMENT);
-	}
+	ArcSegment () { }
+	Value::Kind GetObjectType () { return Value::ARCSEGMENT; };
 };
 ArcSegment	*arc_segment_new		();
 bool		arc_segment_get_is_large_arc	(ArcSegment *segment);
@@ -187,10 +189,8 @@ class BezierSegment : public PathSegment {
 	static DependencyProperty* Point2Property;
 	static DependencyProperty* Point3Property;
 
-	BezierSegment ()
-	{
-		SetObjectType (Value::BEZIERSEGMENT);
-	}
+	BezierSegment () { }
+	Value::Kind GetObjectType () { return Value::BEZIERSEGMENT; };
 };
 BezierSegment	*bezier_segment_new		();
 Point*		bezier_segment_get_point1	(BezierSegment *segment);
@@ -207,10 +207,8 @@ class LineSegment : public PathSegment {
  public:
 	static DependencyProperty* PointProperty;
 
-	LineSegment ()
-	{
-		SetObjectType (Value::LINESEGMENT);
-	}
+	LineSegment () { }
+	Value::Kind GetObjectType () { return Value::LINESEGMENT; };
 };
 LineSegment	*line_segment_new	();
 Point*		line_segment_get_point	(LineSegment *segment);
@@ -224,10 +222,8 @@ class PolyBezierSegment : public PathSegment {
  public:
 	static DependencyProperty* PointsProperty;
 
-	PolyBezierSegment ()
-	{
-		SetObjectType (Value::POLYBEZIERSEGMENT);
-	}
+	PolyBezierSegment () { }
+	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
 };
 PolyBezierSegment	*poly_bezier_segment_new	();
 // there is no managed get for points, do we want one ?
@@ -241,10 +237,8 @@ class PolyLineSegment : public PathSegment {
  public:
 	static DependencyProperty* PointsProperty;
 
-	PolyLineSegment ()
-	{
-		SetObjectType (Value::POLYLINESEGMENT);
-	}
+	PolyLineSegment () { }
+	Value::Kind GetObjectType () { return Value::POLYLINESEGMENT; };
 };
 PolyLineSegment	*poly_line_segment_new	();
 void		poly_line_segment_set_points	(PolyLineSegment *segment, Point *points, int count);
@@ -257,10 +251,8 @@ class PolyQuadraticBezierSegment : public PathSegment {
  public:
 	static DependencyProperty* PointsProperty;
 
-	PolyQuadraticBezierSegment ()
-	{
-		SetObjectType (Value::POLYBEZIERSEGMENT);
-	}
+	PolyQuadraticBezierSegment () { }
+	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
 };
 PolyQuadraticBezierSegment	*poly_quadratic_segment_new	();
 // there is no managed get for points, do we want one ?
@@ -275,10 +267,8 @@ class QuadraticBezierSegment : public PathSegment {
 	static DependencyProperty* Point1Property;
 	static DependencyProperty* Point2Property;
 
-	QuadraticBezierSegment ()
-	{
-		SetObjectType (Value::QUADRATICBEZIERSEGMENT);
-	}
+	QuadraticBezierSegment () { }
+	Value::Kind GetObjectType () { return Value::QUADRATICBEZIERSEGMENT; };
 };
 QuadraticBezierSegment	*quadratic_bezier_segment_new	();
 Point*	quadratic_bezier_segment_get_point1	(QuadraticBezierSegment *segment);

@@ -188,6 +188,7 @@ class Clock : public DependencyObject {
 	};
 
 	Clock (Timeline *timeline);
+	Value::Kind GetObjectType () { return Value::CLOCK; };
 
 	virtual void SpeedChanged () { };
 
@@ -234,6 +235,7 @@ class Clock : public DependencyObject {
 class ClockGroup : public Clock {
  public:
 	ClockGroup (TimelineGroup *timeline);
+	Value::Kind GetObjectType () { return Value::CLOCKGROUP; };
 
 	virtual void Begin (guint64 parent_time);
 
@@ -256,6 +258,7 @@ class ClockGroup : public Clock {
 class Timeline : public DependencyObject {
  public:
 	Timeline ();
+	Value::Kind GetObjectType () { return Value::TIMELINE; };
 
 	static DependencyProperty* AutoReverseProperty;
 	static DependencyProperty* BeginTimeProperty;
@@ -283,6 +286,7 @@ class Timeline : public DependencyObject {
 class TimelineGroup : public Timeline {
  public:
 	TimelineGroup ();
+	Value::Kind GetObjectType () { return Value::TIMELINEGROUP; };
 
 	virtual Clock *AllocateClock () { return new ClockGroup (this); }
 
@@ -304,6 +308,7 @@ class TimelineGroup : public Timeline {
 class ParallelTimeline : public TimelineGroup {
  public:
 	ParallelTimeline () { }
+	Value::Kind GetObjectType () { return Value::PARALLELTIMELINE; };
 };
 
 
@@ -342,6 +347,7 @@ class Animation/*Timeline*/;
 class AnimationClock : public Clock {
  public:
 	AnimationClock (Animation/*Timeline*/ *timeline);
+	Value::Kind GetObjectType () { return Value::ANIMATIONCLOCK; };
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
@@ -360,6 +366,7 @@ class Animation/*Timeline*/ : public Timeline {
  public:
 
 	Animation/*Timeline*/ () { };
+	Value::Kind GetObjectType () { return Value::ANIMATION; };
 
 	virtual Clock *AllocateClock () { return new AnimationClock (this); }
 
@@ -412,6 +419,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
  public:
 
 	DoubleAnimation ();
+	Value::Kind GetObjectType () { return Value::DOUBLEANIMATION; };
 
 	static DependencyProperty* ByProperty;
 	static DependencyProperty* FromProperty;
@@ -435,6 +443,7 @@ class ColorAnimation : public Animation/*Timeline*/ {
  public:
 
 	ColorAnimation ();
+	Value::Kind GetObjectType () { return Value::COLORANIMATION; };
 
 	static DependencyProperty* ByProperty;
 	static DependencyProperty* FromProperty;
@@ -457,7 +466,8 @@ ColorAnimation * color_animation_new ();
 class PointAnimation : public Animation/*Timeline*/ {
  public:
 
-	PointAnimation ();
+	PointAnimation () {};
+	Value::Kind GetObjectType () { return Value::POINTANIMATION; };
 
 	static DependencyProperty* ByProperty;
 	static DependencyProperty* FromProperty;
@@ -480,6 +490,7 @@ PointAnimation * point_animation_new ();
 class Storyboard : public ParallelTimeline {
  public:
 	Storyboard ();
+	Value::Kind GetObjectType () { return Value::STORYBOARD; };
 
 	void Begin ();
 	void Pause ();
@@ -514,10 +525,8 @@ Storyboard *storyboard_new ();
 class BeginStoryboard : public TriggerAction {
 
  public:
-	BeginStoryboard ()
-	{
-		SetObjectType (Value::BEGINSTORYBOARD);
-	}
+	BeginStoryboard () { }
+	Value::Kind GetObjectType () { return Value::BEGINSTORYBOARD; };
 
 	
 	void Fire ();

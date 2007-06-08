@@ -40,10 +40,8 @@ class Shape : public FrameworkElement {
 	static DependencyProperty* StrokeStartLineCapProperty;
 	static DependencyProperty* StrokeThicknessProperty;
 
-	Shape ()
-	{
-		SetObjectType (Value::SHAPE);
-	}
+	Shape () { }
+	Value::Kind GetObjectType () { return Value::SHAPE; };
 
 	//
 	// Overrides from UIElement.
@@ -95,7 +93,8 @@ void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 //
 class Ellipse : public Shape {
  public:
-	Ellipse () { SetObjectType (Value::ELLIPSE); };
+	Ellipse () { };
+	Value::Kind GetObjectType () { return Value::ELLIPSE; };
 
 	void Draw (Surface *s);
 };
@@ -109,7 +108,8 @@ class Rectangle : public Shape {
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
-	Rectangle () { SetObjectType (Value::RECTANGLE); };
+	Rectangle () { };
+	Value::Kind GetObjectType () { return Value::RECTANGLE; };
 
 	void Draw (Surface *s);
 
@@ -131,7 +131,8 @@ class Line : public Shape {
 	static DependencyProperty* X2Property;
 	static DependencyProperty* Y2Property;
 
-	Line () { SetObjectType(Value::LINE); };
+	Line () { };
+	Value::Kind GetObjectType () { return Value::LINE; };
 	
 	void Draw (Surface *s);
 
@@ -157,7 +158,8 @@ class Polygon : public Shape {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polygon () { SetObjectType (Value::POLYGON); };
+	Polygon () { };
+	Value::Kind GetObjectType () { return Value::POLYGON; };
 
 	void Draw (Surface *s);
 };
@@ -175,7 +177,8 @@ class Polyline : public Shape {
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polyline () { SetObjectType (Value::POLYLINE); };
+	Polyline () { };
+	Value::Kind GetObjectType () { return Value::POLYLINE; };
 
 	void Draw (Surface *s);
 

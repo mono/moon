@@ -1,3 +1,10 @@
+2007-06-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* *.h, *.cpp: Remove objectType and SetObjectType from 
+	DependencyObject, make DependencyObject::GetObjectType virtual, 
+	and update all inheritors of DependencyObject to not use 
+	SetObjectType, but override GetObjectType.
+
 2007-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add some type checks to ensure we are setting child

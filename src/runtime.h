@@ -363,8 +363,6 @@ class DependencyObject : public Base {
 	void SetValue (DependencyProperty *property, Value *value);
 	Value *GetValue (DependencyProperty *property);
 	DependencyProperty *GetDependencyProperty (char *name);
-	Value::Kind GetObjectType ();
-
 	DependencyObject* FindName (char *name);
 
 	EventObject *events;
@@ -372,13 +370,17 @@ class DependencyObject : public Base {
 
 	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
+	virtual Value::Kind GetObjectType () 
+	{
+		g_warning ("This class is missing an override of GetObjectType ()");
+		return Value::DEPENDENCY_OBJECT; 
+	};
+
 
  protected:
 	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
-	void SetObjectType (Value::Kind objectType);
 
  private:
-	Value::Kind objectType;
 	GHashTable        *current_values;
 	GSList            *attached_list;
 };
@@ -469,9 +471,8 @@ class Brush : public DependencyObject {
 
 	Brush ()
 	{
-		SetObjectType (Value::BRUSH);
 	}
-	
+	Value::Kind GetObjectType () { return Value::BRUSH; };
 	virtual void SetupBrush (cairo_t *cairo) = 0;
 };
 double		brush_get_opacity		(Brush *brush);
@@ -487,10 +488,9 @@ class SolidColorBrush : public Brush {
  public:
 	static DependencyProperty* ColorProperty;
 
-	SolidColorBrush ()
-	{
-		SetObjectType (Value::SOLIDCOLORBRUSH);
-	}
+	SolidColorBrush () { };
+
+	Value::Kind GetObjectType () { return Value::SOLIDCOLORBRUSH; };
 
 	virtual void SetupBrush (cairo_t *cairo);
 };
@@ -544,11 +544,9 @@ enum SweepDirection {
 class TriggerAction : public DependencyObject {
 
  public:
-       TriggerAction ()
-       {
-               SetObjectType (Value::TRIGGERACTION);
-       }
+	TriggerAction () { };
 
+	Value::Kind GetObjectType () { return Value::TRIGGERACTION; };
        virtual void Fire () = 0;
 };
 
@@ -561,8 +559,9 @@ class EventTrigger : public DependencyObject {
 
 	EventTrigger () : routed_event (NULL), actions (NULL)
 	{
-		SetObjectType (Value::EVENTTRIGGER);
 	}
+
+	Value::Kind GetObjectType () { return Value::EVENTTRIGGER; };
 
 	void AddAction (TriggerAction *action);
 
@@ -584,10 +583,11 @@ class UIElement : public DependencyObject {
 		user_xform_origin(0,0),
 		x1 (0), y1(0), x2(0), y2(0)
 		{
-			SetObjectType (Value::UIELEMENT);
 			cairo_matrix_init_identity (&absolute_xform);
 		}
 	
+	Value::Kind GetObjectType () { return Value::UIELEMENT; };
+
 	UIElement *parent;
 
 	enum UIElementFlags {

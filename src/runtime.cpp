@@ -246,10 +246,10 @@ Value::Value (DependencyObject *obj, Value::Kind kind)
 Value::Value (DependencyObject *obj)
 {
 	g_assert (obj != NULL);
+	g_assert (obj->GetObjectType () >= Value::DEPENDENCY_OBJECT);
 	
-	g_warning ("Warning: Setting a dependency object without full type\n");
 	Init ();
-	k = DEPENDENCY_OBJECT;
+	k = obj->GetObjectType ();
 	u.dependency_object = obj;
 }
 
@@ -930,7 +930,6 @@ DependencyObject::GetValue (DependencyProperty *property)
 
 DependencyObject::DependencyObject ()
 {
-	this->objectType = Value::INVALID;
 	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
 	events = new EventObject ();
 	this->attached_list = NULL;
@@ -942,16 +941,10 @@ DependencyObject::~DependencyObject ()
 	delete events;
 }
 
-void
-DependencyObject::SetObjectType (Value::Kind objectType)
-{
-	this->objectType = objectType;
-}
-
 DependencyProperty *
 DependencyObject::GetDependencyProperty (char *name)
 {
-	return DependencyObject::GetDependencyProperty (objectType, name);
+	return DependencyObject::GetDependencyProperty (GetObjectType (), name);
 }
 
 DependencyProperty *
@@ -1045,12 +1038,6 @@ DependencyObject::RegisterFull (Value::Kind type, char *name, Value *default_val
 	g_hash_table_insert (table, property->name, property);
 
 	return property;
-}
-
-Value::Kind
-DependencyObject::GetObjectType ()
-{
-	return objectType;
 }
 
 Value *
