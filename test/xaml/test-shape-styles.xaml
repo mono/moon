@@ -1,0 +1,16 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Line Stroke="Black" StrokeThickness="0.5" StrokeDashArray="1" X1="10" Y1="10" X2="10" Y2="100" />
+	<Line Stroke="Blue" StrokeThickness="1" StrokeDashArray="2,6" X1="20" Y1="10" X2="20" Y2="100" />
+	<Line Stroke="Brown" StrokeThickness="1.5" StrokeDashArray="6,2" X1="30" Y1="10" X2="30" Y2="100" />
+	<Line Stroke="Cyan" StrokeThickness="2" StrokeDashArray="4,4,1" X1="40" Y1="10" X2="40" Y2="100" />
+	<Line Stroke="DarkGray" StrokeThickness="2.5" StrokeDashArray="9,1,1" X1="50" Y1="10" X2="50" Y2="100" />
+	<Line Stroke="Gray" StrokeThickness="3.0" StrokeDashArray="1,2" X1="60" Y1="10" X2="60" Y2="100" />
+	<Line Stroke="Green" StrokeThickness="3.5" StrokeDashArray="20,1" X1="70" Y1="10" X2="70" Y2="100" />
+	<Line Stroke="LightGray" StrokeThickness="4." StrokeDashArray="1,2,3,4,5" X1="80" Y1="10" X2="80" Y2="100" />
+	<Line Stroke="Magenta" StrokeThickness="4.50" StrokeDashArray="5,4,3,2,1" X1="90" Y1="10" X2="90" Y2="100" />
+	<Line Stroke="Orange" StrokeThickness="5" StrokeDashArray="0" X1="100" Y1="10" X2="100" Y2="100" />
+	<Line Stroke="Purple" StrokeThickness="5.5" StrokeDashArray="-1" X1="110" Y1="10" X2="110" Y2="100" />
+	<Line Stroke="Red" StrokeThickness="6" StrokeDashArray="3.141592" X1="120" Y1="10" X2="120" Y2="100" />
+	<Line Stroke="White" StrokeThickness="6.5" StrokeDashArray="1,2,3,5,7,11" X1="130" Y1="10" X2="130" Y2="100" />
+	<Line Stroke="Yellow" StrokeThickness="7" StrokeDashArray="1,2,3,5,8,13" X1="140" Y1="10" X2="140" Y2="100" />
+</Canvas>
