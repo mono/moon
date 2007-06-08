@@ -24,7 +24,9 @@ libmoon_la_SOURCES = 	\
 demo_SOURCES = \
 	demo.cpp
 
-demo_LDADD = -lmoon $(MOON_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS)
+
+demo_LDADD = -lmoon 
 
 debug:
 	LD_LIBRARY_PATH=.libs gdb .libs/demo
