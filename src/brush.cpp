@@ -145,16 +145,16 @@ color_from_str (const char *name)
 		switch (strlen (name + 1)) {
 		case 3:
 			// rgb
-			r [0] = '0'; r [1] = name [1];
-			g [0] = '0'; g [1] = name [2];
-			b [0] = '0'; b [1] = name [3];
+			r [1] = '0'; r [0] = name [1];
+			g [1] = '0'; g [0] = name [2];
+			b [1] = '0'; b [0] = name [3];
 			break;
 		case 4:
 			// argb
-			a [0] = '0'; a [1] = name [1];
-			r [0] = '0'; r [1] = name [2];
-			g [0] = '0'; g [1] = name [3];
-			b [0] = '0'; b [1] = name [4];
+			a [1] = '0'; a [0] = name [1];
+			r [1] = '0'; r [0] = name [2];
+			g [1] = '0'; g [0] = name [3];
+			b [1] = '0'; b [0] = name [4];
 			break;
 		case 6:
 			// rrggbb
