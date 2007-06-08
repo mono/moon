@@ -109,6 +109,7 @@ cairo_matrix_t matrix_transform_get_matrix (MatrixTransform *t);
 
 
 class TransformGroup : public Transform {
+	Value::Kind GetObjectType() { return Value::TRANSFORMGROUP; };
 };
 
 G_END_DECLS

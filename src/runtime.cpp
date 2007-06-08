@@ -329,9 +329,20 @@ gint32          Value::AsInt32 () { checked_get_exact (INT32, 0, u.i32); }
 Color*          Value::AsColor () { checked_get_exact (COLOR, NULL, u.color); }
 Point*          Value::AsPoint () { checked_get_exact (POINT, NULL, u.point); }
 Rect*           Value::AsRect  () { checked_get_exact (RECT, NULL, u.rect); }
+char*           Value::AsString () { checked_get_exact (STRING, NULL, u.s); }
+PointArray*     Value::AsPointArray () { checked_get_exact (POINT_ARRAY, NULL, u.point_array); }
+DoubleArray*    Value::AsDoubleArray () { checked_get_exact (DOUBLE_ARRAY, NULL, u.double_array); }
+
 RepeatBehavior* Value::AsRepeatBehavior () { checked_get_exact (REPEATBEHAVIOR, NULL, u.repeat); }
 Duration*       Value::AsDuration () { checked_get_exact (DURATION, NULL, u.duration); }
 KeyTime*        Value::AsKeyTime () { checked_get_exact (KEYTIME, NULL, u.keytime); }
+
+/* nullable primitives (all but bool) */
+double*         Value::AsNullableDouble () { checked_get_exact (DOUBLE, NULL, &u.d); }
+guint64*        Value::AsNullableUint64 () { checked_get_exact (UINT64, NULL, &u.ui64); }
+gint64*         Value::AsNullableInt64 () { checked_get_exact (INT64, NULL, &u.i64); }
+gint32*         Value::AsNullableInt32 () { checked_get_exact (INT32, NULL, &u.i32); }
+
 
 AS_DEP_SUBCLASS_IMPL(DEPENDENCY_OBJECT, DependencyObject)
 AS_DEP_SUBCLASS_IMPL(UIELEMENT, UIElement)
@@ -341,6 +352,7 @@ AS_DEP_SUBCLASS_IMPL(TIMELINE, Timeline)
 AS_DEP_SUBCLASS_IMPL(TIMELINEGROUP, TimelineGroup)
 AS_DEP_SUBCLASS_IMPL(PARALLELTIMELINE, ParallelTimeline)
 AS_DEP_SUBCLASS_IMPL(TRANSFORM, Transform)
+AS_DEP_SUBCLASS_IMPL(TRANSFORMGROUP, TransformGroup)
 AS_DEP_SUBCLASS_IMPL(ROTATETRANSFORM, RotateTransform)
 AS_DEP_SUBCLASS_IMPL(SCALETRANSFORM, ScaleTransform)
 AS_DEP_SUBCLASS_IMPL(TRANSLATETRANSFORM, TranslateTransform)
@@ -466,7 +478,7 @@ item_get_render_affine (UIElement *item, cairo_matrix_t *result)
 	if (v == NULL)
 		cairo_matrix_init_identity (result);
 	else {
-		Transform *t = (Transform*)v->u.dependency_object;
+		Transform *t = v->AsTransform();
 		t->GetTransform (result);
 	}
 }
@@ -533,7 +545,7 @@ framework_element_trigger_add (FrameworkElement *element, EventTrigger *trigger)
 double
 framework_element_get_height (FrameworkElement *framework_element)
 {
-	return framework_element->GetValue (FrameworkElement::HeightProperty)->u.d;
+	return framework_element->GetValue (FrameworkElement::HeightProperty)->AsDouble();
 }
 
 void
@@ -545,7 +557,7 @@ framework_element_set_height (FrameworkElement *framework_element, double height
 double
 framework_element_get_width (FrameworkElement *framework_element)
 {
-	return framework_element->GetValue (FrameworkElement::WidthProperty)->u.d;
+	return framework_element->GetValue (FrameworkElement::WidthProperty)->AsDouble();
 }
 
 void
@@ -575,7 +587,7 @@ VisualCollection::Add (void *data)
 	Panel *panel = (Panel *) closure;
 	
 	Value *v = (Value *) data;
-	UIElement *item = (UIElement *) v->u.dependency_object;
+	UIElement *item = v->AsUIElement();
 
 	base_ref (item);
 
@@ -593,7 +605,7 @@ VisualCollection::Remove (void *data)
 {
 	Panel *panel = (Panel *) closure;
 	Value *v = (Value *) data;
-	UIElement *item = (UIElement *) v->u.dependency_object;
+	UIElement *item = v->AsUIElement();
 	
 	Collection::Remove (item);
 
@@ -634,7 +646,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	if (prop == ChildrenProperty){
 		// The new value has already been set, so unref the old collection
 
-		VisualCollection *newcol = (VisualCollection *) GetValue (prop)->u.dependency_object;
+		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 
 		if (newcol != children){
 			if (children){
@@ -669,10 +681,10 @@ Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 
 	// Compute left/top if its attached to the item
 	Value *val_top = item->GetValue (Canvas::TopProperty);
-	double top = val_top == NULL ? 0.0 : val_top->u.d;
+	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
 
 	Value *val_left = item->GetValue (Canvas::LeftProperty);
-	double left = val_left == NULL ? 0.0 : val_left->u.d;
+	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
 		
 	cairo_matrix_translate (result, left, top);
 }
@@ -984,7 +996,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	    (current_value != NULL && value != NULL && *current_value != *value)) {
 
 		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
-			DependencyObject *dob = current_value->u.dependency_object;
+			DependencyObject *dob = current_value->AsDependencyObject();
 
 			for (GSList *l = dob->attached_list; l; l = l->next) {
 				Attachee *att = (Attachee*)l->data;
@@ -1002,7 +1014,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 		if (value) {
 			if (value->k >= Value::DEPENDENCY_OBJECT){
-				DependencyObject *dob = value->u.dependency_object;
+				DependencyObject *dob = value->AsDependencyObject();
 				Attachee *att = new Attachee ();
 				att->dob = this;
 				att->prop = property;
@@ -1300,7 +1312,7 @@ NameScope*
 NameScope::GetNameScope (DependencyObject *obj)
 {
 	Value *v = obj->GetValue (NameScope::NameScopeProperty);
-	return v == NULL ? NULL : (NameScope*)v->u.dependency_object;
+	return v == NULL ? NULL : v->AsNameScope();
 }
 
 void
@@ -1458,6 +1470,9 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
 bool 
 Type::IsSubclassOf (Value::Kind super)
 {
+	if (type == super)
+		return true;
+
 	if (parent == super)
 		return true;
 
@@ -1520,6 +1535,7 @@ types_init ()
 	Type::RegisterType ("TimelineGroup", Value::TIMELINEGROUP, Value::TIMELINE);
 	Type::RegisterType ("ParallelTimeline", Value::PARALLELTIMELINE, Value::TIMELINEGROUP);
 	Type::RegisterType ("Transform", Value::TRANSFORM, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("TransformGroup", Value::TRANSFORMGROUP, Value::TRANSFORM);
 	Type::RegisterType ("RotateTransform", Value::ROTATETRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("ScaleTransform", Value::SCALETRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("TranslateTransform", Value::TRANSLATETRANSFORM, Value::TRANSFORM);
@@ -1580,7 +1596,7 @@ types_init ()
 	Type::RegisterType ("PathSegment_Collection", Value::PATHSEGMENT_COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Timeline_Collection", Value::TIMELINE_COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Transform_Collection", Value::TRANSFORM_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Visual_Collection", Value::VISUAL_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Visual_Collection", Value::VISUAL_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("Resource_Collection", Value::RESOURCE_COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("TriggerAction_Collection", Value::TRIGGERACTION_COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Trigger_Collection", Value::TRIGGER_COLLECTION, Value::DEPENDENCY_OBJECT);

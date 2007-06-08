@@ -209,7 +209,7 @@ Brush*
 shape_get_fill (Shape *shape)
 {
 	Value *value = shape->GetValue (Shape::FillProperty);
-	return (Brush*) (value ? value->u.dependency_object : NULL);
+	return (value ? value->AsBrush() : NULL);
 }
 
 void 
@@ -227,7 +227,7 @@ Brush*
 shape_get_stroke (Shape *shape)
 {
 	Value *value = shape->GetValue (Shape::StrokeProperty);
-	return (Brush*) (value ? value->u.dependency_object : NULL);
+	return (value ? value->AsBrush() : NULL);
 }
 
 void 
@@ -244,7 +244,7 @@ shape_set_stroke (Shape *shape, Brush *stroke)
 Stretch
 shape_get_stretch (Shape *shape)
 {
-	return (Stretch) shape->GetValue (Shape::StretchProperty)->u.i32;
+	return (Stretch) shape->GetValue (Shape::StretchProperty)->AsInt32();
 }
 
 void
@@ -256,7 +256,7 @@ shape_set_stretch (Shape *shape, Stretch stretch)
 PenLineCap
 shape_get_stroke_dash_cap (Shape *shape)
 {
-	return (PenLineCap) shape->GetValue (Shape::StrokeDashCapProperty)->u.i32;
+	return (PenLineCap) shape->GetValue (Shape::StrokeDashCapProperty)->AsInt32();
 }
 
 void
@@ -268,7 +268,7 @@ shape_set_stroke_dash_cap (Shape *shape, PenLineCap cap)
 PenLineCap
 shape_get_stroke_start_line_cap (Shape *shape)
 {
-	return (PenLineCap) shape->GetValue (Shape::StrokeStartLineCapProperty)->u.i32;
+	return (PenLineCap) shape->GetValue (Shape::StrokeStartLineCapProperty)->AsInt32();
 }
 
 void
@@ -280,7 +280,7 @@ shape_set_stroke_start_line_cap (Shape *shape, PenLineCap cap)
 PenLineCap
 shape_get_stroke_end_line_cap (Shape *shape)
 {
-	return (PenLineCap) shape->GetValue (Shape::StrokeEndLineCapProperty)->u.i32;
+	return (PenLineCap) shape->GetValue (Shape::StrokeEndLineCapProperty)->AsInt32();
 }
 
 void
@@ -292,7 +292,7 @@ shape_set_stroke_end_line_cap (Shape *shape, PenLineCap cap)
 double
 shape_get_stroke_dash_offset (Shape *shape)
 {
-	return shape->GetValue (Shape::StrokeDashOffsetProperty)->u.d;
+	return shape->GetValue (Shape::StrokeDashOffsetProperty)->AsDouble();
 }
 
 void
@@ -304,7 +304,7 @@ shape_set_stroke_dash_offset (Shape *shape, double offset)
 double
 shape_get_stroke_miter_limit (Shape *shape)
 {
-	return shape->GetValue (Shape::StrokeMiterLimitProperty)->u.d;
+	return shape->GetValue (Shape::StrokeMiterLimitProperty)->AsDouble();
 }
 
 void
@@ -316,7 +316,7 @@ shape_set_stroke_miter_limit (Shape *shape, double limit)
 double
 shape_get_stroke_thickness (Shape *shape)
 {
-	return shape->GetValue (Shape::StrokeThicknessProperty)->u.d;
+	return shape->GetValue (Shape::StrokeThicknessProperty)->AsDouble();
 }
 
 void
@@ -328,7 +328,7 @@ shape_set_stroke_thickness (Shape *shape, double thickness)
 PenLineJoin
 shape_get_stroke_line_join (Shape *shape)
 {
-	return (PenLineJoin) shape->GetValue (Shape::StrokeLineJoinProperty)->u.i32;
+	return (PenLineJoin) shape->GetValue (Shape::StrokeLineJoinProperty)->AsInt32();
 }
 
 void
@@ -351,8 +351,9 @@ shape_get_stroke_dash_array (Shape *shape, int *count)
 		return NULL;
 	}
 
-	*count = value->u.double_array->count;
-	return value->u.double_array->values;
+	DoubleArray *da = value->AsDoubleArray();
+	*count = da->count;
+	return da->values;
 }
 
 void
@@ -415,7 +416,7 @@ Rectangle::getxformorigin ()
 double
 rectangle_get_radius_x (Rectangle *rectangle)
 {
-	return rectangle->GetValue (Rectangle::RadiusXProperty)->u.d;
+	return rectangle->GetValue (Rectangle::RadiusXProperty)->AsDouble();
 }
 
 void
@@ -427,7 +428,7 @@ rectangle_set_radius_x (Rectangle *rectangle, double value)
 double
 rectangle_get_radius_y (Rectangle *rectangle)
 {
-	return rectangle->GetValue (Rectangle::RadiusYProperty)->u.d;
+	return rectangle->GetValue (Rectangle::RadiusYProperty)->AsDouble();
 }
 
 void
@@ -472,7 +473,7 @@ Line::getxformorigin ()
 double
 line_get_x1 (Line *line)
 {
-	return line->GetValue (Line::X1Property)->u.d;
+	return line->GetValue (Line::X1Property)->AsDouble();
 }
 
 void
@@ -484,7 +485,7 @@ line_set_x1 (Line *line, double value)
 double
 line_get_y1 (Line *line)
 {
-	return line->GetValue (Line::Y1Property)->u.d;
+	return line->GetValue (Line::Y1Property)->AsDouble();
 }
 
 void
@@ -496,7 +497,7 @@ line_set_y1 (Line *line, double value)
 double
 line_get_x2 (Line *line)
 {
-	return line->GetValue (Line::X2Property)->u.d;
+	return line->GetValue (Line::X2Property)->AsDouble();
 }
 
 void
@@ -508,7 +509,7 @@ line_set_x2 (Line *line, double value)
 double
 line_get_y2 (Line *line)
 {
-	return line->GetValue (Line::Y2Property)->u.d;
+	return line->GetValue (Line::Y2Property)->AsDouble();
 }
 
 void
@@ -558,7 +559,7 @@ Polygon::Draw (Surface *s)
 FillRule
 polygon_get_fill_rule (Polygon *polygon)
 {
-	return (FillRule) polygon->GetValue (Polygon::FillRuleProperty)->u.i32;
+	return (FillRule) polygon->GetValue (Polygon::FillRuleProperty)->AsInt32();
 }
 
 void
@@ -581,8 +582,9 @@ polygon_get_points (Polygon *polygon, int *count)
 		return NULL;
 	}
 
-	*count = value->u.point_array->count;
-	return value->u.point_array->points;
+	PointArray *pa = value->AsPointArray();
+	*count = pa->count;
+	return pa->points;
 }
 
 void
@@ -624,7 +626,7 @@ Polyline::Draw (Surface *s)
 FillRule
 polyline_get_fill_rule (Polyline *polyline)
 {
-	return (FillRule) polyline->GetValue (Polyline::FillRuleProperty)->u.i32;
+	return (FillRule) polyline->GetValue (Polyline::FillRuleProperty)->AsInt32();
 }
 
 void
@@ -647,8 +649,9 @@ polyline_get_points (Polyline *polyline, int *count)
 		return NULL;
 	}
 
-	*count = value->u.point_array->count;
-	return value->u.point_array->points;
+	PointArray *pa = value->AsPointArray();
+	*count = pa->count;
+	return pa->points;
 }
 
 void
@@ -693,7 +696,7 @@ Geometry*
 path_get_data (Path *path)
 {
 	Value *value = path->GetValue (Path::DataProperty);
-	return (Geometry*) (value ? value->u.dependency_object : NULL);
+	return (value ? value->AsGeometry() : NULL);
 }
 
 void

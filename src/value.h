@@ -6,9 +6,11 @@
 */
 
 struct Color;
+struct DoubleArray;
 struct Duration;
 struct KeyTime;
 struct Point;
+struct PointArray;
 struct Rect;
 struct RepeatBehavior;
 
@@ -104,6 +106,7 @@ public:
 		TIMELINEGROUP,
 		PARALLELTIMELINE,
 		TRANSFORM,
+		TRANSFORMGROUP,
 		ROTATETRANSFORM,
 		SCALETRANSFORM,
 		TRANSLATETRANSFORM,
@@ -171,24 +174,6 @@ public:
 		LASTTYPE
 	};
 
-	Kind k;
-	union {
-		double d;
-		guint64 ui64;
-		gint64 i64;
-		gint32 i32;
-		char *s;
-		DependencyObject *dependency_object;
-		Color *color;
-		Point *point;
-		Rect *rect;
-		RepeatBehavior *repeat;
-		Duration *duration;
-		KeyTime *keytime;
-		PointArray *point_array;
-		DoubleArray *double_array;
-	} u;
-
 	void Init ();
 
 	Value ();
@@ -237,12 +222,21 @@ public:
 	guint64         AsUint64 ();
 	gint64          AsInt64 ();
 	gint32          AsInt32 ();
+
+	double*         AsNullableDouble ();
+	guint64*        AsNullableUint64 ();
+	gint64*         AsNullableInt64 ();
+	gint32*         AsNullableInt32 ();
+
 	Color*          AsColor ();
 	Point*          AsPoint ();
 	Rect*           AsRect  ();
+	char*           AsString ();
 	RepeatBehavior* AsRepeatBehavior ();
 	Duration*       AsDuration ();
 	KeyTime*        AsKeyTime ();
+	PointArray*     AsPointArray ();
+	DoubleArray*     AsDoubleArray ();
 
 	DependencyObject*             AsDependencyObject ();
 	UIElement*                    AsUIElement ();
@@ -252,6 +246,7 @@ public:
 	TimelineGroup*                AsTimelineGroup ();
 	ParallelTimeline*             AsParallelTimeline ();
 	Transform*                    AsTransform ();
+	TransformGroup*               AsTransformGroup ();
 	RotateTransform*              AsRotateTransform ();
 	ScaleTransform*               AsScaleTransform ();
 	TranslateTransform*           AsTranslateTransform ();
@@ -301,7 +296,26 @@ public:
 	VisualCollection*             AsVisualCollection ();
 
   
+	Kind k;
   private:
+	union {
+		double d;
+		guint64 ui64;
+		gint64 i64;
+		gint32 i32;
+		char *s;
+		DependencyObject *dependency_object;
+		Color *color;
+		Point *point;
+		Rect *rect;
+		RepeatBehavior *repeat;
+		Duration *duration;
+		KeyTime *keytime;
+		PointArray *point_array;
+		DoubleArray *double_array;
+	} u;
+
+
 	// You don't want to be using this ctor.  it's here to help
 	// c++ recognize bad unspecified pointer args to Value ctors
 	// (it normally converts them to bool, which we handle, so you

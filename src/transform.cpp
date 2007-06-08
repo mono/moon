@@ -65,7 +65,7 @@ rotate_transform_set_angle (RotateTransform *t, double angle)
 double
 rotate_transform_get_angle (RotateTransform *t)
 {
-	return t->GetValue (RotateTransform::AngleProperty)->u.d;
+	return t->GetValue (RotateTransform::AngleProperty)->AsDouble();
 }
 
 void
@@ -77,7 +77,7 @@ rotate_transform_set_center_x (RotateTransform *t, double centerX)
 double
 rotate_transform_get_center_x (RotateTransform *t)
 {
-	return t->GetValue (RotateTransform::CenterXProperty)->u.d;
+	return t->GetValue (RotateTransform::CenterXProperty)->AsDouble();
 }
 
 void
@@ -89,7 +89,7 @@ rotate_transform_set_center_y (RotateTransform *t, double centerY)
 double
 rotate_transform_get_center_y (RotateTransform *t)
 {
-	return t->GetValue (RotateTransform::CenterYProperty)->u.d;
+	return t->GetValue (RotateTransform::CenterYProperty)->AsDouble();
 }
 
 
@@ -123,7 +123,7 @@ translate_transform_set_x (TranslateTransform *t, double x)
 double
 translate_transform_get_x (TranslateTransform *t)
 {
-	return t->GetValue (TranslateTransform::XProperty)->u.d;
+	return t->GetValue (TranslateTransform::XProperty)->AsDouble();
 }
 
 void
@@ -135,7 +135,7 @@ translate_transform_set_y (TranslateTransform *t, double y)
 double
 translate_transform_get_y (TranslateTransform *t)
 {
-	return t->GetValue (TranslateTransform::YProperty)->u.d;
+	return t->GetValue (TranslateTransform::YProperty)->AsDouble();
 }
 
 
@@ -182,7 +182,7 @@ scale_transform_set_scale_x (ScaleTransform *t, double scaleX)
 double
 scale_transform_get_scale_x (ScaleTransform *t)
 {
-	return t->GetValue (ScaleTransform::ScaleXProperty)->u.d;
+	return t->GetValue (ScaleTransform::ScaleXProperty)->AsDouble();
 }
 
 void
@@ -195,7 +195,7 @@ scale_transform_set_scale_y (ScaleTransform *t, double scaleY)
 double
 scale_transform_get_scale_y (ScaleTransform *t)
 {
-	return t->GetValue (ScaleTransform::ScaleYProperty)->u.d;
+	return t->GetValue (ScaleTransform::ScaleYProperty)->AsDouble();
 }
 
 void
@@ -207,7 +207,7 @@ scale_transform_set_center_x (ScaleTransform *t, double centerX)
 double
 scale_transform_get_center_x (ScaleTransform *t)
 {
-	return t->GetValue (ScaleTransform::CenterXProperty)->u.d;
+	return t->GetValue (ScaleTransform::CenterXProperty)->AsDouble();
 }
 
 void
@@ -219,7 +219,7 @@ scale_transform_set_center_y (ScaleTransform *t, double centerY)
 double
 scale_transform_get_center_y (ScaleTransform *t)
 {
-	return t->GetValue (ScaleTransform::CenterYProperty)->u.d;
+	return t->GetValue (ScaleTransform::CenterYProperty)->AsDouble();
 }
 
 

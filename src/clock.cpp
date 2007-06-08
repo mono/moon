@@ -348,7 +348,7 @@ Timeline::SetRepeatBehavior (RepeatBehavior behavior)
 RepeatBehavior *
 Timeline::GetRepeatBehavior ()
 {
-	return GetValue (Timeline::RepeatBehaviorProperty)->u.repeat;
+	return GetValue (Timeline::RepeatBehaviorProperty)->AsRepeatBehavior();
 }
 
 void
@@ -360,7 +360,7 @@ Timeline::SetAutoReverse (bool autoreverse)
 bool
 Timeline::GetAutoReverse ()
 {
-	return (bool) GetValue (Timeline::AutoReverseProperty)->u.i32;
+	return GetValue (Timeline::AutoReverseProperty)->AsBool();
 }
 
 void
@@ -372,7 +372,7 @@ Timeline::SetDuration (Duration duration)
 Duration*
 Timeline::GetDuration ()
 {
-	return GetValue (Timeline::DurationProperty)->u.duration;
+	return GetValue (Timeline::DurationProperty)->AsDuration();
 }
 
 

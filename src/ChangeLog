@@ -1,3 +1,18 @@
+2007-06-08  Chris Toshok  <toshok@ximian.com>
+
+	* globally: move away from all uses of Value::u union.  switch
+	everything to using Value::As* methods, which do typechecking and
+	safe downcasting.
+	
+	* value.h: make the union private to catch anyone accessing it
+	directly.
+
+	* runtime.cpp (IsSubclassOf): return true if type == super.  Not
+	strictly "subclass", but it makes this method a little more
+	useful/efficient.  Add As* methods for string, point arrays, and
+	double arrays, and add nullable As* methods for the types which
+	don't return pointers already.
+
 2007-06-09  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Parse time spans correctly.

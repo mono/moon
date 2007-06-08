@@ -30,7 +30,7 @@ DependencyProperty* Geometry::TransformProperty;
 FillRule
 geometry_get_fill_rule (Geometry *geometry)
 {
-	return (FillRule) geometry->GetValue (Geometry::FillRuleProperty)->u.i32;
+	return (FillRule) geometry->GetValue (Geometry::FillRuleProperty)->AsInt32();
 }
 
 void
@@ -43,7 +43,7 @@ Transform*
 geometry_get_transform (Geometry *geometry)
 {
 	Value *value = geometry->GetValue (Geometry::TransformProperty);
-	return (Transform*) (value ? value->u.dependency_object : NULL);
+	return value ? value->AsTransform() : NULL;
 }
 
 void
@@ -95,7 +95,7 @@ Point*
 ellipse_geometry_get_center (EllipseGeometry *ellipse_geometry)
 {
 	Value *value = ellipse_geometry->GetValue (EllipseGeometry::CenterProperty);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -107,7 +107,7 @@ ellipse_geometry_set_center (EllipseGeometry *ellipse_geometry, Point *point)
 double
 ellipse_geometry_get_radius_x (EllipseGeometry *ellipse_geometry)
 {
-	return ellipse_geometry->GetValue (EllipseGeometry::RadiusXProperty)->u.d;
+	return ellipse_geometry->GetValue (EllipseGeometry::RadiusXProperty)->AsDouble();
 }
 
 void
@@ -119,7 +119,7 @@ ellipse_geometry_set_radius_x (EllipseGeometry *ellipse_geometry, double radius_
 double
 ellipse_geometry_get_radius_y (EllipseGeometry *ellipse_geometry)
 {
-	return ellipse_geometry->GetValue (EllipseGeometry::RadiusYProperty)->u.d;
+	return ellipse_geometry->GetValue (EllipseGeometry::RadiusYProperty)->AsDouble();
 }
 
 void
@@ -157,7 +157,7 @@ Point*
 line_geometry_get_end_point (LineGeometry* line_geometry)
 {
 	Value *value = line_geometry->GetValue (LineGeometry::EndPointProperty);
-	return (value ? value->u.point : new Point ());
+	return (value ? value->AsPoint() : new Point ());
 }
 
 void
@@ -170,7 +170,7 @@ Point*
 line_geometry_get_start_point (LineGeometry* line_geometry)
 {
 	Value *value = line_geometry->GetValue (LineGeometry::StartPointProperty);
-	return (value ? value->u.point : new Point ());
+	return (value ? value->AsPoint() : new Point ());
 }
 
 void
@@ -227,7 +227,7 @@ DependencyProperty* RectangleGeometry::RectProperty;
 double
 rectangle_geometry_get_radius_x (RectangleGeometry *rectangle_geometry)
 {
-	return rectangle_geometry->GetValue (RectangleGeometry::RadiusXProperty)->u.d;
+	return rectangle_geometry->GetValue (RectangleGeometry::RadiusXProperty)->AsDouble();
 }
 
 void
@@ -239,7 +239,7 @@ rectangle_geometry_set_radius_x (RectangleGeometry *rectangle_geometry, double r
 double
 rectangle_geometry_get_radius_y (RectangleGeometry *rectangle_geometry)
 {
-	return rectangle_geometry->GetValue (RectangleGeometry::RadiusYProperty)->u.d;
+	return rectangle_geometry->GetValue (RectangleGeometry::RadiusYProperty)->AsDouble();
 }
 
 void
@@ -252,7 +252,7 @@ Rect*
 rectangle_geometry_get_rect (RectangleGeometry *rectangle_geometry)
 {
 	Value *value = rectangle_geometry->GetValue (RectangleGeometry::RectProperty);
-	return (value ? value->u.rect : NULL);
+	return (value ? value->AsRect() : NULL);
 }
 
 void
@@ -303,7 +303,7 @@ path_figure_new ()
 bool
 path_figure_get_is_closed (PathFigure *path_figure)
 {
-	return (bool) path_figure->GetValue (PathFigure::IsClosedProperty)->u.i32;
+	return path_figure->GetValue (PathFigure::IsClosedProperty)->AsBool();
 }
 
 void
@@ -315,7 +315,7 @@ path_figure_set_is_closed (PathFigure *path_figure, bool closed)
 bool
 path_figure_get_is_filled (PathFigure *path_figure)
 {
-	return (bool) path_figure->GetValue (PathFigure::IsFilledProperty)->u.i32;
+	return path_figure->GetValue (PathFigure::IsFilledProperty)->AsBool();
 }
 
 void
@@ -330,7 +330,7 @@ Point*
 path_figure_get_start_point (PathFigure *path_figure)
 {
 	Value *value = path_figure->GetValue (PathFigure::StartPointProperty);
-	return (value ? value->u.point : new Point (0, 0));
+	return (value ? value->AsPoint() : new Point (0, 0));
 }
 
 void
@@ -378,7 +378,7 @@ arc_segment_new ()
 bool
 arc_segment_get_is_large_arc (ArcSegment *segment)
 {
-	return (bool) segment->GetValue (ArcSegment::IsLargeArcProperty)->u.i32;
+	return segment->GetValue (ArcSegment::IsLargeArcProperty)->AsBool();
 }
 
 void
@@ -391,7 +391,7 @@ Point*
 arc_segment_get_point (ArcSegment *segment)
 {
 	Value *value = segment->GetValue (ArcSegment::PointProperty);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -403,7 +403,7 @@ arc_segment_set_point (ArcSegment *segment, Point *point)
 double
 arc_segment_get_rotation_angle (ArcSegment *segment)
 {
-	return segment->GetValue (ArcSegment::RotationAngleProperty)->u.d;
+	return segment->GetValue (ArcSegment::RotationAngleProperty)->AsDouble();
 }
 
 void
@@ -416,7 +416,7 @@ Point*
 arc_segment_get_size (ArcSegment *segment)
 {
 	Value *value = segment->GetValue (ArcSegment::SizeProperty);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -428,7 +428,7 @@ arc_segment_set_size (ArcSegment *segment, Point *size)
 SweepDirection
 arc_segment_get_sweep_direction (ArcSegment *segment)
 {
-	return (SweepDirection) segment->GetValue (ArcSegment::SweepDirectionProperty)->u.i32;
+	return (SweepDirection) segment->GetValue (ArcSegment::SweepDirectionProperty)->AsInt32();
 }
 
 void
@@ -455,7 +455,7 @@ Point*
 bezier_segment_get_point1 (BezierSegment *segment)
 {
 	Value *value = segment->GetValue (BezierSegment::Point1Property);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -468,7 +468,7 @@ Point*
 bezier_segment_get_point2 (BezierSegment *segment)
 {
 	Value *value = segment->GetValue (BezierSegment::Point2Property);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -481,7 +481,7 @@ Point*
 bezier_segment_get_point3 (BezierSegment *segment)
 {
 	Value *value = segment->GetValue (BezierSegment::Point3Property);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -506,7 +506,7 @@ Point*
 line_segment_get_point (LineSegment *segment)
 {
 	Value *value = segment->GetValue (LineSegment::PointProperty);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -541,8 +541,9 @@ poly_bezier_segment_get_points (PolyBezierSegment *segment, int *count)
 		return NULL;
 	}
 
-	*count = value->u.point_array->count;
-	return value->u.point_array->points;
+	PointArray *pa = value->AsPointArray();
+	*count = pa->count;
+	return pa->points;
 }
 
 void
@@ -577,8 +578,9 @@ poly_line_segment_get_points (PolyLineSegment *segment, int *count)
 		return NULL;
 	}
 
-	*count = value->u.point_array->count;
-	return value->u.point_array->points;
+	PointArray *pa = value->AsPointArray();
+	*count = pa->count;
+	return pa->points;
 }
 
 void
@@ -613,8 +615,9 @@ poly_quadratic_segment_get_points (PolyQuadraticBezierSegment *segment, int *cou
 		return NULL;
 	}
 
-	*count = value->u.point_array->count;
-	return value->u.point_array->points;
+	PointArray *pa = value->AsPointArray();
+	*count = pa->count;
+	return pa->points;
 }
 
 void
@@ -640,7 +643,7 @@ Point*
 quadratic_bezier_segment_get_point1 (QuadraticBezierSegment *segment)
 {
 	Value *value = segment->GetValue (QuadraticBezierSegment::Point1Property);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -653,7 +656,7 @@ Point*
 quadratic_bezier_segment_get_point2 (QuadraticBezierSegment *segment)
 {
 	Value *value = segment->GetValue (QuadraticBezierSegment::Point2Property);
-	return (value ? value->u.point : NULL);
+	return (value ? value->AsPoint() : NULL);
 }
 
 void

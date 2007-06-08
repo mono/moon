@@ -185,7 +185,7 @@ char*
 Storyboard::GetTargetProperty (DependencyObject *o)
 {
 	Value *v = o->GetValue (Storyboard::TargetPropertyProperty);
-	return v == NULL ? NULL : v->u.s;
+	return v == NULL ? NULL : v->AsString();
 }
 
 void
@@ -199,7 +199,7 @@ char*
 Storyboard::GetTargetName (DependencyObject *o)
 {
 	Value *v = o->GetValue (Storyboard::TargetNameProperty);
-	return v == NULL ? NULL : v->u.s;
+	return v == NULL ? NULL : v->AsString();
 }
 
 
@@ -224,7 +224,7 @@ BeginStoryboard::SetStoryboard (Storyboard *sb)
 Storyboard *
 BeginStoryboard::GetStoryboard ()
 {
-	return (Storyboard *) GetValue (BeginStoryboard::StoryboardProperty)->u.dependency_object;
+	return GetValue (BeginStoryboard::StoryboardProperty)->AsStoryboard();
 }
 
 BeginStoryboard *
@@ -252,7 +252,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	double* to = GetTo ();
 	double* by = GetBy ();
 
-	double start = from ? *from : defaultOriginValue->u.d;
+	double start = from ? *from : defaultOriginValue->AsDouble();
 	double end;
 
 	if (to) {
@@ -297,7 +297,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	Color *from = GetFrom ();
 	Color *to = GetTo ();
 
-	Color start = from ? *from : *defaultOriginValue->u.color;
+	Color start = from ? *from : *defaultOriginValue->AsColor();
 	Color end;
 
 	if (to) {
@@ -337,7 +337,7 @@ Color*
 color_animation_get_by (ColorAnimation *da)
 {
 	Value *v = da->GetValue (ColorAnimation::ByProperty);
-	return v == NULL ? NULL : v->u.color;
+	return v == NULL ? NULL : v->AsColor();
 }
 
 void
@@ -350,7 +350,7 @@ Color*
 color_animation_get_from (ColorAnimation *da)
 {
 	Value *v = da->GetValue (ColorAnimation::FromProperty);
-	return v == NULL ? NULL : v->u.color;
+	return v == NULL ? NULL : v->AsColor();
 }
 
 void
@@ -363,7 +363,7 @@ Color*
 color_animation_get_to (ColorAnimation *da)
 {
 	Value *v = da->GetValue (ColorAnimation::ToProperty);
-	return v == NULL ? NULL : v->u.color;
+	return v == NULL ? NULL : v->AsColor();
 }
 
 
@@ -382,7 +382,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	Point *from = GetFrom ();
 	Point *to = GetTo ();
 
-	Point start = from ? *from : *defaultOriginValue->u.point;
+	Point start = from ? *from : *defaultOriginValue->AsPoint();
 	Point end;
 
 	if (to) {
@@ -419,7 +419,7 @@ Point*
 point_animation_get_by (PointAnimation *da)
 {
 	Value *v = da->GetValue (PointAnimation::ByProperty);
-	return v == NULL ? NULL : v->u.point;
+	return v == NULL ? NULL : v->AsPoint();
 }
 
 void
@@ -432,7 +432,7 @@ Point*
 point_animation_get_from (PointAnimation *da)
 {
 	Value *v = da->GetValue (PointAnimation::FromProperty);
-	return v == NULL ? NULL : v->u.point;
+	return v == NULL ? NULL : v->AsPoint();
 }
 
 void
@@ -445,7 +445,7 @@ Point*
 point_animation_get_to (PointAnimation *da)
 {
 	Value *v = da->GetValue (PointAnimation::ToProperty);
-	return v == NULL ? NULL : v->u.point;
+	return v == NULL ? NULL : v->AsPoint();
 }
 
 
@@ -459,7 +459,7 @@ KeyFrame::KeyFrame ()
 KeyTime*
 KeyFrame::GetKeyTime()
 {
-	return GetValue (KeyFrame::KeyTimeProperty)->u.keytime;
+	return GetValue (KeyFrame::KeyTimeProperty)->AsKeyTime();
 }
 
 void
@@ -598,14 +598,14 @@ SET_NULLABLE_FUNC(double)
 SET_NULLABLE_FUNC(Color)
 SET_NULLABLE_FUNC(Point)
 
-NULLABLE_GETSET_IMPL (DoubleAnimation, By, double, Double, &v->u.d)
-NULLABLE_GETSET_IMPL (DoubleAnimation, To, double, Double, &v->u.d)
-NULLABLE_GETSET_IMPL (DoubleAnimation, From, double, Double, &v->u.d)
+NULLABLE_PRIM_GETSET_IMPL (DoubleAnimation, By, double, Double)
+NULLABLE_PRIM_GETSET_IMPL (DoubleAnimation, To, double, Double)
+NULLABLE_PRIM_GETSET_IMPL (DoubleAnimation, From, double, Double)
 
-NULLABLE_GETSET_IMPL (ColorAnimation, By, Color, Color, v->u.color)
-NULLABLE_GETSET_IMPL (ColorAnimation, To, Color, Color, v->u.color)
-NULLABLE_GETSET_IMPL (ColorAnimation, From, Color, Color, v->u.color)
+NULLABLE_GETSET_IMPL (ColorAnimation, By, Color, Color)
+NULLABLE_GETSET_IMPL (ColorAnimation, To, Color, Color)
+NULLABLE_GETSET_IMPL (ColorAnimation, From, Color, Color)
 
-NULLABLE_GETSET_IMPL (PointAnimation, By, Point, Point, v->u.point)
-NULLABLE_GETSET_IMPL (PointAnimation, To, Point, Point, v->u.point)
-NULLABLE_GETSET_IMPL (PointAnimation, From, Point, Point, v->u.point)
+NULLABLE_GETSET_IMPL (PointAnimation, By, Point, Point)
+NULLABLE_GETSET_IMPL (PointAnimation, To, Point, Point)
+NULLABLE_GETSET_IMPL (PointAnimation, From, Point, Point)

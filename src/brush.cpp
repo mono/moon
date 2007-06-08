@@ -33,7 +33,7 @@ DependencyProperty* Brush::TransformProperty;
 double
 brush_get_opacity (Brush *brush)
 {
-	return brush->GetValue (Brush::OpacityProperty)->u.d;
+	return brush->GetValue (Brush::OpacityProperty)->AsDouble();
 }
 
 void
@@ -46,7 +46,7 @@ TransformGroup*
 brush_get_relative_transform (Brush *brush)
 {
 	Value *value = brush->GetValue (Brush::RelativeTransformProperty);
-	return (TransformGroup*) (value ? value->u.dependency_object : NULL);
+	return value ? value->AsTransformGroup() : NULL;
 }
 
 void
@@ -59,7 +59,7 @@ TransformGroup*
 brush_get_transform (Brush *brush)
 {
 	Value *value = brush->GetValue (Brush::TransformProperty);
-	return (TransformGroup*) (value ? value->u.dependency_object : NULL);
+	return value ? value->AsTransformGroup() : NULL;
 }
 
 void
@@ -84,7 +84,7 @@ SolidColorBrush::SetupBrush (cairo_t *target)
 Color*
 solid_color_brush_get_color (SolidColorBrush *solid_color_brush)
 {
-	return solid_color_brush->GetValue (SolidColorBrush::ColorProperty)->u.color;
+	return solid_color_brush->GetValue (SolidColorBrush::ColorProperty)->AsColor();
 }
 
 void

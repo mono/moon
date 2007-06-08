@@ -169,10 +169,15 @@ static void SetNullable##t##Prop (DependencyObject *obj, DependencyProperty *pro
     obj->SetValue (prop, Value(*pv)); \
 }
 
-#define NULLABLE_GETSET_IMPL(klass,prop,t,T,umem) \
+#define NULLABLE_GETSET_IMPL(klass,prop,t,T) \
 void klass::Set##prop (t v) { Set##prop (&v); } \
 void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
-t* klass::Get##prop () { Value* v = GetValue (klass::prop##Property);  return v ? (umem) : NULL; }
+t* klass::Get##prop () { Value* v = GetValue (klass::prop##Property);  return v ? v->As##T () : NULL; }
+
+#define NULLABLE_PRIM_GETSET_IMPL(klass,prop,t,T) \
+void klass::Set##prop (t v) { Set##prop (&v); } \
+void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
+t* klass::Get##prop () { Value* v = GetValue (klass::prop##Property);  return v ? v->AsNullable##T () : NULL; }
 
 
 class DoubleAnimation : public Animation/*Timeline*/ {
