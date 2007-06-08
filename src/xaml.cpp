@@ -567,7 +567,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				// Only solid color brushes can be specified using attribute syntax
 				SolidColorBrush *scb = solid_color_brush_new ();
 				solid_color_brush_set_color (scb, color_from_str (attr [i + 1]));
-				dep->SetValue (prop, Value (scb));
+				dep->SetValue (prop, Value (scb, prop->value_type));
 			}
 				break;
 			case Value::POINT:
@@ -575,6 +575,20 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				break;
 			case Value::RECT:
 				dep->SetValue (prop, Value (rect_from_str (attr [i + 1])));
+				break;
+			case Value::DOUBLE_ARRAY:
+			{
+				int count = 0;
+				double *doubles = double_array_from_str (attr [i + 1], &count);
+				dep->SetValue (prop, Value (doubles, count));
+			}
+				break;
+			case Value::POINT_ARRAY:
+			{
+				int count = 0;
+				Point *points = point_array_from_str (attr [i + 1], &count);
+				dep->SetValue (prop, Value (points, count));
+			}
 				break;
 			default:
 #ifdef DEBUG_XAML

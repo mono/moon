@@ -85,6 +85,14 @@ point_from_str (const char *s)
 	return Point (x, y);
 }
 
+Point*
+point_array_from_str (const char *s, int* count)
+{
+	// TODO
+	*count = 0;
+	return NULL;
+}
+
 Rect
 rect_from_str (const char *s)
 {
@@ -101,6 +109,28 @@ rect_from_str (const char *s)
 	if (next)
 		h = strtod (++next, &next);
 	return Rect (x, y, w, h);
+}
+
+double*
+double_array_from_str (const char *s, int* count)
+{
+	int i, n;
+	// FIXME - what are all the valid separators ? I've seen ',' and ' '
+	char** values = g_strsplit_set (s, ", ", 0);
+
+	// count non-NULL entries (which means we must skip NULLs later too)
+	for (n = 0; values[n]; n++);
+	*count = n;
+
+	double *doubles = new double [n];
+	for (i = 0, n = 0; i < *count; i++) {
+		char *value = values[i];
+		if (value)
+			doubles[n++] = strtod (value, NULL);
+	}
+
+	g_strfreev (values);
+	return doubles;
 }
 
 /**
@@ -232,6 +262,19 @@ Value::Value (const char* s)
 	u.s= strdup (s);
 }
 
+Value::Value (Point *points, int count)
+{
+	Init ();
+	k = POINT_ARRAY;
+	u.point_array = new PointArray (points, count);
+}
+
+Value::Value (double *values, int count)
+{
+	Init ();
+	k = DOUBLE_ARRAY;
+	u.double_array = new DoubleArray (values, count);
+}
 
 Value::~Value ()
 {
@@ -1325,6 +1368,8 @@ types_init ()
 	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR);
 	Type::RegisterType ("Duration", Value::DURATION);
 	Type::RegisterType ("int64", Value::INT64);
+	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
+	Type::RegisterType ("Point*", Value::POINT_ARRAY);
 
 	Type::RegisterType ("DependencyObject", Value::DEPENDENCY_OBJECT);
 

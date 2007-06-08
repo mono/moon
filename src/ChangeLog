@@ -1,3 +1,10 @@
+2007-06-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Add DP support for StrokeDashArray (double*).
+	* runtime.cpp|h: Add double* and Point* (array) support to Value.
+	* xaml.cpp: Add DOUBLE_ARRAY and POINT_ARRAY support. Supply value 
+	kind for brushes to avoid runtime warnings.
+
 2007-06-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp, runtime.h: Implemented a type system that tracks

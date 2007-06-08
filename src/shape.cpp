@@ -152,9 +152,12 @@ Shape::DoDraw (Surface *s, bool do_op)
 	Brush *stroke = shape_get_stroke (this);
 	if (stroke){
 		cairo_set_line_width (s->cairo, shape_get_stroke_thickness (this));
-		if (stroke_dash_array) {
+
+		int count = 0;
+		double *dashes = shape_get_stroke_dash_array (this, &count);
+		if (dashes && (count > 0)) {
 			double offset = shape_get_stroke_dash_offset (this);
-			cairo_set_dash (s->cairo, stroke_dash_array, stroke_dash_array_count, offset);
+			cairo_set_dash (s->cairo, dashes, count, offset);
 		}
 		cairo_set_miter_limit (s->cairo, shape_get_stroke_miter_limit (this));
 		cairo_set_line_join (s->cairo, convert_line_join (shape_get_stroke_line_join (this)));
@@ -209,7 +212,7 @@ shape_set_fill (Shape *shape, Brush *fill)
 		base_unref (current_fill);
 
 	base_ref (fill);
-	shape->SetValue (Shape::FillProperty, Value (fill));
+	shape->SetValue (Shape::FillProperty, Value (fill, Value::BRUSH));
 }
 
 Brush*
@@ -227,7 +230,7 @@ shape_set_stroke (Shape *shape, Brush *stroke)
 		base_unref (current_stroke);
 
 	base_ref (stroke);
-	shape->SetValue (Shape::StrokeProperty, Value (stroke));
+	shape->SetValue (Shape::StrokeProperty, Value (stroke, Value::BRUSH));
 }
 
 Stretch
@@ -326,12 +329,28 @@ shape_set_stroke_line_join (Shape *shape, PenLineJoin join)
 	shape->SetValue (Shape::StrokeLineJoinProperty, Value (join));
 }
 
+/*
+ * note: We return a reference, not a copy, of the dashes. Not a big issue as
+ * Silverlight Shape.StrokeDashArray only has a setter (no getter), so it's 
+ * use is only internal.
+ */
+double*
+shape_get_stroke_dash_array (Shape *shape, int *count)
+{
+	Value *value = shape->GetValue (Shape::StrokeDashArrayProperty);
+	if (!value) {
+		*count = 0;
+		return NULL;
+	}
+
+	*count = value->u.double_array->count;
+	return value->u.double_array->values;
+}
+
 void
 shape_set_stroke_dash_array (Shape *shape, double* dashes, int count)
 {
-	// FIXME - move to DependencyObject
-	shape->stroke_dash_array = dashes;
-	shape->stroke_dash_array_count = count;
+	shape->SetValue (Shape::StrokeDashArrayProperty, Value (dashes, count));
 }
 
 //
@@ -621,7 +640,7 @@ path_get_data (Path *path)
 void
 path_set_data (Path *path, Geometry* data)
 {
-	path->SetValue (Path::DataProperty, Value (data));
+	path->SetValue (Path::DataProperty, Value (data, Value::GEOMETRY));
 }
 
 Path*
@@ -642,7 +661,7 @@ shape_init ()
 	Shape::FillProperty = DependencyObject::Register (Value::SHAPE, "Fill", Value::BRUSH);
 	Shape::StretchProperty = DependencyObject::Register (Value::SHAPE, "Stretch", new Value (StretchFill));
 	Shape::StrokeProperty = DependencyObject::Register (Value::SHAPE, "Stroke", Value::BRUSH);
-	Shape::StrokeDashArrayProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashArray", new Value ());
+	Shape::StrokeDashArrayProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashArray", Value::DOUBLE_ARRAY);
 	Shape::StrokeDashCapProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
 	Shape::StrokeDashOffsetProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashOffset", new Value (0.0));
 	Shape::StrokeEndLineCapProperty = DependencyObject::Register (Value::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat));
@@ -663,11 +682,11 @@ shape_init ()
 
 	/* Polygon fields */
 	Polygon::FillRuleProperty = DependencyObject::Register (Value::POLYGON, "Fill", new Value (FillRuleEvenOdd));
-	Polygon::PointsProperty = DependencyObject::Register (Value::POLYGON, "Points", new Value ());
+	Polygon::PointsProperty = DependencyObject::Register (Value::POLYGON, "Points", Value::POINT_ARRAY);
 
 	/* Polyline fields */
 	Polyline::FillRuleProperty = DependencyObject::Register (Value::POLYLINE, "Fill", new Value (FillRuleEvenOdd));
-	Polyline::PointsProperty = DependencyObject::Register (Value::POLYLINE, "Points", new Value ());
+	Polyline::PointsProperty = DependencyObject::Register (Value::POLYLINE, "Points", Value::POINT_ARRAY);
 
 	/* Path fields */
 	Path::DataProperty = DependencyObject::Register (Value::PATH, "Data", Value::GEOMETRY);

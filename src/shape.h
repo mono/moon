@@ -28,9 +28,6 @@ void moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h
 class Shape : public FrameworkElement {
 	void DoDraw (Surface *s, bool do_op);
  public: 
-	double *stroke_dash_array;
-	int stroke_dash_array_count;
-
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;
 	static DependencyProperty* StrokeProperty;
@@ -43,7 +40,7 @@ class Shape : public FrameworkElement {
 	static DependencyProperty* StrokeStartLineCapProperty;
 	static DependencyProperty* StrokeThicknessProperty;
 
-	Shape () : stroke_dash_array (NULL), stroke_dash_array_count (0)
+	Shape ()
 	{
 		SetObjectType (Value::SHAPE);
 	}
@@ -88,6 +85,7 @@ double		shape_get_stroke_thickness	(Shape *shape);
 void		shape_set_stroke_thickness	(Shape *shape, double thickness);
 PenLineJoin	shape_get_stroke_line_join	(Shape *shape);
 void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin join);
+double*		shape_get_stroke_dash_array	(Shape *shape, int *count);
 void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 
 //
