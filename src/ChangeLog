@@ -1,3 +1,12 @@
+2007-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* animation.cpp|h: Implement BeginStoryboard
+	* runtime.cpp|h: Implement event triggers
+	- Fire a loaded event when we first render an element
+	* xaml.cpp: Implement parsing and loading storyboard and begin
+	storyboard as well as event triggers and some of the property
+	types that go with these guys.
+	
 2007-06-08  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (runtime_init): Add panel_init

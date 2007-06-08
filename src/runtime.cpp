@@ -361,6 +361,15 @@ item_set_render_transform (UIElement *item, Transform *transform)
 	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
 }
 
+void 
+framework_element_trigger_add (FrameworkElement *element, EventTrigger *trigger)
+{
+	EventTrigger *action = (EventTrigger *) trigger;
+
+	trigger->SetTarget (element);
+	collection_add (&element->triggers, trigger);
+}
+
 double
 framework_element_get_height (FrameworkElement *framework_element)
 {
@@ -646,6 +655,16 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		UIElement *item = (UIElement *) il->data;
 
 		item->render (s, x, y, width, height);
+
+		if (!(item->flags & UIElement::IS_LOADED)) {
+			item->flags |= UIElement::IS_LOADED;
+			item->events->Emit ("Loaded");
+		}
+	}
+
+	if (!(flags & UIElement::IS_LOADED)) {
+		flags |= UIElement::IS_LOADED;
+		events->Emit ("Loaded");
 	}
 }
 
@@ -1082,9 +1101,18 @@ SetNameScope (DependencyObject *obj, NameScope *scope)
 void
 EventTrigger::AddAction (TriggerAction *action)
 {
-	g_return_if_fail (action);
+	g_assert (action);
 
 	actions = g_slist_append (actions, action);
+}
+
+void
+EventTrigger::SetTarget (DependencyObject *target)
+{
+	g_assert (target);
+
+	// Despite the name, it can only be loaded (according to the docs)
+	target->events->AddHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
 }
 
 EventTrigger *
@@ -1100,6 +1128,17 @@ event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 	g_return_if_fail (action);
 
 	trigger->AddAction (action);
+}
+
+void
+event_trigger_fire_actions (EventTrigger *trigger)
+{
+	g_assert (trigger);
+
+	for (GSList *walk = trigger->actions; walk != NULL; walk = walk->next) {
+		TriggerAction *action = (TriggerAction *) walk->data;
+		action->Fire ();
+	}
 }
 
 DependencyProperty *NameScope::NameScopeProperty;

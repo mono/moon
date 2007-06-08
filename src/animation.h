@@ -519,6 +519,12 @@ class BeginStoryboard : public TriggerAction {
 		SetObjectType (Value::BEGINSTORYBOARD);
 	}
 
+	
+	void Fire ();
+
+	void SetStoryboard (Storyboard *sb);
+	Storyboard *GetStoryboard ();
+
 	static DependencyProperty* StoryboardProperty;
 };
 

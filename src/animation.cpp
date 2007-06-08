@@ -452,7 +452,7 @@ TimelineGroup::TimelineGroup ()
 ClockGroup*
 TimelineGroup::CreateClock ()
 {
-	ClockGroup* group = (ClockGroup*)AllocateClock ();
+	ClockGroup* group = new ClockGroup (this);
 	for (GList *l = child_timelines; l ; l = l->next) {
 		group->AddChild (((Timeline*)l->data)->AllocateClock ());
 	}
@@ -508,7 +508,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		DependencyProperty *prop = o->GetDependencyProperty (targetProperty);
 		if (!prop)
 			return;
-  
+
 
 		ac->HookupStorage (o, prop);
 		break;
@@ -569,6 +569,12 @@ Storyboard::Stop ()
 	root_clock->Stop ();
 }
 
+Storyboard *
+storyboard_new ()
+{
+	return new Storyboard ();
+}
+
 void
 Storyboard::SetTargetProperty (DependencyObject *o,
 			       char *targetProperty)
@@ -597,25 +603,36 @@ Storyboard::GetTargetName (DependencyObject *o)
 	return v == NULL ? NULL : v->u.s;
 }
 
-Storyboard *
-storyboard_new ()
-{
-	return new Storyboard ();
-}
-
-
-
 
 DependencyProperty* BeginStoryboard::StoryboardProperty;
+
+void
+BeginStoryboard::Fire ()
+{
+	Storyboard *sb = GetStoryboard ();
+
+	g_assert (sb);
+
+	sb->Begin ();
+}
+
+void
+BeginStoryboard::SetStoryboard (Storyboard *sb)
+{
+	SetValue (BeginStoryboard::StoryboardProperty, Value (sb));
+}
+
+Storyboard *
+BeginStoryboard::GetStoryboard ()
+{
+	return (Storyboard *) GetValue (BeginStoryboard::StoryboardProperty)->u.dependency_object;
+}
 
 BeginStoryboard *
 begin_storyboard_new ()
 {
 	return new BeginStoryboard ();
 }
-
-
-
 
 
 DependencyProperty* DoubleAnimation::ByProperty;
@@ -653,7 +670,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	double progress = animationClock->GetCurrentProgress ();
 
 	Value *v = new Value (LERP (start, end, progress));
-	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
+	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, *from, *to, progress);
 	return v;
 }
 

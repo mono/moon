@@ -24,6 +24,8 @@
 
 #define READ_BUFFER 1024
 
+extern NameScope *global_NameScope;
+
 GHashTable *element_map = NULL;
 
 class XamlElementInfo;
@@ -355,6 +357,16 @@ repeat_behavior_from_str (const char *str)
 	return RepeatBehavior (strtod (str, NULL));
 }
 
+Duration
+duration_from_str (const char *str)
+{
+	if (!g_strcasecmp ("Automatic", str))
+		return Duration::Automatic;
+	if (!g_strcasecmp ("Forever", str))
+		return Duration::Forever;
+	return Duration::FromSeconds (strtod (str, NULL));
+}
+
 XamlElementInstance *
 default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 {
@@ -367,6 +379,27 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 	return inst;
 }
 
+XamlElementInstance *
+create_event_trigger_instance (XamlParserInfo *p, XamlElementInfo *i)
+{
+	XamlElementInstance *inst = new XamlElementInstance (i);
+	EventTrigger *trigger = (EventTrigger *) i->create_item ();
+	
+	inst->element_name = i->name;
+	inst->element_type = XamlElementInstance::ELEMENT;
+	inst->item = trigger;
+
+	// this is pretty evil, once i work out some of the other issues
+	// in the parser, i will add a more clean way to do this
+	// probably a method that is called to notify an element that it
+	// was added to a property
+	XamlElementInstance *prop = p->current_element;
+	XamlElementInstance *owner = prop->parent;
+
+	trigger->SetTarget ((DependencyObject *) owner->item);
+
+	return inst;
+}
 
 ///
 /// Add Child funcs
@@ -391,10 +424,48 @@ event_trigger_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEle
 	event_trigger_action_add ((EventTrigger *) parent->item, (TriggerAction *) child->item);
 }
 
+void
+begin_storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	BeginStoryboard *bsb = (BeginStoryboard *) parent->item;
+	Storyboard *sb = (Storyboard *) child->item;
 
+	bsb->SetStoryboard (sb);
+}
+
+void
+storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	Storyboard *sb = (Storyboard *) parent->item;
+	Timeline *t = (Timeline *) child->item;
+
+	sb->AddChild (t);
+}
+
+		
 ///
 /// set property funcs
 ///
+
+// these are just a bunch of special cases
+void
+dependency_object_missed_property (XamlElementInstance *item, XamlElementInstance *prop, XamlElementInstance *value, char **prop_name)
+{
+	if (!strcmp ("Triggers", prop_name [1])) {
+
+		// Ensure that we are dealing with a framework element
+		bool is_fwe = false;
+		for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
+			if (walk->dependency_type != Value::FRAMEWORKELEMENT)
+				continue;
+			is_fwe = true;
+			break;
+		}
+
+		if (is_fwe)
+			framework_element_trigger_add ((FrameworkElement *) item->item, (EventTrigger *) value->item);
+	}
+}
 
 void
 dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
@@ -415,6 +486,8 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		if (prop->value_type >= Value::DEPENDENCY_OBJECT) {
 			dep->SetValue (prop, Value ((DependencyObject *) value->item));
 		}
+	} else {
+		dependency_object_missed_property (item, property, value, prop_name);
 	}
 
 	g_strfreev (prop_name);
@@ -432,7 +505,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 	for (int i = 0; attr [i]; i += 2) {
 
 		if (!strcmp ("x:Name", attr [i])) {
-			// 	global_NameScope->RegisterName (attr [i + 1], dep);
+			global_NameScope->RegisterName (attr [i + 1], dep);
 			continue;
 		}
 
@@ -484,6 +557,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				break;
 			case Value::REPEATBEHAVIOR:
 				dep->SetValue (prop, Value (repeat_behavior_from_str (attr [i + 1])));
+				break;
+			case Value::DURATION:
+				dep->SetValue (prop, Value (duration_from_str (attr [i + 1])));
 				break;
 			case Value::BRUSH:
 			case Value::SOLIDCOLORBRUSH:
@@ -627,17 +703,20 @@ xaml_init ()
 	
 	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
 	register_dependency_object_element ("DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	register_dependency_object_element ("Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
+	XamlElementInfo *sb = register_dependency_object_element ("Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
+	sb->add_child = storyboard_add_child;
 
 
 	///
 	/// Triggers
 	///
 	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Value::TRIGGERACTION);
-	register_dependency_object_element ("BeginStoryboard", trg, Value::BEGINSTORYBOARD, (create_item_func) begin_storyboard_new);
+	XamlElementInfo *bsb = register_dependency_object_element ("BeginStoryboard", trg, Value::BEGINSTORYBOARD,
+			(create_item_func) begin_storyboard_new);
+	bsb->add_child = begin_storyboard_add_child;
 
 	register_element_full ("EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new,
-			default_create_element_instance, event_trigger_add_child, dependency_object_set_property,
+			create_event_trigger_instance, event_trigger_add_child, dependency_object_set_property,
 			event_trigger_set_attributes);
 
 	///

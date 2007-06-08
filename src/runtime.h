@@ -474,6 +474,8 @@ class TriggerAction : public DependencyObject {
        {
                SetObjectType (Value::TRIGGERACTION);
        }
+
+       virtual void Fire () = 0;
 };
 
 
@@ -490,10 +492,13 @@ class EventTrigger : public DependencyObject {
 
 	void AddAction (TriggerAction *action);
 
+	void SetTarget (DependencyObject *target);
 };
 
 EventTrigger  *event_trigger_new ();
 void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
+void          event_trigger_fire_actions (EventTrigger *trigger);
+
 
 //
 // Item class
@@ -512,7 +517,8 @@ class UIElement : public DependencyObject {
 	UIElement *parent;
 
 	enum UIElementFlags {
-		IS_CANVAS = 1
+		IS_CANVAS = 1,
+		IS_LOADED = 2
 	};
 	
 	int flags;
@@ -590,6 +596,8 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty* HeightProperty;
 	static DependencyProperty* WidthProperty;
 
+	Collection triggers;
+
 	FrameworkElement () {} 
 };
 
@@ -597,6 +605,7 @@ double	framework_element_get_height	(FrameworkElement *framework_element);
 void	framework_element_set_height	(FrameworkElement *framework_element, double height);
 double	framework_element_get_width	(FrameworkElement *framework_element);
 void	framework_element_set_width	(FrameworkElement *framework_element, double width);
+void	framework_element_trigger_add   (FrameworkElement *framework_element, EventTrigger *trigger);
 
 //
 // Panel Class
