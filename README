@@ -21,7 +21,16 @@ This is not likely the final version of this code.
 	alsa-devel
 		For Audio
 
-	
+* Testing the Managed binding
+
+	Install olive module, in particular you want to compile and
+	install olive/class/agclr to save you some time.
+
+	You must install the libmoom in src directory
+
+	There is a sample in the test directory, type make there, and
+	then "mono demo.exe"
+
 * Use of C++
 
 	C++ is only used for the class hierarchy and API entry points

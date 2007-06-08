@@ -43,3 +43,8 @@ Feel free to add items to this TODO list
 
 	Sam Ruby had some path tests, we could use that as test cases.
 	http://intertwingly.net/stories/2007/05/06/
+
+* Shapes
+
+	All shapes must implement the ::getxformorigin method, the metho
+	is used to determine the center of the object.
