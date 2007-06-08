@@ -150,42 +150,36 @@ void line_set_y2 (Line *line, double value);
 //
 class Polygon : public Shape {
  public:
-	FillRule fill_rule;
-	Point *points;
-	int count;
-
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polygon () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (Value::POLYGON); };
+	Polygon () { SetObjectType (Value::POLYGON); };
 
 	void Draw (Surface *s);
 };
-Polygon *polygon_new ();
-FillRule polygon_get_fill_rule (Polygon *polygon);
-void polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule);
-void polygon_set_points (Polygon *polygon, Point* points, int count);
+Polygon		*polygon_new ();
+FillRule	polygon_get_fill_rule	(Polygon *polygon);
+void		polygon_set_fill_rule	(Polygon *polygon, FillRule fill_rule);
+Point*		polygon_get_points	(Polygon *polygon, int *count);
+void		polygon_set_points	(Polygon *polygon, Point* points, int count);
 
 //
 // Polyline
 //
 class Polyline : public Shape {
  public:
-	FillRule fill_rule;
-	Point *points;
-	int count;
-
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
 
-	Polyline () : fill_rule (FillRuleEvenOdd), points (NULL), count (0) { SetObjectType (Value::POLYLINE); };
+	Polyline () { SetObjectType (Value::POLYLINE); };
 
 	void Draw (Surface *s);
 };
-Polyline *polyline_new ();
-FillRule polyline_get_fill_rule (Polyline *polyline);
-void polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule);
-void polyline_set_points (Polyline *polyline, Point* points, int count);
+Polyline	*polyline_new		();
+FillRule	polyline_get_fill_rule	(Polyline *polyline);
+void		polyline_set_fill_rule	(Polyline *polyline, FillRule fill_rule);
+Point*		polyline_get_points	(Polyline *polyline, int *count);
+void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 
 //
 // Path

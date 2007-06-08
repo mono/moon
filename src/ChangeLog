@@ -1,3 +1,9 @@
+2007-06-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp|h: Implement Polygon::Points aad Polyline:Points 
+	properties as DependencyProperty. Adjust their Draw methods.
+	* runtime.cpp: Implement point_array_from_str.
+
 2007-06-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Add DP support for StrokeDashArray (double*).

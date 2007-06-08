@@ -521,11 +521,13 @@ DependencyProperty* Polygon::PointsProperty;
 void
 Polygon::Draw (Surface *s)
 {
-	int i;
+	int i, count = 0;
+	Point *points = polygon_get_points (this, &count);
 
 	if (!points || (count < 1))
 		return;
 
+	cairo_new_path (s->cairo);
 	cairo_set_fill_rule (s->cairo, convert_fill_rule (polygon_get_fill_rule (this)));
 	cairo_move_to (s->cairo, points [0].x, points [0].y);
 
@@ -553,12 +555,28 @@ polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule)
 	polygon->SetValue (Polygon::FillRuleProperty, Value (fill_rule));
 }
 
+/*
+ * note: We return a reference, not a copy, of the points. Not a big issue as
+ * Silverlight Polygon.Points only has a setter (no getter), so it's use is 
+ * only internal.
+ */
+Point*
+polygon_get_points (Polygon *polygon, int *count)
+{
+	Value *value = polygon->GetValue (Polygon::PointsProperty);
+	if (!value) {
+		*count = 0;
+		return NULL;
+	}
+
+	*count = value->u.point_array->count;
+	return value->u.point_array->points;
+}
+
 void
 polygon_set_points (Polygon *polygon, Point* points, int count)
 {
-	// FIXME - should we do a copy of them ?
-	polygon->points = points;
-	polygon->count = count;
+	polygon->SetValue (Polygon::PointsProperty, Value (points, count));
 }
 
 Polygon *
@@ -577,7 +595,8 @@ DependencyProperty* Polyline::PointsProperty;
 void
 Polyline::Draw (Surface *s)
 {
-	int i;
+	int i, count = 0;
+	Point *points = polyline_get_points (this, &count);
 
 	if (!points || (count < 1))
 		return;
@@ -602,12 +621,28 @@ polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule)
 	polyline->SetValue (Polyline::FillRuleProperty, Value (fill_rule));
 }
 
+/*
+ * note: We return a reference, not a copy, of the points. Not a big issue as
+ * Silverlight Polyline.Points only has a setter (no getter), so it's use is 
+ * only internal.
+ */
+Point*
+polyline_get_points (Polyline *polyline, int *count)
+{
+	Value *value = polyline->GetValue (Polyline::PointsProperty);
+	if (!value) {
+		*count = 0;
+		return NULL;
+	}
+
+	*count = value->u.point_array->count;
+	return value->u.point_array->points;
+}
+
 void
 polyline_set_points (Polyline *polyline, Point* points, int count)
 {
-	// FIXME - should we do a copy of them ?
-	polyline->points = points;
-	polyline->count = count;
+	polyline->SetValue (Polyline::PointsProperty, Value (points, count));
 }
 
 Polyline *

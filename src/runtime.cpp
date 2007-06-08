@@ -72,6 +72,19 @@ collection_remove (Collection *collection, void *data)
 	collection->list = g_slist_remove (collection->list, data);
 }
 
+static char**
+split_str (const char* s, int *count)
+{
+	int n;
+	// FIXME - what are all the valid separators ? I've seen ',' and ' '
+	char** values = g_strsplit_set (s, ", ", 0);
+	if (count) {
+		// count non-NULL entries (which means we must skip NULLs later too)
+		for (n = 0; values[n]; n++);
+		*count = n;
+	}
+	return values;
+}
 
 Point
 point_from_str (const char *s)
@@ -88,9 +101,27 @@ point_from_str (const char *s)
 Point*
 point_array_from_str (const char *s, int* count)
 {
-	// TODO
-	*count = 0;
-	return NULL;
+	int i, j, n = 0;
+	bool x = true;
+	char** values = split_str (s, &n);
+
+	*count = (n >> 1); // 2 doubles for each point
+	Point *points = new Point [*count];
+	for (i = 0, j = 0; i < n; i++) {
+		char *value = values[i];
+		if (value) {
+			if (x) {
+				points[j].x = strtod (value, NULL);
+				x = false;
+			} else {
+				points[j++].y = strtod (value, NULL);
+				x = true;
+			}
+		}
+	}
+
+	g_strfreev (values);
+	return points;
 }
 
 Rect
@@ -115,14 +146,9 @@ double*
 double_array_from_str (const char *s, int* count)
 {
 	int i, n;
-	// FIXME - what are all the valid separators ? I've seen ',' and ' '
-	char** values = g_strsplit_set (s, ", ", 0);
+	char** values = split_str (s, count);
 
-	// count non-NULL entries (which means we must skip NULLs later too)
-	for (n = 0; values[n]; n++);
-	*count = n;
-
-	double *doubles = new double [n];
+	double *doubles = new double [*count];
 	for (i = 0, n = 0; i < *count; i++) {
 		char *value = values[i];
 		if (value)
