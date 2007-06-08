@@ -1,5 +1,11 @@
 2007-06-08  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h, clock.cpp: move all the TimeManager/Clock/Timeline
+	stuff here, to help relieve some of the pressure building up in
+	animation.h/animation.cpp.
+
+2007-06-08  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp: add some skeleton code for point keyframe
 	animations, and reduce all the Double/Point/Color Animation
 	GetCurrentValue() methods to much the same, using LERP and the

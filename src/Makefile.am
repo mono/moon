@@ -5,20 +5,22 @@ lib_LTLIBRARIES = libmoon.la
 INCLUDES = $(MOON_CFLAGS)
 
 libmoon_la_SOURCES = 	\
-	cutil.cpp	\
-	brush.cpp	\
 	animation.cpp	\
 	animation.h	\
+	brush.cpp	\
+	clock.cpp	\
+	clock.h		\
+	cutil.cpp	\
+	ffvideo.cpp	\
 	geometry.cpp	\
 	geometry.h	\
 	runtime.cpp	\
 	runtime.h	\
+	shape.cpp	\
+	shape.h		\
 	transform.cpp	\
 	transform.h	\
-	shape.h		\
-	shape.cpp	\
 	video.cpp	\
-	ffvideo.cpp	\
 	xaml.cpp
 
 demo_SOURCES = \
