@@ -1,3 +1,8 @@
+2007-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp: Initialize the surface to NULL
+	- use UIElement as the type for flags
+
 2007-06-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.h: Don't waste time trying to fill lines.

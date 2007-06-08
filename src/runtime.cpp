@@ -477,7 +477,7 @@ framework_element_set_width (FrameworkElement *framework_element, double width)
 Surface *
 item_get_surface (UIElement *item)
 {
-	if (item->flags & Video::IS_CANVAS){
+	if (item->flags & UIElement::IS_CANVAS){
 		Canvas *canvas = (Canvas *) item;
 		if (canvas->surface)
 			return canvas->surface;
@@ -548,7 +548,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	base_ref (children);
 }
 
-Canvas::Canvas ()
+Canvas::Canvas () : surface (NULL)
 {
 	flags |= IS_CANVAS;
 }
