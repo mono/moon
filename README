@@ -311,6 +311,7 @@ Issues
 	class for use in moon.
 
 	1.  Add a Value::Kind entry for it.
+	2.  Add the same value in olive/class/agclr/Mono/Kind.cs
 	2.  if it's a DependencyObject, override GetObjectType() to return that type.
 	3.  add line(s) to types_init in runtime.cpp registering the
 	    type and its parent type (if there is one.)
