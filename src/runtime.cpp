@@ -603,11 +603,6 @@ VisualCollection::Remove (void *data)
 	panel->getbounds ();
 }
 
-static void
-cb_panel_child_remove (Collection *col, void *datum)
-{
-}
-
 void 
 panel_child_add (Panel *panel, UIElement *child)
 {
@@ -620,7 +615,6 @@ Panel::Panel ()
 {
 	children = NULL;
 	VisualCollection *c = new VisualCollection ();
-	c->closure = this;
 
 	this->SetValue (Panel::ChildrenProperty, Value (c));
 
@@ -640,24 +634,26 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	if (prop == ChildrenProperty){
 		// The new value has already been set, so unref the old collection
 
-		if (children){
-			for (GSList *l = children->list; l != NULL; l = l->next){
-				DependencyObject *dob = (DependencyObject *) l->data;
-				
-				base_unref (dob);
+		VisualCollection *newcol = (VisualCollection *) GetValue (prop)->u.dependency_object;
+
+		if (newcol != children){
+			if (children){
+				for (GSList *l = children->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (children);
+				g_slist_free (children->list);
 			}
-			base_unref (children);
-			g_slist_free (children->list);
+
+			children = newcol;
+			if (children->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			children->closure = this;
+			
+			base_ref (children);
 		}
-		children = (VisualCollection *) GetValue (prop)->u.dependency_object;
-
-		// We attach to it
-		// TODO: what to do if we are already attached?
-		if (children->closure)
-			printf ("Warning we attached a property that was already attached\n");
-		children->closure = this;
-
-		base_ref (children);
 	}
 }
 
@@ -1379,8 +1375,6 @@ item_init ()
 	UIElement::TriggersProperty = DependencyObject::Register (Value::UIELEMENT, "Triggers", Value::TRIGGER_COLLECTION);
 	UIElement::OpacityMaskProperty = DependencyObject::Register (Value::UIELEMENT, "OpacityMask", Value::BRUSH);
 	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransformOrigin", Value::POINT);
-
-	printf ("REMINDER: how do we handle enums, with a type, or with an int? Cursor and Visibiliy as int for now\n");
 	UIElement::CursorProperty = DependencyObject::Register (Value::UIELEMENT, "Cursor", Value::INT32);
 	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Value::UIELEMENT, "IsHitTestVisible", Value::BOOL);
 	UIElement::VisibilityProperty = DependencyObject::Register (Value::UIELEMENT, "Visibility", Value::INT32);
