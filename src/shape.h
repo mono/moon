@@ -136,6 +136,8 @@ class Line : public Shape {
 	void Draw (Surface *s);
 
 	virtual Point getxformorigin ();
+
+	virtual bool CanFill () { return false; }
 };
 Line *line_new  ();
 double line_get_x1 (Line *line);

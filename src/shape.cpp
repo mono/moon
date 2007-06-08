@@ -157,11 +157,16 @@ Shape::DoDraw (Surface *s, bool do_op)
 		cairo_set_line_width (s->cairo, shape_get_stroke_thickness (this));
 
 		int count = 0;
+		double offset = 0.0;
 		double *dashes = shape_get_stroke_dash_array (this, &count);
 		if (dashes && (count > 0)) {
-			double offset = shape_get_stroke_dash_offset (this);
-			cairo_set_dash (s->cairo, dashes, count, offset);
+			offset = shape_get_stroke_dash_offset (this);
+			// special case or cairo stops drawing
+			if ((count == 1) && (*dashes == 0.0))
+				count = 0;
 		}
+		cairo_set_dash (s->cairo, dashes, count, offset);
+
 		cairo_set_miter_limit (s->cairo, shape_get_stroke_miter_limit (this));
 		cairo_set_line_join (s->cairo, convert_line_join (shape_get_stroke_line_join (this)));
 		/* FIXME: cairo doesn't have separate line cap for the start and end */

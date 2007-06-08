@@ -1,3 +1,9 @@
+2007-06-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.h: Don't waste time trying to fill lines.
+	* shape.cpp: Fix dashes support. First reset between shapes and, 
+	second, handle cairo dislike of a single dash value of 0.0.
+
 2007-06-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Some shapes, like polylines, don't supports Fill.
