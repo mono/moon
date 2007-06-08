@@ -42,7 +42,11 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	delete plugin;
+
+	// TODO: This line causes problems when we are in scriptable mode, so will 
+	// be commented for now.
+	//delete plugin;
+
 	instance->pdata = NULL;
 
 	return NPERR_NO_ERROR;

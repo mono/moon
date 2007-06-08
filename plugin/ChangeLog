@@ -1,5 +1,12 @@
 2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-glue.cpp: Dont delete plugin object since right now it causes some
+	segfault when change to another page.
+
+	* moon-plugin.cpp: Got scripting mode enabled by default.
+
+2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-glue.cpp: Fix plugin destruction.
 	* moon-plugin.cpp: Change button to gtk label with plugin name and version.
 

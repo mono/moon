@@ -15,7 +15,7 @@
 #include "npupp.h"
 #include "npruntime.h"
 
-//#define SCRIPTING
+#define SCRIPTING
 //#define DEMO
 
 static void moon_plugin_demo (Canvas *canvas)
