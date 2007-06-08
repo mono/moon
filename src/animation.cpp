@@ -500,7 +500,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		if (!targetName)
 			return;
 
-		printf ("Got %s %s\n", targetProperty, targetName);
+		//printf ("Got %s %s\n", targetProperty, targetName);
 		DependencyObject *o = FindName (targetName);
 		if (!o)
 			return;

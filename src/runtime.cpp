@@ -177,10 +177,21 @@ Value::Value (Color c)
 	u.color = new Color (c);
 }
 
+Value::Value (DependencyObject *obj, Value::Kind kind)
+{
+	g_assert (obj != NULL);
+	g_assert (kind > DEPENDENCY_OBJECT);
+
+	Init ();
+	k = kind;
+	u.dependency_object = obj;
+}
+
 Value::Value (DependencyObject *obj)
 {
 	g_assert (obj != NULL);
-		
+	
+	g_warning ("Warning: Setting a dependency object without full type\n");
 	Init ();
 	k = DEPENDENCY_OBJECT;
 	u.dependency_object = obj;
@@ -433,12 +444,39 @@ panel_child_remove (Collection *col, void *datum)
 void 
 panel_child_add (Panel *panel, UIElement *item)
 {
-	collection_add (&panel->children, item);
+	collection_add (panel->children, item);
 }
 
 Panel::Panel ()
 {
-	children.Setup (panel_child_add, panel_child_remove, this);
+	children = NULL;
+	Collection *c = new Collection (panel_child_add, panel_child_remove, this);
+	this->SetValue (Panel::ChildrenProperty, Value (c, Value::VISUAL_COLLECTION));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == children);
+}
+
+//
+// Intercept any changes to the children property and mirror that into our
+// own variable
+//
+void
+Panel::OnPropertyChanged (DependencyProperty *prop)
+{
+	// The new value has already been set, so unref the old collection
+	
+	if (children){
+		for (GSList *l = children->list; l != NULL; l = l->next){
+			DependencyObject *dob = (DependencyObject *) l->data;
+			
+			base_unref (dob);
+		}
+		base_unref (children);
+		g_slist_free (children->list);
+	}
+	children = (Collection *) GetValue (prop)->u.dependency_object;
+	base_ref (children);
 }
 
 Canvas::Canvas ()
@@ -467,7 +505,7 @@ Canvas::update_xform ()
 	UIElement::update_xform ();
 	GSList *il;
 
-	for (il = children.list; il != NULL; il = il->next){
+	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->update_xform ();
@@ -480,7 +518,7 @@ Canvas::getbounds ()
 	bool first = TRUE;
 	GSList *il;
 
-	for (il = children.list; il != NULL; il = il->next){
+	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->getbounds ();
@@ -651,7 +689,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	GSList *il;
 	double actual [6];
 	
-	for (il = children.list; il != NULL; il = il->next){
+	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->render (s, x, y, width, height);

@@ -1,3 +1,11 @@
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Panel): Make children a property of the panel so we
+	can access it from the managed world.
+
+	(Value): Add new constructor that takes a full type, need to
+	discuss this with the team.
+
 2007-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* animation.cpp|h: Implement BeginStoryboard

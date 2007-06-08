@@ -110,44 +110,6 @@ struct Color {
 Color *color_from_str (const char *name);
 
 
-//
-// Collection: provides a collection that we can monitor for
-// changes.   We expose this collection in a few classes to
-// the managed world, and when a change happens we get a
-// chance to reflect the changes
-//
-class Collection;
-
-typedef void (*collection_item_add)    (Collection *col, void *datum); 
-typedef void (*collection_item_remove) (Collection *col, void *datum);
-
-class Collection {
- public:
-	collection_item_add     add_fn;
-	collection_item_remove  remove_fn;
-	
-	GSList *list;
-	void *closure;
-
-	Collection () { Setup (NULL, NULL, NULL); }
-	
-	Collection (collection_item_add add, collection_item_remove remove, void *data)
-	{
-		Setup (add, remove, data);
-	}
-
-	void Setup (collection_item_add add, collection_item_remove remove, void *data)
-	{
-		list = NULL;
-		add_fn = add;
-		remove_fn = remove;
-		closure = data;
-	}
-};
-
-void collection_add    (Collection *collection, void *data);
-void collection_remove (Collection *collection, void *data);
-
 struct Value {
 public:
 		// Keep these values in sync with the Value.cs in olive.
@@ -259,6 +221,7 @@ public:
 	Value (gint32 i);
 	Value (Color c);
 	Value (DependencyObject *obj);
+	Value (DependencyObject *obj, Value::Kind kind);
 	Value (Point pt);
 	Value (Rect rect);
 	Value (RepeatBehavior repeat);
@@ -386,6 +349,44 @@ class NameScope : public DependencyObject {
 	GHashTable *names;
 };
 
+
+//
+// Collection: provides a collection that we can monitor for
+// changes.   We expose this collection in a few classes to
+// the managed world, and when a change happens we get a
+// chance to reflect the changes
+//
+class Collection;
+
+typedef void (*collection_item_add)    (Collection *col, void *datum); 
+typedef void (*collection_item_remove) (Collection *col, void *datum);
+
+class Collection : public DependencyObject {
+ public:
+	collection_item_add     add_fn;
+	collection_item_remove  remove_fn;
+	
+	GSList *list;
+	void *closure;
+
+	Collection () { Setup (NULL, NULL, NULL); }
+	
+	Collection (collection_item_add add, collection_item_remove remove, void *data)
+	{
+		Setup (add, remove, data);
+	}
+
+	void Setup (collection_item_add add, collection_item_remove remove, void *data)
+	{
+		list = NULL;
+		add_fn = add;
+		remove_fn = remove;
+		closure = data;
+	}
+};
+
+void collection_add    (Collection *collection, void *data);
+void collection_remove (Collection *collection, void *data);
 
 class Brush : public DependencyObject {
  public:
@@ -612,11 +613,13 @@ void	framework_element_trigger_add   (FrameworkElement *framework_element, Event
 //
 class Panel : public FrameworkElement {
  public:
-	Collection children;
+	Collection *children;
 
 	Panel ();
 
 	static DependencyProperty* ChildrenProperty;
+
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 // panel_get_collection, exposed to the managed world so it can manipulate the collection
