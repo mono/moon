@@ -271,6 +271,15 @@ Issues
 
 	But with a rectangle to set the region to clear?
 
+	Missing features:
+
+	- cairo line's cap (cairo_[g|s]et_line_cap) are identical for 
+	both start and end. SL supports different line cap style on 
+	both (StrokeStartCap and StrokeEndCap)
+
+	- cairo dashes (cairo_set_dash) do not support line cap. SL
+	support this (StrokeDashCap).
+
 * Rendering Considerations
 
 	Currently we draw in an off-screen cairo surface when the
