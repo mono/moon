@@ -85,7 +85,7 @@ if test -z $mozilla_xpcom; then
 fi
 
 PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
-PLUGIN_LIBS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
+PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
 
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)

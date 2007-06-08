@@ -1,3 +1,7 @@
+2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
+
+	* configure.ac: Fix MOON_LIBS value, using --libs instead of --cflags.
+
 2007-06-07  Everaldo Canuto  <ecanuto@novell.com>
 
 	* README: Update file to include plugin install information.
