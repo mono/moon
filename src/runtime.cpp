@@ -55,21 +55,28 @@ base_unref (Base *base)
 		base->refcount--;
 }
 
+void
+Collection::Add (void *data)
+{
+	list = g_slist_append (list, data);
+}
+
+void
+Collection::Remove (void *data)
+{
+	list = g_slist_remove (list, data);
+}
+
 void 
 collection_add (Collection *collection, void *data)
 {
-	if (collection->add_fn)
-		collection->add_fn (collection, data);
-	collection->list = g_slist_append (collection->list, data);
+	collection->Add (data);
 }
 
 void 
 collection_remove (Collection *collection, void *data)
 {
-	if (collection->remove_fn)
-		collection->remove_fn (collection, data);
-
-	collection->list = g_slist_remove (collection->list, data);
+	collection->Remove (data);
 }
 
 static char**
@@ -479,11 +486,18 @@ item_get_surface (UIElement *item)
 	return NULL;
 }
 
-static void
-panel_child_add (Collection *col, void *datum)
+void
+VisualCollection::Add (void *data)
 {
-	Panel *panel = (Panel *) col->closure;
-	UIElement *item = (UIElement *) datum;
+	Panel *panel = (Panel *) closure;
+	
+	Value *v = (Value *) data;
+	UIElement *item = (UIElement *) v->u.dependency_object;
+
+	base_ref (item);
+
+	// Add the UIElement, not the Value
+	Collection::Add (item);
 
 	item->parent = panel;
 	item->update_xform ();
@@ -491,25 +505,40 @@ panel_child_add (Collection *col, void *datum)
 	item_invalidate (panel);
 }
 
-static void
-panel_child_remove (Collection *col, void *datum)
+void
+VisualCollection::Remove (void *data)
 {
-	Panel *panel = (Panel *) col->closure;
+	Panel *panel = (Panel *) closure;
+	Value *v = (Value *) data;
+	UIElement *item = (UIElement *) v->u.dependency_object;
 	
-	item_invalidate (panel);
+	Collection::Remove (item);
+
+	item_invalidate (item);
+	base_unref (item);
+
 	panel->getbounds ();
 }
 
-void 
-panel_child_add (Panel *panel, UIElement *item)
+static void
+cb_panel_child_remove (Collection *col, void *datum)
 {
-	collection_add (panel->children, item);
+}
+
+void 
+panel_child_add (Panel *panel, UIElement *child)
+{
+	Value v(child);
+
+	collection_add (panel->children, &v);
 }
 
 Panel::Panel ()
 {
 	children = NULL;
-	Collection *c = new Collection (panel_child_add, panel_child_remove, this);
+	VisualCollection *c = new VisualCollection ();
+	c->closure = this;
+
 	this->SetValue (Panel::ChildrenProperty, Value (c));
 
 	// Ensure that the callback OnPropertyChanged was called.
@@ -523,19 +552,30 @@ Panel::Panel ()
 void
 Panel::OnPropertyChanged (DependencyProperty *prop)
 {
-	// The new value has already been set, so unref the old collection
-	
-	if (children){
-		for (GSList *l = children->list; l != NULL; l = l->next){
-			DependencyObject *dob = (DependencyObject *) l->data;
-			
-			base_unref (dob);
+	FrameworkElement::OnPropertyChanged (prop);
+
+	if (prop == ChildrenProperty){
+		// The new value has already been set, so unref the old collection
+
+		if (children){
+			for (GSList *l = children->list; l != NULL; l = l->next){
+				DependencyObject *dob = (DependencyObject *) l->data;
+				
+				base_unref (dob);
+			}
+			base_unref (children);
+			g_slist_free (children->list);
 		}
-		base_unref (children);
-		g_slist_free (children->list);
+		children = (VisualCollection *) GetValue (prop)->u.dependency_object;
+
+		// We attach to it
+		// TODO: what to do if we are already attached?
+		if (children->closure)
+			printf ("Warning we attached a property that was already attached\n");
+		children->closure = this;
+
+		base_ref (children);
 	}
-	children = (Collection *) GetValue (prop)->u.dependency_object;
-	base_ref (children);
 }
 
 Canvas::Canvas () : surface (NULL)
@@ -726,7 +766,6 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 			cairo_status_to_string (cairo_status (s->cairo)));
 	}
 
-//#define DEBUG_INVALIDATE
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
@@ -920,7 +959,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 
 DependencyObject::DependencyObject ()
 {
-	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
+	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free);
 	events = new EventObject ();
 	this->attached_list = NULL;
 }

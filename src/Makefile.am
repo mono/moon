@@ -30,3 +30,6 @@ demo_LDADD = -lmoon
 
 debug:
 	LD_LIBRARY_PATH=.libs gdb .libs/demo
+
+valgrind:
+	LD_LIBRARY_PATH=.libs valgrind .libs/demo

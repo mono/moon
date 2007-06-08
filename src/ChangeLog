@@ -1,3 +1,23 @@
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp, runtime.h (Collection): Rework the collection to
+	use abstract methods (gulp), 
+
+	(VisualCollection): New collection, derives from Collection, does
+	the collection thing.
+
+	(Panel.OnPropertyChanged): If our children collection is updated,
+	take care of it here.
+
+	(DependencyObject): use free instead of g_free as we are
+	allocating strings with strdup.
+	
+	(Value): drop constructor that specified type, type is not part of
+	Value.
+	
+	* xaml.cpp, shape.cpp: Remove use of the old destructors now that we keep
+	track of types correctly.
+
 2007-06-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Fix color formats argb and rgb (too dark).

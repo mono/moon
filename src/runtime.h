@@ -435,36 +435,29 @@ class NameScope : public DependencyObject {
 //
 class Collection;
 
-typedef void (*collection_item_add)    (Collection *col, void *datum); 
-typedef void (*collection_item_remove) (Collection *col, void *datum);
-
 class Collection : public DependencyObject {
  public:
-	collection_item_add     add_fn;
-	collection_item_remove  remove_fn;
-	
 	GSList *list;
 	void *closure;
 
-	Collection () { Setup (NULL, NULL, NULL); }
+	Collection () : list(NULL), closure(NULL) {}
 	Value::Kind GetObjectType () { return Value::COLLECTION; };	
-	
-	Collection (collection_item_add add, collection_item_remove remove, void *data)
-	{
-		Setup (add, remove, data);
-	}
 
-	void Setup (collection_item_add add, collection_item_remove remove, void *data)
-	{
-		list = NULL;
-		add_fn = add;
-		remove_fn = remove;
-		closure = data;
-	}
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 };
 
 void collection_add    (Collection *collection, void *data);
 void collection_remove (Collection *collection, void *data);
+
+class VisualCollection : public Collection {
+ public:
+	VisualCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::VISUAL_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+};
 
 class Brush : public DependencyObject {
  public:
@@ -689,7 +682,7 @@ void	framework_element_trigger_add   (FrameworkElement *framework_element, Event
 //
 class Panel : public FrameworkElement {
  public:
-	Collection *children;
+	VisualCollection *children;
 
 	Panel ();
 
@@ -697,9 +690,6 @@ class Panel : public FrameworkElement {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
-
-// panel_get_collection, exposed to the managed world so it can manipulate the collection
-void *panel_get_collection (Panel *panel);
 
 // For C API usage.
 void  panel_child_add      (Panel *panel, UIElement *item);
