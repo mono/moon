@@ -217,6 +217,50 @@ This is not likely the final version of this code.
 
 		make debug
 
+* Mozilla plugin
+
+	It is recommended that for now you do not `make install' as there
+	is not much to use.
+
+	To browser plugin installation, use:
+
+		make
+
+		make install-plugin
+
+	It will install all need stuff to your local plugin folder at
+	~/.mozilla/plugins. In plugin/test folder theres a file 
+	index.html that can be use to see plugin in action. Since plugin
+	is under development, if you have any problems with it try to 
+	execute your browser from command line and check log messsages, 
+	this information can be useful to help us fix the problem.
+
+----------------------------------------------------------------------------------
+Issues
+----------------------------------------------------------------------------------
+
+* Reference Counting
+
+	Should every DependencyObject that is "SetValue" be automatically
+	base_ref?   
+
+	I think it should, discuss with Chris, Jackson and Sebastien.
+
+* Value and Kinds
+
+	I wonder if we should move instead to use as keys not the enum
+	values that we have, but instead the void * to the managed "Type"
+	as the key for the various types.
+
+	That would further unify the managed and native code
+
+* XAML Parsing
+
+	We are going to need a way of flagging classes as abstract to
+	avoid instantiating those from XAML.
+
+	Maybe a flag in UIElement::flags
+
 * Cairo Considerations
 
 	surface_clear: should we use something like this?
@@ -251,29 +295,3 @@ This is not likely the final version of this code.
 		If the bit is not set, we got a regular pointer to a
 		GSList.
 
-* Mozilla plugin
-
-	It is recommended that for now you do not `make install' as there
-	is not much to use.
-
-	To browser plugin installation, use:
-
-		make
-
-		make install-plugin
-
-	It will install all need stuff to your local plugin folder at
-	~/.mozilla/plugins. In plugin/test folder theres a file 
-	index.html that can be use to see plugin in action. Since plugin
-	is under development, if you have any problems with it try to 
-	execute your browser from command line and check log messsages, 
-	this information can be useful to help us fix the problem.
-
-	
-* Value and Kinds
-
-	I wonder if we should move instead to use as keys not the enum
-	values that we have, but instead the void * to the managed "Type"
-	as the key for the various types.
-
-	That would further unify the managed and native code
