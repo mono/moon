@@ -212,6 +212,24 @@ public:
 		TRIGGERACTION,
 		BEGINSTORYBOARD,
 		EVENTTRIGGER,
+
+		// The collections
+		STROKE_COLLECTION,
+		INLINES,
+		STYLUSPOINT_COLLECTION,
+		KEYFRAME_COLLECTION,
+		TIMELINEMARKER_COLLECTION,
+		GEOMETRY_COLLECTION,
+		GRADIENTSTOP_COLLECTION,
+		MEDIAATTRIBUTE_COLLECTION,
+		PATHFIGURE_COLLECTION,
+		PATHSEGMENT_COLLECTION,
+		TIMELINE_COLLECTION,
+		TRANSFORM_COLLECTION,
+		VISUAL_COLLECTION,
+		RESOURCE_COLLECTION,
+		TRIGGERACTION_COLLECTION,
+		TRIGGER_COLLECTION
 	};
 
 	Kind k;
@@ -588,6 +606,8 @@ class Panel : public FrameworkElement {
 	Collection children;
 
 	Panel ();
+
+	static DependencyProperty* ChildrenProperty;
 };
 
 // panel_get_collection, exposed to the managed world so it can manipulate the collection

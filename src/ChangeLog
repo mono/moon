@@ -1,3 +1,10 @@
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (runtime_init): Add panel_init
+
+	(panel_init): Register Children property (must still create the
+	collections, that will be a new fight).
+
 2007-06-07  Miguel de Icaza  <miguel@novell.com>
 
 	* xaml.cpp (start_element_handler): For the top element, track the

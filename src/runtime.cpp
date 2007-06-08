@@ -1121,6 +1121,14 @@ framework_element_init ()
 	FrameworkElement::WidthProperty = DependencyObject::Register (Value::FRAMEWORKELEMENT, "Width", new Value (0.0));
 }
 
+DependencyProperty* Panel::ChildrenProperty;
+
+void 
+panel_init ()
+{
+	Panel::ChildrenProperty = DependencyObject::Register (Value::PANEL, "Children", Value::VISUAL_COLLECTION);
+}
+
 DependencyProperty* Canvas::TopProperty;
 DependencyProperty* Canvas::LeftProperty;
 
@@ -1151,6 +1159,7 @@ runtime_init ()
 	namescope_init ();
 	item_init ();
 	framework_element_init ();
+	panel_init ();
 	canvas_init ();
 	transform_init ();
 	animation_init ();
