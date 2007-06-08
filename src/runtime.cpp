@@ -1167,7 +1167,7 @@ dependency_object_get_value (DependencyObject *object, DependencyProperty *prop)
 }
 
 void
-dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value val)
+dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val)
 {
 	object->SetValue (prop, val);
 }

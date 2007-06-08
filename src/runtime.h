@@ -261,7 +261,7 @@ class DependencyObject : public Base {
 };
 
 Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);
-void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value val);
+void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val);
 
 //
 // DependencyProperty
