@@ -347,6 +347,16 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 	return NULL;
 }
 
+bool
+is_instance_of (XamlElementInstance *item, Value::Kind kind)
+{
+	for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
+		if (walk->dependency_type == kind)
+			return true;
+	}
+
+	return false;
+}
 
 RepeatBehavior
 repeat_behavior_from_str (const char *str)
@@ -364,7 +374,7 @@ duration_from_str (const char *str)
 		return Duration::Automatic;
 	if (!g_strcasecmp ("Forever", str))
 		return Duration::Forever;
-	return Duration::FromSeconds (strtod (str, NULL));
+	return Duration::FromSeconds ((int) strtod (str, NULL));
 }
 
 XamlElementInstance *
@@ -427,6 +437,12 @@ event_trigger_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEle
 void
 begin_storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
+	if (!is_instance_of (child, Value::STORYBOARD)) {
+		g_warning ("error, attempting to add non storyboard type (%d) to BeginStoryboard element\n",
+				child->info->dependency_type);
+		return;
+	}
+
 	BeginStoryboard *bsb = (BeginStoryboard *) parent->item;
 	Storyboard *sb = (Storyboard *) child->item;
 
@@ -436,6 +452,12 @@ begin_storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xaml
 void
 storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
+	if (!is_instance_of (child, Value::TIMELINE)) {
+		g_warning ("error, attempting to add non timeline type (%d) to Storyboard element\n",
+				child->info->dependency_type);
+		return;
+	}
+
 	Storyboard *sb = (Storyboard *) parent->item;
 	Timeline *t = (Timeline *) child->item;
 
@@ -452,18 +474,9 @@ void
 dependency_object_missed_property (XamlElementInstance *item, XamlElementInstance *prop, XamlElementInstance *value, char **prop_name)
 {
 	if (!strcmp ("Triggers", prop_name [1])) {
-
-		// Ensure that we are dealing with a framework element
-		bool is_fwe = false;
-		for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
-			if (walk->dependency_type != Value::FRAMEWORKELEMENT)
-				continue;
-			is_fwe = true;
-			break;
-		}
-
-		if (is_fwe)
+		if (is_instance_of (item, Value::TIMELINE) && is_instance_of (value, Value::EVENTTRIGGER)) {
 			framework_element_trigger_add ((FrameworkElement *) item->item, (EventTrigger *) value->item);
+		}
 	}
 }
 
@@ -484,7 +497,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 
 	if (prop) {
 		if (prop->value_type >= Value::DEPENDENCY_OBJECT) {
-			dep->SetValue (prop, Value ((DependencyObject *) value->item));
+			dep->SetValue (prop, Value ((DependencyObject *) value->item, value->info->dependency_type));
 		}
 	} else {
 		dependency_object_missed_property (item, property, value, prop_name);
@@ -535,7 +548,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		}
 
 		if (prop) {
-
 			switch (prop->value_type) {
 			case Value::BOOL:
 				dep->SetValue (prop, Value ((bool) !g_strcasecmp ("true", attr [i + 1])));
