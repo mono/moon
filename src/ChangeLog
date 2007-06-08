@@ -1,3 +1,10 @@
+2007-06-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.h, runtime.cpp: Change Value::Kind to not have any holes
+	in the integer ranges, and change Type's type hashtable to an array
+	of types, indexed by Value::Kind. Also add Value::COLLECTION and 
+	update Collection to use it.
+
 2007-06-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Add Path::CanFill as it depends on the Geometry 

@@ -1277,7 +1277,7 @@ canvas_init ()
 
 DependencyProperty* UIElement::RenderTransformProperty;
 
-GHashTable* Type::types = NULL;
+Type* Type::types [];
 GHashTable* Type::types_by_name = NULL;
 
 Type *
@@ -1290,7 +1290,7 @@ Type *
 Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
 {
 	if (types == NULL) {
-		types = g_hash_table_new (g_int_hash, g_int_equal);
+		memset (&types, 0, Value::LASTTYPE * sizeof (Type*));
 	}
 	if (types_by_name == NULL) {
 		types_by_name = g_hash_table_new (g_str_hash, g_str_equal);
@@ -1301,7 +1301,9 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
 	result->type = type;
 	result->parent = parent;
 
-	g_hash_table_insert (types, result, &result->type);
+	g_assert (types [type] == NULL);
+
+	types [type] = result;
 	g_hash_table_insert (types_by_name, result, result->name);
 
 	return result;
@@ -1340,14 +1342,7 @@ Type::Find (char *name)
 Type *
 Type::Find (Value::Kind type)
 {
-	Type *result;
-	
-	if (types == NULL)
-		return NULL;
-
-	result = (Type*) g_hash_table_lookup (types, &type);
-
-	return result;
+	return types [type];
 }
 
 void
@@ -1427,6 +1422,7 @@ types_init ()
 	Type::RegisterType ("EventTrigger", Value::EVENTTRIGGER, Value::DEPENDENCY_OBJECT);
 
 	// The collections
+	Type::RegisterType ("Collection", Value::COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Stroke_Collection", Value::STROKE_COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Inlines", Value::INLINES, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Styluspoint_Collection", Value::STYLUSPOINT_COLLECTION, Value::DEPENDENCY_OBJECT);
@@ -1443,6 +1439,16 @@ types_init ()
 	Type::RegisterType ("Resource_Collection", Value::RESOURCE_COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("TriggerAction_Collection", Value::TRIGGERACTION_COLLECTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Trigger_Collection", Value::TRIGGER_COLLECTION, Value::DEPENDENCY_OBJECT);
+
+//#if DEBUG
+	//printf ("Checking types...\n");
+	for (int i = 1; i < Value::LASTTYPE; i++) {
+		if (i == 6) // Why did we skip the type #6??
+			continue;
+		if (Type::types [i] == NULL)
+			printf ("Type %i is not initialized\n", i);
+	}
+//#endif
 }
 
 static bool inited = FALSE;

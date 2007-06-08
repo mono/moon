@@ -173,7 +173,7 @@ public:
 		DOUBLE_ARRAY = 13,
 		POINT_ARRAY = 14,
 
-		DEPENDENCY_OBJECT = 1000,
+		DEPENDENCY_OBJECT,
 
 		// These are dependency objects
 		UIELEMENT,
@@ -226,6 +226,7 @@ public:
 		EVENTTRIGGER,
 
 		// The collections
+		COLLECTION,
 		STROKE_COLLECTION,
 		INLINES,
 		STYLUSPOINT_COLLECTION,
@@ -241,7 +242,9 @@ public:
 		VISUAL_COLLECTION,
 		RESOURCE_COLLECTION,
 		TRIGGERACTION_COLLECTION,
-		TRIGGER_COLLECTION
+		TRIGGER_COLLECTION,
+
+		LASTTYPE
 	};
 
 	Kind k;
@@ -326,7 +329,7 @@ public:
 
 private:
 	Type () {};
-	static GHashTable *types;
+	public: static Type* types [Value::LASTTYPE];
 	static GHashTable *types_by_name;
 };
 
@@ -369,7 +372,7 @@ class DependencyObject : public Base {
 
 	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
-	virtual Value::Kind GetObjectType () 
+	virtual Value::Kind GetObjectType ()
 	{
 		g_warning ("This class is missing an override of GetObjectType ()");
 		return Value::DEPENDENCY_OBJECT; 
@@ -444,6 +447,7 @@ class Collection : public DependencyObject {
 	void *closure;
 
 	Collection () { Setup (NULL, NULL, NULL); }
+	Value::Kind GetObjectType () { return Value::COLLECTION; };	
 	
 	Collection (collection_item_add add, collection_item_remove remove, void *data)
 	{
