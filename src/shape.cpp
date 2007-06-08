@@ -673,6 +673,18 @@ Path::Draw (Surface *s)
 		data->Draw (s);
 }
 
+/*
+ * Paths are filled by default but PathFigure, inside a collection in a 
+ * PathGeometry, can be unfilled (IsFilled property). In this case PathGeometry
+ * will have deal with filling, or not, each of it's figure.
+ */
+bool
+Path::CanFill ()
+{
+	Geometry* data = path_get_data (this);
+	return (data ? data->CanFill () : false);
+}
+
 Geometry*
 path_get_data (Path *path)
 {

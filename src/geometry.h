@@ -32,6 +32,8 @@ class Geometry : public DependencyObject {
 	Value::Kind GetObjectType () { return Value::GEOMETRY; };
 
 	virtual void Draw (Surface *s);
+
+	virtual bool CanFill () { return true; };
 };
 FillRule geometry_get_fill_rule (Geometry *geometry);
 void geometry_set_fill_rule (Geometry *geometry, FillRule fill_rule);
@@ -47,6 +49,8 @@ class GeometryGroup : public Geometry {
 
 	GeometryGroup () { };
 	Value::Kind GetObjectType () { return Value::GEOMETRYGROUP; };
+
+	virtual void Draw (Surface *s);
 };
 GeometryGroup* geometry_group_new ();
 // TODO get|set GeometryCollection
@@ -101,6 +105,11 @@ class PathGeometry : public Geometry {
 
 	PathGeometry () { };
 	Value::Kind GetObjectType () { return Value::PATHGEOMETRY; };
+
+	virtual void Draw (Surface *s);
+
+	// this is an element-by-element decision
+	virtual bool CanFill () { return false; }
 };
 PathGeometry* path_geometry_new ();
 // TODO get|set PathFigureCollection
@@ -139,6 +148,8 @@ class PathFigure : public DependencyObject {
 
 	PathFigure () { }
 	Value::Kind GetObjectType () { return Value::PATHFIGURE; };
+
+	virtual void Draw (Surface *s);
 };
 PathFigure* path_figure_new ();
 bool	path_figure_get_is_closed	(PathFigure *path_figure);
@@ -226,7 +237,7 @@ class PolyBezierSegment : public PathSegment {
 	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
 };
 PolyBezierSegment	*poly_bezier_segment_new	();
-// there is no managed get for points, do we want one ?
+Point*			poly_bezier_segment_get_points	(PolyBezierSegment *segment, int *count);
 void			poly_bezier_segment_set_points	(PolyBezierSegment *segment, Point *points, int count);
 
 //
@@ -241,6 +252,7 @@ class PolyLineSegment : public PathSegment {
 	Value::Kind GetObjectType () { return Value::POLYLINESEGMENT; };
 };
 PolyLineSegment	*poly_line_segment_new	();
+Point*		poly_line_segment_get_points	(PolyLineSegment *segment, int *count);
 void		poly_line_segment_set_points	(PolyLineSegment *segment, Point *points, int count);
 
 //
@@ -255,7 +267,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
 };
 PolyQuadraticBezierSegment	*poly_quadratic_segment_new	();
-// there is no managed get for points, do we want one ?
+Point*	poly_quadratic_segment_get_points	(PolyQuadraticBezierSegment *segment, int *count);
 void	poly_quadratic_segment_set_points	(PolyQuadraticBezierSegment *segment, Point *points, int count);
 
 //

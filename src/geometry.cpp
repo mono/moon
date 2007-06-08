@@ -76,6 +76,13 @@ geometry_group_new ()
 	return new GeometryGroup ();
 }
 
+void
+GeometryGroup::Draw (Surface *s)
+{
+	Geometry::Draw (s);
+	// TODO: iterate all childs
+}
+
 //
 // EllipseGeometry
 //
@@ -202,6 +209,13 @@ path_geometry_new ()
 	return new PathGeometry ();
 }
 
+void
+PathGeometry::Draw (Surface *s)
+{
+	Geometry::Draw (s);
+	// TODO, iterates all figures (and their segments) to build the path
+}
+
 //
 // RectangleGeometry
 //
@@ -316,13 +330,33 @@ Point*
 path_figure_get_start_point (PathFigure *path_figure)
 {
 	Value *value = path_figure->GetValue (PathFigure::StartPointProperty);
-	return (value ? value->u.point : NULL);
+	return (value ? value->u.point : new Point (0, 0));
 }
 
 void
 path_figure_set_start_point (PathFigure *path_figure, Point *point)
 {
 	path_figure->SetValue (PathFigure::StartPointProperty, Value (*point));
+}
+
+void
+PathFigure::Draw (Surface *s)
+{
+	Point *start = path_figure_get_start_point (this);
+
+	// should not be required because of the cairo_move_to
+	//cairo_new_sub_path (s->cairo);
+	cairo_move_to (s->cairo, start->x, start->y);
+
+	// TODO: iterates segments
+
+	if (path_figure_get_is_closed (this)) {
+		cairo_close_path (s->cairo);
+	}
+
+	if (path_figure_get_is_filled (this)) {
+		// FIXME: fill is setup in Shape::DoDraw but shouldn't be always called
+	}
 }
 
 //
@@ -493,9 +527,28 @@ poly_bezier_segment_new ()
 	return new PolyBezierSegment ();
 }
 
+/*
+ * note: We return a reference, not a copy, of the points. Not a big issue as
+ * Silverlight PolyBezierSegment.Points only has a setter (no getter), so it's
+ * use is only internal.
+ */
+Point*
+poly_bezier_segment_get_points (PolyBezierSegment *segment, int *count)
+{
+	Value *value = segment->GetValue (PolyBezierSegment::PointsProperty);
+	if (!value) {
+		*count = 0;
+		return NULL;
+	}
+
+	*count = value->u.point_array->count;
+	return value->u.point_array->points;
+}
+
 void
 poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int count)
 {
+	segment->SetValue (PolyBezierSegment::PointsProperty, Value (points, count));
 }
 
 //
@@ -510,9 +563,28 @@ poly_line_segment_new ()
 	return new PolyLineSegment ();
 }
 
+/*
+ * note: We return a reference, not a copy, of the points. Not a big issue as
+ * Silverlight PolyLineSegment.Points only has a setter (no getter), so it's
+ * use is only internal.
+ */
+Point*
+poly_line_segment_get_points (PolyLineSegment *segment, int *count)
+{
+	Value *value = segment->GetValue (PolyLineSegment::PointsProperty);
+	if (!value) {
+		*count = 0;
+		return NULL;
+	}
+
+	*count = value->u.point_array->count;
+	return value->u.point_array->points;
+}
+
 void
 poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int count)
 {
+	segment->SetValue (PolyLineSegment::PointsProperty, Value (points, count));
 }
 
 //
@@ -527,10 +599,28 @@ poly_quadratic_segment_new ()
 	return new PolyQuadraticBezierSegment ();
 }
 
-// there is no managed get for points, do we want one ?
+/*
+ * note: We return a reference, not a copy, of the points. Not a big issue as
+ * Silverlight PolyQuadraticBezierSegment.Points only has a setter (no getter),
+ * so it's use is only internal.
+ */
+Point*
+poly_quadratic_segment_get_points (PolyQuadraticBezierSegment *segment, int *count)
+{
+	Value *value = segment->GetValue (PolyQuadraticBezierSegment::PointsProperty);
+	if (!value) {
+		*count = 0;
+		return NULL;
+	}
+
+	*count = value->u.point_array->count;
+	return value->u.point_array->points;
+}
+
 void
 poly_quadratic_segment_set_points (PolyQuadraticBezierSegment *segment, Point *points, int count)
 {
+	segment->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (points, count));
 }
 
 //

@@ -200,6 +200,8 @@ class Path : public Shape {
 	Path () {};
 
 	void Draw (Surface *s);
+
+	virtual bool CanFill ();
 };
 Path *path_new ();
 Geometry* path_get_data (Path *path);
