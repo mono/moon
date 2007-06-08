@@ -1,34 +1,59 @@
 using System;
-using System.Runtime.InteropServices;
 using Gtk;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
+using System.IO;
 
 class X {
-	[DllImport ("moon")]
-	extern static IntPtr surface_new (int w, int h);
-
-	[DllImport ("moon")]
-	extern static IntPtr surface_get_drawing_area (IntPtr surface);
-	
-	static void Main ()
+	static void Main (string [] args)
 	{
 		Application.Init ();
 
-		IntPtr surface = surface_new (400, 400);
-		
 		Window w = new Window ("Top");
-		DrawingArea da = new DrawingArea (surface_get_drawing_area (surface));
-		w.Add (da);
+		GtkSilver silver = new GtkSilver (400, 400);
+		w.Add (silver);
 		w.ShowAll ();
 
 		//
 		// Now, the SL API
 		//
-		Canvas c = new Canvas (surface);
-		Rectangle r = new Rectangle ();
-		c.Children.Add (r);
+		if (args.Length == 0){
+			Canvas c = new Canvas ();
+			silver.Attach (c);
+			Rectangle r = new Rectangle ();
+			c.Children.Add (r);
+		} else {
+			string xaml = null;
+			
+			try {
+				using (FileStream fs = File.OpenRead (args [0])){
+					using (StreamReader sr = new StreamReader (fs)){
+						xaml = sr.ReadToEnd ();
+					}
+				}
+			} catch (Exception e) {
+				Console.Error.WriteLine ("Error loading XAML file {0}: {1}", args [0], e.GetType());
+				return;
+			}
+			
+			if (xaml == null){
+				Console.Error.WriteLine ("Error loading XAML file {0}", args [0]);
+				return;
+			}
+			DependencyObject d = XamlReader.Load (xaml);
+			if (d == null){
+				Console.Error.WriteLine ("No dependency object returned from XamlReader");
+				return;
+			}
 
+			if (!(d is Canvas)){
+				Console.Error.WriteLine ("No Canvas as root");
+				return;
+			}
+			silver.Attach ((Canvas) d);
+		}
+		
 		Application.Run ();
 	}
 }
