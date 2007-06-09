@@ -1,5 +1,11 @@
 2007-06-09  Jackson Harper  <jackson@ximian.com>
 
+	* transform.cpp|h: C style constructor for TransformGroup
+	* xaml.cpp: Implement loading transform groups and transform
+	collections
+
+2007-06-09  Jackson Harper  <jackson@ximian.com>
+
 	* value.h:
 	* runtime.cpp:
 	* transform.cpp|h: Impplement transform groups and transform

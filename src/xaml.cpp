@@ -1,3 +1,4 @@
+#define DEBUG_XAML
 /*
  * xaml.cpp: xaml parser
  *
@@ -505,7 +506,21 @@ storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElemen
 	sb->AddChild (t);
 }
 
-		
+void
+transform_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	if (!is_instance_of (child, Value::TRANSFORM)) {
+		g_warning ("error, attempting to add non Transform type (%d) to TransformCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	TransformCollection *tc = (TransformCollection *) parent->item;
+	Transform *t = (Transform *) child->item;
+
+	tc->Add (t);
+}
+
 ///
 /// set property funcs
 ///
@@ -789,11 +804,15 @@ xaml_init ()
 	///
 	/// Transforms
 	///
-	
-	register_dependency_object_element ("RotateTransform", NULL, Value::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
-	register_dependency_object_element ("ScaleTransform", NULL, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
-	register_dependency_object_element ("TranslateTransform", NULL, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
-	register_dependency_object_element ("MatrixTransform", NULL, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
+
+	XamlElementInfo *tf = register_ghost_element ("Transform", NULL, Value::TRANSFORM);
+	register_dependency_object_element ("RotateTransform", tf, Value::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
+	register_dependency_object_element ("ScaleTransform", tf, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
+	register_dependency_object_element ("TranslateTransform", tf, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
+	register_dependency_object_element ("MatrixTransform", tf, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
+	register_dependency_object_element ("TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
+	XamlElementInfo *tfc = register_dependency_object_element ("TransformCollection", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
+	tfc->add_child = transform_collection_add_child;
 
 
 	///

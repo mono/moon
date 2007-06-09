@@ -318,6 +318,11 @@ TransformGroup::GetTransform (cairo_matrix_t *value)
 	}
 }
 
+TransformGroup *transform_group_new ()
+{
+	return new TransformGroup ();
+}
+
 void
 transform_init ()
 {

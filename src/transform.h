@@ -131,6 +131,9 @@ public:
 	virtual void GetTransform (cairo_matrix_t *value);
 };
 
+TransformGroup *transform_group_new ();
+
+
 G_END_DECLS
 
 #endif
