@@ -93,21 +93,22 @@ public:
 	// Keep these values in sync with the Value.cs in olive.
 	// Also keep in sync within types_init.
 	enum Kind {
-		INVALID = 0,
-		BOOL = 1,
-		DOUBLE = 2,
-		UINT64 = 3,
-		INT32 = 4,
-		STRING = 5,
-		COLOR = 7,
-		POINT = 8,
-		RECT = 9,
-		REPEATBEHAVIOR = 10,
-		DURATION = 11,
-		INT64 = 12,
-		DOUBLE_ARRAY = 13,
-		POINT_ARRAY = 14,
-		KEYTIME = 15,
+// START_MANAGED_MAPPING
+		INVALID,
+		BOOL,
+		DOUBLE,
+		UINT64,
+		INT32,
+		STRING,
+		COLOR,
+		POINT,
+		RECT,
+		REPEATBEHAVIOR,
+		DURATION,
+		INT64,
+		DOUBLE_ARRAY,
+		POINT_ARRAY,
+		KEYTIME,
 
 		DEPENDENCY_OBJECT,
 
@@ -195,6 +196,7 @@ public:
 		TRIGGER_COLLECTION,
 
 		LASTTYPE
+// END_MANAGED_MAPPING
 	};
 
 	void Init ();

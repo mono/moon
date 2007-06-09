@@ -1,5 +1,14 @@
 2007-06-09  Chris Toshok  <toshok@ximian.com>
 
+	* genkindcs.sh: new file, a script to generate
+	olive/class/agclr/Mono/Kind.cs.
+
+	* value.h: add marker comments so that genkindcs.sh works.  Also,
+	remove the explicit value assignments to enum elements <
+	DEPENDENCY_OBJECT.  there's no need for it.
+
+2007-06-09  Chris Toshok  <toshok@ximian.com>
+
 	* demo.cpp (main): add in another animation, this one using
 	keyframes, that moves a square around in a square, while animating
 	its background color the same way as the other rectangles.
