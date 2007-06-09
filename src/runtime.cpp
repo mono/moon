@@ -784,7 +784,8 @@ surface_realloc (Surface *s)
 void 
 surface_destroy (Surface *s)
 {
-	base_unref (s->toplevel);
+	if (s->toplevel)
+		base_unref (s->toplevel);
 
 	cairo_destroy (s->cairo_buffer);
 	if (s->cairo_xlib)

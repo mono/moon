@@ -1,3 +1,8 @@
+2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
+
+	* runtime.cpp: In surface_destroy check for toplevel before unref
+	it. 
+
 2007-06-08  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h: remove the huge whitespace gap after KeyTime, and
