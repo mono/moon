@@ -33,6 +33,7 @@ static void moon_plugin_demo (Canvas *canvas)
 	SolidColorBrush *scb = new SolidColorBrush ();
 	solid_color_brush_set_color (scb, c);
 	shape_set_stroke (r, scb);
+	panel_child_add (canvas, r);
 
 #if VIDEO_DEMO
 	UIElement *v, *v2;
@@ -43,9 +44,6 @@ static void moon_plugin_demo (Canvas *canvas)
 	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
 	panel_child_add (canvas, v2);
 #endif	
-	panel_child_add (canvas, r);
-
-	//gtk_timeout_add (60, repaint, w);
 }
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
@@ -235,8 +233,12 @@ PluginInstance::CreateWindow ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 #ifdef DEMO
+	this->canvas = new Canvas ();
 	this->surface = surface_new (window->width, window->height);
+	surface_attach (this->surface, canvas);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+
+	moon_plugin_demo (this->canvas);
 #else
 	GtkWidget *label = gtk_label_new (PLUGIN_OURNAME" "PLUGIN_OURVERSION);
 	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);

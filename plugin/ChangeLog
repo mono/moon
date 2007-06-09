@@ -1,5 +1,10 @@
 2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.cpp: Add canvas, connect it to surface and get demo working
+	back.
+
+2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.h,
 	* moon-plugin.cpp: Rename CreateControls to CreateWindow.
 
