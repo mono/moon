@@ -1,5 +1,11 @@
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
 
+	* index.html: Use index.xaml as a src in embed control.
+	* test-path-line.xaml: Renamed to index.xaml.
+	* index.xaml: Sample xaml improved with ellipses.
+
+2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
+
 	* Makefile.am: Makefile added with "debug" target to run firefox wiht gdb.
 
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
