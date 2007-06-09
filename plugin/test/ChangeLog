@@ -1,0 +1,5 @@
+2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
+
+	* index.htmk: Use test-path-line.xaml as a src in embed control.
+	* test-path-line.xaml: Added.
+	* moonlight.scr: Deleted.

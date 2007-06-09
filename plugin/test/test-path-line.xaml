@@ -1,0 +1,12 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Stroke="Blue" StrokeThickness="2">
+		<Path.Data>
+			<LineGeometry StartPoint="10,60" EndPoint="110,60" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="Purple" StrokeThickness="1">
+		<Path.Data>
+			<LineGeometry StartPoint="60,10" EndPoint="60,110" />
+		</Path.Data>
+	</Path>
+</Canvas>
