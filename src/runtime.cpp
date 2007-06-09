@@ -784,22 +784,29 @@ surface_realloc (Surface *s)
 void 
 surface_destroy (Surface *s)
 {
-	if (s->toplevel)
+	if (s->toplevel){
 		base_unref (s->toplevel);
+		s->toplevel = NULL;
+	}
 
 	cairo_destroy (s->cairo_buffer);
 	if (s->cairo_xlib)
 		cairo_destroy (s->cairo_xlib);
+	s->cairo_xlib = NULL;
+	s->cairo_buffer = NULL;
 
 	if (s->pixmap != NULL)
 		gdk_pixmap_unref (s->pixmap);
-	
+	s->pixmap = NULL;
 	cairo_surface_destroy (s->cairo_buffer_surface);
 	if (s->xlib_surface)
 		cairo_surface_destroy (s->xlib_surface);
+	s->cairo_buffer_surface = NULL;
 
-	gtk_widget_destroy (s->drawing_area);
-
+	if (s->drawing_area != NULL){
+		gtk_widget_destroy (s->drawing_area);
+		s->drawing_area = NULL;
+	}
 	// TODO: add everything
 	delete s;
 }
@@ -902,6 +909,14 @@ canvas_new ()
 	return new Canvas ();
 }
 
+void 
+clear_drawing_area (GtkObject *obj, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	s->drawing_area = NULL;
+}
+
 Surface *
 surface_new (int width, int height)
 {
@@ -928,6 +943,9 @@ surface_new (int width, int height)
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "unrealize",
 			    G_CALLBACK (unrealized_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "destroy",
+			    G_CALLBACK (clear_drawing_area), s);
 
 	return s;
 }
