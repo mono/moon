@@ -1,5 +1,9 @@
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
 
-	* index.htmk: Use test-path-line.xaml as a src in embed control.
+	* Makefile.am: Makefile added with "debug" target to run firefox wiht gdb.
+
+2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
+
+	* index.html: Use test-path-line.xaml as a src in embed control.
 	* test-path-line.xaml: Added.
 	* moonlight.scr: Deleted.
