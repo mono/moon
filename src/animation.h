@@ -252,6 +252,18 @@ class DoubleKeyFrame : public KeyFrame {
 };
 
 
+
+class ColorKeyFrame : public KeyFrame {
+ public:
+	ColorKeyFrame ();
+	Value::Kind GetObjectType () { return Value::COLORKEYFRAME; };
+
+	NULLABLE_GETSET_DECL(Value, Color);
+
+	static DependencyProperty *ValueProperty;
+};
+
+
 class PointKeyFrame : public KeyFrame {
  public:
 	PointKeyFrame ();
@@ -263,6 +275,8 @@ class PointKeyFrame : public KeyFrame {
 };
 
 
+
+
 class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	DiscreteDoubleKeyFrame () { }
@@ -272,6 +286,18 @@ class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
 };
 
 DiscreteDoubleKeyFrame* discrete_double_key_frame_new ();
+
+
+
+class DiscreteColorKeyFrame : public ColorKeyFrame {
+ public:
+	DiscreteColorKeyFrame () { }
+	Value::Kind GetObjectType () { return Value::DISCRETECOLORKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
+
+DiscreteColorKeyFrame* discrete_color_key_frame_new ();
 
 
 
@@ -287,6 +313,7 @@ DiscretePointKeyFrame* discrete_point_key_frame_new ();
 
 
 
+
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	LinearDoubleKeyFrame () { }
@@ -297,6 +324,19 @@ class LinearDoubleKeyFrame : public DoubleKeyFrame {
 
 LinearDoubleKeyFrame* linear_double_key_frame_new ();
 
+class LinearColorKeyFrame : public ColorKeyFrame {
+ public:
+	LinearColorKeyFrame () { }
+	Value::Kind GetObjectType () { return Value::LINEARCOLORKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
+
+LinearColorKeyFrame* linear_color_key_frame_new ();
+
+
+
+
 class LinearPointKeyFrame : public PointKeyFrame {
  public:
 	LinearPointKeyFrame () { }
@@ -306,6 +346,7 @@ class LinearPointKeyFrame : public PointKeyFrame {
 };
 
 LinearPointKeyFrame* linear_point_key_frame_new ();
+
 
 
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
@@ -326,6 +367,26 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 };
 
 DoubleAnimationUsingKeyFrames* double_animation_using_key_frames_new ();
+
+class ColorAnimationUsingKeyFrames : public ColorAnimation {
+ public:
+	ColorAnimationUsingKeyFrames ();
+	Value::Kind GetObjectType () { return Value::COLORANIMATIONUSINGKEYFRAMES; };
+
+	void AddKeyFrame (ColorKeyFrame *frame);
+	void RemoveKeyFrame (ColorKeyFrame *frame);
+
+	static DependencyProperty *KeyFramesProperty;
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+
+ private:
+	GList *key_frames;
+};
+
+ColorAnimationUsingKeyFrames* color_animation_using_key_frames_new ();
+
 
 class PointAnimationUsingKeyFrames : public PointAnimation {
  public:

@@ -1685,12 +1685,16 @@ types_init ()
 	Type::RegisterType ("EventTrigger", Value::EVENTTRIGGER, Value::DEPENDENCY_OBJECT);
 
 	Type::RegisterType ("KeyFrame", Value::KEYFRAME, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("ColorKeyFrame", Value::COLORKEYFRAME, Value::KEYFRAME);
 	Type::RegisterType ("DoubleKeyFrame", Value::DOUBLEKEYFRAME, Value::KEYFRAME);
 	Type::RegisterType ("PointKeyFrame", Value::POINTKEYFRAME, Value::KEYFRAME);
+	Type::RegisterType ("DiscreteColorKeyFrame", Value::DISCRETECOLORKEYFRAME, Value::DOUBLEKEYFRAME);
 	Type::RegisterType ("DiscreteDoubleKeyFrame", Value::DISCRETEDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
 	Type::RegisterType ("DiscretePointKeyFrame", Value::DISCRETEPOINTKEYFRAME, Value::POINTKEYFRAME);
+	Type::RegisterType ("LinearColorKeyFrame", Value::LINEARCOLORKEYFRAME, Value::COLORKEYFRAME);
 	Type::RegisterType ("LinearDoubleKeyFrame", Value::LINEARDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
 	Type::RegisterType ("LinearPointKeyFrame", Value::LINEARPOINTKEYFRAME, Value::POINTKEYFRAME);
+	Type::RegisterType ("ColorAnimationUsingKeyFrames", Value::COLORANIMATIONUSINGKEYFRAMES, Value::COLORANIMATION);
 	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Value::DOUBLEANIMATIONUSINGKEYFRAMES, Value::DOUBLEANIMATION);
 	Type::RegisterType ("PointAnimationUsingKeyFrames", Value::POINTANIMATIONUSINGKEYFRAMES, Value::POINTANIMATION);
 

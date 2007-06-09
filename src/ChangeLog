@@ -1,5 +1,11 @@
 2007-06-09  Chris Toshok  <toshok@ximian.com>
 
+	* animation.h, animation.cpp, value.h, runtime.cpp: add
+	ColorKeyFrame and it's linear/discrete subclasses, as well as
+	ColorAnimationUsingKeyFrames.
+
+2007-06-09  Chris Toshok  <toshok@ximian.com>
+
 	* animation.h, animation.cpp, value.h, runtime.cpp: add the
 	Discrete keyframes for point and double.
 
