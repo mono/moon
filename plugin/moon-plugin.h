@@ -29,9 +29,9 @@
 
 #define PLUGIN_NAME         "WPFe Plug-In"
 #define PLUGIN_VERSION      "0.99.0"
-#define PLUGIN_OURNAME      "Novell MoonLight"
+#define PLUGIN_OURNAME      "Novell Moonlight"
 #define PLUGIN_OURVERSION   "0.1"
-#define PLUGIN_DESCRIPTION  "Novell MoonLight is a Free Unix implementation of SilverLight";
+#define PLUGIN_DESCRIPTION  "Novell Moonlight is Mono's Free/Open Source implementation of SilverLight";
 #define MIME_TYPES_HANDLED  "application/ag-plugin:xaml:Novell MoonLight"
 
 #define DEBUG
@@ -40,7 +40,7 @@
 #ifdef G_LOG_DOMAIN
 #undef G_LOG_DOMAIN
 #endif
-#define G_LOG_DOMAIN "MoonLight"
+#define G_LOG_DOMAIN "Moonlight"
 #define DEBUGMSG(x...) g_message (x)
 #else
 #define DEBUGMSG(x...)
