@@ -127,11 +127,20 @@ This is not likely the final version of this code.
 	This ensures that objects with a few hundred exposed
 	properties (that are barely changed) do not consume a lot of memory.
 
-* Rendering in Items
+* Caching commonly used values in DepdendencyObjects
 
-	Rendering currently passes the parent affine, but it might be possible to
-	avoid this if we end up using Cairo: just use the affine that is part of 
-	the cairo context at the time of the rendering.
+	For commonly used fields that might live in a dependency property, it 
+	might be best to keep the data on the object itself.    The only
+	way of doing this, and still support the DependencyObject system is
+	to use the class instance fields as a cache.
+
+	To do this, you can cache the values in the instance variable of the
+	class and  monitor changes to the property overriding the OnPropertyChange
+	method.
+
+	The OnPropertyChange method is called after the actual value has changed
+	so you must update your internally cached version of it with the value
+	in the dependencyproperty.
 
 * Video
 
@@ -164,20 +173,17 @@ This is not likely the final version of this code.
 
 * Rendering
 
-	Currently we are creating a bitmap surface and we always copy
-	it to the screen.  This approach is fine for non-compositing
-	managers as this serves as our double-buffering primitive.
+	Currently we are using Cairo and an xlib surface that points to
+	a pixmap to do the rendering, but this has proven for some users
+	to be slower than the software rendering that we were using.
 
-	David Reveman has some suggestions for the future:
+	The software rendering used to use gdk_draw_pixbuf, which had
+	one problem: gdk_draw_pixbuf expects the data to be in a slightly
+	different ARGB format than the ones that Cairo and libswscale 
+	support.
 
-		* We could create an xlib surface for the backing
-		  store of the videos, this would help if we need
-		  later to do video rendering in a separate process
-		  or thread (for the compiz integration).
-
-		* With a compositing manager we could use the xlib	
-		  surface as this would properly synchornize and 
-	 	  not require the client side double buffering. 
+	To support software rendering we should re-implement this code and
+	and add support for byte swapping to the format required by gdk_draw_pixbuf
 
 * Expose
 
