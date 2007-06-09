@@ -263,6 +263,30 @@ class PointKeyFrame : public KeyFrame {
 };
 
 
+class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
+ public:
+	DiscreteDoubleKeyFrame () { }
+	Value::Kind GetObjectType () { return Value::DISCRETEDOUBLEKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
+
+DiscreteDoubleKeyFrame* discrete_double_key_frame_new ();
+
+
+
+class DiscretePointKeyFrame : public PointKeyFrame {
+ public:
+	DiscretePointKeyFrame () { }
+	Value::Kind GetObjectType () { return Value::DISCRETEPOINTKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
+
+DiscretePointKeyFrame* discrete_point_key_frame_new ();
+
+
+
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	LinearDoubleKeyFrame () { }

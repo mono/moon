@@ -1,5 +1,10 @@
 2007-06-09  Chris Toshok  <toshok@ximian.com>
 
+	* animation.h, animation.cpp, value.h, runtime.cpp: add the
+	Discrete keyframes for point and double.
+
+2007-06-09  Chris Toshok  <toshok@ximian.com>
+
 	* genkindcs.sh: new file, a script to generate
 	olive/class/agclr/Mono/Kind.cs.
 

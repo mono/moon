@@ -36,6 +36,7 @@ AnimationStorage::UpdatePropertyValue ()
 {
 	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
 	targetobj->SetValue (targetprop, *current_value);
+	//delete current_value;
 }
 
 
@@ -267,8 +268,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (LERP (start, end, progress)); // XXX we leak this
-	return v;
+	return new Value (LERP (start, end, progress));
 }
 
 DoubleAnimation *
@@ -311,8 +311,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (LERP (start, end, progress)); // XXX we leak this
-	return v;
+	return new Value (LERP (start, end, progress));
 }
 
 ColorAnimation *
@@ -391,8 +390,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (LERP (start, end, progress)); // XXX we leak this
-	return v;
+	return new Value (LERP (start, end, progress));
 }
 
 PointAnimation *
@@ -438,6 +436,47 @@ PointKeyFrame::PointKeyFrame ()
 
 
 Value*
+DiscreteDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	double *to = GetValue();
+	/* XXX GetValue can return NULL */
+
+	if (keyFrameProgress == 1.0)
+		return new Value(*to);
+	else
+		return new Value (baseValue->AsDouble());
+}
+
+DiscreteDoubleKeyFrame*
+discrete_double_key_frame_new ()
+{
+	return new DiscreteDoubleKeyFrame ();
+}
+
+
+
+Value*
+DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	Point *to = GetValue();
+	/* XXX GetValue can return NULL */
+
+	if (keyFrameProgress == 1.0)
+		return new Value(*to);
+	else
+		return new Value (*baseValue->AsPoint());
+}
+
+DiscretePointKeyFrame*
+discrete_point_key_frame_new ()
+{
+	return new DiscretePointKeyFrame ();
+}
+
+
+
+
+Value*
 LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	double *to = GetValue();
@@ -448,9 +487,7 @@ LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	start = baseValue->AsDouble();
 	end = *to;
 
-	Value *v = new Value (LERP (start, end, keyFrameProgress));
-
-	return v;
+	return new Value (LERP (start, end, keyFrameProgress));
 }
 
 LinearDoubleKeyFrame*
@@ -471,9 +508,7 @@ LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	start = *baseValue->AsPoint();
 	end = *to;
 
-	Value *v = new Value (LERP (start, end, keyFrameProgress));
-
-	return v;
+	return new Value (LERP (start, end, keyFrameProgress));
 }
 
 LinearPointKeyFrame*

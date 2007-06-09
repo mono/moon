@@ -409,6 +409,8 @@ AS_DEP_SUBCLASS_IMPL(EVENTTRIGGER, EventTrigger)
 AS_DEP_SUBCLASS_IMPL(KEYFRAME, KeyFrame)
 AS_DEP_SUBCLASS_IMPL(DOUBLEKEYFRAME, DoubleKeyFrame)
 AS_DEP_SUBCLASS_IMPL(POINTKEYFRAME, PointKeyFrame)
+AS_DEP_SUBCLASS_IMPL(DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame)
+AS_DEP_SUBCLASS_IMPL(DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame)
 AS_DEP_SUBCLASS_IMPL(LINEARDOUBLEKEYFRAME, LinearDoubleKeyFrame)
 AS_DEP_SUBCLASS_IMPL(LINEARPOINTKEYFRAME, LinearPointKeyFrame)
 AS_DEP_SUBCLASS_IMPL(POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames)
@@ -1685,6 +1687,8 @@ types_init ()
 	Type::RegisterType ("KeyFrame", Value::KEYFRAME, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("DoubleKeyFrame", Value::DOUBLEKEYFRAME, Value::KEYFRAME);
 	Type::RegisterType ("PointKeyFrame", Value::POINTKEYFRAME, Value::KEYFRAME);
+	Type::RegisterType ("DiscreteDoubleKeyFrame", Value::DISCRETEDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
+	Type::RegisterType ("DiscretePointKeyFrame", Value::DISCRETEPOINTKEYFRAME, Value::POINTKEYFRAME);
 	Type::RegisterType ("LinearDoubleKeyFrame", Value::LINEARDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
 	Type::RegisterType ("LinearPointKeyFrame", Value::LINEARPOINTKEYFRAME, Value::POINTKEYFRAME);
 	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Value::DOUBLEANIMATIONUSINGKEYFRAMES, Value::DOUBLEANIMATION);
@@ -1712,8 +1716,6 @@ types_init ()
 //#if DEBUG
 	//printf ("Checking types...\n");
 	for (int i = 1; i < Value::LASTTYPE; i++) {
-		if (i == 6) // Why did we skip the type #6??
-			continue;
 		if (Type::types [i] == NULL)
 			printf ("Type %i is not initialized\n", i);
 	}

@@ -26,6 +26,8 @@ class ClockGroup;
 class ColorAnimation;
 class DependencyObject;
 class DependencyProperty;
+class DiscreteDoubleKeyFrame;
+class DiscretePointKeyFrame;
 class DoubleAnimation;
 class DoubleAnimationUsingKeyFrames;
 class DoubleArray;
@@ -171,6 +173,8 @@ public:
 		KEYFRAME,
 		DOUBLEKEYFRAME,
 		POINTKEYFRAME,
+		DISCRETEDOUBLEKEYFRAME,
+		DISCRETEPOINTKEYFRAME,
 		LINEARDOUBLEKEYFRAME,
 		LINEARPOINTKEYFRAME,
 		DOUBLEANIMATIONUSINGKEYFRAMES,
@@ -322,6 +326,8 @@ public:
 	KeyFrame*                     AsKeyFrame ();
 	DoubleKeyFrame*               AsDoubleKeyFrame();
 	PointKeyFrame*                AsPointKeyFrame ();
+	DiscreteDoubleKeyFrame*       AsDiscreteDoubleKeyFrame ();
+	DiscretePointKeyFrame*        AsDiscretePointKeyFrame ();
 	LinearDoubleKeyFrame*         AsLinearDoubleKeyFrame ();
 	LinearPointKeyFrame*          AsLinearPointKeyFrame ();
 	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames ();
