@@ -48,3 +48,11 @@ Feel free to add items to this TODO list
 
 	All shapes must implement the ::getxformorigin method, the metho
 	is used to determine the center of the object.
+
+* Color
+
+	Right now the unmanaged side use 4 doubles for colors (ARGB), 
+	while the managed side use an uint (4 bytes) and must also give
+	float (not double) representations (ScA, ScR, ScG & ScB). All 
+	this will eventually need to be merged into a single 
+	representation
