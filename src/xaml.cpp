@@ -506,6 +506,29 @@ storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElemen
 }
 
 void
+transform_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	TransformGroup *tg = (TransformGroup *) parent->item;
+
+	if (is_instance_of (child, Value::TRANSFORM_COLLECTION)) {
+		Value v ((TransformCollection *) child->item);
+		tg->SetValue (tg->ChildrenProperty, &v);
+		return;
+	}
+
+	if (!is_instance_of (child, Value::TRANSFORM)) {
+		g_warning ("error, attempting to add non Transform type (%d) to TransformCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	Transform *t = (Transform *) child->item;
+	Value v = Value (t);
+
+	tg->children->Add (&v);
+}
+
+void
 transform_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	if (!is_instance_of (child, Value::TRANSFORM)) {
@@ -516,8 +539,9 @@ transform_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, 
 
 	TransformCollection *tc = (TransformCollection *) parent->item;
 	Transform *t = (Transform *) child->item;
+	Value v = Value (t);
 
-	tc->Add (t);
+	tc->Add (&t);
 }
 
 ///
@@ -552,6 +576,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 
 	if (prop) {
 		if (prop->value_type >= Value::DEPENDENCY_OBJECT) {
+			printf ("setting property:  %s\n", property->element_name);
 			dep->SetValue (prop, Value ((DependencyObject *) value->item));
 		}
 	} else {
@@ -809,7 +834,9 @@ xaml_init ()
 	register_dependency_object_element ("ScaleTransform", tf, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
 	register_dependency_object_element ("TranslateTransform", tf, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
 	register_dependency_object_element ("MatrixTransform", tf, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
-	register_dependency_object_element ("TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
+	XamlElementInfo *tg = register_dependency_object_element ("TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
+	tg->add_child = transform_group_add_child;
+	
 	XamlElementInfo *tfc = register_dependency_object_element ("TransformCollection", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
 	tfc->add_child = transform_collection_add_child;
 
