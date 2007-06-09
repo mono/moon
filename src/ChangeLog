@@ -1,3 +1,10 @@
+2007-06-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp|h: Complete GeometryGroup with GeometryCollection.
+	But color rending is not yet correct in demo files.
+	* runtime.cpp, value.h: Add support for GeometryCollection
+	* xaml.cpp: Add support for GeometryGroup
+
 2007-06-09  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h, animation.cpp, value.h, runtime.cpp: add

@@ -41,19 +41,35 @@ Transform* geometry_get_transform (Geometry *geometry);
 void geometry_set_transform (Geometry *geometry, Transform *transform);
 
 //
+// GeometryCollection
+//
+class GeometryCollection : public Collection {
+ public:
+	GeometryCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::GEOMETRY_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+};
+
+//
 // GeometryGroup
 //
 class GeometryGroup : public Geometry {
  public:
 	static DependencyProperty* ChildrenProperty;
 
-	GeometryGroup () { };
+	GeometryCollection *children;
+
+	GeometryGroup ();
 	Value::Kind GetObjectType () { return Value::GEOMETRYGROUP; };
 
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void Draw (Surface *s);
 };
-GeometryGroup* geometry_group_new ();
-// TODO get|set GeometryCollection
+GeometryGroup		*geometry_group_new		();
+GeometryCollection	*geometry_group_get_children	(GeometryGroup *geometry_group);
+void			geometry_group_set_children	(GeometryGroup *geometry_group, GeometryCollection* geometry_collection);
 
 //
 // EllipseGeometry

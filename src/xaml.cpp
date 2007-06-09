@@ -544,6 +544,29 @@ transform_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, 
 	tc->Add (&t);
 }
 
+void
+geometry_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	GeometryGroup *gg = (GeometryGroup *) parent->item;
+
+	if (is_instance_of (child, Value::GEOMETRY_COLLECTION)) {
+		Value v ((GeometryCollection *) child->item);
+		gg->SetValue (gg->ChildrenProperty, &v);
+		return;
+	}
+
+	if (!is_instance_of (child, Value::GEOMETRY)) {
+		g_warning ("error, attempting to add non Geometry type (%d) to GeometryCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	Geometry *g = (Geometry *) child->item;
+	Value v = Value (g);
+
+	gg->children->Add (&v);
+}
+
 ///
 /// set property funcs
 ///
@@ -785,14 +808,14 @@ xaml_init ()
 	///
 
 	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, Value::GEOMETRY);
-	register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 	register_dependency_object_element ("EllipseGeometry", geo, Value::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
 //	register_dependency_object_element ("CombinedGeometry", geo, Value::COMBINEDGEOMETRY, (create_item_func) combined_geometry_new);
 	register_dependency_object_element ("LineGeometry", geo, Value::LINEGEOMETRY, (create_item_func) line_geometry_new);
 	register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
 	register_dependency_object_element ("RectangleGeometry", geo, Value::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
 //	register_dependency_object_element ("StreamGeometry", geo, Value::STREAMGEOMETRY, (create_item_func) stream_geometry_new);
-
+	XamlElementInfo *gg = register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
+	gg->add_child = geometry_group_add_child;
 
 	///
 	/// Panels

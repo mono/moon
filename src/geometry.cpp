@@ -76,11 +76,90 @@ geometry_group_new ()
 	return new GeometryGroup ();
 }
 
+GeometryGroup::GeometryGroup ()
+{
+	children = NULL;
+	GeometryCollection *c = new GeometryCollection ();
+
+	this->SetValue (GeometryGroup::ChildrenProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == children);
+}
+
+void
+GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
+{
+	Geometry::OnPropertyChanged (prop);
+
+	if (prop == ChildrenProperty){
+		// The new value has already been set, so unref the old collection
+
+		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
+
+		if (newcol != children){
+			if (children){
+				for (GSList *l = children->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (children);
+				g_slist_free (children->list);
+			}
+
+			children = newcol;
+			if (children->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			children->closure = this;
+			
+			base_ref (children);
+		}
+	}
+}
+
 void
 GeometryGroup::Draw (Surface *s)
 {
 	Geometry::Draw (s);
-	// TODO: iterate all childs
+
+	for (GSList *g = children->list; g != NULL; g = g->next) {
+		Geometry *geometry = (Geometry*) g->data;
+		geometry->Draw (s);
+	}
+}
+
+GeometryCollection*
+geometry_group_get_children (GeometryGroup *geometry_group)
+{
+	Value *value = geometry_group->GetValue (GeometryGroup::ChildrenProperty);
+	return (GeometryCollection*) (value ? value->AsGeometryCollection() : NULL);
+}
+
+void
+geometry_group_set_children (GeometryGroup *geometry_group, GeometryCollection* geometry_collection)
+{
+	geometry_group->SetValue (GeometryGroup::ChildrenProperty, Value (geometry_collection));
+}
+
+//
+// GeometryCollection
+//
+
+void
+GeometryCollection::Add (void *data)
+{
+	Value *value = (Value*) data;
+	Geometry *geometry = value->AsGeometry ();
+	Collection::Add (geometry);
+}
+
+void
+GeometryCollection::Remove (void *data)
+{
+	Value *value = (Value*) data;
+	Geometry *geometry = value->AsGeometry ();
+	Collection::Remove (geometry);
 }
 
 //

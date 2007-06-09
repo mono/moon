@@ -89,6 +89,7 @@ class VisualCollection;
 class TriggerCollection;
 class TriggerActionCollection;
 class TransformCollection;
+class GeometryCollection;
 
 struct Value {
 public:
@@ -342,6 +343,7 @@ public:
 	TriggerCollection*            AsTriggerCollection ();
 	TriggerActionCollection*      AsTriggerActionCollection ();
 	TransformCollection*          AsTransformCollection ();
+	GeometryCollection*           AsGeometryCollection ();
   
 	Kind k;
   private:
