@@ -7,8 +7,8 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
     <Line.RenderTransform>
       <TransformGroup>
-        <ScaleTransform ScaleX="0.25" ScaleY="0.25"/>
-        <TranslateTransform X="50" Y="26"/>
+        <ScaleTransform ScaleX="50" ScaleY="0.25"/>
+        <RotateTransform Angle="270" />
       </TransformGroup>
     </Line.RenderTransform>
 
