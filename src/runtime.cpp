@@ -296,7 +296,7 @@ Value::Value (const char* s)
 {
 	Init ();
 	k = STRING;
-	u.s= strdup (s);
+	u.s= g_strdup (s);
 }
 
 Value::Value (Point *points, int count)
