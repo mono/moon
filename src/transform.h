@@ -108,8 +108,27 @@ void           matrix_transform_set_matrix (MatrixTransform *t, cairo_matrix_t m
 cairo_matrix_t matrix_transform_get_matrix (MatrixTransform *t);
 
 
+class TransformCollection : public Collection {
+ public:
+	TransformCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::TRANSFORM_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+};
+
 class TransformGroup : public Transform {
+public:
+	static DependencyProperty* ChildrenProperty;
+
+	TransformCollection *children;
+	
+	TransformGroup ();
 	Value::Kind GetObjectType() { return Value::TRANSFORMGROUP; };
+
+	
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 G_END_DECLS

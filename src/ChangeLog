@@ -1,6 +1,13 @@
 2007-06-09  Jackson Harper  <jackson@ximian.com>
 
 	* value.h:
+	* runtime.cpp:
+	* transform.cpp|h: Impplement transform groups and transform
+	collections.
+
+2007-06-09  Jackson Harper  <jackson@ximian.com>
+
+	* value.h:
 	* runtime.cpp|h: Use the new collection classes for triggers and
 	actions. These are unsettable, so don't register them as
 	DependencyProperties.

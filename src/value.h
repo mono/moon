@@ -76,6 +76,7 @@ class Collection;
 class VisualCollection;
 class TriggerCollection;
 class TriggerActionCollection;
+class TransformCollection;
 
 struct Value {
 public:
@@ -298,7 +299,7 @@ public:
 	VisualCollection*             AsVisualCollection ();
 	TriggerCollection*            AsTriggerCollection ();
 	TriggerActionCollection*      AsTriggerActionCollection ();
-
+	TransformCollection*          AsTransformCollection ();
   
 	Kind k;
   private:

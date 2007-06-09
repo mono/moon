@@ -244,6 +244,81 @@ matrix_transform_new ()
 }
 
 void
+TransformCollection::Add (void *data)
+{
+	TransformGroup *tfg = (TransformGroup *) closure;
+	
+	Value *v = (Value *) data;
+	Transform *transform = v->AsTransform ();
+
+	Collection::Add (transform);
+}
+
+void
+TransformCollection::Remove (void *data)
+{
+	TransformGroup *tfg = (TransformGroup *) closure;
+	
+	Value *v = (Value *) data;
+	Transform *transform = v->AsTransform ();
+
+	Collection::Remove (transform);
+}
+
+DependencyProperty* TransformGroup::ChildrenProperty;
+
+TransformGroup::TransformGroup ()
+{
+	children = NULL;
+	TransformCollection *c = new TransformCollection ();
+
+	this->SetValue (TransformGroup::ChildrenProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == children);
+}
+
+void
+TransformGroup::OnPropertyChanged (DependencyProperty *prop)
+{
+	Transform::OnPropertyChanged (prop);
+
+	if (prop == ChildrenProperty){
+		// The new value has already been set, so unref the old collection
+
+		TransformCollection *newcol = GetValue (prop)->AsTransformCollection();
+
+		if (newcol != children){
+			if (children){
+				for (GSList *l = children->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (children);
+				g_slist_free (children->list);
+			}
+
+			children = newcol;
+			if (children->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			children->closure = this;
+			
+			base_ref (children);
+		}
+	}
+}
+
+void
+TransformGroup::GetTransform (cairo_matrix_t *value)
+{
+	for (GSList *w = children->list; w != NULL; w = w->next) {
+		Transform *t = (Transform *) w->data;
+		t->GetTransform (value);
+	}
+}
+
+void
 transform_init ()
 {
 	/* RotateTransform fields */
@@ -262,4 +337,7 @@ transform_init ()
 	ScaleTransform::CenterYProperty = DependencyObject::Register (Value::SCALETRANSFORM, "CenterY", new Value (0.0));
 
 	/* XXX MatrixTransform fields */
+
+	/* TransformGroup fields */
+	TransformGroup::ChildrenProperty = DependencyObject::Register (Value::TRANSFORMGROUP, "Children", Value::TRANSFORM_COLLECTION);
 }
