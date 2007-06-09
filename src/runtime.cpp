@@ -241,6 +241,12 @@ Value::Value (Color c)
 	u.color = new Color (c);
 }
 
+Value
+value_color_from_argb (uint32_t c)
+{
+	return Value (Color (c));
+}
+
 Value::Value (DependencyObject *obj)
 {
 	g_assert (obj != NULL);

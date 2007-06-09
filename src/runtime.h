@@ -162,8 +162,8 @@ struct Color {
 	}
 };
 
-
-Color *color_from_str (const char *name);
+Value  value_color_from_argb (uint32_t value);
+Color *color_from_str  (const char *name);
 
 struct DoubleArray {
  public:

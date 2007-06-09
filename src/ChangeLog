@@ -1,3 +1,11 @@
+2007-06-09  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.h (value_color_from_argb): Temporary hack until we
+	figure out how to marshal Colors properly, we are using the uint32
+	constructor, we should figure out if this is what we want, or if
+	we should go down the route of using doubles (C++ stores thinks as
+	Doubles our managed API as bytes).
+
 2007-06-10  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Handle the TransformGroup default collection.
