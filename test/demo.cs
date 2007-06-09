@@ -29,8 +29,8 @@ class X {
 			r.Stroke = new SolidColorBrush (Color.FromRgb (255, 0, 0));
 			c.Children.Add (r);
 
-			r.SetValue (Canvas.LeftProperty, 100.0);
-			r.SetValue (Canvas.TopProperty, 100.0);
+			r.SetValue (Canvas.LeftProperty, 100);
+			r.SetValue (Canvas.TopProperty, 100);
 
 		} else {
 			string xaml = null;
