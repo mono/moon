@@ -388,6 +388,12 @@ AS_DEP_SUBCLASS_IMPL(ANIMATIONCLOCK, AnimationClock)
 AS_DEP_SUBCLASS_IMPL(CLOCKGROUP, ClockGroup)
 AS_DEP_SUBCLASS_IMPL(BRUSH, Brush)
 AS_DEP_SUBCLASS_IMPL(SOLIDCOLORBRUSH, SolidColorBrush)
+AS_DEP_SUBCLASS_IMPL(TILEBRUSH, TileBrush)
+AS_DEP_SUBCLASS_IMPL(IMAGEBRUSH, ImageBrush)
+AS_DEP_SUBCLASS_IMPL(VIDEOBRUSH, VideoBrush)
+AS_DEP_SUBCLASS_IMPL(LINEARGRADIENTBRUSH, LinearGradientBrush)
+AS_DEP_SUBCLASS_IMPL(GRADIENTBRUSH, GradientBrush)
+AS_DEP_SUBCLASS_IMPL(GRADIENTSTOP, GradientStop)
 AS_DEP_SUBCLASS_IMPL(PATHFIGURE, PathFigure)
 AS_DEP_SUBCLASS_IMPL(PATHSEGMENT, PathSegment)
 AS_DEP_SUBCLASS_IMPL(ARCSEGMENT, ArcSegment)
@@ -1657,6 +1663,12 @@ types_init ()
 	Type::RegisterType ("ClockGroup", Value::CLOCKGROUP, Value::CLOCK);
 	Type::RegisterType ("Brush", Value::BRUSH, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("SolidColorBrush", Value::SOLIDCOLORBRUSH, Value::BRUSH);
+	Type::RegisterType ("TileBrush", Value::TILEBRUSH, Value::BRUSH);
+	Type::RegisterType ("ImageBrush", Value::IMAGEBRUSH, Value::TILEBRUSH);
+	Type::RegisterType ("VideoBrush", Value::VIDEOBRUSH, Value::TILEBRUSH);
+	Type::RegisterType ("GradientBrush", Value::GRADIENTBRUSH, Value::BRUSH);
+	Type::RegisterType ("LinearGradientBrush", Value::LINEARGRADIENTBRUSH, Value::GRADIENTBRUSH);
+	Type::RegisterType ("GradientStop", Value::GRADIENTSTOP, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("PathFigure", Value::PATHFIGURE, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("PathSegment", Value::PATHSEGMENT, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("ArcSegment", Value::ARCSEGMENT, Value::PATHSEGMENT);

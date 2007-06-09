@@ -395,7 +395,20 @@ class GradientBrush : public Brush {
 	virtual void SetupBrush (cairo_t *cairo);
 };
 
+class TileBrush : public Brush {
+};
 
+class ImageBrush : public TileBrush {
+};
+
+class VideoBrush : public TileBrush {
+};
+
+class LinearGradientBrush : public GradientBrush {
+};
+
+class GradientStop : public DependencyObject {
+};
 
 enum Stretch {
 	StretchNone,

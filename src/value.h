@@ -66,6 +66,12 @@ class RotateTransform;
 class ScaleTransform;
 class Shape;
 class SolidColorBrush;
+class TileBrush;
+class ImageBrush;
+class VideoBrush;
+class LinearGradientBrush;
+class GradientBrush;
+class GradientStop;
 class Storyboard;
 class Surface;
 class Timeline;
@@ -143,6 +149,7 @@ public:
 		CLOCKGROUP,
 		BRUSH,
 		SOLIDCOLORBRUSH,
+		TILEBRUSH,
 		IMAGEBRUSH,
 		VIDEOBRUSH,
 		LINEARGRADIENTBRUSH,
@@ -292,6 +299,12 @@ public:
 	ClockGroup*                   AsClockGroup ();
 	Brush*                        AsBrush ();
 	SolidColorBrush*              AsSolidColorBrush ();
+	TileBrush*                    AsTileBrush ();
+	ImageBrush*                   AsImageBrush ();
+	VideoBrush*                   AsVideoBrush ();
+	LinearGradientBrush*          AsLinearGradientBrush ();
+	GradientBrush*                AsGradientBrush ();
+	GradientStop*                 AsGradientStop ();
 	PathFigure*                   AsPathFigure ();
 	PathSegment*                  AsPathSegment ();
 	ArcSegment*                   AsArcSegment ();

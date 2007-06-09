@@ -18,6 +18,7 @@ libmoon_la_SOURCES = 	\
 	runtime.h	\
 	shape.cpp	\
 	shape.h		\
+	text.cpp	\
 	transform.cpp	\
 	transform.h	\
 	value.h		\
