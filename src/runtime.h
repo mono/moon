@@ -332,6 +332,24 @@ class VisualCollection : public Collection {
 	virtual void Remove (void *data);
 };
 
+class TriggerCollection : public Collection {
+ public:
+	TriggerCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::TRIGGER_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+};
+
+class TriggerActionCollection : public Collection {
+ public:
+	TriggerActionCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::TRIGGERACTION_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+};
+
 class Brush : public DependencyObject {
  public:
 	static DependencyProperty* OpacityProperty;
@@ -416,7 +434,7 @@ class TriggerAction : public DependencyObject {
 	TriggerAction () { };
 
 	Value::Kind GetObjectType () { return Value::TRIGGERACTION; };
-       virtual void Fire () = 0;
+	virtual void Fire () = 0;
 };
 
 
@@ -424,17 +442,14 @@ class EventTrigger : public DependencyObject {
 
  public:
 	char *routed_event;
-	GSList *actions;
+	TriggerActionCollection *actions;
 
-	EventTrigger () : routed_event (NULL), actions (NULL)
-	{
-	}
+	EventTrigger ();
 
 	Value::Kind GetObjectType () { return Value::EVENTTRIGGER; };
 
-	void AddAction (TriggerAction *action);
-
 	void SetTarget (DependencyObject *target);
+	void RemoveTarget (DependencyObject *target);
 };
 
 EventTrigger  *event_trigger_new ();
@@ -549,9 +564,9 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty* HeightProperty;
 	static DependencyProperty* WidthProperty;
 
-	Collection triggers;
+	TriggerCollection *triggers;
 
-	FrameworkElement () {} 
+	FrameworkElement ();
 };
 
 double	framework_element_get_height	(FrameworkElement *framework_element);

@@ -400,6 +400,8 @@ AS_DEP_SUBCLASS_IMPL(POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames)
 
 AS_DEP_SUBCLASS_IMPL(COLLECTION, Collection)
 AS_DEP_SUBCLASS_IMPL(VISUAL_COLLECTION, VisualCollection)
+AS_DEP_SUBCLASS_IMPL(TRIGGER_COLLECTION, TriggerCollection)
+AS_DEP_SUBCLASS_IMPL(TRIGGERACTION_COLLECTION, TriggerActionCollection)
 
 
 
@@ -533,13 +535,16 @@ item_set_render_transform (UIElement *item, Transform *transform)
 	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
 }
 
+FrameworkElement::FrameworkElement ()
+{
+	triggers = new TriggerCollection ();
+}
+
 void 
 framework_element_trigger_add (FrameworkElement *element, EventTrigger *trigger)
 {
-	EventTrigger *action = (EventTrigger *) trigger;
-
-	trigger->SetTarget (element);
-	collection_add (&element->triggers, trigger);
+	Value v (trigger);
+	element->triggers->Add (&v);
 }
 
 double
@@ -1341,11 +1346,55 @@ SetNameScope (DependencyObject *obj, NameScope *scope)
 }
 
 void
-EventTrigger::AddAction (TriggerAction *action)
+TriggerCollection::Add (void *data)
 {
-	g_assert (action);
+	FrameworkElement *fwe = (FrameworkElement *) closure;
+	
+	Value *v = (Value *) data;
+	EventTrigger *trigger = v->AsEventTrigger ();
 
-	actions = g_slist_append (actions, action);
+	Collection::Add (trigger);
+
+	trigger->SetTarget (fwe);
+}
+
+void
+TriggerCollection::Remove (void *data)
+{
+	FrameworkElement *fwe = (FrameworkElement *) closure;
+	
+	Value *v = (Value *) data;
+	EventTrigger *trigger = v->AsEventTrigger ();
+
+	Collection::Remove (trigger);
+}
+
+void
+TriggerActionCollection::Add (void *data)
+{
+	EventTrigger *trigger = (EventTrigger *) closure;
+	
+	Value *v = (Value *) data;
+	TriggerAction *action = v->AsTriggerAction ();
+
+	Collection::Add (action);
+}
+
+void
+TriggerActionCollection::Remove (void *data)
+{
+	EventTrigger *trigger = (EventTrigger *) closure;
+	
+	Value *v = (Value *) data;
+	TriggerAction *action = v->AsTriggerAction ();
+
+	Collection::Remove (action);
+}
+
+
+EventTrigger::EventTrigger () : routed_event (NULL)
+{
+	actions = new TriggerActionCollection ();
 }
 
 void
@@ -1357,6 +1406,14 @@ EventTrigger::SetTarget (DependencyObject *target)
 	target->events->AddHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
 }
 
+void
+EventTrigger::RemoveTarget (DependencyObject *target)
+{
+	g_assert (target);
+
+	target->events->RemoveHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
+}
+
 EventTrigger *
 event_trigger_new ()
 {
@@ -1366,10 +1423,8 @@ event_trigger_new ()
 void
 event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {
-	g_return_if_fail (trigger);
-	g_return_if_fail (action);
-
-	trigger->AddAction (action);
+	Value v (action);
+	trigger->actions->Add (&v);
 }
 
 void
@@ -1377,7 +1432,7 @@ event_trigger_fire_actions (EventTrigger *trigger)
 {
 	g_assert (trigger);
 
-	for (GSList *walk = trigger->actions; walk != NULL; walk = walk->next) {
+	for (GSList *walk = trigger->actions->list; walk != NULL; walk = walk->next) {
 		TriggerAction *action = (TriggerAction *) walk->data;
 		action->Fire ();
 	}

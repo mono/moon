@@ -74,6 +74,8 @@ class UIElement;
 
 class Collection;
 class VisualCollection;
+class TriggerCollection;
+class TriggerActionCollection;
 
 struct Value {
 public:
@@ -294,6 +296,8 @@ public:
 
 	Collection*                   AsCollection ();
 	VisualCollection*             AsVisualCollection ();
+	TriggerCollection*            AsTriggerCollection ();
+	TriggerActionCollection*      AsTriggerActionCollection ();
 
   
 	Kind k;
