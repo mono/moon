@@ -1,6 +1,7 @@
 using System;
 using Gtk;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.IO;
@@ -23,6 +24,10 @@ class X {
 			silver.Attach (c);
 			Rectangle r = new Rectangle ();
 			c.Children.Add (r);
+
+			r.Width = 100;
+			r.Height = 100;
+			r.Stroke = new SolidColorBrush (Color.FromRgb (255, 0, 0));
 		} else {
 			string xaml = null;
 			

@@ -1,2 +1,5 @@
 demo.exe: demo.cs gtk.cs
-	gmcs demo.cs gtk.cs -pkg:gtk-sharp-2.0 -pkg:silver
+	gmcs -g demo.cs gtk.cs -pkg:gtk-sharp-2.0 -pkg:silver
+
+run: demo.exe
+	mono --debug demo.exe
