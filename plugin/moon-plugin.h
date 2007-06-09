@@ -68,6 +68,7 @@ class PluginInstance : public PluginClass
 
 	// Private methods
 	void CreateWindow ();
+	void CreateDemoControls ();
 
  public:	
 	PluginInstance (NPP instance, uint16 mode);

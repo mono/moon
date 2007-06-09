@@ -15,36 +15,8 @@
 #include "npupp.h"
 #include "npruntime.h"
 
-#define SCRIPTING
-//#define DEMO
-
-static void moon_plugin_demo (Canvas *canvas)
-{
-	DEBUG ("*** moon_plugin_demo");
-
-	Rectangle *r;
-
-	r = rectangle_new ();
-	framework_element_set_width (r, 100.0);
-	framework_element_set_height (r, 100.0);
-	r->SetValue (Canvas::LeftProperty, Value (50.0));
-	r->SetValue (Canvas::TopProperty, Value (50.0));
-	Color *c = new Color (1.0, 0.0, 0.5, 0.5);
-	SolidColorBrush *scb = new SolidColorBrush ();
-	solid_color_brush_set_color (scb, c);
-	shape_set_stroke (r, scb);
-	panel_child_add (canvas, r);
-
-#if VIDEO_DEMO
-	UIElement *v, *v2;
-
-	v = video_new ("/home/everaldo/BoxerSmacksdownInhoffe.wmv", 0, 0);
-	panel_child_add (canvas, v);
-
-	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
-	panel_child_add (canvas, v2);
-#endif	
-}
+//#define SCRIPTING
+#define DEMO
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {
@@ -238,7 +210,7 @@ PluginInstance::CreateWindow ()
 	surface_attach (this->surface, canvas);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 
-	moon_plugin_demo (this->canvas);
+	CreateDemoControls ();
 #else
 	GtkWidget *label = gtk_label_new (PLUGIN_OURNAME" "PLUGIN_OURVERSION);
 	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
@@ -246,6 +218,35 @@ PluginInstance::CreateWindow ()
 #endif
 
 	gtk_widget_show_all (this->container);
+}
+
+void
+PluginInstance::CreateDemoControls ()
+{
+	DEBUG ("*** creating demo controls");
+
+	Rectangle *r;
+
+	r = rectangle_new ();
+	framework_element_set_width (r, 100.0);
+	framework_element_set_height (r, 100.0);
+	r->SetValue (Canvas::LeftProperty, Value (50.0));
+	r->SetValue (Canvas::TopProperty, Value (50.0));
+	Color *c = new Color (1.0, 0.0, 0.5, 0.5);
+	SolidColorBrush *scb = new SolidColorBrush ();
+	solid_color_brush_set_color (scb, c);
+	shape_set_stroke (r, scb);
+	panel_child_add (this->canvas, r);
+
+#if VIDEO_DEMO
+	UIElement *v, *v2;
+
+	v = video_new ("/home/everaldo/BoxerSmacksdownInhoffe.wmv", 0, 0);
+	panel_child_add (this->canvas, v);
+
+	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
+	panel_child_add (this->canvas, v2);
+#endif	
 }
 
 NPError
