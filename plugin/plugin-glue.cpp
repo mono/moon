@@ -18,7 +18,7 @@
 NPError 
 NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
 {
-	DEBUG ("NPP_New");
+	DEBUGMSG ("NPP_New");
 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -36,7 +36,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 NPError 
 NPP_Destroy (NPP instance, NPSavedData** save)
 {
-	DEBUG ("NPP_Destroy");
+	DEBUGMSG ("NPP_Destroy");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -55,7 +55,7 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 NPError 
 NPP_SetWindow (NPP instance, NPWindow* window)
 {
-	DEBUG ("NPP_SetWindow %d %d", window->width, window->height);
+	DEBUGMSG ("NPP_SetWindow %d %d", window->width, window->height);
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -67,7 +67,7 @@ NPP_SetWindow (NPP instance, NPWindow* window)
 NPError
 NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {
-	DEBUG ("NPP_NewStream");
+	DEBUGMSG ("NPP_NewStream");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -79,7 +79,7 @@ NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable,
 NPError
 NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
 {
-	DEBUG ("NPP_DestroyStream");
+	DEBUGMSG ("NPP_DestroyStream");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -91,7 +91,7 @@ NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
 void
 NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 {
-	DEBUG ("NPP_StreamAsFile");
+	DEBUGMSG ("NPP_StreamAsFile");
 
 	if (instance == NULL)
 		return;
@@ -103,7 +103,7 @@ NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 int32
 NPP_WriteReady (NPP instance, NPStream* stream)
 {
-	DEBUG ("NPP_WriteReady");
+	DEBUGMSG ("NPP_WriteReady");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -117,7 +117,7 @@ NPP_WriteReady (NPP instance, NPStream* stream)
 int32
 NPP_Write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer)
 {
-	DEBUG ("NPP_Write");
+	DEBUGMSG ("NPP_Write");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -131,7 +131,7 @@ NPP_Write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer
 void
 NPP_Print (NPP instance, NPPrint* platformPrint)
 {
-	DEBUG ("NPP_Print");
+	DEBUGMSG ("NPP_Print");
 
 	if (instance == NULL)
 		return;
@@ -143,7 +143,7 @@ NPP_Print (NPP instance, NPPrint* platformPrint)
 void
 NPP_URLNotify (NPP instance, const char* url, NPReason reason, void* notifyData)
 {
-	DEBUG ("NPP_URLNotify");
+	DEBUGMSG ("NPP_URLNotify");
 
 	if (instance == NULL)
 		return;
@@ -156,7 +156,7 @@ NPP_URLNotify (NPP instance, const char* url, NPReason reason, void* notifyData)
 int16 
 NPP_HandleEvent (NPP instance, void* event)
 {
-	DEBUG ("NPP_HandleEvent");
+	DEBUGMSG ("NPP_HandleEvent");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -168,7 +168,7 @@ NPP_HandleEvent (NPP instance, void* event)
 NPError 
 NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 {
-	DEBUG ("NPP_GetValue %d (%x)", variable, variable);
+	DEBUGMSG ("NPP_GetValue %d (%x)", variable, variable);
 
 	NPError err = NPERR_NO_ERROR;
 
@@ -196,7 +196,7 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 NPError 
 NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 {
-	DEBUG ("NPP_SetValue %d (%x)", variable, value);
+	DEBUGMSG ("NPP_SetValue %d (%x)", variable, value);
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -208,14 +208,14 @@ NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 char *
 NPP_GetMIMEDescription (void)
 {
-	DEBUG ("NPP_GetMIMEDescription");
+	DEBUGMSG ("NPP_GetMIMEDescription");
     return (MIME_TYPES_HANDLED);
 }
 
 NPError
 NPP_Initialize (void)
 {
-	DEBUG ("NP_Initialize");
+	DEBUGMSG ("NP_Initialize");
 
 	gtk_init (0, 0);
 	runtime_init ();
@@ -226,5 +226,5 @@ NPP_Initialize (void)
 void
 NPP_Shutdown (void)
 {
-	DEBUG ("NP_Shutdown");
+	DEBUGMSG ("NP_Shutdown");
 }

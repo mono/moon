@@ -27,8 +27,6 @@
 #include "runtime.h"
 #include "shape.h"
 
-#define DEBUG_PLUGIN
-
 #define PLUGIN_NAME         "WPFe Plug-In"
 #define PLUGIN_VERSION      "0.99.0"
 #define PLUGIN_OURNAME      "Novell MoonLight"
@@ -36,14 +34,16 @@
 #define PLUGIN_DESCRIPTION  "Novell MoonLight is a Free Unix implementation of SilverLight";
 #define MIME_TYPES_HANDLED  "application/ag-plugin:xaml:Novell MoonLight"
 
-#ifdef DEBUG_PLUGIN
+#define DEBUG
+
+#ifdef DEBUG
 #ifdef G_LOG_DOMAIN
 #undef G_LOG_DOMAIN
 #endif
 #define G_LOG_DOMAIN "MoonLight"
-#define DEBUG(x...) g_message (x)
+#define DEBUGMSG(x...) g_message (x)
 #else
-#define DEBUG(msg)
+#define DEBUGMSG(x...)
 #endif
 
 class PluginSettings : public PluginClass

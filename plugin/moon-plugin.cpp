@@ -20,14 +20,14 @@
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {
-	DEBUG ("*** moon_plugin_menu_about Clicked!");
+	DEBUGMSG ("*** moon_plugin_menu_about Clicked!");
 	// TODO: Implement an about Window.
 }
 
 gboolean
 moon_plugin_show_menu (PluginInstance *plugin)
 {
-	DEBUG ("*** moon_plugin_show_menu");
+	DEBUGMSG ("*** moon_plugin_show_menu");
 
 	GtkWidget *menu;
 	GtkWidget *menu_item;
@@ -95,20 +95,20 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
-	DEBUG ("destructor point 1");
+	DEBUGMSG ("destructor point 1");
 	if (this->surface != NULL)
 		//gtk_container_remove (GTK_CONTAINER (container), this->surface->drawing_area);
 		surface_destroy (this->surface);
-	DEBUG ("destructor point 2");
+	DEBUGMSG ("destructor point 2");
 	if (this->canvas != NULL)
 		delete (this->canvas);
-	DEBUG ("destructor point 3");
+	DEBUGMSG ("destructor point 3");
 	if (this->container != NULL)
 		gtk_widget_destroy (this->container);
-	DEBUG ("destructor point 4 (end)");
+	DEBUGMSG ("destructor point 4 (end)");
 
 #ifdef SCRIPTING 
-	DEBUG ("destructor point object (%x) (%d)", this->object, this->object->referenceCount);
+	DEBUGMSG ("destructor point object (%x) (%d)", this->object, this->object->referenceCount);
 	if (this->object)
 		NPN_ReleaseObject (this->object);
 #endif
@@ -166,7 +166,7 @@ PluginInstance::SetWindow (NPWindow* window)
 	NPN_GetValue(this->instance, NPNVSupportsXEmbedBool, &this->xembed_supported);
 	if (!this->xembed_supported)
 	{
-		DEBUG ("*** XEmbed not supported");
+		DEBUGMSG ("*** XEmbed not supported");
 		return NPERR_GENERIC_ERROR;
 	}
 
@@ -179,7 +179,7 @@ PluginInstance::SetWindow (NPWindow* window)
 void 
 PluginInstance::CreateWindow ()
 {
-	DEBUG ("*** creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
+	DEBUGMSG ("*** creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
 	//  GtkPlug container and surface inside
 	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
@@ -223,7 +223,7 @@ PluginInstance::CreateWindow ()
 void
 PluginInstance::CreateDemoControls ()
 {
-	DEBUG ("*** creating demo controls");
+	DEBUGMSG ("*** creating demo controls");
 
 	Rectangle *r;
 
