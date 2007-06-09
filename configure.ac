@@ -114,4 +114,5 @@ AC_OUTPUT([
 Makefile
 src/Makefile
 plugin/Makefile
+plugin/test/Makefile
 ])

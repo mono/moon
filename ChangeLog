@@ -1,3 +1,7 @@
+2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
+
+	* configure.ac: plugin/test/Makefile added to AC_OUTPUT.
+
 2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
 
 	* configure.ac: Fix MOON_LIBS value, using --libs instead of --cflags.
