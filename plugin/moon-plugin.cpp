@@ -210,7 +210,7 @@ PluginInstance::CreateWindow ()
 	surface_attach (this->surface, canvas);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 
-	CreateDemoControls ();
+	//CreateDemoControls ();
 #else
 	GtkWidget *label = gtk_label_new (PLUGIN_OURNAME" "PLUGIN_OURVERSION);
 	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
@@ -252,6 +252,8 @@ PluginInstance::CreateDemoControls ()
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {
+	*stype = NP_ASFILEONLY;
+
 	return NPERR_NO_ERROR;
 }
 
@@ -264,7 +266,9 @@ PluginInstance::DestroyStream (NPStream* stream, NPError reason)
 void
 PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 {
-	// nothing to do.
+	DEBUGMSG ("StreamAsFile: %s", fname);
+
+	panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
 }
 
 int32

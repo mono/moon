@@ -1,5 +1,13 @@
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
 
+	[Xaml support]
+
+	* moon-plugin.cpp: 
+	- Read xaml file from src tag and display contents.
+	- Disable demo box, now we have a better demo under xaml file.
+
+2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
+
 	* Makefile.am: test added to subdirs.
 
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
