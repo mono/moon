@@ -316,7 +316,7 @@ Value::Value (double *values, int count)
 Value::~Value ()
 {
 	if (k == STRING)
-		free (u.s);
+		g_free (u.s);
 }
 
 
