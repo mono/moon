@@ -1,3 +1,5 @@
+SUBDIRS = test
+
 lib_LTLIBRARIES = libmoonplugin.la
 
 INCLUDES = \

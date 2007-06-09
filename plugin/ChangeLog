@@ -1,5 +1,9 @@
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile.am: test added to subdirs.
+
+2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp,
 	* plugin-glue.cpp,
 	* moon-plugin.h: Rename DEBUG to DEBUGMSG.
