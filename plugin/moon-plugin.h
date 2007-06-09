@@ -56,8 +56,6 @@ class PluginSettings : public PluginClass
 class PluginInstance : public PluginClass
 {
  private:
-	void CreateControls ();
-
   	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
@@ -67,6 +65,9 @@ class PluginInstance : public PluginClass
 	// Settings
 	PluginSettings *settings;
 	NPObject *obj_settings;
+
+	// Private methods
+	void CreateWindow ();
 
  public:	
 	PluginInstance (NPP instance, uint16 mode);

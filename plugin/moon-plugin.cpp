@@ -201,13 +201,13 @@ PluginInstance::SetWindow (NPWindow* window)
 	}
 
 	this->window = window;
-	this->CreateControls ();
+	this->CreateWindow ();
 
 	return NPERR_NO_ERROR;
 }
 
 void 
-PluginInstance::CreateControls ()
+PluginInstance::CreateWindow ()
 {
 	DEBUG ("*** creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 

@@ -1,5 +1,10 @@
 2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-plugin.h,
+	* moon-plugin.cpp: Rename CreateControls to CreateWindow.
+
+2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
+
 	* Makefile.am: Add $(MOON_LIBS) to linker options.
 
 2007-06-08  Everaldo Canuto  <ecanuto@novell.com>
