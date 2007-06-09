@@ -14,11 +14,11 @@
 
 static UIElement *v;
 static Rectangle *r;
+static Rectangle *square;
 
 static RotateTransform *r_trans;
 static RotateTransform *v_trans;
 static ScaleTransform *s_trans;
-static TranslateTransform *t_trans;
 
 extern NameScope *global_NameScope;
 
@@ -126,8 +126,7 @@ main (int argc, char *argv [])
 		r_trans = new RotateTransform ();
 		v_trans = new RotateTransform ();
 		s_trans = new ScaleTransform ();
-		t_trans = new TranslateTransform ();
-		
+
 		r = rectangle_new ();
 		framework_element_set_width (r, 50.0);
 		framework_element_set_height (r, 50.0);
@@ -181,7 +180,10 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, v2);
 #endif
 
+
 		Storyboard *sb = new Storyboard ();
+
+		sb->SetDuration (Duration::FromSeconds(300));
 
 		DoubleAnimation *r_anim = new DoubleAnimation ();
 		DoubleAnimation *v_anim = new DoubleAnimation ();
@@ -196,7 +198,7 @@ main (int argc, char *argv [])
 		c_anim->SetFrom (Color (1.0, 0.0, 0.0, 0.5));
 		c_anim->SetTo (Color (0.0, 0.0, 1.0, 0.5));
 		c_anim->SetRepeatBehavior (RepeatBehavior::Forever);
-		c_anim->SetDuration (Duration::FromSeconds (5));
+		c_anim->SetDuration (Duration::FromSeconds (2));
 		c_anim->SetAutoReverse (true);
 		sb->AddChild (c_anim);
 		Storyboard::SetTargetName (c_anim, "solid-color-brush");
@@ -243,6 +245,90 @@ main (int argc, char *argv [])
 		sb->AddChild (sy_anim);
 		Storyboard::SetTargetName (sy_anim, "scale-transform");
 		Storyboard::SetTargetProperty (sy_anim, "ScaleY");
+
+#define KEYFRAMES 1
+
+#if KEYFRAMES
+		square = rectangle_new ();
+		framework_element_set_width (square, 50.0);
+		framework_element_set_height (square, 50.0);
+		shape_set_stroke_thickness (square, 10.0);
+		square->SetValue (Canvas::LeftProperty, Value (100.0));
+		square->SetValue (Canvas::TopProperty, Value (50.0));
+
+		Transform *square_trans = new TranslateTransform ();
+		square_trans->SetValue (TranslateTransform::XProperty, Value(50.0));
+		square_trans->SetValue (TranslateTransform::YProperty, Value(50.0));
+
+		item_set_render_transform (square, square_trans);
+		
+		shape_set_stroke (square, scb);
+		panel_child_add (canvas, square);
+
+		global_NameScope->RegisterName ("square-transform", square_trans);
+		
+		DoubleAnimationUsingKeyFrames* square_x_anim = new DoubleAnimationUsingKeyFrames ();
+		DoubleAnimationUsingKeyFrames* square_y_anim = new DoubleAnimationUsingKeyFrames ();
+
+		square_y_anim->SetDuration (Duration::FromSeconds (8));
+		square_y_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		square_x_anim->SetDuration (Duration::FromSeconds (8));
+		square_x_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+
+		LinearDoubleKeyFrame *frame;
+
+		// the X keyframes for the 4 points of the rectangle
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (100.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)2 * 1000000));
+		square_x_anim->AddKeyFrame (frame);
+
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (100.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)4 * 1000000));
+		square_x_anim->AddKeyFrame (frame);
+
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (50.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)6 * 1000000));
+		square_x_anim->AddKeyFrame (frame);
+
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (50.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)8 * 1000000));
+		square_x_anim->AddKeyFrame (frame);
+
+		sb->AddChild (square_x_anim);
+		Storyboard::SetTargetName (square_x_anim, "square-transform");
+		Storyboard::SetTargetProperty (square_x_anim, "X");
+
+		// the Y keyframes for the 4 points of the rectangle
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (50.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)2 * 1000000));
+		square_y_anim->AddKeyFrame (frame);
+
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (100.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)4 * 1000000));
+		square_y_anim->AddKeyFrame (frame);
+
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (100.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)6 * 1000000));
+		square_y_anim->AddKeyFrame (frame);
+
+		frame = new LinearDoubleKeyFrame ();
+		frame->SetValue (50.0);
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)8 * 1000000));
+		square_y_anim->AddKeyFrame (frame);
+
+		sb->AddChild (square_y_anim);
+		Storyboard::SetTargetName (square_y_anim, "square-transform");
+		Storyboard::SetTargetProperty (square_y_anim, "Y");
+#endif
+
+
 		sb->Begin ();
 	}		
 	if (do_fps){

@@ -22,7 +22,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 {
 	clock->events->AddHandler ("CurrentTimeInvalidated", update_property_value, this);
 
-	baseValue = targetobj->GetValue (targetprop);
+	baseValue = new Value(*targetobj->GetValue (targetprop));
 }
 
 void
@@ -157,7 +157,7 @@ Storyboard::Resume ()
 }
 
 void
-Storyboard::Seek (/*Timespan*/guint64 timespan)
+Storyboard::Seek (TimeSpan timespan)
 {
 	root_clock->Seek (timespan);
 }
@@ -267,8 +267,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (LERP (start, end, progress));
-	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, *from, *to, progress);
+	Value *v = new Value (LERP (start, end, progress)); // XXX we leak this
 	return v;
 }
 
@@ -312,9 +311,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (LERP (start, end, progress));
-
-	// printf ("Sending %g from=%g to=%g progresss=%g\n", v->u.d, from, to, progress);
+	Value *v = new Value (LERP (start, end, progress)); // XXX we leak this
 	return v;
 }
 
@@ -394,8 +391,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	double progress = animationClock->GetCurrentProgress ();
 
-	Value *v = new Value (LERP (start, end, progress));
-
+	Value *v = new Value (LERP (start, end, progress)); // XXX we leak this
 	return v;
 }
 
@@ -427,11 +423,145 @@ KeyFrame::SetKeyTime (KeyTime keytime)
 }
 
 
+DependencyProperty* DoubleKeyFrame::ValueProperty;
+
+DoubleKeyFrame::DoubleKeyFrame ()
+{
+}
+
+
 DependencyProperty* PointKeyFrame::ValueProperty;
 
 PointKeyFrame::PointKeyFrame ()
 {
 }
+
+
+Value*
+LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	double *to = GetValue();
+	/* XXX GetValue can return NULL */
+
+	double start, end;
+
+	start = baseValue->AsDouble();
+	end = *to;
+
+	Value *v = new Value (LERP (start, end, keyFrameProgress));
+
+	return v;
+}
+
+LinearDoubleKeyFrame*
+linear_double_key_frame_new ()
+{
+	return new LinearDoubleKeyFrame ();
+}
+
+
+Value*
+LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	Point *to = GetValue();
+	/* XXX GetValue can return NULL */
+
+	Point start, end;
+
+	start = *baseValue->AsPoint();
+	end = *to;
+
+	Value *v = new Value (LERP (start, end, keyFrameProgress));
+
+	return v;
+}
+
+LinearPointKeyFrame*
+linear_point_key_frame_new ()
+{
+	return new LinearPointKeyFrame ();
+}
+
+
+
+
+
+DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
+{
+	key_frames = NULL;
+}
+
+void
+DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
+{
+	key_frames = g_list_append (key_frames, frame);
+}
+
+void
+DoubleAnimationUsingKeyFrames::RemoveKeyFrame (DoubleKeyFrame *frame)
+{
+}
+
+Value*
+DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					       AnimationClock* animationClock)
+{
+
+	/* current segment info */
+	TimeSpan current_time = animationClock->GetCurrentTime();
+	DoubleKeyFrame *current_keyframe;
+	DoubleKeyFrame *previous_keyframe = NULL;
+	Value *baseValue;
+
+	TimeSpan key_end_time;
+
+	/* figure out what segment to use (this list needs to be sorted) */
+	for (GList *l = key_frames; l; l = l->next) {
+		DoubleKeyFrame *keyframe = (DoubleKeyFrame*)l->data;
+
+		key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
+
+		if (key_end_time >= current_time) {
+			current_keyframe = keyframe;
+
+			if (l->prev)
+				previous_keyframe = (DoubleKeyFrame*)l->prev->data;
+
+			break;
+		}
+
+	}
+
+	TimeSpan key_start_time;
+
+	if (previous_keyframe == NULL) {
+		/* the first keyframe, start at the animation's base value */
+		baseValue = defaultOriginValue;
+		key_start_time = 0;
+	}
+	else {
+		/* start at the previous keyframe's target value */
+		baseValue = new Value(*previous_keyframe->GetValue ());
+		/* XXX DoubleKeyFrame::Value is nullable */
+		key_start_time = previous_keyframe->GetKeyTime()->GetTimeSpan ();
+	}
+
+	TimeSpan key_duration = key_end_time - key_start_time;
+	double progress = (double)(current_time - key_start_time) / key_duration;
+
+	/* get the current value out of that segment */
+	
+	return current_keyframe->InterpolateValue (baseValue, progress);
+}
+
+DoubleAnimationUsingKeyFrames*
+double_animation_using_key_frames_new ()
+{
+	return new DoubleAnimationUsingKeyFrames ();
+}
+
+
+
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
@@ -453,11 +583,12 @@ Value*
 PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
+  return NULL;
 #if false
 	/* current segment info */
-	PointKeyFrame *current_target;
+	PointKeyFrame *current_keyframe;
 	Value *start;
-	guint64/*TimeSpan*/ start_time;
+	TimeSpan segment_start_time;
 
 	/* figure out what segment to use (this list needs to be sorted) */
 	for (GList *l = key_frames; l; l = l->next) {
@@ -466,15 +597,19 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 		if (true/*keyframe is the right one*/) {
 			GList *prev = l->prev;
 
-			current_target = keyframe;
+			current_keyframe = keyframe;
 			if (prev == NULL) {
 				/* the first keyframe, start at the animation's base value */
 				start = defaultOriginValue;
+				segment_start_time = 0;
 			}
 			else {
+				PointKeyFrame *prev_frame = (PointKeyFrame*)l->data;
+
 				/* start at the previous keyframe's target value */
-				start = keyframe->GetValue ();
+				start = new Value(*prev_frame->GetValue ()); // XXX we leak this
 				/* XXX PointKeyFrame::Value is nullable */
+				segment_start_time = prev_frame->GetKeyTime()->GetTimeSpan ();
 			}
 
 			break;
@@ -483,12 +618,11 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 
 	/* get the current value out of that segment */
 
-	return current_target->GetCurrentValue (start, NULL, /* XXX */
-						animationClock)
+	return current_keyframe->GetCurrentValue (start, NULL, /* XXX */
+						  segment_start_time,
+						  animationClock);
 #endif
-	  return NULL;
 }
-
 
 
 PointAnimationUsingKeyFrames*
@@ -496,6 +630,8 @@ point_animation_using_key_frames_new ()
 {
 	return new PointAnimationUsingKeyFrames ();
 }
+
+
 
 
 
@@ -510,7 +646,7 @@ animation_init ()
 {
 	/* Timeline properties */
 	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
-	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", new Value ((guint64)0));
+	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", new Value ((TimeSpan)0));
 	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value (Duration::Automatic));
 	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
 	//DependencyObject::Register (DependencyObject::TIMELINE, "FillBehavior", new Value (0));
@@ -544,6 +680,7 @@ animation_init ()
 
 	/* KeyFrame properties */
  	KeyFrame::KeyTimeProperty = DependencyObject::Register (Value::KEYFRAME, "KeyTime", new Value(KeyTime::Uniform));
+ 	DoubleKeyFrame::ValueProperty = DependencyObject::Register (Value::DOUBLEKEYFRAME, "Value", Value::DOUBLE);
  	PointKeyFrame::ValueProperty = DependencyObject::Register (Value::POINTKEYFRAME, "Value", Value::POINT);
 
 	/* KeyFrame animation properties */
@@ -567,3 +704,7 @@ NULLABLE_GETSET_IMPL (ColorAnimation, From, Color, Color)
 NULLABLE_GETSET_IMPL (PointAnimation, By, Point, Point)
 NULLABLE_GETSET_IMPL (PointAnimation, To, Point, Point)
 NULLABLE_GETSET_IMPL (PointAnimation, From, Point, Point)
+
+
+NULLABLE_GETSET_IMPL (PointKeyFrame, Value, Point, Point)
+NULLABLE_PRIM_GETSET_IMPL (DoubleKeyFrame, Value, double, Double)

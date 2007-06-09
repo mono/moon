@@ -27,15 +27,15 @@ struct KeyTime {
 	  : k (PERCENT),
             percent (percent) { }
 
-	KeyTime (guint64/*TimeSpan*/ timeSpan)
+	KeyTime (TimeSpan timeSpan)
 	  : k (TIMESPAN),
-            timespan (timespan) { }
+            timespan (timeSpan) { }
 
 
 	KeyTime (KeyTimeType kind) : k(kind) { }
 
 	static KeyTime FromPercent (double percent) { return KeyTime (percent); }
-	static KeyTime FromTimeSpan (guint64/*TimeSpan*/ timeSpan) { return KeyTime (timeSpan); }
+	static KeyTime FromTimeSpan (TimeSpan timeSpan) { return KeyTime (timeSpan); }
 
 	static KeyTime Paced;
 	static KeyTime Uniform;
@@ -58,12 +58,12 @@ struct KeyTime {
 	}
 
 	double GetPercent () { return percent; }
-	guint64/*TimeSpan*/ GetTimeSpan () { return timespan; }
+	TimeSpan GetTimeSpan () { return timespan; }
 
   private:
 	KeyTimeType k;
 	double percent;
-	guint64/*TimeSpan*/ timespan;
+	TimeSpan timespan;
 };
 
 
@@ -146,12 +146,12 @@ static void SetNullable##t##Prop (DependencyObject *obj, DependencyProperty *pro
 #define NULLABLE_GETSET_IMPL(klass,prop,t,T) \
 void klass::Set##prop (t v) { Set##prop (&v); } \
 void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
-t* klass::Get##prop () { Value* v = GetValue (klass::prop##Property);  return v ? v->As##T () : NULL; }
+t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->As##T () : NULL; }
 
 #define NULLABLE_PRIM_GETSET_IMPL(klass,prop,t,T) \
 void klass::Set##prop (t v) { Set##prop (&v); } \
 void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
-t* klass::Get##prop () { Value* v = GetValue (klass::prop##Property);  return v ? v->AsNullable##T () : NULL; }
+t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->AsNullable##T () : NULL; }
 
 
 class DoubleAnimation : public Animation/*Timeline*/ {
@@ -226,7 +226,7 @@ PointAnimation * point_animation_new ();
 
 
 
-class KeyFrame /* abstract in C# */ : public DependencyObject {
+class KeyFrame : public DependencyObject {
  public:
 	KeyFrame ();
 	Value::Kind GetObjectType () { return Value::POINTKEYFRAME; };
@@ -235,22 +235,75 @@ class KeyFrame /* abstract in C# */ : public DependencyObject {
 	void SetKeyTime (KeyTime keytime);
 
 	static DependencyProperty *KeyTimeProperty;
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress) = 0;
 };
 
 
 
 
-class PointKeyFrame /* abstract in C# */ : public KeyFrame {
+class DoubleKeyFrame : public KeyFrame {
  public:
-	PointKeyFrame ();
-	Value::Kind GetObjectType () { return Value::POINTKEYFRAME; };
+	DoubleKeyFrame ();
+	Value::Kind GetObjectType() { return Value::DOUBLEKEYFRAME; };
+	NULLABLE_GETSET_DECL (Value, double);
 
 	static DependencyProperty *ValueProperty;
 };
 
 
+class PointKeyFrame : public KeyFrame {
+ public:
+	PointKeyFrame ();
+	Value::Kind GetObjectType () { return Value::POINTKEYFRAME; };
 
-class PointAnimationUsingKeyFrames : PointAnimation {
+	NULLABLE_GETSET_DECL(Value, Point);
+
+	static DependencyProperty *ValueProperty;
+};
+
+
+class LinearDoubleKeyFrame : public DoubleKeyFrame {
+ public:
+	LinearDoubleKeyFrame () { }
+	Value::Kind GetObjectType () { return Value::LINEARDOUBLEKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
+
+LinearDoubleKeyFrame* linear_double_key_frame_new ();
+
+class LinearPointKeyFrame : public PointKeyFrame {
+ public:
+	LinearPointKeyFrame () { }
+	Value::Kind GetObjectType () { return Value::LINEARPOINTKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
+
+LinearPointKeyFrame* linear_point_key_frame_new ();
+
+
+class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
+ public:
+	DoubleAnimationUsingKeyFrames ();
+	Value::Kind GetObjectType () { return Value::DOUBLEANIMATIONUSINGKEYFRAMES; };
+
+	void AddKeyFrame (DoubleKeyFrame *frame);
+	void RemoveKeyFrame (DoubleKeyFrame *frame);
+
+	static DependencyProperty *KeyFramesProperty;
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+
+ private:
+	GList *key_frames;
+};
+
+DoubleAnimationUsingKeyFrames* double_animation_using_key_frames_new ();
+
+class PointAnimationUsingKeyFrames : public PointAnimation {
  public:
 	PointAnimationUsingKeyFrames ();
 	Value::Kind GetObjectType () { return Value::POINTANIMATIONUSINGKEYFRAMES; };
@@ -277,7 +330,7 @@ class Storyboard : public ParallelTimeline {
 	void Begin ();
 	void Pause ();
 	void Resume ();
-	void Seek (/*Timespan*/guint64 timespan);
+	void Seek (TimeSpan timespan);
 	void Stop ();
 
 	static DependencyProperty* TargetNameProperty;

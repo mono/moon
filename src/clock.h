@@ -6,6 +6,8 @@
 G_BEGIN_DECLS
 
 // misc types
+typedef gint64 TimeSpan;
+
 struct Duration {
  public:
 	enum DurationKind {
@@ -14,7 +16,7 @@ struct Duration {
 		FOREVER
 	};
 
-	Duration (guint64/*TimeSpan*/ duration)
+	Duration (TimeSpan duration)
 	  : k (TIMESPAN),
 	    timespan (duration) { }
 
@@ -27,7 +29,7 @@ struct Duration {
 	Duration (DurationKind kind) : k(kind) { };
 
 	bool HasTimeSpan () { return k == TIMESPAN; }
-	guint64/*TimeSpan*/ GetTimeSpan() { return timespan; }
+	TimeSpan GetTimeSpan() { return timespan; }
 
 	static Duration Automatic;
 	static Duration Forever;
@@ -51,11 +53,11 @@ struct Duration {
 
 
 	// This should live in a TimeSpan class, but oh well.. */
-	static Duration FromSeconds (int seconds) { return (guint64)seconds * 1000000; }
+	static Duration FromSeconds (int seconds) { return Duration ((TimeSpan)seconds * 1000000); }
 
 	DurationKind k;
  private:
-	guint64/*TimeSpan*/ timespan;
+	TimeSpan timespan;
 };
 
 
@@ -83,7 +85,7 @@ struct RepeatBehavior {
 
 	RepeatBehavior (RepeatKind kind) : k(kind) { }
 
-	RepeatBehavior (guint64/*TimeSpan*/ duration)
+	RepeatBehavior (TimeSpan duration)
 	  : k (DURATION),
 	    duration (duration)
 	{
@@ -109,7 +111,7 @@ struct RepeatBehavior {
 	}
 
 	double GetCount () { return count; }
-	guint64/*TimeSpan*/ GetDuration() { return duration; }
+	TimeSpan GetDuration() { return duration; }
 
 	bool HasCount() { return k == COUNT; }
 	bool HasDuration () { return k == DURATION; }
@@ -117,7 +119,7 @@ struct RepeatBehavior {
 	RepeatKind k;
   private:
 	double count;
-	guint64/*TimeSpan*/ duration;
+	TimeSpan duration;
 };
 
 // our root level time manager (basically the object that registers
@@ -136,7 +138,7 @@ class TimeManager {
 		return _instance;
 	}
 
-	static guint64 GetCurrentGlobalTime () { return Instance()->current_global_time; }
+	static TimeSpan GetCurrentGlobalTime () { return Instance()->current_global_time; }
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
@@ -150,7 +152,7 @@ class TimeManager {
 
 	GList *child_clocks; // XXX should we just have a ClockGroup?
 
-	guint64 current_global_time;
+	TimeSpan current_global_time;
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
 };
@@ -191,26 +193,27 @@ class Clock : public DependencyObject {
 
 	virtual void SpeedChanged () { };
 
-	virtual void Begin (guint64 parent_time);
+	virtual void Begin (TimeSpan parent_time);
 	void Pause ();
 	void Remove ();
 	void Resume ();
-	void Seek (guint64/*TimeSpan*/ timespan);
+	void Seek (TimeSpan timespan);
 	void SeekAlignedToLastTick ();
 	void SkipToFill ();
 	void Stop ();
 
 	double GetCurrentProgress ();
-	guint64 GetCurrentTime ();
+	TimeSpan GetCurrentTime ();
 	Timeline *GetTimeline () { return timeline; }
 
 	virtual void RaiseAccumulatedEvents ();
-	virtual void TimeUpdated (guint64 parent_time);
+	virtual void TimeUpdated (TimeSpan parent_time);
 
  protected:
 	double current_progress;
-	guint64/*TimeSpan*/ current_time;
-	guint64/*TimeSpan*/ start_time; /* the time we actually started.  used for computing CurrentTime */
+	TimeSpan current_time;
+	TimeSpan start_time; /* the time we actually started.  used for computing CurrentTime */
+	TimeSpan iter_start; /* the time we started the current iteration */
 
 	void QueueEvent (int event);
 
@@ -221,7 +224,6 @@ class Clock : public DependencyObject {
 	bool reversed;  // if we're presently working our way from 1.0 progress to 0.0
 	bool autoreverse;
 	int remaining_iterations;
-	double completed_iterations;
 	Duration *duration;
 
 	ClockState current_state;
@@ -236,13 +238,13 @@ class ClockGroup : public Clock {
 	ClockGroup (TimelineGroup *timeline);
 	Value::Kind GetObjectType () { return Value::CLOCKGROUP; };
 
-	virtual void Begin (guint64 parent_time);
+	virtual void Begin (TimeSpan parent_time);
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
 
 	virtual void RaiseAccumulatedEvents ();
-	virtual void TimeUpdated (guint64 parent_time);
+	virtual void TimeUpdated (TimeSpan parent_time);
 
 	GList *child_clocks;
 

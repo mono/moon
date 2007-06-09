@@ -1,3 +1,30 @@
+2007-06-09  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp (main): add in another animation, this one using
+	keyframes, that moves a square around in a square, while animating
+	its background color the same way as the other rectangles.
+
+	* value.h, runtime.cpp: add in the keyframe types.
+
+	* runtime.cpp (DependencyObject::DependenceyObject): fix a
+	valgrind error - we shouldn't be "free"ing Values, since they're
+	"new"ed.  Add free_value and use that for the hash table value
+	dtor, and delete them correctly.
+
+	* animation.h, animation.cpp: add a lot of the keyframe animation
+	stuff.  DoubleAnimationUsingKeyFrames + LinearDoubleKeyFrame is
+	the only tested configuration, though.
+
+	* clock.cpp (everywhere): guint64->TimeSpan fixing.
+	(TimeUpdated): turns out that not only does the progress go from
+	1.0 to 0.0 when reversed, but current_time actually goes backward
+	as well.  this has the nice effect of actually simplifying this
+	method substantially, since we can always compute progress as
+	time/duration.
+
+	* clock.h: typedef TimeSpan to gint64 (switching from guint64
+	everywhere), and update the api to use this.
+
 2007-06-09  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.h (value_color_from_argb): Temporary hack until we

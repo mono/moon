@@ -27,7 +27,9 @@ class ColorAnimation;
 class DependencyObject;
 class DependencyProperty;
 class DoubleAnimation;
+class DoubleAnimationUsingKeyFrames;
 class DoubleArray;
+class DoubleKeyFrame;
 class Ellipse;
 class EllipseGeometry;
 class EventTrigger;
@@ -35,6 +37,8 @@ class FrameworkElement;
 class Geometry;
 class GeometryGroup;
 class KeyFrame;
+class LinearDoubleKeyFrame;
+class LinearPointKeyFrame;
 class Line;
 class LineGeometry;
 class LineSegment;
@@ -152,7 +156,11 @@ public:
 		BEGINSTORYBOARD,
 		EVENTTRIGGER,
 		KEYFRAME,
+		DOUBLEKEYFRAME,
 		POINTKEYFRAME,
+		LINEARDOUBLEKEYFRAME,
+		LINEARPOINTKEYFRAME,
+		DOUBLEANIMATIONUSINGKEYFRAMES,
 		POINTANIMATIONUSINGKEYFRAMES,
 
 		// The collections
@@ -292,7 +300,11 @@ public:
 	BeginStoryboard*              AsBeginStoryboard ();
 	EventTrigger*                 AsEventTrigger ();
 	KeyFrame*                     AsKeyFrame ();
+	DoubleKeyFrame*               AsDoubleKeyFrame();
 	PointKeyFrame*                AsPointKeyFrame ();
+	LinearDoubleKeyFrame*         AsLinearDoubleKeyFrame ();
+	LinearPointKeyFrame*          AsLinearPointKeyFrame ();
+	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames ();
 	PointAnimationUsingKeyFrames* AsPointAnimationUsingKeyFrames ();
 
 	Collection*                   AsCollection ();

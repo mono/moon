@@ -13,14 +13,14 @@
 
 
 
-static guint64
+static TimeSpan
 get_now ()
 {
         struct timeval tv;
-        guint64 res;
+        TimeSpan res;
 
         if (gettimeofday (&tv, NULL) == 0) {
-                res = (guint64)tv.tv_sec * 1000000 + tv.tv_usec;
+                res = (TimeSpan)tv.tv_sec * 1000000 + tv.tv_usec;
                 return res;
         }
 
@@ -109,21 +109,18 @@ Clock::Clock (Timeline *tl)
 
 	autoreverse = timeline->GetAutoReverse ();
 	duration = timeline->GetDuration();
-	completed_iterations = 0.0;
 	current_progress = 0.0;
 	current_time = 0;
 	reversed = false;
 	start_time = 0;
+	iter_start = 0;
 }
 
 void
-Clock::TimeUpdated (guint64 parent_clock_time)
+Clock::TimeUpdated (TimeSpan parent_clock_time)
 {
 	if ((current_state & (STOPPED | PAUSED)) != 0)
 		return;
-
-	current_time = parent_clock_time - start_time;
-	QueueEvent (CURRENT_TIME_INVALIDATED);
 
 	if (*duration == Duration::Automatic  /* useful only on clock groups, means the clock stops when all child clocks have stopped. */
 	    || *duration == Duration::Forever /* for Forever duration timelines, progress is always 0.0 */) {
@@ -131,61 +128,60 @@ Clock::TimeUpdated (guint64 parent_clock_time)
 	}
 	else {
 		// we've got a timespan, so our progress will have changed
-		guint64 duration_timespan = duration->GetTimeSpan();
+		TimeSpan duration_timespan = duration->GetTimeSpan();
 
-		double new_progress;
+		current_time = parent_clock_time - iter_start;
+		if (reversed)
+			current_time = duration_timespan - (current_time - duration_timespan);
 
-		new_progress = (double)(current_time - start_time - completed_iterations * (autoreverse ? 2 : 1) * duration_timespan) / duration_timespan;
+		if (current_time >= duration_timespan) {
+			// we've hit the end point of the clock's timeline
+			if (autoreverse) {
+				/* since autoreverse is true we need
+				   to turn around and head back to
+				   0.0 */
+				reversed = true;
+				current_time = duration_timespan - (current_time - duration_timespan);
+			}
+			else {
+				/* but autoreverse is false. Decrement
+				   the number of remaining iterations.
 
-		if (new_progress >= 1.0) {
-			if (reversed) {
-				reversed = false;
-
-				/* we were heading from 1.0 to 0.0 and
-				   passed it.  decrement our
-				   remaining-iteration count (if we have
-				   one) */
-				completed_iterations += 0.5;
-
-				current_progress = new_progress - 1.0;
-				guint64 diff = current_time - start_time;
-// 				printf ("current_time=%llu start_time=%llu diff=%llu\n", current_time, start_time, diff);
-// 				printf ("completed_iter=%g autoreverse=%d duration=%llu\n", completed_iterations, autoreverse, duration_timespan);
-// 				printf ("Assigning=%g\n", current_progress);
-
+				   If we're done, Stop().  If we're
+				   not done, force current_time to 0
+				   so we start counting from there
+				   again. */
 				if (remaining_iterations > 0)
 					remaining_iterations --;
 
 				if (remaining_iterations == 0) {
-					current_progress = 0.0;
+					current_time = duration_timespan;
 					Stop ();
 				}
+				else {
+					current_time -= duration_timespan;
+					iter_start = parent_clock_time - current_time;
+				}
+			}
+		}
+		else if (current_time <= 0) {
+			reversed = false;
+			current_time = -current_time;
+
+			if (remaining_iterations > 0)
+				remaining_iterations --;
+
+			if (remaining_iterations == 0) {
+				current_time = 0;
+				Stop ();
 			}
 			else {
-				if (autoreverse) {
-					reversed = true;
-					completed_iterations += 0.5;
-					current_progress = 1.0 - (new_progress - 1.0);
-				}
-				else {
-
-					completed_iterations += 1.0;
-
-					current_progress = new_progress - 1.0;
-
-					if (remaining_iterations > 0)
-						remaining_iterations --;
-
-					if (remaining_iterations == 0) {
-						current_progress = 1.0;
-						Stop ();
-					}
-				}
+				iter_start = parent_clock_time - current_time;
 			}
 		}
-		else {
-			current_progress = reversed ? 1.0 - new_progress : new_progress;
-		}
+
+		current_progress = (double)current_time / duration_timespan;
+		QueueEvent (CURRENT_TIME_INVALIDATED);
 	}
 }
 
@@ -211,7 +207,7 @@ Clock::QueueEvent (int event)
 	queued_events |= event;
 }
 
-guint64
+TimeSpan
 Clock::GetCurrentTime ()
 {
 	return current_time;
@@ -224,10 +220,11 @@ Clock::GetCurrentProgress ()
 }
 
 void
-Clock::Begin (guint64 start_time)
+Clock::Begin (TimeSpan start_time)
 {
-	printf ("Starting %llu\n", start_time);
+	printf ("Starting %lld\n", start_time);
 	this->start_time = start_time;
+	this->iter_start = start_time;
 	current_state = RUNNING; /* should we invalidate the state here? */
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
@@ -250,7 +247,7 @@ Clock::Resume ()
 }
 
 void
-Clock::Seek (/*Timespan*/guint64 timespan)
+Clock::Seek (TimeSpan timespan)
 {
 }
 
@@ -293,7 +290,7 @@ ClockGroup::RemoveChild (Clock *clock)
 }
 
 void
-ClockGroup::Begin (guint64 start_time)
+ClockGroup::Begin (TimeSpan start_time)
 {
 	this->Clock::Begin (start_time);
 
@@ -303,7 +300,7 @@ ClockGroup::Begin (guint64 start_time)
 }
 
 void
-ClockGroup::TimeUpdated (guint64 parent_clock_time)
+ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 {
 	/* recompute our current_time */
 	this->Clock::TimeUpdated (parent_clock_time);

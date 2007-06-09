@@ -401,8 +401,12 @@ AS_DEP_SUBCLASS_IMPL(TRIGGERACTION, TriggerAction)
 AS_DEP_SUBCLASS_IMPL(BEGINSTORYBOARD, BeginStoryboard)
 AS_DEP_SUBCLASS_IMPL(EVENTTRIGGER, EventTrigger)
 AS_DEP_SUBCLASS_IMPL(KEYFRAME, KeyFrame)
+AS_DEP_SUBCLASS_IMPL(DOUBLEKEYFRAME, DoubleKeyFrame)
 AS_DEP_SUBCLASS_IMPL(POINTKEYFRAME, PointKeyFrame)
+AS_DEP_SUBCLASS_IMPL(LINEARDOUBLEKEYFRAME, LinearDoubleKeyFrame)
+AS_DEP_SUBCLASS_IMPL(LINEARPOINTKEYFRAME, LinearPointKeyFrame)
 AS_DEP_SUBCLASS_IMPL(POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames)
+AS_DEP_SUBCLASS_IMPL(DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames)
 
 AS_DEP_SUBCLASS_IMPL(COLLECTION, Collection)
 AS_DEP_SUBCLASS_IMPL(VISUAL_COLLECTION, VisualCollection)
@@ -1079,9 +1083,16 @@ DependencyObject::GetValue (DependencyProperty *property)
 	return property->default_value;
 }
 
+static void
+free_value (void *v)
+{
+	Value *val = (Value*)v;
+	delete val;
+}
+
 DependencyObject::DependencyObject ()
 {
-	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free);
+	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_value);
 	events = new EventObject ();
 	this->attached_list = NULL;
 }
@@ -1660,7 +1671,11 @@ types_init ()
 	Type::RegisterType ("EventTrigger", Value::EVENTTRIGGER, Value::DEPENDENCY_OBJECT);
 
 	Type::RegisterType ("KeyFrame", Value::KEYFRAME, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("DoubleKeyFrame", Value::DOUBLEKEYFRAME, Value::KEYFRAME);
 	Type::RegisterType ("PointKeyFrame", Value::POINTKEYFRAME, Value::KEYFRAME);
+	Type::RegisterType ("LinearDoubleKeyFrame", Value::LINEARDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
+	Type::RegisterType ("LinearPointKeyFrame", Value::LINEARPOINTKEYFRAME, Value::POINTKEYFRAME);
+	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Value::DOUBLEANIMATIONUSINGKEYFRAMES, Value::DOUBLEANIMATION);
 	Type::RegisterType ("PointAnimationUsingKeyFrames", Value::POINTANIMATIONUSINGKEYFRAMES, Value::POINTANIMATION);
 
 	// The collections
