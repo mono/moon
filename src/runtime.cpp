@@ -843,7 +843,7 @@ realized_callback (GtkWidget *widget, gpointer data)
 }
 
 gboolean
-unrealized_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+unrealized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
