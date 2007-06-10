@@ -1,6 +1,17 @@
 
 Feel free to add items to this TODO list
 
+* Managed Code:
+
+	Change all the calls to DependencyProperty.Register to
+	DependencyProperty.Lookup so that we actually get the
+	unmanaged properties.
+
+	Complete the marshalling in both directions for all known
+	values in DependencyObject.
+
+	Write sample code to exercise every property.
+
 * DependecyProperty-fication
 
 	A few components still have instance properties that

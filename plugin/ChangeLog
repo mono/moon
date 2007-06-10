@@ -1,3 +1,10 @@
+2007-06-10  Miguel de Icaza  <miguel@novell.com>
+
+	* moonlight.cs: the startup code, will contain the helper classes
+	to create new AppDomains for each instance create.
+
+	* mono.cpp: New file, embeds the Mono VM.
+
 2007-06-10  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-glue.cpp: Call plugin instance destructor, now it dont causes

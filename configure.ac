@@ -39,6 +39,13 @@ else
    exit 1
 fi
 
+if pkg-config mono; then
+   echo Found Mono
+else
+   echo You are missing Mono
+   echo I was looking for mono.pc file
+fi
+
 AC_MSG_CHECKING(Mozilla NSPR pkg-config module name)
 mozilla_nspr_pcs="nspr mozilla-nspr firefox-nspr xulrunner-nspr seamonkey-nspr"
 for pc in $mozilla_nspr_pcs; do
@@ -84,23 +91,24 @@ if test -z $mozilla_xpcom; then
    exit 1
 fi
 
-PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
-PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $mozilla_nspr $mozilla_xpcom`
-
-AC_SUBST(PLUGIN_CFLAGS)
-AC_SUBST(PLUGIN_LIBS)
-
 XPIDL=`pkg-config --variable=libdir $mozilla_xpcom`/xpidl
 XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
-MOON_CFLAGS=`pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`
-MOON_LIBS=`pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa`
-
+MOON_PKGS="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa"
+MOON_CFLAGS=`pkg-config --cflags $MOON_PKGS`
+MOON_LIBS=`pkg-config --libs gtk+-2.0 $MOON_PKGS`
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
+
+PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom $MOON_PKGS mono`
+PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $mozilla_nspr $mozilla_xpcom $MOON_PKGS mono`
+
+AC_SUBST(PLUGIN_CFLAGS)
+AC_SUBST(PLUGIN_LIBS)
+
 
 #CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 #CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"

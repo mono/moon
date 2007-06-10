@@ -12,18 +12,26 @@ libmoonplugin_la_LDFLAGS = \
 	-module \
 	-L$(top_srcdir)/src/.libs
 
-libmoonplugin_la_LIBADD = -lmoon $(MOON_LIBS) $(PLUGIN_LIBS)
+libmoonplugin_la_LIBADD = -lmoon $(PLUGIN_LIBS) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
-	moon-plugin.cpp \
-	moon-plugin.h \
-	plugin-entry.cpp \
-	plugin-glue.cpp \
-	plugin-class.cpp \
-	plugin-class.h
+	mono.cpp		\
+	moon-plugin.cpp 	\
+	moon-plugin.h 		\
+	plugin-entry.cpp 	\
+	plugin-glue.cpp 	\
+	plugin-class.cpp 	\
+	moon-mono.h		\
+	plugin-class.h	
 
 # custom install rule
-install-plugin: libmoonplugin.la
+install-plugin: libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
+	cp moonlight.exe ~/.mozilla/plugins
 	cp $(top_srcdir)/src/.libs/libmoon.so ~/.mozilla/plugins
+
+EXTRA_DIST = moonlight.cs
+
+moonlight.exe: moonlight.cs
+	gmcs -debug moonlight.cs 

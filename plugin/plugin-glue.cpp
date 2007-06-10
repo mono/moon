@@ -14,6 +14,7 @@
 #include "npapi.h"
 #include "npupp.h"
 #include "moon-plugin.h"
+#include "moon-mono.h"
 
 NPError 
 NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
@@ -216,6 +217,7 @@ NPP_Initialize (void)
 
 	gtk_init (0, 0);
 	runtime_init ();
+	vm_init ();
 
 	return NPERR_NO_ERROR;
 }
