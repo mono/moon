@@ -1,0 +1,20 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#FF0000" Stroke="Green" StrokeThickness="2">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 200 200" />
+				<LineGeometry StartPoint="10,60" EndPoint="110,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#770000FF" Stroke="#77777777" StrokeThickness="5">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<EllipseGeometry Center="130,200" RadiusX="30" RadiusY="100" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,110" />
+				<RectangleGeometry Rect="50,20,100,100" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+</Canvas>
