@@ -113,7 +113,7 @@ named_colors_t named_colors [] = {
 	{ "cyan",		0xFF00FFFF },
 	{ "darkgray",		0xFFA9A9A9 },
 	{ "gray",		0xFF808080 },
-	{ "green",		0xFF00FF00 },
+	{ "green",		0xFF008000 },
 	{ "lightgray",		0xFFD3D3D3 },
 	{ "magenta",		0xFFFF00FF },
 	{ "orange",		0xFFFFA500 },

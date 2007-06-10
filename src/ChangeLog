@@ -1,3 +1,8 @@
+2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Brush.cpp: Fix Green definition, like GDI+ MS use a dark (0x80)
+	green unlike other basic colors (red/blue at 0xFF).
+
 2007-06-10  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp, runtime.h (BasicArray): New base struct for
