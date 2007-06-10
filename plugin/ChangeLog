@@ -1,3 +1,15 @@
+2007-06-10  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin-glue.cpp: Call plugin instance destructor, now it dont causes
+	error when you reload page.
+
+	* moon-plugin.cpp: Only destroy container widget, if you dont destroy it
+	when you start with page plugin, go to another page and close browser,
+	a segfault is emited before browser exits. Now navigating for some time in
+	silverlight pages looks to dont emit segfault if scripting is disabled.
+
+	* plugin-class.cpp: Remove debug message from class constructor.
+
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
 
 	[Xaml support]

@@ -80,9 +80,9 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {
-    this->mode = mode;
-    this->instance = instance;
-    this->window = NULL;
+	this->mode = mode;
+	this->instance = instance;
+	this->window = NULL;
 	this->object = NULL;
 
 	this->container = NULL;
@@ -95,17 +95,9 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
-	DEBUGMSG ("destructor point 1");
-	if (this->surface != NULL)
-		//gtk_container_remove (GTK_CONTAINER (container), this->surface->drawing_area);
-		surface_destroy (this->surface);
-	DEBUGMSG ("destructor point 2");
-	if (this->canvas != NULL)
-		delete (this->canvas);
-	DEBUGMSG ("destructor point 3");
+	// Container must be destroyed or we have segfault when browser's closes.
 	if (this->container != NULL)
 		gtk_widget_destroy (this->container);
-	DEBUGMSG ("destructor point 4 (end)");
 
 #ifdef SCRIPTING 
 	DEBUGMSG ("destructor point object (%x) (%d)", this->object, this->object->referenceCount);

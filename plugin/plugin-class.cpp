@@ -118,8 +118,6 @@ RuntimeClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 
 PluginClass::PluginClass ()
 {
-	fprintf (stderr, "*** PluginClass::PluginClass\n");
-
 	this->allocate       = &RuntimeClassAllocate;
 	this->deallocate     = &RuntimeClassDeallocate;
 	this->invalidate     = &RuntimeClassInvalidate;
