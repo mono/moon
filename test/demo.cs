@@ -34,6 +34,16 @@ class X {
 			r.SetValue (Canvas.LeftProperty, 100);
 			r.SetValue (Canvas.TopProperty, 100);
 
+			Line l = new Line ();
+			l.X1 = 100;
+			l.Y1 = 200;
+			l.Y1 = 30;
+			l.Y2 = 90;
+			l.Stroke = new SolidColorBrush (Color.FromRgb (0, 255, 0));
+			l.StrokeDashArray = new double [] { 1, 4, 10 };
+
+			
+			c.Children.Add (l);
 		} else {
 			string xaml = null;
 			
