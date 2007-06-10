@@ -260,6 +260,11 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 {
 	DEBUGMSG ("StreamAsFile: %s", fname);
 
+	// TODO
+	//   1. Call a helper method in managed code that would create the new AppDomain
+	//   2. Call a helper method (maybe the same) that would process the input parameters
+	//   3. Remove the call here below, and let managed code load the XAML
+
 	panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
 }
 
