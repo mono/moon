@@ -90,6 +90,8 @@ class TriggerCollection;
 class TriggerActionCollection;
 class TransformCollection;
 class GeometryCollection;
+class PathFigureCollection;
+class PathSegmentCollection;
 
 struct Value {
 public:
@@ -344,6 +346,8 @@ public:
 	TriggerActionCollection*      AsTriggerActionCollection ();
 	TransformCollection*          AsTransformCollection ();
 	GeometryCollection*           AsGeometryCollection ();
+	PathFigureCollection*         AsPathFigureCollection ();
+	PathSegmentCollection*        AsPathSegmentCollection ();
   
 	Kind k;
   private:

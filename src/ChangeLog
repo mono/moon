@@ -1,5 +1,11 @@
 2007-06-09  Sebastien Pouliot  <sebastien@ximian.com>
 
+	* geometry.cpp|h: Add/complete PathFigureCollection and 
+	PathSegmentCollection. Doesn't parse from xaml.
+	* runtime.cpp, value.h: Add support for new classes.
+
+2007-06-09  Sebastien Pouliot  <sebastien@ximian.com>
+
 	* geometry.cpp|h: Complete GeometryGroup with GeometryCollection.
 	But color rending is not yet correct in demo files.
 	* runtime.cpp, value.h: Add support for GeometryCollection

@@ -113,22 +113,38 @@ Point* line_geometry_get_start_point (LineGeometry* line_geometry);
 void line_geometry_set_start_point (LineGeometry* line_geometry, Point *start_point);
 
 //
+// PathFigureCollection
+//
+class PathFigureCollection : public Collection {
+ public:
+	PathFigureCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::PATHFIGURE_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+};
+
+//
 // PathGeometry
 //
 class PathGeometry : public Geometry {
  public:
 	static DependencyProperty* FiguresProperty;
 
-	PathGeometry () { };
+	PathFigureCollection *children;
+
+	PathGeometry ();
 	Value::Kind GetObjectType () { return Value::PATHGEOMETRY; };
 
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void Draw (Surface *s);
 
 	// this is an element-by-element decision
 	virtual bool CanFill () { return false; }
 };
-PathGeometry* path_geometry_new ();
-// TODO get|set PathFigureCollection
+PathGeometry		*path_geometry_new ();
+PathFigureCollection	*path_geometry_get_figures	(PathFigureCollection *path_geometry);
+void			path_geometry_set_figures	(PathFigureCollection *path_geometry, PathFigureCollection* collection);
 
 //
 // RectangleGeometry
@@ -153,6 +169,18 @@ Rect* rectangle_geometry_get_rect (RectangleGeometry *rectangle_geometry);
 void rectangle_geometry_set_rect (RectangleGeometry *rectangle_geometry, Rect *rect);
 
 //
+// PathSegmentCollection
+//
+class PathSegmentCollection : public Collection {
+ public:
+	PathSegmentCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::PATHSEGMENT_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+};
+
+//
 // PathFigure
 //
 class PathFigure : public DependencyObject {
@@ -162,9 +190,12 @@ class PathFigure : public DependencyObject {
 	static DependencyProperty* SegmentsProperty;
 	static DependencyProperty* StartPointProperty;
 
-	PathFigure () { }
+	PathSegmentCollection *children;
+
+	PathFigure ();
 	Value::Kind GetObjectType () { return Value::PATHFIGURE; };
 
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void Draw (Surface *s);
 };
 PathFigure* path_figure_new ();
@@ -174,11 +205,15 @@ bool	path_figure_get_is_filled	(PathFigure *path_figure);
 void	path_figure_set_is_filled	(PathFigure *path_figure, bool filled);
 Point*	path_figure_get_start_point	(PathFigure *path_figure);
 void	path_figure_set_start_point	(PathFigure *path_figure, Point *point);
+PathSegmentCollection	*path_figure_get_segments	(PathFigure *path_figure);
+void			path_figure_set_segments	(PathFigure *path_figure, PathSegmentCollection* collection);
 
 //
 // PathSegment
 //
 class PathSegment : public DependencyObject {
+ public:
+	virtual void Draw (Surface *s) {}
 };
 
 //

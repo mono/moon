@@ -288,11 +288,90 @@ path_geometry_new ()
 	return new PathGeometry ();
 }
 
+PathGeometry::PathGeometry ()
+{
+	children = NULL;
+	PathFigureCollection *c = new PathFigureCollection ();
+
+	this->SetValue (PathGeometry::FiguresProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == children);
+}
+
+void
+PathGeometry::OnPropertyChanged (DependencyProperty *prop)
+{
+	Geometry::OnPropertyChanged (prop);
+
+	if (prop == FiguresProperty){
+		// The new value has already been set, so unref the old collection
+
+		PathFigureCollection *newcol = GetValue (prop)->AsPathFigureCollection();
+
+		if (newcol != children){
+			if (children){
+				for (GSList *l = children->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (children);
+				g_slist_free (children->list);
+			}
+
+			children = newcol;
+			if (children->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			children->closure = this;
+			
+			base_ref (children);
+		}
+	}
+}
+
 void
 PathGeometry::Draw (Surface *s)
 {
 	Geometry::Draw (s);
-	// TODO, iterates all figures (and their segments) to build the path
+
+	for (GSList *coll = children->list; coll != NULL; coll = coll->next) {
+		PathFigure *pf = (PathFigure*) coll->data;
+		pf->Draw (s);
+	}
+}
+
+PathFigureCollection*
+path_geometry_get_figures (PathGeometry *path_geometry)
+{
+	Value *value = path_geometry->GetValue (PathGeometry::FiguresProperty);
+	return (PathFigureCollection*) (value ? value->AsPathFigureCollection() : NULL);
+}
+
+void
+path_geometry_set_figures (PathGeometry *path_geometry, PathFigureCollection* collection)
+{
+	path_geometry->SetValue (PathGeometry::FiguresProperty, Value (collection));
+}
+
+//
+// PathFigureCollection
+//
+
+void
+PathFigureCollection::Add (void *data)
+{
+	Value *value = (Value*) data;
+	PathFigure *pf = value->AsPathFigure ();
+	Collection::Add (pf);
+}
+
+void
+PathFigureCollection::Remove (void *data)
+{
+	Value *value = (Value*) data;
+	PathFigure *pf = value->AsPathFigure ();
+	Collection::Remove (pf);
 }
 
 //
@@ -365,6 +444,26 @@ RectangleGeometry::Draw (Surface *s)
 }
 
 //
+// PathFigureCollection
+//
+
+void
+PathSegmentCollection::Add (void *data)
+{
+	Value *value = (Value*) data;
+	PathSegment *ps = value->AsPathSegment ();
+	Collection::Add (ps);
+}
+
+void
+PathSegmentCollection::Remove (void *data)
+{
+	Value *value = (Value*) data;
+	PathSegment *ps = value->AsPathSegment ();
+	Collection::Remove (ps);
+}
+
+//
 // PathFigure
 //
 
@@ -377,6 +476,71 @@ PathFigure*
 path_figure_new ()
 {
 	return new PathFigure ();
+}
+
+PathFigure::PathFigure ()
+{
+	children = NULL;
+	PathSegmentCollection *c = new PathSegmentCollection ();
+
+	this->SetValue (PathFigure::SegmentsProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == children);
+}
+
+void
+PathFigure::OnPropertyChanged (DependencyProperty *prop)
+{
+	DependencyObject::OnPropertyChanged (prop);
+
+	if (prop == SegmentsProperty){
+		// The new value has already been set, so unref the old collection
+
+		PathSegmentCollection *newcol = GetValue (prop)->AsPathSegmentCollection();
+
+		if (newcol != children){
+			if (children){
+				for (GSList *l = children->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (children);
+				g_slist_free (children->list);
+			}
+
+			children = newcol;
+			if (children->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			children->closure = this;
+			
+			base_ref (children);
+		}
+	}
+}
+
+void
+PathFigure::Draw (Surface *s)
+{
+	Point *start = path_figure_get_start_point (this);
+
+	// should not be required because of the cairo_move_to
+	//cairo_new_sub_path (s->cairo);
+	cairo_move_to (s->cairo, start->x, start->y);
+
+	for (GSList *coll = children->list; coll != NULL; coll = coll->next) {
+		PathSegment *ps = (PathSegment*) coll->data;
+		ps->Draw (s);
+	}
+
+	if (path_figure_get_is_closed (this)) {
+		cairo_close_path (s->cairo);
+	}
+
+	if (path_figure_get_is_filled (this)) {
+		// FIXME: fill is setup in Shape::DoDraw but shouldn't be always called
+	}
 }
 
 bool
@@ -403,7 +567,18 @@ path_figure_set_is_filled (PathFigure *path_figure, bool filled)
 	path_figure->SetValue (PathFigure::IsFilledProperty, Value (filled));
 }
 
-// TODO Segments
+PathSegmentCollection*
+path_figure_get_segments (PathGeometry *path_geometry)
+{
+	Value *value = path_geometry->GetValue (PathFigure::SegmentsProperty);
+	return (PathSegmentCollection*) (value ? value->AsPathSegmentCollection() : NULL);
+}
+
+void
+path_figure_set_segments (PathGeometry *path_geometry, PathSegmentCollection* collection)
+{
+	path_geometry->SetValue (PathFigure::SegmentsProperty, Value (collection));
+}
 
 Point*
 path_figure_get_start_point (PathFigure *path_figure)
@@ -416,26 +591,6 @@ void
 path_figure_set_start_point (PathFigure *path_figure, Point *point)
 {
 	path_figure->SetValue (PathFigure::StartPointProperty, Value (*point));
-}
-
-void
-PathFigure::Draw (Surface *s)
-{
-	Point *start = path_figure_get_start_point (this);
-
-	// should not be required because of the cairo_move_to
-	//cairo_new_sub_path (s->cairo);
-	cairo_move_to (s->cairo, start->x, start->y);
-
-	// TODO: iterates segments
-
-	if (path_figure_get_is_closed (this)) {
-		cairo_close_path (s->cairo);
-	}
-
-	if (path_figure_get_is_filled (this)) {
-		// FIXME: fill is setup in Shape::DoDraw but shouldn't be always called
-	}
 }
 
 //
