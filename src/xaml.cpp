@@ -183,7 +183,7 @@ end_element_handler (void *data, const char *el)
 		}
 		break;
 	case XamlElementInstance::PROPERTY:
-
+		printf ("Property %s\n", el);
 		GList *walk = info->current_element->children;
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk->data;
@@ -426,7 +426,6 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 	inst->element_name = i->name;
 	inst->element_type = XamlElementInstance::ELEMENT;
 	inst->item = i->create_item ();
-
 	return inst;
 }
 

@@ -571,16 +571,29 @@ void
 UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == UIElement::RenderTransformProperty ||
-	    prop == UIElement::OpacityProperty ||
-	    prop == UIElement::ClipProperty ||
-	    prop == UIElement::OpacityMaskProperty ||
-	    prop == UIElement::RenderTransformOriginProperty ||
-	    prop == UIElement::VisibilityProperty){
-		item_invalidate (this);
-		update_xform ();
-		getbounds ();
-		item_invalidate (this);
+	    prop == UIElement::RenderTransformOriginProperty)
+		FullInvalidate (TRUE);
+	else if (prop == UIElement::OpacityProperty ||
+		 prop == UIElement::ClipProperty ||
+		 prop == UIElement::OpacityMaskProperty ||
+		 prop == UIElement::VisibilityProperty){
+		FullInvalidate (FALSE);
 	}
+}
+
+//
+// Queues the invalidate for the current region, performs any 
+// updates to the RenderTransform (optional) and queues a 
+// new redraw with the new bounding box
+//
+void
+UIElement::FullInvalidate (bool rendertransform)
+{
+	item_invalidate (this);
+	if (rendertransform)
+		update_xform ();
+	item_update_bounds (this);
+	item_invalidate (this);
 }
 
 void

@@ -13,6 +13,14 @@
 
 2007-06-10  Miguel de Icaza  <miguel@novell.com>
 
+	* shape.cpp (OnPropertyChanged): Implement this property for most
+	shapes: if the property is set, we need to invalidate and
+	repaint. 
+
+	* runtime.h (FullInvalidate): A method to perform a queue to
+	redraw the underlying region, update the bounds and queue an
+	update for the new region.
+
 	* runtime.h (Base): make destructor virtual so that base_unref can
 	call delete (Base *) p.   Exposed by the managed code when the
 	first base_unref ran for the first time :-)

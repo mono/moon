@@ -63,6 +63,8 @@ class Shape : public FrameworkElement {
 	// if they are both set.   It will also be called to compute the bounding box.
 	//
 	virtual void Draw (Surface *s) = 0;
+
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 Brush		*shape_get_fill			(Shape *shape);
@@ -114,6 +116,7 @@ class Rectangle : public Shape {
 	void Draw (Surface *s);
 
 	virtual Point getxformorigin ();
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 Rectangle *rectangle_new          ();
 double     rectangle_get_radius_x (Rectangle *rectangle);
@@ -139,6 +142,7 @@ class Line : public Shape {
 	virtual Point getxformorigin ();
 
 	virtual bool CanFill () { return false; }
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 Line *line_new  ();
 double line_get_x1 (Line *line);
@@ -162,6 +166,7 @@ class Polygon : public Shape {
 	Value::Kind GetObjectType () { return Value::POLYGON; };
 
 	void Draw (Surface *s);
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 Polygon		*polygon_new ();
 FillRule	polygon_get_fill_rule	(Polygon *polygon);
@@ -183,6 +188,7 @@ class Polyline : public Shape {
 	void Draw (Surface *s);
 
 	virtual bool CanFill () { return false; }
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 Polyline	*polyline_new		();
 FillRule	polyline_get_fill_rule	(Polyline *polyline);
@@ -202,6 +208,7 @@ class Path : public Shape {
 	void Draw (Surface *s);
 
 	virtual bool CanFill ();
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 Path *path_new ();
 Geometry* path_get_data (Path *path);

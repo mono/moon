@@ -512,6 +512,12 @@ class UIElement : public DependencyObject {
 	//   implemented by containers
 
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
+
+	//
+	// Recomputes the bounding box, requests redraws, 
+	// the parameter determines if we should also update the transformation
+	//
+	void FullInvalidate (bool render_xform);
 	
 	//
 	// gencenter:

@@ -211,6 +211,16 @@ Shape::getbounds ()
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
 }
 
+void
+Shape::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type == Value::SHAPE){
+		FullInvalidate (FALSE);
+		return;
+	}
+	FrameworkElement::OnPropertyChanged (prop);
+}
+
 Brush*
 shape_get_fill (Shape *shape)
 {
@@ -419,6 +429,16 @@ Rectangle::getxformorigin ()
 		framework_element_get_height (this) * user_xform_origin.y);
 }
 
+void
+Rectangle::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type == Value::RECTANGLE){
+		FullInvalidate (FALSE);
+		return;
+	}
+	Shape::OnPropertyChanged (prop);
+}
+
 double
 rectangle_get_radius_x (Rectangle *rectangle)
 {
@@ -474,6 +494,16 @@ Line::getxformorigin ()
 	double y1 = line_get_y1 (this);
 	return Point (x1 + (line_get_x2 (this)- x1) * user_xform_origin.x, 
 		      y1 + (line_get_y2 (this) - y1) * user_xform_origin.y);
+}
+
+void
+Line::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type == Value::LINE){
+		FullInvalidate (FALSE);
+		return;
+	}
+	Shape::OnPropertyChanged (prop);
 }
 
 double
@@ -562,6 +592,16 @@ Polygon::Draw (Surface *s)
 	cairo_close_path (s->cairo);
 }
 
+void
+Polygon::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type == Value::POLYGON){
+		FullInvalidate (FALSE);
+		return;
+	}
+	Shape::OnPropertyChanged (prop);
+}
+
 FillRule
 polygon_get_fill_rule (Polygon *polygon)
 {
@@ -627,6 +667,16 @@ Polyline::Draw (Surface *s)
 	for (i = 1; i < count; i++) {
 		cairo_line_to (s->cairo, points [i].x, points [i].y);
 	}
+}
+
+void
+Polyline::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type == Value::POLYLINE){
+		FullInvalidate (FALSE);
+		return;
+	}
+	Shape::OnPropertyChanged (prop);
 }
 
 FillRule
@@ -696,6 +746,16 @@ Path::CanFill ()
 {
 	Geometry* data = path_get_data (this);
 	return (data ? data->CanFill () : false);
+}
+
+void
+Path::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type == Value::PATH){
+		FullInvalidate (FALSE);
+		return;
+	}
+	Shape::OnPropertyChanged (prop);
 }
 
 Geometry*
