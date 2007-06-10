@@ -59,28 +59,24 @@ public:
 	}
 };
 
+//
+// Arrays derive from this format
+//
+struct BasicArray {
+public:
+	uint32_t count;
+	uint32_t refcount;	// Double purpose: refcount and pad. 
+};
+
 Point point_from_str (const char *s);
 
 struct PointArray {
  public:
-	Point *points;
-	int count;
-
-	PointArray () : points (NULL), count (0) {}
-
-	PointArray (Point* points, int count)
-	{
-		this->points = new Point[count];
-		memcpy (this->points, points, sizeof (Point) * count);
-		this->count = count;
-	}
-
-	~PointArray ()
-	{
-		delete points;
-	}
+	BasicArray basic;
+	Point points [0];
 };
 
+PointArray *point_array_new (int count, Point *points);
 Point* point_array_from_str (const char *s, int* count);
 
 // map to System.Windows.Rect
@@ -167,25 +163,12 @@ Color *color_from_str  (const char *name);
 
 struct DoubleArray {
  public:
-	double *values;
-	int count;
-
-	DoubleArray () : values (NULL), count (0) {}
-
-	DoubleArray (double* values, int count)
-	{
-		this->values = new double[count];
-		memcpy (this->values, values, sizeof (double) * count);
-		this->count = count;
-	}
-
-	~DoubleArray ()
-	{
-		delete values;
-	}
+	BasicArray basic;
+	double values [0];
 };
 
-double* double_array_from_str (const char *s, int* count);
+double* double_array_from_str   (const char *s, int* count);
+DoubleArray *double_array_new   (int count, double *values);
 
 class Type {
 public:

@@ -776,7 +776,7 @@ poly_bezier_segment_get_points (PolyBezierSegment *segment, int *count)
 	}
 
 	PointArray *pa = value->AsPointArray();
-	*count = pa->count;
+	*count = pa->basic.count;
 	return pa->points;
 }
 
@@ -813,7 +813,7 @@ poly_line_segment_get_points (PolyLineSegment *segment, int *count)
 	}
 
 	PointArray *pa = value->AsPointArray();
-	*count = pa->count;
+	*count = pa->basic.count;
 	return pa->points;
 }
 
@@ -850,7 +850,7 @@ poly_quadratic_segment_get_points (PolyQuadraticBezierSegment *segment, int *cou
 	}
 
 	PointArray *pa = value->AsPointArray();
-	*count = pa->count;
+	*count = pa->basic.count;
 	return pa->points;
 }
 

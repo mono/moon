@@ -132,6 +132,27 @@ point_array_from_str (const char *s, int* count)
 	return points;
 }
 
+DoubleArray *
+double_array_new (int count, double *values)
+{
+	DoubleArray *p = (DoubleArray *) g_malloc0 (sizeof (DoubleArray) + count * sizeof (double));
+	p->basic.count = count;
+	p->basic.refcount = 1;
+	memcpy (p->values, values, sizeof (double) * count);
+	return p;
+}
+
+PointArray *
+point_array_new (int count, Point *points)
+{
+	PointArray *p = (PointArray *) g_malloc0 (sizeof (PointArray) + count * sizeof (Point));
+	p->basic.count = count;
+	p->basic.refcount = 1;
+	memcpy (p->points, points, sizeof (Point) * count);
+	return p;
+};
+
+
 Rect
 rect_from_str (const char *s)
 {
@@ -191,6 +212,10 @@ Value::Value (const Value& v)
 	/* make a copy of the string instead of just the pointer */
 	if (k == STRING)
 		u.s = g_strdup (v.u.s);
+	else if (k == POINT_ARRAY)
+		u.point_array->basic.refcount++;
+	else if (k == DOUBLE_ARRAY)
+		u.double_array->basic.refcount++;
 }
 
 Value::Value (Kind k)
@@ -303,20 +328,28 @@ Value::Value (Point *points, int count)
 {
 	Init ();
 	k = POINT_ARRAY;
-	u.point_array = new PointArray (points, count);
+	u.point_array = point_array_new (count, points);
 }
 
 Value::Value (double *values, int count)
 {
 	Init ();
 	k = DOUBLE_ARRAY;
-	u.double_array = new DoubleArray (values, count);
+	u.double_array = double_array_new (count, values);
 }
 
 Value::~Value ()
 {
 	if (k == STRING)
 		g_free (u.s);
+	else if (k == POINT_ARRAY){
+		if (--u.point_array->basic.refcount == 0)
+			g_free (u.point_array);
+	}
+	else if (k == DOUBLE_ARRAY){
+		if (--u.double_array->basic.refcount == 0)
+			g_free (u.double_array);
+	}
 }
 
 

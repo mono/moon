@@ -352,7 +352,7 @@ shape_get_stroke_dash_array (Shape *shape, int *count)
 	}
 
 	DoubleArray *da = value->AsDoubleArray();
-	*count = da->count;
+	*count = da->basic.count;
 	return da->values;
 }
 
@@ -583,7 +583,7 @@ polygon_get_points (Polygon *polygon, int *count)
 	}
 
 	PointArray *pa = value->AsPointArray();
-	*count = pa->count;
+	*count = pa->basic.count;
 	return pa->points;
 }
 
@@ -650,7 +650,7 @@ polyline_get_points (Polyline *polyline, int *count)
 	}
 
 	PointArray *pa = value->AsPointArray();
-	*count = pa->count;
+	*count = pa->basic.count;
 	return pa->points;
 }
 

@@ -1,3 +1,25 @@
+2007-06-10  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp, runtime.h (BasicArray): New base struct for
+	PointArray and double array, puts the count field at the beginning
+	and avoids an extra block to be allocated (count and values are
+	now on a single contiguous block).
+
+	Introduce a refcount for the arrays, so that we can release those
+	properly.  Due to the nature of how we copied values before we
+	had to leak the values, when the leak was plugged, we crashed.  
+
+	The refcount is there just because it was easy, we could clone if
+	we wanted, but also I would like to keep the refcount there to
+	ensure that the array of doubles is aligned on an 8 byte
+	boundary. 
+
+	(double_array_new, point_array_new): New methods to create the
+	structures. 
+
+	(Value): Now free the arrays.
+	
+
 2007-06-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Add/complete PathFigureCollection and 
