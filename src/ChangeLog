@@ -1,3 +1,7 @@
+2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Add PathFigure[Collection]/Segments support.
+
 2007-06-10  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp: Fix Green definition, like GDI+ MS use a dark (0x80)

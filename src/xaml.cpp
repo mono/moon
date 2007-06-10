@@ -567,6 +567,29 @@ geometry_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEl
 	gg->children->Add (&v);
 }
 
+void
+path_figure_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	PathFigure *pf = (PathFigure *) parent->item;
+
+	if (is_instance_of (child, Value::PATHFIGURE_COLLECTION)) {
+		Value v ((PathFigureCollection *) child->item);
+		pf->SetValue (pf->SegmentsProperty, &v);
+		return;
+	}
+
+	if (!is_instance_of (child, Value::PATHSEGMENT)) {
+		g_warning ("error, attempting to add non PathSegment type (%d) to PathFigureCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	PathSegment *ps = (PathSegment *) child->item;
+	Value v = Value (ps);
+
+	pf->children->Add (&v);
+}
+
 ///
 /// set property funcs
 ///
@@ -818,6 +841,8 @@ xaml_init ()
 //	register_dependency_object_element ("StreamGeometry", geo, Value::STREAMGEOMETRY, (create_item_func) stream_geometry_new);
 	XamlElementInfo *gg = register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 	gg->add_child = geometry_group_add_child;
+	XamlElementInfo *pf = register_dependency_object_element ("PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
+	pf->add_child = path_figure_add_child;
 
 	///
 	/// Panels
