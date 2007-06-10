@@ -100,6 +100,12 @@ moon_ellipse (cairo_t *cr, double x, double y, double w, double h)
 void
 moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, double radius_x, double radius_y)
 {
+	// test limits (without using multiplications)
+	if (radius_x > w - radius_x)
+		radius_x = w / 2;
+	if (radius_y > h - radius_y)
+		radius_y = h / 2;
+
 	// approximate (quite close) the arc using a bezier curve
 	double c1 = ARC_TO_BEZIER * radius_x;
 	double c2 = ARC_TO_BEZIER * radius_y;

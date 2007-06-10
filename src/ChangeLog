@@ -1,3 +1,8 @@
+2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Fix rounded rectangle when radius_[x|y] are larger than 
+	half the width|height.
+
 2007-06-10  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.h (Base): make destructor virtual so that base_unref can
