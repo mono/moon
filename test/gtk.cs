@@ -54,6 +54,9 @@ public class GtkSilver : DrawingArea {
 
 		MethodInfo m = typeof (Canvas).GetMethod ("FromPtr", BindingFlags.Static | BindingFlags.NonPublic);
 		Canvas c = (Canvas) m.Invoke (null, new object [] { x });
+		if (c == null)
+			return false;
+		
 		Attach (c);
 		
 		return true;

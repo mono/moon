@@ -7,13 +7,69 @@ using System.Windows.Shapes;
 using System.IO;
 
 class X {
+	static GtkSilver silver;
+	static Window w;
+	
+	static void Load (string file)
+	{
+		string xaml = null;
+
+		Console.WriteLine ("Loading: {0}", file);
+		try {
+			using (FileStream fs = File.OpenRead (file)){
+				using (StreamReader sr = new StreamReader (fs)){
+					xaml = sr.ReadToEnd ();
+				}
+			}
+		} catch (Exception e) {
+			Console.Error.WriteLine ("Error loading XAML file {0}: {1}", file, e.GetType());
+			return;
+		}
+		
+		if (xaml == null){
+			Console.Error.WriteLine ("Error loading XAML file {0}", file);
+			return;
+		}
+		DependencyObject d = XamlReader.Load (xaml);
+		if (d == null){
+			Console.Error.WriteLine ("No dependency object returned from XamlReader");
+			return;
+		}
+		
+		if (!(d is Canvas)){
+			Console.Error.WriteLine ("No Canvas as root");
+			return;
+		}
+		w.Title = file;
+		silver.Attach ((Canvas) d);
+	}
+	
 	static void Main (string [] args)
 	{
+		int i = 0;
 		Application.Init ();
 
-		Window w = new Window ("Top");
-		GtkSilver silver = new GtkSilver (400, 400);
-		w.Add (silver);
+		w = new Window ("Top");
+		Box vb = new VBox ();
+		Box hb = new HBox ();
+		vb.Add (hb);
+
+		if (args.Length > 1){
+			Button next = new Button ("Load next file");
+			hb.Add (next);
+			next.Clicked += delegate {
+				Load (args [++i]);
+				if (i == args.Length-1)
+				next.Sensitive = false;
+			};
+		}
+		
+		Button quit = new Button ("Quit");
+		quit.Clicked += delegate { Application.Quit (); };
+		hb.Add (quit);
+		silver = new GtkSilver (400, 400);
+		vb.Add (silver);
+		w.Add (vb);
 		w.ShowAll ();
 
 		//
@@ -45,34 +101,7 @@ class X {
 			
 			c.Children.Add (l);
 		} else {
-			string xaml = null;
-			
-			try {
-				using (FileStream fs = File.OpenRead (args [0])){
-					using (StreamReader sr = new StreamReader (fs)){
-						xaml = sr.ReadToEnd ();
-					}
-				}
-			} catch (Exception e) {
-				Console.Error.WriteLine ("Error loading XAML file {0}: {1}", args [0], e.GetType());
-				return;
-			}
-			
-			if (xaml == null){
-				Console.Error.WriteLine ("Error loading XAML file {0}", args [0]);
-				return;
-			}
-			DependencyObject d = XamlReader.Load (xaml);
-			if (d == null){
-				Console.Error.WriteLine ("No dependency object returned from XamlReader");
-				return;
-			}
-
-			if (!(d is Canvas)){
-				Console.Error.WriteLine ("No Canvas as root");
-				return;
-			}
-			silver.Attach ((Canvas) d);
+			Load (args [i]);
 		}
 		
 		Application.Run ();
