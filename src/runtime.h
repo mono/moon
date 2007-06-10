@@ -198,6 +198,7 @@ class Base {
  public:	
 	uint32_t refcount;
 	Base () : refcount(BASE_FLOATS) {}
+	virtual ~Base () {} 
 };
 
 void base_ref   (Base *base);

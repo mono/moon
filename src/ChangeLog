@@ -1,3 +1,15 @@
+2007-06-10  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.h (Base): make destructor virtual so that base_unref can
+	call delete (Base *) p.   Exposed by the managed code when the
+	first base_unref ran for the first time :-)
+
+	I sense a leak!
+
+	* runtime.cpp (surface_attach): invalidate the areas before and
+	after, compute the bounds using item_update_bounds, not the
+	getbounds method directly.
+
 2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Add PathFigure[Collection]/Segments support.

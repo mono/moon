@@ -117,7 +117,6 @@ main (int argc, char *argv [])
 		}
 
 		surface_attach (t, e);
-		
 	} else {
 		Canvas *canvas = new Canvas ();
 		surface_attach (t, canvas);

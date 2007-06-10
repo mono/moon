@@ -655,7 +655,7 @@ VisualCollection::Add (void *data)
 
 	item->parent = panel;
 	item->update_xform ();
-	panel->getbounds ();
+	item_update_bounds (panel);
 	item_invalidate (panel);
 }
 
@@ -671,7 +671,7 @@ VisualCollection::Remove (void *data)
 	item_invalidate (item);
 	base_unref (item);
 
-	panel->getbounds ();
+	item_update_bounds (panel);
 }
 
 void 
@@ -1016,13 +1016,19 @@ surface_attach (Surface *surface, UIElement *toplevel)
 		printf ("Unsupported toplevel\n");
 		return;
 	}
-	if (surface->toplevel)
+	if (surface->toplevel){
+		item_invalidate (surface->toplevel);
 		base_unref (surface->toplevel);
+	}
 
 	Canvas *canvas = (Canvas *) toplevel;
 	base_ref (canvas);
+
 	canvas->surface = surface;
 	surface->toplevel = canvas;
+
+	item_update_bounds (canvas);
+	item_invalidate (canvas);
 }
 
 void
