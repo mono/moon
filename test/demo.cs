@@ -29,6 +29,8 @@ class X {
 			r.Stroke = new SolidColorBrush (Color.FromRgb (255, 0, 0));
 			c.Children.Add (r);
 
+			Console.WriteLine (((SolidColorBrush)r.Stroke).Color);
+			
 			r.SetValue (Canvas.LeftProperty, 100);
 			r.SetValue (Canvas.TopProperty, 100);
 
