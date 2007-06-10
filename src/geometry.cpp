@@ -911,7 +911,7 @@ geometry_init ()
 	Geometry::TransformProperty = DependencyObject::Register (Value::GEOMETRY, "Transform", Value::TRANSFORM);
 
 	/* GeometryGroup fields */
-	GeometryGroup::ChildrenProperty = DependencyObject::Register (Value::GEOMETRYGROUP, "Children", Value::DEPENDENCY_OBJECT);
+	GeometryGroup::ChildrenProperty = DependencyObject::Register (Value::GEOMETRYGROUP, "Children", Value::GEOMETRY_COLLECTION);
 
 	/* EllipseGeometry fields */
 	EllipseGeometry::CenterProperty = DependencyObject::Register (Value::ELLIPSEGEOMETRY, "Center", Value::POINT);
@@ -923,7 +923,7 @@ geometry_init ()
 	LineGeometry::StartPointProperty = DependencyObject::Register (Value::LINEGEOMETRY, "StartPoint", Value::POINT);
 
 	/* PathGeometry */
-	PathGeometry::FiguresProperty = DependencyObject::Register (Value::PATHGEOMETRY, "Figures", Value::DEPENDENCY_OBJECT);
+	PathGeometry::FiguresProperty = DependencyObject::Register (Value::PATHGEOMETRY, "Figures", Value::PATHFIGURE_COLLECTION);
 
 	/* RectangleGeometry fields */
 	RectangleGeometry::RadiusXProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0));
@@ -933,7 +933,7 @@ geometry_init ()
 	/* PathFigure fields */
 	PathFigure::IsClosedProperty = DependencyObject::Register (Value::PATHFIGURE, "IsClosed", new Value (false));
 	PathFigure::IsFilledProperty = DependencyObject::Register (Value::PATHFIGURE, "IsFilled", new Value (true));
-	PathFigure::SegmentsProperty = DependencyObject::Register (Value::PATHFIGURE, "Segments", Value::DEPENDENCY_OBJECT);
+	PathFigure::SegmentsProperty = DependencyObject::Register (Value::PATHFIGURE, "Segments", Value::PATHSEGMENT_COLLECTION);
 	PathFigure::StartPointProperty = DependencyObject::Register (Value::PATHFIGURE, "StartPoint", Value::POINT);
 
 	/* ArcSegment fields */
