@@ -600,7 +600,9 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	if (prop) {
 		if (prop->value_type >= Value::DEPENDENCY_OBJECT) {
 			printf ("setting property:  %s\n", property->element_name);
-			dep->SetValue (prop, Value ((DependencyObject *) value->item));
+			// an empty collection can be NULL and valid
+			if (value->item)
+				dep->SetValue (prop, Value ((DependencyObject *) value->item));
 		}
 	} else {
 		dependency_object_missed_property (item, property, value, prop_name);
