@@ -1,0 +1,21 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Fill="#FFFFFFFF" Canvas.Left="10" Canvas.Top="10" Width="50" Height="50" />
+	<Rectangle Fill="#DDDDDDDD" Canvas.Left="60" Canvas.Top="10" Width="50" Height="50" RadiusX="10" RadiusY="10" />
+	<Rectangle Fill="#BBBBBBBB" Canvas.Left="110" Canvas.Top="10" Width="50" Height="50" />
+	<Rectangle Fill="#99999999" Canvas.Left="10" Canvas.Top="60" Width="50" Height="50" RadiusX="20" RadiusY="10"  />
+	<Rectangle Fill="#77777777" Canvas.Left="60" Canvas.Top="60" Width="50" Height="50" />
+	<Rectangle Fill="#55555555" Canvas.Left="110" Canvas.Top="60" Width="50" Height="50" RadiusX="10" RadiusY="20"  />
+	<Rectangle Fill="#33333333" Canvas.Left="10" Canvas.Top="110" Width="50" Height="50" />
+	<Rectangle Fill="#11111111" Canvas.Left="60" Canvas.Top="110" Width="50" Height="50" RadiusX="20" RadiusY="20"  />
+	<Rectangle Fill="#00000000" Stroke="#FFFFFFFF" Canvas.Left="110" Canvas.Top="110" Width="50" Height="50" RadiusX="20" RadiusY="20"  />
+
+	<Rectangle Fill="#FF0000" Opacity="1.0" Canvas.Left="20" Canvas.Top="20" Width="30" Height="30" />
+	<Rectangle Fill="#00FF00" Opacity="0.9" Canvas.Left="70" Canvas.Top="20" Width="30" Height="30" RadiusX="10" RadiusY="10" />
+	<Rectangle Fill="#0000FF" Opacity="0.8" Canvas.Left="120" Canvas.Top="20" Width="30" Height="30" />
+	<Rectangle Fill="#FF0000" Opacity="0.7" Canvas.Left="20" Canvas.Top="70" Width="30" Height="30" RadiusX="20" RadiusY="10"  />
+	<Rectangle Fill="#00FF00" Opacity="0.6" Canvas.Left="70" Canvas.Top="70" Width="30" Height="30" />
+	<Rectangle Fill="#0000FF" Opacity="0.5" Canvas.Left="120" Canvas.Top="70" Width="30" Height="30" RadiusX="10" RadiusY="20"  />
+	<Rectangle Fill="#FF0000" Opacity="0.4" Canvas.Left="20" Canvas.Top="120" Width="30" Height="30" />
+	<Rectangle Fill="#00FF00" Opacity="0.3" Canvas.Left="70" Canvas.Top="120" Width="30" Height="30" RadiusX="20" RadiusY="20"  />
+	<Rectangle Fill="#0000FF" Opacity="0.2" Stroke="#FFFFFFFF" Canvas.Left="120" Canvas.Top="120" Width="30" Height="30" RadiusX="20" RadiusY="20"  />
+</Canvas>
