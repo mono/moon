@@ -1,3 +1,11 @@
+2007-06-10  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* brush.cpp: Implement Opacity for SolidColorBrush.
+	* runtime.cpp|h: Add an UIElement parameter to SetupBrush so we can 
+	access it's properties (e.g. Opacity in this case). Add uielement_
+	[g|s]et_opacity functions.
+	* shape.cpp: Supply the UIElement when setting up brushes.
+
 2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Fix rounded rectangle when radius_[x|y] are larger than 

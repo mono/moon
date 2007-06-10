@@ -151,7 +151,7 @@ Shape::DoDraw (Surface *s, bool do_op)
 	if (CanFill ()) {
 		Brush *fill = shape_get_fill (this);
 		if (fill) {
-			fill->SetupBrush (s->cairo);
+			fill->SetupBrush (s->cairo, this);
 			Draw (s);
 			if (do_op)
 				cairo_fill (s->cairo);
@@ -177,7 +177,7 @@ Shape::DoDraw (Surface *s, bool do_op)
 		cairo_set_line_join (s->cairo, convert_line_join (shape_get_stroke_line_join (this)));
 		/* FIXME: cairo doesn't have separate line cap for the start and end */
 		cairo_set_line_cap (s->cairo, convert_line_cap (shape_get_stroke_start_line_cap (this)));
-		stroke->SetupBrush (s->cairo);
+		stroke->SetupBrush (s->cairo, this);
 		Draw (s);
 		if (do_op)
 			cairo_stroke (s->cairo);

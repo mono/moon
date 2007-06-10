@@ -589,6 +589,19 @@ item_set_render_transform (UIElement *item, Transform *transform)
 	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
 }
 
+double
+uielement_get_opacity (UIElement *item)
+{
+	return item->GetValue (UIElement::OpacityProperty)->AsDouble();
+}
+
+void
+uielement_set_opacity (UIElement *item, double opacity)
+{
+	item->SetValue (UIElement::OpacityProperty, Value (opacity));
+}
+
+
 FrameworkElement::FrameworkElement ()
 {
 	triggers = new TriggerCollection ();
@@ -1523,7 +1536,7 @@ void
 item_init ()
 {
 	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
-	UIElement::OpacityProperty = DependencyObject::Register (Value::UIELEMENT, "Opacity", Value::BRUSH);
+	UIElement::OpacityProperty = DependencyObject::Register (Value::UIELEMENT, "Opacity", new Value(1.0));
 	UIElement::ClipProperty = DependencyObject::Register (Value::UIELEMENT, "Clip", Value::GEOMETRY);
 	UIElement::TriggersProperty = DependencyObject::Register (Value::UIELEMENT, "Triggers", Value::TRIGGER_COLLECTION);
 	UIElement::OpacityMaskProperty = DependencyObject::Register (Value::UIELEMENT, "OpacityMask", Value::BRUSH);

@@ -75,10 +75,29 @@ brush_set_transform (Brush *brush, TransformGroup* transform_group)
 DependencyProperty* SolidColorBrush::ColorProperty;
 
 void
-SolidColorBrush::SetupBrush (cairo_t *target)
+SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 {
 	Color *color = solid_color_brush_get_color (this);
-	cairo_set_source_rgba (target, color->r, color->g, color->b, color->a);
+
+	double alpha = color->a;
+	// apply UIElement opacity and Brush opacity on color's alpha
+	if (uielement) {
+		// this is recursive to parents
+		while (uielement) {
+			double uielement_opacity = uielement_get_opacity (uielement);
+			if (uielement_opacity < 1.0)
+				alpha *= uielement_opacity;
+
+			// FIXME: we should be calling FrameworkElement::Parent
+			uielement = uielement->parent;
+		}
+	}
+
+	double brush_opacity = brush_get_opacity (this);
+	if (brush_opacity < 1.0)
+		alpha *= brush_opacity;
+	
+	cairo_set_source_rgba (target, color->r, color->g, color->b, alpha);
 }
 
 Color*

@@ -344,7 +344,7 @@ class Brush : public DependencyObject {
 	{
 	}
 	Value::Kind GetObjectType () { return Value::BRUSH; };
-	virtual void SetupBrush (cairo_t *cairo) = 0;
+	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement) = 0;
 };
 double		brush_get_opacity		(Brush *brush);
 void		brush_set_opacity		(Brush *brush, double opacity);
@@ -363,7 +363,7 @@ class SolidColorBrush : public Brush {
 
 	Value::Kind GetObjectType () { return Value::SOLIDCOLORBRUSH; };
 
-	virtual void SetupBrush (cairo_t *cairo);
+	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
 SolidColorBrush	*solid_color_brush_new ();
 Color		*solid_color_brush_get_color (SolidColorBrush *solid_color_brush);
@@ -552,6 +552,9 @@ void     item_set_transform_origin (UIElement *item, Point p);
 
 void     item_set_render_transform (UIElement *item, Transform *transform);
 void     item_get_render_affine    (UIElement *item, cairo_matrix_t *result);
+
+double	uielement_get_opacity (UIElement *item);
+void	uielement_set_opacity (UIElement *item, double opacity);
 
 //
 // FrameworkElement class
