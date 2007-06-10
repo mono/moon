@@ -13,12 +13,7 @@
 #include "config.h"
 #include <stdlib.h>
 #include <glib.h>
-G_BEGIN_DECLS
-#include <mono/jit/jit.h>
-#include <mono/metadata/environment.h>
-#include <mono/metadata/mono-config.h>
 #include "moon-mono.h"
-G_END_DECLS
 
 MonoDomain   *moon_domain;
 MonoAssembly *moon_boot_assembly;
