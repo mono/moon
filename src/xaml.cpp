@@ -847,6 +847,8 @@ xaml_init ()
 {
 	element_map = g_hash_table_new (g_str_hash, g_str_equal);
 
+	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Value::COLLECTION);
+
 	//
 	// ui element ->
 	//
@@ -877,17 +879,17 @@ xaml_init ()
 
 	XamlElementInfo *gg = register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 	gg->add_child = geometry_group_add_child;
-//	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
+//	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", col, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 //	gc->add_child = geometry_collection_add_child;
 
 	XamlElementInfo *pg = register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
 //	pg->add_child = path_geometry_add_child;
-//	XamlElementInfo *pfc = register_dependency_object_element ("PathFigureCollection", geo, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
+//	XamlElementInfo *pfc = register_dependency_object_element ("PathFigureCollection", col, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
 //	pfc->add_child = path_figure_collection_add_child;
 
 	XamlElementInfo *pf = register_dependency_object_element ("PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->add_child = path_figure_add_child;
-	XamlElementInfo *psc = register_dependency_object_element ("PathSegmentCollection", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
+	XamlElementInfo *psc = register_dependency_object_element ("PathSegmentCollection", col, Value::PATHFIGURE, (create_item_func) path_figure_new);
 //	psc->add_child = path_segment_collection_add_child;
 
 	XamlElementInfo *ps = register_ghost_element ("PathSegment", geo, Value::PATHSEGMENT);
@@ -942,7 +944,7 @@ xaml_init ()
 	XamlElementInfo *tg = register_dependency_object_element ("TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
 	tg->add_child = transform_group_add_child;
 	
-	XamlElementInfo *tfc = register_dependency_object_element ("TransformCollection", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
+	XamlElementInfo *tfc = register_dependency_object_element ("TransformCollection", col, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
 	tfc->add_child = transform_collection_add_child;
 
 

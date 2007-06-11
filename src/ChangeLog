@@ -1,3 +1,9 @@
+2007-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Make the parents of collections the Collection ghost
+	element.  This is a first step in cleaning up collection creation
+	a little.
+
 2007-06-11  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* transform.cpp: remove dead code.
