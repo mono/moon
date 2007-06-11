@@ -10,9 +10,7 @@
  * 
  */
 
-#include <stdio.h>
-#include "npapi.h"
-#include "npupp.h"
+#include "config.h"
 #include "moon-plugin.h"
 #include "moon-mono.h"
 

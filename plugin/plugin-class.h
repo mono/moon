@@ -10,9 +10,7 @@
  * 
  */
 
-#include "npapi.h"
-#include "npupp.h"
-#include "npruntime.h"
+#include "config.h"
 
 class PluginClass : public NPClass {
  private:

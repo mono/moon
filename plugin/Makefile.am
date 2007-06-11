@@ -15,6 +15,7 @@ libmoonplugin_la_LDFLAGS = \
 libmoonplugin_la_LIBADD = -lmoon $(PLUGIN_LIBS) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
+	config.h		\
 	mono.cpp		\
 	moon-plugin.cpp 	\
 	moon-plugin.h 		\

@@ -11,11 +11,6 @@
  */
 
 #include "moon-plugin.h"
-#include "npapi.h"
-#include "npupp.h"
-#include "npruntime.h"
-
-#define SCRIPTING
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {

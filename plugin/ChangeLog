@@ -1,5 +1,17 @@
 2007-06-10  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile.am: config.h added.
+
+	* config.h: Added.
+
+	* plugin-class.cpp,
+	* moon-plugin.cpp,
+	* plugin-class.h,
+	* plugin-glue.cpp,
+	* moon-plugin.h: Include config.h and remove unneeded includes.
+
+2007-06-10  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp: Remove DEMO mode and set SCRIPTING mode by default.
 
 2007-06-10  Miguel de Icaza  <miguel@novell.com>
