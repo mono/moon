@@ -241,6 +241,15 @@ class KeyFrame : public DependencyObject {
 
 
 
+class KeyFrameCollection : public Collection {
+ public:
+	KeyFrameCollection () {}
+	virtual Value::Kind GetObjectType() { return Value::KEYFRAME_COLLECTION; }
+	virtual void Add (void *data);
+	virtual void Remove (void *data);
+};
+
+
 
 class DoubleKeyFrame : public KeyFrame {
  public:
@@ -362,8 +371,9 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
- private:
-	GList *key_frames;
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	KeyFrameCollection *key_frames;
 };
 
 DoubleAnimationUsingKeyFrames* double_animation_using_key_frames_new ();
@@ -381,8 +391,9 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
- private:
-	GList *key_frames;
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	KeyFrameCollection *key_frames;
 };
 
 ColorAnimationUsingKeyFrames* color_animation_using_key_frames_new ();
@@ -401,8 +412,9 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
- private:
-	GList *key_frames;
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	KeyFrameCollection *key_frames;
 };
 
 PointAnimationUsingKeyFrames* point_animation_using_key_frames_new ();

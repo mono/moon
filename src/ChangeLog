@@ -1,3 +1,10 @@
+2007-06-11  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h, animation.cpp: use KeyFrameCollection's for the
+	*AnimationUsingKeyFrames key frame stuff, instead of GLists.
+
+	* value.h, runtime.cpp: add Value::AsKeyFrameCollection.
+
 2007-06-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Make the parents of collections the Collection ghost

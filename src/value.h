@@ -85,6 +85,7 @@ class TriggerAction;
 class UIElement;
 
 class Collection;
+class KeyFrameCollection;
 class VisualCollection;
 class TriggerCollection;
 class TriggerActionCollection;
@@ -341,6 +342,7 @@ public:
 	PointAnimationUsingKeyFrames* AsPointAnimationUsingKeyFrames ();
 
 	Collection*                   AsCollection ();
+	KeyFrameCollection*           AsKeyFrameCollection ();
 	VisualCollection*             AsVisualCollection ();
 	TriggerCollection*            AsTriggerCollection ();
 	TriggerActionCollection*      AsTriggerActionCollection ();

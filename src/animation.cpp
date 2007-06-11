@@ -421,6 +421,23 @@ KeyFrame::SetKeyTime (KeyTime keytime)
 }
 
 
+
+void
+KeyFrameCollection::Add (void *data)
+{
+	Value *value = (Value*)data;
+	Collection::Add (value->AsKeyFrame());
+}
+
+void
+KeyFrameCollection::Remove (void *data)
+{
+	Value *value = (Value*)data;
+	Collection::Remove (value->AsKeyFrame());
+}
+
+
+
 DependencyProperty* DoubleKeyFrame::ValueProperty;
 
 DoubleKeyFrame::DoubleKeyFrame ()
@@ -570,16 +587,57 @@ linear_point_key_frame_new ()
 
 
 
+DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
 {
 	key_frames = NULL;
+	KeyFrameCollection *c = new KeyFrameCollection ();
+
+	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == key_frames);
+}
+
+void
+DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
+{
+	DoubleAnimation::OnPropertyChanged (prop);
+
+	if (prop == KeyFramesProperty){
+		// The new value has already been set, so unref the old collection
+
+		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
+
+		if (newcol != key_frames){
+			if (key_frames){
+				for (GSList *l = key_frames->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (key_frames);
+				g_slist_free (key_frames->list);
+			}
+
+			key_frames = newcol;
+			if (key_frames->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			key_frames->closure = this;
+			
+			base_ref (key_frames);
+		}
+	}
 }
 
 void
 DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 {
-	key_frames = g_list_append (key_frames, frame);
+	KeyFrameCollection *keyframes = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
+	Value fv = Value(frame);
+	keyframes->Add (&fv);
 }
 
 void
@@ -591,7 +649,6 @@ Value*
 DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
-
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	DoubleKeyFrame *current_keyframe;
@@ -601,7 +658,8 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	TimeSpan key_end_time;
 
 	/* figure out what segment to use (this list needs to be sorted) */
-	for (GList *l = key_frames; l; l = l->next) {
+	GSList *prev = NULL;
+	for (GSList *l = key_frames->list; l; prev = l, l = l->next) {
 		DoubleKeyFrame *keyframe = (DoubleKeyFrame*)l->data;
 
 		key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
@@ -609,8 +667,8 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 		if (key_end_time >= current_time) {
 			current_keyframe = keyframe;
 
-			if (l->prev)
-				previous_keyframe = (DoubleKeyFrame*)l->prev->data;
+			if (prev)
+				previous_keyframe = (DoubleKeyFrame*)prev->data;
 
 			break;
 		}
@@ -647,15 +705,57 @@ double_animation_using_key_frames_new ()
 
 
 
+DependencyProperty* ColorAnimationUsingKeyFrames::KeyFramesProperty;
+
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
 	key_frames = NULL;
+	KeyFrameCollection *c = new KeyFrameCollection ();
+
+	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == key_frames);
+}
+
+void
+ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
+{
+	ColorAnimation::OnPropertyChanged (prop);
+
+	if (prop == KeyFramesProperty){
+		// The new value has already been set, so unref the old collection
+
+		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
+
+		if (newcol != key_frames){
+			if (key_frames){
+				for (GSList *l = key_frames->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (key_frames);
+				g_slist_free (key_frames->list);
+			}
+
+			key_frames = newcol;
+			if (key_frames->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			key_frames->closure = this;
+			
+			base_ref (key_frames);
+		}
+	}
 }
 
 void
 ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 {
-	key_frames = g_list_append (key_frames, frame);
+	KeyFrameCollection *keyframes = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
+	Value fv = Value(frame);
+	keyframes->Add (&fv);
 }
 
 void
@@ -667,7 +767,6 @@ Value*
 ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
-
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	ColorKeyFrame *current_keyframe;
@@ -677,7 +776,8 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	TimeSpan key_end_time;
 
 	/* figure out what segment to use (this list needs to be sorted) */
-	for (GList *l = key_frames; l; l = l->next) {
+	GSList *prev = NULL;
+	for (GSList *l = key_frames->list; l; prev = l, l = l->next) {
 		ColorKeyFrame *keyframe = (ColorKeyFrame*)l->data;
 
 		key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
@@ -685,8 +785,8 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 		if (key_end_time >= current_time) {
 			current_keyframe = keyframe;
 
-			if (l->prev)
-				previous_keyframe = (ColorKeyFrame*)l->prev->data;
+			if (prev)
+				previous_keyframe = (ColorKeyFrame*)prev->data;
 
 			break;
 		}
@@ -725,15 +825,57 @@ color_animation_using_key_frames_new ()
 
 
 
+DependencyProperty* PointAnimationUsingKeyFrames::KeyFramesProperty;
+
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
 	key_frames = NULL;
+	KeyFrameCollection *c = new KeyFrameCollection ();
+
+	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == key_frames);
+}
+
+void
+PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
+{
+	PointAnimation::OnPropertyChanged (prop);
+
+	if (prop == KeyFramesProperty){
+		// The new value has already been set, so unref the old collection
+
+		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
+
+		if (newcol != key_frames){
+			if (key_frames){
+				for (GSList *l = key_frames->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (key_frames);
+				g_slist_free (key_frames->list);
+			}
+
+			key_frames = newcol;
+			if (key_frames->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			key_frames->closure = this;
+			
+			base_ref (key_frames);
+		}
+	}
 }
 
 void
 PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
 {
-	key_frames = g_list_append (key_frames, frame);
+	KeyFrameCollection *keyframes = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
+	Value fv = Value(frame);
+	keyframes->Add (&fv);
 }
 
 void
@@ -745,7 +887,6 @@ Value*
 PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
-
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	PointKeyFrame *current_keyframe;
@@ -755,7 +896,8 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	TimeSpan key_end_time;
 
 	/* figure out what segment to use (this list needs to be sorted) */
-	for (GList *l = key_frames; l; l = l->next) {
+	GSList *prev = NULL;
+	for (GSList *l = key_frames->list; l; prev = l, l = l->next) {
 		PointKeyFrame *keyframe = (PointKeyFrame*)l->data;
 
 		key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
@@ -763,8 +905,8 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 		if (key_end_time >= current_time) {
 			current_keyframe = keyframe;
 
-			if (l->prev)
-				previous_keyframe = (PointKeyFrame*)l->prev->data;
+			if (prev)
+				previous_keyframe = (PointKeyFrame*)prev->data;
 
 			break;
 		}
@@ -853,7 +995,9 @@ animation_init ()
  	PointKeyFrame::ValueProperty = DependencyObject::Register (Value::POINTKEYFRAME, "Value", Value::POINT);
 
 	/* KeyFrame animation properties */
-	//PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::KEYFRAME, "KeyFrames", new Value(KeyTime::Uniform));
+	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);
+	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);
+	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);
 }
 
 
