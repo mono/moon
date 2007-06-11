@@ -326,7 +326,15 @@ Issues
 	class for use in moon.
 
 	1.  Add a Value::Kind entry for it.
-	2.  Add the same value in olive/class/agclr/Mono/Kind.cs
 	2.  if it's a DependencyObject, override GetObjectType() to return that type.
 	3.  add line(s) to types_init in runtime.cpp registering the
-	    type and its parent type (if there is one.)
+	    type and its parent type (if there is one.) in types_init()
+	4.  If it's used in the C++ code, add an As$TYPE method in
+            value.h and an implementation of it to runtime.cpp
+            (there's a nice macro for use with DependencyObject
+            subclasses).
+	5.  Before commiting, run genkindcs.sh to generate the new
+            managed Kind.cs file.  like this:
+	        $ ./genkindcs.sh > ../../olive/class/agclr/Mono/Kind.cs
+
+            and commit this along with your value.h change.
