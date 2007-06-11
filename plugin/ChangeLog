@@ -1,3 +1,7 @@
+2007-06-11  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* Makefile.am : build fix. without -f rm fails.
+
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-class.cpp, plugin-class.h: Remove unused method ClassAllocate

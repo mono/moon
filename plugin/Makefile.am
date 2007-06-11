@@ -28,7 +28,7 @@ libmoonplugin_la_SOURCES = \
 # custom install rule
 install-plugin: libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
-	-rm ~/.mozilla/plugins/libmoon.so
+	-rm -f ~/.mozilla/plugins/libmoon.so
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp moonlight.exe ~/.mozilla/plugins
 
