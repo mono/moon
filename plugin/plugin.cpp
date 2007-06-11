@@ -10,12 +10,8 @@
  * 
  */
 
-#include "moon-plugin.h"
-#include "npapi.h"
-#include "npupp.h"
-//#include "npruntime.h"
+#include "plugin.h"
 #include "moon-mono.h"
-
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {

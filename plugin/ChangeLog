@@ -1,3 +1,11 @@
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon-plugin.cpp: Renamed to plugin.cpp.
+	* moon-plugin.h: Renaned to plugin.h.
+	* config.h: Renaned to moonlight.h.
+
+	* plugin-class.h, plugin-glue.cpp: Update includes.
+
 2007-06-11  Miguel de Icaza  <miguel@novell.com>
 
 	* Makefile.am: Delete the ~/.mozilla/plugins/libmoon.so in case it

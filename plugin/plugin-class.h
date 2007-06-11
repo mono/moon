@@ -10,7 +10,7 @@
  * 
  */
 
-#include "config.h"
+#include "moonlight.h"
 
 class PluginClass : public NPClass {
  private:

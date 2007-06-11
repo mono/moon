@@ -31,7 +31,7 @@
 #define SCRIPTING
 
 #define MOON_1_0
-//#define MOON_1_1
+#define MOON_1_1
 
 // Plugin information
 #define PLUGIN_NAME         "WPFe Plug-In"
