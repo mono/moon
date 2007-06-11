@@ -1,5 +1,10 @@
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp, plugin-class.h: Remove unused method ClassAllocate
+	and fix all debug messages.
+
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp: Fix object creation using NPN_RetainObject to increment
 	reference count as described in Mozilla documentation.
 

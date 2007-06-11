@@ -134,17 +134,6 @@ PluginClass::~PluginClass ()
 	// nothing to do.
 }
 
-NPObject*
-PluginClass::ClassAllocate (NPP instance, NPClass *aClass)
-{
-	NPObject *object;
-	object = (NPObject*) NPN_MemAlloc (sizeof (NPObject));
-	if (!object)
-		return NULL;
-
-	return object;
-}
-
 void
 PluginClass::ClassDeallocate (NPObject *npobj)
 {
@@ -161,21 +150,24 @@ PluginClass::ClassInvalidate (NPObject *npobj)
 bool
 PluginClass::ClassHasProperty (NPObject *npobj, NPIdentifier name)
 {
-	fprintf (stderr, "*** PluginClass::ClassHasProperty (npobj=%p, name=%p)\n", npobj, name);
+	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
+	DEBUGMSG ("*** PluginClass::ClassHasProperty %s", strname);
+	NPN_MemFree(strname);
+
 	return false;
 }
 
 bool
 PluginClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	fprintf (stderr, "*** PluginClass::ClassGetProperty\n");
+	DEBUGMSG ("*** PluginClass::ClassGetProperty");
 	return false;
 }
 
 bool
 PluginClass::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
-	fprintf (stderr, "*** PluginClass::ClassSetProperty\n");
+	DEBUGMSG ("*** PluginClass::ClassSetProperty");
 	return false;
 }
 
@@ -188,7 +180,10 @@ PluginClass::ClassRemoveProperty (NPObject *npobj, NPIdentifier name)
 bool
 PluginClass::ClassHasMethod (NPObject *npobj, NPIdentifier name)
 {
-	fprintf (stderr, "*** PluginClass::ClassHasMethod\n");
+	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
+	DEBUGMSG ("*** PluginClass::ClassHasMethod %s", strname);
+	NPN_MemFree(strname);
+
 	return false;
 }
 
@@ -196,7 +191,7 @@ bool
 PluginClass::ClassInvoke (NPObject *npobj, NPIdentifier name, const NPVariant *args, 
                   uint32_t argCount, NPVariant *result)
 {
-	fprintf (stderr, "*** PluginClass::ClassInvoke\n");
+	DEBUGMSG ("*** PluginClass::ClassInvoke");
 	return false;
 }
 
@@ -204,7 +199,7 @@ bool
 PluginClass::ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 	                                uint32_t argCount, NPVariant *result)
 {
-	fprintf (stderr, "*** PluginClass::ClassInvokeDefault\n");
+	DEBUGMSG ("*** PluginClass::ClassInvokeDefault");
 	return false;
 }
 
@@ -219,10 +214,8 @@ PluginRootClass::PluginRootClass (NPP instance)
 bool
 PluginRootClass::ClassHasProperty (NPObject *npobj, NPIdentifier name)
 {
-	DEBUGMSG ("PluginRootClass::ClassHasProperty");
-
 	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
-	fprintf (stderr, "-----> ClassHasProperty %s\n", strname);
+	DEBUGMSG ("PluginRootClass::ClassHasProperty %s", strname);
 	NPN_MemFree(strname);
 
 	if (name == NPN_GetStringIdentifier ("settings")  ||

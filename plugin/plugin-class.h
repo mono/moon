@@ -19,7 +19,6 @@ class PluginClass : public NPClass {
 	PluginClass ();
 	virtual ~PluginClass ();
 
-	virtual NPObject *ClassAllocate (NPP instance, NPClass *aClass);
 	virtual void ClassDeallocate (NPObject *npobj);
 	virtual void ClassInvalidate (NPObject *npobj);
 	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
