@@ -218,9 +218,15 @@ class DependencyObject : public Base {
 	static DependencyProperty *RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype);
 	
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name);
+	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name, bool inherits);
+
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (DependencyProperty *property, Value *value);
+	void SetValue (char *name, Value *value);
+	void SetValue (char *name, Value value);
 	Value *GetValue (DependencyProperty *property);
+	Value *GetValue (char *name);
+	bool HasProperty (char *name, bool inherits);
 	DependencyProperty *GetDependencyProperty (char *name);
 	DependencyObject* FindName (char *name);
 
@@ -233,6 +239,10 @@ class DependencyObject : public Base {
 	{
 		g_warning ("This class is missing an override of GetObjectType ()");
 		return Value::DEPENDENCY_OBJECT; 
+	};
+	Type* GetType ()
+	{
+		return Type::Find (GetObjectType ());
 	};
 
 

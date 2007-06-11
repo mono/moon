@@ -1163,6 +1163,41 @@ DependencyObject::GetValue (DependencyProperty *property)
 	return property->default_value;
 }
 
+Value *
+DependencyObject::GetValue (char *name)
+{
+	DependencyProperty *property;
+	property = GetDependencyProperty (name);
+
+	if (property == NULL) {
+		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetType ()->name, name);
+		return NULL;
+	}
+
+	return GetValue (property);
+	
+}
+
+void 
+DependencyObject::SetValue (char *name, Value value)
+{
+	SetValue (name, &value);
+}
+
+void
+DependencyObject::SetValue (char *name, Value *value)
+{
+	DependencyProperty *property;
+	property = GetDependencyProperty (name);
+
+	if (property == NULL) {
+		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetType ()->name, name);
+		return;
+	}
+
+	SetValue (property, value);
+}
+
 static void
 free_value (void *v)
 {
@@ -1192,6 +1227,12 @@ DependencyObject::GetDependencyProperty (char *name)
 DependencyProperty *
 DependencyObject::GetDependencyProperty (Value::Kind type, char *name)
 {
+	return GetDependencyProperty (type, name, true);
+}
+
+DependencyProperty *
+DependencyObject::GetDependencyProperty (Value::Kind type, char *name, bool inherits)
+{
 	GHashTable *table;
 	DependencyProperty *property;
 
@@ -1208,6 +1249,9 @@ DependencyObject::GetDependencyProperty (Value::Kind type, char *name)
 	if (property != NULL)
 		return property;
 
+	if (!inherits)
+		return NULL;	
+
 	// Look in the parent type
 	Type *current_type;
 	current_type = Type::Find (type);
@@ -1219,6 +1263,12 @@ DependencyObject::GetDependencyProperty (Value::Kind type, char *name)
 		return NULL;
 
 	return GetDependencyProperty (current_type->parent, name);
+}
+
+bool
+DependencyObject::HasProperty (char *name, bool inherits)
+{
+	return GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
 }
 
 DependencyObject*

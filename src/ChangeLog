@@ -1,3 +1,10 @@
+2007-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.h, runtime.cpp: (DependencyObject) Add SetValue/GetValue 
+	overloads that takes strings as well as DP, GetDependencyProperty where 
+	it's possible to specify whether the parent type is searched for the
+	property or not, and a HasProperty method
+
 2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Fix function names wrt type.
