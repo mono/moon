@@ -15,8 +15,7 @@
 #include "npupp.h"
 #include "npruntime.h"
 
-//#define SCRIPTING
-#define DEMO
+#define SCRIPTING
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {
@@ -196,19 +195,10 @@ PluginInstance::CreateWindow ()
 
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
-#ifdef DEMO
 	this->canvas = new Canvas ();
 	this->surface = surface_new (window->width, window->height);
 	surface_attach (this->surface, canvas);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
-
-	//CreateDemoControls ();
-#else
-	GtkWidget *label = gtk_label_new (PLUGIN_OURNAME" "PLUGIN_OURVERSION);
-	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
-	gtk_container_add (GTK_CONTAINER (container), label);
-#endif
-
 	gtk_widget_show_all (this->container);
 }
 
