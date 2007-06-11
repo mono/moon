@@ -1,6 +1,7 @@
-2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+2007-06-10  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Add more precision to types.
+	* runtime.cpp: Apply Canvas' RenderTransform and RenderTransformOrigin
 
 2007-06-10  Sebastien Pouliot  <sebastien@ximian.com> 
 

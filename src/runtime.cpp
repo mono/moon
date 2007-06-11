@@ -772,6 +772,11 @@ Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
 		
 	cairo_matrix_translate (result, left, top);
+
+	// The RenderTransform and RenderTransformOrigin properties also applies to item drawn on the canvas
+	cairo_matrix_t item_transform;
+	item_get_render_affine (this, &item_transform);
+	cairo_matrix_multiply (result, result, &item_transform);
 }
 
 void
