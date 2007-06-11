@@ -1,5 +1,16 @@
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moonlight.h: Define RUNTIME to enable/disable mono runtime 
+	integration. Its because right now it fails when open a page with 
+	script so we can comment /#define RUNTIME to get plugin working in
+	old way.
+
+	* plugin.cpp: Dont call vm_load_xaml when RUNTIME is not defined.
+
+	* plugin-glue.cpp: Dont call vm_init when RUNTIME is not defined.
+
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-plugin.cpp: Renamed to plugin.cpp.
 	* moon-plugin.h: Renaned to plugin.h.
 	* config.h: Renaned to moonlight.h.

@@ -191,9 +191,11 @@ PluginInstance::CreateWindow ()
 
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
-	//this->canvas = new Canvas ();
 	this->surface = surface_new (window->width, window->height);
-	//surface_attach (this->surface, canvas);
+#ifndef RUNTIME
+	this->canvas = new Canvas ();
+	surface_attach (this->surface, canvas);
+#endif
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 	gtk_widget_show_all (this->container);
 }
@@ -251,9 +253,11 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	//   2. Call a helper method (maybe the same) that would process the input parameters
 	//   3. Remove the call here below, and let managed code load the XAML
 
+#ifdef RUNTIME
 	vm_load_xaml (this->surface, fname);
-
-	//panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
+#else
+	panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
+#endif
 }
 
 int32

@@ -29,6 +29,7 @@
 // Definitions
 #define DEBUG
 #define SCRIPTING
+//#define RUNTIME
 
 #define MOON_1_0
 #define MOON_1_1
