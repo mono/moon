@@ -1,3 +1,16 @@
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
+	* Makefile.am,
+	* moon-mono.cpp,
+	* mono.cpp: Rename moon.cpp to moon-mono.cpp.
+
+	* moon-mono.h: Add header information.
+
+	* plugin-glue.cpp,
+	* config.h: Add constant MOON_1_0 and MOON_1_1, when 1.1 is define 
+	compile also mono runtime, it is disabled by default since mono runtime
+	give us some crashes right now.
+
 2007-06-10  Everaldo Canuto  <ecanuto@novell.com>
 
 	* Makefile.am: config.h added.

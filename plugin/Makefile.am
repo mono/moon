@@ -16,13 +16,13 @@ libmoonplugin_la_LIBADD = -lmoon $(PLUGIN_LIBS) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
 	config.h		\
-	mono.cpp		\
-	moon-plugin.cpp 	\
-	moon-plugin.h 		\
+	moon-plugin.cpp		\
+	moon-plugin.h		\
+	moon-mono.cpp		\
+	moon-mono.h		\
 	plugin-entry.cpp 	\
 	plugin-glue.cpp 	\
 	plugin-class.cpp 	\
-	moon-mono.h		\
 	plugin-class.h	
 
 # custom install rule

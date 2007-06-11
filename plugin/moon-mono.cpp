@@ -1,5 +1,5 @@
 /*
- * mono.cpp: Support routines to load the Mono VM as a browser plugin.
+ * moon-mono.cpp: Support routines to load the Mono VM as a browser plugin.
  *
  * Author:
  *   Miguel de Icaza (miguel@novell.com)
