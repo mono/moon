@@ -1,3 +1,7 @@
+2007-06-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.cpp: Implemented [Ploy]QuadraticBezierSegment::Draw.
+
 2007-06-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Add drawing of [Poly]LinesSegment and 

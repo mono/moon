@@ -922,9 +922,41 @@ poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, P
 	segment->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (points, count));
 }
 
+// quadratic to cubic bezier, the original control point and the end control point are the same
+// http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
 void
 PolyQuadraticBezierSegment::Draw (Surface *s)
 {
+	int count = 0;
+	Point* points = poly_quadratic_bezier_segment_get_points (this, &count);
+	if (!points)
+		return;
+
+	// origin
+	double x0 = 0.0;
+	double y0 = 0.0;
+	cairo_get_current_point (s->cairo, &x0, &y0);
+
+	// we need at least 2 points
+	for (int i=0; i < count - 1; i+=2) {
+		double x1 = points[i].x;
+		double y1 = points[i].y;
+		double x2 = points[i+1].x;
+		double y2 = points[i+1].y;
+		double x3 = x2;
+		double y3 = y2;
+
+		x2 = x1 + (x2 - x1) / 3;
+		y2 = y1 + (y2 - y1) / 3;
+		x1 = x0 + 2 * (x1 - x0) / 3;
+		y1 = y0 + 2 * (y1 - y0) / 3;
+
+		cairo_curve_to (s->cairo, x1, y1, x2, y2, x3, y3);
+
+		// set new origin
+		x0 = x3;
+		y0 = y3;
+	}
 }
 
 //
@@ -969,6 +1001,28 @@ quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *poi
 void
 QuadraticBezierSegment::Draw (Surface *s)
 {
+	Point *p1 = quadratic_bezier_segment_get_point1 (this);
+	Point *p2 = quadratic_bezier_segment_get_point2 (this);
+
+	// quadratic to cubic bezier, the original control point and the end control point are the same
+	// http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
+	double x0 = 0.0;
+	double y0 = 0.0;
+	cairo_get_current_point (s->cairo, &x0, &y0);
+
+	double x1 = p1 ? p1->x : 0.0;
+	double y1 = p1 ? p1->y : 0.0;
+	double x2 = p2 ? p2->x : 0.0;
+	double y2 = p2 ? p2->y : 0.0;
+	double x3 = x2;
+	double y3 = y2;
+
+	x2 = x1 + (x2 - x1) / 3;
+	y2 = y1 + (y2 - y1) / 3;
+	x1 = x0 + 2 * (x1 - x0) / 3;
+	y1 = y0 + 2 * (y1 - y0) / 3;
+
+	cairo_curve_to (s->cairo, x1, y1, x2, y2, x3, y3);
 }
 
 //
