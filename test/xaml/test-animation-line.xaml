@@ -12,13 +12,13 @@
             <DoubleAnimation
               Storyboard.TargetName="TheAmazingMovingLine"
               Storyboard.TargetProperty="X1"
-              From="10" To="300" By="25" Duration="2"
+              From="10" To="300" By="25" Duration="0:1:30"
 	      AutoReverse="True" RepeatBehavior="Forever" />
 
 	    <DoubleAnimation
               Storyboard.TargetName="TheAmazingMovingLine"
               Storyboard.TargetProperty="X2"
-              From="10" To="300" By="25" Duration="2"
+              From="10" To="300" By="25" Duration="0:5:30"
               AutoReverse="True" RepeatBehavior="Forever" />
 	      
           </Storyboard>
