@@ -148,9 +148,8 @@ PluginClass::ClassAllocate (NPP instance, NPClass *aClass)
 void
 PluginClass::ClassDeallocate (NPObject *npobj)
 {
-	DEBUGMSG ("   ### Deallocate ###   ");
-
-	// nothing to do.
+	if (npobj)
+		NPN_ReleaseObject (npobj);
 }
 
 void

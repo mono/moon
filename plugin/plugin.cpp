@@ -123,6 +123,8 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 
 			if (!rootobject)
 				rootobject = NPN_CreateObject (this->instance, rootclass);
+			else
+				NPN_RetainObject (rootobject);
 
 			if (!rootobject)
 				err = NPERR_OUT_OF_MEMORY_ERROR;

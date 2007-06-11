@@ -1,5 +1,14 @@
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp: Fix object creation using NPN_RetainObject to increment
+	reference count as described in Mozilla documentation.
+
+	* plugin-class.cpp: On ClassDeallocate uses NPN_ReleaseObject that
+	checks for references and release object when reference count is equal
+	zero. It see to be solve all remaining segfault when browser closes.
+
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
 	[Refactory jscript runtime code]
 
 	* plugin-class.cpp, plugin-class.h: Create new class PluginRootClass,
