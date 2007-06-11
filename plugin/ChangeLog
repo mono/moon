@@ -1,3 +1,9 @@
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp.h: Remove unused code and fix function names.
+
+	* moonlight.h: Remove ";" on end of PLUGIN_DESCRIPTION define.
+
 2007-06-11  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* Makefile.am : build fix. without -f rm fails.

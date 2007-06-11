@@ -13,59 +13,48 @@
 #include "plugin.h"
 #include "moon-mono.h"
 
-static void moon_plugin_menu_about (PluginInstance *plugin)
+void 
+plugin_menu_about (PluginInstance *plugin)
 {
-	DEBUGMSG ("*** moon_plugin_menu_about Clicked!");
-	// TODO: Implement an about Window.
+	DEBUGMSG ("*** plugin_menu_about");
 }
 
 gboolean
-moon_plugin_show_menu (PluginInstance *plugin)
+plugin_show_menu (PluginInstance *plugin)
 {
-	DEBUGMSG ("*** moon_plugin_show_menu");
-
 	GtkWidget *menu;
 	GtkWidget *menu_item;
 
 	menu = gtk_menu_new();
 
-	menu_item = gtk_menu_item_new_with_label ("Help...");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	gtk_widget_show (menu_item);
-	
-	menu_item = gtk_separator_menu_item_new();
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	gtk_widget_show (menu_item);
-
 	menu_item = gtk_menu_item_new_with_label (g_strdup_printf ("%s %s", PLUGIN_OURNAME, PLUGIN_OURVERSION));
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (moon_plugin_menu_about), plugin);
-	gtk_widget_show (menu_item);
+	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_menu_about), plugin);
 
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
-	    0, gtk_get_current_event_time());
+	gtk_widget_show_all (menu);
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 }
 
 gboolean
 plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-    gboolean handled = 0;
+	gboolean handled = 0;
 
 	PluginInstance *plugin = (PluginInstance *) user_data;
-    GdkEventButton *event_button;
+	GdkEventButton *event_button;
 
-    switch (event->type) {
+	switch (event->type) {
 
-    case GDK_BUTTON_PRESS:
-		event_button = (GdkEventButton *) event;
-		if (event_button->button == 3) {
-			moon_plugin_show_menu (plugin);
-		}
-		handled = 1;
-		break;
+		case GDK_BUTTON_PRESS:
+			event_button = (GdkEventButton *) event;
+			if (event_button->button == 3) {
+				plugin_show_menu (plugin);
+			}
+			handled = 1;
+			break;
 
-	default:
-		break;
+		default:
+			break;
 	}
 
 	return handled;
@@ -92,12 +81,6 @@ PluginInstance::~PluginInstance ()
 	// Container must be destroyed or we have segfault when browser's closes.
 	if (this->container != NULL)
 		gtk_widget_destroy (this->container);
-
-#ifdef SCRIPTING 
-//	DEBUGMSG ("destructor point object (%x) (%d)", this->object, this->object->referenceCount);
-//	if (this->object)
-//		NPN_ReleaseObject (this->object);
-#endif
 }
 
 void 
