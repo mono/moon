@@ -73,19 +73,18 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 
 /*** PluginInstance:: *********************************************************/
 
+static PluginRootClass* rootclass = NULL;
+static NPObject* rootobject = NULL;
+
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {
 	this->mode = mode;
 	this->instance = instance;
 	this->window = NULL;
-	this->object = NULL;
 
 	this->container = NULL;
 	this->canvas = NULL;
 	this->surface = NULL;
-
-	this->settings = new PluginSettings ();
-	this->obj_settings = NPN_CreateObject (this->instance, this->settings);
 }
 
 PluginInstance::~PluginInstance ()
@@ -95,9 +94,9 @@ PluginInstance::~PluginInstance ()
 		gtk_widget_destroy (this->container);
 
 #ifdef SCRIPTING 
-	DEBUGMSG ("destructor point object (%x) (%d)", this->object, this->object->referenceCount);
-	if (this->object)
-		NPN_ReleaseObject (this->object);
+//	DEBUGMSG ("destructor point object (%x) (%d)", this->object, this->object->referenceCount);
+//	if (this->object)
+//		NPN_ReleaseObject (this->object);
 #endif
 }
 
@@ -119,13 +118,16 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 
 #ifdef SCRIPTING
 		case NPPVpluginScriptableNPObject:
-			if (!this->object)
-				this->object = NPN_CreateObject (this->instance, this);
+			if (!rootclass)
+				rootclass = new PluginRootClass (this->instance);
 
-			if (!this->object)
+			if (!rootobject)
+				rootobject = NPN_CreateObject (this->instance, rootclass);
+
+			if (!rootobject)
 				err = NPERR_OUT_OF_MEMORY_ERROR;
 			else
-				*((NPObject **) result) =  this->object;
+				*((NPObject **) result) =  rootobject;
 
 			break;
 #endif
@@ -145,10 +147,8 @@ PluginInstance::SetValue (NPNVariable variable, void *value)
 NPError 
 PluginInstance::SetWindow (NPWindow* window)
 {
-	if (window == this->window) {
-		// TODO: Implement resize and other things.
+	if (window == this->window)
 		return NPERR_NO_ERROR;
-	}
 
 	NPN_GetValue(this->instance, NPNVSupportsXEmbedBool, &this->xembed_supported);
 	if (!this->xembed_supported)
@@ -288,65 +288,4 @@ int16
 PluginInstance::EventHandle (void* event)
 {
 	return 0;
-}
-
-/*** Runtime related **********************************************************/
-
-bool
-PluginInstance::ClassHasProperty (NPObject *npobj, NPIdentifier name)
-{
-	if (name == NPN_GetStringIdentifier ("settings")  ||
-		name == NPN_GetStringIdentifier ("version"))
-		return true;
-
-	return false;
-}
-
-bool
-PluginInstance::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
-{
-	if (name == NPN_GetStringIdentifier ("settings")) 
-	{
-		OBJECT_TO_NPVARIANT (this->obj_settings, *result);
-
-		return true;
-	} 
-	else if (name == NPN_GetStringIdentifier ("version")) 
-	{
-		int len = strlen (PLUGIN_VERSION);
-		char *version = (char *) NPN_MemAlloc (len + 1);
-		memcpy (version, PLUGIN_VERSION, len + 1);
-		STRINGN_TO_NPVARIANT (version, len, *result);
-
-		return true;
-	}
-
-	return false;
-}
-
-/*** PluginSettings class *****************************************************/
-
-bool
-PluginSettings::ClassHasProperty (NPObject *npobj, NPIdentifier name)
-{
-	if (name == NPN_GetStringIdentifier ("version"))
-		return true;
-
-	return false;
-}
-
-bool
-PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
-{
-	if (name == NPN_GetStringIdentifier ("version")) 
-	{
-		int len = strlen (PLUGIN_VERSION);
-		char *version = (char *) NPN_MemAlloc (len + 1);
-		memcpy (version, PLUGIN_VERSION, len + 1);
-		STRINGN_TO_NPVARIANT (version, len, *result);
-
-		return true;
-	}
-
-	return false;
 }

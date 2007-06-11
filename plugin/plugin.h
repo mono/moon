@@ -16,25 +16,13 @@
 #include "moonlight.h"
 #include "plugin-class.h"
 
-class PluginSettings : public PluginClass
-{
- public:
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
-};
-
-class PluginInstance : public PluginClass
+class PluginInstance
 {
  private:
   	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
 	bool xembed_supported; // XEmbed Extension supported
-	NPObject *object;      // JavaScript object
-
-	// Settings
-	PluginSettings *settings;
-	NPObject *obj_settings;
 
 	// Private methods
 	void CreateWindow ();
@@ -62,11 +50,6 @@ class PluginInstance : public PluginClass
 	GtkWidget *container;  // plugin container object
 	Canvas *canvas;        // plugin canvas object
  	Surface *surface;      // plugin surface object
-
-	// Runtime related
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
-
  };
 
 #endif /* MOON_PLUGIN */

@@ -1,5 +1,16 @@
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
+	[Refactory jscript runtime code]
+
+	* plugin-class.cpp, plugin-class.h: Create new class PluginRootClass,
+	to be a proxy for javascript runtime calls, old code on plugin instance
+	was moved here and all segfault related to script stuff was gone.
+
+	* plugin.cpp, plugin.h: Remove jscript runtime related code and use
+	PluginRootClass.
+
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon-mono.cpp,
 	* mono.cpp,
 	* plugin.h: Fix remaining config.h -> moonlight.h.

@@ -33,3 +33,21 @@ class PluginClass : public NPClass {
 	virtual bool ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 	                                uint32_t argCount, NPVariant *result);
 };
+
+class PluginRootClass : public PluginClass
+{
+ private:
+	NPP instance;
+ public:	
+	PluginRootClass (NPP instance);
+
+	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+};
+
+class PluginSettings : public PluginClass
+{
+ public:
+	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+};

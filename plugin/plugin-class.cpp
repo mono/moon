@@ -113,7 +113,7 @@ RuntimeClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 	return false;
 }
 
-/*** PluginClass class ********************************************************/
+/*** PluginClass **************************************************************/
 
 PluginClass::PluginClass ()
 {
@@ -148,6 +148,8 @@ PluginClass::ClassAllocate (NPP instance, NPClass *aClass)
 void
 PluginClass::ClassDeallocate (NPObject *npobj)
 {
+	DEBUGMSG ("   ### Deallocate ###   ");
+
 	// nothing to do.
 }
 
@@ -204,5 +206,83 @@ PluginClass::ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 	                                uint32_t argCount, NPVariant *result)
 {
 	fprintf (stderr, "*** PluginClass::ClassInvokeDefault\n");
+	return false;
+}
+
+/*** PluginRootClass **********************************************************/
+
+PluginRootClass::PluginRootClass (NPP instance)
+{
+	DEBUGMSG ("PluginRootClass::PluginRootClass");
+	this->instance = instance;
+}
+
+bool
+PluginRootClass::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+{
+	DEBUGMSG ("PluginRootClass::ClassHasProperty");
+
+	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
+	fprintf (stderr, "-----> ClassHasProperty %s\n", strname);
+	NPN_MemFree(strname);
+
+	if (name == NPN_GetStringIdentifier ("settings")  ||
+		name == NPN_GetStringIdentifier ("version"))
+		return true;
+
+	return false;
+}
+
+bool
+PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	if (name == NPN_GetStringIdentifier ("settings")) 
+	{
+		PluginSettings *settings;
+		settings = new PluginSettings ();
+
+		NPObject *obj = NPN_CreateObject (this->instance, settings);
+
+		OBJECT_TO_NPVARIANT (obj, *result);
+
+		return true;
+	} 
+	else if (name == NPN_GetStringIdentifier ("version")) 
+	{
+		int len = strlen (PLUGIN_VERSION);
+		char *version = (char *) NPN_MemAlloc (len + 1);
+		memcpy (version, PLUGIN_VERSION, len + 1);
+		STRINGN_TO_NPVARIANT (version, len, *result);
+
+		return true;
+	}
+
+	return false;
+}
+
+/*** PluginSettings class *****************************************************/
+
+bool
+PluginSettings::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+{
+	if (name == NPN_GetStringIdentifier ("version"))
+		return true;
+
+	return false;
+}
+
+bool
+PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	if (name == NPN_GetStringIdentifier ("version")) 
+	{
+		int len = strlen (PLUGIN_VERSION);
+		char *version = (char *) NPN_MemAlloc (len + 1);
+		memcpy (version, PLUGIN_VERSION, len + 1);
+		STRINGN_TO_NPVARIANT (version, len, *result);
+
+		return true;
+	}
+
 	return false;
 }
