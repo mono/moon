@@ -215,9 +215,7 @@ NPP_Initialize (void)
 
 	gtk_init (0, 0);
 	runtime_init ();
-#ifdef MOON_1_1
 	vm_init ();
-#endif
 
 	return NPERR_NO_ERROR;
 }

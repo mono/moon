@@ -13,11 +13,14 @@
 G_BEGIN_DECLS
 #include <mono/jit/jit.h>
 #include <mono/metadata/environment.h>
+#include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 
 extern MonoDomain   *moon_domain;
 extern MonoAssembly *moon_boot_assembly;
 
 gboolean    vm_init ();
+void        vm_load_xaml (gpointer surface, const char *file);
 
 G_END_DECLS

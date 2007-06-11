@@ -1,3 +1,17 @@
+2007-06-11  Miguel de Icaza  <miguel@novell.com>
+
+	* Makefile.am: Delete the ~/.mozilla/plugins/libmoon.so in case it
+	was around, that was the painful bug.
+
+	* moon-plugin.cpp (CreateWindow): Do not create a canvas, nor
+	attach it, let Mono do that. 
+	(StreamAsFile): Request that the VM loads the file, this will
+	change to something else later when we use the Silverlight object
+	embedding API.
+
+	* moonlight.cs: Implement some bits, it currently only loads the
+	XAML file, it needs to create a new appdomain.
+
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
 	* Makefile.am,

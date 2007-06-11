@@ -11,6 +11,11 @@
  */
 
 #include "moon-plugin.h"
+#include "npapi.h"
+#include "npupp.h"
+//#include "npruntime.h"
+#include "moon-mono.h"
+
 
 static void moon_plugin_menu_about (PluginInstance *plugin)
 {
@@ -190,9 +195,9 @@ PluginInstance::CreateWindow ()
 
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
-	this->canvas = new Canvas ();
+	//this->canvas = new Canvas ();
 	this->surface = surface_new (window->width, window->height);
-	surface_attach (this->surface, canvas);
+	//surface_attach (this->surface, canvas);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 	gtk_widget_show_all (this->container);
 }
@@ -250,7 +255,9 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	//   2. Call a helper method (maybe the same) that would process the input parameters
 	//   3. Remove the call here below, and let managed code load the XAML
 
-	panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
+	vm_load_xaml (this->surface, fname);
+
+	//panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
 }
 
 int32

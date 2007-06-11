@@ -18,7 +18,7 @@ libmoonplugin_la_SOURCES = \
 	config.h		\
 	moon-plugin.cpp		\
 	moon-plugin.h		\
-	moon-mono.cpp		\
+	mono.cpp		\
 	moon-mono.h		\
 	plugin-entry.cpp 	\
 	plugin-glue.cpp 	\
@@ -28,11 +28,11 @@ libmoonplugin_la_SOURCES = \
 # custom install rule
 install-plugin: libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
+	-rm ~/.mozilla/plugins/libmoon.so
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp moonlight.exe ~/.mozilla/plugins
-	cp $(top_srcdir)/src/.libs/libmoon.so ~/.mozilla/plugins
 
 EXTRA_DIST = moonlight.cs
 
 moonlight.exe: moonlight.cs
-	gmcs -debug moonlight.cs 
+	gmcs -debug moonlight.cs -pkg:silver
