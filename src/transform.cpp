@@ -246,8 +246,6 @@ matrix_transform_new ()
 void
 TransformCollection::Add (void *data)
 {
-	TransformGroup *tfg = (TransformGroup *) closure;
-	
 	Value *v = (Value *) data;
 	Transform *transform = v->AsTransform ();
 
@@ -257,8 +255,6 @@ TransformCollection::Add (void *data)
 void
 TransformCollection::Remove (void *data)
 {
-	TransformGroup *tfg = (TransformGroup *) closure;
-	
 	Value *v = (Value *) data;
 	Transform *transform = v->AsTransform ();
 

@@ -540,7 +540,7 @@ transform_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, 
 	Transform *t = (Transform *) child->item;
 	Value v = Value (t);
 
-	tc->Add (&t);
+	tc->Add (&v);
 }
 
 void
@@ -567,12 +567,35 @@ geometry_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEl
 }
 
 void
+path_geometry_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	PathGeometry *pg = (PathGeometry *) parent->item;
+
+	if (is_instance_of (child, Value::PATHFIGURE_COLLECTION)) {
+		Value v ((PathFigureCollection *) child->item);
+		pg->SetValue (pg->FiguresProperty, &v);
+		return;
+	}
+
+	if (!is_instance_of (child, Value::PATHFIGURE)) {
+		g_warning ("error, attempting to add non PathFigure type (%d) to PathFigureCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	PathFigure *pf = (PathFigure *) child->item;
+	Value v = Value (pf);
+
+	pg->children->Add (&v);
+}
+
+void
 path_figure_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	PathFigure *pf = (PathFigure *) parent->item;
 
-	if (is_instance_of (child, Value::PATHFIGURE_COLLECTION)) {
-		Value v ((PathFigureCollection *) child->item);
+	if (is_instance_of (child, Value::PATHSEGMENT_COLLECTION)) {
+		Value v ((PathSegmentCollection *) child->item);
 		pf->SetValue (pf->SegmentsProperty, &v);
 		return;
 	}
@@ -587,6 +610,22 @@ path_figure_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEleme
 	Value v = Value (ps);
 
 	pf->children->Add (&v);
+}
+
+void
+path_figure_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	if (!is_instance_of (child, Value::PATHFIGURE)) {
+		g_warning ("error, attempting to add non PathFigure type (%d) to PathFigureCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	PathFigureCollection *pfc = (PathFigureCollection *) parent->item;
+	PathFigure *pf = (PathFigure *) child->item;
+	Value v = Value (pf);
+
+	pfc->Add (&v);
 }
 
 ///
@@ -833,15 +872,32 @@ xaml_init ()
 
 	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, Value::GEOMETRY);
 	register_dependency_object_element ("EllipseGeometry", geo, Value::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
-//	register_dependency_object_element ("CombinedGeometry", geo, Value::COMBINEDGEOMETRY, (create_item_func) combined_geometry_new);
 	register_dependency_object_element ("LineGeometry", geo, Value::LINEGEOMETRY, (create_item_func) line_geometry_new);
-	register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
 	register_dependency_object_element ("RectangleGeometry", geo, Value::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
-//	register_dependency_object_element ("StreamGeometry", geo, Value::STREAMGEOMETRY, (create_item_func) stream_geometry_new);
+
 	XamlElementInfo *gg = register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 	gg->add_child = geometry_group_add_child;
+//	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
+//	gc->add_child = geometry_collection_add_child;
+
+	XamlElementInfo *pg = register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
+//	pg->add_child = path_geometry_add_child;
+//	XamlElementInfo *pfc = register_dependency_object_element ("PathFigureCollection", geo, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
+//	pfc->add_child = path_figure_collection_add_child;
+
 	XamlElementInfo *pf = register_dependency_object_element ("PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->add_child = path_figure_add_child;
+	XamlElementInfo *psc = register_dependency_object_element ("PathSegmentCollection", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
+//	psc->add_child = path_segment_collection_add_child;
+
+	XamlElementInfo *ps = register_ghost_element ("PathSegment", geo, Value::PATHSEGMENT);
+	register_dependency_object_element ("ArcSegment", ps, Value::ARCSEGMENT, (create_item_func) arc_segment_new);
+	register_dependency_object_element ("BezierSegment", ps, Value::BEZIERSEGMENT, (create_item_func) bezier_segment_new);
+	register_dependency_object_element ("LineSegment", ps, Value::LINESEGMENT, (create_item_func) line_segment_new);
+	register_dependency_object_element ("PolyBezierSegment", ps, Value::POLYBEZIERSEGMENT, (create_item_func) poly_bezier_segment_new);
+	register_dependency_object_element ("PolyLineSegment", ps, Value::POLYLINESEGMENT, (create_item_func) poly_line_segment_new);
+	register_dependency_object_element ("PolyQuadraticBezierSegment", ps, Value::POLYQUADRATICBEZIERSEGMENT, (create_item_func) poly_quadratic_bezier_segment_new);
+	register_dependency_object_element ("QuadraticBezierSegment", ps, Value::QUADRATICBEZIERSEGMENT, (create_item_func) quadratic_bezier_segment_new);
 
 	///
 	/// Panels

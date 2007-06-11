@@ -1,3 +1,8 @@
+2007-06-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* transform.cpp: remove dead code.
+	* xaml.cpp: Partial collection support for geometry.
+
 2007-06-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* transform.cpp: Multiply each matrix in a TransformGroup (fix the 
