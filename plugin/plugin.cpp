@@ -185,35 +185,6 @@ PluginInstance::CreateWindow ()
 	gtk_widget_show_all (this->container);
 }
 
-void
-PluginInstance::CreateDemoControls ()
-{
-	DEBUGMSG ("*** creating demo controls");
-
-	Rectangle *r;
-
-	r = rectangle_new ();
-	framework_element_set_width (r, 100.0);
-	framework_element_set_height (r, 100.0);
-	r->SetValue (Canvas::LeftProperty, Value (50.0));
-	r->SetValue (Canvas::TopProperty, Value (50.0));
-	Color *c = new Color (1.0, 0.0, 0.5, 0.5);
-	SolidColorBrush *scb = new SolidColorBrush ();
-	solid_color_brush_set_color (scb, c);
-	shape_set_stroke (r, scb);
-	panel_child_add (this->canvas, r);
-
-#if VIDEO_DEMO
-	UIElement *v, *v2;
-
-	v = video_new ("/home/everaldo/BoxerSmacksdownInhoffe.wmv", 0, 0);
-	panel_child_add (this->canvas, v);
-
-	v2 = video_new ("/home/everaldo/sawamu.wmv", 100, 30);
-	panel_child_add (this->canvas, v2);
-#endif	
-}
-
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {

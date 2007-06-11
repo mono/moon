@@ -1,6 +1,10 @@
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
-	* plugin.cpp.h: Remove unused code and fix function names.
+	* plugin.cpp, plugin.h: Remove unused CreateDemoControls method.
+
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp: Remove unused code and fix function names.
 
 	* moonlight.h: Remove ";" on end of PLUGIN_DESCRIPTION define.
 
