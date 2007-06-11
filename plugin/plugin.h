@@ -13,7 +13,7 @@
 #ifndef MOON_PLUGIN
 #define MOON_PLUGIN
 
-#include "config.h"
+#include "moonlight.h"
 #include "plugin-class.h"
 
 class PluginSettings : public PluginClass

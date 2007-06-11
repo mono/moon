@@ -1,5 +1,11 @@
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moon-mono.cpp,
+	* mono.cpp,
+	* plugin.h: Fix remaining config.h -> moonlight.h.
+
+2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moonlight.h: Define RUNTIME to enable/disable mono runtime 
 	integration. Its because right now it fails when open a page with 
 	script so we can comment /#define RUNTIME to get plugin working in

@@ -10,7 +10,7 @@
  * 
  */
 
-#include "config.h"
+#include "moonlight.h"
 #include <stdlib.h>
 #include <glib.h>
 #include "moon-mono.h"
