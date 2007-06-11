@@ -1,0 +1,28 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+    <Path Stroke="Black">
+        <Path.Data>
+		<GeometryGroup>
+		    <GeometryCollection>
+			<LineGeometry StartPoint="10,10" EndPoint="10,100"/>
+			<LineGeometry StartPoint="10,100" EndPoint="100,100"/>
+			<LineGeometry StartPoint="100,100" EndPoint="100,10"/>
+			<LineGeometry StartPoint="100,10" EndPoint="10,10"/>
+		    </GeometryCollection>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path Stroke="Red">
+        <Path.Data>
+		<GeometryGroup>
+	    		<LineGeometry StartPoint="30,30" EndPoint="30,200"/>
+			<LineGeometry StartPoint="30,200" EndPoint="200,200"/>
+			<LineGeometry StartPoint="200,200" EndPoint="200,30"/>
+			<LineGeometry StartPoint="200,30" EndPoint="30,30"/>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+
+</Canvas>
+
