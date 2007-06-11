@@ -1,0 +1,24 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Stroke="Black" StrokeThickness="2">
+	<Path.Data>
+		<PathGeometry>
+		<PathGeometry.Figures>
+			<PathFigureCollection>
+				<PathFigure StartPoint="10,10">
+				<PathFigure.Segments>
+					<PathSegmentCollection>
+						<LineSegment Point="110,10" />
+					</PathSegmentCollection>
+				</PathFigure.Segments>
+				</PathFigure>
+			</PathFigureCollection>
+		</PathGeometry.Figures>
+		</PathGeometry>
+	</Path.Data>
+	</Path>
+
+	<!-- abbreviated syntax : L (line) H (horizontal) and V (vertical) -->
+	<Path Stroke="Red" StrokeThickness="1" Data="M 10,20 L 110,20" />
+	<Path Stroke="Green" StrokeThickness="1" Data="M 10,30 H 110" />
+	<Path Stroke="Blue" StrokeThickness="1" Data="M 20,10 V 40" />
+</Canvas>

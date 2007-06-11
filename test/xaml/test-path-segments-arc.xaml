@@ -4,10 +4,10 @@
 		<PathGeometry>
 		<PathGeometry.Figures>
 			<PathFigureCollection>
-				<PathFigure StartPoint="10,10">
+				<PathFigure StartPoint="10,30">
 				<PathFigure.Segments>
 					<PathSegmentCollection>
-						<ArcSegment IsLargeArc="False" Point="50,10" RotationAngle="45" Size="10,10" SweepDirection="CounterClockwise" />
+						<ArcSegment IsLargeArc="False" Point="50,30" RotationAngle="45" Size="10,10" SweepDirection="CounterClockwise" />
 					</PathSegmentCollection>
 				</PathFigure.Segments>
 				</PathFigure>
@@ -16,4 +16,9 @@
 		</PathGeometry>
 	</Path.Data>
 	</Path>
+
+	<!-- abbreviated syntax : A (arc) -->
+	<Path Stroke="Red" StrokeThickness="1" Data="M 60,30 A 10,10 45 0 0 100,30" />
+	<Path Stroke="Green" StrokeThickness="1" Data="M 110,30 A 10,10 45 0 1 150,30" />
+	<Path Stroke="Blue" StrokeThickness="1" Data="M 160,30 A 10,10 45 1 1 200,30" />
 </Canvas>

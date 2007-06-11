@@ -1,0 +1,15 @@
+<Canvas
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+  <Line Stroke="Black" X1="10" Y1="10" X2="100" Y2="300" />
+  
+  <Line Stroke="Red" X1="10" Y1="10" X2="10" Y2="300">
+
+    <Line.RenderTransform>
+      <TransformGroup>
+      </TransformGroup>
+    </Line.RenderTransform>
+
+  </Line>
+
+</Canvas>
