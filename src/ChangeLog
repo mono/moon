@@ -1,3 +1,8 @@
+2007-06-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ffvideo.cpp: Attempt to get video to be in sync with audio by
+	using the audio pts as the target_pts.
+
 2007-06-11  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp: Register the collection types as derived from

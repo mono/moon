@@ -27,7 +27,6 @@
 #include <errno.h>
 #include "runtime.h"
 
-//
 #include <fcntl.h>
 
 // video specific 
@@ -46,10 +45,8 @@ G_END_DECLS
 
 #define ALIGN(addr,size) (uint8_t *) (((uint32_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
 
-typedef enum {
-	// When a new frame is ready
-	CMD_NEWFRAME,
-} GuiCommand;
+
+static GStaticMutex ffmpeg_lock = G_STATIC_MUTEX_INIT;
 
 // These come from ffmpeg, we might want to tune:
 #define MAX_VIDEO_SIZE (1024 * 1024)
@@ -82,6 +79,8 @@ public:
 	int          video_stream_idx;
 	GMutex      *video_mutex;
 
+	uint64_t     target_pts;
+
 	AVCodec     *audio_codec;
 	AVStream    *audio_stream;
 	int          audio_stream_idx;
@@ -95,9 +94,7 @@ public:
 	//
 	GAsyncQueue *video_frames;
 	int          video_frames_size;
-	GAsyncQueue *audio_frames;
-	int          audio_frames_size;
-
+	
 	//
 	// Timing components, the next time to display.
 	//
@@ -126,8 +123,6 @@ public:
 	// The SwsContext image convertor
 	struct SwsContext *video_scale_context;
 };
-
-static GMutex *video_lock;
 
 
 void
@@ -164,16 +159,17 @@ VideoFfmpeg::getbounds ()
 static void restart_timer (VideoFfmpeg *video);
 
 static void
-send_command (VideoFfmpeg *video, uint8_t cmd)
+notify_frame_ready (VideoFfmpeg *video)
 {
-	int ret;
+	uint8_t ready = 0;
+	size_t n;
 	
 	do {
-		ret = write (video->pipes [1], &cmd, 1);
-	} while (ret == -1 && errno == EINTR);
+		n = write (video->pipes [1], &ready, 1);
+	} while (n == -1 && errno == EINTR);
 }
 
-gboolean
+static gboolean
 callback_video_inited (gpointer data)
 {
 	VideoFfmpeg *video = (VideoFfmpeg *) data;
@@ -191,10 +187,101 @@ callback_video_inited (gpointer data)
 	// Track where we are at now
 	video->initial_pts = video->video_stream->start_time;
 	video->micro_to_pts = av_q2d (video->video_stream->codec->time_base);
-
+	
 	restart_timer (video);
 
 	return FALSE;
+}
+
+static int
+init_video (VideoFfmpeg *video)
+{
+	AVCodecContext *codec;
+	AVStream *stream;
+	int i, n;
+	
+	g_static_mutex_lock (&ffmpeg_lock);
+	
+	if (av_open_input_file (&video->av_format_context, video->filename, NULL, 0, NULL) < 0) {
+		g_static_mutex_unlock (&ffmpeg_lock);
+		g_error ("ERROR: open input file `%s'\n", video->filename);
+		return -1;
+	}
+	
+	if (video->av_format_context == (void *) &rtsp_demuxer) {
+		g_static_mutex_unlock (&ffmpeg_lock);
+		g_error ("ERROR: stream info\n");
+		return -1;
+	}
+	
+	av_read_play (video->av_format_context);
+	
+        if (av_find_stream_info (video->av_format_context) < 0) {
+		g_static_mutex_unlock (&ffmpeg_lock);
+		g_error ("ERROR: stream info\n");
+		return -1;
+	}
+	
+	for (i = 0; i < video->av_format_context->nb_streams; i++){
+		stream = video->av_format_context->streams [i];
+		
+		switch (stream->codec->codec_type) {
+		case CODEC_TYPE_AUDIO:
+			video->audio_stream_idx = i;
+#define ENABLE_AUDIO
+#ifdef ENABLE_AUDIO
+			if (!(video->audio_codec = avcodec_find_decoder (stream->codec->codec_id)))
+				break;
+			
+			video->audio_stream = video->av_format_context->streams [i];
+			avcodec_open (video->audio_stream->codec, video->audio_codec);
+			
+			codec = video->audio_stream->codec;
+			
+			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+			if (n == 0) {
+				snd_pcm_set_params (video->pcm, SND_PCM_FORMAT_S16, 
+						    SND_PCM_ACCESS_RW_INTERLEAVED,
+						    codec->channels, codec->sample_rate,
+						    1, 0);
+				
+				snd_pcm_get_params (video->pcm, &video->pcm_buffer_size, &video->pcm_period_size);
+			} else {
+				printf ("Error, can not initialize audio %d\n", n);
+			}
+			break;
+#else
+			break;
+#endif /* ENABLE_AUDIO */
+		case CODEC_TYPE_VIDEO:
+			video->video_codec = avcodec_find_decoder (stream->codec->codec_id);
+			video->video_stream = video->av_format_context->streams [i];
+			avcodec_open (video->video_stream->codec, video->video_codec);
+			video->video_stream_idx = i;
+			
+			// Allocate our rendering buffer and cairo surface
+			//
+			codec = video->video_stream->codec;
+			video->video_rgb_buffer = (unsigned char *) g_malloc (codec->width * codec->height * 4);
+			
+			// The YUB to RGB scaleter/translator
+			printf ("Pix_fmt=%d\n", codec->pix_fmt);
+			video->video_scale_context = sws_getContext (
+				codec->width, codec->height, codec->pix_fmt, codec->width, codec->height,
+				PIX_FMT_RGB32, SWS_BICUBIC, NULL, NULL, NULL);
+			break;
+		}
+	}
+	
+	g_static_mutex_unlock (&ffmpeg_lock);
+	
+	//
+	// notify the main thread that we are done loading the video, and that it
+	// can pull the width/height information out of this video
+	//
+	g_idle_add (callback_video_inited, video);
+	
+	return 0;
 }
 
 static int
@@ -219,154 +306,76 @@ static gpointer
 queue_data (gpointer data)
 {
 	VideoFfmpeg *video = (VideoFfmpeg *) data;
-	AVFrame *video_frame;
-	int i;
 	int video_stream_idx, audio_stream_idx;
-	AVFormatParameters pars;
 	struct pollfd *ufds = NULL;
-	int nfds;
+	AVFrame *video_frame;
+	int nfds, i, n;
 	
 	printf ("Video THREAD STARTS\n");
-
-	g_mutex_lock (video_lock);
-	// avcodec setup
-	//   auto-detect format
-	//   default buffer size
-	//   no additional parameters
-	memset (&pars, 0, sizeof (pars));
 	
-	if (av_open_input_file (&video->av_format_context, video->filename, NULL, 0, NULL) < 0){
-		g_error ("ERROR: open input file `%s'\n", video->filename);
-	}
-	if (video->av_format_context == (void *) &rtsp_demuxer){
-		g_error ("ERROR: stream info\n");
-	}
-
-	av_read_play (video->av_format_context);
-
-        if (av_find_stream_info(video->av_format_context) < 0){
-		g_error ("ERROR: stream info\n");
-	}
-
-	for (i = 0; i < video->av_format_context->nb_streams; i++){
-		AVStream *stream = video->av_format_context->streams [i];
-		AVCodecContext *cc;
-		int n;
-		
-		switch (stream->codec->codec_type){
-		case CODEC_TYPE_AUDIO:
-			video->audio_stream_idx = i;
-			audio_stream_idx = i;
-			
-//#define ENABLE_AUDIO
+	if (init_video (video) == -1)
+		return NULL;
+	
 #ifdef ENABLE_AUDIO
-			if (!(video->audio_codec = avcodec_find_decoder (stream->codec->codec_id)))
-				break;
+	if (video->pcm != NULL) {
+		if ((nfds = snd_pcm_poll_descriptors_count (video->pcm)) <= 0) {
+			snd_pcm_close (video->pcm);
+			video->pcm = NULL;
+		} else {
+			ufds = (struct pollfd *) g_malloc (sizeof (struct pollfd) * nfds);
 			
-			video->audio_stream = video->av_format_context->streams [i];
-			avcodec_open (video->audio_stream->codec, video->audio_codec);
-			
-			cc = video->audio_stream->codec;
-			
-			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
-			if (n == 0) {
-				snd_pcm_set_params (video->pcm, SND_PCM_FORMAT_S16, 
-						    SND_PCM_ACCESS_RW_INTERLEAVED,
-						    cc->channels, cc->sample_rate,
-						    1, 0);
-				
-				snd_pcm_get_params (video->pcm, &video->pcm_buffer_size, &video->pcm_period_size);
-				
-				if ((nfds = snd_pcm_poll_descriptors_count (video->pcm)) <= 0) {
-					snd_pcm_close (video->pcm);
-					video->pcm = NULL;
-					break;
-				}
-				
-				ufds = (struct pollfd *) g_malloc (sizeof (struct pollfd) * nfds);
-				
-				if (snd_pcm_poll_descriptors (video->pcm, ufds, nfds) < 0) {
-					snd_pcm_close (video->pcm);
-					video->pcm = NULL;
-					break;
-				}
-			} else {
-				printf ("Error, can not initialize audio %d\n", n);
+			if (snd_pcm_poll_descriptors (video->pcm, ufds, nfds) < 0) {
+				snd_pcm_close (video->pcm);
+				video->pcm = NULL;
 			}
-			break;
-#else
-			break;
-#endif /* ENABLE_AUDIO */
-		case CODEC_TYPE_VIDEO:
-			video->video_codec = avcodec_find_decoder (stream->codec->codec_id);
-			video->video_stream = video->av_format_context->streams [i];
-			avcodec_open (video->video_stream->codec, video->video_codec);
-			video->video_stream_idx = i;
-			video_stream_idx = i;
-			
-			// Allocate our rendering buffer and cairo surface
-			//
-			cc = video->video_stream->codec;
-			video->video_rgb_buffer = (unsigned char *) malloc (cc->width * cc->height * 4);
-
-			// The YUB to RGB scaleter/translator
-			printf ("Pix_fmt=%d\n", cc->pix_fmt);
-			video->video_scale_context = sws_getContext (
-				cc->width, cc->height, cc->pix_fmt, cc->width, cc->height,
-				PIX_FMT_RGB32, SWS_BICUBIC, NULL, NULL, NULL);
-			break;
 		}
 	}
-	g_mutex_unlock (video_lock);
-
-	//
-	// notify the main thread that we are done loading the video, and that it
-	// can pull the width/height information out of this video
-	//
-	g_idle_add (callback_video_inited, video);
-	int frame = 0;
+#endif /* ENABLE_AUDIO */
 	
-	//int audio_fd = open ("audio.out", O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	video_stream_idx = video->video_stream_idx;
+	audio_stream_idx = video->audio_stream_idx;
 	
-	while (TRUE){
+	while (TRUE) {
 		AVPacket *pkt;
 		int ret;
-
-		// 
-		// Sleep while the queues are full
-		//
-		if ((video->video_frames_size > MAX_VIDEO_SIZE) ||
-		    (video->audio_frames_size > MAX_AUDIO_SIZE)){
-			g_usleep (1000);
-			continue;
-		}
-
+		
 		pkt = g_new (AVPacket, 1);
-		ret = av_read_frame (video->av_format_context, pkt);
-		if (ret == -1){
-			printf ("Failed to read frame, terminating\n");
+		if (av_read_frame (video->av_format_context, pkt) < 0) {
+			// ffmpeg stream is complete (or error), either way - nothing left to decode.
+			g_free (pkt);
 			break;
 		}
-
-		frame++;
-		g_mutex_lock (video->video_mutex);
-		if (pkt->stream_index == video_stream_idx){
+		
+		if (pkt->stream_index == video_stream_idx) {
+			//while (video->video_frames_size > MAX_VIDEO_SIZE) {
+			//	// FIXME: use a GCond for this?
+			//	printf ("sleeping...\n");
+			//	g_usleep (1000);
+			//}
+			
+			g_mutex_lock (video->video_mutex);
 			g_async_queue_push (video->video_frames, pkt);
 			video->video_frames_size += pkt->size;
+			g_mutex_unlock (video->video_mutex);
+			
 			if (g_async_queue_length (video->video_frames) == 1)
-				send_command (video, CMD_NEWFRAME);
+				notify_frame_ready (video);
+			
 			pkt = NULL;
-
 		} else if (video->pcm != NULL && pkt->stream_index == audio_stream_idx) {
 			AVCodecContext *audio_codec = video->audio_stream->codec;
 			uint8_t *outbuf;
 			int outlen, n;
+			
+			video->target_pts = pkt->pts;
 			
 			/* avcodec_decode_audio2() requires that the outbuf be 16bit word aligned */
 			outbuf = ALIGN (video->audio_outptr, 2);
 			outlen = (video->audio_outbuf + AUDIO_BUFLEN) - outbuf;
 			
 			n = avcodec_decode_audio2 (audio_codec, (int16_t *) outbuf, &outlen, pkt->data, pkt->size);
+			av_free_packet (pkt);
+			g_free (pkt);
 			
 			if (n > 0) {
 				// append the newly decoded buffer to the end of the remaining audio
@@ -436,11 +445,10 @@ queue_data (gpointer data)
 					snd_pcm_start (video->pcm);
 				}
 			}
-		}
-		
-		if (pkt != NULL)
+		} else {
+			av_free_packet (pkt);
 			g_free (pkt);
-		g_mutex_unlock (video->video_mutex);
+		}
 	}
 	
 	g_free (ufds);
@@ -453,7 +461,7 @@ queue_data (gpointer data)
 //
 // Convert the AVframe into an RGB buffer we can render
 //
-void
+static void
 convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 {
 	static struct SwsContext *img_convert_ctx;
@@ -464,8 +472,8 @@ convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 	if (frame->data == NULL)
 		return;
 	
-	sws_scale (video->video_scale_context, frame->data, frame->linesize,  0,
-		   video->video_stream->codec->height,  rgb_dest, rgb_stride);
+	sws_scale (video->video_scale_context, frame->data, frame->linesize, 0,
+		   video->video_stream->codec->height, rgb_dest, rgb_stride);
 }
 
 static gboolean
@@ -473,11 +481,19 @@ load_next_frame (gpointer data)
 {
 	VideoFfmpeg *video = (VideoFfmpeg *) data;
 	uint64_t target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
-	gboolean cont = TRUE;
 	AVFrame *frame = NULL;
-	int got_picture;
-
-	while (g_async_queue_length (video->video_frames) != 0){
+	gboolean cont = TRUE;
+	int redraw = 0;
+	
+	if (video->pcm == NULL) {
+		// no audio to sync to
+		target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
+	} else {
+		// sync w/ audio
+		target_pts = video->target_pts;
+	}
+	
+	while (g_async_queue_length (video->video_frames) > 0) {
 		AVPacket *pkt;
 		long pkt_pts;
 
@@ -485,21 +501,20 @@ load_next_frame (gpointer data)
 		pkt = (AVPacket *) g_async_queue_pop (video->video_frames);
 		video->video_frames_size -= pkt->size;
 		g_mutex_unlock (video->video_mutex);
-
+		
 		//
 		// Always decode the frame, or we get glitches in the screen if we 
 		// avoid the decoding phase
 		//
 		frame = avcodec_alloc_frame ();
-		avcodec_decode_video (video->video_stream->codec, frame, &got_picture, pkt->data, pkt->size);
+		avcodec_decode_video (video->video_stream->codec, frame, &redraw, pkt->data, pkt->size);
+		
 		pkt_pts = pkt->pts;
-
 		av_free_packet (pkt);
 		g_free (pkt);
-	
-		if (pkt_pts + video->frame_size < target_pts){		
-			// We got more stuff on the queue, discard this one
-			if (g_async_queue_length (video->video_frames) > 1){
+		
+		if (pkt_pts + video->frame_size < target_pts) {
+			if (g_async_queue_length (video->video_frames) > 0) {
 #ifdef DEBUG
 				printf ("Initial PTS=%ld\n", video->initial_pts);
 				printf ("Video Play Start: %ld\n", video->play_start_time);
@@ -513,7 +528,7 @@ load_next_frame (gpointer data)
 					(pkt_pts - video->video_stream->start_time) *
 					av_q2d (video->video_stream->time_base));
 #endif
-				// Remove this to discard
+				// we're going to drop this frame and try the next one
 				av_free (frame);
 				frame = NULL;
 			} else {
@@ -525,19 +540,19 @@ load_next_frame (gpointer data)
 				break;
 			}
 		} else {
-
+			// we are in sync (or ahead) of audio playback
 			break;
 		}
-			
 	}
-
-	if (got_picture){
+	
+	if (redraw) {
 		convert_to_rgb (video, frame);
 		item_invalidate ((UIElement *) video);
 	}
+	
 	if (frame != NULL)
 		av_free (frame);
-
+	
 	// Federico suggested I could use this to process the expose at once:
 	//
 	//gdk_window_process_updates (get_surface (video)->drawing_area->window, FALSE);
@@ -564,34 +579,20 @@ restart_timer (VideoFfmpeg *video)
 //
 // Called on the GUI thread when we got a frame to render.
 //
-gboolean
+static gboolean
 video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 {
 	VideoFfmpeg *video = (VideoFfmpeg *) data;
-	AVFrame *frame;
-	int8_t commands [32];
-	int ret, i;
-	AVCodecContext *cc;
-
-	do {
-		ret = read (video->pipes [0], &commands, sizeof (commands));
-	} while ((ret == -1 && ret == EINTR));
-
-	// Nothing.
-	if (ret <= 0)
-		return TRUE;
+	uint8_t buf[32];
+	ssize_t n;
 	
-	for (i = 0; i < ret; i++){
-		switch (commands [i]){
-		case CMD_NEWFRAME:
-			restart_timer (video);
-			break;
-			
-		default:
-			fprintf (stderr, "video_ready: unknown command from decoding thread (%d)\n", commands [i]);
-		}
-	}
-
+	// clear the pipe
+	do {
+		n = read (video->pipes[0], buf, sizeof (buf));
+	} while (n == -1 && errno == EINTR);
+	
+	restart_timer (video);
+	
 	return TRUE;
 }
 
@@ -626,14 +627,13 @@ static void
 ffmpeg_init ()
 {
 	if (!ffmpeg_inited){
-
-		video_lock = g_mutex_new ();
 		avcodec_init ();
 		av_register_all ();
 		avcodec_register_all ();
 		ffmpeg_inited = TRUE;
 	}
 }
+
 Video *
 video_ffmpeg_new (const char *filename)
 {
@@ -664,11 +664,11 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	w = h = 0;
 	timeout_handle = 0;
 	initial_pts = 0;
+	target_pts = 0;
 	play_start_time = 0;
 	frame_size = 0;
 	micro_to_pts = 0;
 	video_frames_size = 0;
-	audio_frames_size = 0;
 
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
