@@ -313,8 +313,10 @@ void
 TransformGroup::GetTransform (cairo_matrix_t *value)
 {
 	for (GSList *w = children->list; w != NULL; w = w->next) {
+		cairo_matrix_t child;
 		Transform *t = (Transform *) w->data;
-		t->GetTransform (value);
+		t->GetTransform (&child);
+		cairo_matrix_multiply (value, value, &child);
 	}
 }
 

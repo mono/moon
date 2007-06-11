@@ -1,3 +1,10 @@
+2007-06-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* transform.cpp: Multiply each matrix in a TransformGroup (fix the 
+	open-clipart sample, at least the correct parts of the sample).
+	* runtime.cpp: Always initialize the matrix in item_get_render_affine
+	otherwise we'll end up with bad random results.
+
 2007-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.h, runtime.cpp: (DependencyObject) Add SetValue/GetValue 
