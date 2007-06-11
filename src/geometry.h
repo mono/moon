@@ -140,7 +140,7 @@ class PathGeometry : public Geometry {
 	virtual void Draw (Surface *s);
 
 	// this is an element-by-element decision
-	virtual bool CanFill () { return false; }
+	virtual bool CanFill () { return true; }
 };
 PathGeometry		*path_geometry_new ();
 PathFigureCollection	*path_geometry_get_figures	(PathFigureCollection *path_geometry);
@@ -229,6 +229,8 @@ class ArcSegment : public PathSegment {
 
 	ArcSegment () { }
 	Value::Kind GetObjectType () { return Value::ARCSEGMENT; };
+
+	virtual void Draw (Surface *s);
 };
 ArcSegment	*arc_segment_new		();
 bool		arc_segment_get_is_large_arc	(ArcSegment *segment);
@@ -253,6 +255,8 @@ class BezierSegment : public PathSegment {
 
 	BezierSegment () { }
 	Value::Kind GetObjectType () { return Value::BEZIERSEGMENT; };
+
+	virtual void Draw (Surface *s);
 };
 BezierSegment	*bezier_segment_new		();
 Point*		bezier_segment_get_point1	(BezierSegment *segment);
@@ -271,6 +275,8 @@ class LineSegment : public PathSegment {
 
 	LineSegment () { }
 	Value::Kind GetObjectType () { return Value::LINESEGMENT; };
+
+	virtual void Draw (Surface *s);
 };
 LineSegment	*line_segment_new	();
 Point*		line_segment_get_point	(LineSegment *segment);
@@ -286,6 +292,8 @@ class PolyBezierSegment : public PathSegment {
 
 	PolyBezierSegment () { }
 	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
+
+	virtual void Draw (Surface *s);
 };
 PolyBezierSegment	*poly_bezier_segment_new	();
 Point*			poly_bezier_segment_get_points	(PolyBezierSegment *segment, int *count);
@@ -301,6 +309,8 @@ class PolyLineSegment : public PathSegment {
 
 	PolyLineSegment () { }
 	Value::Kind GetObjectType () { return Value::POLYLINESEGMENT; };
+
+	virtual void Draw (Surface *s);
 };
 PolyLineSegment	*poly_line_segment_new	();
 Point*		poly_line_segment_get_points	(PolyLineSegment *segment, int *count);
@@ -316,6 +326,8 @@ class PolyQuadraticBezierSegment : public PathSegment {
 
 	PolyQuadraticBezierSegment () { }
 	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
+
+	virtual void Draw (Surface *s);
 };
 PolyQuadraticBezierSegment	*poly_quadratic_bezier_segment_new	();
 Point*	poly_quadratic_bezier_segment_get_points	(PolyQuadraticBezierSegment *segment, int *count);
@@ -332,6 +344,8 @@ class QuadraticBezierSegment : public PathSegment {
 
 	QuadraticBezierSegment () { }
 	Value::Kind GetObjectType () { return Value::QUADRATICBEZIERSEGMENT; };
+
+	virtual void Draw (Surface *s);
 };
 QuadraticBezierSegment	*quadratic_bezier_segment_new	();
 Point*	quadratic_bezier_segment_get_point1	(QuadraticBezierSegment *segment);

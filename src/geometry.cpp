@@ -671,6 +671,16 @@ arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
 	segment->SetValue (ArcSegment::SweepDirectionProperty, Value (direction));
 }
 
+void
+ArcSegment::Draw (Surface *s)
+{
+	Point* p = arc_segment_get_point (this);
+	double x = (p ? p->x : 0.0);
+	double y = (p ? p->y : 0.0);
+// temp
+	cairo_move_to (s->cairo, x, y);
+}
+
 //
 // BezierSegment
 //
@@ -724,6 +734,23 @@ bezier_segment_set_point3 (BezierSegment *segment, Point *point)
 	segment->SetValue (BezierSegment::Point3Property, Value (*point));
 }
 
+void
+BezierSegment::Draw (Surface *s)
+{
+	Point *p1 = bezier_segment_get_point1 (this);
+	Point *p2 = bezier_segment_get_point2 (this);
+	Point *p3 = bezier_segment_get_point3 (this);
+
+	double x1 = p1 ? p1->x : 0.0;
+	double y1 = p1 ? p1->y : 0.0;
+	double x2 = p2 ? p2->x : 0.0;
+	double y2 = p2 ? p2->y : 0.0;
+	double x3 = p3 ? p3->x : 0.0;
+	double y3 = p3 ? p3->y : 0.0;
+
+	cairo_curve_to (s->cairo, x1, y1, x2, y2, x3, y3);
+}
+
 //
 // LineSegment
 //
@@ -747,6 +774,17 @@ void
 line_segment_set_point (LineSegment *segment, Point *point)
 {
 	segment->SetValue (LineSegment::PointProperty, Value (*point));
+}
+
+void
+LineSegment::Draw (Surface *s)
+{
+	Point *p = line_segment_get_point (this);
+
+	double x = p ? p->x : 0.0;
+	double y = p ? p->y : 0.0;
+
+	cairo_line_to (s->cairo, x, y);
 }
 
 //
@@ -786,6 +824,19 @@ poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int c
 	segment->SetValue (PolyBezierSegment::PointsProperty, Value (points, count));
 }
 
+void
+PolyBezierSegment::Draw (Surface *s)
+{
+	int count = 0;
+	Point* points = poly_bezier_segment_get_points (this, &count);
+
+	// we need at least 3 points
+	for (int i=0; i < count - 2; i+=3) {
+		cairo_curve_to (s->cairo, points[i].x, points[i].y, points[i+1].x, points[i+1].y,
+			points[i+2].x, points[i+2].y);
+	}
+}
+
 //
 // PolyLineSegment
 //
@@ -821,6 +872,17 @@ void
 poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int count)
 {
 	segment->SetValue (PolyLineSegment::PointsProperty, Value (points, count));
+}
+
+void
+PolyLineSegment::Draw (Surface *s)
+{
+	int count = 0;
+	Point* points = poly_line_segment_get_points (this, &count);
+
+	for (int i=0; i < count; i++) {
+		cairo_line_to (s->cairo, points[i].x, points[i].y);
+	}
 }
 
 //
@@ -860,6 +922,11 @@ poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, P
 	segment->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (points, count));
 }
 
+void
+PolyQuadraticBezierSegment::Draw (Surface *s)
+{
+}
+
 //
 // QuadraticBezierSegment
 //
@@ -897,6 +964,11 @@ void
 quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *point)
 {
 	segment->SetValue (QuadraticBezierSegment::Point2Property, Value (*point));
+}
+
+void
+QuadraticBezierSegment::Draw (Surface *s)
+{
 }
 
 //

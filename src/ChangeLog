@@ -1,3 +1,9 @@
+2007-06-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp|h: Add drawing of [Poly]LinesSegment and 
+	[Poly]BezierSegment. More than half of Sam Ruby's samples can work
+	with this.
+
 2007-06-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ffvideo.cpp: Attempt to get video to be in sync with audio by
