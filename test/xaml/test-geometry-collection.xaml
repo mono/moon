@@ -1,13 +1,28 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
+    <Path Stroke="Blue">
+        <Path.Data>
+		<GeometryGroup>
+			<GeometryGroup.Children>
+			    <GeometryCollection>
+				<LineGeometry StartPoint="10,10" EndPoint="10,100"/>
+				<LineGeometry StartPoint="10,100" EndPoint="100,100"/>
+				<LineGeometry StartPoint="100,100" EndPoint="100,10"/>
+				<LineGeometry StartPoint="100,10" EndPoint="10,10"/>
+		    	    </GeometryCollection>
+			</GeometryGroup.Children>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+    
     <Path Stroke="Black">
         <Path.Data>
 		<GeometryGroup>
 		    <GeometryCollection>
-			<LineGeometry StartPoint="10,10" EndPoint="10,100"/>
-			<LineGeometry StartPoint="10,100" EndPoint="100,100"/>
-			<LineGeometry StartPoint="100,100" EndPoint="100,10"/>
-			<LineGeometry StartPoint="100,10" EndPoint="10,10"/>
+			<LineGeometry StartPoint="20,20" EndPoint="20,200"/>
+			<LineGeometry StartPoint="20,200" EndPoint="200,200"/>
+			<LineGeometry StartPoint="200,200" EndPoint="200,20"/>
+			<LineGeometry StartPoint="200,20" EndPoint="20,20"/>
 		    </GeometryCollection>
 		</GeometryGroup>
         </Path.Data>
@@ -16,13 +31,13 @@
     <Path Stroke="Red">
         <Path.Data>
 		<GeometryGroup>
-	    		<LineGeometry StartPoint="30,30" EndPoint="30,200"/>
-			<LineGeometry StartPoint="30,200" EndPoint="200,200"/>
-			<LineGeometry StartPoint="200,200" EndPoint="200,30"/>
-			<LineGeometry StartPoint="200,30" EndPoint="30,30"/>
+	    		<LineGeometry StartPoint="30,30" EndPoint="30,250"/>
+			<LineGeometry StartPoint="30,250" EndPoint="250,250"/>
+			<LineGeometry StartPoint="250,250" EndPoint="250,30"/>
+			<LineGeometry StartPoint="250,30" EndPoint="30,30"/>
 		</GeometryGroup>
         </Path.Data>
     </Path>
-
+    
 </Canvas>
 
