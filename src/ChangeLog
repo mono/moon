@@ -1,3 +1,8 @@
+2007-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp: Register the collection types as derived from
+	COLLECTION.
+
 2007-06-11  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (timespan_from_str): fix reading off the end of digits

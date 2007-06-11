@@ -1822,22 +1822,22 @@ types_init ()
 
 	// The collections
 	Type::RegisterType ("Collection", Value::COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Stroke_Collection", Value::STROKE_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Stroke_Collection", Value::STROKE_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("Inlines", Value::INLINES, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Styluspoint_Collection", Value::STYLUSPOINT_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Keyframe_Collection", Value::KEYFRAME_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TimelineMarker_Collection", Value::TIMELINEMARKER_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Geometry_Collection", Value::GEOMETRY_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("GradientStop_Collection", Value::GRADIENTSTOP_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("MediaAttribute_Collection", Value::MEDIAATTRIBUTE_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("PathFigure_Collection", Value::PATHFIGURE_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("PathSegment_Collection", Value::PATHSEGMENT_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Timeline_Collection", Value::TIMELINE_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Transform_Collection", Value::TRANSFORM_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Styluspoint_Collection", Value::STYLUSPOINT_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("Keyframe_Collection", Value::KEYFRAME_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("TimelineMarker_Collection", Value::TIMELINEMARKER_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("Geometry_Collection", Value::GEOMETRY_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("GradientStop_Collection", Value::GRADIENTSTOP_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("MediaAttribute_Collection", Value::MEDIAATTRIBUTE_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("PathFigure_Collection", Value::PATHFIGURE_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("PathSegment_Collection", Value::PATHSEGMENT_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("Timeline_Collection", Value::TIMELINE_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("Transform_Collection", Value::TRANSFORM_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("Visual_Collection", Value::VISUAL_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Resource_Collection", Value::RESOURCE_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TriggerAction_Collection", Value::TRIGGERACTION_COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Trigger_Collection", Value::TRIGGER_COLLECTION, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Resource_Collection", Value::RESOURCE_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("TriggerAction_Collection", Value::TRIGGERACTION_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("Trigger_Collection", Value::TRIGGER_COLLECTION, Value::COLLECTION);
 
 //#if DEBUG
 	//printf ("Checking types...\n");
