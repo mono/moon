@@ -183,7 +183,7 @@ end_element_handler (void *data, const char *el)
 		}
 		break;
 	case XamlElementInstance::PROPERTY:
-		printf ("Property %s\n", el);
+		printf ("Property: %s\n", el);
 		GList *walk = info->current_element->children;
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk->data;
@@ -451,6 +451,95 @@ create_event_trigger_instance (XamlParserInfo *p, XamlElementInfo *i)
 	return inst;
 }
 
+XamlElementInstance *
+create_path_figure_collection_instance (XamlParserInfo *p, XamlElementInfo *i)
+{
+	XamlElementInstance *inst = new XamlElementInstance (i);
+
+	inst->element_name = i->name;
+	inst->element_type = XamlElementInstance::ELEMENT;
+
+	// Walk up the tree and find the PathGeometry that we are being added to,
+	// attempt to use this instance as our item, if the types are incorrect,
+	// create a new item
+	XamlElementInstance *prop = p->current_element;
+
+	if (prop) {
+		XamlElementInstance *owner = prop->parent;
+		if (owner && is_instance_of (owner, Value::PATHGEOMETRY))
+			inst->item = ((PathGeometry *) owner->item)->children;
+	}
+
+	// This is still legal, because someone could have done:
+	// createFromXaml ("<PathFigureCollection ...");
+	if (!inst->item)
+		inst->item = new PathFigureCollection ();
+
+	return inst;
+}
+
+XamlElementInstance *
+create_path_segment_collection_instance (XamlParserInfo *p, XamlElementInfo *i)
+{
+	XamlElementInstance *inst = new XamlElementInstance (i);
+
+	inst->element_name = i->name;
+	inst->element_type = XamlElementInstance::ELEMENT;
+
+	// Walk up the tree and find the PathFigure that we are being added to,
+	// attempt to use this instance as our item, if the types are incorrect,
+	// create a new item
+	XamlElementInstance *prop = p->current_element;
+
+	if (prop) {
+		XamlElementInstance *owner = prop->parent;
+		if (owner && is_instance_of (owner, Value::PATHFIGURE))
+			inst->item = ((PathFigure *) owner->item)->children;
+	}
+
+	// This is still legal, because someone could have done:
+	// createFromXaml ("<PathSegmentCollection ...");
+	if (!inst->item)
+		inst->item = new PathSegmentCollection ();
+
+	return inst;
+}
+
+XamlElementInstance *
+create_geometry_collection_instance (XamlParserInfo *p, XamlElementInfo *i)
+{
+	XamlElementInstance *inst = new XamlElementInstance (i);
+
+	inst->element_name = i->name;
+	inst->element_type = XamlElementInstance::ELEMENT;
+
+	// Walk up the tree and find the GeometryGroup that we are being added to,
+	// attempt to use this instance as our item, if the types are incorrect,
+	// create a new item
+	XamlElementInstance *prop = p->current_element;
+
+	if (prop) {
+
+		if (is_instance_of (prop, Value::GEOMETRYGROUP)) {
+			inst->item = ((GeometryGroup *) prop->item)->children;
+		} else {
+			XamlElementInstance *owner = prop->parent;
+			if (owner && is_instance_of (owner, Value::GEOMETRYGROUP)) {
+				inst->item = ((GeometryGroup *) owner->item)->children;
+			}
+		}
+	}
+
+	// This is still legal, because someone could have done:
+	// createFromXaml ("<GeometryCollection ...");
+	if (!inst->item) {
+		printf ("creating a new geometry collection\n");
+		inst->item = new GeometryCollection ();
+	}
+
+	return inst;
+}
+
 ///
 /// Add Child funcs
 ///
@@ -548,6 +637,11 @@ geometry_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEl
 {
 	GeometryGroup *gg = (GeometryGroup *) parent->item;
 
+	// When creating the child collections we attempt to use the PathGeometry's Collection
+	// in this case, the pointers will be equal, and we don't need to do anything
+	if (gg->children == child->item)
+		return;
+
 	if (is_instance_of (child, Value::GEOMETRY_COLLECTION)) {
 		Value v ((GeometryCollection *) child->item);
 		gg->SetValue (gg->ChildrenProperty, &v);
@@ -555,8 +649,8 @@ geometry_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEl
 	}
 
 	if (!is_instance_of (child, Value::GEOMETRY)) {
-		g_warning ("error, attempting to add non Geometry type (%d) to GeometryCollection element\n",
-				child->info->dependency_type);
+		g_warning ("error, attempting to add non Geometry type (%s) to GeometryCollection element\n",
+				child->element_name);
 		return;
 	}
 
@@ -570,6 +664,11 @@ void
 path_geometry_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	PathGeometry *pg = (PathGeometry *) parent->item;
+
+	// When creating the child collections we attempt to use the PathGeometry's Collection
+	// in this case, the pointers will be equal, and we don't need to do anything
+	if (pg->children == child->item)
+		return;
 
 	if (is_instance_of (child, Value::PATHFIGURE_COLLECTION)) {
 		Value v ((PathFigureCollection *) child->item);
@@ -590,9 +689,34 @@ path_geometry_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlEle
 }
 
 void
+path_segment_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	PathSegmentCollection *psc = (PathSegmentCollection *) parent->item;
+
+	if (!is_instance_of (child, Value::PATHSEGMENT)) {
+		g_warning ("error, attempting to add non PathSegment type (%d) to PathSegmentCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	PathSegment *ps = (PathSegment *) child->item;
+	Value v = Value (ps);
+
+	psc->Add (&v);
+}
+
+
+void
 path_figure_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	PathFigure *pf = (PathFigure *) parent->item;
+
+	// When creating the child collections we attempt to use the PathGeometry's Collection
+	// in this case, the pointers will be equal, and we don't need to do anything
+	if (pf->children == child->item) {
+		printf ("path figure got an existing children collection\n");
+		return;
+	}
 
 	if (is_instance_of (child, Value::PATHSEGMENT_COLLECTION)) {
 		Value v ((PathSegmentCollection *) child->item);
@@ -626,6 +750,22 @@ path_figure_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent
 	Value v = Value (pf);
 
 	pfc->Add (&v);
+}
+
+void
+geometry_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+	if (!is_instance_of (child, Value::GEOMETRY)) {
+		g_warning ("error, attempting to add non PathFigure type (%d) to PathFigureCollection element\n",
+				child->info->dependency_type);
+		return;
+	}
+
+	GeometryCollection *gc = (GeometryCollection *) parent->item;
+	Geometry *geo = (Geometry *) child->item;
+	Value v = Value (geo);
+
+	gc->Add (&v);
 }
 
 ///
@@ -670,6 +810,28 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	}
 
 	g_strfreev (prop_name);
+}
+
+void
+path_figure_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
+{
+	if (!strcmp (property->element_name, "PathFigure.Segments")) {
+		if (((PathFigure *) item->item)->children == value->item)
+			printf ("collections are equal\n");
+	} else {
+		dependency_object_set_property (p, item, property, value);
+	}
+}
+
+void
+path_geometry_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
+{
+	if (!strcmp (property->element_name, "PathGeometry.Figures")) {
+		if (((PathFigure *) item->item)->children == value->item)
+			printf ("path geometry collections are equal\n");
+	} else {
+		dependency_object_set_property (p, item, property, value);
+	}
 }
 
 ///
@@ -879,18 +1041,25 @@ xaml_init ()
 
 	XamlElementInfo *gg = register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 	gg->add_child = geometry_group_add_child;
-//	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", col, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
-//	gc->add_child = geometry_collection_add_child;
+	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", col, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
+	gc->create_element = create_geometry_collection_instance;
+	gc->add_child = geometry_collection_add_child;
 
 	XamlElementInfo *pg = register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
-//	pg->add_child = path_geometry_add_child;
-//	XamlElementInfo *pfc = register_dependency_object_element ("PathFigureCollection", col, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
-//	pfc->add_child = path_figure_collection_add_child;
+	pg->add_child = path_geometry_add_child;
+	pg->set_property = path_geometry_set_property;
+
+	XamlElementInfo *pfc = register_dependency_object_element ("PathFigureCollection", col, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
+	pfc->add_child = path_figure_collection_add_child;
+	pfc->create_element = create_path_figure_collection_instance;
 
 	XamlElementInfo *pf = register_dependency_object_element ("PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->add_child = path_figure_add_child;
+	pf->set_property = path_figure_set_property;
+
 	XamlElementInfo *psc = register_dependency_object_element ("PathSegmentCollection", col, Value::PATHFIGURE, (create_item_func) path_figure_new);
-//	psc->add_child = path_segment_collection_add_child;
+	psc->create_element = create_path_segment_collection_instance;
+	psc->add_child = path_segment_collection_add_child;
 
 	XamlElementInfo *ps = register_ghost_element ("PathSegment", geo, Value::PATHSEGMENT);
 	register_dependency_object_element ("ArcSegment", ps, Value::ARCSEGMENT, (create_item_func) arc_segment_new);

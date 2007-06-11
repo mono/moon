@@ -1,3 +1,9 @@
+2007-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Implement some more collection loading. A lot of
+	duplicate code here, so I should probably refactor things a bit,
+	but will wait until I've seen how more collections are laid out.
+
 2007-06-11  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h, animation.cpp: use KeyFrameCollection's for the
