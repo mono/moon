@@ -395,7 +395,7 @@ timespan_from_str (const char *str)
 	// TODO: This could overflow?
 	res = ((digits [0] * 86400) + (digits [1] * 3600) + (digits [2] * 60) + digits [3]);
 	res *= 10000L;
-	res += digits [5];
+	res += digits [4];
 
 	return res;
 }

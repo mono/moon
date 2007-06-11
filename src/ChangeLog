@@ -1,3 +1,8 @@
+2007-06-11  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (timespan_from_str): fix reading off the end of digits
+	array.
+
 2007-06-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Implement some more collection loading. A lot of
