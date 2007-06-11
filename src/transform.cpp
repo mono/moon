@@ -43,9 +43,9 @@ RotateTransform::GetTransform (cairo_matrix_t *value)
 	}
 	else {
 		cairo_matrix_init_identity (value);
-		cairo_matrix_translate (value, -center_x, -center_y);
-		cairo_matrix_rotate (value, radians);
 		cairo_matrix_translate (value, center_x, center_y);
+		cairo_matrix_rotate (value, radians);
+		cairo_matrix_translate (value, -center_x, -center_y);
 	}
 	//printf ("Returning2 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
@@ -159,9 +159,9 @@ ScaleTransform::GetTransform (cairo_matrix_t *value)
 	}
 	else {
 		cairo_matrix_init_identity (value);
-		cairo_matrix_translate (value, -cx, -cy);
+		cairo_matrix_translate (value, cx, cy);
 		cairo_matrix_scale (value, sx, sy);
-		cairo_matrix_scale (value, cx, cy);
+		cairo_matrix_translate (value, -cx, -cy);
 	}
 	//printf ("translate to %g %g -- %g %g\n", -cx, -cy, sx, sy);
 	//printf ("Returning4 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);

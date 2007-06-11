@@ -830,7 +830,7 @@ poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int count
 DependencyProperty* PolyQuadraticBezierSegment::PointsProperty;
 
 PolyQuadraticBezierSegment*
-poly_quadratic_segment_new ()
+poly_quadratic_bezier_segment_new ()
 {
 	return new PolyQuadraticBezierSegment ();
 }
@@ -841,7 +841,7 @@ poly_quadratic_segment_new ()
  * so it's use is only internal.
  */
 Point*
-poly_quadratic_segment_get_points (PolyQuadraticBezierSegment *segment, int *count)
+poly_quadratic_bezier_segment_get_points (PolyQuadraticBezierSegment *segment, int *count)
 {
 	Value *value = segment->GetValue (PolyQuadraticBezierSegment::PointsProperty);
 	if (!value) {
@@ -855,7 +855,7 @@ poly_quadratic_segment_get_points (PolyQuadraticBezierSegment *segment, int *cou
 }
 
 void
-poly_quadratic_segment_set_points (PolyQuadraticBezierSegment *segment, Point *points, int count)
+poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, Point *points, int count)
 {
 	segment->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (points, count));
 }

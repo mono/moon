@@ -166,6 +166,7 @@ Shape::DoDraw (Surface *s, bool do_op)
 		double offset = 0.0;
 		double *dashes = shape_get_stroke_dash_array (this, &count);
 		if (dashes && (count > 0)) {
+			/* FIXME: cairo doesn't support line cap for dashes */
 			offset = shape_get_stroke_dash_offset (this);
 			// special case or cairo stops drawing
 			if ((count == 1) && (*dashes == 0.0))
@@ -219,6 +220,10 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 	FrameworkElement::OnPropertyChanged (prop);
+
+	if ((prop == UIElement::RenderTransformOriginProperty) || (prop == UIElement::RenderTransformProperty)) {
+		update_xform ();
+	}
 }
 
 Brush*

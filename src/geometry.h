@@ -317,9 +317,9 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	PolyQuadraticBezierSegment () { }
 	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
 };
-PolyQuadraticBezierSegment	*poly_quadratic_segment_new	();
-Point*	poly_quadratic_segment_get_points	(PolyQuadraticBezierSegment *segment, int *count);
-void	poly_quadratic_segment_set_points	(PolyQuadraticBezierSegment *segment, Point *points, int count);
+PolyQuadraticBezierSegment	*poly_quadratic_bezier_segment_new	();
+Point*	poly_quadratic_bezier_segment_get_points	(PolyQuadraticBezierSegment *segment, int *count);
+void	poly_quadratic_bezier_segment_set_points	(PolyQuadraticBezierSegment *segment, Point *points, int count);
 
 //
 // QuadraticBezierSegment

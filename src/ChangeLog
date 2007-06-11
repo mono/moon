@@ -1,3 +1,10 @@
+2007-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp|h: Fix function names wrt type.
+	* shape.cpp: Detect RenderTransform and RenderTransformOrigin changes
+	and call update_xform. This fix the "atom" sample :)
+	* transform.cpp: Fix Rotate and Scale around a center point.
+
 2007-06-10  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Add more precision to types.
