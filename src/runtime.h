@@ -364,6 +364,56 @@ class ResourceCollection : public Collection {
 	
 };
 
+class StrokeCollection : public Collection {
+ public:
+	StrokeCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::STROKE_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
+};
+
+class StylusPointCollection : public Collection {
+ public:
+	StylusPointCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::STYLUSPOINT_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
+};
+
+class TimelineMarkerCollection : public Collection {
+ public:
+	TimelineMarkerCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::TIMELINEMARKER_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
+};
+
+class GradientStopCollection : public Collection {
+ public:
+	GradientStopCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::GRADIENTSTOP_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
+};
+
+class MediaAttributeCollection : public Collection {
+ public:
+	MediaAttributeCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
+};
+
 class Brush : public DependencyObject {
  public:
 	static DependencyProperty* OpacityProperty;

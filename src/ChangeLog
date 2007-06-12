@@ -1,5 +1,20 @@
 2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: 
+	- (DependencyObject::SetValue): Allow assigning an object of a 
+	  more derived type than the defined property type. Change the
+	  attached_list code to handle NULL dependency_objects.
+	- Delete types_init, it's generated now.
+	- Delete Value:As[DependencyObjects], its generated now.
+	* runtime.h: Added definitions for a few missing collection classes.
+	* types.cpp[.in], value.cpp[.in], value.h.in: Added.
+	* value.h: Update.
+	* Makefile.am: Add types.cpp and value.cpp
+	* typegen.cs, typegen.cs: Added, generates types.cpp, value.cpp, 
+	value.h and Kind.cs from the headers.
+
+2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp, runtime.h: (DO/DP) Make all char*'s const.
 
 

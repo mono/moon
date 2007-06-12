@@ -1,0 +1,59 @@
+/*
+ * type.cpp: Generated code for the type system.
+ *
+ * Author:
+ *   Rolf Bjarne Kvinge (RKvinge@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
+#include <config.h>
+#include <string.h>
+#include <gtk/gtk.h>
+#include <cairo.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include "runtime.h"
+
+void types_init_manually ()
+{
+	// Put types that does not inherit from DependencyObject here (manually)
+
+	//Type::RegisterType ("Invalid", Value::INVALID, Value::INVALID);
+	Type::RegisterType ("bool", Value::BOOL);
+	Type::RegisterType ("double", Value::DOUBLE);
+	Type::RegisterType ("uint64", Value::UINT64);
+	Type::RegisterType ("int", Value::INT32);
+	Type::RegisterType ("string", Value::STRING);
+	Type::RegisterType ("Color", Value::COLOR);
+	Type::RegisterType ("Point", Value::POINT);
+	Type::RegisterType ("Rect", Value::RECT);
+	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR);
+	Type::RegisterType ("Duration", Value::DURATION);
+	Type::RegisterType ("int64", Value::INT64);
+	Type::RegisterType ("KeyTime", Value::KEYTIME);
+	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
+	Type::RegisterType ("Point*", Value::POINT_ARRAY);
+
+#if DEBUG
+	for (int i = 1; i < Value::LASTTYPE; i++) {
+		if (Type::types [i] != NULL)
+			continue;
+
+		if (i > 0 && Type::types [i - 1] != NULL)
+			printf ("Type %i is not initialized (previous type in enum is '%s')\n", i, Type::types [i - 1]->name);
+		else
+			printf ("Type %i is not initialized\n", i);
+	}
+#endif
+}
+
+//
+// The generated code will be put at the end of the file
+//
+// We are currently generating:
+//	- types_init (), initializes all types that inherit from DependencyObject
+

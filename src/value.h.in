@@ -1,0 +1,147 @@
+#ifndef MOON_VALUE_H
+#define MOON_VALUE_H
+
+/* ugly file containing the catchall value type we use.
+   implementation still lives in runtime.cpp
+*/
+
+struct Color;
+struct DoubleArray;
+struct Duration;
+struct KeyTime;
+struct Point;
+struct PointArray;
+struct Rect;
+struct RepeatBehavior;
+struct Value;
+class Type;
+class DependencyProperty;
+class Surface;
+
+/*DO_FWD_DECLS*/
+
+#define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
+#define checked_get_subclass(kind, castas)  g_return_val_if_fail (Type::Find((kind))->IsSubclassOf(k) || Type::Find(k)->IsSubclassOf((kind)), NULL); return (castas*)u.dependency_object;
+
+struct Value {
+public:
+	enum Kind {
+// START_MANAGED_MAPPING
+		INVALID,
+		BOOL,
+		DOUBLE,
+		UINT64,
+		INT32,
+		STRING,
+		COLOR,
+		POINT,
+		RECT,
+		REPEATBEHAVIOR,
+		DURATION,
+		INT64,
+		DOUBLE_ARRAY,
+		POINT_ARRAY,
+		KEYTIME,
+
+/*DO_KINDS*/
+
+		LASTTYPE
+// END_MANAGED_MAPPING
+	};
+
+	void Init ();
+
+	Value ();
+	Value (const Value& v);
+	Value (Kind k);
+	Value (bool z);
+	Value (double d);
+	Value (guint64 i);
+	Value (gint64 i);
+	Value (gint32 i);
+	Value (Color c);
+	Value (DependencyObject *obj);
+	Value (Point pt);
+	Value (Rect rect);
+	Value (RepeatBehavior repeat);
+	Value (Duration duration);
+	Value (KeyTime keytime);
+	Value (const char* s);
+	Value (Point *points, int count);
+	Value (double *values, int count);
+	
+	~Value ();
+
+	bool operator!= (const Value &v) const
+	{
+		return !(*this == v);
+	}
+
+	bool operator== (const Value &v) const
+	{
+		if (k != v.k)
+			return false;
+
+		if (k == STRING) {
+			return !strcmp (u.s, v.u.s);
+		}
+		else {
+			return !memcmp (&u, &v.u, sizeof (u));
+		}
+
+		return true;
+	}
+
+	bool            AsBool ();
+	double          AsDouble ();
+	guint64         AsUint64 ();
+	gint64          AsInt64 ();
+	gint32          AsInt32 ();
+
+	double*         AsNullableDouble ();
+	guint64*        AsNullableUint64 ();
+	gint64*         AsNullableInt64 ();
+	gint32*         AsNullableInt32 ();
+
+	Color*          AsColor ();
+	Point*          AsPoint ();
+	Rect*           AsRect  ();
+	char*           AsString ();
+	RepeatBehavior* AsRepeatBehavior ();
+	Duration*       AsDuration ();
+	KeyTime*        AsKeyTime ();
+	PointArray*     AsPointArray ();
+	DoubleArray*     AsDoubleArray ();
+
+/*DO_AS*/
+  
+	Kind k;
+  private:
+	union {
+		double d;
+		guint64 ui64;
+		gint64 i64;
+		gint32 i32;
+		char *s;
+		DependencyObject *dependency_object;
+		Color *color;
+		Point *point;
+		Rect *rect;
+		RepeatBehavior *repeat;
+		Duration *duration;
+		KeyTime *keytime;
+		PointArray *point_array;
+		DoubleArray *double_array;
+	} u;
+
+
+	// You don't want to be using this ctor.  it's here to help
+	// c++ recognize bad unspecified pointer args to Value ctors
+	// (it normally converts them to bool, which we handle, so you
+	// never see the error of your ways).  So do the world a
+	// favor, and don't expose this ctor. :)
+	Value (void* v) { }
+};
+
+
+#endif /* MOON_VALUE_H */

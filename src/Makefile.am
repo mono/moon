@@ -21,6 +21,8 @@ libmoon_la_SOURCES = 	\
 	text.cpp	\
 	transform.cpp	\
 	transform.h	\
+	type.cpp	\
+	value.cpp	\
 	value.h		\
 	video.cpp	\
 	xaml.cpp

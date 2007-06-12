@@ -288,11 +288,13 @@ value_color_from_argb (uint32_t c)
 
 Value::Value (DependencyObject *obj)
 {
-	g_assert (obj != NULL);
-	g_assert (obj->GetObjectType () >= Value::DEPENDENCY_OBJECT);
-	
 	Init ();
-	k = obj->GetObjectType ();
+	if (obj == NULL) {
+		k = Value::DEPENDENCY_OBJECT;
+	} else {
+		g_assert (obj->GetObjectType () >= Value::DEPENDENCY_OBJECT);
+		k = obj->GetObjectType ();
+	}
 	u.dependency_object = obj;
 }
 
@@ -367,9 +369,6 @@ Value::~Value ()
 }
 
 
-#define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
-#define checked_get_subclass(kind, castas)  g_return_val_if_fail (Type::Find((kind))->IsSubclassOf(k) || Type::Find(k)->IsSubclassOf((kind)), NULL); return (castas*)u.dependency_object;
-      
 
 #define AS_DEP_SUBCLASS_IMPL(kind, castas) \
 castas* Value::As##castas () { checked_get_subclass (kind, castas); }
@@ -395,85 +394,6 @@ double*         Value::AsNullableDouble () { checked_get_exact (DOUBLE, NULL, &u
 guint64*        Value::AsNullableUint64 () { checked_get_exact (UINT64, NULL, &u.ui64); }
 gint64*         Value::AsNullableInt64 () { checked_get_exact (INT64, NULL, &u.i64); }
 gint32*         Value::AsNullableInt32 () { checked_get_exact (INT32, NULL, &u.i32); }
-
-
-AS_DEP_SUBCLASS_IMPL(DEPENDENCY_OBJECT, DependencyObject)
-AS_DEP_SUBCLASS_IMPL(UIELEMENT, UIElement)
-AS_DEP_SUBCLASS_IMPL(PANEL, Panel)
-AS_DEP_SUBCLASS_IMPL(CANVAS, Canvas)
-AS_DEP_SUBCLASS_IMPL(TIMELINE, Timeline)
-AS_DEP_SUBCLASS_IMPL(TIMELINEGROUP, TimelineGroup)
-AS_DEP_SUBCLASS_IMPL(PARALLELTIMELINE, ParallelTimeline)
-AS_DEP_SUBCLASS_IMPL(TRANSFORM, Transform)
-AS_DEP_SUBCLASS_IMPL(TRANSFORMGROUP, TransformGroup)
-AS_DEP_SUBCLASS_IMPL(ROTATETRANSFORM, RotateTransform)
-AS_DEP_SUBCLASS_IMPL(SCALETRANSFORM, ScaleTransform)
-AS_DEP_SUBCLASS_IMPL(TRANSLATETRANSFORM, TranslateTransform)
-AS_DEP_SUBCLASS_IMPL(MATRIXTRANSFORM, MatrixTransform)
-AS_DEP_SUBCLASS_IMPL(STORYBOARD, Storyboard)
-AS_DEP_SUBCLASS_IMPL(ANIMATION, Animation)
-AS_DEP_SUBCLASS_IMPL(DOUBLEANIMATION, DoubleAnimation)
-AS_DEP_SUBCLASS_IMPL(COLORANIMATION, ColorAnimation)
-AS_DEP_SUBCLASS_IMPL(POINTANIMATION, PointAnimation)
-AS_DEP_SUBCLASS_IMPL(SHAPE, Shape)
-AS_DEP_SUBCLASS_IMPL(ELLIPSE, Ellipse)
-AS_DEP_SUBCLASS_IMPL(LINE, Line)
-AS_DEP_SUBCLASS_IMPL(PATH, Path)
-AS_DEP_SUBCLASS_IMPL(POLYGON, Polygon)
-AS_DEP_SUBCLASS_IMPL(POLYLINE, Polyline)
-AS_DEP_SUBCLASS_IMPL(RECTANGLE, Rectangle)
-AS_DEP_SUBCLASS_IMPL(GEOMETRY, Geometry)
-AS_DEP_SUBCLASS_IMPL(GEOMETRYGROUP, GeometryGroup)
-AS_DEP_SUBCLASS_IMPL(ELLIPSEGEOMETRY, EllipseGeometry)
-AS_DEP_SUBCLASS_IMPL(LINEGEOMETRY, LineGeometry)
-AS_DEP_SUBCLASS_IMPL(PATHGEOMETRY, PathGeometry)
-AS_DEP_SUBCLASS_IMPL(RECTANGLEGEOMETRY, RectangleGeometry)
-AS_DEP_SUBCLASS_IMPL(FRAMEWORKELEMENT, FrameworkElement)
-AS_DEP_SUBCLASS_IMPL(NAMESCOPE, NameScope)
-AS_DEP_SUBCLASS_IMPL(CLOCK, Clock)
-AS_DEP_SUBCLASS_IMPL(ANIMATIONCLOCK, AnimationClock)
-AS_DEP_SUBCLASS_IMPL(CLOCKGROUP, ClockGroup)
-AS_DEP_SUBCLASS_IMPL(BRUSH, Brush)
-AS_DEP_SUBCLASS_IMPL(SOLIDCOLORBRUSH, SolidColorBrush)
-AS_DEP_SUBCLASS_IMPL(TILEBRUSH, TileBrush)
-AS_DEP_SUBCLASS_IMPL(IMAGEBRUSH, ImageBrush)
-AS_DEP_SUBCLASS_IMPL(VIDEOBRUSH, VideoBrush)
-AS_DEP_SUBCLASS_IMPL(LINEARGRADIENTBRUSH, LinearGradientBrush)
-AS_DEP_SUBCLASS_IMPL(GRADIENTBRUSH, GradientBrush)
-AS_DEP_SUBCLASS_IMPL(GRADIENTSTOP, GradientStop)
-AS_DEP_SUBCLASS_IMPL(PATHFIGURE, PathFigure)
-AS_DEP_SUBCLASS_IMPL(PATHSEGMENT, PathSegment)
-AS_DEP_SUBCLASS_IMPL(ARCSEGMENT, ArcSegment)
-AS_DEP_SUBCLASS_IMPL(BEZIERSEGMENT, BezierSegment)
-AS_DEP_SUBCLASS_IMPL(LINESEGMENT, LineSegment)
-AS_DEP_SUBCLASS_IMPL(POLYBEZIERSEGMENT, PolyBezierSegment)
-AS_DEP_SUBCLASS_IMPL(POLYLINESEGMENT, PolyLineSegment)
-AS_DEP_SUBCLASS_IMPL(POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment)
-AS_DEP_SUBCLASS_IMPL(QUADRATICBEZIERSEGMENT, QuadraticBezierSegment)
-AS_DEP_SUBCLASS_IMPL(TRIGGERACTION, TriggerAction)
-AS_DEP_SUBCLASS_IMPL(BEGINSTORYBOARD, BeginStoryboard)
-AS_DEP_SUBCLASS_IMPL(EVENTTRIGGER, EventTrigger)
-AS_DEP_SUBCLASS_IMPL(KEYFRAME, KeyFrame)
-AS_DEP_SUBCLASS_IMPL(DOUBLEKEYFRAME, DoubleKeyFrame)
-AS_DEP_SUBCLASS_IMPL(POINTKEYFRAME, PointKeyFrame)
-AS_DEP_SUBCLASS_IMPL(DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame)
-AS_DEP_SUBCLASS_IMPL(DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame)
-AS_DEP_SUBCLASS_IMPL(LINEARDOUBLEKEYFRAME, LinearDoubleKeyFrame)
-AS_DEP_SUBCLASS_IMPL(LINEARPOINTKEYFRAME, LinearPointKeyFrame)
-AS_DEP_SUBCLASS_IMPL(POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames)
-AS_DEP_SUBCLASS_IMPL(DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames)
-
-AS_DEP_SUBCLASS_IMPL(COLLECTION, Collection)
-AS_DEP_SUBCLASS_IMPL(KEYFRAME_COLLECTION, KeyFrameCollection)
-AS_DEP_SUBCLASS_IMPL(TIMELINE_COLLECTION, TimelineCollection)
-AS_DEP_SUBCLASS_IMPL(VISUAL_COLLECTION, VisualCollection)
-AS_DEP_SUBCLASS_IMPL(TRIGGER_COLLECTION, TriggerCollection)
-AS_DEP_SUBCLASS_IMPL(TRIGGERACTION_COLLECTION, TriggerActionCollection)
-AS_DEP_SUBCLASS_IMPL(TRANSFORM_COLLECTION, TransformCollection)
-AS_DEP_SUBCLASS_IMPL(GEOMETRY_COLLECTION, GeometryCollection)
-AS_DEP_SUBCLASS_IMPL(PATHFIGURE_COLLECTION, PathFigureCollection)
-AS_DEP_SUBCLASS_IMPL(PATHSEGMENT_COLLECTION, PathSegmentCollection)
-
 
 
 /**
@@ -1117,8 +1037,10 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 {
 	g_return_if_fail (property != NULL);
 
-	if (property->value_type < Value::DEPENDENCY_OBJECT)
-		g_return_if_fail (property->value_type == value->k);
+	if (!Type::Find (value->k)->IsSubclassOf (property->value_type)) {
+		g_warning ("DependencyObject::SetValue, value cannot be assigned to the property (property has type '%s', value has type '%s')\n", Type::Find (property->value_type)->name, Type::Find (value->k)->name);
+		return;
+	}
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
@@ -1138,12 +1060,14 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->AsDependencyObject();
 
-			for (GSList *l = dob->attached_list; l; l = l->next) {
-				Attachee *att = (Attachee*)l->data;
-				if (att->dob == this && att->prop == property) {
-					dob->attached_list = g_slist_remove_link (dob->attached_list, l);
-					delete att;
-					break;
+			if (dob != NULL) {
+				for (GSList *l = dob->attached_list; l; l = l->next) {
+					Attachee *att = (Attachee*)l->data;
+					if (att->dob == this && att->prop == property) {
+						dob->attached_list = g_slist_remove_link (dob->attached_list, l);
+						delete att;
+						break;
+					}
 				}
 			}
 		}
@@ -1155,10 +1079,12 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		if (value) {
 			if (value->k >= Value::DEPENDENCY_OBJECT){
 				DependencyObject *dob = value->AsDependencyObject();
-				Attachee *att = new Attachee ();
-				att->dob = this;
-				att->prop = property;
-				dob->attached_list = g_slist_append (dob->attached_list, att);
+				if (dob != NULL) {
+					Attachee *att = new Attachee ();
+					att->dob = this;
+					att->prop = property;
+					dob->attached_list = g_slist_append (dob->attached_list, att);
+				}
 			}
 
 			// 
@@ -1797,125 +1723,6 @@ dependencyobject_init ()
 	DependencyObject::ParentProperty = DependencyObject::Register (Value::DEPENDENCY_OBJECT, "Parent", Value::DEPENDENCY_OBJECT);
 }
 
-void 
-types_init ()
-{
-	//Type::RegisterType ("Invalid", Value::INVALID, Value::INVALID);
-	Type::RegisterType ("bool", Value::BOOL);
-	Type::RegisterType ("double", Value::DOUBLE);
-	Type::RegisterType ("uint64", Value::UINT64);
-	Type::RegisterType ("int", Value::INT32);
-	Type::RegisterType ("string", Value::STRING);
-	Type::RegisterType ("Color", Value::COLOR);
-	Type::RegisterType ("Point", Value::POINT);
-	Type::RegisterType ("Rect", Value::RECT);
-	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR);
-	Type::RegisterType ("Duration", Value::DURATION);
-	Type::RegisterType ("int64", Value::INT64);
-	Type::RegisterType ("KeyTime", Value::KEYTIME);
-	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
-	Type::RegisterType ("Point*", Value::POINT_ARRAY);
-
-	Type::RegisterType ("DependencyObject", Value::DEPENDENCY_OBJECT);
-
-	// These are dependency objects
-	Type::RegisterType ("UIElement", Value::UIELEMENT, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Panel", Value::PANEL, Value::FRAMEWORKELEMENT);
-	Type::RegisterType ("Canvas", Value::CANVAS, Value::PANEL);
-	Type::RegisterType ("Timeline", Value::TIMELINE, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TimelineGroup", Value::TIMELINEGROUP, Value::TIMELINE);
-	Type::RegisterType ("ParallelTimeline", Value::PARALLELTIMELINE, Value::TIMELINEGROUP);
-	Type::RegisterType ("Transform", Value::TRANSFORM, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TransformGroup", Value::TRANSFORMGROUP, Value::TRANSFORM);
-	Type::RegisterType ("RotateTransform", Value::ROTATETRANSFORM, Value::TRANSFORM);
-	Type::RegisterType ("ScaleTransform", Value::SCALETRANSFORM, Value::TRANSFORM);
-	Type::RegisterType ("TranslateTransform", Value::TRANSLATETRANSFORM, Value::TRANSFORM);
-	Type::RegisterType ("MatrixTransform", Value::MATRIXTRANSFORM, Value::TRANSFORM);
-	Type::RegisterType ("Storyboard", Value::STORYBOARD, Value::PARALLELTIMELINE);
-	Type::RegisterType ("Animation", Value::ANIMATION, Value::TIMELINE);
-	Type::RegisterType ("DoubleAnimation", Value::DOUBLEANIMATION, Value::ANIMATION);
-	Type::RegisterType ("ColorAnimation", Value::COLORANIMATION, Value::ANIMATION);
-	Type::RegisterType ("PointAnimation", Value::POINTANIMATION, Value::ANIMATION);
-	Type::RegisterType ("Shape", Value::SHAPE, Value::FRAMEWORKELEMENT);
-	Type::RegisterType ("Ellipse", Value::ELLIPSE, Value::SHAPE);
-	Type::RegisterType ("Line", Value::LINE, Value::SHAPE);
-	Type::RegisterType ("Path", Value::PATH, Value::SHAPE);
-	Type::RegisterType ("Polygon", Value::POLYGON, Value::SHAPE);
-	Type::RegisterType ("Polyline", Value::POLYLINE, Value::SHAPE);
-	Type::RegisterType ("Rectangle", Value::RECTANGLE, Value::SHAPE);
-	Type::RegisterType ("Geometry", Value::GEOMETRY, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("GeometryGroup", Value::GEOMETRYGROUP, Value::GEOMETRY);
-	Type::RegisterType ("EllipseGeometry", Value::ELLIPSEGEOMETRY, Value::GEOMETRY);
-	Type::RegisterType ("LineGeometry", Value::LINEGEOMETRY, Value::GEOMETRY);
-	Type::RegisterType ("PathGeometry", Value::PATHGEOMETRY, Value::GEOMETRY);
-	Type::RegisterType ("RectangleGeometry", Value::RECTANGLEGEOMETRY, Value::GEOMETRY);
-	Type::RegisterType ("FrameworkElement", Value::FRAMEWORKELEMENT, Value::UIELEMENT);
-	Type::RegisterType ("Namescope", Value::NAMESCOPE, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Clock", Value::CLOCK, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("AnimationClock", Value::ANIMATIONCLOCK, Value::CLOCK);
-	Type::RegisterType ("ClockGroup", Value::CLOCKGROUP, Value::CLOCK);
-	Type::RegisterType ("Brush", Value::BRUSH, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("SolidColorBrush", Value::SOLIDCOLORBRUSH, Value::BRUSH);
-	Type::RegisterType ("TileBrush", Value::TILEBRUSH, Value::BRUSH);
-	Type::RegisterType ("ImageBrush", Value::IMAGEBRUSH, Value::TILEBRUSH);
-	Type::RegisterType ("VideoBrush", Value::VIDEOBRUSH, Value::TILEBRUSH);
-	Type::RegisterType ("GradientBrush", Value::GRADIENTBRUSH, Value::BRUSH);
-	Type::RegisterType ("LinearGradientBrush", Value::LINEARGRADIENTBRUSH, Value::GRADIENTBRUSH);
-	Type::RegisterType ("GradientStop", Value::GRADIENTSTOP, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("PathFigure", Value::PATHFIGURE, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("PathSegment", Value::PATHSEGMENT, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("ArcSegment", Value::ARCSEGMENT, Value::PATHSEGMENT);
-	Type::RegisterType ("BezierSegment", Value::BEZIERSEGMENT, Value::PATHSEGMENT);
-	Type::RegisterType ("LineSegment", Value::LINESEGMENT, Value::PATHSEGMENT);
-	Type::RegisterType ("PolyBezierSegment", Value::POLYBEZIERSEGMENT, Value::PATHSEGMENT);
-	Type::RegisterType ("PolylineSegment", Value::POLYLINESEGMENT, Value::PATHSEGMENT);
-	Type::RegisterType ("PolyquadraticBezierSegment", Value::POLYQUADRATICBEZIERSEGMENT, Value::PATHSEGMENT);
-	Type::RegisterType ("QuadraticBezierSegment", Value::QUADRATICBEZIERSEGMENT, Value::PATHSEGMENT);
-	Type::RegisterType ("TriggerAction", Value::TRIGGERACTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("BeginStoryboard", Value::BEGINSTORYBOARD, Value::TRIGGERACTION);
-	Type::RegisterType ("EventTrigger", Value::EVENTTRIGGER, Value::DEPENDENCY_OBJECT);
-
-	Type::RegisterType ("KeyFrame", Value::KEYFRAME, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("ColorKeyFrame", Value::COLORKEYFRAME, Value::KEYFRAME);
-	Type::RegisterType ("DoubleKeyFrame", Value::DOUBLEKEYFRAME, Value::KEYFRAME);
-	Type::RegisterType ("PointKeyFrame", Value::POINTKEYFRAME, Value::KEYFRAME);
-	Type::RegisterType ("DiscreteColorKeyFrame", Value::DISCRETECOLORKEYFRAME, Value::DOUBLEKEYFRAME);
-	Type::RegisterType ("DiscreteDoubleKeyFrame", Value::DISCRETEDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
-	Type::RegisterType ("DiscretePointKeyFrame", Value::DISCRETEPOINTKEYFRAME, Value::POINTKEYFRAME);
-	Type::RegisterType ("LinearColorKeyFrame", Value::LINEARCOLORKEYFRAME, Value::COLORKEYFRAME);
-	Type::RegisterType ("LinearDoubleKeyFrame", Value::LINEARDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
-	Type::RegisterType ("LinearPointKeyFrame", Value::LINEARPOINTKEYFRAME, Value::POINTKEYFRAME);
-	Type::RegisterType ("ColorAnimationUsingKeyFrames", Value::COLORANIMATIONUSINGKEYFRAMES, Value::COLORANIMATION);
-	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Value::DOUBLEANIMATIONUSINGKEYFRAMES, Value::DOUBLEANIMATION);
-	Type::RegisterType ("PointAnimationUsingKeyFrames", Value::POINTANIMATIONUSINGKEYFRAMES, Value::POINTANIMATION);
-
-	// The collections
-	Type::RegisterType ("Collection", Value::COLLECTION, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Stroke_Collection", Value::STROKE_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Inlines", Value::INLINES, Value::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Styluspoint_Collection", Value::STYLUSPOINT_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Keyframe_Collection", Value::KEYFRAME_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("TimelineMarker_Collection", Value::TIMELINEMARKER_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Geometry_Collection", Value::GEOMETRY_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("GradientStop_Collection", Value::GRADIENTSTOP_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("MediaAttribute_Collection", Value::MEDIAATTRIBUTE_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("PathFigure_Collection", Value::PATHFIGURE_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("PathSegment_Collection", Value::PATHSEGMENT_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Timeline_Collection", Value::TIMELINE_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Transform_Collection", Value::TRANSFORM_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Visual_Collection", Value::VISUAL_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Resource_Collection", Value::RESOURCE_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("TriggerAction_Collection", Value::TRIGGERACTION_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("Trigger_Collection", Value::TRIGGER_COLLECTION, Value::COLLECTION);
-
-//#if DEBUG
-	//printf ("Checking types...\n");
-	for (int i = 1; i < Value::LASTTYPE; i++) {
-		if (Type::types [i] == NULL)
-			printf ("Type %i is not initialized\n", i);
-	}
-//#endif
-}
 
 static bool inited = FALSE;
 
