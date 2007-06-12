@@ -1,3 +1,8 @@
+2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp, runtime.h: Make DependencyObject::ParentProperty
+	a normal field.
+
 2007-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Don't try to add properties to the panel.

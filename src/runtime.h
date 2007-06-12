@@ -232,7 +232,6 @@ class DependencyObject : public Base {
 
 	EventObject *events;
 	static GHashTable *properties;
-	static DependencyProperty *ParentProperty;
 
 	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
@@ -258,6 +257,7 @@ class DependencyObject : public Base {
  private:
 	GHashTable        *current_values;
 	GSList            *attached_list;
+	DependencyObject  *parent;
 };
 
 Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);

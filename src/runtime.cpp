@@ -1080,13 +1080,11 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
-	if (property != ParentProperty) {
-		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT) {
-			current_value->AsDependencyObject ()->SetParent (NULL);
-		}
-		if (value != NULL && value->k >= Value::DEPENDENCY_OBJECT) {
-			value->AsDependencyObject ()->SetParent (this);
-		}
+	if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT) {
+		current_value->AsDependencyObject ()->SetParent (NULL);
+	}
+	if (value != NULL && value->k >= Value::DEPENDENCY_OBJECT) {
+		value->AsDependencyObject ()->SetParent (this);
 	}
 
 	if ((current_value == NULL && value != NULL) ||
@@ -1199,6 +1197,7 @@ DependencyObject::DependencyObject ()
 	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_value);
 	events = new EventObject ();
 	this->attached_list = NULL;
+	this->parent = NULL;
 }
 
 DependencyObject::~DependencyObject ()
@@ -1324,10 +1323,7 @@ DependencyObject::RegisterFull (Value::Kind type, const char *name, Value *defau
 DependencyObject *
 DependencyObject::GetParent ()
 {
-	Value *parent = GetValue (ParentProperty);
-	if (parent == NULL)
-		return NULL;
-	return parent->AsDependencyObject ();
+	return parent;
 }
 
 void
@@ -1338,10 +1334,10 @@ DependencyObject::SetParent (DependencyObject *parent)
 	DependencyObject *current = parent;
 	do while (current != NULL) {
 		g_assert (current != this);
-		current = current ->GetParent ();
+		current = current->GetParent ();
 	} 
 #endif
-	SetValue (ParentProperty, parent);
+	this->parent = parent;
 }
 
 void
@@ -1859,15 +1855,6 @@ Type::Find (Value::Kind type)
 	return types [type];
 }
 
-DependencyProperty *DependencyObject::ParentProperty;
-
-void
-dependencyobject_init ()
-{
-	DependencyObject::ParentProperty = DependencyObject::Register (Value::DEPENDENCY_OBJECT, "Parent", Value::DEPENDENCY_OBJECT);
-}
-
-
 static bool inited = FALSE;
 
 void
@@ -1878,7 +1865,6 @@ runtime_init ()
 	inited = TRUE;
 
 	types_init ();
-	dependencyobject_init ();
 	namescope_init ();
 	item_init ();
 	framework_element_init ();
