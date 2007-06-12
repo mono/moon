@@ -869,6 +869,7 @@ xaml_init ()
 	XamlElementInfo *evt = register_dependency_object_element ("EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new);
 	evt->content_property = "Actions";
 
+	register_dependency_object_element ("TriggerCollection", col, Value::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
 	register_dependency_object_element ("TriggerActionCollection", col, Value::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
 
 	///
