@@ -215,7 +215,7 @@ class DependencyObject : public Base {
 	~DependencyObject ();
 	static DependencyProperty *Register (Value::Kind type, char *name, Value *default_value);
 	static DependencyProperty *Register (Value::Kind type, char *name, Value::Kind vtype);
-	static DependencyProperty *RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype);
+	static DependencyProperty *RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype, bool attached);
 	
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name);
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name, bool inherits);
@@ -232,9 +232,11 @@ class DependencyObject : public Base {
 
 	EventObject *events;
 	static GHashTable *properties;
+	static DependencyProperty *ParentProperty;
 
 	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
+	virtual void OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { }
 	virtual Value::Kind GetObjectType ()
 	{
 		g_warning ("This class is missing an override of GetObjectType ()");
@@ -245,9 +247,12 @@ class DependencyObject : public Base {
 		return Type::Find (GetObjectType ());
 	};
 
+	void SetParent (DependencyObject *parent);
+	DependencyObject* GetParent ();
 
  protected:
 	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
+	void NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type);
 
  private:
 	GHashTable        *current_values;
@@ -264,12 +269,13 @@ class DependencyProperty {
  public:
 	DependencyProperty () {} ;
 	~DependencyProperty ();
-	DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type);
+	DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type, bool attached);
 
 	char *name;
 	Value *default_value;
 	Value::Kind type;
 	Value::Kind value_type;
+	bool is_attached_property;
 };
 
 DependencyProperty *dependency_property_lookup (Value::Kind type, char *name);
@@ -312,6 +318,10 @@ class Collection : public DependencyObject {
 
 	virtual void Add    (void *data);
 	virtual void Remove (void *data);
+
+ protected:
+	void Add (DependencyObject *data);
+	void Remove (DependencyObject *data);
 };
 
 void collection_add    (Collection *collection, void *data);
@@ -723,6 +733,7 @@ void shape_init ();
 void geometry_init ();
 void xaml_init ();
 void types_init ();
+void dependencyobject_init ();
 
 G_END_DECLS
 

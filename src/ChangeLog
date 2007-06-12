@@ -1,3 +1,14 @@
+2007-06-12  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (DependencyObject::RegisterFull): Allow for
+	properties to be flagged as attached, and only propagate the child
+	notification to those those that care about it.
+
+2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Implement a mechanism to keep track of parents and notify
+	parents of changes in attached properties.
+
 2007-06-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add content properties, and handle collections that

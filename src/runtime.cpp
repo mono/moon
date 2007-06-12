@@ -68,6 +68,20 @@ Collection::Remove (void *data)
 	list = g_slist_remove (list, data);
 }
 
+void
+Collection::Add (DependencyObject *data)
+{
+	Collection::Add ((void*) data);
+	data->SetParent (this);
+}
+
+void
+Collection::Remove (DependencyObject *data)
+{
+	Collection::Remove ((void*) data);
+	data->SetParent (NULL);
+}
+
 void 
 collection_add (Collection *collection, void *data)
 {
@@ -1107,6 +1121,15 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
+	if (property != ParentProperty) {
+		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT) {
+			current_value->AsDependencyObject ()->SetParent (NULL);
+		}
+		if (value != NULL && value->k >= Value::DEPENDENCY_OBJECT) {
+			value->AsDependencyObject ()->SetParent (this);
+		}
+	}
+
 	if ((current_value == NULL && value != NULL) ||
 	    (current_value != NULL && value == NULL) ||
 	    (current_value != NULL && value != NULL && *current_value != *value)) {
@@ -1142,6 +1165,8 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		}
 
 		OnPropertyChanged (property);
+		if (property->is_attached_property)
+			NotifyParentOfPropertyChange (property, true);
 	}
 }
 
@@ -1290,7 +1315,7 @@ DependencyObject::Register (Value::Kind type, char *name, Value::Kind vtype)
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, NULL, vtype);
+	return RegisterFull (type, name, NULL, vtype, FALSE);
 }
 
 //
@@ -1302,7 +1327,7 @@ DependencyObject::Register (Value::Kind type, char *name, Value *default_value)
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, default_value->k);
+	return RegisterFull (type, name, default_value, default_value->k, FALSE);
 }
 
 //
@@ -1311,11 +1336,11 @@ DependencyObject::Register (Value::Kind type, char *name, Value *default_value)
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyObject::RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype)
+DependencyObject::RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype, bool attached)
 {
 	GHashTable *table;
 
-	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype);
+	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached);
 	
 	/* first add the property to the global 2 level property hash */
 	if (NULL == properties)
@@ -1333,6 +1358,41 @@ DependencyObject::RegisterFull (Value::Kind type, char *name, Value *default_val
 	return property;
 }
 
+DependencyObject *
+DependencyObject::GetParent ()
+{
+	Value *parent = GetValue (ParentProperty);
+	if (parent == NULL)
+		return NULL;
+	return parent->AsDependencyObject ();
+}
+
+void
+DependencyObject::SetParent (DependencyObject *parent)
+{
+#if DEBUG
+	// Check for circular families
+	DependencyObject *current = parent;
+	do while (current != NULL) {
+		g_assert (current != this);
+		current = current ->GetParent ();
+	} 
+#endif
+	SetValue (ParentProperty, parent);
+}
+
+void
+DependencyObject::NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type)
+{
+	DependencyObject *current = GetParent ();
+	while (current != NULL) {
+		if (!only_exact_type || property->type == current->GetObjectType ()) {	
+			current->OnChildPropertyChanged (property, this);
+		}
+		current = current->GetParent ();
+	}
+}
+
 Value *
 dependency_object_get_value (DependencyObject *object, DependencyProperty *prop)
 {
@@ -1348,12 +1408,13 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type)
+DependencyProperty::DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type, bool attached)
 {
 	this->type = type;
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->value_type = value_type;
+	this->is_attached_property = attached;
 }
 
 DependencyProperty::~DependencyProperty ()
@@ -1654,8 +1715,8 @@ DependencyProperty* Canvas::LeftProperty;
 void 
 canvas_init ()
 {
-	Canvas::TopProperty = DependencyObject::Register (Value::CANVAS, "Top", new Value (0.0));
-	Canvas::LeftProperty = DependencyObject::Register (Value::CANVAS, "Left", new Value (0.0));
+	Canvas::TopProperty = DependencyObject::RegisterFull (Value::CANVAS, "Top", new Value (0.0), Value::DOUBLE, TRUE);
+	Canvas::LeftProperty = DependencyObject::RegisterFull (Value::CANVAS, "Left", new Value (0.0), Value::DOUBLE, TRUE);
 }
 
 Type* Type::types [];
@@ -1727,6 +1788,14 @@ Type *
 Type::Find (Value::Kind type)
 {
 	return types [type];
+}
+
+DependencyProperty *DependencyObject::ParentProperty;
+
+void
+dependencyobject_init ()
+{
+	DependencyObject::ParentProperty = DependencyObject::Register (Value::DEPENDENCY_OBJECT, "Parent", Value::DEPENDENCY_OBJECT);
 }
 
 void 
@@ -1859,6 +1928,7 @@ runtime_init ()
 	inited = TRUE;
 
 	types_init ();
+	dependencyobject_init ();
 	namescope_init ();
 	item_init ();
 	framework_element_init ();
