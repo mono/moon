@@ -1,0 +1,45 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Rectangle x:Name="rect-one" Fill="Red" Stroke="Black" StrokeThickness="3"
+        Canvas.Left="10" Canvas.Top="10" Width="100" Height="100">
+
+	<Rectangle.Triggers>
+	    <TriggerCollection>
+	            <EventTrigger RoutedEvent="Rectangle.Loaded">
+	                <BeginStoryboard>
+		            <Storyboard>
+		                <DoubleAnimation
+			            Storyboard.TargetName="rect-one"
+			            Storyboard.TargetProperty="Width"
+			            From="10" To="300" Duration="0:0:30"
+			        />
+		            </Storyboard>
+		        </BeginStoryboard>
+      	            </EventTrigger>
+	    </TriggerCollection>
+	</Rectangle.Triggers>
+	
+    </Rectangle>
+
+    <Rectangle x:Name="rect-two" Fill="Red" Stroke="Black" StrokeThickness="3"
+        Canvas.Left="10" Canvas.Top="150" Width="100" Height="100">
+
+	<Rectangle.Triggers>
+	    <EventTrigger RoutedEvent="Rectangle.Loaded">
+	                <BeginStoryboard>
+		            <Storyboard>
+		                <DoubleAnimation
+			            Storyboard.TargetName="rect-two"
+			            Storyboard.TargetProperty="Width"
+			            From="10" To="300" Duration="0:0:30"
+			        />
+		            </Storyboard>
+		        </BeginStoryboard>
+      	            </EventTrigger>
+	</Rectangle.Triggers>
+
+    </Rectangle>
+
+</Canvas>
+
