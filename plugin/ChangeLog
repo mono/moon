@@ -1,5 +1,10 @@
 2007-06-12  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile.am: Fix LIBADD to include MOON_LIBS instead of two times 
+	PLUGIN_LIBS.
+
+2007-06-12  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp, plugin-class.h: Get content and settings as a plugin
 	class properties.
 

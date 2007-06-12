@@ -12,7 +12,7 @@ libmoonplugin_la_LDFLAGS = \
 	-module \
 	-L$(top_srcdir)/src/.libs
 
-libmoonplugin_la_LIBADD = -lmoon $(PLUGIN_LIBS) $(PLUGIN_LIBS)
+libmoonplugin_la_LIBADD = -lmoon $(MOON_LIBS) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
 	moonlight.h		\
