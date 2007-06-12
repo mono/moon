@@ -2,19 +2,19 @@
 
     <Path Stroke="Black" StrokeThickness="2">
 	<Path.Data>
-		<PathGeometry>
+	    <PathGeometry>
 		<PathGeometry.Figures>
-			<PathFigureCollection>
-				<PathFigure StartPoint="10,10">
-				<PathFigure.Segments>
-					<PathSegmentCollection>
-						<LineSegment Point="110,10" />
-					</PathSegmentCollection>
-				</PathFigure.Segments>
-				</PathFigure>
-			</PathFigureCollection>
+		    <PathFigureCollection>
+		        <PathFigure StartPoint="10,10">
+			    <PathFigure.Segments>
+			        <PathSegmentCollection>
+				    <LineSegment Point="110,10" />
+				</PathSegmentCollection>
+			    </PathFigure.Segments>
+		        </PathFigure>
+		    </PathFigureCollection>
 		</PathGeometry.Figures>
-		</PathGeometry>
+	    </PathGeometry>
 	</Path.Data>
     </Path>
 
@@ -38,6 +38,7 @@
 	<Path.Data>
 	    <PathGeometry>
 		<PathFigure StartPoint="30,30">
+		
 		    <PathFigure.Segments>
 			<PathSegmentCollection>
 			    <LineSegment Point="130,30" />
@@ -47,5 +48,5 @@
 	    </PathGeometry>
 	</Path.Data>
     </Path>
-    
+  
 </Canvas>
