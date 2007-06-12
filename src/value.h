@@ -54,6 +54,7 @@ class GradientStop;
 class GradientStopCollection;
 class ImageBrush;
 class Inline;
+class Inlines;
 class KeyFrame;
 class KeyFrameCollection;
 class Line;
@@ -166,6 +167,7 @@ public:
 		GRADIENTSTOP_COLLECTION,
 		IMAGEBRUSH,
 		INLINE,
+		INLINES,
 		KEYFRAME,
 		KEYFRAME_COLLECTION,
 		LINE,
@@ -323,6 +325,7 @@ public:
 	GradientStopCollection*        AsGradientStopCollection ();
 	ImageBrush*                    AsImageBrush ();
 	Inline*                        AsInline ();
+	Inlines*                       AsInlines ();
 	KeyFrame*                      AsKeyFrame ();
 	KeyFrameCollection*            AsKeyFrameCollection ();
 	Line*                          AsLine ();

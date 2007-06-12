@@ -97,6 +97,7 @@ void types_init ()
 	Type::RegisterType ("GradientStopCollection", Value::GRADIENTSTOP_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("ImageBrush", Value::IMAGEBRUSH, Value::TILEBRUSH);
 	Type::RegisterType ("Inline", Value::INLINE, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Inlines", Value::INLINES, Value::COLLECTION);
 	Type::RegisterType ("KeyFrame", Value::KEYFRAME, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("KeyFrameCollection", Value::KEYFRAME_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("Line", Value::LINE, Value::SHAPE);

@@ -218,6 +218,12 @@ Value::AsInline ()
 	checked_get_subclass (INLINE, Inline);
 }
 
+Inlines*
+Value::AsInlines ()
+{
+	checked_get_subclass (INLINES, Inlines);
+}
+
 KeyFrame*
 Value::AsKeyFrame ()
 {

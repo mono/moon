@@ -416,6 +416,16 @@ class MediaAttributeCollection : public Collection {
 	
 };
 
+class Inlines : public Collection {
+ public:
+	Inlines () {}
+	virtual Value::Kind GetObjectType () { return Value::INLINES; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
+};
+
 
 VisualCollection*          visual_collection_new ();
 TriggerCollection*         trigger_collection_new ();
