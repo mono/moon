@@ -16,7 +16,8 @@ class Inline : public DependencyObject {
 	static DependencyProperty* FontWeight;
 	static DependencyProperty* Foreground;
 	static DependencyProperty* TextDecorations;
-	
+
+	Value::Kind GetObjectType () { return Value::INLINE; }	
 };
 
 

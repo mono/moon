@@ -204,6 +204,7 @@ class Path : public Shape {
 	static DependencyProperty* DataProperty;
 
 	Path () {};
+	Value::Kind GetObjectType () { return Value::PATH; };
 
 	void Draw (Surface *s);
 

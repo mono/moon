@@ -15,6 +15,55 @@ class gen {
 		GenerateValueH (classes, bases);	
 		GenerateValueCpp (classes, bases);
 		GenerateKindCs (classes, bases);
+
+		CheckGetObjectType (classes, bases);
+	}
+
+	static void CheckGetObjectType (ArrayList classes, Hashtable bases)
+	{
+		string [] files = Directory.GetFiles (Environment.CurrentDirectory, "*.h");
+		StringBuilder all = new StringBuilder ();
+		string contents;
+
+		foreach (string file in files) {
+			all.AppendLine (File.ReadAllText (file));
+		}
+		all.AppendLine ("class : ;");
+		contents = all.ToString ();
+		contents = RemoveComments (contents);
+
+		foreach (string c in classes) {
+			int a, b;
+			int start = 0;
+			int next;
+			do {
+				start = contents.IndexOf (Environment.NewLine + "class " + c + " ", start);
+				next = contents.IndexOf (Environment.NewLine + "class ", start + 10);
+				
+				if (start == -1) {
+					Console.WriteLine ("Could not find the class " + c);
+					break;
+				}
+
+				a = contents.IndexOf (":", start);
+				b = contents.IndexOf (";", start);
+				if (a > b)
+					start++;
+			} while (start >= 0 && a > b);
+
+			if (start == -1)
+				continue;
+
+			if (contents.IndexOf ("Value::Kind GetObjectType", start, next - start) == -1) {
+				Console.WriteLine ("The class '{0}' does not seem to have an implementation of GetObjectType.", c);
+				//Console.WriteLine (">Code Checked:");
+				//Console.WriteLine (contents.Substring (start, next - start));	
+			} else if (contents.IndexOf ("Value::" + getU (c), start, next - start) == -1) {
+				Console.WriteLine ("The method '{0}::GetObjectType' does not seem to return the correct type (didn't find 'Value::{1}' anywhere within the class).", c, getU (c));
+			} else {
+				//Console.WriteLine ("OK: " + c);
+			}
+		}
 	}
 
 	static void GetClasses (ArrayList classes, Hashtable bases)
@@ -76,7 +125,7 @@ class gen {
 			}
 			if (pp != "DependencyObject")
 				continue;
-			
+
 			classes.Add (c);
 		}
 		// DO has to be the first class in the list, the rest are sorted alphabetically
@@ -112,7 +161,7 @@ class gen {
 			string svn;
 			svn =  Path.Combine (Path.GetDirectoryName (realfile), ".svn/text-base/Kind.cs.svn-base".Replace ('/', Path.DirectorySeparatorChar));
 			if (string.CompareOrdinal (File.ReadAllText (realfile), File.ReadAllText (svn)) != 0) {
-				Console.WriteLine ("Don't forget to commit your pending changes in the Kind.cs file in the directory: " + Path.GetDirectoryName (realfile));
+				Console.WriteLine ("The file '{0}' has been updated, don't forget to commit the changes.", realfile);
 			}			
 		} else {
 			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'olive/olive/class/agclr/Mono/' directory with the Kind.cs file generated here");
@@ -204,6 +253,18 @@ class gen {
 		text.AppendLine ("\ttypes_init_manually ();");
 		text.AppendLine ("}");
 		File.WriteAllText ("type.cpp", text.ToString ());
+	}
+
+	static string RemoveComments (string v)
+	{
+		int a, b;
+		a = v.IndexOf ("/*");
+		while (a >= 0) {
+			b = v.IndexOf ("*/", a + 2);
+			v = v.Remove (a, b - a + 2);
+			a = v.IndexOf ("/*", a + 2);
+		}
+		return v;
 	}
 
 	static string getU (string v)

@@ -285,6 +285,8 @@ class NameScope : public DependencyObject {
 	NameScope ();
 	~NameScope ();
 
+	Value::Kind GetObjectType () { return Value::NAMESCOPE; }
+
 	void RegisterName (const char *name, DependencyObject *object);
 	void UnregisterName (const char *name);
 
@@ -452,6 +454,7 @@ void		solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *co
 class GradientBrush : public Brush {
  public:
 	GradientBrush ();
+	Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
 	// ColorInterpolationMode{ScRgbLinearInterpolation, SRgbLinearInterpolation} mode;
 	// GradientStopCollection stops
 	// BrushMappingMode{Absolute,RelativeToBoundingBox} MappingMode
@@ -460,18 +463,23 @@ class GradientBrush : public Brush {
 };
 
 class TileBrush : public Brush {
+	Value::Kind GetObjectType () { return Value::TILEBRUSH; }
 };
 
 class ImageBrush : public TileBrush {
+	Value::Kind GetObjectType () { return Value::IMAGEBRUSH; }
 };
 
 class VideoBrush : public TileBrush {
+	Value::Kind GetObjectType () { return Value::VIDEOBRUSH; }
 };
 
 class LinearGradientBrush : public GradientBrush {
+	Value::Kind GetObjectType () { return Value::LINEARGRADIENTBRUSH; }
 };
 
 class GradientStop : public DependencyObject {
+	Value::Kind GetObjectType () { return Value::GRADIENTSTOP; }
 };
 
 enum Stretch {
@@ -652,6 +660,7 @@ class FrameworkElement : public UIElement {
 	TriggerCollection *triggers;
 
 	FrameworkElement ();
+	Value::Kind GetObjectType () { return Value::FRAMEWORKELEMENT; }
 };
 
 double	framework_element_get_height	(FrameworkElement *framework_element);
@@ -668,6 +677,7 @@ class Panel : public FrameworkElement {
 	VisualCollection *children;
 
 	Panel ();
+	Value::Kind GetObjectType () { return Value::PANEL; }
 
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;
@@ -687,6 +697,8 @@ class Canvas : public Panel {
 	Canvas ();
 	Surface *surface;
 	
+	Value::Kind GetObjectType () { return Value::CANVAS; }
+
 	virtual Point getxformorigin () { return Point (0, 0); }
 
 	virtual void render (Surface *s, int x, int y, int width, int height);
@@ -702,7 +714,6 @@ class Canvas : public Panel {
 
 Canvas *canvas_new ();
 
-
 // A video is an UIElement
 class Video : public UIElement {
 	enum { VIDEO_OK, VIDEO_ERROR_OPEN, VIDEO_ERROR_STREAM_INFO } VideoError;
@@ -714,6 +725,7 @@ class Video : public UIElement {
 	
 	Video (const char *filename);
 	~Video ();
+	Value::Kind GetObjectType () { return Value::VIDEO; };
 };
 
 Video *video_new     (const char *filename);

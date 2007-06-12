@@ -79,7 +79,6 @@ class AnimationStorage {
  public:
 	AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
 			  DependencyObject *targetobj, DependencyProperty *targetprop);
-
  private:
 	void UpdatePropertyValue ();
 	static void update_property_value (gpointer data);
@@ -230,7 +229,7 @@ PointAnimation * point_animation_new ();
 class KeyFrame : public DependencyObject {
  public:
 	KeyFrame ();
-	Value::Kind GetObjectType () { return Value::POINTKEYFRAME; };
+	Value::Kind GetObjectType () { return Value::KEYFRAME; };
 
 	KeyTime *GetKeyTime();
 	void SetKeyTime (KeyTime keytime);

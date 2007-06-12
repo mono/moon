@@ -1,5 +1,13 @@
 2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* typegen.cs: Now checks if classes that inherits DependencyObject
+	implement GetObjectType.
+	* animation.h, runtime.h, text.h, geometry.h, shape.h: Implement
+	missing GetObjectTypes and fix a few that were returning the wrong
+	type.
+
+2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: 
 	- (DependencyObject::SetValue): Allow assigning an object of a 
 	  more derived type than the defined property type. Change the
@@ -16,7 +24,6 @@
 2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp, runtime.h: (DO/DP) Make all char*'s const.
-
 
 2007-06-12  Chris Toshok  <toshok@ximian.com>
 

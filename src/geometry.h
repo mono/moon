@@ -214,6 +214,7 @@ void			path_figure_set_segments	(PathFigure *path_figure, PathSegmentCollection*
 class PathSegment : public DependencyObject {
  public:
 	virtual void Draw (Surface *s) {}
+	Value::Kind GetObjectType () { return Value::PATHSEGMENT; };
 };
 
 //
@@ -325,7 +326,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	static DependencyProperty* PointsProperty;
 
 	PolyQuadraticBezierSegment () { }
-	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
+	Value::Kind GetObjectType () { return Value::POLYQUADRATICBEZIERSEGMENT; };
 
 	virtual void Draw (Surface *s);
 };
