@@ -438,7 +438,11 @@ KeyFrameCollection::Remove (void *data)
 	Collection::Remove (value->AsKeyFrame());
 }
 
-
+KeyFrameCollection *
+key_frame_collection_new ()
+{
+	return new KeyFrameCollection ();
+}
 
 DependencyProperty* DoubleKeyFrame::ValueProperty;
 

@@ -856,8 +856,22 @@ xaml_init ()
 	XamlElementInfo *caukf = register_dependency_object_element ("ColorAnimationUsingKeyFrames", ca, Value::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
 	caukf->content_property = "KeyFrames";
 
-//	register_dependency_object_element ("KeyFrameCollection", col, Value::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
+	register_dependency_object_element ("KeyFrameCollection", col, Value::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
 
+	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Value::KEYFRAME);
+
+	XamlElementInfo *ckf = register_dependency_object_element ("ColorKeyFrame", keyfrm, Value::COLORKEYFRAME, (create_item_func) NULL);
+	register_dependency_object_element ("DiscreteColorKeyFrame", ckf, Value::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
+	register_dependency_object_element ("LinearColorKeyFrame", ckf, Value::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
+
+	XamlElementInfo *dkf = register_dependency_object_element ("DoubleKeyFrame", keyfrm, Value::DOUBLEKEYFRAME, (create_item_func) NULL);
+	register_dependency_object_element ("DiscreteDoubleKeyFrame", dkf, Value::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
+	register_dependency_object_element ("LinearDoubleKeyFrame", dkf, Value::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
+
+	XamlElementInfo *pkf = register_dependency_object_element ("PointKeyFrame", keyfrm, Value::POINTKEYFRAME, (create_item_func) NULL);
+	register_dependency_object_element ("DiscretePointKeyFrame", pkf, Value::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
+	register_dependency_object_element ("LinearPointKeyFrame", pkf, Value::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
+	
 	///
 	/// Triggers
 	///

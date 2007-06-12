@@ -249,7 +249,7 @@ class KeyFrameCollection : public Collection {
 	virtual void Remove (void *data);
 };
 
-
+KeyFrameCollection * key_frame_collection_new ();
 
 class DoubleKeyFrame : public KeyFrame {
  public:
