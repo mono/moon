@@ -37,15 +37,41 @@
 		        <ColorAnimationUsingKeyFrames
 			    BeginTime="00:00:00" Storyboard.TargetName="rectangle-two-brush"
 			    Storyboard.TargetProperty="Color">
-
-			    <SplineColorKeyFrame KeyTime="00:00:10" Value="Blue"/> 
-			    <SplineColorKeyFrame KeyTime="00:00:10" Value="Orange"/>
+			    <ColorAnimationUsingKeyFrames.KeyFrames>		
+			        <SplineColorKeyFrame KeyTime="00:00:10" Value="Blue"/> 
+				<SplineColorKeyFrame KeyTime="00:00:10" Value="Orange"/>
+			    </ColorAnimationUsingKeyFrames.KeyFrames>
 			</ColorAnimationUsingKeyFrames>
 		    </Storyboard>
 		</BeginStoryboard>
 	    </EventTrigger>
 	</Rectangle.Triggers>
     </Rectangle>
-    
+
+    <Rectangle Stroke="Black" StrokeThickness="4" Canvas.Left="240" Canvas.Top="240" Width="100" Height="100" >
+
+	<Rectangle.Fill>
+	    <SolidColorBrush x:Name="rectangle-three-brush" Color="Red" />
+	</Rectangle.Fill>
+	       
+	<Rectangle.Triggers>
+	    <EventTrigger RoutedEvent="Rectangle.Loaded">
+	        <BeginStoryboard>
+		    <Storyboard RepeatBehavior="Forever" >
+		        <ColorAnimationUsingKeyFrames
+			    BeginTime="00:00:00" Storyboard.TargetName="rectangle-three-brush"
+			    Storyboard.TargetProperty="Color">
+			    <ColorAnimationUsingKeyFrames.KeyFrames>
+			     	<KeyFrameCollection>	
+			            <SplineColorKeyFrame KeyTime="00:00:10.5" Value="Yellow"/> 
+				    <SplineColorKeyFrame KeyTime="00:00:05.5" Value="Purple"/>
+			        </KeyFrameCollection>
+			    </ColorAnimationUsingKeyFrames.KeyFrames>
+			</ColorAnimationUsingKeyFrames>
+		    </Storyboard>
+		</BeginStoryboard>
+	    </EventTrigger>
+	</Rectangle.Triggers>
+    </Rectangle>
 </Canvas>
 
