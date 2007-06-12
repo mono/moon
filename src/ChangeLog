@@ -1,3 +1,10 @@
+2007-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: Hook up the UIElement::Triggers and
+	EventTrigger::Actions/RoutedEvent properly.
+	* xaml.cpp: Remove some of the special casing for event triggers
+	now that they are proper DependencyProperties.
+
 2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* typegen.cs: Now checks if classes that inherits DependencyObject

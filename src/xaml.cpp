@@ -655,12 +655,6 @@ panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInst
 }
 
 void
-event_trigger_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	event_trigger_action_add ((EventTrigger *) parent->item, (TriggerAction *) child->item);
-}
-
-void
 begin_storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	if (!is_instance_of (child, Value::STORYBOARD)) {
@@ -698,11 +692,7 @@ storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElemen
 void
 dependency_object_missed_property (XamlElementInstance *item, XamlElementInstance *prop, XamlElementInstance *value, char **prop_name)
 {
-	if (!strcmp ("Triggers", prop_name [1])) {
-		if (is_instance_of (item, Value::TIMELINE) && is_instance_of (value, Value::EVENTTRIGGER)) {
-			framework_element_trigger_add ((FrameworkElement *) item->item, (EventTrigger *) value->item);
-		}
-	}
+
 }
 
 void
@@ -851,20 +841,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 	}
 }
 
-void
-event_trigger_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
-{
-	EventTrigger *et = (EventTrigger *) item->item;
-
-	for (int i = 0; attr [i]; i += 2) {
-		if (!strcmp (attr [i], "RoutedEvent")) {
-			et->routed_event = g_strdup (attr [i + 1]);
-		}
-	}
-
-	dependency_object_set_attributes (p, item, attr);
-}
-
 // We still use a name for ghost elements to make debugging easier
 XamlElementInfo *
 register_ghost_element (const char *name, XamlElementInfo *parent, Value::Kind dt)
@@ -982,14 +958,17 @@ xaml_init ()
 	
 	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
 	register_dependency_object_element ("DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	register_dependency_object_element ("ColorAnimation", tl, Value::COLORANIMATION, (create_item_func) color_animation_new);
+	XamlElementInfo *ca = register_dependency_object_element ("ColorAnimation", tl, Value::COLORANIMATION, (create_item_func) color_animation_new);
 	register_dependency_object_element ("PointAnimation", tl, Value::POINTANIMATION, (create_item_func) point_animation_new);
 
 	XamlElementInfo *sb = register_dependency_object_element ("Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
 	sb->add_child = storyboard_add_child;
 
+	XamlElementInfo *caukf = register_dependency_object_element ("ColorAnimationUsingKeyFrames", ca, Value::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
+	caukf->content_property = "KeyFrames";
 
-	
+//	register_dependency_object_element ("KeyFrameCollection", col, Value::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
+
 	///
 	/// Triggers
 	///
@@ -998,9 +977,11 @@ xaml_init ()
 			(create_item_func) begin_storyboard_new);
 	bsb->add_child = begin_storyboard_add_child;
 
-	register_element_full ("EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new,
-			create_event_trigger_instance, event_trigger_add_child, dependency_object_set_property,
-			event_trigger_set_attributes);
+	XamlElementInfo *evt = register_dependency_object_element ("EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new);
+	evt->content_property = "Actions";
+	evt->create_element = create_event_trigger_instance;
+
+	register_dependency_object_element ("TriggerActionCollection", col, Value::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
 
 	///
 	/// Transforms

@@ -416,6 +416,19 @@ class MediaAttributeCollection : public Collection {
 	
 };
 
+
+VisualCollection*          visual_collection_new ();
+TriggerCollection*         trigger_collection_new ();
+TriggerActionCollection*   trigger_action_collection_new ();
+/*
+ResourceCollection*        resource_collection_new ();
+StrokeCollection*          stroke_collection_new ();
+StylusPointCollection*     stylus_point_collection_new ();
+TimelineMarkerCollection*  time_line_marker_collection_new ();
+GradientStopCollection*    gradient_stop_collection_new ();
+MediaAttributeCollection*  media_attribute_collection_new ();
+*/
+
 class Brush : public DependencyObject {
  public:
 	static DependencyProperty* OpacityProperty;
@@ -526,7 +539,6 @@ class TriggerAction : public DependencyObject {
 class EventTrigger : public DependencyObject {
 
  public:
-	char *routed_event;
 	TriggerActionCollection *actions;
 
 	EventTrigger ();
@@ -535,6 +547,11 @@ class EventTrigger : public DependencyObject {
 
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
+
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	static DependencyProperty* RoutedEventProperty;
+	static DependencyProperty* ActionsProperty;
 };
 
 EventTrigger  *event_trigger_new ();
@@ -547,12 +564,8 @@ void          event_trigger_fire_actions (EventTrigger *trigger);
 //
 class UIElement : public DependencyObject {
  public:
-	UIElement () :
-		parent(NULL), flags (0),
-		x1 (0), y1(0), x2(0), y2(0)
-		{
-			cairo_matrix_init_identity (&absolute_xform);
-		}
+	UIElement ();
+		
 	
 	Value::Kind GetObjectType () { return Value::UIELEMENT; };
 
@@ -570,6 +583,8 @@ class UIElement : public DependencyObject {
 
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
+
+	TriggerCollection *triggers;
 
 	//
 	// update_xform:
@@ -617,6 +632,7 @@ class UIElement : public DependencyObject {
 
 	~UIElement ();
 
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
 	Point GetRenderTransformOrigin () {
@@ -635,6 +651,7 @@ class UIElement : public DependencyObject {
 	static DependencyProperty* IsHitTestVisibleProperty;
 	static DependencyProperty* VisibilityProperty;
 	static DependencyProperty* ResourcesProperty;
+	static DependencyProperty* TriggersProperty;
 };
 
 Surface *item_get_surface          (UIElement *item);
@@ -657,8 +674,6 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty* HeightProperty;
 	static DependencyProperty* WidthProperty;
 
-	TriggerCollection *triggers;
-
 	FrameworkElement ();
 	Value::Kind GetObjectType () { return Value::FRAMEWORKELEMENT; }
 };
@@ -667,7 +682,6 @@ double	framework_element_get_height	(FrameworkElement *framework_element);
 void	framework_element_set_height	(FrameworkElement *framework_element, double height);
 double	framework_element_get_width	(FrameworkElement *framework_element);
 void	framework_element_set_width	(FrameworkElement *framework_element, double width);
-void	framework_element_trigger_add   (FrameworkElement *framework_element, EventTrigger *trigger);
 
 //
 // Panel Class

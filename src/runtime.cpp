@@ -475,6 +475,50 @@ item_get_render_affine (UIElement *item, cairo_matrix_t *result)
 	}
 }
 
+UIElement::UIElement () : parent(NULL), flags (0), triggers (NULL), x1 (0), y1(0), x2(0), y2(0)
+{
+	cairo_matrix_init_identity (&absolute_xform);
+
+	TriggerCollection *c = new TriggerCollection ();
+	this->SetValue (UIElement::TriggersProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == triggers);
+}
+
+//
+// Intercept any changes to the triggers property and mirror that into our
+// own variable
+//
+void
+UIElement::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == TriggersProperty){
+		// The new value has already been set, so unref the old collection
+
+		TriggerCollection *newcol = GetValue (prop)->AsTriggerCollection();
+
+		if (newcol != triggers){
+			if (triggers){
+				for (GSList *l = triggers->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (triggers);
+				g_slist_free (triggers->list);
+			}
+
+			triggers = newcol;
+			if (triggers->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			triggers->closure = this;
+			
+			base_ref (triggers);
+		}
+	}
+}
+
 void
 UIElement::update_xform ()
 {
@@ -553,14 +597,6 @@ uielement_set_opacity (UIElement *item, double opacity)
 
 FrameworkElement::FrameworkElement ()
 {
-	triggers = new TriggerCollection ();
-}
-
-void 
-framework_element_trigger_add (FrameworkElement *element, EventTrigger *trigger)
-{
-	Value v (trigger);
-	element->triggers->Add (&v);
 }
 
 double
@@ -1528,10 +1564,101 @@ TriggerActionCollection::Remove (void *data)
 	Collection::Remove (action);
 }
 
-
-EventTrigger::EventTrigger () : routed_event (NULL)
+VisualCollection *
+visual_collection_new ()
 {
-	actions = new TriggerActionCollection ();
+	return new VisualCollection ();
+}
+
+TriggerCollection *
+trigger_collection_new ()
+{
+	return new TriggerCollection ();
+}
+
+TriggerActionCollection *
+trigger_action_collection_new ()
+{
+	return new TriggerActionCollection ();
+}
+/*
+ResourceCollection *
+resource_collection_new ()
+{
+	return new ResourceCollection ();
+}
+
+StrokeCollection *
+stroke_collection_new ()
+{
+	return new StrokeCollection ();
+}
+
+StylusPointCollection *
+stylus_point_collection_new ()
+{
+	return new StylusPointCollection ();
+}
+
+TimelineMarkerCollection *
+time_line_marker_collection_new ()
+{
+	return new TimelineMarkerCollection ();
+}
+
+GradientStopCollection *
+gradient_stop_collection_new ()
+{
+	return new GradientStopCollection ();
+}
+
+MediaAttributeCollection *
+media_attribute_collection_new ()
+{
+	return new MediaAttributeCollection ();
+}
+*/
+
+EventTrigger::EventTrigger () : actions (NULL)
+{
+	TriggerActionCollection *c = new TriggerActionCollection ();
+	this->SetValue (EventTrigger::ActionsProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == actions);
+}
+
+//
+// Intercept any changes to the actions property and mirror that into our
+// own variable
+//
+void
+EventTrigger::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == ActionsProperty){
+		// The new value has already been set, so unref the old collection
+
+		TriggerActionCollection *newcol = GetValue (prop)->AsTriggerActionCollection();
+
+		if (newcol != actions){
+			if (actions){
+				for (GSList *l = actions->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (actions);
+				g_slist_free (actions->list);
+			}
+
+			actions = newcol;
+			if (actions->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			actions->closure = this;
+			
+			base_ref (actions);
+		}
+	}
 }
 
 void
@@ -1582,6 +1709,7 @@ DependencyProperty* UIElement::RenderTransformProperty;
 DependencyProperty* UIElement::OpacityProperty;
 DependencyProperty* UIElement::ClipProperty;
 DependencyProperty* UIElement::OpacityMaskProperty;
+DependencyProperty* UIElement::TriggersProperty;
 DependencyProperty* UIElement::RenderTransformOriginProperty;
 DependencyProperty* UIElement::CursorProperty;
 DependencyProperty* UIElement::IsHitTestVisibleProperty;
@@ -1595,6 +1723,7 @@ item_init ()
 	UIElement::OpacityProperty = DependencyObject::Register (Value::UIELEMENT, "Opacity", new Value(1.0));
 	UIElement::ClipProperty = DependencyObject::Register (Value::UIELEMENT, "Clip", Value::GEOMETRY);
 	UIElement::OpacityMaskProperty = DependencyObject::Register (Value::UIELEMENT, "OpacityMask", Value::BRUSH);
+	UIElement::TriggersProperty = DependencyObject::Register (Value::UIELEMENT, "Triggers", Value::TRIGGER_COLLECTION);
 	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransformOrigin", Value::POINT);
 	UIElement::CursorProperty = DependencyObject::Register (Value::UIELEMENT, "Cursor", Value::INT32);
 	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Value::UIELEMENT, "IsHitTestVisible", Value::BOOL);
@@ -1642,6 +1771,16 @@ canvas_init ()
 {
 	Canvas::TopProperty = DependencyObject::RegisterFull (Value::CANVAS, "Top", new Value (0.0), Value::DOUBLE, TRUE);
 	Canvas::LeftProperty = DependencyObject::RegisterFull (Value::CANVAS, "Left", new Value (0.0), Value::DOUBLE, TRUE);
+}
+
+DependencyProperty* EventTrigger::RoutedEventProperty;
+DependencyProperty* EventTrigger::ActionsProperty;
+
+void
+event_trigger_init ()
+{
+	EventTrigger::RoutedEventProperty = DependencyObject::Register (Value::EVENTTRIGGER, "RoutedEvent", Value::STRING);
+	EventTrigger::ActionsProperty = DependencyObject::Register (Value::EVENTTRIGGER, "Actions", Value::TRIGGERACTION_COLLECTION);
 }
 
 Type* Type::types [];
@@ -1740,6 +1879,7 @@ runtime_init ()
 	framework_element_init ();
 	panel_init ();
 	canvas_init ();
+	event_trigger_init ();
 	transform_init ();
 	animation_init ();
 	brush_init ();
