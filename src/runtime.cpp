@@ -1191,7 +1191,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 }
 
 Value *
-DependencyObject::GetValue (char *name)
+DependencyObject::GetValue (const char *name)
 {
 	DependencyProperty *property;
 	property = GetDependencyProperty (name);
@@ -1206,13 +1206,13 @@ DependencyObject::GetValue (char *name)
 }
 
 void 
-DependencyObject::SetValue (char *name, Value value)
+DependencyObject::SetValue (const char *name, Value value)
 {
 	SetValue (name, &value);
 }
 
 void
-DependencyObject::SetValue (char *name, Value *value)
+DependencyObject::SetValue (const char *name, Value *value)
 {
 	DependencyProperty *property;
 	property = GetDependencyProperty (name);
@@ -1246,19 +1246,19 @@ DependencyObject::~DependencyObject ()
 }
 
 DependencyProperty *
-DependencyObject::GetDependencyProperty (char *name)
+DependencyObject::GetDependencyProperty (const char *name)
 {
 	return DependencyObject::GetDependencyProperty (GetObjectType (), name);
 }
 
 DependencyProperty *
-DependencyObject::GetDependencyProperty (Value::Kind type, char *name)
+DependencyObject::GetDependencyProperty (Value::Kind type, const char *name)
 {
 	return GetDependencyProperty (type, name, true);
 }
 
 DependencyProperty *
-DependencyObject::GetDependencyProperty (Value::Kind type, char *name, bool inherits)
+DependencyObject::GetDependencyProperty (Value::Kind type, const char *name, bool inherits)
 {
 	GHashTable *table;
 	DependencyProperty *property;
@@ -1293,13 +1293,13 @@ DependencyObject::GetDependencyProperty (Value::Kind type, char *name, bool inhe
 }
 
 bool
-DependencyObject::HasProperty (char *name, bool inherits)
+DependencyObject::HasProperty (const char *name, bool inherits)
 {
 	return GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
 }
 
 DependencyObject*
-DependencyObject::FindName (char *name)
+DependencyObject::FindName (const char *name)
 {
 	NameScope *scope = NameScope::GetNameScope (this);
 	if (!scope)
@@ -1312,7 +1312,7 @@ DependencyObject::FindName (char *name)
 // Use this for values that can be null
 //
 DependencyProperty *
-DependencyObject::Register (Value::Kind type, char *name, Value::Kind vtype)
+DependencyObject::Register (Value::Kind type, const char *name, Value::Kind vtype)
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
@@ -1323,7 +1323,7 @@ DependencyObject::Register (Value::Kind type, char *name, Value::Kind vtype)
 // DependencyObject takes ownership of the Value * for default_value
 //
 DependencyProperty *
-DependencyObject::Register (Value::Kind type, char *name, Value *default_value)
+DependencyObject::Register (Value::Kind type, const char *name, Value *default_value)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
@@ -1337,7 +1337,7 @@ DependencyObject::Register (Value::Kind type, char *name, Value *default_value)
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyObject::RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype, bool attached)
+DependencyObject::RegisterFull (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype, bool attached)
 {
 	GHashTable *table;
 
@@ -1409,7 +1409,7 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type, bool attached)
+DependencyProperty::DependencyProperty (Value::Kind type, const char *name, Value *default_value, Value::Kind value_type, bool attached)
 {
 	this->type = type;
 	this->name = g_strdup (name);

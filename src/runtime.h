@@ -213,22 +213,22 @@ class DependencyObject : public Base {
 
 	DependencyObject ();
 	~DependencyObject ();
-	static DependencyProperty *Register (Value::Kind type, char *name, Value *default_value);
-	static DependencyProperty *Register (Value::Kind type, char *name, Value::Kind vtype);
-	static DependencyProperty *RegisterFull (Value::Kind type, char *name, Value *default_value, Value::Kind vtype, bool attached);
+	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value);
+	static DependencyProperty *Register (Value::Kind type, const char *name, Value::Kind vtype);
+	static DependencyProperty *RegisterFull (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype, bool attached);
 	
-	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name);
-	static DependencyProperty *GetDependencyProperty (Value::Kind type, char *name, bool inherits);
+	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name);
+	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name, bool inherits);
 
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (DependencyProperty *property, Value *value);
-	void SetValue (char *name, Value *value);
-	void SetValue (char *name, Value value);
+	void SetValue (const char *name, Value *value);
+	void SetValue (const char *name, Value value);
 	Value *GetValue (DependencyProperty *property);
-	Value *GetValue (char *name);
-	bool HasProperty (char *name, bool inherits);
-	DependencyProperty *GetDependencyProperty (char *name);
-	DependencyObject* FindName (char *name);
+	Value *GetValue (const char *name);
+	bool HasProperty (const char *name, bool inherits);
+	DependencyProperty *GetDependencyProperty (const char *name);
+	DependencyObject* FindName (const char *name);
 
 	EventObject *events;
 	static GHashTable *properties;
@@ -269,7 +269,7 @@ class DependencyProperty {
  public:
 	DependencyProperty () {} ;
 	~DependencyProperty ();
-	DependencyProperty (Value::Kind type, char *name, Value *default_value, Value::Kind value_type, bool attached);
+	DependencyProperty (Value::Kind type, const char *name, Value *default_value, Value::Kind value_type, bool attached);
 
 	char *name;
 	Value *default_value;
@@ -352,6 +352,16 @@ class TriggerActionCollection : public Collection {
 
 	virtual void Add    (void *data);
 	virtual void Remove (void *data);
+};
+
+class ResourceCollection : public Collection {
+ public:
+	ResourceCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::RESOURCE_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
 };
 
 class Brush : public DependencyObject {
