@@ -1,3 +1,7 @@
+2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: We now use SDL for audio instead of alsa.
+
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
 
 	* configure.ac: plugin/test/Makefile added to AC_OUTPUT.

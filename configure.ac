@@ -11,7 +11,7 @@ AC_PROG_LIBTOOL
 
 PKG_PROG_PKG_CONFIG
 
-LIBS_TO_CHECK="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa"
+LIBS_TO_CHECK="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale sdl"
 
 if pkg-config gtk+-2.0; then
    echo Gtk+ 2.0 found
@@ -28,14 +28,6 @@ if pkg-config libavcodec libavformat libswscale ; then
 else
    echo ffmpeg and its associated libraries are not installed
    echo You need libavcodec, libavformat and libswscale development kits
-   exit 1
-fi
-
-if pkg-config alsa; then
-   echo Found Alsa
-else
-   echo You are missing ALSA
-   echo looking for the alsa.pc file through pkgconfig.
    exit 1
 fi
 
@@ -97,7 +89,7 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
-MOON_PKGS="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa"
+MOON_PKGS="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale sdl"
 MOON_CFLAGS=`pkg-config --cflags $MOON_PKGS`
 MOON_LIBS=`pkg-config --libs gtk+-2.0 $MOON_PKGS`
 AC_SUBST(MOON_CFLAGS)
