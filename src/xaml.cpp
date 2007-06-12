@@ -683,6 +683,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			case Value::DURATION:
 				dep->SetValue (prop, Value (duration_from_str (attr [i + 1])));
 				break;
+			case Value::KEYTIME:
+				dep->SetValue (prop, Value (KeyTime (timespan_from_str (attr [i + 1]))));
+				break;
 			case Value::BRUSH:
 			case Value::SOLIDCOLORBRUSH:
 			{
