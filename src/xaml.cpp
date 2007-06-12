@@ -61,7 +61,7 @@ class XamlElementInstance {
 
 
 	XamlElementInstance (XamlElementInfo *info) : info (info), element_name (NULL), instance_name (NULL),
-			     parent (NULL), children (NULL), element_type (UNKNOWN)
+						      parent (NULL), children (NULL), element_type (UNKNOWN), item (NULL)
 	{
 	}
 
@@ -93,6 +93,7 @@ class XamlElementInfo {
 	const char *name;
 	XamlElementInfo *parent;
 	Value::Kind dependency_type;
+	const char *content_property;
 
 	create_item_func create_item;
 	create_element_instance_func create_element;
@@ -101,7 +102,7 @@ class XamlElementInfo {
 	set_attributes_func set_attributes;
 
 	XamlElementInfo (const char *name, XamlElementInfo *parent, Value::Kind dependency_type) :
-		name (name), parent (parent), dependency_type (dependency_type),
+		name (name), parent (parent), dependency_type (dependency_type), content_property (NULL),
 		create_item (NULL), create_element (NULL), add_child (NULL), set_property (NULL), set_attributes (NULL)
 	{
 
@@ -131,7 +132,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 			return;
 		}
 
-		if (p->current_element && p->current_element->element_type == XamlElementInstance::ELEMENT) {
+		if (p->current_element && p->current_element->element_type != XamlElementInstance::UNKNOWN) {
 			p->current_element->info->add_child (p, p->current_element, inst);
 		}
 
@@ -147,6 +148,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 
 		if (property) {
 			inst = new XamlElementInstance (NULL);
+			inst->info = p->current_element->info; // We copy this from our parent
 			inst->element_name = g_strdup (el);
 			inst->element_type = XamlElementInstance::PROPERTY;
 		} else {
@@ -183,14 +185,12 @@ end_element_handler (void *data, const char *el)
 		}
 		break;
 	case XamlElementInstance::PROPERTY:
-		printf ("Property: %s\n", el);
 		GList *walk = info->current_element->children;
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk->data;
 			info->current_element->parent->info->set_property (info, info->current_element->parent, info->current_element, child);
 			walk = walk->next;
 		}
-
 		break;
 	}
 
@@ -347,6 +347,16 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 	return NULL;
 }
 
+int
+property_name_index (const char *p)
+{
+	for (int i = 0; p [i]; i++) {
+		if (p [i] == '.' && p [i + 1])
+			return i + 1;
+	}
+	return -1;
+}
+
 bool
 is_instance_of (XamlElementInstance *item, Value::Kind kind)
 {
@@ -425,7 +435,38 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 
 	inst->element_name = i->name;
 	inst->element_type = XamlElementInstance::ELEMENT;
-	inst->item = i->create_item ();
+
+	if (is_instance_of (inst, Value::COLLECTION)) {
+		// If we are creating a collection, try walking up the element tree,
+		// to find the parent that we belong to and using that instance for
+		// our collection, instead of creating a new one
+
+		XamlElementInstance *walk = p->current_element;
+		DependencyProperty *dep = NULL;
+
+		// We attempt to advance past the property setter, because we might be dealing with a
+		// content element
+		if (walk && walk->element_type == XamlElementInstance::PROPERTY) {
+			char **prop_name = g_strsplit (walk->element_name, ".", -1);
+			
+			walk = walk->parent;
+			dep = DependencyObject::GetDependencyProperty (walk->info->dependency_type, prop_name [1]);
+
+			g_strfreev (prop_name);
+		} else if (walk && walk->info->content_property) {
+			dep = DependencyObject::GetDependencyProperty (walk->info->dependency_type,
+					(char *) walk->info->content_property);			
+		}
+
+		if (dep && dep->value_type == i->dependency_type) {
+			Value *v = ((DependencyObject * ) walk->item)->GetValue (dep);
+			inst->item = v->AsCollection ();
+		}
+	}
+
+	if (!inst->item)
+		inst->item = i->create_item ();
+
 	return inst;
 }
 
@@ -545,16 +586,72 @@ create_geometry_collection_instance (XamlParserInfo *p, XamlElementInfo *i)
 ///
 
 void
-nonpanel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
-	/// should we raise an error here????
+	if (parent->element_type == XamlElementInstance::PROPERTY) {
+		char **prop_name = g_strsplit (parent->element_name, ".", -1);
+		XamlElementInfo *powner = (XamlElementInfo *) g_hash_table_lookup (element_map, prop_name [0]);
+		DependencyProperty *dep = DependencyObject::GetDependencyProperty (powner->dependency_type, prop_name [1]);
 
+		g_strfreev (prop_name);
+
+		// Don't add the child element, if it is the entire collection
+		if (!dep || dep->value_type == child->info->dependency_type)
+			return;
+
+		Type *col_type = Type::Find (dep->value_type);
+		if (!col_type->IsSubclassOf (Value::COLLECTION))
+			return;
+
+		// Most common case, we will have a parent that we can snag the collection from
+		DependencyObject *obj = (DependencyObject *) parent->parent->item;
+		Value *col_v = obj->GetValue (dep);
+		Collection *col = (Collection *) col_v->AsCollection ();
+		Value v = Value ((DependencyObject *) child->item);
+
+		col->Add (&v);
+		return;
+	}
+
+	if (is_instance_of (parent, Value::COLLECTION)) {
+		Collection *col = (Collection *) parent->item;
+		Value v = Value ((DependencyObject *) child->item);
+
+		col->Add (&v);
+		return;
+	}
+
+	
+	if (parent->info->content_property && strcmp (child->element_name, parent->info->content_property)) {
+		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->dependency_type,
+				(char *) parent->info->content_property);
+
+		// We only want to enter this if statement if we are NOT dealing with the content property element,
+		// otherwise, attempting to use explicit property setting, would add the content property element
+		// to the content property element collection
+		if (dep && dep->value_type != child->info->dependency_type) {
+			Type *col_type = Type::Find (dep->value_type);
+			if (col_type->IsSubclassOf (Value::COLLECTION)) {
+				DependencyObject *obj = (DependencyObject *) parent->item;
+				Value *col_v = obj->GetValue (dep);
+				Collection *col = (Collection *) col_v->AsCollection ();
+				Value v = Value ((DependencyObject *) child->item);
+
+				col->Add (&v);
+				return;
+			}
+		}
+	}
+
+	// Do nothing if we aren't adding to a collection, or a content property collection
 }
 
 void
 panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
+
+	dependency_object_add_child (p, parent, child);
 }
 
 void
@@ -593,181 +690,6 @@ storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElemen
 	sb->AddChild (t);
 }
 
-void
-transform_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	TransformGroup *tg = (TransformGroup *) parent->item;
-
-	if (is_instance_of (child, Value::TRANSFORM_COLLECTION)) {
-		Value v ((TransformCollection *) child->item);
-		tg->SetValue (tg->ChildrenProperty, &v);
-		return;
-	}
-
-	if (!is_instance_of (child, Value::TRANSFORM)) {
-		g_warning ("error, attempting to add non Transform type (%d) to TransformCollection element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	Transform *t = (Transform *) child->item;
-	Value v = Value (t);
-
-	tg->children->Add (&v);
-}
-
-void
-transform_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	if (!is_instance_of (child, Value::TRANSFORM)) {
-		g_warning ("error, attempting to add non Transform type (%d) to TransformCollection element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	TransformCollection *tc = (TransformCollection *) parent->item;
-	Transform *t = (Transform *) child->item;
-	Value v = Value (t);
-
-	tc->Add (&v);
-}
-
-void
-geometry_group_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	GeometryGroup *gg = (GeometryGroup *) parent->item;
-
-	// When creating the child collections we attempt to use the PathGeometry's Collection
-	// in this case, the pointers will be equal, and we don't need to do anything
-	if (gg->children == child->item)
-		return;
-
-	if (is_instance_of (child, Value::GEOMETRY_COLLECTION)) {
-		Value v ((GeometryCollection *) child->item);
-		gg->SetValue (gg->ChildrenProperty, &v);
-		return;
-	}
-
-	if (!is_instance_of (child, Value::GEOMETRY)) {
-		g_warning ("error, attempting to add non Geometry type (%s) to GeometryCollection element\n",
-				child->element_name);
-		return;
-	}
-
-	Geometry *g = (Geometry *) child->item;
-	Value v = Value (g);
-
-	gg->children->Add (&v);
-}
-
-void
-path_geometry_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	PathGeometry *pg = (PathGeometry *) parent->item;
-
-	// When creating the child collections we attempt to use the PathGeometry's Collection
-	// in this case, the pointers will be equal, and we don't need to do anything
-	if (pg->children == child->item)
-		return;
-
-	if (is_instance_of (child, Value::PATHFIGURE_COLLECTION)) {
-		Value v ((PathFigureCollection *) child->item);
-		pg->SetValue (pg->FiguresProperty, &v);
-		return;
-	}
-
-	if (!is_instance_of (child, Value::PATHFIGURE)) {
-		g_warning ("error, attempting to add non PathFigure type (%d) to PathFigureCollection element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	PathFigure *pf = (PathFigure *) child->item;
-	Value v = Value (pf);
-
-	pg->children->Add (&v);
-}
-
-void
-path_segment_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	PathSegmentCollection *psc = (PathSegmentCollection *) parent->item;
-
-	if (!is_instance_of (child, Value::PATHSEGMENT)) {
-		g_warning ("error, attempting to add non PathSegment type (%d) to PathSegmentCollection element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	PathSegment *ps = (PathSegment *) child->item;
-	Value v = Value (ps);
-
-	psc->Add (&v);
-}
-
-
-void
-path_figure_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	PathFigure *pf = (PathFigure *) parent->item;
-
-	// When creating the child collections we attempt to use the PathGeometry's Collection
-	// in this case, the pointers will be equal, and we don't need to do anything
-	if (pf->children == child->item) {
-		printf ("path figure got an existing children collection\n");
-		return;
-	}
-
-	if (is_instance_of (child, Value::PATHSEGMENT_COLLECTION)) {
-		Value v ((PathSegmentCollection *) child->item);
-		pf->SetValue (pf->SegmentsProperty, &v);
-		return;
-	}
-
-	if (!is_instance_of (child, Value::PATHSEGMENT)) {
-		g_warning ("error, attempting to add non PathSegment type (%d) to PathFigureCollection element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	PathSegment *ps = (PathSegment *) child->item;
-	Value v = Value (ps);
-
-	pf->children->Add (&v);
-}
-
-void
-path_figure_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	if (!is_instance_of (child, Value::PATHFIGURE)) {
-		g_warning ("error, attempting to add non PathFigure type (%d) to PathFigureCollection element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	PathFigureCollection *pfc = (PathFigureCollection *) parent->item;
-	PathFigure *pf = (PathFigure *) child->item;
-	Value v = Value (pf);
-
-	pfc->Add (&v);
-}
-
-void
-geometry_collection_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	if (!is_instance_of (child, Value::GEOMETRY)) {
-		g_warning ("error, attempting to add non PathFigure type (%d) to PathFigureCollection element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	GeometryCollection *gc = (GeometryCollection *) parent->item;
-	Geometry *geo = (Geometry *) child->item;
-	Value v = Value (geo);
-
-	gc->Add (&v);
-}
-
 ///
 /// set property funcs
 ///
@@ -799,39 +721,20 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	}
 
 	if (prop) {
-		if (prop->value_type >= Value::DEPENDENCY_OBJECT) {
-			printf ("setting property:  %s\n", property->element_name);
+		if (is_instance_of (value, prop->value_type)) {
 			// an empty collection can be NULL and valid
 			if (value->item)
 				dep->SetValue (prop, Value ((DependencyObject *) value->item));
+		} else {
+			// TODO: Do some error checking in here, this is a valid place to be
+			// if we are adding a non collection to a collection, so the non collection
+			// item will have already been added to the collection in add_child
 		}
 	} else {
 		dependency_object_missed_property (item, property, value, prop_name);
 	}
 
 	g_strfreev (prop_name);
-}
-
-void
-path_figure_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
-{
-	if (!strcmp (property->element_name, "PathFigure.Segments")) {
-		if (((PathFigure *) item->item)->children == value->item)
-			printf ("collections are equal\n");
-	} else {
-		dependency_object_set_property (p, item, property, value);
-	}
-}
-
-void
-path_geometry_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
-{
-	if (!strcmp (property->element_name, "PathGeometry.Figures")) {
-		if (((PathFigure *) item->item)->children == value->item)
-			printf ("path geometry collections are equal\n");
-	} else {
-		dependency_object_set_property (p, item, property, value);
-	}
 }
 
 ///
@@ -975,9 +878,10 @@ register_dependency_object_element (const char *name, XamlElementInfo *parent, V
 {
 	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
 
+	res->content_property = NULL;
 	res->create_item = create_item;
 	res->create_element = default_create_element_instance;
-	res->add_child = nonpanel_add_child;
+	res->add_child = dependency_object_add_child;
 	res->set_property = dependency_object_set_property;
 	res->set_attributes = dependency_object_set_attributes;
 
@@ -987,9 +891,9 @@ register_dependency_object_element (const char *name, XamlElementInfo *parent, V
 }
 
 XamlElementInfo *
-register_element_full (const char *name, XamlElementInfo *parent, Value::Kind dt,
-		create_item_func create_item, create_element_instance_func create_element, add_child_func add_child,
-		set_property_func set_property, set_attributes_func set_attributes)
+register_element_full (const char *name, XamlElementInfo *parent, Value::Kind dt, create_item_func create_item,
+		create_element_instance_func create_element, add_child_func add_child,set_property_func set_property,
+		set_attributes_func set_attributes)
 {
 	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
 
@@ -1040,28 +944,21 @@ xaml_init ()
 	register_dependency_object_element ("RectangleGeometry", geo, Value::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
 
 	XamlElementInfo *gg = register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
-	gg->add_child = geometry_group_add_child;
-	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", col, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
-	gc->create_element = create_geometry_collection_instance;
-	gc->add_child = geometry_collection_add_child;
+	gg->content_property = "Children";
 
+
+	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", col, Value::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
 	XamlElementInfo *pg = register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
-	pg->add_child = path_geometry_add_child;
-	pg->set_property = path_geometry_set_property;
+	pg->content_property = "Figures";
 
 	XamlElementInfo *pfc = register_dependency_object_element ("PathFigureCollection", col, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
-	pfc->add_child = path_figure_collection_add_child;
-	pfc->create_element = create_path_figure_collection_instance;
 
 	XamlElementInfo *pf = register_dependency_object_element ("PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
-	pf->add_child = path_figure_add_child;
-	pf->set_property = path_figure_set_property;
+	pf->content_property = "Segments";
 
-	XamlElementInfo *psc = register_dependency_object_element ("PathSegmentCollection", col, Value::PATHFIGURE, (create_item_func) path_figure_new);
-	psc->create_element = create_path_segment_collection_instance;
-	psc->add_child = path_segment_collection_add_child;
+	XamlElementInfo *psc = register_dependency_object_element ("PathSegmentCollection", col, Value::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
 
-	XamlElementInfo *ps = register_ghost_element ("PathSegment", geo, Value::PATHSEGMENT);
+	XamlElementInfo *ps = register_ghost_element ("PathSegment", NULL, Value::PATHSEGMENT);
 	register_dependency_object_element ("ArcSegment", ps, Value::ARCSEGMENT, (create_item_func) arc_segment_new);
 	register_dependency_object_element ("BezierSegment", ps, Value::BEZIERSEGMENT, (create_item_func) bezier_segment_new);
 	register_dependency_object_element ("LineSegment", ps, Value::LINESEGMENT, (create_item_func) line_segment_new);
@@ -1076,8 +973,8 @@ xaml_init ()
 	
 	XamlElementInfo *panel = register_ghost_element ("Panel", fw, Value::PANEL);
 	XamlElementInfo *canvas = register_dependency_object_element ("Canvas", panel, Value::CANVAS, (create_item_func) canvas_new);
+	panel->add_child = panel_add_child;
 	canvas->add_child = panel_add_child;
-
 
 	///
 	/// Animation
@@ -1111,10 +1008,9 @@ xaml_init ()
 	register_dependency_object_element ("TranslateTransform", tf, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
 	register_dependency_object_element ("MatrixTransform", tf, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
 	XamlElementInfo *tg = register_dependency_object_element ("TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
-	tg->add_child = transform_group_add_child;
+	tg->content_property = "Children";
 	
-	XamlElementInfo *tfc = register_dependency_object_element ("TransformCollection", col, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
-	tfc->add_child = transform_collection_add_child;
+	XamlElementInfo *tfc = register_dependency_object_element ("TransformCollection", col, Value::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
 
 
 	///

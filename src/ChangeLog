@@ -1,3 +1,9 @@
+2007-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add content properties, and handle collections that
+	are content properties, by implicitly adding items to the
+	collections.
+
 2007-06-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp: Remove matrix initialization (to avoid double-inits in 
