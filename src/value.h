@@ -86,6 +86,7 @@ class UIElement;
 
 class Collection;
 class KeyFrameCollection;
+class TimelineCollection;
 class VisualCollection;
 class TriggerCollection;
 class TriggerActionCollection;
@@ -343,6 +344,7 @@ public:
 
 	Collection*                   AsCollection ();
 	KeyFrameCollection*           AsKeyFrameCollection ();
+	TimelineCollection*           AsTimelineCollection ();
 	VisualCollection*             AsVisualCollection ();
 	TriggerCollection*            AsTriggerCollection ();
 	TriggerActionCollection*      AsTriggerActionCollection ();

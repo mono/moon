@@ -308,8 +308,6 @@ ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 	/* recompute our current_time */
 	this->Clock::TimeUpdated (parent_clock_time);
 
-	//printf ("ClockGroup::TimeUpdated (%lld) - current_time = %lld\n", parent_clock_time, current_time);
-
 	for (GList *l = child_clocks; l; l = l->next) {
 		((Clock*)l->data)->TimeUpdated (current_time);
 	}
@@ -424,18 +422,73 @@ Timeline::GetNaturalDurationCore (Clock *clock)
 	return Duration::Automatic;
 }
 
+/* timeline collection */
+
+void
+TimelineCollection::Add (void *data)
+{
+	Value *value = (Value*)data;
+	Collection::Add (value->AsTimeline());
+}
+
+void
+TimelineCollection::Remove (void *data)
+{
+	Value *value = (Value*)data;
+	Collection::Remove (value->AsTimeline());
+}
+
 /* timeline group */
 
+DependencyProperty* TimelineGroup::ChildrenProperty;
+
 TimelineGroup::TimelineGroup ()
-	: child_timelines (NULL)
 {
+	child_timelines = NULL;
+	TimelineCollection *c = new TimelineCollection ();
+
+	this->SetValue (TimelineGroup::ChildrenProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == child_timelines);
+}
+
+void
+TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
+{
+	Timeline::OnPropertyChanged (prop);
+
+	if (prop == ChildrenProperty){
+		// The new value has already been set, so unref the old collection
+
+		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
+
+		if (newcol != child_timelines){
+			if (child_timelines){
+				for (GSList *l = child_timelines->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (child_timelines);
+				g_slist_free (child_timelines->list);
+			}
+
+			child_timelines = newcol;
+			if (child_timelines->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			child_timelines->closure = this;
+			
+			base_ref (child_timelines);
+		}
+	}
 }
 
 ClockGroup*
 TimelineGroup::CreateClock ()
 {
 	ClockGroup* group = new ClockGroup (this);
-	for (GList *l = child_timelines; l ; l = l->next) {
+	for (GSList *l = child_timelines->list; l ; l = l->next) {
 		group->AddChild (((Timeline*)l->data)->AllocateClock ());
 	}
 
@@ -445,25 +498,25 @@ TimelineGroup::CreateClock ()
 void
 TimelineGroup::AddChild (Timeline *child)
 {
-	child_timelines = g_list_prepend (child_timelines, child);
+	Value fv = Value(child);
+	child_timelines->Add (&fv);
 }
 
 void
 TimelineGroup::RemoveChild (Timeline *child)
 {
-	child_timelines = g_list_remove (child_timelines, child);
 }
 
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
-	if (!child_timelines)
+	if (!child_timelines->list)
 		return Duration (0);
 
 	Duration d = Duration::Automatic;
 	TimeSpan duration_span = 0;
 
-	for (GList *l = child_timelines; l ; l = l->next) {
+	for (GSList *l = child_timelines->list; l ; l = l->next) {
 		Timeline *child_timeline = (Timeline*)l->data;
 
 		Duration child_duration = child_timeline->GetNaturalDuration (clock);
@@ -510,4 +563,7 @@ clock_init ()
 	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
 	Timeline::FillBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "FillBehavior", new Value ((int)FillBehaviorHoldEnd));
 	Timeline::SpeedRatioProperty = DependencyObject::Register (Value::TIMELINE, "SpeedRatio", new Value (1.0));
+
+	/* TimelineGroup properties */
+	TimelineGroup::ChildrenProperty = DependencyObject::Register (Value::TIMELINEGROUP, "Children", Value::TIMELINE_COLLECTION);
 }

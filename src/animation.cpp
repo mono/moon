@@ -773,10 +773,8 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 {
-	KeyFrameCollection *keyframes = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
-
 	Value fv = Value(frame);
-	keyframes->Add (&fv);
+	key_frames->Add (&fv);
 }
 
 void

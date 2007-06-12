@@ -294,6 +294,13 @@ class Timeline : public DependencyObject {
 
 
 
+class TimelineCollection : public Collection {
+ public:
+	TimelineCollection () {}
+	virtual Value::Kind GetObjectType() { return Value::TIMELINE_COLLECTION; }
+	virtual void Add (void *data);
+	virtual void Remove (void *data);
+};
 
 
 class TimelineGroup : public Timeline {
@@ -301,17 +308,19 @@ class TimelineGroup : public Timeline {
 	TimelineGroup ();
 	Value::Kind GetObjectType () { return Value::TIMELINEGROUP; };
 
+	static DependencyProperty* ChildrenProperty;
+
 	virtual Clock *AllocateClock () { return new ClockGroup (this); }
 
 	ClockGroup *CreateClock ();
 
-	/* we use these dependency properties:
-	   Timeline Children - XXX shouldn't that be TimelineCollection?
-	*/
 	void AddChild (Timeline *child);
 	void RemoveChild (Timeline *child);
-	
-	GList *child_timelines;
+
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+ protected:
+	TimelineCollection *child_timelines;
 };
 
 

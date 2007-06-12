@@ -1,5 +1,10 @@
 2007-06-12  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h, clock.cpp, runtime.cpp, value.h: use a
+	TimelineCollection to store child collections in TimelineGroup.
+
+2007-06-12  Chris Toshok  <toshok@ximian.com>
+
 	* animation.h, animation.cpp (animation_init): remove the
 	clock.cpp property registration.
 	(DoubleAnimationUsingKeyFrames::GetNaturalDurationCore): initial
