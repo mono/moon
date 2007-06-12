@@ -17,7 +17,7 @@ public class GtkSilver : DrawingArea {
 	extern static IntPtr surface_attach (IntPtr surface, IntPtr toplevel);
 
 	[DllImport ("moon")]
-	extern static IntPtr xaml_create_from_file (string file);
+	extern static IntPtr xaml_create_from_file (string file, ref int kind_type);
 	
 	IntPtr surface;
 	DrawingArea da;
@@ -45,8 +45,9 @@ public class GtkSilver : DrawingArea {
 	{
 		if (file == null)
 			throw new ArgumentNullException ("file");
-
-		IntPtr x = xaml_create_from_file (file);
+		int k;
+		
+		IntPtr x = xaml_create_from_file (file, ref k);
 		if (x == IntPtr.Zero)
 			return false;
 
