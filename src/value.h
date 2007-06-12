@@ -90,6 +90,7 @@ class ResourceCollection;
 class RotateTransform;
 class ScaleTransform;
 class Shape;
+class SkewTransform;
 class SolidColorBrush;
 class Storyboard;
 class StrokeCollection;
@@ -203,6 +204,7 @@ public:
 		ROTATETRANSFORM,
 		SCALETRANSFORM,
 		SHAPE,
+		SKEWTRANSFORM,
 		SOLIDCOLORBRUSH,
 		STORYBOARD,
 		STROKE_COLLECTION,
@@ -361,6 +363,7 @@ public:
 	RotateTransform*               AsRotateTransform ();
 	ScaleTransform*                AsScaleTransform ();
 	Shape*                         AsShape ();
+	SkewTransform*                 AsSkewTransform ();
 	SolidColorBrush*               AsSolidColorBrush ();
 	Storyboard*                    AsStoryboard ();
 	StrokeCollection*              AsStrokeCollection ();

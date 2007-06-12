@@ -434,6 +434,12 @@ Value::AsShape ()
 	checked_get_subclass (SHAPE, Shape);
 }
 
+SkewTransform*
+Value::AsSkewTransform ()
+{
+	checked_get_subclass (SKEWTRANSFORM, SkewTransform);
+}
+
 SolidColorBrush*
 Value::AsSolidColorBrush ()
 {

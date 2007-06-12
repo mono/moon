@@ -897,6 +897,7 @@ xaml_init ()
 	XamlElementInfo *tf = register_ghost_element ("Transform", NULL, Value::TRANSFORM);
 	register_dependency_object_element ("RotateTransform", tf, Value::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
 	register_dependency_object_element ("ScaleTransform", tf, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
+	register_dependency_object_element ("SkewTransform", tf, Value::SKEWTRANSFORM, (create_item_func) skew_transform_new);
 	register_dependency_object_element ("TranslateTransform", tf, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
 	register_dependency_object_element ("MatrixTransform", tf, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
 	XamlElementInfo *tg = register_dependency_object_element ("TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);

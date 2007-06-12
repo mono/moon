@@ -133,6 +133,7 @@ void types_init ()
 	Type::RegisterType ("RotateTransform", Value::ROTATETRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("ScaleTransform", Value::SCALETRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("Shape", Value::SHAPE, Value::FRAMEWORKELEMENT);
+	Type::RegisterType ("SkewTransform", Value::SKEWTRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("SolidColorBrush", Value::SOLIDCOLORBRUSH, Value::BRUSH);
 	Type::RegisterType ("Storyboard", Value::STORYBOARD, Value::PARALLELTIMELINE);
 	Type::RegisterType ("StrokeCollection", Value::STROKE_COLLECTION, Value::COLLECTION);

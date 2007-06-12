@@ -1,3 +1,10 @@
+2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* transform.cpp|h: Implement SkewTransform.
+	* type.cpp: Register new type SkewTransform.
+	* value.cpp|h: Add SkewTransform.
+	* xaml.cpp: Register DO for SkewTransform.
+
 2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp, runtime.h: Make DependencyObject::ParentProperty

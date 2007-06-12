@@ -90,6 +90,34 @@ void   scale_transform_set_center_y (ScaleTransform *t, double centerY);
 double scale_transform_get_center_y (ScaleTransform *t);
 
 
+class SkewTransform : public Transform {
+public:
+
+	SkewTransform () {  }
+	Value::Kind GetObjectType () { return Value::SKEWTRANSFORM; };
+
+	static DependencyProperty* AngleXProperty;
+	static DependencyProperty* AngleYProperty;
+	static DependencyProperty* CenterXProperty;
+	static DependencyProperty* CenterYProperty;
+
+	virtual void GetTransform (cairo_matrix_t *value);
+};
+
+SkewTransform * skew_transform_new ();
+void   skew_transform_set_angle_x (SkewTransform *t, double angleX);
+double skew_transform_get_angle_x (SkewTransform *t);
+
+void   skew_transform_set_angle_y (SkewTransform *t, double angleY);
+double skew_transform_get_angle_y (SkewTransform *t);
+
+void   skew_transform_set_center_x (SkewTransform *t, double centerX);
+double skew_transform_get_center_x (SkewTransform *t);
+
+void   skew_transform_set_center_y (SkewTransform *t, double centerY);
+double skew_transform_get_center_y (SkewTransform *t);
+
+
 class MatrixTransform : public Transform {
  public:
 

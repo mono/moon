@@ -224,6 +224,87 @@ scale_transform_get_center_y (ScaleTransform *t)
 
 
 
+DependencyProperty* SkewTransform::AngleXProperty;
+DependencyProperty* SkewTransform::AngleYProperty;
+DependencyProperty* SkewTransform::CenterXProperty;
+DependencyProperty* SkewTransform::CenterYProperty;
+
+void
+SkewTransform::GetTransform (cairo_matrix_t *value)
+{
+	cairo_matrix_init_identity (value);
+
+	double ax = skew_transform_get_angle_x (this);
+	if (ax != 0.0)
+		value->xy = tan (ax * M_PI / 180);
+
+	double ay = skew_transform_get_angle_y (this);
+	if (ay != 0.0)
+		value->yx = tan (ay * M_PI / 180);
+
+	double cx = skew_transform_get_center_x (this);
+	double cy = skew_transform_get_center_y (this);
+	cairo_matrix_translate (value, cx, cy);
+	//printf ("SkewTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
+}
+
+SkewTransform *
+skew_transform_new ()
+{
+g_warning ("skew_transform_new");
+	return new SkewTransform ();
+}
+
+void
+skew_transform_set_angle_x (SkewTransform *t, double angleX)
+{
+	t->SetValue (SkewTransform::AngleXProperty, Value(angleX));
+}
+
+double
+skew_transform_get_angle_x (SkewTransform *t)
+{
+	return t->GetValue (SkewTransform::AngleXProperty)->AsDouble();
+}
+
+void
+skew_transform_set_angle_y (SkewTransform *t, double angleY)
+{
+	t->SetValue (SkewTransform::AngleYProperty, Value(angleY));
+}
+
+double
+skew_transform_get_angle_y (SkewTransform *t)
+{
+	return t->GetValue (SkewTransform::AngleYProperty)->AsDouble();
+}
+
+void
+skew_transform_set_center_x (SkewTransform *t, double centerX)
+{
+	t->SetValue (SkewTransform::CenterXProperty, Value(centerX));
+}
+
+double
+skew_transform_get_center_x (SkewTransform *t)
+{
+	return t->GetValue (SkewTransform::CenterXProperty)->AsDouble();
+}
+
+void
+skew_transform_set_center_y (SkewTransform *t, double centerY)
+{
+	t->SetValue (SkewTransform::CenterYProperty, Value(centerY));
+}
+
+double
+skew_transform_get_center_y (SkewTransform *t)
+{
+	return t->GetValue (SkewTransform::CenterYProperty)->AsDouble();
+}
+
+
+
 void
 MatrixTransform::GetTransform (cairo_matrix_t *value)
 {
@@ -339,6 +420,12 @@ transform_init ()
 	ScaleTransform::ScaleYProperty = DependencyObject::Register (Value::SCALETRANSFORM, "ScaleY", new Value (1.0));
 	ScaleTransform::CenterXProperty = DependencyObject::Register (Value::SCALETRANSFORM, "CenterX", new Value (0.0));
 	ScaleTransform::CenterYProperty = DependencyObject::Register (Value::SCALETRANSFORM, "CenterY", new Value (0.0));
+
+	/* SkewTransform fields */
+	SkewTransform::AngleXProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "AngleX", new Value (0.0));
+	SkewTransform::AngleYProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "AngleY", new Value (0.0));
+	SkewTransform::CenterXProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "CenterX", new Value (0.0));
+	SkewTransform::CenterYProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "CenterY", new Value (0.0));
 
 	/* XXX MatrixTransform fields */
 
