@@ -12,10 +12,30 @@ Feel free to add items to this TODO list
 
 	Write sample code to exercise every property.
 
-* DependecyProperty-fication
+* UIElement
 
-	A few components still have instance properties that
-	should be handled as dependencyproperties, look into that.
+	Need to add support for events:
+
+	Event: Loaded
+		This probably should be used instead of the current
+		hack that we have, lookup what the semantics for it
+		are.
+
+	Events that require hit-testing of some form:
+
+		MouseEnter/MouseLeave/MouseMove/MoustButton
+
+	Events: Focus
+
+		Have to investigate what it means to get "focus"
+		with UIElements, there are two signals, GotFocus
+		and LostFocus, but what do they mean?
+
+* Text: Inline, Inlines
+
+	We need to render text.
+
+	Text also participates in hit-testing.
 
 * Video Player:
 
@@ -23,6 +43,8 @@ Feel free to add items to this TODO list
 
 	Fix the memory leak that it currently has that brings the 
 	system down.
+
+	Should use a depenedency property for its source.
 
 * Reference counting and destruction
 
@@ -39,10 +61,6 @@ Feel free to add items to this TODO list
 		  land during a P/Invoke
 
 * XAML Support
-
-	For panel_child_add, we need as precise type information
-	as possible, so when these objects are exposed to the managed
-	side we can create the proper managed wrapper for it.
 
 	Add support to each element to be created from a xaml string.
 
@@ -67,3 +85,14 @@ Feel free to add items to this TODO list
 	float (not double) representations (ScA, ScR, ScG & ScB). All 
 	this will eventually need to be merged into a single 
 	representation
+
+* Idea:
+
+	Instead of using the "Parent" property, use the Attached list,
+	but this will require that Collections update the Attached list
+	as well.
+
+	Must be researched, Rolf said something about:
+
+		<rolf> miguel_, that requires more code :)
+		<rolf> you'd have to attach to every property you want to listen to
