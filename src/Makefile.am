@@ -11,9 +11,12 @@ libmoon_la_SOURCES = 	\
 	clock.cpp	\
 	clock.h		\
 	cutil.cpp	\
+	cutil.h		\
 	ffvideo.cpp	\
 	geometry.cpp	\
 	geometry.h	\
+	rsvg.cpp	\
+	rsvg.h		\
 	runtime.cpp	\
 	runtime.h	\
 	shape.cpp	\

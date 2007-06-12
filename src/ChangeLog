@@ -1,3 +1,9 @@
+2007-06-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.cpp: Implemented ArcSegment::Draw using librsvg code
+	* rsvg.cpp|h: New. Code from LGPL librsvg to implement arc_to
+	* Makefile.am: Add rsvg.cpp|h to the build.
+
 2007-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add parser for KeyTime structures.

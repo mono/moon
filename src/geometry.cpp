@@ -20,6 +20,8 @@
 #include "geometry.h"
 #include "shape.h"
 
+#include "rsvg.h"
+
 //
 // Geometry
 //
@@ -674,11 +676,14 @@ arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
 void
 ArcSegment::Draw (Surface *s)
 {
+	Point *size = arc_segment_get_size (this);
+	double angle = arc_segment_get_rotation_angle (this);
+	int large = arc_segment_get_is_large_arc (this) ? 1 : 0;
+	int direction = arc_segment_get_sweep_direction (this) == SweepDirectionClockwise ? 0 : 1;
 	Point* p = arc_segment_get_point (this);
-	double x = (p ? p->x : 0.0);
-	double y = (p ? p->y : 0.0);
-// temp
-	cairo_move_to (s->cairo, x, y);
+
+	// FIXME: there's no cairo_arc_to so we reuse librsvg code (see rsvg.cpp)
+	rsvg_arc_to (s->cairo, size->x, size->y, angle, large, direction, p->x, p->y); 
 }
 
 //
@@ -1065,8 +1070,8 @@ geometry_init ()
 	/* ArcSegment fields */
 	ArcSegment::IsLargeArcProperty = DependencyObject::Register (Value::ARCSEGMENT, "IsLargeArc", new Value (false));
 	ArcSegment::PointProperty = DependencyObject::Register (Value::ARCSEGMENT, "Point", Value::POINT);
-	ArcSegment::RotationAngleProperty  = DependencyObject::Register (Value::ARCSEGMENT, "RadiusY", new Value (0.0));
-	ArcSegment::SizeProperty = DependencyObject::Register (Value::ARCSEGMENT, "RotationAngle", Value::POINT);
+	ArcSegment::RotationAngleProperty = DependencyObject::Register (Value::ARCSEGMENT, "RotationAngle", new Value (0.0));
+	ArcSegment::SizeProperty = DependencyObject::Register (Value::ARCSEGMENT, "Size", Value::POINT);
 	ArcSegment::SweepDirectionProperty = DependencyObject::Register (Value::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
 
 	/* BezierSegment fields */
