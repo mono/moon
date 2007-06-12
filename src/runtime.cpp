@@ -1654,7 +1654,6 @@ event_trigger_fire_actions (EventTrigger *trigger)
 DependencyProperty* UIElement::RenderTransformProperty;
 DependencyProperty* UIElement::OpacityProperty;
 DependencyProperty* UIElement::ClipProperty;
-DependencyProperty* UIElement::TriggersProperty;
 DependencyProperty* UIElement::OpacityMaskProperty;
 DependencyProperty* UIElement::RenderTransformOriginProperty;
 DependencyProperty* UIElement::CursorProperty;
