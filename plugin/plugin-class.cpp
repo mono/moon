@@ -203,7 +203,27 @@ PluginClass::ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 	return false;
 }
 
+int
+PluginClass::IndexOf (NPIdentifier name, const char *const names[])
+{
+	int count = (sizeof (name) / sizeof (char *));
+
+	for (int i = 0; i < count; i++) {
+		if (name == NPN_GetStringIdentifier (names [i]))
+			return i;
+	}
+
+	return -1;
+}
+
 /*** PluginRootClass **********************************************************/
+
+static const char *const PluginRootClassPropertyNames [PLUGINROOTCLASS_PCOUNT] = 
+{
+	"settings",
+	"content",
+	"version"
+};
 
 PluginRootClass::PluginRootClass (NPP instance)
 {
@@ -217,21 +237,15 @@ PluginRootClass::PluginRootClass (NPP instance)
 bool
 PluginRootClass::ClassHasProperty (NPObject *npobj, NPIdentifier name)
 {
-	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("PluginRootClass::ClassHasProperty %s", strname);
-	NPN_MemFree(strname);
-
-	if (name == NPN_GetStringIdentifier ("settings")  ||
-		name == NPN_GetStringIdentifier ("version"))
-		return true;
-
-	return false;
+	return IndexOf (name, PluginRootClassPropertyNames) > -1;
 }
 
 bool
 PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	if (name == NPN_GetStringIdentifier ("settings")) 
+	int property = IndexOf (name, PluginRootClassPropertyNames);
+
+	if (name == NSID("settings"))
 	{
 		NPObject *obj = NPN_CreateObject (this->instance, settings);
 
@@ -239,7 +253,8 @@ PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant
 
 		return true;
 	} 
-	else if (name == NPN_GetStringIdentifier ("version")) 
+
+	if (name == NPN_GetStringIdentifier ("version")) 
 	{
 		int len = strlen (PLUGIN_VERSION);
 		char *version = (char *) NPN_MemAlloc (len + 1);

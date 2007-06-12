@@ -12,8 +12,17 @@
 
 #include "moonlight.h"
 
+/*** Macros *******************************************************************/
+
+#define NSID(x) NPN_GetStringIdentifier (x)
+
+/*** PluginClass **************************************************************/
+
 class PluginClass : public NPClass
 {
+ protected:
+	int IndexOf (NPIdentifier name, const char *const names[]);
+
  public:
 	PluginClass ();
 	virtual ~PluginClass ();
@@ -30,7 +39,10 @@ class PluginClass : public NPClass
 	                         NPVariant *result);
 	virtual bool ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 	                                uint32_t argCount, NPVariant *result);
+
 };
+
+/*** PluginSettings ***********************************************************/
 
 class PluginSettings : public PluginClass
 {
@@ -39,12 +51,16 @@ class PluginSettings : public PluginClass
 	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
 };
 
+/*** PluginContent ************************************************************/
+
 class PluginContent : public PluginClass
 {
  public:
 	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
 	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
 };
+
+/*** PluginRootClass **********************************************************/
 
 class PluginRootClass : public PluginClass
 {
@@ -60,9 +76,8 @@ class PluginRootClass : public PluginClass
 	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
 };
 
-//
-// This is a PluginClass that can wrap a DependencyObject
-//
+/*** PluginDependencyObject ***************************************************/
+
 class PluginDependencyObject : public PluginClass
 {
  public:
