@@ -1,9 +1,9 @@
 2007-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* animation.cpp|h: C style constructor for KeyFrameCollection.
-	* xaml.cpp: Implement the KeyFrame types, note that the base types
-	DoubleKeyFrame, ColorKeyFrame, and PointKeyFrame can't be created
-	right now, because we don't have c-style constructors for them.
+	* xaml.cpp: Implement the KeyFrame types
+	- Make the base types ghosts, despite what the docs say, they
+	can't be used.
 
 2007-06-12  Miguel de Icaza  <miguel@novell.com>
 

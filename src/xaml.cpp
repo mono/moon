@@ -860,15 +860,15 @@ xaml_init ()
 
 	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Value::KEYFRAME);
 
-	XamlElementInfo *ckf = register_dependency_object_element ("ColorKeyFrame", keyfrm, Value::COLORKEYFRAME, (create_item_func) NULL);
+	XamlElementInfo *ckf = register_ghost_element ("ColorKeyFrame", keyfrm, Value::COLORKEYFRAME);
 	register_dependency_object_element ("DiscreteColorKeyFrame", ckf, Value::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
 	register_dependency_object_element ("LinearColorKeyFrame", ckf, Value::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
 
-	XamlElementInfo *dkf = register_dependency_object_element ("DoubleKeyFrame", keyfrm, Value::DOUBLEKEYFRAME, (create_item_func) NULL);
+	XamlElementInfo *dkf = register_ghost_element ("DoubleKeyFrame", keyfrm, Value::DOUBLEKEYFRAME);
 	register_dependency_object_element ("DiscreteDoubleKeyFrame", dkf, Value::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
 	register_dependency_object_element ("LinearDoubleKeyFrame", dkf, Value::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
 
-	XamlElementInfo *pkf = register_dependency_object_element ("PointKeyFrame", keyfrm, Value::POINTKEYFRAME, (create_item_func) NULL);
+	XamlElementInfo *pkf = register_ghost_element ("PointKeyFrame", keyfrm, Value::POINTKEYFRAME);
 	register_dependency_object_element ("DiscretePointKeyFrame", pkf, Value::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
 	register_dependency_object_element ("LinearPointKeyFrame", pkf, Value::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
 	
