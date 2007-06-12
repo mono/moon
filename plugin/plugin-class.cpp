@@ -278,3 +278,61 @@ PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant 
 
 	return false;
 }
+
+//
+// These are methods for the DependencyObject wrapper
+//
+bool
+PluginDependencyObject::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+{
+	//
+	// Am not sure if this is how you test this
+	//
+	if (name == NPN_GetStringIdentifier ("getHost ()")){
+		return TRUE;
+	}
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DependencyProperty *p = dob->GetDependencyProperty (strname);
+	NPN_MemFree (strname);
+
+	if (p == NULL)
+		return FALSE;
+
+	Value *val =  dob->GetValue (p);
+
+	if (val == 0)
+		return FALSE;
+
+	return TRUE;
+}
+
+bool
+PluginDependencyObject:: ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	//
+	// Am not sure if this is how you test this
+	//
+	if (name == NPN_GetStringIdentifier ("getHost()")){
+		// Dont know what to do with refcount, nor wrapping, but you get the idea
+		return host;
+	}
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DependencyProperty *p = dob->GetDependencyProperty (strname);
+	NPN_MemFree (strname);
+	if (p == NULL)
+		return FALSE;
+
+	Value *val =  dob->GetValue (p);
+
+	if (val == 0)
+		return FALSE;
+
+
+	//
+	// TODO: convert_val_to_something_jscript_can_use ();
+	//
+	return TRUE;
+
+}

@@ -50,3 +50,20 @@ class PluginSettings : public PluginClass
 	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
 	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
 };
+
+//
+// This is a PluginClass that can wrap a DependencyObject
+//
+class PluginDependencyObject : public PluginClass {
+
+ public:
+	DependencyObject *dob;
+	PluginRootClass *host;
+	
+	PluginDependencyObject (PluginRootClass *the_host, DependencyObject *the_dob)
+		: host(the_host), dob(the_dob) {}
+
+	
+	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+};
