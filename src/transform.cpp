@@ -234,6 +234,13 @@ SkewTransform::GetTransform (cairo_matrix_t *value)
 {
 	cairo_matrix_init_identity (value);
 
+	double cx = skew_transform_get_center_x (this);
+	double cy = skew_transform_get_center_y (this);
+
+	bool translation = ((cx != 0.0) || (cy != 0.0));
+	if (translation)
+		cairo_matrix_translate (value, cx, cy);
+
 	double ax = skew_transform_get_angle_x (this);
 	if (ax != 0.0)
 		value->xy = tan (ax * M_PI / 180);
@@ -242,16 +249,15 @@ SkewTransform::GetTransform (cairo_matrix_t *value)
 	if (ay != 0.0)
 		value->yx = tan (ay * M_PI / 180);
 
-	double cx = skew_transform_get_center_x (this);
-	double cy = skew_transform_get_center_y (this);
-	cairo_matrix_translate (value, cx, cy);
+	if (translation)
+		cairo_matrix_translate (value, -cx, -cy);
+
 	//printf ("SkewTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 SkewTransform *
 skew_transform_new ()
 {
-g_warning ("skew_transform_new");
 	return new SkewTransform ();
 }
 
