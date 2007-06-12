@@ -1,3 +1,8 @@
+2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ffvideo.cpp: Instead of aborting when SDL_OpenAudio() fails,
+	simply disable audio for that video. Temporary hack.
+
 2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* transform.cpp: Fix SkewTransform with translations (Center[X|Y])

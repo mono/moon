@@ -75,11 +75,18 @@ public:
 	// Virtual method overrides
 	void getbounds ();
 	void render (Surface *s, int x, int y, int width, int height);
+	void pause (void);
+	void resume (void);
+	void stop (void);
+	
 	virtual Point getxformorigin ();
 
 	GThread    *decode_thread_id;
 	int         pipes [2];
 	GIOChannel *pipe_channel;
+	
+	GStaticMutex pause_mutex;
+	bool         paused;
 	
 	//
 	// AV Fields
@@ -90,14 +97,15 @@ public:
 	AVCodec     *video_codec;
 	AVStream    *video_stream;
 	int          video_stream_idx;
-	GMutex      *video_mutex;
+	GStaticMutex video_mutex;
 	
 	// Audio
+	bool         audio_enabled;
 	SDL_AudioSpec audio_spec;
 	AVCodec     *audio_codec;
 	AVStream    *audio_stream;
 	int          audio_stream_idx;
-	GMutex      *audio_mutex;
+	GStaticMutex audio_mutex;
 	
 	uint64_t     target_pts;
 	
@@ -235,13 +243,20 @@ sdl_audio_callback (void *user_data, uint8_t *stream, int len)
 	QPacket *pkt;
 	int n;
 	
+	/* try to aquire the pause mutex - if we can't, then we are paused - output silence */
+	if (!g_static_mutex_trylock (&video->pause_mutex)) {
+		n = 0;
+		
+		goto silence;
+	}
+	
 	outlen = video->audio_outptr - video->audio_outbuf;
 	
 	while (outlen < len) {
-		g_mutex_lock (video->audio_mutex);
+		g_static_mutex_lock (&video->audio_mutex);
 		pkt = (QPacket *) g_async_queue_pop (video->audio_frames);
 		video->audio_frames_size -= pkt->size;
-		g_mutex_unlock (video->audio_mutex);
+		g_static_mutex_unlock (&video->audio_mutex);
 		
 		video->target_pts = pkt->pts;
 		
@@ -276,6 +291,8 @@ sdl_audio_callback (void *user_data, uint8_t *stream, int len)
 		outlen = video->audio_outptr - video->audio_outbuf;
 	}
 	
+	g_static_mutex_unlock (&video->pause_mutex);
+	
 	n = len < outlen ? len : outlen;
 	memcpy (stream, video->audio_outbuf, n);
 	if (n < outlen) {
@@ -284,6 +301,8 @@ sdl_audio_callback (void *user_data, uint8_t *stream, int len)
 	} else {
 		video->audio_outptr = video->audio_outbuf;
 	}
+	
+silence:
 	
 	if (n < len)
 		memset (stream + n, 0, len - n);
@@ -346,7 +365,9 @@ init_video (VideoFfmpeg *video)
 			spec.userdata = video;
 			if (SDL_OpenAudio (&spec, &video->audio_spec) < 0) {
 				printf ("SDL_OpenAudio: %s\n", SDL_GetError ());
-				return -1;
+				video->audio_enabled = false;
+			} else {
+				video->audio_enabled = true;
 			}
 			
 			//SDL_PauseAudio (0);
@@ -411,8 +432,11 @@ queue_data (gpointer data)
 		AVPacket pkt;
 		int ret;
 		
+		g_static_mutex_lock (&video->pause_mutex);
+		
 		if (av_read_frame (video->av_format_context, &pkt) < 0) {
 			// ffmpeg stream is complete (or error), either way - nothing left to decode.
+			g_static_mutex_unlock (&video->pause_mutex);
 			break;
 		}
 		
@@ -427,10 +451,10 @@ queue_data (gpointer data)
 			
 			//printf ("queueing video packet\n");
 			
-			g_mutex_lock (video->video_mutex);
+			g_static_mutex_lock (&video->video_mutex);
 			g_async_queue_push (video->video_frames, pkt_new (&pkt));
 			video->video_frames_size += pkt.size;
-			g_mutex_unlock (video->video_mutex);
+			g_static_mutex_unlock (&video->video_mutex);
 			
 			if (g_async_queue_length (video->video_frames) == 1)
 				notify_frame_ready (video);
@@ -438,16 +462,18 @@ queue_data (gpointer data)
 		} else if (pkt.stream_index == audio_stream_idx) {
 			//printf ("queueing audio packet\n");
 			
-			g_mutex_lock (video->audio_mutex);
+			g_static_mutex_lock (&video->audio_mutex);
 			g_async_queue_push (video->audio_frames, pkt_new (&pkt));
 			video->audio_frames_size += pkt.size;
-			g_mutex_unlock (video->audio_mutex);
+			g_static_mutex_unlock (&video->audio_mutex);
 #endif /* ENABLE_AUDIO */
 		} else {
 			printf ("unknown packet\n");
 		}
 		
 		av_free_packet (&pkt);
+		
+		g_static_mutex_unlock (&video->pause_mutex);
 	}
 	
 	while (g_async_queue_length (video->audio_frames) > 0)
@@ -484,22 +510,27 @@ load_next_frame (gpointer data)
 	gboolean cont = TRUE;
 	int redraw = 0;
 	
-#ifndef ENABLE_AUDIO
-	// no audio to sync to
-	target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
-#else /* ENABLE_AUDIO */
-	// sync w/ audio
-	target_pts = video->target_pts;
-#endif
+	if (video->paused) {
+		video->timeout_handle = 0;
+		return FALSE;
+	}
+	
+	if (!video->audio_enabled) {
+		// no audio to sync to
+		target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
+	} else {
+		// sync w/ audio
+		target_pts = video->target_pts;
+	}
 	
 	while (g_async_queue_length (video->video_frames) > 0) {
 		QPacket *pkt;
 		long pkt_pts;
 		
-		g_mutex_lock (video->video_mutex);
+		g_static_mutex_lock (&video->video_mutex);
 		pkt = (QPacket *) g_async_queue_pop (video->video_frames);
 		video->video_frames_size -= pkt->size;
-		g_mutex_unlock (video->video_mutex);
+		g_static_mutex_unlock (&video->video_mutex);
 		
 		//
 		// Always decode the frame, or we get glitches in the screen if we 
@@ -608,9 +639,10 @@ VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
 		// FIXME: Draw something, some black box or something
 		return;
 	}
+	
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
-   
+	
 	cairo_set_source_surface (s->cairo, video_cairo_surface, 0, 0);
 
 	cairo_rectangle (s->cairo, 0, 0, this->w, this->h);
@@ -620,10 +652,37 @@ VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
 	cairo_restore (s->cairo);
 }
 
+void
+VideoFfmpeg::pause (void)
+{
+	if (!paused) {
+		g_static_mutex_lock (&pause_mutex);
+		SDL_PauseAudio (1);
+		paused = true;
+	}
+}
+
+void
+VideoFfmpeg::resume (void)
+{
+	if (paused) {
+		g_static_mutex_unlock (&pause_mutex);
+		restart_timer (this);
+		SDL_PauseAudio (0);
+		paused = false;
+	}
+}
+
+void
+VideoFfmpeg::stop (void)
+{
+	
+}
+
 static int ffmpeg_inited;
 
 static void
-ffmpeg_init ()
+ffmpeg_init (void)
 {
 	if (!ffmpeg_inited) {
 		avcodec_init ();
@@ -657,6 +716,8 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	video_scale_context = NULL;
 	av_format_context = NULL;
 	
+	audio_enabled = false;
+	
 	audio_outbuf = ALIGN (audio_buffer, 2);
 	audio_outptr = audio_outbuf;
 	
@@ -673,8 +734,9 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
 	
-	audio_mutex = g_mutex_new ();
-	video_mutex = g_mutex_new ();
+	g_static_mutex_init (&audio_mutex);
+	g_static_mutex_init (&video_mutex);
+	
 	audio_frames = g_async_queue_new ();
 	video_frames = g_async_queue_new ();
 	pipe_channel = g_io_channel_unix_new (pipes [0]);
@@ -699,7 +761,7 @@ VideoFfmpeg::~VideoFfmpeg ()
 	
 	g_async_queue_unref (audio_frames);
 	g_async_queue_unref (video_frames);
-	g_mutex_free (video_mutex);
+	
 	close (pipes [0]);
 	close (pipes [1]);
 	g_io_channel_close (pipe_channel);
