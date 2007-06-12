@@ -401,14 +401,14 @@ Timeline::GetNaturalDuration (Clock *clock)
 {
 	Duration* d = GetDuration ();
 	if (*d == Duration::Automatic) {
-		printf ("automatic duration, we need to calculate it\n");
+//  		printf ("automatic duration, we need to calculate it\n");
 		Duration cd = GetNaturalDurationCore (clock);
-		if (cd.HasTimeSpan ())
-			printf (" + duration (%lld timespan)\n", cd.GetTimeSpan ());
-		else if (cd == Duration::Automatic)
-			printf (" + automatic\n");
-		else if (cd == Duration::Forever)
-			printf (" + forever\n");
+// 		if (cd.HasTimeSpan ())
+//  			printf (" + duration (%lld timespan)\n", cd.GetTimeSpan ());
+// 		else if (cd == Duration::Automatic)
+// 			printf (" + automatic\n");
+// 		else if (cd == Duration::Forever)
+// 			printf (" + forever\n");
 		return cd;
 	}
 	else {

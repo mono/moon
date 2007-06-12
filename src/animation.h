@@ -395,7 +395,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
-	//virtual Duration GetNaturalDurationCore (Clock* clock);
+	virtual Duration GetNaturalDurationCore (Clock* clock);
 
 	KeyFrameCollection *key_frames;
 };
@@ -418,7 +418,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
-	//virtual Duration GetNaturalDurationCore (Clock* clock);
+	virtual Duration GetNaturalDurationCore (Clock* clock);
 
 	KeyFrameCollection *key_frames;
 };

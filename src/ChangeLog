@@ -1,3 +1,13 @@
+2007-06-12  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp
+	(ColorAnimationUsingKeyFrames::GetNaturalDurationCore): implement.
+	(PointAnimationUsingKeyFrames::GetNaturalDurationCore): implement.
+	(animation_init): make sure to initialize
+	ColorKeyFrame::ValueProperty.
+
+	* clock.cpp (Timeline::GetNaturalDuration): comment out some spew.
+
 2007-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* animation.cpp|h: C style constructor for KeyFrameCollection.

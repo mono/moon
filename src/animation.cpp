@@ -838,6 +838,25 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	return current_keyframe->InterpolateValue (baseValue, progress);
 }
 
+Duration
+ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
+{
+	TimeSpan ts = 0;
+	Duration d = Duration::Automatic;
+
+	for (GSList *l = key_frames->list; l; l = l->next) {
+		ColorKeyFrame *dkf = (ColorKeyFrame*)l->data;
+		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
+
+		if (dk_ts > ts) {
+			ts = dk_ts;
+			d = Duration (ts);
+		}
+	}
+
+	return d;
+}
+
 
 ColorAnimationUsingKeyFrames*
 color_animation_using_key_frames_new ()
@@ -958,6 +977,25 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	return current_keyframe->InterpolateValue (baseValue, progress);
 }
 
+Duration
+PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
+{
+	TimeSpan ts = 0;
+	Duration d = Duration::Automatic;
+
+	for (GSList *l = key_frames->list; l; l = l->next) {
+		PointKeyFrame *dkf = (PointKeyFrame*)l->data;
+		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
+
+		if (dk_ts > ts) {
+			ts = dk_ts;
+			d = Duration (ts);
+		}
+	}
+
+	return d;
+}
+
 
 PointAnimationUsingKeyFrames*
 point_animation_using_key_frames_new ()
@@ -1007,6 +1045,7 @@ animation_init ()
  	KeyFrame::KeyTimeProperty = DependencyObject::Register (Value::KEYFRAME, "KeyTime", new Value(KeyTime::Uniform));
  	DoubleKeyFrame::ValueProperty = DependencyObject::Register (Value::DOUBLEKEYFRAME, "Value", Value::DOUBLE);
  	PointKeyFrame::ValueProperty = DependencyObject::Register (Value::POINTKEYFRAME, "Value", Value::POINT);
+ 	ColorKeyFrame::ValueProperty = DependencyObject::Register (Value::COLORKEYFRAME, "Value", Value::POINT);
 
 	/* KeyFrame animation properties */
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);
