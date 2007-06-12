@@ -1350,7 +1350,10 @@ DependencyObject::NotifyParentOfPropertyChange (DependencyProperty *property, bo
 	DependencyObject *current = GetParent ();
 	while (current != NULL) {
 		if (!only_exact_type || property->type == current->GetObjectType ()) {	
-			current->OnChildPropertyChanged (property, this);
+
+			// Only handle up to the first one that catches the attached change
+			if (only_exact_type && current->OnChildPropertyChanged (property, this))
+				return;
 		}
 		current = current->GetParent ();
 	}

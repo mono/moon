@@ -1,3 +1,9 @@
+2007-06-12  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (NotifyParentOfPropertyChange): Stop propagating
+	when we have reached someone that handles that property in the way
+	up. 
+
 2007-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Register the TriggerCollection so that

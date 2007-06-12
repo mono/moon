@@ -236,7 +236,8 @@ class DependencyObject : public Base {
 
 	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
-	virtual void OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { }
+	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { return FALSE; }
+	
 	virtual Value::Kind GetObjectType ()
 	{
 		g_warning ("This class is missing an override of GetObjectType ()");
