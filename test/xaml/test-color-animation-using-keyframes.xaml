@@ -15,8 +15,8 @@
 			    BeginTime="00:00:00" Storyboard.TargetName="rectangle-one-brush"
 			    Storyboard.TargetProperty="Color">
 
-			    <SplineColorKeyFrame KeyTime="0:1:5" Value="Purple"/> 
-			    <SplineColorKeyFrame KeyTime="0:0:5" Value="Gray"/>
+			    <ColorKeyFrame KeyTime="0:1:5" Value="Purple"/> 
+			    <ColorKeyFrame KeyTime="0:0:5" Value="Gray"/>
 			</ColorAnimationUsingKeyFrames>
 		    </Storyboard>
 		</BeginStoryboard>
@@ -38,8 +38,8 @@
 			    BeginTime="00:00:00" Storyboard.TargetName="rectangle-two-brush"
 			    Storyboard.TargetProperty="Color">
 			    <ColorAnimationUsingKeyFrames.KeyFrames>		
-			        <SplineColorKeyFrame KeyTime="00:00:10" Value="Blue"/> 
-				<SplineColorKeyFrame KeyTime="00:00:10" Value="Orange"/>
+			        <ColorKeyFrame KeyTime="00:00:10" Value="Blue"/> 
+				<ColorKeyFrame KeyTime="00:00:10" Value="Orange"/>
 			    </ColorAnimationUsingKeyFrames.KeyFrames>
 			</ColorAnimationUsingKeyFrames>
 		    </Storyboard>
@@ -48,6 +48,7 @@
 	</Rectangle.Triggers>
     </Rectangle>
 
+    
     <Rectangle Stroke="Black" StrokeThickness="4" Canvas.Left="240" Canvas.Top="240" Width="100" Height="100" >
 
 	<Rectangle.Fill>
@@ -63,8 +64,8 @@
 			    Storyboard.TargetProperty="Color">
 			    <ColorAnimationUsingKeyFrames.KeyFrames>
 			     	<KeyFrameCollection>	
-			            <SplineColorKeyFrame KeyTime="00:00:10.5" Value="Yellow"/> 
-				    <SplineColorKeyFrame KeyTime="00:00:05.5" Value="Purple"/>
+			            <ColorKeyFrame KeyTime="00:00:10.5" Value="Yellow"/> 
+				    <ColorKeyFrame KeyTime="00:00:05.5" Value="Purple"/>
 			        </KeyFrameCollection>
 			    </ColorAnimationUsingKeyFrames.KeyFrames>
 			</ColorAnimationUsingKeyFrames>
@@ -73,5 +74,6 @@
 	    </EventTrigger>
 	</Rectangle.Triggers>
     </Rectangle>
+
 </Canvas>
 
