@@ -14,13 +14,9 @@ public class GtkSilver : DrawingArea {
 	extern static IntPtr surface_get_drawing_area (IntPtr surface);
 
 	[DllImport ("moon")]
-	extern static IntPtr surface_attach (IntPtr surface, IntPtr toplevel);
-
-	[DllImport ("moon")]
 	extern static IntPtr xaml_create_from_file (string file, ref int kind_type);
 	
 	IntPtr surface;
-	DrawingArea da;
 	
 	public GtkSilver (int w, int h)
 	{
@@ -35,17 +31,15 @@ public class GtkSilver : DrawingArea {
 
 		// Dynamically invoke our get-the-handle-code
 		MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
-			GetMethod ("GetNativeObject", BindingFlags.Static | BindingFlags.NonPublic);
-		IntPtr p = (IntPtr) m.Invoke (null, new object [] { canvas });
-		
-		surface_attach (surface, p);
+			GetMethod ("SurfaceAttach", BindingFlags.Static | BindingFlags.NonPublic);
+		m.Invoke (null, new object [] { surface, canvas });
 	}
 
 	public bool LoadFile (string file)
 	{
 		if (file == null)
 			throw new ArgumentNullException ("file");
-		int k;
+		int k = 1;
 		
 		IntPtr x = xaml_create_from_file (file, ref k);
 		if (x == IntPtr.Zero)
