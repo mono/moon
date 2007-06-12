@@ -1,5 +1,10 @@
 2007-06-12  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp, plugin-class.h: Get content and settings as a plugin
+	class properties.
+
+2007-06-12  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h: PluginContent class added.
 
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>

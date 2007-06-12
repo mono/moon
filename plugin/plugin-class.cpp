@@ -208,7 +208,10 @@ PluginClass::ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 PluginRootClass::PluginRootClass (NPP instance)
 {
 	DEBUGMSG ("PluginRootClass::PluginRootClass");
+
 	this->instance = instance;
+	this->settings = new PluginSettings ();
+	this->content = new PluginContent ();
 }
 
 bool
@@ -230,9 +233,6 @@ PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant
 {
 	if (name == NPN_GetStringIdentifier ("settings")) 
 	{
-		PluginSettings *settings;
-		settings = new PluginSettings ();
-
 		NPObject *obj = NPN_CreateObject (this->instance, settings);
 
 		OBJECT_TO_NPVARIANT (obj, *result);

@@ -12,9 +12,8 @@
 
 #include "moonlight.h"
 
-class PluginClass : public NPClass {
- private:
-
+class PluginClass : public NPClass
+{
  public:
 	PluginClass ();
 	virtual ~PluginClass ();
@@ -33,17 +32,6 @@ class PluginClass : public NPClass {
 	                                uint32_t argCount, NPVariant *result);
 };
 
-class PluginRootClass : public PluginClass
-{
- private:
-	NPP instance;
- public:	
-	PluginRootClass (NPP instance);
-
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
-};
-
 class PluginSettings : public PluginClass
 {
  public:
@@ -58,11 +46,25 @@ class PluginContent : public PluginClass
 	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
 };
 
+class PluginRootClass : public PluginClass
+{
+ private:
+	NPP instance;
+	PluginSettings *settings;
+	PluginContent *content;
+
+ public:
+	PluginRootClass (NPP instance);
+
+	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+};
+
 //
 // This is a PluginClass that can wrap a DependencyObject
 //
-class PluginDependencyObject : public PluginClass {
-
+class PluginDependencyObject : public PluginClass
+{
  public:
 	DependencyObject *dob;
 	PluginRootClass *host;
