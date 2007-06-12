@@ -1,3 +1,10 @@
+2007-06-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Remove matrix initialization (to avoid double-inits in 
+	most cases).
+	* transform.cpp: Add matrix initialization in TransformGroup::
+	GetTransform. Makes the API safer :)
+
 2007-06-11  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Implemented [Ploy]QuadraticBezierSegment::Draw.

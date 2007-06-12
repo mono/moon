@@ -308,6 +308,7 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 void
 TransformGroup::GetTransform (cairo_matrix_t *value)
 {
+	cairo_matrix_init_identity (value);
 	for (GSList *w = children->list; w != NULL; w = w->next) {
 		cairo_matrix_t child;
 		Transform *t = (Transform *) w->data;

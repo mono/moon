@@ -531,9 +531,10 @@ item_set_transform_origin (UIElement *item, Point p)
 void
 item_get_render_affine (UIElement *item, cairo_matrix_t *result)
 {
-	cairo_matrix_init_identity (result);
 	Value* v = item->GetValue (UIElement::RenderTransformProperty);
-	if (v != NULL) {
+	if (v == NULL)
+		cairo_matrix_init_identity (result);
+	else {
 		Transform *t = v->AsTransform();
 		t->GetTransform (result);
 	}
