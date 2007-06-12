@@ -1668,7 +1668,6 @@ item_init ()
 	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
 	UIElement::OpacityProperty = DependencyObject::Register (Value::UIELEMENT, "Opacity", new Value(1.0));
 	UIElement::ClipProperty = DependencyObject::Register (Value::UIELEMENT, "Clip", Value::GEOMETRY);
-	UIElement::TriggersProperty = DependencyObject::Register (Value::UIELEMENT, "Triggers", Value::TRIGGER_COLLECTION);
 	UIElement::OpacityMaskProperty = DependencyObject::Register (Value::UIELEMENT, "OpacityMask", Value::BRUSH);
 	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransformOrigin", Value::POINT);
 	UIElement::CursorProperty = DependencyObject::Register (Value::UIELEMENT, "Cursor", Value::INT32);

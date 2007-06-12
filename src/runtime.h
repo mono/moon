@@ -561,7 +561,6 @@ class UIElement : public DependencyObject {
 	static DependencyProperty* RenderTransformProperty;
 	static DependencyProperty* OpacityProperty;
 	static DependencyProperty* ClipProperty;
-	static DependencyProperty* TriggersProperty;
 	static DependencyProperty* OpacityMaskProperty;
 	static DependencyProperty* RenderTransformOriginProperty;
 	static DependencyProperty* CursorProperty;
