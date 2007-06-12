@@ -218,7 +218,7 @@ PluginClass::IndexOf (NPIdentifier name, const char *const names[])
 
 /*** PluginRootClass **********************************************************/
 
-static const char *const PluginRootClassPropertyNames [PLUGINROOTCLASS_PCOUNT] = 
+static const char *const PluginRootClassPropertyNames [] = 
 {
 	"settings",
 	"content",
