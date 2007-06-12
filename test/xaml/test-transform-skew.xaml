@@ -1,0 +1,21 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Height="50" Width="50" Fill="white" Stroke="black" Canvas.Left="20" Canvas.Top="20"/>
+
+	<Rectangle Height="50" Width="50" Fill="red" Stroke="black" Canvas.Left="70" Canvas.Top="20">
+	<Rectangle.RenderTransform>
+		<SkewTransform CenterX="0" CenterY="0" AngleX="45" AngleY="0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="50" Width="50" Fill="green" Stroke="black" Canvas.Left="20" Canvas.Top="70">
+	<Rectangle.RenderTransform>
+		<SkewTransform CenterX="0" CenterY="0" AngleX="0" AngleY="45" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="50" Width="50" Fill="blue" Stroke="black" StrokeThickness="2" Canvas.Left="62" Canvas.Top="75">
+	<Rectangle.RenderTransform>
+		<SkewTransform CenterX="10" CenterY="-10" AngleX="33" AngleY="33" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+</Canvas>
