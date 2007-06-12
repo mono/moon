@@ -6,6 +6,12 @@
 G_BEGIN_DECLS
 
 // misc types
+enum {
+  FillBehaviorHoldEnd,
+  FillBehaviorStop
+};
+
+
 typedef gint64 TimeSpan;
 
 struct Duration {
@@ -209,6 +215,8 @@ class Clock : public DependencyObject {
 	virtual void RaiseAccumulatedEvents ();
 	virtual void TimeUpdated (TimeSpan parent_time);
 
+	ClockState current_state;
+
  protected:
 	double current_progress;
 	TimeSpan current_time;
@@ -217,6 +225,10 @@ class Clock : public DependencyObject {
 
 	void QueueEvent (int event);
 
+ protected:
+	Duration *duration;
+	Duration natural_duration;
+
  private:
 	Timeline *timeline;
 	int queued_events;
@@ -224,9 +236,6 @@ class Clock : public DependencyObject {
 	bool reversed;  // if we're presently working our way from 1.0 progress to 0.0
 	bool autoreverse;
 	int remaining_iterations;
-	Duration *duration;
-
-	ClockState current_state;
 };
 
 
@@ -277,6 +286,9 @@ class Timeline : public DependencyObject {
 	void SetDuration (Duration duration);
 	Duration* GetDuration ();
 
+	Duration GetNaturalDuration (Clock *clock);
+	virtual Duration GetNaturalDurationCore (Clock *clock);
+
 	virtual Clock* AllocateClock () { return new Clock (this); }
 };
 
@@ -298,7 +310,7 @@ class TimelineGroup : public Timeline {
 	*/
 	void AddChild (Timeline *child);
 	void RemoveChild (Timeline *child);
-
+	
 	GList *child_timelines;
 };
 
@@ -310,6 +322,8 @@ class ParallelTimeline : public TimelineGroup {
  public:
 	ParallelTimeline () { }
 	Value::Kind GetObjectType () { return Value::PARALLELTIMELINE; };
+
+	virtual Duration GetNaturalDurationCore (Clock *clock);
 };
 
 G_END_DECLS

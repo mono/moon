@@ -95,7 +95,8 @@ TimeManager::RemoveChild (Clock *child)
 Clock::Clock (Timeline *tl)
   : timeline (tl),
     current_state (STOPPED),
-    queued_events (0)
+    queued_events (0),
+    natural_duration (Duration::Automatic)
 {
 	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
@@ -108,7 +109,12 @@ Clock::Clock (Timeline *tl)
 	}
 
 	autoreverse = timeline->GetAutoReverse ();
-	duration = timeline->GetDuration();
+
+	duration = timeline->GetDuration ();
+	if (duration->HasTimeSpan ())
+		natural_duration = *duration;
+	else
+		natural_duration = timeline->GetNaturalDuration (this);
 	current_progress = 0.0;
 	current_time = 0;
 	reversed = false;
@@ -122,15 +128,11 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 	if ((current_state & (STOPPED | PAUSED)) != 0)
 		return;
 
-	if (*duration == Duration::Automatic  /* useful only on clock groups, means the clock stops when all child clocks have stopped. */
-	    || *duration == Duration::Forever /* for Forever duration timelines, progress is always 0.0 */) {
-		current_progress = 0.0;
-	}
-	else {
-		// we've got a timespan, so our progress will have changed
-		TimeSpan duration_timespan = duration->GetTimeSpan();
+	current_time = parent_clock_time - iter_start;
 
-		current_time = parent_clock_time - iter_start;
+	if (natural_duration.HasTimeSpan ()) {
+		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
+
 		if (reversed)
 			current_time = duration_timespan - (current_time - duration_timespan);
 
@@ -151,7 +153,7 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 				   not done, force current_time to 0
 				   so we start counting from there
 				   again. */
-				if (remaining_iterations > 0)
+				if (remaining_iterations > 0 && *duration != Duration::Automatic)
 					remaining_iterations --;
 
 				if (remaining_iterations == 0) {
@@ -168,7 +170,7 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 			reversed = false;
 			current_time = -current_time;
 
-			if (remaining_iterations > 0)
+			if (remaining_iterations > 0 && *duration != Duration::Automatic)
 				remaining_iterations --;
 
 			if (remaining_iterations == 0) {
@@ -181,8 +183,9 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 		}
 
 		current_progress = (double)current_time / duration_timespan;
-		QueueEvent (CURRENT_TIME_INVALIDATED);
 	}
+
+	QueueEvent (CURRENT_TIME_INVALIDATED);
 }
 
 void
@@ -305,8 +308,31 @@ ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 	/* recompute our current_time */
 	this->Clock::TimeUpdated (parent_clock_time);
 
+	//printf ("ClockGroup::TimeUpdated (%lld) - current_time = %lld\n", parent_clock_time, current_time);
+
 	for (GList *l = child_clocks; l; l = l->next) {
 		((Clock*)l->data)->TimeUpdated (current_time);
+	}
+
+	/* if we're automatic and no child clocks are still running, we need to stop.
+
+	   XXX we should probably do this by attaching to
+	   CurrentStateInvalidated on the child clocks instead of
+	   looping over them at the end of each TimeUpdated call.
+	*/
+	if (*duration == Duration::Automatic) {
+		bool stop = true;
+		for (GList *l = child_clocks; l; l = l->next) {
+			if ((((Clock*)l->data)->current_state & Clock::STOPPED) == 0) {
+				stop = false;
+				break;
+			}
+		}
+
+		if (stop) {
+		  printf ("STOP STOP STOP\n");
+			Stop ();
+		}
 	}
 }
 
@@ -372,7 +398,31 @@ Timeline::GetDuration ()
 	return GetValue (Timeline::DurationProperty)->AsDuration();
 }
 
+Duration
+Timeline::GetNaturalDuration (Clock *clock)
+{
+	Duration* d = GetDuration ();
+	if (*d == Duration::Automatic) {
+		printf ("automatic duration, we need to calculate it\n");
+		Duration cd = GetNaturalDurationCore (clock);
+		if (cd.HasTimeSpan ())
+			printf (" + duration (%lld timespan)\n", cd.GetTimeSpan ());
+		else if (cd == Duration::Automatic)
+			printf (" + automatic\n");
+		else if (cd == Duration::Forever)
+			printf (" + forever\n");
+		return cd;
+	}
+	else {
+		return *d;
+	}
+}
 
+Duration
+Timeline::GetNaturalDurationCore (Clock *clock)
+{
+	return Duration::Automatic;
+}
 
 /* timeline group */
 
@@ -404,3 +454,60 @@ TimelineGroup::RemoveChild (Timeline *child)
 	child_timelines = g_list_remove (child_timelines, child);
 }
 
+Duration
+ParallelTimeline::GetNaturalDurationCore (Clock *clock)
+{
+	if (!child_timelines)
+		return Duration (0);
+
+	Duration d = Duration::Automatic;
+	TimeSpan duration_span = 0;
+
+	for (GList *l = child_timelines; l ; l = l->next) {
+		Timeline *child_timeline = (Timeline*)l->data;
+
+		Duration child_duration = child_timeline->GetNaturalDuration (clock);
+		if (child_duration == Duration::Automatic)
+			continue;
+
+		if (child_duration == Duration::Forever)
+			return Duration::Forever;
+
+		TimeSpan child_span = child_duration.GetTimeSpan();
+
+		RepeatBehavior *child_repeat = child_timeline->GetRepeatBehavior ();
+		if (*child_repeat == RepeatBehavior::Forever) {
+			return Duration::Forever;
+		}
+		else if (child_repeat->HasCount ()) {
+			child_span *= child_repeat->GetCount ();
+		}
+		else if (child_repeat->HasDuration ()) {
+			if (child_span > child_repeat->GetDuration ())
+				child_span = child_repeat->GetDuration ();
+		}
+
+		Value *v = child_timeline->GetValue (Timeline::BeginTimeProperty);
+		if (v)
+			child_span += v->AsInt64();
+		
+		if (duration_span < child_span) {
+			duration_span = child_span;
+			d = Duration (duration_span);
+		}
+	}
+
+	return d;
+}
+
+void
+clock_init ()
+{
+	/* Timeline properties */
+	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
+	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", Value::INT64);
+	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value (Duration::Automatic));
+	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
+	Timeline::FillBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "FillBehavior", new Value ((int)FillBehaviorHoldEnd));
+	Timeline::SpeedRatioProperty = DependencyObject::Register (Value::TIMELINE, "SpeedRatio", new Value (1.0));
+}

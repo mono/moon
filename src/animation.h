@@ -25,6 +25,7 @@ struct KeyTime {
 
 	KeyTime (double percent)
 	  : k (PERCENT),
+	    timespan (0),
             percent (percent) { }
 
 	KeyTime (TimeSpan timeSpan)
@@ -125,7 +126,7 @@ class Animation/*Timeline*/ : public Timeline {
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
-	//	Duration GetNaturalDurationCore (Clock* clock);
+	virtual Duration GetNaturalDurationCore (Clock* clock);
 };
 
 
@@ -373,6 +374,8 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
+	virtual Duration GetNaturalDurationCore (Clock* clock);
+
 	KeyFrameCollection *key_frames;
 };
 
@@ -392,6 +395,8 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 					AnimationClock* animationClock);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	//virtual Duration GetNaturalDurationCore (Clock* clock);
 
 	KeyFrameCollection *key_frames;
 };
@@ -413,6 +418,8 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 					AnimationClock* animationClock);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	//virtual Duration GetNaturalDurationCore (Clock* clock);
 
 	KeyFrameCollection *key_frames;
 };

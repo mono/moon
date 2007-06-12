@@ -1,3 +1,22 @@
+2007-06-12  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h, animation.cpp (animation_init): remove the
+	clock.cpp property registration.
+	(DoubleAnimationUsingKeyFrames::GetNaturalDurationCore): initial
+	attempt, calculate our timespan from our key frames.
+	(Animation::GetNaturalDurationCore): return a 1 second duration,
+	as doc'ed on msdn.
+	(UpdatePropertyValue): plug leak.
+
+	* runtime.cpp (runtime_init): call clock_init.
+
+	* clock.h, clock.cpp: largish pass at implementing support for
+	Duration::Automatic in ClockGroups (where they query their child
+	timelines to see how long they should make themselves).  Also, add
+	clock_init.
+
+	* xaml.cpp (timespan_from_str): correct math.
+
 2007-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add a couple more of the animation elements.

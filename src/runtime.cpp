@@ -1938,4 +1938,5 @@ runtime_init ()
 	shape_init ();
 	geometry_init ();
 	xaml_init ();
+	clock_init ();
 }

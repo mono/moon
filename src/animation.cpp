@@ -36,7 +36,7 @@ AnimationStorage::UpdatePropertyValue ()
 {
 	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
 	targetobj->SetValue (targetprop, *current_value);
-	//delete current_value;
+	delete current_value;
 }
 
 
@@ -67,10 +67,12 @@ Animation/*Timeline*/::GetCurrentValue (Value* defaultOriginValue, Value* defaul
 	return NULL;
 }
 
-// Duration
-// AnimationTimeline::GetNaturalDurationCore (Clock* clock)
-// {
-// }
+
+Duration
+Animation/*Timeline*/::GetNaturalDurationCore (Clock* clock)
+{
+	return Duration::FromSeconds (1);
+}
 
 
 
@@ -697,6 +699,25 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	return current_keyframe->InterpolateValue (baseValue, progress);
 }
 
+Duration
+DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
+{
+	TimeSpan ts = 0;
+	Duration d = Duration::Automatic;
+
+	for (GSList *l = key_frames->list; l; l = l->next) {
+		DoubleKeyFrame *dkf = (DoubleKeyFrame*)l->data;
+		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
+
+		if (dk_ts > ts) {
+			ts = dk_ts;
+			d = Duration (ts);
+		}
+	}
+
+	return d;
+}
+
 DoubleAnimationUsingKeyFrames*
 double_animation_using_key_frames_new ()
 {
@@ -955,15 +976,6 @@ KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 void 
 animation_init ()
 {
-	/* Timeline properties */
-	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
-	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", new Value ((TimeSpan)0));
-	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value (Duration::Automatic));
-	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
-	//DependencyObject::Register (DependencyObject::TIMELINE, "FillBehavior", new Value (0));
-	//DependencyObject::Register (DependencyObject::TIMELINE, "SpeedRatio", new Value (0));
-
-
 	/* DoubleAnimation properties */
 	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By",   Value::DOUBLE);
 	DoubleAnimation::FromProperty = DependencyObject::Register (Value::DOUBLEANIMATION, "From", Value::DOUBLE);

@@ -727,6 +727,7 @@ UIElement  *xaml_create_from_str      (const char *xaml, Value::Kind *element_ty
 void runtime_init ();
 void animation_init ();
 void brush_init ();
+void clock_init ();
 void transform_init ();
 void shape_init ();
 void geometry_init ();
