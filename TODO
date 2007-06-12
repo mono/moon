@@ -37,6 +37,9 @@ Feel free to add items to this TODO list
 
 	Text also participates in hit-testing.
 
+	For this we probably want to use pango-cairo bindings as it
+	does most of the heavy lifting for us already.
+
 * Video Player:
 
 	Add support for seeking, stopping, shutdown.
