@@ -1,3 +1,7 @@
+2007-06-12  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp, plugin.h: PluginContent class added.
+
 2007-06-11  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin.cpp, plugin.h: Remove unused CreateDemoControls method.

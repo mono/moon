@@ -252,7 +252,7 @@ PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant
 	return false;
 }
 
-/*** PluginSettings class *****************************************************/
+/*** PluginSettings ***********************************************************/
 
 bool
 PluginSettings::ClassHasProperty (NPObject *npobj, NPIdentifier name)
@@ -279,9 +279,23 @@ PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant 
 	return false;
 }
 
-//
-// These are methods for the DependencyObject wrapper
-//
+/*** PluginContent ************************************************************/
+
+bool
+PluginContent::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+{
+	return false;
+}
+
+bool
+PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	return false;
+}
+
+
+/*** PluginDependencyObject ***************************************************/
+
 bool
 PluginDependencyObject::ClassHasProperty (NPObject *npobj, NPIdentifier name)
 {
