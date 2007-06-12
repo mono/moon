@@ -1,3 +1,13 @@
+2007-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Implement enums.  This implementation is very naive,
+	but works with the current Silverlight object model.  Basically,
+	we just index property names to enum maps.  So a property name
+	maps to a single enum type regardless of the type the enum is
+	declared in.  This works fine with the current silverlight object
+	model, but in the future might need to be changed, if we get
+	conflicting property names.
+
 2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ffvideo.cpp: Fixed sound playback to not get that nasty

@@ -27,6 +27,7 @@
 extern NameScope *global_NameScope;
 
 GHashTable *element_map = NULL;
+GHashTable *enum_map = NULL;
 
 class XamlElementInfo;
 class XamlElementInstance;
@@ -428,6 +429,195 @@ duration_from_str (const char *str)
 	return Duration (timespan_from_str (str));
 }
 
+
+///
+/// ENUMS
+///
+
+typedef struct {
+	const char *name;
+	int value;
+} enum_map_t;
+
+enum_map_t alignment_x_map [] = {
+	{ "Left", 0 },
+	{ "Center", 1 },
+	{ "Right", 2 },
+	{ NULL, 0 },
+};
+
+enum_map_t alignment_y_map [] = {
+	{ "Top", 0 },
+	{ "Center", 1 },
+	{ "Bottom", 2 },
+	{ NULL, 0 },
+};
+
+enum_map_t brush_mapping_mode_map [] = {
+	{ "Absolute", 0 },
+	{ "RelativeToBoundingBox", 1},
+	{ NULL, 0 },
+};
+
+
+enum_map_t color_interpolation_mode_map [] = {
+	{ "ScRgbLinearInterpolation", 0 },
+	{ "SRgbLinearInterpolation", 1 },
+	{ NULL, 0 },
+};
+
+enum_map_t cursors_map [] = {
+	{ "Default", 0 },
+	{ "Arrow", 1 },
+	{ "Hand", 2 },
+	{ "Wait", 3 },
+	{ "IBeam", 4 },
+	{ "Stylus", 5 },
+	{ "Eraser", 6 },
+	{ "None", 7 },
+	{ NULL, 0 },
+};
+
+enum_map_t error_type_map [] = {
+	{ "NoError", 0 },
+	{ "UnknownError", 1 },
+	{ "InitializeError", 2 },
+	{ "ParserError", 3 },
+	{ "ObjectModelError", 4 },
+	{ "RuntimeError", 5 },
+	{ "DownloadError", 6 },
+	{ "MediaError", 7 },
+	{ "ImageError", 8 },
+	{ NULL, 0 },
+};
+
+enum_map_t fill_behavior_map [] = {
+	{ "HoldEnd", 0 },
+	{ "Stop", 1 },
+	{ NULL, 0 },
+};
+
+enum_map_t fill_rule_map [] = {
+	{ "EvenOdd", 0 },
+	{ "Nonzero", 1},
+	{ NULL, 0 },
+};
+
+enum_map_t font_stretches_map [] = {
+	{ "UltraCondensed", 0 },
+	{ "ExtraCondensed", 1 },
+	{ "Condensed", 2 },
+	{ "SemiCondensed", 3 },
+	{ "Normal", 4 },
+	{ "Medium", 5 },
+	{ "SemiExpanded", 6 },
+	{ "Expanded", 7 },
+	{ "ExtraExpanded", 8 },
+	{ "UltraExpanded", 9 },
+	{ NULL, 0 },
+};
+
+enum_map_t font_styles_map [] = {
+	{ "Normal", 0 },
+	{ "Oblique", 1 },
+	{ "Italic", 2 },
+	{ NULL, 0 },
+};
+
+enum_map_t font_weights_map [] = {
+	{ "Thin", 0 },
+	{ "ExtraLight", 1 },
+	{ "UltraLight", 2 },
+	{ "Light", 3 },
+	{ "Normal", 4 },
+	{ "Regular", 5 },
+	{ "Medium", 6 },
+	{ "SemiBold", 7 },
+	{ "DemiBold", 8 },
+	{ "Bold", 9 },
+	{ "ExtraBold", 10 },
+	{ "UltraBold", 11 },
+ 	{ "Black", 12 },
+	{ "Heavy", 13 },
+	{ "ExtraBlack", 14 },
+	{ "UltraBlack", 15 },
+	{ NULL, 0 },
+};
+
+enum_map_t gradient_spread_method_map [] = {
+	{ "Pad", 0 },
+	{ "Reflect", 1 },
+	{ "Repeat", 2 },
+	{ NULL, 0 },
+};
+
+enum_map_t pen_line_cap_map [] = {
+	{ "Flat", 0 },
+	{ "Square", 1 },
+	{ "Round", 2 },
+	{ "Triangle", 3 },
+	{ NULL, 0 },
+};
+
+enum_map_t pen_line_join_map [] = {
+	{ "Miter", 0 },
+	{ "Bevel", 1 },
+	{ "Round", 2 },
+	{ NULL, 0 },
+};
+
+enum_map_t stretch_map [] = {
+	{ "None", 0 },
+	{ "Fill", 1 },
+	{ "Uniform", 2 },
+	{ "UniformToFill", 3 },
+	{ NULL, 0 },
+};
+
+enum_map_t sweep_direction_map [] = {
+	{ "Counterclockwise", 0 },
+	{ "Clockwise", 1 },
+	{ NULL, 0 },
+};
+
+enum_map_t tablet_device_type_map [] = {
+	{ "Mouse", 0 },
+	{ "Stylus", 1 },
+	{ "Touch", 2 },
+	{ NULL, 0 },
+};
+
+enum_map_t text_decorations_map [] = {
+	{ "None", 0 },
+	{ "Underline", 1 },
+	{ NULL, 0 },
+};
+
+enum_map_t text_wrapping_map [] = {
+	{ "Wrap", 0 },
+	{ "NoWrap", 1 },
+	{ "WrapWithOverflow", 2 },
+	{ NULL, 0 },
+};
+
+enum_map_t visibility_map [] = {
+	{ "Visible", 0 },
+	{ "Collapsed", 1 },
+	{ "Hidden", 2 },
+	{ NULL, 0 },
+};
+
+int enum_from_str (const enum_map_t *emu, const char *str)
+{
+	for (int i = 0; emu [i].name; i++) {
+		if (!strcmp (emu [i].name, str))
+			return emu [i].value;
+	}
+
+	// This mind wind up being a legal value, so maybe we should blow up here?
+	return -1;
+}
+
 XamlElementInstance *
 default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 {
@@ -670,7 +860,17 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10)));
 				break;
 			case Value::INT32:
-				dep->SetValue (prop, Value ((int) strtol (attr [i + 1], NULL, 10)));
+			{
+				// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
+				int val;
+				enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, attr [i]);
+
+				if (emu)
+					val = enum_from_str (emu, attr [i + 1]);
+				else
+					val = (int) strtol (attr [i + 1], NULL, 10);
+				dep->SetValue (prop, Value (val));
+			}
 				break;
 			case Value::STRING:
 				dep->SetValue (prop, Value (attr [i + 1]));
@@ -781,6 +981,7 @@ void
 xaml_init ()
 {
 	element_map = g_hash_table_new (g_str_hash, g_str_equal);
+	enum_map = g_hash_table_new (g_str_hash, g_str_equal);
 
 	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Value::COLLECTION);
 
@@ -912,5 +1113,36 @@ xaml_init ()
 
 	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, Value::BRUSH);
 	register_dependency_object_element ("SolidColorBrush", brush, Value::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
+
+
+
+	///
+	/// ENUMS
+	///
+
+	g_hash_table_insert (enum_map, (char *) "AlignmentX", GINT_TO_POINTER (alignment_x_map));
+	g_hash_table_insert (enum_map, (char *) "AlignmentY", GINT_TO_POINTER (&alignment_y_map));
+	g_hash_table_insert (enum_map, (char *) "MappingMode", GINT_TO_POINTER (brush_mapping_mode_map));
+	g_hash_table_insert (enum_map, (char *) "ColorInterpolationMode", GINT_TO_POINTER (color_interpolation_mode_map));
+	g_hash_table_insert (enum_map, (char *) "Cursors", GINT_TO_POINTER (cursors_map));
+	g_hash_table_insert (enum_map, (char *) "ErrorType", GINT_TO_POINTER (error_type_map));
+	g_hash_table_insert (enum_map, (char *) "FillBehavior", GINT_TO_POINTER (fill_behavior_map));
+	g_hash_table_insert (enum_map, (char *) "FillRule", GINT_TO_POINTER (fill_rule_map));
+	g_hash_table_insert (enum_map, (char *) "FontStretch", GINT_TO_POINTER (font_stretches_map));
+	g_hash_table_insert (enum_map, (char *) "FontStyle", GINT_TO_POINTER (font_styles_map));
+	g_hash_table_insert (enum_map, (char *) "FontWeight", GINT_TO_POINTER (font_weights_map));
+	g_hash_table_insert (enum_map, (char *) "SpreadMethod", GINT_TO_POINTER (gradient_spread_method_map));
+
+	g_hash_table_insert (enum_map, (char *) "StrokeDashCap", GINT_TO_POINTER (pen_line_cap_map));
+	g_hash_table_insert (enum_map, (char *) "StrokeStartLineCap", GINT_TO_POINTER (pen_line_cap_map));
+	g_hash_table_insert (enum_map, (char *) "StrokeEndLineCap", GINT_TO_POINTER (pen_line_cap_map));
+	
+	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", GINT_TO_POINTER (pen_line_join_map));
+	g_hash_table_insert (enum_map, (char *) "Stretch", GINT_TO_POINTER (stretch_map));
+	g_hash_table_insert (enum_map, (char *) "SweepDirection", GINT_TO_POINTER (sweep_direction_map));
+	g_hash_table_insert (enum_map, (char *) "DeviceType", GINT_TO_POINTER (tablet_device_type_map));
+	g_hash_table_insert (enum_map, (char *) "TextDecorations", GINT_TO_POINTER (text_decorations_map));
+	g_hash_table_insert (enum_map, (char *) "TextWrapping", GINT_TO_POINTER (text_wrapping_map));
+	g_hash_table_insert (enum_map, (char *) "Visibility", GINT_TO_POINTER (visibility_map));
 
 }
