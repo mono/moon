@@ -1,5 +1,9 @@
 2007-06-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Add a couple more of the animation elements.
+
+2007-06-12  Jackson Harper  <jackson@ximian.com>
+
 	* runtime.cpp|h: There is no public Triggers property.
 
 2007-06-12  Miguel de Icaza  <miguel@novell.com>

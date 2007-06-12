@@ -368,11 +368,11 @@ is_instance_of (XamlElementInstance *item, Value::Kind kind)
 	return false;
 }
 
-guint64
+gint64
 timespan_from_str (const char *str)    
 {
 	char *next = NULL;
-	guint64 res = 0;
+	gint64 res = 0;
 	bool negative = false;
 	int digit;
 	int digits [5] = { 0, 0, 0, 0, 0 };
@@ -982,10 +982,14 @@ xaml_init ()
 	
 	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
 	register_dependency_object_element ("DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
+	register_dependency_object_element ("ColorAnimation", tl, Value::COLORANIMATION, (create_item_func) color_animation_new);
+	register_dependency_object_element ("PointAnimation", tl, Value::POINTANIMATION, (create_item_func) point_animation_new);
+
 	XamlElementInfo *sb = register_dependency_object_element ("Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
 	sb->add_child = storyboard_add_child;
 
 
+	
 	///
 	/// Triggers
 	///
