@@ -1540,6 +1540,8 @@ TriggerCollection::Remove (void *data)
 	EventTrigger *trigger = v->AsEventTrigger ();
 
 	Collection::Remove (trigger);
+
+	trigger->RemoveTarget (fwe);
 }
 
 void

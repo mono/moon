@@ -1,3 +1,10 @@
+2007-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: No longer need to special case EventTriggers. Remove
+	some dead code (yippie!)
+	* runtime.cpp: Unregister the target when removing from the
+	collection.
+
 2007-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.h: Implement Inlines.

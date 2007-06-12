@@ -470,117 +470,6 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 	return inst;
 }
 
-XamlElementInstance *
-create_event_trigger_instance (XamlParserInfo *p, XamlElementInfo *i)
-{
-	XamlElementInstance *inst = new XamlElementInstance (i);
-	EventTrigger *trigger = (EventTrigger *) i->create_item ();
-	
-	inst->element_name = i->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
-	inst->item = trigger;
-
-	// this is pretty evil, once i work out some of the other issues
-	// in the parser, i will add a more clean way to do this
-	// probably a method that is called to notify an element that it
-	// was added to a property
-	XamlElementInstance *prop = p->current_element;
-	XamlElementInstance *owner = prop->parent;
-
-	trigger->SetTarget ((DependencyObject *) owner->item);
-
-	return inst;
-}
-
-XamlElementInstance *
-create_path_figure_collection_instance (XamlParserInfo *p, XamlElementInfo *i)
-{
-	XamlElementInstance *inst = new XamlElementInstance (i);
-
-	inst->element_name = i->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
-
-	// Walk up the tree and find the PathGeometry that we are being added to,
-	// attempt to use this instance as our item, if the types are incorrect,
-	// create a new item
-	XamlElementInstance *prop = p->current_element;
-
-	if (prop) {
-		XamlElementInstance *owner = prop->parent;
-		if (owner && is_instance_of (owner, Value::PATHGEOMETRY))
-			inst->item = ((PathGeometry *) owner->item)->children;
-	}
-
-	// This is still legal, because someone could have done:
-	// createFromXaml ("<PathFigureCollection ...");
-	if (!inst->item)
-		inst->item = new PathFigureCollection ();
-
-	return inst;
-}
-
-XamlElementInstance *
-create_path_segment_collection_instance (XamlParserInfo *p, XamlElementInfo *i)
-{
-	XamlElementInstance *inst = new XamlElementInstance (i);
-
-	inst->element_name = i->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
-
-	// Walk up the tree and find the PathFigure that we are being added to,
-	// attempt to use this instance as our item, if the types are incorrect,
-	// create a new item
-	XamlElementInstance *prop = p->current_element;
-
-	if (prop) {
-		XamlElementInstance *owner = prop->parent;
-		if (owner && is_instance_of (owner, Value::PATHFIGURE))
-			inst->item = ((PathFigure *) owner->item)->children;
-	}
-
-	// This is still legal, because someone could have done:
-	// createFromXaml ("<PathSegmentCollection ...");
-	if (!inst->item)
-		inst->item = new PathSegmentCollection ();
-
-	return inst;
-}
-
-XamlElementInstance *
-create_geometry_collection_instance (XamlParserInfo *p, XamlElementInfo *i)
-{
-	XamlElementInstance *inst = new XamlElementInstance (i);
-
-	inst->element_name = i->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
-
-	// Walk up the tree and find the GeometryGroup that we are being added to,
-	// attempt to use this instance as our item, if the types are incorrect,
-	// create a new item
-	XamlElementInstance *prop = p->current_element;
-
-	if (prop) {
-
-		if (is_instance_of (prop, Value::GEOMETRYGROUP)) {
-			inst->item = ((GeometryGroup *) prop->item)->children;
-		} else {
-			XamlElementInstance *owner = prop->parent;
-			if (owner && is_instance_of (owner, Value::GEOMETRYGROUP)) {
-				inst->item = ((GeometryGroup *) owner->item)->children;
-			}
-		}
-	}
-
-	// This is still legal, because someone could have done:
-	// createFromXaml ("<GeometryCollection ...");
-	if (!inst->item) {
-		printf ("creating a new geometry collection\n");
-		inst->item = new GeometryCollection ();
-	}
-
-	return inst;
-}
-
 ///
 /// Add Child funcs
 ///
@@ -979,7 +868,6 @@ xaml_init ()
 
 	XamlElementInfo *evt = register_dependency_object_element ("EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new);
 	evt->content_property = "Actions";
-	evt->create_element = create_event_trigger_instance;
 
 	register_dependency_object_element ("TriggerActionCollection", col, Value::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
 
