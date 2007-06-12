@@ -1,3 +1,8 @@
+2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ffvideo.cpp: Fixed sound playback to not get that nasty
+	reverb-like effect. Also switched to using SDL for audio.
+
 2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* transform.cpp|h: Implement SkewTransform.

@@ -39,11 +39,24 @@ G_END_DECLS
 
 #include <sys/time.h>
 
-// Alsa
-#include <asoundlib.h>
+#include <SDL.h>
+
 #include "cutil.h"
 
+
+#define ENABLE_AUDIO
+#define AUDIO_SAMPLE_SIZE 1024
+
 #define ALIGN(addr,size) (uint8_t *) (((uint32_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
+
+
+typedef struct {
+	int stream_index;
+	int duration;
+	int64_t pts;
+	size_t size;
+	uint8_t data[1];
+} QPacket;
 
 
 static GStaticMutex ffmpeg_lock = G_STATIC_MUTEX_INIT;
@@ -78,22 +91,23 @@ public:
 	AVStream    *video_stream;
 	int          video_stream_idx;
 	GMutex      *video_mutex;
-
-	uint64_t     target_pts;
-
+	
+	// Audio
+	SDL_AudioSpec audio_spec;
 	AVCodec     *audio_codec;
 	AVStream    *audio_stream;
 	int          audio_stream_idx;
+	GMutex      *audio_mutex;
 	
-	snd_pcm_t   *pcm;
-	snd_pcm_uframes_t pcm_buffer_size;
-	snd_pcm_uframes_t pcm_period_size;
+	uint64_t     target_pts;
 	
 	//
 	// Video and audio frames + usage of the queues
 	//
 	GAsyncQueue *video_frames;
 	int          video_frames_size;
+	GAsyncQueue *audio_frames;
+	int          audio_frames_size;
 	
 	//
 	// Timing components, the next time to display.
@@ -156,6 +170,25 @@ VideoFfmpeg::getbounds ()
 	cairo_restore (s->cairo);
 }
 
+static QPacket *
+pkt_new (AVPacket *pkt)
+{
+	QPacket *qpkt;
+	
+	qpkt = (QPacket *) g_malloc (sizeof (QPacket) + pkt->size);
+	qpkt->stream_index = pkt->stream_index;
+	qpkt->duration = pkt->duration;
+	qpkt->size = pkt->size;
+	qpkt->pts = pkt->pts;
+	
+	memcpy (qpkt->data, pkt->data, pkt->size);
+	
+	return qpkt;
+}
+
+#define pkt_free(x) g_free (x)
+
+
 static void restart_timer (VideoFfmpeg *video);
 
 static void
@@ -174,7 +207,7 @@ callback_video_inited (gpointer data)
 {
 	VideoFfmpeg *video = (VideoFfmpeg *) data;
 	AVCodecContext *cc;
-
+	
 	cc = video->video_stream->codec;
 	video->video_cairo_surface = cairo_image_surface_create_for_data (
 		video->video_rgb_buffer, CAIRO_FORMAT_ARGB32,
@@ -193,10 +226,74 @@ callback_video_inited (gpointer data)
 	return FALSE;
 }
 
+static void
+sdl_audio_callback (void *user_data, uint8_t *stream, int len)
+{
+	VideoFfmpeg *video = (VideoFfmpeg *) user_data;
+	uint8_t *inptr, *outbuf;
+	int inleft, outlen;
+	QPacket *pkt;
+	int n;
+	
+	outlen = video->audio_outptr - video->audio_outbuf;
+	
+	while (outlen < len) {
+		g_mutex_lock (video->audio_mutex);
+		pkt = (QPacket *) g_async_queue_pop (video->audio_frames);
+		video->audio_frames_size -= pkt->size;
+		g_mutex_unlock (video->audio_mutex);
+		
+		video->target_pts = pkt->pts;
+		
+		inptr = pkt->data;
+		inleft = pkt->size;
+		
+		while (inleft > 0) {
+			/* avcodec_decode_audio2() requires that the outbuf be 16bit word aligned */
+			outbuf = ALIGN (video->audio_outptr, 2);
+			outlen = (video->audio_outbuf + AUDIO_BUFLEN) - outbuf;
+			
+			n = avcodec_decode_audio2 (video->audio_stream->codec,
+						   (int16_t *) outbuf, &outlen,
+						   inptr, inleft);
+			
+			if (n > 0) {
+				inleft -= n;
+				inptr += n;
+				
+				// append the newly decoded buffer to the end of the remaining audio
+				// buffer from our previous loop (if re-alignment was required).
+				if (outbuf > video->audio_outptr)
+					memmove (video->audio_outptr, outbuf, outlen);
+				video->audio_outptr += outlen;
+			} else {
+				break;
+			}
+		}
+		
+		pkt_free (pkt);
+		
+		outlen = video->audio_outptr - video->audio_outbuf;
+	}
+	
+	n = len < outlen ? len : outlen;
+	memcpy (stream, video->audio_outbuf, n);
+	if (n < outlen) {
+		memmove (video->audio_outbuf, video->audio_outbuf + n, outlen - n);
+		video->audio_outptr -= n;
+	} else {
+		video->audio_outptr = video->audio_outbuf;
+	}
+	
+	if (n < len)
+		memset (stream + n, 0, len - n);
+}
+
 static int
 init_video (VideoFfmpeg *video)
 {
 	AVCodecContext *codec;
+	SDL_AudioSpec spec;
 	AVStream *stream;
 	int i, n;
 	
@@ -227,8 +324,8 @@ init_video (VideoFfmpeg *video)
 		
 		switch (stream->codec->codec_type) {
 		case CODEC_TYPE_AUDIO:
+			printf ("audio stream id = %d\n", i);
 			video->audio_stream_idx = i;
-#define ENABLE_AUDIO
 #ifdef ENABLE_AUDIO
 			if (!(video->audio_codec = avcodec_find_decoder (stream->codec->codec_id)))
 				break;
@@ -238,26 +335,32 @@ init_video (VideoFfmpeg *video)
 			
 			codec = video->audio_stream->codec;
 			
-			n = snd_pcm_open (&video->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
-			if (n == 0) {
-				snd_pcm_set_params (video->pcm, SND_PCM_FORMAT_S16, 
-						    SND_PCM_ACCESS_RW_INTERLEAVED,
-						    codec->channels, codec->sample_rate,
-						    1, 0);
-				
-				snd_pcm_get_params (video->pcm, &video->pcm_buffer_size, &video->pcm_period_size);
-			} else {
-				printf ("Error, can not initialize audio %d\n", n);
+			spec.freq = codec->sample_rate;
+			spec.format = AUDIO_S16SYS;
+			if (codec->channels > 2)
+				codec->channels = 2;
+			spec.channels = codec->channels;
+			spec.silence = 0;
+			spec.samples = AUDIO_SAMPLE_SIZE;
+			spec.callback = sdl_audio_callback;
+			spec.userdata = video;
+			if (SDL_OpenAudio (&spec, &video->audio_spec) < 0) {
+				printf ("SDL_OpenAudio: %s\n", SDL_GetError ());
+				return -1;
 			}
-			break;
-#else
-			break;
+			
+			//SDL_PauseAudio (0);
 #endif /* ENABLE_AUDIO */
+			break;
 		case CODEC_TYPE_VIDEO:
-			video->video_codec = avcodec_find_decoder (stream->codec->codec_id);
+			printf ("video stream id = %d\n", i);
+			video->video_stream_idx = i;
+			
+			if (!(video->video_codec = avcodec_find_decoder (stream->codec->codec_id)))
+				break;
+			
 			video->video_stream = video->av_format_context->streams [i];
 			avcodec_open (video->video_stream->codec, video->video_codec);
-			video->video_stream_idx = i;
 			
 			// Allocate our rendering buffer and cairo surface
 			//
@@ -284,21 +387,6 @@ init_video (VideoFfmpeg *video)
 	return 0;
 }
 
-static int
-pcm_poll (snd_pcm_t *pcm, struct pollfd *ufds, int nfds)
-{
-	unsigned short revents;
-	
-	while (1) {
-		poll (ufds, nfds, -1);
-		snd_pcm_poll_descriptors_revents (pcm, ufds, nfds, &revents);
-		if (revents & POLLERR)
-			return -1;
-		if (revents & POLLOUT)
-			return 0;
-	}
-}
-
 //
 // The queue-data thread, runs until complete
 //
@@ -309,151 +397,63 @@ queue_data (gpointer data)
 	int video_stream_idx, audio_stream_idx;
 	struct pollfd *ufds = NULL;
 	AVFrame *video_frame;
-	int nfds, i, n;
+	int i, n = 0;
 	
-	printf ("Video THREAD STARTS\n");
+	printf ("video thread %p starting...\n", g_thread_self ());
 	
 	if (init_video (video) == -1)
 		return NULL;
-	
-#ifdef ENABLE_AUDIO
-	if (video->pcm != NULL) {
-		if ((nfds = snd_pcm_poll_descriptors_count (video->pcm)) <= 0) {
-			snd_pcm_close (video->pcm);
-			video->pcm = NULL;
-		} else {
-			ufds = (struct pollfd *) g_malloc (sizeof (struct pollfd) * nfds);
-			
-			if (snd_pcm_poll_descriptors (video->pcm, ufds, nfds) < 0) {
-				snd_pcm_close (video->pcm);
-				video->pcm = NULL;
-			}
-		}
-	}
-#endif /* ENABLE_AUDIO */
 	
 	video_stream_idx = video->video_stream_idx;
 	audio_stream_idx = video->audio_stream_idx;
 	
 	while (TRUE) {
-		AVPacket *pkt;
+		AVPacket pkt;
 		int ret;
 		
-		pkt = g_new (AVPacket, 1);
-		if (av_read_frame (video->av_format_context, pkt) < 0) {
+		if (av_read_frame (video->av_format_context, &pkt) < 0) {
 			// ffmpeg stream is complete (or error), either way - nothing left to decode.
-			g_free (pkt);
 			break;
 		}
 		
-		if (pkt->stream_index == video_stream_idx) {
+		n++;
+		
+		if (pkt.stream_index == video_stream_idx) {
 			//while (video->video_frames_size > MAX_VIDEO_SIZE) {
 			//	// FIXME: use a GCond for this?
 			//	printf ("sleeping...\n");
 			//	g_usleep (1000);
 			//}
 			
+			//printf ("queueing video packet\n");
+			
 			g_mutex_lock (video->video_mutex);
-			g_async_queue_push (video->video_frames, pkt);
-			video->video_frames_size += pkt->size;
+			g_async_queue_push (video->video_frames, pkt_new (&pkt));
+			video->video_frames_size += pkt.size;
 			g_mutex_unlock (video->video_mutex);
 			
 			if (g_async_queue_length (video->video_frames) == 1)
 				notify_frame_ready (video);
+#ifdef ENABLE_AUDIO
+		} else if (pkt.stream_index == audio_stream_idx) {
+			//printf ("queueing audio packet\n");
 			
-			pkt = NULL;
-		} else if (video->pcm != NULL && pkt->stream_index == audio_stream_idx) {
-			AVCodecContext *audio_codec = video->audio_stream->codec;
-			uint8_t *outbuf;
-			int outlen, n;
-			
-			video->target_pts = pkt->pts;
-			
-			/* avcodec_decode_audio2() requires that the outbuf be 16bit word aligned */
-			outbuf = ALIGN (video->audio_outptr, 2);
-			outlen = (video->audio_outbuf + AUDIO_BUFLEN) - outbuf;
-			
-			n = avcodec_decode_audio2 (audio_codec, (int16_t *) outbuf, &outlen, pkt->data, pkt->size);
-			av_free_packet (pkt);
-			g_free (pkt);
-			
-			if (n > 0) {
-				// append the newly decoded buffer to the end of the remaining audio
-				// buffer from our previous loop (if re-alignment was required).
-				if (outbuf > video->audio_outptr)
-					memmove (video->audio_outptr, outbuf, n);
-				video->audio_outptr += n;
-				
-				if (n < video->pcm_period_size) {
-					n = video->pcm_period_size - n;
-					memset (video->audio_outptr, 0, n);
-					video->audio_outptr += n;
-				} else if (n > video->pcm_period_size) {
-					n = n % video->pcm_period_size;
-					memset (video->audio_outptr, 0, n);
-					video->audio_outptr += n;
-				}
-			} else {
-				printf ("error decode: %d\n", n);
-			}
-			
-			outlen = video->audio_outptr - video->audio_outbuf;
-			
-			while (outlen > 0) {
-				if (pcm_poll (video->pcm, ufds, nfds) != 0) {
-					switch (snd_pcm_state (video->pcm)) {
-					case SND_PCM_STATE_XRUN:
-						//printf ("SND_PCM_STATE_XRUN\n");
-						snd_pcm_prepare (video->pcm);
-						break;
-					case SND_PCM_STATE_SUSPENDED:
-						//printf ("SND_PCM_STATE_SUSPENDED\n");
-						while ((n = snd_pcm_resume (video->pcm)) == -EAGAIN)
-							sleep (1);
-						if (n < 0)
-							snd_pcm_prepare (video->pcm);
-						break;
-					default:
-						break;
-					}
-				}
-				
-				n = outlen < video->pcm_period_size ? outlen : video->pcm_period_size;
-				n = snd_pcm_writei (video->pcm, video->audio_outbuf, n);
-				//printf ("%d out of %d bytes written\n", n, outlen);
-				if (n > 0) {
-					if (n < outlen) {
-						memmove (video->audio_outbuf, video->audio_outbuf + n, outlen - n);
-						video->audio_outptr -= n;
-					} else {
-						video->audio_outptr = video->audio_outbuf;
-					}
-					
-					outlen -= n;
-				} else if (n == -ESTRPIPE) {
-					//printf ("snd_pcm_writei() returned -ESTRPIPE\n");
-					while ((n = snd_pcm_resume (video->pcm)) == -EAGAIN)
-						sleep (1);
-					
-					if (n < 0) {
-						snd_pcm_prepare (video->pcm);
-						snd_pcm_start (video->pcm);
-					}
-				} else if (n == -EPIPE) {
-					//printf ("snd_pcm_writei() returned -EPIPE\n");
-					snd_pcm_prepare (video->pcm);
-					snd_pcm_start (video->pcm);
-				}
-			}
+			g_mutex_lock (video->audio_mutex);
+			g_async_queue_push (video->audio_frames, pkt_new (&pkt));
+			video->audio_frames_size += pkt.size;
+			g_mutex_unlock (video->audio_mutex);
+#endif /* ENABLE_AUDIO */
 		} else {
-			av_free_packet (pkt);
-			g_free (pkt);
+			printf ("unknown packet\n");
 		}
+		
+		av_free_packet (&pkt);
 	}
 	
-	g_free (ufds);
+	while (g_async_queue_length (video->audio_frames) > 0)
+		g_usleep (1000);
 	
-	printf ("THREAD COMPLETES\n");
+	printf ("video thread %p complete. decoded %d frames\n", g_thread_self (), n);
 	
 	return NULL;
 }
@@ -464,7 +464,6 @@ queue_data (gpointer data)
 static void
 convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 {
-	static struct SwsContext *img_convert_ctx;
 	AVCodecContext *cc = video->video_stream->codec;
 	uint8_t *rgb_dest[3] = { video->video_rgb_buffer, NULL, NULL};
 	int rgb_stride [3] = { cc->width * 4, 0, 0 };
@@ -485,20 +484,20 @@ load_next_frame (gpointer data)
 	gboolean cont = TRUE;
 	int redraw = 0;
 	
-	if (video->pcm == NULL) {
-		// no audio to sync to
-		target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
-	} else {
-		// sync w/ audio
-		target_pts = video->target_pts;
-	}
+#ifndef ENABLE_AUDIO
+	// no audio to sync to
+	target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
+#else /* ENABLE_AUDIO */
+	// sync w/ audio
+	target_pts = video->target_pts;
+#endif
 	
 	while (g_async_queue_length (video->video_frames) > 0) {
-		AVPacket *pkt;
+		QPacket *pkt;
 		long pkt_pts;
-
+		
 		g_mutex_lock (video->video_mutex);
-		pkt = (AVPacket *) g_async_queue_pop (video->video_frames);
+		pkt = (QPacket *) g_async_queue_pop (video->video_frames);
 		video->video_frames_size -= pkt->size;
 		g_mutex_unlock (video->video_mutex);
 		
@@ -510,8 +509,7 @@ load_next_frame (gpointer data)
 		avcodec_decode_video (video->video_stream->codec, frame, &redraw, pkt->data, pkt->size);
 		
 		pkt_pts = pkt->pts;
-		av_free_packet (pkt);
-		g_free (pkt);
+		pkt_free (pkt);
 		
 		if (pkt_pts + video->frame_size < target_pts) {
 			if (g_async_queue_length (video->video_frames) > 0) {
@@ -574,6 +572,7 @@ restart_timer (VideoFfmpeg *video)
 	video->play_start_time = av_gettime ();
 	printf ("Adding timer for %d\n", video->frame_size);
 	video->timeout_handle = g_timeout_add (video->frame_size, load_next_frame, video);
+	SDL_PauseAudio (0);
 }
 
 //
@@ -626,10 +625,11 @@ static int ffmpeg_inited;
 static void
 ffmpeg_init ()
 {
-	if (!ffmpeg_inited){
+	if (!ffmpeg_inited) {
 		avcodec_init ();
 		av_register_all ();
 		avcodec_register_all ();
+		SDL_Init (SDL_INIT_AUDIO);
 		ffmpeg_inited = TRUE;
 	}
 }
@@ -652,7 +652,6 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	video_stream = NULL;
 	audio_codec = NULL;
 	audio_stream = NULL;
-	pcm = NULL;
 	video_rgb_buffer = NULL;
 	video_cairo_surface = NULL;
 	video_scale_context = NULL;
@@ -668,12 +667,15 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	play_start_time = 0;
 	frame_size = 0;
 	micro_to_pts = 0;
+	audio_frames_size = 0;
 	video_frames_size = 0;
 
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
 	
+	audio_mutex = g_mutex_new ();
 	video_mutex = g_mutex_new ();
+	audio_frames = g_async_queue_new ();
 	video_frames = g_async_queue_new ();
 	pipe_channel = g_io_channel_unix_new (pipes [0]);
 	g_io_add_watch (pipe_channel, G_IO_IN, video_ready, this);
@@ -694,7 +696,8 @@ VideoFfmpeg::~VideoFfmpeg ()
 	//    * Ask our thread to shutdown nicely.
 	//
 	fprintf (stderr, "We should stop the thread");
-
+	
+	g_async_queue_unref (audio_frames);
 	g_async_queue_unref (video_frames);
 	g_mutex_free (video_mutex);
 	close (pipes [0]);
