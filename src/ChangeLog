@@ -1,3 +1,7 @@
+2007-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Don't try to add properties to the panel.
+
 2007-06-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Implemented ArcSegment::Draw using librsvg code

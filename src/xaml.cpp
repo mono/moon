@@ -538,7 +538,8 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 void
 panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
-	panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
+	if (parent->element_type != XamlElementInstance::PROPERTY)
+		panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
 
 	dependency_object_add_child (p, parent, child);
 }
