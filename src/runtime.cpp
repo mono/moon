@@ -421,11 +421,6 @@ item_update_bounds (UIElement *item)
 	}
 }
 
-UIElement::~UIElement ()
-{
-	printf ("FIXME: We should go through all of the attached properties and unref them\n");
-}
-
 void
 UIElement::get_xform_for (UIElement *item, cairo_matrix_t *result)
 {
@@ -594,6 +589,10 @@ uielement_set_opacity (UIElement *item, double opacity)
 	item->SetValue (UIElement::OpacityProperty, Value (opacity));
 }
 
+UIElement::~UIElement ()
+{
+	printf ("FIXME: We should go through all of the attached properties and unref them\n");
+}
 
 FrameworkElement::FrameworkElement ()
 {
@@ -942,6 +941,42 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	return TRUE;
 }
 
+static gboolean 
+motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	printf ("Motion\n");
+}
+
+static gboolean 
+key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	printf ("key press\n");
+}
+
+static gboolean 
+key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	printf ("key release\n");
+}
+
+static gboolean
+button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
+{
+	printf ("%d released\n", button->button);
+}
+
+static gboolean
+button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
+{
+	printf ("%d pressed\n", button->button);
+}
+
 void
 Canvas::render (Surface *s, int x, int y, int width, int height)
 {
@@ -985,6 +1020,13 @@ surface_new (int width, int height)
 	Surface *s = new Surface ();
 
 	s->drawing_area = gtk_drawing_area_new ();
+	gtk_widget_add_events (s->drawing_area, 
+			       GDK_POINTER_MOTION_MASK |
+			       GDK_KEY_PRESS_MASK |
+			       GDK_KEY_RELEASE_MASK |
+			       GDK_BUTTON_PRESS_MASK |
+			       GDK_BUTTON_RELEASE_MASK);
+	GTK_WIDGET_SET_FLAGS (s->drawing_area, GTK_CAN_FOCUS);
 	gtk_widget_set_double_buffered (s->drawing_area, FALSE);
 
 	gtk_widget_show (s->drawing_area);
@@ -999,6 +1041,21 @@ surface_new (int width, int height)
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "expose_event",
 			    G_CALLBACK (expose_event_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "motion_notify_event",
+			    G_CALLBACK (motion_notify_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "key_press_event",
+			    G_CALLBACK (key_press_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "key_release_event",
+			    G_CALLBACK (key_release_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "button_press_event",
+			    G_CALLBACK (button_press_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "button_release_event",
+			    G_CALLBACK (button_release_callback), s);
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "realize",
 			    G_CALLBACK (realized_callback), s);

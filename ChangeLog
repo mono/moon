@@ -1,3 +1,8 @@
+2007-06-10  Miguel de Icaza  <miguel@novell.com>
+
+	* configure.ac: Check for mono, prepare cflags and libs to embed
+	the Mono VM.
+
 2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: We now use SDL for audio instead of alsa.
