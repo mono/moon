@@ -13,6 +13,7 @@ struct Color;
 struct DoubleArray;
 struct Duration;
 struct KeyTime;
+class KeySpline;
 struct Point;
 struct PointArray;
 struct Rect;
@@ -101,6 +102,7 @@ class ScaleTransform;
 class Shape;
 class SkewTransform;
 class SolidColorBrush;
+class SplineDoubleKeyFrame;
 class Storyboard;
 class StrokeCollection;
 class StylusPointCollection;
@@ -145,6 +147,7 @@ public:
 		DOUBLE_ARRAY,
 		POINT_ARRAY,
 		KEYTIME,
+		KEYSPLINE,
 		MATRIX,
 
 		DEPENDENCY_OBJECT,
@@ -223,6 +226,7 @@ public:
 		SHAPE,
 		SKEWTRANSFORM,
 		SOLIDCOLORBRUSH,
+		SPLINEDOUBLEKEYFRAME,
 		STORYBOARD,
 		STROKE_COLLECTION,
 		STYLUSPOINT_COLLECTION,
@@ -266,6 +270,7 @@ public:
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
+	Value (KeySpline* keyspline);
 	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
@@ -311,6 +316,7 @@ public:
 	RepeatBehavior* AsRepeatBehavior ();
 	Duration*       AsDuration ();
 	KeyTime*        AsKeyTime ();
+	KeySpline*      AsKeySpline ();
 	PointArray*     AsPointArray ();
 	DoubleArray*    AsDoubleArray ();
 	Matrix*		AsMatrix ();
@@ -391,6 +397,7 @@ public:
 	Shape*                         AsShape ();
 	SkewTransform*                 AsSkewTransform ();
 	SolidColorBrush*               AsSolidColorBrush ();
+	SplineDoubleKeyFrame*          AsSplineDoubleKeyFrame ();
 	Storyboard*                    AsStoryboard ();
 	StrokeCollection*              AsStrokeCollection ();
 	StylusPointCollection*         AsStylusPointCollection ();
@@ -428,6 +435,7 @@ public:
 		RepeatBehavior *repeat;
 		Duration *duration;
 		KeyTime *keytime;
+		KeySpline *keyspline;
 		PointArray *point_array;
 		DoubleArray *double_array;
 		Matrix* matrix;

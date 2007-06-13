@@ -35,6 +35,7 @@ void types_init_manually ()
 	Type::RegisterType ("Duration", Value::DURATION);
 	Type::RegisterType ("int64", Value::INT64);
 	Type::RegisterType ("KeyTime", Value::KEYTIME);
+	Type::RegisterType ("KeySpline", Value::KEYSPLINE);
 	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
 	Type::RegisterType ("Point*", Value::POINT_ARRAY);
 	Type::RegisterType ("Matrix", Value::MATRIX);

@@ -25,6 +25,22 @@
 
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp, animation.h: add public storyboard methods for
+	begin/pause/resume/seek/stop.  also start in on the spline
+	keyframe/KeySpline stuff.
+
+	* type.cpp: resync.
+
+	* value.cpp: resync.
+
+	* value.h: resync.
+
+	* value.h.in: add keyspline stuff.
+
+	* type.cpp.in: add keyspline stuff.
+
+2007-06-13  Chris Toshok  <toshok@ximian.com>
+
 	* demo.cpp: a few changes - none of the animations run forever
 	now.  also, add some gtk events (button press/release/motion).  we
 	pause animations on press, resume them on release.

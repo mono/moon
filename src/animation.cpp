@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "animation.h"
 
@@ -176,6 +177,37 @@ storyboard_new ()
 {
 	return new Storyboard ();
 }
+
+void
+storyboard_begin  (Storyboard *sb)
+{
+	sb->Begin ();
+}
+
+void
+storyboard_pause  (Storyboard *sb)
+{
+	sb->Pause ();
+}
+
+void
+storyboard_resume (Storyboard *sb)
+{
+	sb->Resume ();
+}
+
+void
+storyboard_seek   (Storyboard *sb, TimeSpan ts)
+{
+	sb->Seek (ts);
+}
+
+void
+storyboard_stop   (Storyboard *sb)
+{
+	sb->Stop ();
+}
+
 
 void
 Storyboard::SetTargetProperty (DependencyObject *o,
@@ -400,6 +432,64 @@ point_animation_new ()
 {
 	return new PointAnimation ();
 }
+
+
+
+
+
+KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
+  : controlPoint1 (controlPoint1),
+    controlPoint2 (controlPoint2)
+{
+}
+
+KeySpline::KeySpline (double x1, double y1,
+		      double x2, double y2)
+  : controlPoint1 (Point (x1, y1)),
+    controlPoint2 (Point (x2, y2))
+{
+}
+
+Point
+KeySpline::GetControlPoint1 ()
+{
+	return controlPoint1;
+}
+void
+KeySpline::SetControlPoint1 (Point controlPoint1)
+{
+	this->controlPoint1 = controlPoint1;
+}
+
+Point
+KeySpline::GetControlPoint2 ()
+{
+	return controlPoint2;
+}
+void
+KeySpline::SetControlPoint2 (Point controlPoint2)
+{
+	this->controlPoint2 = controlPoint2;
+}
+
+double
+KeySpline::GetSplineProgress (double linearProgress)
+{
+	/* perform the actual cubic bezier interpolation here */
+
+	double t = linearProgress;
+	double t2 = t*t;
+	double t3 = t2*t;
+	double omt = 1.0-t;
+	double omt2 = omt*omt;
+	double omt3 = omt2*omt;
+
+	double xb = 0 * omt3 + 3 * controlPoint1.x * t * omt2 + 3 * controlPoint2.x * t2 * omt + 1 * t3;
+	double yb = 0 * omt3 + 3 * controlPoint1.y * t * omt2 + 3 * controlPoint2.y * t2 * omt + 1 * t3;
+
+	return sqrt (xb*xb + yb*yb);
+}
+
 
 
 
@@ -649,6 +739,13 @@ linear_point_key_frame_new ()
 
 
 
+Value*
+SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	return NULL;
+}
+
+
 
 DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
@@ -868,7 +965,10 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	if (!current_keyframe)
 	  printf ("time of %lld resulted in no keyframes\n");
 
-	return current_keyframe->InterpolateValue (baseValue, progress);
+	Value *v = current_keyframe->InterpolateValue (baseValue, progress);
+	Color *c = v->AsColor();
+	printf ("-> (%f, %f, %f, %f)\n", c->r, c->g, c->b, c->a);
+	return v;
 }
 
 Duration

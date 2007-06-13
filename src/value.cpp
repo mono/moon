@@ -482,6 +482,12 @@ Value::AsSolidColorBrush ()
 	checked_get_subclass (SOLIDCOLORBRUSH, SolidColorBrush);
 }
 
+SplineDoubleKeyFrame*
+Value::AsSplineDoubleKeyFrame ()
+{
+	checked_get_subclass (SPLINEDOUBLEKEYFRAME, SplineDoubleKeyFrame);
+}
+
 Storyboard*
 Value::AsStoryboard ()
 {

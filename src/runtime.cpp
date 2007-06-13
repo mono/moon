@@ -406,6 +406,7 @@ DoubleArray*    Value::AsDoubleArray () { checked_get_exact (DOUBLE_ARRAY, NULL,
 RepeatBehavior* Value::AsRepeatBehavior () { checked_get_exact (REPEATBEHAVIOR, NULL, u.repeat); }
 Duration*       Value::AsDuration () { checked_get_exact (DURATION, NULL, u.duration); }
 KeyTime*        Value::AsKeyTime () { checked_get_exact (KEYTIME, NULL, u.keytime); }
+KeySpline*      Value::AsKeySpline () { checked_get_exact (KEYSPLINE, NULL, u.keyspline); }
 Matrix*         Value::AsMatrix () { checked_get_exact (MATRIX, NULL, u.matrix); }
 
 /* nullable primitives (all but bool) */

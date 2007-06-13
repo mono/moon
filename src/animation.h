@@ -7,6 +7,24 @@
 G_BEGIN_DECLS
 
 // misc types
+class KeySpline {
+ public:
+	KeySpline (Point controlPoint1, Point controlPoint2);
+	KeySpline (double x1, double y1, double x2, double y2);
+
+	double GetSplineProgress (double linearProgress);
+
+	Point GetControlPoint1 ();
+	void SetControlPoint1 (Point controlPoint1);
+
+	Point GetControlPoint2 ();
+	void SetControlPoint2 (Point controlPoint2);
+
+ private:
+	Point controlPoint1;
+	Point controlPoint2;
+};
+
 struct KeyTime {
   public:
 	enum KeyTimeType {
@@ -363,6 +381,15 @@ class LinearPointKeyFrame : public PointKeyFrame {
 LinearPointKeyFrame* linear_point_key_frame_new ();
 
 
+class SplineDoubleKeyFrame : public DoubleKeyFrame {
+ public:
+	SplineDoubleKeyFrame () { }
+	Value::Kind GetObjectType () { return Value::SPLINEDOUBLEKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
+
+SplineDoubleKeyFrame* spline_double_key_frame_new ();
 
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
@@ -461,7 +488,11 @@ class Storyboard : public ParallelTimeline {
 };
 
 Storyboard *storyboard_new ();
-
+void storyboard_begin  (Storyboard *sb);
+void storyboard_pause  (Storyboard *sb);
+void storyboard_resume (Storyboard *sb);
+void storyboard_seek   (Storyboard *sb, TimeSpan ts);
+void storyboard_stop   (Storyboard *sb);
 
 
 

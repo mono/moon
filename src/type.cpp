@@ -40,6 +40,7 @@ void types_init_manually ()
 	Type::RegisterType ("Duration", Value::DURATION);
 	Type::RegisterType ("int64", Value::INT64);
 	Type::RegisterType ("KeyTime", Value::KEYTIME);
+	Type::RegisterType ("KeySpline", Value::KEYSPLINE);
 	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
 	Type::RegisterType ("Point*", Value::POINT_ARRAY);
 	Type::RegisterType ("Matrix", Value::MATRIX);
@@ -142,6 +143,7 @@ void types_init ()
 	Type::RegisterType ("Shape", Value::SHAPE, Value::FRAMEWORKELEMENT);
 	Type::RegisterType ("SkewTransform", Value::SKEWTRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("SolidColorBrush", Value::SOLIDCOLORBRUSH, Value::BRUSH);
+	Type::RegisterType ("SplineDoubleKeyFrame", Value::SPLINEDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
 	Type::RegisterType ("Storyboard", Value::STORYBOARD, Value::PARALLELTIMELINE);
 	Type::RegisterType ("StrokeCollection", Value::STROKE_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("StylusPointCollection", Value::STYLUSPOINT_COLLECTION, Value::COLLECTION);
