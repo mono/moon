@@ -48,7 +48,8 @@ class Shape : public FrameworkElement {
 	//
 	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
-
+	virtual bool inside_object (Surface *s, double x, double y);
+	
 	//
 	// new virtual methods for shapes
 	//

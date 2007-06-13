@@ -641,6 +641,19 @@ class UIElement : public DependencyObject {
 		return Point (0, 0);
 	}
 
+	//
+	// inside_object:
+	//   Returns whether the position x, y is inside the object
+	//
+	virtual bool inside_object (Surface *s, double x, double y);
+	
+	//
+	// handle_motion:
+	//   handles an mouse motion event, and dispatches it to anyone that
+	//   might want it
+	//
+	virtual void handle_motion (Surface *s, int state, double x, double y);
+	
 	~UIElement ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -687,6 +700,8 @@ class FrameworkElement : public UIElement {
 
 	FrameworkElement ();
 	Value::Kind GetObjectType () { return Value::FRAMEWORKELEMENT; }
+
+	virtual bool inside_object (Surface *s, double x, double y);
 };
 
 double	framework_element_get_height	(FrameworkElement *framework_element);
@@ -730,7 +745,8 @@ class Canvas : public Panel {
 	virtual void getbounds ();
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
-	
+	virtual void handle_motion (Surface *s, int state, double x, double y);
+
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
 	static DependencyProperty* TopProperty;
@@ -761,6 +777,9 @@ typedef struct _SurfacePrivate SurfacePrivate;
 //
 // Surface:
 //
+typedef void (*callback_mouse_event)    (UIElement *target, int state, double x, double y);
+typedef void (*callback_plain_event)    (UIElement *target);
+typedef void (*callback_keyboard_event) (UIElement *target, int state, int platformcode, int key);
 class Surface {
  public:
 	Surface () : width (0), height (0), buffer (0), 
@@ -801,6 +820,11 @@ class Surface {
 	UIElement *toplevel;
 
 	int frames;
+
+	callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
+	callback_plain_event cb_got_focus, cb_lost_focus, cb_loaded, cb_mouse_leave;
+	callback_keyboard_event cb_keydown, cb_keyup;
+
 };
 
 Surface *surface_new       (int width, int height);
@@ -812,6 +836,14 @@ void     surface_destroy   (Surface *s);
 void     surface_repaint   (Surface *s, int x, int y, int width, int height);
 
 void    *surface_get_drawing_area (Surface *s);
+
+void     surface_register_events (Surface *s,
+				  callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
+				  callback_mouse_event enter,
+				  callback_plain_event got_focus, callback_plain_event lost_focus,
+				  callback_plain_event loaded, callback_plain_event mouse_leave,
+				  callback_keyboard_event keydown, callback_keyboard_event keyup);
+		      
 
 //
 // XAML

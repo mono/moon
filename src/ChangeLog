@@ -1,3 +1,16 @@
+2007-06-12  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.h (UIElement::inside_object): new routine that should
+	return true if the given absolute x, y is inside the given object
+	or not. 
+
+	(UIElement::handle_motion): new routine that is called when a
+	motion event happens, it should determine if it can handle the
+	given event at x, y.
+
+	(Surface): new callbacks, these are callbacks that will pass the
+	notification of the event to managed code. 
+
 2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ffvideo.cpp: Instead of aborting when SDL_OpenAudio() fails,

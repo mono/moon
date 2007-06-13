@@ -212,6 +212,25 @@ Shape::getbounds ()
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
 }
 
+bool
+Shape::inside_object (Surface *s, double x, double y)
+{
+	bool ret = FALSE;
+
+	cairo_save (s->cairo);
+	DoDraw (s, FALSE);
+	
+	double nx = x;
+	double ny = y;
+	cairo_matrix_transform_point (&absolute_xform, &nx, &ny);
+
+	if (cairo_in_stroke (s->cairo, nx, ny) || (CanFill () && cairo_in_fill (s->cairo, nx, ny)))
+		ret = TRUE;
+	
+	cairo_restore (s->cairo);
+	return ret;
+}
+
 void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {

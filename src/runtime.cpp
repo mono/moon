@@ -38,6 +38,10 @@ struct _SurfacePrivate {
 
 NameScope *global_NameScope;
 
+static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
+static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
+static callback_keyboard_event cb_keydown, cb_keyup;
+
 void 
 base_ref (Base *base)
 {
@@ -589,6 +593,19 @@ uielement_set_opacity (UIElement *item, double opacity)
 	item->SetValue (UIElement::OpacityProperty, Value (opacity));
 }
 
+bool
+UIElement::inside_object (Surface *s, double x, double y)
+{
+	printf ("UIElement derivatives should implement inside object\n");
+}
+
+void
+UIElement::handle_motion (Surface *s, int state, double x, double y)
+{
+	if (inside_object (s, x, y))
+		s->cb_motion (this, state, x, y);
+}
+
 UIElement::~UIElement ()
 {
 	printf ("FIXME: We should go through all of the attached properties and unref them\n");
@@ -596,6 +613,26 @@ UIElement::~UIElement ()
 
 FrameworkElement::FrameworkElement ()
 {
+}
+
+bool
+FrameworkElement::inside_object (Surface *s, double x, double y)
+{
+	// Quick bounding box check.
+	if (x < x1 || x > x2 || y < y1 || y > y2)
+		return FALSE;
+
+	bool ret = FALSE;
+	double nx = x, ny = y;
+	cairo_save (s->cairo);
+	cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_rectangle (s->cairo, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
+	cairo_matrix_transform_point (&absolute_xform, &nx, &ny);
+	if (cairo_in_stroke (s->cairo, nx, ny) || cairo_in_fill (s->cairo, nx, ny))
+		ret = TRUE;
+
+	cairo_restore (s->cairo);
+	return ret;
 }
 
 double
@@ -805,6 +842,28 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subp
 }
 
 void 
+Canvas::handle_motion (Surface *s, int state, double x, double y)
+{
+	//printf ("is %g %g inside the canvas? %d\n", x, y, inside_object (s, x, y));
+	//
+	// We need to sync the canvas size with the surface size
+	//if (!inside_object (s, x, y))
+	//return;
+
+	GSList *il;
+	for (il = children->list; il != NULL; il = il->next){
+		UIElement *item = (UIElement *) il->data;
+
+		// Quick bound check:
+		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2){
+			continue;
+		}
+
+		item->handle_motion (s, state, x, y);
+	}
+}
+
+void 
 surface_clear (Surface *s, int x, int y, int width, int height)
 {
 	static unsigned char n;
@@ -946,7 +1005,11 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	printf ("Motion\n");
+	if (!s->cb_motion)
+		return FALSE;
+
+	s->toplevel->handle_motion (s, event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK), event->x, event->y);
+	return TRUE;
 }
 
 static gboolean 
@@ -1936,3 +1999,23 @@ runtime_init ()
 	xaml_init ();
 	clock_init ();
 }
+
+void surface_register_events (Surface *s,
+			      callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
+			      callback_mouse_event enter,
+			      callback_plain_event got_focus, callback_plain_event lost_focus,
+			      callback_plain_event loaded, callback_plain_event mouse_leave,
+			      callback_keyboard_event keydown, callback_keyboard_event keyup)
+{
+	s->cb_motion = motion;
+	s->cb_down = down;
+	s->cb_up = up;
+	s->cb_enter = enter;
+	s->cb_got_focus = got_focus;
+	s->cb_lost_focus = lost_focus;
+	s->cb_loaded = loaded;
+	s->cb_mouse_leave = mouse_leave;
+	s->cb_keydown = keydown;
+	s->cb_keyup = keyup;
+}
+
