@@ -1083,10 +1083,10 @@ geometry_init ()
 	LineSegment::PointProperty = DependencyObject::Register (Value::LINESEGMENT, "Point", Value::POINT);
 
 	/* PolyBezierSegment fields */
-	PolyBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYBEZIERSEGMENT, "Point", Value::POINT);
+	PolyBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYBEZIERSEGMENT, "Points", Value::POINT_ARRAY);
 
 	/* PolyLineSegment fields */
-	PolyLineSegment::PointsProperty = DependencyObject::Register (Value::POLYLINESEGMENT, "Point", Value::POINT);
+	PolyLineSegment::PointsProperty = DependencyObject::Register (Value::POLYLINESEGMENT, "Points", Value::POINT_ARRAY);
 
 	/* PolyQuadraticBezierSegment field */
 	PolyQuadraticBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYQUADRATICBEZIERSEGMENT, "Point", Value::POINT);

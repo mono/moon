@@ -214,7 +214,7 @@ color_from_str (const char *name)
 DependencyProperty* GradientBrush::ColorInterpolationModeProperty;
 DependencyProperty* GradientBrush::GradientStopsProperty;
 DependencyProperty* GradientBrush::MappingModeProperty;
-DependencyProperty* GradientBrush::SpreadProperty;
+DependencyProperty* GradientBrush::SpreadMethodProperty;
 
 ColorInterpolationMode
 gradient_brush_get_color_interpolation_mode (GradientBrush *brush)
@@ -456,9 +456,9 @@ brush_init ()
 
 	/* GradientBrush fields */
 	GradientBrush::ColorInterpolationModeProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "ColorInterpolationMode",  new Value (0));
-	GradientBrush::GradientStopsProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "GradientStops", Value::GRADIENTSTOP_COLLECTION);
+	GradientBrush::GradientStopsProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "GradientStops", Value::GRADIENTSTOP_COLLECTION);
 	GradientBrush::MappingModeProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "MappingMode",  new Value (0));
-	GradientBrush::SpreadProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "Spread",  new Value (0));
+	GradientBrush::SpreadMethodProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "SpreadMethod",  new Value (0));
 
 	/* RadialGradientBrush fields */
 	RadialGradientBrush::CenterProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "Center", Value::POINT);

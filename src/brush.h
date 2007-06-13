@@ -63,7 +63,7 @@ class GradientBrush : public Brush {
 	static DependencyProperty* ColorInterpolationModeProperty;
 	static DependencyProperty* GradientStopsProperty;
 	static DependencyProperty* MappingModeProperty;
-	static DependencyProperty* SpreadProperty;
+	static DependencyProperty* SpreadMethodProperty;
 
 	GradientStopCollection *children;
 

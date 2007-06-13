@@ -1,3 +1,8 @@
+2007-06-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* brush.cpp, brush.h, geometry.cpp: Fix property registration
+	typos.
+
 2007-06-13  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp|h: Fix Brush::RelativeTransformProperty and 
