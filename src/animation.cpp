@@ -1,3 +1,14 @@
+/*
+ * animatio.cpp: Animation engine
+ *
+ * Author:
+ *   Chris Toshok (toshok@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
 #include <config.h>
 #include <string.h>
 #include <gtk/gtk.h>

@@ -3,6 +3,7 @@
  *
  * Author:
  *   Miguel de Icaza (miguel@novell.com)
+ *   Sebastien Pouliot (spouliot@novell.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
