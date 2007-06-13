@@ -302,6 +302,18 @@ class NameScope : public DependencyObject {
 	GHashTable *names;
 };
 
+class Downloader : public DependencyObject {
+ public:
+	Downloader () {};
+	Value::Kind GetObjectType () { return Value::DOWNLOADER; };	
+
+	static DependencyProperty *DownloadProgressProperty;
+	static DependencyProperty *ResponseTextProperty;
+	static DependencyProperty *StatusProperty;
+	static DependencyProperty *StatusTextProperty;
+	static DependencyProperty *UriProperty;
+};
+
 
 //
 // Collection: provides a collection that we can monitor for

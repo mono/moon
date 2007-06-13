@@ -45,6 +45,7 @@ class DiscretePointKeyFrame;
 class DoubleAnimation;
 class DoubleAnimationUsingKeyFrames;
 class DoubleKeyFrame;
+class Downloader;
 class Ellipse;
 class EllipseGeometry;
 class EventTrigger;
@@ -68,6 +69,7 @@ class LinearPointKeyFrame;
 class LineGeometry;
 class LineSegment;
 class MatrixTransform;
+class MediaAttribute;
 class MediaAttributeCollection;
 class MediaBase;
 class MediaElement;
@@ -162,6 +164,7 @@ public:
 		DOUBLEANIMATION,
 		DOUBLEANIMATIONUSINGKEYFRAMES,
 		DOUBLEKEYFRAME,
+		DOWNLOADER,
 		ELLIPSE,
 		ELLIPSEGEOMETRY,
 		EVENTTRIGGER,
@@ -185,6 +188,7 @@ public:
 		LINEGEOMETRY,
 		LINESEGMENT,
 		MATRIXTRANSFORM,
+		MEDIAATTRIBUTE,
 		MEDIAATTRIBUTE_COLLECTION,
 		MEDIABASE,
 		MEDIAELEMENT,
@@ -325,6 +329,7 @@ public:
 	DoubleAnimation*               AsDoubleAnimation ();
 	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames ();
 	DoubleKeyFrame*                AsDoubleKeyFrame ();
+	Downloader*                    AsDownloader ();
 	Ellipse*                       AsEllipse ();
 	EllipseGeometry*               AsEllipseGeometry ();
 	EventTrigger*                  AsEventTrigger ();
@@ -348,6 +353,7 @@ public:
 	LineGeometry*                  AsLineGeometry ();
 	LineSegment*                   AsLineSegment ();
 	MatrixTransform*               AsMatrixTransform ();
+	MediaAttribute*                AsMediaAttribute ();
 	MediaAttributeCollection*      AsMediaAttributeCollection ();
 	MediaBase*                     AsMediaBase ();
 	MediaElement*                  AsMediaElement ();

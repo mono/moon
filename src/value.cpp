@@ -146,6 +146,12 @@ Value::AsDoubleKeyFrame ()
 	checked_get_subclass (DOUBLEKEYFRAME, DoubleKeyFrame);
 }
 
+Downloader*
+Value::AsDownloader ()
+{
+	checked_get_subclass (DOWNLOADER, Downloader);
+}
+
 Ellipse*
 Value::AsEllipse ()
 {
@@ -282,6 +288,12 @@ MatrixTransform*
 Value::AsMatrixTransform ()
 {
 	checked_get_subclass (MATRIXTRANSFORM, MatrixTransform);
+}
+
+MediaAttribute*
+Value::AsMediaAttribute ()
+{
+	checked_get_subclass (MEDIAATTRIBUTE, MediaAttribute);
 }
 
 MediaAttributeCollection*

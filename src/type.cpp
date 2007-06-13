@@ -86,6 +86,7 @@ void types_init ()
 	Type::RegisterType ("DoubleAnimation", Value::DOUBLEANIMATION, Value::ANIMATION);
 	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Value::DOUBLEANIMATIONUSINGKEYFRAMES, Value::DOUBLEANIMATION);
 	Type::RegisterType ("DoubleKeyFrame", Value::DOUBLEKEYFRAME, Value::KEYFRAME);
+	Type::RegisterType ("Downloader", Value::DOWNLOADER, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Ellipse", Value::ELLIPSE, Value::SHAPE);
 	Type::RegisterType ("EllipseGeometry", Value::ELLIPSEGEOMETRY, Value::GEOMETRY);
 	Type::RegisterType ("EventTrigger", Value::EVENTTRIGGER, Value::DEPENDENCY_OBJECT);
@@ -109,6 +110,7 @@ void types_init ()
 	Type::RegisterType ("LineGeometry", Value::LINEGEOMETRY, Value::GEOMETRY);
 	Type::RegisterType ("LineSegment", Value::LINESEGMENT, Value::PATHSEGMENT);
 	Type::RegisterType ("MatrixTransform", Value::MATRIXTRANSFORM, Value::TRANSFORM);
+	Type::RegisterType ("MediaAttribute", Value::MEDIAATTRIBUTE, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("MediaAttributeCollection", Value::MEDIAATTRIBUTE_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("MediaBase", Value::MEDIABASE, Value::FRAMEWORKELEMENT);
 	Type::RegisterType ("MediaElement", Value::MEDIAELEMENT, Value::MEDIABASE);

@@ -1,5 +1,12 @@
 2007-06-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* media.h: Added MediaAttribute.
+	* runtime.h: Added Downloader.
+	* value.cpp, value.h, type.cpp: Updated.
+	* typegen.cs: Copy Kind.cs to the correct directory.
+
+2007-06-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* brush.cpp, brush.h, geometry.cpp: Fix property registration
 	typos.
 

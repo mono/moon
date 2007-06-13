@@ -54,6 +54,13 @@ public:
 	void Stop ();
 };
 
+class MediaAttribute : public DependencyObject {
+ public:
+	MediaAttribute () { }
+	Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
+
+	static DependencyProperty *ValueProperty;
+};
 
 bool media_element_get_auto_play (MediaElement *media);
 void media_element_set_auto_play (MediaElement *media, bool value);
