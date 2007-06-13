@@ -1,3 +1,9 @@
+//
+// demo.cs: if no arguments are passed, loads some default stuff
+// if arguments are passed it loads the XAML file
+// if the XAML file contains a Storyboard with the id "animation"
+// pressing the mouse button pauses the animation, releasing it resumes it
+//
 using System;
 using Gtk;
 using System.Windows;
@@ -6,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Windows.Input;
 using System.IO;
+using System.Windows.Media.Animation;
 
 class X {
 	static GtkSilver silver;
@@ -42,7 +49,22 @@ class X {
 			return;
 		}
 		w.Title = file;
-		silver.Attach ((Canvas) d);
+		Canvas canvas = (Canvas) d;
+		silver.Attach (canvas);
+
+		DependencyObject anim = d.FindObject ("animation");
+		Console.WriteLine ("Find Object: {0}", anim);
+		if (anim != null && anim is Storyboard){
+			Console.WriteLine ("Here");
+			canvas.MouseLeftButtonDown += delegate {
+				((Storyboard) anim).Stop ();
+			};
+
+			canvas.MouseLeftButtonUp += delegate {
+				((Storyboard) anim).Resume ();				
+			};
+		}
+		
 	}
 	
 	static void Main (string [] args)
@@ -81,10 +103,11 @@ class X {
 			c.SetValue (FrameworkElement.WidthProperty, 400);
 			c.SetValue (FrameworkElement.HeightProperty, 400);
 			silver.Attach (c);
+
 			Rectangle r = new Rectangle ();
 			//r.SetValue (Canvas.LeftProperty, 100);
 			RotateTransform trans = new RotateTransform ();
-			trans.Angle = 10;
+			trans.Angle = 45;
 			r.RenderTransform = trans; 
 
 			c.MouseMove += delegate (object sender, MouseEventArgs e) {
@@ -94,6 +117,14 @@ class X {
 			r.MouseMove += delegate (object sender, MouseEventArgs e) {
 				Console.WriteLine ("Rectangle motion {0}", e.GetPosition (r));
 				Console.WriteLine ("Canvas motion {0}", e.GetPosition (c));
+			};
+
+			c.MouseLeftButtonDown += delegate {
+				Console.WriteLine ("Button Pressed!");
+			};
+
+			c.MouseLeftButtonUp += delegate {
+				Console.WriteLine ("Button Released!");
 			};
 
 			r.Width = 100;
