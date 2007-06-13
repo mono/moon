@@ -8,6 +8,7 @@ libmoon_la_SOURCES = 	\
 	animation.cpp	\
 	animation.h	\
 	brush.cpp	\
+	brush.h		\
 	clock.cpp	\
 	clock.h		\
 	cutil.cpp	\

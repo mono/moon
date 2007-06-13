@@ -89,6 +89,7 @@ class Polyline;
 class PolyLineSegment;
 class PolyQuadraticBezierSegment;
 class QuadraticBezierSegment;
+class RadialGradientBrush;
 class Rectangle;
 class RectangleGeometry;
 class ResourceCollection;
@@ -206,6 +207,7 @@ public:
 		POLYLINESEGMENT,
 		POLYQUADRATICBEZIERSEGMENT,
 		QUADRATICBEZIERSEGMENT,
+		RADIALGRADIENTBRUSH,
 		RECTANGLE,
 		RECTANGLEGEOMETRY,
 		RESOURCE_COLLECTION,
@@ -369,6 +371,7 @@ public:
 	PolyLineSegment*               AsPolyLineSegment ();
 	PolyQuadraticBezierSegment*    AsPolyQuadraticBezierSegment ();
 	QuadraticBezierSegment*        AsQuadraticBezierSegment ();
+	RadialGradientBrush*           AsRadialGradientBrush ();
 	Rectangle*                     AsRectangle ();
 	RectangleGeometry*             AsRectangleGeometry ();
 	ResourceCollection*            AsResourceCollection ();

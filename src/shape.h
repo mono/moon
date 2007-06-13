@@ -7,6 +7,7 @@ G_BEGIN_DECLS
 #include <cairo.h>
 
 #include "runtime.h"
+#include "brush.h"
 #include "geometry.h"
 
 // http://graphics.stanford.edu/courses/cs248-98-fall/Final/q1.html

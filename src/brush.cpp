@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
-#include "runtime.h"
+#include "brush.h"
 #include "transform.h"
 
 //
@@ -211,6 +211,15 @@ color_from_str (const char *name)
 //
 //
 
+DependencyProperty* RadialGradientBrush::CenterProperty;
+DependencyProperty* RadialGradientBrush::GradientOriginProperty;
+DependencyProperty* RadialGradientBrush::RadiusXProperty;
+DependencyProperty* RadialGradientBrush::RadiusYProperty;
+
+//
+//
+//
+
 void
 brush_init ()
 {
@@ -221,4 +230,12 @@ brush_init ()
 
 	/* SolidColorBrush fields */
 	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00FFFFFF)));
+
+	/* GradientBrush fields */
+
+	/* RadialGradientBrush fields */
+	RadialGradientBrush::CenterProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "Center", Value::POINT);
+	RadialGradientBrush::GradientOriginProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "GradientOrigin", Value::POINT);
+	RadialGradientBrush::RadiusXProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "RadiusX",  new Value (0.0));
+	RadialGradientBrush::RadiusYProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "RadiusY",  new Value (0.0));
 }

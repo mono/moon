@@ -410,6 +410,12 @@ Value::AsQuadraticBezierSegment ()
 	checked_get_subclass (QUADRATICBEZIERSEGMENT, QuadraticBezierSegment);
 }
 
+RadialGradientBrush*
+Value::AsRadialGradientBrush ()
+{
+	checked_get_subclass (RADIALGRADIENTBRUSH, RadialGradientBrush);
+}
+
 Rectangle*
 Value::AsRectangle ()
 {

@@ -130,6 +130,7 @@ void types_init ()
 	Type::RegisterType ("PolyLineSegment", Value::POLYLINESEGMENT, Value::PATHSEGMENT);
 	Type::RegisterType ("PolyQuadraticBezierSegment", Value::POLYQUADRATICBEZIERSEGMENT, Value::PATHSEGMENT);
 	Type::RegisterType ("QuadraticBezierSegment", Value::QUADRATICBEZIERSEGMENT, Value::PATHSEGMENT);
+	Type::RegisterType ("RadialGradientBrush", Value::RADIALGRADIENTBRUSH, Value::GRADIENTBRUSH);
 	Type::RegisterType ("Rectangle", Value::RECTANGLE, Value::SHAPE);
 	Type::RegisterType ("RectangleGeometry", Value::RECTANGLEGEOMETRY, Value::GEOMETRY);
 	Type::RegisterType ("ResourceCollection", Value::RESOURCE_COLLECTION, Value::COLLECTION);
