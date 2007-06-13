@@ -25,6 +25,7 @@ libmoon_la_SOURCES = 	\
 	shape.cpp	\
 	shape.h		\
 	text.cpp	\
+	text.h		\
 	transform.cpp	\
 	transform.h	\
 	type.cpp	\

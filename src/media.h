@@ -8,6 +8,16 @@ G_BEGIN_DECLS
 #include "clock.h"
 #include "value.h"
 
+
+class MediaAttribute : public DependencyObject {
+ public:
+	static DependencyProperty *ValueProperty;
+	
+	MediaAttribute () { }
+	Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
+};
+
+
 class MediaBase : public FrameworkElement {
 public:
 	static DependencyProperty *SourceProperty;
@@ -52,14 +62,6 @@ public:
 	void Pause ();
 	void Play ();
 	void Stop ();
-};
-
-class MediaAttribute : public DependencyObject {
- public:
-	static DependencyProperty *ValueProperty;
-	
-	MediaAttribute () { }
-	Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
 };
 
 bool media_element_get_auto_play (MediaElement *media);

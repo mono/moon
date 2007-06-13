@@ -30,6 +30,7 @@
 #include "shape.h"
 #include "transform.h"
 #include "animation.h"
+#include "text.h"
 
 #if AGG
 struct _SurfacePrivate {
@@ -2082,6 +2083,7 @@ runtime_init ()
 	geometry_init ();
 	xaml_init ();
 	clock_init ();
+	text_init ();
 }
 
 void surface_register_events (Surface *s,

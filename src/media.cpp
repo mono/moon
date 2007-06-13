@@ -21,7 +21,6 @@
 DependencyProperty *MediaBase::SourceProperty;
 DependencyProperty *MediaBase::StretchProperty;
 
-
 char *
 media_base_get_source (MediaBase *media)
 {
@@ -91,7 +90,6 @@ MediaElement::Stop ()
 {
 	;
 }
-
 
 bool
 media_element_get_auto_play (MediaElement *media)

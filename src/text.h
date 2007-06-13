@@ -55,6 +55,8 @@ enum TextWrapping {
 	TextWrappingWrapWithOverflow
 };
 
+void text_init (void);
+
 class Inline : public DependencyObject {
  public:
 	static DependencyProperty *FontFamilyProperty;
@@ -110,6 +112,16 @@ public:
 	Value::Kind GetObjectType () { return Value::TEXTBLOCK; };
 	
 	void SetFontSource (DependencyObject *downloader);
+	
+	//
+	// Overrides from UIElement.
+	//
+	virtual void render (Surface *s, int x, int y, int width, int height);
+	virtual void getbounds ();
+	virtual bool inside_object (Surface *s, double x, double y);
+	
+private:
+	void Draw (Surface *s, bool render);
 };
 
 double textblock_get_actual_height (TextBlock *textblock);
@@ -147,6 +159,7 @@ void textblock_set_text_decorations (TextBlock *textblock, TextDecorations value
 
 TextWrapping textblock_get_text_wrapping (TextBlock *textblock);
 void textblock_set_text_wrapping (TextBlock *textblock, TextWrapping value);
+
 
 class Glyphs : public FrameworkElement {
 public:
