@@ -1,3 +1,9 @@
+2007-06-13  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: make sure we're getting the right version of
+	cairo, and don't necessarily use the one that comes along with the
+	gtk dependency.
+
 2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Back to alsa instead of SDL (now that I've figured
