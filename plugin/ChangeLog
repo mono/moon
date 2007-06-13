@@ -5,7 +5,7 @@
 	- Create and uses macros PLUGIN_PROPERTIES and PLUGIN_METHODS to define 
 	properties and methods.
 	- Uses arrays to define properties and methods.
-	- Create NPID macro to get string identifier.
+	- Use NPID macro to get string identifier.
 
 2007-06-12  Everaldo Canuto  <ecanuto@novell.com>
 
