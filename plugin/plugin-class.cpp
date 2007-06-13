@@ -285,12 +285,35 @@ PluginSettings::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVa
 bool
 PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
+	// Silverlight always return 0.
+	if (name == NPID ("actualHeight")) {
+		INT32_TO_NPVARIANT (0, *result);
+		return true;
+	}
+
+	// Silverlight always return 0.
+	if (name == NPID ("actualWidth")) {
+		INT32_TO_NPVARIANT (0, *result);
+		return true;
+	}
+
+	// not implemented yet so return false.
+	if (name == NPID ("fullScreen")) {
+		BOOLEAN_TO_NPVARIANT (false, *result);
+		return true;
+	}
+
 	return false;
 }
 
 bool 
 PluginContent::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	// not implemented yet so return false.
+	if (name == NPID ("fullScreen")) {
+		return true;
+	}
+
 	return false;
 }
 
