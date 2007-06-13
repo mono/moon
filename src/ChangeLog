@@ -1,3 +1,7 @@
+2007-06-13  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp: Various new events are now sent.
+
 2007-06-13  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: When using the xaml_create_from_str we automatically

@@ -588,7 +588,7 @@ class UIElement : public DependencyObject {
 	//   might want it
 	//
 	virtual void handle_motion (Surface *s, int state, double x, double y);
-	
+
 	~UIElement ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -682,7 +682,7 @@ class Canvas : public Panel {
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
 	virtual void handle_motion (Surface *s, int state, double x, double y);
-
+	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
 	static DependencyProperty* TopProperty;
@@ -698,7 +698,8 @@ typedef struct _SurfacePrivate SurfacePrivate;
 //
 typedef void (*callback_mouse_event)    (UIElement *target, int state, double x, double y);
 typedef void (*callback_plain_event)    (UIElement *target);
-typedef void (*callback_keyboard_event) (UIElement *target, int state, int platformcode, int key);
+typedef bool (*callback_keyboard_event) (UIElement *target, int state, int platformcode, int key);
+
 class Surface {
  public:
 	Surface () : width (0), height (0), buffer (0), 

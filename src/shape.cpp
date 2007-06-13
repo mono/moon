@@ -20,6 +20,7 @@
 #include "shape.h"
 #include "cutil.h"
 
+#include <sys/time.h>
 //
 // SL-Cairo convertion and helper routines
 //
@@ -219,14 +220,19 @@ Shape::inside_object (Surface *s, double x, double y)
 
 	cairo_save (s->cairo);
 	DoDraw (s, FALSE);
-	
 	double nx = x;
 	double ny = y;
-	cairo_matrix_transform_point (&absolute_xform, &nx, &ny);
+
+	cairo_matrix_t inverse = absolute_xform;
+	cairo_matrix_invert (&inverse);
+
+	cairo_matrix_transform_point (&inverse, &nx, &ny);
 
 	if (cairo_in_stroke (s->cairo, nx, ny) || (CanFill () && cairo_in_fill (s->cairo, nx, ny)))
 		ret = TRUE;
 	
+	cairo_new_path (s->cairo);
+
 	cairo_restore (s->cairo);
 	return ret;
 }

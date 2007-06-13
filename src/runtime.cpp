@@ -1034,7 +1034,7 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 	if (!s->cb_motion)
 		return FALSE;
 
-	s->toplevel->handle_motion (s, event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK), event->x, event->y);
+	s->toplevel->handle_motion (s, event->state, event->x, event->y);
 	return TRUE;
 }
 
@@ -1043,7 +1043,14 @@ key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	printf ("key press\n");
+	if (!s->cb_keydown)
+		return FALSE;
+
+	// 
+	// I could not write a test that would send the output elsewhere, for now
+	// just send to the toplevel
+	//
+	return s->cb_keydown (s->toplevel, key->state, key->keyval, key->hardware_keycode);
 }
 
 static gboolean 
@@ -1051,19 +1058,39 @@ key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	printf ("key release\n");
+	// 
+	// I could not write a test that would send the output elsewhere, for now
+	// just send to the toplevel
+	//
+	return s->cb_keyup (s->toplevel, key->state, key->keyval, key->hardware_keycode);
+
 }
 
 static gboolean
 button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 {
-	printf ("%d released\n", button->button);
+	Surface *s = (Surface *) data;
+
+	if (button->button != 1)
+		return FALSE;
+
+	// Again, I cant get this to go to anything but the toplevel, this is odd.
+	s->cb_up (s->toplevel, button->state, button->x, button->y);
+	return TRUE;
 }
 
 static gboolean
 button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 {
-	printf ("%d pressed\n", button->button);
+	Surface *s = (Surface *) data;
+
+	gtk_widget_grab_focus (widget);
+	if (button->button != 1)
+		return FALSE;
+
+	// Again, I cant get this to go to anything but the toplevel, this is odd.
+	s->cb_down (s->toplevel, button->state, button->x, button->y);
+	return TRUE;
 }
 
 void
