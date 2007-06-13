@@ -208,13 +208,120 @@ color_from_str (const char *name)
 }
 
 //
+// GradientBrush
 //
+
+DependencyProperty* GradientBrush::ColorInterpolationModeProperty;
+DependencyProperty* GradientBrush::GradientStopsProperty;
+DependencyProperty* GradientBrush::MappingModeProperty;
+DependencyProperty* GradientBrush::SpreadProperty;
+
+//
+// RadialGradientBrush
 //
 
 DependencyProperty* RadialGradientBrush::CenterProperty;
 DependencyProperty* RadialGradientBrush::GradientOriginProperty;
 DependencyProperty* RadialGradientBrush::RadiusXProperty;
 DependencyProperty* RadialGradientBrush::RadiusYProperty;
+
+RadialGradientBrush*
+radial_gradient_brush_new ()
+{
+	return new RadialGradientBrush ();
+}
+
+Point*
+radial_gradient_brush_get_center (RadialGradientBrush *brush)
+{
+	Value *value = brush->GetValue (RadialGradientBrush::CenterProperty);
+	return (value ? value->AsPoint() : NULL);
+}
+
+void
+radial_gradient_brush_set_center (RadialGradientBrush *brush, Point *center)
+{
+	brush->SetValue (RadialGradientBrush::CenterProperty, Value (*center));
+}
+
+Point*
+radial_gradient_brush_get_gradientorigin (RadialGradientBrush *brush)
+{
+	Value *value = brush->GetValue (RadialGradientBrush::GradientOriginProperty);
+	return (value ? value->AsPoint() : NULL);
+}
+
+void
+radial_gradient_brush_set_gradientorigin (RadialGradientBrush *brush, Point *origin)
+{
+	brush->SetValue (RadialGradientBrush::GradientOriginProperty, Value (*origin));
+}
+
+double
+radial_gradient_brush_get_radius_x (RadialGradientBrush *brush)
+{
+	return brush->GetValue (RadialGradientBrush::RadiusXProperty)->AsDouble();
+}
+
+void
+radial_gradient_brush_set_radius_x (RadialGradientBrush *brush, double radiusX)
+{
+	brush->SetValue (RadialGradientBrush::RadiusXProperty, Value (radiusX));
+}
+
+double
+radial_gradient_brush_get_radius_y (RadialGradientBrush *brush)
+{
+	return brush->GetValue (RadialGradientBrush::RadiusYProperty)->AsDouble();
+}
+
+void
+radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
+{
+	brush->SetValue (RadialGradientBrush::RadiusYProperty, Value (radiusY));
+}
+
+void
+RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+{
+}
+
+//
+// GradientStop
+//
+
+DependencyProperty* GradientStop::ColorProperty;
+DependencyProperty* GradientStop::OffsetProperty;
+
+GradientStop*
+gradient_stop_new ()
+{
+	return new GradientStop ();
+}
+
+Color*
+gradient_stop_get_color (GradientStop *stop)
+{
+	return stop->GetValue (GradientStop::ColorProperty)->AsColor();
+}
+
+void
+gradient_stop_set_color (GradientStop *stop, Color *color)
+{
+	stop->SetValue (GradientStop::ColorProperty, Value (*color));
+}
+
+double
+gradient_stop_get_offset (GradientStop *stop)
+{
+	return stop->GetValue (GradientStop::OffsetProperty)->AsDouble();
+}
+
+void
+gradient_stop_set_offset (GradientStop *stop, double offset)
+{
+	stop->SetValue (GradientStop::OffsetProperty, Value (offset));
+}
 
 //
 //
@@ -232,10 +339,18 @@ brush_init ()
 	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00FFFFFF)));
 
 	/* GradientBrush fields */
+	GradientBrush::ColorInterpolationModeProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "ColorInterpolationMode",  new Value (0));
+	GradientBrush::GradientStopsProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "GradientStops", Value::GRADIENTSTOP_COLLECTION);
+	GradientBrush::MappingModeProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "MappingMode",  new Value (0));
+	GradientBrush::SpreadProperty = DependencyObject::Register (Value::GRADIENTBRUSH, "Spread",  new Value (0));
 
 	/* RadialGradientBrush fields */
 	RadialGradientBrush::CenterProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "Center", Value::POINT);
 	RadialGradientBrush::GradientOriginProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "GradientOrigin", Value::POINT);
 	RadialGradientBrush::RadiusXProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "RadiusX",  new Value (0.0));
 	RadialGradientBrush::RadiusYProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "RadiusY",  new Value (0.0));
+
+	/* GradientStop */
+	GradientStop::ColorProperty = DependencyObject::Register (Value::GRADIENTSTOP, "Color", new Value (Color (0x00FFFFFF)));
+	GradientStop::OffsetProperty = DependencyObject::Register (Value::GRADIENTSTOP, "Offset", new Value (0.0));
 }

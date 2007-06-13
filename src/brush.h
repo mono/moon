@@ -5,6 +5,22 @@ G_BEGIN_DECLS
 
 #include "runtime.h"
 
+enum BrushMappingMode {
+	BrushMappingModeAbsolute,
+	BrushMappingModeRelativeToBoundingBox
+};
+
+enum ColorInterpolationMode {
+	ColorInterpolationModeScRgbLinearInterpolation,
+	ColorInterpolationModeSRgbLinearInterpolation
+};
+
+enum GradientSpreadMethod {
+	GradientSpreadMethodPad,
+	GradientSpreadMethodReflect,
+	GradientSpreadMethodRepeat
+};
+
 
 class Brush : public DependencyObject {
  public:
@@ -41,16 +57,25 @@ SolidColorBrush	*solid_color_brush_new ();
 Color		*solid_color_brush_get_color (SolidColorBrush *solid_color_brush);
 void		solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color);
 
+// note: abstract in C#
 class GradientBrush : public Brush {
  public:
-	GradientBrush ();
+	static DependencyProperty* ColorInterpolationModeProperty;
+	static DependencyProperty* GradientStopsProperty;
+	static DependencyProperty* MappingModeProperty;
+	static DependencyProperty* SpreadProperty;
+
+	GradientBrush () {};
 	Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
-	// ColorInterpolationMode{ScRgbLinearInterpolation, SRgbLinearInterpolation} mode;
-	// GradientStopCollection stops
-	// BrushMappingMode{Absolute,RelativeToBoundingBox} MappingMode
-	// GradientSpreadMethod{Pad, Reflect, Repeat} SpreadMethod
-	virtual void SetupBrush (cairo_t *cairo);
+
+//	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement) = 0;
 };
+ColorInterpolationMode gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
+void gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode);
+BrushMappingMode gradient_brush_get_mapping_mode (GradientBrush *brush);
+void gradient_brush_set_mapping_mode (GradientBrush *brush, BrushMappingMode mode);
+GradientSpreadMethod gradient_brush_get_spread (GradientBrush *brush);
+void gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method);
 
 class TileBrush : public Brush {
 	Value::Kind GetObjectType () { return Value::TILEBRUSH; }
@@ -75,7 +100,10 @@ class RadialGradientBrush : public GradientBrush {
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
+	RadialGradientBrush () {};
 	Value::Kind GetObjectType () { return Value::RADIALGRADIENTBRUSH; }
+
+	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
 RadialGradientBrush *radial_gradient_brush_new ();
 Point*	radial_gradient_brush_get_center		(RadialGradientBrush *brush);
@@ -85,12 +113,22 @@ void	radial_gradient_brush_set_gradientorigin	(RadialGradientBrush *brush, Point
 double	radial_gradient_brush_get_radius_x		(RadialGradientBrush *brush);
 void	radial_gradient_brush_set_radius_x		(RadialGradientBrush *brush, double radiusX);
 double	radial_gradient_brush_get_radius_y		(RadialGradientBrush *brush);
-void	radial_gradient_brush_set_radius_y		(RadialGradientBrush *brush, double radiusX);
+void	radial_gradient_brush_set_radius_y		(RadialGradientBrush *brush, double radiusY);
 
 
 class GradientStop : public DependencyObject {
+ public:
+	static DependencyProperty* ColorProperty;
+	static DependencyProperty* OffsetProperty;
+
 	Value::Kind GetObjectType () { return Value::GRADIENTSTOP; }
 };
+GradientStop* gradient_stop_new ();
+Color	*gradient_stop_get_color	(GradientStop *stop);
+void	gradient_stop_set_color		(GradientStop *stop, Color *color);
+double	gradient_stop_get_offset	(GradientStop *stop);
+void	gradient_stop_set_offset	(GradientStop *stop, double offset);
+
 
 G_END_DECLS
 
