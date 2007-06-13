@@ -622,9 +622,10 @@ void     item_set_transform_origin (UIElement *item, Point p);
 void     item_set_render_transform (UIElement *item, Transform *transform);
 void     item_get_render_affine    (UIElement *item, cairo_matrix_t *result);
 
-double	uielement_get_opacity (UIElement *item);
-void	uielement_set_opacity (UIElement *item, double opacity);
-
+double	 uielement_get_opacity     (UIElement *item);
+void	 uielement_set_opacity     (UIElement *item, double opacity);
+void     uielement_transform_point (UIElement *item, double *x, double *y);
+	
 //
 // FrameworkElement class
 //
@@ -704,6 +705,9 @@ class Surface {
 		cairo_buffer_surface (NULL), cairo_buffer(NULL),
 		xlib_surface(NULL), cairo_xlib(NULL), pixmap(NULL),
 		using_cairo_xlib_surface(0), pixbuf(NULL),
+		cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
+		cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL),
+		cb_keydown(NULL), cb_keyup(NULL),
 		cairo (NULL) {}
 	
 	int width, height;

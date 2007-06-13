@@ -606,6 +606,18 @@ uielement_set_opacity (UIElement *item, double opacity)
 	item->SetValue (UIElement::OpacityProperty, Value (opacity));
 }
 
+//
+// Maps the x, y coordinate to the space of the given item
+//
+void
+uielement_transform_point (UIElement *item, double *x, double *y)
+{
+	cairo_matrix_t inverse = item->absolute_xform;
+	cairo_matrix_invert (&inverse);
+
+	cairo_matrix_transform_point (&inverse, x, y);
+}
+
 bool
 UIElement::inside_object (Surface *s, double x, double y)
 {
@@ -858,6 +870,7 @@ void
 Canvas::handle_motion (Surface *s, int state, double x, double y)
 {
 	//printf ("is %g %g inside the canvas? %d\n", x, y, inside_object (s, x, y));
+	//printf ("Bounding: %g %g %g %g\n", x1, y1, x2, y2);
 	//
 	// We need to sync the canvas size with the surface size
 	//if (!inside_object (s, x, y))

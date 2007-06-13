@@ -47,6 +47,10 @@
 	(Surface): new callbacks, these are callbacks that will pass the
 	notification of the event to managed code. 
 
+	* runtime.cpp (FrameworkElement): provide a default implementation
+	for inside object that works for "squares" (things with widths and
+	heights) 
+
 2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ffvideo.cpp: Instead of aborting when SDL_OpenAudio() fails,
