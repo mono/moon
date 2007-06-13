@@ -556,7 +556,7 @@ Point*
 radial_gradient_brush_get_center (RadialGradientBrush *brush)
 {
 	Value *value = brush->GetValue (RadialGradientBrush::CenterProperty);
-	return (value ? value->AsPoint() : new Point (0.5, 0.5));
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -569,7 +569,7 @@ Point*
 radial_gradient_brush_get_gradientorigin (RadialGradientBrush *brush)
 {
 	Value *value = brush->GetValue (RadialGradientBrush::GradientOriginProperty);
-	return (value ? value->AsPoint() : new Point (0.5, 0.5));
+	return (value ? value->AsPoint() : NULL);
 }
 
 void
@@ -605,13 +605,22 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 void
 RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
+	double w = framework_element_get_width ((FrameworkElement*)uielement);
+	double h = framework_element_get_height ((FrameworkElement*)uielement);
+
 	Point *center = radial_gradient_brush_get_center (this);
+	double x0 = (center ? center->x : 0.5) * w;
+	double y0 = (center ? center->y : 0.5) * h;
+
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
+	double x1 = (origin ? origin->x : 0.5) * w;
+	double y1 = (origin ? origin->y : 0.5) * h;
+
 	double rx = radial_gradient_brush_get_radius_x (this);
 	double ry = radial_gradient_brush_get_radius_y (this);
 
-	// FIXME - not ok
-	cairo_pattern_t *pattern = cairo_pattern_create_radial (center->x, center->y, rx, origin->x, origin->y, ry);
+	// FIXME - still not ok (need matrix to emulate both radius)
+	cairo_pattern_t *pattern = cairo_pattern_create_radial (x0, y0, 0.0, x1, y1, ry * h);
 
 	GradientBrush::SetupPattern (pattern);
 

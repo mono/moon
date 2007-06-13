@@ -1,3 +1,7 @@
+2007-06-13  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* brush.cpp: Better, but still imperfect, RadialGradientBrush
+
 2007-06-13  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.h: Add some of the error event handler args, so i can
