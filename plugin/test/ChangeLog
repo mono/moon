@@ -1,5 +1,9 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* index.html: Add control.source tests.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* index.html: Remove 'embed' and use now only 'object' to be IE compatible.
 
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>

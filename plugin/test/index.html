@@ -28,12 +28,18 @@
 		var control1 = document.getElementById("control1");
 		var control2 = document.getElementById("control2");
 
-		print ("Version: " + control1.settings.version + "/n");
+		print ("Version: " + control1.settings.version);
+
+		// control1.source - Cant be changed after initialization.
+		NewAssert ();
+		AreEqual ("control1.source", control1.source, "circle.xaml");
+		control1.source == "emote.xaml";
+		AreEqual ("control1.source", control1.source, "circle.xaml");
 
 		// control.settings.background
 		NewAssert ();
-		AreEqual ("control1.settings.background: ", control1.settings.background, "#c0c0c0");
-		AreEqual ("control2.settings.background: ", control2.settings.background, "#ffebcd");
+		AreEqual ("control1.settings.background", control1.settings.background, "#c0c0c0");
+		AreEqual ("control2.settings.background", control2.settings.background, "#ffebcd");
 
 		// control1.content.actualWidth
 		NewAssert ();
@@ -45,6 +51,7 @@
 		AreEqual ("control1.content.actualHeight", control1.content.actualHeight, 0);
 		AreEqual ("control2.content.actualHeight", control2.content.actualHeight, 0);
 	}
+
 </script>
 
 <body bgcolor="gray" onLoad="init ()">
