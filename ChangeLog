@@ -1,3 +1,8 @@
+2007-06-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Back to alsa instead of SDL (now that I've figured
+	out the secret to playing non-choppy audio with it).
+
 2007-06-10  Miguel de Icaza  <miguel@novell.com>
 
 	* configure.ac: Check for mono, prepare cflags and libs to embed

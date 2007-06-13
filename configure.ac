@@ -39,20 +39,6 @@ else
    echo I was looking for mono.pc file
 fi
 
-use_sdlconfig=false
-AC_MSG_CHECKING(SDL)
-if sdl-config --version >& /dev/null; then
-   AC_MSG_RESULT(found)
-   use_sdlconfig=true
-else
-   if pkg-config sdl; then
-      sdl_module=sdl
-   else
-      echo Not found SDL
-      exit 1
-   fi
-fi
-
 AC_MSG_CHECKING(Olive's Silverlight)
 if pkg-config silver; then
    AC_MSG_RESULT(found)
@@ -112,13 +98,9 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
-MOON_PKGS="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale $sdl_module"
+MOON_PKGS="gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa"
 MOON_CFLAGS=`pkg-config --cflags $MOON_PKGS`
 MOON_LIBS=`pkg-config --libs gtk+-2.0 $MOON_PKGS`
-if $use_sdlconfig; then
-   MOON_CFLAGS="$MOON_CFLAGS `sdl-config --cflags`"
-   MOON_LIBS="$MOON_LIBS `sdl-config --libs`"
-fi
 
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
