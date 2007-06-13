@@ -321,6 +321,44 @@ class Visual : public DependencyObject {
 	Value::Kind GetObjectType () { return Value::VISUAL; };	
 };
 
+enum ErrorType {
+	NoError,
+	UnknownError,
+	InitializeError,
+	ParserError,
+	ObjectModelError,
+	RuntimeError,
+	DownloadError,
+	MediaError,
+	ImageError
+};
+
+struct ErrorEventArgs /* : public EventArgs */ {
+
+ public:
+	int error_code;;
+	const char *error_message;
+	ErrorType error_type;
+};
+
+struct ParserErrorEventArgs : public ErrorEventArgs {
+
+ public:
+
+	ParserErrorEventArgs () : char_position (0), line_number (0), xaml_file (NULL),
+	xml_element (NULL), xml_attribute (NULL)
+	{
+		error_type = ParserError;
+	}
+	
+	
+	int char_position;
+	int line_number;
+	const char *xaml_file;
+	const char *xml_element;
+	const char *xml_attribute;
+};
+
 //
 // Collection: provides a collection that we can monitor for
 // changes.   We expose this collection in a few classes to
