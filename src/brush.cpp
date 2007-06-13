@@ -448,8 +448,8 @@ brush_init ()
 {
 	/* Brush fields */
 	Brush::OpacityProperty = DependencyObject::Register (Value::BRUSH, "Opacity", new Value (1.0));
-	Brush::RelativeTransformProperty = DependencyObject::Register (Value::BRUSH, "RelativeTransform", new Value ());
-	Brush::TransformProperty = DependencyObject::Register (Value::BRUSH, "Transform", new Value ());
+	Brush::RelativeTransformProperty = DependencyObject::Register (Value::BRUSH, "RelativeTransform", Value::TRANSFORMGROUP);
+	Brush::TransformProperty = DependencyObject::Register (Value::BRUSH, "Transform", Value::TRANSFORMGROUP);
 
 	/* SolidColorBrush fields */
 	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00FFFFFF)));

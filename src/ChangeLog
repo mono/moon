@@ -1,3 +1,8 @@
+2007-06-13  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* brush.cpp|h: Fix Brush::RelativeTransformProperty and 
+	Brush::RelativeTransformProperty types.
+
 2007-06-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp|h: Complete DependencyProperties for GradientBrush and
