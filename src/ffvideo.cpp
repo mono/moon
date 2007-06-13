@@ -13,21 +13,27 @@
  *    * Copyright (c) 2003 Fabrice Bellard
  * 
  */
-#define __STDC_CONSTANT_MACROS
+
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <unistd.h>
-#include <string.h>
-#include <gtk/gtk.h>
-#include <cairo.h>
-#include <malloc.h>
-#include <glib.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <errno.h>
-#include "runtime.h"
-
+#include <sys/types.h>
+#include <sys/time.h>
+#include <string.h>
+#include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
+
+#include <gtk/gtk.h>
+#include <cairo.h>
+
+#include "runtime.h"
+#include "media.h"
+#include "cutil.h"
 
 // video specific 
 G_BEGIN_DECLS
@@ -37,11 +43,7 @@ G_BEGIN_DECLS
 #include <swscale.h>
 G_END_DECLS
 
-#include <sys/time.h>
-
 #include <SDL.h>
-
-#include "cutil.h"
 
 
 #define ENABLE_AUDIO
@@ -65,22 +67,26 @@ static GStaticMutex ffmpeg_lock = G_STATIC_MUTEX_INIT;
 #define MAX_VIDEO_SIZE (1024 * 1024)
 #define MAX_AUDIO_SIZE (80 * 1024)
 
-class VideoFfmpeg : public Video {
+class MediaElementFfmpeg : public MediaElement {
 public:
+	char *filename;
+	
 	int w, h;
 
-	VideoFfmpeg (const char *filename);
-	~VideoFfmpeg ();
+	MediaElementFfmpeg (const char *filename);
+	~MediaElementFfmpeg ();
 
 	// Virtual method overrides
 	void getbounds ();
-	void render (Surface *s, int x, int y, int width, int height);
-	void pause (void);
-	void resume (void);
-	void stop (void);
-	
 	virtual Point getxformorigin ();
-
+	
+	void render (Surface *s, int x, int y, int width, int height);
+	
+	void Pause ();
+	void Play ();
+	void Stop ();
+	
+	
 	GThread    *decode_thread_id;
 	int         pipes [2];
 	GIOChannel *pipe_channel;
@@ -148,7 +154,7 @@ public:
 
 
 void
-VideoFfmpeg::getbounds ()
+MediaElementFfmpeg::getbounds ()
 {
 	double res [6];
 	AVCodecContext *cc;
@@ -197,10 +203,10 @@ pkt_new (AVPacket *pkt)
 #define pkt_free(x) g_free (x)
 
 
-static void restart_timer (VideoFfmpeg *video);
+static void restart_timer (MediaElementFfmpeg *video);
 
 static void
-notify_frame_ready (VideoFfmpeg *video)
+notify_frame_ready (MediaElementFfmpeg *video)
 {
 	uint8_t ready = 0;
 	size_t n;
@@ -213,7 +219,7 @@ notify_frame_ready (VideoFfmpeg *video)
 static gboolean
 callback_video_inited (gpointer data)
 {
-	VideoFfmpeg *video = (VideoFfmpeg *) data;
+	MediaElementFfmpeg *video = (MediaElementFfmpeg *) data;
 	AVCodecContext *cc;
 	
 	cc = video->video_stream->codec;
@@ -237,7 +243,7 @@ callback_video_inited (gpointer data)
 static void
 sdl_audio_callback (void *user_data, uint8_t *stream, int len)
 {
-	VideoFfmpeg *video = (VideoFfmpeg *) user_data;
+	MediaElementFfmpeg *video = (MediaElementFfmpeg *) user_data;
 	uint8_t *inptr, *outbuf;
 	int inleft, outlen;
 	QPacket *pkt;
@@ -309,7 +315,7 @@ silence:
 }
 
 static int
-init_video (VideoFfmpeg *video)
+init_video (MediaElementFfmpeg *video)
 {
 	AVCodecContext *codec;
 	SDL_AudioSpec spec;
@@ -414,7 +420,7 @@ init_video (VideoFfmpeg *video)
 static gpointer
 queue_data (gpointer data)
 {
-	VideoFfmpeg *video = (VideoFfmpeg *) data;
+	MediaElementFfmpeg *video = (MediaElementFfmpeg *) data;
 	int video_stream_idx, audio_stream_idx;
 	struct pollfd *ufds = NULL;
 	AVFrame *video_frame;
@@ -488,7 +494,7 @@ queue_data (gpointer data)
 // Convert the AVframe into an RGB buffer we can render
 //
 static void
-convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
+convert_to_rgb (MediaElementFfmpeg *video, AVFrame *frame)
 {
 	AVCodecContext *cc = video->video_stream->codec;
 	uint8_t *rgb_dest[3] = { video->video_rgb_buffer, NULL, NULL};
@@ -504,7 +510,7 @@ convert_to_rgb (VideoFfmpeg *video, AVFrame *frame)
 static gboolean
 load_next_frame (gpointer data)
 {
-	VideoFfmpeg *video = (VideoFfmpeg *) data;
+	MediaElementFfmpeg *video = (MediaElementFfmpeg *) data;
 	uint64_t target_pts = (uint64_t) ((av_gettime () - video->play_start_time) * video->micro_to_pts) + video->initial_pts;
 	AVFrame *frame = NULL;
 	gboolean cont = TRUE;
@@ -590,7 +596,7 @@ load_next_frame (gpointer data)
 }
 
 static void
-restart_timer (VideoFfmpeg *video)
+restart_timer (MediaElementFfmpeg *video)
 {
 	if (video->timeout_handle != 0)
 		return;
@@ -612,7 +618,7 @@ restart_timer (VideoFfmpeg *video)
 static gboolean
 video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 {
-	VideoFfmpeg *video = (VideoFfmpeg *) data;
+	MediaElementFfmpeg *video = (MediaElementFfmpeg *) data;
 	uint8_t buf[32];
 	ssize_t n;
 	
@@ -627,7 +633,7 @@ video_ready (GIOChannel *source, GIOCondition condition, gpointer data)
 }
 
 void
-VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
+MediaElementFfmpeg::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_pattern_t *pattern, *old_pattern;
 
@@ -653,7 +659,7 @@ VideoFfmpeg::render (Surface *s, int x, int y, int width, int height)
 }
 
 void
-VideoFfmpeg::pause (void)
+MediaElementFfmpeg::Pause (void)
 {
 	if (!paused) {
 		g_static_mutex_lock (&pause_mutex);
@@ -663,18 +669,18 @@ VideoFfmpeg::pause (void)
 }
 
 void
-VideoFfmpeg::resume (void)
+MediaElementFfmpeg::Play (void)
 {
-	if (paused) {
+	if (paused)
 		g_static_mutex_unlock (&pause_mutex);
-		restart_timer (this);
-		SDL_PauseAudio (0);
-		paused = false;
-	}
+	
+	restart_timer (this);
+	SDL_PauseAudio (0);
+	paused = false;
 }
 
 void
-VideoFfmpeg::stop (void)
+MediaElementFfmpeg::Stop (void)
 {
 	
 }
@@ -693,20 +699,22 @@ ffmpeg_init (void)
 	}
 }
 
-Video *
-video_ffmpeg_new (const char *filename)
+MediaElement *
+media_element_ffmpeg_new (const char *filename)
 {
-	VideoFfmpeg *video;
-
+	MediaElementFfmpeg *ffmpeg;
+	
 	ffmpeg_init ();
-
-	video = new VideoFfmpeg (filename);
-
-	return (Video *) video;
+	
+	ffmpeg = new MediaElementFfmpeg (filename);
+	
+	return (MediaElement *) ffmpeg;
 }
 
-VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
+MediaElementFfmpeg::MediaElementFfmpeg (const char *filename)
 {
+	this->filename = g_strdup (filename);
+	
 	video_codec = NULL;
 	video_stream = NULL;
 	audio_codec = NULL;
@@ -730,7 +738,7 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	micro_to_pts = 0;
 	audio_frames_size = 0;
 	video_frames_size = 0;
-
+	
 	pipe (pipes);
 	fcntl (pipes [0], F_SETFL, O_NONBLOCK);
 	
@@ -741,23 +749,25 @@ VideoFfmpeg::VideoFfmpeg (const char *filename) : Video (filename)
 	video_frames = g_async_queue_new ();
 	pipe_channel = g_io_channel_unix_new (pipes [0]);
 	g_io_add_watch (pipe_channel, G_IO_IN, video_ready, this);
-
+	
 	decode_thread_id = g_thread_create (queue_data, this, TRUE, NULL);
 }
 
 Point
-VideoFfmpeg::getxformorigin ()
+MediaElementFfmpeg::getxformorigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	return Point (user_xform_origin.x * w, user_xform_origin.y * h);
 }
 
-VideoFfmpeg::~VideoFfmpeg ()
+MediaElementFfmpeg::~MediaElementFfmpeg ()
 {
 	// TODO:
 	//    * Ask our thread to shutdown nicely.
 	//
 	fprintf (stderr, "We should stop the thread");
+	
+	g_free (filename);
 	
 	g_async_queue_unref (audio_frames);
 	g_async_queue_unref (video_frames);
@@ -773,12 +783,11 @@ VideoFfmpeg::~VideoFfmpeg ()
 /*
  * video_new:
  * @filename:
- * @x, @y: Position where to position the video
  *
  */
-Video *
+MediaElement *
 video_new (const char *filename)
 {
-	return video_ffmpeg_new (filename);
+	return media_element_ffmpeg_new (filename);
 }
 

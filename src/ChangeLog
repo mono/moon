@@ -1,3 +1,9 @@
+2007-06-12  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* ffvideo.cpp: Fixed to subclass the new MediaElement class.
+
+	* video.cpp: Removed.
+
 2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp|h: Added DependencyProperty for GradientBrush and 

@@ -160,7 +160,7 @@ main (int argc, char *argv [])
 #endif
 		
 #ifdef VIDEO_DEMO
-		v = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
+		v = (UIElement *) video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
 		item_set_render_transform (v, v_trans);
 		item_set_transform_origin (v, Point (1, 1));
 		printf ("Got %d\n", v);
@@ -172,7 +172,7 @@ main (int argc, char *argv [])
 #ifdef VIDEO_DEMO
 		//UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv");
 		//UIElement *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
-		UIElement *v2 = video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
+		UIElement *v2 = (UIElement *) video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
 		v2->SetValue (Canvas::LeftProperty, Value (100.0));
 		v2->SetValue (Canvas::TopProperty, Value (100.0));
 		item_set_render_transform (v2, s_trans);

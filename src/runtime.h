@@ -690,23 +690,6 @@ class Canvas : public Panel {
 
 Canvas *canvas_new ();
 
-// A video is an UIElement
-class Video : public UIElement {
-	enum { VIDEO_OK, VIDEO_ERROR_OPEN, VIDEO_ERROR_STREAM_INFO } VideoError;
- public:
-	char  *filename;
-	int    error;
-
-	virtual Point getxformorigin () = 0;
-	
-	Video (const char *filename);
-	~Video ();
-	Value::Kind GetObjectType () { return Value::VIDEO; };
-};
-
-Video *video_new     (const char *filename);
-void   video_destroy (Video *video);
-
 typedef struct _SurfacePrivate SurfacePrivate;
 
 //
@@ -786,6 +769,9 @@ void     surface_register_events (Surface *s,
 
 UIElement  *xaml_create_from_file     (const char *filename, Value::Kind *element_type);
 UIElement  *xaml_create_from_str      (const char *xaml, Value::Kind *element_type);
+
+
+MediaElement *video_new (const char *filename);
 
 
 void runtime_init ();

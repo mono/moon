@@ -30,7 +30,6 @@ libmoon_la_SOURCES = 	\
 	type.cpp	\
 	value.cpp	\
 	value.h		\
-	video.cpp	\
 	xaml.cpp
 
 demo_SOURCES = \

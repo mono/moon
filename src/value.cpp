@@ -560,12 +560,6 @@ Value::AsUIElement ()
 	checked_get_subclass (UIELEMENT, UIElement);
 }
 
-Video*
-Value::AsVideo ()
-{
-	checked_get_subclass (VIDEO, Video);
-}
-
 VideoBrush*
 Value::AsVideoBrush ()
 {
