@@ -250,6 +250,17 @@ This is not likely the final version of this code.
 	execute your browser from command line and check log messsages, 
 	this information can be useful to help us fix the problem.
 
+	If you debug this, you will run into:
+
+
+		Program received signal SIGSEGV, Segmentation fault.
+		[Switching to Thread 1088688944 (LWP 9517)]
+		0x43827037 in GC_find_limit (p=0x89cb1ec "", up=0) at os_dep.c:813
+		813                     GC_noop1((word)(*result));
+		
+	This is OK and is perfectly harmless, type "cont" to
+	resume execution.
+	
 ----------------------------------------------------------------------------------
 Issues
 ----------------------------------------------------------------------------------
@@ -336,3 +347,8 @@ Issues
 		3.  If it's used in the C++ code, add an As$TYPE method in
 	            value.h.in and an implementation of it to runtime.cpp
 		4.  Execute typegen.sh.
+
+* TimeManager::Instance::Start
+
+	Currently we call this in runtime_init(), it should be further delayed until
+	we determine that we have a storyboard to play, otherwise we are wasting cycles. 
