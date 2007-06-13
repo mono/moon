@@ -1,3 +1,11 @@
+2007-06-13  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* brush.cpp|h: Added code for LinearGradientBrush and partial setup
+	for all gradient-related brushes (needs testing). Add all color 
+	definitions supported by XAML.
+	* mkcolor.cs: Tool to generate colors from System.Drawing (as they
+	are identical).
+
 2007-06-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 	
 	* runtime.h: Add Visual.

@@ -71,6 +71,7 @@ class GradientBrush : public Brush {
 	Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void SetupPattern (cairo_pattern_t *pattern);
 };
 ColorInterpolationMode gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
 void gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode);
@@ -94,8 +95,20 @@ class VideoBrush : public TileBrush {
 };
 
 class LinearGradientBrush : public GradientBrush {
+ public:
+	static DependencyProperty* EndPointProperty;
+	static DependencyProperty* StartPointProperty;
+
+	LinearGradientBrush () {};
 	Value::Kind GetObjectType () { return Value::LINEARGRADIENTBRUSH; }
+
+	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
+LinearGradientBrush *linear_gradient_brush_new ();
+Point	*linear_gradient_brush_get_end_point 	(LinearGradientBrush *brush);
+void	linear_gradient_brush_set_end_point	(LinearGradientBrush *brush, Point *point);
+Point	*linear_gradient_brush_get_start_point	(LinearGradientBrush *brush);
+void	linear_gradient_brush_set_start_point	(LinearGradientBrush *brush, Point *point);
 
 class RadialGradientBrush : public GradientBrush {
  public:
