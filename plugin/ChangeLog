@@ -1,5 +1,11 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* TODO: Added to include information about features that we know that is
+	not current supported. Can be use for now to take some notes to be read 
+	after 21th june.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.h: Add comments about read write/read only on properties.
 
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>

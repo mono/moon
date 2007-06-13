@@ -1,0 +1,12 @@
+= Moonlight Browser Plugin Todo =
+
+
+* Not properly working properties
+
+  control.settings.windowless
+  control.content.fullScreen
+
+* Works for other browsers
+
+ The plugin started working in Opera in r78918 and stopped working in r79006, 
+ so any revision in between should do it.
