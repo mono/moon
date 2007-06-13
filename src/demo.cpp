@@ -76,10 +76,24 @@ delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 static void
 button_press_event (GtkWidget *widget, GdkEventButton *e, gpointer data)
 {
-  //	printf ("button_press_event\n");
 	if (sb)
 		sb->Pause ();
 	//sb->Seek ((TimeSpan)e->x * 100000);
+}
+
+static void
+button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
+{
+	Surface *t = (Surface *) data;
+	Value::Kind kind;
+
+	printf ("button_press_event\n");
+
+	printf ("Loading...\n");
+	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", &kind);
+	printf ("Loading... %p\n", ee);
+	if (ee != NULL)
+		surface_attach (t, ee);
 }
 
 static void
@@ -142,6 +156,7 @@ main (int argc, char *argv [])
 			return 1;
 		}
 
+		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_press_event", G_CALLBACK (button_press_event2), t);
 		surface_attach (t, e);
 	} else {
 		Canvas *canvas = new Canvas ();
