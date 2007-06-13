@@ -1,3 +1,7 @@
+2007-06-13  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (dependency_object_find_name): Add new wrapper 
+
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp: a few changes - none of the animations run forever

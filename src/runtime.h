@@ -262,6 +262,7 @@ class DependencyObject : public Base {
 
 Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);
 void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val);
+DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kind *element_type);
 
 //
 // DependencyProperty

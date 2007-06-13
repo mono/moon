@@ -1453,6 +1453,19 @@ DependencyObject::FindName (const char *name)
 	return scope->FindName (name);
 }
 
+DependencyObject *
+dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kind *element_kind)
+{
+	DependencyObject *ret = obj->FindName (name);
+
+	if (ret == NULL)
+		return NULL;
+
+	*element_kind = ret->GetObjectType ();
+
+	return ret;
+}
+
 //
 // Use this for values that can be null
 //

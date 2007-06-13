@@ -198,9 +198,9 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, r);
 		
 #ifdef VIDEO_DEMO
-		//UIElement *v2 = video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv");
+		UIElement *v2 = (UIElement *) video_new ("file:///tmp/Countdown-Colbert-BestNailings.wmv");
 		//UIElement *v2 = video_new ("file:///tmp/red.wmv", 100, 100);
-		UIElement *v2 = (UIElement *) video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
+		//UIElement *v2 = (UIElement *) video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
 		v2->SetValue (Canvas::LeftProperty, Value (100.0));
 		v2->SetValue (Canvas::TopProperty, Value (100.0));
 		item_set_render_transform (v2, s_trans);
