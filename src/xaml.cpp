@@ -1220,8 +1220,9 @@ xaml_init ()
 	rdoe (dem, "SolidColorBrush", brush, Value::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
 
 	XamlElementInfo *gb = register_ghost_element ("GradientBrush", brush, Value::GRADIENTBRUSH);
-	XamlElementInfo *rgb = rdoe (dem, "RadialGradientBrush", gb, Value::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
-	rgb->content_property = "GradientStops";
+	gb->content_property = "GradientStops";
+	rdoe (dem, "LinearGradientBrush", gb, Value::LINEARGRADIENTBRUSH, (create_item_func) linear_gradient_brush_new);
+	rdoe (dem, "RadialGradientBrush", gb, Value::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
 
 	XamlElementInfo *gsc = rdoe (dem, "GradientStopCollection", col, Value::GRADIENTSTOP_COLLECTION, (create_item_func) gradient_stop_collection_new);
 

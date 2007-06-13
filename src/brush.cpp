@@ -513,13 +513,16 @@ linear_gradient_brush_set_start_point (LinearGradientBrush *brush, Point *point)
 void
 LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
+	double w = framework_element_get_width ((FrameworkElement*)uielement);
+	double h = framework_element_get_height ((FrameworkElement*)uielement);
+
 	Point *start = linear_gradient_brush_get_start_point (this);
-	double x0 = start ? start->x : 0.0;
-	double y0 = start ? start->y : 0.0;
+	double x0 = start ? (start->x * w) : 0.0;
+	double y0 = start ? (start->y * h) : 0.0;
 
 	Point *end = linear_gradient_brush_get_end_point (this);
-	double x1 = end ? start->x : 1.0;
-	double y1 = end ? start->y : 1.0;
+	double x1 = end ? (end->x * w) : w;
+	double y1 = end ? (end->y * h) : h;
 
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 
