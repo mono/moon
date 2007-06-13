@@ -239,6 +239,12 @@ PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant
 		return true;
 	} 
 
+	if (name == NPID ("isLoaded")) {
+		PluginInstance *plugin = (PluginInstance *) instance->pdata;
+		BOOLEAN_TO_NPVARIANT (plugin->getIsLoaded (), *result);
+		return true;
+	} 
+
 	if (name == NPID ("source")) {
 		PluginInstance *plugin = (PluginInstance *) instance->pdata;
 		STRING_TO_NPVARIANT (plugin->getSource (), *result);

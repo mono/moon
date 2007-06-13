@@ -25,7 +25,8 @@ class PluginInstance
 	NPObject* rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
 
-	// Properties fields
+	// Property fields
+	bool isloaded;
 	char *source;
 
 	// Private methods
@@ -54,7 +55,8 @@ class PluginInstance
 	Canvas *canvas;        // plugin canvas object
  	Surface *surface;      // plugin surface object
 
-	// Properties getters/setters
+	// Property getters and setters
+	bool getIsLoaded () { return this->isloaded; };
 	char *getSource () { return this->source; }
  };
 

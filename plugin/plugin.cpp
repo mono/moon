@@ -74,6 +74,10 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->container = NULL;
 	this->canvas = NULL;
 	this->surface = NULL;
+
+	// Property fields
+	this->isloaded = false;
+	this->source = NULL;
 }
 
 PluginInstance::~PluginInstance ()
@@ -226,6 +230,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 #ifdef RUNTIME
 	vm_load_xaml (this->surface, fname);
 #else
+	this->isloaded = true;
 	panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
 #endif
 }

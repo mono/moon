@@ -1,5 +1,11 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h: isLoaded property added.
+
+	* plugin-class.cpp: Implement control.isLoaded wrapper.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.h: 
 	- Take some notes on properties that cant be set after initialization.
 	- Create macho STRING_TO_NPVARIANT to standardize the way how strings are
