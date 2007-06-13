@@ -112,8 +112,6 @@ main (int argc, char *argv [])
 	gdk_threads_init ();
 	runtime_init ();
 
-	TimeManager::Instance()->Start();
-
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), NULL);
 	Surface *t = surface_new (600, 600);

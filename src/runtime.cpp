@@ -2056,6 +2056,8 @@ runtime_init ()
 		return;
 	inited = TRUE;
 
+	TimeManager::Instance()->Start();
+
 	types_init ();
 	namescope_init ();
 	item_init ();
