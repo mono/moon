@@ -27,7 +27,7 @@ static uint64_t last_time;
 
 static GtkWidget *w;
 
-static Storyboard *sb;
+static Storyboard *sb = NULL;
 
 static int64_t
 gettime (void)
@@ -77,7 +77,8 @@ static void
 button_press_event (GtkWidget *widget, GdkEventButton *e, gpointer data)
 {
   //	printf ("button_press_event\n");
-	sb->Pause ();
+	if (sb)
+		sb->Pause ();
 	//sb->Seek ((TimeSpan)e->x * 100000);
 }
 
@@ -85,7 +86,8 @@ static void
 button_release_event (GtkWidget *widget, GdkEventButton *e, gpointer data)
 {
   //	printf ("button_release_event\n");
-	sb->Resume ();
+	if (sb)
+		sb->Resume ();
 }
 
 static void
@@ -93,7 +95,8 @@ button_motion_event (GtkWidget *widget, GdkEventMotion *e, gpointer data)
 {
   //	printf ("button_motion_event\n");
 	/* let's treat pixels as 1/10th of a second */
-  //sb->Seek ((TimeSpan)e->x * 100000);
+// 	if (sb)
+// 		sb->Seek ((TimeSpan)e->x * 100000);
 }
 
 int
@@ -350,6 +353,11 @@ main (int argc, char *argv [])
 		Storyboard::SetTargetProperty (square_y_anim, "Y");
 #endif
 
+		gtk_widget_add_events (t->drawing_area, GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+
+		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_press_event", G_CALLBACK (button_press_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_release_event", G_CALLBACK (button_release_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "motion_notify_event", G_CALLBACK (button_motion_event), NULL);
 
 		sb->Begin ();
 	}		
@@ -358,12 +366,6 @@ main (int argc, char *argv [])
 		last_time = gettime ();
 		gtk_idle_add (invalidator, t);
 	}
-
-	gtk_widget_add_events (t->drawing_area, GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-
-	gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_press_event", G_CALLBACK (button_press_event), NULL);
-	gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_release_event", G_CALLBACK (button_release_event), NULL);
-	gtk_signal_connect (GTK_OBJECT (t->drawing_area), "motion_notify_event", G_CALLBACK (button_motion_event), NULL);
 
 	gtk_widget_set_usize (w, 600, 400);
 	gtk_widget_show_all (w);
