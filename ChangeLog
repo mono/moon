@@ -1,3 +1,7 @@
+2007-06-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Added pango as a dependency for text rendering.
+
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: make sure we're getting the right version of

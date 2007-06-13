@@ -108,7 +108,7 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
-MOON_PKGS="cairo >= $CAIRO_VERSION gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa"
+MOON_PKGS="cairo >= $CAIRO_VERSION gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa"
 MOON_CFLAGS=`pkg-config --cflags $MOON_PKGS`
 MOON_LIBS=`pkg-config --libs $MOON_PKGS`
 
