@@ -1,5 +1,9 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* index.html: Remove 'embed' and use now only 'object' to be IE compatible.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* index.html: Improve tests, show more information and make it IE compatible
 	to compare values. Now it works like a unit test, we must later search for
 	javascript unit test framework, for now it works.
