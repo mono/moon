@@ -25,12 +25,13 @@
 		if (already) return;
 		already = true;
 
-		var control1 = document.getElementById("control1");
-		var control2 = document.getElementById("control2");
+		print ("\n=> Page loaded");
 
-		print ("Version: " + control1.settings.version);
+		// control.isLoaded
+		NewAssert ();
+		AreEqual ("control1.isLoaded", control1.isLoaded, true);
 
-		// control1.source - Cant be changed after initialization.
+		// control.source - Cant be changed after initialization.
 		NewAssert ();
 		AreEqual ("control1.source", control1.source, "circle.xaml");
 		control1.source == "emote.xaml";
@@ -78,6 +79,13 @@
 	<form name="form">
 		<textarea id="outputtext" rows="30" cols="80"></textarea>
 	</form>
+
+	<script>
+		// this assertions must be done before page load.
+		print ("Version: " + control1.settings.version + "\n");
+
+		AreEqual ("control1.isLoaded", control1.isLoaded, false);
+	</script>
 
 </body>
 </html>
