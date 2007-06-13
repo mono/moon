@@ -25,6 +25,9 @@ class PluginInstance
 	NPObject* rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
 
+	// Properties fields
+	char *source;
+
 	// Private methods
 	void CreateWindow ();
 
@@ -50,6 +53,9 @@ class PluginInstance
 	GtkWidget *container;  // plugin container object
 	Canvas *canvas;        // plugin canvas object
  	Surface *surface;      // plugin surface object
+
+	// Properties getters/setters
+	char *getSource () { return this->source; }
  };
 
 #endif /* MOON_PLUGIN */

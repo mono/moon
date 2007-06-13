@@ -227,17 +227,21 @@ PluginRootClass::PluginRootClass (NPP instance) : PluginClass (instance)
 bool
 PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	if (name == NPID ("settings"))
-	{
+	if (name == NPID ("settings")) {
 		NPObject *object = NPN_CreateObject (this->instance, this->settings);
 		OBJECT_TO_NPVARIANT (object, *result);
 		return true;
 	} 
 
-	if (name == NPID ("content"))
-	{
+	if (name == NPID ("content")) {
 		NPObject *object = NPN_CreateObject (this->instance, this->content);
 		OBJECT_TO_NPVARIANT (object, *result);
+		return true;
+	} 
+
+	if (name == NPID ("source")) {
+		PluginInstance *plugin = (PluginInstance *) instance->pdata;
+		STRING_TO_NPVARIANT (plugin->getSource (), *result);
 		return true;
 	} 
 
@@ -263,11 +267,7 @@ bool
 PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	if (name == NPID ("version")) {
-		int len = strlen (PLUGIN_VERSION);
-		char *version = (char *) NPN_MemAlloc (len + 1);
-		memcpy (version, PLUGIN_VERSION, len + 1);
-		STRINGN_TO_NPVARIANT (version, len, *result);
-
+		STRING_TO_NPVARIANT (PLUGIN_VERSION, *result);
 		return true;
 	}
 

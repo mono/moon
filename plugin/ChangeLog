@@ -1,5 +1,20 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.h: 
+	- Take some notes on properties that cant be set after initialization.
+	- Create macho STRING_TO_NPVARIANT to standardize the way how strings are
+	returned to jscript calls.
+
+	* plugin-class.cpp:
+	- Implement control.source using STRING_TO_NPVARIANT macro.
+	- Uses STRING_TO_NPVARIANT macho in control.settings.version.
+
+	* plugin.h: Add source property.
+
+	* plugin.cpp: Set source on initialization.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h: 
 	- Move static rootobject to class field to get working pages with more than
 	one moonlight control.

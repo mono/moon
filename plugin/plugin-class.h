@@ -10,7 +10,11 @@
  * 
  */
 
+#ifndef PLUGIN_CLASS
+#define PLUGIN_CLASS
+
 #include "moonlight.h"
+#include "plugin.h"
 
 /*** Macros *******************************************************************/
 
@@ -30,6 +34,12 @@
 	virtual bool ClassInvoke ( \
 		NPObject *npobj, NPIdentifier name, const NPVariant *args,  \
 		uint32_t argCount, NPVariant *result);
+
+#define STRING_TO_NPVARIANT(x,z) \
+		int len = strlen (x); \
+		char *retval = (char *) NPN_MemAlloc (len + 1); \
+		memcpy (retval, x, len + 1); \
+		STRINGN_TO_NPVARIANT (retval, len, z);
 
 /*** PluginClass **************************************************************/
 
@@ -64,12 +74,12 @@ class PluginClass : public NPClass
 static const char *const PluginSettingsPropertyNames [7] = 
 {
 	"background",             // read write
-	"enableFramerateCounter", // read write
+	"enableFramerateCounter", // read write (cant be set after initialization)
 	"enableRedrawRegions",    // read write
-	"enableHtmlAccess",       // read write
+	"enableHtmlAccess",       // read write (cant be set after initialization)
 	"maxFrameRate",           // read write
 	"version",                // read only
-	"windowless"              // read write
+	"windowless"              // read write (cant be set after initialization)
 };
 
 class PluginSettings : public PluginClass
@@ -116,7 +126,7 @@ static const char *const PluginRootClassPropertyNames [] =
 	"content",    // read only
 	"initParams", // read only
 	"isLoaded",   // read only
-	"source"      // read write
+	"source"      // read write (cant be set after initialization)
 };
 
 static const char *const PluginRootClassMethodNames [] = 
@@ -154,3 +164,5 @@ class PluginDependencyObject : public PluginClass
 	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
 	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
 };
+
+#endif /* PLUGIN_CLASS */

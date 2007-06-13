@@ -94,12 +94,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 		// Source url handle.
 		if (!strcasecmp (argn[i], "src") || !strcasecmp (argn[i], "source")) {
-			url = argv[i];
+			this->source = argv[i];
 		}
 	}
 
-	if (url) {
-		NPN_GetURL (this->instance, url, NULL);
+	if (this->source) {
+		NPN_GetURL (this->instance, this->source, NULL);
 	}
 }
 
