@@ -78,7 +78,7 @@ button_press_event (GtkWidget *widget, GdkEventButton *e, gpointer data)
 {
   //	printf ("button_press_event\n");
 	sb->Pause ();
-	sb->Seek ((TimeSpan)e->x * 100000);
+	//sb->Seek ((TimeSpan)e->x * 100000);
 }
 
 static void
