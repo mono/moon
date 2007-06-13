@@ -311,17 +311,17 @@ skew_transform_get_center_y (SkewTransform *t)
 
 
 
+DependencyProperty* MatrixTransform::MatrixProperty;
+
 void
 MatrixTransform::GetTransform (cairo_matrix_t *value)
 {
-	fprintf (stderr, "Error\n");
-	exit (1);
-#if notyet
-  cairo_matrix_t matrix = matrix_transform_get_matrix (this);
-
-  memcpy (value, &matrix, sizeof (cairo_matrix_t));
-#endif
-	printf ("Returning1 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
+	cairo_matrix_t* matrix = matrix_transform_get_matrix (this);
+	if (matrix)
+		memcpy (value, matrix, sizeof (cairo_matrix_t));
+	else
+		cairo_matrix_init_identity (value);
+	//printf ("Returning1 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 MatrixTransform *
@@ -329,6 +329,21 @@ matrix_transform_new ()
 {
 	return new MatrixTransform ();
 }
+
+void
+matrix_transform_set_matrix (MatrixTransform *t, Matrix *matrix)
+{
+	t->SetValue (MatrixTransform::MatrixProperty, Value(matrix));
+}
+
+Matrix*
+matrix_transform_get_matrix (MatrixTransform *t)
+{
+	Value *value = t->GetValue (MatrixTransform::MatrixProperty);
+	return (value ? value->AsMatrix() : NULL);
+}
+
+
 
 void
 TransformCollection::Add (void *data)
@@ -433,7 +448,8 @@ transform_init ()
 	SkewTransform::CenterXProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "CenterX", new Value (0.0));
 	SkewTransform::CenterYProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "CenterY", new Value (0.0));
 
-	/* XXX MatrixTransform fields */
+	/* MatrixTransform fields */
+	MatrixTransform::MatrixProperty = DependencyObject::Register (Value::MATRIXTRANSFORM, "Matrix", Value::MATRIX);
 
 	/* TransformGroup fields */
 	TransformGroup::ChildrenProperty = DependencyObject::Register (Value::TRANSFORMGROUP, "Children", Value::TRANSFORM_COLLECTION);

@@ -117,9 +117,9 @@ double skew_transform_get_center_x (SkewTransform *t);
 void   skew_transform_set_center_y (SkewTransform *t, double centerY);
 double skew_transform_get_center_y (SkewTransform *t);
 
-
 class MatrixTransform : public Transform {
  public:
+	static DependencyProperty* MatrixProperty;
 
 	MatrixTransform () { }
 	Value::Kind GetObjectType () { return Value::MATRIXTRANSFORM; };
@@ -132,8 +132,8 @@ class MatrixTransform : public Transform {
 };
 
 MatrixTransform *matrix_transform_new ();
-void           matrix_transform_set_matrix (MatrixTransform *t, cairo_matrix_t matrix);
-cairo_matrix_t matrix_transform_get_matrix (MatrixTransform *t);
+void	matrix_transform_set_matrix (MatrixTransform *t, Matrix* matrix);
+Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
 
 
 class TransformCollection : public Collection {

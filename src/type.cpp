@@ -42,6 +42,7 @@ void types_init_manually ()
 	Type::RegisterType ("KeyTime", Value::KEYTIME);
 	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
 	Type::RegisterType ("Point*", Value::POINT_ARRAY);
+	Type::RegisterType ("Matrix", Value::MATRIX);
 
 #if DEBUG
 	for (int i = 1; i < Value::LASTTYPE; i++) {

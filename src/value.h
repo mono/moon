@@ -18,6 +18,9 @@ struct PointArray;
 struct Rect;
 struct RepeatBehavior;
 struct Value;
+
+typedef cairo_matrix_t Matrix;
+
 class Type;
 class DependencyProperty;
 class Surface;
@@ -135,6 +138,7 @@ public:
 		DOUBLE_ARRAY,
 		POINT_ARRAY,
 		KEYTIME,
+		MATRIX,
 
 		DEPENDENCY_OBJECT,
 		ANIMATION,
@@ -251,6 +255,7 @@ public:
 	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
+	Value (Matrix* matrix);
 	
 	~Value ();
 
@@ -293,7 +298,8 @@ public:
 	Duration*       AsDuration ();
 	KeyTime*        AsKeyTime ();
 	PointArray*     AsPointArray ();
-	DoubleArray*     AsDoubleArray ();
+	DoubleArray*    AsDoubleArray ();
+	Matrix*		AsMatrix ();
 
 	DependencyObject*              AsDependencyObject ();
 	Animation*                     AsAnimation ();
@@ -403,6 +409,7 @@ public:
 		KeyTime *keytime;
 		PointArray *point_array;
 		DoubleArray *double_array;
+		Matrix* matrix;
 	} u;
 
 

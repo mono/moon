@@ -1,3 +1,9 @@
+2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* transform.cpp|h: Complete MatrixTransform.
+	* value.h, value.h.in, runtime.cpp, type.cpp, type.cpp.in: Introduce
+	Matrix type.
+
 2007-06-12  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.h (UIElement::inside_object): new routine that should

@@ -234,6 +234,8 @@ Value::Value (const Value& v)
 		u.point_array->basic.refcount++;
 	else if (k == DOUBLE_ARRAY)
 		u.double_array->basic.refcount++;
+	else if (k == MATRIX)
+		memcpy (u.matrix, v.u.matrix, sizeof(Matrix));
 }
 
 Value::Value (Kind k)
@@ -358,6 +360,14 @@ Value::Value (double *values, int count)
 	u.double_array = double_array_new (count, values);
 }
 
+Value::Value (Matrix *matrix)
+{
+	Init ();
+	k = MATRIX;
+	u.matrix = (Matrix*) g_malloc (sizeof (Matrix));
+	memcpy (u.matrix, matrix, sizeof (Matrix));
+}
+
 Value::~Value ()
 {
 	if (k == STRING)
@@ -370,6 +380,8 @@ Value::~Value ()
 		if (--u.double_array->basic.refcount == 0)
 			g_free (u.double_array);
 	}
+	else if (k == MATRIX)
+		g_free (u.matrix);
 }
 
 
@@ -392,6 +404,7 @@ DoubleArray*    Value::AsDoubleArray () { checked_get_exact (DOUBLE_ARRAY, NULL,
 RepeatBehavior* Value::AsRepeatBehavior () { checked_get_exact (REPEATBEHAVIOR, NULL, u.repeat); }
 Duration*       Value::AsDuration () { checked_get_exact (DURATION, NULL, u.duration); }
 KeyTime*        Value::AsKeyTime () { checked_get_exact (KEYTIME, NULL, u.keytime); }
+Matrix*         Value::AsMatrix () { checked_get_exact (MATRIX, NULL, u.matrix); }
 
 /* nullable primitives (all but bool) */
 double*         Value::AsNullableDouble () { checked_get_exact (DOUBLE, NULL, &u.d); }
