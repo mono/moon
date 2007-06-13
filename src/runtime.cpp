@@ -1058,6 +1058,9 @@ key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
+	if (!s->cb_keyp)
+		return FALSE;
+	
 	// 
 	// I could not write a test that would send the output elsewhere, for now
 	// just send to the toplevel
@@ -1071,6 +1074,9 @@ button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer dat
 {
 	Surface *s = (Surface *) data;
 
+	if (!s->cb_up)
+		return FALSE;
+	
 	if (button->button != 1)
 		return FALSE;
 
@@ -1085,6 +1091,9 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 	Surface *s = (Surface *) data;
 
 	gtk_widget_grab_focus (widget);
+	if (!s->cb_down)
+		return FALSE;
+	
 	if (button->button != 1)
 		return FALSE;
 
