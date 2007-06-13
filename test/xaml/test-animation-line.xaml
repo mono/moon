@@ -9,7 +9,7 @@
     <Line.Triggers>
       <EventTrigger RoutedEvent="Line.Loaded">
         <BeginStoryboard>
-          <Storyboard>
+          <Storyboard x:Name="animation">
             <DoubleAnimation
               Storyboard.TargetName="TheAmazingMovingLine"
               Storyboard.TargetProperty="X1"
