@@ -7,6 +7,9 @@
 <script>
 	var already = false;
 
+	var control1 = null;
+	var control2 = null;
+
 	function print (text) {
 		document.form.outputtext.value += text + "\n";
 	}
@@ -59,12 +62,12 @@
 
 	<h2>Moonlight Browser Plugin Test</h2>
 
-	<object id="control1" width="50%" height="200" type="application/ag-plugin">
+	<object id="moonControl1" width="50%" height="200" type="application/ag-plugin">
 		<param name="background" value="#c0c0c0" />
 		<param name="source" value="circle.xaml" />
 	</object>
 
-	<object id="control2" width="200" height="200" type="application/ag-plugin">
+	<object id="moonControl2" width="200" height="200" type="application/ag-plugin">
 		<param name="background" value="#ffebcd" />
 		<param name="enableFramerateCounter" value="true" />
 		<param name="enableHtmlAccess" value="true" />
@@ -81,6 +84,9 @@
 	</form>
 
 	<script>
+		control1 = document.getElementById("moonControl1");
+		control2 = document.getElementById("moonControl2");
+
 		// this assertions must be done before page load.
 		print ("Version: " + control1.settings.version + "\n");
 

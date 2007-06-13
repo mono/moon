@@ -1,5 +1,9 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* index.html: Get page according to W3C specifications.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* index.html: Add control.isLoaded tests.
 
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
