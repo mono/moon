@@ -63,54 +63,39 @@ base_unref (Base *base)
 }
 
 void
-Collection::Add (DependencyObject *data)
+Collection::Add (void *data)
 {
 	list = g_slist_append (list, data);
-	base_ref (data);
+}
+
+void
+Collection::Remove (void *data)
+{
+	list = g_slist_remove (list, data);
+}
+
+void
+Collection::Add (DependencyObject *data)
+{
+	Collection::Add ((void*) data);
 	data->SetParent (this);
 }
 
 void
 Collection::Remove (DependencyObject *data)
 {
-	GSList *l, *prev = NULL;
-	bool found = FALSE;
-
-	// Do this by hand, so we only unref if we find the object
-	for (GSList *l = list; l != NULL; l = l->next){
-		if (l->data == data){
-			found = TRUE;
-			if (prev){
-				prev->next = l->next;
-			} else
-				list = l->next;
-			g_slist_free_1 (l);
-			break;
-		}
-		prev = l;
-	}
+	Collection::Remove ((void*) data);
 	data->SetParent (NULL);
-	if (found)
-		base_unref (data);
-}
-
-Collection::~Collection ()
-{
-	GSList *sl;
-
-	for (sl = list; sl != NULL; sl = sl->next){
-		base_unref ((Base *) sl->data);
-	}
 }
 
 void 
-collection_add (Collection *collection, DependencyObject *data)
+collection_add (Collection *collection, void *data)
 {
 	collection->Add (data);
 }
 
 void 
-collection_remove (Collection *collection, DependencyObject *data)
+collection_remove (Collection *collection, void *data)
 {
 	collection->Remove (data);
 }
@@ -533,7 +518,6 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 				for (GSList *l = triggers->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
-					printf ("Unrefing a %d\n", dob->GetObjectType ());
 					base_unref (dob);
 				}
 				base_unref (triggers);
@@ -722,12 +706,16 @@ item_get_surface (UIElement *item)
 }
 
 void
-VisualCollection::Add (DependencyObject *data)
+VisualCollection::Add (void *data)
 {
 	Panel *panel = (Panel *) closure;
 	
-	UIElement *item = (UIElement *) data;
+	Value *v = (Value *) data;
+	UIElement *item = v->AsUIElement();
 
+	base_ref (item);
+
+	// Add the UIElement, not the Value
 	Collection::Add (item);
 
 	item->parent = panel;
@@ -737,20 +725,26 @@ VisualCollection::Add (DependencyObject *data)
 }
 
 void
-VisualCollection::Remove (DependencyObject *data)
+VisualCollection::Remove (void *data)
 {
 	Panel *panel = (Panel *) closure;
-	UIElement *item = (UIElement *) data;
+	Value *v = (Value *) data;
+	UIElement *item = v->AsUIElement();
 	
-	item_invalidate (item);
 	Collection::Remove (item);
+
+	item_invalidate (item);
+	base_unref (item);
+
 	item_update_bounds (panel);
 }
 
 void 
 panel_child_add (Panel *panel, UIElement *child)
 {
-	collection_add (panel->children, child);
+	Value v(child);
+
+	collection_add (panel->children, &v);
 }
 
 Panel::Panel ()
@@ -1732,11 +1726,12 @@ SetNameScope (DependencyObject *obj, NameScope *scope)
 }
 
 void
-TriggerCollection::Add (DependencyObject *data)
+TriggerCollection::Add (void *data)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
 	
-	EventTrigger *trigger = (EventTrigger *) data;
+	Value *v = (Value *) data;
+	EventTrigger *trigger = v->AsEventTrigger ();
 
 	Collection::Add (trigger);
 
@@ -1744,15 +1739,38 @@ TriggerCollection::Add (DependencyObject *data)
 }
 
 void
-TriggerCollection::Remove (DependencyObject *data)
+TriggerCollection::Remove (void *data)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
 	
-	EventTrigger *trigger = (EventTrigger *) data;
+	Value *v = (Value *) data;
+	EventTrigger *trigger = v->AsEventTrigger ();
 
 	Collection::Remove (trigger);
 
 	trigger->RemoveTarget (fwe);
+}
+
+void
+TriggerActionCollection::Add (void *data)
+{
+	EventTrigger *trigger = (EventTrigger *) closure;
+	
+	Value *v = (Value *) data;
+	TriggerAction *action = v->AsTriggerAction ();
+
+	Collection::Add (action);
+}
+
+void
+TriggerActionCollection::Remove (void *data)
+{
+	EventTrigger *trigger = (EventTrigger *) closure;
+	
+	Value *v = (Value *) data;
+	TriggerAction *action = v->AsTriggerAction ();
+
+	Collection::Remove (action);
 }
 
 VisualCollection *
@@ -1872,7 +1890,8 @@ event_trigger_new ()
 void
 event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {
-	trigger->actions->Add (action);
+	Value v (action);
+	trigger->actions->Add (&v);
 }
 
 void

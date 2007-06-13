@@ -373,26 +373,26 @@ class Collection : public DependencyObject {
 	void *closure;
 
 	Collection () : list(NULL), closure(NULL) {}
-	~Collection ();
 	Value::Kind GetObjectType () { return Value::COLLECTION; };	
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 
-	void Add    (Value *v) { Add (v->AsDependencyObject ()); };
-	void Remove (Value *v) { Remove (v->AsDependencyObject ()); };
+ protected:
+	void Add (DependencyObject *data);
+	void Remove (DependencyObject *data);
 };
 
-void collection_add    (Collection *collection, DependencyObject *data);
-void collection_remove (Collection *collection, DependencyObject *data);
+void collection_add    (Collection *collection, void *data);
+void collection_remove (Collection *collection, void *data);
 
 class VisualCollection : public Collection {
  public:
 	VisualCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::VISUAL_COLLECTION; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 };
 
 class TriggerCollection : public Collection {
@@ -400,14 +400,17 @@ class TriggerCollection : public Collection {
 	TriggerCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TRIGGER_COLLECTION; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 };
 
 class TriggerActionCollection : public Collection {
  public:
 	TriggerActionCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TRIGGERACTION_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 };
 
 class ResourceCollection : public Collection {
@@ -415,8 +418,8 @@ class ResourceCollection : public Collection {
 	ResourceCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::RESOURCE_COLLECTION; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 	
 };
 
@@ -425,8 +428,8 @@ class StrokeCollection : public Collection {
 	StrokeCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::STROKE_COLLECTION; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 	
 };
 
@@ -435,8 +438,8 @@ class StylusPointCollection : public Collection {
 	StylusPointCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::STYLUSPOINT_COLLECTION; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 	
 };
 
@@ -445,8 +448,8 @@ class TimelineMarkerCollection : public Collection {
 	TimelineMarkerCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TIMELINEMARKER_COLLECTION; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 	
 };
 
@@ -455,8 +458,8 @@ class MediaAttributeCollection : public Collection {
 	MediaAttributeCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE_COLLECTION; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 	
 };
 
@@ -465,8 +468,8 @@ class Inlines : public Collection {
 	Inlines () {}
 	virtual Value::Kind GetObjectType () { return Value::INLINES; }
 
-	void Add    (DependencyObject *data);
-	void Remove (DependencyObject *data);
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 	
 };
 

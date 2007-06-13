@@ -140,6 +140,9 @@ class TransformCollection : public Collection {
  public:
 	TransformCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TRANSFORM_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
 };
 
 class TransformGroup : public Transform {

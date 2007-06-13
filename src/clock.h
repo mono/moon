@@ -301,6 +301,8 @@ class TimelineCollection : public Collection {
  public:
 	TimelineCollection () {}
 	virtual Value::Kind GetObjectType() { return Value::TIMELINE_COLLECTION; }
+	virtual void Add (void *data);
+	virtual void Remove (void *data);
 };
 
 

@@ -343,6 +343,26 @@ matrix_transform_get_matrix (MatrixTransform *t)
 	return (value ? value->AsMatrix() : NULL);
 }
 
+
+
+void
+TransformCollection::Add (void *data)
+{
+	Value *v = (Value *) data;
+	Transform *transform = v->AsTransform ();
+
+	Collection::Add (transform);
+}
+
+void
+TransformCollection::Remove (void *data)
+{
+	Value *v = (Value *) data;
+	Transform *transform = v->AsTransform ();
+
+	Collection::Remove (transform);
+}
+
 DependencyProperty* TransformGroup::ChildrenProperty;
 
 TransformGroup::TransformGroup ()
