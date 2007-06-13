@@ -1,0 +1,58 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<Rectangle Width="100" Height="100">
+  <Rectangle.Fill>
+    <LinearGradientBrush StartPoint="1,1" EndPoint="0,0">
+      <LinearGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+<Rectangle Width="100" Height="100" Canvas.Left="120">
+  <Rectangle.Fill>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+      <LinearGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+<Rectangle Width="100" Height="100" Canvas.Top="120">
+  <Rectangle.Fill>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+      <LinearGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+<Rectangle Width="100" Height="100">
+  <Rectangle.Fill>
+    <LinearGradientBrush StartPoint="1,1" EndPoint="0,0">
+      <LinearGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+<Rectangle Width="100" Height="100" Canvas.Left="120" Canvas.Top="120">
+  <Rectangle.Fill>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+      <LinearGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+
+</Canvas>
