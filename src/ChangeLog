@@ -1,3 +1,7 @@
+2007-06-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: GradientBrush is a Brush.
+
 2007-06-13  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (dependency_object_find_name): Add new wrapper 
