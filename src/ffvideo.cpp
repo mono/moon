@@ -14,10 +14,8 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
+#define __STDC_CONSTANT_MACROS
 #include <config.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
