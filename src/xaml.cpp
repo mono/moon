@@ -26,12 +26,18 @@
 
 extern NameScope *global_NameScope;
 
-GHashTable *element_map = NULL;
+GHashTable *namespace_map = NULL;
 GHashTable *enum_map = NULL;
 
 class XamlElementInfo;
 class XamlElementInstance;
 class XamlParserInfo;
+class XamlNamespace;
+class DefaultNamespace;
+class XNamespace;
+
+DefaultNamespace *default_namespace = NULL;
+XNamespace *x_namespace = NULL;
 
 
 typedef void* (*create_item_func) ();
@@ -40,6 +46,29 @@ typedef void  (*add_child_func) (XamlParserInfo *p, XamlElementInstance *parent,
 typedef void  (*set_property_func) (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 
+
+class XamlParserInfo {
+
+ public:
+	XML_Parser parser;
+
+	XamlElementInstance *top_element;
+	Value::Kind          top_kind;
+	XamlNamespace *current_namespace;
+	XamlElementInstance *current_element;
+
+	GHashTable *namespace_map;
+	GString *char_data_buffer;
+
+	int state;
+	
+	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL), current_element (NULL),
+					     current_namespace (NULL), char_data_buffer (NULL), top_kind(Value::INVALID)
+	{
+		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
+	}
+
+};
 
 class XamlElementInstance {
 
@@ -68,26 +97,6 @@ class XamlElementInstance {
 
 };
 
-class XamlParserInfo {
-
- public:
-	XML_Parser parser;
-
-	XamlElementInstance *top_element;
-	Value::Kind          top_kind;
-	XamlElementInstance *current_element;
-
-	GString *char_data_buffer;
-
-	int state;
-	
-	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL),
-					     current_element (NULL), char_data_buffer (NULL), top_kind(Value::INVALID)
-	{
-	}
-
-};
-
 class XamlElementInfo {
 
  public:
@@ -111,15 +120,64 @@ class XamlElementInfo {
 
 };
 
+class XamlNamespace {
+
+ public:
+	const char *name;
+
+	XamlNamespace () : name (NULL) { }
+	
+	virtual XamlElementInfo* FindElement (const char *el) = 0;
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value) = 0;
+};
+
+class DefaultNamespace : public XamlNamespace {
+
+ public:
+	GHashTable *element_map;
+
+	DefaultNamespace (GHashTable *element_map) : element_map (element_map) { }
+
+	virtual XamlElementInfo* FindElement (const char *el)
+	{
+		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
+	}
+
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
+	{
+		// We don't have to do anything, since the default framework covers us
+	}
+};
+
+class XNamespace : public XamlNamespace {
+
+ public:
+	GHashTable *element_map;
+
+	XNamespace () { }
+
+	virtual XamlElementInfo* FindElement (const char *el)
+	{
+		return NULL;
+	}
+
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
+	{
+		if (!strcmp ("Name", attr)) {
+			global_NameScope->RegisterName (value, (DependencyObject *) item->item);
+			return;
+		}
+	}
+};
 
 void
-start_element_handler (void *data, const char *el, const char **attr)
+start_element (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
 	XamlElementInfo *elem;
 	XamlElementInstance *inst;
 
-	elem = (XamlElementInfo *) g_hash_table_lookup (element_map, el);
+	elem = p->current_namespace->FindElement (el);
 
 	if (elem) {
 
@@ -160,12 +218,27 @@ start_element_handler (void *data, const char *el, const char **attr)
 
 	}
 
-	
 	inst->parent = p->current_element;
 	p->current_element->children = g_list_append (p->current_element->children, inst);
 	p->current_element = inst;	
 }
 
+void
+start_element_handler (void *data, const char *el, const char **attr)
+{
+	XamlParserInfo *p = (XamlParserInfo *) data;
+	char **name = g_strsplit (el, "|", -1);
+
+	g_assert (name [1]); // No namespace ??
+
+	// Find the proper namespace
+
+	p->current_namespace = default_namespace;
+
+	start_element (data, name [1], attr);
+
+	g_strfreev (name);
+}
 
 void
 end_element_handler (void *data, const char *el)
@@ -212,6 +285,25 @@ char_data_handler (void *data, const char *txt, int len)
 }
 
 void
+start_namespace_handler (void *data, const char *prefix, const char *uri)
+{
+	XamlParserInfo *p = (XamlParserInfo *) data;
+
+	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml/presentation", uri)) {
+
+		// You are not allowed to override this guy
+		g_assert (prefix == NULL);
+
+		g_hash_table_insert (p->namespace_map, g_strdup (uri), default_namespace);
+	} else if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)) {
+
+		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
+	} else {
+		g_error ("custom namespaces are not supported yet");
+	}
+}
+
+void
 free_recursive (XamlElementInstance *el)
 {
 	
@@ -247,7 +339,7 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 		return NULL;
 	}
 
-	XML_Parser p = XML_ParserCreate (NULL);
+	XML_Parser p = XML_ParserCreateNS (NULL, '|');
 
 	if (!p) {
 #ifdef DEBUG_XAML
@@ -262,6 +354,7 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 
 	XML_SetElementHandler (p, start_element_handler, end_element_handler);
 	XML_SetCharacterDataHandler (p, char_data_handler);
+	XML_SetNamespaceDeclHandler(p, start_namespace_handler, NULL);
 
 	/*
 	XML_SetProcessingInstructionHandler (p, proc_handler);
@@ -669,7 +762,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 {
 	if (parent->element_type == XamlElementInstance::PROPERTY) {
 		char **prop_name = g_strsplit (parent->element_name, ".", -1);
-		XamlElementInfo *powner = (XamlElementInfo *) g_hash_table_lookup (element_map, prop_name [0]);
+		XamlElementInfo *powner = (XamlElementInfo *) g_hash_table_lookup (default_namespace->element_map, prop_name [0]);
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (powner->dependency_type, prop_name [1]);
 
 		g_strfreev (prop_name);
@@ -817,11 +910,17 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 	DependencyObject *dep = (DependencyObject *) item->item;
 
 	for (int i = 0; attr [i]; i += 2) {
+		char **attr_name = g_strsplit (attr [i], "|", -1);
 
-		if (!strcmp ("x:Name", attr [i])) {
-			global_NameScope->RegisterName (attr [i + 1], dep);
+		if (attr_name [1]) {
+			XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, attr_name [0]);
+
+			g_assert (ns);
+			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
 			continue;
 		}
+
+		g_strfreev (attr_name);
 
 		const char *pname = attr [i];
 		char *atchname = NULL;
@@ -837,7 +936,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		XamlElementInfo *walk = item->info;
 
 		if (atchname) {
-			XamlElementInfo *attached = (XamlElementInfo *) g_hash_table_lookup (element_map, atchname);
+			XamlElementInfo *attached = (XamlElementInfo *) g_hash_table_lookup (default_namespace->element_map, atchname);
 			walk = attached;
 		}
 
@@ -942,7 +1041,7 @@ register_ghost_element (const char *name, XamlElementInfo *parent, Value::Kind d
 }
 
 XamlElementInfo *
-register_dependency_object_element (const char *name, XamlElementInfo *parent, Value::Kind dt,
+register_dependency_object_element (GHashTable *table, const char *name, XamlElementInfo *parent, Value::Kind dt,
 		create_item_func create_item)
 {
 	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
@@ -954,36 +1053,23 @@ register_dependency_object_element (const char *name, XamlElementInfo *parent, V
 	res->set_property = dependency_object_set_property;
 	res->set_attributes = dependency_object_set_attributes;
 
-	g_hash_table_insert (element_map, (char *) name, GINT_TO_POINTER (res));
+	g_hash_table_insert (table, (char *) name, GINT_TO_POINTER (res));
 
 	return res;
 }
 
-XamlElementInfo *
-register_element_full (const char *name, XamlElementInfo *parent, Value::Kind dt, create_item_func create_item,
-		create_element_instance_func create_element, add_child_func add_child,set_property_func set_property,
-		set_attributes_func set_attributes)
-{
-	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
 
-	res->create_item = create_item;
-	res->create_element = create_element;
-	res->add_child = add_child;
-	res->set_property = set_property;
-	res->set_attributes = set_attributes;
 
-	g_hash_table_insert (element_map, (char *) name, GINT_TO_POINTER (res));
-
-	return res;
-}
 
 void
 xaml_init ()
 {
-	element_map = g_hash_table_new (g_str_hash, g_str_equal);
+	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
 	enum_map = g_hash_table_new (g_str_hash, g_str_equal);
 
 	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Value::COLLECTION);
+
+#define rdoe register_dependency_object_element
 
 	//
 	// ui element ->
@@ -997,52 +1083,52 @@ xaml_init ()
 	/// Shapes
 	///
 	
-	register_dependency_object_element ("Ellipse", shape, Value::ELLIPSE, (create_item_func) ellipse_new);
-	register_dependency_object_element ("Line", shape, Value::LINE, (create_item_func) line_new);
-	register_dependency_object_element ("Path", shape, Value::PATH, (create_item_func) path_new);
-	register_dependency_object_element ("Polygon", shape, Value::POLYGON, (create_item_func) polygon_new);
-	register_dependency_object_element ("Polyline", shape, Value::POLYLINE, (create_item_func) polyline_new);
-	register_dependency_object_element ("Rectangle", shape, Value::RECTANGLE, (create_item_func) rectangle_new);
+	rdoe (dem, "Ellipse", shape, Value::ELLIPSE, (create_item_func) ellipse_new);
+	rdoe (dem, "Line", shape, Value::LINE, (create_item_func) line_new);
+	rdoe (dem, "Path", shape, Value::PATH, (create_item_func) path_new);
+	rdoe (dem, "Polygon", shape, Value::POLYGON, (create_item_func) polygon_new);
+	rdoe (dem, "Polyline", shape, Value::POLYLINE, (create_item_func) polyline_new);
+	rdoe (dem, "Rectangle", shape, Value::RECTANGLE, (create_item_func) rectangle_new);
 
 	///
 	/// Geometry
 	///
 
 	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, Value::GEOMETRY);
-	register_dependency_object_element ("EllipseGeometry", geo, Value::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
-	register_dependency_object_element ("LineGeometry", geo, Value::LINEGEOMETRY, (create_item_func) line_geometry_new);
-	register_dependency_object_element ("RectangleGeometry", geo, Value::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
+	rdoe (dem, "EllipseGeometry", geo, Value::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
+	rdoe (dem, "LineGeometry", geo, Value::LINEGEOMETRY, (create_item_func) line_geometry_new);
+	rdoe (dem, "RectangleGeometry", geo, Value::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
 
-	XamlElementInfo *gg = register_dependency_object_element ("GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
+	XamlElementInfo *gg = rdoe (dem, "GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 	gg->content_property = "Children";
 
 
-	XamlElementInfo *gc = register_dependency_object_element ("GeometryCollection", col, Value::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
-	XamlElementInfo *pg = register_dependency_object_element ("PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
+	XamlElementInfo *gc = rdoe (dem, "GeometryCollection", col, Value::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
+	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
 	pg->content_property = "Figures";
 
-	XamlElementInfo *pfc = register_dependency_object_element ("PathFigureCollection", col, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
+	XamlElementInfo *pfc = rdoe (dem, "PathFigureCollection", col, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
 
-	XamlElementInfo *pf = register_dependency_object_element ("PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
+	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->content_property = "Segments";
 
-	XamlElementInfo *psc = register_dependency_object_element ("PathSegmentCollection", col, Value::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
+	XamlElementInfo *psc = rdoe (dem, "PathSegmentCollection", col, Value::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
 
 	XamlElementInfo *ps = register_ghost_element ("PathSegment", NULL, Value::PATHSEGMENT);
-	register_dependency_object_element ("ArcSegment", ps, Value::ARCSEGMENT, (create_item_func) arc_segment_new);
-	register_dependency_object_element ("BezierSegment", ps, Value::BEZIERSEGMENT, (create_item_func) bezier_segment_new);
-	register_dependency_object_element ("LineSegment", ps, Value::LINESEGMENT, (create_item_func) line_segment_new);
-	register_dependency_object_element ("PolyBezierSegment", ps, Value::POLYBEZIERSEGMENT, (create_item_func) poly_bezier_segment_new);
-	register_dependency_object_element ("PolyLineSegment", ps, Value::POLYLINESEGMENT, (create_item_func) poly_line_segment_new);
-	register_dependency_object_element ("PolyQuadraticBezierSegment", ps, Value::POLYQUADRATICBEZIERSEGMENT, (create_item_func) poly_quadratic_bezier_segment_new);
-	register_dependency_object_element ("QuadraticBezierSegment", ps, Value::QUADRATICBEZIERSEGMENT, (create_item_func) quadratic_bezier_segment_new);
+	rdoe (dem, "ArcSegment", ps, Value::ARCSEGMENT, (create_item_func) arc_segment_new);
+	rdoe (dem, "BezierSegment", ps, Value::BEZIERSEGMENT, (create_item_func) bezier_segment_new);
+	rdoe (dem, "LineSegment", ps, Value::LINESEGMENT, (create_item_func) line_segment_new);
+	rdoe (dem, "PolyBezierSegment", ps, Value::POLYBEZIERSEGMENT, (create_item_func) poly_bezier_segment_new);
+	rdoe (dem, "PolyLineSegment", ps, Value::POLYLINESEGMENT, (create_item_func) poly_line_segment_new);
+	rdoe (dem, "PolyQuadraticBezierSegment", ps, Value::POLYQUADRATICBEZIERSEGMENT, (create_item_func) poly_quadratic_bezier_segment_new);
+	rdoe (dem, "QuadraticBezierSegment", ps, Value::QUADRATICBEZIERSEGMENT, (create_item_func) quadratic_bezier_segment_new);
 
 	///
 	/// Panels
 	///
 	
 	XamlElementInfo *panel = register_ghost_element ("Panel", fw, Value::PANEL);
-	XamlElementInfo *canvas = register_dependency_object_element ("Canvas", panel, Value::CANVAS, (create_item_func) canvas_new);
+	XamlElementInfo *canvas = rdoe (dem, "Canvas", panel, Value::CANVAS, (create_item_func) canvas_new);
 	panel->add_child = panel_add_child;
 	canvas->add_child = panel_add_child;
 
@@ -1051,60 +1137,60 @@ xaml_init ()
 	///
 	
 	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
-	register_dependency_object_element ("DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	XamlElementInfo *ca = register_dependency_object_element ("ColorAnimation", tl, Value::COLORANIMATION, (create_item_func) color_animation_new);
-	register_dependency_object_element ("PointAnimation", tl, Value::POINTANIMATION, (create_item_func) point_animation_new);
+	rdoe (dem, "DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
+	XamlElementInfo *ca = rdoe (dem, "ColorAnimation", tl, Value::COLORANIMATION, (create_item_func) color_animation_new);
+	rdoe (dem, "PointAnimation", tl, Value::POINTANIMATION, (create_item_func) point_animation_new);
 
-	XamlElementInfo *sb = register_dependency_object_element ("Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
+	XamlElementInfo *sb = rdoe (dem, "Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
 	sb->add_child = storyboard_add_child;
 
-	XamlElementInfo *caukf = register_dependency_object_element ("ColorAnimationUsingKeyFrames", ca, Value::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
+	XamlElementInfo *caukf = rdoe (dem, "ColorAnimationUsingKeyFrames", ca, Value::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
 	caukf->content_property = "KeyFrames";
 
-	register_dependency_object_element ("KeyFrameCollection", col, Value::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
+	rdoe (dem, "KeyFrameCollection", col, Value::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
 
 	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Value::KEYFRAME);
 
 	XamlElementInfo *ckf = register_ghost_element ("ColorKeyFrame", keyfrm, Value::COLORKEYFRAME);
-	register_dependency_object_element ("DiscreteColorKeyFrame", ckf, Value::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
-	register_dependency_object_element ("LinearColorKeyFrame", ckf, Value::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
+	rdoe (dem, "DiscreteColorKeyFrame", ckf, Value::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
+	rdoe (dem, "LinearColorKeyFrame", ckf, Value::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
 
 	XamlElementInfo *dkf = register_ghost_element ("DoubleKeyFrame", keyfrm, Value::DOUBLEKEYFRAME);
-	register_dependency_object_element ("DiscreteDoubleKeyFrame", dkf, Value::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
-	register_dependency_object_element ("LinearDoubleKeyFrame", dkf, Value::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
+	rdoe (dem, "DiscreteDoubleKeyFrame", dkf, Value::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
+	rdoe (dem, "LinearDoubleKeyFrame", dkf, Value::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
 
 	XamlElementInfo *pkf = register_ghost_element ("PointKeyFrame", keyfrm, Value::POINTKEYFRAME);
-	register_dependency_object_element ("DiscretePointKeyFrame", pkf, Value::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
-	register_dependency_object_element ("LinearPointKeyFrame", pkf, Value::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
+	rdoe (dem, "DiscretePointKeyFrame", pkf, Value::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
+	rdoe (dem, "LinearPointKeyFrame", pkf, Value::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
 	
 	///
 	/// Triggers
 	///
 	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Value::TRIGGERACTION);
-	XamlElementInfo *bsb = register_dependency_object_element ("BeginStoryboard", trg, Value::BEGINSTORYBOARD,
+	XamlElementInfo *bsb = rdoe (dem, "BeginStoryboard", trg, Value::BEGINSTORYBOARD,
 			(create_item_func) begin_storyboard_new);
 	bsb->add_child = begin_storyboard_add_child;
 
-	XamlElementInfo *evt = register_dependency_object_element ("EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new);
+	XamlElementInfo *evt = rdoe (dem, "EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new);
 	evt->content_property = "Actions";
 
-	register_dependency_object_element ("TriggerCollection", col, Value::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
-	register_dependency_object_element ("TriggerActionCollection", col, Value::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
+	rdoe (dem, "TriggerCollection", col, Value::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
+	rdoe (dem, "TriggerActionCollection", col, Value::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
 
 	///
 	/// Transforms
 	///
 
 	XamlElementInfo *tf = register_ghost_element ("Transform", NULL, Value::TRANSFORM);
-	register_dependency_object_element ("RotateTransform", tf, Value::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
-	register_dependency_object_element ("ScaleTransform", tf, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
-	register_dependency_object_element ("SkewTransform", tf, Value::SKEWTRANSFORM, (create_item_func) skew_transform_new);
-	register_dependency_object_element ("TranslateTransform", tf, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
-	register_dependency_object_element ("MatrixTransform", tf, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
-	XamlElementInfo *tg = register_dependency_object_element ("TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
+	rdoe (dem, "RotateTransform", tf, Value::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
+	rdoe (dem, "ScaleTransform", tf, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
+	rdoe (dem, "SkewTransform", tf, Value::SKEWTRANSFORM, (create_item_func) skew_transform_new);
+	rdoe (dem, "TranslateTransform", tf, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
+	rdoe (dem, "MatrixTransform", tf, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
+	XamlElementInfo *tg = rdoe (dem, "TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
 	tg->content_property = "Children";
 	
-	XamlElementInfo *tfc = register_dependency_object_element ("TransformCollection", col, Value::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
+	XamlElementInfo *tfc = rdoe (dem, "TransformCollection", col, Value::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
 
 
 	///
@@ -1112,9 +1198,13 @@ xaml_init ()
 	///
 
 	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, Value::BRUSH);
-	register_dependency_object_element ("SolidColorBrush", brush, Value::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
+	rdoe (dem, "SolidColorBrush", brush, Value::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
 
 
+#undef rdoe
+
+	default_namespace = new DefaultNamespace (dem);
+	x_namespace = new XNamespace ();
 
 	///
 	/// ENUMS
