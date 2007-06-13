@@ -1,5 +1,11 @@
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (xaml_create_from_str): make the from_str a little
+	closer to from_file.  fixes hooking up names when loading from
+	strings.
+
+2007-06-13  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (runtime_init): start the time manager here.
 
 	* demo.cpp (main): instead of here.

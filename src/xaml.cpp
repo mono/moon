@@ -470,7 +470,7 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 UIElement *
 xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 {
-	XML_Parser p = XML_ParserCreate (NULL);
+	XML_Parser p = XML_ParserCreateNS (NULL, '|');
 	XamlParserInfo *parser_info;
 	
 	if (!p) {
@@ -489,6 +489,7 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 
 	XML_SetElementHandler (p, start_element_handler, end_element_handler);
 	XML_SetCharacterDataHandler (p, char_data_handler);
+	XML_SetNamespaceDeclHandler(p, start_namespace_handler, NULL);
 
 	/*
 	XML_SetProcessingInstructionHandler (p, proc_handler);
