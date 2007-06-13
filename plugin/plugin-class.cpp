@@ -243,6 +243,12 @@ PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant
 	return false;
 }
 
+bool 
+PluginRootClass::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+{
+	return false;
+}
+
 bool
 PluginRootClass::ClassInvoke (NPObject *npobj, NPIdentifier name, 
 				const NPVariant *args, uint32_t argCount, NPVariant *result)
@@ -255,7 +261,7 @@ PluginRootClass::ClassInvoke (NPObject *npobj, NPIdentifier name,
 bool
 PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	if (name == NPID ("version")) 
+	if (name == NPID ("version"))
 	{
 		int len = strlen (PLUGIN_VERSION);
 		char *version = (char *) NPN_MemAlloc (len + 1);
@@ -268,10 +274,22 @@ PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant 
 	return false;
 }
 
+bool 
+PluginSettings::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+{
+	return false;
+}
+
 /*** PluginContent ************************************************************/
 
 bool
 PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	return false;
+}
+
+bool 
+PluginContent::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	return false;
 }

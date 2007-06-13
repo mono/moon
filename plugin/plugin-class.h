@@ -20,7 +20,9 @@
 	bool ClassHasProperty (NPObject *npobj, NPIdentifier name) \
 		{ return IndexOf (name, x, (sizeof (x) / sizeof (char *))) > -1; }; \
 	virtual bool ClassGetProperty ( \
-		NPObject *npobj, NPIdentifier name, NPVariant *result);
+		NPObject *npobj, NPIdentifier name, NPVariant *result); \
+	virtual bool ClassSetProperty ( \
+		NPObject *npobj, NPIdentifier name, const NPVariant *value);
 
 #define PLUGIN_METHODS(x) \
 	bool ClassHasMethod (NPObject *npobj, NPIdentifier name) \

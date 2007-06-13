@@ -1,5 +1,10 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp, plugin-class.h: Add SetProperty to PLUGIN_PROPERTIES
+	and implement it for all classes.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp, plugin-class.h: 
 	- Fix IndexOf method.
 	- Create and uses macros PLUGIN_PROPERTIES and PLUGIN_METHODS to define 
