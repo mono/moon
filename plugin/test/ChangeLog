@@ -1,3 +1,13 @@
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
+	* index.html: Improve test page to show a textare with some debug 
+	information. Also create two controls, one using embed tag and another
+	using the object tag.
+
+	* circle.xaml: Added.
+
+	* index.xaml: Renamed to emote.xaml
+
 2007-06-09  Everaldo Canuto  <ecanuto@novell.com>
 
 	* index.xaml: Improve xaml demo.

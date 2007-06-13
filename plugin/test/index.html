@@ -1,21 +1,51 @@
 <html>
 
+<head>
+	<title>Moonlight Browser Plugin</title>
+</head>
+
 <body bgcolor="gray">
 
-<h1>Moonlight Browser Plugin</h3>
+	<h2>Moonlight Browser Plugin</h2>
 
-<embed src="index.xaml" type="application/ag-plugin" width="80%" height="300"></embed>
+	<form name="form">
+		<textarea id="outputtext" rows="10" cols="80"></textarea>
+	</form>
 
-<script>
+	<embed id="control1" src="circle.xaml" type="application/ag-plugin" width="50%" height="200">
+	</embed>
 
-	var embed = document.embeds[0];
-	var setti = embed.settings;
+	<object id="control2" width="200" height="200" type="application/ag-plugin">
+		<param name="background" value="#ffebcd" />
+		<param name="enableFramerateCounter" value="true" />
+		<param name="enableHtmlAccess" value="true" />
+		<param name="initParams" value="paramValue1, paramValue2" />
+		<param name="maxFrameRate" value="30" />
+		<param name="onError" value="myErrorHandler" />
+		<param name="onLoad" value="onLoad" />
+		<param name="source" value="emote.xaml" />
+		<param name="windowless" value="false" />
+	</object>
 
-	alert(embed.settings.version);
+	<script>
+		function print (text) {
+			document.form.outputtext.value += text + "\n";
+		}
 
-</script>
+		var control1 = document.getElementById("control1");
+		var control2 = document.getElementById("control2");
 
-<br><br>
+		// settings.version
+		print ("control1.settings.version: " + control1.settings.version);
+		print ("control2.settings.version: " + control2.settings.version);
+		print ("---");
+
+		// settings.version
+		print ("control1.content.actualWidth: " + control1.content.actualWidth);
+		print ("control2.content.actualWidth: " + control2.content.actualWidth);
+		print ("---");
+
+	</script>
 
 </body>
 </html>
