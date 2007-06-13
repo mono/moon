@@ -23,12 +23,95 @@
 
 DependencyProperty *Inline::FontFamilyProperty;
 DependencyProperty *Inline::FontSizeProperty;
-DependencyProperty *Inline::FontStrechProperty;
+DependencyProperty *Inline::FontStretchProperty;
 DependencyProperty *Inline::FontStyleProperty;
 DependencyProperty *Inline::FontWeightProperty;
 DependencyProperty *Inline::ForegroundProperty;
 DependencyProperty *Inline::TextDecorationsProperty;
 
+char *
+inline_get_font_family (Inline *inline_)
+{
+	return (char *) inline_->GetValue (Inline::FontFamilyProperty)->AsString ();
+}
+
+void
+inline_set_font_family (Inline *inline_, char *value)
+{
+	inline_->SetValue (Inline::FontFamilyProperty, Value (value));
+}
+
+double
+inline_get_font_size (Inline *inline_)
+{
+	return (double) inline_->GetValue (Inline::FontSizeProperty)->AsDouble ();
+}
+
+void
+inline_set_font_size (Inline *inline_, double value)
+{
+	inline_->SetValue (Inline::FontSizeProperty, Value (value));
+}
+
+FontStretches
+inline_get_font_stretch (Inline *inline_)
+{
+	return (FontStretches) inline_->GetValue (Inline::FontStretchProperty)->AsInt32 ();
+}
+
+void
+inline_set_font_stretch (Inline *inline_, FontStretches value)
+{
+	inline_->SetValue (Inline::FontStretchProperty, Value (value));
+}
+
+FontStyles
+inline_get_font_style (Inline *inline_)
+{
+	return (FontStyles) inline_->GetValue (Inline::FontStyleProperty)->AsInt32 ();
+}
+
+void
+inline_set_font_style (Inline *inline_, FontStyles value)
+{
+	inline_->SetValue (Inline::FontStyleProperty, Value (value));
+}
+
+FontWeights
+inline_get_font_weight (Inline *inline_)
+{
+	return (FontWeights) inline_->GetValue (Inline::FontWeightProperty)->AsInt32 ();
+}
+
+void
+inline_set_font_weight (Inline *inline_, FontWeights value)
+{
+	inline_->SetValue (Inline::FontWeightProperty, Value (value));
+}
+
+Brush *
+inline_get_foreground (Inline *inline_)
+{
+	return (Brush *) inline_->GetValue (Inline::ForegroundProperty)->AsBrush ();
+}
+
+void
+inline_set_foreground (Inline *inline_, Brush *value)
+{
+	inline_->SetValue (Inline::ForegroundProperty, Value (value));
+}
+
+TextDecorations
+inline_get_text_decorations (Inline *inline_)
+{
+	return (TextDecorations) inline_->GetValue (Inline::TextDecorationsProperty)->AsInt32 ();
+}
+
+void
+inline_set_text_decorations (Inline *inline_, TextDecorations value)
+{
+	inline_->SetValue (Inline::TextDecorationsProperty, Value (value));
+}
 
 
 // TextBlock

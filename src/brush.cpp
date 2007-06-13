@@ -429,18 +429,23 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 
 	if (prop == GradientStopsProperty){
 		// The new value has already been set, so unref the old collection
-
 		GradientStopCollection *newcol = GetValue (prop)->AsGradientStopCollection();
 
 		if (newcol != children){
-			if (children){
-				for (GSList *l = children->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+			if (children) {
+				DependencyObject *dob;
+				GSList *node, *next;
+				
+				node = children->list;
+				while (node != NULL) {
+					dob = (DependencyObject *) node->data;
 					base_unref (dob);
+					next = node->next;
+					g_slist_free_1 (node);
+					node = next;
 				}
+				
 				base_unref (children);
-				g_slist_free (children->list);
 			}
 
 			children = newcol;

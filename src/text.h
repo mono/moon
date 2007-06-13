@@ -6,20 +6,6 @@ G_BEGIN_DECLS
 #include "brush.h"
 #include "runtime.h"
 
-class Inline : public DependencyObject {
- public:
-	static DependencyProperty *FontFamilyProperty;
-	static DependencyProperty *FontSizeProperty;
-	static DependencyProperty *FontStrechProperty;
-	static DependencyProperty *FontStyleProperty;
-	static DependencyProperty *FontWeightProperty;
-	static DependencyProperty *ForegroundProperty;
-	static DependencyProperty *TextDecorationsProperty;
-	
-	Inline () { }
-	Value::Kind GetObjectType () { return Value::INLINE; }	
-};
-
 enum FontStretches {
 	FontStretchesUltraCondensed,
 	FontStretchesExtraCondensed,
@@ -68,6 +54,42 @@ enum TextWrapping {
 	TextWrappingNoWrap,
 	TextWrappingWrapWithOverflow
 };
+
+class Inline : public DependencyObject {
+ public:
+	static DependencyProperty *FontFamilyProperty;
+	static DependencyProperty *FontSizeProperty;
+	static DependencyProperty *FontStretchProperty;
+	static DependencyProperty *FontStyleProperty;
+	static DependencyProperty *FontWeightProperty;
+	static DependencyProperty *ForegroundProperty;
+	static DependencyProperty *TextDecorationsProperty;
+	
+	Inline () { }
+	Value::Kind GetObjectType () { return Value::INLINE; }	
+};
+
+char *inline_get_font_family (Inline *inline_);
+void inline_set_font_family (Inline *inline_, char *value);
+
+double inline_get_font_size (Inline *inline_);
+void inline_set_font_size (Inline *inline_, double value);
+
+FontStretches inline_get_font_stretch (Inline *inline_);
+void inline_set_font_stretch (Inline *inline_, FontStretches value);
+
+FontStyles inline_get_font_style (Inline *inline_);
+void inline_set_font_style (Inline *inline_, FontStyles value);
+
+FontWeights inline_get_font_weight (Inline *inline_);
+void inline_set_font_weight (Inline *inline_, FontWeights value);
+
+Brush *inline_get_foreground (Inline *inline_);
+void inline_set_foreground (Inline *inline_, Brush *value);
+
+TextDecorations inline_get_text_decorations (Inline *inline_);
+void inline_set_text_decorations (Inline *inline_, TextDecorations value);
+
 
 class TextBlock : public FrameworkElement {
 public:

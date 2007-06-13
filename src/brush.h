@@ -28,12 +28,11 @@ class Brush : public DependencyObject {
 	static DependencyProperty* RelativeTransformProperty;
 	static DependencyProperty* TransformProperty;
 
-	Brush ()
-	{
-	}
+	Brush () { }
 	Value::Kind GetObjectType () { return Value::BRUSH; };
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement) = 0;
 };
+
 double		brush_get_opacity		(Brush *brush);
 void		brush_set_opacity		(Brush *brush, double opacity);
 TransformGroup	*brush_get_relative_transform	(Brush *brush);
@@ -43,7 +42,6 @@ void		brush_set_transform		(Brush *brush, TransformGroup* transform_group);
 
 
 class SolidColorBrush : public Brush {
-
  public:
 	static DependencyProperty* ColorProperty;
 
@@ -53,6 +51,7 @@ class SolidColorBrush : public Brush {
 
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
+
 SolidColorBrush	*solid_color_brush_new ();
 Color		*solid_color_brush_get_color (SolidColorBrush *solid_color_brush);
 void		solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color);
@@ -73,6 +72,7 @@ class GradientBrush : public Brush {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void SetupPattern (cairo_pattern_t *pattern);
 };
+
 ColorInterpolationMode gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
 void gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode);
 GradientStopCollection *gradient_brush_get_gradient_stops (GradientBrush *brush);
@@ -104,6 +104,7 @@ class LinearGradientBrush : public GradientBrush {
 
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
+
 LinearGradientBrush *linear_gradient_brush_new ();
 Point	*linear_gradient_brush_get_end_point 	(LinearGradientBrush *brush);
 void	linear_gradient_brush_set_end_point	(LinearGradientBrush *brush, Point *point);
@@ -122,6 +123,7 @@ class RadialGradientBrush : public GradientBrush {
 
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
+
 RadialGradientBrush *radial_gradient_brush_new ();
 Point*	radial_gradient_brush_get_center		(RadialGradientBrush *brush);
 void	radial_gradient_brush_set_center		(RadialGradientBrush *brush, Point *center);
@@ -141,6 +143,7 @@ class GradientStopCollection : public Collection {
 	virtual void Remove (void *data);
 	
 };
+
 GradientStopCollection *gradient_stop_collection_new ();
 
 class GradientStop : public DependencyObject {
@@ -150,6 +153,7 @@ class GradientStop : public DependencyObject {
 
 	Value::Kind GetObjectType () { return Value::GRADIENTSTOP; }
 };
+
 GradientStop* gradient_stop_new ();
 Color	*gradient_stop_get_color	(GradientStop *stop);
 void	gradient_stop_set_color		(GradientStop *stop, Color *color);
