@@ -633,21 +633,6 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 // GradientStopCollection
 //
 
-void
-GradientStopCollection::Add (void *data)
-{
-	Value *value = (Value*) data;
-	GradientStop *gradient_stop = value->AsGradientStop ();
-	Collection::Add (gradient_stop);
-}
-
-void GradientStopCollection::Remove (void *data)
-{
-	Value *value = (Value*) data;
-	GradientStop *gradient_stop = value->AsGradientStop ();
-	Collection::Remove (gradient_stop);
-}
-
 GradientStopCollection*
 gradient_stop_collection_new ()
 {

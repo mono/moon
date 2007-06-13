@@ -447,22 +447,6 @@ Timeline::GetNaturalDurationCore (Clock *clock)
 	return Duration::Automatic;
 }
 
-/* timeline collection */
-
-void
-TimelineCollection::Add (void *data)
-{
-	Value *value = (Value*)data;
-	Collection::Add (value->AsTimeline());
-}
-
-void
-TimelineCollection::Remove (void *data)
-{
-	Value *value = (Value*)data;
-	Collection::Remove (value->AsTimeline());
-}
-
 /* timeline group */
 
 DependencyProperty* TimelineGroup::ChildrenProperty;

@@ -7,6 +7,13 @@
 
 2007-06-13  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.h (Collection): Since it seems that everything we have
+	so far are collections of dependency objects, the code is now
+	simplified and will also take refs and remove refs on destruction.
+
+	The only reason to implement the Add/Remove methods is if you must
+	do something as a hook during add/remove
+	
 	* runtime.cpp (SetValue): Enable NULLs to be set on Dependency
 	Objects. 
 	
