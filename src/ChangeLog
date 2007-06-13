@@ -1,3 +1,10 @@
+2007-06-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Gracefull handling of error conditions. Being
+	intentionally non strict about some things while we are
+	developing (like unknown elements, and attributes, and missing
+	namespaces).
+
 2007-06-13  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp: Better, but still imperfect, RadialGradientBrush

@@ -52,6 +52,8 @@ class XamlParserInfo {
  public:
 	XML_Parser parser;
 
+	const char *file_name;
+
 	XamlElementInstance *top_element;
 	Value::Kind          top_kind;
 	XamlNamespace *current_namespace;
@@ -62,11 +64,13 @@ class XamlParserInfo {
 
 	bool implicit_default_namespace;
 
-	int state;
+	ParserErrorEventArgs *error_args;
 	
-	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL), current_element (NULL),
-					     current_namespace (NULL), char_data_buffer (NULL), top_kind (Value::INVALID),
-					     implicit_default_namespace (false)
+	XamlParserInfo (XML_Parser parser, const char *file_name) : parser (parser), file_name (file_name),
+								    top_element (NULL), current_element (NULL),
+								    current_namespace (NULL), char_data_buffer (NULL),
+								    top_kind (Value::INVALID), implicit_default_namespace (false),
+								    error_args (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
@@ -173,6 +177,26 @@ class XNamespace : public XamlNamespace {
 	}
 };
 
+//
+// Called when we encounter an error.  Note that memory ownership is taken for everything
+// except the message, this allows you to use g_strdup_printf when creating the error message
+//
+void
+parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message)
+{
+	p->error_args = new ParserErrorEventArgs ();
+
+	p->error_args->line_number = XML_GetCurrentLineNumber (p->parser);
+	p->error_args->char_position = XML_GetCurrentColumnNumber (p->parser);
+	p->error_args->xaml_file = p->file_name ? strdup (p->file_name) : NULL;
+	p->error_args->xml_element = el ? strdup (el) : NULL;
+	p->error_args->xml_attribute = attr ? strdup (attr) : NULL;
+	p->error_args->error_message = message;
+
+	g_warning ("PARSER ERROR, STOPPING PARSING:  %s\n", message);
+	XML_StopParser (p->parser, FALSE);
+}
+
 void
 start_element (void *data, const char *el, const char **attr)
 {
@@ -195,7 +219,11 @@ start_element (void *data, const char *el, const char **attr)
 		}
 
 		if (p->current_element && p->current_element->element_type != XamlElementInstance::UNKNOWN) {
-			p->current_element->info->add_child (p, p->current_element, inst);
+
+			if (p->current_element->info)
+				p->current_element->info->add_child (p, p->current_element, inst);
+			else
+				g_warning ("attempt to set property of unimplemented type: %s\n", p->current_element->element_name);
 		}
 
 	} else {
@@ -214,6 +242,7 @@ start_element (void *data, const char *el, const char **attr)
 			inst->element_name = g_strdup (el);
 			inst->element_type = XamlElementInstance::PROPERTY;
 		} else {
+			g_warning ("Attempting to ignore unimplemented type:  %s\n", el);
 			inst = new XamlElementInstance (NULL);
 			inst->element_name = g_strdup (el);
 			inst->element_type = XamlElementInstance::UNKNOWN;
@@ -230,6 +259,10 @@ void
 start_element_handler (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
+
+	if (p->error_args)
+		return;
+
 	char **name = g_strsplit (el, "|", -1);
 	char *element;
 	
@@ -252,6 +285,9 @@ end_element_handler (void *data, const char *el)
 {
 	XamlParserInfo *info = (XamlParserInfo *) data;
 
+	if (info->error_args)
+		return;
+
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
 		if (info->char_data_buffer && info->char_data_buffer->len) {
@@ -269,7 +305,12 @@ end_element_handler (void *data, const char *el)
 		GList *walk = info->current_element->children;
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk->data;
-			info->current_element->parent->info->set_property (info, info->current_element->parent, info->current_element, child);
+			if (info->current_element->parent->element_type != XamlElementInstance::UNKNOWN)
+				info->current_element->parent->info->set_property (info, info->current_element->parent,
+						info->current_element, child);
+			else
+				g_warning ("Attempting to set property on unknown type %s\n",
+						info->current_element->parent->element_name);
 			walk = walk->next;
 		}
 		break;
@@ -281,14 +322,17 @@ end_element_handler (void *data, const char *el)
 void
 char_data_handler (void *data, const char *txt, int len)
 {
-	XamlParserInfo *info = (XamlParserInfo *) data;
+	XamlParserInfo *p = (XamlParserInfo *) data;
 
-	if (info->char_data_buffer == NULL) {
-		info->char_data_buffer = g_string_new_len (txt, len);
+	if (p->error_args)
+		return;
+
+	if (!p->char_data_buffer) {
+		p->char_data_buffer = g_string_new_len (txt, len);
 		return;
 	}
 
-	info->char_data_buffer = g_string_append_len (info->char_data_buffer, txt, len);
+	p->char_data_buffer = g_string_append_len (p->char_data_buffer, txt, len);
 }
 
 void
@@ -296,17 +340,23 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
 
-	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml/presentation", uri)) {
+	if (p->error_args)
+		return;
 
-		// You are not allowed to override this guy
-		g_assert (prefix == NULL);
+	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml/presentation", uri) ||
+			!strcmp ("http://schemas.microsoft.com/client/2007", uri)) {
+
+		if (prefix)
+			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
+					g_strdup_printf  ("It is illegal to add a prefix (xmlns:%s) to the default namespace.\n", prefix));
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), default_namespace);
 	} else if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)) {
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
-		g_error ("custom namespaces are not supported yet");
+		parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
+				g_strdup_printf ("Custom namespaces (%s) are not supported", uri));
 	}
 }
 
@@ -364,7 +414,12 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 		return NULL;
 	}
 
-	parser_info = new XamlParserInfo (p);
+	parser_info = new XamlParserInfo (p, xaml_file);
+
+	// TODO: This is just in here temporarily, to make life less difficult for everyone
+	// while we are developing.  
+	add_default_namespaces (parser_info);
+
 	XML_SetUserData (p, parser_info);
 
 	XML_SetElementHandler (p, start_element_handler, end_element_handler);
@@ -395,12 +450,18 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 	print_tree (parser_info->top_element, 0);
 #endif
 
+	if (parser_info->error_args) {
+		// Emit the error event
+	}
+
 	if (parser_info->top_element) {
 		UIElement *res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_kind;
 		free_recursive (parser_info->top_element);
-		return res;
+
+		if (!parser_info->error_args)
+			return res;
 	}
 
 	return NULL;
@@ -419,7 +480,7 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 		return NULL;
 	}
 
-	parser_info = new XamlParserInfo (p);
+	parser_info = new XamlParserInfo (p, NULL);
 
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
@@ -448,13 +509,18 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 	print_tree (parser_info->top_element, 0);
 #endif
 
+	if (parser_info->error_args) {
+		// Emit the error event
+	}
+
 	if (parser_info->top_element) {
 		UIElement *res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_kind;
-
 		free_recursive (parser_info->top_element);
-		return res;
+
+		if (!parser_info->error_args)
+			return res;
 	}
 
 	return NULL;
@@ -934,7 +1000,10 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		if (attr_name [1]) {
 			XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, attr_name [0]);
 
-			g_assert (ns);
+			if (!ns)
+				return parser_error (p, item->element_name, attr [i],
+						g_strdup_printf ("Could not find namespace %s", attr_name [0]));
+
 			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
 			continue;
 		}
