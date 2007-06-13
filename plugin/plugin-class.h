@@ -61,13 +61,13 @@ class PluginClass : public NPClass
 
 static const char *const PluginSettingsPropertyNames [7] = 
 {
-	"background",
-	"enableFramerateCounter",
-	"enableRedrawRegions",
-	"enableHtmlAccess",
-	"maxFrameRate",
-	"version",
-	"windowless"
+	"background",             // read write
+	"enableFramerateCounter", // read write
+	"enableRedrawRegions",    // read write
+	"enableHtmlAccess",       // read write
+	"maxFrameRate",           // read write
+	"version",                // read only
+	"windowless"              // read write
 };
 
 class PluginSettings : public PluginClass
@@ -80,9 +80,9 @@ class PluginSettings : public PluginClass
 
 static const char *const PluginContentPropertyNames [] = 
 {
-	"actualHeight",
-	"actualWidth",
-	"fullScreen"
+	"actualHeight", // read only
+	"actualWidth",  // read only
+	"fullScreen"    // read write
 };
 
 static const char *const PluginContentMethodNames [] = 
@@ -107,11 +107,11 @@ class PluginContent : public PluginClass
 
 static const char *const PluginRootClassPropertyNames [] = 
 {
-	"settings",
-	"content",
-	"initParams",
-	"isLoaded",
-	"source"
+	"settings",   // read only
+	"content",    // read only
+	"initParams", // read only
+	"isLoaded",   // read only
+	"source"      // read write
 };
 
 static const char *const PluginRootClassMethodNames [] = 

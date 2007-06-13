@@ -1,5 +1,9 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.h: Add comments about read write/read only on properties.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp, plugin-class.h: Add SetProperty to PLUGIN_PROPERTIES
 	and implement it for all classes.
 
