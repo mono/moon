@@ -1058,7 +1058,7 @@ key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	if (!s->cb_keyp)
+	if (!s->cb_keyup)
 		return FALSE;
 	
 	// 
