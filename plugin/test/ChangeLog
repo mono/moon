@@ -1,5 +1,13 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* index.html: Improve tests, show more information and make it IE compatible
+	to compare values. Now it works like a unit test, we must later search for
+	javascript unit test framework, for now it works.
+
+	* Makefile.am: Fix EXTRA_DIST to include emote.xaml and circle.xaml.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* index.html: Improve test page to show a textare with some debug 
 	information. Also create two controls, one using embed tag and another
 	using the object tag.

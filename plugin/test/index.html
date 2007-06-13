@@ -4,16 +4,59 @@
 	<title>Moonlight Browser Plugin</title>
 </head>
 
-<body bgcolor="gray">
+<script>
+	var already = false;
 
-	<h2>Moonlight Browser Plugin</h2>
+	function print (text) {
+		document.form.outputtext.value += text + "\n";
+	}
 
-	<form name="form">
-		<textarea id="outputtext" rows="10" cols="80"></textarea>
-	</form>
+	function NewAssert () {
+		print ("");
+	}
 
-	<embed id="control1" src="circle.xaml" type="application/ag-plugin" width="50%" height="200">
-	</embed>
+	function AreEqual (text, tvalue, expected) {
+		var result = (tvalue == expected) ? "." : "F";
+		document.form.outputtext.value += result + " " + text + ": " + tvalue + "\n";
+	}
+
+	function init () {
+		// I dont know why but IE calls onload two times.
+		if (already) return;
+		already = true;
+
+		var control1 = document.getElementById("control1");
+		var control2 = document.getElementById("control2");
+
+		print ("Version: " + control1.settings.version + "/n");
+
+		// control.settings.background
+		NewAssert ();
+		AreEqual ("control1.settings.background: ", control1.settings.background, "#c0c0c0");
+		AreEqual ("control2.settings.background: ", control2.settings.background, "#ffebcd");
+
+		// control1.content.actualWidth
+		NewAssert ();
+		AreEqual ("control1.content.actualWidth", control1.content.actualWidth, 0);
+		AreEqual ("control2.content.actualWidth", control2.content.actualWidth, 0);
+
+		// control.content.actualHeight
+		NewAssert ();
+		AreEqual ("control1.content.actualHeight", control1.content.actualHeight, 0);
+		AreEqual ("control2.content.actualHeight", control2.content.actualHeight, 0);
+	}
+</script>
+
+<body bgcolor="gray" onLoad="init ()">
+
+	<h2>Moonlight Browser Plugin Test</h2>
+
+	<embedz id="control1b" src="circle.xaml" type="application/ag-plugin" width="50%" height="200">
+	</embedx>
+	<object id="control1" width="50%" height="200" type="application/ag-plugin">
+		<param name="background" value="#c0c0c0" />
+		<param name="source" value="circle.xaml" />
+	</object>
 
 	<object id="control2" width="200" height="200" type="application/ag-plugin">
 		<param name="background" value="#ffebcd" />
@@ -27,25 +70,9 @@
 		<param name="windowless" value="false" />
 	</object>
 
-	<script>
-		function print (text) {
-			document.form.outputtext.value += text + "\n";
-		}
-
-		var control1 = document.getElementById("control1");
-		var control2 = document.getElementById("control2");
-
-		// settings.version
-		print ("control1.settings.version: " + control1.settings.version);
-		print ("control2.settings.version: " + control2.settings.version);
-		print ("---");
-
-		// settings.version
-		print ("control1.content.actualWidth: " + control1.content.actualWidth);
-		print ("control2.content.actualWidth: " + control2.content.actualWidth);
-		print ("---");
-
-	</script>
+	<form name="form">
+		<textarea id="outputtext" rows="30" cols="80"></textarea>
+	</form>
 
 </body>
 </html>
