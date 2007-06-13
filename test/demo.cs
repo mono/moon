@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Shapes;
+using System.Windows.Input;
 using System.IO;
 
 class X {
@@ -77,11 +78,22 @@ class X {
 		//
 		if (args.Length == 0){
 			Canvas c = new Canvas ();
+			c.SetValue (FrameworkElement.WidthProperty, 400);
+			c.SetValue (FrameworkElement.HeightProperty, 400);
 			silver.Attach (c);
 			Rectangle r = new Rectangle ();
+			//r.SetValue (Canvas.LeftProperty, 100);
+			RotateTransform trans = new RotateTransform ();
+			trans.Angle = 10;
+			r.RenderTransform = trans; 
 
-			r.MouseMove += delegate {
-				Console.WriteLine ("Demo is moving");
+			c.MouseMove += delegate (object sender, MouseEventArgs e) {
+				Console.WriteLine ("Canvas Motion: {0}", e.GetPosition (c));
+			};
+			
+			r.MouseMove += delegate (object sender, MouseEventArgs e) {
+				Console.WriteLine ("Rectangle motion {0}", e.GetPosition (r));
+				Console.WriteLine ("Canvas motion {0}", e.GetPosition (c));
 			};
 
 			r.Width = 100;
