@@ -93,7 +93,7 @@ button_motion_event (GtkWidget *widget, GdkEventMotion *e, gpointer data)
 {
   //	printf ("button_motion_event\n");
 	/* let's treat pixels as 1/10th of a second */
-	sb->Seek ((TimeSpan)e->x * 100000);
+  //sb->Seek ((TimeSpan)e->x * 100000);
 }
 
 int
