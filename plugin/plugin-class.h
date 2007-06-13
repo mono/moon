@@ -14,14 +14,27 @@
 
 /*** Macros *******************************************************************/
 
-#define NSID(x) NPN_GetStringIdentifier (x)
+#define NPID(x) NPN_GetStringIdentifier (x)
+
+#define PLUGIN_PROPERTIES(x) \
+	bool ClassHasProperty (NPObject *npobj, NPIdentifier name) \
+		{ return IndexOf (name, x, (sizeof (x) / sizeof (char *))) > -1; }; \
+	virtual bool ClassGetProperty ( \
+		NPObject *npobj, NPIdentifier name, NPVariant *result);
+
+#define PLUGIN_METHODS(x) \
+	bool ClassHasMethod (NPObject *npobj, NPIdentifier name) \
+		{ return IndexOf (name, x, (sizeof (x) / sizeof (char *))) > -1; }; \
+	virtual bool ClassInvoke ( \
+		NPObject *npobj, NPIdentifier name, const NPVariant *args,  \
+		uint32_t argCount, NPVariant *result);
 
 /*** PluginClass **************************************************************/
 
 class PluginClass : public NPClass
 {
  protected:
-	int IndexOf (NPIdentifier name, const char *const names[]);
+	int IndexOf (NPIdentifier name, const char *const names[], int count);
 
  public:
 	PluginClass ();
@@ -44,23 +57,68 @@ class PluginClass : public NPClass
 
 /*** PluginSettings ***********************************************************/
 
+static const char *const PluginSettingsPropertyNames [7] = 
+{
+	"background",
+	"enableFramerateCounter",
+	"enableRedrawRegions",
+	"enableHtmlAccess",
+	"maxFrameRate",
+	"version",
+	"windowless"
+};
+
 class PluginSettings : public PluginClass
 {
  public:
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+	PLUGIN_PROPERTIES (PluginSettingsPropertyNames);
 };
 
 /*** PluginContent ************************************************************/
 
+static const char *const PluginContentPropertyNames [] = 
+{
+	"actualHeight",
+	"actualWidth",
+	"fullScreen"
+};
+
+static const char *const PluginContentMethodNames [] = 
+{
+	"createFromXaml",
+	"createFromXamlDownloader",
+	"findName"
+};
+
+// TODO:
+//onFullScreenChange = "eventhandlerFunction"
+//onResize = "eventhandlerFunction"
+
 class PluginContent : public PluginClass
 {
  public:
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+	PLUGIN_PROPERTIES (PluginContentPropertyNames);
+	PLUGIN_METHODS (PluginContentMethodNames);
 };
 
 /*** PluginRootClass **********************************************************/
+
+static const char *const PluginRootClassPropertyNames [] = 
+{
+	"settings",
+	"content",
+	"initParams",
+	"isLoaded",
+	"source"
+};
+
+static const char *const PluginRootClassMethodNames [] = 
+{
+	"createObject"
+};
+
+// TODO:
+// onError = "eventhandlerFunction"
 
 class PluginRootClass : public PluginClass
 {
@@ -71,9 +129,9 @@ class PluginRootClass : public PluginClass
 
  public:
 	PluginRootClass (NPP instance);
-
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+	
+	PLUGIN_PROPERTIES (PluginRootClassPropertyNames);
+	PLUGIN_METHODS (PluginRootClassMethodNames);
 };
 
 /*** PluginDependencyObject ***************************************************/

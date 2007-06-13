@@ -204,10 +204,8 @@ PluginClass::ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 }
 
 int
-PluginClass::IndexOf (NPIdentifier name, const char *const names[])
+PluginClass::IndexOf (NPIdentifier name, const char *const names[], int count)
 {
-	int count = (sizeof (name) / sizeof (char *));
-
 	for (int i = 0; i < count; i++) {
 		if (name == NPN_GetStringIdentifier (names [i]))
 			return i;
@@ -218,70 +216,46 @@ PluginClass::IndexOf (NPIdentifier name, const char *const names[])
 
 /*** PluginRootClass **********************************************************/
 
-static const char *const PluginRootClassPropertyNames [] = 
-{
-	"settings",
-	"content",
-	"version"
-};
-
 PluginRootClass::PluginRootClass (NPP instance)
 {
-	DEBUGMSG ("PluginRootClass::PluginRootClass");
-
 	this->instance = instance;
 	this->settings = new PluginSettings ();
 	this->content = new PluginContent ();
 }
 
 bool
-PluginRootClass::ClassHasProperty (NPObject *npobj, NPIdentifier name)
-{
-	return IndexOf (name, PluginRootClassPropertyNames) > -1;
-}
-
-bool
 PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	int property = IndexOf (name, PluginRootClassPropertyNames);
-
-	if (name == NSID("settings"))
+	if (name == NPID ("settings"))
 	{
-		NPObject *obj = NPN_CreateObject (this->instance, settings);
-
-		OBJECT_TO_NPVARIANT (obj, *result);
-
+		NPObject *object = NPN_CreateObject (this->instance, this->settings);
+		OBJECT_TO_NPVARIANT (object, *result);
 		return true;
 	} 
 
-	if (name == NPN_GetStringIdentifier ("version")) 
+	if (name == NPID ("content"))
 	{
-		int len = strlen (PLUGIN_VERSION);
-		char *version = (char *) NPN_MemAlloc (len + 1);
-		memcpy (version, PLUGIN_VERSION, len + 1);
-		STRINGN_TO_NPVARIANT (version, len, *result);
-
+		NPObject *object = NPN_CreateObject (this->instance, this->content);
+		OBJECT_TO_NPVARIANT (object, *result);
 		return true;
-	}
+	} 
 
+	return false;
+}
+
+bool
+PluginRootClass::ClassInvoke (NPObject *npobj, NPIdentifier name, 
+				const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
 	return false;
 }
 
 /*** PluginSettings ***********************************************************/
 
 bool
-PluginSettings::ClassHasProperty (NPObject *npobj, NPIdentifier name)
-{
-	if (name == NPN_GetStringIdentifier ("version"))
-		return true;
-
-	return false;
-}
-
-bool
 PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	if (name == NPN_GetStringIdentifier ("version")) 
+	if (name == NPID ("version")) 
 	{
 		int len = strlen (PLUGIN_VERSION);
 		char *version = (char *) NPN_MemAlloc (len + 1);
@@ -297,17 +271,17 @@ PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant 
 /*** PluginContent ************************************************************/
 
 bool
-PluginContent::ClassHasProperty (NPObject *npobj, NPIdentifier name)
-{
-	return false;
-}
-
-bool
 PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	return false;
 }
 
+bool
+PluginContent::ClassInvoke (NPObject *npobj, NPIdentifier name, 
+				const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	return false;
+}
 
 /*** PluginDependencyObject ***************************************************/
 
@@ -363,5 +337,4 @@ PluginDependencyObject:: ClassGetProperty (NPObject *npobj, NPIdentifier name, N
 	// TODO: convert_val_to_something_jscript_can_use ();
 	//
 	return TRUE;
-
 }

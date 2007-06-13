@@ -1,3 +1,12 @@
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin-class.cpp, plugin-class.h: 
+	- Fix IndexOf method.
+	- Create and uses macros PLUGIN_PROPERTIES and PLUGIN_METHODS to define 
+	properties and methods.
+	- Uses arrays to define properties and methods.
+	- Create NPID macro to get string identifier.
+
 2007-06-12  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-class.cpp:  Fix dependency of PLUGINROOTCLASS_PCOUNT in property
