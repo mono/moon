@@ -1,3 +1,11 @@
+2007-06-13  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (SetValue): Enable NULLs to be set on Dependency
+	Objects. 
+	
+	(OnPropertyChanged): Allow the value to be NULL, cope with that,
+	we use this to clear all of our objects.
+
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (xaml_create_from_str): make the from_str a little

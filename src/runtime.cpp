@@ -510,8 +510,8 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == TriggersProperty){
 		// The new value has already been set, so unref the old collection
-
-		TriggerCollection *newcol = GetValue (prop)->AsTriggerCollection();
+		Value *v = GetValue (prop);
+		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
 
 		if (newcol != triggers){
 			if (triggers){
@@ -525,11 +525,14 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 			}
 
 			triggers = newcol;
-			if (triggers->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			triggers->closure = this;
+			if (triggers){
+				if  (triggers->closure)
+					printf ("Warning we attached a property that was already attached\n");
+
+				triggers->closure = this;
 			
-			base_ref (triggers);
+				base_ref (triggers);
+			}
 		}
 	}
 }
@@ -636,7 +639,7 @@ UIElement::handle_motion (Surface *s, int state, double x, double y)
 
 UIElement::~UIElement ()
 {
-	printf ("FIXME: We should go through all of the attached properties and unref them\n");
+	SetValue (TriggersProperty, NULL);
 }
 
 FrameworkElement::FrameworkElement ()
@@ -1258,9 +1261,16 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 {
 	g_return_if_fail (property != NULL);
 
-	if (!Type::Find (value->k)->IsSubclassOf (property->value_type)) {
-		g_warning ("DependencyObject::SetValue, value cannot be assigned to the property (property has type '%s', value has type '%s')\n", Type::Find (property->value_type)->name, Type::Find (value->k)->name);
-		return;
+	if (value != NULL){
+		if (!Type::Find (value->k)->IsSubclassOf (property->value_type)) {
+			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property (property has type '%s', value has type '%s')\n", Type::Find (property->value_type)->name, Type::Find (value->k)->name);
+			return;
+		}
+	} else {
+		if (!(property->value_type >= Value::DEPENDENCY_OBJECT)){
+			g_warning ("Can not set a scalar type to NULL");
+			return;
+		}
 	}
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
