@@ -80,6 +80,10 @@ class X {
 			silver.Attach (c);
 			Rectangle r = new Rectangle ();
 
+			r.MouseMove += delegate {
+				Console.WriteLine ("Demo is moving");
+			};
+
 			r.Width = 100;
 			r.Height = 100;
 			r.Stroke = new SolidColorBrush (Color.FromRgb (255, 0, 0));
