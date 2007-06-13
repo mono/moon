@@ -63,13 +63,13 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 /*** PluginInstance:: *********************************************************/
 
 static PluginRootClass* rootclass = NULL;
-static NPObject* rootobject = NULL;
 
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {
 	this->mode = mode;
 	this->instance = instance;
 	this->window = NULL;
+	this->rootobject = NULL;
 
 	this->container = NULL;
 	this->canvas = NULL;
@@ -86,7 +86,21 @@ PluginInstance::~PluginInstance ()
 void 
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
+	char *url = NULL;
 
+	for (int i = 0; i < argc; i++) {
+		if (argn[i] == NULL)
+			continue;
+
+		// Source url handle.
+		if (!strcasecmp (argn[i], "src") || !strcasecmp (argn[i], "source")) {
+			url = argv[i];
+		}
+	}
+
+	if (url) {
+		NPN_GetURL (this->instance, url, NULL);
+	}
 }
 
 NPError 
@@ -104,15 +118,15 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 			if (!rootclass)
 				rootclass = new PluginRootClass (this->instance);
 
-			if (!rootobject)
-				rootobject = NPN_CreateObject (this->instance, rootclass);
+			if (!this->rootobject)
+				this->rootobject = NPN_CreateObject (this->instance, rootclass);
 			else
-				NPN_RetainObject (rootobject);
+				NPN_RetainObject (this->rootobject);
 
-			if (!rootobject)
+			if (!this->rootobject)
 				err = NPERR_OUT_OF_MEMORY_ERROR;
 			else
-				*((NPObject **) result) =  rootobject;
+				*((NPObject **) result) =  this->rootobject;
 
 			break;
 #endif

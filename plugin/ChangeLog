@@ -1,5 +1,13 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h: 
+	- Move static rootobject to class field to get working pages with more than
+	one moonlight control.
+	- Implement param source for html object elements, this is default way to
+	tell plugin which xaml it must load.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp, plugin-class.h:
 	- Move instance field from PluginRootClass to PluginClass because most
 	classes can make use of this field, class constructor is also changed to
