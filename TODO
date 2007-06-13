@@ -1,6 +1,11 @@
 
 Feel free to add items to this TODO list
 
+* GetKind 
+=
+	All the managed classes need to implement GetKind() as well,
+	to ensure that we pass the proper object to unmanaged code
+
 * Managed Code:
 
 	Change all the calls to DependencyProperty.Register to
@@ -99,3 +104,25 @@ Feel free to add items to this TODO list
 
 		<rolf> miguel_, that requires more code :)
 		<rolf> you'd have to attach to every property you want to listen to
+
+* Managed side
+
+	UIElement.cs currently uses standard events, it should instead
+	use something like EventList like Windows.Forms does to avoid
+	wasting all that space on all those fields that are barely used.
+
+	Also, it should probably flag when the frist event is set to
+	avoid having the native code send any events when we are not
+	interested in them.
+
+	Something like on "add" we would do:
+
+		NativeMethods.UIElement_register_interest_in_events (...)
+
+* Canvas/Surface
+
+	The canvas currently is set to width/height = 0 (we never initialize it),
+	but the surface should actually track the size of the canvas.
+
+	This leads to code in Canvas::handle_motion that does not work
+	for now (since we are an object with no size).
