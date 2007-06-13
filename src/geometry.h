@@ -47,9 +47,6 @@ class GeometryCollection : public Collection {
  public:
 	GeometryCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::GEOMETRY_COLLECTION; }
-
-	virtual void Add    (void *data);
-	virtual void Remove (void *data);
 };
 
 //
@@ -119,9 +116,6 @@ class PathFigureCollection : public Collection {
  public:
 	PathFigureCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::PATHFIGURE_COLLECTION; }
-
-	virtual void Add    (void *data);
-	virtual void Remove (void *data);
 };
 
 //

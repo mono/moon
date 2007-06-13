@@ -543,27 +543,21 @@ compare_keyframes (KeyFrame *kf1, KeyFrame *kf2)
 }
 
 void
-KeyFrameCollection::Add (void *data)
+KeyFrameCollection::Add (DependencyObject *data)
 {
-	Value *value = (Value*)data;
-	KeyFrame *kf = value->AsKeyFrame();
+	KeyFrame *kf = (KeyFrame *) data;
 
 	Collection::Add (kf);
 	
-	sorted_list = g_slist_insert_sorted (sorted_list, value->AsKeyFrame(), (GCompareFunc)compare_keyframes);
-	base_ref (kf);
+	sorted_list = g_slist_insert_sorted (sorted_list, kf, (GCompareFunc)compare_keyframes);
 }
 
 void
-KeyFrameCollection::Remove (void *data)
+KeyFrameCollection::Remove (DependencyObject *data)
 {
-	Value *value = (Value*)data;
-	KeyFrame *kf = value->AsKeyFrame();
+	KeyFrame *kf = (KeyFrame *) data;
 	Collection::Remove (kf);
-
 	sorted_list = g_slist_remove (sorted_list, kf);
-	base_unref (kf); /* XXX i suppose we should only be doing this
-			    if we know kf was in the list, no? */
 }
 
 KeyFrame*
@@ -827,8 +821,7 @@ DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 {
 	KeyFrameCollection *keyframes = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 
-	Value fv = Value(frame);
-	keyframes->Add (&fv);
+	keyframes->Add (frame);
 }
 
 void
@@ -949,8 +942,7 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 {
-	Value fv = Value(frame);
-	key_frames->Add (&fv);
+	key_frames->Add (frame);
 }
 
 void
@@ -1080,8 +1072,7 @@ PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
 {
 	KeyFrameCollection *keyframes = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 
-	Value fv = Value(frame);
-	keyframes->Add (&fv);
+	keyframes->Add (frame);
 }
 
 void

@@ -145,26 +145,6 @@ geometry_group_set_children (GeometryGroup *geometry_group, GeometryCollection* 
 }
 
 //
-// GeometryCollection
-//
-
-void
-GeometryCollection::Add (void *data)
-{
-	Value *value = (Value*) data;
-	Geometry *geometry = value->AsGeometry ();
-	Collection::Add (geometry);
-}
-
-void
-GeometryCollection::Remove (void *data)
-{
-	Value *value = (Value*) data;
-	Geometry *geometry = value->AsGeometry ();
-	Collection::Remove (geometry);
-}
-
-//
 // EllipseGeometry
 //
 
@@ -354,26 +334,6 @@ void
 path_geometry_set_figures (PathGeometry *path_geometry, PathFigureCollection* collection)
 {
 	path_geometry->SetValue (PathGeometry::FiguresProperty, Value (collection));
-}
-
-//
-// PathFigureCollection
-//
-
-void
-PathFigureCollection::Add (void *data)
-{
-	Value *value = (Value*) data;
-	PathFigure *pf = value->AsPathFigure ();
-	Collection::Add (pf);
-}
-
-void
-PathFigureCollection::Remove (void *data)
-{
-	Value *value = (Value*) data;
-	PathFigure *pf = value->AsPathFigure ();
-	Collection::Remove (pf);
 }
 
 //

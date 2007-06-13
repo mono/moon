@@ -263,8 +263,8 @@ class KeyFrameCollection : public Collection {
  public:
 	KeyFrameCollection () : sorted_list(NULL) {}
 	virtual Value::Kind GetObjectType() { return Value::KEYFRAME_COLLECTION; }
-	virtual void Add (void *data);
-	virtual void Remove (void *data);
+	virtual void Add (DependencyObject *obj);
+	virtual void Remove (DependencyObject *obj);
 
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
 
