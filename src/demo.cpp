@@ -28,7 +28,7 @@ static uint64_t last_time;
 static GtkWidget *w;
 
 static int64_t
-gettime ()
+gettime (void)
 {
     struct timeval tv;
 

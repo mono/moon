@@ -1,3 +1,7 @@
+2007-06-13  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* ffvideo.cpp: Back to using ALSA, but this time I got it right ;)
+
 2007-06-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* media.h: Added MediaAttribute.
