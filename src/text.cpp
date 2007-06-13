@@ -91,7 +91,9 @@ DependencyProperty *Inline::TextDecorationsProperty;
 char *
 inline_get_font_family (Inline *inline_)
 {
-	return (char *) inline_->GetValue (Inline::FontFamilyProperty)->AsString ();
+	Value *value = inline_->GetValue (Inline::FontFamilyProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -260,7 +262,6 @@ TextBlock::Draw (Surface *s, bool render)
 	FontWeights weight;
 	FontStyles style;
 	double size;
-	Brush *brush;
 	
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
@@ -268,20 +269,22 @@ TextBlock::Draw (Surface *s, bool render)
 		if (!layout)
 			layout = pango_cairo_create_layout (s->cairo);
 		
-		family = textblock_get_font_family (this);
-		stretch = textblock_get_font_stretch (this);
-		weight = textblock_get_font_weight (this);
-		style = textblock_get_font_style (this);
-		size = textblock_get_font_size (this);
-		
-		brush = textblock_get_foreground (this);
-		
 		// FIXME: cache the PangoFontDescription
 		font = pango_font_description_new ();
-		pango_font_description_set_family (font, family);
+		
+		if ((family = textblock_get_font_family (this)))
+			pango_font_description_set_family (font, family);
+		
+		stretch = textblock_get_font_stretch (this);
 		pango_font_description_set_stretch (font, get_pango_stretch (stretch));
+		
+		weight = textblock_get_font_weight (this);
 		pango_font_description_set_weight (font, get_pango_weight (weight));
+		
+		style = textblock_get_font_style (this);
 		pango_font_description_set_style (font, get_pango_style (style));
+		
+		size = textblock_get_font_size (this);
 		pango_font_description_set_absolute_size (font, size);
 		
 		pango_layout_set_font_description (layout, font);
@@ -319,7 +322,9 @@ textblock_set_actual_width (TextBlock *textblock, double value)
 char *
 textblock_get_font_family (TextBlock *textblock)
 {
-	return (char *) textblock->GetValue (TextBlock::FontFamilyProperty)->AsString ();
+	Value *value = textblock->GetValue (TextBlock::FontFamilyProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -403,7 +408,9 @@ textblock_set_inlines (TextBlock *textblock, Inlines *value)
 char *
 textblock_get_text (TextBlock *textblock)
 {
-	return (char *) textblock->GetValue (TextBlock::TextProperty)->AsString ();
+	Value *value = textblock->GetValue (TextBlock::TextProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -475,7 +482,9 @@ glyphs_set_font_rendering_em_size (Glyphs *glyphs, double value)
 char *
 glyphs_get_font_uri (Glyphs *glyphs)
 {
-	return (char *) glyphs->GetValue (Glyphs::FontUriProperty)->AsString ();
+	Value *value = glyphs->GetValue (Glyphs::FontUriProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -487,7 +496,9 @@ glyphs_set_font_uri (Glyphs *glyphs, char *value)
 char *
 glyphs_get_indices (Glyphs *glyphs)
 {
-	return (char *) glyphs->GetValue (Glyphs::IndicesProperty)->AsString ();
+	Value *value = glyphs->GetValue (Glyphs::IndicesProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -523,7 +534,9 @@ glyphs_set_origin_y (Glyphs *glyphs, double value)
 char *
 glyphs_get_style_simulations (Glyphs *glyphs)
 {
-	return (char *) glyphs->GetValue (Glyphs::StyleSimulationsProperty)->AsString ();
+	Value *value = glyphs->GetValue (Glyphs::StyleSimulationsProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -535,7 +548,9 @@ glyphs_set_style_simulations (Glyphs *glyphs, char *value)
 char *
 glyphs_get_unicode_string (Glyphs *glyphs)
 {
-	return (char *) glyphs->GetValue (Glyphs::UnicodeStringProperty)->AsString ();
+	Value *value = glyphs->GetValue (Glyphs::UnicodeStringProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -551,7 +566,7 @@ text_init (void)
 {
 	// Inline
 	Inline::FontFamilyProperty = DependencyObject::Register (Value::INLINE, "FontFamily", Value::STRING);
-	Inline::FontSizeProperty = DependencyObject::Register (Value::INLINE, "FontSize", Value::DOUBLE);
+	Inline::FontSizeProperty = DependencyObject::Register (Value::INLINE, "FontSize", new Value (12.0));
 	Inline::FontStretchProperty = DependencyObject::Register (Value::INLINE, "FontStretch", new Value (FontStretchesNormal));
 	Inline::FontStyleProperty = DependencyObject::Register (Value::INLINE, "FontStyle", new Value (FontStylesNormal));
 	Inline::FontWeightProperty = DependencyObject::Register (Value::INLINE, "FontWeight", new Value (FontWeightsNormal));
@@ -562,7 +577,7 @@ text_init (void)
 	TextBlock::ActualHeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualHeight", Value::DOUBLE);
 	TextBlock::ActualWidthProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualWidth", Value::DOUBLE);
 	TextBlock::FontFamilyProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontFamily", Value::STRING);
-	TextBlock::FontSizeProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontSize", Value::DOUBLE);
+	TextBlock::FontSizeProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontSize", new Value (12.0));
 	TextBlock::FontStretchProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
 	TextBlock::FontStyleProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
 	TextBlock::FontWeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontWeight", new Value (FontWeightsNormal));
