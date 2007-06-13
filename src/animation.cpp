@@ -438,15 +438,15 @@ point_animation_new ()
 
 
 KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
-  : controlPoint1 (controlPoint1),
-    controlPoint2 (controlPoint2)
+	: controlPoint1 (controlPoint1),
+	  controlPoint2 (controlPoint2)
 {
 }
 
 KeySpline::KeySpline (double x1, double y1,
 		      double x2, double y2)
-  : controlPoint1 (Point (x1, y1)),
-    controlPoint2 (Point (x2, y2))
+	: controlPoint1 (Point (x1, y1)),
+	  controlPoint2 (Point (x2, y2))
 {
 }
 
@@ -484,9 +484,12 @@ KeySpline::GetSplineProgress (double linearProgress)
 	double omt2 = omt*omt;
 	double omt3 = omt2*omt;
 
-	double xb = 0 * omt3 + 3 * controlPoint1.x * t * omt2 + 3 * controlPoint2.x * t2 * omt + 1 * t3;
-	double yb = 0 * omt3 + 3 * controlPoint1.y * t * omt2 + 3 * controlPoint2.y * t2 * omt + 1 * t3;
+	double xb = 3 * controlPoint1.x * t * omt2 + 3 * controlPoint2.x * t2 * omt + t3;
+	double yb = 3 * controlPoint1.y * t * omt2 + 3 * controlPoint2.y * t2 * omt + t3;
 
+	// XXX i have no idea if this is the method they use to
+	// convert the (0.0,0.0) - (1.0,1.0) point into a single
+	// double, but it works..
 	return sqrt (xb*xb + yb*yb);
 }
 
@@ -738,11 +741,28 @@ linear_point_key_frame_new ()
 }
 
 
+DependencyProperty* SplineDoubleKeyFrame::KeySplineProperty;
+
+KeySpline*
+SplineDoubleKeyFrame::GetKeySpline ()
+{
+	return this->DependencyObject::GetValue (SplineDoubleKeyFrame::KeySplineProperty)->AsKeySpline();
+}
 
 Value*
 SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	return NULL;
+	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
+
+	double *to = GetValue();
+	/* XXX GetValue can return NULL */
+
+	double start, end;
+
+	start = baseValue->AsDouble();
+	end = *to;
+
+	return new Value (LERP (start, end, splineProgress));
 }
 
 
@@ -1165,6 +1185,11 @@ animation_init ()
  	DoubleKeyFrame::ValueProperty = DependencyObject::Register (Value::DOUBLEKEYFRAME, "Value", Value::DOUBLE);
  	PointKeyFrame::ValueProperty = DependencyObject::Register (Value::POINTKEYFRAME, "Value", Value::POINT);
  	ColorKeyFrame::ValueProperty = DependencyObject::Register (Value::COLORKEYFRAME, "Value", Value::COLOR);
+
+	/* Spline keyframe properties */
+	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Value::SPLINEDOUBLEKEYFRAME, "KeySpline", Value::KEYSPLINE);
+// 	SplineColorKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINECOLORKEYFRAME, "KeySpline", Value::KEYSPLINE);
+// 	SplinePointKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINEPOINTKEYFRAME, "KeySpline", Value::KEYSPLINE);
 
 	/* KeyFrame animation properties */
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);

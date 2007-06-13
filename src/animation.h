@@ -387,6 +387,10 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	Value::Kind GetObjectType () { return Value::SPLINEDOUBLEKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+	KeySpline* GetKeySpline ();
+
+	static DependencyProperty *KeySplineProperty;
 };
 
 SplineDoubleKeyFrame* spline_double_key_frame_new ();
