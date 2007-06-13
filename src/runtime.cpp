@@ -15,6 +15,7 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#define Visual _XVisual
 #include <gdk/gdkx.h>
 #if AGG
 #    include <agg_rendering_buffer.h>
@@ -24,6 +25,7 @@
 #endif
 
 #include <cairo-xlib.h>
+#undef Visual
 #include "runtime.h"
 #include "shape.h"
 #include "transform.h"

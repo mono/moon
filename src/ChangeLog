@@ -1,3 +1,8 @@
+2007-06-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: Xlib and we are both defining Visual,
+	so implement a workaround.
+
 2007-06-13  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp|h: Added code for LinearGradientBrush and partial setup
