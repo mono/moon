@@ -115,8 +115,10 @@ RuntimeClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 
 /*** PluginClass **************************************************************/
 
-PluginClass::PluginClass ()
+PluginClass::PluginClass (NPP instance)
 {
+	this->instance = instance;
+
 	this->allocate       = &RuntimeClassAllocate;
 	this->deallocate     = &RuntimeClassDeallocate;
 	this->invalidate     = &RuntimeClassInvalidate;
@@ -216,11 +218,10 @@ PluginClass::IndexOf (NPIdentifier name, const char *const names[], int count)
 
 /*** PluginRootClass **********************************************************/
 
-PluginRootClass::PluginRootClass (NPP instance)
+PluginRootClass::PluginRootClass (NPP instance) : PluginClass (instance)
 {
-	this->instance = instance;
-	this->settings = new PluginSettings ();
-	this->content = new PluginContent ();
+	this->settings = new PluginSettings (instance);
+	this->content = new PluginContent (instance);
 }
 
 bool
@@ -261,8 +262,7 @@ PluginRootClass::ClassInvoke (NPObject *npobj, NPIdentifier name,
 bool
 PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	if (name == NPID ("version"))
-	{
+	if (name == NPID ("version")) {
 		int len = strlen (PLUGIN_VERSION);
 		char *version = (char *) NPN_MemAlloc (len + 1);
 		memcpy (version, PLUGIN_VERSION, len + 1);
@@ -297,7 +297,7 @@ PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *
 		return true;
 	}
 
-	// not implemented yet so return false.
+	// not implemented yet.
 	if (name == NPID ("fullScreen")) {
 		BOOLEAN_TO_NPVARIANT (false, *result);
 		return true;
@@ -309,7 +309,7 @@ PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *
 bool 
 PluginContent::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
-	// not implemented yet so return false.
+	// not implemented yet.
 	if (name == NPID ("fullScreen")) {
 		return true;
 	}
@@ -359,7 +359,7 @@ PluginDependencyObject:: ClassGetProperty (NPObject *npobj, NPIdentifier name, N
 	//
 	if (name == NPN_GetStringIdentifier ("getHost()")){
 		// Dont know what to do with refcount, nor wrapping, but you get the idea
-		return host;
+		return NULL;
 	}
 
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);

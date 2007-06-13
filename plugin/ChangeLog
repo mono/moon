@@ -1,5 +1,14 @@
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp, plugin-class.h:
+	- Move instance field from PluginRootClass to PluginClass because most
+	classes can make use of this field, class constructor is also changed to
+	receive instance as parameter.
+	- Remove host field from PluginDependencyObject, host can be accessed using
+	instance field.
+
+2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp: Implement "control.content" proeprties.
 
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>

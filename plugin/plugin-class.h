@@ -36,10 +36,12 @@
 class PluginClass : public NPClass
 {
  protected:
+	NPP instance;
+
 	int IndexOf (NPIdentifier name, const char *const names[], int count);
 
  public:
-	PluginClass ();
+	PluginClass (NPP instance);
 	virtual ~PluginClass ();
 
 	virtual void ClassDeallocate (NPObject *npobj);
@@ -73,6 +75,7 @@ static const char *const PluginSettingsPropertyNames [7] =
 class PluginSettings : public PluginClass
 {
  public:
+	PluginSettings (NPP instance) : PluginClass (instance) {};
 	PLUGIN_PROPERTIES (PluginSettingsPropertyNames);
 };
 
@@ -99,6 +102,8 @@ static const char *const PluginContentMethodNames [] =
 class PluginContent : public PluginClass
 {
  public:
+	PluginContent (NPP instance) : PluginClass (instance) {};
+
 	PLUGIN_PROPERTIES (PluginContentPropertyNames);
 	PLUGIN_METHODS (PluginContentMethodNames);
 };
@@ -125,7 +130,6 @@ static const char *const PluginRootClassMethodNames [] =
 class PluginRootClass : public PluginClass
 {
  private:
-	NPP instance;
 	PluginSettings *settings;
 	PluginContent *content;
 
@@ -142,10 +146,9 @@ class PluginDependencyObject : public PluginClass
 {
  public:
 	DependencyObject *dob;
-	PluginRootClass *host;
 	
-	PluginDependencyObject (PluginRootClass *the_host, DependencyObject *the_dob)
-		: host(the_host), dob(the_dob) {}
+	PluginDependencyObject (NPP instance, DependencyObject *the_dob)
+		: PluginClass (instance), dob(the_dob) {}
 
 	
 	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
