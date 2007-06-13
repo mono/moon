@@ -1,19 +1,7 @@
 
 Feel free to add items to this TODO list
 
-* GetKind 
-=
-	All the managed classes need to implement GetKind() as well,
-	to ensure that we pass the proper object to unmanaged code
-
 * Managed Code:
-
-	Change all the calls to DependencyProperty.Register to
-	DependencyProperty.Lookup so that we actually get the
-	unmanaged properties.
-
-	Complete the marshalling in both directions for all known
-	values in DependencyObject.
 
 	Write sample code to exercise every property.
 
