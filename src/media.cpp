@@ -21,19 +21,18 @@
 DependencyProperty *MediaBase::SourceProperty;
 DependencyProperty *MediaBase::StretchProperty;
 
-#if 0
-Url *
+
+char *
 media_base_get_source (MediaBase *media)
 {
-
+	return (char *) media->GetValue (MediaBase::SourceProperty)->AsString ();
 }
 
 void
-media_base_set_source (MediaBase *media, Url *value)
+media_base_set_source (MediaBase *media, char *value)
 {
-
+	media->SetValue (MediaBase::SourceProperty, Value (value));
 }
-#endif
 
 Stretch
 media_base_get_stretch (MediaBase *media)

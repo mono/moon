@@ -17,8 +17,8 @@ public:
 	Value::Kind GetObjectType () { return Value::MEDIABASE; };
 };
 
-//Url    *media_base_get_source (MediaBase *media);
-//void    media_base_set_source (MediaBase *media, Url *value);
+char *media_base_get_source (MediaBase *media);
+void media_base_set_source (MediaBase *media, char *value);
 
 Stretch media_base_get_stretch (MediaBase *media);
 void    media_base_set_stretch (MediaBase *media, Stretch value);
