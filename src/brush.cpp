@@ -256,13 +256,13 @@ gradient_brush_set_mapping_mode (GradientBrush *brush, BrushMappingMode mode)
 GradientSpreadMethod 
 gradient_brush_get_spread (GradientBrush *brush)
 {
-	return (GradientSpreadMethod) brush->GetValue (GradientBrush::SpreadProperty)->AsInt32();
+	return (GradientSpreadMethod) brush->GetValue (GradientBrush::SpreadMethodProperty)->AsInt32();
 }
 
 void
 gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method)
 {
-	brush->SetValue (GradientBrush::SpreadProperty, Value (method));
+	brush->SetValue (GradientBrush::SpreadMethodProperty, Value (method));
 }
 
 GradientBrush::GradientBrush ()
