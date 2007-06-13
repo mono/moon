@@ -117,6 +117,7 @@ class TriggerActionCollection;
 class TriggerCollection;
 class UIElement;
 class VideoBrush;
+class Visual;
 class VisualCollection;
 
 
@@ -236,6 +237,7 @@ public:
 		TRIGGER_COLLECTION,
 		UIELEMENT,
 		VIDEOBRUSH,
+		VISUAL,
 		VISUAL_COLLECTION,
 
 
@@ -401,6 +403,7 @@ public:
 	TriggerCollection*             AsTriggerCollection ();
 	UIElement*                     AsUIElement ();
 	VideoBrush*                    AsVideoBrush ();
+	Visual*                        AsVisual ();
 	VisualCollection*              AsVisualCollection ();
 
   

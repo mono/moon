@@ -314,6 +314,11 @@ class Downloader : public DependencyObject {
 	static DependencyProperty *UriProperty;
 };
 
+class Visual : public DependencyObject {
+ public:
+	Visual () {};
+	Value::Kind GetObjectType () { return Value::VISUAL; };	
+};
 
 //
 // Collection: provides a collection that we can monitor for

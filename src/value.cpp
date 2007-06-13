@@ -578,6 +578,12 @@ Value::AsVideoBrush ()
 	checked_get_subclass (VIDEOBRUSH, VideoBrush);
 }
 
+Visual*
+Value::AsVisual ()
+{
+	checked_get_subclass (VISUAL, Visual);
+}
+
 VisualCollection*
 Value::AsVisualCollection ()
 {
