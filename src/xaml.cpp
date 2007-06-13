@@ -60,10 +60,13 @@ class XamlParserInfo {
 	GHashTable *namespace_map;
 	GString *char_data_buffer;
 
+	bool implicit_default_namespace;
+
 	int state;
 	
 	XamlParserInfo (XML_Parser parser) : parser (parser), top_element (NULL), current_element (NULL),
-					     current_namespace (NULL), char_data_buffer (NULL), top_kind(Value::INVALID)
+					     current_namespace (NULL), char_data_buffer (NULL), top_kind (Value::INVALID),
+					     implicit_default_namespace (false)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
@@ -228,14 +231,18 @@ start_element_handler (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
 	char **name = g_strsplit (el, "|", -1);
+	char *element;
+	
+	if (name [1]) {
+		// Find the proper namespace
+		p->current_namespace = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, name [0]);
+		element = name [1];
+	} else if (p->implicit_default_namespace) {
+		p->current_namespace = default_namespace;
+		element = name [0];
+	}
 
-	g_assert (name [1]); // No namespace ??
-
-	// Find the proper namespace
-
-	p->current_namespace = default_namespace;
-
-	start_element (data, name [1], attr);
+	start_element (data, element, attr);
 
 	g_strfreev (name);
 }
@@ -301,6 +308,14 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	} else {
 		g_error ("custom namespaces are not supported yet");
 	}
+}
+
+void
+add_default_namespaces (XamlParserInfo *p)
+{
+	p->implicit_default_namespace = true;
+	g_hash_table_insert (p->namespace_map, (char *) "http://schemas.microsoft.com/winfx/2006/xaml/presentation", default_namespace);
+	g_hash_table_insert (p->namespace_map, (char *) "http://schemas.microsoft.com/winfx/2006/xaml", x_namespace);
 }
 
 void
@@ -405,6 +420,10 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 	}
 
 	parser_info = new XamlParserInfo (p);
+
+	// from_str gets the default namespaces implictly added
+	add_default_namespaces (parser_info);
+
 	XML_SetUserData (p, parser_info);
 
 	XML_SetElementHandler (p, start_element_handler, end_element_handler);

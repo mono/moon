@@ -1,3 +1,8 @@
+2007-06-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When using the xaml_create_from_str we automatically
+	add the default and x: namespaces.
+
 2007-06-12  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* ffvideo.cpp: Fixed to subclass the new MediaElement class.
