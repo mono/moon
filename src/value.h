@@ -53,6 +53,7 @@ class FrameworkElement;
 class Geometry;
 class GeometryCollection;
 class GeometryGroup;
+class Glyphs;
 class GradientBrush;
 class GradientStop;
 class GradientStopCollection;
@@ -103,6 +104,7 @@ class SolidColorBrush;
 class Storyboard;
 class StrokeCollection;
 class StylusPointCollection;
+class TextBlock;
 class TileBrush;
 class Timeline;
 class TimelineCollection;
@@ -173,6 +175,7 @@ public:
 		GEOMETRY,
 		GEOMETRY_COLLECTION,
 		GEOMETRYGROUP,
+		GLYPHS,
 		GRADIENTBRUSH,
 		GRADIENTSTOP,
 		GRADIENTSTOP_COLLECTION,
@@ -223,6 +226,7 @@ public:
 		STORYBOARD,
 		STROKE_COLLECTION,
 		STYLUSPOINT_COLLECTION,
+		TEXTBLOCK,
 		TILEBRUSH,
 		TIMELINE,
 		TIMELINE_COLLECTION,
@@ -339,6 +343,7 @@ public:
 	Geometry*                      AsGeometry ();
 	GeometryCollection*            AsGeometryCollection ();
 	GeometryGroup*                 AsGeometryGroup ();
+	Glyphs*                        AsGlyphs ();
 	GradientBrush*                 AsGradientBrush ();
 	GradientStop*                  AsGradientStop ();
 	GradientStopCollection*        AsGradientStopCollection ();
@@ -389,6 +394,7 @@ public:
 	Storyboard*                    AsStoryboard ();
 	StrokeCollection*              AsStrokeCollection ();
 	StylusPointCollection*         AsStylusPointCollection ();
+	TextBlock*                     AsTextBlock ();
 	TileBrush*                     AsTileBrush ();
 	Timeline*                      AsTimeline ();
 	TimelineCollection*            AsTimelineCollection ();

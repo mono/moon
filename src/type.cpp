@@ -94,6 +94,7 @@ void types_init ()
 	Type::RegisterType ("Geometry", Value::GEOMETRY, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("GeometryCollection", Value::GEOMETRY_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("GeometryGroup", Value::GEOMETRYGROUP, Value::GEOMETRY);
+	Type::RegisterType ("Glyphs", Value::GLYPHS, Value::FRAMEWORKELEMENT);
 	Type::RegisterType ("GradientBrush", Value::GRADIENTBRUSH, Value::BRUSH);
 	Type::RegisterType ("GradientStop", Value::GRADIENTSTOP, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("GradientStopCollection", Value::GRADIENTSTOP_COLLECTION, Value::COLLECTION);
@@ -144,6 +145,7 @@ void types_init ()
 	Type::RegisterType ("Storyboard", Value::STORYBOARD, Value::PARALLELTIMELINE);
 	Type::RegisterType ("StrokeCollection", Value::STROKE_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("StylusPointCollection", Value::STYLUSPOINT_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("TextBlock", Value::TEXTBLOCK, Value::FRAMEWORKELEMENT);
 	Type::RegisterType ("TileBrush", Value::TILEBRUSH, Value::BRUSH);
 	Type::RegisterType ("Timeline", Value::TIMELINE, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("TimelineCollection", Value::TIMELINE_COLLECTION, Value::COLLECTION);

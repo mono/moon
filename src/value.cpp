@@ -194,6 +194,12 @@ Value::AsGeometryGroup ()
 	checked_get_subclass (GEOMETRYGROUP, GeometryGroup);
 }
 
+Glyphs*
+Value::AsGlyphs ()
+{
+	checked_get_subclass (GLYPHS, Glyphs);
+}
+
 GradientBrush*
 Value::AsGradientBrush ()
 {
@@ -492,6 +498,12 @@ StylusPointCollection*
 Value::AsStylusPointCollection ()
 {
 	checked_get_subclass (STYLUSPOINT_COLLECTION, StylusPointCollection);
+}
+
+TextBlock*
+Value::AsTextBlock ()
+{
+	checked_get_subclass (TEXTBLOCK, TextBlock);
 }
 
 TileBrush*

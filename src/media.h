@@ -56,10 +56,10 @@ public:
 
 class MediaAttribute : public DependencyObject {
  public:
+	static DependencyProperty *ValueProperty;
+	
 	MediaAttribute () { }
 	Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
-
-	static DependencyProperty *ValueProperty;
 };
 
 bool media_element_get_auto_play (MediaElement *media);
