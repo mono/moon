@@ -1780,12 +1780,6 @@ time_line_marker_collection_new ()
 	return new TimelineMarkerCollection ();
 }
 
-GradientStopCollection *
-gradient_stop_collection_new ()
-{
-	return new GradientStopCollection ();
-}
-
 MediaAttributeCollection *
 media_attribute_collection_new ()
 {

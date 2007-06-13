@@ -1,3 +1,10 @@
+2007-06-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp|h: Complete DependencyProperties for GradientBrush and
+	add GradientStopCollection.
+	* runtime.cpp|h: Remove code for GradientStopCollection.
+	* xaml.cpp: Register new brush classes.
+
 2007-06-13  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp: Various new events are now sent.

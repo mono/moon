@@ -65,13 +65,17 @@ class GradientBrush : public Brush {
 	static DependencyProperty* MappingModeProperty;
 	static DependencyProperty* SpreadProperty;
 
-	GradientBrush () {};
+	GradientStopCollection *children;
+
+	GradientBrush ();
 	Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
 
-//	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement) = 0;
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 ColorInterpolationMode gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
 void gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode);
+GradientStopCollection *gradient_brush_get_gradient_stops (GradientBrush *brush);
+void gradient_brush_set_gradient_stops (GradientBrush *brush, GradientStopCollection* collection);
 BrushMappingMode gradient_brush_get_mapping_mode (GradientBrush *brush);
 void gradient_brush_set_mapping_mode (GradientBrush *brush, BrushMappingMode mode);
 GradientSpreadMethod gradient_brush_get_spread (GradientBrush *brush);
@@ -115,6 +119,16 @@ void	radial_gradient_brush_set_radius_x		(RadialGradientBrush *brush, double rad
 double	radial_gradient_brush_get_radius_y		(RadialGradientBrush *brush);
 void	radial_gradient_brush_set_radius_y		(RadialGradientBrush *brush, double radiusY);
 
+class GradientStopCollection : public Collection {
+ public:
+	GradientStopCollection () {}
+	virtual Value::Kind GetObjectType () { return Value::GRADIENTSTOP_COLLECTION; }
+
+	virtual void Add    (void *data);
+	virtual void Remove (void *data);
+	
+};
+GradientStopCollection *gradient_stop_collection_new ();
 
 class GradientStop : public DependencyObject {
  public:

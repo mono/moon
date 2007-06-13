@@ -397,16 +397,6 @@ class TimelineMarkerCollection : public Collection {
 	
 };
 
-class GradientStopCollection : public Collection {
- public:
-	GradientStopCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::GRADIENTSTOP_COLLECTION; }
-
-	virtual void Add    (void *data);
-	virtual void Remove (void *data);
-	
-};
-
 class MediaAttributeCollection : public Collection {
  public:
 	MediaAttributeCollection () {}

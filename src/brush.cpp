@@ -216,6 +216,97 @@ DependencyProperty* GradientBrush::GradientStopsProperty;
 DependencyProperty* GradientBrush::MappingModeProperty;
 DependencyProperty* GradientBrush::SpreadProperty;
 
+ColorInterpolationMode
+gradient_brush_get_color_interpolation_mode (GradientBrush *brush)
+{
+	return (ColorInterpolationMode) brush->GetValue (GradientBrush::ColorInterpolationModeProperty)->AsInt32();
+}
+
+void
+gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode)
+{
+	brush->SetValue (GradientBrush::ColorInterpolationModeProperty, Value (mode));
+}
+
+GradientStopCollection*
+gradient_brush_get_gradient_stops (GradientBrush *brush)
+{
+	Value *value = brush->GetValue (GradientBrush::GradientStopsProperty);
+	return (GradientStopCollection*) (value ? value->AsGradientStopCollection() : NULL);
+}
+
+void
+gradient_brush_set_gradient_stops (GradientBrush *brush, GradientStopCollection* collection)
+{
+	brush->SetValue (GradientBrush::GradientStopsProperty, Value (collection));
+}
+
+BrushMappingMode
+gradient_brush_get_mapping_mode (GradientBrush *brush)
+{
+	return (BrushMappingMode) brush->GetValue (GradientBrush::MappingModeProperty)->AsInt32();
+}
+
+void
+gradient_brush_set_mapping_mode (GradientBrush *brush, BrushMappingMode mode)
+{
+	brush->SetValue (GradientBrush::MappingModeProperty, Value (mode));
+}
+
+GradientSpreadMethod 
+gradient_brush_get_spread (GradientBrush *brush)
+{
+	return (GradientSpreadMethod) brush->GetValue (GradientBrush::SpreadProperty)->AsInt32();
+}
+
+void
+gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method)
+{
+	brush->SetValue (GradientBrush::SpreadProperty, Value (method));
+}
+
+GradientBrush::GradientBrush ()
+{
+	children = NULL;
+	GradientStopCollection *c = new GradientStopCollection ();
+
+	this->SetValue (GradientBrush::GradientStopsProperty, Value (c));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (c == children);
+}
+
+void
+GradientBrush::OnPropertyChanged (DependencyProperty *prop)
+{
+	Brush::OnPropertyChanged (prop);
+
+	if (prop == GradientStopsProperty){
+		// The new value has already been set, so unref the old collection
+
+		GradientStopCollection *newcol = GetValue (prop)->AsGradientStopCollection();
+
+		if (newcol != children){
+			if (children){
+				for (GSList *l = children->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					base_unref (dob);
+				}
+				base_unref (children);
+				g_slist_free (children->list);
+			}
+
+			children = newcol;
+			if (children->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			children->closure = this;
+			
+			base_ref (children);
+		}
+	}
+}
+
 //
 // RadialGradientBrush
 //
@@ -284,6 +375,31 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 void
 RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
+}
+
+//
+// GradientStopCollection
+//
+
+void
+GradientStopCollection::Add (void *data)
+{
+	Value *value = (Value*) data;
+	GradientStop *gradient_stop = value->AsGradientStop ();
+	Collection::Add (gradient_stop);
+}
+
+void GradientStopCollection::Remove (void *data)
+{
+	Value *value = (Value*) data;
+	GradientStop *gradient_stop = value->AsGradientStop ();
+	Collection::Remove (gradient_stop);
+}
+
+GradientStopCollection*
+gradient_stop_collection_new ()
+{
+	return new GradientStopCollection ();
 }
 
 //
