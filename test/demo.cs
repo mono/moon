@@ -57,7 +57,7 @@ class X {
 		if (anim != null && anim is Storyboard){
 			Console.WriteLine ("Here");
 			canvas.MouseLeftButtonDown += delegate {
-				((Storyboard) anim).Stop ();
+				((Storyboard) anim).Pause ();
 			};
 
 			canvas.MouseLeftButtonUp += delegate {
