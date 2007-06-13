@@ -422,20 +422,74 @@ KeyFrame::SetKeyTime (KeyTime keytime)
 	SetValue (KeyFrame::KeyTimeProperty, Value(keytime));
 }
 
+static gint
+compare_keyframes (KeyFrame *kf1, KeyFrame *kf2)
+{
+	// Assumes timespan keytimes only
+	TimeSpan ts1 = kf1->GetKeyTime()->GetTimeSpan ();
+	TimeSpan ts2 = kf2->GetKeyTime()->GetTimeSpan ();
 
+	TimeSpan tsdiff = ts1 - ts2;
+	if (tsdiff == 0)
+		return 0;
+	else if (tsdiff < 0)
+		return -1;
+	else
+		return 1;
+}
 
 void
 KeyFrameCollection::Add (void *data)
 {
 	Value *value = (Value*)data;
-	Collection::Add (value->AsKeyFrame());
+	KeyFrame *kf = value->AsKeyFrame();
+
+	Collection::Add (kf);
+	
+	sorted_list = g_slist_insert_sorted (sorted_list, value->AsKeyFrame(), (GCompareFunc)compare_keyframes);
+	base_ref (kf);
 }
 
 void
 KeyFrameCollection::Remove (void *data)
 {
 	Value *value = (Value*)data;
-	Collection::Remove (value->AsKeyFrame());
+	KeyFrame *kf = value->AsKeyFrame();
+	Collection::Remove (kf);
+
+	sorted_list = g_slist_remove (sorted_list, kf);
+	base_unref (kf); /* XXX i suppose we should only be doing this
+			    if we know kf was in the list, no? */
+}
+
+KeyFrame*
+KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
+{
+	KeyFrame *current_keyframe = NULL;
+	KeyFrame *previous_keyframe = NULL;
+
+	/* figure out what segment to use (this assumes the list is sorted) */
+	GSList *prev = NULL;
+	for (GSList *l = sorted_list; l; prev = l, l = l->next) {
+		KeyFrame *keyframe = (KeyFrame*)l->data;
+
+		TimeSpan key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
+
+		if (key_end_time >= t) {
+			current_keyframe = keyframe;
+
+			if (prev)
+				previous_keyframe = (KeyFrame*)prev->data;
+
+			break;
+		}
+
+	}
+
+	if (prev_frame != NULL)
+		*prev_frame = previous_keyframe;
+
+	return current_keyframe;
 }
 
 KeyFrameCollection *
@@ -490,6 +544,9 @@ DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 {
 	Color *to = GetValue();
 	/* XXX GetValue can return NULL */
+
+	printf ("DiscreteColorKeyFrame::InterpolateValue (progress = %f)\n", keyFrameProgress);
+
 
 	if (keyFrameProgress == 1.0)
 		return new Value(*to);
@@ -658,29 +715,16 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	DoubleKeyFrame *current_keyframe;
-	DoubleKeyFrame *previous_keyframe = NULL;
+	DoubleKeyFrame *previous_keyframe;
+	DoubleKeyFrame** keyframep = &previous_keyframe;
 	Value *baseValue;
 
-	TimeSpan key_end_time;
 
-	/* figure out what segment to use (this list needs to be sorted) */
-	GSList *prev = NULL;
-	for (GSList *l = key_frames->list; l; prev = l, l = l->next) {
-		DoubleKeyFrame *keyframe = (DoubleKeyFrame*)l->data;
+	current_keyframe = (DoubleKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
+	if (current_keyframe == NULL)
+		return NULL; /* XXX */
 
-		key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
-
-		if (key_end_time >= current_time) {
-			current_keyframe = keyframe;
-
-			if (prev)
-				previous_keyframe = (DoubleKeyFrame*)prev->data;
-
-			break;
-		}
-
-	}
-
+	TimeSpan key_end_time = current_keyframe->GetKeyTime()->GetTimeSpan(); /* XXX this assumes a timespan keyframe */
 	TimeSpan key_start_time;
 
 	if (previous_keyframe == NULL) {
@@ -793,29 +837,15 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	ColorKeyFrame *current_keyframe;
-	ColorKeyFrame *previous_keyframe = NULL;
+	ColorKeyFrame *previous_keyframe;
+	ColorKeyFrame** keyframep = &previous_keyframe;
 	Value *baseValue;
 
-	TimeSpan key_end_time;
+	current_keyframe = (ColorKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
+	if (current_keyframe == NULL)
+		return NULL; /* XXX */
 
-	/* figure out what segment to use (this list needs to be sorted) */
-	GSList *prev = NULL;
-	for (GSList *l = key_frames->list; l; prev = l, l = l->next) {
-		ColorKeyFrame *keyframe = (ColorKeyFrame*)l->data;
-
-		key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
-
-		if (key_end_time >= current_time) {
-			current_keyframe = keyframe;
-
-			if (prev)
-				previous_keyframe = (ColorKeyFrame*)prev->data;
-
-			break;
-		}
-
-	}
-
+	TimeSpan key_end_time = current_keyframe->GetKeyTime()->GetTimeSpan(); /* XXX this assumes a timespan keyframe */
 	TimeSpan key_start_time;
 
 	if (previous_keyframe == NULL) {
@@ -834,7 +864,10 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	double progress = (double)(current_time - key_start_time) / key_duration;
 
 	/* get the current value out of that segment */
-	
+
+	if (!current_keyframe)
+	  printf ("time of %lld resulted in no keyframes\n");
+
 	return current_keyframe->InterpolateValue (baseValue, progress);
 }
 
@@ -932,29 +965,15 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	PointKeyFrame *current_keyframe;
-	PointKeyFrame *previous_keyframe = NULL;
+	PointKeyFrame *previous_keyframe;
+	PointKeyFrame** keyframep = &previous_keyframe;
 	Value *baseValue;
 
-	TimeSpan key_end_time;
+	current_keyframe = (PointKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
+	if (current_keyframe == NULL)
+		return NULL; /* XXX */
 
-	/* figure out what segment to use (this list needs to be sorted) */
-	GSList *prev = NULL;
-	for (GSList *l = key_frames->list; l; prev = l, l = l->next) {
-		PointKeyFrame *keyframe = (PointKeyFrame*)l->data;
-
-		key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
-
-		if (key_end_time >= current_time) {
-			current_keyframe = keyframe;
-
-			if (prev)
-				previous_keyframe = (PointKeyFrame*)prev->data;
-
-			break;
-		}
-
-	}
-
+	TimeSpan key_end_time = current_keyframe->GetKeyTime()->GetTimeSpan(); /* XXX this assumes a timespan keyframe */
 	TimeSpan key_start_time;
 
 	if (previous_keyframe == NULL) {

@@ -243,10 +243,16 @@ class KeyFrame : public DependencyObject {
 
 class KeyFrameCollection : public Collection {
  public:
-	KeyFrameCollection () {}
+	KeyFrameCollection () : sorted_list(NULL) {}
 	virtual Value::Kind GetObjectType() { return Value::KEYFRAME_COLLECTION; }
 	virtual void Add (void *data);
 	virtual void Remove (void *data);
+
+	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
+
+ private:
+	void Resort ();
+	GSList *sorted_list;
 };
 
 KeyFrameCollection * key_frame_collection_new ();

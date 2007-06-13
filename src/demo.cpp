@@ -27,6 +27,8 @@ static uint64_t last_time;
 
 static GtkWidget *w;
 
+static Storyboard *sb;
+
 static int64_t
 gettime (void)
 {
@@ -69,6 +71,29 @@ delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 {
 	gtk_main_quit ();
 	return 1;
+}
+
+static void
+button_press_event (GtkWidget *widget, GdkEventButton *e, gpointer data)
+{
+  //	printf ("button_press_event\n");
+	sb->Pause ();
+	sb->Seek ((TimeSpan)e->x * 100000);
+}
+
+static void
+button_release_event (GtkWidget *widget, GdkEventButton *e, gpointer data)
+{
+  //	printf ("button_release_event\n");
+	sb->Resume ();
+}
+
+static void
+button_motion_event (GtkWidget *widget, GdkEventMotion *e, gpointer data)
+{
+  //	printf ("button_motion_event\n");
+	/* let's treat pixels as 1/10th of a second */
+	sb->Seek ((TimeSpan)e->x * 100000);
 }
 
 int
@@ -180,9 +205,7 @@ main (int argc, char *argv [])
 #endif
 
 
-		Storyboard *sb = new Storyboard ();
-
-		sb->SetDuration (Duration::FromSeconds(300));
+		sb = new Storyboard ();
 
 		DoubleAnimation *r_anim = new DoubleAnimation ();
 		DoubleAnimation *v_anim = new DoubleAnimation ();
@@ -196,7 +219,7 @@ main (int argc, char *argv [])
 
 		c_anim->SetFrom (Color (1.0, 0.0, 0.0, 0.5));
 		c_anim->SetTo (Color (0.0, 0.0, 1.0, 0.5));
-		c_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		c_anim->SetRepeatBehavior (RepeatBehavior (10.0));
 		c_anim->SetDuration (Duration::FromSeconds (2));
 		c_anim->SetAutoReverse (true);
 		sb->AddChild (c_anim);
@@ -216,7 +239,7 @@ main (int argc, char *argv [])
 		// The rotating video takes 5 seconds to complete the rotation
 		global_NameScope->RegisterName ("video-transform", v_trans);
 		v_anim->SetTo (360.0);
-		v_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		v_anim->SetRepeatBehavior (RepeatBehavior(5.0));
 		v_anim->SetDuration (Duration::FromSeconds (5));
 		sb->AddChild (v_anim);
 		Storyboard::SetTargetName (v_anim, "video-transform");
@@ -229,7 +252,7 @@ main (int argc, char *argv [])
 
 		sx_anim->SetFrom (1.0);
 		sx_anim->SetBy (-0.5);
-		sx_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		sx_anim->SetRepeatBehavior (RepeatBehavior (4.0));
 		sx_anim->SetDuration (Duration::FromSeconds (6));
 		sx_anim->SetAutoReverse (true);
 		sb->AddChild (sx_anim);
@@ -238,7 +261,7 @@ main (int argc, char *argv [])
 
 		sy_anim->SetFrom (1.0);
 		sy_anim->SetTo (0.0);
-		sy_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		sy_anim->SetRepeatBehavior (RepeatBehavior(4.0));
 		sy_anim->SetDuration (Duration::FromSeconds (7));
 		sy_anim->SetAutoReverse (true);
 		sb->AddChild (sy_anim);
@@ -270,9 +293,9 @@ main (int argc, char *argv [])
 		DoubleAnimationUsingKeyFrames* square_y_anim = new DoubleAnimationUsingKeyFrames ();
 
 		square_y_anim->SetDuration (Duration::FromSeconds (8));
-		square_y_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		square_y_anim->SetRepeatBehavior (RepeatBehavior (4.0));
 		square_x_anim->SetDuration (Duration::FromSeconds (8));
-		square_x_anim->SetRepeatBehavior (RepeatBehavior::Forever);
+		square_x_anim->SetRepeatBehavior (RepeatBehavior (4.0));
 
 		LinearDoubleKeyFrame *frame;
 
@@ -335,6 +358,13 @@ main (int argc, char *argv [])
 		last_time = gettime ();
 		gtk_idle_add (invalidator, t);
 	}
+
+	gtk_widget_add_events (t->drawing_area, GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+
+	gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_press_event", G_CALLBACK (button_press_event), NULL);
+	gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_release_event", G_CALLBACK (button_release_event), NULL);
+	gtk_signal_connect (GTK_OBJECT (t->drawing_area), "motion_notify_event", G_CALLBACK (button_motion_event), NULL);
+
 	gtk_widget_set_usize (w, 600, 400);
 	gtk_widget_show_all (w);
 	gtk_main ();

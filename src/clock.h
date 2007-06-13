@@ -220,8 +220,11 @@ class Clock : public DependencyObject {
  protected:
 	double current_progress;
 	TimeSpan current_time;
+	TimeSpan current_time_while_paused;
 	TimeSpan start_time; /* the time we actually started.  used for computing CurrentTime */
 	TimeSpan iter_start; /* the time we started the current iteration */
+	TimeSpan pause_time;
+	TimeSpan parent_offset; /* the amount we need to subtract from the parent clock's time to get our time */
 
 	void QueueEvent (int event);
 

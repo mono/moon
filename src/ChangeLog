@@ -1,3 +1,17 @@
+2007-06-13  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp: a few changes - none of the animations run forever
+	now.  also, add some gtk events (button press/release/motion).  we
+	pause animations on press, resume them on release.
+
+	* clock.cpp: keep track of the offset caused by pausing/resuming
+	the clock from our parent's time.
+
+	* animation.cpp: split out all the logic for finding the current
+	(and previous) keyframes into
+	KeyFrameCollection::GetKeyFrameForTime.  Also, make the key frame
+	collection maintain a separate sorted list of keyframes.
+
 2007-06-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (media_base_get_source): Implemented; use char*

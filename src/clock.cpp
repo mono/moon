@@ -118,17 +118,19 @@ Clock::Clock (Timeline *tl)
 	current_progress = 0.0;
 	current_time = 0;
 	reversed = false;
-	start_time = 0;
 	iter_start = 0;
+	parent_offset = 0;
 }
 
 void
 Clock::TimeUpdated (TimeSpan parent_clock_time)
 {
-	if ((current_state & (STOPPED | PAUSED)) != 0)
+	if ((current_state & (STOPPED | PAUSED)) != 0) {
+		current_time_while_paused = parent_clock_time - iter_start - parent_offset;
 		return;
+	}
 
-	current_time = parent_clock_time - iter_start;
+	current_time = parent_clock_time - iter_start - parent_offset;
 
 	if (natural_duration.HasTimeSpan ()) {
 		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
@@ -235,7 +237,13 @@ Clock::Begin (TimeSpan start_time)
 void
 Clock::Pause ()
 {
+	if ((current_state & PAUSED) == PAUSED)
+		return;
+
 	current_state = (ClockState)(current_state | PAUSED);
+	QueueEvent (CURRENT_STATE_INVALIDATED);
+
+	pause_time = current_time;
 }
 
 void
@@ -246,7 +254,13 @@ Clock::Remove ()
 void
 Clock::Resume ()
 {
+	if ((current_state & PAUSED) == 0)
+		return;
+
 	current_state = (ClockState)(current_state & ~PAUSED);
+	QueueEvent (CURRENT_STATE_INVALIDATED);
+
+	parent_offset += current_time_while_paused - pause_time;
 }
 
 void
