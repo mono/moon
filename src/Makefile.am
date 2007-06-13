@@ -15,6 +15,8 @@ libmoon_la_SOURCES = 	\
 	ffvideo.cpp	\
 	geometry.cpp	\
 	geometry.h	\
+	media.cpp	\
+	media.h		\
 	rsvg.cpp	\
 	rsvg.h		\
 	runtime.cpp	\

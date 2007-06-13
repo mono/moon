@@ -1,3 +1,7 @@
+2007-06-12  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* media.cpp|h: Added to the build
+
 2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* transform.cpp|h: Complete MatrixTransform.

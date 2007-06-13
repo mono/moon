@@ -110,6 +110,8 @@ void types_init ()
 	Type::RegisterType ("LineSegment", Value::LINESEGMENT, Value::PATHSEGMENT);
 	Type::RegisterType ("MatrixTransform", Value::MATRIXTRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("MediaAttributeCollection", Value::MEDIAATTRIBUTE_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("MediaBase", Value::MEDIABASE, Value::FRAMEWORKELEMENT);
+	Type::RegisterType ("MediaElement", Value::MEDIAELEMENT, Value::MEDIABASE);
 	Type::RegisterType ("NameScope", Value::NAMESCOPE, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Panel", Value::PANEL, Value::FRAMEWORKELEMENT);
 	Type::RegisterType ("ParallelTimeline", Value::PARALLELTIMELINE, Value::TIMELINEGROUP);

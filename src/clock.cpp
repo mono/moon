@@ -14,7 +14,7 @@
 
 
 static TimeSpan
-get_now ()
+get_now (void)
 {
         struct timeval tv;
         TimeSpan res;

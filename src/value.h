@@ -69,6 +69,8 @@ class LineGeometry;
 class LineSegment;
 class MatrixTransform;
 class MediaAttributeCollection;
+class MediaBase;
+class MediaElement;
 class NameScope;
 class Panel;
 class ParallelTimeline;
@@ -184,6 +186,8 @@ public:
 		LINESEGMENT,
 		MATRIXTRANSFORM,
 		MEDIAATTRIBUTE_COLLECTION,
+		MEDIABASE,
+		MEDIAELEMENT,
 		NAMESCOPE,
 		PANEL,
 		PARALLELTIMELINE,
@@ -345,6 +349,8 @@ public:
 	LineSegment*                   AsLineSegment ();
 	MatrixTransform*               AsMatrixTransform ();
 	MediaAttributeCollection*      AsMediaAttributeCollection ();
+	MediaBase*                     AsMediaBase ();
+	MediaElement*                  AsMediaElement ();
 	NameScope*                     AsNameScope ();
 	Panel*                         AsPanel ();
 	ParallelTimeline*              AsParallelTimeline ();

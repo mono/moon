@@ -290,6 +290,18 @@ Value::AsMediaAttributeCollection ()
 	checked_get_subclass (MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection);
 }
 
+MediaBase*
+Value::AsMediaBase ()
+{
+	checked_get_subclass (MEDIABASE, MediaBase);
+}
+
+MediaElement*
+Value::AsMediaElement ()
+{
+	checked_get_subclass (MEDIAELEMENT, MediaElement);
+}
+
 NameScope*
 Value::AsNameScope ()
 {
