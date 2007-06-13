@@ -507,8 +507,7 @@ TimelineGroup::CreateClock ()
 void
 TimelineGroup::AddChild (Timeline *child)
 {
-	Value fv = Value(child);
-	child_timelines->Add (&fv);
+	child_timelines->Add (child);
 }
 
 void

@@ -865,17 +865,14 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		DependencyObject *obj = (DependencyObject *) parent->parent->item;
 		Value *col_v = obj->GetValue (dep);
 		Collection *col = (Collection *) col_v->AsCollection ();
-		Value v = Value ((DependencyObject *) child->item);
-
-		col->Add (&v);
+		col->Add ((DependencyObject*)child->item);
 		return;
 	}
 
 	if (is_instance_of (parent, Value::COLLECTION)) {
 		Collection *col = (Collection *) parent->item;
-		Value v = Value ((DependencyObject *) child->item);
 
-		col->Add (&v);
+		col->Add ((DependencyObject *) child->item);
 		return;
 	}
 
@@ -893,9 +890,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 				DependencyObject *obj = (DependencyObject *) parent->item;
 				Value *col_v = obj->GetValue (dep);
 				Collection *col = (Collection *) col_v->AsCollection ();
-				Value v = Value ((DependencyObject *) child->item);
-
-				col->Add (&v);
+				col->Add ((DependencyObject *) child->item);
 				return;
 			}
 		}

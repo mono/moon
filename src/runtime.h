@@ -378,9 +378,6 @@ class Collection : public DependencyObject {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
-
-	void Add    (Value *v) { Add (v->AsDependencyObject ()); };
-	void Remove (Value *v) { Remove (v->AsDependencyObject ()); };
 };
 
 void collection_add    (Collection *collection, DependencyObject *data);
@@ -417,7 +414,6 @@ class ResourceCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
-	
 };
 
 class StrokeCollection : public Collection {
@@ -427,7 +423,6 @@ class StrokeCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
-	
 };
 
 class StylusPointCollection : public Collection {
@@ -437,7 +432,6 @@ class StylusPointCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
-	
 };
 
 class TimelineMarkerCollection : public Collection {
@@ -447,7 +441,6 @@ class TimelineMarkerCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
-	
 };
 
 class MediaAttributeCollection : public Collection {
@@ -457,7 +450,6 @@ class MediaAttributeCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
-	
 };
 
 class Inlines : public Collection {
@@ -467,7 +459,6 @@ class Inlines : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
-	
 };
 
 
