@@ -14,7 +14,7 @@ class MediaAttribute : public DependencyObject {
 	static DependencyProperty *ValueProperty;
 	
 	MediaAttribute () { }
-	Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
+	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
 };
 
 
@@ -24,7 +24,7 @@ public:
 	static DependencyProperty *StretchProperty;
 	
 	MediaBase () { }
-	Value::Kind GetObjectType () { return Value::MEDIABASE; };
+	virtual Value::Kind GetObjectType () { return Value::MEDIABASE; };
 };
 
 char *media_base_get_source (MediaBase *media);
@@ -55,7 +55,7 @@ public:
 	static DependencyProperty *AttributesProperty;
 	
 	MediaElement () { }
-	Value::Kind GetObjectType () { return Value::MEDIAELEMENT; };
+	virtual Value::Kind GetObjectType () { return Value::MEDIAELEMENT; };
 	
 	void SetSource (DependencyObject *downloader, char *name);
 	

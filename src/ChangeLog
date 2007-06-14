@@ -1,3 +1,15 @@
+2007-06-14  Miguel de Icaza  <miguel@novell.com>
+
+	* Improve the destruction scenario to release the resources that
+	we have acquired, we are now up to the point of stopping clocks
+	properly, but more work is going to be needed in the long term to
+	properly track refs and objects.
+
+	Ensured that all virtual GetObjectType are flagged with virtual.
+
+	* Makefile.am: Put runtime.cpp at the top, to improve
+	compile/test cycle.
+
 2007-06-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp|h: One step closer for RadialGradientBrush

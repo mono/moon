@@ -309,12 +309,14 @@ void
 ClockGroup::AddChild (Clock *clock)
 {
 	child_clocks = g_list_append (child_clocks, clock);
+	base_ref (clock);
 }
 
 void
 ClockGroup::RemoveChild (Clock *clock)
 {
 	child_clocks = g_list_remove (child_clocks, clock);
+	base_unref (clock);
 }
 
 void
@@ -371,6 +373,17 @@ ClockGroup::RaiseAccumulatedEvents ()
 	}
 }
 
+ClockGroup::~ClockGroup ()
+{
+	GList *l;
+
+	for (l = child_clocks; l; l = l->next){
+		Clock *clock = (Clock *) l->data;
+
+		base_unref (clock);
+	}
+	g_list_free (l);
+}
 
 /* timeline */
 
@@ -513,6 +526,11 @@ TimelineGroup::AddChild (Timeline *child)
 void
 TimelineGroup::RemoveChild (Timeline *child)
 {
+}
+
+TimelineGroup::~TimelineGroup ()
+{
+	base_unref (child_timelines); 
 }
 
 Duration

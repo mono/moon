@@ -105,6 +105,8 @@ Collection::~Collection ()
 	for (sl = list; sl != NULL; sl = sl->next){
 		base_unref ((Base *) sl->data);
 	}
+	g_slist_free (list);
+	list = NULL;
 }
 
 void 
@@ -533,16 +535,8 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
 
 		if (newcol != triggers){
-			if (triggers){
-				for (GSList *l = triggers->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
-					printf ("Unrefing a %d\n", dob->GetObjectType ());
-					base_unref (dob);
-				}
+			if (triggers)
 				base_unref (triggers);
-				g_slist_free (triggers->list);
-			}
 
 			triggers = newcol;
 			if (triggers){
@@ -766,6 +760,11 @@ Panel::Panel ()
 
 	// Ensure that the callback OnPropertyChanged was called.
 	g_assert (c == children);
+}
+
+Panel::~Panel ()
+{
+	base_unref (children);
 }
 
 //
@@ -1286,7 +1285,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
 	if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT) {
-		printf ("Setting null: SetValue\n");
+		// Setting a null.
 		current_value->AsDependencyObject ()->SetParent (NULL);
 	}
 	if (value != NULL && value->k >= Value::DEPENDENCY_OBJECT) {
@@ -1404,6 +1403,20 @@ DependencyObject::DependencyObject ()
 	events = new EventObject ();
 	this->attached_list = NULL;
 	this->parent = NULL;
+}
+
+static void
+dump (gpointer key, gpointer value, gpointer data)
+{
+	printf ("%s\n", key);
+}
+
+Value::Kind
+DependencyObject::GetObjectType ()
+{
+	g_warning ("%p This class is missing an override of GetObjectType ()", this);
+	g_hash_table_foreach (current_values, dump, NULL);
+	return Value::DEPENDENCY_OBJECT; 
 }
 
 DependencyObject::~DependencyObject ()
@@ -1622,10 +1635,16 @@ EventObject::EventObject ()
 }
 
 static void
+deleter (gpointer data)
+{
+	delete (EventClosure *) data;
+}
+
+static void
 free_closure_list (gpointer key, gpointer data, gpointer userdata)
 {
 	g_free (key);
-	g_list_foreach ((GList*)data, (GFunc)g_free, NULL);
+	g_list_foreach ((GList*)data, (GFunc)deleter, NULL);
 }
 
 EventObject::~EventObject ()
@@ -1741,6 +1760,7 @@ TriggerCollection::Add (DependencyObject *data)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
 	
+	printf ("Adding %p\n", data);
 	EventTrigger *trigger = (EventTrigger *) data;
 
 	Collection::Add (trigger);
@@ -1866,6 +1886,11 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 	g_assert (target);
 
 	target->events->RemoveHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
+}
+
+EventTrigger::~EventTrigger ()
+{
+	base_unref (actions);
 }
 
 EventTrigger *

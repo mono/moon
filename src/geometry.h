@@ -29,7 +29,7 @@ class Geometry : public DependencyObject {
 	static DependencyProperty* TransformProperty;
 
 	Geometry () { };
-	Value::Kind GetObjectType () { return Value::GEOMETRY; };
+	virtual Value::Kind GetObjectType () { return Value::GEOMETRY; };
 
 	virtual void Draw (Surface *s);
 
@@ -60,7 +60,7 @@ class GeometryGroup : public Geometry {
 	GeometryCollection *children;
 
 	GeometryGroup ();
-	Value::Kind GetObjectType () { return Value::GEOMETRYGROUP; };
+	virtual Value::Kind GetObjectType () { return Value::GEOMETRYGROUP; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void Draw (Surface *s);
@@ -79,7 +79,7 @@ class EllipseGeometry : public Geometry {
 	static DependencyProperty* RadiusYProperty;
 
 	EllipseGeometry () { };
-	Value::Kind GetObjectType () { return Value::ELLIPSEGEOMETRY; };
+	virtual Value::Kind GetObjectType () { return Value::ELLIPSEGEOMETRY; };
 
 	virtual void Draw (Surface *s);
 };
@@ -100,7 +100,7 @@ class LineGeometry : public Geometry {
 	static DependencyProperty* StartPointProperty;
 
 	LineGeometry () { };
-	Value::Kind GetObjectType () { return Value::LINEGEOMETRY; };
+	virtual Value::Kind GetObjectType () { return Value::LINEGEOMETRY; };
 
 	virtual void Draw (Surface *s);
 };
@@ -130,7 +130,7 @@ class PathGeometry : public Geometry {
 	PathFigureCollection *children;
 
 	PathGeometry ();
-	Value::Kind GetObjectType () { return Value::PATHGEOMETRY; };
+	virtual Value::Kind GetObjectType () { return Value::PATHGEOMETRY; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void Draw (Surface *s);
@@ -152,7 +152,7 @@ class RectangleGeometry : public Geometry {
 	static DependencyProperty* RectProperty;
 
 	RectangleGeometry () { };
-	Value::Kind GetObjectType () { return Value::RECTANGLEGEOMETRY; };
+	virtual Value::Kind GetObjectType () { return Value::RECTANGLEGEOMETRY; };
 
 	virtual void Draw (Surface *s);
 };
@@ -187,7 +187,7 @@ class PathFigure : public DependencyObject {
 	PathSegmentCollection *children;
 
 	PathFigure ();
-	Value::Kind GetObjectType () { return Value::PATHFIGURE; };
+	virtual Value::Kind GetObjectType () { return Value::PATHFIGURE; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void Draw (Surface *s);
@@ -208,7 +208,7 @@ void			path_figure_set_segments	(PathFigure *path_figure, PathSegmentCollection*
 class PathSegment : public DependencyObject {
  public:
 	virtual void Draw (Surface *s) {}
-	Value::Kind GetObjectType () { return Value::PATHSEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::PATHSEGMENT; };
 };
 
 //
@@ -223,7 +223,7 @@ class ArcSegment : public PathSegment {
 	static DependencyProperty* SweepDirectionProperty;
 
 	ArcSegment () { }
-	Value::Kind GetObjectType () { return Value::ARCSEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::ARCSEGMENT; };
 
 	virtual void Draw (Surface *s);
 };
@@ -249,7 +249,7 @@ class BezierSegment : public PathSegment {
 	static DependencyProperty* Point3Property;
 
 	BezierSegment () { }
-	Value::Kind GetObjectType () { return Value::BEZIERSEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::BEZIERSEGMENT; };
 
 	virtual void Draw (Surface *s);
 };
@@ -269,7 +269,7 @@ class LineSegment : public PathSegment {
 	static DependencyProperty* PointProperty;
 
 	LineSegment () { }
-	Value::Kind GetObjectType () { return Value::LINESEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::LINESEGMENT; };
 
 	virtual void Draw (Surface *s);
 };
@@ -286,7 +286,7 @@ class PolyBezierSegment : public PathSegment {
 	static DependencyProperty* PointsProperty;
 
 	PolyBezierSegment () { }
-	Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::POLYBEZIERSEGMENT; };
 
 	virtual void Draw (Surface *s);
 };
@@ -303,7 +303,7 @@ class PolyLineSegment : public PathSegment {
 	static DependencyProperty* PointsProperty;
 
 	PolyLineSegment () { }
-	Value::Kind GetObjectType () { return Value::POLYLINESEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::POLYLINESEGMENT; };
 
 	virtual void Draw (Surface *s);
 };
@@ -320,7 +320,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	static DependencyProperty* PointsProperty;
 
 	PolyQuadraticBezierSegment () { }
-	Value::Kind GetObjectType () { return Value::POLYQUADRATICBEZIERSEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::POLYQUADRATICBEZIERSEGMENT; };
 
 	virtual void Draw (Surface *s);
 };
@@ -338,7 +338,7 @@ class QuadraticBezierSegment : public PathSegment {
 	static DependencyProperty* Point2Property;
 
 	QuadraticBezierSegment () { }
-	Value::Kind GetObjectType () { return Value::QUADRATICBEZIERSEGMENT; };
+	virtual Value::Kind GetObjectType () { return Value::QUADRATICBEZIERSEGMENT; };
 
 	virtual void Draw (Surface *s);
 };

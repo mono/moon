@@ -51,10 +51,14 @@ AnimationStorage::UpdatePropertyValue ()
 	delete current_value;
 }
 
+AnimationStorage::~AnimationStorage ()
+{
+}
 
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
   : timeline(timeline),
-    Clock (timeline)
+    Clock (timeline),
+    storage(NULL)
 {
 }
 
@@ -70,7 +74,11 @@ AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestin
 	return timeline->GetCurrentValue (defaultOriginValue, defaultDestinationValue, this);
 }
 
-
+AnimationClock::~AnimationClock ()
+{
+	if (storage)
+		delete storage;
+}
 
 Value*
 Animation/*Timeline*/::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue,
@@ -248,6 +256,13 @@ Storyboard::GetTargetName (DependencyObject *o)
 	return v == NULL ? NULL : v->AsString();
 }
 
+Storyboard::~Storyboard ()
+{
+	Stop ();
+	TimeManager::Instance()->RemoveChild (root_clock);
+	printf ("Unrefing %p\n", root_clock);
+	base_unref (root_clock);
+}
 
 DependencyProperty* BeginStoryboard::StoryboardProperty;
 
@@ -271,6 +286,13 @@ Storyboard *
 BeginStoryboard::GetStoryboard ()
 {
 	return GetValue (BeginStoryboard::StoryboardProperty)->AsStoryboard();
+}
+
+BeginStoryboard::~BeginStoryboard ()
+{
+	Storyboard *sb = GetStoryboard ();
+	if (sb != NULL)
+		base_unref (sb);
 }
 
 BeginStoryboard *

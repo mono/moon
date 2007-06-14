@@ -237,11 +237,7 @@ class DependencyObject : public Base {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { return FALSE; }
 	
-	virtual Value::Kind GetObjectType ()
-	{
-		g_warning ("This class is missing an override of GetObjectType ()");
-		return Value::DEPENDENCY_OBJECT; 
-	};
+	virtual Value::Kind GetObjectType ();
 	Type* GetType ()
 	{
 		return Type::Find (GetObjectType ());
@@ -287,7 +283,7 @@ class NameScope : public DependencyObject {
 	NameScope ();
 	~NameScope ();
 
-	Value::Kind GetObjectType () { return Value::NAMESCOPE; }
+	virtual Value::Kind GetObjectType () { return Value::NAMESCOPE; }
 
 	void RegisterName (const char *name, DependencyObject *object);
 	void UnregisterName (const char *name);
@@ -306,7 +302,7 @@ class NameScope : public DependencyObject {
 class Downloader : public DependencyObject {
  public:
 	Downloader () {};
-	Value::Kind GetObjectType () { return Value::DOWNLOADER; };	
+	virtual Value::Kind GetObjectType () { return Value::DOWNLOADER; };	
 
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ResponseTextProperty;
@@ -318,7 +314,7 @@ class Downloader : public DependencyObject {
 class Visual : public DependencyObject {
  public:
 	Visual () {};
-	Value::Kind GetObjectType () { return Value::VISUAL; };	
+	virtual Value::Kind GetObjectType () { return Value::VISUAL; };	
 };
 
 enum ErrorType {
@@ -521,7 +517,7 @@ class TriggerAction : public DependencyObject {
  public:
 	TriggerAction () { };
 
-	Value::Kind GetObjectType () { return Value::TRIGGERACTION; };
+	virtual Value::Kind GetObjectType () { return Value::TRIGGERACTION; };
 	virtual void Fire () = 0;
 };
 
@@ -532,8 +528,9 @@ class EventTrigger : public DependencyObject {
 	TriggerActionCollection *actions;
 
 	EventTrigger ();
-
-	Value::Kind GetObjectType () { return Value::EVENTTRIGGER; };
+	~EventTrigger ();
+	
+	virtual Value::Kind GetObjectType () { return Value::EVENTTRIGGER; };
 
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
@@ -557,7 +554,7 @@ class UIElement : public Visual {
 	UIElement ();
 		
 	
-	Value::Kind GetObjectType () { return Value::UIELEMENT; };
+	virtual Value::Kind GetObjectType () { return Value::UIELEMENT; };
 
 	UIElement *parent;
 
@@ -679,7 +676,7 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty* WidthProperty;
 
 	FrameworkElement ();
-	Value::Kind GetObjectType () { return Value::FRAMEWORKELEMENT; }
+	virtual Value::Kind GetObjectType () { return Value::FRAMEWORKELEMENT; }
 
 	virtual bool inside_object (Surface *s, double x, double y);
 };
@@ -697,7 +694,8 @@ class Panel : public FrameworkElement {
 	VisualCollection *children;
 
 	Panel ();
-	Value::Kind GetObjectType () { return Value::PANEL; }
+	~Panel ();
+	virtual Value::Kind GetObjectType () { return Value::PANEL; }
 
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;
@@ -717,7 +715,7 @@ class Canvas : public Panel {
 	Canvas ();
 	Surface *surface;
 	
-	Value::Kind GetObjectType () { return Value::CANVAS; }
+	virtual Value::Kind GetObjectType () { return Value::CANVAS; }
 
 	virtual Point getxformorigin () { return Point (0, 0); }
 

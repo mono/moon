@@ -5,6 +5,7 @@ lib_LTLIBRARIES = libmoon.la
 INCLUDES = $(MOON_CFLAGS)
 
 libmoon_la_SOURCES = 	\
+	runtime.cpp	\
 	animation.cpp	\
 	animation.h	\
 	brush.cpp	\
@@ -20,7 +21,6 @@ libmoon_la_SOURCES = 	\
 	media.h		\
 	rsvg.cpp	\
 	rsvg.h		\
-	runtime.cpp	\
 	runtime.h	\
 	shape.cpp	\
 	shape.h		\

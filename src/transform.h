@@ -10,8 +10,8 @@ G_BEGIN_DECLS
 class Transform : public DependencyObject {
  protected:
  	Transform () { }
-	Value::Kind GetObjectType () { return Value::TRANSFORM; };
  public:
+	virtual Value::Kind GetObjectType () { return Value::TRANSFORM; };
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void GetTransform (cairo_matrix_t *value) = 0;
 };
@@ -22,7 +22,7 @@ class RotateTransform : public Transform {
  public:
 
 	RotateTransform () { }
-	Value::Kind GetObjectType () { return Value::ROTATETRANSFORM; };
+	virtual Value::Kind GetObjectType () { return Value::ROTATETRANSFORM; };
 
 	static DependencyProperty* AngleProperty;
 	static DependencyProperty* CenterXProperty;
@@ -46,7 +46,7 @@ class TranslateTransform : public Transform {
  public:
 
 	TranslateTransform () {  }
-	Value::Kind GetObjectType () { return Value::TRANSLATETRANSFORM; };
+	virtual Value::Kind GetObjectType () { return Value::TRANSLATETRANSFORM; };
 
 	static DependencyProperty* XProperty;
 	static DependencyProperty* YProperty;
@@ -66,7 +66,7 @@ class ScaleTransform : public Transform {
 public:
 
 	ScaleTransform () {  }
-	Value::Kind GetObjectType () { return Value::SCALETRANSFORM; };
+	virtual Value::Kind GetObjectType () { return Value::SCALETRANSFORM; };
 
 	static DependencyProperty* ScaleXProperty;
 	static DependencyProperty* ScaleYProperty;
@@ -94,7 +94,7 @@ class SkewTransform : public Transform {
 public:
 
 	SkewTransform () {  }
-	Value::Kind GetObjectType () { return Value::SKEWTRANSFORM; };
+	virtual Value::Kind GetObjectType () { return Value::SKEWTRANSFORM; };
 
 	static DependencyProperty* AngleXProperty;
 	static DependencyProperty* AngleYProperty;
@@ -122,7 +122,7 @@ class MatrixTransform : public Transform {
 	static DependencyProperty* MatrixProperty;
 
 	MatrixTransform () { }
-	Value::Kind GetObjectType () { return Value::MATRIXTRANSFORM; };
+	virtual Value::Kind GetObjectType () { return Value::MATRIXTRANSFORM; };
 
 	/* these are dependency properties
 	   Matrix matrix;
@@ -149,7 +149,7 @@ public:
 	TransformCollection *children;
 	
 	TransformGroup ();
-	Value::Kind GetObjectType() { return Value::TRANSFORMGROUP; };
+	virtual Value::Kind GetObjectType() { return Value::TRANSFORMGROUP; };
 
 	
 	virtual void OnPropertyChanged (DependencyProperty *prop);

@@ -68,7 +68,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *TextDecorationsProperty;
 	
 	Inline () { }
-	Value::Kind GetObjectType () { return Value::INLINE; }	
+	virtual Value::Kind GetObjectType () { return Value::INLINE; }	
 };
 
 char *inline_get_font_family (Inline *inline_);
@@ -109,7 +109,7 @@ public:
 	static DependencyProperty *TextWrappingProperty;
 	
 	TextBlock () { }
-	Value::Kind GetObjectType () { return Value::TEXTBLOCK; };
+	virtual Value::Kind GetObjectType () { return Value::TEXTBLOCK; };
 	
 	void SetFontSource (DependencyObject *downloader);
 	
@@ -173,7 +173,7 @@ public:
 	static DependencyProperty *UnicodeStringProperty;
 	
 	Glyphs () { }
-	Value::Kind GetObjectType () { return Value::GLYPHS; };
+	virtual Value::Kind GetObjectType () { return Value::GLYPHS; };
 };
 
 Brush *glyphs_get_fill (Glyphs *glyphs);

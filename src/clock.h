@@ -195,7 +195,7 @@ class Clock : public DependencyObject {
 	};
 
 	Clock (Timeline *timeline);
-	Value::Kind GetObjectType () { return Value::CLOCK; };
+	virtual Value::Kind GetObjectType () { return Value::CLOCK; };
 
 	virtual void SpeedChanged () { };
 
@@ -248,7 +248,8 @@ class Clock : public DependencyObject {
 class ClockGroup : public Clock {
  public:
 	ClockGroup (TimelineGroup *timeline);
-	Value::Kind GetObjectType () { return Value::CLOCKGROUP; };
+	~ClockGroup ();
+	virtual Value::Kind GetObjectType () { return Value::CLOCKGROUP; };
 
 	virtual void Begin (TimeSpan parent_time);
 
@@ -271,7 +272,7 @@ class ClockGroup : public Clock {
 class Timeline : public DependencyObject {
  public:
 	Timeline ();
-	Value::Kind GetObjectType () { return Value::TIMELINE; };
+	virtual Value::Kind GetObjectType () { return Value::TIMELINE; };
 
 	static DependencyProperty* AutoReverseProperty;
 	static DependencyProperty* BeginTimeProperty;
@@ -309,7 +310,9 @@ class TimelineCollection : public Collection {
 class TimelineGroup : public Timeline {
  public:
 	TimelineGroup ();
-	Value::Kind GetObjectType () { return Value::TIMELINEGROUP; };
+	~TimelineGroup ();
+	
+	virtual Value::Kind GetObjectType () { return Value::TIMELINEGROUP; };
 
 	static DependencyProperty* ChildrenProperty;
 
@@ -333,7 +336,7 @@ class TimelineGroup : public Timeline {
 class ParallelTimeline : public TimelineGroup {
  public:
 	ParallelTimeline () { }
-	Value::Kind GetObjectType () { return Value::PARALLELTIMELINE; };
+	virtual Value::Kind GetObjectType () { return Value::PARALLELTIMELINE; };
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };
