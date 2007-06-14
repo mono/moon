@@ -1,3 +1,10 @@
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp (GetDependencyProperty): If there is no table for a
+	property, we still need to lookup the property in the parent
+	chain (assumming inherit is true).
+	- Fix some typos with types_by_name
+
 2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* demo.cpp (main): Rotate our demo text inside a filled rectangle

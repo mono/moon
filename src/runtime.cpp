@@ -1510,17 +1510,15 @@ DependencyProperty *
 DependencyObject::GetDependencyProperty (Value::Kind type, const char *name, bool inherits)
 {
 	GHashTable *table;
-	DependencyProperty *property;
+	DependencyProperty *property = NULL;
 
 	if (properties == NULL)
 		return NULL;
 
 	table = (GHashTable*) g_hash_table_lookup (properties, &type);
 
-	if (table == NULL)
-		return NULL;
-
-	property = (DependencyProperty*) g_hash_table_lookup (table, name);
+	if (table)
+		property = (DependencyProperty*) g_hash_table_lookup (table, name);
 
 	if (property != NULL)
 		return property;
@@ -2284,7 +2282,7 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
 	g_assert (types [type] == NULL);
 
 	types [type] = result;
-	g_hash_table_insert (types_by_name, result, result->name);
+	g_hash_table_insert (types_by_name, result->name, result);
 
 	return result;
 }
@@ -2314,10 +2312,10 @@ Type::Find (char *name)
 {
 	Type *result;
 
-	if (types == NULL)
+	if (types_by_name == NULL)
 		return NULL;
 
-	result = (Type*) g_hash_table_lookup (types_by_name, &name);
+	result = (Type*) g_hash_table_lookup (types_by_name, name);
 
 	return result;
 }
