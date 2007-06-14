@@ -311,7 +311,7 @@ class NameScope : public DependencyObject {
 
 class Downloader;
 
-typedef void (*downloader_write_func)(guchar *buf, gsize n, gpointer cb_data);
+typedef void (*downloader_write_func)(guchar *buf, gsize offset, gsize n, gpointer cb_data);
 typedef gpointer (*downloader_create_state_func) (Downloader* dl);
 typedef void (*downloader_destroy_state_func) (gpointer state);
 typedef void (*downloader_open_func)(char *verb, char *uri, bool async, gpointer state);
@@ -339,7 +339,7 @@ class Downloader : public DependencyObject {
 	static DependencyProperty *UriProperty;
 
 
-	void Write (guchar *buf, gsize n);
+	void Write (guchar *buf, gsize offset, gsize n);
 
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
@@ -378,7 +378,7 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_abort_func abort,
 			       downloader_get_response_text_func get_response);
 
-void downloader_write (Downloader *dl, guchar *buf, gsize n);
+void downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n);
 
 class Visual : public DependencyObject {
  public:

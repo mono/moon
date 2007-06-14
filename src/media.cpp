@@ -295,15 +295,15 @@ Image::SetSource (DependencyObject *downloader, char* PartName)
 }
 
 void
-Image::pixbuf_write (guchar *buf, gsize count, gpointer data)
+Image::pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data)
 {
-	((Image*)data)->PixbufWrite (buf, count);
+	((Image*)data)->PixbufWrite (buf, offset, count);
 }
 
 void
-Image::PixbufWrite (guchar *buf, gsize count)
+Image::PixbufWrite (guchar *buf, gsize offset, gsize count)
 {
-	gdk_pixbuf_loader_write (loader, buf, count, NULL);
+	gdk_pixbuf_loader_write (loader, buf + offset, count, NULL);
 }
 
 void

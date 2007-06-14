@@ -2094,9 +2094,9 @@ Downloader::Send ()
 }
 
 void
-Downloader::Write (guchar *buf, gsize n)
+Downloader::Write (guchar *buf, gsize offset, gsize n)
 {
-	this->write (buf, n, write_data);
+	this->write (buf, offset, n, write_data);
 }
 
 void
@@ -2145,9 +2145,9 @@ void downloader_set_functions (downloader_create_state_func create_state,
 }
 
 void
-downloader_write (Downloader *dl, guchar *buf, gsize n)
+downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 {
-	dl->Write (buf, n);
+	dl->Write (buf, offset, n);
 }
 
 

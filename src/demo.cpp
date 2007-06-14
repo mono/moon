@@ -473,7 +473,7 @@ class FileDownloadState {
 
 		int n = read (fd, buf, sizeof (buf));
 
-		downloader->Write (buf, n);
+		downloader->Write (buf, 0, n);
 	}
 
 	static gboolean async_fill_buffer (gpointer cb_data)

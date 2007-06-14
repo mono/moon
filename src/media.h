@@ -49,9 +49,9 @@ class Image : public MediaBase {
 	void SetSource (DependencyObject *Downloader, char *PartName);
 	
  private:
-	void PixbufWrite (guchar *bug, gsize count);
+	void PixbufWrite (guchar *bug, gsize offset, gsize count);
 	void LoaderSizePrepared (int width, int height);
-	static void pixbuf_write (guchar *buf, gsize count, gpointer data);
+	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
 	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
 	GdkPixbufLoader *loader;
 	DependencyObject *downloader;

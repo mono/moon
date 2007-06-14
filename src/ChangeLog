@@ -1,3 +1,12 @@
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp: track downloader api change.
+
+	* media.cpp: track downloader api change.
+
+	* runtime.h, runtime.cpp: the downloader's write function needs an
+	offset as well as a length to work with mozilla's streaming api.
+
 2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* demo.cpp (main): Draw some text
