@@ -94,6 +94,12 @@ MediaElement::Stop ()
 	;
 }
 
+MediaElement *
+media_element_new ()
+{
+	return new MediaElement ();
+}
+
 bool
 media_element_get_auto_play (MediaElement *media)
 {

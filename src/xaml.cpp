@@ -22,6 +22,7 @@
 #include "animation.h"
 #include "geometry.h"
 #include "text.h"
+#include "media.h"
 
 #define READ_BUFFER 1024
 
@@ -1303,11 +1304,24 @@ xaml_init ()
 
 	rdoe (dem, "GradientStop", NULL, Value::GRADIENTSTOP, (create_item_func) gradient_stop_new);
 
+
+	///
+	/// Media
+	///
+
+	XamlElementInfo *mb = register_ghost_element ("MediaBase", NULL, Value::MEDIABASE);
+
+	rdoe (dem, "Image", mb, Value::IMAGE, (create_item_func) image_new);
+	rdoe (dem, "MediaElement", mb, Value::MEDIAELEMENT, (create_item_func) media_element_new);
+	rdoe (dem, "MediaAttribute", NULL, Value::MEDIAATTRIBUTE, (create_item_func) media_attribute_new);
+	
+	
 #undef rdoe
 
 	default_namespace = new DefaultNamespace (dem);
 	x_namespace = new XNamespace ();
 
+	
 	///
 	/// ENUMS
 	///

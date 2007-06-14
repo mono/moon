@@ -1,3 +1,8 @@
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
+	* media.cpp|h: Add some C style constructors.
+	* xaml.cpp:  Add parsing hooks for new components.
+
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp: make one of the videos an image instead.

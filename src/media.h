@@ -95,6 +95,8 @@ public:
 	void Stop ();
 };
 
+MediaElement *media_element_new ();
+
 bool media_element_get_auto_play (MediaElement *media);
 void media_element_set_auto_play (MediaElement *media, bool value);
 
