@@ -1,5 +1,6 @@
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
+	* animation.cpp: C style constructor.
 	* media.cpp|h: Add some C style constructors.
 	* xaml.cpp:  Add parsing hooks for new components.
 

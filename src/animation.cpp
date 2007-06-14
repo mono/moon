@@ -859,7 +859,11 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	return new Value (LERP (start, end, splineProgress));
 }
 
-
+SplineDoubleKeyFrame *
+spline_double_key_frame_new ()
+{
+	return new SplineDoubleKeyFrame ();
+}
 
 DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
