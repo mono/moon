@@ -7,10 +7,12 @@
 G_BEGIN_DECLS
 
 // misc types
-class KeySpline {
+class KeySpline : public DependencyObject {
  public:
 	KeySpline (Point controlPoint1, Point controlPoint2);
 	KeySpline (double x1, double y1, double x2, double y2);
+
+	Value::Kind GetObjectType () { return Value::KEYSPLINE; }
 
 	double GetSplineProgress (double linearProgress);
 

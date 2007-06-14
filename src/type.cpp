@@ -40,7 +40,6 @@ void types_init_manually ()
 	Type::RegisterType ("Duration", Value::DURATION);
 	Type::RegisterType ("int64", Value::INT64);
 	Type::RegisterType ("KeyTime", Value::KEYTIME);
-	Type::RegisterType ("KeySpline", Value::KEYSPLINE);
 	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
 	Type::RegisterType ("Point*", Value::POINT_ARRAY);
 	Type::RegisterType ("Matrix", Value::MATRIX);
@@ -105,6 +104,7 @@ void types_init ()
 	Type::RegisterType ("Inlines", Value::INLINES, Value::COLLECTION);
 	Type::RegisterType ("KeyFrame", Value::KEYFRAME, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("KeyFrameCollection", Value::KEYFRAME_COLLECTION, Value::COLLECTION);
+	Type::RegisterType ("KeySpline", Value::KEYSPLINE, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Line", Value::LINE, Value::SHAPE);
 	Type::RegisterType ("LinearColorKeyFrame", Value::LINEARCOLORKEYFRAME, Value::COLORKEYFRAME);
 	Type::RegisterType ("LinearDoubleKeyFrame", Value::LINEARDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);

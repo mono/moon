@@ -64,6 +64,7 @@ class Inline;
 class Inlines;
 class KeyFrame;
 class KeyFrameCollection;
+class KeySpline;
 class Line;
 class LinearColorKeyFrame;
 class LinearDoubleKeyFrame;
@@ -148,7 +149,6 @@ public:
 		DOUBLE_ARRAY,
 		POINT_ARRAY,
 		KEYTIME,
-		KEYSPLINE,
 		MATRIX,
 
 		DEPENDENCY_OBJECT,
@@ -189,6 +189,7 @@ public:
 		INLINES,
 		KEYFRAME,
 		KEYFRAME_COLLECTION,
+		KEYSPLINE,
 		LINE,
 		LINEARCOLORKEYFRAME,
 		LINEARDOUBLEKEYFRAME,
@@ -318,7 +319,6 @@ public:
 	RepeatBehavior* AsRepeatBehavior ();
 	Duration*       AsDuration ();
 	KeyTime*        AsKeyTime ();
-	KeySpline*      AsKeySpline ();
 	PointArray*     AsPointArray ();
 	DoubleArray*    AsDoubleArray ();
 	Matrix*		AsMatrix ();
@@ -361,6 +361,7 @@ public:
 	Inlines*                       AsInlines ();
 	KeyFrame*                      AsKeyFrame ();
 	KeyFrameCollection*            AsKeyFrameCollection ();
+	KeySpline*                     AsKeySpline ();
 	Line*                          AsLine ();
 	LinearColorKeyFrame*           AsLinearColorKeyFrame ();
 	LinearDoubleKeyFrame*          AsLinearDoubleKeyFrame ();

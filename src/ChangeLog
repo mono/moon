@@ -1,3 +1,9 @@
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* value.cpp, animation.h, type.cpp, value.h, runtime.cpp,
+	type.cpp.in, value.h.in: make KeySpline subclass from
+	DependencyObject like it should, and fix resulting fallout.
+
 2007-06-14  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (Canvas): Implement OnChildPropertyChanged so we can

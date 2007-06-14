@@ -46,7 +46,6 @@ public:
 		DOUBLE_ARRAY,
 		POINT_ARRAY,
 		KEYTIME,
-		KEYSPLINE,
 		MATRIX,
 
 /*DO_KINDS*/
@@ -118,7 +117,6 @@ public:
 	RepeatBehavior* AsRepeatBehavior ();
 	Duration*       AsDuration ();
 	KeyTime*        AsKeyTime ();
-	KeySpline*      AsKeySpline ();
 	PointArray*     AsPointArray ();
 	DoubleArray*    AsDoubleArray ();
 	Matrix*		AsMatrix ();

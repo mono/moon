@@ -254,6 +254,12 @@ Value::AsKeyFrameCollection ()
 	checked_get_subclass (KEYFRAME_COLLECTION, KeyFrameCollection);
 }
 
+KeySpline*
+Value::AsKeySpline ()
+{
+	checked_get_subclass (KEYSPLINE, KeySpline);
+}
+
 Line*
 Value::AsLine ()
 {
