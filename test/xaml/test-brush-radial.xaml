@@ -1,0 +1,47 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<Rectangle Width="200" Height="200">
+  <Rectangle.Fill>
+     <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+       <RadialGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </RadialGradientBrush.GradientStops>
+    </RadialGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+<Rectangle Width="100" Height="200" Canvas.Left="220">
+  <Rectangle.Fill>
+     <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+       <RadialGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </RadialGradientBrush.GradientStops>
+    </RadialGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+<Rectangle Width="200" Height="100" Canvas.Top="220">
+  <Rectangle.Fill>
+     <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+       <RadialGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </RadialGradientBrush.GradientStops>
+    </RadialGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+<Rectangle Width="100" Height="100" Canvas.Left="220" Canvas.Top="220">
+  <Rectangle.Fill>
+     <RadialGradientBrush GradientOrigin="0.0,0.0" Center="0.75,0.75" RadiusX="0.9" RadiusY="0.9">
+       <RadialGradientBrush.GradientStops>
+        <GradientStop Color="Red" Offset="0" />
+        <GradientStop Color="Green" Offset="0.5" />
+        <GradientStop Color="Blue" Offset="1" />
+      </RadialGradientBrush.GradientStops>
+    </RadialGradientBrush>
+  </Rectangle.Fill>
+</Rectangle>
+
+</Canvas>
