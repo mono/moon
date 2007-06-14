@@ -1,3 +1,5 @@
 <Canvas xmlns="http://schemas.microsoft.com/client/2007">
-  <TextBlock Text="I am a TextBlock!!" />
+  <TextBlock Canvas.Left="10" Text="I am a TextBlock!!" />
+  
+  <TextBlock Canvas.Left="10" Canvas.Top="100" Stroke="Red">I am the other textblock</TextBlock>
 </Canvas>
