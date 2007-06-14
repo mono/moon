@@ -1,3 +1,8 @@
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (KeySpline): default should be 1,1 for
+	controlPoint2.
+
 2007-06-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Add support for Matrix (non-DO) type.
