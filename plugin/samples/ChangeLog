@@ -1,0 +1,5 @@
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
+	* clock.html: Added.
+	* clock.xaml: Added.
+	* Makefile.am: Added.
