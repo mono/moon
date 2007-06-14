@@ -9,6 +9,7 @@ G_BEGIN_DECLS
 // misc types
 class KeySpline : public DependencyObject {
  public:
+	KeySpline ();
 	KeySpline (Point controlPoint1, Point controlPoint2);
 	KeySpline (double x1, double y1, double x2, double y2);
 

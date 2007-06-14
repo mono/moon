@@ -469,8 +469,9 @@ point_animation_new ()
 }
 
 
-
-
+KeySpline::KeySpline () : controlPoint1 (Point (0.0, 0.0)), controlPoint2 (Point (0.0, 0.0))
+{
+}
 
 KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 	: controlPoint1 (controlPoint1),
