@@ -27,6 +27,9 @@ class KeySpline : public DependencyObject {
 	Point controlPoint2;
 };
 
+KeySpline * key_spline_new ();
+
+
 struct KeyTime {
   public:
 	enum KeyTimeType {

@@ -507,6 +507,12 @@ KeySpline::SetControlPoint2 (Point controlPoint2)
 	this->controlPoint2 = controlPoint2;
 }
 
+KeySpline *
+key_spline_new ()
+{
+	return new KeySpline ();
+}
+
 
 
 // the following is from:
