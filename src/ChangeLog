@@ -1,5 +1,9 @@
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
+	* media.h: fix the progressive image loading.
+
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
 	* demo.cpp: use the MediaBase::SourceProperty to set the image's
 	source.
 

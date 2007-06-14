@@ -53,8 +53,12 @@ class Image : public MediaBase {
  private:
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
 	void LoaderSizePrepared (int width, int height);
+	void LoaderAreaUpdated (int x, int y, int width, int height);
+
 	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
 	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
+	static void loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data);
+
 	GdkPixbufLoader *loader;
 	Downloader *downloader;
 	cairo_surface_t *xlib_surface;

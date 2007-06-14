@@ -275,7 +275,8 @@ media_element_set_volume (MediaElement *media, double value)
 DependencyProperty* Image::DownloadProgressProperty;
 
 Image::Image ()
-  : pixbuf_width (0),
+  : pixmap (NULL),
+    pixbuf_width (0),
     pixbuf_height (0),
     loader (NULL),
     downloader (NULL),
@@ -289,23 +290,21 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	g_return_if_fail (dl->GetObjectType() == Value::DOWNLOADER);
 
 	if (loader) {
-		g_signal_handlers_disconnect_by_func (loader, (void*)loader_size_prepared, this);
+		// disconnect all our signal handlers at once
+		g_signal_handlers_disconnect_matched (loader,
+						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
+						      0, 0, NULL, NULL, this);
 		g_object_unref (G_OBJECT (loader));
 	}
 	loader = gdk_pixbuf_loader_new ();
 
 	g_signal_connect (loader, "size_prepared", G_CALLBACK(loader_size_prepared), this);
+	g_signal_connect (loader, "area_updated", G_CALLBACK(loader_area_updated), this);
 
 	downloader = (Downloader*)dl;
 	base_ref (downloader);
 	downloader->SetWriteFunc (pixbuf_write, this);
 	downloader->Open ("GET", PartName, true);
-}
-
-void
-Image::pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data)
-{
-	((Image*)data)->PixbufWrite (buf, offset, count);
 }
 
 void
@@ -315,19 +314,54 @@ Image::PixbufWrite (guchar *buf, gsize offset, gsize count)
 }
 
 void
-Image::loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data)
-{
-	((Image*)data)->LoaderSizePrepared (width, height);
-}
-
-void
 Image::LoaderSizePrepared (int width, int height)
 {
 	printf ("image has size %dx%d\n", width, height);
 	pixbuf_width = width;
 	pixbuf_height = height;
 
+	pixmap = gdk_pixmap_new (gdk_get_default_root_window (),
+				 width, height,
+				 gdk_drawable_get_depth (gdk_get_default_root_window ()));
+
 	item_update_bounds (this);
+}
+
+void
+Image::LoaderAreaUpdated (int x, int y, int width, int height)
+{
+	GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+
+	if (!pixbuf)
+		return;
+	GdkGC *gc = gdk_gc_new (GDK_DRAWABLE (pixmap));
+	gdk_draw_pixbuf (GDK_DRAWABLE (pixmap),
+			 gc,
+			 pixbuf,
+			 x, y,
+			 x, y,
+			 width, height,
+			 GDK_RGB_DITHER_NONE,
+			 0,0);
+	g_object_unref (G_OBJECT (gc));
+}
+
+void
+Image::pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data)
+{
+	((Image*)data)->PixbufWrite (buf, offset, count);
+}
+
+void
+Image::loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data)
+{
+	((Image*)data)->LoaderSizePrepared (width, height);
+}
+
+void
+Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data)
+{
+	((Image*)data)->LoaderAreaUpdated (x, y, width, height);
 }
 
 void
@@ -335,31 +369,13 @@ Image::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_save (s->cairo);
 
-	GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-	if (pixbuf) {
+	if (pixmap) {
 		if (!xlib_surface) {
-			pixmap = gdk_pixmap_new (GDK_DRAWABLE (s->drawing_area->window),
-						 gdk_pixbuf_get_width (pixbuf),
-						 gdk_pixbuf_get_height (pixbuf),
-						 gdk_drawable_get_depth (GDK_DRAWABLE (s->drawing_area->window)));
-			GdkGC *gc = gdk_gc_new (GDK_DRAWABLE (pixmap));
-			gdk_draw_pixbuf (GDK_DRAWABLE (pixmap),
-					 gc,
-					 pixbuf,
-					 0, 0,
-					 0, 0,
-					 gdk_pixbuf_get_width (pixbuf),
-					 gdk_pixbuf_get_height (pixbuf),
-					 GDK_RGB_DITHER_NONE,
-					 0,0);
-			g_object_unref (G_OBJECT (gc));
-			
-
 			xlib_surface = cairo_xlib_surface_create (GDK_PIXMAP_XDISPLAY (pixmap),
 								  GDK_PIXMAP_XID (pixmap),
 								  GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (GDK_DRAWABLE (pixmap))),
-								  gdk_pixbuf_get_width (pixbuf),
-								  gdk_pixbuf_get_height (pixbuf));
+								  this->pixbuf_width,
+								  this->pixbuf_height);
 		}
 
 		cairo_set_matrix (s->cairo, &absolute_xform);
