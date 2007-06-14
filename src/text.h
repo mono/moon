@@ -180,6 +180,8 @@ public:
 	virtual Value::Kind GetObjectType () { return Value::GLYPHS; };
 };
 
+Glyphs *glyphs_new ();
+
 Brush *glyphs_get_fill (Glyphs *glyphs);
 void glyphs_set_fill (Glyphs *glyphs, Brush *value);
 

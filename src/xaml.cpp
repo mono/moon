@@ -1,3 +1,4 @@
+#define DEBUG_XAML
 /*
  * xaml.cpp: xaml parser
  *
@@ -1256,16 +1257,22 @@ xaml_init ()
 	///
 	
 	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
-	rdoe (dem, "DoubleAnimation", tl, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	XamlElementInfo *ca = rdoe (dem, "ColorAnimation", tl, Value::COLORANIMATION, (create_item_func) color_animation_new);
-	rdoe (dem, "PointAnimation", tl, Value::POINTANIMATION, (create_item_func) point_animation_new);
+	XamlElementInfo *anim = register_ghost_element ("Animation", tl, Value::ANIMATION);
+	
+	
+	XamlElementInfo * da = rdoe (dem, "DoubleAnimation", anim, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
+	XamlElementInfo *ca = rdoe (dem, "ColorAnimation", anim, Value::COLORANIMATION, (create_item_func) color_animation_new);
+	XamlElementInfo *pa = rdoe (dem, "PointAnimation", anim, Value::POINTANIMATION, (create_item_func) point_animation_new);
 
-	XamlElementInfo *sb = rdoe (dem, "Storyboard", tl, Value::STORYBOARD, (create_item_func) storyboard_new);
-	sb->add_child = storyboard_add_child;
+	XamlElementInfo *daukf = rdoe (dem, "DoubleAnimationUsingKeyFrames", da, Value::DOUBLEANIMATIONUSINGKEYFRAMES, (create_item_func) double_animation_using_key_frames_new);
+	daukf->content_property = "KeyFrames";
 
 	XamlElementInfo *caukf = rdoe (dem, "ColorAnimationUsingKeyFrames", ca, Value::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
 	caukf->content_property = "KeyFrames";
 
+	XamlElementInfo *paukf = rdoe (dem, "PointAnimationUsingKeyFrames", pa, Value::POINTANIMATIONUSINGKEYFRAMES, (create_item_func) point_animation_using_key_frames_new);
+	paukf->content_property = "KeyFrames";
+	
 	rdoe (dem, "KeyFrameCollection", col, Value::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
 
 	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Value::KEYFRAME);
@@ -1273,15 +1280,29 @@ xaml_init ()
 	XamlElementInfo *ckf = register_ghost_element ("ColorKeyFrame", keyfrm, Value::COLORKEYFRAME);
 	rdoe (dem, "DiscreteColorKeyFrame", ckf, Value::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
 	rdoe (dem, "LinearColorKeyFrame", ckf, Value::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
+//	rdoe (dem, "SplineColorKeyFrame", ckf, Value::SPLINECOLORKEYFRAME, (create_item_func) spline_color_key_frame_new);
 
 	XamlElementInfo *dkf = register_ghost_element ("DoubleKeyFrame", keyfrm, Value::DOUBLEKEYFRAME);
 	rdoe (dem, "DiscreteDoubleKeyFrame", dkf, Value::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
 	rdoe (dem, "LinearDoubleKeyFrame", dkf, Value::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
+	rdoe (dem, "SplineDoubleKeyFrame", dkf, Value::SPLINEDOUBLEKEYFRAME, (create_item_func) spline_double_key_frame_new);
 
 	XamlElementInfo *pkf = register_ghost_element ("PointKeyFrame", keyfrm, Value::POINTKEYFRAME);
 	rdoe (dem, "DiscretePointKeyFrame", pkf, Value::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
 	rdoe (dem, "LinearPointKeyFrame", pkf, Value::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
-	
+//	rdoe (dem, "SplinePointKeyFrame", pkf, Value::SPLINEPOINTKEYFRAME, (create_item_func) spline_point_key_frame_new);
+
+	rdoe (dem, "KeySpline", NULL, Value::KEYSPLINE, (create_item_func) key_spline_new);
+
+	rdoe (dem, "TimelineCollection", col, Value::TIMELINE_COLLECTION, (create_item_func) timeline_collection_new);
+
+	XamlElementInfo *timel = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
+	XamlElementInfo *tlg = rdoe (dem, "TimelineGroup", timel, Value::TIMELINEGROUP, (create_item_func) timeline_group_new);
+	XamlElementInfo *prltl = register_ghost_element ("ParallelTimeline", tlg, Value::PARALLELTIMELINE);
+
+	XamlElementInfo *sb = rdoe (dem, "Storyboard", prltl, Value::STORYBOARD, (create_item_func) storyboard_new);
+	sb->add_child = storyboard_add_child;
+
 	///
 	/// Triggers
 	///
@@ -1328,6 +1349,9 @@ xaml_init ()
 
 	rdoe (dem, "GradientStop", NULL, Value::GRADIENTSTOP, (create_item_func) gradient_stop_new);
 
+	rdoe (dem, "TileBrush", brush, Value::TILEBRUSH, (create_item_func) tile_brush_new);
+	rdoe (dem, "ImageBrush", brush, Value::IMAGEBRUSH, (create_item_func) image_brush_new);
+	rdoe (dem, "VideoBrush", brush, Value::VIDEOBRUSH, (create_item_func) video_brush_new);
 
 	///
 	/// Media
@@ -1339,7 +1363,14 @@ xaml_init ()
 	rdoe (dem, "MediaElement", mb, Value::MEDIAELEMENT, (create_item_func) media_element_new);
 	rdoe (dem, "MediaAttribute", NULL, Value::MEDIAATTRIBUTE, (create_item_func) media_attribute_new);
 	
-	
+	///
+	/// Text
+	///
+
+	XamlElementInfo *inl = register_ghost_element ("Inline", NULL, Value::INLINE);
+
+	rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) textblock_new);
+	rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
 #undef rdoe
 
 	default_namespace = new DefaultNamespace (dem);

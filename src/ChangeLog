@@ -1,3 +1,9 @@
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add support for loading all implemented (and semi
+	implemented) dependency object types.
+	* text.cpp|h: C style constructors.
+
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp (KeySpline): default should be 1,1 for

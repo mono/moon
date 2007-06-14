@@ -491,6 +491,12 @@ DependencyProperty *Glyphs::OriginYProperty;
 DependencyProperty *Glyphs::StyleSimulationsProperty;
 DependencyProperty *Glyphs::UnicodeStringProperty;
 
+Glyphs *
+glyphs_new ()
+{
+	return new Glyphs ();
+}
+
 Brush *
 glyphs_get_fill (Glyphs *glyphs)
 {
