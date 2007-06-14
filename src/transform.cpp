@@ -19,6 +19,17 @@ transform_get_transform (Transform *t, cairo_matrix_t *value)
 {
 	t->GetTransform (value);
 }
+void 
+Transform::GetTransform (cairo_matrix_t *value)
+{
+	g_warning ("Transform:GetTransform has been called. The derived class should have overridden it.");
+}
+
+Transform*
+transform_new ()
+{
+	return new Transform ();
+}
 
 
 

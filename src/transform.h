@@ -8,14 +8,14 @@ G_BEGIN_DECLS
 #include "runtime.h"
 
 class Transform : public DependencyObject {
- protected:
- 	Transform () { }
  public:
+ 	Transform () { }
 	virtual Value::Kind GetObjectType () { return Value::TRANSFORM; };
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void GetTransform (cairo_matrix_t *value) = 0;
+	virtual void GetTransform (cairo_matrix_t *value);
 };
 
+Transform* transform_new ();
 void   transform_get_transform (Transform *t, cairo_matrix_t *value);
 
 class RotateTransform : public Transform {

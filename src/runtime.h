@@ -310,6 +310,7 @@ class Downloader : public DependencyObject {
 	static DependencyProperty *StatusTextProperty;
 	static DependencyProperty *UriProperty;
 };
+Downloader* downloader_new ();
 
 class Visual : public DependencyObject {
  public:
@@ -584,7 +585,7 @@ class UIElement : public Visual {
 	//   Renders the given @item on the @surface.  the area that is
 	//   exposed is delimited by x, y, width, height
 	//
-	virtual void render (Surface *surface, int x, int y, int width, int height) = 0;
+	virtual void render (Surface *surface, int x, int y, int width, int height);
 
 	// 
 	// getbounds:
@@ -594,7 +595,7 @@ class UIElement : public Visual {
 	// Output:
 	//   the item->x1,y1,x2,y2 values are updated.
 	// 
-	virtual void getbounds () = 0;
+	virtual void getbounds ();
 
 	//
 	// get_xform_for
@@ -705,6 +706,7 @@ class Panel : public FrameworkElement {
 
 // For C API usage.
 void  panel_child_add      (Panel *panel, UIElement *item);
+Panel* panel_new ();
 
 //
 // Canvas Class, the only purpose is to have the Left/Top properties that

@@ -1,3 +1,9 @@
+2007-06-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* transform.cpp|h, media.cpp|h, brush.cpp|h, runtime.cpp|h:
+	Make all classes that inherit from DO constructable, and add
+	missing C-style constructors.
+
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: Hookup the resource collection.

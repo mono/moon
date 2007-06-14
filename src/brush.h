@@ -43,12 +43,12 @@ class Brush : public DependencyObject {
 	Brush () { }
 	virtual Value::Kind GetObjectType () { return Value::BRUSH; };
 
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement) = 0;
+	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 	virtual void SetupPattern (cairo_pattern_t *pattern, UIElement *uielement);
 
 	double GetTotalOpacity (UIElement *uielement);
 };
-
+Brush *		brush_new			();
 double		brush_get_opacity		(Brush *brush);
 void		brush_set_opacity		(Brush *brush, double opacity);
 TransformGroup	*brush_get_relative_transform	(Brush *brush);
@@ -88,7 +88,7 @@ class GradientBrush : public Brush {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void SetupPattern (cairo_pattern_t *pattern, UIElement *uielement);
 };
-
+GradientBrush* gradient_brush_new ();
 ColorInterpolationMode gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
 void gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode);
 GradientStopCollection *gradient_brush_get_gradient_stops (GradientBrush *brush);
@@ -107,6 +107,7 @@ class TileBrush : public Brush {
 	virtual Value::Kind GetObjectType () { return Value::TILEBRUSH; }
 };
 
+TileBrush*	tile_brush_new			();
 AlignmentX	tile_brush_get_alignment_x	(TileBrush *brush);
 void		tile_brush_set_alignment_x	(TileBrush *brush, AlignmentX alignment);
 AlignmentY	tile_brush_get_alignment_y	(TileBrush *brush);
@@ -123,6 +124,8 @@ class ImageBrush : public TileBrush {
 
 };
 
+ImageBrush* image_brush_new ();
+
 class VideoBrush : public TileBrush {
  public:
 	static DependencyProperty *SourceNameProperty;
@@ -130,6 +133,8 @@ class VideoBrush : public TileBrush {
 	virtual Value::Kind GetObjectType () { return Value::VIDEOBRUSH; }
 
 };
+
+VideoBrush* video_brush_new ();
 
 class LinearGradientBrush : public GradientBrush {
  public:

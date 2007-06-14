@@ -51,6 +51,12 @@ DependencyProperty* Brush::OpacityProperty;
 DependencyProperty* Brush::RelativeTransformProperty;
 DependencyProperty* Brush::TransformProperty;
 
+Brush*
+brush_new ()
+{
+	return new Brush ();
+}
+
 double
 brush_get_opacity (Brush *brush)
 {
@@ -132,6 +138,12 @@ Brush::SetupPattern (cairo_pattern_t *pattern, UIElement *uielement)
 	// TODO - optimization, check for empty/identity matrix too ?
 
 	cairo_pattern_set_matrix (pattern, &matrix);
+}
+
+void
+Brush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+{
+	g_warning ("Brush:SetupBrush has been called. The derived class should have overridden it.");
 }
 
 //
@@ -395,6 +407,12 @@ DependencyProperty* GradientBrush::ColorInterpolationModeProperty;
 DependencyProperty* GradientBrush::GradientStopsProperty;
 DependencyProperty* GradientBrush::MappingModeProperty;
 DependencyProperty* GradientBrush::SpreadMethodProperty;
+
+GradientBrush*
+gradient_brush_new ()
+{
+	return new GradientBrush ();
+}
 
 ColorInterpolationMode
 gradient_brush_get_color_interpolation_mode (GradientBrush *brush)
@@ -742,6 +760,12 @@ DependencyProperty* TileBrush::AlignmentXProperty;
 DependencyProperty* TileBrush::AlignmentYProperty;
 DependencyProperty* TileBrush::StretchProperty;
 
+TileBrush*
+tile_brush_new ()
+{
+	return new TileBrush ();
+}
+
 AlignmentX
 tile_brush_get_alignment_x (TileBrush *brush)
 {
@@ -785,11 +809,23 @@ tile_brush_set_stretch (TileBrush *brush, Stretch stretch)
 DependencyProperty* ImageBrush::DownloadProgressProperty;
 DependencyProperty* ImageBrush::ImageSourceProperty;
 
+ImageBrush*
+image_brush_new ()
+{
+	return new ImageBrush ();
+}
+
 //
 // VideoBrush
 //
 
 DependencyProperty* VideoBrush::SourceNameProperty;
+
+VideoBrush*
+video_brush_new ()
+{
+	return new VideoBrush ();
+}
 
 //
 //

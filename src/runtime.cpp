@@ -690,6 +690,18 @@ UIElement::~UIElement ()
 	SetValue (ResourcesProperty, NULL);
 }
 
+void
+UIElement::getbounds ()
+{
+	g_warning ("UIElement:getbounds has been called. The derived class should have overridden it.");
+}
+
+void
+UIElement::render (Surface *surface, int x, int y, int width, int height)
+{
+	g_warning ("UIElement:render has been called. The derived class should have overridden it.");
+}
+
 FrameworkElement::FrameworkElement ()
 {
 }
@@ -783,6 +795,12 @@ void
 panel_child_add (Panel *panel, UIElement *child)
 {
 	collection_add (panel->children, child);
+}
+
+Panel*
+panel_new ()
+{
+	return new Panel ();
 }
 
 Panel::Panel ()
@@ -2106,6 +2124,12 @@ downloader_init ()
 	Downloader::StatusTextProperty = DependencyObject::Register (Value::DOWNLOADER, "StatusText", Value::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
 
+}
+
+Downloader*
+downloader_new ()
+{
+	return new Downloader ();
 }
 
 Type* Type::types [];

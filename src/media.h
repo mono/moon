@@ -16,6 +16,7 @@ class MediaAttribute : public DependencyObject {
 	MediaAttribute () { }
 	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
 };
+MediaAttribute* media_attribute_new ();
 
 
 class MediaBase : public FrameworkElement {
