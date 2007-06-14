@@ -1,4 +1,4 @@
-SUBDIRS = test
+SUBDIRS = test samples
 
 lib_LTLIBRARIES = libmoonplugin.la
 

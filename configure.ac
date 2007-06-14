@@ -135,4 +135,5 @@ Makefile
 src/Makefile
 plugin/Makefile
 plugin/test/Makefile
+plugin/samples/Makefile
 ])
