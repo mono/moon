@@ -1,0 +1,51 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Height="20" Width="20" Fill="white" Stroke="black" Canvas.Left="10" Canvas.Top="10"/>
+
+	<Rectangle Height="20" Width="20" Fill="white" Stroke="black" Canvas.Left="110" Canvas.Top="10">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="1,0,0,1,0,0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="20" Width="20" Fill="white" Stroke="black" Canvas.Left="210" Canvas.Top="10">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="Identity" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="20" Width="20" Fill="red" Stroke="black" Canvas.Left="10" Canvas.Top="60">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="1.5,0,0,1,0,0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="20" Width="20" Fill="red" Stroke="black" Canvas.Left="110" Canvas.Top="60">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="1,0,0,1.5,-5,-5" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="20" Width="20" Fill="red" Stroke="black" Canvas.Left="210" Canvas.Top="60">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="1.5,0,0,1.5,0,-5" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="20" Width="20" Fill="green" Stroke="black" Canvas.Left="10" Canvas.Top="110">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="2,0.5,0,1,0,0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="20" Width="20" Fill="green" Stroke="black" Canvas.Left="110" Canvas.Top="110">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="1,0,0.5,1,0,0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="20" Width="20" Fill="green" Stroke="black" Canvas.Left="210" Canvas.Top="110">
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="1,0.5,0.5,1,0,0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+</Canvas>
