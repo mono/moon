@@ -34,8 +34,7 @@ get_pango_stretch (FontStretches stretch)
 		return PANGO_STRETCH_CONDENSED;
 	case FontStretchesSemiCondensed:
 		return PANGO_STRETCH_SEMI_CONDENSED;
-	case FontStretchesNormal:
-	case FontStretchesMedium: // alias for FontStretchesNormal
+	case FontStretchesNormal: // FontStretchesMedium (alias)
 	default:
 		return PANGO_STRETCH_NORMAL;
 	case FontStretchesSemiExpanded:
@@ -87,6 +86,12 @@ DependencyProperty *Inline::FontStyleProperty;
 DependencyProperty *Inline::FontWeightProperty;
 DependencyProperty *Inline::ForegroundProperty;
 DependencyProperty *Inline::TextDecorationsProperty;
+
+Inline *
+inline_new (void)
+{
+	return new Inline ();
+}
 
 char *
 inline_get_font_family (Inline *inline_)
@@ -293,6 +298,12 @@ TextBlock::Draw (Surface *s, bool render)
 		//pango_cairo_update_layout (cr, layout);
 		pango_cairo_show_layout (s->cairo, layout);
 	}
+}
+
+TextBlock *
+textblock_new (void)
+{
+	return new TextBlock ();
 }
 
 double

@@ -7,16 +7,16 @@ G_BEGIN_DECLS
 #include "runtime.h"
 
 enum FontStretches {
-	FontStretchesUltraCondensed,
-	FontStretchesExtraCondensed,
-	FontStretchesCondensed,
-	FontStretchesSemiCondensed,
-	FontStretchesNormal,
-	FontStretchesMedium,
-	FontStretchesSemiExpanded,
-	FontStretchesExpanded,
-	FontStretchesExtraExpanded,
-	FontStretchesUltraExpanded
+	FontStretchesUltraCondensed = 1,
+	FontStretchesExtraCondensed = 2,
+	FontStretchesCondensed      = 3,
+	FontStretchesSemiCondensed  = 4,
+	FontStretchesNormal         = 5,
+	FontStretchesMedium         = 5,
+	FontStretchesSemiExpanded   = 6,
+	FontStretchesExpanded       = 7,
+	FontStretchesExtraExpanded  = 8,
+	FontStretchesUltraExpanded  = 9
 };
 
 enum FontStyles {
@@ -26,22 +26,22 @@ enum FontStyles {
 };
 
 enum FontWeights {
-	FontWeightsThin,
-	FontWeightsExtraLight,
-	FontWeightsUltraLight,
-	FontWeightsLight,
-	FontWeightsNormal,
-	FontWeightsRegular,
-	FontWeightsMedium,
-	FontWeightsSemiBold,
-	FontWeightsDemiBold,
-	FontWeightsBold,
-	FontWeightsExtraBold,
-	FontWeightsUltraBold,
-	FontWeightsBlack,
-	FontWeightsHeavy,
-	FontWeightsExtraBlack,
-	FontWeightsUltraBlack
+	FontWeightsThin       = 100,
+	FontWeightsExtraLight = 200,
+	FontWeightsUltraLight = 200,
+	FontWeightsLight      = 300,
+	FontWeightsNormal     = 400,
+	FontWeightsRegular    = 400,
+	FontWeightsMedium     = 500,
+	FontWeightsSemiBold   = 600,
+	FontWeightsDemiBold   = 600,
+	FontWeightsBold       = 700,
+	FontWeightsExtraBold  = 800,
+	FontWeightsUltraBold  = 800,
+	FontWeightsBlack      = 900,
+	FontWeightsHeavy      = 900,
+	FontWeightsExtraBlack = 950,
+	FontWeightsUltraBlack = 950
 };
 
 enum TextDecorations {
@@ -70,6 +70,8 @@ class Inline : public DependencyObject {
 	Inline () { }
 	virtual Value::Kind GetObjectType () { return Value::INLINE; }	
 };
+
+Inline *inline_new (void);
 
 char *inline_get_font_family (Inline *inline_);
 void inline_set_font_family (Inline *inline_, char *value);
@@ -123,6 +125,8 @@ public:
 private:
 	void Draw (Surface *s, bool render);
 };
+
+TextBlock *textblock_new (void);
 
 double textblock_get_actual_height (TextBlock *textblock);
 void textblock_set_actual_height (TextBlock *textblock, double value);

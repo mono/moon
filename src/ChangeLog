@@ -1,3 +1,10 @@
+2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp: Fixed the font_widths and font_stretches maps to
+	reflect the numeric enum values defined in text.h (and msdn docs).
+
+	* text.h: Sync enum values to documented numeric values.
+
 2007-06-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* transform.cpp|h, media.cpp|h, brush.cpp|h, runtime.cpp|h:

@@ -64,8 +64,6 @@ DependencyProperty *MediaElement::NaturalVideoWidthProperty;
 DependencyProperty *MediaElement::PositionProperty;
 DependencyProperty *MediaElement::VolumeProperty;
 
-DependencyProperty *MediaElement::AttributesProperty;
-
 
 void
 MediaElement::SetSource (DependencyObject *downloader, char *name)

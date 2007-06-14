@@ -21,6 +21,7 @@
 #include "shape.h"
 #include "animation.h"
 #include "geometry.h"
+#include "text.h"
 
 #define READ_BUFFER 1024
 
@@ -683,43 +684,43 @@ enum_map_t fill_rule_map [] = {
 };
 
 enum_map_t font_stretches_map [] = {
-	{ "UltraCondensed", 0 },
-	{ "ExtraCondensed", 1 },
-	{ "Condensed", 2 },
-	{ "SemiCondensed", 3 },
-	{ "Normal", 4 },
-	{ "Medium", 5 },
-	{ "SemiExpanded", 6 },
-	{ "Expanded", 7 },
-	{ "ExtraExpanded", 8 },
-	{ "UltraExpanded", 9 },
+	{ "UltraCondensed", 1 },
+	{ "ExtraCondensed", 2 },
+	{ "Condensed",      3 },
+	{ "SemiCondensed",  4 },
+	{ "Normal",         5 },
+	{ "Medium",         5 },
+	{ "SemiExpanded",   6 },
+	{ "Expanded",       7 },
+	{ "ExtraExpanded",  8 },
+	{ "UltraExpanded",  9 },
 	{ NULL, 0 },
 };
 
 enum_map_t font_styles_map [] = {
-	{ "Normal", 0 },
+	{ "Normal",  0 },
 	{ "Oblique", 1 },
-	{ "Italic", 2 },
+	{ "Italic",  2 },
 	{ NULL, 0 },
 };
 
 enum_map_t font_weights_map [] = {
-	{ "Thin", 0 },
-	{ "ExtraLight", 1 },
-	{ "UltraLight", 2 },
-	{ "Light", 3 },
-	{ "Normal", 4 },
-	{ "Regular", 5 },
-	{ "Medium", 6 },
-	{ "SemiBold", 7 },
-	{ "DemiBold", 8 },
-	{ "Bold", 9 },
-	{ "ExtraBold", 10 },
-	{ "UltraBold", 11 },
- 	{ "Black", 12 },
-	{ "Heavy", 13 },
-	{ "ExtraBlack", 14 },
-	{ "UltraBlack", 15 },
+	{ "Thin",       100 },
+	{ "ExtraLight", 200 },
+	{ "UltraLight", 200 },
+	{ "Light",      300 },
+	{ "Normal",     400 },
+	{ "Regular",    400 },
+	{ "Medium",     500 },
+	{ "SemiBold",   600 },
+	{ "DemiBold",   600 },
+	{ "Bold",       700 },
+	{ "ExtraBold",  800 },
+	{ "UltraBold",  800 },
+ 	{ "Black",      900 },
+	{ "Heavy",      900 },
+	{ "ExtraBlack", 950 },
+	{ "UltraBlack", 950 },
 	{ NULL, 0 },
 };
 
@@ -1176,6 +1177,14 @@ xaml_init ()
 	rdoe (dem, "Rectangle", shape, Value::RECTANGLE, (create_item_func) rectangle_new);
 
 	///
+	/// Text
+	///
+	
+	//rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
+	//rdoe (dem, "Inline", do, Value::INLINE, (create_item_func) inline_new);
+	rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) textblock_new);
+	
+	///
 	/// Geometry
 	///
 
@@ -1327,5 +1336,4 @@ xaml_init ()
 	g_hash_table_insert (enum_map, (char *) "TextDecorations", GINT_TO_POINTER (text_decorations_map));
 	g_hash_table_insert (enum_map, (char *) "TextWrapping", GINT_TO_POINTER (text_wrapping_map));
 	g_hash_table_insert (enum_map, (char *) "Visibility", GINT_TO_POINTER (visibility_map));
-
 }
