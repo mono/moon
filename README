@@ -42,6 +42,12 @@ This is not likely the final version of this code.
 
 		ClassName *class_name_new ();
 
+	All classes that inherit from DependencyObject have to be constructable,
+	even though their C# counterparts are abstract, because their C# 
+	counterparts still have a public constructor (there can be derived 
+	classes with no corresponding unmanaged representation, and we have
+	to use the C class of the abstract C# class).
+
 	Destruction of these objects is also done in the C-like way:
 
 		class_name_destroy (ClassName *object)
