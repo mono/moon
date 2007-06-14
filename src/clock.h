@@ -306,6 +306,7 @@ class TimelineCollection : public Collection {
 	virtual Value::Kind GetElementType() { return Value::TIMELINE; }
 };
 
+TimelineCollection * timeline_collection_new ();
 
 class TimelineGroup : public Timeline {
  public:
@@ -329,7 +330,7 @@ class TimelineGroup : public Timeline {
 	TimelineCollection *child_timelines;
 };
 
-
+TimelineGroup * timeline_group_new ();
 
 
 
@@ -340,6 +341,9 @@ class ParallelTimeline : public TimelineGroup {
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };
+
+ParallelTimeline * parallel_timeline_new ();
+
 
 G_END_DECLS
 

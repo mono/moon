@@ -533,6 +533,12 @@ TimelineGroup::~TimelineGroup ()
 	base_unref (child_timelines); 
 }
 
+TimelineGroup *
+timeline_group_new ()
+{
+	return new TimelineGroup ();
+}
+
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
@@ -578,6 +584,19 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 
 	return d;
 }
+
+ParallelTimeline *
+parallel_timeline_new ()
+{
+	return new ParallelTimeline ();
+}
+
+TimelineCollection *
+timeline_collection_new ()
+{
+	return new TimelineCollection ();
+}
+
 
 void
 clock_init ()

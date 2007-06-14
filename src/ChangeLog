@@ -1,3 +1,7 @@
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
+	* clock.cpp|h: C style constructors.
+
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: remove the hack UnmanagedDownloader from
