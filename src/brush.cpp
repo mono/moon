@@ -89,9 +89,38 @@ brush_set_transform (Brush *brush, TransformGroup* transform_group)
 	brush->SetValue (Brush::TransformProperty, Value (transform_group));
 }
 
-void
-Brush::SetupPattern (cairo_pattern_t *pattern)
+/*
+ * Combine recursively UIElement Opacity with Brush Opacity
+ */
+double
+Brush::GetTotalOpacity (UIElement *uielement)
 {
+	double opacity = 1.0;
+	// apply UIElement opacity and Brush opacity on color's alpha
+	if (uielement) {
+		// this is recursive to parents
+		while (uielement) {
+			double uielement_opacity = uielement_get_opacity (uielement);
+			if (uielement_opacity < 1.0)
+				opacity *= uielement_opacity;
+
+			// FIXME: we should be calling FrameworkElement::Parent
+			uielement = uielement->parent;
+		}
+	}
+
+	double brush_opacity = brush_get_opacity (this);
+	if (brush_opacity < 1.0)
+		opacity *= brush_opacity;
+
+	return opacity;
+}
+
+void
+Brush::SetupPattern (cairo_pattern_t *pattern, UIElement *uielement)
+{
+	// NOTE: sadly we cannot handle Opacity at this level, each brush sub-type needs to handle it
+
 	Transform *transform = brush_get_transform (this);
 	if (!transform)
 		return;
@@ -116,27 +145,12 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 {
 	Color *color = solid_color_brush_get_color (this);
 
-	double alpha = color->a;
 	// apply UIElement opacity and Brush opacity on color's alpha
-	if (uielement) {
-		// this is recursive to parents
-		while (uielement) {
-			double uielement_opacity = uielement_get_opacity (uielement);
-			if (uielement_opacity < 1.0)
-				alpha *= uielement_opacity;
+	double alpha = color->a * GetTotalOpacity (uielement);
 
-			// FIXME: we should be calling FrameworkElement::Parent
-			uielement = uielement->parent;
-		}
-	}
-
-	double brush_opacity = brush_get_opacity (this);
-	if (brush_opacity < 1.0)
-		alpha *= brush_opacity;
-	
 	cairo_set_source_rgba (target, color->r, color->g, color->b, alpha);
 
-	// Transform does not apply to a solid color brush
+	// [Relative]Transform do not apply to solid color brush
 }
 
 Color*
@@ -479,7 +493,7 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-GradientBrush::SetupPattern (cairo_pattern_t *pattern)
+GradientBrush::SetupPattern (cairo_pattern_t *pattern, UIElement *uielement)
 {
 	GradientSpreadMethod gsm = gradient_brush_get_spread (this);
 	cairo_pattern_set_extend (pattern, convert_gradient_spread_method (gsm));
@@ -488,14 +502,16 @@ GradientBrush::SetupPattern (cairo_pattern_t *pattern)
 
 	// TODO - ColorInterpolationModeProperty is ignored (map to ?)
 
+	double opacity = GetTotalOpacity (uielement);
 	for (GSList *g = children->list; g != NULL; g = g->next) {
 		GradientStop *stop = (GradientStop*) g->data;
 		Color *color = gradient_stop_get_color (stop);
 		double offset = gradient_stop_get_offset (stop);
-		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a);
+		double alpha = (opacity < 1.0) ? color->a * opacity: color->a;
+		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
 	}
 
-	Brush::SetupPattern (pattern);
+	Brush::SetupPattern (pattern, uielement);
 }
 
 //
@@ -553,7 +569,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 
-	GradientBrush::SetupPattern (pattern);
+	GradientBrush::SetupPattern (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
@@ -665,7 +681,7 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		pattern = cairo_pattern_create_radial (x0, y0, 0.0, x1, y1, rh);
 	}
 
-	GradientBrush::SetupPattern (pattern);
+	GradientBrush::SetupPattern (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
@@ -719,6 +735,50 @@ gradient_stop_set_offset (GradientStop *stop, double offset)
 }
 
 //
+// TileBrush
+//
+
+DependencyProperty* TileBrush::AlignmentXProperty;
+DependencyProperty* TileBrush::AlignmentYProperty;
+DependencyProperty* TileBrush::StretchProperty;
+
+AlignmentX
+tile_brush_get_alignment_x (TileBrush *brush)
+{
+	return (AlignmentX) brush->GetValue (TileBrush::AlignmentXProperty)->AsInt32();
+}
+
+void
+tile_brush_set_alignment_x (TileBrush *brush, AlignmentX alignment)
+{
+	brush->SetValue (TileBrush::AlignmentXProperty, Value (alignment));
+}
+
+AlignmentY
+tile_brush_get_alignment_y (TileBrush *brush)
+{
+	return (AlignmentY) brush->GetValue (TileBrush::AlignmentYProperty)->AsInt32();
+}
+
+void
+tile_brush_set_alignment_y (TileBrush *brush, AlignmentY alignment)
+{
+	brush->SetValue (TileBrush::AlignmentYProperty, Value (alignment));
+}
+
+Stretch
+tile_brush_get_stretch (TileBrush *brush)
+{
+	return (Stretch) brush->GetValue (TileBrush::StretchProperty)->AsInt32();
+}
+
+void
+tile_brush_set_stretch (TileBrush *brush, Stretch stretch)
+{
+	brush->SetValue (TileBrush::StretchProperty, Value (stretch));
+}
+
+//
 //
 //
 
@@ -749,7 +809,12 @@ brush_init ()
 	RadialGradientBrush::RadiusXProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "RadiusX",  new Value (0.5));
 	RadialGradientBrush::RadiusYProperty = DependencyObject::Register (Value::RADIALGRADIENTBRUSH, "RadiusY",  new Value (0.5));
 
-	/* GradientStop */
+	/* GradientStop fields */
 	GradientStop::ColorProperty = DependencyObject::Register (Value::GRADIENTSTOP, "Color", new Value (Color (0x00FFFFFF)));
 	GradientStop::OffsetProperty = DependencyObject::Register (Value::GRADIENTSTOP, "Offset", new Value (0.0));
+
+	/* TileBrush fields */
+	TileBrush::AlignmentXProperty = DependencyObject::Register (Value::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
+	TileBrush::AlignmentYProperty = DependencyObject::Register (Value::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter));
+	TileBrush::StretchProperty = DependencyObject::Register (Value::TILEBRUSH, "Stretch", new Value (StretchFill));
 }

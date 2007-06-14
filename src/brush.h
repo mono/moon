@@ -5,6 +5,18 @@ G_BEGIN_DECLS
 
 #include "runtime.h"
 
+enum AlignmentX {
+	AlignmentXLeft,
+	AlignmentXCenter,
+	AlignmentXRight
+};
+
+enum AlignmentY {
+	AlignmentYTop,
+	AlignmentYCenter,
+	AlignmentYBottom
+};
+
 enum BrushMappingMode {
 	BrushMappingModeAbsolute,
 	BrushMappingModeRelativeToBoundingBox
@@ -32,7 +44,9 @@ class Brush : public DependencyObject {
 	virtual Value::Kind GetObjectType () { return Value::BRUSH; };
 
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement) = 0;
-	virtual void SetupPattern (cairo_pattern_t *pattern);
+	virtual void SetupPattern (cairo_pattern_t *pattern, UIElement *uielement);
+
+	double GetTotalOpacity (UIElement *uielement);
 };
 
 double		brush_get_opacity		(Brush *brush);
@@ -72,7 +86,7 @@ class GradientBrush : public Brush {
 	virtual Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void SetupPattern (cairo_pattern_t *pattern);
+	virtual void SetupPattern (cairo_pattern_t *pattern, UIElement *uielement);
 };
 
 ColorInterpolationMode gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
@@ -85,8 +99,20 @@ GradientSpreadMethod gradient_brush_get_spread (GradientBrush *brush);
 void gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method);
 
 class TileBrush : public Brush {
+ public:
+	static DependencyProperty* AlignmentXProperty;
+	static DependencyProperty* AlignmentYProperty;
+	static DependencyProperty* StretchProperty;
+
 	virtual Value::Kind GetObjectType () { return Value::TILEBRUSH; }
 };
+
+AlignmentX	tile_brush_get_alignment_x	(TileBrush *brush);
+void		tile_brush_set_alignment_x	(TileBrush *brush, AlignmentX alignment);
+AlignmentY	tile_brush_get_alignment_y	(TileBrush *brush);
+void		tile_brush_set_alignment_y	(TileBrush *brush, AlignmentY alignment);
+Stretch		tile_brush_get_stretch		(TileBrush *brush);
+void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 class ImageBrush : public TileBrush {
 	virtual Value::Kind GetObjectType () { return Value::IMAGEBRUSH; }

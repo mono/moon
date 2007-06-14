@@ -1,3 +1,9 @@
+2007-06-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* brush.cpp|h: Refactor Opacity to make it reusable to other brushes
+	(as it cannot be globally applied). Added DP, and related functions,
+	to TileBrush.
+
 2007-06-14  Miguel de Icaza  <miguel@novell.com>
 
 	* Improve the destruction scenario to release the resources that
