@@ -378,6 +378,8 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_abort_func abort,
 			       downloader_get_response_text_func get_response);
 
+void downloader_write (Downloader *dl, guchar *buf, gsize n);
+
 class Visual : public DependencyObject {
  public:
 	Visual () {};

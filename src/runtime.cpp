@@ -2144,6 +2144,12 @@ void downloader_set_functions (downloader_create_state_func create_state,
 				  get_response);
 }
 
+void
+downloader_write (Downloader *dl, guchar *buf, gsize n)
+{
+	dl->Write (buf, n);
+}
+
 
 //
 // UIElement
