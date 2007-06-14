@@ -1,5 +1,19 @@
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
+	* brush.h, geometry.h, animation.h, clock.h: add GetElementType
+	collection overloads.
+
+	* type.cpp: resync to track UIElement : Visual relationship.
+
+	* runtime.h: add Collection::GetElementType, and add overloads
+	(some commented out) for the collections listed.  Also, fix
+	UIElement's superclass to be Visual.
+
+	* runtime.cpp (Add): make sure we're only adding subclasses of our
+	element type.
+
+2007-06-13  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp (AddChild): just pass the child, unwrapped.
 
 	* runtime.h: remove the Value* overloads for Collection::Add and

@@ -66,6 +66,8 @@ base_unref (Base *base)
 void
 Collection::Add (DependencyObject *data)
 {
+	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
+
 	list = g_slist_append (list, data);
 	base_ref (data);
 	data->SetParent (this);

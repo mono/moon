@@ -374,7 +374,8 @@ class Collection : public DependencyObject {
 
 	Collection () : list(NULL), closure(NULL) {}
 	~Collection ();
-	Value::Kind GetObjectType () { return Value::COLLECTION; };	
+	virtual Value::Kind GetObjectType () { return Value::COLLECTION; };	
+	virtual Value::Kind GetElementType () { return Value::DEPENDENCY_OBJECT; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -387,6 +388,7 @@ class VisualCollection : public Collection {
  public:
 	VisualCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::VISUAL_COLLECTION; }
+	virtual Value::Kind GetElementType () { return Value::VISUAL; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -396,6 +398,7 @@ class TriggerCollection : public Collection {
  public:
 	TriggerCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TRIGGER_COLLECTION; }
+	virtual Value::Kind GetElementType () { return Value::EVENTTRIGGER; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -405,6 +408,8 @@ class TriggerActionCollection : public Collection {
  public:
 	TriggerActionCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TRIGGERACTION_COLLECTION; }
+	/* this may seem wrong, but it's what the TriggerActionCollection mandates */
+	virtual Value::Kind GetElementType () { return Value::BEGINSTORYBOARD; }
 };
 
 class ResourceCollection : public Collection {
@@ -420,6 +425,7 @@ class StrokeCollection : public Collection {
  public:
 	StrokeCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::STROKE_COLLECTION; }
+	//virtual Value::Kind GetElementType () { return Value::STROKE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -429,6 +435,7 @@ class StylusPointCollection : public Collection {
  public:
 	StylusPointCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::STYLUSPOINT_COLLECTION; }
+	//virtual Value::Kind GetElementType () { return Value::STYLUSPOINT; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -438,6 +445,7 @@ class TimelineMarkerCollection : public Collection {
  public:
 	TimelineMarkerCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TIMELINEMARKER_COLLECTION; }
+	//virtual Value::Kind GetElementType () { return Value::TIMELINEMARKER; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -447,6 +455,7 @@ class MediaAttributeCollection : public Collection {
  public:
 	MediaAttributeCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE_COLLECTION; }
+	//virtual Value::Kind GetElementType () { return Value::MEDIAATTRIBUTE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -456,6 +465,7 @@ class Inlines : public Collection {
  public:
 	Inlines () {}
 	virtual Value::Kind GetObjectType () { return Value::INLINES; }
+	//virtual Value::Kind GetElementType () { return Value::INLINE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -542,7 +552,7 @@ void          event_trigger_fire_actions (EventTrigger *trigger);
 //
 // Item class
 //
-class UIElement : public DependencyObject {
+class UIElement : public Visual {
  public:
 	UIElement ();
 		

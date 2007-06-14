@@ -406,26 +406,6 @@ RectangleGeometry::Draw (Surface *s)
 }
 
 //
-// PathFigureCollection
-//
-
-void
-PathSegmentCollection::Add (void *data)
-{
-	Value *value = (Value*) data;
-	PathSegment *ps = value->AsPathSegment ();
-	Collection::Add (ps);
-}
-
-void
-PathSegmentCollection::Remove (void *data)
-{
-	Value *value = (Value*) data;
-	PathSegment *ps = value->AsPathSegment ();
-	Collection::Remove (ps);
-}
-
-//
 // PathFigure
 //
 

@@ -138,6 +138,8 @@ class GradientStopCollection : public Collection {
  public:
 	GradientStopCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::GRADIENTSTOP_COLLECTION; }
+
+	virtual Value::Kind GetElementType() { return Value::GRADIENTSTOP; }
 };
 
 GradientStopCollection *gradient_stop_collection_new ();

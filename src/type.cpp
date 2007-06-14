@@ -160,7 +160,7 @@ void types_init ()
 	Type::RegisterType ("TriggerAction", Value::TRIGGERACTION, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("TriggerActionCollection", Value::TRIGGERACTION_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("TriggerCollection", Value::TRIGGER_COLLECTION, Value::COLLECTION);
-	Type::RegisterType ("UIElement", Value::UIELEMENT, Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("UIElement", Value::UIELEMENT, Value::VISUAL);
 	Type::RegisterType ("VideoBrush", Value::VIDEOBRUSH, Value::TILEBRUSH);
 	Type::RegisterType ("Visual", Value::VISUAL, Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("VisualCollection", Value::VISUAL_COLLECTION, Value::COLLECTION);
