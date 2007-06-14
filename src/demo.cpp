@@ -1,3 +1,4 @@
+#define TEXT_DEMO
 #define VIDEO_DEMO
 #define XAML_DEMO
 #include <string.h>
@@ -13,6 +14,7 @@
 #include "animation.h"
 #include "shape.h"
 #include "media.h"
+#include "text.h"
 
 static UIElement *v;
 static Rectangle *r;
@@ -21,6 +23,7 @@ static Rectangle *square;
 static RotateTransform *r_trans;
 static RotateTransform *v_trans;
 static ScaleTransform *s_trans;
+static RotateTransform *t_trans;
 
 extern NameScope *global_NameScope;
 
@@ -183,7 +186,8 @@ main (int argc, char *argv [])
 		r_trans = new RotateTransform ();
 		v_trans = new RotateTransform ();
 		s_trans = new ScaleTransform ();
-
+		t_trans = new RotateTransform ();
+		
 		r = rectangle_new ();
 		framework_element_set_width (r, 50.0);
 		framework_element_set_height (r, 50.0);
@@ -213,6 +217,17 @@ main (int argc, char *argv [])
 		shape_set_stroke (r2, scb);
 		panel_child_add (canvas, r2);
 		
+#ifdef TEXT_DEMO
+		TextBlock *tb = textblock_new ();
+		textblock_set_font_size (tb, 12.0);
+		textblock_set_font_weight (tb, FontWeightsBold);
+		textblock_set_text (tb, "This is a Moonlight Demo");
+		tb->SetValue (Canvas::LeftProperty, Value (50.0));
+		tb->SetValue (Canvas::TopProperty, Value (50.0));
+		item_set_render_transform (tb, t_trans);
+		panel_child_add (canvas, tb);
+#endif
+		
 #ifdef XAML_DEMO
 		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", NULL));
 #endif
@@ -239,6 +254,7 @@ main (int argc, char *argv [])
 		sb = new Storyboard ();
 
 		DoubleAnimation *r_anim = new DoubleAnimation ();
+		DoubleAnimation *t_anim = new DoubleAnimation ();
 		DoubleAnimation *v_anim = new DoubleAnimation ();
 		DoubleAnimation *sx_anim = new DoubleAnimation ();
 		DoubleAnimation *sy_anim = new DoubleAnimation ();
@@ -275,7 +291,17 @@ main (int argc, char *argv [])
 		sb->AddChild (v_anim);
 		Storyboard::SetTargetName (v_anim, "video-transform");
 		Storyboard::SetTargetProperty (v_anim, "Angle");
-
+		
+		// The text rotates completely around every 6
+		// seconds, and stops after the third time around
+		global_NameScope->RegisterName ("text-transform", t_trans);
+		t_anim->SetTo (-360.0);
+		t_anim->SetRepeatBehavior (RepeatBehavior (3.0));
+		t_anim->SetDuration (Duration::FromSeconds (6));
+		sb->AddChild (t_anim);
+		Storyboard::SetTargetName (t_anim, "text-transform");
+		Storyboard::SetTargetProperty (t_anim, "Angle");
+		
 		// for the scaled items, we scale X and Y differently,
 		// the X scaling is completed in 6 seconds, and the y
 		// in 7.

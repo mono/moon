@@ -1,3 +1,11 @@
+2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* demo.cpp (main): Draw some text
+
+	* text.cpp (text_init): Set a default solid black brush for
+	foreground properties on Inline/TextBlock objects.
+	(Draw): Setup the Brush stuff before drawing.
+
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add support for loading all implemented (and semi

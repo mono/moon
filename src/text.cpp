@@ -23,7 +23,7 @@
 
 
 static PangoStretch
-get_pango_stretch (FontStretches stretch)
+font_stretch (FontStretches stretch)
 {
 	switch (stretch) {
 	case FontStretchesUltraCondensed:
@@ -49,7 +49,7 @@ get_pango_stretch (FontStretches stretch)
 }
 
 static PangoStyle
-get_pango_style (FontStyles style)
+font_style (FontStyles style)
 {
 	switch (style) {
 	case FontStylesNormal:
@@ -63,7 +63,7 @@ get_pango_style (FontStyles style)
 }
 
 static PangoWeight
-get_pango_weight (FontWeights weight)
+font_weight (FontWeights weight)
 {
 	// FontWeights and PangoWeight values map exactly
 	
@@ -281,8 +281,7 @@ TextBlock::Draw (Surface *s, bool render)
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
 	if ((text = textblock_get_text (this))) {
-		if (!layout)
-			layout = pango_cairo_create_layout (s->cairo);
+		layout = pango_cairo_create_layout (s->cairo);
 		
 		// FIXME: cache the PangoFontDescription
 		font = pango_font_description_new ();
@@ -291,25 +290,25 @@ TextBlock::Draw (Surface *s, bool render)
 			pango_font_description_set_family (font, family);
 		
 		stretch = textblock_get_font_stretch (this);
-		pango_font_description_set_stretch (font, get_pango_stretch (stretch));
+		pango_font_description_set_stretch (font, font_stretch (stretch));
 		
 		weight = textblock_get_font_weight (this);
-		pango_font_description_set_weight (font, get_pango_weight (weight));
+		pango_font_description_set_weight (font, font_weight (weight));
 		
 		style = textblock_get_font_style (this);
-		pango_font_description_set_style (font, get_pango_style (style));
+		pango_font_description_set_style (font, font_style (style));
 		
 		size = textblock_get_font_size (this);
-		pango_font_description_set_absolute_size (font, size);
+		pango_font_description_set_size (font, (int) (size * 1000.0));
 		
 		pango_layout_set_font_description (layout, font);
 		pango_layout_set_text (layout, text, -1);
 		
-		//pango_cairo_update_layout (cr, layout);
-		pango_cairo_show_layout (s->cairo, layout);
-		
 		if ((foreground = textblock_get_foreground (this)))
 			foreground->SetupBrush (s->cairo, this);
+		
+		//pango_cairo_update_layout (s->cairo, layout);
+		pango_cairo_show_layout (s->cairo, layout);
 		
 		if (render)
 			cairo_fill (s->cairo);
@@ -606,24 +605,31 @@ glyphs_set_unicode_string (Glyphs *glyphs, char *value)
 void
 text_init (void)
 {
+	SolidColorBrush *brush = new SolidColorBrush ();
+	Color *color = color_from_str ("black");
+	
+	solid_color_brush_set_color (brush, color);
+	
 	// Inline
-	Inline::FontFamilyProperty = DependencyObject::Register (Value::INLINE, "FontFamily", Value::STRING);
-	Inline::FontSizeProperty = DependencyObject::Register (Value::INLINE, "FontSize", new Value (12.0));
+	Inline::FontFamilyProperty = DependencyObject::Register (Value::INLINE, "FontFamily", new Value ("Arial"));
+	Inline::FontSizeProperty = DependencyObject::Register (Value::INLINE, "FontSize", new Value (11.0));
 	Inline::FontStretchProperty = DependencyObject::Register (Value::INLINE, "FontStretch", new Value (FontStretchesNormal));
 	Inline::FontStyleProperty = DependencyObject::Register (Value::INLINE, "FontStyle", new Value (FontStylesNormal));
 	Inline::FontWeightProperty = DependencyObject::Register (Value::INLINE, "FontWeight", new Value (FontWeightsNormal));
-	Inline::ForegroundProperty = DependencyObject::Register (Value::INLINE, "Foreground", Value::BRUSH);
+	base_ref (brush);
+	Inline::ForegroundProperty = DependencyObject::Register (Value::INLINE, "Foreground", new Value ((Brush *) brush));
 	Inline::TextDecorationsProperty = DependencyObject::Register (Value::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	
 	// TextBlock
 	TextBlock::ActualHeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualHeight", Value::DOUBLE);
 	TextBlock::ActualWidthProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualWidth", Value::DOUBLE);
-	TextBlock::FontFamilyProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontFamily", Value::STRING);
-	TextBlock::FontSizeProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontSize", new Value (12.0));
+	TextBlock::FontFamilyProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontFamily", new Value ("Arial"));
+	TextBlock::FontSizeProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontSize", new Value (11.0));
 	TextBlock::FontStretchProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
 	TextBlock::FontStyleProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
 	TextBlock::FontWeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontWeight", new Value (FontWeightsNormal));
-	TextBlock::ForegroundProperty = DependencyObject::Register (Value::TEXTBLOCK, "Foreground", Value::BRUSH);
+	base_ref (brush);
+	TextBlock::ForegroundProperty = DependencyObject::Register (Value::TEXTBLOCK, "Foreground", new Value ((Brush *) brush));
 	TextBlock::InlinesProperty = DependencyObject::Register (Value::TEXTBLOCK, "Inlines", Value::INLINES);
 	TextBlock::TextProperty = DependencyObject::Register (Value::TEXTBLOCK, "Text", Value::STRING);
 	TextBlock::TextDecorationsProperty = DependencyObject::Register (Value::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone));
@@ -638,4 +644,6 @@ text_init (void)
 	Glyphs::OriginYProperty = DependencyObject::Register (Value::GLYPHS, "OriginY", Value::DOUBLE);
 	Glyphs::StyleSimulationsProperty = DependencyObject::Register (Value::GLYPHS, "StyleSimulations", Value::STRING);
 	Glyphs::UnicodeStringProperty = DependencyObject::Register (Value::GLYPHS, "UnicodeString", Value::STRING);
+	
+	base_unref (brush);
 }
