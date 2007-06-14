@@ -1,4 +1,3 @@
-#define TEXT_DEMO
 #define VIDEO_DEMO
 #define XAML_DEMO
 #include <string.h>
@@ -219,16 +218,25 @@ main (int argc, char *argv [])
 		shape_set_stroke (r2, scb);
 		panel_child_add (canvas, r2);
 		
-#ifdef TEXT_DEMO
+		Rectangle *r3 = rectangle_new ();
+		framework_element_set_width (r3, 390.0);
+		framework_element_set_height (r3, 36.0);
+		r3->SetValue (Canvas::LeftProperty, Value (75.0));
+		r3->SetValue (Canvas::TopProperty, Value (175.0));
+		shape_set_fill (r3, scb2);
+		item_set_transform_origin (r3, Point (0.5, 0.5));
+		item_set_render_transform (r3, t_trans);
+		panel_child_add (canvas, r3);
+		
 		TextBlock *tb = textblock_new ();
-		textblock_set_font_size (tb, 12.0);
+		textblock_set_font_size (tb, 24.0);
 		textblock_set_font_weight (tb, FontWeightsBold);
 		textblock_set_text (tb, "This is a Moonlight Demo");
-		tb->SetValue (Canvas::LeftProperty, Value (50.0));
-		tb->SetValue (Canvas::TopProperty, Value (50.0));
+		tb->SetValue (Canvas::LeftProperty, Value (75.0));
+		tb->SetValue (Canvas::TopProperty, Value (175.0));
+		item_set_transform_origin (tb, Point (0.5, 0.5));
 		item_set_render_transform (tb, t_trans);
 		panel_child_add (canvas, tb);
-#endif
 		
 #ifdef XAML_DEMO
 		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", NULL));
@@ -295,12 +303,12 @@ main (int argc, char *argv [])
 		Storyboard::SetTargetName (v_anim, "video-transform");
 		Storyboard::SetTargetProperty (v_anim, "Angle");
 		
-		// The text rotates completely around every 6
+		// The text rotates completely around every 8
 		// seconds, and stops after the third time around
 		namescope->RegisterName ("text-transform", t_trans);
-		t_anim->SetTo (-360.0);
-		t_anim->SetRepeatBehavior (RepeatBehavior (3.0));
-		t_anim->SetDuration (Duration::FromSeconds (6));
+		t_anim->SetTo (360.0);
+		t_anim->SetRepeatBehavior (RepeatBehavior (5.0));
+		t_anim->SetDuration (Duration::FromSeconds (8));
 		sb->AddChild (t_anim);
 		Storyboard::SetTargetName (t_anim, "text-transform");
 		Storyboard::SetTargetProperty (t_anim, "Angle");

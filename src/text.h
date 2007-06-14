@@ -3,6 +3,8 @@
 
 G_BEGIN_DECLS
 
+#include <pango/pango.h>
+
 #include "brush.h"
 #include "runtime.h"
 
@@ -110,7 +112,8 @@ public:
 	static DependencyProperty *TextDecorationsProperty;
 	static DependencyProperty *TextWrappingProperty;
 	
-	TextBlock () { }
+	TextBlock ();
+	~TextBlock ();
 	virtual Value::Kind GetObjectType () { return Value::TEXTBLOCK; };
 	
 	void SetFontSource (DependencyObject *downloader);
@@ -120,10 +123,15 @@ public:
 	//
 	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
+	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);
 	
 private:
+	PangoFontDescription *font;
+	PangoLayout *layout;
+	
 	void Draw (Surface *s, bool render);
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 TextBlock *textblock_new (void);

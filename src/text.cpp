@@ -13,7 +13,6 @@
 #endif
 
 #include <gtk/gtk.h>
-#include <pango/pango.h>
 #include <cairo.h>
 
 #include <string.h>
@@ -204,6 +203,33 @@ DependencyProperty *TextBlock::TextProperty;
 DependencyProperty *TextBlock::TextDecorationsProperty;
 DependencyProperty *TextBlock::TextWrappingProperty;
 
+
+TextBlock::TextBlock ()
+{
+	layout = NULL;
+	
+	/* initialize the font description */
+	font = pango_font_description_new ();
+	char *family = textblock_get_font_family (this);
+	pango_font_description_set_family (font, family);
+	double size = textblock_get_font_size (this);
+	pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
+	FontStretches stretch = textblock_get_font_stretch (this);
+	pango_font_description_set_stretch (font, font_stretch (stretch));
+	FontStyles style = textblock_get_font_style (this);
+	pango_font_description_set_style (font, font_style (style));
+	FontWeights weight = textblock_get_font_weight (this);
+	pango_font_description_set_weight (font, font_weight (weight));
+}
+
+TextBlock::~TextBlock ()
+{
+	pango_font_description_free (font);
+	
+	if (layout)
+		g_object_unref (layout);
+}
+
 void
 TextBlock::SetFontSource (DependencyObject *downloader)
 {
@@ -214,6 +240,7 @@ void
 TextBlock::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_save (s->cairo);
+	cairo_set_matrix (s->cairo, &absolute_xform);
 	Draw (s, true);
 	cairo_restore (s->cairo);
 }
@@ -222,21 +249,47 @@ void
 TextBlock::getbounds ()
 {
 	Surface *s = item_get_surface (this);
+	PangoRectangle ink, logical;
 	
 	// not yet attached
 	if (s == NULL)
 		return;
 	
 	cairo_save (s->cairo);
+	cairo_set_matrix (s->cairo, &absolute_xform);
 	
 	Draw (s, false);
 	
-	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
+	pango_layout_get_pixel_extents (layout, &ink, &logical);
+	
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
 	
+	x1 = (double) ink.x;
+	y1 = (double) ink.y;
+	
+	x2 = x1 + ink.width;
+	y2 = y1 + ink.height;
+	
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
+}
+
+Point
+TextBlock::getxformorigin ()
+{
+	Point user_xform_origin = GetRenderTransformOrigin ();
+	Surface *s = item_get_surface (this);
+	int width, height;
+	
+	cairo_save (s->cairo);
+	cairo_identity_matrix (s->cairo);
+	Draw (s, false);
+	pango_layout_get_pixel_size (layout, &width, &height);
+	cairo_new_path (s->cairo);
+	cairo_restore (s->cairo);
+
+	return Point (user_xform_origin.x * width, user_xform_origin.y * height);
 }
 
 bool
@@ -245,6 +298,7 @@ TextBlock::inside_object (Surface *s, double x, double y)
 	bool ret = false;
 	
 	cairo_save (s->cairo);
+	cairo_set_matrix (s->cairo, &absolute_xform);
 	
 	Draw (s, false);
 	
@@ -269,50 +323,58 @@ TextBlock::inside_object (Surface *s, double x, double y)
 void
 TextBlock::Draw (Surface *s, bool render)
 {
-	PangoFontDescription *font = NULL;
-	PangoLayout *layout = NULL;
-	FontStretches stretch;
-	char *family, *text;
-	FontWeights weight;
 	Brush *foreground;
-	FontStyles style;
-	double size;
+	char *text;
 	
-	cairo_set_matrix (s->cairo, &absolute_xform);
+	if (layout == NULL) {
+		// FIXME: keep a global reference to the created
+		// layout's PangoContext so we can share the same
+		// context between all TextBlocks?
+		layout = pango_cairo_create_layout (s->cairo);
+	} else
+		pango_cairo_update_layout (s->cairo, layout);
+	
+	pango_layout_set_font_description (layout, font);
 	
 	if ((text = textblock_get_text (this))) {
-		layout = pango_cairo_create_layout (s->cairo);
-		
-		// FIXME: cache the PangoFontDescription
-		font = pango_font_description_new ();
-		
-		if ((family = textblock_get_font_family (this)))
-			pango_font_description_set_family (font, family);
-		
-		stretch = textblock_get_font_stretch (this);
-		pango_font_description_set_stretch (font, font_stretch (stretch));
-		
-		weight = textblock_get_font_weight (this);
-		pango_font_description_set_weight (font, font_weight (weight));
-		
-		style = textblock_get_font_style (this);
-		pango_font_description_set_style (font, font_style (style));
-		
-		size = textblock_get_font_size (this);
-		pango_font_description_set_size (font, (int) (size * 1000.0));
-		
-		pango_layout_set_font_description (layout, font);
 		pango_layout_set_text (layout, text, -1);
 		
 		if ((foreground = textblock_get_foreground (this)))
 			foreground->SetupBrush (s->cairo, this);
 		
-		//pango_cairo_update_layout (s->cairo, layout);
-		pango_cairo_show_layout (s->cairo, layout);
-		
 		if (render)
-			cairo_fill (s->cairo);
+			pango_cairo_show_layout (s->cairo, layout);
+		else
+			pango_cairo_layout_path (s->cairo, layout);
 	}
+}
+
+void
+TextBlock::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type != Value::TEXTBLOCK) {
+		FrameworkElement::OnPropertyChanged (prop);
+		return;
+	}
+	
+	if (prop == TextBlock::FontFamilyProperty) {
+		char *family = textblock_get_font_family (this);
+		pango_font_description_set_family (font, family);
+	} else if (prop == TextBlock::FontSizeProperty) {
+		double size = textblock_get_font_size (this);
+		pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
+	} else if (prop == TextBlock::FontStretchProperty) {
+		FontStretches stretch = textblock_get_font_stretch (this);
+		pango_font_description_set_stretch (font, font_stretch (stretch));
+	} else if (prop == TextBlock::FontStyleProperty) {
+		FontStyles style = textblock_get_font_style (this);
+		pango_font_description_set_style (font, font_style (style));
+	} else if (prop == TextBlock::FontWeightProperty) {
+		FontWeights weight = textblock_get_font_weight (this);
+		pango_font_description_set_weight (font, font_weight (weight));
+	}
+	
+	FullInvalidate (false);
 }
 
 TextBlock *

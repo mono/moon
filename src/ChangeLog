@@ -1,3 +1,17 @@
+2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* demo.cpp (main): Rotate our demo text inside a filled rectangle
+	around the center of the text.
+
+	* text.cpp (TextBlock.ctor): Initialise a cached
+	PangoFontDescription that we will update when properties change.
+	(TextBlock.dtor): Free our font/layout.
+	(getbounds): Implemented correctly.
+	(getxformorigin): Implemented.
+	(Draw): Simplified since we don't need to create our layout/font
+	anymore (just use the cached ones).
+	(OnPropertyChanged): Implemented.
+
 2007-06-14  Miguel de Icaza  <miguel@novell.com>
 
 	* brush.cpp (Brush, SolidColorBrush, LinearGradientBrush,

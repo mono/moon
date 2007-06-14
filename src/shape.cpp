@@ -522,7 +522,7 @@ Line::getxformorigin ()
 
 	double x1 = line_get_x1 (this);
 	double y1 = line_get_y1 (this);
-	return Point (x1 + (line_get_x2 (this)- x1) * user_xform_origin.x, 
+	return Point (x1 + (line_get_x2 (this) - x1) * user_xform_origin.x, 
 		      y1 + (line_get_y2 (this) - y1) * user_xform_origin.y);
 }
 
