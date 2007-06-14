@@ -1949,7 +1949,7 @@ stylus_point_collection_new ()
 }
 
 TimelineMarkerCollection *
-time_line_marker_collection_new ()
+timeline_marker_collection_new ()
 {
 	return new TimelineMarkerCollection ();
 }

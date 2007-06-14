@@ -544,7 +544,7 @@ TriggerActionCollection*   trigger_action_collection_new ();
 ResourceCollection*        resource_collection_new ();
 StrokeCollection*          stroke_collection_new ();
 StylusPointCollection*     stylus_point_collection_new ();
-TimelineMarkerCollection*  time_line_marker_collection_new ();
+TimelineMarkerCollection*  timeline_marker_collection_new ();
 GradientStopCollection*    gradient_stop_collection_new ();
 MediaAttributeCollection*  media_attribute_collection_new ();
 

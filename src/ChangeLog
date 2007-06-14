@@ -25,6 +25,8 @@
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
 	* clock.cpp|h: C style constructors.
+	* runtime.cpp|h: Follow proper naming convention for
+	TimelineMarker C style constructors.
 
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
