@@ -1,0 +1,29 @@
+<Canvas	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Line x:Name="Line1">
+
+		<Line.Resources>
+		
+			<SolidColorBrush Color="Red" />
+		<!--
+			<SolidColorBrush Color="Green" x:Name="GreenBrushOne" />
+			<SolidColorBrush Color="Blue" x:Name="BlueBrushOne" />
+		-->
+		</Line.Resources>
+
+	</Line>
+
+	<Line x:Name="Line2">
+	<!--
+		<Line.Resources>
+			<ResourceCollection>
+				<SolidColorBrush Color="Red" x:Name="RedBrushTwo" />
+				<SolidColorBrush Color="Green" x:Name="GreenBrushTwo" />
+				<SolidColorBrush Color="Blue" x:Name="BlueBrushTwo" />
+			</ResourceCollection>
+		</Line.Resources>
+	-->
+	</Line>
+</Canvas>
+
