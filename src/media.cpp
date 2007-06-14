@@ -29,7 +29,9 @@ DependencyProperty *MediaBase::StretchProperty;
 char *
 media_base_get_source (MediaBase *media)
 {
-	return (char *) media->GetValue (MediaBase::SourceProperty)->AsString ();
+	Value *value = media->GetValue (MediaBase::SourceProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
@@ -157,7 +159,9 @@ media_element_get_can_seek (MediaElement *media)
 char *
 media_element_get_current_state (MediaElement *media)
 {
-	return (char *) media->GetValue (MediaElement::CurrentStateProperty)->AsString ();
+	Value *value = media->GetValue (MediaElement::CurrentStateProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 double
@@ -187,12 +191,21 @@ media_element_set_is_muted (MediaElement *media, bool value)
 TimelineMarkerCollection *
 media_element_get_markers (MediaElement *media)
 {
-	return (TimelineMarkerCollection *) media->GetValue (MediaElement::MarkersProperty)->AsTimelineMarkerCollection ();
+	Value *value = media->GetValue (MediaElement::MarkersProperty);
+	
+	return value ? (TimelineMarkerCollection *) value->AsTimelineMarkerCollection () : NULL;
 }
 
 void
 media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value)
 {
+	TimelineMarkerCollection *markers = media_element_get_markers (media);
+	
+	if (markers != NULL)
+		base_unref (markers);
+	
+	base_ref (value);
+	
 	media->SetValue (MediaElement::MarkersProperty, Value (value));
 }
 
@@ -244,7 +257,8 @@ media_element_set_position (MediaElement *media, TimeSpan value)
 	media->SetValue (MediaElement::PositionProperty, Value (value));
 }
 
-double media_element_get_volume (MediaElement *media)
+double
+media_element_get_volume (MediaElement *media)
 {
 	return (double) media->GetValue (MediaElement::VolumeProperty)->AsDouble ();
 }
@@ -400,8 +414,27 @@ media_init ()
 {
 	/* MediaAttribute */
 	MediaAttribute::ValueProperty = DependencyObject::Register (Value::MEDIAATTRIBUTE, "Value", new Value (""));
-
+	
+	/* MediaBase */
+	MediaBase::SourceProperty = DependencyObject::Register (Value::MEDIABASE, "Source", Value::STRING);
+	MediaBase::StretchProperty = DependencyObject::Register (Value::MEDIABASE, "Stretch", new Value (StretchNone));
+	
 	/* Image */
-	Image::DownloadProgressProperty = DependencyObject::Register (Value::IMAGE, "DownloadProgress", new Value(0.0));
-
+	Image::DownloadProgressProperty = DependencyObject::Register (Value::IMAGE, "DownloadProgress", new Value (0.0));
+	
+	/* MediaElement */
+	MediaElement::AutoPlayProperty = DependencyObject::Register (Value::MEDIAELEMENT, "AutoPlay", new Value (true));
+	MediaElement::BalanceProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Balance", new Value (0.0));
+	MediaElement::BufferingProgressProperty = DependencyObject::Register (Value::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
+	MediaElement::BufferingTimeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "BufferingTime", new Value (0));
+	MediaElement::CanSeekProperty = DependencyObject::Register (Value::MEDIAELEMENT, "CanSeek", new Value (false));
+	MediaElement::CurrentStateProperty = DependencyObject::Register (Value::MEDIAELEMENT, "CurrentState", Value::STRING);
+	MediaElement::DownloadProgressProperty = DependencyObject::Register (Value::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
+	MediaElement::IsMutedProperty = DependencyObject::Register (Value::MEDIAELEMENT, "IsMuted", new Value (false));
+	MediaElement::MarkersProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Markers", Value::TIMELINEMARKER_COLLECTION);
+	MediaElement::NaturalDurationProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalDuration", Value::DURATION);
+	MediaElement::NaturalVideoHeightProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalVideoHeight", Value::DOUBLE);
+	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalVideoWidth", Value::DOUBLE);
+	MediaElement::PositionProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Position", Value::DOUBLE);
+	MediaElement::VolumeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Volume", Value::DOUBLE);
 }

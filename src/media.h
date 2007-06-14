@@ -16,7 +16,8 @@ class MediaAttribute : public DependencyObject {
 	MediaAttribute () { }
 	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
 };
-MediaAttribute* media_attribute_new ();
+
+MediaAttribute *media_attribute_new ();
 
 
 class MediaBase : public FrameworkElement {
@@ -37,15 +38,16 @@ void    media_base_set_stretch (MediaBase *media, Stretch value);
 
 class Image : public MediaBase {
  public:
+	static DependencyProperty *DownloadProgressProperty;
+	
 	Image ();
 	virtual Value::Kind GetObjectType () { return Value::IMAGE; };
-
+	
 	virtual void render (Surface *surface, int x, int y, int width, int height);
 	virtual void getbounds ();
 
-	void SetSource (DependencyObject *Downloader, char* PartName);
-
-	static DependencyProperty *DownloadProgressProperty;
+	void SetSource (DependencyObject *Downloader, char *PartName);
+	
  private:
 	void PixbufWrite (guchar *bug, gsize count);
 	void LoaderSizePrepared (int width, int height);
@@ -83,12 +85,10 @@ public:
 	static DependencyProperty *PositionProperty;
 	static DependencyProperty *VolumeProperty;
 	
-	static DependencyProperty *AttributesProperty;
-	
 	MediaElement () { }
 	virtual Value::Kind GetObjectType () { return Value::MEDIAELEMENT; };
 	
-	void SetSource (DependencyObject *downloader, char *name);
+	void SetSource (DependencyObject *Downloader, char *PartName);
 	
 	void Pause ();
 	void Play ();

@@ -1,3 +1,10 @@
+2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: Fixed Brush accessors for the NULL case.
+
+	* media.cpp: Fixed accessors that could return NULL
+	(media_init): init MediaBase and MediaElement items.
+
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
 	* animation.cpp: C style constructor.

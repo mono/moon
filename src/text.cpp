@@ -158,12 +158,21 @@ inline_set_font_weight (Inline *inline_, FontWeights value)
 Brush *
 inline_get_foreground (Inline *inline_)
 {
-	return (Brush *) inline_->GetValue (Inline::ForegroundProperty)->AsBrush ();
+	Value *value = inline_->GetValue (Inline::ForegroundProperty);
+	
+	return value ? (Brush *) value->AsBrush () : NULL;
 }
 
 void
 inline_set_foreground (Inline *inline_, Brush *value)
 {
+	Brush *fg = inline_get_foreground (inline_);
+	
+	if (fg != NULL)
+		base_unref (fg);
+	
+	base_ref (value);
+	
 	inline_->SetValue (Inline::ForegroundProperty, Value (value));
 }
 
@@ -262,15 +271,16 @@ TextBlock::Draw (Surface *s, bool render)
 {
 	PangoFontDescription *font = NULL;
 	PangoLayout *layout = NULL;
-	char *family, *text;
 	FontStretches stretch;
+	char *family, *text;
 	FontWeights weight;
+	Brush *foreground;
 	FontStyles style;
 	double size;
 	
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
-	if ((text = textblock_get_text (this)) != NULL) {
+	if ((text = textblock_get_text (this))) {
 		if (!layout)
 			layout = pango_cairo_create_layout (s->cairo);
 		
@@ -297,6 +307,12 @@ TextBlock::Draw (Surface *s, bool render)
 		
 		//pango_cairo_update_layout (cr, layout);
 		pango_cairo_show_layout (s->cairo, layout);
+		
+		if ((foreground = textblock_get_foreground (this)))
+			foreground->SetupBrush (s->cairo, this);
+		
+		if (render)
+			cairo_fill (s->cairo);
 	}
 }
 
@@ -395,12 +411,21 @@ textblock_set_font_weight (TextBlock *textblock, FontWeights value)
 Brush *
 textblock_get_foreground (TextBlock *textblock)
 {
-	return (Brush *) textblock->GetValue (TextBlock::ForegroundProperty)->AsBrush ();
+	Value *value = textblock->GetValue (TextBlock::ForegroundProperty);
+	
+	return value ? (Brush *) value->AsBrush () : NULL;
 }
 
 void
 textblock_set_foreground (TextBlock *textblock, Brush *value)
 {
+	Brush *fg = textblock_get_foreground (textblock);
+	
+	if (fg != NULL)
+		base_unref (fg);
+	
+	base_ref (value);
+	
 	textblock->SetValue (TextBlock::ForegroundProperty, Value (value));
 }
 
