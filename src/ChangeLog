@@ -1,5 +1,11 @@
 2007-06-14  Miguel de Icaza  <miguel@novell.com>
 
+	* brush.cpp (Brush, SolidColorBrush, LinearGradientBrush,
+	RadialGradientBrush): Notify owners when changes happen in the
+	Brush.
+
+	This makes the demo test-color-animation.xaml work without fps.
+
 	* runtime.cpp: Make Canvas use the Background property to render
 	the background.
 

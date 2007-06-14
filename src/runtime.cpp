@@ -620,6 +620,8 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 		 prop == UIElement::OpacityMaskProperty ||
 		 prop == UIElement::VisibilityProperty){
 		FullInvalidate (FALSE);
+	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)){
+		FullInvalidate (FALSE);
 	}
 }
 

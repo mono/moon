@@ -129,6 +129,18 @@ Brush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	g_warning ("Brush:SetupBrush has been called. The derived class should have overridden it.");
 }
 
+void
+Brush::OnPropertyChanged (DependencyProperty *prop)
+{
+	//
+	// If any of our properties change, we have to notify our
+	// owners that they must repaint (all of our properties have
+	// a visible effect
+	//
+	if (prop->type == Value::BRUSH)
+		NotifyAttacheesOfPropertyChange (prop);
+}
+
 //
 // SolidColorBrush
 //
@@ -146,6 +158,16 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 	cairo_set_source_rgba (target, color->r, color->g, color->b, alpha);
 
 	// [Relative]Transform do not apply to solid color brush
+}
+
+void 
+SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == ColorProperty){
+		NotifyAttacheesOfPropertyChange (prop);
+		return;
+	}
+	Brush::OnPropertyChanged (prop);
 }
 
 Color*
@@ -490,6 +512,7 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 			
 			base_ref (children);
 		}
+		NotifyAttacheesOfPropertyChange (prop);
 	}
 }
 
@@ -580,6 +603,21 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
+}
+
+void 
+LinearGradientBrush::OnPropertyChanged (DependencyProperty *prop)
+{
+	//
+	// If any of our properties change, we have to notify our
+	// owners that they must repaint (all of our properties have
+	// a visible effect
+	//
+	if (prop->type == Value::LINEARGRADIENTBRUSH){
+		NotifyAttacheesOfPropertyChange (prop);
+		return;
+	}
+	GradientBrush::OnPropertyChanged (prop);
 }
 
 //
@@ -837,10 +875,13 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 	if (prop == ImageBrush::DownloadProgressProperty) {
 		double progress = GetValue (ImageBrush::DownloadProgressProperty)->AsDouble();
 		image->SetValue (Image::DownloadProgressProperty, Value (progress));
+
+		NotifyAttacheesOfPropertyChange (prop);
 	} else if (prop == ImageBrush::ImageSourceProperty) {
 		Value *value = GetValue (ImageBrush::ImageSourceProperty);
 		char *source = value ? value->AsString () : NULL;
 		image->SetValue (MediaBase::SourceProperty, Value (source));
+		NotifyAttacheesOfPropertyChange (prop);
 	} else
 		TileBrush::OnPropertyChanged (prop);
 }
