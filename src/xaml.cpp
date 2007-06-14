@@ -610,6 +610,27 @@ duration_from_str (const char *str)
 	return Duration (timespan_from_str (str));
 }
 
+// sepcial case, we return a Value, to avoid allocating/freeing a Matrix
+Value*
+matrix_value_from_str (const char *str)
+{
+	cairo_matrix_t matrix;
+	int count = 0;
+
+	double* values = double_array_from_str (str, &count);
+	if (count == 6) {
+		matrix.xx = values [0];
+		matrix.yx = values [1];
+		matrix.xy = values [2];
+		matrix.yy = values [3];
+		matrix.x0 = values [4];
+		matrix.y0 = values [5];
+	} else
+		cairo_matrix_init_identity (&matrix);
+	g_free (values);
+
+	return new Value (&matrix);
+}
 
 ///
 /// ENUMS
@@ -1100,6 +1121,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				Point *points = point_array_from_str (attr [i + 1], &count);
 				dep->SetValue (prop, Value (points, count));
 			}
+				break;
+			case Value::MATRIX:
+				dep->SetValue (prop, matrix_value_from_str (attr [i + 1]));
 				break;
 			default:
 #ifdef DEBUG_XAML

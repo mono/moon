@@ -1,3 +1,7 @@
+2007-06-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Add support for Matrix (non-DO) type.
+
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (downloader_write): add C-style downloader_write
