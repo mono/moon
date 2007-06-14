@@ -1,3 +1,8 @@
+2007-06-14  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp: Make Canvas use the Background property to render
+	the background.
+
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp (main): create a namescope to attach to the canvas, and

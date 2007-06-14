@@ -986,12 +986,6 @@ surface_clear (Surface *s, int x, int y, int width, int height)
 	cairo_fill (s->cairo);
 }
 	
-void
-surface_clear_all (Surface *s)
-{
-	memset (s->buffer, 0, s->width * s->height * 4);
-}
-
 static void
 surface_realloc (Surface *s)
 {
@@ -1000,7 +994,6 @@ surface_realloc (Surface *s)
 
 	int size = s->width * s->height * 4;
 	s->buffer = (unsigned char *) malloc (size);
-	surface_clear_all (s);
        
 	s->cairo_buffer_surface = cairo_image_surface_create_for_data (
 		s->buffer, CAIRO_FORMAT_ARGB32, s->width, s->height, s->width * 4);
@@ -1190,6 +1183,11 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	GSList *il;
 	double actual [6];
 	
+	Brush *background = GetValue (Panel::BackgroundProperty)->AsBrush ();
+	background->SetupBrush (s->cairo, this);
+	cairo_rectangle (s->cairo, x, y, width, height);
+	cairo_fill (s->cairo);
+
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
@@ -1301,7 +1299,6 @@ surface_attach (Surface *surface, UIElement *toplevel)
 void
 surface_repaint (Surface *s, int x, int y, int width, int height)
 {
-	surface_clear (s, x, y, width, height);
 	s->toplevel->render (s, x, y, width, height);
 }
 
@@ -1352,11 +1349,14 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
 	if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT) {
-		// Setting a null.
-		current_value->AsDependencyObject ()->SetParent (NULL);
+		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
+		current_as_dep->SetParent (NULL);
+		base_unref (current_as_dep);
 	}
 	if (value != NULL && value->k >= Value::DEPENDENCY_OBJECT) {
-		value->AsDependencyObject ()->SetParent (this);
+		DependencyObject *new_as_dep = value->AsDependencyObject ();
+		new_as_dep->SetParent (this);
+		base_ref (new_as_dep);
 	}
 
 	if ((current_value == NULL && value != NULL) ||
@@ -2211,8 +2211,11 @@ DependencyProperty* Panel::BackgroundProperty;
 void 
 panel_init ()
 {
+	SolidColorBrush *default_background = solid_color_brush_new ();
+	Color white (1.0, 1.0, 1.0, 1.0);
+	solid_color_brush_set_color (default_background, &white);
 	Panel::ChildrenProperty = DependencyObject::Register (Value::PANEL, "Children", Value::VISUAL_COLLECTION);
-	Panel::BackgroundProperty = DependencyObject::Register (Value::PANEL, "Background", Value::BRUSH);
+	Panel::BackgroundProperty = DependencyObject::Register (Value::PANEL, "Background", new Value (default_background));
 }
 
 DependencyProperty* Canvas::TopProperty;
@@ -2338,7 +2341,6 @@ runtime_init ()
 	namescope_init ();
 	item_init ();
 	framework_element_init ();
-	panel_init ();
 	canvas_init ();
 	event_trigger_init ();
 	transform_init ();
@@ -2351,6 +2353,7 @@ runtime_init ()
 	text_init ();
 	downloader_init ();
 	media_init ();
+	panel_init ();
 }
 
 void surface_register_events (Surface *s,
