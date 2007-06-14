@@ -15,8 +15,6 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #define Visual _XVisual
 #include <gdk/gdkx.h>
 #if AGG
@@ -2034,25 +2032,51 @@ event_trigger_fire_actions (EventTrigger *trigger)
 // Downloader
 //
 
+downloader_create_state_func Downloader::create_state;
+downloader_destroy_state_func Downloader::destroy_state;
+downloader_open_func Downloader::open;
+downloader_send_func Downloader::send;
+downloader_abort_func Downloader::abort;
+downloader_get_response_text_func Downloader::get_response_text;
+
+Downloader::Downloader ()
+{
+	downloader_state = Downloader::create_state (this);
+}
+
+Downloader::~Downloader ()
+{
+	Downloader::destroy_state (downloader_state);
+}
+
 void
 Downloader::Abort ()
 {
+	Downloader::abort (downloader_state);
 }
 
 char*
 Downloader::GetResponseText (char* PartName)
 {
-	return NULL;
+	return Downloader::get_response_text (PartName, downloader_state);
 }
 
 void
 Downloader::Open (char *verb, char *URI, bool Async)
 {
+	Downloader::open (verb, URI, Async, downloader_state);
 }
 
 void
 Downloader::Send ()
 {
+	Downloader::send (downloader_state);
+}
+
+void
+Downloader::Write (guchar *buf, gsize n)
+{
+	this->write (buf, n, write_data);
 }
 
 void
@@ -2063,71 +2087,42 @@ Downloader::SetWriteFunc (downloader_write_func write,
 	this->write_data = data;
 }
 
-//
-// UnmanagedDownloader hack
-//
-
-
-UnmanagedDownloader::UnmanagedDownloader ()
-  : fd (-1),
-    async_idle (-1)
-{
-}
-
-UnmanagedDownloader::~UnmanagedDownloader ()
-{
-	Close ();
-}
-
-gboolean
-UnmanagedDownloader::async_fill_buffer (gpointer cb_data)
-{
-	return ((UnmanagedDownloader*)cb_data)->AsyncFillBuffer ();
-}
-
-gboolean
-UnmanagedDownloader::AsyncFillBuffer ()
-{
-	guchar buf[1024];
-
-	int n = read (fd, buf, sizeof (buf));
-
-	this->write (buf, n, write_data);
-}
-
 void
-UnmanagedDownloader::Open (char *verb, char *uri, bool async)
+Downloader::SetFunctions (downloader_create_state_func create_state,
+			  downloader_destroy_state_func destroy_state,
+			  downloader_open_func open,
+			  downloader_send_func send,
+			  downloader_abort_func abort,
+			  downloader_get_response_text_func get_response)
 {
-	fd = open (uri, O_RDONLY);
-	if (fd == -1) {
-		printf ("failed open\n");
-		return;
-	}
-
-	if (async)
-		async_idle = g_idle_add (async_fill_buffer, this);
+	Downloader::create_state = create_state;
+	Downloader::destroy_state = destroy_state;
+	Downloader::open = open;
+	Downloader::send = send;
+	Downloader::abort = abort;
+	Downloader::get_response_text = get_response;
 }
 
-void
-UnmanagedDownloader::Send ()
+Downloader*
+downloader_new ()
 {
+	return new Downloader ();
 }
 
-void
-UnmanagedDownloader::Abort ()
+void downloader_set_functions (downloader_create_state_func create_state,
+			       downloader_destroy_state_func destroy_state,
+			       downloader_open_func open,
+			       downloader_send_func send,
+			       downloader_abort_func abort,
+			       downloader_get_response_text_func get_response)
 {
-	Close ();
+	Downloader::SetFunctions (create_state,
+				  destroy_state,
+				  open,
+				  send,
+				  abort,
+				  get_response);
 }
-
-void
-UnmanagedDownloader::Close ()
-{
-	if (fd != -1)
-		close (fd);
-	if (async_idle != -1)
-		g_source_remove (async_idle);
-}
-
 
 
 //
@@ -2226,12 +2221,6 @@ downloader_init ()
 	Downloader::StatusTextProperty = DependencyObject::Register (Value::DOWNLOADER, "StatusText", Value::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
 
-}
-
-Downloader*
-downloader_new ()
-{
-	return new Downloader ();
 }
 
 Type* Type::types [];

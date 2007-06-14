@@ -6,6 +6,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/time.h>
 #include "runtime.h"
 #include "transform.h"
@@ -114,6 +115,14 @@ button_motion_event (GtkWidget *widget, GdkEventMotion *e, gpointer data)
 // 		sb->Seek ((TimeSpan)e->x * 100000);
 }
 
+static gpointer downloader_create_state (Downloader* dl);
+static void downloader_destroy_state (gpointer data);
+static void downloader_open (char *verb, char *uri, bool async, gpointer state);
+static void downloader_send (gpointer state);
+static void downloader_abort (gpointer state);
+static void downloader_abort (gpointer state);
+static char* downloader_get_response_text (char *part, gpointer state);
+
 int
 main (int argc, char *argv [])
 {
@@ -126,6 +135,13 @@ main (int argc, char *argv [])
 	g_thread_init (NULL);
 	gdk_threads_init ();
 	runtime_init ();
+
+	downloader_set_functions (downloader_create_state,
+				  downloader_destroy_state,
+				  downloader_open,
+				  downloader_send,
+				  downloader_abort,
+				  downloader_get_response_text);
 
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), NULL);
@@ -211,7 +227,7 @@ main (int argc, char *argv [])
 		
 		panel_child_add (canvas, r);
 		
-		UnmanagedDownloader *dl = new UnmanagedDownloader ();
+		Downloader *dl = new Downloader ();
 		Image *i = image_new ();
 		i->SetSource (dl, "/tmp/mono.png");
 		i->SetValue (Canvas::LeftProperty, Value (100.0));
@@ -383,3 +399,96 @@ main (int argc, char *argv [])
 	gtk_widget_show_all (w);
 	gtk_main ();
 }
+
+
+
+
+class FileDownloadState {
+ public:
+	FileDownloadState (Downloader *dl) : downloader(dl), fd (-1), async_idle (-1) { }
+
+	virtual ~FileDownloadState () { Close (); }
+
+	void Abort () { Close (); }
+	char* GetResponseText (char* PartName) { return NULL; } // XXX
+	void Open (char *verb, char *uri, bool async)
+	{
+		fd = open (uri, O_RDONLY);
+		if (fd == -1) {
+			printf ("failed open\n");
+			return;
+		}
+
+		if (async)
+			async_idle = g_idle_add (async_fill_buffer, this);
+	}
+
+	void Send () { }
+
+	void Close ()
+	{
+		if (fd != -1) {
+			close (fd);
+			fd = -1;
+		}
+		if (async_idle != -1) { 
+			g_source_remove (async_idle);
+			async_idle = -1;
+		}
+	}
+ private:
+	int fd;
+	int async_idle;
+	Downloader *downloader;
+
+	gboolean AsyncFillBuffer ()
+	{
+		guchar buf[1024];
+
+		int n = read (fd, buf, sizeof (buf));
+
+		downloader->Write (buf, n);
+	}
+
+	static gboolean async_fill_buffer (gpointer cb_data)
+	{
+		return ((FileDownloadState*)cb_data)->AsyncFillBuffer ();
+	}
+};
+
+static gpointer
+downloader_create_state (Downloader *dl)
+{
+	return new FileDownloadState (dl);
+}
+
+static void
+downloader_destroy_state (gpointer data)
+{
+	delete ((FileDownloadState*)data);
+}
+
+static void
+downloader_open (char *verb, char *uri, bool async, gpointer state)
+{
+	((FileDownloadState*)state)->Open (verb, uri, async);
+}
+
+static void
+downloader_send (gpointer state)
+{
+	((FileDownloadState*)state)->Send ();
+}
+
+static void
+downloader_abort (gpointer state)
+{
+	((FileDownloadState*)state)->Abort ();
+}
+
+static char*
+downloader_get_response_text (char *part, gpointer state)
+{
+	return ((FileDownloadState*)state)->GetResponseText (part);
+}
+

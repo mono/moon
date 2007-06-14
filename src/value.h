@@ -121,7 +121,6 @@ class TriggerAction;
 class TriggerActionCollection;
 class TriggerCollection;
 class UIElement;
-class UnmanagedDownloader;
 class VideoBrush;
 class Visual;
 class VisualCollection;
@@ -247,7 +246,6 @@ public:
 		TRIGGERACTION_COLLECTION,
 		TRIGGER_COLLECTION,
 		UIELEMENT,
-		UNMANAGEDDOWNLOADER,
 		VIDEOBRUSH,
 		VISUAL,
 		VISUAL_COLLECTION,
@@ -420,7 +418,6 @@ public:
 	TriggerActionCollection*       AsTriggerActionCollection ();
 	TriggerCollection*             AsTriggerCollection ();
 	UIElement*                     AsUIElement ();
-	UnmanagedDownloader*           AsUnmanagedDownloader ();
 	VideoBrush*                    AsVideoBrush ();
 	Visual*                        AsVisual ();
 	VisualCollection*              AsVisualCollection ();

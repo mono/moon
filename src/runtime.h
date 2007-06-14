@@ -299,20 +299,28 @@ class NameScope : public DependencyObject {
 	GHashTable *names;
 };
 
+class Downloader;
+
 typedef void (*downloader_write_func)(guchar *buf, gsize n, gpointer cb_data);
+typedef gpointer (*downloader_create_state_func) (Downloader* dl);
+typedef void (*downloader_destroy_state_func) (gpointer state);
+typedef void (*downloader_open_func)(char *verb, char *uri, bool async, gpointer state);
+typedef void (*downloader_send_func)(gpointer state);
+typedef void (*downloader_abort_func)(gpointer state);
+typedef char* (*downloader_get_response_text_func)(char *part, gpointer state);
 
 class Downloader : public DependencyObject {
  public:
-	Downloader () {};
+	Downloader ();
+	virtual ~Downloader ();
+
 	virtual Value::Kind GetObjectType () { return Value::DOWNLOADER; };	
 
-	virtual void Abort ();
-	virtual char* GetResponseText (char* PartName);
-	virtual void Open (char *verb, char *URI, bool Async);
-	virtual void Send ();
+	void Abort ();
+	char* GetResponseText (char* PartName);
+	void Open (char *verb, char *URI, bool Async);
+	void Send ();
 
-	void SetWriteFunc (downloader_write_func write,
-			   gpointer data);
 
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ResponseTextProperty;
@@ -320,30 +328,45 @@ class Downloader : public DependencyObject {
 	static DependencyProperty *StatusTextProperty;
 	static DependencyProperty *UriProperty;
 
+
+	void Write (guchar *buf, gsize n);
+
+	// This is called by the consumer of the downloaded data (the
+	// Image class for instance)
+	void SetWriteFunc (downloader_write_func write,
+			   gpointer data);
+
+	// This is called by the supplier of the downloaded data (the
+	// managed framework, the browser plugin, the demo test)
+	static void SetFunctions (downloader_create_state_func create_state,
+				  downloader_destroy_state_func destroy_state,
+				  downloader_open_func open,
+				  downloader_send_func send,
+				  downloader_abort_func abort,
+				  downloader_get_response_text_func get_response_text);
+
  protected:
 	downloader_write_func write;
 	gpointer write_data;
+
+	gpointer downloader_state;
+
+	static downloader_create_state_func create_state;
+	static downloader_destroy_state_func destroy_state;
+	static downloader_open_func open;
+	static downloader_send_func send;
+	static downloader_abort_func abort;
+	static downloader_get_response_text_func get_response_text;
+
 };
 Downloader* downloader_new ();
 
-class UnmanagedDownloader : public Downloader {
- public:
-	UnmanagedDownloader ();
-	virtual ~UnmanagedDownloader ();
-	Value::Kind GetObjectType () { return Value::UNMANAGEDDOWNLOADER; };
-
-	virtual void Abort ();
-	//virtual char* GetResponseText (char* PartName);
-	virtual void Open (char *verb, char *URI, bool Async);
-	virtual void Send ();
-
-	void Close ();
- private:
-	gboolean AsyncFillBuffer ();
-	static gboolean async_fill_buffer (gpointer cb_data);
-	int fd;
-	int async_idle;
-};
+void downloader_set_functions (downloader_create_state_func create_state,
+			       downloader_destroy_state_func destroy_state,
+			       downloader_open_func open,
+			       downloader_send_func send,
+			       downloader_abort_func abort,
+			       downloader_get_response_text_func get_response);
 
 class Visual : public DependencyObject {
  public:

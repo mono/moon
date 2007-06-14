@@ -1,3 +1,13 @@
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: remove the hack UnmanagedDownloader from
+	here, and made Downloader pluggable with a set of functions.
+
+	* demo.cpp: use the pluggable nature of Downloader to put
+	UnmanagedDownloader here (and call it FileDownloadState).
+
+	* value.cpp, value.h, type.cpp: resync.
+
 2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp: Fixed Brush accessors for the NULL case.

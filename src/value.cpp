@@ -596,12 +596,6 @@ Value::AsUIElement ()
 	checked_get_subclass (UIELEMENT, UIElement);
 }
 
-UnmanagedDownloader*
-Value::AsUnmanagedDownloader ()
-{
-	checked_get_subclass (UNMANAGEDDOWNLOADER, UnmanagedDownloader);
-}
-
 VideoBrush*
 Value::AsVideoBrush ()
 {
