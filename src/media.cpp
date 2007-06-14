@@ -298,6 +298,7 @@ Image::StopLoader ()
 		g_signal_handlers_disconnect_matched (loader,
 						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
 						      0, 0, NULL, NULL, this);
+		gdk_pixbuf_loader_close (loader, NULL);
 		g_object_unref (G_OBJECT (loader));
 		loader = NULL;
 	}
