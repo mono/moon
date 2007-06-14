@@ -44,7 +44,6 @@ class Brush : public DependencyObject {
 	virtual Value::Kind GetObjectType () { return Value::BRUSH; };
 
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
-	virtual void SetupPattern (cairo_pattern_t *pattern, UIElement *uielement);
 
 	double GetTotalOpacity (UIElement *uielement);
 };
@@ -86,7 +85,7 @@ class GradientBrush : public Brush {
 	virtual Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void SetupPattern (cairo_pattern_t *pattern, UIElement *uielement);
+	virtual void SetupGradient (cairo_pattern_t *pattern, UIElement *uielement);
 };
 GradientBrush* gradient_brush_new ();
 ColorInterpolationMode gradient_brush_get_color_interpolation_mode (GradientBrush *brush);

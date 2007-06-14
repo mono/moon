@@ -97,6 +97,7 @@ brush_set_transform (Brush *brush, TransformGroup* transform_group)
 
 /*
  * Combine recursively UIElement Opacity with Brush Opacity
+ * NOTE: sadly we cannot handle Opacity at this level, each brush sub-type needs to handle it
  */
 double
 Brush::GetTotalOpacity (UIElement *uielement)
@@ -120,24 +121,6 @@ Brush::GetTotalOpacity (UIElement *uielement)
 		opacity *= brush_opacity;
 
 	return opacity;
-}
-
-void
-Brush::SetupPattern (cairo_pattern_t *pattern, UIElement *uielement)
-{
-	// NOTE: sadly we cannot handle Opacity at this level, each brush sub-type needs to handle it
-
-	Transform *transform = brush_get_transform (this);
-	if (!transform)
-		return;
-
-	// FIXME: we may have used/applied a matrix before getting here
-		
-	cairo_matrix_t matrix;
-	transform_get_transform (transform, &matrix);
-	// TODO - optimization, check for empty/identity matrix too ?
-
-	cairo_pattern_set_matrix (pattern, &matrix);
 }
 
 void
@@ -511,7 +494,7 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-GradientBrush::SetupPattern (cairo_pattern_t *pattern, UIElement *uielement)
+GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 {
 	GradientSpreadMethod gsm = gradient_brush_get_spread (this);
 	cairo_pattern_set_extend (pattern, convert_gradient_spread_method (gsm));
@@ -528,8 +511,6 @@ GradientBrush::SetupPattern (cairo_pattern_t *pattern, UIElement *uielement)
 		double alpha = (opacity < 1.0) ? color->a * opacity: color->a;
 		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
 	}
-
-	Brush::SetupPattern (pattern, uielement);
 }
 
 //
@@ -587,7 +568,15 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 
-	GradientBrush::SetupPattern (pattern, uielement);
+	Transform *transform = brush_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform_get_transform (transform, &matrix);
+		cairo_matrix_invert (&matrix);
+		cairo_pattern_set_matrix (pattern, &matrix);
+	}
+
+	GradientBrush::SetupGradient (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
@@ -661,45 +650,36 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 void
 RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
-	double x0, y0, x1, y1;
-	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
-	double w = fabs (x1 - x0);
-	double h = fabs (y1 - y0);
-
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
-	x0 = (origin ? origin->x : 0.5) * w;
-	y0 = (origin ? origin->y : 0.5) * h;
+	double ox = (origin ? origin->x : 0.5);
+	double oy = (origin ? origin->y : 0.5);
 
 	Point *center = radial_gradient_brush_get_center (this);
-	x1 = (center ? center->x : 0.5) * w;
-	y1 = (center ? center->y : 0.5) * h;
+	double cx = (center ? center->x : 0.5);
+	double cy = (center ? center->y : 0.5);
 
 	double rx = radial_gradient_brush_get_radius_x (this);
 	double ry = radial_gradient_brush_get_radius_y (this);
 
-	double rw = w * rx;
-	double rh = h * ry;
+	cairo_pattern_t *pattern = cairo_pattern_create_radial (ox, oy, 0.0, cx, cy, ry);
 
-	cairo_pattern_t *pattern;
-	if (rw != rh) {
-		// FIXME: not quite correct
-		// cairo doesn't directly support different X,Y ratios
-		// so we use a matrix to simulate it's effect
-		double ratio = rw / rh;
-		pattern = cairo_pattern_create_radial (x0, y0, 0.0, x1, y1, rh);
+	double x0, y0, x1, y1;
+	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
 
-		cairo_matrix_t rm;
-		if (rw < rh)
-			cairo_matrix_init (&rm, ratio, 0, 0, 1.0, rw * ratio, 0);
-		else
-			cairo_matrix_init (&rm, ratio, 0, 0, 1.0, -w / ratio, 0);
-		cairo_matrix_invert (&rm);
-		cairo_pattern_set_matrix (pattern, &rm);
-	} else {
-		pattern = cairo_pattern_create_radial (x0, y0, 0.0, x1, y1, rh);
+	cairo_matrix_t matrix;
+	cairo_matrix_init (&matrix, fabs (x1 - x0) * rx / ry, 0, 0, fabs (y1 - y0), x0, y0);
+
+	Transform *transform = brush_get_transform (this);
+	if (transform) {
+		cairo_matrix_t tm;
+		transform_get_transform (transform, &tm);
+		// TODO - optimization, check for empty/identity matrix too ?
+		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
+	cairo_matrix_invert (&matrix);
+	cairo_pattern_set_matrix (pattern, &matrix);
 
-	GradientBrush::SetupPattern (pattern, uielement);
+	GradientBrush::SetupGradient (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
