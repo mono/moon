@@ -191,11 +191,6 @@ This is not likely the final version of this code.
 	To support software rendering we should re-implement this code and
 	and add support for byte swapping to the format required by gdk_draw_pixbuf
 
-* Expose
-
-	Currently repaints happen with an item_invalidate, I need to
-	research if this clears the background before repainting.
-
 * Usage of C++
 
 	I do not know how to initialize instance fields in a structure

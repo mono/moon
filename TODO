@@ -24,15 +24,6 @@ Feel free to add items to this TODO list
 		with UIElements, there are two signals, GotFocus
 		and LostFocus, but what do they mean?
 
-* Text: Inline, Inlines
-
-	We need to render text.
-
-	Text also participates in hit-testing.
-
-	For this we probably want to use pango-cairo bindings as it
-	does most of the heavy lifting for us already.
-
 * Video Player:
 
 	Add support for seeking, stopping, shutdown.
@@ -60,9 +51,29 @@ Feel free to add items to this TODO list
 
 	Add support to each element to be created from a xaml string.
 
-	Need to support attached properties
+* XAML, the revenge of namespaces:
 
-	XAML needs to be case sensitive
+    Consider this:
+                        
+                        <Chess:BoardUI
+                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          Width="640" Height="480"   Background="black"
+                          xmlns:Chess="clr-namespace:Chess;assembly=ClientBin/Chess.dll"
+                          Loaded="Canvas_Loaded">
+
+     It should parse the above, and notice that the Chess NS is
+introduce in that declaration.   What is interesting though is that it
+uses requests an assembly to download there.
+
+* XAML, callbacks during initial construction
+
+	When the code above notices the "assembly" stuff, it should call
+	back a routine so we can provide the UIElement that will be created.
+	
+	In this case, we will have the browser download the stuff, instantiate
+	the object in managed land, and return the object.
+
 
 * Paths
 
@@ -81,17 +92,6 @@ Feel free to add items to this TODO list
 	float (not double) representations (ScA, ScR, ScG & ScB). All 
 	this will eventually need to be merged into a single 
 	representation
-
-* Idea:
-
-	Instead of using the "Parent" property, use the Attached list,
-	but this will require that Collections update the Attached list
-	as well.
-
-	Must be researched, Rolf said something about:
-
-		<rolf> miguel_, that requires more code :)
-		<rolf> you'd have to attach to every property you want to listen to
 
 * Managed side
 
@@ -114,3 +114,19 @@ Feel free to add items to this TODO list
 
 	This leads to code in Canvas::handle_motion that does not work
 	for now (since we are an object with no size).
+
+* Video Brush
+
+	Figure out how to use the video code to use as a brush.
+
+* Mouse
+
+	Implement mouse grabs
+
+
+* Gtk Hackery
+
+	For some reason I cant get moon/test/demo.exe program to focus the
+	Silverlight widget even if I click on it and I do a
+	gtk_widget_grab_focus, am probably missing something.
+	
