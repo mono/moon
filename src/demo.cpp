@@ -242,9 +242,8 @@ main (int argc, char *argv [])
 		
 		panel_child_add (canvas, r);
 		
-		Downloader *dl = new Downloader ();
 		Image *i = image_new ();
-		i->SetSource (dl, "/tmp/mono.png");
+		i->SetValue (MediaBase::SourceProperty, Value ("/tmp/mono.png"));
 		i->SetValue (Canvas::LeftProperty, Value (100.0));
 		i->SetValue (Canvas::TopProperty, Value (100.0));
 		item_set_render_transform (i, s_trans);

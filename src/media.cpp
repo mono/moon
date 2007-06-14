@@ -278,20 +278,28 @@ Image::Image ()
   : pixbuf_width (0),
     pixbuf_height (0),
     loader (NULL),
+    downloader (NULL),
     xlib_surface (NULL)
 {
 }
 
 void
-Image::SetSource (DependencyObject *downloader, char* PartName)
+Image::SetSource (DependencyObject *dl, char* PartName)
 {
+	g_return_if_fail (dl->GetObjectType() == Value::DOWNLOADER);
+
+	if (loader) {
+		g_signal_handlers_disconnect_by_func (loader, (void*)loader_size_prepared, this);
+		g_object_unref (G_OBJECT (loader));
+	}
 	loader = gdk_pixbuf_loader_new ();
 
 	g_signal_connect (loader, "size_prepared", G_CALLBACK(loader_size_prepared), this);
 
-	this->downloader = downloader;
-	((Downloader*)downloader)->SetWriteFunc (pixbuf_write, this);
-	((Downloader*)downloader)->Open ("GET", PartName, true);
+	downloader = (Downloader*)dl;
+	base_ref (downloader);
+	downloader->SetWriteFunc (pixbuf_write, this);
+	downloader->Open ("GET", PartName, true);
 }
 
 void
@@ -371,6 +379,24 @@ Image::getbounds ()
 	x1 = y1 = 0;
 	x2 = pixbuf_width;
 	y2 = pixbuf_height;
+}
+
+void
+Image::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == MediaBase::SourceProperty) {
+		if (downloader) {
+			// we have a previously running download.  stop it.
+			downloader->Abort();
+			base_unref (downloader);
+			downloader = NULL;
+		}
+
+		char *source = GetValue (prop)->AsString();
+
+		printf ("setting image source to '%s'\n", source);
+		SetSource (new Downloader (), source);
+	}
 }
 
 Image*

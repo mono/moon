@@ -1,5 +1,14 @@
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
+	* demo.cpp: use the MediaBase::SourceProperty to set the image's
+	source.
+
+	* media.h, media.cpp: add Image::OnPropertyChanged so we can watch
+	for changes in MediaBase::SourceProperty and kick off the download
+	and stop the currently running one.
+
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
 	* demo.cpp: track downloader api change.
 
 	* media.cpp: track downloader api change.

@@ -47,14 +47,16 @@ class Image : public MediaBase {
 	virtual void getbounds ();
 
 	void SetSource (DependencyObject *Downloader, char *PartName);
-	
+
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
  private:
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
 	void LoaderSizePrepared (int width, int height);
 	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
 	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
 	GdkPixbufLoader *loader;
-	DependencyObject *downloader;
+	Downloader *downloader;
 	cairo_surface_t *xlib_surface;
 	GdkPixmap *pixmap;
 	int pixbuf_width;
