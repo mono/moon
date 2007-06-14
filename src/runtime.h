@@ -235,6 +235,16 @@ class DependencyObject : public Base {
 
 	virtual void OnPropertyChanged (DependencyProperty *property) {}
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
+
+	//
+	// OnChildPropertyChanged:
+	//    This is raised on objects when a child of this object has had one of its
+	//    properties changed.   This is used so that owning objects can monitor if
+	//    one of the attached properties in a child must be acted upon
+	//
+	//    This code will go up in the ownership chain until this is handled, by 
+	//    returning TRUE.
+	//
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { return FALSE; }
 	
 	virtual Value::Kind GetObjectType ();
@@ -784,7 +794,8 @@ class Canvas : public Panel {
 	virtual void handle_motion (Surface *s, int state, double x, double y);
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
-
+	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
+	
 	static DependencyProperty* TopProperty;
 	static DependencyProperty* LeftProperty;
 };

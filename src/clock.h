@@ -177,6 +177,8 @@ class TimelineGroup;
 
 class Clock : public DependencyObject {
  public:
+	~Clock () {  }
+	
 	// events to queue up
 	enum {
 		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,

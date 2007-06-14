@@ -155,6 +155,7 @@ Storyboard::Begin ()
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
 	root_clock = CreateClock ();
+	base_ref (root_clock);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
@@ -258,9 +259,10 @@ Storyboard::GetTargetName (DependencyObject *o)
 
 Storyboard::~Storyboard ()
 {
+	printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 	Stop ();
 	TimeManager::Instance()->RemoveChild (root_clock);
-	printf ("Unrefing %p\n", root_clock);
+	printf ("Unrefing Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 	base_unref (root_clock);
 }
 

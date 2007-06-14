@@ -1,3 +1,10 @@
+2007-06-14  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Canvas): Implement OnChildPropertyChanged so we can
+	catch cases of Top/Left being set on a child, this makes changes
+	to the object after it has been created (adding/removing the
+	property) work. 
+
 2007-06-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp|h: Much closer results for RadialGradients (but I still

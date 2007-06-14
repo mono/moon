@@ -933,6 +933,24 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subp
 	printf ("Prop %s changed in %s\n", prop->name, subprop->name);
 }
 
+bool
+Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child)
+{
+	if (prop == TopProperty || prop == LeftProperty){
+		//
+		// Technically the canvas cares about Visuals, but we cant do much
+		// with them, all the logic to relayout is in UIElement
+		//
+		if (!Type::Find (child->GetObjectType ())->IsSubclassOf (Value::UIELEMENT)){
+			printf ("Child %d is not a UIELEMENT\n");
+			return FALSE;
+		}
+		UIElement *ui = (UIElement *) child;
+		ui->FullInvalidate (true);
+	}
+	return FALSE;
+}
+
 void 
 Canvas::handle_motion (Surface *s, int state, double x, double y)
 {
@@ -1537,12 +1555,15 @@ DependencyObject::FindName (const char *name)
 	if (!scope)
 		scope = global_NameScope;
 
+	printf ("Looking up in scope %p (Global=%p)\n", scope, global_NameScope);
 	return scope->FindName (name);
 }
 
 DependencyObject *
 dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kind *element_kind)
 {
+	printf ("Looking up in %p the string %p\n", obj, name);
+	printf ("        String: %s\n", name);
 	DependencyObject *ret = obj->FindName (name);
 
 	if (ret == NULL)
