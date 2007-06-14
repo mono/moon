@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
+#include <math.h>
 #include "brush.h"
 #include "transform.h"
 
@@ -88,6 +89,22 @@ brush_set_transform (Brush *brush, TransformGroup* transform_group)
 	brush->SetValue (Brush::TransformProperty, Value (transform_group));
 }
 
+void
+Brush::SetupPattern (cairo_pattern_t *pattern)
+{
+	Transform *transform = brush_get_transform (this);
+	if (!transform)
+		return;
+
+	// FIXME: we may have used/applied a matrix before getting here
+		
+	cairo_matrix_t matrix;
+	transform_get_transform (transform, &matrix);
+	// TODO - optimization, check for empty/identity matrix too ?
+
+	cairo_pattern_set_matrix (pattern, &matrix);
+}
+
 //
 // SolidColorBrush
 //
@@ -118,6 +135,8 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 		alpha *= brush_opacity;
 	
 	cairo_set_source_rgba (target, color->r, color->g, color->b, alpha);
+
+	// Transform does not apply to a solid color brush
 }
 
 Color*
@@ -475,6 +494,8 @@ GradientBrush::SetupPattern (cairo_pattern_t *pattern)
 		double offset = gradient_stop_get_offset (stop);
 		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a);
 	}
+
+	Brush::SetupPattern (pattern);
 }
 
 //
@@ -606,22 +627,43 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 void
 RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
-	double w = framework_element_get_width ((FrameworkElement*)uielement);
-	double h = framework_element_get_height ((FrameworkElement*)uielement);
-
-	Point *center = radial_gradient_brush_get_center (this);
-	double x0 = (center ? center->x : 0.5) * w;
-	double y0 = (center ? center->y : 0.5) * h;
+	double x0, y0, x1, y1;
+	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
+	double w = fabs (x1 - x0);
+	double h = fabs (y1 - y0);
 
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
-	double x1 = (origin ? origin->x : 0.5) * w;
-	double y1 = (origin ? origin->y : 0.5) * h;
+	x0 = (origin ? origin->x : 0.5) * w;
+	y0 = (origin ? origin->y : 0.5) * h;
+
+	Point *center = radial_gradient_brush_get_center (this);
+	x1 = (center ? center->x : 0.5) * w;
+	y1 = (center ? center->y : 0.5) * h;
 
 	double rx = radial_gradient_brush_get_radius_x (this);
 	double ry = radial_gradient_brush_get_radius_y (this);
 
-	// FIXME - still not ok (need matrix to emulate both radius)
-	cairo_pattern_t *pattern = cairo_pattern_create_radial (x0, y0, 0.0, x1, y1, ry * h);
+	double rw = w * rx;
+	double rh = h * ry;
+
+	cairo_pattern_t *pattern;
+	if (rw != rh) {
+		// FIXME: not quite correct
+		// cairo doesn't directly support different X,Y ratios
+		// so we use a matrix to simulate it's effect
+		double ratio = rw / rh;
+		pattern = cairo_pattern_create_radial (x0, y0, 0.0, x1, y1, rh);
+
+		cairo_matrix_t rm;
+		if (rw < rh)
+			cairo_matrix_init (&rm, ratio, 0, 0, 1.0, rw * ratio, 0);
+		else
+			cairo_matrix_init (&rm, ratio, 0, 0, 1.0, -w / ratio, 0);
+		cairo_matrix_invert (&rm);
+		cairo_pattern_set_matrix (pattern, &rm);
+	} else {
+		pattern = cairo_pattern_create_radial (x0, y0, 0.0, x1, y1, rh);
+	}
 
 	GradientBrush::SetupPattern (pattern);
 

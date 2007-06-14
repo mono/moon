@@ -619,7 +619,7 @@ ArcSegment::Draw (Surface *s)
 	Point *size = arc_segment_get_size (this);
 	double angle = arc_segment_get_rotation_angle (this);
 	int large = arc_segment_get_is_large_arc (this) ? 1 : 0;
-	int direction = arc_segment_get_sweep_direction (this) == SweepDirectionClockwise ? 0 : 1;
+	int direction = arc_segment_get_sweep_direction (this) == SweepDirectionCounterclockwise ? 0 : 1;
 	Point* p = arc_segment_get_point (this);
 
 	// FIXME: there's no cairo_arc_to so we reuse librsvg code (see rsvg.cpp)

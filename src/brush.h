@@ -30,7 +30,9 @@ class Brush : public DependencyObject {
 
 	Brush () { }
 	Value::Kind GetObjectType () { return Value::BRUSH; };
+
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement) = 0;
+	virtual void SetupPattern (cairo_pattern_t *pattern);
 };
 
 double		brush_get_opacity		(Brush *brush);

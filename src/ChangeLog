@@ -1,3 +1,11 @@
+2007-06-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* brush.cpp|h: One step closer for RadialGradientBrush
+	* geometry.cpp: Fix ArcSegment sweep direction. All chess pieces now 
+	render (shape-wise) correctly.
+	* shape.cpp: Draw before setting the brush. This allows the brush
+	setting code to ask for the extents to stroke/fill.
+
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
 	* brush.h, geometry.h, animation.h, clock.h: add GetElementType
