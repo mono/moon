@@ -299,18 +299,51 @@ class NameScope : public DependencyObject {
 	GHashTable *names;
 };
 
+typedef void (*downloader_write_func)(guchar *buf, gsize n, gpointer cb_data);
+
 class Downloader : public DependencyObject {
  public:
 	Downloader () {};
 	virtual Value::Kind GetObjectType () { return Value::DOWNLOADER; };	
+
+	virtual void Abort ();
+	virtual char* GetResponseText (char* PartName);
+	virtual void Open (char *verb, char *URI, bool Async);
+	virtual void Send ();
+
+	void SetWriteFunc (downloader_write_func write,
+			   gpointer data);
 
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ResponseTextProperty;
 	static DependencyProperty *StatusProperty;
 	static DependencyProperty *StatusTextProperty;
 	static DependencyProperty *UriProperty;
+
+ protected:
+	downloader_write_func write;
+	gpointer write_data;
 };
 Downloader* downloader_new ();
+
+class UnmanagedDownloader : public Downloader {
+ public:
+	UnmanagedDownloader ();
+	virtual ~UnmanagedDownloader ();
+	Value::Kind GetObjectType () { return Value::UNMANAGEDDOWNLOADER; };
+
+	virtual void Abort ();
+	//virtual char* GetResponseText (char* PartName);
+	virtual void Open (char *verb, char *URI, bool Async);
+	virtual void Send ();
+
+	void Close ();
+ private:
+	gboolean AsyncFillBuffer ();
+	static gboolean async_fill_buffer (gpointer cb_data);
+	int fd;
+	int async_idle;
+};
 
 class Visual : public DependencyObject {
  public:

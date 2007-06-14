@@ -15,6 +15,8 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 #define Visual _XVisual
 #include <gdk/gdkx.h>
 #if AGG
@@ -2027,6 +2029,106 @@ event_trigger_fire_actions (EventTrigger *trigger)
 		action->Fire ();
 	}
 }
+
+//
+// Downloader
+//
+
+void
+Downloader::Abort ()
+{
+}
+
+char*
+Downloader::GetResponseText (char* PartName)
+{
+	return NULL;
+}
+
+void
+Downloader::Open (char *verb, char *URI, bool Async)
+{
+}
+
+void
+Downloader::Send ()
+{
+}
+
+void
+Downloader::SetWriteFunc (downloader_write_func write,
+			  gpointer data)
+{
+	this->write = write;
+	this->write_data = data;
+}
+
+//
+// UnmanagedDownloader hack
+//
+
+
+UnmanagedDownloader::UnmanagedDownloader ()
+  : fd (-1),
+    async_idle (-1)
+{
+}
+
+UnmanagedDownloader::~UnmanagedDownloader ()
+{
+	Close ();
+}
+
+gboolean
+UnmanagedDownloader::async_fill_buffer (gpointer cb_data)
+{
+	return ((UnmanagedDownloader*)cb_data)->AsyncFillBuffer ();
+}
+
+gboolean
+UnmanagedDownloader::AsyncFillBuffer ()
+{
+	guchar buf[1024];
+
+	int n = read (fd, buf, sizeof (buf));
+
+	this->write (buf, n, write_data);
+}
+
+void
+UnmanagedDownloader::Open (char *verb, char *uri, bool async)
+{
+	fd = open (uri, O_RDONLY);
+	if (fd == -1) {
+		printf ("failed open\n");
+		return;
+	}
+
+	if (async)
+		async_idle = g_idle_add (async_fill_buffer, this);
+}
+
+void
+UnmanagedDownloader::Send ()
+{
+}
+
+void
+UnmanagedDownloader::Abort ()
+{
+	Close ();
+}
+
+void
+UnmanagedDownloader::Close ()
+{
+	if (fd != -1)
+		close (fd);
+	if (async_idle != -1)
+		g_source_remove (async_idle);
+}
+
+
 
 //
 // UIElement

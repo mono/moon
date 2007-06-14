@@ -218,6 +218,12 @@ Value::AsGradientStopCollection ()
 	checked_get_subclass (GRADIENTSTOP_COLLECTION, GradientStopCollection);
 }
 
+Image*
+Value::AsImage ()
+{
+	checked_get_subclass (IMAGE, Image);
+}
+
 ImageBrush*
 Value::AsImageBrush ()
 {
@@ -588,6 +594,12 @@ UIElement*
 Value::AsUIElement ()
 {
 	checked_get_subclass (UIELEMENT, UIElement);
+}
+
+UnmanagedDownloader*
+Value::AsUnmanagedDownloader ()
+{
+	checked_get_subclass (UNMANAGEDDOWNLOADER, UnmanagedDownloader);
 }
 
 VideoBrush*

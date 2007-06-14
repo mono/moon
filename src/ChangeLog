@@ -1,3 +1,7 @@
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp: make one of the videos an image instead.
+
 2007-06-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp: Fixed the font_widths and font_stretches maps to
@@ -15,6 +19,18 @@
 
 	* runtime.cpp|h: Hookup the resource collection.
 	* xaml.cpp: Parse resource collections.
+
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* type.cpp, value.h, type.h: resync these.
+
+	* media.h, media.cpp: add naive Image class.
+
+	* runtime.h, runtime.cpp: add some Downloader methods, and
+	subclass Downloader with a *very* hackish UnmanagedDownloader
+	class that just loads from files.  Also add a "write_func"
+	callback that the downloader can call when it has new data to hand
+	off.
 
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 

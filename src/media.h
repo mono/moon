@@ -35,6 +35,36 @@ Stretch media_base_get_stretch (MediaBase *media);
 void    media_base_set_stretch (MediaBase *media, Stretch value);
 
 
+class Image : public MediaBase {
+ public:
+	Image ();
+	virtual Value::Kind GetObjectType () { return Value::IMAGE; };
+
+	virtual void render (Surface *surface, int x, int y, int width, int height);
+	virtual void getbounds ();
+
+	void SetSource (DependencyObject *Downloader, char* PartName);
+
+	static DependencyProperty *DownloadProgressProperty;
+ private:
+	void PixbufWrite (guchar *bug, gsize count);
+	void LoaderSizePrepared (int width, int height);
+	static void pixbuf_write (guchar *buf, gsize count, gpointer data);
+	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
+	GdkPixbufLoader *loader;
+	DependencyObject *downloader;
+	cairo_surface_t *xlib_surface;
+	GdkPixmap *pixmap;
+	int pixbuf_width;
+	int pixbuf_height;
+};
+
+Image* image_new ();
+void   image_set_download_progress (Image *img, double progress);
+double image_get_download_progress (Image *img);
+void   image_set_source (DependencyObject *Downloader, char *PartName);
+
+
 
 class MediaElement : public MediaBase {
 public:

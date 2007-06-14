@@ -14,6 +14,11 @@
 
 #include <gtk/gtk.h>
 
+#define Visual _XVisual
+#include <gdk/gdkx.h>
+#include <cairo-xlib.h>
+#undef Visual
+
 #include "media.h"
 
 // MediaBase
@@ -245,6 +250,134 @@ media_element_set_volume (MediaElement *media, double value)
 }
 
 //
+// Image
+//
+DependencyProperty* Image::DownloadProgressProperty;
+
+Image::Image ()
+  : pixbuf_width (0),
+    pixbuf_height (0),
+    loader (NULL),
+    xlib_surface (NULL)
+{
+}
+
+void
+Image::SetSource (DependencyObject *downloader, char* PartName)
+{
+	loader = gdk_pixbuf_loader_new ();
+
+	g_signal_connect (loader, "size_prepared", G_CALLBACK(loader_size_prepared), this);
+
+	this->downloader = downloader;
+	((Downloader*)downloader)->SetWriteFunc (pixbuf_write, this);
+	((Downloader*)downloader)->Open ("GET", PartName, true);
+}
+
+void
+Image::pixbuf_write (guchar *buf, gsize count, gpointer data)
+{
+	((Image*)data)->PixbufWrite (buf, count);
+}
+
+void
+Image::PixbufWrite (guchar *buf, gsize count)
+{
+	gdk_pixbuf_loader_write (loader, buf, count, NULL);
+}
+
+void
+Image::loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data)
+{
+	((Image*)data)->LoaderSizePrepared (width, height);
+}
+
+void
+Image::LoaderSizePrepared (int width, int height)
+{
+	printf ("image has size %dx%d\n", width, height);
+	pixbuf_width = width;
+	pixbuf_height = height;
+
+	item_update_bounds (this);
+}
+
+void
+Image::render (Surface *s, int x, int y, int width, int height)
+{
+	cairo_save (s->cairo);
+
+	GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	if (pixbuf) {
+		if (!xlib_surface) {
+			pixmap = gdk_pixmap_new (GDK_DRAWABLE (s->drawing_area->window),
+						 gdk_pixbuf_get_width (pixbuf),
+						 gdk_pixbuf_get_height (pixbuf),
+						 gdk_drawable_get_depth (GDK_DRAWABLE (s->drawing_area->window)));
+			GdkGC *gc = gdk_gc_new (GDK_DRAWABLE (pixmap));
+			gdk_draw_pixbuf (GDK_DRAWABLE (pixmap),
+					 gc,
+					 pixbuf,
+					 0, 0,
+					 0, 0,
+					 gdk_pixbuf_get_width (pixbuf),
+					 gdk_pixbuf_get_height (pixbuf),
+					 GDK_RGB_DITHER_NONE,
+					 0,0);
+			g_object_unref (G_OBJECT (gc));
+			
+
+			xlib_surface = cairo_xlib_surface_create (GDK_PIXMAP_XDISPLAY (pixmap),
+								  GDK_PIXMAP_XID (pixmap),
+								  GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (GDK_DRAWABLE (pixmap))),
+								  gdk_pixbuf_get_width (pixbuf),
+								  gdk_pixbuf_get_height (pixbuf));
+		}
+
+		cairo_set_matrix (s->cairo, &absolute_xform);
+	
+		cairo_set_source_surface (s->cairo, xlib_surface, 0, 0);
+
+		cairo_rectangle (s->cairo, 0, 0, this->pixbuf_width, this->pixbuf_height);
+
+		cairo_fill (s->cairo);
+	}
+	cairo_restore (s->cairo);
+}
+
+void
+Image::getbounds ()
+{
+	x1 = y1 = 0;
+	x2 = pixbuf_width;
+	y2 = pixbuf_height;
+}
+
+Image*
+image_new ()
+{
+	return new Image ();
+}
+
+void
+image_set_download_progress (Image *img, double progress)
+{
+	img->SetValue (Image::DownloadProgressProperty, Value(progress));
+}
+
+double
+image_get_download_progress (Image *img)
+{
+	return img->GetValue (Image::DownloadProgressProperty)->AsDouble();
+}
+
+void
+image_set_source (Image *img, DependencyObject *Downloader, char *PartName)
+{
+	img->SetSource (Downloader, PartName);
+}
+
+//
 // MediaAttribute
 //
 
@@ -261,4 +394,8 @@ media_init ()
 {
 	/* MediaAttribute */
 	MediaAttribute::ValueProperty = DependencyObject::Register (Value::MEDIAATTRIBUTE, "Value", new Value (""));
+
+	/* Image */
+	Image::DownloadProgressProperty = DependencyObject::Register (Value::IMAGE, "DownloadProgress", new Value(0.0));
+
 }

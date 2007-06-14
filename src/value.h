@@ -58,6 +58,7 @@ class Glyphs;
 class GradientBrush;
 class GradientStop;
 class GradientStopCollection;
+class Image;
 class ImageBrush;
 class Inline;
 class Inlines;
@@ -120,6 +121,7 @@ class TriggerAction;
 class TriggerActionCollection;
 class TriggerCollection;
 class UIElement;
+class UnmanagedDownloader;
 class VideoBrush;
 class Visual;
 class VisualCollection;
@@ -182,6 +184,7 @@ public:
 		GRADIENTBRUSH,
 		GRADIENTSTOP,
 		GRADIENTSTOP_COLLECTION,
+		IMAGE,
 		IMAGEBRUSH,
 		INLINE,
 		INLINES,
@@ -244,6 +247,7 @@ public:
 		TRIGGERACTION_COLLECTION,
 		TRIGGER_COLLECTION,
 		UIELEMENT,
+		UNMANAGEDDOWNLOADER,
 		VIDEOBRUSH,
 		VISUAL,
 		VISUAL_COLLECTION,
@@ -353,6 +357,7 @@ public:
 	GradientBrush*                 AsGradientBrush ();
 	GradientStop*                  AsGradientStop ();
 	GradientStopCollection*        AsGradientStopCollection ();
+	Image*                         AsImage ();
 	ImageBrush*                    AsImageBrush ();
 	Inline*                        AsInline ();
 	Inlines*                       AsInlines ();
@@ -415,6 +420,7 @@ public:
 	TriggerActionCollection*       AsTriggerActionCollection ();
 	TriggerCollection*             AsTriggerCollection ();
 	UIElement*                     AsUIElement ();
+	UnmanagedDownloader*           AsUnmanagedDownloader ();
 	VideoBrush*                    AsVideoBrush ();
 	Visual*                        AsVisual ();
 	VisualCollection*              AsVisualCollection ();
