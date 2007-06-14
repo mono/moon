@@ -1780,6 +1780,66 @@ TriggerCollection::Remove (DependencyObject *data)
 	trigger->RemoveTarget (fwe);
 }
 
+void
+ResourceCollection::Add (DependencyObject *data)
+{
+	Collection::Add (data);
+}
+
+void
+ResourceCollection::Remove (DependencyObject *data)
+{
+	Collection::Remove (data);
+}
+
+void
+StrokeCollection::Add (DependencyObject *data)
+{
+	Collection::Add (data);
+}
+
+void
+StrokeCollection::Remove (DependencyObject *data)
+{
+	Collection::Remove (data);
+}
+
+void
+MediaAttributeCollection::Add (DependencyObject *data)
+{
+	Collection::Add (data);
+}
+
+void
+MediaAttributeCollection::Remove (DependencyObject *data)
+{
+	Collection::Remove (data);
+}
+
+void
+StylusPointCollection::Add (DependencyObject *data)
+{
+	Collection::Add (data);
+}
+
+void
+StylusPointCollection::Remove (DependencyObject *data)
+{
+	Collection::Remove (data);
+}
+
+void
+TimelineMarkerCollection::Add (DependencyObject *data)
+{
+	Collection::Add (data);
+}
+
+void
+TimelineMarkerCollection::Remove (DependencyObject *data)
+{
+	Collection::Remove (data);
+}
+
 VisualCollection *
 visual_collection_new ()
 {
@@ -1797,7 +1857,7 @@ trigger_action_collection_new ()
 {
 	return new TriggerActionCollection ();
 }
-/*
+
 ResourceCollection *
 resource_collection_new ()
 {
@@ -1827,7 +1887,6 @@ media_attribute_collection_new ()
 {
 	return new MediaAttributeCollection ();
 }
-*/
 
 EventTrigger::EventTrigger () : actions (NULL)
 {
@@ -1998,6 +2057,23 @@ event_trigger_init ()
 	EventTrigger::ActionsProperty = DependencyObject::Register (Value::EVENTTRIGGER, "Actions", Value::TRIGGERACTION_COLLECTION);
 }
 
+DependencyProperty *Downloader::DownloadProgressProperty;
+DependencyProperty *Downloader::ResponseTextProperty;
+DependencyProperty *Downloader::StatusProperty;
+DependencyProperty *Downloader::StatusTextProperty;
+DependencyProperty *Downloader::UriProperty;
+
+void
+downloader_init ()
+{
+	Downloader::DownloadProgressProperty = DependencyObject::Register (Value::DOWNLOADER, "DownloadProgress", Value::DOUBLE);
+	Downloader::ResponseTextProperty = DependencyObject::Register (Value::DOWNLOADER, "ResponseText", Value::STRING);
+	Downloader::StatusProperty = DependencyObject::Register (Value::DOWNLOADER, "Status", Value::INT32);
+	Downloader::StatusTextProperty = DependencyObject::Register (Value::DOWNLOADER, "StatusText", Value::STRING);
+	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
+
+}
+
 Type* Type::types [];
 GHashTable* Type::types_by_name = NULL;
 
@@ -2095,6 +2171,8 @@ runtime_init ()
 	xaml_init ();
 	clock_init ();
 	text_init ();
+	downloader_init ();
+	media_init ();
 }
 
 void surface_register_events (Surface *s,

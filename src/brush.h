@@ -115,11 +115,20 @@ Stretch		tile_brush_get_stretch		(TileBrush *brush);
 void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 class ImageBrush : public TileBrush {
+ public:
+	static DependencyProperty *DownloadProgressProperty;
+	static DependencyProperty *ImageSourceProperty;
+
 	virtual Value::Kind GetObjectType () { return Value::IMAGEBRUSH; }
+
 };
 
 class VideoBrush : public TileBrush {
+ public:
+	static DependencyProperty *SourceNameProperty;
+
 	virtual Value::Kind GetObjectType () { return Value::VIDEOBRUSH; }
+
 };
 
 class LinearGradientBrush : public GradientBrush {

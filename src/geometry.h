@@ -49,6 +49,7 @@ class GeometryCollection : public Collection {
 	virtual Value::Kind GetObjectType () { return Value::GEOMETRY_COLLECTION; }
 	virtual Value::Kind GetElementType () { return Value::GEOMETRY; }
 };
+GeometryCollection* geometry_collection_new ();
 
 //
 // GeometryGroup
@@ -119,6 +120,7 @@ class PathFigureCollection : public Collection {
 	virtual Value::Kind GetObjectType () { return Value::PATHFIGURE_COLLECTION; }
 	virtual Value::Kind GetElementType () { return Value::PATHFIGURE; }
 };
+PathFigureCollection* path_figure_collection_new ();
 
 //
 // PathGeometry
@@ -173,6 +175,7 @@ class PathSegmentCollection : public Collection {
 	virtual Value::Kind GetObjectType () { return Value::PATHSEGMENT_COLLECTION; }
 	virtual Value::Kind GetElementType () { return Value::PATHSEGMENT; }
 };
+PathSegmentCollection* path_segment_collection_new ();
 
 //
 // PathFigure

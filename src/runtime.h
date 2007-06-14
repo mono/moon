@@ -471,14 +471,12 @@ class Inlines : public Collection {
 VisualCollection*          visual_collection_new ();
 TriggerCollection*         trigger_collection_new ();
 TriggerActionCollection*   trigger_action_collection_new ();
-/*
 ResourceCollection*        resource_collection_new ();
 StrokeCollection*          stroke_collection_new ();
 StylusPointCollection*     stylus_point_collection_new ();
 TimelineMarkerCollection*  time_line_marker_collection_new ();
 GradientStopCollection*    gradient_stop_collection_new ();
 MediaAttributeCollection*  media_attribute_collection_new ();
-*/
 
 
 enum Stretch {
@@ -831,6 +829,8 @@ void geometry_init ();
 void xaml_init ();
 void types_init ();
 void dependencyobject_init ();
+void downloader_init ();
+void media_init ();
 
 G_END_DECLS
 

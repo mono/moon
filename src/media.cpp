@@ -245,3 +245,16 @@ media_element_set_volume (MediaElement *media, double value)
 {
 	media->SetValue (MediaElement::VolumeProperty, Value (value));
 }
+
+//
+// MediaAttribute
+//
+
+DependencyProperty* MediaAttribute::ValueProperty;
+
+void
+media_init ()
+{
+	/* MediaAttribute */
+	MediaAttribute::ValueProperty = DependencyObject::Register (Value::MEDIAATTRIBUTE, "Value", new Value (""));
+}

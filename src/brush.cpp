@@ -779,6 +779,19 @@ tile_brush_set_stretch (TileBrush *brush, Stretch stretch)
 }
 
 //
+// ImageBrush
+//
+
+DependencyProperty* ImageBrush::DownloadProgressProperty;
+DependencyProperty* ImageBrush::ImageSourceProperty;
+
+//
+// VideoBrush
+//
+
+DependencyProperty* VideoBrush::SourceNameProperty;
+
+//
 //
 //
 
@@ -812,6 +825,14 @@ brush_init ()
 	/* GradientStop fields */
 	GradientStop::ColorProperty = DependencyObject::Register (Value::GRADIENTSTOP, "Color", new Value (Color (0x00FFFFFF)));
 	GradientStop::OffsetProperty = DependencyObject::Register (Value::GRADIENTSTOP, "Offset", new Value (0.0));
+
+	/* ImageBrush */
+	ImageBrush::DownloadProgressProperty = DependencyObject::Register (Value::IMAGEBRUSH, "DownloadProgress", new Value (0.0));
+	ImageBrush::ImageSourceProperty = DependencyObject::Register (Value::IMAGEBRUSH, "ImageSource", new Value (""));
+
+	/* VideoBrush */
+	VideoBrush::SourceNameProperty = DependencyObject::Register (Value::VIDEOBRUSH, "SourceName", new Value (""));
+
 
 	/* TileBrush fields */
 	TileBrush::AlignmentXProperty = DependencyObject::Register (Value::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));

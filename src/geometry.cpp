@@ -145,6 +145,36 @@ geometry_group_set_children (GeometryGroup *geometry_group, GeometryCollection* 
 }
 
 //
+// GeometryCollection
+//
+
+GeometryCollection*
+geometry_collection_new ()
+{
+	return new GeometryCollection ();
+}
+
+//
+// PathFigureCollection
+//
+
+PathFigureCollection*
+path_figure_collection_new ()
+{
+	return new PathFigureCollection ();
+}
+
+//
+// PathSegmentCollection
+//
+
+PathSegmentCollection*
+path_segment_collection_new ()
+{
+	return new PathSegmentCollection ();
+}
+
+//
 // EllipseGeometry
 //
 
@@ -1029,7 +1059,7 @@ geometry_init ()
 	PolyLineSegment::PointsProperty = DependencyObject::Register (Value::POLYLINESEGMENT, "Points", Value::POINT_ARRAY);
 
 	/* PolyQuadraticBezierSegment field */
-	PolyQuadraticBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYQUADRATICBEZIERSEGMENT, "Point", Value::POINT);
+	PolyQuadraticBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYQUADRATICBEZIERSEGMENT, "Points", Value::POINT_ARRAY);
 
 	/* QuadraticBezierSegment field */
 	QuadraticBezierSegment::Point1Property = DependencyObject::Register (Value::QUADRATICBEZIERSEGMENT, "Point1", Value::POINT);

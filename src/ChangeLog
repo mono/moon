@@ -1,3 +1,11 @@
+2007-06-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* geometry.cpp, geometry.h: Add collection constructors.
+	* brush.cpp, brush.h: Add ImageBrush and VideoBrush DPs.
+	* runtime.cpp|runtime.h: Implement collection add/remove methods. 
+	Add Downloader DPs.
+	* media.cpp: Add MediaAttribute DP.	
+
 2007-06-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp|h: Refactor Opacity to make it reusable to other brushes
