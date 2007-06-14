@@ -1,5 +1,17 @@
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp: Move rootclass declaration to plugin-class.
+	
+	* plugin.h: Remove inclusion of plugin-class.h.
+
+	* plugin-class.h: Introduces PluginObject class inherited from NPObject and 
+	add rootclass declaration.
+
+	* plugin-class.cpp: Uses PluginObject instead of NPObject, also make use of
+	object in 'source' property getter.
+
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h: Add a new member finalize that must be calling 
 	instead of delete, we must later found a way to fix reload problems.
 

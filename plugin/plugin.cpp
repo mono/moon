@@ -11,6 +11,7 @@
  */
 
 #include "plugin.h"
+#include "plugin-class.h"
 #include "moon-mono.h"
 
 void 
@@ -61,8 +62,6 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 }
 
 /*** PluginInstance:: *********************************************************/
-
-static PluginRootClass* rootclass = NULL;
 
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {

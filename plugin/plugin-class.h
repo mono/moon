@@ -41,6 +41,15 @@
 		memcpy (retval, x, len + 1); \
 		STRINGN_TO_NPVARIANT (retval, len, z);
 
+/*** PluginObject *************************************************************/
+
+class PluginObject : public NPObject
+{
+ public:
+	NPP instance;
+	PluginInstance *plugin;
+};
+
 /*** PluginClass **************************************************************/
 
 class PluginClass : public NPClass
@@ -149,6 +158,8 @@ class PluginRootClass : public PluginClass
 	PLUGIN_PROPERTIES (PluginRootClassPropertyNames);
 	PLUGIN_METHODS (PluginRootClassMethodNames);
 };
+
+static PluginRootClass* rootclass = NULL;
 
 /*** PluginDependencyObject ***************************************************/
 

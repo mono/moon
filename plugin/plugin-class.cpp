@@ -11,16 +11,20 @@
  */
 
 #include "plugin-class.h"
+#include "plugin.h"
 
 /*** Static wrapper functions *************************************************/
 
 static NPObject*
 RuntimeClassAllocate (NPP instance, NPClass *aClass)
 {
-	NPObject *object;
-	object = (NPObject*) NPN_MemAlloc (sizeof (NPObject));
+	PluginObject *object;
+	object = (PluginObject*) NPN_MemAlloc (sizeof (PluginObject));
 	if (!object)
 		return NULL;
+
+	object->instance = instance;
+	object->plugin = (PluginInstance*) instance->pdata;
 
 	return object;
 }
@@ -246,7 +250,7 @@ PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant
 	} 
 
 	if (name == NPID ("source")) {
-		PluginInstance *plugin = (PluginInstance *) instance->pdata;
+		PluginInstance *plugin = ((PluginObject*) npobj)->plugin;
 		STRING_TO_NPVARIANT (plugin->getSource (), *result);
 		return true;
 	} 

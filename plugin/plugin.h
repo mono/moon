@@ -14,7 +14,7 @@
 #define MOON_PLUGIN
 
 #include "moonlight.h"
-#include "plugin-class.h"
+//#include "plugin-class.h"
 
 class PluginInstance
 {
@@ -59,6 +59,6 @@ class PluginInstance
 	// Property getters and setters
 	bool getIsLoaded () { return this->isloaded; };
 	char *getSource () { return this->source; }
- };
+};
 
 #endif /* MOON_PLUGIN */
