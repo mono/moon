@@ -6,6 +6,7 @@
 //
 using System;
 using Gtk;
+using Gtk.Moonlight;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ using System.Windows.Media.Animation;
 class X {
 	static GtkSilver silver;
 	static Window w;
+	static Label msg;
 	
 	static void Load (string file)
 	{
@@ -55,16 +57,17 @@ class X {
 		DependencyObject anim = d.FindObject ("animation");
 		Console.WriteLine ("Find Object: {0}", anim);
 		if (anim != null && anim is Storyboard){
-			Console.WriteLine ("Here");
+			msg.Text = "Hold the button down to pause the animation";
 			canvas.MouseLeftButtonDown += delegate {
 				((Storyboard) anim).Pause ();
 			};
 
 			canvas.MouseLeftButtonUp += delegate {
-				((Storyboard) anim).Resume ();				
+				((Storyboard) anim).Resume ();
+				Console.WriteLine ("UP");
 			};
-		}
-		
+		}  else
+			msg.Text = "";
 	}
 	
 	static void Main (string [] args)
@@ -74,6 +77,8 @@ class X {
 
 		w = new Window ("Top");
 		Box vb = new VBox ();
+		msg = new Label ("");
+		vb.Add (msg);
 		Box hb = new HBox ();
 		vb.Add (hb);
 

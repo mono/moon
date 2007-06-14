@@ -6,6 +6,8 @@ using System.Windows.Controls;
 using Mono;
 using System.Reflection;
 
+namespace Gtk.Moonlight {
+	
 public class GtkSilver : DrawingArea {
 	[DllImport ("moon")]
 	extern static IntPtr surface_new (int w, int h);
@@ -17,7 +19,38 @@ public class GtkSilver : DrawingArea {
 	extern static IntPtr xaml_create_from_file (string file, ref int kind_type);
 	
 	IntPtr surface;
+
+	//
+	// The downloader callbacks
+	//
+	internal delegate IntPtr downloader_create_state_func  (IntPtr native);
+	internal delegate void   downloader_destroy_state_func (IntPtr state);
+	internal delegate void   downloader_open_func  (string verb, string uri, bool async, IntPtr state);
+	internal delegate void   downloader_send_func  (IntPtr state);
+	internal delegate void   downloader_abort_func (IntPtr state);
+	internal delegate string downloader_get_response_text_func (string part, IntPtr state);
 	
+	[DllImport ("moon")]
+        internal extern static void downloader_set_functions (
+		downloader_create_state_func create_state,
+		downloader_destroy_state_func destroy_state,
+		downloader_open_func open,
+		downloader_send_func send,
+		downloader_abort_func abort,
+		downloader_get_response_text_func get_response);
+
+	
+	static GtkSilver ()
+	{
+		downloader_set_functions (
+			ManagedDownloader.CreateDownloader,
+			ManagedDownloader.DestroyDownloader,
+			ManagedDownloader.Open,
+			ManagedDownloader.Send,
+			ManagedDownloader.Abort,
+			ManagedDownloader.GetResponseText);
+	}
+
 	public GtkSilver (int w, int h)
 	{
 		surface = surface_new (w, h);
@@ -57,5 +90,6 @@ public class GtkSilver : DrawingArea {
 		return true;
 	}
 }
-	
-	
+}
+
+
