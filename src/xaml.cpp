@@ -26,8 +26,6 @@
 
 #define READ_BUFFER 1024
 
-extern NameScope *global_NameScope;
-
 GHashTable *namespace_map = NULL;
 GHashTable *enum_map = NULL;
 
@@ -56,6 +54,7 @@ class XamlParserInfo {
 
 	const char *file_name;
 
+	NameScope *namescope;
 	XamlElementInstance *top_element;
 	Value::Kind          top_kind;
 	XamlNamespace *current_namespace;
@@ -72,7 +71,7 @@ class XamlParserInfo {
 								    top_element (NULL), current_element (NULL),
 								    current_namespace (NULL), char_data_buffer (NULL),
 								    top_kind (Value::INVALID), implicit_default_namespace (false),
-								    error_args (NULL)
+								    error_args (NULL), namescope (new NameScope())
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
@@ -173,7 +172,7 @@ class XNamespace : public XamlNamespace {
 	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
 		if (!strcmp ("Name", attr)) {
-			global_NameScope->RegisterName (value, (DependencyObject *) item->item);
+			p->namescope->RegisterName (value, (DependencyObject *) item->item);
 			return;
 		}
 	}
@@ -462,8 +461,10 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 			*element_type = parser_info->top_kind;
 		free_recursive (parser_info->top_element);
 
-		if (!parser_info->error_args)
+		if (!parser_info->error_args) {
+			NameScope::SetNameScope (res, parser_info->namescope);
 			return res;
+		}
 	}
 
 	return NULL;
@@ -522,8 +523,10 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 			*element_type = parser_info->top_kind;
 		free_recursive (parser_info->top_element);
 
-		if (!parser_info->error_args)
+		if (!parser_info->error_args) {
+			NameScope::SetNameScope (res, parser_info->namescope);
 			return res;
+		}
 	}
 
 	return NULL;

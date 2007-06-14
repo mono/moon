@@ -39,8 +39,6 @@ struct _SurfacePrivate {
 };
 #endif
 
-NameScope *global_NameScope;
-
 static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
 static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
 static callback_keyboard_event cb_keydown, cb_keyup;
@@ -1551,11 +1549,17 @@ DependencyObject*
 DependencyObject::FindName (const char *name)
 {
 	NameScope *scope = NameScope::GetNameScope (this);
-	if (!scope)
-		scope = global_NameScope;
+	DependencyObject *rv = NULL;
 
-	printf ("Looking up in scope %p (Global=%p)\n", scope, global_NameScope);
-	return scope->FindName (name);
+	if (scope)
+		rv = scope->FindName (name);
+
+	if (rv)
+		return rv;
+	else if (parent)
+		return parent->FindName (name);
+	else
+		return NULL;
 }
 
 DependencyObject *
@@ -1822,7 +1826,7 @@ NameScope::GetNameScope (DependencyObject *obj)
 }
 
 void
-SetNameScope (DependencyObject *obj, NameScope *scope)
+NameScope::SetNameScope (DependencyObject *obj, NameScope *scope)
 {
 	obj->SetValue (NameScope::NameScopeProperty, scope);
 }
@@ -2188,7 +2192,6 @@ DependencyProperty *NameScope::NameScopeProperty;
 void
 namescope_init ()
 {
-	global_NameScope = new NameScope ();
 	NameScope::NameScopeProperty = DependencyObject::Register (Value::NAMESCOPE, "NameScope", Value::NAMESCOPE);
 }
 

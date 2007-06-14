@@ -25,8 +25,6 @@ static RotateTransform *v_trans;
 static ScaleTransform *s_trans;
 static RotateTransform *t_trans;
 
-extern NameScope *global_NameScope;
-
 static int do_fps = FALSE;
 static uint64_t last_time;
 
@@ -179,8 +177,12 @@ main (int argc, char *argv [])
 		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_press_event", G_CALLBACK (button_press_event2), t);
 		surface_attach (t, e);
 	} else {
+		NameScope *namescope = new NameScope();
+
 		Canvas *canvas = new Canvas ();
 		surface_attach (t, canvas);
+
+		NameScope::SetNameScope (canvas, namescope);
 
 		// Create our objects
 		r_trans = new RotateTransform ();
@@ -252,6 +254,8 @@ main (int argc, char *argv [])
 
 		sb = new Storyboard ();
 
+		canvas->GetValue(UIElement::ResourcesProperty)->AsResourceCollection()->Add (sb);
+
 		DoubleAnimation *r_anim = new DoubleAnimation ();
 		DoubleAnimation *t_anim = new DoubleAnimation ();
 		DoubleAnimation *v_anim = new DoubleAnimation ();
@@ -261,7 +265,7 @@ main (int argc, char *argv [])
 
 		// the scaled rectangle changes smoothly from Red to
 		// Blue and back again
-		global_NameScope->RegisterName ("solid-color-brush", scb);
+		namescope->RegisterName ("solid-color-brush", scb);
 
 		c_anim->SetFrom (Color (1.0, 0.0, 0.0, 0.5));
 		c_anim->SetTo (Color (0.0, 0.0, 1.0, 0.5));
@@ -274,7 +278,7 @@ main (int argc, char *argv [])
 
 		// The rectangle rotates completely around every 4
 		// seconds, and stops after the second time around
-		global_NameScope->RegisterName ("rect-transform", r_trans);
+		namescope->RegisterName ("rect-transform", r_trans);
 		r_anim->SetTo (-360.0);
 		r_anim->SetRepeatBehavior (RepeatBehavior(2.0));
 		r_anim->SetDuration (Duration::FromSeconds (4));
@@ -283,7 +287,7 @@ main (int argc, char *argv [])
 		Storyboard::SetTargetProperty (r_anim, "Angle");
 
 		// The rotating video takes 5 seconds to complete the rotation
-		global_NameScope->RegisterName ("video-transform", v_trans);
+		namescope->RegisterName ("video-transform", v_trans);
 		v_anim->SetTo (360.0);
 		v_anim->SetRepeatBehavior (RepeatBehavior(5.0));
 		v_anim->SetDuration (Duration::FromSeconds (5));
@@ -293,7 +297,7 @@ main (int argc, char *argv [])
 		
 		// The text rotates completely around every 6
 		// seconds, and stops after the third time around
-		global_NameScope->RegisterName ("text-transform", t_trans);
+		namescope->RegisterName ("text-transform", t_trans);
 		t_anim->SetTo (-360.0);
 		t_anim->SetRepeatBehavior (RepeatBehavior (3.0));
 		t_anim->SetDuration (Duration::FromSeconds (6));
@@ -304,7 +308,7 @@ main (int argc, char *argv [])
 		// for the scaled items, we scale X and Y differently,
 		// the X scaling is completed in 6 seconds, and the y
 		// in 7.
-		global_NameScope->RegisterName ("scale-transform", s_trans);
+		namescope->RegisterName ("scale-transform", s_trans);
 
 		sx_anim->SetFrom (1.0);
 		sx_anim->SetBy (-0.5);
@@ -343,7 +347,7 @@ main (int argc, char *argv [])
 		shape_set_stroke (square, scb);
 		panel_child_add (canvas, square);
 
-		global_NameScope->RegisterName ("square-transform", square_trans);
+		namescope->RegisterName ("square-transform", square_trans);
 		
 		DoubleAnimationUsingKeyFrames* square_x_anim = new DoubleAnimationUsingKeyFrames ();
 		DoubleAnimationUsingKeyFrames* square_y_anim = new DoubleAnimationUsingKeyFrames ();

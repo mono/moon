@@ -1,3 +1,14 @@
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp (main): create a namescope to attach to the canvas, and
+	also make sure to add the storyboard to the tree someplace so that
+	it can find the names of things.
+
+	* xaml.cpp: create a namescope to attach to the top_element.
+
+	* runtime.cpp (FindName): rework this to walk up the tree.  Drop
+	the global namescope.
+
 2007-06-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp|h: Add ImageBrush functions, which delegates most of its
