@@ -284,17 +284,51 @@ Image::Image ()
 {
 }
 
-void
-Image::SetSource (DependencyObject *dl, char* PartName)
+Image::~Image ()
 {
-	g_return_if_fail (dl->GetObjectType() == Value::DOWNLOADER);
+	StopLoader ();
+	CleanupSurface ();
+}
 
+void
+Image::StopLoader ()
+{
 	if (loader) {
 		// disconnect all our signal handlers at once
 		g_signal_handlers_disconnect_matched (loader,
 						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
 						      0, 0, NULL, NULL, this);
 		g_object_unref (G_OBJECT (loader));
+		loader = NULL;
+	}
+}
+
+void
+Image::CleanupSurface ()
+{
+	if (pixmap) {
+		g_object_unref (pixmap);
+		pixmap = NULL;
+	}
+
+	if (xlib_surface) {
+		cairo_surface_destroy (xlib_surface);
+		xlib_surface = NULL;
+	}
+
+	pixbuf_width =
+	  pixbuf_height = 0;
+}
+
+void
+Image::SetSource (DependencyObject *dl, char* PartName)
+{
+	g_return_if_fail (dl->GetObjectType() == Value::DOWNLOADER);
+
+	if (loader) {
+		StopLoader ();
+		CleanupSurface ();
+		item_invalidate (this); /* so we erase the old image */
 	}
 	loader = gdk_pixbuf_loader_new ();
 

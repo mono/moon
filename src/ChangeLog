@@ -1,5 +1,16 @@
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
+	* demo.cpp (FileDownloadState::AsyncFillBuffer): increase buffer
+	size from 1024 to 8192 (and make it an instance instead of stack
+	variable).  Also, add a return statement that will cause the idle
+	handler to no longer be called when we get a write of 0 length.
+	This might be wrong in the long term.
+
+	* media.cpp, media.h: add cleanup methods for the Image class, and
+	add a dtor as well.
+
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
 	* media.cpp (LoaderSizePrepared): fill in the initial state of the
 	image to gray with black border.
 	(LoaderAreaUpdated): invalidate the item.

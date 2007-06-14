@@ -465,14 +465,15 @@ class FileDownloadState {
 	int fd;
 	int async_idle;
 	Downloader *downloader;
+	guchar buf[8192];
 
 	gboolean AsyncFillBuffer ()
 	{
-		guchar buf[1024];
-
 		int n = read (fd, buf, sizeof (buf));
 
 		downloader->Write (buf, 0, n);
+
+		return n > 0;
 	}
 
 	static gboolean async_fill_buffer (gpointer cb_data)

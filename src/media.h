@@ -41,6 +41,8 @@ class Image : public MediaBase {
 	static DependencyProperty *DownloadProgressProperty;
 	
 	Image ();
+	virtual ~Image ();
+
 	virtual Value::Kind GetObjectType () { return Value::IMAGE; };
 	
 	virtual void render (Surface *surface, int x, int y, int width, int height);
@@ -51,6 +53,9 @@ class Image : public MediaBase {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
  private:
+	void CleanupSurface ();
+	void StopLoader ();
+
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
 	void LoaderSizePrepared (int width, int height);
 	void LoaderAreaUpdated (int x, int y, int width, int height);
