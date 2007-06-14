@@ -4,6 +4,7 @@
 G_BEGIN_DECLS
 
 #include "runtime.h"
+#include "media.h"
 
 enum AlignmentX {
 	AlignmentXLeft,
@@ -115,15 +116,25 @@ Stretch		tile_brush_get_stretch		(TileBrush *brush);
 void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 class ImageBrush : public TileBrush {
+	Image *image;
  public:
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ImageSourceProperty;
 
+	ImageBrush ();
+
 	virtual Value::Kind GetObjectType () { return Value::IMAGEBRUSH; }
 
+	void SetSource (DependencyObject *dl, char* PartName);
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
 
 ImageBrush* image_brush_new ();
+double	image_brush_get_download_progress	(ImageBrush *brush);
+void	image_brush_set_download_progress	(ImageBrush *brush, double progress);
+char*	image_brush_get_image_source		(ImageBrush *brush);
+void	image_brush_set_image_source		(ImageBrush *brush, const char* source);
 
 class VideoBrush : public TileBrush {
  public:
@@ -134,6 +145,8 @@ class VideoBrush : public TileBrush {
 };
 
 VideoBrush* video_brush_new ();
+char*	video_brush_get_source_name	(VideoBrush *brush);
+void	video_brush_set_source_name	(VideoBrush *brush, const char* source);
 
 class LinearGradientBrush : public GradientBrush {
  public:

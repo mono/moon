@@ -795,6 +795,78 @@ image_brush_new ()
 	return new ImageBrush ();
 }
 
+double
+image_brush_get_download_progress (ImageBrush *brush)
+{
+	return brush->GetValue (ImageBrush::DownloadProgressProperty)->AsDouble();
+}
+
+void
+image_brush_set_download_progress (ImageBrush *brush, double progress)
+{
+	brush->SetValue (ImageBrush::DownloadProgressProperty, Value (progress));
+}
+
+char*
+image_brush_get_image_source (ImageBrush *brush)
+{
+	Value *value = brush->GetValue (ImageBrush::ImageSourceProperty);
+	return (value ? value->AsString() : NULL);
+}
+
+void
+image_brush_set_image_source (ImageBrush *brush, const char* source)
+{
+	brush->SetValue (ImageBrush::ImageSourceProperty, Value (source));
+}
+
+ImageBrush::ImageBrush ()
+{
+	image = new Image ();
+}
+
+void
+ImageBrush::SetSource (DependencyObject *dl, char* PartName)
+{
+	image->SetSource (dl, PartName);
+}
+
+void
+ImageBrush::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == ImageBrush::DownloadProgressProperty) {
+		double progress = GetValue (ImageBrush::DownloadProgressProperty)->AsDouble();
+		image->SetValue (Image::DownloadProgressProperty, Value (progress));
+	} else if (prop == ImageBrush::ImageSourceProperty) {
+		Value *value = GetValue (ImageBrush::ImageSourceProperty);
+		char *source = value ? value->AsString () : NULL;
+		image->SetValue (MediaBase::SourceProperty, Value (source));
+	} else
+		TileBrush::OnPropertyChanged (prop);
+}
+
+void
+ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+{
+	cairo_surface_t *surface = image->GetSurface ();
+	if (surface) {
+		cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
+
+		Transform *transform = brush_get_transform (this);
+		if (transform) {
+			cairo_matrix_t matrix;
+			transform_get_transform (transform, &matrix);
+			cairo_matrix_invert (&matrix);
+			cairo_pattern_set_matrix (pattern, &matrix);
+		}
+		cairo_set_source (cairo, pattern);
+		cairo_pattern_destroy (pattern);
+	} else {
+		// not yet available, draw gray-ish shadow where the brush should be applied
+		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+	}
+}
+
 //
 // VideoBrush
 //
@@ -805,6 +877,19 @@ VideoBrush*
 video_brush_new ()
 {
 	return new VideoBrush ();
+}
+
+char*
+video_brush_get_source_name (VideoBrush *brush)
+{
+	Value *value = brush->GetValue (VideoBrush::SourceNameProperty);
+	return (value ? value->AsString() : NULL);
+}
+
+void
+video_brush_set_source_name (VideoBrush *brush, const char* source)
+{
+	brush->SetValue (VideoBrush::SourceNameProperty, Value (source));
 }
 
 //

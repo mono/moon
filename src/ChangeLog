@@ -1,3 +1,9 @@
+2007-06-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp|h: Add ImageBrush functions, which delegates most of its
+	work to Image (downloader).
+	* media.cpp|h: Expose the cairo_surface_t that contains the image.
+
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp (FileDownloadState::AsyncFillBuffer): increase buffer

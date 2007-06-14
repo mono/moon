@@ -445,6 +445,12 @@ Image::getbounds ()
 	y2 = pixbuf_height;
 }
 
+cairo_surface_t*
+Image::GetSurface ()
+{
+	return xlib_surface;
+}
+
 void
 Image::OnPropertyChanged (DependencyProperty *prop)
 {
