@@ -1162,7 +1162,8 @@ xaml_init ()
 	XamlElementInfo *fw = register_ghost_element ("FrameworkElement", ui, Value::FRAMEWORKELEMENT);
 	XamlElementInfo *shape = register_ghost_element ("Shape", fw, Value::SHAPE);
 
-	
+	rdoe (dem, "ResourceCollection", col, Value::RESOURCE_COLLECTION, (create_item_func) resource_collection_new);
+
 	///
 	/// Shapes
 	///

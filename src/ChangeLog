@@ -1,3 +1,8 @@
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: Hookup the resource collection.
+	* xaml.cpp: Parse resource collections.
+
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp: import an arc length calculator I found on the

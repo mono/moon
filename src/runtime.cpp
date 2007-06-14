@@ -511,7 +511,7 @@ item_get_render_affine (UIElement *item, cairo_matrix_t *result)
 	}
 }
 
-UIElement::UIElement () : parent(NULL), flags (0), triggers (NULL), x1 (0), y1(0), x2(0), y2(0)
+UIElement::UIElement () : parent(NULL), flags (0), triggers (NULL), resources (NULL), x1 (0), y1(0), x2(0), y2(0)
 {
 	cairo_matrix_init_identity (&absolute_xform);
 
@@ -520,6 +520,12 @@ UIElement::UIElement () : parent(NULL), flags (0), triggers (NULL), x1 (0), y1(0
 
 	// Ensure that the callback OnPropertyChanged was called.
 	g_assert (c == triggers);
+
+	ResourceCollection *r = new ResourceCollection ();
+	this->SetValue (UIElement::ResourcesProperty, Value (r));
+
+	// Ensure that the callback OnPropertyChanged was called.
+	g_assert (r == resources);
 }
 
 //
@@ -546,6 +552,33 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 				triggers->closure = this;
 			
 				base_ref (triggers);
+			}
+		}
+	} else if (prop == ResourcesProperty){
+		// The new value has already been set, so unref the old collection
+		Value *v = GetValue (prop);
+		ResourceCollection *newcol = v ?  v->AsResourceCollection() : NULL;
+
+		if (newcol != resources){
+			if (resources){
+				for (GSList *l = resources->list; l != NULL; l = l->next){
+					DependencyObject *dob = (DependencyObject *) l->data;
+					
+					printf ("Unrefing a %d\n", dob->GetObjectType ());
+					base_unref (dob);
+				}
+				base_unref (resources);
+				g_slist_free (resources->list);
+			}
+
+			resources = newcol;
+			if (resources){
+				if  (resources->closure)
+					printf ("Warning we attached a property that was already attached\n");
+
+				resources->closure = this;
+			
+				base_ref (resources);
 			}
 		}
 	}
@@ -654,6 +687,7 @@ UIElement::handle_motion (Surface *s, int state, double x, double y)
 UIElement::~UIElement ()
 {
 	SetValue (TriggersProperty, NULL);
+	SetValue (ResourcesProperty, NULL);
 }
 
 FrameworkElement::FrameworkElement ()

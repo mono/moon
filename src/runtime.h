@@ -412,6 +412,7 @@ class ResourceCollection : public Collection {
  public:
 	ResourceCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::RESOURCE_COLLECTION; }
+	virtual Value::Kind GetElementType () { return Value::DEPENDENCY_OBJECT; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -570,6 +571,7 @@ class UIElement : public Visual {
 	cairo_matrix_t absolute_xform;
 
 	TriggerCollection *triggers;
+	ResourceCollection *resources;
 
 	//
 	// update_xform:
