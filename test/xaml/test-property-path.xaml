@@ -1,0 +1,39 @@
+<Canvas
+    xmlns="http://schemas.microsoft.com/client/2007"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Canvas.Triggers>
+    <EventTrigger RoutedEvent="Canvas.Loaded">
+      <EventTrigger.Actions>
+        <BeginStoryboard>
+          <Storyboard>
+
+	     <ColorAnimation 
+               Storyboard.TargetName="e1_brush"
+               Storyboard.TargetProperty="Color"
+               From="Red" To="Blue" Duration="0:0:5" />
+
+            <ColorAnimation 
+               Storyboard.TargetName="e2"
+               Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+               From="Red" To="Blue" Duration="0:0:5" RepeatBehavior="Forever" />
+
+            <DoubleAnimation 
+               Storyboard.TargetName="e2"
+               Storyboard.TargetProperty="(Canvas.Left)"
+               From="10" To="250" Duration="0:0:5" RepeatBehavior="Forever" />
+          </Storyboard>
+        </BeginStoryboard>
+      </EventTrigger.Actions>
+    </EventTrigger>
+  </Canvas.Triggers>
+  
+  <Ellipse Fill="Black"
+      Height="100" Width="100" Canvas.Left="30" Canvas.Top="30">
+    <Ellipse.Fill>
+      <SolidColorBrush x:Name="e1_brush" Color="black"/>
+    </Ellipse.Fill>
+  </Ellipse>
+  
+  <Ellipse x:Name="e2" Fill="Black"
+      Height="100" Width="100" Canvas.Left="30" Canvas.Top="130"/>
+</Canvas>
