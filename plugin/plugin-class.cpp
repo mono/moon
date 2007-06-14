@@ -374,7 +374,7 @@ PluginDependencyObject:: ClassGetProperty (NPObject *npobj, NPIdentifier name, N
 	//
 	if (name == NPN_GetStringIdentifier ("getHost()")){
 		// Dont know what to do with refcount, nor wrapping, but you get the idea
-		return NULL;
+		return FALSE;
 	}
 
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);

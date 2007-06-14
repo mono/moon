@@ -1,5 +1,11 @@
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp: In PluginDependencyObject:: ClassGetProperty return 
+	false instead of null because funtion is of type boolean. It fix message
+	warning.
+
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp: Move rootclass declaration to plugin-class.
 	
 	* plugin.h: Remove inclusion of plugin-class.h.
