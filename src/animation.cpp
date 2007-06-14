@@ -505,28 +505,95 @@ KeySpline::SetControlPoint2 (Point controlPoint2)
 	this->controlPoint2 = controlPoint2;
 }
 
+
+
+// the following is from:
+// http://steve.hollasch.net/cgindex/curves/cbezarclen.html
+//
+
+#define sqr(x) (x * x)
+
+#define _ABS(x) (x < 0 ? -x : x)
+
+const double TOLERANCE = 0.0000001;  // Application specific tolerance
+
+static double q1, q2, q3, q4, q5;      // These belong to balf()
+
+
+//---------------------------------------------------------------------------
+static double
+balf(double t)                   // Bezier Arc Length Function
+{
+	double result = q5 + t*(q4 + t*(q3 + t*(q2 + t*q1)));
+	result = sqrt(result);
+	return result;
+}
+
+//---------------------------------------------------------------------------
+// NOTES:       TOLERANCE is a maximum error ratio
+//                      if n_limit isn't a power of 2 it will be act like the next higher
+//                      power of two.
+static double
+Simpson (double (*f)(double),
+	 double a,
+	 double b,
+	 int n_limit)
+{
+	int n = 1;
+	double multiplier = (b - a)/6.0;
+	double endsum = f(a) + f(b);
+	double interval = (b - a)/2.0;
+	double asum = 0;
+	double bsum = f(a + interval);
+	double est1 = multiplier * (endsum + 2 * asum + 4 * bsum);
+	double est0 = 2 * est1;
+
+	while(n < n_limit 
+	      && (_ABS(est1) > 0 && _ABS((est1 - est0) / est1) > TOLERANCE)) {
+		n *= 2;
+		multiplier /= 2;
+		interval /= 2;
+		asum += bsum;
+		bsum = 0;
+		est0 = est1;
+		double interval_div_2n = interval / (2.0 * n);
+
+		for (int i = 1; i < 2 * n; i += 2) {
+			double t = a + i * interval_div_2n;
+			bsum += f(t);
+		}
+
+		est1 = multiplier*(endsum + 2*asum + 4*bsum);
+	}
+
+	return est1;
+}
+
+static double
+BezierArcLength(Point p1, Point p2, Point p3, Point p4, double t)
+{
+	Point k1, k2, k3, k4;
+
+	k1 = p1*-1 + (p2 - p3)*3 + p4;
+	k2 = (p1 + p3)*3 - p2*6;
+	k3 = (p2 - p1)*3;
+	k4 = p1;
+
+	q1 = 9.0*(sqr(k1.x) + sqr(k1.y));
+	q2 = 12.0*(k1.x*k2.x + k1.y*k2.y);
+	q3 = 3.0*(k1.x*k3.x + k1.y*k3.y) + 4.0*(sqr(k2.x) + sqr(k2.y));
+	q4 = 4.0*(k2.x*k3.x + k2.y*k3.y);
+	q5 = sqr(k3.x) + sqr(k3.y);
+
+	return Simpson(balf, 0, t, 1024);
+}
+
 double
 KeySpline::GetSplineProgress (double linearProgress)
 {
-	/* perform the actual cubic bezier interpolation here */
-
-	double t = linearProgress;
-	double t2 = t*t;
-	double t3 = t2*t;
-	double omt = 1.0-t;
-	double omt2 = omt*omt;
-	double omt3 = omt2*omt;
-
-	double xb = 3 * controlPoint1.x * t * omt2 + 3 * controlPoint2.x * t2 * omt + t3;
-	double yb = 3 * controlPoint1.y * t * omt2 + 3 * controlPoint2.y * t2 * omt + t3;
-
-	// XXX i have no idea if this is the method they use to
-	// convert the (0.0,0.0) - (1.0,1.0) point into a single
-	// double, but it works..
-	return sqrt (xb*xb + yb*yb);
+	return (BezierArcLength (Point(0,0), controlPoint1, controlPoint2, Point (1,1), linearProgress) /
+		BezierArcLength (Point(0,0), controlPoint1, controlPoint2, Point (1,1), 1.0));
 }
-
-
 
 
 

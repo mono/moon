@@ -1,3 +1,10 @@
+2007-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp: import an arc length calculator I found on the
+	net (at http://steve.hollasch.net/cgindex/curves/cbezarclen.html)
+	and use that for KeySpline::GetSplineProgress.  The results don't
+	match MS's exactly, though.
+
 2007-06-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* geometry.cpp, geometry.h: Add collection constructors.
@@ -31,6 +38,13 @@
 	render (shape-wise) correctly.
 	* shape.cpp: Draw before setting the brush. This allows the brush
 	setting code to ask for the extents to stroke/fill.
+
+2007-06-13  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (KeySpline::GetSplineProgress): reimplement this
+	to return a percentage of the arc length of the bezier that is
+	traversed when t = linearProgress, taking the algorithm from
+	http://steve.hollasch.net/cgindex/curves/cbezarclen.html
 
 2007-06-13  Chris Toshok  <toshok@ximian.com>
 
