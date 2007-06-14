@@ -1,5 +1,12 @@
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
+	* runtime.cpp|h: New function that follows PropertyPath's to
+	DependencyProperties.
+	* animation.cpp: Use new function to resolve animation target
+	properties.
+
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
 	* runtime.cpp (GetDependencyProperty): If there is no table for a
 	property, we still need to lookup the property in the parent
 	chain (assumming inherit is true).

@@ -1699,6 +1699,96 @@ DependencyProperty *dependency_property_lookup (Value::Kind type, char *name)
 	return DependencyObject::GetDependencyProperty (type, name);
 }
 
+
+//
+// Everything inside of a ( ) resolves to a DependencyProperty, if there is a
+// '.' after the property, we get the object, and continue resolving from there
+// if there is a [n] after the property, we convert the property to a collection
+// and grab the nth item.
+//
+// Dependency properties can be specified as (PropertyName) of the current object
+// or they can be specified as (DependencyObject.PropertyName).
+//
+// Returns NULL on any error
+//
+DependencyProperty *
+resolve_property_path (DependencyObject *o, const char *path)
+{
+	g_assert (o);
+	g_assert (path);
+
+	int c;
+	int len = strlen (path);
+	char *typen = NULL;
+	char *propn = NULL;
+	bool expression_found = false;
+	DependencyProperty *res = NULL;
+	DependencyObject *lu = o;
+
+	for (int i = 0; i < len; i++) {
+		switch (path [i]) {
+		case '(':
+		{
+			expression_found = true;
+
+			typen = NULL;
+			propn = NULL;
+			int estart = i + 1;
+			for (c = estart; c < len; c++) {
+				if (path [c] == '.') {
+					typen = strndup (path + estart, c - estart);
+					estart = c + 1;
+					continue;
+				}
+				if (path [c] == ')') {
+					propn = strndup (path + estart, c - estart);
+					break;
+				}
+			}
+
+			i = c;
+			
+
+			Type *t = NULL;
+			if (typen) {
+				t = Type::Find (typen);
+				g_free (typen);
+			} else
+				t = Type::Find (lu->GetObjectType ());
+
+			res = DependencyObject::GetDependencyProperty (t->type, propn);
+			g_free (propn);
+			break;
+		}
+		case '.':
+			lu = lu->GetValue (res)->AsDependencyObject ();
+			// we can ignore this, since we pull the lookup object when we finish a ( ) block
+			break;
+		case '[':
+		{
+			int indexer = 0;
+
+			// Need to be a little more loving
+			g_assert (path [i + 1]);
+			g_assert (path [i + 2] == ']');
+			g_assert (path [i + 3] == '.');
+
+			indexer = strtol (path + i + 1, NULL, 10);
+
+			Collection * col = lu->GetValue (res)->AsCollection ();
+			lu = (DependencyObject *) g_slist_nth_data (col->list, indexer);
+			i += 3;
+			break;
+		}
+		}
+	}
+
+	if (!expression_found)
+		res = DependencyObject::GetDependencyProperty (o->GetObjectType (), path);
+
+	return res;
+}
+
 // event handlers for c++
 typedef struct {
 	EventHandler func;

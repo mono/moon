@@ -127,7 +127,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		if (!o)
 			return;
 
-		DependencyProperty *prop = o->GetDependencyProperty (targetProperty);
+		DependencyProperty *prop = resolve_property_path (o, targetProperty);
 		if (!prop)
 			return;
 
