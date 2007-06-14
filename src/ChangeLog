@@ -1,5 +1,9 @@
 2007-06-14  Chris Toshok  <toshok@ximian.com>
 
+	* media.cpp (LoaderSizePrepared): fill in the initial state of the
+	image to gray with black border.
+	(LoaderAreaUpdated): invalidate the item.
+
 	* media.h: fix the progressive image loading.
 
 2007-06-14  Chris Toshok  <toshok@ximian.com>

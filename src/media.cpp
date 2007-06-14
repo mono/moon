@@ -324,6 +324,23 @@ Image::LoaderSizePrepared (int width, int height)
 				 width, height,
 				 gdk_drawable_get_depth (gdk_get_default_root_window ()));
 
+	xlib_surface = cairo_xlib_surface_create (GDK_PIXMAP_XDISPLAY (pixmap),
+						  GDK_PIXMAP_XID (pixmap),
+						  GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (GDK_DRAWABLE (pixmap))),
+						  pixbuf_width,
+						  pixbuf_height);
+
+	/* fill in the initial state of the xlib surface so we don't
+	   show garbage to the user */
+	cairo_t *cr = cairo_create (xlib_surface);
+	cairo_set_source_rgba (cr, 0.75, 0.75, 0.75, 1.0);
+	cairo_rectangle (cr, 0, 0, pixbuf_width, pixbuf_height);
+	cairo_fill (cr);
+	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+	cairo_rectangle (cr, 0, 0, pixbuf_width, pixbuf_height);
+	cairo_stroke (cr);
+	cairo_destroy (cr);
+
 	item_update_bounds (this);
 }
 
@@ -344,6 +361,8 @@ Image::LoaderAreaUpdated (int x, int y, int width, int height)
 			 GDK_RGB_DITHER_NONE,
 			 0,0);
 	g_object_unref (G_OBJECT (gc));
+
+	item_invalidate (this);
 }
 
 void
@@ -367,25 +386,19 @@ Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, in
 void
 Image::render (Surface *s, int x, int y, int width, int height)
 {
+	if (!xlib_surface)
+		return;
+
 	cairo_save (s->cairo);
 
-	if (pixmap) {
-		if (!xlib_surface) {
-			xlib_surface = cairo_xlib_surface_create (GDK_PIXMAP_XDISPLAY (pixmap),
-								  GDK_PIXMAP_XID (pixmap),
-								  GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (GDK_DRAWABLE (pixmap))),
-								  this->pixbuf_width,
-								  this->pixbuf_height);
-		}
-
-		cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_set_matrix (s->cairo, &absolute_xform);
 	
-		cairo_set_source_surface (s->cairo, xlib_surface, 0, 0);
+	cairo_set_source_surface (s->cairo, xlib_surface, 0, 0);
 
-		cairo_rectangle (s->cairo, 0, 0, this->pixbuf_width, this->pixbuf_height);
+	cairo_rectangle (s->cairo, 0, 0, this->pixbuf_width, this->pixbuf_height);
 
-		cairo_fill (s->cairo);
-	}
+	cairo_fill (s->cairo);
+
 	cairo_restore (s->cairo);
 }
 
