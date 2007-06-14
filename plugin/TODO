@@ -3,10 +3,18 @@
 
 * Not properly working properties
 
-  control.settings.windowless
-  control.content.fullScreen
+	control.settings.windowless
+	control.content.fullScreen
+
+* Reload page and free memory stuff
+
+	In NPP_Destroy in plugin-glue.cpp we dont free resources, its because on 
+	page reload or browser back button the browser try so access the same old
+	data. We must check the "save" parameter and NPSavedData stuff to get a 
+	better implementation, for now it works but with more memory consume than
+	expected.
 
 * Works for other browsers
 
- The plugin started working in Opera in r78918 and stopped working in r79006, 
- so any revision in between should do it.
+	The plugin started working in Opera in r78918 and stopped working in r79006, 
+	so any revision in between should do it.

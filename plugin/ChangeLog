@@ -1,5 +1,14 @@
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h: Add a new member finalize that must be calling 
+	instead of delete, we must later found a way to fix reload problems.
+
+	* plugin-glue.cpp: Call finalize instead of delete.
+
+	* TODO: Some notes about this bad implementation.
+
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp: Add setter for control.source property.
 
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>

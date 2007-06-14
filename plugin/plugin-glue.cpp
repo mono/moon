@@ -41,9 +41,12 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	delete plugin;
+	plugin->Finalize ();
 
-	instance->pdata = NULL;
+	// We cant call it right now, it causes problems in page reload that try to
+	// use same old memory pointer.
+	//delete plugin;
+	//instance->pdata = NULL;
 
 	return NPERR_NO_ERROR;
 }

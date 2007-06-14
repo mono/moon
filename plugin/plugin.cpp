@@ -82,9 +82,9 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
-	// Container must be destroyed or we have segfault when browser's closes.
-	if (this->container != NULL)
-		gtk_widget_destroy (this->container);
+	// finalization code is under Finalize (), it was moved because we cant
+	// free resources, it causes browser reload problems. It must be checked
+	// and fixed later.
 }
 
 void 
@@ -105,6 +105,14 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	if (this->source) {
 		NPN_GetURL (this->instance, this->source, NULL);
 	}
+}
+
+void 
+PluginInstance::Finalize ()
+{
+	// Container must be destroyed or we have segfault when browser's closes.
+	if (this->container != NULL)
+		gtk_widget_destroy (this->container);
 }
 
 NPError 
