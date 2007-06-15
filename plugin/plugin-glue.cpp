@@ -210,6 +210,8 @@ NPP_GetMIMEDescription (void)
     return (MIME_TYPES_HANDLED);
 }
 
+void downloader_initialize ();
+
 NPError
 NPP_Initialize (void)
 {
