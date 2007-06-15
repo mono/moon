@@ -27,21 +27,12 @@ class Downloader : public DependencyObject {
 
 	virtual Value::Kind GetObjectType () { return Value::DOWNLOADER; };	
 
-	void Abort ();
-	char* GetResponseText (char* PartName);
-	void Open (char *verb, char *URI, bool Async);
-	void Send ();
-
-
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ResponseTextProperty;
 	static DependencyProperty *StatusProperty;
 	static DependencyProperty *StatusTextProperty;
 	static DependencyProperty *UriProperty;
 
-
-	void Write (guchar *buf, gsize offset, gsize n);
-	void NotifySize (int64_t size);
 
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
@@ -58,7 +49,6 @@ class Downloader : public DependencyObject {
 				  downloader_abort_func abort,
 				  downloader_get_response_text_func get_response_text);
 
- protected:
 	// Set by the consumer
 	downloader_write_func       write;
 	downloader_notify_size_func notify_size;
@@ -85,6 +75,14 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_abort_func abort,
 			       downloader_get_response_text_func get_response);
 
+void  downloader_abort             (Downloader *dl);
+char *downloader_get_response_text (Downloader *dl, char *PartName);
+void  downloader_open              (Downloader *dl, char *verb, char *URI, bool Async);
+void  downloader_send              (Downloader *dl);
+
+//
+// Used to push data to the consumer
+//
 void downloader_write       (Downloader *dl, guchar *buf, gsize offset, gsize n);
 void downloader_notify_size (Downloader *dl, int64_t size);
 

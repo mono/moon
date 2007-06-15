@@ -40,39 +40,27 @@ Downloader::~Downloader ()
 }
 
 void
-Downloader::Abort ()
+downloader_abort (Downloader *dl)
 {
-	Downloader::abort (downloader_state);
+	dl->abort (dl->downloader_state);
 }
 
-char*
-Downloader::GetResponseText (char* PartName)
+char *
+downloader_get_response_text (Downloader *dl, char* PartName)
 {
-	return Downloader::get_response_text (PartName, downloader_state);
-}
-
-void
-Downloader::Open (char *verb, char *URI, bool Async)
-{
-	Downloader::open (verb, URI, Async, downloader_state);
+	return dl->get_response_text (PartName, dl->downloader_state);
 }
 
 void
-Downloader::Send ()
+downloader_open (Downloader *dl, char *verb, char *URI, bool Async)
 {
-	Downloader::send (downloader_state);
+	dl->open (verb, URI, Async, dl->downloader_state);
 }
 
 void
-Downloader::Write (guchar *buf, gsize offset, gsize n)
+downloader_send (Downloader *dl)
 {
-	this->write (buf, offset, n, consumer_closure);
-}
-
-void
-Downloader::NotifySize (int64_t size)
-{
-	this->notify_size (size, consumer_closure);
+	dl->send (dl->downloader_state);
 }
 
 void
@@ -83,22 +71,6 @@ Downloader::SetWriteFunc (downloader_write_func write,
 	this->write = write;
 	this->notify_size = notify_size;
 	this->consumer_closure = data;
-}
-
-void
-Downloader::SetFunctions (downloader_create_state_func create_state,
-			  downloader_destroy_state_func destroy_state,
-			  downloader_open_func open,
-			  downloader_send_func send,
-			  downloader_abort_func abort,
-			  downloader_get_response_text_func get_response)
-{
-	Downloader::create_state = create_state;
-	Downloader::destroy_state = destroy_state;
-	Downloader::open = open;
-	Downloader::send = send;
-	Downloader::abort = abort;
-	Downloader::get_response_text = get_response;
 }
 
 Downloader*
@@ -114,24 +86,24 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_abort_func abort,
 			       downloader_get_response_text_func get_response)
 {
-	Downloader::SetFunctions (create_state,
-				  destroy_state,
-				  open,
-				  send,
-				  abort,
-				  get_response);
+	Downloader::create_state = create_state;
+	Downloader::destroy_state = destroy_state;
+	Downloader::open = open;
+	Downloader::send = send;
+	Downloader::abort = abort;
+	Downloader::get_response_text = get_response;
 }
 
 void
 downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 {
-	dl->Write (buf, offset, n);
+	dl->write (buf, offset, n, dl->consumer_closure);
 }
 
 void
 downloader_notify_size (Downloader *dl, int64_t size)
 {
-	dl->NotifySize (size);
+	dl->notify_size (size, dl->consumer_closure);
 }
 
 DependencyProperty *Downloader::DownloadProgressProperty;
@@ -148,5 +120,4 @@ downloader_init (void)
 	Downloader::StatusProperty = DependencyObject::Register (Value::DOWNLOADER, "Status", Value::INT32);
 	Downloader::StatusTextProperty = DependencyObject::Register (Value::DOWNLOADER, "StatusText", Value::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
-
 }

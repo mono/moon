@@ -1,5 +1,8 @@
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
+	* downloader.h: Drop the C++ API with a C proxy API, switch to a
+	pure C API as we need this from the managed side anyways.
+
 	* downloader.h: Move downloader defs into .h file
 
 	Add a notification system for reporting the size of a stream, so

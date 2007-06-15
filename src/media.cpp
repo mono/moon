@@ -341,7 +341,7 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	downloader = (Downloader*)dl;
 	base_ref (downloader);
 	downloader->SetWriteFunc (pixbuf_write, size_notify, this);
-	downloader->Open ("GET", PartName, true);
+	downloader_open (downloader, "GET", PartName, true);
 }
 
 void
@@ -411,6 +411,7 @@ Image::size_notify (int64_t size, gpointer data)
 	// Do something with it?
 	// if size == -1, we do not know the size of the file, can happen
 	// if the server does not return a Content-Length header
+	//printf ("The file size is %lld\n", size);
 }
 
 void
@@ -470,7 +471,7 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 	if (prop == MediaBase::SourceProperty) {
 		if (downloader) {
 			// we have a previously running download.  stop it.
-			downloader->Abort();
+			downloader_abort (downloader);
 			base_unref (downloader);
 			downloader = NULL;
 		}
