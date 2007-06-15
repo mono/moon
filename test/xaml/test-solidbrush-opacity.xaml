@@ -1,0 +1,48 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Fill="#FFFFFFFF" Canvas.Left="10" Canvas.Top="10" Width="160" Height="310" />
+<!-- Opacity applies to SolidColorBrush, with or without alpha -->
+	<Rectangle Canvas.Left="20" Canvas.Top="20" Width="30" Height="30" >
+		<Rectangle.Fill>
+			<SolidColorBrush Color="#FFFF0000" Opacity="0.5" />
+		</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="70" Canvas.Top="20" Width="30" Height="30" >
+		<Rectangle.Fill>
+			<SolidColorBrush Color="#FF00FF00" Opacity="0.5" />
+		</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="120" Canvas.Top="20" Width="30" Height="30" >
+		<Rectangle.Fill>
+			<SolidColorBrush Color="#FF0000FF" Opacity="0.5" />
+		</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="20" Canvas.Top="70" Width="30" Height="30" >
+		<Rectangle.Fill>
+			<SolidColorBrush Color="#80FF0000" Opacity="1.0" />
+		</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="70" Canvas.Top="70" Width="30" Height="30" >
+		<Rectangle.Fill>
+			<SolidColorBrush Color="#8000FF00" Opacity="1.0" />
+		</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="120" Canvas.Top="70" Width="30" Height="30" >
+		<Rectangle.Fill>
+			<SolidColorBrush Color="#800000FF" Opacity="1.0" />
+		</Rectangle.Fill>
+	</Rectangle>
+<!-- Opacity applies to UIElement, with or without alpha -->
+	<Rectangle Fill="#FFFF0000" Opacity="0.5" Canvas.Left="20" Canvas.Top="120" Width="30" Height="30" />
+	<Rectangle Fill="#FF00FF00" Opacity="0.5" Canvas.Left="70" Canvas.Top="120" Width="30" Height="30" />
+	<Rectangle Fill="#FF0000FF" Opacity="0.5" Canvas.Left="120" Canvas.Top="120" Width="30" Height="30" />
+	<Rectangle Fill="#80FF0000" Opacity="1.0" Canvas.Left="20" Canvas.Top="170" Width="30" Height="30" />
+	<Rectangle Fill="#8000FF00" Opacity="1.0" Canvas.Left="70" Canvas.Top="170" Width="30" Height="30" />
+	<Rectangle Fill="#800000FF" Opacity="1.0" Canvas.Left="120" Canvas.Top="170" Width="30" Height="30" />
+<!-- Opacity > 1.0 is ignored -->
+	<Rectangle Fill="#40FF0000" Opacity="2.0" Canvas.Left="20" Canvas.Top="220" Width="30" Height="30" />
+	<Rectangle Fill="#4000FF00" Opacity="2.0" Canvas.Left="70" Canvas.Top="220" Width="30" Height="30" />
+	<Rectangle Fill="#400000FF" Opacity="2.0" Canvas.Left="120" Canvas.Top="220" Width="30" Height="30" />
+	<Rectangle Fill="#40FF0000" Opacity="1.0" Canvas.Left="20" Canvas.Top="270" Width="30" Height="30" />
+	<Rectangle Fill="#4000FF00" Opacity="1.0" Canvas.Left="70" Canvas.Top="270" Width="30" Height="30" />
+	<Rectangle Fill="#400000FF" Opacity="1.0" Canvas.Left="120" Canvas.Top="270" Width="30" Height="30" />
+</Canvas>
