@@ -63,6 +63,7 @@ class PluginInstance
 	char *getInitParams () { return this->initParams; }
 	bool getIsLoaded () { return this->isLoaded; };
 	char *getSource () { return this->source; }
+	void setSource (const char *value);
 };
 
 #endif /* MOON_PLUGIN */

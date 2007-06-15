@@ -1,5 +1,9 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h, plugin-class.cpp: Fix setter for source property.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h: Add sourceUrl to get information about base source
 	url. New Stream also check if request is for source file, if not return
 	NP_NORMAL to be used later by downloader functions.

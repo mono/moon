@@ -289,3 +289,18 @@ PluginInstance::EventHandle (void* event)
 {
 	return 0;
 }
+
+/*** Getters and Setters ******************************************************/
+
+void
+PluginInstance::setSource (const char *value)
+{
+	if (!value || !strcasecmp (this->source, value))
+		return;
+
+	this->source = (char *) NPN_MemAlloc (strlen (value) + 1);
+	strcpy (this->source, value);
+
+	this->sourceUrl = NULL;
+	NPN_GetURL(this->instance, value, NULL);
+}

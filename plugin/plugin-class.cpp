@@ -281,10 +281,10 @@ PluginRootClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVar
 bool 
 PluginRootClass::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
-	// In Silverlight you can set source but it dont change, so do nothing.
 	if (name == NPID ("source")) {
+		npobj->plugin->setSource (NPVARIANT_TO_STRING (*value).utf8characters);
 		return true;
-	} 
+	}
 
 	return false;
 }
