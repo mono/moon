@@ -695,8 +695,9 @@ UIElement::leave (Surface *s)
 
 UIElement::~UIElement ()
 {
-	SetValue (TriggersProperty, NULL);
-	SetValue (ResourcesProperty, NULL);
+	// Do not:
+	//   Be clever, the collections are automatically deleted, do not do this here
+	//   if we do, set the cache properties to null first
 }
 
 void

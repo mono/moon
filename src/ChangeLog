@@ -1,11 +1,25 @@
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp (UIElement): The problem was that:
+
+		The ~UIElement destructor was setting the collection
+		properties to NULL in an attempt to unref stuff (these
+		are now automatically unrefed).
+
+		This caused the hash table destructor to unref the values
+		that were held in the collection.
+
+		At a later point, since "triggers" was cached and
+		OnPropertyNotify was called, we attempted to unref the
+		value, but that cached value pointed to an object that had
+		already been released.
+
 	* Everywhere: remove duplicated code that got copy/pasted
 	everywhere for tracking collections and caching values.  
 
 	This should help fixing the crashing problem, but I still need to
 	review the rules for reference counting and keeping a cache of
-	variables. 
+	variables in instance fields. 
 
 2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
