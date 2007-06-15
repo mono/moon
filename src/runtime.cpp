@@ -1277,8 +1277,14 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	GList *il;
 	double actual [6];
 	
-	Brush *background = GetValue (Panel::BackgroundProperty)->AsBrush ();
-	background->SetupBrush (s->cairo, this);
+	Value *value = GetValue (Panel::BackgroundProperty);
+	if (value) {
+		Brush *background = value->AsBrush ();
+		background->SetupBrush (s->cairo, this);
+	} else {
+		cairo_set_source_rgba (s->cairo, 0.0, 0.0, 0.0, 0.0);
+		// FIXME - UIElement::Opacity may play a role here
+	}
 	cairo_rectangle (s->cairo, x, y, width, height);
 	cairo_fill (s->cairo);
 
@@ -2341,11 +2347,8 @@ DependencyProperty* Panel::BackgroundProperty;
 void 
 panel_init (void)
 {
-	SolidColorBrush *default_background = solid_color_brush_new ();
-	Color white (1.0, 1.0, 1.0, 1.0);
-	solid_color_brush_set_color (default_background, &white);
 	Panel::ChildrenProperty = DependencyObject::Register (Value::PANEL, "Children", Value::VISUAL_COLLECTION);
-	Panel::BackgroundProperty = DependencyObject::Register (Value::PANEL, "Background", new Value (default_background));
+	Panel::BackgroundProperty = DependencyObject::Register (Value::PANEL, "Background", Value::BRUSH);
 }
 
 DependencyProperty* Canvas::TopProperty;

@@ -1,3 +1,8 @@
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Panel.Background is NULL by default, which means it's
+	transparent. This fixes Canvas inside Canvas.
+
 2007-06-15  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: Implement some Inlines stuff that the parser will
