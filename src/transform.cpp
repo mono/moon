@@ -379,13 +379,13 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children){
 			if (children){
-				for (GSList *l = children->list; l != NULL; l = l->next){
+				for (GList *l = children->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (children);
-				g_slist_free (children->list);
+				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -402,7 +402,7 @@ void
 TransformGroup::GetTransform (cairo_matrix_t *value)
 {
 	cairo_matrix_init_identity (value);
-	for (GSList *w = children->list; w != NULL; w = w->next) {
+	for (GList *w = children->list; w != NULL; w = w->next) {
 		cairo_matrix_t child;
 		Transform *t = (Transform *) w->data;
 		t->GetTransform (&child);

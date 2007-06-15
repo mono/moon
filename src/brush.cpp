@@ -491,14 +491,14 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 		if (newcol != children){
 			if (children) {
 				DependencyObject *dob;
-				GSList *node, *next;
+				GList *node, *next;
 				
 				node = children->list;
 				while (node != NULL) {
 					dob = (DependencyObject *) node->data;
 					base_unref (dob);
 					next = node->next;
-					g_slist_free_1 (node);
+					g_list_free_1 (node);
 					node = next;
 				}
 				
@@ -527,7 +527,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 	// TODO - ColorInterpolationModeProperty is ignored (map to ?)
 
 	double opacity = GetTotalOpacity (uielement);
-	for (GSList *g = children->list; g != NULL; g = g->next) {
+	for (GList *g = children->list; g != NULL; g = g->next) {
 		GradientStop *stop = (GradientStop*) g->data;
 		Color *color = gradient_stop_get_color (stop);
 		double offset = gradient_stop_get_offset (stop);

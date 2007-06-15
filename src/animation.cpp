@@ -899,13 +899,13 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != key_frames){
 			if (key_frames){
-				for (GSList *l = key_frames->list; l != NULL; l = l->next){
+				for (GList *l = key_frames->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (key_frames);
-				g_slist_free (key_frames->list);
+				g_list_free (key_frames->list);
 			}
 
 			key_frames = newcol;
@@ -976,7 +976,7 @@ DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
 
-	for (GSList *l = key_frames->list; l; l = l->next) {
+	for (GList *l = key_frames->list; l; l = l->next) {
 		DoubleKeyFrame *dkf = (DoubleKeyFrame*)l->data;
 		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
 
@@ -1022,13 +1022,13 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != key_frames){
 			if (key_frames){
-				for (GSList *l = key_frames->list; l != NULL; l = l->next){
+				for (GList *l = key_frames->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (key_frames);
-				g_slist_free (key_frames->list);
+				g_list_free (key_frames->list);
 			}
 
 			key_frames = newcol;
@@ -1102,7 +1102,7 @@ ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
 
-	for (GSList *l = key_frames->list; l; l = l->next) {
+	for (GList *l = key_frames->list; l; l = l->next) {
 		ColorKeyFrame *dkf = (ColorKeyFrame*)l->data;
 		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
 
@@ -1150,13 +1150,13 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != key_frames){
 			if (key_frames){
-				for (GSList *l = key_frames->list; l != NULL; l = l->next){
+				for (GList *l = key_frames->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (key_frames);
-				g_slist_free (key_frames->list);
+				g_list_free (key_frames->list);
 			}
 
 			key_frames = newcol;
@@ -1226,7 +1226,7 @@ PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
 
-	for (GSList *l = key_frames->list; l; l = l->next) {
+	for (GList *l = key_frames->list; l; l = l->next) {
 		PointKeyFrame *dkf = (PointKeyFrame*)l->data;
 		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
 

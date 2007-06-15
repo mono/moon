@@ -66,7 +66,7 @@ Collection::Add (DependencyObject *data)
 {
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 
-	list = g_slist_append (list, data);
+	list = g_list_append (list, data);
 	base_ref (data);
 	data->SetParent (this);
 }
@@ -74,18 +74,18 @@ Collection::Add (DependencyObject *data)
 void
 Collection::Remove (DependencyObject *data)
 {
-	GSList *l, *prev = NULL;
+	GList *l, *prev = NULL;
 	bool found = FALSE;
 
 	// Do this by hand, so we only unref if we find the object
-	for (GSList *l = list; l != NULL; l = l->next){
+	for (GList *l = list; l != NULL; l = l->next){
 		if (l->data == data){
 			found = TRUE;
 			if (prev){
 				prev->next = l->next;
 			} else
 				list = l->next;
-			g_slist_free_1 (l);
+			g_list_free_1 (l);
 			break;
 		}
 		prev = l;
@@ -98,12 +98,12 @@ Collection::Remove (DependencyObject *data)
 
 Collection::~Collection ()
 {
-	GSList *sl;
+	GList *sl;
 
 	for (sl = list; sl != NULL; sl = sl->next){
 		base_unref ((Base *) sl->data);
 	}
-	g_slist_free (list);
+	g_list_free (list);
 	list = NULL;
 }
 
@@ -558,14 +558,14 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != resources){
 			if (resources){
-				for (GSList *l = resources->list; l != NULL; l = l->next){
+				for (GList *l = resources->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					printf ("Unrefing a %d\n", dob->GetObjectType ());
 					base_unref (dob);
 				}
 				base_unref (resources);
-				g_slist_free (resources->list);
+				g_list_free (resources->list);
 			}
 
 			resources = newcol;
@@ -834,13 +834,13 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children){
 			if (children){
-				for (GSList *l = children->list; l != NULL; l = l->next){
+				for (GList *l = children->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (children);
-				g_slist_free (children->list);
+				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -853,7 +853,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
-Canvas::Canvas () : surface (NULL)
+Canvas::Canvas () : surface (NULL), current_element (NULL)
 {
 	flags |= IS_CANVAS;
 }
@@ -882,7 +882,7 @@ void
 Canvas::update_xform ()
 {
 	UIElement::update_xform ();
-	GSList *il;
+	GList *il;
 
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
@@ -895,7 +895,7 @@ void
 Canvas::getbounds ()
 {
 	bool first = true;
-	GSList *il;
+	GList *il;
 
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
@@ -960,7 +960,7 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 	//if (!inside_object (s, x, y))
 	//return;
 
-	GSList *il;
+	GList *il;
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
@@ -1182,7 +1182,7 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 void
 Canvas::render (Surface *s, int x, int y, int width, int height)
 {
-	GSList *il;
+	GList *il;
 	double actual [6];
 	
 	Brush *background = GetValue (Panel::BackgroundProperty)->AsBrush ();
@@ -1776,7 +1776,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 			indexer = strtol (path + i + 1, NULL, 10);
 
 			Collection * col = lu->GetValue (res)->AsCollection ();
-			lu = (DependencyObject *) g_slist_nth_data (col->list, indexer);
+			lu = (DependencyObject *) g_list_nth_data (col->list, indexer);
 			i += 3;
 			break;
 		}
@@ -2078,13 +2078,13 @@ EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != actions){
 			if (actions){
-				for (GSList *l = actions->list; l != NULL; l = l->next){
+				for (GList *l = actions->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (actions);
-				g_slist_free (actions->list);
+				g_list_free (actions->list);
 			}
 
 			actions = newcol;
@@ -2137,7 +2137,7 @@ event_trigger_fire_actions (EventTrigger *trigger)
 {
 	g_assert (trigger);
 
-	for (GSList *walk = trigger->actions->list; walk != NULL; walk = walk->next) {
+	for (GList *walk = trigger->actions->list; walk != NULL; walk = walk->next) {
 		TriggerAction *action = (TriggerAction *) walk->data;
 		action->Fire ();
 	}

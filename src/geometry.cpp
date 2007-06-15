@@ -101,13 +101,13 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children){
 			if (children){
-				for (GSList *l = children->list; l != NULL; l = l->next){
+				for (GList *l = children->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (children);
-				g_slist_free (children->list);
+				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -125,7 +125,7 @@ GeometryGroup::Draw (Surface *s)
 {
 	Geometry::Draw (s);
 
-	for (GSList *g = children->list; g != NULL; g = g->next) {
+	for (GList *g = children->list; g != NULL; g = g->next) {
 		Geometry *geometry = (Geometry*) g->data;
 		geometry->Draw (s);
 	}
@@ -323,13 +323,13 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children){
 			if (children){
-				for (GSList *l = children->list; l != NULL; l = l->next){
+				for (GList *l = children->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (children);
-				g_slist_free (children->list);
+				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -347,7 +347,7 @@ PathGeometry::Draw (Surface *s)
 {
 	Geometry::Draw (s);
 
-	for (GSList *coll = children->list; coll != NULL; coll = coll->next) {
+	for (GList *coll = children->list; coll != NULL; coll = coll->next) {
 		PathFigure *pf = (PathFigure*) coll->data;
 		pf->Draw (s);
 	}
@@ -473,13 +473,13 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children){
 			if (children){
-				for (GSList *l = children->list; l != NULL; l = l->next){
+				for (GList *l = children->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (children);
-				g_slist_free (children->list);
+				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -501,7 +501,7 @@ PathFigure::Draw (Surface *s)
 	//cairo_new_sub_path (s->cairo);
 	cairo_move_to (s->cairo, start->x, start->y);
 
-	for (GSList *coll = children->list; coll != NULL; coll = coll->next) {
+	for (GList *coll = children->list; coll != NULL; coll = coll->next) {
 		PathSegment *ps = (PathSegment*) coll->data;
 		ps->Draw (s);
 	}

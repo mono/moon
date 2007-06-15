@@ -487,13 +487,13 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != child_timelines){
 			if (child_timelines){
-				for (GSList *l = child_timelines->list; l != NULL; l = l->next){
+				for (GList *l = child_timelines->list; l != NULL; l = l->next){
 					DependencyObject *dob = (DependencyObject *) l->data;
 					
 					base_unref (dob);
 				}
 				base_unref (child_timelines);
-				g_slist_free (child_timelines->list);
+				g_list_free (child_timelines->list);
 			}
 
 			child_timelines = newcol;
@@ -510,7 +510,7 @@ ClockGroup*
 TimelineGroup::CreateClock ()
 {
 	ClockGroup* group = new ClockGroup (this);
-	for (GSList *l = child_timelines->list; l ; l = l->next) {
+	for (GList *l = child_timelines->list; l ; l = l->next) {
 		group->AddChild (((Timeline*)l->data)->AllocateClock ());
 	}
 
@@ -548,7 +548,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	Duration d = Duration::Automatic;
 	TimeSpan duration_span = 0;
 
-	for (GSList *l = child_timelines->list; l ; l = l->next) {
+	for (GList *l = child_timelines->list; l ; l = l->next) {
 		Timeline *child_timeline = (Timeline*)l->data;
 
 		Duration child_duration = child_timeline->GetNaturalDuration (clock);

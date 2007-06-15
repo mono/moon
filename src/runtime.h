@@ -387,6 +387,12 @@ class Visual : public DependencyObject {
  public:
 	Visual () {};
 	virtual Value::Kind GetObjectType () { return Value::VISUAL; };	
+
+	//
+	// inside_object:
+	//   Returns whether the position x, y is inside the object
+	//
+	virtual bool inside_object (Surface *s, double x, double y) { return FALSE; }
 };
 
 enum ErrorType {
@@ -437,7 +443,7 @@ class Collection;
 
 class Collection : public DependencyObject {
  public:
-	GSList *list;
+	GList *list;
 	void *closure;
 
 	Collection () : list(NULL), closure(NULL) {}
@@ -782,7 +788,17 @@ Panel *panel_new (void);
 class Canvas : public Panel {
  public:
 	Canvas ();
+
+	//
+	// if not-null, this is a toplevel canvas, and this points to the
+	// surface
+	//
 	Surface *surface;
+
+	//
+	// Contains the last element where the mouse entered
+	//
+	UIElement *current_element;
 	
 	virtual Value::Kind GetObjectType () { return Value::CANVAS; }
 
