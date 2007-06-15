@@ -1,3 +1,9 @@
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin-class.cpp: Implement setters for enableFramerateCounter,
+	enableHtmlAccess and windowless. This fields cant be set after 
+	initialization so just do nothing and return true.
+
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-glue.cpp: After PluginObject changes we can back to release objects

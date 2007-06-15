@@ -277,10 +277,18 @@ PluginRootClass::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 bool
 PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
+	//"background"
+	//"enableFramerateCounter"
+	//"enableRedrawRegions"
+	//"enableHtmlAccess"
+	//"maxFrameRate"
+
 	if (name == NPID ("version")) {
 		STRING_TO_NPVARIANT (PLUGIN_VERSION, *result);
 		return true;
 	}
+
+	//"windowless"
 
 	return false;
 }
@@ -288,6 +296,27 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 bool 
 PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	// "background"
+
+	// Cant be set after initialization so return true
+	if (name == NPID ("enableFramerateCounter")) {
+		return true;
+	} 
+
+	// "enableRedrawRegions"
+
+	// Cant be set after initialization so return true
+	if (name == NPID ("enableHtmlAccess")) {
+		return true;
+	} 
+
+	// "maxFrameRate"
+
+	// Cant be set after initialization so return true
+	if (name == NPID ("windowless")) {
+		return true;
+	} 
+
 	return false;
 }
 
