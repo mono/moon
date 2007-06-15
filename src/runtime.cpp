@@ -1621,7 +1621,7 @@ static void
 free_value (void *v)
 {
 	Value *val = (Value*)v;
-	if (val->k >= Value::DEPENDENCY_OBJECT){
+	if (val && val->k >= Value::DEPENDENCY_OBJECT){
 		base_unref (val->AsDependencyObject ());
 	}
 
