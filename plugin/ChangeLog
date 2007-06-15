@@ -1,5 +1,9 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h, plugin-class.cpp: Implement initParams property.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp: Implement setters for enableFramerateCounter,
 	enableHtmlAccess and windowless. This fields cant be set after 
 	initialization so just do nothing and return true.

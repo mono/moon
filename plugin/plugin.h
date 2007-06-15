@@ -26,7 +26,8 @@ class PluginInstance
 	bool xembed_supported; // XEmbed Extension supported
 
 	// Property fields
-	bool isloaded;
+	char *initParams;
+	bool isLoaded;
 	char *source;
 
 	// Private methods
@@ -57,7 +58,8 @@ class PluginInstance
  	Surface *surface;      // plugin surface object
 
 	// Property getters and setters
-	bool getIsLoaded () { return this->isloaded; };
+	char *getInitParams () { return this->initParams; }
+	bool getIsLoaded () { return this->isLoaded; };
 	char *getSource () { return this->source; }
 };
 

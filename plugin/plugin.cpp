@@ -75,7 +75,8 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->surface = NULL;
 
 	// Property fields
-	this->isloaded = false;
+	this->initParams = false;
+	this->isLoaded = false;
 	this->source = NULL;
 }
 
@@ -94,6 +95,11 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL)
 			continue;
+
+		// initParams.
+		if (!strcasecmp (argn[i], "initParams")) {
+			this->initParams = argv[i];
+		}
 
 		// Source url handle.
 		if (!strcasecmp (argn[i], "src") || !strcasecmp (argn[i], "source")) {
@@ -237,7 +243,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 #ifdef RUNTIME
 	vm_load_xaml (this->surface, fname);
 #else
-	this->isloaded = true;
+	this->isLoaded = true;
 	panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
 #endif
 }

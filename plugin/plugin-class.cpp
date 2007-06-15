@@ -241,6 +241,12 @@ PluginRootClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVar
 		return true;
 	} 
 
+	if (name == NPID ("initParams")) {
+DEBUGMSG ("-----------------------> %s", npobj->plugin->getInitParams ());
+		STRING_TO_NPVARIANT (npobj->plugin->getInitParams (), *result);
+		return true;
+	} 
+
 	if (name == NPID ("isLoaded")) {
 		BOOLEAN_TO_NPVARIANT (npobj->plugin->getIsLoaded (), *result);
 		return true;
