@@ -1,0 +1,5 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+  <TextBlock Canvas.Left="10" Text="لينكس" />
+  
+  <TextBlock Canvas.Left="10" Canvas.Top="100" Stroke="Red" Text="I am the other textblock"/>
+</Canvas>
