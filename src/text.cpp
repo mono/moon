@@ -75,7 +75,6 @@ font_weight (FontWeights weight)
 }
 
 
-
 // Inline
 
 DependencyProperty *Inline::FontFamilyProperty;
@@ -86,6 +85,55 @@ DependencyProperty *Inline::FontWeightProperty;
 DependencyProperty *Inline::ForegroundProperty;
 DependencyProperty *Inline::TextDecorationsProperty;
 
+Inline::Inline ()
+{
+	/* initialize the font description */
+	font = pango_font_description_new ();
+	char *family = inline_get_font_family (this);
+	pango_font_description_set_family (font, family);
+	double size = inline_get_font_size (this);
+	pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
+	FontStretches stretch = inline_get_font_stretch (this);
+	pango_font_description_set_stretch (font, font_stretch (stretch));
+	FontStyles style = inline_get_font_style (this);
+	pango_font_description_set_style (font, font_style (style));
+	FontWeights weight = inline_get_font_weight (this);
+	pango_font_description_set_weight (font, font_weight (weight));
+}
+
+Inline::~Inline ()
+{
+	pango_font_description_free (font);
+}
+
+void
+Inline::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type != Value::INLINE) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
+	
+	if (font == NULL)
+		return;
+	
+	if (prop == Inline::FontFamilyProperty) {
+		char *family = inline_get_font_family (this);
+		pango_font_description_set_family (font, family);
+	} else if (prop == Inline::FontSizeProperty) {
+		double size = inline_get_font_size (this);
+		pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
+	} else if (prop == Inline::FontStretchProperty) {
+		FontStretches stretch = inline_get_font_stretch (this);
+		pango_font_description_set_stretch (font, font_stretch (stretch));
+	} else if (prop == Inline::FontStyleProperty) {
+		FontStyles style = inline_get_font_style (this);
+		pango_font_description_set_style (font, font_style (style));
+	} else if (prop == Inline::FontWeightProperty) {
+		FontWeights weight = inline_get_font_weight (this);
+		pango_font_description_set_weight (font, font_weight (weight));
+	}
+}
 
 char *
 inline_get_font_family (Inline *inline_)
@@ -195,6 +243,7 @@ line_break_new (void)
 // Run
 
 DependencyProperty *Run::TextProperty;
+
 
 Run *
 run_new (void)
@@ -357,7 +406,8 @@ TextBlock::inside_object (Surface *s, double x, double y)
 void
 TextBlock::Draw (Surface *s, bool render)
 {
-	Brush *foreground;
+	Inlines *inlines;
+	Brush *brush;
 	char *text;
 	
 	if (layout == NULL) {
@@ -368,18 +418,51 @@ TextBlock::Draw (Surface *s, bool render)
 	} else
 		pango_cairo_update_layout (s->cairo, layout);
 	
-	pango_layout_set_font_description (layout, font);
-	
 	if ((text = text_block_get_text (this))) {
+		pango_layout_set_font_description (layout, font);
+		
 		pango_layout_set_text (layout, text, -1);
 		
-		if ((foreground = text_block_get_foreground (this)))
-			foreground->SetupBrush (s->cairo, this);
+		if ((brush = text_block_get_foreground (this)))
+			brush->SetupBrush (s->cairo, this);
 		
 		if (render)
 			pango_cairo_show_layout (s->cairo, layout);
 		else
 			pango_cairo_layout_path (s->cairo, layout);
+	}
+	
+	if ((inlines = text_block_get_inlines (this))) {
+		GList *node = inlines->list;
+		Inline *item;
+		
+		while (node != NULL) {
+			item = (Inline *) node->data;
+			
+			pango_layout_set_font_description (layout, item->font);
+			
+			switch (item->GetObjectType ()) {
+			case Value::RUN:
+				text = run_get_text ((Run *) item);
+				pango_layout_set_text (layout, text, -1);
+				printf ("<Run>%s</Run>\n", text);
+				break;
+			case Value::LINEBREAK:
+				pango_layout_set_text (layout, "\n", 1);
+				printf ("<LineBreak/>\n");
+				break;
+			default:
+				printf ("unknown Inline item\n");
+				break;
+			}
+			
+			if (render)
+				pango_cairo_show_layout (s->cairo, layout);
+			else
+				pango_cairo_layout_path (s->cairo, layout);
+			
+			node = node->next;
+		}
 	}
 }
 
@@ -527,7 +610,9 @@ text_block_set_foreground (TextBlock *textblock, Brush *value)
 Inlines *
 text_block_get_inlines (TextBlock *textblock)
 {
-	return (Inlines *) textblock->GetValue (TextBlock::InlinesProperty)->AsInlines ();
+	Value *value = textblock->GetValue (TextBlock::InlinesProperty);
+	
+	return value ? (Inlines *) value->AsInlines () : NULL;
 }
 
 void

@@ -71,8 +71,12 @@ class Inline : public DependencyObject {
 	static DependencyProperty *ForegroundProperty;
 	static DependencyProperty *TextDecorationsProperty;
 	
-	Inline () { }
-	virtual Value::Kind GetObjectType () { return Value::INLINE; }	
+	PangoFontDescription *font;
+	
+	Inline ();
+	~Inline ();
+	virtual Value::Kind GetObjectType () { return Value::INLINE; }
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 char *inline_get_font_family (Inline *inline_);
@@ -142,19 +146,19 @@ public:
 	void SetFontSource (DependencyObject *downloader);
 	
 	//
-	// Overrides from UIElement.
+	// Overrides
 	//
 	virtual void render (Surface *s, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 	
 private:
 	PangoFontDescription *font;
 	PangoLayout *layout;
 	
 	void Draw (Surface *s, bool render);
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 TextBlock *text_block_new (void);

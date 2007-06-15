@@ -1,3 +1,8 @@
+2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: Have inlines cache their PangoFontDescription and
+	added logic to render textblock inlines.
+
 2007-06-15  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp|h: Added DependencyProperty.NameProperty
