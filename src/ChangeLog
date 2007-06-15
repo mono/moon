@@ -2,6 +2,9 @@
 
 	* runtime.cpp|h: Implement some Inlines stuff that the parser will
 	need.
+	* xaml.cpp: Add some of the pieces for creating textblock inlines.
+	- Added some TODO areas for creating late bound collections (maybe
+	this should just be illegal??).
 
 2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
 

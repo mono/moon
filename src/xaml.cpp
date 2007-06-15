@@ -865,7 +865,8 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 
 		if (dep && dep->value_type == i->dependency_type) {
 			Value *v = ((DependencyObject * ) walk->item)->GetValue (dep);
-			inst->item = v->AsCollection ();
+			if (v)
+				inst->item = v->AsCollection ();
 		}
 	}
 
@@ -936,6 +937,10 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		if (is_collection && dep->value_type != child->info->dependency_type) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			Value *col_v = obj->GetValue (dep);
+			if (!col_v) {
+				// TODO: need to create the collection and set the value here
+				col_v = obj->GetValue (dep);
+			}
 			Collection *col = (Collection *) col_v->AsCollection ();
 			col->Add ((DependencyObject *) child->item);
 			return;
@@ -1317,7 +1322,7 @@ xaml_init (void)
 	XamlElementInfo *tg = rdoe (dem, "TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
 	tg->content_property = "Children";
 	
-	XamlElementInfo *tfc = rdoe (dem, "TransformCollection", col, Value::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
+	rdoe (dem, "TransformCollection", col, Value::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
 
 
 	///
@@ -1332,7 +1337,7 @@ xaml_init (void)
 	rdoe (dem, "LinearGradientBrush", gb, Value::LINEARGRADIENTBRUSH, (create_item_func) linear_gradient_brush_new);
 	rdoe (dem, "RadialGradientBrush", gb, Value::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
 
-	XamlElementInfo *gsc = rdoe (dem, "GradientStopCollection", col, Value::GRADIENTSTOP_COLLECTION, (create_item_func) gradient_stop_collection_new);
+	rdoe (dem, "GradientStopCollection", col, Value::GRADIENTSTOP_COLLECTION, (create_item_func) gradient_stop_collection_new);
 
 	rdoe (dem, "GradientStop", NULL, Value::GRADIENTSTOP, (create_item_func) gradient_stop_new);
 
@@ -1355,9 +1360,13 @@ xaml_init (void)
 	///
 	
 	XamlElementInfo *in = register_ghost_element ("Inline", NULL, Value::INLINE);
+	XamlElementInfo *txtblk = rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) text_block_new);
+	txtblk->content_property = "Inlines";
+
+	rdoe (dem, "Inlines", col, Value::INLINES, (create_item_func) inlines_new);
+
 	rdoe (dem, "Run", in, Value::RUN, (create_item_func) run_new);
 	rdoe (dem, "LineBreak", in, Value::LINEBREAK, (create_item_func) line_break_new);
-	rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) text_block_new);
 	rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
 #undef rdoe
 	
