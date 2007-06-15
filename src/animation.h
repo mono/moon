@@ -28,7 +28,7 @@ class KeySpline : public DependencyObject {
 	Point controlPoint2;
 };
 
-KeySpline * key_spline_new ();
+KeySpline *key_spline_new (void);
 
 
 struct KeyTime {
@@ -183,7 +183,6 @@ t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::pro
 
 class DoubleAnimation : public Animation/*Timeline*/ {
  public:
-
 	DoubleAnimation ();
 	virtual Value::Kind GetObjectType () { return Value::DOUBLEANIMATION; };
 
@@ -199,15 +198,12 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 					AnimationClock* animationClock);
 };
 
-DoubleAnimation * double_animation_new ();
-
-
+DoubleAnimation *double_animation_new (void);
 
 
 
 class ColorAnimation : public Animation/*Timeline*/ {
  public:
-
 	ColorAnimation ();
 	virtual Value::Kind GetObjectType () { return Value::COLORANIMATION; };
 
@@ -223,15 +219,12 @@ class ColorAnimation : public Animation/*Timeline*/ {
 					AnimationClock* animationClock);
 };
 
-ColorAnimation * color_animation_new ();
-
-
+ColorAnimation *color_animation_new (void);
 
 
 
 class PointAnimation : public Animation/*Timeline*/ {
  public:
-
 	PointAnimation () {};
 	virtual Value::Kind GetObjectType () { return Value::POINTANIMATION; };
 
@@ -247,9 +240,7 @@ class PointAnimation : public Animation/*Timeline*/ {
 					AnimationClock* animationClock);
 };
 
-PointAnimation * point_animation_new ();
-
-
+PointAnimation *point_animation_new (void);
 
 
 
@@ -285,7 +276,8 @@ class KeyFrameCollection : public Collection {
 	GSList *sorted_list;
 };
 
-KeyFrameCollection * key_frame_collection_new ();
+KeyFrameCollection *key_frame_collection_new (void);
+
 
 class DoubleKeyFrame : public KeyFrame {
  public:
@@ -330,8 +322,7 @@ class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
-DiscreteDoubleKeyFrame* discrete_double_key_frame_new ();
-
+DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
 
 
 class DiscreteColorKeyFrame : public ColorKeyFrame {
@@ -342,8 +333,7 @@ class DiscreteColorKeyFrame : public ColorKeyFrame {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
-DiscreteColorKeyFrame* discrete_color_key_frame_new ();
-
+DiscreteColorKeyFrame *discrete_color_key_frame_new (void);
 
 
 class DiscretePointKeyFrame : public PointKeyFrame {
@@ -354,9 +344,7 @@ class DiscretePointKeyFrame : public PointKeyFrame {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
-DiscretePointKeyFrame* discrete_point_key_frame_new ();
-
-
+DiscretePointKeyFrame *discrete_point_key_frame_new (void);
 
 
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
@@ -367,7 +355,8 @@ class LinearDoubleKeyFrame : public DoubleKeyFrame {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
-LinearDoubleKeyFrame* linear_double_key_frame_new ();
+LinearDoubleKeyFrame *linear_double_key_frame_new (void);
+
 
 class LinearColorKeyFrame : public ColorKeyFrame {
  public:
@@ -377,9 +366,7 @@ class LinearColorKeyFrame : public ColorKeyFrame {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
-LinearColorKeyFrame* linear_color_key_frame_new ();
-
-
+LinearColorKeyFrame *linear_color_key_frame_new (void);
 
 
 class LinearPointKeyFrame : public PointKeyFrame {
@@ -390,7 +377,7 @@ class LinearPointKeyFrame : public PointKeyFrame {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
-LinearPointKeyFrame* linear_point_key_frame_new ();
+LinearPointKeyFrame *linear_point_key_frame_new (void);
 
 
 class SplineDoubleKeyFrame : public DoubleKeyFrame {
@@ -405,7 +392,8 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	static DependencyProperty *KeySplineProperty;
 };
 
-SplineDoubleKeyFrame* spline_double_key_frame_new ();
+SplineDoubleKeyFrame *spline_double_key_frame_new (void);
+
 
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
@@ -427,7 +415,8 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	KeyFrameCollection *key_frames;
 };
 
-DoubleAnimationUsingKeyFrames* double_animation_using_key_frames_new ();
+DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new (void);
+
 
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
  public:
@@ -449,7 +438,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	KeyFrameCollection *key_frames;
 };
 
-ColorAnimationUsingKeyFrames* color_animation_using_key_frames_new ();
+ColorAnimationUsingKeyFrames *color_animation_using_key_frames_new (void);
 
 
 class PointAnimationUsingKeyFrames : public PointAnimation {
@@ -472,7 +461,8 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	KeyFrameCollection *key_frames;
 };
 
-PointAnimationUsingKeyFrames* point_animation_using_key_frames_new ();
+PointAnimationUsingKeyFrames *point_animation_using_key_frames_new (void);
+
 
 class Storyboard : public ParallelTimeline {
  public:
@@ -504,7 +494,7 @@ class Storyboard : public ParallelTimeline {
 	static gboolean storyboard_tick (gpointer data);
 };
 
-Storyboard *storyboard_new ();
+Storyboard *storyboard_new (void);
 void storyboard_begin  (Storyboard *sb);
 void storyboard_pause  (Storyboard *sb);
 void storyboard_resume (Storyboard *sb);
@@ -513,9 +503,7 @@ void storyboard_stop   (Storyboard *sb);
 
 
 
-
 class BeginStoryboard : public TriggerAction {
-
  public:
 	BeginStoryboard () { }
 	~BeginStoryboard ();
@@ -531,7 +519,7 @@ class BeginStoryboard : public TriggerAction {
 	static DependencyProperty* StoryboardProperty;
 };
 
-BeginStoryboard *begin_storyboard_new ();
+BeginStoryboard *begin_storyboard_new (void);
 
 G_END_DECLS
 

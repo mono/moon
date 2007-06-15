@@ -1188,7 +1188,7 @@ register_dependency_object_element (GHashTable *table, const char *name, XamlEle
 
 
 void
-xaml_init ()
+xaml_init (void)
 {
 	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
 	enum_map = g_hash_table_new (g_str_hash, g_str_equal);
@@ -1216,14 +1216,6 @@ xaml_init ()
 	rdoe (dem, "Polygon", shape, Value::POLYGON, (create_item_func) polygon_new);
 	rdoe (dem, "Polyline", shape, Value::POLYLINE, (create_item_func) polyline_new);
 	rdoe (dem, "Rectangle", shape, Value::RECTANGLE, (create_item_func) rectangle_new);
-
-	///
-	/// Text
-	///
-	
-	//rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
-	//rdoe (dem, "Inline", do, Value::INLINE, (create_item_func) inline_new);
-	rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) textblock_new);
 	
 	///
 	/// Geometry
@@ -1384,7 +1376,7 @@ xaml_init ()
 
 	XamlElementInfo *inl = register_ghost_element ("Inline", NULL, Value::INLINE);
 
-	rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) textblock_new);
+	rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) text_block_new);
 	rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
 #undef rdoe
 

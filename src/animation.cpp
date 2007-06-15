@@ -193,7 +193,7 @@ Storyboard::Stop ()
 }
 
 Storyboard *
-storyboard_new ()
+storyboard_new (void)
 {
 	return new Storyboard ();
 }
@@ -298,7 +298,7 @@ BeginStoryboard::~BeginStoryboard ()
 }
 
 BeginStoryboard *
-begin_storyboard_new ()
+begin_storyboard_new (void)
 {
 	return new BeginStoryboard ();
 }
@@ -341,7 +341,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 }
 
 DoubleAnimation *
-double_animation_new ()
+double_animation_new (void)
 {
 	return new DoubleAnimation ();
 }
@@ -384,7 +384,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 }
 
 ColorAnimation *
-color_animation_new ()
+color_animation_new (void)
 {
 	return new ColorAnimation ();
 }
@@ -463,7 +463,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 }
 
 PointAnimation *
-point_animation_new ()
+point_animation_new (void)
 {
 	return new PointAnimation ();
 }
@@ -509,7 +509,7 @@ KeySpline::SetControlPoint2 (Point controlPoint2)
 }
 
 KeySpline *
-key_spline_new ()
+key_spline_new (void)
 {
 	return new KeySpline ();
 }
@@ -689,7 +689,7 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 }
 
 KeyFrameCollection *
-key_frame_collection_new ()
+key_frame_collection_new (void)
 {
 	return new KeyFrameCollection ();
 }
@@ -727,8 +727,8 @@ DiscreteDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgr
 		return new Value (baseValue->AsDouble());
 }
 
-DiscreteDoubleKeyFrame*
-discrete_double_key_frame_new ()
+DiscreteDoubleKeyFrame *
+discrete_double_key_frame_new (void)
 {
 	return new DiscreteDoubleKeyFrame ();
 }
@@ -750,8 +750,8 @@ DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 		return new Value (*baseValue->AsColor());
 }
 
-DiscreteColorKeyFrame*
-discrete_color_key_frame_new ()
+DiscreteColorKeyFrame *
+discrete_color_key_frame_new (void)
 {
 	return new DiscreteColorKeyFrame ();
 }
@@ -770,8 +770,8 @@ DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 		return new Value (*baseValue->AsPoint());
 }
 
-DiscretePointKeyFrame*
-discrete_point_key_frame_new ()
+DiscretePointKeyFrame *
+discrete_point_key_frame_new (void)
 {
 	return new DiscretePointKeyFrame ();
 }
@@ -793,8 +793,8 @@ LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
-LinearDoubleKeyFrame*
-linear_double_key_frame_new ()
+LinearDoubleKeyFrame *
+linear_double_key_frame_new (void)
 {
 	return new LinearDoubleKeyFrame ();
 }
@@ -815,8 +815,8 @@ LinearColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
-LinearColorKeyFrame*
-linear_color_key_frame_new ()
+LinearColorKeyFrame *
+linear_color_key_frame_new (void)
 {
 	return new LinearColorKeyFrame ();
 }
@@ -837,8 +837,8 @@ LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
-LinearPointKeyFrame*
-linear_point_key_frame_new ()
+LinearPointKeyFrame *
+linear_point_key_frame_new (void)
 {
 	return new LinearPointKeyFrame ();
 }
@@ -869,7 +869,7 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 }
 
 SplineDoubleKeyFrame *
-spline_double_key_frame_new ()
+spline_double_key_frame_new (void)
 {
 	return new SplineDoubleKeyFrame ();
 }
@@ -989,8 +989,8 @@ DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 	return d;
 }
 
-DoubleAnimationUsingKeyFrames*
-double_animation_using_key_frames_new ()
+DoubleAnimationUsingKeyFrames *
+double_animation_using_key_frames_new (void)
 {
 	return new DoubleAnimationUsingKeyFrames ();
 }
@@ -1116,8 +1116,8 @@ ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 }
 
 
-ColorAnimationUsingKeyFrames*
-color_animation_using_key_frames_new ()
+ColorAnimationUsingKeyFrames *
+color_animation_using_key_frames_new (void)
 {
 	return new ColorAnimationUsingKeyFrames ();
 }
@@ -1240,8 +1240,8 @@ PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 }
 
 
-PointAnimationUsingKeyFrames*
-point_animation_using_key_frames_new ()
+PointAnimationUsingKeyFrames *
+point_animation_using_key_frames_new (void)
 {
 	return new PointAnimationUsingKeyFrames ();
 }
@@ -1257,7 +1257,7 @@ KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
 void 
-animation_init ()
+animation_init (void)
 {
 	/* DoubleAnimation properties */
 	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By",   Value::DOUBLE);

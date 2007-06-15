@@ -23,7 +23,8 @@
 #include <stdlib.h>
 #include "runtime.h"
 
-void types_init_manually ()
+void
+types_init_manually (void)
 {
 	// Put types that does not inherit from DependencyObject here (manually)
 
@@ -64,7 +65,8 @@ void types_init_manually ()
 //	- types_init (), initializes all types that inherit from DependencyObject
 
 
-void types_init ()
+void
+types_init (void)
 {
 	Type::RegisterType ("DependencyObject", Value::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Animation", Value::ANIMATION, Value::TIMELINE);

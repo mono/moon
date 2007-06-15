@@ -25,8 +25,8 @@ Transform::GetTransform (cairo_matrix_t *value)
 	g_warning ("Transform:GetTransform has been called. The derived class should have overridden it.");
 }
 
-Transform*
-transform_new ()
+Transform *
+transform_new (void)
 {
 	return new Transform ();
 }
@@ -62,7 +62,7 @@ RotateTransform::GetTransform (cairo_matrix_t *value)
 }
 
 RotateTransform *
-rotate_transform_new ()
+rotate_transform_new (void)
 {
 	return new RotateTransform ();
 }
@@ -120,7 +120,7 @@ TranslateTransform::GetTransform (cairo_matrix_t *value)
 }
 
 TranslateTransform *
-translate_transform_new ()
+translate_transform_new (void)
 {
 	return new TranslateTransform ();
 }
@@ -179,7 +179,7 @@ ScaleTransform::GetTransform (cairo_matrix_t *value)
 }
 
 ScaleTransform *
-scale_transform_new ()
+scale_transform_new (void)
 {
 	return new ScaleTransform ();
 }
@@ -267,7 +267,7 @@ SkewTransform::GetTransform (cairo_matrix_t *value)
 }
 
 SkewTransform *
-skew_transform_new ()
+skew_transform_new (void)
 {
 	return new SkewTransform ();
 }
@@ -336,7 +336,7 @@ MatrixTransform::GetTransform (cairo_matrix_t *value)
 }
 
 MatrixTransform *
-matrix_transform_new ()
+matrix_transform_new (void)
 {
 	return new MatrixTransform ();
 }
@@ -347,7 +347,7 @@ matrix_transform_set_matrix (MatrixTransform *t, Matrix *matrix)
 	t->SetValue (MatrixTransform::MatrixProperty, Value(matrix));
 }
 
-Matrix*
+Matrix *
 matrix_transform_get_matrix (MatrixTransform *t)
 {
 	Value *value = t->GetValue (MatrixTransform::MatrixProperty);
@@ -410,13 +410,14 @@ TransformGroup::GetTransform (cairo_matrix_t *value)
 	}
 }
 
-TransformGroup *transform_group_new ()
+TransformGroup *
+transform_group_new (void)
 {
 	return new TransformGroup ();
 }
 
 void
-transform_init ()
+transform_init (void)
 {
 	/* RotateTransform fields */
 	RotateTransform::AngleProperty   = DependencyObject::Register (Value::ROTATETRANSFORM, "Angle", new Value (0.0));

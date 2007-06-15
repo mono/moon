@@ -443,13 +443,18 @@ gint32*         Value::AsNullableInt32 () { checked_get_exact (INT32, NULL, &u.i
 void
 item_update_bounds (UIElement *item)
 {
+	Surface *s = item_get_surface (item);
+	
+	if (s == NULL)
+		return;
+	
 	double cx1 = item->x1;
 	double cy1 = item->y1;
 	double cx2 = item->x2;
 	double cy2 = item->y2;
 	
 	item->getbounds ();
-
+	
 	//
 	// If we changed, notify the parent to recompute its bounds
 	//
@@ -469,9 +474,9 @@ UIElement::get_xform_for (UIElement *item, cairo_matrix_t *result)
 void 
 item_invalidate (UIElement *item)
 {
-	double res [6];
 	Surface *s = item_get_surface (item);
-
+	double res [6];
+	
 	if (s == NULL)
 		return;
 
@@ -584,8 +589,12 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 void
 UIElement::update_xform ()
 {
+	Surface *s = item_get_surface (this);
 	cairo_matrix_t user_transform;
-
+	
+	if (s == NULL)
+		return;
+	
 	//
 	// What is more important, the space used by 6 doubles,
 	// or the time spent calling the parent (that will call
@@ -600,9 +609,9 @@ UIElement::update_xform ()
 		parent->get_xform_for (this, &absolute_xform);
 	else
 		cairo_matrix_init_identity (&absolute_xform);
-
+	
 	item_get_render_affine (this, &user_transform);
-
+	
 	Point p = getxformorigin ();
 	cairo_matrix_translate (&absolute_xform, p.x, p.y);
 	cairo_matrix_multiply (&absolute_xform, &user_transform, &absolute_xform);
@@ -614,14 +623,14 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 {
 	if (prop == UIElement::RenderTransformProperty ||
 	    prop == UIElement::RenderTransformOriginProperty)
-		FullInvalidate (TRUE);
+		FullInvalidate (true);
 	else if (prop == UIElement::OpacityProperty ||
 		 prop == UIElement::ClipProperty ||
 		 prop == UIElement::OpacityMaskProperty ||
 		 prop == UIElement::VisibilityProperty){
-		FullInvalidate (FALSE);
+		FullInvalidate (false);
 	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)){
-		FullInvalidate (FALSE);
+		FullInvalidate (false);
 	}
 }
 
@@ -894,19 +903,19 @@ Canvas::update_xform ()
 void
 Canvas::getbounds ()
 {
-	bool first = TRUE;
+	bool first = true;
 	GSList *il;
 
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->getbounds ();
-		if (first){
+		if (first) {
 			x1 = item->x1;
 			x2 = item->x2;
 			y1 = item->y1;
 			y2 = item->y2;
-			first = FALSE;
+			first = false;
 			continue;
 		} 
 
@@ -921,9 +930,8 @@ Canvas::getbounds ()
 	}
 
 	// If we found nothing.
-	if (first){
+	if (first)
 		x1 = y1 = x2 = y2 = 0;
-	}
 }
 
 void 
@@ -942,12 +950,13 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 		//
 		if (!Type::Find (child->GetObjectType ())->IsSubclassOf (Value::UIELEMENT)){
 			printf ("Child %d is not a UIELEMENT\n");
-			return FALSE;
+			return false;
 		}
 		UIElement *ui = (UIElement *) child;
 		ui->FullInvalidate (true);
 	}
-	return FALSE;
+	
+	return false;
 }
 
 void 
@@ -1103,7 +1112,7 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	return TRUE;
 }
 
-static gboolean 
+static gboolean
 motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
@@ -1585,7 +1594,7 @@ DependencyObject::Register (Value::Kind type, const char *name, Value::Kind vtyp
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, NULL, vtype, FALSE);
+	return RegisterFull (type, name, NULL, vtype, false);
 }
 
 //
@@ -1597,7 +1606,7 @@ DependencyObject::Register (Value::Kind type, const char *name, Value *default_v
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, default_value->k, FALSE);
+	return RegisterFull (type, name, default_value, default_value->k, false);
 }
 
 //
@@ -2008,49 +2017,49 @@ TimelineMarkerCollection::Remove (DependencyObject *data)
 }
 
 VisualCollection *
-visual_collection_new ()
+visual_collection_new (void)
 {
 	return new VisualCollection ();
 }
 
 TriggerCollection *
-trigger_collection_new ()
+trigger_collection_new (void)
 {
 	return new TriggerCollection ();
 }
 
 TriggerActionCollection *
-trigger_action_collection_new ()
+trigger_action_collection_new (void)
 {
 	return new TriggerActionCollection ();
 }
 
 ResourceCollection *
-resource_collection_new ()
+resource_collection_new (void)
 {
 	return new ResourceCollection ();
 }
 
 StrokeCollection *
-stroke_collection_new ()
+stroke_collection_new (void)
 {
 	return new StrokeCollection ();
 }
 
 StylusPointCollection *
-stylus_point_collection_new ()
+stylus_point_collection_new (void)
 {
 	return new StylusPointCollection ();
 }
 
 TimelineMarkerCollection *
-timeline_marker_collection_new ()
+timeline_marker_collection_new (void)
 {
 	return new TimelineMarkerCollection ();
 }
 
 MediaAttributeCollection *
-media_attribute_collection_new ()
+media_attribute_collection_new (void)
 {
 	return new MediaAttributeCollection ();
 }
@@ -2120,7 +2129,7 @@ EventTrigger::~EventTrigger ()
 }
 
 EventTrigger *
-event_trigger_new ()
+event_trigger_new (void)
 {
 	return new EventTrigger ();
 }
@@ -2219,7 +2228,7 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 }
 
 Downloader*
-downloader_new ()
+downloader_new (void)
 {
 	return new Downloader ();
 }
@@ -2281,7 +2290,7 @@ item_init ()
 DependencyProperty *NameScope::NameScopeProperty;
 
 void
-namescope_init ()
+namescope_init (void)
 {
 	NameScope::NameScopeProperty = DependencyObject::Register (Value::NAMESCOPE, "NameScope", Value::NAMESCOPE);
 }
@@ -2290,7 +2299,7 @@ DependencyProperty* FrameworkElement::HeightProperty;
 DependencyProperty* FrameworkElement::WidthProperty;
 
 void
-framework_element_init ()
+framework_element_init (void)
 {
 	FrameworkElement::HeightProperty = DependencyObject::Register (Value::FRAMEWORKELEMENT, "Height", new Value (0.0));
 	FrameworkElement::WidthProperty = DependencyObject::Register (Value::FRAMEWORKELEMENT, "Width", new Value (0.0));
@@ -2300,7 +2309,7 @@ DependencyProperty* Panel::ChildrenProperty;
 DependencyProperty* Panel::BackgroundProperty;
 
 void 
-panel_init ()
+panel_init (void)
 {
 	SolidColorBrush *default_background = solid_color_brush_new ();
 	Color white (1.0, 1.0, 1.0, 1.0);
@@ -2313,17 +2322,17 @@ DependencyProperty* Canvas::TopProperty;
 DependencyProperty* Canvas::LeftProperty;
 
 void 
-canvas_init ()
+canvas_init (void)
 {
-	Canvas::TopProperty = DependencyObject::RegisterFull (Value::CANVAS, "Top", new Value (0.0), Value::DOUBLE, TRUE);
-	Canvas::LeftProperty = DependencyObject::RegisterFull (Value::CANVAS, "Left", new Value (0.0), Value::DOUBLE, TRUE);
+	Canvas::TopProperty = DependencyObject::RegisterFull (Value::CANVAS, "Top", new Value (0.0), Value::DOUBLE, true);
+	Canvas::LeftProperty = DependencyObject::RegisterFull (Value::CANVAS, "Left", new Value (0.0), Value::DOUBLE, true);
 }
 
 DependencyProperty* EventTrigger::RoutedEventProperty;
 DependencyProperty* EventTrigger::ActionsProperty;
 
 void
-event_trigger_init ()
+event_trigger_init (void)
 {
 	EventTrigger::RoutedEventProperty = DependencyObject::Register (Value::EVENTTRIGGER, "RoutedEvent", Value::STRING);
 	EventTrigger::ActionsProperty = DependencyObject::Register (Value::EVENTTRIGGER, "Actions", Value::TRIGGERACTION_COLLECTION);
@@ -2336,7 +2345,7 @@ DependencyProperty *Downloader::StatusTextProperty;
 DependencyProperty *Downloader::UriProperty;
 
 void
-downloader_init ()
+downloader_init (void)
 {
 	Downloader::DownloadProgressProperty = DependencyObject::Register (Value::DOWNLOADER, "DownloadProgress", Value::DOUBLE);
 	Downloader::ResponseTextProperty = DependencyObject::Register (Value::DOWNLOADER, "ResponseText", Value::STRING);
@@ -2417,14 +2426,15 @@ Type::Find (Value::Kind type)
 	return types [type];
 }
 
-static bool inited = FALSE;
+static bool inited = false;
 
 void
-runtime_init ()
+runtime_init (void)
 {
 	if (inited)
 		return;
-	inited = TRUE;
+	
+	inited = true;
 
 	TimeManager::Instance()->Start();
 

@@ -371,7 +371,8 @@ class Downloader : public DependencyObject {
 	static downloader_get_response_text_func get_response_text;
 
 };
-Downloader* downloader_new ();
+
+Downloader* downloader_new (void);
 
 void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_destroy_state_func destroy_state,
@@ -540,15 +541,15 @@ class Inlines : public Collection {
 };
 
 
-VisualCollection*          visual_collection_new ();
-TriggerCollection*         trigger_collection_new ();
-TriggerActionCollection*   trigger_action_collection_new ();
-ResourceCollection*        resource_collection_new ();
-StrokeCollection*          stroke_collection_new ();
-StylusPointCollection*     stylus_point_collection_new ();
-TimelineMarkerCollection*  timeline_marker_collection_new ();
-GradientStopCollection*    gradient_stop_collection_new ();
-MediaAttributeCollection*  media_attribute_collection_new ();
+VisualCollection *visual_collection_new (void);
+TriggerCollection *trigger_collection_new (void);
+TriggerActionCollection *trigger_action_collection_new (void);
+ResourceCollection *resource_collection_new (void);
+StrokeCollection *stroke_collection_new (void);
+StylusPointCollection *stylus_point_collection_new (void);
+TimelineMarkerCollection *timeline_marker_collection_new (void);
+GradientStopCollection *gradient_stop_collection_new (void);
+MediaAttributeCollection *media_attribute_collection_new (void);
 
 
 enum Stretch {
@@ -583,7 +584,6 @@ enum SweepDirection {
 
 
 class TriggerAction : public DependencyObject {
-
  public:
 	TriggerAction () { };
 
@@ -593,7 +593,6 @@ class TriggerAction : public DependencyObject {
 
 
 class EventTrigger : public DependencyObject {
-
  public:
 	TriggerActionCollection *actions;
 
@@ -611,7 +610,7 @@ class EventTrigger : public DependencyObject {
 	static DependencyProperty* ActionsProperty;
 };
 
-EventTrigger  *event_trigger_new ();
+EventTrigger *event_trigger_new (void);
 void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
 void          event_trigger_fire_actions (EventTrigger *trigger);
 
@@ -622,8 +621,6 @@ void          event_trigger_fire_actions (EventTrigger *trigger);
 class UIElement : public Visual {
  public:
 	UIElement ();
-		
-	
 	virtual Value::Kind GetObjectType () { return Value::UIELEMENT; };
 
 	UIElement *parent;
@@ -776,7 +773,7 @@ class Panel : public FrameworkElement {
 
 // For C API usage.
 void  panel_child_add      (Panel *panel, UIElement *item);
-Panel* panel_new ();
+Panel *panel_new (void);
 
 //
 // Canvas Class, the only purpose is to have the Left/Top properties that
@@ -804,7 +801,7 @@ class Canvas : public Panel {
 	static DependencyProperty* LeftProperty;
 };
 
-Canvas *canvas_new ();
+Canvas *canvas_new (void);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 
@@ -894,18 +891,18 @@ UIElement  *xaml_create_from_str      (const char *xaml, Value::Kind *element_ty
 MediaElement *video_new (const char *filename);
 
 
-void runtime_init ();
-void animation_init ();
-void brush_init ();
-void clock_init ();
-void transform_init ();
-void shape_init ();
-void geometry_init ();
-void xaml_init ();
-void types_init ();
-void dependencyobject_init ();
-void downloader_init ();
-void media_init ();
+void runtime_init (void);
+void animation_init (void);
+void brush_init (void);
+void clock_init (void);
+void transform_init (void);
+void shape_init (void);
+void geometry_init (void);
+void xaml_init (void);
+void types_init (void);
+void dependencyobject_init (void);
+void downloader_init (void);
+void media_init (void);
 
 G_END_DECLS
 

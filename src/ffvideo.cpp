@@ -153,20 +153,16 @@ public:
 void
 MediaElementFfmpeg::getbounds ()
 {
-	double res [6];
-	AVCodecContext *cc;
-	
 	Surface *s = item_get_surface (this);
-	if (s == NULL){
-		// not yet attached
-		return;
-	}
-
+	AVCodecContext *cc;
+	double res [6];
+	
 	// If we have not been initialized yet, we cant compute the bounds
-	if (video_stream == NULL || video_stream->codec == NULL){
+	if (video_stream == NULL || video_stream->codec == NULL) {
 		x1 = y1 = x2 = y2 = 0;
 		return;
 	}
+	
 	cc = video_stream->codec;
 
 	cairo_save (s->cairo);

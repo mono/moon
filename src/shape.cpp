@@ -198,11 +198,7 @@ void
 Shape::getbounds ()
 {
 	Surface *s = item_get_surface (this);
-
-	// not yet attached
-	if (s == NULL)
-		return;
-
+	
 	cairo_save (s->cairo);
 	DoDraw (s, FALSE);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
@@ -421,7 +417,7 @@ Ellipse::Draw (Surface *s)
 }
 
 Ellipse *
-ellipse_new ()
+ellipse_new (void)
 {
 	return new Ellipse ();
 }
@@ -494,7 +490,7 @@ rectangle_set_radius_y (Rectangle *rectangle, double value)
 }
 
 Rectangle *
-rectangle_new ()
+rectangle_new (void)
 {
 	return new Rectangle ();
 }
@@ -585,7 +581,7 @@ line_set_y2 (Line *line, double value)
 }
 
 Line *
-line_new ()
+line_new (void)
 {
 	return new Line ();
 }
@@ -670,7 +666,7 @@ polygon_set_points (Polygon *polygon, Point* points, int count)
 }
 
 Polygon *
-polygon_new ()
+polygon_new (void)
 {
 	return new Polygon ();
 }
@@ -747,7 +743,7 @@ polyline_set_points (Polyline *polyline, Point* points, int count)
 }
 
 Polyline *
-polyline_new ()
+polyline_new (void)
 {
 	return new Polyline ();
 }
@@ -801,8 +797,8 @@ path_set_data (Path *path, Geometry* data)
 	path->SetValue (Path::DataProperty, Value (data));
 }
 
-Path*
-path_new ()
+Path *
+path_new (void)
 {
 	return new Path ();
 }
@@ -813,7 +809,7 @@ path_new ()
 //
 
 void
-shape_init ()
+shape_init (void)
 {
 	/* Shape fields */
 	Shape::FillProperty = DependencyObject::Register (Value::SHAPE, "Fill", Value::BRUSH);

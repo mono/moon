@@ -445,7 +445,7 @@ Image::getbounds ()
 	y2 = pixbuf_height;
 }
 
-cairo_surface_t*
+cairo_surface_t *
 Image::GetSurface ()
 {
 	return xlib_surface;
@@ -461,16 +461,16 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 			base_unref (downloader);
 			downloader = NULL;
 		}
-
+		
 		char *source = GetValue (prop)->AsString();
-
+		
 		printf ("setting image source to '%s'\n", source);
 		SetSource (new Downloader (), source);
 	}
 }
 
-Image*
-image_new ()
+Image *
+image_new (void)
 {
 	return new Image ();
 }
@@ -497,16 +497,16 @@ image_set_source (Image *img, DependencyObject *Downloader, char *PartName)
 // MediaAttribute
 //
 
-DependencyProperty* MediaAttribute::ValueProperty;
+DependencyProperty *MediaAttribute::ValueProperty;
 
-MediaAttribute*
-media_attribute_new ()
+MediaAttribute *
+media_attribute_new (void)
 {
 	return new MediaAttribute ();
 }
 
 void
-media_init ()
+media_init (void)
 {
 	/* MediaAttribute */
 	MediaAttribute::ValueProperty = DependencyObject::Register (Value::MEDIAATTRIBUTE, "Value", new Value (""));

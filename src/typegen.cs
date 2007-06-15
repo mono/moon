@@ -237,7 +237,7 @@ class gen {
 		text.AppendLine ("*/");
 		text.AppendLine ("");
 		text.AppendLine (File.ReadAllText ("type.cpp.in"));
-		text.AppendLine ("void types_init ()");
+		text.AppendLine ("void\ntypes_init (void)");
 		text.AppendLine ("{");
 		foreach (string c in classes) {
 			string p = null;

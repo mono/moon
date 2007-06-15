@@ -210,15 +210,15 @@ TextBlock::TextBlock ()
 	
 	/* initialize the font description */
 	font = pango_font_description_new ();
-	char *family = textblock_get_font_family (this);
+	char *family = text_block_get_font_family (this);
 	pango_font_description_set_family (font, family);
-	double size = textblock_get_font_size (this);
+	double size = text_block_get_font_size (this);
 	pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
-	FontStretches stretch = textblock_get_font_stretch (this);
+	FontStretches stretch = text_block_get_font_stretch (this);
 	pango_font_description_set_stretch (font, font_stretch (stretch));
-	FontStyles style = textblock_get_font_style (this);
+	FontStyles style = text_block_get_font_style (this);
 	pango_font_description_set_style (font, font_style (style));
-	FontWeights weight = textblock_get_font_weight (this);
+	FontWeights weight = text_block_get_font_weight (this);
 	pango_font_description_set_weight (font, font_weight (weight));
 }
 
@@ -251,10 +251,6 @@ TextBlock::getbounds ()
 	Surface *s = item_get_surface (this);
 	PangoRectangle ink, logical;
 	
-	// not yet attached
-	if (s == NULL)
-		return;
-	
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
@@ -281,9 +277,6 @@ TextBlock::getxformorigin ()
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	Surface *s = item_get_surface (this);
 	int width, height;
-
-	if (s == NULL)
-		return Point (0, 0);
 	
 	cairo_save (s->cairo);
 	cairo_identity_matrix (s->cairo);
@@ -339,10 +332,10 @@ TextBlock::Draw (Surface *s, bool render)
 	
 	pango_layout_set_font_description (layout, font);
 	
-	if ((text = textblock_get_text (this))) {
+	if ((text = text_block_get_text (this))) {
 		pango_layout_set_text (layout, text, -1);
 		
-		if ((foreground = textblock_get_foreground (this)))
+		if ((foreground = text_block_get_foreground (this)))
 			foreground->SetupBrush (s->cairo, this);
 		
 		if (render)
@@ -361,19 +354,19 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	if (prop == TextBlock::FontFamilyProperty) {
-		char *family = textblock_get_font_family (this);
+		char *family = text_block_get_font_family (this);
 		pango_font_description_set_family (font, family);
 	} else if (prop == TextBlock::FontSizeProperty) {
-		double size = textblock_get_font_size (this);
+		double size = text_block_get_font_size (this);
 		pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
 	} else if (prop == TextBlock::FontStretchProperty) {
-		FontStretches stretch = textblock_get_font_stretch (this);
+		FontStretches stretch = text_block_get_font_stretch (this);
 		pango_font_description_set_stretch (font, font_stretch (stretch));
 	} else if (prop == TextBlock::FontStyleProperty) {
-		FontStyles style = textblock_get_font_style (this);
+		FontStyles style = text_block_get_font_style (this);
 		pango_font_description_set_style (font, font_style (style));
 	} else if (prop == TextBlock::FontWeightProperty) {
-		FontWeights weight = textblock_get_font_weight (this);
+		FontWeights weight = text_block_get_font_weight (this);
 		pango_font_description_set_weight (font, font_weight (weight));
 	}
 	
@@ -381,37 +374,37 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 }
 
 TextBlock *
-textblock_new (void)
+text_block_new (void)
 {
 	return new TextBlock ();
 }
 
 double
-textblock_get_actual_height (TextBlock *textblock)
+text_block_get_actual_height (TextBlock *textblock)
 {
 	return (double) textblock->GetValue (TextBlock::ActualHeightProperty)->AsDouble ();
 }
 
 void
-textblock_set_actual_height (TextBlock *textblock, double value)
+text_block_set_actual_height (TextBlock *textblock, double value)
 {
 	textblock->SetValue (TextBlock::ActualHeightProperty, Value (value));
 }
 
 double
-textblock_get_actual_width (TextBlock *textblock)
+text_block_get_actual_width (TextBlock *textblock)
 {
 	return (double) textblock->GetValue (TextBlock::ActualWidthProperty)->AsDouble ();
 }
 
 void
-textblock_set_actual_width (TextBlock *textblock, double value)
+text_block_set_actual_width (TextBlock *textblock, double value)
 {
 	textblock->SetValue (TextBlock::ActualWidthProperty, Value (value));
 }
 
 char *
-textblock_get_font_family (TextBlock *textblock)
+text_block_get_font_family (TextBlock *textblock)
 {
 	Value *value = textblock->GetValue (TextBlock::FontFamilyProperty);
 	
@@ -419,61 +412,61 @@ textblock_get_font_family (TextBlock *textblock)
 }
 
 void
-textblock_set_font_family (TextBlock *textblock, char *value)
+text_block_set_font_family (TextBlock *textblock, char *value)
 {
 	textblock->SetValue (TextBlock::FontFamilyProperty, Value (value));
 }
 
 double
-textblock_get_font_size (TextBlock *textblock)
+text_block_get_font_size (TextBlock *textblock)
 {
 	return (double) textblock->GetValue (TextBlock::FontSizeProperty)->AsDouble ();
 }
 
 void
-textblock_set_font_size (TextBlock *textblock, double value)
+text_block_set_font_size (TextBlock *textblock, double value)
 {
 	textblock->SetValue (TextBlock::FontSizeProperty, Value (value));
 }
 
 FontStretches
-textblock_get_font_stretch (TextBlock *textblock)
+text_block_get_font_stretch (TextBlock *textblock)
 {
 	return (FontStretches) textblock->GetValue (TextBlock::FontStretchProperty)->AsInt32 ();
 }
 
 void
-textblock_set_font_stretch (TextBlock *textblock, FontStretches value)
+text_block_set_font_stretch (TextBlock *textblock, FontStretches value)
 {
 	textblock->SetValue (TextBlock::FontStretchProperty, Value (value));
 }
 
 FontStyles
-textblock_get_font_style (TextBlock *textblock)
+text_block_get_font_style (TextBlock *textblock)
 {
 	return (FontStyles) textblock->GetValue (TextBlock::FontStyleProperty)->AsInt32 ();
 }
 
 void
-textblock_set_font_style (TextBlock *textblock, FontStyles value)
+text_block_set_font_style (TextBlock *textblock, FontStyles value)
 {
 	textblock->SetValue (TextBlock::FontStyleProperty, Value (value));
 }
 
 FontWeights
-textblock_get_font_weight (TextBlock *textblock)
+text_block_get_font_weight (TextBlock *textblock)
 {
 	return (FontWeights) textblock->GetValue (TextBlock::FontWeightProperty)->AsInt32 ();
 }
 
 void
-textblock_set_font_weight (TextBlock *textblock, FontWeights value)
+text_block_set_font_weight (TextBlock *textblock, FontWeights value)
 {
 	textblock->SetValue (TextBlock::FontWeightProperty, Value (value));
 }
 
 Brush *
-textblock_get_foreground (TextBlock *textblock)
+text_block_get_foreground (TextBlock *textblock)
 {
 	Value *value = textblock->GetValue (TextBlock::ForegroundProperty);
 	
@@ -481,9 +474,9 @@ textblock_get_foreground (TextBlock *textblock)
 }
 
 void
-textblock_set_foreground (TextBlock *textblock, Brush *value)
+text_block_set_foreground (TextBlock *textblock, Brush *value)
 {
-	Brush *fg = textblock_get_foreground (textblock);
+	Brush *fg = text_block_get_foreground (textblock);
 	
 	if (fg != NULL)
 		base_unref (fg);
@@ -494,19 +487,19 @@ textblock_set_foreground (TextBlock *textblock, Brush *value)
 }
 
 Inlines *
-textblock_get_inlines (TextBlock *textblock)
+text_block_get_inlines (TextBlock *textblock)
 {
 	return (Inlines *) textblock->GetValue (TextBlock::InlinesProperty)->AsInlines ();
 }
 
 void
-textblock_set_inlines (TextBlock *textblock, Inlines *value)
+text_block_set_inlines (TextBlock *textblock, Inlines *value)
 {
 	textblock->SetValue (TextBlock::InlinesProperty, Value (value));
 }
 
 char *
-textblock_get_text (TextBlock *textblock)
+text_block_get_text (TextBlock *textblock)
 {
 	Value *value = textblock->GetValue (TextBlock::TextProperty);
 	
@@ -514,31 +507,31 @@ textblock_get_text (TextBlock *textblock)
 }
 
 void
-textblock_set_text (TextBlock *textblock, char *value)
+text_block_set_text (TextBlock *textblock, char *value)
 {
 	textblock->SetValue (TextBlock::TextProperty, Value (value));
 }
 
 TextDecorations
-textblock_get_text_decorations (TextBlock *textblock)
+text_block_get_text_decorations (TextBlock *textblock)
 {
 	return (TextDecorations) textblock->GetValue (TextBlock::TextDecorationsProperty)->AsInt32 ();
 }
 
 void
-textblock_set_text_decorations (TextBlock *textblock, TextDecorations value)
+text_block_set_text_decorations (TextBlock *textblock, TextDecorations value)
 {
 	textblock->SetValue (TextBlock::TextDecorationsProperty, Value (value));
 }
 
 TextWrapping
-textblock_get_text_wrapping (TextBlock *textblock)
+text_block_get_text_wrapping (TextBlock *textblock)
 {
 	return (TextWrapping) textblock->GetValue (TextBlock::TextWrappingProperty)->AsInt32 ();
 }
 
 void
-textblock_set_text_wrapping (TextBlock *textblock, TextWrapping value)
+text_block_set_text_wrapping (TextBlock *textblock, TextWrapping value)
 {
 	textblock->SetValue (TextBlock::TextWrappingProperty, Value (value));
 }

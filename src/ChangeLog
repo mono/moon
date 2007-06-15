@@ -1,3 +1,21 @@
+2007-06-14  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* demo.cpp: Updated s/textblock/text_block/g
+
+	* xaml.cpp: Don't register TextBlock twice.
+
+	* ffvideo.cpp (getbounds): Can now depend on surface being set.
+
+	* text.cpp: s/textblock/text_block/g
+	(getbounds): Can now depend on surface being set.
+	(getxformorigin): Same.
+
+	* shape.cpp (getbounds): Can now depend on surface being set.
+
+	* runtime.cpp (item_update_bounds): Don't update bounds if the
+	surface hasn't been set yet.
+	(update_xform): Same.
+
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add keyspline parsing.

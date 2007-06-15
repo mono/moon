@@ -73,7 +73,7 @@ class Image : public MediaBase {
 	int pixbuf_height;
 };
 
-Image* image_new ();
+Image *image_new (void);
 void   image_set_download_progress (Image *img, double progress);
 double image_get_download_progress (Image *img);
 void   image_set_source (DependencyObject *Downloader, char *PartName);
@@ -107,7 +107,7 @@ public:
 	void Stop ();
 };
 
-MediaElement *media_element_new ();
+MediaElement *media_element_new (void);
 
 bool media_element_get_auto_play (MediaElement *media);
 void media_element_set_auto_play (MediaElement *media, bool value);

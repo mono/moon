@@ -134,43 +134,43 @@ private:
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
-TextBlock *textblock_new (void);
+TextBlock *text_block_new (void);
 
-double textblock_get_actual_height (TextBlock *textblock);
-void textblock_set_actual_height (TextBlock *textblock, double value);
+double text_block_get_actual_height (TextBlock *textblock);
+void text_block_set_actual_height (TextBlock *textblock, double value);
 
-double textblock_get_actual_width (TextBlock *textblock);
-void textblock_set_actual_width (TextBlock *textblock, double value);
+double text_block_get_actual_width (TextBlock *textblock);
+void text_block_set_actual_width (TextBlock *textblock, double value);
 
-char *textblock_get_font_family (TextBlock *textblock);
-void textblock_set_font_family (TextBlock *textblock, char *value);
+char *text_block_get_font_family (TextBlock *textblock);
+void text_block_set_font_family (TextBlock *textblock, char *value);
 
-double textblock_get_font_size (TextBlock *textblock);
-void textblock_set_font_size (TextBlock *textblock, double value);
+double text_block_get_font_size (TextBlock *textblock);
+void text_block_set_font_size (TextBlock *textblock, double value);
 
-FontStretches textblock_get_font_stretch (TextBlock *textblock);
-void textblock_set_font_stretch (TextBlock *textblock, FontStretches value);
+FontStretches text_block_get_font_stretch (TextBlock *textblock);
+void text_block_set_font_stretch (TextBlock *textblock, FontStretches value);
 
-FontStyles textblock_get_font_style (TextBlock *textblock);
-void textblock_set_font_style (TextBlock *textblock, FontStyles value);
+FontStyles text_block_get_font_style (TextBlock *textblock);
+void text_block_set_font_style (TextBlock *textblock, FontStyles value);
 
-FontWeights textblock_get_font_weight (TextBlock *textblock);
-void textblock_set_font_weight (TextBlock *textblock, FontWeights value);
+FontWeights text_block_get_font_weight (TextBlock *textblock);
+void text_block_set_font_weight (TextBlock *textblock, FontWeights value);
 
-Brush *textblock_get_foreground (TextBlock *textblock);
-void textblock_set_foreground (TextBlock *textblock, Brush *value);
+Brush *text_block_get_foreground (TextBlock *textblock);
+void text_block_set_foreground (TextBlock *textblock, Brush *value);
 
-Inlines *textblock_get_inlines (TextBlock *textblock);
-void textblock_set_inlines (TextBlock *textblock, Inlines *value);
+Inlines *text_block_get_inlines (TextBlock *textblock);
+void text_block_set_inlines (TextBlock *textblock, Inlines *value);
 
-char *textblock_get_text (TextBlock *textblock);
-void textblock_set_text (TextBlock *textblock, char *value);
+char *text_block_get_text (TextBlock *textblock);
+void text_block_set_text (TextBlock *textblock, char *value);
 
-TextDecorations textblock_get_text_decorations (TextBlock *textblock);
-void textblock_set_text_decorations (TextBlock *textblock, TextDecorations value);
+TextDecorations text_block_get_text_decorations (TextBlock *textblock);
+void text_block_set_text_decorations (TextBlock *textblock, TextDecorations value);
 
-TextWrapping textblock_get_text_wrapping (TextBlock *textblock);
-void textblock_set_text_wrapping (TextBlock *textblock, TextWrapping value);
+TextWrapping text_block_get_text_wrapping (TextBlock *textblock);
+void text_block_set_text_wrapping (TextBlock *textblock, TextWrapping value);
 
 
 class Glyphs : public FrameworkElement {

@@ -228,10 +228,10 @@ main (int argc, char *argv [])
 		item_set_render_transform (r3, t_trans);
 		panel_child_add (canvas, r3);
 		
-		TextBlock *tb = textblock_new ();
-		textblock_set_font_size (tb, 24.0);
-		textblock_set_font_weight (tb, FontWeightsBold);
-		textblock_set_text (tb, "This is a Moonlight Demo");
+		TextBlock *tb = text_block_new ();
+		text_block_set_font_size (tb, 24.0);
+		text_block_set_font_weight (tb, FontWeightsBold);
+		text_block_set_text (tb, "This is a Moonlight Demo");
 		tb->SetValue (Canvas::LeftProperty, Value (75.0));
 		tb->SetValue (Canvas::TopProperty, Value (175.0));
 		item_set_transform_origin (tb, Point (0.5, 0.5));
