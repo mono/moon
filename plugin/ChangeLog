@@ -1,5 +1,10 @@
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-glue.cpp: After PluginObject changes we can back to release objects
+	and it fix segfault when browser closes.
+
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp,
 	* plugin-class.cpp,
 	* plugin-class.h: Remove unneeded instance fields, and contructor, after

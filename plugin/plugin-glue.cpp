@@ -44,10 +44,8 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
 	plugin->Finalize ();
 
-	// We cant call it right now, it causes problems in page reload that try to
-	// use same old memory pointer.
-	//delete plugin;
-	//instance->pdata = NULL;
+	delete plugin;
+	instance->pdata = NULL;
 
 	return NPERR_NO_ERROR;
 }
