@@ -1,3 +1,7 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp: Add support for enter/leave events.
+
 2007-06-14  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (getbounds): Set the actual width/height values to keep

@@ -679,8 +679,19 @@ UIElement::inside_object (Surface *s, double x, double y)
 void
 UIElement::handle_motion (Surface *s, int state, double x, double y)
 {
-	if (inside_object (s, x, y))
-		s->cb_motion (this, state, x, y);
+	s->cb_motion (this, state, x, y);
+}
+
+void
+UIElement::enter (Surface *s, int state, double x, double y)
+{
+	s->cb_enter (this, state, x, y);
+}
+
+void
+UIElement::leave (Surface *s)
+{
+	s->cb_mouse_leave (this);
 }
 
 UIElement::~UIElement ()
@@ -853,7 +864,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
-Canvas::Canvas () : surface (NULL), current_element (NULL)
+Canvas::Canvas () : surface (NULL), current_item (NULL)
 {
 	flags |= IS_CANVAS;
 }
@@ -960,8 +971,16 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 	//if (!inside_object (s, x, y))
 	//return;
 
-	GList *il;
-	for (il = children->list; il != NULL; il = il->next){
+	Panel::handle_motion (s, state, x, y);
+
+	// 
+	// Walk the list in reverse
+	//
+	GList *il = g_list_last (children->list);
+	if (il == NULL)
+		return;
+
+	for (; il != NULL; il = il->prev){
 		UIElement *item = (UIElement *) il->data;
 
 		// Quick bound check:
@@ -969,7 +988,34 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 			continue;
 		}
 
-		item->handle_motion (s, state, x, y);
+		if (item->inside_object (s, x, y)){
+			if (item != current_item){
+				if (current_item != NULL)
+					current_item->leave (s);
+
+				current_item = item;
+				current_item->enter (s, state, x, y);
+			}
+
+			current_item->handle_motion (s, state, x, y);
+			return;
+		}
+	}
+
+	if (current_item != NULL){
+		current_item->leave (s);
+		current_item = NULL;
+	}
+}
+
+void
+Canvas::leave (Surface *s)
+{
+	Panel::leave (s);
+
+	if (current_item != NULL){
+	       current_item->leave (s);
+	       current_item = NULL;
 	}
 }
 
@@ -1115,6 +1161,22 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 	return TRUE;
 }
 
+static gint
+crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (s->cb_enter == NULL || s->cb_mouse_leave == NULL)
+		return 0;
+
+	if (event->type == GDK_ENTER_NOTIFY){
+		s->toplevel->enter (s, event->state, event->x, event->y);
+		s->toplevel->handle_motion (s, event->state, event->x, event->y);
+	} else {
+		s->toplevel->leave (s);
+	}
+}
+
 static gboolean 
 key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
@@ -1251,6 +1313,12 @@ surface_new (int width, int height)
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "motion_notify_event",
 			    G_CALLBACK (motion_notify_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "enter_notify_event",
+			    G_CALLBACK (crossing_notify_callback), s);
+
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "leave_notify_event",
+			    G_CALLBACK (crossing_notify_callback), s);
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "key_press_event",
 			    G_CALLBACK (key_press_callback), s);

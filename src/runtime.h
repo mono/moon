@@ -704,6 +704,18 @@ class UIElement : public Visual {
 	//
 	virtual void handle_motion (Surface *s, int state, double x, double y);
 
+	//
+	// enter:
+	//   Invoked when the mouse first enters this given object
+	//
+	virtual void enter (Surface *s, int state, double x, double y);
+	
+	//
+	// leave:
+	//   Invoke when the mouse leaves this given object
+	//
+	virtual void leave (Surface *s);
+	
 	~UIElement ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -798,7 +810,7 @@ class Canvas : public Panel {
 	//
 	// Contains the last element where the mouse entered
 	//
-	UIElement *current_element;
+	UIElement *current_item;
 	
 	virtual Value::Kind GetObjectType () { return Value::CANVAS; }
 
@@ -809,6 +821,7 @@ class Canvas : public Panel {
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
 	virtual void handle_motion (Surface *s, int state, double x, double y);
+	virtual void leave (Surface *s);
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
