@@ -2,68 +2,10 @@
 
 <head>
 	<title>Moonlight Browser Plugin</title>
+	<script type="text/javascript" src="tests.js"></script>
 </head>
 
-<script>
-	var already = false;
-
-	var control1 = null;
-	var control2 = null;
-
-	function print (text) {
-		document.form.outputtext.value += text + "\n";
-	}
-
-	function NewAssert () {
-		print ("");
-	}
-
-	function AreEqual (text, tvalue, expected) {
-		var result = (tvalue == expected) ? "." : "F";
-		document.form.outputtext.value += result + " " + text + ": " + tvalue + "\n";
-	}
-
-	function init () {
-		// I dont know why but IE calls onload two times.
-		if (already) return;
-		already = true;
-
-		print ("\n=> Page loaded");
-
-		// control.isLoaded
-		NewAssert ();
-		AreEqual ("control1.isLoaded", control1.isLoaded, true);
-
-		// control.initParams
-		NewAssert ();
-		AreEqual ("control1.initParams", control1.initParams, "");
-		AreEqual ("control2.initParams", control2.initParams, "paramValue1, paramValue2");
-
-		// control.source - Cant be changed after initialization.
-		NewAssert ();
-		AreEqual ("control1.source", control1.source, "circle.xaml");
-		control1.source == "emote.xaml";
-		AreEqual ("control1.source", control1.source, "circle.xaml");
-
-		// control.settings.background
-		NewAssert ();
-		AreEqual ("control1.settings.background", control1.settings.background, "#c0c0c0");
-		AreEqual ("control2.settings.background", control2.settings.background, "#ffebcd");
-
-		// control1.content.actualWidth
-		NewAssert ();
-		AreEqual ("control1.content.actualWidth", control1.content.actualWidth, 0);
-		AreEqual ("control2.content.actualWidth", control2.content.actualWidth, 0);
-
-		// control.content.actualHeight
-		NewAssert ();
-		AreEqual ("control1.content.actualHeight", control1.content.actualHeight, 0);
-		AreEqual ("control2.content.actualHeight", control2.content.actualHeight, 0);
-	}
-
-</script>
-
-<body bgcolor="gray" onLoad="init ()">
+<body bgcolor="gray" onload="AfterLoadTests()">
 
 	<h2>Moonlight Browser Plugin Test</h2>
 
@@ -88,15 +30,9 @@
 		<textarea id="outputtext" rows="30" cols="80"></textarea>
 	</form>
 
-	<script>
-		control1 = document.getElementById("moonControl1");
-		control2 = document.getElementById("moonControl2");
-
-		// this assertions must be done before page load.
-		print ("Version: " + control1.settings.version + "\n");
-
-		AreEqual ("control1.isLoaded", control1.isLoaded, false);
-	</script>
+    <script type="text/javascript">
+		SetupTests ();
+    </script>
 
 </body>
 </html>

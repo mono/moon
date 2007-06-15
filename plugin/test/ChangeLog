@@ -1,5 +1,10 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile.am, index.html, tests.js: Split test in two files, index.html and
+	tests.js, tests now is turned on real unit tets.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* index.html: Add control.initParam tests.
 
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
