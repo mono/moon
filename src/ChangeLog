@@ -10,6 +10,9 @@
 
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp (~DependencyObject, free_value): unref all the
+	values that are stored in the object on destruction
+
 	* runtime.cpp: Add support for enter/leave events.
 
 2007-06-14  Jeffrey Stedfast  <fejj@gnome.org>

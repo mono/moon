@@ -396,12 +396,10 @@ Value::~Value ()
 	else if (k == POINT_ARRAY){
 		if (--u.point_array->basic.refcount == 0)
 			g_free (u.point_array);
-	}
-	else if (k == DOUBLE_ARRAY){
+	} else if (k == DOUBLE_ARRAY){
 		if (--u.double_array->basic.refcount == 0)
 			g_free (u.double_array);
-	}
-	else if (k == MATRIX)
+	} else if (k == MATRIX)
 		g_free (u.matrix);
 }
 
@@ -1531,6 +1529,10 @@ static void
 free_value (void *v)
 {
 	Value *val = (Value*)v;
+	if (val->k >= Value::DEPENDENCY_OBJECT){
+		base_unref (val->AsDependencyObject ());
+	}
+
 	delete val;
 }
 
