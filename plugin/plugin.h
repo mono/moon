@@ -25,6 +25,8 @@ class PluginInstance
 	NPObject* rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
 
+	const char *sourceUrl;
+
 	// Property fields
 	char *initParams;
 	bool isLoaded;

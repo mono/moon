@@ -74,6 +74,8 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->canvas = NULL;
 	this->surface = NULL;
 
+	this->sourceUrl = NULL;
+
 	// Property fields
 	this->initParams = false;
 	this->isLoaded = false;
@@ -219,7 +221,14 @@ PluginInstance::CreateWindow ()
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {
-	*stype = NP_ASFILEONLY;
+	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
+
+	if (!this->sourceUrl) {
+		this->sourceUrl = stream->url;
+		*stype = NP_ASFILEONLY;
+	} else {
+		*stype = NP_NORMAL;
+	}
 
 	return NPERR_NO_ERROR;
 }
@@ -240,12 +249,15 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	//   2. Call a helper method (maybe the same) that would process the input parameters
 	//   3. Remove the call here below, and let managed code load the XAML
 
+	if (!strcasecmp (this->sourceUrl, stream->url)) {
 #ifdef RUNTIME
-	vm_load_xaml (this->surface, fname);
+		vm_load_xaml (this->surface, fname);
 #else
-	this->isLoaded = true;
-	panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
+		panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
 #endif
+		this->isLoaded = true;
+	}
+
 }
 
 int32
