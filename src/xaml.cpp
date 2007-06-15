@@ -613,6 +613,16 @@ duration_from_str (const char *str)
 	return Duration (timespan_from_str (str));
 }
 
+KeySpline *
+key_spline_from_str (const char *str)
+{
+	int count = 0;
+	Point* pts = point_array_from_str (str, &count);
+	KeySpline *res = new KeySpline (pts [0], pts [1]);
+
+	return res;
+}
+
 // sepcial case, we return a Value, to avoid allocating/freeing a Matrix
 Value*
 matrix_value_from_str (const char *str)
@@ -1095,6 +1105,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				break;
 			case Value::KEYTIME:
 				dep->SetValue (prop, Value (KeyTime (timespan_from_str (attr [i + 1]))));
+				break;
+			case Value::KEYSPLINE:
+				dep->SetValue (prop, Value (key_spline_from_str (attr [i + 1])));
 				break;
 			case Value::BRUSH:
 			case Value::SOLIDCOLORBRUSH:

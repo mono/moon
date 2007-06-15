@@ -1,5 +1,9 @@
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Add keyspline parsing.
+
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
 	* value.h: This guy doesn't exist anymore, he is a
 	DependencyObject now.
 
