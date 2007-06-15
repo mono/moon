@@ -35,12 +35,6 @@
 		PluginObject *npobj, NPIdentifier name, const NPVariant *args,  \
 		uint32_t argCount, NPVariant *result);
 
-#define STRING_TO_NPVARIANT(x,z) \
-		int len = strlen (x); \
-		char *retval = (char *) NPN_MemAlloc (len + 1); \
-		memcpy (retval, x, len + 1); \
-		STRINGN_TO_NPVARIANT (retval, len, z);
-
 /*** PluginObject *************************************************************/
 
 class PluginObject : public NPObject
@@ -56,6 +50,7 @@ class PluginClass : public NPClass
 {
  protected:
 	int IndexOf (NPIdentifier name, const char *const names[], int count);
+	void StringToNPVariant (char *value, NPVariant *result);
 
  public:
 	PluginClass ();

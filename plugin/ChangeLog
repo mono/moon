@@ -1,5 +1,11 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp, plugin-class.h: Remove macro STRING_TO_NPVARIANT, create
+	method StringToNPVariant and change all reverences from macro to method. 
+	StringToNPVariant also take care about NULL strings.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h, plugin-class.cpp: Implement initParams property.
 
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>

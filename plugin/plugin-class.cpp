@@ -218,6 +218,25 @@ PluginClass::IndexOf (NPIdentifier name, const char *const names[], int count)
 	return -1;
 }
 
+void
+PluginClass::StringToNPVariant (char *value, NPVariant *result)
+{
+	int len;
+	char * retval;
+
+	if (value) {
+		len = strlen (value);
+		retval = (char *) NPN_MemAlloc (len + 1);
+		strcpy (retval, value);
+	} else {
+		len = 0;
+		retval = (char *) NPN_MemAlloc (len);
+		retval[0] = 0;
+	}
+
+	STRINGN_TO_NPVARIANT (retval, len, *result);
+}
+
 /*** PluginRootClass **********************************************************/
 
 PluginRootClass::PluginRootClass ()
@@ -242,8 +261,7 @@ PluginRootClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVar
 	} 
 
 	if (name == NPID ("initParams")) {
-DEBUGMSG ("-----------------------> %s", npobj->plugin->getInitParams ());
-		STRING_TO_NPVARIANT (npobj->plugin->getInitParams (), *result);
+		StringToNPVariant (npobj->plugin->getInitParams (), result);
 		return true;
 	} 
 
@@ -253,7 +271,7 @@ DEBUGMSG ("-----------------------> %s", npobj->plugin->getInitParams ());
 	} 
 
 	if (name == NPID ("source")) {
-		STRING_TO_NPVARIANT (npobj->plugin->getSource (), *result);
+		StringToNPVariant (npobj->plugin->getSource (), result);
 		return true;
 	} 
 
@@ -290,7 +308,7 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 	//"maxFrameRate"
 
 	if (name == NPID ("version")) {
-		STRING_TO_NPVARIANT (PLUGIN_VERSION, *result);
+		StringToNPVariant (PLUGIN_VERSION, result);
 		return true;
 	}
 
