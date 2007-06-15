@@ -23,7 +23,9 @@ libmoonplugin_la_SOURCES = \
 	plugin-entry.cpp 	\
 	plugin-glue.cpp 	\
 	plugin-class.cpp 	\
-	plugin-class.h	
+	plugin-class.h 	\
+	downloader.cpp 	\
+	downloader.h
 
 # custom install rule
 install-plugin: libmoonplugin.la moonlight.exe

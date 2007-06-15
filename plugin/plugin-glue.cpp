@@ -13,6 +13,7 @@
 #include "moonlight.h"
 #include "plugin.h"
 #include "moon-mono.h"
+#include "downloader.h"
 
 NPError 
 NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
@@ -218,6 +219,7 @@ NPP_Initialize (void)
 
 	gtk_init (0, 0);
 	runtime_init ();
+	downloader_initialize ();
 #ifdef RUNTIME
 	vm_init ();
 #endif

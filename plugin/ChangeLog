@@ -1,5 +1,13 @@
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
+	* downloader.cpp,
+	* downloader.h,
+	* Makefile.am: Downloader functions added.
+
+	* plugin-glue.cpp: On NPP_Initialize call downloader_initialize.
+
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp: In PluginDependencyObject:: ClassGetProperty return 
 	false instead of null because funtion is of type boolean. It fix message
 	warning.
