@@ -53,6 +53,9 @@ class Image : public MediaBase {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
+	int GetHeight () { return pixbuf_height; };
+	int GetWidth  () { return pixbuf_width; };
+
  private:
 	void CleanupSurface ();
 	void StopLoader ();

@@ -1,3 +1,9 @@
+2007-06-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.h: Expose Image's Height and Width (required for ImageBrush)
+	* brush.cpp: Implement all Strech and Alignment[X|Y] options. Nothing
+	(yet) force an update of the drawing once the image is available.
+
 2007-06-14  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* demo.cpp: Updated s/textblock/text_block/g

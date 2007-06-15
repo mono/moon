@@ -890,22 +890,103 @@ void
 ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	cairo_surface_t *surface = image->GetSurface ();
-	if (surface) {
-		cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
-
-		Transform *transform = brush_get_transform (this);
-		if (transform) {
-			cairo_matrix_t matrix;
-			transform_get_transform (transform, &matrix);
-			cairo_matrix_invert (&matrix);
-			cairo_pattern_set_matrix (pattern, &matrix);
-		}
-		cairo_set_source (cairo, pattern);
-		cairo_pattern_destroy (pattern);
-	} else {
+	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		return;
 	}
+
+	cairo_matrix_t matrix;
+	double x0, y0, x1, y1;
+	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
+
+	double width = fabs (x1 - x0);
+	double height = fabs (y1 - y0);
+
+	int sw = image->GetWidth ();
+	int sh = image->GetHeight ();
+
+	// scale required to "fit" for both axes
+	double sx = sw / width;
+	double sy = sh / height;
+
+	Stretch stretch = tile_brush_get_stretch (this);
+	// Fill is the simplest case because AlignementX and AlignmentY don't matter in this case
+	if (stretch == StretchFill) {
+		// fill extents in both axes
+		cairo_matrix_init_scale (&matrix, sx, sy);
+	} else {
+		bool fit_horz = (sw <= width);
+		bool fit_vert = (sh <= height);
+
+		double scale = 1.0;
+		double dx = 0.0;
+		double dy = 0.0;
+
+		switch (stretch) {
+		case StretchUniform:
+			// fill without cuting the image, center the other axes
+			scale = (sx < sy) ? sy : sx;
+			break;
+		case StretchUniformToFill:
+			// fill by, potentially, cuting the image on one axe, center on both axes
+			scale = (sx < sy) ? sx : sy;
+			break;
+		case StretchNone:
+			break;
+		default:
+			g_warning ("Invalid Stretch value (%d).", stretch);
+			break;
+		}
+
+		double actual_height = scale * height;
+		double actual_width = scale * width;
+
+		switch (tile_brush_get_alignment_x (this)) {
+		case AlignmentXLeft:
+			dx = 0.0;
+			break;
+		case AlignmentXCenter:
+			dx = (sw - actual_width) / 2;
+			break;
+		case AlignmentXRight:
+			dx = (sw - actual_width);
+			break;
+		}
+
+		switch (tile_brush_get_alignment_y (this)) {
+		case AlignmentYTop:
+			dy = 0.0;
+			break;
+		case AlignmentYCenter:
+			dy = (sh - actual_height) / 2;
+			break;
+		case AlignmentYBottom:
+			dy = (sh - actual_height);
+			break;
+		}
+
+		if (stretch == StretchNone) {
+			// no strech, no scale
+			cairo_matrix_init_translate (&matrix, dx, dy);
+		} else {
+			// otherwise there's both a scale and translation to be done
+			cairo_matrix_init (&matrix, scale, 0, 0, scale, dx, dy);
+		}
+	}
+
+	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
+
+	Transform *transform = brush_get_transform (this);
+	if (transform) {
+		cairo_matrix_t tm;
+		transform_get_transform (transform, &tm);
+		cairo_matrix_invert (&tm);
+	}
+	cairo_pattern_set_matrix (pattern, &matrix);
+
+	cairo_set_source (cairo, pattern);
+	cairo_pattern_destroy (pattern);
 }
 
 //
