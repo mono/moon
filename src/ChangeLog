@@ -1,5 +1,8 @@
 2007-06-15  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* text.cpp (text_init): No longer should ref the foreground brush
+	or we leak refs.
+
 	* xaml.cpp: Added support for Runs/LineBreaks
 
 	* text.cpp: Implemented Run/LineBreak classes.
