@@ -1,3 +1,8 @@
+2007-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* transform.cpp|h: Add Transform C constructor.
+	* runtime.cpp: Better warning message.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* downloader.h: Drop the C++ API with a C proxy API, switch to a

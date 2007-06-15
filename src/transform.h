@@ -141,6 +141,7 @@ class TransformCollection : public Collection {
 	TransformCollection () {}
 	virtual Value::Kind GetObjectType () { return Value::TRANSFORM_COLLECTION; }
 };
+TransformCollection* transform_collection_new ();
 
 class TransformGroup : public Transform {
 public:

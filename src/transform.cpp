@@ -422,6 +422,16 @@ transform_group_new (void)
 	return new TransformGroup ();
 }
 
+//
+// TransformCollection
+//
+
+TransformCollection*
+transform_collection_new ()
+{
+	return new TransformCollection ();
+}
+
 void
 transform_init (void)
 {

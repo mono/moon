@@ -1436,7 +1436,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 	if (value != NULL){
 		if (!Type::Find (value->k)->IsSubclassOf (property->value_type)) {
-			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property (property has type '%s', value has type '%s')\n", Type::Find (property->value_type)->name, Type::Find (value->k)->name);
+			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetType ()->name, property->name, Type::Find (property->value_type)->name, Type::Find (value->k)->name);
 			return;
 		}
 	} else {
