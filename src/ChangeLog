@@ -1,6 +1,7 @@
-2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp: Complete ImageBrush.Transform
+	* shape.cpp: Please at least one side of the lines.
 
 2007-06-15  Jeffrey Stedfast  <fejj@gnome.org>
 

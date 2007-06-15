@@ -177,8 +177,14 @@ Shape::DoDraw (Surface *s, bool do_op)
 
 		cairo_set_miter_limit (s->cairo, shape_get_stroke_miter_limit (this));
 		cairo_set_line_join (s->cairo, convert_line_join (shape_get_stroke_line_join (this)));
+
 		/* FIXME: cairo doesn't have separate line cap for the start and end */
-		cairo_set_line_cap (s->cairo, convert_line_cap (shape_get_stroke_start_line_cap (this)));
+		PenLineCap cap = shape_get_stroke_end_line_cap (this);
+		if (cap == PenLineCapFlat) {
+			cap = shape_get_stroke_start_line_cap (this);
+		}
+		cairo_set_line_cap (s->cairo, convert_line_cap (cap));
+
 		Draw (s);
 		stroke->SetupBrush (s->cairo, this);
 		if (do_op)
