@@ -9,7 +9,6 @@ struct Color;
 struct DoubleArray;
 struct Duration;
 struct KeyTime;
-class KeySpline;
 struct Point;
 struct PointArray;
 struct Rect;
@@ -71,7 +70,6 @@ public:
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
-	Value (KeySpline* keyspline);
 	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
@@ -138,7 +136,6 @@ public:
 		RepeatBehavior *repeat;
 		Duration *duration;
 		KeyTime *keytime;
-		KeySpline *keyspline;
 		PointArray *point_array;
 		DoubleArray *double_array;
 		Matrix* matrix;

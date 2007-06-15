@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "runtime.h"
 
-void
+void 
 types_init_manually (void)
 {
 	// Put types that does not inherit from DependencyObject here (manually)
@@ -112,6 +112,7 @@ types_init (void)
 	Type::RegisterType ("LinearDoubleKeyFrame", Value::LINEARDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
 	Type::RegisterType ("LinearGradientBrush", Value::LINEARGRADIENTBRUSH, Value::GRADIENTBRUSH);
 	Type::RegisterType ("LinearPointKeyFrame", Value::LINEARPOINTKEYFRAME, Value::POINTKEYFRAME);
+	Type::RegisterType ("LineBreak", Value::LINEBREAK, Value::INLINE);
 	Type::RegisterType ("LineGeometry", Value::LINEGEOMETRY, Value::GEOMETRY);
 	Type::RegisterType ("LineSegment", Value::LINESEGMENT, Value::PATHSEGMENT);
 	Type::RegisterType ("MatrixTransform", Value::MATRIXTRANSFORM, Value::TRANSFORM);
@@ -142,6 +143,7 @@ types_init (void)
 	Type::RegisterType ("RectangleGeometry", Value::RECTANGLEGEOMETRY, Value::GEOMETRY);
 	Type::RegisterType ("ResourceCollection", Value::RESOURCE_COLLECTION, Value::COLLECTION);
 	Type::RegisterType ("RotateTransform", Value::ROTATETRANSFORM, Value::TRANSFORM);
+	Type::RegisterType ("Run", Value::RUN, Value::INLINE);
 	Type::RegisterType ("ScaleTransform", Value::SCALETRANSFORM, Value::TRANSFORM);
 	Type::RegisterType ("Shape", Value::SHAPE, Value::FRAMEWORKELEMENT);
 	Type::RegisterType ("SkewTransform", Value::SKEWTRANSFORM, Value::TRANSFORM);

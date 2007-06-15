@@ -1353,13 +1353,14 @@ xaml_init (void)
 	///
 	/// Text
 	///
-
-	XamlElementInfo *inl = register_ghost_element ("Inline", NULL, Value::INLINE);
-
+	
+	XamlElementInfo *in = register_ghost_element ("Inline", NULL, Value::INLINE);
+	rdoe (dem, "Run", in, Value::RUN, (create_item_func) run_new);
+	rdoe (dem, "LineBreak", in, Value::LINEBREAK, (create_item_func) line_break_new);
 	rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) text_block_new);
 	rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
 #undef rdoe
-
+	
 	default_namespace = new DefaultNamespace (dem);
 	x_namespace = new XNamespace ();
 

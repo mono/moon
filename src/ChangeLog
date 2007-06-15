@@ -1,3 +1,10 @@
+2007-06-15  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* xaml.cpp: Added support for Runs/LineBreaks
+
+	* text.cpp: Implemented Run/LineBreak classes.
+	(inline_new): Removed (can't instantiate this class).
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp: Add support for enter/leave events.

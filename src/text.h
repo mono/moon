@@ -57,7 +57,9 @@ enum TextWrapping {
 	TextWrappingWrapWithOverflow
 };
 
+
 void text_init (void);
+
 
 class Inline : public DependencyObject {
  public:
@@ -72,8 +74,6 @@ class Inline : public DependencyObject {
 	Inline () { }
 	virtual Value::Kind GetObjectType () { return Value::INLINE; }	
 };
-
-Inline *inline_new (void);
 
 char *inline_get_font_family (Inline *inline_);
 void inline_set_font_family (Inline *inline_, char *value);
@@ -95,6 +95,29 @@ void inline_set_foreground (Inline *inline_, Brush *value);
 
 TextDecorations inline_get_text_decorations (Inline *inline_);
 void inline_set_text_decorations (Inline *inline_, TextDecorations value);
+
+
+class LineBreak : public Inline {
+public:
+	LineBreak () { }
+	virtual Value::Kind GetObjectType () { return Value::LINEBREAK; };
+};
+
+LineBreak *line_break_new (void);
+
+
+class Run : public Inline {
+public:
+	static DependencyProperty *TextProperty;
+	
+	Run () { }
+	virtual Value::Kind GetObjectType () { return Value::RUN; };
+};
+
+Run *run_new (void);
+
+char *run_get_text (Run *run);
+void run_set_text (Run *run, char *value);
 
 
 class TextBlock : public FrameworkElement {
@@ -188,7 +211,7 @@ public:
 	virtual Value::Kind GetObjectType () { return Value::GLYPHS; };
 };
 
-Glyphs *glyphs_new ();
+Glyphs *glyphs_new (void);
 
 Brush *glyphs_get_fill (Glyphs *glyphs);
 void glyphs_set_fill (Glyphs *glyphs, Brush *value);

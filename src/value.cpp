@@ -290,6 +290,12 @@ Value::AsLinearPointKeyFrame ()
 	checked_get_subclass (LINEARPOINTKEYFRAME, LinearPointKeyFrame);
 }
 
+LineBreak*
+Value::AsLineBreak ()
+{
+	checked_get_subclass (LINEBREAK, LineBreak);
+}
+
 LineGeometry*
 Value::AsLineGeometry ()
 {
@@ -468,6 +474,12 @@ RotateTransform*
 Value::AsRotateTransform ()
 {
 	checked_get_subclass (ROTATETRANSFORM, RotateTransform);
+}
+
+Run*
+Value::AsRun ()
+{
+	checked_get_subclass (RUN, Run);
 }
 
 ScaleTransform*

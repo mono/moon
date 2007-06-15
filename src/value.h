@@ -13,7 +13,6 @@ struct Color;
 struct DoubleArray;
 struct Duration;
 struct KeyTime;
-class KeySpline;
 struct Point;
 struct PointArray;
 struct Rect;
@@ -70,6 +69,7 @@ class LinearColorKeyFrame;
 class LinearDoubleKeyFrame;
 class LinearGradientBrush;
 class LinearPointKeyFrame;
+class LineBreak;
 class LineGeometry;
 class LineSegment;
 class MatrixTransform;
@@ -100,6 +100,7 @@ class Rectangle;
 class RectangleGeometry;
 class ResourceCollection;
 class RotateTransform;
+class Run;
 class ScaleTransform;
 class Shape;
 class SkewTransform;
@@ -195,6 +196,7 @@ public:
 		LINEARDOUBLEKEYFRAME,
 		LINEARGRADIENTBRUSH,
 		LINEARPOINTKEYFRAME,
+		LINEBREAK,
 		LINEGEOMETRY,
 		LINESEGMENT,
 		MATRIXTRANSFORM,
@@ -225,6 +227,7 @@ public:
 		RECTANGLEGEOMETRY,
 		RESOURCE_COLLECTION,
 		ROTATETRANSFORM,
+		RUN,
 		SCALETRANSFORM,
 		SHAPE,
 		SKEWTRANSFORM,
@@ -366,6 +369,7 @@ public:
 	LinearDoubleKeyFrame*          AsLinearDoubleKeyFrame ();
 	LinearGradientBrush*           AsLinearGradientBrush ();
 	LinearPointKeyFrame*           AsLinearPointKeyFrame ();
+	LineBreak*                     AsLineBreak ();
 	LineGeometry*                  AsLineGeometry ();
 	LineSegment*                   AsLineSegment ();
 	MatrixTransform*               AsMatrixTransform ();
@@ -396,6 +400,7 @@ public:
 	RectangleGeometry*             AsRectangleGeometry ();
 	ResourceCollection*            AsResourceCollection ();
 	RotateTransform*               AsRotateTransform ();
+	Run*                           AsRun ();
 	ScaleTransform*                AsScaleTransform ();
 	Shape*                         AsShape ();
 	SkewTransform*                 AsSkewTransform ();
@@ -438,7 +443,6 @@ public:
 		RepeatBehavior *repeat;
 		Duration *duration;
 		KeyTime *keytime;
-		KeySpline *keyspline;
 		PointArray *point_array;
 		DoubleArray *double_array;
 		Matrix* matrix;

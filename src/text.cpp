@@ -86,11 +86,6 @@ DependencyProperty *Inline::FontWeightProperty;
 DependencyProperty *Inline::ForegroundProperty;
 DependencyProperty *Inline::TextDecorationsProperty;
 
-Inline *
-inline_new (void)
-{
-	return new Inline ();
-}
 
 char *
 inline_get_font_family (Inline *inline_)
@@ -185,6 +180,40 @@ void
 inline_set_text_decorations (Inline *inline_, TextDecorations value)
 {
 	inline_->SetValue (Inline::TextDecorationsProperty, Value (value));
+}
+
+
+// LineBreak
+
+LineBreak *
+line_break_new (void)
+{
+	return new LineBreak ();
+}
+
+
+// Run
+
+DependencyProperty *Run::TextProperty;
+
+Run *
+run_new (void)
+{
+	return new Run ();
+}
+
+char *
+run_get_text (Run *run)
+{
+	Value *value = run->GetValue (Run::TextProperty);
+	
+	return value ? (char *) value->AsString () : NULL;
+}
+
+void
+run_set_text (Run *run, char *value)
+{
+	run->SetValue (Run::TextProperty, Value (value));
 }
 
 
@@ -678,7 +707,7 @@ text_init (void)
 	solid_color_brush_set_color (brush, color);
 	
 	// Inline
-	Inline::FontFamilyProperty = DependencyObject::Register (Value::INLINE, "FontFamily", new Value ("Arial"));
+	Inline::FontFamilyProperty = DependencyObject::Register (Value::INLINE, "FontFamily", new Value ("Lucida Sans"));
 	Inline::FontSizeProperty = DependencyObject::Register (Value::INLINE, "FontSize", new Value (11.0));
 	Inline::FontStretchProperty = DependencyObject::Register (Value::INLINE, "FontStretch", new Value (FontStretchesNormal));
 	Inline::FontStyleProperty = DependencyObject::Register (Value::INLINE, "FontStyle", new Value (FontStylesNormal));
@@ -687,10 +716,13 @@ text_init (void)
 	Inline::ForegroundProperty = DependencyObject::Register (Value::INLINE, "Foreground", new Value ((Brush *) brush));
 	Inline::TextDecorationsProperty = DependencyObject::Register (Value::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	
+	// Run
+	Run::TextProperty = DependencyObject::Register (Value::RUN, "Text", Value::STRING);
+	
 	// TextBlock
 	TextBlock::ActualHeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualHeight", Value::DOUBLE);
 	TextBlock::ActualWidthProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualWidth", Value::DOUBLE);
-	TextBlock::FontFamilyProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontFamily", new Value ("Arial"));
+	TextBlock::FontFamilyProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans"));
 	TextBlock::FontSizeProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontSize", new Value (11.0));
 	TextBlock::FontStretchProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
 	TextBlock::FontStyleProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
