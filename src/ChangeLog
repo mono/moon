@@ -1,3 +1,8 @@
+2007-06-15  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: Implement some Inlines stuff that the parser will
+	need.
+
 2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp: Have inlines cache their PangoFontDescription and

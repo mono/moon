@@ -484,6 +484,7 @@ StylusPointCollection *stylus_point_collection_new (void);
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 GradientStopCollection *gradient_stop_collection_new (void);
 MediaAttributeCollection *media_attribute_collection_new (void);
+Inlines *inlines_new (void);
 
 
 enum Stretch {

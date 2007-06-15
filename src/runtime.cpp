@@ -2124,6 +2124,18 @@ TimelineMarkerCollection::Remove (DependencyObject *data)
 	Collection::Remove (data);
 }
 
+void
+Inlines::Add (DependencyObject *data)
+{
+	Collection::Add (data);
+}
+
+void
+Inlines::Remove (DependencyObject *data)
+{
+	Collection::Remove (data);
+}
+
 VisualCollection *
 visual_collection_new (void)
 {
@@ -2171,6 +2183,13 @@ media_attribute_collection_new (void)
 {
 	return new MediaAttributeCollection ();
 }
+
+Inlines *
+inlines_new (void)
+{
+	return new Inlines ();
+}
+
 
 EventTrigger::EventTrigger () : actions (NULL)
 {
