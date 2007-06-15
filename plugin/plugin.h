@@ -34,6 +34,8 @@ class PluginInstance
 
 	// Private methods
 	void CreateWindow ();
+	void LoadFromXaml (const char* fname);
+	void RuntimeLoadFromXaml (const char* fname);
 
  public:	
 	PluginInstance (NPP instance, uint16 mode);

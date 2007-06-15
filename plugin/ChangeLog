@@ -1,5 +1,9 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h: LoadFromXaml added to host canvas creation.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moonlight.h: Turns mono runtime enabled by default.
 
 	* mono.cpp: Use of DEBUGMSG macro for debug message.

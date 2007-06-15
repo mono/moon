@@ -211,10 +211,10 @@ PluginInstance::CreateWindow ()
 
 	this->surface = surface_new (window->width, window->height);
 #ifndef RUNTIME
-	this->canvas = new Canvas ();
-	surface_attach (this->surface, canvas);
+//	this->canvas = new Canvas ();
+//	surface_attach (this->surface, canvas);
+//	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 #endif
-	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 	gtk_widget_show_all (this->container);
 }
 
@@ -244,20 +244,42 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 {
 	DEBUGMSG ("StreamAsFile: %s", fname);
 
-	// TODO
-	//   1. Call a helper method in managed code that would create the new AppDomain
-	//   2. Call a helper method (maybe the same) that would process the input parameters
-	//   3. Remove the call here below, and let managed code load the XAML
-
 	if (!strcasecmp (this->sourceUrl, stream->url)) {
-#ifdef RUNTIME
-		vm_load_xaml (this->surface, fname);
-#else
-		panel_child_add (this->canvas, xaml_create_from_file (fname, NULL));
-#endif
+		LoadFromXaml (fname);
 		this->isLoaded = true;
 	}
+}
 
+void
+PluginInstance::LoadFromXaml (const char* fname)
+{
+	DEBUGMSG ("LoadFromXaml: %s", fname);
+
+#ifdef RUNTIME
+
+	vm_load_xaml (this->surface, fname);
+	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+	gtk_widget_show_all (this->container);
+
+#else	
+
+	UIElement * element = xaml_create_from_file (fname, NULL);
+
+	if (element->GetObjectType() != Value::CANVAS) {
+		DEBUGMSG ("*** not canvas object!!!");
+		return;
+	}
+
+	surface_attach (this->surface, element);
+
+	if (this->canvas == NULL) {
+		this->canvas = (Canvas*) element;
+		gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+	}
+
+	gtk_widget_show_all (this->container);
+
+#endif
 }
 
 int32
