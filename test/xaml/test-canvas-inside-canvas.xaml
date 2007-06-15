@@ -1,0 +1,11 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Width="400" Height="400" Background="White">
+	<Canvas>
+		<Rectangle Canvas.Left="120" Canvas.Top="120" Width="160" Height="160" Fill="Blue" />
+	</Canvas>
+	<Canvas>
+		<Rectangle Width="100" Height="400" Fill="Red" />
+		<Rectangle Width="100" Height="400" Canvas.Left="300" Fill="Red" />
+		<Rectangle Width="200" Height="100" Canvas.Left="100" Fill="Green" />
+		<Rectangle Width="200" Height="100" Canvas.Left="100" Canvas.Top="300" Fill="Green" />
+	</Canvas>
+</Canvas>
