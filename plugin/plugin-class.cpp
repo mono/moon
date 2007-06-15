@@ -232,26 +232,24 @@ bool
 PluginRootClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	if (name == NPID ("settings")) {
-		NPObject *object = NPN_CreateObject (this->instance, this->settings);
+		NPObject *object = NPN_CreateObject (npobj->instance, this->settings);
 		OBJECT_TO_NPVARIANT (object, *result);
 		return true;
 	} 
 
 	if (name == NPID ("content")) {
-		NPObject *object = NPN_CreateObject (this->instance, this->content);
+		NPObject *object = NPN_CreateObject (npobj->instance, this->content);
 		OBJECT_TO_NPVARIANT (object, *result);
 		return true;
 	} 
 
 	if (name == NPID ("isLoaded")) {
-		PluginInstance *plugin = (PluginInstance *) instance->pdata;
-		BOOLEAN_TO_NPVARIANT (plugin->getIsLoaded (), *result);
+		BOOLEAN_TO_NPVARIANT (npobj->plugin->getIsLoaded (), *result);
 		return true;
 	} 
 
 	if (name == NPID ("source")) {
-		PluginInstance *plugin = ((PluginObject*) npobj)->plugin;
-		STRING_TO_NPVARIANT (plugin->getSource (), *result);
+		STRING_TO_NPVARIANT (npobj->plugin->getSource (), *result);
 		return true;
 	} 
 

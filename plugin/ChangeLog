@@ -1,5 +1,10 @@
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp: Change all PluginRootClass properties to use new object
+	class PluginObject.
+
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp,
 	* plugin-class.h: Rename NPObject references to PluginObject, PluginObject 
 	class theres more useful information like instance and plugin.
