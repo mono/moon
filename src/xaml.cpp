@@ -917,18 +917,28 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->dependency_type,
 				(char *) parent->info->content_property);
 
+		if (!dep)
+			return;
+
+		Type *prop_type = Type::Find (dep->value_type);
+		bool is_collection = prop_type->IsSubclassOf (Value::COLLECTION);
+
+		if (!is_collection && prop_type->IsSubclassOf (child->info->dependency_type)) {
+			DependencyObject *obj = (DependencyObject *) parent->item;
+			obj->SetValue (dep, (DependencyObject *) child->item);
+			return;
+
+		}
+
 		// We only want to enter this if statement if we are NOT dealing with the content property element,
 		// otherwise, attempting to use explicit property setting, would add the content property element
 		// to the content property element collection
-		if (dep && dep->value_type != child->info->dependency_type) {
-			Type *col_type = Type::Find (dep->value_type);
-			if (col_type->IsSubclassOf (Value::COLLECTION)) {
-				DependencyObject *obj = (DependencyObject *) parent->item;
-				Value *col_v = obj->GetValue (dep);
-				Collection *col = (Collection *) col_v->AsCollection ();
-				col->Add ((DependencyObject *) child->item);
-				return;
-			}
+		if (is_collection && dep->value_type != child->info->dependency_type) {
+			DependencyObject *obj = (DependencyObject *) parent->item;
+			Value *col_v = obj->GetValue (dep);
+			Collection *col = (Collection *) col_v->AsCollection ();
+			col->Add ((DependencyObject *) child->item);
+			return;
 		}
 	}
 
@@ -942,36 +952,6 @@ panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInst
 		panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
 
 	dependency_object_add_child (p, parent, child);
-}
-
-void
-begin_storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	if (!is_instance_of (child, Value::STORYBOARD)) {
-		g_warning ("error, attempting to add non storyboard type (%d) to BeginStoryboard element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	BeginStoryboard *bsb = (BeginStoryboard *) parent->item;
-	Storyboard *sb = (Storyboard *) child->item;
-
-	bsb->SetStoryboard (sb);
-}
-
-void
-storyboard_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	if (!is_instance_of (child, Value::TIMELINE)) {
-		g_warning ("error, attempting to add non timeline type (%d) to Storyboard element\n",
-				child->info->dependency_type);
-		return;
-	}
-
-	Storyboard *sb = (Storyboard *) parent->item;
-	Timeline *t = (Timeline *) child->item;
-
-	sb->AddChild (t);
 }
 
 ///
@@ -1308,7 +1288,7 @@ xaml_init (void)
 	XamlElementInfo *prltl = register_ghost_element ("ParallelTimeline", tlg, Value::PARALLELTIMELINE);
 
 	XamlElementInfo *sb = rdoe (dem, "Storyboard", prltl, Value::STORYBOARD, (create_item_func) storyboard_new);
-	sb->add_child = storyboard_add_child;
+	sb->content_property = "Children";
 
 	///
 	/// Triggers
@@ -1316,7 +1296,7 @@ xaml_init (void)
 	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Value::TRIGGERACTION);
 	XamlElementInfo *bsb = rdoe (dem, "BeginStoryboard", trg, Value::BEGINSTORYBOARD,
 			(create_item_func) begin_storyboard_new);
-	bsb->add_child = begin_storyboard_add_child;
+	bsb->content_property = "Storyboard";
 
 	XamlElementInfo *evt = rdoe (dem, "EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new);
 	evt->content_property = "Actions";
