@@ -96,18 +96,24 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 
 	if (prop == ChildrenProperty){
 		// The new value has already been set, so unref the old collection
-
 		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
 
-		if (newcol != children){
-			if (children){
-				for (GList *l = children->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != children) {
+			if (children) {
+				GList *node = children->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				children->list = NULL;
 				base_unref (children);
-				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -318,18 +324,24 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 
 	if (prop == FiguresProperty){
 		// The new value has already been set, so unref the old collection
-
 		PathFigureCollection *newcol = GetValue (prop)->AsPathFigureCollection();
 
-		if (newcol != children){
-			if (children){
-				for (GList *l = children->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != children) {
+			if (children) {
+				GList *node = children->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				children->list = NULL;
 				base_unref (children);
-				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -468,18 +480,24 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 
 	if (prop == SegmentsProperty){
 		// The new value has already been set, so unref the old collection
-
 		PathSegmentCollection *newcol = GetValue (prop)->AsPathSegmentCollection();
 
-		if (newcol != children){
-			if (children){
-				for (GList *l = children->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != children) {
+			if (children) {
+				GList *node = children->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				children->list = NULL;
 				base_unref (children);
-				g_list_free (children->list);
 			}
 
 			children = newcol;

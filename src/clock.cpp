@@ -375,14 +375,15 @@ ClockGroup::RaiseAccumulatedEvents ()
 
 ClockGroup::~ClockGroup ()
 {
-	GList *l;
-
-	for (l = child_clocks; l; l = l->next){
-		Clock *clock = (Clock *) l->data;
-
-		base_unref (clock);
+	GList *node = child_clocks;
+	GList *next;
+	
+	while (node != NULL) {
+		base_unref ((Base *) node->data);
+		next = node->next;
+		g_list_free_1 (node);
+		node = next;
 	}
-	g_list_free (l);
 }
 
 /* timeline */
@@ -480,20 +481,26 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 {
 	Timeline::OnPropertyChanged (prop);
 
-	if (prop == ChildrenProperty){
+	if (prop == ChildrenProperty) {
 		// The new value has already been set, so unref the old collection
-
 		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
 
-		if (newcol != child_timelines){
-			if (child_timelines){
-				for (GList *l = child_timelines->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != child_timelines) {
+			if (child_timelines) {
+				GList *node = child_timelines->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				child_timelines->list = NULL;
 				base_unref (child_timelines);
-				g_list_free (child_timelines->list);
 			}
 
 			child_timelines = newcol;

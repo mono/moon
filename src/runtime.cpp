@@ -81,9 +81,9 @@ Collection::Remove (DependencyObject *data)
 	for (GList *l = list; l != NULL; l = l->next){
 		if (l->data == data){
 			found = TRUE;
-			if (prev){
+			if (prev)
 				prev->next = l->next;
-			} else
+			else
 				list = l->next;
 			g_list_free_1 (l);
 			break;
@@ -91,19 +91,22 @@ Collection::Remove (DependencyObject *data)
 		prev = l;
 	}
 	data->SetParent (NULL);
-	if (found){
+	if (found)
 		base_unref (data);
-	}
 }
 
 Collection::~Collection ()
 {
-	GList *sl;
-
-	for (sl = list; sl != NULL; sl = sl->next){
-		base_unref ((Base *) sl->data);
+	GList *node = list;
+	GList *next;
+	
+	while (node != NULL) {
+		next = node->next;
+		base_unref ((Base *) node->data);
+		g_list_free_1 (node);
+		node = next;
 	}
-	g_list_free (list);
+	
 	list = NULL;
 }
 
@@ -549,21 +552,28 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 				base_ref (triggers);
 			}
 		}
-	} else if (prop == ResourcesProperty){
+	} else if (prop == ResourcesProperty) {
 		// The new value has already been set, so unref the old collection
 		Value *v = GetValue (prop);
-		ResourceCollection *newcol = v ?  v->AsResourceCollection() : NULL;
+		ResourceCollection *newcol = v ? v->AsResourceCollection() : NULL;
 
-		if (newcol != resources){
-			if (resources){
-				for (GList *l = resources->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != resources) {
+			if (resources) {
+				GList *node = resources->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
 					printf ("Unrefing a %d\n", dob->GetObjectType ());
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				resources->list = NULL;
 				base_unref (resources);
-				g_list_free (resources->list);
 			}
 
 			resources = newcol;
@@ -838,18 +848,24 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 
 	if (prop == ChildrenProperty){
 		// The new value has already been set, so unref the old collection
-
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 
-		if (newcol != children){
-			if (children){
-				for (GList *l = children->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != children) {
+			if (children) {
+				GList *node = children->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				children->list = NULL;
 				base_unref (children);
-				g_list_free (children->list);
 			}
 
 			children = newcol;
@@ -2143,18 +2159,24 @@ EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == ActionsProperty){
 		// The new value has already been set, so unref the old collection
-
 		TriggerActionCollection *newcol = GetValue (prop)->AsTriggerActionCollection();
 
-		if (newcol != actions){
-			if (actions){
-				for (GList *l = actions->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != actions) {
+			if (actions) {
+				GList *node = actions->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				actions->list = NULL;
 				base_unref (actions);
-				g_list_free (actions->list);
 			}
 
 			actions = newcol;

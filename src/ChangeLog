@@ -1,3 +1,27 @@
+2007-06-15  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* text.cpp (text_init): Set more default values.
+
+	* runtime.cpp (Panel::OnPropertyChanged): Free children->list (as
+	we iterate thru them) and set the resulting list to NULL (in case
+	we don't hold the last ref) before unreffing the children object
+	(in case we do own the last ref).
+	(EventTrigger::OnPropertyChanged): Same.
+	(UIElement::OnPropertyChanged): Same.
+
+	* transform.cpp (OnPropertyChanged): Same.
+
+	* geometry.cpp (GeometryGroup::OnPropertyChanged): Same.
+	(PathGeometry::OnPropertyChanged): Same
+	(PathFigure::OnPropertyChanged): Same.
+
+	* clock.cpp (TimelineGroup::OnPropertyChanged): Same.
+
+	* animation.cpp
+	(DoubleAnimationUsingKeyFrames::OnPropertyChanged): Same.
+	(ColorAnimationUsingKeyFrames::OnPropertyChanged): Same.
+	(PointAnimationUsingKeyFrames::OnPropertyChanged): Same.
+
 2007-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp: Complete ImageBrush.Transform

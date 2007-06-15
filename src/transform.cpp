@@ -372,20 +372,26 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 {
 	Transform::OnPropertyChanged (prop);
 
-	if (prop == ChildrenProperty){
+	if (prop == ChildrenProperty) {
 		// The new value has already been set, so unref the old collection
-
 		TransformCollection *newcol = GetValue (prop)->AsTransformCollection();
 
-		if (newcol != children){
-			if (children){
-				for (GList *l = children->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != children) {
+			if (children) {
+				GList *node = children->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				children->list = NULL;
 				base_unref (children);
-				g_list_free (children->list);
 			}
 
 			children = newcol;

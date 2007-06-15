@@ -892,20 +892,26 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 {
 	DoubleAnimation::OnPropertyChanged (prop);
 
-	if (prop == KeyFramesProperty){
+	if (prop == KeyFramesProperty) {
 		// The new value has already been set, so unref the old collection
-
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
-		if (newcol != key_frames){
-			if (key_frames){
-				for (GList *l = key_frames->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != key_frames) {
+			if (key_frames) {
+				GList *node = key_frames->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				key_frames->list = NULL;
 				base_unref (key_frames);
-				g_list_free (key_frames->list);
 			}
 
 			key_frames = newcol;
@@ -1015,20 +1021,26 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 {
 	ColorAnimation::OnPropertyChanged (prop);
 
-	if (prop == KeyFramesProperty){
+	if (prop == KeyFramesProperty) {
 		// The new value has already been set, so unref the old collection
-
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
-		if (newcol != key_frames){
-			if (key_frames){
-				for (GList *l = key_frames->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != key_frames) {
+			if (key_frames) {
+				GList *node = key_frames->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				key_frames->list = NULL;
 				base_unref (key_frames);
-				g_list_free (key_frames->list);
 			}
 
 			key_frames = newcol;
@@ -1143,20 +1155,26 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 {
 	PointAnimation::OnPropertyChanged (prop);
 
-	if (prop == KeyFramesProperty){
+	if (prop == KeyFramesProperty) {
 		// The new value has already been set, so unref the old collection
-
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
-		if (newcol != key_frames){
-			if (key_frames){
-				for (GList *l = key_frames->list; l != NULL; l = l->next){
-					DependencyObject *dob = (DependencyObject *) l->data;
-					
+		if (newcol != key_frames) {
+			if (key_frames) {
+				GList *node = key_frames->list;
+				DependencyObject *dob;
+				GList *next;
+				
+				while (node != NULL) {
+					next = node->next;
+					dob = (DependencyObject *) node->data;
+					g_list_free_1 (node);
 					base_unref (dob);
+					node = next;
 				}
+				
+				key_frames->list = NULL;
 				base_unref (key_frames);
-				g_list_free (key_frames->list);
 			}
 
 			key_frames = newcol;
