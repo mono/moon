@@ -1281,12 +1281,11 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	if (value) {
 		Brush *background = value->AsBrush ();
 		background->SetupBrush (s->cairo, this);
-	} else {
-		cairo_set_source_rgba (s->cairo, 0.0, 0.0, 0.0, 0.0);
+
 		// FIXME - UIElement::Opacity may play a role here
+		cairo_rectangle (s->cairo, x, y, width, height);
+		cairo_fill (s->cairo);
 	}
-	cairo_rectangle (s->cairo, x, y, width, height);
-	cairo_fill (s->cairo);
 
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
@@ -1420,6 +1419,9 @@ surface_attach (Surface *surface, UIElement *toplevel)
 void
 surface_repaint (Surface *s, int x, int y, int width, int height)
 {
+	cairo_set_source_rgb (s->cairo, 0.7, 0.7, 0.7);
+	cairo_rectangle (s->cairo, x, y, width, height);
+	cairo_fill (s->cairo);
 	s->toplevel->render (s, x, y, width, height);
 }
 

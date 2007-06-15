@@ -1,3 +1,8 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (surface_repaint): We clear the background here
+	again, to allow canvases to have transparent brushes.
+
 2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp: Panel.Background is NULL by default, which means it's
