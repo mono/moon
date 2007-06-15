@@ -1,5 +1,9 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* clock.xaml: Just fix alipse position.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moon.png: Added.
 	* clock.xaml: An image added to test downloader functions.
 
