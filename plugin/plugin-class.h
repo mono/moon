@@ -21,18 +21,18 @@
 #define NPID(x) NPN_GetStringIdentifier (x)
 
 #define PLUGIN_PROPERTIES(x) \
-	bool ClassHasProperty (NPObject *npobj, NPIdentifier name) \
+	bool ClassHasProperty (PluginObject *npobj, NPIdentifier name) \
 		{ return IndexOf (name, x, (sizeof (x) / sizeof (char *))) > -1; }; \
 	virtual bool ClassGetProperty ( \
-		NPObject *npobj, NPIdentifier name, NPVariant *result); \
+		PluginObject *npobj, NPIdentifier name, NPVariant *result); \
 	virtual bool ClassSetProperty ( \
-		NPObject *npobj, NPIdentifier name, const NPVariant *value);
+		PluginObject *npobj, NPIdentifier name, const NPVariant *value);
 
 #define PLUGIN_METHODS(x) \
-	bool ClassHasMethod (NPObject *npobj, NPIdentifier name) \
+	bool ClassHasMethod (PluginObject *npobj, NPIdentifier name) \
 		{ return IndexOf (name, x, (sizeof (x) / sizeof (char *))) > -1; }; \
 	virtual bool ClassInvoke ( \
-		NPObject *npobj, NPIdentifier name, const NPVariant *args,  \
+		PluginObject *npobj, NPIdentifier name, const NPVariant *args,  \
 		uint32_t argCount, NPVariant *result);
 
 #define STRING_TO_NPVARIANT(x,z) \
@@ -63,17 +63,17 @@ class PluginClass : public NPClass
 	PluginClass (NPP instance);
 	virtual ~PluginClass ();
 
-	virtual void ClassDeallocate (NPObject *npobj);
-	virtual void ClassInvalidate (NPObject *npobj);
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
-	virtual bool ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value);
-	virtual bool ClassRemoveProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassHasMethod (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassInvoke (NPObject *npobj, NPIdentifier name,
+	virtual void ClassDeallocate (PluginObject *npobj);
+	virtual void ClassInvalidate (PluginObject *npobj);
+	virtual bool ClassHasProperty (PluginObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result);
+	virtual bool ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value);
+	virtual bool ClassRemoveProperty (PluginObject *npobj, NPIdentifier name);
+	virtual bool ClassHasMethod (PluginObject *npobj, NPIdentifier name);
+	virtual bool ClassInvoke (PluginObject *npobj, NPIdentifier name,
 	                         const NPVariant *args, uint32_t argCount,
 	                         NPVariant *result);
-	virtual bool ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
+	virtual bool ClassInvokeDefault (PluginObject *npobj, const NPVariant *args,
 	                                uint32_t argCount, NPVariant *result);
 
 };
@@ -172,8 +172,8 @@ class PluginDependencyObject : public PluginClass
 		: PluginClass (instance), dob(the_dob) {}
 
 	
-	virtual bool ClassHasProperty (NPObject *npobj, NPIdentifier name);
-	virtual bool ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result);
+	virtual bool ClassHasProperty (PluginObject *npobj, NPIdentifier name);
+	virtual bool ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result);
 };
 
 #endif /* PLUGIN_CLASS */

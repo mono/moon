@@ -34,7 +34,7 @@ RuntimeClassDeallocate (NPObject *npobj)
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		plugin->ClassDeallocate (npobj);
+		plugin->ClassDeallocate ((PluginObject *) npobj);
 }
 
 static void
@@ -42,7 +42,7 @@ RuntimeClassInvalidate (NPObject *npobj)
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		plugin->ClassInvalidate (npobj);
+		plugin->ClassInvalidate ((PluginObject *) npobj);
 }
 
 static bool
@@ -50,7 +50,7 @@ RuntimeClassHasProperty (NPObject *npobj, NPIdentifier name)
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		return plugin->ClassHasProperty (npobj, name);
+		return plugin->ClassHasProperty ((PluginObject *) npobj, name);
 
 	return false;
 }
@@ -60,7 +60,7 @@ RuntimeClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		return plugin->ClassGetProperty (npobj, name, result);
+		return plugin->ClassGetProperty ((PluginObject *) npobj, name, result);
 
 	return false;
 }
@@ -70,7 +70,7 @@ RuntimeClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *va
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		return plugin->ClassSetProperty (npobj, name, value);
+		return plugin->ClassSetProperty ((PluginObject *) npobj, name, value);
 
 	return false;
 }
@@ -80,7 +80,7 @@ RuntimeClassRemoveProperty (NPObject *npobj, NPIdentifier name)
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		return plugin->ClassRemoveProperty (npobj, name);
+		return plugin->ClassRemoveProperty ((PluginObject *) npobj, name);
 
 	return false;
 }
@@ -90,7 +90,7 @@ RuntimeClassHasMethod (NPObject *npobj, NPIdentifier name)
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		return plugin->ClassHasMethod (npobj, name);
+		return plugin->ClassHasMethod ((PluginObject *) npobj, name);
 
 	return false;
 }
@@ -101,7 +101,7 @@ RuntimeClassInvoke (NPObject *npobj, NPIdentifier name, const NPVariant *args,
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		return plugin->ClassInvoke (npobj, name, args, argCount, result);
+		return plugin->ClassInvoke ((PluginObject *) npobj, name, args, argCount, result);
 
 	return false;
 }
@@ -112,7 +112,7 @@ RuntimeClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 {
 	PluginClass *plugin = (PluginClass *) npobj->_class;
 	if (plugin != NULL)
-		return plugin->ClassInvokeDefault (npobj, args, argCount, result);
+		return plugin->ClassInvokeDefault ((PluginObject *) npobj, args, argCount, result);
 
 	return false;
 }
@@ -141,20 +141,20 @@ PluginClass::~PluginClass ()
 }
 
 void
-PluginClass::ClassDeallocate (NPObject *npobj)
+PluginClass::ClassDeallocate (PluginObject *npobj)
 {
 	if (npobj)
 		NPN_ReleaseObject (npobj);
 }
 
 void
-PluginClass::ClassInvalidate (NPObject *npobj)
+PluginClass::ClassInvalidate (PluginObject *npobj)
 {
 	// nothing to do.
 }
 
 bool
-PluginClass::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+PluginClass::ClassHasProperty (PluginObject *npobj, NPIdentifier name)
 {
 	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
 	DEBUGMSG ("*** PluginClass::ClassHasProperty %s", strname);
@@ -164,27 +164,27 @@ PluginClass::ClassHasProperty (NPObject *npobj, NPIdentifier name)
 }
 
 bool
-PluginClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+PluginClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	DEBUGMSG ("*** PluginClass::ClassGetProperty");
 	return false;
 }
 
 bool
-PluginClass::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+PluginClass::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	DEBUGMSG ("*** PluginClass::ClassSetProperty");
 	return false;
 }
 
 bool
-PluginClass::ClassRemoveProperty (NPObject *npobj, NPIdentifier name)
+PluginClass::ClassRemoveProperty (PluginObject *npobj, NPIdentifier name)
 {
 	return false;
 }
 
 bool
-PluginClass::ClassHasMethod (NPObject *npobj, NPIdentifier name)
+PluginClass::ClassHasMethod (PluginObject *npobj, NPIdentifier name)
 {
 	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
 	DEBUGMSG ("*** PluginClass::ClassHasMethod %s", strname);
@@ -194,7 +194,7 @@ PluginClass::ClassHasMethod (NPObject *npobj, NPIdentifier name)
 }
 
 bool
-PluginClass::ClassInvoke (NPObject *npobj, NPIdentifier name, const NPVariant *args, 
+PluginClass::ClassInvoke (PluginObject *npobj, NPIdentifier name, const NPVariant *args, 
                   uint32_t argCount, NPVariant *result)
 {
 	DEBUGMSG ("*** PluginClass::ClassInvoke");
@@ -202,7 +202,7 @@ PluginClass::ClassInvoke (NPObject *npobj, NPIdentifier name, const NPVariant *a
 }
 
 bool
-PluginClass::ClassInvokeDefault (NPObject *npobj, const NPVariant *args,
+PluginClass::ClassInvokeDefault (PluginObject *npobj, const NPVariant *args,
 	                                uint32_t argCount, NPVariant *result)
 {
 	DEBUGMSG ("*** PluginClass::ClassInvokeDefault");
@@ -229,7 +229,7 @@ PluginRootClass::PluginRootClass (NPP instance) : PluginClass (instance)
 }
 
 bool
-PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+PluginRootClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	if (name == NPID ("settings")) {
 		NPObject *object = NPN_CreateObject (this->instance, this->settings);
@@ -259,7 +259,7 @@ PluginRootClass::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant
 }
 
 bool 
-PluginRootClass::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+PluginRootClass::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	// In Silverlight you can set source but it dont change, so do nothing.
 	if (name == NPID ("source")) {
@@ -270,7 +270,7 @@ PluginRootClass::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPV
 }
 
 bool
-PluginRootClass::ClassInvoke (NPObject *npobj, NPIdentifier name, 
+PluginRootClass::ClassInvoke (PluginObject *npobj, NPIdentifier name, 
 				const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	return false;
@@ -279,7 +279,7 @@ PluginRootClass::ClassInvoke (NPObject *npobj, NPIdentifier name,
 /*** PluginSettings ***********************************************************/
 
 bool
-PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	if (name == NPID ("version")) {
 		STRING_TO_NPVARIANT (PLUGIN_VERSION, *result);
@@ -290,7 +290,7 @@ PluginSettings::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant 
 }
 
 bool 
-PluginSettings::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	return false;
 }
@@ -298,7 +298,7 @@ PluginSettings::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVa
 /*** PluginContent ************************************************************/
 
 bool
-PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+PluginContent::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	// Silverlight always return 0.
 	if (name == NPID ("actualHeight")) {
@@ -322,7 +322,7 @@ PluginContent::ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *
 }
 
 bool 
-PluginContent::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+PluginContent::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	// not implemented yet.
 	if (name == NPID ("fullScreen")) {
@@ -333,7 +333,7 @@ PluginContent::ClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVar
 }
 
 bool
-PluginContent::ClassInvoke (NPObject *npobj, NPIdentifier name, 
+PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name, 
 				const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	return false;
@@ -342,7 +342,7 @@ PluginContent::ClassInvoke (NPObject *npobj, NPIdentifier name,
 /*** PluginDependencyObject ***************************************************/
 
 bool
-PluginDependencyObject::ClassHasProperty (NPObject *npobj, NPIdentifier name)
+PluginDependencyObject::ClassHasProperty (PluginObject *npobj, NPIdentifier name)
 {
 	//
 	// Am not sure if this is how you test this
@@ -367,7 +367,7 @@ PluginDependencyObject::ClassHasProperty (NPObject *npobj, NPIdentifier name)
 }
 
 bool
-PluginDependencyObject:: ClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+PluginDependencyObject:: ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	//
 	// Am not sure if this is how you test this
