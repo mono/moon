@@ -1338,6 +1338,12 @@ surface_new (int width, int height)
 
 	surface_realloc (s);
 
+	return s;
+}
+
+void
+surface_connect_events (Surface *s)
+{
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "expose_event",
 			    G_CALLBACK (expose_event_callback), s);
 
@@ -1370,13 +1376,13 @@ surface_new (int width, int height)
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "destroy",
 			    G_CALLBACK (clear_drawing_area), s);
-
-	return s;
 }
 
 void
 surface_attach (Surface *surface, UIElement *toplevel)
 {
+	bool first = FALSE;
+
 	if (!(toplevel->flags & UIElement::IS_CANVAS)){
 		printf ("Unsupported toplevel\n");
 		return;
@@ -1384,13 +1390,18 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	if (surface->toplevel){
 		item_invalidate (surface->toplevel);
 		base_unref (surface->toplevel);
-	}
+	} else 
+		first = TRUE;
 
 	Canvas *canvas = (Canvas *) toplevel;
 	base_ref (canvas);
 
 	canvas->surface = surface;
 	surface->toplevel = canvas;
+
+	// First time we connect the surface, start responding to events
+	if (first)
+		surface_connect_events (surface);
 
 	item_update_bounds (canvas);
 	item_invalidate (canvas);

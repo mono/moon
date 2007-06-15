@@ -9,6 +9,9 @@
 
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp (surface_attach): Only hook up the events when we
+	get a toplevel attached.   
+
 	* downloader.h: Drop the C++ API with a C proxy API, switch to a
 	pure C API as we need this from the managed side anyways.
 
