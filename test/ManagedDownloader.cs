@@ -40,6 +40,9 @@ namespace Gtk.Moonlight {
 		[DllImport ("moon")]
 		internal extern static void downloader_write (IntPtr downloader, byte []buf, int offset, int n);
 
+		[DllImport ("moon")]
+		internal extern static void downloader_notify_size (IntPtr downloader, long l);
+		
 		static int keyid;
 		static Hashtable downloaders = new Hashtable ();
 
@@ -92,6 +95,12 @@ namespace Gtk.Moonlight {
 			}
 			
 			using (WebResponse r = request.GetResponse ()){
+				Application.Invoke (delegate {
+					downloader_notify_size (downloader, r.ContentLength);
+					auto_reset.Set ();
+				});
+				auto_reset.WaitOne ();
+				
 				using (Stream rstream = r.GetResponseStream ()){
 					buffer = new byte [16*1024];
 					count = 0;
