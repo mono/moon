@@ -1,5 +1,10 @@
 2007-06-14  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* text.cpp (getbounds): Set the actual width/height values to keep
+	them up-to-date.
+
+2007-06-14  Jeffrey Stedfast  <fejj@gnome.org>
+
 	* text.cpp (getbounds): Revert prior change.
 	(getxformorigin): Same.
 

@@ -270,6 +270,9 @@ TextBlock::getbounds ()
 	x2 = x1 + ink.width;
 	y2 = y1 + ink.height;
 	
+	text_block_set_actual_height (this, (double) ink.height);
+	text_block_set_actual_width (this, (double) ink.width);
+	
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
 }
