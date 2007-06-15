@@ -251,6 +251,9 @@ TextBlock::getbounds ()
 	Surface *s = item_get_surface (this);
 	PangoRectangle ink, logical;
 	
+	if (s == NULL)
+		return;
+	
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
@@ -277,6 +280,9 @@ TextBlock::getxformorigin ()
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	Surface *s = item_get_surface (this);
 	int width, height;
+	
+	if (s == NULL)
+		return Point (0.0, 0.0);
 	
 	cairo_save (s->cairo);
 	cairo_identity_matrix (s->cairo);

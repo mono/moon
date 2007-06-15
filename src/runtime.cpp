@@ -443,11 +443,6 @@ gint32*         Value::AsNullableInt32 () { checked_get_exact (INT32, NULL, &u.i
 void
 item_update_bounds (UIElement *item)
 {
-	Surface *s = item_get_surface (item);
-	
-	if (s == NULL)
-		return;
-	
 	double cx1 = item->x1;
 	double cy1 = item->y1;
 	double cx2 = item->x2;
@@ -589,11 +584,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 void
 UIElement::update_xform ()
 {
-	Surface *s = item_get_surface (this);
 	cairo_matrix_t user_transform;
-	
-	if (s == NULL)
-		return;
 	
 	//
 	// What is more important, the space used by 6 doubles,

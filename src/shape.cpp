@@ -199,6 +199,9 @@ Shape::getbounds ()
 {
 	Surface *s = item_get_surface (this);
 	
+	if (s == NULL)
+		return;
+	
 	cairo_save (s->cairo);
 	DoDraw (s, FALSE);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);

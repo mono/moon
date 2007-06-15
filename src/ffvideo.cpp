@@ -157,6 +157,9 @@ MediaElementFfmpeg::getbounds ()
 	AVCodecContext *cc;
 	double res [6];
 	
+	if (s == NULL)
+		return;
+	
 	// If we have not been initialized yet, we cant compute the bounds
 	if (video_stream == NULL || video_stream->codec == NULL) {
 		x1 = y1 = x2 = y2 = 0;
