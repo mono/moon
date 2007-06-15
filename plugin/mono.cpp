@@ -46,7 +46,7 @@ vm_init ()
 			result = TRUE;
 		}
 	}
-	printf ("Mono Moonlight: %s\n", result ? "OK" : "Failed");
+	DEBUGMSG ("Mono Runtime: %s\n", result ? "OK" : "Failed");
 	return result;
 }
 

@@ -1,5 +1,13 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moonlight.h: Turns mono runtime enabled by default.
+
+	* mono.cpp: Use of DEBUGMSG macro for debug message.
+
+	* moonlight.cs: Fix Canvas kind number.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h, plugin-class.cpp: Fix setter for source property.
 
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>

@@ -34,7 +34,7 @@ namespace Moonlight {
 				Console.WriteLine ("Could not load xaml file");
 				return;
 			}
-			if (kind != 18){
+			if (kind != 23){
 				Console.WriteLine ("return value is not 18 (Canvas)");
 				return;
 			}
