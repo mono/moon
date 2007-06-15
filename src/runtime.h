@@ -219,7 +219,7 @@ class DependencyObject : public Base {
 	
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name, bool inherits);
-
+	static DependencyProperty *NameProperty;
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (DependencyProperty *property, Value *value);
 	void SetValue (const char *name, Value *value);
@@ -865,6 +865,7 @@ void types_init (void);
 void dependencyobject_init (void);
 void downloader_init (void);
 void media_init (void);
+void dependency_object_init(void);
 
 G_END_DECLS
 

@@ -2324,6 +2324,14 @@ canvas_init (void)
 	Canvas::LeftProperty = DependencyObject::RegisterFull (Value::CANVAS, "Left", new Value (0.0), Value::DOUBLE, true);
 }
 
+DependencyProperty* DependencyObject::NameProperty;
+
+void
+dependency_object_init(void)
+{
+	DependencyObject::NameProperty = DependencyObject::Register (Value::DEPENDENCY_OBJECT, "Name", Value::STRING);
+}
+
 DependencyProperty* EventTrigger::RoutedEventProperty;
 DependencyProperty* EventTrigger::ActionsProperty;
 
@@ -2422,6 +2430,7 @@ runtime_init (void)
 	item_init ();
 	framework_element_init ();
 	canvas_init ();
+	dependency_object_init();
 	event_trigger_init ();
 	transform_init ();
 	animation_init ();
