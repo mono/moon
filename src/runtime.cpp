@@ -695,9 +695,10 @@ UIElement::leave (Surface *s)
 
 UIElement::~UIElement ()
 {
-	// Do not:
-	//   Be clever, the collections are automatically deleted, do not do this here
-	//   if we do, set the cache properties to null first
+	if (triggers != NULL)
+		base_unref (triggers);
+	if (resources != NULL)
+		base_unref (resources);
 }
 
 void
