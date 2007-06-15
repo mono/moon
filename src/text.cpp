@@ -281,6 +281,9 @@ TextBlock::getxformorigin ()
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	Surface *s = item_get_surface (this);
 	int width, height;
+
+	if (s == NULL)
+		return Point (0, 0);
 	
 	cairo_save (s->cairo);
 	cairo_identity_matrix (s->cairo);
