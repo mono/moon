@@ -1,3 +1,7 @@
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.cpp|h: Add media_base_new.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* Add destructors to classes that are caching DO collections and

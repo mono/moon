@@ -27,6 +27,12 @@
 DependencyProperty *MediaBase::SourceProperty;
 DependencyProperty *MediaBase::StretchProperty;
 
+MediaBase *
+media_base_new ()
+{
+	return new MediaBase ();
+}
+
 char *
 media_base_get_source (MediaBase *media)
 {
