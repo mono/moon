@@ -555,7 +555,13 @@ Image::render (Surface *s, int x, int y, int width, int height)
 
 	cairo_rectangle (s->cairo, 0, 0, this->pixbuf_width, this->pixbuf_height);
 
-	cairo_fill (s->cairo);
+	// XXX this cairo_new_path shouldn't be necessary here, but
+	// without it, images are framed.  someone isn't calling this
+	// before they return.
+	cairo_new_path (s->cairo);
+	cairo_paint_with_alpha (s->cairo, GetTotalOpacity ());
+
+	//cairo_fill (s->cairo);
 
 	cairo_restore (s->cairo);
 }

@@ -1,3 +1,8 @@
+2007-06-15  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp (Image::render): use the uielement's opacity when
+	painting.  Fixes the DrPopperSilverlight Bubble.xaml file.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (UIElement): The problem was that:
