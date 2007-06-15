@@ -897,22 +897,8 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
 		if (newcol != key_frames) {
-			if (key_frames) {
-				GList *node = key_frames->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				key_frames->list = NULL;
+			if (key_frames) 
 				base_unref (key_frames);
-			}
 
 			key_frames = newcol;
 			if (key_frames->closure)
@@ -1026,22 +1012,8 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
 		if (newcol != key_frames) {
-			if (key_frames) {
-				GList *node = key_frames->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				key_frames->list = NULL;
+			if (key_frames) 
 				base_unref (key_frames);
-			}
 
 			key_frames = newcol;
 			if (key_frames->closure)
@@ -1160,22 +1132,8 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
 		if (newcol != key_frames) {
-			if (key_frames) {
-				GList *node = key_frames->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				key_frames->list = NULL;
+			if (key_frames) 
 				base_unref (key_frames);
-			}
 
 			key_frames = newcol;
 			if (key_frames->closure)

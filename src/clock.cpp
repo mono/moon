@@ -486,22 +486,8 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
 
 		if (newcol != child_timelines) {
-			if (child_timelines) {
-				GList *node = child_timelines->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				child_timelines->list = NULL;
+			if (child_timelines) 
 				base_unref (child_timelines);
-			}
 
 			child_timelines = newcol;
 			if (child_timelines->closure)

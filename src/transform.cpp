@@ -377,22 +377,8 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 		TransformCollection *newcol = GetValue (prop)->AsTransformCollection();
 
 		if (newcol != children) {
-			if (children) {
-				GList *node = children->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				children->list = NULL;
+			if (children) 
 				base_unref (children);
-			}
 
 			children = newcol;
 			if (children->closure)

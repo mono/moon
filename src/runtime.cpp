@@ -558,23 +558,8 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		ResourceCollection *newcol = v ? v->AsResourceCollection() : NULL;
 
 		if (newcol != resources) {
-			if (resources) {
-				GList *node = resources->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					printf ("Unrefing a %d\n", dob->GetObjectType ());
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				resources->list = NULL;
+			if (resources) 
 				base_unref (resources);
-			}
 
 			resources = newcol;
 			if (resources){
@@ -873,23 +858,8 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 
 		if (newcol != children) {
-			if (children) {
-				GList *node = children->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				children->list = NULL;
+			if (children) 
 				base_unref (children);
-			}
-
 			children = newcol;
 			if (children->closure)
 				printf ("Warning we attached a property that was already attached\n");
@@ -2299,22 +2269,8 @@ EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 		TriggerActionCollection *newcol = GetValue (prop)->AsTriggerActionCollection();
 
 		if (newcol != actions) {
-			if (actions) {
-				GList *node = actions->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				actions->list = NULL;
+			if (actions) 
 				base_unref (actions);
-			}
 
 			actions = newcol;
 			if (actions->closure)

@@ -1,3 +1,12 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* Everywhere: remove duplicated code that got copy/pasted
+	everywhere for tracking collections and caching values.  
+
+	This should help fixing the crashing problem, but I still need to
+	review the rules for reference counting and keeping a cache of
+	variables. 
+
 2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Draw): Now renders inlines.
