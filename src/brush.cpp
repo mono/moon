@@ -886,6 +886,7 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 		TileBrush::OnPropertyChanged (prop);
 }
 
+// TODO: Handle Opacity
 void
 ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
@@ -982,6 +983,7 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		cairo_matrix_t tm;
 		transform_get_transform (transform, &tm);
 		cairo_matrix_invert (&tm);
+		cairo_matrix_multiply (&matrix, &tm, &matrix);
 	}
 	cairo_pattern_set_matrix (pattern, &matrix);
 
