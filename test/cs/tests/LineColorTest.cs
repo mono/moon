@@ -26,7 +26,7 @@ public class LineColorTest : TestBase
 		brush.Color = Colors.Red;
 		rect.Fill = brush;
 		rect.MouseLeftButtonDown += new MouseEventHandler(rect_Loaded);
-		rect.MouseMove += new MouseEventHandler(rect_Loaded);
+		//rect.MouseMove += new MouseEventHandler(rect_Loaded);
 		canvas.Children.Add(rect);
 
 		rect = new Rectangle();
