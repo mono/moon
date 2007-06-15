@@ -237,7 +237,7 @@ main (int argc, char *argv [])
 		tb->SetValue (Canvas::TopProperty, Value (175.0));
 		item_set_transform_origin (tb, Point (0.5, 0.5));
 		item_set_render_transform (tb, t_trans);
-		//panel_child_add (canvas, tb);
+		panel_child_add (canvas, tb);
 		
 #ifdef XAML_DEMO
 		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", NULL));
