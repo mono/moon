@@ -14,10 +14,6 @@ Feel free to add items to this TODO list
 		hack that we have, lookup what the semantics for it
 		are.
 
-	Events that require hit-testing of some form:
-
-		MouseEnter/MouseLeave/MouseMove/MoustButton
-
 	Events: Focus
 
 		Have to investigate what it means to get "focus"
@@ -53,7 +49,7 @@ Feel free to add items to this TODO list
 
 * XAML, the revenge of namespaces:
 
-    Consider this:
+	Consider this:
                         
                         <Chess:BoardUI
                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -62,9 +58,13 @@ Feel free to add items to this TODO list
                           xmlns:Chess="clr-namespace:Chess;assembly=ClientBin/Chess.dll"
                           Loaded="Canvas_Loaded">
 
-     It should parse the above, and notice that the Chess NS is
-introduce in that declaration.   What is interesting though is that it
-uses requests an assembly to download there.
+	I suggest that the xaml parsing routines return an error if the
+	resource "ClientBin/Chess.dll" does not exist, and have the caller
+	retry the call if it can satisfy the ClientBin/Chess.dll request.
+
+	By using the above mechanism we can avoid having the XAML parser
+	do a recursive callback.   Instead when the dependency files are 
+	satisfied, we can retry the loading.
 
 * XAML, callbacks during initial construction
 
@@ -129,4 +129,21 @@ uses requests an assembly to download there.
 	For some reason I cant get moon/test/demo.exe program to focus the
 	Silverlight widget even if I click on it and I do a
 	gtk_widget_grab_focus, am probably missing something.
+
+* Optimizing Events
+
+	Currently we emit the mouse events to every widget, regardless
+	of whether they are interested in the event.
+
+	We should avoid doing this if the widget is not interested in them,
+	this could be done like this:
+
+		* Provide Explicit implementaiton of the add/remove event
+		  handlers.
+
+		* Notify the unmanaged API when we register our interest
+		  in the event
+
+		* Unmanaged could use the flags variable that is part of
+	   	  the UIElement to store this information
 	
