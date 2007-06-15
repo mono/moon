@@ -1376,6 +1376,10 @@ surface_connect_events (Surface *s)
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "destroy",
 			    G_CALLBACK (clear_drawing_area), s);
+
+	if (GTK_WIDGET_REALIZED (s->drawing_area)){
+		realized_callback (s->drawing_area, s);
+	}
 }
 
 void
