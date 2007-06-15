@@ -82,6 +82,7 @@ types_init (void)
 	Type::RegisterType ("ColorAnimation", Value::COLORANIMATION, Value::ANIMATION);
 	Type::RegisterType ("ColorAnimationUsingKeyFrames", Value::COLORANIMATIONUSINGKEYFRAMES, Value::COLORANIMATION);
 	Type::RegisterType ("ColorKeyFrame", Value::COLORKEYFRAME, Value::KEYFRAME);
+	Type::RegisterType ("Control", Value::CONTROL, Value::FRAMEWORKELEMENT);
 	Type::RegisterType ("DiscreteColorKeyFrame", Value::DISCRETECOLORKEYFRAME, Value::COLORKEYFRAME);
 	Type::RegisterType ("DiscreteDoubleKeyFrame", Value::DISCRETEDOUBLEKEYFRAME, Value::DOUBLEKEYFRAME);
 	Type::RegisterType ("DiscretePointKeyFrame", Value::DISCRETEPOINTKEYFRAME, Value::POINTKEYFRAME);

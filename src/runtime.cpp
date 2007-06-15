@@ -1049,6 +1049,12 @@ Canvas::leave (Surface *s)
 	}
 }
 
+Control*
+control_new (void)
+{
+	return new Control ();
+}
+
 void 
 surface_clear (Surface *s, int x, int y, int width, int height)
 {

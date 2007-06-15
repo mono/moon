@@ -39,6 +39,7 @@ class Collection;
 class ColorAnimation;
 class ColorAnimationUsingKeyFrames;
 class ColorKeyFrame;
+class Control;
 class DiscreteColorKeyFrame;
 class DiscreteDoubleKeyFrame;
 class DiscretePointKeyFrame;
@@ -166,6 +167,7 @@ public:
 		COLORANIMATION,
 		COLORANIMATIONUSINGKEYFRAMES,
 		COLORKEYFRAME,
+		CONTROL,
 		DISCRETECOLORKEYFRAME,
 		DISCRETEDOUBLEKEYFRAME,
 		DISCRETEPOINTKEYFRAME,
@@ -339,6 +341,7 @@ public:
 	ColorAnimation*                AsColorAnimation ();
 	ColorAnimationUsingKeyFrames*  AsColorAnimationUsingKeyFrames ();
 	ColorKeyFrame*                 AsColorKeyFrame ();
+	Control*                       AsControl ();
 	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame ();
 	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame ();
 	DiscretePointKeyFrame*         AsDiscretePointKeyFrame ();

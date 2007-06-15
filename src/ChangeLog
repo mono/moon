@@ -1,3 +1,7 @@
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp|h, type.cpp, value.cpp|h: Add Control.
+
 2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (dependency_object_add_child): If the col_v collection

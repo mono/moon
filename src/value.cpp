@@ -110,6 +110,12 @@ Value::AsColorKeyFrame ()
 	checked_get_subclass (COLORKEYFRAME, ColorKeyFrame);
 }
 
+Control*
+Value::AsControl ()
+{
+	checked_get_subclass (CONTROL, Control);
+}
+
 DiscreteColorKeyFrame*
 Value::AsDiscreteColorKeyFrame ()
 {

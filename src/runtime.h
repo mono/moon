@@ -776,6 +776,17 @@ class Canvas : public Panel {
 
 Canvas *canvas_new (void);
 
+//
+// Control Class
+//
+class Control : public FrameworkElement {
+ public:
+	Control () {};
+	virtual Value::Kind GetObjectType () { return Value::CONTROL; }
+};
+
+Control *control_new (void);
+
 typedef struct _SurfacePrivate SurfacePrivate;
 
 //
