@@ -54,7 +54,7 @@ class X {
 		Canvas canvas = (Canvas) d;
 		silver.Attach (canvas);
 
-		DependencyObject anim = d.FindObject ("animation");
+		DependencyObject anim = d.FindName ("animation");
 		Console.WriteLine ("Find Object: {0}", anim);
 		if (anim != null && anim is Storyboard){
 			msg.Text = "Hold the button down to pause the animation";
