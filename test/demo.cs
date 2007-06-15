@@ -169,7 +169,7 @@ class X {
 		} else {
 			Load (args [i]);
 		}
-		
+
 		Application.Run ();
 	}
 }

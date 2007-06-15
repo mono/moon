@@ -1,4 +1,9 @@
-demo.exe: demo.cs gtksilver.dll
+all: demo.exe download.exe
+
+download.exe: download.cs gtksilver.dll
+	gmcs -debug download.cs -pkg:gtk-sharp-2.0 -pkg:silver -r:gtksilver.dll
+
+demo.exe: demo.cs gtksilver.dll 
 	gmcs -debug demo.cs -pkg:gtk-sharp-2.0 -pkg:silver -r:gtksilver.dll
 
 gtksilver.dll: gtk.cs ManagedDownloader.cs
