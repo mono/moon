@@ -1,3 +1,8 @@
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
+	* moon.png: Added.
+	* clock.xaml: An image added to test downloader functions.
+
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
 	* clock.html: Added.

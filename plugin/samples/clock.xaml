@@ -1,5 +1,6 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
-	<Ellipse Fill="#ffffff" Stroke="#000000" StrokeThickness="10" Canvas.Left="50" Canvas.Top="50" Width="100" Height="100" />
-
+	<Ellipse Fill="#ffffff" Stroke="#000000" StrokeThickness="10" Canvas.Left="250" Canvas.Top="50" Width="100" Height="100" />
+	<Image Source="moon.png" Canvas.Left="68" Canvas.Top="50" />
+	
 </Canvas>
