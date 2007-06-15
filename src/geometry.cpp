@@ -527,10 +527,6 @@ PathFigure::Draw (Surface *s)
 	if (path_figure_get_is_closed (this)) {
 		cairo_close_path (s->cairo);
 	}
-
-	if (path_figure_get_is_filled (this)) {
-		// FIXME: fill is setup in Shape::DoDraw but shouldn't be always called
-	}
 }
 
 bool
@@ -548,12 +544,16 @@ path_figure_set_is_closed (PathFigure *path_figure, bool closed)
 bool
 path_figure_get_is_filled (PathFigure *path_figure)
 {
+	// FIXME
+	g_warning ("Ignored in Mix, will be removed in 1.0. See http://blogs.msdn.com/jstegman/archive/2007/06/06/more-v-1-0-changes.aspx");
 	return path_figure->GetValue (PathFigure::IsFilledProperty)->AsBool();
 }
 
 void
 path_figure_set_is_filled (PathFigure *path_figure, bool filled)
 {
+	// FIXME
+	g_warning ("Ignored in Mix, will be removed in 1.0. See http://blogs.msdn.com/jstegman/archive/2007/06/06/more-v-1-0-changes.aspx");
 	path_figure->SetValue (PathFigure::IsFilledProperty, Value (filled));
 }
 

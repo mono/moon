@@ -1,3 +1,13 @@
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Implement ImageBrush.Opacity like MS does it in 1.1 alpha
+	(i.e. Brush.Opacity isn't considered, only UIElement.Opacity is)
+	* geometry.cpp: PathFigure::IsFilledProperty is ignored in Mix and
+	will be removed in 1.0.
+	* media.cpp|h: Make Image aware of ImageBrush (so we can update too)
+	* runtime.cpp|h: Move calculation of "total" opacity of UIElement at
+	the *right* place.
+
 2007-06-15  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (text_init): Set more default values.

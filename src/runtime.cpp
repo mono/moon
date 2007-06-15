@@ -720,6 +720,22 @@ UIElement::render (Surface *surface, int x, int y, int width, int height)
 	g_warning ("UIElement:render has been called. The derived class should have overridden it.");
 }
 
+double
+UIElement::GetTotalOpacity ()
+{
+	double opacity = uielement_get_opacity (this);
+	// this is recursive to parents
+	UIElement *uielement = this->parent;
+	while (uielement) {
+		double parent_opacity = uielement_get_opacity (uielement);
+		if (parent_opacity < 1.0)
+			opacity *= parent_opacity;
+		// FIXME: we should be calling FrameworkElement::Parent
+		uielement = uielement->parent;
+	}
+	return opacity;
+}
+
 FrameworkElement::FrameworkElement ()
 {
 }

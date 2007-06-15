@@ -715,6 +715,11 @@ class UIElement : public Visual {
 	//   Invoke when the mouse leaves this given object
 	//
 	virtual void leave (Surface *s);
+
+	//
+	// GetTotalOpacity
+	//   Get the cumulative opacity of this element, including all it's parents
+	double GetTotalOpacity ();
 	
 	~UIElement ();
 

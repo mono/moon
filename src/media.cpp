@@ -280,7 +280,8 @@ Image::Image ()
     pixbuf_height (0),
     loader (NULL),
     downloader (NULL),
-    xlib_surface (NULL)
+    xlib_surface (NULL),
+    brush (NULL)
 {
 }
 
@@ -397,7 +398,10 @@ Image::LoaderAreaUpdated (int x, int y, int width, int height)
 			 0,0);
 	g_object_unref (G_OBJECT (gc));
 
-	item_invalidate (this);
+	if (brush)
+		brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
+	else
+		item_invalidate (this);
 }
 
 void

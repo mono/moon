@@ -7,7 +7,7 @@ G_BEGIN_DECLS
 
 #include "clock.h"
 #include "value.h"
-
+#include "brush.h"
 
 class MediaAttribute : public DependencyObject {
  public:
@@ -55,6 +55,8 @@ class Image : public MediaBase {
 
 	int GetHeight () { return pixbuf_height; };
 	int GetWidth  () { return pixbuf_width; };
+
+	ImageBrush *brush;
 
  private:
 	void CleanupSurface ();

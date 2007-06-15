@@ -96,25 +96,13 @@ brush_set_transform (Brush *brush, TransformGroup* transform_group)
 }
 
 /*
- * Combine recursively UIElement Opacity with Brush Opacity
+ * Combine UIElement Opacity (including all parents) with Brush Opacity
  * NOTE: sadly we cannot handle Opacity at this level, each brush sub-type needs to handle it
  */
 double
 Brush::GetTotalOpacity (UIElement *uielement)
 {
-	double opacity = 1.0;
-	// apply UIElement opacity and Brush opacity on color's alpha
-	if (uielement) {
-		// this is recursive to parents
-		while (uielement) {
-			double uielement_opacity = uielement_get_opacity (uielement);
-			if (uielement_opacity < 1.0)
-				opacity *= uielement_opacity;
-
-			// FIXME: we should be calling FrameworkElement::Parent
-			uielement = uielement->parent;
-		}
-	}
+	double opacity = uielement ? uielement->GetTotalOpacity () : 1.0;
 
 	double brush_opacity = brush_get_opacity (this);
 	if (brush_opacity < 1.0)
@@ -861,6 +849,7 @@ image_brush_set_image_source (ImageBrush *brush, const char* source)
 ImageBrush::ImageBrush ()
 {
 	image = new Image ();
+	image->brush = this;
 }
 
 void
@@ -886,7 +875,6 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 		TileBrush::OnPropertyChanged (prop);
 }
 
-// TODO: Handle Opacity
 void
 ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
@@ -897,15 +885,33 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		return;
 	}
 
+	int sw = image->GetWidth ();
+	int sh = image->GetHeight ();
+
+	cairo_pattern_t *pattern;
+
+// MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
+	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
+	if (opacity < 1.0) {
+		cairo_surface_t *blending = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, sw, sh);
+		pattern = cairo_pattern_create_for_surface (surface);
+		cairo_t *cr = cairo_create (blending);
+		cairo_set_source (cr, pattern);
+		cairo_paint_with_alpha (cr, opacity);
+		cairo_destroy(cr);
+		cairo_pattern_destroy (pattern);
+
+		pattern = cairo_pattern_create_for_surface (blending);
+	} else {
+		pattern = cairo_pattern_create_for_surface (surface);
+	}
+
 	cairo_matrix_t matrix;
 	double x0, y0, x1, y1;
 	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
 
 	double width = fabs (x1 - x0);
 	double height = fabs (y1 - y0);
-
-	int sw = image->GetWidth ();
-	int sh = image->GetHeight ();
 
 	// scale required to "fit" for both axes
 	double sx = sw / width;
@@ -975,8 +981,6 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 			cairo_matrix_init (&matrix, scale, 0, 0, scale, dx, dy);
 		}
 	}
-
-	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
 
 	Transform *transform = brush_get_transform (this);
 	if (transform) {
