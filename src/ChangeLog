@@ -1,5 +1,11 @@
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
+	* animation.cpp:
+	* runtime.cpp|h: We also need to update the DependencyObject when
+	resolving PropertyPaths.
+
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
 	* runtime.cpp|h: New function that follows PropertyPath's to
 	DependencyProperties.
 	* animation.cpp: Use new function to resolve animation target

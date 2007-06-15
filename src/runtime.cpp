@@ -1712,7 +1712,7 @@ DependencyProperty *dependency_property_lookup (Value::Kind type, char *name)
 // Returns NULL on any error
 //
 DependencyProperty *
-resolve_property_path (DependencyObject *o, const char *path)
+resolve_property_path (DependencyObject **o, const char *path)
 {
 	g_assert (o);
 	g_assert (path);
@@ -1723,7 +1723,7 @@ resolve_property_path (DependencyObject *o, const char *path)
 	char *propn = NULL;
 	bool expression_found = false;
 	DependencyProperty *res = NULL;
-	DependencyObject *lu = o;
+	DependencyObject *lu = *o;
 
 	for (int i = 0; i < len; i++) {
 		switch (path [i]) {
@@ -1784,8 +1784,10 @@ resolve_property_path (DependencyObject *o, const char *path)
 	}
 
 	if (!expression_found)
-		res = DependencyObject::GetDependencyProperty (o->GetObjectType (), path);
+		res = DependencyObject::GetDependencyProperty (lu->GetObjectType (), path);
 
+	*o = lu;
+	printf ("resolved: %s to %d->%s  %d\n", path, (res ? res->type : -1), (res ? res->name : ""), o);
 	return res;
 }
 

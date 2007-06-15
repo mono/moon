@@ -287,7 +287,7 @@ class DependencyProperty {
 };
 
 DependencyProperty *dependency_property_lookup (Value::Kind type, char *name);
-DependencyProperty *resolve_property_path (DependencyObject *o, const char *path);
+DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 
 
 class NameScope : public DependencyObject {
