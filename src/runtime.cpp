@@ -2144,6 +2144,48 @@ Inlines::Remove (DependencyObject *data)
 	Collection::Remove (data);
 }
 
+
+Collection *
+collection_new (Value::Kind kind)
+{
+	switch (kind) {
+	case Value::GEOMETRY_COLLECTION:
+		return new GeometryCollection ();
+	case Value::GRADIENTSTOP_COLLECTION:
+		return new GradientStopCollection ();
+	case Value::INLINES:
+		return new Inlines ();
+	case Value::KEYFRAME_COLLECTION:
+		return new KeyFrameCollection ();
+	case Value::MEDIAATTRIBUTE_COLLECTION:
+		return new MediaAttributeCollection ();
+	case Value::PATHFIGURE_COLLECTION:
+		return new PathFigureCollection ();
+	case Value::PATHSEGMENT_COLLECTION:
+		return new PathSegmentCollection ();
+	case Value::RESOURCE_COLLECTION:
+		return new ResourceCollection ();
+	case Value::STROKE_COLLECTION:
+		return new StrokeCollection ();
+	case Value::STYLUSPOINT_COLLECTION:
+		return new StylusPointCollection ();
+	case Value::TIMELINE_COLLECTION:
+		return new TimelineCollection ();
+	case Value::TIMELINEMARKER_COLLECTION:
+		return new TimelineMarkerCollection ();
+	case Value::TRANSFORM_COLLECTION:
+		return new TransformCollection ();
+	case Value::TRIGGER_COLLECTION:
+		return new TriggerCollection ();
+	case Value::TRIGGERACTION_COLLECTION:
+		return new TriggerActionCollection ();
+	case Value::VISUAL_COLLECTION:
+		return new VisualCollection ();
+	default:
+		return NULL;
+	}
+}
+
 VisualCollection *
 visual_collection_new (void)
 {

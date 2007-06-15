@@ -474,6 +474,7 @@ class Inlines : public Collection {
 	virtual void Remove (DependencyObject *data);
 };
 
+Collection *collection_new (Value::Kind kind);
 
 VisualCollection *visual_collection_new (void);
 TriggerCollection *trigger_collection_new (void);

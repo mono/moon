@@ -937,11 +937,15 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		if (is_collection && dep->value_type != child->info->dependency_type) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			Value *col_v = obj->GetValue (dep);
+			Collection *col;
+			
 			if (!col_v) {
-				// TODO: need to create the collection and set the value here
-				col_v = obj->GetValue (dep);
+				col = collection_new (dep->value_type);
+				obj->SetValue (dep, Value (col));
+			} else {
+				col = (Collection *) col_v->AsCollection ();
 			}
-			Collection *col = (Collection *) col_v->AsCollection ();
+			
 			col->Add ((DependencyObject *) child->item);
 			return;
 		}

@@ -1,3 +1,13 @@
+2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp (dependency_object_add_child): If the col_v collection
+	value is NULL, create a new collection and add it to the
+	DependencyObject.
+
+	* runtime.cpp: Added a generic collection_new() function which
+	takes a Value::Kind to specificy which collection-type it should
+	allocate.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (surface_repaint): We clear the background here
