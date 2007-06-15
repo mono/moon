@@ -913,7 +913,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	}
 
 	
-	if (parent->info->content_property && strcmp (child->element_name, parent->info->content_property)) {
+	if (parent->info->content_property) {
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->dependency_type,
 				(char *) parent->info->content_property);
 

@@ -1,3 +1,7 @@
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: I must have been very tired when I wrote that.
+
 2007-06-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* media.h: Expose Image's Height and Width (required for ImageBrush)
