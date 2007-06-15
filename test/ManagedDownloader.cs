@@ -77,13 +77,17 @@ namespace Gtk.Moonlight {
 			
 			Console.WriteLine ("DOWN: Initiating Download");
 			try {
-				request = WebRequest.Create (uri);
-			} catch {
-				Console.WriteLine ("An error happened with the given url");
+				try {
+					request = WebRequest.Create (uri);
+				} catch (UriFormatException){
+					request = WebRequest.Create ("file://" + Path.GetFullPath (uri));
+				}
+			} catch (Exception e){
+				Console.WriteLine ("An error happened with the given url {0}", e);
 				// Do something with this
 			}
 			if (request == null){
-				Console.WriteLine ("An error happened with the given url");
+				Console.WriteLine ("An error happened with the given url, the result was null");
 				return;
 			}
 			

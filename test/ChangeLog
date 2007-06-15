@@ -1,0 +1,4 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* ManagedDownloader.cs: Add support for local files
+
