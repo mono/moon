@@ -1,0 +1,55 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Width="200" Height="200" Stroke="blue">
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None">
+		<ImageBrush.Transform>
+			<TransformGroup>
+				<SkewTransform CenterX="10" CenterY="10" AngleX="5" AngleY="150" />
+				<TranslateTransform X="-20" Y="50" />
+			</TransformGroup>
+		</ImageBrush.Transform>
+		</ImageBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Width="200" Height="200" Canvas.Left="301" Stroke="blue">
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None">
+		<ImageBrush.Transform>
+			<TransformGroup>
+				<RotateTransform CenterX="-20" CenterY="-20" Angle="45" />
+				<TranslateTransform X="120" Y="-50" />
+			</TransformGroup>
+		</ImageBrush.Transform>
+		</ImageBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Width="200" Height="200" Canvas.Top="301" Stroke="blue">
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None">
+		<ImageBrush.Transform>
+			<TransformGroup>
+				<ScaleTransform CenterX="-20" CenterY="-20" ScaleX="2" ScaleY="1.5" />
+				<TranslateTransform X="-120" Y="-50" />
+			</TransformGroup>
+		</ImageBrush.Transform>
+		</ImageBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Width="200" Height="200" Canvas.Top="301" Canvas.Left="301" Stroke="blue">
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None">
+		<ImageBrush.Transform>
+			<TransformGroup>
+				<SkewTransform CenterX="10" CenterY="10" AngleX="5" AngleY="10" />
+				<ScaleTransform ScaleX="2" ScaleY="1" />
+				<RotateTransform CenterX="-20" CenterY="-20" Angle="15" />
+				<TranslateTransform X="-60" Y="-75" />
+			</TransformGroup>
+		</ImageBrush.Transform>
+		</ImageBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+</Canvas>
