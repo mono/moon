@@ -14,6 +14,7 @@ libmoon_la_SOURCES = 	\
 	clock.h		\
 	cutil.cpp	\
 	cutil.h		\
+	downloader.cpp	\
 	ffvideo.cpp	\
 	geometry.cpp	\
 	geometry.h	\

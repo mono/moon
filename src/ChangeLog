@@ -1,3 +1,7 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* downloader.cpp: Move downloader to its own file.
+
 2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Implement ImageBrush.Opacity like MS does it in 1.1 alpha
