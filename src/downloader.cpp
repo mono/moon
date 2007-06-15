@@ -42,10 +42,6 @@
 #include "runtime.h"
 #include "downloader.h"
 
-#define NOTIFY_COMPLETED        0
-#define NOTIFY_PROGRESS_CHANGED 1
-#define NOTIFY_DOWNLOAD_FAILED  2
-
 //
 // Downloader
 //
@@ -144,10 +140,10 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 	dl->SetValue (Downloader::DownloadProgressProperty, Value (p));
 
 	if (dl->event_notify != NULL){
-		dl->event_notify (NOTIFY_PROGRESS_CHANGED);
+		dl->event_notify (Downloader::NOTIFY_PROGRESS_CHANGED, dl->event_closure);
 
 		if (dl->total == dl->file_size)
-			dl->event_notify (NOTIFY_COMPLETED);
+			dl->event_notify (Downloader::NOTIFY_COMPLETED, dl->event_closure);
 	}
 }
 
@@ -162,13 +158,14 @@ downloader_notify_size (Downloader *dl, int64_t size)
 	dl->SetValue (Downloader::DownloadProgressProperty, Value (0.0));
 
 	if (dl->event_notify != NULL)
-		dl->event_notify (NOTIFY_PROGRESS_CHANGED);
+		dl->event_notify (Downloader::NOTIFY_PROGRESS_CHANGED, dl->event_closure);
 }
 
 void  
-downloader_want_events (Downloader *dl, downloader_event_notify event_notify)
+downloader_want_events (Downloader *dl, downloader_event_notify event_notify, gpointer closure)
 {
 	dl->event_notify = event_notify;
+	dl->event_closure = closure;
 }
 
 DependencyProperty *Downloader::DownloadProgressProperty;

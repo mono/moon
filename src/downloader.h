@@ -20,7 +20,7 @@ typedef void     (*downloader_send_func)(gpointer state);
 typedef void     (*downloader_abort_func)(gpointer state);
 typedef char*    (*downloader_get_response_text_func)(char *part, gpointer state);
 
-typedef void     (*downloader_event_notify) (int kind);
+typedef void     (*downloader_event_notify) (int kind, gpointer cb_data);
 
 class Downloader : public DependencyObject {
  public:
@@ -40,7 +40,7 @@ class Downloader : public DependencyObject {
 	// Image class for instance)
 	void SetWriteFunc (downloader_write_func write,
 			   downloader_notify_size_func notify_size,
-			   gpointer data);
+			   gpointer closure);
 
 	// This is called by the supplier of the downloaded data (the
 	// managed framework, the browser plugin, the demo test)
@@ -51,7 +51,14 @@ class Downloader : public DependencyObject {
 				  downloader_abort_func abort,
 				  downloader_get_response_text_func get_response_text);
 
+	enum EventKind {
+		NOTIFY_COMPLETED,
+		NOTIFY_PROGRESS_CHANGED,
+		NOTIFY_DOWNLOAD_FAILED
+	};
+
 	downloader_event_notify event_notify;
+	gpointer event_closure;
 
 	int64_t file_size;
 	int64_t total;
@@ -87,13 +94,14 @@ char *downloader_get_response_text (Downloader *dl, char *PartName);
 void  downloader_open              (Downloader *dl, char *verb, char *URI, bool Async);
 void  downloader_send              (Downloader *dl);
 
-void  downloader_want_events       (Downloader *dl, downloader_event_notify event_notify);
+void  downloader_want_events       (Downloader *dl, downloader_event_notify event_notify, gpointer closure);
 
 //
 // Used to push data to the consumer
 //
-void downloader_write       (Downloader *dl, guchar *buf, gsize offset, gsize n);
-void downloader_notify_size (Downloader *dl, int64_t size);
+void downloader_write           (Downloader *dl, guchar *buf, gsize offset, gsize n);
+void downloader_notify_size     (Downloader *dl, int64_t size);
+void downloader_notify_finished (Downloader *dl);
 
 G_END_DECLS
 #endif

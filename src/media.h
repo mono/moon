@@ -58,23 +58,34 @@ class Image : public MediaBase {
 
 	ImageBrush *brush;
 
+	bool render_progressive; /* true if we want the onscreen image
+				    updated as we download */
+
  private:
+	void CreateSurface ();
 	void CleanupSurface ();
 	void StopLoader ();
 
+	// downloader callbacks
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
-	void LoaderSizePrepared (int width, int height);
-	void LoaderAreaUpdated (int x, int y, int width, int height);
-
+	void DownloaderEvent (int kind);
 	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
+	static void downloader_event (int kind, gpointer data);
 	static void size_notify (int64_t size, gpointer data);
-	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
-	static void loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data);
 
+
+	// pixbuf callbacks
+	void LoaderSizePrepared (int width, int height);
+	void LoaderAreaPrepared ();
+	void LoaderAreaUpdated (int x, int y, int width, int height);
+	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
+	static void loader_area_prepared (GdkPixbufLoader *loader, gpointer data);
+	static void loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data);
+	
 	GdkPixbufLoader *loader;
 	Downloader *downloader;
-	cairo_surface_t *xlib_surface;
-	GdkPixmap *pixmap;
+	GdkPixbuf *pixbuf;
+	cairo_surface_t *surface;
 	int pixbuf_width;
 	int pixbuf_height;
 };

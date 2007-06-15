@@ -1,3 +1,19 @@
+2007-06-15  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (EXTRA_DIST): add alpha-premul-table.inc from
+	libgdiplus.
+
+	* demo.cpp: notify the downloader of the image file size so that
+	it'll generate a COMPLETED event for the Image.
+
+	* media.h, media.cpp: make image downloading non-progressive (we
+	only create the surface when the downloader notifies the download
+	is complete), but gain something in return: images with alpha
+	channels.
+
+	* downloader.h, downloader.cpp: add closure to event_notify, and
+	expose the Event kind.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (UIElement, Canvas): send events to the objects as

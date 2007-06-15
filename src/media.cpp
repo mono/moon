@@ -276,13 +276,14 @@ media_element_set_volume (MediaElement *media, double value)
 DependencyProperty* Image::DownloadProgressProperty;
 
 Image::Image ()
-  : pixmap (NULL),
-    pixbuf_width (0),
+  : pixbuf_width (0),
     pixbuf_height (0),
+    pixbuf (NULL),
     loader (NULL),
     downloader (NULL),
-    xlib_surface (NULL),
-    brush (NULL)
+    surface (NULL),
+    brush (NULL),
+    render_progressive (false)
 {
 }
 
@@ -309,14 +310,14 @@ Image::StopLoader ()
 void
 Image::CleanupSurface ()
 {
-	if (pixmap) {
-		g_object_unref (pixmap);
-		pixmap = NULL;
+	if (pixbuf) {
+		g_object_unref (pixbuf);
+		pixbuf = NULL;
 	}
 
-	if (xlib_surface) {
-		cairo_surface_destroy (xlib_surface);
-		xlib_surface = NULL;
+	if (surface) {
+		cairo_surface_destroy (surface);
+		surface = NULL;
 	}
 
 	pixbuf_width =
@@ -336,11 +337,13 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	loader = gdk_pixbuf_loader_new ();
 
 	g_signal_connect (loader, "size_prepared", G_CALLBACK(loader_size_prepared), this);
+	g_signal_connect (loader, "area_prepared", G_CALLBACK(loader_area_prepared), this);
 	g_signal_connect (loader, "area_updated", G_CALLBACK(loader_area_updated), this);
 
 	downloader = (Downloader*)dl;
 	base_ref (downloader);
 	downloader->SetWriteFunc (pixbuf_write, size_notify, this);
+	downloader_want_events (downloader, downloader_event, this);
 	downloader_open (downloader, "GET", PartName, true);
 }
 
@@ -351,58 +354,152 @@ Image::PixbufWrite (guchar *buf, gsize offset, gsize count)
 }
 
 void
+Image::DownloaderEvent (int kind)
+{
+	if (kind == Downloader::NOTIFY_COMPLETED) {
+		if (!gdk_pixbuf_loader_close (loader, NULL)) {
+		  printf ("Error closing pixbuf loader\n");
+		  return;
+		}
+
+		if (!render_progressive)
+			CreateSurface ();
+
+		if (brush)
+			brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
+		else
+			item_invalidate (this);
+	}
+}
+
+#ifdef WORDS_BIGENDIAN
+#define set_pixel_bgra(pixel,index,b,g,r,a) do { \
+		((unsigned char *)(pixel))[index]   = a; \
+		((unsigned char *)(pixel))[index+1] = r; \
+		((unsigned char *)(pixel))[index+2] = g; \
+		((unsigned char *)(pixel))[index+3] = b; \
+	} while (0)
+#else
+#define set_pixel_bgra(pixel,index,b,g,r,a) do { \
+		((unsigned char *)(pixel))[index]   = b; \
+		((unsigned char *)(pixel))[index+1] = g; \
+		((unsigned char *)(pixel))[index+2] = r; \
+		((unsigned char *)(pixel))[index+3] = a; \
+	} while (0)
+#endif
+#define get_pixel_bgra(color, b, g, r, a) do { \
+		a = ((color & 0xff000000) >> 24); \
+		r = ((color & 0x00ff0000) >> 16); \
+		g = ((color & 0x0000ff00) >> 8); \
+		b = (color & 0x000000ff); \
+	} while(0)
+#define get_pixel_rgba(color, b, g, r, a) do { \
+		a = ((color & 0xff000000) >> 24); \
+		b = ((color & 0x00ff0000) >> 16); \
+		g = ((color & 0x0000ff00) >> 8); \
+		r = (color & 0x000000ff); \
+	} while(0)
+
+#include "alpha-premul-table.inc"
+
+void
+Image::CreateSurface ()
+{
+	if (surface) {
+		printf ("surface already created..\n");
+		return;
+	}
+
+	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	if (!pixbuf)
+		return;
+
+	if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
+		g_object_ref (pixbuf);
+	}
+	else {
+		/* gdk-pixbuf packs its pixel data into 24 bits for
+		   rgb, instead of 32 with an unused byte for alpha,
+		   like cairo expects */
+
+		GdkPixbuf *pb = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, pixbuf_width, pixbuf_height);
+		gdk_pixbuf_copy_area (pixbuf,
+				      0, 0, pixbuf_width, pixbuf_height,
+				      pb,
+				      0, 0);
+		pixbuf = pb;
+	}
+
+	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	guchar *p;
+	for (int y = 0; y < pixbuf_height; y ++) {
+		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
+		for (int x = 0; x < pixbuf_width; x ++) {
+		  guint32 color = *(guint32*)p;
+		  guchar r, g, b, a;
+
+		  get_pixel_rgba (color, r, g, b, a);
+
+		  /* pre-multipled alpha */
+		  if (a == 0) {
+		  	r = g = b = 0;
+		  }
+		  else if (a < 255) {
+		  	r = pre_multiplied_table [r][a];
+			g = pre_multiplied_table [b][a];
+			b = pre_multiplied_table [g][a];
+		  }
+
+		  /* store it back, swapping red and blue */
+		  set_pixel_bgra (p, 0, r, g, b, a);
+
+		  p += 4;
+		}
+	}
+
+	surface = cairo_image_surface_create_for_data (pb_pixels,
+						       CAIRO_FORMAT_ARGB32,
+						       pixbuf_width,
+						       pixbuf_height,
+						       gdk_pixbuf_get_rowstride (pixbuf));
+}
+
+void
 Image::LoaderSizePrepared (int width, int height)
 {
 	printf ("image has size %dx%d\n", width, height);
 	pixbuf_width = width;
 	pixbuf_height = height;
 
-	pixmap = gdk_pixmap_new (gdk_get_default_root_window (),
-				 width, height,
-				 gdk_drawable_get_depth (gdk_get_default_root_window ()));
-
-	xlib_surface = cairo_xlib_surface_create (GDK_PIXMAP_XDISPLAY (pixmap),
-						  GDK_PIXMAP_XID (pixmap),
-						  GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (GDK_DRAWABLE (pixmap))),
-						  pixbuf_width,
-						  pixbuf_height);
-
-	/* fill in the initial state of the xlib surface so we don't
-	   show garbage to the user */
-	cairo_t *cr = cairo_create (xlib_surface);
-	cairo_set_source_rgba (cr, 0.75, 0.75, 0.75, 1.0);
-	cairo_rectangle (cr, 0, 0, pixbuf_width, pixbuf_height);
-	cairo_fill (cr);
-	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-	cairo_rectangle (cr, 0, 0, pixbuf_width, pixbuf_height);
-	cairo_stroke (cr);
-	cairo_destroy (cr);
+#if PROGRESSIVE_IMAGE_LOADING
+	if (render_progressive && !surface)
+		CreateSurface ();
+#endif
 
 	item_update_bounds (this);
 }
 
 void
+Image::LoaderAreaPrepared ()
+{
+#if PROGRESSIVE_IMAGE_LOADING
+	/* the pixbuf can be retrieved from the loader, but it hasn't
+	   been filled in yet.  create our surface data here since we
+	   can ask the pixbuf what width/height/rowstride it will
+	   be. */
+#endif
+}
+
+void
 Image::LoaderAreaUpdated (int x, int y, int width, int height)
 {
-	GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+#if PROGRESSIVE_IMAGE_LOADING
+	if (!render_progressive)
+	  return;
 
-	if (!pixbuf)
-		return;
-	GdkGC *gc = gdk_gc_new (GDK_DRAWABLE (pixmap));
-	gdk_draw_pixbuf (GDK_DRAWABLE (pixmap),
-			 gc,
-			 pixbuf,
-			 x, y,
-			 x, y,
-			 width, height,
-			 GDK_RGB_DITHER_NONE,
-			 0,0);
-	g_object_unref (G_OBJECT (gc));
 
-	if (brush)
-		brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
-	else
-		item_invalidate (this);
+	item_invalidate (this);
+#endif
 }
 
 void
@@ -411,7 +508,13 @@ Image::size_notify (int64_t size, gpointer data)
 	// Do something with it?
 	// if size == -1, we do not know the size of the file, can happen
 	// if the server does not return a Content-Length header
-	//printf ("The file size is %lld\n", size);
+	printf ("The file size is %lld\n", size);
+}
+
+void
+Image::downloader_event (int kind, gpointer data)
+{
+	((Image*)data)->DownloaderEvent (kind);
 }
 
 void
@@ -427,6 +530,12 @@ Image::loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpo
 }
 
 void
+Image::loader_area_prepared (GdkPixbufLoader *loader, gpointer data)
+{
+	((Image*)data)->LoaderAreaPrepared ();
+}
+
+void
 Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data)
 {
 	((Image*)data)->LoaderAreaUpdated (x, y, width, height);
@@ -435,14 +544,14 @@ Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, in
 void
 Image::render (Surface *s, int x, int y, int width, int height)
 {
-	if (!xlib_surface)
+	if (!surface)
 		return;
 
 	cairo_save (s->cairo);
 
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
-	cairo_set_source_surface (s->cairo, xlib_surface, 0, 0);
+	cairo_set_source_surface (s->cairo, surface, 0, 0);
 
 	cairo_rectangle (s->cairo, 0, 0, this->pixbuf_width, this->pixbuf_height);
 
@@ -462,7 +571,7 @@ Image::getbounds ()
 cairo_surface_t *
 Image::GetSurface ()
 {
-	return xlib_surface;
+	return surface;
 }
 
 void

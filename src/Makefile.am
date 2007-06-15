@@ -34,6 +34,8 @@ libmoon_la_SOURCES = 	\
 	value.h		\
 	xaml.cpp
 
+EXTRA_DIST=alpha-premul-table.inc
+
 demo_SOURCES = \
 	demo.cpp
 
