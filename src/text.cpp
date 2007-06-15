@@ -433,36 +433,78 @@ TextBlock::Draw (Surface *s, bool render)
 	}
 	
 	if ((inlines = text_block_get_inlines (this))) {
-		GList *node = inlines->list;
+		PangoFontDescription *cur_font = font;
+		GList *next, *node = inlines->list;
+		int width, height, x = 0, y = 0;
+		bool newline = false;
+		int max_height;
 		Inline *item;
+		
+		pango_layout_get_pixel_size (layout, &width, &height);
+		max_height = height;
 		
 		while (node != NULL) {
 			item = (Inline *) node->data;
 			
-			pango_layout_set_font_description (layout, item->font);
-			
 			switch (item->GetObjectType ()) {
 			case Value::RUN:
+				if (!pango_font_description_equal (item->font, cur_font)) {
+					pango_layout_set_font_description (layout, item->font);
+					cur_font = item->font;
+				}
+				
 				text = run_get_text ((Run *) item);
+				//printf ("<Run>%s</Run>\n", text ? text : "(null)");
+				
+				if (text == NULL || *text == '\0') {
+					// optimization
+					break;
+				}
+				
+				x += width;
+				//printf ("moving to (%d, %d)\n", x, y);
+				cairo_move_to (s->cairo, x, y);
+				pango_cairo_update_layout (s->cairo, layout);
+				
+				if ((brush = inline_get_foreground (item)))
+					brush->SetupBrush (s->cairo, this);
+				
 				pango_layout_set_text (layout, text, -1);
-				printf ("<Run>%s</Run>\n", text);
+				
+				if (render)
+					pango_cairo_show_layout (s->cairo, layout);
+				else
+					pango_cairo_layout_path (s->cairo, layout);
+				
+				pango_layout_get_pixel_size (layout, &width, &height);
+				
+				newline == newline || strchr (text, '\n');
+				if (height > max_height || newline)
+					max_height = height;
+				
+				newline = false;
+				
 				break;
 			case Value::LINEBREAK:
-				pango_layout_set_text (layout, "\n", 1);
-				printf ("<LineBreak/>\n");
+				//printf ("<LineBreak/>\n");
+				y += max_height;
+				//printf ("moving to (%d, %d)\n", x, y);
+				cairo_move_to (s->cairo, 0, y);
+				pango_cairo_update_layout (s->cairo, layout);
+				max_height = height;
+				newline = true;
+				width = 0;
 				break;
 			default:
 				printf ("unknown Inline item\n");
 				break;
 			}
 			
-			if (render)
-				pango_cairo_show_layout (s->cairo, layout);
-			else
-				pango_cairo_layout_path (s->cairo, layout);
-			
 			node = node->next;
 		}
+		
+	finished:
+		;
 	}
 }
 
