@@ -1,3 +1,8 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (UIElement, Canvas): send events to the objects as
+	well.   My original test on orcas was buggy.
+
 2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp|h, type.cpp, value.cpp|h: Add Control.

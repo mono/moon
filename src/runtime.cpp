@@ -691,6 +691,12 @@ UIElement::handle_motion (Surface *s, int state, double x, double y)
 }
 
 void
+UIElement::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
+{
+	cb (this, state, x, y);
+}
+
+void
 UIElement::enter (Surface *s, int state, double x, double y)
 {
 	s->cb_enter (this, state, x, y);
@@ -1039,6 +1045,33 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 }
 
 void
+Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
+{
+	Panel::handle_button (s, cb, state, x, y);
+
+	// 
+	// Walk the list in reverse
+	//
+	GList *il = g_list_last (children->list);
+	if (il == NULL)
+		return;
+
+	for (; il != NULL; il = il->prev){
+		UIElement *item = (UIElement *) il->data;
+
+		// Quick bound check:
+		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2){
+			continue;
+		}
+
+		if (item->inside_object (s, x, y)){
+			item->handle_button (s, cb, state, x, y);
+			return;
+		}
+	}
+}
+
+void
 Canvas::leave (Surface *s)
 {
 	Panel::leave (s);
@@ -1255,8 +1288,7 @@ button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer dat
 	if (button->button != 1)
 		return FALSE;
 
-	// Again, I cant get this to go to anything but the toplevel, this is odd.
-	s->cb_up (s->toplevel, button->state, button->x, button->y);
+	s->toplevel->handle_button (s, s->cb_up, button->state, button->x, button->y);
 	return TRUE;
 }
 
@@ -1266,15 +1298,14 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 	Surface *s = (Surface *) data;
 
 	gtk_widget_grab_focus (widget);
+
 	if (!s->cb_down)
 		return FALSE;
-	
+
 	if (button->button != 1)
 		return FALSE;
 
-	// Again, I cant get this to go to anything but the toplevel, this is odd.
-	s->cb_down (s->toplevel, button->state, button->x, button->y);
-	return TRUE;
+	s->toplevel->handle_button (s, s->cb_down, button->state, button->x, button->y);
 }
 
 void

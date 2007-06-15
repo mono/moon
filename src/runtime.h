@@ -559,6 +559,13 @@ EventTrigger *event_trigger_new (void);
 void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
 void          event_trigger_fire_actions (EventTrigger *trigger);
 
+//
+// Surface callbacks
+//
+typedef void (*callback_mouse_event)    (UIElement *target, int state, double x, double y);
+typedef void (*callback_plain_event)    (UIElement *target);
+typedef bool (*callback_keyboard_event) (UIElement *target, int state, int platformcode, int key);
+
 
 //
 // Item class
@@ -643,6 +650,14 @@ class UIElement : public Visual {
 	//
 	virtual void handle_motion (Surface *s, int state, double x, double y);
 
+	//
+	// handle_button:
+	//   handles the button press or button release events and dispatches
+	//   it to all the objects that might be interested in it (nested
+	//   objects)
+	//
+	virtual void handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	
 	//
 	// enter:
 	//   Invoked when the mouse first enters this given object
@@ -765,6 +780,7 @@ class Canvas : public Panel {
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
 	virtual void handle_motion (Surface *s, int state, double x, double y);
+	virtual void handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	virtual void leave (Surface *s);
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
@@ -788,13 +804,6 @@ class Control : public FrameworkElement {
 Control *control_new (void);
 
 typedef struct _SurfacePrivate SurfacePrivate;
-
-//
-// Surface:
-//
-typedef void (*callback_mouse_event)    (UIElement *target, int state, double x, double y);
-typedef void (*callback_plain_event)    (UIElement *target);
-typedef bool (*callback_keyboard_event) (UIElement *target, int state, int platformcode, int key);
 
 class Surface {
  public:
