@@ -85,6 +85,8 @@ class GradientBrush : public Brush {
 	GradientStopCollection *children;
 
 	GradientBrush ();
+	~GradientBrush ();
+	
 	virtual Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);

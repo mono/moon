@@ -467,6 +467,12 @@ GradientBrush::GradientBrush ()
 	g_assert (c == children);
 }
 
+GradientBrush::~GradientBrush ()
+{
+	if (children)
+		base_unref (children);
+}
+
 void
 GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -477,21 +483,8 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 		GradientStopCollection *newcol = GetValue (prop)->AsGradientStopCollection();
 
 		if (newcol != children){
-			if (children) {
-				DependencyObject *dob;
-				GList *node, *next;
-				
-				node = children->list;
-				while (node != NULL) {
-					dob = (DependencyObject *) node->data;
-					base_unref (dob);
-					next = node->next;
-					g_list_free_1 (node);
-					node = next;
-				}
-				
+			if (children) 
 				base_unref (children);
-			}
 
 			children = newcol;
 			if (children->closure)

@@ -61,6 +61,7 @@ class GeometryGroup : public Geometry {
 	GeometryCollection *children;
 
 	GeometryGroup ();
+	~GeometryGroup ();
 	virtual Value::Kind GetObjectType () { return Value::GEOMETRYGROUP; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -132,6 +133,7 @@ class PathGeometry : public Geometry {
 	PathFigureCollection *children;
 
 	PathGeometry ();
+	~PathGeometry ();
 	virtual Value::Kind GetObjectType () { return Value::PATHGEOMETRY; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -190,6 +192,7 @@ class PathFigure : public DependencyObject {
 	PathSegmentCollection *children;
 
 	PathFigure ();
+	~PathFigure ();
 	virtual Value::Kind GetObjectType () { return Value::PATHFIGURE; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);

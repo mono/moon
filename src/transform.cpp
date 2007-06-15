@@ -367,6 +367,12 @@ TransformGroup::TransformGroup ()
 	g_assert (c == children);
 }
 
+TransformGroup::~TransformGroup ()
+{
+	if (children != NULL)
+		base_unref (children);
+}
+
 void
 TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 {

@@ -1,3 +1,9 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* Add destructors to classes that are caching DO collections and
+	keeping refs to those, thanks to Chris Toshok for the pattern to
+	use here. 
+
 2007-06-15  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (Image::render): use the uielement's opacity when

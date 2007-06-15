@@ -89,6 +89,12 @@ GeometryGroup::GeometryGroup ()
 	g_assert (c == children);
 }
 
+GeometryGroup::~GeometryGroup ()
+{
+	if (children)
+		base_unref (children);
+}
+
 void
 GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -99,22 +105,8 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
 
 		if (newcol != children) {
-			if (children) {
-				GList *node = children->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				children->list = NULL;
+			if (children) 
 				base_unref (children);
-			}
 
 			children = newcol;
 			if (children->closure)
@@ -317,6 +309,12 @@ PathGeometry::PathGeometry ()
 	g_assert (c == children);
 }
 
+PathGeometry::~PathGeometry ()
+{
+	if (children)
+		base_unref (children);
+}
+
 void
 PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -327,22 +325,8 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 		PathFigureCollection *newcol = GetValue (prop)->AsPathFigureCollection();
 
 		if (newcol != children) {
-			if (children) {
-				GList *node = children->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				children->list = NULL;
+			if (children) 
 				base_unref (children);
-			}
 
 			children = newcol;
 			if (children->closure)
@@ -473,6 +457,12 @@ PathFigure::PathFigure ()
 	g_assert (c == children);
 }
 
+PathFigure::~PathFigure ()
+{
+	if (children)
+		base_unref (children);
+}
+
 void
 PathFigure::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -483,22 +473,8 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 		PathSegmentCollection *newcol = GetValue (prop)->AsPathSegmentCollection();
 
 		if (newcol != children) {
-			if (children) {
-				GList *node = children->list;
-				DependencyObject *dob;
-				GList *next;
-				
-				while (node != NULL) {
-					next = node->next;
-					dob = (DependencyObject *) node->data;
-					g_list_free_1 (node);
-					base_unref (dob);
-					node = next;
-				}
-				
-				children->list = NULL;
+			if (children) 
 				base_unref (children);
-			}
 
 			children = newcol;
 			if (children->closure)

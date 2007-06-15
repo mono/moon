@@ -884,6 +884,12 @@ DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
 	g_assert (c == key_frames);
 }
 
+DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
+{
+	if (key_frames)
+		base_unref (key_frames);
+}
+
 void
 DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -997,6 +1003,12 @@ ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 
 	// Ensure that the callback OnPropertyChanged was called.
 	g_assert (c == key_frames);
+}
+
+ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
+{
+	if (key_frames)
+		base_unref (key_frames);
 }
 
 void
@@ -1117,6 +1129,12 @@ PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 
 	// Ensure that the callback OnPropertyChanged was called.
 	g_assert (c == key_frames);
+}
+
+PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
+{
+	if (key_frames)
+		base_unref (key_frames);
 }
 
 void

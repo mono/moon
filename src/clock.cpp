@@ -476,6 +476,12 @@ TimelineGroup::TimelineGroup ()
 	g_assert (c == child_timelines);
 }
 
+TimelineGroup::~TimelineGroup ()
+{
+	if (child_timelines)
+		base_unref (child_timelines);
+}
+
 void
 TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -519,11 +525,6 @@ TimelineGroup::AddChild (Timeline *child)
 void
 TimelineGroup::RemoveChild (Timeline *child)
 {
-}
-
-TimelineGroup::~TimelineGroup ()
-{
-	base_unref (child_timelines); 
 }
 
 TimelineGroup *

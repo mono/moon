@@ -398,6 +398,7 @@ SplineDoubleKeyFrame *spline_double_key_frame_new (void);
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
 	DoubleAnimationUsingKeyFrames ();
+	~DoubleAnimationUsingKeyFrames ();
 	virtual Value::Kind GetObjectType () { return Value::DOUBLEANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (DoubleKeyFrame *frame);
@@ -421,6 +422,7 @@ DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new (void);
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
  public:
 	ColorAnimationUsingKeyFrames ();
+	~ColorAnimationUsingKeyFrames();
 	virtual Value::Kind GetObjectType () { return Value::COLORANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (ColorKeyFrame *frame);
@@ -444,6 +446,7 @@ ColorAnimationUsingKeyFrames *color_animation_using_key_frames_new (void);
 class PointAnimationUsingKeyFrames : public PointAnimation {
  public:
 	PointAnimationUsingKeyFrames ();
+	~PointAnimationUsingKeyFrames();
 	virtual Value::Kind GetObjectType () { return Value::POINTANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (PointKeyFrame *frame);

@@ -150,6 +150,7 @@ public:
 	TransformCollection *children;
 	
 	TransformGroup ();
+	~TransformGroup ();
 	virtual Value::Kind GetObjectType() { return Value::TRANSFORMGROUP; };
 
 	

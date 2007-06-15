@@ -2303,7 +2303,8 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 
 EventTrigger::~EventTrigger ()
 {
-	base_unref (actions);
+	if (actions)
+		base_unref (actions);
 }
 
 EventTrigger *
