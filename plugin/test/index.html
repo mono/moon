@@ -34,6 +34,11 @@
 		NewAssert ();
 		AreEqual ("control1.isLoaded", control1.isLoaded, true);
 
+		// control.initParams
+		NewAssert ();
+		AreEqual ("control1.initParams", control1.initParams, "");
+		AreEqual ("control2.initParams", control2.initParams, "paramValue1, paramValue2");
+
 		// control.source - Cant be changed after initialization.
 		NewAssert ();
 		AreEqual ("control1.source", control1.source, "circle.xaml");

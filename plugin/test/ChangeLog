@@ -1,3 +1,7 @@
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
+	* index.html: Add control.initParam tests.
+
 2007-06-13  Everaldo Canuto  <ecanuto@novell.com>
 
 	* index.html: Get page according to W3C specifications.
