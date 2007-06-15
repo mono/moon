@@ -139,12 +139,22 @@ class X {
 			};
 			
 			c.MouseLeftButtonDown += delegate {
-				Console.WriteLine ("Button Pressed!");
+				Console.WriteLine ("Canvas: Button Pressed!");
 			};
 
 			c.MouseLeftButtonUp += delegate {
-				Console.WriteLine ("Button Released!");
+				Console.WriteLine ("Canvas Button Released!");
 			};
+
+			r.MouseLeftButtonDown += delegate {
+				Console.WriteLine ("Rectangle: Button Pressed!");
+			};
+
+			r.MouseLeftButtonUp += delegate {
+				Console.WriteLine ("Rectangle Button Released!");
+			};
+			
+			
 
 			r.Width = 100;
 			r.Height = 100;
