@@ -273,7 +273,6 @@ public:
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
-	Value (KeySpline* keyspline);
 	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);

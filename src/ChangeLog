@@ -1,5 +1,10 @@
 2007-06-14  Jackson Harper  <jackson@ximian.com>
 
+	* value.h: This guy doesn't exist anymore, he is a
+	DependencyObject now.
+
+2007-06-14  Jackson Harper  <jackson@ximian.com>
+
 	* animation.cpp:
 	* runtime.cpp|h: We also need to update the DependencyObject when
 	resolving PropertyPaths.
