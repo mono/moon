@@ -292,9 +292,6 @@ BeginStoryboard::GetStoryboard ()
 
 BeginStoryboard::~BeginStoryboard ()
 {
-	Storyboard *sb = GetStoryboard ();
-	if (sb != NULL)
-		base_unref (sb);
 }
 
 BeginStoryboard *
