@@ -119,10 +119,8 @@ RuntimeClassInvokeDefault (NPObject *npobj, const NPVariant *args,
 
 /*** PluginClass **************************************************************/
 
-PluginClass::PluginClass (NPP instance)
+PluginClass::PluginClass ()
 {
-	this->instance = instance;
-
 	this->allocate       = &RuntimeClassAllocate;
 	this->deallocate     = &RuntimeClassDeallocate;
 	this->invalidate     = &RuntimeClassInvalidate;
@@ -222,10 +220,10 @@ PluginClass::IndexOf (NPIdentifier name, const char *const names[], int count)
 
 /*** PluginRootClass **********************************************************/
 
-PluginRootClass::PluginRootClass (NPP instance) : PluginClass (instance)
+PluginRootClass::PluginRootClass ()
 {
-	this->settings = new PluginSettings (instance);
-	this->content = new PluginContent (instance);
+	this->settings = new PluginSettings ();
+	this->content = new PluginContent ();
 }
 
 bool

@@ -127,7 +127,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 #ifdef SCRIPTING
 		case NPPVpluginScriptableNPObject:
 			if (!rootclass)
-				rootclass = new PluginRootClass (this->instance);
+				rootclass = new PluginRootClass ();
 
 			if (!this->rootobject)
 				this->rootobject = NPN_CreateObject (this->instance, rootclass);

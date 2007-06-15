@@ -1,5 +1,13 @@
 2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp,
+	* plugin-class.cpp,
+	* plugin-class.h: Remove unneeded instance fields, and contructor, after
+	implementation of PluginObject we have a better way to get instance 
+	information.
+
+2007-06-14  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-class.cpp: Change all PluginRootClass properties to use new object
 	class PluginObject.
 
