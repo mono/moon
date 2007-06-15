@@ -256,6 +256,15 @@ class DependencyObject : public Base {
 	void SetParent (DependencyObject *parent);
 	DependencyObject* GetParent ();
 
+	//
+	// Is:
+	//    Similar to C#'s is: it checks if this object is of this kind or 
+	//    a derived class.
+	
+	bool Is(Value::Kind k) {
+		return GetType ()->IsSubclassOf (k);
+	};
+	
  protected:
 	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
 	void NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type);

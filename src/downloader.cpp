@@ -1,8 +1,32 @@
 /*
- * runtime.cpp: Core surface and canvas definitions.
+ * runtime.cpp: Downloader class.
+ *
+ * The downloader implements two modes of operation:
+ *
+ *    bare bones:  this is the interface expected by Javascript and C#
+ *                 this is the default if the caller does not call
+ *                 Downloader::SetWriteFunc
+ * 
+ *    progressive: this interface is used internally by the Image
+ *                 class to do progressive loading.   If you want to
+ *                 use this mode, you must call the SetWriteFunc routine
+ *                 to install your callbacks before starting the download.
+ * 
+ * TODO:
+ *    Need a mechanism to notify the managed client of errors during 
+ *    download.
+ *
+ *    Need to provide the buffer we downloaded to GetResponseText(string PartName)
+ *    so we can return the response text for the given part name.
+ *
+ *    The providers should store the files *somewhere* and should be able
+ *    to respond to the "GetResponsetext" above on demand.   The current
+ *    code in demo.cpp and ManagedDownloader are not complete in this regard as
+ *    they only stream
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)
+ *   Miguel de Icaza (miguel@novell.com).
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -18,6 +42,10 @@
 #include "runtime.h"
 #include "downloader.h"
 
+#define NOTIFY_COMPLETED        0
+#define NOTIFY_PROGRESS_CHANGED 1
+#define NOTIFY_DOWNLOAD_FAILED  2
+
 //
 // Downloader
 //
@@ -32,6 +60,11 @@ downloader_get_response_text_func Downloader::get_response_text;
 Downloader::Downloader ()
 {
 	downloader_state = Downloader::create_state (this);
+	notify_size = NULL;
+	this->write = NULL;
+	event_notify = NULL;
+	file_size = -2;
+	total = 0;
 }
 
 Downloader::~Downloader ()
@@ -97,13 +130,45 @@ void downloader_set_functions (downloader_create_state_func create_state,
 void
 downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 {
-	dl->write (buf, offset, n, dl->consumer_closure);
+	if (dl->write)
+		dl->write (buf, offset, n, dl->consumer_closure);
+
+	// Update progress
+	dl->total += n;
+	double p;
+	if (dl->file_size >= 0)
+		p = dl->total / (double) dl->file_size;
+	else 
+		p = 0;
+
+	dl->SetValue (Downloader::DownloadProgressProperty, Value (p));
+
+	if (dl->event_notify != NULL){
+		dl->event_notify (NOTIFY_PROGRESS_CHANGED);
+
+		if (dl->total == dl->file_size)
+			dl->event_notify (NOTIFY_COMPLETED);
+	}
 }
 
 void
 downloader_notify_size (Downloader *dl, int64_t size)
 {
-	dl->notify_size (size, dl->consumer_closure);
+	dl->file_size = size;
+
+	if (dl->notify_size)
+		dl->notify_size (size, dl->consumer_closure);
+
+	dl->SetValue (Downloader::DownloadProgressProperty, Value (0.0));
+
+	if (dl->event_notify != NULL)
+		dl->event_notify (NOTIFY_PROGRESS_CHANGED);
+}
+
+void  
+downloader_want_events (Downloader *dl, downloader_event_notify event_notify)
+{
+	dl->event_notify = event_notify;
 }
 
 DependencyProperty *Downloader::DownloadProgressProperty;

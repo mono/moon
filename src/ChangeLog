@@ -10,6 +10,11 @@
 
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
+	* downloader.cpp: Implement DownloadProgress property and event
+	notification. 
+
+	* runtime.h (DependencyObject::Is): new method, similar to C# is.
+
 	* runtime.cpp (surface_repaint): We clear the background here
 	again, to allow canvases to have transparent brushes.
 

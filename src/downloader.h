@@ -19,7 +19,9 @@ typedef void     (*downloader_open_func)(char *verb, char *uri, bool async, gpoi
 typedef void     (*downloader_send_func)(gpointer state);
 typedef void     (*downloader_abort_func)(gpointer state);
 typedef char*    (*downloader_get_response_text_func)(char *part, gpointer state);
-	
+
+typedef void     (*downloader_event_notify) (int kind);
+
 class Downloader : public DependencyObject {
  public:
 	Downloader ();
@@ -49,6 +51,11 @@ class Downloader : public DependencyObject {
 				  downloader_abort_func abort,
 				  downloader_get_response_text_func get_response_text);
 
+	downloader_event_notify event_notify;
+
+	int64_t file_size;
+	int64_t total;
+	
 	// Set by the consumer
 	downloader_write_func       write;
 	downloader_notify_size_func notify_size;
@@ -79,6 +86,8 @@ void  downloader_abort             (Downloader *dl);
 char *downloader_get_response_text (Downloader *dl, char *PartName);
 void  downloader_open              (Downloader *dl, char *verb, char *URI, bool Async);
 void  downloader_send              (Downloader *dl);
+
+void  downloader_want_events       (Downloader *dl, downloader_event_notify event_notify);
 
 //
 // Used to push data to the consumer
