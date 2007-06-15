@@ -1,0 +1,15 @@
+<!-- Display formatted text as Run objects within a TextBlock. -->
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007">
+
+<TextBlock
+  FontFamily="Arial" Width="400" Text="Sample text formatting runs">
+  <LineBreak/>
+  <Run Foreground="Maroon" FontFamily="Courier New" FontSize="24">Courier New 24</Run>
+  <LineBreak/>
+  <Run Foreground="Teal" FontFamily="Times New Roman" FontSize="18" FontStyle="Italic">Times New Roman Italic 18</Run>
+  <LineBreak/>
+  <Run Foreground="SteelBlue" FontFamily="Verdana" FontSize="14" FontWeight="Bold">Verdana Bold 14</Run>
+</TextBlock>
+
+</Canvas>
