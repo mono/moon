@@ -116,14 +116,28 @@ class X {
 			r.RenderTransform = trans; 
 
 			c.MouseMove += delegate (object sender, MouseEventArgs e) {
-				Console.WriteLine ("Canvas Motion: {0}", e.GetPosition (c));
+				//Console.WriteLine ("Canvas Motion: {0}", e.GetPosition (c));
 			};
 			
 			r.MouseMove += delegate (object sender, MouseEventArgs e) {
-				Console.WriteLine ("Rectangle motion {0}", e.GetPosition (r));
-				Console.WriteLine ("Canvas motion {0}", e.GetPosition (c));
+				Console.WriteLine ("Motion Rect={0} Canvas={1}", e.GetPosition (r), e.GetPosition (c));
+				//Console.WriteLine ("          Canvas {0}", e.GetPosition (c));
 			};
 
+			Brush enter_fill = new SolidColorBrush (Color.FromRgb (0, 255, 0));
+			//Brush leave_fill = new SolidColorBrush (Color.FromRgb (0, 0, 255)); // r.Fill;
+			Brush leave_fill = r.Fill;
+			
+			r.MouseEnter += delegate {
+				Console.WriteLine ("Enter");
+				r.Fill = enter_fill;
+			};
+
+			r.MouseLeave += delegate {
+				Console.WriteLine ("Leave");
+				r.Fill = leave_fill;
+			};
+			
 			c.MouseLeftButtonDown += delegate {
 				Console.WriteLine ("Button Pressed!");
 			};
