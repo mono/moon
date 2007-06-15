@@ -1787,7 +1787,6 @@ resolve_property_path (DependencyObject **o, const char *path)
 		res = DependencyObject::GetDependencyProperty (lu->GetObjectType (), path);
 
 	*o = lu;
-	printf ("resolved: %s to %d->%s  %d\n", path, (res ? res->type : -1), (res ? res->name : ""), o);
 	return res;
 }
 
