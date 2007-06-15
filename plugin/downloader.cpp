@@ -12,7 +12,6 @@
 
 #include "moonlight.h"
 #include "runtime.h"
-#include "downloader.h"
 
 static gpointer
 p_downloader_create_state (Downloader *dl)

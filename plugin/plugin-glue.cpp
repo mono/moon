@@ -13,7 +13,6 @@
 #include "moonlight.h"
 #include "plugin.h"
 #include "moon-mono.h"
-#include "downloader.h"
 
 NPError 
 NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
