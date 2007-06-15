@@ -67,6 +67,7 @@ class Image : public MediaBase {
 	void LoaderAreaUpdated (int x, int y, int width, int height);
 
 	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
+	static void size_notify (int64_t size, gpointer data);
 	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
 	static void loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data);
 

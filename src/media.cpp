@@ -20,6 +20,7 @@
 #undef Visual
 
 #include "media.h"
+#include "downloader.h"
 
 // MediaBase
 
@@ -339,7 +340,7 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 
 	downloader = (Downloader*)dl;
 	base_ref (downloader);
-	downloader->SetWriteFunc (pixbuf_write, this);
+	downloader->SetWriteFunc (pixbuf_write, size_notify, this);
 	downloader->Open ("GET", PartName, true);
 }
 
@@ -402,6 +403,14 @@ Image::LoaderAreaUpdated (int x, int y, int width, int height)
 		brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
 	else
 		item_invalidate (this);
+}
+
+void
+Image::size_notify (int64_t size, gpointer data)
+{
+	// Do something with it?
+	// if size == -1, we do not know the size of the file, can happen
+	// if the server does not return a Content-Length header
 }
 
 void

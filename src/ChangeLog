@@ -1,5 +1,10 @@
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
+	* downloader.h: Move downloader defs into .h file
+
+	Add a notification system for reporting the size of a stream, so
+	we can do progress indication.
+
 	* downloader.cpp: Move downloader to its own file.
 
 2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>

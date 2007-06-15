@@ -16,6 +16,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include "runtime.h"
+#include "downloader.h"
 
 //
 // Downloader
@@ -65,15 +66,23 @@ Downloader::Send ()
 void
 Downloader::Write (guchar *buf, gsize offset, gsize n)
 {
-	this->write (buf, offset, n, write_data);
+	this->write (buf, offset, n, consumer_closure);
+}
+
+void
+Downloader::NotifySize (int64_t size)
+{
+	this->notify_size (size, consumer_closure);
 }
 
 void
 Downloader::SetWriteFunc (downloader_write_func write,
+			  downloader_notify_size_func notify_size,
 			  gpointer data)
 {
 	this->write = write;
-	this->write_data = data;
+	this->notify_size = notify_size;
+	this->consumer_closure = data;
 }
 
 void
@@ -119,6 +128,12 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 	dl->Write (buf, offset, n);
 }
 
+void
+downloader_notify_size (Downloader *dl, int64_t size)
+{
+	dl->NotifySize (size);
+}
+
 DependencyProperty *Downloader::DownloadProgressProperty;
 DependencyProperty *Downloader::ResponseTextProperty;
 DependencyProperty *Downloader::StatusProperty;
@@ -135,4 +150,3 @@ downloader_init (void)
 	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
 
 }
-
