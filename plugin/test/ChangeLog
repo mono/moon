@@ -1,5 +1,13 @@
 2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
 
+	* index.html: Turns control size into fixed size.
+
+	* tests.js: Fix tests for size and add size test to before load. The test 
+	values now consider behavior from Silverlight under Firefox that is same
+	behavior described in MSDN.
+
+2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
+
 	* tests.js: Tests added for enableFramerateCounter, enableRedrawRegions
 	and enableHtmlAccess settings properties.
 

@@ -43,6 +43,12 @@ function BeforeLoadTests () {
 
 	AssertNotEqual ("control1.settings.version", control1.settings.version, "");
 	AssertAreEqual ("control1.isLoaded", control1.isLoaded, false);
+
+	AssertAreEqual ("control1.content.actualWidth", control1.content.actualWidth, 400);
+	AssertAreEqual ("control2.content.actualWidth", control2.content.actualWidth, 200);
+
+	AssertAreEqual ("control1.content.actualHeight", control1.content.actualHeight, 180);
+	AssertAreEqual ("control2.content.actualHeight", control2.content.actualHeight, 190);
 }
 
 function AfterLoadTests () {
@@ -72,14 +78,14 @@ function ControlTest () {
 }
 
 function ControlSettingsTest () {
+	// control.settings.version
+	AssertNotEqual ("control1.settings.version", control1.settings.version, "");
+
 	// control.settings.background
 	AssertAreEqual ("control1.settings.background", control1.settings.background, "#c0c0c0");
 	control1.settings.background = "#b1b1b1";
 	AssertAreEqual ("control1.settings.background", control1.settings.background, "#b1b1b1");
 	AssertAreEqual ("control2.settings.background", control2.settings.background, "#ffebcd");
-
-	// control.settings.version
-	AssertNotEqual ("control1.settings.version", control1.settings.version, "");
 
 	// control.settings.enableFramerateCounter
 	AssertAreEqual ("control1.settings.enableFramerateCounter", control1.settings.enableFramerateCounter, false);
@@ -91,10 +97,10 @@ function ControlSettingsTest () {
 
 function ControlContentTest () {
 	// control1.content.actualWidth
-	AssertAreEqual ("control1.content.actualWidth", control1.content.actualWidth, 0);
-	AssertAreEqual ("control2.content.actualWidth", control2.content.actualWidth, 0);
+	AssertAreEqual ("control1.content.actualWidth", control1.content.actualWidth, 400);
+	AssertAreEqual ("control2.content.actualWidth", control2.content.actualWidth, 200);
 
 	// control.content.actualHeight
-	AssertAreEqual ("control1.content.actualHeight", control1.content.actualHeight, 0);
-	AssertAreEqual ("control2.content.actualHeight", control2.content.actualHeight, 0);
+	AssertAreEqual ("control1.content.actualHeight", control1.content.actualHeight, 180);
+	AssertAreEqual ("control2.content.actualHeight", control2.content.actualHeight, 190);
 }
