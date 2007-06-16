@@ -790,7 +790,8 @@ UIElement::~UIElement ()
 void
 UIElement::getbounds ()
 {
-	g_warning ("UIElement:getbounds has been called. The derived class should have overridden it.");
+	g_warning ("UIElement:getbounds has been called. The derived class %s should have overridden it.",
+		   dependency_object_get_name (this));
 }
 
 void

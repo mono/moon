@@ -12,6 +12,7 @@ libmoon_la_SOURCES = 	\
 	brush.h		\
 	clock.cpp	\
 	clock.h		\
+	control.cpp	\
 	cutil.cpp	\
 	cutil.h		\
 	downloader.cpp	\

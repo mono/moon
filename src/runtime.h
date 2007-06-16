@@ -824,11 +824,31 @@ Canvas *canvas_new (void);
 //
 class Control : public FrameworkElement {
  public:
-	Control () {};
+	FrameworkElement *real_object;
+	
+	Control () : real_object (NULL) { };
+	~Control ();
+	
 	virtual Value::Kind GetObjectType () { return Value::CONTROL; }
+	virtual void update_xform ();
+	virtual void render (Surface *surface, int x, int y, int width, int height);
+	virtual void getbounds ();
+	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
+	virtual Point getxformorigin ();
+	virtual bool inside_object (Surface *s, double x, double y);
+	virtual void handle_motion (Surface *s, int state, double x, double y);
+	virtual void handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual void enter (Surface *s, int state, double x, double y);
+	virtual void leave (Surface *s);
+
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
+
 };
 
 Control *control_new (void);
+void     control_initialize_from_xaml (Control *control, const char *xaml);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 

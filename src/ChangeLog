@@ -1,5 +1,7 @@
 2007-06-16  Miguel de Icaza  <miguel@novell.com>
 
+	* control.cpp: Implement Control.
+
 	* downloader.cpp: Implement a system to send various notifications
 	as Chris wants his notifications and managed world wants the
 	notifications as well. 
