@@ -82,10 +82,10 @@
 	<!-- seconds hand -->
 	<Path Fill="Red" Stroke="Red">
 		<Path.Data>
-			<EllipseGeometry Center="100,100" RadiusX="1" RadiusY="1" />
+			<EllipseGeometry Center="100,100" RadiusX="3" RadiusY="3" />
 		</Path.Data>
 	</Path>
-	<Line Stroke="Red" X1="100" Y1="100" X2="100" Y2="60" StrokeThickness="1">
+	<Line Stroke="Red" X1="100" Y1="100" X2="100" Y2="62" StrokeThickness="1" StrokeStartLineCap="Round">
 		<Line.RenderTransform>
 			<TransformGroup>
 				<TransformGroup.Children>
