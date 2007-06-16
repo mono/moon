@@ -1,3 +1,14 @@
+2007-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp, clock.h: don't use a constant for the timeout in
+	gtk_timeout_add, and add methods to add/remove the timeout.
+
+	(ClockGroup::TimeUpdated): if we're paused or stopped,
+	don't call child clock TimeUpdated methods at all.  they always
+	generate CurrentTimeInvalidated even when the time hasn't changed,
+	which triggers redraws that don't need to happen.
+
+
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: We still need C style base_ref/unref.
@@ -23,6 +34,13 @@
 	Inlines.
 	(text_block_set_foreground): Don't unref the old brush.
 	(inline_set_foreground): Same.
+
+2007-06-15  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Canvas::render): small optimization.  only call the
+	item's render method if its bounds actually intersects with the
+	rectangle we're rendering.  Also, clip to the bounding rectangle
+	of the item here.
 
 2007-06-15  Chris Toshok  <toshok@ximian.com>
 

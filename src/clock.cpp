@@ -23,7 +23,6 @@
 //#endif
 
 
-
 static TimeSpan
 get_now (void)
 {
@@ -44,7 +43,8 @@ TimeManager* TimeManager::_instance = NULL;
 
 TimeManager::TimeManager ()
   : child_clocks (NULL),
-    tick_id (-1)
+    tick_id (-1),
+    current_timeout (60)  /* something suitably small */
 {
 }
 
@@ -52,17 +52,37 @@ void
 TimeManager::Start()
 {
 	current_global_time = get_now ();
-	tick_id = gtk_timeout_add (60 /* something suitably small */, TimeManager::tick_timeout, this);
+	AddTimeout ();
 }
 
 void
-TimeManager::Shutdown ()
+TimeManager::AddTimeout ()
 {
 	GList *node = child_clocks;
 	GList *next;
 	
 	if (tick_id != -1)
+		return;
+
+	tick_id = gtk_timeout_add (current_timeout, TimeManager::tick_timeout, this);
+}
+
+void
+TimeManager::RemoveTimeout ()
+{
+	if (tick_id != -1){
 		g_source_remove (tick_id);
+		tick_id = -1;
+	}
+}
+
+void
+TimeManager::Shutdown ()
+{
+	RemoveTimeout ();
+
+        GList *node = child_clocks;
+        GList *next;
 	
 	while (node != NULL) {
 		next = node->next;
@@ -85,6 +105,7 @@ void
 TimeManager::Tick ()
 {
 	current_global_time = get_now ();
+	//printf ("Tick() at %llu (diff = %llu)\n", current_global_time, current_global_time - old_time);
 
 	//printf ("TimeManager::Tick\n");
 
@@ -357,8 +378,10 @@ ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 	/* recompute our current_time */
 	this->Clock::TimeUpdated (parent_clock_time);
 
-	for (GList *l = child_clocks; l; l = l->next) {
-		((Clock*)l->data)->TimeUpdated (current_time);
+	if ((current_state & (STOPPED | PAUSED)) == 0) {
+		for (GList *l = child_clocks; l; l = l->next) {
+			((Clock*)l->data)->TimeUpdated (current_time);
+		}
 	}
 
 	/* if we're automatic and no child clocks are still running, we need to stop.

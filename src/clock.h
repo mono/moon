@@ -153,6 +153,9 @@ class TimeManager {
  private:
 	TimeManager ();
 
+	void AddTimeout ();
+	void RemoveTimeout ();
+
 	void RaiseEnqueuedEvents ();
 
 	static TimeManager *_instance;
@@ -162,6 +165,7 @@ class TimeManager {
 	TimeSpan current_global_time;
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
+	int current_timeout;
 };
 
 
