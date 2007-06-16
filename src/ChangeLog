@@ -1,5 +1,10 @@
 2007-06-16  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* ffvideo.cpp (Stop): Implemented.
+	(.ctor): init paused to false (maybe this is why video
+	didn'talways work?).
+	(.dtor): Stop() the video and unhook the timeout.
+
 	* runtime.cpp: Implement Base::ref and Base::unref instead of
 	doing it the c way.
 

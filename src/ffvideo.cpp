@@ -92,6 +92,8 @@ public:
 	GStaticMutex pause_mutex;
 	bool         paused;
 	
+	bool shutdown;
+	
 	//
 	// AV Fields
 	//
@@ -394,6 +396,12 @@ queue_data (gpointer data)
 		int ret;
 		
 		g_static_mutex_lock (&video->pause_mutex);
+		
+		if (video->shutdown) {
+			printf ("thread being shutdown...\n");
+			g_static_mutex_unlock (&video->pause_mutex);
+			break;
+		}
 		
 		if (av_read_frame (video->av_format_context, &pkt) < 0) {
 			// ffmpeg stream is complete (or error), either way - nothing left to decode.
@@ -715,7 +723,8 @@ MediaElementFfmpeg::Play (void)
 void
 MediaElementFfmpeg::Stop (void)
 {
-	
+	shutdown = true;
+	g_thread_join (decode_thread_id);
 }
 
 static int ffmpeg_inited;
@@ -746,6 +755,9 @@ media_element_ffmpeg_new (const char *filename)
 MediaElementFfmpeg::MediaElementFfmpeg (const char *filename)
 {
 	this->filename = g_strdup (filename);
+	
+	shutdown = false;
+	paused = false;
 	
 	video_codec = NULL;
 	video_stream = NULL;
@@ -791,10 +803,10 @@ MediaElementFfmpeg::getxformorigin ()
 
 MediaElementFfmpeg::~MediaElementFfmpeg ()
 {
-	// TODO:
-	//    * Ask our thread to shutdown nicely.
-	//
-	fprintf (stderr, "We should stop the thread");
+	Stop ();
+	
+	if (timeout_handle != 0)
+		g_source_remove (timeout_handle);
 	
 	g_free (filename);
 	
