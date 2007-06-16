@@ -101,12 +101,12 @@ struct Rect {
 		h = rect.h;
 	}
 
-	bool IntersectsWith (Rect rect)
+	bool IntersectsWith (const Rect& rect)
 	{
 		return ((x < rect.x + rect.w) && (x + w > rect.x) && (y < rect.y + rect.h) && (y + h > rect.y));
 	}
 
-	Rect Intersection (Rect rect)
+	Rect Intersection (const Rect& rect)
 	{
 		Rect result = Rect ();
 		result.x = x > rect.x ? x : rect.x;

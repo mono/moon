@@ -1,3 +1,7 @@
+2007-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h: make these const Rect&'s.
+
 2007-06-16  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* control.cpp|runtime.h: control_initialize_from_xaml needs to return
