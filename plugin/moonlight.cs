@@ -38,7 +38,7 @@ namespace Moonlight {
 				Console.WriteLine ("return value is not 23 (Canvas)");
 				return;
 			}
-			Console.WriteLine ("----> 1");
+			
 			MethodInfo m = typeof (Canvas).GetMethod ("FromPtr", BindingFlags.Static | BindingFlags.NonPublic);
 			Canvas c = (Canvas) m.Invoke (null, new object [] { x });
 			if (c == null){
