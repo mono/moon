@@ -1,3 +1,8 @@
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.h: Implement missing IntersectsWith and Intersection to fix 
+	build.
+
 2007-06-15  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Canvas::render): small optimization.  only call the

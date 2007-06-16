@@ -100,6 +100,21 @@ struct Rect {
 		w = rect.w;
 		h = rect.h;
 	}
+
+	bool IntersectsWith (Rect rect)
+	{
+		return ((x < rect.x + rect.w) && (x + w > rect.x) && (y < rect.y + rect.h) && (y + h > rect.y));
+	}
+
+	Rect Intersection (Rect rect)
+	{
+		Rect result = Rect ();
+		result.x = x > rect.x ? x : rect.x;
+		result.y = y > rect.y ? y : rect.y;
+		result.w = (x + w < rect.x + rect.w) ? (x + w) : (rect.x + rect.w) - result.x;
+		result.h = (y + h < rect.y + rect.h) ? (y + h) : (rect.y + rect.h) - result.y;
+		return result;
+	}
 };
 
 Rect rect_from_str (const char *s);
