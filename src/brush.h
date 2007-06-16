@@ -82,8 +82,6 @@ class GradientBrush : public Brush {
 	static DependencyProperty* MappingModeProperty;
 	static DependencyProperty* SpreadMethodProperty;
 
-	GradientStopCollection *children;
-
 	GradientBrush ();
 	~GradientBrush ();
 	

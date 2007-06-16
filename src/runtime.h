@@ -763,11 +763,12 @@ void	framework_element_set_width	(FrameworkElement *framework_element, double wi
 //
 class Panel : public FrameworkElement {
  public:
-	VisualCollection *children;
-
 	Panel ();
 	virtual ~Panel ();
 	virtual Value::Kind GetObjectType () { return Value::PANEL; }
+
+	VisualCollection *GetChildren ();
+	void SetChildren (VisualCollection *col);
 
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;

@@ -1,5 +1,13 @@
 2007-06-16  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h, runtime.cpp: remove the instance cached
+	Panel::children, use accessor to get it when we need it.
+
+	* brush.h, brush.cpp: same for the GradientBrush::children
+	property.
+
+2007-06-16  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h: make these const Rect&'s.
 
 2007-06-16  Sebastien Pouliot  <sebastien@ximian.com> 

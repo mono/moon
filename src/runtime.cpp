@@ -905,10 +905,22 @@ VisualCollection::Remove (DependencyObject *data)
 	item_update_bounds (panel);
 }
 
+VisualCollection*
+Panel::GetChildren ()
+{
+	return GetValue (Panel::ChildrenProperty)->AsVisualCollection();
+}
+
+void
+Panel::SetChildren (VisualCollection *col)
+{
+	SetValue (Panel::ChildrenProperty, col);
+}
+
 void 
 panel_child_add (Panel *panel, UIElement *child)
 {
-	collection_add (panel->children, child);
+	panel->GetChildren()->Add (child);
 }
 
 Panel*
@@ -919,18 +931,11 @@ panel_new ()
 
 Panel::Panel ()
 {
-	children = NULL;
-	VisualCollection *c = new VisualCollection ();
-
-	this->SetValue (Panel::ChildrenProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == children);
+	this->SetValue (Panel::ChildrenProperty, Value (new VisualCollection ()));
 }
 
 Panel::~Panel ()
 {
-	children->unref ();
 }
 
 //
@@ -946,17 +951,10 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 		// The new value has already been set, so unref the old collection
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 		
-		if (newcol != children) {
-			if (children) 
-				children->unref ();
-			children = newcol;
-			if (children) {
-				if (children->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				children->closure = this;
-				
-				children->ref ();
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	}
 }
@@ -989,6 +987,7 @@ Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 void
 Canvas::update_xform ()
 {
+	VisualCollection *children = GetChildren ();
 	UIElement::update_xform ();
 	GList *il;
 
@@ -1002,6 +1001,7 @@ Canvas::update_xform ()
 void
 Canvas::getbounds ()
 {
+	VisualCollection *children = GetChildren ();
 	bool first = true;
 	GList *il;
 
@@ -1061,6 +1061,7 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 void 
 Canvas::handle_motion (Surface *s, int state, double x, double y)
 {
+	VisualCollection *children = GetChildren ();
 	//printf ("is %g %g inside the canvas? %d\n", x, y, inside_object (s, x, y));
 	//printf ("Bounding: %g %g %g %g\n", x1, y1, x2, y2);
 	//
@@ -1108,6 +1109,7 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 void
 Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
+	VisualCollection *children = GetChildren ();
 	Panel::handle_button (s, cb, state, x, y);
 
 	// 
@@ -1350,6 +1352,7 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 void
 Canvas::render (Surface *s, int x, int y, int width, int height)
 {
+	VisualCollection *children = GetChildren ();
 	GList *il;
 	double actual [6];
 	

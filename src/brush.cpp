@@ -458,19 +458,11 @@ gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method)
 
 GradientBrush::GradientBrush ()
 {
-	children = NULL;
-	GradientStopCollection *c = new GradientStopCollection ();
-
-	this->SetValue (GradientBrush::GradientStopsProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == children);
+	this->SetValue (GradientBrush::GradientStopsProperty, Value (new GradientStopCollection ()));
 }
 
 GradientBrush::~GradientBrush ()
 {
-	if (children)
-		children->unref ();
 }
 
 void
@@ -479,21 +471,12 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 	Brush::OnPropertyChanged (prop);
 
 	if (prop == GradientStopsProperty){
-		// The new value has already been set, so unref the old collection
 		GradientStopCollection *newcol = GetValue (prop)->AsGradientStopCollection();
 
-		if (newcol != children){
-			if (children) 
-				children->unref ();
-
-			children = newcol;
-			if (children) {
-				if (children->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				children->closure = this;
-				
-				children->ref ();
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 		NotifyAttacheesOfPropertyChange (prop);
 	}
@@ -502,6 +485,7 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 void
 GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 {
+	GradientStopCollection *children = GetValue (GradientBrush::GradientStopsProperty)->AsGradientStopCollection ();
 	GradientSpreadMethod gsm = gradient_brush_get_spread (this);
 	cairo_pattern_set_extend (pattern, convert_gradient_spread_method (gsm));
 
