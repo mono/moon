@@ -306,9 +306,21 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 		return true;
 	}
 
-	//"enableFramerateCounter"
-	//"enableRedrawRegions"
-	//"enableHtmlAccess"
+	if (name == NPID ("enableFramerateCounter")) {
+		BOOLEAN_TO_NPVARIANT (npobj->plugin->getEnableFramerateCounter (), *result);
+		return true;
+	} 
+
+	if (name == NPID ("enableRedrawRegions")) {
+		BOOLEAN_TO_NPVARIANT (npobj->plugin->getEnableRedrawRegions (), *result);
+		return true;
+	} 
+
+	if (name == NPID ("enableHtmlAccess")) {
+		BOOLEAN_TO_NPVARIANT (npobj->plugin->getEnableHtmlAccess (), *result);
+		return true;
+	} 
+
 	//"maxFrameRate"
 
 	if (name == NPID ("version")) {
@@ -329,13 +341,15 @@ PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const 
 		return true;
 	}
 
-
 	// Cant be set after initialization so return true
 	if (name == NPID ("enableFramerateCounter")) {
 		return true;
 	} 
 
-	// "enableRedrawRegions"
+	if (name == NPID ("enableRedrawRegions")) {
+		npobj->plugin->setEnableRedrawRegions (NPVARIANT_TO_BOOLEAN (*value));
+		return true;
+	} 
 
 	// Cant be set after initialization so return true
 	if (name == NPID ("enableHtmlAccess")) {

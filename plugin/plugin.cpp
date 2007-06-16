@@ -223,7 +223,9 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 
 	if (!this->sourceUrl) {
 		this->sourceUrl = stream->url;
-		*stype = NP_ASFILEONLY;
+
+	*stype = NP_ASFILEONLY;
+
 	} else {
 		*stype = NP_NORMAL;
 	}
@@ -315,4 +317,28 @@ void
 PluginInstance::setBackground (const char *value)
 {
 	// do nothing, our surface theres no backcolor at moment.
+}
+
+bool
+PluginInstance::getEnableFramerateCounter ()
+{
+	return false;
+}
+
+bool
+PluginInstance::getEnableRedrawRegions ()
+{
+	return false;
+}
+
+void
+PluginInstance::setEnableRedrawRegions (bool value)
+{
+	// not implemented yet.
+}
+
+bool
+PluginInstance::getEnableHtmlAccess ()
+{
+	return true;
 }

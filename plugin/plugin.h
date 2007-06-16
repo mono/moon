@@ -69,6 +69,10 @@ class PluginInstance
 
 	char *getBackground ();
 	void setBackground (const char *value);
+	bool getEnableFramerateCounter ();
+	bool getEnableRedrawRegions ();
+	void setEnableRedrawRegions (bool value);
+	bool getEnableHtmlAccess ();
 };
 
 #endif /* MOON_PLUGIN */
