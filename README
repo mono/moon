@@ -268,10 +268,15 @@ Issues
 
 * Reference Counting
 
-	Should every DependencyObject that is "SetValue" be automatically
-	base_ref?   
+	1. Value() holds a ref to its contained dependency
+	   object. This means we don't have to do anything special for
+	   anything stored in a DP.
+	
+	2. Collections hold a ref to their constituents.
 
-	I think it should, discuss with Chris, Jackson and Sebastien.
+	3. If you *must* cache an DO pointer in an instance field, you
+	   must ref/unref it properly.  But really, you shouldn't need
+	   to cache it.
 
 * Value and Kinds
 
