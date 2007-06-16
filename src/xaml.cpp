@@ -544,12 +544,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		len = fread (buffer, 1, READ_BUFFER, fp);
 		done = feof (fp);
 		if (!XML_Parse (p, buffer, len, done)) {
-#ifdef DEBUG_XAML
-			printf("Parse error at line %d:\n%s\n",
-					XML_GetCurrentLineNumber (p),
-					XML_ErrorString (XML_GetErrorCode (p)));
-			printf ("can not parse xaml\n");
-#endif
+			parser_error (parser_info, NULL, NULL, g_strdup_printf (XML_ErrorString (XML_GetErrorCode (p))));
 			goto cleanup_and_return;
 		}
 	}
@@ -559,7 +554,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 #endif
 
 	if (parser_info->error_args) {
-		// Emit the error event
+
 	}
 
 	if (parser_info->top_element) {
@@ -574,6 +569,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		}
 		else {
 			res = NULL;
+			*element_type = Value::INVALID;
 			goto cleanup_and_return;
 		}
 	}
@@ -624,12 +620,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 
 
 	if (!XML_Parse (p, xaml, strlen (xaml), TRUE)) {
-#ifdef DEBUG_XAML
-		printf("Parse error at line %d:\n%s\n",
-				XML_GetCurrentLineNumber (p),
-				XML_ErrorString (XML_GetErrorCode (p)));
-		printf ("can not parse xaml\n");
-#endif
+		parser_error (parser_info, NULL, NULL, g_strdup_printf (XML_ErrorString (XML_GetErrorCode (p))));
 		goto cleanup_and_return;
 	}
 
@@ -652,6 +643,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 		}
 		else {
 			res = NULL;
+			*element_type = Value::INVALID;
 			goto cleanup_and_return;
 		}
 	}

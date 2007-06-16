@@ -2,6 +2,7 @@
 
 	* xaml.cpp: Kill top_kind, I have no idea how this guy crept back
 	in.
+	- Handle expat errors a little better.
 
 2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
 
