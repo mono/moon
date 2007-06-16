@@ -525,7 +525,6 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 	Timeline::OnPropertyChanged (prop);
 
 	if (prop == ChildrenProperty) {
-		// The new value has already been set, so unref the old collection
 		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
 
 		if (newcol) {
