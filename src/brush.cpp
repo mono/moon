@@ -10,7 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
-#define __STDC_CONSTANT_MACROS
+#include <config.h>
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>

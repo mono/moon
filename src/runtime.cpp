@@ -610,7 +610,13 @@ UIElement::UIElement () : parent(NULL), flags (0), x1 (0), y1(0), x2(0), y2(0)
 void
 UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop == TriggersProperty){
+	if (prop == OpacityProperty || prop == VisibilityProperty){
+		item_invalidate (this);
+	} else if (prop == ClipProperty || prop == OpacityMaskProperty){
+		FullInvalidate (false);
+	} else if (prop == RenderTransformProperty || prop == RenderTransformOriginProperty){
+		FullInvalidate (true);
+	} else if (prop == TriggersProperty){
 		Value *v = GetValue (prop);
 		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
 
@@ -683,11 +689,12 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	if (prop == UIElement::RenderTransformProperty ||
 	    prop == UIElement::RenderTransformOriginProperty)
 		FullInvalidate (true);
-	else if (prop == UIElement::OpacityProperty ||
-		 prop == UIElement::ClipProperty ||
-		 prop == UIElement::OpacityMaskProperty ||
-		 prop == UIElement::VisibilityProperty){
+	else if (prop == UIElement::ClipProperty ||
+		 prop == UIElement::OpacityMaskProperty){
 		FullInvalidate (false);
+	}  else if (prop == UIElement::OpacityProperty ||
+		    prop == UIElement::VisibilityProperty){
+		item_invalidate (this);
 	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)){
 		FullInvalidate (false);
 	}
@@ -789,15 +796,19 @@ double
 UIElement::GetTotalOpacity ()
 {
 	double opacity = uielement_get_opacity (this);
+	printf ("OPACITY=%g %s\n", opacity, dependency_object_get_name (this));
 	// this is recursive to parents
 	UIElement *uielement = this->parent;
 	while (uielement) {
 		double parent_opacity = uielement_get_opacity (uielement);
+		printf ("    Parent=%s %g\n", dependency_object_get_name (uielement), parent_opacity);
 		if (parent_opacity < 1.0)
 			opacity *= parent_opacity;
 		// FIXME: we should be calling FrameworkElement::Parent
 		uielement = uielement->parent;
 	}
+
+	printf ("RETURN Opactity=%g\n", opacity);
 	return opacity;
 }
 
@@ -1329,6 +1340,13 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 	s->toplevel->handle_button (s, s->cb_down, button->state, button->x, button->y);
 }
 
+static int level = 0;
+static void space (int n)
+{
+	for (int i = 0; i < n; i++)
+		putchar (' ');
+}
+
 void
 Canvas::render (Surface *s, int x, int y, int width, int height)
 {
@@ -1348,13 +1366,16 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 
 	Rect render_rect (x, y, width, height);
 
+	level += 4;
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
-		//printf ("    ITEM %s has %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
 		Rect item_rect (item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
 
-		if (render_rect.IntersectsWith (item_rect)) {
+		//space (level);
+		//printf ("%s %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
+
+		if (true || render_rect.IntersectsWith (item_rect)) {
 			Rect inter = render_rect.Intersection(item_rect);
 			cairo_save (s->cairo);
 
@@ -1373,6 +1394,11 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		}
 #endif
 
+		//cairo_set_source_rgb (s->cairo, 1.0, 0, 1.0);
+		//cairo_set_line_width (s->cairo, 10);
+		//cairo_rectangle (s->cairo, item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
+		//cairo_stroke (s->cairo);
+
 		if (!(item->flags & UIElement::IS_LOADED)) {
 			item->flags |= UIElement::IS_LOADED;
 			item->events->Emit ("Loaded");
@@ -1384,6 +1410,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		flags |= UIElement::IS_LOADED;
 		events->Emit ("Loaded");
 	}
+	level -= 4;
 }
 
 Canvas *

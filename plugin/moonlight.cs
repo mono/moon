@@ -1,3 +1,32 @@
+//
+// NativeMethods.cs
+//
+// Author:
+//   Miguel de Icaza (miguel@ximian.com)
+//   Jackson Harper  (jackson@ximian.com)
+//
+// Copyright 2007 Novell, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
@@ -17,6 +46,9 @@ namespace Moonlight {
 		[DllImport ("moon")]
 		internal extern static IntPtr xaml_create_from_file (string file, bool create_namescope, CreateElementCallback ce, ref int kind_type);
 
+		[DllImport("moon")]
+		internal extern static string dependency_object_get_name (IntPtr obj);
+		
                 // [DONE] 1. Load XAML file 
                 // 2. Make sure XAML file exposes a few new properites:
                 //    a. Loaded  (this is the method to call)
@@ -73,23 +105,13 @@ namespace Moonlight {
 		public string TryLoad (out int error)
 		{
 			Console.WriteLine ("Loader.TryLoad: {0} {1}", surface, s);
-			error = 0;
-
-#if false
-			//
-			// The follwoing two lines emulate the XAML parsing
-			// barfing and reporting that it needs a new DLL
-			//
-			if (!h.Contains ("test-custom-element.dll"))
-				return "test-custom-element.dll";
-#endif
-			
 			int kind = 0;
 
 			missing = null;
 			error = -1;
 			IntPtr x = Hosting.xaml_create_from_file (s, true, create_element, ref kind);
-			
+
+			Console.WriteLine ("Got: {0}", x);
 			// HERE:
 			//     Insert code to check the output of from_file
 			//     to see which assembly we are missing
@@ -102,8 +124,10 @@ namespace Moonlight {
 				Console.WriteLine ("Could not load xaml file");
 				return null;
 			}
-			if (kind != 23){
-				Console.WriteLine ("return value is not 23 (Canvas)");
+
+			string xname = Hosting.dependency_object_get_name (x);
+			if (xname != "Canvas"){
+				Console.WriteLine ("return value is not a Canvas, its a {0}", xname);
 				return null;
 			}
 

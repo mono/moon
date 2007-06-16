@@ -150,6 +150,14 @@ Shape::DoDraw (Surface *s, bool do_op)
 {
 	cairo_set_matrix (s->cairo, &absolute_xform);
 
+	//printf ("Draw, xform: %g %g %g %g %g %g\n", 
+	//	absolute_xform.xy,
+	//	absolute_xform.xx,
+	//	absolute_xform.yx,
+	//	absolute_xform.yy,
+	//	absolute_xform.x0,
+	//	absolute_xform.y0);
+
 	// not every shapes can be filled, e.g. polylines
 	if (CanFill ()) {
 		Brush *fill = shape_get_fill (this);

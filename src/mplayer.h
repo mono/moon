@@ -9,7 +9,6 @@
  */
 
 #ifndef __MPLAYER_H__
-
 #include <glib.h>
 #include <cairo.h>
 G_BEGIN_DECLS

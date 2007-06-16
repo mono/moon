@@ -9,9 +9,19 @@
 
 2007-06-16  Miguel de Icaza  <miguel@novell.com>
 
-	* runtime.cpp (Canvas::get_xform_for): Do not apply extra
-	transformations to the child other than the absolute_xform.
+	Observation: either it is the surface, or something else is very
+	slow, but entering the surface is quite slow right now to show the
+	handles.   Not sure what it could be.
 	
+	* runtime.cpp (OnPropertyChanged): We probably should catch the
+	property changes here, and not in the Sub* variant of this thing,
+	this will update the canvas properly now.
+
+	(dump_hierarchy): useful bit to debug what is going wrong. 
+	
+	(Canvas::get_xform_for): Do not apply extra
+	transformations to the child other than the absolute_xform.
+
 	(surface_attach): On attach we need to do a full invalidate, so
 	the transformations are computed, otherwise it uses the defaults
 	for the toplevel (zero), this fixes the atom.xaml issue. 

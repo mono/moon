@@ -9,7 +9,7 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
-
+#include <config.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <malloc.h>

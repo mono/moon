@@ -14,7 +14,6 @@
  * 
  */
 
-#define __STDC_CONSTANT_MACROS
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,5 +1,6 @@
 #define VIDEO_DEMO
 #define XAML_DEMO
+#include <config.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <malloc.h>
@@ -221,6 +222,9 @@ main (int argc, char *argv [])
 		Canvas *canvas = new Canvas ();
 		surface_attach (t, canvas);
 
+		//Control control = new Control ();
+		//control_initialize_from_xaml (control, "<Line X1='0' Y1='0' X2='100' Y2='100' Stroke='#80808080'/>");
+		
 		NameScope::SetNameScope (canvas, namescope);
 
 		// Create our objects
@@ -262,7 +266,7 @@ main (int argc, char *argv [])
 		text_block_set_font_size (tb, 24.0);
 		text_block_set_font_weight (tb, FontWeightsBold);
 		text_block_set_text (tb, "This is a Moonlight Demo");
-#if 1
+#if 0
 		Run *run;
 		SolidColorBrush *blue_brush = new SolidColorBrush ();
 		SolidColorBrush *magenta_brush = new SolidColorBrush ();

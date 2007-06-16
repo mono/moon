@@ -602,6 +602,8 @@ class UIElement : public Visual {
 
 	UIElement *parent;
 
+	int dump_hierarchy (UIElement *obj);
+
 	enum UIElementFlags {
 		IS_CANVAS = 1,
 		IS_LOADED = 2
