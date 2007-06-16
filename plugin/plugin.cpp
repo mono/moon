@@ -285,6 +285,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		this->isLoaded = true;
 	}
 
+#ifdef RUNTIME
 	if (vm_missing_url != NULL && vm_missing_url != NEW_STREAM_REQUEST_AS_FILE && !strcmp (stream->url, vm_missing_url)){
 		//
 		// We got the dependency requested
@@ -296,6 +297,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		// retry to load
 		TryLoad ();
 	}
+#endif
 }
 
 void
@@ -306,7 +308,7 @@ PluginInstance::LoadFromXaml (const char* fname)
 	mono_loader_object = vm_xaml_loader_new (this, this->surface, fname);
 	TryLoad ();
 #else	
-	surface_attach (this->surface, xaml_create_from_file (fname, NULL));
+	surface_attach (this->surface, xaml_create_from_file (fname, NULL, NULL, NULL));
 #endif
 }
 
