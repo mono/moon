@@ -1,3 +1,8 @@
+2007-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp (Image::SetSource): we want events even if we attach a
+	downloader that's been started.
+
 2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: If StrokeThickness == 0 then don't stroke, otherwise it

@@ -347,6 +347,8 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	downloader = (Downloader*) dl;
 	downloader->ref ();
 
+	downloader_want_events (downloader, downloader_event, this);
+
 	if (downloader->Started ()) {
 		// Load the existing data that has been downloaded
 
@@ -359,7 +361,6 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 		UpdateProgress ();
 	} else {
 		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
-		downloader_want_events (downloader, downloader_event, this);
 		downloader_open (downloader, "GET", PartName, true);
 
 		// This is what actually triggers the download
