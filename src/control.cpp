@@ -41,13 +41,11 @@ void
 Control::getbounds ()
 {
 	if (real_object){
-		printf ("BEFORE Control bounds: %g %g %g %g\n" ,x1, y1, x2, y2);
 		real_object->getbounds ();
 		x1 = real_object->x1;
 		y1 = real_object->y1;
 		x2 = real_object->x2;
 		y2 = real_object->y2;
-		printf ("After Control bounds: %g %g %g %g\n" ,x1, y1, x2, y2);
 	} else {
 		x1 = y1 = x2 = y2 = 0;
 	}
