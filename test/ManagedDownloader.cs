@@ -93,14 +93,8 @@ namespace Gtk.Moonlight {
 
 					while (downloading){
 						lock (buffer){
-							int n = rstream.Read (buffer, 0, buffer.Length);
-							Console.WriteLine ("DOWN: Got {0} bytes", n);
-							if (n == 0){
-								// We are done.
-								buffer = null;
-								break;
-							}
-							count = n;
+							count = rstream.Read (buffer, 0, buffer.Length);
+							Console.WriteLine ("DOWN: Got {0} bytes", count);
 						}
 						Application.Invoke (delegate {
 							lock (buffer){
@@ -109,6 +103,12 @@ namespace Gtk.Moonlight {
 							auto_reset.Set ();
 						});
 						auto_reset.WaitOne ();
+						if (count == 0){
+							Console.WriteLine ("DOWN: WE ARE DONE");
+							// We are done.
+							buffer = null;
+							break;
+						}
 					}
 				}
 			}
