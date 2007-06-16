@@ -400,7 +400,6 @@ ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 		}
 
 		if (stop) {
-		  printf ("STOP STOP STOP\n");
 			Stop ();
 		}
 	}
