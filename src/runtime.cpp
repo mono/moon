@@ -563,9 +563,10 @@ item_invalidate (UIElement *item)
 
 //#define DEBUG_INVALIDATE
 #ifdef DEBUG_INVALIDATE
-	printf ("Requesting invalidate for %d %d %d %d\n", 
-				    (int) item->x1, (int)item->y1, 
-				    (int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
+	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
+		item, Type::Find(item->GetObjectType())->name,
+		(int) item->x1, (int)item->y1, 
+		(int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
 #endif
 	// 
 	// Note: this is buggy: why do we need to queue the redraw on the toplevel
@@ -793,7 +794,7 @@ UIElement::getbounds ()
 }
 
 void
-UIElement::render (Surface *surface, int x, int y, int width, int height)
+UIElement::render (Surface *s, int x, int y, int width, int height)
 {
 	g_warning ("UIElement:render has been called. The derived class should have overridden it.");
 }
@@ -1361,10 +1362,31 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		cairo_fill (s->cairo);
 	}
 
+	Rect render_rect (x, y, width, height);
+
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
-		item->render (s, x, y, width, height);
+		Rect item_rect (item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
+
+		if (render_rect.IntersectsWith (item_rect)) {
+			Rect inter = render_rect.Intersection(item_rect);
+			cairo_save (s->cairo);
+
+			// at the very least we need to clip based on the expose area.
+			// there's also a UIElement::ClipProperty
+ 			cairo_rectangle (s->cairo, inter.x, inter.y, inter.w, inter.h);
+ 			cairo_clip (s->cairo);
+
+			item->render (s, (int)inter.x, (int)inter.y, (int)inter.w, (int)inter.h);
+
+			cairo_restore (s->cairo);
+		}
+#if DEBUG_INVALIDATE
+		else {
+			printf ("skipping object %p (%s)\n", item, Type::Find(item->GetObjectType())->name);
+		}
+#endif
 
 		if (!(item->flags & UIElement::IS_LOADED)) {
 			item->flags |= UIElement::IS_LOADED;
