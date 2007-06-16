@@ -1,10 +1,13 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
 using System.Collections;
 
 namespace Moonlight {
+
+	internal delegate IntPtr CreateElementCallback (string xmlns, string name);
 
 	public class Hosting {
 
@@ -12,7 +15,7 @@ namespace Moonlight {
 		internal extern static IntPtr surface_attach (IntPtr surface, IntPtr toplevel);
 
 		[DllImport ("moon")]
-		internal extern static IntPtr xaml_create_from_file (string file, ref int kind_type);
+		internal extern static IntPtr xaml_create_from_file (string file, bool create_namescope, CreateElementCallback ce, ref int kind_type);
 
                 // [DONE] 1. Load XAML file 
                 // 2. Make sure XAML file exposes a few new properites:
@@ -32,9 +35,14 @@ namespace Moonlight {
 		}
 	}
 
+	
+
 	public class Loader {
 		IntPtr plugin, surface;
 		string s;
+		string missing;
+
+		CreateElementCallback create_element_callback;
 		
 		Hashtable h = new Hashtable ();
 		
@@ -43,6 +51,8 @@ namespace Moonlight {
 			this.plugin = plugin;
 			this.surface = surface;
 			this.s = s;
+
+			create_element_callback = new CreateElementCallback (create_element);
 		}
 
 		public void InsertMapping (string key, string name)
@@ -75,10 +85,10 @@ namespace Moonlight {
 #endif
 			
 			int kind = 0;
-			string missing = null;
 
+			missing = null;
 			error = -1;
-			IntPtr x = Hosting.xaml_create_from_file (s, ref kind);
+			IntPtr x = Hosting.xaml_create_from_file (s, true, create_element, ref kind);
 			
 			// HERE:
 			//     Insert code to check the output of from_file
@@ -113,7 +123,65 @@ namespace Moonlight {
 			Hosting.surface_attach (surface, p);
 			return null;
 		}
-	}		
+
+		private IntPtr create_element (string xmlns, string name)
+		{
+			string ns;
+			string asm_name;
+			string asm_path;
+			string fullname;
+
+			ParseXmlns (xmlns, out ns, out asm_name);
+
+			if (ns == null || asm_name == null)
+				return IntPtr.Zero;
+
+			asm_path = h [asm_name] as string;
+
+			if (asm_path == null) {
+				missing = asm_name;
+				Console.WriteLine ("unable to parse xmlns string: '{0}'", xmlns);
+				return IntPtr.Zero;
+			}
+				
+			Assembly clientlib = Assembly.LoadFile (asm_path);
+
+			if (clientlib == null) {
+				Console.WriteLine ("could not load client library: '{0}'", asm_path);
+				return IntPtr.Zero;
+			}
+
+			fullname = String.Concat (ns, ".", name);
+			DependencyObject res = (DependencyObject) clientlib.CreateInstance (fullname);
+
+			if (res == null) {
+				Console.WriteLine ("unable to create object instance:  '{0}'", fullname);
+				return IntPtr.Zero;
+			}
+
+			MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
+				GetMethod ("GetNativeObject", BindingFlags.Static | BindingFlags.NonPublic);
+			
+			IntPtr p = (IntPtr) m.Invoke (null, new object [] { res });
+			return p;
+		}
+
+		internal static void ParseXmlns (string xmlns, out string ns, out string asm)
+		{
+			ns = null;
+			asm = null;
+
+			string [] decls = xmlns.Split (';');
+			foreach (string decl in decls) {
+				if (decl.StartsWith ("clr-namespace:")) {
+					ns = decl.Substring (14, decl.Length - 14);
+				}
+				if (decl.StartsWith ("assembly=")) {
+					asm = decl.Substring (9, decl.Length - 9);
+				}
+			}
+		}
+	}
 		
 	class Moonlight {
 		

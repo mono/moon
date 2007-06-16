@@ -1,3 +1,11 @@
+2007-06-16  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight.cs: Quick implementation of miguels beautiful new xaml
+	loading mechanism. We now properly download the assembly and
+	create the element. The custom.xaml test does work, however you
+	need to invalidate the canvas to see the red canvas background
+	showup.
+
 2007-06-16  Miguel de Icaza  <miguel@novell.com>
 
 	New mechanism for loading XAML files.
