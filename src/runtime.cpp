@@ -796,19 +796,16 @@ double
 UIElement::GetTotalOpacity ()
 {
 	double opacity = uielement_get_opacity (this);
-	printf ("OPACITY=%g %s\n", opacity, dependency_object_get_name (this));
 	// this is recursive to parents
 	UIElement *uielement = this->parent;
 	while (uielement) {
 		double parent_opacity = uielement_get_opacity (uielement);
-		printf ("    Parent=%s %g\n", dependency_object_get_name (uielement), parent_opacity);
 		if (parent_opacity < 1.0)
 			opacity *= parent_opacity;
 		// FIXME: we should be calling FrameworkElement::Parent
 		uielement = uielement->parent;
 	}
 
-	printf ("RETURN Opactity=%g\n", opacity);
 	return opacity;
 }
 
