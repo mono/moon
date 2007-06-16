@@ -210,11 +210,9 @@ PluginInstance::CreateWindow ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 	this->surface = surface_new (window->width, window->height);
-#ifndef RUNTIME
-//	this->canvas = new Canvas ();
-//	surface_attach (this->surface, canvas);
-//	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
-#endif
+	this->canvas = new Canvas ();
+	surface_attach (this->surface, canvas);
+	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 	gtk_widget_show_all (this->container);
 }
 
@@ -254,31 +252,10 @@ void
 PluginInstance::LoadFromXaml (const char* fname)
 {
 	DEBUGMSG ("LoadFromXaml: %s", fname);
-
 #ifdef RUNTIME
-
 	vm_load_xaml (this->surface, fname);
-	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
-	gtk_widget_show_all (this->container);
-
 #else	
-
-	UIElement * element = xaml_create_from_file (fname, NULL);
-
-	if (element->GetObjectType() != Value::CANVAS) {
-		DEBUGMSG ("*** not canvas object!!!");
-		return;
-	}
-
-	surface_attach (this->surface, element);
-
-	if (this->canvas == NULL) {
-		this->canvas = (Canvas*) element;
-		gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
-	}
-
-	gtk_widget_show_all (this->container);
-
+	surface_attach (this->surface, xaml_create_from_file (fname, NULL));
 #endif
 }
 

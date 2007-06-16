@@ -1,5 +1,9 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp: Let LoadFromXaml just call load xaml routines.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* moonlight.cs: Fix surface attachment.
 
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
