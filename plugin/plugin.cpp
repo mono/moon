@@ -118,7 +118,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	}
 
 	if (this->source) {
-		NPN_GetURL (this->instance, this->source, NULL);
+		NPN_GetURLNotify (this->instance, this->source, NULL, this->source);
 	}
 }
 
@@ -229,10 +229,10 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 {
 	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
 
-	if (!this->sourceUrl) {
+	if (stream->notifyData && (this->source == stream->notifyData)) {
 		this->sourceUrl = stream->url;
 
-	*stype = NP_ASFILEONLY;
+		*stype = NP_ASFILEONLY;
 
 	} else {
 		if (vm_missing_url == NEW_STREAM_REQUEST_AS_FILE){
@@ -280,7 +280,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 {
 	DEBUGMSG ("StreamAsFile: %s", fname);
 
-	if (!strcasecmp (this->sourceUrl, stream->url)) {
+	if (stream->notifyData && (this->source == stream->notifyData)) {
 		LoadFromXaml (fname);
 		this->isLoaded = true;
 	}
@@ -352,7 +352,7 @@ PluginInstance::setSource (const char *value)
 	strcpy (this->source, value);
 
 	this->sourceUrl = NULL;
-	NPN_GetURL(this->instance, value, NULL);
+	NPN_GetURLNotify (this->instance, this->source, NULL, this->source);
 }
 
 char *

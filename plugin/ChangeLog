@@ -1,4 +1,9 @@
-2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp, plugin.h: Remove sourceUrl and use NPN_GetURLNotify notifyData
+	param to inform when download is source.
+
+2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
 
 	* mono.cpp: Remove debug message cr.
 
