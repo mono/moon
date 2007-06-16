@@ -1,4 +1,4 @@
-//#define VIDEO_DEMO
+#define VIDEO_DEMO
 #define XAML_DEMO
 #include <string.h>
 #include <gtk/gtk.h>

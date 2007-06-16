@@ -80,6 +80,9 @@ class Downloader : public DependencyObject {
 	static downloader_abort_func abort;
 	static downloader_get_response_text_func get_response_text;
 
+	bool Started ();
+	bool Completed ();
+
 };
 
 Downloader* downloader_new (void);

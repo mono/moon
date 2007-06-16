@@ -1,3 +1,8 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (SetSource): Make it so we use the data from a
+	downloader that might have already finished.
+
 2007-06-15  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp: simplify refcounting a little more.  we now have 3
@@ -30,6 +35,9 @@
 	field to clean up some of the ref counting problems.
 
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (SetSource): Make it so we use the data from a
+	downloader that might have already finished.
 
 	We now accumulated data as we go.
 	

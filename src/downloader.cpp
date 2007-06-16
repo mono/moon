@@ -61,7 +61,7 @@ Downloader::Downloader ()
 	event_notify = NULL;
 	file_size = -2;
 	total = 0;
-	byte_array_contents = g_byte_array_new ();
+	byte_array_contents = NULL;
 }
 
 Downloader::~Downloader ()
@@ -100,6 +100,19 @@ void
 downloader_send (Downloader *dl)
 {
 	dl->send (dl->downloader_state);
+	dl->byte_array_contents = g_byte_array_new ();
+}
+
+bool
+Downloader::Started ()
+{
+	return byte_array_contents != NULL;
+}
+
+bool
+Downloader::Completed ()
+{
+	return byte_array_contents != NULL && total == file_size;
 }
 
 void
