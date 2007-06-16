@@ -74,10 +74,19 @@ function ControlTest () {
 function ControlSettingsTest () {
 	// control.settings.background
 	AssertAreEqual ("control1.settings.background", control1.settings.background, "#c0c0c0");
+	control1.settings.background = "#b1b1b1";
+	AssertAreEqual ("control1.settings.background", control1.settings.background, "#b1b1b1");
 	AssertAreEqual ("control2.settings.background", control2.settings.background, "#ffebcd");
 
 	// control.settings.version
-	AssertNotEqual ("control1.settings.version", settings.version, "");
+	AssertNotEqual ("control1.settings.version", control1.settings.version, "");
+
+	// control.settings.enableFramerateCounter
+	AssertAreEqual ("control1.settings.enableFramerateCounter", control1.settings.enableFramerateCounter, false);
+	AssertAreEqual ("control1.settings.enableRedrawRegions", control1.settings.enableRedrawRegions, false);
+	control1.settings.enableRedrawRegions = true;
+	AssertAreEqual ("control1.settings.enableRedrawRegions", control1.settings.enableRedrawRegions, true);
+	AssertAreEqual ("control1.settings.enableHtmlAccess", control1.settings.enableHtmlAccess, true);
 }
 
 function ControlContentTest () {

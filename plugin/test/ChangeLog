@@ -1,3 +1,8 @@
+2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
+
+	* tests.js: Tests added for enableFramerateCounter, enableRedrawRegions
+	and enableHtmlAccess settings properties.
+
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
 	* Makefile.am, index.html, tests.js: Split test in two files, index.html and
