@@ -455,6 +455,12 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 		while (node != NULL) {
 			item = (Inline *) node->data;
 			
+			//
+			// FIXME: This code won't work properly for RTL text
+			//
+			// There might also be a better way of doing this?
+			//
+			
 			switch (item->GetObjectType ()) {
 			case Value::RUN:
 				if (!pango_font_description_equal (item->font, cur_font)) {
