@@ -1,5 +1,9 @@
 2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
 
+	* tests.js: Add settings.windowless assert.
+
+2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
+
 	* index.html: Turns control size into fixed size.
 
 	* tests.js: Fix tests for size and add size test to before load. The test 

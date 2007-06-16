@@ -95,6 +95,8 @@ function ControlSettingsTest () {
 	AssertAreEqual ("control1.settings.enableRedrawRegions", control1.settings.enableRedrawRegions, true);
 	AssertAreEqual ("control1.settings.enableHtmlAccess", control1.settings.enableHtmlAccess, true);
 	control1.settings.enableRedrawRegions = false;
+	AssertAreEqual ("control1.settings.windowless", control1.settings.windowless, false);
+	AssertAreEqual ("control2.settings.windowless", control2.settings.windowless, false);
 }
 
 function ControlContentTest () {
