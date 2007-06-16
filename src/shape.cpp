@@ -71,6 +71,7 @@ moon_ellipse (cairo_t *cr, double x, double y, double w, double h)
 	double cx = x + rx;
 	double cy = y + ry;
 
+	cairo_new_path (cr);
 	cairo_move_to (cr, cx + rx, cy);
 
 	/* an approximate of the ellipse by drawing a curve in each
@@ -111,6 +112,7 @@ moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, dou
 	double c1 = ARC_TO_BEZIER * radius_x;
 	double c2 = ARC_TO_BEZIER * radius_y;
 
+	cairo_new_path (cr);
 	cairo_move_to (cr, x + radius_x, y);
 	cairo_rel_line_to (cr, w - 2 * radius_x, 0.0);
 	cairo_rel_curve_to (cr, c1, 0.0, radius_x, c2, radius_x, radius_y);
@@ -160,8 +162,12 @@ Shape::DoDraw (Surface *s, bool do_op)
 	}
 
 	Brush *stroke = shape_get_stroke (this);
-	if (stroke){
-		cairo_set_line_width (s->cairo, shape_get_stroke_thickness (this));
+	if (stroke) {
+		double thickness = shape_get_stroke_thickness (this);
+		if (thickness == 0)
+			return;
+
+		cairo_set_line_width (s->cairo, thickness);
 
 		int count = 0;
 		double offset = 0.0;

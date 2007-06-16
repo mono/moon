@@ -1,3 +1,8 @@
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: If StrokeThickness == 0 then don't stroke, otherwise it
+	will mess with the earlier filling.
+
 2007-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: remove the instance cached
