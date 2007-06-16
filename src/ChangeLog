@@ -1,3 +1,10 @@
+2007-06-15  Jackson Harper  <jackson@ximian.com>
+
+	* demo.cpp:
+	* runtime.h:
+	* xaml.cpp: Callback into managed code to create custom element
+	instances.
+
 2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (media_base_new): Removed, not instantiable.

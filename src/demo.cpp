@@ -285,7 +285,7 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, tb);
 		
 #ifdef XAML_DEMO
-		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", NULL));
+		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", false, NULL, NULL));
 #endif
 		
 #ifdef VIDEO_DEMO

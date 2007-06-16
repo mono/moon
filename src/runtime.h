@@ -877,8 +877,11 @@ void     surface_register_events (Surface *s,
 // XAML
 //
 
-UIElement  *xaml_create_from_file     (const char *filename, Value::Kind *element_type);
-UIElement  *xaml_create_from_str      (const char *xaml, Value::Kind *element_type);
+typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
+
+
+UIElement  *xaml_create_from_file (const char *filename, Value::Kind *element_type);
+UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb, Value::Kind *element_type);
 
 
 MediaElement *video_new (const char *filename);

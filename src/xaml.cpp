@@ -36,6 +36,7 @@ class XamlNamespace;
 class DefaultNamespace;
 class XNamespace;
 
+
 DefaultNamespace *default_namespace = NULL;
 XNamespace *x_namespace = NULL;
 
@@ -45,6 +46,15 @@ typedef XamlElementInstance *(*create_element_instance_func) (XamlParserInfo *p,
 typedef void  (*add_child_func) (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 typedef void  (*set_property_func) (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
+
+void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
+
+
+XamlElementInstance *create_custom_element (XamlParserInfo *p, XamlElementInfo *i);
+void  set_custom_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
+void  custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
+void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
+
 
 
 class XamlParserInfo {
@@ -66,12 +76,14 @@ class XamlParserInfo {
 	bool implicit_default_namespace;
 
 	ParserErrorEventArgs *error_args;
-	
-	XamlParserInfo (XML_Parser parser, const char *file_name) : parser (parser), file_name (file_name),
-								    top_element (NULL), current_element (NULL),
-								    current_namespace (NULL), char_data_buffer (NULL),
-								    top_kind (Value::INVALID), implicit_default_namespace (false),
-								    error_args (NULL), namescope (new NameScope())
+
+	xaml_create_custom_element_callback *custom_element_callback;
+//	xaml_set_custom_attribute_callback *custom_attribute_callback;
+
+	XamlParserInfo (XML_Parser parser, const char *file_name) :
+		parser (parser), file_name (file_name), top_element (NULL), current_element (NULL),
+		current_namespace (NULL), char_data_buffer (NULL), top_kind (Value::INVALID), implicit_default_namespace (false),
+		error_args (NULL), namescope (new NameScope()), custom_element_callback (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
@@ -119,12 +131,17 @@ class XamlElementInfo {
 	set_property_func set_property;
 	set_attributes_func set_attributes;
 
+
+
 	XamlElementInfo (const char *name, XamlElementInfo *parent, Value::Kind dependency_type) :
 		name (name), parent (parent), dependency_type (dependency_type), content_property (NULL),
 		create_item (NULL), create_element (NULL), add_child (NULL), set_property (NULL), set_attributes (NULL)
 	{
 
 	}
+
+ protected:
+	XamlElementInfo () { }
 
 };
 
@@ -135,7 +152,7 @@ class XamlNamespace {
 
 	XamlNamespace () : name (NULL) { }
 	
-	virtual XamlElementInfo* FindElement (const char *el) = 0;
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
 	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value) = 0;
 };
 
@@ -146,7 +163,7 @@ class DefaultNamespace : public XamlNamespace {
 
 	DefaultNamespace (GHashTable *element_map) : element_map (element_map) { }
 
-	virtual XamlElementInfo* FindElement (const char *el)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
 		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
 	}
@@ -164,7 +181,7 @@ class XNamespace : public XamlNamespace {
 
 	XNamespace () { }
 
-	virtual XamlElementInfo* FindElement (const char *el)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
 		return NULL;
 	}
@@ -177,6 +194,85 @@ class XNamespace : public XamlNamespace {
 		}
 	}
 };
+
+
+class CustomElementInfo : public XamlElementInfo {
+
+ public:
+	DependencyObject *dependency_object;
+
+	CustomElementInfo (const char *name, XamlElementInfo *parent, Value::Kind dependency_type)
+		: XamlElementInfo (name, parent, dependency_type)
+	{
+	}
+};
+
+
+class CustomNamespace : public XamlNamespace {
+
+ public:
+	char *xmlns;
+
+	CustomNamespace (char *xmlns) :
+		xmlns (xmlns)
+	{
+
+	}
+
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
+	{
+		DependencyObject *dob = p->custom_element_callback (xmlns, el);
+
+		if (!dob) {
+			parser_error (p, el, NULL, g_strdup_printf ("Unable to resolve custom type %s\n", el));
+			return NULL;
+		}
+
+		CustomElementInfo *info = new CustomElementInfo (g_strdup (el), NULL, dob->GetObjectType ());
+
+		info->create_element = create_custom_element;
+		info->set_attributes = set_custom_attributes;
+		info->add_child = custom_add_child;
+		info->set_property = custom_set_property;
+		info->dependency_object = dob;
+
+		return info;
+	}
+
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
+	{
+
+	}
+};
+
+XamlElementInstance *
+create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
+{
+	CustomElementInfo *c = (CustomElementInfo *) i;
+	XamlElementInstance *inst = new XamlElementInstance (i);
+
+	inst->element_name = i->name;
+	inst->element_type = XamlElementInstance::ELEMENT;
+	inst->item = c->dependency_object;
+
+	return inst;
+}
+
+void
+set_custom_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
+{
+
+}
+
+void  custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+{
+
+}
+
+void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
+{
+
+}
 
 //
 // Called when we encounter an error.  Note that memory ownership is taken for everything
@@ -205,7 +301,7 @@ start_element (void *data, const char *el, const char **attr)
 	XamlElementInfo *elem;
 	XamlElementInstance *inst;
 
-	elem = p->current_namespace->FindElement (el);
+	elem = p->current_namespace->FindElement (p, el);
 
 	if (elem) {
 
@@ -356,8 +452,12 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
-		parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
-				g_strdup_printf ("Custom namespaces (%s) are not supported", uri));
+		if (!p->custom_element_callback)
+			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
+					g_strdup_printf ("No custom element callback installed to handle %s", uri));
+
+		CustomNamespace *c = new CustomNamespace (g_strdup (uri));
+		g_hash_table_insert (p->namespace_map, c->xmlns, c);
 	}
 }
 
@@ -471,7 +571,8 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 }
 
 UIElement *
-xaml_create_from_str (const char *xaml, Value::Kind *element_type)
+xaml_create_from_str (const char *xaml, bool create_namescope,
+		xaml_create_custom_element_callback *cecb, Value::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
 	XamlParserInfo *parser_info;
@@ -484,6 +585,9 @@ xaml_create_from_str (const char *xaml, Value::Kind *element_type)
 	}
 
 	parser_info = new XamlParserInfo (p, NULL);
+
+	parser_info->custom_element_callback = cecb;
+//	parser_info->custom_attribute_callback = sacb;
 
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
