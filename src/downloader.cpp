@@ -53,15 +53,20 @@ downloader_send_func Downloader::send;
 downloader_abort_func Downloader::abort;
 downloader_get_response_text_func Downloader::get_response_text;
 
+struct Listener {
+	downloader_event_notify notify;
+	gpointer closure;
+};
+
 Downloader::Downloader ()
 {
 	downloader_state = Downloader::create_state (this);
 	notify_size = NULL;
 	this->write = NULL;
-	event_notify = NULL;
 	file_size = -2;
 	total = 0;
 	byte_array_contents = NULL;
+	downloader_events = NULL;
 }
 
 Downloader::~Downloader ()
@@ -69,6 +74,14 @@ Downloader::~Downloader ()
 	Downloader::destroy_state (downloader_state);
 	if (byte_array_contents)
 		g_byte_array_free (byte_array_contents, TRUE);
+
+	GSList *l;
+	for (l = downloader_events; l; l = l->next){
+		Listener *listener = (Listener *) l->data;
+
+		delete listener;
+	}
+	g_slist_free (l);
 }
 
 void
@@ -146,9 +159,25 @@ void downloader_set_functions (downloader_create_state_func create_state,
 	Downloader::get_response_text = get_response;
 }
 
+static void
+downloader_notify (Downloader *dl, int msg)
+{
+	GSList *l;
+
+	for (l = dl->downloader_events; l; l = l->next){
+		Listener *listener = (Listener *) l->data;
+
+		listener->notify (msg, listener->closure);
+	}
+}
+
+//
+// A zero write means that we are done
+//
 void
 downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 {
+	printf ("Runtime: Write for %d bytes on %p\n", n, dl);
 	if (dl->write)
 		dl->write (buf, offset, n, dl->consumer_closure);
 	
@@ -164,12 +193,9 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 
 	dl->SetValue (Downloader::DownloadProgressProperty, Value (p));
 
-	if (dl->event_notify != NULL){
-		dl->event_notify (Downloader::NOTIFY_PROGRESS_CHANGED, dl->event_closure);
-
-		if (dl->total == dl->file_size)
-			dl->event_notify (Downloader::NOTIFY_COMPLETED, dl->event_closure);
-	}
+	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED);
+	if (n == 0)
+		downloader_notify (dl, Downloader::NOTIFY_COMPLETED);
 }
 
 void
@@ -182,15 +208,17 @@ downloader_notify_size (Downloader *dl, int64_t size)
 
 	dl->SetValue (Downloader::DownloadProgressProperty, Value (0.0));
 
-	if (dl->event_notify != NULL)
-		dl->event_notify (Downloader::NOTIFY_PROGRESS_CHANGED, dl->event_closure);
+	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED);
 }
 
 void  
 downloader_want_events (Downloader *dl, downloader_event_notify event_notify, gpointer closure)
 {
-	dl->event_notify = event_notify;
-	dl->event_closure = closure;
+	Listener *l = new Listener ();
+	l->notify = event_notify;
+	l->closure = closure;
+
+	dl->downloader_events = g_slist_append (dl->downloader_events, l);
 }
 
 DependencyProperty *Downloader::DownloadProgressProperty;

@@ -1,3 +1,12 @@
+2007-06-16  Miguel de Icaza  <miguel@novell.com>
+
+	* downloader.cpp: Implement a system to send various notifications
+	as Chris wants his notifications and managed world wants the
+	notifications as well. 
+
+	Should they ahve been separate?   For now I just added a list of
+	them.   This code is turning uglier every minute.
+
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Kill top_kind, I have no idea how this guy crept back

@@ -57,8 +57,7 @@ class Downloader : public DependencyObject {
 		NOTIFY_DOWNLOAD_FAILED
 	};
 
-	downloader_event_notify event_notify;
-	gpointer event_closure;
+	GSList *downloader_events;
 
 	int64_t file_size;
 	int64_t total;
