@@ -25,7 +25,6 @@ Control::update_xform ()
 {
 	if (real_object){
 		real_object->update_xform ();
-
 		absolute_xform = real_object->absolute_xform;
 	}
 }
@@ -46,6 +45,7 @@ Control::getbounds ()
 		y1 = real_object->y1;
 		x2 = real_object->x2;
 		y2 = real_object->y2;
+		//printf ("CONTROL-CANVAS: Bounds obtained: %g %g %g %g\n", x1, y1, x2, y2);
 	} else {
 		x1 = y1 = x2 = y2 = 0;
 	}
@@ -54,13 +54,10 @@ Control::getbounds ()
 void 
 Control::get_xform_for (UIElement *item, cairo_matrix_t *result)
 {
-	if (real_object && real_object->Is (Value::CANVAS)){
-		real_object->get_xform_for (item, result);
+	if (parent != NULL){
+		parent->get_xform_for (this, result);
 	} else {
-		if (parent != NULL)
-			parent->get_xform_for (this, &absolute_xform);
-		else
-			cairo_matrix_init_identity (&absolute_xform);
+		cairo_matrix_init_identity (result);
 	}
 }
 
