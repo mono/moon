@@ -1,0 +1,8 @@
+
+<Canvas xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:my="clr-namespace:MonoDemo;assembly=test-custom-element.dll">
+
+	<my:CustomCanvas Height="30" Width="200" />
+
+</Canvas>
