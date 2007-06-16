@@ -1,4 +1,7 @@
-all: demo.exe download.exe
+all: demo.exe download.exe control.exe
+
+control.exe: control.cs gtksilver.dll
+	gmcs -debug control.cs -pkg:gtk-sharp-2.0 -pkg:silver -r:gtksilver.dll
 
 download.exe: download.cs gtksilver.dll test-custom-element.dll
 	gmcs -debug download.cs -pkg:gtk-sharp-2.0 -pkg:silver -r:gtksilver.dll
