@@ -536,7 +536,7 @@ class FileDownloadState {
 	{
 		int n = read (fd, buf, sizeof (buf));
 
-		if (n > 0)
+		if (n >= 0)
 			downloader_write (downloader, buf, 0, n);
 
 		return n > 0;
