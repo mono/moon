@@ -566,8 +566,6 @@ class TriggerAction : public DependencyObject {
 
 class EventTrigger : public DependencyObject {
  public:
-	TriggerActionCollection *actions;
-
 	EventTrigger ();
 	virtual ~EventTrigger ();
 	
@@ -616,9 +614,6 @@ class UIElement : public Visual {
 
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
-
-	TriggerCollection *triggers;
-	ResourceCollection *resources;
 
 	//
 	// update_xform:

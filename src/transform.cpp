@@ -358,19 +358,11 @@ DependencyProperty* TransformGroup::ChildrenProperty;
 
 TransformGroup::TransformGroup ()
 {
-	children = NULL;
-	TransformCollection *c = new TransformCollection ();
-
-	this->SetValue (TransformGroup::ChildrenProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == children);
+	this->SetValue (TransformGroup::ChildrenProperty, Value (new TransformCollection ()));
 }
 
 TransformGroup::~TransformGroup ()
 {
-	if (children != NULL)
-		children->unref ();
 }
 
 void
@@ -379,19 +371,12 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 	Transform::OnPropertyChanged (prop);
 
 	if (prop == ChildrenProperty) {
-		// The new value has already been set, so unref the old collection
 		TransformCollection *newcol = GetValue (prop)->AsTransformCollection();
 
-		if (newcol != children) {
-			if (children) 
-				children->unref ();
-			
-			children = newcol;
-			if (children->closure)
+		if (newcol) {
+			if (newcol->closure)
 				printf ("Warning we attached a property that was already attached\n");
-			children->closure = this;
-			
-			children->ref ();
+			newcol->closure = this;
 		}
 	}
 }
@@ -399,6 +384,7 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 void
 TransformGroup::GetTransform (cairo_matrix_t *value)
 {
+	TransformCollection *children = GetValue (TransformGroup::ChildrenProperty)->AsTransformCollection ();
 	cairo_matrix_init_identity (value);
 	for (GList *w = children->list; w != NULL; w = w->next) {
 		cairo_matrix_t child;

@@ -80,19 +80,11 @@ geometry_group_new ()
 
 GeometryGroup::GeometryGroup ()
 {
-	children = NULL;
-	GeometryCollection *c = new GeometryCollection ();
-
-	this->SetValue (GeometryGroup::ChildrenProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == children);
+	this->SetValue (GeometryGroup::ChildrenProperty, Value (new GeometryCollection ()));
 }
 
 GeometryGroup::~GeometryGroup ()
 {
-	if (children)
-		children->unref ();
 }
 
 void
@@ -101,21 +93,12 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 	Geometry::OnPropertyChanged (prop);
 
 	if (prop == ChildrenProperty) {
-		// The new value has already been set, so unref the old collection
 		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
 
-		if (newcol != children) {
-			if (children) 
-				children->unref ();
-			
-			children = newcol;
-			if (children) {
-				if (children->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				children->closure = this;
-				
-				children->ref ();
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	}
 }
@@ -123,6 +106,7 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 void
 GeometryGroup::Draw (Surface *s)
 {
+	GeometryCollection *children = geometry_group_get_children (this);
 	Geometry::Draw (s);
 
 	for (GList *g = children->list; g != NULL; g = g->next) {
@@ -302,19 +286,11 @@ path_geometry_new ()
 
 PathGeometry::PathGeometry ()
 {
-	children = NULL;
-	PathFigureCollection *c = new PathFigureCollection ();
-
-	this->SetValue (PathGeometry::FiguresProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == children);
+	this->SetValue (PathGeometry::FiguresProperty, Value (new PathFigureCollection ()));
 }
 
 PathGeometry::~PathGeometry ()
 {
-	if (children)
-		children->unref ();
 }
 
 void
@@ -323,21 +299,12 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 	Geometry::OnPropertyChanged (prop);
 
 	if (prop == FiguresProperty){
-		// The new value has already been set, so unref the old collection
 		PathFigureCollection *newcol = GetValue (prop)->AsPathFigureCollection();
 
-		if (newcol != children) {
-			if (children) 
-				children->unref ();
-
-			children = newcol;
-			if (children) {
-				if (children->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				children->closure = this;
-				
-				children->ref ();
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	}
 }
@@ -345,6 +312,7 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 void
 PathGeometry::Draw (Surface *s)
 {
+	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
 	Geometry::Draw (s);
 
 	for (GList *coll = children->list; coll != NULL; coll = coll->next) {
@@ -452,19 +420,11 @@ path_figure_new ()
 
 PathFigure::PathFigure ()
 {
-	children = NULL;
-	PathSegmentCollection *c = new PathSegmentCollection ();
-
-	this->SetValue (PathFigure::SegmentsProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == children);
+	this->SetValue (PathFigure::SegmentsProperty, Value (new PathSegmentCollection ()));
 }
 
 PathFigure::~PathFigure ()
 {
-	if (children)
-		children->unref ();
 }
 
 void
@@ -473,21 +433,12 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 	DependencyObject::OnPropertyChanged (prop);
 
 	if (prop == SegmentsProperty){
-		// The new value has already been set, so unref the old collection
 		PathSegmentCollection *newcol = GetValue (prop)->AsPathSegmentCollection();
 
-		if (newcol != children) {
-			if (children) 
-				children->unref ();
-
-			children = newcol;
-			if (children) {
-				if (children->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				children->closure = this;
-				
-				children->ref ();
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	}
 }
@@ -495,6 +446,7 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 void
 PathFigure::Draw (Surface *s)
 {
+	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
 	Point *start = path_figure_get_start_point (this);
 
 	// should not be required because of the cairo_move_to

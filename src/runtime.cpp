@@ -595,21 +595,12 @@ item_get_render_affine (UIElement *item, cairo_matrix_t *result)
 	}
 }
 
-UIElement::UIElement () : parent(NULL), flags (0), triggers (NULL), resources (NULL), x1 (0), y1(0), x2(0), y2(0)
+UIElement::UIElement () : parent(NULL), flags (0), x1 (0), y1(0), x2(0), y2(0)
 {
 	cairo_matrix_init_identity (&absolute_xform);
 
-	TriggerCollection *c = new TriggerCollection ();
-	this->SetValue (UIElement::TriggersProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == triggers);
-
-	ResourceCollection *r = new ResourceCollection ();
-	this->SetValue (UIElement::ResourcesProperty, Value (r));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (r == resources);
+	this->SetValue (UIElement::TriggersProperty, Value (new TriggerCollection ()));
+	this->SetValue (UIElement::ResourcesProperty, Value (new ResourceCollection ()));
 }
 
 //
@@ -620,42 +611,24 @@ void
 UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == TriggersProperty){
-		// The new value has already been set, so unref the old collection
 		Value *v = GetValue (prop);
 		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
 
-		if (newcol != triggers) {
-			if (triggers)
-				triggers->unref ();
-			
-			triggers = newcol;
-			if (triggers) {
-				if  (triggers->closure)
-					printf ("Warning we attached a property that was already attached\n");
+		if (newcol) {
+			if  (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
 				
-				triggers->closure = this;
-				
-				triggers->ref ();
-			}
+			newcol->closure = this;
 		}
 	} else if (prop == ResourcesProperty) {
-		// The new value has already been set, so unref the old collection
 		Value *v = GetValue (prop);
 		ResourceCollection *newcol = v ? v->AsResourceCollection() : NULL;
 
-		if (newcol != resources) {
-			if (resources) 
-				resources->unref ();
-			
-			resources = newcol;
-			if (resources) {
-				if  (resources->closure)
-					printf ("Warning we attached a property that was already attached\n");
+		if (newcol) {
+			if  (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
 				
-				resources->closure = this;
-				
-				resources->ref ();
-			}
+			newcol->closure = this;
 		}
 	}
 }
@@ -781,10 +754,6 @@ UIElement::leave (Surface *s)
 
 UIElement::~UIElement ()
 {
-	if (triggers != NULL)
-		triggers->unref ();
-	if (resources != NULL)
-		resources->unref ();
 }
 
 void
@@ -948,7 +917,6 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	FrameworkElement::OnPropertyChanged (prop);
 
 	if (prop == ChildrenProperty){
-		// The new value has already been set, so unref the old collection
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 		
 		if (newcol) {
@@ -2401,13 +2369,9 @@ inlines_new (void)
 }
 
 
-EventTrigger::EventTrigger () : actions (NULL)
+EventTrigger::EventTrigger ()
 {
-	TriggerActionCollection *c = new TriggerActionCollection ();
-	this->SetValue (EventTrigger::ActionsProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == actions);
+	this->SetValue (EventTrigger::ActionsProperty, Value (new TriggerActionCollection ()));
 }
 
 //
@@ -2418,19 +2382,12 @@ void
 EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == ActionsProperty){
-		// The new value has already been set, so unref the old collection
 		TriggerActionCollection *newcol = GetValue (prop)->AsTriggerActionCollection();
 
-		if (newcol != actions) {
-			if (actions) 
-				actions->unref ();
-
-			actions = newcol;
-			if (actions->closure)
+		if (newcol) {
+			if (newcol->closure)
 				printf ("Warning we attached a property that was already attached\n");
-			actions->closure = this;
-			
-			actions->ref ();
+			newcol->closure = this;
 		}
 	}
 }
@@ -2454,8 +2411,6 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 
 EventTrigger::~EventTrigger ()
 {
-	if (actions)
-		actions->unref ();
 }
 
 EventTrigger *
@@ -2468,15 +2423,16 @@ void
 event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {
 	printf ("Adding action\n");
-	trigger->actions->Add (action);
+	trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection()->Add (action);
 }
 
 void
 event_trigger_fire_actions (EventTrigger *trigger)
 {
 	g_assert (trigger);
+	TriggerActionCollection *actions = trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection();
 
-	for (GList *walk = trigger->actions->list; walk != NULL; walk = walk->next) {
+	for (GList *walk = actions->list; walk != NULL; walk = walk->next) {
 		TriggerAction *action = (TriggerAction *) walk->data;
 		action->Fire ();
 	}

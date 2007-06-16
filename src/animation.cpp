@@ -888,7 +888,6 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 	DoubleAnimation::OnPropertyChanged (prop);
 
 	if (prop == KeyFramesProperty) {
-		// The new value has already been set, so unref the old collection
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
 		if (newcol) {
@@ -1001,7 +1000,6 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 	ColorAnimation::OnPropertyChanged (prop);
 
 	if (prop == KeyFramesProperty) {
-		// The new value has already been set, so unref the old collection
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
 		if (newcol) {
@@ -1120,7 +1118,6 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 	PointAnimation::OnPropertyChanged (prop);
 
 	if (prop == KeyFramesProperty) {
-		// The new value has already been set, so unref the old collection
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
 		if (newcol) {

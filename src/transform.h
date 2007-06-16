@@ -147,8 +147,6 @@ class TransformGroup : public Transform {
 public:
 	static DependencyProperty* ChildrenProperty;
 
-	TransformCollection *children;
-	
 	TransformGroup ();
 	~TransformGroup ();
 	virtual Value::Kind GetObjectType() { return Value::TRANSFORMGROUP; };

@@ -1,5 +1,12 @@
 2007-06-16  Chris Toshok  <toshok@ximian.com>
 
+	* transform.cpp, transform.h, runtime.cpp, runtime.h,
+	  geometry.cpp, geometry.h, animation.cpp: Another pass (the last)
+	  at removing all cached instance collections and using GetValue
+	  for them.
+
+2007-06-16  Chris Toshok  <toshok@ximian.com>
+
 	* media.cpp (Image::SetSource): we want events even if we attach a
 	downloader that's been started.
 

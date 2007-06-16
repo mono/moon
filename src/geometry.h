@@ -58,8 +58,6 @@ class GeometryGroup : public Geometry {
  public:
 	static DependencyProperty* ChildrenProperty;
 
-	GeometryCollection *children;
-
 	GeometryGroup ();
 	~GeometryGroup ();
 	virtual Value::Kind GetObjectType () { return Value::GEOMETRYGROUP; };
@@ -130,8 +128,6 @@ class PathGeometry : public Geometry {
  public:
 	static DependencyProperty* FiguresProperty;
 
-	PathFigureCollection *children;
-
 	PathGeometry ();
 	~PathGeometry ();
 	virtual Value::Kind GetObjectType () { return Value::PATHGEOMETRY; };
@@ -188,8 +184,6 @@ class PathFigure : public DependencyObject {
 	static DependencyProperty* IsFilledProperty;
 	static DependencyProperty* SegmentsProperty;
 	static DependencyProperty* StartPointProperty;
-
-	PathSegmentCollection *children;
 
 	PathFigure ();
 	~PathFigure ();
