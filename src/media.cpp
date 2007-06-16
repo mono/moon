@@ -203,13 +203,6 @@ media_element_get_markers (MediaElement *media)
 void
 media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value)
 {
-	TimelineMarkerCollection *markers = media_element_get_markers (media);
-	
-	if (markers != NULL)
-		base_unref (markers);
-	
-	base_ref (value);
-	
 	media->SetValue (MediaElement::MarkersProperty, Value (value));
 }
 

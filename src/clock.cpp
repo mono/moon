@@ -467,19 +467,11 @@ DependencyProperty* TimelineGroup::ChildrenProperty;
 
 TimelineGroup::TimelineGroup ()
 {
-	child_timelines = NULL;
-	TimelineCollection *c = new TimelineCollection ();
-
-	this->SetValue (TimelineGroup::ChildrenProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == child_timelines);
+	this->SetValue (TimelineGroup::ChildrenProperty, Value (new TimelineCollection ()));
 }
 
 TimelineGroup::~TimelineGroup ()
 {
-	if (child_timelines)
-		base_unref (child_timelines);
 }
 
 void
@@ -491,16 +483,10 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 		// The new value has already been set, so unref the old collection
 		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
 
-		if (newcol != child_timelines) {
-			if (child_timelines) 
-				base_unref (child_timelines);
-
-			child_timelines = newcol;
-			if (child_timelines->closure)
+		if (newcol) {
+			if (newcol->closure)
 				printf ("Warning we attached a property that was already attached\n");
-			child_timelines->closure = this;
-			
-			base_ref (child_timelines);
+			newcol->closure = this;
 		}
 	}
 }
@@ -508,6 +494,7 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 ClockGroup*
 TimelineGroup::CreateClock ()
 {
+	TimelineCollection *child_timelines = GetValue (ChildrenProperty)->AsTimelineCollection();
 	ClockGroup* group = new ClockGroup (this);
 	for (GList *l = child_timelines->list; l ; l = l->next) {
 		group->AddChild (((Timeline*)l->data)->AllocateClock ());
@@ -519,12 +506,13 @@ TimelineGroup::CreateClock ()
 void
 TimelineGroup::AddChild (Timeline *child)
 {
-	child_timelines->Add (child);
+	GetValue (ChildrenProperty)->AsTimelineCollection()->Add (child);
 }
 
 void
 TimelineGroup::RemoveChild (Timeline *child)
 {
+	GetValue (ChildrenProperty)->AsTimelineCollection()->Remove (child);
 }
 
 TimelineGroup *
@@ -536,6 +524,8 @@ timeline_group_new ()
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
+	TimelineCollection *child_timelines = GetValue (ChildrenProperty)->AsTimelineCollection();
+
 	if (!child_timelines->list)
 		return Duration (0);
 

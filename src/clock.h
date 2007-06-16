@@ -327,9 +327,6 @@ class TimelineGroup : public Timeline {
 	void RemoveChild (Timeline *child);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-
- protected:
-	TimelineCollection *child_timelines;
 };
 
 TimelineGroup * timeline_group_new ();

@@ -39,6 +39,8 @@ struct _SurfacePrivate {
 };
 #endif
 
+#define DEBUG_REFCNT 0
+
 static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
 static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
 static callback_keyboard_event cb_keydown, cb_keyup;
@@ -50,15 +52,26 @@ base_ref (Base *base)
 		base->refcount = 1;
 	else
 		base->refcount++;
+
+#if DEBUG_REFCNT
+	printf ("refcount++ %p (%s), refcnt = %d\n", base, Type::Find(((DependencyObject*)base)->GetObjectType())->name, base->refcount);
+#endif
 }
 
 void
 base_unref (Base *base)
 {
 	if (base->refcount == BASE_FLOATS || base->refcount == 1){
+#if DEBUG_REFCNT
+		printf ("destroying object %p (%s)\n", base, Type::Find(((DependencyObject*)base)->GetObjectType())->name);
+#endif
 		delete base;
-	} else
+	} else {
 		base->refcount--;
+#if DEBUG_REFCNT
+		printf ("refcount-- %p (%s), refcnt = %d\n", base, Type::Find(((DependencyObject*)base)->GetObjectType())->name, base->refcount);
+#endif
+	}
 }
 
 void
@@ -260,6 +273,8 @@ Value::Value (const Value& v)
 		u.double_array->basic.refcount++;
 	else if (k == MATRIX)
 		memcpy (u.matrix, v.u.matrix, sizeof(Matrix));
+	else if (k >= DEPENDENCY_OBJECT)
+		base_ref (u.dependency_object);
 }
 
 Value::Value (Kind k)
@@ -324,6 +339,7 @@ Value::Value (DependencyObject *obj)
 	} else {
 		g_assert (obj->GetObjectType () >= Value::DEPENDENCY_OBJECT);
 		k = obj->GetObjectType ();
+		base_ref (obj);
 	}
 	u.dependency_object = obj;
 }
@@ -394,16 +410,25 @@ Value::Value (Matrix *matrix)
 
 Value::~Value ()
 {
-	if (k == STRING)
+	switch (k) {
+	case STRING:
 		g_free (u.s);
-	else if (k == POINT_ARRAY){
+		break;
+	case POINT_ARRAY:
 		if (--u.point_array->basic.refcount == 0)
 			g_free (u.point_array);
-	} else if (k == DOUBLE_ARRAY){
+		break;
+	case DOUBLE_ARRAY:
 		if (--u.double_array->basic.refcount == 0)
 			g_free (u.double_array);
-	} else if (k == MATRIX)
+		break;
+	case MATRIX:
 		g_free (u.matrix);
+		break;
+	default:
+		if (k >= DEPENDENCY_OBJECT)
+			base_unref (u.dependency_object);
+	}
 }
 
 
@@ -863,11 +888,13 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 			if (children) 
 				base_unref (children);
 			children = newcol;
-			if (children->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			children->closure = this;
+			if (children) {
+				if (children->closure)
+					printf ("Warning we attached a property that was already attached\n");
+				children->closure = this;
 			
-			base_ref (children);
+				base_ref (children);
+			}
 		}
 	}
 }
@@ -1483,12 +1510,10 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
 		current_as_dep->SetParent (NULL);
-		base_unref (current_as_dep);
 	}
 	if (value != NULL && value->k >= Value::DEPENDENCY_OBJECT) {
 		DependencyObject *new_as_dep = value->AsDependencyObject ();
 		new_as_dep->SetParent (this);
-		base_ref (new_as_dep);
 	}
 
 	if ((current_value == NULL && value != NULL) ||
@@ -1592,12 +1617,7 @@ DependencyObject::SetValue (const char *name, Value *value)
 static void
 free_value (void *v)
 {
-	Value *val = (Value*)v;
-	if (val && val->k >= Value::DEPENDENCY_OBJECT){
-		base_unref (val->AsDependencyObject ());
-	}
-
-	delete val;
+	delete (Value*)v;
 }
 
 DependencyObject::DependencyObject ()

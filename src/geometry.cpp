@@ -109,11 +109,13 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 				base_unref (children);
 
 			children = newcol;
-			if (children->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			children->closure = this;
+			if (children) {
+				if (children->closure)
+					printf ("Warning we attached a property that was already attached\n");
+				children->closure = this;
 			
-			base_ref (children);
+				base_ref (children);
+			}
 		}
 	}
 }
@@ -329,11 +331,13 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 				base_unref (children);
 
 			children = newcol;
-			if (children->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			children->closure = this;
+			if (children) {
+				if (children->closure)
+					printf ("Warning we attached a property that was already attached\n");
+				children->closure = this;
 			
-			base_ref (children);
+				base_ref (children);
+			}
 		}
 	}
 }
@@ -477,11 +481,13 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 				base_unref (children);
 
 			children = newcol;
-			if (children->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			children->closure = this;
+			if (children) {
+				if (children->closure)
+					printf ("Warning we attached a property that was already attached\n");
+				children->closure = this;
 			
-			base_ref (children);
+				base_ref (children);
+			}
 		}
 	}
 }

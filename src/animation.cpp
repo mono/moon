@@ -738,7 +738,7 @@ DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 	Color *to = GetValue();
 	/* XXX GetValue can return NULL */
 
-	printf ("DiscreteColorKeyFrame::InterpolateValue (progress = %f)\n", keyFrameProgress);
+	//printf ("DiscreteColorKeyFrame::InterpolateValue (progress = %f)\n", keyFrameProgress);
 
 
 	if (keyFrameProgress == 1.0)
@@ -904,11 +904,13 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 				base_unref (key_frames);
 
 			key_frames = newcol;
-			if (key_frames->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			key_frames->closure = this;
+			if (key_frames) {
+				if (key_frames->closure)
+					printf ("Warning we attached a property that was already attached\n");
+				key_frames->closure = this;
 			
-			base_ref (key_frames);
+				base_ref (key_frames);
+			}
 		}
 	}
 }
@@ -1025,11 +1027,13 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 				base_unref (key_frames);
 
 			key_frames = newcol;
-			if (key_frames->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			key_frames->closure = this;
-			
-			base_ref (key_frames);
+			if (key_frames) {
+				if (key_frames->closure)
+					printf ("Warning we attached a property that was already attached\n");
+				key_frames->closure = this;
+
+				base_ref (key_frames);
+			}
 		}
 	}
 }
@@ -1085,7 +1089,7 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 
 	Value *v = current_keyframe->InterpolateValue (baseValue, progress);
 	Color *c = v->AsColor();
-	printf ("-> (%f, %f, %f, %f)\n", c->r, c->g, c->b, c->a);
+	//printf ("-> (%f, %f, %f, %f)\n", c->r, c->g, c->b, c->a);
 	return v;
 }
 
@@ -1151,11 +1155,13 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 				base_unref (key_frames);
 
 			key_frames = newcol;
-			if (key_frames->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			key_frames->closure = this;
+			if (key_frames) {
+				if (key_frames->closure)
+					printf ("Warning we attached a property that was already attached\n");
+				key_frames->closure = this;
 			
-			base_ref (key_frames);
+				base_ref (key_frames);
+			}
 		}
 	}
 }

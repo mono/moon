@@ -212,7 +212,7 @@ class DependencyObject : public Base {
  public:
 
 	DependencyObject ();
-	~DependencyObject ();
+	virtual ~DependencyObject ();
 	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value);
 	static DependencyProperty *Register (Value::Kind type, const char *name, Value::Kind vtype);
 	static DependencyProperty *RegisterFull (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype, bool attached);
@@ -302,7 +302,7 @@ DependencyProperty *resolve_property_path (DependencyObject **o, const char *pat
 class NameScope : public DependencyObject {
  public:
 	NameScope ();
-	~NameScope ();
+	virtual ~NameScope ();
 
 	virtual Value::Kind GetObjectType () { return Value::NAMESCOPE; }
 
@@ -384,7 +384,7 @@ class Collection : public DependencyObject {
 	void *closure;
 
 	Collection () : list(NULL), closure(NULL) {}
-	~Collection ();
+	virtual ~Collection ();
 	virtual Value::Kind GetObjectType () { return Value::COLLECTION; };	
 	virtual Value::Kind GetElementType () { return Value::DEPENDENCY_OBJECT; }
 
@@ -542,7 +542,7 @@ class EventTrigger : public DependencyObject {
 	TriggerActionCollection *actions;
 
 	EventTrigger ();
-	~EventTrigger ();
+	virtual ~EventTrigger ();
 	
 	virtual Value::Kind GetObjectType () { return Value::EVENTTRIGGER; };
 
@@ -675,7 +675,7 @@ class UIElement : public Visual {
 	//   Get the cumulative opacity of this element, including all it's parents
 	double GetTotalOpacity ();
 	
-	~UIElement ();
+	virtual ~UIElement ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
@@ -739,7 +739,7 @@ class Panel : public FrameworkElement {
 	VisualCollection *children;
 
 	Panel ();
-	~Panel ();
+	virtual ~Panel ();
 	virtual Value::Kind GetObjectType () { return Value::PANEL; }
 
 	static DependencyProperty* ChildrenProperty;

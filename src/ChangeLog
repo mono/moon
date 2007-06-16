@@ -1,3 +1,34 @@
+2007-06-15  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp: simplify refcounting a little more.  we now have 3
+	rules:
+
+	    1. Value() holds a ref to its contained dependency object.
+	       This means we don't have to do anything special for
+	       anything stored in a DP.
+	
+	    2. Collections hold a ref to their constituents.
+
+	    3. If you *must* cache an DO pointer in an instance field, you
+	       must ref/unref it properly.  But really, you shouldn't need
+	       to cache it, and I'll likely go through and remove all the
+	       ones I can find.
+
+	* media.cpp (media_element_set_markers): remove the ref/unref
+	stuff.
+
+	* animation.cpp: comment out some spew, and follow a safer pattern
+	in OnPropertyChanged.
+
+	* brush.cpp (OnPropertyChanged): safer pattern.
+
+	* geometry.cpp (OnPropertyChanged): safer pattern.
+
+	* runtime.h: make all these dtors virtual.
+
+	* clock.cpp, clock.h: remove the cached child_timelines instance
+	field to clean up some of the ref counting problems.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	We now accumulated data as we go.
