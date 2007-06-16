@@ -1,3 +1,8 @@
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* control.cpp|runtime.h: control_initialize_from_xaml needs to return
+	the element as the managed side needs (and defines) it.
+
 2007-06-16  Miguel de Icaza  <miguel@novell.com>
 
 	* control.cpp: Implement Control.

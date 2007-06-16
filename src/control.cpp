@@ -126,14 +126,14 @@ Control::~Control ()
 		base_unref (real_object);
 }
 
-void
+UIElement* 
 control_initialize_from_xaml (Control *control, const char *xaml)
 {
 	// No callback, figure out how this will work in the plugin to satisfy deps
 
 	UIElement *element = xaml_create_from_str (xaml, false, NULL, NULL);
 	if (element == NULL)
-		return;
+		return NULL;
 
 	if (control->real_object)
 		base_unref (control->real_object);
@@ -145,4 +145,6 @@ control_initialize_from_xaml (Control *control, const char *xaml)
 
 	// sink the ref, we own this
 	base_ref (control->real_object);
+
+	return element;
 }
