@@ -135,6 +135,7 @@ class Clock;
 class TimeManager {
  public:
 	void Start ();
+	void Shutdown ();
 
 	void Tick ();
 

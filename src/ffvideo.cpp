@@ -800,9 +800,9 @@ MediaElementFfmpeg::~MediaElementFfmpeg ()
 	
 	g_async_queue_unref (video_frames);
 	
+	g_io_channel_close (pipe_channel);
 	close (pipes [0]);
 	close (pipes [1]);
-	g_io_channel_close (pipe_channel);
 	g_free (video_rgb_buffer);
 	cairo_surface_destroy (video_cairo_surface);
 }

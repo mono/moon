@@ -265,16 +265,42 @@ Value::Value (const Value& v)
 	u = v.u;
 
 	/* make a copy of the string instead of just the pointer */
-	if (k == STRING)
+	switch (k) {
+	case STRING:
 		u.s = g_strdup (v.u.s);
-	else if (k == POINT_ARRAY)
+		break;
+	case POINT_ARRAY:
 		u.point_array->basic.refcount++;
-	else if (k == DOUBLE_ARRAY)
+		break;
+	case DOUBLE_ARRAY:
 		u.double_array->basic.refcount++;
-	else if (k == MATRIX)
+		break;
+	case MATRIX:
 		memcpy (u.matrix, v.u.matrix, sizeof(Matrix));
-	else if (k >= DEPENDENCY_OBJECT)
-		base_ref (u.dependency_object);
+		break;
+	case COLOR:
+		u.color = new Color (*v.u.color);
+		break;
+	case POINT:
+		u.point = new Point (*v.u.point);
+		break;
+	case RECT:
+		u.rect = new Rect (*v.u.rect);
+		break;
+	case REPEATBEHAVIOR:
+		u.repeat = new RepeatBehavior (*v.u.repeat);
+		break;
+	case DURATION:
+		u.duration = new Duration (*v.u.duration);
+		break;
+	case KEYTIME:
+		u.keytime = new KeyTime (*v.u.keytime);
+		break;
+	default:
+		if (k >= DEPENDENCY_OBJECT)
+			base_ref (u.dependency_object);
+		break;
+	}
 }
 
 Value::Value (Kind k)
@@ -424,6 +450,24 @@ Value::~Value ()
 		break;
 	case MATRIX:
 		g_free (u.matrix);
+		break;
+	case COLOR:
+		delete u.color;
+		break;
+	case POINT:
+		delete u.point;
+		break;
+	case RECT:
+		delete u.rect;
+		break;
+	case REPEATBEHAVIOR:
+		delete u.repeat;
+		break;
+	case DURATION:
+		delete u.duration;
+		break;
+	case KEYTIME:
+		delete u.keytime;
 		break;
 	default:
 		if (k >= DEPENDENCY_OBJECT)
@@ -1121,30 +1165,6 @@ surface_realloc (Surface *s)
 void 
 surface_destroy (Surface *s)
 {
-	if (s->toplevel){
-		base_unref (s->toplevel);
-		s->toplevel = NULL;
-	}
-
-	cairo_destroy (s->cairo_buffer);
-	if (s->cairo_xlib)
-		cairo_destroy (s->cairo_xlib);
-	s->cairo_xlib = NULL;
-	s->cairo_buffer = NULL;
-
-	if (s->pixmap != NULL)
-		gdk_pixmap_unref (s->pixmap);
-	s->pixmap = NULL;
-	cairo_surface_destroy (s->cairo_buffer_surface);
-	if (s->xlib_surface)
-		cairo_surface_destroy (s->xlib_surface);
-	s->cairo_buffer_surface = NULL;
-
-	if (s->drawing_area != NULL){
-		gtk_widget_destroy (s->drawing_area);
-		s->drawing_area = NULL;
-	}
-	// TODO: add everything
 	delete s;
 }
 
@@ -1178,8 +1198,10 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	cairo_surface_destroy(s->xlib_surface);
-	s->xlib_surface = NULL;
+	if (s->xlib_surface) {
+		cairo_surface_destroy(s->xlib_surface);
+		s->xlib_surface = NULL;
+	}
 
 	s->cairo = s->cairo_buffer;
 }
@@ -1380,6 +1402,42 @@ surface_new (int width, int height)
 	surface_realloc (s);
 
 	return s;
+}
+
+Surface::~Surface ()
+{
+	if (toplevel){
+		base_unref (toplevel);
+		toplevel = NULL;
+	}
+
+	if (buffer) {
+		free (buffer);
+		buffer = NULL;
+	}
+
+	cairo_destroy (cairo_buffer);
+	if (cairo_xlib)
+		cairo_destroy (cairo_xlib);
+	cairo_xlib = NULL;
+	cairo_buffer = NULL;
+
+	if (pixmap != NULL)
+		gdk_pixmap_unref (pixmap);
+	pixmap = NULL;
+	cairo_surface_destroy (cairo_buffer_surface);
+	if (xlib_surface)
+		cairo_surface_destroy (xlib_surface);
+	cairo_buffer_surface = NULL;
+
+	if (drawing_area != NULL){
+		g_signal_handlers_disconnect_matched (drawing_area,
+						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
+						      0, 0, NULL, NULL, this);
+
+		gtk_widget_destroy (drawing_area);
+		drawing_area = NULL;
+	}
 }
 
 void
@@ -1754,6 +1812,18 @@ DependencyObject::Register (Value::Kind type, const char *name, Value *default_v
 	return RegisterFull (type, name, default_value, default_value->k, false);
 }
 
+static void
+free_property_hash (gpointer v)
+{
+	g_hash_table_destroy ((GHashTable*)v);
+}
+
+static void
+free_property (gpointer v)
+{
+	delete (DependencyProperty*)v;
+}
+
 //
 // Register the dependency property that belongs to @type with the name @name
 // The default value is @default_value (if provided) and the type that can be
@@ -1768,18 +1838,27 @@ DependencyObject::RegisterFull (Value::Kind type, const char *name, Value *defau
 	
 	/* first add the property to the global 2 level property hash */
 	if (NULL == properties)
-		properties = g_hash_table_new (g_int_hash, g_int_equal);
+		properties = g_hash_table_new_full (g_int_hash, g_int_equal,
+						    NULL, free_property_hash);
 
 	table = (GHashTable*) g_hash_table_lookup (properties, &property->type);
 
 	if (table == NULL) {
-		table = g_hash_table_new (g_str_hash, g_str_equal);
+		table = g_hash_table_new_full (g_str_hash, g_str_equal,
+					       NULL, free_property);
 		g_hash_table_insert (properties, &property->type, table);
 	}
 
 	g_hash_table_insert (table, property->name, property);
 
 	return property;
+}
+
+void
+DependencyObject::Shutdown ()
+{
+	g_hash_table_destroy (DependencyObject::properties);
+	DependencyObject::properties = NULL;
 }
 
 DependencyObject *
@@ -1845,7 +1924,7 @@ DependencyProperty::~DependencyProperty ()
 {
 	g_free (name);
 	if (default_value != NULL)
-		g_free (default_value);
+		delete default_value;
 }
 
 DependencyProperty *dependency_property_lookup (Value::Kind type, char *name)
@@ -2442,10 +2521,28 @@ event_trigger_init (void)
 Type* Type::types [];
 GHashTable* Type::types_by_name = NULL;
 
+Type::Type (char *name, Value::Kind type, Value::Kind parent)
+{
+	this->name = strdup (name);
+	this->type = type;
+	this->parent = parent;
+}
+
+Type::~Type()
+{
+	free (name);
+}
+
 Type *
 Type::RegisterType (char *name, Value::Kind type)
 {
 	return RegisterType (name, type, Value::INVALID);
+}
+
+void
+Type::free_type (gpointer type)
+{
+	delete (Type*)type;
 }
 
 Type *
@@ -2455,13 +2552,11 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
 		memset (&types, 0, Value::LASTTYPE * sizeof (Type*));
 	}
 	if (types_by_name == NULL) {
-		types_by_name = g_hash_table_new (g_str_hash, g_str_equal);
+		types_by_name = g_hash_table_new_full (g_str_hash, g_str_equal,
+						       NULL, free_type);
 	}
 
-	Type *result = new Type ();
-	result->name = g_strdup (name);
-	result->type = type;
-	result->parent = parent;
+	Type *result = new Type (name, type, parent);
 
 	g_assert (types [type] == NULL);
 
@@ -2510,6 +2605,15 @@ Type::Find (Value::Kind type)
 	return types [type];
 }
 
+void
+Type::Shutdown ()
+{
+	if (types_by_name) {
+		g_hash_table_destroy (types_by_name);
+		types_by_name = NULL;
+	}
+}
+
 static bool inited = false;
 
 void
@@ -2540,6 +2644,17 @@ runtime_init (void)
 	downloader_init ();
 	media_init ();
 	panel_init ();
+}
+
+void
+runtime_shutdown ()
+{
+	if (!inited)
+		return;
+
+	TimeManager::Instance()->Shutdown ();
+	Type::Shutdown ();
+	DependencyObject::Shutdown ();
 }
 
 void surface_register_events (Surface *s,

@@ -183,10 +183,13 @@ public:
 	Value::Kind type;
 	char *name;
 
+	static void Shutdown ();
 private:
-	Type () {};
-	public: static Type* types [Value::LASTTYPE];
+	Type (char *name, Value::Kind type, Value::Kind parent);
+	~Type ();
+	static Type* types [Value::LASTTYPE];
 	static GHashTable *types_by_name;
+	static void free_type (gpointer v);
 };
 
 //
@@ -264,7 +267,9 @@ class DependencyObject : public Base {
 	bool Is(Value::Kind k) {
 		return GetType ()->IsSubclassOf (k);
 	};
-	
+
+	static void Shutdown ();
+
  protected:
 	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
 	void NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type);
@@ -816,6 +821,8 @@ class Surface {
 		cb_keydown(NULL), cb_keyup(NULL),
 		cairo (NULL) {}
 	
+	~Surface();
+
 	int width, height;
 
 	// The data lives here
@@ -900,6 +907,8 @@ void dependencyobject_init (void);
 void downloader_init (void);
 void media_init (void);
 void dependency_object_init(void);
+
+void runtime_shutdown (void);
 
 G_END_DECLS
 

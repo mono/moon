@@ -1,3 +1,48 @@
+2007-06-15  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp (delete_event): destroy the surface and shutdown the
+	runtime before we quit, just to make finding leaks a little
+	easier.
+
+	* ffvideo.cpp (MediaElementFfmpeg): re-order the
+	close/g_io_channel_close calls to quiet down glib.
+
+	* media.cpp: don't close the loader in DownloaderEvents.  do it in
+	the dtor for now, to keep from getting that stupid gdk warning.
+	this is wrong, but at least it's quiet.
+
+	* text.cpp: delete the color we initialize the solid color brush
+	with in text_init.
+
+	* animation.cpp, animation.h: remove the cached key_frames
+	collections.
+
+	* runtime.h, runtime.cpp: clean up our cleanup a lot.
+
+	in the copy constructor we actually need to make a copy (or
+	ref in cases where we can) everything we store as a pointer in
+	our union.  This is to facilitate us destroying it in the
+	destructor.
+
+	in surface_destroy just delete the surface.  move all the destroy
+	code to the destructor.  Also, in the destructor unhook from the
+	gtk events, since we get an unrealize event as part of widget
+	destruction, apparently.
+
+	Add DependencyObject::Shutdown which destroys our properties
+	hashtable.  Create all the hashtables with _new_full so we can
+	give free functions for keys/values.  actually make use of them,
+	and clean up the relevant destructors.
+
+	Add a destructor for Type, and have the Type ctor take its
+	arguments.  free the name in the dtor.  Same deal with _new_full
+	for hashtable creation, and also add Type::Shutdown.
+
+	(runtime_shutdown): call TimeManager::Shutdown, Type::Shutdown,
+	and DependencyObject::Shutdown to free all our stuff.
+	
+	* clock.h, clock.cpp: add TimeManager::Shutdown.
+
 2007-06-15  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* demo.cpp (gettime): Improved fps reporting.

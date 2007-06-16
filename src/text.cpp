@@ -862,8 +862,10 @@ text_init (void)
 	SolidColorBrush *brush = new SolidColorBrush ();
 	Color *color = color_from_str ("black");
 	
-	solid_color_brush_set_color (brush, color);
-	
+	solid_color_brush_set_color (brush, color); // copies color
+
+	delete color;
+
 	// Inline
 	Inline::FontFamilyProperty = DependencyObject::Register (Value::INLINE, "FontFamily", new Value ("Lucida Sans"));
 	Inline::FontSizeProperty = DependencyObject::Register (Value::INLINE, "FontSize", new Value (14.666));

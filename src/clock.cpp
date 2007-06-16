@@ -43,7 +43,8 @@ get_now (void)
 TimeManager* TimeManager::_instance = NULL;
 
 TimeManager::TimeManager ()
-  : child_clocks (NULL)
+  : child_clocks (NULL),
+    tick_id (-1)
 {
 }
 
@@ -52,6 +53,16 @@ TimeManager::Start()
 {
 	current_global_time = get_now ();
 	tick_id = gtk_timeout_add (60 /* something suitably small */, TimeManager::tick_timeout, this);
+}
+
+void
+TimeManager::Shutdown ()
+{
+	if (tick_id != -1)
+		g_source_remove (tick_id);
+
+	g_list_foreach (child_clocks, (GFunc)base_unref, NULL);
+	g_list_free (child_clocks);
 }
 
 gboolean
@@ -91,12 +102,14 @@ void
 TimeManager::AddChild (Clock *child)
 {
 	child_clocks = g_list_prepend (child_clocks, child);
+	base_ref (child);
 }
 
 void
 TimeManager::RemoveChild (Clock *child)
 {
 	child_clocks = g_list_remove (child_clocks, child);
+	base_unref (child);
 }
 
 

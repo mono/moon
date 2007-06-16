@@ -380,11 +380,6 @@ void
 Image::DownloaderEvent (int kind)
 {
 	if (kind == Downloader::NOTIFY_COMPLETED) {
-		if (!gdk_pixbuf_loader_close (loader, NULL)) {
-		  printf ("Error closing pixbuf loader\n");
-		  return;
-		}
-
 		if (!render_progressive)
 			CreateSurface ();
 

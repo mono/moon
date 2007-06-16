@@ -412,8 +412,6 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
-
-	KeyFrameCollection *key_frames;
 };
 
 DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new (void);
@@ -436,8 +434,6 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
-
-	KeyFrameCollection *key_frames;
 };
 
 ColorAnimationUsingKeyFrames *color_animation_using_key_frames_new (void);
@@ -460,8 +456,6 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
-
-	KeyFrameCollection *key_frames;
 };
 
 PointAnimationUsingKeyFrames *point_animation_using_key_frames_new (void);

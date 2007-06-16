@@ -70,6 +70,8 @@ invalidator (gpointer data)
 static gboolean
 delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 {
+	surface_destroy ((Surface*)data);
+	runtime_shutdown ();
 	gtk_main_quit ();
 	return 1;
 }
@@ -173,8 +175,8 @@ main (int argc, char *argv [])
 				  downloader_get_response_text);
 
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), NULL);
 	Surface *t = surface_new (600, 600);
+	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), t);
 	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
 		
 	for (int i = 1; i < argc; i++){

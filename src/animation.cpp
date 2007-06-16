@@ -875,19 +875,11 @@ DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
 {
-	key_frames = NULL;
-	KeyFrameCollection *c = new KeyFrameCollection ();
-
-	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == key_frames);
+	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (new KeyFrameCollection ()));
 }
 
 DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
 {
-	if (key_frames)
-		base_unref (key_frames);
 }
 
 void
@@ -899,18 +891,10 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		// The new value has already been set, so unref the old collection
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
-		if (newcol != key_frames) {
-			if (key_frames) 
-				base_unref (key_frames);
-
-			key_frames = newcol;
-			if (key_frames) {
-				if (key_frames->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				key_frames->closure = this;
-			
-				base_ref (key_frames);
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	}
 }
@@ -918,20 +902,25 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 {
-	KeyFrameCollection *keyframes = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 
-	keyframes->Add (frame);
+	key_frames->Add (frame);
 }
 
 void
 DoubleAnimationUsingKeyFrames::RemoveKeyFrame (DoubleKeyFrame *frame)
 {
+	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
+	key_frames->Remove (frame);
 }
 
 Value*
 DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
+	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	DoubleKeyFrame *current_keyframe;
@@ -970,6 +959,7 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 Duration
 DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
+	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
 
@@ -998,19 +988,11 @@ DependencyProperty* ColorAnimationUsingKeyFrames::KeyFramesProperty;
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
-	key_frames = NULL;
-	KeyFrameCollection *c = new KeyFrameCollection ();
-
-	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == key_frames);
+	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (new KeyFrameCollection ()));
 }
 
 ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
 {
-	if (key_frames)
-		base_unref (key_frames);
 }
 
 void
@@ -1022,18 +1004,10 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		// The new value has already been set, so unref the old collection
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
-		if (newcol != key_frames) {
-			if (key_frames) 
-				base_unref (key_frames);
-
-			key_frames = newcol;
-			if (key_frames) {
-				if (key_frames->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				key_frames->closure = this;
-
-				base_ref (key_frames);
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	}
 }
@@ -1041,18 +1015,24 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 {
+	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
 	key_frames->Add (frame);
 }
 
 void
 ColorAnimationUsingKeyFrames::RemoveKeyFrame (ColorKeyFrame *frame)
 {
+	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
+	key_frames->Remove (frame);
 }
 
 Value*
 ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
+	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	ColorKeyFrame *current_keyframe;
@@ -1096,6 +1076,7 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 Duration
 ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
+	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
 
@@ -1126,19 +1107,11 @@ DependencyProperty* PointAnimationUsingKeyFrames::KeyFramesProperty;
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
-	key_frames = NULL;
-	KeyFrameCollection *c = new KeyFrameCollection ();
-
-	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (c));
-
-	// Ensure that the callback OnPropertyChanged was called.
-	g_assert (c == key_frames);
+	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (new KeyFrameCollection ()));
 }
 
 PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
 {
-	if (key_frames)
-		base_unref (key_frames);
 }
 
 void
@@ -1150,18 +1123,10 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		// The new value has already been set, so unref the old collection
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
 
-		if (newcol != key_frames) {
-			if (key_frames) 
-				base_unref (key_frames);
-
-			key_frames = newcol;
-			if (key_frames) {
-				if (key_frames->closure)
-					printf ("Warning we attached a property that was already attached\n");
-				key_frames->closure = this;
-			
-				base_ref (key_frames);
-			}
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	}
 }
@@ -1169,20 +1134,24 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
 {
-	KeyFrameCollection *keyframes = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 
-	keyframes->Add (frame);
+	key_frames->Add (frame);
 }
 
 void
 PointAnimationUsingKeyFrames::RemoveKeyFrame (PointKeyFrame *frame)
 {
+	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+
+	key_frames->Remove (frame);
 }
 
 Value*
 PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
+	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	PointKeyFrame *current_keyframe;
@@ -1220,6 +1189,7 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 Duration
 PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
+	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
 
