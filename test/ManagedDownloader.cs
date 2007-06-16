@@ -50,7 +50,7 @@ namespace Gtk.Moonlight {
 		IntPtr downloader;
 
 		// Where we track the download
-		delegate void DownloadDelegate (string uri);
+		delegate void DownloadDelegate ();
 		
 		int count;
 		byte [] buffer;
@@ -58,6 +58,7 @@ namespace Gtk.Moonlight {
 		DownloadDelegate down;
 		IAsyncResult async_result;
 		volatile bool downloading = true;
+		WebRequest request = null;
 		
 		ManagedDownloader (IntPtr native)
 		{
@@ -74,25 +75,10 @@ namespace Gtk.Moonlight {
 		}
 
 							    
-		void Download (string uri)
+		void Download ()
 		{
-			WebRequest request = null;
-			
-			Console.WriteLine ("DOWN: Initiating Download");
-			try {
-				try {
-					request = WebRequest.Create (uri);
-				} catch (UriFormatException){
-					request = WebRequest.Create ("file://" + Path.GetFullPath (uri));
-				}
-			} catch (Exception e){
-				Console.WriteLine ("An error happened with the given url {0}", e);
-				// Do something with this
-			}
-			if (request == null){
-				Console.WriteLine ("An error happened with the given url, the result was null");
-				return;
-			}
+			if (request == null)
+				throw new Exception ("This Downloader has not been configured yet, call Open");
 			
 			using (WebResponse r = request.GetResponse ()){
 				Application.Invoke (delegate {
@@ -128,6 +114,23 @@ namespace Gtk.Moonlight {
 			}
 		}
 
+		void Start ()
+		{
+			auto_reset = new AutoResetEvent (false);
+			down = new DownloadDelegate (Download);
+			downloading = true;
+			async_result = down.BeginInvoke (new AsyncCallback (DownloadDone), null);
+		}
+		
+		public static void Send (IntPtr state)
+		{
+			ManagedDownloader m = (ManagedDownloader) downloaders [state];
+			if (m == null)
+				return;
+
+			m.Start ();
+		}
+
 		void DownloadDone (IAsyncResult async_result)
 		{
 			down.EndInvoke (async_result);
@@ -136,18 +139,25 @@ namespace Gtk.Moonlight {
 		
 		void Open (string verb, string uri)
 		{
-			Console.WriteLine ("HERE");
-			if (verb == "GET"){
-				if (buffer != null){
-					Console.WriteLine ("There is already a download in progress");
-					return;
-				}
-				auto_reset = new AutoResetEvent (false);
-				down = new DownloadDelegate (Download);
-				downloading = true;
-				async_result = down.BeginInvoke (uri, new AsyncCallback (DownloadDone), null);
-			} else
+			if (verb != "GET"){
 				Console.WriteLine ("Do not know what to do with verb {0}", verb);
+				return;
+			}
+			
+			try {
+				try {
+					request = WebRequest.Create (uri);
+				} catch (UriFormatException){
+					request = WebRequest.Create ("file://" + Path.GetFullPath (uri));
+				}
+			} catch (Exception e){
+				Console.WriteLine ("An error happened with the given url {0}", e);
+				// Do something with this
+			}
+			if (request == null){
+				Console.WriteLine ("An error happened with the given url, the result was null");
+				return;
+			}
 		}
 
 		public static IntPtr CreateDownloader (IntPtr native)
@@ -180,15 +190,6 @@ namespace Gtk.Moonlight {
 				return;
 
 			m.Open (verb, uri);
-		}
-
-		public static void Send (IntPtr state)
-		{
-			ManagedDownloader m = (ManagedDownloader) downloaders [state];
-			if (m == null)
-				return;
-
-			Console.WriteLine ("Downloader:Send not implemented");
 		}
 
 		public static void Abort (IntPtr state)

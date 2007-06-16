@@ -1,4 +1,8 @@
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
+	* ManagedDownloader.cs: Fixed so that the download happens in
+	Send(), it is not supposed to happen during open.
+
 	* ManagedDownloader.cs: Add support for local files
+	
 
