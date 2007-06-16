@@ -1,5 +1,9 @@
 2007-06-15  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp: little leak fixes here and there.
+
+2007-06-15  Chris Toshok  <toshok@ximian.com>
+
 	* demo.cpp (delete_event): destroy the surface and shutdown the
 	runtime before we quit, just to make finding leaks a little
 	easier.

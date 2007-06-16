@@ -88,6 +88,11 @@ class XamlParserInfo {
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
 
+	~XamlParserInfo ()
+	{
+		if (char_data_buffer)
+			g_string_free (char_data_buffer, TRUE);
+	}
 };
 
 class XamlElementInstance {
@@ -491,10 +496,12 @@ print_tree (XamlElementInstance *el, int depth)
 UIElement *
 xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 {
+	UIElement *res;
 	FILE *fp;
 	char buffer [READ_BUFFER];
 	int len, done;
-	XamlParserInfo *parser_info;
+	XamlParserInfo *parser_info = NULL;
+	XML_Parser p = NULL;
 
 	fp = fopen (xaml_file, "r+");
 
@@ -502,17 +509,18 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 #ifdef DEBUG_XAML
 		printf ("can not open file\n");
 #endif
-		return NULL;
+		goto cleanup_and_return;
 	}
 
-	XML_Parser p = XML_ParserCreateNS (NULL, '|');
+	p = XML_ParserCreateNS (NULL, '|');
 
 	if (!p) {
 #ifdef DEBUG_XAML
 		printf ("can not create parser\n");
 #endif
 		fclose (fp);
-		return NULL;
+		fp = NULL;
+		goto cleanup_and_return;
 	}
 
 	parser_info = new XamlParserInfo (p, xaml_file);
@@ -542,8 +550,7 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 					XML_ErrorString (XML_GetErrorCode (p)));
 			printf ("can not parse xaml\n");
 #endif
-			fclose (fp);
-			return NULL;
+			goto cleanup_and_return;
 		}
 	}
 
@@ -556,18 +563,29 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 	}
 
 	if (parser_info->top_element) {
-		UIElement *res = (UIElement *) parser_info->top_element->item;
+		res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_kind;
 		free_recursive (parser_info->top_element);
 
 		if (!parser_info->error_args) {
 			NameScope::SetNameScope (res, parser_info->namescope);
-			return res;
+		}
+		else {
+			res = NULL;
+			goto cleanup_and_return;
 		}
 	}
 
-	return NULL;
+ cleanup_and_return:
+	if (fp)
+		fclose (fp);
+	if (p)
+		XML_ParserFree (p);
+	if (parser_info)
+		delete parser_info;
+
+	return res;
 }
 
 UIElement *
@@ -575,13 +593,14 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 		xaml_create_custom_element_callback *cecb, Value::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
-	XamlParserInfo *parser_info;
-	
+	XamlParserInfo *parser_info = NULL;
+	UIElement *res = NULL;
+
 	if (!p) {
 #ifdef DEBUG_XAML
 		printf ("can not create parser\n");
 #endif
-		return NULL;
+		goto cleanup_and_return;
 	}
 
 	parser_info = new XamlParserInfo (p, NULL);
@@ -610,7 +629,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 				XML_ErrorString (XML_GetErrorCode (p)));
 		printf ("can not parse xaml\n");
 #endif
-		return NULL;
+		goto cleanup_and_return;
 	}
 
 #ifdef DEBUG_XAML
@@ -622,18 +641,27 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 	}
 
 	if (parser_info->top_element) {
-		UIElement *res = (UIElement *) parser_info->top_element->item;
+		res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_kind;
 		free_recursive (parser_info->top_element);
 
 		if (!parser_info->error_args) {
 			NameScope::SetNameScope (res, parser_info->namescope);
-			return res;
+		}
+		else {
+			res = NULL;
+			goto cleanup_and_return;
 		}
 	}
 
-	return NULL;
+ cleanup_and_return:
+	if (p)
+		XML_ParserFree (p);
+	if (parser_info)
+		delete parser_info;
+
+	return res;
 }
 
 int
@@ -1207,7 +1235,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			{
 				// Only solid color brushes can be specified using attribute syntax
 				SolidColorBrush *scb = solid_color_brush_new ();
-				solid_color_brush_set_color (scb, color_from_str (attr [i + 1]));
+				Color *c = color_from_str (attr [i + 1]);
+				solid_color_brush_set_color (scb, c); // copies c
+				delete c;
 				dep->SetValue (prop, Value (scb));
 			}
 				break;
