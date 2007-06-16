@@ -848,7 +848,7 @@ class Control : public FrameworkElement {
 };
 
 Control *control_new (void);
-UIElement* control_initialize_from_xaml (Control *control, const char *xaml);
+UIElement* control_initialize_from_xaml (Control *control, const char *xaml, Value::Kind *element_type);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 

@@ -1,3 +1,9 @@
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* control.cpp|runtime.h: control_initialize_from_xaml needs to return
+	the Value::Kind of the object that was created so the managed side do
+	a Lookup on it.
+
 2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* control.cpp|runtime.h: control_initialize_from_xaml needs to return
