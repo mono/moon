@@ -1,3 +1,10 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	We now accumulated data as we go.
+	
+	* downloader.cpp (downloader_get_response_text): Return
+	accumulated data.
+
 2007-06-15  Jackson Harper  <jackson@ximian.com>
 
 	* demo.cpp:

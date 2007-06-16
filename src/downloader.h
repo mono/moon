@@ -62,6 +62,8 @@ class Downloader : public DependencyObject {
 
 	int64_t file_size;
 	int64_t total;
+
+	GByteArray *byte_array_contents;
 	
 	// Set by the consumer
 	downloader_write_func       write;
@@ -90,7 +92,7 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_get_response_text_func get_response);
 
 void  downloader_abort             (Downloader *dl);
-char *downloader_get_response_text (Downloader *dl, char *PartName);
+void *downloader_get_response_text (Downloader *dl, char *PartName, uint *size);
 void  downloader_open              (Downloader *dl, char *verb, char *URI, bool Async);
 void  downloader_send              (Downloader *dl);
 

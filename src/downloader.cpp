@@ -61,11 +61,14 @@ Downloader::Downloader ()
 	event_notify = NULL;
 	file_size = -2;
 	total = 0;
+	byte_array_contents = g_byte_array_new ();
 }
 
 Downloader::~Downloader ()
 {
 	Downloader::destroy_state (downloader_state);
+	if (byte_array_contents)
+		g_byte_array_free (byte_array_contents, TRUE);
 }
 
 void
@@ -74,10 +77,17 @@ downloader_abort (Downloader *dl)
 	dl->abort (dl->downloader_state);
 }
 
-char *
-downloader_get_response_text (Downloader *dl, char* PartName)
+void *
+downloader_get_response_text (Downloader *dl, char* PartName, uint *size)
 {
-	return dl->get_response_text (PartName, dl->downloader_state);
+	//return dl->get_response_text (PartName, dl->downloader_state);
+
+	//
+	// For now, we are providing the content in this class
+	// so pull it out of our byte array
+	//
+	*size = dl->byte_array_contents->len;
+	return dl->byte_array_contents->data;
 }
 
 void
@@ -128,7 +138,9 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 {
 	if (dl->write)
 		dl->write (buf, offset, n, dl->consumer_closure);
-
+	
+	g_byte_array_append (dl->byte_array_contents, buf + offset, n);
+	
 	// Update progress
 	dl->total += n;
 	double p;
