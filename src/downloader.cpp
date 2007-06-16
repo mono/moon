@@ -177,7 +177,6 @@ downloader_notify (Downloader *dl, int msg)
 void
 downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 {
-	printf ("Runtime: Write for %d bytes on %p\n", n, dl);
 	if (dl->write)
 		dl->write (buf, offset, n, dl->consumer_closure);
 	
