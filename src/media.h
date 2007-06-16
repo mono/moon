@@ -71,6 +71,7 @@ class Image : public MediaBase {
 	// downloader callbacks
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
 	void DownloaderEvent (int kind);
+	void UpdateProgress ();
 	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
 	static void downloader_event (int kind, gpointer data);
 	static void size_notify (int64_t size, gpointer data);

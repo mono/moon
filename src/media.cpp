@@ -321,6 +321,14 @@ Image::CleanupSurface ()
 }
 
 void
+Image::UpdateProgress ()
+{
+	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
+
+	SetValue (Image::DownloadProgressProperty, Value (progress));
+}
+
+void
 Image::SetSource (DependencyObject *dl, char* PartName)
 {
 	g_return_if_fail (dl->GetObjectType() == Value::DOWNLOADER);
@@ -349,6 +357,8 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 		if (downloader->Completed ()){
 			DownloaderEvent (Downloader::NOTIFY_COMPLETED);
 		}
+
+		UpdateProgress ();
 	} else {
 		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
 		downloader_want_events (downloader, downloader_event, this);
@@ -363,6 +373,7 @@ void
 Image::PixbufWrite (guchar *buf, gsize offset, gsize count)
 {
 	gdk_pixbuf_loader_write (loader, buf + offset, count, NULL);
+	UpdateProgress ();
 }
 
 void
