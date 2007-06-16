@@ -303,3 +303,16 @@ PluginInstance::setSource (const char *value)
 	this->sourceUrl = NULL;
 	NPN_GetURL(this->instance, value, NULL);
 }
+
+char *
+PluginInstance::getBackground ()
+{
+	char *background = "";
+	return background;
+}
+
+void
+PluginInstance::setBackground (const char *value)
+{
+	// do nothing, our surface theres no backcolor at moment.
+}

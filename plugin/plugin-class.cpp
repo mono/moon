@@ -301,7 +301,11 @@ PluginRootClass::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 bool
 PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	//"background"
+	if (name == NPID ("background")) {
+		StringToNPVariant (npobj->plugin->getBackground (), result);
+		return true;
+	}
+
 	//"enableFramerateCounter"
 	//"enableRedrawRegions"
 	//"enableHtmlAccess"
@@ -320,7 +324,11 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 bool 
 PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
-	// "background"
+	if (name == NPID ("background")) {
+		npobj->plugin->setBackground (NPVARIANT_TO_STRING (*value).utf8characters);
+		return true;
+	}
+
 
 	// Cant be set after initialization so return true
 	if (name == NPID ("enableFramerateCounter")) {

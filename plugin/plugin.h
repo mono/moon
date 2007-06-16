@@ -66,6 +66,9 @@ class PluginInstance
 	bool getIsLoaded () { return this->isLoaded; };
 	char *getSource () { return this->source; }
 	void setSource (const char *value);
+
+	char *getBackground ();
+	void setBackground (const char *value);
 };
 
 #endif /* MOON_PLUGIN */
