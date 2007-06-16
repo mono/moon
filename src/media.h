@@ -96,7 +96,7 @@ class Image : public MediaBase {
 Image *image_new (void);
 void   image_set_download_progress (Image *img, double progress);
 double image_get_download_progress (Image *img);
-void   image_set_source (DependencyObject *Downloader, char *PartName);
+void   image_set_source (Image *img, DependencyObject *Downloader, char *PartName);
 
 
 
