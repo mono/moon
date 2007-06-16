@@ -12,6 +12,7 @@ AC_PROG_LIBTOOL
 PKG_PROG_PKG_CONFIG
 
 CAIRO_VERSION=1.4.0
+AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
 
 AC_MSG_CHECKING(cairo 1.4.x)
 if pkg-config "cairo >= $CAIRO_VERSION"; then
