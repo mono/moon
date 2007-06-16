@@ -21,6 +21,7 @@
 
 #include "media.h"
 #include "downloader.h"
+#include "cutil.h"
 
 // MediaBase
 
@@ -575,9 +576,27 @@ Image::render (Surface *s, int x, int y, int width, int height)
 void
 Image::getbounds ()
 {
-	x1 = y1 = 0;
-	x2 = pixbuf_width;
-	y2 = pixbuf_height;
+	Surface *s = item_get_surface (this);
+	if (s == NULL)
+		return;
+
+	cairo_save (s->cairo);
+	cairo_set_line_width (s->cairo, 1.0);
+	cairo_rectangle (s->cairo, 0, 0, pixbuf_width, pixbuf_height);
+	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
+	cairo_new_path (s->cairo);
+	cairo_restore (s->cairo);
+
+	// The extents are in the coordinates of the transform, translate to device coordinates
+	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
+}
+
+Point
+Image::getxformorigin ()
+{
+	Point user_xform_origin = GetRenderTransformOrigin ();
+
+	return Point (pixbuf_width * user_xform_origin.x, pixbuf_height * user_xform_origin.y);
 }
 
 cairo_surface_t *

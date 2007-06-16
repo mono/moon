@@ -1,3 +1,11 @@
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (Image::getxformorigin): Implement getxformorigin, so
+	rotations are correct.
+
+	(Image::getbounds): Implement getbounds correctly, the coordinates
+	should be in device coordinates with the transform applied.
+
 2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* demo.cpp (main): Add some Inlines to the TextBlock to test
