@@ -207,6 +207,11 @@ class Base {
 	void unref ();
 };
 
+void base_ref (Base *base);
+void base_unref (Base *base);
+
+
+
 //
 // DependencyObject
 // 
@@ -887,7 +892,7 @@ void     surface_register_events (Surface *s,
 typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
 
 
-UIElement  *xaml_create_from_file (const char *filename, Value::Kind *element_type);
+UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb, Value::Kind *element_type);
 UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb, Value::Kind *element_type);
 
 

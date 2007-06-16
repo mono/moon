@@ -93,7 +93,7 @@ button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
 	printf ("button_press_event\n");
 
 	printf ("Loading...\n");
-	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", &kind);
+	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, NULL, &kind);
 	printf ("Loading... %p\n", ee);
 	if (ee != NULL)
 		surface_attach (t, ee);
@@ -194,7 +194,7 @@ main (int argc, char *argv [])
 
 		gtk_window_set_title (GTK_WINDOW (w), file);
 		
-		UIElement *e = xaml_create_from_file (file, &kind);
+		UIElement *e = xaml_create_from_file (file, true, NULL, &kind);
 		if (e == NULL){
 			printf ("Was not able to load the file\n");
 			return 1;

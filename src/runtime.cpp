@@ -78,6 +78,18 @@ Base::unref ()
 	}
 }
 
+void 
+base_ref (Base *base)
+{
+	base->ref ();
+}
+ 
+void
+base_unref (Base *base)
+{
+	base->unref ();
+}
+
 void
 Collection::Add (DependencyObject *data)
 {

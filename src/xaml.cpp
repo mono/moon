@@ -494,7 +494,8 @@ print_tree (XamlElementInstance *el, int depth)
 }
 
 UIElement *
-xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
+xaml_create_from_file (const char *xaml_file, bool create_namescope,
+		xaml_create_custom_element_callback *cecb, Value::Kind *element_type)
 {
 	UIElement *res;
 	FILE *fp;
@@ -524,6 +525,7 @@ xaml_create_from_file (const char *xaml_file, Value::Kind *element_type)
 	}
 
 	parser_info = new XamlParserInfo (p, xaml_file);
+	parser_info->custom_element_callback = cecb;
 
 	// TODO: This is just in here temporarily, to make life less difficult for everyone
 	// while we are developing.  
