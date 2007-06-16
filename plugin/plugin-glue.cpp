@@ -211,17 +211,23 @@ NPP_GetMIMEDescription (void)
 
 void downloader_initialize ();
 
+static bool already_initialized = false;
+
 NPError
 NPP_Initialize (void)
 {
 	DEBUGMSG ("NP_Initialize");
 
-	gtk_init (0, 0);
-	runtime_init ();
-	downloader_initialize ();
-#ifdef RUNTIME
-	vm_init ();
-#endif
+	// We dont need to initialize more than one time.
+	if (!already_initialized) {
+		already_initialized = true;
+		gtk_init (0, 0);
+		runtime_init ();
+		downloader_initialize ();
+		#ifdef RUNTIME
+		vm_init ();
+		#endif
+	}
 
 	return NPERR_NO_ERROR;
 }
