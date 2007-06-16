@@ -75,9 +75,68 @@ DependencyProperty *MediaElement::NaturalVideoWidthProperty;
 DependencyProperty *MediaElement::PositionProperty;
 DependencyProperty *MediaElement::VolumeProperty;
 
+static gboolean
+advance_frame (void *user_data)
+{
+	MediaElement *media = (MediaElement *) user_data;
+	
+	if (media->mplayer->AdvanceFrame ())
+		item_invalidate (media);
+	
+	return true;
+}
+
+MediaElement::MediaElement ()
+{
+	mplayer = new MediaPlayer ();
+	timeout_id = 0;
+}
+
+MediaElement::~MediaElement ()
+{
+	if (timeout_id != 0)
+		g_source_remove (timeout_id);
+	
+	delete mplayer;
+}
 
 void
-MediaElement::SetSource (DependencyObject *downloader, char *name)
+MediaElement::getbounds ()
+{
+	Surface *s = item_get_surface (this);
+	
+	if (s == NULL)
+		return;
+	
+	cairo_save (s->cairo);
+	cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_rectangle (s->cairo, 0, 0, mplayer->width, mplayer->height);
+	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
+	cairo_restore (s->cairo);
+	
+	// The extents are in the coordinates of the transform, translate to device coordinates
+	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
+}
+
+Point
+MediaElement::getxformorigin ()
+{
+	Point user_xform_origin = GetRenderTransformOrigin ();
+	return Point (user_xform_origin.x * mplayer->width,
+		      user_xform_origin.y * mplayer->height);
+}
+
+void
+MediaElement::render (Surface *s, int x, int y, int width, int height)
+{
+	cairo_save (s->cairo);
+	cairo_set_matrix (s->cairo, &absolute_xform);
+	mplayer->Render (s->cairo);
+	cairo_restore (s->cairo);
+}
+
+void
+MediaElement::SetSource (DependencyObject *Downloader, char *PartName)
 {
 	;
 }
@@ -85,23 +144,112 @@ MediaElement::SetSource (DependencyObject *downloader, char *name)
 void
 MediaElement::Pause ()
 {
-	;
+	mplayer->Pause ();
+	
+	if (timeout_id != 0) {
+		g_source_remove (timeout_id);
+		timeout_id = 0;
+	}
 }
 
 void
 MediaElement::Play ()
 {
-	;
+	if (timeout_id == 0 && !mplayer->IsPlaying ())
+		timeout_id = mplayer->Play (advance_frame, this);
 }
 
 void
 MediaElement::Stop ()
 {
-	;
+	mplayer->Stop ();
+	
+	if (timeout_id != 0) {
+		g_source_remove (timeout_id);
+		timeout_id = 0;
+	}
+}
+
+void
+MediaElement::OnPropertyChanged (DependencyProperty *prop)
+{
+	bool autoplay = media_element_get_auto_play (this);
+	
+	if (prop == MediaBase::SourceProperty) {
+		char *uri = media_base_get_source (this);
+		
+		printf ("video source changed to `%s'\n", uri);
+		
+		if (timeout_id != 0) {
+			g_source_remove (timeout_id);
+			timeout_id = 0;
+		}
+		
+		mplayer->Stop ();
+		
+		if (uri && *uri && mplayer->Open (uri)) {
+			printf ("video succesfully opened\n");
+			media_element_set_natural_video_height (this, mplayer->height);
+			media_element_set_natural_video_width (this, mplayer->width);
+		} else {
+			printf ("video failed to open\n");
+		}
+	} else if (prop == MediaElement::AutoPlayProperty) {
+		// handled later
+	} else if (prop == MediaElement::BalanceProperty) {
+		// FIXME: implement me
+		// audio balance?
+		return;
+	} else if (prop == MediaElement::BufferingProgressProperty) {
+		// FIXME: 
+		return;
+	} else if (prop == MediaElement::BufferingTimeProperty) {
+		// FIXME: 
+		return;
+	} else if (prop == MediaElement::CanSeekProperty) {
+		// this can only be set by us, no-op
+		return;
+	} else if (prop == MediaElement::CurrentStateProperty) {
+		// FIXME: 
+		return;
+	} else if (prop == MediaElement::DownloadProgressProperty) {
+		// FIXME: 
+		return;
+	} else if (prop == MediaElement::IsMutedProperty) {
+		bool muted = media_element_get_is_muted (this);
+		if (!muted)
+			mplayer->UnMute ();
+		else
+			mplayer->Mute ();
+		return;
+	} else if (prop == MediaElement::MarkersProperty) {
+		// FIXME: 
+		return;
+	} else if (prop == MediaElement::NaturalDurationProperty) {
+		// this can only be set by us, no-op
+		return;
+	} else if (prop == MediaElement::NaturalVideoHeightProperty) {
+		// this can only be set by us, no-op
+		return;
+	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
+		// this can only be set by us, no-op
+		return;
+	} else if (prop == MediaElement::PositionProperty) {
+		// FIXME: needs to seek?
+		return;
+	} else if (prop == MediaElement::VolumeProperty) {
+		// FIXME: implement me
+		return;
+	}
+	
+	if (autoplay && timeout_id == 0 && !mplayer->IsPlaying ()) {
+		timeout_id = mplayer->Play (advance_frame, this);
+		printf ("video autoplayed, timeout = %d\n", timeout_id);
+	}
 }
 
 MediaElement *
-media_element_new ()
+media_element_new (void)
 {
 	return new MediaElement ();
 }

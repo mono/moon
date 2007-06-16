@@ -633,6 +633,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
+#if 0
 int
 UIElement::dump_hierarchy (UIElement *obj)
 {
@@ -645,6 +646,7 @@ UIElement::dump_hierarchy (UIElement *obj)
 	printf ("%s (%p)\n", dependency_object_get_name (obj), obj);
 	return n + 4;
 }
+#endif
 
 void
 UIElement::update_xform ()

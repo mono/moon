@@ -5,6 +5,7 @@ G_BEGIN_DECLS
 
 #include <string.h>
 
+#include "mplayer.h"
 #include "clock.h"
 #include "value.h"
 #include "brush.h"
@@ -117,8 +118,20 @@ public:
 	static DependencyProperty *PositionProperty;
 	static DependencyProperty *VolumeProperty;
 	
-	MediaElement () { }
+	// technically private
+	MediaPlayer *mplayer;
+	guint timeout_id;
+	
+	MediaElement ();
+	~MediaElement ();
 	virtual Value::Kind GetObjectType () { return Value::MEDIAELEMENT; };
+	
+	// overrides
+	virtual void render (Surface *surface, int x, int y, int width, int height);
+	virtual void getbounds ();
+	virtual Point getxformorigin ();
+	
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 	
 	void SetSource (DependencyObject *Downloader, char *PartName);
 	

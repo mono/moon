@@ -928,10 +928,6 @@ typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns
 UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb, Value::Kind *element_type);
 UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb, Value::Kind *element_type);
 
-
-MediaElement *video_new (const char *filename);
-
-
 void runtime_init (void);
 void animation_init (void);
 void brush_init (void);

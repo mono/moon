@@ -154,6 +154,15 @@ text_block_append_run (TextBlock *tb)
 	return run;
 }
 
+static MediaElement *
+video_new (char *uri)
+{
+	MediaElement *video = new MediaElement ();
+	media_base_set_source (video, uri);
+	video->Play ();
+	return video;
+}
+
 int
 main (int argc, char *argv [])
 {

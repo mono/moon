@@ -16,11 +16,12 @@ libmoon_la_SOURCES = 	\
 	cutil.cpp	\
 	cutil.h		\
 	downloader.cpp	\
-	ffvideo.cpp	\
 	geometry.cpp	\
 	geometry.h	\
 	media.cpp	\
 	media.h		\
+	mplayer.cpp	\
+	mplayer.h	\
 	rsvg.cpp	\
 	rsvg.h		\
 	runtime.h	\

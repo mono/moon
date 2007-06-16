@@ -1,3 +1,12 @@
+2007-06-16  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* media.cpp: Implemented all the needed virtual methods for
+	MediaElement to work, using my new MediaPlayer class.
+
+	* mplayer.cpp|h: New class for playing media sources.
+
+	* ffvideo.cpp: Removed from the build.
+
 2007-06-16  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (Canvas::get_xform_for): Do not apply extra
