@@ -32,6 +32,8 @@ class PluginInstance
 	bool isLoaded;
 	char *source;
 
+	bool windowless;
+
 	//
 	// The XAML loader, contains a MonoObject *
 	//
@@ -85,6 +87,7 @@ class PluginInstance
 	bool getEnableRedrawRegions ();
 	void setEnableRedrawRegions (bool value);
 	bool getEnableHtmlAccess ();
+	bool getWindowless ();
 
 	int32 getActualHeight ();
 	int32 getActualWidth ();

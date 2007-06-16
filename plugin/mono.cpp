@@ -62,7 +62,7 @@ vm_init ()
 
 		
 	}
-	DEBUGMSG ("Mono Runtime: %s\n", result ? "OK" : "Failed");
+	DEBUGMSG ("Mono Runtime: %s", result ? "OK" : "Failed");
 	return result;
 }
 

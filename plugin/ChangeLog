@@ -1,3 +1,9 @@
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
+	* mono.cpp: Remove debug message cr.
+
+	* plugin.cpp, plugin.h, plugin-class.cpp: Windowless property added.
+
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight.cs: Quick implementation of miguels beautiful new xaml

@@ -82,6 +82,8 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->initParams = false;
 	this->isLoaded = false;
 	this->source = NULL;
+
+	this->windowless = false;
 	
 	this->vm_missing_url = NULL;
 	this->vm_missing_file = NULL;
@@ -388,6 +390,12 @@ bool
 PluginInstance::getEnableHtmlAccess ()
 {
 	return true;
+}
+
+bool
+PluginInstance::getWindowless ()
+{
+	return this->windowless;
 }
 
 int32

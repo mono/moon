@@ -328,7 +328,10 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 		return true;
 	}
 
-	//"windowless"
+	if (name == NPID ("windowless")) {
+		BOOLEAN_TO_NPVARIANT (npobj->plugin->getWindowless (), *result);
+		return true;
+	} 
 
 	return false;
 }
