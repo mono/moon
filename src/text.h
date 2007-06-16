@@ -157,8 +157,9 @@ public:
 private:
 	PangoFontDescription *font;
 	PangoLayout *layout;
+	int width, height;
 	
-	void Draw (Surface *s, bool render);
+	void Draw (Surface *s, bool render, int *w, int *h);
 };
 
 TextBlock *text_block_new (void);

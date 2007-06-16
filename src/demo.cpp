@@ -1,4 +1,4 @@
-#define VIDEO_DEMO
+//#define VIDEO_DEMO
 #define XAML_DEMO
 #include <string.h>
 #include <gtk/gtk.h>
@@ -124,6 +124,36 @@ static void downloader_abort (gpointer state);
 static void downloader_abort (gpointer state);
 static char* downloader_get_response_text (char *part, gpointer state);
 
+static void
+text_block_append_line_break (TextBlock *tb)
+{
+	Inlines *col = text_block_get_inlines (tb);
+	LineBreak *lb = new LineBreak ();
+	
+	if (col == NULL) {
+		col = new Inlines ();
+		text_block_set_inlines (tb, col);
+	}
+	
+	col->Add (lb);
+}
+
+static Run *
+text_block_append_run (TextBlock *tb)
+{
+	Inlines *col = text_block_get_inlines (tb);
+	Run *run = new Run ();
+	
+	if (col == NULL) {
+		col = new Inlines ();
+		text_block_set_inlines (tb, col);
+	}
+	
+	col->Add (run);
+	
+	return run;
+}
+
 int
 main (int argc, char *argv [])
 {
@@ -219,20 +249,35 @@ main (int argc, char *argv [])
 		shape_set_stroke (r2, scb);
 		panel_child_add (canvas, r2);
 		
-		Rectangle *r3 = rectangle_new ();
-		framework_element_set_width (r3, 390.0);
-		framework_element_set_height (r3, 36.0);
-		r3->SetValue (Canvas::LeftProperty, Value (75.0));
-		r3->SetValue (Canvas::TopProperty, Value (175.0));
-		shape_set_fill (r3, scb2);
-		item_set_transform_origin (r3, Point (0.5, 0.5));
-		item_set_render_transform (r3, t_trans);
-		panel_child_add (canvas, r3);
-		
 		TextBlock *tb = text_block_new ();
 		text_block_set_font_size (tb, 24.0);
 		text_block_set_font_weight (tb, FontWeightsBold);
 		text_block_set_text (tb, "This is a Moonlight Demo");
+#if 1
+		Run *run;
+		SolidColorBrush *font_brush = new SolidColorBrush ();
+		Color *font_color = color_from_str ("SteelBlue");
+		solid_color_brush_set_color (font_brush, font_color);
+		
+		text_block_append_line_break (tb);
+		run = text_block_append_run (tb);
+		inline_set_font_family (run, "Times New Roman");
+		//inline_set_foreground (run, font_brush);
+		inline_set_font_size (run, 12.0);
+		run_set_text (run, "Brought to you by ");
+		run = text_block_append_run (tb);
+		inline_set_font_family (run, "Times New Roman");
+		inline_set_font_style (run, FontStylesItalic);
+		//inline_set_foreground (run, font_brush);
+		inline_set_font_size (run, 12.0);
+		run_set_text (run, "The Fejjster");
+		run = text_block_append_run (tb);
+		inline_set_font_family (run, "Times New Roman");
+		//inline_set_foreground (run, font_brush);
+		inline_set_font_size (run, 12.0);
+		run_set_text (run, " ...and by many other cool hackers");
+#endif
+		
 		tb->SetValue (Canvas::LeftProperty, Value (75.0));
 		tb->SetValue (Canvas::TopProperty, Value (175.0));
 		item_set_transform_origin (tb, Point (0.5, 0.5));

@@ -1,3 +1,17 @@
+2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* demo.cpp (main): Add some Inlines to the TextBlock to test
+	bounding box calculations.
+
+	* text.cpp (OnPropertyChanged): If the property that changed is
+	the Actual width/height, then don't invalidate anything - simply
+	return (these are just cache values that only we can set
+	internally).
+	(Draw): Keep track of the pixel width/height of the entire
+	rendered TextBlock+Inlines.
+	(getbounds): Use the cached width/height of the TextBlock+Inlines
+	and draw a rectangle instead to improve performance.
+
 2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* media.cpp|h: Add media_base_new.

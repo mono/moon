@@ -286,6 +286,9 @@ TextBlock::TextBlock ()
 {
 	layout = NULL;
 	
+	height = -1;
+	width = -1;
+	
 	/* initialize the font description */
 	font = pango_font_description_new ();
 	char *family = text_block_get_font_family (this);
@@ -319,7 +322,7 @@ TextBlock::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
-	Draw (s, true);
+	Draw (s, true, NULL, NULL);
 	cairo_restore (s->cairo);
 }
 
@@ -332,24 +335,27 @@ TextBlock::getbounds ()
 	if (s == NULL)
 		return;
 	
+	if (width == -1 || height == -1) {
+		// need to recompute cached width/height for optimization
+		cairo_save (s->cairo);
+		cairo_identity_matrix (s->cairo);
+		Draw (s, false, &width, &height);
+		cairo_new_path (s->cairo);
+		cairo_restore (s->cairo);
+	}
+	
+	// optimization: use the cached width/height and draw
+	// a simple rectangle to get bounding box
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
-	
-	Draw (s, false);
-	
-	pango_layout_get_pixel_extents (layout, &ink, &logical);
-	
+	cairo_set_line_width (s->cairo, 1);
+	cairo_rectangle (s->cairo, 0, 0, width, height);
+	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
 	
-	x1 = (double) ink.x;
-	y1 = (double) ink.y;
-	
-	x2 = x1 + ink.width;
-	y2 = y1 + ink.height;
-	
-	text_block_set_actual_height (this, (double) ink.height);
-	text_block_set_actual_width (this, (double) ink.width);
+	text_block_set_actual_height (this, y2 - y1);
+	text_block_set_actual_width (this, x2 - x1);
 	
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
@@ -360,18 +366,18 @@ TextBlock::getxformorigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	Surface *s = item_get_surface (this);
-	int width, height;
 	
 	if (s == NULL)
 		return Point (0.0, 0.0);
 	
-	cairo_save (s->cairo);
-	cairo_identity_matrix (s->cairo);
-	Draw (s, false);
-	pango_layout_get_pixel_size (layout, &width, &height);
-	cairo_new_path (s->cairo);
-	cairo_restore (s->cairo);
-
+	if (width == -1 || height == -1) {
+		cairo_save (s->cairo);
+		cairo_identity_matrix (s->cairo);
+		Draw (s, false, &width, &height);
+		cairo_new_path (s->cairo);
+		cairo_restore (s->cairo);
+	}
+	
 	return Point (user_xform_origin.x * width, user_xform_origin.y * height);
 }
 
@@ -383,7 +389,7 @@ TextBlock::inside_object (Surface *s, double x, double y)
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
-	Draw (s, false);
+	Draw (s, false, NULL, NULL);
 	
 	double nx = x;
 	double ny = y;
@@ -404,8 +410,9 @@ TextBlock::inside_object (Surface *s, double x, double y)
 }
 
 void
-TextBlock::Draw (Surface *s, bool render)
+TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 {
+	int full_width = 0, full_height = 0;
 	Inlines *inlines;
 	Brush *brush;
 	char *text;
@@ -432,16 +439,19 @@ TextBlock::Draw (Surface *s, bool render)
 			pango_cairo_layout_path (s->cairo, layout);
 	}
 	
+	pango_layout_get_pixel_size (layout, &full_width, &full_height);
+	
 	if ((inlines = text_block_get_inlines (this))) {
 		PangoFontDescription *cur_font = font;
 		GList *next, *node = inlines->list;
 		int width, height, x = 0, y = 0;
 		bool newline = false;
-		int max_height;
+		int line_height;
 		Inline *item;
 		
-		pango_layout_get_pixel_size (layout, &width, &height);
-		max_height = height;
+		line_height = full_height;
+		height = full_height;
+		width = full_width;
 		
 		while (node != NULL) {
 			item = (Inline *) node->data;
@@ -479,19 +489,26 @@ TextBlock::Draw (Surface *s, bool render)
 				pango_layout_get_pixel_size (layout, &width, &height);
 				
 				newline == newline || strchr (text, '\n');
-				if (height > max_height || newline)
-					max_height = height;
+				if (height > line_height || newline) {
+					if (height > line_height)
+						full_height += (height - line_height);
+					line_height = height;
+				}
+				
+				if ((x + width) > full_width)
+					full_width = x + width;
 				
 				newline = false;
 				
 				break;
 			case Value::LINEBREAK:
 				//printf ("<LineBreak/>\n");
-				y += max_height;
+				y += line_height;
 				//printf ("moving to (%d, %d)\n", x, y);
 				cairo_move_to (s->cairo, 0, y);
 				pango_cairo_update_layout (s->cairo, layout);
-				max_height = height;
+				full_height += height;
+				line_height = height;
 				newline = true;
 				width = 0;
 				break;
@@ -502,10 +519,13 @@ TextBlock::Draw (Surface *s, bool render)
 			
 			node = node->next;
 		}
-		
-	finished:
-		;
 	}
+	
+	if (w)
+		*w = full_width;
+	
+	if (h)
+		*h = full_height;
 }
 
 void
@@ -515,6 +535,9 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		FrameworkElement::OnPropertyChanged (prop);
 		return;
 	}
+	
+	if (prop == TextBlock::ActualHeightProperty || prop == TextBlock::ActualWidthProperty)
+		return;
 	
 	if (prop == TextBlock::FontFamilyProperty) {
 		char *family = text_block_get_font_family (this);
@@ -532,6 +555,9 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		FontWeights weight = text_block_get_font_weight (this);
 		pango_font_description_set_weight (font, font_weight (weight));
 	}
+	
+	height = -1;
+	width = -1;
 	
 	FullInvalidate (false);
 }
