@@ -1829,6 +1829,15 @@ dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kin
 }
 
 //
+//  A helper debugging routine for C#
+//
+const char *
+dependency_object_get_name (DependencyObject *obj)
+{
+	return Type::Find (obj->GetObjectType ())->name;
+}
+
+//
 // Use this for values that can be null
 //
 DependencyProperty *
