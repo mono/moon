@@ -1,3 +1,16 @@
+2007-06-16  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Canvas::get_xform_for): Do not apply extra
+	transformations to the child other than the absolute_xform.
+	
+	(surface_attach): On attach we need to do a full invalidate, so
+	the transformations are computed, otherwise it uses the defaults
+	for the toplevel (zero), this fixes the atom.xaml issue. 
+
+	* control.cpp (get_xform_for): This is not proxied to the real
+	object, this is proxied to the parent.
+	(control_initialize_from_xaml): Set the parent link here.
+
 2007-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* transform.cpp, transform.h, runtime.cpp, runtime.h,

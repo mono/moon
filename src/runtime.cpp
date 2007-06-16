@@ -633,6 +633,19 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
+int
+UIElement::dump_hierarchy (UIElement *obj)
+{
+	if (obj == NULL)
+		return 0;
+	
+	int n = dump_hierarchy (obj->parent);
+	for (int i = 0; i < n; i++)
+		putchar (' ');
+	printf ("%s (%p)\n", dependency_object_get_name (obj), obj);
+	return n + 4;
+}
+
 void
 UIElement::update_xform ()
 {
@@ -648,17 +661,18 @@ UIElement::update_xform ()
 	// base transform in UIElement that will be updated by the
 	// container on demand
 	//
+	item_get_render_affine (this, &user_transform);
+
 	if (parent != NULL)
 		parent->get_xform_for (this, &absolute_xform);
 	else
 		cairo_matrix_init_identity (&absolute_xform);
 	
-	item_get_render_affine (this, &user_transform);
-	
 	Point p = getxformorigin ();
 	cairo_matrix_translate (&absolute_xform, p.x, p.y);
 	cairo_matrix_multiply (&absolute_xform, &user_transform, &absolute_xform);
 	cairo_matrix_translate (&absolute_xform, -p.x, -p.y);
+	//printf ("      Final position for %s x=%g y=%g\n", dependency_object_get_name (this), absolute_xform.x0, absolute_xform.y0);
 }
 
 void
@@ -945,11 +959,6 @@ Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
 		
 	cairo_matrix_translate (result, left, top);
-
-	// The RenderTransform and RenderTransformOrigin properties also applies to item drawn on the canvas
-	cairo_matrix_t item_transform;
-	item_get_render_affine (this, &item_transform);
-	cairo_matrix_multiply (result, result, &item_transform);
 }
 
 void
@@ -959,6 +968,7 @@ Canvas::update_xform ()
 	UIElement::update_xform ();
 	GList *il;
 
+	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
@@ -1339,6 +1349,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
+		//printf ("    ITEM %s has %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
 		Rect item_rect (item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
 
 		if (render_rect.IntersectsWith (item_rect)) {
@@ -1365,6 +1376,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 			item->events->Emit ("Loaded");
 		}
 	}
+//	printf ("RENDER: LEAVE\n");
 
 	if (!(flags & UIElement::IS_LOADED)) {
 		flags |= UIElement::IS_LOADED;
@@ -1517,8 +1529,7 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	if (first)
 		surface_connect_events (surface);
 
-	item_update_bounds (canvas);
-	item_invalidate (canvas);
+	canvas->FullInvalidate (true);
 }
 
 void
