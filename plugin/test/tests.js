@@ -94,6 +94,7 @@ function ControlSettingsTest () {
 	control1.settings.enableRedrawRegions = true;
 	AssertAreEqual ("control1.settings.enableRedrawRegions", control1.settings.enableRedrawRegions, true);
 	AssertAreEqual ("control1.settings.enableHtmlAccess", control1.settings.enableHtmlAccess, true);
+	control1.settings.enableRedrawRegions = false;
 }
 
 function ControlContentTest () {
