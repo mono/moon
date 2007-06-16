@@ -373,13 +373,13 @@ PluginContent::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVaria
 {
 	// Silverlight always return 0.
 	if (name == NPID ("actualHeight")) {
-		INT32_TO_NPVARIANT (0, *result);
+		INT32_TO_NPVARIANT (npobj->plugin->getActualHeight (), *result);
 		return true;
 	}
 
 	// Silverlight always return 0.
 	if (name == NPID ("actualWidth")) {
-		INT32_TO_NPVARIANT (0, *result);
+		INT32_TO_NPVARIANT (npobj->plugin->getActualWidth (), *result);
 		return true;
 	}
 

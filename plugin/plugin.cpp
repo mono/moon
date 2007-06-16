@@ -389,3 +389,15 @@ PluginInstance::getEnableHtmlAccess ()
 {
 	return true;
 }
+
+int32
+PluginInstance::getActualHeight ()
+{
+	return window->height;
+}
+
+int32
+PluginInstance::getActualWidth ()
+{
+	return window->width;
+}

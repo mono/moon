@@ -85,6 +85,9 @@ class PluginInstance
 	bool getEnableRedrawRegions ();
 	void setEnableRedrawRegions (bool value);
 	bool getEnableHtmlAccess ();
+
+	int32 getActualHeight ();
+	int32 getActualWidth ();
 };
 
 #endif /* MOON_PLUGIN */
