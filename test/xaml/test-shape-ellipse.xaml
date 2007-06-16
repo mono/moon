@@ -2,4 +2,7 @@
 	<Ellipse Fill="#FF0000" Stroke="Green" StrokeThickness="1" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" />
 	<Ellipse Fill="#770000FF" Stroke="#7722BB22" StrokeThickness="2" Canvas.Left="20" Canvas.Top="20" Width="40" Height="20" />              
 	<Ellipse Fill="#3300FF00" Stroke="#33333333" StrokeThickness="3" Canvas.Left="30" Canvas.Top="30" Width="40" Height="80" />              
+<!-- 0 == no stroke -->
+	<Ellipse Stroke="Red" StrokeThickness="0" Canvas.Left="100" Canvas.Top="10" Width="100" Height="20" />
+	<Ellipse Stroke="Red" Fill="Blue" StrokeThickness="0" Canvas.Left="120" Canvas.Top="40" Width="100" Height="20" />
 </Canvas>
