@@ -32,8 +32,20 @@ class PluginInstance
 	bool isLoaded;
 	char *source;
 
+	//
+	// The XAML loader, contains a MonoObject *
+	//
+	gpointer mono_loader_object;
+
+	// The name of the file that we are missing, and we requested to be loaded
+	char *vm_missing_file;
+
+	// The mode that we want to set on the next stream opening.
+	const char *vm_missing_url;
+
 	// Private methods
 	void CreateWindow ();
+	void TryLoad ();
 	void LoadFromXaml (const char* fname);
 	void RuntimeLoadFromXaml (const char* fname);
 

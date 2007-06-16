@@ -1,3 +1,4 @@
+
 /*
  * moon-mono.cpp: Support routines to load the Mono VM as a browser plugin.
  *
@@ -21,6 +22,9 @@ extern MonoDomain   *moon_domain;
 extern MonoAssembly *moon_boot_assembly;
 
 gboolean    vm_init ();
-void        vm_load_xaml (gpointer surface, const char *file);
+gpointer    vm_xaml_loader_new (gpointer plugin, gpointer surface, const char *file);
+
+char       *vm_loader_try      (gpointer loader_object, int *error);
+void        vm_insert_mapping  (gpointer loader_object, const char *key, const char *value);
 
 G_END_DECLS

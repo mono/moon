@@ -14,6 +14,8 @@
 #include "plugin-class.h"
 #include "moon-mono.h"
 
+#define NEW_STREAM_REQUEST_AS_FILE vm_missing_file
+
 void 
 plugin_menu_about (PluginInstance *plugin)
 {
@@ -80,6 +82,10 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->initParams = false;
 	this->isLoaded = false;
 	this->source = NULL;
+	
+	this->vm_missing_url = NULL;
+	this->vm_missing_file = NULL;
+	this->mono_loader_object = NULL;
 }
 
 PluginInstance::~PluginInstance ()
@@ -227,8 +233,13 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 	*stype = NP_ASFILEONLY;
 
 	} else {
-		*stype = NP_NORMAL;
+		if (vm_missing_url == NEW_STREAM_REQUEST_AS_FILE){
+			*stype = NP_ASFILEONLY;
+			vm_missing_url = stream->url;
+		} else
+			*stype = NP_NORMAL;
 	}
+
 
 	return NPERR_NO_ERROR;
 }
@@ -237,6 +248,29 @@ NPError
 PluginInstance::DestroyStream (NPStream* stream, NPError reason)
 {
 	return NPERR_NO_ERROR;
+}
+
+//
+// Tries to load the XAML file, the parsing might fail because a
+// required dependency is not available, so we need to queue the
+// request to fetch the data.
+//
+void
+PluginInstance::TryLoad ()
+{
+	int error = 0;
+
+	vm_missing_file = vm_loader_try (mono_loader_object, &error);
+
+	if (vm_missing_file != NULL){
+		vm_missing_url = NEW_STREAM_REQUEST_AS_FILE;
+		NPN_GetURL (instance, vm_missing_file, NULL);
+		return;
+	}
+
+	//
+	// missing file was NULL, if error is set, display some message
+	//
 }
 
 void
@@ -248,6 +282,18 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		LoadFromXaml (fname);
 		this->isLoaded = true;
 	}
+
+	if (vm_missing_url != NULL && vm_missing_url != NEW_STREAM_REQUEST_AS_FILE && !strcmp (stream->url, vm_missing_url)){
+		//
+		// We got the dependency requested
+		//
+		vm_insert_mapping (mono_loader_object, vm_missing_file, vm_missing_url);
+		g_free (vm_missing_file);
+		vm_missing_file = NULL;
+
+		// retry to load
+		TryLoad ();
+	}
 }
 
 void
@@ -255,7 +301,8 @@ PluginInstance::LoadFromXaml (const char* fname)
 {
 	DEBUGMSG ("LoadFromXaml: %s", fname);
 #ifdef RUNTIME
-	vm_load_xaml (this->surface, fname);
+	mono_loader_object = vm_xaml_loader_new (this, this->surface, fname);
+	TryLoad ();
 #else	
 	surface_attach (this->surface, xaml_create_from_file (fname, NULL));
 #endif

@@ -1,3 +1,45 @@
+2007-06-16  Miguel de Icaza  <miguel@novell.com>
+
+	New mechanism for loading XAML files.
+
+	Since XAML files can contain references to external assemblies and
+	these have to be downloaded using the browser, we have now changed
+	our previous setup that just called the xaml parser with a setup
+	that is able to download dependencies.
+
+	The system works by attempting repeatedly to parse the XAML file.
+	The XAML parser needs to return an error condition that includes
+	the missing dependency.   
+
+	For all missing dependencies, we request the file from the
+	browser, and we re-try the parsing until it works (or it fails due
+	to other problems). 
+	
+	* moonlight.cs: Instead of exposing a CreateFromXaml method, we
+	now expose a Loader object.
+
+	The Loader object can keep track of downloaded assembly
+	dependencies and calls the parser.
+	
+	* plugin.cpp (NewStream): Use a primitive state machine
+	(vm_missing_url == vm_missing_file) to detect when we have just
+	requested that a file be downloaded.   This probably is too
+	primitive. 
+
+	(TryLoad): New method.    
+	
+	Tries to load the XAML file, the parsing might fail because a
+	required dependency is not available, so we need to queue the
+	request to fetch the data.
+
+	(LoadFromXaml): Use vm_xaml_loader_new and TryLoad now.
+	
+	* mono.cpp (vm_init): We now use a handful of more methods from
+	moonlight.cs 
+
+	(vm_loader_try, vm_insert_mapping): helper functions to call into
+	the managed wrapper for XAML file loading.
+
 2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin.cpp, 
