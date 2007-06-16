@@ -66,7 +66,6 @@ class XamlParserInfo {
 
 	NameScope *namescope;
 	XamlElementInstance *top_element;
-	Value::Kind          top_kind;
 	XamlNamespace *current_namespace;
 	XamlElementInstance *current_element;
 
@@ -82,7 +81,7 @@ class XamlParserInfo {
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
 		parser (parser), file_name (file_name), top_element (NULL), current_element (NULL),
-		current_namespace (NULL), char_data_buffer (NULL), top_kind (Value::INVALID), implicit_default_namespace (false),
+		current_namespace (NULL), char_data_buffer (NULL), implicit_default_namespace (false),
 		error_args (NULL), namescope (new NameScope()), custom_element_callback (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
@@ -315,7 +314,6 @@ start_element (void *data, const char *el, const char **attr)
 
 		if (!p->top_element) {
 			p->top_element = inst;
-			p->top_kind = elem->dependency_type;
 			p->current_element = inst;
 			return;
 		}
@@ -565,9 +563,10 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 	}
 
 	if (parser_info->top_element) {
+	
 		res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
-			*element_type = parser_info->top_kind;
+			*element_type = parser_info->top_element->info->dependency_type;
 		free_recursive (parser_info->top_element);
 
 		if (!parser_info->error_args) {
@@ -645,7 +644,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 	if (parser_info->top_element) {
 		res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
-			*element_type = parser_info->top_kind;
+			*element_type = parser_info->top_element->info->dependency_type;
 		free_recursive (parser_info->top_element);
 
 		if (!parser_info->error_args) {

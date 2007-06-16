@@ -1,3 +1,8 @@
+2007-06-16  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Kill top_kind, I have no idea how this guy crept back
+	in.
+
 2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.h: Implement missing IntersectsWith and Intersection to fix 
@@ -19,7 +24,6 @@
 	don't call child clock TimeUpdated methods at all.  they always
 	generate CurrentTimeInvalidated even when the time hasn't changed,
 	which triggers redraws that don't need to happen.
-
 
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
