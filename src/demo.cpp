@@ -51,15 +51,13 @@ static gboolean
 invalidator (gpointer data)
 {
 	Surface *s = (Surface *) data;
-
-	gtk_widget_queue_draw (s->drawing_area);
-
 	int64_t now = gettime ();
-
 	int64_t diff = now - last_time;
-	if ((now - last_time) > 1000000){
+	
+	if (diff > 1000000) {
+		float seconds = diff / 1000000.0;
 		last_time = now;
-		char *res = g_strdup_printf ("%d fps", s->frames);
+		char *res = g_strdup_printf ("%.2f fps", s->frames / seconds);
 
 		gtk_window_set_title (GTK_WINDOW (w), res);
 		g_free (res);
@@ -475,7 +473,7 @@ main (int argc, char *argv [])
 	if (do_fps){
 		t->frames = 0;
 		last_time = gettime ();
-		gtk_idle_add (invalidator, t);
+		gtk_timeout_add (1000, invalidator, t);
 	}
 
 	gtk_widget_set_usize (w, 600, 400);
