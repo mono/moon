@@ -1,4 +1,5 @@
-<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<!-- border 1 -->
 	<Path Fill="#ffc6c8da" Stroke="#ff605773" StrokeThickness="3">
