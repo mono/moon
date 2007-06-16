@@ -67,7 +67,6 @@ namespace Gtk.Moonlight {
 
 		void write ()
 		{
-			Console.WriteLine ("Writing {0} bytes", count);
 			lock (buffer){
 				downloader_write (downloader, buffer, 0, count);
 			}
@@ -94,7 +93,6 @@ namespace Gtk.Moonlight {
 					while (downloading){
 						lock (buffer){
 							count = rstream.Read (buffer, 0, buffer.Length);
-							Console.WriteLine ("DOWN: Got {0} bytes", count);
 						}
 						Application.Invoke (delegate {
 							lock (buffer){
@@ -104,7 +102,6 @@ namespace Gtk.Moonlight {
 						});
 						auto_reset.WaitOne ();
 						if (count == 0){
-							Console.WriteLine ("DOWN: WE ARE DONE");
 							// We are done.
 							buffer = null;
 							break;
@@ -166,7 +163,6 @@ namespace Gtk.Moonlight {
 			int key = keyid++;
 			downloaders [(IntPtr) key] = m;
 
-			Console.WriteLine ("Created: {0}", key);
 			return (IntPtr) key;
 		}
 
@@ -185,7 +181,6 @@ namespace Gtk.Moonlight {
 		public static void Open (string verb, string uri, bool async, IntPtr state)
 		{
 			ManagedDownloader m = (ManagedDownloader) downloaders [state];
-			Console.WriteLine ("Key: {0} -- {1}", state, m == null);
 			if (m == null)
 				return;
 
