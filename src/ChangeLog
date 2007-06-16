@@ -1,3 +1,8 @@
+2007-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (media_base_new): Removed, not instantiable.
+	(Image::getbounds): Need to set the absolute_xform matrix :)
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* media.cpp (Image::getxformorigin): Implement getxformorigin, so

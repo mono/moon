@@ -330,7 +330,6 @@ void
 TextBlock::getbounds ()
 {
 	Surface *s = item_get_surface (this);
-	PangoRectangle ink, logical;
 	
 	if (s == NULL)
 		return;
