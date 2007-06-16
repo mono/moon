@@ -111,8 +111,8 @@ struct Rect {
 		Rect result = Rect ();
 		result.x = x > rect.x ? x : rect.x;
 		result.y = y > rect.y ? y : rect.y;
-		result.w = (x + w < rect.x + rect.w) ? (x + w) : (rect.x + rect.w) - result.x;
-		result.h = (y + h < rect.y + rect.h) ? (y + h) : (rect.y + rect.h) - result.y;
+		result.w = ((x + w < rect.x + rect.w) ? (x + w) : (rect.x + rect.w)) - result.x;
+		result.h = ((y + h < rect.y + rect.h) ? (y + h) : (rect.y + rect.h)) - result.y;
 		return result;
 	}
 };
