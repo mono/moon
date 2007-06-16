@@ -75,6 +75,7 @@ function ControlTest () {
 	AssertAreEqual ("control1.source", control1.source, "circle.xaml");
 	control1.source = "emote.xaml";
 	AssertAreEqual ("control1.source", control1.source, "emote.xaml");
+	control1.source = "circle.xaml";
 }
 
 function ControlSettingsTest () {
