@@ -1,5 +1,9 @@
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moonlight.cs: Fix surface attachment.
+
+2007-06-15  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-glue.cpp: Prevent multiple runtime and mono vm initialization.
 
 2007-06-15  Everaldo Canuto  <ecanuto@novell.com>

@@ -35,10 +35,10 @@ namespace Moonlight {
 				return;
 			}
 			if (kind != 23){
-				Console.WriteLine ("return value is not 18 (Canvas)");
+				Console.WriteLine ("return value is not 23 (Canvas)");
 				return;
 			}
-			
+			Console.WriteLine ("----> 1");
 			MethodInfo m = typeof (Canvas).GetMethod ("FromPtr", BindingFlags.Static | BindingFlags.NonPublic);
 			Canvas c = (Canvas) m.Invoke (null, new object [] { x });
 			if (c == null){
@@ -47,10 +47,8 @@ namespace Moonlight {
 			}
 
 			m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
-				GetMethod ("GetNativeObject", BindingFlags.Static | BindingFlags.NonPublic);
-			IntPtr p = (IntPtr) m.Invoke (null, new object [] { c });
-			
-			surface_attach (surface, p);
+				GetMethod ("SurfaceAttach", BindingFlags.Static | BindingFlags.NonPublic);
+			m.Invoke (null, new object [] { surface, c });
 		}
 	}
 	
