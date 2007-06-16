@@ -1816,8 +1816,8 @@ DependencyObject::FindName (const char *name)
 DependencyObject *
 dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kind *element_kind)
 {
-	printf ("Looking up in %p the string %p\n", obj, name);
-	printf ("        String: %s\n", name);
+	//printf ("Looking up in %p the string %p\n", obj, name);
+	//printf ("        String: %s\n", name);
 	DependencyObject *ret = obj->FindName (name);
 
 	if (ret == NULL)
