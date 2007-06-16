@@ -1,4 +1,4 @@
-//#define VIDEO_DEMO
+#define VIDEO_DEMO
 #define XAML_DEMO
 #include <string.h>
 #include <gtk/gtk.h>
@@ -255,25 +255,30 @@ main (int argc, char *argv [])
 		text_block_set_text (tb, "This is a Moonlight Demo");
 #if 1
 		Run *run;
-		SolidColorBrush *font_brush = new SolidColorBrush ();
+		SolidColorBrush *blue_brush = new SolidColorBrush ();
+		SolidColorBrush *magenta_brush = new SolidColorBrush ();
 		Color *font_color = color_from_str ("SteelBlue");
-		solid_color_brush_set_color (font_brush, font_color);
+		solid_color_brush_set_color (blue_brush, font_color);
+		delete font_color;
+		font_color = color_from_str ("Magenta");
+		solid_color_brush_set_color (magenta_brush, font_color);
+		delete font_color;
 		
 		text_block_append_line_break (tb);
 		run = text_block_append_run (tb);
 		inline_set_font_family (run, "Times New Roman");
-		//inline_set_foreground (run, font_brush);
+		inline_set_foreground (run, blue_brush);
 		inline_set_font_size (run, 10.0);
 		run_set_text (run, "Brought to you by ");
 		run = text_block_append_run (tb);
 		inline_set_font_family (run, "Times New Roman");
 		inline_set_font_style (run, FontStylesItalic);
-		//inline_set_foreground (run, font_brush);
+		inline_set_foreground (run, magenta_brush);
 		inline_set_font_size (run, 10.0);
 		run_set_text (run, "The Fejjster");
 		run = text_block_append_run (tb);
 		inline_set_font_family (run, "Times New Roman");
-		//inline_set_foreground (run, font_brush);
+		inline_set_foreground (run, blue_brush);
 		inline_set_font_size (run, 10.0);
 		run_set_text (run, " ...and by many other cool hackers");
 #endif
