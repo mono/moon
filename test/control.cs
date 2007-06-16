@@ -18,11 +18,18 @@ public class MyControl : Control {
 
 class ControlSample {
 
+	static void OnWindowDelete (object o, DeleteEventArgs args)
+	{
+		Application.Quit ();
+	}
+
 	static void Main ()
 	{
 		Application.Init ();
 
 		Window w = new Window ("Top");
+		w.DeleteEvent += new DeleteEventHandler (OnWindowDelete);
+
 		GtkSilver silver = new GtkSilver (400, 400);
 		w.Add (silver);
 		w.ShowAll ();

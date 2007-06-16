@@ -69,6 +69,11 @@ class X {
 		}  else
 			msg.Text = "";
 	}
+
+	static void OnWindowDelete (object o, DeleteEventArgs args)
+	{
+		Application.Quit ();
+	}
 	
 	static void Main (string [] args)
 	{
@@ -76,6 +81,8 @@ class X {
 		Application.Init ();
 
 		w = new Window ("Top");
+		w.DeleteEvent += new DeleteEventHandler (OnWindowDelete);
+
 		Box vb = new VBox ();
 		msg = new Label ("");
 		vb.Add (msg);
