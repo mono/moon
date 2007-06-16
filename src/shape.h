@@ -69,27 +69,27 @@ class Shape : public FrameworkElement {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
-Brush		*shape_get_fill			(Shape *shape);
-void		shape_set_fill			(Shape *shape, Brush *brush);
-Brush		*shape_get_stroke		(Shape *shape);
-void		shape_set_stroke		(Shape *shape, Brush *brush);
+Brush	       *shape_get_fill			(Shape *shape);
+void		shape_set_fill			(Shape *shape, Brush *value);
+Brush	       *shape_get_stroke		(Shape *shape);
+void		shape_set_stroke		(Shape *shape, Brush *value);
 Stretch		shape_get_stretch		(Shape *shape);
-void		shape_set_stretch		(Shape *shape, Stretch stretch);
+void		shape_set_stretch		(Shape *shape, Stretch value);
 PenLineCap	shape_get_stroke_dash_cap	(Shape *shape);
-void		shape_set_stroke_dash_cap	(Shape *shape, PenLineCap cap);
+void		shape_set_stroke_dash_cap	(Shape *shape, PenLineCap value);
 PenLineCap	shape_get_stroke_start_line_cap	(Shape *shape);
-void		shape_set_stroke_start_line_cap	(Shape *shape, PenLineCap cap);
+void		shape_set_stroke_start_line_cap	(Shape *shape, PenLineCap value);
 PenLineCap	shape_get_stroke_end_line_cap	(Shape *shape);
-void		shape_set_stroke_end_line_cap	(Shape *shape, PenLineCap cap);
+void		shape_set_stroke_end_line_cap	(Shape *shape, PenLineCap value);
 double		shape_get_stroke_dash_offset	(Shape *shape);
-void		shape_set_stroke_dash_offset	(Shape *shape, double offset);
+void		shape_set_stroke_dash_offset	(Shape *shape, double value);
 double		shape_get_stroke_miter_limit	(Shape *shape);
-void		shape_set_stroke_miter_limit	(Shape *shape, double limit);
+void		shape_set_stroke_miter_limit	(Shape *shape, double value);
 double		shape_get_stroke_thickness	(Shape *shape);
-void		shape_set_stroke_thickness	(Shape *shape, double thickness);
+void		shape_set_stroke_thickness	(Shape *shape, double value);
 PenLineJoin	shape_get_stroke_line_join	(Shape *shape);
-void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin join);
-double*		shape_get_stroke_dash_array	(Shape *shape, int *count);
+void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin value);
+double	       *shape_get_stroke_dash_array	(Shape *shape, int *count);
 void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 
 //
@@ -120,7 +120,8 @@ class Rectangle : public Shape {
 	virtual Point getxformorigin ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
-Rectangle *rectangle_new          ();
+
+Rectangle *rectangle_new          (void);
 double     rectangle_get_radius_x (Rectangle *rectangle);
 void       rectangle_set_radius_x (Rectangle *rectangle, double value);
 double     rectangle_get_radius_y (Rectangle *rectangle);
@@ -146,7 +147,8 @@ class Line : public Shape {
 	virtual bool CanFill () { return false; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
-Line *line_new  ();
+
+Line *line_new  (void);
 double line_get_x1 (Line *line);
 void line_set_x1 (Line *line, double value);
 double line_get_y1 (Line *line);
@@ -170,10 +172,11 @@ class Polygon : public Shape {
 	void Draw (Surface *s);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
-Polygon		*polygon_new ();
+
+Polygon	       *polygon_new (void);
 FillRule	polygon_get_fill_rule	(Polygon *polygon);
-void		polygon_set_fill_rule	(Polygon *polygon, FillRule fill_rule);
-Point*		polygon_get_points	(Polygon *polygon, int *count);
+void		polygon_set_fill_rule	(Polygon *polygon, FillRule value);
+Point	       *polygon_get_points	(Polygon *polygon, int *count);
 void		polygon_set_points	(Polygon *polygon, Point* points, int count);
 
 //
@@ -192,10 +195,11 @@ class Polyline : public Shape {
 	virtual bool CanFill () { return false; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
-Polyline	*polyline_new		();
+
+Polyline       *polyline_new		(void);
 FillRule	polyline_get_fill_rule	(Polyline *polyline);
-void		polyline_set_fill_rule	(Polyline *polyline, FillRule fill_rule);
-Point*		polyline_get_points	(Polyline *polyline, int *count);
+void		polyline_set_fill_rule	(Polyline *polyline, FillRule value);
+Point	       *polyline_get_points	(Polyline *polyline, int *count);
 void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 
 //
@@ -213,9 +217,10 @@ class Path : public Shape {
 	virtual bool CanFill ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
-Path *path_new ();
+
+Path *path_new (void);
 Geometry* path_get_data (Path *path);
-void path_set_data (Path *path, Geometry* data);
+void path_set_data (Path *path, Geometry *value);
 
 
 G_END_DECLS

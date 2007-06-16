@@ -46,30 +46,34 @@ static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
 static callback_keyboard_event cb_keydown, cb_keyup;
 
 void 
-base_ref (Base *base)
+Base::ref ()
 {
-	if (base->refcount & BASE_FLOATS)
-		base->refcount = 1;
+	if (refcount & BASE_FLOATS)
+		refcount = 1;
 	else
-		base->refcount++;
+		refcount++;
 
 #if DEBUG_REFCNT
-	printf ("refcount++ %p (%s), refcnt = %d\n", base, Type::Find(((DependencyObject*)base)->GetObjectType())->name, base->refcount);
+	printf ("refcount++ %p (%s), refcnt = %d\n", this,
+		Type::Find (((DependencyObject *) this)->GetObjectType ())->name, refcount);
 #endif
 }
 
 void
-base_unref (Base *base)
+Base::unref ()
 {
-	if (base->refcount == BASE_FLOATS || base->refcount == 1){
+	if (refcount == BASE_FLOATS || refcount == 1) {
 #if DEBUG_REFCNT
-		printf ("destroying object %p (%s)\n", base, Type::Find(((DependencyObject*)base)->GetObjectType())->name);
+		printf ("destroying object %p (%s)\n", this,
+			Type::Find (((DependencyObject *) this)->GetObjectType ())->name);
 #endif
-		delete base;
+		delete this;
 	} else {
-		base->refcount--;
+		refcount--;
 #if DEBUG_REFCNT
-		printf ("refcount-- %p (%s), refcnt = %d\n", base, Type::Find(((DependencyObject*)base)->GetObjectType())->name, base->refcount);
+		printf ("refcount-- %p (%s), refcnt = %d\n", this,
+			Type::Find (((DependencyObject *) this)->GetObjectType ())->name,
+			refcount);
 #endif
 	}
 }
@@ -80,7 +84,7 @@ Collection::Add (DependencyObject *data)
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 
 	list = g_list_append (list, data);
-	base_ref (data);
+	data->ref ();
 	data->SetParent (this);
 }
 
@@ -105,7 +109,7 @@ Collection::Remove (DependencyObject *data)
 	}
 	data->SetParent (NULL);
 	if (found)
-		base_unref (data);
+		data->unref ();
 }
 
 Collection::~Collection ()
@@ -115,7 +119,7 @@ Collection::~Collection ()
 	
 	while (node != NULL) {
 		next = node->next;
-		base_unref ((Base *) node->data);
+		((Base *) node->data)->unref ();
 		g_list_free_1 (node);
 		node = next;
 	}
@@ -298,7 +302,7 @@ Value::Value (const Value& v)
 		break;
 	default:
 		if (k >= DEPENDENCY_OBJECT)
-			base_ref (u.dependency_object);
+			u.dependency_object->ref ();
 		break;
 	}
 }
@@ -365,7 +369,7 @@ Value::Value (DependencyObject *obj)
 	} else {
 		g_assert (obj->GetObjectType () >= Value::DEPENDENCY_OBJECT);
 		k = obj->GetObjectType ();
-		base_ref (obj);
+		obj->ref ();
 	}
 	u.dependency_object = obj;
 }
@@ -471,7 +475,7 @@ Value::~Value ()
 		break;
 	default:
 		if (k >= DEPENDENCY_OBJECT)
-			base_unref (u.dependency_object);
+			u.dependency_object->unref ();
 	}
 }
 
@@ -607,18 +611,18 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		Value *v = GetValue (prop);
 		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
 
-		if (newcol != triggers){
+		if (newcol != triggers) {
 			if (triggers)
-				base_unref (triggers);
-
+				triggers->unref ();
+			
 			triggers = newcol;
-			if (triggers){
+			if (triggers) {
 				if  (triggers->closure)
 					printf ("Warning we attached a property that was already attached\n");
-
+				
 				triggers->closure = this;
-			
-				base_ref (triggers);
+				
+				triggers->ref ();
 			}
 		}
 	} else if (prop == ResourcesProperty) {
@@ -628,16 +632,16 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != resources) {
 			if (resources) 
-				base_unref (resources);
-
+				resources->unref ();
+			
 			resources = newcol;
-			if (resources){
+			if (resources) {
 				if  (resources->closure)
 					printf ("Warning we attached a property that was already attached\n");
-
+				
 				resources->closure = this;
-			
-				base_ref (resources);
+				
+				resources->ref ();
 			}
 		}
 	}
@@ -765,9 +769,9 @@ UIElement::leave (Surface *s)
 UIElement::~UIElement ()
 {
 	if (triggers != NULL)
-		base_unref (triggers);
+		triggers->unref ();
 	if (resources != NULL)
-		base_unref (resources);
+		resources->unref ();
 }
 
 void
@@ -912,7 +916,7 @@ Panel::Panel ()
 
 Panel::~Panel ()
 {
-	base_unref (children);
+	children->unref ();
 }
 
 //
@@ -927,17 +931,17 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	if (prop == ChildrenProperty){
 		// The new value has already been set, so unref the old collection
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
-
+		
 		if (newcol != children) {
 			if (children) 
-				base_unref (children);
+				children->unref ();
 			children = newcol;
 			if (children) {
 				if (children->closure)
 					printf ("Warning we attached a property that was already attached\n");
 				children->closure = this;
-			
-				base_ref (children);
+				
+				children->ref ();
 			}
 		}
 	}
@@ -1406,8 +1410,8 @@ surface_new (int width, int height)
 
 Surface::~Surface ()
 {
-	if (toplevel){
-		base_unref (toplevel);
+	if (toplevel) {
+		toplevel->unref ();
 		toplevel = NULL;
 	}
 
@@ -1486,18 +1490,19 @@ surface_attach (Surface *surface, UIElement *toplevel)
 {
 	bool first = FALSE;
 
-	if (!(toplevel->flags & UIElement::IS_CANVAS)){
+	if (!(toplevel->flags & UIElement::IS_CANVAS)) {
 		printf ("Unsupported toplevel\n");
 		return;
 	}
-	if (surface->toplevel){
+	
+	if (surface->toplevel) {
 		item_invalidate (surface->toplevel);
-		base_unref (surface->toplevel);
+		surface->toplevel->unref ();
 	} else 
 		first = TRUE;
 
 	Canvas *canvas = (Canvas *) toplevel;
-	base_ref (canvas);
+	canvas->ref ();
 
 	canvas->surface = surface;
 	surface->toplevel = canvas;
@@ -2371,14 +2376,14 @@ EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != actions) {
 			if (actions) 
-				base_unref (actions);
+				actions->unref ();
 
 			actions = newcol;
 			if (actions->closure)
 				printf ("Warning we attached a property that was already attached\n");
 			actions->closure = this;
 			
-			base_ref (actions);
+			actions->ref ();
 		}
 	}
 }
@@ -2403,7 +2408,7 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 EventTrigger::~EventTrigger ()
 {
 	if (actions)
-		base_unref (actions);
+		actions->unref ();
 }
 
 EventTrigger *

@@ -370,7 +370,7 @@ TransformGroup::TransformGroup ()
 TransformGroup::~TransformGroup ()
 {
 	if (children != NULL)
-		base_unref (children);
+		children->unref ();
 }
 
 void
@@ -384,14 +384,14 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children) {
 			if (children) 
-				base_unref (children);
-
+				children->unref ();
+			
 			children = newcol;
 			if (children->closure)
 				printf ("Warning we attached a property that was already attached\n");
 			children->closure = this;
 			
-			base_ref (children);
+			children->ref ();
 		}
 	}
 }

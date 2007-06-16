@@ -298,7 +298,7 @@ Image::StopLoader ()
 						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
 						      0, 0, NULL, NULL, this);
 		gdk_pixbuf_loader_close (loader, NULL);
-		g_object_unref (G_OBJECT (loader));
+		g_object_unref (loader);
 		loader = NULL;
 	}
 }
@@ -344,20 +344,18 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	g_signal_connect (loader, "area_prepared", G_CALLBACK(loader_area_prepared), this);
 	g_signal_connect (loader, "area_updated", G_CALLBACK(loader_area_updated), this);
 
-	downloader = (Downloader*)dl;
-	base_ref (downloader);
+	downloader = (Downloader*) dl;
+	downloader->ref ();
 
-	if (downloader->Started ()){
-
+	if (downloader->Started ()) {
 		// Load the existing data that has been downloaded
 
 		PixbufWrite (downloader->byte_array_contents->data, 0, downloader->byte_array_contents->len);
 
 		// If it was also finished, notify
-		if (downloader->Completed ()){
+		if (downloader->Completed ())
 			DownloaderEvent (Downloader::NOTIFY_COMPLETED);
-		}
-
+		
 		UpdateProgress ();
 	} else {
 		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
@@ -625,7 +623,7 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 		if (downloader) {
 			// we have a previously running download.  stop it.
 			downloader_abort (downloader);
-			base_unref (downloader);
+			downloader->unref ();
 			downloader = NULL;
 		}
 		

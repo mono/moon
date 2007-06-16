@@ -58,11 +58,20 @@ TimeManager::Start()
 void
 TimeManager::Shutdown ()
 {
+	GList *node = child_clocks;
+	GList *next;
+	
 	if (tick_id != -1)
 		g_source_remove (tick_id);
-
-	g_list_foreach (child_clocks, (GFunc)base_unref, NULL);
-	g_list_free (child_clocks);
+	
+	while (node != NULL) {
+		next = node->next;
+		((Base *) node->data)->unref ();
+		g_list_free_1 (node);
+		node = next;
+	}
+	
+	child_clocks = NULL;
 }
 
 gboolean
@@ -102,14 +111,14 @@ void
 TimeManager::AddChild (Clock *child)
 {
 	child_clocks = g_list_prepend (child_clocks, child);
-	base_ref (child);
+	child->ref ();
 }
 
 void
 TimeManager::RemoveChild (Clock *child)
 {
 	child_clocks = g_list_remove (child_clocks, child);
-	base_unref (child);
+	child->unref ();
 }
 
 
@@ -322,14 +331,14 @@ void
 ClockGroup::AddChild (Clock *clock)
 {
 	child_clocks = g_list_append (child_clocks, clock);
-	base_ref (clock);
+	clock->ref ();
 }
 
 void
 ClockGroup::RemoveChild (Clock *clock)
 {
 	child_clocks = g_list_remove (child_clocks, clock);
-	base_unref (clock);
+	clock->unref ();
 }
 
 void
@@ -392,7 +401,7 @@ ClockGroup::~ClockGroup ()
 	GList *next;
 	
 	while (node != NULL) {
-		base_unref ((Base *) node->data);
+		((Base *) node->data)->unref ();
 		next = node->next;
 		g_list_free_1 (node);
 		node = next;

@@ -1,3 +1,18 @@
+2007-06-16  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* runtime.cpp: Implement Base::ref and Base::unref instead of
+	doing it the c way.
+
+	* *.cpp: Updated for above change.
+
+	* shape.cpp (shape_set_stroke): Don't unref the old stroke.
+	(shape_set_fill): Same.
+
+	* text.cpp (text_init): Use a separate brush for TextBlocks and
+	Inlines.
+	(text_block_set_foreground): Don't unref the old brush.
+	(inline_set_foreground): Same.
+
 2007-06-15  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp: little leak fixes here and there.

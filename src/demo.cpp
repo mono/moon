@@ -1,4 +1,4 @@
-#define VIDEO_DEMO
+//#define VIDEO_DEMO
 #define XAML_DEMO
 #include <string.h>
 #include <gtk/gtk.h>
@@ -263,18 +263,18 @@ main (int argc, char *argv [])
 		run = text_block_append_run (tb);
 		inline_set_font_family (run, "Times New Roman");
 		//inline_set_foreground (run, font_brush);
-		inline_set_font_size (run, 12.0);
+		inline_set_font_size (run, 10.0);
 		run_set_text (run, "Brought to you by ");
 		run = text_block_append_run (tb);
 		inline_set_font_family (run, "Times New Roman");
 		inline_set_font_style (run, FontStylesItalic);
 		//inline_set_foreground (run, font_brush);
-		inline_set_font_size (run, 12.0);
+		inline_set_font_size (run, 10.0);
 		run_set_text (run, "The Fejjster");
 		run = text_block_append_run (tb);
 		inline_set_font_family (run, "Times New Roman");
 		//inline_set_foreground (run, font_brush);
-		inline_set_font_size (run, 12.0);
+		inline_set_font_size (run, 10.0);
 		run_set_text (run, " ...and by many other cool hackers");
 #endif
 		

@@ -256,7 +256,7 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
-Brush*
+Brush *
 shape_get_fill (Shape *shape)
 {
 	Value *value = shape->GetValue (Shape::FillProperty);
@@ -264,17 +264,12 @@ shape_get_fill (Shape *shape)
 }
 
 void 
-shape_set_fill (Shape *shape, Brush *fill)
+shape_set_fill (Shape *shape, Brush *value)
 {
-	Brush *current_fill = shape_get_fill (shape);
-	if (current_fill != NULL)
-		base_unref (current_fill);
-
-	base_ref (fill);
-	shape->SetValue (Shape::FillProperty, Value (fill));
+	shape->SetValue (Shape::FillProperty, Value (value));
 }
 
-Brush*
+Brush *
 shape_get_stroke (Shape *shape)
 {
 	Value *value = shape->GetValue (Shape::StrokeProperty);
@@ -282,14 +277,9 @@ shape_get_stroke (Shape *shape)
 }
 
 void 
-shape_set_stroke (Shape *shape, Brush *stroke)
+shape_set_stroke (Shape *shape, Brush *value)
 {
-	Brush *current_stroke = shape_get_stroke (shape);
-	if (current_stroke != NULL)
-		base_unref (current_stroke);
-
-	base_ref (stroke);
-	shape->SetValue (Shape::StrokeProperty, Value (stroke));
+	shape->SetValue (Shape::StrokeProperty, Value (value));
 }
 
 Stretch
@@ -299,9 +289,9 @@ shape_get_stretch (Shape *shape)
 }
 
 void
-shape_set_stretch (Shape *shape, Stretch stretch)
+shape_set_stretch (Shape *shape, Stretch value)
 {
-	shape->SetValue (Shape::StretchProperty, Value (stretch));
+	shape->SetValue (Shape::StretchProperty, Value (value));
 }
 
 PenLineCap
@@ -311,9 +301,9 @@ shape_get_stroke_dash_cap (Shape *shape)
 }
 
 void
-shape_set_stroke_dash_cap (Shape *shape, PenLineCap cap)
+shape_set_stroke_dash_cap (Shape *shape, PenLineCap value)
 {
-	shape->SetValue (Shape::StrokeDashCapProperty, Value (cap));
+	shape->SetValue (Shape::StrokeDashCapProperty, Value (value));
 }
 
 PenLineCap
@@ -323,9 +313,9 @@ shape_get_stroke_start_line_cap (Shape *shape)
 }
 
 void
-shape_set_stroke_start_line_cap (Shape *shape, PenLineCap cap)
+shape_set_stroke_start_line_cap (Shape *shape, PenLineCap value)
 {
-	shape->SetValue (Shape::StrokeStartLineCapProperty, Value (cap));
+	shape->SetValue (Shape::StrokeStartLineCapProperty, Value (value));
 }
 
 PenLineCap
@@ -335,9 +325,9 @@ shape_get_stroke_end_line_cap (Shape *shape)
 }
 
 void
-shape_set_stroke_end_line_cap (Shape *shape, PenLineCap cap)
+shape_set_stroke_end_line_cap (Shape *shape, PenLineCap value)
 {
-	shape->SetValue (Shape::StrokeEndLineCapProperty, Value (cap));
+	shape->SetValue (Shape::StrokeEndLineCapProperty, Value (value));
 }
 
 double
@@ -347,9 +337,9 @@ shape_get_stroke_dash_offset (Shape *shape)
 }
 
 void
-shape_set_stroke_dash_offset (Shape *shape, double offset)
+shape_set_stroke_dash_offset (Shape *shape, double value)
 {
-	shape->SetValue (Shape::StrokeDashOffsetProperty, Value (offset));
+	shape->SetValue (Shape::StrokeDashOffsetProperty, Value (value));
 }
 
 double
@@ -359,9 +349,9 @@ shape_get_stroke_miter_limit (Shape *shape)
 }
 
 void
-shape_set_stroke_miter_limit (Shape *shape, double limit)
+shape_set_stroke_miter_limit (Shape *shape, double value)
 {
-	shape->SetValue (Shape::StrokeMiterLimitProperty, Value (limit));
+	shape->SetValue (Shape::StrokeMiterLimitProperty, Value (value));
 }
 
 double
@@ -371,9 +361,9 @@ shape_get_stroke_thickness (Shape *shape)
 }
 
 void
-shape_set_stroke_thickness (Shape *shape, double thickness)
+shape_set_stroke_thickness (Shape *shape, double value)
 {
-	shape->SetValue (Shape::StrokeThicknessProperty, Value (thickness));
+	shape->SetValue (Shape::StrokeThicknessProperty, Value (value));
 }
 
 PenLineJoin
@@ -383,9 +373,9 @@ shape_get_stroke_line_join (Shape *shape)
 }
 
 void
-shape_set_stroke_line_join (Shape *shape, PenLineJoin join)
+shape_set_stroke_line_join (Shape *shape, PenLineJoin value)
 {
-	shape->SetValue (Shape::StrokeLineJoinProperty, Value (join));
+	shape->SetValue (Shape::StrokeLineJoinProperty, Value (value));
 }
 
 /*
@@ -644,9 +634,9 @@ polygon_get_fill_rule (Polygon *polygon)
 }
 
 void
-polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule)
+polygon_set_fill_rule (Polygon *polygon, FillRule value)
 {
-	polygon->SetValue (Polygon::FillRuleProperty, Value (fill_rule));
+	polygon->SetValue (Polygon::FillRuleProperty, Value (value));
 }
 
 /*
@@ -654,7 +644,7 @@ polygon_set_fill_rule (Polygon *polygon, FillRule fill_rule)
  * Silverlight Polygon.Points only has a setter (no getter), so it's use is 
  * only internal.
  */
-Point*
+Point *
 polygon_get_points (Polygon *polygon, int *count)
 {
 	Value *value = polygon->GetValue (Polygon::PointsProperty);
@@ -721,9 +711,9 @@ polyline_get_fill_rule (Polyline *polyline)
 }
 
 void
-polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule)
+polyline_set_fill_rule (Polyline *polyline, FillRule value)
 {
-	polyline->SetValue (Polyline::FillRuleProperty, Value (fill_rule));
+	polyline->SetValue (Polyline::FillRuleProperty, Value (value));
 }
 
 /*
@@ -731,7 +721,7 @@ polyline_set_fill_rule (Polyline *polyline, FillRule fill_rule)
  * Silverlight Polyline.Points only has a setter (no getter), so it's use is 
  * only internal.
  */
-Point*
+Point *
 polyline_get_points (Polyline *polyline, int *count)
 {
 	Value *value = polyline->GetValue (Polyline::PointsProperty);
@@ -793,7 +783,7 @@ Path::OnPropertyChanged (DependencyProperty *prop)
 	Shape::OnPropertyChanged (prop);
 }
 
-Geometry*
+Geometry *
 path_get_data (Path *path)
 {
 	Value *value = path->GetValue (Path::DataProperty);
@@ -801,9 +791,9 @@ path_get_data (Path *path)
 }
 
 void
-path_set_data (Path *path, Geometry* data)
+path_set_data (Path *path, Geometry *value)
 {
-	path->SetValue (Path::DataProperty, Value (data));
+	path->SetValue (Path::DataProperty, Value (value));
 }
 
 Path *

@@ -200,12 +200,12 @@ private:
 class Base {
  public:	
 	uint32_t refcount;
-	Base () : refcount(BASE_FLOATS) {}
-	virtual ~Base () {} 
+	Base () : refcount(BASE_FLOATS) { }
+	virtual ~Base () { }
+	
+	void ref ();
+	void unref ();
 };
-
-void base_ref   (Base *base);
-void base_unref (Base *base);
 
 //
 // DependencyObject

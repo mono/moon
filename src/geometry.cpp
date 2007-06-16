@@ -92,7 +92,7 @@ GeometryGroup::GeometryGroup ()
 GeometryGroup::~GeometryGroup ()
 {
 	if (children)
-		base_unref (children);
+		children->unref ();
 }
 
 void
@@ -100,21 +100,21 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 {
 	Geometry::OnPropertyChanged (prop);
 
-	if (prop == ChildrenProperty){
+	if (prop == ChildrenProperty) {
 		// The new value has already been set, so unref the old collection
 		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
 
 		if (newcol != children) {
 			if (children) 
-				base_unref (children);
-
+				children->unref ();
+			
 			children = newcol;
 			if (children) {
 				if (children->closure)
 					printf ("Warning we attached a property that was already attached\n");
 				children->closure = this;
-			
-				base_ref (children);
+				
+				children->ref ();
 			}
 		}
 	}
@@ -314,7 +314,7 @@ PathGeometry::PathGeometry ()
 PathGeometry::~PathGeometry ()
 {
 	if (children)
-		base_unref (children);
+		children->unref ();
 }
 
 void
@@ -328,15 +328,15 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children) {
 			if (children) 
-				base_unref (children);
+				children->unref ();
 
 			children = newcol;
 			if (children) {
 				if (children->closure)
 					printf ("Warning we attached a property that was already attached\n");
 				children->closure = this;
-			
-				base_ref (children);
+				
+				children->ref ();
 			}
 		}
 	}
@@ -464,7 +464,7 @@ PathFigure::PathFigure ()
 PathFigure::~PathFigure ()
 {
 	if (children)
-		base_unref (children);
+		children->unref ();
 }
 
 void
@@ -478,15 +478,15 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 
 		if (newcol != children) {
 			if (children) 
-				base_unref (children);
+				children->unref ();
 
 			children = newcol;
 			if (children) {
 				if (children->closure)
 					printf ("Warning we attached a property that was already attached\n");
 				children->closure = this;
-			
-				base_ref (children);
+				
+				children->ref ();
 			}
 		}
 	}
