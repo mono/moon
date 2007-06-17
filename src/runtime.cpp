@@ -561,7 +561,7 @@ item_invalidate (UIElement *item)
 	if (s == NULL)
 		return;
 
-#define DEBUG_INVALIDATE 1
+#define DEBUG_INVALIDATE 0
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		item, Type::Find(item->GetObjectType())->name,
