@@ -173,7 +173,7 @@ main (int argc, char *argv [])
 	char *file = NULL;
 
 	gtk_init (&argc, &argv);
-//	g_thread_init (NULL);
+	g_thread_init (NULL);
 	gdk_threads_init ();
 	runtime_init ();
 
