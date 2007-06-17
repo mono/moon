@@ -1,5 +1,15 @@
 2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
 
+	Fixes browser segfaults related to timemanager when goto another page or 
+	close browser.
+
+	* plugin-glue.cpp: Call runtime_init every time that browser initialize 
+	plugin, when plugin shutdown just shutdown timemanager since we have 
+	problems to runtime_shutdown. Some comment added to this implementation
+	and we must back here when runtime_shutdown is fixed.
+
+2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h: Create StreamNotify class to use as notifydata 
 	parameter in NPN_GetURLNotify function, it gives us better control about
 	what is downloading. Fixes errors when you try change control source 

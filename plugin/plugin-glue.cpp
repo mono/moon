@@ -218,16 +218,17 @@ NPP_Initialize (void)
 {
 	DEBUGMSG ("NP_Initialize");
 
-	// We dont need to initialize more than one time.
+	// We dont need to initialize mono vm and gtk more than one time.
 	if (!already_initialized) {
 		already_initialized = true;
 		gtk_init (0, 0);
-		runtime_init ();
 		downloader_initialize ();
 		#ifdef RUNTIME
 		vm_init ();
 		#endif
 	}
+
+	runtime_init ();
 
 	return NPERR_NO_ERROR;
 }
@@ -236,4 +237,9 @@ void
 NPP_Shutdown (void)
 {
 	DEBUGMSG ("NP_Shutdown");
+	
+	// runtime_shutdown is broken at moment so let us just shutdown TimeManager,
+	// when fixed please uncomment above line and remove time manger shutdown.
+	//runtime_shutdown ();
+	TimeManager::Instance()->Shutdown ();
 }
