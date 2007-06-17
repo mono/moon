@@ -50,6 +50,7 @@ public:
 	
 	bool AdvanceFrame ();
 	void Render (cairo_t *cr);
+	cairo_surface_t *GetSurface ();
 	
 	bool Open ();
 	bool Open (const char *uri);

@@ -249,7 +249,7 @@ MediaPlayer::Open ()
 			width = encoding->width;
 			
 			// for conversion to rgb32 format needed for rendering
-			video->rgb_buffer = (uint8_t *) g_malloc (width * height * 4);
+			video->rgb_buffer = (uint8_t *) g_malloc0 (width * height * 4);
 			video->scaler = sws_getContext (width, height, encoding->pix_fmt,
 							width, height, PIX_FMT_RGB32,
 							SWS_BICUBIC, NULL, NULL, NULL);
@@ -415,6 +415,7 @@ bool
 MediaPlayer::AdvanceFrame ()
 {
 	bool advanced = false;
+	uint64_t target_pts;
 	AVFrame *frame;
 	int redraw = 0;
 	Packet *pkt;
@@ -422,7 +423,7 @@ MediaPlayer::AdvanceFrame ()
 	
 	if (paused) {
 		// shouldn't happen, but just in case
-		printf ("WARNING: ::AdvanceFrame() called when paused\n");
+		printf ("WARNING: MediaPlayer::AdvanceFrame() called when paused\n");
 		return false;
 	}
 	
@@ -435,7 +436,8 @@ MediaPlayer::AdvanceFrame ()
 		
 		target_pts = video->initial_pts + elapsed_pts;
 	} else {
-		// target_pts set by audio thread
+		// use target_pts as set by audio thread
+		target_pts = this->target_pts;
 	}
 	
 	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue))) {
@@ -479,6 +481,12 @@ MediaPlayer::Render (cairo_t *cr)
 	cairo_set_source_surface (cr, video->surface, 0, 0);
 	cairo_rectangle (cr, 0, 0, width, height);
 	cairo_fill (cr);
+}
+
+cairo_surface_t *
+MediaPlayer::GetSurface ()
+{
+	return video->surface;
 }
 
 bool
@@ -649,7 +657,7 @@ audio_decode (Audio *audio)
 			/* complete or out of room in outbuf */
 			break;
 		} else {
-			printf ("audio_decode_packet error: %d\n", n);
+			printf ("audio_decode error: %d\n", n);
 			// pad frame with silence
 			if ((n = (audio->outptr - audio->outbuf) % frame_size) > 0) {
 				memset (audio->outptr, 0, n);
@@ -671,7 +679,7 @@ pcm_poll (snd_pcm_t *pcm, struct pollfd *ufds, int nfds)
 	if (ufds == NULL)
 		return 0;
 	
-	while (1) {
+	while (true) {
 		poll (ufds, nfds, -1);
 		snd_pcm_poll_descriptors_revents (pcm, ufds, nfds, &revents);
 		if (revents & POLLERR)

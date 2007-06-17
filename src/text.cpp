@@ -859,7 +859,7 @@ text_init (void)
 	Inline::FontStretchProperty = DependencyObject::Register (Value::INLINE, "FontStretch", new Value (FontStretchesNormal));
 	Inline::FontStyleProperty = DependencyObject::Register (Value::INLINE, "FontStyle", new Value (FontStylesNormal));
 	Inline::FontWeightProperty = DependencyObject::Register (Value::INLINE, "FontWeight", new Value (FontWeightsNormal));
-	Inline::ForegroundProperty = DependencyObject::Register (Value::INLINE, "Foreground", new Value ((Brush *) brush));
+	Inline::ForegroundProperty = DependencyObject::RegisterFull (Value::INLINE, "Foreground", new Value ((Brush *) brush), Value::BRUSH, false);
 	Inline::TextDecorationsProperty = DependencyObject::Register (Value::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	
 	
@@ -880,7 +880,7 @@ text_init (void)
 	TextBlock::FontStretchProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
 	TextBlock::FontStyleProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
 	TextBlock::FontWeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontWeight", new Value (FontWeightsNormal));
-	TextBlock::ForegroundProperty = DependencyObject::Register (Value::TEXTBLOCK, "Foreground", new Value ((Brush *) brush));
+	TextBlock::ForegroundProperty = DependencyObject::RegisterFull (Value::TEXTBLOCK, "Foreground", new Value ((Brush *) brush), Value::BRUSH, false);
 	TextBlock::InlinesProperty = DependencyObject::Register (Value::TEXTBLOCK, "Inlines", Value::INLINES);
 	TextBlock::TextProperty = DependencyObject::Register (Value::TEXTBLOCK, "Text", Value::STRING);
 	TextBlock::TextDecorationsProperty = DependencyObject::Register (Value::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone));

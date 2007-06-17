@@ -1996,7 +1996,7 @@ DependencyObject::RegisterFull (Value::Kind type, const char *name, Value *defau
 	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached);
 	
 	/* first add the property to the global 2 level property hash */
-	if (NULL == properties)
+	if (properties == NULL)
 		properties = g_hash_table_new_full (g_int_hash, g_int_equal,
 						    NULL, free_property_hash);
 

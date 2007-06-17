@@ -52,7 +52,7 @@ DependencyProperty* Brush::RelativeTransformProperty;
 DependencyProperty* Brush::TransformProperty;
 
 Brush*
-brush_new ()
+brush_new (void)
 {
 	return new Brush ();
 }
@@ -171,7 +171,7 @@ solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color)
 }
 
 SolidColorBrush*
-solid_color_brush_new ()
+solid_color_brush_new (void)
 {
 	return new SolidColorBrush ();
 }
@@ -402,7 +402,7 @@ DependencyProperty* GradientBrush::MappingModeProperty;
 DependencyProperty* GradientBrush::SpreadMethodProperty;
 
 GradientBrush*
-gradient_brush_new ()
+gradient_brush_new (void)
 {
 	return new GradientBrush ();
 }
@@ -511,7 +511,7 @@ DependencyProperty* LinearGradientBrush::EndPointProperty;
 DependencyProperty* LinearGradientBrush::StartPointProperty;
 
 LinearGradientBrush*
-linear_gradient_brush_new ()
+linear_gradient_brush_new (void)
 {
 	return new LinearGradientBrush ();
 }
@@ -597,7 +597,7 @@ DependencyProperty* RadialGradientBrush::RadiusXProperty;
 DependencyProperty* RadialGradientBrush::RadiusYProperty;
 
 RadialGradientBrush*
-radial_gradient_brush_new ()
+radial_gradient_brush_new (void)
 {
 	return new RadialGradientBrush ();
 }
@@ -695,7 +695,7 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 //
 
 GradientStopCollection*
-gradient_stop_collection_new ()
+gradient_stop_collection_new (void)
 {
 	return new GradientStopCollection ();
 }
@@ -708,7 +708,7 @@ DependencyProperty* GradientStop::ColorProperty;
 DependencyProperty* GradientStop::OffsetProperty;
 
 GradientStop*
-gradient_stop_new ()
+gradient_stop_new (void)
 {
 	return new GradientStop ();
 }
@@ -746,7 +746,7 @@ DependencyProperty* TileBrush::AlignmentYProperty;
 DependencyProperty* TileBrush::StretchProperty;
 
 TileBrush*
-tile_brush_new ()
+tile_brush_new (void)
 {
 	return new TileBrush ();
 }
@@ -795,7 +795,7 @@ DependencyProperty* ImageBrush::DownloadProgressProperty;
 DependencyProperty* ImageBrush::ImageSourceProperty;
 
 ImageBrush*
-image_brush_new ()
+image_brush_new (void)
 {
 	return new ImageBrush ();
 }
@@ -829,6 +829,13 @@ ImageBrush::ImageBrush ()
 {
 	image = new Image ();
 	image->brush = this;
+}
+
+ImageBrush::~ImageBrush ()
+{
+	image->brush = NULL;
+	
+	delete image;
 }
 
 void
@@ -991,25 +998,107 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 // VideoBrush
 //
 
-DependencyProperty* VideoBrush::SourceNameProperty;
+DependencyProperty *VideoBrush::SourceNameProperty;
 
-VideoBrush*
-video_brush_new ()
+static gboolean
+advance_frame (void *user_data)
+{
+	VideoBrush *brush = (VideoBrush *) user_data;
+	
+	if (brush->mplayer->AdvanceFrame ()) {
+		// unfortunately we can't invalidate ourselves, we
+		// have to notify our attachees of a change... this is
+		// kind of a hack.
+		brush->OnPropertyChanged (MediaElement::PositionProperty);
+	}
+	
+	return true;
+}
+
+VideoBrush::VideoBrush ()
+{
+	mplayer = new MediaPlayer ();
+	timeout_id = 0;
+}
+
+VideoBrush::~VideoBrush ()
+{
+	if (timeout_id != 0)
+		g_source_remove (timeout_id);
+	
+	delete mplayer;
+}
+
+void
+VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+{
+	cairo_surface_t *surface = mplayer->GetSurface ();
+	Transform *transform = brush_get_transform (this);
+	AlignmentX ax = tile_brush_get_alignment_x (this);
+	AlignmentY ay = tile_brush_get_alignment_y (this);
+	Stretch stretch = tile_brush_get_stretch (this);
+	double opacity, width, height, x1, y1, x2, y2;
+	
+	if (!surface) {
+		// not yet available, draw gray-ish shadow where the brush should be applied
+		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		return;
+	}
+	
+	opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
+	cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
+	
+	height = fabs (y2 - y1);
+	width = fabs (x2 - x1);
+	
+	image_brush_set_surface_as_pattern (cairo, surface, width, height,
+					    mplayer->width, mplayer->height,
+					    opacity, stretch, ax, ay, transform);
+}
+
+void
+VideoBrush::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == VideoBrush::SourceNameProperty) {
+		Value *value = GetValue (VideoBrush::SourceNameProperty);
+		char *uri = value ? value->AsString () : NULL;
+		
+		printf ("VideoBrush source changed to `%s'\n", uri);
+		
+		if (timeout_id != 0) {
+			g_source_remove (timeout_id);
+			timeout_id = 0;
+		}
+		
+		mplayer->Stop ();
+		
+		if (mplayer->Open (uri))
+			timeout_id = mplayer->Play (advance_frame, this);
+		
+		NotifyAttacheesOfPropertyChange (prop);
+	} else {
+		TileBrush::OnPropertyChanged (prop);
+	}
+}
+
+VideoBrush *
+video_brush_new (void)
 {
 	return new VideoBrush ();
 }
 
-char*
+char *
 video_brush_get_source_name (VideoBrush *brush)
 {
 	Value *value = brush->GetValue (VideoBrush::SourceNameProperty);
-	return (value ? value->AsString() : NULL);
+	
+	return value ? (char *) value->AsString () : NULL;
 }
 
 void
-video_brush_set_source_name (VideoBrush *brush, const char* source)
+video_brush_set_source_name (VideoBrush *brush, const char *value)
 {
-	brush->SetValue (VideoBrush::SourceNameProperty, Value (source));
+	brush->SetValue (VideoBrush::SourceNameProperty, Value (value));
 }
 
 //
@@ -1017,7 +1106,7 @@ video_brush_set_source_name (VideoBrush *brush, const char* source)
 //
 
 void
-brush_init ()
+brush_init (void)
 {
 	/* Brush fields */
 	Brush::OpacityProperty = DependencyObject::Register (Value::BRUSH, "Opacity", new Value (1.0));

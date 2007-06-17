@@ -1,3 +1,13 @@
+2007-06-17  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* brush.cpp: Implemented VideoBrush (tho it's not yet debugged).
+
+	* mplayer.cpp (GetSurface): Added.
+
+	* text.cpp (text_init): Fixed to use RegisterFull for Froeground
+	so we can specify Value::BRUSH as the default value type instead
+	of it using SolidColorBrush as the type.
+
 2007-06-17  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (timespan_from_str): fix parsing of timespans shorter
