@@ -903,6 +903,7 @@ class Surface {
 };
 
 Surface *surface_new       (int width, int height);
+void     surface_resize    (Surface *s, int width, int height);
 void     surface_attach    (Surface *s, UIElement *element);
 void     surface_init      (Surface *s, int width, int height);
 void     surface_clear     (Surface *s, int x, int y, int width, int height);

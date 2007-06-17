@@ -639,7 +639,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
-#if 0
+#if true
 int
 UIElement::dump_hierarchy (UIElement *obj)
 {
@@ -1167,7 +1167,9 @@ surface_realloc (Surface *s)
 		s->buffer, CAIRO_FORMAT_ARGB32, s->width, s->height, s->width * 4);
 
 	s->cairo_buffer = cairo_create (s->cairo_buffer_surface);
-	s->cairo = s->cairo_buffer;
+
+	if (s->cairo_xlib == NULL)
+		s->cairo = s->cairo_buffer;
 }
 
 void 
@@ -1353,12 +1355,18 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	
 	Value *value = GetValue (Panel::BackgroundProperty);
 	if (value) {
-		Brush *background = value->AsBrush ();
-		background->SetupBrush (s->cairo, this);
+		double width = framework_element_get_width (this);
+		double height = framework_element_get_height (this);
 
-		// FIXME - UIElement::Opacity may play a role here
-		cairo_rectangle (s->cairo, x, y, width, height);
-		cairo_fill (s->cairo);
+		if (width > 0 && height > 0){
+			cairo_set_matrix (s->cairo, &absolute_xform);
+			Brush *background = value->AsBrush ();
+			background->SetupBrush (s->cairo, this);
+
+			// FIXME - UIElement::Opacity may play a role here
+			cairo_rectangle (s->cairo, x, y, width, height);
+			cairo_fill (s->cairo);
+		}
 	}
 
 	Rect render_rect (x, y, width, height);
@@ -1424,12 +1432,28 @@ clear_drawing_area (GtkObject *obj, gpointer data)
 	s->drawing_area = NULL;
 }
 
+void
+surface_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
+{
+	Surface *s = (Surface *) user_data;
+
+	if (s->width != allocation->width || s->height != allocation->height){
+		s->width = allocation->width;
+		s->height = allocation->height;
+
+		surface_realloc (s);
+	}
+}
+
 Surface *
 surface_new (int width, int height)
 {
 	Surface *s = new Surface ();
 
 	s->drawing_area = gtk_drawing_area_new ();
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "size_allocate",
+			    G_CALLBACK(surface_size_allocate), s);
+			    
 	gtk_widget_add_events (s->drawing_area, 
 			       GDK_POINTER_MOTION_MASK |
 			       GDK_KEY_PRESS_MASK |
@@ -1443,6 +1467,7 @@ surface_new (int width, int height)
 
 	gtk_widget_set_usize (s->drawing_area, width, height);
 	s->buffer = NULL;
+
 	s->width = width;
 	s->height = height;
 	s->toplevel = NULL;
@@ -1450,6 +1475,19 @@ surface_new (int width, int height)
 	surface_realloc (s);
 
 	return s;
+}
+
+//
+// This will resize the surface (merely a convenience function for
+// resizing the widget area that we have.
+//
+// This will not change the Width and Height properties of the 
+// toplevel canvas, if you want that, you must do that yourself
+//
+void
+surface_resize (Surface *s, int width, int height)
+{
+	gtk_widget_set_usize (s->drawing_area, width, height);
 }
 
 Surface::~Surface ()
@@ -1554,6 +1592,35 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	// First time we connect the surface, start responding to events
 	if (first)
 		surface_connect_events (surface);
+
+	bool change_size = false;
+	//
+	// If the did not get a size specified
+	//
+	if (surface->width == 0){
+		Value *v = toplevel->GetValue (FrameworkElement::WidthProperty);
+
+		if (v){
+			surface->width = (int) v->AsDouble ();
+			if (surface->width < 0)
+				surface->width = 0;
+			change_size = true;
+		}
+	}
+
+	if (surface->height == 0){
+		Value *v = toplevel->GetValue (FrameworkElement::HeightProperty);
+
+		if (v){
+			surface->height = (int) v->AsDouble ();
+			if (surface->height < 0)
+				surface->height = 0;
+			change_size = true;
+		}
+	}
+
+	if (change_size)
+		surface_realloc (surface);
 
 	canvas->FullInvalidate (true);
 }

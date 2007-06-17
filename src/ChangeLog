@@ -1,3 +1,12 @@
+2007-06-16  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Cairo::render): The canvas also needs to set the
+	matrix and clear its background. 
+
+	(surface_resize): convenience entry point to resize a surface.
+	Notice that this will resize the surface, but not the toplevel
+	canvas. 
+
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
 	* demo.cpp:
