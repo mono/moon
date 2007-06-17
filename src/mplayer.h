@@ -9,13 +9,12 @@
  */
 
 #ifndef __MPLAYER_H__
+
 #include <glib.h>
 #include <cairo.h>
-G_BEGIN_DECLS
 #include <stdint.h>
-#include <avformat.h>
-G_END_DECLS
 
+struct AVFormatContext;
 struct Audio;
 struct Video;
 
