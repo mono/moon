@@ -1,5 +1,26 @@
 2007-06-17  Miguel de Icaza  <miguel@novell.com>
 
+	Propagate changes from children of the transform up to our
+	containers, this is done in several steps:
+
+	* runtime.cpp (DependencyObject::Attach, Detach): New methods that
+	are used to attach an object to a container and detach it.   They
+	were previously inlined inside SetValue.
+
+	(Collection::Add, Remove): Attach and detach objects when they are
+	added/removed. 
+	
+	* transform.cpp (Transform::OnPropertyChanged): if any class
+	derived from Transform has one of its properties changed, it
+	has a visual effect, propage this to the attacchees.
+
+	(TransformGroup::OnSubPropertyChanged): Escalate here as well,
+	this will catch the messages coming from anyone in the collection
+	to its container. 
+
+	(TransformCollection::OnSubPropertyChanged): Buble the event up
+	here as well.
+
 	* runtime.cpp (handle_motion): Change the order in which we send
 	the events to the UIElement, we should start at the topmost
 	element, and have the toplevel canvas be last.

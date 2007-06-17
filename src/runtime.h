@@ -291,6 +291,9 @@ class DependencyObject : public Base {
 
 	static void Shutdown ();
 
+	void Attach (DependencyProperty *property, DependencyObject *container);
+	void Detach (DependencyProperty *property, DependencyObject *container);
+	
  protected:
 	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
 	void NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type);
@@ -809,7 +812,6 @@ class Canvas : public Panel {
 	virtual void handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	virtual void leave (Surface *s);
 	
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
 	
 	static DependencyProperty* TopProperty;

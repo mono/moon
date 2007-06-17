@@ -98,6 +98,7 @@ Collection::Add (DependencyObject *data)
 	list = g_list_append (list, data);
 	data->ref ();
 	data->SetParent (this);
+	data->Attach (NULL, this);
 }
 
 void
@@ -122,6 +123,7 @@ Collection::Remove (DependencyObject *data)
 	data->SetParent (NULL);
 	if (found)
 		data->unref ();
+	data->Detach (NULL, this);
 }
 
 Collection::~Collection ()
@@ -561,7 +563,7 @@ item_invalidate (UIElement *item)
 	if (s == NULL)
 		return;
 
-#define DEBUG_INVALIDATE 0
+// #define DEBUG_INVALIDATE 0
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		item, Type::Find(item->GetObjectType())->name,
@@ -697,7 +699,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 		item_invalidate (this);
 	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)){
 		FullInvalidate (false);
-	}
+	} 
 }
 
 //
@@ -1019,12 +1021,6 @@ Canvas::getbounds ()
 	// If we found nothing.
 	if (first)
 		x1 = y1 = x2 = y2 = 0;
-}
-
-void 
-Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
-{
-	printf ("Prop %s changed in %s\n", prop->name, subprop->name);
 }
 
 bool
@@ -1661,6 +1657,32 @@ typedef struct {
 	DependencyProperty *prop;
 } Attachee;
 
+//
+// Attaches the dependency object to the container on the given property.
+//
+void
+DependencyObject::Attach (DependencyProperty *property, DependencyObject *container)
+{
+	Attachee *att = new Attachee ();
+	att->dob = container;
+	att->prop = property;
+	attached_list = g_slist_append (attached_list, att);
+}
+
+void
+DependencyObject::Detach (DependencyProperty *property, DependencyObject *container)
+{
+	for (GSList *l = attached_list; l; l = l->next) {
+		Attachee *att = (Attachee*)l->data;
+
+		if (att->dob == container && att->prop == property) {
+			attached_list = g_slist_remove_link (attached_list, l);
+			delete att;
+			break;
+		}
+	}
+}
+
 void
 DependencyObject::NotifyAttacheesOfPropertyChange (DependencyProperty *subproperty)
 {
@@ -1706,16 +1728,8 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->AsDependencyObject();
 
-			if (dob != NULL) {
-				for (GSList *l = dob->attached_list; l; l = l->next) {
-					Attachee *att = (Attachee*)l->data;
-					if (att->dob == this && att->prop == property) {
-						dob->attached_list = g_slist_remove_link (dob->attached_list, l);
-						delete att;
-						break;
-					}
-				}
-			}
+			if (dob != NULL)
+				dob->Detach (property, this);
 		}
 
 		Value *store = value ? new Value (*value) : NULL;
@@ -1725,12 +1739,9 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		if (value) {
 			if (value->k >= Value::DEPENDENCY_OBJECT){
 				DependencyObject *dob = value->AsDependencyObject();
-				if (dob != NULL) {
-					Attachee *att = new Attachee ();
-					att->dob = this;
-					att->prop = property;
-					dob->attached_list = g_slist_append (dob->attached_list, att);
-				}
+				
+				if (dob != NULL)
+					dob->Attach (property, this);
 			}
 
 			// 

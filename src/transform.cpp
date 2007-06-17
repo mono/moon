@@ -11,6 +11,17 @@
 void
 Transform::OnPropertyChanged (DependencyProperty *prop)
 {
+	//
+	// If the transform changes, we need to notify our owners
+	// that they must repaint (all of our properties have
+	// a visible effect.
+	//
+	// There is no need to override this on the base classes
+	// as they are sealed, so no new properties can be added
+	// and I do not believe that we can create new instances
+	// of transform from C#, and in that case, we would only
+	// be slower.
+	//
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
@@ -383,6 +394,12 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
+TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	NotifyAttacheesOfPropertyChange (subprop);
+}
+
+void
 TransformGroup::GetTransform (cairo_matrix_t *value)
 {
 	TransformCollection *children = GetValue (TransformGroup::ChildrenProperty)->AsTransformCollection ();
@@ -409,6 +426,12 @@ TransformCollection*
 transform_collection_new ()
 {
 	return new TransformCollection ();
+}
+
+void
+TransformCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	NotifyAttacheesOfPropertyChange (subprop);
 }
 
 void

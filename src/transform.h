@@ -10,8 +10,8 @@ G_BEGIN_DECLS
 class Transform : public DependencyObject {
  public:
  	Transform () { }
-	virtual Value::Kind GetObjectType () { return Value::TRANSFORM; };
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual Value::Kind GetObjectType () { return Value::TRANSFORM; };
 	virtual void GetTransform (cairo_matrix_t *value);
 };
 
@@ -139,6 +139,7 @@ Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
 class TransformCollection : public Collection {
  public:
 	TransformCollection () {}
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual Value::Kind GetObjectType () { return Value::TRANSFORM_COLLECTION; }
 };
 TransformCollection* transform_collection_new ();
@@ -151,7 +152,7 @@ public:
 	~TransformGroup ();
 	virtual Value::Kind GetObjectType() { return Value::TRANSFORMGROUP; };
 
-	
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void GetTransform (cairo_matrix_t *value);
 };
