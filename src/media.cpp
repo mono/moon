@@ -187,7 +187,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		
 		mplayer->Stop ();
 		
-		if (uri && *uri && mplayer->Open (uri)) {
+		if (mplayer->Open (uri)) {
 			printf ("video succesfully opened\n");
 			media_element_set_natural_video_height (this, mplayer->height);
 			media_element_set_natural_video_width (this, mplayer->width);
@@ -240,12 +240,17 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::VolumeProperty) {
 		// FIXME: implement me
 		return;
+	} else {
+		// propagate to parent class
+		MediaBase::OnPropertyChanged (prop);
 	}
 	
 	if (autoplay && timeout_id == 0 && !mplayer->IsPlaying ()) {
 		timeout_id = mplayer->Play (advance_frame, this);
 		printf ("video autoplayed, timeout = %d\n", timeout_id);
 	}
+	
+	FullInvalidate (false);
 }
 
 MediaElement *

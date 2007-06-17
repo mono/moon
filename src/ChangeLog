@@ -1,5 +1,8 @@
 2007-06-17  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* media.cpp (MediaElement::OnPropertyChanged): Chain to parent
+	when its not our property.
+
 	* brush.cpp: Implemented VideoBrush (tho it's not yet debugged).
 
 	* mplayer.cpp (GetSurface): Added.
