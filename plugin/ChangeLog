@@ -1,5 +1,11 @@
 2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp: Use setSource to define source in Initialize, it give us only
+	one place to check set source code. Also prevent setSource to segfault when
+	source field is null.
+
+2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
+
 	Fixes browser segfaults related to timemanager when goto another page or 
 	close browser.
 

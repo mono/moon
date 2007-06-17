@@ -117,14 +117,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 		// Source url handle.
 		if (!strcasecmp (argn[i], "src") || !strcasecmp (argn[i], "source")) {
-			this->source = argv[i];
+			url = argv[i];
 		}
 	}
 
-	if (this->source) {
-		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
-		NPN_GetURLNotify (this->instance, this->source, NULL, notify);
-	}
+	if (url)
+		setSource (url);
 }
 
 void 
@@ -351,7 +349,7 @@ PluginInstance::EventHandle (void* event)
 void
 PluginInstance::setSource (const char *value)
 {
-	if (!value || !strcasecmp (this->source, value))
+	if (!value || (this->source && !strcasecmp (this->source, value)))
 		return;
 
 	this->source = (char *) NPN_MemAlloc (strlen (value) + 1);
