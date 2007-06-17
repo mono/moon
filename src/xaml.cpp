@@ -47,6 +47,7 @@ typedef void  (*add_child_func) (XamlParserInfo *p, XamlElementInstance *parent,
 typedef void  (*set_property_func) (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 
+void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
 
 
@@ -77,12 +78,13 @@ class XamlParserInfo {
 	ParserErrorEventArgs *error_args;
 
 	xaml_create_custom_element_callback *custom_element_callback;
-//	xaml_set_custom_attribute_callback *custom_attribute_callback;
+	xaml_set_custom_attribute_callback *custom_attribute_callback;
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
 		parser (parser), file_name (file_name), top_element (NULL), current_element (NULL),
 		current_namespace (NULL), char_data_buffer (NULL), implicit_default_namespace (false),
-		error_args (NULL), namescope (new NameScope()), custom_element_callback (NULL)
+		error_args (NULL), namescope (new NameScope()),
+		custom_element_callback (NULL), custom_attribute_callback (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
@@ -235,7 +237,7 @@ class CustomNamespace : public XamlNamespace {
 		CustomElementInfo *info = new CustomElementInfo (g_strdup (el), NULL, dob->GetObjectType ());
 
 		info->create_element = create_custom_element;
-		info->set_attributes = set_custom_attributes;
+		info->set_attributes = dependency_object_set_attributes;
 		info->add_child = custom_add_child;
 		info->set_property = custom_set_property;
 		info->dependency_object = dob;
@@ -245,7 +247,7 @@ class CustomNamespace : public XamlNamespace {
 
 	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
-
+		p->custom_attribute_callback (item->item, attr, value);
 	}
 };
 
@@ -493,7 +495,9 @@ print_tree (XamlElementInstance *el, int depth)
 
 UIElement *
 xaml_create_from_file (const char *xaml_file, bool create_namescope,
-		xaml_create_custom_element_callback *cecb, Value::Kind *element_type)
+		xaml_create_custom_element_callback *cecb,
+		xaml_set_custom_attribute_callback *sca,
+		Value::Kind *element_type)
 {
 	UIElement *res;
 	FILE *fp;
@@ -502,6 +506,10 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 	XamlParserInfo *parser_info = NULL;
 	XML_Parser p = NULL;
 
+#ifdef DEBUG_XAML
+	printf ("attemtping to load xaml file: %s\n", xaml_file);
+#endif
+	
 	fp = fopen (xaml_file, "r+");
 
 	if (!fp) {
@@ -524,6 +532,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 
 	parser_info = new XamlParserInfo (p, xaml_file);
 	parser_info->custom_element_callback = cecb;
+	parser_info->custom_attribute_callback = sca;
 
 	// TODO: This is just in here temporarily, to make life less difficult for everyone
 	// while we are developing.  
@@ -587,7 +596,9 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 
 UIElement *
 xaml_create_from_str (const char *xaml, bool create_namescope,
-		xaml_create_custom_element_callback *cecb, Value::Kind *element_type)
+		xaml_create_custom_element_callback *cecb,
+		xaml_set_custom_attribute_callback *sca,
+		Value::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
 	XamlParserInfo *parser_info = NULL;
@@ -603,7 +614,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 	parser_info = new XamlParserInfo (p, NULL);
 
 	parser_info->custom_element_callback = cecb;
-//	parser_info->custom_attribute_callback = sacb;
+	parser_info->custom_attribute_callback = sca;
 
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
@@ -1151,6 +1162,8 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 						g_strdup_printf ("Could not find namespace %s", attr_name [0]));
 
 			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
+
+			g_strfreev (attr_name);
 			continue;
 		}
 

@@ -94,7 +94,7 @@ button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
 	printf ("button_press_event\n");
 
 	printf ("Loading...\n");
-	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, NULL, &kind);
+	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, NULL, NULL, &kind);
 	printf ("Loading... %p\n", ee);
 	if (ee != NULL)
 		surface_attach (t, ee);
@@ -173,7 +173,7 @@ main (int argc, char *argv [])
 	char *file = NULL;
 
 	gtk_init (&argc, &argv);
-	g_thread_init (NULL);
+//	g_thread_init (NULL);
 	gdk_threads_init ();
 	runtime_init ();
 
@@ -204,7 +204,7 @@ main (int argc, char *argv [])
 
 		gtk_window_set_title (GTK_WINDOW (w), file);
 		
-		UIElement *e = xaml_create_from_file (file, true, NULL, &kind);
+		UIElement *e = xaml_create_from_file (file, true, NULL, NULL, &kind);
 		if (e == NULL){
 			printf ("Was not able to load the file\n");
 			return 1;
@@ -303,7 +303,7 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, tb);
 		
 #ifdef XAML_DEMO
-		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", false, NULL, NULL));
+		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", false, NULL, NULL, NULL));
 #endif
 		
 #ifdef VIDEO_DEMO

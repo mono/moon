@@ -925,10 +925,13 @@ void     surface_register_events (Surface *s,
 //
 
 typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
+typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
 
+UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
+		xaml_set_custom_attribute_callback *sca, Value::Kind *element_type);
+UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
+		xaml_set_custom_attribute_callback *sca, Value::Kind *element_type);
 
-UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb, Value::Kind *element_type);
-UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb, Value::Kind *element_type);
 
 void runtime_init (void);
 void animation_init (void);

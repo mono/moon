@@ -31,20 +31,24 @@ using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Controls;
 using System.Collections;
+using System.ComponentModel;
 
 namespace Moonlight {
 
 	internal delegate IntPtr CreateElementCallback (string xmlns, string name);
-
+	internal delegate void SetAttributeCallback (IntPtr target, string name, string value);
+	
 	public class Hosting {
 
 		[DllImport ("moon")]
 		internal extern static IntPtr surface_attach (IntPtr surface, IntPtr toplevel);
 
 		[DllImport ("moon")]
-		internal extern static IntPtr xaml_create_from_file (string file, bool create_namescope, CreateElementCallback ce, ref int kind_type);
+		internal extern static IntPtr xaml_create_from_file (string file, bool create_namescope,
+				CreateElementCallback ce, SetAttributeCallback sa, ref int kind_type);
 
 		[DllImport("moon")]
 		internal extern static string dependency_object_get_name (IntPtr obj);
@@ -75,6 +79,7 @@ namespace Moonlight {
 		string missing;
 
 		CreateElementCallback create_element_callback;
+		SetAttributeCallback set_attribute_callback;
 		
 		Hashtable h = new Hashtable ();
 		
@@ -85,6 +90,7 @@ namespace Moonlight {
 			this.s = s;
 
 			create_element_callback = new CreateElementCallback (create_element);
+			set_attribute_callback = new SetAttributeCallback (set_attribute);
 		}
 
 		public void InsertMapping (string key, string name)
@@ -109,9 +115,8 @@ namespace Moonlight {
 
 			missing = null;
 			error = -1;
-			IntPtr x = Hosting.xaml_create_from_file (s, true, create_element, ref kind);
 
-			Console.WriteLine ("Got: {0}", x);
+			IntPtr x = Hosting.xaml_create_from_file (s, true, create_element_callback, set_attribute_callback, ref kind);
 			// HERE:
 			//     Insert code to check the output of from_file
 			//     to see which assembly we are missing
@@ -157,19 +162,20 @@ namespace Moonlight {
 
 			ParseXmlns (xmlns, out ns, out asm_name);
 
-			if (ns == null || asm_name == null)
+			if (ns == null || asm_name == null) {
+				Console.WriteLine ("unable to parse xmlns string: '{0}'", xmlns);
 				return IntPtr.Zero;
+			}
 
 			asm_path = h [asm_name] as string;
 
 			if (asm_path == null) {
 				missing = asm_name;
-				Console.WriteLine ("unable to parse xmlns string: '{0}'", xmlns);
+				Console.WriteLine ("Assembly not available:  {0}", asm_name);
 				return IntPtr.Zero;
 			}
-				
-			Assembly clientlib = Assembly.LoadFile (asm_path);
 
+			Assembly clientlib = Assembly.LoadFile (asm_path);
 			if (clientlib == null) {
 				Console.WriteLine ("could not load client library: '{0}'", asm_path);
 				return IntPtr.Zero;
@@ -188,6 +194,39 @@ namespace Moonlight {
 			
 			IntPtr p = (IntPtr) m.Invoke (null, new object [] { res });
 			return p;
+		}
+
+		private void set_attribute (IntPtr target_ptr, string name, string value)
+		{
+			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
+					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] { typeof (IntPtr) }, null);
+			DependencyObject target = (DependencyObject) m.Invoke (null, new object [] { target_ptr });
+
+			if (target == null) {
+				Console.WriteLine ("unable to create target object from: 0x{0}", target_ptr);
+				return;
+			}
+
+			PropertyDescriptor pd = TypeDescriptor.GetProperties (target).Find (name, true);
+
+			if (pd == null) {
+				Console.WriteLine ("unable to set property ({0}) no property descriptor found", name);
+				return;
+			}
+
+			if (!pd.Converter.CanConvertFrom (typeof (string))) {
+				//
+				// MS does not seem to handle this yet either, but I think a logical improvement
+				// here is to call back into unmanaged code something like xaml_create_object_from_str
+				// with the attribute string, and see if the managed code can parse it, this would
+				// allow you to stick things like Colors and KeySplines on your object and still have
+				// custom setters
+				//
+				Console.WriteLine ("unable to convert property '{0}' from a string", name);
+				return;
+			}
+
+			pd.SetValue (target, pd.Converter.ConvertFrom (value));
 		}
 
 		internal static void ParseXmlns (string xmlns, out string ns, out string asm)

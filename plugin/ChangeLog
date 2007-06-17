@@ -1,3 +1,7 @@
+2007-06-16  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight.cs: Set custom attributes on xaml elements.
+
 2007-06-16  Everaldo Canuto  <ecanuto@novell.com>
 
 	* moonlight.h: Include config.h since moonlight.h is included by all files.
