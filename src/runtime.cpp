@@ -1057,8 +1057,6 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 	//if (!inside_object (s, x, y))
 	//return;
 
-	Panel::handle_motion (s, state, x, y);
-
 	// 
 	// Walk the list in reverse
 	//
@@ -1092,13 +1090,14 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 		current_item->leave (s);
 		current_item = NULL;
 	}
+
+	Panel::handle_motion (s, state, x, y);
 }
 
 void
 Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
-	Panel::handle_button (s, cb, state, x, y);
 
 	// 
 	// Walk the list in reverse
@@ -1117,20 +1116,20 @@ Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x,
 
 		if (item->inside_object (s, x, y)){
 			item->handle_button (s, cb, state, x, y);
-			return;
+			break;
 		}
 	}
+	Panel::handle_button (s, cb, state, x, y);
 }
 
 void
 Canvas::leave (Surface *s)
 {
-	Panel::leave (s);
-
 	if (current_item != NULL){
 	       current_item->leave (s);
 	       current_item = NULL;
 	}
+	s->cb_mouse_leave (this);
 }
 
 Control*
@@ -1270,8 +1269,8 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 		return 0;
 
 	if (event->type == GDK_ENTER_NOTIFY){
-		s->toplevel->enter (s, event->state, event->x, event->y);
 		s->toplevel->handle_motion (s, event->state, event->x, event->y);
+		s->toplevel->enter (s, event->state, event->x, event->y);
 	} else {
 		s->toplevel->leave (s);
 	}

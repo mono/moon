@@ -1,3 +1,9 @@
+2007-06-17  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (handle_motion): Change the order in which we send
+	the events to the UIElement, we should start at the topmost
+	element, and have the toplevel canvas be last.
+
 2007-06-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Refactor ImageBrush::SetupBrush to reuse parts of it
