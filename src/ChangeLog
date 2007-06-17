@@ -1,3 +1,15 @@
+2007-06-17  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (Image): use Framework::Width,Height for the image
+	dimensions instead of the pixbuf width/height, used in extents and
+	rotation computation.
+
+	* runtime.cpp (Canvas::render): Set the clipping path on the
+	identity matrix so we do not miss-clip.
+
+	Render the canvas from 0, 0, fwidht, fheight, not the expose
+	area. 
+
 2007-06-16  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (Cairo::render): The canvas also needs to set the

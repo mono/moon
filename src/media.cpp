@@ -742,7 +742,7 @@ Image::getbounds ()
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	cairo_set_line_width (s->cairo, 1.0);
-	cairo_rectangle (s->cairo, 0, 0, pixbuf_width, pixbuf_height);
+	cairo_rectangle (s->cairo, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
@@ -756,7 +756,8 @@ Image::getxformorigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 
-	return Point (pixbuf_width * user_xform_origin.x, pixbuf_height * user_xform_origin.y);
+	return Point (framework_element_get_width (this) * user_xform_origin.x, 
+		      framework_element_get_height (this) * user_xform_origin.y);
 }
 
 cairo_surface_t *

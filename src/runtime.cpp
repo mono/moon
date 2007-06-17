@@ -561,7 +561,7 @@ item_invalidate (UIElement *item)
 	if (s == NULL)
 		return;
 
-//#define DEBUG_INVALIDATE
+#define DEBUG_INVALIDATE 1
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		item, Type::Find(item->GetObjectType())->name,
@@ -1353,18 +1353,18 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	GList *il;
 	double actual [6];
 	
+	cairo_set_matrix (s->cairo, &absolute_xform);
 	Value *value = GetValue (Panel::BackgroundProperty);
 	if (value) {
-		double width = framework_element_get_width (this);
-		double height = framework_element_get_height (this);
+		double fwidth = framework_element_get_width (this);
+		double fheight = framework_element_get_height (this);
 
-		if (width > 0 && height > 0){
-			cairo_set_matrix (s->cairo, &absolute_xform);
+		if (fwidth > 0 && fheight > 0){
 			Brush *background = value->AsBrush ();
 			background->SetupBrush (s->cairo, this);
 
 			// FIXME - UIElement::Opacity may play a role here
-			cairo_rectangle (s->cairo, x, y, width, height);
+			cairo_rectangle (s->cairo, 0, 0, fwidth, fheight);
 			cairo_fill (s->cairo);
 		}
 	}
@@ -1372,6 +1372,12 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	Rect render_rect (x, y, width, height);
 
 	level += 4;
+
+	//
+	// from this point on, we use the identity matrix to set the clipping
+	// path for the children
+	//
+	cairo_identity_matrix (s->cairo);
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
