@@ -854,23 +854,13 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 		TileBrush::OnPropertyChanged (prop);
 }
 
+// ripped apart to be reusable for Image class
 void
-ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, double width, double height, int sw, int sh, 
+	double opacity, Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform)
 {
-	cairo_surface_t *surface = image->GetSurface ();
-	if (!surface) {
-		// not yet available, draw gray-ish shadow where the brush should be applied
-		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return;
-	}
-
-	int sw = image->GetWidth ();
-	int sh = image->GetHeight ();
-
 	cairo_pattern_t *pattern;
 
-// MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
-	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
 	if (opacity < 1.0) {
 		cairo_surface_t *blending = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, sw, sh);
 		pattern = cairo_pattern_create_for_surface (surface);
@@ -886,17 +876,11 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	}
 
 	cairo_matrix_t matrix;
-	double x0, y0, x1, y1;
-	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
-
-	double width = fabs (x1 - x0);
-	double height = fabs (y1 - y0);
 
 	// scale required to "fit" for both axes
 	double sx = sw / width;
 	double sy = sh / height;
 
-	Stretch stretch = tile_brush_get_stretch (this);
 	// Fill is the simplest case because AlignementX and AlignmentY don't matter in this case
 	if (stretch == StretchFill) {
 		// fill extents in both axes
@@ -928,7 +912,7 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		double actual_height = scale * height;
 		double actual_width = scale * width;
 
-		switch (tile_brush_get_alignment_x (this)) {
+		switch (align_x) {
 		case AlignmentXLeft:
 			dx = 0.0;
 			break;
@@ -940,7 +924,7 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 			break;
 		}
 
-		switch (tile_brush_get_alignment_y (this)) {
+		switch (align_y) {
 		case AlignmentYTop:
 			dy = 0.0;
 			break;
@@ -961,7 +945,6 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		}
 	}
 
-	Transform *transform = brush_get_transform (this);
 	if (transform) {
 		cairo_matrix_t tm;
 		transform_get_transform (transform, &tm);
@@ -972,6 +955,36 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
+}
+
+void
+ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+{
+	cairo_surface_t *surface = image->GetSurface ();
+	if (!surface) {
+		// not yet available, draw gray-ish shadow where the brush should be applied
+		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		return;
+	}
+
+// MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
+	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
+
+	Stretch stretch = tile_brush_get_stretch (this);
+
+	AlignmentX ax = tile_brush_get_alignment_x (this);
+	AlignmentY ay = tile_brush_get_alignment_y (this);
+
+	Transform *transform = brush_get_transform (this);
+
+	double x0, y0, x1, y1;
+	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
+
+	double width = fabs (x1 - x0);
+	double height = fabs (y1 - y0);
+
+	image_brush_set_surface_as_pattern (cairo, surface, width, height, image->GetWidth (), image->GetHeight (), 
+		opacity, stretch, ax, ay, transform);
 }
 
 //

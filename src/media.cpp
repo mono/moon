@@ -706,6 +706,11 @@ Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, in
 	((Image*)data)->LoaderAreaUpdated (x, y, width, height);
 }
 
+// that's too ugly to be exposed in the header files ;-)
+void
+image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, double width, double height, int sw, int sh, 
+	double opacity, Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform);
+
 void
 Image::render (Surface *s, int x, int y, int width, int height)
 {
@@ -715,19 +720,17 @@ Image::render (Surface *s, int x, int y, int width, int height)
 	cairo_save (s->cairo);
 
 	cairo_set_matrix (s->cairo, &absolute_xform);
-	
-	cairo_set_source_surface (s->cairo, surface, 0, 0);
 
-	cairo_rectangle (s->cairo, 0, 0, this->pixbuf_width, this->pixbuf_height);
+	Stretch stretch = media_base_get_stretch (this);
 
-	// XXX this cairo_new_path shouldn't be necessary here, but
-	// without it, images are framed.  someone isn't calling this
-	// before they return.
-	cairo_new_path (s->cairo);
-	cairo_paint_with_alpha (s->cairo, GetTotalOpacity ());
+	double w = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
 
-	//cairo_fill (s->cairo);
+	image_brush_set_surface_as_pattern (s->cairo, surface, w, h, pixbuf_width, pixbuf_height, GetTotalOpacity (), 
+		stretch, AlignmentXCenter, AlignmentYCenter, NULL);
 
+	cairo_rectangle (s->cairo, 0, 0, w, h);
+	cairo_fill (s->cairo);
 	cairo_restore (s->cairo);
 }
 
@@ -742,7 +745,7 @@ Image::getbounds ()
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	cairo_set_line_width (s->cairo, 1.0);
-	cairo_rectangle (s->cairo, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
+	cairo_rectangle (s->cairo, 0, 0, pixbuf_width, pixbuf_height);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
@@ -756,8 +759,7 @@ Image::getxformorigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 
-	return Point (framework_element_get_width (this) * user_xform_origin.x, 
-		      framework_element_get_height (this) * user_xform_origin.y);
+	return Point (pixbuf_width * user_xform_origin.x, pixbuf_height * user_xform_origin.y);
 }
 
 cairo_surface_t *
