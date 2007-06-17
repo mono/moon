@@ -1,3 +1,10 @@
+2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp, plugin.h: Create StreamNotify class to use as notifydata 
+	parameter in NPN_GetURLNotify function, it gives us better control about
+	what is downloading. Fixes errors when you try change control source 
+	property.
+
 2007-06-17  Miguel de Icaza  <miguel@novell.com>
 
 	* downloader.cpp (p_downloader_send): Some tidbits for the plugin

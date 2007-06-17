@@ -78,8 +78,6 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->canvas = NULL;
 	this->surface = NULL;
 
-	this->sourceUrl = NULL;
-
 	// Property fields
 	this->initParams = false;
 	this->isLoaded = false;
@@ -124,7 +122,8 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	}
 
 	if (this->source) {
-		NPN_GetURLNotify (this->instance, this->source, NULL, this->source);
+		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
+		NPN_GetURLNotify (this->instance, this->source, NULL, notify);
 	}
 }
 
@@ -235,8 +234,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 {
 	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
 
-	if (stream->notifyData && (this->source == stream->notifyData)) {
-		this->sourceUrl = stream->url;
+	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 
 		*stype = NP_ASFILEONLY;
 
@@ -286,7 +284,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 {
 	DEBUGMSG ("StreamAsFile: %s", fname);
 
-	if (stream->notifyData && (this->source == stream->notifyData)) {
+	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		LoadFromXaml (fname);
 		this->isLoaded = true;
 	}
@@ -314,7 +312,7 @@ PluginInstance::LoadFromXaml (const char* fname)
 	mono_loader_object = vm_xaml_loader_new (this, this->surface, fname);
 	TryLoad ();
 #else	
-	surface_attach (this->surface, xaml_create_from_file (fname, NULL, NULL, NULL));
+	surface_attach (this->surface, xaml_create_from_file (fname, true, NULL, NULL, NULL));
 #endif
 }
 
@@ -359,8 +357,9 @@ PluginInstance::setSource (const char *value)
 	this->source = (char *) NPN_MemAlloc (strlen (value) + 1);
 	strcpy (this->source, value);
 
-	this->sourceUrl = NULL;
-	NPN_GetURLNotify (this->instance, this->source, NULL, this->source);
+	StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
+
+	NPN_GetURLNotify (this->instance, this->source, NULL, notify);
 }
 
 char *

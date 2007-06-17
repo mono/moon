@@ -14,7 +14,6 @@
 #define MOON_PLUGIN
 
 #include "moonlight.h"
-//#include "plugin-class.h"
 
 class PluginInstance
 {
@@ -24,8 +23,6 @@ class PluginInstance
 	NPP instance;          // Mozilla instance object
 	NPObject* rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
-
-	const char *sourceUrl;
 
 	// Property fields
 	char *initParams;
@@ -94,5 +91,26 @@ class PluginInstance
 };
 
 extern GSList *plugin_instances;
+
+
+#define IS_NOTIFY_SOURCE(x) \
+	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::SOURCE))
+
+class StreamNotify
+{
+ public:
+	enum StreamNotifyFlags {
+		NONE = 0,
+		SOURCE = 1
+	};
+
+	StreamNotify () : type (NONE), pdata (NULL) {};
+	StreamNotify (void* data) : type (NONE), pdata (data) {};
+	StreamNotify (StreamNotifyFlags type) : type (type), pdata (NULL) {};
+	StreamNotify (StreamNotifyFlags type, void* data) : type (type), pdata (data) {};
+
+	StreamNotifyFlags type;
+	void *pdata;
+};
 
 #endif /* MOON_PLUGIN */
