@@ -1261,13 +1261,13 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 	return TRUE;
 }
 
-static gint
+static gboolean
 crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
 	if (s->cb_enter == NULL || s->cb_mouse_leave == NULL)
-		return 0;
+		return FALSE;
 
 	if (event->type == GDK_ENTER_NOTIFY){
 		s->toplevel->handle_motion (s, event->state, event->x, event->y);
@@ -1275,6 +1275,7 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 	} else {
 		s->toplevel->leave (s);
 	}
+	return TRUE;
 }
 
 static gboolean 

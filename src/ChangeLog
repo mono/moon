@@ -1,3 +1,12 @@
+2007-06-17  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (Clock::TimeUpdated): remove a special case for the
+	clock's duration being Automatic.  Fixes infinite animation in
+	Surface port.
+
+	* runtime.cpp (crossing_notify_callback): return type is gboolean,
+	and make sure we always return something.
+	
 2007-06-17  Miguel de Icaza  <miguel@novell.com>
 
 	Propagate changes from children of the transform up to our

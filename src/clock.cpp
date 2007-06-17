@@ -22,6 +22,7 @@
 #include <sys/time.h>
 //#endif
 
+//#define CLOCK_DEBUG
 
 static TimeSpan
 get_now (void)
@@ -165,10 +166,18 @@ Clock::Clock (Timeline *tl)
 	autoreverse = timeline->GetAutoReverse ();
 
 	duration = timeline->GetDuration ();
-	if (duration->HasTimeSpan ())
+	if (duration->HasTimeSpan ()) {
+#if CLOCK_DEBUG
+	  printf ("Clock %p has a timespan based duration\n", this);
+#endif
 		natural_duration = *duration;
-	else
+	}
+	else {
+#if CLOCK_DEBUG
+	  printf ("Clock %p has NON-timespan based duration\n", this);
+#endif
 		natural_duration = timeline->GetNaturalDuration (this);
+	}
 	current_progress = 0.0;
 	current_time = 0;
 	reversed = false;
@@ -186,13 +195,23 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 
 	current_time = parent_clock_time - iter_start - parent_offset;
 
+#if CLOCK_DEBUG
+	printf ("Clock %p updated to time %lld\n", this, current_time);
+#endif
+
 	if (natural_duration.HasTimeSpan ()) {
 		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
 
+#if CLOCK_DEBUG
+		printf ("+ clock %p duration is %lld\n", this, duration_timespan);
+#endif
 		if (reversed)
 			current_time = duration_timespan - (current_time - duration_timespan);
 
 		if (current_time >= duration_timespan) {
+#if CLOCK_DEBUG
+		  printf ("+ clock %p hit its duration\n", this);
+#endif
 			// we've hit the end point of the clock's timeline
 			if (autoreverse) {
 				/* since autoreverse is true we need
@@ -209,10 +228,17 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 				   not done, force current_time to 0
 				   so we start counting from there
 				   again. */
-				if (remaining_iterations > 0 && *duration != Duration::Automatic)
+				if (remaining_iterations > 0) {
 					remaining_iterations --;
+#if CLOCK_DEBUG
+					printf (" + clock %p remaining iterations = %f\n", this, remaining_iterations);
+#endif
+				}
 
 				if (remaining_iterations == 0) {
+#if CLOCK_DEBUG
+					printf (" + clock %p should STOP\n", this, remaining_iterations);
+#endif
 					current_time = duration_timespan;
 					Stop ();
 				}
@@ -335,6 +361,7 @@ Clock::SkipToFill ()
 void
 Clock::Stop ()
 {
+  printf ("stopping clock %p\n", this);
 	current_state = STOPPED;
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
