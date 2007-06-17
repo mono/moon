@@ -127,8 +127,8 @@ TranslateTransform::GetTransform (cairo_matrix_t *value)
 	double y = translate_transform_get_y (this);
 
 	cairo_matrix_init_translate (value, x, y);
-	printf ("translating dx %g dy %g", x, y);
-	printf ("TranslateTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
+	//printf ("translating dx %g dy %g", x, y);
+	//printf ("TranslateTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 TranslateTransform *
