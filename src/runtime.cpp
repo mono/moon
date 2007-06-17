@@ -1061,8 +1061,10 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 	// Walk the list in reverse
 	//
 	GList *il = g_list_last (children->list);
-	if (il == NULL)
+	if (il == NULL){
+		Panel::handle_motion (s, state, x, y);
 		return;
+	}
 
 	for (; il != NULL; il = il->prev){
 		UIElement *item = (UIElement *) il->data;
@@ -1082,6 +1084,7 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 			}
 
 			current_item->handle_motion (s, state, x, y);
+			Panel::handle_motion (s, state, x, y);
 			return;
 		}
 	}
@@ -1103,8 +1106,10 @@ Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x,
 	// Walk the list in reverse
 	//
 	GList *il = g_list_last (children->list);
-	if (il == NULL)
+	if (il == NULL){
+		Panel::handle_button (s, cb, state, x, y);
 		return;
+	}
 
 	for (; il != NULL; il = il->prev){
 		UIElement *item = (UIElement *) il->data;
