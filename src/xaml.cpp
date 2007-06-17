@@ -725,8 +725,9 @@ timespan_from_str (const char *str)
 	// Convert to seconds, then to ticks
 	// TODO: This could overflow?
 	res = ((digits [0] * 86400) + (digits [1] * 3600) + (digits [2] * 60) + digits [3]);
-	res *= 1000000L;
+	res *= 10L;
 	res += digits [4];
+	res *= 100000L;
 
 	return res;
 }
