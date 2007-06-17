@@ -20,7 +20,8 @@ MonoAssembly *moon_boot_assembly;
 static char *boot_assembly;
 
 // Methods
-MonoMethod   *moon_load_xaml;
+MonoMethod   *moon_load_xaml_file;
+MonoMethod   *moon_load_xaml_str;
 MonoMethod   *moon_try_load;
 MonoMethod   *moon_insert_mapping;
 
@@ -44,8 +45,12 @@ vm_init ()
 		
 		MonoMethodDesc *desc;
 
-		desc = mono_method_desc_new ("Moonlight.Hosting:CreateXamlLoader", TRUE);
-		moon_load_xaml = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
+		desc = mono_method_desc_new ("Moonlight.Hosting:CreateXamlFileLoader", TRUE);
+		moon_load_xaml_file = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
+		mono_method_desc_free (desc);
+
+		desc = mono_method_desc_new ("Moonlight.Hosting:CreateXamlStrLoader", TRUE);
+		moon_load_xaml_str = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
 		mono_method_desc_free (desc);
 
 		desc = mono_method_desc_new ("Moonlight.Loader:TryLoad", TRUE);
@@ -56,7 +61,7 @@ vm_init ()
 		moon_insert_mapping = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
 		mono_method_desc_free (desc);
 
-		if (moon_load_xaml != NULL && moon_try_load != NULL){
+		if (moon_load_xaml_file != NULL && moon_try_load != NULL){
 			result = TRUE;
 		}
 
@@ -72,16 +77,29 @@ vm_init ()
 // that the plugin uses (instead of just <embed src>)
 //
 gpointer
-vm_xaml_loader_new (gpointer plugin, gpointer surface, const char *file)
+vm_xaml_file_loader_new (gpointer plugin, gpointer surface, const char *file)
 {
-	if (moon_load_xaml == NULL)
+	if (moon_load_xaml_file == NULL)
 		return NULL;
 
 	void *params [3];
 	params [0] = &plugin;
 	params [1] = &surface;
 	params [2] = mono_string_new (moon_domain, file);
-	return mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
+	return mono_runtime_invoke (moon_load_xaml_file, NULL, params, NULL);
+}
+
+gpointer
+vm_xaml_str_loader_new (gpointer plugin, gpointer surface, const char *str)
+{
+	if (moon_load_xaml_str == NULL)
+		return NULL;
+
+	void *params [3];
+	params [0] = &plugin;
+	params [1] = &surface;
+	params [2] = mono_string_new (moon_domain, str);
+	return mono_runtime_invoke (moon_load_xaml_str, NULL, params, NULL);
 }
 
 char *

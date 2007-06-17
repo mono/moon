@@ -50,6 +50,10 @@ namespace Moonlight {
 		internal extern static IntPtr xaml_create_from_file (string file, bool create_namescope,
 				CreateElementCallback ce, SetAttributeCallback sa, ref int kind_type);
 
+		[DllImport ("moon")]
+		internal extern static IntPtr xaml_create_from_str (string file, bool create_namescope,
+				CreateElementCallback ce, SetAttributeCallback sa, ref int kind_type);
+
 		[DllImport("moon")]
 		internal extern static string dependency_object_get_name (IntPtr obj);
 		
@@ -63,11 +67,20 @@ namespace Moonlight {
                 // 6. Run the method
                 // 7. If none of those properties are there, we can return
 
-		public static Loader CreateXamlLoader (IntPtr plugin, IntPtr surface, string s)
+		public static Loader CreateXamlFileLoader (IntPtr plugin, IntPtr surface, string filename)
 		{
-			Loader l = new Loader (plugin, surface, s);
+			Loader loader = new Loader (plugin, surface);
+			loader.FileName = filename;
 
-			return l;
+			return loader;
+		}
+
+		public static Loader CreateXamlStrLoader (IntPtr plugin, IntPtr surface, string contents)
+		{
+			Loader loader = new Loader (plugin, surface);
+			loader.Contents = contents;
+
+			return loader;
 		}
 	}
 
@@ -75,7 +88,8 @@ namespace Moonlight {
 
 	public class Loader {
 		IntPtr plugin, surface;
-		string s;
+		string filename;
+		string contents;
 		string missing;
 
 		CreateElementCallback create_element_callback;
@@ -83,14 +97,26 @@ namespace Moonlight {
 		
 		Hashtable h = new Hashtable ();
 		
-		public Loader (IntPtr plugin, IntPtr surface, string s)
+		public Loader (IntPtr plugin, IntPtr surface)
 		{
 			this.plugin = plugin;
 			this.surface = surface;
-			this.s = s;
+
+			this.filename = "";
+			this.contents = "";
 
 			create_element_callback = new CreateElementCallback (create_element);
 			set_attribute_callback = new SetAttributeCallback (set_attribute);
+		}
+
+		public string FileName {
+			get { return this.filename; }
+			set { this.filename = value; }
+		}
+
+		public string Contents {
+			get { return this.contents; }
+			set { this.contents = value; }
 		}
 
 		public void InsertMapping (string key, string name)
@@ -110,13 +136,18 @@ namespace Moonlight {
 		//
 		public string TryLoad (out int error)
 		{
-			Console.WriteLine ("Loader.TryLoad: {0} {1}", surface, s);
+			Console.WriteLine ("Loader.TryLoad: {0} {1}", surface, filename);
 			int kind = 0;
 
 			missing = null;
 			error = -1;
+			
+			IntPtr element;
+			if (filename != String.Empty)
+				element = Hosting.xaml_create_from_file (filename, true, create_element_callback, set_attribute_callback, ref kind);
+			else
+				element = Hosting.xaml_create_from_str (contents, true, create_element_callback, set_attribute_callback, ref kind);
 
-			IntPtr x = Hosting.xaml_create_from_file (s, true, create_element_callback, set_attribute_callback, ref kind);
 			// HERE:
 			//     Insert code to check the output of from_file
 			//     to see which assembly we are missing
@@ -125,19 +156,19 @@ namespace Moonlight {
 				return missing;
 			}
 			
-			if (x == IntPtr.Zero){
+			if (element == IntPtr.Zero){
 				Console.WriteLine ("Could not load xaml file");
 				return null;
 			}
 
-			string xname = Hosting.dependency_object_get_name (x);
+			string xname = Hosting.dependency_object_get_name (element);
 			if (xname != "Canvas"){
 				Console.WriteLine ("return value is not a Canvas, its a {0}", xname);
 				return null;
 			}
 
 			MethodInfo m = typeof (Canvas).GetMethod ("FromPtr", BindingFlags.Static | BindingFlags.NonPublic);
-			Canvas c = (Canvas) m.Invoke (null, new object [] { x });
+			Canvas c = (Canvas) m.Invoke (null, new object [] { element });
 			if (c == null){
 				Console.WriteLine ("Could not invoke Canvas.FromPtr");
 				return null;

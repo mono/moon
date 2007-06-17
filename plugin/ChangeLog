@@ -1,5 +1,16 @@
 2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h: Add support for "#" (references) in source urls, it
+	make possible use embedded xaml files. Also every source updates go to the
+	UpdateSource and UpdateSourceByReference methods.
+
+	* moonlight.cs: Xaml file loader splited in two methods CreateXamlFileLoader
+	and CreateXamlStrLoader to support embedded files.
+
+	* mono.cpp: Wrapper funtions also splited in file loader and str loader.
+
+2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp: Use setSource to define source in Initialize, it give us only
 	one place to check set source code. Also prevent setSource to segfault when
 	source field is null.

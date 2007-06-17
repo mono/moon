@@ -104,8 +104,6 @@ PluginInstance::~PluginInstance ()
 void 
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
-	char *url = NULL;
-
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL)
 			continue;
@@ -117,12 +115,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 		// Source url handle.
 		if (!strcasecmp (argn[i], "src") || !strcasecmp (argn[i], "source")) {
-			url = argv[i];
+			this->source = argv[i];
 		}
 	}
-
-	if (url)
-		setSource (url);
 }
 
 void 
@@ -225,6 +220,59 @@ PluginInstance::CreateWindow ()
 	surface_attach (this->surface, canvas);
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 	gtk_widget_show_all (this->container);
+	this->UpdateSource ();
+}
+
+void 
+PluginInstance::UpdateSource ()
+{
+	if (!this->source)
+		return;
+
+	char * pos = strchr (this->source, '#');
+	if (pos) {
+		if (strlen(&pos[1]) > 0);
+			this->UpdateSourceByReference (&pos[1]);
+	} else {
+		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
+		NPN_GetURLNotify (this->instance, this->source, NULL, notify);
+	}
+}
+
+void 
+PluginInstance::UpdateSourceByReference (const char *value)
+{
+	NPObject *object;
+	NPString reference;
+	NPVariant result;
+
+	if (NPERR_NO_ERROR != NPN_GetValue(this->instance, NPNVWindowNPObject, &object)) {
+		DEBUGMSG ("*** Failed to get window object");
+		return;
+	}
+
+	char jscript [strlen (value) + 5];
+	strcpy (jscript, value);
+	strcat (jscript, ".text");
+
+	reference.utf8characters = jscript;
+	reference.utf8length = strlen (jscript);
+
+	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
+		if (NPVARIANT_IS_STRING (result)) {
+			#ifdef RUNTIME
+			mono_loader_object = vm_xaml_str_loader_new (this, this->surface, NPVARIANT_TO_STRING (result).utf8characters);
+			TryLoad ();
+			#else	
+			UIElement * element = xaml_create_from_str (NPVARIANT_TO_STRING (result).utf8characters, true, NULL, NULL, NULL);
+			surface_attach (this->surface, element);
+			#endif
+		}
+
+		NPN_ReleaseVariantValue (&result);
+	}
+
+	NPN_ReleaseObject (object);
 }
 
 NPError
@@ -243,7 +291,6 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 		} else
 			*stype = NP_NORMAL;
 	}
-
 
 	return NPERR_NO_ERROR;
 }
@@ -283,7 +330,14 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	DEBUGMSG ("StreamAsFile: %s", fname);
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-		LoadFromXaml (fname);
+		DEBUGMSG ("LoadFromXaml: %s", fname);
+		#ifdef RUNTIME
+			mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
+			TryLoad ();
+		#else	
+			surface_attach (this->surface, xaml_create_from_file (fname, true, NULL, NULL, NULL));
+		#endif
+
 		this->isLoaded = true;
 	}
 
@@ -299,18 +353,6 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		// retry to load
 		TryLoad ();
 	}
-#endif
-}
-
-void
-PluginInstance::LoadFromXaml (const char* fname)
-{
-	DEBUGMSG ("LoadFromXaml: %s", fname);
-#ifdef RUNTIME
-	mono_loader_object = vm_xaml_loader_new (this, this->surface, fname);
-	TryLoad ();
-#else	
-	surface_attach (this->surface, xaml_create_from_file (fname, true, NULL, NULL, NULL));
 #endif
 }
 
@@ -354,10 +396,7 @@ PluginInstance::setSource (const char *value)
 
 	this->source = (char *) NPN_MemAlloc (strlen (value) + 1);
 	strcpy (this->source, value);
-
-	StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
-
-	NPN_GetURLNotify (this->instance, this->source, NULL, notify);
+	this->UpdateSource ();
 }
 
 char *

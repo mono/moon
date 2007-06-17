@@ -22,7 +22,8 @@ extern MonoDomain   *moon_domain;
 extern MonoAssembly *moon_boot_assembly;
 
 gboolean    vm_init ();
-gpointer    vm_xaml_loader_new (gpointer plugin, gpointer surface, const char *file);
+gpointer    vm_xaml_file_loader_new (gpointer plugin, gpointer surface, const char *file);
+gpointer    vm_xaml_str_loader_new (gpointer plugin, gpointer surface, const char *str);
 
 char       *vm_loader_try      (gpointer loader_object, int *error);
 void        vm_insert_mapping  (gpointer loader_object, const char *key, const char *value);
