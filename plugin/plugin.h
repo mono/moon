@@ -93,4 +93,6 @@ class PluginInstance
 	int32 getActualWidth ();
 };
 
+extern GSList *plugin_instances;
+
 #endif /* MOON_PLUGIN */

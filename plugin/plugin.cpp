@@ -65,6 +65,8 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 
 /*** PluginInstance:: *********************************************************/
 
+GSList *plugin_instances = NULL;
+
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {
 	this->mode = mode;
@@ -88,6 +90,8 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->vm_missing_url = NULL;
 	this->vm_missing_file = NULL;
 	this->mono_loader_object = NULL;
+
+	plugin_instances = g_slist_append (plugin_instances, this);
 }
 
 PluginInstance::~PluginInstance ()
@@ -95,6 +99,8 @@ PluginInstance::~PluginInstance ()
 	// finalization code is under Finalize (), it was moved because we cant
 	// free resources, it causes browser reload problems. It must be checked
 	// and fixed later.
+
+	plugin_instances = g_slist_remove (plugin_instances, this);
 }
 
 void 

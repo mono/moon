@@ -1,3 +1,8 @@
+2007-06-17  Miguel de Icaza  <miguel@novell.com>
+
+	* downloader.cpp (p_downloader_send): Some tidbits for the plugin
+	download, not complete.
+
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight.cs: Set custom attributes on xaml elements.
