@@ -1759,6 +1759,19 @@ DependencyObject::GetValue (DependencyProperty *property)
 }
 
 Value *
+DependencyObject::GetValueNoDefault (DependencyProperty *property)
+{
+	Value *value = NULL;
+
+	value = (Value *) g_hash_table_lookup (current_values, property->name);
+
+	if (value != NULL)
+		return value;
+
+	return NULL;
+}
+
+Value *
 DependencyObject::GetValue (const char *name)
 {
 	DependencyProperty *property;

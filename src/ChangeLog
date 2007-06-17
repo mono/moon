@@ -1,5 +1,10 @@
 2007-06-17  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp (GetValueNoDefault): This is necessary so we can
+	distinguish a value that has been explicitly set from one that has
+	not.
+	
+
 	* media.cpp (Image): use Framework::Width,Height for the image
 	dimensions instead of the pixbuf width/height, used in extents and
 	rotation computation.

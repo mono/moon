@@ -248,6 +248,7 @@ class DependencyObject : public Base {
 	void SetValue (const char *name, Value *value);
 	void SetValue (const char *name, Value value);
 	Value *GetValue (DependencyProperty *property);
+	Value *GetValueNoDefault (DependencyProperty *property);
 	Value *GetValue (const char *name);
 	bool HasProperty (const char *name, bool inherits);
 	DependencyProperty *GetDependencyProperty (const char *name);
