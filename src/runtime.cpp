@@ -753,16 +753,24 @@ UIElement::inside_object (Surface *s, double x, double y)
 	printf ("UIElement derivatives should implement inside object\n");
 }
 
-void
+bool
 UIElement::handle_motion (Surface *s, int state, double x, double y)
 {
-	s->cb_motion (this, state, x, y);
+	if (inside_object (s, x, y)){
+		s->cb_motion (this, state, x, y);
+		return true;
+	} 
+	return false;
 }
 
-void
+bool
 UIElement::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
-	cb (this, state, x, y);
+	if (inside_object (s, x, y)){
+		cb (this, state, x, y);
+		return true;
+	}
+	return false;
 }
 
 void
@@ -824,6 +832,24 @@ FrameworkElement::inside_object (Surface *s, double x, double y)
 
 	bool ret = FALSE;
 	double nx = x, ny = y;
+
+	uielement_transform_point (this, &nx, &ny);
+	if (nx < 0 || ny < 0 || nx > framework_element_get_width (this) || ny > framework_element_get_height (this))
+		return false;
+
+	return true;
+
+#if false
+	// 
+	// The following code is slower and does about the same as the
+	// one above, but I believe it might be buggy.   it is here
+	// as a reference for Shapes that need to ues 
+	// "cairo_in_stroke" and "cairo_in_fill" (like circles) to
+	// detect in/out 
+	//
+	// When I tried this with scaled/rotated objects it was incorrect
+	// for rectangles, but this is roughly the "spirit".
+	//
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	cairo_rectangle (s->cairo, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
@@ -833,6 +859,7 @@ FrameworkElement::inside_object (Surface *s, double x, double y)
 
 	cairo_restore (s->cairo);
 	return ret;
+#endif
 }
 
 double
@@ -950,6 +977,8 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
+	} else if (prop == BackgroundProperty){
+		item_invalidate (this);
 	}
 }
 
@@ -999,6 +1028,14 @@ Canvas::getbounds ()
 		UIElement *item = (UIElement *) il->data;
 
 		item->getbounds ();
+
+		//
+		// The topmost canvas does not use the children
+		// boundaries, it only triggers their computation
+		//
+		if (surface)
+			continue;
+
 		if (first) {
 			x1 = item->x1;
 			x2 = item->x2;
@@ -1018,9 +1055,15 @@ Canvas::getbounds ()
 			y2 = item->y2;
 	}
 
-	// If we found nothing.
-	if (first)
-		x1 = y1 = x2 = y2 = 0;
+	if (surface){
+		x1 = y1 = 0;
+		x2 = surface->width;
+		y2 = surface->height;
+	} else {
+		// If we found nothing.
+		if (first)
+			x1 = y1 = x2 = y2 = 0;
+	}
 }
 
 bool
@@ -1042,35 +1085,29 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 	return false;
 }
 
-void 
+bool
 Canvas::handle_motion (Surface *s, int state, double x, double y)
 {
+	bool handled = false;
+
 	VisualCollection *children = GetChildren ();
-	//printf ("is %g %g inside the canvas? %d\n", x, y, inside_object (s, x, y));
-	//printf ("Bounding: %g %g %g %g\n", x1, y1, x2, y2);
-	//
-	// We need to sync the canvas size with the surface size
-	//if (!inside_object (s, x, y))
-	//return;
 
 	// 
 	// Walk the list in reverse
 	//
 	GList *il = g_list_last (children->list);
-	if (il == NULL){
-		Panel::handle_motion (s, state, x, y);
-		return;
-	}
+	if (il == NULL)
+		goto leave;
 
 	for (; il != NULL; il = il->prev){
 		UIElement *item = (UIElement *) il->data;
 
-		// Quick bound check:
-		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2){
+		// Bounds check:
+		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
 			continue;
-		}
 
-		if (item->inside_object (s, x, y)){
+		handled = item->handle_motion (s, state, x, y);
+		if (handled){
 			if (item != current_item){
 				if (current_item != NULL)
 					current_item->leave (s);
@@ -1078,11 +1115,8 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 				current_item = item;
 				current_item->enter (s, state, x, y);
 			}
-
-			current_item->handle_motion (s, state, x, y);
-			Panel::handle_motion (s, state, x, y);
-			return;
-		}
+			goto leave;
+		} 
 	}
 
 	if (current_item != NULL){
@@ -1090,22 +1124,26 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 		current_item = NULL;
 	}
 
-	Panel::handle_motion (s, state, x, y);
+ leave:
+	if (handled || inside_object (s, x, y)){
+		s->cb_motion (this, state, x, y);
+		return true;
+	}
+	return handled;
 }
 
-void
+bool
 Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
+	bool handled = false;
 
 	// 
 	// Walk the list in reverse
 	//
 	GList *il = g_list_last (children->list);
-	if (il == NULL){
-		Panel::handle_button (s, cb, state, x, y);
-		return;
-	}
+	if (il == NULL)
+		goto leave;
 
 	for (; il != NULL; il = il->prev){
 		UIElement *item = (UIElement *) il->data;
@@ -1115,12 +1153,16 @@ Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x,
 			continue;
 		}
 
-		if (item->inside_object (s, x, y)){
-			item->handle_button (s, cb, state, x, y);
+		handled = item->handle_button (s, cb, state, x, y);
+		if (handled)
 			break;
-		}
 	}
-	Panel::handle_button (s, cb, state, x, y);
+ leave:
+	if (handled || inside_object (s, x, y)){
+		cb (this, state, x, y);
+		return true;
+	}
+	return handled;
 }
 
 void

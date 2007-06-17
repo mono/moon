@@ -79,18 +79,20 @@ Control::inside_object (Surface *s, double x, double y)
 		return false;
 }
 
-void 
+bool
 Control::handle_motion (Surface *s, int state, double x, double y)
 {
 	if (real_object)
-		real_object->handle_motion (s, state, x, y);
+		return real_object->handle_motion (s, state, x, y);
+	return false;
 }
 
-void 
+bool
 Control::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
 	if (real_object)
-		real_object->handle_button (s, cb, state, x, y);
+		return real_object->handle_button (s, cb, state, x, y);
+	return false;
 }
 
 void 

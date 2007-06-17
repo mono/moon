@@ -1,3 +1,33 @@
+2007-06-17  Miguel de Icaza  <miguel@novell.com>
+
+	The surface rotate and translate controls should both work, and
+	the enter/leave events are now correct.
+	
+	* runtime.cpp (UIElement::handle_motion, handle_button): Change
+	the semantics to better match Silverlight.   Now these methods
+	should check if the mouse is inside their region before calling
+	the callback.
+
+	This is necessary because children of the canvas (and panel) are
+	within the confines of the bounding box, but the canvas can be
+	smaller than that.   The canvas is a container whose boundaries
+	are only used for paiting, children might be outside of these
+	boundaries.
+
+	It is necessary in these cases to pass the events to all the
+	children within the canvas bounding box and for each child to
+	determine if the event was within its range. 
+
+	(inside_object): replaced the default implementation for
+	FrameworkElements with a more performing version: instead of
+	mapping the point and using cairo_in_stroke and in_fill operations
+	on a rectangle with mapped coordinates, we map the coordinates and
+	check against the rectangle.
+
+	(Canvas::getbounds): if we are the topmost canvas, the boundaries
+	are those from the Surface, not the ones that include the maximum
+	extent from the children.   Used to do precise mouse enter/leave. 
+
 2007-06-17  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* media.cpp (MediaElement::OnPropertyChanged): Chain to parent

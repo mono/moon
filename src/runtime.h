@@ -674,17 +674,20 @@ class UIElement : public Visual {
 	//
 	// handle_motion:
 	//   handles an mouse motion event, and dispatches it to anyone that
-	//   might want it
+	//   might want it.   Returns true if the event was within this UIElement
+	//   boundaries.
 	//
-	virtual void handle_motion (Surface *s, int state, double x, double y);
+	virtual bool handle_motion (Surface *s, int state, double x, double y);
 
 	//
 	// handle_button:
 	//   handles the button press or button release events and dispatches
 	//   it to all the objects that might be interested in it (nested
-	//   objects)
+	//   objects).
 	//
-	virtual void handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	//   Returns true if the button click was handled. 
+	//
+	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	
 	//
 	// enter:
@@ -808,8 +811,8 @@ class Canvas : public Panel {
 	virtual void getbounds ();
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
-	virtual void handle_motion (Surface *s, int state, double x, double y);
-	virtual void handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual bool handle_motion (Surface *s, int state, double x, double y);
+	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	virtual void leave (Surface *s);
 	
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
@@ -837,8 +840,8 @@ class Control : public FrameworkElement {
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
 	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);
-	virtual void handle_motion (Surface *s, int state, double x, double y);
-	virtual void handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual bool handle_motion (Surface *s, int state, double x, double y);
+	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	virtual void enter (Surface *s, int state, double x, double y);
 	virtual void leave (Surface *s);
 
