@@ -1,0 +1,21 @@
+<html>
+
+<head>
+	<title>Embedded Sample!</title>
+</head>
+
+<body>
+
+	<script type="text/xaml" id="xamlContent">
+		<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+			<TextBlock Canvas.Left="25"	Canvas.Top="10" FontSize="20" Text="Embedded Sample!" />
+		</Canvas>
+	</script>
+
+	<object id="moonControl" width="300" height="60" type="application/ag-plugin">
+		<param name="background" value="Silver" />
+		<param name="source" value="#xamlContent" />
+	</object>
+
+</body>
+</html>
