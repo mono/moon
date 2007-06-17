@@ -55,7 +55,6 @@ class X {
 		silver.Attach (canvas);
 
 		DependencyObject anim = d.FindName ("animation");
-		Console.WriteLine ("Find Object: {0}", anim);
 		if (anim != null && anim is Storyboard){
 			msg.Text = "Hold the button down to pause the animation";
 			canvas.MouseLeftButtonDown += delegate {
@@ -68,6 +67,42 @@ class X {
 			};
 		}  else
 			msg.Text = "";
+
+		Brush enter_fill = new SolidColorBrush (Color.FromRgb (0, 255, 0));
+		Brush leave_fill = new SolidColorBrush (Color.FromRgb (30, 90, 90)); // r.Fill;
+
+		Canvas caa = d.FindName ("canvas") as Canvas;
+		if (caa != null){
+			caa.MouseEnter += delegate {
+				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
+				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
+				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
+				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
+				caa.Background = new SolidColorBrush (Color.FromRgb (128, 0, 255));
+			};
+			caa.MouseLeave += delegate {
+				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
+				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
+				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
+				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
+				caa.Background = leave_fill;
+			};
+		}
+		
+		Shape obj = d.FindName ("xform") as Shape;
+		Console.WriteLine ("Find Object xform: {0}", obj);
+		if(obj != null){
+			
+			obj.MouseEnter += delegate {
+				Console.WriteLine ("OB Enter");
+				obj.Fill = enter_fill;
+			};
+
+			obj.MouseLeave += delegate {
+				Console.WriteLine ("OB Leave");
+				obj.Fill = leave_fill;
+			};
+		}
 	}
 
 	static void OnWindowDelete (object o, DeleteEventArgs args)
