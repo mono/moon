@@ -850,7 +850,6 @@ geometry_from_str (char *str)
 		switch (*data) {
 		case 'm':
 			relative = true;
-			break;
 		case 'M':
 			data++;
 
@@ -1017,6 +1016,47 @@ geometry_from_str (char *str)
 			cp.y = cp2.y;
 			break;
 		}
+		case 'a':
+			relative = true;
+		case 'A':
+		{
+			data++;
+
+			get_point (&cp1, &data);
+			//	if (relative) make_relative (&cp, &cp1);
+
+			advance (&data);
+			double angle = strtod (data, &data);
+
+			advance (&data);
+			int is_large = strtol (data, &data, 10);
+
+			advance (&data);
+			int sweep = strtol (data, &data, 10);
+
+			advance (&data);
+			get_point (&cp2, &data);
+			if (relative) make_relative (&cp, &cp2);
+
+			ArcSegment *arc = new ArcSegment ();
+			arc->SetValue (ArcSegment::SizeProperty, cp1);
+			arc->SetValue (ArcSegment::RotationAngleProperty, angle);
+			arc->SetValue (ArcSegment::IsLargeArcProperty, (bool) is_large);
+			arc->SetValue (ArcSegment::SweepDirectionProperty, sweep);
+			arc->SetValue (ArcSegment::PointProperty, cp2);
+
+			psc->Add (arc);
+					
+			cp.x = cp2.x;
+			cp.y = cp2.y;
+			break;
+		}
+		case 'z':
+		case 'Z':
+			data++;
+
+			path_figure_set_is_closed (pf, true);
+			break;
 
 		default:
 			data++;
