@@ -71,10 +71,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *ForegroundProperty;
 	static DependencyProperty *TextDecorationsProperty;
 	
-	PangoFontDescription *font;
-	
-	Inline ();
-	~Inline ();
+	Inline () { }
 	virtual Value::Kind GetObjectType () { return Value::INLINE; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -114,8 +111,13 @@ class Run : public Inline {
 public:
 	static DependencyProperty *TextProperty;
 	
-	Run () { }
+	PangoFontDescription *font;
+	PangoLayout *layout;
+	
+	Run ();
+	~Run ();
 	virtual Value::Kind GetObjectType () { return Value::RUN; };
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 Run *run_new (void);

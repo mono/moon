@@ -259,13 +259,15 @@ Shape::inside_object (Surface *s, double x, double y)
 void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::SHAPE){
-		FullInvalidate (FALSE);
+	if (prop->type == Value::SHAPE) {
+		FullInvalidate (false);
 		return;
 	}
+	
 	FrameworkElement::OnPropertyChanged (prop);
-
-	if ((prop == UIElement::RenderTransformOriginProperty) || (prop == UIElement::RenderTransformProperty)) {
+	
+	if ((prop == UIElement::RenderTransformOriginProperty) ||
+	    (prop == UIElement::RenderTransformProperty)) {
 		update_xform ();
 	}
 }
@@ -471,10 +473,11 @@ Rectangle::getxformorigin ()
 void
 Rectangle::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::RECTANGLE){
-		FullInvalidate (FALSE);
+	if (prop->type == Value::RECTANGLE) {
+		FullInvalidate (false);
 		return;
 	}
+	
 	Shape::OnPropertyChanged (prop);
 }
 
@@ -538,10 +541,11 @@ Line::getxformorigin ()
 void
 Line::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::LINE){
-		FullInvalidate (FALSE);
+	if (prop->type == Value::LINE) {
+		FullInvalidate (false);
 		return;
 	}
+	
 	Shape::OnPropertyChanged (prop);
 }
 
@@ -634,10 +638,11 @@ Polygon::Draw (Surface *s)
 void
 Polygon::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::POLYGON){
-		FullInvalidate (FALSE);
+	if (prop->type == Value::POLYGON) {
+		FullInvalidate (false);
 		return;
 	}
+	
 	Shape::OnPropertyChanged (prop);
 }
 
@@ -711,10 +716,11 @@ Polyline::Draw (Surface *s)
 void
 Polyline::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::POLYLINE){
-		FullInvalidate (FALSE);
+	if (prop->type == Value::POLYLINE) {
+		FullInvalidate (false);
 		return;
 	}
+	
 	Shape::OnPropertyChanged (prop);
 }
 
@@ -790,10 +796,11 @@ Path::CanFill ()
 void
 Path::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::PATH){
-		FullInvalidate (FALSE);
+	if (prop->type == Value::PATH) {
+		FullInvalidate (false);
 		return;
 	}
+	
 	Shape::OnPropertyChanged (prop);
 }
 

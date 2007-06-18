@@ -1,3 +1,10 @@
+2007-06-18  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* text.cpp|h: Runs now cache their own PangoFontDescription and
+	PangoLayouts as an optimzation (seems to be very slight for simple
+	us-ascii text, but might help enormously for more complex
+	languages). Also added some FIXME thoughts.
+
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
 	* downloader.cpp: Add missing downloader_notify_finished.
