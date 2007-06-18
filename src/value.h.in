@@ -24,7 +24,7 @@ class Surface;
 /*DO_FWD_DECLS*/
 
 #define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
-#define checked_get_subclass(kind, castas)  g_return_val_if_fail (Type::Find((kind))->IsSubclassOf(k) || Type::Find(k)->IsSubclassOf((kind)), NULL); return (castas*)u.dependency_object;
+#define checked_get_subclass(kind, castas)  if (u.dependency_object == NULL) return NULL; g_return_val_if_fail (Type::Find((kind))->IsSubclassOf(k) || Type::Find(k)->IsSubclassOf((kind)), NULL); return (castas*)u.dependency_object;
 
 struct Value {
 public:
@@ -49,18 +49,17 @@ public:
 
 /*DO_KINDS*/
 
-		LASTTYPE
-// END_MANAGED_MAPPING
-		, // <- Don't move the comma anywhere
+		LASTTYPE,
 
 /*
 	Our nullable support:
 	- Set the VALUE_ISNULL on Value.k to mark a value as null
 	- Register a property with type PropertyType | VALUE_NULLTYPE to mark a property type as nullable.
 */
-		VALUE_NULLTYPE = 0x80000000,
-		VALUE_ISNULL   = 0x40000000,
+		VALUE_NULLTYPE = 0x40000000,
+		VALUE_ISNULL   = 0x20000000,
 		VALUE_TYPEMASK = ~(VALUE_NULLTYPE | VALUE_ISNULL)
+// END_MANAGED_MAPPING
 	};
 
 	void Init ();

@@ -1,3 +1,10 @@
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* value.h.in: Make checked_get_subclass handle null values. Include the
+	Kind::*Null* values in the C# Kind.cs, and change their values to fit
+	in a signed int.
+	* value.h: Updated.
+
 2007-06-18  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (Canvas::render):  Cope with rounding from floats to
