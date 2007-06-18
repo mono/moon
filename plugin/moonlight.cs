@@ -61,10 +61,11 @@ namespace Moonlight {
 		{
 			IntPtr p = _dependency_object_get_name (obj);
 			
-			if (p == IntPtr.Zero)
+			if (p == IntPtr.Zero){
+				Console.WriteLine ("Got a null");
 				return null;
-
-			return Marshal.PtrToStringAnsi (obj);
+			}
+			return Marshal.PtrToStringAuto (p);
 		}
 		
                 // [DONE] 1. Load XAML file 
