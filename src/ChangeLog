@@ -1,5 +1,10 @@
 2007-06-17  Miguel de Icaza  <miguel@novell.com>
 
+	* brush.cpp (brush_init): Create a BRUSH property called
+	"FrameChange", it is internal and the sole use of it is so that
+	upper layers that care about brush changes act on it by updating
+	their elements.
+
 	* runtime.cpp (UIElement::OnSubPropertyChanged): Changes on
 	brushes only trigger an invalidate, there is no need to recompute
 	bounds. 

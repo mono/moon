@@ -999,6 +999,9 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 //
 
 DependencyProperty *VideoBrush::SourceNameProperty;
+DependencyProperty *Brush::FrameChangedProperty;
+
+// This is really internal, used to just propagate a change of type "Brush"
 
 static gboolean
 advance_frame (void *user_data)
@@ -1006,10 +1009,8 @@ advance_frame (void *user_data)
 	VideoBrush *brush = (VideoBrush *) user_data;
 	
 	if (brush->mplayer->AdvanceFrame ()) {
-		// unfortunately we can't invalidate ourselves, we
-		// have to notify our attachees of a change... this is
-		// kind of a hack.
-		brush->OnPropertyChanged (MediaElement::PositionProperty);
+		printf ("Advancing frame\n");
+		brush->OnPropertyChanged (Brush::FrameChangedProperty);
 	}
 	
 	return true;
@@ -1113,6 +1114,9 @@ brush_init (void)
 	Brush::RelativeTransformProperty = DependencyObject::Register (Value::BRUSH, "RelativeTransform", Value::TRANSFORMGROUP);
 	Brush::TransformProperty = DependencyObject::Register (Value::BRUSH, "Transform", Value::TRANSFORMGROUP);
 
+	// Only in Moonlight, not public.
+	Brush::FrameChangedProperty = DependencyObject::Register (Value::BRUSH, "FrameChange", new Value(0)); 
+
 	/* SolidColorBrush fields */
 	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00FFFFFF)));
 
@@ -1142,7 +1146,6 @@ brush_init (void)
 
 	/* VideoBrush */
 	VideoBrush::SourceNameProperty = DependencyObject::Register (Value::VIDEOBRUSH, "SourceName", new Value (""));
-
 
 	/* TileBrush fields */
 	TileBrush::AlignmentXProperty = DependencyObject::Register (Value::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
