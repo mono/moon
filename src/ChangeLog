@@ -1,3 +1,10 @@
+2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp|h: SetupBrush and SetupGradient now returns a boolean that
+	indicates if their use would be visible or not (e.g. opacity > 0.0).
+	* shape.cpp: Don't setup brush for getting bounds (do_op == FALSE). 
+	Don't Fill or Stroke if the brush is invisible (opacity == 0).
+
 2007-06-18  Marek Habersack  <grendello@gmail.com>
 
 	* mplayer.cpp (ALIGN): make sure the ALIGN macro is correct on 64 bit

@@ -111,10 +111,11 @@ Brush::GetTotalOpacity (UIElement *uielement)
 	return opacity;
 }
 
-void
+bool
 Brush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	g_warning ("Brush:SetupBrush has been called. The derived class should have overridden it.");
+	return FALSE;
 }
 
 void
@@ -135,7 +136,7 @@ Brush::OnPropertyChanged (DependencyProperty *prop)
 
 DependencyProperty* SolidColorBrush::ColorProperty;
 
-void
+bool
 SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 {
 	Color *color = solid_color_brush_get_color (this);
@@ -146,6 +147,7 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 	cairo_set_source_rgba (target, color->r, color->g, color->b, alpha);
 
 	// [Relative]Transform do not apply to solid color brush
+	return (alpha > 0.0);
 }
 
 void 
@@ -482,7 +484,7 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
-void
+bool
 GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 {
 	GradientStopCollection *children = GetValue (GradientBrush::GradientStopsProperty)->AsGradientStopCollection ();
@@ -501,6 +503,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 		double alpha = (opacity < 1.0) ? color->a * opacity: color->a;
 		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
 	}
+	return (opacity > 0.0);
 }
 
 //
@@ -542,7 +545,7 @@ linear_gradient_brush_set_start_point (LinearGradientBrush *brush, Point *point)
 	brush->SetValue (LinearGradientBrush::StartPointProperty, Value (*point));
 }
 
-void
+bool
 LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	double w = framework_element_get_width ((FrameworkElement*)uielement);
@@ -566,10 +569,12 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		cairo_pattern_set_matrix (pattern, &matrix);
 	}
 
-	GradientBrush::SetupGradient (pattern, uielement);
+	bool visible = GradientBrush::SetupGradient (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
+
+	return visible;
 }
 
 void 
@@ -652,7 +657,7 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 	brush->SetValue (RadialGradientBrush::RadiusYProperty, Value (radiusY));
 }
 
-void
+bool
 RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
@@ -684,10 +689,12 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
-	GradientBrush::SetupGradient (pattern, uielement);
+	bool visible = GradientBrush::SetupGradient (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
+
+	return visible;
 }
 
 //
@@ -958,14 +965,14 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 	}
 }
 
-void
+bool
 ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	cairo_surface_t *surface = image->GetSurface ();
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return;
+		return TRUE;
 	}
 
 // MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
@@ -999,6 +1006,8 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
+
+	return (opacity > 0.0);
 }
 
 //
@@ -1036,7 +1045,7 @@ VideoBrush::~VideoBrush ()
 	delete mplayer;
 }
 
-void
+bool
 VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	cairo_surface_t *surface = mplayer->GetSurface ();
@@ -1049,7 +1058,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return;
+		return TRUE;
 	}
 	
 	if (uielement) {
@@ -1074,6 +1083,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
 
+	return (opacity > 0.0);
 }
 
 void
