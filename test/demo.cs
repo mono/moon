@@ -75,15 +75,9 @@ class X {
 		if (caa != null){
 			caa.MouseEnter += delegate {
 				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
-				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
-				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
-				Console.WriteLine ("DEMOCS: CANVAS ENTERING");
 				caa.Background = new SolidColorBrush (Color.FromRgb (128, 0, 255));
 			};
 			caa.MouseLeave += delegate {
-				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
-				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
-				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
 				Console.WriteLine ("DEMOCS: CANVAS LEAVING");
 				caa.Background = leave_fill;
 			};
@@ -102,6 +96,21 @@ class X {
 				Console.WriteLine ("OB Leave");
 				obj.Fill = leave_fill;
 			};
+		}
+
+		if (obj != null && caa != null){
+			int i  = 0;
+			obj.MouseLeftButtonDown += delegate {
+				Console.WriteLine ("---> rect click");
+				i++;
+			};
+
+			caa.MouseLeftButtonDown += delegate {
+				Console.WriteLine ("---> canvas click");
+				i++;
+			};
+		} else {
+			Console.WriteLine ("No tc/tr");
 		}
 	}
 

@@ -1,4 +1,4 @@
-SUBDIRS = src plugin
+SUBDIRS = src gtk plugin 
 
 # custom install rule
 install-plugin:

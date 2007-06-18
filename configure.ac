@@ -134,6 +134,8 @@ AC_SUBST(PLUGIN_LIBS)
 AC_OUTPUT([
 Makefile
 src/Makefile
+gtk/Makefile
+gtk/gtksilver.pc
 plugin/Makefile
 plugin/test/Makefile
 plugin/samples/Makefile
