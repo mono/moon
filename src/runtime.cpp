@@ -1842,7 +1842,16 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 				dob->Detach (property, this);
 		}
 
-		Value *store = value ? new Value (*value) : NULL;
+		//
+		// Don't store a null value, since GetValue will then 
+		// return the default value.
+		//
+		Value *store;
+		if (value == NULL) {
+			store = new Value (property->value_type, true);
+		} else {
+ 			store = new Value (*value);
+		}
 
 		g_hash_table_insert (current_values, property->name, store);
 

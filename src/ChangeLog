@@ -1,3 +1,8 @@
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: Changed DependencyObject::SetValue to never store 
+	a null value in the hashtable.
+
 2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Refactor the pattern creation to allow caching.
