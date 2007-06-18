@@ -46,12 +46,12 @@
 // Downloader
 //
 
-downloader_create_state_func Downloader::create_state;
-downloader_destroy_state_func Downloader::destroy_state;
-downloader_open_func Downloader::open;
-downloader_send_func Downloader::send;
-downloader_abort_func Downloader::abort;
-downloader_get_response_text_func Downloader::get_response_text;
+downloader_create_state_func Downloader::create_state = NULL;
+downloader_destroy_state_func Downloader::destroy_state = NULL;
+downloader_open_func Downloader::open = NULL;
+downloader_send_func Downloader::send = NULL;
+downloader_abort_func Downloader::abort = NULL;
+downloader_get_response_text_func Downloader::get_response_text = NULL;
 
 struct Listener {
 	downloader_event_notify notify;
@@ -278,12 +278,14 @@ downloader_init (void)
 	Downloader::StatusTextProperty = DependencyObject::Register (Value::DOWNLOADER, "StatusText", Value::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
 
-	downloader_set_functions (
-		dummy_downloader_create_state,
-		dummy_downloader_destroy_state,
-		dummy_downloader_open,
-		dummy_downloader_send,
-		dummy_downloader_abort,
-		dummy_downloader_get_response_text);
+	if (Downloader::create_state == NULL && Downloader::destroy_state == NULL && Downloader::open ==  NULL && 
+		Downloader::send == NULL && Downloader::abort == NULL && Downloader::get_response_text == NULL)
+		downloader_set_functions (
+			dummy_downloader_create_state,
+			dummy_downloader_destroy_state,
+			dummy_downloader_open,
+			dummy_downloader_send,
+			dummy_downloader_abort,
+			dummy_downloader_get_response_text);
 }
 

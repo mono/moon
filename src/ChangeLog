@@ -1,5 +1,10 @@
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* downloader.cpp: Only set dummy downloader functions if they
+	aren't already set.
+
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Add a few null checks.
 	* downloader.cpp: Add initial dummy downloader functions to get
 	meaningful messages if the downloader functions aren't initialized.
