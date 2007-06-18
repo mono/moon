@@ -1,5 +1,9 @@
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* media.h|cpp: Add media_base_new.
+
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* value.h.in: Make checked_get_subclass handle null values. Include the
 	Kind::*Null* values in the C# Kind.cs, and change their values to fit
 	in a signed int.

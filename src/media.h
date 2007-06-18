@@ -29,7 +29,7 @@ public:
 	MediaBase () { }
 	virtual Value::Kind GetObjectType () { return Value::MEDIABASE; };
 };
-
+MediaBase *media_base_new ();
 char *media_base_get_source (MediaBase *media);
 void media_base_set_source (MediaBase *media, char *value);
 
