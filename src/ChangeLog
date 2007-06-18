@@ -1,5 +1,9 @@
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (RemoveHandler): more cleanups.
+
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (RemoveHandler): g_free'ing a new'ed c++ object =
 	bad.
 

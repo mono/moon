@@ -2499,13 +2499,16 @@ deleter (gpointer data)
 static void
 free_closure_list (gpointer key, gpointer data, gpointer userdata)
 {
+	GList *l = (GList*)data;
 	g_free (key);
-	g_list_foreach ((GList*)data, (GFunc)deleter, NULL);
+	g_list_foreach (l, (GFunc)deleter, NULL);
+	g_list_free (l);
 }
 
 EventObject::~EventObject ()
 {
 	g_hash_table_foreach (event_hash, free_closure_list, NULL);
+	g_hash_table_destroy (event_hash);
 }
 
 void
@@ -2528,10 +2531,13 @@ EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
 void
 EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer data)
 {
-	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
-
-	if (events == NULL)
+	gpointer key, value;
+	if (!g_hash_table_lookup_extended (event_hash, event_name,
+					   &key, &value)) {
 		return;
+	}
+
+	GList *events = (GList*)value;
 
 	GList *l;
 	for (l = events; l; l = l->next) {
@@ -2548,12 +2554,11 @@ EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer dat
 
 	if (events == NULL) {
 		/* delete the event */
-		gpointer key, value;
-		g_hash_table_lookup_extended (event_hash, event_name, &key, &value);
+		g_hash_table_remove (event_hash, key);
 		g_free (key);
 	}
 	else {
-		g_hash_table_replace (event_hash, event_name, events);
+		g_hash_table_replace (event_hash, key, events);
 	}
 }
 
