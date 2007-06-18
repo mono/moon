@@ -693,12 +693,14 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 		FullInvalidate (true);
 	else if (prop == UIElement::ClipProperty ||
 		 prop == UIElement::OpacityMaskProperty){
+
+		// Maybe this could also be just item_invalidate?
 		FullInvalidate (false);
 	}  else if (prop == UIElement::OpacityProperty ||
 		    prop == UIElement::VisibilityProperty){
 		item_invalidate (this);
 	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)){
-		FullInvalidate (false);
+		item_invalidate (this);
 	} 
 }
 
