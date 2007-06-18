@@ -1,3 +1,8 @@
+2007-06-18  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (getbounds): use the framework width/height not the
+	pixbuf image size, this shrinks the size of the bounding box.
+
 2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp|h: SetupBrush and SetupGradient now returns a boolean that
