@@ -1,3 +1,15 @@
+2007-06-18  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (SetValue): This looks painful, now
+	DependencyObjects are stored inside the hash but they might
+	contain a NULL.   This seems bad.
+	
+	(Value): Do not delete null dependency objects.
+
+	Remove this patch, and try demo.exe, enter/leave/enter, this
+	crashes now, because the leave sets the fill to "null" and the
+	enter then tries to access it
+
 2007-06-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* brush.cpp: Do proper OnPropertyChanged proagation.

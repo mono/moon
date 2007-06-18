@@ -535,7 +535,7 @@ Value::~Value ()
 		delete u.keytime;
 		break;
 	default:
-		if (GetKind () >= DEPENDENCY_OBJECT)
+		if (GetKind () >= DEPENDENCY_OBJECT && u.dependency_object)
 			u.dependency_object->unref ();
 	}
 }
@@ -1678,6 +1678,12 @@ clear_drawing_area (GtkObject *obj, gpointer data)
 	Surface *s = (Surface *) data;
 
 	s->drawing_area = NULL;
+	cairo_destroy (s->cairo_xlib);
+	s->cairo_xlib = NULL;
+	cairo_surface_destroy (s->xlib_surface);
+	g_object_unref (s->pixmap);
+
+	s->cairo = s->cairo_buffer;
 }
 
 void
@@ -1957,10 +1963,12 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 	if (current_value != NULL && current_value->GetKind () >= Value::DEPENDENCY_OBJECT) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
-		current_as_dep->SetParent (NULL);
+		if (current_as_dep)
+			current_as_dep->SetParent (NULL);
 	}
 	if (value != NULL && value->GetKind () >= Value::DEPENDENCY_OBJECT) {
 		DependencyObject *new_as_dep = value->AsDependencyObject ();
+		
 		new_as_dep->SetParent (this);
 	}
 
