@@ -834,8 +834,12 @@ geometry_from_str (char *str)
 	Point cp = Point (0, 0);
 	Point cp1, cp2, cp3;
 
-	PathFigure *pf = new PathFigure ();
-	PathSegmentCollection *psc = new PathSegmentCollection ();
+	PathFigure *pf = NULL;
+	PathSegmentCollection *psc = NULL;
+
+	PathGeometry *pg = new PathGeometry ();
+	PathFigureCollection *pfc = new PathFigureCollection ();
+	pg->SetValue (PathGeometry::FiguresProperty, pfc);
 
 	while (*data) {
 		if (g_ascii_isspace (*data))
@@ -845,15 +849,25 @@ geometry_from_str (char *str)
 
 		switch (*data) {
 		case 'm':
-			// This denotes the start point is based on the previous point
-			// but I have no idea what previous point
+			relative = true;
 			break;
 		case 'M':
 			data++;
 
-			get_point (&cp, &data);
-			pf->SetValue (PathFigure::StartPointProperty, Value (cp));
+			get_point (&cp1, &data);
+			if (relative) make_relative (&cp, &cp1);
 
+			if (pf)
+				pfc->Add (pf);
+
+			pf = new PathFigure ();
+			psc = new PathSegmentCollection ();
+			pf->SetValue (PathFigure::SegmentsProperty, psc);
+
+			pf->SetValue (PathFigure::StartPointProperty, Value (cp1));
+
+			cp.x = cp1.x;
+			cp.y = cp1.y;
 			break;
 
 		case 'l':
@@ -861,8 +875,6 @@ geometry_from_str (char *str)
 		case 'L':
 		{
 			data++;
-
-			Point cp1;
 
 			get_point (&cp1, &data);
 			if (relative)
@@ -1013,16 +1025,9 @@ geometry_from_str (char *str)
 		}
 	}
 
+	if (pf)
+		pfc->Add (pf);
 	
-	pf->SetValue (PathFigure::SegmentsProperty, psc);
-	path_figure_set_is_closed (pf, true);
-
-	PathGeometry *pg = new PathGeometry ();
-	PathFigureCollection *pfc = new PathFigureCollection ();
-	pfc->Add (pf);
-
-	pg->SetValue (PathGeometry::FiguresProperty, pfc);
-
 	return pg;
 }
 

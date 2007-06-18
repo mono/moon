@@ -1,3 +1,8 @@
+2007-06-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We need to create new figures if we get a Move
+	command.
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp: use TimeManager::AddTickCall for the async file
