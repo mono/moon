@@ -55,7 +55,7 @@ namespace Moonlight {
 				CreateElementCallback ce, SetAttributeCallback sa, ref int kind_type);
 
 		[DllImport("moon",EntryPoint="dependency_object_get_name")]
-		internal extern static string _dependency_object_get_name (IntPtr obj);
+		internal extern static IntPtr _dependency_object_get_name (IntPtr obj);
 
 		internal static string dependency_object_get_name (IntPtr obj)
 		{
