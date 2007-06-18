@@ -105,8 +105,6 @@ NPP_WriteReady (NPP instance, NPStream* stream)
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	NPN_DestroyStream (instance, stream, NPRES_DONE);
-
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
 	return plugin->WriteReady (stream);
 }
@@ -118,8 +116,6 @@ NPP_Write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
-
-	NPN_DestroyStream (instance, stream, NPRES_DONE);
 
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
 	return plugin->Write (stream, offset, len, buffer);

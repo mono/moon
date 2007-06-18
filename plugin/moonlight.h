@@ -43,6 +43,8 @@
 #define PLUGIN_DESCRIPTION  "Novell Moonlight is Mono's Free/Open Source implementation of SilverLight"
 #define MIME_TYPES_HANDLED  "application/ag-plugin:xaml:Novell MoonLight"
 
+#define MAX_STREAM_SIZE 8142
+
 #ifdef DEBUG
 #ifdef G_LOG_DOMAIN
 #undef G_LOG_DOMAIN

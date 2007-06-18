@@ -1,3 +1,10 @@
+2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin-glue.cpp: Remove stream destruction from Write and WriteReady, it
+	was preventing browser to call our write function.
+
+	* moonlight.h: MAX_STREAM_SIZE constant added.
+
 2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin.cpp, plugin.h: Add a new StreamNotifyFlags REQUEST, it is used by
