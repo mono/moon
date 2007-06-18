@@ -983,13 +983,20 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 
 	Transform *transform = brush_get_transform (this);
-
-	double x0, y0, x1, y1;
-	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
-
-	double width = fabs (x1 - x0);
-	double height = fabs (y1 - y0);
-
+	
+	double width, height;
+	
+	if (uielement) {
+		uielement->get_size_for_brush (cairo, &width, &height);
+	} else {
+		double x1, y1, x2, y2;
+		
+		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
+		
+		height = fabs (y2 - y1);
+		width = fabs (x2 - x1);
+	}
+	
 	image_brush_set_surface_as_pattern (cairo, surface, width, height, image->GetWidth (), image->GetHeight (), 
 		opacity, stretch, ax, ay, transform);
 }
@@ -1037,7 +1044,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	AlignmentX ax = tile_brush_get_alignment_x (this);
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 	Stretch stretch = tile_brush_get_stretch (this);
-	double opacity, width, height, x1, y1, x2, y2;
+	double opacity, width, height;
 	
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
@@ -1045,11 +1052,18 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		return;
 	}
 	
-	opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
-	cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
-	
-	height = fabs (y2 - y1);
-	width = fabs (x2 - x1);
+	if (uielement) {
+		uielement->get_size_for_brush (cairo, &width, &height);
+		opacity = uielement->GetTotalOpacity ();
+	} else {
+		double x1, y1, x2, y2;
+		
+		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
+		height = fabs (y2 - y1);
+		width = fabs (x2 - x1);
+		
+		opacity = 1.0;
+	}
 	
 	image_brush_set_surface_as_pattern (cairo, surface, width, height,
 					    mplayer->width, mplayer->height,

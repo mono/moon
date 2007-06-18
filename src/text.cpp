@@ -402,6 +402,13 @@ TextBlock::inside_object (Surface *s, double x, double y)
 }
 
 void
+TextBlock::get_size_for_brush (cairo_t *cr, double *width, double *height)
+{
+	*height = (double) this->height;
+	*width = (double) this->width;
+}
+
+void
 TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 {
 	int full_width = 0, full_height = 0;

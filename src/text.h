@@ -149,6 +149,7 @@ public:
 	// Overrides
 	//
 	virtual void render (Surface *s, int x, int y, int width, int height);
+	virtual void get_size_for_brush (cairo_t *cr, double *width, double *height);
 	virtual void getbounds ();
 	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);

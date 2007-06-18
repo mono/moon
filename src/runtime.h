@@ -633,7 +633,12 @@ class UIElement : public Visual {
 	//   exposed is delimited by x, y, width, height
 	//
 	virtual void render (Surface *surface, int x, int y, int width, int height);
-
+	
+	//
+	// get_size_for_brush:
+	//   Gets the size of the area to be painted by a Brush (needed for image/video scaling)
+	virtual void get_size_for_brush (cairo_t *cr, double *width, double *height);
+	
 	// 
 	// getbounds:
 	//   Updates the bounding box for the given item, this uses the parent

@@ -9,12 +9,14 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
 #include <config.h>
-#include <string.h>
-#include <gtk/gtk.h>
-#include <malloc.h>
-#include <glib.h>
 #include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
+#include <math.h>
+
+#include <gtk/gtk.h>
 #define Visual _XVisual
 #include <gdk/gdkx.h>
 #if AGG
@@ -804,6 +806,17 @@ void
 UIElement::render (Surface *s, int x, int y, int width, int height)
 {
 	g_warning ("UIElement:render has been called. The derived class should have overridden it.");
+}
+
+void
+UIElement::get_size_for_brush (cairo_t *cr, double *width, double *height)
+{
+	double x1, y1, x2, y2;
+	
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	
+	*height = fabs (y2 - y1);
+	*width = fabs (x2 - x1);
 }
 
 double
