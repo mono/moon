@@ -220,6 +220,49 @@ downloader_want_events (Downloader *dl, downloader_event_notify event_notify, gp
 	dl->downloader_events = g_slist_append (dl->downloader_events, l);
 }
 
+void 
+dummy_downloader_write (guchar *buf, gsize offset, gsize n, gpointer cb_data)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+
+void
+dummy_downloader_notify_size (int64_t size, gpointer cb_data)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+
+gpointer
+dummy_downloader_create_state (Downloader* dl)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+
+void
+dummy_downloader_destroy_state (gpointer state)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+void
+dummy_downloader_open (char *verb, char *uri, bool async, gpointer state)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+void
+dummy_downloader_send (gpointer state)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+void
+dummy_downloader_abort (gpointer state)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+char*
+dummy_downloader_get_response_text (char *part, gpointer state)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
 DependencyProperty *Downloader::DownloadProgressProperty;
 DependencyProperty *Downloader::ResponseTextProperty;
 DependencyProperty *Downloader::StatusProperty;
@@ -234,4 +277,13 @@ downloader_init (void)
 	Downloader::StatusProperty = DependencyObject::Register (Value::DOWNLOADER, "Status", Value::INT32);
 	Downloader::StatusTextProperty = DependencyObject::Register (Value::DOWNLOADER, "StatusText", Value::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
+
+	downloader_set_functions (
+		dummy_downloader_create_state,
+		dummy_downloader_destroy_state,
+		dummy_downloader_open,
+		dummy_downloader_send,
+		dummy_downloader_abort,
+		dummy_downloader_get_response_text);
 }
+

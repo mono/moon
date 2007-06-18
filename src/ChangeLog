@@ -1,4 +1,10 @@
-2007-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: Add a few null checks.
+	* downloader.cpp: Add initial dummy downloader functions to get
+	meaningful messages if the downloader functions aren't initialized.
+
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 	
 	* typegen.cs: Special case a few things for DependencyObject, 
 	and make a few messages more informative.

@@ -85,13 +85,15 @@ Base::unref ()
 void 
 base_ref (Base *base)
 {
-	base->ref ();
+	if (base != NULL)
+		base->ref ();
 }
  
 void
 base_unref (Base *base)
 {
-	base->unref ();
+	if (base != NULL)
+		base->unref ();
 }
 
 void
@@ -2169,12 +2171,18 @@ DependencyObject::NotifyParentOfPropertyChange (DependencyProperty *property, bo
 Value *
 dependency_object_get_value (DependencyObject *object, DependencyProperty *prop)
 {
+	if (object == NULL)
+		return NULL;
+
 	return object->GetValue (prop);
 }
 
 void
 dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val)
 {
+	if (object == NULL)
+		return;
+
 	object->SetValue (prop, val);
 }
 
@@ -2894,6 +2902,8 @@ runtime_init (void)
 		return;
 	
 	inited = true;
+
+	g_type_init ();
 
 	TimeManager::Instance()->Start();
 
