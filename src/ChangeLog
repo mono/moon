@@ -1,3 +1,9 @@
+2007-06-17  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Implement x:Class, we can now load the Surface demo's
+	XAML file, and it's custom Canvas class (things still don't work
+	though because the custom canvas uses a downloader.)
+
 2007-06-17  Miguel de Icaza  <miguel@novell.com>
 
 	The surface rotate and translate controls should both work, and

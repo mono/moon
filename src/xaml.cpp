@@ -198,6 +198,19 @@ class XNamespace : public XamlNamespace {
 			p->namescope->RegisterName (value, (DependencyObject *) item->item);
 			return;
 		}
+
+		if (!strcmp ("Class", attr)) {
+			delete item->item;
+			item->item = NULL;
+
+			DependencyObject *dob = p->custom_element_callback (value, NULL);
+			if (!dob)
+				parser_error (p, item->element_name, attr,
+						g_strdup_printf ("Unable to resolve c:Class type %s\n", value));
+
+			item->item = dob;
+			return;
+		}
 	}
 };
 
@@ -1150,9 +1163,10 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
-	DependencyObject *dep = (DependencyObject *) item->item;
-
 	for (int i = 0; attr [i]; i += 2) {
+		// Setting attributes like x:Class can change item->item, so we
+		// need to make sure we have an up to date pointer
+		DependencyObject *dep = (DependencyObject *) item->item;
 		char **attr_name = g_strsplit (attr [i], "|", -1);
 
 		if (attr_name [1]) {
@@ -1165,6 +1179,11 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
 
 			g_strfreev (attr_name);
+
+			// Setting custom attributes can cause errors galore
+			if (p->error_args)
+				return;
+
 			continue;
 		}
 

@@ -187,13 +187,13 @@ namespace Moonlight {
 		private IntPtr create_element (string xmlns, string name)
 		{
 			string ns;
+			string type_name;
 			string asm_name;
 			string asm_path;
-			string fullname;
 
-			ParseXmlns (xmlns, out ns, out asm_name);
+			ParseXmlns (xmlns, out type_name, out ns, out asm_name);
 
-			if (ns == null || asm_name == null) {
+			if (asm_name == null) {
 				Console.WriteLine ("unable to parse xmlns string: '{0}'", xmlns);
 				return IntPtr.Zero;
 			}
@@ -212,17 +212,21 @@ namespace Moonlight {
 				return IntPtr.Zero;
 			}
 
-			fullname = String.Concat (ns, ".", name);
-			DependencyObject res = (DependencyObject) clientlib.CreateInstance (fullname);
+			if (type_name != null)
+				name = type_name;
+
+			if (ns != null)
+				name = String.Concat (ns, ".", name);
+
+			DependencyObject res = (DependencyObject) clientlib.CreateInstance (name);
 
 			if (res == null) {
-				Console.WriteLine ("unable to create object instance:  '{0}'", fullname);
+				Console.WriteLine ("unable to create object instance:  '{0}'", name);
 				return IntPtr.Zero;
 			}
 
-			MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
-				GetMethod ("GetNativeObject", BindingFlags.Static | BindingFlags.NonPublic);
-			
+			MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").GetMethod ("GetNativeObject",
+					BindingFlags.Static | BindingFlags.NonPublic);
 			IntPtr p = (IntPtr) m.Invoke (null, new object [] { res });
 			return p;
 		}
@@ -260,8 +264,9 @@ namespace Moonlight {
 			pd.SetValue (target, pd.Converter.ConvertFrom (value));
 		}
 
-		internal static void ParseXmlns (string xmlns, out string ns, out string asm)
+		internal static void ParseXmlns (string xmlns, out string type_name, out string ns, out string asm)
 		{
+			type_name = null;
 			ns = null;
 			asm = null;
 
@@ -269,10 +274,13 @@ namespace Moonlight {
 			foreach (string decl in decls) {
 				if (decl.StartsWith ("clr-namespace:")) {
 					ns = decl.Substring (14, decl.Length - 14);
+					continue;
 				}
 				if (decl.StartsWith ("assembly=")) {
 					asm = decl.Substring (9, decl.Length - 9);
+					continue;
 				}
+				type_name = decl;
 			}
 		}
 	}

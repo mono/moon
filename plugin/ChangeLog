@@ -1,3 +1,8 @@
+007-06-17  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight.cs: Parse type names out of xmns strings. x:Class uses
+	this slightly different format.
+
 2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin.cpp, plugin.h: Add support for "#" (references) in source urls, it
@@ -37,6 +42,7 @@
 	* downloader.cpp (p_downloader_send): Some tidbits for the plugin
 	download, not complete.
 
+>>>>>>> .r79944
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight.cs: Set custom attributes on xaml elements.
