@@ -1,3 +1,7 @@
+2007-06-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Implement Path Geometry parsing.
+
 2007-06-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* brush.cpp (VideoBrush::SetupBrush): Get a reference to the

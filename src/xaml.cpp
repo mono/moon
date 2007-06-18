@@ -795,6 +795,244 @@ matrix_value_from_str (const char *str)
 	return new Value (&matrix);
 }
 
+
+void
+advance (char **data)
+{
+	char *d = *data;
+
+	while (!g_ascii_isdigit (*d) && *d != '.' && *d != '-')
+		d++;
+	*data = d;
+}
+
+void
+get_point (Point *p, char **data)
+{
+	char *d = *data;
+
+	p->x = strtod (d, &d);
+	advance (&d);
+	p->y = strtod (d, &d);
+
+	*data = d;
+}
+
+void
+make_relative (const Point *cp, Point *mv)
+{
+	mv->x += cp->x;
+	mv->y += cp->y;
+}
+
+
+Geometry *
+geometry_from_str (char *str)
+{
+	char *data = str;
+	int s; // FOr starting expression markers
+	Point cp = Point (0, 0);
+	Point cp1, cp2, cp3;
+
+	PathFigure *pf = new PathFigure ();
+	PathSegmentCollection *psc = new PathSegmentCollection ();
+
+	while (*data) {
+		if (g_ascii_isspace (*data))
+			data++;
+
+		bool relative = false;
+
+		switch (*data) {
+		case 'm':
+			// This denotes the start point is based on the previous point
+			// but I have no idea what previous point
+			break;
+		case 'M':
+			data++;
+
+			get_point (&cp, &data);
+			pf->SetValue (PathFigure::StartPointProperty, Value (cp));
+
+			break;
+
+		case 'l':
+			relative = true;
+		case 'L':
+		{
+			data++;
+
+			Point cp1;
+
+			get_point (&cp1, &data);
+			if (relative)
+				make_relative (&cp, &cp1);
+
+			LineSegment* ls = new LineSegment ();
+			ls->SetValue (LineSegment::PointProperty, Value (cp1));
+			psc->Add (ls);
+
+			cp.x = cp1.x;
+			cp.y = cp1.y;
+			break;
+		}
+		case 'h':
+			relative = true;
+		case 'H':
+		{
+			data++;
+
+			double x = strtod (data, &data);
+
+			if (relative)
+				x += cp.x;
+			cp = Point (x, cp.y);
+
+			LineSegment* ls = new LineSegment ();
+			ls->SetValue (LineSegment::PointProperty, Value (cp));
+			psc->Add (ls);
+			break;
+		}		
+		case 'v':
+			relative = true;
+		case 'V':
+		{
+			data++;
+
+			double y = strtod (data, &data);
+
+			if (relative)
+				y += cp.y;
+			cp = Point (cp.x, y);
+
+			LineSegment* ls = new LineSegment ();
+			ls->SetValue (LineSegment::PointProperty, Value (cp));
+			psc->Add (ls);
+			break;
+		}
+		case 'c':
+			relative = true;
+		case 'C':
+		{
+			data++;
+
+			get_point (&cp1, &data);
+			if (relative) make_relative (&cp, &cp1);
+			
+			advance (&data);
+			get_point (&cp2, &data);
+			if (relative) make_relative (&cp, &cp2);
+
+			advance (&data);
+			get_point (&cp3, &data);
+			if (relative) make_relative (&cp, &cp3);
+
+			BezierSegment *bs = new BezierSegment ();
+			bs->SetValue (BezierSegment::Point1Property, Value (cp1));
+			bs->SetValue (BezierSegment::Point2Property, Value (cp2));
+			bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+
+			psc->Add (bs);
+
+			cp.x = cp3.x;
+			cp.y = cp3.y;
+			break;
+		}
+		case 'q':
+			relative = true;
+		case 'Q':
+		{
+			data++;
+
+			get_point (&cp1, &data);
+			if (relative) make_relative (&cp, &cp1);
+
+			advance (&data);
+			get_point (&cp2, &data);
+			if (relative) make_relative (&cp, &cp2);
+
+			QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
+			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
+			qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
+
+			psc->Add (qbs);
+
+			cp.x = cp2.x;
+			cp.y = cp2.y;
+			break;
+		}
+		case 's':
+			relative = true;
+		case 'S':
+		{
+			data++;
+
+			get_point (&cp2, &data);
+			if (relative) make_relative (&cp, &cp2);
+
+			advance (&data);
+
+			get_point (&cp3, &data);
+			if (relative) make_relative (&cp, &cp3);
+
+			BezierSegment *bs = new BezierSegment ();
+			bs->SetValue (BezierSegment::Point1Property, Value (cp));
+			bs->SetValue (BezierSegment::Point2Property, Value (cp2));
+			bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+
+			psc->Add (bs);
+
+			cp.x = cp3.x;
+			cp.y = cp3.y;
+			break;
+		}
+		// The docs here confuse me, this is obviously wrong, since it is
+		// exactly the same as 'q'
+		case 't':
+			relative = true;
+		case 'T':
+		{
+			data++;
+
+			get_point (&cp1, &data);
+			if (relative) make_relative (&cp, &cp1);
+
+			advance (&data);
+
+			get_point (&cp2, &data);
+			if (relative) make_relative (&cp, &cp2);
+
+			QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
+			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
+			qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
+
+			psc->Add (qbs);
+
+			cp.x = cp2.x;
+			cp.y = cp2.y;
+			break;
+		}
+
+		default:
+			data++;
+			break;
+			
+		}
+	}
+
+	
+	pf->SetValue (PathFigure::SegmentsProperty, psc);
+	path_figure_set_is_closed (pf, true);
+
+	PathGeometry *pg = new PathGeometry ();
+	PathFigureCollection *pfc = new PathFigureCollection ();
+	pfc->Add (pf);
+
+	pg->SetValue (PathGeometry::FiguresProperty, pfc);
+
+	return pg;
+}
+
 ///
 /// ENUMS
 ///
@@ -1121,7 +1359,7 @@ panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInst
 void
 dependency_object_missed_property (XamlElementInstance *item, XamlElementInstance *prop, XamlElementInstance *value, char **prop_name)
 {
-
+			
 }
 
 void
@@ -1289,6 +1527,13 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				break;
 			case Value::MATRIX:
 				dep->SetValue (prop, matrix_value_from_str (attr [i + 1]));
+				break;
+			case Value::GEOMETRY:
+			{
+				char *data = g_strdup (attr [i + 1]);
+				dep->SetValue (prop, geometry_from_str (data));
+				g_free (data);
+			}
 				break;
 			default:
 #ifdef DEBUG_XAML
