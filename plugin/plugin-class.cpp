@@ -321,7 +321,11 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 		return true;
 	} 
 
-	//"maxFrameRate"
+	// not implemented yet, just return 0.
+	if (name == NPID ("maxFrameRate")) {
+		INT32_TO_NPVARIANT (0, *result);
+		return true;
+	}
 
 	if (name == NPID ("version")) {
 		StringToNPVariant (PLUGIN_VERSION, result);
@@ -359,7 +363,10 @@ PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const 
 		return true;
 	} 
 
-	// "maxFrameRate"
+	// not implemented yet.
+	if (name == NPID ("maxFrameRate")) {
+		return true;
+	}
 
 	// Cant be set after initialization so return true
 	if (name == NPID ("windowless")) {
