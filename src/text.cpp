@@ -536,11 +536,11 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 					if ((brush = inline_get_foreground (item)))
 						brush->SetupBrush (s->cairo, this);
 					
-					pango_cairo_show_layout (s->cairo, layout);
+					pango_cairo_show_layout (s->cairo, run->layout);
 				} else
-					pango_cairo_layout_path (s->cairo, layout);
+					pango_cairo_layout_path (s->cairo, run->layout);
 				
-				pango_layout_get_pixel_size (layout, &width, &height);
+				pango_layout_get_pixel_size (run->layout, &width, &height);
 				
 				newline == newline || strchr (text, '\n');
 				if (height > line_height || newline) {
