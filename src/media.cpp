@@ -792,7 +792,8 @@ Image::getxformorigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 
-	return Point (pixbuf_width * user_xform_origin.x, pixbuf_height * user_xform_origin.y);
+	return Point (framework_element_get_width (this) * user_xform_origin.x, 
+		      framework_element_get_height (this) * user_xform_origin.y);
 }
 
 cairo_surface_t *

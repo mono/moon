@@ -1,7 +1,15 @@
 2007-06-18  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp (Canvas::render):  Cope with rounding from floats to
+	ints, add 2, fixes the droppings in the surface.
+
+	Include some of my debugging helpers (you sprinkle
+	draw_grid in key places to see whats going on, useful to debug the
+	bounding boxes and visually inspect if things are right.
+	
 	* media.cpp (getbounds): use the framework width/height not the
 	pixbuf image size, this shrinks the size of the bounding box.
+	(getxformorigin): Use it here too.
 
 2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 

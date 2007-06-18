@@ -605,7 +605,8 @@ item_invalidate (UIElement *item)
 	
 	if (s == NULL)
 		return;
-	
+
+//#define DEBUG_INVALIDATE 1
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		item, Type::Find(item->GetObjectType())->name,
@@ -1074,6 +1075,13 @@ Canvas::update_xform ()
 	}
 }
 
+void space (int n)
+{
+	for (int i = 0; i < n; i++)
+		putchar (' ');
+}
+static int levelb = 0;
+
 void
 Canvas::getbounds ()
 {
@@ -1081,10 +1089,17 @@ Canvas::getbounds ()
 	bool first = true;
 	GList *il;
 
+	//levelb += 4;
+	//space (levelb);
+	//printf ("Canvas: Enter GetBounds\n");
 	for (il = children->list; il != NULL; il = il->next){
 		UIElement *item = (UIElement *) il->data;
 
 		item->getbounds ();
+
+		//space (levelb + 4);
+		//printf ("Item (%s) bounds %g %g %g %g\n", 
+		//dependency_object_get_name (item),item->x1, item->y1, item->x2, item->y2);
 
 		//
 		// The topmost canvas does not use the children
@@ -1121,6 +1136,9 @@ Canvas::getbounds ()
 		if (first)
 			x1 = y1 = x2 = y2 = 0;
 	}
+	//space (levelb);
+	//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1,x2, y2);
+	//levelb -= 4;
 }
 
 bool
@@ -1238,6 +1256,24 @@ control_new (void)
 	return new Control ();
 }
 
+void
+draw_grid (cairo_t *cairo)
+{
+	cairo_set_line_width (cairo, 1.0);
+	cairo_set_source_rgba (cairo, 0, 1, 0, 1.0);
+	for (int col = 100; col < 1024; col += 100){
+		cairo_move_to (cairo, col, 0);
+		cairo_line_to (cairo, col, 1024);
+		cairo_stroke (cairo);
+	}
+
+	for (int row = 0; row < 1024; row += 100){
+		cairo_move_to (cairo, 0, row);
+		cairo_line_to (cairo, 1024, row);
+		cairo_stroke (cairo);
+	}
+}
+
 void 
 surface_clear (Surface *s, int x, int y, int width, int height)
 {
@@ -1251,6 +1287,8 @@ surface_clear (Surface *s, int x, int y, int width, int height)
 	cairo_set_source_rgba (s->cairo, 0.7, 0.7, 0.7, 1.0);
 	cairo_rectangle (s->cairo, x, y, width, height);
 	cairo_fill (s->cairo);
+
+	//draw_grid (s->cairo);
 }
 	
 static void
@@ -1449,11 +1487,6 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 }
 
 static int level = 0;
-static void space (int n)
-{
-	for (int i = 0; i < n; i++)
-		putchar (' ');
-}
 
 void
 Canvas::render (Surface *s, int x, int y, int width, int height)
@@ -1499,12 +1532,13 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 			Rect inter = render_rect.Intersection(item_rect);
 			cairo_save (s->cairo);
 
+			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
 			// at the very least we need to clip based on the expose area.
 			// there's also a UIElement::ClipProperty
- 			cairo_rectangle (s->cairo, inter.x, inter.y, inter.w, inter.h);
+ 			cairo_rectangle (s->cairo, inter.x, inter.y, inter.w + 2, inter.h + 2);
  			cairo_clip (s->cairo);
 
-			item->render (s, (int)inter.x, (int)inter.y, (int)inter.w, (int)inter.h);
+			item->render (s, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
 
 			cairo_restore (s->cairo);
 		}
@@ -1531,6 +1565,8 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		events->Emit ("Loaded");
 	}
 	level -= 4;
+	//draw_grid (s->cairo);
+		
 }
 
 Canvas *
