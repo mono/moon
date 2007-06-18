@@ -1,3 +1,8 @@
+
+Mon Jun 18 17:53:03 CEST 2007 Paolo Molaro <lupus@ximian.com>
+
+	* runtime.cpp: use motion hints for smoother motion event handling.
+
 2007-06-18  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp|h: Runs now cache their own PangoFontDescription and

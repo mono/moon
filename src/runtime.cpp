@@ -1352,11 +1352,20 @@ static gboolean
 motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
+	GdkModifierType state;
+	int x, y;
 
 	if (!s->cb_motion)
 		return FALSE;
 
-	s->toplevel->handle_motion (s, event->state, event->x, event->y);
+	if (event->is_hint) {
+		gdk_window_get_pointer (event->window, &x, &y, &state);
+	} else {
+		x = (int)event->x;
+		y = (int)event->y;
+		state = (GdkModifierType)event->state;
+	}
+	s->toplevel->handle_motion (s, state, x, y);
 	return TRUE;
 }
 
@@ -1562,6 +1571,7 @@ surface_new (int width, int height)
 			    
 	gtk_widget_add_events (s->drawing_area, 
 			       GDK_POINTER_MOTION_MASK |
+			       GDK_POINTER_MOTION_HINT_MASK |
 			       GDK_KEY_PRESS_MASK |
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
