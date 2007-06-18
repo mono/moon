@@ -46,7 +46,8 @@ TimeManager* TimeManager::_instance = NULL;
 TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
-    current_timeout (60)  /* something suitably small */
+    current_timeout (60),  /* something suitably small */
+    render_cb (NULL)
 {
 }
 
@@ -127,6 +128,8 @@ TimeManager::Tick ()
 #if TIME_TICK
 	ENDTIMER (tick, "tick");
 #endif
+
+	Emit ("render");
 }
 
 void

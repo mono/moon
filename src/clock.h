@@ -132,7 +132,7 @@ struct RepeatBehavior {
 // the gtk_timeout and drives all Clock objects
 class Clock;
 
-class TimeManager {
+class TimeManager : public EventObject {
  public:
 	void Start ();
 	void Shutdown ();
@@ -166,6 +166,9 @@ class TimeManager {
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
 	int current_timeout;
+
+	void (*render_cb)(gpointer);
+	gpointer render_cb_data;
 };
 
 

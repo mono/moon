@@ -1,3 +1,18 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (unrealized_callback): remove the render handler.
+	(realized_callback): attach the render handler.
+	(render_surface): a very simple render handler.  We just force gtk
+	to process all pending updates.
+
+	* clock.cpp (TimeManager::Tick): as a temporary hack, have
+	TimeManager emit the "render" event after every animation tick.
+	We should add tuning to this method to achieve usable framerates
+	without killing the cpu.
+
+	* clock.h: make TimeManager subclass from EventObject so we can
+	hook up to events on it.
+
 2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: getbounds gets bad results if stroke (or fill) isn't 

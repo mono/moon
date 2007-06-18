@@ -5,7 +5,7 @@
  *   Miguel de Icaza (miguel@novell.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
- *
+n *
  * See the LICENSE file included with the distribution for details.
  * 
  */
@@ -42,7 +42,7 @@ struct _SurfacePrivate {
 };
 #endif
 
-//#define DEBUG_INVALIDATE
+//#define DEBUG_INVALIDATE 1
 #define DEBUG_REFCNT 0
 
 #define CAIRO_CLIP 0
@@ -610,7 +610,6 @@ item_invalidate (UIElement *item)
 	if (s == NULL)
 		return;
 
-//#define DEBUG_INVALIDATE 1
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		item, Type::Find(item->GetObjectType())->name,
@@ -1341,6 +1340,13 @@ create_xlib (Surface *s, GtkWidget *widget)
 	s->cairo_xlib = cairo_create (s->xlib_surface);
 }
 
+static void
+render_surface (gpointer data)
+{
+	Surface *s = (Surface*)data;
+	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
+}
+
 gboolean
 realized_callback (GtkWidget *widget, gpointer data)
 {
@@ -1350,6 +1356,8 @@ realized_callback (GtkWidget *widget, gpointer data)
 	create_xlib (s, widget);
 
 	s->cairo = s->cairo_xlib;
+
+	TimeManager::Instance()->AddHandler ("render", render_surface, s);
 }
 
 gboolean
@@ -1363,6 +1371,8 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 	}
 
 	s->cairo = s->cairo_buffer;
+
+	TimeManager::Instance()->RemoveHandler ("render", render_surface, s);
 }
 
 gboolean
