@@ -432,7 +432,9 @@ Image::Image ()
     downloader (NULL),
     surface (NULL),
     brush (NULL),
-    render_progressive (false)
+    render_progressive (false),
+    pattern (NULL),
+    pattern_opacity (1.0)
 {
 }
 
@@ -456,6 +458,17 @@ Image::StopLoader ()
 	}
 }
 
+
+void
+Image::CleanupPattern ()
+{
+	if (pattern) {
+		cairo_pattern_destroy (pattern);
+		pattern = NULL;
+	}
+	pattern_opacity = 1.0;
+}
+
 void
 Image::CleanupSurface ()
 {
@@ -464,13 +477,15 @@ Image::CleanupSurface ()
 		pixbuf = NULL;
 	}
 
+	CleanupPattern ();
+
 	if (surface) {
 		cairo_surface_destroy (surface);
 		surface = NULL;
 	}
 
 	pixbuf_width =
-	  pixbuf_height = 0;
+	pixbuf_height = 0;
 }
 
 void
@@ -579,6 +594,8 @@ Image::CreateSurface ()
 		printf ("surface already created..\n");
 		return;
 	}
+
+	CleanupPattern ();
 
 	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
 	if (!pixbuf)
@@ -711,10 +728,10 @@ Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, in
 	((Image*)data)->LoaderAreaUpdated (x, y, width, height);
 }
 
-// that's too ugly to be exposed in the header files ;-)
-void
-image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, double width, double height, int sw, int sh, 
-	double opacity, Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform);
+// still too ugly to be exposed in the header files ;-)
+cairo_pattern_t* image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
+void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
+	Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform);
 
 void
 Image::render (Surface *s, int x, int y, int width, int height)
@@ -731,9 +748,20 @@ Image::render (Surface *s, int x, int y, int width, int height)
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
-	image_brush_set_surface_as_pattern (s->cairo, surface, w, h, pixbuf_width, pixbuf_height, GetTotalOpacity (), 
-		stretch, AlignmentXCenter, AlignmentYCenter, NULL);
+	double opacity = GetTotalOpacity ();
+	if (!pattern || (pattern_opacity != opacity)) {
+		pattern = image_brush_create_pattern (s->cairo, surface, pixbuf_width, pixbuf_height, opacity);
+		pattern_opacity = opacity;
+	}
 
+	cairo_matrix_t matrix;
+	image_brush_compute_pattern_matrix (&matrix, w, h, pixbuf_width, pixbuf_height, stretch, 
+		AlignmentXCenter, AlignmentYCenter, NULL);
+	cairo_pattern_set_matrix (pattern, &matrix);
+
+	cairo_set_source (s->cairo, pattern);
+
+	cairo_new_path (s->cairo);
 	cairo_rectangle (s->cairo, 0, 0, w, h);
 	cairo_fill (s->cairo);
 	cairo_restore (s->cairo);

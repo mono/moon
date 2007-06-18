@@ -67,6 +67,7 @@ class Image : public MediaBase {
  private:
 	void CreateSurface ();
 	void CleanupSurface ();
+	void CleanupPattern ();
 	void StopLoader ();
 
 	// downloader callbacks
@@ -92,6 +93,10 @@ class Image : public MediaBase {
 	cairo_surface_t *surface;
 	int pixbuf_width;
 	int pixbuf_height;
+
+	// pattern caching
+	cairo_pattern_t *pattern;
+	double pattern_opacity;
 };
 
 Image *image_new (void);

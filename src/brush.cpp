@@ -861,10 +861,9 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 		TileBrush::OnPropertyChanged (prop);
 }
 
-// ripped apart to be reusable for Image class
-void
-image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, double width, double height, int sw, int sh, 
-	double opacity, Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform)
+// ripped apart to be reusable for Image and VideoBrush classes
+cairo_pattern_t*
+image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity)
 {
 	cairo_pattern_t *pattern;
 
@@ -882,8 +881,13 @@ image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, do
 		pattern = cairo_pattern_create_for_surface (surface);
 	}
 
-	cairo_matrix_t matrix;
+	return pattern;
+}
 
+void
+image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
+	Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform)
+{
 	// scale required to "fit" for both axes
 	double sx = sw / width;
 	double sy = sh / height;
@@ -891,11 +895,8 @@ image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, do
 	// Fill is the simplest case because AlignementX and AlignmentY don't matter in this case
 	if (stretch == StretchFill) {
 		// fill extents in both axes
-		cairo_matrix_init_scale (&matrix, sx, sy);
+		cairo_matrix_init_scale (matrix, sx, sy);
 	} else {
-		bool fit_horz = (sw <= width);
-		bool fit_vert = (sh <= height);
-
 		double scale = 1.0;
 		double dx = 0.0;
 		double dy = 0.0;
@@ -916,18 +917,15 @@ image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, do
 			break;
 		}
 
-		double actual_height = scale * height;
-		double actual_width = scale * width;
-
 		switch (align_x) {
 		case AlignmentXLeft:
 			dx = 0.0;
 			break;
 		case AlignmentXCenter:
-			dx = (sw - actual_width) / 2;
+			dx = (sw - (scale * width)) / 2;
 			break;
 		case AlignmentXRight:
-			dx = (sw - actual_width);
+			dx = (sw - (scale * width));
 			break;
 		}
 
@@ -936,19 +934,19 @@ image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, do
 			dy = 0.0;
 			break;
 		case AlignmentYCenter:
-			dy = (sh - actual_height) / 2;
+			dy = (sh - (scale * height)) / 2;
 			break;
 		case AlignmentYBottom:
-			dy = (sh - actual_height);
+			dy = (sh - (scale * height));
 			break;
 		}
 
 		if (stretch == StretchNone) {
 			// no strech, no scale
-			cairo_matrix_init_translate (&matrix, dx, dy);
+			cairo_matrix_init_translate (matrix, dx, dy);
 		} else {
 			// otherwise there's both a scale and translation to be done
-			cairo_matrix_init (&matrix, scale, 0, 0, scale, dx, dy);
+			cairo_matrix_init (matrix, scale, 0, 0, scale, dx, dy);
 		}
 	}
 
@@ -956,12 +954,8 @@ image_brush_set_surface_as_pattern (cairo_t *cairo, cairo_surface_t *surface, do
 		cairo_matrix_t tm;
 		transform_get_transform (transform, &tm);
 		cairo_matrix_invert (&tm);
-		cairo_matrix_multiply (&matrix, &tm, &matrix);
+		cairo_matrix_multiply (matrix, &tm, matrix);
 	}
-	cairo_pattern_set_matrix (pattern, &matrix);
-
-	cairo_set_source (cairo, pattern);
-	cairo_pattern_destroy (pattern);
 }
 
 void
@@ -997,8 +991,14 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		width = fabs (x2 - x1);
 	}
 	
-	image_brush_set_surface_as_pattern (cairo, surface, width, height, image->GetWidth (), image->GetHeight (), 
-		opacity, stretch, ax, ay, transform);
+	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, image->GetWidth (), image->GetHeight (), opacity);
+
+	cairo_matrix_t matrix;
+	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetWidth (), image->GetHeight (), stretch, ax, ay, transform);
+	cairo_pattern_set_matrix (pattern, &matrix);
+
+	cairo_set_source (cairo, pattern);
+	cairo_pattern_destroy (pattern);
 }
 
 //
@@ -1065,9 +1065,15 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		opacity = 1.0;
 	}
 	
-	image_brush_set_surface_as_pattern (cairo, surface, width, height,
-					    mplayer->width, mplayer->height,
-					    opacity, stretch, ax, ay, transform);
+	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, mplayer->width, mplayer->height, opacity);
+
+	cairo_matrix_t matrix;
+	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->width, mplayer->height, stretch, ax, ay, transform);
+	cairo_pattern_set_matrix (pattern, &matrix);
+
+	cairo_set_source (cairo, pattern);
+	cairo_pattern_destroy (pattern);
+
 }
 
 void

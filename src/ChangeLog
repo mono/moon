@@ -1,3 +1,7 @@
+2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Refactor the pattern creation to allow caching.
+	* media.cpp|h: Add caching of cairo_pattern_t to Image.
 
 Mon Jun 18 17:53:03 CEST 2007 Paolo Molaro <lupus@ximian.com>
 
