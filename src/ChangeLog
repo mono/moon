@@ -1,3 +1,26 @@
+2007-06-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp: Do proper OnPropertyChanged proagation.
+	(ImageBrush::OnPropertyChanged): Notify using the generic
+	Brush::ChangedProperty.
+	(VideoBrush::OnPropertyChanged): Same.
+	(VideoBrush::OnSubPropertyChanged): Same.
+
+	* shape.cpp (Shape): Need to keep track of our stroke/fill brushes
+	so we can listen for change notification.
+
+	* runtime.cpp (UIElement): Same.
+	(Panel): Here too.
+
+	* text.cpp (TextBlock): Same here (need to do it for Inlines too
+	at some point).
+
+	* media.cpp (media_base_new): Removed, you can't instantiate a
+	MediaBase.
+	(advance_frame): Optimization hack: don't invalidate if our
+	opacity is 0.
+	(MediaElement::render): Respect opacity and stretch properties.
+
 2007-06-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: We need to create new figures if we get a Move

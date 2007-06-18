@@ -369,6 +369,7 @@ class NameScope : public DependencyObject {
 	GHashTable *names;
 };
 
+
 class Visual : public DependencyObject {
  public:
 	Visual () {};
@@ -394,7 +395,6 @@ enum ErrorType {
 };
 
 struct ErrorEventArgs /* : public EventArgs */ {
-
  public:
 	int error_code;;
 	const char *error_message;
@@ -402,7 +402,6 @@ struct ErrorEventArgs /* : public EventArgs */ {
 };
 
 struct ParserErrorEventArgs : public ErrorEventArgs {
-
  public:
 
 	ParserErrorEventArgs () : char_position (0), line_number (0), xaml_file (NULL),
@@ -425,8 +424,6 @@ struct ParserErrorEventArgs : public ErrorEventArgs {
 // the managed world, and when a change happens we get a
 // chance to reflect the changes
 //
-class Collection;
-
 class Collection : public DependencyObject {
  public:
 	GList *list;
@@ -618,8 +615,10 @@ typedef bool (*callback_keyboard_event) (UIElement *target, int state, int platf
 // Item class
 //
 class UIElement : public Visual {
+	Brush *opacityMask;
  public:
 	UIElement ();
+	~UIElement ();
 	virtual Value::Kind GetObjectType () { return Value::UIELEMENT; };
 
 	UIElement *parent;
@@ -733,8 +732,6 @@ class UIElement : public Visual {
 	//   Get the cumulative opacity of this element, including all it's parents
 	double GetTotalOpacity ();
 	
-	virtual ~UIElement ();
-
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
@@ -768,6 +765,9 @@ void     item_get_render_affine    (UIElement *item, cairo_matrix_t *result);
 
 double	 uielement_get_opacity     (UIElement *item);
 void	 uielement_set_opacity     (UIElement *item, double opacity);
+
+Brush   *uielement_get_opacity_mask (UIElement *item);
+
 void     uielement_transform_point (UIElement *item, double *x, double *y);
 	
 //
@@ -793,6 +793,7 @@ void	framework_element_set_width	(FrameworkElement *framework_element, double wi
 // Panel Class
 //
 class Panel : public FrameworkElement {
+	Brush *background;
  public:
 	Panel ();
 	virtual ~Panel ();
@@ -810,6 +811,7 @@ class Panel : public FrameworkElement {
 // For C API usage.
 void  panel_child_add      (Panel *panel, UIElement *item);
 Panel *panel_new (void);
+Brush *panel_get_background (Panel *panel);
 
 //
 // Canvas Class, the only purpose is to have the Left/Top properties that

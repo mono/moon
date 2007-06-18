@@ -40,14 +40,16 @@ class Brush : public DependencyObject {
 	static DependencyProperty* OpacityProperty;
 	static DependencyProperty* RelativeTransformProperty;
 	static DependencyProperty* TransformProperty;
-	static DependencyProperty* FrameChangedProperty;
+	
+	// internal property - generic brush property change
+	static DependencyProperty *ChangedProperty;
 	
 	Brush () { }
 	virtual Value::Kind GetObjectType () { return Value::BRUSH; };
 
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-
+	
 	double GetTotalOpacity (UIElement *uielement);
 };
 
@@ -157,6 +159,7 @@ public:
 	virtual Value::Kind GetObjectType () { return Value::VIDEOBRUSH; }
 	
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
 

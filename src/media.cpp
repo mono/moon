@@ -24,16 +24,18 @@
 #include "downloader.h"
 #include "cutil.h"
 
+
+// still too ugly to be exposed in the header files ;-)
+cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
+void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
+					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform);
+
+
 // MediaBase
 
 DependencyProperty *MediaBase::SourceProperty;
 DependencyProperty *MediaBase::StretchProperty;
 
-MediaBase *
-media_base_new ()
-{
-	return new MediaBase ();
-}
 
 char *
 media_base_get_source (MediaBase *media)
@@ -84,9 +86,10 @@ static gboolean
 advance_frame (void *user_data)
 {
 	MediaElement *media = (MediaElement *) user_data;
+	double opacity = media->GetTotalOpacity ();
 	int64_t pos;
 	
-	if (media->mplayer->AdvanceFrame ())
+	if (media->mplayer->AdvanceFrame () && opacity > 0.0f)
 		item_invalidate (media);
 	
 	pos = media->mplayer->Position ();
@@ -138,9 +141,33 @@ MediaElement::getxformorigin ()
 void
 MediaElement::render (Surface *s, int x, int y, int width, int height)
 {
+	Stretch stretch = media_base_get_stretch (this);
+	double h = framework_element_get_height (this);
+	double w = framework_element_get_width (this);
+	double opacity = GetTotalOpacity ();
+	cairo_surface_t *surface;
+	cairo_pattern_t *pattern;
+	cairo_matrix_t matrix;
+	
+	if (!(surface = mplayer->GetSurface ()))
+		return;
+	
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
-	mplayer->Render (s->cairo);
+	
+	pattern = image_brush_create_pattern (s->cairo, surface, mplayer->width, mplayer->height, opacity);
+	image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch, 
+					    AlignmentXCenter, AlignmentYCenter, NULL);
+	cairo_pattern_set_matrix (pattern, &matrix);
+	
+	cairo_set_source (s->cairo, pattern);
+	cairo_pattern_destroy (pattern);
+	
+	cairo_new_path (s->cairo);
+	cairo_rectangle (s->cairo, 0, 0, w, h);
+	cairo_close_path (s->cairo);
+	
+	cairo_fill (s->cairo);
 	cairo_restore (s->cairo);
 }
 
@@ -775,11 +802,6 @@ Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, in
 	((Image*)data)->LoaderAreaUpdated (x, y, width, height);
 }
 
-// still too ugly to be exposed in the header files ;-)
-cairo_pattern_t* image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
-void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
-	Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform);
-
 void
 Image::render (Surface *s, int x, int y, int width, int height)
 {
@@ -810,6 +832,8 @@ Image::render (Surface *s, int x, int y, int width, int height)
 
 	double opacity = GetTotalOpacity ();
 	if (!pattern || (pattern_opacity != opacity)) {
+		if (pattern)
+			cairo_pattern_destroy (pattern);
 		pattern = image_brush_create_pattern (s->cairo, surface, pixbuf_width, pixbuf_height, opacity);
 		pattern_opacity = opacity;
 	}
@@ -918,6 +942,7 @@ media_attribute_new (void)
 	return new MediaAttribute ();
 }
 
+
 void
 media_init (void)
 {
@@ -926,7 +951,7 @@ media_init (void)
 	
 	/* MediaBase */
 	MediaBase::SourceProperty = DependencyObject::Register (Value::MEDIABASE, "Source", Value::STRING);
-	MediaBase::StretchProperty = DependencyObject::Register (Value::MEDIABASE, "Stretch", new Value (StretchNone));
+	MediaBase::StretchProperty = DependencyObject::Register (Value::MEDIABASE, "Stretch", new Value (StretchUniform));
 	
 	/* Image */
 	Image::DownloadProgressProperty = DependencyObject::Register (Value::IMAGE, "DownloadProgress", new Value (0.0));

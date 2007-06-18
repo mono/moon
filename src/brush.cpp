@@ -47,11 +47,15 @@ convert_gradient_spread_method (GradientSpreadMethod method)
 // Brush
 //
 
-DependencyProperty* Brush::OpacityProperty;
-DependencyProperty* Brush::RelativeTransformProperty;
-DependencyProperty* Brush::TransformProperty;
+DependencyProperty *Brush::OpacityProperty;
+DependencyProperty *Brush::RelativeTransformProperty;
+DependencyProperty *Brush::TransformProperty;
 
-Brush*
+// used only for notifying attachees
+DependencyProperty *Brush::ChangedProperty;
+
+
+Brush *
 brush_new (void)
 {
 	return new Brush ();
@@ -69,7 +73,7 @@ brush_set_opacity (Brush *brush, double opacity)
 	brush->SetValue (Brush::OpacityProperty, Value (opacity));
 }
 
-TransformGroup*
+TransformGroup *
 brush_get_relative_transform (Brush *brush)
 {
 	Value *value = brush->GetValue (Brush::RelativeTransformProperty);
@@ -82,7 +86,7 @@ brush_set_relative_transform (Brush *brush, TransformGroup* transform_group)
 	brush->SetValue (Brush::RelativeTransformProperty, Value (transform_group));
 }
 
-TransformGroup*
+TransformGroup *
 brush_get_transform (Brush *brush)
 {
 	Value *value = brush->GetValue (Brush::TransformProperty);
@@ -128,6 +132,8 @@ Brush::OnPropertyChanged (DependencyProperty *prop)
 	//
 	if (prop->type == Value::BRUSH)
 		NotifyAttacheesOfPropertyChange (prop);
+	
+	DependencyObject::OnPropertyChanged (prop);
 }
 
 //
@@ -153,10 +159,9 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 void 
 SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop == ColorProperty){
+	if (prop == SolidColorBrush::ColorProperty)
 		NotifyAttacheesOfPropertyChange (prop);
-		return;
-	}
+	
 	Brush::OnPropertyChanged (prop);
 }
 
@@ -470,18 +475,19 @@ GradientBrush::~GradientBrush ()
 void
 GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 {
-	Brush::OnPropertyChanged (prop);
-
-	if (prop == GradientStopsProperty){
+	if (prop == GradientBrush::GradientStopsProperty) {
 		GradientStopCollection *newcol = GetValue (prop)->AsGradientStopCollection();
-
+		
 		if (newcol) {
 			if (newcol->closure)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
+		
 		NotifyAttacheesOfPropertyChange (prop);
 	}
+	
+	Brush::OnPropertyChanged (prop);
 }
 
 bool
@@ -585,10 +591,9 @@ LinearGradientBrush::OnPropertyChanged (DependencyProperty *prop)
 	// owners that they must repaint (all of our properties have
 	// a visible effect
 	//
-	if (prop->type == Value::LINEARGRADIENTBRUSH){
+	if (prop->type == Value::LINEARGRADIENTBRUSH)
 		NotifyAttacheesOfPropertyChange (prop);
-		return;
-	}
+	
 	GradientBrush::OnPropertyChanged (prop);
 }
 
@@ -858,12 +863,12 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 		double progress = GetValue (ImageBrush::DownloadProgressProperty)->AsDouble();
 		image->SetValue (Image::DownloadProgressProperty, Value (progress));
 
-		NotifyAttacheesOfPropertyChange (prop);
+		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
 	} else if (prop == ImageBrush::ImageSourceProperty) {
 		Value *value = GetValue (ImageBrush::ImageSourceProperty);
 		char *source = value ? value->AsString () : NULL;
 		image->SetValue (MediaBase::SourceProperty, Value (source));
-		NotifyAttacheesOfPropertyChange (prop);
+		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
 	} else
 		TileBrush::OnPropertyChanged (prop);
 }
@@ -1053,7 +1058,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 			return true;
 		
 		if ((obj = FindName (name)) && obj->Is (Value::MEDIAELEMENT)) {
-			Attach (MediaElement::PositionProperty, obj);
+			obj->Attach (MediaElement::PositionProperty, this);
 			media = (MediaElement *) obj;
 			mplayer = media->mplayer;
 			obj->ref ();
@@ -1102,13 +1107,13 @@ VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 		DependencyObject *obj;
 		
 		if (media != NULL) {
-			Detach (MediaElement::PositionProperty, media);
+			media->Detach (MediaElement::PositionProperty, this);
 			media->unref ();
 			media = NULL;
 		}
 		
 		if ((obj = FindName (name)) && obj->Is (Value::MEDIAELEMENT)) {
-			Attach (MediaElement::PositionProperty, obj);
+			obj->Attach (MediaElement::PositionProperty, this);
 			media = (MediaElement *) obj;
 			obj->ref ();
 		} else {
@@ -1116,16 +1121,23 @@ VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 			// toplevel element yet, we'll try again in SetupBrush()
 		}
 		
-		NotifyAttacheesOfPropertyChange (prop);
-	} else if (prop == MediaElement::PositionProperty) {
+		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
+	}
+	
+	TileBrush::OnPropertyChanged (prop);
+}
+
+void
+VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (subprop == MediaElement::PositionProperty) {
 		// We to changes in this MediaElement property so we
 		// can notify whoever is using us to paint that they
 		// need to redraw themselves.
-		printf ("VideoBrush notified of MediaElement::PositionProperty change... propagating to our consumers\n");
-		NotifyAttacheesOfPropertyChange (prop);
-	} else {
-		TileBrush::OnPropertyChanged (prop);
+		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
 	}
+	
+	TileBrush::OnSubPropertyChanged (prop, subprop);
 }
 
 VideoBrush *
@@ -1159,6 +1171,7 @@ brush_init (void)
 	Brush::OpacityProperty = DependencyObject::Register (Value::BRUSH, "Opacity", new Value (1.0));
 	Brush::RelativeTransformProperty = DependencyObject::Register (Value::BRUSH, "RelativeTransform", Value::TRANSFORMGROUP);
 	Brush::TransformProperty = DependencyObject::Register (Value::BRUSH, "Transform", Value::TRANSFORMGROUP);
+	Brush::ChangedProperty = DependencyObject::Register (Value::BRUSH, "Changed", Value::BOOL);
 	
 	/* SolidColorBrush fields */
 	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00FFFFFF)));

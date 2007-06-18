@@ -127,6 +127,7 @@ void run_set_text (Run *run, char *value);
 
 
 class TextBlock : public FrameworkElement {
+	Brush *foreground;
 public:
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;

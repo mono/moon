@@ -141,6 +141,25 @@ DependencyProperty* Shape::StrokeMiterLimitProperty;
 DependencyProperty* Shape::StrokeStartLineCapProperty;
 DependencyProperty* Shape::StrokeThicknessProperty;
 
+Shape::Shape ()
+{
+	stroke = NULL;
+	fill = NULL;
+}
+
+Shape::~Shape ()
+{
+	if (stroke != NULL) {
+		stroke->Detach (Brush::ChangedProperty, this);
+		stroke->unref ();
+	}
+	
+	if (fill != NULL) {
+		fill->Detach (Brush::ChangedProperty, this);
+		fill->unref ();
+	}
+}
+
 //
 // This routine is useful for Shape derivatives: it can be used
 // to either get the bounding box from cairo, or to paint it
@@ -161,7 +180,6 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
 	// also not every shapes can be filled, e.g. polylines, CallFill
 	if (consider_fill && CanFill ()) {
-		Brush *fill = shape_get_fill (this);
 		if (fill) {
 			Draw (s);
 			if (do_op) {
@@ -172,8 +190,7 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 			}
 		}
 	}
-
-	Brush *stroke = shape_get_stroke (this);
+	
 	if (stroke) {
 		double thickness = shape_get_stroke_thickness (this);
 		if (thickness == 0)
@@ -269,6 +286,28 @@ void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type == Value::SHAPE) {
+		if (prop == Shape::StrokeProperty) {
+			if (stroke != NULL) {
+				stroke->Detach (Brush::ChangedProperty, this);
+				stroke->unref ();
+			}
+			
+			if ((stroke = shape_get_stroke (this)) != NULL) {
+				stroke->Attach (Brush::ChangedProperty, this);
+				stroke->ref ();
+			}
+		} else if (prop == Shape::FillProperty) {
+			if (fill != NULL) {
+				fill->Detach (Brush::ChangedProperty, this);
+				fill->unref ();
+			}
+			
+			if ((fill = shape_get_fill (this)) != NULL) {
+				fill->Attach (Brush::ChangedProperty, this);
+				fill->ref ();
+			}
+		}
+		
 		FullInvalidate (false);
 		return;
 	}

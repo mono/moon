@@ -301,6 +301,14 @@ DependencyProperty *TextBlock::TextWrappingProperty;
 
 TextBlock::TextBlock ()
 {
+	SolidColorBrush *brush = new SolidColorBrush ();
+	Color *color = color_from_str ("black");
+	solid_color_brush_set_color (brush, color);
+	delete color;
+	
+	foreground = NULL;
+	SetValue (TextBlock::ForegroundProperty, Value (brush));
+	
 	layout = NULL;
 	
 	height = -1;
@@ -326,6 +334,11 @@ TextBlock::~TextBlock ()
 	
 	if (layout)
 		g_object_unref (layout);
+	
+	if (foreground != NULL) {
+		foreground->Detach (Brush::ChangedProperty, this);
+		foreground->unref ();
+	}
 }
 
 void
@@ -617,6 +630,16 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == TextBlock::TextProperty && layout != NULL) {
 		char *text = text_block_get_text (this);
 		pango_layout_set_text (layout, text ? text : "", -1);
+	} else if (prop == TextBlock::ForegroundProperty) {
+		if (foreground != NULL) {
+			foreground->Detach (Brush::ChangedProperty, this);
+			foreground->unref ();
+		}
+		
+		if ((foreground = text_block_get_foreground (this)) != NULL) {
+			foreground->Attach (Brush::ChangedProperty, this);
+			foreground->ref ();
+		}
 	}
 	
 	if (font_changed && layout != NULL)
@@ -919,21 +942,13 @@ glyphs_set_unicode_string (Glyphs *glyphs, char *value)
 void
 text_init (void)
 {
-	SolidColorBrush *brush;
-	Color *color;
-	
 	// Inline
-	brush = new SolidColorBrush ();
-	color = color_from_str ("black");
-	solid_color_brush_set_color (brush, color); // copies color
-	delete color;
-	
 	Inline::FontFamilyProperty = DependencyObject::Register (Value::INLINE, "FontFamily", new Value ("Lucida Sans"));
 	Inline::FontSizeProperty = DependencyObject::Register (Value::INLINE, "FontSize", new Value (14.666));
 	Inline::FontStretchProperty = DependencyObject::Register (Value::INLINE, "FontStretch", new Value (FontStretchesNormal));
 	Inline::FontStyleProperty = DependencyObject::Register (Value::INLINE, "FontStyle", new Value (FontStylesNormal));
 	Inline::FontWeightProperty = DependencyObject::Register (Value::INLINE, "FontWeight", new Value (FontWeightsNormal));
-	Inline::ForegroundProperty = DependencyObject::RegisterFull (Value::INLINE, "Foreground", new Value ((Brush *) brush), Value::BRUSH, false);
+	Inline::ForegroundProperty = DependencyObject::Register (Value::INLINE, "Foreground", Value::BRUSH);
 	Inline::TextDecorationsProperty = DependencyObject::Register (Value::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	
 	
@@ -942,11 +957,6 @@ text_init (void)
 	
 	
 	// TextBlock
-	brush = new SolidColorBrush ();
-	color = color_from_str ("black");
-	solid_color_brush_set_color (brush, color); // copies color
-	delete color;
-	
 	TextBlock::ActualHeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualHeight", Value::DOUBLE);
 	TextBlock::ActualWidthProperty = DependencyObject::Register (Value::TEXTBLOCK, "ActualWidth", Value::DOUBLE);
 	TextBlock::FontFamilyProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans"));
@@ -954,7 +964,7 @@ text_init (void)
 	TextBlock::FontStretchProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
 	TextBlock::FontStyleProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
 	TextBlock::FontWeightProperty = DependencyObject::Register (Value::TEXTBLOCK, "FontWeight", new Value (FontWeightsNormal));
-	TextBlock::ForegroundProperty = DependencyObject::RegisterFull (Value::TEXTBLOCK, "Foreground", new Value ((Brush *) brush), Value::BRUSH, false);
+	TextBlock::ForegroundProperty = DependencyObject::Register (Value::TEXTBLOCK, "Foreground", Value::BRUSH);
 	TextBlock::InlinesProperty = DependencyObject::Register (Value::TEXTBLOCK, "Inlines", Value::INLINES);
 	TextBlock::TextProperty = DependencyObject::Register (Value::TEXTBLOCK, "Text", Value::STRING);
 	TextBlock::TextDecorationsProperty = DependencyObject::Register (Value::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone));

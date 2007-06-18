@@ -28,6 +28,7 @@ void moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h
 // 
 class Shape : public FrameworkElement {
 	void DoDraw (Surface *s, bool do_op, bool consider_fill);
+	Brush *stroke, *fill;
  public: 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;
@@ -41,7 +42,8 @@ class Shape : public FrameworkElement {
 	static DependencyProperty* StrokeStartLineCapProperty;
 	static DependencyProperty* StrokeThicknessProperty;
 
-	Shape () { }
+	Shape ();
+	~Shape ();
 	virtual Value::Kind GetObjectType () { return Value::SHAPE; };
 
 	//

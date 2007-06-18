@@ -643,12 +643,20 @@ item_get_render_affine (UIElement *item, cairo_matrix_t *result)
 	}
 }
 
-UIElement::UIElement () : parent(NULL), flags (0), x1 (0), y1(0), x2(0), y2(0)
+UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (0), x1 (0), y1(0), x2(0), y2(0)
 {
 	cairo_matrix_init_identity (&absolute_xform);
 
 	this->SetValue (UIElement::TriggersProperty, Value (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value (new ResourceCollection ()));
+}
+
+UIElement::~UIElement ()
+{
+	if (opacityMask != NULL) {
+		opacityMask->Detach (Brush::ChangedProperty, this);
+		opacityMask->unref ();
+	}
 }
 
 //
@@ -658,11 +666,25 @@ UIElement::UIElement () : parent(NULL), flags (0), x1 (0), y1(0), x2(0), y2(0)
 void
 UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop == OpacityProperty || prop == VisibilityProperty){
+	if (prop == UIElement::OpacityProperty) {
 		item_invalidate (this);
-	} else if (prop == ClipProperty || prop == OpacityMaskProperty){
+	} else if (prop == UIElement::VisibilityProperty) {
+		item_invalidate (this);
+	} else if (prop == UIElement::ClipProperty) {
 		FullInvalidate (false);
-	} else if (prop == RenderTransformProperty || prop == RenderTransformOriginProperty){
+	} else if (prop == UIElement::OpacityMaskProperty) {
+		if (opacityMask != NULL) {
+			opacityMask->Detach (Brush::ChangedProperty, this);
+			opacityMask->unref ();
+		}
+		
+		if ((opacityMask = uielement_get_opacity_mask (this)) != NULL) {
+			opacityMask->Attach (Brush::ChangedProperty, this);
+			opacityMask->ref ();
+		}
+		
+		FullInvalidate (false);
+	} else if (prop == RenderTransformProperty || prop == RenderTransformOriginProperty) {
 		FullInvalidate (true);
 	} else if (prop == TriggersProperty){
 		Value *v = GetValue (prop);
@@ -740,16 +762,18 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	    prop == UIElement::RenderTransformOriginProperty)
 		FullInvalidate (true);
 	else if (prop == UIElement::ClipProperty ||
-		 prop == UIElement::OpacityMaskProperty){
+		 prop == UIElement::OpacityMaskProperty) {
 
 		// Maybe this could also be just item_invalidate?
 		FullInvalidate (false);
 	}  else if (prop == UIElement::OpacityProperty ||
 		    prop == UIElement::VisibilityProperty){
 		item_invalidate (this);
-	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)){
+	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)) {
 		item_invalidate (this);
-	} 
+	}
+	
+	Visual::OnSubPropertyChanged (prop, subprop);
 }
 
 //
@@ -783,6 +807,14 @@ void
 uielement_set_opacity (UIElement *item, double opacity)
 {
 	item->SetValue (UIElement::OpacityProperty, Value (opacity));
+}
+
+Brush *
+uielement_get_opacity_mask (UIElement *item)
+{
+	Value *value = item->GetValue (UIElement::OpacityMaskProperty);
+	
+	return value ? (Brush *) value->AsBrush () : NULL;
 }
 
 //
@@ -833,10 +865,6 @@ void
 UIElement::leave (Surface *s)
 {
 	s->cb_mouse_leave (this);
-}
-
-UIElement::~UIElement ()
-{
 }
 
 void
@@ -1014,8 +1042,16 @@ panel_child_add (Panel *panel, UIElement *child)
 	panel->GetChildren()->Add (child);
 }
 
+Brush *
+panel_get_background (Panel *panel)
+{
+	Value *value = panel->GetValue (Panel::BackgroundProperty);
+	
+	return value ? (Brush *) value->AsBrush () : NULL;
+}
+
 Panel*
-panel_new ()
+panel_new (void)
 {
 	return new Panel ();
 }
@@ -1023,10 +1059,15 @@ panel_new ()
 Panel::Panel ()
 {
 	this->SetValue (Panel::ChildrenProperty, Value (new VisualCollection ()));
+	background = NULL;
 }
 
 Panel::~Panel ()
 {
+	if (background != NULL) {
+		background->Detach (Brush::ChangedProperty, this);
+		background->unref ();
+	}
 }
 
 //
@@ -1038,7 +1079,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 {
 	FrameworkElement::OnPropertyChanged (prop);
 
-	if (prop == ChildrenProperty){
+	if (prop == Panel::ChildrenProperty) {
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 		
 		if (newcol) {
@@ -1046,7 +1087,17 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
-	} else if (prop == BackgroundProperty){
+	} else if (prop == BackgroundProperty) {
+		if (background != NULL) {
+			background->Detach (Brush::ChangedProperty, this);
+			background->unref ();
+		}
+		
+		if ((background = panel_get_background (this)) != NULL) {
+			background->Attach (Brush::ChangedProperty, this);
+			background->ref ();
+		}
+		
 		item_invalidate (this);
 	}
 }
@@ -2829,8 +2880,9 @@ DependencyProperty* UIElement::IsHitTestVisibleProperty;
 DependencyProperty* UIElement::VisibilityProperty;
 DependencyProperty* UIElement::ResourcesProperty;
 
+
 void
-item_init ()
+item_init (void)
 {
 	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
 	UIElement::OpacityProperty = DependencyObject::Register (Value::UIELEMENT, "Opacity", new Value(1.0));
