@@ -1,106 +1,109 @@
-<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<MediaElement x:Name="ExampleVideo" Source="file:///tmp/BoxerSmacksdownInhoffe.wmv"
+                      Opacity="0.0" IsHitTestVisible="False"/>
 	<Rectangle Width="100" Height="100" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="None"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="None"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Left="101" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Uniform"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Uniform"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Left="202" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="UniformToFill"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Left="303" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Fill"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Fill"/>
 	</Rectangle.Fill>
 	</Rectangle>
 
 	<Rectangle Width="100" Height="100" Canvas.Top="101" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="None" AlignmentX="Left"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="None" AlignmentX="Left"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="101" Canvas.Left="101" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Uniform" AlignmentX="Left"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Uniform" AlignmentX="Left"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="101" Canvas.Left="202" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="UniformToFill" AlignmentX="Left"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill" AlignmentX="Left"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="101" Canvas.Left="303" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Fill" AlignmentX="Left"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Fill" AlignmentX="Left"/>
 	</Rectangle.Fill>
 	</Rectangle>
 
 	<Rectangle Width="100" Height="100" Canvas.Top="202" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="None" AlignmentX="Right"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="None" AlignmentX="Right"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="202" Canvas.Left="101" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Uniform" AlignmentX="Right"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Uniform" AlignmentX="Right"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="202" Canvas.Left="202" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="UniformToFill" AlignmentX="Right"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill" AlignmentX="Right"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="202" Canvas.Left="303" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Fill" AlignmentX="Right"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Fill" AlignmentX="Right"/>
 	</Rectangle.Fill>
 	</Rectangle>
 
 	<Rectangle Width="100" Height="100" Canvas.Top="303" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="None" AlignmentY="Top"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="None" AlignmentY="Top"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="303" Canvas.Left="101" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Uniform" AlignmentY="Top"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Uniform" AlignmentY="Top"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="303" Canvas.Left="202" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="UniformToFill" AlignmentY="Top"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill" AlignmentY="Top"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="303" Canvas.Left="303" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Fill" AlignmentY="Top"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Fill" AlignmentY="Top"/>
 	</Rectangle.Fill>
 	</Rectangle>
 
 	<Rectangle Width="100" Height="100" Canvas.Top="404" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="None" AlignmentY="Bottom"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="None" AlignmentY="Bottom"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="404" Canvas.Left="101" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Uniform" AlignmentY="Bottom"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Uniform" AlignmentY="Bottom"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="404" Canvas.Left="202" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="UniformToFill" AlignmentY="Bottom"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill" AlignmentY="Bottom"/>
 	</Rectangle.Fill>
 	</Rectangle>
 	<Rectangle Width="100" Height="100" Canvas.Top="404" Canvas.Left="303" Stroke="blue">
 	<Rectangle.Fill>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="Fill" AlignmentY="Bottom"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="Fill" AlignmentY="Bottom"/>
 	</Rectangle.Fill>
 	</Rectangle>
 </Canvas>

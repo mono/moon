@@ -1,7 +1,12 @@
-<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<MediaElement x:Name="ExampleVideo" Source="file:///tmp/BoxerSmacksdownInhoffe.wmv"
+                      Opacity="0.0" IsHitTestVisible="False"/>
+
         <TextBlock Text="HELLO" FontSize="100">
   	  <TextBlock.Foreground>
-		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="None"/>
+		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill"/>
 	  </TextBlock.Foreground>
         </TextBlock>
 </Canvas>
