@@ -25,6 +25,11 @@
 //#define CLOCK_DEBUG 1
 #define TIME_TICK 0
 
+typedef struct {
+  void (*func)(gpointer);
+  gpointer data;
+} TickCall;
+
 TimeSpan
 get_now (void)
 {
@@ -47,7 +52,7 @@ TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
     current_timeout (60),  /* something suitably small */
-    render_cb (NULL)
+    tick_calls (NULL)
 {
 }
 
@@ -129,6 +134,20 @@ TimeManager::Tick ()
 	ENDTIMER (tick, "tick");
 #endif
 
+	/* only invoke 1 tick call for now */
+	if (tick_calls) {
+		TickCall *call = (TickCall*)tick_calls->data;
+
+		// unlink the call first
+		GList *new_tick_calls = tick_calls->next;
+		g_list_free_1 (tick_calls);
+		tick_calls = new_tick_calls;
+
+		// now invoke it
+		call->func (call->data);
+		g_free (call);
+	}
+
 	Emit ("render");
 }
 
@@ -137,6 +156,21 @@ TimeManager::RaiseEnqueuedEvents ()
 {
 	for (GList *l = child_clocks; l; l = l->next)
 		((Clock*)l->data)->RaiseAccumulatedEvents ();
+}
+
+void
+TimeManager::AddTickCall (void (*func)(gpointer), gpointer tick_data)
+{
+	TickCall *call = g_new (TickCall, 1);
+	call->func = func;
+	call->data = tick_data;
+	tick_calls = g_list_append (tick_calls, call);
+}
+
+void
+time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data)
+{
+	TimeManager::Instance ()->AddTickCall (func, tick_data);
 }
 
 void

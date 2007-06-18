@@ -1,5 +1,17 @@
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
+	* demo.cpp: use TimeManager::AddTickCall for the async file
+	loading.  This makes the image visible immediately for me, instead
+	of requiring the animations be paused to see it.
+
+	* clock.cpp, clock.h: add a one-shot "tick call" idle handler of
+	sorts to TimeManager.  This way we can better control when the
+	cross thread downloader calls happen, and keep them from affecting
+	the frame rate, and also keep them from being starved by an
+	overzealous demo.cpp.
+
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (unrealized_callback): remove the render handler.
 	(realized_callback): attach the render handler.
 	(render_surface): a very simple render handler.  We just force gtk

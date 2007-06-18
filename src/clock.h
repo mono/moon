@@ -150,6 +150,8 @@ class TimeManager : public EventObject {
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
 
+	void AddTickCall (void (*func)(gpointer), gpointer tick_data);
+
  private:
 	TimeManager ();
 
@@ -167,10 +169,10 @@ class TimeManager : public EventObject {
 	gint tick_id;
 	int current_timeout;
 
-	void (*render_cb)(gpointer);
-	gpointer render_cb_data;
+	GList *tick_calls;
 };
 
+void time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data);
 
 
 

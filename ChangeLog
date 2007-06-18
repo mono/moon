@@ -1,3 +1,8 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* gtk/ManagedDownloader.cs: use time_manager_add_tick_call for the
+	cross thread calls instead of Application.Invoke.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* test/ManagedDownloader.cs: Fixed this

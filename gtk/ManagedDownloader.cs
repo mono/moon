@@ -42,6 +42,11 @@ namespace Gtk.Moonlight {
 
 		[DllImport ("moon")]
 		internal extern static void downloader_notify_size (IntPtr downloader, long l);
+
+		public delegate void TickCall (IntPtr data);
+
+		[DllImport ("moon")]
+		internal extern static void time_manager_add_tick_call (TickCall func, IntPtr data);
 		
 		static int keyid;
 		static Hashtable downloaders = new Hashtable ();
@@ -60,6 +65,8 @@ namespace Gtk.Moonlight {
 		volatile bool downloading = true;
 		WebRequest request = null;
 		
+		TickCall tick_call;
+
 		ManagedDownloader (IntPtr native)
 		{
 			downloader = native;
@@ -80,10 +87,11 @@ namespace Gtk.Moonlight {
 				throw new Exception ("This Downloader has not been configured yet, call Open");
 			
 			using (WebResponse r = request.GetResponse ()){
-				Application.Invoke (delegate {
+				time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+					tick_call = null;
 					downloader_notify_size (downloader, r.ContentLength);
 					auto_reset.Set ();
-				});
+				}, IntPtr.Zero);
 				auto_reset.WaitOne ();
 				
 				using (Stream rstream = r.GetResponseStream ()){
@@ -94,12 +102,13 @@ namespace Gtk.Moonlight {
 						lock (buffer){
 							count = rstream.Read (buffer, 0, buffer.Length);
 						}
-						Application.Invoke (delegate {
+						time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+							tick_call = null;
 							lock (buffer){
 								downloader_write (downloader, buffer, 0, count);
 							}
 							auto_reset.Set ();
-						});
+						}, IntPtr.Zero);
 						auto_reset.WaitOne ();
 						if (count == 0){
 							// We are done.

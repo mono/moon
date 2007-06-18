@@ -506,7 +506,7 @@ main (int argc, char *argv [])
 
 class FileDownloadState {
  public:
-	FileDownloadState (Downloader *dl) : downloader(dl), fd (-1), async_idle (-1) { }
+	FileDownloadState (Downloader *dl) : downloader(dl), fd (-1) { }
 
 	virtual ~FileDownloadState () { Close (); }
 
@@ -523,7 +523,7 @@ class FileDownloadState {
 		struct stat sb;
 		fstat (fd, &sb);
 		downloader_notify_size (downloader, sb.st_size);
-		async_idle = g_idle_add (async_fill_buffer, this);
+		TimeManager::Instance ()->AddTickCall (async_fill_buffer, this);
 	}
 
 	void Send () { }
@@ -534,30 +534,28 @@ class FileDownloadState {
 			close (fd);
 			fd = -1;
 		}
-		if (async_idle != -1) { 
-			g_source_remove (async_idle);
-			async_idle = -1;
-		}
+
+		//TimeManager::Instance ()->RemoveTickCall (async_fill_buffer, this);
 	}
  private:
 	int fd;
-	int async_idle;
 	Downloader *downloader;
 	guchar buf[8192];
 
-	gboolean AsyncFillBuffer ()
+	void AsyncFillBuffer ()
 	{
 		int n = read (fd, buf, sizeof (buf));
 
 		if (n >= 0)
 			downloader_write (downloader, buf, 0, n);
 
-		return n > 0;
+		if (n > 0)
+			TimeManager::Instance ()->AddTickCall (async_fill_buffer, this);
 	}
 
-	static gboolean async_fill_buffer (gpointer cb_data)
+	static void async_fill_buffer (gpointer cb_data)
 	{
-		return ((FileDownloadState*)cb_data)->AsyncFillBuffer ();
+		((FileDownloadState*)cb_data)->AsyncFillBuffer ();
 	}
 };
 
