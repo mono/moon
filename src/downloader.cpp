@@ -198,6 +198,12 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 }
 
 void
+downloader_notify_finished (Downloader *dl)
+{
+	downloader_notify (dl, Downloader::NOTIFY_COMPLETED);
+}
+
+void
 downloader_notify_size (Downloader *dl, int64_t size)
 {
 	dl->file_size = size;

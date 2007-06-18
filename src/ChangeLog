@@ -1,3 +1,7 @@
+2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
+
+	* downloader.cpp: Add missing downloader_notify_finished.
+
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* downloader.cpp: Only set dummy downloader functions if they
