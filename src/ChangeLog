@@ -1,3 +1,10 @@
+2007-06-18  Marek Habersack  <grendello@gmail.com>
+
+	* mplayer.cpp (ALIGN): make sure the ALIGN macro is correct on 64 bit
+	platforms too.
+
+	* ffvideo.cpp (ALIGN): as above.
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp: simplify pausing and stopping a clock that has

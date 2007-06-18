@@ -33,8 +33,11 @@ G_END_DECLS
 
 #include "mplayer.h"
 
-
+#if GLIB_SIZEOF_VOID_P == 8
+#define ALIGN(addr,size) (uint8_t *) (((uint64_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
+#else
 #define ALIGN(addr,size) (uint8_t *) (((uint32_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
+#endif
 
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
