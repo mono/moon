@@ -986,24 +986,17 @@ geometry_from_str (char *str)
 			cp.y = cp3.y;
 			break;
 		}
-		// The docs here confuse me, this is obviously wrong, since it is
-		// exactly the same as 'q'
 		case 't':
 			relative = true;
 		case 'T':
 		{
 			data++;
 
-			get_point (&cp1, &data);
-			if (relative) make_relative (&cp, &cp1);
-
-			advance (&data);
-
 			get_point (&cp2, &data);
 			if (relative) make_relative (&cp, &cp2);
 
 			QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
+			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp));
 			qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
 
 			psc->Add (qbs);
