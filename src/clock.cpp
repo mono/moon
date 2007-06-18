@@ -195,6 +195,10 @@ Clock::Clock (Timeline *tl)
 void
 Clock::TimeUpdated (TimeSpan parent_clock_time)
 {
+	if ((current_state & STOPPED) != 0) {
+		return;
+	}
+
 	if ((current_state & PAUSED) != 0) {
 		current_time_while_paused = parent_clock_time - iter_start - parent_offset;
 		return;
