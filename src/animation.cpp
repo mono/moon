@@ -1259,7 +1259,8 @@ animation_init (void)
  	ColorKeyFrame::ValueProperty = DependencyObject::Register (Value::COLORKEYFRAME, "Value", Value::COLOR);
 
 	/* Spline keyframe properties */
-	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Value::SPLINEDOUBLEKEYFRAME, "KeySpline", Value::KEYSPLINE);
+	KeySpline *default_keyspline = new KeySpline (0, 0, 1, 0);
+	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Value::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (default_keyspline));
 // 	SplineColorKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINECOLORKEYFRAME, "KeySpline", Value::KEYSPLINE);
 // 	SplinePointKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINEPOINTKEYFRAME, "KeySpline", Value::KEYSPLINE);
 
