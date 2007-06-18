@@ -97,6 +97,6 @@
 		</Line.RenderTransform>
 	</Line>
 
-	<Image Source="moon.png" Canvas.Left="68" Canvas.Top="50" />
+	<Image Source="moon.png" Canvas.Left="10" Canvas.Top="10" />
 	
 </Canvas>
