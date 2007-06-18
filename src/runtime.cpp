@@ -2543,7 +2543,7 @@ EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer dat
 	if (l == NULL) /* we didn't find it */
 		return;
 
-	g_free (l->data);
+	delete (EventClosure*)l->data;
 	events = g_list_delete_link (events, l);
 
 	if (events == NULL) {
