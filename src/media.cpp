@@ -84,9 +84,13 @@ static gboolean
 advance_frame (void *user_data)
 {
 	MediaElement *media = (MediaElement *) user_data;
+	int64_t pos;
 	
 	if (media->mplayer->AdvanceFrame ())
 		item_invalidate (media);
+	
+	pos = media->mplayer->Position ();
+	media_element_set_position (media, pos);
 	
 	return true;
 }
@@ -143,7 +147,14 @@ MediaElement::render (Surface *s, int x, int y, int width, int height)
 void
 MediaElement::SetSource (DependencyObject *Downloader, char *PartName)
 {
-	;
+	// if we have something opened already...
+	media_element_set_current_state (this, "Closed");
+	
+	media_element_set_current_state (this, "Opening");
+	
+	// FIXME: implement me
+	
+	media_element_set_current_state (this, "Buffering");
 }
 
 void
@@ -155,13 +166,17 @@ MediaElement::Pause ()
 		g_source_remove (timeout_id);
 		timeout_id = 0;
 	}
+	
+	media_element_set_current_state (this, "Paused");
 }
 
 void
 MediaElement::Play ()
 {
-	if (timeout_id == 0 && !mplayer->IsPlaying ())
+	if (timeout_id == 0 && !mplayer->IsPlaying ()) {
 		timeout_id = mplayer->Play (advance_frame, this);
+		media_element_set_current_state (this, "Playing");
+	}
 }
 
 void
@@ -173,6 +188,8 @@ MediaElement::Stop ()
 		g_source_remove (timeout_id);
 		timeout_id = 0;
 	}
+	
+	media_element_set_current_state (this, "Stopped");
 }
 
 void
@@ -186,39 +203,44 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		printf ("video source changed to `%s'\n", uri);
 		
 		if (timeout_id != 0) {
+			media_element_set_current_state (this, "Closed");
 			g_source_remove (timeout_id);
 			timeout_id = 0;
 		}
 		
 		mplayer->Stop ();
 		
+		media_element_set_current_state (this, "Opening");
+		
 		if (mplayer->Open (uri)) {
 			printf ("video succesfully opened\n");
 			media_element_set_natural_video_height (this, mplayer->height);
 			media_element_set_natural_video_width (this, mplayer->width);
+			media_element_set_current_state (this, "Buffering");
 		} else {
+			media_element_set_current_state (this, "Error");
 			printf ("video failed to open\n");
 		}
 	} else if (prop == MediaElement::AutoPlayProperty) {
-		// handled later
+		// handled below
 	} else if (prop == MediaElement::BalanceProperty) {
 		// FIXME: implement me
 		// audio balance?
 		return;
 	} else if (prop == MediaElement::BufferingProgressProperty) {
-		// FIXME: 
+		// this can only be set by us, no-op
 		return;
 	} else if (prop == MediaElement::BufferingTimeProperty) {
-		// FIXME: 
+		// FIXME: set amount of time to buffer
 		return;
 	} else if (prop == MediaElement::CanSeekProperty) {
 		// this can only be set by us, no-op
 		return;
 	} else if (prop == MediaElement::CurrentStateProperty) {
-		// FIXME: 
+		// FIXME: raise CurrentStateChanged event
 		return;
 	} else if (prop == MediaElement::DownloadProgressProperty) {
-		// FIXME: 
+		// this can only be set by us, no-op
 		return;
 	} else if (prop == MediaElement::IsMutedProperty) {
 		bool muted = media_element_get_is_muted (this);
@@ -241,6 +263,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	} else if (prop == MediaElement::PositionProperty) {
 		// FIXME: needs to seek?
+		NotifyAttacheesOfPropertyChange (prop);
 		return;
 	} else if (prop == MediaElement::VolumeProperty) {
 		// FIXME: implement me
@@ -318,12 +341,24 @@ media_element_get_can_seek (MediaElement *media)
 	return (bool) media->GetValue (MediaElement::CanSeekProperty)->AsBool ();
 }
 
+void
+media_element_set_can_seek (MediaElement *media, bool value)
+{
+	media->SetValue (MediaElement::CanSeekProperty, Value (value));
+}
+
 char *
 media_element_get_current_state (MediaElement *media)
 {
 	Value *value = media->GetValue (MediaElement::CurrentStateProperty);
 	
 	return value ? (char *) value->AsString () : NULL;
+}
+
+void
+media_element_set_current_state (MediaElement *media, char *value)
+{
+	media->SetValue (MediaElement::CurrentStateProperty, Value (value));
 }
 
 double
@@ -886,7 +921,7 @@ media_init (void)
 	MediaElement::AutoPlayProperty = DependencyObject::Register (Value::MEDIAELEMENT, "AutoPlay", new Value (true));
 	MediaElement::BalanceProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Balance", new Value (0.0));
 	MediaElement::BufferingProgressProperty = DependencyObject::Register (Value::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
-	MediaElement::BufferingTimeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "BufferingTime", new Value (0));
+	MediaElement::BufferingTimeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "BufferingTime", Value::INT64);
 	MediaElement::CanSeekProperty = DependencyObject::Register (Value::MEDIAELEMENT, "CanSeek", new Value (false));
 	MediaElement::CurrentStateProperty = DependencyObject::Register (Value::MEDIAELEMENT, "CurrentState", Value::STRING);
 	MediaElement::DownloadProgressProperty = DependencyObject::Register (Value::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
@@ -895,6 +930,6 @@ media_init (void)
 	MediaElement::NaturalDurationProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalDuration", Value::DURATION);
 	MediaElement::NaturalVideoHeightProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalVideoHeight", Value::DOUBLE);
 	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalVideoWidth", Value::DOUBLE);
-	MediaElement::PositionProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Position", Value::DOUBLE);
-	MediaElement::VolumeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Volume", Value::DOUBLE);
+	MediaElement::PositionProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Position", Value::INT64);
+	MediaElement::VolumeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Volume", new Value (0.5));
 }

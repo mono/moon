@@ -438,6 +438,7 @@ MediaPlayer::AdvanceFrame ()
 		uint64_t elapsed_pts = elapsed_usec * video->usec_to_pts;
 		
 		target_pts = video->initial_pts + elapsed_pts;
+		this->target_pts = target_pts;
 	} else {
 		// use target_pts as set by audio thread
 		target_pts = this->target_pts;
@@ -547,16 +548,21 @@ MediaPlayer::CanSeek ()
 }
 
 void
-MediaPlayer::Seek (double position)
+MediaPlayer::Seek (int64_t position)
 {
 	// FIXME: implement me
 }
 
-double
+int64_t
 MediaPlayer::Position ()
 {
-	// FIXME: implement me
-	return 0.0f;
+	if (audio->stream_id != -1)
+		return (target_pts - audio->initial_pts);
+	
+	if (video->stream_id != -1)
+		return (target_pts - video->initial_pts);
+	
+	return 0;
 }
 
 void

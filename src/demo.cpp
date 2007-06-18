@@ -266,7 +266,7 @@ main (int argc, char *argv [])
 		text_block_set_font_size (tb, 24.0);
 		text_block_set_font_weight (tb, FontWeightsBold);
 		text_block_set_text (tb, "This is a Moonlight Demo");
-#if 0
+#if 1
 		Run *run;
 		SolidColorBrush *blue_brush = new SolidColorBrush ();
 		SolidColorBrush *magenta_brush = new SolidColorBrush ();

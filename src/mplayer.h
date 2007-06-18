@@ -62,8 +62,8 @@ public:
 	void Stop ();
 	
 	bool CanSeek ();
-	void Seek (double position);
-	double Position ();
+	void Seek (int64_t position);
+	int64_t Position ();
 	
 	void Mute ();
 	void UnMute ();

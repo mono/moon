@@ -1,3 +1,17 @@
+2007-06-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp (VideoBrush::SetupBrush): Get a reference to the
+	MediaElement if we don't already have one.
+	(VideoBrush::OnPropertyChanged): SourceName does not refer to a
+	uri, instead SourceName refers to a MediaElement.
+
+	* media.cpp: Implemented some more helper "setters", defaulted
+	some more MediaElement property values to correct values, and
+	implemented updating of both the CurrentState property and the
+	PositionProperty.
+
+	* mplayer.cpp (Position): Implemented.
+
 2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* media.cpp: Close the path after rendering the image.
@@ -49,8 +63,8 @@
 
 2007-06-18  Marek Habersack  <grendello@gmail.com>
 
-	* mplayer.cpp (ALIGN): make sure the ALIGN macro is correct on 64 bit
-	platforms too.
+	* mplayer.cpp (ALIGN): make sure the ALIGN macro is correct on 64
+	bit platforms too.
 
 	* ffvideo.cpp (ALIGN): as above.
 

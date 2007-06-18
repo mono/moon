@@ -1015,50 +1015,60 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 //
 
 DependencyProperty *VideoBrush::SourceNameProperty;
-DependencyProperty *Brush::FrameChangedProperty;
 
-// This is really internal, used to just propagate a change of type "Brush"
-
-static gboolean
-advance_frame (void *user_data)
-{
-	VideoBrush *brush = (VideoBrush *) user_data;
-	
-	if (brush->mplayer->AdvanceFrame ()) {
-		brush->OnPropertyChanged (Brush::FrameChangedProperty);
-	}
-	
-	return true;
-}
 
 VideoBrush::VideoBrush ()
 {
-	mplayer = new MediaPlayer ();
-	timeout_id = 0;
+	media = NULL;
 }
 
 VideoBrush::~VideoBrush ()
 {
-	if (timeout_id != 0)
-		g_source_remove (timeout_id);
-	
-	delete mplayer;
+	if (media != NULL) {
+		Detach (MediaElement::PositionProperty, media);
+		media->unref ();
+	}
 }
 
 bool
 VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
-	cairo_surface_t *surface = mplayer->GetSurface ();
+	MediaPlayer *mplayer = media ? media->mplayer : NULL;
 	Transform *transform = brush_get_transform (this);
 	AlignmentX ax = tile_brush_get_alignment_x (this);
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 	Stretch stretch = tile_brush_get_stretch (this);
 	double opacity, width, height;
+	cairo_surface_t *surface;
+	cairo_pattern_t *pattern;
+	cairo_matrix_t matrix;
 	
-	if (!surface) {
+	if (media == NULL) {
+		DependencyObject *obj;
+		char *name;
+		
+		name = video_brush_get_source_name (this);
+		
+		if (name == NULL || *name == '\0')
+			return true;
+		
+		if ((obj = FindName (name)) && obj->Is (Value::MEDIAELEMENT)) {
+			Attach (MediaElement::PositionProperty, obj);
+			media = (MediaElement *) obj;
+			mplayer = media->mplayer;
+			obj->ref ();
+		} else if (obj == NULL) {
+			printf ("could not find element `%s'\n", name);
+		} else {
+			printf ("obj %p is not of type MediaElement (it is %s)\n", obj,
+				Type::Find (obj->GetObjectType ())->name);
+		}
+	}
+	
+	if (!mplayer || !(surface = mplayer->GetSurface ())) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return TRUE;
+		return true;
 	}
 	
 	if (uielement) {
@@ -1074,15 +1084,12 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		opacity = 1.0;
 	}
 	
-	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, mplayer->width, mplayer->height, opacity);
-
-	cairo_matrix_t matrix;
+	pattern = image_brush_create_pattern (cairo, surface, mplayer->width, mplayer->height, opacity);
 	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->width, mplayer->height, stretch, ax, ay, transform);
 	cairo_pattern_set_matrix (pattern, &matrix);
-
+	
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
-
 	return (opacity > 0.0);
 }
 
@@ -1091,20 +1098,30 @@ VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == VideoBrush::SourceNameProperty) {
 		Value *value = GetValue (VideoBrush::SourceNameProperty);
-		char *uri = value ? value->AsString () : NULL;
+		char *name = value ? value->AsString () : NULL;
+		DependencyObject *obj;
 		
-		printf ("VideoBrush source changed to `%s'\n", uri);
-		
-		if (timeout_id != 0) {
-			g_source_remove (timeout_id);
-			timeout_id = 0;
+		if (media != NULL) {
+			Detach (MediaElement::PositionProperty, media);
+			media->unref ();
+			media = NULL;
 		}
 		
-		mplayer->Stop ();
+		if ((obj = FindName (name)) && obj->Is (Value::MEDIAELEMENT)) {
+			Attach (MediaElement::PositionProperty, obj);
+			media = (MediaElement *) obj;
+			obj->ref ();
+		} else {
+			// Note: This may have failed because the parser hasn't set the
+			// toplevel element yet, we'll try again in SetupBrush()
+		}
 		
-		if (mplayer->Open (uri))
-			timeout_id = mplayer->Play (advance_frame, this);
-		
+		NotifyAttacheesOfPropertyChange (prop);
+	} else if (prop == MediaElement::PositionProperty) {
+		// We to changes in this MediaElement property so we
+		// can notify whoever is using us to paint that they
+		// need to redraw themselves.
+		printf ("VideoBrush notified of MediaElement::PositionProperty change... propagating to our consumers\n");
 		NotifyAttacheesOfPropertyChange (prop);
 	} else {
 		TileBrush::OnPropertyChanged (prop);
@@ -1142,10 +1159,7 @@ brush_init (void)
 	Brush::OpacityProperty = DependencyObject::Register (Value::BRUSH, "Opacity", new Value (1.0));
 	Brush::RelativeTransformProperty = DependencyObject::Register (Value::BRUSH, "RelativeTransform", Value::TRANSFORMGROUP);
 	Brush::TransformProperty = DependencyObject::Register (Value::BRUSH, "Transform", Value::TRANSFORMGROUP);
-
-	// Only in Moonlight, not public.
-	Brush::FrameChangedProperty = DependencyObject::Register (Value::BRUSH, "FrameChange", new Value(0)); 
-
+	
 	/* SolidColorBrush fields */
 	SolidColorBrush::ColorProperty = DependencyObject::Register (Value::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00FFFFFF)));
 

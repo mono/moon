@@ -147,11 +147,9 @@ void	image_brush_set_image_source		(ImageBrush *brush, const char* source);
 
 
 class VideoBrush : public TileBrush {
- public:
+	MediaElement *media;
+public:
 	static DependencyProperty *SourceNameProperty;
-	
-	MediaPlayer *mplayer;
-	guint timeout_id;
 	
 	VideoBrush ();
 	~VideoBrush ();
