@@ -1,3 +1,11 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp: simplify pausing and stopping a clock that has
+	children by keeping track of the new state (the one the clock will
+	take at the end of this tick).  This is necessary because the
+	parent clock doesn't actually stop until the end of the tick, so
+	we still need to update child clocks after we've determined the
+	parent clock should stop.
 
 Mon Jun 18 19:35:56 CEST 2007 Paolo Molaro <lupus@ximian.com>
 

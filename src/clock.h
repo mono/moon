@@ -223,6 +223,7 @@ class Clock : public DependencyObject {
 	virtual void TimeUpdated (TimeSpan parent_time);
 
 	ClockState current_state;
+	ClockState new_state;
 
  protected:
 	double current_progress;

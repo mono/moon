@@ -22,7 +22,8 @@
 #include <sys/time.h>
 //#endif
 
-//#define CLOCK_DEBUG
+//#define CLOCK_DEBUG 1
+//#define TIME_TICK 1
 
 static TimeSpan
 get_now (void)
@@ -106,6 +107,9 @@ void
 TimeManager::Tick ()
 {
 	current_global_time = get_now ();
+#if TIME_TICK
+	printf ("> TICK START: %llu\n", current_global_time);
+#endif
 	//printf ("Tick() at %llu (diff = %llu)\n", current_global_time, current_global_time - old_time);
 
 	//printf ("TimeManager::Tick\n");
@@ -120,6 +124,10 @@ TimeManager::Tick ()
 	
 	// ... then cause all clocks to raise the events they've queued up
 	RaiseEnqueuedEvents ();
+#if TIME_TICK
+	TimeSpan tick_end = get_now ();
+	printf ("> TICK END: %llu (%f seconds)\n", tick_end, (double)(tick_end - current_global_time) / 1000000);
+#endif
 }
 
 void
@@ -188,7 +196,7 @@ Clock::Clock (Timeline *tl)
 void
 Clock::TimeUpdated (TimeSpan parent_clock_time)
 {
-	if ((current_state & (STOPPED | PAUSED)) != 0) {
+	if ((current_state & PAUSED) != 0) {
 		current_time_while_paused = parent_clock_time - iter_start - parent_offset;
 		return;
 	}
@@ -274,9 +282,13 @@ void
 Clock::RaiseAccumulatedEvents ()
 {
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
-	  events->Emit (/*this,*/ "CurrentTimeInvalidated");
+		events->Emit (/*this,*/ "CurrentTimeInvalidated");
 	}
 
+	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
+		current_state = new_state;
+		events->Emit (/*this,*/ "CurrentStateInvalidated");
+	}
 
 	if ((queued_events & SPEED_CHANGED) != 0)
 		SpeedChanged ();
@@ -306,21 +318,21 @@ Clock::GetCurrentProgress ()
 
 void
 Clock::Begin (TimeSpan start_time)
+
 {
-	printf ("Starting %lld\n", start_time);
 	this->start_time = start_time;
 	this->iter_start = start_time;
-	current_state = RUNNING; /* should we invalidate the state here? */
+	current_state = new_state = RUNNING; /* should we invalidate the state here? */
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
 
 void
 Clock::Pause ()
 {
-	if ((current_state & PAUSED) == PAUSED)
+	if ((new_state & PAUSED) == PAUSED)
 		return;
 
-	current_state = (ClockState)(current_state | PAUSED);
+	new_state = (ClockState)(new_state | PAUSED);
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 
 	pause_time = current_time;
@@ -334,10 +346,10 @@ Clock::Remove ()
 void
 Clock::Resume ()
 {
-	if ((current_state & PAUSED) == 0)
+	if ((new_state & PAUSED) == 0)
 		return;
 
-	current_state = (ClockState)(current_state & ~PAUSED);
+	new_state = (ClockState)(new_state & ~PAUSED);
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 
 	parent_offset += current_time_while_paused - pause_time;
@@ -361,8 +373,8 @@ Clock::SkipToFill ()
 void
 Clock::Stop ()
 {
-  printf ("stopping clock %p\n", this);
-	current_state = STOPPED;
+	printf ("stopping clock %p after this tick\n", this);
+	new_state = STOPPED;
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
 
@@ -402,10 +414,14 @@ ClockGroup::Begin (TimeSpan start_time)
 void
 ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 {
+	if ((current_state & STOPPED) != 0) {
+		return;
+	}
+
 	/* recompute our current_time */
 	this->Clock::TimeUpdated (parent_clock_time);
 
-	if ((current_state & (STOPPED | PAUSED)) == 0) {
+	if ((current_state & STOPPED) == 0) {
 		for (GList *l = child_clocks; l; l = l->next) {
 			((Clock*)l->data)->TimeUpdated (current_time);
 		}
