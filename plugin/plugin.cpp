@@ -14,8 +14,6 @@
 #include "plugin-class.h"
 #include "moon-mono.h"
 
-#define NEW_STREAM_REQUEST_AS_FILE vm_missing_file
-
 void 
 plugin_menu_about (PluginInstance *plugin)
 {
@@ -85,11 +83,10 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 	this->windowless = false;
 	
-	this->vm_missing_url = NULL;
 	this->vm_missing_file = NULL;
 	this->mono_loader_object = NULL;
 
-	plugin_instances = g_slist_append (plugin_instances, this);
+	plugin_instances = g_slist_append (plugin_instances, this->instance);
 }
 
 PluginInstance::~PluginInstance ()
@@ -98,7 +95,7 @@ PluginInstance::~PluginInstance ()
 	// free resources, it causes browser reload problems. It must be checked
 	// and fixed later.
 
-	plugin_instances = g_slist_remove (plugin_instances, this);
+	plugin_instances = g_slist_remove (plugin_instances, this->instance);
 }
 
 void 
@@ -281,16 +278,21 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-
 		*stype = NP_ASFILEONLY;
+		return NPERR_NO_ERROR;
+	} 
 
-	} else {
-		if (vm_missing_url == NEW_STREAM_REQUEST_AS_FILE){
-			*stype = NP_ASFILEONLY;
-			vm_missing_url = stream->url;
-		} else
-			*stype = NP_NORMAL;
+	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
+		*stype = NP_NORMAL;
+		return NPERR_NO_ERROR;
+	} 
+
+	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
+		*stype = NP_ASFILEONLY;
+		return NPERR_NO_ERROR;
 	}
+
+	*stype = NP_NORMAL;
 
 	return NPERR_NO_ERROR;
 }
@@ -314,8 +316,8 @@ PluginInstance::TryLoad ()
 	vm_missing_file = vm_loader_try (mono_loader_object, &error);
 
 	if (vm_missing_file != NULL){
-		vm_missing_url = NEW_STREAM_REQUEST_AS_FILE;
-		NPN_GetURL (instance, vm_missing_file, NULL);
+		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
+		NPN_GetURLNotify (instance, vm_missing_file, NULL, notify);
 		return;
 	}
 
@@ -342,11 +344,8 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	}
 
 #ifdef RUNTIME
-	if (vm_missing_url != NULL && vm_missing_url != NEW_STREAM_REQUEST_AS_FILE && !strcmp (stream->url, vm_missing_url)){
-		//
-		// We got the dependency requested
-		//
-		vm_insert_mapping (mono_loader_object, vm_missing_file, vm_missing_url);
+	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
+		vm_insert_mapping (mono_loader_object, vm_missing_file, stream->url);
 		g_free (vm_missing_file);
 		vm_missing_file = NULL;
 
@@ -359,12 +358,14 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 int32
 PluginInstance::WriteReady (NPStream* stream)
 {
+	DEBUGMSG ("WriteReady");
 	return -1L;
 }
 
 int32
 PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 {
+	DEBUGMSG ("Write");
 	return -1L;
 }
 

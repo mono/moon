@@ -39,9 +39,6 @@ class PluginInstance
 	// The name of the file that we are missing, and we requested to be loaded
 	char *vm_missing_file;
 
-	// The mode that we want to set on the next stream opening.
-	const char *vm_missing_url;
-
 	// Private methods
 	void CreateWindow ();
 	void UpdateSource ();
@@ -96,12 +93,20 @@ extern GSList *plugin_instances;
 #define IS_NOTIFY_SOURCE(x) \
 	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::SOURCE))
 
+#define IS_NOTIFY_DOWNLOADER(x) \
+	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::DOWNLOADER))
+
+#define IS_NOTIFY_REQUEST(x) \
+	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::REQUEST))
+
 class StreamNotify
 {
  public:
 	enum StreamNotifyFlags {
 		NONE = 0,
-		SOURCE = 1
+		SOURCE = 1,
+		DOWNLOADER = 2,
+		REQUEST = 3
 	};
 
 	StreamNotify () : type (NONE), pdata (NULL) {};

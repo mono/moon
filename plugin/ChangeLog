@@ -1,3 +1,11 @@
+2007-06-17  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp, plugin.h: Add a new StreamNotifyFlags REQUEST, it is used by
+	files requested by Mono runtime, the use of notify bring us a more clean
+	code to controls requested files.
+
+	* downloader.cpp: Use StreamNotify and check for existense of instance.
+
 007-06-17  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight.cs: Parse type names out of xmns strings. x:Class uses

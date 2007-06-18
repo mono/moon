@@ -72,7 +72,11 @@ p_downloader_send (gpointer state)
 	// but that is wrong (if that instance is killed, its download
 	// will not complete
 	//
-	NPN_GetURLNotify ((NPP_t *) plugin_instances->data, pd->uri, NULL, pd);
+
+	if (plugin_instances->data) {
+		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd);
+		NPN_GetURLNotify ((NPP_t *) plugin_instances->data, pd->uri, NULL, notify);
+	}
 
 	//
 	// TODO:
