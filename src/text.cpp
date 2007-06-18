@@ -404,6 +404,16 @@ TextBlock::inside_object (Surface *s, double x, double y)
 void
 TextBlock::get_size_for_brush (cairo_t *cr, double *width, double *height)
 {
+	Surface *s = item_get_surface (this);
+	
+	if (s != NULL && this->width == -1 || this->height == -1) {
+		cairo_save (s->cairo);
+		cairo_identity_matrix (s->cairo);
+		Draw (s, false, &this->width, &this->height);
+		cairo_new_path (s->cairo);
+		cairo_restore (s->cairo);
+	}
+	
 	*height = (double) this->height;
 	*width = (double) this->width;
 }
@@ -429,12 +439,11 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 		
 		pango_layout_set_text (layout, text, -1);
 		
-		if ((brush = text_block_get_foreground (this)))
-			brush->SetupBrush (s->cairo, this);
-		
-		if (render)
+		if (render) {
+			if ((brush = text_block_get_foreground (this)))
+				brush->SetupBrush (s->cairo, this);
 			pango_cairo_show_layout (s->cairo, layout);
-		else
+		} else
 			pango_cairo_layout_path (s->cairo, layout);
 	}
 	
@@ -481,14 +490,14 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 				cairo_move_to (s->cairo, x, y);
 				pango_cairo_update_layout (s->cairo, layout);
 				
-				if ((brush = inline_get_foreground (item)))
-					brush->SetupBrush (s->cairo, this);
-				
 				pango_layout_set_text (layout, text, -1);
 				
-				if (render)
+				if (render) {
+					if ((brush = inline_get_foreground (item)))
+						brush->SetupBrush (s->cairo, this);
+					
 					pango_cairo_show_layout (s->cairo, layout);
-				else
+				} else
 					pango_cairo_layout_path (s->cairo, layout);
 				
 				pango_layout_get_pixel_size (layout, &width, &height);

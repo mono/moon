@@ -1,5 +1,13 @@
 2007-06-18  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* text.cpp (get_size_for_brush): Calculate width/height if they
+	are unset.
+	(Draw): Don't use the brush if we aren't going to render (this is
+	needed so that we don't get into a recursive loop since we have to
+	manually calculate width/height).
+
+2007-06-18  Jeffrey Stedfast  <fejj@gnome.org>
+
 	* text.cpp (get_size_for_brush): Implemented (since
 	cairo_stroke_extents() won't work for us).
 
