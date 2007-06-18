@@ -1,3 +1,11 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (AnimationStorage::~AnimationStorage): delete the
+	baseValue here.
+	(Storyboard::Begin): force a TimeManager tick after we've hooked
+	up the clock, so that all the animations have proper values before
+	the next render.  Fixes the "popping" in the surface demo.
+
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: Changed DependencyObject::SetValue to never store 

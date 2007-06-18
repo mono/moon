@@ -53,6 +53,8 @@ AnimationStorage::UpdatePropertyValue ()
 
 AnimationStorage::~AnimationStorage ()
 {
+	if (baseValue)
+		delete baseValue;
 }
 
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
@@ -166,6 +168,8 @@ Storyboard::Begin ()
 	TimeManager::Instance()->AddChild (root_clock);
 
 	root_clock->Begin (TimeManager::GetCurrentGlobalTime());
+
+	TimeManager::Instance()->Tick ();
 }
 
 void
