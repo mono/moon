@@ -187,16 +187,19 @@ DoubleArray *double_array_new   (int count, double *values);
 
 class Type {
 public:
+	static Type* RegisterType (char *name, Value::Kind type, Value::Kind parent, bool value_type);
 	static Type* RegisterType (char *name, Value::Kind type, Value::Kind parent);
-	static Type* RegisterType (char *name, Value::Kind type);
+	static Type* RegisterType (char *name, Value::Kind type, bool value_type);
 	static Type* Find (char *name);
 	static Type* Find (Value::Kind type);
 	
 	bool IsSubclassOf (Value::Kind super);	
-	
+	bool IsNullable ();
+	static bool IsNullable (Value::Kind type);
 	Value::Kind parent;
 	Value::Kind type;
 	char *name;
+	bool value_type;
 
 	static void Shutdown ();
 private:
@@ -238,6 +241,7 @@ class DependencyObject : public Base {
 	virtual ~DependencyObject ();
 	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value);
 	static DependencyProperty *Register (Value::Kind type, const char *name, Value::Kind vtype);
+	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype);
 	static DependencyProperty *RegisterFull (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype, bool attached);
 	
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name);

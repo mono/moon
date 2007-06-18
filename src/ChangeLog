@@ -1,3 +1,18 @@
+2007-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+	
+	* typegen.cs: Special case a few things for DependencyObject, 
+	and make a few messages more informative.
+	* runtime.h|cpp: Add a value_type field to Type, and a constructor
+	to specify the value. Add a constructor to DependencyProperty that
+	can specify default value and type (in the case the default value
+	doesn't have the same type as the property). Changed
+	DependencyObject::SetValue to never store a null value in the 
+	hashtable. In Value destructor check for null pointers in a few 
+	cases. Update all uses of Value.k to Value.GetKind.
+	* type.cpp.in: Update to specify value_type information.
+	* value.h.in: Implement nullable type handling in Value.
+	* value.cpp, type.cpp, value.h: Updated.
+
 2007-06-18  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (get_size_for_brush): Calculate width/height if they

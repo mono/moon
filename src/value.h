@@ -259,6 +259,16 @@ public:
 
 		LASTTYPE
 // END_MANAGED_MAPPING
+		, // <- Don't move the comma anywhere
+
+/*
+	Our nullable support:
+	- Set the VALUE_ISNULL on Value.k to mark a value as null
+	- Register a property with type PropertyType | VALUE_NULLTYPE to mark a property type as nullable.
+*/
+		VALUE_NULLTYPE = 0x80000000,
+		VALUE_ISNULL   = 0x40000000,
+		VALUE_TYPEMASK = ~(VALUE_NULLTYPE | VALUE_ISNULL)
 	};
 
 	void Init ();
@@ -266,6 +276,7 @@ public:
 	Value ();
 	Value (const Value& v);
 	Value (Kind k);
+	Value (Kind k, bool null);
 	Value (bool z);
 	Value (double d);
 	Value (guint64 i);
@@ -292,8 +303,14 @@ public:
 
 	bool operator== (const Value &v) const
 	{
-		if (k != v.k)
+		if ((k & VALUE_TYPEMASK) != (v.k & VALUE_TYPEMASK))
 			return false;
+		
+		if ((k & VALUE_ISNULL) != (v.k & VALUE_ISNULL))
+			return false;
+
+		if ((k & VALUE_ISNULL) == 1 && (v.k & VALUE_ISNULL) == 1)
+			return true;
 
 		if (k == STRING) {
 			return !strcmp (u.s, v.u.s);
@@ -304,6 +321,10 @@ public:
 
 		return true;
 	}
+
+	bool		IsNull ();
+	bool		IsNullable ();
+	void		SetNull (bool null);
 
 	bool            AsBool ();
 	double          AsDouble ();
@@ -431,8 +452,12 @@ public:
 	VisualCollection*              AsVisualCollection ();
 
   
-	Kind k;
+  	// The nullable bit is removed from the returned kind
+  	// (to support comparison like GetKind () >= DEPENDENCY_OBJECT)
+  	Kind GetKind ();
+  
   private:
+	Kind k;
 	union {
 		double d;
 		guint64 ui64;

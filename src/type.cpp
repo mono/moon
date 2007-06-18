@@ -29,21 +29,21 @@ types_init_manually (void)
 	// Put types that does not inherit from DependencyObject here (manually)
 
 	//Type::RegisterType ("Invalid", Value::INVALID, Value::INVALID);
-	Type::RegisterType ("bool", Value::BOOL);
-	Type::RegisterType ("double", Value::DOUBLE);
-	Type::RegisterType ("uint64", Value::UINT64);
-	Type::RegisterType ("int", Value::INT32);
-	Type::RegisterType ("string", Value::STRING);
-	Type::RegisterType ("Color", Value::COLOR);
-	Type::RegisterType ("Point", Value::POINT);
-	Type::RegisterType ("Rect", Value::RECT);
-	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR);
-	Type::RegisterType ("Duration", Value::DURATION);
-	Type::RegisterType ("int64", Value::INT64);
-	Type::RegisterType ("KeyTime", Value::KEYTIME);
-	Type::RegisterType ("double*", Value::DOUBLE_ARRAY);
-	Type::RegisterType ("Point*", Value::POINT_ARRAY);
-	Type::RegisterType ("Matrix", Value::MATRIX);
+	Type::RegisterType ("bool", Value::BOOL, true);
+	Type::RegisterType ("double", Value::DOUBLE, true);
+	Type::RegisterType ("uint64", Value::UINT64, true);
+	Type::RegisterType ("int", Value::INT32, true);
+	Type::RegisterType ("string", Value::STRING, false);
+	Type::RegisterType ("Color", Value::COLOR, true);
+	Type::RegisterType ("Point", Value::POINT, true);
+	Type::RegisterType ("Rect", Value::RECT, true);
+	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR, true);
+	Type::RegisterType ("Duration", Value::DURATION, true);
+	Type::RegisterType ("int64", Value::INT64, true);
+	Type::RegisterType ("KeyTime", Value::KEYTIME, true);
+	Type::RegisterType ("double*", Value::DOUBLE_ARRAY, false);
+	Type::RegisterType ("Point*", Value::POINT_ARRAY, false);
+	Type::RegisterType ("Matrix", Value::MATRIX, true);
 
 #if DEBUG
 	for (int i = 1; i < Value::LASTTYPE; i++) {
@@ -68,7 +68,7 @@ types_init_manually (void)
 void
 types_init (void)
 {
-	Type::RegisterType ("DependencyObject", Value::DEPENDENCY_OBJECT);
+	Type::RegisterType ("DependencyObject", Value::DEPENDENCY_OBJECT, false);
 	Type::RegisterType ("Animation", Value::ANIMATION, Value::TIMELINE);
 	Type::RegisterType ("AnimationClock", Value::ANIMATIONCLOCK, Value::CLOCK);
 	Type::RegisterType ("ArcSegment", Value::ARCSEGMENT, Value::PATHSEGMENT);

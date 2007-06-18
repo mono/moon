@@ -33,6 +33,7 @@
 #include "transform.h"
 #include "animation.h"
 #include "text.h"
+#include "value.h"
 
 #if AGG
 struct _SurfacePrivate {
@@ -268,6 +269,43 @@ double_array_from_str (const char *s, int* count)
  * Value implementation
  */
 
+Value::Value (Kind k, bool null)
+{
+	Init ();
+
+	// Only value types can be nullable.
+	g_assert (Type::IsNullable (k) == Type::Find (k)->value_type);
+
+	if (Type::Find (k)->value_type && null) {
+		g_assert (Type::IsNullable (k));
+		this->k = (Kind) (k | VALUE_ISNULL);
+	} else {
+		this->k = k;
+	}
+}
+
+bool
+Value::IsNullable ()
+{
+	return (k & VALUE_NULLTYPE) == VALUE_NULLTYPE;
+}
+
+bool
+Value::IsNull ()
+{
+	if (!Type::Find (k)->value_type) {
+		return u.dependency_object == NULL;
+	} else {
+		return (k & VALUE_ISNULL) == VALUE_ISNULL;
+	}
+}
+
+Value::Kind
+Value::GetKind ()
+{
+	return (Value::Kind) (k & VALUE_TYPEMASK);
+}
+
 void
 Value::Init ()
 {
@@ -457,16 +495,16 @@ Value::Value (Matrix *matrix)
 
 Value::~Value ()
 {
-	switch (k) {
+	switch (GetKind ()) {
 	case STRING:
 		g_free (u.s);
 		break;
 	case POINT_ARRAY:
-		if (--u.point_array->basic.refcount == 0)
+		if (u.point_array != NULL &&--u.point_array->basic.refcount == 0)
 			g_free (u.point_array);
 		break;
 	case DOUBLE_ARRAY:
-		if (--u.double_array->basic.refcount == 0)
+		if (u.double_array != NULL && --u.double_array->basic.refcount == 0)
 			g_free (u.double_array);
 		break;
 	case MATRIX:
@@ -491,7 +529,7 @@ Value::~Value ()
 		delete u.keytime;
 		break;
 	default:
-		if (k >= DEPENDENCY_OBJECT)
+		if (GetKind () >= DEPENDENCY_OBJECT)
 			u.dependency_object->unref ();
 	}
 }
@@ -1759,24 +1797,24 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	g_return_if_fail (property != NULL);
 
 	if (value != NULL){
-		if (!Type::Find (value->k)->IsSubclassOf (property->value_type)) {
-			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetType ()->name, property->name, Type::Find (property->value_type)->name, Type::Find (value->k)->name);
+		if (!Type::Find (value->GetKind ())->IsSubclassOf (property->value_type)) {
+			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetType ()->name, property->name, Type::Find (property->value_type)->name, Type::Find (value->GetKind ())->name);
 			return;
 		}
 	} else {
-		if (!(property->value_type >= Value::DEPENDENCY_OBJECT)){
-			g_warning ("Can not set a scalar type to NULL");
+		if (!(property->value_type >= Value::DEPENDENCY_OBJECT) && !Type::IsNullable (property->value_type)){
+			g_warning ("Can not set a non-nullable scalar type to NULL");
 			return;
 		}
 	}
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
-	if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT) {
+	if (current_value != NULL && current_value->GetKind () >= Value::DEPENDENCY_OBJECT) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
 		current_as_dep->SetParent (NULL);
 	}
-	if (value != NULL && value->k >= Value::DEPENDENCY_OBJECT) {
+	if (value != NULL && value->GetKind () >= Value::DEPENDENCY_OBJECT) {
 		DependencyObject *new_as_dep = value->AsDependencyObject ();
 		new_as_dep->SetParent (this);
 	}
@@ -1785,7 +1823,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	    (current_value != NULL && value == NULL) ||
 	    (current_value != NULL && value != NULL && *current_value != *value)) {
 
-		if (current_value != NULL && current_value->k >= Value::DEPENDENCY_OBJECT){
+		if (current_value != NULL && current_value->GetKind () >= Value::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->AsDependencyObject();
 
 			if (dob != NULL)
@@ -1797,7 +1835,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		g_hash_table_insert (current_values, property->name, store);
 
 		if (value) {
-			if (value->k >= Value::DEPENDENCY_OBJECT){
+			if (value->GetKind () >= Value::DEPENDENCY_OBJECT){
 				DependencyObject *dob = value->AsDependencyObject();
 				
 				if (dob != NULL)
@@ -2026,7 +2064,7 @@ DependencyObject::Register (Value::Kind type, const char *name, Value *default_v
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, default_value->k, false);
+	return RegisterFull (type, name, default_value, default_value->GetKind (), false);
 }
 
 static void
@@ -2039,6 +2077,21 @@ static void
 free_property (gpointer v)
 {
 	delete (DependencyProperty*)v;
+}
+
+//
+// DependencyObject takes ownership of the Value * for default_value
+// This overload can be used to set the type of the property to a different type
+// than the default value (the default value can for instance be a SolidColorBrush
+// while the property type can be a Brush).
+//
+DependencyProperty *
+DependencyObject::Register (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype)
+{
+	g_return_val_if_fail (default_value != NULL, NULL);
+	g_return_val_if_fail (name != NULL, NULL);
+
+	return RegisterFull (type, name, default_value, vtype, false);
 }
 
 //
@@ -2739,9 +2792,9 @@ Type::~Type()
 }
 
 Type *
-Type::RegisterType (char *name, Value::Kind type)
+Type::RegisterType (char *name, Value::Kind type, bool value_type)
 {
-	return RegisterType (name, type, Value::INVALID);
+	return RegisterType (name, type, Value::INVALID, value_type);
 }
 
 void
@@ -2753,6 +2806,12 @@ Type::free_type (gpointer type)
 Type *
 Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
 {
+	return RegisterType (name, type, parent, false);
+}
+
+Type *
+Type::RegisterType (char *name, Value::Kind type, Value::Kind parent, bool value_type)
+{
 	if (types == NULL) {
 		memset (&types, 0, Value::LASTTYPE * sizeof (Type*));
 	}
@@ -2762,6 +2821,7 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
 	}
 
 	Type *result = new Type (name, type, parent);
+	result->value_type = value_type;
 
 	g_assert (types [type] == NULL);
 
@@ -2791,6 +2851,12 @@ Type::IsSubclassOf (Value::Kind super)
 	return parent_type->IsSubclassOf (super);
 }
 
+bool
+Type::IsNullable (Value::Kind k)
+{
+	return (k & Value::VALUE_NULLTYPE) == Value::VALUE_NULLTYPE;
+}
+
 Type *
 Type::Find (char *name)
 {
@@ -2807,7 +2873,7 @@ Type::Find (char *name)
 Type *
 Type::Find (Value::Kind type)
 {
-	return types [type];
+	return types [type & Value::VALUE_TYPEMASK];
 }
 
 void

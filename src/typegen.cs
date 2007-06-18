@@ -36,6 +36,10 @@ class gen {
 			int a, b;
 			int start = 0;
 			int next;
+	
+			if (c == "DependencyObject")
+				continue;
+
 			do {
 				start = contents.IndexOf (Environment.NewLine + "class " + c + " ", start);
 				next = contents.IndexOf (Environment.NewLine + "class ", start + 10);
@@ -55,11 +59,11 @@ class gen {
 				continue;
 
 			if (contents.IndexOf ("Value::Kind GetObjectType", start, next - start) == -1) {
-				Console.WriteLine ("The class '{0}' does not seem to have an implementation of GetObjectType.", c);
+				Console.WriteLine ("Warning: The class '{0}' does not seem to have an implementation of GetObjectType.", c);
 				//Console.WriteLine (">Code Checked:");
 				//Console.WriteLine (contents.Substring (start, next - start));	
 			} else if (contents.IndexOf ("Value::" + getU (c), start, next - start) == -1) {
-				Console.WriteLine ("The method '{0}::GetObjectType' does not seem to return the correct type (didn't find 'Value::{1}' anywhere within the class).", c, getU (c));
+				Console.WriteLine ("Warning: The method '{0}::GetObjectType' does not seem to return the correct type (didn't find 'Value::{1}' anywhere within the headers).", c, getU (c));
 			} else {
 				//Console.WriteLine ("OK: " + c);
 			}
@@ -247,7 +251,7 @@ class gen {
 			if (p != null && p != string.Empty && c != "DependencyObject") {
 				text.AppendLine (string.Format ("\tType::RegisterType (\"{0}\", Value::{1}, Value::{2});", c, getU(c), getU (p)));
 			} else if (c == "DependencyObject"){
-				text.AppendLine (string.Format ("\tType::RegisterType (\"{0}\", Value::{1});", c, getU(c)));
+				text.AppendLine (string.Format ("\tType::RegisterType (\"{0}\", Value::{1}, false);", c, getU(c)));
 			}	
 		}
 		text.AppendLine ("\ttypes_init_manually ();");
