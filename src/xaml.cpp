@@ -41,7 +41,7 @@ DefaultNamespace *default_namespace = NULL;
 XNamespace *x_namespace = NULL;
 
 
-typedef void* (*create_item_func) ();
+typedef DependencyObject *(*create_item_func) (void);
 typedef XamlElementInstance *(*create_element_instance_func) (XamlParserInfo *p, XamlElementInfo *i);
 typedef void  (*add_child_func) (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 typedef void  (*set_property_func) (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
@@ -113,7 +113,7 @@ class XamlElementInstance {
 	};
 
 	int element_type;
-	void *item;
+	DependencyObject *item;
 
 
 	XamlElementInstance (XamlElementInfo *info) : info (info), element_name (NULL), instance_name (NULL),
