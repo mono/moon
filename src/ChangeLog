@@ -1,3 +1,9 @@
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: Store NULL again in the property hashtable,
+	but use the lookup_extended function to detect this and return
+	a correct NULL value instead of the default value.
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (RemoveHandler): more cleanups.

@@ -1983,13 +1983,13 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 				dob->Detach (property, this);
 		}
 
-		//
-		// Don't store a null value, since GetValue will then
-		// return the default value.
-		//
 		Value *store;
 		if (value == NULL) {
-			store = new Value (property->value_type, true);
+			if (Type::IsNullable (property->value_type)) {
+				store = new Value (property->value_type, true);
+			} else {
+				store = NULL;
+			}
 		} else {
 			store = new Value (*value);
 		}
@@ -2025,9 +2025,10 @@ DependencyObject::GetValue (DependencyProperty *property)
 {
 	Value *value = NULL;
 
-	value = (Value *) g_hash_table_lookup (current_values, property->name);
+	bool found;
+	found = g_hash_table_lookup_extended (current_values, property->name, NULL, (void**)&value);
 
-	if (value != NULL)
+	if (found)
 		return value;
 
 	return property->default_value;
