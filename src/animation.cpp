@@ -1228,20 +1228,20 @@ void
 animation_init (void)
 {
 	/* DoubleAnimation properties */
-	DoubleAnimation::ByProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "By",   Value::DOUBLE);
-	DoubleAnimation::FromProperty = DependencyObject::Register (Value::DOUBLEANIMATION, "From", Value::DOUBLE);
-	DoubleAnimation::ToProperty   = DependencyObject::Register (Value::DOUBLEANIMATION, "To",   Value::DOUBLE);
+	DoubleAnimation::ByProperty   = DependencyObject::RegisterNullable (Value::DOUBLEANIMATION, "By",   Value::DOUBLE);
+	DoubleAnimation::FromProperty = DependencyObject::RegisterNullable (Value::DOUBLEANIMATION, "From", Value::DOUBLE);
+	DoubleAnimation::ToProperty   = DependencyObject::RegisterNullable (Value::DOUBLEANIMATION, "To",   Value::DOUBLE);
 
 
 	/* ColorAnimation properties */
-	ColorAnimation::ByProperty   = DependencyObject::Register (Value::COLORANIMATION, "By",   Value::COLOR); // null defaults
-	ColorAnimation::FromProperty = DependencyObject::Register (Value::COLORANIMATION, "From", Value::COLOR);
-	ColorAnimation::ToProperty   = DependencyObject::Register (Value::COLORANIMATION, "To",   Value::COLOR);
+	ColorAnimation::ByProperty   = DependencyObject::RegisterNullable (Value::COLORANIMATION, "By",   Value::COLOR); // null defaults
+	ColorAnimation::FromProperty = DependencyObject::RegisterNullable (Value::COLORANIMATION, "From", Value::COLOR);
+	ColorAnimation::ToProperty   = DependencyObject::RegisterNullable (Value::COLORANIMATION, "To",   Value::COLOR);
 
 	/* PointAnimation properties */
-	PointAnimation::ByProperty   = DependencyObject::Register (Value::POINTANIMATION, "By",   Value::POINT); // null defaults
-	PointAnimation::FromProperty = DependencyObject::Register (Value::POINTANIMATION, "From", Value::POINT);
-	PointAnimation::ToProperty   = DependencyObject::Register (Value::POINTANIMATION, "To",   Value::POINT);
+	PointAnimation::ByProperty   = DependencyObject::RegisterNullable (Value::POINTANIMATION, "By",   Value::POINT); // null defaults
+	PointAnimation::FromProperty = DependencyObject::RegisterNullable (Value::POINTANIMATION, "From", Value::POINT);
+	PointAnimation::ToProperty   = DependencyObject::RegisterNullable (Value::POINTANIMATION, "To",   Value::POINT);
 
 	/* Storyboard properties */
 	Storyboard::TargetPropertyProperty = DependencyObject::Register (Value::STORYBOARD, "TargetProperty", 

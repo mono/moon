@@ -2151,6 +2151,12 @@ DependencyObject::Register (Value::Kind type, const char *name, Value *default_v
 	return RegisterFull (type, name, default_value, vtype, false);
 }
 
+DependencyProperty *
+DependencyObject::RegisterNullable (Value::Kind type, const char *name, Value::Kind vtype)
+{
+	return Register (type, name, (Value::Kind) (vtype | Value::VALUE_NULLTYPE));
+}
+
 //
 // Register the dependency property that belongs to @type with the name @name
 // The default value is @default_value (if provided) and the type that can be
@@ -2263,6 +2269,18 @@ DependencyProperty::~DependencyProperty ()
 DependencyProperty *dependency_property_lookup (Value::Kind type, char *name)
 {
 	return DependencyObject::GetDependencyProperty (type, name);
+}
+
+char*
+dependency_property_get_name (DependencyProperty *property)
+{
+	return property->name;
+}
+
+Value::Kind
+dependency_property_get_value_type (DependencyProperty *property)
+{
+	return property->value_type;
 }
 
 
@@ -2897,6 +2915,8 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent, bool value
 bool 
 Type::IsSubclassOf (Value::Kind super)
 {
+	super = (Value::Kind) (super & Value::VALUE_TYPEMASK);
+
 	if (type == super)
 		return true;
 
@@ -2946,6 +2966,12 @@ Type::Shutdown ()
 		g_hash_table_destroy (types_by_name);
 		types_by_name = NULL;
 	}
+}
+
+bool
+type_get_value_type (Value::Kind type)
+{
+	return Type::Find (type)->value_type;
 }
 
 static bool inited = false;

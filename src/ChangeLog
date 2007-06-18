@@ -1,5 +1,12 @@
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.h|cpp: Add DependencyObject::RegisterNullable. Add a few
+	C-style methods to access Type and DependencyProperty fields.
+	In Type::IsSubclassOf don't take into account nullability.
+	* animation.cpp, clock.cpp: Register nullable properties as such.
+
+2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* media.h|cpp: Add media_base_new.
 
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>

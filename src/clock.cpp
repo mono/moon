@@ -673,7 +673,7 @@ clock_init ()
 {
 	/* Timeline properties */
 	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
-	Timeline::BeginTimeProperty = DependencyObject::Register (Value::TIMELINE, "BeginTime", Value::INT64);
+	Timeline::BeginTimeProperty = DependencyObject::RegisterNullable (Value::TIMELINE, "BeginTime", Value::INT64);
 	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value (Duration::Automatic));
 	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
 	Timeline::FillBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "FillBehavior", new Value ((int)FillBehaviorHoldEnd));

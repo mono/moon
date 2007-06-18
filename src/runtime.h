@@ -210,6 +210,8 @@ private:
 	static void free_type (gpointer v);
 };
 
+bool type_get_value_type (Value::Kind type);
+
 //
 // This guy provide reference counting
 //
@@ -242,6 +244,7 @@ class DependencyObject : public Base {
 	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value);
 	static DependencyProperty *Register (Value::Kind type, const char *name, Value::Kind vtype);
 	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype);
+	static DependencyProperty *RegisterNullable (Value::Kind type, const char *name, Value::Kind vtype);
 	static DependencyProperty *RegisterFull (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype, bool attached);
 	
 	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name);
@@ -331,6 +334,8 @@ class DependencyProperty {
 };
 
 DependencyProperty *dependency_property_lookup (Value::Kind type, char *name);
+char* dependency_property_get_name (DependencyProperty* property);
+Value::Kind dependency_property_get_value_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 
 
