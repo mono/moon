@@ -1,0 +1,7 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <TextBlock Text="HELLO" FontSize="100">
+  	  <TextBlock.Foreground>
+		<VideoBrush SourceName="file:///tmp/BoxerSmacksdownInhoffe.wmv" Stretch="None"/>
+	  </TextBlock.Foreground>
+        </TextBlock>
+</Canvas>
