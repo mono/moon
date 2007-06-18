@@ -150,12 +150,12 @@ Shape::Shape ()
 Shape::~Shape ()
 {
 	if (stroke != NULL) {
-		stroke->Detach (Brush::ChangedProperty, this);
+		stroke->Detach (NULL, this);
 		stroke->unref ();
 	}
 	
 	if (fill != NULL) {
-		fill->Detach (Brush::ChangedProperty, this);
+		fill->Detach (NULL, this);
 		fill->unref ();
 	}
 }
@@ -234,7 +234,7 @@ void
 Shape::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_save (s->cairo);
-	DoDraw (s, TRUE, TRUE);
+	DoDraw (s, true, true);
 	cairo_restore (s->cairo);
 }
 
@@ -248,7 +248,7 @@ Shape::getbounds ()
 	
 	cairo_save (s->cairo);
 	// dont do the operation and don't do the fill setup
-	DoDraw (s, FALSE, FALSE);
+	DoDraw (s, false, false);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
@@ -260,11 +260,11 @@ Shape::getbounds ()
 bool
 Shape::inside_object (Surface *s, double x, double y)
 {
-	bool ret = FALSE;
+	bool ret = false;
 
 	cairo_save (s->cairo);
 	// don't do the operation but do consider filling
-	DoDraw (s, FALSE, TRUE);
+	DoDraw (s, false, true);
 	double nx = x;
 	double ny = y;
 
@@ -288,28 +288,27 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 	if (prop->type == Value::SHAPE) {
 		if (prop == Shape::StrokeProperty) {
 			if (stroke != NULL) {
-				stroke->Detach (Brush::ChangedProperty, this);
+				stroke->Detach (NULL, this);
 				stroke->unref ();
 			}
 			
 			if ((stroke = shape_get_stroke (this)) != NULL) {
-				stroke->Attach (Brush::ChangedProperty, this);
+				stroke->Attach (NULL, this);
 				stroke->ref ();
 			}
 		} else if (prop == Shape::FillProperty) {
 			if (fill != NULL) {
-				fill->Detach (Brush::ChangedProperty, this);
+				fill->Detach (NULL, this);
 				fill->unref ();
 			}
 			
 			if ((fill = shape_get_fill (this)) != NULL) {
-				fill->Attach (Brush::ChangedProperty, this);
+				fill->Attach (NULL, this);
 				fill->ref ();
 			}
 		}
 		
 		FullInvalidate (false);
-		return;
 	}
 	
 	FrameworkElement::OnPropertyChanged (prop);

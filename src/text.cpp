@@ -336,7 +336,7 @@ TextBlock::~TextBlock ()
 		g_object_unref (layout);
 	
 	if (foreground != NULL) {
-		foreground->Detach (Brush::ChangedProperty, this);
+		foreground->Detach (NULL, this);
 		foreground->unref ();
 	}
 }
@@ -632,12 +632,12 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		pango_layout_set_text (layout, text ? text : "", -1);
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {
-			foreground->Detach (Brush::ChangedProperty, this);
+			foreground->Detach (NULL, this);
 			foreground->unref ();
 		}
 		
 		if ((foreground = text_block_get_foreground (this)) != NULL) {
-			foreground->Attach (Brush::ChangedProperty, this);
+			foreground->Attach (NULL, this);
 			foreground->ref ();
 		}
 	}

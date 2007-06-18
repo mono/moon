@@ -1,3 +1,13 @@
+2007-06-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	Instead of attaching to Brush::ChangedProperty, connect to NULL.
+
+	* media.cpp (render): If the width/height are 0.0, then use the
+	video's natural width/height.
+	(OnPropertyChanged): chain up.
+
+	* shape.cpp (OnPropertyChanged): Always chain up to our parent.
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (dependency_object_set_attributes): suggestion by rolf.

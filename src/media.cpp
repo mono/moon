@@ -152,6 +152,11 @@ MediaElement::render (Surface *s, int x, int y, int width, int height)
 	if (!(surface = mplayer->GetSurface ()))
 		return;
 	
+	if (w == 0.0 && h == 0.0) {
+		h = (double) mplayer->height;
+		w = (double) mplayer->width;
+	}
+	
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
@@ -295,9 +300,6 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::VolumeProperty) {
 		// FIXME: implement me
 		return;
-	} else {
-		// propagate to parent class
-		MediaBase::OnPropertyChanged (prop);
 	}
 	
 	if (autoplay && timeout_id == 0 && !mplayer->IsPlaying ()) {
@@ -306,6 +308,9 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	FullInvalidate (false);
+	
+	// propagate to parent class
+	MediaBase::OnPropertyChanged (prop);
 }
 
 MediaElement *

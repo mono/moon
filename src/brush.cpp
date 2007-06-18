@@ -1055,7 +1055,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		name = video_brush_get_source_name (this);
 		
 		if (name == NULL || *name == '\0')
-			return true;
+			return false;
 		
 		if ((obj = FindName (name)) && obj->Is (Value::MEDIAELEMENT)) {
 			obj->Attach (MediaElement::PositionProperty, this);
@@ -1095,6 +1095,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
+	
 	return (opacity > 0.0);
 }
 

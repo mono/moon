@@ -654,7 +654,7 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (0), x1 (0), y1
 UIElement::~UIElement ()
 {
 	if (opacityMask != NULL) {
-		opacityMask->Detach (Brush::ChangedProperty, this);
+		opacityMask->Detach (NULL, this);
 		opacityMask->unref ();
 	}
 }
@@ -674,12 +674,12 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		FullInvalidate (false);
 	} else if (prop == UIElement::OpacityMaskProperty) {
 		if (opacityMask != NULL) {
-			opacityMask->Detach (Brush::ChangedProperty, this);
+			opacityMask->Detach (NULL, this);
 			opacityMask->unref ();
 		}
 		
 		if ((opacityMask = uielement_get_opacity_mask (this)) != NULL) {
-			opacityMask->Attach (Brush::ChangedProperty, this);
+			opacityMask->Attach (NULL, this);
 			opacityMask->ref ();
 		}
 		
@@ -1065,7 +1065,7 @@ Panel::Panel ()
 Panel::~Panel ()
 {
 	if (background != NULL) {
-		background->Detach (Brush::ChangedProperty, this);
+		background->Detach (NULL, this);
 		background->unref ();
 	}
 }
@@ -1089,12 +1089,12 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 		}
 	} else if (prop == BackgroundProperty) {
 		if (background != NULL) {
-			background->Detach (Brush::ChangedProperty, this);
+			background->Detach (NULL, this);
 			background->unref ();
 		}
 		
 		if ((background = panel_get_background (this)) != NULL) {
-			background->Attach (Brush::ChangedProperty, this);
+			background->Attach (NULL, this);
 			background->ref ();
 		}
 		
