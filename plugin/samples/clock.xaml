@@ -1,6 +1,8 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+	<Image Source="moon1.jpg" x:Name="backImage" Canvas.Left="0" Canvas.Top="0" />
+
 	<!-- border 1 -->
 	<Path Fill="#ffc6c8da" Stroke="#ff605773" StrokeThickness="3">
 		<Path.Data>
@@ -51,7 +53,7 @@
 			<TransformGroup>
 				<TransformGroup.Children>
 					<TransformCollection>
-						<RotateTransform Angle="20"/>
+						<RotateTransform x:Name="hourHand" Angle="20"/>
 					</TransformCollection>
 				</TransformGroup.Children>
 			</TransformGroup>
@@ -64,7 +66,7 @@
 			<TransformGroup>
 				<TransformGroup.Children>
 					<TransformCollection>
-						<RotateTransform Angle="230"/>
+						<RotateTransform x:Name="minuteHand" Angle="230"/>
 					</TransformCollection>
 				</TransformGroup.Children>
 			</TransformGroup>
@@ -97,6 +99,6 @@
 		</Line.RenderTransform>
 	</Line>
 
-	<Image Source="moon.png" Canvas.Left="10" Canvas.Top="10" />
+
 	
 </Canvas>
