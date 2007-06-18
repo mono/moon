@@ -718,6 +718,12 @@ text_block_set_text_wrapping (TextBlock *textblock, TextWrapping value)
 	textblock->SetValue (TextBlock::TextWrappingProperty, Value (value));
 }
 
+void
+text_block_set_font_source (TextBlock *textblock, DependencyObject *Downloader)
+{
+	textblock->SetFontSource (Downloader);
+}
+
 
 // Glyphs
 

@@ -1,3 +1,7 @@
+2007-06-17  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* text.cpp : added text_block_set_font_source().
+
 2007-06-17  Miguel de Icaza  <miguel@novell.com>
 
 	* brush.cpp (brush_init): Create a BRUSH property called
