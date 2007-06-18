@@ -555,10 +555,16 @@ Image::DownloaderEvent (int kind)
 		if (!render_progressive)
 			CreateSurface ();
 
+		if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
+			SetValue (FrameworkElement::WidthProperty, (double) pixbuf_width);
+
+		if (GetValueNoDefault (FrameworkElement::HeightProperty) == NULL)
+			SetValue (FrameworkElement::HeightProperty, (double) pixbuf_height);
+
 		if (brush)
 			brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
-		else
-			item_invalidate (this);
+		else 
+			FullInvalidate (true);
 	}
 }
 

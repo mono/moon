@@ -18,6 +18,11 @@
 
 2007-06-18  Miguel de Icaza  <miguel@novell.com>
 
+	* media.cpp (DownloaderEvent): If the Width/Height have not been
+	set explicitly, provide them from the images (demo works, but it
+	takes a while, due to the idle handler being too busy to be
+	invoked).
+
 	* runtime.cpp (Canvas::render):  Cope with rounding from floats to
 	ints, add 2, fixes the droppings in the surface.
 
