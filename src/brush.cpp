@@ -1009,7 +1009,6 @@ advance_frame (void *user_data)
 	VideoBrush *brush = (VideoBrush *) user_data;
 	
 	if (brush->mplayer->AdvanceFrame ()) {
-		printf ("Advancing frame\n");
 		brush->OnPropertyChanged (Brush::FrameChangedProperty);
 	}
 	
