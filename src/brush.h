@@ -40,7 +40,8 @@ class Brush : public DependencyObject {
 	static DependencyProperty* OpacityProperty;
 	static DependencyProperty* RelativeTransformProperty;
 	static DependencyProperty* TransformProperty;
-
+	static DependencyProperty* FrameChangedProperty;
+	
 	Brush () { }
 	virtual Value::Kind GetObjectType () { return Value::BRUSH; };
 
