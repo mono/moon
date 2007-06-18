@@ -164,8 +164,12 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 		Brush *fill = shape_get_fill (this);
 		if (fill) {
 			Draw (s);
-			if (do_op && fill->SetupBrush (s->cairo, this))
-				cairo_fill (s->cairo);
+			if (do_op) {
+				if (fill->SetupBrush (s->cairo, this))
+					cairo_fill (s->cairo);
+				else
+					cairo_new_path (s->cairo);
+			}
 		}
 	}
 
@@ -200,8 +204,12 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 		cairo_set_line_cap (s->cairo, convert_line_cap (cap));
 
 		Draw (s);
-		if (do_op && stroke->SetupBrush (s->cairo, this))
-			cairo_stroke (s->cairo);
+		if (do_op) {
+			if (stroke->SetupBrush (s->cairo, this))
+				cairo_stroke (s->cairo);
+			else
+				cairo_new_path (s->cairo);
+		}
 	}
 }
 

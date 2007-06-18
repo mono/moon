@@ -1,3 +1,9 @@
+2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: getbounds gets bad results if stroke (or fill) isn't 
+	called. We create a new path so the bounds, for an invisible object,
+	will be empty.
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (Clock::TimeUpdated): return immediately if we're stopped.
