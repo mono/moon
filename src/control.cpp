@@ -33,7 +33,7 @@ void
 Control::render (Surface *surface, int x, int y, int width, int height)
 {
 	if (real_object)
-		real_object->render (surface, x, y, width, height);
+		real_object->dorender (surface, x, y, width, height);
 }
 
 void 

@@ -8,6 +8,15 @@ G_BEGIN_DECLS
 
 #include "value.h"
 
+#define TIMERS 0
+#if TIMERS
+#define STARTTIMER(id,str) TimeSpan id##_t_start = get_now(); printf ("timing of '%s' started at %lld\n", str, id##_t_start)
+#define ENDTIMER(id,str) TimeSpan id##_t_end = get_now(); printf ("timingof %p '%s' ended at %lld (%f seconds)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 1000000)
+#else
+#define STARTTIMER(id,str)
+#define ENDTIMER(id,str)
+#endif
+
 typedef void (*EventHandler) (gpointer data);
 
 class EventObject {
@@ -642,6 +651,10 @@ class UIElement : public Visual {
 	//   exposed is delimited by x, y, width, height
 	//
 	virtual void render (Surface *surface, int x, int y, int width, int height);
+
+	// a non virtual method for use when we want to wrap render
+	// with debugging and/or timing info
+	void dorender (Surface *surface, int x, int y, int width, int height);
 	
 	//
 	// get_size_for_brush:

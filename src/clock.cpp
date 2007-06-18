@@ -23,9 +23,9 @@
 //#endif
 
 //#define CLOCK_DEBUG 1
-//#define TIME_TICK 1
+#define TIME_TICK 0
 
-static TimeSpan
+TimeSpan
 get_now (void)
 {
         struct timeval tv;
@@ -108,7 +108,7 @@ TimeManager::Tick ()
 {
 	current_global_time = get_now ();
 #if TIME_TICK
-	printf ("> TICK START: %llu\n", current_global_time);
+	STARTTIMER (tick, "tick");
 #endif
 	//printf ("Tick() at %llu (diff = %llu)\n", current_global_time, current_global_time - old_time);
 
@@ -125,8 +125,7 @@ TimeManager::Tick ()
 	// ... then cause all clocks to raise the events they've queued up
 	RaiseEnqueuedEvents ();
 #if TIME_TICK
-	TimeSpan tick_end = get_now ();
-	printf ("> TICK END: %llu (%f seconds)\n", tick_end, (double)(tick_end - current_global_time) / 1000000);
+	ENDTIMER (tick, "tick");
 #endif
 }
 

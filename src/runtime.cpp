@@ -45,6 +45,10 @@ struct _SurfacePrivate {
 //#define DEBUG_INVALIDATE
 #define DEBUG_REFCNT 0
 
+#define CAIRO_CLIP 0
+#define TIME_CLIP 0
+#define TIME_REDRAW 0
+
 static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
 static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
 static callback_keyboard_event cb_keydown, cb_keyup;
@@ -844,6 +848,14 @@ UIElement::getbounds ()
 }
 
 void
+UIElement::dorender (Surface *surface, int x, int y, int width, int height)
+{
+	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
+	render (surface, x, y, width, height);
+	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
+}
+
+void
 UIElement::render (Surface *s, int x, int y, int width, int height)
 {
 	g_warning ("UIElement:render has been called. The derived class should have overridden it.");
@@ -1363,6 +1375,10 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	if (event->area.x > s->width || event->area.y > s->height)
 		return TRUE;
 
+#if TIME_REDRAW
+	STARTTIMER (expose, "redraw");
+#endif
+
 	//
 	// BIG DEBUG BLOB
 	// 
@@ -1382,6 +1398,10 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 		event->area.x, event->area.y, // gint dest_x, gint dest_y,
 		MIN (event->area.width, s->width),
 		MIN (event->area.height, s->height));
+
+#if TIME_REDRAW
+	ENDTIMER (expose, "redraw");
+#endif
 
 	return TRUE;
 }
@@ -1530,17 +1550,33 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 
 		if (true || render_rect.IntersectsWith (item_rect)) {
 			Rect inter = render_rect.Intersection(item_rect);
+#if CAIRO_CLIP
+#if TIME_CLIP
+			STARTTIMER(clip, "cairo clip setup");
+#endif
 			cairo_save (s->cairo);
 
 			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
 			// at the very least we need to clip based on the expose area.
 			// there's also a UIElement::ClipProperty
- 			cairo_rectangle (s->cairo, inter.x, inter.y, inter.w + 2, inter.h + 2);
- 			cairo_clip (s->cairo);
+			cairo_rectangle (s->cairo, inter.x, inter.y, inter.w + 2, inter.h + 2);
+			cairo_clip (s->cairo);
+#if TIME_CLIP
+			ENDTIMER(clip, "cairo clip setup");
+#endif
+#endif
+			item->dorender (s, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
 
-			item->render (s, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
-
+#if CAIRO_CLIP
+#if TIME_CLIP
+			STARTTIMER(endclip, "cairo clip teardown");
+#endif			
 			cairo_restore (s->cairo);
+
+#if TIME_CLIP
+			ENDTIMER(endclip, "cairo clip teardown");
+#endif
+#endif
 		}
 #ifdef DEBUG_INVALIDATE
 		else {
@@ -1783,7 +1819,7 @@ surface_repaint (Surface *s, int x, int y, int width, int height)
 	cairo_set_source_rgb (s->cairo, 0.7, 0.7, 0.7);
 	cairo_rectangle (s->cairo, x, y, width, height);
 	cairo_fill (s->cairo);
-	s->toplevel->render (s, x, y, width, height);
+	s->toplevel->dorender (s, x, y, width, height);
 }
 
 void *
@@ -1879,14 +1915,14 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		}
 
 		//
-		// Don't store a null value, since GetValue will then 
+		// Don't store a null value, since GetValue will then
 		// return the default value.
 		//
 		Value *store;
 		if (value == NULL) {
 			store = new Value (property->value_type, true);
 		} else {
- 			store = new Value (*value);
+			store = new Value (*value);
 		}
 
 		g_hash_table_insert (current_values, property->name, store);

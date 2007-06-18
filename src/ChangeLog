@@ -1,3 +1,19 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (UIElement::dorender): add this, and make everything
+	that calls ->render call ->dorender.
+
+	* control.cpp (render): call dorender on the realobject.
+
+	* runtime.h: add STARTTIMER/ENDTIMER macros, and add
+	UIElement::dorender which can be used to wrap render calls with
+	debug info (in this case timer info.)
+
+	* clock.h: add prototype for get_now().
+
+	* clock.cpp (get_now): make this public, so we can use it for
+	timers.
+
 2007-06-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Implement Path Geometry parsing.

@@ -350,6 +350,10 @@ class ParallelTimeline : public TimelineGroup {
 ParallelTimeline * parallel_timeline_new ();
 
 
+/* useful for timing things */
+TimeSpan get_now (void);
+
+
 G_END_DECLS
 
 #endif /* MOON_TIME_H */
