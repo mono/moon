@@ -65,6 +65,8 @@ class Image : public MediaBase {
 				    updated as we download */
 
  private:
+	bool create_xlib_surface;
+
 	void CreateSurface ();
 	void CleanupSurface ();
 	void CleanupPattern ();

@@ -467,6 +467,7 @@ DependencyProperty* Image::DownloadProgressProperty;
 Image::Image ()
   : pixbuf_width (0),
     pixbuf_height (0),
+    create_xlib_surface (true),
     pixbuf (NULL),
     loader (NULL),
     downloader (NULL),
@@ -784,6 +785,19 @@ Image::render (Surface *s, int x, int y, int width, int height)
 {
 	if (!surface)
 		return;
+
+	if (create_xlib_surface) {
+		create_xlib_surface = false;
+		cairo_surface_t *xlib_surface = cairo_surface_create_similar (s->xlib_surface, CAIRO_CONTENT_COLOR_ALPHA,
+									      pixbuf_width, pixbuf_height);
+		cairo_t *cr = cairo_create (xlib_surface);
+		cairo_set_source_surface (cr, surface, 0, 0);
+		cairo_rectangle (cr, 0, 0, pixbuf_width, pixbuf_height);
+		cairo_fill (cr);
+		cairo_destroy (cr);
+		cairo_surface_destroy (surface);
+		surface = xlib_surface;
+	}
 
 	cairo_save (s->cairo);
 

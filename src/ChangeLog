@@ -1,5 +1,10 @@
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
+	* media.cpp, media.h (Image::render): on our first rendering,
+	convert to using an xlib surface to speed up future redraws.
+
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (UIElement::dorender): add this, and make everything
 	that calls ->render call ->dorender.
 
