@@ -39,6 +39,7 @@ struct _SurfacePrivate {
 };
 #endif
 
+//#define DEBUG_INVALIDATE
 #define DEBUG_REFCNT 0
 
 static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
@@ -562,8 +563,7 @@ item_invalidate (UIElement *item)
 	
 	if (s == NULL)
 		return;
-
-// #define DEBUG_INVALIDATE 0
+	
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		item, Type::Find(item->GetObjectType())->name,
@@ -638,6 +638,8 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 				
 			newcol->closure = this;
 		}
+	} else {
+		Visual::OnPropertyChanged (prop);
 	}
 }
 
@@ -1444,7 +1446,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 
 			cairo_restore (s->cairo);
 		}
-#if DEBUG_INVALIDATE
+#ifdef DEBUG_INVALIDATE
 		else {
 			printf ("skipping object %p (%s)\n", item, Type::Find(item->GetObjectType())->name);
 		}
@@ -1843,7 +1845,6 @@ DependencyObject::GetValue (const char *name)
 	}
 
 	return GetValue (property);
-	
 }
 
 void 
