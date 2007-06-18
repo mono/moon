@@ -13,6 +13,7 @@
 #include "plugin.h"
 #include "plugin-class.h"
 #include "moon-mono.h"
+#include "downloader.h"
 
 void 
 plugin_menu_about (PluginInstance *plugin)
@@ -358,15 +359,36 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 int32
 PluginInstance::WriteReady (NPStream* stream)
 {
-	DEBUGMSG ("WriteReady");
+	DEBUGMSG ("WriteReady (%d)", stream->end);
+
+	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
+
+	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
+		Downloader * dl = (Downloader *) notify->pdata;
+		downloader_notify_size (dl, stream->end);
+		return MAX_STREAM_SIZE;
+	}
+	
+	NPN_DestroyStream (instance, stream, NPRES_DONE);
+
 	return -1L;
 }
 
 int32
 PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 {
-	DEBUGMSG ("Write");
-	return -1L;
+	DEBUGMSG ("Write size: %d offset: %d len: %d", stream->end, offset, len);
+
+	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
+
+	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
+		Downloader * dl = (Downloader *) notify->pdata;
+		downloader_write (dl, (guchar*) buffer, offset, len);
+		if ((offset+len) >= stream->end)
+			downloader_notify_finished (dl);
+	}
+
+	return len;
 }
 
 void

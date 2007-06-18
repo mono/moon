@@ -89,6 +89,9 @@ class PluginInstance
 
 extern GSList *plugin_instances;
 
+#define STREAM_NOTIFY(x) ((StreamNotify*) x)
+
+#define STREAM_NOTIFY_DATA(x) ((StreamNotify*) x)->pdata
 
 #define IS_NOTIFY_SOURCE(x) \
 	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::SOURCE))

@@ -1,5 +1,12 @@
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin.cpp, plugin.h: Implement Write and WriteReady to interact with
+	Downloader functions. It looks to be right but image still dont appears, 
+	mayeb something in download manager functions. STREAM_NOTIFY macro added to
+	header file.
+
+2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
+
 	* downloader.cpp: Fix stream notify data, must be Downloader not 
 	PluginDownloader.
 
