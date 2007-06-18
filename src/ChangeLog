@@ -1,3 +1,8 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_set_attributes): suggestion by rolf.
+	fixes setting of nullable property values.
+
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: Store NULL again in the property hashtable,

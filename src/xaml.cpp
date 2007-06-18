@@ -1491,7 +1491,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		}
 
 		if (prop) {
-			switch (prop->value_type) {
+			switch (prop->value_type & Value::VALUE_TYPEMASK) {
 			case Value::BOOL:
 				dep->SetValue (prop, Value ((bool) !g_strcasecmp ("true", attr [i + 1])));
 				break;
