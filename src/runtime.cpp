@@ -110,26 +110,26 @@ Collection::Add (DependencyObject *data)
 void
 Collection::Remove (DependencyObject *data)
 {
-	GList *l, *prev = NULL;
 	bool found = FALSE;
 
 	// Do this by hand, so we only unref if we find the object
 	for (GList *l = list; l != NULL; l = l->next){
 		if (l->data == data){
 			found = TRUE;
-			if (prev)
-				prev->next = l->next;
-			else
+			if (l->prev)
+				l->prev->next = l->next;
+			if (l->next)
+				l->next->prev = l->prev;
+			if (list == l)
 				list = l->next;
 			g_list_free_1 (l);
 			break;
 		}
-		prev = l;
 	}
 	data->SetParent (NULL);
+	data->Detach (NULL, this);
 	if (found)
 		data->unref ();
-	data->Detach (NULL, this);
 }
 
 Collection::~Collection ()
