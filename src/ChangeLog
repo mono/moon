@@ -1,3 +1,9 @@
+2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.cpp: Close the path after rendering the image.
+	* shape.cpp: Avoid the filling operation in calls to getbounds. Also
+	open and close a path before drawing normal (square) rectangles.
+
 2007-06-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.h|cpp: Add DependencyObject::RegisterNullable. Add a few

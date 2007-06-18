@@ -27,7 +27,7 @@ void moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h
 // Shape class 
 // 
 class Shape : public FrameworkElement {
-	void DoDraw (Surface *s, bool do_op);
+	void DoDraw (Surface *s, bool do_op, bool consider_fill);
  public: 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;

@@ -774,6 +774,8 @@ Image::render (Surface *s, int x, int y, int width, int height)
 
 	cairo_new_path (s->cairo);
 	cairo_rectangle (s->cairo, 0, 0, w, h);
+	cairo_close_path (s->cairo);
+
 	cairo_fill (s->cairo);
 	cairo_restore (s->cairo);
 }

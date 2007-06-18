@@ -146,7 +146,7 @@ DependencyProperty* Shape::StrokeThicknessProperty;
 // to either get the bounding box from cairo, or to paint it
 //
 void 
-Shape::DoDraw (Surface *s, bool do_op)
+Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 {
 	cairo_set_matrix (s->cairo, &absolute_xform);
 
@@ -158,8 +158,9 @@ Shape::DoDraw (Surface *s, bool do_op)
 	//	absolute_xform.x0,
 	//	absolute_xform.y0);
 
-	// not every shapes can be filled, e.g. polylines
-	if (CanFill ()) {
+	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
+	// also not every shapes can be filled, e.g. polylines, CallFill
+	if (consider_fill && CanFill ()) {
 		Brush *fill = shape_get_fill (this);
 		if (fill) {
 			Draw (s);
@@ -208,7 +209,7 @@ void
 Shape::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_save (s->cairo);
-	DoDraw (s, TRUE);
+	DoDraw (s, TRUE, TRUE);
 	cairo_restore (s->cairo);
 }
 
@@ -221,7 +222,8 @@ Shape::getbounds ()
 		return;
 	
 	cairo_save (s->cairo);
-	DoDraw (s, FALSE);
+	// dont do the operation and don't do the fill setup
+	DoDraw (s, FALSE, FALSE);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
@@ -236,7 +238,8 @@ Shape::inside_object (Surface *s, double x, double y)
 	bool ret = FALSE;
 
 	cairo_save (s->cairo);
-	DoDraw (s, FALSE);
+	// don't do the operation but do consider filling
+	DoDraw (s, FALSE, TRUE);
 	double nx = x;
 	double ny = y;
 
@@ -456,7 +459,9 @@ Rectangle::Draw (Surface *s)
 		}
 	}
 	// normal rectangle
+	cairo_new_path (s->cairo);
 	cairo_rectangle (s->cairo, 0, 0, w, h);
+	cairo_close_path (s->cairo);
 }
 
 Point
