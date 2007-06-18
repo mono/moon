@@ -54,8 +54,18 @@ namespace Moonlight {
 		internal extern static IntPtr xaml_create_from_str (string file, bool create_namescope,
 				CreateElementCallback ce, SetAttributeCallback sa, ref int kind_type);
 
-		[DllImport("moon")]
-		internal extern static string dependency_object_get_name (IntPtr obj);
+		[DllImport("moon",EntryPoint="dependency_object_get_name")]
+		internal extern static string _dependency_object_get_name (IntPtr obj);
+
+		internal static string dependency_object_get_name (IntPtr obj)
+		{
+			IntPtr p = _dependency_object_get_name (obj);
+			
+			if (p == IntPtr.Zero)
+				return null;
+
+			return Marshal.PtrToStringAnsi (obj);
+		}
 		
                 // [DONE] 1. Load XAML file 
                 // 2. Make sure XAML file exposes a few new properites:
