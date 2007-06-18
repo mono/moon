@@ -1,5 +1,9 @@
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
+	* moonlight.h: Just a high value for MAX_STREAM_SIZE.
+
+2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp, plugin.h: Implement Write and WriteReady to interact with
 	Downloader functions. It looks to be right but image still dont appears, 
 	mayeb something in download manager functions. STREAM_NOTIFY macro added to
