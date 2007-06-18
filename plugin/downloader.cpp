@@ -74,7 +74,7 @@ p_downloader_send (gpointer state)
 	//
 
 	if (plugin_instances->data) {
-		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd);
+		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
 		NPN_GetURLNotify ((NPP_t *) plugin_instances->data, pd->uri, NULL, notify);
 	}
 

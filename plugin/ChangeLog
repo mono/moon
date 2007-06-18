@@ -1,5 +1,10 @@
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
+	* downloader.cpp: Fix stream notify data, must be Downloader not 
+	PluginDownloader.
+
+2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin-glue.cpp: Remove stream destruction from Write and WriteReady, it
 	was preventing browser to call our write function.
 
