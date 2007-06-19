@@ -1,4 +1,9 @@
 2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* value.cpp|h|in: Inline the non-DependencyObject
+	As* functions as well.
+
+2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 	
 	* typegen.cs: Removed some dead code.
 	* value.cpp.in: Deleted, not needed anymore.

@@ -260,25 +260,3 @@ Value::~Value ()
 	}
 }
 
-bool            Value::AsBool () { checked_get_exact (Type::BOOL, false, (bool)u.i32); }
-double          Value::AsDouble () { checked_get_exact (Type::DOUBLE, 0.0, u.d); }
-guint64         Value::AsUint64 () { checked_get_exact (Type::UINT64, 0, u.ui64); }
-gint64          Value::AsInt64 () { checked_get_exact (Type::INT64, 0, u.i64); }
-gint32          Value::AsInt32 () { checked_get_exact (Type::INT32, 0, u.i32); }
-Color*          Value::AsColor () { checked_get_exact (Type::COLOR, NULL, u.color); }
-Point*          Value::AsPoint () { checked_get_exact (Type::POINT, NULL, u.point); }
-Rect*           Value::AsRect  () { checked_get_exact (Type::RECT, NULL, u.rect); }
-char*           Value::AsString () { checked_get_exact (Type::STRING, NULL, u.s); }
-PointArray*     Value::AsPointArray () { checked_get_exact (Type::POINT_ARRAY, NULL, u.point_array); }
-DoubleArray*    Value::AsDoubleArray () { checked_get_exact (Type::DOUBLE_ARRAY, NULL, u.double_array); }
-
-RepeatBehavior* Value::AsRepeatBehavior () { checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
-Duration*       Value::AsDuration () { checked_get_exact (Type::DURATION, NULL, u.duration); }
-KeyTime*        Value::AsKeyTime () { checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
-Matrix*         Value::AsMatrix () { checked_get_exact (Type::MATRIX, NULL, u.matrix); }
-
-/* nullable primitives (all but bool) */
-double*         Value::AsNullableDouble () { checked_get_exact (Type::DOUBLE, NULL, &u.d); }
-guint64*        Value::AsNullableUint64 () { checked_get_exact (Type::UINT64, NULL, &u.ui64); }
-gint64*         Value::AsNullableInt64 () { checked_get_exact (Type::INT64, NULL, &u.i64); }
-gint32*         Value::AsNullableInt32 () { checked_get_exact (Type::INT32, NULL, &u.i32); }

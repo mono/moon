@@ -73,27 +73,29 @@ public:
 		return true;
 	}
 
-	bool            AsBool ();
-	double          AsDouble ();
-	guint64         AsUint64 ();
-	gint64          AsInt64 ();
-	gint32          AsInt32 ();
 
-	double*         AsNullableDouble ();
-	guint64*        AsNullableUint64 ();
-	gint64*         AsNullableInt64 ();
-	gint32*         AsNullableInt32 ();
+	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
+	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
+	guint64		AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
+	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
+	gint32		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
+	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
+	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
+	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
+	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
+	PointArray*	AsPointArray ()	{ checked_get_exact (Type::POINT_ARRAY, NULL, u.point_array); }
+	DoubleArray*	AsDoubleArray ()	{ checked_get_exact (Type::DOUBLE_ARRAY, NULL, u.double_array); }
+	
+	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
+	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
+	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
+	Matrix*		AsMatrix ()	{ checked_get_exact (Type::MATRIX, NULL, u.matrix); }
 
-	Color*          AsColor ();
-	Point*          AsPoint ();
-	Rect*           AsRect  ();
-	char*           AsString ();
-	RepeatBehavior* AsRepeatBehavior ();
-	Duration*       AsDuration ();
-	KeyTime*        AsKeyTime ();
-	PointArray*     AsPointArray ();
-	DoubleArray*    AsDoubleArray ();
-	Matrix*		AsMatrix ();
+	/* nullable primitives (all but bool) */
+	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
+	guint64*	AsNullableUint64 ()	{ checked_get_exact (Type::UINT64, NULL, &u.ui64); }
+	gint64*		AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
+	gint32*		AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 
 /*DO_AS*/
   
