@@ -1,5 +1,13 @@
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
+	* geometry.cpp|h: Change API so the Strech value is propagated from
+	the shape to all the geometry figures. Fixed Stretch for LineGeometry,
+	EllipseGeometry and RectangleGeometry.
+	* shape.cpp: Path::Draw now supply the Stretch property value to
+	all Geometry objects drawing methods.
+
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
 	* shape.cpp: Don't call cairo_new_path inside moon_ellipse. It's
 	the caller responsbility to do so, if required (e.g. it isn't for
 	geometry stuff).

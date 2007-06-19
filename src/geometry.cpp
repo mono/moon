@@ -55,7 +55,7 @@ geometry_set_transform (Geometry *geometry, Transform *transform)
 }
 
 void
-Geometry::Draw (Surface *s)
+Geometry::Draw (Surface *s, Stretch stretch)
 {
 	cairo_set_fill_rule (s->cairo, convert_fill_rule (geometry_get_fill_rule (this)));
 	Transform* transform = geometry_get_transform (this);
@@ -104,14 +104,14 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-GeometryGroup::Draw (Surface *s)
+GeometryGroup::Draw (Surface *s, Stretch stretch)
 {
 	GeometryCollection *children = geometry_group_get_children (this);
-	Geometry::Draw (s);
+	Geometry::Draw (s, stretch);
 
 	for (GList *g = children->list; g != NULL; g = g->next) {
 		Geometry *geometry = (Geometry*) g->data;
-		geometry->Draw (s);
+		geometry->Draw (s, stretch);
 	}
 }
 
@@ -210,15 +210,23 @@ ellipse_geometry_new ()
 }
 
 void
-EllipseGeometry::Draw (Surface *s)
+EllipseGeometry::Draw (Surface *s, Stretch stretch)
 {
-	Geometry::Draw (s);
+	Geometry::Draw (s, stretch);
 
-	Point *pt = ellipse_geometry_get_center (this);
+	Point *pt;
 	double rx = ellipse_geometry_get_radius_x (this);
 	double ry = ellipse_geometry_get_radius_y (this);
 
-	moon_ellipse (s->cairo, pt->x - rx, pt->y - ry, rx * 2, ry * 2);
+	switch (stretch) {
+	case StretchNone:
+		pt = ellipse_geometry_get_center (this);
+		moon_ellipse (s->cairo, pt->x - rx, pt->y - ry, rx * 2, ry * 2);
+		break;
+	default:
+		moon_ellipse (s->cairo, 0, 0, rx * 2, ry * 2);
+		break;
+	}
 }
 
 //
@@ -261,15 +269,23 @@ line_geometry_new ()
 }
 
 void
-LineGeometry::Draw (Surface *s)
+LineGeometry::Draw (Surface *s, Stretch stretch)
 {
-	Geometry::Draw (s);
+	Geometry::Draw (s, stretch);
 
 	Point *p1 = line_geometry_get_start_point (this);
 	Point *p2 = line_geometry_get_end_point (this);
 
-	cairo_move_to (s->cairo, p1->x, p1->y);
-	cairo_line_to (s->cairo, p2->x, p2->y);
+	switch (stretch) {
+	case StretchNone:
+		cairo_move_to (s->cairo, p1->x, p1->y);
+		cairo_line_to (s->cairo, p2->x, p2->y);
+		break;
+	default:
+		cairo_move_to (s->cairo, 0.0, 0.0);
+		cairo_line_to (s->cairo, p2->x - p1->x, p2->y - p1->y);
+		break;
+	}
 }
 
 //
@@ -310,14 +326,14 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-PathGeometry::Draw (Surface *s)
+PathGeometry::Draw (Surface *s, Stretch stretch)
 {
 	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
-	Geometry::Draw (s);
+	Geometry::Draw (s, stretch);
 
 	for (GList *coll = children->list; coll != NULL; coll = coll->next) {
 		PathFigure *pf = (PathFigure*) coll->data;
-		pf->Draw (s);
+		pf->Draw (s, stretch);
 	}
 }
 
@@ -386,21 +402,34 @@ rectangle_geometry_new ()
 }
 
 void
-RectangleGeometry::Draw (Surface *s)
+RectangleGeometry::Draw (Surface *s, Stretch stretch)
 {
-	Geometry::Draw (s);
+	Geometry::Draw (s, stretch);
 
 	Rect *rect = rectangle_geometry_get_rect (this);
+	double x, y;
+
+	switch (stretch) {
+	case StretchNone:
+		x = rect->x;
+		y = rect->y;
+		break;
+	default:
+		x = 0;
+		y = 0;
+		break;
+	}
+
 	double radius_x = rectangle_geometry_get_radius_x  (this);
 	if (radius_x != 0) {
 		double radius_y = rectangle_geometry_get_radius_y (this);
 		if (radius_y != 0) {
-			moon_rounded_rectangle (s->cairo, rect->x, rect->y, rect->w, rect->h, radius_x, radius_y);
+			moon_rounded_rectangle (s->cairo, x, y, rect->w, rect->h, radius_x, radius_y);
 			return;
 		}
 	}
 	// normal rectangle
-	cairo_rectangle (s->cairo, rect->x, rect->y, rect->w, rect->h);
+	cairo_rectangle (s->cairo, x, y, rect->w, rect->h);
 }
 
 //
@@ -444,7 +473,7 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-PathFigure::Draw (Surface *s)
+PathFigure::Draw (Surface *s, Stretch stretch)
 {
 	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
 	Point *start = path_figure_get_start_point (this);
@@ -455,7 +484,7 @@ PathFigure::Draw (Surface *s)
 
 	for (GList *coll = children->list; coll != NULL; coll = coll->next) {
 		PathSegment *ps = (PathSegment*) coll->data;
-		ps->Draw (s);
+		ps->Draw (s, stretch);
 	}
 
 	if (path_figure_get_is_closed (this)) {
@@ -596,7 +625,7 @@ arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
 }
 
 void
-ArcSegment::Draw (Surface *s)
+ArcSegment::Draw (Surface *s, Stretch stretch)
 {
 	Point *size = arc_segment_get_size (this);
 	double angle = arc_segment_get_rotation_angle (this);
@@ -662,7 +691,7 @@ bezier_segment_set_point3 (BezierSegment *segment, Point *point)
 }
 
 void
-BezierSegment::Draw (Surface *s)
+BezierSegment::Draw (Surface *s, Stretch stretch)
 {
 	Point *p1 = bezier_segment_get_point1 (this);
 	Point *p2 = bezier_segment_get_point2 (this);
@@ -704,7 +733,7 @@ line_segment_set_point (LineSegment *segment, Point *point)
 }
 
 void
-LineSegment::Draw (Surface *s)
+LineSegment::Draw (Surface *s, Stretch stretch)
 {
 	Point *p = line_segment_get_point (this);
 
@@ -752,7 +781,7 @@ poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int c
 }
 
 void
-PolyBezierSegment::Draw (Surface *s)
+PolyBezierSegment::Draw (Surface *s, Stretch stretch)
 {
 	int count = 0;
 	Point* points = poly_bezier_segment_get_points (this, &count);
@@ -802,7 +831,7 @@ poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int count
 }
 
 void
-PolyLineSegment::Draw (Surface *s)
+PolyLineSegment::Draw (Surface *s, Stretch stretch)
 {
 	int count = 0;
 	Point* points = poly_line_segment_get_points (this, &count);
@@ -852,7 +881,7 @@ poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, P
 // quadratic to cubic bezier, the original control point and the end control point are the same
 // http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
 void
-PolyQuadraticBezierSegment::Draw (Surface *s)
+PolyQuadraticBezierSegment::Draw (Surface *s, Stretch stretch)
 {
 	int count = 0;
 	Point* points = poly_quadratic_bezier_segment_get_points (this, &count);
@@ -926,7 +955,7 @@ quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *poi
 }
 
 void
-QuadraticBezierSegment::Draw (Surface *s)
+QuadraticBezierSegment::Draw (Surface *s, Stretch stretch)
 {
 	Point *p1 = quadratic_bezier_segment_get_point1 (this);
 	Point *p2 = quadratic_bezier_segment_get_point2 (this);

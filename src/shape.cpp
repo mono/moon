@@ -903,8 +903,10 @@ void
 Path::Draw (Surface *s)
 {
 	Geometry* data = path_get_data (this);
-	if (data)
-		data->Draw (s);
+	if (data) {
+		Stretch stretch = shape_get_stretch (this);
+		data->Draw (s, stretch);
+	}
 }
 
 /*
