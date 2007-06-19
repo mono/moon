@@ -1,3 +1,9 @@
+2007-06-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (audio_loop): Fixed muting to advance the correct
+	number of pts and not hang forever in a g_usleep() (gah, the timer
+	was a huge negative value).
+
 2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* clock.h: Added TimelineMarker.

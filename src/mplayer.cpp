@@ -76,8 +76,6 @@ struct Audio {
 	
 	// sync
 	uint64_t initial_pts;
-	int usec_per_frame;
-	int usec_to_pts;
 };
 
 struct Video {
@@ -145,8 +143,6 @@ MediaPlayer::MediaPlayer ()
 	audio->pcm = NULL;
 	audio->sample_size = 0;
 	audio->initial_pts = 0;
-	audio->usec_per_frame = 0;
-	audio->usec_to_pts = 0;
 	
 	video = new Video ();
 	video->queue = g_async_queue_new ();
@@ -230,12 +226,6 @@ MediaPlayer::Open ()
 			
 			// starting time
 			audio->initial_pts = stream->start_time;
-			
-			// usec per frame
-			audio->usec_per_frame = (int) (1000 / av_q2d (stream->r_frame_rate));
-			
-			// usec -> pts conversion
-			audio->usec_to_pts = (int) av_q2d (encoding->time_base);
 			break;
 		case CODEC_TYPE_VIDEO:
 			if (video->stream_id != -1)
@@ -375,8 +365,6 @@ MediaPlayer::Close ()
 	audio->codec = NULL;
 	audio->sample_size = 0;
 	audio->initial_pts = 0;
-	audio->usec_per_frame = 0;
-	audio->usec_to_pts = 0;
 	
 	video->stream_id = -1;
 	video->stream = NULL;
@@ -698,11 +686,12 @@ pcm_poll (snd_pcm_t *pcm, struct pollfd *ufds, int nfds)
 	}
 }
 
-// Returns true if a frame of audio was played or false if insufficient data
-static bool
+// Returns the frame pts or 0 if insufficient audio data
+static uint64_t
 audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 {
 	int frame_size, samples, outlen, channels, n;
+	uint64_t frame_start;
 	uint8_t *outptr;
 	
 	channels = audio->stream->codec->channels;
@@ -713,17 +702,14 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 	
 	// make sure we have enough data to play a frame of audio
 	if (outlen < frame_size)
-		return false;
+		return 0;
 	
-	if (audio->muted) {
-		// FIXME: would it be better to play silence?
-		// sleep for a frame...
-		g_usleep (audio->usec_per_frame);
-		outptr += frame_size;
-		goto shift;
-	}
+	if (audio->muted)
+		memset (audio->outbuf, 0, frame_size);
 	
 	// FIXME: set volume?
+	
+	frame_start = av_gettime ();
 	
 	// play only 1 frame
 	while (samples > 0) {
@@ -765,8 +751,6 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 		}
 	}
 	
-shift:
-	
 	if (outptr < audio->outptr) {
 		// make room for more audio to be buffered
 		outlen = audio->outptr - outptr;
@@ -777,7 +761,7 @@ shift:
 		audio->outptr = audio->outbuf;
 	}
 	
-	return true;
+	return (av_gettime () - frame_start) / 1024;
 }
 
 static void *
@@ -785,8 +769,6 @@ audio_loop (void *data)
 {
 	MediaPlayer *mplayer = (MediaPlayer *) data;
 	Audio *audio = mplayer->audio;
-	//uint64_t pkt_pts, pts;
-	//bool have_pts = false;
 	struct pollfd *ufds;
 	uint64_t frame_pts;
 	Packet *pkt;
@@ -801,16 +783,19 @@ audio_loop (void *data)
 		}
 	}
 	
-	frame_pts = audio->usec_per_frame * audio->usec_to_pts;
-	
 	mplayer->target_pts = audio->initial_pts;
 	
 	while (!mplayer->stop) {
 		g_static_mutex_lock (&mplayer->pause_mutex);
 		
-		if (audio_play (audio, ufds, n)) {
+		if (mplayer->stop)
+			break;
+		
+		if ((frame_pts = audio_play (audio, ufds, n)) > 0) {
 			// calculated pts
+			//printf ("frame_pts = %llu\n", frame_pts);
 			mplayer->target_pts += frame_pts;
+			//printf ("calculated target_pts = %llu\n", mplayer->target_pts);
 		} else {
 			// decode an audio packet
 			if (!audio->pkt && (pkt = (Packet *) g_async_queue_try_pop (audio->queue))) {
@@ -819,6 +804,7 @@ audio_loop (void *data)
 				audio->pkt = pkt;
 				
 				mplayer->target_pts = pkt->pts;
+				//printf ("setting target_pts to %llu\n", mplayer->target_pts);
 			}
 			
 			if (audio->pkt && audio_decode (audio)) {
