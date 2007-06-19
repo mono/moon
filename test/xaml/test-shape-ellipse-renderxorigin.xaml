@@ -1,0 +1,57 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="20" Stroke="#f00" RenderTransformOrigin="0,1" />
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="20" Stroke="#00f">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="20" Stroke="#f00" />
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="20" Stroke="#00f">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="0" CenterY="0"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="100" Stroke="#f00"/>
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="100" Stroke="#00f" RenderTransformOrigin="1,1">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="100" Stroke="#f00"/>
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="100" Stroke="#00f" RenderTransformOrigin="0,1">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="40"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="180" Stroke="#f00"/>
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="180" Stroke="#00f" RenderTransformOrigin="0.5,0.5">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="180" Stroke="#f00"/>
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="180" Stroke="#00f" RenderTransformOrigin="0.5,1.0">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45" CenterY="-20"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="260" Stroke="#f00"/>
+	<Ellipse Height="40" Width="40" Canvas.Left="100" Canvas.Top="260" Stroke="#00f" RenderTransformOrigin="1.5,1.5">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="260" Stroke="#f00"/>
+	<Ellipse Height="40" Width="40" Canvas.Left="200" Canvas.Top="260" Stroke="#00f" RenderTransformOrigin="1.0,1.0">
+	   <Ellipse.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="20" CenterY="20"/>
+   	   </Ellipse.RenderTransform>
+	</Ellipse>
+</Canvas>

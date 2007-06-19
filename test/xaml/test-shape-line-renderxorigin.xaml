@@ -1,0 +1,57 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Line X1="100" Y1="20" X2="140" Y2="20" Stroke="#f00" RenderTransformOrigin="0,1" />
+	<Line X1="100" Y1="20" X2="140" Y2="20" Stroke="#00f">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Line.RenderTransform>
+	</Line>
+
+	<Line X1="200" Y1="20" X2="240" Y2="20" Stroke="#f00"/>
+	<Line X1="200" Y1="20" X2="240" Y2="20" Stroke="#00f">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="220" CenterY="20"/>
+   	   </Line.RenderTransform>
+	</Line>
+
+	<Line X1="100" Y1="100" X2="140" Y2="100" Stroke="#f00"/>
+	<Line X1="100" Y1="100" X2="140" Y2="100" Stroke="#00f" RenderTransformOrigin="1,1">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="-45"/>
+   	   </Line.RenderTransform>
+	</Line>
+
+	<Line X1="200" Y1="100" X2="240" Y2="100" Stroke="#f00"/>
+	<Line X1="200" Y1="100" X2="240" Y2="100" Stroke="#00f" RenderTransformOrigin="1,1">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="-45" CenterX="-100" CenterY="20"/>
+   	   </Line.RenderTransform>
+	</Line>
+
+	<Line X1="100" Y1="180" X2="140" Y2="180" Stroke="#f00"/>
+	<Line X1="100" Y1="180" X2="140" Y2="180" Stroke="#00f" RenderTransformOrigin="0.5,0.5">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Line.RenderTransform>
+	</Line>
+
+	<Line X1="200" Y1="180" X2="240" Y2="180" Stroke="#f00"/>
+	<Line X1="200" Y1="180" X2="240" Y2="180" Stroke="#00f" RenderTransformOrigin="0.5,0.5">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="-100" CenterY="100"/>
+   	   </Line.RenderTransform>
+	</Line>
+
+	<Line X1="100" Y1="260" X2="140" Y2="260" Stroke="#f00"/>
+	<Line X1="100" Y1="260" X2="140" Y2="260" Stroke="#00f" RenderTransformOrigin="1.5,1.5">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="-45"/>
+   	   </Line.RenderTransform>
+	</Line>
+
+	<Line X1="200" Y1="260" X2="240" Y2="260" Stroke="#f00"/>
+	<Line X1="200" Y1="260" X2="240" Y2="260" Stroke="#00f" RenderTransformOrigin="1.5,1.5">
+	   <Line.RenderTransform>
+	     <RotateTransform Angle="-45" CenterX="-50" CenterY="260"/>
+   	   </Line.RenderTransform>
+	</Line>
+</Canvas>

@@ -1,0 +1,58 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="20" Stroke="#f00" RenderTransformOrigin="0,1" />
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="20" Stroke="#00f">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="20" Stroke="#f00" />
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="20" Stroke="#00f">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="0" CenterY="0"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="100" Stroke="#f00" RadiusX="10" RadiusY="10" />
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="100" Stroke="#00f" RadiusX="10" RadiusY="10" RenderTransformOrigin="1,1">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="100" Stroke="#f00" RadiusX="10" RadiusY="10" />
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="100" Stroke="#00f" RadiusX="10" RadiusY="10" RenderTransformOrigin="0,1">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="40"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="180" Stroke="#f00"/>
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="180" Stroke="#00f" RenderTransformOrigin="0.5,0.5">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="180" Stroke="#f00"/>
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="180" Stroke="#00f" RenderTransformOrigin="0.5,1.0">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45" CenterY="-20"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="260" Stroke="#f00" RadiusX="5" RadiusY="15" />
+	<Rectangle Height="40" Width="40" Canvas.Left="100" Canvas.Top="260" Stroke="#00f" RadiusX="5" RadiusY="15" RenderTransformOrigin="1.5,1.5">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="260" Stroke="#f00" RadiusX="5" RadiusY="15" />
+	<Rectangle Height="40" Width="40" Canvas.Left="200" Canvas.Top="260" Stroke="#00f" RadiusX="5" RadiusY="15" RenderTransformOrigin="1.0,1.0">
+	   <Rectangle.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="20" CenterY="20"/>
+   	   </Rectangle.RenderTransform>
+	</Rectangle>
+
+</Canvas>
