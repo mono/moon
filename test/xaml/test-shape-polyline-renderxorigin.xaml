@@ -1,0 +1,30 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polyline Points="110,110 210,110 210,210 110,210" Stroke="#f00" RenderTransformOrigin="0,1"/>
+	<Polyline Points="110,110 210,110 210,210 110,210" Stroke="#00f" >
+	   <Polyline.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Polyline.RenderTransform>
+	</Polyline>
+
+	<Polyline Points="210,110 310,110 310,210 210,210" Stroke="#f00" />
+	<Polyline Points="210,110 310,110 310,210 210,210" Stroke="#00f">
+	   <Polyline.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="220" CenterY="20"/>
+   	   </Polyline.RenderTransform>
+	</Polyline>
+
+	<Polyline Points="110,210 210,210 210,310 110,310" Stroke="#f00" />
+	<Polyline Points="110,210 210,210 210,310 110,310" Stroke="#00f" RenderTransformOrigin="1,1">
+	   <Polyline.RenderTransform>
+	     <RotateTransform Angle="-45"/>
+   	   </Polyline.RenderTransform>
+	</Polyline>
+
+	<Polyline Points="210,210 310,210 310,310 210,310" Stroke="#f00" />
+	<Polyline Points="210,210 310,210 310,310 210,310" Stroke="#00f" RenderTransformOrigin="1,1">
+	   <Polyline.RenderTransform>
+	     <RotateTransform Angle="-45" CenterX="150" CenterY="20"/>
+   	   </Polyline.RenderTransform>
+	</Polyline>
+
+</Canvas>

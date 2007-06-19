@@ -1,0 +1,30 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polygon Points="110,110 210,110 210,210 110,210" Stroke="#f00" Fill="#7700" RenderTransformOrigin="0,1"/>
+	<Polygon Points="110,110 210,110 210,210 110,210" Stroke="#00f" Fill="#7007">
+	   <Polygon.RenderTransform>
+	     <RotateTransform Angle="45"/>
+   	   </Polygon.RenderTransform>
+	</Polygon>
+
+	<Polygon Points="210,110 310,110 310,210 210,210" Stroke="#f00" Fill="#7700"/>
+	<Polygon Points="210,110 310,110 310,210 210,210" Stroke="#00f" Fill="#7007">
+	   <Polygon.RenderTransform>
+	     <RotateTransform Angle="45" CenterX="220" CenterY="20"/>
+   	   </Polygon.RenderTransform>
+	</Polygon>
+
+	<Polygon Points="110,210 210,210 210,310 110,310" Stroke="#f00" Fill="#7700"/>
+	<Polygon Points="110,210 210,210 210,310 110,310" Stroke="#00f" Fill="#7007" RenderTransformOrigin="1,1">
+	   <Polygon.RenderTransform>
+	     <RotateTransform Angle="-45"/>
+   	   </Polygon.RenderTransform>
+	</Polygon>
+
+	<Polygon Points="210,210 310,210 310,310 210,310" Stroke="#f00" Fill="#7700"/>
+	<Polygon Points="210,210 310,210 310,310 210,310" Stroke="#00f" Fill="#7007" RenderTransformOrigin="1,1">
+	   <Polygon.RenderTransform>
+	     <RotateTransform Angle="-45" CenterX="150" CenterY="20"/>
+   	   </Polygon.RenderTransform>
+	</Polygon>
+
+</Canvas>
