@@ -1,0 +1,32 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<!-- default == None -->
+	<Path Stroke="Red" StrokeThickness="2">
+		<Path.Data>
+			<EllipseGeometry Center="10,100" RadiusX="10" RadiusY="10" />              
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Green" StrokeThickness="2" Stretch="None">
+		<Path.Data>
+			<EllipseGeometry Center="30,100" RadiusX="10" RadiusY="10" />              
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Blue" StrokeThickness="2" Stretch="Fill">
+		<Path.Data>
+			<EllipseGeometry Center="50,100" RadiusX="10" RadiusY="10" />              
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Yellow" StrokeThickness="2" Stretch="Uniform" Canvas.Left="40">
+		<Path.Data>
+			<EllipseGeometry Center="70,100" RadiusX="10" RadiusY="10" />              
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Purple" StrokeThickness="2" Stretch="UniformToFill" Canvas.Left="80">
+		<Path.Data>
+			<EllipseGeometry Center="90,100" RadiusX="10" RadiusY="10" />              
+		</Path.Data>
+	</Path>
+</Canvas>

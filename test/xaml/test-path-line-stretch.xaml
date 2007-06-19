@@ -1,0 +1,32 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<!-- default == None -->
+	<Path Stroke="Red" StrokeThickness="2">
+		<Path.Data>
+			<LineGeometry StartPoint="10,60" EndPoint="20,80" />
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Green" StrokeThickness="2" Stretch="None">
+		<Path.Data>
+			<LineGeometry StartPoint="30,60" EndPoint="40,80"/>
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Blue" StrokeThickness="2" Stretch="Fill">
+		<Path.Data>
+			<LineGeometry StartPoint="50,60" EndPoint="60,80"/>
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Yellow" StrokeThickness="2" Stretch="Uniform" Canvas.Left="40">
+		<Path.Data>
+			<LineGeometry StartPoint="70,60" EndPoint="80,80"/>
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Purple" StrokeThickness="2" Stretch="UniformToFill" Canvas.Left="80">
+		<Path.Data>
+			<LineGeometry StartPoint="90,60" EndPoint="100,80"/>
+		</Path.Data>
+	</Path>
+</Canvas>

@@ -1,0 +1,57 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<!-- default == None -->
+	<Path Stroke="Red" StrokeThickness="2">
+		<Path.Data>
+			<RectangleGeometry Rect="10,10,100,20" RadiusX="20" RadiusY="20" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="Red" StrokeThickness="2">
+		<Path.Data>
+			<RectangleGeometry Rect="110,10,100,20"/>
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Green" StrokeThickness="2" Stretch="None">
+		<Path.Data>
+			<RectangleGeometry Rect="10,30,100,20" RadiusX="20" RadiusY="20" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="Green" StrokeThickness="2" Stretch="None">
+		<Path.Data>
+			<RectangleGeometry Rect="110,30,100,20"/>
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Blue" StrokeThickness="2" Stretch="Fill" Canvas.Top="50" Canvas.Left="10">
+		<Path.Data>
+			<RectangleGeometry Rect="10,50,100,20" RadiusX="20" RadiusY="20" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="Blue" StrokeThickness="2" Stretch="Fill" Canvas.Top="50" Canvas.Left="110">
+		<Path.Data>
+			<RectangleGeometry Rect="110,50,100,20"/>
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Yellow" StrokeThickness="2" Stretch="Uniform" Canvas.Top="70" Canvas.Left="10">
+		<Path.Data>
+			<RectangleGeometry Rect="10,70,100,20" RadiusX="20" RadiusY="20" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="Yellow" StrokeThickness="2" Stretch="Uniform" Canvas.Top="70" Canvas.Left="110">
+		<Path.Data>
+			<RectangleGeometry Rect="110,70,100,20"/>
+		</Path.Data>
+	</Path>
+
+	<Path Stroke="Purple" StrokeThickness="2" Stretch="UniformToFill" Canvas.Top="90" Canvas.Left="10">
+		<Path.Data>
+			<RectangleGeometry Rect="10,90,100,20" RadiusX="20" RadiusY="20" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="Purple" StrokeThickness="2" Stretch="UniformToFill" Canvas.Top="90" Canvas.Left="110">
+		<Path.Data>
+			<RectangleGeometry Rect="110,90,100,20"/>
+		</Path.Data>
+	</Path>
+</Canvas>
