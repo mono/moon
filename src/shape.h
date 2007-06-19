@@ -102,6 +102,8 @@ class Ellipse : public Shape {
 	Ellipse () { };
 	virtual Value::Kind GetObjectType () { return Value::ELLIPSE; };
 
+	virtual Point getxformorigin ();
+
 	void Draw (Surface *s);
 };
 Ellipse *ellipse_new ();
@@ -120,6 +122,7 @@ class Rectangle : public Shape {
 	void Draw (Surface *s);
 
 	virtual Point getxformorigin ();
+
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -144,7 +147,8 @@ class Line : public Shape {
 	
 	void Draw (Surface *s);
 
-	virtual Point getxformorigin ();
+	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
+	// virtual Point getxformorigin ();
 
 	virtual bool CanFill () { return false; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);

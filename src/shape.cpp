@@ -478,6 +478,15 @@ Ellipse::Draw (Surface *s)
 	moon_ellipse (s->cairo, 0, 0, w, h);
 }
 
+Point
+Ellipse::getxformorigin ()
+{
+	Point user_xform_origin = GetRenderTransformOrigin ();
+
+	return Point (framework_element_get_width (this) * user_xform_origin.x, 
+		framework_element_get_height (this) * user_xform_origin.y);
+}
+
 Ellipse *
 ellipse_new (void)
 {
@@ -574,17 +583,6 @@ Line::Draw (Surface *s)
 {
 	cairo_move_to (s->cairo, line_get_x1 (this), line_get_y1 (this));
 	cairo_line_to (s->cairo, line_get_x2 (this), line_get_y2 (this));
-}
-
-Point
-Line::getxformorigin ()
-{
-	Point user_xform_origin = GetRenderTransformOrigin ();
-
-	double x1 = line_get_x1 (this);
-	double y1 = line_get_y1 (this);
-	return Point (x1 + (line_get_x2 (this) - x1) * user_xform_origin.x, 
-		      y1 + (line_get_y2 (this) - y1) * user_xform_origin.y);
 }
 
 void

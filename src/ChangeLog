@@ -1,3 +1,7 @@
+2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Fix Line and Ellipse getxformorigin.
+
 2007-06-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Now implement the smooth beziers correctly, much
