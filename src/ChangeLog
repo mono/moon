@@ -13,7 +13,10 @@
 
 2007-06-19  Miguel de Icaza  <miguel@novell.com>
 
-	* runtime.cpp: Add support for resizing objects.
+	* runtime.cpp: Add support for notifying the consumer that the
+	surface has resized.
+
+	Add support for resizing objects.
 
 2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
 

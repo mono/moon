@@ -1389,11 +1389,12 @@ surface_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer us
 {
 	Surface *s = (Surface *) user_data;
 
-	printf ("Size allocate from %d %d to %d %d\n",
-		s->width, s->height, allocation->width, allocation->height);
 	if (s->width != allocation->width || s->height != allocation->height){
 		s->width = allocation->width;
 		s->height = allocation->height;
+
+		if (s->cb_surface_resize != NULL)
+			s->cb_surface_resize (s->toplevel);
 
 		surface_realloc (s);
 		gtk_widget_queue_draw_area ((GtkWidget *) s->drawing_area,
@@ -2738,7 +2739,7 @@ void surface_register_events (Surface *s,
 			      callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
 			      callback_mouse_event enter,
 			      callback_plain_event got_focus, callback_plain_event lost_focus,
-			      callback_plain_event loaded, callback_plain_event mouse_leave,
+			      callback_plain_event loaded, callback_plain_event mouse_leave, callback_plain_event surface_resize,
 			      callback_keyboard_event keydown, callback_keyboard_event keyup)
 {
 	s->cb_motion = motion;
@@ -2751,5 +2752,6 @@ void surface_register_events (Surface *s,
 	s->cb_mouse_leave = mouse_leave;
 	s->cb_keydown = keydown;
 	s->cb_keyup = keyup;
+	s->cb_surface_resize = surface_resize;
 }
 

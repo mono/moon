@@ -871,7 +871,7 @@ class Surface {
 		xlib_surface(NULL), cairo_xlib(NULL), pixmap(NULL),
 		using_cairo_xlib_surface(0), pixbuf(NULL),
 		cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
-		cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL),
+		cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL), cb_surface_resize(NULL),
 		cb_keydown(NULL), cb_keyup(NULL),
 		cairo (NULL) {}
 	
@@ -911,7 +911,7 @@ class Surface {
 	int frames;
 
 	callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
-	callback_plain_event cb_got_focus, cb_lost_focus, cb_loaded, cb_mouse_leave;
+	callback_plain_event cb_got_focus, cb_lost_focus, cb_loaded, cb_mouse_leave, cb_surface_resize;
 	callback_keyboard_event cb_keydown, cb_keyup;
 
 };
@@ -932,6 +932,7 @@ void     surface_register_events (Surface *s,
 				  callback_mouse_event enter,
 				  callback_plain_event got_focus, callback_plain_event lost_focus,
 				  callback_plain_event loaded, callback_plain_event mouse_leave,
+				  callback_plain_event surface_resized,
 				  callback_keyboard_event keydown, callback_keyboard_event keyup);
 		      
 
