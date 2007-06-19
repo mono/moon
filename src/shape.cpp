@@ -503,14 +503,23 @@ DependencyProperty* Rectangle::RadiusYProperty;
 void
 Rectangle::Draw (Surface *s)
 {
-	double w = framework_element_get_width (this);
-	double h = framework_element_get_height (this);
-	double radius_x = rectangle_get_radius_x (this);
-	if (radius_x != 0) {
-		double radius_y = rectangle_get_radius_y (this);
-		if (radius_y != 0) {
-			moon_rounded_rectangle (s->cairo, 0, 0, w, h, radius_x, radius_y);
-			return;
+	double w, h;
+	// only StretchNone gets some special attention
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch == StretchNone) {
+		// this gets us a single colored point at X,Y
+		w = 0.5;
+		h = 0.5;
+	} else {
+		w = framework_element_get_width (this);
+		h = framework_element_get_height (this);
+		double radius_x = rectangle_get_radius_x (this);
+		if (radius_x != 0) {
+			double radius_y = rectangle_get_radius_y (this);
+			if (radius_y != 0) {
+				moon_rounded_rectangle (s->cairo, 0, 0, w, h, radius_x, radius_y);
+				return;
+			}
 		}
 	}
 	// normal rectangle
@@ -581,6 +590,9 @@ DependencyProperty* Line::Y2Property;
 void
 Line::Draw (Surface *s)
 {
+	// Note: Shape::StretchProperty has no effect on lines
+	// Note: SL 1.1 alpha considers X2,Y2 as the start point (when drawing end line caps)
+	//	This doesn't affect us because Cairo doesn't support separate start/end line caps
 	cairo_move_to (s->cairo, line_get_x1 (this), line_get_y1 (this));
 	cairo_line_to (s->cairo, line_get_x2 (this), line_get_y2 (this));
 }

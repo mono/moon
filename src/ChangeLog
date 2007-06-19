@@ -1,3 +1,8 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Add Strech support for Rectangle (only None is different).
+	Add comments to Line as Stretch doesn't apply for this Shape.
+
 2007-06-19  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (Collection): Add new Insert method, and update all
