@@ -1484,6 +1484,106 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 ///
 
 void
+xaml_set_property_from_str (DependencyObject *obj, const char *pname, const char *value)
+{
+	DependencyProperty *prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
+
+	if (!prop) {
+		printf ("can not find property:  %s\n", prop);
+		return;
+	}
+
+	switch (prop->value_type & Value::VALUE_TYPEMASK) {
+	case Value::BOOL:
+		obj->SetValue (prop, Value ((bool) !g_strcasecmp ("true", value)));
+		break;
+	case Value::DOUBLE:
+		obj->SetValue (prop, Value ((double) strtod (value, NULL)));
+		break;
+	case Value::INT64:
+		obj->SetValue (prop, Value ((gint64) strtol (value, NULL, 10)));
+		break;
+	case Value::INT32:
+	{
+		// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
+		int val;
+		enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, value);
+
+		if (emu)
+			val = enum_from_str (emu, value);
+		else
+			val = (int) strtol (value, NULL, 10);
+		obj->SetValue (prop, Value (val));
+		break;
+	}
+	case Value::STRING:
+		obj->SetValue (prop, Value (value));
+		break;
+	case Value::COLOR:
+		obj->SetValue (prop, Value (*color_from_str (value)));
+		break;
+	case Value::REPEATBEHAVIOR:
+		obj->SetValue (prop, Value (repeat_behavior_from_str (value)));
+		break;
+	case Value::DURATION:
+		obj->SetValue (prop, Value (duration_from_str (value)));
+		break;
+	case Value::KEYTIME:
+		obj->SetValue (prop, Value (KeyTime (timespan_from_str (value))));
+		break;
+	case Value::KEYSPLINE:
+		obj->SetValue (prop, Value (key_spline_from_str (value)));
+		break;
+	case Value::BRUSH:
+	case Value::SOLIDCOLORBRUSH:
+	{
+		// Only solid color brushes can be specified using attribute syntax
+		SolidColorBrush *scb = solid_color_brush_new ();
+		Color *c = color_from_str (value);
+		solid_color_brush_set_color (scb, c); // copies c
+		delete c;
+		obj->SetValue (prop, Value (scb));
+		break;
+	}
+	case Value::POINT:
+		obj->SetValue (prop, Value (point_from_str (value)));
+		break;
+	case Value::RECT:
+		obj->SetValue (prop, Value (rect_from_str (value)));
+		break;
+	case Value::DOUBLE_ARRAY:
+	{
+		int count = 0;
+		double *doubles = double_array_from_str (value, &count);
+		obj->SetValue (prop, Value (doubles, count));
+		break;
+	}
+	case Value::POINT_ARRAY:
+	{
+		int count = 0;
+		Point *points = point_array_from_str (value, &count);
+		obj->SetValue (prop, Value (points, count));
+		break;
+	}
+	
+	case Value::MATRIX:
+		obj->SetValue (prop, matrix_value_from_str (value));
+		break;
+	case Value::GEOMETRY:
+	{
+		char *data = g_strdup (value);
+		obj->SetValue (prop, geometry_from_str (data));
+		g_free (data);
+		break;
+	}
+	default:
+		printf ("could not find value type for: %s to '%s' %d\n", prop, value, prop->value_type);
+		break;
+	}
+}
+
+// TODO: Merge more of this code with the above function
+void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
 	for (int i = 0; attr [i]; i += 2) {
