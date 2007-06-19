@@ -1,0 +1,37 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+<!-- default == Fill -->
+	<Line Stroke="Red" StrokeThickness="10" X1="10" Y1="10" X2="10" Y2="50" />
+	<Line Stroke="Orange" StrokeThickness="10" X1="20" Y1="10" X2="20" Y2="50" />
+	<Line Stroke="Yellow" StrokeThickness="10" X1="30" Y1="10" X2="30" Y2="50" />
+	<Line Stroke="Green" StrokeThickness="10" X1="40" Y1="10" X2="40" Y2="50" />
+	<Line Stroke="Blue" StrokeThickness="10" X1="50" Y1="10" X2="50" Y2="50" />
+	<Line Stroke="Purple" StrokeThickness="10" X1="60" Y1="10" X2="60" Y2="50" />
+
+	<Line Stroke="Red" StrokeThickness="10" X1="10" Y1="60" X2="10" Y2="100" Stretch="None"/>
+	<Line Stroke="Orange" StrokeThickness="10" X1="20" Y1="60" X2="20" Y2="100" Stretch="None"/>
+	<Line Stroke="Yellow" StrokeThickness="10" X1="30" Y1="60" X2="30" Y2="100" Stretch="None"/>
+	<Line Stroke="Green" StrokeThickness="10" X1="40" Y1="60" X2="40" Y2="100" Stretch="None"/>
+	<Line Stroke="Blue" StrokeThickness="10" X1="50" Y1="60" X2="50" Y2="100" Stretch="None"/>
+	<Line Stroke="Purple" StrokeThickness="10" X1="60" Y1="60" X2="60" Y2="100" Stretch="None"/>
+
+	<Line Stroke="Red" StrokeThickness="10" X1="10" Y1="110" X2="10" Y2="150" Stretch="Fill"/>
+	<Line Stroke="Orange" StrokeThickness="10" X1="20" Y1="110" X2="20" Y2="150" Stretch="Fill"/>
+	<Line Stroke="Yellow" StrokeThickness="10" X1="30" Y1="110" X2="30" Y2="150" Stretch="Fill"/>
+	<Line Stroke="Green" StrokeThickness="10" X1="40" Y1="110" X2="40" Y2="150" Stretch="Fill"/>
+	<Line Stroke="Blue" StrokeThickness="10" X1="50" Y1="110" X2="50" Y2="150" Stretch="Fill"/>
+	<Line Stroke="Purple" StrokeThickness="10" X1="60" Y1="110" X2="60" Y2="150" Stretch="Fill"/>
+
+	<Line Stroke="Red" StrokeThickness="10" X1="10" Y1="160" X2="10" Y2="200" Stretch="Uniform"/>
+	<Line Stroke="Orange" StrokeThickness="10" X1="20" Y1="160" X2="20" Y2="200" Stretch="Uniform"/>
+	<Line Stroke="Yellow" StrokeThickness="10" X1="30" Y1="160" X2="30" Y2="200" Stretch="Uniform"/>
+	<Line Stroke="Green" StrokeThickness="10" X1="40" Y1="160" X2="40" Y2="200" Stretch="Uniform"/>
+	<Line Stroke="Blue" StrokeThickness="10" X1="50" Y1="160" X2="50" Y2="200" Stretch="Uniform"/>
+	<Line Stroke="Purple" StrokeThickness="10" X1="60" Y1="160" X2="60" Y2="200" Stretch="Uniform"/>
+
+	<Line Stroke="Red" StrokeThickness="10" X1="10" Y1="210" X2="10" Y2="250" Stretch="UniformToFill"/>
+	<Line Stroke="Orange" StrokeThickness="10" X1="20" Y1="210" X2="20" Y2="250" Stretch="UniformToFill"/>
+	<Line Stroke="Yellow" StrokeThickness="10" X1="30" Y1="210" X2="30" Y2="250" Stretch="UniformToFill"/>
+	<Line Stroke="Green" StrokeThickness="10" X1="40" Y1="210" X2="40" Y2="250" Stretch="UniformToFill"/>
+	<Line Stroke="Blue" StrokeThickness="10" X1="50" Y1="210" X2="50" Y2="250" Stretch="UniformToFill"/>
+	<Line Stroke="Purple" StrokeThickness="10" X1="60" Y1="210" X2="60" Y2="250" Stretch="UniformToFill"/>
+</Canvas>
