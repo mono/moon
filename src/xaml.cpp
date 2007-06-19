@@ -1494,16 +1494,16 @@ xaml_set_property_from_str (DependencyObject *obj, const char *pname, const char
 	}
 
 	switch (prop->value_type) {
-	case Value::BOOL:
+	case Type::BOOL:
 		obj->SetValue (prop, Value ((bool) !g_strcasecmp ("true", value)));
 		break;
-	case Value::DOUBLE:
+	case Type::DOUBLE:
 		obj->SetValue (prop, Value ((double) strtod (value, NULL)));
 		break;
-	case Value::INT64:
+	case Type::INT64:
 		obj->SetValue (prop, Value ((gint64) strtol (value, NULL, 10)));
 		break;
-	case Value::INT32:
+	case Type::INT32:
 	{
 		// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
 		int val;
@@ -1516,26 +1516,26 @@ xaml_set_property_from_str (DependencyObject *obj, const char *pname, const char
 		obj->SetValue (prop, Value (val));
 		break;
 	}
-	case Value::STRING:
+	case Type::STRING:
 		obj->SetValue (prop, Value (value));
 		break;
-	case Value::COLOR:
+	case Type::COLOR:
 		obj->SetValue (prop, Value (*color_from_str (value)));
 		break;
-	case Value::REPEATBEHAVIOR:
+	case Type::REPEATBEHAVIOR:
 		obj->SetValue (prop, Value (repeat_behavior_from_str (value)));
 		break;
-	case Value::DURATION:
+	case Type::DURATION:
 		obj->SetValue (prop, Value (duration_from_str (value)));
 		break;
-	case Value::KEYTIME:
+	case Type::KEYTIME:
 		obj->SetValue (prop, Value (KeyTime (timespan_from_str (value))));
 		break;
-	case Value::KEYSPLINE:
+	case Type::KEYSPLINE:
 		obj->SetValue (prop, Value (key_spline_from_str (value)));
 		break;
-	case Value::BRUSH:
-	case Value::SOLIDCOLORBRUSH:
+	case Type::BRUSH:
+	case Type::SOLIDCOLORBRUSH:
 	{
 		// Only solid color brushes can be specified using attribute syntax
 		SolidColorBrush *scb = solid_color_brush_new ();
@@ -1545,20 +1545,20 @@ xaml_set_property_from_str (DependencyObject *obj, const char *pname, const char
 		obj->SetValue (prop, Value (scb));
 		break;
 	}
-	case Value::POINT:
+	case Type::POINT:
 		obj->SetValue (prop, Value (point_from_str (value)));
 		break;
-	case Value::RECT:
+	case Type::RECT:
 		obj->SetValue (prop, Value (rect_from_str (value)));
 		break;
-	case Value::DOUBLE_ARRAY:
+	case Type::DOUBLE_ARRAY:
 	{
 		int count = 0;
 		double *doubles = double_array_from_str (value, &count);
 		obj->SetValue (prop, Value (doubles, count));
 		break;
 	}
-	case Value::POINT_ARRAY:
+	case Type::POINT_ARRAY:
 	{
 		int count = 0;
 		Point *points = point_array_from_str (value, &count);
@@ -1566,10 +1566,10 @@ xaml_set_property_from_str (DependencyObject *obj, const char *pname, const char
 		break;
 	}
 	
-	case Value::MATRIX:
+	case Type::MATRIX:
 		obj->SetValue (prop, matrix_value_from_str (value));
 		break;
-	case Value::GEOMETRY:
+	case Type::GEOMETRY:
 	{
 		char *data = g_strdup (value);
 		obj->SetValue (prop, geometry_from_str (data));
