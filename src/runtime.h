@@ -417,8 +417,27 @@ class Collection : public DependencyObject {
 	virtual void Remove (DependencyObject *data);
 };
 
+class CollectionIterator {
+ public:
+	CollectionIterator (Collection *c){
+		collection = c;
+		current = c->list;
+	}
+	
+	Collection *collection;
+	GList *current;
+
+};
+
 void collection_add    (Collection *collection, DependencyObject *data);
 void collection_remove (Collection *collection, DependencyObject *data);
+Type::Kind collection_get_element_type (Collection *collection);
+CollectionIterator *collection_get_iterator (Collection *collection);
+
+bool   collection_iterator_move_next   (CollectionIterator *iterator);
+void   collection_iterator_reset       (CollectionIterator *iterator);
+void   collection_iterator_destroy     (CollectionIterator *iterator);
+DependencyObject *collection_iterator_get_current (CollectionIterator *iterator);
 
 class VisualCollection : public Collection {
  public:

@@ -163,6 +163,48 @@ collection_remove (Collection *collection, DependencyObject *data)
 	collection->Remove (data);
 }
 
+Type::Kind
+collection_get_element_type (Collection *collection)
+{
+	return collection->GetElementType ();
+}
+
+CollectionIterator *
+collection_get_iterator (Collection *collection)
+{
+	return new CollectionIterator (collection);
+}
+
+bool
+collection_iterator_move_next (CollectionIterator *iterator)
+{
+	if (!iterator->current)
+		return FALSE;
+	iterator->current = iterator->current->next;
+	return TRUE;
+}
+
+void 
+collection_iterator_reset (CollectionIterator *iterator)
+{
+	iterator->current = iterator->collection->list;
+}
+
+DependencyObject *
+collection_iterator_get_current (CollectionIterator *iterator)
+{
+	if (iterator->current == NULL)
+		return NULL;
+
+	return (DependencyObject *) iterator->current->data;
+}
+
+void
+collection_iterator_destroy (CollectionIterator *iterator)
+{
+	delete iterator;
+}
+
 static char**
 split_str (const char* s, int *count)
 {

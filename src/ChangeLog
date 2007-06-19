@@ -1,3 +1,7 @@
+2007-06-19  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp: Implement collection iterators.
+
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (timespan_from_str): don't walk off the end of the
