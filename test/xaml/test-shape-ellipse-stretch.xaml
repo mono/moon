@@ -1,0 +1,37 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+<!-- default == Fill -->
+	<Ellipse Fill="Red"	Canvas.Left="10" Canvas.Top="10" Width="20" Height="10" />
+	<Ellipse Fill="Orange"	Canvas.Left="32" Canvas.Top="10" Width="20" Height="10" />
+	<Ellipse Fill="Yellow"	Canvas.Left="54" Canvas.Top="10" Width="20" Height="10" />
+	<Ellipse Fill="Green"	Canvas.Left="76" Canvas.Top="10" Width="20" Height="10" />
+	<Ellipse Fill="Blue"	Canvas.Left="98" Canvas.Top="10" Width="20" Height="10" />
+	<Ellipse Fill="Purple"	Canvas.Left="120" Canvas.Top="10" Width="20" Height="10" />
+
+	<Ellipse Fill="Red"	Canvas.Left="10" Canvas.Top="22" Width="20" Height="10" Stretch="None"/>
+	<Ellipse Fill="Orange"	Canvas.Left="32" Canvas.Top="22" Width="20" Height="10" Stretch="None"/>
+	<Ellipse Fill="Yellow"	Canvas.Left="54" Canvas.Top="22" Width="20" Height="10" Stretch="None"/>
+	<Ellipse Fill="Green"	Canvas.Left="76" Canvas.Top="22" Width="20" Height="10" Stretch="None"/>
+	<Ellipse Fill="Blue"	Canvas.Left="98" Canvas.Top="22" Width="20" Height="10" Stretch="None"/>
+	<Ellipse Fill="Purple"	Canvas.Left="120" Canvas.Top="22" Width="20" Height="10" Stretch="None"/>
+
+	<Ellipse Fill="Red"	Canvas.Left="10" Canvas.Top="34" Width="20" Height="10" Stretch="Fill"/>
+	<Ellipse Fill="Orange"	Canvas.Left="32" Canvas.Top="34" Width="20" Height="10" Stretch="Fill"/>
+	<Ellipse Fill="Yellow"	Canvas.Left="54" Canvas.Top="34" Width="20" Height="10" Stretch="Fill"/>
+	<Ellipse Fill="Green"	Canvas.Left="76" Canvas.Top="34" Width="20" Height="10" Stretch="Fill"/>
+	<Ellipse Fill="Blue"	Canvas.Left="98" Canvas.Top="34" Width="20" Height="10" Stretch="Fill"/>
+	<Ellipse Fill="Purple"	Canvas.Left="120" Canvas.Top="34" Width="20" Height="10" Stretch="Fill"/>
+
+	<Ellipse Fill="Red"	Canvas.Left="10" Canvas.Top="46" Width="20" Height="10" Stretch="Uniform"/>
+	<Ellipse Fill="Orange"	Canvas.Left="32" Canvas.Top="46" Width="20" Height="10" Stretch="Uniform"/>
+	<Ellipse Fill="Yellow"	Canvas.Left="54" Canvas.Top="46" Width="20" Height="10" Stretch="Uniform"/>
+	<Ellipse Fill="Green"	Canvas.Left="76" Canvas.Top="46" Width="20" Height="10" Stretch="Uniform"/>
+	<Ellipse Fill="Blue"	Canvas.Left="98" Canvas.Top="46" Width="20" Height="10" Stretch="Uniform"/>
+	<Ellipse Fill="Purple"	Canvas.Left="120" Canvas.Top="46" Width="20" Height="10" Stretch="Uniform"/>
+
+	<Ellipse Fill="Red"	Canvas.Left="10" Canvas.Top="58" Width="20" Height="10" Stretch="UniformToFill"/>
+	<Ellipse Fill="Orange"	Canvas.Left="32" Canvas.Top="58" Width="20" Height="10" Stretch="UniformToFill"/>
+	<Ellipse Fill="Yellow"	Canvas.Left="54" Canvas.Top="58" Width="20" Height="10" Stretch="UniformToFill"/>
+	<Ellipse Fill="Green"	Canvas.Left="76" Canvas.Top="58" Width="20" Height="10" Stretch="UniformToFill"/>
+	<Ellipse Fill="Blue"	Canvas.Left="98" Canvas.Top="58" Width="20" Height="10" Stretch="UniformToFill"/>
+	<Ellipse Fill="Purple"	Canvas.Left="120" Canvas.Top="58" Width="20" Height="10" Stretch="UniformToFill"/>
+</Canvas>
