@@ -1,3 +1,8 @@
+2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* brush.cpp (~VideoBrush): We want to detach from the media
+	element, not ourselves. Doh.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.h: Update comments about which shapes needs, or not, to 

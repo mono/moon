@@ -1030,7 +1030,7 @@ VideoBrush::VideoBrush ()
 VideoBrush::~VideoBrush ()
 {
 	if (media != NULL) {
-		Detach (MediaElement::PositionProperty, media);
+		media->Detach (MediaElement::PositionProperty, this);
 		media->unref ();
 	}
 }
