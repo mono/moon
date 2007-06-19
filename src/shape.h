@@ -175,6 +175,9 @@ class Polygon : public Shape {
 	Polygon () { };
 	virtual Type::Kind GetObjectType () { return Type::POLYGON; };
 
+	// Polygon has no center to compute, it's always 0,0 because it provides it's own start and end
+	// virtual Point getxformorigin ();
+
 	void Draw (Surface *s);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -195,6 +198,9 @@ class Polyline : public Shape {
 
 	Polyline () { };
 	virtual Type::Kind GetObjectType () { return Type::POLYLINE; };
+
+	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
+	// virtual Point getxformorigin ();
 
 	void Draw (Surface *s);
 
@@ -217,6 +223,9 @@ class Path : public Shape {
 
 	Path () {};
 	virtual Type::Kind GetObjectType () { return Type::PATH; };
+
+	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
+	// virtual Point getxformorigin ();
 
 	void Draw (Surface *s);
 

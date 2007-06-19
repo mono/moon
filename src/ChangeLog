@@ -1,3 +1,8 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.h: Update comments about which shapes needs, or not, to 
+	provide a getxformorigin method.
+
 2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* media.h|cpp: Add media_base_new.
