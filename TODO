@@ -22,12 +22,9 @@ Feel free to add items to this TODO list
 
 * Video Player:
 
-	Add support for seeking, stopping, shutdown.
+	Add support for seeking
 
-	Fix the memory leak that it currently has that brings the 
-	system down.
-
-	Should use a depenedency property for its source.
+	Implement Downloader
 
 * Reference counting and destruction
 
@@ -117,10 +114,6 @@ Feel free to add items to this TODO list
 
 	This leads to code in Canvas::handle_motion that does not work
 	for now (since we are an object with no size).
-
-* Video Brush
-
-	Figure out how to use the video code to use as a brush.
 
 * Mouse
 
