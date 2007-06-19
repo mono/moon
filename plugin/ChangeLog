@@ -1,5 +1,8 @@
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp: check in the variant_to_value/value_to_variant
+	methods, and make GetProperty/SetProperty use them.
+
 	* plugin.cpp (UpdateSourceByReference): use g_strlcpy/g_strlcat
 	instead of strcpy/strcat (which was actually walking off the end
 	of the string).  also, create the char array of the right size.

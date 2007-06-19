@@ -50,26 +50,14 @@
 	<!-- hour hand -->
 	<Line Stroke="Black" X1="100" Y1="75" X2="100" Y2="100" StrokeThickness="6" StrokeStartLineCap="Round">
 		<Line.RenderTransform>
-			<TransformGroup>
-				<TransformGroup.Children>
-					<TransformCollection>
-						<RotateTransform x:Name="hourHand" Angle="30" CenterX="100" CenterY="100" />
-					</TransformCollection>
-				</TransformGroup.Children>
-			</TransformGroup>
+			<RotateTransform x:Name="hourHand" Angle="30" CenterX="100" CenterY="100" />
 		</Line.RenderTransform>
 	</Line>
 
 	<!-- minute hand -->
 	<Line Stroke="Black" X1="100" Y1="64" X2="100" Y2="100" StrokeThickness="4" StrokeStartLineCap="Round">
 		<Line.RenderTransform>
-			<TransformGroup>
-				<TransformGroup.Children>
-					<TransformCollection>
-						<RotateTransform x:Name="minuteHand" Angle="100" CenterX="100" CenterY="100" />
-					</TransformCollection>
-				</TransformGroup.Children>
-			</TransformGroup>
+			<RotateTransform x:Name="minuteHand" Angle="100" CenterX="100" CenterY="100" />
 		</Line.RenderTransform>
 	</Line>
 
@@ -88,13 +76,7 @@
 	</Path>
 	<Line Stroke="Red" X1="100" Y1="62" X2="100" Y2="100" StrokeThickness="2" StrokeStartLineCap="Round">
 		<Line.RenderTransform>
-			<TransformGroup>
-				<TransformGroup.Children>
-					<TransformCollection>
-						<RotateTransform x:Name="secondsHand" Angle="10" CenterX="100" CenterY="100" />
-					</TransformCollection>
-				</TransformGroup.Children>
-			</TransformGroup>
+			<RotateTransform x:Name="secondsHand" Angle="10" CenterX="100" CenterY="100" />
 		</Line.RenderTransform>
 	</Line>
 	

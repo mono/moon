@@ -1,3 +1,10 @@
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* clock.xaml: no reason to use transform groups for the hands.  we
+	can just embed the actual transform there.
+
+	* clock.html: comment out the setting of source for now.  crashes.
+
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
 	* clock-ie.xaml: Removed, now we have same xaml for both implementations.
