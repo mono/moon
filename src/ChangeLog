@@ -1,3 +1,19 @@
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (clear_drawing_area): this method doesn't need to
+	clean up the xlib cairo context/surface and the pixmap.
+
+	There are two possibilities:
+
+	1) the drawing area has been realized, which means we have xlib
+	surface/context + pixmap.  We're guaranteed to hit
+	unrealized_callback before this method is called, so they will
+	have already been freed.
+
+	2) the drawing area has not been realized, which means we have no
+	xlib surface/context + pixmap, and this method doesn't need to do
+	anything.
+
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.h/shape.cpp: Fix typo.

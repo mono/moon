@@ -1456,12 +1456,6 @@ clear_drawing_area (GtkObject *obj, gpointer data)
 	Surface *s = (Surface *) data;
 
 	s->drawing_area = NULL;
-	cairo_destroy (s->cairo_xlib);
-	s->cairo_xlib = NULL;
-	cairo_surface_destroy (s->xlib_surface);
-	g_object_unref (s->pixmap);
-
-	s->cairo = s->cairo_buffer;
 }
 
 void
