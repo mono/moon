@@ -643,7 +643,7 @@ KeyFrame::SetKeyTime (KeyTime keytime)
 Value *
 KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	g_warning ("KeyFrame::InterpolateValue has been called. The derived class should have overridden it.",
+	g_warning ("KeyFrame::InterpolateValue has been called. The derived class %s should have overridden it.",
 		   dependency_object_get_name (this));
 }
 
