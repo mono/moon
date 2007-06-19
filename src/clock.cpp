@@ -235,16 +235,16 @@ Clock::Clock (Timeline *tl)
 
 	duration = timeline->GetDuration ();
 	if (duration->HasTimeSpan ()) {
-#if CLOCK_DEBUG
-	  printf ("Clock %p has a timespan based duration\n", this);
-#endif
 		natural_duration = *duration;
+#if CLOCK_DEBUG
+	  printf ("Clock %p (%s) has a timespan based duration of %llu\n", this, Type::Find(timeline->GetObjectType())->name, natural_duration.GetTimeSpan ());
+#endif
 	}
 	else {
-#if CLOCK_DEBUG
-	  printf ("Clock %p has NON-timespan based duration\n", this);
-#endif
 		natural_duration = timeline->GetNaturalDuration (this);
+#if CLOCK_DEBUG
+	  printf ("Clock %p (%s) has NON-timespan based duration, computed to be %llu\n", this, Type::Find(timeline->GetObjectType())->name, natural_duration.GetTimeSpan ());
+#endif
 	}
 	current_progress = 0.0;
 	current_time = 0;
