@@ -10,6 +10,7 @@
  * 
  */
 
+#include <ctype.h>
 #include "plugin-class.h"
 #include "plugin.h"
 
@@ -429,18 +430,14 @@ PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 		
-		DEBUGMSG ("==============>1 findName(\"%s\")", name);
-
-		DependencyObject *element = canvas->FindName (name); /// This line fails!!
+		DependencyObject *element = canvas->FindName (name);
 		if (!element)
 			return true;
 
-		DEBUGMSG ("==============>2 findName(\"%s\")", name);
-
-		//PluginDependencyObject *depobj = new PluginDependencyObject (npobj->instance, (DependencyObject*) element);
+		PluginDependencyObject *depobj = new PluginDependencyObject ((DependencyObject*) element);
 		
-		//NPObject *object = NPN_CreateObject (npobj->instance, depobj);
-		//OBJECT_TO_NPVARIANT (object, *result);
+		NPObject *object = NPN_CreateObject (npobj->instance, depobj);
+		OBJECT_TO_NPVARIANT (object, *result);
 		return true;
 	}
 
@@ -452,53 +449,69 @@ PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 bool
 PluginDependencyObject::ClassHasProperty (PluginObject *npobj, NPIdentifier name)
 {
-	//
-	// Am not sure if this is how you test this
-	//
-	if (name == NPN_GetStringIdentifier ("getHost ()")){
-		return TRUE;
-	}
+	DEBUGMSG ("PluginDependencyObject::ClassHasProperty");
+
+	if (HAS_PROPERTY (PluginDependencyObjectPropertyNames, name))
+		return true;
 
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	strname[0] = toupper(strname[0]);
 	DependencyProperty *p = dob->GetDependencyProperty (strname);
 	NPN_MemFree (strname);
 
-	if (p == NULL)
-		return FALSE;
-
-	Value *val =  dob->GetValue (p);
-
-	if (val == 0)
-		return FALSE;
-
-	return TRUE;
+	return (p != NULL);
 }
 
 bool
 PluginDependencyObject:: ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	//
-	// Am not sure if this is how you test this
-	//
-	if (name == NPN_GetStringIdentifier ("getHost()")){
-		// Dont know what to do with refcount, nor wrapping, but you get the idea
-		return FALSE;
-	}
+	DEBUGMSG ("PluginDependencyObject::ClassGetProperty");
 
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	strname[0] = toupper(strname[0]);
 	DependencyProperty *p = dob->GetDependencyProperty (strname);
 	NPN_MemFree (strname);
-	if (p == NULL)
-		return FALSE;
 
-	Value *val =  dob->GetValue (p);
+	if (!p)
+		return false;
 
-	if (val == 0)
-		return FALSE;
+	Value *value =  dob->GetValue (p);
+	if (!value)
+		return false;
 
+	StringToNPVariant (value->AsString(), result);
+	return true;
+}
 
-	//
-	// TODO: convert_val_to_something_jscript_can_use ();
-	//
-	return TRUE;
+bool 
+PluginDependencyObject::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
+{
+	DEBUGMSG ("PluginDependencyObject::ClassSetProperty");
+
+	bool result = false;
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	strname[0] = toupper(strname[0]);
+	DependencyProperty *p = dob->GetDependencyProperty (strname);
+
+	if (p) {
+		Value *thevalue;
+
+		if (NPVARIANT_IS_STRING (*value)) {
+			DEBUGMSG ("*** string (%s)", NPVARIANT_TO_STRING (*value).utf8characters);
+			thevalue = new Value ((char *) NPVARIANT_TO_STRING (*value).utf8characters);
+			dob->SetValue (strname, thevalue);
+		} 
+		else if (NPVARIANT_IS_INT32 (*value)) {
+			DEBUGMSG ("*** int32 (%d)", NPVARIANT_TO_INT32 (*value));
+			//thevalue = new Value ((int32) NPVARIANT_TO_INT32 (*value));
+			thevalue = new Value ((double) NPVARIANT_TO_DOUBLE (*value));
+			dob->SetValue (strname, thevalue);
+		}
+		result = true;
+	}
+
+	NPN_MemFree (strname);
+
+	return result;
 }

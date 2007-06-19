@@ -35,6 +35,9 @@
 		PluginObject *npobj, NPIdentifier name, const NPVariant *args,  \
 		uint32_t argCount, NPVariant *result);
 
+#define HAS_PROPERTY(x,v) \
+		(IndexOf (v, x, (sizeof (x) / sizeof (char *))) > -1)
+
 /*** PluginObject *************************************************************/
 
 class PluginObject : public NPObject
@@ -153,17 +156,26 @@ static PluginRootClass* rootclass = NULL;
 
 /*** PluginDependencyObject ***************************************************/
 
+static const char *const PluginDependencyObjectPropertyNames [] = 
+{
+};
+
+static const char *const PluginDependencyObjectMethodNames [] = 
+{
+	"getHost"
+};
+
 class PluginDependencyObject : public PluginClass
 {
  public:
 	DependencyObject *dob;
 	
-	PluginDependencyObject (NPP instance, DependencyObject *the_dob)
+	PluginDependencyObject (DependencyObject *the_dob)
 		: PluginClass (), dob(the_dob) {}
 
-	
 	virtual bool ClassHasProperty (PluginObject *npobj, NPIdentifier name);
 	virtual bool ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result);
+	virtual bool ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value);
 };
 
 #endif /* PLUGIN_CLASS */
