@@ -1,0 +1,17 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+<!-- default == None -->
+	<Polygon Stroke="Black" Fill="Blue"   Points="10,10 50,10 50,30 10,30" />
+	<Polygon Stroke="Black" Fill="Silver" Points="30,30 70,30 70,50 30,50 30,30" />
+
+	<Polygon Stroke="Black" Fill="Blue"   Points="10,60 50,60 50,80 10,80" Stretch="None"/>
+	<Polygon Stroke="Black" Fill="Silver" Points="30,80 70,80 70,100 30,100 30,80" Stretch="None"/>
+
+	<Polygon Stroke="Black" Fill="Blue"   Canvas.Top="110" Points="10,110 50,110 50,130 10,130" Stretch="Fill"/>
+	<Polygon Stroke="Black" Fill="Silver" Canvas.Top="130" Points="30,130 70,130 70,150 30,150 30,130" Stretch="Fill"/>
+
+	<Polygon Stroke="Black" Fill="Blue"   Canvas.Top="160" Points="10,160 50,160 50,180 10,180" Stretch="Uniform"/>
+	<Polygon Stroke="Black" Fill="Silver" Canvas.Top="180" Points="30,180 70,180 70,200 30,200 30,180" Stretch="Uniform"/>
+
+	<Polygon Stroke="Black" Fill="Blue"   Canvas.Top="210" Points="10,210 50,210 50,230 10,230" Stretch="UniformToFill"/>
+	<Polygon Stroke="Black" Fill="Silver" Canvas.Top="230" Points="30,230 70,230 70,250 30,250 30,230" Stretch="UniformToFill"/>
+</Canvas>
