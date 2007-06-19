@@ -25,6 +25,15 @@
 #define CLOCK_DEBUG 0
 #define TIME_TICK 0
 
+#if TIME_TICK
+#define STARTTICKTIMER(id,str) STARTTIMER(id,str)
+#define ENDTICKTIMER(id,str) ENDTIMER(it,str)
+#else
+#define STARTTICKTIMER(id,str)
+#define ENDTICKTIMER(id,str)
+#endif
+
+
 #define DESIRED_FPS 20
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
@@ -134,11 +143,10 @@ TimeManager::InvokeTickCall ()
 void
 TimeManager::Tick ()
 {
+	STARTTICKTIMER (tick, "TimeManager::Tick");
 	if (flags & TIME_MANAGER_UPDATE_CLOCKS) {
+		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 		current_global_time = get_now ();
-#if TIME_TICK
-		STARTTIMER (tick, "tick");
-#endif
 		// loop over all toplevel clocks, updating their time (and
 		// triggering them to queue up their events) using the
 		// value of current_global_time...
@@ -149,18 +157,22 @@ TimeManager::Tick ()
 	
 		// ... then cause all clocks to raise the events they've queued up
 		RaiseEnqueuedEvents ();
-#if TIME_TICK
-		ENDTIMER (tick, "tick");
-#endif
+		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
 
 	if (flags & TIME_MANAGER_RENDER) {
+		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
 		Emit ("render");
+		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 
 	if (flags & TIME_MANAGER_TICK_CALL) {
+		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTick");
 		InvokeTickCall ();
+		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTick");
 	}
+
+	ENDTICKTIMER (tick, "TimeManager::Tick");
 }
 
 void
@@ -505,12 +517,21 @@ ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 void
 ClockGroup::RaiseAccumulatedEvents ()
 {
+	/* if we're changing from running to stopped and our progress is 1.0, we need to emit Completed */
+	bool need_completed = false;
+	if (current_progress == 1.0 && (new_state & STOPPED) != 0 && (current_state & STOPPED) == 0)
+		need_completed = true;
+
 	/* raise our events */
 	this->Clock::RaiseAccumulatedEvents ();
 
 	/* now cause our children to raise theirs*/
 	for (GList *l = child_clocks; l; l = l->next) {
 		((Clock*)l->data)->RaiseAccumulatedEvents ();
+	}
+
+	if (need_completed) {
+		events->Emit ("Completed");
 	}
 }
 

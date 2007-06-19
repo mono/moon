@@ -11,7 +11,7 @@ G_BEGIN_DECLS
 #define TIMERS 0
 #if TIMERS
 #define STARTTIMER(id,str) TimeSpan id##_t_start = get_now(); printf ("timing of '%s' started at %lld\n", str, id##_t_start)
-#define ENDTIMER(id,str) TimeSpan id##_t_end = get_now(); printf ("timingof %p '%s' ended at %lld (%f seconds)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 1000000)
+#define ENDTIMER(id,str) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended at %lld (%f seconds)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 1000000)
 #else
 #define STARTTIMER(id,str)
 #define ENDTIMER(id,str)
@@ -326,6 +326,9 @@ void   dependency_object_set_value (DependencyObject *object, DependencyProperty
 DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kind *element_type);
 const char       *dependency_object_get_name  (DependencyObject *obj);
 
+void dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
+void dependency_object_remove_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
+
 //
 // DependencyProperty
 //
@@ -346,7 +349,6 @@ DependencyProperty *dependency_property_lookup (Value::Kind type, char *name);
 char* dependency_property_get_name (DependencyProperty* property);
 Value::Kind dependency_property_get_value_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
-
 
 class NameScope : public DependencyObject {
  public:

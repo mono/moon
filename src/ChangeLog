@@ -1,3 +1,19 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (TimeManager::Tick): add a lot of timing foo.
+	(ClockGroup::RaiseAccumulatedEvents): raise the Completed event if
+	we switching to the stopped state and our progress is 1.0 (that
+	is, if we've finished).
+
+	* animation.h, animation.cpp (Storyboard::Begin): rather heavy
+	handed (but bulletproof) approach to making Begin work on a
+	storyboard that has run its course - destroy the clock hierarchy
+	and recreate it.  Also, add a handler for the ClockGroup's
+	"Completed" event so we can reflect that back to managed land.
+
+	* runtime.h: add C functions to add/remove handlers from the
+	EventObject inside a dep object.
+
 2007-06-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Set text context properties from char data.  This

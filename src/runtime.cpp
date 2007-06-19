@@ -47,7 +47,7 @@ struct _SurfacePrivate {
 
 #define CAIRO_CLIP 0
 #define TIME_CLIP 0
-#define TIME_REDRAW 0
+#define TIME_REDRAW 1
 
 static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
 static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
@@ -2206,6 +2206,19 @@ dependency_object_get_name (DependencyObject *obj)
 {
 	return Type::Find (obj->GetObjectType ())->name;
 }
+
+void
+dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure)
+{
+	o->events->AddHandler (event, handler, closure);
+}
+
+void
+dependency_object_remove_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure)
+{
+	o->events->RemoveHandler (event, handler, closure);
+}
+
 
 //
 // Use this for values that can be null

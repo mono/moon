@@ -489,6 +489,7 @@ class Storyboard : public ParallelTimeline {
 
 	gboolean Tick ();
 	static gboolean storyboard_tick (gpointer data);
+	static void invoke_completed (gpointer data);
 };
 
 Storyboard *storyboard_new (void);

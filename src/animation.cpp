@@ -147,17 +147,32 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 }
 
 void
+Storyboard::invoke_completed (gpointer data)
+{
+	((Storyboard*)data)->events->Emit ("Completed");
+}
+
+void
 Storyboard::Begin ()
 {
 	// we shouldn't begin again, I'd imagine..
-	if (root_clock)
+	if (root_clock && (root_clock->current_state & Clock::STOPPED) == 0)
 		return;
+
+	/* destroy the clock hierarchy and recreate it to restart.
+	   easier than making Begin work again with the existing clock
+	   hierarchy */
+	if (root_clock) {
+		TimeManager::Instance()->RemoveChild (root_clock);
+		root_clock->unref ();
+	}
 
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
 	root_clock = CreateClock ();
 	root_clock->ref ();
+	root_clock->events->AddHandler ("Completed", invoke_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
