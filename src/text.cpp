@@ -75,6 +75,18 @@ font_weight (FontWeights weight)
 }
 
 
+static Brush *
+default_foreground (void)
+{
+	SolidColorBrush *brush = new SolidColorBrush ();
+	Color *color = color_from_str ("black");
+	solid_color_brush_set_color (brush, color);
+	delete color;
+	
+	return (Brush *) brush;
+}
+
+
 // Inline
 
 DependencyProperty *Inline::FontFamilyProperty;
@@ -89,10 +101,10 @@ DependencyProperty *Inline::TextDecorationsProperty;
 void
 Inline::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type != Type::INLINE) {
-		DependencyObject::OnPropertyChanged (prop);
-		return;
-	}
+	if (prop->type == Type::INLINE)
+		NotifyAttacheesOfPropertyChange (prop);
+	
+	DependencyObject::OnPropertyChanged (prop);
 }
 
 char *
@@ -201,6 +213,8 @@ Run::Run ()
 {
 	layout = NULL;
 	
+	foreground = NULL;
+	
 	/* initialize the font description */
 	font = pango_font_description_new ();
 	char *family = inline_get_font_family (this);
@@ -221,14 +235,17 @@ Run::~Run ()
 	
 	if (layout != NULL)
 		g_object_unref (layout);
+	
+	if (foreground != NULL) {
+		foreground->Detach (NULL, this);
+		foreground->unref ();
+	}
 }
 
 void
 Run::OnPropertyChanged (DependencyProperty *prop)
 {
 	bool font_changed = false;
-	
-	// FIXME: need to invalidate our parent TextBlock
 	
 	if (prop == Inline::FontFamilyProperty) {
 		char *family = inline_get_font_family (this);
@@ -250,16 +267,28 @@ Run::OnPropertyChanged (DependencyProperty *prop)
 		FontWeights weight = inline_get_font_weight (this);
 		pango_font_description_set_weight (font, font_weight (weight));
 		font_changed = true;
+	} else if (prop == Inline::ForegroundProperty) {
+		if (foreground != NULL) {
+			foreground->Detach (NULL, this);
+			foreground->unref ();
+		}
+		
+		if ((foreground = inline_get_foreground (this)) != NULL) {
+			foreground->Attach (NULL, this);
+			foreground->ref ();
+		}
 	} else if (prop == Run::TextProperty && layout != NULL) {
 		char *text = run_get_text (this);
 		pango_layout_set_text (layout, text ? text : "", -1);
-	} else {
-		Inline::OnPropertyChanged (prop);
-		return;
 	}
 	
 	if (font_changed && layout != NULL)
 		pango_layout_set_font_description (layout, font);
+	
+	if (prop->type == Type::RUN)
+		NotifyAttacheesOfPropertyChange (prop);
+	
+	Inline::OnPropertyChanged (prop);
 }
 
 Run *
@@ -301,13 +330,12 @@ DependencyProperty *TextBlock::TextWrappingProperty;
 
 TextBlock::TextBlock ()
 {
-	SolidColorBrush *brush = new SolidColorBrush ();
-	Color *color = color_from_str ("black");
-	solid_color_brush_set_color (brush, color);
-	delete color;
+	Brush *brush = default_foreground ();
 	
 	foreground = NULL;
 	SetValue (TextBlock::ForegroundProperty, Value (brush));
+	
+	inlines = NULL;
 	
 	layout = NULL;
 	
@@ -334,6 +362,11 @@ TextBlock::~TextBlock ()
 	
 	if (layout)
 		g_object_unref (layout);
+	
+	if (inlines != NULL) {
+		inlines->Detach (NULL, this);
+		inlines->unref ();
+	}
 	
 	if (foreground != NULL) {
 		foreground->Detach (NULL, this);
@@ -459,8 +492,6 @@ void
 TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 {
 	int full_width = 0, full_height = 0;
-	Inlines *inlines;
-	Brush *brush;
 	char *text;
 	
 	text = text_block_get_text (this);
@@ -490,8 +521,7 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 	
 	if (text && *text) {
 		if (render) {
-			if ((brush = text_block_get_foreground (this)))
-				brush->SetupBrush (s->cairo, this);
+			foreground->SetupBrush (s->cairo, this);
 			pango_cairo_show_layout (s->cairo, layout);
 		} else
 			pango_cairo_layout_path (s->cairo, layout);
@@ -499,7 +529,7 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 		pango_layout_get_pixel_size (layout, &full_width, &full_height);
 	}
 	
-	if ((inlines = text_block_get_inlines (this))) {
+	if (inlines != NULL) {
 		PangoFontDescription *cur_font = font;
 		GList *next, *node = inlines->list;
 		int width, height, x = 0, y = 0;
@@ -546,8 +576,10 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 				}
 				
 				if (render) {
-					if ((brush = inline_get_foreground (item)))
-						brush->SetupBrush (s->cairo, this);
+					if (run->foreground != NULL)
+						run->foreground->SetupBrush (s->cairo, this);
+					else
+						foreground->SetupBrush (s->cairo, this);
 					
 					pango_cairo_show_layout (s->cairo, run->layout);
 				} else
@@ -630,6 +662,16 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == TextBlock::TextProperty && layout != NULL) {
 		char *text = text_block_get_text (this);
 		pango_layout_set_text (layout, text ? text : "", -1);
+	} else if (prop == TextBlock::InlinesProperty) {
+		if (inlines != NULL) {
+			inlines->Detach (NULL, this);
+			inlines->unref ();
+		}
+		
+		if ((inlines = text_block_get_inlines (this)) != NULL) {
+			inlines->Attach (NULL, this);
+			inlines->ref ();
+		}
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {
 			foreground->Detach (NULL, this);
@@ -649,6 +691,14 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	width = -1;
 	
 	FullInvalidate (false);
+}
+
+void
+TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	FullInvalidate (false);
+	
+	FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }
 
 TextBlock *

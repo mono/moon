@@ -1,3 +1,13 @@
+2007-06-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Run::OnPropertyChanged): Always chain up to our parent
+	implementation and if one of our properties changed, notify our
+	attachees.
+	(Inline::OnPropertyChanged): Same.
+	(TextBlock::OnPropertyChanged): Keep track of Inlines changes.
+	(TextBlock::Draw): Use our foreground brush directly and the same
+	for run's foreground brush.
+
 2007-06-19  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp: Implement collection iterators.

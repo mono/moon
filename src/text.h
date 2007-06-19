@@ -113,6 +113,7 @@ public:
 	
 	PangoFontDescription *font;
 	PangoLayout *layout;
+	Brush *foreground;
 	
 	Run ();
 	~Run ();
@@ -128,6 +129,7 @@ void run_set_text (Run *run, char *value);
 
 class TextBlock : public FrameworkElement {
 	Brush *foreground;
+	Inlines *inlines;
 public:
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;
@@ -157,6 +159,7 @@ public:
 	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	
 private:
 	PangoFontDescription *font;
