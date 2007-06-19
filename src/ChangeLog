@@ -1,3 +1,8 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.h: Fix filling for Polyline. MS supports filling polylines,
+	even unclosed ones.
+
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (surface_realloc): make sure to reassign s->cairo to

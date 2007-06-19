@@ -204,7 +204,6 @@ class Polyline : public Shape {
 
 	void Draw (Surface *s);
 
-	virtual bool CanFill () { return false; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
