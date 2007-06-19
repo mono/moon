@@ -57,6 +57,7 @@ struct Audio {
 	uint32_t inleft;
 	uint8_t *inptr;
 	
+	double balance;
 	double volume;
 	bool muted;
 	
@@ -132,6 +133,7 @@ MediaPlayer::MediaPlayer ()
 	audio->pkt = NULL;
 	audio->inleft = 0;
 	audio->inptr = NULL;
+	audio->balance = 0.0f;
 	audio->volume = 0.0f;
 	audio->muted = false;
 	audio->stream_id = -1;
@@ -553,6 +555,18 @@ MediaPlayer::Position ()
 	return 0;
 }
 
+int64_t
+MediaPlayer::Duration ()
+{
+	if (audio->stream_id != -1)
+		return audio->stream->duration;
+	
+	if (video->stream_id != -1)
+		return video->stream->duration;
+	
+	return 0;
+}
+
 void
 MediaPlayer::Mute ()
 {
@@ -569,6 +583,20 @@ bool
 MediaPlayer::IsMuted ()
 {
 	return audio->muted;
+}
+
+double
+MediaPlayer::GetBalance ()
+{
+	// FIXME: implement
+	return audio->balance;
+}
+
+void
+MediaPlayer::SetBalance (double balance)
+{
+	// FIXME: implement
+	audio->balance = balance;
 }
 
 double

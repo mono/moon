@@ -23,6 +23,7 @@
 #include "geometry.h"
 #include "text.h"
 #include "media.h"
+#include "list.h"
 
 #define READ_BUFFER 1024
 
@@ -59,7 +60,6 @@ void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlEle
 
 
 class XamlParserInfo {
-
  public:
 	XML_Parser parser;
 
@@ -96,15 +96,14 @@ class XamlParserInfo {
 	}
 };
 
-class XamlElementInstance {
-
+class XamlElementInstance : public List::Node {
  public:
 	const char *element_name;
 	const char *instance_name;
 
 	XamlElementInfo *info;
 	XamlElementInstance *parent;
-	GList *children;
+	List *children;
 
 	enum ElementType {
 		ELEMENT,
@@ -117,14 +116,19 @@ class XamlElementInstance {
 
 
 	XamlElementInstance (XamlElementInfo *info) : info (info), element_name (NULL), instance_name (NULL),
-						      parent (NULL), children (NULL), element_type (UNKNOWN), item (NULL)
+						      parent (NULL), element_type (UNKNOWN), item (NULL)
 	{
+		children = new List ();
 	}
-
+	
+	~XamlElementInstance ()
+	{
+		children->Clear (true);
+		delete children;
+	}
 };
 
 class XamlElementInfo {
-
  public:
 	const char *name;
 	XamlElementInfo *parent;
@@ -324,7 +328,6 @@ start_element (void *data, const char *el, const char **attr)
 	elem = p->current_namespace->FindElement (p, el);
 
 	if (elem) {
-
 		inst = elem->create_element (p, elem);
 		elem->set_attributes (p, inst, attr);
 
@@ -341,9 +344,7 @@ start_element (void *data, const char *el, const char **attr)
 			else
 				g_warning ("attempt to set property of unimplemented type: %s\n", p->current_element->element_name);
 		}
-
 	} else {
-
 		bool property = false;
 		for (int i = 0; el [i]; i++) {
 			if (el [i] != '.')
@@ -363,11 +364,10 @@ start_element (void *data, const char *el, const char **attr)
 			inst->element_name = g_strdup (el);
 			inst->element_type = XamlElementInstance::UNKNOWN;
 		}
-
 	}
 
 	inst->parent = p->current_element;
-	p->current_element->children = g_list_append (p->current_element->children, inst);
+	p->current_element->children->Append (inst);
 	p->current_element = inst;	
 }
 
@@ -433,16 +433,16 @@ end_element_handler (void *data, const char *el)
 		}
 		break;
 	case XamlElementInstance::PROPERTY:
-		GList *walk = info->current_element->children;
+		List::Node *walk = info->current_element->children->First ();
 		while (walk) {
-			XamlElementInstance *child = (XamlElementInstance *) walk->data;
+			XamlElementInstance *child = (XamlElementInstance *) walk;
 			if (info->current_element->parent->element_type != XamlElementInstance::UNKNOWN)
 				info->current_element->parent->info->set_property (info, info->current_element->parent,
 						info->current_element, child);
 			else
 				g_warning ("Attempting to set property on unknown type %s\n",
 						info->current_element->parent->element_name);
-			walk = walk->next;
+			walk = walk->Next ();
 		}
 		break;
 	}
@@ -515,9 +515,9 @@ print_tree (XamlElementInstance *el, int depth)
 	for (int i = 0; i < depth; i++)
 		printf ("\t");
 	printf ("%s  (%d)\n", el->element_name, el->element_type);
-
-	for (GList *walk = el->children; walk != NULL; walk = walk->next) {
-		XamlElementInstance *el = (XamlElementInstance *) walk->data;
+	
+	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->Next ()) {
+		XamlElementInstance *el = (XamlElementInstance *) walk;
 		print_tree (el, depth + 1);
 	}
 }

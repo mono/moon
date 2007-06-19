@@ -1,3 +1,11 @@
+2007-06-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp: Updated to use a real linked list implementation.. for
+	added uberness. Also reduces memory leakage.
+
+	* mplayer.cpp: Stubbed out a few more things and can now return
+	the video duration.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp|h: Set Shape::Stretch default to None and set Stretch

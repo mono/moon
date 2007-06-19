@@ -18,6 +18,8 @@ libmoon_la_SOURCES = 	\
 	downloader.cpp	\
 	geometry.cpp	\
 	geometry.h	\
+	list.cpp	\
+	list.h		\
 	media.cpp	\
 	media.h		\
 	mplayer.cpp	\

@@ -64,10 +64,14 @@ public:
 	bool CanSeek ();
 	void Seek (int64_t position);
 	int64_t Position ();
+	int64_t Duration ();
 	
 	void Mute ();
 	void UnMute ();
 	bool IsMuted ();
+	
+	double GetBalance ();
+	void SetBalance (double balance);
 	
 	double GetVolume ();
 	void SetVolume (double volume);
