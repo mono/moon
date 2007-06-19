@@ -309,7 +309,8 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *m
 	p->error_args->xml_attribute = attr ? strdup (attr) : NULL;
 	p->error_args->error_message = message;
 
-	g_warning ("PARSER ERROR, STOPPING PARSING:  %s\n", message);
+	g_warning ("PARSER ERROR, STOPPING PARSING:  %s  line: %d   char: %d\n", message,
+			p->error_args->line_number, p->error_args->char_position);
 	XML_StopParser (p->parser, FALSE);
 }
 
