@@ -82,8 +82,11 @@ Feel free to add items to this TODO list
 
 * Shapes
 
-	All shapes must implement the ::getxformorigin method, the metho
-	is used to determine the center of the object.
+	Many shapes requires the ::getxformorigin method, the method
+	is used to determine the center of the object. Some shapes (e.g.
+	Lines) don't have center as their position isn't given wrt to 
+	the Canvas Top and Left properties (e.g. Line supplies X1,Y1 and
+	X2,Y2). Not sure ? Add a test case ;-)
 
 * Color
 
