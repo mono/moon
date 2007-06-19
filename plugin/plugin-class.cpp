@@ -417,6 +417,32 @@ bool
 PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name, 
 				const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
+	if (name == NPID ("findName")) {
+
+		if (!argCount)
+			return true;
+
+		Canvas *canvas = npobj->plugin->canvas;
+		if (!canvas) {
+			return true;
+
+		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
+		
+		DEBUGMSG ("==============>1 findName(\"%s\")", name);
+
+		DependencyObject *element = canvas->FindName (name); /// This line fails!!
+		if (!element)
+			return true;
+
+		DEBUGMSG ("==============>2 findName(\"%s\")", name);
+
+		//PluginDependencyObject *depobj = new PluginDependencyObject (npobj->instance, (DependencyObject*) element);
+		
+		//NPObject *object = NPN_CreateObject (npobj->instance, depobj);
+		//OBJECT_TO_NPVARIANT (object, *result);
+		return true;
+	}
+
 	return false;
 }
 
