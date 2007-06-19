@@ -80,25 +80,46 @@ namespace Moonlight {
 
 		public static Loader CreateXamlFileLoader (IntPtr plugin, IntPtr surface, string filename)
 		{
-			Loader loader = new Loader (plugin, surface);
-			loader.FileName = filename;
+			Loader loader = new Loader (plugin, surface, filename, "");
 
 			return loader;
 		}
 
 		public static Loader CreateXamlStrLoader (IntPtr plugin, IntPtr surface, string contents)
 		{
-			Loader loader = new Loader (plugin, surface);
-			loader.Contents = contents;
+			Loader loader = new Loader (plugin, surface, "", contents);
 
 			return loader;
 		}
 	}
 
-	
-
 	public class Loader {
-		IntPtr plugin, surface;
+		DomainInstance rl;
+		
+		public Loader (IntPtr plugin, IntPtr surface, string filename, string contents)
+		{
+			AppDomain a = AppDomain.CreateDomain ("moonlight-" + plugin);
+
+			rl =  (DomainInstance) a.CreateInstanceAndUnwrap (
+				Assembly.GetExecutingAssembly ().FullName,
+				"Moonlight.DomainInstance");
+
+			rl.Setup (plugin, surface, filename, contents);
+		}
+
+		public void InsertMapping (string key, string name)
+		{
+			rl.InsertMapping (key, name);
+		}
+
+		public string TryLoad (out int error)
+		{
+			return rl.TryLoad (out error);
+		}
+	}
+	
+	public class DomainInstance : MarshalByRefObject {
+		static IntPtr plugin, surface;
 		string filename;
 		string contents;
 		string missing;
@@ -107,27 +128,36 @@ namespace Moonlight {
 		SetAttributeCallback set_attribute_callback;
 		
 		Hashtable h = new Hashtable ();
-		
-		public Loader (IntPtr plugin, IntPtr surface)
-		{
-			this.plugin = plugin;
-			this.surface = surface;
 
-			this.filename = "";
-			this.contents = "";
+		static public IntPtr PluginHandle {
+			get {
+				return plugin;
+			}
+		}
+		
+		public DomainInstance ()
+		{
+		}
+		
+		public void Setup (IntPtr _plugin, IntPtr _surface, string filename, string contents)
+		{
+			plugin = _plugin;
+			surface = _surface;
+			this.filename = filename;
+			this.contents = contents;
 
 			create_element_callback = new CreateElementCallback (create_element);
 			set_attribute_callback = new SetAttributeCallback (set_attribute);
-		}
 
-		public string FileName {
-			get { return this.filename; }
-			set { this.filename = value; }
-		}
-
-		public string Contents {
-			get { return this.contents; }
-			set { this.contents = value; }
+			
+			Type t = typeof (System.Windows.Interop.BrowserHost);
+			MethodInfo m = t.GetMethod ("SetPluginHandle", BindingFlags.Static | BindingFlags.NonPublic);
+			if (m == null){
+				Console.WriteLine ("Having problems");
+			} else {
+				Console.WriteLine ("The plugin handle is {0}", _plugin);
+				m.Invoke (null, new object [] { _plugin });
+			} 
 		}
 
 		public void InsertMapping (string key, string name)

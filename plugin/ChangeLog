@@ -1,3 +1,11 @@
+2007-06-18  Miguel de Icaza  <miguel@novell.com>
+
+	* moonlight.cs: Create appdomains to keep applications separate
+	and to keep the IntPtr to the plugin.
+
+	The handle to the plugin is stored in agclr in the BrowserHost
+	class. 
+
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-class.cpp: Implement maxFrameRate property.
