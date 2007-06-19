@@ -835,7 +835,9 @@ geometry_from_str (char *str)
 	Point cp1, cp2, cp3;
 
 	PathFigure *pf = NULL;
+	PathSegment *prev = NULL;
 	PathSegmentCollection *psc = NULL;
+	
 
 	PathGeometry *pg = new PathGeometry ();
 	PathFigureCollection *pfc = new PathFigureCollection ();
@@ -865,6 +867,8 @@ geometry_from_str (char *str)
 
 			pf->SetValue (PathFigure::StartPointProperty, Value (cp1));
 
+			prev = NULL;
+
 			cp.x = cp1.x;
 			cp.y = cp1.y;
 			break;
@@ -881,7 +885,9 @@ geometry_from_str (char *str)
 
 			LineSegment* ls = new LineSegment ();
 			ls->SetValue (LineSegment::PointProperty, Value (cp1));
+
 			psc->Add (ls);
+			prev = ls;
 
 			cp.x = cp1.x;
 			cp.y = cp1.y;
@@ -901,7 +907,10 @@ geometry_from_str (char *str)
 
 			LineSegment* ls = new LineSegment ();
 			ls->SetValue (LineSegment::PointProperty, Value (cp));
+
 			psc->Add (ls);
+			prev = ls;
+
 			break;
 		}		
 		case 'v':
@@ -918,7 +927,10 @@ geometry_from_str (char *str)
 
 			LineSegment* ls = new LineSegment ();
 			ls->SetValue (LineSegment::PointProperty, Value (cp));
+
 			psc->Add (ls);
+			prev = ls;
+
 			break;
 		}
 		case 'c':
@@ -944,6 +956,41 @@ geometry_from_str (char *str)
 			bs->SetValue (BezierSegment::Point3Property, Value (cp3));
 
 			psc->Add (bs);
+			prev = bs;
+
+			cp.x = cp3.x;
+			cp.y = cp3.y;
+			break;
+		}
+		case 's':
+			relative = true;
+		case 'S':
+		{
+			data++;
+
+			get_point (&cp2, &data);
+			if (relative) make_relative (&cp, &cp2);
+
+			advance (&data);
+
+			get_point (&cp3, &data);
+			if (relative) make_relative (&cp, &cp3);
+
+			if (prev->GetObjectType () == Value::BEZIERSEGMENT) {
+				Point *p = prev->GetValue (BezierSegment::Point2Property)->AsPoint ();
+				cp1.x = 2 * cp.x - p->x;
+				cp1.y = 2 * cp.y - p->y;
+			} else
+				cp2 = cp;
+			if (relative) make_relative (&cp, &cp2);
+
+			BezierSegment *bs = new BezierSegment ();
+			bs->SetValue (BezierSegment::Point1Property, Value (cp1));
+			bs->SetValue (BezierSegment::Point2Property, Value (cp2));
+			bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+
+			psc->Add (bs);
+			prev = bs;
 
 			cp.x = cp3.x;
 			cp.y = cp3.y;
@@ -967,34 +1014,10 @@ geometry_from_str (char *str)
 			qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
 
 			psc->Add (qbs);
+			prev = qbs;
 
 			cp.x = cp2.x;
 			cp.y = cp2.y;
-			break;
-		}
-		case 's':
-			relative = true;
-		case 'S':
-		{
-			data++;
-
-			get_point (&cp2, &data);
-			if (relative) make_relative (&cp, &cp2);
-
-			advance (&data);
-
-			get_point (&cp3, &data);
-			if (relative) make_relative (&cp, &cp3);
-
-			BezierSegment *bs = new BezierSegment ();
-			bs->SetValue (BezierSegment::Point1Property, Value (cp));
-			bs->SetValue (BezierSegment::Point2Property, Value (cp2));
-			bs->SetValue (BezierSegment::Point3Property, Value (cp3));
-
-			psc->Add (bs);
-
-			cp.x = cp3.x;
-			cp.y = cp3.y;
 			break;
 		}
 		case 't':
@@ -1006,11 +1029,18 @@ geometry_from_str (char *str)
 			get_point (&cp2, &data);
 			if (relative) make_relative (&cp, &cp2);
 
+			if (prev->GetObjectType () == Value::QUADRATICBEZIERSEGMENT) {
+				Point *p = prev->GetValue (QuadraticBezierSegment::Point2Property)->AsPoint ();
+				cp1.x = 2 * cp.x - p->x;
+				cp1.y = 2 * cp.y - p->y;
+			} else
+				cp1 = cp;
 			QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp));
+			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
 			qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
 
 			psc->Add (qbs);
+			prev = qbs;
 
 			cp.x = cp2.x;
 			cp.y = cp2.y;
@@ -1046,6 +1076,7 @@ geometry_from_str (char *str)
 			arc->SetValue (ArcSegment::PointProperty, cp2);
 
 			psc->Add (arc);
+			prev = arc;
 					
 			cp.x = cp2.x;
 			cp.y = cp2.y;
@@ -1055,6 +1086,7 @@ geometry_from_str (char *str)
 		case 'Z':
 			data++;
 
+			prev = NULL;
 			path_figure_set_is_closed (pf, true);
 			break;
 

@@ -1,3 +1,9 @@
+2007-06-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Now implement the smooth beziers correctly, much
+	thanks to spouliot for figuring out the formula to reflect control
+	points.
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: ifdef some debug spew, add a bitmask for
