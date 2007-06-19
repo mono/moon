@@ -1,0 +1,4 @@
+<!-- subset from 08_03.svg in http://www.w3.org/TR/SVGMobile12/paths.html -->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <Path Fill="#000" Data="M200,300 Q400,50 600,300 T1000,300"/>
+</Canvas>

@@ -1,0 +1,4 @@
+<!-- subset from 08_02.svg in http://www.w3.org/TR/SVGMobile12/paths.html -->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <Path Stroke="#000" Data="M100,200 C100,100 250,100 250,200 S400,300 400,200"/>
+</Canvas>
