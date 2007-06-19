@@ -33,16 +33,6 @@ static GtkWidget *w;
 
 static Storyboard *sb = NULL;
 
-static int64_t
-gettime (void)
-{
-    struct timeval tv;
-
-    gettimeofday (&tv, NULL);
-
-    return (int64_t) tv.tv_sec * 1000000 + tv.tv_usec;
-}
-
 static gboolean
 my_expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
@@ -52,7 +42,7 @@ static gboolean
 invalidator (gpointer data)
 {
 	Surface *s = (Surface *) data;
-	int64_t now = gettime ();
+	int64_t now = get_now ();
 	int64_t diff = now - last_time;
 	
 	if (diff > 1000000) {
@@ -307,7 +297,7 @@ main (int argc, char *argv [])
 #endif
 		
 #ifdef VIDEO_DEMO
-		v = (UIElement *) video_new ("file:///tmp/BoxerSmacksdownInhoffe.wmv");
+		v = (UIElement *) video_new ("/tmp/BoxerSmacksdownInhoffe.wmv");
 		item_set_render_transform (v, v_trans);
 		item_set_transform_origin (v, Point (1, 1));
 		printf ("Got %d\n", v);
@@ -492,7 +482,7 @@ main (int argc, char *argv [])
 	}		
 	if (do_fps){
 		t->frames = 0;
-		last_time = gettime ();
+		last_time = get_now ();
 		gtk_timeout_add (1000, invalidator, t);
 	}
 
