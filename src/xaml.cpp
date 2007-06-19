@@ -744,7 +744,7 @@ timespan_from_str (const char *str)
 	while (next && di < 5) {
 		int d =  strtol (next, &next, 10);
 		digits [di++] = d;
-		if (next)
+		if (next && *next)
 			next++;
 	}
 

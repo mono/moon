@@ -1,3 +1,8 @@
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (timespan_from_str): don't walk off the end of the
+	string.
+
 2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* animation.h|cpp: Remove pureness from KeyFrame::InterpolateValue.
