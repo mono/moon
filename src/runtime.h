@@ -574,7 +574,7 @@ enum PenLineJoin {
 
 enum FillRule {
 	FillRuleEvenOdd,
-	FileRuleNonzero
+	FillRuleNonzero
 };
 
 enum SweepDirection {

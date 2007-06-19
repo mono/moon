@@ -58,7 +58,7 @@ convert_fill_rule (FillRule fill_rule)
 	switch (fill_rule) {
 	case FillRuleEvenOdd:
 		return CAIRO_FILL_RULE_EVEN_ODD;
-	case FileRuleNonzero:
+	case FillRuleNonzero:
 		return CAIRO_FILL_RULE_WINDING;
 	}
 }

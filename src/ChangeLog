@@ -1,3 +1,7 @@
+2007-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.h/shape.cpp: Fix typo.
+
 2007-06-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Run::OnPropertyChanged): Always chain up to our parent
