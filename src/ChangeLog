@@ -1,3 +1,11 @@
+2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp|h, value.h.in: Remove current nullable code,
+	it's easier to store an is_nullable flag in the registered
+	property, and store NULL values in the objects hashtable.
+	* xaml.cpp: Revert unnecessary fixes.
+	* value.h: Updated.
+
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h: get rid of the specialized surface callbacks for

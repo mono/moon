@@ -215,8 +215,6 @@ public:
 	static Type* Find (Value::Kind type);
 	
 	bool IsSubclassOf (Value::Kind super);	
-	bool IsNullable ();
-	static bool IsNullable (Value::Kind type);
 	Value::Kind parent;
 	Value::Kind type;
 	char *name;
@@ -353,12 +351,15 @@ class DependencyProperty {
 	char *name;
 	Value *default_value;
 	Value::Kind type;
-	Value::Kind value_type;
 	bool is_attached_property;
+	Value::Kind value_type;
+	bool is_nullable;
+	bool IsNullable () { return is_nullable; }
 };
 
 DependencyProperty *dependency_property_lookup (Value::Kind type, char *name);
 char* dependency_property_get_name (DependencyProperty* property);
+bool  dependency_property_is_nullable (DependencyProperty* property);
 Value::Kind dependency_property_get_value_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 

@@ -422,7 +422,7 @@ end_element_handler (void *data, const char *el)
 				// but string is all i have found so far.  If you can specify other
 				// types, i should pull the property setting out of set_attributes
 				// and use that code
-				if ((con->value_type & Value::VALUE_TYPEMASK) == Value::STRING) {
+				if ((con->value_type) == Value::STRING) {
 					info->current_element->item->SetValue (con, Value (info->char_data_buffer->str));
 				}
 			}
@@ -1538,7 +1538,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		}
 
 		if (prop) {
-			switch (prop->value_type & Value::VALUE_TYPEMASK) {
+			switch (prop->value_type) {
 			case Value::BOOL:
 				dep->SetValue (prop, Value ((bool) !g_strcasecmp ("true", attr [i + 1])));
 				break;

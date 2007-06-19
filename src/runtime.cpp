@@ -271,41 +271,10 @@ double_array_from_str (const char *s, int* count)
  * Value implementation
  */
 
-Value::Value (Kind k, bool null)
-{
-	Init ();
-
-	// Only value types can be nullable.
-	g_assert (Type::IsNullable (k) == Type::Find (k)->value_type);
-
-	if (Type::Find (k)->value_type && null) {
-		g_assert (Type::IsNullable (k));
-		this->k = (Kind) (k | VALUE_ISNULL);
-	} else {
-		this->k = k;
-	}
-}
-
-bool
-Value::IsNullable ()
-{
-	return (k & VALUE_NULLTYPE) == VALUE_NULLTYPE;
-}
-
-bool
-Value::IsNull ()
-{
-	if (!Type::Find (k)->value_type) {
-		return u.dependency_object == NULL;
-	} else {
-		return (k & VALUE_ISNULL) == VALUE_ISNULL;
-	}
-}
-
 Value::Kind
 Value::GetKind ()
 {
-	return (Value::Kind) (k & VALUE_TYPEMASK);
+	return k;
 }
 
 void
@@ -1960,7 +1929,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			return;
 		}
 	} else {
-		if (!(property->value_type >= Value::DEPENDENCY_OBJECT) && !Type::IsNullable (property->value_type)){
+		if (!(property->value_type >= Value::DEPENDENCY_OBJECT) && !property->IsNullable ()) {
 			g_warning ("Can not set a non-nullable scalar type to NULL");
 			return;
 		}
@@ -1992,11 +1961,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 		Value *store;
 		if (value == NULL) {
-			if (Type::IsNullable (property->value_type)) {
-				store = new Value (property->value_type, true);
-			} else {
-				store = NULL;
-			}
+			store = NULL;
 		} else {
 			store = new Value (*value);
 		}
@@ -2280,7 +2245,10 @@ DependencyObject::Register (Value::Kind type, const char *name, Value *default_v
 DependencyProperty *
 DependencyObject::RegisterNullable (Value::Kind type, const char *name, Value::Kind vtype)
 {
-	return Register (type, name, (Value::Kind) (vtype | Value::VALUE_NULLTYPE));
+	DependencyProperty *property;
+	property = Register (type, name, vtype);
+	property->is_nullable = true;
+	return property;
 }
 
 //
@@ -2407,6 +2375,12 @@ Value::Kind
 dependency_property_get_value_type (DependencyProperty *property)
 {
 	return property->value_type;
+}
+
+bool
+dependency_property_is_nullable (DependencyProperty *property)
+{
+	return property->IsNullable ();
 }
 
 
@@ -3047,8 +3021,6 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent, bool value
 bool 
 Type::IsSubclassOf (Value::Kind super)
 {
-	super = (Value::Kind) (super & Value::VALUE_TYPEMASK);
-
 	if (type == super)
 		return true;
 
@@ -3064,12 +3036,6 @@ Type::IsSubclassOf (Value::Kind super)
 		return false;
 	
 	return parent_type->IsSubclassOf (super);
-}
-
-bool
-Type::IsNullable (Value::Kind k)
-{
-	return (k & Value::VALUE_NULLTYPE) == Value::VALUE_NULLTYPE;
 }
 
 Type *
@@ -3088,7 +3054,7 @@ Type::Find (char *name)
 Type *
 Type::Find (Value::Kind type)
 {
-	return types [type & Value::VALUE_TYPEMASK];
+	return types [type];
 }
 
 void
