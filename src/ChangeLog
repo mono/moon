@@ -1,3 +1,8 @@
+2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* clock.h: Added TimelineMarker.
+	* type.h, type.cpp, value.h: Updated.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.h: Fix filling for Polyline. MS supports filling polylines,

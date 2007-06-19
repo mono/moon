@@ -272,6 +272,7 @@ types_init (void)
 	Type::RegisterType ("Timeline", Type::TIMELINE, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("TimelineCollection", Type::TIMELINE_COLLECTION, Type::COLLECTION);
 	Type::RegisterType ("TimelineGroup", Type::TIMELINEGROUP, Type::TIMELINE);
+	Type::RegisterType ("TimelineMarker", Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("TimelineMarkerCollection", Type::TIMELINEMARKER_COLLECTION, Type::COLLECTION);
 	Type::RegisterType ("Transform", Type::TRANSFORM, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("TransformCollection", Type::TRANSFORM_COLLECTION, Type::COLLECTION);

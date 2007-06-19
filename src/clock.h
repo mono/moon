@@ -364,6 +364,18 @@ class ParallelTimeline : public TimelineGroup {
 
 ParallelTimeline * parallel_timeline_new ();
 
+class TimelineMarker : public DependencyObject {
+ public:
+	TimelineMarker () {}
+	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER; };
+
+	static DependencyProperty* TextProperty;
+	static DependencyProperty* TimeProperty;
+	static DependencyProperty* TypeProperty;
+};
+
+TimelineMarker* timeline_marker_new ();
+
 
 /* useful for timing things */
 TimeSpan get_now (void);

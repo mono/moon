@@ -116,6 +116,7 @@ class TileBrush;
 class Timeline;
 class TimelineCollection;
 class TimelineGroup;
+class TimelineMarker;
 class TimelineMarkerCollection;
 class Transform;
 class TransformCollection;
@@ -293,6 +294,7 @@ public:
 	Timeline*                      AsTimeline () { checked_get_subclass (Type::TIMELINE, Timeline) }
 	TimelineCollection*            AsTimelineCollection () { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }
 	TimelineGroup*                 AsTimelineGroup () { checked_get_subclass (Type::TIMELINEGROUP, TimelineGroup) }
+	TimelineMarker*                AsTimelineMarker () { checked_get_subclass (Type::TIMELINEMARKER, TimelineMarker) }
 	TimelineMarkerCollection*      AsTimelineMarkerCollection () { checked_get_subclass (Type::TIMELINEMARKER_COLLECTION, TimelineMarkerCollection) }
 	Transform*                     AsTransform () { checked_get_subclass (Type::TRANSFORM, Transform) }
 	TransformCollection*           AsTransformCollection () { checked_get_subclass (Type::TRANSFORM_COLLECTION, TransformCollection) }
