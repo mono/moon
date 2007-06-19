@@ -423,7 +423,7 @@ PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 			return true;
 
 		Canvas *canvas = npobj->plugin->canvas;
-		if (!canvas) {
+		if (!canvas)
 			return true;
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
