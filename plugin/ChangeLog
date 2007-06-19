@@ -1,5 +1,8 @@
 2007-06-19  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp,  plugin-class.h: Implement DependencyObject properties
+	getter and setters.
+
 2007-06-19  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin.cpp: Eliminate remaining canvas field.
