@@ -1493,7 +1493,7 @@ xaml_set_property_from_str (DependencyObject *obj, const char *pname, const char
 		return;
 	}
 
-	switch (prop->value_type & Value::VALUE_TYPEMASK) {
+	switch (prop->value_type) {
 	case Value::BOOL:
 		obj->SetValue (prop, Value ((bool) !g_strcasecmp ("true", value)));
 		break;
