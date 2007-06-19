@@ -257,6 +257,7 @@ class KeyFrame : public DependencyObject {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress) = 0;
 };
 
+KeyFrame* key_frame_new ();
 
 
 class KeyFrameCollection : public Collection {
@@ -288,6 +289,7 @@ class DoubleKeyFrame : public KeyFrame {
 	static DependencyProperty *ValueProperty;
 };
 
+DoubleKeyFrame* double_key_frame_new ();
 
 
 class ColorKeyFrame : public KeyFrame {
@@ -300,6 +302,7 @@ class ColorKeyFrame : public KeyFrame {
 	static DependencyProperty *ValueProperty;
 };
 
+ColorKeyFrame* color_key_frame_new ();
 
 class PointKeyFrame : public KeyFrame {
  public:
@@ -311,7 +314,7 @@ class PointKeyFrame : public KeyFrame {
 	static DependencyProperty *ValueProperty;
 };
 
-
+PointKeyFrame* point_key_frame_new ();
 
 
 class DiscreteDoubleKeyFrame : public DoubleKeyFrame {

@@ -640,6 +640,12 @@ KeyFrame::SetKeyTime (KeyTime keytime)
 	SetValue (KeyFrame::KeyTimeProperty, Value(keytime));
 }
 
+KeyFrame*
+key_frame_new ()
+{
+	return new KeyFrame ();
+}
+
 static gint
 compare_keyframes (KeyFrame *kf1, KeyFrame *kf2)
 {
@@ -716,6 +722,11 @@ DoubleKeyFrame::DoubleKeyFrame ()
 {
 }
 
+DoubleKeyFrame*
+double_key_frame_new ()
+{
+	return new DoubleKeyFrame ();
+}
 
 DependencyProperty* ColorKeyFrame::ValueProperty;
 
@@ -723,6 +734,11 @@ ColorKeyFrame::ColorKeyFrame ()
 {
 }
 
+ColorKeyFrame*
+color_key_frame_new ()
+{
+	return new ColorKeyFrame ();
+}
 
 DependencyProperty* PointKeyFrame::ValueProperty;
 
@@ -730,6 +746,11 @@ PointKeyFrame::PointKeyFrame ()
 {
 }
 
+PointKeyFrame*
+point_key_frame_new ()
+{
+	return new PointKeyFrame ();
+}
 
 Value*
 DiscreteDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)

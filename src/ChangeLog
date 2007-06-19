@@ -1,3 +1,7 @@
+2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* animation.h|cpp: Add *_key_frame_new.
+
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp\runtime.h: Add a public function for setting
