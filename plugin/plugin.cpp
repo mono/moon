@@ -247,9 +247,10 @@ PluginInstance::UpdateSourceByReference (const char *value)
 		return;
 	}
 
-	char jscript [strlen (value) + 5];
-	strcpy (jscript, value);
-	strcat (jscript, ".text");
+	char jscript[strlen (value) + strlen (".text") + 1];
+
+	g_strlcpy (jscript, value, sizeof(jscript));
+	g_strlcat (jscript, ".text", sizeof(jscript));
 
 	reference.utf8characters = jscript;
 	reference.utf8length = strlen (jscript);

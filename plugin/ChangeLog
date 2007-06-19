@@ -1,3 +1,9 @@
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (UpdateSourceByReference): use g_strlcpy/g_strlcat
+	instead of strcpy/strcat (which was actually walking off the end
+	of the string).  also, create the char array of the right size.
+
 2007-06-19  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* Makefile.am : we need uninstall-plugin to avoid
