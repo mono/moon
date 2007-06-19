@@ -71,7 +71,6 @@ moon_ellipse (cairo_t *cr, double x, double y, double w, double h)
 	double cx = x + rx;
 	double cy = y + ry;
 
-	cairo_new_path (cr);
 	cairo_move_to (cr, cx + rx, cy);
 
 	/* an approximate of the ellipse by drawing a curve in each

@@ -1,3 +1,9 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Don't call cairo_new_path inside moon_ellipse. It's
+	the caller responsbility to do so, if required (e.g. it isn't for
+	geometry stuff).
+
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Implement all the optional points on path markup.
