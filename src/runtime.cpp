@@ -1064,13 +1064,33 @@ surface_clear (Surface *s, int x, int y, int width, int height)
 
 	cairo_set_matrix (s->cairo, &identity);
 
-	cairo_set_source_rgba (s->cairo, 0.7, 0.7, 0.7, 1.0);
-	cairo_rectangle (s->cairo, x, y, width, height);
-	cairo_fill (s->cairo);
+	//cairo_set_source_rgba (s->cairo, 1, 0.5, 1, 1);
+	//cairo_rectangle (s->cairo, x, y, width, height);
+	//cairo_fill (s->cairo);
 
 	//draw_grid (s->cairo);
 }
 	
+void
+create_xlib (Surface *s, GtkWidget *widget)
+{
+	if (s->pixmap){
+		cairo_surface_destroy (s->xlib_surface);
+		cairo_destroy (s->cairo_xlib);
+		g_object_unref (s->pixmap);
+	}
+
+	s->pixmap = gdk_pixmap_new (GDK_DRAWABLE (widget->window), s->width, s->height, -1);
+
+	s->xlib_surface = cairo_xlib_surface_create (
+		GDK_WINDOW_XDISPLAY(widget->window),
+		GDK_WINDOW_XWINDOW(GDK_DRAWABLE (s->pixmap)),
+		GDK_VISUAL_XVISUAL (gdk_window_get_visual(widget->window)),
+		s->width, s->height);
+
+	s->cairo_xlib = cairo_create (s->xlib_surface);
+}
+
 static void
 surface_realloc (Surface *s)
 {
@@ -1087,26 +1107,14 @@ surface_realloc (Surface *s)
 
 	if (s->cairo_xlib == NULL)
 		s->cairo = s->cairo_buffer;
+	else 
+		create_xlib (s, s->drawing_area);
 }
 
 void 
 surface_destroy (Surface *s)
 {
 	delete s;
-}
-
-void
-create_xlib (Surface *s, GtkWidget *widget)
-{
-	s->pixmap = gdk_pixmap_new (GDK_DRAWABLE (widget->window), s->width, s->height, -1);
-
-	s->xlib_surface = cairo_xlib_surface_create (
-		GDK_WINDOW_XDISPLAY(widget->window),
-		GDK_WINDOW_XWINDOW(GDK_DRAWABLE (s->pixmap)),
-		GDK_VISUAL_XVISUAL (gdk_window_get_visual(widget->window)),
-		s->width, s->height);
-
-	s->cairo_xlib = cairo_create (s->xlib_surface);
 }
 
 static void
@@ -1136,6 +1144,11 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 
 	if (s->xlib_surface) {
 		cairo_surface_destroy(s->xlib_surface);
+		cairo_destroy (s->cairo_xlib);
+		g_object_unref (s->pixmap);
+
+		s->pixmap = NULL;
+		s->cairo_xlib = NULL;
 		s->xlib_surface = NULL;
 	}
 
@@ -1151,6 +1164,7 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 
 	s->frames++;
 
+	printf ("Expose event for %d, %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 	if (event->area.x > s->width || event->area.y > s->height)
 		return TRUE;
 
@@ -1400,11 +1414,15 @@ surface_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer us
 {
 	Surface *s = (Surface *) user_data;
 
+	printf ("Size allocate from %d %d to %d %d\n",
+		s->width, s->height, allocation->width, allocation->height);
 	if (s->width != allocation->width || s->height != allocation->height){
 		s->width = allocation->width;
 		s->height = allocation->height;
 
 		surface_realloc (s);
+		gtk_widget_queue_draw_area ((GtkWidget *) s->drawing_area,
+					    0, 0, allocation->width, allocation->height);
 	}
 }
 

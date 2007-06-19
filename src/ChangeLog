@@ -1,3 +1,7 @@
+2007-06-19  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp: Add support for resizing objects.
+
 2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* brush.cpp (~VideoBrush): We want to detach from the media
