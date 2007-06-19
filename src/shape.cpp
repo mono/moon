@@ -722,15 +722,29 @@ Polygon::Draw (Surface *s)
 
 	cairo_new_path (s->cairo);
 	cairo_set_fill_rule (s->cairo, convert_fill_rule (polygon_get_fill_rule (this)));
-	cairo_move_to (s->cairo, points [0].x, points [0].y);
 
-	for (i = 1; i < count; i++) {
-		cairo_line_to (s->cairo, points [i].x, points [i].y);
-	}
-
-	// Draw a line from the last point back to the first point if they're not the same
-	if ((points [0].x != points [count-1].x) && (points [0].y != points [count-1].y)) {
-		cairo_line_to (s->cairo, points [0].x, points [0].y);
+	Stretch stretch = shape_get_stretch (this);
+	switch (stretch) {
+	case StretchNone:
+		cairo_move_to (s->cairo, points [0].x, points [0].y);
+		for (i = 1; i < count; i++)
+			cairo_line_to (s->cairo, points [i].x, points [i].y);
+		break;
+		// Draw a line from the last point back to the first point if they're not the same
+		if ((points [0].x != points [count-1].x) && (points [0].y != points [count-1].y)) {
+			cairo_line_to (s->cairo, points [0].x, points [0].y);
+		}
+	default:
+		double x = points [0].x;
+		double y = points [0].y;
+		cairo_move_to (s->cairo, 0, 0);
+		for (i = 1; i < count; i++)
+			cairo_line_to (s->cairo, points [i].x - x, points [i].y - y);
+		break;
+		// Draw a line from the last point back to the first point if they're not the same
+		if ((points [count-1].x != 0) && (points [count-1].y != 0)) {
+			cairo_line_to (s->cairo, 0, 0);
+		}
 	}
 
 	cairo_close_path (s->cairo);
@@ -807,10 +821,22 @@ Polyline::Draw (Surface *s)
 		return;
 
 	cairo_set_fill_rule (s->cairo, convert_fill_rule (polyline_get_fill_rule (this)));
-	cairo_move_to (s->cairo, points [0].x, points [0].y);
+	cairo_new_path (s->cairo);
 
-	for (i = 1; i < count; i++) {
-		cairo_line_to (s->cairo, points [i].x, points [i].y);
+	Stretch stretch = shape_get_stretch (this);
+	switch (stretch) {
+	case StretchNone:
+		cairo_move_to (s->cairo, points [0].x, points [0].y);
+		for (i = 1; i < count; i++)
+			cairo_line_to (s->cairo, points [i].x, points [i].y);
+		break;
+	default:
+		double x = points [0].x;
+		double y = points [0].y;
+		cairo_move_to (s->cairo, 0, 0);
+		for (i = 1; i < count; i++)
+			cairo_line_to (s->cairo, points [i].x - x, points [i].y - y);
+		break;
 	}
 }
 

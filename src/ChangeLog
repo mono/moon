@@ -1,3 +1,7 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Fix Stretch for Polyline and Polygon.
+
 2007-06-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp: Updated to use a real linked list implementation.. for
