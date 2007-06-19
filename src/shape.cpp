@@ -470,6 +470,11 @@ shape_set_stroke_dash_array (Shape *shape, double* dashes, int count)
 // Ellipse
 //
 
+Ellipse::Ellipse ()
+{
+	SetValue (Shape::StretchProperty, Value (StretchFill));
+}
+
 void
 Ellipse::Draw (Surface *s)
 {
@@ -517,6 +522,11 @@ ellipse_new (void)
 
 DependencyProperty* Rectangle::RadiusXProperty;
 DependencyProperty* Rectangle::RadiusYProperty;
+
+Rectangle::Rectangle ()
+{
+	SetValue (Shape::StretchProperty, Value (StretchFill));
+}
 
 void
 Rectangle::Draw (Surface *s)
@@ -924,7 +934,7 @@ shape_init (void)
 {
 	/* Shape fields */
 	Shape::FillProperty = DependencyObject::Register (Type::SHAPE, "Fill", Type::BRUSH);
-	Shape::StretchProperty = DependencyObject::Register (Type::SHAPE, "Stretch", new Value (StretchFill));
+	Shape::StretchProperty = DependencyObject::Register (Type::SHAPE, "Stretch", new Value (StretchNone));
 	Shape::StrokeProperty = DependencyObject::Register (Type::SHAPE, "Stroke", Type::BRUSH);
 	Shape::StrokeDashArrayProperty = DependencyObject::Register (Type::SHAPE, "StrokeDashArray", Type::DOUBLE_ARRAY);
 	Shape::StrokeDashCapProperty = DependencyObject::Register (Type::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));

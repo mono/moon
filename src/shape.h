@@ -99,7 +99,7 @@ void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 //
 class Ellipse : public Shape {
  public:
-	Ellipse () { };
+	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
 	virtual Point getxformorigin ();
@@ -116,7 +116,7 @@ class Rectangle : public Shape {
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
 
-	Rectangle () { };
+	Rectangle ();
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
 
 	void Draw (Surface *s);
