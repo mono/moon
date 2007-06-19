@@ -522,7 +522,7 @@ void
 Rectangle::Draw (Surface *s)
 {
 	double w, h;
-	// only StretchNone gets some special attention
+
 	Stretch stretch = shape_get_stretch (this);
 	if (stretch == StretchNone) {
 		// this gets us a single colored point at X,Y
@@ -531,6 +531,20 @@ Rectangle::Draw (Surface *s)
 	} else {
 		w = framework_element_get_width (this);
 		h = framework_element_get_height (this);
+
+		switch (stretch) {
+		case StretchUniform:
+			w = h = (w < h) ? w : h;
+			break;
+		case StretchUniformToFill:
+			// this gets an ellipse larger than it's dimension, relative
+			// scaling is ok but we need to clip to it's original size
+			cairo_rectangle (s->cairo, 0, 0, w, h);
+			cairo_clip (s->cairo);
+			w = h = (w > h) ? w : h;
+			break;
+		}
+
 		double radius_x = rectangle_get_radius_x (this);
 		if (radius_x != 0) {
 			double radius_y = rectangle_get_radius_y (this);
