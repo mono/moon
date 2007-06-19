@@ -1038,23 +1038,6 @@ draw_grid (cairo_t *cairo)
 	}
 }
 
-void 
-surface_clear (Surface *s, int x, int y, int width, int height)
-{
-	static unsigned char n;
-	cairo_matrix_t identity;
-
-	cairo_matrix_init_identity (&identity);
-
-	cairo_set_matrix (s->cairo, &identity);
-
-	//cairo_set_source_rgba (s->cairo, 1, 0.5, 1, 1);
-	//cairo_rectangle (s->cairo, x, y, width, height);
-	//cairo_fill (s->cairo);
-
-	//draw_grid (s->cairo);
-}
-	
 void
 create_xlib (Surface *s, GtkWidget *widget)
 {
@@ -1148,7 +1131,6 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 
 	s->frames++;
 
-	printf ("Expose event for %d, %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 	if (event->area.x > s->width || event->area.y > s->height)
 		return TRUE;
 
@@ -1603,7 +1585,7 @@ surface_attach (Surface *surface, UIElement *toplevel)
 void
 surface_repaint (Surface *s, int x, int y, int width, int height)
 {
-	cairo_set_source_rgb (s->cairo, 0.7, 0.7, 0.7);
+	cairo_set_source_rgb (s->cairo, 1, 1, 1);
 	cairo_rectangle (s->cairo, x, y, width, height);
 	cairo_fill (s->cairo);
 	s->toplevel->dorender (s, x, y, width, height);
