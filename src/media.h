@@ -30,6 +30,7 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
 };
 
+MediaBase* media_base_new ();
 char *media_base_get_source (MediaBase *media);
 void media_base_set_source (MediaBase *media, char *value);
 

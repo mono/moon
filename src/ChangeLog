@@ -1,5 +1,9 @@
 2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* media.h|cpp: Add media_base_new.
+
+2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* value.cpp|h|in: Inline the non-DependencyObject
 	As* functions as well.
 
