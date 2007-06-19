@@ -670,8 +670,8 @@ void
 KeyFrameCollection::Remove (DependencyObject *data)
 {
 	KeyFrame *kf = (KeyFrame *) data;
-	Collection::Remove (kf);
 	sorted_list = g_slist_remove (sorted_list, kf);
+	Collection::Remove (kf);
 }
 
 KeyFrame*

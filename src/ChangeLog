@@ -1,3 +1,9 @@
+2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* animation.cpp (Remove): Remove the KeyFrame from the sorted list
+	before removing it from the collection (since it may be freed by
+	Collection::Remove).
+
 2007-06-19  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp: Add support for resizing objects.
