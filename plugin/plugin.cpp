@@ -264,6 +264,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 			#else	
 			UIElement * element = xaml_create_from_str (NPVARIANT_TO_STRING (result).utf8characters, true, NULL, NULL, NULL);
 			surface_attach (this->surface, element);
+			plugin->canvas = element;
 			#endif
 		}
 
@@ -338,7 +339,9 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 			mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
 			TryLoad ();
 		#else	
-			surface_attach (this->surface, xaml_create_from_file (fname, true, NULL, NULL, NULL));
+			UIElement *element = xaml_create_from_file (fname, true, NULL, NULL, NULL);
+			surface_attach (this->surface, element);
+			plugin->canvas = element;
 		#endif
 
 		this->isLoaded = true;

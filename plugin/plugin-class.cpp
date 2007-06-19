@@ -423,6 +423,7 @@ PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 			return true;
 
 		Canvas *canvas = npobj->plugin->canvas;
+
 		if (!canvas)
 			return true;
 
