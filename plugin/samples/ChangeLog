@@ -1,5 +1,10 @@
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
+	* clock-ie.xaml: Removed, now we have same xaml for both implementations.
+	* clock.xaml: Implement IE compatibility properties.
+
+2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
+
 	* clock.html: Add javascript hands logic.
 	* clock-ie.xaml: Add silverlight compatible clock xaml.
 
