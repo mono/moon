@@ -107,7 +107,7 @@ class AnimationStorage {
 	
  private:
 	void UpdatePropertyValue ();
-	static void update_property_value (gpointer data);
+	static void update_property_value (DependencyObject *sender, gpointer event_data, gpointer closure);
 
 	AnimationClock *clock;
 	Animation/*Timeline*/* timeline;
@@ -487,9 +487,7 @@ class Storyboard : public ParallelTimeline {
 	void HookupAnimationsRecurse (Clock *clock);
 	Clock *root_clock;
 
-	gboolean Tick ();
-	static gboolean storyboard_tick (gpointer data);
-	static void invoke_completed (gpointer data);
+	static void invoke_completed (DependencyObject *sender, gpointer event_data, gpointer data);
 };
 
 Storyboard *storyboard_new (void);

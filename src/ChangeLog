@@ -1,3 +1,21 @@
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h: get rid of the specialized surface callbacks for
+	mouse events.  we can dispatch them directly to the UIElements.
+	Change the EventObject signatures to permit an event/call data as
+	well as the closure.  add the sender object for kicks while we're
+	at it.
+
+	* runtime.cpp: dispatch element events through the
+	DependencyObject's events object.
+
+	* animation.h, animation.cpp: update signatures for event
+	handlers.
+
+	* control.cpp (handle_button): track signature change.
+
+	* clock.cpp: same.
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (TimeManager::Tick): add a lot of timing foo.

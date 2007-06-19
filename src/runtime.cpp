@@ -49,10 +49,6 @@ struct _SurfacePrivate {
 #define TIME_CLIP 0
 #define TIME_REDRAW 1
 
-static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
-static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
-static callback_keyboard_event cb_keydown, cb_keyup;
-
 void 
 Base::ref ()
 {
@@ -839,17 +835,25 @@ bool
 UIElement::handle_motion (Surface *s, int state, double x, double y)
 {
 	if (inside_object (s, x, y)){
-		s->cb_motion (this, state, x, y);
+		MouseEventArgs args;
+		args.state = state;
+		args.x = x;
+		args.y = y;
+		events->Emit (this, "MouseMove", &args);
 		return true;
 	} 
 	return false;
 }
 
 bool
-UIElement::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
+UIElement::handle_button (Surface *s, char *event, int state, double x, double y)
 {
 	if (inside_object (s, x, y)){
-		cb (this, state, x, y);
+		MouseEventArgs args;
+		args.state = state;
+		args.x = x;
+		args.y = y;
+		events->Emit (this, event, &args);
 		return true;
 	}
 	return false;
@@ -858,13 +862,17 @@ UIElement::handle_button (Surface *s, callback_mouse_event cb, int state, double
 void
 UIElement::enter (Surface *s, int state, double x, double y)
 {
-	s->cb_enter (this, state, x, y);
+	MouseEventArgs args;
+	args.state = state;
+	args.x = x;
+	args.y = y;
+	events->Emit (this, "MouseEnter", &args);
 }
 
 void
 UIElement::leave (Surface *s)
 {
-	s->cb_mouse_leave (this);
+	events->Emit (this, "MouseEnter");
 }
 
 void
@@ -1263,14 +1271,18 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 
  leave:
 	if (handled || inside_object (s, x, y)){
-		s->cb_motion (this, state, x, y);
+		MouseEventArgs args;
+		args.state = state;
+		args.x = x;
+		args.y = y;
+		events->Emit (this, "MouseMove", &args);
 		return true;
 	}
 	return handled;
 }
 
 bool
-Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
+Canvas::handle_button (Surface *s, char *event, int state, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
 	bool handled = false;
@@ -1290,13 +1302,17 @@ Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x,
 			continue;
 		}
 
-		handled = item->handle_button (s, cb, state, x, y);
+		handled = item->handle_button (s, event, state, x, y);
 		if (handled)
 			break;
 	}
  leave:
 	if (handled || inside_object (s, x, y)){
-		cb (this, state, x, y);
+		MouseEventArgs args;
+		args.state = state;
+		args.x = x;
+		args.y = y;
+		events->Emit (this, event, &args);
 		return true;
 	}
 	return handled;
@@ -1309,7 +1325,7 @@ Canvas::leave (Surface *s)
 	       current_item->leave (s);
 	       current_item = NULL;
 	}
-	s->cb_mouse_leave (this);
+	events->Emit (this, "MouseLeave");
 }
 
 Control*
@@ -1392,9 +1408,9 @@ create_xlib (Surface *s, GtkWidget *widget)
 }
 
 static void
-render_surface (gpointer data)
+render_surface (DependencyObject *sender, gpointer event_data, gpointer closure)
 {
-	Surface *s = (Surface*)data;
+	Surface *s = (Surface*)closure;
 	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
 }
 
@@ -1474,9 +1490,6 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 	GdkModifierType state;
 	int x, y;
 
-	if (!s->cb_motion)
-		return FALSE;
-
 	if (event->is_hint) {
 		gdk_window_get_pointer (event->window, &x, &y, &state);
 	} else {
@@ -1493,9 +1506,6 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 {
 	Surface *s = (Surface *) data;
 
-	if (s->cb_enter == NULL || s->cb_mouse_leave == NULL)
-		return FALSE;
-
 	if (event->type == GDK_ENTER_NOTIFY){
 		s->toplevel->handle_motion (s, event->state, event->x, event->y);
 		s->toplevel->enter (s, event->state, event->x, event->y);
@@ -1510,14 +1520,16 @@ key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	if (!s->cb_keydown)
-		return FALSE;
-
 	// 
 	// I could not write a test that would send the output elsewhere, for now
 	// just send to the toplevel
 	//
-	return s->cb_keydown (s->toplevel, key->state, key->keyval, key->hardware_keycode);
+	KeyboardEventArgs args;
+	args.state = key->state;
+	args.key = key->keyval;
+	args.platformcode = key->hardware_keycode;
+	s->toplevel->events->Emit (s->toplevel, "KeyDown", &args);
+	return TRUE;
 }
 
 static gboolean 
@@ -1525,15 +1537,16 @@ key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	if (!s->cb_keyup)
-		return FALSE;
-	
 	// 
 	// I could not write a test that would send the output elsewhere, for now
 	// just send to the toplevel
 	//
-	return s->cb_keyup (s->toplevel, key->state, key->keyval, key->hardware_keycode);
-
+	KeyboardEventArgs args;
+	args.state = key->state;
+	args.key = key->keyval;
+	args.platformcode = key->hardware_keycode;
+	s->toplevel->events->Emit (s->toplevel, "KeyUp", &args);
+	return TRUE;
 }
 
 static gboolean
@@ -1541,13 +1554,10 @@ button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer dat
 {
 	Surface *s = (Surface *) data;
 
-	if (!s->cb_up)
-		return FALSE;
-	
 	if (button->button != 1)
 		return FALSE;
 
-	s->toplevel->handle_button (s, s->cb_up, button->state, button->x, button->y);
+	s->toplevel->handle_button (s, "MouseLeftButtonUp", button->state, button->x, button->y);
 	return TRUE;
 }
 
@@ -1558,13 +1568,10 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 
 	gtk_widget_grab_focus (widget);
 
-	if (!s->cb_down)
-		return FALSE;
-
 	if (button->button != 1)
 		return FALSE;
 
-	s->toplevel->handle_button (s, s->cb_down, button->state, button->x, button->y);
+	s->toplevel->handle_button (s, "MouseLeftButtonDown", button->state, button->x, button->y);
 }
 
 static int level = 0;
@@ -1652,14 +1659,14 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 
 		if (!(item->flags & UIElement::IS_LOADED)) {
 			item->flags |= UIElement::IS_LOADED;
-			item->events->Emit ("Loaded");
+			item->events->Emit (item, "Loaded");
 		}
 	}
 //	printf ("RENDER: LEAVE\n");
 
 	if (!(flags & UIElement::IS_LOADED)) {
 		flags |= UIElement::IS_LOADED;
-		events->Emit ("Loaded");
+		events->Emit (this, "Loaded");
 	}
 	level -= 4;
 	//draw_grid (s->cairo);
@@ -2577,7 +2584,7 @@ EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer dat
 }
 
 void
-EventObject::Emit (char *event_name)
+EventObject::Emit (DependencyObject* sender, char *event_name, gpointer event_data)
 {
 	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 
@@ -2586,7 +2593,7 @@ EventObject::Emit (char *event_name)
 	
 	for (GList *l = events; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
-		closure->func (closure->data);
+		closure->func (sender, event_data, closure->data);
 	}
 }
 
@@ -3143,23 +3150,3 @@ runtime_shutdown ()
 	Type::Shutdown ();
 	DependencyObject::Shutdown ();
 }
-
-void surface_register_events (Surface *s,
-			      callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
-			      callback_mouse_event enter,
-			      callback_plain_event got_focus, callback_plain_event lost_focus,
-			      callback_plain_event loaded, callback_plain_event mouse_leave,
-			      callback_keyboard_event keydown, callback_keyboard_event keyup)
-{
-	s->cb_motion = motion;
-	s->cb_down = down;
-	s->cb_up = up;
-	s->cb_enter = enter;
-	s->cb_got_focus = got_focus;
-	s->cb_lost_focus = lost_focus;
-	s->cb_loaded = loaded;
-	s->cb_mouse_leave = mouse_leave;
-	s->cb_keydown = keydown;
-	s->cb_keyup = keyup;
-}
-

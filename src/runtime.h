@@ -17,7 +17,7 @@ G_BEGIN_DECLS
 #define ENDTIMER(id,str)
 #endif
 
-typedef void (*EventHandler) (gpointer data);
+typedef void (*EventHandler) (DependencyObject* sender, gpointer event_data, gpointer closure);
 
 class EventObject {
  public:
@@ -27,9 +27,21 @@ class EventObject {
 	void AddHandler (char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (char *event_name, EventHandler handler, gpointer data);
 	
-	void Emit (char *event_name);
+	void Emit (DependencyObject* sender, char *event_name, gpointer event_data = NULL);
  private:
 	GHashTable *event_hash;
+};
+
+struct MouseEventArgs {
+	int state;
+	double x;
+	double y;
+};
+
+struct KeyboardEventArgs {
+	int state;
+	int platformcode;
+	int key;
 };
 
 struct Point {
@@ -606,14 +618,6 @@ void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *ac
 void          event_trigger_fire_actions (EventTrigger *trigger);
 
 //
-// Surface callbacks
-//
-typedef void (*callback_mouse_event)    (UIElement *target, int state, double x, double y);
-typedef void (*callback_plain_event)    (UIElement *target);
-typedef bool (*callback_keyboard_event) (UIElement *target, int state, int platformcode, int key);
-
-
-//
 // Item class
 //
 class UIElement : public Visual {
@@ -715,7 +719,7 @@ class UIElement : public Visual {
 	//
 	//   Returns true if the button click was handled. 
 	//
-	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual bool handle_button (Surface *s, char *event, int state, double x, double y);
 	
 	//
 	// enter:
@@ -843,7 +847,7 @@ class Canvas : public Panel {
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
 	virtual bool handle_motion (Surface *s, int state, double x, double y);
-	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual bool handle_button (Surface *s, char *event, int state, double x, double y);
 	virtual void leave (Surface *s);
 	
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
@@ -872,7 +876,7 @@ class Control : public FrameworkElement {
 	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);
 	virtual bool handle_motion (Surface *s, int state, double x, double y);
-	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual bool handle_button (Surface *s, char *event, int state, double x, double y);
 	virtual void enter (Surface *s, int state, double x, double y);
 	virtual void leave (Surface *s);
 
@@ -893,9 +897,6 @@ class Surface {
 		cairo_buffer_surface (NULL), cairo_buffer(NULL),
 		xlib_surface(NULL), cairo_xlib(NULL), pixmap(NULL),
 		using_cairo_xlib_surface(0), pixbuf(NULL),
-		cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
-		cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL),
-		cb_keydown(NULL), cb_keyup(NULL),
 		cairo (NULL) {}
 	
 	~Surface();
@@ -932,11 +933,6 @@ class Surface {
 	UIElement *toplevel;
 
 	int frames;
-
-	callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
-	callback_plain_event cb_got_focus, cb_lost_focus, cb_loaded, cb_mouse_leave;
-	callback_keyboard_event cb_keydown, cb_keyup;
-
 };
 
 Surface *surface_new       (int width, int height);
@@ -949,13 +945,6 @@ void     surface_destroy   (Surface *s);
 void     surface_repaint   (Surface *s, int x, int y, int width, int height);
 
 void    *surface_get_drawing_area (Surface *s);
-
-void     surface_register_events (Surface *s,
-				  callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
-				  callback_mouse_event enter,
-				  callback_plain_event got_focus, callback_plain_event lost_focus,
-				  callback_plain_event loaded, callback_plain_event mouse_leave,
-				  callback_keyboard_event keydown, callback_keyboard_event keyup);
 		      
 
 //
