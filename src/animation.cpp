@@ -38,9 +38,9 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 }
 
 void
-AnimationStorage::update_property_value (DependencyObject *sender, gpointer event_data, gpointer closure)
+AnimationStorage::update_property_value (gpointer data)
 {
-	((AnimationStorage*)closure)->UpdatePropertyValue ();
+	((AnimationStorage*)data)->UpdatePropertyValue ();
 }
 
 void
@@ -147,10 +147,9 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 }
 
 void
-Storyboard::invoke_completed (DependencyObject *sender, gpointer event_data, gpointer closure)
+Storyboard::invoke_completed (gpointer data)
 {
-	Storyboard *sb = (Storyboard*)closure;
-	sb->events->Emit (sb, "Completed");
+	((Storyboard*)data)->events->Emit ("Completed");
 }
 
 void

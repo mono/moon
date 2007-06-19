@@ -162,7 +162,7 @@ TimeManager::Tick ()
 
 	if (flags & TIME_MANAGER_RENDER) {
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
-		Emit (NULL/* XXX */, "render");
+		Emit ("render");
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 
@@ -346,12 +346,12 @@ void
 Clock::RaiseAccumulatedEvents ()
 {
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
-		events->Emit (this, "CurrentTimeInvalidated");
+		events->Emit (/*this,*/ "CurrentTimeInvalidated");
 	}
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
 		current_state = new_state;
-		events->Emit (this, "CurrentStateInvalidated");
+		events->Emit (/*this,*/ "CurrentStateInvalidated");
 	}
 
 	if ((queued_events & SPEED_CHANGED) != 0)
@@ -531,7 +531,7 @@ ClockGroup::RaiseAccumulatedEvents ()
 	}
 
 	if (need_completed) {
-		events->Emit (this, "Completed");
+		events->Emit ("Completed");
 	}
 }
 
