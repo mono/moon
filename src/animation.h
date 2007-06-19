@@ -254,7 +254,7 @@ class KeyFrame : public DependencyObject {
 
 	static DependencyProperty *KeyTimeProperty;
 
-	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress) = 0;
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
 KeyFrame* key_frame_new ();

@@ -640,6 +640,13 @@ KeyFrame::SetKeyTime (KeyTime keytime)
 	SetValue (KeyFrame::KeyTimeProperty, Value(keytime));
 }
 
+Value *
+KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	g_warning ("KeyFrame::InterpolateValue has been called. The derived class should have overridden it.",
+		   dependency_object_get_name (this));
+}
+
 KeyFrame*
 key_frame_new ()
 {
