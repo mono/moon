@@ -1,3 +1,7 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Add Strech support for Ellipse.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Add Strech support for Rectangle (only None is different).
