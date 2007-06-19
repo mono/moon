@@ -34,6 +34,10 @@ install-plugin: libmoonplugin.la moonlight.exe
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp moonlight.exe ~/.mozilla/plugins
 
+uninstall-plugin:
+	rm -rf ~/.mozilla/plugins/libmoonplugin.so
+	rm -rf ~/.mozilla/plugin/moonlight.exe
+
 EXTRA_DIST = moonlight.cs
 
 moonlight.exe: moonlight.cs

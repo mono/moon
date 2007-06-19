@@ -1,3 +1,8 @@
+2007-06-19  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* Makefile.am : we need uninstall-plugin to avoid
+	  possible browser shutdown on browsing sl-enabled sites.
+
 2007-06-19  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-class.cpp,  plugin-class.h: Implement DependencyObject properties
