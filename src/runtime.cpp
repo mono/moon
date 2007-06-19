@@ -186,6 +186,17 @@ collection_insert (Collection *collection, int index, DependencyObject *data)
 	collection->Insert (index, data);
 }
 
+//
+// Very trivial implementation for now
+//
+void 
+collection_clear (Collection *collection)
+{
+	while (collection->list){
+		collection_remove (collection, (DependencyObject *)collection->list->data);
+	}
+}
+
 Type::Kind
 collection_get_element_type (Collection *collection)
 {

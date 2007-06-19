@@ -436,6 +436,7 @@ class CollectionIterator {
 void collection_add    (Collection *collection, DependencyObject *data);
 void collection_remove (Collection *collection, DependencyObject *data);
 void collection_insert (Collection *collection, int index, DependencyObject *data);
+void collection_clear  (Collection *collection);
 
 Type::Kind collection_get_element_type (Collection *collection);
 CollectionIterator *collection_get_iterator (Collection *collection);
