@@ -123,9 +123,7 @@ Collection::Insert (int index, DependencyObject *data)
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 
 	list = g_list_insert (list, data, index);
-	data->ref ();
-	data->SetParent (this);
-	data->Attach (NULL, this);
+	SharedAdd (data);
 }
 
 void
@@ -2445,7 +2443,7 @@ TriggerCollection::Insert (int index, DependencyObject *data)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
 	
-	printf ("Adding %p\n", data);
+	printf ("Inserting %p\n", data);
 	EventTrigger *trigger = (EventTrigger *) data;
 
 	Collection::Insert (index, trigger);

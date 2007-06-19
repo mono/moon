@@ -1,3 +1,8 @@
+2007-06-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (Insert): Make this use SharedAdd too, which I
+	presume was the whole point.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Fix Strech support for Rectangle (it behave more like
