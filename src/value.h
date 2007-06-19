@@ -5,6 +5,8 @@
 #ifndef MOON_VALUE_H
 #define MOON_VALUE_H
 
+#include "type.h"
+
 /* ugly file containing the catchall value type we use.
    implementation still lives in runtime.cpp
 */
@@ -134,138 +136,11 @@ class VisualCollection;
 
 struct Value {
 public:
-	enum Kind {
-// START_MANAGED_MAPPING
-		INVALID,
-		BOOL,
-		DOUBLE,
-		UINT64,
-		INT32,
-		STRING,
-		COLOR,
-		POINT,
-		RECT,
-		REPEATBEHAVIOR,
-		DURATION,
-		INT64,
-		DOUBLE_ARRAY,
-		POINT_ARRAY,
-		KEYTIME,
-		MATRIX,
-
-		DEPENDENCY_OBJECT,
-		ANIMATION,
-		ANIMATIONCLOCK,
-		ARCSEGMENT,
-		BEGINSTORYBOARD,
-		BEZIERSEGMENT,
-		BRUSH,
-		CANVAS,
-		CLOCK,
-		CLOCKGROUP,
-		COLLECTION,
-		COLORANIMATION,
-		COLORANIMATIONUSINGKEYFRAMES,
-		COLORKEYFRAME,
-		CONTROL,
-		DISCRETECOLORKEYFRAME,
-		DISCRETEDOUBLEKEYFRAME,
-		DISCRETEPOINTKEYFRAME,
-		DOUBLEANIMATION,
-		DOUBLEANIMATIONUSINGKEYFRAMES,
-		DOUBLEKEYFRAME,
-		DOWNLOADER,
-		ELLIPSE,
-		ELLIPSEGEOMETRY,
-		EVENTTRIGGER,
-		FRAMEWORKELEMENT,
-		GEOMETRY,
-		GEOMETRY_COLLECTION,
-		GEOMETRYGROUP,
-		GLYPHS,
-		GRADIENTBRUSH,
-		GRADIENTSTOP,
-		GRADIENTSTOP_COLLECTION,
-		IMAGE,
-		IMAGEBRUSH,
-		INLINE,
-		INLINES,
-		KEYFRAME,
-		KEYFRAME_COLLECTION,
-		KEYSPLINE,
-		LINE,
-		LINEARCOLORKEYFRAME,
-		LINEARDOUBLEKEYFRAME,
-		LINEARGRADIENTBRUSH,
-		LINEARPOINTKEYFRAME,
-		LINEBREAK,
-		LINEGEOMETRY,
-		LINESEGMENT,
-		MATRIXTRANSFORM,
-		MEDIAATTRIBUTE,
-		MEDIAATTRIBUTE_COLLECTION,
-		MEDIABASE,
-		MEDIAELEMENT,
-		NAMESCOPE,
-		PANEL,
-		PARALLELTIMELINE,
-		PATH,
-		PATHFIGURE,
-		PATHFIGURE_COLLECTION,
-		PATHGEOMETRY,
-		PATHSEGMENT,
-		PATHSEGMENT_COLLECTION,
-		POINTANIMATION,
-		POINTANIMATIONUSINGKEYFRAMES,
-		POINTKEYFRAME,
-		POLYBEZIERSEGMENT,
-		POLYGON,
-		POLYLINE,
-		POLYLINESEGMENT,
-		POLYQUADRATICBEZIERSEGMENT,
-		QUADRATICBEZIERSEGMENT,
-		RADIALGRADIENTBRUSH,
-		RECTANGLE,
-		RECTANGLEGEOMETRY,
-		RESOURCE_COLLECTION,
-		ROTATETRANSFORM,
-		RUN,
-		SCALETRANSFORM,
-		SHAPE,
-		SKEWTRANSFORM,
-		SOLIDCOLORBRUSH,
-		SPLINEDOUBLEKEYFRAME,
-		STORYBOARD,
-		STROKE_COLLECTION,
-		STYLUSPOINT_COLLECTION,
-		TEXTBLOCK,
-		TILEBRUSH,
-		TIMELINE,
-		TIMELINE_COLLECTION,
-		TIMELINEGROUP,
-		TIMELINEMARKER_COLLECTION,
-		TRANSFORM,
-		TRANSFORM_COLLECTION,
-		TRANSFORMGROUP,
-		TRANSLATETRANSFORM,
-		TRIGGERACTION,
-		TRIGGERACTION_COLLECTION,
-		TRIGGER_COLLECTION,
-		UIELEMENT,
-		VIDEOBRUSH,
-		VISUAL,
-		VISUAL_COLLECTION,
-
-
-		LASTTYPE,
-// END_MANAGED_MAPPING
-	};
-
 	void Init ();
 
 	Value ();
 	Value (const Value& v);
-	Value (Kind k);
+	Value (Type::Kind k);
 	Value (bool z);
 	Value (double d);
 	Value (guint64 i);
@@ -295,7 +170,7 @@ public:
 		if (k != v.k)
 			return false;
 
-		if (k == STRING) {
+		if (k == Type::STRING) {
 			return !strcmp (u.s, v.u.s);
 		}
 		else {
@@ -327,114 +202,114 @@ public:
 	DoubleArray*    AsDoubleArray ();
 	Matrix*		AsMatrix ();
 
-	DependencyObject*              AsDependencyObject ();
-	Animation*                     AsAnimation ();
-	AnimationClock*                AsAnimationClock ();
-	ArcSegment*                    AsArcSegment ();
-	BeginStoryboard*               AsBeginStoryboard ();
-	BezierSegment*                 AsBezierSegment ();
-	Brush*                         AsBrush ();
-	Canvas*                        AsCanvas ();
-	Clock*                         AsClock ();
-	ClockGroup*                    AsClockGroup ();
-	Collection*                    AsCollection ();
-	ColorAnimation*                AsColorAnimation ();
-	ColorAnimationUsingKeyFrames*  AsColorAnimationUsingKeyFrames ();
-	ColorKeyFrame*                 AsColorKeyFrame ();
-	Control*                       AsControl ();
-	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame ();
-	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame ();
-	DiscretePointKeyFrame*         AsDiscretePointKeyFrame ();
-	DoubleAnimation*               AsDoubleAnimation ();
-	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames ();
-	DoubleKeyFrame*                AsDoubleKeyFrame ();
-	Downloader*                    AsDownloader ();
-	Ellipse*                       AsEllipse ();
-	EllipseGeometry*               AsEllipseGeometry ();
-	EventTrigger*                  AsEventTrigger ();
-	FrameworkElement*              AsFrameworkElement ();
-	Geometry*                      AsGeometry ();
-	GeometryCollection*            AsGeometryCollection ();
-	GeometryGroup*                 AsGeometryGroup ();
-	Glyphs*                        AsGlyphs ();
-	GradientBrush*                 AsGradientBrush ();
-	GradientStop*                  AsGradientStop ();
-	GradientStopCollection*        AsGradientStopCollection ();
-	Image*                         AsImage ();
-	ImageBrush*                    AsImageBrush ();
-	Inline*                        AsInline ();
-	Inlines*                       AsInlines ();
-	KeyFrame*                      AsKeyFrame ();
-	KeyFrameCollection*            AsKeyFrameCollection ();
-	KeySpline*                     AsKeySpline ();
-	Line*                          AsLine ();
-	LinearColorKeyFrame*           AsLinearColorKeyFrame ();
-	LinearDoubleKeyFrame*          AsLinearDoubleKeyFrame ();
-	LinearGradientBrush*           AsLinearGradientBrush ();
-	LinearPointKeyFrame*           AsLinearPointKeyFrame ();
-	LineBreak*                     AsLineBreak ();
-	LineGeometry*                  AsLineGeometry ();
-	LineSegment*                   AsLineSegment ();
-	MatrixTransform*               AsMatrixTransform ();
-	MediaAttribute*                AsMediaAttribute ();
-	MediaAttributeCollection*      AsMediaAttributeCollection ();
-	MediaBase*                     AsMediaBase ();
-	MediaElement*                  AsMediaElement ();
-	NameScope*                     AsNameScope ();
-	Panel*                         AsPanel ();
-	ParallelTimeline*              AsParallelTimeline ();
-	Path*                          AsPath ();
-	PathFigure*                    AsPathFigure ();
-	PathFigureCollection*          AsPathFigureCollection ();
-	PathGeometry*                  AsPathGeometry ();
-	PathSegment*                   AsPathSegment ();
-	PathSegmentCollection*         AsPathSegmentCollection ();
-	PointAnimation*                AsPointAnimation ();
-	PointAnimationUsingKeyFrames*  AsPointAnimationUsingKeyFrames ();
-	PointKeyFrame*                 AsPointKeyFrame ();
-	PolyBezierSegment*             AsPolyBezierSegment ();
-	Polygon*                       AsPolygon ();
-	Polyline*                      AsPolyline ();
-	PolyLineSegment*               AsPolyLineSegment ();
-	PolyQuadraticBezierSegment*    AsPolyQuadraticBezierSegment ();
-	QuadraticBezierSegment*        AsQuadraticBezierSegment ();
-	RadialGradientBrush*           AsRadialGradientBrush ();
-	Rectangle*                     AsRectangle ();
-	RectangleGeometry*             AsRectangleGeometry ();
-	ResourceCollection*            AsResourceCollection ();
-	RotateTransform*               AsRotateTransform ();
-	Run*                           AsRun ();
-	ScaleTransform*                AsScaleTransform ();
-	Shape*                         AsShape ();
-	SkewTransform*                 AsSkewTransform ();
-	SolidColorBrush*               AsSolidColorBrush ();
-	SplineDoubleKeyFrame*          AsSplineDoubleKeyFrame ();
-	Storyboard*                    AsStoryboard ();
-	StrokeCollection*              AsStrokeCollection ();
-	StylusPointCollection*         AsStylusPointCollection ();
-	TextBlock*                     AsTextBlock ();
-	TileBrush*                     AsTileBrush ();
-	Timeline*                      AsTimeline ();
-	TimelineCollection*            AsTimelineCollection ();
-	TimelineGroup*                 AsTimelineGroup ();
-	TimelineMarkerCollection*      AsTimelineMarkerCollection ();
-	Transform*                     AsTransform ();
-	TransformCollection*           AsTransformCollection ();
-	TransformGroup*                AsTransformGroup ();
-	TranslateTransform*            AsTranslateTransform ();
-	TriggerAction*                 AsTriggerAction ();
-	TriggerActionCollection*       AsTriggerActionCollection ();
-	TriggerCollection*             AsTriggerCollection ();
-	UIElement*                     AsUIElement ();
-	VideoBrush*                    AsVideoBrush ();
-	Visual*                        AsVisual ();
-	VisualCollection*              AsVisualCollection ();
+	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
+	Animation*                     AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
+	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
+	ArcSegment*                    AsArcSegment () { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
+	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
+	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
+	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
+	Canvas*                        AsCanvas () { checked_get_subclass (Type::CANVAS, Canvas) }
+	Clock*                         AsClock () { checked_get_subclass (Type::CLOCK, Clock) }
+	ClockGroup*                    AsClockGroup () { checked_get_subclass (Type::CLOCKGROUP, ClockGroup) }
+	Collection*                    AsCollection () { checked_get_subclass (Type::COLLECTION, Collection) }
+	ColorAnimation*                AsColorAnimation () { checked_get_subclass (Type::COLORANIMATION, ColorAnimation) }
+	ColorAnimationUsingKeyFrames*  AsColorAnimationUsingKeyFrames () { checked_get_subclass (Type::COLORANIMATIONUSINGKEYFRAMES, ColorAnimationUsingKeyFrames) }
+	ColorKeyFrame*                 AsColorKeyFrame () { checked_get_subclass (Type::COLORKEYFRAME, ColorKeyFrame) }
+	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
+	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame () { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
+	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame () { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
+	DiscretePointKeyFrame*         AsDiscretePointKeyFrame () { checked_get_subclass (Type::DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame) }
+	DoubleAnimation*               AsDoubleAnimation () { checked_get_subclass (Type::DOUBLEANIMATION, DoubleAnimation) }
+	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames () { checked_get_subclass (Type::DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames) }
+	DoubleKeyFrame*                AsDoubleKeyFrame () { checked_get_subclass (Type::DOUBLEKEYFRAME, DoubleKeyFrame) }
+	Downloader*                    AsDownloader () { checked_get_subclass (Type::DOWNLOADER, Downloader) }
+	Ellipse*                       AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
+	EllipseGeometry*               AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
+	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
+	FrameworkElement*              AsFrameworkElement () { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
+	Geometry*                      AsGeometry () { checked_get_subclass (Type::GEOMETRY, Geometry) }
+	GeometryCollection*            AsGeometryCollection () { checked_get_subclass (Type::GEOMETRY_COLLECTION, GeometryCollection) }
+	GeometryGroup*                 AsGeometryGroup () { checked_get_subclass (Type::GEOMETRYGROUP, GeometryGroup) }
+	Glyphs*                        AsGlyphs () { checked_get_subclass (Type::GLYPHS, Glyphs) }
+	GradientBrush*                 AsGradientBrush () { checked_get_subclass (Type::GRADIENTBRUSH, GradientBrush) }
+	GradientStop*                  AsGradientStop () { checked_get_subclass (Type::GRADIENTSTOP, GradientStop) }
+	GradientStopCollection*        AsGradientStopCollection () { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
+	Image*                         AsImage () { checked_get_subclass (Type::IMAGE, Image) }
+	ImageBrush*                    AsImageBrush () { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
+	Inline*                        AsInline () { checked_get_subclass (Type::INLINE, Inline) }
+	Inlines*                       AsInlines () { checked_get_subclass (Type::INLINES, Inlines) }
+	KeyFrame*                      AsKeyFrame () { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
+	KeyFrameCollection*            AsKeyFrameCollection () { checked_get_subclass (Type::KEYFRAME_COLLECTION, KeyFrameCollection) }
+	KeySpline*                     AsKeySpline () { checked_get_subclass (Type::KEYSPLINE, KeySpline) }
+	Line*                          AsLine () { checked_get_subclass (Type::LINE, Line) }
+	LinearColorKeyFrame*           AsLinearColorKeyFrame () { checked_get_subclass (Type::LINEARCOLORKEYFRAME, LinearColorKeyFrame) }
+	LinearDoubleKeyFrame*          AsLinearDoubleKeyFrame () { checked_get_subclass (Type::LINEARDOUBLEKEYFRAME, LinearDoubleKeyFrame) }
+	LinearGradientBrush*           AsLinearGradientBrush () { checked_get_subclass (Type::LINEARGRADIENTBRUSH, LinearGradientBrush) }
+	LinearPointKeyFrame*           AsLinearPointKeyFrame () { checked_get_subclass (Type::LINEARPOINTKEYFRAME, LinearPointKeyFrame) }
+	LineBreak*                     AsLineBreak () { checked_get_subclass (Type::LINEBREAK, LineBreak) }
+	LineGeometry*                  AsLineGeometry () { checked_get_subclass (Type::LINEGEOMETRY, LineGeometry) }
+	LineSegment*                   AsLineSegment () { checked_get_subclass (Type::LINESEGMENT, LineSegment) }
+	MatrixTransform*               AsMatrixTransform () { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
+	MediaAttribute*                AsMediaAttribute () { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
+	MediaAttributeCollection*      AsMediaAttributeCollection () { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
+	MediaBase*                     AsMediaBase () { checked_get_subclass (Type::MEDIABASE, MediaBase) }
+	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
+	NameScope*                     AsNameScope () { checked_get_subclass (Type::NAMESCOPE, NameScope) }
+	Panel*                         AsPanel () { checked_get_subclass (Type::PANEL, Panel) }
+	ParallelTimeline*              AsParallelTimeline () { checked_get_subclass (Type::PARALLELTIMELINE, ParallelTimeline) }
+	Path*                          AsPath () { checked_get_subclass (Type::PATH, Path) }
+	PathFigure*                    AsPathFigure () { checked_get_subclass (Type::PATHFIGURE, PathFigure) }
+	PathFigureCollection*          AsPathFigureCollection () { checked_get_subclass (Type::PATHFIGURE_COLLECTION, PathFigureCollection) }
+	PathGeometry*                  AsPathGeometry () { checked_get_subclass (Type::PATHGEOMETRY, PathGeometry) }
+	PathSegment*                   AsPathSegment () { checked_get_subclass (Type::PATHSEGMENT, PathSegment) }
+	PathSegmentCollection*         AsPathSegmentCollection () { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
+	PointAnimation*                AsPointAnimation () { checked_get_subclass (Type::POINTANIMATION, PointAnimation) }
+	PointAnimationUsingKeyFrames*  AsPointAnimationUsingKeyFrames () { checked_get_subclass (Type::POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames) }
+	PointKeyFrame*                 AsPointKeyFrame () { checked_get_subclass (Type::POINTKEYFRAME, PointKeyFrame) }
+	PolyBezierSegment*             AsPolyBezierSegment () { checked_get_subclass (Type::POLYBEZIERSEGMENT, PolyBezierSegment) }
+	Polygon*                       AsPolygon () { checked_get_subclass (Type::POLYGON, Polygon) }
+	Polyline*                      AsPolyline () { checked_get_subclass (Type::POLYLINE, Polyline) }
+	PolyLineSegment*               AsPolyLineSegment () { checked_get_subclass (Type::POLYLINESEGMENT, PolyLineSegment) }
+	PolyQuadraticBezierSegment*    AsPolyQuadraticBezierSegment () { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
+	QuadraticBezierSegment*        AsQuadraticBezierSegment () { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
+	RadialGradientBrush*           AsRadialGradientBrush () { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
+	Rectangle*                     AsRectangle () { checked_get_subclass (Type::RECTANGLE, Rectangle) }
+	RectangleGeometry*             AsRectangleGeometry () { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
+	ResourceCollection*            AsResourceCollection () { checked_get_subclass (Type::RESOURCE_COLLECTION, ResourceCollection) }
+	RotateTransform*               AsRotateTransform () { checked_get_subclass (Type::ROTATETRANSFORM, RotateTransform) }
+	Run*                           AsRun () { checked_get_subclass (Type::RUN, Run) }
+	ScaleTransform*                AsScaleTransform () { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
+	Shape*                         AsShape () { checked_get_subclass (Type::SHAPE, Shape) }
+	SkewTransform*                 AsSkewTransform () { checked_get_subclass (Type::SKEWTRANSFORM, SkewTransform) }
+	SolidColorBrush*               AsSolidColorBrush () { checked_get_subclass (Type::SOLIDCOLORBRUSH, SolidColorBrush) }
+	SplineDoubleKeyFrame*          AsSplineDoubleKeyFrame () { checked_get_subclass (Type::SPLINEDOUBLEKEYFRAME, SplineDoubleKeyFrame) }
+	Storyboard*                    AsStoryboard () { checked_get_subclass (Type::STORYBOARD, Storyboard) }
+	StrokeCollection*              AsStrokeCollection () { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }
+	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
+	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
+	TileBrush*                     AsTileBrush () { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
+	Timeline*                      AsTimeline () { checked_get_subclass (Type::TIMELINE, Timeline) }
+	TimelineCollection*            AsTimelineCollection () { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }
+	TimelineGroup*                 AsTimelineGroup () { checked_get_subclass (Type::TIMELINEGROUP, TimelineGroup) }
+	TimelineMarkerCollection*      AsTimelineMarkerCollection () { checked_get_subclass (Type::TIMELINEMARKER_COLLECTION, TimelineMarkerCollection) }
+	Transform*                     AsTransform () { checked_get_subclass (Type::TRANSFORM, Transform) }
+	TransformCollection*           AsTransformCollection () { checked_get_subclass (Type::TRANSFORM_COLLECTION, TransformCollection) }
+	TransformGroup*                AsTransformGroup () { checked_get_subclass (Type::TRANSFORMGROUP, TransformGroup) }
+	TranslateTransform*            AsTranslateTransform () { checked_get_subclass (Type::TRANSLATETRANSFORM, TranslateTransform) }
+	TriggerAction*                 AsTriggerAction () { checked_get_subclass (Type::TRIGGERACTION, TriggerAction) }
+	TriggerActionCollection*       AsTriggerActionCollection () { checked_get_subclass (Type::TRIGGERACTION_COLLECTION, TriggerActionCollection) }
+	TriggerCollection*             AsTriggerCollection () { checked_get_subclass (Type::TRIGGER_COLLECTION, TriggerCollection) }
+	UIElement*                     AsUIElement () { checked_get_subclass (Type::UIELEMENT, UIElement) }
+	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
+	Visual*                        AsVisual () { checked_get_subclass (Type::VISUAL, Visual) }
+	VisualCollection*              AsVisualCollection () { checked_get_subclass (Type::VISUAL_COLLECTION, VisualCollection) }
 
   
-  	Kind GetKind ();
+  	Type::Kind GetKind ();
   
   private:
-	Kind k;
+	Type::Kind k;
 	union {
 		double d;
 		guint64 ui64;

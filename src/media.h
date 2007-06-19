@@ -15,7 +15,7 @@ class MediaAttribute : public DependencyObject {
 	static DependencyProperty *ValueProperty;
 	
 	MediaAttribute () { }
-	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE; };
+	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; };
 };
 
 MediaAttribute *media_attribute_new ();
@@ -27,7 +27,7 @@ public:
 	static DependencyProperty *StretchProperty;
 	
 	MediaBase () { }
-	virtual Value::Kind GetObjectType () { return Value::MEDIABASE; };
+	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
 };
 
 char *media_base_get_source (MediaBase *media);
@@ -44,7 +44,7 @@ class Image : public MediaBase {
 	Image ();
 	virtual ~Image ();
 
-	virtual Value::Kind GetObjectType () { return Value::IMAGE; };
+	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
 	virtual void render (Surface *surface, int x, int y, int width, int height);
 	virtual void getbounds ();
@@ -131,7 +131,7 @@ public:
 	
 	MediaElement ();
 	~MediaElement ();
-	virtual Value::Kind GetObjectType () { return Value::MEDIAELEMENT; };
+	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
 	
 	// overrides
 	virtual void render (Surface *surface, int x, int y, int width, int height);

@@ -72,7 +72,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *TextDecorationsProperty;
 	
 	Inline () { }
-	virtual Value::Kind GetObjectType () { return Value::INLINE; }
+	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -101,7 +101,7 @@ void inline_set_text_decorations (Inline *inline_, TextDecorations value);
 class LineBreak : public Inline {
 public:
 	LineBreak () { }
-	virtual Value::Kind GetObjectType () { return Value::LINEBREAK; };
+	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; };
 };
 
 LineBreak *line_break_new (void);
@@ -116,7 +116,7 @@ public:
 	
 	Run ();
 	~Run ();
-	virtual Value::Kind GetObjectType () { return Value::RUN; };
+	virtual Type::Kind GetObjectType () { return Type::RUN; };
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -144,7 +144,7 @@ public:
 	
 	TextBlock ();
 	~TextBlock ();
-	virtual Value::Kind GetObjectType () { return Value::TEXTBLOCK; };
+	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
 	
 	void SetFontSource (DependencyObject *downloader);
 	
@@ -217,7 +217,7 @@ public:
 	static DependencyProperty *UnicodeStringProperty;
 	
 	Glyphs () { }
-	virtual Value::Kind GetObjectType () { return Value::GLYPHS; };
+	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
 };
 
 Glyphs *glyphs_new (void);

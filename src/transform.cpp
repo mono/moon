@@ -438,29 +438,29 @@ void
 transform_init (void)
 {
 	/* RotateTransform fields */
-	RotateTransform::AngleProperty   = DependencyObject::Register (Value::ROTATETRANSFORM, "Angle", new Value (0.0));
-	RotateTransform::CenterXProperty = DependencyObject::Register (Value::ROTATETRANSFORM, "CenterX", new Value (0.0));
-	RotateTransform::CenterYProperty = DependencyObject::Register (Value::ROTATETRANSFORM, "CenterY", new Value (0.0));
+	RotateTransform::AngleProperty   = DependencyObject::Register (Type::ROTATETRANSFORM, "Angle", new Value (0.0));
+	RotateTransform::CenterXProperty = DependencyObject::Register (Type::ROTATETRANSFORM, "CenterX", new Value (0.0));
+	RotateTransform::CenterYProperty = DependencyObject::Register (Type::ROTATETRANSFORM, "CenterY", new Value (0.0));
   
 	/* TranslateTransform fields */
-	TranslateTransform::XProperty = DependencyObject::Register (Value::TRANSLATETRANSFORM, "X", new Value (0.0));
-	TranslateTransform::YProperty = DependencyObject::Register (Value::TRANSLATETRANSFORM, "Y", new Value (0.0));
+	TranslateTransform::XProperty = DependencyObject::Register (Type::TRANSLATETRANSFORM, "X", new Value (0.0));
+	TranslateTransform::YProperty = DependencyObject::Register (Type::TRANSLATETRANSFORM, "Y", new Value (0.0));
 
 	/* ScaleTransform fields */
-	ScaleTransform::ScaleXProperty = DependencyObject::Register (Value::SCALETRANSFORM, "ScaleX", new Value (1.0));
-	ScaleTransform::ScaleYProperty = DependencyObject::Register (Value::SCALETRANSFORM, "ScaleY", new Value (1.0));
-	ScaleTransform::CenterXProperty = DependencyObject::Register (Value::SCALETRANSFORM, "CenterX", new Value (0.0));
-	ScaleTransform::CenterYProperty = DependencyObject::Register (Value::SCALETRANSFORM, "CenterY", new Value (0.0));
+	ScaleTransform::ScaleXProperty = DependencyObject::Register (Type::SCALETRANSFORM, "ScaleX", new Value (1.0));
+	ScaleTransform::ScaleYProperty = DependencyObject::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
+	ScaleTransform::CenterXProperty = DependencyObject::Register (Type::SCALETRANSFORM, "CenterX", new Value (0.0));
+	ScaleTransform::CenterYProperty = DependencyObject::Register (Type::SCALETRANSFORM, "CenterY", new Value (0.0));
 
 	/* SkewTransform fields */
-	SkewTransform::AngleXProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "AngleX", new Value (0.0));
-	SkewTransform::AngleYProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "AngleY", new Value (0.0));
-	SkewTransform::CenterXProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "CenterX", new Value (0.0));
-	SkewTransform::CenterYProperty = DependencyObject::Register (Value::SKEWTRANSFORM, "CenterY", new Value (0.0));
+	SkewTransform::AngleXProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "AngleX", new Value (0.0));
+	SkewTransform::AngleYProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "AngleY", new Value (0.0));
+	SkewTransform::CenterXProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "CenterX", new Value (0.0));
+	SkewTransform::CenterYProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "CenterY", new Value (0.0));
 
 	/* MatrixTransform fields */
-	MatrixTransform::MatrixProperty = DependencyObject::Register (Value::MATRIXTRANSFORM, "Matrix", Value::MATRIX);
+	MatrixTransform::MatrixProperty = DependencyObject::Register (Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
 
 	/* TransformGroup fields */
-	TransformGroup::ChildrenProperty = DependencyObject::Register (Value::TRANSFORMGROUP, "Children", Value::TRANSFORM_COLLECTION);
+	TransformGroup::ChildrenProperty = DependencyObject::Register (Type::TRANSFORMGROUP, "Children", Type::TRANSFORM_COLLECTION);
 }

@@ -285,7 +285,7 @@ Shape::inside_object (Surface *s, double x, double y)
 void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::SHAPE) {
+	if (prop->type == Type::SHAPE) {
 		if (prop == Shape::StrokeProperty) {
 			if (stroke != NULL) {
 				stroke->Detach (NULL, this);
@@ -531,7 +531,7 @@ Rectangle::getxformorigin ()
 void
 Rectangle::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::RECTANGLE) {
+	if (prop->type == Type::RECTANGLE) {
 		FullInvalidate (false);
 		return;
 	}
@@ -588,7 +588,7 @@ Line::Draw (Surface *s)
 void
 Line::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::LINE) {
+	if (prop->type == Type::LINE) {
 		FullInvalidate (false);
 		return;
 	}
@@ -685,7 +685,7 @@ Polygon::Draw (Surface *s)
 void
 Polygon::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::POLYGON) {
+	if (prop->type == Type::POLYGON) {
 		FullInvalidate (false);
 		return;
 	}
@@ -763,7 +763,7 @@ Polyline::Draw (Surface *s)
 void
 Polyline::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::POLYLINE) {
+	if (prop->type == Type::POLYLINE) {
 		FullInvalidate (false);
 		return;
 	}
@@ -843,7 +843,7 @@ Path::CanFill ()
 void
 Path::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Value::PATH) {
+	if (prop->type == Type::PATH) {
 		FullInvalidate (false);
 		return;
 	}
@@ -879,36 +879,36 @@ void
 shape_init (void)
 {
 	/* Shape fields */
-	Shape::FillProperty = DependencyObject::Register (Value::SHAPE, "Fill", Value::BRUSH);
-	Shape::StretchProperty = DependencyObject::Register (Value::SHAPE, "Stretch", new Value (StretchFill));
-	Shape::StrokeProperty = DependencyObject::Register (Value::SHAPE, "Stroke", Value::BRUSH);
-	Shape::StrokeDashArrayProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashArray", Value::DOUBLE_ARRAY);
-	Shape::StrokeDashCapProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
-	Shape::StrokeDashOffsetProperty = DependencyObject::Register (Value::SHAPE, "StrokeDashOffset", new Value (0.0));
-	Shape::StrokeEndLineCapProperty = DependencyObject::Register (Value::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat));
-	Shape::StrokeLineJoinProperty = DependencyObject::Register (Value::SHAPE, "StrokeLineJoin", new Value (PenLineJoinMiter));
-	Shape::StrokeMiterLimitProperty = DependencyObject::Register (Value::SHAPE, "StrokeMiterLimit", new Value (10.0));
-	Shape::StrokeStartLineCapProperty = DependencyObject::Register (Value::SHAPE, "StrokeStartLineCap", new Value (PenLineCapFlat));
-	Shape::StrokeThicknessProperty = DependencyObject::Register (Value::SHAPE, "StrokeThickness", new Value (1.0));
+	Shape::FillProperty = DependencyObject::Register (Type::SHAPE, "Fill", Type::BRUSH);
+	Shape::StretchProperty = DependencyObject::Register (Type::SHAPE, "Stretch", new Value (StretchFill));
+	Shape::StrokeProperty = DependencyObject::Register (Type::SHAPE, "Stroke", Type::BRUSH);
+	Shape::StrokeDashArrayProperty = DependencyObject::Register (Type::SHAPE, "StrokeDashArray", Type::DOUBLE_ARRAY);
+	Shape::StrokeDashCapProperty = DependencyObject::Register (Type::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
+	Shape::StrokeDashOffsetProperty = DependencyObject::Register (Type::SHAPE, "StrokeDashOffset", new Value (0.0));
+	Shape::StrokeEndLineCapProperty = DependencyObject::Register (Type::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat));
+	Shape::StrokeLineJoinProperty = DependencyObject::Register (Type::SHAPE, "StrokeLineJoin", new Value (PenLineJoinMiter));
+	Shape::StrokeMiterLimitProperty = DependencyObject::Register (Type::SHAPE, "StrokeMiterLimit", new Value (10.0));
+	Shape::StrokeStartLineCapProperty = DependencyObject::Register (Type::SHAPE, "StrokeStartLineCap", new Value (PenLineCapFlat));
+	Shape::StrokeThicknessProperty = DependencyObject::Register (Type::SHAPE, "StrokeThickness", new Value (1.0));
 
 	/* Rectangle fields */
-	Rectangle::RadiusXProperty = DependencyObject::Register (Value::RECTANGLE, "RadiusX", new Value (0.0));
-	Rectangle::RadiusYProperty = DependencyObject::Register (Value::RECTANGLE, "RadiusY", new Value (0.0));
+	Rectangle::RadiusXProperty = DependencyObject::Register (Type::RECTANGLE, "RadiusX", new Value (0.0));
+	Rectangle::RadiusYProperty = DependencyObject::Register (Type::RECTANGLE, "RadiusY", new Value (0.0));
 
 	/* Line fields */
-	Line::X1Property = DependencyObject::Register (Value::LINE, "X1", new Value (0.0));
-	Line::Y1Property = DependencyObject::Register (Value::LINE, "Y1", new Value (0.0));
-	Line::X2Property = DependencyObject::Register (Value::LINE, "X2", new Value (0.0));
-	Line::Y2Property = DependencyObject::Register (Value::LINE, "Y2", new Value (0.0));
+	Line::X1Property = DependencyObject::Register (Type::LINE, "X1", new Value (0.0));
+	Line::Y1Property = DependencyObject::Register (Type::LINE, "Y1", new Value (0.0));
+	Line::X2Property = DependencyObject::Register (Type::LINE, "X2", new Value (0.0));
+	Line::Y2Property = DependencyObject::Register (Type::LINE, "Y2", new Value (0.0));
 
 	/* Polygon fields */
-	Polygon::FillRuleProperty = DependencyObject::Register (Value::POLYGON, "FillRule", new Value (FillRuleEvenOdd));
-	Polygon::PointsProperty = DependencyObject::Register (Value::POLYGON, "Points", Value::POINT_ARRAY);
+	Polygon::FillRuleProperty = DependencyObject::Register (Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd));
+	Polygon::PointsProperty = DependencyObject::Register (Type::POLYGON, "Points", Type::POINT_ARRAY);
 
 	/* Polyline fields */
-	Polyline::FillRuleProperty = DependencyObject::Register (Value::POLYLINE, "FillRule", new Value (FillRuleEvenOdd));
-	Polyline::PointsProperty = DependencyObject::Register (Value::POLYLINE, "Points", Value::POINT_ARRAY);
+	Polyline::FillRuleProperty = DependencyObject::Register (Type::POLYLINE, "FillRule", new Value (FillRuleEvenOdd));
+	Polyline::PointsProperty = DependencyObject::Register (Type::POLYLINE, "Points", Type::POINT_ARRAY);
 
 	/* Path fields */
-	Path::DataProperty = DependencyObject::Register (Value::PATH, "Data", Value::GEOMETRY);
+	Path::DataProperty = DependencyObject::Register (Type::PATH, "Data", Type::GEOMETRY);
 }

@@ -278,11 +278,11 @@ DependencyProperty *Downloader::UriProperty;
 void
 downloader_init (void)
 {
-	Downloader::DownloadProgressProperty = DependencyObject::Register (Value::DOWNLOADER, "DownloadProgress", Value::DOUBLE);
-	Downloader::ResponseTextProperty = DependencyObject::Register (Value::DOWNLOADER, "ResponseText", Value::STRING);
-	Downloader::StatusProperty = DependencyObject::Register (Value::DOWNLOADER, "Status", Value::INT32);
-	Downloader::StatusTextProperty = DependencyObject::Register (Value::DOWNLOADER, "StatusText", Value::STRING);
-	Downloader::UriProperty = DependencyObject::Register (Value::DOWNLOADER, "Uri", Value::STRING);
+	Downloader::DownloadProgressProperty = DependencyObject::Register (Type::DOWNLOADER, "DownloadProgress", Type::DOUBLE);
+	Downloader::ResponseTextProperty = DependencyObject::Register (Type::DOWNLOADER, "ResponseText", Type::STRING);
+	Downloader::StatusProperty = DependencyObject::Register (Type::DOWNLOADER, "Status", Type::INT32);
+	Downloader::StatusTextProperty = DependencyObject::Register (Type::DOWNLOADER, "StatusText", Type::STRING);
+	Downloader::UriProperty = DependencyObject::Register (Type::DOWNLOADER, "Uri", Type::STRING);
 
 	if (Downloader::create_state == NULL && Downloader::destroy_state == NULL && Downloader::open ==  NULL && 
 		Downloader::send == NULL && Downloader::abort == NULL && Downloader::get_response_text == NULL)

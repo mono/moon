@@ -1,5 +1,12 @@
 2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.h, type.h.in: Created, moved declaration of Type here.
+	* *.h|cpp|in: Move Value:Kind to Type::Kind and update all
+	references. Move the Value::As* into the header.
+	* typegen.cs: Updated to cope with Kind changes.
+
+2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp|h, value.h.in: Remove current nullable code,
 	it's easier to store an is_nullable flag in the registered
 	property, and store NULL values in the objects hashtable.

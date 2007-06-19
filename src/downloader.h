@@ -27,7 +27,7 @@ class Downloader : public DependencyObject {
 	Downloader ();
 	virtual ~Downloader ();
 
-	virtual Value::Kind GetObjectType () { return Value::DOWNLOADER; };	
+	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
 
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ResponseTextProperty;

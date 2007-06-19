@@ -13,7 +13,7 @@ class KeySpline : public DependencyObject {
 	KeySpline (Point controlPoint1, Point controlPoint2);
 	KeySpline (double x1, double y1, double x2, double y2);
 
-	Value::Kind GetObjectType () { return Value::KEYSPLINE; }
+	Type::Kind GetObjectType () { return Type::KEYSPLINE; }
 
 	double GetSplineProgress (double linearProgress);
 
@@ -126,7 +126,7 @@ class AnimationClock : public Clock {
  public:
 	AnimationClock (Animation/*Timeline*/ *timeline);
 	~AnimationClock ();
-	virtual Value::Kind GetObjectType () { return Value::ANIMATIONCLOCK; };
+	virtual Type::Kind GetObjectType () { return Type::ANIMATIONCLOCK; };
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
@@ -145,7 +145,7 @@ class Animation/*Timeline*/ : public Timeline {
  public:
 
 	Animation/*Timeline*/ () { };
-	virtual Value::Kind GetObjectType () { return Value::ANIMATION; };
+	virtual Type::Kind GetObjectType () { return Type::ANIMATION; };
 
 	virtual Clock *AllocateClock () { return new AnimationClock (this); }
 
@@ -184,7 +184,7 @@ t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::pro
 class DoubleAnimation : public Animation/*Timeline*/ {
  public:
 	DoubleAnimation ();
-	virtual Value::Kind GetObjectType () { return Value::DOUBLEANIMATION; };
+	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATION; };
 
 	static DependencyProperty* ByProperty;
 	static DependencyProperty* FromProperty;
@@ -205,7 +205,7 @@ DoubleAnimation *double_animation_new (void);
 class ColorAnimation : public Animation/*Timeline*/ {
  public:
 	ColorAnimation ();
-	virtual Value::Kind GetObjectType () { return Value::COLORANIMATION; };
+	virtual Type::Kind GetObjectType () { return Type::COLORANIMATION; };
 
 	static DependencyProperty* ByProperty;
 	static DependencyProperty* FromProperty;
@@ -226,7 +226,7 @@ ColorAnimation *color_animation_new (void);
 class PointAnimation : public Animation/*Timeline*/ {
  public:
 	PointAnimation () {};
-	virtual Value::Kind GetObjectType () { return Value::POINTANIMATION; };
+	virtual Type::Kind GetObjectType () { return Type::POINTANIMATION; };
 
 	static DependencyProperty* ByProperty;
 	static DependencyProperty* FromProperty;
@@ -247,7 +247,7 @@ PointAnimation *point_animation_new (void);
 class KeyFrame : public DependencyObject {
  public:
 	KeyFrame ();
-	virtual Value::Kind GetObjectType () { return Value::KEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::KEYFRAME; };
 
 	KeyTime *GetKeyTime();
 	void SetKeyTime (KeyTime keytime);
@@ -263,8 +263,8 @@ class KeyFrameCollection : public Collection {
  public:
 	KeyFrameCollection () : sorted_list(NULL) {}
 
-	virtual Value::Kind GetObjectType() { return Value::KEYFRAME_COLLECTION; }
-	virtual Value::Kind GetElementType() { return Value::KEYFRAME; }
+	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
+	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
 
 	virtual void Add (DependencyObject *obj);
 	virtual void Remove (DependencyObject *obj);
@@ -282,7 +282,7 @@ KeyFrameCollection *key_frame_collection_new (void);
 class DoubleKeyFrame : public KeyFrame {
  public:
 	DoubleKeyFrame ();
-	virtual Value::Kind GetObjectType() { return Value::DOUBLEKEYFRAME; };
+	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME; };
 	NULLABLE_GETSET_DECL (Value, double);
 
 	static DependencyProperty *ValueProperty;
@@ -293,7 +293,7 @@ class DoubleKeyFrame : public KeyFrame {
 class ColorKeyFrame : public KeyFrame {
  public:
 	ColorKeyFrame ();
-	virtual Value::Kind GetObjectType () { return Value::COLORKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::COLORKEYFRAME; };
 
 	NULLABLE_GETSET_DECL(Value, Color);
 
@@ -304,7 +304,7 @@ class ColorKeyFrame : public KeyFrame {
 class PointKeyFrame : public KeyFrame {
  public:
 	PointKeyFrame ();
-	virtual Value::Kind GetObjectType () { return Value::POINTKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::POINTKEYFRAME; };
 
 	NULLABLE_GETSET_DECL(Value, Point);
 
@@ -317,7 +317,7 @@ class PointKeyFrame : public KeyFrame {
 class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	DiscreteDoubleKeyFrame () { }
-	virtual Value::Kind GetObjectType () { return Value::DISCRETEDOUBLEKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::DISCRETEDOUBLEKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -328,7 +328,7 @@ DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
 class DiscreteColorKeyFrame : public ColorKeyFrame {
  public:
 	DiscreteColorKeyFrame () { }
-	virtual Value::Kind GetObjectType () { return Value::DISCRETECOLORKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::DISCRETECOLORKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -339,7 +339,7 @@ DiscreteColorKeyFrame *discrete_color_key_frame_new (void);
 class DiscretePointKeyFrame : public PointKeyFrame {
  public:
 	DiscretePointKeyFrame () { }
-	virtual Value::Kind GetObjectType () { return Value::DISCRETEPOINTKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::DISCRETEPOINTKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -350,7 +350,7 @@ DiscretePointKeyFrame *discrete_point_key_frame_new (void);
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	LinearDoubleKeyFrame () { }
-	virtual Value::Kind GetObjectType () { return Value::LINEARDOUBLEKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::LINEARDOUBLEKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -361,7 +361,7 @@ LinearDoubleKeyFrame *linear_double_key_frame_new (void);
 class LinearColorKeyFrame : public ColorKeyFrame {
  public:
 	LinearColorKeyFrame () { }
-	virtual Value::Kind GetObjectType () { return Value::LINEARCOLORKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::LINEARCOLORKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -372,7 +372,7 @@ LinearColorKeyFrame *linear_color_key_frame_new (void);
 class LinearPointKeyFrame : public PointKeyFrame {
  public:
 	LinearPointKeyFrame () { }
-	virtual Value::Kind GetObjectType () { return Value::LINEARPOINTKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::LINEARPOINTKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -383,7 +383,7 @@ LinearPointKeyFrame *linear_point_key_frame_new (void);
 class SplineDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	SplineDoubleKeyFrame () { }
-	virtual Value::Kind GetObjectType () { return Value::SPLINEDOUBLEKEYFRAME; };
+	virtual Type::Kind GetObjectType () { return Type::SPLINEDOUBLEKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 
@@ -399,7 +399,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
 	DoubleAnimationUsingKeyFrames ();
 	~DoubleAnimationUsingKeyFrames ();
-	virtual Value::Kind GetObjectType () { return Value::DOUBLEANIMATIONUSINGKEYFRAMES; };
+	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (DoubleKeyFrame *frame);
 	void RemoveKeyFrame (DoubleKeyFrame *frame);
@@ -421,7 +421,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
  public:
 	ColorAnimationUsingKeyFrames ();
 	~ColorAnimationUsingKeyFrames();
-	virtual Value::Kind GetObjectType () { return Value::COLORANIMATIONUSINGKEYFRAMES; };
+	virtual Type::Kind GetObjectType () { return Type::COLORANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (ColorKeyFrame *frame);
 	void RemoveKeyFrame (ColorKeyFrame *frame);
@@ -443,7 +443,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
  public:
 	PointAnimationUsingKeyFrames ();
 	~PointAnimationUsingKeyFrames();
-	virtual Value::Kind GetObjectType () { return Value::POINTANIMATIONUSINGKEYFRAMES; };
+	virtual Type::Kind GetObjectType () { return Type::POINTANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (PointKeyFrame *frame);
 	void RemoveKeyFrame (PointKeyFrame *frame);
@@ -464,7 +464,7 @@ PointAnimationUsingKeyFrames *point_animation_using_key_frames_new (void);
 class Storyboard : public ParallelTimeline {
  public:
 	Storyboard ();
-	virtual Value::Kind GetObjectType () { return Value::STORYBOARD; };
+	virtual Type::Kind GetObjectType () { return Type::STORYBOARD; };
 
 	void Begin ();
 	void Pause ();
@@ -504,7 +504,7 @@ class BeginStoryboard : public TriggerAction {
 	BeginStoryboard () { }
 	~BeginStoryboard ();
 	
-	virtual Value::Kind GetObjectType () { return Value::BEGINSTORYBOARD; };
+	virtual Type::Kind GetObjectType () { return Type::BEGINSTORYBOARD; };
 
 	
 	void Fire ();

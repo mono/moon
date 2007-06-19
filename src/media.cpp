@@ -572,7 +572,7 @@ Image::UpdateProgress ()
 void
 Image::SetSource (DependencyObject *dl, char* PartName)
 {
-	g_return_if_fail (dl->GetObjectType() == Value::DOWNLOADER);
+	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
 
 	if (loader) {
 		StopLoader ();
@@ -952,28 +952,28 @@ void
 media_init (void)
 {
 	/* MediaAttribute */
-	MediaAttribute::ValueProperty = DependencyObject::Register (Value::MEDIAATTRIBUTE, "Value", new Value (""));
+	MediaAttribute::ValueProperty = DependencyObject::Register (Type::MEDIAATTRIBUTE, "Value", new Value (""));
 	
 	/* MediaBase */
-	MediaBase::SourceProperty = DependencyObject::Register (Value::MEDIABASE, "Source", Value::STRING);
-	MediaBase::StretchProperty = DependencyObject::Register (Value::MEDIABASE, "Stretch", new Value (StretchUniform));
+	MediaBase::SourceProperty = DependencyObject::Register (Type::MEDIABASE, "Source", Type::STRING);
+	MediaBase::StretchProperty = DependencyObject::Register (Type::MEDIABASE, "Stretch", new Value (StretchUniform));
 	
 	/* Image */
-	Image::DownloadProgressProperty = DependencyObject::Register (Value::IMAGE, "DownloadProgress", new Value (0.0));
+	Image::DownloadProgressProperty = DependencyObject::Register (Type::IMAGE, "DownloadProgress", new Value (0.0));
 	
 	/* MediaElement */
-	MediaElement::AutoPlayProperty = DependencyObject::Register (Value::MEDIAELEMENT, "AutoPlay", new Value (true));
-	MediaElement::BalanceProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Balance", new Value (0.0));
-	MediaElement::BufferingProgressProperty = DependencyObject::Register (Value::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
-	MediaElement::BufferingTimeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "BufferingTime", Value::INT64);
-	MediaElement::CanSeekProperty = DependencyObject::Register (Value::MEDIAELEMENT, "CanSeek", new Value (false));
-	MediaElement::CurrentStateProperty = DependencyObject::Register (Value::MEDIAELEMENT, "CurrentState", Value::STRING);
-	MediaElement::DownloadProgressProperty = DependencyObject::Register (Value::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
-	MediaElement::IsMutedProperty = DependencyObject::Register (Value::MEDIAELEMENT, "IsMuted", new Value (false));
-	MediaElement::MarkersProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Markers", Value::TIMELINEMARKER_COLLECTION);
-	MediaElement::NaturalDurationProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalDuration", Value::DURATION);
-	MediaElement::NaturalVideoHeightProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalVideoHeight", Value::DOUBLE);
-	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Value::MEDIAELEMENT, "NaturalVideoWidth", Value::DOUBLE);
-	MediaElement::PositionProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Position", Value::INT64);
-	MediaElement::VolumeProperty = DependencyObject::Register (Value::MEDIAELEMENT, "Volume", new Value (0.5));
+	MediaElement::AutoPlayProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
+	MediaElement::BalanceProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
+	MediaElement::BufferingProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
+	MediaElement::BufferingTimeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingTime", Type::INT64);
+	MediaElement::CanSeekProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanSeek", new Value (false));
+	MediaElement::CurrentStateProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CurrentState", Type::STRING);
+	MediaElement::DownloadProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
+	MediaElement::IsMutedProperty = DependencyObject::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
+	MediaElement::MarkersProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
+	MediaElement::NaturalDurationProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalDuration", Type::DURATION);
+	MediaElement::NaturalVideoHeightProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoHeight", Type::DOUBLE);
+	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoWidth", Type::DOUBLE);
+	MediaElement::PositionProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Position", Type::INT64);
+	MediaElement::VolumeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
 }

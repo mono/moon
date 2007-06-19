@@ -271,7 +271,7 @@ double_array_from_str (const char *s, int* count)
  * Value implementation
  */
 
-Value::Kind
+Type::Kind
 Value::GetKind ()
 {
 	return k;
@@ -284,7 +284,7 @@ Value::Init ()
 }
 
 Value::Value()
-  : k (INVALID)
+  : k (Type::INVALID)
 {
 	Init ();
 }
@@ -296,44 +296,44 @@ Value::Value (const Value& v)
 
 	/* make a copy of the string instead of just the pointer */
 	switch (k) {
-	case STRING:
+	case Type::STRING:
 		u.s = g_strdup (v.u.s);
 		break;
-	case POINT_ARRAY:
+	case Type::POINT_ARRAY:
 		u.point_array->basic.refcount++;
 		break;
-	case DOUBLE_ARRAY:
+	case Type::DOUBLE_ARRAY:
 		u.double_array->basic.refcount++;
 		break;
-	case MATRIX:
+	case Type::MATRIX:
 		memcpy (u.matrix, v.u.matrix, sizeof(Matrix));
 		break;
-	case COLOR:
+	case Type::COLOR:
 		u.color = new Color (*v.u.color);
 		break;
-	case POINT:
+	case Type::POINT:
 		u.point = new Point (*v.u.point);
 		break;
-	case RECT:
+	case Type::RECT:
 		u.rect = new Rect (*v.u.rect);
 		break;
-	case REPEATBEHAVIOR:
+	case Type::REPEATBEHAVIOR:
 		u.repeat = new RepeatBehavior (*v.u.repeat);
 		break;
-	case DURATION:
+	case Type::DURATION:
 		u.duration = new Duration (*v.u.duration);
 		break;
-	case KEYTIME:
+	case Type::KEYTIME:
 		u.keytime = new KeyTime (*v.u.keytime);
 		break;
 	default:
-		if (k >= DEPENDENCY_OBJECT)
+		if (k >= Type::DEPENDENCY_OBJECT)
 			u.dependency_object->ref ();
 		break;
 	}
 }
 
-Value::Value (Kind k)
+Value::Value (Type::Kind k)
 {
 	Init();
 	this->k = k;
@@ -342,42 +342,42 @@ Value::Value (Kind k)
 Value::Value(bool z)
 {
 	Init ();
-	k = BOOL;
+	k = Type::BOOL;
 	u.i32 = z;
 }
 
 Value::Value (double d)
 {
 	Init ();
-	k = DOUBLE;
+	k = Type::DOUBLE;
 	u.d = d;
 }
 
 Value::Value (guint64 i)
 {
 	Init ();
-	k = UINT64;
+	k = Type::UINT64;
 	u.ui64 = i;
 }
 
 Value::Value (gint64 i)
 {
 	Init ();
-	k = INT64;
+	k = Type::INT64;
 	u.i64 = i;
 }
 
 Value::Value (gint32 i)
 {
 	Init ();
-	k = INT32;
+	k = Type::INT32;
 	u.i32 = i;
 }
 
 Value::Value (Color c)
 {
 	Init ();
-	k = COLOR;
+	k = Type::COLOR;
 	u.color = new Color (c);
 }
 
@@ -391,9 +391,9 @@ Value::Value (DependencyObject *obj)
 {
 	Init ();
 	if (obj == NULL) {
-		k = Value::DEPENDENCY_OBJECT;
+		k = Type::DEPENDENCY_OBJECT;
 	} else {
-		g_assert (obj->GetObjectType () >= Value::DEPENDENCY_OBJECT);
+		g_assert (obj->GetObjectType () >= Type::DEPENDENCY_OBJECT);
 		k = obj->GetObjectType ();
 		obj->ref ();
 	}
@@ -403,63 +403,63 @@ Value::Value (DependencyObject *obj)
 Value::Value (Point pt)
 {
 	Init ();
-	k = POINT;
+	k = Type::POINT;
 	u.point = new Point (pt);
 }
 
 Value::Value (Rect rect)
 {
 	Init ();
-	k = RECT;
+	k = Type::RECT;
 	u.rect = new Rect (rect);
 }
 
 Value::Value (RepeatBehavior repeat)
 {
 	Init();
-	k = REPEATBEHAVIOR;
+	k = Type::REPEATBEHAVIOR;
 	u.repeat = new RepeatBehavior (repeat);
 }
 
 Value::Value (Duration duration)
 {
 	Init();
-	k = DURATION;
+	k = Type::DURATION;
 	u.duration = new Duration (duration);
 }
 
 Value::Value (KeyTime keytime)
 {
 	Init ();
-	k = KEYTIME;
+	k = Type::KEYTIME;
 	u.keytime = new KeyTime (keytime);
 }
 
 Value::Value (const char* s)
 {
 	Init ();
-	k = STRING;
+	k = Type::STRING;
 	u.s= g_strdup (s);
 }
 
 Value::Value (Point *points, int count)
 {
 	Init ();
-	k = POINT_ARRAY;
+	k = Type::POINT_ARRAY;
 	u.point_array = point_array_new (count, points);
 }
 
 Value::Value (double *values, int count)
 {
 	Init ();
-	k = DOUBLE_ARRAY;
+	k = Type::DOUBLE_ARRAY;
 	u.double_array = double_array_new (count, values);
 }
 
 Value::Value (Matrix *matrix)
 {
 	Init ();
-	k = MATRIX;
+	k = Type::MATRIX;
 	u.matrix = (Matrix*) g_malloc (sizeof (Matrix));
 	memcpy (u.matrix, matrix, sizeof (Matrix));
 }
@@ -467,40 +467,40 @@ Value::Value (Matrix *matrix)
 Value::~Value ()
 {
 	switch (GetKind ()) {
-	case STRING:
+	case Type::STRING:
 		g_free (u.s);
 		break;
-	case POINT_ARRAY:
+	case Type::POINT_ARRAY:
 		if (u.point_array != NULL &&--u.point_array->basic.refcount == 0)
 			g_free (u.point_array);
 		break;
-	case DOUBLE_ARRAY:
+	case Type::DOUBLE_ARRAY:
 		if (u.double_array != NULL && --u.double_array->basic.refcount == 0)
 			g_free (u.double_array);
 		break;
-	case MATRIX:
+	case Type::MATRIX:
 		g_free (u.matrix);
 		break;
-	case COLOR:
+	case Type::COLOR:
 		delete u.color;
 		break;
-	case POINT:
+	case Type::POINT:
 		delete u.point;
 		break;
-	case RECT:
+	case Type::RECT:
 		delete u.rect;
 		break;
-	case REPEATBEHAVIOR:
+	case Type::REPEATBEHAVIOR:
 		delete u.repeat;
 		break;
-	case DURATION:
+	case Type::DURATION:
 		delete u.duration;
 		break;
-	case KEYTIME:
+	case Type::KEYTIME:
 		delete u.keytime;
 		break;
 	default:
-		if (GetKind () >= DEPENDENCY_OBJECT && u.dependency_object)
+		if (GetKind () >= Type::DEPENDENCY_OBJECT && u.dependency_object)
 			u.dependency_object->unref ();
 	}
 }
@@ -510,28 +510,28 @@ Value::~Value ()
 #define AS_DEP_SUBCLASS_IMPL(kind, castas) \
 castas* Value::As##castas () { checked_get_subclass (kind, castas); }
 
-bool            Value::AsBool () { checked_get_exact (BOOL, false, (bool)u.i32); }
-double          Value::AsDouble () { checked_get_exact (DOUBLE, 0.0, u.d); }
-guint64         Value::AsUint64 () { checked_get_exact (UINT64, 0, u.ui64); }
-gint64          Value::AsInt64 () { checked_get_exact (INT64, 0, u.i64); }
-gint32          Value::AsInt32 () { checked_get_exact (INT32, 0, u.i32); }
-Color*          Value::AsColor () { checked_get_exact (COLOR, NULL, u.color); }
-Point*          Value::AsPoint () { checked_get_exact (POINT, NULL, u.point); }
-Rect*           Value::AsRect  () { checked_get_exact (RECT, NULL, u.rect); }
-char*           Value::AsString () { checked_get_exact (STRING, NULL, u.s); }
-PointArray*     Value::AsPointArray () { checked_get_exact (POINT_ARRAY, NULL, u.point_array); }
-DoubleArray*    Value::AsDoubleArray () { checked_get_exact (DOUBLE_ARRAY, NULL, u.double_array); }
+bool            Value::AsBool () { checked_get_exact (Type::BOOL, false, (bool)u.i32); }
+double          Value::AsDouble () { checked_get_exact (Type::DOUBLE, 0.0, u.d); }
+guint64         Value::AsUint64 () { checked_get_exact (Type::UINT64, 0, u.ui64); }
+gint64          Value::AsInt64 () { checked_get_exact (Type::INT64, 0, u.i64); }
+gint32          Value::AsInt32 () { checked_get_exact (Type::INT32, 0, u.i32); }
+Color*          Value::AsColor () { checked_get_exact (Type::COLOR, NULL, u.color); }
+Point*          Value::AsPoint () { checked_get_exact (Type::POINT, NULL, u.point); }
+Rect*           Value::AsRect  () { checked_get_exact (Type::RECT, NULL, u.rect); }
+char*           Value::AsString () { checked_get_exact (Type::STRING, NULL, u.s); }
+PointArray*     Value::AsPointArray () { checked_get_exact (Type::POINT_ARRAY, NULL, u.point_array); }
+DoubleArray*    Value::AsDoubleArray () { checked_get_exact (Type::DOUBLE_ARRAY, NULL, u.double_array); }
 
-RepeatBehavior* Value::AsRepeatBehavior () { checked_get_exact (REPEATBEHAVIOR, NULL, u.repeat); }
-Duration*       Value::AsDuration () { checked_get_exact (DURATION, NULL, u.duration); }
-KeyTime*        Value::AsKeyTime () { checked_get_exact (KEYTIME, NULL, u.keytime); }
-Matrix*         Value::AsMatrix () { checked_get_exact (MATRIX, NULL, u.matrix); }
+RepeatBehavior* Value::AsRepeatBehavior () { checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
+Duration*       Value::AsDuration () { checked_get_exact (Type::DURATION, NULL, u.duration); }
+KeyTime*        Value::AsKeyTime () { checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
+Matrix*         Value::AsMatrix () { checked_get_exact (Type::MATRIX, NULL, u.matrix); }
 
 /* nullable primitives (all but bool) */
-double*         Value::AsNullableDouble () { checked_get_exact (DOUBLE, NULL, &u.d); }
-guint64*        Value::AsNullableUint64 () { checked_get_exact (UINT64, NULL, &u.ui64); }
-gint64*         Value::AsNullableInt64 () { checked_get_exact (INT64, NULL, &u.i64); }
-gint32*         Value::AsNullableInt32 () { checked_get_exact (INT32, NULL, &u.i32); }
+double*         Value::AsNullableDouble () { checked_get_exact (Type::DOUBLE, NULL, &u.d); }
+guint64*        Value::AsNullableUint64 () { checked_get_exact (Type::UINT64, NULL, &u.ui64); }
+gint64*         Value::AsNullableInt64 () { checked_get_exact (Type::INT64, NULL, &u.i64); }
+gint32*         Value::AsNullableInt32 () { checked_get_exact (Type::	INT32, NULL, &u.i32); }
 
 
 /**
@@ -734,7 +734,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	}  else if (prop == UIElement::OpacityProperty ||
 		    prop == UIElement::VisibilityProperty){
 		item_invalidate (this);
-	} else if (Type::Find (subprop->type)->IsSubclassOf (Value::BRUSH)) {
+	} else if (Type::Find (subprop->type)->IsSubclassOf (Type::BRUSH)) {
 		item_invalidate (this);
 	}
 	
@@ -1188,7 +1188,7 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 		// Technically the canvas cares about Visuals, but we cant do much
 		// with them, all the logic to relayout is in UIElement
 		//
-		if (!Type::Find (child->GetObjectType ())->IsSubclassOf (Value::UIELEMENT)){
+		if (!Type::Find (child->GetObjectType ())->IsSubclassOf (Type::UIELEMENT)){
 			printf ("Child %d is not a UIELEMENT\n");
 			return false;
 		}
@@ -1929,7 +1929,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			return;
 		}
 	} else {
-		if (!(property->value_type >= Value::DEPENDENCY_OBJECT) && !property->IsNullable ()) {
+		if (!(property->value_type >= Type::DEPENDENCY_OBJECT) && !property->IsNullable ()) {
 			g_warning ("Can not set a non-nullable scalar type to NULL");
 			return;
 		}
@@ -1937,12 +1937,12 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
 
-	if (current_value != NULL && current_value->GetKind () >= Value::DEPENDENCY_OBJECT) {
+	if (current_value != NULL && current_value->GetKind () >= Type::DEPENDENCY_OBJECT) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
 		if (current_as_dep)
 			current_as_dep->SetParent (NULL);
 	}
-	if (value != NULL && value->GetKind () >= Value::DEPENDENCY_OBJECT) {
+	if (value != NULL && value->GetKind () >= Type::DEPENDENCY_OBJECT) {
 		DependencyObject *new_as_dep = value->AsDependencyObject ();
 		
 		new_as_dep->SetParent (this);
@@ -1952,7 +1952,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	    (current_value != NULL && value == NULL) ||
 	    (current_value != NULL && value != NULL && *current_value != *value)) {
 
-		if (current_value != NULL && current_value->GetKind () >= Value::DEPENDENCY_OBJECT){
+		if (current_value != NULL && current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->AsDependencyObject();
 
 			if (dob != NULL)
@@ -1969,7 +1969,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		g_hash_table_insert (current_values, property->name, store);
 
 		if (value) {
-			if (value->GetKind () >= Value::DEPENDENCY_OBJECT){
+			if (value->GetKind () >= Type::DEPENDENCY_OBJECT){
 				DependencyObject *dob = value->AsDependencyObject();
 				
 				if (dob != NULL)
@@ -2073,12 +2073,12 @@ dump (gpointer key, gpointer value, gpointer data)
 	printf ("%s\n", key);
 }
 
-Value::Kind
+Type::Kind
 DependencyObject::GetObjectType ()
 {
 	g_warning ("%p This class is missing an override of GetObjectType ()", this);
 	g_hash_table_foreach (current_values, dump, NULL);
-	return Value::DEPENDENCY_OBJECT; 
+	return Type::DEPENDENCY_OBJECT; 
 }
 
 DependencyObject::~DependencyObject ()
@@ -2094,13 +2094,13 @@ DependencyObject::GetDependencyProperty (const char *name)
 }
 
 DependencyProperty *
-DependencyObject::GetDependencyProperty (Value::Kind type, const char *name)
+DependencyObject::GetDependencyProperty (Type::Kind type, const char *name)
 {
 	return GetDependencyProperty (type, name, true);
 }
 
 DependencyProperty *
-DependencyObject::GetDependencyProperty (Value::Kind type, const char *name, bool inherits)
+DependencyObject::GetDependencyProperty (Type::Kind type, const char *name, bool inherits)
 {
 	GHashTable *table;
 	DependencyProperty *property = NULL;
@@ -2126,7 +2126,7 @@ DependencyObject::GetDependencyProperty (Value::Kind type, const char *name, boo
 	if (current_type == NULL)
 		return NULL;
 	
-	if (current_type->parent == Value::INVALID)
+	if (current_type->parent == Type::INVALID)
 		return NULL;
 
 	return GetDependencyProperty (current_type->parent, name);
@@ -2156,7 +2156,7 @@ DependencyObject::FindName (const char *name)
 }
 
 DependencyObject *
-dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kind *element_kind)
+dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_kind)
 {
 	//printf ("Looking up in %p the string %p\n", obj, name);
 	//printf ("        String: %s\n", name);
@@ -2196,7 +2196,7 @@ dependency_object_remove_event_handler (DependencyObject *o, char *event, EventH
 // Use this for values that can be null
 //
 DependencyProperty *
-DependencyObject::Register (Value::Kind type, const char *name, Value::Kind vtype)
+DependencyObject::Register (Type::Kind type, const char *name, Type::Kind vtype)
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
@@ -2207,7 +2207,7 @@ DependencyObject::Register (Value::Kind type, const char *name, Value::Kind vtyp
 // DependencyObject takes ownership of the Value * for default_value
 //
 DependencyProperty *
-DependencyObject::Register (Value::Kind type, const char *name, Value *default_value)
+DependencyObject::Register (Type::Kind type, const char *name, Value *default_value)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
@@ -2234,7 +2234,7 @@ free_property (gpointer v)
 // while the property type can be a Brush).
 //
 DependencyProperty *
-DependencyObject::Register (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype)
+DependencyObject::Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
@@ -2243,7 +2243,7 @@ DependencyObject::Register (Value::Kind type, const char *name, Value *default_v
 }
 
 DependencyProperty *
-DependencyObject::RegisterNullable (Value::Kind type, const char *name, Value::Kind vtype)
+DependencyObject::RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype)
 {
 	DependencyProperty *property;
 	property = Register (type, name, vtype);
@@ -2257,7 +2257,7 @@ DependencyObject::RegisterNullable (Value::Kind type, const char *name, Value::K
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyObject::RegisterFull (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype, bool attached)
+DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached)
 {
 	GHashTable *table;
 
@@ -2344,7 +2344,7 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Value::Kind type, const char *name, Value *default_value, Value::Kind value_type, bool attached)
+DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached)
 {
 	this->type = type;
 	this->name = g_strdup (name);
@@ -2360,7 +2360,7 @@ DependencyProperty::~DependencyProperty ()
 		delete default_value;
 }
 
-DependencyProperty *dependency_property_lookup (Value::Kind type, char *name)
+DependencyProperty *dependency_property_lookup (Type::Kind type, char *name)
 {
 	return DependencyObject::GetDependencyProperty (type, name);
 }
@@ -2371,7 +2371,7 @@ dependency_property_get_name (DependencyProperty *property)
 	return property->name;
 }
 
-Value::Kind
+Type::Kind
 dependency_property_get_value_type (DependencyProperty *property)
 {
 	return property->value_type;
@@ -2710,40 +2710,40 @@ Inlines::Remove (DependencyObject *data)
 
 
 Collection *
-collection_new (Value::Kind kind)
+collection_new (Type::Kind kind)
 {
 	switch (kind) {
-	case Value::GEOMETRY_COLLECTION:
+	case Type::GEOMETRY_COLLECTION:
 		return new GeometryCollection ();
-	case Value::GRADIENTSTOP_COLLECTION:
+	case Type::GRADIENTSTOP_COLLECTION:
 		return new GradientStopCollection ();
-	case Value::INLINES:
+	case Type::INLINES:
 		return new Inlines ();
-	case Value::KEYFRAME_COLLECTION:
+	case Type::KEYFRAME_COLLECTION:
 		return new KeyFrameCollection ();
-	case Value::MEDIAATTRIBUTE_COLLECTION:
+	case Type::MEDIAATTRIBUTE_COLLECTION:
 		return new MediaAttributeCollection ();
-	case Value::PATHFIGURE_COLLECTION:
+	case Type::PATHFIGURE_COLLECTION:
 		return new PathFigureCollection ();
-	case Value::PATHSEGMENT_COLLECTION:
+	case Type::PATHSEGMENT_COLLECTION:
 		return new PathSegmentCollection ();
-	case Value::RESOURCE_COLLECTION:
+	case Type::RESOURCE_COLLECTION:
 		return new ResourceCollection ();
-	case Value::STROKE_COLLECTION:
+	case Type::STROKE_COLLECTION:
 		return new StrokeCollection ();
-	case Value::STYLUSPOINT_COLLECTION:
+	case Type::STYLUSPOINT_COLLECTION:
 		return new StylusPointCollection ();
-	case Value::TIMELINE_COLLECTION:
+	case Type::TIMELINE_COLLECTION:
 		return new TimelineCollection ();
-	case Value::TIMELINEMARKER_COLLECTION:
+	case Type::TIMELINEMARKER_COLLECTION:
 		return new TimelineMarkerCollection ();
-	case Value::TRANSFORM_COLLECTION:
+	case Type::TRANSFORM_COLLECTION:
 		return new TransformCollection ();
-	case Value::TRIGGER_COLLECTION:
+	case Type::TRIGGER_COLLECTION:
 		return new TriggerCollection ();
-	case Value::TRIGGERACTION_COLLECTION:
+	case Type::TRIGGERACTION_COLLECTION:
 		return new TriggerActionCollection ();
-	case Value::VISUAL_COLLECTION:
+	case Type::VISUAL_COLLECTION:
 		return new VisualCollection ();
 	default:
 		return NULL;
@@ -2892,16 +2892,16 @@ DependencyProperty* UIElement::ResourcesProperty;
 void
 item_init (void)
 {
-	UIElement::RenderTransformProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransform", Value::TRANSFORM);
-	UIElement::OpacityProperty = DependencyObject::Register (Value::UIELEMENT, "Opacity", new Value(1.0));
-	UIElement::ClipProperty = DependencyObject::Register (Value::UIELEMENT, "Clip", Value::GEOMETRY);
-	UIElement::OpacityMaskProperty = DependencyObject::Register (Value::UIELEMENT, "OpacityMask", Value::BRUSH);
-	UIElement::TriggersProperty = DependencyObject::Register (Value::UIELEMENT, "Triggers", Value::TRIGGER_COLLECTION);
-	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Value::UIELEMENT, "RenderTransformOrigin", Value::POINT);
-	UIElement::CursorProperty = DependencyObject::Register (Value::UIELEMENT, "Cursor", Value::INT32);
-	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Value::UIELEMENT, "IsHitTestVisible", Value::BOOL);
-	UIElement::VisibilityProperty = DependencyObject::Register (Value::UIELEMENT, "Visibility", Value::INT32);
-	UIElement::ResourcesProperty = DependencyObject::Register (Value::UIELEMENT, "Resources", Value::RESOURCE_COLLECTION);
+	UIElement::RenderTransformProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransform", Type::TRANSFORM);
+	UIElement::OpacityProperty = DependencyObject::Register (Type::UIELEMENT, "Opacity", new Value(1.0));
+	UIElement::ClipProperty = DependencyObject::Register (Type::UIELEMENT, "Clip", Type::GEOMETRY);
+	UIElement::OpacityMaskProperty = DependencyObject::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
+	UIElement::TriggersProperty = DependencyObject::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
+	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransformOrigin", Type::POINT);
+	UIElement::CursorProperty = DependencyObject::Register (Type::UIELEMENT, "Cursor", Type::INT32);
+	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", Type::BOOL);
+	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", Type::INT32);
+	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_COLLECTION);
 }
 
 //
@@ -2912,7 +2912,7 @@ DependencyProperty *NameScope::NameScopeProperty;
 void
 namescope_init (void)
 {
-	NameScope::NameScopeProperty = DependencyObject::Register (Value::NAMESCOPE, "NameScope", Value::NAMESCOPE);
+	NameScope::NameScopeProperty = DependencyObject::Register (Type::NAMESCOPE, "NameScope", Type::NAMESCOPE);
 }
 
 DependencyProperty* FrameworkElement::HeightProperty;
@@ -2921,8 +2921,8 @@ DependencyProperty* FrameworkElement::WidthProperty;
 void
 framework_element_init (void)
 {
-	FrameworkElement::HeightProperty = DependencyObject::Register (Value::FRAMEWORKELEMENT, "Height", new Value (0.0));
-	FrameworkElement::WidthProperty = DependencyObject::Register (Value::FRAMEWORKELEMENT, "Width", new Value (0.0));
+	FrameworkElement::HeightProperty = DependencyObject::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
+	FrameworkElement::WidthProperty = DependencyObject::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
 }
 
 DependencyProperty* Panel::ChildrenProperty;
@@ -2931,8 +2931,8 @@ DependencyProperty* Panel::BackgroundProperty;
 void 
 panel_init (void)
 {
-	Panel::ChildrenProperty = DependencyObject::Register (Value::PANEL, "Children", Value::VISUAL_COLLECTION);
-	Panel::BackgroundProperty = DependencyObject::Register (Value::PANEL, "Background", Value::BRUSH);
+	Panel::ChildrenProperty = DependencyObject::Register (Type::PANEL, "Children", Type::VISUAL_COLLECTION);
+	Panel::BackgroundProperty = DependencyObject::Register (Type::PANEL, "Background", Type::BRUSH);
 }
 
 DependencyProperty* Canvas::TopProperty;
@@ -2941,8 +2941,8 @@ DependencyProperty* Canvas::LeftProperty;
 void 
 canvas_init (void)
 {
-	Canvas::TopProperty = DependencyObject::RegisterFull (Value::CANVAS, "Top", new Value (0.0), Value::DOUBLE, true);
-	Canvas::LeftProperty = DependencyObject::RegisterFull (Value::CANVAS, "Left", new Value (0.0), Value::DOUBLE, true);
+	Canvas::TopProperty = DependencyObject::RegisterFull (Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true);
+	Canvas::LeftProperty = DependencyObject::RegisterFull (Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true);
 }
 
 DependencyProperty* DependencyObject::NameProperty;
@@ -2950,7 +2950,7 @@ DependencyProperty* DependencyObject::NameProperty;
 void
 dependency_object_init(void)
 {
-	DependencyObject::NameProperty = DependencyObject::Register (Value::DEPENDENCY_OBJECT, "Name", Value::STRING);
+	DependencyObject::NameProperty = DependencyObject::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 }
 
 DependencyProperty* EventTrigger::RoutedEventProperty;
@@ -2959,14 +2959,14 @@ DependencyProperty* EventTrigger::ActionsProperty;
 void
 event_trigger_init (void)
 {
-	EventTrigger::RoutedEventProperty = DependencyObject::Register (Value::EVENTTRIGGER, "RoutedEvent", Value::STRING);
-	EventTrigger::ActionsProperty = DependencyObject::Register (Value::EVENTTRIGGER, "Actions", Value::TRIGGERACTION_COLLECTION);
+	EventTrigger::RoutedEventProperty = DependencyObject::Register (Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
+	EventTrigger::ActionsProperty = DependencyObject::Register (Type::EVENTTRIGGER, "Actions", Type::TRIGGERACTION_COLLECTION);
 }
 
 Type* Type::types [];
 GHashTable* Type::types_by_name = NULL;
 
-Type::Type (char *name, Value::Kind type, Value::Kind parent)
+Type::Type (char *name, Type::Kind type, Type::Kind parent)
 {
 	this->name = strdup (name);
 	this->type = type;
@@ -2979,9 +2979,9 @@ Type::~Type()
 }
 
 Type *
-Type::RegisterType (char *name, Value::Kind type, bool value_type)
+Type::RegisterType (char *name, Type::Kind type, bool value_type)
 {
-	return RegisterType (name, type, Value::INVALID, value_type);
+	return RegisterType (name, type, Type::INVALID, value_type);
 }
 
 void
@@ -2991,16 +2991,16 @@ Type::free_type (gpointer type)
 }
 
 Type *
-Type::RegisterType (char *name, Value::Kind type, Value::Kind parent)
+Type::RegisterType (char *name, Type::Kind type, Type::Kind parent)
 {
 	return RegisterType (name, type, parent, false);
 }
 
 Type *
-Type::RegisterType (char *name, Value::Kind type, Value::Kind parent, bool value_type)
+Type::RegisterType (char *name, Type::Kind type, Type::Kind parent, bool value_type)
 {
 	if (types == NULL) {
-		memset (&types, 0, Value::LASTTYPE * sizeof (Type*));
+		memset (&types, 0, Type::LASTTYPE * sizeof (Type*));
 	}
 	if (types_by_name == NULL) {
 		types_by_name = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -3019,7 +3019,7 @@ Type::RegisterType (char *name, Value::Kind type, Value::Kind parent, bool value
 }
 
 bool 
-Type::IsSubclassOf (Value::Kind super)
+Type::IsSubclassOf (Type::Kind super)
 {
 	if (type == super)
 		return true;
@@ -3027,7 +3027,7 @@ Type::IsSubclassOf (Value::Kind super)
 	if (parent == super)
 		return true;
 
-	if (parent == Value::INVALID)
+	if (parent == Type::INVALID)
 		return false;
 
 	Type *parent_type = Find (parent);
@@ -3052,7 +3052,7 @@ Type::Find (char *name)
 }
 
 Type *
-Type::Find (Value::Kind type)
+Type::Find (Type::Kind type)
 {
 	return types [type];
 }
@@ -3067,7 +3067,7 @@ Type::Shutdown ()
 }
 
 bool
-type_get_value_type (Value::Kind type)
+type_get_value_type (Type::Kind type)
 {
 	return Type::Find (type)->value_type;
 }

@@ -7,6 +7,7 @@ G_BEGIN_DECLS
 #include <cairo.h>
 
 #include "value.h"
+#include "type.h"
 
 #define TIMERS 0
 #if TIMERS
@@ -206,31 +207,6 @@ struct DoubleArray {
 double* double_array_from_str   (const char *s, int* count);
 DoubleArray *double_array_new   (int count, double *values);
 
-class Type {
-public:
-	static Type* RegisterType (char *name, Value::Kind type, Value::Kind parent, bool value_type);
-	static Type* RegisterType (char *name, Value::Kind type, Value::Kind parent);
-	static Type* RegisterType (char *name, Value::Kind type, bool value_type);
-	static Type* Find (char *name);
-	static Type* Find (Value::Kind type);
-	
-	bool IsSubclassOf (Value::Kind super);	
-	Value::Kind parent;
-	Value::Kind type;
-	char *name;
-	bool value_type;
-
-	static void Shutdown ();
-private:
-	Type (char *name, Value::Kind type, Value::Kind parent);
-	~Type ();
-	static Type* types [Value::LASTTYPE];
-	static GHashTable *types_by_name;
-	static void free_type (gpointer v);
-};
-
-bool type_get_value_type (Value::Kind type);
-
 //
 // This guy provide reference counting
 //
@@ -260,14 +236,14 @@ class DependencyObject : public Base {
 
 	DependencyObject ();
 	virtual ~DependencyObject ();
-	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value);
-	static DependencyProperty *Register (Value::Kind type, const char *name, Value::Kind vtype);
-	static DependencyProperty *Register (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype);
-	static DependencyProperty *RegisterNullable (Value::Kind type, const char *name, Value::Kind vtype);
-	static DependencyProperty *RegisterFull (Value::Kind type, const char *name, Value *default_value, Value::Kind vtype, bool attached);
+	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
+	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
+	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
+	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
+	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached);
 	
-	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name);
-	static DependencyProperty *GetDependencyProperty (Value::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
+	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
 	static DependencyProperty *NameProperty;
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (DependencyProperty *property, Value *value);
@@ -297,7 +273,7 @@ class DependencyObject : public Base {
 	//
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { return FALSE; }
 	
-	virtual Value::Kind GetObjectType ();
+	virtual Type::Kind GetObjectType ();
 	Type* GetType ()
 	{
 		return Type::Find (GetObjectType ());
@@ -311,7 +287,7 @@ class DependencyObject : public Base {
 	//    Similar to C#'s is: it checks if this object is of this kind or 
 	//    a derived class.
 	
-	bool Is(Value::Kind k) {
+	bool Is(Type::Kind k) {
 		return GetType ()->IsSubclassOf (k);
 	};
 
@@ -333,7 +309,7 @@ class DependencyObject : public Base {
 Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);
 void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val);
 
-DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Value::Kind *element_type);
+DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_type);
 const char       *dependency_object_get_name  (DependencyObject *obj);
 
 void dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
@@ -346,21 +322,21 @@ class DependencyProperty {
  public:
 	DependencyProperty () {} ;
 	~DependencyProperty ();
-	DependencyProperty (Value::Kind type, const char *name, Value *default_value, Value::Kind value_type, bool attached);
+	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached);
 
 	char *name;
 	Value *default_value;
-	Value::Kind type;
+	Type::Kind type;
 	bool is_attached_property;
-	Value::Kind value_type;
+	Type::Kind value_type;
 	bool is_nullable;
 	bool IsNullable () { return is_nullable; }
 };
 
-DependencyProperty *dependency_property_lookup (Value::Kind type, char *name);
+DependencyProperty *dependency_property_lookup (Type::Kind type, char *name);
 char* dependency_property_get_name (DependencyProperty* property);
 bool  dependency_property_is_nullable (DependencyProperty* property);
-Value::Kind dependency_property_get_value_type (DependencyProperty* property);
+Type::Kind dependency_property_get_value_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 
 class NameScope : public DependencyObject {
@@ -368,7 +344,7 @@ class NameScope : public DependencyObject {
 	NameScope ();
 	virtual ~NameScope ();
 
-	virtual Value::Kind GetObjectType () { return Value::NAMESCOPE; }
+	virtual Type::Kind GetObjectType () { return Type::NAMESCOPE; }
 
 	void RegisterName (const char *name, DependencyObject *object);
 	void UnregisterName (const char *name);
@@ -388,7 +364,7 @@ class NameScope : public DependencyObject {
 class Visual : public DependencyObject {
  public:
 	Visual () {};
-	virtual Value::Kind GetObjectType () { return Value::VISUAL; };	
+	virtual Type::Kind GetObjectType () { return Type::VISUAL; };	
 
 	//
 	// inside_object:
@@ -446,8 +422,8 @@ class Collection : public DependencyObject {
 
 	Collection () : list(NULL), closure(NULL) {}
 	virtual ~Collection ();
-	virtual Value::Kind GetObjectType () { return Value::COLLECTION; };	
-	virtual Value::Kind GetElementType () { return Value::DEPENDENCY_OBJECT; }
+	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
+	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -459,8 +435,8 @@ void collection_remove (Collection *collection, DependencyObject *data);
 class VisualCollection : public Collection {
  public:
 	VisualCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::VISUAL_COLLECTION; }
-	virtual Value::Kind GetElementType () { return Value::VISUAL; }
+	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::VISUAL; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -469,8 +445,8 @@ class VisualCollection : public Collection {
 class TriggerCollection : public Collection {
  public:
 	TriggerCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::TRIGGER_COLLECTION; }
-	virtual Value::Kind GetElementType () { return Value::EVENTTRIGGER; }
+	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -479,16 +455,16 @@ class TriggerCollection : public Collection {
 class TriggerActionCollection : public Collection {
  public:
 	TriggerActionCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::TRIGGERACTION_COLLECTION; }
+	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION_COLLECTION; }
 	/* this may seem wrong, but it's what the TriggerActionCollection mandates */
-	virtual Value::Kind GetElementType () { return Value::BEGINSTORYBOARD; }
+	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
 };
 
 class ResourceCollection : public Collection {
  public:
 	ResourceCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::RESOURCE_COLLECTION; }
-	virtual Value::Kind GetElementType () { return Value::DEPENDENCY_OBJECT; }
+	virtual Type::Kind GetObjectType () { return Type::RESOURCE_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -497,8 +473,8 @@ class ResourceCollection : public Collection {
 class StrokeCollection : public Collection {
  public:
 	StrokeCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::STROKE_COLLECTION; }
-	//virtual Value::Kind GetElementType () { return Value::STROKE; }
+	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
+	//virtual Type::Kind GetElementType () { return Value::STROKE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -507,8 +483,8 @@ class StrokeCollection : public Collection {
 class StylusPointCollection : public Collection {
  public:
 	StylusPointCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::STYLUSPOINT_COLLECTION; }
-	//virtual Value::Kind GetElementType () { return Value::STYLUSPOINT; }
+	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
+	//virtual Type::Kind GetElementType () { return Value::STYLUSPOINT; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -517,8 +493,8 @@ class StylusPointCollection : public Collection {
 class TimelineMarkerCollection : public Collection {
  public:
 	TimelineMarkerCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::TIMELINEMARKER_COLLECTION; }
-	//virtual Value::Kind GetElementType () { return Value::TIMELINEMARKER; }
+	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
+	//virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -527,8 +503,8 @@ class TimelineMarkerCollection : public Collection {
 class MediaAttributeCollection : public Collection {
  public:
 	MediaAttributeCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::MEDIAATTRIBUTE_COLLECTION; }
-	//virtual Value::Kind GetElementType () { return Value::MEDIAATTRIBUTE; }
+	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
+	//virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -537,14 +513,14 @@ class MediaAttributeCollection : public Collection {
 class Inlines : public Collection {
  public:
 	Inlines () {}
-	virtual Value::Kind GetObjectType () { return Value::INLINES; }
-	//virtual Value::Kind GetElementType () { return Value::INLINE; }
+	virtual Type::Kind GetObjectType () { return Type::INLINES; }
+	//virtual Type::Kind GetElementType () { return Type::INLINE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
 };
 
-Collection *collection_new (Value::Kind kind);
+Collection *collection_new (Type::Kind kind);
 
 VisualCollection *visual_collection_new (void);
 TriggerCollection *trigger_collection_new (void);
@@ -593,7 +569,7 @@ class TriggerAction : public DependencyObject {
  public:
 	TriggerAction () { };
 
-	virtual Value::Kind GetObjectType () { return Value::TRIGGERACTION; };
+	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION; };
 	virtual void Fire () = 0;
 };
 
@@ -603,7 +579,7 @@ class EventTrigger : public DependencyObject {
 	EventTrigger ();
 	virtual ~EventTrigger ();
 	
-	virtual Value::Kind GetObjectType () { return Value::EVENTTRIGGER; };
+	virtual Type::Kind GetObjectType () { return Type::EVENTTRIGGER; };
 
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
@@ -626,7 +602,7 @@ class UIElement : public Visual {
  public:
 	UIElement ();
 	~UIElement ();
-	virtual Value::Kind GetObjectType () { return Value::UIELEMENT; };
+	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };
 
 	UIElement *parent;
 
@@ -786,7 +762,7 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty* WidthProperty;
 
 	FrameworkElement ();
-	virtual Value::Kind GetObjectType () { return Value::FRAMEWORKELEMENT; }
+	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
 
 	virtual bool inside_object (Surface *s, double x, double y);
 };
@@ -804,7 +780,7 @@ class Panel : public FrameworkElement {
  public:
 	Panel ();
 	virtual ~Panel ();
-	virtual Value::Kind GetObjectType () { return Value::PANEL; }
+	virtual Type::Kind GetObjectType () { return Type::PANEL; }
 
 	VisualCollection *GetChildren ();
 	void SetChildren (VisualCollection *col);
@@ -839,7 +815,7 @@ class Canvas : public Panel {
 	//
 	UIElement *current_item;
 	
-	virtual Value::Kind GetObjectType () { return Value::CANVAS; }
+	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
 	virtual Point getxformorigin () { return Point (0, 0); }
 
@@ -869,7 +845,7 @@ class Control : public FrameworkElement {
 	Control () : real_object (NULL) { };
 	~Control ();
 	
-	virtual Value::Kind GetObjectType () { return Value::CONTROL; }
+	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 	virtual void update_xform ();
 	virtual void render (Surface *surface, int x, int y, int width, int height);
 	virtual void getbounds ();
@@ -888,7 +864,7 @@ class Control : public FrameworkElement {
 };
 
 Control *control_new (void);
-UIElement* control_initialize_from_xaml (Control *control, const char *xaml, Value::Kind *element_type);
+UIElement* control_initialize_from_xaml (Control *control, const char *xaml, Type::Kind *element_type);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 
@@ -956,9 +932,9 @@ typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns
 typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
 
 UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
-		xaml_set_custom_attribute_callback *sca, Value::Kind *element_type);
+		xaml_set_custom_attribute_callback *sca, Type::Kind *element_type);
 UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
-		xaml_set_custom_attribute_callback *sca, Value::Kind *element_type);
+		xaml_set_custom_attribute_callback *sca, Type::Kind *element_type);
 
 
 void runtime_init (void);

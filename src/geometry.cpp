@@ -960,60 +960,60 @@ void
 geometry_init ()
 {
 	/* Geometry fields */
-	Geometry::FillRuleProperty = DependencyObject::Register (Value::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
-	Geometry::TransformProperty = DependencyObject::Register (Value::GEOMETRY, "Transform", Value::TRANSFORM);
+	Geometry::FillRuleProperty = DependencyObject::Register (Type::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
+	Geometry::TransformProperty = DependencyObject::Register (Type::GEOMETRY, "Transform", Type::TRANSFORM);
 
 	/* GeometryGroup fields */
-	GeometryGroup::ChildrenProperty = DependencyObject::Register (Value::GEOMETRYGROUP, "Children", Value::GEOMETRY_COLLECTION);
+	GeometryGroup::ChildrenProperty = DependencyObject::Register (Type::GEOMETRYGROUP, "Children", Type::GEOMETRY_COLLECTION);
 
 	/* EllipseGeometry fields */
-	EllipseGeometry::CenterProperty = DependencyObject::Register (Value::ELLIPSEGEOMETRY, "Center", Value::POINT);
-	EllipseGeometry::RadiusXProperty = DependencyObject::Register (Value::ELLIPSEGEOMETRY, "RadiusX", new Value (0.0));
-	EllipseGeometry::RadiusYProperty = DependencyObject::Register (Value::ELLIPSEGEOMETRY, "RadiusY", new Value (0.0));
+	EllipseGeometry::CenterProperty = DependencyObject::Register (Type::ELLIPSEGEOMETRY, "Center", Type::POINT);
+	EllipseGeometry::RadiusXProperty = DependencyObject::Register (Type::ELLIPSEGEOMETRY, "RadiusX", new Value (0.0));
+	EllipseGeometry::RadiusYProperty = DependencyObject::Register (Type::ELLIPSEGEOMETRY, "RadiusY", new Value (0.0));
 
 	/* LineGeometry fields */
-	LineGeometry::EndPointProperty = DependencyObject::Register (Value::LINEGEOMETRY, "EndPoint", Value::POINT);
-	LineGeometry::StartPointProperty = DependencyObject::Register (Value::LINEGEOMETRY, "StartPoint", Value::POINT);
+	LineGeometry::EndPointProperty = DependencyObject::Register (Type::LINEGEOMETRY, "EndPoint", Type::POINT);
+	LineGeometry::StartPointProperty = DependencyObject::Register (Type::LINEGEOMETRY, "StartPoint", Type::POINT);
 
 	/* PathGeometry */
-	PathGeometry::FiguresProperty = DependencyObject::Register (Value::PATHGEOMETRY, "Figures", Value::PATHFIGURE_COLLECTION);
+	PathGeometry::FiguresProperty = DependencyObject::Register (Type::PATHGEOMETRY, "Figures", Type::PATHFIGURE_COLLECTION);
 
 	/* RectangleGeometry fields */
-	RectangleGeometry::RadiusXProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0));
-	RectangleGeometry::RadiusYProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0));
-	RectangleGeometry::RectProperty = DependencyObject::Register (Value::RECTANGLEGEOMETRY, "Rect", Value::RECT);
+	RectangleGeometry::RadiusXProperty = DependencyObject::Register (Type::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0));
+	RectangleGeometry::RadiusYProperty = DependencyObject::Register (Type::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0));
+	RectangleGeometry::RectProperty = DependencyObject::Register (Type::RECTANGLEGEOMETRY, "Rect", Type::RECT);
 
 	/* PathFigure fields */
-	PathFigure::IsClosedProperty = DependencyObject::Register (Value::PATHFIGURE, "IsClosed", new Value (false));
-	PathFigure::IsFilledProperty = DependencyObject::Register (Value::PATHFIGURE, "IsFilled", new Value (true));
-	PathFigure::SegmentsProperty = DependencyObject::Register (Value::PATHFIGURE, "Segments", Value::PATHSEGMENT_COLLECTION);
-	PathFigure::StartPointProperty = DependencyObject::Register (Value::PATHFIGURE, "StartPoint", Value::POINT);
+	PathFigure::IsClosedProperty = DependencyObject::Register (Type::PATHFIGURE, "IsClosed", new Value (false));
+	PathFigure::IsFilledProperty = DependencyObject::Register (Type::PATHFIGURE, "IsFilled", new Value (true));
+	PathFigure::SegmentsProperty = DependencyObject::Register (Type::PATHFIGURE, "Segments", Type::PATHSEGMENT_COLLECTION);
+	PathFigure::StartPointProperty = DependencyObject::Register (Type::PATHFIGURE, "StartPoint", Type::POINT);
 
 	/* ArcSegment fields */
-	ArcSegment::IsLargeArcProperty = DependencyObject::Register (Value::ARCSEGMENT, "IsLargeArc", new Value (false));
-	ArcSegment::PointProperty = DependencyObject::Register (Value::ARCSEGMENT, "Point", Value::POINT);
-	ArcSegment::RotationAngleProperty = DependencyObject::Register (Value::ARCSEGMENT, "RotationAngle", new Value (0.0));
-	ArcSegment::SizeProperty = DependencyObject::Register (Value::ARCSEGMENT, "Size", Value::POINT);
-	ArcSegment::SweepDirectionProperty = DependencyObject::Register (Value::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
+	ArcSegment::IsLargeArcProperty = DependencyObject::Register (Type::ARCSEGMENT, "IsLargeArc", new Value (false));
+	ArcSegment::PointProperty = DependencyObject::Register (Type::ARCSEGMENT, "Point", Type::POINT);
+	ArcSegment::RotationAngleProperty = DependencyObject::Register (Type::ARCSEGMENT, "RotationAngle", new Value (0.0));
+	ArcSegment::SizeProperty = DependencyObject::Register (Type::ARCSEGMENT, "Size", Type::POINT);
+	ArcSegment::SweepDirectionProperty = DependencyObject::Register (Type::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
 
 	/* BezierSegment fields */
-	BezierSegment::Point1Property = DependencyObject::Register (Value::BEZIERSEGMENT, "Point1", Value::POINT);
-	BezierSegment::Point2Property = DependencyObject::Register (Value::BEZIERSEGMENT, "Point2", Value::POINT);
-	BezierSegment::Point3Property = DependencyObject::Register (Value::BEZIERSEGMENT, "Point3", Value::POINT);
+	BezierSegment::Point1Property = DependencyObject::Register (Type::BEZIERSEGMENT, "Point1", Type::POINT);
+	BezierSegment::Point2Property = DependencyObject::Register (Type::BEZIERSEGMENT, "Point2", Type::POINT);
+	BezierSegment::Point3Property = DependencyObject::Register (Type::BEZIERSEGMENT, "Point3", Type::POINT);
 
 	/* LineSegment fields */
-	LineSegment::PointProperty = DependencyObject::Register (Value::LINESEGMENT, "Point", Value::POINT);
+	LineSegment::PointProperty = DependencyObject::Register (Type::LINESEGMENT, "Point", Type::POINT);
 
 	/* PolyBezierSegment fields */
-	PolyBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYBEZIERSEGMENT, "Points", Value::POINT_ARRAY);
+	PolyBezierSegment::PointsProperty = DependencyObject::Register (Type::POLYBEZIERSEGMENT, "Points", Type::POINT_ARRAY);
 
 	/* PolyLineSegment fields */
-	PolyLineSegment::PointsProperty = DependencyObject::Register (Value::POLYLINESEGMENT, "Points", Value::POINT_ARRAY);
+	PolyLineSegment::PointsProperty = DependencyObject::Register (Type::POLYLINESEGMENT, "Points", Type::POINT_ARRAY);
 
 	/* PolyQuadraticBezierSegment field */
-	PolyQuadraticBezierSegment::PointsProperty = DependencyObject::Register (Value::POLYQUADRATICBEZIERSEGMENT, "Points", Value::POINT_ARRAY);
+	PolyQuadraticBezierSegment::PointsProperty = DependencyObject::Register (Type::POLYQUADRATICBEZIERSEGMENT, "Points", Type::POINT_ARRAY);
 
 	/* QuadraticBezierSegment field */
-	QuadraticBezierSegment::Point1Property = DependencyObject::Register (Value::QUADRATICBEZIERSEGMENT, "Point1", Value::POINT);
-	QuadraticBezierSegment::Point2Property = DependencyObject::Register (Value::QUADRATICBEZIERSEGMENT, "Point2", Value::POINT);
+	QuadraticBezierSegment::Point1Property = DependencyObject::Register (Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);
+	QuadraticBezierSegment::Point2Property = DependencyObject::Register (Type::QUADRATICBEZIERSEGMENT, "Point2", Type::POINT);
 }

@@ -747,13 +747,13 @@ void
 clock_init ()
 {
 	/* Timeline properties */
-	Timeline::AutoReverseProperty = DependencyObject::Register (Value::TIMELINE, "AutoReverse", new Value (false));
-	Timeline::BeginTimeProperty = DependencyObject::RegisterNullable (Value::TIMELINE, "BeginTime", Value::INT64);
-	Timeline::DurationProperty = DependencyObject::Register (Value::TIMELINE, "Duration", new Value (Duration::Automatic));
-	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
-	Timeline::FillBehaviorProperty = DependencyObject::Register (Value::TIMELINE, "FillBehavior", new Value ((int)FillBehaviorHoldEnd));
-	Timeline::SpeedRatioProperty = DependencyObject::Register (Value::TIMELINE, "SpeedRatio", new Value (1.0));
+	Timeline::AutoReverseProperty = DependencyObject::Register (Type::TIMELINE, "AutoReverse", new Value (false));
+	Timeline::BeginTimeProperty = DependencyObject::RegisterNullable (Type::TIMELINE, "BeginTime", Type::INT64);
+	Timeline::DurationProperty = DependencyObject::Register (Type::TIMELINE, "Duration", new Value (Duration::Automatic));
+	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Type::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
+	Timeline::FillBehaviorProperty = DependencyObject::Register (Type::TIMELINE, "FillBehavior", new Value ((int)FillBehaviorHoldEnd));
+	Timeline::SpeedRatioProperty = DependencyObject::Register (Type::TIMELINE, "SpeedRatio", new Value (1.0));
 
 	/* TimelineGroup properties */
-	TimelineGroup::ChildrenProperty = DependencyObject::Register (Value::TIMELINEGROUP, "Children", Value::TIMELINE_COLLECTION);
+	TimelineGroup::ChildrenProperty = DependencyObject::Register (Type::TIMELINEGROUP, "Children", Type::TIMELINE_COLLECTION);
 }

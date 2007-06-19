@@ -45,7 +45,7 @@ class Brush : public DependencyObject {
 	static DependencyProperty *ChangedProperty;
 	
 	Brush () { }
-	virtual Value::Kind GetObjectType () { return Value::BRUSH; };
+	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
 
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -68,7 +68,7 @@ class SolidColorBrush : public Brush {
 
 	SolidColorBrush () { };
 
-	virtual Value::Kind GetObjectType () { return Value::SOLIDCOLORBRUSH; };
+	virtual Type::Kind GetObjectType () { return Type::SOLIDCOLORBRUSH; };
 
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -90,7 +90,7 @@ class GradientBrush : public Brush {
 	GradientBrush ();
 	~GradientBrush ();
 	
-	virtual Value::Kind GetObjectType () { return Value::GRADIENTBRUSH; }
+	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual bool SetupGradient (cairo_pattern_t *pattern, UIElement *uielement);
@@ -113,7 +113,7 @@ class TileBrush : public Brush {
 	static DependencyProperty* AlignmentYProperty;
 	static DependencyProperty* StretchProperty;
 
-	virtual Value::Kind GetObjectType () { return Value::TILEBRUSH; }
+	virtual Type::Kind GetObjectType () { return Type::TILEBRUSH; }
 };
 
 TileBrush*	tile_brush_new			();
@@ -134,7 +134,7 @@ class ImageBrush : public TileBrush {
 	ImageBrush ();
 	~ImageBrush ();
 	
-	virtual Value::Kind GetObjectType () { return Value::IMAGEBRUSH; }
+	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
 
 	void SetSource (DependencyObject *dl, char* PartName);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -156,7 +156,7 @@ public:
 	VideoBrush ();
 	~VideoBrush ();
 	
-	virtual Value::Kind GetObjectType () { return Value::VIDEOBRUSH; }
+	virtual Type::Kind GetObjectType () { return Type::VIDEOBRUSH; }
 	
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
@@ -174,7 +174,7 @@ class LinearGradientBrush : public GradientBrush {
 	static DependencyProperty* StartPointProperty;
 
 	LinearGradientBrush () {};
-	virtual Value::Kind GetObjectType () { return Value::LINEARGRADIENTBRUSH; }
+	virtual Type::Kind GetObjectType () { return Type::LINEARGRADIENTBRUSH; }
 
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -195,7 +195,7 @@ class RadialGradientBrush : public GradientBrush {
 	static DependencyProperty* RadiusYProperty;
 
 	RadialGradientBrush () {};
-	virtual Value::Kind GetObjectType () { return Value::RADIALGRADIENTBRUSH; }
+	virtual Type::Kind GetObjectType () { return Type::RADIALGRADIENTBRUSH; }
 
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
@@ -214,9 +214,9 @@ void	radial_gradient_brush_set_radius_y		(RadialGradientBrush *brush, double rad
 class GradientStopCollection : public Collection {
  public:
 	GradientStopCollection () {}
-	virtual Value::Kind GetObjectType () { return Value::GRADIENTSTOP_COLLECTION; }
+	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP_COLLECTION; }
 
-	virtual Value::Kind GetElementType() { return Value::GRADIENTSTOP; }
+	virtual Type::Kind GetElementType() { return Type::GRADIENTSTOP; }
 };
 
 GradientStopCollection *gradient_stop_collection_new ();
@@ -227,7 +227,7 @@ class GradientStop : public DependencyObject {
 	static DependencyProperty* ColorProperty;
 	static DependencyProperty* OffsetProperty;
 
-	virtual Value::Kind GetObjectType () { return Value::GRADIENTSTOP; }
+	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP; }
 };
 
 GradientStop* gradient_stop_new (void);

@@ -137,7 +137,7 @@ Control::~Control ()
 }
 
 UIElement* 
-control_initialize_from_xaml (Control *control, const char *xaml, Value::Kind *element_type)
+control_initialize_from_xaml (Control *control, const char *xaml, Type::Kind *element_type)
 {
 	// No callback, figure out how this will work in the plugin to satisfy deps
 

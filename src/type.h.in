@@ -1,0 +1,71 @@
+/*
+ * type.h: Generated code for the type system.
+ *
+ * Author:
+ *   Rolf Bjarne Kvinge (RKvinge@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+#ifndef __TYPE_H__
+#define __TYPE_H__
+
+G_BEGIN_DECLS
+
+class Type {
+public:
+	enum Kind {
+	// START_MANAGED_MAPPING
+		INVALID,
+		BOOL,
+		DOUBLE,
+		UINT64,
+		INT32,
+		STRING,
+		COLOR,
+		POINT,
+		RECT,
+		REPEATBEHAVIOR,
+		DURATION,
+		INT64,
+		DOUBLE_ARRAY,
+		POINT_ARRAY,
+		KEYTIME,
+		MATRIX,
+
+/*DO_KINDS*/
+	
+		LASTTYPE,
+	// END_MANAGED_MAPPING
+		};
+
+	static Type* RegisterType (char *name, Type::Kind type, Type::Kind parent, bool value_type);
+	static Type* RegisterType (char *name, Type::Kind type, Type::Kind parent);
+	static Type* RegisterType (char *name, Type::Kind type, bool value_type);
+	static Type* Find (char *name);
+	static Type* Find (Type::Kind type);
+	
+	bool IsSubclassOf (Type::Kind super);	
+	Type::Kind parent;
+	Type::Kind type;
+	char *name;
+	bool value_type;
+
+	static void Shutdown ();
+private:
+	Type (char *name, Type::Kind type, Type::Kind parent);
+	~Type ();
+	static Type* types [Type::LASTTYPE];
+	static GHashTable *types_by_name;
+	static void free_type (gpointer v);
+};
+
+bool type_get_value_type (Type::Kind type);
+
+
+G_END_DECLS
+
+#endif
+

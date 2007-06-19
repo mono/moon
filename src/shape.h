@@ -44,7 +44,7 @@ class Shape : public FrameworkElement {
 
 	Shape ();
 	~Shape ();
-	virtual Value::Kind GetObjectType () { return Value::SHAPE; };
+	virtual Type::Kind GetObjectType () { return Type::SHAPE; };
 
 	//
 	// Overrides from UIElement.
@@ -100,7 +100,7 @@ void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 class Ellipse : public Shape {
  public:
 	Ellipse () { };
-	virtual Value::Kind GetObjectType () { return Value::ELLIPSE; };
+	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
 	virtual Point getxformorigin ();
 
@@ -117,7 +117,7 @@ class Rectangle : public Shape {
 	static DependencyProperty* RadiusYProperty;
 
 	Rectangle () { };
-	virtual Value::Kind GetObjectType () { return Value::RECTANGLE; };
+	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
 
 	void Draw (Surface *s);
 
@@ -143,7 +143,7 @@ class Line : public Shape {
 	static DependencyProperty* Y2Property;
 
 	Line () { };
-	virtual Value::Kind GetObjectType () { return Value::LINE; };
+	virtual Type::Kind GetObjectType () { return Type::LINE; };
 	
 	void Draw (Surface *s);
 
@@ -173,7 +173,7 @@ class Polygon : public Shape {
 	static DependencyProperty* PointsProperty;
 
 	Polygon () { };
-	virtual Value::Kind GetObjectType () { return Value::POLYGON; };
+	virtual Type::Kind GetObjectType () { return Type::POLYGON; };
 
 	void Draw (Surface *s);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -194,7 +194,7 @@ class Polyline : public Shape {
 	static DependencyProperty* PointsProperty;
 
 	Polyline () { };
-	virtual Value::Kind GetObjectType () { return Value::POLYLINE; };
+	virtual Type::Kind GetObjectType () { return Type::POLYLINE; };
 
 	void Draw (Surface *s);
 
@@ -216,7 +216,7 @@ class Path : public Shape {
 	static DependencyProperty* DataProperty;
 
 	Path () {};
-	virtual Value::Kind GetObjectType () { return Value::PATH; };
+	virtual Type::Kind GetObjectType () { return Type::PATH; };
 
 	void Draw (Surface *s);
 

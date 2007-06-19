@@ -217,7 +217,7 @@ class Clock : public DependencyObject {
 	};
 
 	Clock (Timeline *timeline);
-	virtual Value::Kind GetObjectType () { return Value::CLOCK; };
+	virtual Type::Kind GetObjectType () { return Type::CLOCK; };
 
 	virtual void SpeedChanged () { };
 
@@ -272,7 +272,7 @@ class ClockGroup : public Clock {
  public:
 	ClockGroup (TimelineGroup *timeline);
 	~ClockGroup ();
-	virtual Value::Kind GetObjectType () { return Value::CLOCKGROUP; };
+	virtual Type::Kind GetObjectType () { return Type::CLOCKGROUP; };
 
 	virtual void Begin (TimeSpan parent_time);
 
@@ -295,7 +295,7 @@ class ClockGroup : public Clock {
 class Timeline : public DependencyObject {
  public:
 	Timeline ();
-	virtual Value::Kind GetObjectType () { return Value::TIMELINE; };
+	virtual Type::Kind GetObjectType () { return Type::TIMELINE; };
 
 	static DependencyProperty* AutoReverseProperty;
 	static DependencyProperty* BeginTimeProperty;
@@ -324,9 +324,9 @@ class Timeline : public DependencyObject {
 class TimelineCollection : public Collection {
  public:
 	TimelineCollection () {}
-	virtual Value::Kind GetObjectType() { return Value::TIMELINE_COLLECTION; }
+	virtual Type::Kind GetObjectType() { return Type::TIMELINE_COLLECTION; }
 
-	virtual Value::Kind GetElementType() { return Value::TIMELINE; }
+	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 };
 
 TimelineCollection * timeline_collection_new ();
@@ -336,7 +336,7 @@ class TimelineGroup : public Timeline {
 	TimelineGroup ();
 	~TimelineGroup ();
 	
-	virtual Value::Kind GetObjectType () { return Value::TIMELINEGROUP; };
+	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; };
 
 	static DependencyProperty* ChildrenProperty;
 
@@ -357,7 +357,7 @@ TimelineGroup * timeline_group_new ();
 class ParallelTimeline : public TimelineGroup {
  public:
 	ParallelTimeline () { }
-	virtual Value::Kind GetObjectType () { return Value::PARALLELTIMELINE; };
+	virtual Type::Kind GetObjectType () { return Type::PARALLELTIMELINE; };
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };

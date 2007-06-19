@@ -128,7 +128,7 @@ class XamlElementInfo {
  public:
 	const char *name;
 	XamlElementInfo *parent;
-	Value::Kind dependency_type;
+	Type::Kind dependency_type;
 	const char *content_property;
 
 	create_item_func create_item;
@@ -139,7 +139,7 @@ class XamlElementInfo {
 
 
 
-	XamlElementInfo (const char *name, XamlElementInfo *parent, Value::Kind dependency_type) :
+	XamlElementInfo (const char *name, XamlElementInfo *parent, Type::Kind dependency_type) :
 		name (name), parent (parent), dependency_type (dependency_type), content_property (NULL),
 		create_item (NULL), create_element (NULL), add_child (NULL), set_property (NULL), set_attributes (NULL)
 	{
@@ -220,7 +220,7 @@ class CustomElementInfo : public XamlElementInfo {
  public:
 	DependencyObject *dependency_object;
 
-	CustomElementInfo (const char *name, XamlElementInfo *parent, Value::Kind dependency_type)
+	CustomElementInfo (const char *name, XamlElementInfo *parent, Type::Kind dependency_type)
 		: XamlElementInfo (name, parent, dependency_type)
 	{
 	}
@@ -422,7 +422,7 @@ end_element_handler (void *data, const char *el)
 				// but string is all i have found so far.  If you can specify other
 				// types, i should pull the property setting out of set_attributes
 				// and use that code
-				if ((con->value_type) == Value::STRING) {
+				if ((con->value_type) == Type::STRING) {
 					info->current_element->item->SetValue (con, Value (info->char_data_buffer->str));
 				}
 			}
@@ -525,7 +525,7 @@ UIElement *
 xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		xaml_create_custom_element_callback *cecb,
 		xaml_set_custom_attribute_callback *sca,
-		Value::Kind *element_type)
+		Type::Kind *element_type)
 {
 	UIElement *res;
 	FILE *fp;
@@ -606,7 +606,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		}
 		else {
 			res = NULL;
-			*element_type = Value::INVALID;
+			*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
 	}
@@ -626,7 +626,7 @@ UIElement *
 xaml_create_from_str (const char *xaml, bool create_namescope,
 		xaml_create_custom_element_callback *cecb,
 		xaml_set_custom_attribute_callback *sca,
-		Value::Kind *element_type)
+		Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
 	XamlParserInfo *parser_info = NULL;
@@ -682,7 +682,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 		}
 		else {
 			res = NULL;
-			*element_type = Value::INVALID;
+			*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
 	}
@@ -707,7 +707,7 @@ property_name_index (const char *p)
 }
 
 bool
-is_instance_of (XamlElementInstance *item, Value::Kind kind)
+is_instance_of (XamlElementInstance *item, Type::Kind kind)
 {
 	for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
 		if (walk->dependency_type == kind)
@@ -991,7 +991,7 @@ geometry_from_str (char *str)
 			get_point (&cp3, &data);
 			if (relative) make_relative (&cp, &cp3);
 
-			if (prev->GetObjectType () == Value::BEZIERSEGMENT) {
+			if (prev->GetObjectType () == Type::BEZIERSEGMENT) {
 				Point *p = prev->GetValue (BezierSegment::Point2Property)->AsPoint ();
 				cp1.x = 2 * cp.x - p->x;
 				cp1.y = 2 * cp.y - p->y;
@@ -1044,7 +1044,7 @@ geometry_from_str (char *str)
 			get_point (&cp2, &data);
 			if (relative) make_relative (&cp, &cp2);
 
-			if (prev->GetObjectType () == Value::QUADRATICBEZIERSEGMENT) {
+			if (prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
 				Point *p = prev->GetValue (QuadraticBezierSegment::Point2Property)->AsPoint ();
 				cp1.x = 2 * cp.x - p->x;
 				cp1.y = 2 * cp.y - p->y;
@@ -1314,7 +1314,7 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 	inst->element_name = i->name;
 	inst->element_type = XamlElementInstance::ELEMENT;
 
-	if (is_instance_of (inst, Value::COLLECTION)) {
+	if (is_instance_of (inst, Type::COLLECTION)) {
 		// If we are creating a collection, try walking up the element tree,
 		// to find the parent that we belong to and using that instance for
 		// our collection, instead of creating a new one
@@ -1368,7 +1368,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			return;
 
 		Type *col_type = Type::Find (dep->value_type);
-		if (!col_type->IsSubclassOf (Value::COLLECTION))
+		if (!col_type->IsSubclassOf (Type::COLLECTION))
 			return;
 
 		// Most common case, we will have a parent that we can snag the collection from
@@ -1379,7 +1379,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		return;
 	}
 
-	if (is_instance_of (parent, Value::COLLECTION)) {
+	if (is_instance_of (parent, Type::COLLECTION)) {
 		Collection *col = (Collection *) parent->item;
 
 		col->Add ((DependencyObject *) child->item);
@@ -1395,7 +1395,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			return;
 
 		Type *prop_type = Type::Find (dep->value_type);
-		bool is_collection = prop_type->IsSubclassOf (Value::COLLECTION);
+		bool is_collection = prop_type->IsSubclassOf (Type::COLLECTION);
 
 		if (!is_collection && prop_type->IsSubclassOf (child->info->dependency_type)) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
@@ -1539,16 +1539,16 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 		if (prop) {
 			switch (prop->value_type) {
-			case Value::BOOL:
+			case Type::BOOL:
 				dep->SetValue (prop, Value ((bool) !g_strcasecmp ("true", attr [i + 1])));
 				break;
-			case Value::DOUBLE:
+			case Type::DOUBLE:
 				dep->SetValue (prop, Value ((double) strtod (attr [i + 1], NULL)));
 				break;
-			case Value::INT64:
+			case Type::INT64:
 				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10)));
 				break;
-			case Value::INT32:
+			case Type::INT32:
 			{
 				// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
 				int val;
@@ -1561,26 +1561,26 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				dep->SetValue (prop, Value (val));
 			}
 				break;
-			case Value::STRING:
+			case Type::STRING:
 				dep->SetValue (prop, Value (attr [i + 1]));
 				break;
-			case Value::COLOR:
+			case Type::COLOR:
 				dep->SetValue (prop, Value (*color_from_str (attr [i + 1])));
 				break;
-			case Value::REPEATBEHAVIOR:
+			case Type::REPEATBEHAVIOR:
 				dep->SetValue (prop, Value (repeat_behavior_from_str (attr [i + 1])));
 				break;
-			case Value::DURATION:
+			case Type::DURATION:
 				dep->SetValue (prop, Value (duration_from_str (attr [i + 1])));
 				break;
-			case Value::KEYTIME:
+			case Type::KEYTIME:
 				dep->SetValue (prop, Value (KeyTime (timespan_from_str (attr [i + 1]))));
 				break;
-			case Value::KEYSPLINE:
+			case Type::KEYSPLINE:
 				dep->SetValue (prop, Value (key_spline_from_str (attr [i + 1])));
 				break;
-			case Value::BRUSH:
-			case Value::SOLIDCOLORBRUSH:
+			case Type::BRUSH:
+			case Type::SOLIDCOLORBRUSH:
 			{
 				// Only solid color brushes can be specified using attribute syntax
 				SolidColorBrush *scb = solid_color_brush_new ();
@@ -1590,30 +1590,30 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				dep->SetValue (prop, Value (scb));
 			}
 				break;
-			case Value::POINT:
+			case Type::POINT:
 				dep->SetValue (prop, Value (point_from_str (attr [i + 1])));
 				break;
-			case Value::RECT:
+			case Type::RECT:
 				dep->SetValue (prop, Value (rect_from_str (attr [i + 1])));
 				break;
-			case Value::DOUBLE_ARRAY:
+			case Type::DOUBLE_ARRAY:
 			{
 				int count = 0;
 				double *doubles = double_array_from_str (attr [i + 1], &count);
 				dep->SetValue (prop, Value (doubles, count));
 			}
 				break;
-			case Value::POINT_ARRAY:
+			case Type::POINT_ARRAY:
 			{
 				int count = 0;
 				Point *points = point_array_from_str (attr [i + 1], &count);
 				dep->SetValue (prop, Value (points, count));
 			}
 				break;
-			case Value::MATRIX:
+			case Type::MATRIX:
 				dep->SetValue (prop, matrix_value_from_str (attr [i + 1]));
 				break;
-			case Value::GEOMETRY:
+			case Type::GEOMETRY:
 			{
 				char *data = g_strdup (attr [i + 1]);
 				dep->SetValue (prop, geometry_from_str (data));
@@ -1640,13 +1640,13 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 // We still use a name for ghost elements to make debugging easier
 XamlElementInfo *
-register_ghost_element (const char *name, XamlElementInfo *parent, Value::Kind dt)
+register_ghost_element (const char *name, XamlElementInfo *parent, Type::Kind dt)
 {
 	return new XamlElementInfo (name, parent, dt);
 }
 
 XamlElementInfo *
-register_dependency_object_element (GHashTable *table, const char *name, XamlElementInfo *parent, Value::Kind dt,
+register_dependency_object_element (GHashTable *table, const char *name, XamlElementInfo *parent, Type::Kind dt,
 		create_item_func create_item)
 {
 	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
@@ -1672,69 +1672,69 @@ xaml_init (void)
 	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
 	enum_map = g_hash_table_new (g_str_hash, g_str_equal);
 
-	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Value::COLLECTION);
+	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Type::COLLECTION);
 
 #define rdoe register_dependency_object_element
 
 	//
 	// ui element ->
 	//
-	XamlElementInfo *ui = register_ghost_element ("UIElement", NULL, Value::UIELEMENT);
-	XamlElementInfo *fw = register_ghost_element ("FrameworkElement", ui, Value::FRAMEWORKELEMENT);
-	XamlElementInfo *shape = register_ghost_element ("Shape", fw, Value::SHAPE);
+	XamlElementInfo *ui = register_ghost_element ("UIElement", NULL, Type::UIELEMENT);
+	XamlElementInfo *fw = register_ghost_element ("FrameworkElement", ui, Type::FRAMEWORKELEMENT);
+	XamlElementInfo *shape = register_ghost_element ("Shape", fw, Type::SHAPE);
 
-	rdoe (dem, "ResourceCollection", col, Value::RESOURCE_COLLECTION, (create_item_func) resource_collection_new);
+	rdoe (dem, "ResourceCollection", col, Type::RESOURCE_COLLECTION, (create_item_func) resource_collection_new);
 
 	///
 	/// Shapes
 	///
 	
-	rdoe (dem, "Ellipse", shape, Value::ELLIPSE, (create_item_func) ellipse_new);
-	rdoe (dem, "Line", shape, Value::LINE, (create_item_func) line_new);
-	rdoe (dem, "Path", shape, Value::PATH, (create_item_func) path_new);
-	rdoe (dem, "Polygon", shape, Value::POLYGON, (create_item_func) polygon_new);
-	rdoe (dem, "Polyline", shape, Value::POLYLINE, (create_item_func) polyline_new);
-	rdoe (dem, "Rectangle", shape, Value::RECTANGLE, (create_item_func) rectangle_new);
+	rdoe (dem, "Ellipse", shape, Type::ELLIPSE, (create_item_func) ellipse_new);
+	rdoe (dem, "Line", shape, Type::LINE, (create_item_func) line_new);
+	rdoe (dem, "Path", shape, Type::PATH, (create_item_func) path_new);
+	rdoe (dem, "Polygon", shape, Type::POLYGON, (create_item_func) polygon_new);
+	rdoe (dem, "Polyline", shape, Type::POLYLINE, (create_item_func) polyline_new);
+	rdoe (dem, "Rectangle", shape, Type::RECTANGLE, (create_item_func) rectangle_new);
 	
 	///
 	/// Geometry
 	///
 
-	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, Value::GEOMETRY);
-	rdoe (dem, "EllipseGeometry", geo, Value::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
-	rdoe (dem, "LineGeometry", geo, Value::LINEGEOMETRY, (create_item_func) line_geometry_new);
-	rdoe (dem, "RectangleGeometry", geo, Value::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
+	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, Type::GEOMETRY);
+	rdoe (dem, "EllipseGeometry", geo, Type::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
+	rdoe (dem, "LineGeometry", geo, Type::LINEGEOMETRY, (create_item_func) line_geometry_new);
+	rdoe (dem, "RectangleGeometry", geo, Type::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
 
-	XamlElementInfo *gg = rdoe (dem, "GeometryGroup", geo, Value::GEOMETRYGROUP, (create_item_func) geometry_group_new);
+	XamlElementInfo *gg = rdoe (dem, "GeometryGroup", geo, Type::GEOMETRYGROUP, (create_item_func) geometry_group_new);
 	gg->content_property = "Children";
 
 
-	XamlElementInfo *gc = rdoe (dem, "GeometryCollection", col, Value::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
-	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Value::PATHGEOMETRY, (create_item_func) path_geometry_new);
+	XamlElementInfo *gc = rdoe (dem, "GeometryCollection", col, Type::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
+	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Type::PATHGEOMETRY, (create_item_func) path_geometry_new);
 	pg->content_property = "Figures";
 
-	XamlElementInfo *pfc = rdoe (dem, "PathFigureCollection", col, Value::PATHFIGURE_COLLECTION, (create_item_func) NULL);
+	XamlElementInfo *pfc = rdoe (dem, "PathFigureCollection", col, Type::PATHFIGURE_COLLECTION, (create_item_func) NULL);
 
-	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Value::PATHFIGURE, (create_item_func) path_figure_new);
+	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Type::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->content_property = "Segments";
 
-	XamlElementInfo *psc = rdoe (dem, "PathSegmentCollection", col, Value::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
+	XamlElementInfo *psc = rdoe (dem, "PathSegmentCollection", col, Type::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
 
-	XamlElementInfo *ps = register_ghost_element ("PathSegment", NULL, Value::PATHSEGMENT);
-	rdoe (dem, "ArcSegment", ps, Value::ARCSEGMENT, (create_item_func) arc_segment_new);
-	rdoe (dem, "BezierSegment", ps, Value::BEZIERSEGMENT, (create_item_func) bezier_segment_new);
-	rdoe (dem, "LineSegment", ps, Value::LINESEGMENT, (create_item_func) line_segment_new);
-	rdoe (dem, "PolyBezierSegment", ps, Value::POLYBEZIERSEGMENT, (create_item_func) poly_bezier_segment_new);
-	rdoe (dem, "PolyLineSegment", ps, Value::POLYLINESEGMENT, (create_item_func) poly_line_segment_new);
-	rdoe (dem, "PolyQuadraticBezierSegment", ps, Value::POLYQUADRATICBEZIERSEGMENT, (create_item_func) poly_quadratic_bezier_segment_new);
-	rdoe (dem, "QuadraticBezierSegment", ps, Value::QUADRATICBEZIERSEGMENT, (create_item_func) quadratic_bezier_segment_new);
+	XamlElementInfo *ps = register_ghost_element ("PathSegment", NULL, Type::PATHSEGMENT);
+	rdoe (dem, "ArcSegment", ps, Type::ARCSEGMENT, (create_item_func) arc_segment_new);
+	rdoe (dem, "BezierSegment", ps, Type::BEZIERSEGMENT, (create_item_func) bezier_segment_new);
+	rdoe (dem, "LineSegment", ps, Type::LINESEGMENT, (create_item_func) line_segment_new);
+	rdoe (dem, "PolyBezierSegment", ps, Type::POLYBEZIERSEGMENT, (create_item_func) poly_bezier_segment_new);
+	rdoe (dem, "PolyLineSegment", ps, Type::POLYLINESEGMENT, (create_item_func) poly_line_segment_new);
+	rdoe (dem, "PolyQuadraticBezierSegment", ps, Type::POLYQUADRATICBEZIERSEGMENT, (create_item_func) poly_quadratic_bezier_segment_new);
+	rdoe (dem, "QuadraticBezierSegment", ps, Type::QUADRATICBEZIERSEGMENT, (create_item_func) quadratic_bezier_segment_new);
 
 	///
 	/// Panels
 	///
 	
-	XamlElementInfo *panel = register_ghost_element ("Panel", fw, Value::PANEL);
-	XamlElementInfo *canvas = rdoe (dem, "Canvas", panel, Value::CANVAS, (create_item_func) canvas_new);
+	XamlElementInfo *panel = register_ghost_element ("Panel", fw, Type::PANEL);
+	XamlElementInfo *canvas = rdoe (dem, "Canvas", panel, Type::CANVAS, (create_item_func) canvas_new);
 	panel->add_child = panel_add_child;
 	canvas->add_child = panel_add_child;
 
@@ -1742,127 +1742,127 @@ xaml_init (void)
 	/// Animation
 	///
 	
-	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
-	XamlElementInfo *anim = register_ghost_element ("Animation", tl, Value::ANIMATION);
+	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Type::TIMELINE);
+	XamlElementInfo *anim = register_ghost_element ("Animation", tl, Type::ANIMATION);
 	
 	
-	XamlElementInfo * da = rdoe (dem, "DoubleAnimation", anim, Value::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	XamlElementInfo *ca = rdoe (dem, "ColorAnimation", anim, Value::COLORANIMATION, (create_item_func) color_animation_new);
-	XamlElementInfo *pa = rdoe (dem, "PointAnimation", anim, Value::POINTANIMATION, (create_item_func) point_animation_new);
+	XamlElementInfo * da = rdoe (dem, "DoubleAnimation", anim, Type::DOUBLEANIMATION, (create_item_func) double_animation_new);
+	XamlElementInfo *ca = rdoe (dem, "ColorAnimation", anim, Type::COLORANIMATION, (create_item_func) color_animation_new);
+	XamlElementInfo *pa = rdoe (dem, "PointAnimation", anim, Type::POINTANIMATION, (create_item_func) point_animation_new);
 
-	XamlElementInfo *daukf = rdoe (dem, "DoubleAnimationUsingKeyFrames", da, Value::DOUBLEANIMATIONUSINGKEYFRAMES, (create_item_func) double_animation_using_key_frames_new);
+	XamlElementInfo *daukf = rdoe (dem, "DoubleAnimationUsingKeyFrames", da, Type::DOUBLEANIMATIONUSINGKEYFRAMES, (create_item_func) double_animation_using_key_frames_new);
 	daukf->content_property = "KeyFrames";
 
-	XamlElementInfo *caukf = rdoe (dem, "ColorAnimationUsingKeyFrames", ca, Value::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
+	XamlElementInfo *caukf = rdoe (dem, "ColorAnimationUsingKeyFrames", ca, Type::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
 	caukf->content_property = "KeyFrames";
 
-	XamlElementInfo *paukf = rdoe (dem, "PointAnimationUsingKeyFrames", pa, Value::POINTANIMATIONUSINGKEYFRAMES, (create_item_func) point_animation_using_key_frames_new);
+	XamlElementInfo *paukf = rdoe (dem, "PointAnimationUsingKeyFrames", pa, Type::POINTANIMATIONUSINGKEYFRAMES, (create_item_func) point_animation_using_key_frames_new);
 	paukf->content_property = "KeyFrames";
 	
-	rdoe (dem, "KeyFrameCollection", col, Value::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
+	rdoe (dem, "KeyFrameCollection", col, Type::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
 
-	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Value::KEYFRAME);
+	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Type::KEYFRAME);
 
-	XamlElementInfo *ckf = register_ghost_element ("ColorKeyFrame", keyfrm, Value::COLORKEYFRAME);
-	rdoe (dem, "DiscreteColorKeyFrame", ckf, Value::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
-	rdoe (dem, "LinearColorKeyFrame", ckf, Value::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
+	XamlElementInfo *ckf = register_ghost_element ("ColorKeyFrame", keyfrm, Type::COLORKEYFRAME);
+	rdoe (dem, "DiscreteColorKeyFrame", ckf, Type::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
+	rdoe (dem, "LinearColorKeyFrame", ckf, Type::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
 //	rdoe (dem, "SplineColorKeyFrame", ckf, Value::SPLINECOLORKEYFRAME, (create_item_func) spline_color_key_frame_new);
 
-	XamlElementInfo *dkf = register_ghost_element ("DoubleKeyFrame", keyfrm, Value::DOUBLEKEYFRAME);
-	rdoe (dem, "DiscreteDoubleKeyFrame", dkf, Value::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
-	rdoe (dem, "LinearDoubleKeyFrame", dkf, Value::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
-	rdoe (dem, "SplineDoubleKeyFrame", dkf, Value::SPLINEDOUBLEKEYFRAME, (create_item_func) spline_double_key_frame_new);
+	XamlElementInfo *dkf = register_ghost_element ("DoubleKeyFrame", keyfrm, Type::DOUBLEKEYFRAME);
+	rdoe (dem, "DiscreteDoubleKeyFrame", dkf, Type::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
+	rdoe (dem, "LinearDoubleKeyFrame", dkf, Type::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
+	rdoe (dem, "SplineDoubleKeyFrame", dkf, Type::SPLINEDOUBLEKEYFRAME, (create_item_func) spline_double_key_frame_new);
 
-	XamlElementInfo *pkf = register_ghost_element ("PointKeyFrame", keyfrm, Value::POINTKEYFRAME);
-	rdoe (dem, "DiscretePointKeyFrame", pkf, Value::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
-	rdoe (dem, "LinearPointKeyFrame", pkf, Value::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
+	XamlElementInfo *pkf = register_ghost_element ("PointKeyFrame", keyfrm, Type::POINTKEYFRAME);
+	rdoe (dem, "DiscretePointKeyFrame", pkf, Type::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
+	rdoe (dem, "LinearPointKeyFrame", pkf, Type::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
 //	rdoe (dem, "SplinePointKeyFrame", pkf, Value::SPLINEPOINTKEYFRAME, (create_item_func) spline_point_key_frame_new);
 
-	rdoe (dem, "KeySpline", NULL, Value::KEYSPLINE, (create_item_func) key_spline_new);
+	rdoe (dem, "KeySpline", NULL, Type::KEYSPLINE, (create_item_func) key_spline_new);
 
-	rdoe (dem, "TimelineCollection", col, Value::TIMELINE_COLLECTION, (create_item_func) timeline_collection_new);
+	rdoe (dem, "TimelineCollection", col, Type::TIMELINE_COLLECTION, (create_item_func) timeline_collection_new);
 
-	XamlElementInfo *timel = register_ghost_element ("Timeline", NULL, Value::TIMELINE);
-	XamlElementInfo *tlg = rdoe (dem, "TimelineGroup", timel, Value::TIMELINEGROUP, (create_item_func) timeline_group_new);
-	XamlElementInfo *prltl = register_ghost_element ("ParallelTimeline", tlg, Value::PARALLELTIMELINE);
+	XamlElementInfo *timel = register_ghost_element ("Timeline", NULL, Type::TIMELINE);
+	XamlElementInfo *tlg = rdoe (dem, "TimelineGroup", timel, Type::TIMELINEGROUP, (create_item_func) timeline_group_new);
+	XamlElementInfo *prltl = register_ghost_element ("ParallelTimeline", tlg, Type::PARALLELTIMELINE);
 
-	XamlElementInfo *sb = rdoe (dem, "Storyboard", prltl, Value::STORYBOARD, (create_item_func) storyboard_new);
+	XamlElementInfo *sb = rdoe (dem, "Storyboard", prltl, Type::STORYBOARD, (create_item_func) storyboard_new);
 	sb->content_property = "Children";
 
 	///
 	/// Triggers
 	///
-	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Value::TRIGGERACTION);
-	XamlElementInfo *bsb = rdoe (dem, "BeginStoryboard", trg, Value::BEGINSTORYBOARD,
+	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Type::TRIGGERACTION);
+	XamlElementInfo *bsb = rdoe (dem, "BeginStoryboard", trg, Type::BEGINSTORYBOARD,
 			(create_item_func) begin_storyboard_new);
 	bsb->content_property = "Storyboard";
 
-	XamlElementInfo *evt = rdoe (dem, "EventTrigger", NULL, Value::EVENTTRIGGER, (create_item_func) event_trigger_new);
+	XamlElementInfo *evt = rdoe (dem, "EventTrigger", NULL, Type::EVENTTRIGGER, (create_item_func) event_trigger_new);
 	evt->content_property = "Actions";
 
-	rdoe (dem, "TriggerCollection", col, Value::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
-	rdoe (dem, "TriggerActionCollection", col, Value::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
+	rdoe (dem, "TriggerCollection", col, Type::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
+	rdoe (dem, "TriggerActionCollection", col, Type::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
 
 	///
 	/// Transforms
 	///
 
-	XamlElementInfo *tf = register_ghost_element ("Transform", NULL, Value::TRANSFORM);
-	rdoe (dem, "RotateTransform", tf, Value::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
-	rdoe (dem, "ScaleTransform", tf, Value::SCALETRANSFORM, (create_item_func) scale_transform_new);
-	rdoe (dem, "SkewTransform", tf, Value::SKEWTRANSFORM, (create_item_func) skew_transform_new);
-	rdoe (dem, "TranslateTransform", tf, Value::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
-	rdoe (dem, "MatrixTransform", tf, Value::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
-	XamlElementInfo *tg = rdoe (dem, "TransformGroup", tf, Value::TRANSFORMGROUP, (create_item_func) transform_group_new);
+	XamlElementInfo *tf = register_ghost_element ("Transform", NULL, Type::TRANSFORM);
+	rdoe (dem, "RotateTransform", tf, Type::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
+	rdoe (dem, "ScaleTransform", tf, Type::SCALETRANSFORM, (create_item_func) scale_transform_new);
+	rdoe (dem, "SkewTransform", tf, Type::SKEWTRANSFORM, (create_item_func) skew_transform_new);
+	rdoe (dem, "TranslateTransform", tf, Type::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
+	rdoe (dem, "MatrixTransform", tf, Type::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
+	XamlElementInfo *tg = rdoe (dem, "TransformGroup", tf, Type::TRANSFORMGROUP, (create_item_func) transform_group_new);
 	tg->content_property = "Children";
 	
-	rdoe (dem, "TransformCollection", col, Value::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
+	rdoe (dem, "TransformCollection", col, Type::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
 
 
 	///
 	/// Brushes
 	///
 
-	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, Value::BRUSH);
-	rdoe (dem, "SolidColorBrush", brush, Value::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
+	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, Type::BRUSH);
+	rdoe (dem, "SolidColorBrush", brush, Type::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
 
-	XamlElementInfo *gb = register_ghost_element ("GradientBrush", brush, Value::GRADIENTBRUSH);
+	XamlElementInfo *gb = register_ghost_element ("GradientBrush", brush, Type::GRADIENTBRUSH);
 	gb->content_property = "GradientStops";
-	rdoe (dem, "LinearGradientBrush", gb, Value::LINEARGRADIENTBRUSH, (create_item_func) linear_gradient_brush_new);
-	rdoe (dem, "RadialGradientBrush", gb, Value::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
+	rdoe (dem, "LinearGradientBrush", gb, Type::LINEARGRADIENTBRUSH, (create_item_func) linear_gradient_brush_new);
+	rdoe (dem, "RadialGradientBrush", gb, Type::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
 
-	rdoe (dem, "GradientStopCollection", col, Value::GRADIENTSTOP_COLLECTION, (create_item_func) gradient_stop_collection_new);
+	rdoe (dem, "GradientStopCollection", col, Type::GRADIENTSTOP_COLLECTION, (create_item_func) gradient_stop_collection_new);
 
-	rdoe (dem, "GradientStop", NULL, Value::GRADIENTSTOP, (create_item_func) gradient_stop_new);
+	rdoe (dem, "GradientStop", NULL, Type::GRADIENTSTOP, (create_item_func) gradient_stop_new);
 
-	rdoe (dem, "TileBrush", brush, Value::TILEBRUSH, (create_item_func) tile_brush_new);
-	rdoe (dem, "ImageBrush", brush, Value::IMAGEBRUSH, (create_item_func) image_brush_new);
-	rdoe (dem, "VideoBrush", brush, Value::VIDEOBRUSH, (create_item_func) video_brush_new);
+	rdoe (dem, "TileBrush", brush, Type::TILEBRUSH, (create_item_func) tile_brush_new);
+	rdoe (dem, "ImageBrush", brush, Type::IMAGEBRUSH, (create_item_func) image_brush_new);
+	rdoe (dem, "VideoBrush", brush, Type::VIDEOBRUSH, (create_item_func) video_brush_new);
 
 	///
 	/// Media
 	///
 
-	XamlElementInfo *mb = register_ghost_element ("MediaBase", NULL, Value::MEDIABASE);
+	XamlElementInfo *mb = register_ghost_element ("MediaBase", NULL, Type::MEDIABASE);
 
-	rdoe (dem, "Image", mb, Value::IMAGE, (create_item_func) image_new);
-	rdoe (dem, "MediaElement", mb, Value::MEDIAELEMENT, (create_item_func) media_element_new);
-	rdoe (dem, "MediaAttribute", NULL, Value::MEDIAATTRIBUTE, (create_item_func) media_attribute_new);
+	rdoe (dem, "Image", mb, Type::IMAGE, (create_item_func) image_new);
+	rdoe (dem, "MediaElement", mb, Type::MEDIAELEMENT, (create_item_func) media_element_new);
+	rdoe (dem, "MediaAttribute", NULL, Type::MEDIAATTRIBUTE, (create_item_func) media_attribute_new);
 	
 	///
 	/// Text
 	///
 	
-	XamlElementInfo *in = register_ghost_element ("Inline", NULL, Value::INLINE);
-	XamlElementInfo *txtblk = rdoe (dem, "TextBlock", fw, Value::TEXTBLOCK, (create_item_func) text_block_new);
+	XamlElementInfo *in = register_ghost_element ("Inline", NULL, Type::INLINE);
+	XamlElementInfo *txtblk = rdoe (dem, "TextBlock", fw, Type::TEXTBLOCK, (create_item_func) text_block_new);
 	txtblk->content_property = "Inlines";
 
-	rdoe (dem, "Inlines", col, Value::INLINES, (create_item_func) inlines_new);
+	rdoe (dem, "Inlines", col, Type::INLINES, (create_item_func) inlines_new);
 
-	XamlElementInfo *run = rdoe (dem, "Run", in, Value::RUN, (create_item_func) run_new);
+	XamlElementInfo *run = rdoe (dem, "Run", in, Type::RUN, (create_item_func) run_new);
 	run->content_property = "Text";
-	rdoe (dem, "LineBreak", in, Value::LINEBREAK, (create_item_func) line_break_new);
-	rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
+	rdoe (dem, "LineBreak", in, Type::LINEBREAK, (create_item_func) line_break_new);
+	rdoe (dem, "Glyphs", fw, Type::GLYPHS, (create_item_func) glyphs_new);
 
 
 #undef rdoe

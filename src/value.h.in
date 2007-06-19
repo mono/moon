@@ -1,6 +1,8 @@
 #ifndef MOON_VALUE_H
 #define MOON_VALUE_H
 
+#include "type.h"
+
 /* ugly file containing the catchall value type we use.
    implementation still lives in runtime.cpp
 */
@@ -28,36 +30,11 @@ class Surface;
 
 struct Value {
 public:
-	enum Kind {
-// START_MANAGED_MAPPING
-		INVALID,
-		BOOL,
-		DOUBLE,
-		UINT64,
-		INT32,
-		STRING,
-		COLOR,
-		POINT,
-		RECT,
-		REPEATBEHAVIOR,
-		DURATION,
-		INT64,
-		DOUBLE_ARRAY,
-		POINT_ARRAY,
-		KEYTIME,
-		MATRIX,
-
-/*DO_KINDS*/
-
-		LASTTYPE,
-// END_MANAGED_MAPPING
-	};
-
 	void Init ();
 
 	Value ();
 	Value (const Value& v);
-	Value (Kind k);
+	Value (Type::Kind k);
 	Value (bool z);
 	Value (double d);
 	Value (guint64 i);
@@ -87,7 +64,7 @@ public:
 		if (k != v.k)
 			return false;
 
-		if (k == STRING) {
+		if (k == Type::STRING) {
 			return !strcmp (u.s, v.u.s);
 		}
 		else {
@@ -121,10 +98,10 @@ public:
 
 /*DO_AS*/
   
-  	Kind GetKind ();
+  	Type::Kind GetKind ();
   
   private:
-	Kind k;
+	Type::Kind k;
 	union {
 		double d;
 		guint64 ui64;

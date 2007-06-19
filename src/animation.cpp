@@ -113,7 +113,7 @@ void
 Storyboard::HookupAnimationsRecurse (Clock *clock)
 {
 	switch (clock->GetObjectType ()) {
-	case Value::ANIMATIONCLOCK: {
+	case Type::ANIMATIONCLOCK: {
 		AnimationClock *ac = (AnimationClock*)clock;
 
 		char *targetProperty = Storyboard::GetTargetProperty (ac->GetTimeline());
@@ -137,7 +137,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		ac->HookupStorage (o, prop);
 		break;
 	}
-	case Value::CLOCKGROUP: {
+	case Type::CLOCKGROUP: {
 		ClockGroup *cg = (ClockGroup*)clock;
 		for (GList *l = cg->child_clocks; l; l = l->next)
 			HookupAnimationsRecurse ((Clock*)l->data);
@@ -1244,46 +1244,46 @@ void
 animation_init (void)
 {
 	/* DoubleAnimation properties */
-	DoubleAnimation::ByProperty   = DependencyObject::RegisterNullable (Value::DOUBLEANIMATION, "By",   Value::DOUBLE);
-	DoubleAnimation::FromProperty = DependencyObject::RegisterNullable (Value::DOUBLEANIMATION, "From", Value::DOUBLE);
-	DoubleAnimation::ToProperty   = DependencyObject::RegisterNullable (Value::DOUBLEANIMATION, "To",   Value::DOUBLE);
+	DoubleAnimation::ByProperty   = DependencyObject::RegisterNullable (Type::DOUBLEANIMATION, "By",   Type::DOUBLE);
+	DoubleAnimation::FromProperty = DependencyObject::RegisterNullable (Type::DOUBLEANIMATION, "From", Type::DOUBLE);
+	DoubleAnimation::ToProperty   = DependencyObject::RegisterNullable (Type::DOUBLEANIMATION, "To",   Type::DOUBLE);
 
 
 	/* ColorAnimation properties */
-	ColorAnimation::ByProperty   = DependencyObject::RegisterNullable (Value::COLORANIMATION, "By",   Value::COLOR); // null defaults
-	ColorAnimation::FromProperty = DependencyObject::RegisterNullable (Value::COLORANIMATION, "From", Value::COLOR);
-	ColorAnimation::ToProperty   = DependencyObject::RegisterNullable (Value::COLORANIMATION, "To",   Value::COLOR);
+	ColorAnimation::ByProperty   = DependencyObject::RegisterNullable (Type::COLORANIMATION, "By",   Type::COLOR); // null defaults
+	ColorAnimation::FromProperty = DependencyObject::RegisterNullable (Type::COLORANIMATION, "From", Type::COLOR);
+	ColorAnimation::ToProperty   = DependencyObject::RegisterNullable (Type::COLORANIMATION, "To",   Type::COLOR);
 
 	/* PointAnimation properties */
-	PointAnimation::ByProperty   = DependencyObject::RegisterNullable (Value::POINTANIMATION, "By",   Value::POINT); // null defaults
-	PointAnimation::FromProperty = DependencyObject::RegisterNullable (Value::POINTANIMATION, "From", Value::POINT);
-	PointAnimation::ToProperty   = DependencyObject::RegisterNullable (Value::POINTANIMATION, "To",   Value::POINT);
+	PointAnimation::ByProperty   = DependencyObject::RegisterNullable (Type::POINTANIMATION, "By",   Type::POINT); // null defaults
+	PointAnimation::FromProperty = DependencyObject::RegisterNullable (Type::POINTANIMATION, "From", Type::POINT);
+	PointAnimation::ToProperty   = DependencyObject::RegisterNullable (Type::POINTANIMATION, "To",   Type::POINT);
 
 	/* Storyboard properties */
-	Storyboard::TargetPropertyProperty = DependencyObject::Register (Value::STORYBOARD, "TargetProperty", 
-									 Value::STRING);
-	Storyboard::TargetNameProperty     = DependencyObject::Register (Value::STORYBOARD, "TargetName", 
-									 Value::STRING);
+	Storyboard::TargetPropertyProperty = DependencyObject::Register (Type::STORYBOARD, "TargetProperty", 
+									 Type::STRING);
+	Storyboard::TargetNameProperty     = DependencyObject::Register (Type::STORYBOARD, "TargetName", 
+									 Type::STRING);
 
 	/* BeginStoryboard properties */
-	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Value::BEGINSTORYBOARD, "Storyboard",	Value::STORYBOARD);
+	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Type::BEGINSTORYBOARD, "Storyboard",	Type::STORYBOARD);
 
 	/* KeyFrame properties */
- 	KeyFrame::KeyTimeProperty = DependencyObject::Register (Value::KEYFRAME, "KeyTime", new Value(KeyTime::Uniform));
- 	DoubleKeyFrame::ValueProperty = DependencyObject::Register (Value::DOUBLEKEYFRAME, "Value", Value::DOUBLE);
- 	PointKeyFrame::ValueProperty = DependencyObject::Register (Value::POINTKEYFRAME, "Value", Value::POINT);
- 	ColorKeyFrame::ValueProperty = DependencyObject::Register (Value::COLORKEYFRAME, "Value", Value::COLOR);
+ 	KeyFrame::KeyTimeProperty = DependencyObject::Register (Type::KEYFRAME, "KeyTime", new Value(KeyTime::Uniform));
+ 	DoubleKeyFrame::ValueProperty = DependencyObject::Register (Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
+ 	PointKeyFrame::ValueProperty = DependencyObject::Register (Type::POINTKEYFRAME, "Value", Type::POINT);
+ 	ColorKeyFrame::ValueProperty = DependencyObject::Register (Type::COLORKEYFRAME, "Value", Type::COLOR);
 
 	/* Spline keyframe properties */
 	KeySpline *default_keyspline = new KeySpline (0, 0, 1, 0);
-	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Value::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (default_keyspline));
-// 	SplineColorKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINECOLORKEYFRAME, "KeySpline", Value::KEYSPLINE);
-// 	SplinePointKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINEPOINTKEYFRAME, "KeySpline", Value::KEYSPLINE);
+	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (default_keyspline));
+// 	SplineColorKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
+// 	SplinePointKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
 
 	/* KeyFrame animation properties */
-	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);
-	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);
-	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Value::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Value::KEYFRAME_COLLECTION);
+	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);
+	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);
+	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);
 }
 
 

@@ -79,7 +79,7 @@ static void
 button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
 {
 	Surface *t = (Surface *) data;
-	Value::Kind kind;
+	Type::Kind kind;
 
 	printf ("button_press_event\n");
 
@@ -190,7 +190,7 @@ main (int argc, char *argv [])
 	}
 
 	if (file){
-		Value::Kind kind;
+		Type::Kind kind;
 
 		gtk_window_set_title (GTK_WINDOW (w), file);
 		
@@ -199,7 +199,7 @@ main (int argc, char *argv [])
 			printf ("Was not able to load the file\n");
 			return 1;
 		}
-		if (kind != Value::CANVAS){
+		if (kind != Type::CANVAS){
 			printf ("Currently we only support Canvas toplevel elements\n");
 			return 1;
 		}

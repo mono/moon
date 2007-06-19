@@ -17,31 +17,32 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include "runtime.h"
+#include "type.h"
 
 void 
 types_init_manually (void)
 {
 	// Put types that does not inherit from DependencyObject here (manually)
 
-	//Type::RegisterType ("Invalid", Value::INVALID, Value::INVALID);
-	Type::RegisterType ("bool", Value::BOOL, true);
-	Type::RegisterType ("double", Value::DOUBLE, true);
-	Type::RegisterType ("uint64", Value::UINT64, true);
-	Type::RegisterType ("int", Value::INT32, true);
-	Type::RegisterType ("string", Value::STRING, false);
-	Type::RegisterType ("Color", Value::COLOR, true);
-	Type::RegisterType ("Point", Value::POINT, true);
-	Type::RegisterType ("Rect", Value::RECT, true);
-	Type::RegisterType ("RepeatBehaviour", Value::REPEATBEHAVIOR, true);
-	Type::RegisterType ("Duration", Value::DURATION, true);
-	Type::RegisterType ("int64", Value::INT64, true);
-	Type::RegisterType ("KeyTime", Value::KEYTIME, true);
-	Type::RegisterType ("double*", Value::DOUBLE_ARRAY, false);
-	Type::RegisterType ("Point*", Value::POINT_ARRAY, false);
-	Type::RegisterType ("Matrix", Value::MATRIX, true);
+	//Type::RegisterType ("Invalid", Type::INVALID, Value::INVALID);
+	Type::RegisterType ("bool", Type::BOOL, true);
+	Type::RegisterType ("double", Type::DOUBLE, true);
+	Type::RegisterType ("uint64", Type::UINT64, true);
+	Type::RegisterType ("int", Type::INT32, true);
+	Type::RegisterType ("string", Type::STRING, false);
+	Type::RegisterType ("Color", Type::COLOR, true);
+	Type::RegisterType ("Point", Type::POINT, true);
+	Type::RegisterType ("Rect", Type::RECT, true);
+	Type::RegisterType ("RepeatBehaviour", Type::REPEATBEHAVIOR, true);
+	Type::RegisterType ("Duration", Type::DURATION, true);
+	Type::RegisterType ("int64", Type::INT64, true);
+	Type::RegisterType ("KeyTime", Type::KEYTIME, true);
+	Type::RegisterType ("double*", Type::DOUBLE_ARRAY, false);
+	Type::RegisterType ("Point*", Type::POINT_ARRAY, false);
+	Type::RegisterType ("Matrix", Type::MATRIX, true);
 
 #if DEBUG
-	for (int i = 1; i < Value::LASTTYPE; i++) {
+	for (int i = 1; i < Type::LASTTYPE; i++) {
 		if (Type::types [i] != NULL)
 			continue;
 
