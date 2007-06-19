@@ -1,5 +1,5 @@
 <Canvas xmlns="http://schemas.microsoft.com/client/2007">
-<!-- default == Fill -->
+<!-- default == None -->
 	<Line Stroke="Red" StrokeThickness="10" X1="10" Y1="10" X2="10" Y2="50" />
 	<Line Stroke="Orange" StrokeThickness="10" X1="20" Y1="10" X2="20" Y2="50" />
 	<Line Stroke="Yellow" StrokeThickness="10" X1="30" Y1="10" X2="30" Y2="50" />
