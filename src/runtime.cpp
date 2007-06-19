@@ -1163,10 +1163,13 @@ surface_realloc (Surface *s)
 
 	s->cairo_buffer = cairo_create (s->cairo_buffer_surface);
 
-	if (s->cairo_xlib == NULL)
+	if (s->cairo_xlib == NULL) {
 		s->cairo = s->cairo_buffer;
-	else 
+	}
+	else {
 		create_xlib (s, s->drawing_area);
+		s->cairo = s->cairo_xlib;
+	}
 }
 
 void 
@@ -1200,6 +1203,7 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
+	printf ("unrealized_callback\n");
 	if (s->xlib_surface) {
 		cairo_surface_destroy(s->xlib_surface);
 		cairo_destroy (s->cairo_xlib);
