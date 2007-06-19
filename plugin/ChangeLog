@@ -1,3 +1,7 @@
+2007-06-19  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp: Eliminate remaining canvas field.
+
 2007-06-19  Miguel de Icaza  <miguel@novell.com>
 
 	* plugin.h: Eliminate the field canvas, as the managed code can
