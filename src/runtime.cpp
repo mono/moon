@@ -101,11 +101,28 @@ base_unref (Base *base)
 }
 
 void
+Collection::SharedAdd (DependencyObject *data)
+{
+	data->ref ();
+	data->SetParent (this);
+	data->Attach (NULL, this);
+}
+
+void
 Collection::Add (DependencyObject *data)
 {
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 
 	list = g_list_append (list, data);
+	SharedAdd (data);
+}
+
+void
+Collection::Insert (int index, DependencyObject *data)
+{
+	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
+
+	list = g_list_insert (list, data, index);
 	data->ref ();
 	data->SetParent (this);
 	data->Attach (NULL, this);
@@ -161,6 +178,12 @@ void
 collection_remove (Collection *collection, DependencyObject *data)
 {
 	collection->Remove (data);
+}
+
+void
+collection_insert (Collection *collection, int index, DependencyObject *data)
+{
+	collection->Insert (index, data);
 }
 
 Type::Kind
@@ -743,18 +766,33 @@ item_get_surface (UIElement *item)
 }
 
 void
-VisualCollection::Add (DependencyObject *data)
+VisualCollection::VisualUpdate (DependencyObject *data)
 {
 	Panel *panel = (Panel *) closure;
-	
 	UIElement *item = (UIElement *) data;
-
-	Collection::Add (item);
-
+	
 	item->parent = panel;
 	item->update_xform ();
 	item_update_bounds (panel);
 	item_invalidate (panel);
+}
+
+void
+VisualCollection::Add (DependencyObject *data)
+{
+	UIElement *item = (UIElement *) data;
+	Collection::Add (item);
+	VisualUpdate (data);
+}
+
+void
+VisualCollection::Insert (int index, DependencyObject *data)
+{
+	UIElement *item = (UIElement *) data;
+
+	Collection::Insert (index, item);
+
+	VisualUpdate (data);
 }
 
 void
@@ -2389,6 +2427,19 @@ TriggerCollection::Add (DependencyObject *data)
 	EventTrigger *trigger = (EventTrigger *) data;
 
 	Collection::Add (trigger);
+
+	trigger->SetTarget (fwe);
+}
+
+void
+TriggerCollection::Insert (int index, DependencyObject *data)
+{
+	FrameworkElement *fwe = (FrameworkElement *) closure;
+	
+	printf ("Adding %p\n", data);
+	EventTrigger *trigger = (EventTrigger *) data;
+
+	Collection::Insert (index, trigger);
 
 	trigger->SetTarget (fwe);
 }

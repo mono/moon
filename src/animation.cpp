@@ -680,6 +680,16 @@ KeyFrameCollection::Add (DependencyObject *data)
 }
 
 void
+KeyFrameCollection::Insert (int index, DependencyObject *data)
+{
+	KeyFrame *kf = (KeyFrame *) data;
+
+	Collection::Insert (index, kf);
+	
+	sorted_list = g_slist_insert_sorted (sorted_list, kf, (GCompareFunc)compare_keyframes);
+}
+
+void
 KeyFrameCollection::Remove (DependencyObject *data)
 {
 	KeyFrame *kf = (KeyFrame *) data;

@@ -415,6 +415,10 @@ class Collection : public DependencyObject {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
+	virtual void Insert (int index, DependencyObject *data);
+
+ private:
+	void SharedAdd (DependencyObject *data);
 };
 
 class CollectionIterator {
@@ -431,6 +435,8 @@ class CollectionIterator {
 
 void collection_add    (Collection *collection, DependencyObject *data);
 void collection_remove (Collection *collection, DependencyObject *data);
+void collection_insert (Collection *collection, int index, DependencyObject *data);
+
 Type::Kind collection_get_element_type (Collection *collection);
 CollectionIterator *collection_get_iterator (Collection *collection);
 
@@ -447,6 +453,10 @@ class VisualCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
+	virtual void Insert (int index, DependencyObject *data);
+
+ private:
+	void VisualUpdate (DependencyObject *data);
 };
 
 class TriggerCollection : public Collection {
@@ -457,6 +467,7 @@ class TriggerCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
+	virtual void Insert (int index, DependencyObject *data);
 };
 
 class TriggerActionCollection : public Collection {
