@@ -74,7 +74,6 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->rootobject = NULL;
 
 	this->container = NULL;
-	this->canvas = NULL;
 	this->surface = NULL;
 
 	// Property fields
@@ -214,8 +213,7 @@ PluginInstance::CreateWindow ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 	this->surface = surface_new (window->width, window->height);
-	this->canvas = new Canvas ();
-	surface_attach (this->surface, canvas);
+	surface_attach (this->surface, new Canvas ());
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
 	gtk_widget_show_all (this->container);
 	this->UpdateSource ();

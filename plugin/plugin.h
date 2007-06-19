@@ -66,7 +66,6 @@ class PluginInstance
 
 	// Gtk controls
 	GtkWidget *container;  // plugin container object
-	Canvas *canvas;        // plugin canvas object
  	Surface *surface;      // plugin surface object
 
 	// Property getters and setters

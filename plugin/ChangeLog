@@ -1,3 +1,9 @@
+2007-06-19  Miguel de Icaza  <miguel@novell.com>
+
+	* plugin.h: Eliminate the field canvas, as the managed code can
+	replace the toplevel and we wont be able to track it.   Access the
+	field directly from the surface instead.
+
 2007-06-18  Miguel de Icaza  <miguel@novell.com>
 
 	* moonlight.cs: Create appdomains to keep applications separate
