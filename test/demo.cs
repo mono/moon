@@ -142,6 +142,7 @@ class X {
 				next.Sensitive = false;
 			};
 		}
+
 		
 		Button quit = new Button ("Quit");
 		quit.Clicked += delegate { Application.Quit (); };
@@ -151,6 +152,11 @@ class X {
 		w.Add (vb);
 		w.ShowAll ();
 
+		// When the window resizes, the widget is resized
+		w.SizeAllocated += delegate (object o, SizeAllocatedArgs a) {
+			silver.SizeAllocate (new Gdk.Rectangle (0, 0, a.Allocation.Width, a.Allocation.Height));
+		};
+		
 		//
 		// Now, the SL API
 		//
