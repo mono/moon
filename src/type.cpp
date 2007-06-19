@@ -24,6 +24,119 @@
 #include "runtime.h"
 #include "type.h"
 
+/*
+	Type implementation
+*/
+
+Type* Type::types [];
+GHashTable* Type::types_by_name = NULL;
+
+Type::Type (char *name, Type::Kind type, Type::Kind parent)
+{
+	this->name = strdup (name);
+	this->type = type;
+	this->parent = parent;
+}
+
+Type::~Type()
+{
+	free (name);
+}
+
+Type *
+Type::RegisterType (char *name, Type::Kind type, bool value_type)
+{
+	return RegisterType (name, type, Type::INVALID, value_type);
+}
+
+void
+Type::free_type (gpointer type)
+{
+	delete (Type*)type;
+}
+
+Type *
+Type::RegisterType (char *name, Type::Kind type, Type::Kind parent)
+{
+	return RegisterType (name, type, parent, false);
+}
+
+Type *
+Type::RegisterType (char *name, Type::Kind type, Type::Kind parent, bool value_type)
+{
+	if (types == NULL) {
+		memset (&types, 0, Type::LASTTYPE * sizeof (Type*));
+	}
+	if (types_by_name == NULL) {
+		types_by_name = g_hash_table_new_full (g_str_hash, g_str_equal,
+						       NULL, free_type);
+	}
+
+	Type *result = new Type (name, type, parent);
+	result->value_type = value_type;
+
+	g_assert (types [type] == NULL);
+
+	types [type] = result;
+	g_hash_table_insert (types_by_name, result->name, result);
+
+	return result;
+}
+
+bool 
+Type::IsSubclassOf (Type::Kind super)
+{
+	if (type == super)
+		return true;
+
+	if (parent == super)
+		return true;
+
+	if (parent == Type::INVALID)
+		return false;
+
+	Type *parent_type = Find (parent);
+	
+	if (parent_type == NULL)
+		return false;
+	
+	return parent_type->IsSubclassOf (super);
+}
+
+Type *
+Type::Find (char *name)
+{
+	Type *result;
+
+	if (types_by_name == NULL)
+		return NULL;
+
+	result = (Type*) g_hash_table_lookup (types_by_name, name);
+
+	return result;
+}
+
+Type *
+Type::Find (Type::Kind type)
+{
+	return types [type];
+}
+
+void
+Type::Shutdown ()
+{
+	if (types_by_name) {
+		g_hash_table_destroy (types_by_name);
+		types_by_name = NULL;
+	}
+}
+
+bool
+type_get_value_type (Type::Kind type)
+{
+	return Type::Find (type)->value_type;
+}
+
 void 
 types_init_manually (void)
 {

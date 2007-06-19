@@ -1,4 +1,12 @@
 2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+	
+	* typegen.cs: Removed some dead code.
+	* value.cpp.in: Deleted, not needed anymore.
+	* runtime.cpp, value.cpp, type.cpp.in: Moved 
+	implementation of Value and Type into their own files.
+	* type.cpp: Updated.
+
+2007-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* type.h, type.h.in: Created, moved declaration of Type here.
 	* *.h|cpp|in: Move Value:Kind to Type::Kind and update all

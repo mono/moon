@@ -4,7 +4,6 @@
 #include "type.h"
 
 /* ugly file containing the catchall value type we use.
-   implementation still lives in runtime.cpp
 */
 
 struct Color;
