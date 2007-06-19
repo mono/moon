@@ -4,7 +4,7 @@
 	<title>Moonlight Clock Sample</title>
 </head>
 
-<body bgcolor="white">
+<body bgcolor="white" onload="StartClock()" onunload="StopClock()">
 
 	<h2 align="center">Moon Clock Sample</h2>
 
@@ -21,5 +21,48 @@
 			<param name="windowless" value="false" />
 		</object>
 	</p>
+
+    <script type="text/javascript">
+		var control = null;
+		var timerID = null;
+		var image = null;
+		var secondsHand = null;
+		var minuteHand = null;
+		var hourHand = null;
+
+		function StartClock () {
+			control = document.getElementById("moonControl");
+			image = control.content.findName("backImage");
+			secondsHand = control.content.findName("secondsHand");
+			minuteHand = control.content.findName("minuteHand");
+			hourHand = control.content.findName("hourHand");
+
+			timerID = self.setTimeout("UpdateClock()", 1);
+		}
+
+		function StopClock () {
+			if (timerID)
+				clearTimeout (timerID)
+		}
+
+		function UpdateClock () {
+			var date = new Date();
+
+			if (date.getSeconds() < 30)
+				image.source = "moon1.jpg";
+			else
+				image.source = "moon2.jpg";
+
+			secondsHand.angle = (date.getSeconds () * 6);
+			minuteHand.angle = (date.getMinutes () * 6);
+			hourHand.angle = (date.getHours () * 30);
+
+			self.setTimeout("UpdateClock()", 1000);
+		}
+
+		
+
+    </script>
+
 </body>
 </html>

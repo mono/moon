@@ -1,5 +1,10 @@
 2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
 
+	* clock.html: Add javascript hands logic.
+	* clock-ie.xaml: Add silverlight compatible clock xaml.
+
+2007-06-18  Everaldo Canuto  <ecanuto@novell.com>
+
 	* Makefile.am: Include moon1 and moon2 images in dist files.
 	* clock.html: Control aligned to center.
 	* clock.xaml: Get image as background.
