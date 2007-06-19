@@ -22,8 +22,12 @@
 #include <sys/time.h>
 //#endif
 
-//#define CLOCK_DEBUG 1
+#define CLOCK_DEBUG 0
 #define TIME_TICK 0
+
+#define DESIRED_FPS 20
+
+#define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 
 typedef struct {
   void (*func)(gpointer);
@@ -51,8 +55,9 @@ TimeManager* TimeManager::_instance = NULL;
 TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
-    current_timeout (60),  /* something suitably small */
-    tick_calls (NULL)
+    current_timeout (FPS_TO_DELAY (DESIRED_FPS)),  /* something suitably small */
+    tick_calls (NULL),
+    flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL))
 {
 }
 
@@ -110,31 +115,8 @@ TimeManager::tick_timeout (gpointer data)
 }
 
 void
-TimeManager::Tick ()
+TimeManager::InvokeTickCall ()
 {
-	current_global_time = get_now ();
-#if TIME_TICK
-	STARTTIMER (tick, "tick");
-#endif
-	//printf ("Tick() at %llu (diff = %llu)\n", current_global_time, current_global_time - old_time);
-
-	//printf ("TimeManager::Tick\n");
-
-	// loop over all toplevel clocks, updating their time (and
-	// triggering them to queue up their events) using the
-	// value of current_global_time...
-
-	for (GList *l = child_clocks; l; l = l->next)
-		((Clock*)l->data)->TimeUpdated (current_global_time);
-
-	
-	// ... then cause all clocks to raise the events they've queued up
-	RaiseEnqueuedEvents ();
-#if TIME_TICK
-	ENDTIMER (tick, "tick");
-#endif
-
-	/* only invoke 1 tick call for now */
 	if (tick_calls) {
 		TickCall *call = (TickCall*)tick_calls->data;
 
@@ -147,8 +129,38 @@ TimeManager::Tick ()
 		call->func (call->data);
 		g_free (call);
 	}
+}
 
-	Emit ("render");
+void
+TimeManager::Tick ()
+{
+	if (flags & TIME_MANAGER_UPDATE_CLOCKS) {
+		current_global_time = get_now ();
+#if TIME_TICK
+		STARTTIMER (tick, "tick");
+#endif
+		// loop over all toplevel clocks, updating their time (and
+		// triggering them to queue up their events) using the
+		// value of current_global_time...
+
+		for (GList *l = child_clocks; l; l = l->next)
+			((Clock*)l->data)->TimeUpdated (current_global_time);
+
+	
+		// ... then cause all clocks to raise the events they've queued up
+		RaiseEnqueuedEvents ();
+#if TIME_TICK
+		ENDTIMER (tick, "tick");
+#endif
+	}
+
+	if (flags & TIME_MANAGER_RENDER) {
+		Emit ("render");
+	}
+
+	if (flags & TIME_MANAGER_TICK_CALL) {
+		InvokeTickCall ();
+	}
 }
 
 void
@@ -413,7 +425,9 @@ Clock::SkipToFill ()
 void
 Clock::Stop ()
 {
+#if CLOCK_DEBUG
 	printf ("stopping clock %p after this tick\n", this);
+#endif
 	new_state = STOPPED;
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 }

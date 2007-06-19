@@ -160,6 +160,8 @@ class TimeManager : public EventObject {
 
 	void RaiseEnqueuedEvents ();
 
+	void InvokeTickCall ();
+
 	static TimeManager *_instance;
 
 	GList *child_clocks; // XXX should we just have a ClockGroup?
@@ -168,6 +170,14 @@ class TimeManager : public EventObject {
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
 	int current_timeout;
+
+	enum TimeManagerOp {
+		TIME_MANAGER_UPDATE_CLOCKS = 0x01,
+		TIME_MANAGER_RENDER = 0x02,
+		TIME_MANAGER_TICK_CALL = 0x04
+	};
+
+	TimeManagerOp flags;
 
 	GList *tick_calls;
 };

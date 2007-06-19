@@ -1,3 +1,10 @@
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: ifdef some debug spew, add a bitmask for
+	what the timemanager should do on a given tick, and add some
+	#defines/logic to calculate the gtk delay from the desired
+	framerate.  Set the desired framerate to 20fps.
+
 2007-06-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	Instead of attaching to Brush::ChangedProperty, connect to NULL.
