@@ -121,8 +121,8 @@ void
 PluginInstance::Finalize ()
 {
 	// Container must be destroyed or we have segfault when browser's closes.
-	if (this->container != NULL)
-		gtk_widget_destroy (this->container);
+	//if (this->container != NULL)
+	//gtk_widget_destroy (this->container);
 }
 
 NPError 
@@ -475,4 +475,16 @@ int32
 PluginInstance::getActualWidth ()
 {
 	return window->width;
+}
+
+int32
+plugin_instance_get_actual_width (PluginInstance *instance)
+{
+	return instance->getActualWidth ();
+}
+
+int32
+plugin_instance_get_actual_height (PluginInstance *instance)
+{
+	return instance->getActualHeight ();
 }

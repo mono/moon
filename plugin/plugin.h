@@ -120,4 +120,11 @@ class StreamNotify
 	void *pdata;
 };
 
+G_BEGIN_DECLS
+
+int32 plugin_instance_get_actual_width (PluginInstance *instance);
+int32 plugin_instance_get_actual_height (PluginInstance *instance);
+
+G_END_DECLS
+
 #endif /* MOON_PLUGIN */

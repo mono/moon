@@ -1,3 +1,9 @@
+2007-06-19  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (Collection): Add new Insert method, and update all
+	the callers that overwrote it.   We probably need to cleanup
+	everything that is doing virtual overrides and is a no-op 
+
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (clear_drawing_area): this method doesn't need to
