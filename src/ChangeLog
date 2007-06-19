@@ -1,3 +1,9 @@
+2007-06-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Set text context properties from char data.  This
+	allows you to do things like <Run>Hi I am some text</Run>.  As far
+	as I can tell, Run is the only element that allows this.
+
 2007-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Fix Line and Ellipse getxformorigin.

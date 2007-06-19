@@ -406,11 +406,26 @@ end_element_handler (void *data, const char *el)
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
 		if (info->char_data_buffer && info->char_data_buffer->len) {
-			/*
-			 * TODO: set content property
-			 - Make sure we aren't just white space
-			 info->current_element->set_content_prop (info->char_data_buffer->str);
-			*/
+
+			bool has_content = false;
+			for (int i = 0; i < info->char_data_buffer->len; i++) {
+				if (g_ascii_isspace (info->char_data_buffer->str [i]))
+					continue;
+				has_content = true;
+				break;
+			}
+
+			const char *cp = info->current_element->info->content_property;
+			if (has_content && cp) {
+				DependencyProperty *con = DependencyObject::GetDependencyProperty (info->current_element->info->dependency_type, cp);
+				// TODO: There might be other types that can be specified here,
+				// but string is all i have found so far.  If you can specify other
+				// types, i should pull the property setting out of set_attributes
+				// and use that code
+				if ((con->value_type & Value::VALUE_TYPEMASK) == Value::STRING) {
+					info->current_element->item->SetValue (con, Value (info->char_data_buffer->str));
+				}
+			}
 		
 			g_string_free (info->char_data_buffer, FALSE);
 			info->char_data_buffer = NULL;
@@ -1844,9 +1859,12 @@ xaml_init (void)
 
 	rdoe (dem, "Inlines", col, Value::INLINES, (create_item_func) inlines_new);
 
-	rdoe (dem, "Run", in, Value::RUN, (create_item_func) run_new);
+	XamlElementInfo *run = rdoe (dem, "Run", in, Value::RUN, (create_item_func) run_new);
+	run->content_property = "Text";
 	rdoe (dem, "LineBreak", in, Value::LINEBREAK, (create_item_func) line_break_new);
 	rdoe (dem, "Glyphs", fw, Value::GLYPHS, (create_item_func) glyphs_new);
+
+
 #undef rdoe
 	
 	default_namespace = new DefaultNamespace (dem);
