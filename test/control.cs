@@ -30,7 +30,7 @@ class ControlSample {
 		Window w = new Window ("Top");
 		w.DeleteEvent += new DeleteEventHandler (OnWindowDelete);
 
-		GtkSilver silver = new GtkSilver (400, 400);
+		GtkSilver silver = new GtkSilver (800, 600);
 		w.Add (silver);
 		w.ShowAll ();
 

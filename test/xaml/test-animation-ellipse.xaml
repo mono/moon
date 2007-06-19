@@ -1,0 +1,49 @@
+<Canvas
+	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="800" Height="600">
+
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard x:Name="Movement">
+					<!-- Rotate by 360 degrees in 15 seconds -->
+					<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse"
+						Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)"
+					>
+						<SplineDoubleKeyFrame KeyTime="00:00:15" Value="360"/>
+					</DoubleAnimationUsingKeyFrames>
+
+					<!-- After 4 seconds, shrink the width to 150px. After 8, it's still at 150px. At 15
+						 seconds, width is at it's original 300px-->
+					<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse"
+						Storyboard.TargetProperty="(FrameworkElement.Width)"
+					>
+						<SplineDoubleKeyFrame KeyTime="00:00:04" Value="150"/>
+						<SplineDoubleKeyFrame KeyTime="00:00:08" Value="150"/>
+						<SplineDoubleKeyFrame KeyTime="00:00:15" Value="300"/>
+					</DoubleAnimationUsingKeyFrames>
+
+					<!-- After 4 seconds height is 75px, after 8 seconds it's back at it's original 150px -->
+					<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse"
+						 Storyboard.TargetProperty="(FrameworkElement.Height)"
+					>
+						<SplineDoubleKeyFrame KeyTime="00:00:04" Value="75"/>
+						<SplineDoubleKeyFrame KeyTime="00:00:08" Value="150"/>
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+
+	<Ellipse x:Name="ellipse" Fill="Red" Canvas.Left="83" Canvas.Top="135" Width="300" Height="150" Stroke="blue" RenderTransformOrigin="0.5,0.5">
+		<Ellipse.RenderTransform>
+			<TransformGroup>
+				<ScaleTransform ScaleX="1" ScaleY="1"/>
+				<SkewTransform AngleX="0" AngleY="0"/>
+				<RotateTransform Angle="0"/>
+				<TranslateTransform X="0" Y="0"/>
+			</TransformGroup>
+		</Ellipse.RenderTransform>
+	</Ellipse>
+</Canvas>
