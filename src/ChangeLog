@@ -1,3 +1,7 @@
+2007-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Implement all the optional points on path markup.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Fix Stretch for Polyline and Polygon.

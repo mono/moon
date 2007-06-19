@@ -315,6 +315,7 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *m
 
 	g_warning ("PARSER ERROR, STOPPING PARSING:  %s  line: %d   char: %d\n", message,
 			p->error_args->line_number, p->error_args->char_position);
+
 	XML_StopParser (p->parser, FALSE);
 }
 
@@ -817,8 +818,9 @@ advance (char **data)
 {
 	char *d = *data;
 
-	while (!g_ascii_isdigit (*d) && *d != '.' && *d != '-')
+	while (*d && !g_ascii_isalnum (*d) && *d != '.' && *d != '-')
 		d++;
+
 	*data = d;
 }
 
@@ -841,7 +843,53 @@ make_relative (const Point *cp, Point *mv)
 	mv->y += cp->y;
 }
 
+bool
+more_points_available (char *data)
+{
+	char *d  = data;
+	while (*d) {
+		if (g_ascii_isalpha (*d))
+			return false;
+		if (g_ascii_isdigit (*d) || *d == '.' || *d == '-')
+			return true;
+		// otherwise we are whitespace
+		d++;
+	}
 
+	return false;
+}
+
+Point *
+get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, Point *last)
+{
+	int c = *count;
+
+	while (more_points_available (data)) {
+		Point n;
+
+		get_point (&n, &data);
+		advance (&data);
+
+		if (relative) make_relative (cp, &n);
+
+		pl = g_slist_append (pl, &n);
+		c++;
+	}
+
+	Point *t;
+	Point *pts = new Point [c];
+	for (int i = 0; i < c; i++) {
+		t = (Point *) pl->data;
+		pts [i].x = t->x;
+		pts [i].y = t->y;
+	}
+
+	last = t;
+	*count = c;
+
+	return pts;
+}
+		
 Geometry *
 geometry_from_str (char *str)
 {
@@ -858,6 +906,8 @@ geometry_from_str (char *str)
 	PathGeometry *pg = new PathGeometry ();
 	PathFigureCollection *pfc = new PathFigureCollection ();
 	pg->SetValue (PathGeometry::FiguresProperty, pfc);
+
+	geometry_set_fill_rule (pg, FillRuleEvenOdd);
 
 	while (*data) {
 		if (g_ascii_isspace (*data))
@@ -887,6 +937,21 @@ geometry_from_str (char *str)
 
 			cp.x = cp1.x;
 			cp.y = cp1.y;
+
+			advance (&data);
+			while (more_points_available (data)) {
+				get_point (&cp1, &data);
+				if (relative) make_relative (&cp, &cp1);
+
+				LineSegment* ls = new LineSegment ();
+				ls->SetValue (LineSegment::PointProperty, Value (cp1));
+
+				psc->Add (ls);
+				prev = ls;
+			}
+
+			cp.x = cp1.x;
+			cp.y = cp1.y;
 			break;
 
 		case 'l':
@@ -899,14 +964,38 @@ geometry_from_str (char *str)
 			if (relative)
 				make_relative (&cp, &cp1);
 
-			LineSegment* ls = new LineSegment ();
-			ls->SetValue (LineSegment::PointProperty, Value (cp1));
+			advance (&data);
+			if (more_points_available (data)) {
+				GSList *pl = NULL;
 
-			psc->Add (ls);
-			prev = ls;
+				pl = g_slist_append (pl, &cp1);
 
-			cp.x = cp1.x;
-			cp.y = cp1.y;
+				Point last;
+				int count = 1;
+				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
+				
+				PolyLineSegment *pls = new PolyLineSegment ();
+				pls->SetValue (PolyLineSegment::PointsProperty, Value (pts, count));
+
+				psc->Add (pls);
+				prev = pls;
+
+				cp.x = last.x;
+				cp.y = last.y;
+
+				g_slist_free (pl);
+			} else {
+				LineSegment* ls = new LineSegment ();
+				ls->SetValue (LineSegment::PointProperty, Value (cp1));
+
+				psc->Add (ls);
+				prev = ls;
+
+				cp.x = cp1.x;
+				cp.y = cp1.y;
+			}
+
+			
 			break;
 		}
 		case 'h':
@@ -966,16 +1055,42 @@ geometry_from_str (char *str)
 			get_point (&cp3, &data);
 			if (relative) make_relative (&cp, &cp3);
 
-			BezierSegment *bs = new BezierSegment ();
-			bs->SetValue (BezierSegment::Point1Property, Value (cp1));
-			bs->SetValue (BezierSegment::Point2Property, Value (cp2));
-			bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+			advance (&data);
+			if (more_points_available (data)) {
+				GSList *pl = NULL;
+				int count = 3;
 
-			psc->Add (bs);
-			prev = bs;
+				pl = g_slist_append (pl, &cp1);
+				pl = g_slist_append (pl, &cp2);
+				pl = g_slist_append (pl, &cp3);
 
-			cp.x = cp3.x;
-			cp.y = cp3.y;
+				
+				Point last;
+				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
+				PolyBezierSegment *pbs = new PolyBezierSegment ();
+				pbs->SetValue (PolyBezierSegment::PointsProperty, Value (pts, count));
+
+				psc->Add (pbs);
+				prev = pbs;
+
+				cp.x = last.x;
+				cp.y = last.y;
+
+				g_slist_free (pl);
+			} else {
+				BezierSegment *bs = new BezierSegment ();
+				bs->SetValue (BezierSegment::Point1Property, Value (cp1));
+				bs->SetValue (BezierSegment::Point2Property, Value (cp2));
+				bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+
+				psc->Add (bs);
+				prev = bs;
+
+				cp.x = cp3.x;
+				cp.y = cp3.y;
+			}
+
+			
 			break;
 		}
 		case 's':
@@ -1000,16 +1115,39 @@ geometry_from_str (char *str)
 				cp2 = cp;
 			if (relative) make_relative (&cp, &cp2);
 
-			BezierSegment *bs = new BezierSegment ();
-			bs->SetValue (BezierSegment::Point1Property, Value (cp1));
-			bs->SetValue (BezierSegment::Point2Property, Value (cp2));
-			bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+			advance (&data);
+			if (more_points_available (data)) {
+				GSList *pl = NULL;
+				int count = 3;
 
-			psc->Add (bs);
-			prev = bs;
+				pl = g_slist_append (pl, &cp1);
+				pl = g_slist_append (pl, &cp2);
+				pl = g_slist_append (pl, &cp3);
 
-			cp.x = cp3.x;
-			cp.y = cp3.y;
+				Point last;
+				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
+				PolyBezierSegment *pbs = new PolyBezierSegment ();
+				pbs->SetValue (PolyBezierSegment::PointsProperty, Value (pts, count));
+
+				psc->Add (pbs);
+				prev = pbs;
+
+				cp.x = last.x;
+				cp.y = last.y;
+
+				g_slist_free (pl);
+			} else {
+				BezierSegment *bs = new BezierSegment ();
+				bs->SetValue (BezierSegment::Point1Property, Value (cp1));
+				bs->SetValue (BezierSegment::Point2Property, Value (cp2));
+				bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+
+				psc->Add (bs);
+				prev = bs;
+
+				cp.x = cp3.x;
+				cp.y = cp3.y;
+			}
 			break;
 		}
 		case 'q':
@@ -1025,15 +1163,37 @@ geometry_from_str (char *str)
 			get_point (&cp2, &data);
 			if (relative) make_relative (&cp, &cp2);
 
-			QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
-			qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
+			advance (&data);
+			if (more_points_available (data)) {
+				GSList *pl = NULL;
+				int count = 2;
 
-			psc->Add (qbs);
-			prev = qbs;
+				pl = g_slist_append (pl, &cp1);
+				pl = g_slist_append (pl, &cp2);
 
-			cp.x = cp2.x;
-			cp.y = cp2.y;
+				Point last;
+				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
+				PolyQuadraticBezierSegment *pqbs = new PolyQuadraticBezierSegment ();
+				pqbs->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (pts, count));
+
+				psc->Add (pqbs);
+				prev = pqbs;
+
+				cp.x = last.x;
+				cp.y = last.y;
+
+				g_slist_free (pl);
+			} else {
+				QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
+				qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
+				qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
+
+				psc->Add (qbs);
+				prev = qbs;
+
+				cp.x = cp2.x;
+				cp.y = cp2.y;
+			}
 			break;
 		}
 		case 't':
@@ -1051,15 +1211,39 @@ geometry_from_str (char *str)
 				cp1.y = 2 * cp.y - p->y;
 			} else
 				cp1 = cp;
-			QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-			qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
-			qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
 
-			psc->Add (qbs);
-			prev = qbs;
+			advance (&data);
 
-			cp.x = cp2.x;
-			cp.y = cp2.y;
+			if (more_points_available (data)) {
+				GSList *pl = NULL;
+				int count = 2;
+
+				pl = g_slist_append (pl, &cp1);
+				pl = g_slist_append (pl, &cp2);
+
+				Point last;
+				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
+				PolyQuadraticBezierSegment *pqbs = new PolyQuadraticBezierSegment ();
+				pqbs->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (pts, count));
+
+				psc->Add (pqbs);
+				prev = pqbs;
+
+				cp.x = last.x;
+				cp.y = last.y;
+
+				g_slist_free (pl);
+			} else {
+				QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
+				qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
+				qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
+
+				psc->Add (qbs);
+				prev = qbs;
+
+				cp.x = cp2.x;
+				cp.y = cp2.y;
+			}
 			break;
 		}
 		case 'a':
@@ -1068,34 +1252,37 @@ geometry_from_str (char *str)
 		{
 			data++;
 
-			get_point (&cp1, &data);
-			//	if (relative) make_relative (&cp, &cp1);
+			while (more_points_available (data)) {
+				get_point (&cp1, &data);
 
-			advance (&data);
-			double angle = strtod (data, &data);
+				advance (&data);
+				double angle = strtod (data, &data);
 
-			advance (&data);
-			int is_large = strtol (data, &data, 10);
+				advance (&data);
+				int is_large = strtol (data, &data, 10);
 
-			advance (&data);
-			int sweep = strtol (data, &data, 10);
+				advance (&data);
+				int sweep = strtol (data, &data, 10);
 
-			advance (&data);
-			get_point (&cp2, &data);
-			if (relative) make_relative (&cp, &cp2);
+				advance (&data);
+				get_point (&cp2, &data);
+				if (relative) make_relative (&cp, &cp2);
 
-			ArcSegment *arc = new ArcSegment ();
-			arc->SetValue (ArcSegment::SizeProperty, cp1);
-			arc->SetValue (ArcSegment::RotationAngleProperty, angle);
-			arc->SetValue (ArcSegment::IsLargeArcProperty, (bool) is_large);
-			arc->SetValue (ArcSegment::SweepDirectionProperty, sweep);
-			arc->SetValue (ArcSegment::PointProperty, cp2);
+				ArcSegment *arc = new ArcSegment ();
+				arc->SetValue (ArcSegment::SizeProperty, cp1);
+				arc->SetValue (ArcSegment::RotationAngleProperty, angle);
+				arc->SetValue (ArcSegment::IsLargeArcProperty, (bool) is_large);
+				arc->SetValue (ArcSegment::SweepDirectionProperty, sweep);
+				arc->SetValue (ArcSegment::PointProperty, cp2);
 
-			psc->Add (arc);
-			prev = arc;
+				psc->Add (arc);
+				prev = arc;
 					
-			cp.x = cp2.x;
-			cp.y = cp2.y;
+				cp.x = cp2.x;
+				cp.y = cp2.y;
+
+				advance (&data);
+			}
 			break;
 		}
 		case 'z':
