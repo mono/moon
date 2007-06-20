@@ -1,0 +1,51 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Rectangle Fill="Red" Stroke="Black" StrokeThickness="2" Canvas.Left="10" Canvas.Top="10" Width="500" Height="100" x:Name="BoxedBox">
+
+    <Rectangle.Triggers>
+      <EventTrigger RoutedEvent="Rectangle.Loaded">
+        <BeginStoryboard>
+          <Storyboard x:Name="animation">
+            <DoubleAnimation
+	      BeginTime="0:0:0"
+              Storyboard.TargetName="BoxedBox"
+              Storyboard.TargetProperty="Width"
+              From="100" To="300" Duration="0:0:4"
+	      RepeatBehavior="1" AutoReverse="false" />
+
+	    <DoubleAnimation
+              BeginTime="0:0:4"
+              Storyboard.TargetName="BoxedBox"
+              Storyboard.TargetProperty="Height"
+              From="100" To="300" Duration="0:0:4"
+	      RepeatBehavior="1" AutoReverse="false" />
+
+            <DoubleAnimation
+	      BeginTime="0:0:8"
+              Storyboard.TargetName="BoxedBox"
+              Storyboard.TargetProperty="Width"
+              From="300" To="100" Duration="0:0:4"
+	      RepeatBehavior="1" AutoReverse="false" />
+
+	    <DoubleAnimation
+              BeginTime="0:0:12"
+              Storyboard.TargetName="BoxedBox"
+              Storyboard.TargetProperty="Height"
+              From="300" To="100" Duration="0:0:4"
+	      RepeatBehavior="1" AutoReverse="false" />
+	      
+	    <DoubleAnimation
+              BeginTime="0:0:16"
+              Storyboard.TargetName="BoxedBox"
+              Storyboard.TargetProperty="Opacity"
+              From="1" To="0" Duration="0:0:2"
+	      RepeatBehavior="1" AutoReverse="true" />
+
+          </Storyboard>
+        </BeginStoryboard>
+      </EventTrigger>
+    </Rectangle.Triggers>
+
+  </Rectangle>
+</Canvas>
