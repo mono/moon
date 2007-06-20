@@ -264,7 +264,9 @@ types_init (void)
 	Type::RegisterType ("Shape", Type::SHAPE, Type::FRAMEWORKELEMENT);
 	Type::RegisterType ("SkewTransform", Type::SKEWTRANSFORM, Type::TRANSFORM);
 	Type::RegisterType ("SolidColorBrush", Type::SOLIDCOLORBRUSH, Type::BRUSH);
+	Type::RegisterType ("SplineColorKeyFrame", Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME);
 	Type::RegisterType ("SplineDoubleKeyFrame", Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME);
+	Type::RegisterType ("SplinePointKeyFrame", Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME);
 	Type::RegisterType ("Storyboard", Type::STORYBOARD, Type::PARALLELTIMELINE);
 	Type::RegisterType ("StrokeCollection", Type::STROKE_COLLECTION, Type::COLLECTION);
 	Type::RegisterType ("StylusPointCollection", Type::STYLUSPOINT_COLLECTION, Type::COLLECTION);

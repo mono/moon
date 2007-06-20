@@ -369,7 +369,7 @@ media_element_get_buffering_time (MediaElement *media)
 void
 media_element_set_buffering_time (MediaElement *media, TimeSpan value)
 {
-	media->SetValue (MediaElement::BufferingTimeProperty, Value (value));
+	media->SetValue (MediaElement::BufferingTimeProperty, Value (value, Type::TIMESPAN));
 }
 
 bool
@@ -481,7 +481,7 @@ media_element_get_position (MediaElement *media)
 void
 media_element_set_position (MediaElement *media, TimeSpan value)
 {
-	media->SetValue (MediaElement::PositionProperty, Value (value));
+	media->SetValue (MediaElement::PositionProperty, Value (value, Type::TIMESPAN));
 }
 
 double

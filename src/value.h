@@ -107,7 +107,9 @@ class ScaleTransform;
 class Shape;
 class SkewTransform;
 class SolidColorBrush;
+class SplineColorKeyFrame;
 class SplineDoubleKeyFrame;
+class SplinePointKeyFrame;
 class Storyboard;
 class StrokeCollection;
 class StylusPointCollection;
@@ -287,7 +289,9 @@ public:
 	Shape*                         AsShape () { checked_get_subclass (Type::SHAPE, Shape) }
 	SkewTransform*                 AsSkewTransform () { checked_get_subclass (Type::SKEWTRANSFORM, SkewTransform) }
 	SolidColorBrush*               AsSolidColorBrush () { checked_get_subclass (Type::SOLIDCOLORBRUSH, SolidColorBrush) }
+	SplineColorKeyFrame*           AsSplineColorKeyFrame () { checked_get_subclass (Type::SPLINECOLORKEYFRAME, SplineColorKeyFrame) }
 	SplineDoubleKeyFrame*          AsSplineDoubleKeyFrame () { checked_get_subclass (Type::SPLINEDOUBLEKEYFRAME, SplineDoubleKeyFrame) }
+	SplinePointKeyFrame*           AsSplinePointKeyFrame () { checked_get_subclass (Type::SPLINEPOINTKEYFRAME, SplinePointKeyFrame) }
 	Storyboard*                    AsStoryboard () { checked_get_subclass (Type::STORYBOARD, Storyboard) }
 	StrokeCollection*              AsStrokeCollection () { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }
 	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }

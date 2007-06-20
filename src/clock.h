@@ -6,6 +6,7 @@
 G_BEGIN_DECLS
 
 // misc types
+typedef gint32 FillBehavior;
 enum {
 	FillBehaviorHoldEnd,
 	FillBehaviorStop
@@ -212,6 +213,7 @@ class Clock : public DependencyObject {
 	Timeline* GetTimeline ()        { return timeline; }
 	Duration  GetNaturalDuration () { return natural_duration; }
 	bool      GetIsPaused ()        { return is_paused; }
+	bool      GetHasStarted ()      { return has_started; }
 
 	TimeSpan GetBeginTime ();
 
@@ -272,6 +274,7 @@ class Clock : public DependencyObject {
 	TimeSpan last_parent_time;
 
 	bool is_paused;
+	bool has_started;
 	Timeline *timeline;
 	int queued_events;
 
@@ -292,6 +295,8 @@ class ClockGroup : public Clock {
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
+
+	virtual void Begin ();
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
@@ -333,6 +338,8 @@ class Timeline : public DependencyObject {
 
 	Duration GetNaturalDuration (Clock *clock);
 	virtual Duration GetNaturalDurationCore (Clock *clock);
+
+	FillBehavior GetFillBehavior ();
 
 	virtual Clock* AllocateClock () { return new Clock (this); }
 };

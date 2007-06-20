@@ -398,6 +398,36 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 SplineDoubleKeyFrame *spline_double_key_frame_new (void);
 
 
+class SplineColorKeyFrame : public ColorKeyFrame {
+ public:
+	SplineColorKeyFrame () { }
+	virtual Type::Kind GetObjectType () { return Type::SPLINECOLORKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+	KeySpline* GetKeySpline ();
+
+	static DependencyProperty *KeySplineProperty;
+};
+
+SplineColorKeyFrame *spline_color_key_frame_new (void);
+
+
+class SplinePointKeyFrame : public PointKeyFrame {
+ public:
+	SplinePointKeyFrame () { }
+	virtual Type::Kind GetObjectType () { return Type::SPLINEPOINTKEYFRAME; };
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+	KeySpline* GetKeySpline ();
+
+	static DependencyProperty *KeySplineProperty;
+};
+
+SplinePointKeyFrame *spline_point_key_frame_new (void);
+
+
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
 	DoubleAnimationUsingKeyFrames ();

@@ -174,6 +174,17 @@ ScaleTransform::GetTransform (cairo_matrix_t *value)
 	double sx = scale_transform_get_scale_x (this);
 	double sy = scale_transform_get_scale_y (this);
 
+	// XXX you don't want to know.  don't make these 0.00001, or
+	// else cairo spits out errors about non-invertable matrices
+	// (or worse, crashes)
+	//
+	// the 0.0 scales are caused in at least one instance by us
+	// being too aggressive at starting animations at time=0 when
+	// they're supposed to (unset, or 0:0:0 BeginTime)
+	//
+	if (sx == 0.0) sx = 0.00002;
+	if (sy == 0.0) sy = 0.00002;
+
 	double cx = scale_transform_get_center_x (this);
 	double cy = scale_transform_get_center_y (this);
 

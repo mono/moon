@@ -157,7 +157,7 @@ void
 Storyboard::Begin ()
 {
 	// we shouldn't begin again, I'd imagine..
-	if (root_clock && (root_clock->GetClockState() == Clock::Stopped) == 0)
+	if (root_clock && (root_clock->GetClockState() != Clock::Stopped))
 		return;
 
 	/* destroy the clock hierarchy and recreate it to restart.
@@ -950,6 +950,69 @@ spline_double_key_frame_new (void)
 	return new SplineDoubleKeyFrame ();
 }
 
+
+DependencyProperty* SplineColorKeyFrame::KeySplineProperty;
+
+KeySpline*
+SplineColorKeyFrame::GetKeySpline ()
+{
+	return this->DependencyObject::GetValue (SplineColorKeyFrame::KeySplineProperty)->AsKeySpline();
+}
+
+Value*
+SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
+
+	Color *to = GetValue();
+	/* XXX GetValue can return NULL */
+
+	Color start, end;
+
+	start = baseValue->AsColor();
+	end = *to;
+
+	return new Value (LERP (start, end, splineProgress));
+}
+
+SplineColorKeyFrame *
+spline_color_key_frame_new (void)
+{
+	return new SplineColorKeyFrame ();
+}
+
+
+DependencyProperty* SplinePointKeyFrame::KeySplineProperty;
+
+KeySpline*
+SplinePointKeyFrame::GetKeySpline ()
+{
+	return this->DependencyObject::GetValue (SplinePointKeyFrame::KeySplineProperty)->AsKeySpline();
+}
+
+Value*
+SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
+
+	Point *to = GetValue();
+	/* XXX GetValue can return NULL */
+
+	Point start, end;
+
+	start = baseValue->AsPoint();
+	end = *to;
+
+	return new Value (LERP (start, end, splineProgress));
+}
+
+SplinePointKeyFrame *
+spline_point_key_frame_new (void)
+{
+	return new SplinePointKeyFrame ();
+}
+
+
 DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
@@ -1006,7 +1069,6 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	DoubleKeyFrame** keyframep = &previous_keyframe;
 	Value *baseValue;
 
-
 	current_keyframe = (DoubleKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
 	if (current_keyframe == NULL)
 		return NULL; /* XXX */
@@ -1026,11 +1088,20 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 		key_start_time = previous_keyframe->GetKeyTime()->GetTimeSpan ();
 	}
 
-	TimeSpan key_duration = key_end_time - key_start_time;
-	double progress = (double)(current_time - key_start_time) / key_duration;
+	double progress;
+
+	if (current_time == key_end_time) {
+		progress = 1.0;
+	}
+	else {
+		TimeSpan key_duration = key_end_time - key_start_time;
+		if (key_duration == 0)
+			progress = 1.0;
+		else
+			progress = (double)(current_time - key_start_time) / key_duration;
+	}
 
 	/* get the current value out of that segment */
-	
 	return current_keyframe->InterpolateValue (baseValue, progress);
 }
 
@@ -1138,18 +1209,21 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 		key_start_time = previous_keyframe->GetKeyTime()->GetTimeSpan ();
 	}
 
-	TimeSpan key_duration = key_end_time - key_start_time;
-	double progress = (double)(current_time - key_start_time) / key_duration;
+	double progress;
+
+	if (current_time == key_end_time) {
+		progress = 1.0;
+	}
+	else {
+		TimeSpan key_duration = key_end_time - key_start_time;
+		if (key_duration == 0)
+			progress = 1.0;
+		else
+			progress = (double)(current_time - key_start_time) / key_duration;
+	}
 
 	/* get the current value out of that segment */
-
-	if (!current_keyframe)
-	  printf ("time of %lld resulted in no keyframes\n");
-
-	Value *v = current_keyframe->InterpolateValue (baseValue, progress);
-	Color *c = v->AsColor();
-	//printf ("-> (%f, %f, %f, %f)\n", c->r, c->g, c->b, c->a);
-	return v;
+	return current_keyframe->InterpolateValue (baseValue, progress);
 }
 
 Duration
@@ -1258,11 +1332,20 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 		key_start_time = previous_keyframe->GetKeyTime()->GetTimeSpan ();
 	}
 
-	TimeSpan key_duration = key_end_time - key_start_time;
-	double progress = (double)(current_time - key_start_time) / key_duration;
+	double progress;
+
+	if (current_time == key_end_time) {
+		progress = 1.0;
+	}
+	else {
+		TimeSpan key_duration = key_end_time - key_start_time;
+		if (key_duration == 0)
+			progress = 1.0;
+		else
+			progress = (double)(current_time - key_start_time) / key_duration;
+	}
 
 	/* get the current value out of that segment */
-	
 	return current_keyframe->InterpolateValue (baseValue, progress);
 }
 
@@ -1342,8 +1425,8 @@ animation_init (void)
 	/* Spline keyframe properties */
 	KeySpline *default_keyspline = new KeySpline (0, 0, 1, 0);
 	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (default_keyspline));
-// 	SplineColorKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
-// 	SplinePointKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
+ 	SplineColorKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
+ 	SplinePointKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
 
 	/* KeyFrame animation properties */
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);

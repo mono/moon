@@ -1219,7 +1219,6 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	printf ("unrealized_callback\n");
 	if (s->xlib_surface) {
 		cairo_surface_destroy(s->xlib_surface);
 		cairo_destroy (s->cairo_xlib);
@@ -1469,18 +1468,9 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		//cairo_set_line_width (s->cairo, 10);
 		//cairo_rectangle (s->cairo, item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
 		//cairo_stroke (s->cairo);
-
-		if (!(item->flags & UIElement::IS_LOADED)) {
-			item->flags |= UIElement::IS_LOADED;
-			item->events->Emit ("Loaded");
-		}
 	}
 //	printf ("RENDER: LEAVE\n");
 
-	if (!(flags & UIElement::IS_LOADED)) {
-		flags |= UIElement::IS_LOADED;
-		events->Emit ("Loaded");
-	}
 	level -= 4;
 	//draw_grid (s->cairo);
 
@@ -1642,6 +1632,28 @@ surface_connect_events (Surface *s)
 	}
 }
 
+static void
+emit_loaded_events (UIElement *ui)
+{
+	if ((ui->flags & UIElement::IS_CANVAS)) {
+		Canvas *c = (Canvas*)ui;
+		VisualCollection *children = c->GetChildren ();
+		Collection::Node *cn;
+
+		cn = (Collection::Node *) children->list->First ();
+		for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+			UIElement *item = (UIElement *) cn->obj;
+
+			emit_loaded_events (item);
+		}
+	}
+
+	if (!(ui->flags & UIElement::IS_LOADED)) {
+		ui->flags |= UIElement::IS_LOADED;
+		ui->events->Emit ("Loaded");
+	}
+}
+
 void
 surface_attach (Surface *surface, UIElement *toplevel)
 {
@@ -1667,6 +1679,8 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	// First time we connect the surface, start responding to events
 	if (first)
 		surface_connect_events (surface);
+
+	emit_loaded_events (canvas);
 
 	bool change_size = false;
 	//
@@ -2834,6 +2848,14 @@ runtime_init (void)
 	if (inited)
 		return;
 	
+	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
+		printf ("*** WARNING ***\n");
+		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
+		printf ("*** Moon was configured to use Cairo version %d.%d.%d, but\n", CAIRO_VERSION_MAJOR, CAIRO_VERSION_MINOR, CAIRO_VERSION_MICRO);
+		printf ("*** is being run against version %s.\n", cairo_version_string ());
+		printf ("*** Proceed at your own risk\n");
+	}
+
 	inited = true;
 
 	g_type_init ();

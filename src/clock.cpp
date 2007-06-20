@@ -162,7 +162,7 @@ TimeManager::Tick ()
 			if (c->GetClockState() != Clock::Stopped) {
 				c->Tick ();
 			}
-			else if ((c->GetClockState() == Clock::Stopped) && (c->GetBeginTime() <= cur)) {
+			else if ((c->GetClockState() == Clock::Stopped) && (!c->GetHasStarted() && c->GetBeginTime() <= cur)) {
 				c->Begin ();
 			}
 		}
@@ -234,6 +234,7 @@ Clock::Clock (Timeline *tl)
   : timeline (tl),
     parent_clock (NULL),
     is_paused (false),
+    has_started (false),
     is_reversed (false),
     current_state (Clock::Stopped), new_state (Clock::Stopped),
     current_speed (1.0), new_speed (1.0),
@@ -335,10 +336,7 @@ Clock::Tick ()
 					printf (" + clock %p should STOP\n", this, remaining_iterations);
 #endif
 					new_time = duration_timespan;
-// 					if (parent_clock != NULL && parent_clock->GetClockState () == Clock::Active)
-						SkipToFill ();
-// 					else
-// 						Stop ();
+					Stop ();
 				}
 				else {
 					new_time -= duration_timespan;
@@ -354,10 +352,7 @@ Clock::Tick ()
 
 			if (remaining_iterations == 0) {
 				new_time = 0;
-// 				if (parent_clock != NULL && parent_clock->GetClockState () == Clock::Active)
- 					SkipToFill ();
-// 				else
-// 					Stop ();
+				Stop ();
 			}
 		}
 
@@ -379,6 +374,8 @@ Clock::RaiseAccumulatedEvents ()
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
 		current_state = new_state;
+		if (current_state == Clock::Active)
+			has_started = true;
 		events->Emit ("CurrentStateInvalidated");
 	}
 
@@ -417,12 +414,12 @@ Clock::Begin ()
 	/* we're starting.  initialize our last_parent_time and current_time fields */
 	last_parent_time = parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
 
-	new_time = last_parent_time - GetBeginTime ();
+	current_time = new_time = last_parent_time - GetBeginTime ();
 
 	if (natural_duration.HasTimeSpan ())
-		new_progress = (double)current_time / natural_duration.GetTimeSpan();
+		current_progress = new_progress = (double)current_time / natural_duration.GetTimeSpan();
 	else
-		new_progress = 0.0;
+		current_progress = new_progress = 0.0;
 
 	new_state = Clock::Active;
 	QueueEvent (CURRENT_STATE_INVALIDATED | CURRENT_TIME_INVALIDATED);
@@ -515,6 +512,22 @@ ClockGroup::RemoveChild (Clock *clock)
 }
 
 void
+ClockGroup::Begin ()
+{
+	Clock::Begin ();
+
+	if (current_state == Clock::Stopped && current_state == Clock::Active) {
+		/* start any clocks that need starting immediately */
+		for (GList *l = child_clocks; l; l = l->next) {
+			Clock *c = (Clock*)l->data;
+			if ((c->GetClockState() == Clock::Stopped) && (!c->GetHasStarted() && c->GetBeginTime() <= current_time)) {
+				c->Begin ();
+			}
+		}
+	}
+}
+
+void
 ClockGroup::Tick ()
 {
 	/* recompute our current_time */
@@ -531,7 +544,7 @@ ClockGroup::Tick ()
 		if (c->GetClockState() != Clock::Stopped) {
 			c->Tick ();
 		}
-		else if ((c->GetClockState() == Clock::Stopped) && (c->GetBeginTime () <= current_time)) {
+		else if ((c->GetClockState() == Clock::Stopped) && (!c->GetHasStarted() && c->GetBeginTime () <= current_time)) {
 			c->Begin ();
 		}
 	}
@@ -543,19 +556,13 @@ ClockGroup::Tick ()
 	   looping over them at the end of each Tick call.
 	*/
 	if (*duration == Duration::Automatic) {
-		bool stop = true;
 		for (GList *l = child_clocks; l; l = l->next) {
 			Clock *c = (Clock*)l->data;
-			if (c->GetClockState() == Clock::Active) {
-				stop = false;
-				break;
-			}
+			if (!c->GetHasStarted () || c->GetClockState() == Clock::Active)
+				return;
 		}
 
-		if (stop) {
-			// we need to put this in, but with it the TimeManager restarts the storyboard
-			// Stop ();
-		}
+		Stop ();
 	}
 }
 
@@ -564,11 +571,9 @@ ClockGroup::RaiseAccumulatedEvents ()
 {
 	bool need_completed = false;
 	
-	/* this needs more work.  check 
-	   http://msdn2.microsoft.com/en-us/library/system.windows.media.animation.clock.completed.aspx
-	*/
-	if (new_state == Clock::Filling && current_state != Clock::Filling)
+	if (new_state == Clock::Stopped && current_state != Clock::Stopped) {
 		need_completed = true;
+	}
 
 	/* raise our events */
 	this->Clock::RaiseAccumulatedEvents ();
@@ -643,6 +648,12 @@ Duration*
 Timeline::GetDuration ()
 {
 	return GetValue (Timeline::DurationProperty)->AsDuration();
+}
+
+FillBehavior
+Timeline::GetFillBehavior ()
+{
+	return (FillBehavior)GetValue (Timeline::FillBehaviorProperty)->AsInt32();
 }
 
 Duration
