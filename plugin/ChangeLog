@@ -1,5 +1,11 @@
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-glue.cpp (NPP_Initialize): if we're going to Shutdown()
+	the TimeManager in NPP_Shutdown, we need to restart it in
+	NP_Initialize.
+
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp: check in the variant_to_value/value_to_variant
 	methods, and make GetProperty/SetProperty use them.
 

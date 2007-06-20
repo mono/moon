@@ -225,6 +225,7 @@ NPP_Initialize (void)
 	}
 
 	runtime_init ();
+	TimeManager::Instance()->Start();
 
 	return NPERR_NO_ERROR;
 }
