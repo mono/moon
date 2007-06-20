@@ -1,3 +1,7 @@
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight.cs: Tie into events.
+
 2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin-class.cpp: Update DependencyObject setter to work with strings

@@ -40,6 +40,7 @@ namespace Moonlight {
 
 	internal delegate IntPtr CreateElementCallback (string xmlns, string name);
 	internal delegate void SetAttributeCallback (IntPtr target, string name, string value);
+	internal delegate void HookupEventCallback (IntPtr target, string name, string value);
 	
 	public class Hosting {
 
@@ -48,11 +49,11 @@ namespace Moonlight {
 
 		[DllImport ("moon")]
 		internal extern static IntPtr xaml_create_from_file (string file, bool create_namescope,
-				CreateElementCallback ce, SetAttributeCallback sa, ref int kind_type);
+				CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue, ref int kind_type);
 
 		[DllImport ("moon")]
 		internal extern static IntPtr xaml_create_from_str (string file, bool create_namescope,
-				CreateElementCallback ce, SetAttributeCallback sa, ref int kind_type);
+				CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue, ref int kind_type);
 
 		[DllImport("moon",EntryPoint="dependency_object_get_name")]
 		internal extern static IntPtr _dependency_object_get_name (IntPtr obj);
@@ -126,6 +127,7 @@ namespace Moonlight {
 
 		CreateElementCallback create_element_callback;
 		SetAttributeCallback set_attribute_callback;
+		HookupEventCallback hookup_event_callback;
 		
 		Hashtable h = new Hashtable ();
 
@@ -148,7 +150,7 @@ namespace Moonlight {
 
 			create_element_callback = new CreateElementCallback (create_element);
 			set_attribute_callback = new SetAttributeCallback (set_attribute);
-
+			hookup_event_callback = new HookupEventCallback (hookup_event);
 			
 			Type t = typeof (System.Windows.Interop.BrowserHost);
 			MethodInfo m = t.GetMethod ("SetPluginHandle", BindingFlags.Static | BindingFlags.NonPublic);
@@ -185,9 +187,9 @@ namespace Moonlight {
 			
 			IntPtr element;
 			if (filename != String.Empty)
-				element = Hosting.xaml_create_from_file (filename, true, create_element_callback, set_attribute_callback, ref kind);
+				element = Hosting.xaml_create_from_file (filename, true, create_element_callback, set_attribute_callback, hookup_event_callback, ref kind);
 			else
-				element = Hosting.xaml_create_from_str (contents, true, create_element_callback, set_attribute_callback, ref kind);
+				element = Hosting.xaml_create_from_str (contents, true, create_element_callback, set_attribute_callback, hookup_event_callback, ref kind);
 
 			// HERE:
 			//     Insert code to check the output of from_file
@@ -303,6 +305,32 @@ namespace Moonlight {
 			}
 
 			pd.SetValue (target, pd.Converter.ConvertFrom (value));
+		}
+
+		private void hookup_event (IntPtr target_ptr, string name, string value)
+		{
+			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
+					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] { typeof (IntPtr) }, null);
+			DependencyObject target = (DependencyObject) m.Invoke (null, new object [] { target_ptr });
+
+			if (target == null) {
+				Console.WriteLine ("hookup event unable to create target object from: 0x{0}", target_ptr);
+				return;
+			}
+
+			EventInfo src = target.GetType ().GetEvent (name);
+			if (src == null) {
+				Console.WriteLine ("hookup event unable to find event to hook to: '{0}'.", name);
+				return;
+			}
+
+			Delegate d = Delegate.CreateDelegate (src.EventHandlerType, target, value);
+			if (d == null) {
+				Console.WriteLine ("hookup event unable to create delegate.");
+				return;
+			}
+
+			src.AddEventHandler (target, d);
 		}
 
 		internal static void ParseXmlns (string xmlns, out string type_name, out string ns, out string asm)
