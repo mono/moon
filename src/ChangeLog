@@ -1,6 +1,19 @@
+2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* *.cpp: Updated to use the new List type.
+
+	* runtime.cpp|h (Collection): Modified to use List instead og
+	GList which made some code simpler, we get to take advantage of
+	destructors, woo!
+
+	* demo.cpp (main): Removed surface_destroy() and
+	runtime_shutdown() out of the delete_event callback (gtk timeouts
+	could still fire after the gtk_main_quit() call it seems).
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* runtime.cpp: Enforce UIElement::ClipProperty when rendering Canvas
+	* runtime.cpp: Enforce UIElement::ClipProperty when rendering
+	Canvas
 
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 

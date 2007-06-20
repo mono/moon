@@ -107,10 +107,13 @@ void
 GeometryGroup::Draw (Surface *s)
 {
 	GeometryCollection *children = geometry_group_get_children (this);
+	Collection::Node *node;
+	
 	Geometry::Draw (s);
-
-	for (GList *g = children->list; g != NULL; g = g->next) {
-		Geometry *geometry = (Geometry*) g->data;
+	
+	node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		Geometry *geometry = (Geometry *) node->obj;
 		geometry->Draw (s);
 	}
 }
@@ -313,15 +316,18 @@ void
 PathGeometry::Draw (Surface *s)
 {
 	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
+	Collection::Node *node;
+	
 	Geometry::Draw (s);
-
-	for (GList *coll = children->list; coll != NULL; coll = coll->next) {
-		PathFigure *pf = (PathFigure*) coll->data;
+	
+	node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		PathFigure *pf = (PathFigure *) node->obj;
 		pf->Draw (s);
 	}
 }
 
-PathFigureCollection*
+PathFigureCollection *
 path_geometry_get_figures (PathGeometry *path_geometry)
 {
 	Value *value = path_geometry->GetValue (PathGeometry::FiguresProperty);
@@ -448,19 +454,20 @@ PathFigure::Draw (Surface *s)
 {
 	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
 	Point *start = path_figure_get_start_point (this);
-
+	Collection::Node *node;
+	
 	// should not be required because of the cairo_move_to
 	//cairo_new_sub_path (s->cairo);
 	cairo_move_to (s->cairo, start->x, start->y);
-
-	for (GList *coll = children->list; coll != NULL; coll = coll->next) {
-		PathSegment *ps = (PathSegment*) coll->data;
+	
+	node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		PathSegment *ps = (PathSegment *) node->obj;
 		ps->Draw (s);
 	}
-
-	if (path_figure_get_is_closed (this)) {
+	
+	if (path_figure_get_is_closed (this))
 		cairo_close_path (s->cairo);
-	}
 }
 
 bool

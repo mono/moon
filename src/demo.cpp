@@ -61,8 +61,6 @@ invalidator (gpointer data)
 static gboolean
 delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 {
-	surface_destroy ((Surface*)data);
-	runtime_shutdown ();
 	gtk_main_quit ();
 	return 1;
 }
@@ -489,6 +487,11 @@ main (int argc, char *argv [])
 	gtk_widget_set_usize (w, 600, 400);
 	gtk_widget_show_all (w);
 	gtk_main ();
+	
+	surface_destroy (t);
+	runtime_shutdown ();
+	
+	return 0;
 }
 
 

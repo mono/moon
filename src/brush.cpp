@@ -10,6 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
 #include <config.h>
 #include <unistd.h>
 #include <string.h>
@@ -496,18 +497,21 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 	GradientStopCollection *children = GetValue (GradientBrush::GradientStopsProperty)->AsGradientStopCollection ();
 	GradientSpreadMethod gsm = gradient_brush_get_spread (this);
 	cairo_pattern_set_extend (pattern, convert_gradient_spread_method (gsm));
-
+	Collection::Node *node;
+	
 	// TODO - BrushMappingMode is ignore (use a matrix)
 
 	// TODO - ColorInterpolationModeProperty is ignored (map to ?)
 
 	double opacity = GetTotalOpacity (uielement);
-	for (GList *g = children->list; g != NULL; g = g->next) {
-		GradientStop *stop = (GradientStop*) g->data;
+	node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		GradientStop *stop = (GradientStop *) node->obj;
 		Color *color = gradient_stop_get_color (stop);
 		double offset = gradient_stop_get_offset (stop);
-		double alpha = (opacity < 1.0) ? color->a * opacity: color->a;
-		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
+		double alpha = (opacity < 1.0) ? color->a * opacity : color->a;
+		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r,
+						   color->g, color->b, alpha);
 	}
 	return (opacity > 0.0);
 }

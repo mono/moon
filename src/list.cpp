@@ -232,6 +232,26 @@ List::Remove (NodeFinder find, void *data)
 }
 
 
+List::Node *
+List::Index (int index)
+{
+	List::Node *n = head;
+	int i = 0;
+	
+	if (index < 0)
+		return 0;
+	
+	while (n->next && i < index) {
+		n = n->next;
+		i++;
+	}
+	
+	if (i == index)
+		return n;
+	
+	return 0;
+}
+
 int
 List::IndexOf (List::Node *node)
 {

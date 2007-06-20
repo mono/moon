@@ -9,6 +9,7 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
 #include <config.h>
 #include <string.h>
 #include <gtk/gtk.h>
@@ -652,15 +653,17 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
-ClockGroup*
+ClockGroup *
 TimelineGroup::CreateClock ()
 {
-	TimelineCollection *child_timelines = GetValue (ChildrenProperty)->AsTimelineCollection();
-	ClockGroup* group = new ClockGroup (this);
-	for (GList *l = child_timelines->list; l ; l = l->next) {
-		group->AddChild (((Timeline*)l->data)->AllocateClock ());
-	}
-
+	TimelineCollection *collection = GetValue (ChildrenProperty)->AsTimelineCollection();
+	ClockGroup *group = new ClockGroup (this);
+	Collection::Node *node;
+	
+	node = (Collection::Node *) collection->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ())
+		group->AddChild (((Timeline *) node->obj)->AllocateClock ());
+	
 	return group;
 }
 
@@ -685,44 +688,43 @@ timeline_group_new ()
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
-	TimelineCollection *child_timelines = GetValue (ChildrenProperty)->AsTimelineCollection();
-
-	if (!child_timelines->list)
-		return Duration (0);
-
+	TimelineCollection *collection = GetValue (ChildrenProperty)->AsTimelineCollection();
+	Collection::Node *node = (Collection::Node *) collection->list->First ();
 	Duration d = Duration::Automatic;
 	TimeSpan duration_span = 0;
+	
+	if (!node)
+		return Duration (0);
+	
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		Timeline *timeline = (Timeline *) node->obj;
 
-	for (GList *l = child_timelines->list; l ; l = l->next) {
-		Timeline *child_timeline = (Timeline*)l->data;
-
-		Duration child_duration = child_timeline->GetNaturalDuration (clock);
-		if (child_duration == Duration::Automatic)
+		Duration duration = timeline->GetNaturalDuration (clock);
+		if (duration == Duration::Automatic)
 			continue;
 
-		if (child_duration == Duration::Forever)
+		if (duration == Duration::Forever)
 			return Duration::Forever;
-
-		TimeSpan child_span = child_duration.GetTimeSpan();
-
-		RepeatBehavior *child_repeat = child_timeline->GetRepeatBehavior ();
-		if (*child_repeat == RepeatBehavior::Forever) {
-			return Duration::Forever;
-		}
-		else if (child_repeat->HasCount ()) {
-			child_span *= child_repeat->GetCount ();
-		}
-		else if (child_repeat->HasDuration ()) {
-			if (child_span > child_repeat->GetDuration ())
-				child_span = child_repeat->GetDuration ();
-		}
-
-		Value *v = child_timeline->GetValue (Timeline::BeginTimeProperty);
-		if (v)
-			child_span += v->AsInt64();
 		
-		if (duration_span < child_span) {
-			duration_span = child_span;
+		TimeSpan span = duration.GetTimeSpan ();
+		
+		RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
+		if (*repeat == RepeatBehavior::Forever)
+			return Duration::Forever;
+		
+		if (repeat->HasCount ()) {
+			span *= repeat->GetCount ();
+		} else if (repeat->HasDuration ()) {
+			if (span > repeat->GetDuration ())
+				span = repeat->GetDuration ();
+		}
+		
+		Value *v = timeline->GetValue (Timeline::BeginTimeProperty);
+		if (v)
+			span += v->AsInt64();
+		
+		if (duration_span < span) {
+			duration_span = span;
 			d = Duration (duration_span);
 		}
 	}
@@ -731,20 +733,20 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 }
 
 ParallelTimeline *
-parallel_timeline_new ()
+parallel_timeline_new (void)
 {
 	return new ParallelTimeline ();
 }
 
 TimelineCollection *
-timeline_collection_new ()
+timeline_collection_new (void)
 {
 	return new TimelineCollection ();
 }
 
 
 void
-clock_init ()
+clock_init (void)
 {
 	/* Timeline properties */
 	Timeline::AutoReverseProperty = DependencyObject::Register (Type::TIMELINE, "AutoReverse", new Value (false));

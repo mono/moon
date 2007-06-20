@@ -8,6 +8,7 @@ G_BEGIN_DECLS
 
 #include "value.h"
 #include "type.h"
+#include "list.h"
 
 #define TIMERS 0
 #if TIMERS
@@ -405,10 +406,18 @@ struct ParserErrorEventArgs : public ErrorEventArgs {
 //
 class Collection : public DependencyObject {
  public:
-	GList *list;
+	class Node : public List::Node {
+	public:
+		DependencyObject *obj;
+		
+		Node (DependencyObject *dob, DependencyObject *parent);
+		~Node ();
+	};
+	
+	List *list;
 	void *closure;
-
-	Collection () : list(NULL), closure(NULL) {}
+	
+	Collection ();
 	virtual ~Collection ();
 	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
@@ -421,16 +430,17 @@ class Collection : public DependencyObject {
 	void SharedAdd (DependencyObject *data);
 };
 
+bool CollectionNodeFinder (List::Node *n, void *data);
+
 class CollectionIterator {
  public:
 	CollectionIterator (Collection *c){
 		collection = c;
-		current = c->list;
+		current = c->list->First ();
 	}
 	
 	Collection *collection;
-	GList *current;
-
+	List::Node *current;
 };
 
 void collection_add    (Collection *collection, DependencyObject *data);

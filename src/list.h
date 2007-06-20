@@ -59,6 +59,8 @@ public:
 	Node *Find (NodeFinder find, void *data);
 	void Remove (NodeFinder find, void *data);
 	
+	Node *Index (int index);
+	
 	int IndexOf (Node *node);
 	int IndexOf (NodeFinder find, void *data);
 };

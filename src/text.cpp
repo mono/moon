@@ -530,8 +530,7 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 	}
 	
 	if (inlines != NULL) {
-		PangoFontDescription *cur_font = font;
-		GList *next, *node = inlines->list;
+		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		int width, height, x = 0, y = 0;
 		bool newline = false;
 		int line_height;
@@ -543,7 +542,7 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 		width = full_width;
 		
 		while (node != NULL) {
-			item = (Inline *) node->data;
+			item = (Inline *) node->obj;
 			
 			//
 			// FIXME: This code won't work properly for RTL text
@@ -615,7 +614,7 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 				break;
 			}
 			
-			node = node->next;
+			node = (Collection::Node *) node->Next ();
 		}
 	}
 	

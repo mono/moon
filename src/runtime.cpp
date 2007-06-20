@@ -100,70 +100,70 @@ base_unref (Base *base)
 		base->unref ();
 }
 
-void
-Collection::SharedAdd (DependencyObject *data)
+
+Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {
-	data->ref ();
-	data->SetParent (this);
-	data->Attach (NULL, this);
+	dob->Attach (NULL, parent);
+	dob->SetParent (parent);
+	dob->ref ();
+	obj = dob;
+}
+
+Collection::Node::~Node ()
+{
+	obj->Detach (NULL, obj->GetParent ());
+	obj->SetParent (NULL);
+	obj->unref ();
+}
+
+bool
+CollectionNodeFinder (List::Node *n, void *data)
+{
+	Collection::Node *cn = (Collection::Node *) n;
+	
+	return cn->obj == (DependencyObject *) data;
+}
+
+
+Collection::Collection ()
+{
+	list = new List ();
+	closure = NULL;
+}
+
+Collection::~Collection ()
+{
+	list->Clear (true);
+	delete list;
 }
 
 void
 Collection::Add (DependencyObject *data)
 {
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
-
-	list = g_list_append (list, data);
-	SharedAdd (data);
+	
+	list->Append (new Collection::Node (data, this));
 }
 
 void
 Collection::Insert (int index, DependencyObject *data)
 {
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
-
-	list = g_list_insert (list, data, index);
-	SharedAdd (data);
+	
+	list->Insert (new Collection::Node (data, this), index);
 }
 
 void
 Collection::Remove (DependencyObject *data)
 {
-	bool found = FALSE;
-
-	// Do this by hand, so we only unref if we find the object
-	for (GList *l = list; l != NULL; l = l->next){
-		if (l->data == data){
-			found = TRUE;
-			if (l->prev)
-				l->prev->next = l->next;
-			if (l->next)
-				l->next->prev = l->prev;
-			if (list == l)
-				list = l->next;
-			g_list_free_1 (l);
-			break;
-		}
-	}
-	data->SetParent (NULL);
-	data->Detach (NULL, this);
-	if (found)
-		data->unref ();
-}
-
-Collection::~Collection ()
-{
-	GList *node = list;
-	GList *next;
+	Collection::Node *n;
 	
-	while (node != NULL) {
-		next = node->next;
-		((Base *) node->data)->unref ();
-		g_list_free_1 (node);
-		node = next;
-	}
+	if (!(n = (Collection::Node *) list->Find (CollectionNodeFinder, data)))
+		return;
 	
-	list = NULL;
+	n->Unlink ();
+	
+	delete n;
 }
 
 void 
@@ -190,9 +190,7 @@ collection_insert (Collection *collection, int index, DependencyObject *data)
 void 
 collection_clear (Collection *collection)
 {
-	while (collection->list){
-		collection_remove (collection, (DependencyObject *)collection->list->data);
-	}
+	collection->list->Clear (true);
 }
 
 Type::Kind
@@ -211,15 +209,17 @@ bool
 collection_iterator_move_next (CollectionIterator *iterator)
 {
 	if (!iterator->current)
-		return FALSE;
-	iterator->current = iterator->current->next;
-	return TRUE;
+		return false;
+	
+	iterator->current = iterator->current->Next ();
+	
+	return iterator->current != NULL;
 }
 
 void 
 collection_iterator_reset (CollectionIterator *iterator)
 {
-	iterator->current = iterator->collection->list;
+	iterator->current = iterator->collection->list->First ();
 }
 
 DependencyObject *
@@ -227,8 +227,8 @@ collection_iterator_get_current (CollectionIterator *iterator)
 {
 	if (iterator->current == NULL)
 		return NULL;
-
-	return (DependencyObject *) iterator->current->data;
+	
+	return ((Collection::Node *) iterator->current)->obj;
 }
 
 void
@@ -918,13 +918,16 @@ Canvas::update_xform ()
 {
 	VisualCollection *children = GetChildren ();
 	UIElement::update_xform ();
-	GList *il;
+	Collection::Node *n;
 
 	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
-	for (il = children->list; il != NULL; il = il->next){
-		UIElement *item = (UIElement *) il->data;
-
+	n = (Collection::Node *) children->list->First ();
+	while (n != NULL) {
+		UIElement *item = (UIElement *) n->obj;
+		
 		item->update_xform ();
+		
+		n = (Collection::Node *) n->Next ();
 	}
 }
 
@@ -939,15 +942,17 @@ void
 Canvas::getbounds ()
 {
 	VisualCollection *children = GetChildren ();
+	Collection::Node *cn;
 	bool first = true;
 	GList *il;
 
 	//levelb += 4;
 	//space (levelb);
 	//printf ("Canvas: Enter GetBounds\n");
-	for (il = children->list; il != NULL; il = il->next){
-		UIElement *item = (UIElement *) il->data;
-
+	cn = (Collection::Node *) children->list->First ();
+	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+		UIElement *item = (UIElement *) cn->obj;
+		
 		item->getbounds ();
 
 		//space (levelb + 4);
@@ -1016,24 +1021,23 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 bool
 Canvas::handle_motion (Surface *s, int state, double x, double y)
 {
-	bool handled = false;
-
 	VisualCollection *children = GetChildren ();
+	bool handled = false;
+	Collection::Node *cn;
 
 	// 
 	// Walk the list in reverse
 	//
-	GList *il = g_list_last (children->list);
-	if (il == NULL)
+	if (!(cn = (Collection::Node *) children->list->Last ()))
 		goto leave;
-
-	for (; il != NULL; il = il->prev){
-		UIElement *item = (UIElement *) il->data;
-
+	
+	for ( ; cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
+		UIElement *item = (UIElement *) cn->obj;
+		
 		// Bounds check:
 		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
 			continue;
-
+		
 		handled = item->handle_motion (s, state, x, y);
 		if (handled){
 			if (item != current_item){
@@ -1057,6 +1061,7 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 		s->cb_motion (this, state, x, y);
 		return true;
 	}
+	
 	return handled;
 }
 
@@ -1065,31 +1070,32 @@ Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x,
 {
 	VisualCollection *children = GetChildren ();
 	bool handled = false;
-
+	Collection::Node *cn;
+	
 	// 
 	// Walk the list in reverse
 	//
-	GList *il = g_list_last (children->list);
-	if (il == NULL)
+	if (!(cn = (Collection::Node *) children->list->Last ()))
 		goto leave;
-
-	for (; il != NULL; il = il->prev){
-		UIElement *item = (UIElement *) il->data;
-
+	
+	for ( ; cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
+		UIElement *item = (UIElement *) cn->obj;
+		
 		// Quick bound check:
-		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2){
+		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
 			continue;
-		}
-
+		
 		handled = item->handle_button (s, cb, state, x, y);
 		if (handled)
 			break;
 	}
+	
  leave:
 	if (handled || inside_object (s, x, y)){
 		cb (this, state, x, y);
 		return true;
 	}
+	
 	return handled;
 }
 
@@ -1103,7 +1109,7 @@ Canvas::leave (Surface *s)
 	s->cb_mouse_leave (this);
 }
 
-Control*
+Control *
 control_new (void)
 {
 	return new Control ();
@@ -1364,7 +1370,7 @@ void
 Canvas::render (Surface *s, int x, int y, int width, int height)
 {
 	VisualCollection *children = GetChildren ();
-	GList *il;
+	Collection::Node *cn;
 	double actual [6];
 	
 	cairo_save (s->cairo);  // for UIElement::ClipProperty
@@ -1402,14 +1408,15 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	// path for the children
 	//
 	cairo_identity_matrix (s->cairo);
-	for (il = children->list; il != NULL; il = il->next){
-		UIElement *item = (UIElement *) il->data;
-
+	cn = (Collection::Node *) children->list->First ();
+	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+		UIElement *item = (UIElement *) cn->obj;
+		
 		Rect item_rect (item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
-
+		
 		//space (level);
 		//printf ("%s %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
-
+		
 		if (true || render_rect.IntersectsWith (item_rect)) {
 			Rect inter = render_rect.Intersection(item_rect);
 #if CAIRO_CLIP
@@ -1469,7 +1476,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 }
 
 Canvas *
-canvas_new ()
+canvas_new (void)
 {
 	return new Canvas ();
 }
@@ -2284,8 +2291,9 @@ resolve_property_path (DependencyObject **o, const char *path)
 
 			indexer = strtol (path + i + 1, NULL, 10);
 
-			Collection * col = lu->GetValue (res)->AsCollection ();
-			lu = (DependencyObject *) g_list_nth_data (col->list, indexer);
+			Collection *col = lu->GetValue (res)->AsCollection ();
+			List::Node *n = col->list->Index (indexer);
+			lu = n ? ((Collection::Node *) n)->obj : NULL;
 			i += 3;
 			break;
 		}
@@ -2705,9 +2713,10 @@ event_trigger_fire_actions (EventTrigger *trigger)
 {
 	g_assert (trigger);
 	TriggerActionCollection *actions = trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection();
-
-	for (GList *walk = actions->list; walk != NULL; walk = walk->next) {
-		TriggerAction *action = (TriggerAction *) walk->data;
+	Collection::Node *n = (Collection::Node *) actions->list->First ();
+	
+	for ( ; n != NULL; n = (Collection::Node *) n->Next ()) {
+		TriggerAction *action = (TriggerAction *) n->obj;
 		action->Fire ();
 	}
 }

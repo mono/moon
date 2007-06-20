@@ -403,12 +403,16 @@ void
 TransformGroup::GetTransform (cairo_matrix_t *value)
 {
 	TransformCollection *children = GetValue (TransformGroup::ChildrenProperty)->AsTransformCollection ();
+	Collection::Node *node = (Collection::Node *) children->list->First ();
+	
 	cairo_matrix_init_identity (value);
-	for (GList *w = children->list; w != NULL; w = w->next) {
-		cairo_matrix_t child;
-		Transform *t = (Transform *) w->data;
-		t->GetTransform (&child);
-		cairo_matrix_multiply (value, value, &child);
+	
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		Transform *transform = (Transform *) node->obj;
+		cairo_matrix_t matrix;
+		
+		transform->GetTransform (&matrix);
+		cairo_matrix_multiply (value, value, &matrix);
 	}
 }
 

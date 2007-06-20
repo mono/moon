@@ -9,6 +9,7 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
 #include <config.h>
 #include <string.h>
 #include <gtk/gtk.h>
@@ -1041,19 +1042,21 @@ Duration
 DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
 	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
-	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
-
-	for (GList *l = key_frames->list; l; l = l->next) {
-		DoubleKeyFrame *dkf = (DoubleKeyFrame*)l->data;
+	Collection::Node *node;
+	TimeSpan ts = 0;
+	
+	node = (Collection::Node *) key_frames->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		DoubleKeyFrame *dkf = (DoubleKeyFrame *) node->obj;
 		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
-
+		
 		if (dk_ts > ts) {
 			ts = dk_ts;
 			d = Duration (ts);
 		}
 	}
-
+	
 	return d;
 }
 
@@ -1154,22 +1157,24 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 }
 
 Duration
-ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
+ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 {
 	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
-	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
-
-	for (GList *l = key_frames->list; l; l = l->next) {
-		ColorKeyFrame *dkf = (ColorKeyFrame*)l->data;
+	Collection::Node *node;
+	TimeSpan ts = 0;
+	
+	node = (Collection::Node *) key_frames->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		ColorKeyFrame *dkf = (ColorKeyFrame *) node->obj;
 		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
-
+		
 		if (dk_ts > ts) {
 			ts = dk_ts;
 			d = Duration (ts);
 		}
 	}
-
+	
 	return d;
 }
 
@@ -1269,19 +1274,21 @@ Duration
 PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
 	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
-	TimeSpan ts = 0;
 	Duration d = Duration::Automatic;
-
-	for (GList *l = key_frames->list; l; l = l->next) {
-		PointKeyFrame *dkf = (PointKeyFrame*)l->data;
+	Collection::Node *node;
+	TimeSpan ts = 0;
+	
+	node = (Collection::Node *) key_frames->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+		PointKeyFrame *dkf = (PointKeyFrame *) node->obj;
 		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
-
+		
 		if (dk_ts > ts) {
 			ts = dk_ts;
 			d = Duration (ts);
 		}
 	}
-
+	
 	return d;
 }
 
