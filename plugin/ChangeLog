@@ -1,5 +1,11 @@
 2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
 
+	* plugin-class.cpp: Update DependencyObject setter to work with strings
+	and some other data types, using xaml_set_property_from_str. Also remove
+	some debug messages, we have too much.
+
+2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
+
 	* plugin.cpp: Uncomment container detroy lines in Finalize method.
 
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com>

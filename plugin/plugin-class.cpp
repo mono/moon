@@ -446,11 +446,40 @@ PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 
 /*** PluginDependencyObject ***************************************************/
 
+void
+value_to_variant (PluginObject *npobj, Value *v, NPVariant *result)
+{
+	switch (v->GetKind ()) {
+		case Type::BOOL:
+			BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
+			break;
+
+		case Type::INT32:
+			INT32_TO_NPVARIANT (v->AsInt32(), *result);
+			break;
+
+		case Type::DOUBLE:
+			DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
+			break;
+		case Type::STRING:
+			STRINGZ_TO_NPVARIANT (v->AsString(), *result);
+			break;
+
+		/* more builtins.. */
+		default:
+			if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
+				PluginDependencyObject *depobj = new PluginDependencyObject (v->AsDependencyObject ());
+
+				NPObject *object = NPN_CreateObject (npobj->instance, depobj);
+				OBJECT_TO_NPVARIANT (object, *result);
+			}
+			break;
+	}
+}
+
 bool
 PluginDependencyObject::ClassHasProperty (PluginObject *npobj, NPIdentifier name)
 {
-	DEBUGMSG ("PluginDependencyObject::ClassHasProperty");
-
 	if (HAS_PROPERTY (PluginDependencyObjectPropertyNames, name))
 		return true;
 
@@ -460,60 +489,6 @@ PluginDependencyObject::ClassHasProperty (PluginObject *npobj, NPIdentifier name
 	NPN_MemFree (strname);
 
 	return (p != NULL);
-}
-
-static void
-value_to_variant (PluginObject *npobj, Value *v, NPVariant *result)
-{
-	switch (v->GetKind ()) {
-	case Type::BOOL:
-	  BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
-	  break;
-	case Type::INT32:
-	  INT32_TO_NPVARIANT (v->AsInt32(), *result);
-	  break;
-	case Type::DOUBLE:
-	  DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
-	  break;
-	case Type::STRING:
-	  STRINGZ_TO_NPVARIANT (v->AsString(), *result);
-	  break;
-	  /* more builtins.. */
-	default:
-	  if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
-		PluginDependencyObject *depobj = new PluginDependencyObject (v->AsDependencyObject ());
-		
-		NPObject *object = NPN_CreateObject (npobj->instance, depobj);
-		OBJECT_TO_NPVARIANT (object, *result);
-	  }
-	  break;
-	}
-}
-
-static void
-variant_to_value (PluginObject *npobj, const NPVariant *variant, Type::Kind property_type, Value *v)
-{
-	*v = Value (Type::INVALID);
-
-	if (NPVARIANT_IS_BOOLEAN (*variant)) {
-		*v = Value ((bool)NPVARIANT_TO_BOOLEAN (*variant));
-	}
-	else if (NPVARIANT_IS_INT32 (*variant)) {
-		/* for some reason javascript likes to pass numbers as ints
-		   even when you put .0 after them, or treat them in some
-		   other fashion like floats. */
-		if (property_type == Type::DOUBLE)
-			*v = Value ((double)NPVARIANT_TO_INT32 (*variant));
-		else
-			*v = Value ((gint32)NPVARIANT_TO_INT32 (*variant));
-	}
-	else if (NPVARIANT_IS_DOUBLE (*variant)) {
-		*v = Value (NPVARIANT_TO_DOUBLE (*variant));
-	}
-	else if (NPVARIANT_IS_STRING (*variant)) {
-	  printf ("setting a string property to %s\n", NPVARIANT_TO_STRING (*variant).utf8characters);
-		*v = Value ((char *)NPVARIANT_TO_STRING (*variant).utf8characters);
-	}
 }
 
 bool
@@ -539,25 +514,28 @@ PluginDependencyObject::ClassGetProperty (PluginObject *npobj, NPIdentifier name
 bool 
 PluginDependencyObject::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	char *strvalue = (char *) NPN_MemAlloc (20);
+
+	if (NPVARIANT_IS_BOOLEAN (*value)) {
+		strcpy (strvalue, (NPVARIANT_TO_BOOLEAN (*value) ? "true" : "false"));
+	} else if (NPVARIANT_IS_INT32 (*value)) {
+		sprintf (strvalue, "%d", NPVARIANT_TO_INT32 (*value));
+	} else if (NPVARIANT_IS_DOUBLE (*value)) {
+		sprintf (strvalue, "%d", NPVARIANT_TO_DOUBLE (*value));
+	} else if (NPVARIANT_IS_OBJECT(*value)) {
+		// not implemented yet.
+	}
+
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper(strname[0]);
+	strname[0] = toupper (strname[0]);
 
-	DEBUGMSG ("PluginDependencyObject::ClassSetProperty (%s)", strname);
+	if (NPVARIANT_IS_STRING (*value))
+		xaml_set_property_from_str (dob, strname, (char *) NPVARIANT_TO_STRING (*value).utf8characters);
+	else
+		xaml_set_property_from_str (dob, strname, strvalue);
 
-	DependencyProperty *p = dob->GetDependencyProperty (strname);
 	NPN_MemFree (strname);
-
-	if (p == NULL)
-		return false;
-
-	Value val;
-
-	variant_to_value (npobj, value, p->value_type, &val);
-
-	if (val.GetKind () == Type::INVALID)
-	  return false;
-
-	dob->SetValue (p, val);
+	NPN_MemFree (strvalue);
 
 	return true;
 }
