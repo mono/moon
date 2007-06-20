@@ -1101,7 +1101,7 @@ geometry_from_str (char *str)
 			get_point (&cp3, &data);
 			if (relative) make_relative (&cp, &cp3);
 
-			if (prev->GetObjectType () == Type::BEZIERSEGMENT) {
+			if (prev && prev->GetObjectType () == Type::BEZIERSEGMENT) {
 				Point *p = prev->GetValue (BezierSegment::Point2Property)->AsPoint ();
 				cp1.x = 2 * cp.x - p->x;
 				cp1.y = 2 * cp.y - p->y;
@@ -1199,7 +1199,7 @@ geometry_from_str (char *str)
 			get_point (&cp2, &data);
 			if (relative) make_relative (&cp, &cp2);
 
-			if (prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
+			if (prev && prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
 				Point *p = prev->GetValue (QuadraticBezierSegment::Point2Property)->AsPoint ();
 				cp1.x = 2 * cp.x - p->x;
 				cp1.y = 2 * cp.y - p->y;
