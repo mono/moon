@@ -2,6 +2,8 @@
 
 	* xaml.cpp: More verbose debug output with namespace lookup
 	errors.
+	- Map in the default namespaces if we are unable to lookup the
+	proper namespace name.
 
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com> 
 

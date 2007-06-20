@@ -412,7 +412,9 @@ start_element_handler (void *data, const char *el, const char **attr)
 		// Find the proper namespace
 		p->current_namespace = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, name [0]);
 		element = name [1];
-	} else if (p->implicit_default_namespace) {
+	}
+
+	if (!p->current_namespace && p->implicit_default_namespace) {
 		p->current_namespace = default_namespace;
 		element = name [0];
 	}
