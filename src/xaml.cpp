@@ -406,7 +406,8 @@ start_element_handler (void *data, const char *el, const char **attr)
 
 	char **name = g_strsplit (el, "|", -1);
 	char *element;
-	
+
+	p->current_namespace = NULL;
 	if (name [1]) {
 		// Find the proper namespace
 		p->current_namespace = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, name [0]);
@@ -414,6 +415,18 @@ start_element_handler (void *data, const char *el, const char **attr)
 	} else if (p->implicit_default_namespace) {
 		p->current_namespace = default_namespace;
 		element = name [0];
+	}
+
+
+
+	if (!p->current_namespace) {
+
+		g_strfreev (name);
+
+		if (name [1])
+			return parser_error (p, name [1], NULL, g_strdup_printf ("No handlers available for namespace: '%s'\n", name [0]));
+		else
+			return parser_error (p, el, NULL, g_strdup_printf ("No namespace mapping available for element: '%s'\n", el));
 	}
 
 	start_element (data, element, attr);
