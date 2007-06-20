@@ -33,6 +33,21 @@ static GtkWidget *w;
 
 static Storyboard *sb = NULL;
 
+DependencyObject *_custom_element_callback (const char *xmlns, const char *name)
+{
+	return NULL;
+}
+
+void _custom_attribute_callback (void *target, const char *name, const char *value)
+{
+}
+
+void _event_callback (void *target, const char *ename, const char *evalue)
+{
+}
+
+
+
 static gboolean
 my_expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
@@ -82,7 +97,7 @@ button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
 	printf ("button_press_event\n");
 
 	printf ("Loading...\n");
-	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, NULL, NULL, NULL, &kind);
+	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, _custom_element_callback, _custom_attribute_callback, _event_callback, &kind);
 	printf ("Loading... %p\n", ee);
 	if (ee != NULL)
 		surface_attach (t, ee);
@@ -192,7 +207,7 @@ main (int argc, char *argv [])
 
 		gtk_window_set_title (GTK_WINDOW (w), file);
 		
-		UIElement *e = xaml_create_from_file (file, true, NULL, NULL, NULL, &kind);
+		UIElement *e = xaml_create_from_file (file, true, _custom_element_callback, _custom_attribute_callback, _event_callback, &kind);
 		if (e == NULL){
 			printf ("Was not able to load the file\n");
 			return 1;
