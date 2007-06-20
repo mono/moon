@@ -1,3 +1,7 @@
+2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
+
+	* clock.html: Uncomment the setting of source, it works now.
+
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* clock.xaml: no reason to use transform groups for the hands.  we
