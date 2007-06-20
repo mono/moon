@@ -336,7 +336,10 @@ Clock::Tick ()
 					printf (" + clock %p should STOP\n", this, remaining_iterations);
 #endif
 					new_time = duration_timespan;
-					Stop ();
+					if (*duration == Duration::Automatic)
+						SkipToFill ();
+					else
+						Stop ();
 				}
 				else {
 					new_time -= duration_timespan;
@@ -352,7 +355,10 @@ Clock::Tick ()
 
 			if (remaining_iterations == 0) {
 				new_time = 0;
-				Stop ();
+				if (*duration == Duration::Automatic)
+					SkipToFill ();
+				else
+					Stop ();
 			}
 		}
 
@@ -416,6 +422,9 @@ Clock::Begin ()
 
 	current_time = new_time = last_parent_time - GetBeginTime ();
 
+#if CLOCK_DEBUG
+	printf (" + it's current time at that point will be %lld\n", current_time);
+#endif
 	if (natural_duration.HasTimeSpan ())
 		current_progress = new_progress = (double)current_time / natural_duration.GetTimeSpan();
 	else

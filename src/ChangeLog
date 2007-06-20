@@ -1,3 +1,10 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (Clock::Tick): if we hit our natural duration but our
+	duration is Automatic, go to Fill mode, since we may have child
+	clocks that started after us and need a chance to run their last
+	tick.
+
 2007-06-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (collection_iterator_move_next): If we can't iterate
