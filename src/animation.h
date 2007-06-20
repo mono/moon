@@ -3,6 +3,7 @@
 
 #include "runtime.h"
 #include "clock.h"
+#include "list.h"
 
 G_BEGIN_DECLS
 
@@ -261,8 +262,10 @@ KeyFrame* key_frame_new ();
 
 
 class KeyFrameCollection : public Collection {
+	List *sorted_list;
  public:
-	KeyFrameCollection () : sorted_list(NULL) {}
+	KeyFrameCollection ();
+	~KeyFrameCollection ();
 
 	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
@@ -272,10 +275,6 @@ class KeyFrameCollection : public Collection {
 	virtual void Insert (int index, DependencyObject *data);
 
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
-
- private:
-	void Resort ();
-	GSList *sorted_list;
 };
 
 KeyFrameCollection *key_frame_collection_new (void);

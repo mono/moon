@@ -648,19 +648,27 @@ KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 }
 
 KeyFrame*
-key_frame_new ()
+key_frame_new (void)
 {
 	return new KeyFrame ();
 }
 
-static gint
-compare_keyframes (KeyFrame *kf1, KeyFrame *kf2)
+
+class KeyFrameNode : public List::Node {
+public:
+	KeyFrame *key_frame;
+	
+	KeyFrameNode (KeyFrame *kf) { key_frame = kf; }
+};
+
+static int
+KeyFrameNodeComparer (List::Node *kfn1, List::Node *kfn2)
 {
 	// Assumes timespan keytimes only
-	TimeSpan ts1 = kf1->GetKeyTime()->GetTimeSpan ();
-	TimeSpan ts2 = kf2->GetKeyTime()->GetTimeSpan ();
-
+	TimeSpan ts1 = ((KeyFrameNode *) kfn1)->key_frame->GetKeyTime()->GetTimeSpan ();
+	TimeSpan ts2 = ((KeyFrameNode *) kfn2)->key_frame->GetKeyTime()->GetTimeSpan ();
 	TimeSpan tsdiff = ts1 - ts2;
+	
 	if (tsdiff == 0)
 		return 0;
 	else if (tsdiff < 0)
@@ -669,31 +677,49 @@ compare_keyframes (KeyFrame *kf1, KeyFrame *kf2)
 		return 1;
 }
 
+static bool
+KeyFrameNodeFinder (List::Node *kfn, void *data)
+{
+	return ((KeyFrameNode *) kfn)->key_frame == (KeyFrame *) data;
+}
+
+KeyFrameCollection::KeyFrameCollection ()
+{
+	sorted_list = new List ();
+}
+
+KeyFrameCollection::~KeyFrameCollection ()
+{
+	sorted_list->Clear (true);
+	delete sorted_list;
+}
+
 void
 KeyFrameCollection::Add (DependencyObject *data)
 {
-	KeyFrame *kf = (KeyFrame *) data;
-
-	Collection::Add (kf);
+	KeyFrameNode *kfn = new KeyFrameNode ((KeyFrame *) data);
 	
-	sorted_list = g_slist_insert_sorted (sorted_list, kf, (GCompareFunc)compare_keyframes);
+	Collection::Add (data);
+	
+	sorted_list->InsertSorted (kfn, KeyFrameNodeComparer);
 }
 
 void
 KeyFrameCollection::Insert (int index, DependencyObject *data)
 {
-	KeyFrame *kf = (KeyFrame *) data;
-
-	Collection::Insert (index, kf);
+	KeyFrameNode *kfn = new KeyFrameNode ((KeyFrame *) data);
 	
-	sorted_list = g_slist_insert_sorted (sorted_list, kf, (GCompareFunc)compare_keyframes);
+	Collection::Insert (index, data);
+	
+	sorted_list->InsertSorted (kfn, KeyFrameNodeComparer);
 }
 
 void
 KeyFrameCollection::Remove (DependencyObject *data)
 {
 	KeyFrame *kf = (KeyFrame *) data;
-	sorted_list = g_slist_remove (sorted_list, kf);
+	
+	sorted_list->Remove (KeyFrameNodeFinder, kf);
 	Collection::Remove (kf);
 }
 
@@ -702,28 +728,27 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 {
 	KeyFrame *current_keyframe = NULL;
 	KeyFrame *previous_keyframe = NULL;
-
+	List::Node *cur, *prev = NULL;
+	
 	/* figure out what segment to use (this assumes the list is sorted) */
-	GSList *prev = NULL;
-	for (GSList *l = sorted_list; l; prev = l, l = l->next) {
-		KeyFrame *keyframe = (KeyFrame*)l->data;
-
+	for (cur = sorted_list->First (); cur; prev = cur, cur = cur->Next ()) {
+		KeyFrame *keyframe = ((KeyFrameNode *) cur)->key_frame;
 		TimeSpan key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
-
+		
 		if (key_end_time >= t) {
 			current_keyframe = keyframe;
-
+			
 			if (prev)
-				previous_keyframe = (KeyFrame*)prev->data;
-
+				previous_keyframe = ((KeyFrameNode *) prev)->key_frame;
+			
 			break;
 		}
 
 	}
-
+	
 	if (prev_frame != NULL)
 		*prev_frame = previous_keyframe;
-
+	
 	return current_keyframe;
 }
 

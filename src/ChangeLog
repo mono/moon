@@ -1,3 +1,7 @@
+2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* animation.cpp: Switched to use List instead of GList.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp|h: Change API so the Strech value is propagated from
