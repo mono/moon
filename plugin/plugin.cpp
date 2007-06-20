@@ -386,7 +386,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 			surface_attach (this->surface, element);
 		#endif
 
-		if (!this->isLoaded) {
+		if (!this->isLoaded && this->onLoad) {
 			this->isLoaded = true;
 			JsExecute (this->onLoad);
 		}

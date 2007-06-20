@@ -1,3 +1,8 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (StreamAsFile): don't try to execute onLoad if there
+	isn't one.
+
 2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
 
 	* plugin.cpp, plugin.h: Implement JsExecute method and use it to call onload
