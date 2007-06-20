@@ -1,3 +1,8 @@
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Hookup attached properties in the property_from_str
+	method.
+
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (media_element_get_buffering_time): use AsTimeSpan().

@@ -1697,7 +1697,12 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 		break;
 	}
 
-	DependencyProperty *prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
+	DependencyProperty *prop = NULL;
+	if (atchname) {
+		Type *container = Type::Find (atchname);
+		prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
+	} else
+		prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
 
 	if (!prop) {
 		printf ("can not find property:  %s\n", prop);
