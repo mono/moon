@@ -1,3 +1,10 @@
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: New method for finding an objects namescope.
+	- Call an objects loaded event when it is added to a Collection
+	- Some bits of namescope merging, these functions aren't called
+	yet though.
+
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (dependency_object_hookup_event): we need more than

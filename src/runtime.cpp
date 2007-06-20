@@ -100,6 +100,27 @@ base_unref (Base *base)
 		base->unref ();
 }
 
+static void
+emit_loaded_events (UIElement *ui)
+{
+	if ((ui->flags & UIElement::IS_CANVAS)) {
+		Canvas *c = (Canvas*)ui;
+		VisualCollection *children = c->GetChildren ();
+		Collection::Node *cn;
+
+		cn = (Collection::Node *) children->list->First ();
+		for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+			UIElement *item = (UIElement *) cn->obj;
+
+			emit_loaded_events (item);
+		}
+	}
+
+	if (!(ui->flags & UIElement::IS_LOADED)) {
+		ui->flags |= UIElement::IS_LOADED;
+		ui->events->Emit ("Loaded");
+	}
+}
 
 Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {
@@ -807,8 +828,13 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 void
 VisualCollection::Add (DependencyObject *data)
 {
+	DependencyObject *obj = (DependencyObject *) closure;
 	UIElement *item = (UIElement *) data;
+
 	Collection::Add (item);
+	emit_loaded_events (item);
+
+	
 	VisualUpdate (data);
 }
 
@@ -1638,28 +1664,6 @@ surface_connect_events (Surface *s)
 	}
 }
 
-static void
-emit_loaded_events (UIElement *ui)
-{
-	if ((ui->flags & UIElement::IS_CANVAS)) {
-		Canvas *c = (Canvas*)ui;
-		VisualCollection *children = c->GetChildren ();
-		Collection::Node *cn;
-
-		cn = (Collection::Node *) children->list->First ();
-		for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
-			UIElement *item = (UIElement *) cn->obj;
-
-			emit_loaded_events (item);
-		}
-	}
-
-	if (!(ui->flags & UIElement::IS_LOADED)) {
-		ui->flags |= UIElement::IS_LOADED;
-		ui->events->Emit ("Loaded");
-	}
-}
-
 void
 surface_attach (Surface *surface, UIElement *toplevel)
 {
@@ -2019,6 +2023,20 @@ DependencyObject::FindName (const char *name)
 		return NULL;
 }
 
+NameScope*
+DependencyObject::FindNameScope ()
+{
+	NameScope *scope = NameScope::GetNameScope (this);
+
+	if (scope)
+		return scope;
+
+	if (parent)
+		return parent->FindNameScope ();
+
+	return NULL;
+}
+		 
 DependencyObject *
 dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_kind)
 {
@@ -2484,6 +2502,23 @@ void
 NameScope::SetNameScope (DependencyObject *obj, NameScope *scope)
 {
 	obj->SetValue (NameScope::NameScopeProperty, scope);
+}
+
+static void
+merge_scope_func (void *key, void *value, void *data)
+{
+	char *name = (char *) key;
+	DependencyObject *obj = (DependencyObject *) value;
+	NameScope *scope = (NameScope *) data;
+
+	printf ("MERGING:  %s, %p\n", name, obj);
+	scope->RegisterName (name, obj);
+}
+
+void
+NameScope::MergeTemporaryScope (NameScope *temp)
+{
+	g_hash_table_foreach (temp->names, merge_scope_func, this);
 }
 
 void

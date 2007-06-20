@@ -253,11 +253,12 @@ class DependencyObject : public Base {
 	bool HasProperty (const char *name, bool inherits);
 	DependencyProperty *GetDependencyProperty (const char *name);
 	DependencyObject* FindName (const char *name);
+	NameScope* FindNameScope ();
 
 	EventObject *events;
 	static GHashTable *properties;
 
-	virtual void OnPropertyChanged (DependencyProperty *property) {}
+	virtual void OnPropertyChanged (DependencyProperty *property) { }
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
 
 	//
@@ -350,6 +351,8 @@ class NameScope : public DependencyObject {
 	void UnregisterName (const char *name);
 
 	DependencyObject* FindName (const char *name);
+
+	void MergeTemporaryScope (NameScope *scope);
 
 	static NameScope* GetNameScope (DependencyObject *obj);
 	static void SetNameScope (DependencyObject *obj, NameScope *scope);
