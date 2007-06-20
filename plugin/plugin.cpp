@@ -383,7 +383,7 @@ PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
 		Downloader * dl = (Downloader *) notify->pdata;
-		downloader_write (dl, (guchar*) buffer, offset, len);
+		downloader_write (dl, (guchar*) buffer, 0, len);
 		if ((offset+len) >= stream->end)
 			downloader_notify_finished (dl);
 	}

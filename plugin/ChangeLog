@@ -1,3 +1,11 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::Write): it turns out the "offset"
+	parameter that is passed to us is the offset without the *stream*,
+	not the buffer.  Always pass 0 for the offset to downloader_write.
+	This fixes image downloads for images larger than the mozilla
+	buffer size (those requiring more than 1 write) of 16384.
+
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-glue.cpp (NPP_Initialize): if we're going to Shutdown()
