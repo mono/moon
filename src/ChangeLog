@@ -1,5 +1,11 @@
 2007-06-19  Chris Toshok  <toshok@ximian.com>
 
+	* media.cpp (media_element_get_buffering_time): use AsTimeSpan().
+	(media_element_get_position): same.
+	(media_init): mark BufferingTime and Position as TimeSpan's.
+
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp, clock.h: bad time for a a rearchitecting, perhaps,
 	but this was necessary to get BeginTime's to be supported.  It
 	reintroduces the "popping" in the surface demo, though, and
