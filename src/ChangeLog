@@ -1,3 +1,8 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_hookup_event): we need more than
+	just the Loaded event.
+
 2007-06-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Run): Don't set default font values here... we need
