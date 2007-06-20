@@ -354,6 +354,14 @@ TextBlock::TextBlock ()
 	pango_font_description_set_style (font, font_style (style));
 	FontWeights weight = text_block_get_font_weight (this);
 	pango_font_description_set_weight (font, font_weight (weight));
+	
+	// FIXME: Airlines demo requests actual width/height before
+	// ::getbounds(), ::getxformorigin or ::render() are called,
+	// so we probably need to recompute these values in
+	// OnPropertyChanged? Setting to 0.0, 0.0 for now at least
+	// prevents a crash.
+	text_block_set_actual_height (this, 0.0f);
+	text_block_set_actual_width (this, 0.0f);
 }
 
 TextBlock::~TextBlock ()
@@ -404,6 +412,9 @@ TextBlock::getbounds ()
 		Draw (s, false, &width, &height);
 		cairo_new_path (s->cairo);
 		cairo_restore (s->cairo);
+		
+		text_block_set_actual_height (this, (double) height);
+		text_block_set_actual_width (this, (double) width);
 	}
 	
 	// optimization: use the cached width/height and draw
@@ -438,6 +449,9 @@ TextBlock::getxformorigin ()
 		Draw (s, false, &width, &height);
 		cairo_new_path (s->cairo);
 		cairo_restore (s->cairo);
+		
+		text_block_set_actual_height (this, (double) height);
+		text_block_set_actual_width (this, (double) width);
 	}
 	
 	return Point (user_xform_origin.x * width, user_xform_origin.y * height);
@@ -482,6 +496,9 @@ TextBlock::get_size_for_brush (cairo_t *cr, double *width, double *height)
 		Draw (s, false, &this->width, &this->height);
 		cairo_new_path (s->cairo);
 		cairo_restore (s->cairo);
+		
+		text_block_set_actual_height (this, (double) this->height);
+		text_block_set_actual_width (this, (double) this->width);
 	}
 	
 	*height = (double) this->height;
