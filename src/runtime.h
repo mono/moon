@@ -19,6 +19,15 @@ G_BEGIN_DECLS
 #define ENDTIMER(id,str)
 #endif
 
+// XAML callbacks up here so they can be used by
+// control_initialize_from_xaml down there in the guts of the file.
+class DependencyObject;
+
+typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
+typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
+typedef void xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
+
+
 typedef void (*EventHandler) (gpointer data);
 
 class EventObject {
@@ -905,7 +914,11 @@ class Control : public FrameworkElement {
 };
 
 Control *control_new (void);
-UIElement* control_initialize_from_xaml (Control *control, const char *xaml, Type::Kind *element_type);
+UIElement* control_initialize_from_xaml (Control *control, const char *xaml,
+					 xaml_create_custom_element_callback *cecb,
+					 xaml_set_custom_attribute_callback *sca,
+					 xaml_hookup_event_callback *hue,
+					 Type::Kind *element_type);
 
 typedef struct _SurfacePrivate SurfacePrivate;
 
@@ -983,10 +996,6 @@ void     surface_register_events (Surface *s,
 //
 // XAML
 //
-
-typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
-typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
-typedef void xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
 
 UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
 		xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue, Type::Kind *element_type);

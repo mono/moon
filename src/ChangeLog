@@ -1,5 +1,13 @@
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (UIElement::render): make this print the classname
+	like UIElement::getbounds() does.
+
+	* runtime.h, runtime.cpp: make control_initialize_from_xaml take
+	the xaml parser custom element callbacks.
+
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (runtime_shutdown): set inited to false, since we
 	want people to be able to call runtime_init again after this.
 

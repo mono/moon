@@ -666,7 +666,8 @@ UIElement::dorender (Surface *surface, int x, int y, int width, int height)
 void
 UIElement::render (Surface *s, int x, int y, int width, int height)
 {
-	g_warning ("UIElement:render has been called. The derived class should have overridden it.");
+	g_warning ("UIElement:render has been called. The derived class %s should have overridden it.",
+		   dependency_object_get_name (this));
 }
 
 void
