@@ -1838,7 +1838,7 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 		if (!p->hookup_event_callback) {
 			// void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
 			parser_error (p, item->element_name, name,
-					g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n"));
+					g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n", name));
 			return true;
 		}
 
