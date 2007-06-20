@@ -2042,6 +2042,12 @@ dependency_object_get_name (DependencyObject *obj)
 	return Type::Find (obj->GetObjectType ())->name;
 }
 
+Type::Kind
+dependency_object_get_kind (DependencyObject *obj)
+{
+	return obj->GetObjectType ();
+}
+
 void
 dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure)
 {

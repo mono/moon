@@ -9,6 +9,7 @@
 
 	* runtime.cpp (collection_iterator_move_next): If we can't iterate
 	to the next item, don't set current = NULL.
+	(dependency_object_get_name): New function needed for the binding.
 
 2007-06-20  Larry Ewing  <lewing@novell.com>
 
