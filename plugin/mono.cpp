@@ -34,6 +34,8 @@ vm_init ()
 	boot_assembly = g_build_path ("/", home, ".mozilla", "plugins", "moonlight.exe", NULL);
 	mono_config_parse (NULL);
 	moon_domain = mono_jit_init (boot_assembly);
+	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
+	mono_debug_init_1 (moon_domain);
 	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
 	if (moon_boot_assembly){
 		char *argv [2];
