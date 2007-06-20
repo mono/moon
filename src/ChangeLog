@@ -1,3 +1,13 @@
+2007-06-20  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: use gdk_cairo helper functions and clip to the
+	expose event region.
+
+	* runtime.h: remove unused members.
+
+	* media.cpp: use cairo_get_target rather than keeping track of
+	pixmap.
+
 2007-06-20  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp/runtime.h: Add one more callback, this one will hookup

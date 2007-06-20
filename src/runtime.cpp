@@ -1146,24 +1146,26 @@ draw_grid (cairo_t *cairo)
 }
 
 void
-create_xlib (Surface *s, GtkWidget *widget)
+create_similar (Surface *s, GtkWidget *widget)
 {
-	if (s->pixmap){
-		cairo_surface_destroy (s->xlib_surface);
-		cairo_destroy (s->cairo_xlib);
-		g_object_unref (s->pixmap);
-	}
+    cairo_t *ctx = gdk_cairo_create (widget->window);
 
-	s->pixmap = gdk_pixmap_new (GDK_DRAWABLE (widget->window), s->width, s->height, -1);
+    if (s->cairo_xlib){
+	cairo_destroy (s->cairo_xlib);
+    }
 
-	s->xlib_surface = cairo_xlib_surface_create (
-		GDK_WINDOW_XDISPLAY(widget->window),
-		GDK_WINDOW_XWINDOW(GDK_DRAWABLE (s->pixmap)),
-		GDK_VISUAL_XVISUAL (gdk_window_get_visual(widget->window)),
-		s->width, s->height);
+    cairo_surface_t *xlib_surface = cairo_surface_create_similar (
+	   cairo_get_target (ctx), 
+	   CAIRO_CONTENT_COLOR_ALPHA,
+	   s->width, s->height);
 
-	s->cairo_xlib = cairo_create (s->xlib_surface);
+    cairo_destroy (ctx);
+
+    s->cairo_xlib = cairo_create (xlib_surface);
+    cairo_surface_destroy (xlib_surface);
 }
+
+
 
 static void
 surface_realloc (Surface *s)
@@ -1173,7 +1175,7 @@ surface_realloc (Surface *s)
 
 	int size = s->width * s->height * 4;
 	s->buffer = (unsigned char *) malloc (size);
-       
+
 	s->cairo_buffer_surface = cairo_image_surface_create_for_data (
 		s->buffer, CAIRO_FORMAT_ARGB32, s->width, s->height, s->width * 4);
 
@@ -1183,7 +1185,7 @@ surface_realloc (Surface *s)
 		s->cairo = s->cairo_buffer;
 	}
 	else {
-		create_xlib (s, s->drawing_area);
+		create_similar (s, s->drawing_area);
 		s->cairo = s->cairo_xlib;
 	}
 }
@@ -1205,10 +1207,8 @@ gboolean
 realized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
-	cairo_surface_t *xlib;
 
-	create_xlib (s, widget);
-
+	create_similar (s, widget);
 	s->cairo = s->cairo_xlib;
 
 	TimeManager::Instance()->AddHandler ("render", render_surface, s);
@@ -1219,14 +1219,9 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	if (s->xlib_surface) {
-		cairo_surface_destroy(s->xlib_surface);
+	if (s->cairo_xlib) {
 		cairo_destroy (s->cairo_xlib);
-		g_object_unref (s->pixmap);
-
-		s->pixmap = NULL;
 		s->cairo_xlib = NULL;
-		s->xlib_surface = NULL;
 	}
 
 	s->cairo = s->cairo_buffer;
@@ -1247,6 +1242,7 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 #if TIME_REDRAW
 	STARTTIMER (expose, "redraw");
 #endif
+	s->cairo = s->cairo_xlib;
 
 	//
 	// BIG DEBUG BLOB
@@ -1260,14 +1256,26 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
 
+	cairo_reset_clip (s->cairo);
+	gdk_cairo_region (s->cairo, event->region);
+	cairo_clip (s->cairo);
 	surface_repaint (s, event->area.x, event->area.y, event->area.width, event->area.height);
+	cairo_t *ctx = gdk_cairo_create (widget->window);
+	cairo_surface_flush (cairo_get_target (s->cairo));
+	cairo_set_source_surface (ctx, cairo_get_target (s->cairo), 0, 0);
+	gdk_cairo_region (ctx, event->region);
+	cairo_clip (ctx);
+	cairo_paint (ctx);
+	cairo_destroy (ctx);
+
+/*
 	gdk_draw_drawable (
 		widget->window, gtk_widget_get_style (widget)->white_gc, s->pixmap, 
 		event->area.x, event->area.y, // gint src_x, gint src_y,
 		event->area.x, event->area.y, // gint dest_x, gint dest_y,
 		MIN (event->area.width, s->width),
 		MIN (event->area.height, s->height));
-
+*/
 #if TIME_REDRAW
 	ENDTIMER (expose, "redraw");
 #endif
@@ -1568,17 +1576,9 @@ Surface::~Surface ()
 	}
 
 	cairo_destroy (cairo_buffer);
-	if (cairo_xlib)
-		cairo_destroy (cairo_xlib);
-	cairo_xlib = NULL;
 	cairo_buffer = NULL;
 
-	if (pixmap != NULL)
-		gdk_pixmap_unref (pixmap);
-	pixmap = NULL;
 	cairo_surface_destroy (cairo_buffer_surface);
-	if (xlib_surface)
-		cairo_surface_destroy (xlib_surface);
 	cairo_buffer_surface = NULL;
 
 	if (drawing_area != NULL){

@@ -820,7 +820,8 @@ Image::render (Surface *s, int x, int y, int width, int height)
 
 	if (create_xlib_surface) {
 		create_xlib_surface = false;
-		cairo_surface_t *xlib_surface = cairo_surface_create_similar (s->xlib_surface, CAIRO_CONTENT_COLOR_ALPHA,
+		cairo_surface_t *xlib_surface = cairo_surface_create_similar (cairo_get_target (s->cairo_xlib),
+									      CAIRO_CONTENT_COLOR_ALPHA,
 									      pixbuf_width, pixbuf_height);
 		cairo_t *cr = cairo_create (xlib_surface);
 		cairo_set_source_surface (cr, surface, 0, 0);

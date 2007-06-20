@@ -911,7 +911,7 @@ class Surface {
  public:
 	Surface () : width (0), height (0), buffer (0), 
 		cairo_buffer_surface (NULL), cairo_buffer(NULL),
-		xlib_surface(NULL), cairo_xlib(NULL), pixmap(NULL),
+		cairo_xlib(NULL),
 		using_cairo_xlib_surface(0), pixbuf(NULL),
 		cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
 		cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL), cb_surface_resize(NULL),
@@ -932,7 +932,6 @@ class Surface {
 	
 	cairo_surface_t *cairo_buffer_surface;
 	cairo_t         *cairo_buffer;
-	cairo_surface_t *xlib_surface;
 	cairo_t         *cairo_xlib;
 	
 	//
