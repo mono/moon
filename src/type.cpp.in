@@ -149,6 +149,7 @@ types_init_manually (void)
 	Type::RegisterType ("RepeatBehaviour", Type::REPEATBEHAVIOR, true);
 	Type::RegisterType ("Duration", Type::DURATION, true);
 	Type::RegisterType ("int64", Type::INT64, true);
+	Type::RegisterType ("TimeSpan", Type::TIMESPAN, true);
 	Type::RegisterType ("KeyTime", Type::KEYTIME, true);
 	Type::RegisterType ("double*", Type::DOUBLE_ARRAY, false);
 	Type::RegisterType ("Point*", Type::POINT_ARRAY, false);

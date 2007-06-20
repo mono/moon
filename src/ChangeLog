@@ -1,3 +1,39 @@
+2007-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp, clock.h: bad time for a a rearchitecting, perhaps,
+	but this was necessary to get BeginTime's to be supported.  It
+	reintroduces the "popping" in the surface demo, though, and
+	honestly I'm unsure how we can ever guarantee that enough ticks
+	will have occured to be sure we won't see the initial state of the
+	surface objects.
+
+	* animation.cpp: track clock api changes.
+
+	* runtime.h: decl for FramworkElement::OnPropertyChanged.
+	
+	* runtime.cpp (EventObject::Emit): make a copy of the list before
+	we start emitting, to keep us crashing if the list is modified
+	while we're traversing it.
+	(FramworkElement::OnPropertyChanged): invalidate on width/height
+	changes.
+
+	* xaml.cpp: when parsing a TIMESPAN property, use
+	timespan_from_str.  This fixes the parsing of BeginTime
+	attributes.
+
+	* type.cpp.in: register TIMESPAN.
+
+	* value.h.in: add a AsTimeSpan method, and special hacky
+	constructor so the parser can construct a value of type TIMESPAN
+	(which is problematic since it's typedef'ed to gint64.)  Move the
+	TimeSpan typedef here.
+
+	* value.cpp: add the impl for that hacky ctor.
+	
+	* type.h.in: add a TIMESPAN kind.
+
+	* type.h, value.h, type.cpp: sync.
+
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: we need to new the points.

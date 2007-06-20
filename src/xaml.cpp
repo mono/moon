@@ -1714,6 +1714,9 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 	case Type::INT64:
 		obj->SetValue (prop, Value ((gint64) strtol (value, NULL, 10)));
 		break;
+	case Type::TIMESPAN:
+		obj->SetValue (prop, Value (timespan_from_str (value), Type::TIMESPAN));
+		break;
 	case Type::INT32:
 	{
 		// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
@@ -1858,6 +1861,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				break;
 			case Type::INT64:
 				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10)));
+				break;
+			case Type::TIMESPAN:
+				dep->SetValue (prop, Value (timespan_from_str (attr [i + 1]), Type::TIMESPAN));
 				break;
 			case Type::INT32:
 			{

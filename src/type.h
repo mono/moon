@@ -18,6 +18,8 @@
 
 G_BEGIN_DECLS
 
+typedef gint64 TimeSpan;
+
 class Type {
 public:
 	enum Kind {
@@ -34,6 +36,7 @@ public:
 		REPEATBEHAVIOR,
 		DURATION,
 		INT64,
+		TIMESPAN,
 		DOUBLE_ARRAY,
 		POINT_ARRAY,
 		KEYTIME,

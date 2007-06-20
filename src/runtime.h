@@ -801,6 +801,8 @@ class FrameworkElement : public UIElement {
 	FrameworkElement ();
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
 
+	void OnPropertyChanged (DependencyProperty *prop);
+
 	virtual bool inside_object (Surface *s, double x, double y);
 };
 

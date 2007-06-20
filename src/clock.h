@@ -7,12 +7,10 @@ G_BEGIN_DECLS
 
 // misc types
 enum {
-  FillBehaviorHoldEnd,
-  FillBehaviorStop
+	FillBehaviorHoldEnd,
+	FillBehaviorStop
 };
 
-
-typedef gint64 TimeSpan;
 
 struct Duration {
  public:
@@ -145,6 +143,8 @@ class TimeManager : public EventObject {
 		return _instance;
 	}
 
+	TimeSpan GetCurrentTime () { return current_global_time - start_time; }
+
 	static TimeSpan GetCurrentGlobalTime () { return Instance()->current_global_time; }
 
 	void AddChild (Clock *clock);
@@ -167,6 +167,8 @@ class TimeManager : public EventObject {
 	GList *child_clocks; // XXX should we just have a ClockGroup?
 
 	TimeSpan current_global_time;
+	TimeSpan start_time;
+
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
 	int current_timeout;
@@ -195,33 +197,35 @@ void time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data);
 class Timeline;
 class TimelineGroup;
 
+/* our clock is a mixture of the WPF Clock and ClockController
+   classes.  as such, all clocks are controllable */
 class Clock : public DependencyObject {
  public:
+	Clock (Timeline *timeline);
 	~Clock () {  }
 	
-	// events to queue up
-	enum {
-		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,
-		CURRENT_STATE_INVALIDATED        = 0x02,
-		CURRENT_TIME_INVALIDATED         = 0x04,
-		REMOVE_REQUESTED                 = 0x08,
-		SPEED_CHANGED                    = 0x10
-	};
-
-	// states
-	enum ClockState {
-		RUNNING = 0x00,
-		STOPPED = 0x01,
-
-		PAUSED  = 0x80
-	};
-
-	Clock (Timeline *timeline);
 	virtual Type::Kind GetObjectType () { return Type::CLOCK; };
 
-	virtual void SpeedChanged () { };
+	Clock*    GetParent ()          { return parent_clock; }
+	double    GetCurrentProgress () { return current_progress; }
+	TimeSpan  GetCurrentTime ()     { return current_time; }
+	Timeline* GetTimeline ()        { return timeline; }
+	Duration  GetNaturalDuration () { return natural_duration; }
+	bool      GetIsPaused ()        { return is_paused; }
 
-	virtual void Begin (TimeSpan parent_time);
+	TimeSpan GetBeginTime ();
+
+	enum ClockState {
+		Active,  /* time is progressing.  each tick results in a property value changing */
+		Filling, /* time is progressing.  each tick results in NO property value changing */
+		Stopped  /* time is no longer progressing */
+	};
+	ClockState GetClockState () { return current_state; }
+
+	virtual void SpeedChanged () { }
+
+	// ClockController methods
+	void Begin ();
 	void Pause ();
 	void Remove ();
 	void Resume ();
@@ -230,36 +234,48 @@ class Clock : public DependencyObject {
 	void SkipToFill ();
 	void Stop ();
 
-	double GetCurrentProgress ();
-	TimeSpan GetCurrentTime ();
-	Timeline *GetTimeline () { return timeline; }
 
+	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
-	virtual void TimeUpdated (TimeSpan parent_time);
+	virtual void Tick ();
+	void SetParent (Clock *parent) { parent_clock = parent; }
+
+ protected:
+	// events to queue up
+	enum {
+		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,
+		CURRENT_STATE_INVALIDATED        = 0x02,
+		CURRENT_TIME_INVALIDATED         = 0x04,
+		REMOVE_REQUESTED                 = 0x08,
+	};
+	void QueueEvent (int event) { queued_events |= event; }
+
+	Duration *duration;
+	Duration natural_duration;
+
+	TimeSpan begintime;
 
 	ClockState current_state;
 	ClockState new_state;
 
- protected:
 	double current_progress;
+	double new_progress;
+
 	TimeSpan current_time;
-	TimeSpan current_time_while_paused;
-	TimeSpan start_time; /* the time we actually started.  used for computing CurrentTime */
-	TimeSpan iter_start; /* the time we started the current iteration */
-	TimeSpan pause_time;
-	TimeSpan parent_offset; /* the amount we need to subtract from the parent clock's time to get our time */
+	TimeSpan new_time;
 
-	void QueueEvent (int event);
-
- protected:
-	Duration *duration;
-	Duration natural_duration;
+	double current_speed;
+	double new_speed;
 
  private:
+	Clock *parent_clock;
+	TimeSpan last_parent_time;
+
+	bool is_paused;
 	Timeline *timeline;
 	int queued_events;
 
-	bool reversed;  // if we're presently working our way from 1.0 progress to 0.0
+	bool is_reversed;  // if we're presently working our way from 1.0 progress to 0.0
 	bool autoreverse;
 	int remaining_iterations;
 };
@@ -274,13 +290,12 @@ class ClockGroup : public Clock {
 	~ClockGroup ();
 	virtual Type::Kind GetObjectType () { return Type::CLOCKGROUP; };
 
-	virtual void Begin (TimeSpan parent_time);
-
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
 
+	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
-	virtual void TimeUpdated (TimeSpan parent_time);
+	virtual void Tick ();
 
 	GList *child_clocks;
 
@@ -312,6 +327,9 @@ class Timeline : public DependencyObject {
 
 	void SetDuration (Duration duration);
 	Duration* GetDuration ();
+
+	TimeSpan GetBeginTime ();
+	bool HasBeginTime ();
 
 	Duration GetNaturalDuration (Clock *clock);
 	virtual Duration GetNaturalDurationCore (Clock *clock);

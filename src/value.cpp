@@ -44,6 +44,15 @@ Value::Value()
 	Init ();
 }
 
+/* this is needed for the TimeSpan handling in the parser (since
+   timespans are stored as gint64's, we need this to "cast" it as far
+   as the value goes) */
+Value::Value (const Value& v, Type::Kind as)
+{
+	k = as;
+	u = v.u;
+}
+
 Value::Value (const Value& v)
 {
 	k = v.k;

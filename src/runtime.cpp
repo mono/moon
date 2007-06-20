@@ -696,6 +696,18 @@ FrameworkElement::FrameworkElement ()
 {
 }
 
+void
+FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == FrameworkElement::WidthProperty ||
+	    prop == FrameworkElement::HeightProperty) {
+		FullInvalidate (false);
+		return;
+	}
+
+	UIElement::OnPropertyChanged (prop);
+}
+
 bool
 FrameworkElement::inside_object (Surface *s, double x, double y)
 {
@@ -2398,10 +2410,14 @@ EventObject::Emit (char *event_name)
 	if (events == NULL)
 		return;
 	
-	for (GList *l = events; l; l = l->next) {
+	GList *copy = g_list_copy (events);
+
+	for (GList *l = copy; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
 		closure->func (closure->data);
 	}
+
+	g_list_free (copy);
 }
 
 NameScope::NameScope ()

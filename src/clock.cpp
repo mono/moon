@@ -69,6 +69,7 @@ TimeManager::TimeManager ()
     tick_calls (NULL),
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL))
 {
+	start_time = get_now ();
 }
 
 void
@@ -152,8 +153,19 @@ TimeManager::Tick ()
 		// triggering them to queue up their events) using the
 		// value of current_global_time...
 
-		for (GList *l = child_clocks; l; l = l->next)
-			((Clock*)l->data)->TimeUpdated (current_global_time);
+		TimeSpan cur = GetCurrentTime ();
+		for (GList *l = child_clocks; l; l = l->next) {
+			/* start the child clock here if we need to,
+			   otherwise just call its Tick
+			   method */
+			Clock *c = (Clock*)l->data;
+			if (c->GetClockState() != Clock::Stopped) {
+				c->Tick ();
+			}
+			else if ((c->GetClockState() == Clock::Stopped) && (c->GetBeginTime() <= cur)) {
+				c->Begin ();
+			}
+		}
 
 	
 		// ... then cause all clocks to raise the events they've queued up
@@ -179,8 +191,10 @@ TimeManager::Tick ()
 void
 TimeManager::RaiseEnqueuedEvents ()
 {
-	for (GList *l = child_clocks; l; l = l->next)
-		((Clock*)l->data)->RaiseAccumulatedEvents ();
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+		c->RaiseAccumulatedEvents ();
+	}
 }
 
 void
@@ -218,7 +232,13 @@ TimeManager::RemoveChild (Clock *child)
 
 Clock::Clock (Timeline *tl)
   : timeline (tl),
-    current_state (STOPPED),
+    parent_clock (NULL),
+    is_paused (false),
+    is_reversed (false),
+    current_state (Clock::Stopped), new_state (Clock::Stopped),
+    current_speed (1.0), new_speed (1.0),
+    current_progress (0.0), new_progress (0.0),
+    current_time (0), new_time (0),
     queued_events (0),
     natural_duration (Duration::Automatic)
 {
@@ -231,6 +251,10 @@ Clock::Clock (Timeline *tl)
 		// XXX treat both Forever and Duration as Forever.
 		remaining_iterations = -1;
 	}
+
+	if (timeline->HasBeginTime ())
+		begintime = timeline->GetBeginTime ();
+	/* otherwise it's filled in when we Begin the clock */
 
 	autoreverse = timeline->GetAutoReverse ();
 
@@ -247,29 +271,30 @@ Clock::Clock (Timeline *tl)
 	  printf ("Clock %p (%s) has NON-timespan based duration, computed to be %llu\n", this, Type::Find(timeline->GetObjectType())->name, natural_duration.GetTimeSpan ());
 #endif
 	}
-	current_progress = 0.0;
-	current_time = 0;
-	reversed = false;
-	iter_start = 0;
-	parent_offset = 0;
 }
 
 void
-Clock::TimeUpdated (TimeSpan parent_clock_time)
+Clock::Tick ()
 {
-	if ((current_state & STOPPED) != 0) {
-		return;
-	}
+	TimeSpan new_parent_time = parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
 
-	if ((current_state & PAUSED) != 0) {
-		current_time_while_paused = parent_clock_time - iter_start - parent_offset;
-		return;
-	}
+	TimeSpan our_delta = (TimeSpan)((new_parent_time - last_parent_time) * current_speed);
 
-	current_time = parent_clock_time - iter_start - parent_offset;
+	last_parent_time = new_parent_time;
+
+	if (current_state != Clock::Active)
+		return;
+
+	new_time = current_time;
+
+	if (is_reversed)
+		new_time -= our_delta;
+	else
+		new_time += our_delta;
+
 
 #if CLOCK_DEBUG
-	printf ("Clock %p updated to time %lld\n", this, current_time);
+	printf ("Clock %p updated to time %lld\n", this, new_time);
 #endif
 
 	if (natural_duration.HasTimeSpan ()) {
@@ -278,27 +303,24 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 #if CLOCK_DEBUG
 		printf ("+ clock %p duration is %lld\n", this, duration_timespan);
 #endif
-		if (reversed)
-			current_time = duration_timespan - (current_time - duration_timespan);
-
-		if (current_time >= duration_timespan) {
+		if (new_time >= duration_timespan) {
 #if CLOCK_DEBUG
-		  printf ("+ clock %p hit its duration\n", this);
+			printf ("+ clock %p hit its duration\n", this);
 #endif
 			// we've hit the end point of the clock's timeline
 			if (autoreverse) {
 				/* since autoreverse is true we need
 				   to turn around and head back to
 				   0.0 */
-				reversed = true;
-				current_time = duration_timespan - (current_time - duration_timespan);
+				is_reversed = true;
+				new_time = duration_timespan - (new_time - duration_timespan);
 			}
 			else {
 				/* but autoreverse is false. Decrement
 				   the number of remaining iterations.
 
 				   If we're done, Stop().  If we're
-				   not done, force current_time to 0
+				   not done, force new_time to 0
 				   so we start counting from there
 				   again. */
 				if (remaining_iterations > 0) {
@@ -312,32 +334,34 @@ Clock::TimeUpdated (TimeSpan parent_clock_time)
 #if CLOCK_DEBUG
 					printf (" + clock %p should STOP\n", this, remaining_iterations);
 #endif
-					current_time = duration_timespan;
-					Stop ();
+					new_time = duration_timespan;
+// 					if (parent_clock != NULL && parent_clock->GetClockState () == Clock::Active)
+						SkipToFill ();
+// 					else
+// 						Stop ();
 				}
 				else {
-					current_time -= duration_timespan;
-					iter_start = parent_clock_time - current_time;
+					new_time -= duration_timespan;
 				}
 			}
 		}
-		else if (current_time <= 0) {
-			reversed = false;
-			current_time = -current_time;
+		else if (new_time <= 0) {
+			is_reversed = false;
+			new_time = -new_time;
 
 			if (remaining_iterations > 0 && *duration != Duration::Automatic)
 				remaining_iterations --;
 
 			if (remaining_iterations == 0) {
-				current_time = 0;
-				Stop ();
-			}
-			else {
-				iter_start = parent_clock_time - current_time;
+				new_time = 0;
+// 				if (parent_clock != NULL && parent_clock->GetClockState () == Clock::Active)
+ 					SkipToFill ();
+// 				else
+// 					Stop ();
 			}
 		}
 
-		current_progress = (double)current_time / duration_timespan;
+		new_progress = (double)new_time / duration_timespan;
 	}
 
 	QueueEvent (CURRENT_TIME_INVALIDATED);
@@ -347,60 +371,74 @@ void
 Clock::RaiseAccumulatedEvents ()
 {
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
-		events->Emit (/*this,*/ "CurrentTimeInvalidated");
+		current_time = new_time;
+		current_progress = new_progress;
+
+		events->Emit ("CurrentTimeInvalidated");
 	}
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
 		current_state = new_state;
-		events->Emit (/*this,*/ "CurrentStateInvalidated");
+		events->Emit ("CurrentStateInvalidated");
 	}
 
-	if ((queued_events & SPEED_CHANGED) != 0)
+	if ((queued_events & CURRENT_GLOBAL_SPEED_INVALIDATED) != 0) {
+		current_speed = new_speed;
 		SpeedChanged ();
+		events->Emit ("CurrentGlobalSpeedInvalidated"); /* this probably happens in SpeedChanged () */
+	}
 
 	/* XXX more events here, i assume */
 
 	queued_events = 0;
 }
 
-void
-Clock::QueueEvent (int event)
-{
-	queued_events |= event;
-}
-
 TimeSpan
-Clock::GetCurrentTime ()
+Clock::GetBeginTime ()
 {
-	return current_time;
-}
-
-double
-Clock::GetCurrentProgress ()
-{
-	return current_progress;
+	if (timeline->HasBeginTime ()) {
+		return timeline->GetBeginTime ();
+	}
+	else {
+		return parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
+	}
 }
 
 void
-Clock::Begin (TimeSpan start_time)
-
+Clock::Begin ()
 {
-	this->start_time = start_time;
-	this->iter_start = start_time;
-	current_state = new_state = RUNNING; /* should we invalidate the state here? */
-	QueueEvent (CURRENT_STATE_INVALIDATED);
+	if (current_state != Clock::Stopped)
+		return;
+
+#if CLOCK_DEBUG
+	printf ("Starting clock %p (%s) on the next tick\n", this, Type::Find (GetTimeline()->GetObjectType())->name);
+#endif
+
+	/* we're starting.  initialize our last_parent_time and current_time fields */
+	last_parent_time = parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
+
+	new_time = last_parent_time - GetBeginTime ();
+
+	if (natural_duration.HasTimeSpan ())
+		new_progress = (double)current_time / natural_duration.GetTimeSpan();
+	else
+		new_progress = 0.0;
+
+	new_state = Clock::Active;
+	QueueEvent (CURRENT_STATE_INVALIDATED | CURRENT_TIME_INVALIDATED);
 }
 
 void
 Clock::Pause ()
 {
-	if ((new_state & PAUSED) == PAUSED)
+	if (is_paused)
 		return;
 
-	new_state = (ClockState)(new_state | PAUSED);
-	QueueEvent (CURRENT_STATE_INVALIDATED);
+	// XXX this likely should be updated in RaiseAccumulatedEvents like current_speed is
+	is_paused = true;
 
-	pause_time = current_time;
+	new_speed = 0.0;
+	QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED);
 }
 
 void
@@ -411,13 +449,14 @@ Clock::Remove ()
 void
 Clock::Resume ()
 {
-	if ((new_state & PAUSED) == 0)
+	if (!is_paused)
 		return;
 
-	new_state = (ClockState)(new_state & ~PAUSED);
-	QueueEvent (CURRENT_STATE_INVALIDATED);
+	// XXX this likely should be updated in RaiseAccumulatedEvents like current_speed is
+	is_paused = false;
 
-	parent_offset += current_time_while_paused - pause_time;
+	new_speed = 1.0;
+	QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED);
 }
 
 void
@@ -433,6 +472,11 @@ Clock::SeekAlignedToLastTick ()
 void
 Clock::SkipToFill ()
 {
+#if CLOCK_DEBUG
+	printf ("filling clock %p after this tick\n", this);
+#endif
+	new_state = Clock::Filling;
+	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
 
 void
@@ -441,7 +485,7 @@ Clock::Stop ()
 #if CLOCK_DEBUG
 	printf ("stopping clock %p after this tick\n", this);
 #endif
-	new_state = STOPPED;
+	new_state = Clock::Stopped;
 	QueueEvent (CURRENT_STATE_INVALIDATED);
 }
 
@@ -449,8 +493,8 @@ Clock::Stop ()
 
 ClockGroup::ClockGroup (TimelineGroup *timeline)
   : timeline (timeline),
-    Clock (timeline),
-    child_clocks (NULL)
+    child_clocks (NULL),
+    Clock (timeline)
 {
 }
 
@@ -459,38 +503,36 @@ ClockGroup::AddChild (Clock *clock)
 {
 	child_clocks = g_list_append (child_clocks, clock);
 	clock->ref ();
+	clock->SetParent (this);
 }
 
 void
 ClockGroup::RemoveChild (Clock *clock)
 {
 	child_clocks = g_list_remove (child_clocks, clock);
+	clock->SetParent (NULL);
 	clock->unref ();
 }
 
 void
-ClockGroup::Begin (TimeSpan start_time)
+ClockGroup::Tick ()
 {
-	this->Clock::Begin (start_time);
+	/* recompute our current_time */
+	this->Clock::Tick ();
+
+	if (GetClockState() == Clock::Stopped)
+		return;
 
 	for (GList *l = child_clocks; l; l = l->next) {
-		((Clock*)l->data)->Begin (current_time);
-	}
-}
-
-void
-ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
-{
-	if ((current_state & STOPPED) != 0) {
-		return;
-	}
-
-	/* recompute our current_time */
-	this->Clock::TimeUpdated (parent_clock_time);
-
-	if ((current_state & STOPPED) == 0) {
-		for (GList *l = child_clocks; l; l = l->next) {
-			((Clock*)l->data)->TimeUpdated (current_time);
+		/* start the child clock here if we need to,
+		   otherwise just call its Tick
+		   method */
+		Clock *c = (Clock*)l->data;
+		if (c->GetClockState() != Clock::Stopped) {
+			c->Tick ();
+		}
+		else if ((c->GetClockState() == Clock::Stopped) && (c->GetBeginTime () <= current_time)) {
+			c->Begin ();
 		}
 	}
 
@@ -498,19 +540,21 @@ ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 
 	   XXX we should probably do this by attaching to
 	   CurrentStateInvalidated on the child clocks instead of
-	   looping over them at the end of each TimeUpdated call.
+	   looping over them at the end of each Tick call.
 	*/
 	if (*duration == Duration::Automatic) {
 		bool stop = true;
 		for (GList *l = child_clocks; l; l = l->next) {
-			if ((((Clock*)l->data)->current_state & Clock::STOPPED) == 0) {
+			Clock *c = (Clock*)l->data;
+			if (c->GetClockState() == Clock::Active) {
 				stop = false;
 				break;
 			}
 		}
 
 		if (stop) {
-			Stop ();
+			// we need to put this in, but with it the TimeManager restarts the storyboard
+			// Stop ();
 		}
 	}
 }
@@ -518,9 +562,12 @@ ClockGroup::TimeUpdated (TimeSpan parent_clock_time)
 void
 ClockGroup::RaiseAccumulatedEvents ()
 {
-	/* if we're changing from running to stopped and our progress is 1.0, we need to emit Completed */
 	bool need_completed = false;
-	if (current_progress == 1.0 && (new_state & STOPPED) != 0 && (current_state & STOPPED) == 0)
+	
+	/* this needs more work.  check 
+	   http://msdn2.microsoft.com/en-us/library/system.windows.media.animation.clock.completed.aspx
+	*/
+	if (new_state == Clock::Filling && current_state != Clock::Filling)
 		need_completed = true;
 
 	/* raise our events */
@@ -624,6 +671,20 @@ Timeline::GetNaturalDurationCore (Clock *clock)
 	return Duration::Automatic;
 }
 
+bool
+Timeline::HasBeginTime ()
+{
+	return GetValue (Timeline::BeginTimeProperty) != NULL;
+}
+
+TimeSpan
+Timeline::GetBeginTime ()
+{
+	Value *v = GetValue (Timeline::BeginTimeProperty);
+	return v == NULL ? 0LL : v->AsTimeSpan();
+}
+
+
 /* timeline group */
 
 DependencyProperty* TimelineGroup::ChildrenProperty;
@@ -718,10 +779,13 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 			if (span > repeat->GetDuration ())
 				span = repeat->GetDuration ();
 		}
-		
+
+		if (timeline->GetAutoReverse ())
+			span *= 2;
+
 		Value *v = timeline->GetValue (Timeline::BeginTimeProperty);
 		if (v)
-			span += v->AsInt64();
+			span += v->AsTimeSpan();
 		
 		if (duration_span < span) {
 			duration_span = span;
@@ -750,7 +814,7 @@ clock_init (void)
 {
 	/* Timeline properties */
 	Timeline::AutoReverseProperty = DependencyObject::Register (Type::TIMELINE, "AutoReverse", new Value (false));
-	Timeline::BeginTimeProperty = DependencyObject::RegisterNullable (Type::TIMELINE, "BeginTime", Type::INT64);
+	Timeline::BeginTimeProperty = DependencyObject::RegisterNullable (Type::TIMELINE, "BeginTime", Type::TIMESPAN);
 	Timeline::DurationProperty = DependencyObject::Register (Type::TIMELINE, "Duration", new Value (Duration::Automatic));
 	Timeline::RepeatBehaviorProperty = DependencyObject::Register (Type::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
 	Timeline::FillBehaviorProperty = DependencyObject::Register (Type::TIMELINE, "FillBehavior", new Value ((int)FillBehaviorHoldEnd));

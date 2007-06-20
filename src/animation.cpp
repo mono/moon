@@ -157,7 +157,7 @@ void
 Storyboard::Begin ()
 {
 	// we shouldn't begin again, I'd imagine..
-	if (root_clock && (root_clock->current_state & Clock::STOPPED) == 0)
+	if (root_clock && (root_clock->GetClockState() == Clock::Stopped) == 0)
 		return;
 
 	/* destroy the clock hierarchy and recreate it to restart.
@@ -182,10 +182,6 @@ Storyboard::Begin ()
 	// hack to make storyboards work..  we need to attach them to
 	// TimeManager's list of clocks
 	TimeManager::Instance()->AddChild (root_clock);
-
-	root_clock->Begin (TimeManager::GetCurrentGlobalTime());
-
-	TimeManager::Instance()->Tick ();
 }
 
 void

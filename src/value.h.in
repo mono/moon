@@ -34,6 +34,7 @@ public:
 	Value ();
 	Value (const Value& v);
 	Value (Type::Kind k);
+	Value (const Value& v, Type::Kind as);
 	Value (bool z);
 	Value (double d);
 	Value (guint64 i);
@@ -78,6 +79,7 @@ public:
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
 	guint64		AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
 	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
+	TimeSpan	AsTimeSpan ()	{ checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
 	gint32		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
 	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
 	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
