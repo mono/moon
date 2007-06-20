@@ -424,7 +424,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 		g_strfreev (name);
 
 		if (name [1])
-			return parser_error (p, name [1], NULL, g_strdup_printf ("No handlers available for namespace: '%s'\n", name [0]));
+			return parser_error (p, name [1], NULL, g_strdup_printf ("No handlers available for namespace: '%s' (%s)\n", name [0], el));
 		else
 			return parser_error (p, el, NULL, g_strdup_printf ("No namespace mapping available for element: '%s'\n", el));
 	}
