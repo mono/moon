@@ -874,14 +874,14 @@ get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, P
 	int c = *count;
 
 	while (more_points_available (data)) {
-		Point n;
+		Point *n = new Point ();
 
-		get_point (&n, &data);
+		get_point (n, &data);
 		advance (&data);
 
-		if (relative) make_relative (cp, &n);
+		if (relative) make_relative (cp, n);
 
-		pl = g_slist_append (pl, &n);
+		pl = g_slist_append (pl, n);
 		c++;
 	}
 
@@ -891,6 +891,7 @@ get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, P
 		t = (Point *) pl->data;
 		pts [i].x = t->x;
 		pts [i].y = t->y;
+		
 		pl = pl->next;
 	}
 

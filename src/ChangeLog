@@ -1,3 +1,7 @@
+2007-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: we need to new the points.
+
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Add safety to ensure the number of points are 
