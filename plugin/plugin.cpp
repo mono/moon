@@ -121,8 +121,8 @@ void
 PluginInstance::Finalize ()
 {
 	// Container must be destroyed or we have segfault when browser's closes.
-	//if (this->container != NULL)
-	//gtk_widget_destroy (this->container);
+	if (this->container != NULL)
+		gtk_widget_destroy (this->container);
 }
 
 NPError 

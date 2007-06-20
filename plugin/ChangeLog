@@ -1,3 +1,7 @@
+2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp: Uncomment container detroy lines in Finalize method.
+
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp: Alloc one byte to set it to NULL so we don't
