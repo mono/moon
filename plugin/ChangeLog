@@ -1,3 +1,8 @@
+2007-06-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Alloc one byte to set it to NULL so we don't
+	write to unallocated memory.
+
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::Write): it turns out the "offset"

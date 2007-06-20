@@ -231,7 +231,7 @@ PluginClass::StringToNPVariant (char *value, NPVariant *result)
 		strcpy (retval, value);
 	} else {
 		len = 0;
-		retval = (char *) NPN_MemAlloc (len);
+		retval = (char *) NPN_MemAlloc (1);
 		retval[0] = 0;
 	}
 
