@@ -765,6 +765,9 @@ PolyBezierSegment::Draw (Surface *s)
 	Point* points = poly_bezier_segment_get_points (this, &count);
 
 	// we need at least 3 points
+	if (!points || (count % 3) != 0)
+		return;
+
 	for (int i=0; i < count - 2; i+=3) {
 		cairo_curve_to (s->cairo, points[i].x, points[i].y, points[i+1].x, points[i+1].y,
 			points[i+2].x, points[i+2].y);
@@ -863,7 +866,7 @@ PolyQuadraticBezierSegment::Draw (Surface *s)
 {
 	int count = 0;
 	Point* points = poly_quadratic_bezier_segment_get_points (this, &count);
-	if (!points)
+	if (!points || ((count % 2) != 0))
 		return;
 
 	// origin

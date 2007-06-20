@@ -1,3 +1,8 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.cpp: Add safety to ensure the number of points are 
+	valid before iterating on them.
+
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: make sure to get all the points.
