@@ -335,6 +335,7 @@ start_element (void *data, const char *el, const char **attr)
 		if (!p->top_element) {
 			p->top_element = inst;
 			p->current_element = inst;
+			NameScope::SetNameScope (p->top_element->item, p->namescope);
 			return;
 		}
 
@@ -603,11 +604,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 			*element_type = parser_info->top_element->info->dependency_type;
 		free_recursive (parser_info->top_element);
 
-		if (!parser_info->error_args) {
-			NameScope::SetNameScope (res, parser_info->namescope);
-		}
-		else {
-			res = NULL;
+		if (parser_info->error_args) {
 			*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
@@ -679,10 +676,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 			*element_type = parser_info->top_element->info->dependency_type;
 		free_recursive (parser_info->top_element);
 
-		if (!parser_info->error_args) {
-			NameScope::SetNameScope (res, parser_info->namescope);
-		}
-		else {
+		if (parser_info->error_args) {
 			res = NULL;
 			*element_type = Type::INVALID;
 			goto cleanup_and_return;
