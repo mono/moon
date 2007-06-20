@@ -1,3 +1,10 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.cpp|h: Revert previous changes. That didn't work well
+	with groups/collections.
+	* shape.cpp: Path::Draw now process the path (find and susbtract
+	origin) when Stretch requires it.
+
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Set the namescope right away, so FindName will work in

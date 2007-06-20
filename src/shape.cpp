@@ -903,10 +903,72 @@ void
 Path::Draw (Surface *s)
 {
 	Geometry* data = path_get_data (this);
-	if (data) {
-		Stretch stretch = shape_get_stretch (this);
-		data->Draw (s, stretch);
+	if (!data)
+		return;
+
+	data->Draw (s);
+
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch == StretchNone)
+		return;
+
+	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
+	 * (resulting in something even more complex).
+	 * IDEA: If we implement caching then this would be a nice candidate.
+	 */
+	double x = G_MAXDOUBLE;
+	double y = G_MAXDOUBLE;
+	cairo_path_t* path = cairo_copy_path (s->cairo);
+
+	// find origin
+	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
+		cairo_path_data_t *data = &path->data[i];
+		switch (data->header.type) {
+		case CAIRO_PATH_CURVE_TO:
+			if (x > data[3].point.x)
+				x = data[3].point.x;
+			if (y > data[3].point.y)
+				y = data[3].point.y;
+			if (x > data[2].point.x)
+				x = data[2].point.x;
+			if (y > data[2].point.y)
+				y = data[2].point.y;
+			/* fallthru */
+		case CAIRO_PATH_LINE_TO:
+		case CAIRO_PATH_MOVE_TO:
+			if (x > data[1].point.x)
+				x = data[1].point.x;
+			if (y > data[1].point.y)
+				y = data[1].point.y;
+			break;
+		case CAIRO_PATH_CLOSE_PATH:
+			break;
+		}
 	}
+
+	// substract origin
+	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
+		cairo_path_data_t *data = &path->data[i];
+		switch (data->header.type) {
+		case CAIRO_PATH_CURVE_TO:
+			data[3].point.x -= x;
+			data[3].point.y -= y;
+			data[2].point.x -= x;
+			data[2].point.y -= y;
+			/* fallthru */
+		case CAIRO_PATH_LINE_TO:
+		case CAIRO_PATH_MOVE_TO:
+			data[1].point.x -= x;
+			data[1].point.y -= y;
+			break;
+		case CAIRO_PATH_CLOSE_PATH:
+			break;
+		}
+	}
+
+	cairo_new_path (s->cairo);
+	cairo_append_path (s->cairo, path);
+	cairo_path_destroy (path);
 }
 
 /*
