@@ -1,3 +1,15 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (runtime_shutdown): set inited to false, since we
+	want people to be able to call runtime_init again after this.
+
+	* type.cpp.in (Type::RegisterType): allocate types if we need to.
+	(Type::Shutdown): free types.
+
+	* type.h.in (private): make the types array dynamically allocated.
+
+	* type.h, type.cpp: sync
+
 2007-06-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock): Need to actually set ActualWidth and

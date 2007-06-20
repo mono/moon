@@ -28,7 +28,7 @@
 	Type implementation
 */
 
-Type* Type::types [];
+Type** Type::types;
 GHashTable* Type::types_by_name = NULL;
 
 Type::Type (char *name, Type::Kind type, Type::Kind parent)
@@ -65,7 +65,7 @@ Type *
 Type::RegisterType (char *name, Type::Kind type, Type::Kind parent, bool value_type)
 {
 	if (types == NULL) {
-		memset (&types, 0, Type::LASTTYPE * sizeof (Type*));
+		types = (Type**)calloc (Type::LASTTYPE, sizeof (Type*));
 	}
 	if (types_by_name == NULL) {
 		types_by_name = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -125,6 +125,10 @@ Type::Find (Type::Kind type)
 void
 Type::Shutdown ()
 {
+	if (types) {
+		g_free (types);
+		types = NULL;
+	}
 	if (types_by_name) {
 		g_hash_table_destroy (types_by_name);
 		types_by_name = NULL;

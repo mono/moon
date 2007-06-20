@@ -169,7 +169,7 @@ public:
 private:
 	Type (char *name, Type::Kind type, Type::Kind parent);
 	~Type ();
-	static Type* types [Type::LASTTYPE];
+	static Type** types;
 	static GHashTable *types_by_name;
 	static void free_type (gpointer v);
 };
