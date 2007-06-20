@@ -923,6 +923,9 @@ geometry_from_str (char *str)
 		if (g_ascii_isspace (*data))
 			data++;
 
+		if (!*data)
+			break;
+
 		bool relative = false;
 
 		switch (*data) {

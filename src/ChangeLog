@@ -3,6 +3,8 @@
 	* xaml.cpp: make sure to get all the points.
 	- sneak peek at the exciting new attached property setting code.
 	- improve error message
+	- dont step off the end of the string when the trailing characters
+	are white space.
 
 2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
 
