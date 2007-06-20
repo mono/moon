@@ -1,3 +1,7 @@
+2007-06-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Enforce UIElement::ClipProperty when rendering Canvas
+
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Content properties can be inherited.

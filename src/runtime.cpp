@@ -1367,8 +1367,18 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	GList *il;
 	double actual [6];
 	
+	cairo_save (s->cairo);  // for UIElement::ClipProperty
+
 	cairo_set_matrix (s->cairo, &absolute_xform);
-	Value *value = GetValue (Panel::BackgroundProperty);
+
+	Value *value = GetValue (Canvas::ClipProperty);
+	if (value) {
+		Geometry *geometry = value->AsGeometry ();
+		geometry->Draw (s);
+		cairo_clip (s->cairo);
+	}
+
+	value = GetValue (Panel::BackgroundProperty);
 	if (value) {
 		double fwidth = framework_element_get_width (this);
 		double fheight = framework_element_get_height (this);
@@ -1454,7 +1464,8 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	}
 	level -= 4;
 	//draw_grid (s->cairo);
-		
+
+	cairo_restore (s->cairo); // for UIElement::ClipProperty
 }
 
 Canvas *
