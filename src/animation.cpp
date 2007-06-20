@@ -969,7 +969,7 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 	Color start, end;
 
-	start = baseValue->AsColor();
+	start = *baseValue->AsColor();
 	end = *to;
 
 	return new Value (LERP (start, end, splineProgress));
@@ -1000,7 +1000,7 @@ SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 	Point start, end;
 
-	start = baseValue->AsPoint();
+	start = *baseValue->AsPoint();
 	end = *to;
 
 	return new Value (LERP (start, end, splineProgress));
@@ -1423,10 +1423,9 @@ animation_init (void)
  	ColorKeyFrame::ValueProperty = DependencyObject::Register (Type::COLORKEYFRAME, "Value", Type::COLOR);
 
 	/* Spline keyframe properties */
-	KeySpline *default_keyspline = new KeySpline (0, 0, 1, 0);
-	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (default_keyspline));
- 	SplineColorKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
- 	SplinePointKeyFrame::KeyTimeProperty = DependencyObject::Register (Value::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
+	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
+ 	SplineColorKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
+ 	SplinePointKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
 
 	/* KeyFrame animation properties */
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);

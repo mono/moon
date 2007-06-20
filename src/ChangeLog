@@ -1,5 +1,12 @@
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp: um.. "oops".
+
+	* xaml.cpp (xaml_init): enable the parsing of the color/point
+	spline key frames.
+
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp: guard against division by zero in the double
 	keyframe GetCurrentValue method.  I'll fix this method up some
 	more and then report it to the other animation types.

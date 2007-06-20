@@ -2096,7 +2096,7 @@ xaml_init (void)
 	XamlElementInfo *ckf = register_ghost_element ("ColorKeyFrame", keyfrm, Type::COLORKEYFRAME);
 	rdoe (dem, "DiscreteColorKeyFrame", ckf, Type::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
 	rdoe (dem, "LinearColorKeyFrame", ckf, Type::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
-//	rdoe (dem, "SplineColorKeyFrame", ckf, Value::SPLINECOLORKEYFRAME, (create_item_func) spline_color_key_frame_new);
+	rdoe (dem, "SplineColorKeyFrame", ckf, Type::SPLINECOLORKEYFRAME, (create_item_func) spline_color_key_frame_new);
 
 	XamlElementInfo *dkf = register_ghost_element ("DoubleKeyFrame", keyfrm, Type::DOUBLEKEYFRAME);
 	rdoe (dem, "DiscreteDoubleKeyFrame", dkf, Type::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
@@ -2106,7 +2106,7 @@ xaml_init (void)
 	XamlElementInfo *pkf = register_ghost_element ("PointKeyFrame", keyfrm, Type::POINTKEYFRAME);
 	rdoe (dem, "DiscretePointKeyFrame", pkf, Type::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
 	rdoe (dem, "LinearPointKeyFrame", pkf, Type::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
-//	rdoe (dem, "SplinePointKeyFrame", pkf, Value::SPLINEPOINTKEYFRAME, (create_item_func) spline_point_key_frame_new);
+	rdoe (dem, "SplinePointKeyFrame", pkf, Type::SPLINEPOINTKEYFRAME, (create_item_func) spline_point_key_frame_new);
 
 	rdoe (dem, "KeySpline", NULL, Type::KEYSPLINE, (create_item_func) key_spline_new);
 
