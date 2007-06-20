@@ -225,7 +225,7 @@ class XNamespace : public XamlNamespace {
 			DependencyObject *dob = p->custom_element_callback (value, NULL);
 			if (!dob)
 				parser_error (p, item->element_name, attr,
-						g_strdup_printf ("Unable to resolve c:Class type %s\n", value));
+						g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
 
 			item->item = dob;
 			return;

@@ -2,6 +2,7 @@
 
 	* xaml.cpp: make sure to get all the points.
 	- sneak peek at the exciting new attached property setting code.
+	- improve error message
 
 2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
 
