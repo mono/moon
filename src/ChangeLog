@@ -1,3 +1,8 @@
+2007-06-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Fix Shape::getbounds to work even if no stroke brush is
+	assigned, in that case we get the extents of the fill.
+
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp: um.. "oops".

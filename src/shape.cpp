@@ -177,15 +177,16 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 	//	absolute_xform.y0);
 
 	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
+	// unless there is no stroke brush assigned, which requires us to fill and use cairo_fill_extents
 	// also not every shapes can be filled, e.g. polylines, CallFill
-	if (consider_fill && CanFill ()) {
+	if ((consider_fill || !stroke) && CanFill ()) {
 		if (fill) {
 			Draw (s);
 			if (do_op) {
-				if (fill->SetupBrush (s->cairo, this))
-					cairo_fill (s->cairo);
-				else
-					cairo_new_path (s->cairo);
+				fill->SetupBrush (s->cairo, this);
+				cairo_fill (s->cairo);
+			} else {
+				cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
 			}
 		}
 	}
@@ -221,10 +222,10 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 
 		Draw (s);
 		if (do_op) {
-			if (stroke->SetupBrush (s->cairo, this))
-				cairo_stroke (s->cairo);
-			else
-				cairo_new_path (s->cairo);
+			stroke->SetupBrush (s->cairo, this);
+			cairo_stroke (s->cairo);
+		} else {
+			cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 		}
 	}
 }
@@ -248,7 +249,8 @@ Shape::getbounds ()
 	cairo_save (s->cairo);
 	// dont do the operation and don't do the fill setup
 	DoDraw (s, false, false);
-	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
+	// DoDraw will call cairo_stroke_extents, or cairo_fill_extents if no
+	// stroke is assigned, and update x1, y1, x2 and y2.
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
 
