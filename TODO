@@ -40,37 +40,6 @@ Feel free to add items to this TODO list
 	  	  a destruction when we pass an object to unmanaged
 		  land during a P/Invoke
 
-* XAML Support
-
-	Add support to each element to be created from a xaml string.
-
-* XAML, the revenge of namespaces:
-
-	Consider this:
-                        
-                        <Chess:BoardUI
-                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                          Width="640" Height="480"   Background="black"
-                          xmlns:Chess="clr-namespace:Chess;assembly=ClientBin/Chess.dll"
-                          Loaded="Canvas_Loaded">
-
-	I suggest that the xaml parsing routines return an error if the
-	resource "ClientBin/Chess.dll" does not exist, and have the caller
-	retry the call if it can satisfy the ClientBin/Chess.dll request.
-
-	By using the above mechanism we can avoid having the XAML parser
-	do a recursive callback.   Instead when the dependency files are 
-	satisfied, we can retry the loading.
-
-* XAML, callbacks during initial construction
-
-	When the code above notices the "assembly" stuff, it should call
-	back a routine so we can provide the UIElement that will be created.
-	
-	In this case, we will have the browser download the stuff, instantiate
-	the object in managed land, and return the object.
-
 
 * Paths
 
@@ -107,18 +76,9 @@ Feel free to add items to this TODO list
 
 		NativeMethods.UIElement_register_interest_in_events (...)
 
-* Canvas/Surface
-
-	The canvas currently is set to width/height = 0 (we never initialize it),
-	but the surface should actually track the size of the canvas.
-
-	This leads to code in Canvas::handle_motion that does not work
-	for now (since we are an object with no size).
-
 * Mouse
 
 	Implement mouse grabs
-
 
 * Gtk Hackery
 
