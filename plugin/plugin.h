@@ -28,6 +28,8 @@ class PluginInstance
 	char *initParams;
 	bool isLoaded;
 	char *source;
+	char *onLoad;
+	char *onError;
 
 	bool windowless;
 
@@ -63,6 +65,8 @@ class PluginInstance
 	void UrlNotify (const char* url, NPReason reason, void* notifyData);
 	void Print (NPPrint* platformPrint);
 	int16 EventHandle (void* event);
+	bool JsExecute (const char *expression);
+
 
 	// Gtk controls
 	GtkWidget *container;  // plugin container object

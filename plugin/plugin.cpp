@@ -80,6 +80,8 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->initParams = false;
 	this->isLoaded = false;
 	this->source = NULL;
+	this->onLoad = NULL;
+	this->onError = NULL;
 
 	this->windowless = false;
 	
@@ -108,6 +110,16 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		// initParams.
 		if (!strcasecmp (argn[i], "initParams")) {
 			this->initParams = argv[i];
+		}
+
+		// onLoad.
+		if (!strcasecmp (argn[i], "onLoad")) {
+			this->onLoad = argv[i];
+		}
+
+		// onError.
+		if (!strcasecmp (argn[i], "onError")) {
+			this->onError = argv[i];
 		}
 
 		// Source url handle.
@@ -238,7 +250,7 @@ PluginInstance::UpdateSource ()
 void 
 PluginInstance::UpdateSourceByReference (const char *value)
 {
-	NPObject *object;
+	NPObject *object = NULL;
 	NPString reference;
 	NPVariant result;
 
@@ -270,6 +282,39 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	}
 
 	NPN_ReleaseObject (object);
+}
+
+bool
+PluginInstance::JsExecute (const char *expression)
+{
+	bool retval = false;
+	NPObject *object = NULL;
+	NPString reference;
+	NPVariant result;
+
+	if (NPERR_NO_ERROR != NPN_GetValue(this->instance, NPNVWindowNPObject, &object)) {
+		DEBUGMSG ("*** Failed to get window object");
+		return false;
+	}
+
+	char jscript [strlen (expression) + 4];
+
+	g_strlcpy (jscript, expression, sizeof (jscript));
+	g_strlcat (jscript, "();", sizeof (jscript));
+
+	reference.utf8characters = jscript;
+	reference.utf8length = strlen (jscript);
+
+	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
+		if (&result)
+			retval = true;
+
+		NPN_ReleaseVariantValue (&result);
+	}
+
+	NPN_ReleaseObject (object);
+	
+	return retval;
 }
 
 NPError
@@ -341,7 +386,10 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 			surface_attach (this->surface, element);
 		#endif
 
-		this->isLoaded = true;
+		if (!this->isLoaded) {
+			this->isLoaded = true;
+			JsExecute (this->onLoad);
+		}
 	}
 
 #ifdef RUNTIME

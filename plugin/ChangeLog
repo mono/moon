@@ -1,3 +1,9 @@
+2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp, plugin.h: Implement JsExecute method and use it to call onload
+	event specified in control creation. onLoad and onError field is also 
+	created.
+
 2007-06-20  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight.cs: Tie into events.
