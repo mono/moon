@@ -345,12 +345,20 @@ start_element (void *data, const char *el, const char **attr)
 
 	if (elem) {
 		inst = elem->create_element (p, elem);
+
+		if (!inst || !inst->item)
+			return;
+
 		elem->set_attributes (p, inst, attr);
+
+		// Setting the attributes can kill the item
+		if (!inst->item)
+			return;
 
 		if (!p->top_element) {
 			p->top_element = inst;
 			p->current_element = inst;
-			NameScope::SetNameScope (p->top_element->item, p->namescope);
+			NameScope::SetNameScope (inst->item, p->namescope);
 			return;
 		}
 

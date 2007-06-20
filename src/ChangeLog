@@ -1,5 +1,10 @@
 2007-06-20  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Improve the way we handle x:Class attributes failing
+	to load.
+
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Hookup attached properties in the property_from_str
 	method.
 
