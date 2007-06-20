@@ -1,3 +1,8 @@
+2007-06-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Call cairo_[stroke|fill]_extents inside Shape::getbounds
+	or the mouse moving won't work.
+
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Fix Shape::getbounds to work even if no stroke brush is
