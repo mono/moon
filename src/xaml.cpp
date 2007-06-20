@@ -891,6 +891,7 @@ get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, P
 		t = (Point *) pl->data;
 		pts [i].x = t->x;
 		pts [i].y = t->y;
+		pl = pl->next;
 	}
 
 	last = t;
@@ -1073,7 +1074,6 @@ geometry_from_str (char *str)
 				pl = g_slist_append (pl, &cp2);
 				pl = g_slist_append (pl, &cp3);
 
-				
 				Point last;
 				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
 				PolyBezierSegment *pbs = new PolyBezierSegment ();
@@ -1681,8 +1681,18 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 ///
 
 void
-xaml_set_property_from_str (DependencyObject *obj, const char *pname, const char *value)
+xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const char *value)
 {
+	const char *pname = full_pname;
+	char *atchname = NULL;
+	for (int a = 0; full_pname [a]; a++) {
+		if (full_pname [a] != '.')
+			continue;
+		atchname = g_strndup (full_pname, a);
+		pname = full_pname + a + 1;
+		break;
+	}
+
 	DependencyProperty *prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
 
 	if (!prop) {

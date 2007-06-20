@@ -1,3 +1,8 @@
+2007-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: make sure to get all the points.
+	- sneak peek at the exciting new attached property setting code.
+
 2007-06-19  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* *.cpp: Updated to use the new List type.
