@@ -150,6 +150,21 @@ class XamlElementInfo {
 
 	}
 
+        const char * GetContentProperty ()
+	{
+		XamlElementInfo *walk = this;
+
+		while (walk) {
+
+			if (walk->content_property)
+				return walk->content_property;
+
+			walk = walk->parent;
+		}
+
+		return NULL;
+	}
+	
  protected:
 	XamlElementInfo () { }
 
@@ -1513,9 +1528,9 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 			dep = DependencyObject::GetDependencyProperty (walk->info->dependency_type, prop_name [1]);
 
 			g_strfreev (prop_name);
-		} else if (walk && walk->info->content_property) {
+		} else if (walk && walk->info->GetContentProperty ()) {
 			dep = DependencyObject::GetDependencyProperty (walk->info->dependency_type,
-					(char *) walk->info->content_property);			
+					(char *) walk->info->GetContentProperty ());			
 		}
 
 		if (dep && dep->value_type == i->dependency_type) {
@@ -1569,9 +1584,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	}
 
 	
-	if (parent->info->content_property) {
+	if (parent->info->GetContentProperty ()) {
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->dependency_type,
-				(char *) parent->info->content_property);
+				(char *) parent->info->GetContentProperty ());
 
 		if (!dep)
 			return;
@@ -2110,6 +2125,7 @@ xaml_init (void)
 
 	XamlElementInfo *gb = register_ghost_element ("GradientBrush", brush, Type::GRADIENTBRUSH);
 	gb->content_property = "GradientStops";
+
 	rdoe (dem, "LinearGradientBrush", gb, Type::LINEARGRADIENTBRUSH, (create_item_func) linear_gradient_brush_new);
 	rdoe (dem, "RadialGradientBrush", gb, Type::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
 

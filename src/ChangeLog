@@ -1,5 +1,9 @@
 2007-06-19  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Content properties can be inherited.
+
+2007-06-19  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Make sure that we have a previous figure.
 
 2007-06-19  Sebastien Pouliot  <sebastien@ximian.com> 
