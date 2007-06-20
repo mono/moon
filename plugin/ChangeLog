@@ -1,3 +1,8 @@
+2007-06-20  Everaldo Canuto  <ecanuto@novell.com>
+
+	* plugin.cpp: Add new params to xaml_create_from_file and 
+	xaml_create_from_str calls to fix compilations problems.
+
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (StreamAsFile): don't try to execute onLoad if there
