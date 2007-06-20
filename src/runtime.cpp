@@ -208,12 +208,17 @@ collection_get_iterator (Collection *collection)
 bool
 collection_iterator_move_next (CollectionIterator *iterator)
 {
+	List::Node *next;
+	
 	if (!iterator->current)
 		return false;
 	
-	iterator->current = iterator->current->Next ();
+	if (!(next = iterator->current->Next ()))
+		return false;
 	
-	return iterator->current != NULL;
+	iterator->current = next;
+	
+	return true;
 }
 
 void 
