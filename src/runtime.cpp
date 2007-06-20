@@ -2902,6 +2902,8 @@ runtime_shutdown ()
 	TimeManager::Instance()->Shutdown ();
 	Type::Shutdown ();
 	DependencyObject::Shutdown ();
+
+	inited = false;
 }
 
 void surface_register_events (Surface *s,
