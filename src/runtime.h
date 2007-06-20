@@ -985,11 +985,12 @@ void     surface_register_events (Surface *s,
 
 typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
 typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
+typedef void xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
 
 UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
-		xaml_set_custom_attribute_callback *sca, Type::Kind *element_type);
+		xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue, Type::Kind *element_type);
 UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
-		xaml_set_custom_attribute_callback *sca, Type::Kind *element_type);
+		xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue, Type::Kind *element_type);
 void       xaml_set_property_from_str (DependencyObject *obj, const char *prop, const char *value);
 
 

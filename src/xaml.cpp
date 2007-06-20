@@ -27,8 +27,8 @@
 
 #define READ_BUFFER 1024
 
-GHashTable *namespace_map = NULL;
-GHashTable *enum_map = NULL;
+static GHashTable *namespace_map = NULL;
+static GHashTable *enum_map = NULL;
 
 class XamlElementInfo;
 class XamlElementInstance;
@@ -38,8 +38,8 @@ class DefaultNamespace;
 class XNamespace;
 
 
-DefaultNamespace *default_namespace = NULL;
-XNamespace *x_namespace = NULL;
+static DefaultNamespace *default_namespace = NULL;
+static XNamespace *x_namespace = NULL;
 
 
 typedef DependencyObject *(*create_item_func) (void);
@@ -79,12 +79,13 @@ class XamlParserInfo {
 
 	xaml_create_custom_element_callback *custom_element_callback;
 	xaml_set_custom_attribute_callback *custom_attribute_callback;
+	xaml_hookup_event_callback *hookup_event_callback; 
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
 		parser (parser), file_name (file_name), top_element (NULL), current_element (NULL),
 		current_namespace (NULL), char_data_buffer (NULL), implicit_default_namespace (false),
 		error_args (NULL), namescope (new NameScope()),
-		custom_element_callback (NULL), custom_attribute_callback (NULL)
+		custom_element_callback (NULL), custom_attribute_callback (NULL), hookup_event_callback (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
@@ -279,6 +280,7 @@ class CustomNamespace : public XamlNamespace {
 
 	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
+		printf ("Setting custom attribute:  %p\n", item->item);
 		p->custom_attribute_callback (item->item, attr, value);
 	}
 };
@@ -567,6 +569,7 @@ UIElement *
 xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		xaml_create_custom_element_callback *cecb,
 		xaml_set_custom_attribute_callback *sca,
+		xaml_hookup_event_callback *hue,
 		Type::Kind *element_type)
 {
 	UIElement *res;
@@ -603,6 +606,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 	parser_info = new XamlParserInfo (p, xaml_file);
 	parser_info->custom_element_callback = cecb;
 	parser_info->custom_attribute_callback = sca;
+	parser_info->hookup_event_callback = hue;
 
 	// TODO: This is just in here temporarily, to make life less difficult for everyone
 	// while we are developing.  
@@ -664,6 +668,7 @@ UIElement *
 xaml_create_from_str (const char *xaml, bool create_namescope,
 		xaml_create_custom_element_callback *cecb,
 		xaml_set_custom_attribute_callback *sca,
+		xaml_hookup_event_callback *hue,
 		Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
@@ -681,6 +686,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 
 	parser_info->custom_element_callback = cecb;
 	parser_info->custom_attribute_callback = sca;
+	parser_info->hookup_event_callback = hue;
 
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
@@ -1669,7 +1675,7 @@ panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInst
 void
 dependency_object_missed_property (XamlElementInstance *item, XamlElementInstance *prop, XamlElementInstance *value, char **prop_name)
 {
-			
+
 }
 
 void
@@ -1825,6 +1831,24 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 	}
 }
 
+bool
+dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, const char *name, const char *value)
+{
+	if (!strcmp (name, "Loaded")) {
+		if (!p->hookup_event_callback) {
+			// void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
+			parser_error (p, item->element_name, name,
+					g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n"));
+			return true;
+		}
+
+		p->hookup_event_callback (item->item, name, value);
+	}
+
+	return false;
+}
+
+
 // TODO: Merge more of this code with the above function
 void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
@@ -1974,8 +1998,10 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			}
 
 		} else {
+			bool event = dependency_object_hookup_event (p, item, pname, attr [i + 1]);
 #ifdef DEBUG_XAML
-			printf ("can not find property:  %s  %s\n", pname, attr [i + 1]);
+			if (!event)
+				printf ("can not find property:  %s  %s\n", pname, attr [i + 1]);
 #endif
 		}
 

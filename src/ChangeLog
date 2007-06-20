@@ -1,5 +1,12 @@
 2007-06-20  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp/runtime.h: Add one more callback, this one will hookup
+	events to methods. So things like Loaded=CanvasLoaded will work.
+	* demo.cpp:
+	* control.cpp:
+	
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: More verbose debug output with namespace lookup
 	errors.
 	- Map in the default namespaces if we are unable to lookup the
