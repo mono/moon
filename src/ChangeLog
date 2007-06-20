@@ -1,3 +1,12 @@
+2007-06-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Run): Don't set default font values here... we need
+	them to be unset if they aren't explicitly set by the user so that
+	we can inherit font properties from our parent TextBlock.
+	(Draw): Fixed to make Runs inherit unset font properties from the
+	TextBlock at render-time. Also fixed to make sure we have a
+	foreground brush to draw with... if unset, use the default brush.
+
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (UIElement::render): make this print the classname

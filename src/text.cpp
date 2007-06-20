@@ -217,16 +217,6 @@ Run::Run ()
 	
 	/* initialize the font description */
 	font = pango_font_description_new ();
-	char *family = inline_get_font_family (this);
-	pango_font_description_set_family (font, family);
-	double size = inline_get_font_size (this);
-	pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
-	FontStretches stretch = inline_get_font_stretch (this);
-	pango_font_description_set_stretch (font, font_stretch (stretch));
-	FontStyles style = inline_get_font_style (this);
-	pango_font_description_set_style (font, font_style (style));
-	FontWeights weight = inline_get_font_weight (this);
-	pango_font_description_set_weight (font, font_weight (weight));
 }
 
 Run::~Run ()
@@ -509,6 +499,7 @@ void
 TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 {
 	int full_width = 0, full_height = 0;
+	PangoFontMask font_mask;
 	char *text;
 	
 	text = text_block_get_text (this);
@@ -521,20 +512,12 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 		pango_cairo_update_layout (s->cairo, layout);
 	}
 	
-	// FIXME: I wonder if inline Runs use their parent TextBlock
-	// brush if they don't specify their own?
-	//
-	// If they do, we need to:
-	//   1. default the inline foreground brush to NULL in text_init()
-	//   2. keep a pointer to the TextBlock brush for the inlines loop
-	//      to reuse.
-	//
-	// If they don't, we need to:
-	//   1. probably change SetupBrush to take width/height args instead of
-	//      calling uielement->get_size_for_brush() because for TextBlocks,
-	//      that gets the entire size, including inlines - and we need more
-	//      fine-grained control.
-	//
+	font_mask = pango_font_description_get_set_fields (font);
+	
+	if (foreground == NULL)
+		foreground = default_foreground ();
+	else
+		foreground->ref ();
 	
 	if (text && *text) {
 		if (render) {
@@ -546,12 +529,25 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 		pango_layout_get_pixel_size (layout, &full_width, &full_height);
 	}
 	
+	// FIXME: we need to render text line-by-line so that we can
+	// align the painted text along the bottom edge of each line.
+	//
+	// Note: This includes TextBlock Text... e.g.:
+	//
+	// <TextBlock FontSize="12" Text="Hello"><Run FontSize="24">World</Run></TextBlock>
+	//
+	// The bottom edges of "Hello" and "World" would have to be aligned, not the top
+	// (like it is now).
+	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
+		PangoFontMask run_mask, inherited_mask;
 		int width, height, x = 0, y = 0;
+		PangoFontMask inherited;
 		bool newline = false;
 		int line_height;
 		Inline *item;
+		guint32 bit;
 		Run *run;
 		
 		line_height = full_height;
@@ -586,12 +582,24 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 				if (run->layout == NULL) {
 					run->layout = pango_cairo_create_layout (s->cairo);
 					pango_layout_set_text (run->layout, text ? text : "", -1);
-					pango_layout_set_font_description (run->layout, run->font);
 				} else {
 					pango_cairo_update_layout (s->cairo, run->layout);
 				}
 				
+				// Runs share their parent TextBlock's font properties if
+				// they don't specify their own.
+				run_mask = pango_font_description_get_set_fields (run->font);
+				pango_font_description_merge (run->font, font, false);
+				inherited_mask = (PangoFontMask) (font_mask & ~run_mask);
+				
+				if (inherited_mask != 0) {
+					pango_layout_set_font_description (run->layout, run->font);
+					pango_font_description_unset_fields (run->font, inherited_mask);
+				}
+				
 				if (render) {
+					// Runs share their parent TextBlock's Foreground
+					// property if they don't specify one of their own.
 					if (run->foreground != NULL)
 						run->foreground->SetupBrush (s->cairo, this);
 					else
@@ -634,6 +642,8 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 			node = (Collection::Node *) node->Next ();
 		}
 	}
+	
+	foreground->unref ();
 	
 	if (w)
 		*w = full_width;
@@ -1009,13 +1019,13 @@ void
 text_init (void)
 {
 	// Inline
-	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", new Value ("Lucida Sans"));
-	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", new Value (14.666));
-	Inline::FontStretchProperty = DependencyObject::Register (Type::INLINE, "FontStretch", new Value (FontStretchesNormal));
-	Inline::FontStyleProperty = DependencyObject::Register (Type::INLINE, "FontStyle", new Value (FontStylesNormal));
-	Inline::FontWeightProperty = DependencyObject::Register (Type::INLINE, "FontWeight", new Value (FontWeightsNormal));
+	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", Type::STRING);
+	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", Type::DOUBLE);
+	Inline::FontStretchProperty = DependencyObject::Register (Type::INLINE, "FontStretch", Type::INT32);
+	Inline::FontStyleProperty = DependencyObject::Register (Type::INLINE, "FontStyle", Type::INT32);
+	Inline::FontWeightProperty = DependencyObject::Register (Type::INLINE, "FontWeight", Type::INT32);
 	Inline::ForegroundProperty = DependencyObject::Register (Type::INLINE, "Foreground", Type::BRUSH);
-	Inline::TextDecorationsProperty = DependencyObject::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
+	Inline::TextDecorationsProperty = DependencyObject::Register (Type::INLINE, "TextDecorations", Type::INT32);
 	
 	
 	// Run
