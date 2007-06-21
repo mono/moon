@@ -607,6 +607,11 @@ enum SweepDirection {
 	SweepDirectionClockwise
 };
 
+enum Visibility {
+	VisibilityVisible,
+	VisibilityCollapsed, /* Not handled, treated like Hidden */
+	VisibilityHidden
+};
 
 class TriggerAction : public DependencyObject {
  public:

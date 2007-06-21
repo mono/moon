@@ -471,7 +471,9 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	if (prop == UIElement::OpacityProperty) {
 		item_invalidate (this);
 	} else if (prop == UIElement::VisibilityProperty) {
-		item_invalidate (this);
+		// XXX we need a FullInvalidate if this is changing
+		// from or to Collapsed, but as there's no way to tell that...
+		FullInvalidate (true);
 	} else if (prop == UIElement::ClipProperty) {
 		FullInvalidate (false);
 	} else if (prop == UIElement::OpacityMaskProperty) {
@@ -568,9 +570,12 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 
 		// Maybe this could also be just item_invalidate?
 		FullInvalidate (false);
-	}  else if (prop == UIElement::OpacityProperty ||
-		    prop == UIElement::VisibilityProperty){
-		item_invalidate (this);
+	}  else if (prop == UIElement::OpacityProperty) {
+	  	item_invalidate (this);
+	} else if (prop == UIElement::VisibilityProperty){
+		// XXX we need a FullInvalidate if this is changing
+		// from or to Collapsed, but as there's no way to tell that...
+		FullInvalidate (true);
 	} else if (Type::Find (subprop->type)->IsSubclassOf (Type::BRUSH)) {
 		item_invalidate (this);
 	}
@@ -1423,7 +1428,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
 	double actual [6];
-	
+
 	cairo_save (s->cairo);  // for UIElement::ClipProperty
 
 	cairo_set_matrix (s->cairo, &absolute_xform);
@@ -1462,6 +1467,9 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	cn = (Collection::Node *) children->list->First ();
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 		UIElement *item = (UIElement *) cn->obj;
+
+		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
+			return;
 		
 		Rect item_rect (item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
 		
@@ -2824,7 +2832,7 @@ item_init (void)
 	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransformOrigin", Type::POINT);
 	UIElement::CursorProperty = DependencyObject::Register (Type::UIELEMENT, "Cursor", Type::INT32);
 	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", Type::BOOL);
-	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", Type::INT32);
+	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_COLLECTION);
 }
 

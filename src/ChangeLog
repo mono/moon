@@ -1,5 +1,8 @@
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp, runtime.h: add rudimentary Visibility support.  we
+	only support Visible/Hidden really, and treat Collapsed as Hidden.
+
 	* xaml.cpp (enum_from_str): use g_strcasecmp here.
 
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com> 
