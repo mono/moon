@@ -273,6 +273,7 @@ class KeyFrameCollection : public Collection {
 	virtual void Add (DependencyObject *obj);
 	virtual void Remove (DependencyObject *obj);
 	virtual void Insert (int index, DependencyObject *data);
+	virtual void Clear ();
 
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
 };

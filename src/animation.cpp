@@ -36,6 +36,8 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 	clock->events->AddHandler ("CurrentTimeInvalidated", update_property_value, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
+
+	targetobj->ref();
 }
 
 void
@@ -56,6 +58,8 @@ AnimationStorage::~AnimationStorage ()
 {
 	if (baseValue)
 		delete baseValue;
+
+	targetobj->unref();
 }
 
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
@@ -187,25 +191,29 @@ Storyboard::Begin ()
 void
 Storyboard::Pause ()
 {
-	root_clock->Pause ();
+	if (root_clock)
+		root_clock->Pause ();
 }
 
 void
 Storyboard::Resume ()
 {
-	root_clock->Resume ();
+	if (root_clock)
+		root_clock->Resume ();
 }
 
 void
 Storyboard::Seek (TimeSpan timespan)
 {
-	root_clock->Seek (timespan);
+	if (root_clock)
+		root_clock->Seek (timespan);
 }
 
 void
 Storyboard::Stop ()
 {
-	root_clock->Stop ();
+	if (root_clock)
+		root_clock->Stop ();
 }
 
 Storyboard *
@@ -718,6 +726,13 @@ KeyFrameCollection::Remove (DependencyObject *data)
 	
 	sorted_list->Remove (KeyFrameNodeFinder, kf);
 	Collection::Remove (kf);
+}
+
+void
+KeyFrameCollection::Clear ()
+{
+	sorted_list->Clear ();
+	Collection::Clear ();
 }
 
 KeyFrame*

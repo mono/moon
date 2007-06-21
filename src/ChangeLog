@@ -1,3 +1,11 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp, animation.h: KeyFrameCollection overrides
+	Collection::Clear to clear its sorted list.
+
+	* runtime.cpp, runtime.h: add overrideable Collection::Clear
+	method, and move collection_clear's body into it.
+
 2007-06-21  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: Don't return false on single element collections

@@ -439,6 +439,7 @@ class Collection : public DependencyObject {
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
 	virtual void Insert (int index, DependencyObject *data);
+	virtual void Clear  ();
 
  private:
 	void SharedAdd (DependencyObject *data);
@@ -900,8 +901,6 @@ Canvas *canvas_new (void);
 //
 class Control : public FrameworkElement {
  public:
-	FrameworkElement *real_object;
-	
 	Control () : real_object (NULL) { };
 	~Control ();
 	
@@ -921,6 +920,13 @@ class Control : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
 
+	UIElement* InitializeFromXaml (const char *xaml,
+				       xaml_create_custom_element_callback *cecb,
+				       xaml_set_custom_attribute_callback *sca,
+				       xaml_hookup_event_callback *hue,
+				       Type::Kind *element_type);
+ private:
+	FrameworkElement *real_object;
 };
 
 Control *control_new (void);

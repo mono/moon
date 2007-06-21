@@ -187,6 +187,12 @@ Collection::Remove (DependencyObject *data)
 	delete n;
 }
 
+void
+Collection::Clear ()
+{
+	list->Clear (true);
+}
+
 void 
 collection_add (Collection *collection, DependencyObject *data)
 {
@@ -211,7 +217,7 @@ collection_insert (Collection *collection, int index, DependencyObject *data)
 void 
 collection_clear (Collection *collection)
 {
-	collection->list->Clear (true);
+	collection->Clear ();
 }
 
 Type::Kind
