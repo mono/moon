@@ -21,7 +21,7 @@ G_BEGIN_DECLS
 extern MonoDomain   *moon_domain;
 extern MonoAssembly *moon_boot_assembly;
 
-gboolean    vm_init ();
+gboolean    vm_init (void);
 gpointer    vm_xaml_file_loader_new (gpointer plugin, gpointer surface, const char *file);
 gpointer    vm_xaml_str_loader_new (gpointer plugin, gpointer surface, const char *str);
 

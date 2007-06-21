@@ -26,12 +26,12 @@ MonoMethod   *moon_try_load;
 MonoMethod   *moon_insert_mapping;
 
 gboolean
-vm_init ()
+vm_init (void)
 {
 	const char *home = g_get_home_dir ();
 	gboolean result = FALSE;
 
-	boot_assembly = g_build_path ("/", home, ".mozilla", "plugins", "moonlight.exe", NULL);
+	boot_assembly = g_build_path (home, ".mozilla", "plugins", "moonlight.exe", NULL);
 	mono_config_parse (NULL);
 	moon_domain = mono_jit_init (boot_assembly);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);

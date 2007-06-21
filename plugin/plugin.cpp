@@ -26,10 +26,14 @@ plugin_show_menu (PluginInstance *plugin)
 {
 	GtkWidget *menu;
 	GtkWidget *menu_item;
+	char *name;
 
 	menu = gtk_menu_new();
-
-	menu_item = gtk_menu_item_new_with_label (g_strdup_printf ("%s %s", PLUGIN_OURNAME, PLUGIN_OURVERSION));
+	
+	name = g_strdup_printf ("%s %s", PLUGIN_OURNAME, PLUGIN_OURVERSION);
+	menu_item = gtk_menu_item_new_with_label (name);
+	g_free (name);
+	
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_menu_about), plugin);
 
@@ -237,7 +241,7 @@ PluginInstance::UpdateSource ()
 	if (!this->source)
 		return;
 
-	char * pos = strchr (this->source, '#');
+	char *pos = strchr (this->source, '#');
 	if (pos) {
 		if (strlen(&pos[1]) > 0);
 			this->UpdateSourceByReference (&pos[1]);
