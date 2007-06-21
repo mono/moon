@@ -1,3 +1,7 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (enum_from_str): use g_strcasecmp here.
+
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp|h: Implement caching of Path (this could be extended to
