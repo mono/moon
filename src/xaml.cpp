@@ -932,9 +932,9 @@ get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, P
 }
 		
 Geometry *
-geometry_from_str (char *str)
+geometry_from_str (const char *str)
 {
-	char *data = str;
+	char *data = (char*)str;
 	int s; // FOr starting expression markers
 	Point cp = Point (0, 0);
 	Point cp1, cp2, cp3;
@@ -1820,9 +1820,7 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 		break;
 	case Type::GEOMETRY:
 	{
-		char *data = g_strdup (value);
-		obj->SetValue (prop, geometry_from_str (data));
-		g_free (data);
+		obj->SetValue (prop, geometry_from_str (value));
 		break;
 	}
 	default:
@@ -2015,9 +2013,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				break;
 			case Type::GEOMETRY:
 			{
-				char *data = g_strdup (attr [i + 1]);
-				dep->SetValue (prop, geometry_from_str (data));
-				g_free (data);
+				dep->SetValue (prop, geometry_from_str (attr [i + 1]));
 			}
 				break;
 			default:

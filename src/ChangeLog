@@ -1,3 +1,8 @@
+2007-06-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Don't allocate (and free) a copy of the PML before 
+	calling	geometry_from_str.
+
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Fix some Stretch modes for paths. This can get very
