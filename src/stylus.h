@@ -32,6 +32,33 @@ class StylusPoint : public DependencyObject {
 
 StylusPoint* stylus_point_new ();
 
+class Stroke : public DependencyObject {
+ public:
+	Stroke () { }
+	~Stroke () { };
+	
+	virtual Type::Kind GetObjectType () { return Type::STROKE; };
+
+	static DependencyProperty* DrawingAttributesProperty;
+	static DependencyProperty* StylusPointsProperty;
+};
+
+Stroke* stroke_new ();
+
+class DrawingAttributes : public DependencyObject {
+ public:
+	DrawingAttributes () { }
+	~DrawingAttributes () { };
+	
+	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; };
+
+	static DependencyProperty* ColorProperty;
+	static DependencyProperty* OutlineColorProperty;
+	static DependencyProperty* HeightProperty;
+	static DependencyProperty* WidthProperty;
+};
+
+DrawingAttributes* drawing_attributes_new ();
 
 G_END_DECLS
 

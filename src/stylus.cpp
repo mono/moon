@@ -32,12 +32,32 @@ stylus_point_new ()
 	return new StylusPoint ();
 }
 
+Stroke*
+stroke_new ()
+{
+	return new Stroke ();
+}
+
+DrawingAttributes*
+drawing_attributes_new ()
+{
+	return new DrawingAttributes ();
+}
+
 DependencyProperty* StylusInfo::DeviceTypeProperty;
 DependencyProperty* StylusInfo::IsInvertedProperty;
 
 DependencyProperty* StylusPoint::PressureFactorProperty;
 DependencyProperty* StylusPoint::XProperty;
 DependencyProperty* StylusPoint::YProperty;
+
+DependencyProperty* Stroke::DrawingAttributesProperty;
+DependencyProperty* Stroke::StylusPointsProperty;
+
+DependencyProperty* DrawingAttributes::ColorProperty;
+DependencyProperty* DrawingAttributes::OutlineColorProperty;
+DependencyProperty* DrawingAttributes::HeightProperty;
+DependencyProperty* DrawingAttributes::WidthProperty;
 
 void stylus_init ()
 {
@@ -47,5 +67,13 @@ void stylus_init ()
 	StylusPoint::PressureFactorProperty = DependencyObject::Register (Type::STYLUSPOINT, "PressureFactor", Type::DOUBLE);
 	StylusPoint::XProperty = DependencyObject::Register (Type::STYLUSPOINT, "X", Type::DOUBLE);
 	StylusPoint::YProperty = DependencyObject::Register (Type::STYLUSPOINT, "Y", Type::DOUBLE);
+
+	Stroke::DrawingAttributesProperty = DependencyObject::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
+	Stroke::StylusPointsProperty = DependencyObject::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
+
+	DrawingAttributes::ColorProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Color", Type::COLOR);
+	DrawingAttributes::OutlineColorProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "OutlineColor", Type::COLOR);
+	DrawingAttributes::HeightProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Height", Type::DOUBLE);
+	DrawingAttributes::WidthProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Width", Type::DOUBLE);
 }
 

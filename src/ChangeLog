@@ -1,5 +1,11 @@
 2007-06-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* stylus.cpp|h: Added Stroke and DrawingAttributes.
+	* runtime.h: All collections can now implement GetElementType.
+	* value.h, type.h, type.cpp: Updated.
+	
+2007-06-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* stylus.cpp|h: Added.
 	* runtime.cpp|h: Define and call stylus_init.
 	* Makefile.am: Add stylus.cpp|h.

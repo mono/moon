@@ -209,6 +209,7 @@ types_init (void)
 	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION);
 	Type::RegisterType ("DoubleKeyFrame", Type::DOUBLEKEYFRAME, Type::KEYFRAME);
 	Type::RegisterType ("Downloader", Type::DOWNLOADER, Type::DEPENDENCY_OBJECT);
+	Type::RegisterType ("DrawingAttributes", Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Ellipse", Type::ELLIPSE, Type::SHAPE);
 	Type::RegisterType ("EllipseGeometry", Type::ELLIPSEGEOMETRY, Type::GEOMETRY);
 	Type::RegisterType ("EventTrigger", Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT);
@@ -272,6 +273,7 @@ types_init (void)
 	Type::RegisterType ("SplineDoubleKeyFrame", Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME);
 	Type::RegisterType ("SplinePointKeyFrame", Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME);
 	Type::RegisterType ("Storyboard", Type::STORYBOARD, Type::PARALLELTIMELINE);
+	Type::RegisterType ("Stroke", Type::STROKE, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("StrokeCollection", Type::STROKE_COLLECTION, Type::COLLECTION);
 	Type::RegisterType ("StylusInfo", Type::STYLUSINFO, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("StylusPoint", Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT);

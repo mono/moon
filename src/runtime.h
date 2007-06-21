@@ -520,7 +520,7 @@ class StrokeCollection : public Collection {
  public:
 	StrokeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
-	//virtual Type::Kind GetElementType () { return Value::STROKE; }
+	virtual Type::Kind GetElementType () { return Type::STROKE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -530,7 +530,7 @@ class StylusPointCollection : public Collection {
  public:
 	StylusPointCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
-	//virtual Type::Kind GetElementType () { return Value::STYLUSPOINT; }
+	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -540,7 +540,7 @@ class TimelineMarkerCollection : public Collection {
  public:
 	TimelineMarkerCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
-	//virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
+	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -550,7 +550,7 @@ class MediaAttributeCollection : public Collection {
  public:
 	MediaAttributeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
-	//virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
+	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
@@ -560,7 +560,7 @@ class Inlines : public Collection {
  public:
 	Inlines () {}
 	virtual Type::Kind GetObjectType () { return Type::INLINES; }
-	//virtual Type::Kind GetElementType () { return Type::INLINE; }
+	virtual Type::Kind GetElementType () { return Type::INLINE; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);

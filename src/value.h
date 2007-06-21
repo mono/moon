@@ -48,6 +48,7 @@ class DoubleAnimation;
 class DoubleAnimationUsingKeyFrames;
 class DoubleKeyFrame;
 class Downloader;
+class DrawingAttributes;
 class Ellipse;
 class EllipseGeometry;
 class EventTrigger;
@@ -111,6 +112,7 @@ class SplineColorKeyFrame;
 class SplineDoubleKeyFrame;
 class SplinePointKeyFrame;
 class Storyboard;
+class Stroke;
 class StrokeCollection;
 class StylusInfo;
 class StylusPoint;
@@ -232,6 +234,7 @@ public:
 	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames () { checked_get_subclass (Type::DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames) }
 	DoubleKeyFrame*                AsDoubleKeyFrame () { checked_get_subclass (Type::DOUBLEKEYFRAME, DoubleKeyFrame) }
 	Downloader*                    AsDownloader () { checked_get_subclass (Type::DOWNLOADER, Downloader) }
+	DrawingAttributes*             AsDrawingAttributes () { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
 	Ellipse*                       AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
 	EllipseGeometry*               AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
@@ -295,6 +298,7 @@ public:
 	SplineDoubleKeyFrame*          AsSplineDoubleKeyFrame () { checked_get_subclass (Type::SPLINEDOUBLEKEYFRAME, SplineDoubleKeyFrame) }
 	SplinePointKeyFrame*           AsSplinePointKeyFrame () { checked_get_subclass (Type::SPLINEPOINTKEYFRAME, SplinePointKeyFrame) }
 	Storyboard*                    AsStoryboard () { checked_get_subclass (Type::STORYBOARD, Storyboard) }
+	Stroke*                        AsStroke () { checked_get_subclass (Type::STROKE, Stroke) }
 	StrokeCollection*              AsStrokeCollection () { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }
 	StylusInfo*                    AsStylusInfo () { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
 	StylusPoint*                   AsStylusPoint () { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
