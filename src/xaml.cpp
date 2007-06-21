@@ -179,7 +179,7 @@ class XamlNamespace {
 	XamlNamespace () : name (NULL) { }
 	
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value) = 0;
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
 };
 
 class DefaultNamespace : public XamlNamespace {
@@ -194,7 +194,7 @@ class DefaultNamespace : public XamlNamespace {
 		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
 	}
 
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
 		// We don't have to do anything, since the default framework covers us
 	}
@@ -212,23 +212,34 @@ class XNamespace : public XamlNamespace {
 		return NULL;
 	}
 
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
+		*reparse = false;
+
 		if (!strcmp ("Name", attr)) {
 			p->namescope->RegisterName (value, (DependencyObject *) item->item);
 			return;
 		}
 
 		if (!strcmp ("Class", attr)) {
-			delete item->item;
+			DependencyObject *old = item->item;
+			
 			item->item = NULL;
-
 			DependencyObject *dob = p->custom_element_callback (value, NULL);
-			if (!dob)
+			if (!dob) {
 				parser_error (p, item->element_name, attr,
 						g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
+				return;
+			}
 
+			// Special case the namescope for now, since attached properties aren't copied
+			NameScope *ns = NameScope::GetNameScope (old);
+			if (ns)
+				NameScope::SetNameScope (dob, ns);
 			item->item = dob;
+
+ 			delete old;
+			*reparse = true;
 			return;
 		}
 	}
@@ -278,9 +289,8 @@ class CustomNamespace : public XamlNamespace {
 		return info;
 	}
 
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
+	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
-		printf ("Setting custom attribute:  %p\n", item->item);
 		p->custom_attribute_callback (item->item, attr, value);
 	}
 };
@@ -336,6 +346,20 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *m
 	XML_StopParser (p->parser, FALSE);
 }
 
+DependencyObject *
+get_parent (XamlElementInstance *inst)
+{
+	XamlElementInstance *walk = inst;
+
+	while (walk) {
+		if (walk->element_type == XamlElementInstance::ELEMENT)
+			return walk->item;
+		walk = walk->parent;
+	}
+
+	return NULL;
+}
+
 void
 start_element (void *data, const char *el, const char **attr)
 {
@@ -346,10 +370,25 @@ start_element (void *data, const char *el, const char **attr)
 	elem = p->current_namespace->FindElement (p, el);
 
 	if (elem) {
+		bool set_top = false;
+
 		inst = elem->create_element (p, elem);
 
 		if (!inst || !inst->item)
 			return;
+
+		if (!p->top_element) {
+			set_top = true;
+
+			p->top_element = inst;
+			p->current_element = inst;
+			NameScope::SetNameScope (inst->item, p->namescope);
+		} else {
+			DependencyObject *parent = get_parent (p->current_element);
+			if (parent) {
+				inst->item->SetParent (parent);
+			}
+		}
 
 		elem->set_attributes (p, inst, attr);
 
@@ -357,12 +396,8 @@ start_element (void *data, const char *el, const char **attr)
 		if (!inst->item)
 			return;
 
-		if (!p->top_element) {
-			p->top_element = inst;
-			p->current_element = inst;
-			NameScope::SetNameScope (inst->item, p->namescope);
+		if (set_top)
 			return;
-		}
 
 		if (p->current_element && p->current_element->element_type != XamlElementInstance::UNKNOWN) {
 
@@ -371,6 +406,7 @@ start_element (void *data, const char *el, const char **attr)
 			else
 				g_warning ("attempt to set property of unimplemented type: %s\n", p->current_element->element_name);
 		}
+
 	} else {
 		bool property = false;
 		for (int i = 0; el [i]; i++) {
@@ -1881,7 +1917,12 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
+	int skip_attribute = -1;
 	for (int i = 0; attr [i]; i += 2) {
+
+		if (i == skip_attribute)
+			continue;
+
 		// Setting attributes like x:Class can change item->item, so we
 		// need to make sure we have an up to date pointer
 		DependencyObject *dep = (DependencyObject *) item->item;
@@ -1894,7 +1935,8 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				return parser_error (p, item->element_name, attr [i],
 						g_strdup_printf ("Could not find namespace %s", attr_name [0]));
 
-			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
+			bool reparse = false;
+			ns->SetAttribute (p, item, attr_name [1], attr [i + 1], &reparse);
 
 			g_strfreev (attr_name);
 
@@ -1902,6 +1944,10 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			if (p->error_args)
 				return;
 
+			if (reparse) {
+				skip_attribute = i;
+				i = 0;
+			}
 			continue;
 		}
 

@@ -1,3 +1,12 @@
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Set namecopes earlier, and make sure to copy the
+	namescope when we recreate a class using x:Class.
+	- When we use x:Class reparse the element's attributes, so it can
+	hook up to events and set properties.
+	* runtime.cpp|h: When the Name property is set, register it with
+	the proper NameScope.
+	
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp, runtime.h: add rudimentary Visibility support.  we

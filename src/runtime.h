@@ -258,7 +258,7 @@ class DependencyObject : public Base {
 	EventObject *events;
 	static GHashTable *properties;
 
-	virtual void OnPropertyChanged (DependencyProperty *property) { }
+	virtual void OnPropertyChanged (DependencyProperty *property);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop) { }
 
 	//

@@ -839,7 +839,6 @@ VisualCollection::Add (DependencyObject *data)
 	Collection::Add (item);
 	emit_loaded_events (item);
 
-	
 	VisualUpdate (data);
 }
 
@@ -2519,7 +2518,6 @@ merge_scope_func (void *key, void *value, void *data)
 	DependencyObject *obj = (DependencyObject *) value;
 	NameScope *scope = (NameScope *) data;
 
-	printf ("MERGING:  %s, %p\n", name, obj);
 	scope->RegisterName (name, obj);
 }
 
@@ -2878,6 +2876,17 @@ canvas_init (void)
 }
 
 DependencyProperty* DependencyObject::NameProperty;
+
+void
+DependencyObject::OnPropertyChanged (DependencyProperty *property)
+{
+	if (NameProperty == property) {
+		NameScope *scope = FindNameScope ();
+		Value *v = GetValue (NameProperty);
+		if (scope && v)
+			scope->RegisterName (v->AsString (), this);
+	}
+}
 
 void
 dependency_object_init(void)
