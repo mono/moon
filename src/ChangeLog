@@ -1,3 +1,8 @@
+2007-06-21  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: Don't return false on single element collections
+	on the first item.
+
 2007-06-21  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp: Use absolute font sizes, makes the fonts not so huge.

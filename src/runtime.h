@@ -449,10 +449,12 @@ bool CollectionNodeFinder (List::Node *n, void *data);
 class CollectionIterator {
  public:
 	CollectionIterator (Collection *c){
+		first = true;
 		collection = c;
 		current = c->list->First ();
 	}
-	
+
+	bool first;
 	Collection *collection;
 	List::Node *current;
 };

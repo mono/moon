@@ -233,12 +233,13 @@ collection_iterator_move_next (CollectionIterator *iterator)
 	
 	if (!iterator->current)
 		return false;
-	
-	if (!(next = iterator->current->Next ()))
+
+	if (!iterator->first && !(next = iterator->current->Next ()))
 		return false;
 	
 	iterator->current = next;
-	
+	iterator->first = false;
+
 	return true;
 }
 
@@ -246,6 +247,7 @@ void
 collection_iterator_reset (CollectionIterator *iterator)
 {
 	iterator->current = iterator->collection->list->First ();
+	iterator->first = true;
 }
 
 DependencyObject *
