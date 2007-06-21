@@ -901,6 +901,8 @@ Canvas *canvas_new (void);
 //
 class Control : public FrameworkElement {
  public:
+	FrameworkElement *real_object;
+
 	Control () : real_object (NULL) { };
 	~Control ();
 	
@@ -925,8 +927,6 @@ class Control : public FrameworkElement {
 				       xaml_set_custom_attribute_callback *sca,
 				       xaml_hookup_event_callback *hue,
 				       Type::Kind *element_type);
- private:
-	FrameworkElement *real_object;
 };
 
 Control *control_new (void);

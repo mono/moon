@@ -731,7 +731,7 @@ KeyFrameCollection::Remove (DependencyObject *data)
 void
 KeyFrameCollection::Clear ()
 {
-	sorted_list->Clear ();
+	sorted_list->Clear (true);
 	Collection::Clear ();
 }
 
