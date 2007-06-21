@@ -1,5 +1,10 @@
 2007-06-21  Jackson Harper  <jackson@ximian.com>
 
+	* moonlight.cs: Do what I was trying to do with the last commit.
+	Attach the surface so that events are registed.
+
+2007-06-21  Jackson Harper  <jackson@ximian.com>
+
 	* moonlight.cs: Init the surface so that the mouse events are
 	hookedup.
 
