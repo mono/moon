@@ -273,6 +273,8 @@ types_init (void)
 	Type::RegisterType ("SplinePointKeyFrame", Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME);
 	Type::RegisterType ("Storyboard", Type::STORYBOARD, Type::PARALLELTIMELINE);
 	Type::RegisterType ("StrokeCollection", Type::STROKE_COLLECTION, Type::COLLECTION);
+	Type::RegisterType ("StylusInfo", Type::STYLUSINFO, Type::DEPENDENCY_OBJECT);
+	Type::RegisterType ("StylusPoint", Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("StylusPointCollection", Type::STYLUSPOINT_COLLECTION, Type::COLLECTION);
 	Type::RegisterType ("TextBlock", Type::TEXTBLOCK, Type::FRAMEWORKELEMENT);
 	Type::RegisterType ("TileBrush", Type::TILEBRUSH, Type::BRUSH);

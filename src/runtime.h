@@ -1033,6 +1033,7 @@ void dependencyobject_init (void);
 void downloader_init (void);
 void media_init (void);
 void dependency_object_init(void);
+void stylus_init (void);
 
 void runtime_shutdown (void);
 

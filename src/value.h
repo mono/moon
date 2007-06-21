@@ -112,6 +112,8 @@ class SplineDoubleKeyFrame;
 class SplinePointKeyFrame;
 class Storyboard;
 class StrokeCollection;
+class StylusInfo;
+class StylusPoint;
 class StylusPointCollection;
 class TextBlock;
 class TileBrush;
@@ -294,6 +296,8 @@ public:
 	SplinePointKeyFrame*           AsSplinePointKeyFrame () { checked_get_subclass (Type::SPLINEPOINTKEYFRAME, SplinePointKeyFrame) }
 	Storyboard*                    AsStoryboard () { checked_get_subclass (Type::STORYBOARD, Storyboard) }
 	StrokeCollection*              AsStrokeCollection () { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }
+	StylusInfo*                    AsStylusInfo () { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
+	StylusPoint*                   AsStylusPoint () { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
 	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
 	TileBrush*                     AsTileBrush () { checked_get_subclass (Type::TILEBRUSH, TileBrush) }

@@ -2952,6 +2952,7 @@ runtime_init (void)
 	downloader_init ();
 	media_init ();
 	panel_init ();
+	stylus_init ();
 }
 
 void
