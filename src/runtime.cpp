@@ -1044,7 +1044,7 @@ Canvas::getbounds ()
 		x1 = y1 = 0;
 		x2 = surface->width;
 		y2 = surface->height;
-		printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
+		//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
 	} else {
 		// If we found nothing.
 		if (first)
