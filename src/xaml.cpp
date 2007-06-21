@@ -41,6 +41,10 @@ class XNamespace;
 static DefaultNamespace *default_namespace = NULL;
 static XNamespace *x_namespace = NULL;
 
+static xaml_create_custom_element_callback * installed_custom_element_callback = NULL;
+static xaml_set_custom_attribute_callback * installed_custom_attribute_callback = NULL;
+static xaml_hookup_event_callback * installed_hookup_event_callback = NULL;
+
 
 typedef DependencyObject *(*create_item_func) (void);
 typedef XamlElementInstance *(*create_element_instance_func) (XamlParserInfo *p, XamlElementInfo *i);
@@ -593,7 +597,12 @@ print_tree (XamlElementInstance *el, int depth)
 {
 	for (int i = 0; i < depth; i++)
 		printf ("\t");
-	printf ("%s  (%d)\n", el->element_name, el->element_type);
+	
+	Value *v = NULL;
+
+	if (el->element_type == XamlElementInstance::ELEMENT)
+		v = el->item->GetValue (DependencyObject::NameProperty);
+	printf ("%s  (%s)\n", el->element_name, v ? v->AsString () : "-no name-");
 	
 	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->Next ()) {
 		XamlElementInstance *el = (XamlElementInstance *) walk;
@@ -640,9 +649,21 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 	}
 
 	parser_info = new XamlParserInfo (p, xaml_file);
-	parser_info->custom_element_callback = cecb;
-	parser_info->custom_attribute_callback = sca;
-	parser_info->hookup_event_callback = hue;
+	
+
+	if (!installed_custom_element_callback) {
+		installed_custom_element_callback = cecb;
+		installed_custom_attribute_callback = sca;
+		installed_hookup_event_callback = hue;
+
+		parser_info->custom_element_callback = cecb;
+		parser_info->custom_attribute_callback = sca;
+		parser_info->hookup_event_callback = hue;
+	} else {
+		parser_info->custom_element_callback = installed_custom_element_callback;
+		parser_info->custom_attribute_callback = installed_custom_attribute_callback;
+		parser_info->hookup_event_callback = installed_hookup_event_callback;
+	}
 
 	// TODO: This is just in here temporarily, to make life less difficult for everyone
 	// while we are developing.  
@@ -690,6 +711,10 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 	}
 
  cleanup_and_return:
+	installed_custom_element_callback = NULL;
+	installed_custom_attribute_callback = NULL;
+	installed_hookup_event_callback = NULL;
+
 	if (fp)
 		fclose (fp);
 	if (p)
@@ -720,9 +745,19 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 
 	parser_info = new XamlParserInfo (p, NULL);
 
-	parser_info->custom_element_callback = cecb;
-	parser_info->custom_attribute_callback = sca;
-	parser_info->hookup_event_callback = hue;
+	if (!installed_custom_element_callback) {
+		installed_custom_element_callback = cecb;
+		installed_custom_attribute_callback = sca;
+		installed_hookup_event_callback = hue;
+
+		parser_info->custom_element_callback = cecb;
+		parser_info->custom_attribute_callback = sca;
+		parser_info->hookup_event_callback = hue;
+	} else {
+		parser_info->custom_element_callback = installed_custom_element_callback;
+		parser_info->custom_attribute_callback = installed_custom_attribute_callback;
+		parser_info->hookup_event_callback = installed_hookup_event_callback;
+	}
 
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
@@ -765,6 +800,9 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 	}
 
  cleanup_and_return:
+	installed_custom_element_callback = NULL;
+	installed_custom_attribute_callback = NULL;
+	installed_hookup_event_callback = NULL;
 	if (p)
 		XML_ParserFree (p);
 	if (parser_info)

@@ -1,3 +1,10 @@
+2007-06-21  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add a global set of callbacks, so that all of the
+	custom callbacks for a given parsing instance use the same
+	methods.  This needs to be encapsulated properly, but for now is
+	fine.
+
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp, animation.h: KeyFrameCollection overrides
