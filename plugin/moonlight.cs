@@ -225,9 +225,11 @@ namespace Moonlight {
 			error = 0;
 			Hosting.surface_attach (surface, p);
 
+			/*
 			m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
 			GetMethod ("SurfaceAttach", BindingFlags.Static | BindingFlags.NonPublic);
 			m.Invoke (null, new object [] { surface, c });
+			*/
 
 			return null;
 		}
