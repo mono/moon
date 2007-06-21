@@ -1,3 +1,8 @@
+2007-06-21  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight.cs: Init the surface so that the mouse events are
+	hookedup.
+
 2007-06-20  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* plugin.cpp (plugin_show_menu): Free the menu name after setting
