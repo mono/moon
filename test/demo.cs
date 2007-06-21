@@ -52,6 +52,8 @@ class X {
 		}
 		w.Title = file;
 		Canvas canvas = (Canvas) d;
+		if (canvas.Width > 0 && canvas.Height > 0)
+			w.Resize ((int)canvas.Width, (int)canvas.Height);
 		silver.Attach (canvas);
 
 		DependencyObject anim = d.FindName ("animation");
