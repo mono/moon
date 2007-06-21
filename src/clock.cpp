@@ -828,6 +828,19 @@ timeline_collection_new (void)
 	return new TimelineCollection ();
 }
 
+/*
+	TimelineMarker
+*/
+
+DependencyProperty* TimelineMarker::TextProperty;
+DependencyProperty* TimelineMarker::TimeProperty;
+DependencyProperty* TimelineMarker::TypeProperty;
+
+TimelineMarker*
+timeline_marker_new ()
+{
+	return new TimelineMarker ();
+}
 
 void
 clock_init (void)
@@ -842,4 +855,9 @@ clock_init (void)
 
 	/* TimelineGroup properties */
 	TimelineGroup::ChildrenProperty = DependencyObject::Register (Type::TIMELINEGROUP, "Children", Type::TIMELINE_COLLECTION);
+
+	/* TimelineMarker properties */
+	TimelineMarker::TextProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Text", Type::STRING);
+	TimelineMarker::TimeProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Time", Type::TIMESPAN);
+	TimelineMarker::TypeProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Type", Type::STRING);
 }

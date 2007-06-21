@@ -1433,9 +1433,9 @@ animation_init (void)
 
 	/* KeyFrame properties */
  	KeyFrame::KeyTimeProperty = DependencyObject::Register (Type::KEYFRAME, "KeyTime", new Value(KeyTime::Uniform));
- 	DoubleKeyFrame::ValueProperty = DependencyObject::Register (Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
- 	PointKeyFrame::ValueProperty = DependencyObject::Register (Type::POINTKEYFRAME, "Value", Type::POINT);
- 	ColorKeyFrame::ValueProperty = DependencyObject::Register (Type::COLORKEYFRAME, "Value", Type::COLOR);
+ 	DoubleKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
+ 	PointKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::POINTKEYFRAME, "Value", Type::POINT);
+ 	ColorKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
 
 	/* Spline keyframe properties */
 	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
