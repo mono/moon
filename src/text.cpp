@@ -215,6 +215,10 @@ Run::Run ()
 	
 	foreground = NULL;
 	
+	text_height = -1.0;
+	text_width = -1.0;
+	text_dir = 0;
+	
 	/* initialize the font description */
 	font = pango_font_description_new ();
 }
@@ -270,10 +274,18 @@ Run::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == Run::TextProperty && layout != NULL) {
 		char *text = run_get_text (this);
 		pango_layout_set_text (layout, text ? text : "", -1);
+		text_height = -1.0;
+		text_width = -1.0;
+		text_dir = 0;
 	}
 	
-	if (font_changed && layout != NULL)
-		pango_layout_set_font_description (layout, font);
+	if (font_changed) {
+		if (layout != NULL)
+			pango_layout_set_font_description (layout, font);
+		
+		text_height = -1.0;
+		text_width = -1.0;
+	}
 	
 	if (prop->type == Type::RUN)
 		NotifyAttacheesOfPropertyChange (prop);
@@ -329,8 +341,11 @@ TextBlock::TextBlock ()
 	
 	layout = NULL;
 	
-	height = -1;
-	width = -1;
+	block_height = -1.0;
+	block_width = -1.0;
+	
+	text_height = -1.0;
+	text_width = -1.0;
 	
 	/* initialize the font description */
 	font = pango_font_description_new ();
@@ -383,7 +398,7 @@ TextBlock::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
-	Draw (s, true, NULL, NULL);
+	Paint (s);
 	cairo_restore (s->cairo);
 }
 
@@ -395,16 +410,16 @@ TextBlock::getbounds ()
 	if (s == NULL)
 		return;
 	
-	if (width == -1 || height == -1) {
-		// need to recompute cached width/height for optimization
+	if (block_width < 0.0) {
+		// need to recompute cached width/height
 		cairo_save (s->cairo);
 		cairo_identity_matrix (s->cairo);
-		Draw (s, false, &width, &height);
+		Layout (s);
 		cairo_new_path (s->cairo);
 		cairo_restore (s->cairo);
 		
-		text_block_set_actual_height (this, (double) height);
-		text_block_set_actual_width (this, (double) width);
+		text_block_set_actual_height (this, block_height);
+		text_block_set_actual_width (this, block_width);
 	}
 	
 	// optimization: use the cached width/height and draw
@@ -412,7 +427,7 @@ TextBlock::getbounds ()
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	cairo_set_line_width (s->cairo, 1);
-	cairo_rectangle (s->cairo, 0, 0, width, height);
+	cairo_rectangle (s->cairo, 0, 0, block_width, block_height);
 	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
@@ -433,36 +448,35 @@ TextBlock::getxformorigin ()
 	if (s == NULL)
 		return Point (0.0, 0.0);
 	
-	if (width == -1 || height == -1) {
+	if (block_width < 0.0) {
 		cairo_save (s->cairo);
 		cairo_identity_matrix (s->cairo);
-		Draw (s, false, &width, &height);
+		Layout (s);
 		cairo_new_path (s->cairo);
 		cairo_restore (s->cairo);
 		
-		text_block_set_actual_height (this, (double) height);
-		text_block_set_actual_width (this, (double) width);
+		text_block_set_actual_height (this, block_height);
+		text_block_set_actual_width (this, block_width);
 	}
 	
-	return Point (user_xform_origin.x * width, user_xform_origin.y * height);
+	return Point (user_xform_origin.x * block_width, user_xform_origin.y * block_height);
 }
 
 bool
 TextBlock::inside_object (Surface *s, double x, double y)
 {
+	// FIXME: this code probably doesn't work
+	cairo_matrix_t inverse = absolute_xform;
 	bool ret = false;
+	double nx = x;
+	double ny = y;
 	
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
-	Draw (s, false, NULL, NULL);
+	Layout (s);
 	
-	double nx = x;
-	double ny = y;
-	
-	cairo_matrix_t inverse = absolute_xform;
 	cairo_matrix_invert (&inverse);
-	
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
 	
 	if (cairo_in_stroke (s->cairo, nx, ny) || cairo_in_fill (s->cairo, nx, ny))
@@ -478,29 +492,30 @@ TextBlock::inside_object (Surface *s, double x, double y)
 void
 TextBlock::get_size_for_brush (cairo_t *cr, double *width, double *height)
 {
-	Surface *s = item_get_surface (this);
-	
-	if (s != NULL && this->width == -1 || this->height == -1) {
+	if (block_width < 0.0) {
+		Surface *s = item_get_surface (this);
+		
 		cairo_save (s->cairo);
 		cairo_identity_matrix (s->cairo);
-		Draw (s, false, &this->width, &this->height);
+		Layout (s);
 		cairo_new_path (s->cairo);
 		cairo_restore (s->cairo);
 		
-		text_block_set_actual_height (this, (double) this->height);
-		text_block_set_actual_width (this, (double) this->width);
+		text_block_set_actual_height (this, block_height);
+		text_block_set_actual_width (this, block_width);
 	}
 	
-	*height = (double) this->height;
-	*width = (double) this->width;
+	*height = block_height;
+	*width = block_width;
 }
 
 void
-TextBlock::Draw (Surface *s, bool render, int *w, int *h)
+TextBlock::Layout (Surface *s)
 {
-	int full_width = 0, full_height = 0;
+	double width, height, x = 0, y = 0;
 	PangoFontMask font_mask;
 	char *text;
+	int w, h;
 	
 	text = text_block_get_text (this);
 	
@@ -514,54 +529,40 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 	
 	font_mask = pango_font_description_get_set_fields (font);
 	
-	if (foreground == NULL)
-		foreground = default_foreground ();
-	else
-		foreground->ref ();
+	block_height = 0;
+	block_width = 0;
 	
 	if (text && *text) {
-		if (render) {
-			foreground->SetupBrush (s->cairo, this);
-			pango_cairo_show_layout (s->cairo, layout);
-		} else
-			pango_cairo_layout_path (s->cairo, layout);
-		
-		pango_layout_get_pixel_size (layout, &full_width, &full_height);
+		pango_cairo_layout_path (s->cairo, layout);
+		pango_layout_get_pixel_size (layout, &w, &h);
+		text_height = (double) h;
+		text_width = (double) w;
+		text_dir = 1; // FIXME
 	}
 	
-	// FIXME: we need to render text line-by-line so that we can
-	// align the painted text along the bottom edge of each line.
-	//
-	// Note: This includes TextBlock Text... e.g.:
-	//
-	// <TextBlock FontSize="12" Text="Hello"><Run FontSize="24">World</Run></TextBlock>
-	//
-	// The bottom edges of "Hello" and "World" would have to be aligned, not the top
-	// (like it is now).
+	// Note: we don't worry about alignment here because all we
+	// really care about is width/height values for each Run
+	// element and the overall width/height of each line (for
+	// calculating block width/height).
 	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		PangoFontMask run_mask, inherited_mask;
-		int width, height, x = 0, y = 0;
 		PangoFontMask inherited;
 		bool newline = false;
-		int line_height;
+		double line_height;
 		Inline *item;
-		guint32 bit;
 		Run *run;
 		
-		line_height = full_height;
-		height = full_height;
-		width = full_width;
+		line_height = text_height;
+		height = text_height;
+		width = text_width;
 		
 		while (node != NULL) {
 			item = (Inline *) node->obj;
 			
-			//
-			// FIXME: This code won't work properly for RTL text
-			//
-			// There might also be a better way of doing this?
-			//
+			// FIXME: Figure out RTL vs LTR direction for each run and
+			// cache it to make calculating offsets in ::Paint easier.
 			
 			switch (item->GetObjectType ()) {
 			case Type::RUN:
@@ -572,6 +573,9 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 				
 				if (text == NULL || *text == '\0') {
 					// optimization
+					run->text_height = 0;
+					run->text_width = 0;
+					run->text_dir = 1;
 					break;
 				}
 				
@@ -597,39 +601,31 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 					pango_font_description_unset_fields (run->font, inherited_mask);
 				}
 				
-				if (render) {
-					// Runs share their parent TextBlock's Foreground
-					// property if they don't specify one of their own.
-					if (run->foreground != NULL)
-						run->foreground->SetupBrush (s->cairo, this);
-					else
-						foreground->SetupBrush (s->cairo, this);
-					
-					pango_cairo_show_layout (s->cairo, run->layout);
-				} else
-					pango_cairo_layout_path (s->cairo, run->layout);
+				pango_cairo_layout_path (s->cairo, run->layout);
 				
-				pango_layout_get_pixel_size (run->layout, &width, &height);
+				pango_layout_get_pixel_size (run->layout, &w, &h);
+				run->text_height = (double) h;
+				run->text_width = (double) w;
+				run->text_dir = 1; // FIXME
 				
-				newline == newline || strchr (text, '\n');
-				if (height > line_height || newline) {
-					if (height > line_height)
-						full_height += (height - line_height);
-					line_height = height;
+				if (run->text_height > line_height || newline) {
+					if (run->text_height > line_height)
+						block_height += (run->text_height - line_height);
+					line_height = run->text_height;
 				}
 				
-				if ((x + width) > full_width)
-					full_width = x + width;
+				if ((x + run->text_width) > block_width)
+					block_width = x + run->text_width;
 				
+				height = run->text_height;
+				width = run->text_width;
 				newline = false;
 				
 				break;
 			case Type::LINEBREAK:
 				//printf ("<LineBreak/>\n");
 				y += line_height;
-				//printf ("moving to (%d, %d)\n", x, y);
-				cairo_move_to (s->cairo, 0, y);
-				full_height += height;
+				block_height += height;
 				line_height = height;
 				newline = true;
 				width = 0;
@@ -642,14 +638,202 @@ TextBlock::Draw (Surface *s, bool render, int *w, int *h)
 			node = (Collection::Node *) node->Next ();
 		}
 	}
+}
+
+static void
+line_width_height (Collection::Node *iNode, double *width, double *height)
+{
+	double w = 0, h = 0;
+	Inline *item;
 	
-	foreground->unref ();
+	while (iNode != NULL) {
+		item = (Inline *) iNode->obj;
+		if (item->GetObjectType () == Type::LINEBREAK)
+			break;
+		
+		if (((Run *) item)->text_height > h)
+			h = ((Run *) item)->text_height;
+		
+		w += ((Run *) item)->text_width;
+		
+		iNode = (Collection::Node *) iNode->Next ();
+	}
 	
-	if (w)
-		*w = full_width;
+	*height = h;
+	*width = w;
+}
+
+void
+TextBlock::Paint (Surface *s)
+{
+	Collection::Node *node = inlines ? (Collection::Node *) inlines->list->First () : NULL;
+	double run_height, dx, dy, x, y = 0;
+        double line_width, line_height;
+	PangoFontMask font_mask;
+	int8_t dir;
+	char *text;
+	Brush *fg;
 	
-	if (h)
-		*h = full_height;
+	if (block_width == -1)
+		Layout (s);
+	
+	font_mask = pango_font_description_get_set_fields (font);
+	
+	if (foreground == NULL) {
+		fg = default_foreground ();
+	} else {
+		fg = foreground;
+		fg->ref ();
+	}
+	
+	line_width_height (node, &line_width, &line_height);
+	
+	text = text_block_get_text (this);
+	
+	if (text && *text) {
+		if (text_height > line_height)
+			line_height = text_height;
+		
+		line_width += text_width;
+		
+		// dir keeps track of overall line direction
+		dir = text_dir;
+		
+		// run_height keeps track of the previous run's height (for newline offset calculations)
+		run_height = text_height;
+		
+		// x,y keep track of cursor position
+		if (text_dir < 0)
+			x = block_width;
+		else
+			x = 0;
+		
+		// dx,dy keep track of x,y deltas for placement (dy for font height)
+		if (text_height < line_height)
+			dy = line_height - text_height;
+		else
+			dy = 0;
+		
+		dx = 0;
+		
+		//printf ("<TextBlock> moving to (%g, %g)\n", x + dx, y + dy);
+		cairo_move_to (s->cairo, x + dx, y + dy);
+		pango_cairo_update_layout (s->cairo, layout);
+		fg->SetupBrush (s->cairo, this);
+		pango_cairo_show_layout (s->cairo, layout);
+		x += (dir * text_width);
+	} else {
+		if (node && ((Inline *) node->obj)->GetObjectType () == Type::RUN) {
+			run_height = ((Run *) node->obj)->text_height;
+			dir = ((Run *) node->obj)->text_dir;
+		} else {
+			run_height = 0;
+			dir = 0;
+		}
+		
+		x = dir < 0 ? block_width : 0;
+	}
+	
+	// Note: all text per line is aligned along the bottom edge
+	
+	if (inlines != NULL) {
+		PangoFontMask run_mask, inherited_mask;
+		PangoFontMask inherited;
+		Collection::Node *next;
+		bool newline = false;
+		Inline *item;
+		Run *run;
+		
+		while (node != NULL) {
+			item = (Inline *) node->obj;
+			
+			// FIXME: consider run->text_dir for horizontal placement of text runs
+			
+			switch (item->GetObjectType ()) {
+			case Type::RUN:
+				run = (Run *) item;
+				
+				text = run_get_text (run);
+				//printf ("<Run>%s</Run>\n", text ? text : "(null)");
+				
+				if (text == NULL || *text == '\0') {
+					// optimization
+					break;
+				}
+				
+				// calculate dx
+				if (dir >= 0 && run->text_dir < 0)
+					dx = run->text_width;
+				else if (dir < 0 && run->text_dir > 0)
+					dx = -run->text_width;
+				else
+					dx = 0;
+				
+				// calculate dy
+				if (run->text_height < line_height)
+					dy = line_height - run->text_height;
+				else
+					dy = 0;
+				
+				//printf ("\tmoving to (%g, %g)\n", x + dx, y + dy);
+				cairo_move_to (s->cairo, x + dx, y + dy);
+				pango_cairo_update_layout (s->cairo, run->layout);
+				x += (run->text_dir * run->text_width) + dx;
+				
+				// Runs share their parent TextBlock's font properties if
+				// they don't specify their own.
+				run_mask = pango_font_description_get_set_fields (run->font);
+				pango_font_description_merge (run->font, font, false);
+				inherited_mask = (PangoFontMask) (font_mask & ~run_mask);
+				
+				if (inherited_mask != 0) {
+					pango_layout_set_font_description (run->layout, run->font);
+					pango_font_description_unset_fields (run->font, inherited_mask);
+				}
+				
+				// Runs share their parent TextBlock's Foreground
+				// property if they don't specify one of their own.
+				if (run->foreground != NULL)
+					run->foreground->SetupBrush (s->cairo, this);
+				else
+					fg->SetupBrush (s->cairo, this);
+				
+				pango_cairo_show_layout (s->cairo, run->layout);
+				
+				run_height = run->text_height;
+				newline = false;
+				
+				break;
+			case Type::LINEBREAK:
+				//printf ("<LineBreak/>\n");
+				y += line_height;
+				newline = true;
+				
+				next = (Collection::Node *) node->Next ();
+				if (next != NULL) {
+					if (((Inline *) next->obj)->GetObjectType () == Type::RUN) {
+						line_width_height (next, &line_width, &line_height);
+						dir = ((Run *) next->obj)->text_dir;
+						x = dir < 0 ? block_width : 0;
+					} else {
+						// use the last run height as the line height
+						line_height = run_height;
+					}
+					
+					//printf ("\tnext line's width = %g, height = %g\n", line_width, line_height);
+				}
+				
+				break;
+			default:
+				printf ("unknown Inline item\n");
+				break;
+			}
+			
+			node = (Collection::Node *) node->Next ();
+		}
+	}
+	
+	fg->unref ();
 }
 
 void
@@ -688,6 +872,11 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == TextBlock::TextProperty && layout != NULL) {
 		char *text = text_block_get_text (this);
 		pango_layout_set_text (layout, text ? text : "", -1);
+		block_height = -1;
+		block_width = -1;
+		text_height = -1;
+		text_width = -1;
+		text_dir = 0;
 	} else if (prop == TextBlock::InlinesProperty) {
 		if (inlines != NULL) {
 			inlines->Detach (NULL, this);
@@ -698,6 +887,9 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			inlines->Attach (NULL, this);
 			inlines->ref ();
 		}
+		
+		block_height = -1;
+		block_width = -1;
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {
 			foreground->Detach (NULL, this);
@@ -710,11 +902,15 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 	
-	if (font_changed && layout != NULL)
-		pango_layout_set_font_description (layout, font);
-	
-	height = -1;
-	width = -1;
+	if (font_changed) {
+		if (layout != NULL)
+			pango_layout_set_font_description (layout, font);
+		
+		block_height = -1;
+		block_width = -1;
+		text_height = -1;
+		text_width = -1;
+	}
 	
 	FullInvalidate (false);
 }

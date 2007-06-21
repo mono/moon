@@ -1,3 +1,13 @@
+2007-06-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: Reworked text layout/rendering logic - we now cache
+	width/height info for each text string as well as the overall
+	block width/height. This info is then used to align text strings
+	on each line along the bottom edge (rather than along the top
+	edge) of the line of text.
+
+	* xaml.cpp (char_data_handler): Ignore insignificant lwsp CDATA
+
 2007-06-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* stylus.h|cpp: Add InkPresenter.

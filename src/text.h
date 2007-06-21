@@ -115,6 +115,10 @@ public:
 	PangoLayout *layout;
 	Brush *foreground;
 	
+	double text_height;
+	double text_width;
+	int8_t text_dir;
+	
 	Run ();
 	~Run ();
 	virtual Type::Kind GetObjectType () { return Type::RUN; };
@@ -128,8 +132,6 @@ void run_set_text (Run *run, char *value);
 
 
 class TextBlock : public FrameworkElement {
-	Brush *foreground;
-	Inlines *inlines;
 public:
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;
@@ -164,9 +166,17 @@ public:
 private:
 	PangoFontDescription *font;
 	PangoLayout *layout;
-	int width, height;
+	Brush *foreground;
+	Inlines *inlines;
 	
-	void Draw (Surface *s, bool render, int *w, int *h);
+	double block_height;
+	double block_width;
+	double text_height;
+	double text_width;
+	int8_t text_dir;
+	
+	void Layout (Surface *s);
+	void Paint (Surface *s);
 };
 
 TextBlock *text_block_new (void);

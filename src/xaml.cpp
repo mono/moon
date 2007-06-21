@@ -160,7 +160,6 @@ class XamlElementInfo {
 		XamlElementInfo *walk = this;
 
 		while (walk) {
-
 			if (walk->content_property)
 				return walk->content_property;
 
@@ -491,7 +490,6 @@ end_element_handler (void *data, const char *el)
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
 		if (info->char_data_buffer && info->char_data_buffer->len) {
-
 			bool has_content = false;
 			for (int i = 0; i < info->char_data_buffer->len; i++) {
 				if (g_ascii_isspace (info->char_data_buffer->str [i]))
@@ -507,11 +505,10 @@ end_element_handler (void *data, const char *el)
 				// but string is all i have found so far.  If you can specify other
 				// types, i should pull the property setting out of set_attributes
 				// and use that code
-				if ((con->value_type) == Type::STRING) {
+				if ((con->value_type) == Type::STRING)
 					info->current_element->item->SetValue (con, Value (info->char_data_buffer->str));
-				}
 			}
-		
+			
 			g_string_free (info->char_data_buffer, FALSE);
 			info->char_data_buffer = NULL;
 		}
@@ -535,19 +532,48 @@ end_element_handler (void *data, const char *el)
 }
 
 void
-char_data_handler (void *data, const char *txt, int len)
+char_data_handler (void *data, const char *in, int inlen)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
-
+	const char *inend = in + inlen;
+	const char *inptr = in;
+	bool lwsp = false;
+	size_t len = 0;
+	char *s, *d;
+	
 	if (p->error_args)
 		return;
-
+	
 	if (!p->char_data_buffer) {
-		p->char_data_buffer = g_string_new_len (txt, len);
-		return;
+		// unless we already have significant char data, ignore lwsp
+		while (g_ascii_isspace (*inptr) && inptr < inend)
+			inptr++;
+		
+		if (inptr == inend)
+			return;
+		
+		p->char_data_buffer = g_string_new_len (inptr, inend - inptr);
+	} else {
+		len = p->char_data_buffer->len;
+		g_string_append_len (p->char_data_buffer, in, inlen);
+		lwsp = g_ascii_isspace (p->char_data_buffer->str[len - 1]);
 	}
-
-	p->char_data_buffer = g_string_append_len (p->char_data_buffer, txt, len);
+	
+	// Condense multi-lwsp blocks into a single space (and make all lwsp chars a literal space, not '\n', etc)
+	s = d = p->char_data_buffer->str + len;
+	while (*s != '\0') {
+		if (g_ascii_isspace (*s)) {
+			if (!lwsp)
+				*d++ = ' ';
+			lwsp = true;
+			s++;
+		} else {
+			lwsp = false;
+			*d++ = *s++;
+		}
+	}
+	
+	g_string_truncate (p->char_data_buffer, d - p->char_data_buffer->str);
 }
 
 void
