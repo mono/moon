@@ -222,6 +222,7 @@ class XNamespace : public XamlNamespace {
 
 		if (!strcmp ("Name", attr)) {
 			p->namescope->RegisterName (value, (DependencyObject *) item->item);
+			item->item->SetValue (DependencyObject::NameProperty, Value (value));
 			return;
 		}
 
