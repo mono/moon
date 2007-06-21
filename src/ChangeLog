@@ -1,3 +1,9 @@
+2007-06-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Fix some Stretch modes for paths. This can get very
+	expansive, next step is to cache the cairo_path_t* in the Path and
+	recompute it only on changes.
+
 2007-06-20  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (is_valid_event_name): new function.

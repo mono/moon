@@ -901,6 +901,8 @@ polyline_new (void)
 
 DependencyProperty* Path::DataProperty;
 
+// FIXME - this can be VERY expansive to compute several times (fill, stroke & bounds)
+//	we should cache the cairo_path_t and recompute it on changes
 void
 Path::Draw (Surface *s)
 {
@@ -916,54 +918,114 @@ Path::Draw (Surface *s)
 
 	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
 	 * (resulting in something even more complex).
-	 * IDEA: If we implement caching then this would be a nice candidate.
 	 */
-	double x = G_MAXDOUBLE;
-	double y = G_MAXDOUBLE;
+	double minx = G_MAXDOUBLE;
+	double miny = G_MAXDOUBLE;
+	double maxx = G_MINDOUBLE;
+	double maxy = G_MINDOUBLE;
 	cairo_path_t* path = cairo_copy_path (s->cairo);
 
-	// find origin
+	// find origin (minimums) and actual width/height (maximums - minimums)
 	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
 		cairo_path_data_t *data = &path->data[i];
 		switch (data->header.type) {
 		case CAIRO_PATH_CURVE_TO:
-			if (x > data[3].point.x)
-				x = data[3].point.x;
-			if (y > data[3].point.y)
-				y = data[3].point.y;
-			if (x > data[2].point.x)
-				x = data[2].point.x;
-			if (y > data[2].point.y)
-				y = data[2].point.y;
+			// minimum
+			if (minx > data[3].point.x)
+				minx = data[3].point.x;
+			if (miny > data[3].point.y)
+				miny = data[3].point.y;
+			if (minx > data[2].point.x)
+				minx = data[2].point.x;
+			if (miny > data[2].point.y)
+				miny = data[2].point.y;
+			// maximum
+			if (maxx < data[3].point.x)
+				maxx = data[3].point.x;
+			if (maxy < data[3].point.y)
+				maxy = data[3].point.y;
+			if (maxx < data[2].point.x)
+				maxx = data[2].point.x;
+			if (maxy < data[2].point.y)
+				maxy = data[2].point.y;
 			/* fallthru */
 		case CAIRO_PATH_LINE_TO:
 		case CAIRO_PATH_MOVE_TO:
-			if (x > data[1].point.x)
-				x = data[1].point.x;
-			if (y > data[1].point.y)
-				y = data[1].point.y;
+			// minimum
+			if (minx > data[1].point.x)
+				minx = data[1].point.x;
+			if (miny > data[1].point.y)
+				miny = data[1].point.y;
+			// maximum
+			if (maxx < data[1].point.x)
+				maxx = data[1].point.x;
+			if (maxy < data[1].point.y)
+				maxy = data[1].point.y;
 			break;
 		case CAIRO_PATH_CLOSE_PATH:
 			break;
 		}
 	}
 
-	// substract origin
+	double actual_height = maxy - miny;
+	double actual_width = maxx - minx;
+
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	double requested_height = (vh ? vh->AsDouble () : actual_height);
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	double requested_width = (vw ? vw->AsDouble () : actual_width);
+
+	double sh = vh ? (requested_height / actual_height) : 1.0;
+	double sw = vw ? (requested_width / actual_width) : 1.0;
+	switch (stretch) {
+	case StretchFill:
+		break;
+	case StretchUniform:
+		sw = sh = (sw < sh) ? sw : sh;
+		if (sw < sh) {
+		} else {
+		}
+		break;
+	case StretchUniformToFill:
+		cairo_new_path (s->cairo);
+		cairo_rectangle (s->cairo, 0, 0, requested_width, requested_height);
+		cairo_clip (s->cairo);
+		sw = sh = (sw > sh) ? sw : sh;
+		break;
+	}
+
+	bool stretch_horz = (vw || (sw != 1.0));
+	bool stretch_vert = (vh || (sh != 1.0));
+
+	// substract origin (min[x|y]) and scale to requested dimensions (if specified)
 	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
 		cairo_path_data_t *data = &path->data[i];
 		switch (data->header.type) {
 		case CAIRO_PATH_CURVE_TO:
-			data[3].point.x -= x;
-			data[3].point.y -= y;
-			data[2].point.x -= x;
-			data[2].point.y -= y;
+			data[3].point.x -= minx;
+			data[3].point.y -= miny;
+			data[2].point.x -= minx;
+			data[2].point.y -= miny;
+			if (stretch_horz) {
+				data[3].point.x *= sw;
+				data[2].point.x *= sw;
+			}
+			if (stretch_vert) {
+				data[3].point.y *= sh;
+				data[2].point.y *= sh;
+			}
 			/* fallthru */
 		case CAIRO_PATH_LINE_TO:
 		case CAIRO_PATH_MOVE_TO:
-			data[1].point.x -= x;
-			data[1].point.y -= y;
+			data[1].point.x -= minx;
+			data[1].point.y -= miny;
+			if (stretch_horz)
+				data[1].point.x *= sw;
+			if (stretch_vert)
+				data[1].point.y *= sh;
 			break;
 		case CAIRO_PATH_CLOSE_PATH:
+			break;
 			break;
 		}
 	}
