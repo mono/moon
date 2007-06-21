@@ -1,3 +1,9 @@
+2007-06-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp|h: Implement caching of Path (this could be extended to
+	all shapes).
+	* geometry.cpp|h: Notify on changes.
+
 2007-06-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Don't allocate (and free) a copy of the PML before 

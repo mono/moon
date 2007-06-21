@@ -66,6 +66,12 @@ Geometry::Draw (Surface *s)
 	}
 }
 
+void
+Geometry::OnPropertyChanged (DependencyProperty *prop)
+{
+	NotifyAttacheesOfPropertyChange (prop);
+}
+
 //
 // GeometryGroup
 //
@@ -101,6 +107,12 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+}
+
+void
+GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	NotifyAttacheesOfPropertyChange (subprop);
 }
 
 void
@@ -141,6 +153,12 @@ geometry_collection_new ()
 	return new GeometryCollection ();
 }
 
+void
+GeometryCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	NotifyAttacheesOfPropertyChange (subprop);
+}
+
 //
 // PathFigureCollection
 //
@@ -151,6 +169,12 @@ path_figure_collection_new ()
 	return new PathFigureCollection ();
 }
 
+void
+PathFigureCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	NotifyAttacheesOfPropertyChange (subprop);
+}
+
 //
 // PathSegmentCollection
 //
@@ -159,6 +183,12 @@ PathSegmentCollection*
 path_segment_collection_new ()
 {
 	return new PathSegmentCollection ();
+}
+
+void
+PathSegmentCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	NotifyAttacheesOfPropertyChange (subprop);
 }
 
 //

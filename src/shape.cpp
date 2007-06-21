@@ -901,8 +901,12 @@ polyline_new (void)
 
 DependencyProperty* Path::DataProperty;
 
-// FIXME - this can be VERY expansive to compute several times (fill, stroke & bounds)
-//	we should cache the cairo_path_t and recompute it on changes
+Path::~Path ()
+{
+g_warning ("~Path %p", this);
+	CleanupCache ();
+}
+
 void
 Path::Draw (Surface *s)
 {
@@ -910,7 +914,21 @@ Path::Draw (Surface *s)
 	if (!data)
 		return;
 
-	data->Draw (s);
+	// compute and cache the path as some options, like stretch, can be very expansive
+	// to compute multiple times (e.g. fill, stroke and getbounds)
+	if (!path)
+		BuildPath (s, data);
+
+	cairo_new_path (s->cairo);
+	cairo_append_path (s->cairo, path);
+}
+
+void
+Path::BuildPath (Surface *s, Geometry* geometry)
+{
+	geometry->Draw (s);
+
+	path = cairo_copy_path (s->cairo);
 
 	Stretch stretch = shape_get_stretch (this);
 	if (stretch == StretchNone)
@@ -923,7 +941,6 @@ Path::Draw (Surface *s)
 	double miny = G_MAXDOUBLE;
 	double maxx = G_MINDOUBLE;
 	double maxy = G_MINDOUBLE;
-	cairo_path_t* path = cairo_copy_path (s->cairo);
 
 	// find origin (minimums) and actual width/height (maximums - minimums)
 	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
@@ -1029,10 +1046,15 @@ Path::Draw (Surface *s)
 			break;
 		}
 	}
+}
 
-	cairo_new_path (s->cairo);
-	cairo_append_path (s->cairo, path);
-	cairo_path_destroy (path);
+void
+Path::CleanupCache ()
+{
+	if (path) {
+		cairo_path_destroy (path);
+		path = NULL;
+	}
 }
 
 /*
@@ -1051,8 +1073,11 @@ void
 Path::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type == Type::PATH) {
+		CleanupCache ();
 		FullInvalidate (false);
 		return;
+	} else if (prop == Shape::StretchProperty) {
+		CleanupCache ();
 	}
 	
 	Shape::OnPropertyChanged (prop);

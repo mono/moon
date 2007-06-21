@@ -217,10 +217,16 @@ void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 // Path
 //
 class Path : public Shape {
+	cairo_path_t *path;
+
+	void BuildPath (Surface *s, Geometry* geometry);
+	void CleanupCache ();
  public:
 	static DependencyProperty* DataProperty;
 
-	Path () {};
+	Path () : path (NULL) {};
+	~Path ();
+
 	virtual Type::Kind GetObjectType () { return Type::PATH; };
 
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
