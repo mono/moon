@@ -62,6 +62,7 @@ class GradientStop;
 class GradientStopCollection;
 class Image;
 class ImageBrush;
+class InkPresenter;
 class Inline;
 class Inlines;
 class KeyFrame;
@@ -248,6 +249,7 @@ public:
 	GradientStopCollection*        AsGradientStopCollection () { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
 	Image*                         AsImage () { checked_get_subclass (Type::IMAGE, Image) }
 	ImageBrush*                    AsImageBrush () { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
+	InkPresenter*                  AsInkPresenter () { checked_get_subclass (Type::INKPRESENTER, InkPresenter) }
 	Inline*                        AsInline () { checked_get_subclass (Type::INLINE, Inline) }
 	Inlines*                       AsInlines () { checked_get_subclass (Type::INLINES, Inlines) }
 	KeyFrame*                      AsKeyFrame () { checked_get_subclass (Type::KEYFRAME, KeyFrame) }

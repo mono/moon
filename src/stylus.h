@@ -60,6 +60,18 @@ class DrawingAttributes : public DependencyObject {
 
 DrawingAttributes* drawing_attributes_new ();
 
+class InkPresenter : public Canvas {
+ public:
+	InkPresenter () { }
+	~InkPresenter () { };
+	
+	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
+
+	static DependencyProperty* StrokesProperty;
+};
+
+InkPresenter* ink_presenter_new ();
+
 G_END_DECLS
 
 #endif /* MOON_STYLUS_H */

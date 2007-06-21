@@ -72,6 +72,7 @@ media_base_set_stretch (MediaBase *media, Stretch value)
 
 // MediaElement
 
+DependencyProperty *MediaElement::AttributesProperty;
 DependencyProperty *MediaElement::AutoPlayProperty;
 DependencyProperty *MediaElement::BalanceProperty;
 DependencyProperty *MediaElement::BufferingProgressProperty;
@@ -322,6 +323,30 @@ MediaElement *
 media_element_new (void)
 {
 	return new MediaElement ();
+}
+
+void
+media_element_stop (MediaElement *media)
+{
+	media->Stop ();
+}
+
+void 
+media_element_play (MediaElement *media)
+{
+	media->Play ();
+}
+
+void
+media_element_pause (MediaElement *media)
+{
+	media->Pause ();
+}
+
+void
+media_element_setsource (MediaElement *media, DependencyObject* Downloader, char* PartName)
+{
+	media->SetSource (Downloader, PartName);
 }
 
 bool
@@ -968,6 +993,7 @@ media_init (void)
 	Image::DownloadProgressProperty = DependencyObject::Register (Type::IMAGE, "DownloadProgress", new Value (0.0));
 	
 	/* MediaElement */
+	MediaElement::AttributesProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Attributes", Type::MEDIAATTRIBUTE_COLLECTION);
 	MediaElement::AutoPlayProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
 	MediaElement::BalanceProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
 	MediaElement::BufferingProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0));

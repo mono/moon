@@ -1,5 +1,11 @@
 2007-06-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* stylus.h|cpp: Add InkPresenter.
+	* media.h|cpp: Add C methods to stop, pause and play a MediaElement.
+	* value.h, type.h|cpp: Updated.
+
+2007-06-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* animation.cpp: Register *KeyFrame::Value properties as nullable.
 	* clock.cpp: Register TimelineMarker properties.
 

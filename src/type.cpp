@@ -223,6 +223,7 @@ types_init (void)
 	Type::RegisterType ("GradientStopCollection", Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION);
 	Type::RegisterType ("Image", Type::IMAGE, Type::MEDIABASE);
 	Type::RegisterType ("ImageBrush", Type::IMAGEBRUSH, Type::TILEBRUSH);
+	Type::RegisterType ("InkPresenter", Type::INKPRESENTER, Type::CANVAS);
 	Type::RegisterType ("Inline", Type::INLINE, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Inlines", Type::INLINES, Type::COLLECTION);
 	Type::RegisterType ("KeyFrame", Type::KEYFRAME, Type::DEPENDENCY_OBJECT);

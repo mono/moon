@@ -111,6 +111,7 @@ void   image_set_source (Image *img, DependencyObject *Downloader, char *PartNam
 
 class MediaElement : public MediaBase {
 public:
+	static DependencyProperty *AttributesProperty;
 	static DependencyProperty *AutoPlayProperty;
 	static DependencyProperty *BalanceProperty;
 	static DependencyProperty *BufferingProgressProperty;
@@ -149,6 +150,11 @@ public:
 };
 
 MediaElement *media_element_new (void);
+
+void media_element_pause (MediaElement *media);
+void media_element_play (MediaElement *media);
+void media_element_stop (MediaElement *media);
+void media_element_setsource (MediaElement *media, DependencyObject *Downloader, char *PartName);
 
 bool media_element_get_auto_play (MediaElement *media);
 void media_element_set_auto_play (MediaElement *media, bool value);

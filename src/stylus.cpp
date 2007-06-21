@@ -44,6 +44,12 @@ drawing_attributes_new ()
 	return new DrawingAttributes ();
 }
 
+InkPresenter*
+ink_presenter_new ()
+{
+	return new InkPresenter ();
+}
+
 DependencyProperty* StylusInfo::DeviceTypeProperty;
 DependencyProperty* StylusInfo::IsInvertedProperty;
 
@@ -58,6 +64,8 @@ DependencyProperty* DrawingAttributes::ColorProperty;
 DependencyProperty* DrawingAttributes::OutlineColorProperty;
 DependencyProperty* DrawingAttributes::HeightProperty;
 DependencyProperty* DrawingAttributes::WidthProperty;
+
+DependencyProperty* InkPresenter::StrokesProperty;
 
 void stylus_init ()
 {
@@ -75,5 +83,7 @@ void stylus_init ()
 	DrawingAttributes::OutlineColorProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "OutlineColor", Type::COLOR);
 	DrawingAttributes::HeightProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Height", Type::DOUBLE);
 	DrawingAttributes::WidthProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Width", Type::DOUBLE);
+
+	InkPresenter::StrokesProperty = DependencyObject::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
 }
 
