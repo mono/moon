@@ -103,6 +103,21 @@ if test -z $mozilla_xpcom; then
    exit 1
 fi
 
+AC_MSG_CHECKING(Mozilla PLUGIN pkg-config module name)
+mozilla_plugin_pcs="plugin mozilla-plugin firefox-plugin xulrunner-plugin"
+for pc in $mozilla_plugin_pcs; do
+	if $PKG_CONFIG --exists $pc; then
+		AC_MSG_RESULT($pc)
+		mozilla_plugin=$pc
+		break;
+	fi
+done
+
+if test -z $mozilla_plugin; then
+   echo You need to install the Mozilla PLUGIN development package.
+   exit 1
+fi
+
 XPIDL=`pkg-config --variable=libdir $mozilla_xpcom`/xpidl
 XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 
@@ -116,8 +131,8 @@ MOON_LIBS=`pkg-config --libs $MOON_PKGS`
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
 
-PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom $MOON_PKGS mono`
-PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $mozilla_nspr $mozilla_xpcom $MOON_PKGS mono`
+PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS mono`
+PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS mono`
 
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)

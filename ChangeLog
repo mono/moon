@@ -1,3 +1,7 @@
+2007-06-21  Dick Porter  <dick@ximian.com>
+
+	* configure.ac: Added checks for mozilla "plugin" pkgconfig file
+
 2007-06-18  Chris Toshok  <toshok@ximian.com>
 
 	* gtk/ManagedDownloader.cs: use time_manager_add_tick_call for the
