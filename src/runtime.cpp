@@ -838,7 +838,6 @@ VisualCollection::Add (DependencyObject *data)
 
 	Collection::Add (item);
 	emit_loaded_events (item);
-
 	VisualUpdate (data);
 }
 
@@ -1033,24 +1032,25 @@ Canvas::getbounds ()
 			y2 = item->y2;
 	}
 
-	if (surface){
+	if (surface) {
 		x1 = y1 = 0;
 		x2 = surface->width;
 		y2 = surface->height;
+		printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
 	} else {
 		// If we found nothing.
 		if (first)
 			x1 = y1 = x2 = y2 = 0;
 	}
 	//space (levelb);
-	//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1,x2, y2);
+	//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
 	//levelb -= 4;
 }
 
 bool
 Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child)
 {
-	if (prop == TopProperty || prop == LeftProperty){
+	if (prop == TopProperty || prop == LeftProperty) {
 		//
 		// Technically the canvas cares about Visuals, but we cant do much
 		// with them, all the logic to relayout is in UIElement

@@ -94,6 +94,7 @@ void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin value);
 double	       *shape_get_stroke_dash_array	(Shape *shape, int *count);
 void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 
+
 //
 // Ellipse
 //
@@ -106,7 +107,9 @@ class Ellipse : public Shape {
 
 	void Draw (Surface *s);
 };
-Ellipse *ellipse_new ();
+
+Ellipse *ellipse_new (void);
+
 
 //
 // Rectangle class 
@@ -131,6 +134,7 @@ double     rectangle_get_radius_x (Rectangle *rectangle);
 void       rectangle_set_radius_x (Rectangle *rectangle, double value);
 double     rectangle_get_radius_y (Rectangle *rectangle);
 void       rectangle_set_radius_y (Rectangle *rectangle, double value);
+
 
 //
 // Line class 
@@ -164,6 +168,7 @@ void line_set_x2 (Line *line, double value);
 double line_get_y2 (Line *line);
 void line_set_y2 (Line *line, double value);
 
+
 //
 // Polygon
 //
@@ -187,6 +192,7 @@ FillRule	polygon_get_fill_rule	(Polygon *polygon);
 void		polygon_set_fill_rule	(Polygon *polygon, FillRule value);
 Point	       *polygon_get_points	(Polygon *polygon, int *count);
 void		polygon_set_points	(Polygon *polygon, Point* points, int count);
+
 
 //
 // Polyline
@@ -212,6 +218,7 @@ FillRule	polyline_get_fill_rule	(Polyline *polyline);
 void		polyline_set_fill_rule	(Polyline *polyline, FillRule value);
 Point	       *polyline_get_points	(Polyline *polyline, int *count);
 void		polyline_set_points	(Polyline *polyline, Point* points, int count);
+
 
 //
 // Path

@@ -243,7 +243,7 @@ Run::OnPropertyChanged (DependencyProperty *prop)
 		font_changed = true;
 	} else if (prop == Inline::FontSizeProperty) {
 		double size = inline_get_font_size (this);
-		pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
+		pango_font_description_set_absolute_size (font, size * PANGO_SCALE);
 		font_changed = true;
 	} else if (prop == Inline::FontStretchProperty) {
 		FontStretches stretch = inline_get_font_stretch (this);
@@ -337,7 +337,7 @@ TextBlock::TextBlock ()
 	char *family = text_block_get_font_family (this);
 	pango_font_description_set_family (font, family);
 	double size = text_block_get_font_size (this);
-	pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
+	pango_font_description_set_absolute_size (font, size * PANGO_SCALE);
 	FontStretches stretch = text_block_get_font_stretch (this);
 	pango_font_description_set_stretch (font, font_stretch (stretch));
 	FontStyles style = text_block_get_font_style (this);
@@ -671,7 +671,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		font_changed = true;
 	} else if (prop == TextBlock::FontSizeProperty) {
 		double size = text_block_get_font_size (this);
-		pango_font_description_set_size (font, (int) (size * PANGO_SCALE));
+		pango_font_description_set_absolute_size (font, size * PANGO_SCALE);
 		font_changed = true;
 	} else if (prop == TextBlock::FontStretchProperty) {
 		FontStretches stretch = text_block_get_font_stretch (this);

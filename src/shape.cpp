@@ -532,9 +532,9 @@ Rectangle::Rectangle ()
 void
 Rectangle::Draw (Surface *s)
 {
-	double w, h;
-
 	Stretch stretch = shape_get_stretch (this);
+	double w, h;
+	
 	if (stretch == StretchNone) {
 		// this gets us a single colored point at X,Y
 		w = 0.5;
@@ -565,6 +565,7 @@ Rectangle::Draw (Surface *s)
 			}
 		}
 	}
+	
 	// normal rectangle
 	cairo_new_path (s->cairo);
 	cairo_rectangle (s->cairo, 0, 0, w, h);

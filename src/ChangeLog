@@ -1,3 +1,7 @@
+2007-06-21  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* text.cpp: Use absolute font sizes, makes the fonts not so huge.
+
 2007-06-20  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Set namecopes earlier, and make sure to copy the
@@ -243,7 +247,7 @@
 
 	* *.cpp: Updated to use the new List type.
 
-	* runtime.cpp|h (Collection): Modified to use List instead og
+	* runtime.cpp|h (Collection): Modified to use List instead of
 	GList which made some code simpler, we get to take advantage of
 	destructors, woo!
 
