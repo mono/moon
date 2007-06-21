@@ -1,3 +1,9 @@
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (is_valid_event_name): new function.
+	(dependency_object_hookup_event): only allow valid events to be
+	hooked up.
+
 2007-06-20  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: New method for finding an objects namescope.

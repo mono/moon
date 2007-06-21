@@ -1831,17 +1831,50 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 	}
 }
 
+static bool
+is_valid_event_name (const char *name)
+{
+	return (!strcmp (name, "ImageFailed") ||
+		!strcmp (name, "MediaEnded") ||
+		!strcmp (name, "MediaFailed") ||
+		!strcmp (name, "MediaOpened") ||
+		!strcmp (name, "BufferingProgressChanged") ||
+		!strcmp (name, "CurrentStateChanged") ||
+		!strcmp (name, "DownloadProgressChanged") ||
+		!strcmp (name, "MarkerReached") ||
+		!strcmp (name, "Completed") ||
+		!strcmp (name, "DownloadFailed") ||
+		!strcmp (name, "DownloadProgressChanged") ||
+		!strcmp (name, "FullScreenChange") ||
+		!strcmp (name, "Resize") ||
+		!strcmp (name, "Completed") ||
+		!strcmp (name, "ImageFailed") ||
+		!strcmp (name, "GotFocus") ||
+		!strcmp (name, "KeyDown") ||
+		!strcmp (name, "KeyUp") ||
+		!strcmp (name, "Loaded") ||
+		!strcmp (name, "LostFocus") ||
+		!strcmp (name, "MouseEnter") ||
+		!strcmp (name, "MouseLeave") ||
+		!strcmp (name, "MouseLeftButtonDown") ||
+		!strcmp (name, "MouseLeftButtonUp") ||
+		!strcmp (name, "MouseMove"));
+}
+
 bool
 dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, const char *name, const char *value)
 {
-	if (!p->hookup_event_callback) {
-		// void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
-		parser_error (p, item->element_name, name,
-			      g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n", name));
-		return true;
+	if (is_valid_event_name (name)) {
+		if (!p->hookup_event_callback) {
+			// void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
+			parser_error (p, item->element_name, name,
+					g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n", name));
+			return true;
+		}
+
+		p->hookup_event_callback (item->item, name, value);
 	}
 
-	p->hookup_event_callback (item->item, name, value);
 	return false;
 }
 
