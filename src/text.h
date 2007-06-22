@@ -3,6 +3,7 @@
 
 G_BEGIN_DECLS
 
+#include <cairo.h>
 #include <pango/pango.h>
 
 #include "brush.h"
@@ -175,8 +176,9 @@ private:
 	double text_width;
 	int8_t text_dir;
 	
-	void Layout (Surface *s);
-	void Paint (Surface *s);
+	void CalcActualWidthHeight (cairo_t *cr);
+	void Layout (cairo_t *cr);
+	void Paint (cairo_t *cr);
 };
 
 TextBlock *text_block_new (void);
@@ -231,6 +233,11 @@ public:
 	
 	Glyphs () { }
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
+	
+	virtual void render (Surface *s, int x, int y, int width, int height);
+	virtual void getbounds ();
+	virtual Point getxformorigin ();
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 Glyphs *glyphs_new (void);

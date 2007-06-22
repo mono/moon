@@ -398,7 +398,7 @@ TextBlock::render (Surface *s, int x, int y, int width, int height)
 {
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
-	Paint (s);
+	Paint (s->cairo);
 	cairo_restore (s->cairo);
 }
 
@@ -410,17 +410,8 @@ TextBlock::getbounds ()
 	if (s == NULL)
 		return;
 	
-	if (block_width < 0.0) {
-		// need to recompute cached width/height
-		cairo_save (s->cairo);
-		cairo_identity_matrix (s->cairo);
-		Layout (s);
-		cairo_new_path (s->cairo);
-		cairo_restore (s->cairo);
-		
-		text_block_set_actual_height (this, block_height);
-		text_block_set_actual_width (this, block_width);
-	}
+	if (block_width < 0.0)
+		CalcActualWidthHeight (s->cairo);
 	
 	// optimization: use the cached width/height and draw
 	// a simple rectangle to get bounding box
@@ -448,16 +439,8 @@ TextBlock::getxformorigin ()
 	if (s == NULL)
 		return Point (0.0, 0.0);
 	
-	if (block_width < 0.0) {
-		cairo_save (s->cairo);
-		cairo_identity_matrix (s->cairo);
-		Layout (s);
-		cairo_new_path (s->cairo);
-		cairo_restore (s->cairo);
-		
-		text_block_set_actual_height (this, block_height);
-		text_block_set_actual_width (this, block_width);
-	}
+	if (block_width < 0.0)
+		CalcActualWidthHeight (s->cairo);
 	
 	return Point (user_xform_origin.x * block_width, user_xform_origin.y * block_height);
 }
@@ -474,7 +457,7 @@ TextBlock::inside_object (Surface *s, double x, double y)
 	cairo_save (s->cairo);
 	cairo_set_matrix (s->cairo, &absolute_xform);
 	
-	Layout (s);
+	Layout (s->cairo);
 	
 	cairo_matrix_invert (&inverse);
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
@@ -492,25 +475,46 @@ TextBlock::inside_object (Surface *s, double x, double y)
 void
 TextBlock::get_size_for_brush (cairo_t *cr, double *width, double *height)
 {
-	if (block_width < 0.0) {
-		Surface *s = item_get_surface (this);
-		
-		cairo_save (s->cairo);
-		cairo_identity_matrix (s->cairo);
-		Layout (s);
-		cairo_new_path (s->cairo);
-		cairo_restore (s->cairo);
-		
-		text_block_set_actual_height (this, block_height);
-		text_block_set_actual_width (this, block_width);
-	}
+	if (block_width < 0.0)
+		CalcActualWidthHeight (cr);
 	
 	*height = block_height;
 	*width = block_width;
 }
 
 void
-TextBlock::Layout (Surface *s)
+TextBlock::CalcActualWidthHeight (cairo_t *cr)
+{
+	cairo_surface_t *surface = NULL;
+	bool destroy = false;
+	
+	if (cr == NULL) {
+		// FIXME: we need better width/height values here
+		printf ("CalcWidthHeight called before surface available for TextBlock with Text=\"%s\"\n", text_block_get_text (this));
+		surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1280, 1024);
+		cr = cairo_create (surface);
+		destroy = true;
+	} else {
+		cairo_save (cr);
+	}
+	
+	cairo_identity_matrix (cr);
+	Layout (cr);
+	
+	if (destroy) {
+		cairo_surface_destroy (surface);
+		cairo_destroy (cr);
+	} else {
+		cairo_new_path (cr);
+		cairo_restore (cr);
+	}
+	
+	text_block_set_actual_height (this, block_height);
+	text_block_set_actual_width (this, block_width);
+}
+
+void
+TextBlock::Layout (cairo_t *cr)
 {
 	double width, height, x = 0, y = 0;
 	PangoFontMask font_mask;
@@ -520,11 +524,11 @@ TextBlock::Layout (Surface *s)
 	text = text_block_get_text (this);
 	
 	if (layout == NULL) {
-		layout = pango_cairo_create_layout (s->cairo);
+		layout = pango_cairo_create_layout (cr);
 		pango_layout_set_text (layout, text ? text : "", -1);
 		pango_layout_set_font_description (layout, font);	
 	} else {
-		pango_cairo_update_layout (s->cairo, layout);
+		pango_cairo_update_layout (cr, layout);
 	}
 	
 	font_mask = pango_font_description_get_set_fields (font);
@@ -533,7 +537,7 @@ TextBlock::Layout (Surface *s)
 	block_width = 0;
 	
 	if (text && *text) {
-		pango_cairo_layout_path (s->cairo, layout);
+		pango_cairo_layout_path (cr, layout);
 		pango_layout_get_pixel_size (layout, &w, &h);
 		text_height = (double) h;
 		text_width = (double) w;
@@ -581,13 +585,13 @@ TextBlock::Layout (Surface *s)
 				
 				x += width;
 				//printf ("moving to (%d, %d)\n", x, y);
-				cairo_move_to (s->cairo, x, y);
+				cairo_move_to (cr, x, y);
 				
 				if (run->layout == NULL) {
-					run->layout = pango_cairo_create_layout (s->cairo);
+					run->layout = pango_cairo_create_layout (cr);
 					pango_layout_set_text (run->layout, text ? text : "", -1);
 				} else {
-					pango_cairo_update_layout (s->cairo, run->layout);
+					pango_cairo_update_layout (cr, run->layout);
 				}
 				
 				// Runs share their parent TextBlock's font properties if
@@ -601,7 +605,7 @@ TextBlock::Layout (Surface *s)
 					pango_font_description_unset_fields (run->font, inherited_mask);
 				}
 				
-				pango_cairo_layout_path (s->cairo, run->layout);
+				pango_cairo_layout_path (cr, run->layout);
 				
 				pango_layout_get_pixel_size (run->layout, &w, &h);
 				run->text_height = (double) h;
@@ -664,7 +668,7 @@ line_width_height (Collection::Node *iNode, double *width, double *height)
 }
 
 void
-TextBlock::Paint (Surface *s)
+TextBlock::Paint (cairo_t *cr)
 {
 	Collection::Node *node = inlines ? (Collection::Node *) inlines->list->First () : NULL;
 	double run_height, dx, dy, x, y = 0;
@@ -675,7 +679,7 @@ TextBlock::Paint (Surface *s)
 	Brush *fg;
 	
 	if (block_width == -1)
-		Layout (s);
+		CalcActualWidthHeight (cr);
 	
 	font_mask = pango_font_description_get_set_fields (font);
 	
@@ -717,10 +721,10 @@ TextBlock::Paint (Surface *s)
 		dx = 0;
 		
 		//printf ("<TextBlock> moving to (%g, %g)\n", x + dx, y + dy);
-		cairo_move_to (s->cairo, x + dx, y + dy);
-		pango_cairo_update_layout (s->cairo, layout);
-		fg->SetupBrush (s->cairo, this);
-		pango_cairo_show_layout (s->cairo, layout);
+		cairo_move_to (cr, x + dx, y + dy);
+		pango_cairo_update_layout (cr, layout);
+		fg->SetupBrush (cr, this);
+		pango_cairo_show_layout (cr, layout);
 		x += (dir * text_width);
 	} else {
 		if (node && ((Inline *) node->obj)->GetObjectType () == Type::RUN) {
@@ -776,8 +780,8 @@ TextBlock::Paint (Surface *s)
 					dy = 0;
 				
 				//printf ("\tmoving to (%g, %g)\n", x + dx, y + dy);
-				cairo_move_to (s->cairo, x + dx, y + dy);
-				pango_cairo_update_layout (s->cairo, run->layout);
+				cairo_move_to (cr, x + dx, y + dy);
+				pango_cairo_update_layout (cr, run->layout);
 				x += (run->text_dir * run->text_width) + dx;
 				
 				// Runs share their parent TextBlock's font properties if
@@ -794,11 +798,11 @@ TextBlock::Paint (Surface *s)
 				// Runs share their parent TextBlock's Foreground
 				// property if they don't specify one of their own.
 				if (run->foreground != NULL)
-					run->foreground->SetupBrush (s->cairo, this);
+					run->foreground->SetupBrush (cr, this);
 				else
-					fg->SetupBrush (s->cairo, this);
+					fg->SetupBrush (cr, this);
 				
-				pango_cairo_show_layout (s->cairo, run->layout);
+				pango_cairo_show_layout (cr, run->layout);
 				
 				run_height = run->text_height;
 				newline = false;
@@ -912,15 +916,27 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		text_width = -1;
 	}
 	
+	if (block_width == -1) {
+		Surface *s = item_get_surface (this);
+		printf ("OnPropertyChanged: ");
+		CalcActualWidthHeight (s ? s->cairo : NULL);
+	}
+	
 	FullInvalidate (false);
 }
 
 void
 TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	FullInvalidate (false);
-	
 	FrameworkElement::OnSubPropertyChanged (prop, subprop);
+	
+	if (subprop->type == Type::INLINES) {
+		Surface *s = item_get_surface (this);
+		printf ("OnSubPropertyChanged: ");
+		CalcActualWidthHeight (s ? s->cairo : NULL);
+	}
+	
+	FullInvalidate (false);
 }
 
 TextBlock *
@@ -1098,6 +1114,67 @@ DependencyProperty *Glyphs::OriginXProperty;
 DependencyProperty *Glyphs::OriginYProperty;
 DependencyProperty *Glyphs::StyleSimulationsProperty;
 DependencyProperty *Glyphs::UnicodeStringProperty;
+
+void
+Glyphs::render (Surface *s, int x, int y, int width, int height)
+{
+	// FIXME: implement me
+}
+
+void 
+Glyphs::getbounds ()
+{
+	Surface *s = item_get_surface (this);
+	
+	if (s == NULL)
+		return;
+	
+	// FIXME: implement me
+	x1 = y1 = x2 = y2 = 0;
+}
+
+Point
+Glyphs::getxformorigin ()
+{
+	// FIXME: implement me
+	return Point (0.0, 0.0);
+}
+
+void
+Glyphs::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type != Type::GLYPHS) {
+		FrameworkElement::OnPropertyChanged (prop);
+		return;
+	}
+	
+	if (prop == Glyphs::FillProperty) {
+		printf ("Glyphs::Fill property changed\n");
+	} else if (prop == Glyphs::FontRenderingEmSizeProperty) {
+		double size = glyphs_get_font_rendering_em_size (this);
+		printf ("Glyphs::FontRenderingEmSize property changed to %g\n", size);
+	} else if (prop == Glyphs::FontUriProperty) {
+		char *uri = glyphs_get_font_uri (this);
+		printf ("Glyphs::FontUri property changed to %s\n", uri);
+	} else if (prop == Glyphs::IndicesProperty) {
+		char *indices = glyphs_get_indices (this);
+		printf ("Glyphs::Indicies property changed to %s\n", indices);
+	} else if (prop == Glyphs::OriginXProperty) {
+		double x = glyphs_get_origin_x (this);
+		printf ("Glyphs::OriginX property changed to %g\n", x);
+	} else if (prop == Glyphs::OriginXProperty) {
+		double y = glyphs_get_origin_y (this);
+		printf ("Glyphs::OriginY property changed to %g\n", y);
+	} else if (prop == Glyphs::StyleSimulationsProperty) {
+		char *sims = glyphs_get_style_simulations (this);
+		printf ("Glyphs::StyleSimulations property changed to %s\n", sims);
+	} else if (prop == Glyphs::UnicodeStringProperty) {
+		char *str = glyphs_get_unicode_string (this);
+		printf ("Glyphs::UnicodeString property changed to %s\n", str);
+	}
+	
+	FullInvalidate (false);
+}
 
 Glyphs *
 glyphs_new (void)
