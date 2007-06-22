@@ -554,15 +554,20 @@ TextBlock::Layout (cairo_t *cr)
 	
 	font_mask = pango_font_description_get_set_fields (font);
 	
-	block_height = 0.0;
-	block_width = 0.0;
-	
 	if (text && *text) {
 		pango_cairo_layout_path (cr, layout);
 		pango_layout_get_pixel_size (layout, &w, &h);
+		block_height = (double) h;
+		block_width = (double) w;
 		text_height = (double) h;
 		text_width = (double) w;
 		text_dir = 1; // FIXME
+	} else {
+		block_height = 0.0;
+		block_width = 0.0;
+		text_height = 0.0;
+		text_width = 0.0;
+		text_dir = 0;
 	}
 	
 	// Note: we don't worry about alignment here because all we

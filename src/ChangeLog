@@ -1,5 +1,10 @@
 2007-06-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Layout): D'oh, make sure to always init text/block
+	width/height values. This fixes VideoBrush again.
+
+2007-06-22  Jeffrey Stedfast  <fejj@novell.com>
+
 	* mplayer.cpp: Initialize 'opened' state variable.
 
 	* text.cpp (GetValue): Override DependencyObject::GetValue() so
