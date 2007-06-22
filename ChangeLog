@@ -1,3 +1,11 @@
+2007-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* moon.pc.in: new file.
+
+	* configure.ac: generate our moon.pc file.
+
+	* Makefile.am: add pkgconfig stuff.
+
 2007-06-21  Dick Porter  <dick@ximian.com>
 
 	* configure.ac: Added checks for mozilla "plugin" pkgconfig file

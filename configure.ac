@@ -147,6 +147,7 @@ AC_SUBST(PLUGIN_LIBS)
 #AC_SUBST(LIBS)
 
 AC_OUTPUT([
+moon.pc
 Makefile
 src/Makefile
 gtk/Makefile
