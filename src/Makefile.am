@@ -8,9 +8,11 @@ lib_LTLIBRARIES = libmoon.la
 INCLUDES = $(MOON_CFLAGS)
 
 libmooninclude_HEADERS = \
+	animation.h	\
 	brush.h		\
 	clock.h		\
 	cutil.h		\
+	downloader.h	\
 	geometry.h	\
 	media.h		\
 	list.h		\
@@ -20,6 +22,8 @@ libmooninclude_HEADERS = \
 	shape.h		\
 	stylus.h	\
 	text.h		\
+	transform.h	\
+	type.h		\
 	value.h
 
 
