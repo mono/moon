@@ -142,6 +142,9 @@ main(int argc, char **argv)
 	/* parse the file, which in turn starts the image downloads if
 	   there are any, using our gnomevfs downloader. */
 	UIElement *e = xaml_create_from_file (tmp_file, true, _custom_element_callback, _custom_attribute_callback, _event_callback, &kind);
+
+	unlink (tmp_file);
+
 	if (e == NULL){
 		printf ("Was not able to load the uri\n");
 		return 1;
