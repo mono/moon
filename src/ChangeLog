@@ -1,3 +1,7 @@
+2007-06-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Small hack to avoid calling Draw 2 times during render.
+
 2007-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* value.cpp (Value): the copy ctor is definitely corrupting memory
