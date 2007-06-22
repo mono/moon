@@ -1,6 +1,9 @@
 SUBDIRS = test samples
 
-lib_LTLIBRARIES = libmoonplugin.la
+pluginlibdir=$(pkglibdir)/plugin
+pluginlib_LTLIBRARIES = libmoonplugin.la
+
+pluginlib_DATA=README moonlight.exe
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
@@ -28,13 +31,13 @@ libmoonplugin_la_SOURCES = \
 	downloader.h
 
 # custom install rule
-install-plugin: libmoonplugin.la moonlight.exe
+test-plugin: libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
 	-rm -f ~/.mozilla/plugins/libmoon.so
 	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp moonlight.exe ~/.mozilla/plugins
 
-uninstall-plugin:
+untest-plugin:
 	rm -rf ~/.mozilla/plugins/libmoonplugin.so
 	rm -rf ~/.mozilla/plugin/moonlight.exe
 
