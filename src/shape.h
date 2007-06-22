@@ -1,3 +1,14 @@
+/*
+ * shape.h: This match the classes inside System.Windows.Shapes
+ *
+ * Author:
+ *   Miguel de Icaza (miguel@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
 #ifndef __SHAPE_H__
 #define __SHAPE_H__
 

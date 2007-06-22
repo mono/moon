@@ -1,5 +1,5 @@
 /*
- * stylys.cpp
+ * stylus.cpp
  *
  * Author:
  *   Rolf Bjarne Kvinge  (RKvinge@novell.com)

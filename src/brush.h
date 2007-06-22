@@ -1,3 +1,16 @@
+/*
+ * brush.h: Brushes
+ *
+ * Author:
+ *   Miguel de Icaza (miguel@novell.com)
+ *   Sebastien Pouliot (spouliot@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
 #ifndef __BRUSH__H__
 #define __BRUSH__H__
 

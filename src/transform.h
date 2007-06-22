@@ -1,3 +1,15 @@
+/*
+ * transform.h: 
+ *
+ * Author:
+ *   Sebastien Pouliot (spouliot@novell.com)
+ *   Chris Toshok <toshok@novell.com>
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ */
+
 #ifndef __TRANSFORM_H__
 #define __TRANSFORM_H__
 

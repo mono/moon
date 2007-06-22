@@ -1,5 +1,5 @@
 /*
- * animatio.cpp: Animation engine
+ * animation.cpp: Animation engine
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)

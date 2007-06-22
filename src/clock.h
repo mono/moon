@@ -1,5 +1,17 @@
-#ifndef MOON_TIME_H
-#define MOON_TIME_H
+/*
+ * clock.h: Clock management
+ *
+ * Author:
+ *   Chris Toshok (toshok@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
+#ifndef MOON_CLOCK_H
+#define MOON_CLOCK_H
 
 #include "runtime.h"
 
@@ -410,4 +422,4 @@ TimeSpan get_now (void);
 
 G_END_DECLS
 
-#endif /* MOON_TIME_H */
+#endif /* MOON_CLOCK_H */

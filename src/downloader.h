@@ -1,3 +1,16 @@
+/*
+ * runtime.h: Downloader class.
+ *
+ * Author:
+ *   Chris Toshok (toshok@novell.com)
+ *   Miguel de Icaza (miguel@novell.com).
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
 #ifndef __DOWNLOADER_H__
 #define __DOWNLOADER_H__
 

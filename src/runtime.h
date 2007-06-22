@@ -1,3 +1,15 @@
+/*
+ * runtime.h: Core surface and canvas definitions.
+ *
+ * Author:
+ *   Miguel de Icaza (miguel@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
 #ifndef __RUNTIME_H__
 #define __RUNTIME_H__
 

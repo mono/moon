@@ -5,7 +5,7 @@
  *   Miguel de Icaza (miguel@novell.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
-n *
+ *
  * See the LICENSE file included with the distribution for details.
  * 
  */

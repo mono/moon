@@ -1,3 +1,13 @@
+/*
+ * text.h: 
+ *
+ * Author: Jeffrey Stedfast <fejj@novell.com>
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ */
+
 #ifndef __TEXT_H__
 #define __TEXT_H__
 
