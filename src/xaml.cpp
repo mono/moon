@@ -927,6 +927,7 @@ key_spline_from_str (const char *str)
 	Point* pts = point_array_from_str (str, &count);
 	KeySpline *res = new KeySpline (pts [0], pts [1]);
 
+	delete[] pts;
 	return res;
 }
 
@@ -1913,6 +1914,7 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 		int count = 0;
 		Point *points = point_array_from_str (value, &count);
 		obj->SetValue (prop, Value (points, count));
+		delete[] points;
 		break;
 	}
 	

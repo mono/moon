@@ -27,6 +27,12 @@
 
 2007-06-22  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (key_spline_from_str): free up the point arrays from
+	point_array_from_str after we use them.
+	(xaml_set_property_from_str): same.
+
+2007-06-22  Chris Toshok  <toshok@ximian.com>
+
 	* value.cpp (Value): the copy ctor is definitely corrupting memory
 	in the MATRIX case - we need to allocate the destination matrix.
 
