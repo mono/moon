@@ -88,6 +88,7 @@ struct KeyTime {
 
   private:
 	KeyTimeType k;
+	gint32 padding;
 	double percent;
 	TimeSpan timespan;
 };

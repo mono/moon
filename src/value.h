@@ -329,6 +329,9 @@ public:
   
   private:
 	Type::Kind k;
+
+	gint32 padding;
+
 	union {
 		double d;
 		guint64 ui64;

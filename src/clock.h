@@ -60,8 +60,9 @@ struct Duration {
 	// This should live in a TimeSpan class, but oh well.. */
 	static Duration FromSeconds (int seconds) { return Duration ((TimeSpan)seconds * 1000000); }
 
-	DurationKind k;
  private:
+	DurationKind k;
+	gint32 padding;
 	TimeSpan timespan;
 };
 
@@ -121,8 +122,9 @@ struct RepeatBehavior {
 	bool HasCount() { return k == COUNT; }
 	bool HasDuration () { return k == DURATION; }
 
-	RepeatKind k;
   private:
+	RepeatKind k;
+	gint32 padding;
 	double count;
 	TimeSpan duration;
 };
