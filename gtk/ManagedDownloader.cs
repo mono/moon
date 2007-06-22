@@ -29,7 +29,6 @@
 using System;
 using System.Threading;
 using System.IO;
-using Gtk;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Net;
