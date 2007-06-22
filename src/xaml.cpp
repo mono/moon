@@ -924,21 +924,22 @@ KeySpline *
 key_spline_from_str (const char *str)
 {
 	int count = 0;
-	Point* pts = point_array_from_str (str, &count);
+	Point *pts = point_array_from_str (str, &count);
 	KeySpline *res = new KeySpline (pts [0], pts [1]);
-
-	delete[] pts;
+	
+	delete [] pts;
+	
 	return res;
 }
 
 // sepcial case, we return a Value, to avoid allocating/freeing a Matrix
-Value*
+Value *
 matrix_value_from_str (const char *str)
 {
 	cairo_matrix_t matrix;
 	int count = 0;
-
-	double* values = double_array_from_str (str, &count);
+	
+	double *values = double_array_from_str (str, &count);
 	if (count == 6) {
 		matrix.xx = values [0];
 		matrix.yx = values [1];
@@ -948,8 +949,9 @@ matrix_value_from_str (const char *str)
 		matrix.y0 = values [5];
 	} else
 		cairo_matrix_init_identity (&matrix);
-	g_free (values);
-
+	
+	delete [] values;
+	
 	return new Value (&matrix);
 }
 

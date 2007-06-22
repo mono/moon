@@ -1,5 +1,9 @@
 2007-06-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp (matrix_value_from_str): use delete[] to free the array
+	of doubles instead of g_free() as it was allocated with new, not
+	g_malloc().
+
 	* text.cpp (Layout): D'oh, make sure to always init text/block
 	width/height values. This fixes VideoBrush again.
 

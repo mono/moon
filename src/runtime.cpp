@@ -297,7 +297,7 @@ point_from_str (const char *s)
 	return Point (x, y);
 }
 
-Point*
+Point *
 point_array_from_str (const char *s, int* count)
 {
 	int i, j, n = 0;
@@ -362,12 +362,12 @@ rect_from_str (const char *s)
 	return Rect (x, y, w, h);
 }
 
-double*
-double_array_from_str (const char *s, int* count)
+double *
+double_array_from_str (const char *s, int *count)
 {
+	char **values = split_str (s, count);
 	int i, n;
-	char** values = split_str (s, count);
-
+	
 	double *doubles = new double [*count];
 	for (i = 0, n = 0; i < *count; i++) {
 		char *value = values[i];
