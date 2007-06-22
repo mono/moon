@@ -290,6 +290,7 @@ Run::OnPropertyChanged (DependencyProperty *prop)
 	if (prop->type == Type::RUN)
 		NotifyAttacheesOfPropertyChange (prop);
 	
+	// this will notify attachees of font property changes
 	Inline::OnPropertyChanged (prop);
 }
 
@@ -359,14 +360,6 @@ TextBlock::TextBlock ()
 	pango_font_description_set_style (font, font_style (style));
 	FontWeights weight = text_block_get_font_weight (this);
 	pango_font_description_set_weight (font, font_weight (weight));
-	
-	// FIXME: Airlines demo requests actual width/height before
-	// ::getbounds(), ::getxformorigin or ::render() are called,
-	// so we probably need to recompute these values in
-	// OnPropertyChanged? Setting to 0.0, 0.0 for now at least
-	// prevents a crash.
-	text_block_set_actual_height (this, 0.0f);
-	text_block_set_actual_width (this, 0.0f);
 }
 
 TextBlock::~TextBlock ()
@@ -423,8 +416,8 @@ TextBlock::getbounds ()
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
 	
-	text_block_set_actual_height (this, y2 - y1);
-	text_block_set_actual_width (this, x2 - x1);
+	//text_block_set_actual_height (this, y2 - y1);
+	//text_block_set_actual_width (this, x2 - x1);
 	
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
@@ -486,6 +479,7 @@ void
 TextBlock::CalcActualWidthHeight (cairo_t *cr)
 {
 	cairo_surface_t *surface = NULL;
+	Collection::Node *node;
 	bool destroy = false;
 	
 	if (cr == NULL) {
@@ -499,10 +493,24 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 	}
 	
 	cairo_identity_matrix (cr);
+	
 	Layout (cr);
 	
 	if (destroy) {
-		cairo_surface_destroy (surface);
+		if (inlines != NULL && (node = (Collection::Node *) inlines->list->First ())) {
+			do {
+				if (node->obj->GetObjectType () == Type::RUN) {
+					g_object_unref (((Run *) node->obj)->layout);
+					((Run *) node->obj)->layout = NULL;
+				}
+				node = (Collection::Node *) node->Next ();
+			} while (node != NULL);
+		}
+		
+		g_object_unref (layout);
+		layout = NULL;
+		
+		//cairo_surface_destroy (surface);
 		cairo_destroy (cr);
 	} else {
 		cairo_new_path (cr);
@@ -511,6 +519,19 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 	
 	text_block_set_actual_height (this, block_height);
 	text_block_set_actual_width (this, block_width);
+}
+
+Value *
+TextBlock::GetValue (DependencyProperty *prop)
+{
+	if ((prop == TextBlock::ActualWidthProperty ||
+	     prop == TextBlock::ActualHeightProperty) && block_width < 0.0) {
+		Surface *s = item_get_surface (this);
+		printf ("GetValue for actual width/height value requested before calculated\n");
+		CalcActualWidthHeight (s ? s->cairo : NULL);
+	}
+	
+	return FrameworkElement::GetValue (prop);
 }
 
 void
@@ -533,8 +554,8 @@ TextBlock::Layout (cairo_t *cr)
 	
 	font_mask = pango_font_description_get_set_fields (font);
 	
-	block_height = 0;
-	block_width = 0;
+	block_height = 0.0;
+	block_width = 0.0;
 	
 	if (text && *text) {
 		pango_cairo_layout_path (cr, layout);
@@ -678,7 +699,7 @@ TextBlock::Paint (cairo_t *cr)
 	char *text;
 	Brush *fg;
 	
-	if (block_width == -1)
+	if (block_width < 0.0)
 		CalcActualWidthHeight (cr);
 	
 	font_mask = pango_font_description_get_set_fields (font);
@@ -693,6 +714,12 @@ TextBlock::Paint (cairo_t *cr)
 	line_width_height (node, &line_width, &line_height);
 	
 	text = text_block_get_text (this);
+	
+	if (layout == NULL) {
+		layout = pango_cairo_create_layout (cr);
+		pango_layout_set_text (layout, text ? text : "", -1);
+		pango_layout_set_font_description (layout, font);	
+	}
 	
 	if (text && *text) {
 		if (text_height > line_height)
@@ -763,6 +790,11 @@ TextBlock::Paint (cairo_t *cr)
 				if (text == NULL || *text == '\0') {
 					// optimization
 					break;
+				}
+				
+				if (run->layout == NULL) {
+					run->layout = pango_cairo_create_layout (cr);
+					pango_layout_set_text (run->layout, text ? text : "", -1);
 				}
 				
 				// calculate dx
@@ -876,10 +908,10 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == TextBlock::TextProperty && layout != NULL) {
 		char *text = text_block_get_text (this);
 		pango_layout_set_text (layout, text ? text : "", -1);
-		block_height = -1;
-		block_width = -1;
-		text_height = -1;
-		text_width = -1;
+		block_height = -1.0;
+		block_width = -1.0;
+		text_height = -1.0;
+		text_width = -1.0;
 		text_dir = 0;
 	} else if (prop == TextBlock::InlinesProperty) {
 		if (inlines != NULL) {
@@ -892,8 +924,8 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			inlines->ref ();
 		}
 		
-		block_height = -1;
-		block_width = -1;
+		block_height = -1.0;
+		block_width = -1.0;
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {
 			foreground->Detach (NULL, this);
@@ -910,17 +942,13 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		if (layout != NULL)
 			pango_layout_set_font_description (layout, font);
 		
-		block_height = -1;
-		block_width = -1;
-		text_height = -1;
-		text_width = -1;
+		block_height = -1.0;
+		block_width = -1.0;
+		text_height = -1.0;
+		text_width = -1.0;
 	}
 	
-	if (block_width == -1) {
-		Surface *s = item_get_surface (this);
-		printf ("OnPropertyChanged: ");
-		CalcActualWidthHeight (s ? s->cairo : NULL);
-	}
+	FrameworkElement::OnPropertyChanged (prop);
 	
 	FullInvalidate (false);
 }
@@ -931,9 +959,9 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	FrameworkElement::OnSubPropertyChanged (prop, subprop);
 	
 	if (subprop->type == Type::INLINES) {
-		Surface *s = item_get_surface (this);
-		printf ("OnSubPropertyChanged: ");
-		CalcActualWidthHeight (s ? s->cairo : NULL);
+		// will need to recalculate layout
+		block_height = -1.0;
+		block_width = -1.0;
 	}
 	
 	FullInvalidate (false);

@@ -120,6 +120,7 @@ MediaPlayer::MediaPlayer ()
 	
 	g_static_mutex_init (&pause_mutex);
 	g_static_mutex_lock (&pause_mutex);
+	opened = false;
 	paused = true;
 	stop = false;
 	

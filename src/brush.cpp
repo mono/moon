@@ -166,7 +166,7 @@ SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
 	Brush::OnPropertyChanged (prop);
 }
 
-Color*
+Color *
 solid_color_brush_get_color (SolidColorBrush *solid_color_brush)
 {
 	return solid_color_brush->GetValue (SolidColorBrush::ColorProperty)->AsColor();

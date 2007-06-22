@@ -161,6 +161,7 @@ public:
 	virtual void getbounds ();
 	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);
+	virtual Value *GetValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	
