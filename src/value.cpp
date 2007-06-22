@@ -70,6 +70,7 @@ Value::Value (const Value& v)
 		u.double_array->basic.refcount++;
 		break;
 	case Type::MATRIX:
+		u.matrix = (Matrix*) g_malloc (sizeof (Matrix));
 		memcpy (u.matrix, v.u.matrix, sizeof(Matrix));
 		break;
 	case Type::COLOR:

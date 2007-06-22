@@ -1,3 +1,8 @@
+2007-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* value.cpp (Value): the copy ctor is definitely corrupting memory
+	in the MATRIX case - we need to allocate the destination matrix.
+
 2007-06-21  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: not that anyone should be installing this yet,
