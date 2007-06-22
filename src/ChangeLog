@@ -1,3 +1,8 @@
+2007-06-21  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: not that anyone should be installing this yet,
+	install the headers to $(includedir)/libmoon.
+
 2007-06-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp: Reworked text layout/rendering logic - we now cache

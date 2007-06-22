@@ -1,43 +1,49 @@
-bin_PROGRAMS = demo
+
+libmoonincludedir=$(includedir)/libmoon
+
+noinst_PROGRAMS = demo
 
 lib_LTLIBRARIES = libmoon.la
 
 INCLUDES = $(MOON_CFLAGS)
+
+libmooninclude_HEADERS = \
+	brush.h		\
+	clock.h		\
+	cutil.h		\
+	geometry.h	\
+	media.h		\
+	list.h		\
+	mplayer.h	\
+	rsvg.h		\
+	runtime.h	\
+	shape.h		\
+	stylus.h	\
+	text.h		\
+	value.h
+
 
 libmoon_la_SOURCES = 	\
 	runtime.cpp	\
 	animation.cpp	\
 	animation.h	\
 	brush.cpp	\
-	brush.h		\
 	clock.cpp	\
-	clock.h		\
 	control.cpp	\
 	cutil.cpp	\
-	cutil.h		\
 	downloader.cpp	\
 	geometry.cpp	\
-	geometry.h	\
 	list.cpp	\
-	list.h		\
 	media.cpp	\
-	media.h		\
 	mplayer.cpp	\
-	mplayer.h	\
 	rsvg.cpp	\
-	rsvg.h		\
-	runtime.h	\
 	shape.cpp	\
-	shape.h		\
-	stylus.h	\
 	stylus.cpp	\
 	text.cpp	\
-	text.h		\
 	transform.cpp	\
 	transform.h	\
 	type.cpp	\
 	value.cpp	\
-	value.h		\
 	xaml.cpp
 
 EXTRA_DIST=alpha-premul-table.inc
