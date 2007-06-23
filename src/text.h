@@ -134,6 +134,8 @@ public:
 	~Run ();
 	virtual Type::Kind GetObjectType () { return Type::RUN; };
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void SetValue (DependencyProperty *prop, Value *value);
+	virtual void SetValue (DependencyProperty *prop, Value value);
 };
 
 Run *run_new (void);
@@ -172,6 +174,8 @@ public:
 	virtual Point getxformorigin ();
 	virtual bool inside_object (Surface *s, double x, double y);
 	virtual Value *GetValue (DependencyProperty *prop);
+	virtual void SetValue (DependencyProperty *prop, Value *value);
+	virtual void SetValue (DependencyProperty *prop, Value value);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	

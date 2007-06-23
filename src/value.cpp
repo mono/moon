@@ -200,11 +200,11 @@ Value::Value (KeyTime keytime)
 	u.keytime = new KeyTime (keytime);
 }
 
-Value::Value (const char* s)
+Value::Value (const char *s)
 {
 	Init ();
 	k = Type::STRING;
-	u.s= g_strdup (s);
+	u.s = g_strdup (s);
 }
 
 Value::Value (Point *points, int count)

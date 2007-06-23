@@ -1825,6 +1825,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		if (current_as_dep)
 			current_as_dep->SetParent (NULL);
 	}
+	
 	if (value != NULL && value->GetKind () >= Type::DEPENDENCY_OBJECT) {
 		DependencyObject *new_as_dep = value->AsDependencyObject ();
 		
@@ -1834,7 +1835,6 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	if ((current_value == NULL && value != NULL) ||
 	    (current_value != NULL && value == NULL) ||
 	    (current_value != NULL && value != NULL && *current_value != *value)) {
-
 		if (current_value != NULL && current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
 			DependencyObject *dob = current_value->AsDependencyObject();
 
@@ -1851,16 +1851,11 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 		g_hash_table_insert (current_values, property->name, store);
 
-		if (value) {
-			if (value->GetKind () >= Type::DEPENDENCY_OBJECT){
-				DependencyObject *dob = value->AsDependencyObject();
-				
-				if (dob != NULL)
-					dob->Attach (property, this);
-			}
-
-			// 
-			//NotifyAttacheesOfPropertyChange (property);
+		if (value && value->GetKind () >= Type::DEPENDENCY_OBJECT){
+			DependencyObject *dob = value->AsDependencyObject();
+			
+			if (dob != NULL)
+				dob->Attach (property, this);
 		}
 
 		OnPropertyChanged (property);

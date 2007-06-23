@@ -294,6 +294,24 @@ Run::OnPropertyChanged (DependencyProperty *prop)
 	Inline::OnPropertyChanged (prop);
 }
 
+void
+Run::SetValue (DependencyProperty *prop, Value *value)
+{
+	if (prop == Run::TextProperty && value != NULL) {
+		// Note: Any leading or trailing whitespace is not
+		// preserved when setting the Text property.
+		g_strstrip (value->AsString ());
+	}
+	
+	Inline::SetValue (prop, value);
+}
+
+void
+Run::SetValue (DependencyProperty *prop, Value value)
+{
+	Inline::SetValue (prop, value);
+}
+
 Run *
 run_new (void)
 {
@@ -527,11 +545,29 @@ TextBlock::GetValue (DependencyProperty *prop)
 	if ((prop == TextBlock::ActualWidthProperty ||
 	     prop == TextBlock::ActualHeightProperty) && block_width < 0.0) {
 		Surface *s = item_get_surface (this);
-		printf ("GetValue for actual width/height value requested before calculated\n");
+		printf ("GetValue for actual width/height requested before calculated\n");
 		CalcActualWidthHeight (s ? s->cairo : NULL);
 	}
 	
 	return FrameworkElement::GetValue (prop);
+}
+
+void
+TextBlock::SetValue (DependencyProperty *prop, Value *value)
+{
+	if (prop == TextBlock::TextProperty && value != NULL) {
+		// Note: Any leading or trailing whitespace is not
+		// preserved when setting the Text property.
+		g_strstrip (value->AsString ());
+	}
+	
+	FrameworkElement::SetValue (prop, value);
+}
+
+void
+TextBlock::SetValue (DependencyProperty *prop, Value value)
+{
+	FrameworkElement::SetValue (prop, value);
 }
 
 void
@@ -574,6 +610,10 @@ TextBlock::Layout (cairo_t *cr)
 	// really care about is width/height values for each Run
 	// element and the overall width/height of each line (for
 	// calculating block width/height).
+	
+	// FIXME: we need to take the TextWrapping property into
+	// consideration... and possibly embedded \n's? Ugh, this will
+	// be a bitch.
 	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();

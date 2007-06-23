@@ -559,7 +559,8 @@ char_data_handler (void *data, const char *in, int inlen)
 		lwsp = g_ascii_isspace (p->char_data_buffer->str[len - 1]);
 	}
 	
-	// Condense multi-lwsp blocks into a single space (and make all lwsp chars a literal space, not '\n', etc)
+	// Condense multi-lwsp blocks into a single space (and make
+	// all lwsp chars a literal space, not '\n', etc)
 	s = d = p->char_data_buffer->str + len;
 	while (*s != '\0') {
 		if (g_ascii_isspace (*s)) {
