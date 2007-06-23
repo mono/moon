@@ -1,3 +1,7 @@
+2007-06-23  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: distcheck work.
+
 2007-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* README: barebones README to tell people what to do with the

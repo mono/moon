@@ -1,3 +1,11 @@
+2007-06-23  Chris Toshok  <toshok@ximian.com>
+
+	* gtk/Assembly.cs: don't put the assembly key here.  pass it
+	directly on the command line to gmcs so we can use a $(srcdir)
+	path without generating the Assembly.cs file.
+
+	* gtk/Makefile.am: make dist/distcheck work.
+
 2007-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* moon.pc.in: new file.

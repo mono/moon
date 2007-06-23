@@ -20,10 +20,9 @@ libmoonloader_la_SOURCES = \
 
 libmoonplugin_la_LDFLAGS = \
 	-avoid-version \
-	-module \
-	-L$(top_srcdir)/src/.libs
+	-module
 
-libmoonplugin_la_LIBADD = -lmoon $(MOON_LIBS) $(PLUGIN_LIBS)
+libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon.la $(MOON_LIBS) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
 	moonlight.h		\
@@ -35,8 +34,7 @@ libmoonplugin_la_SOURCES = \
 	plugin-glue.cpp 	\
 	plugin-class.cpp 	\
 	plugin-class.h 	\
-	downloader.cpp 	\
-	downloader.h
+	downloader.cpp
 
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
@@ -52,5 +50,7 @@ untest-plugin:
 
 EXTRA_DIST = moonlight.cs
 
-moonlight.exe: moonlight.cs
-	gmcs -debug moonlight.cs -pkg:silver
+moonlight_CS=  $(srcdir)/moonlight.cs
+
+moonlight.exe: $(moonlight_CS)
+	gmcs -debug -out:moonlight.exe $(moonlight_CS) -pkg:silver
