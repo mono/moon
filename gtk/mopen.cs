@@ -44,7 +44,6 @@ using Gtk.Moonlight;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
-using System.Windows.Shapes;
 using System.Windows.Input;
 using System.IO;
 using System.Collections;
@@ -207,6 +206,21 @@ class MonoOpen {
 		if (File.Exists (file))
 			return DoLoad (file, cmdargs);
 
+		if (Directory.Exists (file)){
+			string combine = Path.Combine (file, "default.xaml");
+			if (File.Exists (combine))
+				return DoLoad (combine, cmdargs);
+		}
+
+		string path = Environment.GetEnvironmentVariable ("PATH");
+		string [] dirs = path.Split (new char [] {':'});
+		foreach (string dir in dirs){
+			string combine = Path.Combine (dir, "default.xaml");
+
+			if (File.Exists (combine))
+				return DoLoad (combine, cmdargs);
+		}
+		
 		Console.Error.WriteLine ("mopen: Nothing to do");
 		return 1;
 	}
