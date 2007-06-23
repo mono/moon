@@ -9,6 +9,16 @@
 //
 // See LICENSE file in the Moonlight distribution for licensing details
 //
+// TODO:
+//    * Implement --host
+//    * Implement --fixed
+//    * Make it so we can open directories that contain DIR/Default.xaml
+//      and setup the managed loader to default to this location to load
+//      files from.
+//
+// The idea is that we can write XAML-based applications and launch them with
+// this thing.
+//
 
 using System;
 using Gtk;
@@ -53,7 +63,8 @@ class MonoOpen {
 		w.SizeAllocated += delegate (object o, SizeAllocatedArgs a){
 			silver.SizeAllocate (new Gdk.Rectangle (0, 0, a.Allocation.Width, a.Allocation.Height));
 		};
-
+		w.Add (silver);
+		
 		string xaml = "";
 		
 		try {
@@ -72,16 +83,12 @@ class MonoOpen {
 			return 1;
 		}
 
-		Console.WriteLine ("Loading: {0}", xaml);
 		DependencyObject d = XamlReader.Load (xaml);
 		if (d == null){
 			Console.Error.WriteLine ("mopen: No dependency object returned from XamlReader");
 			return 1;
 		}
 		
-		w.Add (silver);
-		
-
 		if (!(d is Canvas)){
 			Console.Error.WriteLine ("mopen: No Canvas as root in the specified file");
 			return 1;
