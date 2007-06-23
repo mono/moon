@@ -35,7 +35,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 NPError 
 NPP_Destroy (NPP instance, NPSavedData** save)
 {
-	DEBUGMSG ("NPP_Destroy");
+	DEBUGMSG ("NPP_Destroy, instance=%p\n");
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -219,12 +219,11 @@ NPP_Initialize (void)
 		already_initialized = true;
 		gtk_init (0, 0);
 		downloader_initialize ();
-		#ifdef RUNTIME
+#ifdef RUNTIME
 		vm_init ();
-		#endif
+#endif
+		runtime_init ();
 	}
-
-	runtime_init ();
 	TimeManager::Instance()->Start();
 
 	return NPERR_NO_ERROR;

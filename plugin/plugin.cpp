@@ -97,11 +97,19 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
-	// finalization code is under Finalize (), it was moved because we cant
-	// free resources, it causes browser reload problems. It must be checked
-	// and fixed later.
-
 	plugin_instances = g_slist_remove (plugin_instances, this->instance);
+
+	// 
+	// The code below was an attempt at fixing this, but we are still getting spurious errors
+	// we might have another source of problems
+	//
+	fprintf (stderr, "Destroying the plugin: %p\n", surface);
+	if (surface != NULL){
+		//gdk_error_trap_push ();
+		surface_destroy (surface);
+		//gdk_display_sync (this->display);
+		//gdk_error_trap_pop ();
+	}
 }
 
 void 
@@ -136,9 +144,6 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 void 
 PluginInstance::Finalize ()
 {
-	// Container must be destroyed or we have segfault when browser's closes.
-	if (this->container != NULL)
-		gtk_widget_destroy (this->container);
 }
 
 NPError 
@@ -231,6 +236,7 @@ PluginInstance::CreateWindow ()
 	this->surface = surface_new (window->width, window->height);
 	surface_attach (this->surface, new Canvas ());
 	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
+	display = gdk_drawable_get_display (this->surface->drawing_area->window);
 	gtk_widget_show_all (this->container);
 	this->UpdateSource ();
 }

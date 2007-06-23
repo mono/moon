@@ -18,6 +18,7 @@ G_BEGIN_DECLS
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/mono-debug.h>
+
 extern MonoDomain   *moon_domain;
 extern MonoAssembly *moon_boot_assembly;
 

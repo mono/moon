@@ -71,6 +71,7 @@ class PluginInstance
 	// Gtk controls
 	GtkWidget *container;  // plugin container object
  	Surface *surface;      // plugin surface object
+	GdkDisplay *display;
 
 	// Property getters and setters
 	char *getInitParams () { return this->initParams; }
