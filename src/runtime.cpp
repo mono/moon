@@ -1269,7 +1269,6 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 	}
 
 	s->cairo = s->cairo_buffer;
-
 	TimeManager::Instance()->RemoveHandler ("render", render_surface, s);
 }
 
@@ -1564,6 +1563,16 @@ surface_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer us
 	}
 }
 
+static void
+surface_drawing_area_destroyed (GtkWidget *widget, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	// This is never called, why?
+	printf ("------------------ WE ARE DESTROYED ---------------\n");
+	s->drawing_area = NULL;
+}
+
 Surface *
 surface_new (int width, int height)
 {
@@ -1572,7 +1581,9 @@ surface_new (int width, int height)
 	s->drawing_area = gtk_drawing_area_new ();
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "size_allocate",
 			    G_CALLBACK(surface_size_allocate), s);
-			    
+	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "destroy",
+			    G_CALLBACK(surface_drawing_area_destroyed), s);
+
 	gtk_widget_add_events (s->drawing_area, 
 			       GDK_POINTER_MOTION_MASK |
 			       GDK_POINTER_MOTION_HINT_MASK |
@@ -1612,6 +1623,22 @@ surface_resize (Surface *s, int width, int height)
 
 Surface::~Surface ()
 {
+	//
+	// This removes one source of problems: the unrealize handler is not
+	// being called when Mozilla destroys our window, so we remove it here.
+	//
+	// This is easy to trigger, open two clocks and try to load a different
+	// page on one of the pages (that keeps the timer ticking, and eventually
+	// kills this
+	//
+	// There is still another problem: sometimes we are getting:
+	//     The error was 'RenderBadPicture (invalid Picture parameter)'.
+	//
+	// And I have yet to track what causes this, the stack trace is not 
+	// very useful
+	//
+	TimeManager::Instance()->RemoveHandler ("render", render_surface, this);
+
 	if (toplevel) {
 		toplevel->unref ();
 		toplevel = NULL;
@@ -2414,6 +2441,7 @@ EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
 	closure->func = handler;
 	closure->data = data;
 
+	printf ("**** Adding handler %s pointing to %p with data %p\n");
 	if (events == NULL) {
 		g_hash_table_insert (event_hash, g_strdup (event_name), g_list_prepend (NULL, closure));
 	}
@@ -2426,6 +2454,8 @@ void
 EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer data)
 {
 	gpointer key, value;
+
+	printf ("**** Removing handler %s pointing to %p with data %p\n");
 	if (!g_hash_table_lookup_extended (event_hash, event_name,
 					   &key, &value)) {
 		return;
