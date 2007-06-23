@@ -17,7 +17,25 @@
 //      files from.
 //
 // The idea is that we can write XAML-based applications and launch them with
-// this thing.
+// this thing, typing:
+//
+//    $ mopen calendar
+//
+// Would check if calendar/default.xaml exists, and if it does, configure the
+// downloader to default to the directory calendar for obtaining images,
+// resources and so on.
+//
+// If no default.xaml exists, we could check in order: a file with a .dll
+// extension, if found, load it;   a file with any of the scripting languages
+// extensions that the DLR knows about ".py", ".rb", ".js", ".vb" and load
+// the proper compiler to run the code.
+//
+// The idea behind --host is to load multiple programs in a single instance of
+// mono/moonlight using separate appdomains, so multiple applications (or
+// desklets) can be loaded into the same process, saving resources.
+//
+// We could either use DBus# for this, or a simpler mechanism might be to use
+// the named features from System.Threading to do this
 //
 
 using System;
@@ -58,13 +76,13 @@ class MonoOpen {
 		if (width != -1 && height != -1)
 			silver = new GtkSilver (width, height);
 		else
-			silver = new GtkSilver (100, 100);
+			silver = new GtkSilver (400, 400);
 
 		w.SizeAllocated += delegate (object o, SizeAllocatedArgs a){
 			silver.SizeAllocate (new Gdk.Rectangle (0, 0, a.Allocation.Width, a.Allocation.Height));
 		};
 		w.Add (silver);
-		
+
 		string xaml = "";
 		
 		try {
