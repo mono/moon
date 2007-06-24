@@ -1,3 +1,14 @@
+2007-06-23  Miguel de Icaza  <miguel@novell.com>
+
+	* plugin-proxy.cpp: This is the new entry point for the plugin
+	which can be loaded and unloaded as many times as desired, and
+	will keep the real plugin in $pkgdir/libmoonplugin.so loaded as
+	well as the Mono VM
+
+	This prevents the bugs where the code is unloaded, but we still
+	have a few places where we are triggering screen updates when the
+	objects have gone, those must be tracked down.
+
 2007-06-23  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: distcheck work.
