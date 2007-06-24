@@ -845,7 +845,11 @@ VisualCollection::Add (DependencyObject *data)
 	UIElement *item = (UIElement *) data;
 
 	Collection::Add (item);
-	emit_loaded_events (item);
+	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+		/* emit loaded events on the new item if the tree
+		   we're adding it to has already been "loaded" */
+		emit_loaded_events (item);
+	}
 	VisualUpdate (data);
 }
 

@@ -1,3 +1,8 @@
+2007-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (VisualCollection::Add): only emit Loaded if the
+	tree we're adding it to has already been loaded.
+
 2007-06-24  Larry Ewing  <lewing@>
 
 	* demo.cpp: add -trans flag to demo to make the toplevel transparent.
