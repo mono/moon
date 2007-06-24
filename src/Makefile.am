@@ -11,6 +11,7 @@ libmooninclude_HEADERS = \
 	animation.h	\
 	brush.h		\
 	clock.h		\
+	control.h	\
 	cutil.h		\
 	downloader.h	\
 	geometry.h	\

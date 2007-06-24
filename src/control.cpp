@@ -1,5 +1,5 @@
 /*
- * runtime.cpp: Core surface and canvas definitions.
+ * control.cpp:
  *
  * Author:
  *   Miguel de Icaza (miguel@novell.com)
@@ -18,7 +18,7 @@
 #define Visual _XVisual
 #include <cairo-xlib.h>
 #undef Visual
-#include "runtime.h"
+#include "control.h"
 
 void 
 Control::update_xform ()

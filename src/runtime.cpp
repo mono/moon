@@ -29,6 +29,7 @@
 #include <cairo-xlib.h>
 #undef Visual
 #include "runtime.h"
+#include "control.h"
 #include "shape.h"
 #include "transform.h"
 #include "animation.h"

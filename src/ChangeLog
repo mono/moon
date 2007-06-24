@@ -1,5 +1,17 @@
 2007-06-24  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (libmooninclude_HEADERS): add control.h
+
+	* control.h: split out class Control stuff...
+
+	* runtime.h: .. from here.
+
+	* runtime.cpp: #include control.h
+
+	* control.cpp: same.
+
+2007-06-24  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h: add OnLoaded methods to UIElement, Panel, and
 	Control.
 
