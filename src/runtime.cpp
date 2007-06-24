@@ -2437,7 +2437,7 @@ EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
 	closure->func = handler;
 	closure->data = data;
 
-	printf ("**** Adding handler %s pointing to %p with data %p\n");
+	//printf ("**** Adding handler %s pointing to %p with data %p\n");
 	if (events == NULL) {
 		g_hash_table_insert (event_hash, g_strdup (event_name), g_list_prepend (NULL, closure));
 	}
@@ -2451,7 +2451,7 @@ EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer dat
 {
 	gpointer key, value;
 
-	printf ("**** Removing handler %s pointing to %p with data %p\n");
+	//printf ("**** Removing handler %s pointing to %p with data %p\n");
 	if (!g_hash_table_lookup_extended (event_hash, event_name,
 					   &key, &value)) {
 		return;
