@@ -11,8 +11,9 @@
 //
 // TODO:
 //    * Implement --host
+//    * Implement loading of exes
 //    * Implement --fixed
-//    * Make it so we can open directories that contain DIR/Default.xaml
+//    * Make it so we can open directories that contain DIR/default.xaml
 //      and setup the managed loader to default to this location to load
 //      files from.
 //

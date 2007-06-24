@@ -1,0 +1,111 @@
+.\" 
+.\" mopen manual page.
+.\" (C) 2007 Novell, Inc. 
+.\" Author:
+.\"   Miguel de Icaza (miguel@gnu.org)
+.\"
+.de Sp \" Vertical space (when we can't use .PP)
+.if t .sp .5v
+.if n .sp
+..
+.TH mopen "Mono 1.2, Moonlight 1.0"
+.SH NAME
+mopen \- Application launcher (including Mono, Moonlight and Silverlight).
+.SH SYNOPSIS
+.PP
+.B mopen [options] file [arguments...]
+.SH DESCRIPTION
+The \fImopen\fP command is a tool to open applications, XAML files or
+packages that contains executables, images and other resources in a
+directory.
+.PP
+In addition to launching these applications, it is possible to run
+multiple applications using the same Mono virtual machine.  This is
+useful for example if you want to run a collection of small
+applications, gadgets or widgets and do not want to pay the price of
+memory consumption of running one entire virtual machine for every
+application.  This is achieved by using Mono Application Domains: the
+equivalent to processes within a Mono virtual machine, and it is the
+same infrastructure used by ASP.NET applications to run multiple
+isolated applications in the same virtual machine.
+.PP
+In its simplest incarnation, you can open a XAML file like this:
+.nf
+
+	$ mopen /opt/myapp/test.xaml
+
+.fi
+This will load the test.xaml file and any of the dependencies it might
+have from the directory where test.xaml is located.
+.PP
+mopen also supports launching these applications if they are contained
+in a directory thta is on the PATH and such directory contains a file
+called "default.xaml" or "main.exe".
+.PP
+With this configuration it is possible to have entire applications
+that are packaged in a directory and can be deployed and copied by
+copying the entire directory (drag and dropping the directory, using
+cp -a, or any other mechanism to copy a directory).  
+.SH OPTIONS
+The following options are available:
+.TP
+.I "-fixed", "--fixed"
+Makes the toplevel window fixed, prevents the user from resizing it. 
+.TP
+.I "--geometry GEO", "-g GEO"
+Sets the geometry of the window to be GEO, the format for this is
+WIDTHxHEIGH where WIDTH and HEIGHT are integers, for example:
+.nf
+
+	mopen -g 1024x768
+
+.fi
+.TP
+.I "--host NAME"
+Loads the application into the host identified by NAME.   If no host
+is specified this application is loaded into its own virtual machine
+and can not be shared with others.
+.SH SHARING A VIRTUAL MACHINE
+.PP
+To load multiple independent applications into a single virtual
+machine (the virtual machine will isolate each application from each
+other using Application Domains, or AppDomains) you use the --host
+option with the name of the domain where you want to load your
+application.
+.PP
+For example, if you wanted to load various desktop gadgets on a single
+process, you would load them like this:
+.nf
+
+	mopen --host desktop calendar
+	mopen --host desktop stocktracker
+	mopen --host desktop flicker-best-images
+	mopen --host desktop cute-clock
+
+.fi
+You could load a separate set of programs on another VM, for example
+while developing code that might be unstable:
+.nf
+
+	mopen --host devel mytestapp
+
+.fi
+.SH FILES
+When a file is specified, if it exists on the current directory, that
+one is loaded, otherwise directories on the PATH are searched and if
+they contain the file 
+.I default.xaml
+or the file
+.I main.exe
+Those are loaded and launched
+.SH MAILING LISTS
+Mailing lists are listed at the
+http://www.mono-project.com/Mailing_Lists
+.PP
+In addition Moonlight is discussed in the "Olive" group:
+http://groups.google.com/group/mono-olive
+.SH WEB SITE
+http://www.mono-project.com
+.SH SEE ALSO
+.PP
+mono(1)
