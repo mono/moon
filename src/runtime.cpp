@@ -100,28 +100,6 @@ base_unref (Base *base)
 		base->unref ();
 }
 
-static void
-emit_loaded_events (UIElement *ui)
-{
-	if ((ui->flags & UIElement::IS_CANVAS)) {
-		Canvas *c = (Canvas*)ui;
-		VisualCollection *children = c->GetChildren ();
-		Collection::Node *cn;
-
-		cn = (Collection::Node *) children->list->First ();
-		for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
-			UIElement *item = (UIElement *) cn->obj;
-
-			emit_loaded_events (item);
-		}
-	}
-
-	if (!(ui->flags & UIElement::IS_LOADED)) {
-		ui->flags |= UIElement::IS_LOADED;
-		ui->events->Emit ("Loaded");
-	}
-}
-
 Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {
 	dob->Attach (NULL, parent);
@@ -591,6 +569,15 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	Visual::OnSubPropertyChanged (prop, subprop);
 }
 
+void
+UIElement::OnLoaded ()
+{
+	if (!(flags & UIElement::IS_LOADED)) {
+		flags |= UIElement::IS_LOADED;
+		events->Emit ("Loaded");
+	}
+}
+
 //
 // Queues the invalidate for the current region, performs any 
 // updates to the RenderTransform (optional) and queues a 
@@ -814,7 +801,7 @@ framework_element_set_width (FrameworkElement *framework_element, double width)
 Surface *
 item_get_surface (UIElement *item)
 {
-	if (item->flags & UIElement::IS_CANVAS){
+	if (Type::Find (item->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
 		Canvas *canvas = (Canvas *) item;
 		if (canvas->surface)
 			return canvas->surface;
@@ -848,7 +835,7 @@ VisualCollection::Add (DependencyObject *data)
 	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
-		emit_loaded_events (item);
+		item->OnLoaded ();
 	}
 	VisualUpdate (data);
 }
@@ -859,6 +846,12 @@ VisualCollection::Insert (int index, DependencyObject *data)
 	UIElement *item = (UIElement *) data;
 
 	Collection::Insert (index, item);
+
+	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+		/* emit loaded events on the new item if the tree
+		   we're adding it to has already been "loaded" */
+		item->OnLoaded ();
+	}
 
 	VisualUpdate (data);
 }
@@ -952,9 +945,24 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
+void
+Panel::OnLoaded ()
+{
+	VisualCollection *children = GetChildren ();
+	Collection::Node *cn;
+
+	cn = (Collection::Node *) children->list->First ();
+	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+		UIElement *item = (UIElement *) cn->obj;
+
+		item->OnLoaded ();
+	}
+
+	FrameworkElement::OnLoaded ();
+}
+
 Canvas::Canvas () : surface (NULL), current_item (NULL)
 {
-	flags |= IS_CANVAS;
 }
 
 void
@@ -1707,7 +1715,7 @@ surface_attach (Surface *surface, UIElement *toplevel)
 {
 	bool first = FALSE;
 
-	if (!(toplevel->flags & UIElement::IS_CANVAS)) {
+	if (!Type::Find (toplevel->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
 		printf ("Unsupported toplevel\n");
 		return;
 	}
@@ -1728,7 +1736,7 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	if (first)
 		surface_connect_events (surface);
 
-	emit_loaded_events (canvas);
+	canvas->OnLoaded ();
 
 	bool change_size = false;
 	//

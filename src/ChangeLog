@@ -1,3 +1,24 @@
+2007-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h: add OnLoaded methods to UIElement, Panel, and
+	Control.
+
+	* runtime.cpp (UIElement::OnLoaded): emit the Loaded event if we
+	haven't already.
+	(VisualCollection::Add): only invoke OnLoaded on the item if the
+	closure (the parent of the collection) has been loaded.
+	(VisualCollection::Insert): same.
+	(Panel::OnLoaded): call OnLoaded on all our children, then chain
+	up.
+	(surface_attach): call canvas->OnLoaded instead of
+	emit_loaded_events(canvas).  also, don't use a special IS_CANVAS
+	flag - just use the type system.
+	(item_get_surface): get rid of the IS_CANVAS flag and just use the
+	type system.
+
+	* control.cpp (Control::OnLoaded): new method, invoke OnLoaded on
+	the real object before chaining up.
+
 2007-06-24  Larry Ewing  <lewing@novell.com>
 
 	* brush.cpp: use cairo_create_similar rather than using an image

@@ -130,6 +130,15 @@ Control::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chi
 		real_object->OnChildPropertyChanged (prop, child);
 }
 
+void
+Control::OnLoaded ()
+{
+	if (real_object)
+		real_object->OnLoaded ();
+
+	FrameworkElement::OnLoaded ();
+}
+
 Control::~Control ()
 {
 	if (real_object)

@@ -680,8 +680,7 @@ class UIElement : public Visual {
 	int dump_hierarchy (UIElement *obj);
 
 	enum UIElementFlags {
-		IS_CANVAS = 1,
-		IS_LOADED = 2
+		IS_LOADED = 1
 	};
 	
 	int flags;
@@ -786,6 +785,8 @@ class UIElement : public Visual {
 	//   Get the cumulative opacity of this element, including all it's parents
 	double GetTotalOpacity ();
 	
+	virtual void OnLoaded ();
+
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
@@ -862,6 +863,8 @@ class Panel : public FrameworkElement {
 	static DependencyProperty* BackgroundProperty;
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	virtual void OnLoaded ();
 };
 
 // For C API usage.
@@ -933,6 +936,8 @@ class Control : public FrameworkElement {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
+
+	virtual void OnLoaded ();
 
 	UIElement* InitializeFromXaml (const char *xaml,
 				       xaml_create_custom_element_callback *cecb,
