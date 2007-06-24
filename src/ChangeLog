@@ -1,3 +1,12 @@
+2007-06-23  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp: Since unrealize does not seem to be called when our
+	widget is destroyed by Mozilla, we need to cleanup on destroy the
+	tick event.   This takes care of one of the plugin crashers.
+
+	There are still others that I have to find out, I added some
+	debugging prints for now.
+
 2007-06-24  Larry Ewing  <lewing@>
 
 	* runtime.cpp: derive from EventBox not drawing area so that we
