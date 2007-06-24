@@ -153,6 +153,7 @@ moon.pc
 Makefile
 src/Makefile
 gtk/Makefile
+man/Makefile
 gtk/gtksilver.pc
 plugin/Makefile
 plugin/test/Makefile
