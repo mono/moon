@@ -1,3 +1,7 @@
+2007-06-24  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* Makefile.am : we need libmoonplugin.so installed too.
+
 2007-06-23  Miguel de Icaza  <miguel@novell.com>
 
 	* plugin-proxy.cpp: This is the new entry point for the plugin

@@ -40,6 +40,7 @@ libmoonplugin_la_SOURCES = \
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
 	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so
+	cp .libs/libmoonplugin.so ~/.mozilla/plugins
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
 	cp moonlight.exe ~/.mozilla/plugins
 
