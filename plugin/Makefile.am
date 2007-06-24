@@ -50,6 +50,7 @@ untest-plugin:
 	rm -rf ~/.mozilla/plugin/moonlight.exe
 
 EXTRA_DIST = moonlight.cs
+DISTCLEANFILES=moonlight.exe moonlight.exe.mdb
 
 moonlight_CS=  $(srcdir)/moonlight.cs
 
