@@ -884,7 +884,10 @@ image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, in
 	cairo_pattern_t *pattern;
 
 	if (opacity < 1.0) {
-		cairo_surface_t *blending = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, sw, sh);
+		cairo_surface_t *blending = cairo_surface_create_similar (cairo_get_target (cairo),
+									  CAIRO_CONTENT_COLOR_ALPHA,
+									  sw, sh);
+
 		pattern = cairo_pattern_create_for_surface (surface);
 		cairo_t *cr = cairo_create (blending);
 		cairo_set_source (cr, pattern);
