@@ -1,3 +1,9 @@
+2007-06-24  Larry Ewing  <lewing@>
+
+	* runtime.cpp: derive from EventBox not drawing area so that we
+	can use it as a quick method of switching back and forth between
+	transparent and not.  Add a method 
+
 2007-06-23  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (SetValue): Overridden to enforce Text strings not

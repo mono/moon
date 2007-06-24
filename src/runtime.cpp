@@ -1299,26 +1299,13 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
 
-	cairo_reset_clip (s->cairo);
-	gdk_cairo_region (s->cairo, event->region);
-	cairo_clip (s->cairo);
-	surface_repaint (s, event->area.x, event->area.y, event->area.width, event->area.height);
 	cairo_t *ctx = gdk_cairo_create (widget->window);
-	cairo_surface_flush (cairo_get_target (s->cairo));
-	cairo_set_source_surface (ctx, cairo_get_target (s->cairo), 0, 0);
 	gdk_cairo_region (ctx, event->region);
 	cairo_clip (ctx);
-	cairo_paint (ctx);
+	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+	surface_paint (s, ctx, event->area.x, event->area.y, event->area.width, event->area.height);
 	cairo_destroy (ctx);
 
-/*
-	gdk_draw_drawable (
-		widget->window, gtk_widget_get_style (widget)->white_gc, s->pixmap, 
-		event->area.x, event->area.y, // gint src_x, gint src_y,
-		event->area.x, event->area.y, // gint dest_x, gint dest_y,
-		MIN (event->area.width, s->width),
-		MIN (event->area.height, s->height));
-*/
 #if TIME_REDRAW
 	ENDTIMER (expose, "redraw");
 #endif
@@ -1578,7 +1565,10 @@ surface_new (int width, int height)
 {
 	Surface *s = new Surface ();
 
-	s->drawing_area = gtk_drawing_area_new ();
+	s->drawing_area = gtk_event_box_new ();
+	gtk_widget_set_app_paintable (s->drawing_area, TRUE);
+	gtk_event_box_set_visible_window (GTK_EVENT_BOX (s->drawing_area), FALSE);
+
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "size_allocate",
 			    G_CALLBACK(surface_size_allocate), s);
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "destroy",
@@ -1592,7 +1582,7 @@ surface_new (int width, int height)
 			       GDK_BUTTON_PRESS_MASK |
 			       GDK_BUTTON_RELEASE_MASK);
 	GTK_WIDGET_SET_FLAGS (s->drawing_area, GTK_CAN_FOCUS);
-	gtk_widget_set_double_buffered (s->drawing_area, FALSE);
+	//gtk_widget_set_double_buffered (s->drawing_area, FALSE);
 
 	gtk_widget_show (s->drawing_area);
 
@@ -1767,12 +1757,12 @@ surface_attach (Surface *surface, UIElement *toplevel)
 }
 
 void
-surface_repaint (Surface *s, int x, int y, int width, int height)
+surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
 {
-	cairo_set_source_rgb (s->cairo, 1, 1, 1);
-	cairo_rectangle (s->cairo, x, y, width, height);
-	cairo_fill (s->cairo);
+        cairo_t *temp = s->cairo;
+	s->cairo = ctx;
 	s->toplevel->dorender (s, x, y, width, height);
+	s->cairo = temp;
 }
 
 void *

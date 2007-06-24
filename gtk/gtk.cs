@@ -36,7 +36,7 @@ using System.Reflection;
 
 namespace Gtk.Moonlight {
 	
-public class GtkSilver : DrawingArea {
+public class GtkSilver : EventBox {
 	[DllImport ("moon")]
 	extern static IntPtr surface_new (int w, int h);
 
@@ -46,6 +46,9 @@ public class GtkSilver : DrawingArea {
 	[DllImport ("moon")]
 	extern static IntPtr xaml_create_from_file (string file, ref int kind_type);
 	
+	[DllImport ("moon")]
+	extern static void surface_paint (IntPtr surface, IntPtr ctx, int x, int y, int width, int height);
+
 	IntPtr surface;
 
 	//
@@ -83,6 +86,12 @@ public class GtkSilver : DrawingArea {
 	{
 		surface = surface_new (w, h);
 		Raw = surface_get_drawing_area (surface);
+	}
+
+	// This is a quick hack for f-spot code it will be cleaned up soon
+	public void Print (IntPtr ctx, Gdk.Rectangle area)
+	{
+		surface_paint (surface, ctx, area.X, area.Y, area.Width, area.Height);
 	}
 
 	public void Attach (Canvas canvas)

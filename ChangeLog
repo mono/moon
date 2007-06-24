@@ -1,3 +1,8 @@
+2007-06-24  Larry Ewing  <lewing@>
+
+	* gtk/gtk.cs: derive from eventbox to match the runtime change.
+	Expose a print method, 
+
 2007-06-23  Chris Toshok  <toshok@ximian.com>
 
 	* gtk/Assembly.cs: don't put the assembly key here.  pass it
