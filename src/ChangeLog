@@ -1,3 +1,9 @@
+2007-06-24  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: add comments to the new gtk functions.
+
+	* runtime.h: expose surface_paint.
+
 2007-06-23  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp: Since unrealize does not seem to be called when our
@@ -7,11 +13,12 @@
 	There are still others that I have to find out, I added some
 	debugging prints for now.
 
-2007-06-24  Larry Ewing  <lewing@>
+2007-06-24  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: derive from EventBox not drawing area so that we
 	can use it as a quick method of switching back and forth between
-	transparent and not.  Add a method 
+	transparent and not.  Add a method to let external code paint to a
+	cairo context.
 
 2007-06-23  Jeffrey Stedfast  <fejj@gnome.org>
 

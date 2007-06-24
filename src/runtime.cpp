@@ -1566,7 +1566,9 @@ surface_new (int width, int height)
 	Surface *s = new Surface ();
 
 	s->drawing_area = gtk_event_box_new ();
+	// don't let gtk clear the window we'll do all the drawing.
 	gtk_widget_set_app_paintable (s->drawing_area, TRUE);
+	// draw on the parent not ourselves so that we can blend
 	gtk_event_box_set_visible_window (GTK_EVENT_BOX (s->drawing_area), FALSE);
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "size_allocate",
