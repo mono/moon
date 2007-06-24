@@ -167,6 +167,36 @@ video_new (char *uri)
 	return video;
 }
 
+static void
+window_realized (GtkWidget *widget, gpointer data)
+{
+     GdkScreen* screen = gtk_widget_get_screen(widget);
+     GdkColormap* colormap = gdk_screen_get_rgba_colormap(screen);
+     
+     if (!colormap)
+	 return;
+     
+     gtk_widget_set_colormap(widget, colormap);
+}
+
+static gboolean
+expose_event (GtkWidget	    *widget,
+	      GdkEventExpose     *event,
+	      gpointer *data)
+{
+    cairo_t *ctx = gdk_cairo_create (widget->window);
+    cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
+    gboolean do_trans = GPOINTER_TO_UINT (data);
+    
+    cairo_set_source_rgba (ctx, 1, 1, 1, do_trans ? 0.0 : 1.0);
+    gdk_cairo_region (ctx, event->region);
+    cairo_fill (ctx);
+    cairo_paint (ctx);
+    cairo_destroy (ctx);
+    
+    return FALSE;
+}
+
 int
 main (int argc, char *argv [])
 {
@@ -174,6 +204,7 @@ main (int argc, char *argv [])
 	cairo_matrix_t trans;
 	double dash = 3.5;
 	char *file = NULL;
+	gboolean do_trans = FALSE;
 
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
@@ -188,20 +219,34 @@ main (int argc, char *argv [])
 				  downloader_get_response_text);
 
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	Surface *t = surface_new (600, 600);
-	gtk_signal_connect (GTK_OBJECT (w), "delete_event", G_CALLBACK (delete_event), t);
-	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
-		
+
 	for (int i = 1; i < argc; i++){
 		if (strcmp (argv [i], "-h") == 0){
 			printf ("usage is: demo [-fps] [file.xaml]\n");
 			return 0;
 		} else if (strcmp (argv [i], "-fps")== 0){
 			do_fps = TRUE;
+		} else if (strcmp (argv [i], "-trans") == 0) {
+		        do_trans = TRUE;
 		}else
 			file = argv [i];
 	}
 
+	gtk_widget_set_app_paintable (w, TRUE);
+	if (do_trans){
+	    GdkScreen* screen = gtk_widget_get_screen(w);
+	    GdkColormap* colormap = gdk_screen_get_rgba_colormap(screen);
+     
+	    if (colormap) {
+		gtk_widget_set_colormap(w, colormap);
+	    }
+	}
+
+	Surface *t = surface_new (600, 600);
+	gtk_signal_connect (GTK_OBJECT (w), "delete-event", G_CALLBACK (delete_event), t);
+	gtk_signal_connect (GTK_OBJECT (w), "expose-event", G_CALLBACK (expose_event), GUINT_TO_POINTER (do_trans));
+	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
+		
 	if (file){
 		Type::Kind kind;
 

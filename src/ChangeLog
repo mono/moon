@@ -1,3 +1,7 @@
+2007-06-24  Larry Ewing  <lewing@>
+
+	* demo.cpp: add -trans flag to demo to make the toplevel transparent.
+
 2007-06-24  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: add comments to the new gtk functions.
