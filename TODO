@@ -1,6 +1,41 @@
 
 Feel free to add items to this TODO list
 
+* Samples:
+
+	Although we are going to need to have API coverage through
+	writing tests, a good way of getting stuff done would be to
+	identify some demo applications to get working:
+
+		* Chess program.
+		* Silverlight airlines.
+		* Page turner sample
+		* Stock wizard-generated video players.
+
+* Plugin
+
+	Need to destroy the appdomain when the instance is destroyed.
+
+	Need to track down who is calling surface_repaint after we have
+	destroyed the plugin.
+
+	Need to make sure that Downloaders get the plugin_instance pointer
+	from the caller instead of the current hack that picsk the first
+	available plugin from the list of plugins as the owner of the request. 
+
+* Downloader
+
+	Support a non-streaming mode that would still provide notifications
+	but would not store the data in memory, but instead be notified at
+	the end of the download.
+
+	Currently images are not progressive, and we are just wasting memory,
+	but in addition we need a file to be available if we want to provide
+	ZIP-file services.
+
+	Once we have full files transfered to disk, we can implement the ZIP
+	functionality: GetResponseText (string partName).
+
 * Managed Code:
 
 	Write sample code to exercise every property.
@@ -20,9 +55,14 @@ Feel free to add items to this TODO list
 		with UIElements, there are two signals, GotFocus
 		and LostFocus, but what do they mean?
 
+	Need support for Z-axis.
+
+
 * Video Player:
 
 	Add support for seeking
+
+	Expose properties to managed world.
 
 	Implement Downloader
 
@@ -103,3 +143,11 @@ Feel free to add items to this TODO list
 		* Unmanaged could use the flags variable that is part of
 	   	  the UIElement to store this information
 	
+
+* Visibility:
+
+	Implement all three modes
+
+* Text
+
+	Find out why ligatures are not happening for certain scripts.
