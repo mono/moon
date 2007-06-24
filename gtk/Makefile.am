@@ -5,7 +5,8 @@ bin_SCRIPTS = mopen
 gtksilver_DATA = gtksilver.dll mopen.exe
 pkgconfig_DATA = gtksilver.pc
 
-EXTRA_DIST= $(gtksilver_CS) gtksilver.snk
+EXTRA_DIST= $(gtksilver_dll_CS) $(mopen_exe_CS) gtksilver.snk mopen.in
+DISTCLEANFILES=mopen gtksilver.dll gtksilver.dll.mdb mopen.exe mopen.exe.mdb
 
 gtksilver_dll_CS = $(srcdir)/gtk.cs \
                    $(srcdir)/ManagedDownloader.cs \
@@ -19,7 +20,7 @@ gtksilver.dll: $(gtksilver_dll_CS)
 	gmcs -debug -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -pkg:silver 
 
 mopen.exe: $(mopen_exe_CS) gtksilver.dll 
-	gmcs -debug -out:mopen.exe -target:exe mopen.cs -r:gtksilver.dll -pkg:gtk-sharp-2.0 -pkg:silver
+	gmcs -debug -out:mopen.exe -target:exe $(mopen_exe_CS) -r:gtksilver.dll -pkg:gtk-sharp-2.0 -pkg:silver
 
 do_subst = sed -e 's,[@]gtksilverdir[@],$(gtksilverdir),g' -e 's,[@]VERSION[@],$(VERSION),g' 
 
