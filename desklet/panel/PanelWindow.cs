@@ -14,10 +14,29 @@ using System;
 using Gtk;
 
 public partial class PanelWindow: Gtk.Window
-{	
+{
+	StatusIcon statusIcon;
+	
 	public PanelWindow (): base (Gtk.WindowType.Toplevel)
 	{
 		Build ();
+	}
+
+	public PanelWindow (StatusIcon statusIcon) : this ()
+	{
+		this.statusIcon = statusIcon;
+		this.statusIcon.PopupMenu += new PopupMenuHandler (IconPopupHandler);
+	}
+
+	void IconPopupHandler (object o, PopupMenuArgs args)
+	{
+		Menu popup = new Menu ();
+		
+		MenuItem item = new MenuItem ("About");
+		popup.Append (item);
+		// broken
+//		popup.Popup (null, null, new MenuPositionFunc (StatusIcon.PositionMenu),
+//			     null, args.Event.Button, Gtk.Global.CurrentEventTime);
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)

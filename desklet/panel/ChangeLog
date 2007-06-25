@@ -1,5 +1,7 @@
 2007-06-25  Marek Habersack  <mhabersack@novell.com>
 
+	* PanelWindow.cs: added a handler for the icon popup menu.
+
 	* Panel.cs: added status icon. Graphics is loaded from resources
 
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>

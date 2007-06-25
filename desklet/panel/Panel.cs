@@ -21,18 +21,17 @@ namespace DeskletsPanel
 	{
 		static StatusIcon statusIcon;
 		
-		static void SetUpStatusIcon ()
+		static StatusIcon SetUpStatusIcon ()
 		{
 			Pixbuf icon = Pixbuf.LoadFromResource ("mono_monkey_icon.png");
-			statusIcon = new StatusIcon (icon);
+			return new StatusIcon (icon);
 		}
 		
 		public static void Main (string[] args)
 		{
 			Application.Init ();
-			PanelWindow win = new PanelWindow ();
+			PanelWindow win = new PanelWindow (SetUpStatusIcon ());
 			win.Show ();
-			SetUpStatusIcon ();
 			Application.Run ();
 		}
 	}
