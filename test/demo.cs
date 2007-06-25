@@ -131,9 +131,9 @@ class X {
 
 		Box vb = new VBox ();
 		msg = new Label ("");
-		vb.Add (msg);
+		vb.PackStart (msg, false, false, 0);
 		Box hb = new HBox ();
-		vb.Add (hb);
+		vb.PackStart (hb, false, false, 0);
 
 		if (args.Length > 1){
 			Button next = new Button ("Load next file");
@@ -148,17 +148,12 @@ class X {
 		
 		Button quit = new Button ("Quit");
 		quit.Clicked += delegate { Application.Quit (); };
-		hb.Add (quit);
+		hb.PackStart (quit);
 		silver = new GtkSilver (400, 400);
-		vb.Add (silver);
+		vb.PackStart (silver, true, true, 0);
 		w.Add (vb);
 		w.ShowAll ();
 
-		// When the window resizes, the widget is resized
-		w.SizeAllocated += delegate (object o, SizeAllocatedArgs a) {
-			silver.SizeAllocate (new Gdk.Rectangle (0, 0, a.Allocation.Width, a.Allocation.Height));
-		};
-		
 		//
 		// Now, the SL API
 		//

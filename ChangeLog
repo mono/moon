@@ -1,11 +1,17 @@
+2007-06-24  Larry Ewing  <lewing@novell.com>
+
+	* test/demo.cs: fix the resizing logic.
+
 2007-06-24  Everaldo Canuto  <ecanuto@novell.com>
 
 	* configure.ac: man/Makefile added to AC_OUTPUT.
 
 2007-06-24  Larry Ewing  <lewing@>
 
+	* src/runtime.cpp: add comments to the new gtk functions.
+
 	* gtk/gtk.cs: derive from eventbox to match the runtime change.
-	Expose a print method, 
+	Expose a print method.
 
 2007-06-23  Chris Toshok  <toshok@ximian.com>
 
