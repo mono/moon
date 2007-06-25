@@ -1156,6 +1156,7 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 	int x = button->x + widget->allocation.x;
 	int y = button->y + widget->allocation.y;
 	s->toplevel->handle_button (s, s->cb_down, button->state, x, y);
+	return FALSE;
 }
 
 static int level = 0;

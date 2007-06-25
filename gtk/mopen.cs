@@ -223,7 +223,7 @@ class MonoOpen {
 				Help ();
 				return 0;
 
-			case "-fixed": case "--fixed":
+			case "-f": case "--fixed":
 				fixedwindow = true;
 				break;
 
