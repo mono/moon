@@ -5,17 +5,50 @@
 	Width="310" Height="100"
 	>
 
-  <Rectangle Fill="#ffaaaaaa" Stroke="#a0bbbbbb" StrokeThickness="2" 
-	Canvas.Left="10" Canvas.Top="10" Width="300" Height="96"  RadiusX="40" RadiusY="40"/>
-
   <Canvas.Resources>
     <Storyboard x:Name="run">
     </Storyboard>
+    <Storyboard x:Name="to_config">
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="clockcanvas" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="1" />
+        <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="0" KeySpline="0.25,0.6 0.75,1" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="configcanvas" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1" KeySpline="0.25,0.6 0.75,1" />
+      </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+    <Storyboard x:Name="to_clock">
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="clockcanvas" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1" KeySpline="0.25,0.6 0.75,1" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="configcanvas" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="1" />
+        <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="0" KeySpline="0.25,0.6 0.75,1" />
+      </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
   </Canvas.Resources>
 
-  <TextBlock x:Name="hour" Text="12" FontSize="68" Canvas.Left="30" Canvas.Top="15"/>
-  <TextBlock x:Name="minute" Text=":00" FontSize="68" Canvas.Left="118" Canvas.Top="15"/>
-  <Rectangle x:Name="dotcover" Canvas.Left="121" Canvas.Top="30" Width="14" Height="68" Fill="#ffaaaaaa"/>
+  <Rectangle Fill="#ffaaaaaa" Stroke="#a0bbbbbb" StrokeThickness="2" 
+	Canvas.Left="10" Canvas.Top="10" Width="300" Height="96"  RadiusX="40" RadiusY="40"/>
 
-  <TextBlock x:Name="ampm" Text="am" FontSize="24" Canvas.Left="240" Canvas.Top="25"/>
+  <Canvas x:Name="clockcanvas">
+      <TextBlock x:Name="hour" Text="12" FontSize="68" Canvas.Left="30" Canvas.Top="15"/>
+      <TextBlock x:Name="minute" Text=":00" FontSize="68" Canvas.Left="118" Canvas.Top="15"/>
+      <Rectangle x:Name="dotcover" Canvas.Left="121" Canvas.Top="30" Width="14" Height="68" Fill="#ffaaaaaa"/>
+    
+      <TextBlock x:Name="ampm" Text="am" FontSize="24" Canvas.Left="240" Canvas.Top="25"/>
+
+      <Canvas x:Name="config" Canvas.Left="240" Canvas.Top="70" Width="16" Height="16">
+        <Rectangle x:Name="config" Width="16" Height="16" Fill="#ffffffff"/>
+        <TextBlock Text="i" FontSize="14" Fill="#ffffffff" Stroke="#ffff00ff" Canvas.Left="6" />
+      </Canvas>
+  </Canvas>
+  <Canvas x:Name="configcanvas" Opacity="0">
+      <Canvas Canvas.Left="60" Canvas.Top="30">
+         <TextBlock Text="Show AM/PM" FontSize="16"/>
+         <TextBlock Text="Another Option" Canvas.Top="36" FontSize="16"/>
+      </Canvas>
+  </Canvas>
 </Canvas>

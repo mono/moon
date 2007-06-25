@@ -53,15 +53,20 @@ namespace Clock {
 			hour = FindName ("hour") as TextBlock;
 			minute = FindName ("minute") as TextBlock;
 			ampm = FindName ("ampm") as TextBlock;
-
+			Canvas config = FindName ("configcanvas") as Canvas;
+			Storyboard to_config = FindName ("to_config") as Storyboard;
+			Storyboard to_clock = FindName ("to_clock") as Storyboard;
+			
 			if (ampm != null) {
 				if (use24h)
 					ampm.Visibility = Visibility.Hidden;
 				else
 					isAm = ampm.Text.ToLower () == "am";
 			}
+
 			
-			if (sb == null || r == null || hour == null || minute == null){
+			if (sb == null || r == null || hour == null || minute == null || config == null ||
+			    to_config == null || to_clock == null){
 				Console.WriteLine ("Elements are missing from the xaml file\n");
 				return;
 			}
@@ -78,7 +83,20 @@ namespace Clock {
 				sb.Begin ();
 			};
 			UpdateTime ();
+
+			bool in_config = false;
+			MouseLeftButtonUp += delegate {
+				if (in_config){
+					in_config = false;
+					to_clock.Begin ();
+				} else {
+					in_config = true;
+					to_config.Begin ();
+				}
+			};
+			
 			sb.Begin ();
+			
 		}
 	}
 }
