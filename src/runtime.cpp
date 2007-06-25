@@ -2365,6 +2365,7 @@ DependencyProperty* UIElement::CursorProperty;
 DependencyProperty* UIElement::IsHitTestVisibleProperty;
 DependencyProperty* UIElement::VisibilityProperty;
 DependencyProperty* UIElement::ResourcesProperty;
+DependencyProperty* UIElement::ZIndexProperty;
 
 
 void
@@ -2380,6 +2381,7 @@ item_init (void)
 	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", Type::BOOL);
 	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_COLLECTION);
+	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value(0));
 }
 
 //

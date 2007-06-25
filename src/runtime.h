@@ -586,6 +586,7 @@ class UIElement : public Visual {
 	static DependencyProperty* VisibilityProperty;
 	static DependencyProperty* ResourcesProperty;
 	static DependencyProperty* TriggersProperty;
+	static DependencyProperty* ZIndexProperty;
 };
 
 Surface *item_get_surface          (UIElement *item);
