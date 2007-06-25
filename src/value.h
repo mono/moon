@@ -5,6 +5,8 @@
 #ifndef MOON_VALUE_H
 #define MOON_VALUE_H
 
+#include <string.h>
+
 #include "type.h"
 
 /* ugly file containing the catchall value type we use.

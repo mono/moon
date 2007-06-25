@@ -1,5 +1,23 @@
 2007-06-24  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (libmooninclude_HEADERS): add collection.h
+	(libmoon_la_SOURCES): add collection.cpp
+
+	* collection.h, collection.cpp: new files.  split out Collection
+	and all the collection-related code from runtime.h/runtime.cpp.
+	arguably the collections specific to certain elements should exist
+	completely in those .cpp/.h files, instead of here.
+
+	* runtime.h, runtime.cpp: remove collection stuff.
+
+	* clock.h, animation.h, transform.h: #include collection.h
+
+	* value.h, value.h.in: #include <string.h> here so we can stop
+	requiring it for everyone else.  really, though we should be using
+	g_strcmp or something that's already pulled in from glib.
+	
+2007-06-24  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (libmoon_la_SOURCES): add array.cpp
 	(libmooninclude_HEADERS): add array.h
 

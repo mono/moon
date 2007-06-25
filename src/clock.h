@@ -14,6 +14,7 @@
 #define MOON_CLOCK_H
 
 #include "runtime.h"
+#include "collection.h"
 
 G_BEGIN_DECLS
 

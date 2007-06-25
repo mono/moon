@@ -12,6 +12,7 @@ libmooninclude_HEADERS = \
 	array.h		\
 	brush.h		\
 	clock.h		\
+	collection.h	\
 	control.h	\
 	cutil.h		\
 	downloader.h	\
@@ -35,6 +36,7 @@ libmoon_la_SOURCES = 	\
 	array.cpp	\
 	brush.cpp	\
 	clock.cpp	\
+	collection.cpp	\
 	control.cpp	\
 	cutil.cpp	\
 	downloader.cpp	\

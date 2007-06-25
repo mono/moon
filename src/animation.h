@@ -14,6 +14,7 @@
 #define MOON_ANIMATION_H
 
 #include "runtime.h"
+#include "collection.h"
 #include "clock.h"
 #include "list.h"
 
