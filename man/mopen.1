@@ -42,6 +42,10 @@ mopen also supports launching these applications if they are contained
 in a directory thta is on the PATH and such directory contains a file
 called "default.xaml" or "main.exe".
 .PP
+In the case of applications that start up from XAML, the default
+size of the window will be the one specified for the Canvas unless the
+--geometry option has been used
+.PP
 With this configuration it is possible to have entire applications
 that are packaged in a directory and can be deployed and copied by
 copying the entire directory (drag and dropping the directory, using
@@ -49,8 +53,14 @@ cp -a, or any other mechanism to copy a directory).
 .SH OPTIONS
 The following options are available:
 .TP
-.I "-fixed", "--fixed"
-Makes the toplevel window fixed, prevents the user from resizing it. 
+.I "--desklet", "-d"
+Turns on desklet mode.   In this mode the window decoration is not
+shown and the default rendering mode will enable alpha transparency.
+This means that anything painted with an alpha channel will be
+properly transparent.
+.TP
+.I "-f", "--fixed"
+Makes the toplevel window fixed, prevents the user from resizing it.
 .TP
 .I "--geometry GEO", "-g GEO"
 Sets the geometry of the window to be GEO, the format for this is
@@ -65,6 +75,11 @@ WIDTHxHEIGH where WIDTH and HEIGHT are integers, for example:
 Loads the application into the host identified by NAME.   If no host
 is specified this application is loaded into its own virtual machine
 and can not be shared with others.
+.TP
+.I "--transparent", "-t"
+Enables the alpha channel on the rendering surface.   Any areas that
+are rendered with non-opaque values will be properly composited
+against the underlying background by the system compositing manager.
 .SH SHARING A VIRTUAL MACHINE
 .PP
 To load multiple independent applications into a single virtual
@@ -88,6 +103,13 @@ while developing code that might be unstable:
 .nf
 
 	mopen --host devel mytestapp
+
+.fi
+.PP
+To load a desklet, you would use:
+.nf
+
+	mopen --desklet mydesklet
 
 .fi
 .SH FILES
