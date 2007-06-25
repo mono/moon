@@ -542,6 +542,12 @@ TextBlock::Layout (cairo_t *cr)
 	char *text;
 	int w, h;
 	
+	// FIXME: we could use a single PangoLayout for getting
+	// overall width/height if we created a proper
+	// PangoAttrList. However, we can't really do this until we
+	// find a way of changing the Foreground brush for runs if
+	// they override it.
+	
 	text = text_block_get_text (this);
 	
 	if (layout == NULL) {
@@ -706,6 +712,12 @@ TextBlock::Paint (cairo_t *cr)
 	
 	if (block_width < 0.0)
 		CalcActualWidthHeight (cr);
+	
+	// FIXME: we could use a single PangoLayout for drawing if we
+	// created a proper PangoAttrList. However, we can't really do
+	// this until we find a way of changing the Foreground brush
+	// for runs if they override it - until then, we have to lay
+	// out the text/runs manually :(
 	
 	font_mask = pango_font_description_get_set_fields (font);
 	
