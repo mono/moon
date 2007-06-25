@@ -1,4 +1,8 @@
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
 
+	* mopen.cs: Use cavas size for silver and window size.
+
+2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
+
 	* mopen.cs: Add support for "--desklet" option, it removes window decoration
 	and will add some other desklet related stuff. Also add "--help"

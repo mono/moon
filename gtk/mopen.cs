@@ -107,14 +107,6 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		GtkSilver silver;
-		if (width != -1 && height != -1)
-			silver = new GtkSilver (width, height);
-		else
-			silver = new GtkSilver (400, 400);
-
-		w.Add (silver);
-
 		string xaml = "";
 		
 		try {
@@ -144,12 +136,18 @@ class MonoOpen {
 			return 1;
 		}
 
+		GtkSilver silver;
 		Canvas canvas = d as Canvas;
-		if (width != -1 && height != -1){
-			w.Resize (width, height);
-		} else if (canvas.Width > 0 && canvas.Height > 0)
-			w.Resize ((int) canvas.Width, (int) canvas.Height);
 
+		if (width != -1 && height != -1){
+			silver = new GtkSilver (width, height);
+			w.Resize (width, height);
+		} else if (canvas.Width > 0 && canvas.Height > 0) {
+			w.Resize ((int) canvas.Width, (int) canvas.Height);
+			silver = new GtkSilver ((int) canvas.Width, (int) canvas.Height);
+		}
+
+		w.Add (silver);
 		silver.Attach (canvas);
 
 		w.ShowAll ();
@@ -206,13 +204,14 @@ class MonoOpen {
 			case "-fixed": case "--fixed":
 				fixedwindow = true;
 				break;
-			
-			case "--transparent": case "-t":
-				transparent = true;
-				break;
 
 			case "--desklet": case "-d":
 				desklet = true;
+				//transparent = true;
+				break;
+			
+			case "--transparent": case "-t":
+				transparent = true;
 				break;
 
 			case "--geometry": case "-g":
