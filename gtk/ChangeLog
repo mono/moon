@@ -1,5 +1,10 @@
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
 
+	* mopen.cs: Fix mopen crash when canvas size is not specified. We should
+	have a better stuff for this, just get it working right now.
+
+2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
+
 	* mopen.cs: Use cavas size for silver and window size.
 
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>

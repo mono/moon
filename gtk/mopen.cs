@@ -81,6 +81,18 @@ class MonoOpen {
 		 ctx.Fill ();
 	}
 
+	[GLib.ConnectBefore]
+	static void HandleMousePressEvent (object sender, ExposeEventArgs expose_args)
+	{
+		 Widget w = (Widget)sender;
+	    
+		 Cairo.Context ctx = CompositeHelper.Create (w.GdkWindow);
+		 ctx.Operator = Cairo.Operator.Source;
+		 ctx.Color = new Cairo.Color (1.0, 1.0, 1.0, 0.0);
+		 CompositeHelper.Region (ctx, expose_args.Event.Region);
+		 ctx.Fill ();
+	}
+
 	static void ConfigureDeskletWindow (Gtk.Window window)
 	{
 		window.Decorated = false;
@@ -145,6 +157,8 @@ class MonoOpen {
 		} else if (canvas.Width > 0 && canvas.Height > 0) {
 			w.Resize ((int) canvas.Width, (int) canvas.Height);
 			silver = new GtkSilver ((int) canvas.Width, (int) canvas.Height);
+		} else {
+			silver = new GtkSilver (400, 400);
 		}
 
 		w.Add (silver);
