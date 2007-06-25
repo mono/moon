@@ -1,4 +1,4 @@
 there should be a lot more info here, but for the time being, to test
 out the plugin, copy libmoonplugin.so and moonlight.exe to your
-$HOME/.mozilla/plugin directory (creating the directory if it doesn't
+$HOME/.mozilla/plugins directory (creating the directory if it doesn't
 exist).
