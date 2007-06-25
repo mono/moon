@@ -1,5 +1,9 @@
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
 
+	* mopen.cs: Use XRoot and YRoot instead of X and Y in drag-and-drop event.
+
+2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
+
 	* mopen.cs: Add mouse drag-and-drop event.
 
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>

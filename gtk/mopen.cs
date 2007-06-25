@@ -92,8 +92,8 @@ class MonoOpen {
 
 			if (args.Event.Button == 1) {
 				w.BeginMoveDrag ((int) args.Event.Button, 
-								(int)args.Event.X, 
-								(int)args.Event.Y, 
+								(int) args.Event.XRoot, 
+								(int) args.Event.YRoot, 
 								(uint) args.Event.Time);
 			}
 		}
