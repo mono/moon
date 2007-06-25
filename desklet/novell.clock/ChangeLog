@@ -1,4 +1,9 @@
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile: Add generic makefile.
+	* default.xaml: Remove /bin from assembly path.
+
+2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
+
 	* ChangeLog: Added.
 	* default.desklet: Renamed from clock.desklet.
