@@ -3,15 +3,19 @@ SOURCES = clock.cs
 
 # you dont need to change below lines
 
-ASSEMBLY = $(DESKLET).dll
+ASSEMBLY = bin/$(DESKLET).dll
 DSOURCES = $(SOURCES)
-LAUNCHER = mopen
+LAUNCHER = mopen -t -d
 LOPTIONS = --debug
 
 all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(DSOURCES)
-	gmcs -debug -target:library -pkg:silver $(DSOURCES)
+	mkdir -p bin
+	gmcs -debug -target:library -pkg:silver -out:$(ASSEMBLY) $(DSOURCES)
+
+clean:
+	rm -f $(ASSEMBLY)
 
 run: $(ASSEMBLY)
 	MONO_OPTIONS=$(LOPTIONS) $(LAUNCHER) default.xaml
