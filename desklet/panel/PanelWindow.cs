@@ -12,6 +12,7 @@
 
 using System;
 using Gtk;
+using Gdk;
 
 public partial class PanelWindow: Gtk.Window
 {
@@ -20,12 +21,11 @@ public partial class PanelWindow: Gtk.Window
 	public PanelWindow (): base (Gtk.WindowType.Toplevel)
 	{
 		Build ();
-	}
 
-	public PanelWindow (StatusIcon statusIcon) : this ()
-	{
-		this.statusIcon = statusIcon;
-		this.statusIcon.PopupMenu += new PopupMenuHandler (IconPopupHandler);
+		Pixbuf icon = Pixbuf.LoadFromResource ("mono_monkey_icon.png");
+		statusIcon = new StatusIcon (icon);
+		statusIcon = statusIcon;
+		statusIcon.PopupMenu += new PopupMenuHandler (IconPopupHandler);
 	}
 
 	void IconPopupHandler (object o, PopupMenuArgs args)
@@ -35,8 +35,8 @@ public partial class PanelWindow: Gtk.Window
 		MenuItem item = new MenuItem ("About");
 		popup.Append (item);
 		// broken
-//		popup.Popup (null, null, new MenuPositionFunc (StatusIcon.PositionMenu),
-//			     null, args.Event.Button, Gtk.Global.CurrentEventTime);
+// 		popup.Popup (null, null, new MenuPositionFunc (StatusIcon.PositionMenu),
+// 			     null, args.Event.Button, Gtk.Global.CurrentEventTime);
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
