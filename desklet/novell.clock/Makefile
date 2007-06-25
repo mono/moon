@@ -19,3 +19,6 @@ clean:
 
 run: $(ASSEMBLY)
 	MONO_OPTIONS=$(LOPTIONS) $(LAUNCHER) default.xaml
+
+dist: $(ASSEMBLY)
+	# put here code to pack desklet (zip? tgz?)
