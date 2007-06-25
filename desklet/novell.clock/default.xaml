@@ -1,0 +1,85 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Golem.Desklet.Clock;assembly=bin/clock.dll"
+	Loaded="PageLoaded">
+
+	<Image Source="images/moon1.jpg" x:Name="backImage" Canvas.Left="0" Canvas.Top="0" />
+
+	<!-- border 1 -->
+	<Path Fill="#ffc6c8da" Stroke="#ff605773" StrokeThickness="3">
+		<Path.Data>
+			<EllipseGeometry Center="100,100" RadiusX="50" RadiusY="50" />
+		</Path.Data>
+	</Path>
+
+	<!-- border 2 -->
+	<Path Fill="#fff3f3f3" Stroke="#ff8585a0" StrokeThickness="5">
+		<Path.Data>
+			<EllipseGeometry Center="100,100" RadiusX="44" RadiusY="44" />
+		</Path.Data>
+	</Path>
+
+	<!-- border 2 -->
+	<Path Fill="#fff3f3f3" Stroke="Silver" StrokeThickness="1">
+		<Path.Data>
+			<EllipseGeometry Center="100,100" RadiusX="40" RadiusY="40" />
+		</Path.Data>
+	</Path>
+
+	<!-- dots -->
+	<Path Fill="Silver">
+		<Path.Data>
+			<EllipseGeometry Center="100,68" RadiusX="4" RadiusY="4" />
+		</Path.Data>
+	</Path>
+	<Path Fill="Silver">
+		<Path.Data>
+			<EllipseGeometry Center="132,100" RadiusX="4" RadiusY="4" />
+		</Path.Data>
+	</Path>
+	<Path Fill="Silver">
+		<Path.Data>
+			<EllipseGeometry Center="100,132" RadiusX="4" RadiusY="4" />
+		</Path.Data>
+	</Path>
+	<Path Fill="Silver">
+		<Path.Data>
+			<EllipseGeometry Center="68,100" RadiusX="4" RadiusY="4" />
+		</Path.Data>
+	</Path>
+
+
+	<!-- hour hand -->
+	<Line Stroke="Black" X1="100" Y1="75" X2="100" Y2="100" StrokeThickness="6" StrokeStartLineCap="Round">
+		<Line.RenderTransform>
+			<RotateTransform x:Name="hourHand" Angle="30" CenterX="100" CenterY="100" />
+		</Line.RenderTransform>
+	</Line>
+
+	<!-- minute hand -->
+	<Line Stroke="Black" X1="100" Y1="64" X2="100" Y2="100" StrokeThickness="4" StrokeStartLineCap="Round">
+		<Line.RenderTransform>
+			<RotateTransform x:Name="minuteHand" Angle="100" CenterX="100" CenterY="100" />
+		</Line.RenderTransform>
+	</Line>
+
+	<!-- middle -->
+	<Path Fill="#fff3f3f3" Stroke="#ff000000" StrokeThickness="4">
+		<Path.Data>
+			<EllipseGeometry Center="100,100" RadiusX="6" RadiusY="6" />
+		</Path.Data>
+	</Path>
+
+	<!-- seconds hand -->
+	<Path Fill="Red" Stroke="Red">
+		<Path.Data>
+			<EllipseGeometry Center="100,100" RadiusX="3" RadiusY="3" />
+		</Path.Data>
+	</Path>
+	<Line Stroke="Red" X1="100" Y1="62" X2="100" Y2="100" StrokeThickness="2" StrokeStartLineCap="Round">
+		<Line.RenderTransform>
+			<RotateTransform x:Name="secondsHand" Angle="10" CenterX="100" CenterY="100" />
+		</Line.RenderTransform>
+	</Line>
+	
+</Canvas>
