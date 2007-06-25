@@ -100,9 +100,6 @@ class MonoOpen {
 		else
 			silver = new GtkSilver (400, 400);
 
-		w.SizeAllocated += delegate (object o, SizeAllocatedArgs a){
-			silver.SizeAllocate (new Gdk.Rectangle (0, 0, a.Allocation.Width, a.Allocation.Height));
-		};
 		w.Add (silver);
 
 		string xaml = "";
