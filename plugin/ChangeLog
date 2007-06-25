@@ -1,3 +1,7 @@
+2007-06-24  Larry Ewing  <lewing@novell.com>
+
+	* moonlight.h: include xaml.h so that things build.
+
 2007-06-24  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* Makefile.am : we need libmoonplugin.so installed too.

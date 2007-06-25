@@ -26,6 +26,7 @@
 
 #include "runtime.h"
 #include "shape.h"
+#include "xaml.h"
 
 // Definitions
 #define DEBUG
