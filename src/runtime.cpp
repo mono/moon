@@ -216,7 +216,8 @@ UIElement::~UIElement ()
 void
 UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop == UIElement::OpacityProperty) {
+	if (prop == UIElement::OpacityProperty ||
+	    prop == UIElement::ZIndexProperty) {
 		item_invalidate (this);
 	} else if (prop == UIElement::VisibilityProperty) {
 		// XXX we need a FullInvalidate if this is changing
@@ -311,16 +312,16 @@ void
 UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == UIElement::RenderTransformProperty ||
-	    prop == UIElement::RenderTransformOriginProperty)
+	    prop == UIElement::RenderTransformOriginProperty) {
 		FullInvalidate (true);
-	else if (prop == UIElement::ClipProperty ||
-		 prop == UIElement::OpacityMaskProperty) {
+	} else if (prop == UIElement::ClipProperty ||
+		   prop == UIElement::OpacityMaskProperty) {
 
 		// Maybe this could also be just item_invalidate?
 		FullInvalidate (false);
-	}  else if (prop == UIElement::OpacityProperty) {
+	} else if (prop == UIElement::OpacityProperty) {
 	  	item_invalidate (this);
-	} else if (prop == UIElement::VisibilityProperty){
+	} else if (prop == UIElement::VisibilityProperty) {
 		// XXX we need a FullInvalidate if this is changing
 		// from or to Collapsed, but as there's no way to tell that...
 		FullInvalidate (true);
@@ -652,6 +653,19 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 		item_invalidate (this);
 	}
 }
+
+void
+Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	// if a child changes its ZIndex property we need to resort our Children
+	if (prop == UIElement::ZIndexProperty) {
+		GetChildren()->ResortByZIndex ();
+		return;
+	}
+  
+	FrameworkElement::OnSubPropertyChanged (prop, subprop);
+}
+
 
 void
 Panel::OnLoaded ()
@@ -1181,7 +1195,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	// path for the children
 	//
 	cairo_identity_matrix (s->cairo);
-	cn = (Collection::Node *) children->list->First ();
+	cn = (Collection::Node *) children->z_sorted_list->First ();
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 		UIElement *item = (UIElement *) cn->obj;
 
@@ -2381,7 +2395,7 @@ item_init (void)
 	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", Type::BOOL);
 	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_COLLECTION);
-	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value(0));
+	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
 }
 
 //

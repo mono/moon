@@ -1,3 +1,28 @@
+2007-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h: add decl for Panel::OnSubPropertyChanged.
+
+	* runtime.cpp (UIElement::OnPropertyChanged): handle changes to
+	zIndex by invalidating the item's rectangle.
+	(UIElement::OnSubPropertyChanged): add braces around all the if
+	blocks for consistency.
+	(Panel::OnSubPropertyChanged): if a child changes its z index we
+	need to resort our visual collection.
+	(Canvas::render): loop over the z sorted list of children instead
+	of the default collection list.
+	(item_init): just to be anal, cast the Zindex default value to
+	gint32.
+
+x2007-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* collection.cpp: keep a z-sorted list in VisualCollection,
+	adding/removing elements from it when needed, and clearing it when
+	the collection is cleared.
+
+	* collection.h: add a virtual clear method so VisualCollection can
+	override it.  Also, add a z_sorted_list member to
+	VisualCollection, so we can deal with the ZIndices of children.
+
 2007-06-24  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.(cpp|h): Implemented UIElement.ZIndexPropery

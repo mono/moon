@@ -167,6 +167,59 @@ collection_iterator_destroy (CollectionIterator *iterator)
 }
 
 
+VisualCollection::VisualCollection ()
+{
+	z_sorted_list = new List ();
+}
+
+VisualCollection::~VisualCollection ()
+{
+	z_sorted_list->Clear (true);
+	delete z_sorted_list;
+}
+
+class UIElementNode : public List::Node {
+public:
+	UIElement *item;
+	
+	UIElementNode (UIElement *v) : item (v) { }
+};
+
+static bool
+UIElementNodeFinder (List::Node *uin, void *data)
+{
+	return ((UIElementNode *) uin)->item == (UIElement *) data;
+}
+
+static int
+UIElementNodeComparer (List::Node *ui1, List::Node *ui2)
+{
+	int z1 = ((UIElementNode*)ui1)->item->GetValue(UIElement::ZIndexProperty)->AsInt32();
+	int z2 = ((UIElementNode*)ui2)->item->GetValue(UIElement::ZIndexProperty)->AsInt32();
+	int zdiff = z1 - z2;
+
+	if (zdiff == 0)
+		return 0;
+	else if (zdiff < 0)
+		return -1;
+	else
+		return 1;
+}
+
+void
+VisualCollection::ResortByZIndex ()
+{
+  printf ("ResortByZIndex\n");
+	z_sorted_list->Clear (true);
+
+	UIElementNode* n = (UIElementNode *) list->First ();
+	while (n != NULL) {
+		z_sorted_list->InsertSorted (new UIElementNode ((UIElement *) n->item), UIElementNodeComparer, true);
+
+		n = (UIElementNode *) n->Next ();
+	}
+}
+
 
 void
 VisualCollection::VisualUpdate (DependencyObject *data)
@@ -187,11 +240,13 @@ VisualCollection::Add (DependencyObject *data)
 	UIElement *item = (UIElement *) data;
 
 	Collection::Add (item);
+	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
 	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
 		item->OnLoaded ();
 	}
+
 	VisualUpdate (data);
 }
 
@@ -201,6 +256,7 @@ VisualCollection::Insert (int index, DependencyObject *data)
 	UIElement *item = (UIElement *) data;
 
 	Collection::Insert (index, item);
+	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
 
 	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
@@ -219,8 +275,17 @@ VisualCollection::Remove (DependencyObject *data)
 	
 	item_invalidate (item);
 	Collection::Remove (item);
+	z_sorted_list->Remove (UIElementNodeFinder, item);
 	item_update_bounds (panel);
 }
+
+void
+VisualCollection::Clear ()
+{
+	z_sorted_list->Clear (true);
+	Collection::Clear ();
+}
+
 
 void
 TriggerCollection::Add (DependencyObject *data)

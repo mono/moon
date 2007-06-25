@@ -62,13 +62,18 @@ class CollectionIterator {
 
 class VisualCollection : public Collection {
  public:
-	VisualCollection () {}
+	VisualCollection ();
+	virtual ~VisualCollection ();
 	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::VISUAL; }
 
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
 	virtual void Insert (int index, DependencyObject *data);
+	virtual void Clear  ();
+
+	void ResortByZIndex ();
+	List *z_sorted_list;
 
  private:
 	void VisualUpdate (DependencyObject *data);
