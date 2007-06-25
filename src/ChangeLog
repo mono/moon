@@ -1,5 +1,8 @@
 2007-06-25  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp: Cope with the fact that we are now windowless and
+	we will be sharing the parent's window.   Fixes mouse events.
+
 	* collection.cpp (collection_get_value_at, collection_count): Add
 	new methods.
 
