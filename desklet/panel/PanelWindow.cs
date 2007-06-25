@@ -26,6 +26,7 @@ public partial class PanelWindow: Gtk.Window
 		statusIcon = new StatusIcon (icon);
 		statusIcon = statusIcon;
 		statusIcon.PopupMenu += new PopupMenuHandler (IconPopupHandler);
+		statusIcon.Activate += new EventHandler (IconActivateHandler);
 	}
 
 	void IconPopupHandler (object o, PopupMenuArgs args)
@@ -37,6 +38,15 @@ public partial class PanelWindow: Gtk.Window
 		// broken
 // 		popup.Popup (null, null, new MenuPositionFunc (StatusIcon.PositionMenu),
 // 			     null, args.Event.Button, Gtk.Global.CurrentEventTime);
+		popup.Popup ();
+	}
+
+	void IconActivateHandler (object o, EventArgs args)
+	{
+		if (Visible)
+			Hide ();
+		else
+			Show ();
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
