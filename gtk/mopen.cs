@@ -41,6 +41,7 @@
 
 using System;
 using Gtk;
+using Cairo;
 using Gtk.Moonlight;
 using System.Windows;
 using System.Windows.Media;
@@ -53,21 +54,42 @@ class MonoOpen {
 	static bool fixedwindow = false;
 	static int width = -1;
 	static int height = -1;
-	
+	static bool transparent = false;	
+
 	static void Help ()
 	{
 		Console.WriteLine ("Usage is: mopen [args] [file.xaml|dirname]\n\n" +
 				   "Arguments are:\n" +
 				   "   --fixed         Disable window resizing\n"  +
 				   "   --geometry WxH  Overrides the geometry to be W x H pixels\n" +
-				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" 
+				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" +
+				   "   --transparent   Transparent toplevel\n"
 				   );
+	}
+
+	[GLib.ConnectBefore]
+	static void HandleExposeEvent (object sender, ExposeEventArgs expose_args)
+	{
+		 Widget w = (Widget)sender;
+	    
+		 Cairo.Context ctx = CompositeHelper.Create (w.GdkWindow);
+		 ctx.Operator = Cairo.Operator.Source;
+		 ctx.Color = new Cairo.Color (1.0, 1.0, 1.0, 0.0);
+		 CompositeHelper.Region (ctx, expose_args.Event.Region);
+		 ctx.Fill ();
 	}
 
 	static int LoadXaml (string file, ArrayList args)
 	{
 		Application.Init ();
 		Window w = new Window (file);
+
+		if (transparent) {
+			CompositeHelper.SetRgbaColormap (w);
+			w.AppPaintable = true;
+			w.ExposeEvent += HandleExposeEvent;
+		}    	
+
 		w.DeleteEvent += delegate {
 			Application.Quit ();
 		};
@@ -173,6 +195,10 @@ class MonoOpen {
 
 			case "-fixed": case "--fixed":
 				fixedwindow = true;
+				break;
+			
+			case "--transparent": case "-t":
+				transparent = true;
 				break;
 
 			case "--geometry": case "-g":
