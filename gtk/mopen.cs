@@ -55,6 +55,7 @@ class MonoOpen {
 	static int width = -1;
 	static int height = -1;
 	static bool transparent = false;	
+	static bool desklet = false;
 
 	static void Help ()
 	{
@@ -63,7 +64,8 @@ class MonoOpen {
 				   "   --fixed         Disable window resizing\n"  +
 				   "   --geometry WxH  Overrides the geometry to be W x H pixels\n" +
 				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" +
-				   "   --transparent   Transparent toplevel\n"
+				   "   --transparent   Transparent toplevel\n" +
+				   "   --desklet       Remove window decoration for desklets use\n"
 				   );
 	}
 
@@ -79,6 +81,13 @@ class MonoOpen {
 		 ctx.Fill ();
 	}
 
+	static void ConfigureDeskletWindow (Gtk.Window window)
+	{
+		window.Decorated = false;
+		window.SkipPagerHint = true;
+		window.SkipTaskbarHint = true;
+	}
+
 	static int LoadXaml (string file, ArrayList args)
 	{
 		Application.Init ();
@@ -89,6 +98,10 @@ class MonoOpen {
 			w.AppPaintable = true;
 			w.ExposeEvent += HandleExposeEvent;
 		}    	
+
+		if (desklet) {
+			ConfigureDeskletWindow (w);
+		}
 
 		w.DeleteEvent += delegate {
 			Application.Quit ();
@@ -186,7 +199,7 @@ class MonoOpen {
 
 		for (int i = 0; i < args.Length; i++){
 			switch (args [i]){
-			case "-h": case "-help":
+			case "-h": case "-help": case "--help":
 				Help ();
 				return 0;
 
@@ -196,6 +209,10 @@ class MonoOpen {
 			
 			case "--transparent": case "-t":
 				transparent = true;
+				break;
+
+			case "--desklet": case "-d":
+				desklet = true;
 				break;
 
 			case "--geometry": case "-g":
