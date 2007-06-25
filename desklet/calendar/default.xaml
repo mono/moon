@@ -1,0 +1,537 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Desklet.Calendar;assembly=calendar.dll"
+	Loaded="PageLoaded" Width="228" Height="188">
+
+	<!-- border 1 -->
+	<Rectangle
+		Fill="Black"
+		Stroke="#232323"
+		StrokeThickness="8"
+		Canvas.Left="4"
+		Canvas.Top="4"
+		Width="220"
+		Height="180"
+		RadiusX="10"
+		RadiusY="10"/>
+		
+
+      <TextBlock
+		x:Name="month"
+		Text="June 2007"
+		FontSize="16"
+		FontWeight="Bold"
+		Foreground="Yellow"
+		Canvas.Left="75"
+		Canvas.Top="12"/>
+		
+
+	<Polygon
+		Fill="White"
+		Stroke="White"
+		StrokeThickness="2"
+		Points="212,20 207,15 207,25" />
+
+	<Polygon
+		Fill="White"
+		Stroke="White"
+		StrokeThickness="2"
+		Points="17,20 22,15 22,25" />
+
+
+
+      <TextBlock
+		Text="S"
+		FontSize="16"
+		FontWeight="ExtraBlack"
+		Canvas.Left="20"
+		Foreground="#777777"
+		Canvas.Top="42"/>
+
+      <TextBlock
+		Text="M"
+		FontSize="16"
+		FontWeight="ExtraBlack"
+		Canvas.Left="50"
+		Foreground="#777777"
+		Canvas.Top="42"/>
+
+      <TextBlock
+		Text="T"
+		FontSize="16"
+		FontWeight="ExtraBlack"
+		Canvas.Left="80"
+		Foreground="#777777"
+		Canvas.Top="42"/>
+
+      <TextBlock
+		Text="W"
+		FontSize="16"
+		FontWeight="ExtraBlack"
+		Canvas.Left="110"
+		Foreground="#777777"
+		Canvas.Top="42"/>
+
+      <TextBlock
+		Text="T"
+		FontSize="16"
+		FontWeight="ExtraBlack"
+		Canvas.Left="140"
+		Foreground="#777777"
+		Canvas.Top="42"/>
+
+      <TextBlock
+		Text="F"
+		FontSize="16"
+		FontWeight="ExtraBlack"
+		Canvas.Left="170"
+		Foreground="#777777"
+		Canvas.Top="42"/>
+
+      <TextBlock
+		Text="S"
+		FontSize="16"
+		FontWeight="ExtraBlack"
+		Canvas.Left="200"
+		Foreground="#777777"
+		Canvas.Top="42"/>
+		
+	<Polygon
+		Fill="White"
+		Stroke="#444444"
+		StrokeThickness="1"
+		Points="40,52 40,160" />
+
+	<Polygon
+		Fill="White"
+		Stroke="#444444"
+		StrokeThickness="1"
+		Points="70,52 70,160" />
+
+	<Polygon
+		Fill="White"
+		Stroke="#444444"
+		StrokeThickness="1"
+		Points="100,52 100,160" />
+
+	<Polygon
+		Fill="White"
+		Stroke="#444444"
+		StrokeThickness="1"
+		Points="130,52 130,160" />
+
+	<Polygon
+		Fill="White"
+		Stroke="#444444"
+		StrokeThickness="1"
+		Points="160,52 160,160" />
+
+	<Polygon
+		Fill="White"
+		Stroke="#444444"
+		StrokeThickness="1"
+		Points="190,52 190,160" />
+
+
+
+
+
+      <TextBlock
+      	x:Name="c0_l0"
+		Text="27"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="18"
+		Foreground="#333333"
+		Canvas.Top="65"/>
+
+      <TextBlock
+      	x:Name="c0_l1"
+		Text="28"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="48"
+		Foreground="#333333"
+		Canvas.Top="65"/>
+
+      <TextBlock
+      	x:Name="c0_l2"
+		Text="29"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="78"
+		Foreground="#333333"
+		Canvas.Top="65"/>
+		
+      <TextBlock
+      	x:Name="c0_l3"
+		Text="30"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="108"
+		Foreground="#333333"
+		Canvas.Top="65"/>
+
+      <TextBlock
+      	x:Name="c0_l4"
+		Text="31"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="138"
+		Foreground="#333333"
+		Canvas.Top="65"/>
+		
+      <TextBlock
+      	x:Name="c0_l5"
+		Text="1"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="168"
+		Foreground="White"
+		Canvas.Top="65"/>
+
+      <TextBlock
+      	x:Name="c0_l6"
+		Text="2"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="198"
+		Foreground="White"
+		Canvas.Top="65"/>
+
+
+
+
+
+
+      <TextBlock
+      	x:Name="c1_l0"
+		Text="3"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="18"
+		Foreground="White"
+		Canvas.Top="82"/>
+
+      <TextBlock
+      	x:Name="c1_l1"
+		Text="4"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="48"
+		Foreground="White"
+		Canvas.Top="82"/>
+
+      <TextBlock
+      	x:Name="c1_l2"
+		Text="5"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="78"
+		Foreground="White"
+		Canvas.Top="82"/>
+		
+      <TextBlock
+      	x:Name="c1_l3"
+		Text="6"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="108"
+		Foreground="White"
+		Canvas.Top="82"/>
+
+      <TextBlock
+      	x:Name="c1_l4"
+		Text="7"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="138"
+		Foreground="White"
+		Canvas.Top="82"/>
+		
+      <TextBlock
+      	x:Name="c1_l5"
+		Text="8"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="168"
+		Foreground="White"
+		Canvas.Top="82"/>
+
+      <TextBlock
+      	x:Name="c1_l6"
+		Text="9"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="198"
+		Foreground="White"
+		Canvas.Top="82"/>
+
+
+
+
+
+      <TextBlock
+      	x:Name="c2_l0"
+		Text="10"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="18"
+		Foreground="White"
+		Canvas.Top="99"/>
+
+      <TextBlock
+      	x:Name="c2_l1"
+		Text="11"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="48"
+		Foreground="White"
+		Canvas.Top="99"/>
+
+      <TextBlock
+      	x:Name="c2_l2"
+		Text="12"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="78"
+		Foreground="White"
+		Canvas.Top="99"/>
+		
+      <TextBlock
+      	x:Name="c2_l3"
+		Text="13"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="108"
+		Foreground="White"
+		Canvas.Top="99"/>
+
+      <TextBlock
+      	x:Name="c2_l4"
+		Text="14"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="138"
+		Foreground="White"
+		Canvas.Top="99"/>
+		
+      <TextBlock
+      	x:Name="c2_l5"
+		Text="15"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="168"
+		Foreground="White"
+		Canvas.Top="99"/>
+
+      <TextBlock
+      	x:Name="c2_l6"
+		Text="16"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="198"
+		Foreground="White"
+		Canvas.Top="99"/>
+
+
+
+
+      <TextBlock
+      	x:Name="c3_l0"
+		Text="17"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="18"
+		Foreground="White"
+		Canvas.Top="116"/>
+
+      <TextBlock
+      	x:Name="c3_l1"
+		Text="18"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="48"
+		Foreground="White"
+		Canvas.Top="116"/>
+
+      <TextBlock
+      	x:Name="c3_l2"
+		Text="19"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="78"
+		Foreground="White"
+		Canvas.Top="116"/>
+		
+      <TextBlock
+      	x:Name="c3_l3"
+		Text="20"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="108"
+		Foreground="White"
+		Canvas.Top="116"/>
+
+      <TextBlock
+      	x:Name="c3_l4"
+		Text="21"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="138"
+		Foreground="White"
+		Canvas.Top="116"/>
+		
+      <TextBlock
+      	x:Name="c3_l5"
+		Text="22"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="168"
+		Foreground="White"
+		Canvas.Top="116"/>
+
+      <TextBlock
+      	x:Name="c3_l6"
+		Text="23"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="198"
+		Foreground="White"
+		Canvas.Top="116"/>
+
+
+
+
+
+
+      <TextBlock
+      	x:Name="c4_l0"
+		Text="24"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="18"
+		Foreground="White"
+		Canvas.Top="133"/>
+
+      <TextBlock
+      	x:Name="c4_l1"
+		Text="25"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="48"
+		Foreground="White"
+		Canvas.Top="133"/>
+
+      <TextBlock
+      	x:Name="c4_l2"
+		Text="26"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="78"
+		Foreground="White"
+		Canvas.Top="133"/>
+		
+      <TextBlock
+      	x:Name="c4_l3"
+		Text="27"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="108"
+		Foreground="White"
+		Canvas.Top="133"/>
+
+      <TextBlock
+      	x:Name="c4_l4"
+		Text="28"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="138"
+		Foreground="White"
+		Canvas.Top="133"/>
+		
+      <TextBlock
+      	x:Name="c4_l5"
+		Text="29"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="168"
+		Foreground="White"
+		Canvas.Top="133"/>
+
+      <TextBlock
+      	x:Name="c4_l6"
+		Text="30"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="198"
+		Foreground="White"
+		Canvas.Top="133"/>
+
+
+
+
+      <TextBlock
+      	x:Name="c5_l0"
+		Text="1"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="18"
+		Foreground="#333333"
+		Canvas.Top="150"/>
+
+      <TextBlock
+      	x:Name="c5_l1"
+		Text="2"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="48"
+		Foreground="#333333"
+		Canvas.Top="150"/>
+
+      <TextBlock
+      	x:Name="c5_l2"
+		Text="3"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="78"
+		Foreground="#333333"
+		Canvas.Top="150"/>
+		
+      <TextBlock
+      	x:Name="c5_l3"
+		Text="4"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="108"
+		Foreground="#333333"
+		Canvas.Top="150"/>
+
+      <TextBlock
+      	x:Name="c5_l4"
+		Text="5"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="138"
+		Foreground="#333333"
+		Canvas.Top="150"/>
+		
+      <TextBlock
+      	x:Name="c5_l5"
+		Text="6"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="168"
+		Foreground="#333333"
+		Canvas.Top="150"/>
+
+      <TextBlock
+      	x:Name="c5_l6"
+		Text="7"
+		FontSize="12"
+		FontWeight="ExtraBlack"
+		Canvas.Left="198"
+		Foreground="#333333"
+		Canvas.Top="150"/>
+
+</Canvas>
