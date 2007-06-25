@@ -82,15 +82,21 @@ class MonoOpen {
 	}
 
 	[GLib.ConnectBefore]
-	static void HandleMousePressEvent (object sender, ExposeEventArgs expose_args)
+	static void HandleButtonPressEvent (object sender, ButtonPressEventArgs args)
 	{
-		 Widget w = (Widget)sender;
-	    
-		 Cairo.Context ctx = CompositeHelper.Create (w.GdkWindow);
-		 ctx.Operator = Cairo.Operator.Source;
-		 ctx.Color = new Cairo.Color (1.0, 1.0, 1.0, 0.0);
-		 CompositeHelper.Region (ctx, expose_args.Event.Region);
-		 ctx.Fill ();
+		if (!(sender is Gtk.Window))
+			return;
+
+		if (args.Event.Button == args.Event.Button) {
+			Gtk.Window w = (Gtk.Window)sender;
+
+			if (args.Event.Button == 1) {
+				w.BeginMoveDrag ((int) args.Event.Button, 
+								(int)args.Event.X, 
+								(int)args.Event.Y, 
+								(uint) args.Event.Time);
+			}
+		}
 	}
 
 	static void ConfigureDeskletWindow (Gtk.Window window)
@@ -98,6 +104,8 @@ class MonoOpen {
 		window.Decorated = false;
 		window.SkipPagerHint = true;
 		window.SkipTaskbarHint = true;
+
+		window.ButtonPressEvent += HandleButtonPressEvent;
 	}
 
 	static int LoadXaml (string file, ArrayList args)
