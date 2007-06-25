@@ -94,6 +94,23 @@ collection_add (Collection *collection, DependencyObject *data)
 	collection->Add (data);
 }
 
+int
+collection_count (Collection *collection)
+{
+	return collection->list->Length ();
+}
+
+DependencyObject *
+collection_get_value_at (Collection *collection, int index)
+{
+	Collection::Node *node = (Collection::Node *) collection->list->Index (index);
+	
+	if (node == NULL)
+		return NULL;
+
+	return node->obj;
+}
+
 void 
 collection_remove (Collection *collection, DependencyObject *data)
 {

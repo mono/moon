@@ -164,8 +164,10 @@ void collection_add    (Collection *collection, DependencyObject *data);
 void collection_remove (Collection *collection, DependencyObject *data);
 void collection_insert (Collection *collection, int index, DependencyObject *data);
 void collection_clear  (Collection *collection);
+int  collection_count  (Collection *collection);
 
-Type::Kind collection_get_element_type (Collection *collection);
+DependencyObject   *collection_get_value_at (Collection *collection, int index);
+Type::Kind          collection_get_element_type (Collection *collection);
 CollectionIterator *collection_get_iterator (Collection *collection);
 
 bool   collection_iterator_move_next   (CollectionIterator *iterator);
