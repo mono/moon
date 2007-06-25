@@ -1,5 +1,7 @@
 2007-06-25  Marek Habersack  <mhabersack@novell.com>
 
+	* AboutBox.cs: added
+
 	* PanelWindow.cs: added a handler for the icon popup menu.
 	Added a handler for the Activate event to toggle window
 	visibility.
