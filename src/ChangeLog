@@ -1,5 +1,15 @@
 2007-06-24  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (libmooninclude_HEADERS): add xaml.h
+
+	* xaml.h: split this out from...
+
+	* runtime.h: ... here.
+
+	* xaml.cpp, runtime.cpp, control.h, demo.cpp: #include xaml.h
+	
+2007-06-24  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (libmooninclude_HEADERS): add control.h
 
 	* control.h: split out class Control stuff...

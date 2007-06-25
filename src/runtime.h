@@ -31,15 +31,6 @@ G_BEGIN_DECLS
 #define ENDTIMER(id,str)
 #endif
 
-// XAML callbacks up here so they can be used by
-// control_initialize_from_xaml down there in the guts of the file.
-class DependencyObject;
-
-typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
-typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
-typedef void xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
-
-
 typedef void (*EventHandler) (gpointer data);
 
 class EventObject {
@@ -405,23 +396,6 @@ struct ErrorEventArgs /* : public EventArgs */ {
 	int error_code;;
 	const char *error_message;
 	ErrorType error_type;
-};
-
-struct ParserErrorEventArgs : public ErrorEventArgs {
- public:
-
-	ParserErrorEventArgs () : char_position (0), line_number (0), xaml_file (NULL),
-	xml_element (NULL), xml_attribute (NULL)
-	{
-		error_type = ParserError;
-	}
-	
-	
-	int char_position;
-	int line_number;
-	const char *xaml_file;
-	const char *xml_element;
-	const char *xml_attribute;
 };
 
 //
@@ -984,17 +958,6 @@ void     surface_register_events (Surface *s,
 				  callback_keyboard_event keydown, callback_keyboard_event keyup);
 		      
 
-//
-// XAML
-//
-
-UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
-		xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue, Type::Kind *element_type);
-UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, xaml_create_custom_element_callback *cecb,
-		xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue, Type::Kind *element_type);
-void       xaml_set_property_from_str (DependencyObject *obj, const char *prop, const char *value);
-
-
 void runtime_init (void);
 void animation_init (void);
 void brush_init (void);
@@ -1002,7 +965,6 @@ void clock_init (void);
 void transform_init (void);
 void shape_init (void);
 void geometry_init (void);
-void xaml_init (void);
 void types_init (void);
 void dependencyobject_init (void);
 void downloader_init (void);

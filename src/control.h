@@ -11,6 +11,7 @@
 #define __MOON_CONTROL_H__
 
 #include "runtime.h"
+#include "xaml.h"
 
 //
 // Control Class

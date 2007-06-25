@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <expat.h>
 
-#include "runtime.h"
+#include "xaml.h"
 #include "shape.h"
 #include "animation.h"
 #include "geometry.h"

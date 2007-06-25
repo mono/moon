@@ -25,7 +25,8 @@ libmooninclude_HEADERS = \
 	text.h		\
 	transform.h	\
 	type.h		\
-	value.h
+	value.h		\
+	xaml.h
 
 
 libmoon_la_SOURCES = 	\

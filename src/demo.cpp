@@ -16,6 +16,7 @@
 #include "media.h"
 #include "text.h"
 #include "downloader.h"
+#include "xaml.h"
 
 static UIElement *v;
 static Rectangle *r;

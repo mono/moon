@@ -35,6 +35,7 @@
 #include "animation.h"
 #include "text.h"
 #include "value.h"
+#include "xaml.h"
 
 #if AGG
 struct _SurfacePrivate {
