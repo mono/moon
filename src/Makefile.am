@@ -17,6 +17,7 @@ libmooninclude_HEADERS = \
 	cutil.h		\
 	downloader.h	\
 	geometry.h	\
+	mango.h		\
 	media.h		\
 	list.h		\
 	mplayer.h	\
@@ -42,6 +43,7 @@ libmoon_la_SOURCES = 	\
 	downloader.cpp	\
 	geometry.cpp	\
 	list.cpp	\
+	mango.cpp	\
 	media.cpp	\
 	mplayer.cpp	\
 	rsvg.cpp	\

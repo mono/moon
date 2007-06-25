@@ -17,6 +17,7 @@ G_BEGIN_DECLS
 #include <pango/pango.h>
 
 #include "brush.h"
+#include "mango.h"
 #include "runtime.h"
 
 enum FontStretches {
@@ -82,9 +83,13 @@ class Inline : public DependencyObject {
 	static DependencyProperty *ForegroundProperty;
 	static DependencyProperty *TextDecorationsProperty;
 	
-	Inline () { }
+	Inline ();
+	~Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	
+	PangoFontDescription *font;
+	Brush *foreground;
 };
 
 char *inline_get_font_family (Inline *inline_);
@@ -122,16 +127,7 @@ class Run : public Inline {
 public:
 	static DependencyProperty *TextProperty;
 	
-	PangoFontDescription *font;
-	PangoLayout *layout;
-	Brush *foreground;
-	
-	double text_height;
-	double text_width;
-	int8_t text_dir;
-	
-	Run ();
-	~Run ();
+	Run () { }
 	virtual Type::Kind GetObjectType () { return Type::RUN; };
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -177,15 +173,13 @@ public:
 	
 private:
 	PangoFontDescription *font;
+	MangoRenderer *renderer;
 	PangoLayout *layout;
 	Brush *foreground;
 	Inlines *inlines;
 	
-	double block_height;
-	double block_width;
-	double text_height;
-	double text_width;
-	int8_t text_dir;
+	double actual_height;
+	double actual_width;
 	
 	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);

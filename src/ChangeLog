@@ -1,3 +1,13 @@
+2007-06-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	Mango-licious.
+
+	* text.cpp: Rewritten to use the new MangoRenderer and
+	MangoAttrForeground classes.
+
+	* mango.cpp: New source file implementing a PangoRenderer and
+	providing a new PangoAttribute for brushes.
+
 2007-06-25  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h: add decl for Panel::OnSubPropertyChanged.
