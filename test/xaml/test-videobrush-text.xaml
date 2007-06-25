@@ -4,9 +4,14 @@
 	<MediaElement x:Name="ExampleVideo" Source="file:///tmp/BoxerSmacksdownInhoffe.wmv"
                       Opacity="0.0" IsHitTestVisible="False"/>
 
-        <TextBlock Text="HELLO" FontSize="100">
+        <TextBlock Text="TextBlock" FontSize="100" FontWidth="Bold">
   	  <TextBlock.Foreground>
 		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill"/>
 	  </TextBlock.Foreground>
+          <LineBreak/>
+          <Run FontSize="40" Foreground="black">Black-</Run>
+          <Run FontSize="40">Video-</Run>
+          <Run FontSize="40" Foreground="black">Black-</Run>
+          <Run FontSize="40">Video</Run>
         </TextBlock>
 </Canvas>
