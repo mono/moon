@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stetic-interface>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
+  <widget class="Gtk.Window" id="PanelWindow" design-size="447 446">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">Moonlight Desklets Panel</property>
+    <property name="WindowPosition">Center</property>
+    <signal name="DeleteEvent" handler="OnDeleteEvent" />
+    <child>
+      <widget class="Gtk.VBox" id="vbox2">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <property name="BorderWidth">6</property>
+        <child>
+          <widget class="Gtk.HBox" id="hbox2">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Label" id="SearchLabel">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Search:</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ComboBoxEntry" id="SearchEntry">
+                <property name="MemberName" />
+                <property name="IsTextCombo">False</property>
+                <property name="Items" translatable="yes" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ScrolledWindow" id="DeskletsScrolledWindow">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="VscrollbarPolicy">Automatic</property>
+            <property name="HscrollbarPolicy">Automatic</property>
+            <property name="ShadowType">In</property>
+            <child>
+              <widget class="Gtk.TreeView" id="DeskletsView">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="HeadersClickable">True</property>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Expander" id="DetailsExpander">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <child>
+              <widget class="Gtk.Label" id="DetailsLabel">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes" />
+              </widget>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="GtkLabel">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Show details</property>
+                <property name="UseUnderline">True</property>
+              </widget>
+              <packing>
+                <property name="type">label_item</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HButtonBox" id="ActionButtonBox">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <property name="Size">3</property>
+            <property name="LayoutStyle">End</property>
+            <child>
+              <widget class="Gtk.Button" id="HelpButton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="UseStock">True</property>
+                <property name="Type">StockItem</property>
+                <property name="StockId">gtk-help</property>
+                <property name="IsDialogButton">False</property>
+                <signal name="Clicked" handler="OnHelpButtonClicked" />
+                <property name="label">gtk-help</property>
+              </widget>
+              <packing>
+                <property name="Secondary">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="DeskletsButton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">TextAndIcon</property>
+                <property name="Icon">stock:gtk-find Menu</property>
+                <property name="Label" translatable="yes">Get desklets</property>
+                <property name="UseUnderline">True</property>
+                <property name="IsDialogButton">False</property>
+                <signal name="Clicked" handler="OnDeskletsButtonClicked" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="CloseButton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="UseStock">True</property>
+                <property name="Type">StockItem</property>
+                <property name="StockId">gtk-close</property>
+                <property name="IsDialogButton">False</property>
+                <signal name="Clicked" handler="OnCloseButtonClicked" />
+                <property name="label">gtk-close</property>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</stetic-interface>

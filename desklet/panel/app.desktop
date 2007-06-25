@@ -1,0 +1,6 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=desklets-panel
+Exec=desklets-panel
+Terminal=false
