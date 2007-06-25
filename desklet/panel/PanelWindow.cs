@@ -41,9 +41,9 @@ public partial class PanelWindow: Gtk.Window
 		item.Activated += new EventHandler (OnCloseButtonClicked);
 		popup.Append (item);
 		
-		statusIcon.PresentMenu (popup, 3, Gtk.Global.CurrentEventTime);
 		popup.ShowAll ();
-		popup.Popup ();
+		statusIcon.PresentMenu (popup, 3, Gtk.Global.CurrentEventTime);
+//		popup.Popup ();
 	}
 
 	void IconActivateHandler (object o, EventArgs args)
