@@ -11,17 +11,28 @@
  */
 
 using System;
+using System.IO;
 using Gtk;
+using Gdk;
 
 namespace DeskletsPanel
 {
 	class MainClass
 	{
+		static StatusIcon statusIcon;
+		
+		static void SetUpStatusIcon ()
+		{
+			Pixbuf icon = Pixbuf.LoadFromResource ("mono_monkey_icon.png");
+			statusIcon = new StatusIcon (icon);
+		}
+		
 		public static void Main (string[] args)
 		{
 			Application.Init ();
 			PanelWindow win = new PanelWindow ();
 			win.Show ();
+			SetUpStatusIcon ();
 			Application.Run ();
 		}
 	}
