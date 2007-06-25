@@ -1,5 +1,6 @@
 using System.Windows;
 using System;
+using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -8,21 +9,39 @@ using System.Windows.Shapes;
 namespace Clock {
 	
 	public class Display : Canvas {
-		TextBlock hour, minute;
+		TextBlock hour, minute, ampm;
 		DateTime last = DateTime.MinValue;
+		bool isAm, use24h;
 		
 		void UpdateTime ()
 		{
 			DateTime dt = DateTime.Now;
-
+			
 			if (dt.Hour == last.Hour && dt.Minute == last.Minute)
 				return;
-
-			if (dt.Hour != last.Hour)
-				hour.Text = dt.Hour.ToString ("00");
-
+			
+			if (dt.Hour != last.Hour) {
+				int h = dt.Hour;
+				if (!use24h) {
+					h %= 12;
+					if (h == 0)
+						h = 12;
+				}
+				hour.Text = h.ToString ("00");
+			}
+			
 			minute.Text = ":" + dt.Minute.ToString ("00");
 			last = dt;
+			
+			if (!use24h) {
+				if (isAm && dt.Hour >= 12) {
+					isAm = false;
+					ampm.Text = "pm";
+				} else if (!isAm && dt.Hour < 12) {
+					isAm = true;
+					ampm.Text = "am";
+				}
+			}
 		}
 		
 		public void PageLoaded(object o, EventArgs e)
@@ -33,6 +52,14 @@ namespace Clock {
 			Storyboard sb = FindName ("run") as Storyboard;
 			hour = FindName ("hour") as TextBlock;
 			minute = FindName ("minute") as TextBlock;
+			ampm = FindName ("ampm") as TextBlock;
+
+			if (ampm != null) {
+				if (use24h)
+					ampm.Visibility = Visibility.Hidden;
+				else
+					isAm = ampm.Text.ToLower () == "am";
+			}
 			
 			if (sb == null || r == null || hour == null || minute == null){
 				Console.WriteLine ("Elements are missing from the xaml file\n");
@@ -42,7 +69,6 @@ namespace Clock {
 			DoubleAnimation timer = new DoubleAnimation ();
 			sb.Children.Add (timer);
 			timer.Duration = new Duration (TimeSpan.FromSeconds (0.5));
-
 			
 			sb.Completed += delegate {
 				visible = !visible;
