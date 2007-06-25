@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?><!-- -*- nxml -*- -->
-<golemDesklet>
-  <name>Clock</name>
-  <version>0.0.1</version>
-  <author>Mono Team</author>
-  <description>A sample clock applet</description>
-  <desklet path="default.xaml"/>
-</golemDesklet>

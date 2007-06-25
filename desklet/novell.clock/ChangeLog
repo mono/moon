@@ -1,0 +1,4 @@
+2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
+
+	* ChangeLog: Added.
+	* default.desklet: Renamed from clock.desklet.
