@@ -34,10 +34,15 @@ public partial class PanelWindow: Gtk.Window
 		Menu popup = new Menu ();
 		
 		MenuItem item = new MenuItem ("About");
+		item.Activated += new EventHandler (OnMenuAbout);
 		popup.Append (item);
-		// broken
-// 		popup.Popup (null, null, new MenuPositionFunc (StatusIcon.PositionMenu),
-// 			     null, args.Event.Button, Gtk.Global.CurrentEventTime);
+		
+		item = new MenuItem ("Quit");
+		item.Activated += new EventHandler (OnCloseButtonClicked);
+		popup.Append (item);
+		
+		statusIcon.PresentMenu (popup, 3, Gtk.Global.CurrentEventTime);
+		popup.ShowAll ();
 		popup.Popup ();
 	}
 
@@ -47,6 +52,10 @@ public partial class PanelWindow: Gtk.Window
 			Hide ();
 		else
 			Show ();
+	}
+
+	protected void OnMenuAbout (object sender, System.EventArgs e)
+	{
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
