@@ -19,6 +19,7 @@
 
 #include "shape.h"
 #include "cutil.h"
+#include "array.h"
 
 #include <sys/time.h>
 //

@@ -19,6 +19,7 @@
 
 #include "geometry.h"
 #include "shape.h"
+#include "array.h"
 
 #include "rsvg.h"
 

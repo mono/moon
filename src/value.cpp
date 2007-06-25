@@ -20,7 +20,7 @@
 #include "runtime.h"
 #include "clock.h"
 #include "animation.h"
-
+#include "array.h"
 
 /**
  * Value implementation

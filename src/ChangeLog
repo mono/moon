@@ -1,5 +1,15 @@
 2007-06-24  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (libmoon_la_SOURCES): add array.cpp
+	(libmooninclude_HEADERS): add array.h
+
+	* xaml.cpp, value.cpp, shape.cpp, geometry.cpp: include array.h
+
+	* array.h, array.cpp: new files, split them out from
+	runtime.h/.cpp.
+
+2007-06-24  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (libmooninclude_HEADERS): add xaml.h
 
 	* xaml.h: split this out from...

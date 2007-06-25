@@ -9,6 +9,7 @@ INCLUDES = $(MOON_CFLAGS)
 
 libmooninclude_HEADERS = \
 	animation.h	\
+	array.h		\
 	brush.h		\
 	clock.h		\
 	control.h	\
@@ -30,9 +31,8 @@ libmooninclude_HEADERS = \
 
 
 libmoon_la_SOURCES = 	\
-	runtime.cpp	\
 	animation.cpp	\
-	animation.h	\
+	array.cpp	\
 	brush.cpp	\
 	clock.cpp	\
 	control.cpp	\
@@ -43,11 +43,11 @@ libmoon_la_SOURCES = 	\
 	media.cpp	\
 	mplayer.cpp	\
 	rsvg.cpp	\
+	runtime.cpp	\
 	shape.cpp	\
 	stylus.cpp	\
 	text.cpp	\
 	transform.cpp	\
-	transform.h	\
 	type.cpp	\
 	value.cpp	\
 	xaml.cpp

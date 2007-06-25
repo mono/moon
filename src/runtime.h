@@ -82,25 +82,7 @@ public:
 	}
 };
 
-//
-// Arrays derive from this format
-//
-struct BasicArray {
-public:
-	uint32_t count;
-	uint32_t refcount;	// Double purpose: refcount and pad. 
-};
-
 Point point_from_str (const char *s);
-
-struct PointArray {
- public:
-	BasicArray basic;
-	Point points [0];
-};
-
-PointArray *point_array_new (int count, Point *points);
-Point* point_array_from_str (const char *s, int* count);
 
 // map to System.Windows.Rect
 struct Rect {
@@ -198,15 +180,6 @@ struct Color {
 
 Value  value_color_from_argb (uint32_t value);
 Color *color_from_str  (const char *name);
-
-struct DoubleArray {
- public:
-	BasicArray basic;
-	double values [0];
-};
-
-double* double_array_from_str   (const char *s, int* count);
-DoubleArray *double_array_new   (int count, double *values);
 
 //
 // This guy provide reference counting

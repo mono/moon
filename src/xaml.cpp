@@ -24,6 +24,7 @@
 #include "text.h"
 #include "media.h"
 #include "list.h"
+#include "array.h"
 
 #define READ_BUFFER 1024
 
