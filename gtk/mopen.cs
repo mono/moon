@@ -53,6 +53,7 @@ class MonoOpen {
 	static bool fixedwindow = false;
 	static int width = -1;
 	static int height = -1;
+	static bool transparent = false;
 	
 	static void Help ()
 	{
@@ -68,6 +69,15 @@ class MonoOpen {
 	{
 		Application.Init ();
 		Window w = new Window (file);
+		w.AppPaintable = true;
+
+		if (transparent){
+			Gdk.Colormap colormap = w.Screen.RgbaColormap;
+
+			if (colormap != null)
+				w.Colormap = colormap;
+		}
+		
 		w.DeleteEvent += delegate {
 			Application.Quit ();
 		};
@@ -175,6 +185,10 @@ class MonoOpen {
 				fixedwindow = true;
 				break;
 
+			case "--trans":
+				transparent = true;
+				break;
+				
 			case "--geometry": case "-g":
 				if (i+1 == args.Length){
 					Console.Error.WriteLine ("mopen: geometry flag `{0}' takes an argument", args [i]);

@@ -1,0 +1,21 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	x:Class="Clock.Display;assembly=clock.dll"
+	Loaded="PageLoaded"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="310" Height="100"
+	>
+
+  <Rectangle Fill="#ffaaaaaa" Stroke="#a0bbbbbb" StrokeThickness="2" 
+	Canvas.Left="10" Canvas.Top="10" Width="300" Height="96"  RadiusX="40" RadiusY="40"/>
+
+  <Canvas.Resources>
+    <Storyboard x:Name="run">
+    </Storyboard>
+  </Canvas.Resources>
+
+  <TextBlock x:Name="hour" Text="12" FontSize="68" Canvas.Left="30" Canvas.Top="15"/>
+  <TextBlock x:Name="minute" Text=":00" FontSize="68" Canvas.Left="118" Canvas.Top="15"/>
+  <Rectangle x:Name="dotcover" Canvas.Left="121" Canvas.Top="30" Width="14" Height="68" Fill="#ffaaaaaa"/>
+
+  <TextBlock x:Name="ampm" Text="am" FontSize="24" Canvas.Left="240" Canvas.Top="25"/>
+</Canvas>
