@@ -1,3 +1,9 @@
+2007-06-24  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: rework size allocation and make toplevel Canvas
+	items read the allocation->x and allocation->y offsets from the
+	surface widget when computing their position.
+
 2007-06-24  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmooninclude_HEADERS): add collection.h
@@ -68,6 +74,11 @@
 
 	* control.cpp (Control::OnLoaded): new method, invoke OnLoaded on
 	the real object before chaining up.
+
+2007-06-24  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: disable transparent surfaces while fixing the
+	drawing offset problem.
 
 2007-06-24  Larry Ewing  <lewing@novell.com>
 

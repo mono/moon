@@ -678,6 +678,10 @@ Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 {
 	*result = absolute_xform;
 
+	// This is a hack to pick up the position allcation offset of the gtk widget
+	if (surface != NULL && surface->drawing_area != NULL && GTK_WIDGET_NO_WINDOW (surface->drawing_area))
+	        cairo_matrix_translate (result, surface->drawing_area->allocation.x, surface->drawing_area->allocation.y);
+
 	// Compute left/top if its attached to the item
 	Value *val_top = item->GetValue (Canvas::TopProperty);
 	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
@@ -1257,17 +1261,17 @@ surface_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer us
 {
 	Surface *s = (Surface *) user_data;
 
-	if (s->width != allocation->width || s->height != allocation->height){
-		s->width = allocation->width;
-		s->height = allocation->height;
-
-		if (s->cb_surface_resize != NULL)
-			s->cb_surface_resize (s->toplevel);
+        if (s->width != allocation->width || s->height != allocation->height){
+                s->width = allocation->width;
+                s->height = allocation->height;
 
 		surface_realloc (s);
-		gtk_widget_queue_draw_area ((GtkWidget *) s->drawing_area,
-					    0, 0, allocation->width, allocation->height);
 	}
+	
+	// if x or y changed we need to recompute the presentation matrix
+	// because the toplevel position depends on the allocation.
+	if (s->toplevel)
+	        s->toplevel->FullInvalidate (true);
 }
 
 static void
@@ -1286,6 +1290,7 @@ surface_new (int width, int height)
 	Surface *s = new Surface ();
 
 	s->drawing_area = gtk_event_box_new ();
+
 	// don't let gtk clear the window we'll do all the drawing.
 	gtk_widget_set_app_paintable (s->drawing_area, TRUE);
 	// draw on the parent not ourselves so that we can blend
@@ -1308,7 +1313,7 @@ surface_new (int width, int height)
 
 	gtk_widget_show (s->drawing_area);
 
-	gtk_widget_set_usize (s->drawing_area, width, height);
+	gtk_widget_set_size_request (s->drawing_area, width, height);
 	s->buffer = NULL;
 
 	s->width = width;
@@ -1330,7 +1335,7 @@ surface_new (int width, int height)
 void
 surface_resize (Surface *s, int width, int height)
 {
-	gtk_widget_set_usize (s->drawing_area, width, height);
+	gtk_widget_set_size_request (s->drawing_area, width, height);
 }
 
 Surface::~Surface ()
