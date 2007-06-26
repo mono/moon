@@ -105,7 +105,7 @@ class MonoOpen {
 		window.SkipPagerHint = true;
 		window.SkipTaskbarHint = true;
 
-		window.ButtonPressEvent += HandleButtonPressEvent;
+		//window.ButtonPressEvent += HandleButtonPressEvent;
 	}
 
 	static int LoadXaml (string file, ArrayList args)
