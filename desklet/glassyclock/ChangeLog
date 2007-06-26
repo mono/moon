@@ -1,3 +1,9 @@
+2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
+
+	* clock.cs: Remove timer and use DoubleAnimation.
+
+	* default.xaml: Add DoubleAnimation.
+
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
 
 	* Initial import.

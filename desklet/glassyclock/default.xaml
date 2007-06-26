@@ -8,20 +8,21 @@
 		<Ellipse.Stroke>
 			<LinearGradientBrush>
 				<LinearGradientBrush.GradientStops>
-					<GradientStop Color="#aab1b1b1" Offset="0" />
-					<GradientStop Color="#aa111111" Offset="1" />
+					<GradientStop Color="#aaffffff" Offset="0" />
+					<GradientStop Color="#aa999999" Offset="1" />
 				</LinearGradientBrush.GradientStops>
 			</LinearGradientBrush>
 		</Ellipse.Stroke>
 	</Ellipse>
+
 
 	<!-- inner border -->
 	<Ellipse Canvas.Left="4" Canvas.Top="4" Width="106" Height="106" StrokeThickness="4">
 		<Ellipse.Stroke>
 			<LinearGradientBrush>
 				<LinearGradientBrush.GradientStops>
-					<GradientStop Color="#aa111111" Offset="0" />
-					<GradientStop Color="#aab1b1b1" Offset="1" />
+					<GradientStop Color="#aa999999" Offset="0" />
+					<GradientStop Color="#aaffffff" Offset="1" />
 				</LinearGradientBrush.GradientStops>
 			</LinearGradientBrush>
 		</Ellipse.Stroke>
@@ -56,9 +57,29 @@
 	</Path>
 	<Line Stroke="#6393c4" X1="57" Y1="14" X2="57" Y2="67" StrokeThickness="1" StrokeStartLineCap="Round">
 		<Line.RenderTransform>
-			<RotateTransform x:Name="secondsHand" Angle="10" CenterX="57" CenterY="57" />
+			<RotateTransform x:Name="secondsHand" Angle="90" CenterX="57" CenterY="57" />
 		</Line.RenderTransform>
 	</Line>
 
+	<Path.Triggers>
+		<EventTrigger>
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Name="secondsAnim"
+						Storyboard.TargetName="secondsHand"
+						Storyboard.TargetProperty="Angle"
+						RepeatBehavior="Forever" Duration="0:01:00" By="360" />
+					<DoubleAnimation Name="minutesAnim"
+						Storyboard.TargetName="minuteHand"
+						Storyboard.TargetProperty="Angle"
+						RepeatBehavior="Forever" Duration="1:00:00" By="360" />
+					<DoubleAnimation Name="hoursAnim"
+						Storyboard.TargetName="hourHand"
+						Storyboard.TargetProperty="Angle"
+						RepeatBehavior="Forever" Duration="12:00:00" By="360" />
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Path.Triggers>
 	
 </Canvas>
