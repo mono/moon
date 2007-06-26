@@ -22,3 +22,6 @@ run: $(ASSEMBLY)
 
 dist: $(ASSEMBLY)
 	# put here code to pack desklet (zip? tgz?)
+
+debug:
+	gdb --args mono /opt/mono/lib/mono/gtksilver/mopen.exe -d default.xaml
