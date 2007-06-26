@@ -5,7 +5,7 @@ SOURCES = clock.cs
 
 ASSEMBLY = bin/$(DESKLET).dll
 DSOURCES = $(SOURCES)
-LAUNCHER = mopen -t
+LAUNCHER = mopen -d
 LOPTIONS = --debug
 
 all: $(ASSEMBLY)
