@@ -1081,14 +1081,15 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 		return FALSE;
 
 	if (event->type == GDK_ENTER_NOTIFY){
-		int x = event->x + widget->allocation.x;
-		int y = event->y + widget->allocation.y;
-
+		int x = (int) event->x + widget->allocation.x;
+		int y = (int) event->y + widget->allocation.y;
+		
 		s->toplevel->handle_motion (s, event->state, x, y);
 		s->toplevel->enter (s, event->state, x, y);
 	} else {
 		s->toplevel->leave (s);
 	}
+	
 	return TRUE;
 }
 
@@ -1134,9 +1135,10 @@ button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer dat
 	if (button->button != 1)
 		return FALSE;
 
-	int x = button->x + widget->allocation.x;
-	int y = button->y + widget->allocation.y;
+	int x = (int) button->x + widget->allocation.x;
+	int y = (int) button->y + widget->allocation.y;
 	s->toplevel->handle_button (s, s->cb_up, button->state, x, y);
+	
 	return TRUE;
 }
 
@@ -1153,9 +1155,10 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 	if (button->button != 1)
 		return FALSE;
 
-	int x = button->x + widget->allocation.x;
-	int y = button->y + widget->allocation.y;
+	int x = (int) button->x + widget->allocation.x;
+	int y = (int) button->y + widget->allocation.y;
 	s->toplevel->handle_button (s, s->cb_down, button->state, x, y);
+	
 	return FALSE;
 }
 
