@@ -3,6 +3,12 @@
         x:Class="Desklets.Clock;assembly=bin/clock.dll"
 	Loaded="PageLoaded" Width="104" Height="104">
 
+	<!-- To trigger our timer -->
+	<Canvas.Resources>
+        <Storyboard x:Name="run">
+        </Storyboard>
+	</Canvas.Resources>
+
 	<!-- border 1 -->
 	<Path Fill="#ffc6c8da" Stroke="#ff605773" StrokeThickness="3">
 		<Path.Data>

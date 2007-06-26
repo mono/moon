@@ -17,7 +17,7 @@ namespace Desklets
 		RotateTransform hourHand;
 		Timer timer;
 
-		void UpdateTime (object status)
+		void UpdateTime ()
 		{
 			DateTime now = DateTime.Now;
 
@@ -31,12 +31,20 @@ namespace Desklets
 			secondsHand = FindName ("secondsHand") as RotateTransform;
 			minuteHand  = FindName ("minuteHand")  as RotateTransform;
 			hourHand    = FindName ("hourHand")    as RotateTransform;
-
-			if (secondsHand == null || minuteHand == null || hourHand == null)
+			Storyboard sb = FindName ("run") as Storyboard;
+			
+			if (secondsHand == null || minuteHand == null || hourHand == null || sb == null)
 				return;
 
-			AutoResetEvent autoEvent = new AutoResetEvent(false);
-			timer = new Timer (new TimerCallback (UpdateTime), autoEvent, 5, 1000);
+			UpdateTime ();
+			DoubleAnimation timer = new DoubleAnimation ();
+			sb.Children.Add (timer);
+			timer.Duration = new Duration (TimeSpan.FromSeconds (0.5));
+			sb.Completed += delegate {
+				UpdateTime ();
+				sb.Begin ();
+			};
+			sb.Begin ();
 		}
 	}
 }
