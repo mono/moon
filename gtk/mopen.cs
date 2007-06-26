@@ -229,7 +229,7 @@ class MonoOpen {
 
 			case "--desklet": case "-d":
 				desklet = true;
-				//transparent = true;
+				transparent = true;
 				break;
 			
 			case "--transparent": case "-t":
