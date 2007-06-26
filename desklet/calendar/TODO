@@ -1,3 +1,1 @@
 * Make month/year text align to the center
-* Add a MouseButtonDown handler that changes the color of the buttons to fake clicking
-* Calendar should have a timer for changing the active day

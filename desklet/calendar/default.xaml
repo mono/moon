@@ -18,11 +18,11 @@
 
       <TextBlock
 		x:Name="month"
-		Text="June 2007"
-		FontSize="16"
+		Text=""
+		FontSize="14"
 		FontWeight="Bold"
 		Foreground="Yellow"
-		Canvas.Left="75"
+		Canvas.Left="70"
 		Canvas.Top="12"/>
 		
 
@@ -30,14 +30,14 @@
 		x:Name="afterButton"
 		Fill="White"
 		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="3"
 		Points="212,20 207,15 207,25" />
 
 	<Polygon
 		x:Name="beforeButton"
 		Fill="White"
 		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="3"
 		Points="17,20 22,15 22,25" />
 
 
@@ -140,7 +140,7 @@
 
       <TextBlock
       	x:Name="c0_l0"
-		Text="27"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="18"
@@ -149,7 +149,7 @@
 
       <TextBlock
       	x:Name="c0_l1"
-		Text="28"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="48"
@@ -158,7 +158,7 @@
 
       <TextBlock
       	x:Name="c0_l2"
-		Text="29"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="78"
@@ -167,7 +167,7 @@
 		
       <TextBlock
       	x:Name="c0_l3"
-		Text="30"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="108"
@@ -176,7 +176,7 @@
 
       <TextBlock
       	x:Name="c0_l4"
-		Text="31"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="138"
@@ -185,7 +185,7 @@
 		
       <TextBlock
       	x:Name="c0_l5"
-		Text="1"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="168"
@@ -194,7 +194,7 @@
 
       <TextBlock
       	x:Name="c0_l6"
-		Text="2"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="198"
@@ -208,7 +208,7 @@
 
       <TextBlock
       	x:Name="c1_l0"
-		Text="3"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="18"
@@ -217,7 +217,7 @@
 
       <TextBlock
       	x:Name="c1_l1"
-		Text="4"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="48"
@@ -226,7 +226,7 @@
 
       <TextBlock
       	x:Name="c1_l2"
-		Text="5"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="78"
@@ -235,7 +235,7 @@
 		
       <TextBlock
       	x:Name="c1_l3"
-		Text="6"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="108"
@@ -244,7 +244,7 @@
 
       <TextBlock
       	x:Name="c1_l4"
-		Text="7"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="138"
@@ -253,7 +253,7 @@
 		
       <TextBlock
       	x:Name="c1_l5"
-		Text="8"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="168"
@@ -262,7 +262,7 @@
 
       <TextBlock
       	x:Name="c1_l6"
-		Text="9"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="198"
@@ -275,7 +275,7 @@
 
       <TextBlock
       	x:Name="c2_l0"
-		Text="10"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="18"
@@ -284,7 +284,7 @@
 
       <TextBlock
       	x:Name="c2_l1"
-		Text="11"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="48"
@@ -293,7 +293,7 @@
 
       <TextBlock
       	x:Name="c2_l2"
-		Text="12"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="78"
@@ -302,7 +302,7 @@
 		
       <TextBlock
       	x:Name="c2_l3"
-		Text="13"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="108"
@@ -311,7 +311,7 @@
 
       <TextBlock
       	x:Name="c2_l4"
-		Text="14"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="138"
@@ -320,7 +320,7 @@
 		
       <TextBlock
       	x:Name="c2_l5"
-		Text="15"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="168"
@@ -329,7 +329,7 @@
 
       <TextBlock
       	x:Name="c2_l6"
-		Text="16"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="198"
@@ -341,7 +341,7 @@
 
       <TextBlock
       	x:Name="c3_l0"
-		Text="17"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="18"
@@ -350,7 +350,7 @@
 
       <TextBlock
       	x:Name="c3_l1"
-		Text="18"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="48"
@@ -359,7 +359,7 @@
 
       <TextBlock
       	x:Name="c3_l2"
-		Text="19"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="78"
@@ -368,7 +368,7 @@
 		
       <TextBlock
       	x:Name="c3_l3"
-		Text="20"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="108"
@@ -377,7 +377,7 @@
 
       <TextBlock
       	x:Name="c3_l4"
-		Text="21"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="138"
@@ -386,7 +386,7 @@
 		
       <TextBlock
       	x:Name="c3_l5"
-		Text="22"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="168"
@@ -395,7 +395,7 @@
 
       <TextBlock
       	x:Name="c3_l6"
-		Text="23"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="198"
@@ -409,7 +409,7 @@
 
       <TextBlock
       	x:Name="c4_l0"
-		Text="24"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="18"
@@ -418,7 +418,7 @@
 
       <TextBlock
       	x:Name="c4_l1"
-		Text="25"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="48"
@@ -427,7 +427,7 @@
 
       <TextBlock
       	x:Name="c4_l2"
-		Text="26"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="78"
@@ -436,7 +436,7 @@
 		
       <TextBlock
       	x:Name="c4_l3"
-		Text="27"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="108"
@@ -445,7 +445,7 @@
 
       <TextBlock
       	x:Name="c4_l4"
-		Text="28"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="138"
@@ -454,7 +454,7 @@
 		
       <TextBlock
       	x:Name="c4_l5"
-		Text="29"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="168"
@@ -463,7 +463,7 @@
 
       <TextBlock
       	x:Name="c4_l6"
-		Text="30"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="198"
@@ -475,7 +475,7 @@
 
       <TextBlock
       	x:Name="c5_l0"
-		Text="1"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="18"
@@ -484,7 +484,7 @@
 
       <TextBlock
       	x:Name="c5_l1"
-		Text="2"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="48"
@@ -493,7 +493,7 @@
 
       <TextBlock
       	x:Name="c5_l2"
-		Text="3"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="78"
@@ -502,7 +502,7 @@
 		
       <TextBlock
       	x:Name="c5_l3"
-		Text="4"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="108"
@@ -511,7 +511,7 @@
 
       <TextBlock
       	x:Name="c5_l4"
-		Text="5"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="138"
@@ -520,7 +520,7 @@
 		
       <TextBlock
       	x:Name="c5_l5"
-		Text="6"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="168"
@@ -529,7 +529,7 @@
 
       <TextBlock
       	x:Name="c5_l6"
-		Text="7"
+		Text=""
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="198"

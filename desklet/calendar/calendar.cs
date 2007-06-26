@@ -1,7 +1,9 @@
 using System;
+using System.Threading;
 using System.Globalization;
 
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -14,14 +16,37 @@ namespace Desklet
 		TextBlock monthText;
 		TextBlock[,] days = new TextBlock[6,7];
 		DateTime current;
-		
+		DateTime currentHour;
+		Timer timer;
+
+		//Yellow
 		static readonly Brush CURRENT_DAY = new SolidColorBrush (Color.FromRgb (255, 255, 0));
+		//White
 		static readonly Brush CURRENT_MONTH = new SolidColorBrush (Color.FromRgb (255, 255, 255));
-		static readonly Brush OTHERS = new  SolidColorBrush (Color.FromRgb (44, 44, 44));
+		//Dark grey
+		static readonly Brush OTHERS = new SolidColorBrush (Color.FromRgb (44, 44, 44));
+
+		//White
+		static readonly Brush BUTTON_UP_BRUSH = new SolidColorBrush (Color.FromRgb (255, 255, 255));
+		//Grey
+		static readonly Brush BUTTON_DOWN_BRUSH = new SolidColorBrush (Color.FromRgb (150, 150, 150));
 
 		void drawDay (int l, int c, int day, bool mainMonth, bool curDay) {
 			days[l, c].Text = day.ToString ();
 			days[l, c].Foreground = mainMonth ? (curDay ? CURRENT_DAY : CURRENT_MONTH) : OTHERS;
+		}
+
+		void UpdateTime (object status)
+		{
+			if (current.Month != currentHour.Month || current.Year != currentHour.Year)
+				return;
+			
+			DateTime now = DateTime.Now;
+			if (now.Day != currentHour.Day) {
+				current = currentHour = now;
+				drawCalendar ();
+			} else
+				current = currentHour = now;
 		}
 
 		void drawCalendar () {
@@ -56,29 +81,51 @@ namespace Desklet
 				}
 			}
 		}
+		
+		public void MouseDown (Object sender, MouseEventArgs e)
+		{
+			Shape shape = sender as Shape;
+			shape.Fill = shape.Stroke = BUTTON_DOWN_BRUSH;
+		}
+
+		public void MouseLeft (Object sender, EventArgs e)
+		{
+			Shape shape = sender as Shape;
+			shape.Fill = shape.Stroke = BUTTON_UP_BRUSH;
+		}
 
 		public void PageLoaded (object o, EventArgs e) 
 	    {
-			Console.WriteLine ("page loaded");
 			monthText = FindName ("month") as TextBlock;
 			for (int i = 0; i < 6; ++i)
 				for (int j = 0; j < 7; ++j)
 					days [i, j] = FindName ("c"+i+"_l"+j) as TextBlock;
 
-			current = DateTime.Now; //.AddMonths ( -1);
+			currentHour = current = DateTime.Now;
 			drawCalendar ();
 			
-			(FindName ("beforeButton") as UIElement).MouseLeftButtonUp += delegate {
-			current = current.AddMonths (-1);
+			Shape before = (FindName ("beforeButton") as Shape);
+			Shape after = (FindName ("afterButton") as Shape);
+			
+			before.MouseLeftButtonDown += new MouseEventHandler(this.MouseDown);
+			before.MouseLeave += new EventHandler(this.MouseLeft);
+			
+			before.MouseLeftButtonUp += delegate {
+				before.Fill = before.Stroke = BUTTON_UP_BRUSH;
+				current = current.AddMonths (-1);
 				drawCalendar ();
 			};
 			
-			(FindName ("afterButton") as UIElement).MouseLeftButtonUp += delegate {
+			after.MouseLeftButtonDown += new MouseEventHandler(this.MouseDown);
+			after.MouseLeave += new EventHandler(this.MouseLeft);
+			after.MouseLeftButtonUp += delegate {
+				after.Fill = after.Stroke = BUTTON_UP_BRUSH;
 				current = current.AddMonths (1);
 				drawCalendar ();
 			};
 
-			Console.WriteLine ("widgets loaded");
+			AutoResetEvent autoEvent = new AutoResetEvent(false);
+			timer = new Timer (new TimerCallback (UpdateTime), autoEvent, 3600 * 1000, 3600 * 1000);
 		}
 
 	}
