@@ -385,7 +385,7 @@ dependency_object_get_name (DependencyObject *obj)
 }
 
 Type::Kind
-dependency_object_get_kind (DependencyObject *obj)
+dependency_object_get_object_type (DependencyObject *obj)
 {
 	return obj->GetObjectType ();
 }
@@ -541,6 +541,15 @@ dependency_object_get_value (DependencyObject *object, DependencyProperty *prop)
 		return NULL;
 
 	return object->GetValue (prop);
+}
+
+Value *
+dependency_object_get_value_no_default (DependencyObject *object, DependencyProperty *prop)
+{
+	if (object == NULL)
+		return NULL;
+	
+	return object->GetValueNoDefault (prop);
 }
 
 void

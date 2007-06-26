@@ -145,12 +145,13 @@ void base_unref (Base *base);
 
 
 Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);
+Value *dependency_object_get_value_no_default (DependencyObject *object, DependencyProperty *prop);
 void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val);
 
 DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_type);
 const char       *dependency_object_get_name  (DependencyObject *obj);
 
-Type::Kind dependency_object_get_kind (DependencyObject *obj);
+Type::Kind dependency_object_get_object_type (DependencyObject *obj);
 
 void dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
 void dependency_object_remove_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
@@ -158,7 +159,7 @@ void dependency_object_remove_event_handler (DependencyObject *o, char *event, E
 
 
 DependencyProperty *dependency_property_lookup (Type::Kind type, char *name);
-char* dependency_property_get_name (DependencyProperty* property);
+char *dependency_property_get_name (DependencyProperty* property);
 bool  dependency_property_is_nullable (DependencyProperty* property);
 Type::Kind dependency_property_get_value_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
