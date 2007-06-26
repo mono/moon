@@ -82,9 +82,6 @@ TimeManager::Start()
 void
 TimeManager::AddTimeout ()
 {
-	GList *node = child_clocks;
-	GList *next;
-	
 	if (tick_id != -1)
 		return;
 
