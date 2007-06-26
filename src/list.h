@@ -56,8 +56,11 @@ public:
 	Node *InsertSorted (Node *node, NodeComparer cmp);
 	Node *InsertSorted (Node *node, NodeComparer cmp, bool stable);
 	
+	Node *Replace (Node *node, int index);
+	
 	Node *Find (NodeFinder find, void *data);
 	void Remove (NodeFinder find, void *data);
+	
 	
 	Node *Index (int index);
 	

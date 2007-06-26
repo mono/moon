@@ -200,6 +200,24 @@ List::InsertSorted (List::Node *node, NodeComparer cmp, bool stable)
 	return node;
 }
 
+List::Node *
+List::Replace (List::Node *node, int index)
+{
+	List::Node *n;
+	
+	if (!(n = Index (index)))
+		return 0;
+	
+	node->next = n->next;
+	node->prev = n->prev;
+	n->prev->next = node;
+	n->next->prev = node;
+	
+	n->next = n;
+	n->prev = n;
+	
+	return n;
+}
 
 List::Node *
 List::Find (NodeFinder find, void *data)
@@ -230,7 +248,6 @@ List::Remove (NodeFinder find, void *data)
 		delete n;
 	}
 }
-
 
 List::Node *
 List::Index (int index)
