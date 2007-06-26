@@ -558,9 +558,15 @@ linear_gradient_brush_set_start_point (LinearGradientBrush *brush, Point *point)
 bool
 LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
-	double w = framework_element_get_width ((FrameworkElement*)uielement);
-	double h = framework_element_get_height ((FrameworkElement*)uielement);
-
+	double w, h;
+	
+	if (uielement) {
+		uielement->get_size_for_brush (cairo, &w, &h);
+	} else {
+		h = framework_element_get_height ((FrameworkElement *) uielement);
+		w = framework_element_get_width ((FrameworkElement *) uielement);
+	}
+	
 	Point *start = linear_gradient_brush_get_start_point (this);
 	double x0 = start ? (start->x * w) : 0.0;
 	double y0 = start ? (start->y * h) : 0.0;
@@ -729,7 +735,7 @@ gradient_stop_new (void)
 	return new GradientStop ();
 }
 
-Color*
+Color *
 gradient_stop_get_color (GradientStop *stop)
 {
 	return stop->GetValue (GradientStop::ColorProperty)->AsColor();
@@ -761,7 +767,7 @@ DependencyProperty* TileBrush::AlignmentXProperty;
 DependencyProperty* TileBrush::AlignmentYProperty;
 DependencyProperty* TileBrush::StretchProperty;
 
-TileBrush*
+TileBrush *
 tile_brush_new (void)
 {
 	return new TileBrush ();
@@ -810,7 +816,7 @@ tile_brush_set_stretch (TileBrush *brush, Stretch stretch)
 DependencyProperty* ImageBrush::DownloadProgressProperty;
 DependencyProperty* ImageBrush::ImageSourceProperty;
 
-ImageBrush*
+ImageBrush *
 image_brush_new (void)
 {
 	return new ImageBrush ();

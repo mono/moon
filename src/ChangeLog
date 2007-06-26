@@ -1,5 +1,9 @@
 2007-06-25  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* brush.cpp (LinearGradientBrush::SetupBrush): Use
+	uielement->get_size_for_brush() because the framework width/height
+	might be 0.
+
 	* text.cpp: Implement text wrapping and clipping to Width/Height
 	bounds if specified.
 
