@@ -513,28 +513,6 @@ FrameworkElement::inside_object (Surface *s, double x, double y)
 		return false;
 
 	return true;
-
-#if false
-	// 
-	// The following code is slower and does about the same as the
-	// one above, but I believe it might be buggy.   it is here
-	// as a reference for Shapes that need to ues 
-	// "cairo_in_stroke" and "cairo_in_fill" (like circles) to
-	// detect in/out 
-	//
-	// When I tried this with scaled/rotated objects it was incorrect
-	// for rectangles, but this is roughly the "spirit".
-	//
-	cairo_save (s->cairo);
-	cairo_set_matrix (s->cairo, &absolute_xform);
-	cairo_rectangle (s->cairo, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
-	cairo_matrix_transform_point (&absolute_xform, &nx, &ny);
-	if (cairo_in_stroke (s->cairo, nx, ny) || cairo_in_fill (s->cairo, nx, ny))
-		ret = TRUE;
-
-	cairo_restore (s->cairo);
-	return ret;
-#endif
 }
 
 double
@@ -1211,7 +1189,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		UIElement *item = (UIElement *) cn->obj;
 
 		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
-			return;
+			goto leave;
 		
 		Rect item_rect (item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
 		
@@ -1254,17 +1232,13 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 		}
 #endif
 
-		//cairo_set_source_rgb (s->cairo, 1.0, 0, 1.0);
-		//cairo_set_line_width (s->cairo, 10);
-		//cairo_rectangle (s->cairo, item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
-		//cairo_stroke (s->cairo);
 	}
-//	printf ("RENDER: LEAVE\n");
-
-	level -= 4;
+	//printf ("RENDER: LEAVE\n");
 	//draw_grid (s->cairo);
 
-	cairo_restore (s->cairo); // for UIElement::ClipProperty
+ leave:
+	level -= 4;
+	cairo_restore (s->cairo);
 }
 
 Canvas *
