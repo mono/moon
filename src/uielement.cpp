@@ -14,7 +14,6 @@
 #include <gtk/gtk.h>
 
 #include "uielement.h"
-#include "canvas.h"
 #include "collection.h"
 #include "brush.h"
 #include "transform.h"
@@ -389,19 +388,16 @@ UIElement::GetTotalOpacity ()
 	return opacity;
 }
 
-Surface *
+Surface*
+UIElement::GetSurface ()
+{
+	return parent == NULL ? NULL : parent->GetSurface();
+}
+
+Surface*
 item_get_surface (UIElement *item)
 {
-	if (Type::Find (item->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
-		Canvas *canvas = (Canvas *) item;
-		if (canvas->surface)
-			return canvas->surface;
-	}
-
-	if (item->parent != NULL)
-		return item_get_surface (item->parent);
-
-	return NULL;
+  return item->GetSurface ();
 }
 
 DependencyProperty* UIElement::RenderTransformProperty;

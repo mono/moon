@@ -920,7 +920,7 @@ Image::getxformorigin ()
 }
 
 cairo_surface_t *
-Image::GetSurface ()
+Image::GetCairoSurface ()
 {
 	return surface;
 }

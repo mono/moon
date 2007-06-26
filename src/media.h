@@ -63,7 +63,7 @@ class Image : public MediaBase {
 	virtual void getbounds ();
 	virtual Point getxformorigin ();
 	
-	cairo_surface_t *GetSurface ();
+	cairo_surface_t *GetCairoSurface ();
 
 	void SetSource (DependencyObject *Downloader, char *PartName);
 

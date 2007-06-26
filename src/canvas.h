@@ -30,6 +30,8 @@ class Canvas : public Panel {
 	//
 	Surface *surface;
 
+	virtual Surface *GetSurface ();
+
 	//
 	// Contains the last element where the mouse entered
 	//

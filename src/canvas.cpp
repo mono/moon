@@ -25,6 +25,15 @@ Canvas::Canvas () : surface (NULL), current_item (NULL)
 {
 }
 
+Surface*
+Canvas::GetSurface ()
+{
+	if (surface)
+		return surface;
+	else
+		return UIElement::GetSurface ();
+}
+
 void
 Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 {

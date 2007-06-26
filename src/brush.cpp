@@ -773,7 +773,7 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 bool
 ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
-	cairo_surface_t *surface = image->GetSurface ();
+	cairo_surface_t *surface = image->GetCairoSurface ();
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);

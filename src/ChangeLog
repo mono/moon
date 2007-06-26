@@ -1,3 +1,22 @@
+2007-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h: add virtual GetSurface() method.
+
+	* uielement.cpp: implement UIElement::GetSurface to just chain up
+	to the parent element if we have one, and return NULL otherwise.
+	Also, make item_get_surface call this method.  removes the
+	dependency on canvas.h from this file.
+
+	* canvas.h: we override UIElement::GetSurface ()
+
+	* canvas.cpp (Canvas::GetSurface): if we're the toplevel canvas,
+	return our surface.  otherwise call our base class's GetSurface.
+
+	* media.h: rename Image::GetSurface here to GetCairoSurface to
+	avoid name collision.
+
+	* brush.cpp, media.cpp: track media.h change.
+
 2007-06-26  Miguel de Icaza  <miguel@novell.com>
 
 	* collection.h (Add): Make this method return the index of the
