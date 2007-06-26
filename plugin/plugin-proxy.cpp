@@ -33,7 +33,7 @@ static np_getmime_func    getmime;
 static NPError
 load ()
 {
-	void *real_plugin = dlopen (PLUGIN_DIR "/libmoonplugin.so", RTLD_NOW);
+	void *real_plugin = dlopen (PLUGIN_DIR "/plugin/libmoonplugin.so", RTLD_NOW);
 
 	if (real_plugin == NULL){
 		fprintf (stderr, "Unable to load the real plugin %s\n", dlerror ());
