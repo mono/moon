@@ -8,10 +8,6 @@
  *
  * See the LICENSE file included with the distribution for details.
  *
- *
- * This compiler uses the Location.xml file from the gnome weather applet as its input.
- * Currently, the translations are ignored (they should be used to generate .po files
- * later on)
  */
 
 using System;

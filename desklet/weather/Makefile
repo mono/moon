@@ -1,5 +1,5 @@
 DESKLET = weather
-SOURCES = Locations.cs LocationsGenerated.cs
+SOURCES = Locations.cs LocationsGenerated.cs Metar.cs
 
 # you dont need to change below lines
 
