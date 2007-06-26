@@ -10,6 +10,7 @@ namespace Clock {
 	
 	public class Display : Canvas {
 		TextBlock hour, minute, ampm;
+		Storyboard to_config, to_clock;
 		DateTime last = DateTime.MinValue;
 		bool isAm, use24h;
 		
@@ -43,6 +44,19 @@ namespace Clock {
 				}
 			}
 		}
+
+		bool in_config = false;
+
+		void DoConfigTransition ()
+		{
+			if (in_config){
+				in_config = false;
+				to_clock.Begin ();
+			} else {
+				in_config = true;
+				to_config.Begin ();
+			}
+		}
 		
 		public void PageLoaded(object o, EventArgs e)
 		{
@@ -54,8 +68,9 @@ namespace Clock {
 			minute = FindName ("minute") as TextBlock;
 			ampm = FindName ("ampm") as TextBlock;
 			Canvas config = FindName ("configcanvas") as Canvas;
-			Storyboard to_config = FindName ("to_config") as Storyboard;
-			Storyboard to_clock = FindName ("to_clock") as Storyboard;
+			Canvas config_button = FindName ("config_button") as Canvas;
+			to_config = FindName ("to_config") as Storyboard;
+			to_clock = FindName ("to_clock") as Storyboard;
 			
 			if (ampm != null) {
 				if (use24h)
@@ -84,16 +99,15 @@ namespace Clock {
 			UpdateTime ();
 
 			bool in_config = false;
-			MouseLeftButtonUp += delegate {
-				if (in_config){
-					in_config = false;
-					to_clock.Begin ();
-				} else {
-					in_config = true;
-					to_config.Begin ();
-				}
-			};
 			
+			config_button.MouseLeftButtonUp += delegate {
+				DoConfigTransition ();
+			};
+
+			config.MouseLeftButtonUp += delegate {
+				DoConfigTransition ();
+			};
+	
 			sb.Begin ();
 			
 		}

@@ -40,7 +40,7 @@
     
       <TextBlock x:Name="ampm" Text="am" FontSize="24" Canvas.Left="240" Canvas.Top="25"/>
 
-      <Canvas x:Name="config" Canvas.Left="240" Canvas.Top="70" Width="16" Height="16">
+      <Canvas x:Name="config_button" Canvas.Left="240" Canvas.Top="70" Width="16" Height="16">
         <Rectangle x:Name="config" Width="16" Height="16" Fill="#ffffffff"/>
         <TextBlock Text="i" FontSize="14" Fill="#ffffffff" Stroke="#ffff00ff" Canvas.Left="6" />
       </Canvas>
