@@ -1,3 +1,9 @@
+2007-06-26  Marek Habersack  <mhabersack@novell.com>
+
+	* moonlight.h (GDK_NATIVE_WINDOW_POINTER): define this macro if
+	we're on a 64-bit platform. Otherwise plugin.cpp will fail to
+	compile (attempting to convert guint32 to 64-bit pointer).
+
 2007-06-24  Larry Ewing  <lewing@novell.com>
 
 	* moonlight.h: include xaml.h so that things build.
