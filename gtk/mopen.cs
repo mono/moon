@@ -81,7 +81,6 @@ class MonoOpen {
 		 ctx.Fill ();
 	}
 
-	[GLib.ConnectBefore]
 	static void HandleButtonPressEvent (object sender, ButtonPressEventArgs args)
 	{
 		if (!(sender is Gtk.Window))
@@ -111,6 +110,7 @@ class MonoOpen {
 	static int LoadXaml (string file, ArrayList args)
 	{
 		Application.Init ();
+		GtkSilver.Init ();
 		Window w = new Window (file);
 
 		if (transparent) {

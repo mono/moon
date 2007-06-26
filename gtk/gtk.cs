@@ -82,6 +82,11 @@ public class GtkSilver : EventBox {
 			ManagedDownloader.GetResponseText);
 	}
 
+	static public void Init ()
+	{
+		// Just to execute the constructor.
+	}
+	
 	public GtkSilver (int w, int h)
 	{
 		surface = surface_new (w, h);
