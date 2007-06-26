@@ -1,18 +1,3 @@
-2007-06-26  Miguel de Icaza  <miguel@novell.com>
-
-	* runtime.cpp (expose_event_callback): Do not swap cairo contexts
-	here as expose event *is* being called from within
-	Shape::getbounds, some cairo call is triggering the main loop to
-	run and in particular the expose event to be invoked.
-
-	We can not swap the s->cairo here, as it would cause Shape to get
-	a different one later and issue a restore on the wrong context
-	(and also access memory that is not allocated to it).
-
-	I have no idea how the code in ::getbounds would trigger the
-	mainloop again and the expose handler, but its very well confirmed
-	that it is happening.
-
 2007-06-25  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* brush.cpp (LinearGradientBrush::SetupBrush): Use

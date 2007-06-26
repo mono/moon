@@ -943,12 +943,10 @@ surface_realloc (Surface *s)
 
 	if (s->cairo_xlib == NULL) {
 		s->cairo = s->cairo_buffer;
-		//printf ("surface_realloc: s->cairo = s->cairo_buffer (%p)\n", s->cairo);
 	}
 	else {
 		create_similar (s, s->drawing_area);
 		s->cairo = s->cairo_xlib;
-		//printf ("surface_realloc: s->cairo = s->cairo_xlib (%p)\n", s->cairo);
 	}
 }
 
@@ -972,7 +970,6 @@ realized_callback (GtkWidget *widget, gpointer data)
 
 	create_similar (s, widget);
 	s->cairo = s->cairo_xlib;
-	//printf ("realized_callback: s->cairo = s->cairo_xlib (%p)\n", s->cairo);
 
 	TimeManager::Instance()->AddHandler ("render", render_surface, s);
 }
@@ -988,7 +985,6 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 	}
 
 	s->cairo = s->cairo_buffer;
-	//printf ("unrealized_callback: s->cairo = s->cairo_buffer (%p)\n", s->cairo);
 	TimeManager::Instance()->RemoveHandler ("render", render_surface, s);
 }
 
@@ -1005,7 +1001,7 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 #if TIME_REDRAW
 	STARTTIMER (expose, "redraw");
 #endif
-	g_assert (s->cairo == s->cairo_xlib);
+	s->cairo = s->cairo_xlib;
 
 	//
 	// BIG DEBUG BLOB
@@ -1018,19 +1014,13 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
-	surface_paint (s, event->area.x, event->area.y, event->area.width, event->area.height);
 
-	// 
-	// Now copy the result to the screen
-	//
-	cairo_t *screen = gdk_cairo_create (widget->window);
-	gdk_cairo_region (screen, event->region);
-	cairo_clip (screen);
-	cairo_set_operator (screen, CAIRO_OPERATOR_OVER);
-	cairo_surface_flush (cairo_get_target (s->cairo));
-	cairo_set_source_surface (screen, cairo_get_target (s->cairo), 0, 0);
-	cairo_paint (screen);
-	cairo_destroy (screen);
+	cairo_t *ctx = gdk_cairo_create (widget->window);
+	gdk_cairo_region (ctx, event->region);
+	cairo_clip (ctx);
+	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+	surface_paint (s, ctx, event->area.x, event->area.y, event->area.width, event->area.height);
+	cairo_destroy (ctx);
 
 #if TIME_REDRAW
 	ENDTIMER (expose, "redraw");
@@ -1496,9 +1486,12 @@ surface_attach (Surface *surface, UIElement *toplevel)
 }
 
 void
-surface_paint (Surface *s, int x, int y, int width, int height)
+surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
 {
+        cairo_t *temp = s->cairo;
+	s->cairo = ctx;
 	s->toplevel->dorender (s, x, y, width, height);
+	s->cairo = temp;
 }
 
 void *
@@ -2344,7 +2337,7 @@ event_trigger_new (void)
 void
 event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {
-	//printf ("Adding action\n");
+	printf ("Adding action\n");
 	trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection()->Add (action);
 }
 

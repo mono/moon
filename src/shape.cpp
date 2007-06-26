@@ -246,8 +246,6 @@ Shape::getbounds ()
 	if (s == NULL)
 		return;
 	
-	cairo_t *context = s->cairo;
-
 	cairo_save (s->cairo);
 	// dont do the operation and don't do the fill setup
 	DoDraw (s, false, false);
@@ -256,11 +254,6 @@ Shape::getbounds ()
 		cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
 	else
 		cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
-
-	if (s->cairo != context){
-		fprintf (stderr, "What happened? s->cairo changed under me now=%p and was=%p\n", s->cairo, context);
-		abort ();
-	}
 
 	cairo_new_path (s->cairo);
 	cairo_restore (s->cairo);
