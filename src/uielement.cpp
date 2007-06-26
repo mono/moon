@@ -29,19 +29,25 @@
 void
 item_update_bounds (UIElement *item)
 {
-	double cx1 = item->x1;
-	double cy1 = item->y1;
-	double cx2 = item->x2;
-	double cy2 = item->y2;
+	item->updatebounds();
+}
+
+void
+UIElement::updatebounds ()
+{
+	double cx1 = x1;
+	double cy1 = y1;
+	double cx2 = x2;
+	double cy2 = y2;
 	
-	item->getbounds ();
+	getbounds ();
 	
 	//
 	// If we changed, notify the parent to recompute its bounds
 	//
-	if (item->x1 != cx1 || item->y1 != cy1 || item->y2 != cy2 || item->x2 != cx2){
-		if (item->parent != NULL)
-			item_update_bounds (item->parent);
+	if (x1 != cx1 || y1 != cy1 || y2 != cy2 || x2 != cx2){
+		if (parent != NULL)
+			parent->updatebounds();
 	}
 }
 
@@ -341,15 +347,15 @@ UIElement::getbounds ()
 }
 
 void
-UIElement::dorender (Surface *surface, int x, int y, int width, int height)
+UIElement::dorender (cairo_t *cr, int x, int y, int width, int height)
 {
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
-	render (surface, x, y, width, height);
+	render (cr, x, y, width, height);
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 }
 
 void
-UIElement::render (Surface *s, int x, int y, int width, int height)
+UIElement::render (cairo_t *cr, int x, int y, int width, int height)
 {
 	g_warning ("UIElement:render has been called. The derived class %s should have overridden it.",
 		   dependency_object_get_name (this));

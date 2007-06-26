@@ -56,17 +56,24 @@ class UIElement : public Visual {
 	//   Renders the given @item on the @surface.  the area that is
 	//   exposed is delimited by x, y, width, height
 	//
-	virtual void render (Surface *surface, int x, int y, int width, int height);
+	virtual void render (cairo_t *cr, int x, int y, int width, int height);
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
-	void dorender (Surface *surface, int x, int y, int width, int height);
-	
+	void dorender (cairo_t *cr, int x, int y, int width, int height);
+
 	//
 	// get_size_for_brush:
 	//   Gets the size of the area to be painted by a Brush (needed for image/video scaling)
 	virtual void get_size_for_brush (cairo_t *cr, double *width, double *height);
-	
+
+	//
+	// updatebounds:
+	//   Updates the bounds of a item by requesting bounds update
+	//   to all of its parents.
+	//
+	void updatebounds ();
+
 	// 
 	// getbounds:
 	//   Updates the bounding box for the given item, this uses the parent
@@ -162,6 +169,7 @@ class UIElement : public Visual {
 	static DependencyProperty* ResourcesProperty;
 	static DependencyProperty* TriggersProperty;
 	static DependencyProperty* ZIndexProperty;
+
 };
 
 G_BEGIN_DECLS

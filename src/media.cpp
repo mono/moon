@@ -146,7 +146,7 @@ MediaElement::getxformorigin ()
 }
 
 void
-MediaElement::render (Surface *s, int x, int y, int width, int height)
+MediaElement::render (cairo_t *cr, int x, int y, int width, int height)
 {
 	Stretch stretch = media_base_get_stretch (this);
 	double h = framework_element_get_height (this);
@@ -164,23 +164,23 @@ MediaElement::render (Surface *s, int x, int y, int width, int height)
 		w = (double) mplayer->width;
 	}
 	
-	cairo_save (s->cairo);
-	cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
 	
-	pattern = image_brush_create_pattern (s->cairo, surface, mplayer->width, mplayer->height, opacity);
+	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, opacity);
 	image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch, 
 					    AlignmentXCenter, AlignmentYCenter, NULL);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
-	cairo_set_source (s->cairo, pattern);
+	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 	
-	cairo_new_path (s->cairo);
-	cairo_rectangle (s->cairo, 0, 0, w, h);
-	cairo_close_path (s->cairo);
+	cairo_new_path (cr);
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_close_path (cr);
 	
-	cairo_fill (s->cairo);
-	cairo_restore (s->cairo);
+	cairo_fill (cr);
+	cairo_restore (cr);
 }
 
 void
@@ -839,14 +839,14 @@ Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, in
 }
 
 void
-Image::render (Surface *s, int x, int y, int width, int height)
+Image::render (cairo_t *cr, int x, int y, int width, int height)
 {
 	if (!surface)
 		return;
 
 	if (create_xlib_surface) {
 		create_xlib_surface = false;
-		cairo_surface_t *xlib_surface = cairo_surface_create_similar (cairo_get_target (s->cairo_xlib),
+		cairo_surface_t *xlib_surface = cairo_surface_create_similar (cairo_get_target (cr),
 									      CAIRO_CONTENT_COLOR_ALPHA,
 									      pixbuf_width, pixbuf_height);
 		cairo_t *cr = cairo_create (xlib_surface);
@@ -858,9 +858,9 @@ Image::render (Surface *s, int x, int y, int width, int height)
 		surface = xlib_surface;
 	}
 
-	cairo_save (s->cairo);
+	cairo_save (cr);
 
-	cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_set_matrix (cr, &absolute_xform);
 
 	Stretch stretch = media_base_get_stretch (this);
 
@@ -871,7 +871,7 @@ Image::render (Surface *s, int x, int y, int width, int height)
 	if (!pattern || (pattern_opacity != opacity)) {
 		if (pattern)
 			cairo_pattern_destroy (pattern);
-		pattern = image_brush_create_pattern (s->cairo, surface, pixbuf_width, pixbuf_height, opacity);
+		pattern = image_brush_create_pattern (cr, surface, pixbuf_width, pixbuf_height, opacity);
 		pattern_opacity = opacity;
 	}
 
@@ -880,14 +880,14 @@ Image::render (Surface *s, int x, int y, int width, int height)
 		AlignmentXCenter, AlignmentYCenter, NULL);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
-	cairo_set_source (s->cairo, pattern);
+	cairo_set_source (cr, pattern);
 
-	cairo_new_path (s->cairo);
-	cairo_rectangle (s->cairo, 0, 0, w, h);
-	cairo_close_path (s->cairo);
+	cairo_new_path (cr);
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_close_path (cr);
 
-	cairo_fill (s->cairo);
-	cairo_restore (s->cairo);
+	cairo_fill (cr);
+	cairo_restore (cr);
 }
 
 void

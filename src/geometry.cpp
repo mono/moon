@@ -58,14 +58,14 @@ geometry_set_transform (Geometry *geometry, Transform *transform)
 }
 
 void
-Geometry::Draw (Surface *s)
+Geometry::Draw (cairo_t *cr)
 {
-	cairo_set_fill_rule (s->cairo, convert_fill_rule (geometry_get_fill_rule (this)));
+	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
 	Transform* transform = geometry_get_transform (this);
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
-		cairo_transform (s->cairo, &matrix);
+		cairo_transform (cr, &matrix);
 	}
 }
 
@@ -119,17 +119,17 @@ GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyPropert
 }
 
 void
-GeometryGroup::Draw (Surface *s)
+GeometryGroup::Draw (cairo_t *cr)
 {
 	GeometryCollection *children = geometry_group_get_children (this);
 	Collection::Node *node;
 	
-	Geometry::Draw (s);
+	Geometry::Draw (cr);
 	
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
 		Geometry *geometry = (Geometry *) node->obj;
-		geometry->Draw (s);
+		geometry->Draw (cr);
 	}
 }
 
@@ -246,15 +246,15 @@ ellipse_geometry_new ()
 }
 
 void
-EllipseGeometry::Draw (Surface *s)
+EllipseGeometry::Draw (cairo_t *cr)
 {
-	Geometry::Draw (s);
+	Geometry::Draw (cr);
 
 	Point *pt = ellipse_geometry_get_center (this);
 	double rx = ellipse_geometry_get_radius_x (this);
 	double ry = ellipse_geometry_get_radius_y (this);
 
-	moon_ellipse (s->cairo, pt->x - rx, pt->y - ry, rx * 2, ry * 2);
+	moon_ellipse (cr, pt->x - rx, pt->y - ry, rx * 2, ry * 2);
 }
 
 //
@@ -297,15 +297,15 @@ line_geometry_new ()
 }
 
 void
-LineGeometry::Draw (Surface *s)
+LineGeometry::Draw (cairo_t *cr)
 {
-	Geometry::Draw (s);
+	Geometry::Draw (cr);
 
 	Point *p1 = line_geometry_get_start_point (this);
 	Point *p2 = line_geometry_get_end_point (this);
 
-	cairo_move_to (s->cairo, p1->x, p1->y);
-	cairo_line_to (s->cairo, p2->x, p2->y);
+	cairo_move_to (cr, p1->x, p1->y);
+	cairo_line_to (cr, p2->x, p2->y);
 }
 
 //
@@ -346,17 +346,17 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-PathGeometry::Draw (Surface *s)
+PathGeometry::Draw (cairo_t *cr)
 {
 	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
 	Collection::Node *node;
 	
-	Geometry::Draw (s);
+	Geometry::Draw (cr);
 	
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
 		PathFigure *pf = (PathFigure *) node->obj;
-		pf->Draw (s);
+		pf->Draw (cr);
 	}
 }
 
@@ -425,21 +425,21 @@ rectangle_geometry_new ()
 }
 
 void
-RectangleGeometry::Draw (Surface *s)
+RectangleGeometry::Draw (cairo_t *cr)
 {
-	Geometry::Draw (s);
+	Geometry::Draw (cr);
 
 	Rect *rect = rectangle_geometry_get_rect (this);
 	double radius_x = rectangle_geometry_get_radius_x  (this);
 	if (radius_x != 0) {
 		double radius_y = rectangle_geometry_get_radius_y (this);
 		if (radius_y != 0) {
-			moon_rounded_rectangle (s->cairo, rect->x, rect->y, rect->w, rect->h, radius_x, radius_y);
+			moon_rounded_rectangle (cr, rect->x, rect->y, rect->w, rect->h, radius_x, radius_y);
 			return;
 		}
 	}
 	// normal rectangle
-	cairo_rectangle (s->cairo, rect->x, rect->y, rect->w, rect->h);
+	cairo_rectangle (cr, rect->x, rect->y, rect->w, rect->h);
 }
 
 //
@@ -483,24 +483,24 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-PathFigure::Draw (Surface *s)
+PathFigure::Draw (cairo_t *cr)
 {
 	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
 	Point *start = path_figure_get_start_point (this);
 	Collection::Node *node;
 	
 	// should not be required because of the cairo_move_to
-	//cairo_new_sub_path (s->cairo);
-	cairo_move_to (s->cairo, start->x, start->y);
+	//cairo_new_sub_path (cr);
+	cairo_move_to (cr, start->x, start->y);
 	
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
 		PathSegment *ps = (PathSegment *) node->obj;
-		ps->Draw (s);
+		ps->Draw (cr);
 	}
 	
 	if (path_figure_get_is_closed (this))
-		cairo_close_path (s->cairo);
+		cairo_close_path (cr);
 }
 
 bool
@@ -636,7 +636,7 @@ arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
 }
 
 void
-ArcSegment::Draw (Surface *s)
+ArcSegment::Draw (cairo_t *cr)
 {
 	Point *size = arc_segment_get_size (this);
 	double angle = arc_segment_get_rotation_angle (this);
@@ -645,7 +645,7 @@ ArcSegment::Draw (Surface *s)
 	Point* p = arc_segment_get_point (this);
 
 	// FIXME: there's no cairo_arc_to so we reuse librsvg code (see rsvg.cpp)
-	rsvg_arc_to (s->cairo, size->x, size->y, angle, large, direction, p->x, p->y); 
+	rsvg_arc_to (cr, size->x, size->y, angle, large, direction, p->x, p->y); 
 }
 
 //
@@ -702,7 +702,7 @@ bezier_segment_set_point3 (BezierSegment *segment, Point *point)
 }
 
 void
-BezierSegment::Draw (Surface *s)
+BezierSegment::Draw (cairo_t *cr)
 {
 	Point *p1 = bezier_segment_get_point1 (this);
 	Point *p2 = bezier_segment_get_point2 (this);
@@ -715,7 +715,7 @@ BezierSegment::Draw (Surface *s)
 	double x3 = p3 ? p3->x : 0.0;
 	double y3 = p3 ? p3->y : 0.0;
 
-	cairo_curve_to (s->cairo, x1, y1, x2, y2, x3, y3);
+	cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
 }
 
 //
@@ -744,14 +744,14 @@ line_segment_set_point (LineSegment *segment, Point *point)
 }
 
 void
-LineSegment::Draw (Surface *s)
+LineSegment::Draw (cairo_t *cr)
 {
 	Point *p = line_segment_get_point (this);
 
 	double x = p ? p->x : 0.0;
 	double y = p ? p->y : 0.0;
 
-	cairo_line_to (s->cairo, x, y);
+	cairo_line_to (cr, x, y);
 }
 
 //
@@ -792,7 +792,7 @@ poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int c
 }
 
 void
-PolyBezierSegment::Draw (Surface *s)
+PolyBezierSegment::Draw (cairo_t *cr)
 {
 	int count = 0;
 	Point* points = poly_bezier_segment_get_points (this, &count);
@@ -802,7 +802,7 @@ PolyBezierSegment::Draw (Surface *s)
 		return;
 
 	for (int i=0; i < count - 2; i+=3) {
-		cairo_curve_to (s->cairo, points[i].x, points[i].y, points[i+1].x, points[i+1].y,
+		cairo_curve_to (cr, points[i].x, points[i].y, points[i+1].x, points[i+1].y,
 			points[i+2].x, points[i+2].y);
 	}
 }
@@ -845,13 +845,13 @@ poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int count
 }
 
 void
-PolyLineSegment::Draw (Surface *s)
+PolyLineSegment::Draw (cairo_t *cr)
 {
 	int count = 0;
 	Point* points = poly_line_segment_get_points (this, &count);
 
 	for (int i=0; i < count; i++) {
-		cairo_line_to (s->cairo, points[i].x, points[i].y);
+		cairo_line_to (cr, points[i].x, points[i].y);
 	}
 }
 
@@ -895,7 +895,7 @@ poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, P
 // quadratic to cubic bezier, the original control point and the end control point are the same
 // http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
 void
-PolyQuadraticBezierSegment::Draw (Surface *s)
+PolyQuadraticBezierSegment::Draw (cairo_t *cr)
 {
 	int count = 0;
 	Point* points = poly_quadratic_bezier_segment_get_points (this, &count);
@@ -905,7 +905,7 @@ PolyQuadraticBezierSegment::Draw (Surface *s)
 	// origin
 	double x0 = 0.0;
 	double y0 = 0.0;
-	cairo_get_current_point (s->cairo, &x0, &y0);
+	cairo_get_current_point (cr, &x0, &y0);
 
 	// we need at least 2 points
 	for (int i=0; i < count - 1; i+=2) {
@@ -921,7 +921,7 @@ PolyQuadraticBezierSegment::Draw (Surface *s)
 		x1 = x0 + 2 * (x1 - x0) / 3;
 		y1 = y0 + 2 * (y1 - y0) / 3;
 
-		cairo_curve_to (s->cairo, x1, y1, x2, y2, x3, y3);
+		cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
 
 		// set new origin
 		x0 = x3;
@@ -969,7 +969,7 @@ quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *poi
 }
 
 void
-QuadraticBezierSegment::Draw (Surface *s)
+QuadraticBezierSegment::Draw (cairo_t *cr)
 {
 	Point *p1 = quadratic_bezier_segment_get_point1 (this);
 	Point *p2 = quadratic_bezier_segment_get_point2 (this);
@@ -978,7 +978,7 @@ QuadraticBezierSegment::Draw (Surface *s)
 	// http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
 	double x0 = 0.0;
 	double y0 = 0.0;
-	cairo_get_current_point (s->cairo, &x0, &y0);
+	cairo_get_current_point (cr, &x0, &y0);
 
 	double x1 = p1 ? p1->x : 0.0;
 	double y1 = p1 ? p1->y : 0.0;
@@ -992,7 +992,7 @@ QuadraticBezierSegment::Draw (Surface *s)
 	x1 = x0 + 2 * (x1 - x0) / 3;
 	y1 = y0 + 2 * (y1 - y0) / 3;
 
-	cairo_curve_to (s->cairo, x1, y1, x2, y2, x3, y3);
+	cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
 }
 
 //

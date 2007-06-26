@@ -547,7 +547,7 @@ surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
 {
         cairo_t *temp = s->cairo;
 	s->cairo = ctx;
-	s->toplevel->dorender (s, x, y, width, height);
+	s->toplevel->dorender (s->cairo, x, y, width, height);
 	s->cairo = temp;
 }
 

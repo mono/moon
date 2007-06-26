@@ -358,12 +358,12 @@ TextBlock::SetFontSource (DependencyObject *downloader)
 }
 
 void
-TextBlock::render (Surface *s, int x, int y, int width, int height)
+TextBlock::render (cairo_t *cr, int x, int y, int width, int height)
 {
-	cairo_save (s->cairo);
-	cairo_set_matrix (s->cairo, &absolute_xform);
-	Paint (s->cairo);
-	cairo_restore (s->cairo);
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	Paint (cr);
+	cairo_restore (cr);
 }
 
 void 
@@ -969,7 +969,7 @@ DependencyProperty *Glyphs::StyleSimulationsProperty;
 DependencyProperty *Glyphs::UnicodeStringProperty;
 
 void
-Glyphs::render (Surface *s, int x, int y, int width, int height)
+Glyphs::render (cairo_t *cr, int x, int y, int width, int height)
 {
 	// FIXME: implement me
 }

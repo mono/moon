@@ -37,7 +37,7 @@ void moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h
 // Shape class 
 // 
 class Shape : public FrameworkElement {
-	void DoDraw (Surface *s, bool do_op, bool consider_fill);
+	void DoDraw (cairo_t *cr, bool do_op, bool consider_fill);
 	Brush *stroke, *fill;
  public: 
 	static DependencyProperty* FillProperty;
@@ -59,7 +59,7 @@ class Shape : public FrameworkElement {
 	//
 	// Overrides from UIElement.
 	//
-	virtual void render (Surface *s, int x, int y, int width, int height);
+	virtual void render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual bool inside_object (Surface *s, double x, double y);
 	
@@ -76,7 +76,7 @@ class Shape : public FrameworkElement {
 	// This is called multiple times: one for fills, one for strokes
 	// if they are both set.   It will also be called to compute the bounding box.
 	//
-	virtual void Draw (Surface *s) = 0;
+	virtual void Draw (cairo_t *cr) = 0;
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -115,7 +115,7 @@ class Ellipse : public Shape {
 
 	virtual Point getxformorigin ();
 
-	void Draw (Surface *s);
+	void Draw (cairo_t *cr);
 };
 
 Ellipse *ellipse_new (void);
@@ -132,7 +132,7 @@ class Rectangle : public Shape {
 	Rectangle ();
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
 
-	void Draw (Surface *s);
+	void Draw (cairo_t *cr);
 
 	virtual Point getxformorigin ();
 
@@ -159,7 +159,7 @@ class Line : public Shape {
 	Line () { };
 	virtual Type::Kind GetObjectType () { return Type::LINE; };
 	
-	void Draw (Surface *s);
+	void Draw (cairo_t *cr);
 
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point getxformorigin ();
@@ -193,7 +193,7 @@ class Polygon : public Shape {
 	// Polygon has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point getxformorigin ();
 
-	void Draw (Surface *s);
+	void Draw (cairo_t *cr);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -218,7 +218,7 @@ class Polyline : public Shape {
 	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point getxformorigin ();
 
-	void Draw (Surface *s);
+	void Draw (cairo_t *cr);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -236,7 +236,7 @@ void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 class Path : public Shape {
 	cairo_path_t *path;
 
-	void BuildPath (Surface *s, Geometry* geometry);
+	void BuildPath (cairo_t *cr, Geometry* geometry);
 	void CleanupCache ();
  public:
 	static DependencyProperty* DataProperty;
@@ -249,7 +249,7 @@ class Path : public Shape {
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point getxformorigin ();
 
-	void Draw (Surface *s);
+	void Draw (cairo_t *cr);
 
 	virtual bool CanFill ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);

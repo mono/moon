@@ -25,7 +25,7 @@ class Control : public FrameworkElement {
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 	virtual void update_xform ();
-	virtual void render (Surface *surface, int x, int y, int width, int height);
+	virtual void render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
 	virtual Point getxformorigin ();

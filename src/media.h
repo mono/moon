@@ -59,7 +59,7 @@ class Image : public MediaBase {
 
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
-	virtual void render (Surface *surface, int x, int y, int width, int height);
+	virtual void render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual Point getxformorigin ();
 	
@@ -148,7 +148,7 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
 	
 	// overrides
-	virtual void render (Surface *surface, int x, int y, int width, int height);
+	virtual void render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual Point getxformorigin ();
 	

@@ -30,10 +30,10 @@ Control::update_xform ()
 }
 
 void 
-Control::render (Surface *surface, int x, int y, int width, int height)
+Control::render (cairo_t *cr, int x, int y, int width, int height)
 {
 	if (real_object)
-		real_object->dorender (surface, x, y, width, height);
+		real_object->dorender (cr, x, y, width, height);
 }
 
 void 

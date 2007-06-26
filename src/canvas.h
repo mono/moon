@@ -39,7 +39,7 @@ class Canvas : public Panel {
 
 	virtual Point getxformorigin () { return Point (0, 0); }
 
-	virtual void render (Surface *s, int x, int y, int width, int height);
+	virtual void render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void getbounds ();
 	virtual void update_xform ();
 	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);

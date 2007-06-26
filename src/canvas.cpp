@@ -244,21 +244,21 @@ Canvas::leave (Surface *s)
 static int level = 0;
 
 void
-Canvas::render (Surface *s, int x, int y, int width, int height)
+Canvas::render (cairo_t *cr, int x, int y, int width, int height)
 {
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
 	double actual [6];
 
-	cairo_save (s->cairo);  // for UIElement::ClipProperty
+	cairo_save (cr);  // for UIElement::ClipProperty
 
-	cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_set_matrix (cr, &absolute_xform);
 
 	Value *value = GetValue (Canvas::ClipProperty);
 	if (value) {
 		Geometry *geometry = value->AsGeometry ();
-		geometry->Draw (s);
-		cairo_clip (s->cairo);
+		geometry->Draw (cr);
+		cairo_clip (cr);
 	}
 
 	value = GetValue (Panel::BackgroundProperty);
@@ -268,11 +268,11 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 
 		if (fwidth > 0 && fheight > 0){
 			Brush *background = value->AsBrush ();
-			background->SetupBrush (s->cairo, this);
+			background->SetupBrush (cr, this);
 
 			// FIXME - UIElement::Opacity may play a role here
-			cairo_rectangle (s->cairo, 0, 0, fwidth, fheight);
-			cairo_fill (s->cairo);
+			cairo_rectangle (cr, 0, 0, fwidth, fheight);
+			cairo_fill (cr);
 		}
 	}
 
@@ -284,7 +284,7 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 	// from this point on, we use the identity matrix to set the clipping
 	// path for the children
 	//
-	cairo_identity_matrix (s->cairo);
+	cairo_identity_matrix (cr);
 	cn = (Collection::Node *) children->z_sorted_list->First ();
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 		UIElement *item = (UIElement *) cn->obj;
@@ -303,24 +303,24 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 #if TIME_CLIP
 			STARTTIMER(clip, "cairo clip setup");
 #endif
-			cairo_save (s->cairo);
+			cairo_save (cr);
 
 			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
 			// at the very least we need to clip based on the expose area.
 			// there's also a UIElement::ClipProperty
-			cairo_rectangle (s->cairo, inter.x, inter.y, inter.w + 2, inter.h + 2);
-			cairo_clip (s->cairo);
+			cairo_rectangle (cr, inter.x, inter.y, inter.w + 2, inter.h + 2);
+			cairo_clip (cr);
 #if TIME_CLIP
 			ENDTIMER(clip, "cairo clip setup");
 #endif
 #endif
-			item->dorender (s, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
+			item->dorender (cr, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
 
 #if CAIRO_CLIP
 #if TIME_CLIP
 			STARTTIMER(endclip, "cairo clip teardown");
 #endif			
-			cairo_restore (s->cairo);
+			cairo_restore (cr);
 
 #if TIME_CLIP
 			ENDTIMER(endclip, "cairo clip teardown");
@@ -335,11 +335,11 @@ Canvas::render (Surface *s, int x, int y, int width, int height)
 
 	}
 	//printf ("RENDER: LEAVE\n");
-	//draw_grid (s->cairo);
+	//draw_grid (cr);
 
  leave:
 	level -= 4;
-	cairo_restore (s->cairo);
+	cairo_restore (cr);
 }
 
 Canvas *

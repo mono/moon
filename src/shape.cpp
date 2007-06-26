@@ -166,9 +166,9 @@ Shape::~Shape ()
 // to either get the bounding box from cairo, or to paint it
 //
 void 
-Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
+Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 {
-	cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_set_matrix (cr, &absolute_xform);
 
 	//printf ("Draw, xform: %g %g %g %g %g %g\n", 
 	//	absolute_xform.xy,
@@ -184,11 +184,11 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 	// also not every shapes can be filled, e.g. polylines, CallFill
 	if ((consider_fill || !stroke) && CanFill ()) {
 		if (fill) {
-			Draw (s);
+			Draw (cr);
 			drawn = true;
 			if (do_op) {
-				fill->SetupBrush (s->cairo, this);
-				cairo_fill_preserve (s->cairo);
+				fill->SetupBrush (cr, this);
+				cairo_fill_preserve (cr);
 			}
 		}
 	}
@@ -198,7 +198,7 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 		if (thickness == 0)
 			return;
 
-		cairo_set_line_width (s->cairo, thickness);
+		cairo_set_line_width (cr, thickness);
 
 		int count = 0;
 		double offset = 0.0;
@@ -210,33 +210,33 @@ Shape::DoDraw (Surface *s, bool do_op, bool consider_fill)
 			if ((count == 1) && (*dashes == 0.0))
 				count = 0;
 		}
-		cairo_set_dash (s->cairo, dashes, count, offset);
+		cairo_set_dash (cr, dashes, count, offset);
 
-		cairo_set_miter_limit (s->cairo, shape_get_stroke_miter_limit (this));
-		cairo_set_line_join (s->cairo, convert_line_join (shape_get_stroke_line_join (this)));
+		cairo_set_miter_limit (cr, shape_get_stroke_miter_limit (this));
+		cairo_set_line_join (cr, convert_line_join (shape_get_stroke_line_join (this)));
 
 		/* FIXME: cairo doesn't have separate line cap for the start and end */
 		PenLineCap cap = shape_get_stroke_end_line_cap (this);
 		if (cap == PenLineCapFlat) {
 			cap = shape_get_stroke_start_line_cap (this);
 		}
-		cairo_set_line_cap (s->cairo, convert_line_cap (cap));
+		cairo_set_line_cap (cr, convert_line_cap (cap));
 
 		if (!drawn)
-			Draw (s);
+			Draw (cr);
 		if (do_op) {
-			stroke->SetupBrush (s->cairo, this);
-			cairo_stroke (s->cairo);
+			stroke->SetupBrush (cr, this);
+			cairo_stroke (cr);
 		}
 	}
 }
 
 void
-Shape::render (Surface *s, int x, int y, int width, int height)
+Shape::render (cairo_t *cr, int x, int y, int width, int height)
 {
-	cairo_save (s->cairo);
-	DoDraw (s, true, true);
-	cairo_restore (s->cairo);
+	cairo_save (cr);
+	DoDraw (cr, true, true);
+	cairo_restore (cr);
 }
 
 void 
@@ -249,7 +249,7 @@ Shape::getbounds ()
 	
 	cairo_save (s->cairo);
 	// dont do the operation and don't do the fill setup
-	DoDraw (s, false, false);
+	DoDraw (s->cairo, false, false);
 
 	if (stroke)
 		cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
@@ -270,7 +270,7 @@ Shape::inside_object (Surface *s, double x, double y)
 
 	cairo_save (s->cairo);
 	// don't do the operation but do consider filling
-	DoDraw (s, false, true);
+	DoDraw (s->cairo, false, true);
 	double nx = x;
 	double ny = y;
 
@@ -482,7 +482,7 @@ Ellipse::Ellipse ()
 }
 
 void
-Ellipse::Draw (Surface *s)
+Ellipse::Draw (cairo_t *cr)
 {
 	Stretch stretch = shape_get_stretch (this);
 	if (stretch == StretchNone)
@@ -498,13 +498,13 @@ Ellipse::Draw (Surface *s)
 	case StretchUniformToFill:
 		// this gets an ellipse larger than it's dimension, relative
 		// scaling is ok but we need to clip to it's original size
-		cairo_rectangle (s->cairo, 0, 0, w, h);
-		cairo_clip (s->cairo);
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_clip (cr);
 		w = h = (w > h) ? w : h;
 		break;
 	}
 
-	moon_ellipse (s->cairo, 0, 0, w, h);
+	moon_ellipse (cr, 0, 0, w, h);
 }
 
 Point
@@ -535,7 +535,7 @@ Rectangle::Rectangle ()
 }
 
 void
-Rectangle::Draw (Surface *s)
+Rectangle::Draw (cairo_t *cr)
 {
 	Stretch stretch = shape_get_stretch (this);
 	double w, h;
@@ -555,8 +555,8 @@ Rectangle::Draw (Surface *s)
 		case StretchUniformToFill:
 			// this gets an ellipse larger than it's dimension, relative
 			// scaling is ok but we need to clip to it's original size
-			cairo_rectangle (s->cairo, 0, 0, w, h);
-			cairo_clip (s->cairo);
+			cairo_rectangle (cr, 0, 0, w, h);
+			cairo_clip (cr);
 			w = h = (w > h) ? w : h;
 			break;
 		}
@@ -565,16 +565,16 @@ Rectangle::Draw (Surface *s)
 		if (radius_x != 0) {
 			double radius_y = rectangle_get_radius_y (this);
 			if (radius_y != 0) {
-				moon_rounded_rectangle (s->cairo, 0, 0, w, h, radius_x, radius_y);
+				moon_rounded_rectangle (cr, 0, 0, w, h, radius_x, radius_y);
 				return;
 			}
 		}
 	}
 	
 	// normal rectangle
-	cairo_new_path (s->cairo);
-	cairo_rectangle (s->cairo, 0, 0, w, h);
-	cairo_close_path (s->cairo);
+	cairo_new_path (cr);
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_close_path (cr);
 }
 
 Point
@@ -637,13 +637,13 @@ DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
 void
-Line::Draw (Surface *s)
+Line::Draw (cairo_t *cr)
 {
 	// Note: Shape::StretchProperty has no effect on lines
 	// Note: SL 1.1 alpha considers X2,Y2 as the start point (when drawing end line caps)
 	//	This doesn't affect us because Cairo doesn't support separate start/end line caps
-	cairo_move_to (s->cairo, line_get_x1 (this), line_get_y1 (this));
-	cairo_line_to (s->cairo, line_get_x2 (this), line_get_y2 (this));
+	cairo_move_to (cr, line_get_x1 (this), line_get_y1 (this));
+	cairo_line_to (cr, line_get_x2 (this), line_get_y2 (this));
 }
 
 void
@@ -719,7 +719,7 @@ DependencyProperty* Polygon::FillRuleProperty;
 DependencyProperty* Polygon::PointsProperty;
 
 void
-Polygon::Draw (Surface *s)
+Polygon::Draw (cairo_t *cr)
 {
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
@@ -727,34 +727,34 @@ Polygon::Draw (Surface *s)
 	if (!points || (count < 1))
 		return;
 
-	cairo_new_path (s->cairo);
-	cairo_set_fill_rule (s->cairo, convert_fill_rule (polygon_get_fill_rule (this)));
+	cairo_new_path (cr);
+	cairo_set_fill_rule (cr, convert_fill_rule (polygon_get_fill_rule (this)));
 
 	Stretch stretch = shape_get_stretch (this);
 	switch (stretch) {
 	case StretchNone:
-		cairo_move_to (s->cairo, points [0].x, points [0].y);
+		cairo_move_to (cr, points [0].x, points [0].y);
 		for (i = 1; i < count; i++)
-			cairo_line_to (s->cairo, points [i].x, points [i].y);
+			cairo_line_to (cr, points [i].x, points [i].y);
 		break;
 		// Draw a line from the last point back to the first point if they're not the same
 		if ((points [0].x != points [count-1].x) && (points [0].y != points [count-1].y)) {
-			cairo_line_to (s->cairo, points [0].x, points [0].y);
+			cairo_line_to (cr, points [0].x, points [0].y);
 		}
 	default:
 		double x = points [0].x;
 		double y = points [0].y;
-		cairo_move_to (s->cairo, 0, 0);
+		cairo_move_to (cr, 0, 0);
 		for (i = 1; i < count; i++)
-			cairo_line_to (s->cairo, points [i].x - x, points [i].y - y);
+			cairo_line_to (cr, points [i].x - x, points [i].y - y);
 		break;
 		// Draw a line from the last point back to the first point if they're not the same
 		if ((points [count-1].x != 0) && (points [count-1].y != 0)) {
-			cairo_line_to (s->cairo, 0, 0);
+			cairo_line_to (cr, 0, 0);
 		}
 	}
 
-	cairo_close_path (s->cairo);
+	cairo_close_path (cr);
 }
 
 void
@@ -819,7 +819,7 @@ DependencyProperty* Polyline::FillRuleProperty;
 DependencyProperty* Polyline::PointsProperty;
 
 void
-Polyline::Draw (Surface *s)
+Polyline::Draw (cairo_t *cr)
 {
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
@@ -827,22 +827,22 @@ Polyline::Draw (Surface *s)
 	if (!points || (count < 1))
 		return;
 
-	cairo_set_fill_rule (s->cairo, convert_fill_rule (polyline_get_fill_rule (this)));
-	cairo_new_path (s->cairo);
+	cairo_set_fill_rule (cr, convert_fill_rule (polyline_get_fill_rule (this)));
+	cairo_new_path (cr);
 
 	Stretch stretch = shape_get_stretch (this);
 	switch (stretch) {
 	case StretchNone:
-		cairo_move_to (s->cairo, points [0].x, points [0].y);
+		cairo_move_to (cr, points [0].x, points [0].y);
 		for (i = 1; i < count; i++)
-			cairo_line_to (s->cairo, points [i].x, points [i].y);
+			cairo_line_to (cr, points [i].x, points [i].y);
 		break;
 	default:
 		double x = points [0].x;
 		double y = points [0].y;
-		cairo_move_to (s->cairo, 0, 0);
+		cairo_move_to (cr, 0, 0);
 		for (i = 1; i < count; i++)
-			cairo_line_to (s->cairo, points [i].x - x, points [i].y - y);
+			cairo_line_to (cr, points [i].x - x, points [i].y - y);
 		break;
 	}
 }
@@ -914,7 +914,7 @@ g_warning ("~Path %p", this);
 }
 
 void
-Path::Draw (Surface *s)
+Path::Draw (cairo_t *cr)
 {
 	Geometry* data = path_get_data (this);
 	if (!data)
@@ -923,18 +923,18 @@ Path::Draw (Surface *s)
 	// compute and cache the path as some options, like stretch, can be very expansive
 	// to compute multiple times (e.g. fill, stroke and getbounds)
 	if (!path)
-		BuildPath (s, data);
+		BuildPath (cr, data);
 
-	cairo_new_path (s->cairo);
-	cairo_append_path (s->cairo, path);
+	cairo_new_path (cr);
+	cairo_append_path (cr, path);
 }
 
 void
-Path::BuildPath (Surface *s, Geometry* geometry)
+Path::BuildPath (cairo_t *cr, Geometry* geometry)
 {
-	geometry->Draw (s);
+	geometry->Draw (cr);
 
-	path = cairo_copy_path (s->cairo);
+	path = cairo_copy_path (cr);
 
 	Stretch stretch = shape_get_stretch (this);
 	if (stretch == StretchNone)
@@ -1010,9 +1010,9 @@ Path::BuildPath (Surface *s, Geometry* geometry)
 		}
 		break;
 	case StretchUniformToFill:
-		cairo_new_path (s->cairo);
-		cairo_rectangle (s->cairo, 0, 0, requested_width, requested_height);
-		cairo_clip (s->cairo);
+		cairo_new_path (cr);
+		cairo_rectangle (cr, 0, 0, requested_width, requested_height);
+		cairo_clip (cr);
 		sw = sh = (sw > sh) ? sw : sh;
 		break;
 	}
