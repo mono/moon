@@ -191,10 +191,12 @@ TimeManager::Tick ()
 void
 TimeManager::RaiseEnqueuedEvents ()
 {
-	for (GList *l = child_clocks; l; l = l->next) {
+	GList *copy = g_list_copy (child_clocks);
+	for (GList *l = copy; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
 		c->RaiseAccumulatedEvents ();
 	}
+	g_list_free (copy);
 }
 
 void
@@ -588,9 +590,11 @@ ClockGroup::RaiseAccumulatedEvents ()
 	this->Clock::RaiseAccumulatedEvents ();
 
 	/* now cause our children to raise theirs*/
-	for (GList *l = child_clocks; l; l = l->next) {
+	GList *copy = g_list_copy (child_clocks);
+	for (GList *l = copy; l; l = l->next) {
 		((Clock*)l->data)->RaiseAccumulatedEvents ();
 	}
+	g_list_free (copy);
 
 	if (need_completed) {
 		events->Emit ("Completed");

@@ -1,5 +1,11 @@
 2007-06-26  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp: make a copy of the child clocks lists before
+	traversing them calling callbacks that could result in the lists
+	being modified.
+
+2007-06-26  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.h: add OnCollectionChanged to allow
 	propertychange notifications from elements in collections to
 	bubble up to their parent.
