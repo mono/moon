@@ -909,7 +909,6 @@ DependencyProperty* Path::DataProperty;
 
 Path::~Path ()
 {
-g_warning ("~Path %p", this);
 	CleanupCache ();
 }
 

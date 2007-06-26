@@ -558,6 +558,15 @@ path_figure_set_start_point (PathFigure *path_figure, Point *point)
 }
 
 //
+// PathSegment
+//
+
+void PathSegment::OnPropertyChanged (DependencyProperty *prop)
+{
+	NotifyAttacheesOfPropertyChange (prop);
+}
+
+//
 // ArcSegment
 //
 
