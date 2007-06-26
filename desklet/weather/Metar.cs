@@ -191,10 +191,34 @@ namespace Desklets.Weather
 	
 	public class Visibility
 	{
-		int range;
+		double range; // meters
 		VisibilityDirection direction = VisibilityDirection.Invalid;
 		VisibilityAccuracy accuracy = VisibilityAccuracy.Invalid;
 
+		public double Range {
+			get { return range; }
+		}
+
+		public double Meters {
+			get { return range; }
+		}
+
+		public double Kilometers {
+			get { return range * 0.001; }
+		}
+
+		public double Miles {
+			get { return range * 0.00062137119; }
+		}
+		
+		public VisibilityDirection Direction {
+			get { return direction; }
+		}
+
+		public VisibilityAccuracy Accuracy {
+			get { return accuracy; }
+		}
+	
 		public Visibility (string range, string direction)
 		{
 			if (range == "0000") {
@@ -321,7 +345,7 @@ namespace Desklets.Weather
 		{
 			switch (unit) {
 				case WindSpeedUnits.Knots:
-					return speed * 0.5399568;
+					return speed * 1.852;
 
 				case WindSpeedUnits.MetersPerSecond:
 					return speed * 3.6;
@@ -457,6 +481,26 @@ namespace Desklets.Weather
 		WeatherPrecipitation precipitation = WeatherPrecipitation.Invalid;
 		WeatherObscuration obscuration = WeatherObscuration.Invalid;
 		WeatherMisc misc = WeatherMisc.Invalid;
+
+		public WeatherIntensity Intensity {
+			get { return intensity; }
+		}
+
+		public WeatherDescriptor Descriptor {
+			get { return descriptor; }
+		}
+
+		public WeatherPrecipitation Precipitation {
+			get { return precipitation; }
+		}
+
+		public WeatherObscuration Obscuration {
+			get { return obscuration; }
+		}
+
+		public WeatherMisc Misc {
+			get { return misc; }
+		}
 		
 		public Weather (string proximity, string intensity, string descriptor,
 				string precipitation, string obscuration, string misc)
@@ -813,18 +857,17 @@ namespace Desklets.Weather
 		
 		string[] GetGroups (Match match)
 		{
-			string[] ret = new string [match.Groups.Count];
-
 			GroupCollection groups = match.Groups;
+			string[] ret = new string [groups.Count];
 			Group g;
 			
-			for (int i = 0; i < groups.Count; i++) {
+			for (int i = 1; i < groups.Count; i++) {
 				g = groups [i];
 				if (g.Captures.Count <= 0) {
-					ret [i] = String.Empty;
+					ret [i - 1] = String.Empty;
 					continue;
 				}
-				ret [i] = g.Captures [0].Value;
+				ret [i - 1] = g.Captures [0].Value;
 			}
 
 			return ret;
