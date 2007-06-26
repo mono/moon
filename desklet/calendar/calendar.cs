@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Globalization;
 
 using System.Windows;
@@ -124,8 +123,8 @@ namespace Desklet
 				drawCalendar ();
 			};
 
-			AutoResetEvent autoEvent = new AutoResetEvent(false);
-			timer = new Timer (new TimerCallback (UpdateTime), autoEvent, 3600 * 1000, 3600 * 1000);
+			// REMOVED BROKEN CODE.
+			// DO NOT EVER USE THREADS IN MOONLIGHT
 		}
 
 	}

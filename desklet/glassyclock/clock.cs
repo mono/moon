@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using IO=System.IO;
 
 using System.Windows;
@@ -35,8 +34,6 @@ namespace Desklets
 			if (secondsHand == null || minuteHand == null || hourHand == null)
 				return;
 
-			AutoResetEvent autoEvent = new AutoResetEvent(false);
-			timer = new Timer (new TimerCallback (UpdateTime), autoEvent, 5, 1000);
 		}
 	}
 }

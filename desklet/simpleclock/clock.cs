@@ -78,7 +78,6 @@ namespace Clock {
 			sb.Completed += delegate {
 				visible = !visible;
 				UpdateTime ();
-				Console.WriteLine ("here");
 				r.Opacity = visible ? 0.0 : 1.0;
 				sb.Begin ();
 			};
