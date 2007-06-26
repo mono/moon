@@ -32,9 +32,6 @@ namespace Desklets
 			minuteHand  = FindName ("minuteHand")  as RotateTransform;
 			hourHand    = FindName ("hourHand")    as RotateTransform;
 
-			// We can use 
-			//string imagesDir = IO.Path.Combine (Environment.CurrentDirectory, "images");
-
 			if (secondsHand == null || minuteHand == null || hourHand == null)
 				return;
 
