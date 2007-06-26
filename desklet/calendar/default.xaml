@@ -2,6 +2,11 @@
  	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="Desklet.CalendarPanel;assembly=calendar.dll"
 	Loaded="PageLoaded" Width="228" Height="188">
+	
+	<Canvas.Resources>
+		<Storyboard x:Name="run">
+    	</Storyboard>
+    </Canvas.Resources>
 
 	<!-- border 1 -->
 	<Rectangle

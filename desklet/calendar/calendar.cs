@@ -16,17 +16,13 @@ namespace Desklet
 		TextBlock[,] days = new TextBlock[6,7];
 		DateTime current;
 		DateTime currentHour;
-		Timer timer;
 
-		//Yellow
-		static readonly Brush CURRENT_DAY = new SolidColorBrush (Color.FromRgb (255, 255, 0));
-		//White
-		static readonly Brush CURRENT_MONTH = new SolidColorBrush (Color.FromRgb (255, 255, 255));
+		static readonly Brush CURRENT_DAY = new SolidColorBrush (Colors.Yellow);
+		static readonly Brush CURRENT_MONTH = new SolidColorBrush (Colors.White);
 		//Dark grey
 		static readonly Brush OTHERS = new SolidColorBrush (Color.FromRgb (44, 44, 44));
 
-		//White
-		static readonly Brush BUTTON_UP_BRUSH = new SolidColorBrush (Color.FromRgb (255, 255, 255));
+		static readonly Brush BUTTON_UP_BRUSH = new SolidColorBrush (Colors.White);
 		//Grey
 		static readonly Brush BUTTON_DOWN_BRUSH = new SolidColorBrush (Color.FromRgb (150, 150, 150));
 
@@ -35,7 +31,7 @@ namespace Desklet
 			days[l, c].Foreground = mainMonth ? (curDay ? CURRENT_DAY : CURRENT_MONTH) : OTHERS;
 		}
 
-		void UpdateTime (object status)
+		void UpdateTime ()
 		{
 			if (current.Month != currentHour.Month || current.Year != currentHour.Year)
 				return;
@@ -100,21 +96,17 @@ namespace Desklet
 				for (int j = 0; j < 7; ++j)
 					days [i, j] = FindName ("c"+i+"_l"+j) as TextBlock;
 
-			currentHour = current = DateTime.Now;
-			drawCalendar ();
-			
-			Shape before = (FindName ("beforeButton") as Shape);
-			Shape after = (FindName ("afterButton") as Shape);
-			
+
+			Shape before = FindName ("beforeButton") as Shape;
 			before.MouseLeftButtonDown += new MouseEventHandler(this.MouseDown);
 			before.MouseLeave += new EventHandler(this.MouseLeft);
-			
 			before.MouseLeftButtonUp += delegate {
 				before.Fill = before.Stroke = BUTTON_UP_BRUSH;
 				current = current.AddMonths (-1);
 				drawCalendar ();
 			};
 			
+			Shape after = FindName ("afterButton") as Shape;
 			after.MouseLeftButtonDown += new MouseEventHandler(this.MouseDown);
 			after.MouseLeave += new EventHandler(this.MouseLeft);
 			after.MouseLeftButtonUp += delegate {
@@ -123,8 +115,19 @@ namespace Desklet
 				drawCalendar ();
 			};
 
-			// REMOVED BROKEN CODE.
-			// DO NOT EVER USE THREADS IN MOONLIGHT
+			Storyboard sb = FindName ("run") as Storyboard;
+			DoubleAnimation timer = new DoubleAnimation ();
+			sb.Children.Add (timer);
+			timer.Duration = new Duration (TimeSpan.FromSeconds (3600));
+
+			sb.Completed += delegate {
+				UpdateTime ();
+				sb.Begin ();
+			};
+			sb.Begin ();
+
+			currentHour = current = DateTime.Now;
+			drawCalendar ();
 		}
 
 	}
