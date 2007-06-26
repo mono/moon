@@ -501,9 +501,11 @@ TextBlock::Layout (cairo_t *cr)
 	PangoAttribute *fg_attr = NULL;
 	PangoAttribute *attr = NULL;
 	TextDecorations decorations;
+	double clip_height, width;
 	PangoFontMask font_mask;
 	PangoAttrList *attrs;
 	size_t start, end;
+	bool clip = false;
 	GString *block;
 	char *text;
 	Brush *fg;
@@ -518,6 +520,27 @@ TextBlock::Layout (cairo_t *cr)
 	
 	if (layout == NULL)
 		layout = pango_cairo_create_layout (cr);
+	
+	clip_height = framework_element_get_height (this);
+	switch (text_block_get_text_wrapping (this)) {
+	case TextWrappingWrap:
+		// same as w/ Overflow except we clip height (if defined)
+		if (clip_height > 0.0)
+			clip = true;
+	case TextWrappingWrapWithOverflow:
+		pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+		
+		width = framework_element_get_width (this);
+		
+		if (width > 0.0)
+			pango_layout_set_width (layout, (int) width * PANGO_SCALE);
+		else
+			pango_layout_set_width (layout, -1);
+		break;
+	default:
+		pango_layout_set_width (layout, -1);
+		break;
+	}
 	
 	block = g_string_new ("");
 	attrs = pango_attr_list_new ();
@@ -664,13 +687,28 @@ TextBlock::Layout (cairo_t *cr)
 	
 	actual_height = (double) h;
 	actual_width = (double) w;
+	
+	if (clip && actual_height > clip_height)
+		actual_height = clip_height;
 }
 
 void
 TextBlock::Paint (cairo_t *cr)
 {
+	TextWrapping wrapping = text_block_get_text_wrapping (this);
+	double h = framework_element_get_height (this);
+	double w = framework_element_get_width (this);
+	
 	if (actual_width < 0.0 || !layout)
 		CalcActualWidthHeight (cr);
+	
+	if (wrapping == TextWrappingWrapWithOverflow)
+		h = actual_height;
+	
+	if (w > 0.0 && h > 0.0) {
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_clip (cr);
+	}
 	
 	pango_cairo_update_layout (cr, layout);
 	mango_renderer_set_cairo_context (renderer, cr);
