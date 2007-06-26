@@ -1,0 +1,64 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Desklets.Clock;assembly=bin/clock.dll"
+	Loaded="PageLoaded" Width="114" Height="114">
+
+	<!-- outer border -->
+	<Ellipse Canvas.Left="2" Canvas.Top="2" Width="110" Height="110" StrokeThickness="4">
+		<Ellipse.Stroke>
+			<LinearGradientBrush>
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="#aab1b1b1" Offset="0" />
+					<GradientStop Color="#aa111111" Offset="1" />
+				</LinearGradientBrush.GradientStops>
+			</LinearGradientBrush>
+		</Ellipse.Stroke>
+	</Ellipse>
+
+	<!-- inner border -->
+	<Ellipse Canvas.Left="4" Canvas.Top="4" Width="106" Height="106" StrokeThickness="4">
+		<Ellipse.Stroke>
+			<LinearGradientBrush>
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="#aa111111" Offset="0" />
+					<GradientStop Color="#aab1b1b1" Offset="1" />
+				</LinearGradientBrush.GradientStops>
+			</LinearGradientBrush>
+		</Ellipse.Stroke>
+	</Ellipse>
+
+	<!-- hour hand -->
+	<Line Stroke="#101010" X1="57" Y1="28" X2="57" Y2="67" StrokeThickness="3">
+		<Line.RenderTransform>
+			<RotateTransform x:Name="hourHand" Angle="30" CenterX="57" CenterY="57" />
+		</Line.RenderTransform>
+	</Line>
+
+	<!-- minute hand -->
+	<Line Stroke="#101010" X1="57" Y1="16" X2="57" Y2="70" StrokeThickness="2">
+		<Line.RenderTransform>
+			<RotateTransform x:Name="minuteHand" Angle="100" CenterX="57" CenterY="57" />
+		</Line.RenderTransform>
+	</Line>
+
+	<!-- middle -->
+	<Path Fill="#101010">
+		<Path.Data>
+			<EllipseGeometry Center="57,57" RadiusX="3" RadiusY="3" />
+		</Path.Data>
+	</Path>
+
+	<!-- seconds hand -->
+	<Path Fill="#6393c4" Stroke="#6393c4">
+		<Path.Data>
+			<EllipseGeometry Center="57,57" RadiusX="1" RadiusY="1" />
+		</Path.Data>
+	</Path>
+	<Line Stroke="#6393c4" X1="57" Y1="14" X2="57" Y2="67" StrokeThickness="1" StrokeStartLineCap="Round">
+		<Line.RenderTransform>
+			<RotateTransform x:Name="secondsHand" Angle="10" CenterX="57" CenterY="57" />
+		</Line.RenderTransform>
+	</Line>
+
+	
+</Canvas>
