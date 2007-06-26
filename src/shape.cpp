@@ -1088,6 +1088,13 @@ Path::OnPropertyChanged (DependencyProperty *prop)
 	Shape::OnPropertyChanged (prop);
 }
 
+void
+Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	CleanupCache ();
+	FullInvalidate (false);
+}
+
 Geometry *
 path_get_data (Path *path)
 {

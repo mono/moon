@@ -50,8 +50,6 @@ class GeometryCollection : public Collection {
 	GeometryCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::GEOMETRY; }
-
-	virtual void OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop);
 };
 GeometryCollection* geometry_collection_new ();
 
@@ -68,6 +66,7 @@ class GeometryGroup : public Geometry {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 
 	virtual void Draw (cairo_t *cr);
 };
@@ -124,8 +123,6 @@ class PathFigureCollection : public Collection {
 	PathFigureCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHFIGURE; }
-
-	virtual void OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop);
 };
 PathFigureCollection* path_figure_collection_new ();
 
@@ -141,6 +138,7 @@ class PathGeometry : public Geometry {
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	virtual void Draw (cairo_t *cr);
 
 	// this is an element-by-element decision
@@ -180,8 +178,6 @@ class PathSegmentCollection : public Collection {
 	PathSegmentCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHSEGMENT; }
-
-	virtual void OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop);
 };
 PathSegmentCollection* path_segment_collection_new ();
 
@@ -200,6 +196,7 @@ class PathFigure : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	virtual void Draw (cairo_t *cr);
 };
 PathFigure* path_figure_new ();

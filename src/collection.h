@@ -30,7 +30,7 @@ class Collection : public DependencyObject {
 	};
 	
 	List *list;
-	void *closure;
+	DependencyObject *closure;
 	
 	Collection ();
 	virtual ~Collection ();
@@ -42,6 +42,8 @@ class Collection : public DependencyObject {
 	virtual void Insert (int index, DependencyObject *data);
 	virtual void SetVal (int index, DependencyObject *data);
 	virtual void Clear  ();
+
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
  private:
 	void SharedAdd (DependencyObject *data);

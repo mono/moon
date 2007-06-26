@@ -60,6 +60,11 @@ Collection::Add (DependencyObject *data)
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 	
 	list->Append (new Collection::Node (data, this));
+
+	data->Attach (NULL, this);
+
+	if (closure)
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 }
 
 void
@@ -68,6 +73,21 @@ Collection::Insert (int index, DependencyObject *data)
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 	
 	list->Insert (new Collection::Node (data, this), index);
+
+	data->Attach (NULL, this);
+
+	if (closure)
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+}
+
+void
+Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (closure) {
+		/* unfortunately OnSubPropertyChanged doesn't give us
+		   enough info to fill in the obj parameter here */
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemChanged, NULL, subprop);
+	}
 }
 
 void
@@ -85,6 +105,11 @@ Collection::Remove (DependencyObject *data)
 		return;
 	
 	n->Unlink ();
+
+	data->Detach (NULL, this);
+
+	if (closure)
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, data, NULL);
 	
 	delete n;
 }
@@ -92,7 +117,15 @@ Collection::Remove (DependencyObject *data)
 void
 Collection::Clear ()
 {
+	Collection::Node *n;
+	for (n = (Collection::Node*)list->First(); n; n = (Collection::Node*)n->Next()) {
+		n->obj->Detach (NULL, this);
+	}
+
 	list->Clear (true);
+
+	if (closure)
+		closure->OnCollectionChanged (this, CollectionChangeTypeChanged, NULL, NULL);
 }
 
 void 

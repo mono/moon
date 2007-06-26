@@ -1,3 +1,22 @@
+2007-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: add OnCollectionChanged to allow
+	propertychange notifications from elements in collections to
+	bubble up to their parent.
+
+	* collection.h: make the closure a DependencyObject*, just to be
+	explicit.  also, add OnSubPropertyChanged to Collection so we can
+	generate OnCollectionChanged notifications.
+
+	* collection.cpp: hook things up on elements in collections, and
+	generate proper notifications from the collection to its closure.
+
+	* enums.h: add CollectionChangeType for use in
+	OnCollectionChanged.
+
+	* geometry.h, geometry.cpp, shape.h, shape.cpp: use the new
+	collection notification stuff to bubble changes up the hierarchy.
+	
 2007-06-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* list.cpp (Replace): Added.

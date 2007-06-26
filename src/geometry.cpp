@@ -119,6 +119,14 @@ GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyPropert
 }
 
 void
+GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	// GeometryGroup only has one collection, so let's save the hash lookup
+	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
+		NotifyAttacheesOfPropertyChange (GeometryGroup::ChildrenProperty);
+}
+
+void
 GeometryGroup::Draw (cairo_t *cr)
 {
 	GeometryCollection *children = geometry_group_get_children (this);
@@ -156,12 +164,6 @@ geometry_collection_new ()
 	return new GeometryCollection ();
 }
 
-void
-GeometryCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
-{
-	NotifyAttacheesOfPropertyChange (subprop);
-}
-
 //
 // PathFigureCollection
 //
@@ -172,12 +174,6 @@ path_figure_collection_new ()
 	return new PathFigureCollection ();
 }
 
-void
-PathFigureCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
-{
-	NotifyAttacheesOfPropertyChange (subprop);
-}
-
 //
 // PathSegmentCollection
 //
@@ -186,12 +182,6 @@ PathSegmentCollection*
 path_segment_collection_new ()
 {
 	return new PathSegmentCollection ();
-}
-
-void
-PathSegmentCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
-{
-	NotifyAttacheesOfPropertyChange (subprop);
 }
 
 //
@@ -346,6 +336,14 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
+PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	// PathGeometry only has one collection, so let's save the hash lookup
+	//if (col == GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection ())
+		NotifyAttacheesOfPropertyChange (PathGeometry::FiguresProperty);
+}
+
+void
 PathGeometry::Draw (cairo_t *cr)
 {
 	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
@@ -480,6 +478,18 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	if (prop->type == Type::PATHFIGURE) {
+		NotifyAttacheesOfPropertyChange (prop);
+	}
+}
+
+void
+PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	// PathFigure only has one collection, so let's save the hash lookup
+	//if (col == GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection())
+		NotifyAttacheesOfPropertyChange (PathFigure::SegmentsProperty);
 }
 
 void

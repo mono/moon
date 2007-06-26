@@ -11,6 +11,7 @@
 #define __MONO_DEPOBJECT_H__
 
 #include "value.h"
+#include "enums.h"
 
 typedef void (*EventHandler) (gpointer data);
 
@@ -85,7 +86,13 @@ class DependencyObject : public Base {
 	//    returning TRUE.
 	//
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { return FALSE; }
-	
+
+
+	//
+	// OnCollectionPropertyChanged:
+	//
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop) { }
+
 	virtual Type::Kind GetObjectType ();
 	Type* GetType ()
 	{

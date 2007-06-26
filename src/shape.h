@@ -253,6 +253,7 @@ class Path : public Shape {
 
 	virtual bool CanFill ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 };
 
 Path *path_new (void);

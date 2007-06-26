@@ -58,4 +58,12 @@ enum Visibility {
 	VisibilityHidden
 };
 
+enum CollectionChangeType {
+	CollectionChangeTypeItemAdded,
+	CollectionChangeTypeItemRemoved,
+	CollectionChangeTypeItemChanged,
+
+	CollectionChangeTypeChanged
+};
+
 #endif
