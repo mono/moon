@@ -700,14 +700,15 @@ KeyFrameCollection::~KeyFrameCollection ()
 	delete sorted_list;
 }
 
-void
+int
 KeyFrameCollection::Add (DependencyObject *data)
 {
 	KeyFrameNode *kfn = new KeyFrameNode ((KeyFrame *) data);
 	
-	Collection::Add (data);
+	int p = Collection::Add (data);
 	
 	sorted_list->InsertSorted (kfn, KeyFrameNodeComparer);
+	return p;
 }
 
 void

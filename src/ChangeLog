@@ -1,3 +1,15 @@
+2007-06-26  Miguel de Icaza  <miguel@novell.com>
+
+	* collection.h (Add): Make this method return the index of the
+	object just created, so we can implement int IList.Add(...).
+
+	Removed all the empty Add/Remove methods from collections that
+	were not doing anything interesting with them, the remaining
+	chunks of old hacks.
+	
+	* (SetVal): This method is used to replace a value at a given
+	index with another one.   For the C# IList.this [int] indexer.
+
 2007-06-26  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp: make a copy of the child clocks lists before

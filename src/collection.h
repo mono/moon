@@ -37,12 +37,16 @@ class Collection : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 
-	virtual void Add    (DependencyObject *data);
+	virtual int  Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
 	virtual void Insert (int index, DependencyObject *data);
-	virtual void SetVal (int index, DependencyObject *data);
 	virtual void Clear  ();
 
+	//
+	// Returns the old value
+	//
+	virtual DependencyObject *SetVal (int index, DependencyObject *data);
+	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
  private:
@@ -71,10 +75,11 @@ class VisualCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::VISUAL; }
 
-	virtual void Add    (DependencyObject *data);
+	virtual int  Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
 	virtual void Insert (int index, DependencyObject *data);
 	virtual void Clear  ();
+	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 
 	void ResortByZIndex ();
 	List *z_sorted_list;
@@ -89,9 +94,10 @@ class TriggerCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
 
-	virtual void Add    (DependencyObject *data);
+	virtual int  Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
 	virtual void Insert (int index, DependencyObject *data);
+	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 };
 
 class TriggerActionCollection : public Collection {
@@ -107,9 +113,6 @@ class ResourceCollection : public Collection {
 	ResourceCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::RESOURCE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
-
-	virtual void Add    (DependencyObject *data);
-	virtual void Remove (DependencyObject *data);
 };
 
 class StrokeCollection : public Collection {
@@ -117,9 +120,6 @@ class StrokeCollection : public Collection {
 	StrokeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
-
-	virtual void Add    (DependencyObject *data);
-	virtual void Remove (DependencyObject *data);
 };
 
 class StylusPointCollection : public Collection {
@@ -127,9 +127,6 @@ class StylusPointCollection : public Collection {
 	StylusPointCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
-
-	virtual void Add    (DependencyObject *data);
-	virtual void Remove (DependencyObject *data);
 };
 
 class TimelineMarkerCollection : public Collection {
@@ -137,19 +134,13 @@ class TimelineMarkerCollection : public Collection {
 	TimelineMarkerCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
-
-	virtual void Add    (DependencyObject *data);
-	virtual void Remove (DependencyObject *data);
 };
 
 class MediaAttributeCollection : public Collection {
  public:
-	MediaAttributeCollection () {}
-	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
-
-	virtual void Add    (DependencyObject *data);
-	virtual void Remove (DependencyObject *data);
+       MediaAttributeCollection () {}
+       virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
+       virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 };
 
 class Inlines : public Collection {
@@ -157,14 +148,11 @@ class Inlines : public Collection {
 	Inlines () {}
 	virtual Type::Kind GetObjectType () { return Type::INLINES; }
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
-
-	virtual void Add    (DependencyObject *data);
-	virtual void Remove (DependencyObject *data);
 };
 
 G_BEGIN_DECLS
 
-void collection_add    (Collection *collection, DependencyObject *data);
+int  collection_add    (Collection *collection, DependencyObject *data);
 void collection_remove (Collection *collection, DependencyObject *data);
 void collection_insert (Collection *collection, int index, DependencyObject *data);
 void collection_clear  (Collection *collection);

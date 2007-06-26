@@ -54,17 +54,17 @@ Collection::~Collection ()
 	delete list;
 }
 
-void
+int
 Collection::Add (DependencyObject *data)
 {
-	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
+	g_return_val_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()), 0);
 	
 	list->Append (new Collection::Node (data, this));
-
 	data->Attach (NULL, this);
 
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+	return list->Length ();
 }
 
 void
@@ -90,10 +90,24 @@ Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *
 	}
 }
 
-void
+DependencyObject *
 Collection::SetVal (int index, DependencyObject *data)
 {
-	// Not implemented yet
+	g_return_val_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()), NULL);
+
+	Node *old = (Collection::Node *) list->Replace (new Collection::Node (data, this), index);
+
+	old->Unlink ();
+
+	data->Attach (NULL, this);
+	old->obj->Detach (NULL, this);
+
+	if (closure){
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, old->obj, NULL);
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+	}
+
+	return old->obj;
 }
 
 void
@@ -128,10 +142,10 @@ Collection::Clear ()
 		closure->OnCollectionChanged (this, CollectionChangeTypeChanged, NULL, NULL);
 }
 
-void 
+int
 collection_add (Collection *collection, DependencyObject *data)
 {
-	collection->Add (data);
+	return collection->Add (data);
 }
 
 int
@@ -302,13 +316,13 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	item_invalidate (panel);
 }
 
-void
+int
 VisualCollection::Add (DependencyObject *data)
 {
 	DependencyObject *obj = (DependencyObject *) closure;
 	UIElement *item = (UIElement *) data;
 
-	Collection::Add (item);
+	int p = Collection::Add (item);
 	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
 	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
@@ -317,6 +331,28 @@ VisualCollection::Add (DependencyObject *data)
 	}
 
 	VisualUpdate (data);
+
+	return p;
+}
+
+DependencyObject *
+VisualCollection::SetVal (int index, DependencyObject *data)
+{
+	UIElement *item = (UIElement *) data;
+
+	UIElement *old = (UIElement *) Collection::SetVal (index, item);
+	z_sorted_list->Remove (UIElementNodeFinder, old);
+	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
+
+	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+		/* emit loaded events on the new item if the tree
+		   we're adding it to has already been "loaded" */
+		item->OnLoaded ();
+	}
+
+	VisualUpdate (data);
+
+	return old;
 }
 
 void
@@ -356,7 +392,7 @@ VisualCollection::Clear ()
 }
 
 
-void
+int
 TriggerCollection::Add (DependencyObject *data)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
@@ -364,9 +400,25 @@ TriggerCollection::Add (DependencyObject *data)
 	printf ("Adding %p\n", data);
 	EventTrigger *trigger = (EventTrigger *) data;
 
-	Collection::Add (trigger);
+	int p = Collection::Add (trigger);
 
 	trigger->SetTarget (fwe);
+	return p;
+}
+
+DependencyObject *
+TriggerCollection::SetVal (int index, DependencyObject *data)
+{
+	FrameworkElement *fwe = (FrameworkElement *) closure;
+	
+	printf ("Inserting %p\n", data);
+	EventTrigger *trigger = (EventTrigger *) data;
+
+	FrameworkElement *old = (FrameworkElement *) Collection::SetVal (index, trigger);
+
+	trigger->SetTarget (fwe);
+
+	trigger->RemoveTarget (old);
 }
 
 void
@@ -393,79 +445,6 @@ TriggerCollection::Remove (DependencyObject *data)
 
 	trigger->RemoveTarget (fwe);
 }
-
-void
-ResourceCollection::Add (DependencyObject *data)
-{
-	Collection::Add (data);
-}
-
-void
-ResourceCollection::Remove (DependencyObject *data)
-{
-	Collection::Remove (data);
-}
-
-void
-StrokeCollection::Add (DependencyObject *data)
-{
-	Collection::Add (data);
-}
-
-void
-StrokeCollection::Remove (DependencyObject *data)
-{
-	Collection::Remove (data);
-}
-
-void
-MediaAttributeCollection::Add (DependencyObject *data)
-{
-	Collection::Add (data);
-}
-
-void
-MediaAttributeCollection::Remove (DependencyObject *data)
-{
-	Collection::Remove (data);
-}
-
-void
-StylusPointCollection::Add (DependencyObject *data)
-{
-	Collection::Add (data);
-}
-
-void
-StylusPointCollection::Remove (DependencyObject *data)
-{
-	Collection::Remove (data);
-}
-
-void
-TimelineMarkerCollection::Add (DependencyObject *data)
-{
-	Collection::Add (data);
-}
-
-void
-TimelineMarkerCollection::Remove (DependencyObject *data)
-{
-	Collection::Remove (data);
-}
-
-void
-Inlines::Add (DependencyObject *data)
-{
-	Collection::Add (data);
-}
-
-void
-Inlines::Remove (DependencyObject *data)
-{
-	Collection::Remove (data);
-}
-
 
 Collection *
 collection_new (Type::Kind kind)
