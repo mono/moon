@@ -40,6 +40,7 @@ class Collection : public DependencyObject {
 	virtual void Add    (DependencyObject *data);
 	virtual void Remove (DependencyObject *data);
 	virtual void Insert (int index, DependencyObject *data);
+	virtual void SetVal (int index, DependencyObject *data);
 	virtual void Clear  ();
 
  private:
@@ -168,8 +169,10 @@ void collection_clear  (Collection *collection);
 int  collection_count  (Collection *collection);
 
 DependencyObject   *collection_get_value_at (Collection *collection, int index);
+void                collection_set_value_at (Collection *collection, int index, DependencyObject *obj);
 Type::Kind          collection_get_element_type (Collection *collection);
 CollectionIterator *collection_get_iterator (Collection *collection);
+int                 collection_get_index_of (Collection *collection, DependencyObject *obj);
 
 bool   collection_iterator_move_next   (CollectionIterator *iterator);
 void   collection_iterator_reset       (CollectionIterator *iterator);

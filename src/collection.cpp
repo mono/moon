@@ -71,6 +71,12 @@ Collection::Insert (int index, DependencyObject *data)
 }
 
 void
+Collection::SetVal (int index, DependencyObject *data)
+{
+	// Not implemented yet
+}
+
+void
 Collection::Remove (DependencyObject *data)
 {
 	Collection::Node *n;
@@ -110,6 +116,18 @@ collection_get_value_at (Collection *collection, int index)
 		return NULL;
 
 	return node->obj;
+}
+
+void
+collection_set_value_at (Collection *collection, int index, DependencyObject *dob)
+{
+	collection->SetVal (index, dob);
+}
+
+int
+collection_get_index_of (Collection *collection, DependencyObject *dob)
+{
+	return collection->list->IndexOf (CollectionNodeFinder, dob);
 }
 
 void 
