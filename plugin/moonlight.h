@@ -24,9 +24,7 @@
 #include "glib.h"
 #include "gtk/gtk.h"
 
-#include "runtime.h"
-#include "shape.h"
-#include "xaml.h"
+#include "libmoon.h"
 
 // Definitions
 #define DEBUG
