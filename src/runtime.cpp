@@ -1034,16 +1034,19 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
 	GdkModifierType state;
-	int x, y;
+	double x, y;
 
 	if (!s->cb_motion)
 		return FALSE;
 
 	if (event->is_hint) {
-		gdk_window_get_pointer (event->window, &x, &y, &state);
+		int ix, iy;
+		gdk_window_get_pointer (event->window, &ix, &iy, &state);
+		x = ix;
+		y = iy;
 	} else {
-		x = (int)event->x + widget->allocation.x;
-		y = (int)event->y + widget->allocation.y;
+		x = event->x + widget->allocation.x;
+		y = event->y + widget->allocation.y;
 		state = (GdkModifierType)event->state;
 	}
 	s->toplevel->handle_motion (s, state, x, y);
@@ -1059,8 +1062,8 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 		return FALSE;
 
 	if (event->type == GDK_ENTER_NOTIFY){
-		int x = (int) event->x + widget->allocation.x;
-		int y = (int) event->y + widget->allocation.y;
+		double x = event->x + widget->allocation.x;
+		double y = event->y + widget->allocation.y;
 		
 		s->toplevel->handle_motion (s, event->state, x, y);
 		s->toplevel->enter (s, event->state, x, y);
@@ -1113,8 +1116,8 @@ button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer dat
 	if (button->button != 1)
 		return FALSE;
 
-	int x = (int) button->x + widget->allocation.x;
-	int y = (int) button->y + widget->allocation.y;
+	double x = button->x + widget->allocation.x;
+	double y = button->y + widget->allocation.y;
 	s->toplevel->handle_button (s, s->cb_up, button->state, x, y);
 	
 	return TRUE;
@@ -1133,8 +1136,8 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 	if (button->button != 1)
 		return FALSE;
 
-	int x = (int) button->x + widget->allocation.x;
-	int y = (int) button->y + widget->allocation.y;
+	double x = button->x + widget->allocation.x;
+	double y = button->y + widget->allocation.y;
 	s->toplevel->handle_button (s, s->cb_down, button->state, x, y);
 	
 	return FALSE;
