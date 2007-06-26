@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <cairo.h>
 
+#include "runtime.h"
 #include "shape.h"
 #include "cutil.h"
 #include "array.h"

@@ -13,7 +13,7 @@
 #ifndef MOON_STYLUS_H
 #define MOON_STYLUS_H
 
-#include "runtime.h"
+#include "canvas.h"
 
 G_BEGIN_DECLS
 
@@ -83,6 +83,8 @@ class InkPresenter : public Canvas {
 };
 
 InkPresenter* ink_presenter_new ();
+
+void stylus_init (void);
 
 G_END_DECLS
 

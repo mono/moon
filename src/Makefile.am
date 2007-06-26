@@ -11,6 +11,7 @@ libmooninclude_HEADERS = \
 	animation.h	\
 	array.h		\
 	brush.h		\
+	canvas.h	\
 	clock.h		\
 	collection.h	\
 	control.h	\
@@ -21,6 +22,9 @@ libmooninclude_HEADERS = \
 	media.h		\
 	list.h		\
 	mplayer.h	\
+	namescope.h	\
+	point.h		\
+	rect.h		\
 	rsvg.h		\
 	runtime.h	\
 	shape.h		\
@@ -28,31 +32,43 @@ libmooninclude_HEADERS = \
 	text.h		\
 	transform.h	\
 	type.h		\
+	uielement.h	\
 	value.h		\
-	xaml.h
+	xaml.h		\
+	libmoon.h
 
 
 libmoon_la_SOURCES = 	\
 	animation.cpp	\
 	array.cpp	\
 	brush.cpp	\
+	canvas.cpp	\
+	color.cpp	\
 	clock.cpp	\
 	collection.cpp	\
 	control.cpp	\
 	cutil.cpp	\
+	dependencyobject.cpp	\
 	downloader.cpp	\
+	frameworkelement.cpp	\
 	geometry.cpp	\
 	list.cpp	\
 	mango.cpp	\
 	media.cpp	\
 	mplayer.cpp	\
+	namescope.cpp	\
+	panel.cpp	\
+	point.cpp	\
+	rect.cpp	\
 	rsvg.cpp	\
 	runtime.cpp	\
 	shape.cpp	\
 	stylus.cpp	\
 	text.cpp	\
 	transform.cpp	\
+	trigger.cpp	\
 	type.cpp	\
+	uielement.cpp	\
 	value.cpp	\
 	xaml.cpp
 

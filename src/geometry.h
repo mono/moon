@@ -17,7 +17,7 @@ G_BEGIN_DECLS
 
 #include <stdint.h>
 #include <cairo.h>
-#include "runtime.h"
+#include "enums.h"
 #include "transform.h"
 
 //
@@ -357,6 +357,8 @@ Point*	quadratic_bezier_segment_get_point1	(QuadraticBezierSegment *segment);
 void	quadratic_bezier_segment_set_point1	(QuadraticBezierSegment *segment, Point *point);
 Point*	quadratic_bezier_segment_get_point2	(QuadraticBezierSegment *segment);
 void	quadratic_bezier_segment_set_point2	(QuadraticBezierSegment *segment, Point *point);
+
+void geometry_init (void);
 
 G_END_DECLS
 

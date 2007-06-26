@@ -19,6 +19,7 @@
 #include <cairo-xlib.h>
 #undef Visual
 
+#include "runtime.h"
 #include "cutil.h"
 #include "media.h"
 #include "downloader.h"

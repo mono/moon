@@ -174,3 +174,9 @@ control_initialize_from_xaml (Control *control, const char *xaml,
 
 	return element;
 }
+
+Control *
+control_new (void)
+{
+	return new Control ();
+}

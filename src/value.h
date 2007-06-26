@@ -6,6 +6,7 @@
 #define MOON_VALUE_H
 
 #include <string.h>
+#include <cairo.h>
 
 #include "type.h"
 

@@ -10,7 +10,7 @@
 #ifndef __MOON_ARRAY_H__
 #define __MOON_ARRAY_H__
 
-#include "runtime.h"
+#include "point.h"
 
 //
 // Arrays derive from this format

@@ -24,7 +24,12 @@
 #include "text.h"
 #include "media.h"
 #include "list.h"
+#include "rect.h"
+#include "point.h"
 #include "array.h"
+#include "canvas.h"
+#include "color.h"
+#include "namescope.h"
 
 #define READ_BUFFER 1024
 

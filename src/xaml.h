@@ -13,7 +13,15 @@
 #ifndef __MOON_XAML_H__
 #define __MOON_XAML_H__
 
-#include "runtime.h"
+#include "enums.h"
+#include "uielement.h"
+
+struct ErrorEventArgs /* : public EventArgs */ {
+ public:
+	int error_code;;
+	const char *error_message;
+	ErrorType error_type;
+};
 
 struct ParserErrorEventArgs : public ErrorEventArgs {
  public:

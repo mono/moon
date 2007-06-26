@@ -17,7 +17,9 @@
 
 #include <string.h>
 
+#include "runtime.h"
 #include "cutil.h"
+#include "color.h"
 #include "text.h"
 
 

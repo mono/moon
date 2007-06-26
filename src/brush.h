@@ -16,7 +16,7 @@
 
 G_BEGIN_DECLS
 
-#include "runtime.h"
+#include "enums.h"
 #include "media.h"
 
 enum AlignmentX {
@@ -249,6 +249,7 @@ void	gradient_stop_set_color		(GradientStop *stop, Color *color);
 double	gradient_stop_get_offset	(GradientStop *stop);
 void	gradient_stop_set_offset	(GradientStop *stop, double offset);
 
+void brush_init (void);
 
 G_END_DECLS
 

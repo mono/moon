@@ -8,7 +8,8 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifndef __MPLAYER_H__
+#ifndef __MOON_MPLAYER_H__
+#define __MOON_MPLAYER_H__
 
 #include <glib.h>
 #include <cairo.h>
@@ -77,4 +78,4 @@ public:
 	void SetVolume (double volume);
 };
 
-#endif /* __MPLAYER_H__ */
+#endif /* __MOON_MPLAYER_H__ */

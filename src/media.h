@@ -16,9 +16,11 @@ G_BEGIN_DECLS
 #include <string.h>
 
 #include "mplayer.h"
+#include "enums.h"
 #include "clock.h"
 #include "value.h"
 #include "brush.h"
+#include "frameworkelement.h"
 
 class MediaAttribute : public DependencyObject {
  public:
@@ -207,6 +209,8 @@ void media_element_set_position (MediaElement *media, TimeSpan value);
 
 double media_element_get_volume (MediaElement *media);
 void media_element_set_volume (MediaElement *media, double value);
+
+void media_init (void);
 
 G_END_DECLS
 

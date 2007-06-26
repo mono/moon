@@ -13,7 +13,6 @@
 
 G_BEGIN_DECLS
 
-#include "runtime.h"
 #include "brush.h"
 
 #define MOON_TYPE_MANGO_RENDERER            (mango_renderer_get_type())

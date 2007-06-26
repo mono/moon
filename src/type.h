@@ -16,6 +16,8 @@
 #ifndef __TYPE_H__
 #define __TYPE_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 typedef gint64 TimeSpan;
@@ -181,6 +183,7 @@ private:
 
 bool type_get_value_type (Type::Kind type);
 
+void types_init (void);
 
 G_END_DECLS
 

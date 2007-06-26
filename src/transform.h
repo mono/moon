@@ -17,7 +17,6 @@ G_BEGIN_DECLS
 
 #include <stdint.h>
 #include <cairo.h>
-#include "runtime.h"
 #include "collection.h"
 
 class Transform : public DependencyObject {
@@ -172,6 +171,7 @@ public:
 
 TransformGroup *transform_group_new ();
 
+void transform_init (void);
 
 G_END_DECLS
 

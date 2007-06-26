@@ -16,7 +16,6 @@
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
 
-#include "runtime.h"
 #include "brush.h"
 #include "mango.h"
 

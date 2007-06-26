@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 
 #include "collection.h"
+#include "panel.h"
 #include "geometry.h"
 #include "brush.h"
 #include "animation.h"

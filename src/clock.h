@@ -13,7 +13,6 @@
 #ifndef MOON_CLOCK_H
 #define MOON_CLOCK_H
 
-#include "runtime.h"
 #include "collection.h"
 
 G_BEGIN_DECLS
@@ -420,6 +419,7 @@ TimelineMarker* timeline_marker_new ();
 /* useful for timing things */
 TimeSpan get_now (void);
 
+void clock_init (void);
 
 G_END_DECLS
 

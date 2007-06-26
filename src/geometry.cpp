@@ -17,7 +17,9 @@
 #include <glib.h>
 #include <stdlib.h>
 
+#include "runtime.h"
 #include "geometry.h"
+#include "rect.h"
 #include "shape.h"
 #include "array.h"
 

@@ -16,7 +16,6 @@
 #include <cairo.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include "runtime.h"
 #include "type.h"
 
 /*

@@ -18,7 +18,6 @@ G_BEGIN_DECLS
 
 #include "brush.h"
 #include "mango.h"
-#include "runtime.h"
 
 enum FontStretches {
 	FontStretchesUltraCondensed = 1,

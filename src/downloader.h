@@ -1,5 +1,5 @@
 /*
- * runtime.h: Downloader class.
+ * downloader.h: Downloader class.
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)
@@ -19,7 +19,7 @@ G_BEGIN_DECLS
 #include <stdint.h>
 #include <cairo.h>
 
-#include "value.h"
+#include "dependencyobject.h"
 
 class Downloader;
 
@@ -120,5 +120,8 @@ void downloader_write           (Downloader *dl, guchar *buf, gsize offset, gsiz
 void downloader_notify_size     (Downloader *dl, int64_t size);
 void downloader_notify_finished (Downloader *dl);
 
+void downloader_init (void);
+
 G_END_DECLS
+
 #endif

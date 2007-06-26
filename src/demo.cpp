@@ -9,14 +9,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/time.h>
-#include "runtime.h"
-#include "transform.h"
-#include "animation.h"
-#include "shape.h"
-#include "media.h"
-#include "text.h"
-#include "downloader.h"
-#include "xaml.h"
+
+#include "libmoon.h"
 
 static UIElement *v;
 static Rectangle *r;

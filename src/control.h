@@ -10,7 +10,7 @@
 #ifndef __MOON_CONTROL_H__
 #define __MOON_CONTROL_H__
 
-#include "runtime.h"
+#include "frameworkelement.h"
 #include "xaml.h"
 
 //

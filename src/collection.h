@@ -10,7 +10,8 @@
 #ifndef __MOON_COLLECTION_H__
 #define __MOON_COLLECTION_H__
 
-#include "runtime.h"
+#include "dependencyobject.h"
+#include "list.h"
 
 //
 // Collection: provides a collection that we can monitor for

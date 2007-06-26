@@ -19,6 +19,7 @@
 #include <math.h>
 
 #include "animation.h"
+#include "color.h"
 
 #define LERP(f,t,p) ((f) + ((t) - (f)) * (p))
 

@@ -17,7 +17,8 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include "value.h"
-#include "runtime.h"
+#include "rect.h"
+#include "color.h"
 #include "clock.h"
 #include "animation.h"
 #include "array.h"
@@ -144,12 +145,6 @@ Value::Value (Color c)
 	Init ();
 	k = Type::COLOR;
 	u.color = new Color (c);
-}
-
-Value
-value_color_from_argb (uint32_t c)
-{
-	return Value (Color (c));
 }
 
 Value::Value (DependencyObject *obj)

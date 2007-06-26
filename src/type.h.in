@@ -14,6 +14,8 @@
 
 G_BEGIN_DECLS
 
+#include <glib.h>
+
 typedef gint64 TimeSpan;
 
 class Type {
@@ -67,6 +69,7 @@ private:
 
 bool type_get_value_type (Type::Kind type);
 
+void types_init (void);
 
 G_END_DECLS
 
