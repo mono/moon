@@ -1,6 +1,6 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Desklet.Calendar;assembly=calendar.dll"
+        x:Class="Desklet.CalendarPanel;assembly=calendar.dll"
 	Loaded="PageLoaded" Width="228" Height="188">
 
 	<!-- border 1 -->
@@ -27,12 +27,14 @@
 		
 
 	<Polygon
+		x:Name="afterButton"
 		Fill="White"
 		Stroke="White"
 		StrokeThickness="2"
 		Points="212,20 207,15 207,25" />
 
 	<Polygon
+		x:Name="beforeButton"
 		Fill="White"
 		Stroke="White"
 		StrokeThickness="2"
@@ -420,7 +422,7 @@
 		FontSize="12"
 		FontWeight="ExtraBlack"
 		Canvas.Left="48"
-		Foreground="White"
+		Foreground="Yellow"
 		Canvas.Top="133"/>
 
       <TextBlock

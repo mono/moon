@@ -1,3 +1,8 @@
 2007-06-25  Rodrigo Kumpera  <rkumpera@novell.com>
 
+	* calendar.cs: added code to generate the calendar and walk between the months
+	* default.xaml: added names to the polylines 
+
+2007-06-25  Rodrigo Kumpera  <rkumpera@novell.com>
+
 	* ChangeLog: Added.
