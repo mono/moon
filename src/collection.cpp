@@ -54,17 +54,16 @@ Collection::~Collection ()
 	delete list;
 }
 
-int
+void
 Collection::Add (DependencyObject *data)
 {
-	g_return_val_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()), 0);
+	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 	
 	list->Append (new Collection::Node (data, this));
 	data->Attach (NULL, this);
 
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
-	return list->Length ();
 }
 
 void
@@ -107,16 +106,18 @@ Collection::SetVal (int index, DependencyObject *data)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 	}
 
-	return old->obj;
+	DependencyObject *obj = old->obj;
+	delete old;
+	return obj;
 }
 
-void
+bool
 Collection::Remove (DependencyObject *data)
 {
 	Collection::Node *n;
 	
 	if (!(n = (Collection::Node *) list->Find (CollectionNodeFinder, data)))
-		return;
+		return false;
 	
 	n->Unlink ();
 
@@ -126,6 +127,7 @@ Collection::Remove (DependencyObject *data)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, data, NULL);
 	
 	delete n;
+	return true;
 }
 
 void
@@ -142,10 +144,10 @@ Collection::Clear ()
 		closure->OnCollectionChanged (this, CollectionChangeTypeChanged, NULL, NULL);
 }
 
-int
+void
 collection_add (Collection *collection, DependencyObject *data)
 {
-	return collection->Add (data);
+	collection->Add (data);
 }
 
 int
@@ -177,10 +179,10 @@ collection_get_index_of (Collection *collection, DependencyObject *dob)
 	return collection->list->IndexOf (CollectionNodeFinder, dob);
 }
 
-void 
+bool
 collection_remove (Collection *collection, DependencyObject *data)
 {
-	collection->Remove (data);
+	return collection->Remove (data);
 }
 
 void
@@ -316,13 +318,13 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	item_invalidate (panel);
 }
 
-int
+void
 VisualCollection::Add (DependencyObject *data)
 {
 	DependencyObject *obj = (DependencyObject *) closure;
 	UIElement *item = (UIElement *) data;
 
-	int p = Collection::Add (item);
+	Collection::Add (item);
 	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
 	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
@@ -331,8 +333,6 @@ VisualCollection::Add (DependencyObject *data)
 	}
 
 	VisualUpdate (data);
-
-	return p;
 }
 
 DependencyObject *
@@ -372,16 +372,18 @@ VisualCollection::Insert (int index, DependencyObject *data)
 	VisualUpdate (data);
 }
 
-void
+bool
 VisualCollection::Remove (DependencyObject *data)
 {
 	Panel *panel = (Panel *) closure;
 	UIElement *item = (UIElement *) data;
 	
 	item_invalidate (item);
-	Collection::Remove (item);
+	bool b = Collection::Remove (item);
 	z_sorted_list->Remove (UIElementNodeFinder, item);
 	item_update_bounds (panel);
+
+	return b;
 }
 
 void
@@ -392,7 +394,7 @@ VisualCollection::Clear ()
 }
 
 
-int
+void
 TriggerCollection::Add (DependencyObject *data)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
@@ -400,10 +402,9 @@ TriggerCollection::Add (DependencyObject *data)
 	printf ("Adding %p\n", data);
 	EventTrigger *trigger = (EventTrigger *) data;
 
-	int p = Collection::Add (trigger);
+	Collection::Add (trigger);
 
 	trigger->SetTarget (fwe);
-	return p;
 }
 
 DependencyObject *
@@ -434,16 +435,17 @@ TriggerCollection::Insert (int index, DependencyObject *data)
 	trigger->SetTarget (fwe);
 }
 
-void
+bool
 TriggerCollection::Remove (DependencyObject *data)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
 	
 	EventTrigger *trigger = (EventTrigger *) data;
 
-	Collection::Remove (trigger);
+	bool b = Collection::Remove (trigger);
 
 	trigger->RemoveTarget (fwe);
+	return b;
 }
 
 Collection *
