@@ -750,7 +750,7 @@ void     surface_init      (Surface *s, int width, int height);
 void     surface_clear     (Surface *s, int x, int y, int width, int height);
 void     surface_clear_all (Surface *s);
 void     surface_destroy   (Surface *s);
-void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
+void     surface_paint     (Surface *s, int x, int y, int width, int height);
 
 void    *surface_get_drawing_area (Surface *s);
 
