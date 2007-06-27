@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <monodoc>
-  <source provider="ecma" basefile="desklets" path="various"/>
+  <source provider="ecma" basefile="desklets" path="moonlight"/>
 </monodoc>
