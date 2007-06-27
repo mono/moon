@@ -13,6 +13,7 @@ using System;
 using IO=System.IO;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace Desklet.Weather
 {
@@ -21,6 +22,20 @@ namespace Desklet.Weather
 		Canvas updCanvas;
 		Image weatherIcon;
 		string iconsDir;
+		string stationCode;
+
+		public string StationCode {
+			get { return stationCode; }
+			set { stationCode = value; }
+		}
+		
+		public void UpdateData ()
+		{
+			updCanvas.Visibility = Visibility.Visible;
+
+			Storyboard animation = FindName ("animation") as Storyboard;
+			animation.Begin ();
+		}
 		
 		public void Page_Loaded (object sender, EventArgs e)
 		{
@@ -30,6 +45,9 @@ namespace Desklet.Weather
 			iconsDir = IO.Path.Combine (IO.Path.Combine (Environment.CurrentDirectory, "data"), "icons");
 			weatherIcon = FindName ("WeatherIcon") as Image;
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
+
+			Storyboard run = FindName ("run") as Storyboard;
+			UpdateData ();
 		}
 	}
 }
