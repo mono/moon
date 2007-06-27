@@ -1,0 +1,55 @@
+<Namespace Name="Mono.Desklets">
+  <Docs>
+    <summary>
+      Mono.Desklets is a set of tools to run small applications built
+      with Moonlight/Silverlight(tm) on your Linux desktop using
+      Mono's Moonlight.
+    </summary>
+    <remarks>
+       <para>
+         Desklets are basically Silverlight applications that have
+         been transported from the Web to the desktop.   Unlike their
+         Web counterparts, these desklets run with the full Mono API,
+         not the subset that is part of Silverlight and they run with
+         full trust on the desktop. 
+       </para>
+       <para>
+         To launch a desklet you would typically use the mopen command
+         or double click on the default.xaml file on your desktop (if
+         the mopen command has been associated with the XAML mime type
+         in your Linux installation).    
+       </para>
+       <para>
+         A simple desklet can be as simple as a XAML file with
+         animations embedded into it.  But most desklets will likely
+         have some logic written in another language to add the
+         special behaviour for each desklet.  To do this, you
+         typically reference an assembly from your XAML file and
+         specify the namespace that will instantiate this class (using
+         the x:Class attribute in your toplevel Canvas declaration
+         referencing the assembly, like this:
+         x:Class="Clock.Display;assembly=bin/clock.dll").  You can use
+         the Loaded property of any of the UIElements to trigger the
+         execution of a particular method in the assembly, for
+         example: Loaded="PageLoaded".
+       </para>
+       <para>
+         The following sample shows how things would look like in the
+         C# side of things:
+       </para>
+       <example>
+         <code lang="C#">
+namespace Clock {
+
+        public class Display : Canvas {
+                public void PageLoaded(object o, EventArgs e)
+		{
+			// C# code goes here
+		}	
+        }
+}
+	 </code>
+       </example>
+    </remarks>
+  </Docs>
+</Namespace>
