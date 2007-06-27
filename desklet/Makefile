@@ -9,7 +9,7 @@ docs/Mono.Desklets.xml: desklets.xml desklets.dll
 desklets.tree desklets.zip: docs/Mono.Desklets.xml
 	mdassembler --ecma docs/ --out desklets
 
-install:
+install: desklets.tree desklets.zip desklets.dll
+	cp desklets.tree desklets.zip desklets.source `pkg-config monodoc --variable sourcesdir`
 	echo TODO: install desklets.dll into the gac
 	echo TODO: create and install desklets.pc into the pkgconfig thing
-	echo TODO: install documentation
