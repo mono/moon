@@ -1,4 +1,3 @@
-
 using System;
 using Gtk;
 using System.IO;
@@ -9,6 +8,7 @@ using Gtk.Moonlight;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Reflection;
 
 
 
@@ -58,7 +58,8 @@ public partial class MainWindow: Gtk.Window
 	protected virtual void OnConvert (object sender, System.EventArgs e)
 	{
 		XmlDocument xsltdoc = new XmlDocument();
-		xsltdoc.Load ("svg2xaml.xslt");
+		Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream("svg2xaml.xslt");
+		xsltdoc.Load (s);
 		XslTransform t = new XslTransform();
 		t.Load (xsltdoc);
 		t.Transform (svgFilename, svgFilename + ".xaml");

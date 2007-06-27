@@ -190,10 +190,15 @@ exclude-result-prefixes="svg xsl xaml msxsl"
 				</attributes>
 			</xsl:variable>
 
+
 			<!-- inherit parents attributes -->
 			<xsl:copy-of select="$defaults/defaults/@*"/>
 			<!-- output this node's attributes -->
 			<xsl:copy-of select="msxsl:node-set($local-attributes)/xaml:attributes/@*"/>
+
+			<xsl:if test="not(@fill) and not($defaults/defaults/@fill) and not(msxsl:node-set($local-attributes)/xaml:attributes/@fill)">
+				<xsl:attribute name="Fill">#000</xsl:attribute>
+			</xsl:if>
 
 			<!-- check if there are transforms inherited from the parent and aggregate them all into one -->
 			<xsl:choose>
@@ -224,7 +229,6 @@ exclude-result-prefixes="svg xsl xaml msxsl"
 
 			<!-- output remaning attributes that got turned into elements and that were not outputted in the above group -->
 			<xsl:copy-of select="msxsl:node-set($local-attributes)/xaml:attributes/*[not(contains(local-name(.), 'Transform'))]"/>
-
 
 		</xsl:element>
 	</xsl:template>
@@ -621,18 +625,22 @@ exclude-result-prefixes="svg xsl xaml msxsl"
 	
 							<!-- first do the custom attributes -->
 							<xsl:when test="$attname='r'">
+								<xsl:if test="not(../@cx)">
+									<xsl:attribute name="Canvas.Left"><xsl:value-of select=". * -1"/></xsl:attribute>
+								</xsl:if>
+
+								<xsl:if test="not(../@cy)">
+									<xsl:attribute name="Canvas.Top"><xsl:value-of select=". * -1"/></xsl:attribute>
+								</xsl:if>
+								
 								<xsl:attribute name="Width"><xsl:value-of select=". * 2"/></xsl:attribute>
 								<xsl:attribute name="Height"><xsl:value-of select=". * 2"/></xsl:attribute>
-								<xsl:attribute name="Canvas.Left"><xsl:value-of select=". * -1"/></xsl:attribute>
-								<xsl:attribute name="Canvas.Top"><xsl:value-of select=". * -1"/></xsl:attribute>
 							</xsl:when>
 							<xsl:when test="$attname='rx'">
 								<xsl:attribute name="Width"><xsl:value-of select=". * 2"/></xsl:attribute>
-								<xsl:attribute name="Canvas.Left"><xsl:value-of select=". * -1"/></xsl:attribute>
 							</xsl:when>
 							<xsl:when test="$attname='ry'">
 								<xsl:attribute name="Height"><xsl:value-of select=". * 2"/></xsl:attribute>
-								<xsl:attribute name="Canvas.Top"><xsl:value-of select=". * -1"/></xsl:attribute>
 							</xsl:when>
 							<xsl:when test="$attname='cx'">
 								<xsl:attribute name="Canvas.Left">

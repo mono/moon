@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Xsl;
+using System.Reflection;
 
 
 namespace svg2xaml
@@ -35,7 +36,8 @@ namespace svg2xaml
 			XmlDocument xsltdoc = new XmlDocument();
 			try
 			{
-				xsltdoc.Load ("svg2xaml.xslt");
+				Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream("svg2xaml.xslt");
+				xsltdoc.Load (s);
 			}
 			catch (FileNotFoundException e)
 			{
