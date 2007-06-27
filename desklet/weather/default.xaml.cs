@@ -22,17 +22,40 @@ namespace Desklet.Weather
 	{
 		Canvas updCanvas;
 		Image weatherIcon;
+		TextBlock stationID;
 		string iconsDir;
-		string stationCode;
 
-		public string StationCode {
-			get { return stationCode; }
-			set { stationCode = value;}
+		public void DownloadComplete (Downloader downloader)
+		{
+			string response = downloader.GetResponseText ("What?");
+
+			// We're getting full HTML from the CGI script, need to extract our data
+			int idxStart = response.IndexOf (String.Format ("\n{0}", stationID.Text));
+			int idxEnd;
+
+			if (idxStart < 0)
+				return;
+			idxStart++;
+			idxEnd = response.IndexOf ('\n', idxStart);
+			if (idxEnd < 0)
+				idxEnd = response.Length;
+			
+			string metarData = response.Substring (idxStart, idxEnd - idxStart);
+			Metar metar;
+
+			try {
+				metar = new Metar (metarData);
+			} catch {
+				metar = null;
+			}
+
+			if (metar == null)
+				return;
 		}
 
-		public void DoUpdateData (Downloader downloader)
+		public void DownloadFailed (Downloader downloader)
 		{
-			Console.WriteLine ("Download complete");
+			// report failure
 		}
 		
 		public void UpdateData ()
@@ -44,17 +67,30 @@ namespace Desklet.Weather
 
 			Downloader downloader = new Downloader ();
 			downloader.Completed += delegate {
-				DoUpdateData (downloader);
+				DownloadComplete (downloader);
 				animation.Stop ();
+				updCanvas.Visibility = Visibility.Hidden;
 			};
 
-			Console.WriteLine ("Loading data...");
+			downloader.DownloadFailed += delegate {
+				DownloadFailed (downloader);
+				animation.Stop ();
+				updCanvas.Visibility = Visibility.Hidden;
+			};
 			
 			downloader.Open (
 				"GET",
-				new Uri (String.Format ("http://weather.noaa.gov/cgi-bin/mgetmetar.pl?cccc={0}", stationCode)),
+				new Uri (String.Format ("http://weather.noaa.gov/cgi-bin/mgetmetar.pl?cccc={0}", stationID.Text)),
 				true);
 			downloader.Send ();
+		}
+
+		public void AdjustLayout ()
+		{
+			TextBlock stationIdLabel = FindName ("StationIDLabel") as TextBlock;
+
+			double idLeft = (double)stationID.GetValue (Canvas.LeftProperty);
+			stationIdLabel.SetValue (Canvas.LeftProperty, idLeft - stationIdLabel.ActualWidth - 5.0);
 		}
 		
 		public void Page_Loaded (object sender, EventArgs e)
@@ -66,8 +102,12 @@ namespace Desklet.Weather
 			weatherIcon = FindName ("WeatherIcon") as Image;
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
 
+			stationID = FindName ("StationID") as TextBlock;
+			
 			Storyboard run = FindName ("run") as Storyboard;
 			run.Begin ();
+
+			AdjustLayout ();
 			UpdateData ();
 		}
 	}

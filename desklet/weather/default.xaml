@@ -3,32 +3,35 @@
     xmlns="http://schemas.microsoft.com/client/2007"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="Desklet.Weather.Default;assembly=bin/weather.dll"
-    Loaded="Page_Loaded" Width="553" Height="263" 
-    StationCode="EPPO" >
+    Loaded="Page_Loaded" Width="500" Height="200" >
+
   <Canvas.Resources>
     <Storyboard x:Name="run"/>
   </Canvas.Resources>
 
-  <Canvas.Background>
-    <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
-      <GradientStop Color="#FFF3A20A" Offset="0"/>
-      <GradientStop Color="#FF09620C" Offset="1"/>
-    </LinearGradientBrush>
-  </Canvas.Background>
+  <!-- border  -->
+  <Rectangle Fill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"
+	     Canvas.Left="4" Canvas.Top="4" Width="492" Height="192"
+	     RadiusX="10" RadiusY="10">
+    <Rectangle.Fill>
+      <LinearGradientBrush SpreadMethod="Pad" EndPoint="1.0,1.1" StartPoint="0.0,0.0">
+	<GradientStop Offset="0.0" Color="Transparent" />
+	<GradientStop Offset="0.2" Color="#30ffffff" />
+	<GradientStop Offset="0.4" Color="#3fffffff" />
+	<GradientStop Offset="1.0" Color="Transparent" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+
+  <TextBlock x:Name="StationIDLabel" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF" 
+	     Text="Station:"/>
+  <TextBlock x:Name="StationID" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
 
   <Image x:Name="WeatherIcon" Width="64" Height="64" Canvas.Left="8" Canvas.Top="8"/>
   <Image x:Name="WindIcon" Width="64" Height="64" Canvas.Left="86" Canvas.Top="8"/>
 
-  <Canvas x:Name="Updating" Width="124" Height="29" Canvas.Left="223" Canvas.Top="111" Opacity="1">
-    <TextBlock x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="0" Canvas.Top="0" FontFamily="Tahoma" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Opacity="0">
-      <TextBlock.RenderTransform>
-	<TransformGroup>
-	  <ScaleTransform ScaleX="1" ScaleY="1"/>
-	  <SkewTransform AngleX="0" AngleY="0"/>
-	  <RotateTransform Angle="0"/>
-	  <TranslateTransform X="0" Y="0"/>
-	</TransformGroup>
-      </TextBlock.RenderTransform>
+  <Canvas x:Name="Updating" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0.5">
+    <TextBlock x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="0" Canvas.Top="0" FontFamily="Tahoma" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Opacity="1">
       <TextBlock.Foreground>
 	<LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
 	  <GradientStop Color="#FF1BC28D" Offset="0"/>
