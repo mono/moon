@@ -1,5 +1,15 @@
 2007-06-27  Andreia Gaita  <avidigal@novell.com>
 
+	* svg2xaml.mdp, Makefile, Main.cs, MainWindow.cs
+	  gtk-gui/generated.cs, gtk-gui/gui.stetic,
+	  gtk-gui/MainWindow.cs: 
+	  
+	  Little svg2xaml application to load and convert a 
+	  svg file to a xaml file. Note: the mdp doesn't use 
+	  the makefile.
+
+2007-06-27  Andreia Gaita  <avidigal@novell.com>
+
 	* svg2xaml.xslt: initial checkin. 
 	* svg2xaml_standalone.xslt: initial checkin. 
 	Same as svg2xaml.xsl, but doesn't use microsoft
