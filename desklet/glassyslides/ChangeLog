@@ -1,4 +1,7 @@
 2007-06-27  Everaldo Canuto  <ecanuto@novell.com>
 
-	* Initial import.
+	* deafult.xaml, slideshow.cs: Enable fade in/out.
 
+2007-06-27  Everaldo Canuto  <ecanuto@novell.com>
+
+	* Initial import.

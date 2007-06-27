@@ -31,17 +31,16 @@ namespace Desklets
 
 		public void ChangePicture (object o, EventArgs e)
 		{
+			fadein.Begin ();
+		}
+
+		public void FadeInPicture (object o, EventArgs e)
+		{
 			image_index = (image_index < 8) ? image_index + 1 : 1;
 			
 			string uri = "data/image0" + image_index.ToString() + ".jpg";
 			image.SetValue (ImageBrush.ImageSourceProperty, uri);
 
-			//fadein.Begin ();
-			change.Begin ();
-		}
-
-		public void FadeInPicture (object o, EventArgs e)
-		{
 			fadeout.Begin ();
 		}
 

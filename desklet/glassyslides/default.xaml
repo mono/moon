@@ -32,17 +32,17 @@
 		</Storyboard>
 
 		<Storyboard x:Name="fadein">
-		      <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="imageRect" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
-		        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-		        <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="0" KeySpline="0.25,0.6 0.75,1" />
-		      </DoubleAnimationUsingKeyFrames>-->
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetName="imageRect" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
+				<LinearDoubleKeyFrame KeyTime="0:0:0" Value="1" />
+				<SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="0" KeySpline="0.25,0.6 0.75,1" />
+			</DoubleAnimationUsingKeyFrames>
 		</Storyboard>
 
 		<Storyboard x:Name="fadeout">
-		      <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="imageRect" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
-		        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-		        <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1" KeySpline="0.25,0.6 0.75,1" />
-		      </DoubleAnimationUsingKeyFrames>-->
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetName="imageRect" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
+				<LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+				<SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1" KeySpline="0.25,0.6 0.75,1" />
+			</DoubleAnimationUsingKeyFrames>-->
 		</Storyboard>
 	</Canvas.Resources>
 
