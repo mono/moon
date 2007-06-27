@@ -99,7 +99,15 @@ exclude-result-prefixes="svg xsl xaml"
 	<!-- A element - for links -->
 	
 	<xsl:template match="svg:a">
-			<xsl:apply-templates />
+		<!-- inherited transformations -->
+		<xsl:param name="transform"/>
+		<!-- inherited defaults -->
+		<xsl:param name="defaults"/>
+
+		<xsl:apply-templates>
+					<xsl:with-param name="transform" select="$transform"/>
+					<xsl:with-param name="defaults" select="$defaults"/>
+		</xsl:apply-templates>
 	</xsl:template>
 
 	<!-- g element - children inherit these values and transforms -->
@@ -160,7 +168,7 @@ exclude-result-prefixes="svg xsl xaml"
 
 
 	<!-- drawing children - they're all the same, really -->
-	<xsl:template match="svg:path | svg:circle | svg:ellipse">
+	<xsl:template match="svg:path | svg:circle | svg:ellipse | svg:rect | svg:line | svg:polyline | svg:polygon">
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
@@ -222,6 +230,11 @@ exclude-result-prefixes="svg xsl xaml"
 	</xsl:template>
 
 	<xsl:template match="svg:text">
+		<!-- inherited transformations -->
+		<xsl:param name="transform"/>
+		<!-- inherited defaults -->
+		<xsl:param name="defaults"/>
+
 		<xsl:variable name="attributes">
 			<attributes>
 				<xsl:call-template name="attributes">
@@ -236,228 +249,22 @@ exclude-result-prefixes="svg xsl xaml"
 		</TextBlock>
 	</xsl:template>
 
-	<xsl:template match="svg:defs">
-	</xsl:template>
-
-	<xsl:template match="svg:desc">
-	</xsl:template>
-
-	<xsl:template match="svg:symbol">
-	</xsl:template>
-
-	<xsl:template match="svg:use">
-	</xsl:template>
-
-	<xsl:template match="svg:image">
-	</xsl:template>
-
-	<xsl:template match="svg:switch">
-	</xsl:template>
-
-	<xsl:template match="svg:style">
-	</xsl:template>
-
-
-	<xsl:template match="svg:rect">
-	</xsl:template>
-
-	<xsl:template match="svg:line">
-	</xsl:template>
-
-	<xsl:template match="svg:polyline">
-	</xsl:template>
-
-	<xsl:template match="svg:polygon">
-	</xsl:template>
-
-
-	<xsl:template match="svg:tspan">
-	</xsl:template>
-
-	<xsl:template match="svg:tref">
-	</xsl:template>
-
-	<xsl:template match="svg:textPath">
-	</xsl:template>
-
-	<xsl:template match="svg:altGlyph">
-	</xsl:template>
-
-	<xsl:template match="svg:altGlyphDef">
-	</xsl:template>
-
-	<xsl:template match="svg:altGlyphItem">
-	</xsl:template>
-
-	<xsl:template match="svg:glyphRef">
-	</xsl:template>
-
-	<xsl:template match="svg:marker">
-	</xsl:template>
-
-	<xsl:template match="svg:color-profile">
-	</xsl:template>
-
-	<xsl:template match="svg:linearGradient">
-	</xsl:template>
-
-	<xsl:template match="svg:radialGradient">
-	</xsl:template>
-
-	<xsl:template match="svg:stop">
-	</xsl:template>
-
-	<xsl:template match="svg:pattern">
-	</xsl:template>
-
-	<xsl:template match="svg:clipPath">
-	</xsl:template>
-
-	<xsl:template match="svg:mask">
-	</xsl:template>
-
-	<xsl:template match="svg:filter">
-	</xsl:template>
-
-	<xsl:template match="svg:feDistantLight">
-	</xsl:template>
-
-	<xsl:template match="svg:fePointLight">
-	</xsl:template>
-
-	<xsl:template match="svg:feSpotLight">
-	</xsl:template>
-
-	<xsl:template match="svg:feBlend">
-	</xsl:template>
-
-	<xsl:template match="svg:feColorMatrix">
-	</xsl:template>
-
-	<xsl:template match="svg:feComponentTransfer">
-	</xsl:template>
-
-	<xsl:template match="svg:feFuncR">
-	</xsl:template>
-
-	<xsl:template match="svg:feFuncG">
-	</xsl:template>
-
-	<xsl:template match="svg:feFuncB">
-	</xsl:template>
-
-	<xsl:template match="svg:feFuncA">
-	</xsl:template>
-
-	<xsl:template match="svg:feComposite">
-	</xsl:template>
-
-	<xsl:template match="svg:feConvolveMatrix">
-	</xsl:template>
-
-	<xsl:template match="svg:feDiffuseLighting">
-	</xsl:template>
-
-	<xsl:template match="svg:feDisplacementMap">
-	</xsl:template>
-
-	<xsl:template match="svg:feFlood">
-	</xsl:template>
-
-	<xsl:template match="svg:feGaussianBlur">
-	</xsl:template>
-
-	<xsl:template match="svg:feImage">
-	</xsl:template>
-
-	<xsl:template match="svg:feMerge">
-	</xsl:template>
-
-	<xsl:template match="svg:feMergeNode">
-	</xsl:template>
-
-	<xsl:template match="svg:feMorphology">
-	</xsl:template>
-
-	<xsl:template match="svg:feOffset">
-	</xsl:template>
-
-	<xsl:template match="svg:feSpecularLighting">
-	</xsl:template>
-
-	<xsl:template match="svg:feTile">
-	</xsl:template>
-
-	<xsl:template match="svg:feTurbulence">
-	</xsl:template>
-
-	<xsl:template match="svg:cursor">
-	</xsl:template>
-
-
-	<xsl:template match="svg:view">
-	</xsl:template>
 
-	<xsl:template match="svg:script">
-	</xsl:template>
-
-	<xsl:template match="svg:animate">
-	</xsl:template>
-
-	<xsl:template match="svg:set">
-	</xsl:template>
-
-	<xsl:template match="svg:animateMotion">
-	</xsl:template>
-
-	<xsl:template match="svg:mpath">
-	</xsl:template>
-
-	<xsl:template match="svg:animateColor">
-	</xsl:template>
-
-	<xsl:template match="svg:animateTransform">
-	</xsl:template>
-
-	<xsl:template match="svg:font">
-	</xsl:template>
-
-	<xsl:template match="svg:glyph">
-	</xsl:template>
-
-	<xsl:template match="svg:missing-glyph">
-	</xsl:template>
-
-	<xsl:template match="svg:hkern">
-	</xsl:template>
-
-	<xsl:template match="svg:vkern">
-	</xsl:template>
-
-	<xsl:template match="svg:font-face">
-	</xsl:template>
-
-	<xsl:template match="svg:font-face-src">
-	</xsl:template>
+<!-- DEFAULT TEMPLATES
+	These are just default implementations that don't really do anything. 
+-->
 
-	<xsl:template match="svg:font-face-uri">
-	</xsl:template>
-
-	<xsl:template match="svg:font-face-format">
-	</xsl:template>
-
-	<xsl:template match="svg:font-face-name">
-	</xsl:template>
+	<xsl:template match="svg:defs | add_more_catches_here">
+		<!-- inherited transformations -->
+		<xsl:param name="transform"/>
+		<!-- inherited defaults -->
+		<xsl:param name="defaults"/>
 
-	<xsl:template match="svg:definition-src">
+		<xsl:apply-templates>
+					<xsl:with-param name="transform" select="$transform"/>
+					<xsl:with-param name="defaults" select="$defaults"/>
+		</xsl:apply-templates>
 	</xsl:template>
-
-	<xsl:template match="svg:metadata">
-	</xsl:template>
-
-	<xsl:template match="svg:foreignObject">
-	</xsl:template>
-
 
 
 <!-- ######## HELPER TEMPLATES ####### -->
@@ -476,9 +283,7 @@ exclude-result-prefixes="svg xsl xaml"
 			</mapping>
 			<mapping name="fill" parent="text" value="Foreground" type="attribute"/>
 			<mapping name="transform" value="RenderTransform" type="element" template="transform" prefixParent="true"/>
-			<mapping name="viewBox" value="RenderTransform" type="element" template="viewBox" prefixParent="true" names="X Y Width Height" filter="local">
-				<ignore>0</ignore>
-			</mapping>
+			<mapping name="viewBox" value="RenderTransform" type="element" template="viewBox" prefixParent="true" names="x y Width Height" filter="local"/>
 			<mapping name="stroke-linejoin" value="StrokeLineJoin" type="attribute"/>
 			<mapping name="stroke-width" value="StrokeThickness" type="attribute"/>
 			<mapping name="font-size" value="FontSize" type="attribute"/>
@@ -487,6 +292,12 @@ exclude-result-prefixes="svg xsl xaml"
 			</mapping>			
 			<mapping name="x" value="Canvas.Left" type="attribute" filter="local"/>
 			<mapping name="y" value="Canvas.Top" type="attribute" filter="local"/>
+			<mapping name="x" value="X" parent="viewBox" type="attribute" filter="local" op="mul" opval="-1">
+				<ignore>0</ignore>
+			</mapping>
+			<mapping name="y" value="X" parent="viewBox" type="attribute" filter="local" op="mul" opval="-1">
+				<ignore>0</ignore>
+			</mapping>
 			<mapping name="rx" value="Width" type="attribute" filter="local"/>
 			<mapping name="ry" value="Height" type="attribute" filter="local"/>
 			<mapping name="r" type="attribute"/>
@@ -494,6 +305,60 @@ exclude-result-prefixes="svg xsl xaml"
 			<mapping name="cy" value="Canvas.Top" type="attribute" filter="local"/>
 		</mappings>
 	</xsl:variable>
+
+	<!-- transform template - to turn transform="..." properties into Transform* elements -->
+	<xsl:template name="transform">
+		<xsl:param name="name"/>
+		<xsl:param name="str"/>
+		<xsl:param name="prefix"/>
+
+		<!-- check what the separator is on the list of values to process -->
+		<xsl:variable name="separator">
+			<xsl:choose>
+				<xsl:when test="contains($str, ',')">,</xsl:when>
+				<xsl:otherwise> </xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- each transformation outputs slightly different nodes, so check one by one -->
+		
+		<xsl:if test="starts-with($str, 'translate')">
+			<xsl:element name="{prefix}TranslateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+			
+				<xsl:call-template name="splitCoords">
+					<xsl:with-param name="str" select="substring-before(substring-after($str, 'translate('), ')')"/>
+					<xsl:with-param name="separator"><xsl:value-of select="string($separator)"/></xsl:with-param>
+				</xsl:call-template>
+		
+			</xsl:element>
+		</xsl:if>
+		<xsl:if test="starts-with($str, 'rotate')">
+			<xsl:element name="{prefix}RotateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+				<xsl:attribute name="Angle"><xsl:value-of select="substring-before(substring-after($str, 'rotate('), ')')"/></xsl:attribute>
+				<xsl:if test="../@rx">
+					<xsl:attribute name="CenterX"><xsl:value-of select="../@rx"/></xsl:attribute>
+				</xsl:if>
+				<xsl:if test="../@ry">
+					<xsl:attribute name="CenterY"><xsl:value-of select="../@ry"/></xsl:attribute>
+				</xsl:if>
+				<xsl:if test="../@r">
+					<xsl:attribute name="CenterX"><xsl:value-of select="../@r"/></xsl:attribute>
+					<xsl:attribute name="CenterY"><xsl:value-of select="../@r"/></xsl:attribute>
+				</xsl:if>
+
+			</xsl:element>
+		</xsl:if>
+		<xsl:if test="starts-with($str, 'scale')">
+			<xsl:element name="{prefix}ScaleTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+				<xsl:call-template name="splitCoords">
+					<xsl:with-param name="str" select="substring-before(substring-after($str, 'scale('), ')')"/>
+					<xsl:with-param name="prefix" select="'Scale'"/>
+					<xsl:with-param name="separator" select="string($separator)"/>
+				</xsl:call-template>
+			</xsl:element>
+		</xsl:if>
+
+	</xsl:template>
 
 	<!-- template to process the viewBox property of the svg and turn it into properties of the canvas -->
 	<xsl:template name="viewBox">
@@ -514,11 +379,18 @@ exclude-result-prefixes="svg xsl xaml"
 		<xsl:copy-of select="$attributes/attributes/@Width"/>
 		<xsl:copy-of select="$attributes/attributes/@Height"/>
 		
-		<xsl:if test="$attributes/attributes/@X or $attributes/attributes/@Y">
-				<xsl:element name="{$prefix}TranslateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-					<xsl:copy-of select="$attributes/attributes/@X"/>
-					<xsl:copy-of select="$attributes/attributes/@Y"/>
-				</xsl:element>
+		<xsl:variable name="transform">
+			<transform>
+				<xsl:call-template name="attributes">
+					<xsl:with-param name="node" select="$attributes/attributes"/>
+				</xsl:call-template>
+			</transform>
+		</xsl:variable>
+		<xsl:if test="count($transform/transform/@*) > 0 or count($transform/transform/*) > 0">
+			<xsl:element name="{$prefix}TranslateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+				<xsl:copy-of select="$transform/transform/@*"/>
+				<xsl:copy-of select="$transform/transform/*"/>
+			</xsl:element>
 		</xsl:if>
 
 	</xsl:template>
@@ -597,60 +469,6 @@ exclude-result-prefixes="svg xsl xaml"
 				</xsl:choose>
 			</xsl:otherwise>
 		</xsl:choose>
-
-	</xsl:template>
-
-	<!-- transform template - to turn transform="..." properties into Transform* elements -->
-	<xsl:template name="transform">
-		<xsl:param name="name"/>
-		<xsl:param name="str"/>
-		<xsl:param name="prefix"/>
-
-		<!-- check what the separator is on the list of values to process -->
-		<xsl:variable name="separator">
-			<xsl:choose>
-				<xsl:when test="contains($str, ',')">,</xsl:when>
-				<xsl:otherwise> </xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-
-		<!-- each transformation outputs slightly different nodes, so check one by one -->
-		
-		<xsl:if test="starts-with($str, 'translate')">
-			<xsl:element name="{prefix}TranslateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-			
-				<xsl:call-template name="splitCoords">
-					<xsl:with-param name="str" select="substring-before(substring-after($str, 'translate('), ')')"/>
-					<xsl:with-param name="separator"><xsl:value-of select="string($separator)"/></xsl:with-param>
-				</xsl:call-template>
-		
-			</xsl:element>
-		</xsl:if>
-		<xsl:if test="starts-with($str, 'rotate')">
-			<xsl:element name="{prefix}RotateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-				<xsl:attribute name="Angle"><xsl:value-of select="substring-before(substring-after($str, 'rotate('), ')')"/></xsl:attribute>
-				<xsl:if test="../@rx">
-					<xsl:attribute name="CenterX"><xsl:value-of select="../@rx"/></xsl:attribute>
-				</xsl:if>
-				<xsl:if test="../@ry">
-					<xsl:attribute name="CenterY"><xsl:value-of select="../@ry"/></xsl:attribute>
-				</xsl:if>
-				<xsl:if test="../@r">
-					<xsl:attribute name="CenterX"><xsl:value-of select="../@r"/></xsl:attribute>
-					<xsl:attribute name="CenterY"><xsl:value-of select="../@r"/></xsl:attribute>
-				</xsl:if>
-
-			</xsl:element>
-		</xsl:if>
-		<xsl:if test="starts-with($str, 'scale')">
-			<xsl:element name="{prefix}ScaleTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-				<xsl:call-template name="splitCoords">
-					<xsl:with-param name="str" select="substring-before(substring-after($str, 'scale('), ')')"/>
-					<xsl:with-param name="prefix" select="'Scale'"/>
-					<xsl:with-param name="separator" select="string($separator)"/>
-				</xsl:call-template>
-			</xsl:element>
-		</xsl:if>
 
 	</xsl:template>
 
@@ -759,29 +577,35 @@ exclude-result-prefixes="svg xsl xaml"
 		<xsl:param name="name"/>
 		<xsl:param name="node"/>
 		<xsl:param name="filter"/>
+		<xsl:param name="parent"/>
 		
 		<xsl:variable name="prefix">
 			<xsl:if test="$name"><xsl:value-of select="$name"/>.</xsl:if>
 		</xsl:variable>
 		
-		<xsl:variable name="parent" select="local-name(.)"/>
+		<xsl:variable name="local-parent">		
+			<xsl:choose>
+				<xsl:when test="$parent"><xsl:value-of select="$parent"/>.</xsl:when>
+				<xsl:otherwise><xsl:value-of select="local-name(.)"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		
 		<xsl:for-each select="$node/@*">
 			<xsl:variable name="attname" select="local-name(.)"/>
 
 			<xsl:variable name="mapping" select="$mappings/mappings/mapping[@name=$attname]"/>
 			
-			<xsl:if test="not($filter) or ($mapping[@parent=$parent and @filter = $filter]) or ($mapping[not(@parent) and @filter = $filter]) or ($mapping[not(@filter)])">
+			<xsl:if test="not($filter) or ($mapping[@parent=$local-parent and @filter = $filter]) or ($mapping[not(@parent) and @filter = $filter]) or ($mapping[not(@filter)])">
 
 				<xsl:choose>
 				
 					<!-- process attributes that need to be processed with a specific template (like transforms) -->
 					<!-- there are certain attributes that have different mapping names depending on the parent, so check here -->
-					<xsl:when test="$mapping[@parent=$parent and @template != '']">
+					<xsl:when test="$mapping[@parent=$local-parent and @template != '']">
 						<xsl:call-template name="process-template">
-							<xsl:with-param name="mapping" select="$mapping[@name=$attname and @parent=$parent and @template != '']"/>
+							<xsl:with-param name="mapping" select="$mapping[@name=$attname and @parent=$local-parent and @template != '']"/>
 							<xsl:with-param name="name" select="$attname"/>
-							<xsl:with-param name="template" select="$mapping[@name=$attname and @parent=$parent and @template != '']/@template"/>
+							<xsl:with-param name="template" select="$mapping[@name=$attname and @parent=$local-parent and @template != '']/@template"/>
 							<xsl:with-param name="str" select="."/>
 							<xsl:with-param name="prefix" select="$prefix"/>
 						</xsl:call-template>
@@ -845,11 +669,16 @@ exclude-result-prefixes="svg xsl xaml"
 	
 							<!-- if it's not a custom one, check the mappings -->
 							<!-- if there is a mapping for this attribute, with a corresponding parent, and the value is not marked to ignore -->
-							<xsl:when test="$mapping[@name=$attname and @parent=$parent] and not($mapping[@name=$attname]/ignore = .)">
-								<xsl:attribute name="{$mapping[@name=$attname and @parent=$parent]/@value}">
+							<xsl:when test="$mapping[@name=$attname and @parent=$local-parent] and not($mapping[@name=$attname]/ignore = .)">
+								<xsl:attribute name="{$mapping[@name=$attname and @parent=$local-parent]/@value}">
 									<xsl:choose>
-										<xsl:when test="$mapping[@name=$attname and @parent=$parent]/value[@name=current()]"><xsl:value-of select="$mapping[@name=$attname and @parent=$parent]/value[@name=current()]/@value"/></xsl:when>
-										<xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+										<xsl:when test="$mapping[@name=$attname and @parent=$local-parent]/value[@name=current()]"><xsl:value-of select="$mapping[@name=$attname and @parent=$local-parent]/value[@name=current()]/@value"/></xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="output-attribute-value">
+												<xsl:with-param name="mapping" select="$mapping[@name=$attname and @parent=$local-parent]"/>
+												<xsl:with-param name="value" select="."/>
+											</xsl:call-template>										
+										</xsl:otherwise>
 									</xsl:choose>
 								</xsl:attribute>
 							</xsl:when>
@@ -859,7 +688,12 @@ exclude-result-prefixes="svg xsl xaml"
 								<xsl:attribute name="{$mapping[@name=$attname]/@value}">
 									<xsl:choose>
 										<xsl:when test="$mapping[@name=$attname]/value[@name=current()]"><xsl:value-of select="$mapping[@name=$attname]/value[@name=current()]/@value"/></xsl:when>
-										<xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+										<xsl:otherwise>
+											<xsl:call-template name="output-attribute-value">
+												<xsl:with-param name="mapping" select="$mapping[@name=$attname]"/>
+												<xsl:with-param name="value" select="."/>
+											</xsl:call-template>
+										</xsl:otherwise>
 									</xsl:choose>
 								</xsl:attribute>
 							</xsl:when>
@@ -872,13 +706,24 @@ exclude-result-prefixes="svg xsl xaml"
 		</xsl:for-each>	
 
 		<!-- output any text value -->
-		<xsl:if test=". != '' and $mappings/mappings/mapping[@name=$parent]">
+		<xsl:if test="text() and $mappings/mappings/mapping[@name=$local-parent]">
 			<xsl:attribute name="{$mappings/mappings/mapping[@name=$parent]/@value}"><xsl:value-of select="."/></xsl:attribute>
 		</xsl:if>
 		
 	</xsl:template>
 
-
+	<xsl:template name="output-attribute-value">
+		<xsl:param name="mapping"/>
+		<xsl:param name="value"/>
+		
+		<xsl:choose>
+			<xsl:when test="$mapping/@op = 'mul'"><xsl:value-of select="$value * $mapping/@opval"/></xsl:when>
+			<xsl:when test="$mapping/@op = 'add'"><xsl:value-of select="$value + $mapping/@opval"/></xsl:when>
+			<xsl:when test="$mapping/@op = 'sub'"><xsl:value-of select="$value - $mapping/@opval"/></xsl:when>
+			<xsl:when test="$mapping/@op = 'div'"><xsl:value-of select="$value div $mapping/@opval"/></xsl:when>
+			<xsl:otherwise><xsl:value-of select="$value"/></xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 <!-- ######## END OF HELPER TEMPLATES ####### -->
 
 </xsl:stylesheet>

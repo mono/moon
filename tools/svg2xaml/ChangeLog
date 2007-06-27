@@ -1,5 +1,12 @@
 2007-06-27  Andreia Gaita  <avidigal@novell.com>
 
+	* svg2xaml.xslt, svg2xaml_standalone.xslt: add 
+	matches for lines, rects and polygons, remove
+	not used matches, pass defaults from svg:a into
+	children, fix transform values.
+
+2007-06-27  Andreia Gaita  <avidigal@novell.com>
+
 	* sv2xaml.cs, svg2xaml.mdp: command-line tool to
 	convert svg to xaml
 	* svg2xaml-gui.mdp: new name of the gui app and 
