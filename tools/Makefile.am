@@ -1,0 +1,1 @@
+SUBDIRS = svg2xaml mopen

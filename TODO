@@ -57,6 +57,14 @@ Feel free to add items to this TODO list
 
 	Need support for Z-axis.
 
+* Mouse events
+
+	Since we are going to be using the linker to thin out various
+	libraries maybe we should think out AGCLR as well, and by default
+	install a more capable AGCLR.
+
+	In particular this would be interesting for handling other
+	mouse events other than "button1".
 
 * Video Player:
 

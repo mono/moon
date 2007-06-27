@@ -1,4 +1,4 @@
-SUBDIRS = src gtk plugin man
+SUBDIRS = src gtk plugin tools man
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc

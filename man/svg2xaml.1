@@ -1,0 +1,34 @@
+.\" 
+.\" svn2xaml manual page.
+.\" (C) 2007 Novell, Inc. 
+.\" Author:
+.\"   Miguel de Icaza (miguel@gnu.org)
+.\"
+.de Sp \" Vertical space (when we can't use .PP)
+.if t .sp .5v
+.if n .sp
+..
+.TH svg2xaml "Mono 1.2, Moonlight 1.0"
+.SH NAME
+svg2xaml \- SVG to XAML conversion utility
+.SH SYNOPSIS
+.PP
+.B svg2xaml input.svg [output.xaml]
+.SH DESCRIPTION
+The \fIsvg2xaml\fP command is a tool that can be used to transform SVG
+files into XAML files that are suitable to be consumed by Mono's
+Moonlight engine or Microsoft's Silverlight or WPF.
+.PP
+If no output file is specified, a new file based on the input file
+name with the extension .xaml is created.
+.SH MAILING LISTS
+Mailing lists are listed at the
+http://www.mono-project.com/Mailing_Lists
+.PP
+In addition Moonlight is discussed in the "Olive" group:
+http://groups.google.com/group/mono-olive
+.SH WEB SITE
+http://www.mono-project.com/Moonlight
+.SH SEE ALSO
+.PP
+mono(1), mopen(1)
