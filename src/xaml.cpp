@@ -903,7 +903,7 @@ timespan_from_str (const char *str)
 	res = ((digits [0] * 86400) + (digits [1] * 3600) + (digits [2] * 60) + digits [3]);
 	res *= 10L;
 	res += digits [4];
-	res *= 100000L;
+	res *= 1000000L;
 
 	return res;
 }

@@ -70,7 +70,7 @@ struct Duration {
 
 
 	// This should live in a TimeSpan class, but oh well.. */
-	static Duration FromSeconds (int seconds) { return Duration ((TimeSpan)seconds * 1000000); }
+	static Duration FromSeconds (int seconds) { return Duration ((TimeSpan)seconds * 10000000); }
 
  private:
 	DurationKind k;

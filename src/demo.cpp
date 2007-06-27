@@ -477,22 +477,22 @@ main (int argc, char *argv [])
 		// the X keyframes for the 4 points of the rectangle
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (100.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)2 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)2 * 10000000));
 		square_x_anim->AddKeyFrame (frame);
 
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (100.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)4 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)4 * 10000000));
 		square_x_anim->AddKeyFrame (frame);
 
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (50.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)6 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)6 * 10000000));
 		square_x_anim->AddKeyFrame (frame);
 
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (50.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)8 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)8 * 10000000));
 		square_x_anim->AddKeyFrame (frame);
 
 		sb->AddChild (square_x_anim);
@@ -502,22 +502,22 @@ main (int argc, char *argv [])
 		// the Y keyframes for the 4 points of the rectangle
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (50.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)2 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)2 * 10000000));
 		square_y_anim->AddKeyFrame (frame);
 
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (100.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)4 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)4 * 10000000));
 		square_y_anim->AddKeyFrame (frame);
 
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (100.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)6 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)6 * 10000000));
 		square_y_anim->AddKeyFrame (frame);
 
 		frame = new LinearDoubleKeyFrame ();
 		frame->SetValue (50.0);
-		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)8 * 1000000));
+		frame->SetKeyTime (KeyTime::FromTimeSpan ((TimeSpan)8 * 10000000));
 		square_y_anim->AddKeyFrame (frame);
 
 		sb->AddChild (square_y_anim);
