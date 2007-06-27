@@ -44,7 +44,7 @@
 	  <Storyboard x:Name="animation">
 	    <DoubleAnimation BeginTime="0:0:0" StoryBoard.TargetName="LoadingMessage"
 			     StoryBoard.TargetProperty="Opacity" From="0" To="1"
-			     Duration="0:0:10" RepeatBehavior="1" AutoReverse="true"/>
+			     Duration="0:0:10" RepeatBehavior="Forever" AutoReverse="true"/>
 	  </Storyboard>
 	</BeginStoryboard>
       </EventTrigger>

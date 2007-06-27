@@ -11,6 +11,7 @@
  */
 using System;
 using IO=System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -26,7 +27,12 @@ namespace Desklet.Weather
 
 		public string StationCode {
 			get { return stationCode; }
-			set { stationCode = value; }
+			set { stationCode = value;}
+		}
+
+		public void DoUpdateData (Downloader downloader)
+		{
+			Console.WriteLine ("Download complete");
 		}
 		
 		public void UpdateData ()
@@ -35,6 +41,20 @@ namespace Desklet.Weather
 
 			Storyboard animation = FindName ("animation") as Storyboard;
 			animation.Begin ();
+
+			Downloader downloader = new Downloader ();
+			downloader.Completed += delegate {
+				DoUpdateData (downloader);
+				animation.Stop ();
+			};
+
+			Console.WriteLine ("Loading data...");
+			
+			downloader.Open (
+				"GET",
+				new Uri (String.Format ("http://weather.noaa.gov/cgi-bin/mgetmetar.pl?cccc={0}", stationCode)),
+				true);
+			downloader.Send ();
 		}
 		
 		public void Page_Loaded (object sender, EventArgs e)
@@ -47,6 +67,7 @@ namespace Desklet.Weather
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
 
 			Storyboard run = FindName ("run") as Storyboard;
+			run.Begin ();
 			UpdateData ();
 		}
 	}
