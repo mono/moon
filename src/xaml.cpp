@@ -1699,8 +1699,8 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 {
 	if (parent->element_type == XamlElementInstance::PROPERTY) {
 		char **prop_name = g_strsplit (parent->element_name, ".", -1);
-		XamlElementInfo *powner = (XamlElementInfo *) g_hash_table_lookup (default_namespace->element_map, prop_name [0]);
-		DependencyProperty *dep = DependencyObject::GetDependencyProperty (powner->dependency_type, prop_name [1]);
+		Type *owner = Type::Find (prop_name [0]);
+		DependencyProperty *dep = DependencyObject::GetDependencyProperty (owner->type, prop_name [1]);
 
 		g_strfreev (prop_name);
 
