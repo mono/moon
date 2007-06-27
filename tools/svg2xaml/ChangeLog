@@ -1,0 +1,7 @@
+2007-06-27  Andreia Gaita  <avidigal@novell.com>
+
+	* svg2xaml.xslt: initial checkin. 
+	* svg2xaml_standalone.xslt: initial checkin. 
+	Same as svg2xaml.xsl, but doesn't use microsoft
+	xslt extensions (node-set), so it can work with
+	other versions of the xslt spec.
