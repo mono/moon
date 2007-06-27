@@ -1,6 +1,6 @@
 using System;
 
-namespace Desklets.Weather
+namespace Desklet.Weather
 {
 	public class App
 	{

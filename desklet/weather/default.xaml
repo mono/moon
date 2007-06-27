@@ -1,0 +1,38 @@
+<?xml version="1.0" ?><!-- -*- nxml -*- -->
+<Canvas
+    xmlns="http://schemas.microsoft.com/client/2007"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="Desklet.Weather.Default;assembly=bin/weather.dll"
+    Loaded="Page_Loaded" Width="553" Height="263">
+  <Canvas.Resources>
+    <Storyboard x:Name="run"/>
+  </Canvas.Resources>
+
+  <Canvas.Background>
+    <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+      <GradientStop Color="#FFF3A20A" Offset="0"/>
+      <GradientStop Color="#FF09620C" Offset="1"/>
+    </LinearGradientBrush>
+  </Canvas.Background>
+  <Image x:Name="WeatherIcon" Width="64" Height="64" Canvas.Left="8" Canvas.Top="8"/>
+  <Image x:Name="WindIcon" Width="64" Height="64" Canvas.Left="86" Canvas.Top="8"/>
+  <Canvas x:Name="Updating" Width="180" Height="80" Canvas.Left="223" Canvas.Top="111" Background="#FF080303">
+    <TextBlock RenderTransformOrigin="0.5,0.5" x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="31" Canvas.Top="23" FontFamily="Tahoma" FontSize="22" FontWeight="Bold" TextWrapping="Wrap">
+      <TextBlock.RenderTransform>
+	<TransformGroup>
+	  <ScaleTransform ScaleX="1" ScaleY="1"/>
+	  <SkewTransform AngleX="0" AngleY="0"/>
+	  <RotateTransform Angle="0"/>
+	  <TranslateTransform X="0" Y="0"/>
+	</TransformGroup>
+      </TextBlock.RenderTransform>
+      <TextBlock.Foreground>
+	<LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+	  <GradientStop Color="#FF1BC28D" Offset="0"/>
+	  <GradientStop Color="#FFADC85C" Offset="1"/>
+	</LinearGradientBrush>
+      </TextBlock.Foreground>
+      <Run Language="en">UPDATING</Run>
+    </TextBlock>
+  </Canvas>
+</Canvas>

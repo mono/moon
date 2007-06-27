@@ -15,7 +15,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Desklets.Weather
+namespace Desklet.Weather
 {
 	class Regexps
 	{

@@ -1,5 +1,9 @@
 2007-06-27  Marek Habersack  <mhabersack@novell.com>
 
+        * Changed namespace to Desklet.Weather
+	* default.xaml: added
+	* default.xaml.cs: added
+	* moved icons/ directory to data/
 	* Metar.cs: added Weather decoding
 
 2007-06-26  Marek Habersack  <mhabersack@novell.com>

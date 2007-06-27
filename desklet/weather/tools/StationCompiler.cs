@@ -601,7 +601,7 @@ public class App
 	static void CompileLocations (string outputFile)
 	{
 		CodeCompileUnit unit = new CodeCompileUnit ();
-		CodeNamespace ns = new CodeNamespace ("Desklets.Weather");
+		CodeNamespace ns = new CodeNamespace ("Desklet.Weather");
 
 		unit.Namespaces.Add (ns);
 		ns.Imports.Add (new CodeNamespaceImport ("System"));

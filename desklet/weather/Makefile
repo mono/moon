@@ -1,5 +1,5 @@
 DESKLET = weather
-SOURCES = Locations.cs LocationsGenerated.cs Metar.cs
+SOURCES = Locations.cs LocationsGenerated.cs Metar.cs default.xaml.cs
 
 # you dont need to change below lines
 
