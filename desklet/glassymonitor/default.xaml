@@ -23,15 +23,15 @@
 
 	<TextBlock x:Name="received"
 		FontSize="10" FontWeight="ExtraBlack" Foreground="#66FFFFFF"
-		Canvas.Left="110" Canvas.Top="22" Text="0" />
+		Canvas.Left="120" Canvas.Top="22" Text="0" />
 
 	<TextBlock x:Name="sent"
 		FontSize="10" FontWeight="ExtraBlack" Foreground="#66FFFFFF"
-		Canvas.Left="110" Canvas.Top="34" Text="0" />
+		Canvas.Left="120" Canvas.Top="34" Text="0" />
 
 	<!-- border -->
 	<Rectangle cFill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"
-		Canvas.Left="1" Canvas.Top="1" Width="200" Height="50"
+		Canvas.Left="1" Canvas.Top="1" Width="220" Height="50"
 		RadiusX="10" RadiusY="10">
 		<Rectangle.Fill>
 			<LinearGradientBrush SpreadMethod="Pad" EndPoint="1.0,1.1" StartPoint="0.0,0.0">
