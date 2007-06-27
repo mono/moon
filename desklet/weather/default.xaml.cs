@@ -18,13 +18,28 @@ using System.Windows.Media.Animation;
 
 namespace Desklet.Weather
 {
+	enum TemperatureScale {
+		Min,
+		Celcius,
+		Kelvin,
+		Fahrenheit,
+		Max
+	};
+	
 	public class Default : Canvas
 	{
 		Canvas updCanvas;
 		Image weatherIcon;
 		TextBlock stationID;
+		TextBlock temperature;
+		TextBlock dewPoint;
+		TextBlock dewPointLabel;
+		
 		string iconsDir;
-
+		Metar metar;
+		
+		TemperatureScale scale = TemperatureScale.Celcius;
+		
 		public void DownloadComplete (Downloader downloader)
 		{
 			string response = downloader.GetResponseText ("What?");
@@ -41,7 +56,6 @@ namespace Desklet.Weather
 				idxEnd = response.Length;
 			
 			string metarData = response.Substring (idxStart, idxEnd - idxStart);
-			Metar metar;
 
 			try {
 				metar = new Metar (metarData);
@@ -49,8 +63,7 @@ namespace Desklet.Weather
 				metar = null;
 			}
 
-			if (metar == null)
-				return;
+			SetTemperature ();
 		}
 
 		public void DownloadFailed (Downloader downloader)
@@ -85,7 +98,54 @@ namespace Desklet.Weather
 			downloader.Send ();
 		}
 
-		public void AdjustLayout ()
+		void SetTemperature ()
+		{
+			if (metar == null)
+				return;
+
+			double temp = 0.0, dew = 0.0;
+
+			switch (scale) {
+				case TemperatureScale.Celcius:
+					temp = metar.Temperature.Celcius;
+					dew = metar.DewPoint.Celcius;
+					break;
+
+				case TemperatureScale.Kelvin:
+					temp = metar.Temperature.Kelvin;
+					dew = metar.DewPoint.Kelvin;
+					break;
+
+				case TemperatureScale.Fahrenheit:
+					temp = metar.Temperature.Fahrenheit;
+					dew = metar.DewPoint.Fahrenheit;
+					break;
+			}
+
+			char scaleChar = scale.ToString () [0];
+			temperature.Text = String.Format ("{0} °{1}", temp, scaleChar);
+			dewPoint.Text = String.Format ("{0} °{1}", dew, scaleChar);
+			
+			AdjustTemperatureLayout ();
+		}
+
+		void AdjustTemperatureLayout ()
+		{
+			double pos = (double)temperature.GetValue (Canvas.LeftProperty) + temperature.ActualWidth + 5.0;
+			dewPointLabel.SetValue (Canvas.LeftProperty, pos);
+			pos += (double)dewPointLabel.ActualWidth + 5.0;
+			dewPoint.SetValue (Canvas.LeftProperty, pos);
+		}
+		
+		void ChangeTemperatureScale ()
+		{
+			scale++;
+			if (scale == TemperatureScale.Max)
+				scale = TemperatureScale.Min + 1;
+			SetTemperature ();
+		}
+		
+		void AdjustLayout ()
 		{
 			TextBlock stationIdLabel = FindName ("StationIDLabel") as TextBlock;
 
@@ -103,10 +163,14 @@ namespace Desklet.Weather
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
 
 			stationID = FindName ("StationID") as TextBlock;
+			temperature = FindName ("Temperature") as TextBlock;
+			dewPoint = FindName ("DewPoint") as TextBlock;
+			dewPointLabel = FindName ("DewPointLabel") as TextBlock;
 			
-			Storyboard run = FindName ("run") as Storyboard;
-			run.Begin ();
-
+			temperature.MouseLeftButtonUp += delegate {
+				ChangeTemperatureScale ();
+			};
+			
 			AdjustLayout ();
 			UpdateData ();
 		}

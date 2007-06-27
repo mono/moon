@@ -23,12 +23,21 @@
     </Rectangle.Fill>
   </Rectangle>
 
+  <Image x:Name="WeatherIcon" Width="64" Height="64" Canvas.Left="8" Canvas.Top="8"/>
+  <Image x:Name="WindIcon" Width="64" Height="64" Canvas.Left="86" Canvas.Top="8"/>
+
+  <!-- station id -->
   <TextBlock x:Name="StationIDLabel" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF" 
 	     Text="Station:"/>
   <TextBlock x:Name="StationID" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
 
-  <Image x:Name="WeatherIcon" Width="64" Height="64" Canvas.Left="8" Canvas.Top="8"/>
-  <Image x:Name="WindIcon" Width="64" Height="64" Canvas.Left="86" Canvas.Top="8"/>
+  <!-- temperature -->
+  <TextBlock x:Name="Temperature" Canvas.Left="100" Canvas.Top="64" FontSize="16" FontWeight="Bold" Foreground="LightYellow" 
+	     Text="0 °C"/>
+  <TextBlock x:Name="DewPointLabel" Canvas.Left="100" Canvas.Top="64" FontSize="16" FontWeight="Bold" Foreground="#66FFFFFF"
+	     Text=", dew point"/>
+  <TextBlock x:Name="DewPoint" Canvas.Left="100" Canvas.Top="64" FontSize="16" FontWeight="Bold" Foreground="LightYellow"
+	     Text="0 °C"/>
 
   <Canvas x:Name="Updating" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0.5">
     <TextBlock x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="0" Canvas.Top="0" FontFamily="Tahoma" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Opacity="1">
