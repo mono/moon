@@ -1,5 +1,14 @@
 2007-06-27  Andreia Gaita  <avidigal@novell.com>
 
+	* sv2xaml.cs, svg2xaml.mdp: command-line tool to
+	convert svg to xaml
+	* svg2xaml-gui.mdp: new name of the gui app and 
+	project 
+	* svg2xaml.mds: add a nice solution for both apps,
+	while I'm at it.
+
+2007-06-27  Andreia Gaita  <avidigal@novell.com>
+
 	* svg2xaml.mdp, Makefile, Main.cs, MainWindow.cs
 	  gtk-gui/generated.cs, gtk-gui/gui.stetic,
 	  gtk-gui/MainWindow.cs: 

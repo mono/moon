@@ -1,0 +1,20 @@
+<Combine name="svg2xaml" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="svg2xaml-gui" configuration="Debug" />
+      <Entry build="True" name="svg2xaml" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="svg2xaml-gui" configuration="Release" />
+      <Entry build="True" name="svg2xaml" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="svg2xaml-gui" single="True">
+    <Execute type="None" entry="svg2xaml-gui" />
+    <Execute type="None" entry="svg2xaml" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./svg2xaml-gui.mdp" />
+    <Entry filename="./svg2xaml.mdp" />
+  </Entries>
+</Combine>
