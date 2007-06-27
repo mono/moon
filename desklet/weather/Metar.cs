@@ -771,17 +771,17 @@ namespace Desklet.Weather
 				}
 
 				try {
-					minute = Convert.ToInt32 (groups [1]);
-				} catch {
-					minute = now.Minute;
-				}
-
-				try {
-					hour = Convert.ToInt32 (groups [2]);
+					hour = Convert.ToInt32 (groups [1]);
 				} catch {
 					hour = now.Hour;
 				}
 
+				try {
+					minute = Convert.ToInt32 (groups [2]);
+				} catch {
+					minute = now.Minute;
+				}
+				
 				time = new DateTime (now.Year, now.Month, day, hour, minute, 0);
 				return;				
 			}

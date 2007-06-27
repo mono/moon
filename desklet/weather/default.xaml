@@ -32,12 +32,14 @@
   <TextBlock x:Name="StationID" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
 
   <!-- temperature -->
-  <TextBlock x:Name="Temperature" Canvas.Left="100" Canvas.Top="64" FontSize="16" FontWeight="Bold" Foreground="LightYellow" 
-	     Text="0 °C"/>
-  <TextBlock x:Name="DewPointLabel" Canvas.Left="100" Canvas.Top="64" FontSize="16" FontWeight="Bold" Foreground="#66FFFFFF"
-	     Text=", dew point"/>
-  <TextBlock x:Name="DewPoint" Canvas.Left="100" Canvas.Top="64" FontSize="16" FontWeight="Bold" Foreground="LightYellow"
-	     Text="0 °C"/>
+  <Canvas x:Name="TemperaturePanel" Canvas.Left="100" Canvas.Top="64">
+    <TextBlock x:Name="Temperature" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="LightYellow" 
+	       Text="0 °C"/>
+    <TextBlock x:Name="DewPointLabel" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF"
+	       Text=", dew point"/>
+    <TextBlock x:Name="DewPoint" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="LightYellow"
+	       Text="0 °C"/>
+  </Canvas>
 
   <Canvas x:Name="Updating" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0.5">
     <TextBlock x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="0" Canvas.Top="0" FontFamily="Tahoma" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Opacity="1">

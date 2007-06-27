@@ -29,7 +29,10 @@ namespace Desklet.Weather
 	public class Default : Canvas
 	{
 		Canvas updCanvas;
+		Canvas temperaturePanel;
+		
 		Image weatherIcon;
+		
 		TextBlock stationID;
 		TextBlock temperature;
 		TextBlock dewPoint;
@@ -59,35 +62,31 @@ namespace Desklet.Weather
 
 			try {
 				metar = new Metar (metarData);
-			} catch {
+			} catch (Exception ex) {
+				Console.WriteLine ("metar failed: {0}", ex);
 				metar = null;
 			}
-
 			SetTemperature ();
 		}
 
 		public void DownloadFailed (Downloader downloader)
 		{
 			// report failure
+			Console.WriteLine ("Download failed");
 		}
 		
 		public void UpdateData ()
 		{
 			updCanvas.Visibility = Visibility.Visible;
 
-			Storyboard animation = FindName ("animation") as Storyboard;
-			animation.Begin ();
-
 			Downloader downloader = new Downloader ();
 			downloader.Completed += delegate {
 				DownloadComplete (downloader);
-				animation.Stop ();
 				updCanvas.Visibility = Visibility.Hidden;
 			};
 
 			downloader.DownloadFailed += delegate {
 				DownloadFailed (downloader);
-				animation.Stop ();
 				updCanvas.Visibility = Visibility.Hidden;
 			};
 			
@@ -103,6 +102,9 @@ namespace Desklet.Weather
 			if (metar == null)
 				return;
 
+			if (temperaturePanel.Visibility == Visibility.Hidden)
+				temperaturePanel.Visibility = Visibility.Visible;
+			
 			double temp = 0.0, dew = 0.0;
 
 			switch (scale) {
@@ -155,9 +157,6 @@ namespace Desklet.Weather
 		
 		public void Page_Loaded (object sender, EventArgs e)
 		{
-			updCanvas = FindName ("Updating") as Canvas;
-			updCanvas.Visibility = Visibility.Hidden;
-
 			iconsDir = IO.Path.Combine (IO.Path.Combine (Environment.CurrentDirectory, "data"), "icons");
 			weatherIcon = FindName ("WeatherIcon") as Image;
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
@@ -166,10 +165,15 @@ namespace Desklet.Weather
 			temperature = FindName ("Temperature") as TextBlock;
 			dewPoint = FindName ("DewPoint") as TextBlock;
 			dewPointLabel = FindName ("DewPointLabel") as TextBlock;
-			
-			temperature.MouseLeftButtonUp += delegate {
+			temperaturePanel = FindName ("TemperaturePanel") as Canvas;
+
+			temperaturePanel.Visibility = Visibility.Hidden;
+			temperaturePanel.MouseLeftButtonUp += delegate {
 				ChangeTemperatureScale ();
 			};
+
+			updCanvas = FindName ("Updating") as Canvas;
+			updCanvas.Visibility = Visibility.Visible;
 			
 			AdjustLayout ();
 			UpdateData ();
