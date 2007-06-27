@@ -30,6 +30,7 @@ namespace Desklet.Weather
 	{
 		Canvas updCanvas;
 		Canvas temperaturePanel;
+		Canvas cloudsPanel;
 		
 		Image weatherIcon;
 		
@@ -37,6 +38,7 @@ namespace Desklet.Weather
 		TextBlock temperature;
 		TextBlock dewPoint;
 		TextBlock dewPointLabel;
+		TextBlock loadingMessage;
 		
 		Storyboard show_updating;
 		Storyboard hide_updating;
@@ -71,6 +73,7 @@ namespace Desklet.Weather
 				metar = null;
 			}
 			SetTemperature ();
+			SetClouds ();
 		}
 
 		public void DownloadFailed (Downloader downloader)
@@ -86,8 +89,9 @@ namespace Desklet.Weather
 			Downloader downloader = new Downloader ();
 			downloader.Completed += delegate {
 				show_updating.Stop ();
-				//hide_updating.Begin ();
-				updCanvas.Opacity = 0;
+				hide_updating.Begin ();
+				// updCanvas.Opacity = 0;
+// 				loadingMessage.Text = "DONE";
 				DownloadComplete (downloader);
 			};
 
@@ -104,6 +108,10 @@ namespace Desklet.Weather
 			downloader.Send ();
 		}
 
+		void SetClouds ()
+		{
+		}
+		
 		void SetTemperature ()
 		{
 			if (metar == null)
@@ -156,8 +164,12 @@ namespace Desklet.Weather
 		{
 			TextBlock stationIdLabel = FindName ("StationIDLabel") as TextBlock;
 
-			double idLeft = (double)stationID.GetValue (Canvas.LeftProperty);
-			stationIdLabel.SetValue (Canvas.LeftProperty, idLeft - stationIdLabel.ActualWidth - 5.0);
+			double val = (double)stationID.GetValue (Canvas.LeftProperty);
+			stationIdLabel.SetValue (Canvas.LeftProperty, val - stationIdLabel.ActualWidth - 5.0);
+
+			// doesn't work - Height is 0, should it be?
+//			val = (double)temperaturePanel.GetValue (Canvas.HeightProperty);
+//			cloudsPanel.SetValue (Canvas.TopProperty, val + 5.0);
 		}
 
 		public DependencyObject LoadControl (string name)
@@ -179,6 +191,8 @@ namespace Desklet.Weather
 			show_updating = LoadControl ("show_updating") as Storyboard;
 			hide_updating = LoadControl ("hide_updating") as Storyboard;
 			updCanvas = LoadControl ("UpdatingCanvas") as Canvas;
+			cloudsPanel = LoadControl ("CloudsVisPanel") as Canvas;
+			loadingMessage = LoadControl ("LoadingMessage") as TextBlock;
 		}
 		
 		public void Page_Loaded (object sender, EventArgs e)
