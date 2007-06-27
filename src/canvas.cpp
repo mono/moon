@@ -92,7 +92,15 @@ Canvas::GetBounds ()
 	cn = (Collection::Node *) children->list->First ();
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 		UIElement *item = (UIElement *) cn->obj;
-		
+
+		/* if the element is collapsed, it doesn't figure into
+		   layout, and therefore shouldn't figure into our
+		   bounding box computation.  Hidden means it still
+		   takes up space, just isn't drawn and doesn't take
+		   part in HitTest stuff. */
+		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() == VisibilityCollapsed)
+			continue;
+
 		item->GetBounds ();
 
 		//space (levelb + 4);
@@ -175,11 +183,14 @@ Canvas::HandleMotion (Surface *s, int state, double x, double y)
 	// 
 	// Walk the list in reverse
 	//
-	if (!(cn = (Collection::Node *) children->list->Last ()))
+	if (!(cn = (Collection::Node *) children->z_sorted_list->Last ()))
 		goto leave;
 	
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
 		UIElement *item = (UIElement *) cn->obj;
+
+		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
+			continue;
 		
 		// Bounds check:
 		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
@@ -222,12 +233,15 @@ Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, 
 	// 
 	// Walk the list in reverse
 	//
-	if (!(cn = (Collection::Node *) children->list->Last ()))
+	if (!(cn = (Collection::Node *) children->z_sorted_list->Last ()))
 		goto leave;
 	
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
 		UIElement *item = (UIElement *) cn->obj;
 		
+		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
+			continue;
+
 		// Quick bound check:
 		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
 			continue;

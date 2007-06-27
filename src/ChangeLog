@@ -1,3 +1,11 @@
+2007-06-27  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::GetBounds): Collapsed elements shouldn't
+	take part in bounds computation.
+	(Canvas::HandleButton): !Visible elements don't take part in hit
+	testing.
+	(Canvas::HandleMotion): same here.
+
 2007-06-27  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Use Type to lookup the property owner, because it
