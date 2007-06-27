@@ -1,5 +1,5 @@
 DESKLET = picasa
-SOURCES = picasa.cs
+SOURCES = picasa.cs ../desklets.cs
 LIBS = bin/Google.GData.Client.dll
 
 include ../rules.make
@@ -12,7 +12,7 @@ download-google:
 	unzip -j -o /tmp/google/google.zip root/clients/cs/lib/Release/Google.GData.Client.dll -d bin
 	rm -rf /tmp/google
 
-$(ASSEMBLY): $(DSOURCES) $(LIBS)
+$(ASSEMBLY): $(DSOURCES)
 	mkdir -p bin
-	gmcs -debug -target:library -r:$(LIBS) -pkg:silver -out:$(ASSEMBLY) $(DSOURCES)
+	gmcs -debug -target:library -r:$(LIBS) -pkg:silver -pkg:gtk-sharp-2.0 -out:$(ASSEMBLY) $(DSOURCES)
 

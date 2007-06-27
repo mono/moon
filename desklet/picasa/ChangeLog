@@ -1,3 +1,8 @@
 2007-06-27  Rodrigo Kumpera  <rkumpera@novell.com>
 
+	* picasa.cs: removed comented code, now using Desklet.Invoke to manage async calls
+	* Makefile: fixed
+
+2007-06-27  Rodrigo Kumpera  <rkumpera@novell.com>
+
 	* ChangeLog: Added.

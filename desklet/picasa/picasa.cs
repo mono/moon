@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+using Mono.Desklets;
 
 namespace Desklets
 {
@@ -53,14 +54,13 @@ namespace Desklets
 
 	public class PicasaPanel : Canvas 
 	{
-		String[] urls;// = new String[] { "mono.png", "img1.png", "img2.png", "img3.png"};
+		String[] urls;
 		
 		List<SlideImage> images = new List<SlideImage>();
 		int imgIdx=0;
 		
 		Storyboard storyBoard;
 		SlideImage active;
-		Rectangle rec;
 		
 		public void DownloadImage (int idx)
 		{
@@ -79,11 +79,11 @@ namespace Desklets
 		}
 		
 		public void DisplayNextImage () {
-			Console.WriteLine ("-----displaying image "+imgIdx);
+			Console.WriteLine ("-----displaying image "+imgIdx+" - "+DateTime.Now);
 
 			SlideImage img = images[imgIdx];
 			if (!img.Ready) {
-				Console.WriteLine ("----bummer image not ready\n");
+				Console.WriteLine ("----bummer image not ready "+DateTime.Now);
 				img.ImageReady += delegate { DisplayNextImage(); };
 				return;
 			}
@@ -101,48 +101,17 @@ namespace Desklets
 		public void PageLoaded (object o, EventArgs e) 
 	    {
 			storyBoard = FindName ("run") as Storyboard;
-			rec = FindName ("rec") as Rectangle;
-
-			//FIXME, make this download in the background (or try to)
-			enumerateImages ();
-
 			storyBoard.Completed += delegate { DisplayNextImage (); };
-			DownloadImage (0);			
 
-			/*img = new Image ();
-			img2 = new Image ();
-			
-			Children.Add (img);
-
-			Downloader downloader = new Downloader ();
-			img.SetSource (downloader, images[0]);
-			
-			downloader.Completed += delegate {
-				downloader = new Downloader ();
-				img2.SetSource (downloader, images[1]);
-			};
-
-			img.MediaEnded += delegate {
-				Console.WriteLine ("img1 ended :"+DateTime.Now);
-			};
-
-			img2.MediaEnded += delegate {
-				Console.WriteLine ("img2 is ready :"+DateTime.Now);
-				storyBoard.Begin();
-			};
-			
-			
-			storyBoard.Completed += delegate {
-				Console.WriteLine ("story board finished :"+DateTime.Now);
-				
-				Children.Remove (img);
-				Children.Add (img2);
-			};*/
+			EventHandler handler = delegate { enumerateImages (); };
+			handler.BeginInvoke(null, null, 
+			null, null);
 		}
 
 
 		public void enumerateImages ()
 		{
+			//FIXME make this configurable, it should at least flip between all albuns of the user
 			String feed = "http://picasaweb.google.com/data/feed/api/user/kumpera/album/RandomPhotos?kind=photo";
 
             FeedQuery query = new FeedQuery();
@@ -157,6 +126,8 @@ namespace Desklets
 				urls[i++] = entry.Content.Src.Content;
 				Console.WriteLine ("content: "+entry.Content.Src.Content);
 			}
+			
+			Desklet.Invoke(delegate { DownloadImage (0); });
 		}
 	}
 }
