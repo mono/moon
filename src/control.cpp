@@ -21,26 +21,26 @@
 #include "control.h"
 
 void 
-Control::update_xform ()
+Control::UpdateTransform ()
 {
 	if (real_object){
-		real_object->update_xform ();
+		real_object->UpdateTransform ();
 		absolute_xform = real_object->absolute_xform;
 	}
 }
 
 void 
-Control::render (cairo_t *cr, int x, int y, int width, int height)
+Control::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	if (real_object)
-		real_object->dorender (cr, x, y, width, height);
+		real_object->DoRender (cr, x, y, width, height);
 }
 
 void 
-Control::getbounds ()
+Control::GetBounds ()
 {
 	if (real_object){
-		real_object->getbounds ();
+		real_object->GetBounds ();
 		x1 = real_object->x1;
 		y1 = real_object->y1;
 		x2 = real_object->x2;
@@ -52,61 +52,61 @@ Control::getbounds ()
 }
 
 void 
-Control::get_xform_for (UIElement *item, cairo_matrix_t *result)
+Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
 	if (parent != NULL){
-		parent->get_xform_for (this, result);
+		parent->GetTransformFor (this, result);
 	} else {
 		cairo_matrix_init_identity (result);
 	}
 }
 
 Point 
-Control::getxformorigin ()
+Control::GetTransformOrigin ()
 {
 	if (real_object)
-		return real_object->getxformorigin ();
+		return real_object->GetTransformOrigin ();
 	else
 		return Point (0, 0);
 }
 
 bool 
-Control::inside_object (Surface *s, double x, double y)
+Control::InsideObject (Surface *s, double x, double y)
 {
 	if (real_object)
-		return real_object->inside_object (s, x, y);
+		return real_object->InsideObject (s, x, y);
 	else
 		return false;
 }
 
 bool
-Control::handle_motion (Surface *s, int state, double x, double y)
+Control::HandleMotion (Surface *s, int state, double x, double y)
 {
 	if (real_object)
-		return real_object->handle_motion (s, state, x, y);
+		return real_object->HandleMotion (s, state, x, y);
 	return false;
 }
 
 bool
-Control::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
+Control::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
 	if (real_object)
-		return real_object->handle_button (s, cb, state, x, y);
+		return real_object->HandleButton (s, cb, state, x, y);
 	return false;
 }
 
 void 
-Control::enter (Surface *s, int state, double x, double y)
+Control::Enter (Surface *s, int state, double x, double y)
 {
 	if (real_object)
-		real_object->enter (s, state, x, y);
+		real_object->Enter (s, state, x, y);
 }
 
 void 
-Control::leave (Surface *s)
+Control::Leave (Surface *s)
 {
 	if (real_object)
-		real_object->leave (s);
+		real_object->Leave (s);
 }
 
 void 

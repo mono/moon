@@ -59,9 +59,9 @@ class Shape : public FrameworkElement {
 	//
 	// Overrides from UIElement.
 	//
-	virtual void render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void getbounds ();
-	virtual bool inside_object (Surface *s, double x, double y);
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void GetBounds ();
+	virtual bool InsideObject (Surface *s, double x, double y);
 	
 	//
 	// new virtual methods for shapes
@@ -113,7 +113,7 @@ class Ellipse : public Shape {
 	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
-	virtual Point getxformorigin ();
+	virtual Point GetTransformOrigin ();
 
 	void Draw (cairo_t *cr);
 };
@@ -134,7 +134,7 @@ class Rectangle : public Shape {
 
 	void Draw (cairo_t *cr);
 
-	virtual Point getxformorigin ();
+	virtual Point GetTransformOrigin ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -162,7 +162,7 @@ class Line : public Shape {
 	void Draw (cairo_t *cr);
 
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
-	// virtual Point getxformorigin ();
+	// virtual Point GetTransformOrigin ();
 
 	virtual bool CanFill () { return false; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -191,7 +191,7 @@ class Polygon : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::POLYGON; };
 
 	// Polygon has no center to compute, it's always 0,0 because it provides it's own start and end
-	// virtual Point getxformorigin ();
+	// virtual Point GetTransformOrigin ();
 
 	void Draw (cairo_t *cr);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -216,7 +216,7 @@ class Polyline : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::POLYLINE; };
 
 	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
-	// virtual Point getxformorigin ();
+	// virtual Point GetTransformOrigin ();
 
 	void Draw (cairo_t *cr);
 
@@ -247,7 +247,7 @@ class Path : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::PATH; };
 
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
-	// virtual Point getxformorigin ();
+	// virtual Point GetTransformOrigin ();
 
 	void Draw (cairo_t *cr);
 

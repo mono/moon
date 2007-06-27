@@ -39,15 +39,15 @@ class Canvas : public Panel {
 	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
-	virtual Point getxformorigin () { return Point (0, 0); }
+	virtual Point GetTransformOrigin () { return Point (0, 0); }
 
-	virtual void render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void getbounds ();
-	virtual void update_xform ();
-	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
-	virtual bool handle_motion (Surface *s, int state, double x, double y);
-	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
-	virtual void leave (Surface *s);
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void GetBounds ();
+	virtual void UpdateTransform ();
+	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
+	virtual bool HandleMotion (Surface *s, int state, double x, double y);
+	virtual bool HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual void Leave (Surface *s);
 	
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
 	

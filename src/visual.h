@@ -21,10 +21,10 @@ class Visual : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::VISUAL; };	
 
 	//
-	// inside_object:
+	// InsideObject:
 	//   Returns whether the position x, y is inside the object
 	//
-	virtual bool inside_object (Surface *s, double x, double y) { return FALSE; }
+	virtual bool InsideObject (Surface *s, double x, double y) { return FALSE; }
 };
 
 

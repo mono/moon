@@ -31,7 +31,7 @@ class UIElement : public Visual {
 
 	UIElement *parent;
 
-	int dump_hierarchy (UIElement *obj);
+	int DumpHierarchy (UIElement *obj);
 
 	enum UIElementFlags {
 		IS_LOADED = 1
@@ -48,50 +48,50 @@ class UIElement : public Visual {
 	virtual Surface *GetSurface ();
 
 	//
-	// update_xform:
+	// UpdateTransform:
 	//   Updates the absolute_xform for this item
 	//
-	virtual void update_xform ();
+	virtual void UpdateTransform ();
 	
 	//
-	// render: 
+	// Render: 
 	//   Renders the given @item on the @surface.  the area that is
 	//   exposed is delimited by x, y, width, height
 	//
-	virtual void render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
-	void dorender (cairo_t *cr, int x, int y, int width, int height);
+	void DoRender (cairo_t *cr, int x, int y, int width, int height);
 
 	//
-	// get_size_for_brush:
+	// GetSizeForBrush:
 	//   Gets the size of the area to be painted by a Brush (needed for image/video scaling)
-	virtual void get_size_for_brush (cairo_t *cr, double *width, double *height);
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 
 	//
 	// updatebounds:
 	//   Updates the bounds of a item by requesting bounds update
 	//   to all of its parents.
 	//
-	void updatebounds ();
+	void UpdateBounds ();
 
 	// 
-	// getbounds:
+	// GetBounds:
 	//   Updates the bounding box for the given item, this uses the parent
 	//   chain to compute the composite affine.
 	//
 	// Output:
 	//   the item->x1,y1,x2,y2 values are updated.
 	// 
-	virtual void getbounds ();
+	virtual void GetBounds ();
 
 	//
-	// get_xform_for
+	// GetTransformFor
 	//   Obtains the affine transform for the given child, this is
 	//   implemented by containers
 
-	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
+	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
 	//
 	// Recomputes the bounding box, requests redraws, 
@@ -100,48 +100,48 @@ class UIElement : public Visual {
 	void FullInvalidate (bool render_xform);
 	
 	//
-	// gencenter:
+	// GetTransformOrigin:
 	//   Returns the transformation origin based on  of the item and the
 	//   xform_origin
-	virtual Point getxformorigin () {
+	virtual Point GetTransformOrigin () {
 		return Point (0, 0);
 	}
 
 	//
-	// inside_object:
+	// InsideObject:
 	//   Returns whether the position x, y is inside the object
 	//
-	virtual bool inside_object (Surface *s, double x, double y);
+	virtual bool InsideObject (Surface *s, double x, double y);
 	
 	//
-	// handle_motion:
+	// HandleMotion:
 	//   handles an mouse motion event, and dispatches it to anyone that
 	//   might want it.   Returns true if the event was within this UIElement
 	//   boundaries.
 	//
-	virtual bool handle_motion (Surface *s, int state, double x, double y);
+	virtual bool HandleMotion (Surface *s, int state, double x, double y);
 
 	//
-	// handle_button:
+	// HandleButton:
 	//   handles the button press or button release events and dispatches
 	//   it to all the objects that might be interested in it (nested
 	//   objects).
 	//
 	//   Returns true if the button click was handled. 
 	//
-	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual bool HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	
 	//
-	// enter:
+	// Enter:
 	//   Invoked when the mouse first enters this given object
 	//
-	virtual void enter (Surface *s, int state, double x, double y);
+	virtual void Enter (Surface *s, int state, double x, double y);
 	
 	//
-	// leave:
+	// Leave:
 	//   Invoke when the mouse leaves this given object
 	//
-	virtual void leave (Surface *s);
+	virtual void Leave (Surface *s);
 
 	//
 	// GetTotalOpacity

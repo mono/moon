@@ -232,7 +232,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 }
 
 void
-Shape::render (cairo_t *cr, int x, int y, int width, int height)
+Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	cairo_save (cr);
 	DoDraw (cr, true, true);
@@ -240,7 +240,7 @@ Shape::render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void 
-Shape::getbounds ()
+Shape::GetBounds ()
 {
 	Surface *s = item_get_surface (this);
 	
@@ -264,7 +264,7 @@ Shape::getbounds ()
 }
 
 bool
-Shape::inside_object (Surface *s, double x, double y)
+Shape::InsideObject (Surface *s, double x, double y)
 {
 	bool ret = false;
 
@@ -321,7 +321,7 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 	
 	if ((prop == UIElement::RenderTransformOriginProperty) ||
 	    (prop == UIElement::RenderTransformProperty)) {
-		update_xform ();
+		UpdateTransform ();
 	}
 }
 
@@ -508,7 +508,7 @@ Ellipse::Draw (cairo_t *cr)
 }
 
 Point
-Ellipse::getxformorigin ()
+Ellipse::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 
@@ -578,7 +578,7 @@ Rectangle::Draw (cairo_t *cr)
 }
 
 Point
-Rectangle::getxformorigin ()
+Rectangle::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 

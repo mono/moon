@@ -31,7 +31,7 @@ FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 }
 
 bool
-FrameworkElement::inside_object (Surface *s, double x, double y)
+FrameworkElement::InsideObject (Surface *s, double x, double y)
 {
 	// Quick bounding box check.
 	if (x < x1 || x > x2 || y < y1 || y > y2)

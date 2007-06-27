@@ -120,7 +120,7 @@ MediaElement::~MediaElement ()
 }
 
 void
-MediaElement::getbounds ()
+MediaElement::GetBounds ()
 {
 	Surface *s = item_get_surface (this);
 	
@@ -138,7 +138,7 @@ MediaElement::getbounds ()
 }
 
 Point
-MediaElement::getxformorigin ()
+MediaElement::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	return Point (user_xform_origin.x * mplayer->width,
@@ -146,7 +146,7 @@ MediaElement::getxformorigin ()
 }
 
 void
-MediaElement::render (cairo_t *cr, int x, int y, int width, int height)
+MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	Stretch stretch = media_base_get_stretch (this);
 	double h = framework_element_get_height (this);
@@ -839,7 +839,7 @@ Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, in
 }
 
 void
-Image::render (cairo_t *cr, int x, int y, int width, int height)
+Image::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	if (!surface)
 		return;
@@ -891,7 +891,7 @@ Image::render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void
-Image::getbounds ()
+Image::GetBounds ()
 {
 	Surface *s = item_get_surface (this);
 	
@@ -911,7 +911,7 @@ Image::getbounds ()
 }
 
 Point
-Image::getxformorigin ()
+Image::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 

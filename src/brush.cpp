@@ -348,7 +348,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	double w, h;
 	
 	if (uielement) {
-		uielement->get_size_for_brush (cairo, &w, &h);
+		uielement->GetSizeForBrush (cairo, &w, &h);
 	} else {
 		h = framework_element_get_height ((FrameworkElement *) uielement);
 		w = framework_element_get_width ((FrameworkElement *) uielement);
@@ -793,7 +793,7 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	double width, height;
 	
 	if (uielement) {
-		uielement->get_size_for_brush (cairo, &width, &height);
+		uielement->GetSizeForBrush (cairo, &width, &height);
 	} else {
 		double x1, y1, x2, y2;
 		
@@ -877,7 +877,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	}
 	
 	if (uielement) {
-		uielement->get_size_for_brush (cairo, &width, &height);
+		uielement->GetSizeForBrush (cairo, &width, &height);
 		opacity = uielement->GetTotalOpacity ();
 	} else {
 		double x1, y1, x2, y2;

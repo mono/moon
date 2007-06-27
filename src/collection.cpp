@@ -313,7 +313,7 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	UIElement *item = (UIElement *) data;
 	
 	item->parent = panel;
-	item->update_xform ();
+	item->UpdateTransform ();
 	item_update_bounds (panel);
 	item_invalidate (panel);
 }

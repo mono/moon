@@ -28,30 +28,30 @@
 void
 item_update_bounds (UIElement *item)
 {
-	item->updatebounds();
+	item->UpdateBounds();
 }
 
 void
-UIElement::updatebounds ()
+UIElement::UpdateBounds ()
 {
 	double cx1 = x1;
 	double cy1 = y1;
 	double cx2 = x2;
 	double cy2 = y2;
 	
-	getbounds ();
+	GetBounds ();
 	
 	//
 	// If we changed, notify the parent to recompute its bounds
 	//
 	if (x1 != cx1 || y1 != cy1 || y2 != cy2 || x2 != cx2){
 		if (parent != NULL)
-			parent->updatebounds();
+			parent->UpdateBounds();
 	}
 }
 
 void
-UIElement::get_xform_for (UIElement *item, cairo_matrix_t *result)
+UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
 	printf ("get_xform_for called on a non-container, you must implement this in your container\n");
 	exit (1);
@@ -172,12 +172,12 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 
 #if true
 int
-UIElement::dump_hierarchy (UIElement *obj)
+UIElement::DumpHierarchy (UIElement *obj)
 {
 	if (obj == NULL)
 		return 0;
 	
-	int n = dump_hierarchy (obj->parent);
+	int n = DumpHierarchy (obj->parent);
 	for (int i = 0; i < n; i++)
 		putchar (' ');
 	printf ("%s (%p)\n", dependency_object_get_name (obj), obj);
@@ -186,7 +186,7 @@ UIElement::dump_hierarchy (UIElement *obj)
 #endif
 
 void
-UIElement::update_xform ()
+UIElement::UpdateTransform ()
 {
 	cairo_matrix_t user_transform;
 	
@@ -203,11 +203,11 @@ UIElement::update_xform ()
 	item_get_render_affine (this, &user_transform);
 
 	if (parent != NULL)
-		parent->get_xform_for (this, &absolute_xform);
+		parent->GetTransformFor (this, &absolute_xform);
 	else
 		cairo_matrix_init_identity (&absolute_xform);
 	
-	Point p = getxformorigin ();
+	Point p = GetTransformOrigin ();
 	cairo_matrix_translate (&absolute_xform, p.x, p.y);
 	cairo_matrix_multiply (&absolute_xform, &user_transform, &absolute_xform);
 	cairo_matrix_translate (&absolute_xform, -p.x, -p.y);
@@ -257,7 +257,7 @@ UIElement::FullInvalidate (bool rendertransform)
 {
 	item_invalidate (this);
 	if (rendertransform)
-		update_xform ();
+		UpdateTransform ();
 	item_update_bounds (this);
 	item_invalidate (this);
 }
@@ -301,15 +301,15 @@ uielement_transform_point (UIElement *item, double *x, double *y)
 }
 
 bool
-UIElement::inside_object (Surface *s, double x, double y)
+UIElement::InsideObject (Surface *s, double x, double y)
 {
 	printf ("UIElement derivatives should implement inside object\n");
 }
 
 bool
-UIElement::handle_motion (Surface *s, int state, double x, double y)
+UIElement::HandleMotion (Surface *s, int state, double x, double y)
 {
-	if (inside_object (s, x, y)){
+	if (InsideObject (s, x, y)){
 		s->cb_motion (this, state, x, y);
 		return true;
 	} 
@@ -317,9 +317,9 @@ UIElement::handle_motion (Surface *s, int state, double x, double y)
 }
 
 bool
-UIElement::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
+UIElement::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
-	if (inside_object (s, x, y)){
+	if (InsideObject (s, x, y)){
 		cb (this, state, x, y);
 		return true;
 	}
@@ -327,41 +327,41 @@ UIElement::handle_button (Surface *s, callback_mouse_event cb, int state, double
 }
 
 void
-UIElement::enter (Surface *s, int state, double x, double y)
+UIElement::Enter (Surface *s, int state, double x, double y)
 {
 	s->cb_enter (this, state, x, y);
 }
 
 void
-UIElement::leave (Surface *s)
+UIElement::Leave (Surface *s)
 {
 	s->cb_mouse_leave (this);
 }
 
 void
-UIElement::getbounds ()
+UIElement::GetBounds ()
 {
 	g_warning ("UIElement:getbounds has been called. The derived class %s should have overridden it.",
 		   dependency_object_get_name (this));
 }
 
 void
-UIElement::dorender (cairo_t *cr, int x, int y, int width, int height)
+UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 {
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
-	render (cr, x, y, width, height);
+	Render (cr, x, y, width, height);
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 }
 
 void
-UIElement::render (cairo_t *cr, int x, int y, int width, int height)
+UIElement::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	g_warning ("UIElement:render has been called. The derived class %s should have overridden it.",
 		   dependency_object_get_name (this));
 }
 
 void
-UIElement::get_size_for_brush (cairo_t *cr, double *width, double *height)
+UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	double x1, y1, x2, y2;
 	

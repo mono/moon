@@ -161,11 +161,11 @@ public:
 	//
 	// Overrides
 	//
-	virtual void render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void get_size_for_brush (cairo_t *cr, double *width, double *height);
-	virtual void getbounds ();
-	virtual Point getxformorigin ();
-	virtual bool inside_object (Surface *s, double x, double y);
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual void GetBounds ();
+	virtual Point GetTransformOrigin ();
+	virtual bool InsideObject (Surface *s, double x, double y);
 	virtual Value *GetValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
@@ -238,9 +238,9 @@ public:
 	Glyphs () { }
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
 	
-	virtual void render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void getbounds ();
-	virtual Point getxformorigin ();
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void GetBounds ();
+	virtual Point GetTransformOrigin ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 

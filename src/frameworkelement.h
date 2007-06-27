@@ -23,7 +23,7 @@ class FrameworkElement : public UIElement {
 
 	void OnPropertyChanged (DependencyProperty *prop);
 
-	virtual bool inside_object (Surface *s, double x, double y);
+	virtual bool InsideObject (Surface *s, double x, double y);
 };
 
 G_BEGIN_DECLS

@@ -35,7 +35,7 @@ Canvas::GetSurface ()
 }
 
 void
-Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
+Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
 	*result = absolute_xform;
 
@@ -54,10 +54,10 @@ Canvas::get_xform_for (UIElement *item, cairo_matrix_t *result)
 }
 
 void
-Canvas::update_xform ()
+Canvas::UpdateTransform ()
 {
 	VisualCollection *children = GetChildren ();
-	UIElement::update_xform ();
+	UIElement::UpdateTransform ();
 	Collection::Node *n;
 
 	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
@@ -65,7 +65,7 @@ Canvas::update_xform ()
 	while (n != NULL) {
 		UIElement *item = (UIElement *) n->obj;
 		
-		item->update_xform ();
+		item->UpdateTransform ();
 		
 		n = (Collection::Node *) n->Next ();
 	}
@@ -79,7 +79,7 @@ void space (int n)
 static int levelb = 0;
 
 void
-Canvas::getbounds ()
+Canvas::GetBounds ()
 {
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
@@ -93,7 +93,7 @@ Canvas::getbounds ()
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 		UIElement *item = (UIElement *) cn->obj;
 		
-		item->getbounds ();
+		item->GetBounds ();
 
 		//space (levelb + 4);
 		//printf ("Item (%s) bounds %g %g %g %g\n", 
@@ -160,7 +160,7 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 }
 
 bool
-Canvas::handle_motion (Surface *s, int state, double x, double y)
+Canvas::HandleMotion (Surface *s, int state, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
 	bool handled = false;
@@ -179,26 +179,26 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
 			continue;
 		
-		handled = item->handle_motion (s, state, x, y);
+		handled = item->HandleMotion (s, state, x, y);
 		if (handled){
 			if (item != current_item){
 				if (current_item != NULL)
-					current_item->leave (s);
+					current_item->Leave (s);
 
 				current_item = item;
-				current_item->enter (s, state, x, y);
+				current_item->Enter (s, state, x, y);
 			}
 			goto leave;
 		} 
 	}
 
 	if (current_item != NULL){
-		current_item->leave (s);
+		current_item->Leave (s);
 		current_item = NULL;
 	}
 
  leave:
-	if (handled || inside_object (s, x, y)){
+	if (handled || InsideObject (s, x, y)){
 		s->cb_motion (this, state, x, y);
 		return true;
 	}
@@ -207,7 +207,7 @@ Canvas::handle_motion (Surface *s, int state, double x, double y)
 }
 
 bool
-Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y)
+Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
 	bool handled = false;
@@ -226,13 +226,13 @@ Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x,
 		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
 			continue;
 		
-		handled = item->handle_button (s, cb, state, x, y);
+		handled = item->HandleButton (s, cb, state, x, y);
 		if (handled)
 			break;
 	}
 	
  leave:
-	if (handled || inside_object (s, x, y)){
+	if (handled || InsideObject (s, x, y)){
 		cb (this, state, x, y);
 		return true;
 	}
@@ -241,10 +241,10 @@ Canvas::handle_button (Surface *s, callback_mouse_event cb, int state, double x,
 }
 
 void
-Canvas::leave (Surface *s)
+Canvas::Leave (Surface *s)
 {
 	if (current_item != NULL){
-	       current_item->leave (s);
+	       current_item->Leave (s);
 	       current_item = NULL;
 	}
 	s->cb_mouse_leave (this);
@@ -253,7 +253,7 @@ Canvas::leave (Surface *s)
 static int level = 0;
 
 void
-Canvas::render (cairo_t *cr, int x, int y, int width, int height)
+Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
@@ -323,7 +323,7 @@ Canvas::render (cairo_t *cr, int x, int y, int width, int height)
 			ENDTIMER(clip, "cairo clip setup");
 #endif
 #endif
-			item->dorender (cr, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
+			item->DoRender (cr, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
 
 #if CAIRO_CLIP
 #if TIME_CLIP

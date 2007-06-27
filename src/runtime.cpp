@@ -212,7 +212,7 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 		y = event->y + widget->allocation.y;
 		state = (GdkModifierType)event->state;
 	}
-	s->toplevel->handle_motion (s, state, x, y);
+	s->toplevel->HandleMotion (s, state, x, y);
 	return TRUE;
 }
 
@@ -228,10 +228,10 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 		double x = event->x + widget->allocation.x;
 		double y = event->y + widget->allocation.y;
 		
-		s->toplevel->handle_motion (s, event->state, x, y);
-		s->toplevel->enter (s, event->state, x, y);
+		s->toplevel->HandleMotion (s, event->state, x, y);
+		s->toplevel->Enter (s, event->state, x, y);
 	} else {
-		s->toplevel->leave (s);
+		s->toplevel->Leave (s);
 	}
 	
 	return TRUE;
@@ -281,7 +281,7 @@ button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer dat
 
 	double x = button->x + widget->allocation.x;
 	double y = button->y + widget->allocation.y;
-	s->toplevel->handle_button (s, s->cb_up, button->state, x, y);
+	s->toplevel->HandleButton (s, s->cb_up, button->state, x, y);
 	
 	return TRUE;
 }
@@ -301,7 +301,7 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 
 	double x = button->x + widget->allocation.x;
 	double y = button->y + widget->allocation.y;
-	s->toplevel->handle_button (s, s->cb_down, button->state, x, y);
+	s->toplevel->HandleButton (s, s->cb_down, button->state, x, y);
 	
 	return FALSE;
 }
@@ -547,7 +547,7 @@ surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
 {
         cairo_t *temp = s->cairo;
 	s->cairo = ctx;
-	s->toplevel->dorender (s->cairo, x, y, width, height);
+	s->toplevel->DoRender (s->cairo, x, y, width, height);
 	s->cairo = temp;
 }
 

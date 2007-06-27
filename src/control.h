@@ -24,16 +24,16 @@ class Control : public FrameworkElement {
 	~Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
-	virtual void update_xform ();
-	virtual void render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void getbounds ();
-	virtual void get_xform_for (UIElement *item, cairo_matrix_t *result);
-	virtual Point getxformorigin ();
-	virtual bool inside_object (Surface *s, double x, double y);
-	virtual bool handle_motion (Surface *s, int state, double x, double y);
-	virtual bool handle_button (Surface *s, callback_mouse_event cb, int state, double x, double y);
-	virtual void enter (Surface *s, int state, double x, double y);
-	virtual void leave (Surface *s);
+	virtual void UpdateTransform ();
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void GetBounds ();
+	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
+	virtual Point GetTransformOrigin ();
+	virtual bool InsideObject (Surface *s, double x, double y);
+	virtual bool HandleMotion (Surface *s, int state, double x, double y);
+	virtual bool HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual void Enter (Surface *s, int state, double x, double y);
+	virtual void Leave (Surface *s);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);

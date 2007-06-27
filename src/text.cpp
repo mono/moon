@@ -358,7 +358,7 @@ TextBlock::SetFontSource (DependencyObject *downloader)
 }
 
 void
-TextBlock::render (cairo_t *cr, int x, int y, int width, int height)
+TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
@@ -367,7 +367,7 @@ TextBlock::render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void 
-TextBlock::getbounds ()
+TextBlock::GetBounds ()
 {
 	Surface *s = item_get_surface (this);
 	
@@ -392,7 +392,7 @@ TextBlock::getbounds ()
 }
 
 Point
-TextBlock::getxformorigin ()
+TextBlock::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	Surface *s = item_get_surface (this);
@@ -407,7 +407,7 @@ TextBlock::getxformorigin ()
 }
 
 bool
-TextBlock::inside_object (Surface *s, double x, double y)
+TextBlock::InsideObject (Surface *s, double x, double y)
 {
 	// FIXME: this code probably doesn't work
 	cairo_matrix_t inverse = absolute_xform;
@@ -434,7 +434,7 @@ TextBlock::inside_object (Surface *s, double x, double y)
 }
 
 void
-TextBlock::get_size_for_brush (cairo_t *cr, double *width, double *height)
+TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	if (actual_width < 0.0) {
 		// FIXME: this should never happen as we should be inside ::Paint() at this point
@@ -969,13 +969,13 @@ DependencyProperty *Glyphs::StyleSimulationsProperty;
 DependencyProperty *Glyphs::UnicodeStringProperty;
 
 void
-Glyphs::render (cairo_t *cr, int x, int y, int width, int height)
+Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	// FIXME: implement me
 }
 
 void 
-Glyphs::getbounds ()
+Glyphs::GetBounds ()
 {
 	Surface *s = item_get_surface (this);
 	
@@ -987,7 +987,7 @@ Glyphs::getbounds ()
 }
 
 Point
-Glyphs::getxformorigin ()
+Glyphs::GetTransformOrigin ()
 {
 	// FIXME: implement me
 	return Point (0.0, 0.0);
