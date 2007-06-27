@@ -1,5 +1,9 @@
 2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
 
+	* Makefile: Include rules.make.
+
+2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
+
 	* default.xaml: Add marsk and glass.
 
 2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
