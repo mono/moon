@@ -18,6 +18,7 @@
 #define Visual _XVisual
 #include <cairo-xlib.h>
 #undef Visual
+#include "runtime.h"
 #include "control.h"
 
 void 
@@ -82,31 +83,43 @@ Control::InsideObject (Surface *s, double x, double y)
 bool
 Control::HandleMotion (Surface *s, int state, double x, double y)
 {
-	if (real_object)
-		return real_object->HandleMotion (s, state, x, y);
+	if (real_object){
+		bool handled =real_object->HandleMotion (s, state, x, y);
+		if (handled)
+			s->cb_motion (this, state, x, y);
+		return handled;
+	}
 	return false;
 }
 
 bool
 Control::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
-	if (real_object)
-		return real_object->HandleButton (s, cb, state, x, y);
+	if (real_object){
+		bool handled = real_object->HandleButton (s, cb, state, x, y);
+		if (handled)
+			cb (this, state, x, y);
+		return handled;
+	}
 	return false;
 }
 
 void 
 Control::Enter (Surface *s, int state, double x, double y)
 {
-	if (real_object)
+	if (real_object){
+		s->cb_enter (this, state, x, y);
 		real_object->Enter (s, state, x, y);
+	}
 }
 
 void 
 Control::Leave (Surface *s)
 {
-	if (real_object)
+	if (real_object){
 		real_object->Leave (s);
+		s->cb_mouse_leave (this);
+	}
 }
 
 void 

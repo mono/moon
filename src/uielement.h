@@ -70,7 +70,7 @@ class UIElement : public Visual {
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 
 	//
-	// updatebounds:
+	// UpdateBounds:
 	//   Updates the bounds of a item by requesting bounds update
 	//   to all of its parents.
 	//

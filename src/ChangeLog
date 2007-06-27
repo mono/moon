@@ -1,3 +1,18 @@
+2007-06-27  Miguel de Icaza  <miguel@novell.com>
+
+	* control.cpp: When handling events, we also need to pass the
+	event notification to the control, not only to the "real_object"
+	that we are proxying for.   This is what cause the calendar to
+	malfunction. 
+
+	* canvas.cpp (GetBounds): Do not use 0, 0, 0, 0 for the bounds of
+	the canvas, instead use the point at (0,0) and the width, height
+	with its absolute transformation.
+
+	Otherwise canvases with children would end up with
+	(0,0,0,0) and when compounded would extend the bounding box of
+	containing ones to include this region even when not needed.
+
 2007-06-26  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h: add virtual GetSurface() method.
@@ -19,6 +34,11 @@
 
 2007-06-26  Miguel de Icaza  <miguel@novell.com>
 
+	* collection.h: Change of course.   The actual public interface
+	implements IList<T> and ICollection<T> not IList nor ICollection
+	which means that Add does not need to return an index, and Remove
+	must return whether it actually removed the object.
+	
 	* collection.h (Add): Make this method return the index of the
 	object just created, so we can implement int IList.Add(...).
 

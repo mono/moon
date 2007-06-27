@@ -132,8 +132,14 @@ Canvas::GetBounds ()
 		//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
 	} else {
 		// If we found nothing.
-		if (first)
-			x1 = y1 = x2 = y2 = 0;
+		if (first){
+			x1 = y1 = 0;
+			x2 = framework_element_get_width (this);
+			y2 = framework_element_get_height (this);
+
+			cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
+			cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
+		}
 	}
 	//space (levelb);
 	//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
@@ -230,7 +236,6 @@ Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, 
 		if (handled)
 			break;
 	}
-	
  leave:
 	if (handled || InsideObject (s, x, y)){
 		cb (this, state, x, y);
