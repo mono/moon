@@ -1,5 +1,10 @@
 2007-06-27  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp (RaiseEnqueuedEvents): ref/unref the clocks around the
+	calls to RaiseAccumulatedEvents.
+
+2007-06-27  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp (get_now): turns out we really do want this extra *10
 	in there, so that it matches up with mono's TimeSpan.Tick values.
 

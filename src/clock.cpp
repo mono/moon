@@ -189,10 +189,12 @@ void
 TimeManager::RaiseEnqueuedEvents ()
 {
 	GList *copy = g_list_copy (child_clocks);
+	g_list_foreach (copy, (GFunc)base_ref, NULL);
 	for (GList *l = copy; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
 		c->RaiseAccumulatedEvents ();
 	}
+	g_list_foreach (copy, (GFunc)base_unref, NULL);
 	g_list_free (copy);
 }
 
