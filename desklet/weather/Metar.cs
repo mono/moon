@@ -97,15 +97,23 @@ namespace Desklet.Weather
 			get { return kind; }
 		}
 		
-		public double HeightFeet {
+		public double Height {
 			get { return height; }
 			
 		}
 
-		public double HeightMeters {
+		public double Feet {
+			get { return height; }
+		}
+		
+		public double Meters {
 			get { return height * 0.3048; }
 		}
 
+		public double Kilometers {
+			get { return height * 0.0003048; }
+		}
+		
 		public Clouds ()
 		{
 			this.coverage = CloudsCoverage.Clear;
@@ -155,7 +163,7 @@ namespace Desklet.Weather
 				accuracy = CloudsAccuracy.Nil;
 			} else {
 				try {
-					this.height = Convert.ToDouble (height);
+					this.height = Convert.ToDouble (height) * 100.0;
 					accuracy = CloudsAccuracy.Exactly;
 				} catch {
 					this.height = -1;
@@ -163,6 +171,7 @@ namespace Desklet.Weather
 				}
 			}
 
+			Console.WriteLine ("kind == {0}", kind);
 			if (!String.IsNullOrEmpty (kind)) {
 				switch (kind) {
 					case "CB":

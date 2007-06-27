@@ -10,11 +10,17 @@
  *
  */
 using System;
+using System.Globalization;
 using IO=System.IO;
+using System.Text;
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
+
+using Mono.Desklets;
 
 namespace Desklet.Weather
 {
@@ -25,6 +31,14 @@ namespace Desklet.Weather
 		Fahrenheit,
 		Max
 	};
+
+	enum CloudsUnits {
+		Min,
+		Feet,
+		Meters,
+		Kilometers,
+		Max
+	}
 	
 	public class Default : Canvas
 	{
@@ -39,15 +53,20 @@ namespace Desklet.Weather
 		TextBlock dewPoint;
 		TextBlock dewPointLabel;
 		TextBlock loadingMessage;
+		TextBlock skyConditions;
 		
 		Storyboard show_updating;
 		Storyboard hide_updating;
 
+		Path closeButton;
+		Path dragButton;
+		
 		bool allControlsPresent= true;
 		string iconsDir;
 		Metar metar;
 		
 		TemperatureScale scale = TemperatureScale.Celcius;
+		CloudsUnits cloudsUnits = CloudsUnits.Meters;
 		
 		public void DownloadComplete (Downloader downloader)
 		{			
@@ -110,6 +129,74 @@ namespace Desklet.Weather
 
 		void SetClouds ()
 		{
+			if (metar == null || metar.Clouds == null)
+				return;
+
+			Clouds clouds = metar.Clouds;
+			if (clouds.Coverage == CloudsCoverage.Clear) {
+				skyConditions.Text = "Clear sky";
+				return;
+			}
+				
+			StringBuilder sb = new StringBuilder ();
+			switch (clouds.Coverage) {
+				case CloudsCoverage.Few:
+				case CloudsCoverage.Scatterred:
+				case CloudsCoverage.Broken:
+				case CloudsCoverage.Overcast:
+					sb.Append (clouds.Coverage.ToString ());
+					break;
+			}
+
+			Console.WriteLine ("Clouds kind: {0}", clouds.Kind);
+			switch (clouds.Kind) {
+				case CloudsKind.Cumulus:
+				case CloudsKind.Cumulonumbus:
+				case CloudsKind.Cirrus:
+					sb.AppendFormat (" {0}", clouds.Kind.ToString ().ToLower (CultureInfo.InvariantCulture));
+					break;
+					
+				case CloudsKind.ToweringCumulus:
+					sb.Append (" towering cumulus");
+					break;
+			}
+			sb.Append (" clouds");
+
+			bool showHeight = true;
+			switch (clouds.Accuracy) {
+				case CloudsAccuracy.LessThan:
+					sb.Append (" at less than");
+					break;
+
+				case CloudsAccuracy.Exactly:
+					sb.Append (" at");
+					break;
+
+				default:
+					showHeight = false;
+					break;
+			}
+
+			if (showHeight) {
+				double height = 0.0;
+				switch (cloudsUnits) {
+					case CloudsUnits.Feet:
+						height = clouds.Feet;
+						break;
+
+					case CloudsUnits.Meters:
+						height = clouds.Meters;
+						break;
+
+					case CloudsUnits.Kilometers:
+						height = clouds.Kilometers;
+						break;
+				}
+				
+				sb.AppendFormat (" {0} {1}", height, cloudsUnits.ToString ().ToLower (CultureInfo.InvariantCulture));
+			}
+			
+			skyConditions.Text = sb.ToString ();
 		}
 		
 		void SetTemperature ()
@@ -159,6 +246,14 @@ namespace Desklet.Weather
 				scale = TemperatureScale.Min + 1;
 			SetTemperature ();
 		}
+
+		void ChangeCloudsUnits ()
+		{
+			cloudsUnits++;
+			if (cloudsUnits == CloudsUnits.Max)
+				cloudsUnits = CloudsUnits.Min + 1;
+			SetClouds ();
+		}
 		
 		void AdjustLayout ()
 		{
@@ -193,12 +288,26 @@ namespace Desklet.Weather
 			updCanvas = LoadControl ("UpdatingCanvas") as Canvas;
 			cloudsPanel = LoadControl ("CloudsVisPanel") as Canvas;
 			loadingMessage = LoadControl ("LoadingMessage") as TextBlock;
+			closeButton = LoadControl ("desklet-close") as Path;
+			dragButton = LoadControl ("desklet-drag") as Path;
+			skyConditions = LoadControl ("SkyConditions") as TextBlock;
+		}
+
+		void HighlightButton (Path button)
+		{
+			button.Stroke=new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+		}
+
+		void UnhighlightButton (Path button)
+		{
+			button.Stroke=new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
 		}
 		
 		public void Page_Loaded (object sender, EventArgs e)
 		{
 			LoadControls ();
-
+			Mono.Desklets.Desklet.SetupToolbox (this);
+			
 			if (!allControlsPresent) {
 				Console.WriteLine ("Elements are missing from the xaml file");
 				return;
@@ -208,6 +317,26 @@ namespace Desklet.Weather
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
 			temperaturePanel.MouseLeftButtonUp += delegate {
 				ChangeTemperatureScale ();
+			};
+
+			cloudsPanel.MouseLeftButtonUp += delegate {
+				ChangeCloudsUnits ();
+			};
+			
+			closeButton.MouseEnter += delegate {
+				HighlightButton (closeButton);
+			};
+
+			closeButton.MouseLeave += delegate {
+				UnhighlightButton (closeButton);
+			};
+
+			dragButton.MouseEnter += delegate {
+				HighlightButton (dragButton);
+			};
+
+			dragButton.MouseLeave += delegate {
+				UnhighlightButton (dragButton);
 			};
 			
 			AdjustLayout ();

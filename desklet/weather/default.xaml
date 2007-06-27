@@ -47,10 +47,30 @@
   <Image x:Name="WeatherIcon" Width="64" Height="64" Canvas.Left="8" Canvas.Top="8"/>
   <Image x:Name="WindIcon" Width="64" Height="64" Canvas.Left="86" Canvas.Top="8"/>
 
+  <!-- close/drag elements -->
+  <Path Stroke="#66FFFFFF" StrokeThickness="2" x:Name="desklet-close">
+    <Path.Data>
+      <GeometryGroup FillRule="OddEven">
+	<RectangleGeometry Rect="450,8,16,16" RadiusX="3" RadiusY="3"/>
+	<LineGeometry StartPoint="451,9" EndPoint="465,23"/>
+	<LineGeometry StartPoint="465,9" EndPoint="451,23"/>
+      </GeometryGroup>
+    </Path.Data>
+  </Path>
+
+  <Path Stroke="#66FFFFFF" StrokeThickness="2" x:Name="desklet-drag">
+    <Path.Data>
+      <GeometryGroup FillRule="OddEven">
+	<EllipseGeometry Center="480,16" RadiusX="8" RadiusY="8"/>
+	<EllipseGeometry Center="480,16" RadiusX="2" RadiusY="2" Fill="#66FFFFFF"/>
+      </GeometryGroup>
+    </Path.Data>
+  </Path>
+
   <!-- station id -->
-  <TextBlock x:Name="StationIDLabel" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF" 
+  <TextBlock x:Name="StationIDLabel" Canvas.Left="100" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF" 
 	     Text="Station:"/>
-  <TextBlock x:Name="StationID" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
+  <TextBlock x:Name="StationID" Canvas.Left="150" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
 
   <!-- temperature -->
   <Canvas x:Name="TemperaturePanel" Canvas.Left="100" Canvas.Top="64" Opacity="0">

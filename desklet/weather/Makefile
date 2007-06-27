@@ -15,7 +15,9 @@ all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(DSOURCES)
 	mkdir -p bin
-	gmcs -debug -target:library -pkg:silver -out:$@ $^
+	$(MAKE) -C.. desklets.dll
+	cp -rap ../desklets.dll bin
+	gmcs -debug -target:library -pkg:silver -r:bin/desklets.dll -out:$@ $^
 
 clean:
 	rm -f $(ASSEMBLY)
