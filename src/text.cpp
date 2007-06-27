@@ -369,7 +369,7 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::GetBounds ()
 {
-	Surface *s = item_get_surface (this);
+	Surface *s = GetSurface ();
 	
 	if (s == NULL)
 		return;
@@ -395,7 +395,7 @@ Point
 TextBlock::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-	Surface *s = item_get_surface (this);
+	Surface *s = GetSurface ();
 	
 	if (s == NULL)
 		return Point (0.0, 0.0);
@@ -487,7 +487,7 @@ TextBlock::GetValue (DependencyProperty *prop)
 {
 	if ((prop == TextBlock::ActualWidthProperty ||
 	     prop == TextBlock::ActualHeightProperty) && actual_width < 0.0) {
-		Surface *s = item_get_surface (this);
+		Surface *s = GetSurface ();
 		printf ("GetValue for actual width/height value requested before calculated\n");
 		CalcActualWidthHeight (s ? s->cairo : NULL);
 	}
@@ -977,7 +977,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 Glyphs::GetBounds ()
 {
-	Surface *s = item_get_surface (this);
+	Surface *s = GetSurface ();
 	
 	if (s == NULL)
 		return;

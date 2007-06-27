@@ -19,18 +19,6 @@
 #include "transform.h"
 #include "runtime.h"
 
-/**
- * item_getbounds:
- * @item: the item to update the bounds of
- *
- * Does this by requesting bounds update to all of its parents. 
- */
-void
-item_update_bounds (UIElement *item)
-{
-	item->UpdateBounds();
-}
-
 void
 UIElement::UpdateBounds ()
 {
@@ -55,48 +43,6 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
 	printf ("get_xform_for called on a non-container, you must implement this in your container\n");
 	exit (1);
-}
-
-void 
-item_invalidate (UIElement *item)
-{
-	Surface *s = item_get_surface (item);
-	double res [6];
-	
-	if (s == NULL)
-		return;
-
-#ifdef DEBUG_INVALIDATE
-	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
-		item, Type::Find(item->GetObjectType())->name,
-		(int) item->x1, (int)item->y1, 
-		(int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
-#endif
-	// 
-	// Note: this is buggy: why do we need to queue the redraw on the toplevel
-	// widget (s->data) and does not work with the drawing area?
-	//
-	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
-				    (int) item->x1, (int)item->y1, 
-				    (int)(item->x2-item->x1+2), (int)(item->y2-item->y1+2));
-}
-
-void 
-item_set_transform_origin (UIElement *item, Point p)
-{
-	item->SetValue (UIElement::RenderTransformOriginProperty, p);
-}
-
-void
-item_get_render_affine (UIElement *item, cairo_matrix_t *result)
-{
-	Value* v = item->GetValue (UIElement::RenderTransformProperty);
-	if (v == NULL)
-		cairo_matrix_init_identity (result);
-	else {
-		Transform *t = v->AsTransform();
-		t->GetTransform (result);
-	}
 }
 
 UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (0), x1 (0), y1(0), x2(0), y2(0)
@@ -124,7 +70,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == UIElement::OpacityProperty ||
 	    prop == UIElement::ZIndexProperty) {
-		item_invalidate (this);
+		Invalidate ();
 	} else if (prop == UIElement::VisibilityProperty) {
 		// XXX we need a FullInvalidate if this is changing
 		// from or to Collapsed, but as there's no way to tell that...
@@ -200,7 +146,7 @@ UIElement::UpdateTransform ()
 	// base transform in UIElement that will be updated by the
 	// container on demand
 	//
-	item_get_render_affine (this, &user_transform);
+	uielement_get_render_affine (this, &user_transform);
 
 	if (parent != NULL)
 		parent->GetTransformFor (this, &absolute_xform);
@@ -226,13 +172,13 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 		// Maybe this could also be just item_invalidate?
 		FullInvalidate (false);
 	} else if (prop == UIElement::OpacityProperty) {
-	  	item_invalidate (this);
+	  	Invalidate ();
 	} else if (prop == UIElement::VisibilityProperty) {
 		// XXX we need a FullInvalidate if this is changing
 		// from or to Collapsed, but as there's no way to tell that...
 		FullInvalidate (true);
 	} else if (Type::Find (subprop->type)->IsSubclassOf (Type::BRUSH)) {
-		item_invalidate (this);
+		Invalidate ();
 	}
 	
 	Visual::OnSubPropertyChanged (prop, subprop);
@@ -255,50 +201,37 @@ UIElement::OnLoaded ()
 void
 UIElement::FullInvalidate (bool rendertransform)
 {
-	item_invalidate (this);
+	Invalidate ();
 	if (rendertransform)
 		UpdateTransform ();
-	item_update_bounds (this);
-	item_invalidate (this);
+	UpdateBounds ();
+	Invalidate ();
 }
 
 void
-item_set_render_transform (UIElement *item, Transform *transform)
+UIElement::Invalidate ()
 {
-	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
-}
-
-double
-uielement_get_opacity (UIElement *item)
-{
-	return item->GetValue (UIElement::OpacityProperty)->AsDouble();
-}
-
-void
-uielement_set_opacity (UIElement *item, double opacity)
-{
-	item->SetValue (UIElement::OpacityProperty, Value (opacity));
-}
-
-Brush *
-uielement_get_opacity_mask (UIElement *item)
-{
-	Value *value = item->GetValue (UIElement::OpacityMaskProperty);
+	Surface *s = GetSurface ();
+	double res [6];
 	
-	return value ? (Brush *) value->AsBrush () : NULL;
+	if (s == NULL)
+		return;
+
+#ifdef DEBUG_INVALIDATE
+	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
+		item, Type::Find(item->GetObjectType())->name,
+		(int) item->x1, (int)item->y1, 
+		(int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
+#endif
+	// 
+	// Note: this is buggy: why do we need to queue the redraw on the toplevel
+	// widget (s->data) and does not work with the drawing area?
+	//
+	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
+				    (int) x1, (int)y1, 
+				    (int)(x2-x1+2), (int)(y2-y1+2));
 }
 
-//
-// Maps the x, y coordinate to the space of the given item
-//
-void
-uielement_transform_point (UIElement *item, double *x, double *y)
-{
-	cairo_matrix_t inverse = item->absolute_xform;
-	cairo_matrix_invert (&inverse);
-
-	cairo_matrix_transform_point (&inverse, x, y);
-}
 
 bool
 UIElement::InsideObject (Surface *s, double x, double y)
@@ -394,12 +327,6 @@ UIElement::GetSurface ()
 	return parent == NULL ? NULL : parent->GetSurface();
 }
 
-Surface*
-item_get_surface (UIElement *item)
-{
-  return item->GetSurface ();
-}
-
 DependencyProperty* UIElement::RenderTransformProperty;
 DependencyProperty* UIElement::OpacityProperty;
 DependencyProperty* UIElement::ClipProperty;
@@ -426,5 +353,85 @@ uielement_init (void)
 	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_COLLECTION);
 	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
+}
+
+Surface*
+uielement_get_surface (UIElement *item)
+{
+	return item->GetSurface ();
+}
+
+void 
+uielement_invalidate (UIElement *item)
+{
+	item->Invalidate ();
+}
+
+void 
+uielement_set_transform_origin (UIElement *item, Point p)
+{
+	item->SetValue (UIElement::RenderTransformOriginProperty, p);
+}
+
+void
+uielement_get_render_affine (UIElement *item, cairo_matrix_t *result)
+{
+	Value* v = item->GetValue (UIElement::RenderTransformProperty);
+	if (v == NULL)
+		cairo_matrix_init_identity (result);
+	else {
+		Transform *t = v->AsTransform();
+		t->GetTransform (result);
+	}
+}
+
+/**
+ * uielement_getbounds:
+ * @item: the item to update the bounds of
+ *
+ * Does this by requesting bounds update to all of its parents. 
+ */
+void
+uielement_update_bounds (UIElement *item)
+{
+	item->UpdateBounds();
+}
+
+void
+uielement_set_render_transform (UIElement *item, Transform *transform)
+{
+	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
+}
+
+double
+uielement_get_opacity (UIElement *item)
+{
+	return item->GetValue (UIElement::OpacityProperty)->AsDouble();
+}
+
+void
+uielement_set_opacity (UIElement *item, double opacity)
+{
+	item->SetValue (UIElement::OpacityProperty, Value (opacity));
+}
+
+Brush *
+uielement_get_opacity_mask (UIElement *item)
+{
+	Value *value = item->GetValue (UIElement::OpacityMaskProperty);
+	
+	return value ? (Brush *) value->AsBrush () : NULL;
+}
+
+//
+// Maps the x, y coordinate to the space of the given item
+//
+void
+uielement_transform_point (UIElement *item, double *x, double *y)
+{
+	cairo_matrix_t inverse = item->absolute_xform;
+	cairo_matrix_invert (&inverse);
+
+	cairo_matrix_transform_point (&inverse, x, y);
 }
 

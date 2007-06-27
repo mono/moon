@@ -314,8 +314,8 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	
 	item->parent = panel;
 	item->UpdateTransform ();
-	item_update_bounds (panel);
-	item_invalidate (panel);
+	panel->UpdateBounds ();
+	panel->Invalidate ();
 }
 
 void
@@ -378,10 +378,10 @@ VisualCollection::Remove (DependencyObject *data)
 	Panel *panel = (Panel *) closure;
 	UIElement *item = (UIElement *) data;
 	
-	item_invalidate (item);
+	item->Invalidate ();
 	bool b = Collection::Remove (item);
 	z_sorted_list->Remove (UIElementNodeFinder, item);
-	item_update_bounds (panel);
+	panel->UpdateBounds ();
 
 	return b;
 }

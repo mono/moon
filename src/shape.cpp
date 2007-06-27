@@ -242,7 +242,7 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 Shape::GetBounds ()
 {
-	Surface *s = item_get_surface (this);
+	Surface *s = GetSurface ();
 	
 	if (s == NULL)
 		return;

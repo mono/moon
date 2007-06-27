@@ -100,6 +100,11 @@ class UIElement : public Visual {
 	void FullInvalidate (bool render_xform);
 	
 	//
+	// Invalidates the items bounding rectangle on its surface
+	//
+	void Invalidate ();
+
+	//
 	// GetTransformOrigin:
 	//   Returns the transformation origin based on  of the item and the
 	//   xform_origin
@@ -177,14 +182,14 @@ class UIElement : public Visual {
 G_BEGIN_DECLS
 
 
-Surface *item_get_surface          (UIElement *item);
-void     item_invalidate           (UIElement *item);
-void     item_update_bounds        (UIElement *item);
-void     item_set_transform        (UIElement *item, double *transform);
-void     item_set_transform_origin (UIElement *item, Point p);
+Surface *uielement_get_surface          (UIElement *item);
+void     uielement_invalidate           (UIElement *item);
+void     uielement_update_bounds        (UIElement *item);
+void     uielement_set_transform        (UIElement *item, double *transform);
+void     uielement_set_transform_origin (UIElement *item, Point p);
 
-void     item_set_render_transform (UIElement *item, Transform *transform);
-void     item_get_render_affine    (UIElement *item, cairo_matrix_t *result);
+void     uielement_set_render_transform (UIElement *item, Transform *transform);
+void     uielement_get_render_affine    (UIElement *item, cairo_matrix_t *result);
 
 double	 uielement_get_opacity     (UIElement *item);
 void	 uielement_set_opacity     (UIElement *item, double opacity);

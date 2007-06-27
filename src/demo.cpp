@@ -285,7 +285,7 @@ main (int argc, char *argv [])
 		
 		rectangle_set_radius_x (r, 10);
 		rectangle_set_radius_y (r, 20);
-		item_set_render_transform (r, s_trans);
+		uielement_set_render_transform (r, s_trans);
 		Color *c = new Color (1.0, 0.0, 0.5, 0.5);
 		SolidColorBrush *scb = new SolidColorBrush ();
 		solid_color_brush_set_color (scb, c);
@@ -301,7 +301,7 @@ main (int argc, char *argv [])
 		shape_set_stroke_dash_array (r2, &dash, 1);
 		r2->SetValue (Canvas::LeftProperty, Value (50.0));
 		r2->SetValue (Canvas::TopProperty, Value (50.0));
-		item_set_render_transform (r2, r_trans);
+		uielement_set_render_transform (r2, r_trans);
 		shape_set_stroke (r2, scb);
 		panel_child_add (canvas, r2);
 		
@@ -341,8 +341,8 @@ main (int argc, char *argv [])
 		
 		tb->SetValue (Canvas::LeftProperty, Value (75.0));
 		tb->SetValue (Canvas::TopProperty, Value (175.0));
-		item_set_transform_origin (tb, Point (0.5, 0.5));
-		item_set_render_transform (tb, t_trans);
+		uielement_set_transform_origin (tb, Point (0.5, 0.5));
+		uielement_set_render_transform (tb, t_trans);
 		panel_child_add (canvas, tb);
 		
 #ifdef XAML_DEMO
@@ -351,8 +351,8 @@ main (int argc, char *argv [])
 		
 #ifdef VIDEO_DEMO
 		v = (UIElement *) video_new ("/tmp/BoxerSmacksdownInhoffe.wmv");
-		item_set_render_transform (v, v_trans);
-		item_set_transform_origin (v, Point (1, 1));
+		uielement_set_render_transform (v, v_trans);
+		uielement_set_transform_origin (v, Point (1, 1));
 		printf ("Got %d\n", v);
 		panel_child_add (canvas, v);
 #endif
@@ -363,7 +363,7 @@ main (int argc, char *argv [])
 		i->SetValue (MediaBase::SourceProperty, Value ("/tmp/mono.png"));
 		i->SetValue (Canvas::LeftProperty, Value (100.0));
 		i->SetValue (Canvas::TopProperty, Value (100.0));
-		item_set_render_transform (i, s_trans);
+		uielement_set_render_transform (i, s_trans);
 		panel_child_add (canvas, i);
 
 
@@ -457,7 +457,7 @@ main (int argc, char *argv [])
 		square_trans->SetValue (TranslateTransform::XProperty, Value(50.0));
 		square_trans->SetValue (TranslateTransform::YProperty, Value(50.0));
 
-		item_set_render_transform (square, square_trans);
+		uielement_set_render_transform (square, square_trans);
 		
 		shape_set_stroke (square, scb);
 		panel_child_add (canvas, square);

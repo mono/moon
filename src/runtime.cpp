@@ -493,7 +493,7 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	}
 	
 	if (surface->toplevel) {
-		item_invalidate (surface->toplevel);
+		surface->toplevel->Invalidate ();
 		surface->toplevel->unref ();
 	} else 
 		first = TRUE;

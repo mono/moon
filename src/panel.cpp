@@ -89,7 +89,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 			background->ref ();
 		}
 		
-		item_invalidate (this);
+		Invalidate ();
 	}
 }
 

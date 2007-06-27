@@ -97,7 +97,7 @@ advance_frame (void *user_data)
 	int64_t pos;
 	
 	if (media->mplayer->AdvanceFrame () && opacity > 0.0f)
-		item_invalidate (media);
+		media->Invalidate ();
 	
 	pos = media->mplayer->Position ();
 	media_element_set_position (media, pos);
@@ -122,7 +122,7 @@ MediaElement::~MediaElement ()
 void
 MediaElement::GetBounds ()
 {
-	Surface *s = item_get_surface (this);
+	Surface *s = GetSurface ();
 	
 	if (s == NULL)
 		return;
@@ -608,7 +608,7 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	if (loader) {
 		StopLoader ();
 		CleanupSurface ();
-		item_invalidate (this); /* so we erase the old image */
+		Invalidate (); /* so we erase the old image */
 	}
 	loader = gdk_pixbuf_loader_new ();
 
@@ -773,7 +773,7 @@ Image::LoaderSizePrepared (int width, int height)
 		CreateSurface ();
 #endif
 
-	item_update_bounds (this);
+	UpdateBounds ();
 }
 
 void
@@ -893,7 +893,7 @@ Image::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 Image::GetBounds ()
 {
-	Surface *s = item_get_surface (this);
+	Surface *s = GetSurface ();
 	
 	if (s == NULL)
 		return;
