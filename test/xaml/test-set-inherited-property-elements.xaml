@@ -1,0 +1,9 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Ellipse Stroke="Green" StrokeThickness="1" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" >
+		<Shape.Fill>
+			<SolidColorBrush Color="Red" />
+		</Shape.Fill>
+	</Ellipse>
+
+</Canvas>
+
