@@ -51,7 +51,7 @@ get_now (void)
         TimeSpan res;
 
         if (gettimeofday (&tv, NULL) == 0) {
-                res = (TimeSpan)tv.tv_sec * 1000000 + tv.tv_usec;
+                res = (TimeSpan)(tv.tv_sec * 1000000 + tv.tv_usec) * 10;
                 return res;
         }
 
@@ -262,7 +262,7 @@ Clock::Clock (Timeline *tl)
 	if (duration->HasTimeSpan ()) {
 		natural_duration = *duration;
 #if CLOCK_DEBUG
-	  printf ("Clock %p (%s) has a timespan based duration of %llu\n", this, Type::Find(timeline->GetObjectType())->name, natural_duration.GetTimeSpan ());
+		printf ("Clock %p (%s) has a timespan based duration of %llu\n", this, Type::Find(timeline->GetObjectType())->name, natural_duration.GetTimeSpan ());
 #endif
 	}
 	else {
