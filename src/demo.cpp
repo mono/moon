@@ -55,8 +55,8 @@ invalidator (gpointer data)
 	int64_t now = get_now ();
 	int64_t diff = now - last_time;
 	
-	if (diff > 1000000) {
-		float seconds = diff / 1000000.0;
+	if (diff > 10000000) {
+		float seconds = diff / 10000000.0;
 		last_time = now;
 		char *res = g_strdup_printf ("%.2f fps", s->frames / seconds);
 
