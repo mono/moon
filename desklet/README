@@ -1,0 +1,9 @@
+Samples on how to use "mopen" and desklets to work together, these still depend on 
+ongoing work in the mopen command which is not very complete.
+
+For now, do:
+
+	cd lameclock
+	make
+	mopen default.xaml
+
