@@ -28,6 +28,80 @@
 		</Ellipse.Stroke>
 	</Ellipse>
 
+	<!-- background -->
+	<Ellipse Canvas.Left="6" Canvas.Top="6" Width="102" Height="102">
+		<Ellipse.Fill>
+			<LinearGradientBrush StartPoint="0.4,0.1" EndPoint="0.6,0.9">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Offset="0.0" Color="#33888888" />
+					<GradientStop Offset="1.0" Color="#33111111" />
+				</LinearGradientBrush.GradientStops>
+			</LinearGradientBrush>
+		</Ellipse.Fill>
+	</Ellipse>
+
+	<!-- Marks -->
+	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="0" CenterY="50" Angle="0" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="0" CenterY="50" Angle="30" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="0" CenterY="50" Angle="60" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="0" CenterY="50" Angle="90" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="0" CenterY="50" Angle="120" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="0" CenterY="50" Angle="150" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="1" CenterY="50" Angle="180" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="1" CenterY="50" Angle="210" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="1" CenterY="50" Angle="240" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="1" CenterY="50" Angle="270" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="1" CenterY="50" Angle="300" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+		<Rectangle.RenderTransform>
+			<RotateTransform CenterX="1" CenterY="50" Angle="330" />
+		</Rectangle.RenderTransform>
+	</Rectangle>
+
 	<!-- hour hand -->
 	<Line Stroke="#101010" X1="57" Y1="28" X2="57" Y2="67" StrokeThickness="3">
 		<Line.RenderTransform>
@@ -82,4 +156,17 @@
 		</EventTrigger>
 	</Path.Triggers>
 	
+
+	<!-- glass--> 
+	<Ellipse Canvas.Left="2" Canvas.Top="2" Width="106" Height="106">
+		<Ellipse.Fill>
+			<RadialGradientBrush Center="0.7,0.8" SpreadMethod="Pad" RadiusX="1.3" RadiusY="1.2">
+				<GradientStop Offset="0.0" Color="Transparent" />
+				<GradientStop Offset="0.4" Color="#30ffffff" />
+				<GradientStop Offset="0.5" Color="#60ffffff" />
+				<GradientStop Offset="0.6" Color="#3fffffff" />
+				<GradientStop Offset="1.0" Color="Transparent" />
+			</RadialGradientBrush>
+		</Ellipse.Fill>
+	</Ellipse>
 </Canvas>
