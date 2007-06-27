@@ -1,11 +1,13 @@
 gtksilverdir = $(prefix)/lib/mono/gtksilver
 pkgconfigdir = $(prefix)/lib/pkgconfig
+monodocdir   = $(prefix)/lib/monodoc/sources
 
 bin_SCRIPTS = mopen
 gtksilver_DATA = gtksilver.dll mopen.exe mopen.exe.config
 pkgconfig_DATA = gtksilver.pc
 
-EXTRA_DIST= $(gtksilver_dll_CS) $(mopen_exe_CS) gtksilver.snk mopen.in
+EXTRA_DIST= $(gtksilver_dll_CS) $(mopen_exe_CS) gtksilver.snk mopen.in gtksilver.source
+
 DISTCLEANFILES=mopen gtksilver.dll gtksilver.dll.mdb mopen.exe mopen.exe.mdb
 
 gtksilver_dll_CS = $(srcdir)/gtk.cs \
@@ -17,8 +19,14 @@ mopen_exe_CS = $(srcdir)/mopen.cs		\
 
 gtksilver_SNK = $(srcdir)/gtksilver.snk
 
-gtksilver.dll: $(gtksilver_dll_CS)
-	gmcs -debug -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -pkg:silver
+monodoc_DATA = gtksilver.zip gtksilver.tree gtksilver.source
+
+gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS)
+	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -pkg:silver
+
+gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll
+	monodocer -importsslashdoc:gtksilver.xml -path:docs -assembly:gtksilver.dll
+	mdassembler --ecma docs/ --out gtksilver
 
 mopen.exe: $(mopen_exe_CS) gtksilver.dll 
 	gmcs -debug -out:mopen.exe -target:exe $(mopen_exe_CS) -r:gtksilver.dll -pkg:gtk-sharp-2.0 -pkg:silver -pkg:mono-cairo

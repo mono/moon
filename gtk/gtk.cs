@@ -36,6 +36,12 @@ using System.Reflection;
 
 namespace Gtk.Moonlight {
 	
+	/// <summary>
+	///    A Gtk# widget that can be used to embed Moonlight/Silverlight(tm)
+	///    content in a Gtk application
+	/// </summary>
+	/// <remarks>
+	/// </remarks>
 public class GtkSilver : EventBox {
 	[DllImport ("moon")]
 	extern static IntPtr surface_new (int w, int h);
@@ -87,9 +93,23 @@ public class GtkSilver : EventBox {
 		// Just to execute the constructor.
 	}
 	
-	public GtkSilver (int w, int h)
+	/// <summary>
+	///    Public constructor, creates a widget with the specified width and height
+	/// </summary>
+	/// <param name="width">The initial width for the widget</param>
+	/// <param name="height">The initial height for the widget</param>
+	/// <remarks>
+	///    The initial width and height of the GtkSilver control are given by the
+	///    parameters.   The size of the widget can later be changed by using the
+	///    standard Gtk# APIs (SizeAllocate).
+	///
+	///    The widget is initially empty, you must call the <see cref="Attach"/>
+	///    method with a System.Windows.Controls.Canvas instance (you can create
+	///    those programatically, using XAML, or using the <see cref="LoadFile"/> method).
+	/// </remarks>
+	public GtkSilver (int width, int height)
 	{
-		surface = surface_new (w, h);
+		surface = surface_new (width, height);
 		Raw = surface_get_drawing_area (surface);
 	}
 
@@ -99,6 +119,15 @@ public class GtkSilver : EventBox {
 		surface_paint (surface, ctx, area.X, area.Y, area.Width, area.Height);
 	}
 
+	/// <summary>
+	///    Makes the specifies System.Windows.Control.Canvas the content to be displayed on this widget
+	/// </summary>
+	/// <param name="canvas">The System.Windows.Control.Canvas to attach.</param>
+	/// <remarks>
+	///    This will make the instance of canvas be the content displayed by the widget.
+	///    Calling this method with a new canvas replaces the currently attached canvas
+	///    with the new one.
+	/// </remarks>
 	public void Attach (Canvas canvas)
 	{
 		if (canvas == null)
@@ -110,6 +139,14 @@ public class GtkSilver : EventBox {
 		m.Invoke (null, new object [] { surface, canvas });
 	}
 
+	/// <summary>
+	///    Initializes the GtkSilver widget from the XAML contents in a file
+	/// </summary>
+	/// <param name="file">The name of a file in your file system.</param>
+	/// <remarks>
+	///   This uses the XAML parser to load the given file and display it on 
+	///   the GtkSilver widget.
+	/// </remarks>
 	public bool LoadFile (string file)
 	{
 		if (file == null)
