@@ -1,0 +1,14 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Desklets.PicasaPanel;assembly=bin/picasa.dll"
+	Loaded="PageLoaded" Width="640" Height="480">
+
+	
+	<Rectangle Width="640" Height="480" Fill="Blue" x:Name="rec"/>
+
+	<Canvas.Resources>
+		<Storyboard x:Name="run">
+	      <DoubleAnimation Duration="0:0:5"/>
+    	</Storyboard>
+    </Canvas.Resources>
+</Canvas>
