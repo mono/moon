@@ -9,9 +9,19 @@
 	</Canvas.Resources>
 
 	<!-- border  -->
-	<Rectangle Fill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="2"
+	<Rectangle Fill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"
 		Canvas.Left="4" Canvas.Top="4" Width="220" Height="180"
-		RadiusX="10" RadiusY="10"/>
+		RadiusX="10" RadiusY="10">
+		<Rectangle.Fill>
+			<LinearGradientBrush SpreadMethod="Pad" EndPoint="1.0,1.1" StartPoint="0.0,0.0">
+				<GradientStop Offset="0.0" Color="Transparent" />
+				<GradientStop Offset="0.2" Color="#30ffffff" />
+				<GradientStop Offset="0.4" Color="#3fffffff" />
+				<GradientStop Offset="1.0" Color="Transparent" />
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+	</Rectangle>
+
 
 	<!-- month and year -->
 	<TextBlock x:Name="month" Text="" 
@@ -38,12 +48,12 @@
 	<TextBlock Text="S" FontSize="14" FontWeight="ExtraBlack" Canvas.Left="200" Foreground="#66FFFFFF" Canvas.Top="42"/>
 
 	<!-- dividers -->
-	<Polygon Fill="" Stroke="#66FFFFFF" StrokeThickness="1" Points="40,52 40,160" />
-	<Polygon Fill="" Stroke="#66FFFFFF" StrokeThickness="1" Points="70,52 70,160" />
-	<Polygon Fill="" Stroke="#66FFFFFF" StrokeThickness="1" Points="100,52 100,160" />
-	<Polygon Fill="" Stroke="#66FFFFFF" StrokeThickness="1" Points="130,52 130,160" />
-	<Polygon Fill="" Stroke="#66FFFFFF" StrokeThickness="1" Points="160,52 160,160" />
-	<Polygon Fill="" Stroke="#66FFFFFF" StrokeThickness="1" Points="190,52 190,160" />
+	<Line X1="40" Y1="52" X2="40" Y2="160" Stroke="#66FFFFFF" StrokeThickness="1" />
+	<Line X1="70" Y1="52" X2="70" Y2="160" Stroke="#66FFFFFF" StrokeThickness="1" />
+	<Line X1="100" Y1="52" X2="100" Y2="160" Stroke="#66FFFFFF" StrokeThickness="1" />
+	<Line X1="130" Y1="52" X2="130" Y2="160" Stroke="#66FFFFFF" StrokeThickness="1" />
+	<Line X1="160" Y1="52" X2="160" Y2="160" Stroke="#66FFFFFF" StrokeThickness="1" />
+	<Line X1="190" Y1="52" X2="190" Y2="160" Stroke="#66FFFFFF" StrokeThickness="1" />
 
 	<!-- cells -->
 	<TextBlock x:Name="c0_l0" Text="" FontSize="12" FontWeight="ExtraBlack" Canvas.Left="18"  Foreground="#333333" Canvas.Top="65"/>
