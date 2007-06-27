@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?><!-- -*- nxml -*- -->
+<Desklet>
+    <name>Glassy Calendar</name>
+    <version>0.0.1</version>
+    <author>Mono Team</author>
+    <description>Glassy calendar sample</description>
+    <desklet path="default.xaml"/>
+</Desklet>
