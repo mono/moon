@@ -38,13 +38,17 @@ namespace Desklet.Weather
 		TextBlock dewPoint;
 		TextBlock dewPointLabel;
 		
+		Storyboard show_updating;
+		Storyboard hide_updating;
+
+		bool allControlsPresent= true;
 		string iconsDir;
 		Metar metar;
 		
 		TemperatureScale scale = TemperatureScale.Celcius;
 		
 		public void DownloadComplete (Downloader downloader)
-		{
+		{			
 			string response = downloader.GetResponseText ("What?");
 
 			// We're getting full HTML from the CGI script, need to extract our data
@@ -77,17 +81,19 @@ namespace Desklet.Weather
 		
 		public void UpdateData ()
 		{
-			updCanvas.Visibility = Visibility.Visible;
-
+			show_updating.Begin ();
+			
 			Downloader downloader = new Downloader ();
 			downloader.Completed += delegate {
+				show_updating.Stop ();
+				hide_updating.Begin ();
 				DownloadComplete (downloader);
-				updCanvas.Visibility = Visibility.Hidden;
 			};
 
 			downloader.DownloadFailed += delegate {
+				show_updating.Stop ();
+				hide_updating.Begin ();
 				DownloadFailed (downloader);
-				updCanvas.Visibility = Visibility.Hidden;
 			};
 			
 			downloader.Open (
@@ -101,9 +107,6 @@ namespace Desklet.Weather
 		{
 			if (metar == null)
 				return;
-
-			if (temperaturePanel.Visibility == Visibility.Hidden)
-				temperaturePanel.Visibility = Visibility.Visible;
 			
 			double temp = 0.0, dew = 0.0;
 
@@ -129,6 +132,7 @@ namespace Desklet.Weather
 			dewPoint.Text = String.Format ("{0} °{1}", dew, scaleChar);
 			
 			AdjustTemperatureLayout ();
+			temperaturePanel.Opacity = 1;
 		}
 
 		void AdjustTemperatureLayout ()
@@ -154,26 +158,42 @@ namespace Desklet.Weather
 			double idLeft = (double)stationID.GetValue (Canvas.LeftProperty);
 			stationIdLabel.SetValue (Canvas.LeftProperty, idLeft - stationIdLabel.ActualWidth - 5.0);
 		}
+
+		public DependencyObject LoadControl (string name)
+		{
+			DependencyObject ret = FindName (name);
+			if (ret == null)
+				allControlsPresent = false;
+			return ret;
+		}
+		
+		public void LoadControls ()
+		{
+			weatherIcon = LoadControl ("WeatherIcon") as Image;
+			stationID = LoadControl ("StationID") as TextBlock;
+			temperature = LoadControl ("Temperature") as TextBlock;
+			dewPoint = LoadControl ("DewPoint") as TextBlock;
+			dewPointLabel = LoadControl ("DewPointLabel") as TextBlock;
+			temperaturePanel = LoadControl ("TemperaturePanel") as Canvas;
+			show_updating = LoadControl ("show_updating") as Storyboard;
+			hide_updating = LoadControl ("hide_updating") as Storyboard;
+			updCanvas = LoadControl ("UpdatingCanvas") as Canvas;
+		}
 		
 		public void Page_Loaded (object sender, EventArgs e)
 		{
+			LoadControls ();
+
+			if (!allControlsPresent) {
+				Console.WriteLine ("Elements are missing from the xaml file");
+				return;
+			}
+			
 			iconsDir = IO.Path.Combine (IO.Path.Combine (Environment.CurrentDirectory, "data"), "icons");
-			weatherIcon = FindName ("WeatherIcon") as Image;
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
-
-			stationID = FindName ("StationID") as TextBlock;
-			temperature = FindName ("Temperature") as TextBlock;
-			dewPoint = FindName ("DewPoint") as TextBlock;
-			dewPointLabel = FindName ("DewPointLabel") as TextBlock;
-			temperaturePanel = FindName ("TemperaturePanel") as Canvas;
-
-			temperaturePanel.Visibility = Visibility.Hidden;
 			temperaturePanel.MouseLeftButtonUp += delegate {
 				ChangeTemperatureScale ();
 			};
-
-			updCanvas = FindName ("Updating") as Canvas;
-			updCanvas.Visibility = Visibility.Visible;
 			
 			AdjustLayout ();
 			UpdateData ();

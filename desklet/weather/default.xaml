@@ -7,6 +7,26 @@
 
   <Canvas.Resources>
     <Storyboard x:Name="run"/>
+
+    <Storyboard x:Name="show_updating">
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="UpdatingCanvas" 
+				     Storyboard.TargetProperty="Opacity" 
+				     Duration="0:0:1"
+				     RepeatBehavior="Forever" 
+				     AutoReverse="true">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="1" />
+        <SplineDoubleKeyFrame KeyTime="0:0:1" Value="0" KeySpline="0.25,0.6 0.75,1" />
+      </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+
+    <Storyboard x:Name="hide_updating">
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="UpdatingCanvas" 
+				     Storyboard.TargetProperty="Opacity" 
+				     Duration="0:0:0.5">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="(Opacity)" />
+        <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="0" KeySpline="0.25,0.6 0.75,1" />
+      </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
   </Canvas.Resources>
 
   <!-- border  -->
@@ -32,7 +52,7 @@
   <TextBlock x:Name="StationID" Canvas.Left="450" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
 
   <!-- temperature -->
-  <Canvas x:Name="TemperaturePanel" Canvas.Left="100" Canvas.Top="64">
+  <Canvas x:Name="TemperaturePanel" Canvas.Left="100" Canvas.Top="64" Opacity="0">
     <TextBlock x:Name="Temperature" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="LightYellow" 
 	       Text="0 °C"/>
     <TextBlock x:Name="DewPointLabel" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF"
@@ -41,7 +61,7 @@
 	       Text="0 °C"/>
   </Canvas>
 
-  <Canvas x:Name="Updating" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0.5">
+  <Canvas x:Name="UpdatingCanvas" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0">
     <TextBlock x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="0" Canvas.Top="0" FontFamily="Tahoma" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Opacity="1">
       <TextBlock.Foreground>
 	<LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
