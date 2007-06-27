@@ -1,3 +1,8 @@
+2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
+
+	* Makefile: Include rules.make.
+	* default.xaml: Add prefix bin/ to assembly name.
+
 2007-06-26  Rodrigo Kumpera  <rkumpera@novell.com>
 
 	* calendar.cs: removed timer
