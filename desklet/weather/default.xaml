@@ -3,7 +3,8 @@
     xmlns="http://schemas.microsoft.com/client/2007"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="Desklet.Weather.Default;assembly=bin/weather.dll"
-    Loaded="Page_Loaded" Width="500" Height="200" >
+    Loaded="Page_Loaded" Width="500" Height="200" 
+    LayoutUpdated="Layout_Updated">
 
   <Canvas.Resources>
     <Storyboard x:Name="run"/>
@@ -59,6 +60,11 @@
 	       Text=", dew point"/>
     <TextBlock x:Name="DewPoint" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="LightYellow"
 	       Text="0 °C"/>
+  </Canvas>
+  
+  <!-- clouds & visibility -->
+  <Canvas x:Name="CloudsVisPanel" Canvas.Left="100" Canvas.Top="128" Opacity="0">
+    <TextBlock Text="Sky:" Canvas.Left="0" Canvas.Top="0" FontSize="14"/>
   </Canvas>
 
   <Canvas x:Name="UpdatingCanvas" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0">

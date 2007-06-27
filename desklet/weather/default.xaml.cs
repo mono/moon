@@ -86,7 +86,8 @@ namespace Desklet.Weather
 			Downloader downloader = new Downloader ();
 			downloader.Completed += delegate {
 				show_updating.Stop ();
-				hide_updating.Begin ();
+				//hide_updating.Begin ();
+				updCanvas.Opacity = 0;
 				DownloadComplete (downloader);
 			};
 
