@@ -17,6 +17,7 @@ $(ASSEMBLY): $(DSOURCES)
 
 clean:
 	rm -f $(ASSEMBLY)
+	rm -f $(ASSEMBLY).mdb
 
 run: $(ASSEMBLY)
 	MONO_OPTIONS=$(LOPTIONS) $(LAUNCHER) default.xaml
