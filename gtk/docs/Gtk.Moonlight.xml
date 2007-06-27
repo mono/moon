@@ -1,0 +1,43 @@
+<Namespace Name="Gtk.Moonlight">
+  <Docs>
+    <summary>The Gtk bindings to the Moonlight/Silverlight(tm) rendering surface</summary>
+    <remarks>
+      <para>
+        Gtk.Moonlight provides the necessary tools to integrate
+        Moonlight into your Gtk#-based applications.
+      </para>
+      <para>
+        The following example illustrates how to use this class:
+      </para>
+      <example>
+        <code lang="C#">
+using Gtk;
+using Gtk.Moonlight;
+
+class X {
+	static void Main ()
+	{
+		Application.Init ();
+		GtkSilver.Init ();
+		Window w = new Window ("Sample XAML Content");
+		GtkSilver silver = new GtkSilver (100, 100);
+		w.Add (silver);
+		w.ShowAll ();
+		
+		silver.LoadFile ("test-animation-line.xaml");
+		Application.Run ();
+	}
+}
+        </code>
+      </example>
+      <para>
+         To compile the above code, you can use the following command line:
+      </para>
+      <example>
+        <code lang="shell">
+    $ gmcs demo.cs -pkg:gtksilver -pkg:gtk-sharp-2.0
+        </code>
+      </example>
+    </remarks>
+  </Docs>
+</Namespace>

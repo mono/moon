@@ -8,7 +8,8 @@ pkgconfig_DATA = gtksilver.pc
 
 EXTRA_DIST= $(gtksilver_dll_CS) $(mopen_exe_CS) gtksilver.snk mopen.in gtksilver.source
 
-DISTCLEANFILES=mopen gtksilver.dll gtksilver.dll.mdb mopen.exe mopen.exe.mdb
+CLEANFILES=mopen gtksilver.dll gtksilver.dll.mdb mopen.exe mopen.exe.mdb gtksilver.tree gtksilver.zip
+DISTCLEANFILES=$(CLEANFILES)
 
 gtksilver_dll_CS = $(srcdir)/gtk.cs \
                    $(srcdir)/ManagedDownloader.cs \
@@ -24,8 +25,8 @@ monodoc_DATA = gtksilver.zip gtksilver.tree gtksilver.source
 gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS)
 	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -pkg:silver
 
-gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll
-	monodocer -importsslashdoc:gtksilver.xml -path:docs -assembly:gtksilver.dll
+gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll docs/Gtk.Moonlight.xml docs/index.xml
+	monodocer -importslashdoc:gtksilver.xml -path:docs -assembly:gtksilver.dll
 	mdassembler --ecma docs/ --out gtksilver
 
 mopen.exe: $(mopen_exe_CS) gtksilver.dll 
@@ -40,3 +41,6 @@ mopen: $(srcdir)/mopen.in Makefile
 install-data-local:
 	gacutil -i gtksilver.dll
 
+dist-hook:
+	mkdir $(distdir)/docs
+	-cp $(srcdir)/docs/Gtk.Moonlight.xml $(srcdir)/docs/index.xml $(distdir)/docs

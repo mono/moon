@@ -41,6 +41,8 @@ namespace Gtk.Moonlight {
 	///    content in a Gtk application
 	/// </summary>
 	/// <remarks>
+        ///    See the namespace documentation for a sample on how to use this
+        ///    widget with your Gtk# code.
 	/// </remarks>
 public class GtkSilver : EventBox {
 	[DllImport ("moon")]
@@ -86,8 +88,28 @@ public class GtkSilver : EventBox {
 			ManagedDownloader.Send,
 			ManagedDownloader.Abort,
 			ManagedDownloader.GetResponseText);
+
+		// Just touch something in DependencyObject to trigger
+		// its initialization
+		object o = DependencyObject.NameProperty;
 	}
 
+	/// <summary>
+	///    Initializes the GtkSilver widget, this must be called
+        ///    before any calls are done to System.Windows.
+	/// </summary>
+	/// <remarks>
+        ///    The System.Windows namespace for Silverlight requires a
+        ///    downloader engine to be registered before it can be used to
+        ///    satisfy assembly dependencies and images.    If your application will
+	///    for some reason call into System.Windows before they create an instance
+	///    of GtkSilver, they should call this method to ensure that the proper
+	///    downloader has been registered with the agclr runtime.
+	///
+	///    Failure to call this method typically result in errors from the XAML
+	///    parsing code when it tries to resolve assembly references, external
+	///    classes or loading of external media.
+	/// </remarks>
 	static public void Init ()
 	{
 		// Just to execute the constructor.
