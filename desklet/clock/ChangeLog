@@ -1,3 +1,8 @@
+2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
+
+	* Makefile: Include rules.make.
+	* clock.cs: Remove timer and use storyboard.
+
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
 
 	* clock.xaml: Clean clock design.

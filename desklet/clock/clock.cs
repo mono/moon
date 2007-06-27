@@ -1,6 +1,4 @@
 using System;
-using IO=System.IO;
-
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,15 +12,17 @@ namespace Desklets
 		RotateTransform secondsHand;
 		RotateTransform minuteHand;
 		RotateTransform hourHand;
-		Timer timer;
+		Storyboard storyboard;
 
-		void UpdateTime ()
+		void UpdateClock (object o, EventArgs e)
 		{
 			DateTime now = DateTime.Now;
 
 			secondsHand.Angle = now.Second * 6;
 			minuteHand.Angle  = now.Minute * 6;
 			hourHand.Angle    = now.Hour   * 30;
+
+			storyboard.Begin ();
 		}
 
 		public void PageLoaded (object o, EventArgs e)
@@ -30,20 +30,18 @@ namespace Desklets
 			secondsHand = FindName ("secondsHand") as RotateTransform;
 			minuteHand  = FindName ("minuteHand")  as RotateTransform;
 			hourHand    = FindName ("hourHand")    as RotateTransform;
-			Storyboard sb = FindName ("run") as Storyboard;
+			storyboard  = FindName ("run")         as Storyboard;
 			
-			if (secondsHand == null || minuteHand == null || hourHand == null || sb == null)
+			if (secondsHand == null || minuteHand == null || hourHand == null || storyboard == null)
 				return;
 
-			UpdateTime ();
+			UpdateClock (null, null);
+
 			DoubleAnimation timer = new DoubleAnimation ();
-			sb.Children.Add (timer);
+			storyboard.Children.Add (timer);
 			timer.Duration = new Duration (TimeSpan.FromSeconds (0.5));
-			sb.Completed += delegate {
-				UpdateTime ();
-				sb.Begin ();
-			};
-			sb.Begin ();
+			storyboard.Completed += new EventHandler (UpdateClock);
+			storyboard.Begin ();
 		}
 	}
 }
