@@ -224,7 +224,8 @@ Value::Value (Matrix *matrix)
 	memcpy (u.matrix, matrix, sizeof (Matrix));
 }
 
-Value::~Value ()
+void
+Value::FreeValue ()
 {
 	switch (GetKind ()) {
 	case Type::STRING:
@@ -263,5 +264,19 @@ Value::~Value ()
 		if (GetKind () >= Type::DEPENDENCY_OBJECT && u.dependency_object)
 			u.dependency_object->unref ();
 	}
+}
+
+//
+// This is invoked by managed code to free the contents of the value
+//
+void 
+value_free_value (Value *value)
+{
+	value->FreeValue ();
+}
+
+Value::~Value ()
+{
+	FreeValue ();
 }
 

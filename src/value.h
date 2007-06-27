@@ -329,7 +329,9 @@ public:
 
   
   	Type::Kind GetKind ();
-  
+
+	void FreeValue ();
+
   private:
 	Type::Kind k;
 
@@ -362,5 +364,8 @@ public:
 	Value (void* v) { }
 };
 
+G_BEGIN_DECLS
+void value_free_value (Value *value);
+G_END_DECLS
 
 #endif /* MOON_VALUE_H */

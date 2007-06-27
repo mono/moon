@@ -1,3 +1,11 @@
+2007-06-27  Miguel de Icaza  <miguel@novell.com>
+
+	* value.cpp (FreeValue): New method that does the actual releasing
+	of the value.   We do this here so the managed code can release
+	things in the same way.
+
+	(value_free_value): helper method.
+
 2007-06-27  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (RaiseEnqueuedEvents): ref/unref the clocks around the
