@@ -27,6 +27,8 @@ namespace Desklets
 		Storyboard change;
 		Storyboard fadein;
 		Storyboard fadeout;
+		Storyboard replace;
+		Rectangle irect;
 		ImageBrush image;
 
 		public void ChangePicture (object o, EventArgs e)
@@ -37,10 +39,17 @@ namespace Desklets
 		public void FadeInPicture (object o, EventArgs e)
 		{
 			image_index = (image_index < 8) ? image_index + 1 : 1;
-			
+
 			string uri = "data/image0" + image_index.ToString() + ".jpg";
 			image.SetValue (ImageBrush.ImageSourceProperty, uri);
+			Children.Remove (irect);
 
+			replace.Begin ();
+		}
+
+		public void ReplacePicture (object o, EventArgs e)
+		{
+			Children.Add (irect);
 			fadeout.Begin ();
 		}
 
@@ -54,11 +63,14 @@ namespace Desklets
 			change  = FindName ("change")  as Storyboard;
 			fadein  = FindName ("fadein")  as Storyboard;
 			fadeout = FindName ("fadeout") as Storyboard;
+			replace = FindName ("replace") as Storyboard;
+			irect   = FindName ("irect")   as Rectangle;
 			image   = FindName ("image")   as ImageBrush;
 
 			change.Completed  += new EventHandler (ChangePicture);
 			fadein.Completed  += new EventHandler (FadeInPicture);
 			fadeout.Completed += new EventHandler (FadeOutPicture);
+			replace.Completed += new EventHandler (ReplacePicture);
 
 			change.Begin ();
 		}

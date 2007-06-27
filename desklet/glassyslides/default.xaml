@@ -17,7 +17,7 @@
 		</Rectangle.Fill>
 	</Rectangle>
 
-	<Rectangle x:Name="imageRect"
+	<Rectangle x:Name="irect"
 		Canvas.Left="11" Canvas.Top="11" 
 		RadiusX="10" RadiusY="10"
 		Width="300" Height="200">
@@ -28,21 +28,22 @@
 
 	<Canvas.Resources>
 		<Storyboard x:Name="change">
-			<DoubleAnimation Duration="0:00:05" />
+			<DoubleAnimation Duration="0:00:20" />
 		</Storyboard>
-
 		<Storyboard x:Name="fadein">
-			<DoubleAnimationUsingKeyFrames Storyboard.TargetName="imageRect" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
-				<LinearDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-				<SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="0" KeySpline="0.25,0.6 0.75,1" />
-			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimation 
+				Storyboard.TargetName="irect"
+				Storyboard.TargetProperty="Opacity"
+				From="1.0" To="0.5" Duration="0:0:10" />
 		</Storyboard>
-
+		<Storyboard x:Name="replace">
+			<DoubleAnimation Duration="0:00:01" />
+		</Storyboard>
 		<Storyboard x:Name="fadeout">
-			<DoubleAnimationUsingKeyFrames Storyboard.TargetName="imageRect" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5">
-				<LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-				<SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1" KeySpline="0.25,0.6 0.75,1" />
-			</DoubleAnimationUsingKeyFrames>-->
+			<DoubleAnimation 
+				Storyboard.TargetName="irect"
+				Storyboard.TargetProperty="Opacity"
+				From="0.5" To="1.0" Duration="0:0:10" />
 		</Storyboard>
 	</Canvas.Resources>
 

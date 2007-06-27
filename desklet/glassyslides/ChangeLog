@@ -1,5 +1,11 @@
 2007-06-27  Everaldo Canuto  <ecanuto@novell.com>
 
+	* deafult.xaml, slideshow.cs: Fixes fade-in and fade-out flicker when load
+	image, now we remove image and use another storyboard to add it again. Maybe 
+	we can found a better solution later.
+
+2007-06-27  Everaldo Canuto  <ecanuto@novell.com>
+
 	* deafult.xaml, slideshow.cs: Enable fade in/out.
 
 2007-06-27  Everaldo Canuto  <ecanuto@novell.com>
