@@ -1,8 +1,9 @@
 //
 // desklets.cs: basic functionality for moonlight desklets
 //
-// Author:
+// Authors:
 //   Miguel de Icaza (miguel@novell.com)
+//   Marek Habersack (mhabersack@novell.com)
 //
 // Copyright 2007 Novell, Inc.
 //
@@ -31,6 +32,118 @@ using Gtk;
 
 namespace Mono.Desklets {
 
+	/// <summary>
+	///   Provides an abstract base for configuration storage providers
+	/// </summary>
+	public abstract class ConfigStorage
+	{
+		string deskletName;
+		int deskletInstance;
+
+		/// <summary>
+		///   Desklet name
+		/// </summary>
+		/// <remarks>
+		///   This is the value used to identify the desklet data in the config storage
+		/// </remarks>
+		public string DeskletName {
+			get { return deskletName; }
+		}
+
+		/// <summary>
+		///   Desklet instance number
+		/// </summary>
+		/// <remarks>
+		///   As desklets can exist in several instances, each instance might need to have
+		///   its own config storage data. This instance number, if different to -1, will
+		///   be appended to the DeskletName in order to create a unique config storage
+		///   designator.
+		/// </remarks>
+		public int DeskletInstance {
+			get { return deskletInstance; }
+		}
+
+		/// <summary>
+		///   Construct new storage class using the specified desklet name
+		/// </summary>
+		/// <param name="deskletName">The desklet name</param>
+		/// <remarks>
+		///   You should make sure your desklet name is unique. It might be a good idea to
+		///   use the common desklet name concatenated with a GUID (or UUID) value.
+		/// </remarks>
+		public ConfigStorage (string deskletName) : this (deskletName, -1)
+		{}
+
+		/// <summary>
+		///   Construct new storage class using the specified desklet name and instance number.
+		/// </summary>
+		/// <param name="deskletName">The desklet name</param>
+		/// <param name="deskletInstance">The desklet instance number</param>
+		/// <remarks>
+		///   If your desklet can exist in several instances, and each of them might have a
+		///   different configuration, you should use different instance number for each copy
+		///   of the desklet, thus separating their configuration storage.
+		///
+		///   You should make sure your desklet name is unique. It might be a good idea to
+		///   use the common desklet name concatenated with a GUID (or UUID) value.
+		/// </remarks>
+		public ConfigStorage (string deskletName, int deskletInstance)
+		{
+			this.deskletName = deskletName;
+			this.deskletInstance = deskletInstance;
+		}
+		
+		/// <summary>
+		///    Stores the named configuration item with the specified value.
+		/// </summary>
+		/// <param name="name">Item name</param>
+		/// <param name="value">Item value</param>
+		/// <remarks>
+		///   This method will store the item in the desklet instance config
+		///   storage area.
+		/// </remarks>
+		public abstract void Store (string name, object value);
+
+		/// <summary>
+		///    Stores the named configuration item with the specified value.
+		/// </summary>
+		/// <param name="name">Item name</param>
+		/// <param name="value">Item value</param>
+		/// <remarks>
+		///   This method will store the item in the desklet common config
+		///   storage area. The common area is named using only the desklet name
+		///   without the instance number.
+		/// </remarks>
+		public abstract void StoreCommon (string name, object value);
+		
+		/// <summary>
+		///    Retrieves the named configuration item from the storage media.
+		/// </summary>
+		/// <param name="name">Item name</param>
+		/// <remarks>
+		///    This method retrieves the item from the desklet instance config
+		///    storage area.
+		/// </remarks>
+		/// <returns>
+		///   The requested item's value or null if not found
+		/// </returns>
+		public abstract object Retrieve (string name);
+
+		/// <summary>
+		///    Retrieves the named configuration item from the storage media.
+		/// </summary>
+		/// <param name="name">Item name</param>
+		/// <remarks>
+		///    This method retrieves the item from the desklet common config
+		///    storage area. The common area is named using only the desklet name
+		///    without the instance number.
+		/// </remarks>
+		/// <returns>
+		///   The requested item's value or null if not found
+		/// </returns>
+		public abstract object RetrieveCommon (string name);
+	}
+	
 	/// <summary>
 	///   Provides utility functions for Desklet developers
 	/// </summary>
