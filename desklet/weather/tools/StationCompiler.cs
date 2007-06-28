@@ -79,6 +79,27 @@ public class App
 {
 	static Stack<Element> elements;
 	static List<Region> regions;
+
+	static CodeTypeDeclaration MainClass;
+	static int regionCounter = 1;
+	static int countryCounter = 1;
+	static int locationCounter = 1;
+	static int stateCounter = 1;
+	static int cityCounter = 1;
+
+	static CodeThisReferenceExpression thisref = new CodeThisReferenceExpression ();
+	static CodeTypeReference regionType = new CodeTypeReference ("Region");
+	static CodeTypeReference countryType = new CodeTypeReference ("Country");
+	static CodeTypeReference stateType = new CodeTypeReference ("State");
+	static CodeTypeReference locationType = new CodeTypeReference ("Location");
+	static CodeTypeReference cityType = new CodeTypeReference ("City");
+	
+	static CodeFieldReferenceExpression curRegion = new CodeFieldReferenceExpression (thisref, "curRegion");
+	static CodeFieldReferenceExpression curCountry = new CodeFieldReferenceExpression (thisref, "curCountry");
+	static CodeFieldReferenceExpression curCountryLocation = new CodeFieldReferenceExpression (thisref, "curCountryLocation");
+	static CodeFieldReferenceExpression curCity = new CodeFieldReferenceExpression (thisref, "curCity");
+	static CodeFieldReferenceExpression curState = new CodeFieldReferenceExpression (thisref, "curState");
+	static CodeFieldReferenceExpression curStateLocation = new CodeFieldReferenceExpression (thisref, "curStateLocation");
 	
 	static void Usage ()
 	{
@@ -367,8 +388,8 @@ public class App
 						       });
 	}
 	
-	static void BuildCity (City c, CodeMemberMethod method, CodeVariableReferenceExpression curVar,
-			       CodeVariableReferenceExpression curLocation)
+	static void BuildCity (City c, CodeMemberMethod method, CodeFieldReferenceExpression curVar,
+			       CodeFieldReferenceExpression curLocation)
 	{
 		CodeAssignStatement cityAssign = new CodeAssignStatement ();
 		cityAssign.Left = curCity;
@@ -499,12 +520,24 @@ public class App
 								new CodePrimitiveExpression (c.Name),
 								new CodePrimitiveExpression (c.Locations.Count)
 							});
+
+		string methodName = String.Format ("Country_{0}", countryCounter++);
+		CodeMemberMethod countryMethod = new CodeMemberMethod ();
+		countryMethod.Name = methodName;
+		MainClass.Members.Add (countryMethod);
+		
 		CodeAssignStatement countryAssign = new CodeAssignStatement ();
 		countryAssign.Left = curCountry;
 		countryAssign.Right = country;
 		method.Statements.Add (countryAssign);
 
-		CodeMethodInvokeExpression locationAdd = new CodeMethodInvokeExpression (
+		CodeMethodInvokeExpression methodCall = new CodeMethodInvokeExpression (
+			thisref,
+			methodName
+		);
+		method.Statements.Add (methodCall);
+
+		methodCall = new CodeMethodInvokeExpression (
 			curCountry,
 			"Add",
 			new CodeExpression[] {curCountryLocation}
@@ -516,14 +549,14 @@ public class App
 		foreach (Element e in c.Locations) {
 			expr = BuildCountryLocation (e, method);
 			if (expr == null)
-				method.Statements.Add (locationAdd);
+				countryMethod.Statements.Add (methodCall);
 			else {
 				locationAddDirect = new CodeMethodInvokeExpression (
 					curCountry,
 					"Add",
 					new CodeExpression[] {expr}
 				);
-				method.Statements.Add (locationAddDirect);
+				countryMethod.Statements.Add (locationAddDirect);
 			}
 		}
 	}
@@ -536,36 +569,34 @@ public class App
 								new CodePrimitiveExpression (r.Name),
 								new CodePrimitiveExpression (r.Countries.Count)
 							});
+
+		string methodName = String.Format ("Region_{0}", regionCounter++);
+		CodeMemberMethod regionMethod = new CodeMemberMethod ();
+		regionMethod.Name = methodName;
+		MainClass.Members.Add (regionMethod);
+		
+		CodeMethodInvokeExpression methodCall = new CodeMethodInvokeExpression (
+			thisref,
+			methodName
+		);
+		method.Statements.Add (methodCall);
+		
 		CodeAssignStatement regionAssign = new CodeAssignStatement ();
 		regionAssign.Left = curRegion;
 		regionAssign.Right = region;
-		method.Statements.Add (regionAssign);
+		regionMethod.Statements.Add (regionAssign);
 
-		CodeMethodInvokeExpression regionAdd = new CodeMethodInvokeExpression (
+		methodCall = new CodeMethodInvokeExpression (
 			curRegion,
 			"Add",
 			new CodeExpression[] {curCountry}
 		);
 		
 		foreach (Country c in r.Countries) {
-			BuildCountry (c, method);
-			method.Statements.Add (regionAdd);
+			BuildCountry (c, regionMethod);
+			regionMethod.Statements.Add (methodCall);
 		}
 	}
-
-	static CodeThisReferenceExpression thisref = new CodeThisReferenceExpression ();
-	static CodeTypeReference regionType = new CodeTypeReference ("Region");
-	static CodeTypeReference countryType = new CodeTypeReference ("Country");
-	static CodeTypeReference stateType = new CodeTypeReference ("State");
-	static CodeTypeReference locationType = new CodeTypeReference ("Location");
-	static CodeTypeReference cityType = new CodeTypeReference ("City");
-	
-	static CodeVariableReferenceExpression curRegion = new CodeVariableReferenceExpression ("curRegion");
-	static CodeVariableReferenceExpression curCountry = new CodeVariableReferenceExpression ("curCountry");
-	static CodeVariableReferenceExpression curCountryLocation = new CodeVariableReferenceExpression ("curCountryLocation");
-	static CodeVariableReferenceExpression curCity = new CodeVariableReferenceExpression ("curCity");
-	static CodeVariableReferenceExpression curState = new CodeVariableReferenceExpression ("curState");
-	static CodeVariableReferenceExpression curStateLocation = new CodeVariableReferenceExpression ("curStateLocation");
 	
 	static void GenerateBuildData (CodeMemberMethod method)
 	{
@@ -581,18 +612,18 @@ public class App
 		regionsAssign.Right = newObject;
 		method.Statements.Add (regionsAssign);
 
-		CodeVariableDeclarationStatement var = new CodeVariableDeclarationStatement ("Region", "curRegion");
-		method.Statements.Add (var);
-		var = new CodeVariableDeclarationStatement ("Country", "curCountry");
-		method.Statements.Add (var);
-		var = new CodeVariableDeclarationStatement ("Element", "curCountryLocation");
-		method.Statements.Add (var);
-		var = new CodeVariableDeclarationStatement ("City", "curCity");
-		method.Statements.Add (var);
-		var = new CodeVariableDeclarationStatement ("State", "curState");
-		method.Statements.Add (var);
-		var = new CodeVariableDeclarationStatement ("Element", "curStateLocation");
-		method.Statements.Add (var);
+		CodeMemberField field = new CodeMemberField ("Region", "curRegion");
+		MainClass.Members.Add (field);
+		field = new CodeMemberField ("Country", "curCountry");
+		MainClass.Members.Add (field);
+		field = new CodeMemberField ("Element", "curCountryLocation");
+		MainClass.Members.Add (field);
+		field = new CodeMemberField ("City", "curCity");
+		MainClass.Members.Add (field);
+		field = new CodeMemberField ("State", "curState");
+		MainClass.Members.Add (field);
+		field = new CodeMemberField ("Element", "curStateLocation");
+		MainClass.Members.Add (field);
 		
 		foreach (Region r in regions)
 			BuildRegion (r, method);
@@ -607,15 +638,15 @@ public class App
 		ns.Imports.Add (new CodeNamespaceImport ("System"));
 		ns.Imports.Add (new CodeNamespaceImport ("System.Collections.Generic"));
 
-		CodeTypeDeclaration mainClass = new CodeTypeDeclaration ("Locations");
-		mainClass.TypeAttributes = TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.Public;
-		mainClass.IsPartial = true;
-		ns.Types.Add (mainClass);
+		MainClass = new CodeTypeDeclaration ("Locations");
+		MainClass.TypeAttributes = TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.Public;
+		MainClass.IsPartial = true;
+		ns.Types.Add (MainClass);
 
 		CodeMemberMethod buildData = new CodeMemberMethod ();
 		buildData.Name = "BuildData";
 		GenerateBuildData (buildData);
-		mainClass.Members.Add (buildData);
+		MainClass.Members.Add (buildData);
 		
 		CodeDomProvider provider = new CSharpCodeProvider ();
 		ICodeGenerator gen = provider.CreateGenerator ();

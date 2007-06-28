@@ -76,20 +76,20 @@ namespace Desklet.Weather
 
 	public class State : Element
 	{
-		List <Location> locations;
+		List <Element> locations;
 
-		public List <Location> Locations {
+		public List <Element> Locations {
 			get { return locations; }
 		}
 
 		public State (string name, int nLocations) : base (name)
 		{
-			locations = new List <Location> (nLocations);
+			locations = new List <Element> (nLocations);
 		}
 
 		public override void Add (Element element)
 		{
-			locations.Add ((Location)element);
+			locations.Add (element);
 		}
 	}
 	
@@ -135,6 +135,10 @@ namespace Desklet.Weather
 	{
 		List <Region> regions;
 
+		public List <Region> Regions {
+			get { return regions; }
+		}
+		
 		public Locations ()
 		{
 			BuildData ();

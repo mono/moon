@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/client/2007"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="Desklet.Weather.Default;assembly=bin/weather.dll"
-    Loaded="Page_Loaded" Width="500" Height="200" 
+    Loaded="Page_Loaded" Width="500" Height="178" 
     LayoutUpdated="Layout_Updated">
 
   <Canvas.Resources>
@@ -32,7 +32,7 @@
 
   <!-- border  -->
   <Rectangle Fill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"
-	     Canvas.Left="4" Canvas.Top="4" Width="492" Height="192"
+	     Canvas.Left="4" Canvas.Top="4" Width="492" Height="170"
 	     RadiusX="10" RadiusY="10">
     <Rectangle.Fill>
       <LinearGradientBrush SpreadMethod="Pad" EndPoint="1.0,1.1" StartPoint="0.0,0.0">
@@ -44,8 +44,8 @@
     </Rectangle.Fill>
   </Rectangle>
 
-  <Image x:Name="WeatherIcon" Width="64" Height="64" Canvas.Left="8" Canvas.Top="8"/>
-  <Image x:Name="WindIcon" Width="64" Height="64" Canvas.Left="86" Canvas.Top="8"/>
+  <Image x:Name="WeatherIcon" Width="64" Height="64" Canvas.Left="5" Canvas.Top="8"/>
+  <Image x:Name="WindIcon" Width="98" Height="98" Canvas.Left="5" Canvas.Top="72"/>
 
   <!-- close/drag elements -->
   <Path Stroke="#66FFFFFF" StrokeThickness="2" x:Name="desklet-close">
@@ -70,10 +70,10 @@
   <!-- station id -->
   <TextBlock x:Name="StationIDLabel" Canvas.Left="100" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF" 
 	     Text="Station:"/>
-  <TextBlock x:Name="StationID" Canvas.Left="150" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
+  <TextBlock x:Name="StationID" Canvas.Left="150" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="OMAA"/>
 
   <!-- temperature -->
-  <Canvas x:Name="TemperaturePanel" Canvas.Left="100" Canvas.Top="64" Opacity="0">
+  <Canvas x:Name="TemperaturePanel" Canvas.Left="110" Canvas.Top="34" Opacity="0">
     <TextBlock x:Name="Temperature" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="LightYellow" 
 	       Text="0 °C"/>
     <TextBlock x:Name="DewPointLabel" Canvas.Left="0" Canvas.Top="0" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF"
@@ -83,15 +83,28 @@
   </Canvas>
   
   <!-- Wind -->
-  <Canvas x:Name="WindPanel" Canvas.Left="100" Canvas.Top="84" Opacity="1">
+  <Canvas x:Name="WindPanel" Canvas.Left="110" Canvas.Top="54" Opacity="1">
     <TextBlock x:Name="WindConditions" Canvas.Left="0" Canvas.Top="0" FontWeight="Bold" Foreground="LightYellow"/>
   </Canvas>
 
   <!-- clouds & visibility -->
-  <Canvas x:Name="CloudsVisPanel" Canvas.Left="100" Canvas.Top="104" Opacity="1">
+  <Canvas x:Name="CloudsVisPanel" Canvas.Left="110" Canvas.Top="74" Opacity="1">
     <TextBlock x:Name="SkyConditions" Canvas.Left="0" Canvas.Top="0" FontWeight="Bold" Foreground="LightYellow"/>
   </Canvas>
- 
+
+  <!-- wind indicator -->
+  <Ellipse x:Name="WindIndicator" Canvas.Left="49" Canvas.Top="116" Width="10" Height="10">
+    <Ellipse.Fill>
+      <RadialGradientBrush GradientOrigin="0,0" Center="5,5" RadiusX="5" RadiusY="5">
+	<RadialGradientBrush.GradientStops>
+	  <GradientStop Color="Red" Offset="0" />
+	  <GradientStop Color="LightYellow" Offset="5" />
+	  <GradientStop Color="Red" Offset="10" />
+	</RadialGradientBrush.GradientStops>
+      </RadialGradientBrush>
+    </Ellipse.Fill>
+  </Ellipse>
+
   <Canvas x:Name="UpdatingCanvas" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0">
     <TextBlock x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="0" Canvas.Top="0" FontFamily="Tahoma" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Opacity="1">
       <TextBlock.Foreground>

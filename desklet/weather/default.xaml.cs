@@ -23,6 +23,8 @@ using System.Windows.Shapes;
 
 using Mono.Desklets;
 
+using Gtk;
+
 namespace Desklet.Weather
 {
 	enum TemperatureScale {
@@ -49,27 +51,41 @@ namespace Desklet.Weather
 		MilesPerHour,
 		Max
 	};
+
+	class WindDirection
+	{
+		public string Name;
+		public double X;
+		public double Y;
+
+		public WindDirection (string name, double x, double y)
+		{
+			this.Name = name;
+			this.X = x;
+			this.Y = y;
+		}
+	}
 	
 	public class Default : Canvas
 	{
-		readonly string[] wind_directions = new string [] {
-			"North",
-			"North-Northeast",
-			"Northeast",
-			"East-Northeast",
-			"East",
-			"East-Southeast",
-			"Southeast",
-			"South-Southeast",
-			"South",
-			"South-Southwest",
-			"Southwest",
-			"West-Southwest",
-			"West",
-			"West-Northwest",
-			"Northwest",
-			"North-Northwest",
-			"North"
+		readonly WindDirection[] wind_directions = new WindDirection [] {
+			new WindDirection ("North", 48, 0),
+			new WindDirection ("North-Northeast", 62, 15),
+			new WindDirection ("Northeast", 78, 19),
+			new WindDirection ("East-Northeast", 82, 34),
+			new WindDirection ("East", 96, 48),
+			new WindDirection ("East-Southeast", 82, 62),
+			new WindDirection ("Southeast", 78, 78),
+			new WindDirection ("South-Southeast", 62, 82),
+			new WindDirection ("South", 48, 96),
+			new WindDirection ("South-Southwest", 34, 82),
+			new WindDirection ("Southwest", 19, 78),
+			new WindDirection ("West-Southwest", 15, 62),
+			new WindDirection ("West", 0, 48),
+			new WindDirection ("West-Northwest", 15, 34),
+			new WindDirection ("Northwest", 19, 19),
+			new WindDirection ("North-Northwest", 34, 15),
+			new WindDirection ("North", 48, 0)
 		};
 		
 		Canvas updCanvas;
@@ -77,7 +93,9 @@ namespace Desklet.Weather
 		Canvas cloudsPanel;
 		Canvas windPanel;
 		
-		Image weatherIcon;
+		System.Windows.Controls.Image weatherIcon;
+		System.Windows.Controls.Image windIcon;
+		Ellipse windIndicator;
 		
 		TextBlock stationID;
 		TextBlock temperature;
@@ -100,6 +118,9 @@ namespace Desklet.Weather
 		TemperatureScale scale = TemperatureScale.Celcius;
 		CloudsUnits cloudsUnits = CloudsUnits.Meters;
 		WindUnits windUnits = WindUnits.KilometersPerHour;
+
+		double windIconTop;
+		double windIconLeft;
 		
 		public void DownloadComplete (Downloader downloader)
 		{			
@@ -166,7 +187,8 @@ namespace Desklet.Weather
 
 			Wind w = metar.Wind;
 			StringBuilder sb = new StringBuilder ("Wind ");
-			sb.AppendFormat ("from {0}", wind_directions [(int)Math.Round (w.Direction / 22.5)]);
+			WindDirection dir = wind_directions [(int)Math.Round (w.Direction / 22.5)];
+			sb.AppendFormat ("from {0}", dir.Name);
 
 			double speed = 0.0;
 			string unit = String.Empty;
@@ -192,9 +214,12 @@ namespace Desklet.Weather
 					speed = w.MilesPerHour;
 					break;
 			}
-			sb.AppendFormat (", {0} {1}", speed, unit);
-			
+			sb.AppendFormat (", {0} {1}", speed, unit);			
 			windConditions.Text = sb.ToString ();
+
+			// move wind indicator
+			windIndicator.SetValue (Canvas.LeftProperty, dir.X + windIconLeft - (windIndicator.Width / 2));
+			windIndicator.SetValue (Canvas.TopProperty, dir.Y + windIconTop - (windIndicator.Height / 2));
 		}
 		
 		void SetClouds ()
@@ -337,6 +362,50 @@ namespace Desklet.Weather
 				windUnits = WindUnits.Min + 1;
 			SetWind ();
 		}
+
+		void AddTreeEntries (Country c, TreeStore store, TreeIter parent)
+		{
+			foreach (Element e in c.Locations)
+				store.AppendValues (parent, e.Name, e.GetType ().ToString ());
+		}
+		
+		void AddTreeEntries (Region r, TreeStore store, TreeIter parent)
+		{
+			foreach (Country c in r.Countries) {
+				TreeIter iter = store.AppendValues (parent, c.Name, "Country");
+				AddTreeEntries (c, store, iter);
+			}
+		}
+		
+		void ChooseStation ()
+		{
+			Locations loc = new Locations ();
+			TreeStore store = new TreeStore (typeof (string), typeof (string));
+
+			List <Region> regions = loc.Regions;
+			foreach (Region r in regions) {
+				TreeIter iter = store.AppendValues (r.Name, "Region");
+				AddTreeEntries (r, store, iter);
+			}
+			
+			Window win = new Window ("Select your location");
+//			win.DeleteEvent += new DeleteEventHandler (delete_cb);
+			win.SetDefaultSize (400,250);
+			
+			ScrolledWindow sw = new ScrolledWindow ();
+			win.Add (sw);
+			
+			TreeView tv = new TreeView (store);
+			tv.HeadersVisible = false;
+			tv.EnableSearch = true;
+			
+			tv.AppendColumn ("Location", new CellRendererText (), "text", 0);
+			tv.AppendColumn ("Location Type", new CellRendererText (), "text", 1);
+                        
+			sw.Add (tv);
+			sw.Show ();
+			win.ShowAll ();
+		}
 		
 		void AdjustLayout ()
 		{
@@ -360,7 +429,8 @@ namespace Desklet.Weather
 		
 		public void LoadControls ()
 		{
-			weatherIcon = LoadControl ("WeatherIcon") as Image;
+			weatherIcon = LoadControl ("WeatherIcon") as System.Windows.Controls.Image;
+			windIcon = LoadControl ("WindIcon") as System.Windows.Controls.Image;
 			stationID = LoadControl ("StationID") as TextBlock;
 			temperature = LoadControl ("Temperature") as TextBlock;
 			dewPoint = LoadControl ("DewPoint") as TextBlock;
@@ -376,6 +446,7 @@ namespace Desklet.Weather
 			skyConditions = LoadControl ("SkyConditions") as TextBlock;
 			windPanel = LoadControl ("WindPanel") as Canvas;
 			windConditions = LoadControl ("WindConditions") as TextBlock;
+			windIndicator = LoadControl ("WindIndicator") as Ellipse;
 		}
 
 		void HighlightButton (Path button)
@@ -400,6 +471,14 @@ namespace Desklet.Weather
 			
 			iconsDir = IO.Path.Combine (IO.Path.Combine (Environment.CurrentDirectory, "data"), "icons");
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
+			windIcon.Source = new Uri (IO.Path.Combine (iconsDir, "wind.png"));
+			windIconLeft = (double) windIcon.GetValue (Canvas.LeftProperty);
+			windIconTop = (double) windIcon.GetValue (Canvas.TopProperty);
+
+			stationID.MouseLeftButtonUp += delegate {
+				ChooseStation ();
+			};
+			
 			temperaturePanel.MouseLeftButtonUp += delegate {
 				ChangeTemperatureScale ();
 			};
