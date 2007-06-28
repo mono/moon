@@ -1,3 +1,9 @@
+2007-06-28  Rodrigo Kumpera  <rkumpera@novell.com>
+
+	* calendar.cs: added support for google calendar, for now it is fixed on a test calendar I created
+	* default.xaml: added new storyboard needed by calendar stuff and moved some code to XAML
+
+
 2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
 
 	* Makefile: Include rules.make.

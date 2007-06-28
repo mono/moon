@@ -5,6 +5,10 @@
 	
 	<Canvas.Resources>
 		<Storyboard x:Name="run">
+	      <DoubleAnimation Duration="1:0:0"/>
+    	</Storyboard>
+		<Storyboard x:Name="mouse_click">
+	      <DoubleAnimation Duration="0:0:0.5"/>
     	</Storyboard>
     </Canvas.Resources>
 
@@ -19,7 +23,6 @@
 		Height="180"
 		RadiusX="10"
 		RadiusY="10"/>
-		
 
       <TextBlock
 		x:Name="month"
@@ -540,5 +543,4 @@
 		Canvas.Left="198"
 		Foreground="#333333"
 		Canvas.Top="150"/>
-
 </Canvas>
