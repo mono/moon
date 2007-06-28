@@ -15,7 +15,7 @@
 //    * Implement --fixed
 //    * Make it so we can open directories that contain DIR/default.xaml
 //      and setup the managed loader to default to this location to load
-//      files from.
+//      images from. 
 //
 // The idea is that we can write XAML-based applications and launch them with
 // this thing, typing:
@@ -49,6 +49,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.IO;
 using System.Collections;
+using Mono;
+using System.Reflection;
 
 class MonoOpen {
 	static bool fixedwindow = false;
@@ -112,6 +114,17 @@ class MonoOpen {
 		Application.Init ();
 		GtkSilver.Init ();
 		Window w = new Window (file);
+
+		string full = Path.GetFullPath (file);
+		string dir = Path.GetDirectoryName (full);
+		
+		Moonlight.RegisterLoader (delegate (string asm_file) {
+			if (Path.IsPathRooted (asm_file)){
+				return Assembly.LoadFile (asm_file);
+			} else {
+				return Assembly.LoadFile (Path.Combine (dir, asm_file));
+			}
+		});
 
 		if (transparent) {
 			CompositeHelper.SetRgbaColormap (w);
