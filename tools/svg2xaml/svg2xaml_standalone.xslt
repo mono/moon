@@ -195,7 +195,7 @@ exclude-result-prefixes="svg xsl xaml"
 			<!-- output this node's attributes -->
 			<xsl:copy-of select="$local-attributes/xaml:attributes/@*"/>
 
-			<xsl:if test="not(@fill) and not($defaults/defaults/@fill) and not($local-attributes/xaml:attributes/@fill)">
+			<xsl:if test="not(@fill) and not($defaults/defaults/@Fill) and not($local-attributes/xaml:attributes/@Fill)">
 				<xsl:attribute name="Fill">#000</xsl:attribute>
 			</xsl:if>
 

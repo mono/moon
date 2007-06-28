@@ -1,5 +1,11 @@
 2007-06-27  Andreia Gaita  <avidigal@novell.com>
 
+	* svg2xaml.xslt, svg2xaml_standalone.xslt:
+	fix the check for default fills, it was getting
+	everything black :p
+
+2007-06-27  Andreia Gaita  <avidigal@novell.com>
+
 	* MainWindow.cs, svg2xaml.cs, Makefile:
 	Embed svg2xaml.xslt into both apps instead of 
 	loading it from the filesystem.
