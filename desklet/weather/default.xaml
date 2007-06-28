@@ -82,11 +82,16 @@
 	       Text="0 °C"/>
   </Canvas>
   
-  <!-- clouds & visibility -->
-  <Canvas x:Name="CloudsVisPanel" Canvas.Left="100" Canvas.Top="84" Opacity="1">
-    <TextBlock x:Name="SkyConditions" Canvas.Left="0" Canvas.Top="0" FontWeight="Bold" Foreground="LightYellow"/>
+  <!-- Wind -->
+  <Canvas x:Name="WindPanel" Canvas.Left="100" Canvas.Top="84" Opacity="1">
+    <TextBlock x:Name="WindConditions" Canvas.Left="0" Canvas.Top="0" FontWeight="Bold" Foreground="LightYellow"/>
   </Canvas>
 
+  <!-- clouds & visibility -->
+  <Canvas x:Name="CloudsVisPanel" Canvas.Left="100" Canvas.Top="104" Opacity="1">
+    <TextBlock x:Name="SkyConditions" Canvas.Left="0" Canvas.Top="0" FontWeight="Bold" Foreground="LightYellow"/>
+  </Canvas>
+ 
   <Canvas x:Name="UpdatingCanvas" Width="124" Height="29" Canvas.Left="188" Canvas.Top="85" Opacity="0">
     <TextBlock x:Name="LoadingMessage" Width="124" Height="29" Canvas.Left="0" Canvas.Top="0" FontFamily="Tahoma" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Opacity="1">
       <TextBlock.Foreground>

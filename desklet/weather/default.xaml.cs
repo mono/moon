@@ -10,6 +10,7 @@
  *
  */
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using IO=System.IO;
 using System.Text;
@@ -39,12 +40,42 @@ namespace Desklet.Weather
 		Kilometers,
 		Max
 	}
+
+	enum WindUnits {
+		Min,
+		Knots,
+		MetersPerSecond,
+		KilometersPerHour,
+		MilesPerHour,
+		Max
+	};
 	
 	public class Default : Canvas
 	{
+		readonly string[] wind_directions = new string [] {
+			"North",
+			"North-Northeast",
+			"Northeast",
+			"East-Northeast",
+			"East",
+			"East-Southeast",
+			"Southeast",
+			"South-Southeast",
+			"South",
+			"South-Southwest",
+			"Southwest",
+			"West-Southwest",
+			"West",
+			"West-Northwest",
+			"Northwest",
+			"North-Northwest",
+			"North"
+		};
+		
 		Canvas updCanvas;
 		Canvas temperaturePanel;
 		Canvas cloudsPanel;
+		Canvas windPanel;
 		
 		Image weatherIcon;
 		
@@ -54,6 +85,7 @@ namespace Desklet.Weather
 		TextBlock dewPointLabel;
 		TextBlock loadingMessage;
 		TextBlock skyConditions;
+		TextBlock windConditions;
 		
 		Storyboard show_updating;
 		Storyboard hide_updating;
@@ -67,6 +99,7 @@ namespace Desklet.Weather
 		
 		TemperatureScale scale = TemperatureScale.Celcius;
 		CloudsUnits cloudsUnits = CloudsUnits.Meters;
+		WindUnits windUnits = WindUnits.KilometersPerHour;
 		
 		public void DownloadComplete (Downloader downloader)
 		{			
@@ -93,6 +126,7 @@ namespace Desklet.Weather
 			}
 			SetTemperature ();
 			SetClouds ();
+			SetWind ();
 		}
 
 		public void DownloadFailed (Downloader downloader)
@@ -109,8 +143,6 @@ namespace Desklet.Weather
 			downloader.Completed += delegate {
 				show_updating.Stop ();
 				hide_updating.Begin ();
-				// updCanvas.Opacity = 0;
-// 				loadingMessage.Text = "DONE";
 				DownloadComplete (downloader);
 			};
 
@@ -126,74 +158,117 @@ namespace Desklet.Weather
 				true);
 			downloader.Send ();
 		}
+		
+		void SetWind ()
+		{
+			if (metar == null || metar.Wind == null)
+				return;
 
+			Wind w = metar.Wind;
+			StringBuilder sb = new StringBuilder ("Wind ");
+			sb.AppendFormat ("from {0}", wind_directions [(int)Math.Round (w.Direction / 22.5)]);
+
+			double speed = 0.0;
+			string unit = String.Empty;
+			
+			switch (windUnits) {
+				case WindUnits.Knots:
+					unit = "kt";
+					speed = w.Knots;
+					break;
+
+				case WindUnits.MetersPerSecond:
+					unit = "m/s";
+					speed = w.MetersPerSecond;
+					break;
+
+				case WindUnits.KilometersPerHour:
+					unit = "km/h";
+					speed = w.KilometersPerHour;
+					break;
+
+				case WindUnits.MilesPerHour:
+					unit = "mph";
+					speed = w.MilesPerHour;
+					break;
+			}
+			sb.AppendFormat (", {0} {1}", speed, unit);
+			
+			windConditions.Text = sb.ToString ();
+		}
+		
 		void SetClouds ()
 		{
 			if (metar == null || metar.Clouds == null)
 				return;
 
-			Clouds clouds = metar.Clouds;
-			if (clouds.Coverage == CloudsCoverage.Clear) {
-				skyConditions.Text = "Clear sky";
-				return;
-			}
-				
 			StringBuilder sb = new StringBuilder ();
-			switch (clouds.Coverage) {
-				case CloudsCoverage.Few:
-				case CloudsCoverage.Scatterred:
-				case CloudsCoverage.Broken:
-				case CloudsCoverage.Overcast:
-					sb.Append (clouds.Coverage.ToString ());
-					break;
-			}
+			List<Clouds> clouds = metar.Clouds;
 
-			Console.WriteLine ("Clouds kind: {0}", clouds.Kind);
-			switch (clouds.Kind) {
-				case CloudsKind.Cumulus:
-				case CloudsKind.Cumulonumbus:
-				case CloudsKind.Cirrus:
-					sb.AppendFormat (" {0}", clouds.Kind.ToString ().ToLower (CultureInfo.InvariantCulture));
-					break;
-					
-				case CloudsKind.ToweringCumulus:
-					sb.Append (" towering cumulus");
-					break;
-			}
-			sb.Append (" clouds");
-
-			bool showHeight = true;
-			switch (clouds.Accuracy) {
-				case CloudsAccuracy.LessThan:
-					sb.Append (" at less than");
-					break;
-
-				case CloudsAccuracy.Exactly:
-					sb.Append (" at");
-					break;
-
-				default:
-					showHeight = false;
-					break;
-			}
-
-			if (showHeight) {
-				double height = 0.0;
-				switch (cloudsUnits) {
-					case CloudsUnits.Feet:
-						height = clouds.Feet;
-						break;
-
-					case CloudsUnits.Meters:
-						height = clouds.Meters;
-						break;
-
-					case CloudsUnits.Kilometers:
-						height = clouds.Kilometers;
+			foreach (Clouds c in clouds) {
+				if (sb.Length > 0)
+					sb.Append ("\n");
+				
+				if (c.Coverage == CloudsCoverage.Clear) {
+					skyConditions.Text = "Clear sky";
+					return;
+				}
+			
+				switch (c.Coverage) {
+					case CloudsCoverage.Few:
+					case CloudsCoverage.Scatterred:
+					case CloudsCoverage.Broken:
+					case CloudsCoverage.Overcast:
+						sb.Append (c.Coverage.ToString ());
 						break;
 				}
+
+				switch (c.Kind) {
+					case CloudsKind.Cumulus:
+					case CloudsKind.Cumulonimbus:
+					case CloudsKind.Cirrus:
+						sb.AppendFormat (" {0}", c.Kind.ToString ().ToLower (CultureInfo.InvariantCulture));
+						break;
+					
+					case CloudsKind.ToweringCumulus:
+						sb.Append (" towering cumulus");
+						break;
+				}
+				sb.Append (" clouds");
+
+				bool showHeight = true;
+				switch (c.Accuracy) {
+					case CloudsAccuracy.LessThan:
+						sb.Append (" at less than");
+						break;
+
+					case CloudsAccuracy.Exactly:
+						sb.Append (" at");
+						break;
+
+					default:
+						showHeight = false;
+						break;
+				}
+
+				if (showHeight) {
+					double height = 0.0;
+					switch (cloudsUnits) {
+						case CloudsUnits.Feet:
+							height = c.Feet;
+							break;
+
+						case CloudsUnits.Meters:
+							height = c.Meters;
+							break;
+
+						case CloudsUnits.Kilometers:
+							height = c.Kilometers;
+							break;
+					}
 				
-				sb.AppendFormat (" {0} {1}", height, cloudsUnits.ToString ().ToLower (CultureInfo.InvariantCulture));
+					sb.AppendFormat (" {0} {1}", height, cloudsUnits.ToString ().ToLower (CultureInfo.InvariantCulture));
+				}
 			}
 			
 			skyConditions.Text = sb.ToString ();
@@ -254,6 +329,14 @@ namespace Desklet.Weather
 				cloudsUnits = CloudsUnits.Min + 1;
 			SetClouds ();
 		}
+
+		void ChangeWindUnits ()
+		{
+			windUnits++;
+			if (windUnits == WindUnits.Max)
+				windUnits = WindUnits.Min + 1;
+			SetWind ();
+		}
 		
 		void AdjustLayout ()
 		{
@@ -291,6 +374,8 @@ namespace Desklet.Weather
 			closeButton = LoadControl ("desklet-close") as Path;
 			dragButton = LoadControl ("desklet-drag") as Path;
 			skyConditions = LoadControl ("SkyConditions") as TextBlock;
+			windPanel = LoadControl ("WindPanel") as Canvas;
+			windConditions = LoadControl ("WindConditions") as TextBlock;
 		}
 
 		void HighlightButton (Path button)
@@ -321,6 +406,10 @@ namespace Desklet.Weather
 
 			cloudsPanel.MouseLeftButtonUp += delegate {
 				ChangeCloudsUnits ();
+			};
+
+			windPanel.MouseLeftButtonUp += delegate {
+				ChangeWindUnits ();
 			};
 			
 			closeButton.MouseEnter += delegate {

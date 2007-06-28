@@ -13,6 +13,7 @@
  *
  */
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Desklet.Weather
@@ -73,7 +74,7 @@ namespace Desklet.Weather
 		Invalid,
 		None,
 		Cumulus,
-		Cumulonumbus,
+		Cumulonimbus,
 		ToweringCumulus,
 		Cirrus
 	};
@@ -175,7 +176,7 @@ namespace Desklet.Weather
 			if (!String.IsNullOrEmpty (kind)) {
 				switch (kind) {
 					case "CB":
-						this.kind = CloudsKind.Cumulonumbus;
+						this.kind = CloudsKind.Cumulonimbus;
 						break;
 
 					case "CU":
@@ -274,7 +275,7 @@ namespace Desklet.Weather
 	{
 		WindSpeedUnits unit;
 		int gusts = -1;
-		int direction = -1;
+		double direction = -1;
 		double speed = -1;
 
 		public WindSpeedUnits Unit {
@@ -285,7 +286,7 @@ namespace Desklet.Weather
 			get { return gusts; }
 		}
 
-		public int Direction {
+		public double Direction {
 			get { return direction; }
 		}
 
@@ -304,14 +305,18 @@ namespace Desklet.Weather
 		public double KilometersPerHour {
 			get { return ToKilometersPerHour (); }
 		}
+
+		public double MilesPerHour {
+			get { return ToMilesPerHour (); }
+		}
 		
 		public Wind (string direction, string speed, string gusts, string unit)
 		{
 			if (direction == "VRB")
-				this.direction = Int32.MaxValue;
+				this.direction = Double.MaxValue;
 			else {
 				try {
-					this.direction = Convert.ToInt32 (direction);
+					this.direction = Convert.ToDouble (direction);
 				} catch {
 					this.direction = -1;
 				}
@@ -350,6 +355,22 @@ namespace Desklet.Weather
 			}
 		}
 
+		double ToMilesPerHour ()
+		{
+			switch (unit) {
+				case WindSpeedUnits.Knots:
+					return speed * 1.1507794;
+
+				case WindSpeedUnits.MetersPerSecond:
+					return speed * 2.2369363;
+
+				case WindSpeedUnits.KilometersPerHour:
+					return speed * 0.62137119;
+			}
+
+			return 0.0;
+		}
+		
 		double ToKilometersPerHour ()
 		{
 			switch (unit) {
@@ -680,7 +701,7 @@ namespace Desklet.Weather
 		DateTime time;
 		Wind wind;
 		Visibility visibility;
-		Clouds clouds;
+		List<Clouds> clouds;
 		Temperature temperature;
 		Temperature dewPoint;
 		double pressureHg;
@@ -703,7 +724,7 @@ namespace Desklet.Weather
 			get { return visibility; }
 		}
 
-		public Clouds Clouds {
+		public List<Clouds> Clouds {
 			get { return clouds; }
 		}
 
@@ -750,10 +771,18 @@ namespace Desklet.Weather
 				DoPart (p);
 		}
 
+		void AddClouds (Clouds c)
+		{
+			if (clouds == null)
+				clouds = new List <Clouds> (1);
+			clouds.Add (c);
+		}
+		
 		void DoPart (string part)
 		{
+			Console.WriteLine ("part {0}", part);
 			if (part == "CAVOK") {
-				this.clouds = new Clouds ();
+				AddClouds (new Clouds ());
 				return;
 			}
 			
@@ -815,7 +844,7 @@ namespace Desklet.Weather
 			if (match.Success) {
 				groups = GetGroups (match);
 
-				clouds = new Clouds (groups [0], groups [1], groups [2]);
+				AddClouds (new Clouds (groups [0], groups [1], groups [2]));
 				return;
 			}
 
