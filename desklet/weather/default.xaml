@@ -70,7 +70,7 @@
   <!-- station id -->
   <TextBlock x:Name="StationIDLabel" Canvas.Left="100" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF" 
 	     Text="Station:"/>
-  <TextBlock x:Name="StationID" Canvas.Left="150" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="OMAA"/>
+  <TextBlock x:Name="StationID" Canvas.Left="150" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="LightGray" Text="EPPO"/>
 
   <!-- temperature -->
   <Canvas x:Name="TemperaturePanel" Canvas.Left="110" Canvas.Top="34" Opacity="0">

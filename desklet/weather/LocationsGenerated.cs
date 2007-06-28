@@ -29,45 +29,35 @@ namespace Desklet.Weather {
         
         private void Region_1() {
             this.curRegion = new Region("Middle East", 12);
-            this.curCountry = new Country("United Arab Emirates", 6);
+            this.regions.Add(this.curRegion);
             this.Country_1();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Qatar", 2);
             this.Country_2();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Oman", 2);
             this.Country_3();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Yemen", 9);
             this.Country_4();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Saudi Arabia", 29);
             this.Country_5();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Bahrain", 1);
             this.Country_6();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Lebanon", 1);
             this.Country_7();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Israel", 5);
             this.Country_8();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Iran, Islamic Republic of", 23);
             this.Country_9();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Jordan", 3);
             this.Country_10();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Kuwait", 1);
             this.Country_11();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Syria", 5);
             this.Country_12();
             this.curRegion.Add(this.curCountry);
         }
         
         private void Country_1() {
+            this.curCountry = new Country("United Arab Emirates", 6);
             this.curCountry.Add(new Location("Abu Dhabi", "OMAA", "24-26N 054-39E"));
             this.curCountry.Add(new Location("Al Ain", "OMAL", "24-16N 055-36E"));
             this.curCountry.Add(new Location("Dubai", "OMDB", "25-15N 055-20E"));
@@ -77,16 +67,19 @@ namespace Desklet.Weather {
         }
         
         private void Country_2() {
+            this.curCountry = new Country("Qatar", 2);
             this.curCountry.Add(new Location("Al Udeid", "KQIR", "25-07N 051-18E"));
             this.curCountry.Add(new Location("Doha", "OTBD", "25-07N 051-18E"));
         }
         
         private void Country_3() {
+            this.curCountry = new Country("Oman", 2);
             this.curCountry.Add(new Location("Salalah", "OOSA", "17-02N 054-05E"));
             this.curCountry.Add(new Location("Seeb", "OOMS", "23-35N 058-17E"));
         }
         
         private void Country_4() {
+            this.curCountry = new Country("Yemen", 9);
             this.curCountry.Add(new Location("Aden", "OYAA", "12-40N 045-02E"));
             this.curCountry.Add(new Location("Ataq", "OYAT", "14-31N 046-51E"));
             this.curCountry.Add(new Location("Hodeidah", "OYHD", "14-45N 042-59E"));
@@ -99,6 +92,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_5() {
+            this.curCountry = new Country("Saudi Arabia", 29);
             this.curCountry.Add(new Location("Abha", "OEAB", "18-14N 042-39E"));
             this.curCountry.Add(new Location("Al Ahsa", "OEAH", "25-18N 049-29E"));
             this.curCountry.Add(new Location("Al Baha", "OEBA", "20-18N 041-38E"));
@@ -131,14 +125,17 @@ namespace Desklet.Weather {
         }
         
         private void Country_6() {
+            this.curCountry = new Country("Bahrain", 1);
             this.curCountry.Add(new Location("Bahrain", "OBBI", "26-16N 050-39E"));
         }
         
         private void Country_7() {
+            this.curCountry = new Country("Lebanon", 1);
             this.curCountry.Add(new Location("Beirut", "OLBA", "33-49N 035-29E"));
         }
         
         private void Country_8() {
+            this.curCountry = new Country("Israel", 5);
             this.curCountry.Add(new Location("Ben-Gurion", "LLBG", "32-00N 034-54E"));
             this.curCountry.Add(new Location("Eilat", "LLET", "29-33N 034-57E"));
             this.curCountry.Add(new Location("Galilee/Pina", "LLIB", "32-58-48N 035-34-12E"));
@@ -147,6 +144,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_9() {
+            this.curCountry = new Country("Iran, Islamic Republic of", 23);
             this.curCountry.Add(new Location("Abadan", "OIAA", "30-22N 048-15E"));
             this.curCountry.Add(new Location("Ahwaz", "OIAW", "31-20N 048-40E"));
             this.curCountry.Add(new Location("Ardabil", "OITL", "38-19-35N 048-25-28E"));
@@ -173,16 +171,19 @@ namespace Desklet.Weather {
         }
         
         private void Country_10() {
+            this.curCountry = new Country("Jordan", 3);
             this.curCountry.Add(new Location("Amman", "OJAM", "31-59N 035-59E"));
             this.curCountry.Add(new Location("Aqaba", "OJAQ", "29-38N 035-01E"));
             this.curCountry.Add(new Location("Queen Alia Airport", "OJAI", "31-40N 035-58E"));
         }
         
         private void Country_11() {
+            this.curCountry = new Country("Kuwait", 1);
             this.curCountry.Add(new Location("Kuwait", "OKBK", "29-13N 047-59E"));
         }
         
         private void Country_12() {
+            this.curCountry = new Country("Syria", 5);
             this.curCountry.Add(new Location("Aleppo", "OSAP", "36-11N 037-12E"));
             this.curCountry.Add(new Location("Damascus", "OSDI", "33-25N 036-31E"));
             this.curCountry.Add(new Location("Deir Ezzor", "OSDZ", "35-19N 040-09E"));
@@ -192,16 +193,242 @@ namespace Desklet.Weather {
         
         private void Region_2() {
             this.curRegion = new Region("North America", 4);
-            this.curCountry = new Country("Mexico", 59);
+            this.regions.Add(this.curRegion);
             this.Country_13();
+            this.curRegion.Add(this.curCountry);
+            this.Country_14();
+            this.curRegion.Add(this.curCountry);
+            this.Country_15();
+            this.curRegion.Add(this.curCountry);
+            this.Country_16();
+            this.curRegion.Add(this.curCountry);
+        }
+        
+        private void Country_13() {
+            this.curCountry = new Country("Mexico", 59);
+            this.curCountry.Add(new Location("Acapulco", "MMAA", "16-46N 099-45W"));
+            this.curCountry.Add(new Location("Aguascalientes", "MMAS", "21-53N 102-18W"));
+            this.curCountry.Add(new Location("Bahías de Huatulco", "MMBT", "15-47N 096-16W"));
+            this.curCountry.Add(new Location("Campeche", "MMCP", "19-51N 090-33W"));
+            this.curCountry.Add(new Location("Cancún", "MMUN", "21-02N 086-52W"));
+            this.curCountry.Add(new Location("Chetumal", "MMCM", "18-29N 088-18W"));
+            this.curCountry.Add(new Location("Chichen-Itzá", "MMCT", "20-38-30N 088-26-58W"));
+            this.curCountry.Add(new Location("Chihuahua", "MMCU", "28-42N 105-58W"));
+            this.curCountry.Add(new Location("Ciudad del Carmen", "MMCE", "18-39N 091-48W"));
+            this.curCountry.Add(new Location("Ciudad Juárez", "MMCS", "31-38N 106-26W"));
+            this.curCountry.Add(new Location("Ciudad Obregón", "MMCN", "27-19N 112-18W"));
+            this.curCountry.Add(new Location("Ciudad Victoria", "MMCV", "23-43N 098-58W"));
+            this.curCountry.Add(new Location("Colima", "MMIA", "19-16N 103-35W"));
+            this.curCountry.Add(new Location("Cozumel", "MMCZ", "20-32N 086-56W"));
+            this.curCountry.Add(new Location("Cuernavaca", "MMCB", "18-53N 099-14W"));
+            this.curCountry.Add(new Location("Culiacán", "MMCL", "24-49N 107-24W"));
+            this.curCountry.Add(new Location("Del Bajío", "MMLO", "21-00N 101-29W"));
+            this.curCountry.Add(new Location("Durango", "MMDO", "24-08N 104-32W"));
+            this.curCountry.Add(new Location("Guadalajara", "MMGL", "20-31N 103-19W"));
+            this.curCountry.Add(new Location("Guaymas", "MMGM", "27-58N 110-56W"));
+            this.curCountry.Add(new Location("Hermosillo", "MMHO", "29-04N 110-57W"));
+            this.curCountry.Add(new Location("Ixtapa", "MMZH", "17-36N 101-28W"));
+            this.curCountry.Add(new Location("Ixtepec", "MMIT", "16-27N 095-05W"));
+            this.curCountry.Add(new Location("La Paz", "MMLP", "24-04N 110-22W"));
+            this.curCountry.Add(new Location("Loreto", "MMLT", "26-01N 111-21W"));
+            this.curCountry.Add(new Location("Los Mochis", "MMLM", "25-41N 109-05W"));
+            this.curCountry.Add(new Location("Manzanillo", "MMZO", "19-09N 104-34W"));
+            this.curCountry.Add(new Location("Matamoros", "MMMA", "25-46N 097-32W"));
+            this.curCountry.Add(new Location("Mazatlán", "MMMZ", "23-10N 106-16W"));
+            this.curCountry.Add(new Location("Mérida", "MMMD", "20-56N 089-39W"));
+            this.curCountry.Add(new Location("Mexicali", "MMML", "32-38N 117-00W"));
+            this.curCountry.Add(new Location("Mexico City", "MMMX", "19-26N 099-06W"));
+            this.curCountry.Add(new Location("Minatitlán", "MMMT", "18-06N 094-35W"));
+            this.curCountry.Add(new Location("Monclova", "MMMV", "26-53N 101-25W"));
             this.curCountryLocation = new City("Monterrey", 2);
             this.curCity = ((City)(this.curCountryLocation));
             this.curCity.Add(new Location("Airport del Norte", "MMAN", "25-52N 100-14W"));
             this.curCity.Add(new Location("Virgen María", "MMMY", "25-47N 100-06W"));
-            this.curRegion.Add(this.curCountry);
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountry.Add(new Location("Morelia", "MMMM", "19-51N 101-02W"));
+            this.curCountry.Add(new Location("Nuevo Laredo", "MMNL", "27-26N 099-34W"));
+            this.curCountry.Add(new Location("Oaxaca", "MMOX", "16-58N 096-44W"));
+            this.curCountry.Add(new Location("Piedras Negras", "MMPG", "28-42N 100-31W"));
+            this.curCountry.Add(new Location("Poza Rica", "MMPA", "20-31N 097-28W"));
+            this.curCountry.Add(new Location("Puebla", "MMPB", "19-03N 098-10W"));
+            this.curCountry.Add(new Location("Puerto Escondido", "MMPS", "15-52N 097-05W"));
+            this.curCountry.Add(new Location("Puerto Vallarta", "MMPR", "20-41N 105-15W"));
+            this.curCountry.Add(new Location("Queretaro", "MMQT", "20-36N 100-23W"));
+            this.curCountry.Add(new Location("Reynosa", "MMRX", "26-01N 098-14W"));
+            this.curCountry.Add(new Location("Saltillo", "MMIO", "25-27N 100-59W"));
+            this.curCountry.Add(new Location("San José del Cabo", "MMSD", "23-09N 109-42W"));
+            this.curCountry.Add(new Location("San Luis de Potosí", "MMSP", "22-09N 100-59W"));
+            this.curCountry.Add(new Location("Tampico", "MMTM", "22-17N 097-52W"));
+            this.curCountry.Add(new Location("Tapachula", "MMTP", "14-47N 092-23W"));
+            this.curCountry.Add(new Location("Tepic", "MMEP", "21-31N 104-54W"));
+            this.curCountry.Add(new Location("Tijuana", "MMTJ", "32-33N 116-58W"));
+            this.curCountry.Add(new Location("Toluca", "MMTO", "19-21N 099-34W"));
+            this.curCountry.Add(new Location("Torreón", "MMTC", "25-32N 103-27W"));
+            this.curCountry.Add(new Location("Tuxtla Gutiérrez", "MMTG", "16-45N 093-07W"));
+            this.curCountry.Add(new Location("Uruapan", "MMPN", "19-24N 102-02W"));
+            this.curCountry.Add(new Location("Veracruz", "MMVR", "19-09N 096-11W"));
+            this.curCountry.Add(new Location("Villahermosa", "MMVA", "18-00N 092-49W"));
+            this.curCountry.Add(new Location("Zacatecas", "MMZC", "22-54N 102-41W"));
+        }
+        
+        private void Country_14() {
             this.curCountry = new Country("United States", 51);
-            this.Country_14();
             this.curCountryLocation = new State("Alabama", 20);
+            this.State_1();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Alaska", 130);
+            this.State_2();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Arizona", 24);
+            this.State_3();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Arkansas", 39);
+            this.State_4();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("California", 98);
+            this.State_5();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Colorado", 36);
+            this.State_6();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Connecticut", 9);
+            this.State_7();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Delaware", 3);
+            this.State_8();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("District of Columbia", 2);
+            this.State_9();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Florida", 52);
+            this.State_10();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Georgia", 40);
+            this.State_11();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Hawaii", 18);
+            this.State_12();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Idaho", 20);
+            this.State_13();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Illinois", 54);
+            this.State_14();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Indiana", 20);
+            this.State_15();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Iowa", 54);
+            this.State_16();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Kansas", 29);
+            this.State_17();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Kentucky", 15);
+            this.State_18();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Lousiana", 33);
+            this.State_19();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Maine", 19);
+            this.State_20();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Maryland", 13);
+            this.State_21();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Massachusetts", 25);
+            this.State_22();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Michigan", 62);
+            this.State_23();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Minnesota", 81);
+            this.State_24();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Mississippi", 16);
+            this.State_25();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Missouri", 20);
+            this.State_26();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Montana", 22);
+            this.State_27();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Nebraska", 34);
+            this.State_28();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Nevada", 15);
+            this.State_29();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("New Hampshire", 14);
+            this.State_30();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("New Jersey", 15);
+            this.State_31();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("New Mexico", 31);
+            this.State_32();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("New York", 34);
+            this.State_33();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("North Carolina", 64);
+            this.State_34();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("North Dakota", 11);
+            this.State_35();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Ohio", 22);
+            this.State_36();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Oklahoma", 36);
+            this.State_37();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Oregon", 30);
+            this.State_38();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Pennsylvania", 32);
+            this.State_39();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Rhode Island", 6);
+            this.State_40();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("South Carolina", 18);
+            this.State_41();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("South Dakota", 22);
+            this.State_42();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Tennessee", 12);
+            this.State_43();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Texas", 113);
+            this.State_44();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Utah", 18);
+            this.State_45();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Vermont", 16);
+            this.State_46();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Virginia", 49);
+            this.State_47();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Washington", 38);
+            this.State_48();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("West Virginia", 15);
+            this.State_49();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Wisconsin", 49);
+            this.State_50();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Wyoming", 25);
+            this.State_51();
+            this.curCountry.Add(this.curCountryLocation);
+        }
+        
+        private void State_1() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Alabaster", "KEET", "33-10-42N 086-46-54W"));
             this.curState.Add(new Location("Alexander City", "KALX", "32-54-53N 085-57-46W"));
@@ -211,7 +438,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Birmingham", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Birmingham", "KBHM", "33-33-56N 086-44-42W"));
-            this.curState.Add(new Location("Auburn", "KAUO", "32-37N 085-26W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Cullman", "K3A1", "34-16-07N 086-51-30W"));
             this.curState.Add(new Location("Decatur", "KDCU", "34-39-29N 086-56-36W"));
             this.curState.Add(new Location("Dothan", "KDHN", "31-19-17N 085-26-59W"));
@@ -222,19 +449,21 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Huntsville", "KHSV", "34-38-37N 086-47-08W"));
             this.curCity.Add(new Location("Madison County Executive Airport", "KMDQ", "34-51-41N 086-33-26W"));
-            this.curState.Add(new Location("Gadsden", "KGAD", "33-58N 086-05W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Mobile", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Mobile Downtown Airport", "KBFM", "30-36-50N 088-03-48W"));
             this.curCity.Add(new Location("Mobile Regional Airport", "KMOB", "30-41-18N 088-14-44W"));
-            this.curState.Add(new Location("Gadsden", "KGAD", "33-58N 086-05W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Montgomery", "KMGM", "32-18-01N 086-24-22W"));
             this.curState.Add(new Location("Maxwell AFB", "KMXF", "32-23N 086-22W"));
             this.curState.Add(new Location("Muscle Shoals", "KMSL", "34-44-38N 087-35-58W"));
             this.curState.Add(new Location("Ozark", "KOZR", "31-17N 085-43W"));
             this.curState.Add(new Location("Troy", "KTOI", "31-51-38N 086-00-44W"));
             this.curState.Add(new Location("Tuscaloosa", "KTCL", "33-12-43N 087-36-57W"));
-            this.curCountryLocation = new State("Alaska", 130);
+        }
+        
+        private void State_2() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Adak Island", "PADK", "51-52-40N 176-38-45W"));
             this.curState.Add(new Location("Ambler", "PAFM", "67-06N 157-51W"));
@@ -245,7 +474,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Elmendorf AFB", "PAED", "61-15-11N 149-47-38W"));
             this.curCity.Add(new Location("Lake Hood Sea Plane Base", "PALH", "61-11N 149-58W"));
             this.curCity.Add(new Location("Merrill Field", "PAMR", "61-13N 149-51W"));
-            this.curState.Add(new Location("Anaktuvuk Pass", "PAKP", "68-08-01N 151-44-36W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Angoon", "PAGN", "57-30N 134-35W"));
             this.curState.Add(new Location("Aniak", "PANI", "61-34-53N 159-32-34W"));
             this.curState.Add(new Location("Annette", "PANT", "55-02-32N 131-34-20W"));
@@ -256,7 +485,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Barter Island", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Airport", "PABA", "70-08-02N 143-34-37W"));
-            this.curState.Add(new Location("Barrow", "PABR", "71-17-07N 156-45-57W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Bethel", "PABE", "60-46-47N 161-50-16W"));
             this.curState.Add(new Location("Bettles", "PABT", "66-55N 151-31W"));
             this.curState.Add(new Location("Big River Lake", "PALV", "60-49N 152-18W"));
@@ -274,16 +503,16 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Cordova", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Merle K (Mudhole) Smith Airport", "PACV", "60-29-30N 145-28-40W"));
-            this.curState.Add(new Location("Cold Bay", "PACD", "55-13-15N 162-43-40W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Deadhorse", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Alpine Airstrip", "PALP", "70-20N 150-56W"));
             this.curCity.Add(new Location("Deadhorse Airport", "PASC", "70-12N 148-28W"));
-            this.curState.Add(new Location("Cold Bay", "PACD", "55-13-15N 162-43-40W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Deering", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Deering/New Airport", "PADE", "66-05N 162-45W"));
-            this.curState.Add(new Location("Cold Bay", "PACD", "55-13-15N 162-43-40W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Fort Greely/Allen Army Airfield", "PABI", "64-00N 145-44W"));
             this.curState.Add(new Location("Dillingham", "PADL", "59-03N 158-31W"));
             this.curState.Add(new Location("Dutch Harbor", "PADU", null));
@@ -296,11 +525,11 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Eielson AFB", "PAEI", "64-39N 147-06W"));
             this.curCity.Add(new Location("International Airport", "PAFA", "64-48-14N 147-52-34W"));
-            this.curState.Add(new Location("Eureka", "PAZK", "61-56N 147-10W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Farewell Lake", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Farewell Lake Seaplane Base", "PAFK", "62-32-33N 153-37-21W"));
-            this.curState.Add(new Location("Eureka", "PAZK", "61-56N 147-10W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Fort Yukon", "PFYU", "66-34N 145-16W"));
             this.curState.Add(new Location("Galbraith Lake", "PAGB", "68-29N 149-29W"));
             this.curState.Add(new Location("Galena", "PAGA", "64-44N 156-56W"));
@@ -314,7 +543,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Homer", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Homer Airport", "PAHO", "59-39N 151-29W"));
-            this.curState.Add(new Location("Healy River", "PAHV", "63-52N 148-58W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Hoonah", "PAOH", "58-07N 135-27W"));
             this.curState.Add(new Location("Hooper Bay", "PAHP", "61-31N 166-08W"));
             this.curState.Add(new Location("Hydaburg", "PAHY", "55-12N 132-50W"));
@@ -340,7 +569,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Merril Field", "PAMR", null));
             this.curCity.Add(new Location("Merrill Pass West", "PAER", "61-15N 153-49W"));
-            this.curState.Add(new Location("Mekoryuk", "PAMY", "60-22N 166-16W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Metlakatla", "PAMM", "55-07-52N 131-34-41W"));
             this.curState.Add(new Location("Middleton Island", "PAMD", "59-26N 146-18W"));
             this.curState.Add(new Location("Minchumina", "PAMH", "63-52-50N 152-18-02W"));
@@ -363,7 +592,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Portage Glacier", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "PATO", "60-47N 148-50W"));
-            this.curState.Add(new Location("Port Heiden", "PAPH", "56-57N 158-38W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Prospect Creek", "PAPR", "66-48-46N 150-38-38W"));
             this.curState.Add(new Location("Puntilla Lake", "PAPT", "62-06N 152-45W"));
             this.curState.Add(new Location("Red Dog", "PARD", "68-01-53N 162-54-11W"));
@@ -398,18 +627,20 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Valdez", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Valdez", "PAVD", "61-08N 146-16W"));
-            this.curState.Add(new Location("Utopia Creek", "PAIM", "66-59N 153-42W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Wainwright", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Wainwright U. S. Army Airfield", "PAFB", "64-50N 147-37W"));
             this.curCity.Add(new Location("Wainwright Airport", "PAWI", "70-38N 159-51W"));
-            this.curState.Add(new Location("Utopia Creek", "PAIM", "66-59N 153-42W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Wasilla", "PAWS", "61-34-19N 149-32-26W"));
             this.curState.Add(new Location("Whittier", "PAWR", "60-46N 148-41W"));
             this.curState.Add(new Location("Willow", "PAUO", "61-45N 150-03W"));
             this.curState.Add(new Location("Wrangell", "PAWG", "56-29N 132-22W"));
             this.curState.Add(new Location("Yakutat", "PAYA", "59-31N 139-40W"));
-            this.curCountryLocation = new State("Arizona", 24);
+        }
+        
+        private void State_3() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Bullhead City", 1);
             this.curCity = ((City)(this.curStateLocation));
@@ -429,11 +660,11 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Falcon Field", "KFFZ", "33-28N 111-44W"));
             this.curCity.Add(new Location("Williams Gateway Airport", "KIWA", "33-19N 111-39W"));
-            this.curState.Add(new Location("Kingman", "KIGM", "35-15-28N 113-55-59W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Nogales", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Nogales International Airport", "KOLS", "31-25-15N 110-50-45W"));
-            this.curState.Add(new Location("Kingman", "KIGM", "35-15-28N 113-55-59W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Page", "KPGA", "36-55-14N 111-26-53W"));
             this.curStateLocation = new City("Phoenix", 4);
             this.curCity = ((City)(this.curStateLocation));
@@ -441,12 +672,12 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Phoenix-Deer Valley", "KDVT", "33-41-25N 112-03-56W"));
             this.curCity.Add(new Location("Phoenix-Goodyear", "KGYR", null));
             this.curCity.Add(new Location("Phoenix-Luke AFB", "KLUF", "33-32N 112-23W"));
-            this.curState.Add(new Location("Page", "KPGA", "36-55-14N 111-26-53W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Prescott", "KPRC", "34-38-57N 112-25-20W"));
             this.curStateLocation = new City("Safford", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Municipal Airport", "KSAD", "32-51-26N 109-38-08W"));
-            this.curState.Add(new Location("Prescott", "KPRC", "34-38-57N 112-25-20W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Scottsdale", "KSDL", "33-37-22N 111-54-38W"));
             this.curState.Add(new Location("Show Low", "KSOW", "34-16N 110-00W"));
             this.curState.Add(new Location("St. Johns", "KSJN", "34-31-06N 109-22-45W"));
@@ -454,15 +685,17 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Tucson", "KTUS", "32-07-53N 110-57-19W"));
             this.curCity.Add(new Location("Tucson-Davis AFB", "KDMA", null));
-            this.curState.Add(new Location("St. Johns", "KSJN", "34-31-06N 109-22-45W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Window Rock", "KRQE", "35-39N 109-04W"));
             this.curState.Add(new Location("Winslow", "KINW", "35-01-41N 110-43-15W"));
             this.curStateLocation = new City("Yuma", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("International Airport", "KYUM", "32-39N 114-36W"));
             this.curCity.Add(new Location("Marine Corps Air Station", "KNYL", "32-37-25N 113-45-50W"));
-            this.curState.Add(new Location("Winslow", "KINW", "35-01-41N 110-43-15W"));
-            this.curCountryLocation = new State("Arkansas", 39);
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_4() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Auburn", 1);
             this.curCity = ((City)(this.curStateLocation));
@@ -483,7 +716,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Drake Field", "KFYV", "36-00-37N 094-10-04W"));
             this.curCity.Add(new Location("Northwest Arkansas Regional Airport", "KXNA", "36-16-55N  094-18-25W"));
-            this.curState.Add(new Location("Evergreen", "KGZH", "31-25-08N 087-02-53W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Flippin", "KFLP", "36-18N 092-28W"));
             this.curState.Add(new Location("Fort Payne", "K4A9", "34-28-25N 085-43-17W"));
             this.curState.Add(new Location("Fort Smith", "KFSM", "35-20-01N 094-21-54W"));
@@ -510,7 +743,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Tuscaloosa", "KTCL", "33-12-43N 087-36-57W"));
             this.curState.Add(new Location("Walnut Ridge", "KARG", "36-08N 090-55W"));
             this.curState.Add(new Location("West Memphis", "KAWM", "35-08N 090-14W"));
-            this.curCountryLocation = new State("California", 98);
+        }
+        
+        private void State_5() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Alturas", "KS11", "41-29-29N 120-33-52W"));
             this.curState.Add(new Location("Arcata", "KACV", "40-58-41N 124-06-31W"));
@@ -535,7 +770,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("El Centro", "KNJK", "33-27N 120-02W"));
             this.curCity.Add(new Location("Naval Air Facility", "KNJK", "32-49-30N 115-39-38W"));
-            this.curState.Add(new Location("Edwards AFB", "KEDW", "34-55N 117-54W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("El Monte", "KEMT", "34-05N 118-02W"));
             this.curState.Add(new Location("Emigrant Gap", "KBLU", "39-16-34N 120-42-29W"));
             this.curState.Add(new Location("Fairfield", "KSUU", "38-16N 121-57W"));
@@ -560,7 +795,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Los Angeles", "KLAX", "33-56-17N 118-23-20W"));
             this.curCity.Add(new Location("USC Campus Downtown", "KCQT", "34-01N 118-17W"));
             this.curCity.Add(new Location("Whiteman Airport", "KWHP", "34-15 118-24W"));
-            this.curState.Add(new Location("Los Alamitos", "KSLI", "33-47N 118-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Madera", "KMAE", "36-59-12N 120-06-39W"));
             this.curState.Add(new Location("Mammoth/June Lakes", "KMMH", "37-37N 118-50W"));
             this.curState.Add(new Location("Marysville", "KMYV", "39-05-52N 121-34-11W"));
@@ -568,14 +803,14 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Merced", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Merced", "KMCE", "37-16-59N 120-30-28W"));
-            this.curState.Add(new Location("Marysville-Beale AFB", "KBAB", "39-08N 121-26W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Modesto", "KMOD", "37-37-27N 120-57-02W"));
             this.curState.Add(new Location("Mojave", "KMHV", "35-04N 118-09W"));
             this.curState.Add(new Location("Montague", "KSIY", "41-46-53N 122-28-05W"));
             this.curStateLocation = new City("Montery", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Monterey", "KMRY", "36-35-26N 121-50-51W"));
-            this.curState.Add(new Location("Montague", "KSIY", "41-46-53N 122-28-05W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Mount Shasta", "KMHS", "41-18-57N 122-18-58W"));
             this.curState.Add(new Location("Mount Wilson", "KMWS", "34-14N 118-04W"));
             this.curState.Add(new Location("Mountain View", "KNUQ", "37-24-21N 122-02-53W"));
@@ -586,7 +821,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Oceanside", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "KNFG", "33-18-17N 117-21-14W"));
-            this.curState.Add(new Location("Oakland", "KOAK", "37-43-10N 122-14-07W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Ontario", "KONT", "34-03-12N 117-34-33W"));
             this.curState.Add(new Location("Oroville", "KOVE", "39-29-41N 121-37-13W"));
             this.curState.Add(new Location("Oxnard", "KOXR", "34-12-02N 119-12-11W"));
@@ -603,19 +838,19 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("March Air Force Base", "KRIV", "33-54N 117-15W"));
             this.curCity.Add(new Location("Riverside Municipal Airport", "KRAL", "33-57-05N 117-27-02W"));
-            this.curState.Add(new Location("Redding", "KRDD", "40-30-54N 122-17-48W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Sacramento", 3);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Sacramento", "KSAC", "38-30-25N 121-29-42W"));
             this.curCity.Add(new Location("Woodland", "KSMF", "38-42-05N 121-35-38W"));
             this.curCity.Add(new Location("Sacramento Mather Airport", "KMHR", "38-33N 121-18W"));
-            this.curState.Add(new Location("Redding", "KRDD", "40-30-54N 122-17-48W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Salinas", "KSNS", "36-39-49N 121-36-29W"));
             this.curState.Add(new Location("San Carlos", "KSQL", "37-31N 122-15W"));
             this.curStateLocation = new City("San Clemente", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Naval Auxiliary Landing Field", "KNUC", "33-01-16N 118-34-52W"));
-            this.curState.Add(new Location("San Carlos", "KSQL", "37-31N 122-15W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("San Diego", 6);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Gillespie", "KSEE", "32-50N 116-58W"));
@@ -624,16 +859,16 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Montgomery Field", "KMYF", "32-48-52N 117-08-11W"));
             this.curCity.Add(new Location("North Island", "KNZY", "32-41-27N 117-12-32W"));
             this.curCity.Add(new Location("San Diego", "KSAN", "32-44-01N 117-10-59W"));
-            this.curState.Add(new Location("San Carlos", "KSQL", "37-31N 122-15W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("San Francisco", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Airport", "KSFO", "37-37-11N 122-21-53W"));
-            this.curState.Add(new Location("San Carlos", "KSQL", "37-31N 122-15W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("San Jose", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Reid/Hillv", "KRHV", "37-20N 121-49W"));
             this.curCity.Add(new Location("Santa Clara", "KSJC", "37-21-33N 121-55-27W"));
-            this.curState.Add(new Location("San Carlos", "KSQL", "37-31N 122-15W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("San Luis Obispo", "KSBP", "35-14-10N 120-38-10W"));
             this.curState.Add(new Location("San Nicholas Island", "KNSI", "33-14-05N 119-27-10W"));
             this.curState.Add(new Location("Sandberg", "KSDB", "34-44-37N 118-43-28W"));
@@ -656,10 +891,12 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Air Force Base", "KVBG", "34-45N 120-34W"));
             this.curCity.Add(new Location("Vandenberg Range", "KVBG", "34-43N 120-34W"));
-            this.curState.Add(new Location("Van Nuys", "KVNY", "34-12-45N 118-29-27W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Visalia", "KVIS", "36-19N 119-24W"));
             this.curState.Add(new Location("Watsonville", "KWVI", "36-56-22N 121-47-20W"));
-            this.curCountryLocation = new State("Colorado", 36);
+        }
+        
+        private void State_6() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Air Force Academy", "KAFF", "38-58N 104-49W"));
             this.curState.Add(new Location("Akron", "KAKO", "40-10-28N 103-12-52W"));
@@ -677,11 +914,11 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Centennial Airport", "KAPA", "39-33-50N 104-50-54W"));
             this.curCity.Add(new Location("Aurora Buckley Air Force Base", "KBKF", null));
             this.curCity.Add(new Location("Broomfield", "KBJC", null));
-            this.curState.Add(new Location("Craig", "KCAG", "40-29-36N 107-31-25W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Durango", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Durango", "KDRO", "37-08-35N 107-45-35W"));
-            this.curState.Add(new Location("Craig", "KCAG", "40-29-36N 107-31-25W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Eagle", "KEGE", "39-39N 106-55W"));
             this.curState.Add(new Location("Elbert Mountain", "KMNH", "39-13-00N 104-38-02W"));
             this.curState.Add(new Location("Fort Carson", "KFCS", "38-42N 104-46W"));
@@ -691,7 +928,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Gunnison", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Crested Butte Regional Airport", "KGUC", "38-32N 106-56W"));
-            this.curState.Add(new Location("Greeley", "KGXY", "40-26N 104-38W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Hayden", "KHDN", "40-29N 107-13W"));
             this.curState.Add(new Location("Kremmling", "K20V", "40-03-13N 106-22-08W"));
             this.curState.Add(new Location("La Junta", "KLHX", "38-02-58N 103-30-44W"));
@@ -704,20 +941,22 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "KMTJ", "38-30-18N 107-53-51W"));
             this.curCity.Add(new Location("Location 2", "K6V8", null));
-            this.curState.Add(new Location("Meeker", "KEEO", "40-02-32N 107-53-23W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Pagosa Springs", "KCPW", "37-27-05N 106-48-01W"));
             this.curState.Add(new Location("Pueblo", "KPUB", "38-17-24N 104-29-54W"));
             this.curStateLocation = new City("Rifle", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Garfield County Regional Airport", "KRIL", "39-31-30N 107-43-38W"));
-            this.curState.Add(new Location("Pueblo", "KPUB", "38-17-24N 104-29-54W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Saguache", "K04V", "38-05-50N 106-10-07W"));
             this.curState.Add(new Location("Salida-Harriet", "K0V2", null));
             this.curState.Add(new Location("Salida Mountain", "KMYP", "38-29-04N 106-19-01W"));
             this.curState.Add(new Location("Springfield", "KSPD", "37-17N 102-37W"));
             this.curState.Add(new Location("Telluride", "KTEX", "37-57-14N 107-54-31W"));
             this.curState.Add(new Location("Trinidad", "KTAD", "37-16N 104-26W"));
-            this.curCountryLocation = new State("Connecticut", 9);
+        }
+        
+        private void State_7() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Bridgeport", "KBDR", "41-09-30N 073-07-44W"));
             this.curState.Add(new Location("Danbury", "KDXR", "41-22-18N 073-29-04W"));
@@ -728,16 +967,22 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Oxford", "KOXC", "41-29N 073-08W"));
             this.curState.Add(new Location("Willimantic", "KIJD", "41-44-31N 072-11-01W"));
             this.curState.Add(new Location("Windsor Locks", "KBDL", "41-56-17N 072-40-57W"));
-            this.curCountryLocation = new State("Delaware", 3);
+        }
+        
+        private void State_8() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Dover", "KDOV", "39-08N 075-28W"));
             this.curState.Add(new Location("Georgetown", "KGED", "38-41-24N 075-21-45W"));
             this.curState.Add(new Location("Wilmington", "KILG", "39-40-22N 075-36-03W"));
-            this.curCountryLocation = new State("District of Columbia", 2);
+        }
+        
+        private void State_9() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Washington", "KDCA", "38-53-42N 77-02-12W"));
             this.curState.Add(new Location("Washington-Dulles International Airport", "KIAD", "38-56-05N 077-26-51W"));
-            this.curCountryLocation = new State("Florida", 52);
+        }
+        
+        private void State_10() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Atoka", "KAQR", "34-23-54N 096-08-53W"));
             this.curState.Add(new Location("Bartow", "KBOW", "27-57N 081-47W"));
@@ -747,7 +992,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Cape Canaveral", "KMXR", "28-28N 080-33W"));
             this.curCity.Add(new Location("Patrick AFB", "KCOF", "28-14N 080-36W"));
-            this.curState.Add(new Location("Brooksville", "KBKV", "28-28-25N 082-27-16W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Crestview", "KCEW", "30-46-20N 086-31-12W"));
             this.curState.Add(new Location("Cross City", "KCTY", "29-33-00N 083-06-19W"));
             this.curState.Add(new Location("Daytona Beach", "KDAB", "29-10-38N 081-03-36W"));
@@ -756,21 +1001,21 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Duke Field", "KEGI", "30-39N 086-31W"));
             this.curCity.Add(new Location("Eglin", "KEGI", null));
-            this.curState.Add(new Location("Destin", "KDTS", "30-23-36N 086-28-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Fort Lauderdale", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Fort Lauderdale (International)", "KFLL", "26-04-05N 080-09-09W"));
             this.curCity.Add(new Location("Fort Lauderdale", "KFXE", "26-12-00N 080-11-00W"));
-            this.curState.Add(new Location("Destin", "KDTS", "30-23-36N 086-28-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Fort Myers", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Page Field", "KFMY", "26-35-03N 081-51-45W"));
             this.curCity.Add(new Location("Southwest Florida International", "KRSW", "26-31-37N 081-45-59W"));
-            this.curState.Add(new Location("Destin", "KDTS", "30-23-36N 086-28-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Fort Pierce", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("St. Lucie County International Airport", "KFPR", "27-29-53N 080-22-36W"));
-            this.curState.Add(new Location("Destin", "KDTS", "30-23-36N 086-28-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Gainesville", "KGNV", "29-41-31N 082-16-32W"));
             this.curState.Add(new Location("Hollywood", "KHWO", "25-59-56N 080-14-28W"));
             this.curState.Add(new Location("Homestead AFB", "KHST", "25-29N 080-23W"));
@@ -781,7 +1026,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Jacksonville", "KJAX", "30-29-40N 081-41-36W"));
             this.curCity.Add(new Location("Naval Air Station", "KNIP", "30-14-03N 081-40-29W"));
             this.curCity.Add(new Location("Craig Airport", "KCRG", "30-20-10N 081-30-53W"));
-            this.curState.Add(new Location("Hurlburt", "KHRT", "30-25N 086-41W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Key West", "KEYW", "24-33-13N 081-45-13W"));
             this.curState.Add(new Location("Key West NAS", "KNQX", "24-34-46N 081-41-02W"));
             this.curState.Add(new Location("Lakeland", "KLAL", "27-59N 082-01W"));
@@ -790,7 +1035,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Marathon", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Marathon", "KMTH", "24-43-33N 081-02-52W"));
-            this.curState.Add(new Location("Macdill", "KMCF", "27-51N 082-30W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Marianna", "KMAI", "30-50-12N 085-11-01W"));
             this.curState.Add(new Location("Mayport", "KNRB", "30-23-45N 081-25-21W"));
             this.curState.Add(new Location("Melbourne", "KMLB", "28-06-10N 080-38-45W"));
@@ -799,11 +1044,11 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Miami", "KMIA", "25-47-26N 080-18-59W"));
             this.curCity.Add(new Location("Kendall", "KTMB", "25-38-31N 080-26-05W"));
             this.curCity.Add(new Location("Opa Locka", "KOPF", "25-54-36N 080-16-59W"));
-            this.curState.Add(new Location("Melbourne", "KMLB", "28-06-10N 080-38-45W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Milton", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Whiting Field - North", "KNSE", "30-44-00N 087-01-00W"));
-            this.curState.Add(new Location("Melbourne", "KMLB", "28-06-10N 080-38-45W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("NASA Shuttle", "KTTS", "28-37N 080-43W"));
             this.curState.Add(new Location("Naples", "KAPF", "26-09N 081-46W"));
             this.curState.Add(new Location("Ocala", "KOCF", "29-10N 082-13W"));
@@ -813,13 +1058,13 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Kissimmee Municipal Airport", "KISM", "28-17-23N 081-26-14W"));
             this.curCity.Add(new Location("Orlando", "KORL", "28-32-47N 081-20-09W"));
             this.curCity.Add(new Location("International Airport", "KMCO", "28-25-02N 081-19-30W"));
-            this.curState.Add(new Location("Ocala", "KOCF", "29-10N 082-13W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Panama City", "KPFN", "30-12-27N 085-41-06W"));
             this.curStateLocation = new City("Pensacola", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Pensacola", "KPNS", "30-28-41N 087-11-13W"));
             this.curCity.Add(new Location("Naval Air Station", "KNPA", "30-21-22N 087-19-24W"));
-            this.curState.Add(new Location("Panama City", "KPFN", "30-12-27N 085-41-06W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Perry-Foley", "K40J", "30-04-19N 083-34-25W"));
             this.curState.Add(new Location("Pompano Beach", "KPMP", "26-14-44N 080-06-41W"));
             this.curState.Add(new Location("Punta Gorda", "KPGD", "26-55-04N 081-59-37W"));
@@ -830,7 +1075,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("St Petersburg", "KSPG", "27-46-04N 082-37-34W"));
             this.curCity.Add(new Location("Clearwater", "KPIE", "27-54-44N 082-41-08W"));
-            this.curState.Add(new Location("St. Augustine", "KSGJ", "29-57-33N 081-20-23W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Stuart", "KSUA", "27-10-54N 080-13-16W"));
             this.curState.Add(new Location("Tallahassee", "KTLH", "30-23-35N 084-21-12W"));
             this.curStateLocation = new City("Tampa", 3);
@@ -838,7 +1083,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Tampa", "KTPA", "27-57-41N 082-32-25W"));
             this.curCity.Add(new Location("Macdill Air Force Base", "KMCF", null));
             this.curCity.Add(new Location("Vandenberg Airport", "KVDF", "28-00-50N 082-20-43W"));
-            this.curState.Add(new Location("Tallahassee", "KTLH", "30-23-35N 084-21-12W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("The Villages", "KVVG", "28-58N 081-58W"));
             this.curState.Add(new Location("Titusville", "KTIX", "28-31N 080-48W"));
             this.curState.Add(new Location("Tyndall AFB", "KPAM", "30-04N 085-35W"));
@@ -846,7 +1091,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Vero Beach", "KVRB", "27-39-20N 080-25-05W"));
             this.curState.Add(new Location("West Palm Beach", "KPBI", "26-41-05N 080-05-58W"));
             this.curState.Add(new Location("Winter Haven", "KGIF", "28-03-38N 081-45-27W"));
-            this.curCountryLocation = new State("Georgia", 40);
+        }
+        
+        private void State_11() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Albany", "KABY", "31-32-08N 084-11-40W"));
             this.curState.Add(new Location("Alma", "KAMG", "31-32-10N 082-30-24W"));
@@ -857,26 +1104,26 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("De Kalb-Peachtree Airport", "KPDK", "33-52-42N 084-17-53W"));
             this.curCity.Add(new Location("Fulton County Airport", "KFTY", "33-46-39N 084-31-28W"));
             this.curCity.Add(new Location("Peachtree City", "KFFC", "33-21-19N 084-34-01W"));
-            this.curState.Add(new Location("Athens", "KAHN", "33-57-03N 083-19-41W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Augusta", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Augusta", "KAGS", "33-21-52N 081-57-48W"));
             this.curCity.Add(new Location("Daniel Field", "KDNL", "33-28-01N 082-02-19W"));
-            this.curState.Add(new Location("Athens", "KAHN", "33-57-03N 083-19-41W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Bainbridge", "KBGE", "30-58N 084-38W"));
             this.curState.Add(new Location("Blakely", "K11J", "31-23-49N 084-53-42W"));
             this.curStateLocation = new City("Brunswick", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Glynco", "KBQK", "31-15N 081-28W"));
             this.curCity.Add(new Location("Brunswick", "KSSI", "31-09-06N 081-23-29W"));
-            this.curState.Add(new Location("Blakely", "K11J", "31-23-49N 084-53-42W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Canton", "K47A", "34-18-38N 084-25-26W"));
             this.curState.Add(new Location("Cartersville", "KVPC", "34-07-42N 084-50-50W"));
             this.curStateLocation = new City("Columbus", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Columbus", "KCSG", "32-30-58N 084-56-32W"));
             this.curCity.Add(new Location("Fort Benning", "KLSF", "32-20N 084-50W"));
-            this.curState.Add(new Location("Cartersville", "KVPC", "34-07-42N 084-50-50W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Douglas", "KDQH", "31-28-36N 082-51-37W"));
             this.curState.Add(new Location("Dublin", "KDBN", "32-33-52N 082-59-06W"));
             this.curState.Add(new Location("Gainesville", "KGVL", "34-16-19N 083-49-49W"));
@@ -891,7 +1138,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Marietta", "KMGE", "33-55N 084-31W"));
             this.curCity.Add(new Location("McCollum Field Airport", "KRYY", "34-00-47N 084-35-55W"));
-            this.curState.Add(new Location("Macon", "KMCN", "32-41-16N 083-39-16W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Milledgeville", "KMLJ", "33-09-15N 083-14-26W"));
             this.curState.Add(new Location("Moultrie", "KMGR", "31-05-05N 083-48-11W"));
             this.curState.Add(new Location("Newnan", "KCCO", "33-18-44N 084-46-13W"));
@@ -910,7 +1157,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("West Atlanta", "KFTY", null));
             this.curState.Add(new Location("Waycross", "KAYS", "31-15N 082-24W"));
             this.curState.Add(new Location("Winder", "KWDR", "33-58-56N 083-40-05W"));
-            this.curCountryLocation = new State("Hawaii", 18);
+        }
+        
+        private void State_12() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Barbers Point", "PHNA", null));
             this.curState.Add(new Location("Barking Sand", "PHBK", null));
@@ -930,7 +1179,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Oahu", "PHHI", "21-18-30N 158-04-05W"));
             this.curState.Add(new Location("Sand Island", "PMDY", "28-13N 177-22W"));
             this.curState.Add(new Location("Wheeler", "PHHI", "21-29N 158-02W"));
-            this.curCountryLocation = new State("Idaho", 20);
+        }
+        
+        private void State_13() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Boise", "KBOI", "43-34-00N 116-14-26W"));
             this.curState.Add(new Location("Burley", "KBYI", "42-32-33N 113-46-17W"));
@@ -953,9 +1204,11 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Stanley", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Stanley Ranger Station", "KSNT", "44-12-31N 114-56-04W"));
-            this.curState.Add(new Location("Soda Springs", "KU78", "42-39N 111-35W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Twin Falls", "KTWF", "42-28-43N 114-28-34W"));
-            this.curCountryLocation = new State("Illinois", 54);
+        }
+        
+        private void State_14() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Alton", "KALN", "38-54N 090-03W"));
             this.curState.Add(new Location("Aurora", "KARR", "41-46-12N 088-28-53W"));
@@ -976,7 +1229,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Waukegan", "KUGN", "42-25N 087-52W"));
             this.curCity.Add(new Location("West Chicago", "KDPA", "41-53-47N 088-15-04W"));
             this.curCity.Add(new Location("Wheeling", "KPWK", "42-07-15N 087-54-17W"));
-            this.curState.Add(new Location("Champaign", "KCMI", "40-01-56N 088-16-24W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Danville", "KDNV", "40-11-58N 087-35-44W"));
             this.curState.Add(new Location("De Kalb", "KDKB", "41-55-55N 088-42-30W"));
             this.curState.Add(new Location("Decatur", "KDEC", "39-50-04N 088-51-56W"));
@@ -1012,7 +1265,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Rantoul", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("National Aviation Center", "KTIP", "40-17-37N 088-08-33W"));
-            this.curState.Add(new Location("Quincy", "KUIN", "39-56-33N 091-11-40W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Robinson", "KRSV", "39-00-57N 087-38-59W"));
             this.curState.Add(new Location("Rochelle", "KRPJ", "41-53-35N 089-04-42W"));
             this.curState.Add(new Location("Rockford", "KRFD", "42-11-34N 089-05-36W"));
@@ -1023,7 +1276,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Sterling Rockfalls", "KSQI", "41-45N 089-40W"));
             this.curState.Add(new Location("Taylorville", "KTAZ", "39-32-03N 089-19-40W"));
             this.curState.Add(new Location("Wheeling", "KPWK", "42-07-15N 087-54-17W"));
-            this.curCountryLocation = new State("Indiana", 20);
+        }
+        
+        private void State_15() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Anderson", "KAID", "40-07N 085-37W"));
             this.curState.Add(new Location("Bloomington", "KBMG", "39-08-35N 086-37-00W"));
@@ -1038,7 +1293,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Eagle Creek Airpark", "KEYE", "39-49-30N 086-17-45W"));
             this.curCity.Add(new Location("Indianapolis", "KIND", "39-43-30N 086-16-55W"));
-            this.curState.Add(new Location("Huntingburg", "KHNB", "38-15N 086-57W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Kokomo", "KOKK", "40-32N 086-04W"));
             this.curState.Add(new Location("Lafayette", "KLAF", "40-24-45N 086-56-51W"));
             this.curState.Add(new Location("Marion", "KMZZ", null));
@@ -1049,7 +1304,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Terre Haute", "KHUF", "39-26-30N 087-19-31W"));
             this.curState.Add(new Location("Valparaiso", "KVPZ", "41-27-11N 086-59-53W"));
             this.curState.Add(new Location("Warsaw", "KASW", "41-16-28N 085-50-24W"));
-            this.curCountryLocation = new State("Iowa", 54);
+        }
+        
+        private void State_16() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Algona", "KAXA", "43-05N 094-16W"));
             this.curState.Add(new Location("Ames", "KAMW", "41-59-26N 093-37-08W"));
@@ -1105,7 +1362,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Washington", "KAWG", "41-17N 091-40W"));
             this.curState.Add(new Location("Waterloo", "KALO", "42-33-16N 092-24-04W"));
             this.curState.Add(new Location("Webster City", "KEBS", "42-26N 093-52W"));
-            this.curCountryLocation = new State("Kansas", 29);
+        }
+        
+        private void State_17() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Chanute", "KCNU", "37-40-13N 095-29-03W"));
             this.curState.Add(new Location("Coffeyville", "KCFV", "37-05-28N 095-33-59W"));
@@ -1114,7 +1373,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Elkhart", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Elkhart Automatic Weather Observing/Reporting System", "KEHA", "37-00N 101-54W"));
-            this.curState.Add(new Location("Dodge City", "KDDC", "37-46-22N 099-58-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Emporia", "KEMP", "38-19-44N 096-11-38W"));
             this.curState.Add(new Location("Garden City", "KGCK", "37-55-39N 100-43-28W"));
             this.curState.Add(new Location("Goodland", "KGLD", "39-22-03N 101-41-35W"));
@@ -1139,7 +1398,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Wichita", "KICT", "37-38-50N 097-25-46W"));
             this.curState.Add(new Location("Wichita-McConnell AFB", "KIAB", null));
             this.curState.Add(new Location("Winfield", "KWLD", "37-10-05N 097-02-13W"));
-            this.curCountryLocation = new State("Kentucky", 15);
+        }
+        
+        private void State_18() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Bowling Green", "KBWG", "36-57-52N 086-25-10W"));
             this.curState.Add(new Location("Covington", "KCVG", "39-02-35N 084-40-18W"));
@@ -1156,7 +1417,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Owensboro", "KOWB", "37-44N 087-10W"));
             this.curState.Add(new Location("Paducah", "KPAH", "37-03-23N 088-46-26W"));
             this.curState.Add(new Location("Somerset", "KSME", "37-03-15N 084-36-54W"));
-            this.curCountryLocation = new State("Lousiana", 33);
+        }
+        
+        private void State_19() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Alexandria", "KAEX", "31-20-05N 092-33-31W"));
             this.curState.Add(new Location("Alexandria-Esler", "KESF", "31-23-42N 092-17-25W"));
@@ -1169,7 +1432,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Boothville", "KBVE", "29-20N 089-24W"));
             this.curCity.Add(new Location("Boothville Heliport", "K1B7", "29-21N 89-26W"));
-            this.curState.Add(new Location("Baton Rouge", "KBTR", "30-32-14N 091-08-49W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Chenault Airpark", "KCWF", "30-13N 093-09W"));
             this.curState.Add(new Location("De Ridder", "KDRI", "30-49-54N 093-20-23W"));
             this.curState.Add(new Location("Fort Polk-Leesville", "KPOE", "31-02N 093-02W"));
@@ -1178,12 +1441,12 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Green Canyon", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "KXCN", "27-46N 091-31W"));
-            this.curState.Add(new Location("Galliano", "K2GL", "29-24-48N 090-17-56W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Hammond", "KHDC", "30-31-15N 090-25-03W"));
             this.curStateLocation = new City("High Island", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "KH08", "28-28N 93-44W"));
-            this.curState.Add(new Location("Hammond", "KHDC", "30-31-15N 090-25-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Houma", "KHUM", "29-34N 090-40W"));
             this.curState.Add(new Location("Intercostal City", "K7R4", "29-47N 092-08W"));
             this.curState.Add(new Location("Lafayette", "KLFT", "30-12-08N 091-59-35W"));
@@ -1200,18 +1463,20 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Downtown", "KDTN", "32-32-33N 093-44-41W"));
             this.curCity.Add(new Location("Regional", "KSHV", "32-26-49N 093-49-27W"));
-            this.curState.Add(new Location("Salt Point", "KP92", "29-33-44N 091-31-32W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Slidell", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "KASD", "30-20-35N 089-49-19W"));
-            this.curState.Add(new Location("Salt Point", "KP92", "29-33-44N 091-31-32W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("South Timbalier", "KS58", "28-32N 090-35W"));
             this.curStateLocation = new City("Vermilion", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "K9R9", null));
-            this.curState.Add(new Location("South Timbalier", "KS58", "28-32N 090-35W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Vicksburg", "KTVR", "32-20-53N 091-01-48W"));
-            this.curCountryLocation = new State("Maine", 19);
+        }
+        
+        private void State_20() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Auburn-Lewiston", "KLEW", "44-03N 070-17W"));
             this.curState.Add(new Location("Augusta", "KAUG", "44-19-14N 069-47-50W"));
@@ -1232,19 +1497,21 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Sanford", "KSFM", "43-24N 070-43W"));
             this.curState.Add(new Location("Waterville", "KWVL", "44-32N 069-41W"));
             this.curState.Add(new Location("Wiscasset", "KIWI", "43-57-49N 069-42-42W"));
-            this.curCountryLocation = new State("Maryland", 13);
+        }
+        
+        private void State_21() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Aberdeen", "KAPG", "39-28N 076-10W"));
             this.curStateLocation = new City("Annapolis", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("United States Naval Academy", "KNAK", "38-59-29N 076-29-00W"));
-            this.curState.Add(new Location("Aberdeen", "KAPG", "39-28N 076-10W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Baltimore", 3);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Inner Harbor", "KDMH", "39-17N 076-37W"));
             this.curCity.Add(new Location("Martin", "KMTN", "39-20N 076-25W"));
             this.curCity.Add(new Location("Glen Burnie", "KBWI", "39-10-00N 076-41-00W"));
-            this.curState.Add(new Location("Aberdeen", "KAPG", "39-28N 076-10W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Camp Springs", "KADW", "38-49N 076-51W"));
             this.curState.Add(new Location("Cumberland", "KCBE", null));
             this.curState.Add(new Location("Easton", "KESN", "38-48N 076-04W"));
@@ -1255,10 +1522,12 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Ocean City", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Ocean City Municipal Airport", "KOXB", "38-18-38N 075-07-26W"));
-            this.curState.Add(new Location("Oakland", "K2G4", null));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Patuxent River", "KNHK", "38-16-43N 076-24-50W"));
             this.curState.Add(new Location("Salisbury", "KSBY", "38-20-26N 075-30-37W"));
-            this.curCountryLocation = new State("Massachusetts", 25);
+        }
+        
+        private void State_22() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Ashburnam", "K9B4", null));
             this.curState.Add(new Location("Ashfield", "K2B5", null));
@@ -1267,12 +1536,12 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Boston", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Logan Airport", "KBOS", "42-21-38N 071-00-38W"));
-            this.curState.Add(new Location("Beverly", "KBVY", "42-35-01N 070-54-59W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Chatham", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Chatham", "KCQX", "41-40N 069-58W"));
             this.curCity.Add(new Location("Chatham Municipal Airport", "KCQX", "41-41-15N 069-59-36W"));
-            this.curState.Add(new Location("Beverly", "KBVY", "42-35-01N 070-54-59W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Chicopee Falls", "KCEF", "42-12N 072-32W"));
             this.curState.Add(new Location("East Milton", "KMQE", "42-12-44N 71-06-53W"));
             this.curState.Add(new Location("Falmouth", "KFMH", "41-39N 070-31W"));
@@ -1292,7 +1561,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Taunton", "K9B0", "41-52-32N 071-01-16W"));
             this.curState.Add(new Location("Westfield", "KBAF", "42-09-35N 072-42-46W"));
             this.curState.Add(new Location("Worcester", "KORH", "42-16-14N 071-52-23W"));
-            this.curCountryLocation = new State("Michigan", 62);
+        }
+        
+        private void State_23() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Adrian", "KADG", "41-52-04N 084-04-46W"));
             this.curState.Add(new Location("Alma", "KAMN", "43-19-19N 084-41-16W"));
@@ -1316,7 +1587,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Detroit", "KDET", "42-24-33N 083-00-36W"));
             this.curCity.Add(new Location("Taylor", "KDTW", "42-13-53N 083-19-51W"));
             this.curCity.Add(new Location("Grosse Ile Airport", "KONZ", "42-05-55N 083-09-40W"));
-            this.curState.Add(new Location("Copper Harbor", "KP59", "47-28-01N 087-52-30W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Escanaba", "KESC", "45-45N 087-02W"));
             this.curState.Add(new Location("Flint", "KFNT", "42-58-00N 083-44-58W"));
             this.curState.Add(new Location("Gaylord", "KGLR", "45-00-59N 084-41-20W"));
@@ -1324,7 +1595,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Graying", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Grayling Army Airfield (alternate)", "KGOV", "44-40-49N 084-43-44W"));
-            this.curState.Add(new Location("Grand Rapids", "KGRR", "42-52-51N 085-31-22W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Gwinn", "KSAW", "46-21-13N 087-23-45W"));
             this.curState.Add(new Location("Hancock", "KCMX", "47-10-06N 088-29-20W"));
             this.curState.Add(new Location("Harbor Beach", "KP58", null));
@@ -1333,12 +1604,12 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Holland", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Tulip City Airport", "KBIV", "42-44-46N 086-05-48W"));
-            this.curState.Add(new Location("Hillsdale", "KJYM", "41-55-17N 084-35-09W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Houghton Lake", "KHTL", "44-21-04N 084-40-27W"));
             this.curStateLocation = new City("Howell", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Livingston County Airport", "KOZW", "42-37-46N 083-59-03W"));
-            this.curState.Add(new Location("Houghton Lake", "KHTL", "44-21-04N 084-40-27W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Iron Mountain", "KIMT", "45-48-51N 088-06-32W"));
             this.curState.Add(new Location("Ironwood", "KIWD", "46-32N 090-08W"));
             this.curState.Add(new Location("Jackson", "KJXN", "42-15-35N 084-27-34W"));
@@ -1348,13 +1619,13 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Ludington", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Mason County Airport", "KLDM", "43-58N 86-24W"));
-            this.curState.Add(new Location("Lansing", "KLAN", "42-46-49N 084-34-44W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Macinac Island", "KMCD", "45-51-54N 084-38-14W"));
             this.curState.Add(new Location("Manistee", "KMBL", "44-16N 086-15W"));
             this.curStateLocation = new City("Manistique", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Schoolcraft County Airport", "KISQ", "45-58-29N 086-10-19W"));
-            this.curState.Add(new Location("Manistee", "KMBL", "44-16N 086-15W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Marshall", "KRMY", "42-15-04N 084-57-20W"));
             this.curState.Add(new Location("Mason", "KTEW", "42-33-57N 084-25-24W"));
             this.curState.Add(new Location("Menominee", "KMNM", "45-08N 087-38W"));
@@ -1372,19 +1643,21 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Saginaw", "KMBS", "43-31-58N 084-04-46W"));
             this.curCity.Add(new Location("Saginaw County H.W. Browne Airport", "KHYX", "43-26-00N 083-51-45W"));
-            this.curState.Add(new Location("Presque Isle / Rogers", "KPZQ", "45-24N 083-49W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Sault Ste. Marie", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "KANJ", "46-28-46N 084-21-26W"));
             this.curCity.Add(new Location("Location 2", "KSSM", null));
-            this.curState.Add(new Location("Presque Isle / Rogers", "KPZQ", "45-24N 083-49W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Sawyer Air Force Base", "KSAW", null));
             this.curState.Add(new Location("Selfridge", "KMTC", "42-37N 082-50W"));
             this.curState.Add(new Location("St. Clair", "KPHN", "42-55N 082-32W"));
             this.curState.Add(new Location("Sturgis", "KIRS", "41-48-46N 085-26-21W"));
             this.curState.Add(new Location("Traverse City", "KTVC", "44-44-12N 085-34-12W"));
             this.curState.Add(new Location("Ypsilanti", "KYIP", "42-14-12N 083-31-34W"));
-            this.curCountryLocation = new State("Minnesota", 81);
+        }
+        
+        private void State_24() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Aitkin", "KAIT", "46-33N 093-41W"));
             this.curState.Add(new Location("Albert Lea", "KAEL", "43-41N 093-22W"));
@@ -1403,7 +1676,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Crane Lake", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Scotts Seaplane Base", "KCDD", "48-15-59N 92-29-01W"));
-            this.curState.Add(new Location("Cook", "KCQM", "47-49-19N 092-41-22W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Crookston", "KCKN", "47-51N 096-37W"));
             this.curState.Add(new Location("Detroit Lakes", "KDTL", "46-50N 095-53W"));
             this.curState.Add(new Location("Dodge Center", "KTOB", "44-01-05N 092-49-53W"));
@@ -1411,7 +1684,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Duluth", "KDLH", "46-50-34N 092-13-34W"));
             this.curCity.Add(new Location("Sky Harbor Airport", "KDYT", "46-43-19N 092-02-36W"));
-            this.curState.Add(new Location("Dodge Center", "KTOB", "44-01-05N 092-49-53W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Ely", "KELO", "47-49N 091-50W"));
             this.curState.Add(new Location("Eveleth", "KEVM", "47-24N 092-30W"));
             this.curState.Add(new Location("Fairmont", "KFRM", "43-39N 094-25W"));
@@ -1423,18 +1696,18 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Glenwood", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Automatic Surface Observing System", "KGHW", "45-39N 095-19W"));
-            this.curState.Add(new Location("Glencoe", "KGYL", "44-45-22N 094-04-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Grand Marais", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Cook County Airport", "KCKC", "47-50-18N 090-22-59W"));
             this.curCity.Add(new Location("The Bay of Grand Marais", "KGNA", "47-50N 090-23W"));
-            this.curState.Add(new Location("Glencoe", "KGYL", "44-45-22N 094-04-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Grand Rapids", "KGPZ", "47-13N 093-31W"));
             this.curState.Add(new Location("Granite Falls", "KGDB", "44-45-11N 095-33-21W"));
             this.curStateLocation = new City("Hallock", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "KHCO", "48-45-10N 096-56-35W"));
-            this.curState.Add(new Location("Granite Falls", "KGDB", "44-45-11N 095-33-21W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Hibbing", "KHIB", "47-23-12N 092-50-20W"));
             this.curState.Add(new Location("Hutchinson", "KHCD", "44-52N 094-23W"));
             this.curState.Add(new Location("International Falls", "KINL", "48-33-43N 093-23-52W"));
@@ -1443,7 +1716,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Litchfield Municipal Airport (alternate)", "KLJF", "45-05-50N 094-30-26W"));
             this.curCity.Add(new Location("Litchfield", "KY69", null));
-            this.curState.Add(new Location("Jackson", "KMJQ", "43-39N 094-59W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Little Falls", "KLXL", "45-57N 094-21W"));
             this.curState.Add(new Location("Longville", "KXVG", "46-59-25N 094-12-14W"));
             this.curState.Add(new Location("Madison", "KDXX", "44-59-10N 096-10-40W"));
@@ -1458,14 +1731,14 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Crystal Airport", "KMIC", "45-03-45N 093-21-03W"));
             this.curCity.Add(new Location("Minneapolis-St.Paul International Airport", "KMSP", "44-52-59N 093-13-44W"));
             this.curCity.Add(new Location("Flying Cloud Airport", "KFCM", "44-49-56N 093-28-13W"));
-            this.curState.Add(new Location("Mc Gregor", "KHZX", "46-37-07N 093-18-35W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Montevideo", "KMVE", "44-58N 095-43W"));
             this.curState.Add(new Location("Moorhead", "KJKJ", "46-50-21N 096-39-47W"));
             this.curState.Add(new Location("Moose Lake", "KMZH", "46-25N 092-48W"));
             this.curStateLocation = new City("Mora", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Mora Municipal Airport", "KJMR", "45-53-10N 093-16-18W"));
-            this.curState.Add(new Location("Moose Lake", "KMZH", "46-25N 092-48W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Morris", "KMOX", "45-34N 095-58W"));
             this.curState.Add(new Location("New Ulm", "KULM", "44-19N 094-30W"));
             this.curState.Add(new Location("Orr", "KORB", "48-01N 092-52W"));
@@ -1485,7 +1758,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("South St. Paul", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Richard E. Fleming Airport", "KSGS", "44-51-26N 093-01-58W"));
-            this.curState.Add(new Location("Silver Bay", "KBFW", "47-12N 091-24W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("St Cloud", "KSTC", "45-32-41N 094-03-07W"));
             this.curState.Add(new Location("St. James", "KJYG", "43-59-11N 094-33-29W"));
             this.curState.Add(new Location("St Paul", "KSTP", "44-55-49N 093-02-53W"));
@@ -1496,7 +1769,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Warroad", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Warroad International - Swede Carlston Field", "KRRT", "48-56-29N 095-20-54W"));
-            this.curState.Add(new Location("Wadena", "KADC", "46-27-01N 095-12-39W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Waseca", "KACQ", "44-04-24N 093-33-11W"));
             this.curState.Add(new Location("Waskish", "KVWU", "48-09-15N 094-31-01W"));
             this.curState.Add(new Location("Wheaton", "KETH", "45-42N 096-30W"));
@@ -1504,7 +1777,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Windom", "KMWM", "43-54-48N 095-06-34W"));
             this.curState.Add(new Location("Winona", "KONA", "44-05N 091-42W"));
             this.curState.Add(new Location("Worthington", "KOTG", "43-39N 095-35W"));
-            this.curCountryLocation = new State("Mississippi", 16);
+        }
+        
+        private void State_25() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Biloxi", 1);
             this.curCity = ((City)(this.curStateLocation));
@@ -1523,24 +1798,26 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Hawkins Field Airport", "KHKS", "32-20-05N 090-13-21W"));
             this.curCity.Add(new Location("Jackson International Airport", "KJAN", "32-19-11N 090-04-39W"));
-            this.curState.Add(new Location("Hattiesburg", "KHBG", "31-15-54N 089-15-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Laurel", "KPIB", null));
             this.curState.Add(new Location("McComb", "KMCB", "31-10-42N 090-28-19W"));
             this.curStateLocation = new City("Meridian", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Meridian", "KMEI", "32-20-17N 088-44-52W"));
             this.curCity.Add(new Location("Lauderdale", "KNMM", "32-32-47N 088-32-35W"));
-            this.curState.Add(new Location("McComb", "KMCB", "31-10-42N 090-28-19W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Natchez", "KHEZ", "31-37N 091-18W"));
             this.curState.Add(new Location("Olive Branch", "KOLV", "34-58-44N 089-47-13W"));
             this.curStateLocation = new City("Pascagoula", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Lott International Airport", "KPQL", "30-27-49N 088-31-55W"));
-            this.curState.Add(new Location("Olive Branch", "KOLV", "34-58-44N 089-47-13W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Pine Belt", "KPIB", "31-28N 089-20W"));
             this.curState.Add(new Location("Tupelo", "KTUP", "34-16-05N 088-46-12W"));
             this.curState.Add(new Location("Vicksburg", "KTVR", "32-14N 090-56W"));
-            this.curCountryLocation = new State("Missouri", 20);
+        }
+        
+        private void State_26() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Cape Girardeau", "KCGI", "37-13-32N 089-34-42W"));
             this.curState.Add(new Location("Chillicothe", "KCDJ", "39-49N 093-35W"));
@@ -1554,7 +1831,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Downtown Airport", "KMKC", "39-07-15N 094-35-49W"));
             this.curCity.Add(new Location("Gladstone", "KMCI", "39-17-50N 094-43-50W"));
-            this.curState.Add(new Location("Kaiser", "KAIZ", "38-06N 092-33W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Kirksville", "KIRK", "40-05-50N 092-32-36W"));
             this.curState.Add(new Location("Lee's Summit", "KLXT", "38-57-35N 094-22-18W"));
             this.curState.Add(new Location("Poplar Bluff", "KP02", "36-46-14N 090-19-20W"));
@@ -1566,11 +1843,13 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Lambert", "KSTL", "38-45-09N 090-22-25W"));
             this.curCity.Add(new Location("Spirit of St. Louis", "KSUS", "38-39-26N 090-39-21W"));
-            this.curState.Add(new Location("St Joseph", "KSTJ", "39-46-05N 094-54-33W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Vichy-Rolla", "KVIH", "38-07-55N 091-45-55W"));
             this.curState.Add(new Location("West Plains", "KUNO", "36-52-45N 091-54-18W"));
             this.curState.Add(new Location("Whiteman", "KSZL", "38-44N 093-33W"));
-            this.curCountryLocation = new State("Montana", 22);
+        }
+        
+        private void State_27() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Baker", "KBHK", "46-20-52N 104-15-27W"));
             this.curState.Add(new Location("Billings", "KBIL", "45-48-25N 108-32-32W"));
@@ -1593,11 +1872,13 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Missoula", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Missoula", "KMSO", "46-55-15N 114-05-33W"));
-            this.curState.Add(new Location("Miles City", "KMLS", "46-25-41N 105-53-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Sidney", "KSDY", "47-42N 104-12W"));
             this.curState.Add(new Location("West Yellowstone (2)", "KWEY", null));
             this.curState.Add(new Location("Wolf Point", "KOLF", "48-05-40N 105-34-38W"));
-            this.curCountryLocation = new State("Nebraska", 34);
+        }
+        
+        private void State_28() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Ainsworth", "KANW", "42-35N 100-00W"));
             this.curState.Add(new Location("Albion", "KBVN", "41-43-43N 098-03-21W"));
@@ -1614,14 +1895,14 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Grand Island", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Grand Island", "KGRI", "40-57-30N 098-18-45W"));
-            this.curState.Add(new Location("Fremont", "KFET", "41-27N 096-31W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Hastings", "KHSI", "40-36-02N 098-25-33W"));
             this.curState.Add(new Location("Hebron", "KHJH", "40-09-08N 097-35-13W"));
             this.curStateLocation = new City("Imperial", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "KIML", "40-31N 101-37W"));
             this.curCity.Add(new Location("Location 2", "K6V1", null));
-            this.curState.Add(new Location("Hebron", "KHJH", "40-09-08N 097-35-13W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Kearney", "KEAR", "40-44N 099-00W"));
             this.curState.Add(new Location("Kimball", "KIBM", "41-11N 103-40W"));
             this.curState.Add(new Location("Lexington", "KLXN", "40-47-28N 099-46-38W"));
@@ -1638,7 +1919,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Omaha", "KOMA", "41-18-37N 095-53-57W"));
             this.curCity.Add(new Location("Millard Airport", "KMLE", "41-11-45N 096-06-44W"));
             this.curCity.Add(new Location("Bellevue", "KOFF", null));
-            this.curState.Add(new Location("Ogallala", "KOGA", "41-07-11N 101-46-08W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Ord-Sharp", "KODX", "41-37-27N 098-57-09W"));
             this.curState.Add(new Location("Scottsbluff", "KBFF", "41-52-01N 103-35-09W"));
             this.curState.Add(new Location("Sidney", "KSNY", "41-05-58N 102-59-08W"));
@@ -1646,7 +1927,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Thedford", "KTIF", "41-57-43N 100-34-08W"));
             this.curState.Add(new Location("Valentine", "KVTN", "42-51-31N 100-33-05W"));
             this.curState.Add(new Location("York", "KJYR", "40-53-48N 097-37-22W"));
-            this.curCountryLocation = new State("Nevada", 15);
+        }
+        
+        private void State_29() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Battle Mountain", "KBAM", "40-36N 116-52W"));
             this.curState.Add(new Location("Desert Rock", "KDRA", null));
@@ -1654,7 +1937,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Elko", "KEKO", "40-49-30N 115-47-30W"));
             this.curCity.Add(new Location("Wildhorse Reservation / Elko", "KAWH", "41-40N 115-47W"));
-            this.curState.Add(new Location("Desert Rock", "KDRA", null));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Ely", "KELY", "39-17-42N 114-50-43W"));
             this.curState.Add(new Location("Eureka", "KP68", "39-36-05N 116-00-20W"));
             this.curState.Add(new Location("Fallon", "KNFL", "39-25-56N 118-41-08W"));
@@ -1665,21 +1948,23 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("McCarran", "KLAS", "35-58-35N 115-07-58W"));
             this.curCity.Add(new Location("North Las Vegas Airport", "KVGT", "36-12-42N 115-11-45W"));
             this.curCity.Add(new Location("North Las Vegas", "KLSV", null));
-            this.curState.Add(new Location("Indian Springs", "KL63", "36-32N 115-54W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Lovelock", "KLOL", "40-03-59N 118-33-55W"));
             this.curState.Add(new Location("Mercury", "KDRA", "36-37-14N 116-01-40W"));
             this.curState.Add(new Location("Nellis Air Force Base", "KLSV", "36-14N 115-02W"));
             this.curStateLocation = new City("Reno", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Reno", "KRNO", "39-29-02N 119-46-16W"));
-            this.curState.Add(new Location("Nellis Air Force Base", "KLSV", "36-14N 115-02W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Tonopah", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Tonopah", "KTPH", "38-03-37N 117-05-14W"));
-            this.curState.Add(new Location("Nellis Air Force Base", "KLSV", "36-14N 115-02W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Wells", "K9BB", "41-07N 114-58W"));
             this.curState.Add(new Location("Winnemucca", "KWMC", "40-54-07N 117-48-26W"));
-            this.curCountryLocation = new State("New Hampshire", 14);
+        }
+        
+        private void State_30() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Berlin", "KBML", "44-34-34N 071-10-43W"));
             this.curState.Add(new Location("Concord", "KCON", "43-11-43N 071-30-04W"));
@@ -1696,16 +1981,18 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Portsmouth", "KPSM", null));
             this.curCity.Add(new Location("Pease Airport", "KPSM", "43-05N 070-49W"));
-            this.curState.Add(new Location("Plymouth", "K1P1", "43-46-45N 071-45-13W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Rochester", "KDAW", "43-16-41N 070-55-20W"));
             this.curState.Add(new Location("Whitefield", "KHIE", "44-21-58N 071-33-09W"));
-            this.curCountryLocation = new State("New Jersey", 15);
+        }
+        
+        private void State_31() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Andover", "K12N", "41-00-32N 074-44-12W"));
             this.curStateLocation = new City("Atlantic City", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Atlantic City", "KACY", "39-27-53N 074-35-12W"));
-            this.curState.Add(new Location("Andover", "K12N", "41-00-32N 074-44-12W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Belmar-Farmingdale", "KBLM", "40-11N 074-08W"));
             this.curState.Add(new Location("Caldwell", "KCDW", "40-52-35N 074-16-59W"));
             this.curState.Add(new Location("Lakehurst", "KNEL", "40-02N 074-19W"));
@@ -1719,14 +2006,16 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Trenton", "KTTN", "40-16-35N 074-48-59W"));
             this.curState.Add(new Location("Wildwood", "KWWD", "39-01N 074-55W"));
             this.curState.Add(new Location("Wrightstown", "KWRI", "40-01N 074-36W"));
-            this.curCountryLocation = new State("New Mexico", 31);
+        }
+        
+        private void State_32() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Alamogordo", "KALM", "32-50N 105-59W"));
             this.curStateLocation = new City("Albuquerque", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Albuquerque Airport", "KABQ", "35-02-30N 106-36-53W"));
             this.curCity.Add(new Location("Double Eagle II Airport", "KAEG", "35-08-42N 106-47-42W"));
-            this.curState.Add(new Location("Alamogordo", "KALM", "32-50N 105-59W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Artesia", "KATS", "32-51-09N 104-28-03W"));
             this.curState.Add(new Location("Carlsbad", "KCNM", "32-20-15N 104-15-48W"));
             this.curState.Add(new Location("Chama", "KE33", "36-54N 106-35W"));
@@ -1736,7 +2025,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Municipal Automatic Weather Observing/Reporting System", "KCVN", "34-26N 103-05W"));
             this.curCity.Add(new Location("Cannon Air Force Base", "KCVS", "34-23N 103-19W"));
-            this.curState.Add(new Location("Clines Corners", "KCQC", "35-00N 105-40W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Corona", "K4CR", "34-06N 105-41W"));
             this.curState.Add(new Location("Cuba Awrs", "K4SL", null));
             this.curState.Add(new Location("Deming", "KDMN", "32-15-44N 107-43-14W"));
@@ -1756,14 +2045,16 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Santa Teresa", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Dona Ana County Airport", "K5T6", "31-52-51N 106-42-17W"));
-            this.curState.Add(new Location("Santa Fe", "KSAF", "35-36-38N 106-05-42W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Silver City", "KSVC", "32-38N 108-09W"));
             this.curState.Add(new Location("Taos", "KE23", "36-27N 105-40W"));
             this.curState.Add(new Location("Torreon", "K4SL", "35-48N 107-11W"));
             this.curState.Add(new Location("Truth or Consequences", "KTCS", "33-14-12N 107-16-05W"));
             this.curState.Add(new Location("Tucumcari", "KTCC", "35-10-58N 103-36-11W"));
             this.curState.Add(new Location("Zuni Pueblo", "KZUN", null));
-            this.curCountryLocation = new State("New York", 34);
+        }
+        
+        private void State_33() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Albany", 1);
             this.curCity = ((City)(this.curStateLocation));
@@ -1773,7 +2064,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Buffalo", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Buffalo", "KBUF", "42-56-27N 078-44-09W"));
-            this.curState.Add(new Location("Binghamton", "KBGM", "42-12-28N 075-58-53W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Dansville", "KDSV", "42-34-10N 077-42-52W"));
             this.curState.Add(new Location("Dunkirk", "KDKK", "42-29-35N 079-16-33W"));
             this.curState.Add(new Location("East Hampton", "KHTO", "40-57-34N 072-15-07W"));
@@ -1788,7 +2079,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Montauk", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Montauk Airport", "KMTP", "41-04-23N 071-55-24W"));
-            this.curState.Add(new Location("Massena", "KMSS", "44-56-09N 074-50-44W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Montgomery", "KMGJ", "41-30-33N 074-15-54W"));
             this.curState.Add(new Location("Monticello", "KMSV", "41-42N 074-48W"));
             this.curStateLocation = new City("New York", 3);
@@ -1796,7 +2087,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Central Park", "KNYC", "40-47-00N 073-58-00W"));
             this.curCity.Add(new Location("Kennedy Airport", "KJFK", "40-38-19N 073-45-44W"));
             this.curCity.Add(new Location("La Guardia Airport", "KLGA", "40-46-45N 073-52-48W"));
-            this.curState.Add(new Location("Monticello", "KMSV", "41-42N 074-48W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Newburgh", "KSWF", "41-30N 074-06W"));
             this.curState.Add(new Location("Niagara Falls", "KIAG", "43-06-26N 078-56-43W"));
             this.curState.Add(new Location("Ogdensburg", "KOGS", "44-41N 075-28W"));
@@ -1804,12 +2095,12 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Plattsburgh", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Plattsburgh, Clinton County Airport", "KPLB", "44-40-56N 073-31-40W"));
-            this.curState.Add(new Location("Penn Yan", "KPEO", "42-38-35N 077-02-58W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Poughkeepsie", "KPOU", "41-37-36N 073-53-03W"));
             this.curStateLocation = new City("Rochester", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Rochester", "KROC", "43-07-00N 077-40-36W"));
-            this.curState.Add(new Location("Poughkeepsie", "KPOU", "41-37-36N 073-53-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Saranac Lake", "KSLK", "44-23-35N 074-12-10W"));
             this.curState.Add(new Location("Schenectady", "KSCH", "42-51N 073-56W"));
             this.curState.Add(new Location("Shirley", "KHWV", "40-49-18N 072-52-08W"));
@@ -1819,7 +2110,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Wellsville", "KELZ", "42-06-27N 077-59-04W"));
             this.curState.Add(new Location("Westhampton", "KFOK", "40-51-03N 072-37-14W"));
             this.curState.Add(new Location("White Plains", "KHPN", "41-04-01N 073-42-27W"));
-            this.curCountryLocation = new State("North Carolina", 64);
+        }
+        
+        private void State_34() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Ahoskie", "KASJ", "36-17-51N 077-10-15W"));
             this.curState.Add(new Location("Albemarle", "KVUJ", "35-25-00N 080-09-03W"));
@@ -1845,7 +2138,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Wayne Municipal Airport", "KGWW", "35-27-38N 077-57-54W"));
             this.curCity.Add(new Location("Goldsboro", "KGSB", null));
-            this.curState.Add(new Location("Gastonia", "KAKH", "35-11-48N 081-09-21W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Greensboro", "KGSO", "36-05-51N 079-56-37W"));
             this.curState.Add(new Location("Hatteras", "KHSE", "35-13-56N 075-37-21W"));
             this.curState.Add(new Location("Hickory", "KHKY", "35-44-32N 081-22-56W"));
@@ -1854,7 +2147,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Jacksonville", "KOAJ", "34-50N 077-37W"));
             this.curCity.Add(new Location("New River, Marine Corps Air Station", "KNCA", "34-42-21N 077-26-27W"));
-            this.curState.Add(new Location("Hoffman", "KHFF", null));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Jefferson", "KGEV", "36-26N 81-25W"));
             this.curState.Add(new Location("Kenansville", "KDPL", "35-00-00N 077-58-54W"));
             this.curState.Add(new Location("Kill Devil Hills", "KFFA", "36-01N 075-40W"));
@@ -1879,7 +2172,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Raleigh", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Durham", "KRDU", "35-52-14N 078-47-11W"));
-            this.curState.Add(new Location("Pope Air Force Base", "KPOB", "35-10N 079-02W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Roanoke Rapids", "KRZZ", "36-26-22N 077-42-35W"));
             this.curState.Add(new Location("Rockingham", "K45J", "34-53-27N 079-45-32W"));
             this.curState.Add(new Location("Rocky Mount", "KRWI", "35-51-18N 077-53-35W"));
@@ -1889,7 +2182,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Sanford", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Sanford-Lee County Regional Airport", "KTTA", "35-34-57N 079-06-05W"));
-            this.curState.Add(new Location("Salisbury", "KRUQ", "35-39N 080-31W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Seymour", "KGSB", "35-20N 077-58W"));
             this.curState.Add(new Location("Shelby", "KEHO", "35-15N 081-36W"));
             this.curState.Add(new Location("Smithfield", "KJNX", "35-32-27N 078-23-25W"));
@@ -1900,9 +2193,11 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Wilmington", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Wilmington", "KILM", "34-16-14N 077-54-09W"));
-            this.curState.Add(new Location("Whiteville", "KCPC", "34-16-22N 078-42-54W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Winston-Salem", "KINT", "36-08-00N 080-13-29W"));
-            this.curCountryLocation = new State("North Dakota", 11);
+        }
+        
+        private void State_35() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Bismarck", "KBIS", "46-46-57N 100-45-26W"));
             this.curState.Add(new Location("Devils Lake", "KDVL", "48-07N 098-55W"));
@@ -1913,13 +2208,15 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Air Force Base", "KRDR", "47-58N 097-24W"));
             this.curCity.Add(new Location("Grand Forks", "KGFK", "47-56-53N 097-10-57W"));
-            this.curState.Add(new Location("Garrison", "KN60", "47-38-45N 101-26-22W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Hettinger", "KHEI", "46-00-38N 102-38-59W"));
             this.curState.Add(new Location("Jamestown", "KJMS", "46-55-47N 098-40-42W"));
             this.curState.Add(new Location("Minot", "KMOT", "48-15-34N 101-16-49W"));
             this.curState.Add(new Location("Minot AFB", "KMIB", "48-25N 101-21W"));
             this.curState.Add(new Location("Williston", "KISN", "48-10-26N 103-38-12W"));
-            this.curCountryLocation = new State("Ohio", 22);
+        }
+        
+        private void State_36() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Akron", 2);
             this.curCity = ((City)(this.curStateLocation));
@@ -1932,19 +2229,19 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Cleveland", "KCLE", "41-24-18N 081-51-10W"));
             this.curCity.Add(new Location("Lakefront", "KBKL", "41-31-32N 081-40-08W"));
             this.curCity.Add(new Location("Cuyahoga", "KCGF", "41-34N 081-29W"));
-            this.curState.Add(new Location("Cincinnati", "KLUK", "39-06-21N 084-24-57W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Columbus", 3);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Bolton Field Airport", "KTZR", "39-54-03N 083-08-14W"));
             this.curCity.Add(new Location("Gahanna", "KCMH", "39-59-42N 082-52-35W"));
             this.curCity.Add(new Location("OSU", "KOSU", "40-04-41N 083-04-41W"));
-            this.curState.Add(new Location("Cincinnati", "KLUK", "39-06-21N 084-24-57W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Dayton", 3);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Dayton", "KDAY", "39-54-22N 084-13-07W"));
             this.curCity.Add(new Location("Fairborn", "KFFO", "39-50N 084-03W"));
             this.curCity.Add(new Location("South Airport", "KMGY", "39-35-20N 084-13-29W"));
-            this.curState.Add(new Location("Cincinnati", "KLUK", "39-06-21N 084-24-57W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Defiance", "KDFI", "41-20-11N 084-25-46W"));
             this.curState.Add(new Location("Findlay", "KFDY", "41-00-49N 083-40-07W"));
             this.curState.Add(new Location("Hamilton", "KHAO", "39-21-41N 084-31-15W"));
@@ -1953,7 +2250,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Lorain", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Elyria", "KLPR", "41-20-46N 082-10-46W"));
-            this.curState.Add(new Location("Lima", "KAOH", "40-42-29N 084-01-17W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Mansfield", "KMFD", "40-49-13N 082-31-04W"));
             this.curState.Add(new Location("Marion", "KMNN", "40-37-00N 083-04-06W"));
             this.curState.Add(new Location("New Philadelphia", "KPHD", "40-28-19N 081-25-25W"));
@@ -1964,12 +2261,14 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Toledo, Metcalf Field", "KTDZ", "41-33-47N 083-28-35W"));
             this.curCity.Add(new Location("Toledo", "KTOL", "41-35-19N 083-48-05W"));
-            this.curState.Add(new Location("Springfield", "KSGH", "39-50N 083-50W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Wilmington", "KILN", "39-25-42N 083-46-45W"));
             this.curState.Add(new Location("Wooster", "KBJJ", "40-52-23N 081-53-12W"));
             this.curState.Add(new Location("Youngstown", "KYNG", "41-15-16N 080-40-26W"));
             this.curState.Add(new Location("Zanesville", "KZZV", "39-56-40N 081-53-32W"));
-            this.curCountryLocation = new State("Oklahoma", 36);
+        }
+        
+        private void State_37() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Ada", "KADH", "34-48-16N 096-40-17W"));
             this.curState.Add(new Location("Altus", "KLTS", "34-39N 099-16W"));
@@ -1978,7 +2277,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Ardmore", "KADM", "34-18N 097-01W"));
             this.curCity.Add(new Location("Ardmore, Ardmore Downtown Executive Airport", "K1F0", "34-08-49N 097-07-21W"));
-            this.curState.Add(new Location("Alva", "KAVK", "36-46-23N 098-40-12W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Bartlesville", "KBVO", "36-46-06N 096-01-34W"));
             this.curState.Add(new Location("Chandler", "KCQB", "35-43-26N 096-49-13W"));
             this.curState.Add(new Location("Chickasha", "KCHK", "35-05-46N 097-57-58W"));
@@ -1990,7 +2289,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Enid", "KEND", null));
             this.curCity.Add(new Location("Woodring", "KWDG", "36-23N 097-47W"));
-            this.curState.Add(new Location("Durant", "KDUA", "33-56-32N 096-23-40W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Fort Sill", "KFSI", "34-36N 098-24W"));
             this.curState.Add(new Location("Frederick", "KFDR", "34-20-40N 098-58-59W"));
             this.curState.Add(new Location("Gage", "KGAG", "36-17-48N 099-46-08W"));
@@ -2007,7 +2306,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Oklahoma City", "KOKC", "35-23-19N 097-36-01W"));
             this.curCity.Add(new Location("Bethany", "KPWA", "35-32-28N 097-38-48W"));
             this.curCity.Add(new Location("Midwest City", "KTIK", null));
-            this.curState.Add(new Location("Norman", "KOUN", "35-13N 097-27W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Okmulgee", "KOKM", "35-40-05N 095-56-55W"));
             this.curState.Add(new Location("Page", "KPGO", null));
             this.curState.Add(new Location("Pauls Valley", "KPVJ", "34-42-40N 097-13-24W"));
@@ -2021,16 +2320,18 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Jones Jr. Airport", "KRVS", "36-02-33N 095-59-22W"));
             this.curCity.Add(new Location("Tulsa", "KTUL", "36-11-51N 095-53-11W"));
-            this.curState.Add(new Location("Tahlequah", "KTQH", "35-55-44N 095-00-16W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Watonga", "KJWG", "35-51-53N 098-25-15W"));
             this.curState.Add(new Location("Woodward", "KWWR", "36-26-12N 099-31-16W"));
-            this.curCountryLocation = new State("Oregon", 30);
+        }
+        
+        private void State_38() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Astoria", "KAST", "46-09-25N 123-52-57W"));
             this.curStateLocation = new City("Aurora State", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Aurora State Airport", "KUAO", "45-14-56N 122-45-56W"));
-            this.curState.Add(new Location("Astoria", "KAST", "46-09-25N 123-52-57W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Baker City", "KBKE", "44-50-14N 117-48-33W"));
             this.curState.Add(new Location("Burns", "KBNO", "43-35-42N 118-57-23W"));
             this.curState.Add(new Location("Cascade Locks", "KCZK", "45-40N 121-53W"));
@@ -2044,13 +2345,13 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Lakeview", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Lakeview Automatic Weather Observing/Reporting System", "KLKV", "42-10N 120-24W"));
-            this.curState.Add(new Location("La Grande", "KLGD", "45-17N 118-00W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("McMinnville", "KMMV", "45-11-46N 123-07-56W"));
             this.curState.Add(new Location("Meacham", "KMEH", "45-30-41N 118-25-29W"));
             this.curStateLocation = new City("Medford", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Medford", "KMFR", "42-22-52N 122-52-20W"));
-            this.curState.Add(new Location("Meacham", "KMEH", "45-30-41N 118-25-29W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Newport", "KONP", "44-34-49N 124-03-29W"));
             this.curState.Add(new Location("North Bend", "KOTH", "43-25N 124-15W"));
             this.curState.Add(new Location("Ontario", "KONO", "44-01-10N 117-00-35W"));
@@ -2060,12 +2361,12 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Portland", "KPDX", "45-35-27N 122-36-01W"));
             this.curCity.Add(new Location("Hillsboro Airport", "KHIO", "45-32-53N 122-57-16W"));
             this.curCity.Add(new Location("Troutdale Airport", "KTTD", "45-33-04N 122-24-32W"));
-            this.curState.Add(new Location("Pendleton", "KPDT", "45-41-54N 118-50-03W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Redmond", "KRDM", "44-15-15N 121-08-59W"));
             this.curStateLocation = new City("Rome", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Rome", "KREO", "42-35-26N 117-51-52W"));
-            this.curState.Add(new Location("Redmond", "KRDM", "44-15-15N 121-08-59W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Roseburg", "KRBG", "43-14-02N 123-21-22W"));
             this.curState.Add(new Location("Salem", "KSLE", "44-54-28N 122-59-42W"));
             this.curState.Add(new Location("Scappoose", "KSPB", "45-46-09N 122-51-44W"));
@@ -2074,9 +2375,11 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Tillamook", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Tillamook", "KS47", "45-25-05N 123-48-52W"));
-            this.curState.Add(new Location("The Dalles", "KDLS", "45-37-07N 121-10-02W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Troutdale", "KTTD", null));
-            this.curCountryLocation = new State("Pennsylvania", 32);
+        }
+        
+        private void State_39() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Allentown", "KABE", "40-39-03N 075-26-57W"));
             this.curState.Add(new Location("Altoona", "KAOO", "40-18-00N 078-19-01W"));
@@ -2089,13 +2392,13 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Erie", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Erie", "KERI", "42-04-48N 080-10-57W"));
-            this.curState.Add(new Location("Du Bois", "KDUJ", "41-11N 078-54W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Franklin", "KFKL", "41-23N 079-52W"));
             this.curStateLocation = new City("Harrisburg", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Harrisburg", "KCXY", "40-13-02N 076-51-05W"));
             this.curCity.Add(new Location("Harrisburg International Airport", "KMDT", "40-11-37N 076-45-48W"));
-            this.curState.Add(new Location("Franklin", "KFKL", "41-23N 079-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Indiana", "KIDI", "40-38N 079-06W"));
             this.curState.Add(new Location("Johnstown", "KJST", "40-18-58N 078-50-02W"));
             this.curState.Add(new Location("Lancaster", "KLNS", "40-07-13N 076-17-40W"));
@@ -2108,13 +2411,13 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Northeast Philadelphia", "KPNE", "40-04-44N 075-00-49W"));
             this.curCity.Add(new Location("Philadelphia", "KPHL", "39-52-06N 075-13-52W"));
-            this.curState.Add(new Location("Muir", "KMUI", "40-26N 076-34W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Philipsburg", "KPSB", null));
             this.curStateLocation = new City("Pittsburgh", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Pittsburgh", "KPIT", "40-30-14N 080-15-59W"));
             this.curCity.Add(new Location("West Mifflin", "KAGC", "40-21-17N 079-55-18W"));
-            this.curState.Add(new Location("Philipsburg", "KPSB", null));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Pottstown", "KPTW", "40-14-18N 075-33-26W"));
             this.curState.Add(new Location("Quakertown", "KUKT", "40-26-06N 075-22-54W"));
             this.curState.Add(new Location("Reading", "KRDG", "40-22-24N 075-57-34W"));
@@ -2122,13 +2425,15 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("State College", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("State College", "KUNV", "40-51N 077-51W"));
-            this.curState.Add(new Location("Selinsgrove", "KSEG", "40-49-09N 076-51-58W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Washington", "KAFJ", "40-08N 080-17W"));
             this.curState.Add(new Location("Wilkes-Barre", "KAVP", "41-20-20N 075-43-36W"));
             this.curState.Add(new Location("Williamsport", "KIPT", "41-14-30N 076-55-15W"));
             this.curState.Add(new Location("Willow Grove", "KNXX", "40-11-35N 075-08-40W"));
             this.curState.Add(new Location("York", "KTHV", "39-55-10N 076-52-37W"));
-            this.curCountryLocation = new State("Rhode Island", 6);
+        }
+        
+        private void State_40() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Block Island", "KBID", "41-10N 071-34W"));
             this.curState.Add(new Location("North Kingston", "KOQU", "41-36N 071-25W"));
@@ -2136,21 +2441,23 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Pawtucket", "KSFZ", "41-55N 071-30W"));
             this.curState.Add(new Location("Providence", "KPVD", "41-43-26N 071-25-41W"));
             this.curState.Add(new Location("Westerly", "KWST", "41-20-59N 071-47-56W"));
-            this.curCountryLocation = new State("South Carolina", 18);
+        }
+        
+        private void State_41() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Anderson", "KAND", "34-29-52N 082-42-35W"));
             this.curState.Add(new Location("Beaufort", "KNBC", "32-29-37N 080-42-11W"));
             this.curStateLocation = new City("Charleston", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Charleston", "KCHS", "32-53-56N 080-02-26W"));
-            this.curState.Add(new Location("Beaufort", "KNBC", "32-29-37N 080-42-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Clemson", "KCEU", "34-40-20N 082-52-53W"));
             this.curStateLocation = new City("Columbia", 3);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Columbia", "KCAE", "33-56-31N 081-07-05W"));
             this.curCity.Add(new Location("Owens Downtown Airport", "KCUB", "33-58-15N 080-59-40W"));
             this.curCity.Add(new Location("McEntire", "KMMT", "33-55N 080-48W"));
-            this.curState.Add(new Location("Clemson", "KCEU", "34-40-20N 082-52-53W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Darlington", "KUDG", "34-26-57N 079-53-25W"));
             this.curState.Add(new Location("Florence", "KFLO", "34-11-16N 079-43-51W"));
             this.curState.Add(new Location("Greenville", "KGMU", "34-50-46N 082-20-46W"));
@@ -2164,7 +2471,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Rock Hill", "KUZA", "34-59-02N 081-03-21W"));
             this.curState.Add(new Location("Shaw Air Force Base", "KSSC", "33-58N 080-29W"));
             this.curState.Add(new Location("Sumter", "KSSC", null));
-            this.curCountryLocation = new State("South Dakota", 22);
+        }
+        
+        private void State_42() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Aberdeen", "KABR", "45-26-36N 098-24-47W"));
             this.curState.Add(new Location("Brookings", "KBKX", "44-18N 096-49W"));
@@ -2173,7 +2482,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Custer", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Custer County Airport", "KCUT", "43-43-59N 103-37-03W"));
-            this.curState.Add(new Location("Chamberlain", "K9V9", "43-46-00N 099-19-06W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Ellsworth Air Force Base", "KRCA", "44-09N 103-06W"));
             this.curState.Add(new Location("Faith", "KD07", "45-01-55N 102-01-09W"));
             this.curState.Add(new Location("Huron", "KHON", "44-23-17N 098-13-42W"));
@@ -2182,7 +2491,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Mobridge", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Mobridge Municipal Airport", "KMBG", "45-33-00N 100-24-31W"));
-            this.curState.Add(new Location("Mitchell", "KMHE", "43-46N 098-02W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Philip", "KPHP", "44-03-04N 101-36-04W"));
             this.curState.Add(new Location("Pierre", "KPIR", "44-22-58N 100-17-09W"));
             this.curState.Add(new Location("Pine Ridge", "KIEN", "43-01-32N 102-31-23W"));
@@ -2194,7 +2503,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Watertown", "KATY", "44-54-17N 097-08-58W"));
             this.curState.Add(new Location("Winner, Bob Wiley Field Airport", "KSFD", "43-23-26N 099-50-33W"));
             this.curState.Add(new Location("Yankton", "KYKN", "42-55N 097-23W"));
-            this.curCountryLocation = new State("Tennessee", 12);
+        }
+        
+        private void State_43() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Bristol", "KTRI", "36-28-47N 082-23-56W"));
             this.curState.Add(new Location("Chattanooga", "KCHA", "35-02-00N 085-12-00W"));
@@ -2208,10 +2519,12 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Nashville", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Nashville", "KBNA", "36-07-08N 086-41-21W"));
-            this.curState.Add(new Location("Millington", "KNQA", "35-21-24N 089-52-13W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Oak Ridge", "KOQT", "36-01-22N 84-14W"));
             this.curState.Add(new Location("Smyrna", "KMQY", "36-01N 086-31W"));
-            this.curCountryLocation = new State("Texas", 113);
+        }
+        
+        private void State_44() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Abilene", 2);
             this.curCity = ((City)(this.curStateLocation));
@@ -2226,7 +2539,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Arlington Municipal Airport", "KGKY", "32-39-50N 097-05-45W"));
             this.curCity.Add(new Location("Arlington", "KF54", null));
-            this.curState.Add(new Location("Angleton", "KLBX", "29-06-55N 095-27-47W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Austin", "KAUS", "30-11-40N 097-40-12W"));
             this.curState.Add(new Location("Austin City", "KATT", "30-19N 097-46W"));
             this.curState.Add(new Location("Bay City", "KBYY", "28-58-23N 095-51-48W"));
@@ -2243,14 +2556,14 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Clarksville", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("J D Trissell Field Airport", "KLBR", "33-35-35N 095-03-48W"));
-            this.curState.Add(new Location("Childress", "KCDS", "34-25-39N 100-17-00W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("College Station", "KCLL", "30-34-56N 096-21-42W"));
             this.curState.Add(new Location("Conroe", "KCXO", "30-21-24N 095-24-50W"));
             this.curStateLocation = new City("Corpus Christi", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Airport", "KCRP", "27-46-23N 097-30-46W"));
             this.curCity.Add(new Location("Naval Air Station", "KNGP", "27-41-19N 097-17-30W"));
-            this.curState.Add(new Location("Conroe", "KCXO", "30-21-24N 095-24-50W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Corsicana", "KCRS", "32-01-52N 096-23-56W"));
             this.curState.Add(new Location("Cotulla", "KCOT", "28-27-30N 099-13-13W"));
             this.curState.Add(new Location("Dalhart", "KDHT", "36-01-24N 102-32-50W"));
@@ -2260,7 +2573,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Dallas-Fort Worth", "KDFW", "32-53-49N 097-01-19W"));
             this.curCity.Add(new Location("Love Field", "KDAL", "32-51-09N 096-51-20W"));
             this.curCity.Add(new Location("Redbird", "KRBD", "32-40-33N 096-51-50W"));
-            this.curState.Add(new Location("Dalhart", "KDHT", "36-01-24N 102-32-50W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Decatur", "KLUD", "33-15-16N 097-34-50W"));
             this.curState.Add(new Location("Del Rio", "KDRT", "29-22-29N 100-55-25W"));
             this.curState.Add(new Location("Denton", "KDTO", "33-12-22N 097-11-56W"));
@@ -2275,7 +2588,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Meacham", "KFTW", "32-49-31N 097-21-51W"));
             this.curCity.Add(new Location("Naval Air Station", "KNFW", "32-45-57N 097-26-00W"));
             this.curCity.Add(new Location("Alliance", "KAFW", "32-58-24N 097-19-05W"));
-            this.curState.Add(new Location("Fort Stockton", "KFST", "30-54-43N 102-55-00W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Fredericksburg", "KT82", "30-14-37N 098-54-34W"));
             this.curState.Add(new Location("Gainesville", "KGLE", "33-39-05N 097-11-49W"));
             this.curState.Add(new Location("Galveston", "KGLS", "29-16-13N 094-51-51W"));
@@ -2300,7 +2613,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Houston Intercontinental Airport", "KIAH", "29-59-33N 095-21-50W"));
             this.curCity.Add(new Location("Pearland", "KLVJ", "29-31-16N 095-14-31W"));
             this.curCity.Add(new Location("Sugar Land", "KSGR", "29-37-20N 095-39-24W"));
-            this.curState.Add(new Location("Hondo", "KHDO", "29-21-34N 099-10-27W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Huntsville", "KUTS", "30-44-38N 095-35-10W"));
             this.curState.Add(new Location("Jacksonville", "KJSO", "31-52-09N 095-13-02W"));
             this.curState.Add(new Location("Jasper", "KJAS", "30-53-08N 094-02-05W"));
@@ -2311,7 +2624,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Killeen", "KILE", "31-05N 097-41W"));
             this.curCity.Add(new Location("Fort Hood", "KHLR", null));
             this.curCity.Add(new Location("Gray Army Air Field", "KGRK", null));
-            this.curState.Add(new Location("Kerrville", "KERV", "29-58N 099-05W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Kingsville", "KNQI", "27-30-11N 097-48-42W"));
             this.curState.Add(new Location("La Grange", "K3T5", "29-54-29N 096-57-00W"));
             this.curState.Add(new Location("Lancaster", "KLNC", "32-34-45N 096-43-08W"));
@@ -2350,23 +2663,23 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Sabine Pass", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Sabine Pass", "KRPE", "29-42N 093-57W"));
-            this.curState.Add(new Location("Rocksprings", "KECU", "29-56-48N 100-10-25W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("San Angelo", "KSJT", "31-21-05N 100-29-38W"));
             this.curStateLocation = new City("San Antonio", 3);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("San Antonio", "KSAT", "29-31-58N 098-27-49W"));
             this.curCity.Add(new Location("Kelly Air Force Base", "KSKF", null));
             this.curCity.Add(new Location("Stinson", "KSSF", "29-20-20N 098-28-18W"));
-            this.curState.Add(new Location("San Angelo", "KSJT", "31-21-05N 100-29-38W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("San Marcos", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("San Marcos Municipal Airport", "KHYI", "29-53-37N 097-51-53W"));
-            this.curState.Add(new Location("San Angelo", "KSJT", "31-21-05N 100-29-38W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Seminole", "KGNC", "32-40-31N 102-39-09W"));
             this.curStateLocation = new City("Sherman/Denison", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Grayson County Airport", "KGYI", "33-43N 096-40W"));
-            this.curState.Add(new Location("Seminole", "KGNC", "32-40-31N 102-39-09W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Snyder", "KSNK", "32-41-36N 100-57-01W"));
             this.curState.Add(new Location("Stephenville", "KSEP", "32-13N 098-11W"));
             this.curState.Add(new Location("Sulphur Springs", "KSLR", "33-09-40N 095-37-16W"));
@@ -2381,7 +2694,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Weslaco", "KT65", "26-10-39N 097-58-23W"));
             this.curState.Add(new Location("Wichita Falls", "KSPS", "33-58-43N 098-29-34W"));
             this.curState.Add(new Location("Wink", "KINK", "31-46-47N 103-12-05W"));
-            this.curCountryLocation = new State("Utah", 18);
+        }
+        
+        private void State_45() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Blanding", "K4BL", "37-37N 109-28W"));
             this.curState.Add(new Location("Bryce Canyon", "KBCE", "37-42-23N 112-08-44W"));
@@ -2401,10 +2716,12 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Salt Lake City", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "KSLC", "40-46-41N 111-58-10W"));
-            this.curState.Add(new Location("St. George", "KSGU", "37-05N 113-36W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Vernal", "KVEL", "40-26-39N 109-30-42W"));
             this.curState.Add(new Location("Wendover", "KENV", "40-44N 114-02W"));
-            this.curCountryLocation = new State("Vermont", 16);
+        }
+        
+        private void State_46() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Ball Mountain", "K8B3", null));
             this.curState.Add(new Location("Barre", "KMPV", "44-12-17N 072-33-58W"));
@@ -2422,7 +2739,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Waterbury", "K5B1", null));
             this.curState.Add(new Location("West Burke", "KVT2", null));
             this.curState.Add(new Location("Wilmington", "K0B0", null));
-            this.curCountryLocation = new State("Virginia", 49);
+        }
+        
+        private void State_47() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Abingdon", "KVJI", "36-41N 082-02W"));
             this.curState.Add(new Location("Arlington", "KDCA", "38-51-08N 077-02-16W"));
@@ -2456,7 +2775,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Norfolk", "KORF", "36-54-13N 076-11-31W"));
             this.curCity.Add(new Location("Naval Air Station", "KNGU", "36-56-01N 076-17-45W"));
-            this.curState.Add(new Location("Newport News", "KPHF", "37-07-55N 076-29-35W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Orange", "KOMH", "38-14-50N 78-02-44W"));
             this.curState.Add(new Location("Petersburg", "KPTB", "37-11N 077-31W"));
             this.curState.Add(new Location("Quantico", "KNYG", "38-30-45N 077-17-30W"));
@@ -2465,7 +2784,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Roanoke", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Roanoke", "KROA", "37-19-01N 079-58-27W"));
-            this.curState.Add(new Location("Richmond", "KRIC", "37-30-40N 077-19-24W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Shannon", "KEZF", null));
             this.curState.Add(new Location("South Hill", "KAVC", "36-41-19N 078-03-15W"));
             this.curState.Add(new Location("Stafford", "KRMN", "38-23-53N 077-27-19W"));
@@ -2480,7 +2799,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Williamsburg", "KJGG", "37-14-21N 076-42-57W"));
             this.curState.Add(new Location("Winchester", "KOKV", "39-09N 078-09W"));
             this.curState.Add(new Location("Wise", "KLNP", "36-59N 082-32W"));
-            this.curCountryLocation = new State("Washington", 38);
+        }
+        
+        private void State_48() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Arlington", 1);
             this.curCity = ((City)(this.curStateLocation));
@@ -2491,7 +2812,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Burlington", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Skagit Regional Airport", "KBVS", "48-28-15N 122-25-15W"));
-            this.curState.Add(new Location("Bremerton", "KPWT", "47-30N 122-45W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Colville", "K63S", null));
             this.curState.Add(new Location("Deer Park", "KDEW", "47-58-27N 117-25-42W"));
             this.curState.Add(new Location("Eastsound", "KORS", "48-42-29 122-54-37W"));
@@ -2512,18 +2833,18 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Port Angeles", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Port Angeles", "KCLM", "48-07-20N 123-30-19W"));
-            this.curState.Add(new Location("Pasco", "KPSC", "46-16-11N 119-07-00W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Pullman", "KPUW", "46-44-38N 117-06-35W"));
             this.curStateLocation = new City("Quillayute", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Quillayute", "KUIL", "47-56-15N 124-33-18W"));
-            this.curState.Add(new Location("Pullman", "KPUW", "46-44-38N 117-06-35W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Renton", "KRNT", "47-29-40N 122-12-46W"));
             this.curStateLocation = new City("Seattle", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Seattle", "KSEA", "47-26-41N 122-18-49W"));
             this.curCity.Add(new Location("Boeing", "KBFI", "47-32-45N 122-18-49W"));
-            this.curState.Add(new Location("Renton", "KRNT", "47-29-40N 122-12-46W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Shelton", "KSHN", "47-14-17N 123-08-27W"));
             this.curState.Add(new Location("Spokane", "KGEG", "47-37-17N 117-31-40W"));
             this.curState.Add(new Location("Spokane-Parkwater", "KSFF", "47-41-08N 117-19-13W"));
@@ -2536,7 +2857,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Wenatchee", "KEAT", "47-23-56N 120-12-25W"));
             this.curState.Add(new Location("Whidbey Island", "KNUW", "48-20-57N 122-39-02W"));
             this.curState.Add(new Location("Yakima", "KYKM", "46-33-51N 120-32-01W"));
-            this.curCountryLocation = new State("West Virginia", 15);
+        }
+        
+        private void State_49() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Beckley", "KBKW", "37-47-42N 081-07-29W"));
             this.curState.Add(new Location("Bluefield", "KBLF", "37-17-45N 081-12-28W"));
@@ -2553,7 +2876,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Pineville", "KI16", "37-36-01N 081-33-33W"));
             this.curState.Add(new Location("Point Pleasant", "K3I2", "38-54-52N 082-05-54W"));
             this.curState.Add(new Location("Wheeling", "KHLG", "40-10-13N 080-38-40W"));
-            this.curCountryLocation = new State("Wisconsin", 49);
+        }
+        
+        private void State_50() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Antigo", "KAIG", "45-09N 087-09W"));
             this.curState.Add(new Location("Appleton", "KATW", "44-15N 088-31W"));
@@ -2571,7 +2896,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Kenosha", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Kenosha", "KENW", "42-35-42N 087-56-17W"));
-            this.curState.Add(new Location("Juneau", "KUNU", "43-25-36N 088-42-12W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("La Crosse", "KLSE", "43-52-46N 091-15-24W"));
             this.curState.Add(new Location("Ladysmith", "KRCX", "45-29-48N 091-00-01W"));
             this.curState.Add(new Location("Land O' Lakes", "KLNL", "46-09-14N 089-12-43W"));
@@ -2585,7 +2910,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Milwaukee", "KMKE", "42-57-18N 087-54-16W"));
             this.curCity.Add(new Location("Timmerman", "KMWC", "43-07N 088-02W"));
-            this.curState.Add(new Location("Merrill", "KRRL", "45-11N 089-42W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Mineral Point", "KMRJ", "42-53-07N 090-13-55W"));
             this.curState.Add(new Location("Minocqua", "KARV", "45-56N 089-44W"));
             this.curState.Add(new Location("Monroe", "KEFT", "42-36-54N 089-35-27W"));
@@ -2600,11 +2925,11 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Rice Lake", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Carl's Field Airport", "KRPD", "45-25-05N 091-46-25W"));
-            this.curState.Add(new Location("Rhinelander", "KRHI", "45-37-54N 089-28-56W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Sheboygan", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Sheboygan", "KSBM", "43-46-35N 087-50-59W"));
-            this.curState.Add(new Location("Rhinelander", "KRHI", "45-37-54N 089-28-56W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Siren", "KRZN", "45-49-22N 092-22-21W"));
             this.curState.Add(new Location("Sparta", "KCMY", "43-57-30N 090-44-16W"));
             this.curState.Add(new Location("Stevens Point", "KSTE", "44-32-42N 089-31-49W"));
@@ -2617,7 +2942,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Wausau", "KAUW", "44-55-43N 089-37-36W"));
             this.curState.Add(new Location("West Bend", "KETB", "43-25-20N 088-07-41W"));
             this.curState.Add(new Location("Wisconsin Rapids", "KISW", "44-21-33N 089-50-13W"));
-            this.curCountryLocation = new State("Wyoming", 25);
+        }
+        
+        private void State_51() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Arlington", "KARL", "41-42N 106-13W"));
             this.curState.Add(new Location("Big Piney", "KBPI", "42-34-44N 110-06-11W"));
@@ -2630,7 +2957,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Douglas", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Converse County Airport", "KDGW", "42-47-39N 105-22-55W"));
-            this.curState.Add(new Location("Cody", "KCOD", "44-31N 109-01W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Evanston", "KEVW", "41-16-23N 111-01-50W"));
             this.curState.Add(new Location("Gillette", "KGCC", "44-20-22N 105-32-31W"));
             this.curState.Add(new Location("Greybull", "KGEY", "44-30-57N 108-04-33W"));
@@ -2647,10 +2974,52 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Vedauwoo", "KVDW", "41-09N 105-24W"));
             this.curState.Add(new Location("Worland", "KWRL", "43-57-57N 107-57-03W"));
             this.curState.Add(new Location("Yellowstone", "KP60", "44-32-40N 110-25-16W"));
-            this.curRegion.Add(this.curCountry);
+        }
+        
+        private void Country_15() {
             this.curCountry = new Country("Canada", 13);
-            this.Country_15();
             this.curCountryLocation = new State("Alberta", 17);
+            this.State_52();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("British Columbia", 39);
+            this.State_53();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Manitoba", 12);
+            this.State_54();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("New Brunswick", 6);
+            this.State_55();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Newfoundland", 15);
+            this.State_56();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Northwest Territories", 24);
+            this.State_57();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Nova Scotia", 6);
+            this.State_58();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Nunavut", 38);
+            this.State_59();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Ontario", 35);
+            this.State_60();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Prince Edward Island", 1);
+            this.State_61();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Quebec", 37);
+            this.State_62();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Saskatchewan", 13);
+            this.State_63();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Yukon Territory", 11);
+            this.State_64();
+            this.curCountry.Add(this.curCountryLocation);
+        }
+        
+        private void State_52() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Calgary", 2);
             this.curCity = ((City)(this.curStateLocation));
@@ -2663,22 +3032,22 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Edmonton International", "CYEG", "53-18N 113-35W"));
             this.curCity.Add(new Location("Edmonton Municipal", "CYXD", "53-34N 113-31W"));
             this.curCity.Add(new Location("Namao", "CYED", "53-40N 113-28W"));
-            this.curState.Add(new Location("Cold Lake", "CYOD", "54-25N 110-17W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Edson", "CYET", "53-35N 116-28W"));
             this.curStateLocation = new City("Fort Chipewyan", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Fort Chipewyan", "CYPY", "58-46N 111-07W"));
-            this.curState.Add(new Location("Edson", "CYET", "53-35N 116-28W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Fort McMurray", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Fort McMurray", "CYMM", "56-39N 111-13W"));
-            this.curState.Add(new Location("Edson", "CYET", "53-35N 116-28W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Grande Prairie", "CYQU", "55-11N 118-53W"));
             this.curState.Add(new Location("High Level", "CYOJ", "58-37N 117-10W"));
             this.curStateLocation = new City("Lethbridge", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Lethbridge", "CYQL", "49-38N 112-48W"));
-            this.curState.Add(new Location("High Level", "CYOJ", "58-37N 117-10W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Lloydminister", "CYLL", "53-19N 110-04W"));
             this.curState.Add(new Location("Medicine Hat", "CYXH", "50-01N 110-43W"));
             this.curState.Add(new Location("Peace River", "CYPE", "56-14N 117-26W"));
@@ -2689,15 +3058,17 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Whitecourt", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "CYZU", "54-09N 115-47W"));
-            this.curState.Add(new Location("Suffield", "CYSD", "50-16N 111-11W"));
-            this.curCountryLocation = new State("British Columbia", 39);
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_53() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Abbotsford", "CYXX", "49-02N 122-22W"));
             this.curState.Add(new Location("Bella Coola", "CYBD", "52-23N 126-35W"));
             this.curStateLocation = new City("Blue River", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Blue River", "CYCP", "52-08N 119-18W"));
-            this.curState.Add(new Location("Bella Coola", "CYBD", "52-23N 126-35W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Campbell River", "CYBL", "49-57N 125-16W"));
             this.curState.Add(new Location("Castlegar", "CYCG", "49-18N 117-38W"));
             this.curState.Add(new Location("Chetwynd", "CYCQ", "55-42N 121-38W"));
@@ -2708,7 +3079,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Dease Lake", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Dease Lake", "CWDL", "58-25N 130-00W"));
-            this.curState.Add(new Location("Dawson Creek", "CYDQ", "55-45N 120-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Fort Nelson", "CYYE", "58-50N 122-35W"));
             this.curState.Add(new Location("Fort St John", "CYXJ", "56-14N 120-44W"));
             this.curState.Add(new Location("Golden", "CYGE", "51-18N 116-59W"));
@@ -2727,33 +3098,35 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Princeton", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Princeton Airport", "CYDC", "49-28N 120-31W"));
-            this.curState.Add(new Location("Prince Rupert", "CYPR", "54-18N 130-26W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Quesnel", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Quesnel Airport", "CYQZ", "53-02N 122-31W"));
-            this.curState.Add(new Location("Prince Rupert", "CYPR", "54-18N 130-26W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Revelstoke", "CYRV", "50-58N 118-11W"));
             this.curState.Add(new Location("Sandspit", "CYZP", "53-15N 131-49W"));
             this.curState.Add(new Location("Smithers", "CYYD", "54-49N 127-11W"));
             this.curStateLocation = new City("Sparwood", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Sparwood / Elk Valley", "CWSW", "49-45N 114-53W"));
-            this.curState.Add(new Location("Smithers", "CYYD", "54-49N 127-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Stewart", "CZST", "55-56N 129-59W"));
             this.curState.Add(new Location("Terrace", "CYXT", "54-28N 128-35W"));
             this.curState.Add(new Location("Tofino", "CYAZ", "49-05N 125-46W"));
             this.curStateLocation = new City("Vancouver", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Vancouver International Airport", "CYVR", "49-11N 123-10W"));
-            this.curState.Add(new Location("Tofino", "CYAZ", "49-05N 125-46W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Victoria", 2);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Victoria Harbour", "CYWH", "48-25N 123-20W"));
             this.curCity.Add(new Location("Victoria International Airport", "CYYJ", "48-39N 123-26W"));
-            this.curState.Add(new Location("Tofino", "CYAZ", "49-05N 125-46W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Whistler", "CWAE", "50-08N 122-57W"));
             this.curState.Add(new Location("Williams Lake", "CYWL", "52-11N 122-03W"));
-            this.curCountryLocation = new State("Manitoba", 12);
+        }
+        
+        private void State_54() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Berens River", 1);
             this.curCity = ((City)(this.curStateLocation));
@@ -2764,7 +3137,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Dauphin", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Dauphin", "CYDN", "51-06N 100-03W"));
-            this.curState.Add(new Location("Churchill", "CYYQ", "58-44N 094-04W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Flin Flon", "CYFO", "54-41N 101-41W"));
             this.curState.Add(new Location("Gillam", "CYGX", "56-21N 094-42W"));
             this.curState.Add(new Location("Island Lake", "CYIV", "53-51N 094-39W"));
@@ -2773,7 +3146,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Portage Southport", "CYPG", "49-54N 098-16W"));
             this.curState.Add(new Location("The Pas", "CYQD", "53-58N 101-06W"));
             this.curState.Add(new Location("Winnipeg", "CYWG", "49-54N 097-14W"));
-            this.curCountryLocation = new State("New Brunswick", 6);
+        }
+        
+        private void State_55() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Bathurst", "CZBF", "47-38N 065-45W"));
             this.curState.Add(new Location("Fredericton", "CYFC", "45-52N 066-32W"));
@@ -2783,8 +3158,10 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Saint Leonard", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Saint Leonard", "CYSL", "47-09N 067-50W"));
-            this.curState.Add(new Location("Saint John", "CYSJ", "45-20N 065-53W"));
-            this.curCountryLocation = new State("Newfoundland", 15);
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_56() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Cape Kiglapait", "CWYK", "57-08N 061-29W"));
             this.curState.Add(new Location("Cartwright", "CWCA", "53-42N 057-02W"));
@@ -2796,18 +3173,20 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Mary's Harbour", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "CYMH", "52-18N 055-51W"));
-            this.curState.Add(new Location("Makkovik", "CYFT", "55-05N 059-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Nain", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "CYDP", "56-33N 061-41W"));
-            this.curState.Add(new Location("Makkovik", "CYFT", "55-05N 059-11W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Saglek Bay", "CWZZ", "58-20N 062-35W"));
             this.curState.Add(new Location("Saint Anthony", "CYAY", "51-22N 055-38W"));
             this.curState.Add(new Location("St. John's", "CYYT", "47-37N 052-44W"));
             this.curState.Add(new Location("Stephenville", "CYJT", "48-32N 058-33W"));
             this.curState.Add(new Location("Tukialik Bay", "CWTU", "54-43N 058-21W"));
             this.curState.Add(new Location("Wabush Lake", "CYWK", "52-56N 066-52W"));
-            this.curCountryLocation = new State("Northwest Territories", 24);
+        }
+        
+        private void State_57() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Aklavik", "CYKD", "68-13N 135-00W"));
             this.curState.Add(new Location("Ekati", "CYOA", "64-42N 110-37W"));
@@ -2830,30 +3209,34 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Paulatuk", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Paulatuk Airport", "CYPC", "69-21N 124-02W"));
-            this.curState.Add(new Location("Norman Wells", "CYVQ", "65-17N 126-48W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Sachs Harbour", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Sachs Harbour Airport", "CYSY", "72-00N 125-17W"));
-            this.curState.Add(new Location("Norman Wells", "CYVQ", "65-17N 126-48W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Storm Hills", "CWVH", "68-54N 133-56W"));
             this.curStateLocation = new City("Tuktoyaktuk", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Tuktoyaktuk", "CYUB", "69-27N 133-01W"));
-            this.curState.Add(new Location("Storm Hills", "CWVH", "68-54N 133-56W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Wrigley", "CYWY", "63-13N 123-26W"));
             this.curState.Add(new Location("Yellowknife", "CYZF", "62-28N 114-27W"));
-            this.curCountryLocation = new State("Nova Scotia", 6);
+        }
+        
+        private void State_58() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Greenwood", "CYZX", "44-59N 064-55W"));
             this.curState.Add(new Location("Halifax", "CYHZ", "44-53N 063-30W"));
             this.curStateLocation = new City("Sable Island", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Sable Island", "CWSA", "43-56N 060-01W"));
-            this.curState.Add(new Location("Halifax", "CYHZ", "44-53N 063-30W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Shearwater", "CYAW", "44-38N 063-30W"));
             this.curState.Add(new Location("Sydney", "CYQY", "46-10N 060-03W"));
             this.curState.Add(new Location("Yarmouth", "CYQI", "43-50N 066-05W"));
-            this.curCountryLocation = new State("Nunavut", 38);
+        }
+        
+        private void State_59() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Alert", "CYLT", "82-31N 062-17W"));
             this.curState.Add(new Location("Arviat", "CYEK", "61-06N 094-04W"));
@@ -2863,7 +3246,7 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Broughton Island", "CWVD", "67-32N 063-47W"));
             this.curCity.Add(new Location("Broughton Island Airport", "CYVM", "67-33N 064-02W"));
-            this.curState.Add(new Location("Brevoort Island", "CWOB", "63-20N 064-09W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Cambridge Bay", "CYCB", "69-06N 105-07W"));
             this.curState.Add(new Location("Cape Dorset", "CYTE", "64-13N 076-32W"));
             this.curState.Add(new Location("Cape Dyer", "CWFD", "66-35N 061-37W"));
@@ -2887,11 +3270,11 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Pangnirtung", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Pangnirtung Airport", "CYXP", "66-09N 065-43W"));
-            this.curState.Add(new Location("Nanisivik", "CYSR", "72-59N 084-38W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Pelly Bay", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Pelly Bay Airport", "CYBB", "68-32N 089-49W"));
-            this.curState.Add(new Location("Nanisivik", "CYSR", "72-59N 084-38W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Pond Inlet", "CYIO", "72-42N 077-58W"));
             this.curState.Add(new Location("Povungnituq", "CYPX", "60-03N 077-17W"));
             this.curState.Add(new Location("Rankin Inlet", "CYRT", "62-49N 092-07W"));
@@ -2903,7 +3286,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Shepherd Bay", "CYUS", "68-49N 093-26W"));
             this.curState.Add(new Location("Spence Bay", "CYYH", "69-33N 093-35W"));
             this.curState.Add(new Location("Whale Cove", "CYXN", "62-14N 092-36W"));
-            this.curCountryLocation = new State("Ontario", 35);
+        }
+        
+        private void State_60() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Big Trout Lake", "CYTL", "53-50N 089-52W"));
             this.curState.Add(new Location("Borden", "CYBN", "44-15N 079-55W"));
@@ -2923,14 +3308,14 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("North Bay", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "CYYB", "46-21N 079-26W"));
-            this.curState.Add(new Location("Muskoka", "CYQA", "44-58N 079-18W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Ottawa", "CYOW", "45-19N 075-40W"));
             this.curState.Add(new Location("Petawawa", "CYWA", "45-57N 077-19W"));
             this.curState.Add(new Location("Peterborough", "CYPQ", "44-14N 078-22W"));
             this.curStateLocation = new City("Pickle Lake", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "CYPL", "51-27N 090-12W"));
-            this.curState.Add(new Location("Peterborough", "CYPQ", "44-14N 078-22W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Red Lake", "CYRL", "51-04N 093-48W"));
             this.curState.Add(new Location("St. Catharines", "CYSN", "43-12N 079-10W"));
             this.curState.Add(new Location("Sault Ste Marie", "CYAM", "46-29N 084-30W"));
@@ -2944,22 +3329,26 @@ namespace Desklet.Weather {
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Buttonville", "CYKZ", "43-52N 079-22W"));
             this.curCity.Add(new Location("Pearson Int'l", "CYYZ", "43-40N 079-38W"));
-            this.curState.Add(new Location("Timmins", "CYTS", "48-34N 081-22W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Trenton", "CYTR", "44-07N 077-32W"));
             this.curStateLocation = new City("Waterloo", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Kitchener", "CYKF", "43-28N 080-23W"));
-            this.curState.Add(new Location("Trenton", "CYTR", "44-07N 077-32W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Wawa", "CYXZ", "47-58N 084-47W"));
             this.curState.Add(new Location("Wiarton", "CYVV", "44-45N 081-06W"));
             this.curState.Add(new Location("Windsor", "CYQG", "42-16N 082-58W"));
-            this.curCountryLocation = new State("Prince Edward Island", 1);
+        }
+        
+        private void State_61() {
             this.curState = ((State)(this.curCountryLocation));
             this.curStateLocation = new City("Charlottetown", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Charlottetown Airport", "CYYG", "46-17N 063-08W"));
             this.curState.Add(this.curStateLocation);
-            this.curCountryLocation = new State("Quebec", 37);
+        }
+        
+        private void State_62() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Akulivik", "CYKO", "60-49N 078-09W"));
             this.curState.Add(new Location("Bagotville", "CYBG", "48-20N 071-00W"));
@@ -2974,7 +3363,7 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Inujuak", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Supplementary Aviation Weather Reporting Station", "CYPH", "58-28N 078-05W"));
-            this.curState.Add(new Location("Iles De La Madeleineque", "CYGR", "47-25N 061-47W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Ivujivik Airport Supplementary Aviation Weather Reporting Station", "CYIK", "62-25N 077-57W"));
             this.curState.Add(new Location("Kangiqsualujjuaq", "CYLU", "58-43N 065-59W"));
             this.curState.Add(new Location("Kangiqsujuaq", "CYKG", "61-35N 071-56W"));
@@ -2989,7 +3378,7 @@ namespace Desklet.Weather {
             this.curCity.Add(new Location("Dorval", "CYUL", "45-28N 073-45W"));
             this.curCity.Add(new Location("Mirabel", "CYMX", "45-41N 074-02W"));
             this.curCity.Add(new Location("Saint-Hubert", "CYHU", "45-31N 073-25W"));
-            this.curState.Add(new Location("Mont Joli", "CYYY", "48-36N 068-13W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Natashquan", "CYNA", "50-11N 061-49W"));
             this.curState.Add(new Location("Nemiscau", "CYHH", "51-42N 076-07W"));
             this.curState.Add(new Location("Quaqtaq", "CYHA", "61-03N 069-38W"));
@@ -3006,7 +3395,9 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Valcartier Airport", "CYOY", "46-54N 071-30W"));
             this.curState.Add(new Location("Waskaganish", "CYKQ", "51-29N 078-45W"));
             this.curState.Add(new Location("Wemindji", "CYNC", "53-00-39N 078-49-49W"));
-            this.curCountryLocation = new State("Saskatchewan", 13);
+        }
+        
+        private void State_63() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Broadview", "CWIK", "50-23N 102-41W"));
             this.curState.Add(new Location("Estevan", "CYEN", "49-13N 102-58W"));
@@ -3022,947 +3413,144 @@ namespace Desklet.Weather {
             this.curStateLocation = new City("Swift Current", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Swift Current", "CYYN", "50-17N 107-41W"));
-            this.curState.Add(new Location("Stony Rapids", "CYSF", "59-15N 105-50W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Yorkton", "CYQV", "51-16N 102-28W"));
-            this.curCountryLocation = new State("Yukon Territory", 11);
+        }
+        
+        private void State_64() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Beaver Creek", "CYXQ", "62-25N 140-52W"));
             this.curStateLocation = new City("Burwash Landing", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "CYDB", "61-22N 139-02W"));
-            this.curState.Add(new Location("Beaver Creek", "CYXQ", "62-25N 140-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Dawson", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "CYDA", "64-03N 139-08W"));
-            this.curState.Add(new Location("Beaver Creek", "CYXQ", "62-25N 140-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Faro", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "CZFA", "62-12N 133-22W"));
-            this.curState.Add(new Location("Beaver Creek", "CYXQ", "62-25N 140-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curStateLocation = new City("Komakuk Beach", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 2", "CWKM", "69-37N 140-12W"));
-            this.curState.Add(new Location("Beaver Creek", "CYXQ", "62-25N 140-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Mayo", "CYMA", "63-37N 135-52W"));
             this.curStateLocation = new City("Old Crow", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Location 1", "CYOC", "67-34N 139-49W"));
-            this.curState.Add(new Location("Mayo", "CYMA", "63-37N 135-52W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Shingle Point", "CYUA", "68-57N 137-13W"));
             this.curStateLocation = new City("Teslin", 1);
             this.curCity = ((City)(this.curStateLocation));
             this.curCity.Add(new Location("Teslin", "CYZW", "60-10N 132-44W"));
-            this.curState.Add(new Location("Shingle Point", "CYUA", "68-57N 137-13W"));
+            this.curState.Add(this.curStateLocation);
             this.curState.Add(new Location("Watson Lake", "CYQH", "60-07N 128-49W"));
             this.curState.Add(new Location("Whitehorse", "CYXY", "60-07N 128-49W"));
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Saint Pierre and Miquelon", 1);
-            this.Country_16();
-            this.curRegion.Add(this.curCountry);
-        }
-        
-        private void Country_13() {
-            this.curCountry.Add(new Location("Acapulco", "MMAA", "16-46N 099-45W"));
-            this.curCountry.Add(new Location("Aguascalientes", "MMAS", "21-53N 102-18W"));
-            this.curCountry.Add(new Location("Bahías de Huatulco", "MMBT", "15-47N 096-16W"));
-            this.curCountry.Add(new Location("Campeche", "MMCP", "19-51N 090-33W"));
-            this.curCountry.Add(new Location("Cancún", "MMUN", "21-02N 086-52W"));
-            this.curCountry.Add(new Location("Chetumal", "MMCM", "18-29N 088-18W"));
-            this.curCountry.Add(new Location("Chichen-Itzá", "MMCT", "20-38-30N 088-26-58W"));
-            this.curCountry.Add(new Location("Chihuahua", "MMCU", "28-42N 105-58W"));
-            this.curCountry.Add(new Location("Ciudad del Carmen", "MMCE", "18-39N 091-48W"));
-            this.curCountry.Add(new Location("Ciudad Juárez", "MMCS", "31-38N 106-26W"));
-            this.curCountry.Add(new Location("Ciudad Obregón", "MMCN", "27-19N 112-18W"));
-            this.curCountry.Add(new Location("Ciudad Victoria", "MMCV", "23-43N 098-58W"));
-            this.curCountry.Add(new Location("Colima", "MMIA", "19-16N 103-35W"));
-            this.curCountry.Add(new Location("Cozumel", "MMCZ", "20-32N 086-56W"));
-            this.curCountry.Add(new Location("Cuernavaca", "MMCB", "18-53N 099-14W"));
-            this.curCountry.Add(new Location("Culiacán", "MMCL", "24-49N 107-24W"));
-            this.curCountry.Add(new Location("Del Bajío", "MMLO", "21-00N 101-29W"));
-            this.curCountry.Add(new Location("Durango", "MMDO", "24-08N 104-32W"));
-            this.curCountry.Add(new Location("Guadalajara", "MMGL", "20-31N 103-19W"));
-            this.curCountry.Add(new Location("Guaymas", "MMGM", "27-58N 110-56W"));
-            this.curCountry.Add(new Location("Hermosillo", "MMHO", "29-04N 110-57W"));
-            this.curCountry.Add(new Location("Ixtapa", "MMZH", "17-36N 101-28W"));
-            this.curCountry.Add(new Location("Ixtepec", "MMIT", "16-27N 095-05W"));
-            this.curCountry.Add(new Location("La Paz", "MMLP", "24-04N 110-22W"));
-            this.curCountry.Add(new Location("Loreto", "MMLT", "26-01N 111-21W"));
-            this.curCountry.Add(new Location("Los Mochis", "MMLM", "25-41N 109-05W"));
-            this.curCountry.Add(new Location("Manzanillo", "MMZO", "19-09N 104-34W"));
-            this.curCountry.Add(new Location("Matamoros", "MMMA", "25-46N 097-32W"));
-            this.curCountry.Add(new Location("Mazatlán", "MMMZ", "23-10N 106-16W"));
-            this.curCountry.Add(new Location("Mérida", "MMMD", "20-56N 089-39W"));
-            this.curCountry.Add(new Location("Mexicali", "MMML", "32-38N 117-00W"));
-            this.curCountry.Add(new Location("Mexico City", "MMMX", "19-26N 099-06W"));
-            this.curCountry.Add(new Location("Minatitlán", "MMMT", "18-06N 094-35W"));
-            this.curCountry.Add(new Location("Monclova", "MMMV", "26-53N 101-25W"));
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(new Location("Morelia", "MMMM", "19-51N 101-02W"));
-            this.curCountry.Add(new Location("Nuevo Laredo", "MMNL", "27-26N 099-34W"));
-            this.curCountry.Add(new Location("Oaxaca", "MMOX", "16-58N 096-44W"));
-            this.curCountry.Add(new Location("Piedras Negras", "MMPG", "28-42N 100-31W"));
-            this.curCountry.Add(new Location("Poza Rica", "MMPA", "20-31N 097-28W"));
-            this.curCountry.Add(new Location("Puebla", "MMPB", "19-03N 098-10W"));
-            this.curCountry.Add(new Location("Puerto Escondido", "MMPS", "15-52N 097-05W"));
-            this.curCountry.Add(new Location("Puerto Vallarta", "MMPR", "20-41N 105-15W"));
-            this.curCountry.Add(new Location("Queretaro", "MMQT", "20-36N 100-23W"));
-            this.curCountry.Add(new Location("Reynosa", "MMRX", "26-01N 098-14W"));
-            this.curCountry.Add(new Location("Saltillo", "MMIO", "25-27N 100-59W"));
-            this.curCountry.Add(new Location("San José del Cabo", "MMSD", "23-09N 109-42W"));
-            this.curCountry.Add(new Location("San Luis de Potosí", "MMSP", "22-09N 100-59W"));
-            this.curCountry.Add(new Location("Tampico", "MMTM", "22-17N 097-52W"));
-            this.curCountry.Add(new Location("Tapachula", "MMTP", "14-47N 092-23W"));
-            this.curCountry.Add(new Location("Tepic", "MMEP", "21-31N 104-54W"));
-            this.curCountry.Add(new Location("Tijuana", "MMTJ", "32-33N 116-58W"));
-            this.curCountry.Add(new Location("Toluca", "MMTO", "19-21N 099-34W"));
-            this.curCountry.Add(new Location("Torreón", "MMTC", "25-32N 103-27W"));
-            this.curCountry.Add(new Location("Tuxtla Gutiérrez", "MMTG", "16-45N 093-07W"));
-            this.curCountry.Add(new Location("Uruapan", "MMPN", "19-24N 102-02W"));
-            this.curCountry.Add(new Location("Veracruz", "MMVR", "19-09N 096-11W"));
-            this.curCountry.Add(new Location("Villahermosa", "MMVA", "18-00N 092-49W"));
-            this.curCountry.Add(new Location("Zacatecas", "MMZC", "22-54N 102-41W"));
-        }
-        
-        private void Country_14() {
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-        }
-        
-        private void Country_15() {
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
         }
         
         private void Country_16() {
+            this.curCountry = new Country("Saint Pierre and Miquelon", 1);
             this.curCountry.Add(new Location("Saint-Pierre", "LFVP", "46-46N 056-10W"));
         }
         
         private void Region_3() {
             this.curRegion = new Region("Europe", 42);
-            this.curCountry = new Country("Albania", 1);
+            this.regions.Add(this.curRegion);
             this.Country_17();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Austria", 16);
             this.Country_18();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Belarus", 6);
             this.Country_19();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Belgium", 6);
             this.Country_20();
-            this.curCountryLocation = new State("Antwerp", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Antwerp", "EBAW", "51-12N 004-28E"));
-            this.curCountryLocation = new State("Brussels, Flemish and Walloon Brabant", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Zaventem", "EBBR", "50-54N 004-32E"));
-            this.curCountryLocation = new State("Hainaut", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Charleroi", "EBCI", "50-28N 004-27E"));
-            this.curState.Add(new Location("Chièvres", "EBCV", "50-34N 003-50E"));
-            this.curCountryLocation = new State("Liège", 4);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Elsenborn", "EBLB", "50-28N 006-11E"));
-            this.curState.Add(new Location("Liège", "EBLG", "50-39N 005-27E"));
-            this.curState.Add(new Location("Saint-Hubert", "EBSH", "50-02N 005-24E"));
-            this.curState.Add(new Location("Spa", "EBSP", "50-29N 005-55E"));
-            this.curCountryLocation = new State("Limburg", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Kleine Brogel", "EBBL", "51-10N 005-28E"));
-            this.curCountryLocation = new State("West-Flanders", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Koksijde", "EBFN", "51-05N 002-39E"));
-            this.curState.Add(new Location("Ostend", "EBOS", "51-12N 002-52E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Bosnia-Herzegovina", 5);
             this.Country_21();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Bulgaria", 5);
             this.Country_22();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Czech Republic", 7);
             this.Country_23();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Croatia", 9);
             this.Country_24();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Denmark", 16);
             this.Country_25();
-            this.curCountryLocation = new City("Copenhagen", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Kastrup", "EKCH", "55-37N 012-39E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Estonia", 5);
             this.Country_26();
-            this.curCountryLocation = new City("Tallinn", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Ülemiste Airport", "EETN", "59-24N 024-49E"));
-            this.curCity.Add(new Location("Ülemiste Airport (alternate)", "ULTT", "59-23N 024-35E"));
-            this.curCountryLocation = new City("Tartu", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Ülenurme", "EETU", "58-18N 026-44E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Faroe Islands", 1);
             this.Country_27();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Gibraltar", 1);
             this.Country_28();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Iceland", 4);
             this.Country_29();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Latvia", 2);
             this.Country_30();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Lithuania", 5);
             this.Country_31();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Luxembourg", 1);
             this.Country_32();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Macedonia", 2);
             this.Country_33();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Malta", 1);
             this.Country_34();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Moldova", 1);
             this.Country_35();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Norway", 58);
             this.Country_36();
-            this.curCountryLocation = new City("Oslo", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Gardermoen", "ENGM", "60-12N 011-05E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Poland", 8);
             this.Country_37();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Portugal", 10);
             this.Country_38();
-            this.curCountryLocation = new City("Lisbon", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Portela", "LPPT", "38-46N 009-08W"));
-            this.curCountryLocation = new City("Ponta Delgada", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("João Paulo II", "LPPD", "37-44N 025-42W"));
-            this.curCountryLocation = new City("Oporto", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Francisco Sá Carneiro", "LPPR", "41-14N 008-41W"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Romania", 7);
             this.Country_39();
-            this.curCountryLocation = new City("Bucharest", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Imh", "LRBS", "44-30N 026-08E"));
-            this.curCity.Add(new Location("Otopeni", "LROP", "44-33N 026-06E"));
-            this.curCountryLocation = new City("Constanţa", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Mihail Kogalniceanu", "LRCK", "44-20N 028-26E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Russia", 69);
             this.Country_40();
-            this.curCountryLocation = new City("Kaliningrad", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Khrabrovo", "UMKK", "54-43-12N 020-30E"));
-            this.curCountryLocation = new City("Moscow", 3);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Domodedovo", "UUDD", "55-24N 037-54E"));
-            this.curCity.Add(new Location("Sheremet'Ye", "UUEE", "55-59N 037-30E"));
-            this.curCity.Add(new Location("Vnukovo", "UUWW", "55-39N 037-16E"));
-            this.curCountryLocation = new City("Nizhny Novgorod", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Strigino", "UWGG", "56-19-48N 044-00E"));
-            this.curCountryLocation = new City("Orenburg", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Tsentralny", "UWOO", "51-46-48N 055-07-12E"));
-            this.curCountryLocation = new City("Perm'", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Bolshoe Savino", "USPP", "58-00N 056-15E"));
-            this.curCountryLocation = new City("Saratov", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Tsentralny", "UWSS", "51-34-12N 046-04-12E"));
-            this.curCountryLocation = new City("Stavropol", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Shpakovskoye", "URMT", "45-20N 042-00E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Serbia and Montenegro", 5);
             this.Country_41();
-            this.curCountryLocation = new City("Belgrade", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Surčin", "LYBE", "44-49N 020-17E"));
-            this.curCountryLocation = new City("Uroševac", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Camp Bondsteel", "KQUK", "42-35N 021-23E"));
-            this.curCountryLocation = new City("Podgorica", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Podgorica", "LYPG", "42-26N 019-17E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Slovakia", 10);
             this.Country_42();
-            this.curCountryLocation = new City("Košice", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Barca", "LZKZ", "48-39-47N 021-14-28E"));
-            this.curCountryLocation = new City("Piešťany", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Location 1", "LZPP", "48-37-30N 017-49-43E"));
-            this.curCountryLocation = new City("Sliač", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Location 1", "LZSL", "48-38-17N 019-08-03E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Slovenia", 3);
             this.Country_43();
-            this.curCountryLocation = new City("Ljubljana", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Brnik", "LJLJ", "46-13N 014-29E"));
-            this.curCountryLocation = new City("Maribor", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Slivnica", "LJMB", "46-29N 015-41E"));
-            this.curCountryLocation = new City("Portorož", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Portorož", "LJPZ", "45-31N 013-34E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Sweden", 32);
             this.Country_44();
-            this.curCountryLocation = new City("Gothenburg", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Landvetter", "ESGG", "57-40N 012-18E"));
-            this.curCity.Add(new Location("Säve", "ESGP", "57-47N 011-53E"));
-            this.curCountryLocation = new City("Kristianstad", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Everöd", "ESMK", "55-55N 014-05E"));
-            this.curCountryLocation = new City("Linköping", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Saab", "ESSL", "58-24N 015-41E"));
-            this.curCountryLocation = new City("Ljungbyhed", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Location 1", "ESTL", "56-04N 013-12E"));
-            this.curCountryLocation = new City("Luleå", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Kallax", "ESPA", "65-33N 022-08E"));
-            this.curCountryLocation = new City("Malmö", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Sturup", "ESMS", "55-33N 013-22E"));
-            this.curCountryLocation = new City("Östersund", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Frösön", "ESPC", "63-11N 014-30E"));
-            this.curCountryLocation = new City("Stockholm", 3);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Arlanda", "ESSA", "59-39N 017-57E"));
-            this.curCity.Add(new Location("Bromma", "ESSB", "59-21N 017-57E"));
-            this.curCity.Add(new Location("Skavsta", "ESKN", "58-47N 016-55E"));
-            this.curCountryLocation = new City("Västerås", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Hässlö", "ESOW", "59-35N 016-38E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Switzerland", 8);
             this.Country_45();
-            this.curCountryLocation = new City("Bern", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Belp", "LSZB", "46-55N 007-30E"));
-            this.curCountryLocation = new City("Geneva", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Cointrin", "LSGG", "46-15N 006-08E"));
-            this.curCountryLocation = new City("La Chaux-de-Fonds", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Les Eplatures", "LSGC", "47-05-03N 006-47-37E"));
-            this.curCountryLocation = new City("Zurich", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Kloten", "LSZH", "47-29N 008-32E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cyprus", 4);
             this.Country_46();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Finland", 26);
             this.Country_47();
-            this.curCountryLocation = new City("Helsinki", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Malmi", "EFHF", "60-15N 025-03E"));
-            this.curCity.Add(new Location("Vantaa", "EFHK", "60-19N 024-58E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("France", 73);
             this.Country_48();
-            this.curCountryLocation = new City("Ajaccio", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Campo dell'Oro", "LFKJ", "41-55N 008-48E"));
-            this.curCountryLocation = new City("Beauvais", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Tille", "LFOB", "49-28N 002-07E"));
-            this.curCountryLocation = new City("Béziers", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Vias", "LFMU", "43-19N 003-21E"));
-            this.curCountryLocation = new City("Bordeaux", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Mérignac", "LFBD", "44-50N 000-42W"));
-            this.curCountryLocation = new City("Caen", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Carpiquet", "LFRK", "49-11N 000-27W"));
-            this.curCountryLocation = new City("Calvi", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Sainte Catherine", "LFKC", "42-32N 008-48E"));
-            this.curCountryLocation = new City("Cannes", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Mandelieu-la-Napoule", "LFMD", "43-33N 006-57E"));
-            this.curCountryLocation = new City("Châlons-en-Champagne", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Vatry", "LFOK", "48-46-34N 004-11-04E"));
-            this.curCountryLocation = new City("Chambéry", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Aix-les-Bains", "LFLB", "45-39N 005-53E"));
-            this.curCountryLocation = new City("Cherbourg", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Maupertus-sur-Mer", "LFRC", "49-39N 001-28W"));
-            this.curCountryLocation = new City("Colmar", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Meyenheim", "LFSC", "47-55N 007-24E"));
-            this.curCountryLocation = new City("Deauville", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Saint-Gatien-des-Bois", "LFRG", null));
-            this.curCountryLocation = new City("Dole", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Tavaux", "LFGJ", "47-02-34N 005-26-06E"));
-            this.curCountryLocation = new City("Évreux", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Fauville", "LFOE", "49-01N 001-13E"));
-            this.curCountryLocation = new City("Grenoble", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Saint Etienne de Saint Geoirs", "LFLS", "45-22N 005-20E"));
-            this.curCountryLocation = new City("Île Wallis", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Hihifo", "NLWW", "13-14S 176-10W"));
-            this.curCountryLocation = new City("Hyères", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Le Palyvestre", "LFTH", "43-06N 006-09E"));
-            this.curCountryLocation = new City("Le Havre", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Octeville-sur-mer", "LFOH", "49-31N 000-04E"));
-            this.curCountryLocation = new City("Lorient", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Lann-Bihoué", "LFRH", "47-46N 003-27W"));
-            this.curCountryLocation = new City("Lille", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Lesquin", "LFQQ", "50-34N 003-06E"));
-            this.curCountryLocation = new City("Lyon", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Bron", "LFLY", "45-43N 004-57E"));
-            this.curCity.Add(new Location("Saint Exupéry", "LFLL", "45-44N 005-05E"));
-            this.curCountryLocation = new City("Marseille", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Marignane", "LFML", "43-27N 005-14E"));
-            this.curCountryLocation = new City("Metz", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Frescaty", "LFSF", "49-05N 006-08E"));
-            this.curCity.Add(new Location("Metz-Nancy-Lorraine", "LFJL", "48-59N 006-15E"));
-            this.curCountryLocation = new City("Montpellier", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Méditerranée", "LFMT", "43-35N 003-58E"));
-            this.curCountryLocation = new City("Nancy", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Ochey", "LFSO", "48-35N 005-58E"));
-            this.curCountryLocation = new City("Nice", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Côte d'Azur", "LFMN", "43-39N 007-12E"));
-            this.curCountryLocation = new City("Nîmes", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Garons", "LFTW", "43-45N 004-25E"));
-            this.curCountryLocation = new City("Paris", 5);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Charles De Gaulle", "LFPG", "49-01N 002-32E"));
-            this.curCity.Add(new Location("Le Bourget", "LFPB", "48-58N 002-27E"));
-            this.curCity.Add(new Location("Orly", "LFPO", "48-44N 002-24E"));
-            this.curCity.Add(new Location("Toussus-le-Noble", "LFPN", "48-46N 001-06E"));
-            this.curCity.Add(new Location("Vélizy-Villacoublay", "LFPV", "48-46N 002-12E"));
-            this.curCountryLocation = new City("Pau", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Pyrénées", "LFBP", "43-23N 000-25W"));
-            this.curCountryLocation = new City("Perpignan", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Rivesaltes", "LFMP", "42-44N 002-52E"));
-            this.curCountryLocation = new City("Reims", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Champagne", "LFSR", "49-18N 004-02E"));
-            this.curCountryLocation = new City("Rouen", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Vallée de Seine", "LFOP", "49-23N 001-11E"));
-            this.curCountryLocation = new City("Saint-Brieuc", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Armor", "LFRT", "48-32N 002-51W"));
-            this.curCountryLocation = new City("Saint-Dizier", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Robinson", "LFSI", "48-38N 004-54E"));
-            this.curCountryLocation = new City("Saint-Étienne", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Bouthéon", "LFMH", "45-32N 004-18E"));
-            this.curCountryLocation = new City("Saint-Nazaire", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Montoir-de-Bretagne", "LFRZ", "47-19N 002-10W"));
-            this.curCountryLocation = new City("Tarbes", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Ossun", "LFBT", "43-11N 000-00"));
-            this.curCountryLocation = new City("Toulouse", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Blagnac", "LFBO", "43-38N 001-22E"));
-            this.curCountryLocation = new City("Tours", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Saint-Symphorien", "LFOT", "47-27N 000-43E"));
-            this.curCountryLocation = new City("Troyes", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Barberey-Saint-Sulpice", "LFQB", "48-20N 004-01E"));
-            this.curCountryLocation = new City("Vichy", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Charmeil", "LFLV", "46-10N 003-24E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Germany", 15);
             this.Country_49();
-            this.curCountryLocation = new State("Baden-Württemberg", 9);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Donaueschingen-Villingen", "EDTD", "47-58N 008-31E"));
-            this.curState.Add(new Location("Friedrichshafen", "EDNY", "47-40N 009-31E"));
-            this.curState.Add(new Location("Karlsruhe", "EDSB", "48-46-43N 008-04-47E"));
-            this.curState.Add(new Location("Lahr", "EDTL", "48-22-09N 007-49-40E"));
-            this.curState.Add(new Location("Laupheim", "ETHL", "48-13N 009-55E"));
-            this.curStateLocation = new City("Mannheim", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Neuostheim", "EDFM", "49-28-21N 008-30-56E"));
-            this.curState.Add(new Location("Laupheim", "ETHL", "48-13N 009-55E"));
-            this.curState.Add(new Location("Meßstetten", "ETGZ", "48-11N 009-00E"));
-            this.curState.Add(new Location("Niederstetten", "ETHN", "49-24N 009-58E"));
-            this.curStateLocation = new City("Stuttgart", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Echterdingen", "EDDS", "48-41N 009-13E"));
-            this.curState.Add(new Location("Niederstetten", "ETHN", "49-24N 009-58E"));
-            this.curCountryLocation = new State("Bavaria", 14);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Altenstadt-Schongau", "ETHA", "47-50N 010-52E"));
-            this.curStateLocation = new City("Augsburg", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Mühlhausen", "EDMA", "48-26N 010-56E"));
-            this.curState.Add(new Location("Altenstadt-Schongau", "ETHA", "47-50N 010-52E"));
-            this.curState.Add(new Location("Bamberg", "ETEJ", "49-55N 010-54E"));
-            this.curState.Add(new Location("Bayreuth", "EDQD", "49-59N 011-38E"));
-            this.curState.Add(new Location("Erding", "ETSE", "48-19N 011-57E"));
-            this.curState.Add(new Location("Hof", "EDQM", "50-19N 011-53E"));
-            this.curState.Add(new Location("Ingolstadt", "ETSI", "48-43N 011-32E"));
-            this.curState.Add(new Location("Landsberg am Lech", "ETSA", "48-04N 010-54E"));
-            this.curState.Add(new Location("Lechfeld", "ETSL", "48-11N 010-52E"));
-            this.curState.Add(new Location("Munich", "EDDM", "48-21N 011-47E"));
-            this.curState.Add(new Location("Neuburg an der Donau", "ETSN", "48-43N 011-13E"));
-            this.curState.Add(new Location("Nuremberg", "EDDN", "49-30N 011-03E"));
-            this.curState.Add(new Location("Oberpfaffenhofen", "EDMO", "48-05N 011-17E"));
-            this.curState.Add(new Location("Roth", "ETHR", "49-13N 011-06E"));
-            this.curCountryLocation = new City("Berlin", 3);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Schönefeld", "EDDB", "52-23N 013-31E"));
-            this.curCity.Add(new Location("Tegel", "EDDT", "52-34N 013-19E"));
-            this.curCity.Add(new Location("Tempelhof", "EDDI", "52-28N 013-24E"));
-            this.curCountryLocation = new City("Bremen", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Bremen", "EDDW", "53-03N 008-48E"));
-            this.curCountryLocation = new City("Hamburg", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Finkenwerder", "EDHI", "53-32N 009-50E"));
-            this.curCity.Add(new Location("Fuhlsbüttel", "EDDH", "53-38N 010-00E"));
-            this.curCountryLocation = new State("Hesse", 4);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Frankfurt am Main", "EDDF", "50-03N 008-36E"));
-            this.curState.Add(new Location("Fritzlar", "ETHF", "51-07N 009-17E"));
-            this.curStateLocation = new City("Kassel", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Calden", "EDVK", "51-24N 009-23E"));
-            this.curState.Add(new Location("Fritzlar", "ETHF", "51-07N 009-17E"));
-            this.curState.Add(new Location("Wiesbaden", "ETOU", "50-03N 008-20E"));
-            this.curCountryLocation = new State("Lower Saxony", 11);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Braunschweig", "EDVE", "52-18N 010-27E"));
-            this.curState.Add(new Location("Bückeburg", "ETHB", "52-17N 009-05E"));
-            this.curState.Add(new Location("Celle", "ETHC", "52-36N 010-01E"));
-            this.curState.Add(new Location("Diepholz", "ETND", "52-35N 008-21E"));
-            this.curState.Add(new Location("Faßberg", "ETHS", "52-55N 010-11E"));
-            this.curState.Add(new Location("Hannover", "EDDV", "52-28N 009-41E"));
-            this.curState.Add(new Location("Jever", "ETNJ", "53-32N 007-53E"));
-            this.curState.Add(new Location("Meppen", "ETWM", "52-43-24N 007-19-35E"));
-            this.curStateLocation = new City("Cuxhaven", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Nordholz", "ETMN", "53-46N 008-40E"));
-            this.curState.Add(new Location("Meppen", "ETWM", "52-43-24N 007-19-35E"));
-            this.curStateLocation = new City("Wittmund", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Wittmundhaven", "ETNT", "53-33N 007-40E"));
-            this.curState.Add(new Location("Meppen", "ETWM", "52-43-24N 007-19-35E"));
-            this.curState.Add(new Location("Wunstorf", "ETNW", "52-27N 009-26E"));
-            this.curCountryLocation = new State("Mecklenburg-Western Pomerania", 4);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Heringsdorf", "EDAH", "53-53N 014-09E"));
-            this.curStateLocation = new City("Neubrandenburg", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Trollenhagen", "ETNU", "53-36N 013-19E"));
-            this.curState.Add(new Location("Heringsdorf", "EDAH", "53-53N 014-09E"));
-            this.curState.Add(new Location("Parchim", "EDOP", "53-25-37N 011-47-01E"));
-            this.curStateLocation = new City("Rostock", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Laage", "ETNL", "53-55N 012-17E"));
-            this.curState.Add(new Location("Parchim", "EDOP", "53-25-37N 011-47-01E"));
-            this.curCountryLocation = new State("North Rhine-Westphalia", 13);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Cologne/Bonn", "EDDK", "50-52N 007-10E"));
-            this.curStateLocation = new City("Dortmund", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Wickede", "EDLW", "51-31N 007-37E"));
-            this.curState.Add(new Location("Cologne/Bonn", "EDDK", "50-52N 007-10E"));
-            this.curState.Add(new Location("Düsseldorf", "EDDL", "51-18N 006-46E"));
-            this.curState.Add(new Location("Gütersloh", "ETUO", "51-55N 008-18E"));
-            this.curState.Add(new Location("Hopsten", "ETNP", "52-20N 007-32E"));
-            this.curState.Add(new Location("Kalkar", "ETGY", "51-44N 006-16E"));
-            this.curState.Add(new Location("Mönchengladbach", "EDLN", "51-13-49N 006-30-16E"));
-            this.curState.Add(new Location("Münster/Osnabrück", "EDDG", "52-08N 007-42E"));
-            this.curState.Add(new Location("Nörvenich", "ETNN", "50-50N 006-40E"));
-            this.curState.Add(new Location("Paderborn/Lippstadt", "EDLP", "51-37N 008-37E"));
-            this.curStateLocation = new City("Rheine", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Bentlage", "ETHE", "52-18N 007-23E"));
-            this.curState.Add(new Location("Paderborn/Lippstadt", "EDLP", "51-37N 008-37E"));
-            this.curStateLocation = new City("Siegen", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Siegerland", "EDGS", "50-42-28N 008-04-59E"));
-            this.curState.Add(new Location("Paderborn/Lippstadt", "EDLP", "51-37N 008-37E"));
-            this.curState.Add(new Location("Weeze", "EDLV", "51-36-09N 006-08-32E"));
-            this.curCountryLocation = new State("Rhineland-Palatinate", 6);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Büchel", "ETSB", "50-10N 007-04E"));
-            this.curState.Add(new Location("Hahn", "EDFH", "49-57N 007-16E"));
-            this.curState.Add(new Location("Mendig", "ETHM", "50-22N 007-19E"));
-            this.curState.Add(new Location("Ramstein", "ETAR", "49-26N 007-36E"));
-            this.curState.Add(new Location("Spangdahlem", "ETAD", "49-59N 006-42E"));
-            this.curState.Add(new Location("Zweibrücken", "EDRZ", "49-12-34N 007-24-04E"));
-            this.curCountryLocation = new State("Saarland", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Saarbrücken", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Ensheim", "EDDR", "49-13N 007-07E"));
-            this.curState.Add(this.curStateLocation);
-            this.curCountryLocation = new State("Saxony", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Dresden", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Klotzsche", "EDDC", "51-08N 013-45E"));
-            this.curState.Add(this.curStateLocation);
-            this.curStateLocation = new City("Leipzig", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Schkeuditz", "EDDP", "51-25N 012-14E"));
-            this.curState.Add(this.curStateLocation);
-            this.curCountryLocation = new State("Saxony-Anhalt", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Holzdorf", "ETSH", "51-46N 013-11E"));
-            this.curState.Add(new Location("Magdeburg", "EDBM", "52-04-35N 011-37-25E"));
-            this.curCountryLocation = new State("Schleswig-Holstein", 6);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Flensburg", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Glücksburg", "ETGG", "54-50N 009-30E"));
-            this.curState.Add(this.curStateLocation);
-            this.curStateLocation = new City("Rendsburg", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Hohn", "ETNH", "54-19N 009-32E"));
-            this.curState.Add(this.curStateLocation);
-            this.curStateLocation = new City("Kiel", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Holtenau", "EDHK", "54-23N 010-10E"));
-            this.curState.Add(this.curStateLocation);
-            this.curStateLocation = new City("Lübeck", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Blankensee", "EDHL", "53-49N 010-42E"));
-            this.curState.Add(this.curStateLocation);
-            this.curStateLocation = new City("Schleswig", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Jagel", "ETNS", "54-28N 009-31E"));
-            this.curState.Add(this.curStateLocation);
-            this.curState.Add(new Location("Westerland", "EDXW", "54-55N 008-21E"));
-            this.curCountryLocation = new State("Thuringia", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Altenburg", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Nobitz", "EDAC", "50-58N 012-30E"));
-            this.curState.Add(this.curStateLocation);
-            this.curStateLocation = new City("Erfurt", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Bindersleben", "EDDE", "50-59N 010-58E"));
-            this.curState.Add(this.curStateLocation);
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Greece", 31);
             this.Country_50();
-            this.curCountryLocation = new City("Preveza", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Aktion", "LGPZ", "38-37N 020-46E"));
-            this.curCountryLocation = new City("Athens", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Eleftherios Venizelos", "LGAV", "37-56N 023-56E"));
-            this.curCountryLocation = new City("Kavala", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Chrysoupoli", "LGKV", "40-59N 024-36E"));
-            this.curCountryLocation = new City("Cyclades Islands", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Naxos", "LGNX", "37-04-47N 025-22-01E"));
-            this.curCountryLocation = new City("Lesvos", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Mytilene", "LGMT", "39-04N 026-36E"));
-            this.curCountryLocation = new City("Rhodes", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Rhodes", "LGRP", "36-24N 028-05E"));
-            this.curCountryLocation = new City("Chania", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Souda", "LGSA", "35-29N 024-07E"));
-            this.curCountryLocation = new City("Thessaloniki", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Makedonia", "LGTS", "40-31N 022-58E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Hungary", 6);
             this.Country_51();
-            this.curCountryLocation = new City("Budapest", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Ferihegy", "LHBP", "47-26N 019-16E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Ireland", 4);
             this.Country_52();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Italy", 99);
             this.Country_53();
-            this.curCountryLocation = new City("Catania", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Fontanarossa", "LICC", "37-28N 015-03E"));
-            this.curCity.Add(new Location("Sigonella", "LICZ", "37-24N 014-55E"));
-            this.curCountryLocation = new City("Palermo", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Punta Raisi", "LICJ", "38-11N 013-06E"));
-            this.curCity.Add(new Location("Boccadifalco", "LICP", "38-06N 013-18E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Netherlands", 15);
             this.Country_54();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Spain", 34);
             this.Country_55();
-            this.curCountryLocation = new City("Canary Islands", 7);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Hierro/Airport", "GCHI", "27-49N 017-53W"));
-            this.curCity.Add(new Location("Lanzarote", "GCRR", "28-57N 013-36W"));
-            this.curCity.Add(new Location("Las Palmas de Gran Canaria/Gando", "GCLP", "27-56N 015-23W"));
-            this.curCity.Add(new Location("Tenerife/Tenerife Norte (Los Rodeos) Airport", "GCXO", "28-28N 016-19W"));
-            this.curCity.Add(new Location("Tenerife/Tenerife Sur Airport", "GCTS", "28-03N 016-34W"));
-            this.curCity.Add(new Location("La Palma", "GCLA", "28-37N 017-45W"));
-            this.curCity.Add(new Location("Fuerteventura", "GCFV", "28-27N 013-52W"));
-            this.curCountryLocation = new City("Baleares Islands", 3);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Ibiza/Es Codolar", "LEIB", "38-52N 001-23E"));
-            this.curCity.Add(new Location("Menorca", "LEMH", "39-52N 004-14E"));
-            this.curCity.Add(new Location("Palma de Mallorca/Son Sant Joan", "LEPA", "39-33N 002-44E"));
-            this.curCountryLocation = new City("Madrid", 4);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Barajas", "LEMD", "40-27N 003-33W"));
-            this.curCity.Add(new Location("Cuatro Vientos", "LEVS", "40-23N 003-47W"));
-            this.curCity.Add(new Location("Getafe", "LEGT", "40-18N 003-43W"));
-            this.curCity.Add(new Location("Torrejón", "LETO", "40-29N 003-27W"));
-            this.curCountryLocation = new City("Murcia", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Alcantarilla", "LERI", "37-57N 001-14W"));
-            this.curCity.Add(new Location("San Javier", "LELC", "37-47N 000-48W"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Turkey", 34);
             this.Country_56();
-            this.curCountryLocation = new City("Bodrum", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Bodrum Milas Airport", "LTFE", "37-14-53N 027-40-55E"));
-            this.curCountryLocation = new City("Istanbul", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Ataturk", "LTBA", "40-58N 028-49E"));
-            this.curCity.Add(new Location("Sabiha Gokcen", "LTFJ", "40-53-55N 029-18-33E"));
-            this.curCountryLocation = new City("Izmir", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Adnan Menderes", "LTBJ", "38-16N 027-09E"));
-            this.curCity.Add(new Location("Cigli", "LTBL", "38-30N 027-01E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Ukraine", 18);
             this.Country_57();
-            this.curCountryLocation = new City("Kiev", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Boryspil", "UKBB", null));
-            this.curCity.Add(new Location("Zhuliany", "UKKK", "50-24N 030-34E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("United Kingdom", 8);
             this.Country_58();
-            this.curCountryLocation = new State("Wales", 4);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Cardiff", "EGFF", "51-24N 003-21W"));
-            this.curState.Add(new Location("Pembrey", "EGOP", "51-43N 004-22W"));
-            this.curState.Add(new Location("St Athan", "EGDX", "51-24N 003-26W"));
-            this.curState.Add(new Location("Valley", "EGOV", "53-15N 004-32W"));
-            this.curCountryLocation = new State("East and South East England", 22);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Barkston Heath", "EGYE", "52-58N 000-34W"));
-            this.curState.Add(new Location("Benson", "EGUB", "51-37N 001-05W"));
-            this.curState.Add(new Location("Biggin Hill", "EGKB", "51-19N 000-02E"));
-            this.curState.Add(new Location("Brize Norton", "EGVN", "51-08N 001-06W"));
-            this.curState.Add(new Location("Cambridge", "EGSC", "52-12N 000-11E"));
-            this.curState.Add(new Location("Coltishall", "EGYC", "52-26N 001-21E"));
-            this.curState.Add(new Location("Cranfield", "EGTC", "52-04N 000-37W"));
-            this.curState.Add(new Location("Farnborough", "EGLF", "51-17N 000-46W"));
-            this.curState.Add(new Location("Holbeach", "EGYH", "52-52N 000-09E"));
-            this.curStateLocation = new City("London", 4);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("City Airport", "EGLC", "51-30N 000-30W"));
-            this.curCity.Add(new Location("Gatwick Airport", "EGKK", "51-09N 000-11W"));
-            this.curCity.Add(new Location("Heathrow Airport", "EGLL", "51-29N 000-27W"));
-            this.curCity.Add(new Location("Stansted Airport", "EGSS", "51-53N 000-14E"));
-            this.curState.Add(new Location("Holbeach", "EGYH", "52-52N 000-09E"));
-            this.curState.Add(new Location("Luton", "EGGW", "51-52N 000-22W"));
-            this.curState.Add(new Location("Manston", "EGMH", "51-20-31N 001-20-46E"));
-            this.curState.Add(new Location("Marham", "EGYM", "52-39N 000-34E"));
-            this.curState.Add(new Location("Mildenhall", "EGUN", "52-22N 000-29E"));
-            this.curState.Add(new Location("Northolt", "EGWU", "51-33N 000-25W"));
-            this.curState.Add(new Location("Norwich", "EGSH", "52-38N 001-18E"));
-            this.curState.Add(new Location("Odiham", "EGVO", "51-14N 000-57W"));
-            this.curState.Add(new Location("Shoreham", "EGKA", "50-50N 000-17W"));
-            this.curState.Add(new Location("Southend", "EGMC", "51-34N 000-42E"));
-            this.curState.Add(new Location("Wattisham", "EGUW", "52-07N 000-58E"));
-            this.curState.Add(new Location("Wittering", "EGXT", "52-37N 000-28W"));
-            this.curState.Add(new Location("Wyton", "EGUY", "52-21N 000-07W"));
-            this.curCountryLocation = new State("Midlands", 6);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Birmingham", "EGBB", null));
-            this.curState.Add(new Location("Cosford", "EGWC", "52-38N 002-18W"));
-            this.curState.Add(new Location("Coventry", "EGBE", "52-22N 001-29W"));
-            this.curState.Add(new Location("Nottingham East Midlands", "EGNX", "52-50N 001-20W"));
-            this.curState.Add(new Location("Gloucestershire", "EGBJ", "51-54N 002-10W"));
-            this.curState.Add(new Location("Shawbury", "EGOS", "52-48N 002-40W"));
-            this.curCountryLocation = new State("North East England", 10);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Coningsby", "EGXC", "53-05N 000-10W"));
-            this.curState.Add(new Location("Cranwell", "EGYD", "53-02N 000-30W"));
-            this.curState.Add(new Location("Dishforth", "EGXD", "54-08N 001-25W"));
-            this.curState.Add(new Location("Humberside", "EGNJ", "53-35N 000-21W"));
-            this.curState.Add(new Location("Leeming", "EGXE", "54-18N 001-32W"));
-            this.curState.Add(new Location("Linton-on-Ouse", "EGXU", "54-03N 001-15W"));
-            this.curState.Add(new Location("Newcastle", "EGNT", "55-02N 001-42W"));
-            this.curState.Add(new Location("Teesside", "EGNV", "54-31N 001-25W"));
-            this.curState.Add(new Location("Topcliffe", "EGXZ", "54-12N 001-23W"));
-            this.curState.Add(new Location("Waddington", "EGXW", "53-10N 000-31W"));
-            this.curCountryLocation = new State("North West England", 7);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Blackpool", "EGNH", null));
-            this.curState.Add(new Location("Carlisle", "EGNC", "54-56N 002-57W"));
-            this.curState.Add(new Location("Hawarden", "EGNR", "53-10N 002-59W"));
-            this.curState.Add(new Location("Isle of Man", "EGNS", "54-05N 004-38W"));
-            this.curState.Add(new Location("Leeds/Bradford", "EGNM", "53-52N 001-39W"));
-            this.curState.Add(new Location("Liverpool", "EGGP", "53-20N 002-51W"));
-            this.curState.Add(new Location("Manchester", "EGCC", "53-21N 002-17W"));
-            this.curCountryLocation = new State("South and South West England", 16);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Alderney", "EGJA", "49-43N 002-12W"));
-            this.curState.Add(new Location("Boscombe Down", "EGDM", null));
-            this.curState.Add(new Location("Bournemouth", "EGHH", null));
-            this.curState.Add(new Location("Bristol", "EGGD", null));
-            this.curState.Add(new Location("Bristol Filton", "EGTG", "51-31N 002-35W"));
-            this.curState.Add(new Location("Culdrose", "EGDR", "50-05N 005-15W"));
-            this.curState.Add(new Location("Exeter", "EGTE", "50-44N 003-25W"));
-            this.curState.Add(new Location("Guernsey", "EGJB", "49-26N 002-36W"));
-            this.curState.Add(new Location("Jersey", "EGJJ", "49-13N 002-12W"));
-            this.curState.Add(new Location("Lyneham", "EGDL", "51-30N 001-59W"));
-            this.curState.Add(new Location("Middle Wallop", "EGVP", "51-09N 001-34W"));
-            this.curState.Add(new Location("Plymouth", "EGHD", "50-25N 004-07W"));
-            this.curState.Add(new Location("Scilly St Mary's", "EGHE", "49-55N 006-18W"));
-            this.curState.Add(new Location("Southampton", "EGHI", "50-54N 001-24W"));
-            this.curState.Add(new Location("St Mawgan", "EGDG", "50-26N 005-00W"));
-            this.curState.Add(new Location("Yeovilton", "EGDY", "51-00N 002-38W"));
-            this.curCountryLocation = new State("Northern Ireland", 3);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Belfast/Aldergrove", "EGAA", "54-39N 006-13W"));
-            this.curState.Add(new Location("Belfast/City", "EGAC", "54-36N 005-53W"));
-            this.curState.Add(new Location("Londonderry", "EGAE", "55-03N 007-09W"));
-            this.curCountryLocation = new State("Scotland", 17);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Aberdeen", "EGPD", "57-12N 002-13W"));
-            this.curState.Add(new Location("Benbecula", "EGPL", "57-28N 007-22W"));
-            this.curState.Add(new Location("Dundee", "EGPN", "56-27N 003-01W"));
-            this.curState.Add(new Location("Edinburgh", "EGPH", "55-57N 003-21W"));
-            this.curState.Add(new Location("Glasgow", "EGPF", "55-52N 004-26W"));
-            this.curState.Add(new Location("Inverness", "EGPE", "57-32N 004-03W"));
-            this.curState.Add(new Location("Islay", "EGPI", "55-40-55N 006-15-24W"));
-            this.curState.Add(new Location("Kinloss", "EGQK", "57-39N 003-34W"));
-            this.curState.Add(new Location("Kirkwall", "EGPA", "58-57N 002-54W"));
-            this.curState.Add(new Location("Leuchars", "EGQL", "56-23N 002-52W"));
-            this.curState.Add(new Location("Lossiemouth", "EGQS", "57-43N 003-19W"));
-            this.curState.Add(new Location("Prestwick", "EGPK", "55-30N 004-35W"));
-            this.curState.Add(new Location("Scatsta", "EGPM", "60-26N 001-18W"));
-            this.curState.Add(new Location("Stornoway", "EGPO", "58-13N 006-19W"));
-            this.curState.Add(new Location("Sumburgh", "EGPB", "59-53N 001-18W"));
-            this.curState.Add(new Location("Tain", "EGQA", "57-49N 003-58W"));
-            this.curState.Add(new Location("Tiree", "EGPU", "56-30N 006-53W"));
             this.curRegion.Add(this.curCountry);
         }
         
         private void Country_17() {
+            this.curCountry = new Country("Albania", 1);
             this.curCountry.Add(new Location("Tirana", "LATI", "41-20N 019-47E"));
         }
         
         private void Country_18() {
+            this.curCountry = new Country("Austria", 16);
             this.curCountry.Add(new Location("Aigen im Ennstal", "LOXA", "47-32N 014-08E"));
             this.curCountry.Add(new Location("Graz", "LOWG", "47-00N 015-26E"));
             this.curCountry.Add(new Location("Hohenems", "LOIH", "47-23-05N 009-42-02E"));
@@ -3982,6 +3570,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_19() {
+            this.curCountry = new Country("Belarus", 6);
             this.curCountry.Add(new Location("Brest", "UMBB", "52-06-30N 023-53-48E"));
             this.curCountry.Add(new Location("Gomel'", "UMGG", "52-31-36N 031-01-06E"));
             this.curCountry.Add(new Location("Grodno", "UMMG", "53-36-06N 024-03-18E"));
@@ -3991,15 +3580,64 @@ namespace Desklet.Weather {
         }
         
         private void Country_20() {
+            this.curCountry = new Country("Belgium", 6);
+            this.curCountryLocation = new State("Antwerp", 1);
+            this.State_65();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Brussels, Flemish and Walloon Brabant", 1);
+            this.State_66();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Hainaut", 2);
+            this.State_67();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Liège", 4);
+            this.State_68();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Limburg", 1);
+            this.State_69();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("West-Flanders", 2);
+            this.State_70();
             this.curCountry.Add(this.curCountryLocation);
         }
         
+        private void State_65() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Antwerp", "EBAW", "51-12N 004-28E"));
+        }
+        
+        private void State_66() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Zaventem", "EBBR", "50-54N 004-32E"));
+        }
+        
+        private void State_67() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Charleroi", "EBCI", "50-28N 004-27E"));
+            this.curState.Add(new Location("Chièvres", "EBCV", "50-34N 003-50E"));
+        }
+        
+        private void State_68() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Elsenborn", "EBLB", "50-28N 006-11E"));
+            this.curState.Add(new Location("Liège", "EBLG", "50-39N 005-27E"));
+            this.curState.Add(new Location("Saint-Hubert", "EBSH", "50-02N 005-24E"));
+            this.curState.Add(new Location("Spa", "EBSP", "50-29N 005-55E"));
+        }
+        
+        private void State_69() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Kleine Brogel", "EBBL", "51-10N 005-28E"));
+        }
+        
+        private void State_70() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Koksijde", "EBFN", "51-05N 002-39E"));
+            this.curState.Add(new Location("Ostend", "EBOS", "51-12N 002-52E"));
+        }
+        
         private void Country_21() {
+            this.curCountry = new Country("Bosnia-Herzegovina", 5);
             this.curCountry.Add(new Location("Banja Luka", "LQBK", "44-47N 017-13E"));
             this.curCountry.Add(new Location("Mostar", "LQMO", "43-21N 017-48E"));
             this.curCountry.Add(new Location("Sarajevo", "LQSA", null));
@@ -4008,6 +3646,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_22() {
+            this.curCountry = new Country("Bulgaria", 5);
             this.curCountry.Add(new Location("Burgas", "LBBG", "42-29N 027-29E"));
             this.curCountry.Add(new Location("Gorna Oryahovitza", "LBGO", "43-09N 025-36E"));
             this.curCountry.Add(new Location("Plovdiv", "LBPD", "42-08N 024-45E"));
@@ -4016,6 +3655,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_23() {
+            this.curCountry = new Country("Czech Republic", 7);
             this.curCountry.Add(new Location("Brno", "LKTB", "49-09N 016-42E"));
             this.curCountry.Add(new Location("Holesov", "LKHO", "49-19N 017-34E"));
             this.curCountry.Add(new Location("Karlovy Vary", "LKKV", "50-12N 012-55E"));
@@ -4026,6 +3666,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_24() {
+            this.curCountry = new Country("Croatia", 9);
             this.curCountry.Add(new Location("Brač", "LDSB", "43-17-09N 016-40-47E"));
             this.curCountry.Add(new Location("Dubrovnik", "LDDU", "42-34N 018-16E"));
             this.curCountry.Add(new Location("Lošinj", "LDLO", "44-33-57N 014-23-35E"));
@@ -4038,10 +3679,14 @@ namespace Desklet.Weather {
         }
         
         private void Country_25() {
+            this.curCountry = new Country("Denmark", 16);
             this.curCountry.Add(new Location("Billund", "EKBI", "55-44N 009-10E"));
             this.curCountry.Add(new Location("Bornholm", "EKRN", "55-04N 014-45E"));
             this.curCountry.Add(new Location("Esbjerg", "EKEB", "55-32N 008-34E"));
             this.curCountry.Add(new Location("Karup", "EKKA", "56-18N 009-07E"));
+            this.curCountryLocation = new City("Copenhagen", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Kastrup", "EKCH", "55-37N 012-39E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Roskilde", "EKRK", "55-35N 012-08E"));
             this.curCountry.Add(new Location("Kolding/Vamdrup", "EKVD", "55-26N 009-20E"));
@@ -4057,22 +3702,33 @@ namespace Desklet.Weather {
         }
         
         private void Country_26() {
+            this.curCountry = new Country("Estonia", 5);
             this.curCountry.Add(new Location("Kärdla", "EEKA", "58-59N 022-49E"));
             this.curCountry.Add(new Location("Kuressaare", "EEKE", "58-13-48N 022-30-34E"));
             this.curCountry.Add(new Location("Pärnu", "EEPU", "58-25-09N 024-28-22E"));
+            this.curCountryLocation = new City("Tallinn", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Ülemiste Airport", "EETN", "59-24N 024-49E"));
+            this.curCity.Add(new Location("Ülemiste Airport (alternate)", "ULTT", "59-23N 024-35E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Tartu", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Ülenurme", "EETU", "58-18N 026-44E"));
             this.curCountry.Add(this.curCountryLocation);
         }
         
         private void Country_27() {
+            this.curCountry = new Country("Faroe Islands", 1);
             this.curCountry.Add(new Location("Vágar/Sørvágur", "EKVG", "62-04N 007-17W"));
         }
         
         private void Country_28() {
+            this.curCountry = new Country("Gibraltar", 1);
             this.curCountry.Add(new Location("Gibraltar", "LXGB", "36-09N 005-21W"));
         }
         
         private void Country_29() {
+            this.curCountry = new Country("Iceland", 4);
             this.curCountry.Add(new Location("Akureyri", "BIAR", "65-41N 018-05W"));
             this.curCountry.Add(new Location("Egilsstaðir", "BIEG", "65-17N 014-24W"));
             this.curCountry.Add(new Location("Keflavík", "BIKF", "63-58N 022-36W"));
@@ -4080,11 +3736,13 @@ namespace Desklet.Weather {
         }
         
         private void Country_30() {
+            this.curCountry = new Country("Latvia", 2);
             this.curCountry.Add(new Location("Liepāja", "EVLA", "56-31N 021-05E"));
             this.curCountry.Add(new Location("Riga", "EVRA", "56-55N 023-58E"));
         }
         
         private void Country_31() {
+            this.curCountry = new Country("Lithuania", 5);
             this.curCountry.Add(new Location("Kaunas", "EYKA", "54-54N 023-55-12E"));
             this.curCountry.Add(new Location("Palanga", "EYPA", "55-55-12N 021-03E"));
             this.curCountry.Add(new Location("Panevėžys", "EYPN", null));
@@ -4093,23 +3751,28 @@ namespace Desklet.Weather {
         }
         
         private void Country_32() {
+            this.curCountry = new Country("Luxembourg", 1);
             this.curCountry.Add(new Location("Luxembourg", "ELLX", "49-37N 006-13E"));
         }
         
         private void Country_33() {
+            this.curCountry = new Country("Macedonia", 2);
             this.curCountry.Add(new Location("Ohrid", "LWOH", "41-07N 020-48E"));
             this.curCountry.Add(new Location("Skopje/Petrovec", "LWSK", "41-58N 021-39E"));
         }
         
         private void Country_34() {
+            this.curCountry = new Country("Malta", 1);
             this.curCountry.Add(new Location("Luqa", "LMML", "35-51N 014-29E"));
         }
         
         private void Country_35() {
+            this.curCountry = new Country("Moldova", 1);
             this.curCountry.Add(new Location("Chişinău", "LUKK", "46-55-40N 028-55-51E"));
         }
         
         private void Country_36() {
+            this.curCountry = new Country("Norway", 58);
             this.curCountry.Add(new Location("Ålesund/Vigra", "ENAL", "62-34N 006-07E"));
             this.curCountry.Add(new Location("Alta", "ENAT", "69-59N 023-22E"));
             this.curCountry.Add(new Location("Andøya", "ENAN", "69-18N 016-09E"));
@@ -4148,6 +3811,9 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Ørland", "ENOL", "63-42N 009-36E"));
             this.curCountry.Add(new Location("Ørsta-Volda/Hovden", "ENOV", "62-11N 006-04E"));
             this.curCountry.Add(new Location("Oseberg A", "ENOA", "59-19N 010-27E"));
+            this.curCountryLocation = new City("Oslo", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Gardermoen", "ENGM", "60-12N 011-05E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Røros", "ENRO", "62-35N 011-21E"));
             this.curCountry.Add(new Location("Rørvik/Ryum", "ENRM", "64-50N 011-09E"));
@@ -4171,6 +3837,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_37() {
+            this.curCountry = new Country("Poland", 8);
             this.curCountry.Add(new Location("Gdańsk-Rebiechowo", "EPGD", "54-23N 018-28E"));
             this.curCountry.Add(new Location("Katowice", "EPKT", "50-14N 019-02E"));
             this.curCountry.Add(new Location("Kraków", "EPKK", "50-05N 019-48E"));
@@ -4182,22 +3849,40 @@ namespace Desklet.Weather {
         }
         
         private void Country_38() {
+            this.curCountry = new Country("Portugal", 10);
             this.curCountry.Add(new Location("Aeroporto Da Madeira", "LPMA", "32-41-52N 016-46-28W"));
             this.curCountry.Add(new Location("Faro", "LPFR", "37-01N 007-58W"));
             this.curCountry.Add(new Location("Flores", "LPFL", "39-27N 031-08W"));
             this.curCountry.Add(new Location("Horta", "LPHR", "38-31N 028-43W"));
             this.curCountry.Add(new Location("Lajes", "LPLA", "38-46N 027-06W"));
+            this.curCountryLocation = new City("Lisbon", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Portela", "LPPT", "38-46N 009-08W"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Ponta Delgada", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("João Paulo II", "LPPD", "37-44N 025-42W"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Oporto", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Francisco Sá Carneiro", "LPPR", "41-14N 008-41W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Porto Santo", "LPPS", "33-04N 016-21W"));
             this.curCountry.Add(new Location("Santa Maria", "LPAZ", "36-58N 025-10W"));
         }
         
         private void Country_39() {
+            this.curCountry = new Country("Romania", 7);
             this.curCountry.Add(new Location("Arad", "LRAR", "46-12N 021-24E"));
+            this.curCountryLocation = new City("Bucharest", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Imh", "LRBS", "44-30N 026-08E"));
+            this.curCity.Add(new Location("Otopeni", "LROP", "44-33N 026-06E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Iaşi", "LRIA", "47-10N 027-38E"));
+            this.curCountryLocation = new City("Constanţa", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Mihail Kogalniceanu", "LRCK", "44-20N 028-26E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Timişoara", "LRTR", "45-46N 021-15E"));
             this.curCountry.Add(new Location("Târgu-Mureş", "LRTM", "46-32N 024-32E"));
@@ -4205,6 +3890,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_40() {
+            this.curCountry = new Country("Russia", 69);
             this.curCountry.Add(new Location("Abakan", "UNAA", "53-45N 091-24E"));
             this.curCountry.Add(new Location("Adler", "URSS", "43-26N 039-54E"));
             this.curCountry.Add(new Location("Anadyr", "UHMA", "64-47N 177-34E"));
@@ -4225,6 +3911,9 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Elista", "URWI", "46-22N 044-20E"));
             this.curCountry.Add(new Location("Irkutsk", "UIII", "52-16N 104-19E"));
             this.curCountry.Add(new Location("Jakutsk", "UEEE", "62-01N 129-43E"));
+            this.curCountryLocation = new City("Kaliningrad", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Khrabrovo", "UMKK", "54-43-12N 020-30E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Kazan'", "UWKD", "55-47N 049-12E"));
             this.curCountry.Add(new Location("Kemerovo", "UNEE", "55-19-48N 086-04-48E"));
@@ -4236,16 +3925,30 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Makhachkala", "URML", null));
             this.curCountry.Add(new Location("Mineral'Nye Vody", "URMM", "44-14N 043-04E"));
             this.curCountry.Add(new Location("Mirny", "UERR", "62-31-48N 114-01-48E"));
+            this.curCountryLocation = new City("Moscow", 3);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Domodedovo", "UUDD", "55-24N 037-54E"));
+            this.curCity.Add(new Location("Sheremet'Ye", "UUEE", "55-59N 037-30E"));
+            this.curCity.Add(new Location("Vnukovo", "UUWW", "55-39N 037-16E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Murmansk", "ULMM", "68-58N 033-03E"));
             this.curCountry.Add(new Location("Nalchik", "URMN", "43-30-46N 043-38-12E"));
             this.curCountry.Add(new Location("Nizhnevartovsk", "USNN", "60-56N 076-29E"));
+            this.curCountryLocation = new City("Nizhny Novgorod", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Strigino", "UWGG", "56-19-48N 044-00E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Novokuznetsk", "UNWW", "53-44N 087-11E"));
             this.curCountry.Add(new Location("Novosibirsk", "UNNT", null));
             this.curCountry.Add(new Location("Omsk", "UNOO", "54-58N 073-18E"));
+            this.curCountryLocation = new City("Orenburg", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Tsentralny", "UWOO", "51-46-48N 055-07-12E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Penza", "UWPP", "53-07N 045-01E"));
+            this.curCountryLocation = new City("Perm'", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Bolshoe Savino", "USPP", "58-00N 056-15E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Petropavlovsk-Kamchatsky", "UHPP", "53-05N 158-35E"));
             this.curCountry.Add(new Location("Petrozavodsk-Kamchatskij", "ULPP", "53-05N 158-35E"));
@@ -4255,8 +3958,14 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Raduzhny", "USNR", null));
             this.curCountry.Add(new Location("Rostov-Na-Donu", "URRR", "47-16N 039-49E"));
             this.curCountry.Add(new Location("Samara", "UWWW", "53-12N 050-09E"));
+            this.curCountryLocation = new City("Saratov", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Tsentralny", "UWSS", "51-34-12N 046-04-12E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("St. Petersburg", "ULLI", "59-58N 030-18E"));
+            this.curCountryLocation = new City("Stavropol", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Shpakovskoye", "URMT", "45-20N 042-00E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Surgut", "USRR", "61-15N 073-30E"));
             this.curCountry.Add(new Location("Syktyvkar", "UUYY", "61-43N 050-50E"));
@@ -4277,35 +3986,70 @@ namespace Desklet.Weather {
         }
         
         private void Country_41() {
+            this.curCountry = new Country("Serbia and Montenegro", 5);
+            this.curCountryLocation = new City("Belgrade", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Surčin", "LYBE", "44-49N 020-17E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Uroševac", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Camp Bondsteel", "KQUK", "42-35N 021-23E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Niš", "LYNI", "43-20N 021-54E"));
+            this.curCountryLocation = new City("Podgorica", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Podgorica", "LYPG", "42-26N 019-17E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Tivat", "LYTV", "42-24N 018-44E"));
         }
         
         private void Country_42() {
+            this.curCountry = new Country("Slovakia", 10);
             this.curCountry.Add(new Location("Bratislava", "LZIB", "48-12N 017-12E"));
             this.curCountry.Add(new Location("Dolný Hričov", "LZZI", "49-14N 018-36-49E"));
             this.curCountry.Add(new Location("Kamenica Nad Cirochou", "LZKC", "48-56N 022-00E"));
+            this.curCountryLocation = new City("Košice", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Barca", "LZKZ", "48-39-47N 021-14-28E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Lučenec", "LZLU", "48-20N 019-44E"));
             this.curCountry.Add(new Location("Nitra", "LZNI", "48-16-46N 018-07-58E"));
+            this.curCountryLocation = new City("Piešťany", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Location 1", "LZPP", "48-37-30N 017-49-43E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Poprad-Tatry", "LZTT", "49-04N 020-15E"));
             this.curCountry.Add(new Location("Prievidza", "LZPE", "48-45-59N 018-35-18E"));
+            this.curCountryLocation = new City("Sliač", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Location 1", "LZSL", "48-38-17N 019-08-03E"));
             this.curCountry.Add(this.curCountryLocation);
         }
         
         private void Country_43() {
+            this.curCountry = new Country("Slovenia", 3);
+            this.curCountryLocation = new City("Ljubljana", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Brnik", "LJLJ", "46-13N 014-29E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Maribor", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Slivnica", "LJMB", "46-29N 015-41E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Portorož", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Portorož", "LJPZ", "45-31N 013-34E"));
             this.curCountry.Add(this.curCountryLocation);
         }
         
         private void Country_44() {
+            this.curCountry = new Country("Sweden", 32);
             this.curCountry.Add(new Location("Borlänge", "ESSD", "60-26N 015-31E"));
             this.curCountry.Add(new Location("Gällivare", "ESNG", "67-09N 020-39E"));
+            this.curCountryLocation = new City("Gothenburg", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Landvetter", "ESGG", "57-40N 012-18E"));
+            this.curCity.Add(new Location("Säve", "ESGP", "57-47N 011-53E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Halmstad", "ESMT", "56-41N 012-50E"));
             this.curCountry.Add(new Location("Hultsfred", "ESSF", "57-31N 015-50E"));
@@ -4314,42 +4058,82 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Karlstad", "ESOK", "59-26-41N 013-20-15E"));
             this.curCountry.Add(new Location("Kiruna", "ESNQ", "67-49N 020-20E"));
             this.curCountry.Add(new Location("Kramfors", "ESNK", "63-03N 017-46E"));
+            this.curCountryLocation = new City("Kristianstad", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Everöd", "ESMK", "55-55N 014-05E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Linköping", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Saab", "ESSL", "58-24N 015-41E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Ljungbyhed", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Location 1", "ESTL", "56-04N 013-12E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Luleå", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Kallax", "ESPA", "65-33N 022-08E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Lycksele", "ESNL", "64-32-51N 018-43-03E"));
+            this.curCountryLocation = new City("Malmö", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Sturup", "ESMS", "55-33N 013-22E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Norrköping", "ESSP", "58-35N 016-09E"));
             this.curCountry.Add(new Location("Örebro", "ESOE", "59-14N 015-03E"));
             this.curCountry.Add(new Location("Örnsköldsvik", "ESNO", "63-24N 018-58E"));
+            this.curCountryLocation = new City("Östersund", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Frösön", "ESPC", "63-11N 014-30E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Ronneby", "ESDF", "56-16N 015-17E"));
             this.curCountry.Add(new Location("Siljan/Mora", "ESKM", "60-58N 014-31E"));
             this.curCountry.Add(new Location("Skellefteå", "ESNS", "64-38N 021-05E"));
             this.curCountry.Add(new Location("Skövde", "ESGR", "58-27N 013-58E"));
             this.curCountry.Add(new Location("Söderhamn", "ESNY", "61-15-41N 017-05-57E"));
+            this.curCountryLocation = new City("Stockholm", 3);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Arlanda", "ESSA", "59-39N 017-57E"));
+            this.curCity.Add(new Location("Bromma", "ESSB", "59-21N 017-57E"));
+            this.curCity.Add(new Location("Skavsta", "ESKN", "58-47N 016-55E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Sundsvall-Härnösand", "ESNN", "62-32N 017-27E"));
             this.curCountry.Add(new Location("Trollhättan", "ESGT", "58-19N 012-21E"));
             this.curCountry.Add(new Location("Umeå", "ESNU", "63-48N 020-17E"));
+            this.curCountryLocation = new City("Västerås", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Hässlö", "ESOW", "59-35N 016-38E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Växjö", "ESMX", "56-51N 014-50E"));
             this.curCountry.Add(new Location("Visby", "ESSV", "57-40N 018-21E"));
         }
         
         private void Country_45() {
+            this.curCountry = new Country("Switzerland", 8);
+            this.curCountryLocation = new City("Bern", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Belp", "LSZB", "46-55N 007-30E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Geneva", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Cointrin", "LSGG", "46-15N 006-08E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Grenchen", "LSZG", "47-10-53N 007-24-59E"));
+            this.curCountryLocation = new City("La Chaux-de-Fonds", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Les Eplatures", "LSGC", "47-05-03N 006-47-37E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Lugano", "LSZA", "46-00N 008-58E"));
             this.curCountry.Add(new Location("St. Gallen-Altenrhein", "LSZR", "47-29-06N 009-33-43E"));
             this.curCountry.Add(new Location("Sion", "LSGS", "46-13N 007-20E"));
+            this.curCountryLocation = new City("Zurich", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Kloten", "LSZH", "47-29N 008-32E"));
             this.curCountry.Add(this.curCountryLocation);
         }
         
         private void Country_46() {
+            this.curCountry = new Country("Cyprus", 4);
             this.curCountry.Add(new Location("Akrotiri", "LCRA", "34-35N 032-59E"));
             this.curCountry.Add(new Location("Ercan", "LCEN", "35-09N 033-30E"));
             this.curCountry.Add(new Location("Larnaka", "LCLK", "34-53N 033-38E"));
@@ -4357,8 +4141,13 @@ namespace Desklet.Weather {
         }
         
         private void Country_47() {
+            this.curCountry = new Country("Finland", 26);
             this.curCountry.Add(new Location("Enontekiö", "EFET", "68-21-52N 023-25-39E"));
             this.curCountry.Add(new Location("Halli", "EFHA", "61-51N 024-48E"));
+            this.curCountryLocation = new City("Helsinki", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Malmi", "EFHF", "60-15N 025-03E"));
+            this.curCity.Add(new Location("Vantaa", "EFHK", "60-19N 024-58E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Ivalo", "EFIV", "68-37N 027-25E"));
             this.curCountry.Add(new Location("Joensuu", "EFJO", "62-40N 029-38E"));
@@ -4386,108 +4175,473 @@ namespace Desklet.Weather {
         }
         
         private void Country_48() {
+            this.curCountry = new Country("France", 73);
             this.curCountry.Add(new Location("Agen", "LFBA", "44-11N 000-36E"));
+            this.curCountryLocation = new City("Ajaccio", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Campo dell'Oro", "LFKJ", "41-55N 008-48E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Avord", "LFOA", "47-03-12N 002-37-57E"));
             this.curCountry.Add(new Location("Basel-Mulhouse-Freiburg", "LFSB", "47-36N 007-31E"));
             this.curCountry.Add(new Location("Bastia", "LFKB", "42-33N 009-29E"));
+            this.curCountryLocation = new City("Beauvais", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Tille", "LFOB", "49-28N 002-07E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Bergerac", "LFBE", "44-49N 000-31E"));
+            this.curCountryLocation = new City("Béziers", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Vias", "LFMU", "43-19N 003-21E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Biarritz-Bayonne", "LFBZ", "43-28N 001-32W"));
+            this.curCountryLocation = new City("Bordeaux", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Mérignac", "LFBD", "44-50N 000-42W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Bourges", "LFLD", "47-04N 002-22E"));
             this.curCountry.Add(new Location("Brest", "LFRB", "48-27N 004-25W"));
+            this.curCountryLocation = new City("Caen", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Carpiquet", "LFRK", "49-11N 000-27W"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Calvi", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Sainte Catherine", "LFKC", "42-32N 008-48E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Cambrai", "LFQI", "50-13N 003-09E"));
+            this.curCountryLocation = new City("Cannes", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Mandelieu-la-Napoule", "LFMD", "43-33N 006-57E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Carcassonne", "LFMK", "43-13N 002-19E"));
             this.curCountry.Add(new Location("Cazaux", "LFBC", "44-32N 001-08W"));
+            this.curCountryLocation = new City("Châlons-en-Champagne", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Vatry", "LFOK", "48-46-34N 004-11-04E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Chambéry", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Aix-les-Bains", "LFLB", "45-39N 005-53E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Châteauroux", "LFLX", "46-51N 001-43E"));
+            this.curCountryLocation = new City("Cherbourg", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Maupertus-sur-Mer", "LFRC", "49-39N 001-28W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Clermont-Ferrand", "LFLC", "45-47N 003-10E"));
             this.curCountry.Add(new Location("Cognac", "LFBG", "45-40N 000-19W"));
+            this.curCountryLocation = new City("Colmar", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Meyenheim", "LFSC", "47-55N 007-24E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Deauville", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Saint-Gatien-des-Bois", "LFRG", null));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Dijon", "LFSD", "47-16N 005-05E"));
             this.curCountry.Add(new Location("Dinard", "LFRD", "48-35N 002-04W"));
+            this.curCountryLocation = new City("Dole", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Tavaux", "LFGJ", "47-02-34N 005-26-06E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Évreux", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Fauville", "LFOE", "49-01N 001-13E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Figari", "LFKF", "41-30N 009-06E"));
+            this.curCountryLocation = new City("Grenoble", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Saint Etienne de Saint Geoirs", "LFLS", "45-22N 005-20E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Île Wallis", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Hihifo", "NLWW", "13-14S 176-10W"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Hyères", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Le Palyvestre", "LFTH", "43-06N 006-09E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Istres", "LFMI", "43-31N 004-56E"));
             this.curCountry.Add(new Location("Lannion", "LFRO", "48-45N 003-28W"));
+            this.curCountryLocation = new City("Le Havre", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Octeville-sur-mer", "LFOH", "49-31N 000-04E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("La Rochelle", "LFBH", "46-09N 001-09W"));
+            this.curCountryLocation = new City("Lorient", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Lann-Bihoué", "LFRH", "47-46N 003-27W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Le Mans", "LFRM", "47-56N 000-12E"));
+            this.curCountryLocation = new City("Lille", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Lesquin", "LFQQ", "50-34N 003-06E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Limoges", "LFBL", "45-52N 001-11E"));
             this.curCountry.Add(new Location("Luxeuil-les-Bains", "LFSX", "47-47N 006-21E"));
+            this.curCountryLocation = new City("Lyon", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Bron", "LFLY", "45-43N 004-57E"));
+            this.curCity.Add(new Location("Saint Exupéry", "LFLL", "45-44N 005-05E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Marseille", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Marignane", "LFML", "43-27N 005-14E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Metz", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Frescaty", "LFSF", "49-05N 006-08E"));
+            this.curCity.Add(new Location("Metz-Nancy-Lorraine", "LFJL", "48-59N 006-15E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Mont-de-Marsan", "LFBM", "43-55N 000-30W"));
+            this.curCountryLocation = new City("Montpellier", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Méditerranée", "LFMT", "43-35N 003-58E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Nancy", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Ochey", "LFSO", "48-35N 005-58E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Nantes", "LFRS", "47-10N 001-36W"));
+            this.curCountryLocation = new City("Nice", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Côte d'Azur", "LFMN", "43-39N 007-12E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Nîmes", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Garons", "LFTW", "43-45N 004-25E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Orange", "LFMO", "44-08N 004-50E"));
             this.curCountry.Add(new Location("Orléans", "LFOJ", "47-59N 001-45E"));
+            this.curCountryLocation = new City("Paris", 5);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Charles De Gaulle", "LFPG", "49-01N 002-32E"));
+            this.curCity.Add(new Location("Le Bourget", "LFPB", "48-58N 002-27E"));
+            this.curCity.Add(new Location("Orly", "LFPO", "48-44N 002-24E"));
+            this.curCity.Add(new Location("Toussus-le-Noble", "LFPN", "48-46N 001-06E"));
+            this.curCity.Add(new Location("Vélizy-Villacoublay", "LFPV", "48-46N 002-12E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Pau", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Pyrénées", "LFBP", "43-23N 000-25W"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Perpignan", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Rivesaltes", "LFMP", "42-44N 002-52E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Poitiers", "LFBI", "46-35N 000-19E"));
             this.curCountry.Add(new Location("Quimper", "LFRQ", "47-58N 004-10W"));
+            this.curCountryLocation = new City("Reims", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Champagne", "LFSR", "49-18N 004-02E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Rennes", "LFRN", "48-04N 001-44W"));
             this.curCountry.Add(new Location("Rodez", "LFCR", "44-24N 002-29E"));
+            this.curCountryLocation = new City("Rouen", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Vallée de Seine", "LFOP", "49-23N 001-11E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Saint-Brieuc", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Armor", "LFRT", "48-32N 002-51W"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Saint-Dizier", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Robinson", "LFSI", "48-38N 004-54E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Saint-Étienne", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Bouthéon", "LFMH", "45-32N 004-18E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Saint-Nazaire", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Montoir-de-Bretagne", "LFRZ", "47-19N 002-10W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Strasbourg", "LFST", "48-33N 007-38E"));
+            this.curCountryLocation = new City("Tarbes", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Ossun", "LFBT", "43-11N 000-00"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Toulouse", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Blagnac", "LFBO", "43-38N 001-22E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Tours", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Saint-Symphorien", "LFOT", "47-27N 000-43E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Troyes", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Barberey-Saint-Sulpice", "LFQB", "48-20N 004-01E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Vichy", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Charmeil", "LFLV", "46-10N 003-24E"));
             this.curCountry.Add(this.curCountryLocation);
         }
         
         private void Country_49() {
+            this.curCountry = new Country("Germany", 15);
+            this.curCountryLocation = new State("Baden-Württemberg", 9);
+            this.State_71();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Bavaria", 14);
+            this.State_72();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Berlin", 3);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Schönefeld", "EDDB", "52-23N 013-31E"));
+            this.curCity.Add(new Location("Tegel", "EDDT", "52-34N 013-19E"));
+            this.curCity.Add(new Location("Tempelhof", "EDDI", "52-28N 013-24E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Bremen", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Bremen", "EDDW", "53-03N 008-48E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Hamburg", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Finkenwerder", "EDHI", "53-32N 009-50E"));
+            this.curCity.Add(new Location("Fuhlsbüttel", "EDDH", "53-38N 010-00E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Hesse", 4);
+            this.State_73();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Lower Saxony", 11);
+            this.State_74();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Mecklenburg-Western Pomerania", 4);
+            this.State_75();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("North Rhine-Westphalia", 13);
+            this.State_76();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Rhineland-Palatinate", 6);
+            this.State_77();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Saarland", 1);
+            this.State_78();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Saxony", 2);
+            this.State_79();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Saxony-Anhalt", 2);
+            this.State_80();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Schleswig-Holstein", 6);
+            this.State_81();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Thuringia", 2);
+            this.State_82();
             this.curCountry.Add(this.curCountryLocation);
         }
         
+        private void State_71() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Donaueschingen-Villingen", "EDTD", "47-58N 008-31E"));
+            this.curState.Add(new Location("Friedrichshafen", "EDNY", "47-40N 009-31E"));
+            this.curState.Add(new Location("Karlsruhe", "EDSB", "48-46-43N 008-04-47E"));
+            this.curState.Add(new Location("Lahr", "EDTL", "48-22-09N 007-49-40E"));
+            this.curState.Add(new Location("Laupheim", "ETHL", "48-13N 009-55E"));
+            this.curStateLocation = new City("Mannheim", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Neuostheim", "EDFM", "49-28-21N 008-30-56E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Meßstetten", "ETGZ", "48-11N 009-00E"));
+            this.curState.Add(new Location("Niederstetten", "ETHN", "49-24N 009-58E"));
+            this.curStateLocation = new City("Stuttgart", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Echterdingen", "EDDS", "48-41N 009-13E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_72() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Altenstadt-Schongau", "ETHA", "47-50N 010-52E"));
+            this.curStateLocation = new City("Augsburg", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Mühlhausen", "EDMA", "48-26N 010-56E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Bamberg", "ETEJ", "49-55N 010-54E"));
+            this.curState.Add(new Location("Bayreuth", "EDQD", "49-59N 011-38E"));
+            this.curState.Add(new Location("Erding", "ETSE", "48-19N 011-57E"));
+            this.curState.Add(new Location("Hof", "EDQM", "50-19N 011-53E"));
+            this.curState.Add(new Location("Ingolstadt", "ETSI", "48-43N 011-32E"));
+            this.curState.Add(new Location("Landsberg am Lech", "ETSA", "48-04N 010-54E"));
+            this.curState.Add(new Location("Lechfeld", "ETSL", "48-11N 010-52E"));
+            this.curState.Add(new Location("Munich", "EDDM", "48-21N 011-47E"));
+            this.curState.Add(new Location("Neuburg an der Donau", "ETSN", "48-43N 011-13E"));
+            this.curState.Add(new Location("Nuremberg", "EDDN", "49-30N 011-03E"));
+            this.curState.Add(new Location("Oberpfaffenhofen", "EDMO", "48-05N 011-17E"));
+            this.curState.Add(new Location("Roth", "ETHR", "49-13N 011-06E"));
+        }
+        
+        private void State_73() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Frankfurt am Main", "EDDF", "50-03N 008-36E"));
+            this.curState.Add(new Location("Fritzlar", "ETHF", "51-07N 009-17E"));
+            this.curStateLocation = new City("Kassel", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Calden", "EDVK", "51-24N 009-23E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Wiesbaden", "ETOU", "50-03N 008-20E"));
+        }
+        
+        private void State_74() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Braunschweig", "EDVE", "52-18N 010-27E"));
+            this.curState.Add(new Location("Bückeburg", "ETHB", "52-17N 009-05E"));
+            this.curState.Add(new Location("Celle", "ETHC", "52-36N 010-01E"));
+            this.curState.Add(new Location("Diepholz", "ETND", "52-35N 008-21E"));
+            this.curState.Add(new Location("Faßberg", "ETHS", "52-55N 010-11E"));
+            this.curState.Add(new Location("Hannover", "EDDV", "52-28N 009-41E"));
+            this.curState.Add(new Location("Jever", "ETNJ", "53-32N 007-53E"));
+            this.curState.Add(new Location("Meppen", "ETWM", "52-43-24N 007-19-35E"));
+            this.curStateLocation = new City("Cuxhaven", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Nordholz", "ETMN", "53-46N 008-40E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Wittmund", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Wittmundhaven", "ETNT", "53-33N 007-40E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Wunstorf", "ETNW", "52-27N 009-26E"));
+        }
+        
+        private void State_75() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Heringsdorf", "EDAH", "53-53N 014-09E"));
+            this.curStateLocation = new City("Neubrandenburg", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Trollenhagen", "ETNU", "53-36N 013-19E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Parchim", "EDOP", "53-25-37N 011-47-01E"));
+            this.curStateLocation = new City("Rostock", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Laage", "ETNL", "53-55N 012-17E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_76() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Cologne/Bonn", "EDDK", "50-52N 007-10E"));
+            this.curStateLocation = new City("Dortmund", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Wickede", "EDLW", "51-31N 007-37E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Düsseldorf", "EDDL", "51-18N 006-46E"));
+            this.curState.Add(new Location("Gütersloh", "ETUO", "51-55N 008-18E"));
+            this.curState.Add(new Location("Hopsten", "ETNP", "52-20N 007-32E"));
+            this.curState.Add(new Location("Kalkar", "ETGY", "51-44N 006-16E"));
+            this.curState.Add(new Location("Mönchengladbach", "EDLN", "51-13-49N 006-30-16E"));
+            this.curState.Add(new Location("Münster/Osnabrück", "EDDG", "52-08N 007-42E"));
+            this.curState.Add(new Location("Nörvenich", "ETNN", "50-50N 006-40E"));
+            this.curState.Add(new Location("Paderborn/Lippstadt", "EDLP", "51-37N 008-37E"));
+            this.curStateLocation = new City("Rheine", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Bentlage", "ETHE", "52-18N 007-23E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Siegen", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Siegerland", "EDGS", "50-42-28N 008-04-59E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Weeze", "EDLV", "51-36-09N 006-08-32E"));
+        }
+        
+        private void State_77() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Büchel", "ETSB", "50-10N 007-04E"));
+            this.curState.Add(new Location("Hahn", "EDFH", "49-57N 007-16E"));
+            this.curState.Add(new Location("Mendig", "ETHM", "50-22N 007-19E"));
+            this.curState.Add(new Location("Ramstein", "ETAR", "49-26N 007-36E"));
+            this.curState.Add(new Location("Spangdahlem", "ETAD", "49-59N 006-42E"));
+            this.curState.Add(new Location("Zweibrücken", "EDRZ", "49-12-34N 007-24-04E"));
+        }
+        
+        private void State_78() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Saarbrücken", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Ensheim", "EDDR", "49-13N 007-07E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_79() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Dresden", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Klotzsche", "EDDC", "51-08N 013-45E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Leipzig", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Schkeuditz", "EDDP", "51-25N 012-14E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_80() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Holzdorf", "ETSH", "51-46N 013-11E"));
+            this.curState.Add(new Location("Magdeburg", "EDBM", "52-04-35N 011-37-25E"));
+        }
+        
+        private void State_81() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Flensburg", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Glücksburg", "ETGG", "54-50N 009-30E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Rendsburg", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Hohn", "ETNH", "54-19N 009-32E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Kiel", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Holtenau", "EDHK", "54-23N 010-10E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Lübeck", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Blankensee", "EDHL", "53-49N 010-42E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Schleswig", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Jagel", "ETNS", "54-28N 009-31E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Westerland", "EDXW", "54-55N 008-21E"));
+        }
+        
+        private void State_82() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Altenburg", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Nobitz", "EDAC", "50-58N 012-30E"));
+            this.curState.Add(this.curStateLocation);
+            this.curStateLocation = new City("Erfurt", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Bindersleben", "EDDE", "50-59N 010-58E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
         private void Country_50() {
+            this.curCountry = new Country("Greece", 31);
             this.curCountry.Add(new Location("Agrinio", "LGAG", null));
+            this.curCountryLocation = new City("Preveza", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Aktion", "LGPZ", "38-37N 020-46E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Alexandroupoli", "LGAL", "40-51N 025-55E"));
             this.curCountry.Add(new Location("Andravida", "LGAD", "37-55N 021-17E"));
             this.curCountry.Add(new Location("Araxos", "LGRX", "38-09N 021-25E"));
+            this.curCountryLocation = new City("Athens", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Eleftherios Venizelos", "LGAV", "37-56N 023-56E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Chios", "LGHI", "38-20N 026-08E"));
+            this.curCountryLocation = new City("Kavala", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Chrysoupoli", "LGKV", "40-59N 024-36E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Cyclades Islands", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Naxos", "LGNX", "37-04-47N 025-22-01E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Elefsina", "LGEL", "38-04N 023-33E"));
             this.curCountry.Add(new Location("Heraklion", "LGIR", "35-20N 025-11E"));
@@ -4500,20 +4654,36 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Kozani", "LGKZ", "40-18N 021-47E"));
             this.curCountry.Add(new Location("Limnos", "LGLM", "39-55N 025-14E"));
             this.curCountry.Add(new Location("Mikonos", "LGMK", "37-26-09N 025-20-45E"));
+            this.curCountryLocation = new City("Lesvos", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Mytilene", "LGMT", "39-04N 026-36E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Paros", "LGPA", "37-00-40N 025-07-32E"));
+            this.curCountryLocation = new City("Rhodes", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Rhodes", "LGRP", "36-24N 028-05E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Samos", "LGSM", "37-42N 026-55E"));
             this.curCountry.Add(new Location("Santorini", "LGSR", "36-24N 025-29E"));
             this.curCountry.Add(new Location("Skiathos", "LGSK", "39-11N 023-30E"));
             this.curCountry.Add(new Location("Skiros", "LGSY", null));
+            this.curCountryLocation = new City("Chania", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Souda", "LGSA", "35-29N 024-07E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Syros", "LGSO", "37-25-16N 024-56-54E"));
+            this.curCountryLocation = new City("Thessaloniki", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Makedonia", "LGTS", "40-31N 022-58E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Zakinthos", "LGZA", "37-45N 020-53E"));
         }
         
         private void Country_51() {
+            this.curCountry = new Country("Hungary", 6);
+            this.curCountryLocation = new City("Budapest", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Ferihegy", "LHBP", "47-26N 019-16E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Debrecen", "LHDC", "47-29N 021-36E"));
             this.curCountry.Add(new Location("Kecskemet", "LHKE", "46-55N 019-45E"));
@@ -4523,6 +4693,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_52() {
+            this.curCountry = new Country("Ireland", 4);
             this.curCountry.Add(new Location("Connaught", "EIKN", "53-54-37N 008-49-05W"));
             this.curCountry.Add(new Location("Cork", "EICK", "51-51N 008-29W"));
             this.curCountry.Add(new Location("Dublin", "EIDW", "53-26N 006-15W"));
@@ -4530,6 +4701,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_53() {
+            this.curCountry = new Country("Italy", 99);
             this.curCountry.Add(new Location("Albenga", "LIMG", "44-03N 008-07E"));
             this.curCountry.Add(new Location("Alghero", "LIEA", "40-38N 008-17E"));
             this.curCountry.Add(new Location("Amendola", "LIBA", "41-32N 015-43E"));
@@ -4547,6 +4719,10 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Capo Bellavista", "LIEB", "39-56N 009-43E"));
             this.curCountry.Add(new Location("Capo Mele", "LIMU", "43-57N 008-10E"));
             this.curCountry.Add(new Location("Capri", "LIQC", "40-33N 014-12E"));
+            this.curCountryLocation = new City("Catania", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Fontanarossa", "LICC", "37-28N 015-03E"));
+            this.curCity.Add(new Location("Sigonella", "LICZ", "37-24N 014-55E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Cervia", "LIPC", "44-13N 012-18E"));
             this.curCountry.Add(new Location("Crotone", "LIBC", "39-00N 017-04E"));
@@ -4587,6 +4763,10 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Olbia/Costa Smeralda", "LIEO", "40-54N 009-31E"));
             this.curCountry.Add(new Location("Padova", "LIPU", null));
             this.curCountry.Add(new Location("Paganella", "LIVP", "46-09N 011-02E"));
+            this.curCountryLocation = new City("Palermo", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Punta Raisi", "LICJ", "38-11N 013-06E"));
+            this.curCity.Add(new Location("Boccadifalco", "LICP", "38-06N 013-18E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Pantelleria", "LICG", "36-49N 011-58E"));
             this.curCountry.Add(new Location("Parma", "LIMP", "44-49-17N 010-17-41E"));
@@ -4632,6 +4812,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_54() {
+            this.curCountry = new Country("Netherlands", 15);
             this.curCountry.Add(new Location("Amsterdam", "EHAM", "52-18N 004-46E"));
             this.curCountry.Add(new Location("Deelen", "EHDL", "52-04N 005-53E"));
             this.curCountry.Add(new Location("Den Helder/De Kooy", "EHKD", "52-55N 004-47E"));
@@ -4650,6 +4831,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_55() {
+            this.curCountry = new Country("Spain", 34);
             this.curCountry.Add(new Location("Albacete/Los Llanos", "LEAB", "38-57N 001-51W"));
             this.curCountry.Add(new Location("Alacant/L'Altet", "LEAL", "38-17N 000-33W"));
             this.curCountry.Add(new Location("Almería/Airport", "LEAM", "36-51N 002-23W"));
@@ -4657,19 +4839,43 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Badajoz/Talavera la Real", "LEBZ", "38-53N 006-49W"));
             this.curCountry.Add(new Location("Barcelona/Airport", "LEBL", "41-17N 002-04E"));
             this.curCountry.Add(new Location("Bilbao/Sondika", "LEBB", "43-18N 002-56W"));
+            this.curCountryLocation = new City("Canary Islands", 7);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Hierro/Airport", "GCHI", "27-49N 017-53W"));
+            this.curCity.Add(new Location("Lanzarote", "GCRR", "28-57N 013-36W"));
+            this.curCity.Add(new Location("Las Palmas de Gran Canaria/Gando", "GCLP", "27-56N 015-23W"));
+            this.curCity.Add(new Location("Tenerife/Tenerife Norte (Los Rodeos) Airport", "GCXO", "28-28N 016-19W"));
+            this.curCity.Add(new Location("Tenerife/Tenerife Sur Airport", "GCTS", "28-03N 016-34W"));
+            this.curCity.Add(new Location("La Palma", "GCLA", "28-37N 017-45W"));
+            this.curCity.Add(new Location("Fuerteventura", "GCFV", "28-27N 013-52W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Córdoba", "LEBA", "37-51N 004-51W"));
             this.curCountry.Add(new Location("Girona/Costa Brava", "LEGE", "41-54N 002-46E"));
             this.curCountry.Add(new Location("Granada/Airport", "LEGR", "37-11N 003-47W"));
             this.curCountry.Add(new Location("Granada/Armilla", "LEGA", "37-8N 003-38-08W"));
+            this.curCountryLocation = new City("Baleares Islands", 3);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Ibiza/Es Codolar", "LEIB", "38-52N 001-23E"));
+            this.curCity.Add(new Location("Menorca", "LEMH", "39-52N 004-14E"));
+            this.curCity.Add(new Location("Palma de Mallorca/Son Sant Joan", "LEPA", "39-33N 002-44E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Jerez de la Frontera", "LEJR", "36-45N 006-04W"));
             this.curCountry.Add(new Location("La Coruña/Alvedro", "LECO", "43-18N 008-23W"));
             this.curCountry.Add(new Location("León/Virgen del Camino", "LELN", "42-35N 005-39W"));
+            this.curCountryLocation = new City("Madrid", 4);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Barajas", "LEMD", "40-27N 003-33W"));
+            this.curCity.Add(new Location("Cuatro Vientos", "LEVS", "40-23N 003-47W"));
+            this.curCity.Add(new Location("Getafe", "LEGT", "40-18N 003-43W"));
+            this.curCity.Add(new Location("Torrejón", "LETO", "40-29N 003-27W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Málaga", "LEMG", "36-40N 004-29W"));
             this.curCountry.Add(new Location("Melilla", "GEML", "35-17N 002-57W"));
             this.curCountry.Add(new Location("Morón de la Frontera", "LEMO", "37-09N 005-37W"));
+            this.curCountryLocation = new City("Murcia", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Alcantarilla", "LERI", "37-57N 001-14W"));
+            this.curCity.Add(new Location("San Javier", "LELC", "37-47N 000-48W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Pamplona/Noain", "LEPP", "42-46N 001-38W"));
             this.curCountry.Add(new Location("Reus", "LERS", "41-09N 001-10E"));
@@ -4687,6 +4893,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_56() {
+            this.curCountry = new Country("Turkey", 34);
             this.curCountry.Add(new Location("Adana/Incirlik", "LTAG", "37-00N 035-25E"));
             this.curCountry.Add(new Location("Adana/Sakirpasa", "LTAF", "36-59N 035-18E"));
             this.curCountry.Add(new Location("Amasya", "LTAP", null));
@@ -4697,6 +4904,9 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Balikesir", "LTBF", "39-37N 027-55E"));
             this.curCountry.Add(new Location("Bandirma", "LTBG", "40-19N 027-58E"));
             this.curCountry.Add(new Location("Batman", "LTCJ", "37-52N 041-10E"));
+            this.curCountryLocation = new City("Bodrum", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Bodrum Milas Airport", "LTFE", "37-14-53N 027-40-55E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Bursa/Yenisehir", "LTBR", "40-15-19N 029-33-45E"));
             this.curCountry.Add(new Location("Corlu", "LTBU", "41-08N 027-55E"));
@@ -4706,7 +4916,15 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Erzurum", "LTCE", "39-55N 041-16E"));
             this.curCountry.Add(new Location("Eskisehir", "LTBI", "39-47N 030-34E"));
             this.curCountry.Add(new Location("Gaziantep", "LTAJ", "37-05N 037-22E"));
+            this.curCountryLocation = new City("Istanbul", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Ataturk", "LTBA", "40-58N 028-49E"));
+            this.curCity.Add(new Location("Sabiha Gokcen", "LTFJ", "40-53-55N 029-18-33E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Izmir", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Adnan Menderes", "LTBJ", "38-16N 027-09E"));
+            this.curCity.Add(new Location("Cigli", "LTBL", "38-30N 027-01E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Kars", "LTCF", "40-36N 043-05E"));
             this.curCountry.Add(new Location("Kayseri/Erkilet", "LTAU", "38-47N 035-29E"));
@@ -4724,6 +4942,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_57() {
+            this.curCountry = new Country("Ukraine", 18);
             this.curCountry.Add(new Location("Chernovsty", "UKLN", "48-15-36N 025-58-54E"));
             this.curCountry.Add(new Location("Dnipropetrovs'k", "UKDD", "48-32N 034-40E"));
             this.curCountry.Add(new Location("Donets'k", "UKCC", "48-05N 037-45E"));
@@ -4731,6 +4950,10 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Ivano-Frankivs'k", "UKLI", "48-53-03N 024-41-10E"));
             this.curCountry.Add(new Location("Kharkiv", "UKHH", "49-58N 036-08E"));
             this.curCountry.Add(new Location("Kryvyi Rihi/Dnipropetrovs'k", "UKDR", "48-03N 033-13-12E"));
+            this.curCountryLocation = new City("Kiev", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Boryspil", "UKBB", null));
+            this.curCity.Add(new Location("Zhuliany", "UKKK", "50-24N 030-34E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("L'Viv", "UKLL", "49-49N 023-57E"));
             this.curCountry.Add(new Location("Lugansk", "UKCW", null));
@@ -4745,187 +4968,261 @@ namespace Desklet.Weather {
         }
         
         private void Country_58() {
+            this.curCountry = new Country("United Kingdom", 8);
+            this.curCountryLocation = new State("Wales", 4);
+            this.State_83();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("East and South East England", 22);
+            this.State_84();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Midlands", 6);
+            this.State_85();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("North East England", 10);
+            this.State_86();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("North West England", 7);
+            this.State_87();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("South and South West England", 16);
+            this.State_88();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Northern Ireland", 3);
+            this.State_89();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Scotland", 17);
+            this.State_90();
             this.curCountry.Add(this.curCountryLocation);
+        }
+        
+        private void State_83() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Cardiff", "EGFF", "51-24N 003-21W"));
+            this.curState.Add(new Location("Pembrey", "EGOP", "51-43N 004-22W"));
+            this.curState.Add(new Location("St Athan", "EGDX", "51-24N 003-26W"));
+            this.curState.Add(new Location("Valley", "EGOV", "53-15N 004-32W"));
+        }
+        
+        private void State_84() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Barkston Heath", "EGYE", "52-58N 000-34W"));
+            this.curState.Add(new Location("Benson", "EGUB", "51-37N 001-05W"));
+            this.curState.Add(new Location("Biggin Hill", "EGKB", "51-19N 000-02E"));
+            this.curState.Add(new Location("Brize Norton", "EGVN", "51-08N 001-06W"));
+            this.curState.Add(new Location("Cambridge", "EGSC", "52-12N 000-11E"));
+            this.curState.Add(new Location("Coltishall", "EGYC", "52-26N 001-21E"));
+            this.curState.Add(new Location("Cranfield", "EGTC", "52-04N 000-37W"));
+            this.curState.Add(new Location("Farnborough", "EGLF", "51-17N 000-46W"));
+            this.curState.Add(new Location("Holbeach", "EGYH", "52-52N 000-09E"));
+            this.curStateLocation = new City("London", 4);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("City Airport", "EGLC", "51-30N 000-30W"));
+            this.curCity.Add(new Location("Gatwick Airport", "EGKK", "51-09N 000-11W"));
+            this.curCity.Add(new Location("Heathrow Airport", "EGLL", "51-29N 000-27W"));
+            this.curCity.Add(new Location("Stansted Airport", "EGSS", "51-53N 000-14E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Luton", "EGGW", "51-52N 000-22W"));
+            this.curState.Add(new Location("Manston", "EGMH", "51-20-31N 001-20-46E"));
+            this.curState.Add(new Location("Marham", "EGYM", "52-39N 000-34E"));
+            this.curState.Add(new Location("Mildenhall", "EGUN", "52-22N 000-29E"));
+            this.curState.Add(new Location("Northolt", "EGWU", "51-33N 000-25W"));
+            this.curState.Add(new Location("Norwich", "EGSH", "52-38N 001-18E"));
+            this.curState.Add(new Location("Odiham", "EGVO", "51-14N 000-57W"));
+            this.curState.Add(new Location("Shoreham", "EGKA", "50-50N 000-17W"));
+            this.curState.Add(new Location("Southend", "EGMC", "51-34N 000-42E"));
+            this.curState.Add(new Location("Wattisham", "EGUW", "52-07N 000-58E"));
+            this.curState.Add(new Location("Wittering", "EGXT", "52-37N 000-28W"));
+            this.curState.Add(new Location("Wyton", "EGUY", "52-21N 000-07W"));
+        }
+        
+        private void State_85() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Birmingham", "EGBB", null));
+            this.curState.Add(new Location("Cosford", "EGWC", "52-38N 002-18W"));
+            this.curState.Add(new Location("Coventry", "EGBE", "52-22N 001-29W"));
+            this.curState.Add(new Location("Nottingham East Midlands", "EGNX", "52-50N 001-20W"));
+            this.curState.Add(new Location("Gloucestershire", "EGBJ", "51-54N 002-10W"));
+            this.curState.Add(new Location("Shawbury", "EGOS", "52-48N 002-40W"));
+        }
+        
+        private void State_86() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Coningsby", "EGXC", "53-05N 000-10W"));
+            this.curState.Add(new Location("Cranwell", "EGYD", "53-02N 000-30W"));
+            this.curState.Add(new Location("Dishforth", "EGXD", "54-08N 001-25W"));
+            this.curState.Add(new Location("Humberside", "EGNJ", "53-35N 000-21W"));
+            this.curState.Add(new Location("Leeming", "EGXE", "54-18N 001-32W"));
+            this.curState.Add(new Location("Linton-on-Ouse", "EGXU", "54-03N 001-15W"));
+            this.curState.Add(new Location("Newcastle", "EGNT", "55-02N 001-42W"));
+            this.curState.Add(new Location("Teesside", "EGNV", "54-31N 001-25W"));
+            this.curState.Add(new Location("Topcliffe", "EGXZ", "54-12N 001-23W"));
+            this.curState.Add(new Location("Waddington", "EGXW", "53-10N 000-31W"));
+        }
+        
+        private void State_87() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Blackpool", "EGNH", null));
+            this.curState.Add(new Location("Carlisle", "EGNC", "54-56N 002-57W"));
+            this.curState.Add(new Location("Hawarden", "EGNR", "53-10N 002-59W"));
+            this.curState.Add(new Location("Isle of Man", "EGNS", "54-05N 004-38W"));
+            this.curState.Add(new Location("Leeds/Bradford", "EGNM", "53-52N 001-39W"));
+            this.curState.Add(new Location("Liverpool", "EGGP", "53-20N 002-51W"));
+            this.curState.Add(new Location("Manchester", "EGCC", "53-21N 002-17W"));
+        }
+        
+        private void State_88() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Alderney", "EGJA", "49-43N 002-12W"));
+            this.curState.Add(new Location("Boscombe Down", "EGDM", null));
+            this.curState.Add(new Location("Bournemouth", "EGHH", null));
+            this.curState.Add(new Location("Bristol", "EGGD", null));
+            this.curState.Add(new Location("Bristol Filton", "EGTG", "51-31N 002-35W"));
+            this.curState.Add(new Location("Culdrose", "EGDR", "50-05N 005-15W"));
+            this.curState.Add(new Location("Exeter", "EGTE", "50-44N 003-25W"));
+            this.curState.Add(new Location("Guernsey", "EGJB", "49-26N 002-36W"));
+            this.curState.Add(new Location("Jersey", "EGJJ", "49-13N 002-12W"));
+            this.curState.Add(new Location("Lyneham", "EGDL", "51-30N 001-59W"));
+            this.curState.Add(new Location("Middle Wallop", "EGVP", "51-09N 001-34W"));
+            this.curState.Add(new Location("Plymouth", "EGHD", "50-25N 004-07W"));
+            this.curState.Add(new Location("Scilly St Mary's", "EGHE", "49-55N 006-18W"));
+            this.curState.Add(new Location("Southampton", "EGHI", "50-54N 001-24W"));
+            this.curState.Add(new Location("St Mawgan", "EGDG", "50-26N 005-00W"));
+            this.curState.Add(new Location("Yeovilton", "EGDY", "51-00N 002-38W"));
+        }
+        
+        private void State_89() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Belfast/Aldergrove", "EGAA", "54-39N 006-13W"));
+            this.curState.Add(new Location("Belfast/City", "EGAC", "54-36N 005-53W"));
+            this.curState.Add(new Location("Londonderry", "EGAE", "55-03N 007-09W"));
+        }
+        
+        private void State_90() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Aberdeen", "EGPD", "57-12N 002-13W"));
+            this.curState.Add(new Location("Benbecula", "EGPL", "57-28N 007-22W"));
+            this.curState.Add(new Location("Dundee", "EGPN", "56-27N 003-01W"));
+            this.curState.Add(new Location("Edinburgh", "EGPH", "55-57N 003-21W"));
+            this.curState.Add(new Location("Glasgow", "EGPF", "55-52N 004-26W"));
+            this.curState.Add(new Location("Inverness", "EGPE", "57-32N 004-03W"));
+            this.curState.Add(new Location("Islay", "EGPI", "55-40-55N 006-15-24W"));
+            this.curState.Add(new Location("Kinloss", "EGQK", "57-39N 003-34W"));
+            this.curState.Add(new Location("Kirkwall", "EGPA", "58-57N 002-54W"));
+            this.curState.Add(new Location("Leuchars", "EGQL", "56-23N 002-52W"));
+            this.curState.Add(new Location("Lossiemouth", "EGQS", "57-43N 003-19W"));
+            this.curState.Add(new Location("Prestwick", "EGPK", "55-30N 004-35W"));
+            this.curState.Add(new Location("Scatsta", "EGPM", "60-26N 001-18W"));
+            this.curState.Add(new Location("Stornoway", "EGPO", "58-13N 006-19W"));
+            this.curState.Add(new Location("Sumburgh", "EGPB", "59-53N 001-18W"));
+            this.curState.Add(new Location("Tain", "EGQA", "57-49N 003-58W"));
+            this.curState.Add(new Location("Tiree", "EGPU", "56-30N 006-53W"));
         }
         
         private void Region_4() {
             this.curRegion = new Region("Africa", 49);
-            this.curCountry = new Country("Algeria", 34);
+            this.regions.Add(this.curRegion);
             this.Country_59();
-            this.curCountryLocation = new City("Oran", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Es Senia", "DAOO", "35-38N 000-36W"));
-            this.curCity.Add(new Location("Tafaraoui", "DAOL", "35-32-33N 000-31-56W"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Angola", 3);
             this.Country_60();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Benin", 1);
             this.Country_61();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Botswana", 12);
             this.Country_62();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Burkina Faso", 2);
             this.Country_63();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Burundi", 1);
             this.Country_64();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cameroon", 4);
             this.Country_65();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cape Verde", 1);
             this.Country_66();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Central African Republic", 3);
             this.Country_67();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Chad", 4);
             this.Country_68();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Comoros", 2);
             this.Country_69();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Congo, Democratic Republic of the", 3);
             this.Country_70();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Congo, Republic of the", 2);
             this.Country_71();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cote d'Ivoire", 1);
             this.Country_72();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Djibouti", 1);
             this.Country_73();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Egypt", 12);
             this.Country_74();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Equatorial Guinea", 1);
             this.Country_75();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Ethiopia", 1);
             this.Country_76();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Gabon", 13);
             this.Country_77();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Gambia, The", 1);
             this.Country_78();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Ghana", 2);
             this.Country_79();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Guinea", 1);
             this.Country_80();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Kenya", 23);
             this.Country_81();
-            this.curCountryLocation = new City("Nairobi", 3);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Dagoretti", "HKNC", "01-18S 036-45E"));
-            this.curCity.Add(new Location("Wilson", "HKNW", "01-19S 036-49E"));
-            this.curCity.Add(new Location("Jomo Kenyatta Airport", "HKJK", "01-19S 036-55E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Liberia", 1);
             this.Country_82();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Libya", 2);
             this.Country_83();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Madagascar", 8);
             this.Country_84();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Mali", 1);
             this.Country_85();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Mauritania", 2);
             this.Country_86();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Mauritius", 2);
             this.Country_87();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Morocco", 14);
             this.Country_88();
-            this.curCountryLocation = new City("Nador", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Arwi", "GMMW", "34-59-20N 003-01-42W"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Mozambique", 10);
             this.Country_89();
-            this.curCountryLocation = new City("Tete", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Chingozi", "FQTT", "16-06S 033-38E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Namibia", 3);
             this.Country_90();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Niger", 3);
             this.Country_91();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Nigeria", 10);
             this.Country_92();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Reunion", 2);
             this.Country_93();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Rwanda", 1);
             this.Country_94();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Senegal", 5);
             this.Country_95();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Seychelles", 1);
             this.Country_96();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Somalia", 4);
             this.Country_97();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("South Africa", 20);
             this.Country_98();
-            this.curCountryLocation = new City("Johannesburg", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Rand", "FAGM", "26-15S 028-00E"));
-            this.curCity.Add(new Location("Johannesburg Airport", "FAJS", "26-08S 028-14E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Sierra Leone", 1);
             this.Country_99();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Sudan", 1);
             this.Country_100();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Swaziland", 1);
             this.Country_101();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Tanzania", 20);
             this.Country_102();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Togo", 2);
             this.Country_103();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Tunisia", 16);
             this.Country_104();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Uganda", 11);
             this.Country_105();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Zambia", 4);
             this.Country_106();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Zimbabwe", 8);
             this.Country_107();
             this.curRegion.Add(this.curCountry);
         }
         
         private void Country_59() {
+            this.curCountry = new Country("Algeria", 34);
             this.curCountry.Add(new Location("Adrar", "DAUA", "27-53N 000-17W"));
             this.curCountry.Add(new Location("Annaba", "DABB", "36-50N 007-49E"));
             this.curCountry.Add(new Location("Batna", "DABT", "35-33N 006-11E"));
@@ -4949,6 +5246,10 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Laghouat", "DAUL", "33-46N 002-56E"));
             this.curCountry.Add(new Location("Mascara-Ghriss", "DAOV", "35-12E 000-08W"));
             this.curCountry.Add(new Location("Mecheria", "DAAY", "34-56N 000-26W"));
+            this.curCountryLocation = new City("Oran", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Es Senia", "DAOO", "35-38N 000-36W"));
+            this.curCity.Add(new Location("Tafaraoui", "DAOL", "35-32-33N 000-31-56W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Ouargla", "DAUU", "31-55N 005-24E"));
             this.curCountry.Add(new Location("Setif", "DAAS", "36-11N 005-25E"));
@@ -4963,16 +5264,19 @@ namespace Desklet.Weather {
         }
         
         private void Country_60() {
+            this.curCountry = new Country("Angola", 3);
             this.curCountry.Add(new Location("Huambo Nova Lisboa", "FNHU", "12-48S 015-45E"));
             this.curCountry.Add(new Location("Luanda", "FNLU", "08-51S 013-14E"));
             this.curCountry.Add(new Location("Monbaca Benguela", "FNBG", "12-35S 013-25E"));
         }
         
         private void Country_61() {
+            this.curCountry = new Country("Benin", 1);
             this.curCountry.Add(new Location("Cotonou", "DBBB", "06-21N 002-23E"));
         }
         
         private void Country_62() {
+            this.curCountry = new Country("Botswana", 12);
             this.curCountry.Add(new Location("Francistown", "FBFT", "21-13S 027-30E"));
             this.curCountry.Add(new Location("Ghanzi", "FBGZ", "21-42S 021-39E"));
             this.curCountry.Add(new Location("Jwaneng", "FBJW", "24-36S 024-40E"));
@@ -4988,15 +5292,18 @@ namespace Desklet.Weather {
         }
         
         private void Country_63() {
+            this.curCountry = new Country("Burkina Faso", 2);
             this.curCountry.Add(new Location("Bobo-Dioulasso", "DFOO", "11-10N 004-19W"));
             this.curCountry.Add(new Location("Ouagadougou", "DFFD", "12-21N 001-31W"));
         }
         
         private void Country_64() {
+            this.curCountry = new Country("Burundi", 1);
             this.curCountry.Add(new Location("Bujumbura", "HBBA", "03-19S 029-19E"));
         }
         
         private void Country_65() {
+            this.curCountry = new Country("Cameroon", 4);
             this.curCountry.Add(new Location("Douala Obs.", "FKKD", "04-00N 009-44E"));
             this.curCountry.Add(new Location("Garoua", "FKKR", "09-20N 013-23E"));
             this.curCountry.Add(new Location("Ngaoundere", "FKKN", "07-21N 013-34E"));
@@ -5004,16 +5311,19 @@ namespace Desklet.Weather {
         }
         
         private void Country_66() {
+            this.curCountry = new Country("Cape Verde", 1);
             this.curCountry.Add(new Location("Sal", "GVAC", "16-44N 022-57W"));
         }
         
         private void Country_67() {
+            this.curCountry = new Country("Central African Republic", 3);
             this.curCountry.Add(new Location("Bangassou", "FEFG", "04-44N 022-50E"));
             this.curCountry.Add(new Location("Bangui", "FEFF", "04-24N 018-31E"));
             this.curCountry.Add(new Location("Berberati", "FEFT", "04-15N 015-48E"));
         }
         
         private void Country_68() {
+            this.curCountry = new Country("Chad", 4);
             this.curCountry.Add(new Location("Abeche", "FTTC", "13-51N 020-51E"));
             this.curCountry.Add(new Location("Moundou", "FTTD", "08-37N 016-04E"));
             this.curCountry.Add(new Location("Ndjamena", "FTTJ", "12-08N 015-02E"));
@@ -5021,30 +5331,36 @@ namespace Desklet.Weather {
         }
         
         private void Country_69() {
+            this.curCountry = new Country("Comoros", 2);
             this.curCountry.Add(new Location("Dzaoudzi / Pamanzi Mayotte", "FMCZ", "12-48S 045-17E"));
             this.curCountry.Add(new Location("Hahaya", "FMCH", "11-32S 043-16E"));
         }
         
         private void Country_70() {
+            this.curCountry = new Country("Congo, Democratic Republic of the", 3);
             this.curCountry.Add(new Location("Kindu", "FZOA", "02-57S 025-55E"));
             this.curCountry.Add(new Location("Kinshasa / N'Djili", "FZAA", "04-23S 015-26E"));
             this.curCountry.Add(new Location("Lubumbashi-Luano", "FZQA", "11-40S 027-29E"));
         }
         
         private void Country_71() {
+            this.curCountry = new Country("Congo, Republic of the", 2);
             this.curCountry.Add(new Location("Brazzaville / Maya-Maya", "FCBB", "04-15S 015-15E"));
             this.curCountry.Add(new Location("Pointe-Noire", "FCPP", "04-49S 011-54E"));
         }
         
         private void Country_72() {
+            this.curCountry = new Country("Cote d'Ivoire", 1);
             this.curCountry.Add(new Location("Abidjan", "DIAP", "05-15N 003-56W"));
         }
         
         private void Country_73() {
+            this.curCountry = new Country("Djibouti", 1);
             this.curCountry.Add(new Location("Ambouli", "HDAM", "11-33N 043-10E"));
         }
         
         private void Country_74() {
+            this.curCountry = new Country("Egypt", 12);
             this.curCountry.Add(new Location("Alexandria/Nouzha", "HEAX", "31-12N 029-57E"));
             this.curCountry.Add(new Location("Alexandria Borg El Arab", "HEBA", "31-31N 030-10E"));
             this.curCountry.Add(new Location("Asswan", "HESN", "23-58N 032-47E"));
@@ -5060,14 +5376,17 @@ namespace Desklet.Weather {
         }
         
         private void Country_75() {
+            this.curCountry = new Country("Equatorial Guinea", 1);
             this.curCountry.Add(new Location("Malabo/Fernando Poo", "FGSL", "03-45N 008-46E"));
         }
         
         private void Country_76() {
+            this.curCountry = new Country("Ethiopia", 1);
             this.curCountry.Add(new Location("Addis Ababa", "HAAB", "08-59N 038-48E"));
         }
         
         private void Country_77() {
+            this.curCountry = new Country("Gabon", 13);
             this.curCountry.Add(new Location("Bitam", "FOOB", "02-05N 011-29E"));
             this.curCountry.Add(new Location("Cocobeach", "FOOC", "01-00N 009-36E"));
             this.curCountry.Add(new Location("Franceville / Mvengue", "FOON", "01-39S 013-26E"));
@@ -5084,19 +5403,23 @@ namespace Desklet.Weather {
         }
         
         private void Country_78() {
+            this.curCountry = new Country("Gambia, The", 1);
             this.curCountry.Add(new Location("Banjul / Yundum", "GBYD", "13-21N 016-48W"));
         }
         
         private void Country_79() {
+            this.curCountry = new Country("Ghana", 2);
             this.curCountry.Add(new Location("Accra", "DGAA", "05-36N 000-10W"));
             this.curCountry.Add(new Location("Kumasi", "DGSI", "06-43N 001-36W"));
         }
         
         private void Country_80() {
+            this.curCountry = new Country("Guinea", 1);
             this.curCountry.Add(new Location("Conakry / Gbessia", "GUCY", "09-34N 013-37W"));
         }
         
         private void Country_81() {
+            this.curCountry = new Country("Kenya", 23);
             this.curCountry.Add(new Location("Eldoret", "HKEL", "00-32N 035-17E"));
             this.curCountry.Add(new Location("Embu", "HKEM", "00-30S 037-27E"));
             this.curCountry.Add(new Location("Garissa", "HKGA", "00-28S 039-38E"));
@@ -5114,6 +5437,11 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Meru", "HKME", "00-05N 037-39E"));
             this.curCountry.Add(new Location("Mombasa", "HKMO", "04-02S 039-37E"));
             this.curCountry.Add(new Location("Moyale", "HKMY", "03-32N 039-03E"));
+            this.curCountryLocation = new City("Nairobi", 3);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Dagoretti", "HKNC", "01-18S 036-45E"));
+            this.curCity.Add(new Location("Wilson", "HKNW", "01-19S 036-49E"));
+            this.curCity.Add(new Location("Jomo Kenyatta Airport", "HKJK", "01-19S 036-55E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Nakuru", "HKNK", "00-16S 036-06E"));
             this.curCountry.Add(new Location("Narok", "HKNO", "01-08S 035-50E"));
@@ -5123,15 +5451,18 @@ namespace Desklet.Weather {
         }
         
         private void Country_82() {
+            this.curCountry = new Country("Liberia", 1);
             this.curCountry.Add(new Location("Grand Bassa, Roberts Field", "GLRB", "06-15N 010-21W"));
         }
         
         private void Country_83() {
+            this.curCountry = new Country("Libya", 2);
             this.curCountry.Add(new Location("Benina", "HLLB", "32-06N 020-16E"));
             this.curCountry.Add(new Location("Tripoli", "HLLT", "32-40N 013-09E"));
         }
         
         private void Country_84() {
+            this.curCountry = new Country("Madagascar", 8);
             this.curCountry.Add(new Location("Antananarivo / Ivato", "FMMI", "18-48S 047-29E"));
             this.curCountry.Add(new Location("Diego-Suarez", "FMNA", "12-21S 049-18E"));
             this.curCountry.Add(new Location("Fascene Nossi-Be", "FMNN", "13-19S 048-19E"));
@@ -5143,20 +5474,24 @@ namespace Desklet.Weather {
         }
         
         private void Country_85() {
+            this.curCountry = new Country("Mali", 1);
             this.curCountry.Add(new Location("Bamako / Senou", "GABS", "12-32N 007-57W"));
         }
         
         private void Country_86() {
+            this.curCountry = new Country("Mauritania", 2);
             this.curCountry.Add(new Location("Nouadhibou", "GQPP", "20-56N 017-02W"));
             this.curCountry.Add(new Location("Nouakchott", "GQNN", "18-06N 015-57W"));
         }
         
         private void Country_87() {
+            this.curCountry = new Country("Mauritius", 2);
             this.curCountry.Add(new Location("Plaisance Mauritius", "FIMP", "20-26S 057-40E"));
             this.curCountry.Add(new Location("Rodrigues", "FIMR", "19-41S 063-25E"));
         }
         
         private void Country_88() {
+            this.curCountry = new Country("Morocco", 14);
             this.curCountry.Add(new Location("Agadir Al Massira", "GMAD", "30-20N 009-24W"));
             this.curCountry.Add(new Location("Al Hoceima", "GMTA", "35-11N 003-51W"));
             this.curCountry.Add(new Location("Casablanca", "GMMC", "33-34N 007-40W"));
@@ -5164,6 +5499,9 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Laayoune/Hassan Isl", "GMML", "27-10N 013-12-59W"));
             this.curCountry.Add(new Location("Marrakech", "GMMX", "31-37N 008-02W"));
             this.curCountry.Add(new Location("Meknes", "GMFM", "33-53N 005-32W"));
+            this.curCountryLocation = new City("Nador", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Arwi", "GMMW", "34-59-20N 003-01-42W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Nouasseur", "GMMN", "33-22N 007-35W"));
             this.curCountry.Add(new Location("Ouarzazate", "GMMZ", "30-56N 006-54W"));
@@ -5174,6 +5512,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_89() {
+            this.curCountry = new Country("Mozambique", 10);
             this.curCountry.Add(new Location("Beira", "FQBR", "19-48S 034-54E"));
             this.curCountry.Add(new Location("Chimoio", "FQCH", "19-07S 033-28E"));
             this.curCountry.Add(new Location("Inhambane", "FQIN", "23-52S 035-23E"));
@@ -5182,23 +5521,29 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Nampula", "FQNP", "15-06S 039-17E"));
             this.curCountry.Add(new Location("Pemba", "FQPB", "12-59S 040-32E"));
             this.curCountry.Add(new Location("Quelimane", "FQQL", "17-53S 036-53E"));
+            this.curCountryLocation = new City("Tete", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Chingozi", "FQTT", "16-06S 033-38E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Vilanculos", "FQVL", "22-00S 035-19E"));
         }
         
         private void Country_90() {
+            this.curCountry = new Country("Namibia", 3);
             this.curCountry.Add(new Location("Ondangwa", "FYOA", "17-52-42S 015-57-09E"));
             this.curCountry.Add(new Location("Walvis Bay", "FYWB", "22-58-59S 014-39E"));
             this.curCountry.Add(new Location("Windhoek, Town MET", "FYWW", "22-34S 017-06E"));
         }
         
         private void Country_91() {
+            this.curCountry = new Country("Niger", 3);
             this.curCountry.Add(new Location("Agadez", "DRZA", "16-58N 007-59E"));
             this.curCountry.Add(new Location("Niamey-Aero", "DRRN", "13-29N 002-10E"));
             this.curCountry.Add(new Location("Zinder", "DRZR", "13-47N 008-59E"));
         }
         
         private void Country_92() {
+            this.curCountry = new Country("Nigeria", 10);
             this.curCountry.Add(new Location("Calabar", "DNCA", "04-58N 008-21E"));
             this.curCountry.Add(new Location("Enugu", "DNEN", "06-28N 007-33E"));
             this.curCountry.Add(new Location("Ibadan", "DNIB", "07-26N 003-54E"));
@@ -5212,15 +5557,18 @@ namespace Desklet.Weather {
         }
         
         private void Country_93() {
+            this.curCountry = new Country("Reunion", 2);
             this.curCountry.Add(new Location("Saint-Denis / Gillot", "FMEE", "20-53S 055-31E"));
             this.curCountry.Add(new Location("Saint-Pierre", "FMEP", "21-20S 055-29E"));
         }
         
         private void Country_94() {
+            this.curCountry = new Country("Rwanda", 1);
             this.curCountry.Add(new Location("Kigali", "HRYR", "01-58S 030-07E"));
         }
         
         private void Country_95() {
+            this.curCountry = new Country("Senegal", 5);
             this.curCountry.Add(new Location("Cap-Skirring", "GOGS", "12-24N 016-45W"));
             this.curCountry.Add(new Location("Dakar / Yoff", "GOOY", "14-44N 017-30W"));
             this.curCountry.Add(new Location("Saint-Louis", "GOSS", "16-03N 016-27W"));
@@ -5229,10 +5577,12 @@ namespace Desklet.Weather {
         }
         
         private void Country_96() {
+            this.curCountry = new Country("Seychelles", 1);
             this.curCountry.Add(new Location("Seychelles International Airport", "FSIA", "04-40S 055-31E"));
         }
         
         private void Country_97() {
+            this.curCountry = new Country("Somalia", 4);
             this.curCountry.Add(new Location("Berbera", "HCMI", "10-25N 045-01E"));
             this.curCountry.Add(new Location("Burao", "HCMV", "09-30N 045-34E"));
             this.curCountry.Add(new Location("Hargeisa", "HCMH", "09-30N 044-05E"));
@@ -5240,12 +5590,17 @@ namespace Desklet.Weather {
         }
         
         private void Country_98() {
+            this.curCountry = new Country("South Africa", 20);
             this.curCountry.Add(new Location("Alexander Bay", "FAAB", "28-34S 016-32E"));
             this.curCountry.Add(new Location("Bloemfontein J. B. M. Hertzog", "FABL", "29-06S 026-18E"));
             this.curCountry.Add(new Location("Cape Town D. F. Malan", "FACT", "33-59S 018-36E"));
             this.curCountry.Add(new Location("Durban Louis Botha", "FADN", "29-58S 030-57E"));
             this.curCountry.Add(new Location("East London", "FAEL", "33-02S 027-50E"));
             this.curCountry.Add(new Location("George Airport", "FAGG", "34-00S 022-23E"));
+            this.curCountryLocation = new City("Johannesburg", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Rand", "FAGM", "26-15S 028-00E"));
+            this.curCity.Add(new Location("Johannesburg Airport", "FAJS", "26-08S 028-14E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Kimberley", "FAKM", "28-48S 024-46E"));
             this.curCountry.Add(new Location("Klerksdorp", "FAKD", "26-52S 026-43E"));
@@ -5263,18 +5618,22 @@ namespace Desklet.Weather {
         }
         
         private void Country_99() {
+            this.curCountry = new Country("Sierra Leone", 1);
             this.curCountry.Add(new Location("Lungi", "GFLL", "08-37N 013-12W"));
         }
         
         private void Country_100() {
+            this.curCountry = new Country("Sudan", 1);
             this.curCountry.Add(new Location("Khartoum", "HSSS", "15-36N 032-33E"));
         }
         
         private void Country_101() {
+            this.curCountry = new Country("Swaziland", 1);
             this.curCountry.Add(new Location("Manzini", "FDMS", "26-32S 031-18E"));
         }
         
         private void Country_102() {
+            this.curCountry = new Country("Tanzania", 20);
             this.curCountry.Add(new Location("Arusha", "HTAR", "03-20S 036-37E"));
             this.curCountry.Add(new Location("Bukoba", "HTBU", "01-20S 031-49E"));
             this.curCountry.Add(new Location("Dar Es Salaam", "HTDA", "06-52S 039-12E"));
@@ -5298,11 +5657,13 @@ namespace Desklet.Weather {
         }
         
         private void Country_103() {
+            this.curCountry = new Country("Togo", 2);
             this.curCountry.Add(new Location("Lome", "DXXX", "06-10N 001-15E"));
             this.curCountry.Add(new Location("Niamtougou", "DXNG", "09-46N 001-06E"));
         }
         
         private void Country_104() {
+            this.curCountry = new Country("Tunisia", 16);
             this.curCountry.Add(new Location("Bizerte", "DTTB", "37-15N 009-48E"));
             this.curCountry.Add(new Location("Bordj El Amri", "DTTI", "36-43N 009-56E"));
             this.curCountry.Add(new Location("Djerba Mellita", "DTTJ", "33-52N 010-46E"));
@@ -5322,6 +5683,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_105() {
+            this.curCountry = new Country("Uganda", 11);
             this.curCountry.Add(new Location("Arua", "HUAR", "03-03N 030-55E"));
             this.curCountry.Add(new Location("Entebbe", "HUEN", "00-03N 032-27E"));
             this.curCountry.Add(new Location("Gulu", "HUGU", "02-45N 032-20E"));
@@ -5336,6 +5698,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_106() {
+            this.curCountry = new Country("Zambia", 4);
             this.curCountry.Add(new Location("Livingstone", "FLLI", "17-49S 025-49E"));
             this.curCountry.Add(new Location("Lusaka International Airport", "FLLS", "15-19S 028-27E"));
             this.curCountry.Add(new Location("Mfuwe", "FLMF", "13-15-32S 031-56-12E"));
@@ -5343,6 +5706,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_107() {
+            this.curCountry = new Country("Zimbabwe", 8);
             this.curCountry.Add(new Location("Buffalo Range", "FVCZ", "21-01S 031-35E"));
             this.curCountry.Add(new Location("Bulawayo", "FVBU", "20-01S 028-37E"));
             this.curCountry.Add(new Location("Gweru", "FVTL", "19-27S 029-51E"));
@@ -5355,12 +5719,86 @@ namespace Desklet.Weather {
         
         private void Region_5() {
             this.curRegion = new Region("Australasia & Oceania", 20);
-            this.curCountry = new Country("Australia", 9);
+            this.regions.Add(this.curRegion);
             this.Country_108();
+            this.curRegion.Add(this.curCountry);
+            this.Country_109();
+            this.curRegion.Add(this.curCountry);
+            this.Country_110();
+            this.curRegion.Add(this.curCountry);
+            this.Country_111();
+            this.curRegion.Add(this.curCountry);
+            this.Country_112();
+            this.curRegion.Add(this.curCountry);
+            this.Country_113();
+            this.curRegion.Add(this.curCountry);
+            this.Country_114();
+            this.curRegion.Add(this.curCountry);
+            this.Country_115();
+            this.curRegion.Add(this.curCountry);
+            this.Country_116();
+            this.curRegion.Add(this.curCountry);
+            this.Country_117();
+            this.curRegion.Add(this.curCountry);
+            this.Country_118();
+            this.curRegion.Add(this.curCountry);
+            this.Country_119();
+            this.curRegion.Add(this.curCountry);
+            this.Country_120();
+            this.curRegion.Add(this.curCountry);
+            this.Country_121();
+            this.curRegion.Add(this.curCountry);
+            this.Country_122();
+            this.curRegion.Add(this.curCountry);
+            this.Country_123();
+            this.curRegion.Add(this.curCountry);
+            this.Country_124();
+            this.curRegion.Add(this.curCountry);
+            this.Country_125();
+            this.curRegion.Add(this.curCountry);
+            this.Country_126();
+            this.curRegion.Add(this.curCountry);
+            this.Country_127();
+            this.curRegion.Add(this.curCountry);
+        }
+        
+        private void Country_108() {
+            this.curCountry = new Country("Australia", 9);
             this.curCountryLocation = new State("South Australia", 1);
+            this.State_91();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Western Australia", 7);
+            this.State_92();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Northern Territory", 4);
+            this.State_93();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("New South Wales", 4);
+            this.State_94();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Queensland", 6);
+            this.State_95();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Victoria", 3);
+            this.State_96();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Australian Capital Territory", 1);
+            this.State_97();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Tasmania", 2);
+            this.State_98();
+            this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Australian External Territories", 3);
+            this.State_99();
+            this.curCountry.Add(this.curCountryLocation);
+        }
+        
+        private void State_91() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Adelaide", "YPAD", "34-56S 138-31E"));
-            this.curCountryLocation = new State("Western Australia", 7);
+        }
+        
+        private void State_92() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Broome", "YBRM", "17-57S 122-13E"));
             this.curState.Add(new Location("Bullsbrook Pearce", "YPEA", "31-40S 116-01E"));
@@ -5369,19 +5807,25 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Perth", "YPPH", "31-56S 115-57E"));
             this.curState.Add(new Location("Port Hedland", "YPPD", "20-06S 119-34E"));
             this.curState.Add(new Location("Learmouth", "YPLM", "22-14S 114-05E"));
-            this.curCountryLocation = new State("Northern Territory", 4);
+        }
+        
+        private void State_93() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Alice Springs", "YBAS", "23-48S 133-53E"));
             this.curState.Add(new Location("Ayers Rock", "YAYE", "25-11S 130-58E"));
             this.curState.Add(new Location("Darwin", "YPDN", "12-24S 130-52E"));
             this.curState.Add(new Location("Tindal/Katherine", "YPTN", "14-26S 132-16E"));
-            this.curCountryLocation = new State("New South Wales", 4);
+        }
+        
+        private void State_94() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Dubbo", "YSDU", "32-12S 148-34E"));
             this.curState.Add(new Location("Sydney", "YSSY", "33-57S 151-11E"));
             this.curState.Add(new Location("Tamworth", "YSTW", "31-05S 150-50E"));
             this.curState.Add(new Location("Wagga Wagga", "YSWG", "35-09S 147-27E"));
-            this.curCountryLocation = new State("Queensland", 6);
+        }
+        
+        private void State_95() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Brisbane", "YBBN", "27-23S 153-06E"));
             this.curState.Add(new Location("Cairns", "YBCS", "16-53S 145-45E"));
@@ -5389,110 +5833,52 @@ namespace Desklet.Weather {
             this.curState.Add(new Location("Mount Isa", "YBMA", "20-40S 139-28E"));
             this.curState.Add(new Location("Rockhampton", "YBRK", "23-23S 150-28E"));
             this.curState.Add(new Location("Townsville", "YBTL", "19-15S 146-45E"));
-            this.curCountryLocation = new State("Victoria", 3);
+        }
+        
+        private void State_96() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Avalon", "YMAV", "38-02S 144-29E"));
             this.curState.Add(new Location("Melbourne", "YMML", "37-40S 144-50E"));
             this.curState.Add(new Location("Richmond", "YSRI", "33-36S 150-47E"));
-            this.curCountryLocation = new State("Australian Capital Territory", 1);
+        }
+        
+        private void State_97() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Canberra", "YSCB", "35-18S 149-11E"));
-            this.curCountryLocation = new State("Tasmania", 2);
+        }
+        
+        private void State_98() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Hobart", "YMHB", "42-50S 147-29E"));
             this.curState.Add(new Location("Launceston", "YMLT", "41-32S 147-12E"));
-            this.curCountryLocation = new State("Australian External Territories", 3);
+        }
+        
+        private void State_99() {
             this.curState = ((State)(this.curCountryLocation));
             this.curState.Add(new Location("Norfolk Island", "YSNF", "29-02S 167-56E"));
             this.curState.Add(new Location("Christmas Island", "YPXM", null));
             this.curState.Add(new Location("Cocos (Keeling) Island", "YPCC", "12-30S 96-50E"));
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("British Indian Ocean Territory", 1);
-            this.Country_109();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cook Islands", 2);
-            this.Country_110();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Fiji", 2);
-            this.Country_111();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Guam", 5);
-            this.Country_112();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Indonesia", 4);
-            this.Country_113();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Kiribati", 1);
-            this.Country_114();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Marshall Islands", 3);
-            this.Country_115();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Micronesia, Federated States of", 5);
-            this.Country_116();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("New Caledonia", 1);
-            this.Country_117();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("New Zealand", 7);
-            this.Country_118();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Northern Mariana Islands", 1);
-            this.Country_119();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Palau", 2);
-            this.Country_120();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Papua New Guinea", 2);
-            this.Country_121();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Samoa", 1);
-            this.Country_122();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Solomon Islands", 1);
-            this.Country_123();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Tonga", 2);
-            this.Country_124();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Tuvalu", 1);
-            this.Country_125();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("United States Minor Outlying Islands", 1);
-            this.Country_126();
-            this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Vanuatu", 4);
-            this.Country_127();
-            this.curRegion.Add(this.curCountry);
-        }
-        
-        private void Country_108() {
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
-            this.curCountry.Add(this.curCountryLocation);
         }
         
         private void Country_109() {
+            this.curCountry = new Country("British Indian Ocean Territory", 1);
             this.curCountry.Add(new Location("Diego Garcia", "FJDG", "07-18S 072-24E"));
         }
         
         private void Country_110() {
+            this.curCountry = new Country("Cook Islands", 2);
             this.curCountry.Add(new Location("Alofi / Niue", "NIUE", "19-04S 169-55W"));
             this.curCountry.Add(new Location("Rarotonga", "NCRG", "21-12S 159-49W"));
         }
         
         private void Country_111() {
+            this.curCountry = new Country("Fiji", 2);
             this.curCountry.Add(new Location("Nandi", "NFFN", "17-45S 177-27E"));
             this.curCountry.Add(new Location("Nausori", "NFNA", "18-03S 178-34E"));
         }
         
         private void Country_112() {
+            this.curCountry = new Country("Guam", 5);
             this.curCountry.Add(new Location("Agana", "PGUM", "13-29N 144-48E"));
             this.curCountry.Add(new Location("Andersen", "PGUA", "13-35N 144-56E"));
             this.curCountry.Add(new Location("Rota Island", "PGRO", "14-11N 145-15E"));
@@ -5501,6 +5887,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_113() {
+            this.curCountry = new Country("Indonesia", 4);
             this.curCountry.Add(new Location("Biak / Mokmer", "WABB", "01-11S 136-07E"));
             this.curCountry.Add(new Location("Jakarta / Soekarno-Hatta", "WIII", "06-07S 106-39E"));
             this.curCountry.Add(new Location("Medan / Polonia", "WIMM", "03-34N 098-41E"));
@@ -5508,16 +5895,19 @@ namespace Desklet.Weather {
         }
         
         private void Country_114() {
+            this.curCountry = new Country("Kiribati", 1);
             this.curCountry.Add(new Location("Tarawa", "NGTA", "01-21N 172-55E"));
         }
         
         private void Country_115() {
+            this.curCountry = new Country("Marshall Islands", 3);
             this.curCountry.Add(new Location("Kwajalein", "PKWA", "08-43N 167-44E"));
             this.curCountry.Add(new Location("Majuro Atoll, Marshall Islands Int. Airp.", "PKMJ", "07-04N 171-17E"));
             this.curCountry.Add(new Location("Majuro Atoll, NWS Office", "PKMR", "07-05N 171-12E"));
         }
         
         private void Country_116() {
+            this.curCountry = new Country("Micronesia, Federated States of", 5);
             this.curCountry.Add(new Location("Kosrae Island", "PTSA", "05-21N 162-57E"));
             this.curCountry.Add(new Location("Pohnpei Island, Pohnpei Int. Airp.", "PTPN", "06-59N 158-12E"));
             this.curCountry.Add(new Location("Pohnpei, NWS Office", "PTTP", "06-58N 158-13E"));
@@ -5526,10 +5916,12 @@ namespace Desklet.Weather {
         }
         
         private void Country_117() {
+            this.curCountry = new Country("New Caledonia", 1);
             this.curCountry.Add(new Location("La Tontouta Nlle-Caledonie", "NWWW", "22-01S 166-13E"));
         }
         
         private void Country_118() {
+            this.curCountry = new Country("New Zealand", 7);
             this.curCountry.Add(new Location("Auckland", "NZAA", "37-01S 174-48E"));
             this.curCountry.Add(new Location("Christchurch", "NZCH", "43-29S 172-33E"));
             this.curCountry.Add(new Location("Christmas/Cassidy", "PLCH", "01-59N 157-29W"));
@@ -5540,41 +5932,50 @@ namespace Desklet.Weather {
         }
         
         private void Country_119() {
+            this.curCountry = new Country("Northern Mariana Islands", 1);
             this.curCountry.Add(new Location("Saipan Island", "PGSN", "15-07N 145-44E"));
         }
         
         private void Country_120() {
+            this.curCountry = new Country("Palau", 2);
             this.curCountry.Add(new Location("Babelthuap Island", "PTRO", "07-22N 134-32E"));
             this.curCountry.Add(new Location("Koror, Palau, NWS Office", "PTKR", "07-20N 134-29E"));
         }
         
         private void Country_121() {
+            this.curCountry = new Country("Papua New Guinea", 2);
             this.curCountry.Add(new Location("Manus Island/Momote", "AYMO", "02-03-43S 147-25-27E"));
             this.curCountry.Add(new Location("Moresby", "AYPY", "09-26S 147-13E"));
         }
         
         private void Country_122() {
+            this.curCountry = new Country("Samoa", 1);
             this.curCountry.Add(new Location("Faleolo Intl / Apia", "NSFA", "13-49S 172-00W"));
         }
         
         private void Country_123() {
+            this.curCountry = new Country("Solomon Islands", 1);
             this.curCountry.Add(new Location("Honiara / Henderson", "AGGH", "09-25S 160-03E"));
         }
         
         private void Country_124() {
+            this.curCountry = new Country("Tonga", 2);
             this.curCountry.Add(new Location("Fua'Amotu", "NFTF", "21-14S 175-09W"));
             this.curCountry.Add(new Location("Haapai", "NFTL", "19-48S 174-21W"));
         }
         
         private void Country_125() {
+            this.curCountry = new Country("Tuvalu", 1);
             this.curCountry.Add(new Location("Funafuti", "NGFU", "08-31S 179-13E"));
         }
         
         private void Country_126() {
+            this.curCountry = new Country("United States Minor Outlying Islands", 1);
             this.curCountry.Add(new Location("Pago Pago", "NSTU", "14-20S 170-43W"));
         }
         
         private void Country_127() {
+            this.curCountry = new Country("Vanuatu", 4);
             this.curCountry.Add(new Location("Bauerfield Efate", "NVVV", "17-42S 168-18E"));
             this.curCountry.Add(new Location("Lamap Malekula", "NVSL", "16-25S 167-48E"));
             this.curCountry.Add(new Location("Pekoa Airport Santo", "NVSS", "15-31S 167-13E"));
@@ -5583,218 +5984,79 @@ namespace Desklet.Weather {
         
         private void Region_6() {
             this.curRegion = new Region("Asia", 31);
-            this.curCountry = new Country("Afghanistan", 2);
+            this.regions.Add(this.curRegion);
             this.Country_128();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Philippines", 7);
             this.Country_129();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Viet Nam", 3);
             this.Country_130();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("South Korea", 15);
             this.Country_131();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("North Korea", 1);
             this.Country_132();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Hong Kong", 1);
             this.Country_133();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Pakistan", 6);
             this.Country_134();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Georgia", 1);
             this.Country_135();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("India", 15);
             this.Country_136();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Nepal", 1);
             this.Country_137();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("People's Republic of China", 26);
             this.Country_138();
-            this.curCountryLocation = new City("Beijing", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Capital International Airport", "ZBAA", "39-56N 116-17E"));
-            this.curCountryLocation = new City("Shanghai", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Hongqiao International Airport", "ZSSS", "31-10N 121-26E"));
-            this.curCity.Add(new Location("Pudong International Airport", "ZSPD", "31-07N 121-46E"));
-            this.curCountryLocation = new City("Tianjin", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Zhang Gui Zhuang", "ZBTJ", "39-11N 117-21E"));
-            this.curCountryLocation = new City("Chongqing", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Jiangbe Airport", "ZUCK", "29-31N 106-29E"));
-            this.curCountryLocation = new State("Jilin", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Changchun", "ZYCC", "43-54N 125-13E"));
-            this.curState.Add(new Location("Yanji", "ZYYJ", null));
-            this.curCountryLocation = new State("Hunan", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Changsha", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Huanghua International Airport", "ZGHA", "28-14N 112-52E"));
-            this.curState.Add(this.curStateLocation);
-            this.curCountryLocation = new State("Sichuan", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Chengdu", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Shuangliu International Airport", "ZUUU", "30-40N 104-01E"));
-            this.curState.Add(this.curStateLocation);
-            this.curState.Add(new Location("Xichang", "ZUXC", null));
-            this.curCountryLocation = new State("Liaoning", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Dalian", "ZYTL", "38-54N 121-38E"));
-            this.curState.Add(new Location("Shenyang/Taokian", "ZYTX", "41-48N 123-24E"));
-            this.curCountryLocation = new State("Fujian", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Xiamen", "ZSAM", "24-29N 118-05E"));
-            this.curCountryLocation = new State("Guangdong", 3);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Guangzhou", "ZGGG", "23-10N 113-20E"));
-            this.curState.Add(new Location("Shenzhen", "ZGSZ", "22-33N 114-06E"));
-            this.curState.Add(new Location("Shantou", "ZGOW", "23-24N 116-41E"));
-            this.curCountryLocation = new State("Guangxi", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Guilin", "ZGKL", "25-20N 110-18E"));
-            this.curState.Add(new Location("Nanning", "ZGNN", "22-49N 108-21E"));
-            this.curCountryLocation = new State("Guizhou", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Guiyang", "ZUGY", "26-35N 106-43E"));
-            this.curCountryLocation = new State("Hainan", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Sanya", 2);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Sanya", "ZGSY", null));
-            this.curCity.Add(new Location("Fenghuang International Airport", "ZJSY", "18-18N 109-24E"));
-            this.curState.Add(this.curStateLocation);
-            this.curCountryLocation = new State("Xinjiang", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Urum-Qi/Diwopu", "ZWWW", "43-54N 087-28E"));
-            this.curState.Add(new Location("Kashi", "ZWSH", "39-28N 075-59E"));
-            this.curCountryLocation = new State("Zhejiang", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Hangzhou", "ZSHC", "30-14N 120-10E"));
-            this.curState.Add(new Location("Ningbo", "ZSNB", null));
-            this.curCountryLocation = new State("Heilongjiang", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Harbin", "ZYHB", "46-01-12N 126-34-48E"));
-            this.curState.Add(new Location("Mudanjiang", "ZYMD", null));
-            this.curCountryLocation = new State("Inner Mongolia", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Hohhot", "ZBHH", "40-49N 111-41E"));
-            this.curCountryLocation = new State("Anhui", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Hefei", "ZSOF", "31-52N 117-14E"));
-            this.curCountryLocation = new State("Shantong", 3);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Jinan", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Yaoqiang International Airport", "ZSJN", "36-50N 117-10E"));
-            this.curState.Add(this.curStateLocation);
-            this.curState.Add(new Location("Qingdao", "ZSQD", "36-04N 120-20E"));
-            this.curState.Add(new Location("Yantai", "ZSYT", null));
-            this.curCountryLocation = new State("Gansu", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Lanzhou", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Zhongchuan Airport", "ZLLL", "36-01-12N 103-45E"));
-            this.curState.Add(this.curStateLocation);
-            this.curCountryLocation = new State("Yunnan", 2);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curStateLocation = new City("Kunming", 1);
-            this.curCity = ((City)(this.curStateLocation));
-            this.curCity.Add(new Location("Wujiaba International Airport", "ZPPP", "25-01N 102-41E"));
-            this.curState.Add(this.curStateLocation);
-            this.curState.Add(new Location("Xishuangbanna", "ZPJH", null));
-            this.curCountryLocation = new State("Shaanxi", 1);
-            this.curState = ((State)(this.curCountryLocation));
-            this.curState.Add(new Location("Xian/Xianyang", "ZLXY", "34-26N 108-45E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Japan", 106);
             this.Country_139();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Kazakhstan", 9);
             this.Country_140();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Malaysia", 20);
             this.Country_141();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Mongolia", 1);
             this.Country_142();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Myanmar", 1);
             this.Country_143();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Singapore", 2);
             this.Country_144();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Sri Lanka", 1);
             this.Country_145();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Tajikistan", 1);
             this.Country_146();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Thailand", 19);
             this.Country_147();
-            this.curCountryLocation = new City("Bangkok", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Don Muang", "VTBD", "13-55N 100-36E"));
-            this.curCountryLocation = new City("Prachuap Khirikhan", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Hua Hin", "VTPH", "12-35N 099-57E"));
-            this.curCountryLocation = new City("Songkhla", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Hat Yai", "VTSS", "06-55N 100-26E"));
-            this.curCountryLocation = new City("Tak", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Mae Sot", "VTPM", "16-40N 098-33E"));
-            this.curCity.Add(new Location("Tak", "VTPT", "16-53N 099-09E"));
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Taiwan", 3);
             this.Country_148();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Turkmenistan", 1);
             this.Country_149();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Maldives", 1);
             this.Country_150();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Azerbaijan", 2);
             this.Country_151();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Bangladesh", 2);
             this.Country_152();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Brunei", 1);
             this.Country_153();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Kyrgyzstan", 1);
             this.Country_154();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Laos", 1);
             this.Country_155();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Macau", 1);
             this.Country_156();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Uzbekistan", 5);
             this.Country_157();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cambodia", 2);
             this.Country_158();
             this.curRegion.Add(this.curCountry);
         }
         
         private void Country_128() {
+            this.curCountry = new Country("Afghanistan", 2);
             this.curCountry.Add(new Location("Herat", "OAHR", "34-13N 062-13E"));
             this.curCountry.Add(new Location("Kabul", "OAKB", "34-38N 069-12E"));
         }
         
         private void Country_129() {
+            this.curCountry = new Country("Philippines", 7);
             this.curCountry.Add(new Location("Clarkfield Pampanga", "RPLC", "15-11N 120-33E"));
             this.curCountry.Add(new Location("Davao", "RPMD", "07-07N 125-39E"));
             this.curCountry.Add(new Location("Laoag", "RPLI", "18-11N 120-32E"));
@@ -5805,12 +6067,14 @@ namespace Desklet.Weather {
         }
         
         private void Country_130() {
+            this.curCountry = new Country("Viet Nam", 3);
             this.curCountry.Add(new Location("Da Nang", "VVDN", "16-02N 108-11E"));
             this.curCountry.Add(new Location("Ha Noi", "VVNB", "21-01N 105-48E"));
             this.curCountry.Add(new Location("Ho Chi Minh", "VVTS", "10-49N 106-40E"));
         }
         
         private void Country_131() {
+            this.curCountry = new Country("South Korea", 15);
             this.curCountry.Add(new Location("Cheju", "RKPC", "33-30N 126-30E"));
             this.curCountry.Add(new Location("Chongju Ab", "RKTU", "36-42N 127-30E"));
             this.curCountry.Add(new Location("Incheon", "RKSI", "37-28N 126-27E"));
@@ -5829,14 +6093,17 @@ namespace Desklet.Weather {
         }
         
         private void Country_132() {
+            this.curCountry = new Country("North Korea", 1);
             this.curCountry.Add(new Location("Pyongyang", "ZKPY", "39-02N 125-47E"));
         }
         
         private void Country_133() {
+            this.curCountry = new Country("Hong Kong", 1);
             this.curCountry.Add(new Location("Hong Kong International Airport", "VHHH", "22-20N 114-11E"));
         }
         
         private void Country_134() {
+            this.curCountry = new Country("Pakistan", 6);
             this.curCountry.Add(new Location("Islamabad", "OPRN", "33-37N 073-06E"));
             this.curCountry.Add(new Location("Karachi", "OPKC", "24-54N 067-08E"));
             this.curCountry.Add(new Location("Lahore", "OPLA", "31-31N 074-24E"));
@@ -5846,10 +6113,12 @@ namespace Desklet.Weather {
         }
         
         private void Country_135() {
+            this.curCountry = new Country("Georgia", 1);
             this.curCountry.Add(new Location("Tbilisi", "UGGG", "41-41N 044-57E"));
         }
         
         private void Country_136() {
+            this.curCountry = new Country("India", 15);
             this.curCountry.Add(new Location("Ahmadabad", "VAAH", "23-04N 072-38E"));
             this.curCountry.Add(new Location("Amritsar", "VIAR", "31-38N 074-52E"));
             this.curCountry.Add(new Location("Bangalore/Hindustan", "VOBG", "12-57N 077-40E"));
@@ -5868,31 +6137,82 @@ namespace Desklet.Weather {
         }
         
         private void Country_137() {
+            this.curCountry = new Country("Nepal", 1);
             this.curCountry.Add(new Location("Kathmandu", "VNKT", "27-42N 085-22E"));
         }
         
         private void Country_138() {
+            this.curCountry = new Country("People's Republic of China", 26);
+            this.curCountryLocation = new City("Beijing", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Capital International Airport", "ZBAA", "39-56N 116-17E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Shanghai", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Hongqiao International Airport", "ZSSS", "31-10N 121-26E"));
+            this.curCity.Add(new Location("Pudong International Airport", "ZSPD", "31-07N 121-46E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Tianjin", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Zhang Gui Zhuang", "ZBTJ", "39-11N 117-21E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new City("Chongqing", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Jiangbe Airport", "ZUCK", "29-31N 106-29E"));
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Jilin", 2);
+            this.State_100();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Hunan", 1);
+            this.State_101();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Sichuan", 2);
+            this.State_102();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Liaoning", 2);
+            this.State_103();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Fujian", 1);
+            this.State_104();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Guangdong", 3);
+            this.State_105();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Guangxi", 2);
+            this.State_106();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Guizhou", 1);
+            this.State_107();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Hainan", 1);
+            this.State_108();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Xinjiang", 2);
+            this.State_109();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Zhejiang", 2);
+            this.State_110();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Heilongjiang", 2);
+            this.State_111();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Inner Mongolia", 1);
+            this.State_112();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Anhui", 1);
+            this.State_113();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Shantong", 3);
+            this.State_114();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Gansu", 1);
+            this.State_115();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Yunnan", 2);
+            this.State_116();
             this.curCountry.Add(this.curCountryLocation);
+            this.curCountryLocation = new State("Shaanxi", 1);
+            this.State_117();
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Nanjing", "ZSNJ", "32-00N 118-48E"));
             this.curCountry.Add(new Location("Shijiazhuang", "ZBSJ", null));
@@ -5900,7 +6220,129 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Wuhan", "ZHHH", "30-37N 114-08E"));
         }
         
+        private void State_100() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Changchun", "ZYCC", "43-54N 125-13E"));
+            this.curState.Add(new Location("Yanji", "ZYYJ", null));
+        }
+        
+        private void State_101() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Changsha", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Huanghua International Airport", "ZGHA", "28-14N 112-52E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_102() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Chengdu", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Shuangliu International Airport", "ZUUU", "30-40N 104-01E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Xichang", "ZUXC", null));
+        }
+        
+        private void State_103() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Dalian", "ZYTL", "38-54N 121-38E"));
+            this.curState.Add(new Location("Shenyang/Taokian", "ZYTX", "41-48N 123-24E"));
+        }
+        
+        private void State_104() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Xiamen", "ZSAM", "24-29N 118-05E"));
+        }
+        
+        private void State_105() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Guangzhou", "ZGGG", "23-10N 113-20E"));
+            this.curState.Add(new Location("Shenzhen", "ZGSZ", "22-33N 114-06E"));
+            this.curState.Add(new Location("Shantou", "ZGOW", "23-24N 116-41E"));
+        }
+        
+        private void State_106() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Guilin", "ZGKL", "25-20N 110-18E"));
+            this.curState.Add(new Location("Nanning", "ZGNN", "22-49N 108-21E"));
+        }
+        
+        private void State_107() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Guiyang", "ZUGY", "26-35N 106-43E"));
+        }
+        
+        private void State_108() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Sanya", 2);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Sanya", "ZGSY", null));
+            this.curCity.Add(new Location("Fenghuang International Airport", "ZJSY", "18-18N 109-24E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_109() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Urum-Qi/Diwopu", "ZWWW", "43-54N 087-28E"));
+            this.curState.Add(new Location("Kashi", "ZWSH", "39-28N 075-59E"));
+        }
+        
+        private void State_110() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Hangzhou", "ZSHC", "30-14N 120-10E"));
+            this.curState.Add(new Location("Ningbo", "ZSNB", null));
+        }
+        
+        private void State_111() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Harbin", "ZYHB", "46-01-12N 126-34-48E"));
+            this.curState.Add(new Location("Mudanjiang", "ZYMD", null));
+        }
+        
+        private void State_112() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Hohhot", "ZBHH", "40-49N 111-41E"));
+        }
+        
+        private void State_113() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Hefei", "ZSOF", "31-52N 117-14E"));
+        }
+        
+        private void State_114() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Jinan", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Yaoqiang International Airport", "ZSJN", "36-50N 117-10E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Qingdao", "ZSQD", "36-04N 120-20E"));
+            this.curState.Add(new Location("Yantai", "ZSYT", null));
+        }
+        
+        private void State_115() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Lanzhou", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Zhongchuan Airport", "ZLLL", "36-01-12N 103-45E"));
+            this.curState.Add(this.curStateLocation);
+        }
+        
+        private void State_116() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curStateLocation = new City("Kunming", 1);
+            this.curCity = ((City)(this.curStateLocation));
+            this.curCity.Add(new Location("Wujiaba International Airport", "ZPPP", "25-01N 102-41E"));
+            this.curState.Add(this.curStateLocation);
+            this.curState.Add(new Location("Xishuangbanna", "ZPJH", null));
+        }
+        
+        private void State_117() {
+            this.curState = ((State)(this.curCountryLocation));
+            this.curState.Add(new Location("Xian/Xianyang", "ZLXY", "34-26N 108-45E"));
+        }
+        
         private void Country_139() {
+            this.curCountry = new Country("Japan", 106);
             this.curCountry.Add(new Location("Akeno Ab", "RJOE", "34-32N 136-41E"));
             this.curCountry.Add(new Location("Akita", "RJSK", "39-37N 140-13E"));
             this.curCountry.Add(new Location("Amami", "RJKA", "28-26N 129-43E"));
@@ -6010,6 +6452,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_140() {
+            this.curCountry = new Country("Kazakhstan", 9);
             this.curCountry.Add(new Location("Aktau", "UATE", "43-52-12N 051-06E"));
             this.curCountry.Add(new Location("Aktjubinsk", "UATT", "50-17N 057-09E"));
             this.curCountry.Add(new Location("Almaty", "UAAA", "43-14N 076-56E"));
@@ -6022,6 +6465,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_141() {
+            this.curCountry = new Country("Malaysia", 20);
             this.curCountry.Add(new Location("Alor Setar", "WMKA", null));
             this.curCountry.Add(new Location("Bintulu", "WBGB", "03-12N 113-02E"));
             this.curCountry.Add(new Location("Johore Bharu/Senai", "WMKJ", "01-38N 103-40E"));
@@ -6045,27 +6489,36 @@ namespace Desklet.Weather {
         }
         
         private void Country_142() {
+            this.curCountry = new Country("Mongolia", 1);
             this.curCountry.Add(new Location("Ulan-Bator", "ZMUB", "47-51N 106-46E"));
         }
         
         private void Country_143() {
+            this.curCountry = new Country("Myanmar", 1);
             this.curCountry.Add(new Location("Yangon", "VYYY", "16-46N 096-10E"));
         }
         
         private void Country_144() {
+            this.curCountry = new Country("Singapore", 2);
             this.curCountry.Add(new Location("Singapore/Changi Airport", "WSSS", "01-22N 103-59E"));
             this.curCountry.Add(new Location("Singapore/Paya Lebar", "WSAP", "01-22N 103-55E"));
         }
         
         private void Country_145() {
+            this.curCountry = new Country("Sri Lanka", 1);
             this.curCountry.Add(new Location("Katunayake", "VCBI", "07-10N 079-53E"));
         }
         
         private void Country_146() {
+            this.curCountry = new Country("Tajikistan", 1);
             this.curCountry.Add(new Location("Dushanbe", "UTDD", "38-33N 068-47E"));
         }
         
         private void Country_147() {
+            this.curCountry = new Country("Thailand", 19);
+            this.curCountryLocation = new City("Bangkok", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Don Muang", "VTBD", "13-55N 100-36E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Chiang Mai", "VTCC", "18-47N 098-59E"));
             this.curCountry.Add(new Location("Khon Kaen", "VTUK", "16-26N 102-50E"));
@@ -6076,11 +6529,21 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Pattani", "VTSK", "06-47N 101-09E"));
             this.curCountry.Add(new Location("Phrae", "VTCP", "18-10N 100-10E"));
             this.curCountry.Add(new Location("Phuket", "VTSP", "08-07N 098-19E"));
+            this.curCountryLocation = new City("Prachuap Khirikhan", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Hua Hin", "VTPH", "12-35N 099-57E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Ranong", "VTSR", "09-59N 098-37E"));
             this.curCountry.Add(new Location("Rayong", "VTBU", "12-38N 101-21E"));
+            this.curCountryLocation = new City("Songkhla", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Hat Yai", "VTSS", "06-55N 100-26E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Surat Thani", "VTSB", "09-07N 099-21E"));
+            this.curCountryLocation = new City("Tak", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Mae Sot", "VTPM", "16-40N 098-33E"));
+            this.curCity.Add(new Location("Tak", "VTPT", "16-53N 099-09E"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Trang", "VTST", "07-31N 099-37E"));
             this.curCountry.Add(new Location("Ubon Ratchathani", "VTUU", "15-15N 104-52E"));
@@ -6088,46 +6551,56 @@ namespace Desklet.Weather {
         }
         
         private void Country_148() {
+            this.curCountry = new Country("Taiwan", 3);
             this.curCountry.Add(new Location("Chiang Kai Shek", "RCTP", "25-05N 121-13E"));
             this.curCountry.Add(new Location("Kaohsiung", "RCKH", "22-35N 120-21E"));
             this.curCountry.Add(new Location("Sungshan/Taipei", "RCSS", "25-04N 121-33E"));
         }
         
         private void Country_149() {
+            this.curCountry = new Country("Turkmenistan", 1);
             this.curCountry.Add(new Location("Ashgabat", "UTAA", "37-59N 058-22E"));
         }
         
         private void Country_150() {
+            this.curCountry = new Country("Maldives", 1);
             this.curCountry.Add(new Location("Male", "VRMM", "04-12N 073-32E"));
         }
         
         private void Country_151() {
+            this.curCountry = new Country("Azerbaijan", 2);
             this.curCountry.Add(new Location("Baku", "UBBB", "40-27N 050-04E"));
             this.curCountry.Add(new Location("Gyanca", "UBBG", "40-44N 046-24E"));
         }
         
         private void Country_152() {
+            this.curCountry = new Country("Bangladesh", 2);
             this.curCountry.Add(new Location("Chittagong Patenga", "VGEG", "22-16N 091-49E"));
             this.curCountry.Add(new Location("Kurmitola, Dia", "VGZR", "23-51N 090-24E"));
         }
         
         private void Country_153() {
+            this.curCountry = new Country("Brunei", 1);
             this.curCountry.Add(new Location("Brunei", "WBSB", "04-56N 114-56E"));
         }
         
         private void Country_154() {
+            this.curCountry = new Country("Kyrgyzstan", 1);
             this.curCountry.Add(new Location("Bishkek", "UAFM", "42-51N 074-35E"));
         }
         
         private void Country_155() {
+            this.curCountry = new Country("Laos", 1);
             this.curCountry.Add(new Location("Vientiane", "VLVT", "17-57N 102-34E"));
         }
         
         private void Country_156() {
+            this.curCountry = new Country("Macau", 1);
             this.curCountry.Add(new Location("Taipa", "VMMC", "22-10N 113-34E"));
         }
         
         private void Country_157() {
+            this.curCountry = new Country("Uzbekistan", 5);
             this.curCountry.Add(new Location("Nukus / Karakalpakstan", "UTNN", "42-28-48N 059-37-48E"));
             this.curCountry.Add(new Location("Samarkand", "UTSS", "39-34N 066-57E"));
             this.curCountry.Add(new Location("Tashkent", "UTTT", "41-16N 069-16E"));
@@ -6136,178 +6609,129 @@ namespace Desklet.Weather {
         }
         
         private void Country_158() {
+            this.curCountry = new Country("Cambodia", 2);
             this.curCountry.Add(new Location("Phnom-Penh / Pochentong", "VDPP", "11-33N 104-51E"));
             this.curCountry.Add(new Location("Siemreap", "VDSR", "13-22N 103-51E"));
         }
         
         private void Region_7() {
             this.curRegion = new Region("Central and South America", 39);
-            this.curCountry = new Country("Aruba", 1);
+            this.regions.Add(this.curRegion);
             this.Country_159();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Bahamas", 3);
             this.Country_160();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Belize", 1);
             this.Country_161();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Bermuda", 1);
             this.Country_162();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("British Virgin Islands", 1);
             this.Country_163();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cayman Islands", 2);
             this.Country_164();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Cuba", 16);
             this.Country_165();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Costa Rica", 4);
             this.Country_166();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Dominican Republic", 6);
             this.Country_167();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("El Salvador", 5);
             this.Country_168();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("French Polynesia", 1);
             this.Country_169();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Grenada", 1);
             this.Country_170();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Guadeloupe", 1);
             this.Country_171();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Guatemala", 5);
             this.Country_172();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Guyana", 1);
             this.Country_173();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Haiti", 2);
             this.Country_174();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Honduras", 15);
             this.Country_175();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Jamaica", 3);
             this.Country_176();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Martinique", 1);
             this.Country_177();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Netherlands Antilles", 4);
             this.Country_178();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Nicaragua", 7);
             this.Country_179();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Panamá", 7);
             this.Country_180();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Saint Lucia", 2);
             this.Country_181();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Saint Vincent and the Grenadines", 1);
             this.Country_182();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Trinidad and Tobago", 2);
             this.Country_183();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Turks and Caicos Islands", 1);
             this.Country_184();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Bolivia", 30);
             this.Country_185();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Chile", 13);
             this.Country_186();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Colombia", 27);
             this.Country_187();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Ecuador", 4);
             this.Country_188();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("French Guiana", 1);
             this.Country_189();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Paraguay", 2);
             this.Country_190();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Peru", 17);
             this.Country_191();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("South Georgia and the Islands", 1);
             this.Country_192();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Suriname", 1);
             this.Country_193();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Uruguay", 11);
             this.Country_194();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Venezuela", 35);
             this.Country_195();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Argentina", 47);
             this.Country_196();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Brazil", 43);
             this.Country_197();
-            this.curCountryLocation = new City("Belo Horizonte", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Confins Airport", "SBCF", "19-56S 043-56W"));
-            this.curCountryLocation = new City("Curitiba", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Afonso Pena Airport", "SBCT", "25-31S 049-10W"));
-            this.curCountryLocation = new City("Manaus", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Eduardo Gomes International Airport", "SBEG", "03-02S 060-03W"));
-            this.curCountryLocation = new City("Porto Alegre", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Porto Alegre Airport", "SBPA", "30-00S 051-11W"));
-            this.curCountryLocation = new City("Rio de Janeiro", 2);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Galeão Airport", "SBGL", "22-49S 043-15W"));
-            this.curCity.Add(new Location("Santos Dumont Airport", "SBRJ", "22-54S 043-10W"));
-            this.curCountryLocation = new City("São Paulo", 1);
-            this.curCity = ((City)(this.curCountryLocation));
-            this.curCity.Add(new Location("Congonhas Airport", "SBSP", "23-37S 046-39W"));
             this.curRegion.Add(this.curCountry);
         }
         
         private void Country_159() {
+            this.curCountry = new Country("Aruba", 1);
             this.curCountry.Add(new Location("Queen Beatrix Airport", "TNCA", "12-30N 070-01W"));
         }
         
         private void Country_160() {
+            this.curCountry = new Country("Bahamas", 3);
             this.curCountry.Add(new Location("Freeport", "MYGF", "26-33N 078-42W"));
             this.curCountry.Add(new Location("Georgetown, Exuma", "MYEG", "23-28-30N 075-46-00W"));
             this.curCountry.Add(new Location("Nassau", "MYNN", "25-03N 077-28W"));
         }
         
         private void Country_161() {
+            this.curCountry = new Country("Belize", 1);
             this.curCountry.Add(new Location("Belize", "MZBZ", "17-32N 088-18W"));
         }
         
         private void Country_162() {
+            this.curCountry = new Country("Bermuda", 1);
             this.curCountry.Add(new Location("Bermuda", "TXKF", "32-22N 064-41W"));
         }
         
         private void Country_163() {
+            this.curCountry = new Country("British Virgin Islands", 1);
             this.curCountry.Add(new Location("Beef Island, Tortola", "TUPJ", "18-27N 064-32W"));
         }
         
         private void Country_164() {
+            this.curCountry = new Country("Cayman Islands", 2);
             this.curCountry.Add(new Location("Cayman Brac", "MWCB", "19-41-13N 079-52-58"));
             this.curCountry.Add(new Location("Grand Cayman", "MWCR", "19-17N 081-21W"));
         }
         
         private void Country_165() {
+            this.curCountry = new Country("Cuba", 16);
             this.curCountry.Add(new Location("Airport Jose Martí, Rancho-Boyeros, Habana", "MUHA", "22-59N 082-24W"));
             this.curCountry.Add(new Location("Baracoa", "MUBA", "20-21N 074-30W"));
             this.curCountry.Add(new Location("Bayamo", "MUBY", "20-24N 076-37W"));
@@ -6327,6 +6751,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_166() {
+            this.curCountry = new Country("Costa Rica", 4);
             this.curCountry.Add(new Location("Juan Santamaría", "MROC", "10-00N 084-13W"));
             this.curCountry.Add(new Location("Liberia", "MRLB", "10-37N 085-26W"));
             this.curCountry.Add(new Location("Puerto Limón", "MRLM", "10-00N 083-03W"));
@@ -6334,6 +6759,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_167() {
+            this.curCountry = new Country("Dominican Republic", 6);
             this.curCountry.Add(new Location("Herrera", "MDHE", "18-28N 069-58W"));
             this.curCountry.Add(new Location("La Romana", "MDLR", "18-25N 068-57W"));
             this.curCountry.Add(new Location("Las Américas", "MDSD", "18-26N 069-40W"));
@@ -6343,6 +6769,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_168() {
+            this.curCountry = new Country("El Salvador", 5);
             this.curCountry.Add(new Location("Acajutla", "MSAC", "13-34N 089-50W"));
             this.curCountry.Add(new Location("El Salvador/Comalapa", "MSLP", "13-26N 089-03W"));
             this.curCountry.Add(new Location("San Miguel/El Papalón", "MSSM", "13-27N 088-07W"));
@@ -6351,18 +6778,22 @@ namespace Desklet.Weather {
         }
         
         private void Country_169() {
+            this.curCountry = new Country("French Polynesia", 1);
             this.curCountry.Add(new Location("Tahiti-Faaa", "NTAA", "17-33S 149-37W"));
         }
         
         private void Country_170() {
+            this.curCountry = new Country("Grenada", 1);
             this.curCountry.Add(new Location("Point Salines", "TGPY", "12-00N 061-47W"));
         }
         
         private void Country_171() {
+            this.curCountry = new Country("Guadeloupe", 1);
             this.curCountry.Add(new Location("Le Raizet, Guadeloupe", "TFFR", "16-16N 061-31W"));
         }
         
         private void Country_172() {
+            this.curCountry = new Country("Guatemala", 5);
             this.curCountry.Add(new Location("La Aurora Airport", "MGGT", "14-35N 090-31W"));
             this.curCountry.Add(new Location("Huehuetenango", "MGHT", "15-19N 091-28W"));
             this.curCountry.Add(new Location("Puerto Barrios", "MGPB", "15-43N 088-36W"));
@@ -6371,15 +6802,18 @@ namespace Desklet.Weather {
         }
         
         private void Country_173() {
+            this.curCountry = new Country("Guyana", 1);
             this.curCountry.Add(new Location("Georgetown/Cheddi Jagan International Airport", "SYCJ", "06-29N 058-15W"));
         }
         
         private void Country_174() {
+            this.curCountry = new Country("Haiti", 2);
             this.curCountry.Add(new Location("Cap-Haitien", "MTCH", "19-45N 072-11W"));
             this.curCountry.Add(new Location("Port-Au-Prince", "MTPP", "18-34N 072-18W"));
         }
         
         private void Country_175() {
+            this.curCountry = new Country("Honduras", 15);
             this.curCountry.Add(new Location("Amapala", "MHAM", "13-16N 087-39W"));
             this.curCountry.Add(new Location("Catacamas", "MHCA", "14-54N 085-56W"));
             this.curCountry.Add(new Location("Choluteca", "MHCH", "13-18N 087-11W"));
@@ -6398,16 +6832,19 @@ namespace Desklet.Weather {
         }
         
         private void Country_176() {
+            this.curCountry = new Country("Jamaica", 3);
             this.curCountry.Add(new Location("Kingston/Norman Manley", "MKJP", "17-56N 076-47W"));
             this.curCountry.Add(new Location("Montego Bay/Sangster", "MKJS", "18-30N 077-55W"));
             this.curCountry.Add(new Location("Montego Bay", "MKJA", null));
         }
         
         private void Country_177() {
+            this.curCountry = new Country("Martinique", 1);
             this.curCountry.Add(new Location("Le Lamentin", "TFFF", "14-36N 061-00W"));
         }
         
         private void Country_178() {
+            this.curCountry = new Country("Netherlands Antilles", 4);
             this.curCountry.Add(new Location("Bonaire", "TNCB", "12-09N 068-17W"));
             this.curCountry.Add(new Location("Curacao", "TNCC", "12-12N 068-58W"));
             this.curCountry.Add(new Location("Saint Maarten", "TNCM", "18-03N 063-07W"));
@@ -6415,6 +6852,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_179() {
+            this.curCountry = new Country("Nicaragua", 7);
             this.curCountry.Add(new Location("Bluefields", "MNBL", "12-00N 086-46W"));
             this.curCountry.Add(new Location("Chinandega", "MNCH", "12-38N 087-08W"));
             this.curCountry.Add(new Location("Jinotega", "MNJG", "13-05N 085-59W"));
@@ -6425,6 +6863,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_180() {
+            this.curCountry = new Country("Panamá", 7);
             this.curCountry.Add(new Location("Bocas Del Toro International", "MPBO", "09-21N 082-15W"));
             this.curCountry.Add(new Location("Changuinola/Capitán Manuel Niño", "MPCH", "09-28N 082-31W"));
             this.curCountry.Add(new Location("David", "MPDA", "08-24N 082-25W"));
@@ -6435,24 +6874,29 @@ namespace Desklet.Weather {
         }
         
         private void Country_181() {
+            this.curCountry = new Country("Saint Lucia", 2);
             this.curCountry.Add(new Location("Hewanorra", "TLPL", "13-45N 060-57W"));
             this.curCountry.Add(new Location("Vigie", "TLPC", "14-01N 061-00W"));
         }
         
         private void Country_182() {
+            this.curCountry = new Country("Saint Vincent and the Grenadines", 1);
             this.curCountry.Add(new Location("Arnos Vale", "TVSV", "13-08N 061-12W"));
         }
         
         private void Country_183() {
+            this.curCountry = new Country("Trinidad and Tobago", 2);
             this.curCountry.Add(new Location("Crown Pt./ Scarborou", "TTCP", "11-09N 060-51W"));
             this.curCountry.Add(new Location("Trinidad", "TTPP", "10-37N 061-21W"));
         }
         
         private void Country_184() {
+            this.curCountry = new Country("Turks and Caicos Islands", 1);
             this.curCountry.Add(new Location("Providenciales", "MBPV", "21-46-25N 072-15-57W"));
         }
         
         private void Country_185() {
+            this.curCountry = new Country("Bolivia", 30);
             this.curCountry.Add(new Location("Ascensión De Guarayos", "SLAS", "15-43S 063-06W"));
             this.curCountry.Add(new Location("Camiri", "SLCA", "20-00S 063-32W"));
             this.curCountry.Add(new Location("Charana", "SLCN", "17-35S 069-36W"));
@@ -6486,6 +6930,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_186() {
+            this.curCountry = new Country("Chile", 13);
             this.curCountry.Add(new Location("Antofagasta", "SCFA", "23-26S 070-26W"));
             this.curCountry.Add(new Location("Arica", "SCAR", "18-20S 070-20W"));
             this.curCountry.Add(new Location("Balmaceda", "SCBA", "45-55S 071-41W"));
@@ -6502,6 +6947,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_187() {
+            this.curCountry = new Country("Colombia", 27);
             this.curCountry.Add(new Location("Apartado/Los Cedros", "SKLC", "07-49N 076-42W"));
             this.curCountry.Add(new Location("Arauca/Santiago Pérez", "SKUC", "07-04N 070-44W"));
             this.curCountry.Add(new Location("Armenia/El Eden", "SKAR", "04-30N 075-43W"));
@@ -6532,6 +6978,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_188() {
+            this.curCountry = new Country("Ecuador", 4);
             this.curCountry.Add(new Location("Guayaquil/Simón Bolívar", "SEGU", "02-09S 079-53W"));
             this.curCountry.Add(new Location("Latacunga", "SELT", "00-55S 078-37W"));
             this.curCountry.Add(new Location("Manta", "SEMT", "00-57S 080-41W"));
@@ -6539,15 +6986,18 @@ namespace Desklet.Weather {
         }
         
         private void Country_189() {
+            this.curCountry = new Country("French Guiana", 1);
             this.curCountry.Add(new Location("Cayenne / Rochambeau", "SOCA", "04-50N 052-22W"));
         }
         
         private void Country_190() {
+            this.curCountry = new Country("Paraguay", 2);
             this.curCountry.Add(new Location("Asunción", "SGAS", "25-16S 057-38W"));
             this.curCountry.Add(new Location("Guarany", "SGES", "25-27S 054-51W"));
         }
         
         private void Country_191() {
+            this.curCountry = new Country("Peru", 17);
             this.curCountry.Add(new Location("Andahuayla", "SPHY", "13-43S 073-21W"));
             this.curCountry.Add(new Location("Arequipa", "SPQU", "16-19S 071-33W"));
             this.curCountry.Add(new Location("Ayacucho", "SPHO", "13-08S 074-13W"));
@@ -6568,14 +7018,17 @@ namespace Desklet.Weather {
         }
         
         private void Country_192() {
+            this.curCountry = new Country("South Georgia and the Islands", 1);
             this.curCountry.Add(new Location("Mount Pleasant", "EGYP", "51-49S 058-27W"));
         }
         
         private void Country_193() {
+            this.curCountry = new Country("Suriname", 1);
             this.curCountry.Add(new Location("Johan A. Pengel", "SMJP", "05-27N 055-11W"));
         }
         
         private void Country_194() {
+            this.curCountry = new Country("Uruguay", 11);
             this.curCountry.Add(new Location("Artigas", "SUAG", "30-23S 056-30W"));
             this.curCountry.Add(new Location("Capitán Corbeta", "SULS", "34-52S 055-06W"));
             this.curCountry.Add(new Location("Colonia", "SUCA", "34-27S 057-50W"));
@@ -6590,6 +7043,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_195() {
+            this.curCountry = new Country("Venezuela", 35);
             this.curCountry.Add(new Location("Acarigua", "SVAC", "09-33N 069-14W"));
             this.curCountry.Add(new Location("Barcelona", "SVBC", "10-07N 064-41W"));
             this.curCountry.Add(new Location("Barinas", "SVBI", "08-37N 070-13W"));
@@ -6628,6 +7082,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_196() {
+            this.curCountry = new Country("Argentina", 47);
             this.curCountry.Add(new Location("Aeroparque", "SABE", "34-34S 058-25W"));
             this.curCountry.Add(new Location("Bahia Blanca", "SAZB", "38-44S 062-10W"));
             this.curCountry.Add(new Location("Bariloche", "SAZS", "41-09S 071-10W"));
@@ -6678,8 +7133,12 @@ namespace Desklet.Weather {
         }
         
         private void Country_197() {
+            this.curCountry = new Country("Brazil", 43);
             this.curCountry.Add(new Location("Bagé", "SBBG", "31-21S 054-07W"));
             this.curCountry.Add(new Location("Belém", "SBBE", "01-23S 048-29W"));
+            this.curCountryLocation = new City("Belo Horizonte", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Confins Airport", "SBCF", "19-56S 043-56W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Boa Vista", "SBBV", "02-50N 060-42W"));
             this.curCountry.Add(new Location("Brasília", "SBBR", "15-52S 047-56W"));
@@ -6688,6 +7147,9 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Corumbá", "SBCR", "19-05S 057-30W"));
             this.curCountry.Add(new Location("Cruzeiro do Sul", "SBCZ", "07-38S 072-40W"));
             this.curCountry.Add(new Location("Cuiabá", "SBCY", "15-39S 056-06W"));
+            this.curCountryLocation = new City("Curitiba", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Afonso Pena Airport", "SBCT", "25-31S 049-10W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Fernando de Noronha", "SBFN", "03-51S 032-25W"));
             this.curCountry.Add(new Location("Florianópolis", "SBFL", "27-40S 048-33W"));
@@ -6699,22 +7161,35 @@ namespace Desklet.Weather {
             this.curCountry.Add(new Location("Londrina", "SBLO", "23-20S 051-08W"));
             this.curCountry.Add(new Location("Macapá", "SBMQ", "00-02N 050-03W"));
             this.curCountry.Add(new Location("Maceió", "SBMO", "09-31S 035-47W"));
+            this.curCountryLocation = new City("Manaus", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Eduardo Gomes International Airport", "SBEG", "03-02S 060-03W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Marabá", "SBMA", "05-21S 049-09W"));
             this.curCountry.Add(new Location("Natal", "SBNT", "05-55S 035-15W"));
             this.curCountry.Add(new Location("Parauapebas", "SBCJ", "06-07S 050-00W"));
             this.curCountry.Add(new Location("Pelotas", "SBPK", "31-52S 052-21W"));
             this.curCountry.Add(new Location("Ponta Porã", "SBPP", "22-33S 055-42W"));
+            this.curCountryLocation = new City("Porto Alegre", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Porto Alegre Airport", "SBPA", "30-00S 051-11W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Porto Velho", "SBPV", "08-46S 063-55W"));
             this.curCountry.Add(new Location("Recife", "SBRF", "08-04S 034-51W"));
             this.curCountry.Add(new Location("Ribeirão Preto", "SBRP", "21-08S 047-47W"));
             this.curCountry.Add(new Location("Rio Branco", "SBRB", "10-00S 067-48W"));
+            this.curCountryLocation = new City("Rio de Janeiro", 2);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Galeão Airport", "SBGL", "22-49S 043-15W"));
+            this.curCity.Add(new Location("Santos Dumont Airport", "SBRJ", "22-54S 043-10W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Salvador", "SBSV", "12-54S 038-20W"));
             this.curCountry.Add(new Location("Santarém", "SBSN", "02-26S 054-43W"));
             this.curCountry.Add(new Location("São José dos Campos", "SBSJ", "23-14S 045-52W"));
             this.curCountry.Add(new Location("São Luís", "SBSL", "02-36S 044-14W"));
+            this.curCountryLocation = new City("São Paulo", 1);
+            this.curCity = ((City)(this.curCountryLocation));
+            this.curCity.Add(new Location("Congonhas Airport", "SBSP", "23-37S 046-39W"));
             this.curCountry.Add(this.curCountryLocation);
             this.curCountry.Add(new Location("Tabatinga", "SBTT", "03-40S 069-40W"));
             this.curCountry.Add(new Location("Tefé", "SBTF", "03-22S 064-41W"));
@@ -6725,43 +7200,39 @@ namespace Desklet.Weather {
         
         private void Region_8() {
             this.curRegion = new Region("Atlantic", 8);
-            this.curCountry = new Country("Antigua and Barbuda", 2);
+            this.regions.Add(this.curRegion);
             this.Country_198();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Dominica", 2);
             this.Country_199();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Greenland", 7);
             this.Country_200();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Puerto Rico", 5);
             this.Country_201();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Saint Helena", 1);
             this.Country_202();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Virgin Islands", 2);
             this.Country_203();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Barbados", 1);
             this.Country_204();
             this.curRegion.Add(this.curCountry);
-            this.curCountry = new Country("Saint Kitts and Nevis", 1);
             this.Country_205();
             this.curRegion.Add(this.curCountry);
         }
         
         private void Country_198() {
+            this.curCountry = new Country("Antigua and Barbuda", 2);
             this.curCountry.Add(new Location("Antigua", "TAPA", "17-07N 061-47W"));
             this.curCountry.Add(new Location("Charlestown/Newcast", "TKPN", "17-12N 062-35W"));
         }
         
         private void Country_199() {
+            this.curCountry = new Country("Dominica", 2);
             this.curCountry.Add(new Location("Canefield", "TDCF", "15-32N 061-24W"));
             this.curCountry.Add(new Location("Melville Hall Airport", "TDPD", "15-32N 061-18W"));
         }
         
         private void Country_200() {
+            this.curCountry = new Country("Greenland", 7);
             this.curCountry.Add(new Location("Constable Pynt", "BGCO", "70-45N 022-39W"));
             this.curCountry.Add(new Location("Godthaab / Nuuk", "BGGH", "64-10N 051-45W"));
             this.curCountry.Add(new Location("Jacobshavn Lufthavn", "BGJN", "69-14N 051-04W"));
@@ -6772,6 +7243,7 @@ namespace Desklet.Weather {
         }
         
         private void Country_201() {
+            this.curCountry = new Country("Puerto Rico", 5);
             this.curCountry.Add(new Location("Aquadilla", "TJBQ", "18-30N 067-08W"));
             this.curCountry.Add(new Location("Mayaguez", "TJMZ", "18-16N 067-09W"));
             this.curCountry.Add(new Location("Ponce", "TJPS", "18-01N 066-34W"));
@@ -6780,30 +7252,35 @@ namespace Desklet.Weather {
         }
         
         private void Country_202() {
+            this.curCountry = new Country("Saint Helena", 1);
             this.curCountry.Add(new Location("Wide Awake Field Ascension Island", "FHAW", "07-58S 014-24W"));
         }
         
         private void Country_203() {
+            this.curCountry = new Country("Virgin Islands", 2);
             this.curCountry.Add(new Location("Charlotte Amalie St. Thomas", "TIST", "18-20N 064-59W"));
             this.curCountry.Add(new Location("Christiansted", "TISX", "17-42N 064-48W"));
         }
         
         private void Country_204() {
+            this.curCountry = new Country("Barbados", 1);
             this.curCountry.Add(new Location("Grantley Adams", "TBPB", "13-04N 059-29W"));
         }
         
         private void Country_205() {
+            this.curCountry = new Country("Saint Kitts and Nevis", 1);
             this.curCountry.Add(new Location("Golden Rock", "TKPK", "17-18N 062-41W"));
         }
         
         private void Region_9() {
             this.curRegion = new Region("Antarctica", 1);
-            this.curCountry = new Country("Antarctica", 3);
+            this.regions.Add(this.curRegion);
             this.Country_206();
             this.curRegion.Add(this.curCountry);
         }
         
         private void Country_206() {
+            this.curCountry = new Country("Antarctica", 3);
             this.curCountry.Add(new Location("Amundsen-Scott South Pole Station", "NZSP", "90-00S 00-00"));
             this.curCountry.Add(new Location("Ice Runway", "NZIR", "77-52S 166-32E"));
             this.curCountry.Add(new Location("Williams Field", "NZCM", "77-52S 166-58E"));

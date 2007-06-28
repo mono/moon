@@ -363,15 +363,60 @@ namespace Desklet.Weather
 			SetWind ();
 		}
 
+		void AddTreeEntries (Element e, TreeStore store, TreeIter parent)
+		{
+			if (e is Location)
+				AddTreeEntries ((Location)e, store, parent);
+			else if (e is City)
+				AddTreeEntries ((City)e, store, parent);
+			else if (e is State)
+				AddTreeEntries ((State)e, store, parent);
+			else if (e is Country)
+				AddTreeEntries ((Country)e, store, parent);
+			else if (e is Region)
+				AddTreeEntries ((Region)e, store, parent);
+		}
+		
+		void AddTreeEntries (Location l, TreeStore store, TreeIter parent)
+		{
+			store.AppendValues (parent, l.Name, l.Code);
+		}
+
+		void AddTreeEntries (City c, TreeStore store, TreeIter parent)
+		{
+			foreach (Location l in c.Locations) {
+				if (l == null)
+					continue;
+				TreeIter iter = store.AppendValues (parent, l.Name, "Location");
+				AddTreeEntries (l, store, iter);
+			}
+		}
+		
+		void AddTreeEntries (State s, TreeStore store, TreeIter parent)
+		{
+			foreach (Element e in s.Locations) {
+				if (e == null)
+					continue;
+				TreeIter iter = store.AppendValues (parent, e.Name, e.GetType ().ToString ());
+				AddTreeEntries (e, store, iter);
+			}
+		}
+				
 		void AddTreeEntries (Country c, TreeStore store, TreeIter parent)
 		{
-			foreach (Element e in c.Locations)
-				store.AppendValues (parent, e.Name, e.GetType ().ToString ());
+			foreach (Element e in c.Locations) {
+				if (e == null)
+					continue;
+				TreeIter iter = store.AppendValues (parent, e.Name, e.GetType ().ToString ());
+				AddTreeEntries (e, store, iter);
+			}
 		}
 		
 		void AddTreeEntries (Region r, TreeStore store, TreeIter parent)
 		{
 			foreach (Country c in r.Countries) {
+				if (c == null)
+					continue;
 				TreeIter iter = store.AppendValues (parent, c.Name, "Country");
 				AddTreeEntries (c, store, iter);
 			}

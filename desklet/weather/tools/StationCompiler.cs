@@ -443,12 +443,23 @@ public class App
 	
 	static void BuildState (State s, CodeMemberMethod method)
 	{
+		string methodName = String.Format ("State_{0}", stateCounter++);
+		CodeMemberMethod stateMethod = new CodeMemberMethod ();
+		stateMethod.Name = methodName;
+		MainClass.Members.Add (stateMethod);
+		
 		CodeAssignStatement stateAssign = new CodeAssignStatement ();
 		stateAssign.Left = curState;
 		stateAssign.Right = new CodeCastExpression (stateType, curCountryLocation);
-		method.Statements.Add (stateAssign);
+		stateMethod.Statements.Add (stateAssign);
 
-		CodeMethodInvokeExpression locationAdd = new CodeMethodInvokeExpression (
+		CodeMethodInvokeExpression methodCall = new CodeMethodInvokeExpression (
+			thisref,
+			methodName
+		);
+		method.Statements.Add (methodCall);
+		
+		methodCall = new CodeMethodInvokeExpression (
 			curState,
 			"Add",
 			new CodeExpression[] {curStateLocation}
@@ -457,15 +468,15 @@ public class App
 		
 		CodeObjectCreateExpression expr;
 		foreach (Element e in s.Locations) {
-			expr = BuildStateLocation (e, method);
+			expr = BuildStateLocation (e, stateMethod);
 			if (expr == null)
-				method.Statements.Add (locationAdd);
+				stateMethod.Statements.Add (methodCall);
 			else {
-				locationAddDirect = locationAdd = new CodeMethodInvokeExpression (
+				locationAddDirect = new CodeMethodInvokeExpression (
 					curState,
 					"Add",
 					new CodeExpression[] {expr});
-				method.Statements.Add (locationAddDirect);
+				stateMethod.Statements.Add (locationAddDirect);
 			}
 		}
 	}
@@ -529,7 +540,7 @@ public class App
 		CodeAssignStatement countryAssign = new CodeAssignStatement ();
 		countryAssign.Left = curCountry;
 		countryAssign.Right = country;
-		method.Statements.Add (countryAssign);
+		countryMethod.Statements.Add (countryAssign);
 
 		CodeMethodInvokeExpression methodCall = new CodeMethodInvokeExpression (
 			thisref,
@@ -547,7 +558,7 @@ public class App
 		CodeObjectCreateExpression expr;
 		
 		foreach (Element e in c.Locations) {
-			expr = BuildCountryLocation (e, method);
+			expr = BuildCountryLocation (e, countryMethod);
 			if (expr == null)
 				countryMethod.Statements.Add (methodCall);
 			else {
@@ -586,6 +597,13 @@ public class App
 		regionAssign.Right = region;
 		regionMethod.Statements.Add (regionAssign);
 
+		methodCall = new CodeMethodInvokeExpression (
+			new CodeFieldReferenceExpression (thisref, "regions"),
+			"Add",
+			new CodeExpression[] {curRegion}
+		);
+		regionMethod.Statements.Add (methodCall);
+		
 		methodCall = new CodeMethodInvokeExpression (
 			curRegion,
 			"Add",
