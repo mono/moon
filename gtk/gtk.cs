@@ -104,16 +104,16 @@ public class GtkSilver : EventBox {
         ///    before any calls are done to System.Windows.
 	/// </summary>
 	/// <remarks>
-        ///    The System.Windows namespace for Silverlight requires a
+        ///    <para>The System.Windows namespace for Silverlight requires a
         ///    downloader engine to be registered before it can be used to
         ///    satisfy assembly dependencies and images.    If your application will
 	///    for some reason call into System.Windows before they create an instance
 	///    of GtkSilver, they should call this method to ensure that the proper
-	///    downloader has been registered with the agclr runtime.
+	///    downloader has been registered with the agclr runtime.</para>
 	///
-	///    Failure to call this method typically result in errors from the XAML
+	///    <para>Failure to call this method typically result in errors from the XAML
 	///    parsing code when it tries to resolve assembly references, external
-	///    classes or loading of external media.
+	///    classes or loading of external media.</para>
 	/// </remarks>
 	static public void Init ()
 	{
@@ -126,13 +126,13 @@ public class GtkSilver : EventBox {
 	/// <param name="width">The initial width for the widget</param>
 	/// <param name="height">The initial height for the widget</param>
 	/// <remarks>
-	///    The initial width and height of the GtkSilver control are given by the
+	///    <para>The initial width and height of the GtkSilver control are given by the
 	///    parameters.   The size of the widget can later be changed by using the
-	///    standard Gtk# APIs (SizeAllocate).
+	///    standard Gtk# APIs (SizeAllocate).</para>
 	///
-	///    The widget is initially empty, you must call the <see cref="Attach"/>
+	///    <para>The widget is initially empty, you must call the <see cref="Attach"/>
 	///    method with a System.Windows.Controls.Canvas instance (you can create
-	///    those programatically, using XAML, or using the <see cref="LoadFile"/> method).
+	///    those programatically, using XAML, or using the <see cref="LoadFile"/> method).</para>
 	/// </remarks>
 	public GtkSilver (int width, int height)
 	{
