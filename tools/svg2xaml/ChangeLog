@@ -1,3 +1,7 @@
+2007-06-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: add the xslt as a resource
+
 2007-06-27  Andreia Gaita  <avidigal@novell.com>
 
 	* svg2xaml.xslt, svg2xaml_standalone.xslt:
