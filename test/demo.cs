@@ -170,11 +170,11 @@ class X {
 			r.RenderTransform = trans; 
 
 			c.MouseMove += delegate (object sender, MouseEventArgs e) {
-				//Console.WriteLine ("Canvas Motion: {0}", e.GetPosition (c));
+				Console.WriteLine ("Canvas Motion: {0}", e.GetPosition (c));
 			};
 			
 			r.MouseMove += delegate (object sender, MouseEventArgs e) {
-				Console.WriteLine ("Motion Rect={0} Canvas={1}", e.GetPosition (r), e.GetPosition (c));
+				//Console.WriteLine ("Motion Rect={0} Canvas={1}", e.GetPosition (r), e.GetPosition (c));
 				//Console.WriteLine ("          Canvas {0}", e.GetPosition (c));
 			};
 
@@ -192,8 +192,8 @@ class X {
 				r.Fill = leave_fill;
 			};
 			
-			c.MouseLeftButtonDown += delegate {
-				Console.WriteLine ("Canvas: Button Pressed!");
+			c.MouseLeftButtonDown += delegate (object sender, MouseEventArgs e) {
+				Console.WriteLine ("Canvas: Button Pressed! {0}", e.GetPosition (null));
 			};
 
 			c.MouseLeftButtonUp += delegate {

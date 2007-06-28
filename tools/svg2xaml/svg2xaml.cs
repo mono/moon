@@ -13,9 +13,9 @@ namespace svg2xaml
 		{		
 			if (args.Length == 0)
 			{
-				Console.WriteLine ("Usage: mono svg2xaml.exe input.svg [output.xaml].");
-				Console.WriteLine ("If you don't specify an output file, it will be created");
-				Console.WriteLine ("as 'input.svg.xaml' in the location of the svg file.");
+				Console.WriteLine ("Usage: svg2xaml input.svg [output.xaml].\n");
+				Console.WriteLine ("   If you don't specify an output file, it will be created");
+				Console.WriteLine ("   as 'input.svg.xaml' in the location of the svg file.");
 				return;
 			}
 			
