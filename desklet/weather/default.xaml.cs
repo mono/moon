@@ -121,6 +121,8 @@ namespace Desklet.Weather
 
 		double windIconTop;
 		double windIconLeft;
+
+		GConfConfigStorage config = new GConfConfigStorage ("Weather", 0);
 		
 		public void DownloadComplete (Downloader downloader)
 		{			
@@ -488,6 +490,8 @@ namespace Desklet.Weather
 					val = (string) model.GetValue (iter, 1);
 					if (val == "Location")
 						val = (string) model.GetValue (iter, 2);
+					else
+						val = null;
 				}
 				
 				win.Hide ();

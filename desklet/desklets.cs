@@ -29,6 +29,7 @@
 using System;
 using System.Windows;
 using Gtk;
+using GConf;
 
 namespace Mono.Desklets {
 
@@ -39,7 +40,8 @@ namespace Mono.Desklets {
 	{
 		string deskletName;
 		int deskletInstance;
-
+		string storageName;
+		
 		/// <summary>
 		///   Desklet name
 		/// </summary>
@@ -63,6 +65,13 @@ namespace Mono.Desklets {
 			get { return deskletInstance; }
 		}
 
+		protected string StorageName {
+			get { return storageName; }
+		}
+				
+		protected ConfigStorage () : this (null, -1)
+		{}
+		
 		/// <summary>
 		///   Construct new storage class using the specified desklet name
 		/// </summary>
@@ -91,6 +100,19 @@ namespace Mono.Desklets {
 		{
 			this.deskletName = deskletName;
 			this.deskletInstance = deskletInstance;
+
+			if (deskletInstance >= 0)
+				storageName = String.Format ("{0}_{1}", deskletName, deskletInstance);
+			else
+				storageName = deskletName;
+		}
+
+		protected void CheckValid ()
+		{
+			if (String.IsNullOrEmpty (deskletName))
+				throw new ApplicationException ("DeskletName must not be empty");
+			if (String.IsNullOrEmpty (storageName))
+				throw new ApplicationException ("No storage name specified");
 		}
 		
 		/// <summary>
@@ -141,7 +163,92 @@ namespace Mono.Desklets {
 		/// <returns>
 		///   The requested item's value or null if not found
 		/// </returns>
-		public abstract object RetrieveCommon (string name);
+		public abstract object RetrieveCommon (string name);		
+	}
+
+	public class GConfConfigStorage : ConfigStorage {
+		readonly string baseKeyPath = "/apps/mono/desklets";
+		
+		GConf.Client client;
+
+		string keyPathCommon;
+		string keyPathInstance;
+
+		public string KeyPathCommon {
+			get {
+				if (keyPathCommon == null)
+					keyPathCommon = String.Format ("{0}/{1}", baseKeyPath, DeskletName);
+				
+				return keyPathCommon;
+			}
+		}
+
+		public string KeyPathInstance {
+			get {
+				if (keyPathInstance == null)
+					if (DeskletInstance >= 0)
+						keyPathInstance = String.Format ("{0}/{1}/{2}", baseKeyPath, DeskletName,
+										 DeskletInstance);
+					else
+						keyPathInstance = KeyPathCommon;
+				
+				return keyPathInstance;
+			}
+		}
+
+		public GConfConfigStorage (string deskletName) : this (deskletName, -1)
+		{}
+
+		public GConfConfigStorage (string deskletName, int deskletInstance)
+			: base (deskletName, deskletInstance)
+		{
+			client = new GConf.Client ();
+		}
+		
+		public override void Store (string name, object value)
+		{
+			CheckValid ();
+
+			string key = String.Format ("{0}/{1}", KeyPathInstance, name);
+			client.Set (key, value);
+		}
+		
+		public override void StoreCommon (string name, object value)
+		{
+			string key = String.Format ("{0}/{1}", KeyPathCommon, name);
+			client.Set (key, value);
+			CheckValid ();
+		}
+		
+		public override object Retrieve (string name)
+		{
+			CheckValid ();
+
+			object ret = null;
+			string key = String.Format ("{0}/{1}", KeyPathInstance, name);
+			try {
+				ret = client.Get (key);
+			} catch (GConf.NoSuchKeyException) {
+				ret = null;
+			}
+			
+			return ret;
+		}
+		
+		public override object RetrieveCommon (string name)
+		{
+			CheckValid ();
+
+			object ret = null;
+			string key = String.Format ("{0}/{1}", KeyPathCommon, name);
+			try {
+				ret = client.Get (key);
+			} catch (GConf.NoSuchKeyException) {
+				ret = null;
+			}
+			
+			return ret;
+		}
 	}
 	
 	/// <summary>

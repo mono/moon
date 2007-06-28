@@ -1,3 +1,7 @@
+2007-06-29  Marek Habersack  <mhabersack@novell.com>
+
+	* desklet/desklets.cs: added GConf config storage backend.
+
 2007-06-28  Marek Habersack  <mhabersack@novell.com>
 
 	* desklet/desklets.cs: beginnings of the config storage code.
