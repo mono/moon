@@ -222,7 +222,8 @@ void
 surface_set_trans (Surface *s, bool trans)
 {
 	s->transparent = trans;
-	gtk_widget_queue_draw (s->drawing_area);
+	if (s->drawing_area)
+		gtk_widget_queue_draw (s->drawing_area);
 }
 
 bool
