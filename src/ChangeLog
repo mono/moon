@@ -1,3 +1,10 @@
+2007-06-28  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::ComputeBounds): fix the debug printf's.
+
+	* collection.cpp (VisualCollectoin::Clear): update the panel's
+	bounds after the clear so we redraw everything.
+
 2007-06-27  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h: stop using x1,y1,x2,y2 for bounds, use a Rect

@@ -94,7 +94,7 @@ Canvas::ComputeBounds ()
 #if DEBUG_BOUNDS
 		levelb += 4;
 		space (levelb);
-		printf ("Canvas: Enter GetBounds\n");
+		printf ("Canvas: Enter ComputeBounds\n");
 #endif
 		cn = (Collection::Node *) children->list->First ();
 		for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
@@ -139,7 +139,7 @@ Canvas::ComputeBounds ()
 	}
 #if DEBUG_BOUNDS
 	space (levelb);
-	printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	printf ("Canvas: Leave ComputeBounds (%g %g %g %g)\n", bounds.x, bounds.y, bounds.w, bounds.h);
 	levelb -= 4;
 #endif
 }

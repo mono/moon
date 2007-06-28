@@ -389,8 +389,12 @@ VisualCollection::Remove (DependencyObject *data)
 void
 VisualCollection::Clear ()
 {
+	Panel *panel = (Panel *) closure;
+
 	z_sorted_list->Clear (true);
 	Collection::Clear ();
+
+	panel->UpdateBounds ();
 }
 
 
