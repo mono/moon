@@ -159,7 +159,7 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 		// with them, all the logic to relayout is in UIElement
 		//
 		if (!Type::Find (child->GetObjectType ())->IsSubclassOf (Type::UIELEMENT)){
-			printf ("Child %d is not a UIELEMENT\n");
+			printf ("Child %s is not a UIELEMENT\n", dependency_object_get_name (child));
 			return false;
 		}
 		UIElement *ui = (UIElement *) child;
