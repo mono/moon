@@ -168,6 +168,10 @@ class MonoOpen {
 		} else {
 			silver = new GtkSilver (400, 400);
 		}
+		if (transparent){
+			silver.AppPaintable = true;
+			silver.Transparent = true;
+		}
 
 		w.Add (silver);
 		silver.Attach (canvas);
