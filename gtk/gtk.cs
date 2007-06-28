@@ -57,6 +57,11 @@ public class GtkSilver : EventBox {
 	[DllImport ("moon")]
 	extern static void surface_paint (IntPtr surface, IntPtr ctx, int x, int y, int width, int height);
 
+	[DllImport ("moon")]
+	extern static void surface_set_trans (IntPtr surface, bool trans);
+	[DllImport ("moon")]
+	extern static bool surface_get_trans (IntPtr surface);
+	
 	IntPtr surface;
 
 	//
@@ -135,6 +140,24 @@ public class GtkSilver : EventBox {
 		Raw = surface_get_drawing_area (surface);
 	}
 
+	/// <summary>
+	///    The transparent state for the widget.   Used to drive the compositing of unpainted regions against the background.
+	/// </summary>
+	/// <remarks>
+        ///    By default the value is false which will produce a solid white background,
+	///    otherwise the background is cleared with black and composited with the
+	///    background.
+	/// </remarks>
+	public bool Transparent {
+		get {
+			return surface_get_trans (surface);
+		}
+
+		set {
+			surface_set_trans (surface, value);
+		}
+	}
+	
 	// This is a quick hack for f-spot code it will be cleaned up soon
 	public void Print (IntPtr ctx, Gdk.Rectangle area)
 	{
