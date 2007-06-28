@@ -230,6 +230,14 @@ class X {
 
 			
 			c.Children.Add (l);
+
+			Polyline pl = new Polyline ();
+			pl.Points = new System.Windows.Point[] { new Point (0, 0), new Point (0, 200), new Point (200, 200), new Point (200, 0), new Point (0, 0) };
+			pl.Stroke = new SolidColorBrush (Color.FromRgb (70, 70, 70));
+			pl.StrokeThickness = 7;
+			pl.StrokeLineJoin = PenLineJoin.Round;
+			
+			c.Children.Add (pl);
 		} else {
 			Load (args [i]);
 		}
