@@ -181,6 +181,15 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	cairo_t *ctx = gdk_cairo_create (widget->window);
 	gdk_cairo_region (ctx, event->region);
 	cairo_clip (ctx);
+
+	//
+	// These are temporary while we change this to paint at the offset position
+	// instead of using the old approach of modifying the topmost Canvas (a no-no)
+	//
+	cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
+	cairo_set_source_rgba (ctx, 1, 1, 1, 1);
+	cairo_paint (ctx);
+
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 	surface_paint (s, ctx, event->area.x, event->area.y, event->area.width, event->area.height);
 	cairo_destroy (ctx);
@@ -208,10 +217,17 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 		x = ix;
 		y = iy;
 	} else {
-		x = event->x + widget->allocation.x;
-		y = event->y + widget->allocation.y;
+		x = event->x;
+		y = event->y;
+
+		if (GTK_WIDGET_NO_WINDOW (widget)){
+			x -= widget->allocation.x;
+			y -= widget->allocation.y;
+		}
+
 		state = (GdkModifierType)event->state;
 	}
+
 	s->toplevel->HandleMotion (s, state, x, y);
 	return TRUE;
 }
@@ -225,8 +241,13 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 		return FALSE;
 
 	if (event->type == GDK_ENTER_NOTIFY){
-		double x = event->x + widget->allocation.x;
-		double y = event->y + widget->allocation.y;
+		double x = event->x;
+		double y = event->y;
+
+		if (GTK_WIDGET_NO_WINDOW (widget)){
+			x -= widget->allocation.x;
+			y -= widget->allocation.y;
+		}
 		
 		s->toplevel->HandleMotion (s, event->state, x, y);
 		s->toplevel->Enter (s, event->state, x, y);
@@ -279,8 +300,12 @@ button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer dat
 	if (button->button != 1)
 		return FALSE;
 
-	double x = button->x + widget->allocation.x;
-	double y = button->y + widget->allocation.y;
+	double x = button->x;
+	double y = button->y;
+	if (GTK_WIDGET_NO_WINDOW (widget)){
+		x -= widget->allocation.x;
+		y -= widget->allocation.y;
+	}
 	s->toplevel->HandleButton (s, s->cb_up, button->state, x, y);
 	
 	return TRUE;
@@ -299,8 +324,12 @@ button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
 	if (button->button != 1)
 		return FALSE;
 
-	double x = button->x + widget->allocation.x;
-	double y = button->y + widget->allocation.y;
+	double x = button->x;
+	double y = button->y;
+	if (GTK_WIDGET_NO_WINDOW (widget)){
+		x -= widget->allocation.x;
+		y -= widget->allocation.y;
+	}
 	s->toplevel->HandleButton (s, s->cb_down, button->state, x, y);
 	
 	return FALSE;
@@ -352,8 +381,12 @@ surface_new (int width, int height)
 
 	// don't let gtk clear the window we'll do all the drawing.
 	gtk_widget_set_app_paintable (s->drawing_area, TRUE);
-	// draw on the parent not ourselves so that we can blend
-	gtk_event_box_set_visible_window (GTK_EVENT_BOX (s->drawing_area), FALSE);
+
+	//
+	// Set to true, need to change that to FALSE later when we start
+	// repainting again.   
+	//
+	gtk_event_box_set_visible_window (GTK_EVENT_BOX (s->drawing_area), TRUE);
 
 	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "size_allocate",
 			    G_CALLBACK(surface_size_allocate), s);

@@ -1,5 +1,31 @@
 2007-06-27  Miguel de Icaza  <miguel@novell.com>
 
+	* runtime.cpp: Event handlers will work with or without GdkWindows
+	on the GtkWindows in preparation to support Larry later.
+
+	Paint the surface with alpha transparency for now, this breaks the
+	F-Spot embedding but will be fixed later when we can paint at an
+	offset, wonder if this will affect performance for now.
+
+	Call gtk_event_box_set_visible_window () with TRUE, so that we
+	have a window, for now we require this to get the events working
+	properly. 
+	
+	* canvas.cpp: Drop the translate transform on the topmost canvas
+	as that was breaking all the code that depended on the inverse
+	matrix transform to work for doing coordinate mapping based on the
+	absolute_xform. 
+
+	Instead we need to draw the cairo context at the given offset
+	in the repaint routine.  This is left as an excercise for Larry. 
+
+	Tests to validate that the mouse input is working:
+
+		* test/demo.exe: enter/leave
+		* surface demo
+		* silverlight airlines
+		* LunarEclipse designer.
+	
 	* value.cpp (FreeValue): New method that does the actual releasing
 	of the value.   We do this here so the managed code can release
 	things in the same way.

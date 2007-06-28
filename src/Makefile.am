@@ -7,7 +7,7 @@ lib_LTLIBRARIES = libmoon.la
 
 INCLUDES = $(MOON_CFLAGS)
 
-libmooninclude_HEADERS = \
+libmooninclude_headers = \
 	animation.h	\
 	array.h		\
 	brush.h		\
@@ -39,6 +39,7 @@ libmooninclude_HEADERS = \
 
 
 libmoon_la_SOURCES = 	\
+	$(libmoon_la_headers) \
 	animation.cpp	\
 	array.cpp	\
 	brush.cpp	\

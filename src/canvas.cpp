@@ -39,10 +39,6 @@ Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
 	*result = absolute_xform;
 
-	// This is a hack to pick up the position allcation offset of the gtk widget
-	if (surface != NULL && surface->drawing_area != NULL && GTK_WIDGET_NO_WINDOW (surface->drawing_area))
-	        cairo_matrix_translate (result, surface->drawing_area->allocation.x, surface->drawing_area->allocation.y);
-
 	// Compute left/top if its attached to the item
 	Value *val_top = item->GetValue (Canvas::TopProperty);
 	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
