@@ -467,7 +467,6 @@ namespace Desklet.Weather
 			
 			TreeView tv = new TreeView (store);
 			tv.HeadersVisible = true;
-			tv.EnableGridLines = TreeViewGridLines.Vertical;
 			tv.EnableSearch = true;
 			
 			tv.AppendColumn ("Location", new CellRendererText (), "text", 0);
