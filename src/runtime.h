@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 
 class Surface {
  public:
-	Surface () : width (0), height (0), buffer (0), 
+	Surface () : width (0), height (0), buffer (0), transparent(false),
 		cairo_buffer_surface (NULL), cairo_buffer(NULL),
 		cairo_xlib(NULL),
 		using_cairo_xlib_surface(0), pixbuf(NULL),
@@ -71,6 +71,8 @@ class Surface {
 	// The pixmap used for the backing storage for xlib_surface
 	GdkPixmap *pixmap;
 
+	bool transparent;
+	
 	// The widget where we draw.
 	GtkWidget *drawing_area;
 
@@ -92,6 +94,8 @@ void     surface_init      (Surface *s, int width, int height);
 void     surface_clear     (Surface *s, int x, int y, int width, int height);
 void     surface_clear_all (Surface *s);
 void     surface_destroy   (Surface *s);
+void     surface_set_trans (Surface *s, bool trans);
+bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
 
 void    *surface_get_drawing_area (Surface *s);

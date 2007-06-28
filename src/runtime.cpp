@@ -184,11 +184,28 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 
 	//
 	// These are temporary while we change this to paint at the offset position
-	// instead of using the old approach of modifying the topmost Canvas (a no-no)
+	// instead of using the old approach of modifying the topmost Canvas (a no-no),
 	//
-	cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
-	cairo_set_source_rgba (ctx, 1, 1, 1, 1);
-	cairo_paint (ctx);
+	// The flag "s->transparent" is here because I could not
+	// figure out what is painting the background with white now.
+	// The change that made the white painting implicit instead of
+	// explicit is patch 80632.   I would appreciate any help in tracking down
+	// the proper way of making the background white when not running in 
+	// "transparent" mode.    
+	//
+	// Either exposing surface_set_trans to turn the next code is a hack, 
+	// or it is normal to request all code that wants to paint to manually
+	// clear the background to white beforehand.    For now am going with
+	// making this an explicit surface API.
+	//
+	// The second part is for coping with the future: when we support being 
+	// windowless
+	//
+	if (s->transparent && !GTK_WIDGET_NO_WINDOW (widget)){
+		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
+		cairo_set_source_rgba (ctx, 1, 1, 1, 0);
+		cairo_paint (ctx);
+	}
 
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 	surface_paint (s, ctx, event->area.x, event->area.y, event->area.width, event->area.height);
@@ -199,6 +216,19 @@ expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 #endif
 
 	return TRUE;
+}
+
+void 
+surface_set_trans (Surface *s, bool trans)
+{
+	s->transparent = trans;
+	gtk_widget_queue_draw (s->drawing_area);
+}
+
+bool
+surface_get_trans (Surface *s)
+{
+	return s->transparent;
 }
 
 static gboolean

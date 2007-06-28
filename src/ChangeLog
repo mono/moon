@@ -1,3 +1,9 @@
+2007-06-28  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (expose_event_callback): Introduce a new
+	"transparent" field in the Surface.   If set, we clear the
+	region with a transparent region.
+
 2007-06-27  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp: Event handlers will work with or without GdkWindows
