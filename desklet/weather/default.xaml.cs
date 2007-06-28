@@ -363,6 +363,22 @@ namespace Desklet.Weather
 			SetWind ();
 		}
 
+		string GetTypeName (Element e)
+		{
+			if (e is Location)
+				return "Location";
+			else if (e is City)
+				return "City";
+			else if (e is State)
+				return "State";
+			else if (e is Country)
+				return "Country";
+			else if (e is Region)
+				return "Region";
+			else
+				return "Unknown";
+		}
+		
 		void AddTreeEntries (Element e, TreeStore store, TreeIter parent)
 		{
 			if (e is Location)
@@ -379,7 +395,7 @@ namespace Desklet.Weather
 		
 		void AddTreeEntries (Location l, TreeStore store, TreeIter parent)
 		{
-			store.AppendValues (parent, l.Name, l.Code);
+			store.AppendValues (parent, l.Name, GetTypeName (l), l.Code);
 		}
 
 		void AddTreeEntries (City c, TreeStore store, TreeIter parent)
@@ -387,8 +403,8 @@ namespace Desklet.Weather
 			foreach (Location l in c.Locations) {
 				if (l == null)
 					continue;
-				TreeIter iter = store.AppendValues (parent, l.Name, "Location");
-				AddTreeEntries (l, store, iter);
+//				TreeIter iter = store.AppendValues (parent, l.Name, GetTypeName (l));
+				AddTreeEntries (l, store, parent);
 			}
 		}
 		
@@ -397,8 +413,11 @@ namespace Desklet.Weather
 			foreach (Element e in s.Locations) {
 				if (e == null)
 					continue;
-				TreeIter iter = store.AppendValues (parent, e.Name, e.GetType ().ToString ());
-				AddTreeEntries (e, store, iter);
+				if (!(e is Location)) {
+					TreeIter iter = store.AppendValues (parent, e.Name, GetTypeName (e), String.Empty);
+					AddTreeEntries (e, store, iter);
+				} else
+					AddTreeEntries (e, store, parent);
 			}
 		}
 				
@@ -407,8 +426,11 @@ namespace Desklet.Weather
 			foreach (Element e in c.Locations) {
 				if (e == null)
 					continue;
-				TreeIter iter = store.AppendValues (parent, e.Name, e.GetType ().ToString ());
-				AddTreeEntries (e, store, iter);
+				if (!(e is Location)) {
+					TreeIter iter = store.AppendValues (parent, e.Name, GetTypeName (e), String.Empty);
+					AddTreeEntries (e, store, iter);
+				} else
+					AddTreeEntries (e, store, parent);
 			}
 		}
 		
@@ -417,7 +439,7 @@ namespace Desklet.Weather
 			foreach (Country c in r.Countries) {
 				if (c == null)
 					continue;
-				TreeIter iter = store.AppendValues (parent, c.Name, "Country");
+				TreeIter iter = store.AppendValues (parent, c.Name, GetTypeName (c), String.Empty);
 				AddTreeEntries (c, store, iter);
 			}
 		}
@@ -425,30 +447,62 @@ namespace Desklet.Weather
 		void ChooseStation ()
 		{
 			Locations loc = new Locations ();
-			TreeStore store = new TreeStore (typeof (string), typeof (string));
+			TreeStore store = new TreeStore (typeof (string), typeof (string), typeof (string));
 
 			List <Region> regions = loc.Regions;
 			foreach (Region r in regions) {
-				TreeIter iter = store.AppendValues (r.Name, "Region");
+				TreeIter iter = store.AppendValues (r.Name, GetTypeName (r), String.Empty);
 				AddTreeEntries (r, store, iter);
 			}
 			
 			Window win = new Window ("Select your location");
 //			win.DeleteEvent += new DeleteEventHandler (delete_cb);
-			win.SetDefaultSize (400,250);
+			win.SetDefaultSize (400,400);
+
+			VBox vbox = new VBox (false, 0);
+			win.Add (vbox);
 			
 			ScrolledWindow sw = new ScrolledWindow ();
-			win.Add (sw);
+			vbox.PackStart (sw, true, true, 0);
 			
 			TreeView tv = new TreeView (store);
-			tv.HeadersVisible = false;
+			tv.HeadersVisible = true;
+			tv.EnableGridLines = TreeViewGridLines.Vertical;
 			tv.EnableSearch = true;
 			
 			tv.AppendColumn ("Location", new CellRendererText (), "text", 0);
-			tv.AppendColumn ("Location Type", new CellRendererText (), "text", 1);
-                        
+			tv.AppendColumn ("Type", new CellRendererText (), "text", 1);
+                        tv.AppendColumn ("Code", new CellRendererText (), "text", 2);
+			
 			sw.Add (tv);
 			sw.Show ();
+
+			HBox hbox = new HBox (true, 0);
+			Button closeBtn = new Button (Stock.Close);
+			closeBtn.Clicked += delegate {
+				TreeSelection sel = tv.Selection;
+				TreeModel model;
+				TreeIter iter;
+
+				string val = null;
+				if (sel.GetSelected (out model, out iter)) {
+					val = (string) model.GetValue (iter, 1);
+					if (val == "Location")
+						val = (string) model.GetValue (iter, 2);
+				}
+				
+				win.Hide ();
+				win.Destroy ();
+
+				if (!String.IsNullOrEmpty (val)) {
+					stationID.Text = val;
+					UpdateData ();
+				}
+			};
+			
+			hbox.PackEnd (closeBtn, false, false, 0);
+			vbox.PackStart (hbox, false, false, 1);
+			
 			win.ShowAll ();
 		}
 		
