@@ -60,7 +60,7 @@ class Shape : public FrameworkElement {
 	// Overrides from UIElement.
 	//
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void GetBounds ();
+	virtual void ComputeBounds ();
 	virtual bool InsideObject (Surface *s, double x, double y);
 	
 	//
@@ -195,6 +195,7 @@ class Polygon : public Shape {
 
 	void Draw (cairo_t *cr);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 };
 
 Polygon	       *polygon_new (void);
@@ -221,6 +222,7 @@ class Polyline : public Shape {
 	void Draw (cairo_t *cr);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 };
 
 Polyline       *polyline_new		(void);

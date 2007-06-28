@@ -304,18 +304,15 @@ DependencyProperty *TextBlock::TextWrappingProperty;
 
 TextBlock::TextBlock ()
 {
-	Brush *brush = default_foreground ();
+	renderer = (MangoRenderer *) mango_renderer_new ();
 	
 	foreground = NULL;
-	SetValue (TextBlock::ForegroundProperty, Value (brush));
 	
 	inlines = NULL;
 	layout = NULL;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
-	
-	renderer = (MangoRenderer *) mango_renderer_new ();
 	
 	/* initialize the font description */
 	font = pango_font_description_new ();
@@ -329,6 +326,11 @@ TextBlock::TextBlock ()
 	pango_font_description_set_style (font, font_style (style));
 	FontWeights weight = text_block_get_font_weight (this);
 	pango_font_description_set_weight (font, font_weight (weight));
+
+	// this has to come last, since in our OnPropertyChanged
+	// method we update our bounds.
+	Brush *brush = default_foreground ();
+	SetValue (TextBlock::ForegroundProperty, Value (brush));
 }
 
 TextBlock::~TextBlock ()
@@ -367,41 +369,46 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void 
-TextBlock::GetBounds ()
+TextBlock::ComputeBounds ()
 {
-	Surface *s = GetSurface ();
-	
-	if (s == NULL)
-		return;
-	
-	if (actual_width < 0.0)
-		CalcActualWidthHeight (s->cairo);
+	double x1, y1, x2, y2;
+	cairo_t* cr = measuring_context_create ();
+
+ 	if (actual_width < 0.0) {
+		// XXX toshok -
+		// i *want* to pass cr here so we don't allocate 2
+		// surfaces, but for some reason when I do that, the text
+		// headings in the itinerary display in the airlines demo
+		// disappears (or rather, gets a width of 3 pixels instead
+		// of the correct width.)
+ 		CalcActualWidthHeight (NULL);
+	}
 	
 	// optimization: use the cached width/height and draw
 	// a simple rectangle to get bounding box
-	cairo_save (s->cairo);
-	cairo_set_matrix (s->cairo, &absolute_xform);
-	cairo_set_line_width (s->cairo, 1);
-	cairo_rectangle (s->cairo, 0, 0, actual_width, actual_height);
-	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
-	cairo_new_path (s->cairo);
-	cairo_restore (s->cairo);
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	cairo_set_line_width (cr, 1);
+	cairo_rectangle (cr, 0, 0, actual_width, actual_height);
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	cairo_new_path (cr);
+	cairo_restore (cr);
 	
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
+
+	bounds = Rect (x1, y1, x2-x1, y2-y1);
+
+	measuring_context_destroy (cr);
 }
 
 Point
 TextBlock::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-	Surface *s = GetSurface ();
-	
-	if (s == NULL)
-		return Point (0.0, 0.0);
 	
 	if (actual_width < 0.0)
-		CalcActualWidthHeight (s->cairo);
+		CalcActualWidthHeight (NULL);
 	
 	return Point (user_xform_origin.x * actual_width, user_xform_origin.y * actual_height);
 }
@@ -448,16 +455,14 @@ TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 TextBlock::CalcActualWidthHeight (cairo_t *cr)
 {
-	cairo_surface_t *surface = NULL;
 	Collection::Node *node;
 	bool destroy = false;
 	
 	if (cr == NULL) {
 		// FIXME: we need better width/height values here
-		printf ("CalcActualWidthHeight called before surface available for TextBlock Text=\"%s\"\n",
-			text_block_get_text (this));
-		surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1280, 1024);
-		cr = cairo_create (surface);
+// 		printf ("CalcActualWidthHeight called before surface available for TextBlock Text=\"%s\"\n",
+// 			text_block_get_text (this));
+		cr = measuring_context_create ();
 		destroy = true;
 	} else {
 		cairo_save (cr);
@@ -471,8 +476,7 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 		g_object_unref (layout);
 		layout = NULL;
 		
-		//cairo_surface_destroy (surface);
-		cairo_destroy (cr);
+		measuring_context_destroy (cr);
 	} else {
 		cairo_new_path (cr);
 		cairo_restore (cr);
@@ -487,9 +491,7 @@ TextBlock::GetValue (DependencyProperty *prop)
 {
 	if ((prop == TextBlock::ActualWidthProperty ||
 	     prop == TextBlock::ActualHeightProperty) && actual_width < 0.0) {
-		Surface *s = GetSurface ();
-		printf ("GetValue for actual width/height value requested before calculated\n");
-		CalcActualWidthHeight (s ? s->cairo : NULL);
+		CalcActualWidthHeight (NULL);
 	}
 	
 	return FrameworkElement::GetValue (prop);
@@ -768,12 +770,8 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 	
-	if (prop->type == Type::TEXTBLOCK) {
-		actual_height = -1.0;
-		actual_width = -1.0;
-	}
-	
-	FrameworkElement::OnPropertyChanged (prop);
+	actual_height = -1.0;
+	actual_width = -1.0;
 	
 	FullInvalidate (false);
 }
@@ -975,15 +973,10 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void 
-Glyphs::GetBounds ()
+Glyphs::ComputeBounds ()
 {
-	Surface *s = GetSurface ();
-	
-	if (s == NULL)
-		return;
-	
 	// FIXME: implement me
-	x1 = y1 = x2 = y2 = 0;
+	bounds = Rect (0, 0, 0, 0);
 }
 
 Point

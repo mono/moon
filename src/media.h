@@ -60,7 +60,7 @@ class Image : public MediaBase {
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void GetBounds ();
+	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	
 	cairo_surface_t *GetCairoSurface ();
@@ -149,7 +149,7 @@ public:
 	
 	// overrides
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void GetBounds ();
+	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	
 	virtual void OnPropertyChanged (DependencyProperty *prop);

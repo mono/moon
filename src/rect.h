@@ -32,6 +32,11 @@ struct Rect {
 		h = rect.h;
 	}
 
+	bool PointInside (double px, double py)
+	{
+		return px > x && px < (x + w) && py > y && py < (y + h);
+	}
+
 	bool IntersectsWith (const Rect& rect)
 	{
 		return ((x < rect.x + rect.w) && (x + w > rect.x) && (y < rect.y + rect.h) && (y + h > rect.y));
@@ -45,6 +50,26 @@ struct Rect {
 		result.w = ((x + w < rect.x + rect.w) ? (x + w) : (rect.x + rect.w)) - result.x;
 		result.h = ((y + h < rect.y + rect.h) ? (y + h) : (rect.y + rect.h)) - result.y;
 		return result;
+	}
+
+	Rect Union (const Rect& rect)
+	{
+		Rect result = Rect ();
+		result.x = x < rect.x ? x : rect.x;
+		result.y = y < rect.y ? y : rect.y;
+		result.w = ((x + w > rect.x + rect.w) ? (x + w) : (rect.x + rect.w)) - result.x;
+		result.h = ((y + h > rect.y + rect.h) ? (y + h) : (rect.y + rect.h)) - result.y;
+		return result;
+	}
+
+	bool operator == (const Rect &rect)
+	{
+		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
+	}
+
+	bool operator != (const Rect &rect)
+	{
+		return !(*this == rect);
 	}
 };
 

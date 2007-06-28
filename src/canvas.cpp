@@ -67,87 +67,81 @@ Canvas::UpdateTransform ()
 	}
 }
 
+#define DEBUG_BOUNDS 0
+
+#if DEBUG_BOUNDS
 void space (int n)
 {
 	for (int i = 0; i < n; i++)
 		putchar (' ');
 }
 static int levelb = 0;
+#endif
 
 void
-Canvas::GetBounds ()
+Canvas::ComputeBounds ()
 {
-	VisualCollection *children = GetChildren ();
-	Collection::Node *cn;
-	bool first = true;
-	GList *il;
-
-	//levelb += 4;
-	//space (levelb);
-	//printf ("Canvas: Enter GetBounds\n");
-	cn = (Collection::Node *) children->list->First ();
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
-		UIElement *item = (UIElement *) cn->obj;
-
-		/* if the element is collapsed, it doesn't figure into
-		   layout, and therefore shouldn't figure into our
-		   bounding box computation.  Hidden means it still
-		   takes up space, just isn't drawn and doesn't take
-		   part in HitTest stuff. */
-		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() == VisibilityCollapsed)
-			continue;
-
-		item->GetBounds ();
-
-		//space (levelb + 4);
-		//printf ("Item (%s) bounds %g %g %g %g\n", 
-		//dependency_object_get_name (item),item->x1, item->y1, item->x2, item->y2);
-
-		//
-		// The topmost canvas does not use the children
-		// boundaries, it only triggers their computation
-		//
-		if (surface)
-			continue;
-
-		if (first) {
-			x1 = item->x1;
-			x2 = item->x2;
-			y1 = item->y1;
-			y2 = item->y2;
-			first = false;
-			continue;
-		} 
-
-		if (item->x1 < x1)
-			x1 = item->x1;
-		if (item->x2 > x2)
-			x2 = item->x2;
-		if (item->y1 < y1)
-			y1 = item->y1;
-		if (item->y2 > y2)
-			y2 = item->y2;
-	}
-
 	if (surface) {
-		x1 = y1 = 0;
-		x2 = surface->width;
-		y2 = surface->height;
-		//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
-	} else {
+		// toplevel canvas don't subscribe to the same bounds computation as others
+		bounds = Rect (0, 0, surface->width, surface->height);
+	}
+	else {
+		VisualCollection *children = GetChildren ();
+		Collection::Node *cn;
+		bool first = true;
+		GList *il;
+
+#if DEBUG_BOUNDS
+		levelb += 4;
+		space (levelb);
+		printf ("Canvas: Enter GetBounds\n");
+#endif
+		cn = (Collection::Node *) children->list->First ();
+		for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+			UIElement *item = (UIElement *) cn->obj;
+
+			/* if the element is collapsed, it doesn't figure into
+			   layout, and therefore shouldn't figure into our
+			   bounding box computation.  Hidden means it still
+			   takes up space, just isn't drawn and doesn't take
+			   part in HitTest stuff. */
+			if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() == VisibilityCollapsed)
+				continue;
+
+			Rect r = item->GetBounds ();
+
+#if DEBUG_BOUNDS
+			space (levelb + 4);
+			printf ("Item (%s) bounds %g %g %g %g\n", 
+				dependency_object_get_name (item),r.x, r.y, r.w, r.h);
+#endif
+			if (first) {
+				bounds = r;
+				first = false;
+			}
+			else {
+				bounds = bounds.Union (r);
+			}
+		}
+
 		// If we found nothing.
 		if (first){
+			double x1, y1, x2, y2;
 			x1 = y1 = 0;
 			x2 = framework_element_get_width (this);
 			y2 = framework_element_get_height (this);
 
 			cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
 			cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
+
+			bounds = Rect (x1, y1, x2, y2);
 		}
 	}
-	//space (levelb);
-	//printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", x1, y1, x2, y2);
-	//levelb -= 4;
+#if DEBUG_BOUNDS
+	space (levelb);
+	printf ("Canvas: Leave GetBounds (%g %g %g %g)\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	levelb -= 4;
+#endif
 }
 
 bool
@@ -163,7 +157,10 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 			return false;
 		}
 		UIElement *ui = (UIElement *) child;
-		ui->FullInvalidate (true);
+
+		ui->UpdateTransform ();
+		ui->UpdateBounds ();
+		ui->Invalidate (); /* force the invalidate */
 	}
 	
 	return false;
@@ -189,7 +186,7 @@ Canvas::HandleMotion (Surface *s, int state, double x, double y)
 			continue;
 		
 		// Bounds check:
-		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
+		if (!item->GetBounds().PointInside (x, y))
 			continue;
 		
 		handled = item->HandleMotion (s, state, x, y);
@@ -225,7 +222,7 @@ Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, 
 	VisualCollection *children = GetChildren ();
 	bool handled = false;
 	Collection::Node *cn;
-	
+
 	// 
 	// Walk the list in reverse
 	//
@@ -234,12 +231,12 @@ Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, 
 	
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
 		UIElement *item = (UIElement *) cn->obj;
-		
+
 		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
 			continue;
 
 		// Quick bound check:
-		if (x < item->x1 || x > item->x2 || y < item->y1 || y > item->y2)
+		if (!item->GetBounds().PointInside (x, y))
 			continue;
 		
 		handled = item->HandleButton (s, cb, state, x, y);
@@ -316,13 +313,11 @@ Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
 			goto leave;
 		
-		Rect item_rect (item->x1, item->y1, item->x2 - item->x1, item->y2 - item->y1);
-		
 		//space (level);
 		//printf ("%s %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
 		
-		if (true || render_rect.IntersectsWith (item_rect)) {
-			Rect inter = render_rect.Intersection(item_rect);
+		if (true || render_rect.IntersectsWith (item->GetBounds())) {
+			Rect inter = render_rect.Intersection(item->GetBounds());
 #if CAIRO_CLIP
 #if TIME_CLIP
 			STARTTIMER(clip, "cairo clip setup");

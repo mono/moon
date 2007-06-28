@@ -34,7 +34,7 @@ bool
 FrameworkElement::InsideObject (Surface *s, double x, double y)
 {
 	// Quick bounding box check.
-	if (x < x1 || x > x2 || y < y1 || y > y2)
+	if (!bounds.PointInside (x, y))
 		return FALSE;
 
 	bool ret = FALSE;

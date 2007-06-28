@@ -120,21 +120,23 @@ MediaElement::~MediaElement ()
 }
 
 void
-MediaElement::GetBounds ()
+MediaElement::ComputeBounds ()
 {
-	Surface *s = GetSurface ();
-	
-	if (s == NULL)
-		return;
-	
-	cairo_save (s->cairo);
-	cairo_set_matrix (s->cairo, &absolute_xform);
-	cairo_rectangle (s->cairo, 0, 0, mplayer->width, mplayer->height);
-	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
-	cairo_restore (s->cairo);
+	double x1, y1, x2, y2;
+	cairo_t* cr = measuring_context_create ();
+
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	cairo_rectangle (cr, 0, 0, mplayer->width, mplayer->height);
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	cairo_restore (cr);
 	
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
+
+	bounds = Rect (x1, y1, x2-x1, y2-y1);
+
+	measuring_context_destroy (cr);
 }
 
 Point
@@ -314,7 +316,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		printf ("video autoplayed, timeout = %d\n", timeout_id);
 	}
 	
-	FullInvalidate (false);
+	Invalidate ();
 	
 	// propagate to parent class
 	MediaBase::OnPropertyChanged (prop);
@@ -663,7 +665,7 @@ Image::DownloaderEvent (int kind)
 		if (brush)
 			brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
 		else 
-			FullInvalidate (true);
+			Invalidate ();
 	}
 }
 
@@ -891,23 +893,25 @@ Image::Render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void
-Image::GetBounds ()
+Image::ComputeBounds ()
 {
-	Surface *s = GetSurface ();
-	
-	if (s == NULL)
-		return;
-	
-	cairo_save (s->cairo);
-	cairo_set_matrix (s->cairo, &absolute_xform);
-	cairo_set_line_width (s->cairo, 1.0);
-	cairo_rectangle (s->cairo, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
-	cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
-	cairo_new_path (s->cairo);
-	cairo_restore (s->cairo);
+	double x1, y1, x2, y2;
+	cairo_t* cr = measuring_context_create ();
+
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	cairo_set_line_width (cr, 1.0);
+	cairo_rectangle (cr, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	cairo_new_path (cr);
+	cairo_restore (cr);
 	
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
+
+	bounds = Rect (x1, y1, x2-x1, y2-y1);
+
+	measuring_context_destroy (cr);
 }
 
 Point

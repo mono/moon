@@ -109,6 +109,9 @@ void     surface_register_events (Surface *s,
 				  callback_keyboard_event keydown, callback_keyboard_event keyup);
 		      
 
+cairo_t *measuring_context_create (void);
+void     measuring_context_destroy (cairo_t *cr);
+
 void runtime_init (void);
 
 void runtime_shutdown (void);

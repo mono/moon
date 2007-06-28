@@ -15,6 +15,7 @@
 
 #include "visual.h"
 #include "point.h"
+#include "rect.h"
 
 class Surface;
 
@@ -40,7 +41,7 @@ class UIElement : public Visual {
 	int flags;
 
 	// The computed bounding box
-	double x1, y1, x2, y2;
+	Rect bounds;
 
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
@@ -77,14 +78,20 @@ class UIElement : public Visual {
 	void UpdateBounds ();
 
 	// 
-	// GetBounds:
+	// ComputeBounds:
 	//   Updates the bounding box for the given item, this uses the parent
 	//   chain to compute the composite affine.
 	//
 	// Output:
-	//   the item->x1,y1,x2,y2 values are updated.
+	//   item->bounds is updated
 	// 
-	virtual void GetBounds ();
+	virtual void ComputeBounds ();
+
+	// 
+	// GetBounds:
+	//   returns the current bounding box for the given item.
+	// 
+	virtual Rect GetBounds () { return bounds; }
 
 	//
 	// GetTransformFor
@@ -98,6 +105,12 @@ class UIElement : public Visual {
 	// the parameter determines if we should also update the transformation
 	//
 	void FullInvalidate (bool render_xform);
+
+
+	//
+	// Invalidates a subrectangle of this element
+	//
+	void Invalidate (Rect r);
 	
 	//
 	// Invalidates the items bounding rectangle on its surface

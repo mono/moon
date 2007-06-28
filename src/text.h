@@ -163,7 +163,7 @@ public:
 	//
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void GetBounds ();
+	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual bool InsideObject (Surface *s, double x, double y);
 	virtual Value *GetValue (DependencyProperty *prop);
@@ -239,7 +239,7 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
 	
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void GetBounds ();
+	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };

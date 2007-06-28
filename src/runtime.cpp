@@ -390,7 +390,7 @@ surface_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer us
 	// if x or y changed we need to recompute the presentation matrix
 	// because the toplevel position depends on the allocation.
 	if (s->toplevel)
-	        s->toplevel->FullInvalidate (true);
+		s->toplevel->UpdateBounds ();
 }
 
 static void
@@ -603,7 +603,8 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	if (change_size)
 		surface_realloc (surface);
 
-	canvas->FullInvalidate (true);
+	canvas->UpdateBounds ();
+	canvas->Invalidate ();
 }
 
 void
@@ -642,6 +643,19 @@ void surface_register_events (Surface *s,
 }
 
 
+cairo_t*
+measuring_context_create (void)
+{
+	cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
+	return cairo_create (surf);
+}
+
+void
+measuring_context_destroy (cairo_t *cr)
+{
+	cairo_surface_destroy (cairo_get_target (cr));
+	cairo_destroy (cr);
+}
 
 static bool inited = false;
 

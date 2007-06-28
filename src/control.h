@@ -26,7 +26,9 @@ class Control : public FrameworkElement {
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 	virtual void UpdateTransform ();
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void GetBounds ();
+	virtual void ComputeBounds ();
+	virtual Rect GetBounds ();
+
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 	virtual Point GetTransformOrigin ();
 	virtual bool InsideObject (Surface *s, double x, double y);

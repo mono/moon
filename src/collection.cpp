@@ -314,8 +314,8 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	
 	item->parent = panel;
 	item->UpdateTransform ();
+	item->Invalidate ();
 	panel->UpdateBounds ();
-	panel->Invalidate ();
 }
 
 void

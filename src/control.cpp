@@ -37,19 +37,20 @@ Control::Render (cairo_t *cr, int x, int y, int width, int height)
 		real_object->DoRender (cr, x, y, width, height);
 }
 
-void 
+Rect
 Control::GetBounds ()
 {
-	if (real_object){
-		real_object->GetBounds ();
-		x1 = real_object->x1;
-		y1 = real_object->y1;
-		x2 = real_object->x2;
-		y2 = real_object->y2;
-		//printf ("CONTROL-CANVAS: Bounds obtained: %g %g %g %g\n", x1, y1, x2, y2);
-	} else {
-		x1 = y1 = x2 = y2 = 0;
-	}
+	if (real_object)
+		return real_object->GetBounds();
+	else
+		return Rect (0,0,0,0);
+}
+
+void 
+Control::ComputeBounds ()
+{
+	if (real_object)
+		real_object->ComputeBounds ();
 }
 
 void 

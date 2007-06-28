@@ -22,17 +22,20 @@
 void
 UIElement::UpdateBounds ()
 {
-	double cx1 = x1;
-	double cy1 = y1;
-	double cx2 = x2;
-	double cy2 = y2;
+	Rect obounds = bounds;
 	
-	GetBounds ();
+	ComputeBounds ();
 	
 	//
 	// If we changed, notify the parent to recompute its bounds
 	//
-	if (x1 != cx1 || y1 != cy1 || y2 != cy2 || x2 != cx2){
+	if (bounds != obounds) {
+		// Invalidate the old bounds
+		Invalidate (obounds);
+
+		// And the new rect
+		Invalidate (bounds);
+
 		if (parent != NULL)
 			parent->UpdateBounds();
 	}
@@ -45,8 +48,9 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	exit (1);
 }
 
-UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (0), x1 (0), y1(0), x2(0), y2(0)
+UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (0)
 {
+	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 
 	this->SetValue (UIElement::TriggersProperty, Value (new TriggerCollection ()));
@@ -76,7 +80,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		// from or to Collapsed, but as there's no way to tell that...
 		FullInvalidate (true);
 	} else if (prop == UIElement::ClipProperty) {
-		FullInvalidate (false);
+		Invalidate ();
 	} else if (prop == UIElement::OpacityMaskProperty) {
 		if (opacityMask != NULL) {
 			opacityMask->Detach (NULL, this);
@@ -88,9 +92,9 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 			opacityMask->ref ();
 		}
 		
-		FullInvalidate (false);
+		Invalidate ();
 	} else if (prop == RenderTransformProperty || prop == RenderTransformOriginProperty) {
-		FullInvalidate (true);
+		UpdateTransform ();
 	} else if (prop == TriggersProperty){
 		Value *v = GetValue (prop);
 		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
@@ -158,6 +162,9 @@ UIElement::UpdateTransform ()
 	cairo_matrix_multiply (&absolute_xform, &user_transform, &absolute_xform);
 	cairo_matrix_translate (&absolute_xform, -p.x, -p.y);
 	//printf ("      Final position for %s x=%g y=%g\n", dependency_object_get_name (this), absolute_xform.x0, absolute_xform.y0);
+
+	// a change in transform requires a change in our bounds, more than likely
+	UpdateBounds ();
 }
 
 void
@@ -165,17 +172,18 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 {
 	if (prop == UIElement::RenderTransformProperty ||
 	    prop == UIElement::RenderTransformOriginProperty) {
-		FullInvalidate (true);
+		UpdateTransform ();
 	} else if (prop == UIElement::ClipProperty ||
 		   prop == UIElement::OpacityMaskProperty) {
 
-		// Maybe this could also be just item_invalidate?
-		FullInvalidate (false);
+		Invalidate ();
 	} else if (prop == UIElement::OpacityProperty) {
 	  	Invalidate ();
 	} else if (prop == UIElement::VisibilityProperty) {
 		// XXX we need a FullInvalidate if this is changing
 		// from or to Collapsed, but as there's no way to tell that...
+
+	  // XX do we need this here at all?
 		FullInvalidate (true);
 	} else if (Type::Find (subprop->type)->IsSubclassOf (Type::BRUSH)) {
 		Invalidate ();
@@ -208,28 +216,36 @@ UIElement::FullInvalidate (bool rendertransform)
 	Invalidate ();
 }
 
+
+// XXX this should really intersect with the bounding rect.
 void
-UIElement::Invalidate ()
+UIElement::Invalidate (Rect r)
 {
 	Surface *s = GetSurface ();
-	double res [6];
 	
 	if (s == NULL)
 		return;
 
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
-		item, Type::Find(item->GetObjectType())->name,
-		(int) item->x1, (int)item->y1, 
-		(int)(item->x2-item->x1+1), (int)(item->y2-item->y1+1));
+		this, Type::Find(GetObjectType())->name,
+		(int) r.x, (int)r.y, 
+		(int)(r.w+2), (int)(r.h+2));
 #endif
 	// 
 	// Note: this is buggy: why do we need to queue the redraw on the toplevel
 	// widget (s->data) and does not work with the drawing area?
 	//
 	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
-				    (int) x1, (int)y1, 
-				    (int)(x2-x1+2), (int)(y2-y1+2));
+				    (int) r.x, (int)r.y, 
+				    (int)(r.w+2), (int)(r.h+2));
+}
+
+void
+UIElement::Invalidate ()
+{
+	// invalidate the full bounds of this UIElement.
+	Invalidate (bounds);
 }
 
 
@@ -272,9 +288,9 @@ UIElement::Leave (Surface *s)
 }
 
 void
-UIElement::GetBounds ()
+UIElement::ComputeBounds ()
 {
-	g_warning ("UIElement:getbounds has been called. The derived class %s should have overridden it.",
+	g_warning ("UIElement:ComputeBounds has been called. The derived class %s should have overridden it.",
 		   dependency_object_get_name (this));
 }
 

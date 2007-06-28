@@ -1,3 +1,101 @@
+2007-06-27  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h: stop using x1,y1,x2,y2 for bounds, use a Rect
+	instead.  Also, rename getbounds to ComputeBounds(), and add a new
+	GetBounds which returns the bounding rectangle.
+
+	* canvas.cpp (Canvas::ComputeBounds): rename GetBounds to this.
+	Simplify it a bit by using Rect's instead of the 4 doubles.  Note
+	that the calls to item->GetBounds do *not* cause item's bounds to
+	be computed.
+	(Canvas::OnChildPropertyChanged): just call UpdateTransform on the
+	child when its Left/Top properties change.
+	(Canvas::HandleMotion): use Rect.PointInside to clean up the
+	check.
+	(Canvas::HandleButton): same.
+	(Canvas::Render): remove the local "item_rect" and just use the
+	item's bounds.
+
+	* uielement.cpp (UIElement::UpdateBounds): remember the old
+	bounds, compute the new bounds, and (if they're different)
+	invalidate both and chain up to the parent's UpdateBounds method.
+	(UIElement::UIElement): init the bounds.
+	(UIElement::OnPropertyChanged): when switch away from a lot of the
+	FullInvalidate calls.  If the clip or OpacityMask is changed, just
+	Invalidate.  If the RenderTransform or RenderTransformOrigin is
+	changed, called UpdateTransform.
+	(UIElement::UpdateTransform): all UpdateBounds, since it's
+	uncommon that our transform will change without our bounds
+	changing..
+	(UIElement::OnSubPropertyChanged): These shouldn't be necessary,
+	but again switch away from FullInvalidate to other more targeted
+	methods.  If the transform properties change, call
+	UpdateTransform, for clip and OpacityMask just call Invalidate.
+	(UIElement::Invalidate): add a Rect taking one that just
+	invalidates the rect, and make the default variety call it with
+	bounds as the arg.
+	(UIElement::ComputeBounds): rename GetBounds().
+
+	* shape.cpp (ComputeBounds): don't use GetSurface.  use a
+	measuring cairo context.
+	(Shape::OnPropertyChanged): if the Stretch property changed,
+	UpdateBounds.  also, change from FullInvalidate to just Invalidate
+	for everything.  Remove the UpdateTransform call as that gets
+	handled by UIElement::OnPropetyChanged.
+	(Rectangle::OnPropertyChanged): we only need to invalidate on a
+	property change.
+	(Polygon::OnPropertyChanged): if the Points property changes we
+	need to UpdateBounds and force an Invalidate.  otherwise, just
+	Invalidate.  no need for FullInvalidate always.
+	(Polygon::OnCollectionChanged): new method.
+	UpdateBounds+Invalidate to catch changes to the points collection.
+	(Polyline::OnPropertyChanged): analogous changes as were made to
+	Polygon::OnPropertyChanged.
+	(Polyline::OnCollectionChanged): same as
+	Polygon::OnCollectionChanged.
+
+	* text.cpp (TextBlock::TextBlock): move the SetValue call to the
+	end, past all the initialization of things that might be needed in
+	ComputeBounds, which gets called.
+	(TextBlock::ComputeBounds): don't use GetSurface.  use a measuring
+	cairo context.
+	(TextBlock::CalcActualWidthHeight): use a measuring context here.
+	(TextBlock::OnPropertyChanged): remove unnecessary call to
+	FrameworkElement::OnPropertyChanged from the end of the method.
+	(Glyphs::ComputeBounds): return Rect (0,0,0,0).
+
+	* media.cpp (MediaElement::ComputeBounds): don't use GetSurface.
+	use a measuring context.
+	(Image::ComputeBounds): same.
+	(OnPropertyChanged): just Invalidate here, no need for
+	FullInvalidate.
+	(DownloaderEvent): just Invalidate here, not FullInvalidate.
+
+	* frameworkelement.cpp (FrameworkElement::InsideObject): use
+	Rect.PointInside.
+
+	* control.cpp (Control::GetBounds): use a Rect here.
+	(Control::ComputeBounds): forward on to the real_object.
+
+	* collection.cpp (VisualCollection::VisualUpdate): when adding an
+	element, we need to force its invalidation, but not the parent's.
+	we just update the parent's bounds and UpdateBounds will do the
+	invalidating if it needs to.
+
+	* runtime.cpp (surface_attach): we don't need to do a full
+	invalidate.  just update the bounds of the toplevel (which sets
+	the width and height to the widget's) and force an invalidate
+	(just in case the user set the width/height to exactly the same
+	thing before attaching).
+	(surface_size_allocate): same thing here - no need for
+	FullInvalidate.  Just update the bounds.
+	(measuring_context_create): create a tiny surface and a cairo_t
+	for use in measuring things.
+	(measuring_context_destroy): destroy the surface and cairo_t.
+
+	* control.h, text.h, canvas.h, media.h, shape.h: GetBounds ->
+	ComputeBounds.
+	
 2007-06-28  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp (expose_event_callback): Introduce a new

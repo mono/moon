@@ -240,27 +240,29 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void 
-Shape::GetBounds ()
+Shape::ComputeBounds ()
 {
-	Surface *s = GetSurface ();
-	
-	if (s == NULL)
-		return;
-	
-	cairo_save (s->cairo);
+	double x1, y1, x2, y2;
+	cairo_t* cr = measuring_context_create ();
+
+	cairo_save (cr);
 	// dont do the operation and don't do the fill setup
-	DoDraw (s->cairo, false, false);
+	DoDraw (cr, false, false);
 
 	if (stroke)
-		cairo_stroke_extents (s->cairo, &x1, &y1, &x2, &y2);
+		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
 	else
-		cairo_fill_extents (s->cairo, &x1, &y1, &x2, &y2);
+		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
 
-	cairo_new_path (s->cairo);
-	cairo_restore (s->cairo);
+	cairo_new_path (cr);
+	cairo_restore (cr);
 
 	// The extents are in the coordinates of the transform, translate to device coordinates
 	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
+
+	bounds = Rect (x1, y1, x2-x1, y2-y1);
+
+	measuring_context_destroy (cr);
 }
 
 bool
@@ -292,7 +294,10 @@ void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type == Type::SHAPE) {
-		if (prop == Shape::StrokeProperty) {
+		if (prop == Shape::StretchProperty) {
+			UpdateBounds ();
+		}
+		else if (prop == Shape::StrokeProperty) {
 			if (stroke != NULL) {
 				stroke->Detach (NULL, this);
 				stroke->unref ();
@@ -314,15 +319,10 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 			}
 		}
 		
-		FullInvalidate (false);
+		Invalidate ();
 	}
 	
 	FrameworkElement::OnPropertyChanged (prop);
-	
-	if ((prop == UIElement::RenderTransformOriginProperty) ||
-	    (prop == UIElement::RenderTransformProperty)) {
-		UpdateTransform ();
-	}
 }
 
 Brush *
@@ -590,7 +590,7 @@ void
 Rectangle::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type == Type::RECTANGLE) {
-		FullInvalidate (false);
+		Invalidate ();
 		return;
 	}
 	
@@ -761,11 +761,24 @@ void
 Polygon::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type == Type::POLYGON) {
-		FullInvalidate (false);
+		if (prop == Polygon::PointsProperty) {
+			UpdateBounds ();
+			Invalidate (); // force one here, even if the bounds don't change
+		}
+		else {
+			Invalidate ();
+		}
 		return;
 	}
 	
 	Shape::OnPropertyChanged (prop);
+}
+
+void
+Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	UpdateBounds ();
+	Invalidate ();
 }
 
 FillRule
@@ -851,11 +864,24 @@ void
 Polyline::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type == Type::POLYLINE) {
-		FullInvalidate (false);
+		if (prop == Polyline::PointsProperty) {
+			UpdateBounds ();
+			Invalidate (); // force one here, even if the bounds don't change
+		}
+		else {
+			Invalidate ();
+		}
 		return;
 	}
 	
 	Shape::OnPropertyChanged (prop);
+}
+
+void
+Polyline::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	UpdateBounds ();
+	Invalidate ();
 }
 
 FillRule
