@@ -1,5 +1,16 @@
 2007-06-28  Andreia Gaita  <avidigal@novell.com>
 
+	* svg2xaml.xslt, svg2xaml_standalone.xslt:
+	Start parsing the defs node for global defaults.
+	Not finished yet. Detect "url" reference and 
+	import the previously parsed node with that name
+	(id).
+	fix the Canvas.RenderTransform tag. Catch and 
+	ignore text nodes. Fix name-value splitting.
+	Add some example svg to test the transformation.
+
+2007-06-28  Andreia Gaita  <avidigal@novell.com>
+
 	* Makefile.am: add the xslt as a resource
 
 2007-06-27  Andreia Gaita  <avidigal@novell.com>
