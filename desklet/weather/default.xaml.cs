@@ -92,7 +92,7 @@ namespace Desklet.Weather
 		Canvas temperaturePanel;
 		Canvas cloudsPanel;
 		Canvas windPanel;
-		
+
 		System.Windows.Controls.Image weatherIcon;
 		System.Windows.Controls.Image windIcon;
 		Ellipse windIndicator;
@@ -108,7 +108,7 @@ namespace Desklet.Weather
 		Storyboard show_updating;
 		Storyboard hide_updating;
 
-		Path closeButton;
+		Polygon closeButton;
 		
 		bool allControlsPresent= true;
 		string iconsDir;
@@ -121,6 +121,9 @@ namespace Desklet.Weather
 		double windIconTop;
 		double windIconLeft;
 
+		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+		
 		GConfConfigStorage config = new GConfConfigStorage ("Weather", 0);
 		
 		public void DownloadComplete (Downloader downloader)
@@ -542,7 +545,7 @@ namespace Desklet.Weather
 			updCanvas = LoadControl ("UpdatingCanvas") as Canvas;
 			cloudsPanel = LoadControl ("CloudsVisPanel") as Canvas;
 			loadingMessage = LoadControl ("LoadingMessage") as TextBlock;
-			closeButton = LoadControl ("desklet-close") as Path;
+			closeButton = LoadControl ("desklet-close") as Polygon;
 			skyConditions = LoadControl ("SkyConditions") as TextBlock;
 			windPanel = LoadControl ("WindPanel") as Canvas;
 			windConditions = LoadControl ("WindConditions") as TextBlock;
@@ -571,14 +574,14 @@ namespace Desklet.Weather
 			}
 		}
 		
-		void HighlightButton (Path button)
+		void HighlightButton (Polygon button)
 		{
-			button.Stroke=new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+			button.Stroke = buttonHilite;
 		}
 
-		void UnhighlightButton (Path button)
+		void UnhighlightButton (Polygon button)
 		{
-			button.Stroke=new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+			button.Stroke = buttonNormal;
 		}
 		
 		public void Page_Loaded (object sender, EventArgs e)

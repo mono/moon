@@ -48,15 +48,9 @@
   <Image x:Name="WindIcon" Width="98" Height="98" Canvas.Left="5" Canvas.Top="72"/>
 
   <!-- close/drag elements -->
-  <Path Stroke="#66FFFFFF" StrokeThickness="2" x:Name="desklet-close">
-    <Path.Data>
-      <GeometryGroup FillRule="OddEven">
-	<RectangleGeometry Rect="475,8,16,16" RadiusX="3" RadiusY="3"/>
-	<LineGeometry StartPoint="476,9" EndPoint="490,23"/>
-	<LineGeometry StartPoint="490,9" EndPoint="476,23"/>
-      </GeometryGroup>
-    </Path.Data>
-  </Path>
+  <Polygon x:Name="desklet-close" Canvas.Left="475" Canvas.Top="8"
+                Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
+                Stroke="#66FFFFFF" StrokeThickness="3" Fill="#66FFFFFF" />
 
   <!-- station id -->
   <TextBlock x:Name="StationIDLabel" Canvas.Left="100" Canvas.Top="8" FontSize="14" FontWeight="Bold" Foreground="#66FFFFFF" 
