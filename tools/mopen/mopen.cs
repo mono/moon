@@ -53,6 +53,7 @@ using Mono;
 using System.Reflection;
 
 class MonoOpen {
+	static Window window;
 	static bool fixedwindow = false;
 	static int width = -1;
 	static int height = -1;
@@ -83,21 +84,29 @@ class MonoOpen {
 		 ctx.Fill ();
 	}
 
-	static void HandleButtonPressEvent (object sender, ButtonPressEventArgs args)
+	static bool can_dragging = false;
+
+	static void HandleMouseLeftButtonDown (object sender, MouseEventArgs e)
 	{
-		if (!(sender is Gtk.Window))
+		can_dragging = true;
+	}
+
+	static void HandleMouseLeftButtonUp (object sender, MouseEventArgs e)
+	{
+		can_dragging = false;
+	}
+
+	static void HandleMouseMove (object sender, MouseEventArgs e)
+	{
+		if (!can_dragging)
 			return;
 
-		if (args.Event.Button == args.Event.Button) {
-			Gtk.Window w = (Gtk.Window)sender;
+		int x = 0, y = 0;
+		window.GetPosition (out x, out y);
+		System.Windows.Point p = e.GetPosition (sender as UIElement);
+		window.BeginMoveDrag (1, (int) p.X + x,	(int) p.Y + y, 0);
 
-			if (args.Event.Button == 1) {
-				w.BeginMoveDrag ((int) args.Event.Button, 
-								(int) args.Event.XRoot, 
-								(int) args.Event.YRoot, 
-								(uint) args.Event.Time);
-			}
-		}
+		can_dragging = false;
 	}
 
 	static void ConfigureDeskletWindow (Gtk.Window window)
@@ -105,15 +114,13 @@ class MonoOpen {
 		window.Decorated = false;
 		window.SkipPagerHint = true;
 		window.SkipTaskbarHint = true;
-
-		//window.ButtonPressEvent += HandleButtonPressEvent;
 	}
 
 	static int LoadXaml (string file, ArrayList args)
 	{
 		Application.Init ();
 		GtkSilver.Init ();
-		Window w = new Window (file);
+		window = new Window (file);
 
 		string full = Path.GetFullPath (file);
 		string dir = Path.GetDirectoryName (full);
@@ -127,16 +134,16 @@ class MonoOpen {
 		});
 
 		if (transparent) {
-			CompositeHelper.SetRgbaColormap (w);
-			w.AppPaintable = true;
-			w.ExposeEvent += HandleExposeEvent;
+			CompositeHelper.SetRgbaColormap (window);
+			window.AppPaintable = true;
+			window.ExposeEvent += HandleExposeEvent;
 		}    	
 
 		if (desklet) {
-			ConfigureDeskletWindow (w);
+			ConfigureDeskletWindow (window);
 		}
 
-		w.DeleteEvent += delegate {
+		window.DeleteEvent += delegate {
 			Application.Quit ();
 		};
 
@@ -174,9 +181,9 @@ class MonoOpen {
 
 		if (width != -1 && height != -1){
 			silver = new GtkSilver (width, height);
-			w.Resize (width, height);
+			window.Resize (width, height);
 		} else if (canvas.Width > 0 && canvas.Height > 0) {
-			w.Resize ((int) canvas.Width, (int) canvas.Height);
+			window.Resize ((int) canvas.Width, (int) canvas.Height);
 			silver = new GtkSilver ((int) canvas.Width, (int) canvas.Height);
 		} else {
 			silver = new GtkSilver (400, 400);
@@ -186,10 +193,16 @@ class MonoOpen {
 			silver.Transparent = true;
 		}
 
-		w.Add (silver);
+		if (desklet) {
+			canvas.MouseLeftButtonDown += new MouseEventHandler (HandleMouseLeftButtonDown);
+			canvas.MouseLeftButtonUp += new MouseEventHandler (HandleMouseLeftButtonUp);
+			canvas.MouseMove += new MouseEventHandler (HandleMouseMove);
+		}
+
+		window.Add (silver);
 		silver.Attach (canvas);
 
-		w.ShowAll ();
+		window.ShowAll ();
 		Application.Run ();
 		return 0;
 	}

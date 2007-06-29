@@ -1,3 +1,9 @@
+2007-06-29  Everaldo Canuto  <ecanuto@novell.com>
+
+	* tools/mopen.cs: Use a new drag-and-move system that make use of
+	canvas events to check mouse move. Now the elements events also 
+	works, this drag-and-move is activated when you use -d option.
+
 2007-06-29  Marek Habersack  <mhabersack@novell.com>
 
 	* desklet/desklets.cs: added GConf config storage backend.
