@@ -1,24 +1,3 @@
-2007-06-26  Everaldo Canuto  <ecanuto@novell.com>
+2007-06-29  Rodrigo Kumpera  <rkumpera@novell.com>
 
-	* Makefile: Include rules.make.
-	* clock.cs: Remove timer and use storyboard.
-
-2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
-
-	* clock.xaml: Clean clock design.
-	* clock.cs: Remove some unused code.
-
-2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
-
-	* Makefile: Add clean target and add -t to laucher options.
-	* image/*: Remove background images, we dont need it.
-
-2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
-
-	* Makefile: Add generic makefile.
-	* default.xaml: Remove /bin from assembly path.
-
-2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
-
-	* ChangeLog: Added.
-	* default.desklet: Renamed from clock.desklet.
+	* ChangeLog: Initial Player adder, used parts of Everaldo's xaml.

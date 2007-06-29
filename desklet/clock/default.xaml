@@ -1,79 +1,18 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Desklets.Clock;assembly=bin/clock.dll"
-	Loaded="PageLoaded" Width="104" Height="104">
+        x:Class="Desklets.VideoPlayer;assembly=bin/videoplayer.dll"
+	Loaded="PageLoaded" Width="400" Height="400">
 
-	<!-- To trigger our timer -->
-	<Canvas.Resources>
-        <Storyboard x:Name="run">
-        </Storyboard>
-	</Canvas.Resources>
+	<Rectangle Width="350" Height="30" Fill="Gray" RadiusX="15" RadiusY="15"/>
 
-	<!-- border 1 -->
-	<Path Fill="#ffc6c8da" Stroke="#ff605773" StrokeThickness="3">
-		<Path.Data>
-			<EllipseGeometry Center="52,52" RadiusX="50" RadiusY="50" />
-		</Path.Data>
-	</Path>
+	<Rectangle Width="20" Height="20" Fill="Black" Canvas.Top="5" Canvas.Left="140" x:Name="Stop" RadiusX="2" RadiusY="2"/>
 
-	<!-- border 2 -->
-	<Path Fill="#fff3f3f3" Stroke="#ff8585a0" StrokeThickness="5">
-		<Path.Data>
-			<EllipseGeometry Center="52,52" RadiusX="44" RadiusY="44" />
-		</Path.Data>
-	</Path>
+	<Canvas Width="18" Height="20" Canvas.Top="5" Canvas.Left="180" x:Name="Pause">
+		<Rectangle Width="7" Height="20" Fill="Black" RadiusX="2" RadiusY="2"/>
+		<Rectangle Width="7" Height="20" Fill="Black" Canvas.Left="11" RadiusX="2" RadiusY="2"/>
+	</Canvas>
 
-	<!-- border 2 -->
-	<Path Fill="#fff3f3f3" Stroke="Silver" StrokeThickness="1">
-		<Path.Data>
-			<EllipseGeometry Center="52,52" RadiusX="40" RadiusY="40" />
-		</Path.Data>
-	</Path>
+	<Polygon Fill="Black" Points="220,5 220,25 240,15" x:Name="Play"/>
 
-	<!-- dots -->
-	<Path Stroke="#a0a0a0" Fill="#c0c0c0">
-		<Path.Data>
-			<GeometryGroup>
-				<EllipseGeometry Center="52,20" RadiusX="4" RadiusY="4" />
-				<EllipseGeometry Center="84,52" RadiusX="4" RadiusY="4" />
-				<EllipseGeometry Center="52,84" RadiusX="4" RadiusY="4" />
-				<EllipseGeometry Center="20,52" RadiusX="4" RadiusY="4" />
-			</GeometryGroup>
-		</Path.Data>
-	</Path>
-
-
-	<!-- hour hand -->
-	<Line Stroke="Black" X1="52" Y1="22" X2="52" Y2="52" StrokeThickness="4" StrokeStartLineCap="Round">
-		<Line.RenderTransform>
-			<RotateTransform x:Name="hourHand" Angle="30" CenterX="52" CenterY="52" />
-		</Line.RenderTransform>
-	</Line>
-
-	<!-- minute hand -->
-	<Line Stroke="Black" X1="52" Y1="16" X2="52" Y2="52" StrokeThickness="2" StrokeStartLineCap="Round">
-		<Line.RenderTransform>
-			<RotateTransform x:Name="minuteHand" Angle="100" CenterX="52" CenterY="52" />
-		</Line.RenderTransform>
-	</Line>
-
-	<!-- middle -->
-	<Path Fill="#fff3f3f3" Stroke="#ff000000" StrokeThickness="3">
-		<Path.Data>
-			<EllipseGeometry Center="52,52" RadiusX="6" RadiusY="6" />
-		</Path.Data>
-	</Path>
-
-	<!-- seconds hand -->
-	<Path Fill="Red" Stroke="Red">
-		<Path.Data>
-			<EllipseGeometry Center="52,52" RadiusX="3" RadiusY="3" />
-		</Path.Data>
-	</Path>
-	<Line Stroke="Red" X1="52" Y1="14" X2="52" Y2="62" StrokeThickness="1" StrokeStartLineCap="Round">
-		<Line.RenderTransform>
-			<RotateTransform x:Name="secondsHand" Angle="10" CenterX="52" CenterY="52" />
-		</Line.RenderTransform>
-	</Line>
-	
+	<MediaElement AutoPlay="False" x:Name="Video" Source="video.ogg" Opacity="1.0" Canvas.Top="30" Canvas.Left="15"/>
 </Canvas>
