@@ -15,7 +15,7 @@
     <Namespace Name="Mono.Desklets">
       <Type Name="ConfigStorage" />
       <Type Name="Desklet" />
-      <Type Name="GconfConfigStorage" />
+      <Type Name="GConfConfigStorage" />
     </Namespace>
   </Types>
   <Title>desklets</Title>
