@@ -1,0 +1,3 @@
+2007-06-29  Everaldo Canuto  <ecanuto@novell.com>
+
+	* default.xaml: Fix main rectangle size to better look.
