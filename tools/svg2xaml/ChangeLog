@@ -1,6 +1,12 @@
 2007-06-29  Andreia Gaita  <avidigal@novell.com>
 
 	* svg2xaml.xslt, svg2xaml_standalone.xslt:
+	Add parent element (*.RenderTransform) to 
+	inherited transformations.
+	
+2007-06-29  Andreia Gaita  <avidigal@novell.com>
+
+	* svg2xaml.xslt, svg2xaml_standalone.xslt:
 	Parse and output matrix transformations.
 
 2007-06-28  Andreia Gaita  <avidigal@novell.com>

@@ -281,7 +281,9 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:if test="$transform">
-						<xsl:copy-of select="$transform"/>
+						<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}.RenderTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+							<xsl:copy-of select="$transform"/>
+						</xsl:element>
 					</xsl:if>
 				</xsl:otherwise>
 			</xsl:choose>
