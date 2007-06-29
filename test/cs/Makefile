@@ -5,6 +5,7 @@ demo.exe: demo.cs
 	tests/LinearBrushTest.cs \
 	tests/RadialBrushTest.cs \
 	tests/LineColorTest.cs \
+	tests/ZIndexChangeTest.cs \
 	-pkg:gtk-sharp-2.0 -pkg:silver -r:../gtksilver.dll
 
 run: demo.exe

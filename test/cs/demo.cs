@@ -67,6 +67,7 @@ class X {
 		tests.Add(new LinearBrushTest());
 		tests.Add(new RadialBrushTest());
 		tests.Add(new AnimationLineTest());
+		tests.Add(new ZIndexChangeTest());
 
 		Load (tests[0]);		
 		Application.Run ();
