@@ -39,7 +39,7 @@ UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 		if (parent != NULL)
 			parent->UpdateBounds();
 	}
-	else {
+	else if (force_redraw_of_new_bounds) {
 		Invalidate (bounds);
 	}
 }

@@ -1,5 +1,10 @@
 2007-06-29  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::UpdateBounds): oops.  really only do
+	that invalidate if the flag is true.
+
+2007-06-29  Chris Toshok  <toshok@ximian.com>
+
 	* text.cpp: Do CalcActualWidtHeight on any property that might
 	cause a change.  This is going to be a performance hit, but we
 	need to take this step backward to get things working with the new
