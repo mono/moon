@@ -1,5 +1,11 @@
 2007-06-29  Chris Toshok  <toshok@ximian.com>
 
+	* panel.h, panel.cpp: okay, i'm stupid.  it's not
+	OnChildPropertyChanged either.  it's OnCollectionChanged.  we
+	seriously need to clean this stuff up.
+
+2007-06-29  Chris Toshok  <toshok@ximian.com>
+
 	* panel.h, panel.cpp: child ZIndex property changes are reflected
 	via OnChildPropertyChanged, not OnSubPropertyChanged.
 

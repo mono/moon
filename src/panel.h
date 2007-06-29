@@ -27,7 +27,7 @@ class Panel : public FrameworkElement {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
-	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 
 	virtual void OnLoaded ();
 };
