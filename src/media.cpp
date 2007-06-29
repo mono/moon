@@ -304,6 +304,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	} else if (prop == MediaElement::PositionProperty) {
 		// FIXME: needs to seek?
+		NotifyAttacheesOfPropertyChange (prop);
 		return;
 	} else if (prop == MediaElement::VolumeProperty) {
 		// FIXME: implement me

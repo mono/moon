@@ -161,7 +161,6 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 		ui->UpdateTransform ();
 		ui->UpdateBounds ();
 		ui->Invalidate (); /* force the invalidate */
-		return true;
 	}
 	
 	return false;

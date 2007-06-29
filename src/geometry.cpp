@@ -69,6 +69,12 @@ Geometry::Draw (cairo_t *cr)
 	}
 }
 
+void
+Geometry::OnPropertyChanged (DependencyProperty *prop)
+{
+	NotifyAttacheesOfPropertyChange (prop);
+}
+
 //
 // GeometryGroup
 //
@@ -109,7 +115,7 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 void
 GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttacheesOfPropertyChange (subprop);
 }
 
 void
@@ -472,6 +478,10 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	if (prop->type == Type::PATHFIGURE) {
+		NotifyAttacheesOfPropertyChange (prop);
+	}
 }
 
 void
@@ -555,6 +565,15 @@ void
 path_figure_set_start_point (PathFigure *path_figure, Point *point)
 {
 	path_figure->SetValue (PathFigure::StartPointProperty, Value (*point));
+}
+
+//
+// PathSegment
+//
+
+void PathSegment::OnPropertyChanged (DependencyProperty *prop)
+{
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 //
