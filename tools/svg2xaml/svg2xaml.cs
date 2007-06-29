@@ -60,6 +60,7 @@ namespace svg2xaml
 			{
 				Console.WriteLine ("Houston, we have a problem!");
 				Exception a = ex;
+				Console.WriteLine (a.Message);
 				Console.WriteLine (a.StackTrace);
 				while (a != null)
 				{

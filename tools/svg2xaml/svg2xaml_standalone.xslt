@@ -38,8 +38,9 @@
 <xsl:stylesheet version="1.0" 
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:svg="http://www.w3.org/2000/svg"
+xmlns:xlink="http://www.w3.org/1999/xlink"
 xmlns:xaml="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-exclude-result-prefixes="svg xsl xaml"
+exclude-result-prefixes="svg xsl xaml xlink"
 
 >
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
@@ -56,8 +57,11 @@ exclude-result-prefixes="svg xsl xaml"
 			<mapping name="fill" parent="text" value="Foreground" type="attribute"/>
 			<mapping name="transform" value="RenderTransform" type="element" template="transform" prefixParent="true"/>
 			<mapping name="viewBox" value="RenderTransform" type="element" template="viewBox" prefixParent="true" names="x y Width Height" filter="local"/>
+
 			<mapping name="stroke-linejoin" value="StrokeLineJoin" type="attribute"/>
 			<mapping name="stroke-width" value="StrokeThickness" type="attribute"/>
+			<mapping name="stroke-linecap" value="StrokeEndLineCap" type="attribute" />
+
 			<mapping name="font-size" value="FontSize" type="attribute"/>
 			<mapping name="text-anchor" value="AlignmentX" type="attribute">
 				<value name="middle" value="Centered"></value>
@@ -80,6 +84,8 @@ exclude-result-prefixes="svg xsl xaml"
 			<mapping name="offset" value="Offset" type="attribute" />
 			<mapping name="stop-color" value="Color" type="attribute" />
 			<mapping name="style" value="Style" type="attribute" />
+			<mapping name="d" value="Data" type="attribute" />
+			<mapping name="xlink:href" />
 			
 			<mapping name="path" value="Path"  type="element"/>
 			<mapping name="text" value="Text"  type="element"/>
@@ -89,7 +95,6 @@ exclude-result-prefixes="svg xsl xaml"
 			<mapping name="radialGradient" value="RadialGradientBrush"  type="element"/>
 			<mapping name="stop" value="GradientStop" type="element"/>
 
-			<mapping name="d" value="Data" type="attribute" />
 		</mappings>
 	</xsl:variable>
 	
@@ -101,18 +106,11 @@ exclude-result-prefixes="svg xsl xaml"
 	
 	<xsl:template match="svg:svg">
 	
-		<xsl:variable name="globals">
-			<Defaults>
-				<xsl:apply-templates mode="defaults" />
-			</Defaults>
-		</xsl:variable>
-
 		<xsl:variable name="inheritable-settings">
 			<settings>
 				<xsl:call-template name="parse-attributes">
 					<xsl:with-param name="node" select="."/>
 					<xsl:with-param name="filter" select="'inherit'"/>
-					<xsl:with-param name="globals" select="$globals/Defaults"/>
 				</xsl:call-template>
 			</settings>
 		</xsl:variable>
@@ -129,22 +127,18 @@ exclude-result-prefixes="svg xsl xaml"
 					<xsl:with-param name="name" select="'Canvas'"/>
 					<xsl:with-param name="node" select="."/>
 					<xsl:with-param name="filter" select="'local'"/>
-					<xsl:with-param name="globals" select="$globals/Defaults"/>
 				</xsl:call-template>
 			</settings>
 		</xsl:variable>
 
 		<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
-			<!-- for debugging purposes
-			<xsl:copy-of select="$globals"/>
-			-->
 			<!-- output the local settings -->
 			<xsl:copy-of select="$local-settings/settings/@*"/>
 			
 			<!-- search and output the node element settings, adding the Canvas. prefix-->
 			<xsl:for-each select="$inheritable-settings/settings/*">
-				<xsl:element name="Canvas.{local-name(.)}">
+				<xsl:element name="Canvas.{name(.)}">
 					<xsl:copy-of select="@*"/>
 					<xsl:copy-of select="child::*"/>
 				</xsl:element>
@@ -155,7 +149,6 @@ exclude-result-prefixes="svg xsl xaml"
 			
 			<xsl:apply-templates>
 					<xsl:with-param name="defaults" select="$inheritable-attributes"/>
-					<xsl:with-param name="globals" select="$globals/Defaults"/>
 			</xsl:apply-templates>
 
 		</Canvas>
@@ -168,12 +161,10 @@ exclude-result-prefixes="svg xsl xaml"
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
 		<xsl:param name="defaults"/>
-		<xsl:param name="globals"/>
 
 		<xsl:apply-templates>
 					<xsl:with-param name="transform" select="$transform"/>
 					<xsl:with-param name="defaults" select="$defaults"/>
-					<xsl:with-param name="globals" select="$globals"/>
 		</xsl:apply-templates>
 	</xsl:template>
 
@@ -181,7 +172,6 @@ exclude-result-prefixes="svg xsl xaml"
 	<xsl:template match="svg:g">
 		<xsl:param name="transform"/>
 		<xsl:param name="defaults"/>
-		<xsl:param name="globals"/>
 		
 		<!-- gather up the default values for the children to have -->
 		<xsl:variable name="defs">
@@ -190,7 +180,6 @@ exclude-result-prefixes="svg xsl xaml"
 				<xsl:copy-of select="$defaults/defaults/@*"/>
 				<xsl:call-template name="parse-attributes">
 					<xsl:with-param name="node" select="."/>
-					<xsl:with-param name="globals" select="$globals"/>
 				</xsl:call-template>
 				<xsl:copy-of select="$defaults/defaults/*"/>
 			</defaults>
@@ -242,9 +231,8 @@ exclude-result-prefixes="svg xsl xaml"
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
 		<xsl:param name="defaults"><defaults></defaults></xsl:param>
-		<xsl:param name="globals"/>
 
-		<xsl:variable name="name" select="local-name(.)"/>
+		<xsl:variable name="name" select="name(.)"/>
 		<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
 			<!-- process the attributes and store them in a variable for later use -->
@@ -253,7 +241,6 @@ exclude-result-prefixes="svg xsl xaml"
 					<xsl:call-template name="parse-attributes">
 						<xsl:with-param name="name" select="$mappings/mappings/mapping[@name=$name]/@value"/>
 						<xsl:with-param name="node" select="."/>
-						<xsl:with-param name="globals" select="$globals"/>
 					</xsl:call-template>
 				</attributes>
 			</xsl:variable>
@@ -269,22 +256,22 @@ exclude-result-prefixes="svg xsl xaml"
 
 			<!-- check if there are transforms inherited from the parent and aggregate them all into one -->
 			<xsl:choose>
-				<xsl:when test="$local-attributes/xaml:attributes/*[contains(local-name(.), 'Transform')]">
+				<xsl:when test="$local-attributes/xaml:attributes/*[contains(name(.), 'Transform')]">
 					<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}.RenderTransform" 
 										xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 						<xsl:choose>
-							<xsl:when test="$transform[local-name(.)='TransformGroup']">
+							<xsl:when test="$transform[name(.)='TransformGroup']">
 								<TransformGroup 
 									xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 									
 									<xsl:copy-of select="$transform/*"/>
-									<xsl:copy-of select="$local-attributes/xaml:attributes/*[contains(local-name(.), 'Transform')]"/>
+									<xsl:copy-of select="$local-attributes/xaml:attributes/*[contains(name(.), 'Transform')]"/>
 									
 								</TransformGroup>
 							</xsl:when>
 							<xsl:otherwise>
 								<xsl:copy-of select="$transform"/>
-								<xsl:copy-of select="$local-attributes/xaml:attributes/*[contains(local-name(.), 'Transform')]"/>
+								<xsl:copy-of select="$local-attributes/xaml:attributes/*[contains(name(.), 'Transform')]"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:element>
@@ -295,7 +282,7 @@ exclude-result-prefixes="svg xsl xaml"
 			</xsl:choose>
 
 			<!-- output remaning attributes that got turned into elements and that were not outputted in the above group -->
-			<xsl:copy-of select="$local-attributes/xaml:attributes/*[not(contains(local-name(.), 'Transform'))]"/>
+			<xsl:copy-of select="$local-attributes/xaml:attributes/*[not(contains(name(.), 'Transform'))]"/>
 
 		</xsl:element>
 	</xsl:template>
@@ -305,19 +292,17 @@ exclude-result-prefixes="svg xsl xaml"
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
 		<xsl:param name="defaults"/>
-		<xsl:param name="globals"/>		
 
 		<xsl:variable name="attributes">
 			<attributes>
 				<xsl:call-template name="parse-attributes">
 					<xsl:with-param name="node" select="."/>
-					<xsl:with-param name="globals" select="$globals"/>
 				</xsl:call-template>
 			</attributes>
 		</xsl:variable>
 
 		<TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-			<xsl:copy-of select="$attributes/attributes/@*[local-name(.) != 'Text']"/>
+			<xsl:copy-of select="$attributes/attributes/@*[name(.) != 'Text']"/>
 			<Run><xsl:value-of select="$attributes/attributes/@Text"/></Run>
 		</TextBlock>
 	</xsl:template>
@@ -328,7 +313,7 @@ exclude-result-prefixes="svg xsl xaml"
 	</xsl:template>
 
 	<xsl:template match="svg:*" mode="defaults">
-		<xsl:variable name="name" select="local-name()"/>
+		<xsl:variable name="name" select="name()"/>
 		<xsl:if test="$mappings/mappings/mapping[@name=$name and @type='element']">
 			<xsl:element name="{$mappings/mappings/mapping[@name=$name and @type='element']/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 				<xsl:call-template name="parse-attributes">
@@ -642,7 +627,6 @@ exclude-result-prefixes="svg xsl xaml"
 		<xsl:param name="node"/>
 		<xsl:param name="filter"/>
 		<xsl:param name="parent"/>
-		<xsl:param name="globals"/>
 		
 		<xsl:variable name="prefix">
 			<xsl:if test="$name"><xsl:value-of select="$name"/>.</xsl:if>
@@ -651,12 +635,12 @@ exclude-result-prefixes="svg xsl xaml"
 		<xsl:variable name="local-parent">		
 			<xsl:choose>
 				<xsl:when test="$parent"><xsl:value-of select="$parent"/>.</xsl:when>
-				<xsl:otherwise><xsl:value-of select="local-name(.)"/></xsl:otherwise>
+				<xsl:otherwise><xsl:value-of select="name(.)"/></xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 		
 		<xsl:for-each select="$node/@*">
-			<xsl:variable name="attname" select="local-name(.)"/>
+			<xsl:variable name="attname" select="name(.)"/>
 
 		
 			<xsl:variable name="mapping">
@@ -748,14 +732,14 @@ exclude-result-prefixes="svg xsl xaml"
 									</style>
 								</xsl:variable>
 								
+								<xsl:variable name="defs" select="//svg:defs"/>
 								<xsl:variable name="style-elements">
 									<style-elements>
 										<xsl:for-each select="$style/style/@*">
 											<xsl:choose>
-												<xsl:when test="$globals and contains(., 'url')">
-													<xsl:element name="{$mappings/mappings/mapping[@name=$local-parent]/@value}.{local-name()}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-														<xsl:copy-of select="$globals/descendant::*[@Name=substring-before(substring-after(., 'url(#'), ')')]"/>
-													</xsl:element>
+												<xsl:when test="contains(., 'url')">
+													<xsl:variable name="ref" select="substring-before(substring-after(., 'url(#'), ')')"/>
+													<xsl:apply-templates select="$defs/*[@id=$ref]" mode="defaults"/>
 												</xsl:when>
 												<xsl:otherwise>
 													<xsl:copy-of select="."/>
@@ -765,9 +749,23 @@ exclude-result-prefixes="svg xsl xaml"
 									</style-elements>
 								</xsl:variable>
 								
+								<xsl:copy-of select="$style-elements/style-elements/@*"/>
 								<xsl:copy-of select="$style-elements/style-elements/*"/>
 							</xsl:when>
 	
+							<xsl:when test="$attname='xlink:href'">
+								<xsl:variable name="defs" select="//svg:defs"/>
+								<xsl:variable name="style-elements">
+									<style-elements>
+										<xsl:variable name="ref" select="substring-after(., '#')"/>
+										<xsl:apply-templates select="$defs/*[@id=$ref]" mode="defaults"/>
+									</style-elements>
+								</xsl:variable>
+								
+								<xsl:copy-of select="$style-elements/style-elements/@*"/>
+								<xsl:copy-of select="$style-elements/style-elements/*"/>
+							</xsl:when>
+
 	
 							<!-- if it's not a custom one, check the mappings -->
 							<!-- if there is a mapping for this attribute (ignore parent) and  the value is not marked to ignore -->

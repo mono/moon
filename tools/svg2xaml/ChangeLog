@@ -1,6 +1,12 @@
 2007-06-28  Andreia Gaita  <avidigal@novell.com>
 
 	* svg2xaml.xslt, svg2xaml_standalone.xslt:
+	Parse url(#bla) and xlink:href="#bla" references
+	to elements on the <defs> node.
+
+2007-06-28  Andreia Gaita  <avidigal@novell.com>
+
+	* svg2xaml.xslt, svg2xaml_standalone.xslt:
 	Start parsing the defs node for global defaults.
 	Not finished yet. Detect "url" reference and 
 	import the previously parsed node with that name
