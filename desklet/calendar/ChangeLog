@@ -1,6 +1,10 @@
+2007-06-29  Everaldo Canuto  <ecanuto@novell.com>
+
+	* calendar.cs: Fixes first click on details rect, we must remove it
+	on OnLoad.
+
 2007-06-29  Rodrigo Kumpera  <rkumpera@novell.com>
 
-	* calendar.cs: added calendar details
 	* default.xaml: same
 
 2007-06-28  Rodrigo Kumpera  <rkumpera@novell.com>

@@ -312,6 +312,7 @@ namespace Desklet
 				Children.Remove (detailText);
 				Children.Remove (rect);
 			};
+			Children.Remove (rect);
 
 			Storyboard mouseChange = FindName ("mouse_click") as Storyboard;
 			mouseChange.Completed += delegate {
