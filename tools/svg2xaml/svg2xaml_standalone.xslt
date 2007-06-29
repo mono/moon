@@ -160,7 +160,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults"><defaults/></xsl:param>
 
 		<xsl:apply-templates>
 					<xsl:with-param name="transform" select="$transform"/>
@@ -171,7 +171,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 	<!-- g element - children inherit these values and transforms -->
 	<xsl:template match="svg:g">
 		<xsl:param name="transform"/>
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults"><defaults/></xsl:param>
 		
 		<!-- gather up the default values for the children to have -->
 		<xsl:variable name="defs">
@@ -230,7 +230,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"><defaults></defaults></xsl:param>
+		<xsl:param name="defaults"><defaults/></xsl:param>
 
 		<xsl:variable name="name" select="name(.)"/>
 		<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
@@ -291,7 +291,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults"><defaults/></xsl:param>
 
 		<xsl:variable name="attributes">
 			<attributes>
@@ -334,7 +334,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults"><defaults/></xsl:param>
 
 		<xsl:apply-templates>
 					<xsl:with-param name="transform" select="$transform"/>
@@ -762,8 +762,9 @@ exclude-result-prefixes="svg xsl xaml xlink"
 									</style-elements>
 								</xsl:variable>
 								
-								<xsl:copy-of select="$style-elements/style-elements/@*"/>
-								<xsl:copy-of select="$style-elements/style-elements/*"/>
+								<xsl:call-template name="recursive-copy">
+									<xsl:with-param name="node" select="$style-elements/style-elements" />
+								</xsl:call-template>
 							</xsl:when>
 
 	
@@ -809,6 +810,23 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			<xsl:otherwise><xsl:value-of select="$value"/></xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+
+	<xsl:template name="recursive-copy">
+		<xsl:param name="node" />
+		
+			<xsl:for-each select="$node/*">
+				<xsl:choose>
+					<xsl:when test="count(child::*) = 0"><xsl:copy-of select="." /></xsl:when>
+					<xsl:otherwise>
+						<xsl:copy-of select="@*"/>
+						<xsl:call-template name="recursive-copy">
+							<xsl:with-param name="node" select="." />
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:for-each>
+	</xsl:template>
+
 <!-- ######## END OF HELPER TEMPLATES ####### -->
 
 </xsl:stylesheet>

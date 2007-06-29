@@ -1,6 +1,12 @@
 2007-06-28  Andreia Gaita  <avidigal@novell.com>
 
 	* svg2xaml.xslt, svg2xaml_standalone.xslt:
+	Fix problem with trying to do a msxsl:node-set
+	in the defaults parameter when it was empty.
+
+2007-06-28  Andreia Gaita  <avidigal@novell.com>
+
+	* svg2xaml.xslt, svg2xaml_standalone.xslt:
 	Parse url(#bla) and xlink:href="#bla" references
 	to elements on the <defs> node.
 

@@ -48,7 +48,7 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
 
 	<!--- maps svg names into xaml names -->
-	<xsl:variable name="mappings">
+	<xsl:variable name="mappings-text">
 		<mappings>
 			<mapping name="id" value="Name"  type="attribute"/>
 			
@@ -97,6 +97,8 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 
 		</mappings>
 	</xsl:variable>
+	
+	<xsl:variable name="mappings" select="msxsl:node-set($mappings-text)" />
 	
 	<!-- START HERE -->
 	
@@ -160,7 +162,7 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults" select="msxsl:node-set('&lt;defaults/&gt;')"/>
 
 		<xsl:apply-templates>
 					<xsl:with-param name="transform" select="$transform"/>
@@ -171,7 +173,7 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 	<!-- g element - children inherit these values and transforms -->
 	<xsl:template match="svg:g">
 		<xsl:param name="transform"/>
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults" select="msxsl:node-set('&lt;defaults/&gt;')"/>
 		
 		<!-- gather up the default values for the children to have -->
 		<xsl:variable name="defs">
@@ -230,16 +232,16 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"><defaults></defaults></xsl:param>
+		<xsl:param name="defaults" select="msxsl:node-set('&lt;defaults/&gt;')"/>
 
 		<xsl:variable name="name" select="name(.)"/>
-		<xsl:element name="{msxsl:node-set($mappings)/mappings/mapping[@name=$name]/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+		<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
 			<!-- process the attributes and store them in a variable for later use -->
 			<xsl:variable name="local-attributes">
 				<attributes>
 					<xsl:call-template name="parse-attributes">
-						<xsl:with-param name="name" select="msxsl:node-set($mappings)/mappings/mapping[@name=$name]/@value"/>
+						<xsl:with-param name="name" select="$mappings/mappings/mapping[@name=$name]/@value"/>
 						<xsl:with-param name="node" select="."/>
 					</xsl:call-template>
 				</attributes>
@@ -250,14 +252,14 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 			<!-- output this node's attributes -->
 			<xsl:copy-of select="msxsl:node-set($local-attributes)/xaml:attributes/@*"/>
 
-			<xsl:if test="not(@fill) and not(msxsl:node-set($defaults)/defaults/@Fill) and not(msxsl:node-set($local-attributes)/xaml:attributes/@Fill)">
+			<xsl:if test="not(@fill) and not($defaults/defaults/@Fill) and not(msxsl:node-set($local-attributes)/xaml:attributes/@Fill)">
 				<xsl:attribute name="Fill">#000</xsl:attribute>
 			</xsl:if>
 
 			<!-- check if there are transforms inherited from the parent and aggregate them all into one -->
 			<xsl:choose>
 				<xsl:when test="msxsl:node-set($local-attributes)/xaml:attributes/*[contains(name(.), 'Transform')]">
-					<xsl:element name="{msxsl:node-set($mappings)/mappings/mapping[@name=$name]/@value}.RenderTransform" 
+					<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}.RenderTransform" 
 										xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 						<xsl:choose>
 							<xsl:when test="$transform[name(.)='TransformGroup']">
@@ -291,7 +293,7 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults" select="msxsl:node-set('&lt;defaults/&gt;')"/>
 
 		<xsl:variable name="attributes">
 			<attributes>
@@ -315,10 +317,10 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 
 	<xsl:template match="svg:*" mode="defaults">
 		<xsl:variable name="name" select="name()"/>
-		<xsl:if test="msxsl:node-set($mappings)/mappings/mapping[@name=$name and @type='element']">
-			<xsl:element name="{msxsl:node-set($mappings)/mappings/mapping[@name=$name and @type='element']/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+		<xsl:if test="$mappings/mappings/mapping[@name=$name and @type='element']">
+			<xsl:element name="{$mappings/mappings/mapping[@name=$name and @type='element']/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 				<xsl:call-template name="parse-attributes">
-					<xsl:with-param name="name" select="msxsl:node-set($mappings)/mappings/mapping[@name=$name and @type='element']/@value"/>
+					<xsl:with-param name="name" select="$mappings/mappings/mapping[@name=$name and @type='element']/@value"/>
 					<xsl:with-param name="node" select="."/>
 				</xsl:call-template>
 	
@@ -335,7 +337,7 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"/>
+		<xsl:param name="defaults" select="msxsl:node-set('&lt;defaults/&gt;')"/>
 
 		<xsl:apply-templates>
 					<xsl:with-param name="transform" select="$transform"/>
@@ -462,7 +464,7 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 	</xsl:template>
 
 	<xsl:template name="splitCoords">
-		<xsl:param name="mapping"/>
+		<xsl:param name="mapping" select="msxsl:node-set('&lt;mapping&gt;')"/>
 		<xsl:param name="str"/>
 		<xsl:param name="prefix"/>
 		<xsl:param name="separator"/>
@@ -472,16 +474,16 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 			<!--- stupid contains thinks an empty space is equal to no space at all... -->
 			<xsl:when test="contains($str,$separator) and substring-after($str, $separator) != $str">
 				<xsl:choose>
-					<xsl:when test="$n = 1 and ((msxsl:node-set($mapping)/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 1 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
 						<xsl:attribute name="{$prefix}X"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 2 and ((msxsl:node-set($mapping)/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 2 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
 						<xsl:attribute name="{$prefix}Y"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 3 and ((msxsl:node-set($mapping)/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 3 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
 						<xsl:attribute name="{$prefix}Width"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 4 and ((msxsl:node-set($mapping)/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 4 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
 						<xsl:attribute name="{$prefix}Height"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
 				</xsl:choose>
@@ -498,16 +500,16 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 			<xsl:otherwise>
 				<!-- this is the last one, end recursion -->
 				<xsl:choose>
-					<xsl:when test="$n = 1 and ((msxsl:node-set($mapping)/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 1 and (($mapping/ignore != $str) or not($mapping))">
 						<xsl:attribute name="{$prefix}X"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 2 and ((msxsl:node-set($mapping)/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 2 and (($mapping/ignore != $str) or not($mapping))">
 						<xsl:attribute name="{$prefix}Y"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 3 and ((msxsl:node-set($mapping)/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 3 and (($mapping/ignore != $str) or not($mapping))">
 						<xsl:attribute name="{$prefix}Width"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 4 and ((msxsl:node-set($mapping)/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 4 and (($mapping/ignore != $str) or not($mapping))">
 						<xsl:attribute name="{$prefix}Height"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
 				</xsl:choose>
@@ -644,8 +646,8 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 		
 			<xsl:variable name="mapping1">
 				<xsl:choose>
-					<xsl:when test="msxsl:node-set($mappings)/mappings/mapping[@name=$attname and @parent=$local-parent]"><xsl:copy-of select="msxsl:node-set($mappings)/mappings/mapping[@name=$attname and @parent=$local-parent]" /></xsl:when>
-					<xsl:otherwise><xsl:copy-of  select="msxsl:node-set($mappings)/mappings/mapping[@name=$attname]" /></xsl:otherwise>
+					<xsl:when test="$mappings/mappings/mapping[@name=$attname and @parent=$local-parent]"><xsl:copy-of select="$mappings/mappings/mapping[@name=$attname and @parent=$local-parent]" /></xsl:when>
+					<xsl:otherwise><xsl:copy-of  select="$mappings/mappings/mapping[@name=$attname]" /></xsl:otherwise>
 				</xsl:choose>
 			</xsl:variable>
 			
@@ -762,8 +764,9 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 									</style-elements>
 								</xsl:variable>
 								
-								<xsl:copy-of select="msxsl:node-set($style-elements)/style-elements/@*"/>
-								<xsl:copy-of select="msxsl:node-set($style-elements)/style-elements/*"/>
+								<xsl:call-template name="recursive-copy">
+									<xsl:with-param name="node" select="msxsl:node-set($style-elements)/style-elements" />
+								</xsl:call-template>
 							</xsl:when>
 
 	
@@ -791,8 +794,8 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 		</xsl:for-each>	
 
 		<!-- output any text value -->
-		<xsl:if test="text() and msxsl:node-set($mappings)/mappings/mapping[@name=$local-parent]">
-			<xsl:attribute name="{msxsl:node-set($mappings)/mappings/mapping[@name=$local-parent]/@value}"><xsl:value-of select="."/></xsl:attribute>
+		<xsl:if test="text() and $mappings/mappings/mapping[@name=$local-parent]">
+			<xsl:attribute name="{$mappings/mappings/mapping[@name=$local-parent]/@value}"><xsl:value-of select="."/></xsl:attribute>
 		</xsl:if>
 		
 	</xsl:template>
@@ -809,6 +812,23 @@ exclude-result-prefixes="svg xsl xaml xlink msxsl"
 			<xsl:otherwise><xsl:value-of select="$value"/></xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+
+	<xsl:template name="recursive-copy">
+		<xsl:param name="node" />
+		
+			<xsl:for-each select="$node/*">
+				<xsl:choose>
+					<xsl:when test="count(child::*) = 0"><xsl:copy-of select="." /></xsl:when>
+					<xsl:otherwise>
+						<xsl:copy-of select="@*"/>
+						<xsl:call-template name="recursive-copy">
+							<xsl:with-param name="node" select="." />
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:for-each>
+	</xsl:template>
+
 <!-- ######## END OF HELPER TEMPLATES ####### -->
 
 </xsl:stylesheet>
