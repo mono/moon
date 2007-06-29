@@ -51,18 +51,9 @@
   <Path Stroke="#66FFFFFF" StrokeThickness="2" x:Name="desklet-close">
     <Path.Data>
       <GeometryGroup FillRule="OddEven">
-	<RectangleGeometry Rect="450,8,16,16" RadiusX="3" RadiusY="3"/>
-	<LineGeometry StartPoint="451,9" EndPoint="465,23"/>
-	<LineGeometry StartPoint="465,9" EndPoint="451,23"/>
-      </GeometryGroup>
-    </Path.Data>
-  </Path>
-
-  <Path Stroke="#66FFFFFF" StrokeThickness="2" x:Name="desklet-drag">
-    <Path.Data>
-      <GeometryGroup FillRule="OddEven">
-	<EllipseGeometry Center="480,16" RadiusX="8" RadiusY="8"/>
-	<EllipseGeometry Center="480,16" RadiusX="2" RadiusY="2" Fill="#66FFFFFF"/>
+	<RectangleGeometry Rect="475,8,16,16" RadiusX="3" RadiusY="3"/>
+	<LineGeometry StartPoint="476,9" EndPoint="490,23"/>
+	<LineGeometry StartPoint="490,9" EndPoint="476,23"/>
       </GeometryGroup>
     </Path.Data>
   </Path>

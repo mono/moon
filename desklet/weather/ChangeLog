@@ -1,3 +1,9 @@
+2007-06-29  Marek Habersack  <mhabersack@novell.com>
+
+	* default.xaml: removed the drag button
+
+	* default.xaml.cs: store/retrieve configuration
+
 2007-06-27  Marek Habersack  <mhabersack@novell.com>
 
         * Changed namespace to Desklet.Weather

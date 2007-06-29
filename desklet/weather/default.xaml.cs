@@ -109,7 +109,6 @@ namespace Desklet.Weather
 		Storyboard hide_updating;
 
 		Path closeButton;
-		Path dragButton;
 		
 		bool allControlsPresent= true;
 		string iconsDir;
@@ -458,7 +457,6 @@ namespace Desklet.Weather
 			}
 			
 			Window win = new Window ("Select your location");
-//			win.DeleteEvent += new DeleteEventHandler (delete_cb);
 			win.SetDefaultSize (400,400);
 
 			VBox vbox = new VBox (false, 0);
@@ -499,6 +497,7 @@ namespace Desklet.Weather
 
 				if (!String.IsNullOrEmpty (val)) {
 					stationID.Text = val;
+					StoreConfig ();
 					UpdateData ();
 				}
 			};
@@ -529,7 +528,7 @@ namespace Desklet.Weather
 			return ret;
 		}
 		
-		public void LoadControls ()
+		void LoadControls ()
 		{
 			weatherIcon = LoadControl ("WeatherIcon") as System.Windows.Controls.Image;
 			windIcon = LoadControl ("WindIcon") as System.Windows.Controls.Image;
@@ -544,13 +543,34 @@ namespace Desklet.Weather
 			cloudsPanel = LoadControl ("CloudsVisPanel") as Canvas;
 			loadingMessage = LoadControl ("LoadingMessage") as TextBlock;
 			closeButton = LoadControl ("desklet-close") as Path;
-			dragButton = LoadControl ("desklet-drag") as Path;
 			skyConditions = LoadControl ("SkyConditions") as TextBlock;
 			windPanel = LoadControl ("WindPanel") as Canvas;
 			windConditions = LoadControl ("WindConditions") as TextBlock;
 			windIndicator = LoadControl ("WindIndicator") as Ellipse;
 		}
 
+		void StoreConfig ()
+		{
+			try {
+				config.Store ("StationID", stationID.Text);
+			} catch {
+				// ignore
+			}
+		}
+		
+		void LoadConfig ()
+		{
+			try {
+				string id = config.Retrieve ("StationID") as string;
+				if (id == null)
+					config.Store ("StationID", stationID.Text);
+				else
+					stationID.Text = id;
+			} catch {
+				// ignore
+			}
+		}
+		
 		void HighlightButton (Path button)
 		{
 			button.Stroke=new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
@@ -601,14 +621,7 @@ namespace Desklet.Weather
 				UnhighlightButton (closeButton);
 			};
 
-			dragButton.MouseEnter += delegate {
-				HighlightButton (dragButton);
-			};
-
-			dragButton.MouseLeave += delegate {
-				UnhighlightButton (dragButton);
-			};
-			
+			LoadConfig ();
 			AdjustLayout ();
 			UpdateData ();
 		}
