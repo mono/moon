@@ -294,7 +294,6 @@ UIElementNodeComparer (List::Node *ui1, List::Node *ui2)
 void
 VisualCollection::ResortByZIndex ()
 {
-  printf ("ResortByZIndex\n");
 	z_sorted_list->Clear (true);
 
 	UIElementNode* n = (UIElementNode *) list->First ();
