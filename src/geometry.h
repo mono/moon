@@ -31,8 +31,6 @@ class Geometry : public DependencyObject {
 	Geometry () { };
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-
 	virtual void Draw (cairo_t *cr);
 
 	virtual bool CanFill () { return true; };
@@ -216,8 +214,6 @@ class PathSegment : public DependencyObject {
  public:
 	virtual void Draw (cairo_t *cr) {}
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT; };
-
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 //

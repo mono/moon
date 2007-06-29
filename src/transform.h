@@ -22,7 +22,6 @@ G_BEGIN_DECLS
 class Transform : public DependencyObject {
  public:
  	Transform () { }
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
 	virtual void GetTransform (cairo_matrix_t *value);
 };

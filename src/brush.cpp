@@ -125,20 +125,6 @@ Brush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	return FALSE;
 }
 
-void
-Brush::OnPropertyChanged (DependencyProperty *prop)
-{
-	//
-	// If any of our properties change, we have to notify our
-	// owners that they must repaint (all of our properties have
-	// a visible effect
-	//
-	if (prop->type == Type::BRUSH)
-		NotifyAttacheesOfPropertyChange (prop);
-	
-	DependencyObject::OnPropertyChanged (prop);
-}
-
 //
 // SolidColorBrush
 //
@@ -157,15 +143,6 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 
 	// [Relative]Transform do not apply to solid color brush
 	return (alpha > 0.0);
-}
-
-void 
-SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop == SolidColorBrush::ColorProperty)
-		NotifyAttacheesOfPropertyChange (prop);
-	
-	Brush::OnPropertyChanged (prop);
 }
 
 Color *
@@ -271,8 +248,6 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
-		
-		NotifyAttacheesOfPropertyChange (prop);
 	}
 	
 	Brush::OnPropertyChanged (prop);
@@ -378,20 +353,6 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_pattern_destroy (pattern);
 
 	return visible;
-}
-
-void 
-LinearGradientBrush::OnPropertyChanged (DependencyProperty *prop)
-{
-	//
-	// If any of our properties change, we have to notify our
-	// owners that they must repaint (all of our properties have
-	// a visible effect
-	//
-	if (prop->type == Type::LINEARGRADIENTBRUSH)
-		NotifyAttacheesOfPropertyChange (prop);
-	
-	GradientBrush::OnPropertyChanged (prop);
 }
 
 //

@@ -128,7 +128,6 @@ public:
 	
 	Run () { }
 	virtual Type::Kind GetObjectType () { return Type::RUN; };
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 Run *run_new (void);

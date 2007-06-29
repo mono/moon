@@ -147,9 +147,6 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 	
-	if (prop->type == Type::INLINE)
-		NotifyAttacheesOfPropertyChange (prop);
-	
 	DependencyObject::OnPropertyChanged (prop);
 }
 
@@ -254,16 +251,6 @@ line_break_new (void)
 // Run
 
 DependencyProperty *Run::TextProperty;
-
-void
-Run::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type == Type::RUN)
-		NotifyAttacheesOfPropertyChange (prop);
-	
-	// this will notify attachees of font property changes
-	Inline::OnPropertyChanged (prop);
-}
 
 Run *
 run_new (void)
