@@ -7,10 +7,43 @@
 		<Storyboard x:Name="run">
 	      <DoubleAnimation Duration="1:0:0"/>
     	</Storyboard>
+
 		<Storyboard x:Name="mouse_click">
 	      <DoubleAnimation Duration="0:0:0.5"/>
     	</Storyboard>
+
+		<Storyboard x:Name="detail_anim">
+	      <DoubleAnimation x:Name="anim_x"
+	      		Duration="0:0:0.5"
+				Storyboard.TargetName="calendar_rect"
+				Storyboard.TargetProperty="(Canvas.Left)"/>
+	      <DoubleAnimation x:Name="anim_y"
+	      		Duration="0:0:0.5"
+				Storyboard.TargetName="calendar_rect"
+				Storyboard.TargetProperty="(Canvas.Top)"/>
+
+	      <DoubleAnimation x:Name="anim_w"
+	      		Duration="0:0:0.5"
+				Storyboard.TargetName="calendar_rect"
+				Storyboard.TargetProperty="(Width)"/>
+
+	      <DoubleAnimation x:Name="anim_h"
+	      		Duration="0:0:0.5"
+				Storyboard.TargetName="calendar_rect"
+				Storyboard.TargetProperty="(Height)"/>
+    	</Storyboard>
     </Canvas.Resources>
+
+	<Rectangle Fill="#CCAAAAAA" x:Name="calendar_rect" />
+
+	<TextBlock
+		x:Name="detail"
+		FontSize="14"
+		FontWeight="ExtraBlack"
+		Foreground="Blue"
+		Canvas.Left="20"
+		Canvas.Top="25"/>
+	
 
 	<!-- border 1 -->
 	<Rectangle
@@ -543,4 +576,5 @@
 		Canvas.Left="198"
 		Foreground="#333333"
 		Canvas.Top="150"/>
+
 </Canvas>

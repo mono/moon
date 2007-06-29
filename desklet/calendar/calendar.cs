@@ -1,3 +1,30 @@
+//
+// calendar.cs: calendar desklet with google calendar integration
+//
+// Authors:
+//   Rodrigo Kumpera (rkumpera@novell.com)
+//
+// Copyright 2007 Novell, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 using System;
 using System.Globalization;
 using System.Xml; 
@@ -32,11 +59,6 @@ namespace Desklet
 		public int CompareTo (Entry other) {
 			return this.time.CompareTo (other.time);
 		}
-
-		public String ToString ()
-		{
-			return "doing " + title + " at " + location + " starting at " + time;
-		}
 	}
 
 	public class DaySchedule
@@ -61,23 +83,19 @@ namespace Desklet
 		{
 			this.entries.Sort ();
 		}
-
-		public String ToString ()
-		{
-			String stuff = "";
-			foreach (Entry et in entries)
-				stuff += "[" + et.ToString () + "] ";
-			return "sched for " + date + ": " + stuff;
-		}
 	}
 
 	public class CalendarPanel : Canvas 
 	{
 		TextBlock monthText;
+		TextBlock detailText;
 		TextBlock[,] days = new TextBlock[6,7];
 		DateTime current;
 		DateTime currentHour;
 		List<Rectangle> rectangles = new List<Rectangle> ();
+		Rectangle rect;
+		Storyboard detailsStoryboard;
+		DaySchedule selectedDay;
 
 		static readonly Brush CURRENT_DAY = new SolidColorBrush (Colors.Yellow);
 		static readonly Brush CURRENT_MONTH = new SolidColorBrush (Colors.White);
@@ -89,10 +107,20 @@ namespace Desklet
 		static readonly Brush BUTTON_DOWN_BRUSH = new SolidColorBrush (Color.FromRgb (150, 150, 150));
 
 		static readonly Brush CALENDAR_BRUSH = new SolidColorBrush (Colors.Red);
+		static readonly Brush CALENDAR_FILL_BRUSH = new SolidColorBrush (Color.FromArgb (40, 255, 0, 0));
 
 		void drawDay (int l, int c, int day, bool mainMonth, bool curDay) {
 			days[l, c].Text = day.ToString ();
 			days[l, c].Foreground = mainMonth ? (curDay ? CURRENT_DAY : CURRENT_MONTH) : OTHERS;
+		}
+
+		public void DrawCalendarDetails ()
+		{
+			String text = "";
+			foreach (Entry entry in selectedDay.Appointments)
+				text += entry.Time.ToString () + "\n" +entry.Title + "\n"+entry.Location+"\n";
+			detailText.Text = text;
+			Children.Add (detailText);
 		}
 
 		public static bool IsSameMonth (DateTime a, DateTime b)
@@ -148,7 +176,8 @@ namespace Desklet
 			return dic;
 		}
 
-		public void CalendarDownloadComplete (DateTime start, String xml) {
+		public void CalendarDownloadComplete (DateTime start, String xml)
+		{
 			if (!IsSameMonth (start, current))
 				return;
 			Dictionary<DateTime, DaySchedule> dic = parseXml (xml);
@@ -158,17 +187,21 @@ namespace Desklet
 				int day = ds.Date.Day;
 				int x = (day + dayZero - 1) % 7;
 				int y = (day + dayZero) / 7 - ((day + dayZero) % 7 == 0 ? 1 : 0);
-				Rectangle rect = new Rectangle ();
-				rect.Stroke = CALENDAR_BRUSH;
-				rect.StrokeThickness = 1;
-				rect.Width = 24;
-				rect.Height = 15;
-				rect.RadiusX = 4;
-				rect.RadiusY = 4;
-				rect.SetValue (Canvas.LeftProperty, 13 + x * 30);
-				rect.SetValue (Canvas.TopProperty, 65 + y * 17);
-				Children.Add (rect);
-				rectangles.Add (rect);
+				Rectangle dayRect = new Rectangle ();
+				dayRect.Stroke = CALENDAR_BRUSH;
+				dayRect.Fill = CALENDAR_FILL_BRUSH;
+				dayRect.StrokeThickness = 1;
+				dayRect.Width = 24;
+				dayRect.Height = 15;
+				dayRect.RadiusX = 4;
+				dayRect.RadiusY = 4;
+				dayRect.SetValue (Canvas.LeftProperty, 13 + x * 30);
+				dayRect.SetValue (Canvas.TopProperty, 65 + y * 17);
+				Children.Add (dayRect);
+				rectangles.Add (dayRect);
+				DaySchedule it = ds;
+				dayRect.MouseLeftButtonUp += delegate { OpenCalendarDetailAnimation (x, y, it); };
+				
 			}			
 		}
 		
@@ -191,16 +224,17 @@ namespace Desklet
 		}
 
 
-		void DrawCalendar () {
-	    	Calendar cal = new GregorianCalendar ();
-	    	int currentMonthDays = cal.GetDaysInMonth (current.Year, current.Month);
-	    	int lastMonthDays = current.Month > 1 ? cal.GetDaysInMonth (current.Year, current.Month - 1) : 31;
-	    	DateTime dayOne = current.AddDays (1 - current.Day);
-	    	int firstDayOfMonth = (int)dayOne.DayOfWeek;
-	    	bool activeMonth = IsSameMonth (DateTime.Now, current);
+		void DrawCalendar ()
+		{
+			Calendar cal = new GregorianCalendar ();
+			int currentMonthDays = cal.GetDaysInMonth (current.Year, current.Month);
+			int lastMonthDays = current.Month > 1 ? cal.GetDaysInMonth (current.Year, current.Month - 1) : 31;
+			DateTime dayOne = current.AddDays (1 - current.Day);
+			int firstDayOfMonth = (int)dayOne.DayOfWeek;
+			bool activeMonth = IsSameMonth (DateTime.Now, current);
 
-			monthText.Text = current.ToString ("MMMM yyyy");	    	
-	    	int first = lastMonthDays - firstDayOfMonth + 1;
+			monthText.Text = current.ToString ("MMMM yyyy");			
+			int first = lastMonthDays - firstDayOfMonth + 1;
 			for (int i = 0; i < firstDayOfMonth; ++i)
 				drawDay (0, i, first + i, false, false);
 			
@@ -240,19 +274,50 @@ namespace Desklet
 			shape.Fill = shape.Stroke = BUTTON_UP_BRUSH;
 		}
 
+		public void OpenCalendarDetailAnimation (int l, int c, DaySchedule ds) {
+			int x = (18 + l * 30) + 6;
+			int y = (65 + c * 17) + 7;
+			rect.Width = 2;
+			rect.Height = 2;
+			rect.SetValue (Canvas.LeftProperty, x);
+			rect.SetValue (Canvas.TopProperty, y);
+			Children.Add (rect);
+
+			DoubleAnimation animX = FindName ("anim_x") as DoubleAnimation;
+			DoubleAnimation animY = FindName ("anim_y") as DoubleAnimation;
+			DoubleAnimation animH = FindName ("anim_h") as DoubleAnimation;
+			DoubleAnimation animW = FindName ("anim_w") as DoubleAnimation;
+			animX.By = -x;
+			animY.By = -y;
+			animH.By = Height - rect.Height;
+			animW.By = Width - rect.Width;
+			selectedDay = ds;
+
+			detailsStoryboard.Begin ();
+		}
+
+
 		public void PageLoaded (object o, EventArgs e) 
-	    {
+		{
 			monthText = FindName ("month") as TextBlock;
+			detailText = FindName ("detail") as TextBlock;
+			Children.Remove (detailText);			
+	
 			for (int i = 0; i < 6; ++i)
 				for (int j = 0; j < 7; ++j)
 					days [i, j] = FindName ("c"+i+"_l"+j) as TextBlock;
+
+			this.rect = FindName ("calendar_rect") as Rectangle;
+			rect.MouseLeftButtonUp += delegate {
+				Children.Remove (detailText);
+				Children.Remove (rect);
+			};
 
 			Storyboard mouseChange = FindName ("mouse_click") as Storyboard;
 			mouseChange.Completed += delegate {
 				DateTime dayOne = current.AddDays (1 - current.Day);
 				UpdateCalendarData (dayOne, dayOne.AddMonths (1));
 			};
-			mouseChange.Begin ();
 
 			Shape before = FindName ("beforeButton") as Shape;
 			before.MouseLeftButtonDown += new MouseEventHandler(this.MouseDown);
@@ -281,11 +346,15 @@ namespace Desklet
 				UpdateTime ();
 				sb.Begin ();
 			};
-			sb.Begin ();
+
+
+			detailsStoryboard = FindName ("detail_anim") as Storyboard;
+			detailsStoryboard.Completed += delegate { DrawCalendarDetails (); };
 
 			currentHour = current = DateTime.Now;
 			DrawCalendar ();
+			mouseChange.Begin ();
+			sb.Begin ();
 		}
-
 	}
 }
