@@ -147,8 +147,7 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 	
-	if (prop->type == Type::INLINE)
-		NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttacheesOfPropertyChange (prop);
 	
 	DependencyObject::OnPropertyChanged (prop);
 }
@@ -308,11 +307,10 @@ TextBlock::TextBlock ()
 	
 	foreground = NULL;
 	
-	inlines = NULL;
 	layout = NULL;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = 0.0;
+	actual_width = 0.0;
 	
 	/* initialize the font description */
 	font = pango_font_description_new ();
@@ -342,11 +340,6 @@ TextBlock::~TextBlock ()
 	
 	g_object_unref (renderer);
 	
-	if (inlines != NULL) {
-		inlines->Detach (NULL, this);
-		inlines->unref ();
-	}
-	
 	if (foreground != NULL) {
 		foreground->Detach (NULL, this);
 		foreground->unref ();
@@ -374,16 +367,6 @@ TextBlock::ComputeBounds ()
 	double x1, y1, x2, y2;
 	cairo_t* cr = measuring_context_create ();
 
- 	if (actual_width < 0.0) {
-		// XXX toshok -
-		// i *want* to pass cr here so we don't allocate 2
-		// surfaces, but for some reason when I do that, the text
-		// headings in the itinerary display in the airlines demo
-		// disappears (or rather, gets a width of 3 pixels instead
-		// of the correct width.)
- 		CalcActualWidthHeight (NULL);
-	}
-	
 	// optimization: use the cached width/height and draw
 	// a simple rectangle to get bounding box
 	cairo_save (cr);
@@ -406,9 +389,6 @@ Point
 TextBlock::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-	
-	if (actual_width < 0.0)
-		CalcActualWidthHeight (NULL);
 	
 	return Point (user_xform_origin.x * actual_width, user_xform_origin.y * actual_height);
 }
@@ -443,11 +423,6 @@ TextBlock::InsideObject (Surface *s, double x, double y)
 void
 TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	if (actual_width < 0.0) {
-		// FIXME: this should never happen as we should be inside ::Paint() at this point
-		CalcActualWidthHeight (cr);
-	}
-	
 	*height = actual_height;
 	*width = actual_width;
 }
@@ -457,7 +432,7 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 {
 	Collection::Node *node;
 	bool destroy = false;
-	
+
 	if (cr == NULL) {
 		// FIXME: we need better width/height values here
 // 		printf ("CalcActualWidthHeight called before surface available for TextBlock Text=\"%s\"\n",
@@ -473,9 +448,6 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 	Layout (cr);
 	
 	if (destroy) {
-		g_object_unref (layout);
-		layout = NULL;
-		
 		measuring_context_destroy (cr);
 	} else {
 		cairo_new_path (cr);
@@ -484,17 +456,6 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 	
 	text_block_set_actual_height (this, actual_height);
 	text_block_set_actual_width (this, actual_width);
-}
-
-Value *
-TextBlock::GetValue (DependencyProperty *prop)
-{
-	if ((prop == TextBlock::ActualWidthProperty ||
-	     prop == TextBlock::ActualHeightProperty) && actual_width < 0.0) {
-		CalcActualWidthHeight (NULL);
-	}
-	
-	return FrameworkElement::GetValue (prop);
 }
 
 void
@@ -579,7 +540,9 @@ TextBlock::Layout (cairo_t *cr)
 		
 		pango_attr_list_insert (attrs, fg_attr);
 	}
-	
+
+	Inlines* inlines = text_block_get_inlines (this);
+
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		PangoFontMask run_mask, inherited_mask;
@@ -702,10 +665,7 @@ TextBlock::Paint (cairo_t *cr)
 	TextWrapping wrapping = text_block_get_text_wrapping (this);
 	double h = framework_element_get_height (this);
 	double w = framework_element_get_width (this);
-	
-	if (actual_width < 0.0 || !layout)
-		CalcActualWidthHeight (cr);
-	
+
 	if (wrapping == TextWrappingWrapWithOverflow)
 		h = actual_height;
 	
@@ -749,14 +709,12 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		char *text = text_block_get_text (this);
 		pango_layout_set_text (layout, text ? text : "", -1);
 	} else if (prop == TextBlock::InlinesProperty) {
-		if (inlines != NULL) {
-			inlines->Detach (NULL, this);
-			inlines->unref ();
-		}
-		
-		if ((inlines = text_block_get_inlines (this)) != NULL) {
-			inlines->Attach (NULL, this);
-			inlines->ref ();
+		Inlines *newcol = GetValue (prop)->AsInlines();
+
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
 		}
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {
@@ -770,24 +728,15 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
-	
+	CalcActualWidthHeight (NULL);
 	FullInvalidate (false);
 }
 
 void
-TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
-	FrameworkElement::OnSubPropertyChanged (prop, subprop);
-	
-	if (subprop->type == Type::INLINES || subprop->type == Type::RUN) {
-		// will need to recalculate layout
-		actual_height = -1.0;
-		actual_width = -1.0;
-	}
-	
-	FullInvalidate (false);
+	CalcActualWidthHeight (NULL);
+	UpdateBounds (true);
 }
 
 TextBlock *

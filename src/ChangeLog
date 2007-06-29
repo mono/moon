@@ -1,5 +1,18 @@
 2007-06-29  Chris Toshok  <toshok@ximian.com>
 
+	* text.cpp: Do CalcActualWidtHeight on any property that might
+	cause a change.  This is going to be a performance hit, but we
+	need to take this step backward to get things working with the new
+	ComputeBounds stuff.  we'll need to reoptimize this so that it
+	still works.  Make sure to listen to OnCollectionChanged so we'll
+	update our bounds (and recompute our actual width/height) on
+	Inlines collection changes.
+
+	* text.h: remove OnSubPropertyChanged (since it's not used.)  Add
+	OnCollectionChanged.
+	
+2007-06-29  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.cpp (UIElement::OnPropertyChanged): reformat this so I
 	can actually read it, and notify attachees of our property
 	changes.  this makes ZIndex setting resort the parent panels list.

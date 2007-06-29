@@ -166,9 +166,8 @@ public:
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual bool InsideObject (Surface *s, double x, double y);
-	virtual Value *GetValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	
 private:
 	PangoFontDescription *font;
