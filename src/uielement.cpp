@@ -20,7 +20,7 @@
 #include "runtime.h"
 
 void
-UIElement::UpdateBounds ()
+UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 {
 	Rect obounds = bounds;
 	
@@ -38,6 +38,9 @@ UIElement::UpdateBounds ()
 
 		if (parent != NULL)
 			parent->UpdateBounds();
+	}
+	else {
+		Invalidate (bounds);
 	}
 }
 
@@ -72,16 +75,24 @@ UIElement::~UIElement ()
 void
 UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::UIELEMENT) {
+		Visual::OnPropertyChanged (prop);
+		return;
+	}
+	  
 	if (prop == UIElement::OpacityProperty ||
 	    prop == UIElement::ZIndexProperty) {
 		Invalidate ();
-	} else if (prop == UIElement::VisibilityProperty) {
+	}
+	else if (prop == UIElement::VisibilityProperty) {
 		// XXX we need a FullInvalidate if this is changing
 		// from or to Collapsed, but as there's no way to tell that...
 		FullInvalidate (true);
-	} else if (prop == UIElement::ClipProperty) {
+	}
+	else if (prop == UIElement::ClipProperty) {
 		Invalidate ();
-	} else if (prop == UIElement::OpacityMaskProperty) {
+	}
+	else if (prop == UIElement::OpacityMaskProperty) {
 		if (opacityMask != NULL) {
 			opacityMask->Detach (NULL, this);
 			opacityMask->unref ();
@@ -93,9 +104,11 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		}
 		
 		Invalidate ();
-	} else if (prop == RenderTransformProperty || prop == RenderTransformOriginProperty) {
+	}
+	else if (prop == RenderTransformProperty || prop == RenderTransformOriginProperty) {
 		UpdateTransform ();
-	} else if (prop == TriggersProperty){
+	}
+	else if (prop == TriggersProperty) {
 		Value *v = GetValue (prop);
 		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
 
@@ -105,7 +118,8 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 				
 			newcol->closure = this;
 		}
-	} else if (prop == ResourcesProperty) {
+	}
+	else if (prop == ResourcesProperty) {
 		Value *v = GetValue (prop);
 		ResourceCollection *newcol = v ? v->AsResourceCollection() : NULL;
 
@@ -115,9 +129,9 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 				
 			newcol->closure = this;
 		}
-	} else {
-		Visual::OnPropertyChanged (prop);
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 #if true
@@ -173,19 +187,10 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	if (prop == UIElement::RenderTransformProperty ||
 	    prop == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
-	} else if (prop == UIElement::ClipProperty ||
-		   prop == UIElement::OpacityMaskProperty) {
+	}
+	else if (prop == UIElement::ClipProperty ||
+		 prop == UIElement::OpacityMaskProperty) {
 
-		Invalidate ();
-	} else if (prop == UIElement::OpacityProperty) {
-	  	Invalidate ();
-	} else if (prop == UIElement::VisibilityProperty) {
-		// XXX we need a FullInvalidate if this is changing
-		// from or to Collapsed, but as there's no way to tell that...
-
-	  // XX do we need this here at all?
-		FullInvalidate (true);
-	} else if (Type::Find (subprop->type)->IsSubclassOf (Type::BRUSH)) {
 		Invalidate ();
 	}
 	
@@ -212,8 +217,7 @@ UIElement::FullInvalidate (bool rendertransform)
 	Invalidate ();
 	if (rendertransform)
 		UpdateTransform ();
-	UpdateBounds ();
-	Invalidate ();
+	UpdateBounds (true /* force an invalidate here, even if the bounds don't change */);
 }
 
 

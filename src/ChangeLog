@@ -1,5 +1,14 @@
 2007-06-29  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::OnPropertyChanged): reformat this so I
+	can actually read it, and notify attachees of our property
+	changes.  this makes ZIndex setting resort the parent panels list.
+
+	* uielement.h: add an arg to UpdateBounds (a bool that defaults to
+	false) to force an invalidation of the new bounds.
+
+2007-06-29  Chris Toshok  <toshok@ximian.com>
+
 	* panel.h, panel.cpp: okay, i'm stupid.  it's not
 	OnChildPropertyChanged either.  it's OnCollectionChanged.  we
 	seriously need to clean this stuff up.
