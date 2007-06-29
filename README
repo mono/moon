@@ -148,6 +148,126 @@ This is not likely the final version of this code.
 	so you must update your internally cached version of it with the value
 	in the dependencyproperty.
 
+* DependencyObject::On*Changed methods
+
+	The following are guidelines for the different methods used in
+	property change notifications.
+
+	OnPropertyChanged:
+
+		To perform operations when a property defined on your class is
+		changed, you must override this method.
+
+
+		void
+		MySubclass::OnPropertyChanged (DependencyProperty *prop)
+		{
+			if (prop->type != Type::MYSUBCLASSTYPE) {
+				ParentClass::OnPropertyChanged (prop);
+				return;
+			}
+
+			if (prop == MySubclass::FirstProperty) {
+				/* do stuff */
+			}
+			else if (prop == MySubclass::FirstProperty) {
+				/* do different stuff stuff */
+			}
+			else if ...
+
+			.
+			.
+			.
+		}
+
+		you don't need to explicitly call NotifyAttacheesOfPropertyChange.
+		this is done for you.
+
+
+
+	OnSubPropertyChanged:
+
+		if your class has a property that is a DependencyObject (say a
+		property of type Brush or Transform), you should override this
+		method to catch changes to that object's properties.
+
+
+		It should look like this:
+
+
+		void
+		MySubclass::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+		{
+			if (prop == MySubclass::FirstProperty) {
+				/* do this whenever any part of the value of FirstProperty changes */
+			}
+			else if (prop == MySubclass::SecondProperty &&
+				 subprop == SecondClass::Property) {
+
+				/* do this whenever the property "SecondClass::Property" changes on
+				   the object stored in our MySubclass::SecondProperty property */
+			}
+			.
+			.
+			.
+			else
+				ParentClass::OnSubPropertyChanged (prop, subprop);
+		}
+
+	OnChildPropertyChanged:
+
+		if your class defines "attached" properties, like the Canvas
+		class's Left and Top, you must override this method to add
+		support for them
+
+
+		It should look like this:
+
+		bool
+		MySubclass::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child)
+		{
+			if (prop == MySubclass::FirstAttachedProperty) {
+				// do something when "child"'s value for FirstAttachedProperty changes
+
+				return true;
+			}
+			else if (prop == MySubclass::SecondAttachedProperty) {
+				// do something when "child"'s value for SecondAttachedProperty changes
+
+				return true;
+			}
+
+			return false;
+		}
+
+
+	OnCollectionChanged:
+
+		if your class has any collection properties, it must override
+		this method to be able to deal with changes to elements of the
+		collection.
+
+
+		It should look like this:
+
+		void
+		MySubclass::OnCollectionChanged (Collection *col, CollectionChangeType type,
+						 DependencyObject *obj, DependencyProperty *prop)
+		{
+			if (col == GetValue (MySubclass::MyCollectionProperty)->AsMyCollection()) {
+				/* do something when the collection MyCollectionProperty changes in any way */
+			}
+			else if (type == CollectionChangeItemRemoved &&
+				 col == ...) {
+				/* do something only when an item is removed */
+			}
+			.
+			.
+			.
+			else
+				ParentClass::OnCollectionChanged (col, type, obj, prop);
+		}
+
 * Video
 
 	The video stuff is *incredibly* early at this point and
