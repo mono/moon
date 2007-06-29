@@ -1,3 +1,8 @@
+2007-06-29 Rodrigo Kumpera <rkumpera@novell.com>
+
+	* default.xaml: Integrated google cal code.
+	* calendar.cs: Integrated google cal code.
+
 2007-06-27  Everaldo Canuto  <ecanuto@novell.com>
 
 	* default.xaml: Improve calendar look.
