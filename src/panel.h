@@ -26,7 +26,8 @@ class Panel : public FrameworkElement {
 	static DependencyProperty* BackgroundProperty;
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+
+	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
 
 	virtual void OnLoaded ();
 };

@@ -1,3 +1,8 @@
+2007-06-29  Chris Toshok  <toshok@ximian.com>
+
+	* panel.h, panel.cpp: child ZIndex property changes are reflected
+	via OnChildPropertyChanged, not OnSubPropertyChanged.
+
 2007-06-28  Chris Toshok  <toshok@ximian.com>
 
 	* canvas.cpp (Canvas::ComputeBounds): fix the debug printf's.

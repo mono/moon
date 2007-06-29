@@ -93,16 +93,16 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 	}
 }
 
-void
-Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+bool
+Panel::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child)
 {
 	// if a child changes its ZIndex property we need to resort our Children
 	if (prop == UIElement::ZIndexProperty) {
 		GetChildren()->ResortByZIndex ();
-		return;
+		return true;
 	}
-  
-	FrameworkElement::OnSubPropertyChanged (prop, subprop);
+
+	return false;
 }
 
 
