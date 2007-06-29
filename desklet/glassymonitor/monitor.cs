@@ -30,10 +30,15 @@ namespace Desklets
 		TextBlock received_text;
 		TextBlock sent_text;
 
+		Polygon closeButton;
+		
+		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+		
 		public void UpdateInfo (object o, EventArgs e)
 		{
-	    	using (StreamReader sr = new StreamReader ("/proc/net/dev")) {
-                string line;
+			using (StreamReader sr = new StreamReader ("/proc/net/dev")) {
+				string line;
 
 				// Ignore two first lines.
 				sr.ReadLine();
@@ -44,7 +49,7 @@ namespace Desklets
 
 					if ((pieces.Length > 1) && (pieces [0].Trim() == device)) {
 						String[] fields = pieces [1].Split (new char[] {' '}, 
-							StringSplitOptions.RemoveEmptyEntries);
+										    StringSplitOptions.RemoveEmptyEntries);
 
 						device_text.Text   = device;
 						received_text.Text = fields [1];
@@ -58,8 +63,30 @@ namespace Desklets
 			storyboard.Begin ();
 		}
 
+		void HighlightButton (Polygon button)
+		{
+			button.Stroke = buttonHilite;
+		}
+
+		void UnhighlightButton (Polygon button)
+		{
+			button.Stroke = buttonNormal;
+		}
+		
 		public void PageLoaded (object o, EventArgs e)
 		{
+			Mono.Desklets.Desklet.SetupToolbox (this);
+
+			closeButton = FindName ("desklet-close") as Polygon;			
+
+			closeButton.MouseEnter += delegate {
+				HighlightButton (closeButton);
+			};
+
+			closeButton.MouseLeave += delegate {
+				UnhighlightButton (closeButton);
+			};
+			
 			storyboard    = FindName ("storyboard") as Storyboard;
 			device_text   = FindName ("device") as TextBlock;
 			received_text = FindName ("received") as TextBlock;
