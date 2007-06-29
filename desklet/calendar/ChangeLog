@@ -1,3 +1,7 @@
+2007-06-29  Rodrigo Kumpera  <rkumpera@novell.com>
+
+	* default.xaml: made the animated details rect more pleasant to use 
+
 2007-06-29  Everaldo Canuto  <ecanuto@novell.com>
 
 	* calendar.cs: Fixes first click on details rect, we must remove it
@@ -5,6 +9,7 @@
 
 2007-06-29  Rodrigo Kumpera  <rkumpera@novell.com>
 
+	* calendar.cs: added support for day details using an animation
 	* default.xaml: same
 
 2007-06-28  Rodrigo Kumpera  <rkumpera@novell.com>

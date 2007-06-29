@@ -34,7 +34,11 @@
     	</Storyboard>
     </Canvas.Resources>
 
-	<Rectangle Fill="#CCAAAAAA" x:Name="calendar_rect" />
+	<Rectangle
+		Fill="#F0AFAFAF"
+		x:Name="calendar_rect"
+		RadiusX="10"
+		RadiusY="10"/>
 
 	<TextBlock
 		x:Name="detail"
