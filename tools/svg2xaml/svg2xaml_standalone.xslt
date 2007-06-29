@@ -146,9 +146,8 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			
 			<xsl:copy-of select="$local-settings/settings/child::*"/>
 			
-			
 			<xsl:apply-templates>
-					<xsl:with-param name="defaults" select="$inheritable-attributes"/>
+				<xsl:with-param name="defaults" select="$inheritable-attributes"/>
 			</xsl:apply-templates>
 
 		</Canvas>
@@ -260,7 +259,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 					<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}.RenderTransform" 
 										xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 						<xsl:choose>
-							<xsl:when test="$transform[name(.)='TransformGroup']">
+							<xsl:when test="$transform and $transform[name(.)='TransformGroup']">
 								<TransformGroup 
 									xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 									
@@ -270,14 +269,18 @@ exclude-result-prefixes="svg xsl xaml xlink"
 								</TransformGroup>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:copy-of select="$transform"/>
+								<xsl:if test="$transform">
+									<xsl:copy-of select="$transform"/>
+								</xsl:if>
 								<xsl:copy-of select="$local-attributes/xaml:attributes/*[contains(name(.), 'Transform')]"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:element>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:copy-of select="$transform"/>
+					<xsl:if test="$transform">
+						<xsl:copy-of select="$transform"/>
+					</xsl:if>
 				</xsl:otherwise>
 			</xsl:choose>
 
@@ -374,7 +377,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			</xsl:element>
 		</xsl:if>
 		<xsl:if test="starts-with($str, 'rotate')">
-			<xsl:element name="{prefix}RotateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+			<xsl:element name="RotateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 				<xsl:attribute name="Angle"><xsl:value-of select="substring-before(substring-after($str, 'rotate('), ')')"/></xsl:attribute>
 				<xsl:if test="../@rx">
 					<xsl:attribute name="CenterX"><xsl:value-of select="../@rx"/></xsl:attribute>
@@ -390,12 +393,17 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			</xsl:element>
 		</xsl:if>
 		<xsl:if test="starts-with($str, 'scale')">
-			<xsl:element name="{prefix}ScaleTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+			<xsl:element name="ScaleTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 				<xsl:call-template name="splitCoords">
 					<xsl:with-param name="str" select="substring-before(substring-after($str, 'scale('), ')')"/>
 					<xsl:with-param name="prefix" select="'Scale'"/>
 					<xsl:with-param name="separator" select="string($separator)"/>
 				</xsl:call-template>
+			</xsl:element>
+		</xsl:if>
+		<xsl:if test="starts-with($str, 'matrix')">
+			<xsl:element name="MatrixTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+				<xsl:attribute name="Matrix"><xsl:value-of select="substring-before(substring-after($str, 'matrix('), ')')"/></xsl:attribute>
 			</xsl:element>
 		</xsl:if>
 
@@ -428,7 +436,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			</transform>
 		</xsl:variable>
 		
-		<xsl:if test="count($transform/transform/@*) > 0 or count($transform/transform/*) > 0">
+		<xsl:if test="$transform and count($transform/transform/@*) > 0 or count($transform/transform/*) > 0">
 			<xsl:element name="{$prefix}RenderTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 				 <xsl:element name="TranslateTransform" namespace="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 					<xsl:copy-of select="$transform/transform/@*"/>
