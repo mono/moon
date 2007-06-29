@@ -160,7 +160,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"><defaults/></xsl:param>
+		<xsl:param name="defaults" />
 
 		<xsl:apply-templates>
 					<xsl:with-param name="transform" select="$transform"/>
@@ -171,7 +171,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 	<!-- g element - children inherit these values and transforms -->
 	<xsl:template match="svg:g">
 		<xsl:param name="transform"/>
-		<xsl:param name="defaults"><defaults/></xsl:param>
+		<xsl:param name="defaults" />
 		
 		<!-- gather up the default values for the children to have -->
 		<xsl:variable name="defs">
@@ -230,7 +230,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"><defaults/></xsl:param>
+		<xsl:param name="defaults" />
 
 		<xsl:variable name="name" select="name(.)"/>
 		<xsl:element name="{$mappings/mappings/mapping[@name=$name]/@value}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
@@ -291,7 +291,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"><defaults/></xsl:param>
+		<xsl:param name="defaults" />
 
 		<xsl:variable name="attributes">
 			<attributes>
@@ -330,11 +330,11 @@ exclude-result-prefixes="svg xsl xaml xlink"
 	These are just default implementations that don't really do anything. 
 -->
 
-	<xsl:template match="svg:add_more_catches_here">
+	<xsl:template match="svg:*">
 		<!-- inherited transformations -->
 		<xsl:param name="transform"/>
 		<!-- inherited defaults -->
-		<xsl:param name="defaults"><defaults/></xsl:param>
+		<xsl:param name="defaults" />
 
 		<xsl:apply-templates>
 					<xsl:with-param name="transform" select="$transform"/>
