@@ -95,6 +95,11 @@ namespace Desklet
 		static readonly Brush CALENDAR_BRUSH = new SolidColorBrush (Colors.Red);
 		static readonly Brush CALENDAR_FILL_BRUSH = new SolidColorBrush (Color.FromArgb (40, 255, 0, 0));
 
+		Polygon closeButton;
+                
+                Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+                Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+		
 		void drawDay (int l, int c, int day, bool mainMonth, bool curDay) {
 			days[l, c].Text = day.ToString ();
 			days[l, c].Foreground = mainMonth ? (curDay ? CURRENT_DAY : CURRENT_MONTH) : OTHERS;
@@ -282,9 +287,29 @@ namespace Desklet
 			detailsStoryboard.Begin ();
 		}
 
+		void HighlightButton (Polygon button)
+                {
+                        button.Stroke = buttonHilite;
+                }
 
+                void UnhighlightButton (Polygon button)
+                {
+                        button.Stroke = buttonNormal;
+                }
+		
 		public void PageLoaded (object o, EventArgs e) 
 		{
+			Mono.Desklets.Desklet.SetupToolbox (this);
+
+                        closeButton = FindName ("desklet-close") as Polygon;
+                        closeButton.MouseEnter += delegate {
+                                HighlightButton (closeButton);
+                        };
+
+                        closeButton.MouseLeave += delegate {
+                                UnhighlightButton (closeButton);
+                        };
+			
 			monthText = FindName ("month") as TextBlock;
 			detailText = FindName ("detail") as TextBlock;
 			Children.Remove (detailText);			

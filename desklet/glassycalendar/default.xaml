@@ -139,5 +139,8 @@
 	<TextBlock x:Name="c5_l4" Text="" FontSize="12" FontWeight="ExtraBlack" Canvas.Left="138" Foreground="#333333" Canvas.Top="150"/>
 	<TextBlock x:Name="c5_l5" Text="" FontSize="12" FontWeight="ExtraBlack" Canvas.Left="168" Foreground="#333333" Canvas.Top="150"/>
 	<TextBlock x:Name="c5_l6" Text="" FontSize="12" FontWeight="ExtraBlack" Canvas.Left="198" Foreground="#333333" Canvas.Top="150"/>
-
+	<!-- close/drag elements -->
+	<Polygon x:Name="desklet-close" Canvas.Left="202" Canvas.Top="163"
+		 Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
+		 Stroke="#66FFFFFF" StrokeThickness="3" Fill="#66FFFFFF" />
 </Canvas>
