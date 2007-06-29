@@ -53,8 +53,15 @@ namespace Desklet
 		public TextBlock buttonClearT;
 		public TextBlock Result;
 
+		Polygon closeButton;
+		
+		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+		
 		public void PageLoaded (object o, EventArgs e) 
 		{
+			Mono.Desklets.Desklet.SetupToolbox (this);
+			
 			button9 = FindName ("9ButtonFrame") as Shape;
 			button8 = FindName ("8ButtonFrame") as Shape;
 			button7 = FindName ("7ButtonFrame") as Shape;
@@ -91,6 +98,15 @@ namespace Desklet
 			buttonEqualT = FindName ("EqualButton") as TextBlock;
 			buttonClearT = FindName ("Clear") as TextBlock;
 
+			closeButton = FindName ("desklet-close") as Polygon;
+			closeButton.MouseEnter += delegate {
+				HighlightButton (closeButton);
+			};
+
+			closeButton.MouseLeave += delegate {
+				UnhighlightButton (closeButton);
+			};
+			
 			Result = FindName ("ResultFrame") as TextBlock;
 
 			this.MouseEvents ();
@@ -106,6 +122,16 @@ namespace Desklet
 			sb.Begin ();
 		}
 
+		void HighlightButton (Polygon button)
+		{
+			button.Stroke = buttonHilite;
+		}
+
+		void UnhighlightButton (Polygon button)
+		{
+			button.Stroke = buttonNormal;
+		}
+		
 		private void Method (string str, bool op)
 		{
 			if (!isRunning) return;

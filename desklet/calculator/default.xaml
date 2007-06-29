@@ -2,12 +2,17 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="Desklet.Calculator;assembly=bin/calculator.dll" Loaded="PageLoaded"
-	Width="165" Height="220">
+	Width="185" Height="220">
 	
 	<Canvas.Resources>
 		<Storyboard x:Name="run" />
 	</Canvas.Resources>
 
+	<!-- close/drag elements -->
+	<Polygon x:Name="desklet-close" Canvas.Left="165" Canvas.Top="2"
+                Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
+                Stroke="#66FFFFFF" StrokeThickness="3" Fill="#66FFFFFF" />
+		
 	<Rectangle 
 		Fill="#22000000" 
                 Stroke="Blue" 
