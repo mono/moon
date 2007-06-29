@@ -1,6 +1,7 @@
 DESKLET = picasa
-SOURCES = picasa.cs ../desklets.cs
+SOURCES = picasa.cs
 LIBS = bin/Google.GData.Client.dll
+EXTRA_ASSEMBLIES = ../desklets.dll
 
 include ../rules.make
 
@@ -16,3 +17,5 @@ $(ASSEMBLY): $(DSOURCES)
 	mkdir -p bin
 	gmcs -debug -target:library -r:$(LIBS) -pkg:silver -pkg:gtk-sharp-2.0 -out:$(ASSEMBLY) $(DSOURCES)
 
+postcompile:
+	cp -a ../desklets.dll bin/
