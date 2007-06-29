@@ -11,7 +11,8 @@ LOPTIONS = --debug
 all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(DSOURCES)
-	gmcs -debug -target:library -pkg:silver $(DSOURCES)
+	gmcs -debug -target:library -pkg:silver -r:../desklets.dll $(DSOURCES)
+	cp -a ../desklets.dll .
 
 run: $(ASSEMBLY)
 	MONO_OPTIONS=$(LOPTIONS) $(LAUNCHER) default.xaml

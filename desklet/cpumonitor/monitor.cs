@@ -49,7 +49,7 @@ namespace Desklet
 		}
 
 		public void FetchGlobalCounters() {
-	    	using ( StreamReader sr = new StreamReader ("/proc/stat")) {
+			using ( StreamReader sr = new StreamReader ("/proc/stat")) {
 				String line = sr.ReadLine ();
 				Read (line);
 			}
@@ -68,19 +68,24 @@ namespace Desklet
 		ColorAnimation colorAnim;
 		Storyboard colorSb;
 
+		Polygon closeButton;
+		
+		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+		
 		public void DrawLoad ()
 		{
-    		CpuCounter cur = new CpuCounter ();
-    		cur.FetchGlobalCounters ();
-    		CpuCounter delta = cur.Sub (ref last);
-    		last = cur;
+			CpuCounter cur = new CpuCounter ();
+			cur.FetchGlobalCounters ();
+			CpuCounter delta = cur.Sub (ref last);
+			last = cur;
     		
-    		double num = Math.Round (delta.CpuLoad ());
-    		load.Text = ((int)num).ToString ();
+			double num = Math.Round (delta.CpuLoad ());
+			load.Text = ((int)num).ToString ();
 			Color current = (circle.Fill as SolidColorBrush).Color;
-    		Color color = new Color ();
+			Color color = new Color ();
 
-    		if (num <= 50) {
+			if (num <= 50) {
 				//interpolate (0,50) between green (0,255,0) and yellow (255,255,0)
 				double red = num / (50d / 255);
 				color = Color.FromRgb ((byte)red, 255, 0);
@@ -95,18 +100,39 @@ namespace Desklet
 			colorSb.Begin ();
 		}
 
+		void HighlightButton (Polygon button)
+		{
+			button.Stroke = buttonHilite;
+		}
+
+		void UnhighlightButton (Polygon button)
+		{
+			button.Stroke = buttonNormal;
+		}
+		
 		public void PageLoaded (object o, EventArgs e) 
-	    {
-	    	circle = FindName ("Circle") as Shape;
-	    	load = FindName ("Load") as TextBlock;
-	    	colorSb = FindName ("color_sb") as Storyboard;
-	    	colorAnim = FindName ("color_anim") as  ColorAnimation;
-	    	last = new CpuCounter ();
+		{
+			Mono.Desklets.Desklet.SetupToolbox (this);
 
-	    	if (circle == null)
-	    		Console.WriteLine ("no circle ="+(FindName ("Circle") != null));
+			closeButton = FindName ("desklet-close") as Polygon;
 
-	    	Storyboard sb = FindName ("run") as Storyboard;
+			closeButton.MouseEnter += delegate {
+				HighlightButton (closeButton);
+			};
+
+			closeButton.MouseLeave += delegate {
+				UnhighlightButton (closeButton);
+			};
+			circle = FindName ("Circle") as Shape;
+			load = FindName ("Load") as TextBlock;
+			colorSb = FindName ("color_sb") as Storyboard;
+			colorAnim = FindName ("color_anim") as  ColorAnimation;
+			last = new CpuCounter ();
+
+			if (circle == null)
+				Console.WriteLine ("no circle ="+(FindName ("Circle") != null));
+
+			Storyboard sb = FindName ("run") as Storyboard;
 			DoubleAnimation timer = new DoubleAnimation ();
 			sb.Children.Add (timer);
 			timer.Duration = new Duration (TimeSpan.FromMilliseconds (100));
@@ -115,8 +141,8 @@ namespace Desklet
 				DrawLoad ();
 				sb.Begin ();
 			};
-	    	sb.Begin ();
-	    	DrawLoad ();
+			sb.Begin ();
+			DrawLoad ();
 		}
 	}
 }
