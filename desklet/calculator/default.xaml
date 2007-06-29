@@ -9,7 +9,7 @@
 	</Canvas.Resources>
 
 	<Rectangle 
-		Fill="Black" 
+		Fill="#22000000" 
                 Stroke="Blue" 
                 StrokeThickness="4" 
 		Canvas.Left="4" 
@@ -44,18 +44,25 @@
                 TextAlignment="right"
         />
 
-        <Rectangle
-                x:Name="ClearFrame"
-                Fill="White"
-                Strock="White"
-                StrokeThickness="2"
-                Canvas.Left="120"
-                Canvas.Top="15"
-                Width="30"
-                Height="30"
-                RadiusX="1"
-                RadiusY="1"
-        />
+	<Rectangle
+		x:Name="ClearFrame"
+		Fill="White"
+		StrokeThickness="0"
+		Canvas.Left="120"
+		Canvas.Top="15"
+		Width="30"
+		Height="30"
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Fuchsia" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
         
         <TextBlock
                 x:Name="Clear"
@@ -69,16 +76,22 @@
 
 	<Rectangle
 		x:Name="7ButtonFrame"
-		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="15"
 		Canvas.Top="50"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="7Button"
@@ -93,15 +106,23 @@
 	<Rectangle
 		x:Name="8ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="50"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
+
 
 	<TextBlock
 		x:Name="8Button"
@@ -116,15 +137,22 @@
 	<Rectangle
 		x:Name="9ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="50"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="9Button"
@@ -139,15 +167,22 @@
 	<Rectangle
 		x:Name="PlusButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="50"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Yellow" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="PlusButton"
@@ -162,15 +197,22 @@
 	<Rectangle
 		x:Name="4ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="15"
 		Canvas.Top="90"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="4Button"
@@ -185,15 +227,22 @@
 	<Rectangle
 		x:Name="5ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="90"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="5Button"
@@ -208,15 +257,22 @@
 	<Rectangle
 		x:Name="6ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="90"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="6Button"
@@ -231,15 +287,22 @@
 	<Rectangle
 		x:Name="MinusButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="90"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Green" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="MinusButton"
@@ -254,15 +317,22 @@
 	<Rectangle
 		x:Name="1ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="15"
 		Canvas.Top="130"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="1Button"
@@ -277,15 +347,22 @@
 	<Rectangle
 		x:Name="2ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="130"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="2Button"
@@ -300,15 +377,22 @@
 	<Rectangle
 		x:Name="3ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="130"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="3Button"
@@ -323,15 +407,22 @@
 	<Rectangle
 		x:Name="MulButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="130"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Blue" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="MulButton"
@@ -346,15 +437,22 @@
 	<Rectangle
 		x:Name="0ButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="15"
 		Canvas.Top="170"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Red" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="0Button"
@@ -369,15 +467,22 @@
 	<Rectangle
 		x:Name="DotButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="170"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Cyan" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="DotButton"
@@ -392,15 +497,22 @@
 	<Rectangle
 		x:Name="EqualButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="170"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Ivory" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="EqualButton"
@@ -415,15 +527,22 @@
 	<Rectangle
 		x:Name="DivButtonFrame"
 		Fill="White"
-		Stroke="White"
-		StrokeThickness="2"
+		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="170"
 		Width="30"
 		Height="35"
-		RadiusX="1"
-		RadiusY="1"
-	/>
+		RadiusX="12"
+		RadiusY="12">
+			<Rectangle.Fill>
+			  <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.9" RadiusY="0.9">
+		        <RadialGradientBrush.GradientStops>
+		            <GradientStop Color="Orange" Offset="0" />
+		            <GradientStop Color="#F0B0B0B0" Offset="1" />
+		          </RadialGradientBrush.GradientStops>
+			  </RadialGradientBrush>
+			</Rectangle.Fill>
+	</Rectangle>
 
 	<TextBlock
 		x:Name="DivButton"
