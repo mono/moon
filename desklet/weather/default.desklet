@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?><!-- -*- nxml -*- -->
+<Desklet>
+    <name>Weather</name>
+    <version>0.0.1</version>
+    <author>Mono Team</author>
+    <separateDomain>true</separateDomain>
+    <description>A sample weather desklet</description>
+    <desklet path="default.xaml"/>
+</Desklet>

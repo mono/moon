@@ -9,11 +9,11 @@ DSOURCES = $(SOURCES)
 LAUNCHER = mopen -d
 LOPTIONS = --debug
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) postcompile
 
 $(ASSEMBLY): $(DSOURCES)
 	mkdir -p bin
-	gmcs -debug -target:library -pkg:silver -out:$(ASSEMBLY) $(DSOURCES)
+	gmcs -debug -target:library -pkg:silver -out:$(ASSEMBLY) $(foreach a,$(EXTRA_ASSEMBLIES),-r:$(a)) $(DSOURCES)
 
 clean:
 	rm -f $(ASSEMBLY)
@@ -24,3 +24,8 @@ run: $(ASSEMBLY)
 
 dist: $(ASSEMBLY)
 	# put here code to pack desklet (zip? tgz?)
+
+postcompile:
+
+.PHONY: postcompile
+

@@ -14,7 +14,7 @@
 		RadiusX="10" RadiusY="10">
 	</Rectangle>
 
-	<Polygon x:Name="close_button" Canvas.Left="10" Canvas.Top="55"
+	<Polygon x:Name="desklet-close" Canvas.Left="10" Canvas.Top="55"
 		Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
 		Stroke="#FF111111" StrokeThickness="3" Fill="#FF111111" />
 
