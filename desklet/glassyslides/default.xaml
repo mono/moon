@@ -3,7 +3,12 @@
 	x:Class="Desklets.SlideShow;assembly=bin/slideshow.dll"
 	Loaded="PageLoaded" Width="322" Height="252">
 
-	<!-- border -->
+  <!-- close/drag elements -->
+  <Polygon x:Name="desklet-close" Canvas.Left="300" Canvas.Top="230"
+	   Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
+	   Stroke="#66FFFFFF" StrokeThickness="3" Fill="#66FFFFFF" />
+
+  <!-- border -->
 	<Rectangle cFill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"
 		Canvas.Left="1" Canvas.Top="1" Width="320" Height="250"
 		RadiusX="10" RadiusY="10">

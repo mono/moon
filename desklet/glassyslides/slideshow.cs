@@ -31,6 +31,11 @@ namespace Desklets
 		Rectangle irect;
 		ImageBrush image;
 
+		Polygon closeButton;
+		
+		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+		
 		public void ChangePicture (object o, EventArgs e)
 		{
 			fadein.Begin ();
@@ -58,8 +63,20 @@ namespace Desklets
 			change.Begin ();
 		}
 
+		void HighlightButton (Polygon button)
+		{
+			button.Stroke = buttonHilite;
+		}
+
+		void UnhighlightButton (Polygon button)
+		{
+			button.Stroke = buttonNormal;
+		}
+		
 		public void PageLoaded (object o, EventArgs e)
 		{
+			Mono.Desklets.Desklet.SetupToolbox (this);
+			
 			change  = FindName ("change")  as Storyboard;
 			fadein  = FindName ("fadein")  as Storyboard;
 			fadeout = FindName ("fadeout") as Storyboard;
@@ -73,6 +90,16 @@ namespace Desklets
 			replace.Completed += new EventHandler (ReplacePicture);
 
 			change.Begin ();
+
+			closeButton = FindName ("desklet-close") as Polygon;
+
+			closeButton.MouseEnter += delegate {
+				HighlightButton (closeButton);
+			};
+
+			closeButton.MouseLeave += delegate {
+				UnhighlightButton (closeButton);
+			};
 		}
 	}
 }
