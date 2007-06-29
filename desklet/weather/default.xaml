@@ -31,15 +31,15 @@
   </Canvas.Resources>
 
   <!-- border  -->
-  <Rectangle Fill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"
+  <Rectangle Fill="#33000000" Stroke="#33FFFFFF" StrokeThickness="1"
 	     Canvas.Left="4" Canvas.Top="4" Width="492" Height="170"
 	     RadiusX="10" RadiusY="10">
     <Rectangle.Fill>
       <LinearGradientBrush SpreadMethod="Pad" EndPoint="1.0,1.1" StartPoint="0.0,0.0">
-	<GradientStop Offset="0.0" Color="Transparent" />
-	<GradientStop Offset="0.2" Color="#30ffffff" />
-	<GradientStop Offset="0.4" Color="#3fffffff" />
-	<GradientStop Offset="1.0" Color="Transparent" />
+	<GradientStop Offset="0.0" Color="#AA227db7" />
+	<GradientStop Offset="0.2" Color="#EE1e21b8" />
+	<GradientStop Offset="0.4" Color="#EE3a3c85" />
+	<GradientStop Offset="1.0" Color="#AA227db7" />
       </LinearGradientBrush>
     </Rectangle.Fill>
   </Rectangle>
