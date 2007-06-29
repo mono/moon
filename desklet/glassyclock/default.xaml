@@ -3,6 +3,11 @@
         x:Class="Desklets.Clock;assembly=bin/clock.dll"
 	Loaded="PageLoaded" Width="114" Height="114">
 
+  <!-- close/drag elements -->
+        <Polygon x:Name="desklet-close" Canvas.Left="0" Canvas.Top="0"
+                 Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
+                 Stroke="#66FFFFFF" StrokeThickness="3" Fill="#66FFFFFF" />
+
 	<!-- outer border -->
 	<Ellipse Canvas.Left="2" Canvas.Top="2" Width="110" Height="110" StrokeThickness="4">
 		<Ellipse.Stroke>

@@ -25,15 +25,41 @@ namespace Desklets
 		RotateTransform minuteHand;
 		RotateTransform hourHand;
 
+		Polygon closeButton;
+		
+		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
+		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+
+		void HighlightButton (Polygon button)
+		{
+			button.Stroke = buttonHilite;
+		}
+
+		void UnhighlightButton (Polygon button)
+		{
+			button.Stroke = buttonNormal;
+		}
+		
 		public void PageLoaded (object o, EventArgs e)
 		{
+			Mono.Desklets.Desklet.SetupToolbox (this);
+			
 			secondsHand = FindName ("secondsHand") as RotateTransform;
 			minuteHand  = FindName ("minuteHand")  as RotateTransform;
 			hourHand    = FindName ("hourHand")    as RotateTransform;
-
-			if (secondsHand == null || minuteHand == null || hourHand == null)
+			closeButton = FindName ("desklet-close") as Polygon;
+			
+			if (secondsHand == null || minuteHand == null || hourHand == null || closeButton == null)
 				return;
 
+			closeButton.MouseEnter += delegate {
+				HighlightButton (closeButton);
+			};
+
+			closeButton.MouseLeave += delegate {
+				UnhighlightButton (closeButton);
+			};
+			
 			DateTime now = DateTime.Now;
 
 			secondsHand.Angle = now.Second * 6;
