@@ -1,3 +1,9 @@
+2007-06-30  Marek Habersack  <mhabersack@novell.com>
+
+	* desklet/desklets.cs: added the FindElement method to look up
+	elements in a parent.
+	Added the AllElementsFound property.
+
 2007-06-29  Marek Habersack  <mhabersack@novell.com>
 
 	* desklet/desklets.cs: removed a field from ConfigStore which
