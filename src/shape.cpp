@@ -307,6 +307,8 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 				stroke->Attach (NULL, this);
 				stroke->ref ();
 			}
+
+			UpdateBounds ();
 		} else if (prop == Shape::FillProperty) {
 			if (fill != NULL) {
 				fill->Detach (NULL, this);
@@ -317,6 +319,13 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 				fill->Attach (NULL, this);
 				fill->ref ();
 			}
+		} else if (prop == Shape::StrokeDashCapProperty
+			   || prop == Shape::StrokeEndLineCapProperty
+			   || prop == Shape::StrokeLineJoinProperty
+			   || prop == Shape::StrokeMiterLimitProperty
+			   || prop == Shape::StrokeStartLineCapProperty
+			   || prop == Shape::StrokeThicknessProperty) }
+			UpdateBounds ();
 		}
 		
 		Invalidate ();

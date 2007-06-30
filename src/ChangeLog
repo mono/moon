@@ -1,3 +1,9 @@
+2007-06-30  Chris Toshok  <toshok@ximian.com>
+
+	* shape.cpp (Shape::OnPropertyChanged): when need to update our
+	bounding rectangle when a number of the stroke properties change.
+	Also update them when the stroke itself is changed.
+
 2007-06-29  Chris Toshok  <toshok@ximian.com>
 
 	* text.cpp, text.h: Add back in TextBlock::OnSubPropertyChanged -
