@@ -1,5 +1,12 @@
 2007-06-29  Chris Toshok  <toshok@ximian.com>
 
+	* text.cpp, text.h: Add back in TextBlock::OnSubPropertyChanged -
+	we need it for the foreground property.  Make this explicit.
+	also, add an OnSubPropertyChanged method for Glyphs, to handle the
+	FillProperty.
+
+2007-06-29  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.cpp (UIElement::UpdateBounds): oops.  really only do
 	that invalidate if the flag is true.
 

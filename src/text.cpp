@@ -733,6 +733,17 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
+TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (prop == TextBlock::ForegroundProperty) {
+		CalcActualWidthHeight (NULL);
+		UpdateBounds (true);
+	}
+	else
+		FrameworkElement::OnSubPropertyChanged (prop, subprop);
+}
+
+void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
 	CalcActualWidthHeight (NULL);
@@ -933,6 +944,16 @@ Glyphs::GetTransformOrigin ()
 {
 	// FIXME: implement me
 	return Point (0.0, 0.0);
+}
+
+void
+Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (prop == Glyphs::FillProperty) {
+		printf ("Glyphs::FillProperty subproperty changed\n");
+	}
+	else
+		FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }
 
 void
