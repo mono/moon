@@ -144,7 +144,7 @@ namespace Gtk.Moonlight {
 		
 		void Open (string verb, string uri)
 		{
-			if (verb != "GET"){
+			if (verb != "GET" && verb.ToUpper () != "GET"){
 				Console.WriteLine ("Do not know what to do with verb {0}", verb);
 				return;
 			}
