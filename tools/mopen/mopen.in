@@ -1,2 +1,7 @@
 #!/bin/sh
-exec mono $MONO_OPTIONS @moondir@/mopen.exe $@
+if test x$1 = x--debug; then
+   DEBUG=--debug
+   shift
+fi
+
+exec mono $DEBUG $MONO_OPTIONS @moondir@/mopen.exe $@
