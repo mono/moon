@@ -68,6 +68,7 @@ namespace Desklet.Weather
 	
 	public class Default : Canvas
 	{
+		readonly double defaultUpdateInterval = 30.0; // minutes
 		readonly WindDirection[] wind_directions = new WindDirection [] {
 			new WindDirection ("North", 48, 0),
 			new WindDirection ("North-Northeast", 62, 15),
@@ -87,6 +88,8 @@ namespace Desklet.Weather
 			new WindDirection ("North-Northwest", 34, 15),
 			new WindDirection ("North", 48, 0)
 		};
+
+		Storyboard run;
 		
 		Canvas updCanvas;
 		Canvas temperaturePanel;
@@ -110,7 +113,6 @@ namespace Desklet.Weather
 
 		Polygon closeButton;
 		
-		bool allControlsPresent= true;
 		string iconsDir;
 		Metar metar;
 		
@@ -160,7 +162,7 @@ namespace Desklet.Weather
 			Console.WriteLine ("Download failed");
 		}
 		
-		public void UpdateData ()
+		public void UpdateData (object sender, EventArgs e)
 		{
 			show_updating.Begin ();
 			
@@ -501,7 +503,7 @@ namespace Desklet.Weather
 				if (!String.IsNullOrEmpty (val)) {
 					stationID.Text = val;
 					StoreConfig ();
-					UpdateData ();
+					UpdateData (null, null);
 				}
 			};
 			
@@ -522,34 +524,29 @@ namespace Desklet.Weather
 //			val = (double)temperaturePanel.GetValue (Canvas.HeightProperty);
 //			cloudsPanel.SetValue (Canvas.TopProperty, val + 5.0);
 		}
-
-		public DependencyObject LoadControl (string name)
-		{
-			DependencyObject ret = FindName (name);
-			if (ret == null)
-				allControlsPresent = false;
-			return ret;
-		}
 		
 		void LoadControls ()
 		{
-			weatherIcon = LoadControl ("WeatherIcon") as System.Windows.Controls.Image;
-			windIcon = LoadControl ("WindIcon") as System.Windows.Controls.Image;
-			stationID = LoadControl ("StationID") as TextBlock;
-			temperature = LoadControl ("Temperature") as TextBlock;
-			dewPoint = LoadControl ("DewPoint") as TextBlock;
-			dewPointLabel = LoadControl ("DewPointLabel") as TextBlock;
-			temperaturePanel = LoadControl ("TemperaturePanel") as Canvas;
-			show_updating = LoadControl ("show_updating") as Storyboard;
-			hide_updating = LoadControl ("hide_updating") as Storyboard;
-			updCanvas = LoadControl ("UpdatingCanvas") as Canvas;
-			cloudsPanel = LoadControl ("CloudsVisPanel") as Canvas;
-			loadingMessage = LoadControl ("LoadingMessage") as TextBlock;
-			closeButton = LoadControl ("desklet-close") as Polygon;
-			skyConditions = LoadControl ("SkyConditions") as TextBlock;
-			windPanel = LoadControl ("WindPanel") as Canvas;
-			windConditions = LoadControl ("WindConditions") as TextBlock;
-			windIndicator = LoadControl ("WindIndicator") as Ellipse;
+			run = Mono.Desklets.Desklet.FindElement (this, "run", typeof (Storyboard)) as Storyboard;
+			weatherIcon = Mono.Desklets.Desklet.FindElement (this, "WeatherIcon", typeof (System.Windows.Controls.Image))
+				as System.Windows.Controls.Image;
+			windIcon = Mono.Desklets.Desklet.FindElement (this, "WindIcon", typeof (System.Windows.Controls.Image))
+				as System.Windows.Controls.Image;
+			stationID = Mono.Desklets.Desklet.FindElement (this, "StationID", typeof (TextBlock)) as TextBlock;
+			temperature = Mono.Desklets.Desklet.FindElement (this, "Temperature", typeof (TextBlock)) as TextBlock;
+			dewPoint = Mono.Desklets.Desklet.FindElement (this, "DewPoint", typeof (TextBlock)) as TextBlock;
+			dewPointLabel = Mono.Desklets.Desklet.FindElement (this, "DewPointLabel", typeof (TextBlock)) as TextBlock;
+			temperaturePanel = Mono.Desklets.Desklet.FindElement (this, "TemperaturePanel", typeof (Canvas)) as Canvas;
+			show_updating = Mono.Desklets.Desklet.FindElement (this, "show_updating", typeof (Storyboard)) as Storyboard;
+			hide_updating = Mono.Desklets.Desklet.FindElement (this, "hide_updating", typeof (Storyboard)) as Storyboard;
+			updCanvas = Mono.Desklets.Desklet.FindElement (this, "UpdatingCanvas", typeof (Canvas)) as Canvas;
+			cloudsPanel = Mono.Desklets.Desklet.FindElement (this, "CloudsVisPanel", typeof (Canvas)) as Canvas;
+			loadingMessage = Mono.Desklets.Desklet.FindElement (this, "LoadingMessage", typeof (TextBlock)) as TextBlock;
+			closeButton = Mono.Desklets.Desklet.FindElement (this, "desklet-close", typeof (Polygon)) as Polygon;
+			skyConditions = Mono.Desklets.Desklet.FindElement (this, "SkyConditions", typeof (TextBlock)) as TextBlock;
+			windPanel = Mono.Desklets.Desklet.FindElement (this, "WindPanel", typeof (Canvas)) as Canvas;
+			windConditions = Mono.Desklets.Desklet.FindElement (this, "WindConditions", typeof (TextBlock)) as TextBlock;
+			windIndicator = Mono.Desklets.Desklet.FindElement (this, "WindIndicator", typeof (Ellipse)) as Ellipse;
 		}
 
 		void StoreConfig ()
@@ -589,7 +586,7 @@ namespace Desklet.Weather
 			LoadControls ();
 			Mono.Desklets.Desklet.SetupToolbox (this);
 			
-			if (!allControlsPresent) {
+			if (!Mono.Desklets.Desklet.AllElementsFound) {
 				Console.WriteLine ("Elements are missing from the xaml file");
 				return;
 			}
@@ -626,7 +623,13 @@ namespace Desklet.Weather
 
 			LoadConfig ();
 			AdjustLayout ();
-			UpdateData ();
+			UpdateData (null, null);
+
+			DoubleAnimation timer = new DoubleAnimation ();
+                        run.Children.Add (timer);
+                        timer.Duration = new Duration (TimeSpan.FromMinutes (defaultUpdateInterval));
+                        run.Completed += new EventHandler (UpdateData);
+                        run.Begin ();
 		}
 	}
 }
