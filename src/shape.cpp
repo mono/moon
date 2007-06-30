@@ -324,7 +324,7 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 			   || prop == Shape::StrokeLineJoinProperty
 			   || prop == Shape::StrokeMiterLimitProperty
 			   || prop == Shape::StrokeStartLineCapProperty
-			   || prop == Shape::StrokeThicknessProperty) }
+			   || prop == Shape::StrokeThicknessProperty) {
 			UpdateBounds ();
 		}
 		
