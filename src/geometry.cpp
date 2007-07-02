@@ -99,7 +99,10 @@ GeometryGroup::~GeometryGroup ()
 void
 GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 {
-	Geometry::OnPropertyChanged (prop);
+	if (prop->type != Type::GEOMETRYGROUP) {
+		Geometry::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == ChildrenProperty) {
 		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
@@ -322,7 +325,10 @@ PathGeometry::~PathGeometry ()
 void
 PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 {
-	Geometry::OnPropertyChanged (prop);
+	if (prop->type != Type::PATHGEOMETRY) {
+		Geometry::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == FiguresProperty){
 		PathFigureCollection *newcol = GetValue (prop)->AsPathFigureCollection();
@@ -467,7 +473,10 @@ PathFigure::~PathFigure ()
 void
 PathFigure::OnPropertyChanged (DependencyProperty *prop)
 {
-	DependencyObject::OnPropertyChanged (prop);
+	if (prop->type != Type::PATHFIGURE) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == SegmentsProperty){
 		PathSegmentCollection *newcol = GetValue (prop)->AsPathSegmentCollection();
@@ -479,9 +488,7 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	if (prop->type == Type::PATHFIGURE) {
-		NotifyAttacheesOfPropertyChange (prop);
-	}
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -573,6 +580,11 @@ path_figure_set_start_point (PathFigure *path_figure, Point *point)
 
 void PathSegment::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type == Type::DEPENDENCY_OBJECT) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
+
 	NotifyAttacheesOfPropertyChange (prop);
 }
 

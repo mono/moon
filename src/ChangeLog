@@ -1,3 +1,40 @@
+2007-07-01  Chris Toshok  <toshok@ximian.com>
+
+	* shape.cpp (Line::OnPropertyChanged): use recommended pattern.
+	(Polygon::OnPropertyChanged): same.
+	(Path::OnPropertyChanged): same.
+	(Shape::OnPropertyChanged): same.
+	(Rectangle::OnPropertyChanged): same.
+
+	* geometry.cpp (GeometryGroup::OnPropertyChanged): use recommended
+	pattern.
+	(PathGeometry::OnPropertyChanged): same.
+	(PathFigure::OnPropertyChanged): same.
+
+	* brush.cpp (Brush::OnPropertyChanged): use the recommended
+	pattern.
+	(SolidColorBrush::OnPropertyChanged): same.
+	(GradientBrush::OnPropertyChanged): same.
+	(LinearGradientBrush::OnPropertyChanged): same.
+	(RadialGradientBrush::OnPropertyChanged): new method.
+
+
+	* brush.h: add RadialGradientBrush::OnPropertyChanged.
+
+	* animation.cpp (animation_init): mark the storyboard TargetName
+	and TargetProperty properties as attached.
+
+	* text.cpp (Inline::OnPropertyChanged): follow recommended pattern
+	for chaining.
+	(Run::OnPropertyChanged): same.
+	(Inline::OnSubPropertyChanged): add to handle the inline's
+	foreground brush changing.
+
+	* text.h: add Inline::OnSubPropertyChanged.
+
+	* panel.h, panel.cpp: add OnSubPropertyChanged for the panel's
+	background brush, and invalidate whenever it changes.
+
 2007-06-30  Chris Toshok  <toshok@ximian.com>
 
 	* shape.cpp (Shape::OnPropertyChanged): when need to update our

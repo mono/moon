@@ -293,45 +293,46 @@ Shape::InsideObject (Surface *s, double x, double y)
 void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Type::SHAPE) {
-		if (prop == Shape::StretchProperty) {
-			UpdateBounds ();
-		}
-		else if (prop == Shape::StrokeProperty) {
-			if (stroke != NULL) {
-				stroke->Detach (NULL, this);
-				stroke->unref ();
-			}
-			
-			if ((stroke = shape_get_stroke (this)) != NULL) {
-				stroke->Attach (NULL, this);
-				stroke->ref ();
-			}
+	if (prop->type != Type::SHAPE) {
+		FrameworkElement::OnPropertyChanged (prop);
+		return;
+	}
 
-			UpdateBounds ();
-		} else if (prop == Shape::FillProperty) {
-			if (fill != NULL) {
-				fill->Detach (NULL, this);
-				fill->unref ();
-			}
-			
-			if ((fill = shape_get_fill (this)) != NULL) {
-				fill->Attach (NULL, this);
-				fill->ref ();
-			}
-		} else if (prop == Shape::StrokeDashCapProperty
-			   || prop == Shape::StrokeEndLineCapProperty
-			   || prop == Shape::StrokeLineJoinProperty
-			   || prop == Shape::StrokeMiterLimitProperty
-			   || prop == Shape::StrokeStartLineCapProperty
-			   || prop == Shape::StrokeThicknessProperty) {
-			UpdateBounds ();
+	if (prop == Shape::StretchProperty) {
+		UpdateBounds ();
+	}
+	else if (prop == Shape::StrokeProperty) {
+		if (stroke != NULL) {
+			stroke->Detach (NULL, this);
+			stroke->unref ();
 		}
 		
-		Invalidate ();
+		if ((stroke = shape_get_stroke (this)) != NULL) {
+			stroke->Attach (NULL, this);
+			stroke->ref ();
+		}
+
+		UpdateBounds ();
+	} else if (prop == Shape::FillProperty) {
+		if (fill != NULL) {
+			fill->Detach (NULL, this);
+			fill->unref ();
+		}
+		
+		if ((fill = shape_get_fill (this)) != NULL) {
+			fill->Attach (NULL, this);
+			fill->ref ();
+		}
+	} else if (prop == Shape::StrokeDashCapProperty
+		   || prop == Shape::StrokeEndLineCapProperty
+		   || prop == Shape::StrokeLineJoinProperty
+		   || prop == Shape::StrokeMiterLimitProperty
+		   || prop == Shape::StrokeStartLineCapProperty
+		   || prop == Shape::StrokeThicknessProperty) {
+		UpdateBounds ();
 	}
 	
-	FrameworkElement::OnPropertyChanged (prop);
+	Invalidate ();
 }
 
 Brush *
@@ -598,12 +599,12 @@ Rectangle::GetTransformOrigin ()
 void
 Rectangle::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Type::RECTANGLE) {
-		Invalidate ();
+	if (prop->type != Type::RECTANGLE) {
+		Shape::OnPropertyChanged (prop);
 		return;
 	}
 	
-	Shape::OnPropertyChanged (prop);
+	Invalidate ();
 }
 
 double
@@ -658,12 +659,12 @@ Line::Draw (cairo_t *cr)
 void
 Line::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Type::LINE) {
-		FullInvalidate (false);
+	if (prop->type != Type::LINE) {
+		Shape::OnPropertyChanged (prop);
 		return;
 	}
-	
-	Shape::OnPropertyChanged (prop);
+
+	FullInvalidate (false);
 }
 
 double
@@ -769,25 +770,25 @@ Polygon::Draw (cairo_t *cr)
 void
 Polygon::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::POLYGON) {
+		Shape::OnPropertyChanged (prop);
+		return;
+	}
+
 	if (prop->type == Type::POLYGON) {
 		if (prop == Polygon::PointsProperty) {
-			UpdateBounds ();
-			Invalidate (); // force one here, even if the bounds don't change
+			UpdateBounds (true /* force one here, even if the bounds don't change */);
 		}
 		else {
 			Invalidate ();
 		}
-		return;
 	}
-	
-	Shape::OnPropertyChanged (prop);
 }
 
 void
 Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
-	UpdateBounds ();
-	Invalidate ();
+	UpdateBounds (true);
 }
 
 FillRule
@@ -872,18 +873,18 @@ Polyline::Draw (cairo_t *cr)
 void
 Polyline::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Type::POLYLINE) {
-		if (prop == Polyline::PointsProperty) {
-			UpdateBounds ();
-			Invalidate (); // force one here, even if the bounds don't change
-		}
-		else {
-			Invalidate ();
-		}
+	if (prop->type != Type::POLYLINE) {
+		Shape::OnPropertyChanged (prop);
 		return;
 	}
-	
-	Shape::OnPropertyChanged (prop);
+
+	if (prop == Polyline::PointsProperty) {
+		UpdateBounds (true /* force one here, even if the bounds don't change */);
+		Invalidate ();
+	}
+	else {
+		Invalidate ();
+	}
 }
 
 void
@@ -1112,15 +1113,20 @@ Path::CanFill ()
 void
 Path::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Type::PATH) {
-		CleanupCache ();
-		FullInvalidate (false);
-		return;
-	} else if (prop == Shape::StretchProperty) {
+	/* base class property we have special code to handle */
+	if (prop == Shape::StretchProperty) {
 		CleanupCache ();
 	}
-	
-	Shape::OnPropertyChanged (prop);
+
+	if (prop->type != Type::PATH) {
+		Shape::OnPropertyChanged (prop);
+		return;
+	}
+
+
+	CleanupCache ();
+	FullInvalidate (false);
+	return;
 }
 
 void

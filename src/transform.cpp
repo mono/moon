@@ -23,6 +23,11 @@
 void
 Transform::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type == Type::DEPENDENCY_OBJECT) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
+
 	//
 	// If the transform changes, we need to notify our owners
 	// that they must repaint (all of our properties have

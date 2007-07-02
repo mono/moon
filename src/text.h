@@ -86,7 +86,8 @@ class Inline : public DependencyObject {
 	~Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+
 	PangoFontDescription *font;
 	Brush *foreground;
 };

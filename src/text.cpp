@@ -120,6 +120,11 @@ Inline::~Inline ()
 void
 Inline::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::INLINE) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
+    
 	if (prop == Inline::FontFamilyProperty) {
 		char *family = inline_get_font_family (this);
 		pango_font_description_set_family (font, family);
@@ -148,8 +153,16 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	NotifyAttacheesOfPropertyChange (prop);
-	
-	DependencyObject::OnPropertyChanged (prop);
+}
+
+void
+Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (prop == Inline::ForegroundProperty) {
+		// this isn't exactly what we want, I don't
+		// think... but it'll have to do.
+		NotifyAttacheesOfPropertyChange (prop);
+	}
 }
 
 char *
@@ -257,11 +270,12 @@ DependencyProperty *Run::TextProperty;
 void
 Run::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop->type == Type::RUN)
-		NotifyAttacheesOfPropertyChange (prop);
-	
-	// this will notify attachees of font property changes
-	Inline::OnPropertyChanged (prop);
+	if (prop->type != Type::RUN) {
+		Inline::OnPropertyChanged (prop);
+		return;
+	}
+    
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 Run *
@@ -729,7 +743,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	CalcActualWidthHeight (NULL);
-	FullInvalidate (false);
+	UpdateBounds (true);
 }
 
 void

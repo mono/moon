@@ -1424,10 +1424,10 @@ animation_init (void)
 	PointAnimation::ToProperty   = DependencyObject::RegisterNullable (Type::POINTANIMATION, "To",   Type::POINT);
 
 	/* Storyboard properties */
-	Storyboard::TargetPropertyProperty = DependencyObject::Register (Type::STORYBOARD, "TargetProperty", 
-									 Type::STRING);
-	Storyboard::TargetNameProperty     = DependencyObject::Register (Type::STORYBOARD, "TargetName", 
-									 Type::STRING);
+	Storyboard::TargetPropertyProperty = DependencyObject::RegisterFull (Type::STORYBOARD, "TargetProperty", 
+									     NULL, Type::STRING, true);
+	Storyboard::TargetNameProperty     = DependencyObject::RegisterFull (Type::STORYBOARD, "TargetName", 
+									     NULL, Type::STRING, true);
 
 	/* BeginStoryboard properties */
 	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Type::BEGINSTORYBOARD, "Storyboard",	Type::STORYBOARD);

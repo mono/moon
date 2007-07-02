@@ -211,6 +211,7 @@ class RadialGradientBrush : public GradientBrush {
 	virtual Type::Kind GetObjectType () { return Type::RADIALGRADIENTBRUSH; }
 
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 RadialGradientBrush *radial_gradient_brush_new (void);

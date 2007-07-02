@@ -128,15 +128,17 @@ Brush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 void
 Brush::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::BRUSH) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
+
 	//
 	// If any of our properties change, we have to notify our
 	// owners that they must repaint (all of our properties have
 	// a visible effect
 	//
-	if (prop->type == Type::BRUSH)
-		NotifyAttacheesOfPropertyChange (prop);
-	
-	DependencyObject::OnPropertyChanged (prop);
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 //
@@ -162,10 +164,13 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 void 
 SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::SOLIDCOLORBRUSH) {
+		Brush::OnPropertyChanged (prop);
+		return;
+	}
+
 	if (prop == SolidColorBrush::ColorProperty)
 		NotifyAttacheesOfPropertyChange (prop);
-	
-	Brush::OnPropertyChanged (prop);
 }
 
 Color *
@@ -263,6 +268,11 @@ GradientBrush::~GradientBrush ()
 void
 GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::GRADIENTBRUSH) {
+		Brush::OnPropertyChanged (prop);
+		return;
+	}
+
 	if (prop == GradientBrush::GradientStopsProperty) {
 		GradientStopCollection *newcol = GetValue (prop)->AsGradientStopCollection();
 		
@@ -274,8 +284,6 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 		
 		NotifyAttacheesOfPropertyChange (prop);
 	}
-	
-	Brush::OnPropertyChanged (prop);
 }
 
 bool
@@ -383,15 +391,17 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 void 
 LinearGradientBrush::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::LINEARGRADIENTBRUSH) {
+		GradientBrush::OnPropertyChanged (prop);
+		return;
+	}
+
 	//
 	// If any of our properties change, we have to notify our
 	// owners that they must repaint (all of our properties have
 	// a visible effect
 	//
-	if (prop->type == Type::LINEARGRADIENTBRUSH)
-		NotifyAttacheesOfPropertyChange (prop);
-	
-	GradientBrush::OnPropertyChanged (prop);
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 //
@@ -497,6 +507,22 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_pattern_destroy (pattern);
 
 	return visible;
+}
+
+void 
+RadialGradientBrush::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type != Type::RADIALGRADIENTBRUSH) {
+		GradientBrush::OnPropertyChanged (prop);
+		return;
+	}
+
+	//
+	// If any of our properties change, we have to notify our
+	// owners that they must repaint (all of our properties have
+	// a visible effect
+	//
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 //

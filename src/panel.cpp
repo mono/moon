@@ -94,6 +94,14 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
+Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (prop == Panel::BackgroundProperty) {
+		Invalidate ();
+	}
+}
+
+void
 Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
 	// if a child changes its ZIndex property we need to resort our Children
