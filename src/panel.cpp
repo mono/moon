@@ -99,6 +99,9 @@ Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subpr
 	if (prop == Panel::BackgroundProperty) {
 		Invalidate ();
 	}
+	else {
+		FrameworkElement::OnSubPropertyChanged (prop, subprop);
+	}
 }
 
 void

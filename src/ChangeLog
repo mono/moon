@@ -1,5 +1,11 @@
 2007-07-01  Chris Toshok  <toshok@ximian.com>
 
+	* panel.cpp (Panel::OnSubPropertyChanged): oops, didn't follow the
+	guidelines here.  need to chain up to FrameworkElement.  fixes
+	airline demo.
+
+2007-07-01  Chris Toshok  <toshok@ximian.com>
+
 	* shape.cpp (Line::OnPropertyChanged): use recommended pattern.
 	(Polygon::OnPropertyChanged): same.
 	(Path::OnPropertyChanged): same.
