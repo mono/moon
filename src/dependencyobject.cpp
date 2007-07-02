@@ -99,9 +99,12 @@ DependencyObject::Detach (DependencyProperty *property, DependencyObject *contai
 	}
 }
 
+static bool attachees_notified;
+
 void
 DependencyObject::NotifyAttacheesOfPropertyChange (DependencyProperty *subproperty)
 {
+	attachees_notified = true;
 	for (GSList *l = attached_list; l != NULL; l = l->next){
 		Attachee *att = (Attachee*)l->data;
 
@@ -168,10 +171,13 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			}
 		}
 
+		attachees_notified = false;
+
 		OnPropertyChanged (property);
 
-		// not yet
-		//		NotifyAttacheesOfPropertyChange (property);
+		if (!attachees_notified)
+			g_warning ("setting property %s::%s on object of type %s didn't result in attachees being notified\n",
+				   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
 
 		if (property->is_attached_property)
 			NotifyParentOfPropertyChange (property, true);
