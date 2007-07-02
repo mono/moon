@@ -1,3 +1,11 @@
+2007-07-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Convert char data into Runs and set them on
+	TextBlocks, also flush the char data when starting elements, so
+	things like: <TextBlock>line one<LineBreak />line two</TextBlock>
+	work properly. <TextBlock><TextBlock.Inlines>text... is illegal
+	though.
+
 2007-07-02  Miguel de Icaza  <miguel@novell.com>
 
 	* uielement.cpp: Add new helper method needed by Alan.

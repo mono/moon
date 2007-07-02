@@ -334,6 +334,17 @@ void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlEle
 
 }
 
+bool
+is_instance_of (XamlElementInstance *item, Type::Kind kind)
+{
+	for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
+		if (walk->dependency_type == kind)
+			return true;
+	}
+
+	return false;
+}
+
 //
 // Called when we encounter an error.  Note that memory ownership is taken for everything
 // except the message, this allows you to use g_strdup_printf when creating the error message
@@ -445,6 +456,48 @@ start_element (void *data, const char *el, const char **attr)
 }
 
 void
+flush_char_data (XamlParserInfo *p)
+{
+	if (p->char_data_buffer && p->char_data_buffer->len) {
+			bool has_content = false;
+			for (int i = 0; i < p->char_data_buffer->len; i++) {
+				if (g_ascii_isspace (p->char_data_buffer->str [i]))
+					continue;
+				has_content = true;
+				break;
+			}
+
+			const char *cp = p->current_element->info->content_property;
+			if (has_content && cp) {
+				DependencyProperty *con = DependencyObject::GetDependencyProperty (p->current_element->info->dependency_type, cp);
+				// TODO: There might be other types that can be specified here,
+				// but string is all i have found so far.  If you can specify other
+				// types, i should pull the property setting out of set_attributes
+				// and use that code
+
+				if ((con->value_type) == Type::STRING)
+					p->current_element->item->SetValue (con, Value (p->char_data_buffer->str));
+				else if (is_instance_of (p->current_element, Type::TEXTBLOCK)) {
+					Run *run = new Run ();
+					run_set_text (run, p->char_data_buffer->str);
+
+					Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
+
+					if (!inlines) {
+						inlines = new Inlines ();
+						text_block_set_inlines ((TextBlock *) p->current_element->item, inlines);
+					}
+
+					inlines->Add (run);
+				}
+			}
+			
+			g_string_free (p->char_data_buffer, FALSE);
+			p->char_data_buffer = NULL;
+		}
+}
+
+void
 start_element_handler (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
@@ -454,6 +507,8 @@ start_element_handler (void *data, const char *el, const char **attr)
 
 	char **name = g_strsplit (el, "|",  -1);
 	char *element;
+
+	flush_char_data (p);
 
 	p->current_namespace = NULL;
 	if (g_strv_length (name) == 2) {
@@ -495,29 +550,7 @@ end_element_handler (void *data, const char *el)
 
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
-		if (info->char_data_buffer && info->char_data_buffer->len) {
-			bool has_content = false;
-			for (int i = 0; i < info->char_data_buffer->len; i++) {
-				if (g_ascii_isspace (info->char_data_buffer->str [i]))
-					continue;
-				has_content = true;
-				break;
-			}
-
-			const char *cp = info->current_element->info->content_property;
-			if (has_content && cp) {
-				DependencyProperty *con = DependencyObject::GetDependencyProperty (info->current_element->info->dependency_type, cp);
-				// TODO: There might be other types that can be specified here,
-				// but string is all i have found so far.  If you can specify other
-				// types, i should pull the property setting out of set_attributes
-				// and use that code
-				if ((con->value_type) == Type::STRING)
-					info->current_element->item->SetValue (con, Value (info->char_data_buffer->str));
-			}
-			
-			g_string_free (info->char_data_buffer, FALSE);
-			info->char_data_buffer = NULL;
-		}
+		flush_char_data (info);
 		break;
 	case XamlElementInstance::PROPERTY:
 		List::Node *walk = info->current_element->children->First ();
@@ -852,17 +885,6 @@ property_name_index (const char *p)
 			return i + 1;
 	}
 	return -1;
-}
-
-bool
-is_instance_of (XamlElementInstance *item, Type::Kind kind)
-{
-	for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
-		if (walk->dependency_type == kind)
-			return true;
-	}
-
-	return false;
 }
 
 gint64
