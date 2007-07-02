@@ -1,5 +1,11 @@
 2007-07-02  Chris Toshok  <toshok@ximian.com>
 
+	* canvas.cpp (Canvas::OnChildPropertyChanged): we don't need to
+	updatebounds/invalidate here.  UpdateTransform will take care of
+	that for us.
+
+2007-07-02  Chris Toshok  <toshok@ximian.com>
+
 	* shape.cpp (Shape::OnPropertyChanged): turns out we need to
 	update our bounds on the FillProperty changing as well, for shapes
 	that aren't stroked.

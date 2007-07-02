@@ -158,8 +158,6 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 		UIElement *ui = (UIElement *) child;
 
 		ui->UpdateTransform ();
-		ui->UpdateBounds ();
-		ui->Invalidate (); /* force the invalidate */
 	}
 	
 	return false;
