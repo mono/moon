@@ -21,13 +21,15 @@ FrameworkElement::FrameworkElement ()
 void
 FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop == FrameworkElement::WidthProperty ||
-	    prop == FrameworkElement::HeightProperty) {
-		FullInvalidate (false);
+	if (prop->type != Type::FRAMEWORKELEMENT) {
+		UIElement::OnPropertyChanged (prop);
 		return;
 	}
 
-	UIElement::OnPropertyChanged (prop);
+	if (prop == FrameworkElement::WidthProperty ||
+	    prop == FrameworkElement::HeightProperty) {
+		FullInvalidate (false);
+	}
 }
 
 bool

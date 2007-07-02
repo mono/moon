@@ -166,12 +166,13 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 				if (dob != NULL)
 					dob->Attach (property, this);
 			}
-
-			// 
-			//NotifyAttacheesOfPropertyChange (property);
 		}
 
 		OnPropertyChanged (property);
+
+		// not yet
+		//		NotifyAttacheesOfPropertyChange (property);
+
 		if (property->is_attached_property)
 			NotifyParentOfPropertyChange (property, true);
 	}
@@ -706,6 +707,8 @@ DependencyObject::OnPropertyChanged (DependencyProperty *property)
 		if (scope && v)
 			scope->RegisterName (v->AsString (), this);
 	}
+
+	NotifyAttacheesOfPropertyChange (property);
 }
 
 void

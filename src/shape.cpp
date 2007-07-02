@@ -333,6 +333,8 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	Invalidate ();
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 Brush *
@@ -605,6 +607,8 @@ Rectangle::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	Invalidate ();
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 double
@@ -665,6 +669,8 @@ Line::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	FullInvalidate (false);
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 double
@@ -783,6 +789,8 @@ Polygon::OnPropertyChanged (DependencyProperty *prop)
 			Invalidate ();
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -885,6 +893,8 @@ Polyline::OnPropertyChanged (DependencyProperty *prop)
 	else {
 		Invalidate ();
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -1126,7 +1136,8 @@ Path::OnPropertyChanged (DependencyProperty *prop)
 
 	CleanupCache ();
 	FullInvalidate (false);
-	return;
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void

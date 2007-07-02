@@ -113,6 +113,8 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -339,6 +341,8 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void

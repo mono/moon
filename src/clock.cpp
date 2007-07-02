@@ -724,7 +724,10 @@ TimelineGroup::~TimelineGroup ()
 void
 TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 {
-	Timeline::OnPropertyChanged (prop);
+	if (prop->type != Type::TIMELINEGROUP) {
+		Timeline::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == ChildrenProperty) {
 		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
@@ -735,6 +738,8 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 ClockGroup *

@@ -169,8 +169,7 @@ SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == SolidColorBrush::ColorProperty)
-		NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 Color *
@@ -281,9 +280,9 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
-		
-		NotifyAttacheesOfPropertyChange (prop);
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 bool
@@ -682,18 +681,22 @@ ImageBrush::SetSource (DependencyObject *dl, char* PartName)
 void
 ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::IMAGEBRUSH) {
+		TileBrush::OnPropertyChanged (prop);
+		return;
+	}
+
 	if (prop == ImageBrush::DownloadProgressProperty) {
 		double progress = GetValue (ImageBrush::DownloadProgressProperty)->AsDouble();
 		image->SetValue (Image::DownloadProgressProperty, Value (progress));
-
-		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
-	} else if (prop == ImageBrush::ImageSourceProperty) {
+	}
+	else if (prop == ImageBrush::ImageSourceProperty) {
 		Value *value = GetValue (ImageBrush::ImageSourceProperty);
 		char *source = value ? value->AsString () : NULL;
 		image->SetValue (MediaBase::SourceProperty, Value (source));
-		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
-	} else
-		TileBrush::OnPropertyChanged (prop);
+	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 // ripped apart to be reusable for Image and VideoBrush classes
@@ -928,6 +931,11 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 void
 VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::VIDEOBRUSH) {
+		TileBrush::OnPropertyChanged (prop);
+		return;
+	}
+
 	if (prop == VideoBrush::SourceNameProperty) {
 		Value *value = GetValue (VideoBrush::SourceNameProperty);
 		char *name = value ? value->AsString () : NULL;
@@ -947,11 +955,9 @@ VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 			// Note: This may have failed because the parser hasn't set the
 			// toplevel element yet, we'll try again in SetupBrush()
 		}
-		
-		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
 	}
-	
-	TileBrush::OnPropertyChanged (prop);
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void

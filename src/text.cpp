@@ -744,6 +744,8 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	
 	CalcActualWidthHeight (NULL);
 	UpdateBounds (true);
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -1004,6 +1006,8 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	FullInvalidate (false);
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 Glyphs *

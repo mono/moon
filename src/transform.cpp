@@ -408,7 +408,10 @@ TransformGroup::~TransformGroup ()
 void
 TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 {
-	Transform::OnPropertyChanged (prop);
+	if (prop->type != Type::TRANSFORMGROUP) {
+		Transform::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == ChildrenProperty) {
 		TransformCollection *newcol = GetValue (prop)->AsTransformCollection();
@@ -419,6 +422,8 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void

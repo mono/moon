@@ -36,6 +36,8 @@ EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
