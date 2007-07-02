@@ -75,22 +75,28 @@ Value::Value (const Value& v)
 		memcpy (u.matrix, v.u.matrix, sizeof(Matrix));
 		break;
 	case Type::COLOR:
-		u.color = new Color (*v.u.color);
+		u.color = g_new (Color, 1);
+		*u.color = Color (*v.u.color);
 		break;
 	case Type::POINT:
-		u.point = new Point (*v.u.point);
+		u.point = g_new (Point, 1);
+		*u.point = Point (*v.u.point);
 		break;
 	case Type::RECT:
-		u.rect = new Rect (*v.u.rect);
+		u.rect = g_new (Rect, 1);
+		*u.rect = Rect (*v.u.rect);
 		break;
 	case Type::REPEATBEHAVIOR:
-		u.repeat = new RepeatBehavior (*v.u.repeat);
+		u.repeat = g_new (RepeatBehavior, 1);
+		*u.repeat = RepeatBehavior (*v.u.repeat);
 		break;
 	case Type::DURATION:
-		u.duration = new Duration (*v.u.duration);
+		u.duration = g_new (Duration, 1);
+		*u.duration = Duration (*v.u.duration);
 		break;
 	case Type::KEYTIME:
-		u.keytime = new KeyTime (*v.u.keytime);
+		u.keytime = g_new (KeyTime, 1);
+		*u.keytime = KeyTime (*v.u.keytime);
 		break;
 	default:
 		if (k >= Type::DEPENDENCY_OBJECT)
@@ -243,22 +249,22 @@ Value::FreeValue ()
 		g_free (u.matrix);
 		break;
 	case Type::COLOR:
-		delete u.color;
+		g_free (u.color);
 		break;
 	case Type::POINT:
-		delete u.point;
+		g_free (u.point);
 		break;
 	case Type::RECT:
-		delete u.rect;
+		g_free (u.rect);
 		break;
 	case Type::REPEATBEHAVIOR:
-		delete u.repeat;
+		g_free (u.repeat);
 		break;
 	case Type::DURATION:
-		delete u.duration;
+		g_free (u.duration);
 		break;
 	case Type::KEYTIME:
-		delete u.keytime;
+		g_free (u.keytime);
 		break;
 	default:
 		if (GetKind () >= Type::DEPENDENCY_OBJECT && u.dependency_object)

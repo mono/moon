@@ -8,6 +8,12 @@
 
 2007-07-02  Miguel de Icaza  <miguel@novell.com>
 
+	* value.cpp: Use g_malloc/g_free as the managed code is not able
+	to use C++ new operator, so we have a potential error when we
+	mismatch g_new with new and g_free with delete. 
+
+	Reported by Valgrind.
+
 	* uielement.cpp: Add new helper method needed by Alan.
 
 2007-07-01  Chris Toshok  <toshok@ximian.com>
