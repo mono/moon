@@ -215,16 +215,22 @@ collection_get_iterator (Collection *collection)
 bool
 collection_iterator_move_next (CollectionIterator *iterator)
 {
-	List::Node *next;
-	
 	if (!iterator->current)
 		return false;
 
-	if (!iterator->first && !(next = iterator->current->Next ()))
+	if (iterator->first) {
+		/* we don't actually move the iterator forward here.  it's
+		   initialized in the ctor to point to the first element */
+		iterator->first = false;
+		return true;
+	}
+
+	List::Node *next = iterator->current->Next ();
+
+	if (next == NULL)
 		return false;
 	
 	iterator->current = next;
-	iterator->first = false;
 
 	return true;
 }
@@ -320,7 +326,6 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 void
 VisualCollection::Add (DependencyObject *data)
 {
-	DependencyObject *obj = (DependencyObject *) closure;
 	UIElement *item = (UIElement *) data;
 
 	Collection::Add (item);
@@ -423,6 +428,8 @@ TriggerCollection::SetVal (int index, DependencyObject *data)
 	trigger->SetTarget (fwe);
 
 	trigger->RemoveTarget (old);
+
+	return old;
 }
 
 void
