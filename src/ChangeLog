@@ -1,3 +1,7 @@
+2007-07-02  Miguel de Icaza  <miguel@novell.com>
+
+	* uielement.cpp: Add new helper method needed by Alan.
+
 2007-07-01  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.cpp (FrameworkElement::OnPropertyChanged):

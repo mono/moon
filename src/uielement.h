@@ -195,22 +195,21 @@ class UIElement : public Visual {
 G_BEGIN_DECLS
 
 
-Surface *uielement_get_surface          (UIElement *item);
-void     uielement_invalidate           (UIElement *item);
-void     uielement_update_bounds        (UIElement *item);
-void     uielement_set_transform        (UIElement *item, double *transform);
-void     uielement_set_transform_origin (UIElement *item, Point p);
-
-void     uielement_set_render_transform (UIElement *item, Transform *transform);
-void     uielement_get_render_affine    (UIElement *item, cairo_matrix_t *result);
-
-double	 uielement_get_opacity     (UIElement *item);
-void	 uielement_set_opacity     (UIElement *item, double opacity);
-
-Brush   *uielement_get_opacity_mask (UIElement *item);
-
-void     uielement_transform_point (UIElement *item, double *x, double *y);
-	
+Surface   *uielement_get_surface          (UIElement *item);
+void       uielement_invalidate           (UIElement *item);
+void       uielement_update_bounds        (UIElement *item);
+void       uielement_set_transform        (UIElement *item, double *transform);
+void       uielement_set_transform_origin (UIElement *item, Point p);
+         
+void       uielement_set_render_transform (UIElement *item, Transform *transform);
+void       uielement_get_render_affine    (UIElement *item, cairo_matrix_t *result);
+         
+double     uielement_get_opacity          (UIElement *item);
+void       uielement_set_opacity          (UIElement *item, double opacity);
+         
+Brush     *uielement_get_opacity_mask     (UIElement *item);
+void       uielement_transform_point      (UIElement *item, double *x, double *y);
+UIElement *uielement_get_parent           (UIElement *item);
 
 void     uielement_init ();
 G_END_DECLS

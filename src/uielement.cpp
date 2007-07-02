@@ -455,3 +455,8 @@ uielement_transform_point (UIElement *item, double *x, double *y)
 	cairo_matrix_transform_point (&inverse, x, y);
 }
 
+UIElement *
+uielement_get_parent (UIElement *item)
+{
+	return item->parent;
+}
