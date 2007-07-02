@@ -128,7 +128,7 @@ rsvg_arc_to (cairo_t *ctx, double rx, double ry, double x_axis_rotation, int lar
   else if (th_arc > 0 && !sweep_flag)
     th_arc -= 2 * M_PI;
 
-  n_segs = ceil (fabs (th_arc / (M_PI * 0.5 + 0.001)));
+  n_segs = (int)ceil (fabs (th_arc / (M_PI * 0.5 + 0.001)));
 
   for (i = 0; i < n_segs; i++)
     rsvg_path_arc_segment (ctx, xc, yc,

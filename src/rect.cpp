@@ -21,14 +21,20 @@ rect_from_str (const char *s)
 	char *next = NULL;
 	double x = strtod (s, &next);
 	double y = 0.0;
-	if (next)
-		y = strtod (++next, &next);
+	if (next) {
+		++next;
+		y = strtod (next, &next);
+	}
 	double w = 0.0;
-	if (next)
-		w = strtod (++next, &next);
+	if (next) {
+		++next;
+		w = strtod (next, &next);
+	}
 	double h = 0.0;
-	if (next)
-		h = strtod (++next, &next);
+	if (next) {
+		++next;
+		h = strtod (next, &next);
+	}
 	return Rect (x, y, w, h);
 }
 

@@ -91,9 +91,10 @@ class XamlParserInfo {
 	xaml_hookup_event_callback *hookup_event_callback; 
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
-		parser (parser), file_name (file_name), top_element (NULL), current_element (NULL),
-		current_namespace (NULL), char_data_buffer (NULL), implicit_default_namespace (false),
-		error_args (NULL), namescope (new NameScope()),
+	  
+		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
+		current_namespace (NULL), current_element (NULL),
+		char_data_buffer (NULL), implicit_default_namespace (false), error_args (NULL),
 		custom_element_callback (NULL), custom_attribute_callback (NULL), hookup_event_callback (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
@@ -125,8 +126,9 @@ class XamlElementInstance : public List::Node {
 	DependencyObject *item;
 
 
-	XamlElementInstance (XamlElementInfo *info) : info (info), element_name (NULL), instance_name (NULL),
-						      parent (NULL), element_type (UNKNOWN), item (NULL)
+	XamlElementInstance (XamlElementInfo *info) : element_name (NULL), instance_name (NULL),
+						      info (info), parent (NULL), element_type (UNKNOWN),
+						      item (NULL)
 	{
 		children = new List ();
 	}
@@ -466,7 +468,7 @@ flush_char_data (XamlParserInfo *p)
 {
 	if (p->char_data_buffer && p->char_data_buffer->len) {
 			bool has_content = false;
-			for (int i = 0; i < p->char_data_buffer->len; i++) {
+			for (uint i = 0; i < p->char_data_buffer->len; i++) {
 				if (g_ascii_isspace (p->char_data_buffer->str [i]))
 					continue;
 				has_content = true;
@@ -512,7 +514,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 		return;
 
 	char **name = g_strsplit (el, "|",  -1);
-	char *element;
+	char *element = NULL;
 
 	flush_char_data (p);
 
@@ -689,7 +691,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		xaml_hookup_event_callback *hue,
 		Type::Kind *element_type)
 {
-	UIElement *res;
+	UIElement *res = NULL;
 	FILE *fp;
 	char buffer [READ_BUFFER];
 	int len, done;
@@ -898,7 +900,7 @@ timespan_from_str (const char *str)
 {
 	char *next = NULL;
 	gint64 res = 0;
-	bool negative = false;
+	//bool negative = false;
 	int digit;
 	int digits [5] = { 0, 0, 0, 0, 0 };
 	int di = 0;
@@ -1073,7 +1075,7 @@ Geometry *
 geometry_from_str (const char *str)
 {
 	char *data = (char*)str;
-	int s; // FOr starting expression markers
+	//int s; // FOr starting expression markers
 	Point cp = Point (0, 0);
 	Point cp1, cp2, cp3;
 
@@ -2172,7 +2174,10 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			}
 
 		} else {
-			bool event = dependency_object_hookup_event (p, item, pname, attr [i + 1]);
+#ifdef DEBUG_XAML
+			bool event =
+#endif
+			  dependency_object_hookup_event (p, item, pname, attr [i + 1]);
 #ifdef DEBUG_XAML
 			if (!event)
 				printf ("can not find property:  %s  %s\n", pname, attr [i + 1]);
@@ -2255,16 +2260,16 @@ xaml_init (void)
 	gg->content_property = "Children";
 
 
-	XamlElementInfo *gc = rdoe (dem, "GeometryCollection", col, Type::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
+	/*XamlElementInfo *gc = */ rdoe (dem, "GeometryCollection", col, Type::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
 	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Type::PATHGEOMETRY, (create_item_func) path_geometry_new);
 	pg->content_property = "Figures";
 
-	XamlElementInfo *pfc = rdoe (dem, "PathFigureCollection", col, Type::PATHFIGURE_COLLECTION, (create_item_func) NULL);
+	/*XamlElementInfo *pfc = */ rdoe (dem, "PathFigureCollection", col, Type::PATHFIGURE_COLLECTION, (create_item_func) NULL);
 
 	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Type::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->content_property = "Segments";
 
-	XamlElementInfo *psc = rdoe (dem, "PathSegmentCollection", col, Type::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
+	/*XamlElementInfo *psc = */ rdoe (dem, "PathSegmentCollection", col, Type::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
 
 	XamlElementInfo *ps = register_ghost_element ("PathSegment", NULL, Type::PATHSEGMENT);
 	rdoe (dem, "ArcSegment", ps, Type::ARCSEGMENT, (create_item_func) arc_segment_new);

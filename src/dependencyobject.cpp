@@ -193,13 +193,13 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 Value *
 DependencyObject::GetValue (DependencyProperty *property)
 {
-	Value *value = NULL;
+	void *value = NULL;
 
 	bool found;
-	found = g_hash_table_lookup_extended (current_values, property->name, NULL, (void**)&value);
+	found = g_hash_table_lookup_extended (current_values, property->name, NULL, &value);
 
 	if (found)
-		return value;
+		return (Value*)value;
 
 	return property->default_value;
 }

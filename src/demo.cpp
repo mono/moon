@@ -44,11 +44,6 @@ void _event_callback (void *target, const char *ename, const char *evalue)
 
 
 static gboolean
-my_expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer data)
-{
-}
-
-static gboolean
 invalidator (gpointer data)
 {
 	Surface *s = (Surface *) data;
@@ -162,18 +157,6 @@ video_new (char *uri)
 	return video;
 }
 
-static void
-window_realized (GtkWidget *widget, gpointer data)
-{
-     GdkScreen* screen = gtk_widget_get_screen(widget);
-     GdkColormap* colormap = gdk_screen_get_rgba_colormap(screen);
-     
-     if (!colormap)
-	 return;
-     
-     gtk_widget_set_colormap(widget, colormap);
-}
-
 static gboolean
 expose_event (GtkWidget	    *widget,
 	      GdkEventExpose     *event,
@@ -195,8 +178,6 @@ expose_event (GtkWidget	    *widget,
 int
 main (int argc, char *argv [])
 {
-	GtkWidget *w2, *box, *button;
-	cairo_matrix_t trans;
 	double dash = 3.5;
 	char *file = NULL;
 	gboolean do_trans = FALSE;
@@ -353,7 +334,7 @@ main (int argc, char *argv [])
 		v = (UIElement *) video_new ("/tmp/BoxerSmacksdownInhoffe.wmv");
 		uielement_set_render_transform (v, v_trans);
 		uielement_set_transform_origin (v, Point (1, 1));
-		printf ("Got %d\n", v);
+		printf ("Got %p\n", v);
 		panel_child_add (canvas, v);
 #endif
 		
@@ -554,7 +535,7 @@ main (int argc, char *argv [])
 
 class FileDownloadState {
  public:
-	FileDownloadState (Downloader *dl) : downloader(dl), fd (-1) { }
+	FileDownloadState (Downloader *dl) : fd (-1), downloader(dl) { }
 
 	virtual ~FileDownloadState () { Close (); }
 

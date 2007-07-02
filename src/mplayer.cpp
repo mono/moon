@@ -211,7 +211,7 @@ MediaPlayer::Open ()
 	av_read_play (av_ctx);
 	
 	// Find audio/video streams
-	for (int i = 0; i < av_ctx->nb_streams; i++) {
+	for (uint i = 0; i < av_ctx->nb_streams; i++) {
 		stream = av_ctx->streams[i];
 		encoding = stream->codec;
 		
@@ -413,7 +413,7 @@ MediaPlayer::AdvanceFrame ()
 	AVFrame *frame;
 	int redraw = 0;
 	Packet *pkt;
-	int64_t pts;
+	uint64_t pts;
 	
 	if (paused) {
 		// shouldn't happen, but just in case
@@ -651,7 +651,7 @@ static bool
 audio_decode (Audio *audio)
 {
 	AVCodecContext *codec = audio->stream->codec;
-	uint32_t frame_size = audio->sample_size * codec->channels * 2;
+	int32_t frame_size = audio->sample_size * codec->channels * 2;
 	uint8_t *outbuf;
 	int outlen = 0;
 	int n;

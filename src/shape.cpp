@@ -37,6 +37,9 @@ convert_line_join (PenLineJoin pen_line_join)
 		return CAIRO_LINE_JOIN_BEVEL;
 	case PenLineJoinRound:
 		return CAIRO_LINE_JOIN_ROUND;
+	default:
+		/* g++ is stupid */
+		g_assert_not_reached ();
 	}
 }
 
@@ -51,6 +54,9 @@ convert_line_cap (PenLineCap pen_line_cap)
 	case PenLineCapRound:
 	case PenLineCapTriangle: 		/* FIXME: Triangle doesn't exist in Cairo */
 		return CAIRO_LINE_CAP_ROUND;
+	default:
+		/* g++ is stupid */
+		g_assert_not_reached ();
 	}
 }
 
@@ -62,6 +68,9 @@ convert_fill_rule (FillRule fill_rule)
 		return CAIRO_FILL_RULE_EVEN_ODD;
 	case FillRuleNonzero:
 		return CAIRO_FILL_RULE_WINDING;
+	default:
+		/* g++ is stupid */
+		g_assert_not_reached ();
 	}
 }
 
@@ -514,6 +523,10 @@ Ellipse::Draw (cairo_t *cr)
 		cairo_clip (cr);
 		w = h = (w > h) ? w : h;
 		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
 	case StretchNone:
 		/* not reached */
 		break;
@@ -573,6 +586,10 @@ Rectangle::Draw (cairo_t *cr)
 			cairo_rectangle (cr, 0, 0, w, h);
 			cairo_clip (cr);
 			w = h = (w > h) ? w : h;
+			break;
+		case StretchFill:
+			/* nothing needed here.  the assignment of w/h above
+			   is correct for this case. */
 			break;
 		case StretchNone:
 			/* not reached */

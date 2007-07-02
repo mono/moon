@@ -5,7 +5,7 @@ noinst_PROGRAMS = demo
 
 lib_LTLIBRARIES = libmoon.la
 
-INCLUDES = $(MOON_CFLAGS)
+INCLUDES = $(MOON_CFLAGS) -Wall
 
 libmooninclude_headers = \
 	animation.h	\
