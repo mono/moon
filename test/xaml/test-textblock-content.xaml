@@ -1,0 +1,15 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <TextBlock x:Name="text_one" Canvas.Left="10" Canvas.Top="10">
+	line one
+	<LineBreak />
+	line two
+	<LineBreak />
+	line three
+  </TextBlock>
+  
+  <TextBlock x:Name="text_two" Canvas.Left="10" Canvas.Top="100">Just one line</TextBlock>
+
+</Canvas>
+
