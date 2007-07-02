@@ -332,6 +332,8 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 			fill->Attach (NULL, this);
 			fill->ref ();
 		}
+
+		UpdateBounds ();
 	} else if (prop == Shape::StrokeDashCapProperty
 		   || prop == Shape::StrokeEndLineCapProperty
 		   || prop == Shape::StrokeLineJoinProperty
