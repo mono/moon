@@ -45,11 +45,6 @@
 #define TIME_CLIP 0
 #define TIME_REDRAW 1
 
-static callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
-static callback_plain_event cb_got_focus, cb_focus, cb_loaded, cb_mouse_leave;
-static callback_keyboard_event cb_keydown, cb_keyup;
-
-
 void
 draw_grid (cairo_t *cairo)
 {
@@ -135,6 +130,7 @@ realized_callback (GtkWidget *widget, gpointer data)
 	s->cairo = s->cairo_xlib;
 
 	TimeManager::Instance()->AddHandler ("render", render_surface, s);
+	return TRUE;
 }
 
 gboolean
@@ -149,6 +145,7 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 
 	s->cairo = s->cairo_buffer;
 	TimeManager::Instance()->RemoveHandler ("render", render_surface, s);
+	return TRUE;
 }
 
 gboolean

@@ -66,8 +66,8 @@ TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
     current_timeout (FPS_TO_DELAY (DESIRED_FPS)),  /* something suitably small */
-    tick_calls (NULL),
-    flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL))
+    flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL)),
+    tick_calls (NULL)
 {
 	start_time = get_now ();
 }
@@ -232,17 +232,17 @@ TimeManager::RemoveChild (Clock *child)
 
 
 Clock::Clock (Timeline *tl)
-  : timeline (tl),
+  : natural_duration (Duration::Automatic),
+    current_state (Clock::Stopped), new_state (Clock::Stopped),
+    current_progress (0.0), new_progress (0.0),
+    current_time (0), new_time (0),
+    current_speed (1.0), new_speed (1.0),
     parent_clock (NULL),
     is_paused (false),
     has_started (false),
-    is_reversed (false),
-    current_state (Clock::Stopped), new_state (Clock::Stopped),
-    current_speed (1.0), new_speed (1.0),
-    current_progress (0.0), new_progress (0.0),
-    current_time (0), new_time (0),
+    timeline (tl),
     queued_events (0),
-    natural_duration (Duration::Automatic)
+    is_reversed (false)
 {
 	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
@@ -499,9 +499,9 @@ Clock::Stop ()
 
 
 ClockGroup::ClockGroup (TimelineGroup *timeline)
-  : timeline (timeline),
+  : Clock (timeline),
     child_clocks (NULL),
-    Clock (timeline)
+    timeline (timeline)
 {
 }
 
@@ -802,7 +802,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 			return Duration::Forever;
 		
 		if (repeat->HasCount ()) {
-			span *= repeat->GetCount ();
+			span = (TimeSpan) (span * repeat->GetCount ());
 		} else if (repeat->HasDuration ()) {
 			if (span > repeat->GetDuration ())
 				span = repeat->GetDuration ();

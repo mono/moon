@@ -59,8 +59,8 @@ struct KeyTime {
 
 	KeyTime (double percent)
 	  : k (PERCENT),
-	    timespan (0),
-            percent (percent) { }
+	    percent (percent),
+	    timespan (0) { }
 
 	KeyTime (TimeSpan timeSpan)
 	  : k (TIMESPAN),

@@ -268,7 +268,7 @@ DependencyObject::DependencyObject ()
 static void
 dump (gpointer key, gpointer value, gpointer data)
 {
-	printf ("%s\n", key);
+	printf ("%s\n", (char*)key);
 }
 
 Type::Kind

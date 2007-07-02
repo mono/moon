@@ -126,6 +126,9 @@ struct RepeatBehavior {
 		case COUNT: return count == v.count;
 		case FOREVER: return true;
 		}
+
+		/* not reached.  quiet g++ -Wall */
+		return false;
 	}
 
 	double GetCount () { return count; }

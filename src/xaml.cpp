@@ -33,7 +33,6 @@
 
 #define READ_BUFFER 1024
 
-static GHashTable *namespace_map = NULL;
 static GHashTable *enum_map = NULL;
 
 class XamlElementInfo;
@@ -186,7 +185,8 @@ class XamlNamespace {
 	const char *name;
 
 	XamlNamespace () : name (NULL) { }
-	
+
+	virtual ~XamlNamespace () { }
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
 	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
 };
@@ -197,6 +197,8 @@ class DefaultNamespace : public XamlNamespace {
 	GHashTable *element_map;
 
 	DefaultNamespace (GHashTable *element_map) : element_map (element_map) { }
+
+	virtual ~DefaultNamespace () { }
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
@@ -215,6 +217,8 @@ class XNamespace : public XamlNamespace {
 	GHashTable *element_map;
 
 	XNamespace () { }
+
+	virtual ~XNamespace () { }
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
@@ -278,6 +282,8 @@ class CustomNamespace : public XamlNamespace {
 	{
 
 	}
+
+	virtual ~CustomNamespace () { }
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
@@ -1861,13 +1867,12 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 
 	DependencyProperty *prop = NULL;
 	if (atchname) {
-		Type *container = Type::Find (atchname);
 		prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
 	} else
 		prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
 
 	if (!prop) {
-		printf ("can not find property:  %s\n", prop);
+		printf ("can not find property:  %s\n", pname);
 		return;
 	}
 
@@ -1957,7 +1962,7 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 		break;
 	}
 	default:
-		printf ("could not find value type for: %s to '%s' %d\n", prop, value, prop->value_type);
+		printf ("could not find value type for: %s to '%s' %d\n", pname, value, prop->value_type);
 		break;
 	}
 }

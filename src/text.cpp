@@ -444,7 +444,6 @@ TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 TextBlock::CalcActualWidthHeight (cairo_t *cr)
 {
-	Collection::Node *node;
 	bool destroy = false;
 
 	if (cr == NULL) {

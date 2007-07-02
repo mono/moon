@@ -141,7 +141,9 @@ bool
 Control::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) 
 {
 	if (real_object)
-		real_object->OnChildPropertyChanged (prop, child);
+		return real_object->OnChildPropertyChanged (prop, child);
+
+	return false;
 }
 
 void

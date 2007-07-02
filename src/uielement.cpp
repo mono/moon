@@ -257,6 +257,7 @@ bool
 UIElement::InsideObject (Surface *s, double x, double y)
 {
 	printf ("UIElement derivatives should implement inside object\n");
+	return false;
 }
 
 bool

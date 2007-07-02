@@ -241,6 +241,7 @@ gpointer
 dummy_downloader_create_state (Downloader* dl)
 {
 	g_warning ("downloader_set_function has never been called.\n");
+	return NULL;
 }
 
 void
@@ -267,6 +268,7 @@ char*
 dummy_downloader_get_response_text (char *part, gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
+	return NULL;
 }
 DependencyProperty *Downloader::DownloadProgressProperty;
 DependencyProperty *Downloader::ResponseTextProperty;

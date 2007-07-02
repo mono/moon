@@ -64,8 +64,8 @@ AnimationStorage::~AnimationStorage ()
 }
 
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
-  : timeline(timeline),
-    Clock (timeline),
+  : Clock (timeline),
+    timeline(timeline),
     storage(NULL)
 {
 }
@@ -149,6 +149,9 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 			HookupAnimationsRecurse ((Clock*)l->data);
 		break;
 	}
+	default:
+		g_assert_not_reached ();
+		break;
 	}
 }
 
@@ -651,6 +654,7 @@ KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	g_warning ("KeyFrame::InterpolateValue has been called. The derived class %s should have overridden it.",
 		   dependency_object_get_name (this));
+	return NULL;
 }
 
 KeyFrame*

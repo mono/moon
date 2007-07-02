@@ -89,7 +89,6 @@ Canvas::ComputeBounds ()
 		VisualCollection *children = GetChildren ();
 		Collection::Node *cn;
 		bool first = true;
-		GList *il;
 
 #if DEBUG_BOUNDS
 		levelb += 4;
@@ -269,7 +268,6 @@ Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
-	double actual [6];
 
 	cairo_save (cr);  // for UIElement::ClipProperty
 

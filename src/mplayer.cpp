@@ -798,7 +798,7 @@ audio_loop (void *data)
 {
 	MediaPlayer *mplayer = (MediaPlayer *) data;
 	Audio *audio = mplayer->audio;
-	struct pollfd *ufds;
+	struct pollfd *ufds = NULL;
 	uint64_t frame_pts;
 	Packet *pkt;
 	int n;

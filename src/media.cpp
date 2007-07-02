@@ -530,15 +530,15 @@ media_element_set_volume (MediaElement *media, double value)
 DependencyProperty* Image::DownloadProgressProperty;
 
 Image::Image ()
-  : pixbuf_width (0),
-    pixbuf_height (0),
+  : brush (NULL),
+    render_progressive (false),
     create_xlib_surface (true),
-    pixbuf (NULL),
     loader (NULL),
     downloader (NULL),
+    pixbuf (NULL),
     surface (NULL),
-    brush (NULL),
-    render_progressive (false),
+    pixbuf_width (0),
+    pixbuf_height (0),
     pattern (NULL),
     pattern_opacity (1.0)
 {

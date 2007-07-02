@@ -41,7 +41,6 @@ FrameworkElement::InsideObject (Surface *s, double x, double y)
 	if (!bounds.PointInside (x, y))
 		return FALSE;
 
-	bool ret = FALSE;
 	double nx = x, ny = y;
 
 	uielement_transform_point (this, &nx, &ny);

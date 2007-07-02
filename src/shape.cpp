@@ -514,6 +514,9 @@ Ellipse::Draw (cairo_t *cr)
 		cairo_clip (cr);
 		w = h = (w > h) ? w : h;
 		break;
+	case StretchNone:
+		/* not reached */
+		break;
 	}
 
 	moon_ellipse (cr, 0, 0, w, h);
@@ -570,6 +573,9 @@ Rectangle::Draw (cairo_t *cr)
 			cairo_rectangle (cr, 0, 0, w, h);
 			cairo_clip (cr);
 			w = h = (w > h) ? w : h;
+			break;
+		case StretchNone:
+			/* not reached */
 			break;
 		}
 
@@ -1059,6 +1065,9 @@ Path::BuildPath (cairo_t *cr, Geometry* geometry)
 		cairo_rectangle (cr, 0, 0, requested_width, requested_height);
 		cairo_clip (cr);
 		sw = sh = (sw > sh) ? sw : sh;
+		break;
+	case StretchNone:
+		/* not reached */
 		break;
 	}
 
