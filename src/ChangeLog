@@ -1,3 +1,8 @@
+2007-07-02  Miguel de Icaza  <miguel@ximian.com>
+
+	* collection.cpp: Guard for cases where we are not attached to
+	anything (closure is set to NULL).
+
 2007-07-02  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp (collection_iterator_move_next): rework the logic

@@ -316,6 +316,9 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 {
 	Panel *panel = (Panel *) closure;
 	UIElement *item = (UIElement *) data;
+
+	if (panel == NULL)
+		return;
 	
 	item->parent = panel;
 	item->UpdateTransform ();
@@ -330,7 +333,7 @@ VisualCollection::Add (DependencyObject *data)
 
 	Collection::Add (item);
 	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
-	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
 		item->OnLoaded ();
@@ -348,7 +351,7 @@ VisualCollection::SetVal (int index, DependencyObject *data)
 	z_sorted_list->Remove (UIElementNodeFinder, old);
 	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
 
-	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
 		item->OnLoaded ();
@@ -367,7 +370,7 @@ VisualCollection::Insert (int index, DependencyObject *data)
 	Collection::Insert (index, item);
 	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
 
-	if (((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
 		item->OnLoaded ();
@@ -381,11 +384,12 @@ VisualCollection::Remove (DependencyObject *data)
 {
 	Panel *panel = (Panel *) closure;
 	UIElement *item = (UIElement *) data;
-	
+
 	item->Invalidate ();
 	bool b = Collection::Remove (item);
 	z_sorted_list->Remove (UIElementNodeFinder, item);
-	panel->UpdateBounds ();
+	if (panel)
+		panel->UpdateBounds ();
 
 	return b;
 }
@@ -398,7 +402,8 @@ VisualCollection::Clear ()
 	z_sorted_list->Clear (true);
 	Collection::Clear ();
 
-	panel->UpdateBounds ();
+	if (panel)
+		panel->UpdateBounds ();
 }
 
 
