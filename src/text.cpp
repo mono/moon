@@ -701,9 +701,6 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 	
-	if (prop == TextBlock::ActualHeightProperty || prop == TextBlock::ActualWidthProperty)
-		return;
-	
 	if (prop == TextBlock::FontFamilyProperty) {
 		char *family = text_block_get_font_family (this);
 		pango_font_description_set_family (font, family);
@@ -741,9 +738,11 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			foreground->ref ();
 		}
 	}
-	
-	CalcActualWidthHeight (NULL);
-	UpdateBounds (true);
+
+	if (prop != TextBlock::ActualHeightProperty && prop != TextBlock::ActualWidthProperty) {
+		CalcActualWidthHeight (NULL);
+		UpdateBounds (true);
+	}
 
 	NotifyAttacheesOfPropertyChange (prop);
 }

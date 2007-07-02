@@ -30,6 +30,8 @@ FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 	    prop == FrameworkElement::HeightProperty) {
 		FullInvalidate (false);
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 bool

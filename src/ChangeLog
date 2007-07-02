@@ -1,5 +1,14 @@
 2007-07-01  Chris Toshok  <toshok@ximian.com>
 
+	* frameworkelement.cpp (FrameworkElement::OnPropertyChanged):
+	notify attachees here.
+
+	* text.cpp (TextBlock::OnPropertyChanged): need to notify on
+	Actual Width/Height property changes, even if we don't recalc
+	anything.
+
+2007-07-01  Chris Toshok  <toshok@ximian.com>
+
 	* panel.cpp (Panel::OnSubPropertyChanged): oops, didn't follow the
 	guidelines here.  need to chain up to FrameworkElement.  fixes
 	airline demo.
