@@ -31,7 +31,7 @@ namespace Clock {
 				hour.Text = h.ToString ("00");
 			}
 			
-			minute.Text = ":" + dt.Minute.ToString ("00");
+			minute.Text = dt.Minute.ToString ("00");
 			last = dt;
 			
 			if (!use24h) {
@@ -62,7 +62,7 @@ namespace Clock {
 		{
 			bool visible = false;
 			
-			Rectangle r = FindName ("dotcover") as Rectangle;
+			UIElement r = FindName ("dotcover") as UIElement;
 			Storyboard sb = FindName ("run") as Storyboard;
 			hour = FindName ("hour") as TextBlock;
 			minute = FindName ("minute") as TextBlock;
