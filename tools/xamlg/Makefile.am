@@ -2,6 +2,8 @@ moondir = $(prefix)/lib/moon
 
 bin_SCRIPTS = xamlg
 
+man_MANS = xamlg.1
+
 moon_DATA = xamlg.exe
 
 EXTRA_DIST = xamlg.in
