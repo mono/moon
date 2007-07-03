@@ -196,6 +196,12 @@ downloader_notify_finished (Downloader *dl, const char *fname)
 }
 
 void
+downloader_notify_error (Downloader *dl, const char *msg)
+{
+	downloader_notify (dl, Downloader::NOTIFY_DOWNLOAD_FAILED, (void *) msg);
+}
+
+void
 downloader_notify_size (Downloader *dl, int64_t size)
 {
 	dl->file_size = size;
