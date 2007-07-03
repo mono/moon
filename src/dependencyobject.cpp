@@ -388,7 +388,7 @@ dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind
 const char *
 dependency_object_get_name (DependencyObject *obj)
 {
-	return Type::Find (obj->GetObjectType ())->name;
+	return obj->GetTypeName ();
 }
 
 Type::Kind
