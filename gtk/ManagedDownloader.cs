@@ -201,7 +201,7 @@ namespace Gtk.Moonlight {
 				Console.WriteLine ("An error happened with the given url {0}", e);
 				// Do something with this
 			}
-			if (request == null){
+			if (request == null && fname == null){
 				Console.WriteLine ("An error happened with the given url, the result was null");
 				return;
 			}
