@@ -1,5 +1,9 @@
 2007-07-03  Chris Toshok  <toshok@ximian.com>
 
+	* text.h: add prototype for text_block_set_font_source.
+
+2007-07-03  Chris Toshok  <toshok@ximian.com>
+
 	* shape.cpp, shape.h: add Shape::OnSubPropertyChanged to deal with
 	brush property changes.  Property chain up to
 	Shape::OnSubPropertyChanged from Path::OnSubPropertyChanged.
