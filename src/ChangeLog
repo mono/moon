@@ -1,5 +1,8 @@
 2007-07-03  Miguel de Icaza  <miguel@novell.com>
 
+	* collection.cpp: Add support for reporting errors if the iterator
+	gets out of sync with the collection.
+
 	* demo.cpp: Updated to the new downloader interface.
 
 	* downloader.cpp: Eliminates the in-memory buffer during

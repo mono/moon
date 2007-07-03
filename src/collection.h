@@ -28,6 +28,8 @@ class Collection : public DependencyObject {
 		Node (DependencyObject *dob, DependencyObject *parent);
 		~Node ();
 	};
+
+	int generation;
 	
 	List *list;
 	DependencyObject *closure;
@@ -61,9 +63,11 @@ class CollectionIterator {
 		first = true;
 		collection = c;
 		current = c->list->First ();
+		generation = c->generation;
 	}
 
 	bool first;
+	int generation;
 	Collection *collection;
 	List::Node *current;
 };
@@ -164,10 +168,10 @@ Type::Kind          collection_get_element_type (Collection *collection);
 CollectionIterator *collection_get_iterator (Collection *collection);
 int                 collection_get_index_of (Collection *collection, DependencyObject *obj);
 
-bool   collection_iterator_move_next   (CollectionIterator *iterator);
-void   collection_iterator_reset       (CollectionIterator *iterator);
+int    collection_iterator_move_next   (CollectionIterator *iterator);
+bool   collection_iterator_reset       (CollectionIterator *iterator);
 void   collection_iterator_destroy     (CollectionIterator *iterator);
-DependencyObject *collection_iterator_get_current (CollectionIterator *iterator);
+DependencyObject *collection_iterator_get_current (CollectionIterator *iterator, int *error);
 
 
 Collection *collection_new (Type::Kind kind);

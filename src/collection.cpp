@@ -46,6 +46,7 @@ Collection::Collection ()
 {
 	list = new List ();
 	closure = NULL;
+	generation = 0;
 }
 
 Collection::~Collection ()
@@ -59,6 +60,7 @@ Collection::Add (DependencyObject *data)
 {
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 	
+	generation++;
 	list->Append (new Collection::Node (data, this));
 	data->Attach (NULL, this);
 
@@ -71,6 +73,7 @@ Collection::Insert (int index, DependencyObject *data)
 {
 	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
 	
+	generation++;
 	list->Insert (new Collection::Node (data, this), index);
 
 	data->Attach (NULL, this);
@@ -94,6 +97,7 @@ Collection::SetVal (int index, DependencyObject *data)
 {
 	g_return_val_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()), NULL);
 
+	generation++;
 	Node *old = (Collection::Node *) list->Replace (new Collection::Node (data, this), index);
 
 	old->Unlink ();
@@ -116,6 +120,7 @@ Collection::Remove (DependencyObject *data)
 {
 	Collection::Node *n;
 	
+	generation++;
 	if (!(n = (Collection::Node *) list->Find (CollectionNodeFinder, data)))
 		return false;
 	
@@ -134,6 +139,8 @@ void
 Collection::Clear ()
 {
 	Collection::Node *n;
+
+	generation++;
 	for (n = (Collection::Node*)list->First(); n; n = (Collection::Node*)n->Next()) {
 		n->obj->Detach (NULL, this);
 	}
@@ -212,39 +219,51 @@ collection_get_iterator (Collection *collection)
 	return new CollectionIterator (collection);
 }
 
-bool
+int
 collection_iterator_move_next (CollectionIterator *iterator)
 {
+	if (iterator->collection->generation != iterator->generation)
+		return -1;
+
 	if (!iterator->current)
-		return false;
+		return 0;
 
 	if (iterator->first) {
 		/* we don't actually move the iterator forward here.  it's
 		   initialized in the ctor to point to the first element */
 		iterator->first = false;
-		return true;
+		return 1;
 	}
 
 	List::Node *next = iterator->current->Next ();
 
 	if (next == NULL)
-		return false;
+		return 0;
 	
 	iterator->current = next;
 
+	return 1;
+}
+
+bool
+collection_iterator_reset (CollectionIterator *iterator)
+{
+	if (iterator->collection->generation != iterator->generation)
+		return false;
+
+	iterator->current = iterator->collection->list->First ();
+	iterator->first = true;
 	return true;
 }
 
-void 
-collection_iterator_reset (CollectionIterator *iterator)
-{
-	iterator->current = iterator->collection->list->First ();
-	iterator->first = true;
-}
-
 DependencyObject *
-collection_iterator_get_current (CollectionIterator *iterator)
+collection_iterator_get_current (CollectionIterator *iterator, int *error)
 {
+	if (iterator->collection->generation != iterator->generation){
+		*error = 1;
+		return NULL;
+	}
+	error = 0;
 	if (iterator->current == NULL)
 		return NULL;
 	
