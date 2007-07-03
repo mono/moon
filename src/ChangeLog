@@ -1,3 +1,34 @@
+2007-07-03  Miguel de Icaza  <miguel@novell.com>
+
+	* demo.cpp: Updated to the new downloader interface.
+
+	* downloader.cpp: Eliminates the in-memory buffer during
+	download. 
+
+	We still do the progressive updates as those are necessary for the
+	progress indicators, and if we ever need to hook up during
+	progressive downloads again.   
+
+	But now downloads on completion must notify the downloader of the
+	local file where the download contents have been placed (necesary
+	for implementing the Zip-file support).
+
+	(Downloader): eliminate our in-memory buffer byte_array_contents 
+
+	(downloader_notify): takes a new extra argument, overloaded
+	depended on the operation.
+	
+	(get_response_text): currently not implemented, it needs to be
+	implemented by a callback into managed code so we can use ZipLib
+	(unless we can find a suitable unmanaged version).
+
+	* media.cpp: Remove the stale code for progressive image
+	downloads. 
+2007-07-02  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (SetSource): If we had a previous downloader, unref
+	it.  
+
 2007-07-02  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp (VisualCollection::Remove): punt on the optimized

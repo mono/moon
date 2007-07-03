@@ -1,3 +1,9 @@
+2007-07-03  Miguel de Icaza  <miguel@novell.com>
+
+	* plugin.cpp (NewStream): Request that DOWNLOADER downloads be
+	downloaded as NP_ASFILE, this means: notify us of the progres and
+	the resulting filename.
+
 2007-06-26  Marek Habersack  <mhabersack@novell.com>
 
 	* moonlight.h (GDK_NATIVE_WINDOW_POINTER): define this macro if
@@ -214,7 +220,6 @@
 	* downloader.cpp (p_downloader_send): Some tidbits for the plugin
 	download, not complete.
 
->>>>>>> .r79944
 2007-06-16  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight.cs: Set custom attributes on xaml elements.

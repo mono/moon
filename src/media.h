@@ -74,35 +74,22 @@ class Image : public MediaBase {
 
 	ImageBrush *brush;
 
-	bool render_progressive; /* true if we want the onscreen image
-				    updated as we download */
-
  private:
 	bool create_xlib_surface;
 
-	void CreateSurface ();
+	void CreateSurface (const char *fname);
 	void CleanupSurface ();
 	void CleanupPattern ();
 	void StopLoader ();
 
 	// downloader callbacks
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
-	void DownloaderEvent (int kind);
+	void DownloaderEvent (int kind, void *extra);
 	void UpdateProgress ();
 	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
-	static void downloader_event (int kind, gpointer data);
+	static void downloader_event (int kind, gpointer data, gpointer extra);
 	static void size_notify (int64_t size, gpointer data);
 
-
-	// pixbuf callbacks
-	void LoaderSizePrepared (int width, int height);
-	void LoaderAreaPrepared ();
-	void LoaderAreaUpdated (int x, int y, int width, int height);
-	static void loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data);
-	static void loader_area_prepared (GdkPixbufLoader *loader, gpointer data);
-	static void loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data);
-	
-	GdkPixbufLoader *loader;
 	Downloader *downloader;
 	GdkPixbuf *pixbuf;
 	cairo_surface_t *surface;

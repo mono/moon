@@ -531,9 +531,7 @@ DependencyProperty* Image::DownloadProgressProperty;
 
 Image::Image ()
   : brush (NULL),
-    render_progressive (false),
     create_xlib_surface (true),
-    loader (NULL),
     downloader (NULL),
     pixbuf (NULL),
     surface (NULL),
@@ -553,15 +551,6 @@ Image::~Image ()
 void
 Image::StopLoader ()
 {
-	if (loader) {
-		// disconnect all our signal handlers at once
-		g_signal_handlers_disconnect_matched (loader,
-						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
-						      0, 0, NULL, NULL, this);
-		gdk_pixbuf_loader_close (loader, NULL);
-		g_object_unref (loader);
-		loader = NULL;
-	}
 }
 
 
@@ -590,7 +579,7 @@ Image::CleanupSurface ()
 		surface = NULL;
 	}
 
-	pixbuf_width =
+	pixbuf_width = 0;
 	pixbuf_height = 0;
 }
 
@@ -607,16 +596,11 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 {
 	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
 
-	if (loader) {
-		StopLoader ();
-		CleanupSurface ();
-		Invalidate (); /* so we erase the old image */
-	}
-	loader = gdk_pixbuf_loader_new ();
+	if (downloader)
+		downloader->unref ();
 
-	g_signal_connect (loader, "size_prepared", G_CALLBACK(loader_size_prepared), this);
-	g_signal_connect (loader, "area_prepared", G_CALLBACK(loader_area_prepared), this);
-	g_signal_connect (loader, "area_updated", G_CALLBACK(loader_area_updated), this);
+	CleanupSurface ();
+	Invalidate (); 
 
 	downloader = (Downloader*) dl;
 	downloader->ref ();
@@ -624,13 +608,8 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	downloader_want_events (downloader, downloader_event, this);
 
 	if (downloader->Started ()) {
-		// Load the existing data that has been downloaded
-
-		PixbufWrite (downloader->byte_array_contents->data, 0, downloader->byte_array_contents->len);
-
-		// If it was also finished, notify
 		if (downloader->Completed ())
-			DownloaderEvent (Downloader::NOTIFY_COMPLETED);
+			DownloaderEvent (Downloader::NOTIFY_COMPLETED, downloader->filename);
 		
 		UpdateProgress ();
 	} else {
@@ -645,16 +624,14 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 void
 Image::PixbufWrite (guchar *buf, gsize offset, gsize count)
 {
-	gdk_pixbuf_loader_write (loader, buf + offset, count, NULL);
 	UpdateProgress ();
 }
 
 void
-Image::DownloaderEvent (int kind)
+Image::DownloaderEvent (int kind, void *extra)
 {
 	if (kind == Downloader::NOTIFY_COMPLETED) {
-		if (!render_progressive)
-			CreateSurface ();
+		CreateSurface ((char *) extra);
 
 		if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
 			SetValue (FrameworkElement::WidthProperty, (double) pixbuf_width);
@@ -700,7 +677,7 @@ Image::DownloaderEvent (int kind)
 #include "alpha-premul-table.inc"
 
 void
-Image::CreateSurface ()
+Image::CreateSurface (const char *fname)
 {
 	if (surface) {
 		printf ("surface already created..\n");
@@ -708,15 +685,22 @@ Image::CreateSurface ()
 	}
 
 	CleanupPattern ();
+	GError *error = NULL;
 
-	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-	if (!pixbuf)
+	pixbuf = gdk_pixbuf_new_from_file (fname, &error);
+	fprintf (stderr, "TODO/WARNING: We need to register Image callbacks to raise events in managed land\n");
+	if (!pixbuf){
+		printf ("Failed to load image %s\n", fname);
 		return;
+	}
+	printf ("Loaded image %s!\n", fname);
+
+	pixbuf_height = gdk_pixbuf_get_height (pixbuf);
+	pixbuf_width = gdk_pixbuf_get_width (pixbuf);
 
 	if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
 		g_object_ref (pixbuf);
-	}
-	else {
+	} else {
 		/* gdk-pixbuf packs its pixel data into 24 bits for
 		   rgb, instead of 32 with an unused byte for alpha,
 		   like cairo expects */
@@ -764,44 +748,6 @@ Image::CreateSurface ()
 }
 
 void
-Image::LoaderSizePrepared (int width, int height)
-{
-	printf ("image has size %dx%d\n", width, height);
-	pixbuf_width = width;
-	pixbuf_height = height;
-
-#if PROGRESSIVE_IMAGE_LOADING
-	if (render_progressive && !surface)
-		CreateSurface ();
-#endif
-
-	UpdateBounds ();
-}
-
-void
-Image::LoaderAreaPrepared ()
-{
-#if PROGRESSIVE_IMAGE_LOADING
-	/* the pixbuf can be retrieved from the loader, but it hasn't
-	   been filled in yet.  create our surface data here since we
-	   can ask the pixbuf what width/height/rowstride it will
-	   be. */
-#endif
-}
-
-void
-Image::LoaderAreaUpdated (int x, int y, int width, int height)
-{
-#if PROGRESSIVE_IMAGE_LOADING
-	if (!render_progressive)
-	  return;
-
-
-	item_invalidate (this);
-#endif
-}
-
-void
 Image::size_notify (int64_t size, gpointer data)
 {
 	// Do something with it?
@@ -811,33 +757,15 @@ Image::size_notify (int64_t size, gpointer data)
 }
 
 void
-Image::downloader_event (int kind, gpointer data)
+Image::downloader_event (int kind, gpointer data, gpointer extra)
 {
-	((Image*)data)->DownloaderEvent (kind);
+	((Image*)data)->DownloaderEvent (kind, extra);
 }
 
 void
 Image::pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data)
 {
 	((Image*)data)->PixbufWrite (buf, offset, count);
-}
-
-void
-Image::loader_size_prepared (GdkPixbufLoader *loader, int width, int height, gpointer data)
-{
-	((Image*)data)->LoaderSizePrepared (width, height);
-}
-
-void
-Image::loader_area_prepared (GdkPixbufLoader *loader, gpointer data)
-{
-	((Image*)data)->LoaderAreaPrepared ();
-}
-
-void
-Image::loader_area_updated (GdkPixbufLoader *loader, int x, int y, int width, int height, gpointer data)
-{
-	((Image*)data)->LoaderAreaUpdated (x, y, width, height);
 }
 
 void

@@ -1,3 +1,18 @@
+2007-07-03  Miguel de Icaza  <miguel@novell.com>
+
+	* ManagedDownloader.cs: Adapt to the new downloading framework
+	that requires us to notify with a filename where the results have
+	been placed. 
+
+	(Download): Now places the file in a temporary file.   The TODO
+	file has been updated with thoughts on how to cache this.
+
+	(Start): Special case for files in the local file system, notify
+	the downloader immediately of the transfer being finished.
+	
+	(dowloader_notify_error, downloader_notify_finished): new
+	pinvokes, used to notify of completion and errors.
+
 2007-06-25  Everaldo Canuto  <ecanuto@novell.com>
 
 	* mopen.cs: When --desklet difine also --transparent.

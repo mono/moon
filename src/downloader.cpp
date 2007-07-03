@@ -39,6 +39,9 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "downloader.h"
 
 //
@@ -61,18 +64,17 @@ Downloader::Downloader ()
 {
 	downloader_state = Downloader::create_state (this);
 	notify_size = NULL;
+	filename = NULL;
+	started = false;
 	this->write = NULL;
 	file_size = -2;
 	total = 0;
-	byte_array_contents = NULL;
 	downloader_events = NULL;
 }
 
 Downloader::~Downloader ()
 {
 	Downloader::destroy_state (downloader_state);
-	if (byte_array_contents)
-		g_byte_array_free (byte_array_contents, TRUE);
 
 	GSList *l;
 	for (l = downloader_events; l; l = l->next){
@@ -92,14 +94,9 @@ downloader_abort (Downloader *dl)
 void *
 downloader_get_response_text (Downloader *dl, char* PartName, uint *size)
 {
-	//return dl->get_response_text (PartName, dl->downloader_state);
-
-	//
-	// For now, we are providing the content in this class
-	// so pull it out of our byte array
-	//
-	*size = dl->byte_array_contents->len;
-	return dl->byte_array_contents->data;
+	fprintf (stderr, "Get response text not implemented with the new setup\n");
+	exit (1);
+	return NULL;
 }
 
 void
@@ -111,20 +108,20 @@ downloader_open (Downloader *dl, char *verb, char *URI, bool Async)
 void
 downloader_send (Downloader *dl)
 {
+	dl->started = true;
 	dl->send (dl->downloader_state);
-	dl->byte_array_contents = g_byte_array_new ();
 }
 
 bool
 Downloader::Started ()
 {
-	return byte_array_contents != NULL;
+	return started;
 }
 
 bool
 Downloader::Completed ()
 {
-	return byte_array_contents != NULL && total == file_size;
+	return filename != NULL;
 }
 
 void
@@ -159,14 +156,14 @@ void downloader_set_functions (downloader_create_state_func create_state,
 }
 
 static void
-downloader_notify (Downloader *dl, int msg)
+downloader_notify (Downloader *dl, int msg, void *extra)
 {
 	GSList *l;
 
 	for (l = dl->downloader_events; l; l = l->next){
 		Listener *listener = (Listener *) l->data;
 
-		listener->notify (msg, listener->closure);
+		listener->notify (msg, listener->closure, extra);
 	}
 }
 
@@ -179,8 +176,6 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 	if (dl->write)
 		dl->write (buf, offset, n, dl->consumer_closure);
 	
-	g_byte_array_append (dl->byte_array_contents, buf + offset, n);
-	
 	// Update progress
 	dl->total += n;
 	double p;
@@ -191,15 +186,13 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 
 	dl->SetValue (Downloader::DownloadProgressProperty, Value (p));
 
-	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED);
-	if (n == 0)
-		downloader_notify (dl, Downloader::NOTIFY_COMPLETED);
+	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED, NULL);
 }
 
 void
-downloader_notify_finished (Downloader *dl)
+downloader_notify_finished (Downloader *dl, const char *fname)
 {
-	downloader_notify (dl, Downloader::NOTIFY_COMPLETED);
+	downloader_notify (dl, Downloader::NOTIFY_COMPLETED, (void *) fname);
 }
 
 void
@@ -212,7 +205,7 @@ downloader_notify_size (Downloader *dl, int64_t size)
 
 	dl->SetValue (Downloader::DownloadProgressProperty, Value (0.0));
 
-	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED);
+	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED, NULL);
 }
 
 void  

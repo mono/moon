@@ -279,13 +279,13 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
 		if (NPVARIANT_IS_STRING (result)) {
-			#ifdef RUNTIME
+#ifdef RUNTIME
 			mono_loader_object = vm_xaml_str_loader_new (this, this->surface, NPVARIANT_TO_STRING (result).utf8characters);
 			TryLoad ();
-			#else	
+#else	
 			UIElement * element = xaml_create_from_str (NPVARIANT_TO_STRING (result).utf8characters, true, NULL, NULL, NULL, NULL);
 			surface_attach (this->surface, element);
-			#endif
+#endif
 		}
 
 		NPN_ReleaseVariantValue (&result);
@@ -338,7 +338,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 	} 
 
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
-		*stype = NP_NORMAL;
+		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	} 
 
@@ -388,13 +388,13 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		DEBUGMSG ("LoadFromXaml: %s", fname);
-		#ifdef RUNTIME
+#ifdef RUNTIME
 			mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
 			TryLoad ();
-		#else	
+#else	
 			UIElement *element = xaml_create_from_file (fname, true, NULL, NULL, NULL, NULL);
 			surface_attach (this->surface, element);
-		#endif
+#endif
 
 		if (!this->isLoaded) {
 			this->isLoaded = true;
@@ -403,6 +403,12 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		}
 	}
 
+	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
+		Downloader * dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
+
+		downloader_notify_finished (dl, fname);
+	}
+	
 #ifdef RUNTIME
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
 		vm_insert_mapping (mono_loader_object, vm_missing_file, stream->url);
@@ -443,8 +449,6 @@ PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
 		Downloader * dl = (Downloader *) notify->pdata;
 		downloader_write (dl, (guchar*) buffer, 0, len);
-		if ((offset+len) >= stream->end)
-			downloader_notify_finished (dl);
 	}
 
 	return len;
@@ -453,7 +457,6 @@ PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 void
 PluginInstance::UrlNotify (const char* url, NPReason reason, void* notifyData)
 {
-	// nothing to do.
 }
 
 void

@@ -535,15 +535,17 @@ main (int argc, char *argv [])
 
 class FileDownloadState {
  public:
-	FileDownloadState (Downloader *dl) : fd (-1), downloader(dl) { }
+	FileDownloadState (Downloader *dl) : downloader(dl),uri(NULL) { }
 
 	virtual ~FileDownloadState () { Close (); }
+	size_t size;
+	char *uri;
 
 	void Abort () { Close (); }
 	char* GetResponseText (char* PartName) { return NULL; } // XXX
 	void Open (char *verb, char *uri, bool async)
 	{
-		fd = open (uri, O_RDONLY);
+		int fd = open (uri, O_RDONLY);
 		if (fd == -1) {
 			printf ("failed open\n");
 			return;
@@ -551,41 +553,22 @@ class FileDownloadState {
 
 		struct stat sb;
 		fstat (fd, &sb);
-		downloader_notify_size (downloader, sb.st_size);
-		TimeManager::Instance ()->AddTickCall (async_fill_buffer, this);
+		close (fd);
+		this->uri = g_strdup (uri);
+		size = sb.st_size;
+		downloader_notify_size (downloader, size);
 	}
 
-	void Send () { }
+	void Send () { 
+		downloader_notify_finished (downloader, uri);
+	}
 
 	void Close ()
 	{
-		if (fd != -1) {
-			close (fd);
-			fd = -1;
-		}
-
-		//TimeManager::Instance ()->RemoveTickCall (async_fill_buffer, this);
+		g_free (uri);
 	}
  private:
-	int fd;
 	Downloader *downloader;
-	guchar buf[8192];
-
-	void AsyncFillBuffer ()
-	{
-		int n = read (fd, buf, sizeof (buf));
-
-		if (n >= 0)
-			downloader_write (downloader, buf, 0, n);
-
-		if (n > 0)
-			TimeManager::Instance ()->AddTickCall (async_fill_buffer, this);
-	}
-
-	static void async_fill_buffer (gpointer cb_data)
-	{
-		((FileDownloadState*)cb_data)->AsyncFillBuffer ();
-	}
 };
 
 static gpointer

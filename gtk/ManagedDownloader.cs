@@ -42,6 +42,12 @@ namespace Gtk.Moonlight {
 		[DllImport ("moon")]
 		internal extern static void downloader_notify_size (IntPtr downloader, long l);
 
+		[DllImport ("moon")]
+		internal extern static void downloader_notify_error (IntPtr downloader, string msg);
+		
+		[DllImport ("moon")]
+		internal extern static void downloader_notify_finished (IntPtr downloader, string filename);
+		
 		public delegate void TickCall (IntPtr data);
 
 		[DllImport ("moon")]
@@ -62,7 +68,15 @@ namespace Gtk.Moonlight {
 		DownloadDelegate down;
 		IAsyncResult async_result;
 		volatile bool downloading = true;
+
+		//
+		// Either request is non-null, or fname is non-null.
+		// This is merely an optimization: for fname, instead of going
+		// through FileWebRequest threads and the gtk main loop, we just
+		// emit the ready signal as soon as we can.
+		//
 		WebRequest request = null;
+		string fname;
 		
 		TickCall tick_call;
 
@@ -71,56 +85,84 @@ namespace Gtk.Moonlight {
 			downloader = native;
 		}
 
-		void write ()
+		Stream GetTempFile (out string path)
 		{
-			lock (buffer){
-				downloader_write (downloader, buffer, 0, count);
-			}
-			auto_reset.Set ();
+			path = Path.GetTempFileName ();
+			return File.OpenWrite (path);
 		}
-
-							    
+		
 		void Download ()
 		{
 			if (request == null)
 				throw new Exception ("This Downloader has not been configured yet, call Open");
-			
-			using (WebResponse r = request.GetResponse ()){
-				time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
-					tick_call = null;
-					downloader_notify_size (downloader, r.ContentLength);
-					auto_reset.Set ();
-				}, IntPtr.Zero);
-				auto_reset.WaitOne ();
-				
-				using (Stream rstream = r.GetResponseStream ()){
-					buffer = new byte [16*1024];
-					count = 0;
 
-					while (downloading){
-						lock (buffer){
-							count = rstream.Read (buffer, 0, buffer.Length);
-						}
-						time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
-							tick_call = null;
+			string path;
+			
+			try {
+				using (WebResponse r = request.GetResponse ()){
+					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						downloader_notify_size (downloader, r.ContentLength);
+						tick_call = null;
+						auto_reset.Set ();
+					}, IntPtr.Zero);
+					auto_reset.WaitOne ();
+
+					using (Stream rstream = r.GetResponseStream (), output = GetTempFile (out path)){
+						buffer = new byte [16*1024];
+						count = 0;
+						
+						while (downloading){
 							lock (buffer){
-								downloader_write (downloader, buffer, 0, count);
+								count = rstream.Read (buffer, 0, buffer.Length);
 							}
-							auto_reset.Set ();
-						}, IntPtr.Zero);
-						auto_reset.WaitOne ();
-						if (count == 0){
-							// We are done.
-							buffer = null;
-							break;
+							if (count == 0){
+								buffer = null;
+								break;
+							}
+							output.Write (buffer, 0, count);
+							
+							time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+								tick_call = null;
+								lock (buffer){
+									downloader_write (downloader, buffer, 0, count);
+								}
+								auto_reset.Set ();
+							}, IntPtr.Zero);
+							auto_reset.WaitOne ();
 						}
 					}
+					// We are done
+					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						tick_call = null;
+						downloader_notify_finished (downloader, path);
+						auto_reset.Set ();
+					}, IntPtr.Zero);
+					auto_reset.WaitOne ();
 				}
+			} catch (Exception e){
+				downloader_notify_error (downloader, e.Message);
 			}
 		}
 
+		//
+		// Initiates the download
+		//
 		void Start ()
 		{
+			// Special case: local file, just notify that we are done
+			
+			if (fname != null){
+				if (File.Exists (fname))
+					downloader_notify_finished (downloader, fname);
+				else
+					downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
+
+				return;
+			}
+
+			//
+			// Need to use a separate thread
+			//
 			auto_reset = new AutoResetEvent (false);
 			down = new DownloadDelegate (Download);
 			downloading = true;
@@ -148,12 +190,12 @@ namespace Gtk.Moonlight {
 				Console.WriteLine ("Do not know what to do with verb {0}", verb);
 				return;
 			}
-			
+
 			try {
 				try {
 					request = WebRequest.Create (uri);
 				} catch (UriFormatException){
-					request = WebRequest.Create ("file://" + Path.GetFullPath (uri));
+					fname = Path.GetFullPath (uri);
 				}
 			} catch (Exception e){
 				Console.WriteLine ("An error happened with the given url {0}", e);

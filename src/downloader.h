@@ -33,7 +33,15 @@ typedef void     (*downloader_send_func)(gpointer state);
 typedef void     (*downloader_abort_func)(gpointer state);
 typedef char*    (*downloader_get_response_text_func)(char *part, gpointer state);
 
-typedef void     (*downloader_event_notify) (int kind, gpointer cb_data);
+//
+// downloader_event_notify:
+//    @kind:    indicates the kind of operation that we are being notified about
+//    @cb_data: callback data, this is the closure value passed to SetWriteFunc.
+//    @extra:   Depends on the value of kind:
+//              kind == NOTIFY_COMPLETED, extra = filename that holds the full downloaded data
+//              kind == NOTIFY_DOWNLOAD_FAILED, extra = error message to provide on ErrorArgs
+//
+typedef void     (*downloader_event_notify) (int kind, gpointer cb_data, gpointer extra);
 
 class Downloader : public DependencyObject {
  public:
@@ -75,7 +83,8 @@ class Downloader : public DependencyObject {
 	int64_t file_size;
 	int64_t total;
 
-	GByteArray *byte_array_contents;
+	char *filename;
+	bool  started;
 	
 	// Set by the consumer
 	downloader_write_func       write;
@@ -117,8 +126,11 @@ void  downloader_want_events       (Downloader *dl, downloader_event_notify even
 // Used to push data to the consumer
 //
 void downloader_write           (Downloader *dl, guchar *buf, gsize offset, gsize n);
+void downloader_completed       (Downloader *dl, const char *filename);
+
 void downloader_notify_size     (Downloader *dl, int64_t size);
-void downloader_notify_finished (Downloader *dl);
+void downloader_notify_finished (Downloader *dl, const char *filename);
+void downloader_notify_error    (Downloader *dl, const char *msg);
 
 void downloader_init (void);
 
