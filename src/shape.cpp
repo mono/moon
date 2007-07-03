@@ -255,8 +255,8 @@ Shape::ComputeBounds ()
 	cairo_t* cr = measuring_context_create ();
 
 	cairo_save (cr);
-	// dont do the operation and don't do the fill setup
-	DoDraw (cr, false, false);
+	// dont do the operation
+	DoDraw (cr, false, true);
 
 	if (stroke)
 		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
@@ -346,6 +346,16 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 	Invalidate ();
 
 	NotifyAttacheesOfPropertyChange (prop);
+}
+
+void
+Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (prop == Shape::FillProperty || prop == Shape::StrokeProperty) {
+		UpdateBounds (true);
+	}
+	else
+		FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }
 
 Brush *
@@ -1171,8 +1181,12 @@ Path::OnPropertyChanged (DependencyProperty *prop)
 void
 Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	CleanupCache ();
-	FullInvalidate (false);
+	if (prop == Path::DataProperty) {
+		CleanupCache ();
+		FullInvalidate (false);
+	}
+	else
+		Shape::OnSubPropertyChanged (prop, subprop);
 }
 
 Geometry *

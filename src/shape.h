@@ -79,6 +79,7 @@ class Shape : public FrameworkElement {
 	virtual void Draw (cairo_t *cr) = 0;
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 };
 
 Brush	       *shape_get_fill			(Shape *shape);

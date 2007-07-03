@@ -1,5 +1,14 @@
 2007-07-03  Chris Toshok  <toshok@ximian.com>
 
+	* shape.cpp, shape.h: add Shape::OnSubPropertyChanged to deal with
+	brush property changes.  Property chain up to
+	Shape::OnSubPropertyChanged from Path::OnSubPropertyChanged.
+	(Shape::ComputeBounds): we need to do the fill, so pass true as
+	consider_fill to DoDraw.  otherwise a stroke-less filled shape
+	gets bounds with w == h == 0.0.
+
+2007-07-03  Chris Toshok  <toshok@ximian.com>
+
 	* collection.cpp (VisualCollection::Clear): force the invalidate
 	when we update our bounds.  Also, don't do anything if the length
 	of the collection is 0.
