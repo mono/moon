@@ -1,3 +1,9 @@
+2007-07-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add the stylus types and some missing collections,
+	this brings us up to sync with everything implemented in
+	moonlight.
+
 2007-07-03  Chris Toshok  <toshok@ximian.com>
 
 	* shape.cpp (Shape::DoDraw): if we aren't going to stroke (but we

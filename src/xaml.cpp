@@ -30,6 +30,7 @@
 #include "canvas.h"
 #include "color.h"
 #include "namescope.h"
+#include "stylus.h"
 
 #define READ_BUFFER 1024
 
@@ -2403,6 +2404,7 @@ xaml_init (void)
 	rdoe (dem, "Image", mb, Type::IMAGE, (create_item_func) image_new);
 	rdoe (dem, "MediaElement", mb, Type::MEDIAELEMENT, (create_item_func) media_element_new);
 	rdoe (dem, "MediaAttribute", NULL, Type::MEDIAATTRIBUTE, (create_item_func) media_attribute_new);
+	rdoe (dem, "MediaAttributeCollection", col, Type::MEDIAATTRIBUTE_COLLECTION, (create_item_func) media_attribute_collection_new);
 	
 	///
 	/// Text
@@ -2419,7 +2421,17 @@ xaml_init (void)
 	rdoe (dem, "LineBreak", in, Type::LINEBREAK, (create_item_func) line_break_new);
 	rdoe (dem, "Glyphs", fw, Type::GLYPHS, (create_item_func) glyphs_new);
 
+	//
+	// Stylus
+	//
 
+	rdoe (dem, "StylusPoint", NULL, Type::STYLUSPOINT, (create_item_func) stylus_point_new);
+	rdoe (dem, "Stroke", NULL, Type::STROKE, (create_item_func) stroke_new);
+	rdoe (dem, "DrawingAttributes", NULL, Type::DRAWINGATTRIBUTES, (create_item_func) drawing_attributes_new);
+	rdoe (dem, "InkPresenter", canvas, Type::INKPRESENTER, (create_item_func) ink_presenter_new);
+	rdoe (dem, "StrokeCollection", col, Type::STROKE_COLLECTION, (create_item_func) stroke_collection_new);
+	rdoe (dem, "StylusPointCollection", col, Type::STYLUSPOINT_COLLECTION, (create_item_func) stylus_point_collection_new);
+	
 #undef rdoe
 	
 	default_namespace = new DefaultNamespace (dem);
