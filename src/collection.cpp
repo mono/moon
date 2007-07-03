@@ -385,11 +385,16 @@ VisualCollection::Remove (DependencyObject *data)
 	Panel *panel = (Panel *) closure;
 	UIElement *item = (UIElement *) data;
 
-	item->Invalidate ();
+	// XXX FIX THIS - as it stands the map path segments in the
+	// airlines demo don't seem to be invalidating entirely, so we
+	// force a panel invalidate below.  we need to figure out what
+	// about the paths isn't working (or under-reporting the
+	// bounds), and then remove the panel invalidate.
+ 	item->Invalidate ();
 	bool b = Collection::Remove (item);
 	z_sorted_list->Remove (UIElementNodeFinder, item);
 	if (panel)
-		panel->UpdateBounds ();
+		panel->UpdateBounds (true /* XXX when the map path stuff is fixed, remove this "true" */);
 
 	return b;
 }

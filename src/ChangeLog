@@ -1,5 +1,26 @@
 2007-07-02  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp (VisualCollection::Remove): punt on the optimized
+	behavior for now.  invalidating just the item should work if the
+	item's bounds are correct, but for some reason the map path
+	segments in the airline demo aren't redrawing properly.  So, for
+	now we just invalidate the parent container when an item is
+	removed.
+
+	* control.h, control.cpp: override GetValue to report back values
+	from our real_object if there is one, from us otherwise.  and
+	override SetValue to set values both on us and the real_object if
+	there is one.
+
+	Also, do nothing in our ComputeBounds call.  Our GetBounds always
+	returns the right thing (the bounds of the real_object), so
+	there's no need to do any computation.
+
+	lastly, remove the OnChildPropertyChanged. This is only invoked
+	for attached properties, so we shouldn't ever be called.
+
+2007-07-02  Chris Toshok  <toshok@ximian.com>
+
 	* canvas.cpp (Canvas::OnChildPropertyChanged): we don't need to
 	updatebounds/invalidate here.  UpdateTransform will take care of
 	that for us.

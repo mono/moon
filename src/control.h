@@ -39,7 +39,9 @@ class Control : public FrameworkElement {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
-	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
+
+	virtual void SetValue (DependencyProperty *property, Value *value);
+	virtual Value *GetValue (DependencyProperty *property);
 
 	virtual void OnLoaded ();
 

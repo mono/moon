@@ -49,8 +49,7 @@ Control::GetBounds ()
 void 
 Control::ComputeBounds ()
 {
-	if (real_object)
-		real_object->ComputeBounds ();
+	/* nothing to do here */
 }
 
 void 
@@ -137,13 +136,21 @@ Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *sub
 		real_object->OnSubPropertyChanged (prop, subprop);
 }
 
-bool 
-Control::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) 
+void
+Control::SetValue (DependencyProperty *property, Value *value)
+{
+	FrameworkElement::SetValue (property, value);
+	if (real_object)
+		real_object->SetValue (property, value);
+}
+
+Value*
+Control::GetValue (DependencyProperty *property)
 {
 	if (real_object)
-		return real_object->OnChildPropertyChanged (prop, child);
-
-	return false;
+		return real_object->GetValue (property);
+	else
+		return FrameworkElement::GetValue (property);
 }
 
 void
