@@ -527,16 +527,16 @@ media_element_set_volume (MediaElement *media, double value)
 //
 // Image
 //
+GHashTable* Image::surface_cache = NULL;
 DependencyProperty* Image::DownloadProgressProperty;
 
 Image::Image ()
   : brush (NULL),
     create_xlib_surface (true),
     downloader (NULL),
-    pixbuf (NULL),
     surface (NULL),
-    pixbuf_width (0),
-    pixbuf_height (0),
+    surface_width (0),
+    surface_height (0),
     pattern (NULL),
     pattern_opacity (1.0)
 {
@@ -567,20 +567,22 @@ Image::CleanupPattern ()
 void
 Image::CleanupSurface ()
 {
-	if (pixbuf) {
-		g_object_unref (pixbuf);
-		pixbuf = NULL;
-	}
-
 	CleanupPattern ();
 
 	if (surface) {
+		if (cairo_surface_get_reference_count (surface) == 1) {
+			g_hash_table_remove (surface_cache, fname);
+		}
+
 		cairo_surface_destroy (surface);
 		surface = NULL;
+
+		g_free (fname);
+		fname = NULL;
 	}
 
-	pixbuf_width = 0;
-	pixbuf_height = 0;
+	surface_width = 0;
+	surface_height = 0;
 }
 
 void
@@ -634,10 +636,10 @@ Image::DownloaderEvent (int kind, void *extra)
 		CreateSurface ((char *) extra);
 
 		if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
-			SetValue (FrameworkElement::WidthProperty, (double) pixbuf_width);
+			SetValue (FrameworkElement::WidthProperty, (double) surface_width);
 
 		if (GetValueNoDefault (FrameworkElement::HeightProperty) == NULL)
-			SetValue (FrameworkElement::HeightProperty, (double) pixbuf_height);
+			SetValue (FrameworkElement::HeightProperty, (double) surface_height);
 
 		if (brush)
 			brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
@@ -676,6 +678,7 @@ Image::DownloaderEvent (int kind, void *extra)
 
 #include "alpha-premul-table.inc"
 
+
 void
 Image::CreateSurface (const char *fname)
 {
@@ -685,66 +688,86 @@ Image::CreateSurface (const char *fname)
 	}
 
 	CleanupPattern ();
-	GError *error = NULL;
 
-	pixbuf = gdk_pixbuf_new_from_file (fname, &error);
-	fprintf (stderr, "TODO/WARNING: We need to register Image callbacks to raise events in managed land\n");
-	if (!pixbuf){
-		printf ("Failed to load image %s\n", fname);
-		return;
+	if (!surface_cache)
+		surface_cache = g_hash_table_new_full (g_str_hash, g_str_equal, (GDestroyNotify)g_free, NULL);
+
+	this->fname = g_strdup (fname);
+
+	surface = (cairo_surface_t*)g_hash_table_lookup (surface_cache, fname);
+	if (surface) {
+		surface = cairo_surface_reference (surface);
+
+		surface_height = cairo_image_surface_get_height (surface);
+		surface_width = cairo_image_surface_get_width (surface);
 	}
-	printf ("Loaded image %s!\n", fname);
+	else {
+		GError *error = NULL;
 
-	pixbuf_height = gdk_pixbuf_get_height (pixbuf);
-	pixbuf_width = gdk_pixbuf_get_width (pixbuf);
-
-	if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
-		g_object_ref (pixbuf);
-	} else {
-		/* gdk-pixbuf packs its pixel data into 24 bits for
-		   rgb, instead of 32 with an unused byte for alpha,
-		   like cairo expects */
-
-		GdkPixbuf *pb = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, pixbuf_width, pixbuf_height);
-		gdk_pixbuf_copy_area (pixbuf,
-				      0, 0, pixbuf_width, pixbuf_height,
-				      pb,
-				      0, 0);
-		pixbuf = pb;
-	}
-
-	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
-	guchar *p;
-	for (int y = 0; y < pixbuf_height; y ++) {
-		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
-		for (int x = 0; x < pixbuf_width; x ++) {
-		  guint32 color = *(guint32*)p;
-		  guchar r, g, b, a;
-
-		  get_pixel_rgba (color, r, g, b, a);
-
-		  /* pre-multipled alpha */
-		  if (a == 0) {
-		  	r = g = b = 0;
-		  }
-		  else if (a < 255) {
-		  	r = pre_multiplied_table [r][a];
-			g = pre_multiplied_table [b][a];
-			b = pre_multiplied_table [g][a];
-		  }
-
-		  /* store it back, swapping red and blue */
-		  set_pixel_bgra (p, 0, r, g, b, a);
-
-		  p += 4;
+		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (fname, &error);
+		fprintf (stderr, "TODO/WARNING: We need to register Image callbacks to raise events in managed land\n");
+		if (!pixbuf){
+			printf ("Failed to load image %s\n", fname);
+			return;
 		}
-	}
 
-	surface = cairo_image_surface_create_for_data (pb_pixels,
-						       CAIRO_FORMAT_ARGB32,
-						       pixbuf_width,
-						       pixbuf_height,
-						       gdk_pixbuf_get_rowstride (pixbuf));
+		printf ("Loaded image %s!\n", fname);
+
+		surface_height = gdk_pixbuf_get_height (pixbuf);
+		surface_width = gdk_pixbuf_get_width (pixbuf);
+
+		if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
+			g_object_ref (pixbuf);
+		} else {
+			/* gdk-pixbuf packs its pixel data into 24 bits for
+			   rgb, instead of 32 with an unused byte for alpha,
+			   like cairo expects */
+
+			GdkPixbuf *pb = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, surface_width, surface_height);
+			gdk_pixbuf_copy_area (pixbuf,
+					      0, 0, surface_width, surface_height,
+					      pb,
+					      0, 0);
+			pixbuf = pb;
+		}
+
+		guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
+		guchar *p;
+		for (int y = 0; y < surface_height; y ++) {
+			p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
+			for (int x = 0; x < surface_width; x ++) {
+				guint32 color = *(guint32*)p;
+				guchar r, g, b, a;
+
+				get_pixel_rgba (color, r, g, b, a);
+
+				/* pre-multipled alpha */
+				if (a == 0) {
+					r = g = b = 0;
+				}
+				else if (a < 255) {
+					r = pre_multiplied_table [r][a];
+					g = pre_multiplied_table [b][a];
+					b = pre_multiplied_table [g][a];
+				}
+
+				/* store it back, swapping red and blue */
+				set_pixel_bgra (p, 0, r, g, b, a);
+
+				p += 4;
+			}
+		}
+
+		surface = cairo_image_surface_create_for_data (pb_pixels,
+							       CAIRO_FORMAT_ARGB32,
+							       surface_width,
+							       surface_height,
+							       gdk_pixbuf_get_rowstride (pixbuf));
+
+		g_object_unref (pixbuf);
+
+		g_hash_table_insert (surface_cache, g_strdup (fname), surface);
+	}
 }
 
 void
@@ -769,7 +792,7 @@ Image::pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data)
 }
 
 void
-Image::Render (cairo_t *cr, int x, int y, int width, int height)
+Image::Render (cairo_t *cr, int, int, int, int)
 {
 	if (!surface)
 		return;
@@ -778,10 +801,10 @@ Image::Render (cairo_t *cr, int x, int y, int width, int height)
 		create_xlib_surface = false;
 		cairo_surface_t *xlib_surface = cairo_surface_create_similar (cairo_get_target (cr),
 									      CAIRO_CONTENT_COLOR_ALPHA,
-									      pixbuf_width, pixbuf_height);
+									      surface_width, surface_height);
 		cairo_t *cr = cairo_create (xlib_surface);
 		cairo_set_source_surface (cr, surface, 0, 0);
-		cairo_rectangle (cr, 0, 0, pixbuf_width, pixbuf_height);
+		cairo_rectangle (cr, 0, 0, surface_width, surface_height);
 		cairo_fill (cr);
 		cairo_destroy (cr);
 		cairo_surface_destroy (surface);
@@ -801,12 +824,12 @@ Image::Render (cairo_t *cr, int x, int y, int width, int height)
 	if (!pattern || (pattern_opacity != opacity)) {
 		if (pattern)
 			cairo_pattern_destroy (pattern);
-		pattern = image_brush_create_pattern (cr, surface, pixbuf_width, pixbuf_height, opacity);
+		pattern = image_brush_create_pattern (cr, surface, surface_width, surface_height, opacity);
 		pattern_opacity = opacity;
 	}
 
 	cairo_matrix_t matrix;
-	image_brush_compute_pattern_matrix (&matrix, w, h, pixbuf_width, pixbuf_height, stretch, 
+	image_brush_compute_pattern_matrix (&matrix, w, h, surface_width, surface_height, stretch, 
 		AlignmentXCenter, AlignmentYCenter, NULL);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
@@ -870,9 +893,16 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 		
 		char *source = GetValue (prop)->AsString();
 		
-		printf ("setting image source to '%s'\n", source);
 		SetSource (new Downloader (), source);
 	}
+
+	if (prop->type != Type::IMAGE) {
+		MediaBase::OnPropertyChanged (prop);
+		return;
+	}
+
+	// we need to notify attachees if our DownloadProgress changed.
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 Image *

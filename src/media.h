@@ -69,10 +69,12 @@ class Image : public MediaBase {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
-	int GetHeight () { return pixbuf_height; };
-	int GetWidth  () { return pixbuf_width; };
+	int GetHeight () { return surface_height; };
+	int GetWidth  () { return surface_width; };
 
 	ImageBrush *brush;
+
+	static GHashTable *surface_cache;
 
  private:
 	bool create_xlib_surface;
@@ -91,10 +93,10 @@ class Image : public MediaBase {
 	static void size_notify (int64_t size, gpointer data);
 
 	Downloader *downloader;
-	GdkPixbuf *pixbuf;
 	cairo_surface_t *surface;
-	int pixbuf_width;
-	int pixbuf_height;
+	char *fname;
+	int surface_width;
+	int surface_height;
 
 	// pattern caching
 	cairo_pattern_t *pattern;
