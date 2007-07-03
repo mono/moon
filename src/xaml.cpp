@@ -68,6 +68,45 @@ void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlEle
 
 
 
+class XamlElementInstance : public List::Node {
+ public:
+	const char *element_name;
+	const char *instance_name;
+
+	XamlElementInfo *info;
+
+	XamlElementInstance *parent;
+	List *children;
+
+	enum ElementType {
+		ELEMENT,
+		PROPERTY,
+		UNKNOWN
+	};
+
+	int element_type;
+	DependencyObject *item;
+
+
+	XamlElementInstance (XamlElementInfo *info) : element_name (NULL), instance_name (NULL),
+						      info (info), parent (NULL), element_type (UNKNOWN),
+						      item (NULL)
+	{
+		children = new List ();
+	}
+	
+	~XamlElementInstance ()
+	{
+		children->Clear (true);
+		delete children;
+		if (instance_name)
+			delete instance_name;
+		// if (element_name && element_type == PROPERTY)
+		//	delete element_name;
+	}
+};
+
+
 class XamlParserInfo {
  public:
 	XML_Parser parser;
@@ -104,41 +143,11 @@ class XamlParserInfo {
 	{
 		if (char_data_buffer)
 			g_string_free (char_data_buffer, TRUE);
+		if (top_element)
+			delete top_element;
 	}
 };
 
-class XamlElementInstance : public List::Node {
- public:
-	const char *element_name;
-	const char *instance_name;
-
-	XamlElementInfo *info;
-	XamlElementInstance *parent;
-	List *children;
-
-	enum ElementType {
-		ELEMENT,
-		PROPERTY,
-		UNKNOWN
-	};
-
-	int element_type;
-	DependencyObject *item;
-
-
-	XamlElementInstance (XamlElementInfo *info) : element_name (NULL), instance_name (NULL),
-						      info (info), parent (NULL), element_type (UNKNOWN),
-						      item (NULL)
-	{
-		children = new List ();
-	}
-	
-	~XamlElementInstance ()
-	{
-		children->Clear (true);
-		delete children;
-	}
-};
 
 class XamlElementInfo {
  public:
@@ -661,12 +670,6 @@ add_default_namespaces (XamlParserInfo *p)
 }
 
 void
-free_recursive (XamlElementInstance *el)
-{
-	
-}
-
-void
 print_tree (XamlElementInstance *el, int depth)
 {
 	for (int i = 0; i < depth; i++)
@@ -776,7 +779,6 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_element->info->dependency_type;
-		free_recursive (parser_info->top_element);
 
 		if (parser_info->error_args) {
 			*element_type = Type::INVALID;
@@ -849,6 +851,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 
 	if (!XML_Parse (p, xaml, strlen (xaml), TRUE)) {
 		parser_error (parser_info, NULL, NULL, g_strdup_printf (XML_ErrorString (XML_GetErrorCode (p))));
+		printf ("error parsing:  %s\n\n", xaml);
 		goto cleanup_and_return;
 	}
 
@@ -858,13 +861,13 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 
 	if (parser_info->error_args) {
 		// Emit the error event
+		printf ("error parsing:  %s\n\n", xaml);
 	}
 
 	if (parser_info->top_element) {
 		res = (UIElement *) parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_element->info->dependency_type;
-		free_recursive (parser_info->top_element);
 
 		if (parser_info->error_args) {
 			res = NULL;

@@ -1,3 +1,8 @@
+2007-07-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Some post parsing memory cleanup and a little extra
+	debug code.
+
 2007-07-03  Chris Toshok  <toshok@ximian.com>
 
 	* text.h: add prototype for text_block_set_font_source.
