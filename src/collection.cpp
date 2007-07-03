@@ -421,13 +421,19 @@ VisualCollection::Remove (DependencyObject *data)
 void
 VisualCollection::Clear ()
 {
+	if (list->Length() == 0)
+		return;
+
 	Panel *panel = (Panel *) closure;
 
 	z_sorted_list->Clear (true);
 	Collection::Clear ();
 
+	// we need to force the invalidate here if the bounds don't
+	// change, as it means the canvas has width/height explicitly
+	// set.
 	if (panel)
-		panel->UpdateBounds ();
+		panel->UpdateBounds (true);
 }
 
 

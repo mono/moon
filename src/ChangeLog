@@ -1,5 +1,11 @@
 2007-07-03  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp (VisualCollection::Clear): force the invalidate
+	when we update our bounds.  Also, don't do anything if the length
+	of the collection is 0.
+
+2007-07-03  Chris Toshok  <toshok@ximian.com>
+
 	* canvas.cpp (Canvas::ComputeBounds): we need to always include
 	our FrameworkElement::Width/Height in our bounds computation,
 	instead of only consulting them if we have no children.
