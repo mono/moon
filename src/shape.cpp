@@ -204,8 +204,11 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	
 	if (stroke) {
 		double thickness = shape_get_stroke_thickness (this);
-		if (thickness == 0)
+		if (thickness == 0) {
+			if (drawn)
+				cairo_new_path (cr);
 			return;
+		}
 
 		cairo_set_line_width (cr, thickness);
 
@@ -237,6 +240,10 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 			stroke->SetupBrush (cr, this);
 			cairo_stroke (cr);
 		}
+	}
+	else {
+		if (drawn)
+			cairo_new_path (cr);
 	}
 }
 
