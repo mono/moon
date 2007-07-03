@@ -570,11 +570,14 @@ Image::CleanupSurface ()
 	CleanupPattern ();
 
 	if (surface) {
+#if notyet
+	  /* we need to fix libtool's ass backwardness */
 		if (cairo_surface_get_reference_count (surface) == 1) {
 			g_hash_table_remove (surface_cache, fname);
 		}
 
 		cairo_surface_destroy (surface);
+#endif
 		surface = NULL;
 
 		g_free (fname);
