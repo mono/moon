@@ -124,17 +124,21 @@ Canvas::ComputeBounds ()
 		}
 
 		// If we found nothing.
-		if (first){
-			double x1, y1, x2, y2;
-			x1 = y1 = 0;
-			x2 = framework_element_get_width (this);
-			y2 = framework_element_get_height (this);
+		double x1, x2, y1, y2;
+		
+		x1 = y1 = 0.0;
+		x2 = framework_element_get_width (this);
+		y2 = framework_element_get_height (this);
 
-			cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
-			cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
+		cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
+		cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
 
-			bounds = Rect (x1, y1, x2, y2);
-		}
+		Rect fw_rect = Rect (x1, y1, x2 - x1, y2 - y1);
+
+		if (first)
+			bounds = fw_rect;
+		else
+			bounds = bounds.Union (fw_rect);
 	}
 #if DEBUG_BOUNDS
 	space (levelb);

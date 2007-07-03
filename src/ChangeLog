@@ -1,5 +1,11 @@
 2007-07-03  Chris Toshok  <toshok@ximian.com>
 
+	* canvas.cpp (Canvas::ComputeBounds): we need to always include
+	our FrameworkElement::Width/Height in our bounds computation,
+	instead of only consulting them if we have no children.
+
+2007-07-03  Chris Toshok  <toshok@ximian.com>
+
 	* media.cpp, media.h: add an image surface cache.  we don't cache
 	the xlib surface unfortunately, so there's still a slowdown from
 	generating 1 per Image for shared pixbufs.
