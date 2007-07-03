@@ -1,0 +1,269 @@
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// maker.cs
+//
+// Author:
+//   Jackson Harper (jackson@ximian.com)
+//
+// Copyright 2007 Novell, Inc.
+//
+// 
+
+
+using System;
+using System.IO;
+using System.Xml;
+using System.Xml.XPath;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.Collections;
+
+using Microsoft.CSharp;
+
+namespace Moonlight {
+
+	public class XamlG {
+
+		private static readonly string help_string = "xamlg.exe - a utility for generating partial classes from XAML.\n" +
+				"xamlg.exe [/lang:NAME] xamlfile[,outputfile]...\n\n" +
+				"If an outputfile is not specified one will be created using the format <xamlfile>.g.cs\n" +
+				"lang may be CS for C Sharp or VB for Visual Basic\n";
+
+		private static CodeDomProvider provider = new CSharpCodeProvider ();
+
+		public static void Main (string [] args)
+		{
+			if (args.Length < 1) {
+				Console.WriteLine (help_string);
+				Environment.Exit (0);
+			}
+
+			int ind;
+			for (ind = 0; ind < args.Length; ind++) {
+				if (args [ind].StartsWith ("-lang:")) {
+					int sub = "-lang:".Length;
+					string lang = args [ind].Substring (sub, args [ind].Length - sub);
+					switch (lang) {
+					case "CS":
+						provider = new CSharpCodeProvider ();
+						break;
+					case "VB":
+						provider = new Microsoft.VisualBasic.VBCodeProvider ();
+						break;
+					default:
+						Console.WriteLine ("unknown language specified.");
+						break;
+					}
+				} else if (args [ind] == "-help" || args [ind] == "-?") {
+					Console.WriteLine (help_string);
+					return;
+				} else
+					break;
+			}
+
+			for ( ; ind < args.Length; ind++) {
+				string f = args [ind];
+				string n;
+
+				int sub = args [ind].IndexOf (",");
+				if (sub > 0) {
+					n = f.Substring (sub + 1);
+					f = f.Substring (0, sub);
+				} else {
+					n = String.Concat (Path.GetFileName (f), ".g.", provider.FileExtension);
+				}
+
+				GenerateFile (f, n);
+			}
+		}
+
+		public static void GenerateFile (string xaml_file, string out_file)
+		{
+			XmlDocument xmldoc = new XmlDocument ();
+			xmldoc.Load (xaml_file);
+
+			XmlNamespaceManager nsmgr = new XmlNamespaceManager (xmldoc.NameTable);
+			nsmgr.AddNamespace("x", "http://schemas.microsoft.com/winfx/2006/xaml");
+
+			XmlNode root = xmldoc.SelectSingleNode ("/*", nsmgr);
+			if (root == null) {
+				Console.Error.WriteLine ("{0}:  No root node found.", xaml_file);
+				return;
+			}
+
+			XmlAttribute root_class = root.Attributes ["x:Class"];
+			if (root_class == null) {
+				Console.Error.WriteLine ("{0}:  Does not contain an x:Class attribute.", xaml_file);
+				return;
+			}
+
+			string root_ns;
+			string root_type;
+			string root_asm;
+
+			ParseXmlns (root_class.Value, out root_type, out root_ns, out root_asm);
+
+			Hashtable names_and_types = GetNamesAndTypes (root, nsmgr);
+
+			CodeCompileUnit ccu = new CodeCompileUnit ();
+			CodeNamespace decl_ns = new CodeNamespace (root_ns);
+			ccu.Namespaces.Add (decl_ns);
+
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Controls"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Documents"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Input"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Media"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Media.Animation"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Shapes"));
+
+			CodeTypeDeclaration decl_type = new CodeTypeDeclaration (root_type);
+			decl_type.IsPartial = true;
+
+			decl_ns.Types.Add (decl_type);
+			
+			CodeMemberMethod initcomp = new CodeMemberMethod ();
+			initcomp.Name = "InitializeComponent";
+			decl_type.Members.Add (initcomp);
+
+			foreach (DictionaryEntry entry  in names_and_types) {
+				string name = (string) entry.Key;
+				string type = (string) entry.Value;
+					
+				CodeMemberField field = new CodeMemberField ();
+				field.Name = name;
+				field.Type = new CodeTypeReference (type);
+
+				decl_type.Members.Add (field);
+
+				CodeMethodInvokeExpression find_invoke = new CodeMethodInvokeExpression (
+					new CodeThisReferenceExpression(), "FindName", 
+					new CodeExpression[] { new CodePrimitiveExpression (name) } );
+
+				CodeCastExpression cast = new CodeCastExpression (type, find_invoke);
+
+				CodeAssignStatement assign = new CodeAssignStatement (
+					new CodeVariableReferenceExpression (name), cast);
+
+				initcomp.Statements.Add (assign);
+			}
+
+			using (StreamWriter writer = new StreamWriter (out_file)) {
+				provider.GenerateCodeFromCompileUnit (ccu, writer, new CodeGeneratorOptions ());
+			}
+		}
+
+		private static Hashtable GetNamesAndTypes (XmlNode root, XmlNamespaceManager nsmgr)
+		{
+			Hashtable res = new Hashtable ();
+
+			XmlNodeList names = root.SelectNodes ("//*[@x:Name]", nsmgr);
+			foreach (XmlNode node in names)	{
+
+				// Don't take the root canvas
+				if (node == root)
+					continue;
+
+				XmlAttribute attr = node.Attributes ["x:Name"];
+				string name = attr.Value;
+				string ns = GetNamespace (node);
+				string member_type = node.LocalName;
+
+				if (ns != null)
+					member_type = String.Concat (ns, ".", member_type);
+
+				res [name] = member_type;
+			}
+
+			return res;
+		}
+		
+		private static string GetNamespace (XmlNode node)
+		{
+			if (!IsCustom (node.NamespaceURI))
+				return null;
+
+			return ParseNamespaceFromXmlns (node.NamespaceURI);
+		}
+
+		private static bool IsCustom (string ns)
+		{
+			switch (ns) {
+			case "http://schemas.microsoft.com/winfx/2006/xaml":
+			case "http://schemas.microsoft.com/winfx/2006/xaml/presentation":
+			case "http://schemas.microsoft.com/client/2007":
+				return false;
+			}
+
+			return true;
+		}
+
+		private static string ParseNamespaceFromXmlns (string xmlns)
+		{
+			string type_name = null;
+			string ns = null;
+			string asm = null;
+
+			ParseXmlns (xmlns, out type_name, out ns, out asm);
+
+			return ns;
+		}
+
+		private static string ParseTypeFromXmlns (string xmlns)
+		{
+			string type_name = null;
+			string ns = null;
+			string asm = null;
+
+			ParseXmlns (xmlns, out type_name, out ns, out asm);
+
+			return type_name;
+		}
+
+		internal static void ParseXmlns (string xmlns, out string type_name, out string ns, out string asm)
+		{
+			type_name = null;
+			ns = null;
+			asm = null;
+
+			string [] decls = xmlns.Split (';');
+			foreach (string decl in decls) {
+				if (decl.StartsWith ("clr-namespace:")) {
+					ns = decl.Substring (14, decl.Length - 14);
+					continue;
+				}
+				if (decl.StartsWith ("assembly=")) {
+					asm = decl.Substring (9, decl.Length - 9);
+					continue;
+				}
+				int nsind = decl.LastIndexOf (".");
+				if (nsind > 0) {
+					ns = decl.Substring (0, nsind);
+					type_name = decl.Substring (nsind + 1, decl.Length - nsind - 1);
+				} else {
+					type_name = decl;
+				}
+			}
+		}
+	}
+}
+

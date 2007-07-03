@@ -1,1 +1,1 @@
-SUBDIRS = svg2xaml mopen
+SUBDIRS = svg2xaml mopen xamlg

@@ -158,6 +158,7 @@ gtk/gtksilver.pc
 tools/Makefile
 tools/mopen/Makefile
 tools/svg2xaml/Makefile
+tools/xamlg/Makefile
 plugin/Makefile
 plugin/test/Makefile
 plugin/samples/Makefile
