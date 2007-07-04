@@ -150,7 +150,8 @@ Value::Value (Color c)
 {
 	Init ();
 	k = Type::COLOR;
-	u.color = new Color (c);
+	u.color = g_new (Color, 1);
+	*u.color = Color (c);
 }
 
 Value::Value (DependencyObject *obj)
@@ -170,35 +171,40 @@ Value::Value (Point pt)
 {
 	Init ();
 	k = Type::POINT;
-	u.point = new Point (pt);
+	u.point = g_new (Point, 1);
+	*u.point = Point (pt);
 }
 
 Value::Value (Rect rect)
 {
 	Init ();
 	k = Type::RECT;
-	u.rect = new Rect (rect);
+	u.rect = g_new (Rect, 1);
+	*u.rect = Rect (rect);
 }
 
 Value::Value (RepeatBehavior repeat)
 {
 	Init();
 	k = Type::REPEATBEHAVIOR;
-	u.repeat = new RepeatBehavior (repeat);
+	u.repeat = g_new (RepeatBehavior, 1);
+	*u.repeat = RepeatBehavior (repeat);
 }
 
 Value::Value (Duration duration)
 {
 	Init();
 	k = Type::DURATION;
-	u.duration = new Duration (duration);
+	u.duration = g_new (Duration, 1);
+	*u.duration = Duration (duration);
 }
 
 Value::Value (KeyTime keytime)
 {
 	Init ();
 	k = Type::KEYTIME;
-	u.keytime = new KeyTime (keytime);
+	u.keytime = g_new (KeyTime, 1);
+	*u.keytime = KeyTime (keytime);
 }
 
 Value::Value (const char* s)

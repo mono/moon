@@ -1,3 +1,9 @@
+2007-07-04  Miguel de Icaza  <miguel@novell.com>
+
+	* value.cpp (Value): Add a couple of extra cases I had missed
+	where we should be using g_new instead of new as FreeValue always
+	uses g_free.
+
 2007-07-03  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add the stylus types and some missing collections,
