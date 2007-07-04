@@ -1,3 +1,8 @@
+2007-07-04  Miguel de Icaza  <miguel@novell.com>
+
+	* ManagedDownloader.cs: Do not go the expensive route if we are
+	getting a file:// uri, just get directly from the file system.
+
 2007-07-03  Miguel de Icaza  <miguel@novell.com>
 
 	* ManagedDownloader.cs: Adapt to the new downloading framework

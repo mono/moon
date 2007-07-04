@@ -192,10 +192,14 @@ namespace Gtk.Moonlight {
 			}
 
 			try {
-				try {
-					request = WebRequest.Create (uri);
-				} catch (UriFormatException){
-					fname = Path.GetFullPath (uri);
+				if (uri.StartsWith ("file://"))
+					fname = uri.Substring (7);
+				else {
+					try {
+						request = WebRequest.Create (uri);
+					} catch (UriFormatException){
+						fname = Path.GetFullPath (uri);
+					}
 				}
 			} catch (Exception e){
 				Console.WriteLine ("An error happened with the given url {0}", e);
