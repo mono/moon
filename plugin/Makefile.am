@@ -39,9 +39,8 @@ libmoonplugin_la_SOURCES = \
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
-	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so
+	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/moonlight.exe
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
-	cp moonlight.exe ~/.mozilla/plugins
 
 untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonplugin.so

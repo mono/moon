@@ -115,7 +115,14 @@ namespace Moonlight {
 
 		public string TryLoad (out int error)
 		{
-			return rl.TryLoad (out error);
+			Console.Error.WriteLine ("Main domain: Try Load");
+			try {
+				return rl.TryLoad (out error);
+			} catch (Exception e){
+				Console.Error.WriteLine ("Error inside TryLoad: {0}", e);
+				error = 1;
+				return null;
+			}
 		}
 	}
 	

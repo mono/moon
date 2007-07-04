@@ -31,9 +31,8 @@ vm_init (void)
 	const char *home = g_get_home_dir ();
 	gboolean result = FALSE;
 
-	boot_assembly = g_build_path ("/", home, ".mozilla", "plugins", "moonlight.exe", NULL);
-	//boot_assembly = g_build_path (home, ".mozilla", "plugins", "moonlight.exe", NULL);
-
+	boot_assembly = g_build_path ("/", PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
+	printf ("The file is %s\n", boot_assembly);
 
 	mono_config_parse (NULL);
 	moon_domain = mono_jit_init (boot_assembly);
