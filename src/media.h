@@ -69,8 +69,8 @@ class Image : public MediaBase {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
-	int GetHeight () { return surface_height; };
-	int GetWidth  () { return surface_width; };
+	int GetHeight () { return surface ? surface->height : 0; };
+	int GetWidth  () { return surface ? surface->width : 0; };
 
 	ImageBrush *brush;
 
@@ -93,10 +93,20 @@ class Image : public MediaBase {
 	static void size_notify (int64_t size, gpointer data);
 
 	Downloader *downloader;
-	cairo_surface_t *surface;
-	char *fname;
-	int surface_width;
-	int surface_height;
+
+	struct CachedSurface {
+		int ref_cnt;
+
+		char *fname;
+		cairo_surface_t *cairo;
+		bool xlib_surface_created;
+		GdkPixbuf *backing_pixbuf;
+
+		int width;
+		int height;
+	};
+
+	CachedSurface *surface;
 
 	// pattern caching
 	cairo_pattern_t *pattern;

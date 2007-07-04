@@ -1,3 +1,10 @@
+2007-07-04  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp, media.h: rework our caching for images.  we now
+	properly refcount things, don't leak the filename (or the
+	surface), share 1 xlib surface amongst all Image's, and don't
+	crash.  improvements all around!
+
 2007-07-04  Miguel de Icaza  <miguel@novell.com>
 
 	* value.cpp (Value): Add a couple of extra cases I had missed

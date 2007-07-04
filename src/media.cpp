@@ -25,7 +25,6 @@
 #include "downloader.h"
 #include "cutil.h"
 
-
 // still too ugly to be exposed in the header files ;-)
 cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
@@ -535,8 +534,6 @@ Image::Image ()
     create_xlib_surface (true),
     downloader (NULL),
     surface (NULL),
-    surface_width (0),
-    surface_height (0),
     pattern (NULL),
     pattern_opacity (1.0)
 {
@@ -570,22 +567,17 @@ Image::CleanupSurface ()
 	CleanupPattern ();
 
 	if (surface) {
-#if notyet
-	  /* we need to fix libtool's ass backwardness */
-		if (cairo_surface_get_reference_count (surface) == 1) {
-			g_hash_table_remove (surface_cache, fname);
+		surface->ref_cnt --;
+		if (surface->ref_cnt == 0) {
+			g_hash_table_remove (surface_cache, surface->fname);
+			g_free (surface->fname);
+			cairo_surface_destroy (surface->cairo);
+			g_object_unref (surface->backing_pixbuf);
+			g_free (surface);
 		}
 
-		cairo_surface_destroy (surface);
-#endif
 		surface = NULL;
-
-		g_free (fname);
-		fname = NULL;
 	}
-
-	surface_width = 0;
-	surface_height = 0;
 }
 
 void
@@ -639,10 +631,10 @@ Image::DownloaderEvent (int kind, void *extra)
 		CreateSurface ((char *) extra);
 
 		if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
-			SetValue (FrameworkElement::WidthProperty, (double) surface_width);
+			SetValue (FrameworkElement::WidthProperty, (double) surface->width);
 
 		if (GetValueNoDefault (FrameworkElement::HeightProperty) == NULL)
-			SetValue (FrameworkElement::HeightProperty, (double) surface_height);
+			SetValue (FrameworkElement::HeightProperty, (double) surface->height);
 
 		if (brush)
 			brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
@@ -693,16 +685,11 @@ Image::CreateSurface (const char *fname)
 	CleanupPattern ();
 
 	if (!surface_cache)
-		surface_cache = g_hash_table_new_full (g_str_hash, g_str_equal, (GDestroyNotify)g_free, NULL);
+		surface_cache = g_hash_table_new (g_str_hash, g_str_equal);
 
-	this->fname = g_strdup (fname);
-
-	surface = (cairo_surface_t*)g_hash_table_lookup (surface_cache, fname);
+	surface = (CachedSurface*)g_hash_table_lookup (surface_cache, fname);
 	if (surface) {
-		surface = cairo_surface_reference (surface);
-
-		surface_height = cairo_image_surface_get_height (surface);
-		surface_width = cairo_image_surface_get_width (surface);
+		surface->ref_cnt ++;
 	}
 	else {
 		GError *error = NULL;
@@ -716,8 +703,12 @@ Image::CreateSurface (const char *fname)
 
 		printf ("Loaded image %s!\n", fname);
 
-		surface_height = gdk_pixbuf_get_height (pixbuf);
-		surface_width = gdk_pixbuf_get_width (pixbuf);
+		surface = g_new0 (CachedSurface, 1);
+
+		surface->ref_cnt = 1;
+		surface->fname = g_strdup (fname);
+		surface->height = gdk_pixbuf_get_height (pixbuf);
+		surface->width = gdk_pixbuf_get_width (pixbuf);
 
 		if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
 			g_object_ref (pixbuf);
@@ -726,9 +717,9 @@ Image::CreateSurface (const char *fname)
 			   rgb, instead of 32 with an unused byte for alpha,
 			   like cairo expects */
 
-			GdkPixbuf *pb = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, surface_width, surface_height);
+			GdkPixbuf *pb = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, surface->width, surface->height);
 			gdk_pixbuf_copy_area (pixbuf,
-					      0, 0, surface_width, surface_height,
+					      0, 0, surface->width, surface->height,
 					      pb,
 					      0, 0);
 			pixbuf = pb;
@@ -736,9 +727,9 @@ Image::CreateSurface (const char *fname)
 
 		guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
 		guchar *p;
-		for (int y = 0; y < surface_height; y ++) {
+		for (int y = 0; y < surface->height; y ++) {
 			p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
-			for (int x = 0; x < surface_width; x ++) {
+			for (int x = 0; x < surface->width; x ++) {
 				guint32 color = *(guint32*)p;
 				guchar r, g, b, a;
 
@@ -761,15 +752,14 @@ Image::CreateSurface (const char *fname)
 			}
 		}
 
-		surface = cairo_image_surface_create_for_data (pb_pixels,
-							       CAIRO_FORMAT_ARGB32,
-							       surface_width,
-							       surface_height,
-							       gdk_pixbuf_get_rowstride (pixbuf));
+		surface->backing_pixbuf = pixbuf;
+		surface->cairo = cairo_image_surface_create_for_data (pb_pixels,
+								      CAIRO_FORMAT_ARGB32,
+								      surface->width,
+								      surface->height,
+								      gdk_pixbuf_get_rowstride (pixbuf));
 
-		g_object_unref (pixbuf);
-
-		g_hash_table_insert (surface_cache, g_strdup (fname), surface);
+		g_hash_table_insert (surface_cache, surface->fname, surface);
 	}
 }
 
@@ -800,18 +790,19 @@ Image::Render (cairo_t *cr, int, int, int, int)
 	if (!surface)
 		return;
 
-	if (create_xlib_surface) {
-		create_xlib_surface = false;
+	if (create_xlib_surface && !surface->xlib_surface_created) {
+		surface->xlib_surface_created = true;
+
 		cairo_surface_t *xlib_surface = cairo_surface_create_similar (cairo_get_target (cr),
 									      CAIRO_CONTENT_COLOR_ALPHA,
-									      surface_width, surface_height);
+									      surface->width, surface->height);
 		cairo_t *cr = cairo_create (xlib_surface);
-		cairo_set_source_surface (cr, surface, 0, 0);
-		cairo_rectangle (cr, 0, 0, surface_width, surface_height);
+		cairo_set_source_surface (cr, surface->cairo, 0, 0);
+		cairo_rectangle (cr, 0, 0, surface->width, surface->height);
 		cairo_fill (cr);
 		cairo_destroy (cr);
-		cairo_surface_destroy (surface);
-		surface = xlib_surface;
+		cairo_surface_destroy (surface->cairo);
+		surface->cairo = xlib_surface;
 	}
 
 	cairo_save (cr);
@@ -827,12 +818,12 @@ Image::Render (cairo_t *cr, int, int, int, int)
 	if (!pattern || (pattern_opacity != opacity)) {
 		if (pattern)
 			cairo_pattern_destroy (pattern);
-		pattern = image_brush_create_pattern (cr, surface, surface_width, surface_height, opacity);
+		pattern = image_brush_create_pattern (cr, surface->cairo, surface->width, surface->height, opacity);
 		pattern_opacity = opacity;
 	}
 
 	cairo_matrix_t matrix;
-	image_brush_compute_pattern_matrix (&matrix, w, h, surface_width, surface_height, stretch, 
+	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
 		AlignmentXCenter, AlignmentYCenter, NULL);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
@@ -880,7 +871,7 @@ Image::GetTransformOrigin ()
 cairo_surface_t *
 Image::GetCairoSurface ()
 {
-	return surface;
+	return surface ? surface->cairo : NULL;
 }
 
 void
