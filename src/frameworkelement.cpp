@@ -37,10 +37,6 @@ FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 bool
 FrameworkElement::InsideObject (Surface *s, double x, double y)
 {
-	// Quick bounding box check.
-	if (!bounds.PointInside (x, y))
-		return FALSE;
-
 	double nx = x, ny = y;
 
 	uielement_transform_point (this, &nx, &ny);

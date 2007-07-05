@@ -32,8 +32,8 @@ class Control : public FrameworkElement {
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 	virtual Point GetTransformOrigin ();
 	virtual bool InsideObject (Surface *s, double x, double y);
-	virtual bool HandleMotion (Surface *s, int state, double x, double y);
-	virtual bool HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual void HandleMotion (Surface *s, int state, double x, double y);
+	virtual void HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	virtual void Enter (Surface *s, int state, double x, double y);
 	virtual void Leave (Surface *s);
 

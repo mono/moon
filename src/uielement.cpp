@@ -19,6 +19,8 @@
 #include "transform.h"
 #include "runtime.h"
 
+#define SHOW_BOUNDING_BOXES 0
+
 void
 UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 {
@@ -260,24 +262,16 @@ UIElement::InsideObject (Surface *s, double x, double y)
 	return false;
 }
 
-bool
+void
 UIElement::HandleMotion (Surface *s, int state, double x, double y)
 {
-	if (InsideObject (s, x, y)){
-		s->cb_motion (this, state, x, y);
-		return true;
-	} 
-	return false;
+	s->cb_motion (this, state, x, y);
 }
 
-bool
+void
 UIElement::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
 {
-	if (InsideObject (s, x, y)){
-		cb (this, state, x, y);
-		return true;
-	}
-	return false;
+	cb (this, state, x, y);
 }
 
 void
@@ -305,6 +299,16 @@ UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	Render (cr, x, y, width, height);
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
+
+#if SHOW_BOUNDING_BOXES
+	cairo_restore (cr);
+	cairo_save (cr);
+	cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 1.0);
+	cairo_set_line_width (cr, 2);
+	cairo_rectangle (cr, bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h - 2);
+	cairo_stroke (cr);
+	cairo_new_path (cr);
+#endif
 }
 
 void

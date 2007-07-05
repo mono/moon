@@ -21,7 +21,7 @@
 #include "runtime.h"
 #include "collection.h"
 
-Canvas::Canvas () : surface (NULL), current_item (NULL)
+Canvas::Canvas () : surface (NULL), mouse_over (NULL)
 {
 }
 
@@ -168,99 +168,126 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 }
 
 bool
-Canvas::HandleMotion (Surface *s, int state, double x, double y)
+Canvas::InsideObject (Surface *s, double x, double y)
 {
-	VisualCollection *children = GetChildren ();
-	bool handled = false;
-	Collection::Node *cn;
-
-	// 
-	// Walk the list in reverse
-	//
-	if (!(cn = (Collection::Node *) children->z_sorted_list->Last ()))
-		goto leave;
-	
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
-		UIElement *item = (UIElement *) cn->obj;
-
-		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
-			continue;
-		
-		// Bounds check:
-		if (!item->GetBounds().PointInside (x, y))
-			continue;
-		
-		handled = item->HandleMotion (s, state, x, y);
-		if (handled){
-			if (item != current_item){
-				if (current_item != NULL)
-					current_item->Leave (s);
-
-				current_item = item;
-				current_item->Enter (s, state, x, y);
-			}
-			goto leave;
-		} 
-	}
-
-	if (current_item != NULL){
-		current_item->Leave (s);
-		current_item = NULL;
-	}
-
- leave:
-	if (handled || InsideObject (s, x, y)){
-		s->cb_motion (this, state, x, y);
+	/* if we have explicitly set width/height, we check them */
+	if (FrameworkElement::InsideObject (s, x, y))
 		return true;
-	}
-	
-	return handled;
+
+	/* otherwise we try to figure out if we're inside one of our child elements */
+	UIElement *mouseover = FindMouseOver (s, x, y);
+
+	return mouseover != NULL;
 }
 
 bool
-Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
+Canvas::CheckOver (Surface *s, UIElement *item, double x, double y)
+{
+	// if the item isn't visible, it's really easy
+	if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
+		return false;
+		
+	// first a quick bounds check
+	if (!item->GetBounds().PointInside (x, y))
+		return false;
+
+	// then, if that passes, a more tailored shape check
+	if (!item->InsideObject (s, x, y))
+		return false;
+
+	return true;
+}
+
+UIElement *
+Canvas::FindMouseOver (Surface *s, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
-	bool handled = false;
 	Collection::Node *cn;
 
-	// 
-	// Walk the list in reverse
+	// if we have a previous mouse_over, see if we're still in it
+	// first, to make things a little quicker in the case where we
+	// have a lot of children
 	//
-	if (!(cn = (Collection::Node *) children->z_sorted_list->Last ()))
-		goto leave;
-	
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
+	if (mouse_over) {
+		if (CheckOver (s, mouse_over, x, y))
+			return mouse_over;
+	}
+
+	// Walk the list in reverse order, since it's sorted in ascending z-index order
+	//
+	for (cn = (Collection::Node *) children->z_sorted_list->Last (); cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
 		UIElement *item = (UIElement *) cn->obj;
 
-		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
+		// skip the mouse_over, since we already checked it above
+		if (item == mouse_over)
 			continue;
 
-		// Quick bound check:
-		if (!item->GetBounds().PointInside (x, y))
-			continue;
-		
-		handled = item->HandleButton (s, cb, state, x, y);
-		if (handled)
-			break;
+		if (CheckOver (s, item, x, y))
+			return item;
 	}
- leave:
-	if (handled || InsideObject (s, x, y)){
-		cb (this, state, x, y);
-		return true;
+
+	return NULL;
+}
+
+void
+Canvas::HandleMotion (Surface *s, int state, double x, double y)
+{
+	UIElement *new_over = FindMouseOver (s, x, y);
+
+	if (new_over != mouse_over) {
+		if (mouse_over)
+			mouse_over->Leave (s);
+
+		mouse_over = new_over;
+
+		if (mouse_over)
+			mouse_over->Enter (s, state, x, y);
 	}
-	
-	return handled;
+
+	if (mouse_over)
+		mouse_over->HandleMotion (s, state, x, y);
+
+	if (mouse_over || InsideObject (s, x, y))
+		UIElement::HandleMotion (s, state, x, y);
+}
+
+void
+Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
+{
+	// not sure if this is correct, but we don't bother updating
+	// the current mouse_over here (and along with that, emitting
+	// enter/leave events).
+	if (mouse_over) {
+		if (mouse_over->GetBounds().PointInside (x, y)
+		    && mouse_over->InsideObject (s, x, y)) {
+
+			mouse_over->HandleButton (s, cb, state, x, y);
+		}
+	}
+
+	UIElement::HandleButton (s, cb, state, x, y);
+}
+
+void
+Canvas::Enter (Surface *s, int state, double x, double y)
+{
+	mouse_over = FindMouseOver (s, x, y);
+
+	if (mouse_over)
+		mouse_over->Enter (s, state, x, y);
+	  
+	UIElement::Enter (s, state, x, y);
 }
 
 void
 Canvas::Leave (Surface *s)
 {
-	if (current_item != NULL){
-	       current_item->Leave (s);
-	       current_item = NULL;
+	if (mouse_over) {
+	       mouse_over->Leave (s);
+	       mouse_over = NULL;
 	}
-	s->cb_mouse_leave (this);
+
+	UIElement::Leave (s);
 }
 
 static int level = 0;

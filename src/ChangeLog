@@ -1,3 +1,23 @@
+2007-07-05  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h, uielement.cpp, canvas.h, canvas.cpp: refactor the
+	mouse event code so that the Handle* calls return void, like the
+	Enter/Leave calls do.  Also, all checks for "inside"-ness happen
+	in the canvas/parent object.  Also factored out the loop over
+	children to "FindMouseOver", with the checks happening in
+	"CheckOver".
+
+	This needs more testing to make sure that we're still emitting
+	events in the right order/amount as silverlight.
+
+	In uielement.cpp, also add support for showing the bounding
+	rectangle.
+
+	* control.h, control.cpp: track event refactoring.
+
+	* frameworkelement.cpp (FrameworkElement::InsideObject): remove
+	the bounding rect check.  that's handled in the parent object now.
+
 2007-07-04  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp, media.h: rework our caching for images.  we now

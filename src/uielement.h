@@ -134,10 +134,9 @@ class UIElement : public Visual {
 	//
 	// HandleMotion:
 	//   handles an mouse motion event, and dispatches it to anyone that
-	//   might want it.   Returns true if the event was within this UIElement
-	//   boundaries.
+	//   might want it.
 	//
-	virtual bool HandleMotion (Surface *s, int state, double x, double y);
+	virtual void HandleMotion (Surface *s, int state, double x, double y);
 
 	//
 	// HandleButton:
@@ -145,9 +144,7 @@ class UIElement : public Visual {
 	//   it to all the objects that might be interested in it (nested
 	//   objects).
 	//
-	//   Returns true if the button click was handled. 
-	//
-	virtual bool HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual void HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
 	
 	//
 	// Enter:
