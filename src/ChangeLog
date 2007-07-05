@@ -1,5 +1,21 @@
 2007-07-05  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp, runtime.h: store the last mouse position of events
+	so that we can continue to update after the clock tick (and
+	provide motion/enter/leave events to elements that might have
+	moved under the pointer).
+
+	The "update-input" event isn't presently emitted (see clock.cpp)
+	because it results in this code calling HandleMotion on every
+	tick, which ends up emitting the C# event (which is wrong).
+
+	* clock.h, clock.cpp: add a (presently unused) phase to the clock
+	tick to update the current mouse over after we've updated our
+	clocks (and therefore possibly updated the transforms on
+	elements).
+
+2007-07-05  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.cpp (dependency_object_get_name): change this
 	to return the x:Name value if there is one (and "(null)" if not).
 	(dependency_object_get_type_name): and make this function do the

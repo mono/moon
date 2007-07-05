@@ -66,7 +66,7 @@ TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
     current_timeout (FPS_TO_DELAY (DESIRED_FPS)),  /* something suitably small */
-    flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL)),
+    flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
 {
 	start_time = get_now ();
@@ -168,6 +168,12 @@ TimeManager::Tick ()
 		// ... then cause all clocks to raise the events they've queued up
 		RaiseEnqueuedEvents ();
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
+	}
+
+	if (flags & TIME_MANAGER_UPDATE_INPUT) {
+		STARTTICKTIMER (tick_input, "TimeManager::Tick - Input");
+		Emit ("update-input");
+		ENDTICKTIMER (tick_input, "TimeManager::Tick - Input");
 	}
 
 	if (flags & TIME_MANAGER_RENDER) {

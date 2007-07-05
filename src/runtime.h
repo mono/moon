@@ -80,6 +80,9 @@ class Surface {
 
 	int frames;
 
+	int last_event_state;
+	double last_event_x, last_event_y;
+
 	callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
 	callback_plain_event cb_got_focus, cb_lost_focus, cb_loaded, cb_mouse_leave, cb_surface_resize;
 	callback_keyboard_event cb_keydown, cb_keyup;

@@ -194,7 +194,8 @@ class TimeManager : public EventObject {
 	enum TimeManagerOp {
 		TIME_MANAGER_UPDATE_CLOCKS = 0x01,
 		TIME_MANAGER_RENDER = 0x02,
-		TIME_MANAGER_TICK_CALL = 0x04
+		TIME_MANAGER_TICK_CALL = 0x04,
+		TIME_MANAGER_UPDATE_INPUT = 0x08
 	};
 
 	TimeManagerOp flags;

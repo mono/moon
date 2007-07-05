@@ -121,6 +121,13 @@ render_surface (gpointer data)
 	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
 }
 
+static void
+update_input (gpointer data)
+{
+	Surface *s = (Surface*)data;
+	s->toplevel->HandleMotion (s, s->last_event_state, s->last_event_x, s->last_event_y);
+}
+
 gboolean
 realized_callback (GtkWidget *widget, gpointer data)
 {
@@ -129,7 +136,7 @@ realized_callback (GtkWidget *widget, gpointer data)
 	create_similar (s, widget);
 	s->cairo = s->cairo_xlib;
 
-	TimeManager::Instance()->AddHandler ("render", render_surface, s);
+	TimeManager::Instance()->AddHandler ("update-input", update_input, s);
 	return TRUE;
 }
 
@@ -145,6 +152,7 @@ unrealized_callback (GtkWidget *widget, gpointer data)
 
 	s->cairo = s->cairo_buffer;
 	TimeManager::Instance()->RemoveHandler ("render", render_surface, s);
+	TimeManager::Instance()->RemoveHandler ("update-input", update_input, s);
 	return TRUE;
 }
 
@@ -256,6 +264,10 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 		state = (GdkModifierType)event->state;
 	}
 
+	s->last_event_x = x;
+	s->last_event_y = y;
+	s->last_event_state = state;
+
 	s->toplevel->HandleMotion (s, state, x, y);
 	return TRUE;
 }
@@ -279,10 +291,15 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 		
 		s->toplevel->HandleMotion (s, event->state, x, y);
 		s->toplevel->Enter (s, event->state, x, y);
+
+		s->last_event_x = x;
+		s->last_event_y = y;
+		s->last_event_state = event->state;
+	
 	} else {
 		s->toplevel->Leave (s);
 	}
-	
+
 	return TRUE;
 }
 
@@ -475,6 +492,7 @@ Surface::~Surface ()
 	// very useful
 	//
 	TimeManager::Instance()->RemoveHandler ("render", render_surface, this);
+	TimeManager::Instance()->RemoveHandler ("update-input", update_input, this);
 
 	if (toplevel) {
 		toplevel->unref ();
