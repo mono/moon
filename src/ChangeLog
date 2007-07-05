@@ -1,5 +1,15 @@
 2007-07-05  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp (dependency_object_get_name): change this
+	to return the x:Name value if there is one (and "(null)" if not).
+	(dependency_object_get_type_name): and make this function do the
+	job originally done by _get_name.
+
+	* dependencyobject.h: add dependency_object_get_type_name
+	prototype.
+
+2007-07-05  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h, uielement.cpp, canvas.h, canvas.cpp: refactor the
 	mouse event code so that the Handle* calls return void, like the
 	Enter/Leave calls do.  Also, all checks for "inside"-ness happen

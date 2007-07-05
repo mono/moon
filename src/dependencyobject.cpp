@@ -388,13 +388,21 @@ dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind
 const char *
 dependency_object_get_name (DependencyObject *obj)
 {
-	return obj->GetTypeName ();
+	Value *v = obj->GetValue (DependencyObject::NameProperty);
+
+	return v ? (v->AsString () ? v->AsString() : "(null)") : "(null)";
 }
 
 Type::Kind
 dependency_object_get_object_type (DependencyObject *obj)
 {
 	return obj->GetObjectType ();
+}
+
+const char *
+dependency_object_get_type_name (DependencyObject *obj)
+{
+	return obj->GetTypeName ();
 }
 
 void

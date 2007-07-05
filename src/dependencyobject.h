@@ -163,6 +163,7 @@ DependencyObject *dependency_object_find_name (DependencyObject *obj, const char
 const char       *dependency_object_get_name  (DependencyObject *obj);
 
 Type::Kind dependency_object_get_object_type (DependencyObject *obj);
+const char *dependency_object_get_type_name (DependencyObject *obj);
 
 void dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
 void dependency_object_remove_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
