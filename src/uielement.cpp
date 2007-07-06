@@ -19,7 +19,7 @@
 #include "transform.h"
 #include "runtime.h"
 
-#define SHOW_BOUNDING_BOXES 0
+#define SHOW_BOUNDING_BOXES 1
 
 void
 UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
@@ -262,8 +262,11 @@ UIElement::InsideObject (Surface *s, double x, double y)
 }
 
 void
-UIElement::HandleMotion (Surface *s, int state, double x, double y)
+UIElement::HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor)
 {
+	if (cursor && *cursor == MouseCursorDefault)
+		*cursor = (MouseCursor)GetValue (UIElement::CursorProperty)->AsInt32();
+
 	s->cb_motion (this, state, x, y);
 }
 
@@ -372,8 +375,8 @@ uielement_init (void)
 	UIElement::OpacityMaskProperty = DependencyObject::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
 	UIElement::TriggersProperty = DependencyObject::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransformOrigin", Type::POINT);
-	UIElement::CursorProperty = DependencyObject::Register (Type::UIELEMENT, "Cursor", Type::INT32);
-	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", Type::BOOL);
+	UIElement::CursorProperty = DependencyObject::Register (Type::UIELEMENT, "Cursor", new Value ((gint32)MouseCursorDefault));
+	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", new Value (true));
 	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_COLLECTION);
 	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;

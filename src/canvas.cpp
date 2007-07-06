@@ -186,7 +186,11 @@ Canvas::CheckOver (Surface *s, UIElement *item, double x, double y)
 	// if the item isn't visible, it's really easy
 	if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
 		return false;
-		
+
+	// if the item doesn't take part in hit testing, it's also easy
+	if (item->GetValue (UIElement::IsHitTestVisibleProperty)->AsBool() == false)
+		return false;
+
 	// first a quick bounds check
 	if (!item->GetBounds().PointInside (x, y))
 		return false;
@@ -230,7 +234,7 @@ Canvas::FindMouseOver (Surface *s, double x, double y)
 }
 
 void
-Canvas::HandleMotion (Surface *s, int state, double x, double y)
+Canvas::HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor)
 {
 	UIElement *new_over = FindMouseOver (s, x, y);
 
@@ -244,11 +248,14 @@ Canvas::HandleMotion (Surface *s, int state, double x, double y)
 			mouse_over->Enter (s, state, x, y);
 	}
 
+	if (cursor && *cursor == MouseCursorDefault)
+		*cursor = (MouseCursor)GetValue (UIElement::CursorProperty)->AsInt32();
+
 	if (mouse_over)
-		mouse_over->HandleMotion (s, state, x, y);
+		mouse_over->HandleMotion (s, state, x, y, cursor);
 
 	if (mouse_over || InsideObject (s, x, y))
-		UIElement::HandleMotion (s, state, x, y);
+		UIElement::HandleMotion (s, state, x, y, NULL);
 }
 
 void

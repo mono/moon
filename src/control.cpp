@@ -81,11 +81,11 @@ Control::InsideObject (Surface *s, double x, double y)
 }
 
 void
-Control::HandleMotion (Surface *s, int state, double x, double y)
+Control::HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor)
 {
 	if (real_object)
-		real_object->HandleMotion (s, state, x, y);
-	FrameworkElement::HandleMotion (s, state, x, y);
+		real_object->HandleMotion (s, state, x, y, cursor);
+	FrameworkElement::HandleMotion (s, state, x, y, NULL);
 }
 
 void

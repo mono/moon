@@ -125,7 +125,10 @@ static void
 update_input (gpointer data)
 {
 	Surface *s = (Surface*)data;
-	s->toplevel->HandleMotion (s, s->last_event_state, s->last_event_x, s->last_event_y);
+
+	MouseCursor new_cursor = MouseCursorDefault;
+	s->toplevel->HandleMotion (s, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
+	s->SetCursor (new_cursor);
 }
 
 gboolean
@@ -268,7 +271,10 @@ motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 	s->last_event_y = y;
 	s->last_event_state = state;
 
-	s->toplevel->HandleMotion (s, state, x, y);
+	MouseCursor new_cursor = MouseCursorDefault;
+	s->toplevel->HandleMotion (s, state, x, y, &new_cursor);
+	s->SetCursor (new_cursor);
+
 	return TRUE;
 }
 
@@ -289,8 +295,11 @@ crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer d
 			y -= widget->allocation.y;
 		}
 		
-		s->toplevel->HandleMotion (s, event->state, x, y);
+		MouseCursor new_cursor = MouseCursorDefault;
+		s->toplevel->HandleMotion (s, event->state, x, y, &new_cursor);
 		s->toplevel->Enter (s, event->state, x, y);
+
+		s->SetCursor (new_cursor);
 
 		s->last_event_x = x;
 		s->last_event_y = y;
@@ -475,6 +484,18 @@ surface_resize (Surface *s, int width, int height)
 	gtk_widget_set_size_request (s->drawing_area, width, height);
 }
 
+Surface::Surface()
+  : width (0), height (0), buffer (0), pixbuf (NULL),
+    using_cairo_xlib_surface(0),
+    cairo_buffer_surface (NULL), cairo_buffer(NULL),
+    cairo_xlib(NULL), cairo (NULL), transparent(false),
+    cursor (MouseCursorDefault),
+    cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
+    cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL), cb_surface_resize(NULL),
+    cb_keydown(NULL), cb_keyup(NULL)
+{
+}
+
 Surface::~Surface ()
 {
 	//
@@ -517,6 +538,47 @@ Surface::~Surface ()
 
 		gtk_widget_destroy (drawing_area);
 		drawing_area = NULL;
+	}
+}
+
+void
+Surface::SetCursor (MouseCursor new_cursor)
+{
+	if (new_cursor != cursor) {
+		cursor = new_cursor;
+
+		if (drawing_area == NULL)
+			return;
+
+		GdkCursor *c = NULL;
+		switch (cursor) {
+		case MouseCursorDefault:
+			c = NULL;
+			break;
+		case MouseCursorArrow:
+			c = gdk_cursor_new (GDK_LEFT_PTR);
+			break;
+		case MouseCursorHand:
+			c = gdk_cursor_new (GDK_HAND1);
+			break;
+		case MouseCursorWait:
+			c = gdk_cursor_new (GDK_WATCH);
+			break;
+		case MouseCursorIBeam:
+			c = gdk_cursor_new (GDK_XTERM);
+			break;
+		case MouseCursorStylus:
+			c = gdk_cursor_new (GDK_CROSSHAIR); // ??
+			break;
+		case MouseCursorEraser:
+			c = gdk_cursor_new (GDK_PENCIL); // ??
+			break;
+		case MouseCursorNone:
+			// XXX nothing yet.  create a pixmap cursor with no pixel data
+			break;
+		}
+
+		gdk_window_set_cursor (drawing_area->window, c);
 	}
 }
 

@@ -2106,11 +2106,13 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				int val;
 				enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, attr [i]);
 
+				printf ("value = %s\n", attr [ i + 1 ]);
 				if (emu)
 					val = enum_from_str (emu, attr [i + 1]);
 				else
 					val = (int) strtol (attr [i + 1], NULL, 10);
 				dep->SetValue (prop, Value (val));
+				printf ("val = %d\n", val);
 			}
 				break;
 			case Type::STRING:
@@ -2446,7 +2448,7 @@ xaml_init (void)
 	g_hash_table_insert (enum_map, (char *) "AlignmentY", GINT_TO_POINTER (&alignment_y_map));
 	g_hash_table_insert (enum_map, (char *) "MappingMode", GINT_TO_POINTER (brush_mapping_mode_map));
 	g_hash_table_insert (enum_map, (char *) "ColorInterpolationMode", GINT_TO_POINTER (color_interpolation_mode_map));
-	g_hash_table_insert (enum_map, (char *) "Cursors", GINT_TO_POINTER (cursors_map));
+	g_hash_table_insert (enum_map, (char *) "Cursor", GINT_TO_POINTER (cursors_map));
 	g_hash_table_insert (enum_map, (char *) "ErrorType", GINT_TO_POINTER (error_type_map));
 	g_hash_table_insert (enum_map, (char *) "FillBehavior", GINT_TO_POINTER (fill_behavior_map));
 	g_hash_table_insert (enum_map, (char *) "FillRule", GINT_TO_POINTER (fill_rule_map));

@@ -136,7 +136,7 @@ class UIElement : public Visual {
 	//   handles an mouse motion event, and dispatches it to anyone that
 	//   might want it.
 	//
-	virtual void HandleMotion (Surface *s, int state, double x, double y);
+	virtual void HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor);
 
 	//
 	// HandleButton:

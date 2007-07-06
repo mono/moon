@@ -66,4 +66,15 @@ enum CollectionChangeType {
 	CollectionChangeTypeChanged
 };
 
+enum MouseCursor {
+	MouseCursorDefault,
+	MouseCursorArrow,
+	MouseCursorHand,
+	MouseCursorWait,
+	MouseCursorIBeam,
+	MouseCursorStylus,
+	MouseCursorEraser,
+	MouseCursorNone
+};
+
 #endif

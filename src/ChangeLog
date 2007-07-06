@@ -1,3 +1,22 @@
+2007-07-06  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::SetCursor): new method, used in the event
+	code to update the cursor as we enter/leave elements.
+
+	* runtime.h: add method, cursor_instance field, and move the body
+	of the Surface ctor (and initializations) to the .cpp file.
+	
+	* xaml.cpp: fix name of Cursor property enum mapping.
+
+	* canvas.h, canvas.cpp, uielement.h, uielement.cpp, control.h,
+	control.cpp: add MouseCursor* arg to HandleMotion so we can report
+	back cursor changes on elements.
+
+	Also, in canvas.cpp, implement IsHitTestVisible checking in
+	CheckOver.
+
+	* enums.h: add the MouseCursor enum.
+	
 2007-07-05  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmooninclude_headers): remove cutil.h

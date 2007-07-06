@@ -36,15 +36,11 @@ G_BEGIN_DECLS
 
 class Surface {
  public:
-	Surface () : width (0), height (0), buffer (0), pixbuf (NULL),
-	        using_cairo_xlib_surface(0),
-		cairo_buffer_surface (NULL), cairo_buffer(NULL),
-		cairo_xlib(NULL), cairo (NULL), transparent(false),
-		cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
-		cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL), cb_surface_resize(NULL),
-		cb_keydown(NULL), cb_keyup(NULL) { }
+	Surface();
 	
 	~Surface();
+
+	void SetCursor (MouseCursor cursor);
 
 	int width, height;
 
@@ -77,6 +73,9 @@ class Surface {
 
 	// This currently can only be a canvas.
 	UIElement *toplevel;
+
+	// the currently shown cursor
+	MouseCursor cursor;
 
 	int frames;
 
