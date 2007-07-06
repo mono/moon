@@ -19,7 +19,7 @@
 #include "transform.h"
 #include "runtime.h"
 
-#define SHOW_BOUNDING_BOXES 1
+#define SHOW_BOUNDING_BOXES 0
 
 void
 UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
