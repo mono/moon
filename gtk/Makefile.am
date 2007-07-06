@@ -31,3 +31,6 @@ install-data-local:
 dist-hook:
 	mkdir $(distdir)/docs
 	-cp $(srcdir)/docs/Gtk.Moonlight.xml $(srcdir)/docs/index.xml $(distdir)/docs
+
+push:
+	scp -v gtksilver.tree gtksilver.zip gtksilver.source root@www.go-mono.com:/usr/lib/monodoc/sources/

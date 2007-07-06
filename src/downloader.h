@@ -31,7 +31,6 @@ typedef void     (*downloader_destroy_state_func) (gpointer state);
 typedef void     (*downloader_open_func)(char *verb, char *uri, bool async, gpointer state);
 typedef void     (*downloader_send_func)(gpointer state);
 typedef void     (*downloader_abort_func)(gpointer state);
-typedef char*    (*downloader_get_response_text_func)(char *part, gpointer state);
 
 //
 // downloader_event_notify:
@@ -69,8 +68,7 @@ class Downloader : public DependencyObject {
 				  downloader_destroy_state_func destroy_state,
 				  downloader_open_func open,
 				  downloader_send_func send,
-				  downloader_abort_func abort,
-				  downloader_get_response_text_func get_response_text);
+				  downloader_abort_func abort);
 
 	enum EventKind {
 		NOTIFY_COMPLETED,
@@ -99,7 +97,6 @@ class Downloader : public DependencyObject {
 	static downloader_open_func open;
 	static downloader_send_func send;
 	static downloader_abort_func abort;
-	static downloader_get_response_text_func get_response_text;
 
 	bool Started ();
 	bool Completed ();
@@ -112,11 +109,11 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_destroy_state_func destroy_state,
 			       downloader_open_func open,
 			       downloader_send_func send,
-			       downloader_abort_func abort,
-			       downloader_get_response_text_func get_response);
+			       downloader_abort_func abort);
 
 void  downloader_abort             (Downloader *dl);
-void *downloader_get_response_text (Downloader *dl, char *PartName, uint *size);
+void *downloader_get_response_text (Downloader *dl, char *PartName, uint64_t *size);
+char *downloader_get_response_file (Downloader *dl, char *PartName);
 void  downloader_open              (Downloader *dl, char *verb, char *URI, bool Async);
 void  downloader_send              (Downloader *dl);
 

@@ -69,9 +69,15 @@ libmoon_la_SOURCES = 	\
 	type.cpp	\
 	uielement.cpp	\
 	value.cpp	\
-	xaml.cpp
+	xaml.cpp	\
+	zip/ioapi.c	\
+	zip/ioapi.h	\
+	zip/unzip.c	\
+	zip/unzip.h	\
+	zip/crypt.h
 
-EXTRA_DIST=alpha-premul-table.inc
+
+EXTRA_DIST = alpha-premul-table.inc zip/README zip/ChangeLogUnzip
 
 demo_SOURCES = \
 	demo.cpp

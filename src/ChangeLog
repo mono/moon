@@ -1,3 +1,16 @@
+2007-07-06  Miguel de Icaza  <miguel@novell.com>
+
+	* downloader.cpp: Implement the zip file support for the
+	downloader using miniZip, from:
+
+		http://www.winimage.com/zLibDll/minizip.html
+
+	The implementation is in C++, so there are no needs to delegate
+	this to the managed side as previously planned. 
+
+	There are two APIs: one returns a filename, the other returns the
+	file loaded into memory, with the size of the memory blob.
+
 2007-07-06  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h, uielement.cpp (UIElement::OnPropertyChanged): keep

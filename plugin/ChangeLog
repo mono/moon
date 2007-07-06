@@ -1,3 +1,7 @@
+2007-07-06  Miguel de Icaza  <miguel@novell.com>
+
+	* downloader.cpp: Update to the get-response-text downloader API.
+
 2007-07-03  Miguel de Icaza  <miguel@novell.com>
 
 	* plugin.cpp (NewStream): Request that DOWNLOADER downloads be

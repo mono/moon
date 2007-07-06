@@ -25,16 +25,30 @@ Feel free to add items to this TODO list
 
 * Downloader
 
-	Support a non-streaming mode that would still provide notifications
-	but would not store the data in memory, but instead be notified at
-	the end of the download.
-
-	Currently images are not progressive, and we are just wasting memory,
-	but in addition we need a file to be available if we want to provide
-	ZIP-file services.
-
 	Once we have full files transfered to disk, we can implement the ZIP
 	functionality: GetResponseText (string partName).
+
+	Add support for handling errors on the plugin on downloads.
+
+	Investigate Exception: what happens if you call "Send" without calling Open first?
+
+* Collections:
+
+	Do not allow iterators to continue working after a collection mutation.
+
+* Managed Downloader
+
+	Implement a cache for uris to avoid downloading the same file more
+	than once.
+
+	Implement a check for modification on the requested file to
+	avoid downloading again.
+
+	Queue multiple downloads to the same url and notify multiple
+	sources of the image  being ready at the same time.
+
+	Optimization: if we are coping with a local file, immediately send
+	the "done" notifications.
 
 * Managed Code:
 

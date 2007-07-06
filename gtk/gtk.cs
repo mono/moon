@@ -72,7 +72,6 @@ public class GtkSilver : EventBox {
 	internal delegate void   downloader_open_func  (string verb, string uri, bool async, IntPtr state);
 	internal delegate void   downloader_send_func  (IntPtr state);
 	internal delegate void   downloader_abort_func (IntPtr state);
-	internal delegate string downloader_get_response_text_func (string part, IntPtr state);
 	
 	[DllImport ("moon")]
         internal extern static void downloader_set_functions (
@@ -80,9 +79,7 @@ public class GtkSilver : EventBox {
 		downloader_destroy_state_func destroy_state,
 		downloader_open_func open,
 		downloader_send_func send,
-		downloader_abort_func abort,
-		downloader_get_response_text_func get_response);
-
+		downloader_abort_func abort);
 	
 	static GtkSilver ()
 	{

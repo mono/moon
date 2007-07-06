@@ -116,7 +116,6 @@ static void downloader_open (char *verb, char *uri, bool async, gpointer state);
 static void downloader_send (gpointer state);
 static void downloader_abort (gpointer state);
 static void downloader_abort (gpointer state);
-static char* downloader_get_response_text (char *part, gpointer state);
 
 static void
 text_block_append_line_break (TextBlock *tb)
@@ -191,8 +190,7 @@ main (int argc, char *argv [])
 				  downloader_destroy_state,
 				  downloader_open,
 				  downloader_send,
-				  downloader_abort,
-				  downloader_get_response_text);
+				  downloader_abort);
 
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
@@ -535,14 +533,14 @@ main (int argc, char *argv [])
 
 class FileDownloadState {
  public:
-	FileDownloadState (Downloader *dl) : downloader(dl),uri(NULL) { }
+	FileDownloadState (Downloader *dl) : uri(NULL), downloader(dl) { }
 
 	virtual ~FileDownloadState () { Close (); }
 	size_t size;
 	char *uri;
 
 	void Abort () { Close (); }
-	char* GetResponseText (char* PartName) { return NULL; } // XXX
+	char* GetResponseText (char *fname, char* PartName) { return NULL; } // XXX
 	void Open (char *verb, char *uri, bool async)
 	{
 		int fd = open (uri, O_RDONLY);
@@ -599,11 +597,5 @@ static void
 downloader_abort (gpointer state)
 {
 	((FileDownloadState*)state)->Abort ();
-}
-
-static char*
-downloader_get_response_text (char *part, gpointer state)
-{
-	return ((FileDownloadState*)state)->GetResponseText (part);
 }
 

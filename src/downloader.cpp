@@ -42,7 +42,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include "downloader.h"
+#include "zip/unzip.h"
 
 //
 // Downloader
@@ -53,7 +55,6 @@ downloader_destroy_state_func Downloader::destroy_state = NULL;
 downloader_open_func Downloader::open = NULL;
 downloader_send_func Downloader::send = NULL;
 downloader_abort_func Downloader::abort = NULL;
-downloader_get_response_text_func Downloader::get_response_text = NULL;
 
 struct Listener {
 	downloader_event_notify notify;
@@ -83,6 +84,7 @@ Downloader::~Downloader ()
 		delete listener;
 	}
 	g_slist_free (l);
+	g_free (filename);
 }
 
 void
@@ -92,11 +94,118 @@ downloader_abort (Downloader *dl)
 }
 
 void *
-downloader_get_response_text (Downloader *dl, char* PartName, uint *size)
+downloader_get_response_text (Downloader *dl, char* PartName, uint64_t *size)
 {
-	fprintf (stderr, "Get response text not implemented with the new setup\n");
-	exit (1);
+	FILE *f = NULL;
+	struct stat buf;
+	long n = 0;
+	void *data = NULL;
+
+	char *fname = downloader_get_response_file (dl, PartName);
+	if (fname == NULL)
+		return NULL;
+
+	if (stat (fname, &buf) == -1)
+		goto leave_error;
+	
+	// 
+	// Must use g_malloc here, because the C# code will call
+	// g_free on that
+	//
+	data = g_try_malloc (buf.st_size);
+	if (data == NULL)
+		goto leave_error;
+
+	f = fopen (fname, "r");
+	if (f == NULL)
+		goto leave_error;
+
+	n = fread (data, 1, buf.st_size, f);
+	*size = n;
+	
+	fclose (f);
+	return data;
+
+ leave_error:
+	g_free (fname);
+	if (data != NULL)
+		g_free (data);
+	if (f != NULL)
+		fclose (f);
 	return NULL;
+}
+
+//
+// Returns the filename that holds that given file.
+// 
+// Return values:
+//   A newly allocated string containing the filename.
+//
+char *
+downloader_get_response_file (Downloader *dl, char *PartName)
+{
+	int fd = -1;
+	char buffer [32*1024];
+	char name [L_tmpnam + 1];
+	char *file = NULL;
+	FILE *f = NULL;
+
+	if (dl->filename == NULL)
+		return NULL;
+
+	// Null or empty, get the original file.
+	if (PartName == NULL || *PartName == 0)
+		return g_strdup (dl->filename);
+
+	//
+	// Open zip file
+	//
+	unzFile zipfile = unzOpen (dl->filename);
+	if (zipfile == NULL)
+		return NULL;
+
+	if (unzLocateFile (zipfile, PartName, 0) != UNZ_OK)
+		goto leave;
+
+	if (unzOpenCurrentFile (zipfile) != UNZ_OK)
+		goto leave;
+
+	// 
+	// Create the file where the content is extracted
+	//
+	do {
+		file = tmpnam_r (name);
+		if (file == NULL)
+			goto leave1;
+
+		fd = open (file, O_WRONLY | O_EXCL | O_CREAT, S_IRUSR | S_IWUSR);
+	} while (fd == -1);
+
+	f = fdopen (fd, "w");
+	int n;
+	do {
+		n = unzReadCurrentFile (zipfile, buffer, sizeof (buffer));
+		if (n < 0){
+			unlink (file);
+			file = NULL;
+			goto leave1;
+		}
+		if (fwrite (buffer, n, 1, f) != 1){
+			unlink (file);
+			file = NULL;
+			goto leave1;
+		}
+	} while (n > 0);
+
+ leave1:
+	unzCloseCurrentFile (zipfile);
+ leave:
+	fclose (f);
+	unzClose (zipfile);
+
+	if (file != NULL)
+		return g_strdup (file);
+	return file;
 }
 
 void
@@ -144,15 +253,13 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_destroy_state_func destroy_state,
 			       downloader_open_func open,
 			       downloader_send_func send,
-			       downloader_abort_func abort,
-			       downloader_get_response_text_func get_response)
+			       downloader_abort_func abort)
 {
 	Downloader::create_state = create_state;
 	Downloader::destroy_state = destroy_state;
 	Downloader::open = open;
 	Downloader::send = send;
 	Downloader::abort = abort;
-	Downloader::get_response_text = get_response;
 }
 
 static void
@@ -192,6 +299,7 @@ downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 void
 downloader_notify_finished (Downloader *dl, const char *fname)
 {
+	dl->filename = g_strdup (fname);
 	downloader_notify (dl, Downloader::NOTIFY_COMPLETED, (void *) fname);
 }
 
@@ -264,7 +372,7 @@ dummy_downloader_abort (gpointer state)
 	g_warning ("downloader_set_function has never been called.\n");
 }
 char*
-dummy_downloader_get_response_text (char *part, gpointer state)
+dummy_downloader_get_response_text (char *fname, char *part, gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 	return NULL;
@@ -285,13 +393,12 @@ downloader_init (void)
 	Downloader::UriProperty = DependencyObject::Register (Type::DOWNLOADER, "Uri", Type::STRING);
 
 	if (Downloader::create_state == NULL && Downloader::destroy_state == NULL && Downloader::open ==  NULL && 
-		Downloader::send == NULL && Downloader::abort == NULL && Downloader::get_response_text == NULL)
+		Downloader::send == NULL && Downloader::abort == NULL)
 		downloader_set_functions (
 			dummy_downloader_create_state,
 			dummy_downloader_destroy_state,
 			dummy_downloader_open,
 			dummy_downloader_send,
-			dummy_downloader_abort,
-			dummy_downloader_get_response_text);
+			dummy_downloader_abort);
 }
 

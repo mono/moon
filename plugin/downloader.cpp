@@ -97,12 +97,6 @@ p_downloader_abort (gpointer state)
 	DEBUGMSG ("downloader_abort");
 }
 
-static char*
-p_downloader_get_response_text (char *part, gpointer state)
-{
-	DEBUGMSG ("downloader_get_response_text");
-}
-
 void
 downloader_initialize ()
 {
@@ -111,7 +105,6 @@ downloader_initialize ()
 			p_downloader_destroy_state,
 			p_downloader_open,
 			p_downloader_send,
-			p_downloader_abort,
-			p_downloader_get_response_text);
+			p_downloader_abort);
 }
 
