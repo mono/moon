@@ -56,6 +56,7 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			</mapping>
 			<mapping name="fill" parent="text" value="Foreground" type="attribute"/>
 			<mapping name="transform" value="RenderTransform" type="element" template="transform" prefixParent="true"/>
+			<mapping name="gradientTransform" value="RenderTransform" type="element" template="transform" prefixParent="true"/>
 			<mapping name="viewBox" value="RenderTransform" type="element" template="viewBox" prefixParent="true" names="x y Width Height" filter="local"/>
 
 			<mapping name="stroke-linejoin" value="StrokeLineJoin" type="attribute"/>
@@ -483,16 +484,16 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			<!--- stupid contains thinks an empty space is equal to no space at all... -->
 			<xsl:when test="contains($str,$separator) and substring-after($str, $separator) != $str">
 				<xsl:choose>
-					<xsl:when test="$n = 1 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 1 and (not($mapping) or ($mapping/ignore != substring-before($str, $separator)))">
 						<xsl:attribute name="{$prefix}X"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 2 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 2 and (not($mapping) or ($mapping/ignore != substring-before($str, $separator)))">
 						<xsl:attribute name="{$prefix}Y"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 3 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 3 and (not($mapping) or ($mapping/ignore != substring-before($str, $separator)))">
 						<xsl:attribute name="{$prefix}Width"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 4 and (($mapping/ignore != substring-before($str, $separator)) or not($mapping))">
+					<xsl:when test="$n = 4 and (not($mapping) or ($mapping/ignore != substring-before($str, $separator)))">
 						<xsl:attribute name="{$prefix}Height"><xsl:value-of select="substring-before($str, $separator)"/></xsl:attribute>
 					</xsl:when>
 				</xsl:choose>
@@ -509,16 +510,16 @@ exclude-result-prefixes="svg xsl xaml xlink"
 			<xsl:otherwise>
 				<!-- this is the last one, end recursion -->
 				<xsl:choose>
-					<xsl:when test="$n = 1 and (($mapping/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 1 and (not($mapping) or ($mapping/ignore != $str))">
 						<xsl:attribute name="{$prefix}X"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 2 and (($mapping/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 2 and (not($mapping) or ($mapping/ignore != $str))">
 						<xsl:attribute name="{$prefix}Y"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 3 and (($mapping/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 3 and (not($mapping) or ($mapping/ignore != $str))">
 						<xsl:attribute name="{$prefix}Width"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
-					<xsl:when test="$n = 4 and (($mapping/ignore != $str) or not($mapping))">
+					<xsl:when test="$n = 4 and (not($mapping) or ($mapping/ignore != $str))">
 						<xsl:attribute name="{$prefix}Height"><xsl:value-of select="$str"/></xsl:attribute>
 					</xsl:when>
 				</xsl:choose>
@@ -748,8 +749,10 @@ exclude-result-prefixes="svg xsl xaml xlink"
 										<xsl:for-each select="$style/style/@*">
 											<xsl:choose>
 												<xsl:when test="contains(., 'url')">
-													<xsl:variable name="ref" select="substring-before(substring-after(., 'url(#'), ')')"/>
-													<xsl:apply-templates select="$defs/*[@id=$ref]" mode="defaults"/>
+													<xsl:element name="{$name}.{name()}"  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+														<xsl:variable name="ref" select="substring-before(substring-after(., 'url(#'), ')')"/>
+														<xsl:apply-templates select="$defs/*[@id=$ref]" mode="defaults"/>
+													</xsl:element>
 												</xsl:when>
 												<xsl:otherwise>
 													<xsl:copy-of select="."/>
@@ -759,8 +762,8 @@ exclude-result-prefixes="svg xsl xaml xlink"
 									</style-elements>
 								</xsl:variable>
 								
-								<xsl:copy-of select="$style-elements/style-elements/@*"/>
-								<xsl:copy-of select="$style-elements/style-elements/*"/>
+								<xsl:copy-of select="$style-elements/style-elements/@*" />
+								<xsl:copy-of select="$style-elements/style-elements/*" />
 							</xsl:when>
 	
 							<xsl:when test="$attname='xlink:href'">
