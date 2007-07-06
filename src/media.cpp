@@ -308,11 +308,12 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	if (invalidate)
 		Invalidate ();
 	
-	if (prop->type == Type::MEDIAELEMENT)
+	if (prop->type == Type::MEDIAELEMENT) {
 		NotifyAttacheesOfPropertyChange (prop);
-	
-	// propagate to parent class
-	MediaBase::OnPropertyChanged (prop);
+	} else {
+		// propagate to parent class
+		MediaBase::OnPropertyChanged (prop);
+	}
 }
 
 MediaElement *

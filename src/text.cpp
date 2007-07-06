@@ -377,9 +377,9 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::ComputeBounds ()
 {
+	cairo_t *cr = measuring_context_create ();
 	double x1, y1, x2, y2;
-	cairo_t* cr = measuring_context_create ();
-
+	
 	// optimization: use the cached width/height and draw
 	// a simple rectangle to get bounding box
 	cairo_save (cr);
@@ -552,9 +552,9 @@ TextBlock::Layout (cairo_t *cr)
 		
 		pango_attr_list_insert (attrs, fg_attr);
 	}
-
-	Inlines* inlines = text_block_get_inlines (this);
-
+	
+	Inlines *inlines = text_block_get_inlines (this);
+	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		PangoFontMask run_mask, inherited_mask;
@@ -751,8 +751,7 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	if (prop == TextBlock::ForegroundProperty) {
 		CalcActualWidthHeight (NULL);
 		UpdateBounds (true);
-	}
-	else
+	} else
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }
 

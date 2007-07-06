@@ -176,7 +176,6 @@ private:
 	MangoRenderer *renderer;
 	PangoLayout *layout;
 	Brush *foreground;
-	Inlines *inlines;
 	
 	double actual_height;
 	double actual_width;

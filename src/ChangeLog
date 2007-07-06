@@ -1,5 +1,12 @@
 2007-07-06  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (OnPropertyChanged): Oops, be consistant with other
+	implementations - only chain up if it wasn't a property owned by
+	us.
+
+	* text.cpp: We don't use TextBlock::Inlines anymore, so remove it
+	to save object size.
+
 	* media.cpp (OnPropertyChanged): Fixed to always notify property
 	listeners and chain up to our parent impl.
 
