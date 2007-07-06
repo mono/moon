@@ -71,6 +71,13 @@ Downloader::Downloader ()
 	file_size = -2;
 	total = 0;
 	downloader_events = NULL;
+	part_hash = NULL;
+}
+
+static void 
+delete_file (gpointer key, gpointer value, gpointer user_data)
+{
+	unlink ((char *) value);
 }
 
 Downloader::~Downloader ()
@@ -85,6 +92,12 @@ Downloader::~Downloader ()
 	}
 	g_slist_free (l);
 	g_free (filename);
+
+	// Delete temporary files.
+	if (part_hash != NULL){
+		g_hash_table_foreach (part_hash, delete_file, NULL);
+		g_hash_table_destroy (part_hash);
+	}
 }
 
 void
@@ -135,14 +148,8 @@ downloader_get_response_text (Downloader *dl, char* PartName, uint64_t *size)
 	return NULL;
 }
 
-//
-// Returns the filename that holds that given file.
-// 
-// Return values:
-//   A newly allocated string containing the filename.
-//
-char *
-downloader_get_response_file (Downloader *dl, char *PartName)
+static char *
+ll_downloader_get_response_file (Downloader *dl, char *PartName)
 {
 	int fd = -1;
 	char buffer [32*1024];
@@ -206,6 +213,30 @@ downloader_get_response_file (Downloader *dl, char *PartName)
 	if (file != NULL)
 		return g_strdup (file);
 	return file;
+}
+
+//
+// Returns the filename that holds that given file.
+// 
+// Return values:
+//   A newly allocated string containing the filename.
+//
+char *
+downloader_get_response_file (Downloader *dl, char *PartName)
+{
+	if (dl->part_hash != NULL){
+		char *fname = (char*) g_hash_table_lookup (dl->part_hash, PartName);
+		if (fname != NULL)
+			return g_strdup (fname);
+	}
+
+	char *part = ll_downloader_get_response_file (dl, PartName);
+	if (part != NULL){
+		if (dl->part_hash == NULL)
+			dl->part_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+		g_hash_table_insert (dl->part_hash, g_strdup (PartName), g_strdup (part));
+	}
+	return part;
 }
 
 void

@@ -77,6 +77,7 @@ class Downloader : public DependencyObject {
 	};
 
 	GSList *downloader_events;
+	GHashTable *part_hash;
 
 	int64_t file_size;
 	int64_t total;

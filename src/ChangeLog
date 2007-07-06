@@ -1,3 +1,15 @@
+2007-07-06  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp: Do not pass the filename as the result now on the
+	calls.   Code must use the downloader_get_response_text or
+	downloader_get_response_file to get the contents from the download
+	(as the request will include the part name).
+
+	* downloader.cpp: Add a cache for zip file parts.
+
+	* media.h (Image): track the part name that was requested on the
+	call to SetSource.
+
 2007-07-06  Chris Toshok  <toshok@ximian.com>
 
 	* canvas.cpp (Canvas::ComputeBounds): if the width/height

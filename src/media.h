@@ -107,7 +107,8 @@ class Image : public MediaBase {
 	};
 
 	CachedSurface *surface;
-
+	char *part_name;
+	
 	// pattern caching
 	cairo_pattern_t *pattern;
 	double pattern_opacity;

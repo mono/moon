@@ -529,6 +529,7 @@ Image::Image ()
     create_xlib_surface (true),
     downloader (NULL),
     surface (NULL),
+    part_name(NULL),
     pattern (NULL),
     pattern_opacity (1.0)
 {
@@ -538,6 +539,7 @@ Image::~Image ()
 {
 	StopLoader ();
 	CleanupSurface ();
+	g_free (part_name);
 }
 
 void
@@ -591,6 +593,8 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	if (downloader)
 		downloader->unref ();
 
+	part_name = g_strdup (PartName);
+
 	CleanupSurface ();
 	Invalidate (); 
 
@@ -601,13 +605,12 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 
 	if (downloader->Started ()) {
 		if (downloader->Completed ())
-			DownloaderEvent (Downloader::NOTIFY_COMPLETED, downloader->filename);
+			DownloaderEvent (Downloader::NOTIFY_COMPLETED, NULL);
 		
 		UpdateProgress ();
 	} else {
 		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
-		downloader_open (downloader, "GET", PartName, true);
-
+		
 		// This is what actually triggers the download
 		downloader_send (downloader);
 	}
@@ -623,7 +626,9 @@ void
 Image::DownloaderEvent (int kind, void *extra)
 {
 	if (kind == Downloader::NOTIFY_COMPLETED) {
-		CreateSurface ((char *) extra);
+		char *file = downloader_get_response_file (downloader, part_name);
+		CreateSurface (file);
+		g_free (file);
 
 		if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
 			SetValue (FrameworkElement::WidthProperty, (double) surface->width);
@@ -882,7 +887,9 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 		
 		char *source = GetValue (prop)->AsString();
 		
-		SetSource (new Downloader (), source);
+		Downloader *dl = new Downloader ();
+		downloader_open (dl, "GET", source, true);
+		SetSource (dl, "");
 	}
 
 	if (prop->type != Type::IMAGE) {
