@@ -58,7 +58,8 @@ class Surface {
 	int GetFrameCount () { return frames; }
 	void ResetFrameCount () { frames = 0; }
 
-	GtkWidget *GetDrawingArea () { return drawing_area; }
+	GtkWidget* GetDrawingArea () { return drawing_area; }
+	UIElement* GetToplevel() { return toplevel; }
 
 	void RegisterEvents (callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
 			     callback_mouse_event enter,
