@@ -46,11 +46,11 @@ class Canvas : public Panel {
 	virtual void UpdateTransform ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
-	bool CheckOver (Surface *s, UIElement *item, double x, double y);
+	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 
-	virtual UIElement* FindMouseOver (Surface *s, double x, double y);
+	virtual UIElement* FindMouseOver (cairo_t *cr, double x, double y);
 
-	virtual bool InsideObject (Surface *s, double x, double y);
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	virtual void HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor);
 	virtual void HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);

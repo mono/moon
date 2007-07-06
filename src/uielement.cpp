@@ -252,7 +252,7 @@ UIElement::Invalidate ()
 
 
 bool
-UIElement::InsideObject (Surface *s, double x, double y)
+UIElement::InsideObject (cairo_t *cr, double x, double y)
 {
 	printf ("UIElement derivatives should implement inside object\n");
 	return false;

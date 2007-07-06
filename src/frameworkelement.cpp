@@ -35,7 +35,7 @@ FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 }
 
 bool
-FrameworkElement::InsideObject (Surface *s, double x, double y)
+FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
 	double nx = x, ny = y;
 

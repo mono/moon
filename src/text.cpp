@@ -407,7 +407,7 @@ TextBlock::GetTransformOrigin ()
 }
 
 bool
-TextBlock::InsideObject (Surface *s, double x, double y)
+TextBlock::InsideObject (cairo_t *cr, double x, double y)
 {
 	// FIXME: this code probably doesn't work
 	cairo_matrix_t inverse = absolute_xform;
@@ -415,20 +415,20 @@ TextBlock::InsideObject (Surface *s, double x, double y)
 	double nx = x;
 	double ny = y;
 	
-	cairo_save (s->cairo);
-	cairo_set_matrix (s->cairo, &absolute_xform);
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
 	
-	Layout (s->cairo);
+	Layout (cr);
 	
 	cairo_matrix_invert (&inverse);
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
 	
-	if (cairo_in_stroke (s->cairo, nx, ny) || cairo_in_fill (s->cairo, nx, ny))
+	if (cairo_in_stroke (cr, nx, ny) || cairo_in_fill (cr, nx, ny))
 		ret = true;
 	
-	cairo_new_path (s->cairo);
+	cairo_new_path (cr);
 	
-	cairo_restore (s->cairo);
+	cairo_restore (cr);
 	
 	return ret;
 }

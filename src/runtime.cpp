@@ -720,18 +720,25 @@ void surface_register_events (Surface *s,
 }
 
 
+static cairo_t* measuring_context = NULL;
+
 cairo_t*
 measuring_context_create (void)
 {
-	cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
-	return cairo_create (surf);
+	if (!measuring_context) {
+		cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
+		measuring_context = cairo_create (surf);
+
+		cairo_surface_destroy (surf);
+	}
+
+	return measuring_context;
 }
 
 void
 measuring_context_destroy (cairo_t *cr)
 {
-	cairo_surface_destroy (cairo_get_target (cr));
-	cairo_destroy (cr);
+	// nothing here.  we destroy the context in runtime_shutdown.
 }
 
 static bool inited = false;
@@ -786,6 +793,11 @@ runtime_shutdown ()
 	TimeManager::Instance()->Shutdown ();
 	Type::Shutdown ();
 	DependencyObject::Shutdown ();
+
+	if (measuring_context != NULL) {
+		cairo_destroy (measuring_context);
+		measuring_context = NULL;
+	}
 
 	inited = false;
 }

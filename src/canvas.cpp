@@ -168,20 +168,20 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 }
 
 bool
-Canvas::InsideObject (Surface *s, double x, double y)
+Canvas::InsideObject (cairo_t *cr, double x, double y)
 {
 	/* if we have explicitly set width/height, we check them */
-	if (FrameworkElement::InsideObject (s, x, y))
+	if (FrameworkElement::InsideObject (cr, x, y))
 		return true;
 
 	/* otherwise we try to figure out if we're inside one of our child elements */
-	UIElement *mouseover = FindMouseOver (s, x, y);
+	UIElement *mouseover = FindMouseOver (cr, x, y);
 
 	return mouseover != NULL;
 }
 
 bool
-Canvas::CheckOver (Surface *s, UIElement *item, double x, double y)
+Canvas::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
 {
 	// if the item isn't visible, it's really easy
 	if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
@@ -196,14 +196,14 @@ Canvas::CheckOver (Surface *s, UIElement *item, double x, double y)
 		return false;
 
 	// then, if that passes, a more tailored shape check
-	if (!item->InsideObject (s, x, y))
+	if (!item->InsideObject (cr, x, y))
 		return false;
 
 	return true;
 }
 
 UIElement *
-Canvas::FindMouseOver (Surface *s, double x, double y)
+Canvas::FindMouseOver (cairo_t *cr, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
@@ -213,7 +213,7 @@ Canvas::FindMouseOver (Surface *s, double x, double y)
 	// have a lot of children
 	//
 	if (mouse_over) {
-		if (CheckOver (s, mouse_over, x, y))
+		if (CheckOver (cr, mouse_over, x, y))
 			return mouse_over;
 	}
 
@@ -226,7 +226,7 @@ Canvas::FindMouseOver (Surface *s, double x, double y)
 		if (item == mouse_over)
 			continue;
 
-		if (CheckOver (s, item, x, y))
+		if (CheckOver (cr, item, x, y))
 			return item;
 	}
 
@@ -236,7 +236,7 @@ Canvas::FindMouseOver (Surface *s, double x, double y)
 void
 Canvas::HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor)
 {
-	UIElement *new_over = FindMouseOver (s, x, y);
+	UIElement *new_over = FindMouseOver (s->cairo, x, y);
 
 	if (new_over != mouse_over) {
 		if (mouse_over)
@@ -254,7 +254,7 @@ Canvas::HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cu
 	if (mouse_over)
 		mouse_over->HandleMotion (s, state, x, y, cursor);
 
-	if (mouse_over || InsideObject (s, x, y))
+	if (mouse_over || InsideObject (s->cairo, x, y))
 		UIElement::HandleMotion (s, state, x, y, NULL);
 }
 
@@ -266,7 +266,7 @@ Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, 
 	// enter/leave events).
 	if (mouse_over) {
 		if (mouse_over->GetBounds().PointInside (x, y)
-		    && mouse_over->InsideObject (s, x, y)) {
+		    && mouse_over->InsideObject (s->cairo, x, y)) {
 
 			mouse_over->HandleButton (s, cb, state, x, y);
 		}
@@ -278,7 +278,7 @@ Canvas::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, 
 void
 Canvas::Enter (Surface *s, int state, double x, double y)
 {
-	mouse_over = FindMouseOver (s, x, y);
+	mouse_over = FindMouseOver (s->cairo, x, y);
 
 	if (mouse_over)
 		mouse_over->Enter (s, state, x, y);

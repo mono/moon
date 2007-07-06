@@ -72,10 +72,10 @@ Control::GetTransformOrigin ()
 }
 
 bool 
-Control::InsideObject (Surface *s, double x, double y)
+Control::InsideObject (cairo_t *cr, double x, double y)
 {
 	if (real_object)
-		return real_object->InsideObject (s, x, y);
+		return real_object->InsideObject (cr, x, y);
 	else
 		return false;
 }

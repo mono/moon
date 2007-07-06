@@ -61,7 +61,7 @@ class Shape : public FrameworkElement {
 	//
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
-	virtual bool InsideObject (Surface *s, double x, double y);
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	//
 	// new virtual methods for shapes
@@ -70,7 +70,7 @@ class Shape : public FrameworkElement {
 	virtual bool CanFill () { return true; }
 
 	//
-	// Draw: draws the Shape on the surface (affine transforms are set before this
+	// Draw: draws the Shape in the cairo context (affine transforms are set before this
 	// is called). 
 	//
 	// This is called multiple times: one for fills, one for strokes

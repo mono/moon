@@ -24,7 +24,7 @@ class Visual : public DependencyObject {
 	// InsideObject:
 	//   Returns whether the position x, y is inside the object
 	//
-	virtual bool InsideObject (Surface *s, double x, double y) { return FALSE; }
+	virtual bool InsideObject (cairo_t *cr, double x, double y) { return FALSE; }
 };
 
 

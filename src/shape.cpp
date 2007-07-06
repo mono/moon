@@ -281,13 +281,13 @@ Shape::ComputeBounds ()
 }
 
 bool
-Shape::InsideObject (Surface *s, double x, double y)
+Shape::InsideObject (cairo_t *cr, double x, double y)
 {
 	bool ret = false;
 
-	cairo_save (s->cairo);
+	cairo_save (cr);
 	// don't do the operation but do consider filling
-	DoDraw (s->cairo, false, true);
+	DoDraw (cr, false, true);
 	double nx = x;
 	double ny = y;
 
@@ -296,12 +296,12 @@ Shape::InsideObject (Surface *s, double x, double y)
 
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
 
-	if (cairo_in_stroke (s->cairo, nx, ny) || (CanFill () && cairo_in_fill (s->cairo, nx, ny)))
+	if (cairo_in_stroke (cr, nx, ny) || (CanFill () && cairo_in_fill (cr, nx, ny)))
 		ret = TRUE;
 	
-	cairo_new_path (s->cairo);
+	cairo_new_path (cr);
 
-	cairo_restore (s->cairo);
+	cairo_restore (cr);
 	return ret;
 }
 

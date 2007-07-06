@@ -1,5 +1,18 @@
 2007-07-06  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (measuring_context_create): we keep a singleton
+	measuring context now.
+	(measuring_context_destroy): do nothing here.  it's freed in
+	runtime_shutdown.
+	(runtime_shutdown): free up our measuring context.
+
+	* canvas.cpp, canvas.h, control.cpp, control.h,
+	frameworkelement.cpp, frameworkelement.h, shape.cpp, shape.h,
+	text.cpp, text.h, uielement.cpp, uielement.h, visual.h: change
+	InsideObject to take the cairo_t* instead of the Surface.
+	
+2007-07-06  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::SetCursor): new method, used in the event
 	code to update the cursor as we enter/leave elements.
 
