@@ -88,8 +88,7 @@ public class GtkSilver : EventBox {
 			ManagedDownloader.DestroyDownloader,
 			ManagedDownloader.Open,
 			ManagedDownloader.Send,
-			ManagedDownloader.Abort,
-			ManagedDownloader.GetResponseText);
+			ManagedDownloader.Abort);
 
 		// Just touch something in DependencyObject to trigger
 		// its initialization
