@@ -41,9 +41,9 @@
   </Rectangle>
 
   <Canvas x:Name="clockcanvas" Width="310" Height="100">
-      <TextBlock x:Name="hour" Text="12" FontSize="68" Foreground="#fff" Canvas.Left="30" Canvas.Top="15"/>
+      <TextBlock x:Name="hour" Text="12" FontSize="68" Foreground="#fff" Canvas.Left="28" Canvas.Top="15"/>
       <TextBlock x:Name="dotcover" Text=":" FontSize="68" Foreground="#fff" Canvas.Left="108" Canvas.Top="10"/>
-      <TextBlock x:Name="minute" Text="00" FontSize="68" Foreground="#fff" Canvas.Left="122" Canvas.Top="15"/>
+      <TextBlock x:Name="minute" Text="00" FontSize="68" Foreground="#fff" Canvas.Left="124 " Canvas.Top="15"/>
     
       <TextBlock x:Name="ampm" Text="am" FontSize="24" Foreground="#fff" Canvas.Left="240" Canvas.Top="25"/>
 
@@ -54,8 +54,8 @@
   </Canvas>
   <Canvas x:Name="configcanvas" Opacity="0">
       <Canvas Canvas.Left="60" Canvas.Top="30">
-         <TextBlock Text="Show AM/PM" FontSize="16"/>
-         <TextBlock Text="Another Option" Canvas.Top="36" FontSize="16"/>
+         <TextBlock Text="Show AM/PM" Foreground="#fff" FontSize="16"/>
+         <TextBlock Text="Another Option" Foreground="#fff" Canvas.Top="36" FontSize="16"/>
       </Canvas>
   </Canvas>
 </Canvas>
