@@ -1,5 +1,11 @@
 2007-07-06  Chris Toshok  <toshok@ximian.com>
 
+	* canvas.cpp (Canvas::ComputeBounds): if the width/height
+	framework element properties haven't been set (their default is
+	0.0), then don't union it with the rest of our bounds.
+
+2007-07-06  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h, runtime.cpp: continue the marginalization of
 	Surface-as-general-data-dumping-ground by passing the cairo
 	context to all the event handlers that need it (all but Leave, but
