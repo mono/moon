@@ -201,7 +201,7 @@ namespace Desklet
 			Console.WriteLine ("updating calendar "+start);
 			Downloader downloader = new Downloader ();
 			downloader.Completed += delegate {
-				CalendarDownloadComplete (start.Date, downloader.GetResponseText ("What?"));
+				CalendarDownloadComplete (start.Date, downloader.GetResponseText (""));
 			};
 			
 			String uri = "http://www.google.com/calendar/feeds/ca5i3j9j0gv2j0lln2htfb3tus%40group.calendar.google.com/public/full?start-min="

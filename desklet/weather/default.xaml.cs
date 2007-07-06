@@ -130,7 +130,7 @@ namespace Desklet.Weather
 		
 		public void DownloadComplete (Downloader downloader)
 		{			
-			string response = downloader.GetResponseText ("What?");
+			string response = downloader.GetResponseText ("");
 
 			// We're getting full HTML from the CGI script, need to extract our data
 			int idxStart = response.IndexOf (String.Format ("\n{0}", stationID.Text));
