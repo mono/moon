@@ -186,8 +186,7 @@ UIElement::UpdateTransform ()
 void
 UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	if (prop == UIElement::RenderTransformProperty ||
-	    prop == UIElement::RenderTransformOriginProperty) {
+	if (prop == UIElement::RenderTransformProperty) {
 		UpdateTransform ();
 	}
 	else if (prop == UIElement::ClipProperty ||
