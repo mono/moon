@@ -423,7 +423,7 @@ PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name,
 		if (!argCount)
 			return true;
 
-		UIElement *canvas = npobj->plugin->surface->toplevel;
+		UIElement *canvas = npobj->plugin->surface->GetToplevel ();
 
 		if (!canvas)
 			return true;

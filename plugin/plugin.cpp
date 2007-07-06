@@ -106,7 +106,7 @@ PluginInstance::~PluginInstance ()
 	fprintf (stderr, "Destroying the plugin: %p\n", surface);
 	if (surface != NULL){
 		//gdk_error_trap_push ();
-		surface_destroy (surface);
+		delete surface;
 		//gdk_display_sync (this->display);
 		//gdk_error_trap_pop ();
 	}
@@ -233,10 +233,10 @@ PluginInstance::CreateWindow ()
 
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
-	this->surface = surface_new (window->width, window->height);
-	surface_attach (this->surface, new Canvas ());
-	gtk_container_add (GTK_CONTAINER (container), this->surface->drawing_area);
-	display = gdk_drawable_get_display (this->surface->drawing_area->window);
+	this->surface = new Surface (window->width, window->height);
+	this->surface->Attach (new Canvas ());
+	gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
+	display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
 	gtk_widget_show_all (this->container);
 	this->UpdateSource ();
 }
@@ -284,7 +284,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 			TryLoad ();
 #else	
 			UIElement * element = xaml_create_from_str (NPVARIANT_TO_STRING (result).utf8characters, true, NULL, NULL, NULL, NULL);
-			surface_attach (this->surface, element);
+			this->surface->Attach (element);
 #endif
 		}
 
@@ -393,7 +393,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 			TryLoad ();
 #else	
 			UIElement *element = xaml_create_from_file (fname, true, NULL, NULL, NULL, NULL);
-			surface_attach (this->surface, element);
+			this->surface->Attach (element);
 #endif
 
 		if (!this->isLoaded) {
