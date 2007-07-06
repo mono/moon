@@ -237,10 +237,7 @@ UIElement::Invalidate (Rect r)
 		(int) r.x, (int)r.y, 
 		(int)(r.w+2), (int)(r.h+2));
 #endif
-	// 
-	// Note: this is buggy: why do we need to queue the redraw on the toplevel
-	// widget (s->data) and does not work with the drawing area?
-	//
+
 	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
 				    (int) r.x, (int)r.y, 
 				    (int)(r.w+2), (int)(r.h+2));
