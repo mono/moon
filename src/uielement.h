@@ -151,7 +151,7 @@ class UIElement : public Visual {
 	//   handles an mouse motion event, and dispatches it to anyone that
 	//   might want it.
 	//
-	virtual void HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor);
+	virtual void HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
 
 	//
 	// HandleButton:
@@ -159,13 +159,13 @@ class UIElement : public Visual {
 	//   it to all the objects that might be interested in it (nested
 	//   objects).
 	//
-	virtual void HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
+	virtual void HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y);
 	
 	//
 	// Enter:
 	//   Invoked when the mouse first enters this given object
 	//
-	virtual void Enter (Surface *s, int state, double x, double y);
+	virtual void Enter (Surface *s, cairo_t *cr, int state, double x, double y);
 	
 	//
 	// Leave:

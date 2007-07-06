@@ -53,11 +53,11 @@ invalidator (gpointer data)
 	if (diff > 10000000) {
 		float seconds = diff / 10000000.0;
 		last_time = now;
-		char *res = g_strdup_printf ("%.2f fps", s->frames / seconds);
+		char *res = g_strdup_printf ("%.2f fps", s->GetFrameCount() / seconds);
 
 		gtk_window_set_title (GTK_WINDOW (w), res);
 		g_free (res);
-		s->frames = 0;
+		s->ResetFrameCount();
 	}
 
 	return TRUE;
@@ -90,7 +90,7 @@ button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
 	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, _custom_element_callback, _custom_attribute_callback, _event_callback, &kind);
 	printf ("Loading... %p\n", ee);
 	if (ee != NULL)
-		surface_attach (t, ee);
+		t->Attach (ee);
 }
 
 static void
@@ -216,10 +216,10 @@ main (int argc, char *argv [])
 	    }
 	}
 
-	Surface *t = surface_new (600, 600);
+	Surface *t = new Surface (600, 600);
 	gtk_signal_connect (GTK_OBJECT (w), "delete-event", G_CALLBACK (delete_event), t);
 	gtk_signal_connect (GTK_OBJECT (w), "expose-event", G_CALLBACK (expose_event), GUINT_TO_POINTER (do_trans));
-	gtk_container_add (GTK_CONTAINER(w), t->drawing_area);
+	gtk_container_add (GTK_CONTAINER(w), t->GetDrawingArea ());
 		
 	if (file){
 		Type::Kind kind;
@@ -236,13 +236,13 @@ main (int argc, char *argv [])
 			return 1;
 		}
 
-		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_press_event", G_CALLBACK (button_press_event2), t);
-		surface_attach (t, e);
+		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "button_press_event", G_CALLBACK (button_press_event2), t);
+		t->Attach (e);
 	} else {
 		NameScope *namescope = new NameScope();
 
 		Canvas *canvas = new Canvas ();
-		surface_attach (t, canvas);
+		t->Attach (canvas);
 
 		//Control control = new Control ();
 		//control_initialize_from_xaml (control, "<Line X1='0' Y1='0' X2='100' Y2='100' Stroke='#80808080'/>");
@@ -504,16 +504,16 @@ main (int argc, char *argv [])
 		Storyboard::SetTargetProperty (square_y_anim, "Y");
 #endif
 
-		gtk_widget_add_events (t->drawing_area, GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+		gtk_widget_add_events (t->GetDrawingArea(), GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 
-		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_press_event", G_CALLBACK (button_press_event), NULL);
-		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "button_release_event", G_CALLBACK (button_release_event), NULL);
-		gtk_signal_connect (GTK_OBJECT (t->drawing_area), "motion_notify_event", G_CALLBACK (button_motion_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "button_press_event", G_CALLBACK (button_press_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "button_release_event", G_CALLBACK (button_release_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "motion_notify_event", G_CALLBACK (button_motion_event), NULL);
 
 		sb->Begin ();
 	}		
 	if (do_fps){
-		t->frames = 0;
+		t->ResetFrameCount ();
 		last_time = get_now ();
 		gtk_timeout_add (1000, invalidator, t);
 	}
@@ -522,7 +522,7 @@ main (int argc, char *argv [])
 	gtk_widget_show_all (w);
 	gtk_main ();
 	
-	surface_destroy (t);
+	delete t;
 	runtime_shutdown ();
 	
 	return 0;

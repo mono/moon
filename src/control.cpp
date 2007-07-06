@@ -81,27 +81,27 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-Control::HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor)
+Control::HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
 {
 	if (real_object)
-		real_object->HandleMotion (s, state, x, y, cursor);
-	FrameworkElement::HandleMotion (s, state, x, y, NULL);
+		real_object->HandleMotion (s, cr, state, x, y, cursor);
+	FrameworkElement::HandleMotion (s, cr, state, x, y, NULL);
 }
 
 void
-Control::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
+Control::HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y)
 {
 	if (real_object)
-		real_object->HandleButton (s, cb, state, x, y);
-	FrameworkElement::HandleButton (s, cb, state, x, y);
+		real_object->HandleButton (s, cr, cb, state, x, y);
+	FrameworkElement::HandleButton (s, cr, cb, state, x, y);
 }
 
 void 
-Control::Enter (Surface *s, int state, double x, double y)
+Control::Enter (Surface *s, cairo_t *cr, int state, double x, double y)
 {
 	if (real_object){
-		FrameworkElement::Enter (s, state, x, y);
-		real_object->Enter (s, state, x, y);
+		FrameworkElement::Enter (s, cr, state, x, y);
+		real_object->Enter (s, cr, state, x, y);
 	}
 }
 

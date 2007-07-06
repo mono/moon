@@ -249,7 +249,7 @@ UIElement::Invalidate (Rect r)
 		(int)(r.w+2), (int)(r.h+2));
 #endif
 
-	gtk_widget_queue_draw_area ((GtkWidget *)s->drawing_area, 
+	gtk_widget_queue_draw_area (s->GetDrawingArea (),
 				    (int) r.x, (int)r.y, 
 				    (int)(r.w+2), (int)(r.h+2));
 }
@@ -270,7 +270,7 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-UIElement::HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor)
+UIElement::HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
 {
 	if (cursor && *cursor == MouseCursorDefault)
 		*cursor = (MouseCursor)GetValue (UIElement::CursorProperty)->AsInt32();
@@ -279,13 +279,13 @@ UIElement::HandleMotion (Surface *s, int state, double x, double y, MouseCursor 
 }
 
 void
-UIElement::HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y)
+UIElement::HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y)
 {
 	cb (this, state, x, y);
 }
 
 void
-UIElement::Enter (Surface *s, int state, double x, double y)
+UIElement::Enter (Surface *s, cairo_t *cr, int state, double x, double y)
 {
 	s->cb_enter (this, state, x, y);
 }

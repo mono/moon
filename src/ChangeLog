@@ -1,3 +1,25 @@
+2007-07-06  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: continue the marginalization of
+	Surface-as-general-data-dumping-ground by passing the cairo
+	context to all the event handlers that need it (all but Leave, but
+	should we make this distinction?).
+	
+	Make tons of stuff private that doesn't need exposing.  Add
+	accessors for the easier things, and leave the callbacks public
+	for now.  Also clean up the partially C/partially c++
+	implementation in runtime.cpp.  Now the C api is a thin wrapper
+	around instance method calls, and all the gtk/clock event
+	callbacks are static methods so they can still access the private
+	data.
+
+	* canvas.h, canvas.cpp, control.h, control.cpp, uielement.h,
+	uielement.cpp: fallout from the event signature changes - add
+	cairo_t* to a lot of places, basically.
+
+	* demo.cpp: no need to use the C api for Surface here.  just use
+	the c++ one.
+
 2007-07-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (OnPropertyChanged): Oops, be consistant with other

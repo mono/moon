@@ -52,9 +52,9 @@ class Canvas : public Panel {
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
-	virtual void HandleMotion (Surface *s, int state, double x, double y, MouseCursor *cursor);
-	virtual void HandleButton (Surface *s, callback_mouse_event cb, int state, double x, double y);
-	virtual void Enter (Surface *s, int state, double x, double y);
+	virtual void HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
+	virtual void HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y);
+	virtual void Enter (Surface *s, cairo_t *cr, int state, double x, double y);
 	virtual void Leave (Surface *s);
 	
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);

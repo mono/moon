@@ -46,454 +46,73 @@
 #define TIME_REDRAW 1
 
 void
-draw_grid (cairo_t *cairo)
+Surface::CreateSimilarSurface ()
 {
-	cairo_set_line_width (cairo, 1.0);
-	cairo_set_source_rgba (cairo, 0, 1, 0, 1.0);
-	for (int col = 100; col < 1024; col += 100){
-		cairo_move_to (cairo, col, 0);
-		cairo_line_to (cairo, col, 1024);
-		cairo_stroke (cairo);
-	}
+    cairo_t *ctx = gdk_cairo_create (drawing_area->window);
 
-	for (int row = 0; row < 1024; row += 100){
-		cairo_move_to (cairo, 0, row);
-		cairo_line_to (cairo, 1024, row);
-		cairo_stroke (cairo);
-	}
-}
-
-void
-create_similar (Surface *s, GtkWidget *widget)
-{
-    cairo_t *ctx = gdk_cairo_create (widget->window);
-
-    if (s->cairo_xlib){
-	cairo_destroy (s->cairo_xlib);
+    if (cairo_xlib){
+	cairo_destroy (cairo_xlib);
     }
 
     cairo_surface_t *xlib_surface = cairo_surface_create_similar (
 	   cairo_get_target (ctx), 
 	   CAIRO_CONTENT_COLOR_ALPHA,
-	   s->width, s->height);
+	   width, height);
 
     cairo_destroy (ctx);
 
-    s->cairo_xlib = cairo_create (xlib_surface);
+    cairo_xlib = cairo_create (xlib_surface);
     cairo_surface_destroy (xlib_surface);
 }
 
 
+Surface::Surface(int w, int h)
+  :
+    cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
+    cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL), cb_surface_resize(NULL),
+    cb_keydown(NULL), cb_keyup(NULL),
 
-static void
-surface_realloc (Surface *s)
+    width (w), height (h), buffer (0), pixbuf (NULL),
+    using_cairo_xlib_surface(0),
+    cairo_buffer_surface (NULL), cairo_buffer(NULL),
+    cairo_xlib(NULL), cairo (NULL), transparent(false),
+    cursor (MouseCursorDefault)
 {
-	if (s->buffer)
-		free (s->buffer);
 
-	int size = s->width * s->height * 4;
-	s->buffer = (unsigned char *) malloc (size);
-
-	s->cairo_buffer_surface = cairo_image_surface_create_for_data (
-		s->buffer, CAIRO_FORMAT_ARGB32, s->width, s->height, s->width * 4);
-
-	s->cairo_buffer = cairo_create (s->cairo_buffer_surface);
-
-	if (s->cairo_xlib == NULL) {
-		s->cairo = s->cairo_buffer;
-	}
-	else {
-		create_similar (s, s->drawing_area);
-		s->cairo = s->cairo_xlib;
-	}
-}
-
-void 
-surface_destroy (Surface *s)
-{
-	delete s;
-}
-
-static void
-render_surface (gpointer data)
-{
-	Surface *s = (Surface*)data;
-	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
-}
-
-static void
-update_input (gpointer data)
-{
-	Surface *s = (Surface*)data;
-
-	MouseCursor new_cursor = MouseCursorDefault;
-	s->toplevel->HandleMotion (s, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
-	s->SetCursor (new_cursor);
-}
-
-gboolean
-realized_callback (GtkWidget *widget, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	create_similar (s, widget);
-	s->cairo = s->cairo_xlib;
-
-	TimeManager::Instance()->AddHandler ("update-input", update_input, s);
-	return TRUE;
-}
-
-gboolean
-unrealized_callback (GtkWidget *widget, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	if (s->cairo_xlib) {
-		cairo_destroy (s->cairo_xlib);
-		s->cairo_xlib = NULL;
-	}
-
-	s->cairo = s->cairo_buffer;
-	TimeManager::Instance()->RemoveHandler ("render", render_surface, s);
-	TimeManager::Instance()->RemoveHandler ("update-input", update_input, s);
-	return TRUE;
-}
-
-gboolean
-expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	s->frames++;
-
-	if (event->area.x > s->width || event->area.y > s->height)
-		return TRUE;
-
-#if TIME_REDRAW
-	STARTTIMER (expose, "redraw");
-#endif
-	s->cairo = s->cairo_xlib;
-
-	//
-	// BIG DEBUG BLOB
-	// 
-	if (cairo_status (s->cairo) != CAIRO_STATUS_SUCCESS){
-		printf ("expose event: the cairo context has an error condition and refuses to paint: %s\n", 
-			cairo_status_to_string (cairo_status (s->cairo)));
-	}
-
-#ifdef DEBUG_INVALIDATE
-	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
-#endif
-
-	cairo_t *ctx = gdk_cairo_create (widget->window);
-	gdk_cairo_region (ctx, event->region);
-	cairo_clip (ctx);
-
-	//
-	// These are temporary while we change this to paint at the offset position
-	// instead of using the old approach of modifying the topmost Canvas (a no-no),
-	//
-	// The flag "s->transparent" is here because I could not
-	// figure out what is painting the background with white now.
-	// The change that made the white painting implicit instead of
-	// explicit is patch 80632.   I would appreciate any help in tracking down
-	// the proper way of making the background white when not running in 
-	// "transparent" mode.    
-	//
-	// Either exposing surface_set_trans to turn the next code is a hack, 
-	// or it is normal to request all code that wants to paint to manually
-	// clear the background to white beforehand.    For now am going with
-	// making this an explicit surface API.
-	//
-	// The second part is for coping with the future: when we support being 
-	// windowless
-	//
-	if (s->transparent && !GTK_WIDGET_NO_WINDOW (widget)){
-		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
-		cairo_set_source_rgba (ctx, 1, 1, 1, 0);
-		cairo_paint (ctx);
-	}
-
-	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-	surface_paint (s, ctx, event->area.x, event->area.y, event->area.width, event->area.height);
-	cairo_destroy (ctx);
-
-#if TIME_REDRAW
-	ENDTIMER (expose, "redraw");
-#endif
-
-	return TRUE;
-}
-
-void 
-surface_set_trans (Surface *s, bool trans)
-{
-	s->transparent = trans;
-	if (s->drawing_area)
-		gtk_widget_queue_draw (s->drawing_area);
-}
-
-bool
-surface_get_trans (Surface *s)
-{
-	return s->transparent;
-}
-
-static gboolean
-motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
-{
-	Surface *s = (Surface *) data;
-	GdkModifierType state;
-	double x, y;
-
-	if (!s->cb_motion)
-		return FALSE;
-
-	if (event->is_hint) {
-		int ix, iy;
-		gdk_window_get_pointer (event->window, &ix, &iy, &state);
-		x = ix;
-		y = iy;
-	} else {
-		x = event->x;
-		y = event->y;
-
-		if (GTK_WIDGET_NO_WINDOW (widget)){
-			x -= widget->allocation.x;
-			y -= widget->allocation.y;
-		}
-
-		state = (GdkModifierType)event->state;
-	}
-
-	s->last_event_x = x;
-	s->last_event_y = y;
-	s->last_event_state = state;
-
-	MouseCursor new_cursor = MouseCursorDefault;
-	s->toplevel->HandleMotion (s, state, x, y, &new_cursor);
-	s->SetCursor (new_cursor);
-
-	return TRUE;
-}
-
-static gboolean
-crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	if (s->cb_enter == NULL || s->cb_mouse_leave == NULL)
-		return FALSE;
-
-	if (event->type == GDK_ENTER_NOTIFY){
-		double x = event->x;
-		double y = event->y;
-
-		if (GTK_WIDGET_NO_WINDOW (widget)){
-			x -= widget->allocation.x;
-			y -= widget->allocation.y;
-		}
-		
-		MouseCursor new_cursor = MouseCursorDefault;
-		s->toplevel->HandleMotion (s, event->state, x, y, &new_cursor);
-		s->toplevel->Enter (s, event->state, x, y);
-
-		s->SetCursor (new_cursor);
-
-		s->last_event_x = x;
-		s->last_event_y = y;
-		s->last_event_state = event->state;
-	
-	} else {
-		s->toplevel->Leave (s);
-	}
-
-	return TRUE;
-}
-
-static gboolean 
-key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	if (!s->cb_keydown)
-		return FALSE;
-
-	// 
-	// I could not write a test that would send the output elsewhere, for now
-	// just send to the toplevel
-	//
-	return s->cb_keydown (s->toplevel, key->state, key->keyval, key->hardware_keycode);
-}
-
-static gboolean 
-key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	if (!s->cb_keyup)
-		return FALSE;
-	
-	// 
-	// I could not write a test that would send the output elsewhere, for now
-	// just send to the toplevel
-	//
-	return s->cb_keyup (s->toplevel, key->state, key->keyval, key->hardware_keycode);
-
-}
-
-static gboolean
-button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	if (!s->cb_up)
-		return FALSE;
-	
-	if (button->button != 1)
-		return FALSE;
-
-	double x = button->x;
-	double y = button->y;
-	if (GTK_WIDGET_NO_WINDOW (widget)){
-		x -= widget->allocation.x;
-		y -= widget->allocation.y;
-	}
-	s->toplevel->HandleButton (s, s->cb_up, button->state, x, y);
-	
-	return TRUE;
-}
-
-static gboolean
-button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	gtk_widget_grab_focus (widget);
-
-	if (!s->cb_down)
-		return FALSE;
-
-	if (button->button != 1)
-		return FALSE;
-
-	double x = button->x;
-	double y = button->y;
-	if (GTK_WIDGET_NO_WINDOW (widget)){
-		x -= widget->allocation.x;
-		y -= widget->allocation.y;
-	}
-	s->toplevel->HandleButton (s, s->cb_down, button->state, x, y);
-	
-	return FALSE;
-}
-
-
-void 
-clear_drawing_area (GtkObject *obj, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	s->drawing_area = NULL;
-}
-
-void
-surface_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
-{
-	Surface *s = (Surface *) user_data;
-
-        if (s->width != allocation->width || s->height != allocation->height){
-                s->width = allocation->width;
-                s->height = allocation->height;
-
-		surface_realloc (s);
-	}
-	
-	// if x or y changed we need to recompute the presentation matrix
-	// because the toplevel position depends on the allocation.
-	if (s->toplevel)
-		s->toplevel->UpdateBounds ();
-}
-
-static void
-surface_drawing_area_destroyed (GtkWidget *widget, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	// This is never called, why?
-	printf ("------------------ WE ARE DESTROYED ---------------\n");
-	s->drawing_area = NULL;
-}
-
-Surface *
-surface_new (int width, int height)
-{
-	Surface *s = new Surface ();
-
-	s->drawing_area = gtk_event_box_new ();
+	drawing_area = gtk_event_box_new ();
 
 	// don't let gtk clear the window we'll do all the drawing.
-	gtk_widget_set_app_paintable (s->drawing_area, TRUE);
+	gtk_widget_set_app_paintable (drawing_area, TRUE);
 
 	//
 	// Set to true, need to change that to FALSE later when we start
 	// repainting again.   
 	//
-	gtk_event_box_set_visible_window (GTK_EVENT_BOX (s->drawing_area), TRUE);
+	gtk_event_box_set_visible_window (GTK_EVENT_BOX (drawing_area), TRUE);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "size_allocate",
-			    G_CALLBACK(surface_size_allocate), s);
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "destroy",
-			    G_CALLBACK(surface_drawing_area_destroyed), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "size_allocate",
+			    G_CALLBACK(drawing_area_size_allocate), this);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "destroy",
+			    G_CALLBACK(drawing_area_destroyed), this);
 
-	gtk_widget_add_events (s->drawing_area, 
+	gtk_widget_add_events (drawing_area, 
 			       GDK_POINTER_MOTION_MASK |
 			       GDK_POINTER_MOTION_HINT_MASK |
 			       GDK_KEY_PRESS_MASK |
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
 			       GDK_BUTTON_RELEASE_MASK);
-	GTK_WIDGET_SET_FLAGS (s->drawing_area, GTK_CAN_FOCUS);
-	//gtk_widget_set_double_buffered (s->drawing_area, FALSE);
+	GTK_WIDGET_SET_FLAGS (drawing_area, GTK_CAN_FOCUS);
+	//gtk_widget_set_double_buffered (drawing_area, FALSE);
 
-	gtk_widget_show (s->drawing_area);
+	gtk_widget_show (drawing_area);
 
-	gtk_widget_set_size_request (s->drawing_area, width, height);
-	s->buffer = NULL;
+	gtk_widget_set_size_request (drawing_area, width, height);
+	buffer = NULL;
 
-	s->width = width;
-	s->height = height;
-	s->toplevel = NULL;
+	toplevel = NULL;
 
-	surface_realloc (s);
-
-	return s;
-}
-
-//
-// This will resize the surface (merely a convenience function for
-// resizing the widget area that we have.
-//
-// This will not change the Width and Height properties of the 
-// toplevel canvas, if you want that, you must do that yourself
-//
-void
-surface_resize (Surface *s, int width, int height)
-{
-	gtk_widget_set_size_request (s->drawing_area, width, height);
-}
-
-Surface::Surface()
-  : width (0), height (0), buffer (0), pixbuf (NULL),
-    using_cairo_xlib_surface(0),
-    cairo_buffer_surface (NULL), cairo_buffer(NULL),
-    cairo_xlib(NULL), cairo (NULL), transparent(false),
-    cursor (MouseCursorDefault),
-    cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
-    cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL), cb_surface_resize(NULL),
-    cb_keydown(NULL), cb_keyup(NULL)
-{
+	Realloc ();
 }
 
 Surface::~Surface ()
@@ -512,8 +131,8 @@ Surface::~Surface ()
 	// And I have yet to track what causes this, the stack trace is not 
 	// very useful
 	//
-	TimeManager::Instance()->RemoveHandler ("render", render_surface, this);
-	TimeManager::Instance()->RemoveHandler ("update-input", update_input, this);
+	TimeManager::Instance()->RemoveHandler ("render", render_cb, this);
+	TimeManager::Instance()->RemoveHandler ("update-input", update_input_cb, this);
 
 	if (toplevel) {
 		toplevel->unref ();
@@ -583,71 +202,68 @@ Surface::SetCursor (MouseCursor new_cursor)
 }
 
 void
-surface_connect_events (Surface *s)
+Surface::ConnectEvents ()
 {
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "expose_event",
-			    G_CALLBACK (expose_event_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
+			    G_CALLBACK (Surface::expose_event_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "motion_notify_event",
-			    G_CALLBACK (motion_notify_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "motion_notify_event",
+			    G_CALLBACK (motion_notify_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "enter_notify_event",
-			    G_CALLBACK (crossing_notify_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "enter_notify_event",
+			    G_CALLBACK (crossing_notify_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "leave_notify_event",
-			    G_CALLBACK (crossing_notify_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "leave_notify_event",
+			    G_CALLBACK (crossing_notify_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "key_press_event",
-			    G_CALLBACK (key_press_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "key_press_event",
+			    G_CALLBACK (key_press_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "key_release_event",
-			    G_CALLBACK (key_release_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "key_release_event",
+			    G_CALLBACK (key_release_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "button_press_event",
-			    G_CALLBACK (button_press_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "button_press_event",
+			    G_CALLBACK (button_press_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "button_release_event",
-			    G_CALLBACK (button_release_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "button_release_event",
+			    G_CALLBACK (button_release_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "realize",
-			    G_CALLBACK (realized_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "realize",
+			    G_CALLBACK (realized_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "unrealize",
-			    G_CALLBACK (unrealized_callback), s);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "unrealize",
+			    G_CALLBACK (unrealized_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (s->drawing_area), "destroy",
-			    G_CALLBACK (clear_drawing_area), s);
-
-	if (GTK_WIDGET_REALIZED (s->drawing_area)){
-		realized_callback (s->drawing_area, s);
+	if (GTK_WIDGET_REALIZED (drawing_area)){
+		realized_callback (drawing_area, this);
 	}
 }
 
 void
-surface_attach (Surface *surface, UIElement *toplevel)
+Surface::Attach (UIElement *element)
 {
 	bool first = FALSE;
 
-	if (!Type::Find (toplevel->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
+	if (!Type::Find (element->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
 		printf ("Unsupported toplevel\n");
 		return;
 	}
 	
-	if (surface->toplevel) {
-		surface->toplevel->Invalidate ();
-		surface->toplevel->unref ();
+	if (toplevel) {
+		toplevel->Invalidate ();
+		toplevel->unref ();
 	} else 
 		first = TRUE;
 
-	Canvas *canvas = (Canvas *) toplevel;
+	Canvas *canvas = (Canvas *) element;
 	canvas->ref ();
 
-	canvas->surface = surface;
-	surface->toplevel = canvas;
+	canvas->surface = this;
+	toplevel = canvas;
 
 	// First time we connect the surface, start responding to events
 	if (first)
-		surface_connect_events (surface);
+		ConnectEvents ();
 
 	canvas->OnLoaded ();
 
@@ -655,68 +271,464 @@ surface_attach (Surface *surface, UIElement *toplevel)
 	//
 	// If the did not get a size specified
 	//
-	if (surface->width == 0){
+	if (width == 0){
 		Value *v = toplevel->GetValue (FrameworkElement::WidthProperty);
 
 		if (v){
-			surface->width = (int) v->AsDouble ();
-			if (surface->width < 0)
-				surface->width = 0;
+			width = (int) v->AsDouble ();
+			if (width < 0)
+				width = 0;
 			change_size = true;
 		}
 	}
 
-	if (surface->height == 0){
+	if (height == 0){
 		Value *v = toplevel->GetValue (FrameworkElement::HeightProperty);
 
 		if (v){
-			surface->height = (int) v->AsDouble ();
-			if (surface->height < 0)
-				surface->height = 0;
+			height = (int) v->AsDouble ();
+			if (height < 0)
+				height = 0;
 			change_size = true;
 		}
 	}
 
 	if (change_size)
-		surface_realloc (surface);
+		Realloc ();
 
 	canvas->UpdateBounds ();
 	canvas->Invalidate ();
 }
 
 void
+Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
+{
+	toplevel->DoRender (ctx, x, y, width, height);
+}
+
+//
+// This will resize the surface (merely a convenience function for
+// resizing the widget area that we have.
+//
+// This will not change the Width and Height properties of the 
+// toplevel canvas, if you want that, you must do that yourself
+//
+void
+Surface::Resize (int width, int height)
+{
+	gtk_widget_set_size_request (drawing_area, width, height);
+}
+
+void
+Surface::Realloc ()
+{
+	if (buffer)
+		free (buffer);
+
+	int size = width * height * 4;
+	buffer = (unsigned char *) malloc (size);
+
+	cairo_buffer_surface = cairo_image_surface_create_for_data (
+		buffer, CAIRO_FORMAT_ARGB32, width, height, width * 4);
+
+	cairo_buffer = cairo_create (cairo_buffer_surface);
+
+	if (cairo_xlib == NULL) {
+		cairo = cairo_buffer;
+	}
+	else {
+		CreateSimilarSurface ();
+		cairo = cairo_xlib;
+	}
+}
+
+void
+Surface::RegisterEvents (callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
+			 callback_mouse_event enter,
+			 callback_plain_event got_focus, callback_plain_event lost_focus,
+			 callback_plain_event loaded, callback_plain_event mouse_leave, callback_plain_event surface_resize,
+			 callback_keyboard_event keydown, callback_keyboard_event keyup)
+{
+	this->cb_motion = motion;
+	this->cb_down = down;
+	this->cb_up = up;
+	this->cb_enter = enter;
+	this->cb_got_focus = got_focus;
+	this->cb_lost_focus = lost_focus;
+	this->cb_loaded = loaded;
+	this->cb_mouse_leave = mouse_leave;
+	this->cb_keydown = keydown;
+	this->cb_keyup = keyup;
+	this->cb_surface_resize = surface_resize;
+}
+
+
+void
+Surface::render_cb (gpointer data)
+{
+	Surface *s = (Surface*)data;
+	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
+}
+
+void
+Surface::update_input_cb (gpointer data)
+{
+	Surface *s = (Surface*)data;
+
+	MouseCursor new_cursor = MouseCursorDefault;
+	s->toplevel->HandleMotion (s, s->cairo, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
+	s->SetCursor (new_cursor);
+}
+
+gboolean
+Surface::realized_callback (GtkWidget *widget, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	s->CreateSimilarSurface ();
+	s->cairo = s->cairo_xlib;
+
+	TimeManager::Instance()->AddHandler ("render", render_cb, s);
+	TimeManager::Instance()->AddHandler ("update-input", update_input_cb, s);
+	return TRUE;
+}
+
+gboolean
+Surface::unrealized_callback (GtkWidget *widget, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (s->cairo_xlib) {
+		cairo_destroy (s->cairo_xlib);
+		s->cairo_xlib = NULL;
+	}
+
+	s->cairo = s->cairo_buffer;
+	TimeManager::Instance()->RemoveHandler ("render", render_cb, s);
+	TimeManager::Instance()->RemoveHandler ("update-input", update_input_cb, s);
+	return TRUE;
+}
+
+gboolean
+Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	s->frames++;
+
+	if (event->area.x > s->width || event->area.y > s->height)
+		return TRUE;
+
+#if TIME_REDRAW
+	STARTTIMER (expose, "redraw");
+#endif
+	s->cairo = s->cairo_xlib;
+
+	//
+	// BIG DEBUG BLOB
+	// 
+	if (cairo_status (s->cairo) != CAIRO_STATUS_SUCCESS){
+		printf ("expose event: the cairo context has an error condition and refuses to paint: %s\n", 
+			cairo_status_to_string (cairo_status (s->cairo)));
+	}
+
+#ifdef DEBUG_INVALIDATE
+	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
+#endif
+
+	cairo_t *ctx = gdk_cairo_create (widget->window);
+	gdk_cairo_region (ctx, event->region);
+	cairo_clip (ctx);
+
+	//
+	// These are temporary while we change this to paint at the offset position
+	// instead of using the old approach of modifying the topmost Canvas (a no-no),
+	//
+	// The flag "s->transparent" is here because I could not
+	// figure out what is painting the background with white now.
+	// The change that made the white painting implicit instead of
+	// explicit is patch 80632.   I would appreciate any help in tracking down
+	// the proper way of making the background white when not running in 
+	// "transparent" mode.    
+	//
+	// Either exposing surface_set_trans to turn the next code is a hack, 
+	// or it is normal to request all code that wants to paint to manually
+	// clear the background to white beforehand.    For now am going with
+	// making this an explicit surface API.
+	//
+	// The second part is for coping with the future: when we support being 
+	// windowless
+	//
+	if (s->transparent && !GTK_WIDGET_NO_WINDOW (widget)){
+		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
+		cairo_set_source_rgba (ctx, 1, 1, 1, 0);
+		cairo_paint (ctx);
+	}
+
+	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+	Paint (ctx, event->area.x, event->area.y, event->area.width, event->area.height);
+	cairo_destroy (ctx);
+
+#if TIME_REDRAW
+	ENDTIMER (expose, "redraw");
+#endif
+
+	return TRUE;
+}
+
+gboolean
+Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+	GdkModifierType state;
+	double x, y;
+
+	if (!s->cb_motion)
+		return FALSE;
+
+	if (event->is_hint) {
+		int ix, iy;
+		gdk_window_get_pointer (event->window, &ix, &iy, &state);
+		x = ix;
+		y = iy;
+	} else {
+		x = event->x;
+		y = event->y;
+
+		if (GTK_WIDGET_NO_WINDOW (widget)){
+			x -= widget->allocation.x;
+			y -= widget->allocation.y;
+		}
+
+		state = (GdkModifierType)event->state;
+	}
+
+	s->last_event_x = x;
+	s->last_event_y = y;
+	s->last_event_state = state;
+
+	MouseCursor new_cursor = MouseCursorDefault;
+	s->toplevel->HandleMotion (s, s->cairo, state, x, y, &new_cursor);
+	s->SetCursor (new_cursor);
+
+	return TRUE;
+}
+
+gboolean
+Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (s->cb_enter == NULL || s->cb_mouse_leave == NULL)
+		return FALSE;
+
+	if (event->type == GDK_ENTER_NOTIFY){
+		double x = event->x;
+		double y = event->y;
+
+		if (GTK_WIDGET_NO_WINDOW (widget)){
+			x -= widget->allocation.x;
+			y -= widget->allocation.y;
+		}
+		
+		MouseCursor new_cursor = MouseCursorDefault;
+		s->toplevel->HandleMotion (s, s->cairo, event->state, x, y, &new_cursor);
+		s->toplevel->Enter (s, s->cairo, event->state, x, y);
+
+		s->SetCursor (new_cursor);
+
+		s->last_event_x = x;
+		s->last_event_y = y;
+		s->last_event_state = event->state;
+	
+	} else {
+		s->toplevel->Leave (s);
+	}
+
+	return TRUE;
+}
+
+gboolean 
+Surface::key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (!s->cb_keydown)
+		return FALSE;
+
+	// 
+	// I could not write a test that would send the output elsewhere, for now
+	// just send to the toplevel
+	//
+	return s->cb_keydown (s->toplevel, key->state, key->keyval, key->hardware_keycode);
+}
+
+gboolean 
+Surface::key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (!s->cb_keyup)
+		return FALSE;
+	
+	// 
+	// I could not write a test that would send the output elsewhere, for now
+	// just send to the toplevel
+	//
+	return s->cb_keyup (s->toplevel, key->state, key->keyval, key->hardware_keycode);
+
+}
+
+gboolean
+Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (!s->cb_up)
+		return FALSE;
+	
+	if (button->button != 1)
+		return FALSE;
+
+	double x = button->x;
+	double y = button->y;
+	if (GTK_WIDGET_NO_WINDOW (widget)){
+		x -= widget->allocation.x;
+		y -= widget->allocation.y;
+	}
+	s->toplevel->HandleButton (s, s->cairo, s->cb_up, button->state, x, y);
+	
+	return TRUE;
+}
+
+gboolean
+Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	gtk_widget_grab_focus (widget);
+
+	if (!s->cb_down)
+		return FALSE;
+
+	if (button->button != 1)
+		return FALSE;
+
+	double x = button->x;
+	double y = button->y;
+	if (GTK_WIDGET_NO_WINDOW (widget)){
+		x -= widget->allocation.x;
+		y -= widget->allocation.y;
+	}
+	s->toplevel->HandleButton (s, s->cairo, s->cb_down, button->state, x, y);
+	
+	return FALSE;
+}
+
+
+void
+Surface::drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
+{
+	Surface *s = (Surface *) user_data;
+
+        if (s->width != allocation->width || s->height != allocation->height){
+                s->width = allocation->width;
+                s->height = allocation->height;
+
+		s->Realloc ();
+	}
+	
+	// if x or y changed we need to recompute the presentation matrix
+	// because the toplevel position depends on the allocation.
+	if (s->toplevel)
+		s->toplevel->UpdateBounds ();
+}
+
+void
+Surface::drawing_area_destroyed (GtkWidget *widget, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	// This is never called, why?
+	printf ("------------------ WE ARE DESTROYED ---------------\n");
+	s->drawing_area = NULL;
+}
+
+
+
+Surface *
+surface_new (int width, int height)
+{
+	return new Surface (width, height);
+}
+
+void 
+surface_destroy (Surface *s)
+{
+	delete s;
+}
+
+void
+surface_resize (Surface *s, int width, int height)
+{
+	s->Resize (width, height);
+}
+
+void
+surface_attach (Surface *surface, UIElement *toplevel)
+{
+	surface->Attach (toplevel);
+}
+
+void
 surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
 {
-        cairo_t *temp = s->cairo;
-	s->cairo = ctx;
-	s->toplevel->DoRender (s->cairo, x, y, width, height);
-	s->cairo = temp;
+	s->Paint (ctx, x, y, width, height);
 }
 
 void *
 surface_get_drawing_area (Surface *s)
 {
-	return s->drawing_area;
+	return s->GetDrawingArea ();
 }
 
-void surface_register_events (Surface *s,
-			      callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
-			      callback_mouse_event enter,
-			      callback_plain_event got_focus, callback_plain_event lost_focus,
-			      callback_plain_event loaded, callback_plain_event mouse_leave, callback_plain_event surface_resize,
-			      callback_keyboard_event keydown, callback_keyboard_event keyup)
+void
+surface_register_events (Surface *s,
+			 callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
+			 callback_mouse_event enter,
+			 callback_plain_event got_focus, callback_plain_event lost_focus,
+			 callback_plain_event loaded, callback_plain_event mouse_leave, callback_plain_event surface_resize,
+			 callback_keyboard_event keydown, callback_keyboard_event keyup)
 {
-	s->cb_motion = motion;
-	s->cb_down = down;
-	s->cb_up = up;
-	s->cb_enter = enter;
-	s->cb_got_focus = got_focus;
-	s->cb_lost_focus = lost_focus;
-	s->cb_loaded = loaded;
-	s->cb_mouse_leave = mouse_leave;
-	s->cb_keydown = keydown;
-	s->cb_keyup = keyup;
-	s->cb_surface_resize = surface_resize;
+	s->RegisterEvents (motion,
+			   down, up,
+			   enter,
+			   got_focus, lost_focus,
+			   loaded,
+			   mouse_leave,
+			   surface_resize,
+			   keydown, keyup);
+}
+
+void
+Surface::SetTrans (bool trans)
+{
+	transparent = trans;
+	if (drawing_area)
+		gtk_widget_queue_draw (drawing_area);
+}
+
+
+void 
+surface_set_trans (Surface *s, bool trans)
+{
+	s->SetTrans (trans);
+}
+
+bool
+surface_get_trans (Surface *s)
+{
+	return s->GetTrans ();
 }
 
 
