@@ -1,3 +1,8 @@
+2007-07-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (OnPropertyChanged): Fixed to always notify property
+	listeners and chain up to our parent impl.
+
 2007-07-06  Miguel de Icaza  <miguel@novell.com>
 
 	* downloader.cpp: Implement the zip file support for the

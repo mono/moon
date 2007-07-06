@@ -233,10 +233,13 @@ MediaElement::Stop ()
 void
 MediaElement::OnPropertyChanged (DependencyProperty *prop)
 {
-	bool autoplay = media_element_get_auto_play (this);
+	bool invalidate = false;
+	bool autoplay = false;
 	
 	if (prop == MediaBase::SourceProperty) {
 		char *uri = media_base_get_source (this);
+		
+		autoplay = media_element_get_auto_play (this);
 		
 		printf ("video source changed to `%s'\n", uri);
 		
@@ -259,53 +262,42 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 			media_element_set_current_state (this, "Error");
 			printf ("video failed to open\n");
 		}
+		
+		invalidate = true;
 	} else if (prop == MediaElement::AutoPlayProperty) {
 		// handled below
+		autoplay = media_element_get_auto_play (this);
 	} else if (prop == MediaElement::BalanceProperty) {
 		// FIXME: implement me
 		// audio balance?
-		return;
 	} else if (prop == MediaElement::BufferingProgressProperty) {
 		// this can only be set by us, no-op
-		return;
 	} else if (prop == MediaElement::BufferingTimeProperty) {
 		// FIXME: set amount of time to buffer
-		return;
 	} else if (prop == MediaElement::CanSeekProperty) {
 		// this can only be set by us, no-op
-		return;
 	} else if (prop == MediaElement::CurrentStateProperty) {
 		// FIXME: raise CurrentStateChanged event
-		return;
 	} else if (prop == MediaElement::DownloadProgressProperty) {
 		// this can only be set by us, no-op
-		return;
 	} else if (prop == MediaElement::IsMutedProperty) {
 		bool muted = media_element_get_is_muted (this);
 		if (!muted)
 			mplayer->UnMute ();
 		else
 			mplayer->Mute ();
-		return;
 	} else if (prop == MediaElement::MarkersProperty) {
-		// FIXME: 
-		return;
+		// FIXME: implement
 	} else if (prop == MediaElement::NaturalDurationProperty) {
 		// this can only be set by us, no-op
-		return;
 	} else if (prop == MediaElement::NaturalVideoHeightProperty) {
 		// this can only be set by us, no-op
-		return;
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
 		// this can only be set by us, no-op
-		return;
 	} else if (prop == MediaElement::PositionProperty) {
 		// FIXME: needs to seek?
-		NotifyAttacheesOfPropertyChange (prop);
-		return;
 	} else if (prop == MediaElement::VolumeProperty) {
 		// FIXME: implement me
-		return;
 	}
 	
 	if (autoplay && timeout_id == 0 && !mplayer->IsPlaying ()) {
@@ -313,7 +305,11 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		printf ("video autoplayed, timeout = %d\n", timeout_id);
 	}
 	
-	Invalidate ();
+	if (invalidate)
+		Invalidate ();
+	
+	if (prop->type == Type::MEDIAELEMENT)
+		NotifyAttacheesOfPropertyChange (prop);
 	
 	// propagate to parent class
 	MediaBase::OnPropertyChanged (prop);
