@@ -2106,13 +2106,11 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				int val;
 				enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, attr [i]);
 
-				printf ("value = %s\n", attr [ i + 1 ]);
 				if (emu)
 					val = enum_from_str (emu, attr [i + 1]);
 				else
 					val = (int) strtol (attr [i + 1], NULL, 10);
 				dep->SetValue (prop, Value (val));
-				printf ("val = %d\n", val);
 			}
 				break;
 			case Type::STRING:
