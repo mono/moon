@@ -53,7 +53,7 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	exit (1);
 }
 
-UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (0)
+UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::VISIBLE | UIElement::HIT_TEST_VISIBLE)
 {
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
@@ -87,9 +87,20 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		Invalidate ();
 	}
 	else if (prop == UIElement::VisibilityProperty) {
+		if (GetValue (prop)->AsInt32() == VisibilityVisible)
+			flags |= UIElement::VISIBLE;
+		else
+			flags &= ~UIElement::VISIBLE;
+
 		// XXX we need a FullInvalidate if this is changing
 		// from or to Collapsed, but as there's no way to tell that...
 		FullInvalidate (true);
+	}
+	else if (prop == UIElement::IsHitTestVisibleProperty) {
+		if (GetValue (prop)->AsBool())
+			flags |= UIElement::HIT_TEST_VISIBLE;
+		else
+			flags &= ~UIElement::HIT_TEST_VISIBLE;
 	}
 	else if (prop == UIElement::ClipProperty) {
 		Invalidate ();

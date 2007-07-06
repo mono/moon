@@ -1,5 +1,16 @@
 2007-07-06  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp (UIElement::OnPropertyChanged): keep
+	track of the visibility (boolean, not three-state) and hit test
+	visibility state in our flags.  implement GetVisible() and
+	GetHitTestVisible() using the flags.
+
+	* canvas.cpp (Canvas::CheckOver): use GetVisible and
+	GetHitTestVisible to avoid property lookups when dispatching
+	events.
+
+2007-07-06  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (measuring_context_create): we keep a singleton
 	measuring context now.
 	(measuring_context_destroy): do nothing here.  it's freed in

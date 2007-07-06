@@ -35,7 +35,10 @@ class UIElement : public Visual {
 	int DumpHierarchy (UIElement *obj);
 
 	enum UIElementFlags {
-		IS_LOADED = 1
+		IS_LOADED        = 0x01,
+
+		VISIBLE          = 0x02,
+		HIT_TEST_VISIBLE = 0x04
 	};
 	
 	int flags;
@@ -53,7 +56,19 @@ class UIElement : public Visual {
 	//   Updates the absolute_xform for this item
 	//
 	virtual void UpdateTransform ();
-	
+
+	//
+	// GetVisible:
+	//   Returns true if the Visibility property of this item is "Visible", and false otherwise
+	//
+	virtual bool GetVisible () { return (flags & UIElement::VISIBLE) != 0; }
+
+	//
+	// GetHitTestVisible:
+	//   Returns true if the IsHitTestVisible property of this item true, and false otherwise
+	//
+	virtual bool GetHitTestVisible () { return (flags & UIElement::HIT_TEST_VISIBLE) != 0; }
+
 	//
 	// Render: 
 	//   Renders the given @item on the @surface.  the area that is

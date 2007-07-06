@@ -184,11 +184,11 @@ bool
 Canvas::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
 {
 	// if the item isn't visible, it's really easy
-	if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
+	if (!item->GetVisible ())
 		return false;
 
 	// if the item doesn't take part in hit testing, it's also easy
-	if (item->GetValue (UIElement::IsHitTestVisibleProperty)->AsBool() == false)
+	if (!item->GetHitTestVisible ())
 		return false;
 
 	// first a quick bounds check
