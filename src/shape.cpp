@@ -19,7 +19,6 @@
 
 #include "runtime.h"
 #include "shape.h"
-#include "cutil.h"
 #include "array.h"
 
 #include <sys/time.h>
@@ -242,7 +241,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 		}
 	}
 	else {
-		if (drawn)
+		if (drawn && do_op)
 			cairo_new_path (cr);
 	}
 }
@@ -265,6 +264,9 @@ Shape::ComputeBounds ()
 	// dont do the operation
 	DoDraw (cr, false, true);
 
+	// XXX this next call will hopefully become unnecessary in a
+	// later version of cairo.
+	cairo_identity_matrix (cr);
 	if (stroke)
 		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
 	else
@@ -273,10 +275,7 @@ Shape::ComputeBounds ()
 	cairo_new_path (cr);
 	cairo_restore (cr);
 
-	// The extents are in the coordinates of the transform, translate to device coordinates
-	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
-
-	bounds = Rect (x1, y1, x2-x1, y2-y1);
+	bounds = Rect (x1-1, y1-1, x2-x1 + 2, y2-y1 + 2);
 
 	measuring_context_destroy (cr);
 }

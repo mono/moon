@@ -18,7 +18,6 @@
 #include <string.h>
 
 #include "runtime.h"
-#include "cutil.h"
 #include "color.h"
 #include "text.h"
 
@@ -387,14 +386,14 @@ TextBlock::ComputeBounds ()
 	cairo_set_matrix (cr, &absolute_xform);
 	cairo_set_line_width (cr, 1);
 	cairo_rectangle (cr, 0, 0, actual_width, actual_height);
+	// XXX this next call will hopefully become unnecessary in a
+	// later version of cairo.
+	cairo_identity_matrix (cr);
 	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
 	cairo_new_path (cr);
 	cairo_restore (cr);
-	
-	// The extents are in the coordinates of the transform, translate to device coordinates
-	x_cairo_matrix_transform_bounding_box (&absolute_xform, &x1, &y1, &x2, &y2);
 
-	bounds = Rect (x1, y1, x2-x1, y2-y1);
+	bounds = Rect (x1 - 1, y1 - 1, x2-x1 + 2, y2-y1 + 2);
 
 	measuring_context_destroy (cr);
 }

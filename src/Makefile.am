@@ -15,7 +15,6 @@ libmooninclude_headers = \
 	clock.h		\
 	collection.h	\
 	control.h	\
-	cutil.h		\
 	downloader.h	\
 	geometry.h	\
 	mango.h		\
@@ -48,7 +47,6 @@ libmoon_la_SOURCES = 	\
 	clock.cpp	\
 	collection.cpp	\
 	control.cpp	\
-	cutil.cpp	\
 	dependencyobject.cpp	\
 	downloader.cpp	\
 	frameworkelement.cpp	\
