@@ -1,3 +1,17 @@
+2007-07-07  Chris Toshok  <toshok@ximian.com>
+
+	* brush.cpp: make sure to use GetSizeForBrush for everything
+	instead of cairo_stroke_extents, which won't work for non-stroked
+	elements like canvases.  Also, notify changes to the
+	GradientStopCollection up the hierarchy properly.
+
+	* frameworkelement.h, frameworkelement.cpp: add a GetSizeForBrush
+	implementation for FrameworkElement so Canvases (and other
+	uielement subclasses) can have brushes assigned to them (canvas
+	uses it for its background.)
+
+	* canvas.cpp (Canvas::Render): remove the unused label.
+
 2007-07-06  Miguel de Icaza  <miguel@novell.com>
 
 	* media.cpp: Do not pass the filename as the result now on the

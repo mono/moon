@@ -106,6 +106,7 @@ class GradientBrush : public Brush {
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	virtual bool SetupGradient (cairo_pattern_t *pattern, UIElement *uielement);
 };
 

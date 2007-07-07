@@ -285,6 +285,14 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
+void
+GradientBrush::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	// GeometryGroup only has one collection, so let's save the hash lookup
+	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
+		NotifyAttacheesOfPropertyChange (GradientBrush::GradientStopsProperty);
+}
+
 bool
 GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 {
@@ -357,8 +365,12 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	if (uielement) {
 		uielement->GetSizeForBrush (cairo, &w, &h);
 	} else {
-		h = framework_element_get_height ((FrameworkElement *) uielement);
-		w = framework_element_get_width ((FrameworkElement *) uielement);
+		double x1, y1, x2, y2;
+		
+		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
+		
+		h = fabs (y2 - y1);
+		w = fabs (x2 - x1);
 	}
 	
 	Point *start = linear_gradient_brush_get_start_point (this);
@@ -484,11 +496,21 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_pattern_t *pattern = cairo_pattern_create_radial (ox, oy, 0.0, cx, cy, ry);
 
-	double x0, y0, x1, y1;
-	cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
+	double w, h;
+
+	if (uielement) {
+		uielement->GetSizeForBrush (cairo, &w, &h);
+	} else {
+		double x1, y1, x2, y2;
+		
+		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
+		
+		h = fabs (y2 - y1);
+		w = fabs (x2 - x1);
+	}
 
 	cairo_matrix_t matrix;
-	cairo_matrix_init (&matrix, fabs (x1 - x0) * rx / ry, 0, 0, fabs (y1 - y0), x0, y0);
+	cairo_matrix_init (&matrix, w * rx / ry, 0, 0, h, 0, 0);
 
 	Transform *transform = brush_get_transform (this);
 	if (transform) {

@@ -400,7 +400,6 @@ Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 	//printf ("RENDER: LEAVE\n");
 	//draw_grid (cr);
 
- leave:
 	level -= 4;
 	cairo_restore (cr);
 }
