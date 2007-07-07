@@ -346,8 +346,8 @@ Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 		UIElement *item = (UIElement *) cn->obj;
 
-		if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() != VisibilityVisible)
-			goto leave;
+		if (!item->GetVisible())
+			continue;
 		
 		//space (level);
 		//printf ("%s %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
