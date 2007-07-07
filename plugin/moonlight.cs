@@ -55,17 +55,12 @@ namespace Moonlight {
 		internal extern static IntPtr xaml_create_from_str (string file, bool create_namescope,
 				CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue, ref int kind_type);
 
-		[DllImport("moon",EntryPoint="dependency_object_get_name")]
-		internal extern static IntPtr _dependency_object_get_name (IntPtr obj);
+		[DllImport("moon",EntryPoint="dependency_object_get_type_name")]
+		internal extern static IntPtr _dependency_object_get_type_name (IntPtr obj);
 
-		internal static string dependency_object_get_name (IntPtr obj)
+		internal static string dependency_object_get_type_name (IntPtr obj)
 		{
-			IntPtr p = _dependency_object_get_name (obj);
-			
-			if (p == IntPtr.Zero){
-				Console.WriteLine ("Got a null");
-				return null;
-			}
+			IntPtr p = _dependency_object_get_type_name (obj);
 			return Marshal.PtrToStringAuto (p);
 		}
 		
@@ -211,7 +206,7 @@ namespace Moonlight {
 				return null;
 			}
 
-			string xname = Hosting.dependency_object_get_name (element);
+			string xname = Hosting.dependency_object_get_type_name (element);
 			if (xname != "Canvas"){
 				Console.WriteLine ("return value is not a Canvas, its a {0}", xname);
 				return null;
