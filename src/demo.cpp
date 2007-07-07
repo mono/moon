@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <errno.h>
 
 #include "libmoon.h"
 
@@ -545,7 +546,9 @@ class FileDownloadState {
 	{
 		int fd = open (uri, O_RDONLY);
 		if (fd == -1) {
-			printf ("failed open\n");
+			const char *msg = g_strerror (errno);
+			printf ("downloader failed to open %s: %s\n", uri, msg);
+			downloader_notify_error (downloader, msg);
 			return;
 		}
 
@@ -557,8 +560,9 @@ class FileDownloadState {
 		downloader_notify_size (downloader, size);
 	}
 
-	void Send () { 
-		downloader_notify_finished (downloader, uri);
+	void Send () {
+		if (uri != NULL)
+			downloader_notify_finished (downloader, uri);
 	}
 
 	void Close ()

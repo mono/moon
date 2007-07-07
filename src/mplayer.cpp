@@ -663,7 +663,13 @@ audio_decode (Audio *audio)
 		outbuf = ALIGN (audio->outptr, 2);
 		outlen = (audio->outbuf + AUDIO_BUFLEN) - outbuf;
 		
-		if (outlen < frame_size)
+		// ffmpeg is kinda dumb here, there's no reason outlen
+		// has to be >= AVCODEC_MAX_AUDIO_FRAME_SIZE so long
+		// as it is >= the actual frame size... but ffmpeg
+		// will spew warnings... so to silence this nonsense,
+		// we check outlen < AVCODEC_MAX_AUDIO_FRAME_SIZE
+		// rather than outlen < frame_size
+		if (outlen < AVCODEC_MAX_AUDIO_FRAME_SIZE)
 			break;
 		
 		n = avcodec_decode_audio2 (codec, (int16_t *) outbuf, &outlen,
