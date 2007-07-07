@@ -701,8 +701,6 @@ Image::CreateSurface (const char *fname)
 			return;
 		}
 
-		printf ("Loaded image %s!\n", fname);
-
 		surface = g_new0 (CachedSurface, 1);
 
 		surface->ref_cnt = 1;

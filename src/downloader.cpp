@@ -231,7 +231,7 @@ downloader_get_response_file (Downloader *dl, char *PartName)
 	}
 
 	char *part = ll_downloader_get_response_file (dl, PartName);
-	if (part != NULL){
+	if (part != NULL && PartName != NULL && *PartName != 0){
 		if (dl->part_hash == NULL)
 			dl->part_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 		g_hash_table_insert (dl->part_hash, g_strdup (PartName), g_strdup (part));
@@ -331,12 +331,18 @@ void
 downloader_notify_finished (Downloader *dl, const char *fname)
 {
 	dl->filename = g_strdup (fname);
+	
+	// HACK, we should provide the status code
+	dl->SetValue (Downloader::StatusProperty, Value (200));
 	downloader_notify (dl, Downloader::NOTIFY_COMPLETED, (void *) fname);
 }
 
 void
 downloader_notify_error (Downloader *dl, const char *msg)
 {
+	// dl->SetValue (Downloader::StatusProperty, Value (400))
+	// For some reason the status is 0, not updated on errors?
+	
 	downloader_notify (dl, Downloader::NOTIFY_DOWNLOAD_FAILED, (void *) msg);
 }
 

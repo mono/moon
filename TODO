@@ -25,10 +25,14 @@ Feel free to add items to this TODO list
 
 * Downloader
 
-	Once we have full files transfered to disk, we can implement the ZIP
-	functionality: GetResponseText (string partName).
-
 	Add support for handling errors on the plugin on downloads.
+
+	Add support for logging the actual HTTP return code, and text.
+
+	Investigate: if Send is called twice, are two connections open, or only the first Send works?
+
+	Image and the Downloader: if I set an Image source to be a downloader, does that
+	automaticlaly call Send on the downloader?   Currently we do, but does MS?
 
 	Investigate Exception: what happens if you call "Send" without calling Open first?
 
