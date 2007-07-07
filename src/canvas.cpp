@@ -141,6 +141,14 @@ Canvas::ComputeBounds ()
 			else
 				bounds = bounds.Union (fw_rect);
 		}
+
+		/* standard "grow the rectangle by enough to cover our
+		   asses because of cairo's floating point rendering"
+		   thing */
+		bounds.x -= 1;
+		bounds.y -= 1;
+		bounds.w += 2;
+		bounds.h += 2;
 	}
 #if DEBUG_BOUNDS
 	space (levelb);
