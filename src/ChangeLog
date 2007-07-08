@@ -1,5 +1,19 @@
 2007-07-08  Chris Toshok  <toshok@ximian.com>
 
+	* many-files (again!): another, smaller change to the event stuff.
+	stop using strings for everything that we can.  Register events at
+	object construction time, and use those id's for everything else.
+	The string interface is still around because of
+	EventTrigger::Set/RemoveTarget, as well as the managed code.
+
+	One further change that's needed - the id's are per-instance now,
+	which is stupid.  they should be static.
+
+	This further cuts down the work (in terms of hash functions) that
+	needs to be performed in order to dispatch an event.
+	
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
 	* many-files: fairly big change.  Stick the EventObject class
 	between Base and DependencyObject in the hierarchy, and get rid of
 	DependencyObject's "events" field.  Get rid of all the registered

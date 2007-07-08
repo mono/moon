@@ -70,6 +70,9 @@ TimeManager::TimeManager ()
     tick_calls (NULL)
 {
 	start_time = get_now ();
+
+	UpdateInputEvent = RegisterEvent ("update-input");
+	RenderEvent = RegisterEvent ("render");
 }
 
 void
@@ -172,13 +175,13 @@ TimeManager::Tick ()
 
 	if (flags & TIME_MANAGER_UPDATE_INPUT) {
 		STARTTICKTIMER (tick_input, "TimeManager::Tick - Input");
-		Emit ("update-input");
+		Emit (UpdateInputEvent);
 		ENDTICKTIMER (tick_input, "TimeManager::Tick - Input");
 	}
 
 	if (flags & TIME_MANAGER_RENDER) {
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
-		Emit ("render");
+		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 
@@ -250,6 +253,11 @@ Clock::Clock (Timeline *tl)
     queued_events (0),
     is_reversed (false)
 {
+	CurrentTimeInvalidatedEvent = RegisterEvent ("CurrentTimeInvalidated");
+	CurrentStateInvalidatedEvent = RegisterEvent ("CurrentStateInvalidated");
+	CurrentGlobalSpeedInvalidatedEvent = RegisterEvent ("CurrentGlobalSpeedInvalidated");
+	CompletedEvent = RegisterEvent ("Completed");
+
 	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
 		// remaining_iterations is an int.. GetCount returns a double.  badness?
@@ -382,20 +390,20 @@ Clock::RaiseAccumulatedEvents ()
 		current_time = new_time;
 		current_progress = new_progress;
 
-		Emit ("CurrentTimeInvalidated");
+		Emit (CurrentTimeInvalidatedEvent);
 	}
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
 		current_state = new_state;
 		if (current_state == Clock::Active)
 			has_started = true;
-		Emit ("CurrentStateInvalidated");
+		Emit (CurrentStateInvalidatedEvent);
 	}
 
 	if ((queued_events & CURRENT_GLOBAL_SPEED_INVALIDATED) != 0) {
 		current_speed = new_speed;
 		SpeedChanged ();
-		Emit ("CurrentGlobalSpeedInvalidated"); /* this probably happens in SpeedChanged () */
+		Emit (CurrentGlobalSpeedInvalidatedEvent); /* this probably happens in SpeedChanged () */
 	}
 
 	/* XXX more events here, i assume */
@@ -602,7 +610,7 @@ ClockGroup::RaiseAccumulatedEvents ()
 	g_list_free (copy);
 
 	if (need_completed) {
-		Emit ("Completed");
+		Emit (CompletedEvent);
 	}
 }
 

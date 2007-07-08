@@ -39,10 +39,18 @@ class EventObject : public Base {
 	
 	void AddHandler (char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (char *event_name, EventHandler handler, gpointer data);
-	
+
+	void AddHandler (int event_id, EventHandler handler, gpointer data);
+	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
+
+ protected:
+	int  RegisterEvent (char *event_name);
 	void Emit (char *event_name, gpointer calldata = NULL);
+	void Emit (int event_id, gpointer calldata = NULL);
+
  private:
-	GHashTable *event_hash;
+	GHashTable *event_name_hash;
+	GPtrArray *events;
 };
 
 

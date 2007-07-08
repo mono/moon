@@ -228,6 +228,13 @@ class UIElement : public Visual {
 	static DependencyProperty* TriggersProperty;
 	static DependencyProperty* ZIndexProperty;
 
+	// Events you can AddHandler to
+	int LoadedEvent;
+	int MotionEvent;
+	int ButtonPressEvent;
+	int ButtonReleaseEvent;
+	int EnterEvent;
+	int LeaveEvent;
 };
 
 G_BEGIN_DECLS

@@ -170,6 +170,10 @@ class TimeManager : public EventObject {
 
 	void AddTickCall (void (*func)(gpointer), gpointer tick_data);
 
+	// Events you can AddHandler to
+	int UpdateInputEvent;
+	int RenderEvent;
+
  private:
 	TimeManager ();
 
@@ -259,6 +263,12 @@ class Clock : public DependencyObject {
 	virtual void RaiseAccumulatedEvents ();
 	virtual void Tick ();
 	void SetParent (Clock *parent) { parent_clock = parent; }
+
+	// Events you can AddHandler to
+	int CurrentTimeInvalidatedEvent;
+	int CurrentStateInvalidatedEvent;
+	int CurrentGlobalSpeedInvalidatedEvent;
+	int CompletedEvent;
 
  protected:
 	// events to queue up

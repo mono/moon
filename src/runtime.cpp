@@ -128,8 +128,8 @@ Surface::~Surface ()
 	// And I have yet to track what causes this, the stack trace is not 
 	// very useful
 	//
-	TimeManager::Instance()->RemoveHandler ("render", render_cb, this);
-	TimeManager::Instance()->RemoveHandler ("update-input", update_input_cb, this);
+	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->RenderEvent, render_cb, this);
+	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, this);
 
 	if (toplevel) {
 		toplevel->unref ();
@@ -371,8 +371,8 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 	s->CreateSimilarSurface ();
 	s->cairo = s->cairo_xlib;
 
-	TimeManager::Instance()->AddHandler ("render", render_cb, s);
-	TimeManager::Instance()->AddHandler ("update-input", update_input_cb, s);
+	TimeManager::Instance()->AddHandler (TimeManager::Instance()->RenderEvent, render_cb, s);
+	TimeManager::Instance()->AddHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, s);
 	return TRUE;
 }
 
@@ -387,8 +387,8 @@ Surface::unrealized_callback (GtkWidget *widget, gpointer data)
 	}
 
 	s->cairo = s->cairo_buffer;
-	TimeManager::Instance()->RemoveHandler ("render", render_cb, s);
-	TimeManager::Instance()->RemoveHandler ("update-input", update_input_cb, s);
+	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->RenderEvent, render_cb, s);
+	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, s);
 	return TRUE;
 }
 

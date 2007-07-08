@@ -55,6 +55,13 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 
 UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE | UIElement::HIT_TEST_VISIBLE)
 {
+	LoadedEvent = RegisterEvent ("Loaded");
+	MotionEvent = RegisterEvent ("Motion");
+	ButtonPressEvent = RegisterEvent ("ButtonPress");
+	ButtonReleaseEvent = RegisterEvent ("ButtonRelease");
+	EnterEvent = RegisterEvent ("Enter");
+	LeaveEvent = RegisterEvent ("Leave");
+
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 
@@ -222,7 +229,7 @@ UIElement::OnLoaded ()
 {
 	if (!(flags & UIElement::IS_LOADED)) {
 		flags |= UIElement::IS_LOADED;
-		Emit ("Loaded");
+		Emit (LoadedEvent);
 	}
 }
 
@@ -288,7 +295,7 @@ UIElement::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor
 	e.x = x;
 	e.y = y;
 
-	Emit ("Motion", &e);
+	Emit (MotionEvent, &e);
 }
 
 void
@@ -299,7 +306,7 @@ UIElement::HandleButtonPress (cairo_t *cr, int state, double x, double y)
 	e.x = x;
 	e.y = y;
 
-	Emit ("ButtonPress", &e);
+	Emit (ButtonPressEvent, &e);
 }
 
 void
@@ -310,7 +317,7 @@ UIElement::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
 	e.x = x;
 	e.y = y;
 
-	Emit ("ButtonRelease", &e);
+	Emit (ButtonReleaseEvent, &e);
 }
 
 void
@@ -321,13 +328,13 @@ UIElement::Enter (cairo_t *cr, int state, double x, double y)
 	e.x = x;
 	e.y = y;
 
-	Emit ("Enter", &e);
+	Emit (EnterEvent, &e);
 }
 
 void
 UIElement::Leave ()
 {
-	Emit ("Leave");
+	Emit (LeaveEvent);
 }
 
 void
