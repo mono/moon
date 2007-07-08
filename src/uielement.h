@@ -37,8 +37,12 @@ class UIElement : public Visual {
 	enum UIElementFlags {
 		IS_LOADED        = 0x01,
 
-		VISIBLE          = 0x02,
-		HIT_TEST_VISIBLE = 0x04
+		// these two flags correspond to the 3 states of VisibilityProperty
+		RENDER_VISIBLE   = 0x02,
+		LAYOUT_VISIBLE   = 0x04,
+
+		// the HitTestVisible property
+		HIT_TEST_VISIBLE = 0x08
 	};
 	
 	int flags;
@@ -61,7 +65,13 @@ class UIElement : public Visual {
 	// GetVisible:
 	//   Returns true if the Visibility property of this item is "Visible", and false otherwise
 	//
-	virtual bool GetVisible () { return (flags & UIElement::VISIBLE) != 0; }
+	virtual bool GetVisible () { return (flags & UIElement::RENDER_VISIBLE) != 0; }
+
+	//
+	// GetLayoutVisible:
+	//   Returns true if the element takes part in layout (if Visibility == Visible or Hidden, but not Collapsed)
+	//
+	virtual bool GetLayoutVisible () { return (flags & UIElement::LAYOUT_VISIBLE) != 0; }
 
 	//
 	// GetHitTestVisible:

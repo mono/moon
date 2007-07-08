@@ -16,6 +16,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <cairo.h>
+#include <math.h>
 
 #include "runtime.h"
 #include "shape.h"
@@ -278,6 +279,17 @@ Shape::ComputeBounds ()
 	bounds = Rect (x1-1, y1-1, x2-x1 + 2, y2-y1 + 2);
 
 	measuring_context_destroy (cr);
+}
+
+void
+Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	double x1, y1, x2, y2;
+	
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	
+	*height = fabs (y2 - y1);
+	*width = fabs (x2 - x1);
 }
 
 bool

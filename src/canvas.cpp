@@ -99,12 +99,9 @@ Canvas::ComputeBounds ()
 		for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 			UIElement *item = (UIElement *) cn->obj;
 
-			/* if the element is collapsed, it doesn't figure into
-			   layout, and therefore shouldn't figure into our
-			   bounding box computation.  Hidden means it still
-			   takes up space, just isn't drawn and doesn't take
-			   part in HitTest stuff. */
-			if (item->GetValue (UIElement::VisibilityProperty)->AsInt32() == VisibilityCollapsed)
+			// if the item doesn't take part in layout
+			// calculations, skip it
+			if (!item->GetLayoutVisible ())
 				continue;
 
 			Rect r = item->GetBounds ();
@@ -180,9 +177,11 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 bool
 Canvas::InsideObject (cairo_t *cr, double x, double y)
 {
+#if false
 	/* if we have explicitly set width/height, we check them */
-	if (FrameworkElement::InsideObject (cr, x, y))
-		return true;
+	if (!FrameworkElement::InsideObject (cr, x, y))
+		return false;
+#endif
 
 	/* otherwise we try to figure out if we're inside one of our child elements */
 	UIElement *mouseover = FindMouseOver (cr, x, y);
@@ -218,26 +217,15 @@ Canvas::FindMouseOver (cairo_t *cr, double x, double y)
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
 
-	// if we have a previous mouse_over, see if we're still in it
-	// first, to make things a little quicker in the case where we
-	// have a lot of children
-	//
-	if (mouse_over) {
-		if (CheckOver (cr, mouse_over, x, y))
-			return mouse_over;
-	}
-
 	// Walk the list in reverse order, since it's sorted in ascending z-index order
 	//
 	for (cn = (Collection::Node *) children->z_sorted_list->Last (); cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
 		UIElement *item = (UIElement *) cn->obj;
 
-		// skip the mouse_over, since we already checked it above
-		if (item == mouse_over)
-			continue;
-
-		if (CheckOver (cr, item, x, y))
+		if (CheckOver (cr, item, x, y)) {
+		  //		  printf (" mouse_over = %s\n", item->GetName());
 			return item;
+		}
 	}
 
 	return NULL;
@@ -309,6 +297,8 @@ Canvas::Leave (Surface *s)
 
 static int level = 0;
 
+//#define DEBUG_INVALIDATE 1
+
 void
 Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 {
@@ -354,13 +344,17 @@ Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
 		UIElement *item = (UIElement *) cn->obj;
 
-		if (!item->GetVisible())
+		if (!item->GetVisible()) {
+#ifdef DEBUG_INVALIDATE
+			printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
+#endif
 			continue;
-		
+		}
+
 		//space (level);
 		//printf ("%s %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
 		
-		if (true || render_rect.IntersectsWith (item->GetBounds())) {
+		if (render_rect.IntersectsWith (item->GetBounds())) {
 			Rect inter = render_rect.Intersection(item->GetBounds());
 #if CAIRO_CLIP
 #if TIME_CLIP
@@ -371,13 +365,13 @@ Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
 			// at the very least we need to clip based on the expose area.
 			// there's also a UIElement::ClipProperty
-			cairo_rectangle (cr, inter.x, inter.y, inter.w + 2, inter.h + 2);
+			cairo_rectangle (cr, inter.x-1, inter.y-1, inter.w + 2, inter.h + 2);
 			cairo_clip (cr);
 #if TIME_CLIP
 			ENDTIMER(clip, "cairo clip setup");
 #endif
 #endif
-			item->DoRender (cr, (int)inter.x, (int)inter.y, (int)inter.w + 2, (int)inter.h + 2);
+			item->DoRender (cr, (int)inter.x-1, (int)inter.y-1, (int)inter.w + 2, (int)inter.h + 2);
 
 #if CAIRO_CLIP
 #if TIME_CLIP
@@ -392,7 +386,7 @@ Canvas::Render (cairo_t *cr, int x, int y, int width, int height)
 		}
 #ifdef DEBUG_INVALIDATE
 		else {
-			printf ("skipping object %p (%s)\n", item, Type::Find(item->GetObjectType())->name);
+			printf ("skipping object %s: %p (%s)\n", item->GetName(), item, item->GetTypeName());
 		}
 #endif
 

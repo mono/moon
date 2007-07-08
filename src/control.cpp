@@ -33,6 +33,8 @@ Control::UpdateTransform ()
 void 
 Control::Render (cairo_t *cr, int x, int y, int width, int height)
 {
+  if (!GetVisible ())
+    printf ("wtf?\n");
 	if (real_object)
 		real_object->DoRender (cr, x, y, width, height);
 }
@@ -124,8 +126,7 @@ Control::OnPropertyChanged (DependencyProperty *prop)
 void 
 Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	if (real_object)
-		real_object->OnSubPropertyChanged (prop, subprop);
+	NotifyAttacheesOfPropertyChange (subprop);
 }
 
 void
@@ -160,6 +161,34 @@ Control::~Control ()
 		base_unref (real_object);
 }
 
+UIElement*
+Control::InitializeFromXaml (const char *xaml,
+			     xaml_create_custom_element_callback *cecb,
+			     xaml_set_custom_attribute_callback *sca,
+			     xaml_hookup_event_callback *hue,
+			     Type::Kind *element_type)
+{
+	// No callback, figure out how this will work in the plugin to satisfy deps
+	UIElement *element = xaml_create_from_str (xaml, false, cecb, sca, hue, element_type);
+	if (element == NULL)
+		return NULL;
+
+	if (real_object){
+		real_object->parent = NULL;
+		base_unref (real_object);
+	}
+
+	real_object = (FrameworkElement *) element;
+	real_object->parent = this;
+
+	real_object->Attach (NULL, this);
+
+	// sink the ref, we own this
+	base_ref (real_object);
+
+	return element;
+}
+
 UIElement* 
 control_initialize_from_xaml (Control *control, const char *xaml,
 			      xaml_create_custom_element_callback *cecb,
@@ -167,27 +196,7 @@ control_initialize_from_xaml (Control *control, const char *xaml,
 			      xaml_hookup_event_callback *hue,
 			      Type::Kind *element_type)
 {
-	// No callback, figure out how this will work in the plugin to satisfy deps
-
-	UIElement *element = xaml_create_from_str (xaml, false, cecb, sca, hue, element_type);
-	if (element == NULL)
-		return NULL;
-
-	if (control->real_object){
-		control->real_object->parent = NULL;
-		base_unref (control->real_object);
-	}
-
-	// 
-	// It does not matter, they are the same
-	//
-	control->real_object = (FrameworkElement *) element;
-	control->real_object->parent = control;
-
-	// sink the ref, we own this
-	base_ref (control->real_object);
-
-	return element;
+	return control->InitializeFromXaml (xaml, cecb, sca, hue, element_type);
 }
 
 Control *

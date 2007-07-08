@@ -43,6 +43,10 @@ class Control : public FrameworkElement {
 	virtual void SetValue (DependencyProperty *property, Value *value);
 	virtual Value *GetValue (DependencyProperty *property);
 
+	virtual bool GetVisible () { return real_object && real_object->GetVisible(); }
+	virtual bool GetLayoutVisible () { return real_object && real_object->GetLayoutVisible(); }
+	virtual bool GetHitTestVisible () { return real_object && real_object->GetHitTestVisible(); }
+
 	virtual void OnLoaded ();
 
 	UIElement* InitializeFromXaml (const char *xaml,

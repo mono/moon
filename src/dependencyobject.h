@@ -103,6 +103,12 @@ class DependencyObject : public Base {
 		return Type::Find (GetObjectType ())->name;
 	}
 
+	const char* GetName ()
+	{
+		Value *v = GetValue (DependencyObject::NameProperty);
+		return v ? (v->AsString () ? v->AsString() : "(null)") : "(null)";
+	}
+	
 	void SetParent (DependencyObject *parent);
 	DependencyObject* GetParent ();
 

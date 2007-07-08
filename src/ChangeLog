@@ -1,3 +1,39 @@
+2007-07-07  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: add GetName() instance method.
+
+	* dependencyobject.cpp (dependency_object_get_name): and call it
+	here.
+
+	* shape.h, shape.cpp (Shape::GetSizeForBrush): we need this
+	implementation here since FrameworkElement just goes by
+	Width/Height.
+
+	* canvas.cpp (Canvas::FindMouseOver): remove the "still over the
+	same element" optimization.  it's stupid and doesn't work. what
+	was i thinking?
+	(Canvas::ComputeBounds): simplify this by using
+	item->GetLayoutVisible instead of item->GetValue.
+	(Canvas::Render): enable the rendering optimization where we only
+	bother rendering elements whose bounds intersect those of the
+	rectangle we're repainting.  This seriously speeds up airlines.
+
+	* uielement.cpp, uielement.h: add GetLayoutVisible() method, and
+	another flag.  now the three VisibilityProperty states are
+	represented by two flags.
+
+	Also, remove the implementation of GetSizeForBrush (not all
+	UIElements are stroked) and warn callers.
+
+	* control.cpp: Attach to the real object, and report back its
+	property changes to our parents.  Also, control_initialize_from_xaml
+	should call Control::InitializeFromXaml.
+
+	* control.h: override the 3 Get*Visible methods from UIElement,
+	and return our real_object's state.
+
+	
+
 2007-07-07  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* demo.cpp (FileDownloadState::Send): Only notify complete if uri

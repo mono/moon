@@ -53,7 +53,7 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	exit (1);
 }
 
-UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::VISIBLE | UIElement::HIT_TEST_VISIBLE)
+UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE | UIElement::HIT_TEST_VISIBLE)
 {
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
@@ -70,10 +70,6 @@ UIElement::~UIElement ()
 	}
 }
 
-//
-// Intercept any changes to the triggers property and mirror that into our
-// own variable
-//
 void
 UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -87,10 +83,22 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		Invalidate ();
 	}
 	else if (prop == UIElement::VisibilityProperty) {
-		if (GetValue (prop)->AsInt32() == VisibilityVisible)
-			flags |= UIElement::VISIBLE;
-		else
-			flags &= ~UIElement::VISIBLE;
+		switch (GetValue (prop)->AsInt32()) {
+		case VisibilityVisible:
+			flags |= UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE;
+			break;
+		case VisibilityHidden:
+			flags &= ~UIElement::RENDER_VISIBLE;
+			flags |= UIElement::LAYOUT_VISIBLE;
+			break;
+		case VisibilityCollapsed:
+			flags &= ~(UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE);
+			UpdateBounds (true);
+			break;
+		default:
+			g_assert_not_reached ();
+			break;
+		}
 
 		// XXX we need a FullInvalidate if this is changing
 		// from or to Collapsed, but as there's no way to tell that...
@@ -157,7 +165,7 @@ UIElement::DumpHierarchy (UIElement *obj)
 	int n = DumpHierarchy (obj->parent);
 	for (int i = 0; i < n; i++)
 		putchar (' ');
-	printf ("%s (%p)\n", dependency_object_get_name (obj), obj);
+	printf ("%s (%p)\n", obj->GetTypeName(), obj);
 	return n + 4;
 }
 #endif
@@ -188,7 +196,7 @@ UIElement::UpdateTransform ()
 	cairo_matrix_translate (&absolute_xform, p.x, p.y);
 	cairo_matrix_multiply (&absolute_xform, &user_transform, &absolute_xform);
 	cairo_matrix_translate (&absolute_xform, -p.x, -p.y);
-	//printf ("      Final position for %s x=%g y=%g\n", dependency_object_get_name (this), absolute_xform.x0, absolute_xform.y0);
+	//printf ("      Final position for %s x=%g y=%g\n", GetTypeName(), absolute_xform.x0, absolute_xform.y0);
 
 	// a change in transform requires a change in our bounds, more than likely
 	UpdateBounds ();
@@ -300,7 +308,7 @@ void
 UIElement::ComputeBounds ()
 {
 	g_warning ("UIElement:ComputeBounds has been called. The derived class %s should have overridden it.",
-		   dependency_object_get_name (this));
+		   GetTypeName ());
 }
 
 void
@@ -324,19 +332,17 @@ UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 void
 UIElement::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-	g_warning ("UIElement:render has been called. The derived class %s should have overridden it.",
-		   dependency_object_get_name (this));
+	g_warning ("UIElement:Render has been called. The derived class %s should have overridden it.",
+		   GetTypeName ());
 }
 
 void
 UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	double x1, y1, x2, y2;
-	
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	
-	*height = fabs (y2 - y1);
-	*width = fabs (x2 - x1);
+	g_warning ("UIElement:GetSizeForBrush has been called. The derived class %s should have overridden it.",
+		   GetTypeName ());
+	*height = 
+	  *width = 0.0;
 }
 
 double
