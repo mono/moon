@@ -32,10 +32,11 @@ class Control : public FrameworkElement {
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 	virtual Point GetTransformOrigin ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual void HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
-	virtual void HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y);
-	virtual void Enter (Surface *s, cairo_t *cr, int state, double x, double y);
-	virtual void Leave (Surface *s);
+	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
+	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
+	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
+	virtual void Enter (cairo_t *cr, int state, double x, double y);
+	virtual void Leave ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);

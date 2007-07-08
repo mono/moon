@@ -83,36 +83,44 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-Control::HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
+Control::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
 {
 	if (real_object)
-		real_object->HandleMotion (s, cr, state, x, y, cursor);
-	FrameworkElement::HandleMotion (s, cr, state, x, y, NULL);
+		real_object->HandleMotion (cr, state, x, y, cursor);
+	FrameworkElement::HandleMotion (cr, state, x, y, NULL);
 }
 
 void
-Control::HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y)
+Control::HandleButtonPress (cairo_t *cr, int state, double x, double y)
 {
 	if (real_object)
-		real_object->HandleButton (s, cr, cb, state, x, y);
-	FrameworkElement::HandleButton (s, cr, cb, state, x, y);
+		real_object->HandleButtonPress (cr, state, x, y);
+	FrameworkElement::HandleButtonPress (cr, state, x, y);
+}
+
+void
+Control::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
+{
+	if (real_object)
+		real_object->HandleButtonRelease (cr, state, x, y);
+	FrameworkElement::HandleButtonRelease (cr, state, x, y);
 }
 
 void 
-Control::Enter (Surface *s, cairo_t *cr, int state, double x, double y)
+Control::Enter (cairo_t *cr, int state, double x, double y)
 {
 	if (real_object){
-		FrameworkElement::Enter (s, cr, state, x, y);
-		real_object->Enter (s, cr, state, x, y);
+		FrameworkElement::Enter (cr, state, x, y);
+		real_object->Enter (cr, state, x, y);
 	}
 }
 
 void 
-Control::Leave (Surface *s)
+Control::Leave ()
 {
 	if (real_object){
-		real_object->Leave (s);
-		FrameworkElement::Leave (s);
+		real_object->Leave ();
+		FrameworkElement::Leave ();
 	}
 }
 

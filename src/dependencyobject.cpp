@@ -260,7 +260,6 @@ free_value (void *v)
 DependencyObject::DependencyObject ()
 {
 	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_value);
-	events = new EventObject ();
 	this->attached_list = NULL;
 	this->parent = NULL;
 }
@@ -282,7 +281,6 @@ DependencyObject::GetObjectType ()
 DependencyObject::~DependencyObject ()
 {
 	g_hash_table_destroy (current_values);
-	delete events;
 }
 
 DependencyProperty *
@@ -406,13 +404,13 @@ dependency_object_get_type_name (DependencyObject *obj)
 void
 dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure)
 {
-	o->events->AddHandler (event, handler, closure);
+	o->AddHandler (event, handler, closure);
 }
 
 void
 dependency_object_remove_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure)
 {
-	o->events->RemoveHandler (event, handler, closure);
+	o->RemoveHandler (event, handler, closure);
 }
 
 
@@ -817,7 +815,7 @@ EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer dat
 }
 
 void
-EventObject::Emit (char *event_name)
+EventObject::Emit (char *event_name, gpointer calldata)
 {
 	GList *events = (GList*)g_hash_table_lookup (event_hash, event_name);
 
@@ -828,7 +826,7 @@ EventObject::Emit (char *event_name)
 
 	for (GList *l = copy; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
-		closure->func (closure->data);
+		closure->func (this, calldata, closure->data);
 	}
 
 	g_list_free (copy);

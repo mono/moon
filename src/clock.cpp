@@ -382,20 +382,20 @@ Clock::RaiseAccumulatedEvents ()
 		current_time = new_time;
 		current_progress = new_progress;
 
-		events->Emit ("CurrentTimeInvalidated");
+		Emit ("CurrentTimeInvalidated");
 	}
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
 		current_state = new_state;
 		if (current_state == Clock::Active)
 			has_started = true;
-		events->Emit ("CurrentStateInvalidated");
+		Emit ("CurrentStateInvalidated");
 	}
 
 	if ((queued_events & CURRENT_GLOBAL_SPEED_INVALIDATED) != 0) {
 		current_speed = new_speed;
 		SpeedChanged ();
-		events->Emit ("CurrentGlobalSpeedInvalidated"); /* this probably happens in SpeedChanged () */
+		Emit ("CurrentGlobalSpeedInvalidated"); /* this probably happens in SpeedChanged () */
 	}
 
 	/* XXX more events here, i assume */
@@ -602,7 +602,7 @@ ClockGroup::RaiseAccumulatedEvents ()
 	g_list_free (copy);
 
 	if (need_completed) {
-		events->Emit ("Completed");
+		Emit ("Completed");
 	}
 }
 

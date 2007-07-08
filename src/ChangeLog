@@ -1,3 +1,19 @@
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* many-files: fairly big change.  Stick the EventObject class
+	between Base and DependencyObject in the hierarchy, and get rid of
+	DependencyObject's "events" field.  Get rid of all the registered
+	events on surface, and emit them directly from the elements where
+	they occur.  This allows us to remove the Surface* parameter to
+	all the event methods.  Also, change the EventHandler signature to
+	include the sender of the event as well as a "calldata" pointer,
+	which is where we stuff the unmanaged MouseEventArgs (and later
+	will the KeyboardEventArgs).
+
+	Next step is to add RegisterEvent in EventObject and use that
+	integer id everywhere instead of the string name when we Emit
+	events.
+
 2007-07-07  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h: add GetName() instance method.

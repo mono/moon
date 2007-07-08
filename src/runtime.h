@@ -34,6 +34,8 @@ G_BEGIN_DECLS
 #define ENDTIMER(id,str)
 #endif
 
+typedef void (*callback_plain_event)    (UIElement *target);
+
 class Surface {
  public:
 	Surface(int width, int height);
@@ -61,15 +63,9 @@ class Surface {
 	GtkWidget* GetDrawingArea () { return drawing_area; }
 	UIElement* GetToplevel() { return toplevel; }
 
-	void RegisterEvents (callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
-			     callback_mouse_event enter,
-			     callback_plain_event got_focus, callback_plain_event lost_focus,
-			     callback_plain_event loaded, callback_plain_event mouse_leave, callback_plain_event surface_resize,
-			     callback_keyboard_event keydown, callback_keyboard_event keyup);
+	void RegisterEvents (callback_plain_event surface_resize);
 
-	callback_mouse_event cb_motion, cb_down, cb_up, cb_enter;
-	callback_plain_event cb_got_focus, cb_lost_focus, cb_loaded, cb_mouse_leave, cb_surface_resize;
-	callback_keyboard_event cb_keydown, cb_keyup;
+	callback_plain_event cb_surface_resize;
 
 private:
 	int width, height;
@@ -117,8 +113,8 @@ private:
 
 	void CreateSimilarSurface ();
 
-	static void render_cb (gpointer data);
-	static void update_input_cb (gpointer data);
+	static void render_cb (EventObject *sender, gpointer calldata, gpointer closure);
+	static void update_input_cb (EventObject *sender, gpointer calldata, gpointer closure);
 	static void drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
 	static void drawing_area_destroyed (GtkWidget *w, gpointer data);
 	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data);
@@ -144,13 +140,7 @@ void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, i
 void    *surface_get_drawing_area (Surface *s);
 
 void     surface_register_events (Surface *s,
-				  callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
-				  callback_mouse_event enter,
-				  callback_plain_event got_focus, callback_plain_event lost_focus,
-				  callback_plain_event loaded, callback_plain_event mouse_leave,
-				  callback_plain_event surface_resized,
-				  callback_keyboard_event keydown, callback_keyboard_event keyup);
-		      
+				  callback_plain_event surface_resize);
 
 cairo_t *measuring_context_create (void);
 void     measuring_context_destroy (cairo_t *cr);

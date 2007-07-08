@@ -232,32 +232,32 @@ Canvas::FindMouseOver (cairo_t *cr, double x, double y)
 }
 
 void
-Canvas::HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
+Canvas::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
 {
 	UIElement *new_over = FindMouseOver (cr, x, y);
 
 	if (new_over != mouse_over) {
 		if (mouse_over)
-			mouse_over->Leave (s);
+			mouse_over->Leave ();
 
 		mouse_over = new_over;
 
 		if (mouse_over)
-			mouse_over->Enter (s, cr, state, x, y);
+			mouse_over->Enter (cr, state, x, y);
 	}
 
 	if (cursor && *cursor == MouseCursorDefault)
 		*cursor = (MouseCursor)GetValue (UIElement::CursorProperty)->AsInt32();
 
 	if (mouse_over)
-		mouse_over->HandleMotion (s, cr, state, x, y, cursor);
+		mouse_over->HandleMotion (cr, state, x, y, cursor);
 
 	if (mouse_over || InsideObject (cr, x, y))
-		UIElement::HandleMotion (s, cr, state, x, y, NULL);
+		UIElement::HandleMotion (cr, state, x, y, NULL);
 }
 
 void
-Canvas::HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y)
+Canvas::HandleButtonPress (cairo_t *cr, int state, double x, double y)
 {
 	// not sure if this is correct, but we don't bother updating
 	// the current mouse_over here (and along with that, emitting
@@ -266,33 +266,50 @@ Canvas::HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int stat
 		if (mouse_over->GetBounds().PointInside (x, y)
 		    && mouse_over->InsideObject (cr, x, y)) {
 
-			mouse_over->HandleButton (s, cr, cb, state, x, y);
+			mouse_over->HandleButtonPress (cr, state, x, y);
 		}
 	}
 
-	UIElement::HandleButton (s, cr, cb, state, x, y);
+	UIElement::HandleButtonPress (cr, state, x, y);
 }
 
 void
-Canvas::Enter (Surface *s, cairo_t *cr, int state, double x, double y)
+Canvas::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
+{
+	// not sure if this is correct, but we don't bother updating
+	// the current mouse_over here (and along with that, emitting
+	// enter/leave events).
+	if (mouse_over) {
+		if (mouse_over->GetBounds().PointInside (x, y)
+		    && mouse_over->InsideObject (cr, x, y)) {
+
+			mouse_over->HandleButtonRelease (cr, state, x, y);
+		}
+	}
+
+	UIElement::HandleButtonRelease (cr, state, x, y);
+}
+
+void
+Canvas::Enter (cairo_t *cr, int state, double x, double y)
 {
 	mouse_over = FindMouseOver (cr, x, y);
 
 	if (mouse_over)
-		mouse_over->Enter (s, cr, state, x, y);
+		mouse_over->Enter (cr, state, x, y);
 	  
-	UIElement::Enter (s, cr, state, x, y);
+	UIElement::Enter (cr, state, x, y);
 }
 
 void
-Canvas::Leave (Surface *s)
+Canvas::Leave ()
 {
 	if (mouse_over) {
-	       mouse_over->Leave (s);
+	       mouse_over->Leave ();
 	       mouse_over = NULL;
 	}
 
-	UIElement::Leave (s);
+	UIElement::Leave ();
 }
 
 static int level = 0;

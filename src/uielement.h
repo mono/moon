@@ -19,9 +19,17 @@
 
 class Surface;
 
-typedef void (*callback_mouse_event)    (UIElement *target, int state, double x, double y);
-typedef void (*callback_plain_event)    (UIElement *target);
-typedef bool (*callback_keyboard_event) (UIElement *target, int state, int platformcode, int key);
+struct KeyboardEventArgs {
+	int state;
+	int platformcode;
+	int key;
+};
+
+struct MouseEventArgs {
+	int state;
+	double x;
+	double y;
+};
 
 class UIElement : public Visual {
 	Brush *opacityMask;
@@ -161,27 +169,35 @@ class UIElement : public Visual {
 	//   handles an mouse motion event, and dispatches it to anyone that
 	//   might want it.
 	//
-	virtual void HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
+	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
 
 	//
-	// HandleButton:
-	//   handles the button press or button release events and dispatches
-	//   it to all the objects that might be interested in it (nested
+	// HandleButtonPress:
+	//   handles the button press event and dispatches it to all
+	//   the objects that might be interested in it (nested
 	//   objects).
 	//
-	virtual void HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y);
+	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
+
+	//
+	// HandleButtonRelease:
+	//   handles the button release event and dispatches it to all
+	//   the objects that might be interested in it (nested
+	//   objects).
+	//
+	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
 	
 	//
 	// Enter:
 	//   Invoked when the mouse first enters this given object
 	//
-	virtual void Enter (Surface *s, cairo_t *cr, int state, double x, double y);
+	virtual void Enter (cairo_t *cr, int state, double x, double y);
 	
 	//
 	// Leave:
 	//   Invoke when the mouse leaves this given object
 	//
-	virtual void Leave (Surface *s);
+	virtual void Leave ();
 
 	//
 	// GetTotalOpacity

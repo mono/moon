@@ -13,20 +13,9 @@
 #include "value.h"
 #include "enums.h"
 
-typedef void (*EventHandler) (gpointer data);
+class EventObject;
 
-class EventObject {
- public:
-	EventObject ();
-	~EventObject ();
-	
-	void AddHandler (char *event_name, EventHandler handler, gpointer data);
-	void RemoveHandler (char *event_name, EventHandler handler, gpointer data);
-	
-	void Emit (char *event_name);
- private:
-	GHashTable *event_hash;
-};
+typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer closure);
 
 //
 // This guy provide reference counting
@@ -43,8 +32,21 @@ class Base {
 	void unref ();
 };
 
+class EventObject : public Base {
+ public:
+	EventObject ();
+	~EventObject ();
+	
+	void AddHandler (char *event_name, EventHandler handler, gpointer data);
+	void RemoveHandler (char *event_name, EventHandler handler, gpointer data);
+	
+	void Emit (char *event_name, gpointer calldata = NULL);
+ private:
+	GHashTable *event_hash;
+};
 
-class DependencyObject : public Base {
+
+class DependencyObject : public EventObject {
  public:
 
 	DependencyObject ();
@@ -70,7 +72,6 @@ class DependencyObject : public Base {
 	DependencyObject *FindName (const char *name);
 	NameScope *FindNameScope ();
 
-	EventObject *events;
 	static GHashTable *properties;
 
 	virtual void OnPropertyChanged (DependencyProperty *property);

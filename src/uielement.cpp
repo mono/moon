@@ -222,7 +222,7 @@ UIElement::OnLoaded ()
 {
 	if (!(flags & UIElement::IS_LOADED)) {
 		flags |= UIElement::IS_LOADED;
-		events->Emit ("Loaded");
+		Emit ("Loaded");
 	}
 }
 
@@ -278,30 +278,56 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-UIElement::HandleMotion (Surface *s, cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
+UIElement::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
 {
 	if (cursor && *cursor == MouseCursorDefault)
 		*cursor = (MouseCursor)GetValue (UIElement::CursorProperty)->AsInt32();
 
-	s->cb_motion (this, state, x, y);
+	MouseEventArgs e;
+	e.state = state;
+	e.x = x;
+	e.y = y;
+
+	Emit ("Motion", &e);
 }
 
 void
-UIElement::HandleButton (Surface *s, cairo_t *cr, callback_mouse_event cb, int state, double x, double y)
+UIElement::HandleButtonPress (cairo_t *cr, int state, double x, double y)
 {
-	cb (this, state, x, y);
+	MouseEventArgs e;
+	e.state = state;
+	e.x = x;
+	e.y = y;
+
+	Emit ("ButtonPress", &e);
 }
 
 void
-UIElement::Enter (Surface *s, cairo_t *cr, int state, double x, double y)
+UIElement::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
 {
-	s->cb_enter (this, state, x, y);
+	MouseEventArgs e;
+	e.state = state;
+	e.x = x;
+	e.y = y;
+
+	Emit ("ButtonRelease", &e);
 }
 
 void
-UIElement::Leave (Surface *s)
+UIElement::Enter (cairo_t *cr, int state, double x, double y)
 {
-	s->cb_mouse_leave (this);
+	MouseEventArgs e;
+	e.state = state;
+	e.x = x;
+	e.y = y;
+
+	Emit ("Enter", &e);
+}
+
+void
+UIElement::Leave ()
+{
+	Emit ("Leave");
 }
 
 void

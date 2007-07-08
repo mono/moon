@@ -34,7 +34,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
     targetprop (targetprop)
   
 {
-	clock->events->AddHandler ("CurrentTimeInvalidated", update_property_value, this);
+	clock->AddHandler ("CurrentTimeInvalidated", update_property_value, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
 
@@ -42,9 +42,9 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 }
 
 void
-AnimationStorage::update_property_value (gpointer data)
+AnimationStorage::update_property_value (EventObject *, gpointer, gpointer closure)
 {
-	((AnimationStorage*)data)->UpdatePropertyValue ();
+	((AnimationStorage*)closure)->UpdatePropertyValue ();
 }
 
 void
@@ -156,9 +156,9 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 }
 
 void
-Storyboard::invoke_completed (gpointer data)
+Storyboard::invoke_completed (EventObject *, gpointer, gpointer closure)
 {
-	((Storyboard*)data)->events->Emit ("Completed");
+	((Storyboard*)closure)->Emit ("Completed");
 }
 
 void
@@ -181,7 +181,7 @@ Storyboard::Begin ()
 	// will be a child of ClockGroup cB.
 	root_clock = CreateClock ();
 	root_clock->ref ();
-	root_clock->events->AddHandler ("Completed", invoke_completed, this);
+	root_clock->AddHandler ("Completed", invoke_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.

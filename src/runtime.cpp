@@ -67,10 +67,7 @@ Surface::CreateSimilarSurface ()
 
 
 Surface::Surface(int w, int h)
-  :
-    cb_motion(NULL), cb_down(NULL), cb_up(NULL), cb_enter(NULL),
-    cb_got_focus(NULL), cb_lost_focus(NULL), cb_loaded(NULL), cb_mouse_leave(NULL), cb_surface_resize(NULL),
-    cb_keydown(NULL), cb_keyup(NULL),
+  : cb_surface_resize(NULL),
 
     width (w), height (h), buffer (0), pixbuf (NULL),
     using_cairo_xlib_surface(0),
@@ -343,40 +340,26 @@ Surface::Realloc ()
 }
 
 void
-Surface::RegisterEvents (callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
-			 callback_mouse_event enter,
-			 callback_plain_event got_focus, callback_plain_event lost_focus,
-			 callback_plain_event loaded, callback_plain_event mouse_leave, callback_plain_event surface_resize,
-			 callback_keyboard_event keydown, callback_keyboard_event keyup)
+Surface::RegisterEvents (callback_plain_event surface_resize)
 {
-	this->cb_motion = motion;
-	this->cb_down = down;
-	this->cb_up = up;
-	this->cb_enter = enter;
-	this->cb_got_focus = got_focus;
-	this->cb_lost_focus = lost_focus;
-	this->cb_loaded = loaded;
-	this->cb_mouse_leave = mouse_leave;
-	this->cb_keydown = keydown;
-	this->cb_keyup = keyup;
 	this->cb_surface_resize = surface_resize;
 }
 
 
 void
-Surface::render_cb (gpointer data)
+Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	Surface *s = (Surface*)data;
+	Surface *s = (Surface*)closure;
 	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
 }
 
 void
-Surface::update_input_cb (gpointer data)
+Surface::update_input_cb (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	Surface *s = (Surface*)data;
+	Surface *s = (Surface*)closure;
 
 	MouseCursor new_cursor = MouseCursorDefault;
-	s->toplevel->HandleMotion (s, s->cairo, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
+	s->toplevel->HandleMotion (s->cairo, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
 	s->SetCursor (new_cursor);
 }
 
@@ -483,9 +466,6 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 	GdkModifierType state;
 	double x, y;
 
-	if (!s->cb_motion)
-		return FALSE;
-
 	if (event->is_hint) {
 		int ix, iy;
 		gdk_window_get_pointer (event->window, &ix, &iy, &state);
@@ -508,7 +488,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 	s->last_event_state = state;
 
 	MouseCursor new_cursor = MouseCursorDefault;
-	s->toplevel->HandleMotion (s, s->cairo, state, x, y, &new_cursor);
+	s->toplevel->HandleMotion (s->cairo, state, x, y, &new_cursor);
 	s->SetCursor (new_cursor);
 
 	return TRUE;
@@ -518,9 +498,6 @@ gboolean
 Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
-
-	if (s->cb_enter == NULL || s->cb_mouse_leave == NULL)
-		return FALSE;
 
 	if (event->type == GDK_ENTER_NOTIFY){
 		double x = event->x;
@@ -532,8 +509,8 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		}
 		
 		MouseCursor new_cursor = MouseCursorDefault;
-		s->toplevel->HandleMotion (s, s->cairo, event->state, x, y, &new_cursor);
-		s->toplevel->Enter (s, s->cairo, event->state, x, y);
+		s->toplevel->HandleMotion (s->cairo, event->state, x, y, &new_cursor);
+		s->toplevel->Enter (s->cairo, event->state, x, y);
 
 		s->SetCursor (new_cursor);
 
@@ -542,7 +519,7 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		s->last_event_state = event->state;
 	
 	} else {
-		s->toplevel->Leave (s);
+		s->toplevel->Leave ();
 	}
 
 	return TRUE;
@@ -551,32 +528,31 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 gboolean 
 Surface::key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
+#if notyet
 	Surface *s = (Surface *) data;
-
-	if (!s->cb_keydown)
-		return FALSE;
 
 	// 
 	// I could not write a test that would send the output elsewhere, for now
 	// just send to the toplevel
 	//
 	return s->cb_keydown (s->toplevel, key->state, key->keyval, key->hardware_keycode);
+#endif
+	return FALSE;
 }
 
 gboolean 
 Surface::key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
+#if notyet
 	Surface *s = (Surface *) data;
 
-	if (!s->cb_keyup)
-		return FALSE;
-	
 	// 
 	// I could not write a test that would send the output elsewhere, for now
 	// just send to the toplevel
 	//
 	return s->cb_keyup (s->toplevel, key->state, key->keyval, key->hardware_keycode);
-
+#endif
+	return FALSE;
 }
 
 gboolean
@@ -584,9 +560,6 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 {
 	Surface *s = (Surface *) data;
 
-	if (!s->cb_up)
-		return FALSE;
-	
 	if (button->button != 1)
 		return FALSE;
 
@@ -596,7 +569,7 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 		x -= widget->allocation.x;
 		y -= widget->allocation.y;
 	}
-	s->toplevel->HandleButton (s, s->cairo, s->cb_up, button->state, x, y);
+	s->toplevel->HandleButtonRelease (s->cairo, button->state, x, y);
 	
 	return TRUE;
 }
@@ -608,9 +581,6 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 
 	gtk_widget_grab_focus (widget);
 
-	if (!s->cb_down)
-		return FALSE;
-
 	if (button->button != 1)
 		return FALSE;
 
@@ -620,7 +590,7 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 		x -= widget->allocation.x;
 		y -= widget->allocation.y;
 	}
-	s->toplevel->HandleButton (s, s->cairo, s->cb_down, button->state, x, y);
+	s->toplevel->HandleButtonPress (s->cairo, button->state, x, y);
 	
 	return FALSE;
 }
@@ -694,20 +664,9 @@ surface_get_drawing_area (Surface *s)
 
 void
 surface_register_events (Surface *s,
-			 callback_mouse_event motion, callback_mouse_event down, callback_mouse_event up,
-			 callback_mouse_event enter,
-			 callback_plain_event got_focus, callback_plain_event lost_focus,
-			 callback_plain_event loaded, callback_plain_event mouse_leave, callback_plain_event surface_resize,
-			 callback_keyboard_event keydown, callback_keyboard_event keyup)
+			 callback_plain_event surface_resize)
 {
-	s->RegisterEvents (motion,
-			   down, up,
-			   enter,
-			   got_focus, lost_focus,
-			   loaded,
-			   mouse_leave,
-			   surface_resize,
-			   keydown, keyup);
+	s->RegisterEvents (surface_resize);
 }
 
 void

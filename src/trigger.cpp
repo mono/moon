@@ -46,7 +46,7 @@ EventTrigger::SetTarget (DependencyObject *target)
 	g_assert (target);
 
 	// Despite the name, it can only be loaded (according to the docs)
-	target->events->AddHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
+	target->AddHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
 }
 
 void
@@ -54,7 +54,7 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 {
 	g_assert (target);
 
-	target->events->RemoveHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
+	target->RemoveHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
 }
 
 EventTrigger::~EventTrigger ()
