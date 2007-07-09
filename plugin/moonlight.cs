@@ -26,7 +26,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
+using Mono;
 using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
@@ -181,7 +181,7 @@ namespace Moonlight {
 		//
 		public string TryLoad (out int error)
 		{
-			Console.WriteLine ("Loader.TryLoad: {0} {1}", surface, filename);
+			Console.WriteLine ("Loader.TryLoad: {0} XAML file={1}", surface, filename);
 			int kind = 0;
 
 			missing = null;
@@ -273,7 +273,7 @@ namespace Moonlight {
 			DependencyObject res = (DependencyObject) clientlib.CreateInstance (name);
 
 			if (res == null) {
-				Console.WriteLine ("unable to create object instance:  '{0}'", name);
+				Console.WriteLine ("moonlight.exe: unable to create object instance:  '{0}'", name);
 				return IntPtr.Zero;
 			}
 
@@ -286,18 +286,21 @@ namespace Moonlight {
 		private void set_attribute (IntPtr target_ptr, string name, string value)
 		{
 			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
-					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] { typeof (IntPtr) }, null);
-			DependencyObject target = (DependencyObject) m.Invoke (null, new object [] { target_ptr });
+					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] {
+					    typeof (Kind), typeof (IntPtr) }, null);
+			Kind k = NativeMethods.dependency_object_get_object_type (target_ptr); 
+
+			DependencyObject target = (DependencyObject) m.Invoke (null, new object [] { k, target_ptr });
 
 			if (target == null) {
-				Console.WriteLine ("unable to create target object from: 0x{0}", target_ptr);
+				Console.WriteLine ("moonlight.exe: unable to create target object from: 0x{0:x}", target_ptr);
 				return;
 			}
 
 			PropertyDescriptor pd = TypeDescriptor.GetProperties (target).Find (name, true);
 
 			if (pd == null) {
-				Console.WriteLine ("unable to set property ({0}) no property descriptor found", name);
+				Console.WriteLine ("moonlight.exe: unable to set property ({0}) no property descriptor found", name);
 				return;
 			}
 
@@ -319,11 +322,13 @@ namespace Moonlight {
 		private void hookup_event (IntPtr target_ptr, string name, string value)
 		{
 			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
-					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] { typeof (IntPtr) }, null);
-			DependencyObject target = (DependencyObject) m.Invoke (null, new object [] { target_ptr });
+					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] {
+					    typeof (Kind), typeof (IntPtr) }, null);
+			Kind k = NativeMethods.dependency_object_get_object_type (target_ptr);
+			DependencyObject target = (DependencyObject) m.Invoke (null, new object [] { k, target_ptr });
 
 			if (target == null) {
-				Console.WriteLine ("hookup event unable to create target object from: 0x{0}", target_ptr);
+				Console.WriteLine ("hookup event unable to create target object from: 0x{0:x}", target_ptr);
 				return;
 			}
 

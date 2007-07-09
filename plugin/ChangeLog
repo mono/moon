@@ -1,3 +1,8 @@
+2007-07-09  Miguel de Icaza  <miguel@novell.com>
+
+	* moonligh.cs: Invoke the Lookup(Kind, IntPtr) overload, just like
+	we do in XamlReader. 
+
 2007-07-06  Miguel de Icaza  <miguel@novell.com>
 
 	* downloader.cpp: Update to the get-response-text downloader API.
