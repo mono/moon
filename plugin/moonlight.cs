@@ -260,7 +260,7 @@ namespace Moonlight {
 		private IntPtr create_element (string xmlns, string name)
 		{
 			try {
-				return create_element (xmlns, name);
+				return real_create_element (xmlns, name);
 			} catch {
 				return IntPtr.Zero;
 			}
@@ -402,6 +402,7 @@ namespace Moonlight {
 			try {
 				real_hookup_event (target_ptr, name, value);
 			} catch {
+				Console.Error.WriteLine ("Returning unhappily");
 			}
 		}
 		
