@@ -823,8 +823,10 @@ audio_loop (void *data)
 	while (!mplayer->stop) {
 		g_static_mutex_lock (&mplayer->pause_mutex);
 		
-		if (mplayer->stop)
+		if (mplayer->stop) {
+			g_static_mutex_unlock (&mplayer->pause_mutex);
 			break;
+		}
 		
 		if ((frame_pts = audio_play (audio, ufds, n)) > 0) {
 			// calculated pts
