@@ -3,6 +3,8 @@
 	* mplayer.cpp (audio_loop): If we break out of the loop because
 	the media player was stopped, don't forget to unlock the pause
 	mutex.
+	(Close): Don't free the uri here.
+	(~MediaPlayer): Free it ehre, though.
 
 2007-07-09  Chris Toshok  <toshok@ximian.com>
 

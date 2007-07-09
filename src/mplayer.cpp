@@ -179,6 +179,8 @@ MediaPlayer::~MediaPlayer ()
 	g_async_queue_unref (audio->queue);
 	g_async_queue_unref (video->queue);
 	
+	g_free (uri);
+	
 	delete audio;
 	delete video;
 }
@@ -383,9 +385,6 @@ MediaPlayer::Close ()
 	// enter paused state
 	g_static_mutex_lock (&pause_mutex);
 	paused = true;
-	
-	g_free (uri);
-	uri = NULL;
 }
 
 //
