@@ -16,6 +16,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <expat.h>
+#include <ctype.h>
 
 #include "xaml.h"
 #include "shape.h"
@@ -899,47 +900,106 @@ property_name_index (const char *p)
 	return -1;
 }
 
+static int
+parse_int (const char **pp, const char *end)
+{
+	const char *p = *pp;
+#if false
+	if (optional && AtEnd)
+		return 0;
+#endif
+
+	int res = 0;
+	int count = 0;
+
+	while (p <= end && isdigit (*p)) {
+		res = res * 10 + *p - '0';
+		p++;
+		count++;
+	}
+
+#if false
+	if (count == 0)
+		formatError = true;
+#endif
+
+	*pp = p;
+	return res;
+}
+
+static gint64
+parse_ticks (const char **pp, const char *end)
+{
+	gint64 mag = 1000000;
+	gint64 res = 0;
+	bool digitseen = false;
+
+	const char *p = *pp;
+
+	while (mag > 0 && p <= end && isdigit (*p)) {
+		res = res + (*p - '0') * mag;
+		p++;
+		mag = mag / 10;
+		digitseen = true;
+	}
+
+#if false
+	if (!digitseen)
+		formatError = true;
+#endif
+
+	*pp = p;
+	return res;
+}
+
 gint64
 timespan_from_str (const char *str)    
 {
-	char *next = NULL;
-	gint64 res = 0;
-	//bool negative = false;
-	int digit;
-	int digits [5] = { 0, 0, 0, 0, 0 };
-	int di = 0;
+	const char *end = str + strlen (str);
+	const char *p;
 
-	digit = strtol (str, &next, 10);
+	bool negative = false;
+	int days;
+	int hours;
+	int minutes;
+	int seconds;
+	gint64 ticks;
 
-	if (!next)
-		return digit * 36000000;
+	p = str;
 
-	if (next [0] == '.') {
-		digits [0] = digit;
-		di = 1;
-	} else {
-		digits [1] = digit;
-		di = 2;
+	if (*p == '-') {
+		p++;
+		negative = true;
 	}
 
-	next++;
-	while (next && di < 5) {
-		int d =  strtol (next, &next, 10);
-		digits [di++] = d;
-		if (next && *next)
-			next++;
+	days = parse_int (&p, end);
+	
+	if (*p == '.') {
+		p++;
+		hours = parse_int (&p, end);
+	}
+	else {
+		hours = days;
+		days = 0;
+	}
+	if (*p == ':') p++;
+	minutes = parse_int (&p, end);
+	if (*p == ':') p++;
+	seconds = parse_int (&p, end);
+	if (*p == '.') {
+		p++;
+		ticks = parse_ticks (&p, end);
+	}
+	else {
+		ticks = 0;
 	}
 
-// 	printf ("%d.%d:%d:%d.%d\n", digits [0], digits [1], digits [2], digits [3], digits [4]);  
+	gint64 t = (days * 86400) + (hours * 3600) + (minutes * 60) + seconds;
+	t *= 10000000L;
 
-	// Convert to seconds, then to ticks
-	// TODO: This could overflow?
-	res = ((digits [0] * 86400) + (digits [1] * 3600) + (digits [2] * 60) + digits [3]);
-	res *= 10L;
-	res += digits [4];
-	res *= 1000000L;
+	t = negative ? (-t - ticks) : (t + ticks);
 
-	return res;
+	return t;
 }
 
 RepeatBehavior

@@ -59,6 +59,8 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	MotionEvent = RegisterEvent ("Motion");
 	ButtonPressEvent = RegisterEvent ("ButtonPress");
 	ButtonReleaseEvent = RegisterEvent ("ButtonRelease");
+	KeyDownEvent = RegisterEvent ("KeyDown");
+	KeyUpEvent = RegisterEvent ("KeyUp");
 	EnterEvent = RegisterEvent ("Enter");
 	LeaveEvent = RegisterEvent ("Leave");
 

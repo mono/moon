@@ -233,6 +233,8 @@ class UIElement : public Visual {
 	int MotionEvent;
 	int ButtonPressEvent;
 	int ButtonReleaseEvent;
+	int KeyDownEvent;
+	int KeyUpEvent;
 	int EnterEvent;
 	int LeaveEvent;
 };

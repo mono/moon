@@ -1,5 +1,18 @@
 2007-07-09  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp: we need to register the
+	KeyUp/KeyDown events (even if we aren't emitting them) to keep
+	from getting a warning when running aglayoutdemo.
+
+	* xaml.cpp (timespan_from_str): port our System.TimeSpan.Parse
+	method (and remove all error handling, which should likely go back
+	in) and replace the previous implementation.  It was failing to
+	parse timespans like this: 0:0:0.20000000 because it was treating
+	it as if I wanted "20000000" tenths of a second, instead of 2.
+	This makes the 'pop' animation in dr.popper actually show up.
+	
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp: fix some missing NotifyAttacheesOfPropertyChange
 	calls.
 	(Storyboard::Begin): This is a dubious change.  Remove the check
