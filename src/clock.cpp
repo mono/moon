@@ -804,7 +804,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	TimeSpan duration_span = 0;
 	
 	if (!node)
-		return Duration (0);
+		return Duration::FromSeconds (0);
 	
 	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
 		Timeline *timeline = (Timeline *) node->obj;
