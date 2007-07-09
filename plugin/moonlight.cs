@@ -106,15 +106,27 @@ namespace Moonlight {
 			rl.Setup (plugin, surface, filename, contents);
 		}
 
+		//
+		// Public API called by the plugin, transfers the call
+		// to the AppDomain that has the actual plugin loaded.
+		//
 		public void InsertMapping (string key, string name)
 		{
 			rl.InsertMapping (key, name);
 		}
 
+		//
+		// Public API called by the plugin, transfers the call
+		// to the AppDomain that has the actual plugin loaded.
+		//
 		public string TryLoad (out int error)
 		{
 			Console.Error.WriteLine ("Main domain: Try Load");
 			try {
+				//
+				// This calls the method on the other
+				// domain.
+				//
 				return rl.TryLoad (out error);
 			} catch (Exception e){
 				Console.Error.WriteLine ("Error inside TryLoad: {0}", e);
@@ -241,7 +253,20 @@ namespace Moonlight {
 			return null;
 		}
 
+		//
+		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
+		// genreating an exception and unwinding the stack.
+		//
 		private IntPtr create_element (string xmlns, string name)
+		{
+			try {
+				return create_element (xmlns, name);
+			} catch {
+				return IntPtr.Zero;
+			}
+		}
+		
+		private IntPtr real_create_element (string xmlns, string name)
 		{
 			string ns;
 			string type_name;
@@ -319,7 +344,20 @@ namespace Moonlight {
 			return converter;
 		}
 
-		private void set_attribute (IntPtr target_ptr, string name, string value)
+		//
+		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
+		// genreating an exception and unwinding the stack.
+		//
+		void set_attribute (IntPtr target_ptr, string name, string value)
+		{
+			try {
+				real_set_attribute (target_ptr, name, value);
+			} catch {
+				// Ignore errors. 
+			}
+		}
+		
+		private void real_set_attribute (IntPtr target_ptr, string name, string value)
 		{
 			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
 					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] {
@@ -356,8 +394,20 @@ namespace Moonlight {
 			pi.SetValue (target, converter.ConvertFrom (value), null);
 		}
 
+		//
+		// Proxy so that we do not fail.
+		//
 		private void hookup_event (IntPtr target_ptr, string name, string value)
 		{
+			try {
+				real_hookup_event (target_ptr, name, value);
+			} catch {
+			}
+		}
+		
+		private void real_hookup_event (IntPtr target_ptr, string name, string value)
+		{
+		    Console.WriteLine ("In hookup event");
 			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
 					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] {
 					    typeof (Kind), typeof (IntPtr) }, null);
@@ -375,9 +425,9 @@ namespace Moonlight {
 				return;
 			}
 
+			Console.WriteLine ("hookup event unable to create delegate src={0} target={1} value={2}", src.EventHandlerType, target, value);
 			Delegate d = Delegate.CreateDelegate (src.EventHandlerType, target, value);
 			if (d == null) {
-				Console.WriteLine ("hookup event unable to create delegate.");
 				return;
 			}
 

@@ -3,7 +3,7 @@ SUBDIRS = test samples
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
-pluginlib_DATA=README moonlight.exe
+pluginlib_DATA=README moonlight.exe moonlight.exe.mdb
 
 INCLUDES = \
 	-I$(top_srcdir)/src \

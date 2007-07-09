@@ -1,3 +1,10 @@
+2007-07-09  Miguel de Icaza  <miguel@novell.com>
+
+	* Makefile.am: install debugging symbols.
+
+	* moonlight.cs: try/catch wrappers to prevent exceptions to be
+	propagated to native code.
+
 2007-07-09  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.cs: copy over the System.Reflection implementation of
