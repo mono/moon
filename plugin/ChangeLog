@@ -1,3 +1,10 @@
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.cs: copy over the System.Reflection implementation of
+	set_attribute from XamlReader.  also, track the change to the
+	xaml_* apis - don't pass the callbacks to the individual methods.
+	instead register them in a static ctor.
+
 2007-07-09  Miguel de Icaza  <miguel@novell.com>
 
 	* moonligh.cs: Invoke the Lookup(Kind, IntPtr) overload, just like

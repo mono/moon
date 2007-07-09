@@ -51,9 +51,6 @@ class Control : public FrameworkElement {
 	virtual void OnLoaded ();
 
 	UIElement* InitializeFromXaml (const char *xaml,
-				       xaml_create_custom_element_callback *cecb,
-				       xaml_set_custom_attribute_callback *sca,
-				       xaml_hookup_event_callback *hue,
 				       Type::Kind *element_type);
 };
 
@@ -61,9 +58,6 @@ G_BEGIN_DECLS
 
 Control *control_new (void);
 UIElement* control_initialize_from_xaml (Control *control, const char *xaml,
-					 xaml_create_custom_element_callback *cecb,
-					 xaml_set_custom_attribute_callback *sca,
-					 xaml_hookup_event_callback *hue,
 					 Type::Kind *element_type);
 
 G_END_DECLS

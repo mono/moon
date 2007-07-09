@@ -29,21 +29,6 @@ static GtkWidget *w;
 
 static Storyboard *sb = NULL;
 
-DependencyObject *_custom_element_callback (const char *xmlns, const char *name)
-{
-	return NULL;
-}
-
-void _custom_attribute_callback (void *target, const char *name, const char *value)
-{
-}
-
-void _event_callback (void *target, const char *ename, const char *evalue)
-{
-}
-
-
-
 static gboolean
 invalidator (gpointer data)
 {
@@ -88,7 +73,7 @@ button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
 	printf ("button_press_event\n");
 
 	printf ("Loading...\n");
-	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, _custom_element_callback, _custom_attribute_callback, _event_callback, &kind);
+	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, &kind);
 	printf ("Loading... %p\n", ee);
 	if (ee != NULL)
 		t->Attach (ee);
@@ -227,7 +212,7 @@ main (int argc, char *argv [])
 
 		gtk_window_set_title (GTK_WINDOW (w), file);
 		
-		UIElement *e = xaml_create_from_file (file, true, _custom_element_callback, _custom_attribute_callback, _event_callback, &kind);
+		UIElement *e = xaml_create_from_file (file, true, &kind);
 		if (e == NULL){
 			printf ("Was not able to load the file\n");
 			return 1;
@@ -326,7 +311,7 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, tb);
 		
 #ifdef XAML_DEMO
-		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", false, NULL, NULL, NULL, NULL));
+		panel_child_add (canvas, xaml_create_from_str ("<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", false, NULL));
 #endif
 		
 #ifdef VIDEO_DEMO

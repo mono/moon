@@ -171,13 +171,10 @@ Control::~Control ()
 
 UIElement*
 Control::InitializeFromXaml (const char *xaml,
-			     xaml_create_custom_element_callback *cecb,
-			     xaml_set_custom_attribute_callback *sca,
-			     xaml_hookup_event_callback *hue,
 			     Type::Kind *element_type)
 {
 	// No callback, figure out how this will work in the plugin to satisfy deps
-	UIElement *element = xaml_create_from_str (xaml, false, cecb, sca, hue, element_type);
+	UIElement *element = xaml_create_from_str (xaml, false, element_type);
 	if (element == NULL)
 		return NULL;
 
@@ -199,12 +196,9 @@ Control::InitializeFromXaml (const char *xaml,
 
 UIElement* 
 control_initialize_from_xaml (Control *control, const char *xaml,
-			      xaml_create_custom_element_callback *cecb,
-			      xaml_set_custom_attribute_callback *sca,
-			      xaml_hookup_event_callback *hue,
 			      Type::Kind *element_type)
 {
-	return control->InitializeFromXaml (xaml, cecb, sca, hue, element_type);
+	return control->InitializeFromXaml (xaml, element_type);
 }
 
 Control *

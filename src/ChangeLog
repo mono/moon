@@ -1,3 +1,14 @@
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* demo.cpp: don't pass the parser callbacks to the individual xaml
+	functions.
+
+	* control.h, control.cpp: don't pass the parser callbacks to
+	initialize_from_xaml.
+
+	* xaml.h, xaml.cpp: remove the parser callbacks from the
+	individual parsing methods, and add xaml_set_parser_callbacks.
+
 2007-07-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (audio_loop): If we break out of the loop because
