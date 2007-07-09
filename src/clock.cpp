@@ -225,7 +225,7 @@ time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data)
 void
 TimeManager::AddChild (Clock *child)
 {
-	child_clocks = g_list_prepend (child_clocks, child);
+	child_clocks = g_list_append (child_clocks, child);
 	child->ref ();
 }
 
@@ -298,8 +298,9 @@ Clock::Tick ()
 
 	last_parent_time = new_parent_time;
 
-	if (current_state != Clock::Active)
+	if (current_state == Clock::Stopped)
 		return;
+
 
 	new_time = current_time;
 
@@ -307,6 +308,18 @@ Clock::Tick ()
 		new_time -= our_delta;
 	else
 		new_time += our_delta;
+
+	/* if we were filling and ended up back in our Active period,
+	   switch our state and return. */
+	if (current_state == Clock::Filling) {
+		if (natural_duration.HasTimeSpan ())
+			current_progress = new_progress = (double)new_time / natural_duration.GetTimeSpan();
+		else
+			current_progress = new_progress = 0.0;
+
+		new_state = Clock::Active;
+		QueueEvent (CURRENT_STATE_INVALIDATED | CURRENT_TIME_INVALIDATED);
+	}
 
 
 #if CLOCK_DEBUG
@@ -317,11 +330,11 @@ Clock::Tick ()
 		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
 
 #if CLOCK_DEBUG
-		printf ("+ clock %p duration is %lld\n", this, duration_timespan);
+		printf ("+ clock %p (%s) duration is %lld, and new_time == %lld\n", this, timeline->GetName(), duration_timespan, new_time);
 #endif
 		if (new_time >= duration_timespan) {
 #if CLOCK_DEBUG
-			printf ("+ clock %p hit its duration\n", this);
+			printf ("+ clock %p (%s) hit its duration\n", this, timeline->GetName());
 #endif
 			// we've hit the end point of the clock's timeline
 			if (autoreverse) {
@@ -342,19 +355,16 @@ Clock::Tick ()
 				if (remaining_iterations > 0) {
 					remaining_iterations --;
 #if CLOCK_DEBUG
-					printf (" + clock %p remaining iterations = %f\n", this, remaining_iterations);
+					printf (" + clock %p remaining iterations = %d\n", this, remaining_iterations);
 #endif
 				}
 
 				if (remaining_iterations == 0) {
 #if CLOCK_DEBUG
-					printf (" + clock %p should STOP\n", this, remaining_iterations);
+					printf (" + clock %p should fill\n", this);
 #endif
 					new_time = duration_timespan;
-					if (*duration == Duration::Automatic)
-						SkipToFill ();
-					else
-						Stop ();
+					SkipToFill ();
 				}
 				else {
 					new_time -= duration_timespan;
@@ -370,10 +380,7 @@ Clock::Tick ()
 
 			if (remaining_iterations == 0) {
 				new_time = 0;
-				if (*duration == Duration::Automatic)
-					SkipToFill ();
-				else
-					Stop ();
+				SkipToFill ();
 			}
 		}
 
@@ -429,7 +436,7 @@ Clock::Begin ()
 		return;
 
 #if CLOCK_DEBUG
-	printf ("Starting clock %p (%s) on the next tick\n", this, Type::Find (GetTimeline()->GetObjectType())->name);
+	printf ("Starting clock %p (%s) on the next tick\n", this, timeline->GetName());
 #endif
 
 	/* we're starting.  initialize our last_parent_time and current_time fields */
@@ -540,7 +547,7 @@ ClockGroup::Begin ()
 {
 	Clock::Begin ();
 
-	if (current_state == Clock::Stopped && current_state == Clock::Active) {
+	if (current_state == Clock::Stopped && new_state == Clock::Active) {
 		/* start any clocks that need starting immediately */
 		for (GList *l = child_clocks; l; l = l->next) {
 			Clock *c = (Clock*)l->data;

@@ -166,10 +166,6 @@ Storyboard::invoke_completed (EventObject *, gpointer, gpointer closure)
 void
 Storyboard::Begin ()
 {
-	// we shouldn't begin again, I'd imagine..
-	if (root_clock && (root_clock->GetClockState() != Clock::Stopped))
-		return;
-
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
@@ -1049,7 +1045,10 @@ DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
 void
 DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 {
-	DoubleAnimation::OnPropertyChanged (prop);
+	if (prop->type != Type::DOUBLEANIMATIONUSINGKEYFRAMES) {
+		DoubleAnimation::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == KeyFramesProperty) {
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
@@ -1060,6 +1059,8 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -1080,7 +1081,7 @@ DoubleAnimationUsingKeyFrames::RemoveKeyFrame (DoubleKeyFrame *frame)
 
 Value*
 DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
-					       AnimationClock* animationClock)
+						AnimationClock* animationClock)
 {
 	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 
@@ -1171,7 +1172,10 @@ ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
 void
 ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 {
-	ColorAnimation::OnPropertyChanged (prop);
+	if (prop->type != Type::COLORANIMATIONUSINGKEYFRAMES) {
+		ColorAnimation::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == KeyFramesProperty) {
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
@@ -1182,6 +1186,8 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
@@ -1294,7 +1300,10 @@ PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
 void
 PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 {
-	PointAnimation::OnPropertyChanged (prop);
+	if (prop->type != Type::POINTANIMATIONUSINGKEYFRAMES) {
+		PointAnimation::OnPropertyChanged (prop);
+		return;
+	}
 
 	if (prop == KeyFramesProperty) {
 		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
@@ -1305,6 +1314,8 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
+
+	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void

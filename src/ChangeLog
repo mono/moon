@@ -1,3 +1,18 @@
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp: fix some missing NotifyAttacheesOfPropertyChange
+	calls.
+	(Storyboard::Begin): This is a dubious change.  Remove the check
+	to see if we weren't already Active.  This fixes the calendar view
+	in airlines, since there's a window where the start animation is
+	startable when we enter a day, but the end animation isn't (since
+	it's still active) when we leave.  So we're left with a selected
+	day.
+
+	* clock.cpp: instead of Stopping clocks that come to the end of
+	their active period, move to the Filling state.  ClockGroups with
+	automatic duration and no Active children still stop correctly.
+
 2007-07-08  Chris Toshok  <toshok@ximian.com>
 
 	* many-files (again!): another, smaller change to the event stuff.
