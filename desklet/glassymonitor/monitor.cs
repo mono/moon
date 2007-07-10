@@ -23,7 +23,7 @@ namespace Desklets
 	public class Monitor : Canvas 
 	{
 		// TODO: use eth0 for now, later we must have a place to select it.
-		string device = "eth0";
+		string device = GetActiveInterface();
 
 		Storyboard storyboard;
 		TextBlock device_text;
@@ -34,7 +34,28 @@ namespace Desklets
 		
 		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
 		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
-		
+
+	static string GetActiveInterface()
+	{
+		string iface="eth0";
+		using (StreamReader sr = new StreamReader ("/proc/net/route")) {
+			string line;
+			int cur_metric=Int32.MaxValue;
+			// Ignore first line
+			sr.ReadLine();
+
+			while ((line = sr.ReadLine()) != null) {
+				String[] pieces = line.Split (new char[] {'\t'});
+				int m = Int32.Parse(pieces[6]);
+				if ( (pieces[1] == "00000000") && (m < cur_metric) ) {
+					iface=pieces[0];
+					cur_metric=m;
+				}
+			}
+		}
+		return iface;
+	}
+
 		public void UpdateInfo (object o, EventArgs e)
 		{
 			using (StreamReader sr = new StreamReader ("/proc/net/dev")) {
