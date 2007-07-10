@@ -177,11 +177,10 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 bool
 Canvas::InsideObject (cairo_t *cr, double x, double y)
 {
-#if false
 	/* if we have explicitly set width/height, we check them */
-	if (!FrameworkElement::InsideObject (cr, x, y))
-		return false;
-#endif
+	if (FrameworkElement::InsideObject (cr, x, y)) {
+		return true;
+	}
 
 	/* otherwise we try to figure out if we're inside one of our child elements */
 	UIElement *mouseover = FindMouseOver (cr, x, y);

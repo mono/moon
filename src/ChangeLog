@@ -1,3 +1,8 @@
+2007-07-10  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::InsideObject): revert the change that helped
+	dr.popper because it breaks lunareclipse.
+
 2007-07-09  Chris Toshok  <toshok@ximian.com>
 
 	* demo.cpp: don't pass the parser callbacks to the individual xaml
