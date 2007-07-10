@@ -411,7 +411,8 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	
 #ifdef RUNTIME
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
-		vm_insert_mapping (mono_loader_object, vm_missing_file, stream->url);
+		vm_insert_mapping (mono_loader_object, vm_missing_file, fname);
+		vm_insert_mapping (mono_loader_object, stream->url, fname);
 		g_free (vm_missing_file);
 		vm_missing_file = NULL;
 

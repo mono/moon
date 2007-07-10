@@ -1,3 +1,13 @@
+2007-07-10  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.cs: add some helpful debug spew.
+
+	* plugin.cpp (StreamAsFile): the mapping needs to point to the
+	filename on disk, not the full uri.  or else we try loading
+	"http://" off the filesystem, which doesn't really work.  Just to
+	be thorough, add a mapping from the stream's url to the fname as
+	well.
+
 2007-07-09  Miguel de Icaza  <miguel@novell.com>
 
 	* Makefile.am: install debugging symbols.

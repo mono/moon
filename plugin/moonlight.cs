@@ -261,7 +261,9 @@ namespace Moonlight {
 		{
 			try {
 				return real_create_element (xmlns, name);
-			} catch {
+			} catch (Exception e) {
+				Console.WriteLine (e);
+
 				return IntPtr.Zero;
 			}
 		}
@@ -272,6 +274,8 @@ namespace Moonlight {
 			string type_name;
 			string asm_name;
 			string asm_path;
+
+			Console.WriteLine ("real_create_element ({0}, {1})", xmlns, name);
 
 			ParseXmlns (xmlns, out type_name, out ns, out asm_name);
 
@@ -401,14 +405,14 @@ namespace Moonlight {
 		{
 			try {
 				real_hookup_event (target_ptr, name, value);
-			} catch {
+			} catch (Exception e) {
+				Console.WriteLine (e);
 				Console.Error.WriteLine ("Returning unhappily");
 			}
 		}
 		
 		private void real_hookup_event (IntPtr target_ptr, string name, string value)
 		{
-		    Console.WriteLine ("In hookup event");
 			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
 					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] {
 					    typeof (Kind), typeof (IntPtr) }, null);
@@ -420,15 +424,18 @@ namespace Moonlight {
 				return;
 			}
 
+			Console.WriteLine ("attempting to hookup delegate {0} to event {1} on object of type {2}",
+					   value, name, target.GetType().FullName);
+
 			EventInfo src = target.GetType ().GetEvent (name);
 			if (src == null) {
 				Console.WriteLine ("hookup event unable to find event to hook to: '{0}'.", name);
 				return;
 			}
 
-			Console.WriteLine ("hookup event unable to create delegate src={0} target={1} value={2}", src.EventHandlerType, target, value);
 			Delegate d = Delegate.CreateDelegate (src.EventHandlerType, target, value);
 			if (d == null) {
+				Console.WriteLine ("hookup event unable to create delegate src={0} target={1} value={2}", src.EventHandlerType, target, value);
 				return;
 			}
 
