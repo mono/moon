@@ -1,5 +1,11 @@
 2007-07-10  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp (resolve_property_path): we need to reset
+	"expression_found" when we hit a '.' so that we'll lookup what
+	comes after it.
+
+2007-07-10  Chris Toshok  <toshok@ximian.com>
+	
 	* dependencyobject.cpp (resolve_property_path): we need to be able
 	to handle more than just single digit indexers.  use strtol and
 	recompute 'i' afterward.

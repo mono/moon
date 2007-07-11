@@ -119,7 +119,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 
 	if (value != NULL){
 		if (!Type::Find (value->GetKind ())->IsSubclassOf (property->value_type)) {
-			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetType ()->name, property->name, Type::Find (property->value_type)->name, Type::Find (value->GetKind ())->name);
+			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetTypeName (), property->name, Type::Find (property->value_type)->name, Type::Find (value->GetKind ())->name);
 			return;
 		}
 	} else {
@@ -677,6 +677,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 		}
 		case '.':
 			lu = lu->GetValue (res)->AsDependencyObject ();
+			expression_found = false;
 			// we can ignore this, since we pull the lookup object when we finish a ( ) block
 			break;
 		case '[':
