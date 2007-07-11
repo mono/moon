@@ -685,15 +685,19 @@ resolve_property_path (DependencyObject **o, const char *path)
 
 			// Need to be a little more loving
 			g_assert (path [i + 1]);
-			g_assert (path [i + 2] == ']');
-			g_assert (path [i + 3] == '.');
 
-			indexer = strtol (path + i + 1, NULL, 10);
+			char *p;
+
+			indexer = strtol (path + i + 1, &p, 10);
+			i = p - path;
+
+			g_assert (path [i] == ']');
+			g_assert (path [i + 1] == '.');
 
 			Collection *col = lu->GetValue (res)->AsCollection ();
 			List::Node *n = col->list->Index (indexer);
 			lu = n ? ((Collection::Node *) n)->obj : NULL;
-			i += 3;
+			i += 1;
 			break;
 		}
 		}
