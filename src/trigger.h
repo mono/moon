@@ -35,13 +35,16 @@ class EventTrigger : public DependencyObject {
 
 	static DependencyProperty* RoutedEventProperty;
 	static DependencyProperty* ActionsProperty;
+
+ private:
+	static void event_trigger_fire_actions (EventObject *sender, gpointer calldata, gpointer closure);
 };
 
 G_BEGIN_DECLS
 
 EventTrigger *event_trigger_new (void);
 void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
-void          event_trigger_fire_actions (EventTrigger *trigger);
+
 
 void          event_trigger_init (void);
 

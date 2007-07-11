@@ -46,7 +46,7 @@ EventTrigger::SetTarget (DependencyObject *target)
 	g_assert (target);
 
 	// Despite the name, it can only be loaded (according to the docs)
-	target->AddHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
+	target->AddHandler ("Loaded", event_trigger_fire_actions, this);
 }
 
 void
@@ -54,29 +54,17 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 {
 	g_assert (target);
 
-	target->RemoveHandler ("Loaded", (EventHandler) event_trigger_fire_actions, this);
+	target->RemoveHandler ("Loaded", event_trigger_fire_actions, this);
 }
 
 EventTrigger::~EventTrigger ()
 {
 }
 
-EventTrigger *
-event_trigger_new (void)
-{
-	return new EventTrigger ();
-}
-
 void
-event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
+EventTrigger::event_trigger_fire_actions (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	printf ("Adding action\n");
-	trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection()->Add (action);
-}
-
-void
-event_trigger_fire_actions (EventTrigger *trigger)
-{
+	EventTrigger *trigger = (EventTrigger*)closure;
 	g_assert (trigger);
 	TriggerActionCollection *actions = trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection();
 	Collection::Node *n = (Collection::Node *) actions->list->First ();
@@ -87,6 +75,18 @@ event_trigger_fire_actions (EventTrigger *trigger)
 	}
 }
 
+
+EventTrigger *
+event_trigger_new (void)
+{
+	return new EventTrigger ();
+}
+
+void
+event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
+{
+	trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection()->Add (action);
+}
 
 DependencyProperty* EventTrigger::RoutedEventProperty;
 DependencyProperty* EventTrigger::ActionsProperty;
