@@ -409,6 +409,9 @@ start_element (void *data, const char *el, const char **attr)
 
 	elem = p->current_namespace->FindElement (p, el);
 
+	if (p->error_args)
+		return;
+
 	if (elem) {
 		bool set_top = false;
 

@@ -1,3 +1,8 @@
+2007-07-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We need to stop parsing if there is an error while
+	resolving a custom namespace type.
+
 2007-07-10  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (resolve_property_path): we need to reset
