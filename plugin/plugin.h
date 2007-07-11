@@ -89,6 +89,8 @@ class PluginInstance
 	bool getEnableHtmlAccess ();
 	bool getWindowless ();
 
+	MoonlightControlObject *getRootObject ();
+
 	int32 getActualHeight ();
 	int32 getActualWidth ();
 };

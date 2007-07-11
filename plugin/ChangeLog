@@ -1,5 +1,13 @@
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.h, plugin.cpp: add getRootObject to return the
+	MoonlightControlObject.
+
+	* plugin-class.cpp (MoonlightDependencyObjectClass::Invoke):
+	implement "getHost" by returning PluginInstance->getRootObject().
+
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.h, plugin-class.cpp: substantially rework this
 	stuff.  Rename everything Moonlight*Class and Moonlight*Object
 	instead of Plugin*Class/Object, to make it a little clearer that

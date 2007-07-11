@@ -718,6 +718,11 @@ MoonlightDependencyObjectClass::Invoke (MoonlightObject *npobj, NPIdentifier nam
 		OBJECT_TO_NPVARIANT (depobj, *result);
 		return true;
 	}
+	else if (name == NPID ("getHost")) {
+		PluginInstance *plugin = (PluginInstance*) npobj->instance->pdata;
+
+		OBJECT_TO_NPVARIANT ((NPObject*)plugin->getRootObject(), *result);
+	}
 	else if (name == NPID ("addEventListener")) {
 		// not yet implemented
 		return true;
