@@ -1,5 +1,10 @@
 2007-07-11  Jackson Harper  <jackson@ximian.com>
 
+	* collection.cpp: When new objects are added to a collection, try
+	to merge them into the containers namescope.
+
+2007-07-11  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: We need to stop parsing if there is an error while
 	resolving a custom namespace type.
 
