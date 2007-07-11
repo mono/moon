@@ -7,6 +7,14 @@ part) it should build with a C compiler
 
 This is not likely the final version of this code.
 
+* Plugin Notes
+
+	If you want to use the plugin, you need this patch:
+
+		http://pastebin.com/m45bb628b
+
+	To your Mono runtime
+
 * Dependencies
 
 	ffmpeg, from:
