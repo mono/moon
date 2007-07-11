@@ -1,3 +1,8 @@
+2007-07-11  Miguel de Icaza  <miguel@novell.com>
+
+	* moonlight.cs: Add support for downloading assembly
+	dependencies. 
+
 2007-07-10  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.cs: add some helpful debug spew.

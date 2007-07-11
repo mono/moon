@@ -298,6 +298,47 @@ namespace Moonlight {
 				return IntPtr.Zero;
 			}
 
+			//
+			// If this assembly depends on other assemblies, we need to request them
+			//
+			string dirname = ""; 
+			int p = asm_name.LastIndexOf ('/');
+			if (p != -1)
+				dirname = asm_name.Substring (0, p + 1);
+			
+			foreach (AssemblyName an in clientlib.GetReferencedAssemblies ()){
+
+				//
+				// This is not the best probing mechanism.
+				// I do not like depending on an.Name and adding .dll
+				// to figure out if we have already the assembly downloaded
+				// from a previous iteration
+				//
+				string req = dirname + an.Name + ".dll";
+				string local = (string) h [req];
+				if (local != null){
+					// Ensure we load it.
+					try {
+						Assembly.LoadFile (local);
+					} catch {
+						Console.WriteLine ("moonlight.exe: Error loading referenced {0} library (from {1})", local, req);
+						return IntPtr.Zero;
+					}
+					continue;
+				}
+
+				try {
+					Assembly.Load (an);
+				} catch {
+					//
+					// If we fail, it means that the given assembly has
+					// not been downloaded, request it
+					//
+					missing = req;
+					return IntPtr.Zero;
+				}
+					
+			}
 			if (type_name != null)
 				name = type_name;
 
@@ -313,8 +354,8 @@ namespace Moonlight {
 
 			MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").GetMethod ("GetNativeObject",
 					BindingFlags.Static | BindingFlags.NonPublic);
-			IntPtr p = (IntPtr) m.Invoke (null, new object [] { res });
-			return p;
+			IntPtr ptr = (IntPtr) m.Invoke (null, new object [] { res });
+			return ptr;
 		}
 
 		private static TypeConverter GetConverterFor (PropertyInfo info)
