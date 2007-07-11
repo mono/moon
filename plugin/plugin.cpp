@@ -75,6 +75,7 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->mode = mode;
 	this->instance = instance;
 	this->window = NULL;
+
 	this->rootobject = NULL;
 
 	this->container = NULL;
@@ -93,6 +94,9 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->mono_loader_object = NULL;
 
 	plugin_instances = g_slist_append (plugin_instances, this->instance);
+
+	/* back pointer to us */
+	instance->pdata = this;
 }
 
 PluginInstance::~PluginInstance ()
@@ -110,6 +114,9 @@ PluginInstance::~PluginInstance ()
 		//gdk_display_sync (this->display);
 		//gdk_error_trap_pop ();
 	}
+
+	if (rootobject)
+		NPN_ReleaseObject ((NPObject*)rootobject);
 }
 
 void 
@@ -156,23 +163,14 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 			*((PRBool *)result) = PR_TRUE;
 			break;
 
-#ifdef SCRIPTING
 		case NPPVpluginScriptableNPObject:
-			if (!rootclass)
-				rootclass = new PluginRootClass ();
-
-			if (!this->rootobject)
-				this->rootobject = NPN_CreateObject (this->instance, rootclass);
+			if (rootobject == NULL)
+				rootobject = (MoonlightControlObject*)NPN_CreateObject (instance, MoonlightControlClass::Class());
 			else
-				NPN_RetainObject (this->rootobject);
+				NPN_RetainObject ((NPObject*)rootobject);
 
-			if (!this->rootobject)
-				err = NPERR_OUT_OF_MEMORY_ERROR;
-			else
-				*((NPObject **) result) =  this->rootobject;
-
+			*((NPObject **) result) = rootobject;
 			break;
-#endif
 		default:
 			err = NPERR_INVALID_PARAM;
 	}
@@ -295,31 +293,40 @@ PluginInstance::UpdateSourceByReference (const char *value)
 }
 
 bool
-PluginInstance::JsExecute (const char *expression)
+PluginInstance::JsRunOnload ()
 {
 	bool retval = false;
 	NPObject *object = NULL;
 	NPString reference;
 	NPVariant result;
+	const char *expression = onLoad;
 
-	if (NPERR_NO_ERROR != NPN_GetValue(this->instance, NPNVWindowNPObject, &object)) {
+	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVWindowNPObject, &object)) {
 		DEBUGMSG ("*** Failed to get window object");
 		return false;
 	}
 
-	char jscript [strlen (expression) + 4];
+	if (!strncmp (expression, "javascript:", strlen ("javascript:")))
+		expression += strlen ("javascript:");
 
-	g_strlcpy (jscript, expression, sizeof (jscript));
-	g_strlcat (jscript, "();", sizeof (jscript));
+	NPVariant args[1];
 
-	reference.utf8characters = jscript;
-	reference.utf8length = strlen (jscript);
+	DependencyObject *toplevel = surface->GetToplevel ();
+	DEBUGMSG ("In JsRunOnload, toplevel = %p", toplevel);
 
-	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
-		if (&result)
-			retval = true;
+	MoonlightDependencyObjectObject *depobj = MoonlightDependencyObjectClass::CreateWrapper (instance, surface->GetToplevel());
+	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
 
+	if (NPN_Invoke (instance, object, NPID (expression),
+			args, 1, &result)) {
+
+		DEBUGMSG ("NPN_Invoke succeeded");
 		NPN_ReleaseVariantValue (&result);
+
+		return true;
+	}
+	else {
+		DEBUGMSG ("NPN_Invoke failed");
 	}
 
 	NPN_ReleaseObject (object);
@@ -399,7 +406,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		if (!this->isLoaded) {
 			this->isLoaded = true;
 			if (this->onLoad)
-				JsExecute (this->onLoad);
+				JsRunOnload ();
 		}
 	}
 

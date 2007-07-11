@@ -1,3 +1,31 @@
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: substantially rework this
+	stuff.  Rename everything Moonlight*Class and Moonlight*Object
+	instead of Plugin*Class/Object, to make it a little clearer that
+	these are (almost entirely) wrappers for moonlight objects.
+
+	Also clean up the distinction between "Class" and "Object".  for
+	instance, MoonlightDependencyObjectClass shouldn't have the
+	DependencyObject*, that should live in the instance -
+	MoonlightDependencyObjectObject (bad name i know..)
+
+	our Objects also need a little bit more inheritance action.
+	MoonlightObject isn't enough for all cases.  Augment this with
+	other classes, and override AllocateObject to allocate the right
+	kind per class.  Also, we need to override InvalidateObject to
+	clear fields in the MoonlightObject subclasses before it's
+	deallocated.
+
+	Also make all the Class's singletons.  We never need more than one
+	of each of them.
+	
+	* plugin.h, plugin.cpp: we don't need a generate JsExecute method.
+	besides, it's dangerous to NPN_Evaluate strings we get from the
+	HTML anyway.  Replace JsExecute with JsRunOnload, which uses
+	NPN_Invoke to call the specified method.  we also need to pass the
+	surface's toplevel control as an argument to it.
+
 2007-07-11  Miguel de Icaza  <miguel@novell.com>
 
 	* moonlight.cs: Add support for downloading assembly

@@ -16,200 +16,166 @@
 
 /*** Static wrapper functions *************************************************/
 
-static NPObject*
-RuntimeClassAllocate (NPP instance, NPClass *aClass)
+NPObject*
+MoonlightClass::moonlightAllocate (NPP instance, NPClass *aClass)
 {
-	PluginObject *object;
-	object = (PluginObject*) NPN_MemAlloc (sizeof (PluginObject));
-	if (!object)
-		return NULL;
-
-	object->instance = instance;
-	object->plugin = (PluginInstance*) instance->pdata;
-
-	return object;
+	return (NPObject*)((MoonlightClass *) aClass)->AllocateObject (instance);
 }
 
-static void
-RuntimeClassDeallocate (NPObject *npobj)
+void
+MoonlightClass::moonlightDeallocate (NPObject *npobj)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		plugin->ClassDeallocate ((PluginObject *) npobj);
+	((MoonlightClass*)npobj->_class)->DeallocateObject ((MoonlightObject*)npobj);
 }
 
-static void
-RuntimeClassInvalidate (NPObject *npobj)
+void
+MoonlightClass::moonlightInvalidate (NPObject *npobj)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		plugin->ClassInvalidate ((PluginObject *) npobj);
+	((MoonlightClass *) npobj->_class)->InvalidateObject ((MoonlightObject *) npobj);
 }
 
-static bool
-RuntimeClassHasProperty (NPObject *npobj, NPIdentifier name)
+bool
+MoonlightClass::moonlightHasProperty (NPObject *npobj, NPIdentifier name)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		return plugin->ClassHasProperty ((PluginObject *) npobj, name);
-
-	return false;
+	return ((MoonlightClass *) npobj->_class)->HasProperty ((MoonlightObject *) npobj, name);
 }
 
-static bool
-RuntimeClassGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
+bool
+MoonlightClass::moonlightGetProperty (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		return plugin->ClassGetProperty ((PluginObject *) npobj, name, result);
-
-	return false;
+	return ((MoonlightClass *) npobj->_class)->GetProperty ((MoonlightObject *) npobj, name, result);
 }
 
-static bool
-RuntimeClassSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+bool
+MoonlightClass::moonlightSetProperty (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		return plugin->ClassSetProperty ((PluginObject *) npobj, name, value);
-
-	return false;
+	return ((MoonlightClass *) npobj->_class)->SetProperty ((MoonlightObject *) npobj, name, value);
 }
 
-static bool
-RuntimeClassRemoveProperty (NPObject *npobj, NPIdentifier name)
+bool
+MoonlightClass::moonlightRemoveProperty (NPObject *npobj, NPIdentifier name)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		return plugin->ClassRemoveProperty ((PluginObject *) npobj, name);
-
-	return false;
+	return ((MoonlightClass *) npobj->_class)->RemoveProperty ((MoonlightObject *) npobj, name);
 }
 
-static bool
-RuntimeClassHasMethod (NPObject *npobj, NPIdentifier name)
+bool
+MoonlightClass::moonlightHasMethod (NPObject *npobj, NPIdentifier name)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		return plugin->ClassHasMethod ((PluginObject *) npobj, name);
-
-	return false;
+	return ((MoonlightClass *) npobj->_class)->HasMethod ((MoonlightObject *) npobj, name);
 }
 
-static bool
-RuntimeClassInvoke (NPObject *npobj, NPIdentifier name, const NPVariant *args, 
-                  uint32_t argCount, NPVariant *result)
+bool
+MoonlightClass::moonlightInvoke (NPObject *npobj, NPIdentifier name, const NPVariant *args, 
+				 uint32_t argCount, NPVariant *result)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		return plugin->ClassInvoke ((PluginObject *) npobj, name, args, argCount, result);
-
-	return false;
+	return ((MoonlightClass *) npobj->_class)->Invoke ((MoonlightObject *) npobj, name, args, argCount, result);
 }
 
-static bool
-RuntimeClassInvokeDefault (NPObject *npobj, const NPVariant *args,
-	                                uint32_t argCount, NPVariant *result)
+bool
+MoonlightClass::moonlightInvokeDefault (NPObject *npobj, const NPVariant *args,
+					uint32_t argCount, NPVariant *result)
 {
-	PluginClass *plugin = (PluginClass *) npobj->_class;
-	if (plugin != NULL)
-		return plugin->ClassInvokeDefault ((PluginObject *) npobj, args, argCount, result);
-
-	return false;
+	return ((MoonlightClass *) npobj->_class)->InvokeDefault ((MoonlightObject *) npobj, args, argCount, result);
 }
 
-/*** PluginClass **************************************************************/
+/*** MoonlightClass **************************************************************/
 
-PluginClass::PluginClass ()
+MoonlightClass::MoonlightClass ()
 {
-	this->allocate       = &RuntimeClassAllocate;
-	this->deallocate     = &RuntimeClassDeallocate;
-	this->invalidate     = &RuntimeClassInvalidate;
-	this->hasProperty    = &RuntimeClassHasProperty;
-	this->getProperty    = &RuntimeClassGetProperty;
-	this->setProperty    = &RuntimeClassSetProperty;
-	this->removeProperty = &RuntimeClassRemoveProperty;
-	this->hasMethod      = &RuntimeClassHasMethod;
-	this->invoke         = &RuntimeClassInvoke;
-	this->invokeDefault  = &RuntimeClassInvokeDefault;
+	this->allocate       = moonlightAllocate;
+	this->deallocate     = moonlightDeallocate;
+	this->invalidate     = moonlightInvalidate;
+	this->hasProperty    = moonlightHasProperty;
+	this->getProperty    = moonlightGetProperty;
+	this->setProperty    = moonlightSetProperty;
+	this->removeProperty = moonlightRemoveProperty;
+	this->hasMethod      = moonlightHasMethod;
+	this->invoke         = moonlightInvoke;
+	this->invokeDefault  = moonlightInvokeDefault;
 }
 
-PluginClass::~PluginClass ()
+MoonlightClass::~MoonlightClass ()
 {
 	// nothing to do.
 }
 
-void
-PluginClass::ClassDeallocate (PluginObject *npobj)
+MoonlightObject*
+MoonlightClass::AllocateObject (NPP instance)
 {
-	if (npobj)
-		NPN_ReleaseObject (npobj);
+	return new MoonlightObject (instance);
 }
 
 void
-PluginClass::ClassInvalidate (PluginObject *npobj)
+MoonlightClass::DeallocateObject (MoonlightObject *npobj)
+{
+  // XXX this is crashing?  bad....
+  //	delete npobj;
+}
+
+void
+MoonlightClass::InvalidateObject (MoonlightObject *npobj)
 {
 	// nothing to do.
 }
 
 bool
-PluginClass::ClassHasProperty (PluginObject *npobj, NPIdentifier name)
+MoonlightClass::HasProperty (MoonlightObject *npobj, NPIdentifier name)
 {
 	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("*** PluginClass::ClassHasProperty %s", strname);
+	DEBUGMSG ("*** MoonlightClass::HasProperty %s", strname);
 	NPN_MemFree(strname);
 
 	return false;
 }
 
 bool
-PluginClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
+MoonlightClass::GetProperty (MoonlightObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	DEBUGMSG ("*** PluginClass::ClassGetProperty");
+	DEBUGMSG ("*** MoonlightClass::GetProperty");
 	return false;
 }
 
 bool
-PluginClass::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
+MoonlightClass::SetProperty (MoonlightObject *npobj, NPIdentifier name, const NPVariant *value)
 {
-	DEBUGMSG ("*** PluginClass::ClassSetProperty");
+	DEBUGMSG ("*** MoonlightClass::SetProperty");
 	return false;
 }
 
 bool
-PluginClass::ClassRemoveProperty (PluginObject *npobj, NPIdentifier name)
+MoonlightClass::RemoveProperty (MoonlightObject *npobj, NPIdentifier name)
 {
 	return false;
 }
 
 bool
-PluginClass::ClassHasMethod (PluginObject *npobj, NPIdentifier name)
+MoonlightClass::HasMethod (MoonlightObject *npobj, NPIdentifier name)
 {
 	NPUTF8 * strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("*** PluginClass::ClassHasMethod %s", strname);
+	DEBUGMSG ("*** MoonlightClass::HasMethod %s", strname);
 	NPN_MemFree(strname);
 
 	return false;
 }
 
 bool
-PluginClass::ClassInvoke (PluginObject *npobj, NPIdentifier name, const NPVariant *args, 
-                  uint32_t argCount, NPVariant *result)
+MoonlightClass::Invoke (MoonlightObject *npobj, NPIdentifier name, const NPVariant *args, 
+			uint32_t argCount, NPVariant *result)
 {
-	DEBUGMSG ("*** PluginClass::ClassInvoke");
+	DEBUGMSG ("*** MoonlightClass::Invoke");
 	return false;
 }
 
 bool
-PluginClass::ClassInvokeDefault (PluginObject *npobj, const NPVariant *args,
-	                                uint32_t argCount, NPVariant *result)
+MoonlightClass::InvokeDefault (MoonlightObject *npobj, const NPVariant *args,
+			       uint32_t argCount, NPVariant *result)
 {
-	DEBUGMSG ("*** PluginClass::ClassInvokeDefault");
+	DEBUGMSG ("*** MoonlightClass::InvokeDefault");
 	return false;
 }
 
 int
-PluginClass::IndexOf (NPIdentifier name, const char *const names[], int count)
+MoonlightClass::IndexOf (NPIdentifier name, const char *const names[], int count)
 {
 	for (int i = 0; i < count; i++) {
 		if (name == NPN_GetStringIdentifier (names [i]))
@@ -220,7 +186,7 @@ PluginClass::IndexOf (NPIdentifier name, const char *const names[], int count)
 }
 
 void
-PluginClass::StringToNPVariant (char *value, NPVariant *result)
+MoonlightClass::StringToNPVariant (char *value, NPVariant *result)
 {
 	int len;
 	char * retval;
@@ -238,41 +204,85 @@ PluginClass::StringToNPVariant (char *value, NPVariant *result)
 	STRINGN_TO_NPVARIANT (retval, len, *result);
 }
 
-/*** PluginRootClass **********************************************************/
+/*** MoonlightControlClass **********************************************************/
 
-PluginRootClass::PluginRootClass ()
+MoonlightControlClass* MoonlightControlClass::_class = NULL;
+
+MoonlightControlClass::MoonlightControlClass ()
 {
-	this->settings = new PluginSettings ();
-	this->content = new PluginContent ();
+}
+
+const char *const MoonlightControlClass::properties[] = {
+	"settings",   // read only
+	"content",    // read only
+	"initParams", // read only
+	"isLoaded",   // read only
+	"source"      // read write (cant be set after initialization)
+};
+const char *const MoonlightControlClass::methods[] = { };
+
+MoonlightObject*
+MoonlightControlClass::AllocateObject (NPP instance)
+{
+	return new MoonlightControlObject (instance);
+}
+
+void
+MoonlightControlClass::InvalidateObject (MoonlightObject *npobj)
+{
+	MoonlightControlObject *control = (MoonlightControlObject*)npobj;
+
+	if (control->settings)
+		NPN_ReleaseObject (control->settings);
+	control->settings = NULL;
+
+	if (control->content)
+		NPN_ReleaseObject (control->content);
+	control->content = NULL;
 }
 
 bool
-PluginRootClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
+MoonlightControlClass::HasProperty (MoonlightObject *npobj, NPIdentifier name)
 {
+  DEBUGMSG ("MoonlightControlClass::HasProperty");
+	return HAS_PROPERTY (properties, name);
+}
+
+bool
+MoonlightControlClass::HasMethod (MoonlightObject *npobj, NPIdentifier name)
+{
+  DEBUGMSG ("MoonlightControlClass::HasMethod");
+	return HAS_METHOD (methods, name);
+}
+
+bool
+MoonlightControlClass::GetProperty (MoonlightObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	PluginInstance *plugin = (PluginInstance*) npobj->instance->pdata;
+	MoonlightControlObject *rootobj = (MoonlightControlObject*)npobj;
+
 	if (name == NPID ("settings")) {
-		NPObject *object = NPN_CreateObject (npobj->instance, this->settings);
-		OBJECT_TO_NPVARIANT (object, *result);
+		OBJECT_TO_NPVARIANT (rootobj->settings, *result);
 		return true;
 	} 
 
 	if (name == NPID ("content")) {
-		NPObject *object = NPN_CreateObject (npobj->instance, this->content);
-		OBJECT_TO_NPVARIANT (object, *result);
+		OBJECT_TO_NPVARIANT (rootobj->content, *result);
 		return true;
 	} 
 
 	if (name == NPID ("initParams")) {
-		StringToNPVariant (npobj->plugin->getInitParams (), result);
+		StringToNPVariant (plugin->getInitParams (), result);
 		return true;
 	} 
 
 	if (name == NPID ("isLoaded")) {
-		BOOLEAN_TO_NPVARIANT (npobj->plugin->getIsLoaded (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->getIsLoaded (), *result);
 		return true;
 	} 
 
 	if (name == NPID ("source")) {
-		StringToNPVariant (npobj->plugin->getSource (), result);
+		StringToNPVariant (plugin->getSource (), result);
 		return true;
 	} 
 
@@ -280,10 +290,12 @@ PluginRootClass::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVar
 }
 
 bool 
-PluginRootClass::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
+MoonlightControlClass::SetProperty (MoonlightObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	PluginInstance *plugin = (PluginInstance*) npobj->instance->pdata;
+
 	if (name == NPID ("source")) {
-		npobj->plugin->setSource (NPVARIANT_TO_STRING (*value).utf8characters);
+		plugin->setSource (NPVARIANT_TO_STRING (*value).utf8characters);
 		return true;
 	}
 
@@ -291,34 +303,58 @@ PluginRootClass::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const
 }
 
 bool
-PluginRootClass::ClassInvoke (PluginObject *npobj, NPIdentifier name, 
-				const NPVariant *args, uint32_t argCount, NPVariant *result)
+MoonlightControlClass::Invoke (MoonlightObject *npobj, NPIdentifier name, 
+			       const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	return false;
 }
 
-/*** PluginSettings ***********************************************************/
+/*** MoonlightSettingsClass ***********************************************************/
+
+MoonlightSettingsClass* MoonlightSettingsClass::_class = NULL;
+
+MoonlightSettingsClass::MoonlightSettingsClass ()
+{
+}
+
+const char *const MoonlightSettingsClass::properties [] = {
+	"background",             // read write
+	"enableFramerateCounter", // read write (cant be set after initialization)
+	"enableRedrawRegions",    // read write
+	"enableHtmlAccess",       // read write (cant be set after initialization)
+	"maxFrameRate",           // read write
+	"version",                // read only
+	"windowless"              // read write (cant be set after initialization)
+};
 
 bool
-PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
+MoonlightSettingsClass::HasProperty (MoonlightObject *npobj, NPIdentifier name)
 {
+	return HAS_PROPERTY (properties, name);
+}
+
+bool
+MoonlightSettingsClass::GetProperty (MoonlightObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	PluginInstance *plugin = (PluginInstance*) npobj->instance->pdata;
+
 	if (name == NPID ("background")) {
-		StringToNPVariant (npobj->plugin->getBackground (), result);
+		StringToNPVariant (plugin->getBackground (), result);
 		return true;
 	}
 
 	if (name == NPID ("enableFramerateCounter")) {
-		BOOLEAN_TO_NPVARIANT (npobj->plugin->getEnableFramerateCounter (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->getEnableFramerateCounter (), *result);
 		return true;
 	} 
 
 	if (name == NPID ("enableRedrawRegions")) {
-		BOOLEAN_TO_NPVARIANT (npobj->plugin->getEnableRedrawRegions (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->getEnableRedrawRegions (), *result);
 		return true;
 	} 
 
 	if (name == NPID ("enableHtmlAccess")) {
-		BOOLEAN_TO_NPVARIANT (npobj->plugin->getEnableHtmlAccess (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->getEnableHtmlAccess (), *result);
 		return true;
 	} 
 
@@ -334,7 +370,7 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 	}
 
 	if (name == NPID ("windowless")) {
-		BOOLEAN_TO_NPVARIANT (npobj->plugin->getWindowless (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->getWindowless (), *result);
 		return true;
 	} 
 
@@ -342,10 +378,11 @@ PluginSettings::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVari
 }
 
 bool 
-PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
+MoonlightSettingsClass::SetProperty (MoonlightObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	PluginInstance *plugin = (PluginInstance*) npobj->instance->pdata;
 	if (name == NPID ("background")) {
-		npobj->plugin->setBackground (NPVARIANT_TO_STRING (*value).utf8characters);
+		plugin->setBackground (NPVARIANT_TO_STRING (*value).utf8characters);
 		return true;
 	}
 
@@ -355,7 +392,7 @@ PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const 
 	} 
 
 	if (name == NPID ("enableRedrawRegions")) {
-		npobj->plugin->setEnableRedrawRegions (NPVARIANT_TO_BOOLEAN (*value));
+		plugin->setEnableRedrawRegions (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
 	} 
 
@@ -377,20 +414,53 @@ PluginSettings::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const 
 	return false;
 }
 
-/*** PluginContent ************************************************************/
+/*** MoonlightContentClass ************************************************************/
+
+MoonlightContentClass* MoonlightContentClass::_class = NULL;
+
+MoonlightContentClass::MoonlightContentClass ()
+{
+}
+
+
+const char *const MoonlightContentClass::properties[] = {
+	"actualHeight", // read only
+	"actualWidth",  // read only
+	"fullScreen"    // read write
+};
+
+const char *const MoonlightContentClass::methods[] = {
+	"createObject",
+	"createFromXaml",
+	"createFromXamlDownloader"
+};
 
 bool
-PluginContent::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
+MoonlightContentClass::HasProperty (MoonlightObject *npobj, NPIdentifier name)
 {
+	return HAS_PROPERTY (properties, name);
+}
+
+bool
+MoonlightContentClass::HasMethod (MoonlightObject *npobj, NPIdentifier name)
+{
+	return HAS_METHOD (methods, name);
+}
+
+bool
+MoonlightContentClass::GetProperty (MoonlightObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	PluginInstance *plugin = (PluginInstance*) npobj->instance->pdata;
+
 	// Silverlight always return 0.
 	if (name == NPID ("actualHeight")) {
-		INT32_TO_NPVARIANT (npobj->plugin->getActualHeight (), *result);
+		INT32_TO_NPVARIANT (plugin->getActualHeight (), *result);
 		return true;
 	}
 
 	// Silverlight always return 0.
 	if (name == NPID ("actualWidth")) {
-		INT32_TO_NPVARIANT (npobj->plugin->getActualWidth (), *result);
+		INT32_TO_NPVARIANT (plugin->getActualWidth (), *result);
 		return true;
 	}
 
@@ -404,7 +474,7 @@ PluginContent::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVaria
 }
 
 bool 
-PluginContent::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
+MoonlightContentClass::SetProperty (MoonlightObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	// not implemented yet.
 	if (name == NPID ("fullScreen")) {
@@ -415,94 +485,161 @@ PluginContent::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const N
 }
 
 bool
-PluginContent::ClassInvoke (PluginObject *npobj, NPIdentifier name, 
-				const NPVariant *args, uint32_t argCount, NPVariant *result)
+MoonlightContentClass::Invoke (MoonlightObject *npobj, NPIdentifier name, 
+			       const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
-	if (name == NPID ("findName")) {
+	if (name == NPID ("createObject")) {
+		// not implemented yet
+		return true;
+	}
+	else if (name == NPID ("createFromXaml")) {
+		// create a Control object
 
-		if (!argCount)
+		if (argCount < 1)
 			return true;
 
-		UIElement *canvas = npobj->plugin->surface->GetToplevel ();
+		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
-		if (!canvas)
-			return true;
+		Control *control = new Control ();
+		Type::Kind element_type;
+		control->InitializeFromXaml (xaml, &element_type);
 
-		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
-		
-		DependencyObject *element = canvas->FindName (name);
-		if (!element)
-			return true;
+		MoonlightDependencyObjectObject *depobj =
+			MoonlightDependencyObjectClass::CreateWrapper (npobj->instance, control);
 
-		PluginDependencyObject *depobj = new PluginDependencyObject ((DependencyObject*) element);
-		
-		NPObject *object = NPN_CreateObject (npobj->instance, depobj);
-		OBJECT_TO_NPVARIANT (object, *result);
+		OBJECT_TO_NPVARIANT (depobj, *result);
+
+		return true;
+	}
+	else if (name == NPID ("createFromXamlDownloader")) {
+		// not implemented yet
 		return true;
 	}
 
 	return false;
 }
 
-/*** PluginDependencyObject ***************************************************/
+/*** MoonlightDependencyObjectClass ***************************************************/
+
+MoonlightDependencyObjectClass* MoonlightDependencyObjectClass::_class = NULL;
+
+const char *const MoonlightDependencyObjectClass::properties [] = {
+};
+
+const char *const MoonlightDependencyObjectClass::methods [] = {
+	"getHost",
+	"addEventListener",
+	"removeEventListener",
+	"findName"
+};
 
 void
-value_to_variant (PluginObject *npobj, Value *v, NPVariant *result)
+value_to_variant (MoonlightObject *npobj, Value *v, NPVariant *result)
 {
 	switch (v->GetKind ()) {
-		case Type::BOOL:
-			BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
-			break;
+	case Type::BOOL:
+		BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
+		break;
 
-		case Type::INT32:
-			INT32_TO_NPVARIANT (v->AsInt32(), *result);
-			break;
+	case Type::INT32:
+		INT32_TO_NPVARIANT (v->AsInt32(), *result);
+		break;
 
-		case Type::DOUBLE:
-			DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
-			break;
-		case Type::STRING:
-			STRINGZ_TO_NPVARIANT (v->AsString(), *result);
-			break;
+	case Type::DOUBLE:
+		DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
+		break;
+	case Type::STRING:
+		STRINGZ_TO_NPVARIANT (v->AsString(), *result);
+		break;
 
-		/* more builtins.. */
-		default:
-			if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
-				PluginDependencyObject *depobj = new PluginDependencyObject (v->AsDependencyObject ());
-
-				NPObject *object = NPN_CreateObject (npobj->instance, depobj);
-				OBJECT_TO_NPVARIANT (object, *result);
-			}
-			break;
+	/* more builtins.. */
+	default:
+		if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
+			MoonlightDependencyObjectObject *depobj =
+				MoonlightDependencyObjectClass::CreateWrapper (npobj->instance, v->AsDependencyObject ());
+				OBJECT_TO_NPVARIANT (depobj, *result);
+		}
+		break;
 	}
 }
 
-bool
-PluginDependencyObject::ClassHasProperty (PluginObject *npobj, NPIdentifier name)
+MoonlightDependencyObjectClass::MoonlightDependencyObjectClass ()
+	: MoonlightClass ()
 {
-	if (HAS_PROPERTY (PluginDependencyObjectPropertyNames, name))
+}
+
+MoonlightObject *
+MoonlightDependencyObjectClass::AllocateObject (NPP instance)
+{
+	return new MoonlightDependencyObjectObject (instance);
+}
+
+void
+MoonlightDependencyObjectClass::InvalidateObject (MoonlightObject *npobj)
+{
+	MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*)npobj;
+
+	if (depobj->dob)
+		depobj->dob->unref ();
+	depobj->dob = NULL;
+}
+
+DependencyProperty*
+MoonlightDependencyObjectClass::GetDependencyProperty (DependencyObject *obj, char *attrname)
+{
+  DEBUGMSG ("GetDependencyProperty (%s)", attrname);
+
+	attrname[0] = toupper(attrname[0]);
+	DependencyProperty *p = obj->GetDependencyProperty (attrname);
+
+	if (p)
+		return p;
+
+	char *period = strchr (attrname, '.');
+	if (period) {
+		char *type_name = g_strndup (attrname, period-attrname);
+		attrname = period + 1;
+
+		Type* type = Type::Find (type_name);
+		if (type != NULL) {
+			p = dependency_property_lookup (type->type, attrname);
+		}
+		g_free (type_name);
+	}
+
+	return p;
+}
+
+bool
+MoonlightDependencyObjectClass::HasProperty (MoonlightObject *npobj, NPIdentifier name)
+{
+	if (HAS_PROPERTY (properties, name))
 		return true;
 
+	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->dob;
+
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper(strname[0]);
-	DependencyProperty *p = dob->GetDependencyProperty (strname);
+	DEBUGMSG ("MoonlightDependencyObjectClass::HasProperty (%s)", strname);
+	DependencyProperty *p = GetDependencyProperty (dob, strname);
 	NPN_MemFree (strname);
 
 	return (p != NULL);
 }
 
 bool
-PluginDependencyObject::ClassGetProperty (PluginObject *npobj, NPIdentifier name, NPVariant *result)
+MoonlightDependencyObjectClass::GetProperty (MoonlightObject *npobj, NPIdentifier name, NPVariant *result)
 {
+	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->dob;
+
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	strname[0] = toupper(strname[0]);
-	DependencyProperty *p = dob->GetDependencyProperty (strname);
+	DependencyProperty *p = GetDependencyProperty (dob, strname);
 	NPN_MemFree (strname);
 
 	if (!p)
 		return false;
 
-	Value *value =  dob->GetValue (p);
+	Value *value = dob->GetValue (p);
 	if (!value)
 		return false;
 
@@ -512,8 +649,18 @@ PluginDependencyObject::ClassGetProperty (PluginObject *npobj, NPIdentifier name
 }
 
 bool 
-PluginDependencyObject::ClassSetProperty (PluginObject *npobj, NPIdentifier name, const NPVariant *value)
+MoonlightDependencyObjectClass::SetProperty (MoonlightObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	strname[0] = toupper(strname[0]);
+	DependencyProperty *p = GetDependencyProperty (dob, strname);
+	NPN_MemFree (strname);
+
+	if (!p)
+		return false;
+
 	char *strvalue = (char *) NPN_MemAlloc (20);
 
 	if (NPVARIANT_IS_BOOLEAN (*value)) {
@@ -526,16 +673,292 @@ PluginDependencyObject::ClassSetProperty (PluginObject *npobj, NPIdentifier name
 		// not implemented yet.
 	}
 
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper (strname[0]);
-
 	if (NPVARIANT_IS_STRING (*value))
-		xaml_set_property_from_str (dob, strname, (char *) NPVARIANT_TO_STRING (*value).utf8characters);
+		xaml_set_property_from_str (dob, p, (char *) NPVARIANT_TO_STRING (*value).utf8characters);
 	else
-		xaml_set_property_from_str (dob, strname, strvalue);
+		xaml_set_property_from_str (dob, p, strvalue);
 
-	NPN_MemFree (strname);
 	NPN_MemFree (strvalue);
 
 	return true;
 }
+
+bool
+MoonlightDependencyObjectClass::HasMethod (MoonlightObject *npobj, NPIdentifier name)
+{
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DEBUGMSG ("MoonlightDependencyObjectClass::HasMethod (%s)", strname);
+	NPN_MemFree (strname);
+
+	if (HAS_METHOD (methods, name))
+		return true;
+
+	return false;
+}
+
+bool
+MoonlightDependencyObjectClass::Invoke (MoonlightObject *npobj, NPIdentifier name,
+					const NPVariant *args, uint32_t argCount,
+					NPVariant *result)
+{
+	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name == NPID ("findName")) {
+		if (!argCount)
+			return true;
+
+		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
+		
+		DependencyObject *element = dob->FindName (name);
+		if (!element)
+			return true;
+
+		MoonlightDependencyObjectObject *depobj = MoonlightDependencyObjectClass::CreateWrapper (npobj->instance, element);
+
+		OBJECT_TO_NPVARIANT (depobj, *result);
+		return true;
+	}
+	else if (name == NPID ("addEventListener")) {
+		// not yet implemented
+		return true;
+	}
+	else if (name == NPID ("removeEventlistener")) {
+		// not yet implemented
+		return true;
+	}
+	else
+		return MoonlightClass::Invoke (npobj, name,
+					       args, argCount,
+					       result);
+}
+
+MoonlightDependencyObjectObject*
+MoonlightDependencyObjectClass::CreateWrapper (NPP instance, DependencyObject *obj)
+{
+	NPClass *np_class = MoonlightDependencyObjectClass::Class();
+
+	/* for DependencyObject subclasses which have special plugin classes, check here */
+	if (Type::Find (obj->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
+		np_class = MoonlightCollectionClass::Class();
+	else if (obj->GetObjectType() == Type::STORYBOARD)
+		np_class = MoonlightStoryboardClass::Class();
+
+	MoonlightDependencyObjectObject *depobj
+		= (MoonlightDependencyObjectObject*)NPN_CreateObject (instance,
+								      np_class);
+
+	depobj->SetDependencyObject (obj);
+
+	return depobj;
+}
+
+
+/*** MoonlightCollectionClass ***************************************************/
+
+MoonlightCollectionClass* MoonlightCollectionClass::_class = NULL;
+
+const char *const MoonlightCollectionClass::properties [] = {
+	"count"
+};
+
+const char *const MoonlightCollectionClass::methods [] = {
+	"add",
+	"remove",
+	"insert",
+	"clear",
+	"getItem"
+};
+
+MoonlightCollectionClass::MoonlightCollectionClass ()
+	: MoonlightDependencyObjectClass ()
+{
+}
+
+bool
+MoonlightCollectionClass::HasProperty (MoonlightObject *npobj, NPIdentifier name)
+{
+  DEBUGMSG ("MoonlightCollectionClass::HasProperty");
+
+	if (HAS_PROPERTY (properties, name))
+		return true;
+
+	return MoonlightDependencyObjectClass::HasProperty (npobj, name);
+}
+
+bool
+MoonlightCollectionClass::GetProperty (MoonlightObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	Collection *col = (Collection*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	// Silverlight always return 0.
+	if (name == NPID ("count")) {
+		INT32_TO_NPVARIANT (col->list->Length(), *result);	  
+		return true;
+	}
+
+	return false;
+}
+
+bool
+MoonlightCollectionClass::HasMethod (MoonlightObject *npobj, NPIdentifier name)
+{
+  DEBUGMSG ("MoonlightCollectionClass::HasMethod");
+	if (HAS_METHOD (methods, name))
+		return true;
+
+	return MoonlightDependencyObjectClass::HasMethod (npobj, name);
+}
+
+bool
+MoonlightCollectionClass::Invoke (MoonlightObject *npobj, NPIdentifier name,
+					const NPVariant *args, uint32_t argCount,
+					NPVariant *result)
+{
+  DEBUGMSG ("MoonlightCollectionClass::Invoke");
+	Collection *col = (Collection*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name == NPID ("add")) {
+		if (argCount < 1)
+			return true;
+
+		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (args[0]);
+		col->Add (el->dob);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name == NPID ("remove")) {
+		if (argCount < 1)
+			return true;
+
+		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (args[0]);
+		col->Remove (el->dob);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name == NPID ("insert")) {
+		if (argCount < 2)
+			return true;
+
+		int index = NPVARIANT_TO_INT32 (args[0]);
+		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (args[1]);
+
+		col->Insert (index, el->dob);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name == NPID ("clear")) {
+		if (argCount != 0)
+		  return true;
+
+		col->Clear ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else
+		return MoonlightDependencyObjectClass::Invoke (npobj, name,
+							       args, argCount,
+							       result);
+}
+
+
+/*** MoonlightStoryboardClass ***************************************************/
+
+MoonlightStoryboardClass* MoonlightStoryboardClass::_class = NULL;
+
+const char *const MoonlightStoryboardClass::methods [] = {
+	"begin",
+	"pause",
+	"resume",
+	"seek",
+	"stop"
+};
+
+MoonlightStoryboardClass::MoonlightStoryboardClass ()
+	: MoonlightDependencyObjectClass ()
+{
+}
+
+bool
+MoonlightStoryboardClass::HasMethod (MoonlightObject *npobj, NPIdentifier name)
+{
+  DEBUGMSG ("MoonlightStoryboardClass::HasMethod");
+	if (HAS_METHOD (methods, name))
+		return true;
+
+	return MoonlightDependencyObjectClass::HasMethod (npobj, name);
+}
+
+bool
+MoonlightStoryboardClass::Invoke (MoonlightObject *npobj, NPIdentifier name,
+				  const NPVariant *args, uint32_t argCount,
+				  NPVariant *result)
+{
+  DEBUGMSG ("MoonlightStoryboardClass::Invoke");
+	Storyboard *sb = (Storyboard*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name == NPID ("begin")) {
+		if (argCount != 0)
+			return true;
+
+		sb->Begin ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name == NPID ("pause")) {
+		if (argCount != 0)
+			return true;
+
+		sb->Pause ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name == NPID ("resume")) {
+		if (argCount != 0)
+			return true;
+
+		sb->Resume ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name == NPID ("seek")) {
+		// not yet implemented
+#if notyet
+		if (argCount != 1)
+			return true;
+
+		sb->Seek (...);
+
+		VOID_TO_NPVARIANT (*result);
+#endif
+		return true;
+	}
+	else if (name == NPID ("stop")) {
+		if (argCount != 0)
+			return true;
+
+		sb->Stop ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else
+		return MoonlightDependencyObjectClass::Invoke (npobj, name,
+							       args, argCount,
+							       result);
+}
+

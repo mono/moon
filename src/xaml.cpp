@@ -1889,29 +1889,8 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 ///
 
 void
-xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const char *value)
+xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
 {
-	const char *pname = full_pname;
-	char *atchname = NULL;
-	for (int a = 0; full_pname [a]; a++) {
-		if (full_pname [a] != '.')
-			continue;
-		atchname = g_strndup (full_pname, a);
-		pname = full_pname + a + 1;
-		break;
-	}
-
-	DependencyProperty *prop = NULL;
-	if (atchname) {
-		prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
-	} else
-		prop = DependencyObject::GetDependencyProperty (obj->GetObjectType (), (char *) pname);
-
-	if (!prop) {
-		printf ("can not find property:  %s\n", pname);
-		return;
-	}
-
 	switch (prop->value_type) {
 	case Type::BOOL:
 		obj->SetValue (prop, Value ((bool) !g_strcasecmp ("true", value)));
@@ -1998,7 +1977,7 @@ xaml_set_property_from_str (DependencyObject *obj, const char *full_pname, const
 		break;
 	}
 	default:
-		printf ("could not find value type for: %s to '%s' %d\n", pname, value, prop->value_type);
+		printf ("could not find value type for: %s to '%s' %d\n", prop->name, value, prop->value_type);
 		break;
 	}
 }

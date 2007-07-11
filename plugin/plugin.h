@@ -15,13 +15,15 @@
 
 #include "moonlight.h"
 
+class MoonlightControlObject;
+
 class PluginInstance
 {
  private:
   	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
-	NPObject* rootobject;  // Mozilla jscript object wrapper
+	MoonlightControlObject* rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
 
 	// Property fields
@@ -65,7 +67,7 @@ class PluginInstance
 	void UrlNotify (const char* url, NPReason reason, void* notifyData);
 	void Print (NPPrint* platformPrint);
 	int16 EventHandle (void* event);
-	bool JsExecute (const char *expression);
+	bool JsRunOnload ();
 
 
 	// Gtk controls
