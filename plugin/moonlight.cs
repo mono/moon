@@ -262,8 +262,7 @@ namespace Moonlight {
 			try {
 				return real_create_element (xmlns, name);
 			} catch (Exception e) {
-				Console.WriteLine (e);
-
+				Console.WriteLine ("moonlight.exe: Failed to create element {0}", e);
 				return IntPtr.Zero;
 			}
 		}
@@ -292,6 +291,7 @@ namespace Moonlight {
 				return IntPtr.Zero;
 			}
 
+			Console.WriteLine ("asm_path={0} asm_name={1}", asm_path, asm_name);
 			Assembly clientlib = Assembly.LoadFile (asm_path);
 			if (clientlib == null) {
 				Console.WriteLine ("could not load client library: '{0}'", asm_path);
