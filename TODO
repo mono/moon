@@ -128,11 +128,7 @@ Feel free to add items to this TODO list
 
 * Managed side
 
-	UIElement.cs currently uses standard events, it should instead
-	use something like EventList like Windows.Forms does to avoid
-	wasting all that space on all those fields that are barely used.
-
-	Also, it should probably flag when the frist event is set to
+	UIElement should probably flag when the frist event is set to
 	avoid having the native code send any events when we are not
 	interested in them.
 
