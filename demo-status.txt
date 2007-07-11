@@ -20,16 +20,24 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Browser Poker (http://support.newsgator.com/nickh/browserpoker/browserpoker.html)
 
-	Depends on implicitly loaded assembly
+	Starts up, but crashes when it tries to access
+	IsolatedStorage:
 
-		real_create_element (BrowserPoker.Page;assembly=ClientBin/BrowserPoker.dll, )
-
-		** (Gecko:24708): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/1E9AD4C5d01 could not be loaded:
-		     Assembly:   PlayingCards    (assemblyref_index=2)
-		     Version:    1.0.0.0
-		     Public Key: (none)
-		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
-
+		Unhandled Exception: System.IO.IsolatedStorage.IsolatedStorageException: No ApplicationIdentity available for AppDomain.
+		at System.IO.IsolatedStorage.IsolatedStorage.InitStore (System.IO.IsolatedStorage.IsolatedStorageScope,System.Type) [0x0002e] in /home/cvs/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorage.cs:157
+		at (wrapper remoting-invoke-with-check) System.IO.IsolatedStorage.IsolatedStorage.InitStore (System.IO.IsolatedStorage.IsolatedStorageScope,System.Type) <0x0005a>
+		at System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication () [0x0000a] in /home/cvs/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorageFile.cs:220
+		at BrowserPoker.Page.SaveData () <0x0004b>
+		at BrowserPoker.Page.chkbxSaveSettings_MouseLeftButtonUp (object,System.Windows.Input.MouseEventArgs) <0x00093>
+		at System.Windows.UIElement.InvokeMouseButtonUp (System.Windows.Input.MouseEventArgs) [0x0001c] in /home/cvs/olive/class/agclr/System.Windows/UIElement.cs:357
+		at Mono.Events.mouse_button_up_callback (intptr,intptr,intptr) [0x00014] in /home/cvs/olive/class/agclr/Mono/Events.cs:173
+		at (wrapper delegate-invoke) System.MulticastDelegate.invoke_void_intptr_intptr_intptr (intptr,intptr,intptr) <0x00050>
+		at Mono.CrossDomainProxy.call_in_target_domain () [0x0001b] in /home/cvs/olive/class/agclr/Mono/Events.cs:72
+		at System.AppDomain.DoCallBack (System.CrossAppDomainDelegate) [0x0001a] in /home/cvs/mcs/class/corlib/System/AppDomain.cs:448
+		at (wrapper remoting-invoke-with-check) System.AppDomain.DoCallBack (System.CrossAppDomainDelegate) <0x00045>
+		at Mono.CrossDomainProxy.wrapper (intptr,intptr,intptr) [0x00015] in /home/cvs/olive/class/agclr/Mono/Events.cs:64
+		at (wrapper native-to-managed) Mono.CrossDomainProxy.wrapper (intptr,intptr,intptr) <0x00030>
+		
 * Bubble Factory (http://cosmik.members.winisp.net/BubbleFactory/)
 
 	seems to be unable to hook up the PageLoaded event properly:
@@ -292,50 +300,60 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Silverlight Rocks (http://www.junkship.org:8000/silverlightdemo/)
 
-	Depends on implicitly loaded assembly:
+  	Although it seems to load the depending assembly now, it crashes now with:
 
-		** (Gecko:7037): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/2D75DF5Fd01 could not be loaded:
-		     Assembly:   Physics    (assemblyref_index=3)
-		     Version:    1.0.0.0
-		     Public Key: (none)
-		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
-	
-	then crashes here:
-
-	        /opt/mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4) [0xb3d0c2c4]
-	        /opt/mono/lib/libmono.so.0 [0xb3cc304a]
-	        [0xffffe440]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN10Storyboard23HookupAnimationsRecurseEP5Clock+0xae) [0xb3704abe]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN10Storyboard23HookupAnimationsRecurseEP5Clock+0xf1) [0xb3704b01]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN10Storyboard5BeginEv+0x8f) [0xb37062ff]
-        	/opt/silverlight/lib/libmoon.so.0(_ZN15BeginStoryboard4FireEv+0x29) [0xb37063c9]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN12EventTrigger26event_trigger_fire_actionsEP11EventObjectPvS2_+0x7b) [0xb372fd4b]
-        	/opt/silverlight/lib/libmoon.so.0(_ZN11EventObject4EmitEiPv+0x4e) [0xb371455e]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN9UIElement8OnLoadedEv+0x39) [0xb3731879]
-        	/opt/silverlight/lib/libmoon.so.0(_ZN5Panel8OnLoadedEv+0x51) [0xb3722c51]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN7Surface6AttachEP9UIElement+0x79) [0xb3724c59]
-	        /opt/silverlight/lib/libmoon.so.0(surface_attach+0x24) [0xb3724e14]
+		System.ArgumentException: Couldn't bind to method 'Page_Loaded'.
+		  at System.Delegate.CreateDelegate (System.Type type, System.Object target, System.String method, Boolean ignoreCase, Boolean throwOnBindFailure) [0x000e5] in /home/cvs/mcs/class/corlib/System/Delegate.cs:330
+		  at System.Delegate.CreateDelegate (System.Type type, System.Object target, System.String method, Boolean ignoreCase) [0x00000] in /home/cvs/mcs/class/corlib/System/Delegate.cs:333
+		  at System.Delegate.CreateDelegate (System.Type type, System.Object target, System.String method) [0x00000] in /home/cvs/mcs/class/corlib/System/Delegate.cs:230
+		  at Moonlight.DomainInstance.real_hookup_event (IntPtr target_ptr, System.String name, System.String value) [0x000b4] in /home/cvs/moon/plugin/moonlight.cs:477
+		  at Moonlight.DomainInstance.hookup_event (IntPtr target_ptr, System.String name, System.String value) [0x00000] in /home/cvs/moon/plugin/moonlight.cs:448
+		Returning unhappily
+		real_create_element (Tarantula.Page;assembly=tarantula.dll, )
+		asm_path=/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/2D75DF5Fd01 asm_name=tarantula.dll
+		attempting to hookup delegate Page_Loaded to event Loaded on object of type Tarantula.Page
+		Adding 0xb10fee48
+		corlib: Callback is happening on domain: moonlight--1312249792
+		Stacktrace:
+		
+		  at (wrapper managed-to-native) Moonlight.Hosting.surface_attach (intptr,intptr) <0x00004>
+		  at (wrapper managed-to-native) Moonlight.Hosting.surface_attach (intptr,intptr) <0xffffffff>
+		  at Moonlight.DomainInstance.TryLoad (int&) [0x00139] in /home/cvs/moon/plugin/moonlight.cs:245
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance.TryLoad (object,byte[]&,byte[]&,int&) <0xffffffff>
+		  at (wrapper xdomain-invoke) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+		  at Moonlight.Loader.TryLoad (int&) <0x00040>
+		  at (wrapper runtime-invoke) Moonlight.Loader.runtime_invoke_string_int& (object,intptr,intptr,intptr) <0xffffffff>
+		
 	
 * SilverNibbles (http://www.wordandspirit.co.uk/SilverNibbles/SilverNibbles.html)
 
-	requires System.Xml.Core, which fails to load:
-
-		** (Gecko:25421): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/C9740E7Ed01 could not be loaded:
-		     Assembly:   System.Xml.Core    (assemblyref_index=4)
-		     Version:    2.1.0.0
-		     Public Key: b77a5c561934e089
-		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
-
-	and crashes here
-
-	        /opt/mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4) [0xb3c502c4]
-	        /opt/mono/lib/libmono.so.0 [0xb3c0704a]
-	        [0xffffe440]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN9UIElement8OnLoadedEv+0x39) [0xb3669879]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN5Panel8OnLoadedEv+0x51) [0xb365ac51]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN7Surface6AttachEP9UIElement+0x79) [0xb365cc59]
-	        /opt/silverlight/lib/libmoon.so.0(surface_attach+0x24) [0xb365ce14]
-
+	Requires System.Xml.Core to be built manually from mcs/class.
+	
+	Then fails with:
+	
+		Moonlight-Message: NewStream (Page.xaml) http://www.wordandspirit.co.uk/SilverNibbles/ClientBin/SilverNibbles.dll
+		Moonlight-Message: NPP_StreamAsFile
+		Moonlight-Message: StreamAsFile: /home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/C9740E7Ed01
+		Inserting mapping ClientBin/SilverNibbles.dll and /home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/C9740E7Ed01
+		Inserting mapping http://www.wordandspirit.co.uk/SilverNibbles/ClientBin/SilverNibbles.dll and /home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/C9740E7Ed01
+		Main domain: Try Load
+		Loader.TryLoad: 164510776 XAML file=/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/5D38B4B7d01
+		attempting to hookup delegate Page_Loaded to event Loaded on object of type System.Windows.Controls.Canvas
+		System.ArgumentException: Couldn't bind to method 'Page_Loaded'.
+		...
+		...
+		real_create_element (SilverNibbles.Page;assembly=ClientBin/SilverNibbles.dll, )
+		asm_path=/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/C9740E7Ed01 asm_name=ClientBin/SilverNibbles.dll
+		
+		** (Gecko:28991): WARNING **: PARSER ERROR, STOPPING PARSING:  
+		Unable to resolve x:Class type 'SilverNibbles.Page;assembly=ClientBin/SilverNibbles.dll'  line: 1   char: 1
+		
+		
+		** (Gecko:28991): WARNING **: PARSER ERROR, STOPPING PARSING:  parsing aborted  line: 9   char: 9
+		
+		
 * Smalltalk in Silverlight (http://vistascript.net/vistascript/test)
 
 	Depends on implicitly loaded assembly:
