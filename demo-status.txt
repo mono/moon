@@ -1,0 +1,442 @@
+the first column from here: http://blogs.msdn.com/tims/default.aspx
+
+* 2D Physics Simulation (http://odetocode.com/aimages/200705/verlet/default.htm)
+
+	comes up showing the background.  clicking the javascript button results in this in the JS console:
+
+		Error: this.windVector has no properties
+		Source File: http://odetocode.com/aimages/200705/verlet/js/Rope.js
+		Line: 65
+
+* 3D Teapot Demo (http://www.dolittle.com/Silverlight/3D/TestPage.html)
+
+	lots of delegate hookup errors (with no subsequence
+	successes).  The word "Statistics" shows up in the browser, but
+	nothing else.  No JS Console errors.
+
+* Binary Clock (http://explosivedog.com/silverlight/binaryclock/default.html)
+
+	works!
+
+* Browser Poker (http://support.newsgator.com/nickh/browserpoker/browserpoker.html)
+
+	Depends on implicitly loaded assembly
+
+		real_create_element (BrowserPoker.Page;assembly=ClientBin/BrowserPoker.dll, )
+
+		** (Gecko:24708): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/1E9AD4C5d01 could not be loaded:
+		     Assembly:   PlayingCards    (assemblyref_index=2)
+		     Version:    1.0.0.0
+		     Public Key: (none)
+		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
+
+* Bubble Factory (http://cosmik.members.winisp.net/BubbleFactory/)
+
+	seems to be unable to hook up the PageLoaded event properly:
+
+		attempting to hookup delegate splashScreenLoaded to event Loaded on object of type System.Windows.Controls.Canvas
+		System.ArgumentException: Couldn't bind to method 'splashScreenLoaded'.
+
+	no further attempt is made.  Download page shows up but stalls.
+
+* Bubble Mark (http://bubblemark.com/)
+
+	Silverlight (CLR) page comes up, 3 fps.
+
+		Javascript controls are broken.  Interacting with them shows this in the JS console:
+
+			Error: _wpfeTest.Content has no properties
+			Source File: http://bubblemark.com/silverlight_clr.htm
+			Line: 65
+
+		Same with the start/stop links.
+
+	Silverlight (Javascript) page doesn't start, shows this in the console but doesn't crash:
+
+		attempting to hookup delegate javascript:wpfeLoaded to event Loaded on object of type System.Windows.Controls.Canvas
+		System.ArgumentException: Couldn't bind to method 'javascript:wpfeLoaded'.
+
+* Comic Book Viewer (http://mycomix.wintellect.com/Spotlight.aspx?Item=1041)
+
+	Lots of delegates failed to hook up messages.  nothing but an empty plugin area in the browser.
+
+		attempting to hookup delegate OnCanvasLoaded to event Loaded on object of type System.Windows.Controls.Canvas
+		System.ArgumentException: Couldn't bind to method 'OnCanvasLoaded'.
+
+
+		attempting to hookup delegate OnMouseEnter to event MouseEnter on object of type System.Windows.Shapes.Rectangle
+		System.ArgumentException: Couldn't bind to method 'OnMouseEnter'.
+
+* Destroy All Invaders (http://www.andybeaulieu.com/silverlight/DestroyAll/Default.html)
+
+	crashes here:
+
+		at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0x00004>
+		at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0xffffffff>
+		at System.Windows.DependencyObject.FindName (string) [0x00000] in /home/toshok/src/mono/olive/class/agclr/System.Windows/DependencyObject.cs:653
+		at MapGameScroller.Page.Page_Loaded (object,System.EventArgs) <0x00032>
+		at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+
+* Digger (http://www.aisto.com/Roeder/Silverlight/Digger/Default.aspx)
+
+	Comes up but is unresponsive. Missing browser bridge functionality.
+
+	It makes use of the HtmlTimer class, which we don't have populated yet.
+
+* Disco Dance Floor (http://explosivedog.com/silverlight/discolights/)
+
+	Comes up, shows garbage..  status bar says it's still getting data from explosivedog.com, but nothing's happening..
+
+* Dr. Green Thumb (http://labs.blitzagency.com/?p=50)
+
+	page comes up telling you to install WPF/e.  plugin isn't being recognized?
+
+* Dr. Popper (http://www.bluerosegames.com/brg/drpopper/)
+
+	comes up, but is unresponsive to mouse clicks.  there's an
+	"overlay" canvas over the entire UI which eats all mouse
+	events. Not sure how they're passed through on MS.
+
+	a few little visual problems.  all the button text is
+	"Button", and the button highlights are missing, due to our
+	not handling the Absolute BrushMapping mode.
+
+* Glyph Map (http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx)
+
+	Some of the UI comes up.  lots of unattached delegate errors:
+
+		attempting to hookup delegate SkinSlideOut_Completed to event Completed on object of type System.Windows.Media.Animation.Storyboard
+		System.ArgumentException: Couldn't bind to method 'SkinSlideOut_Completed'.
+
+		attempting to hookup delegate SkinSlideIn_Completed to event Completed on object of type System.Windows.Media.Animation.Storyboard
+		System.ArgumentException: Couldn't bind to method 'SkinSlideIn_Completed'.
+
+	with no subsequent successes.
+
+* GOA WinForms Demo (http://community.netikatech.com/demos/)
+
+	Missing browser bridge functionality.  Requires HtmlTimer, which isn't fleshed out.
+
+	This shows up on the console:
+
+		Error inside TryLoad: System.Exception: Unknown class
+
+		Server stack trace:
+		  at NETiKA.Silverlight.WinFormHost.c (System.Object A_0, System.EventArgs A_1) [0x00000]
+		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
+		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
+		  at <0x00000> <unknown method>
+		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
+		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x0014d] in /home/toshok/src/mono/moon/plugin/moonlight.cs:246
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
+		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
+
+		Exception rethrown at [0]:
+
+		  at (wrapper xdomain-invoke) Moonlight.DomainInstance:TryLoad (int&)
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
+		  at Moonlight.Loader.TryLoad (System.Int32& error) [0x0000f] in /home/toshok/src/mono/moon/plugin/moonlight.cs:130
+
+* Gradient Animation Demo (http://www.zillinois.com/blog/2007/05/16/YetAnotherSilverLightXAMLDemo.aspx)
+
+	works!
+
+* Grand Piano (http://silverlight.net/samples/1.0/Grand-Piano/default.html)
+
+	UI Seems to come up, nice piano graphics.  No response from
+	clicks/mouse movement though.  This on the JS Console:
+
+		Error: this.rootElement has no properties
+		Source File: http://silverlight.net/samples/1.0/Grand-Piano/GrandPiano.xaml.js
+		Line: 27
+
+	Also, the media player lacks downloader support
+
+* Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
+
+	Last thing output to the console is:
+
+		Moonlight-Message: *** PluginClass::ClassHasMethod version
+
+	Maybe we're not matching the plugin version required?
+
+* JavaScript/.NET Chess (http://silverlight.net/samples/1.1/chess/run/default.html)
+
+	This shows up on the console:
+
+		Loader.TryLoad: 152030272 XAML file=/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/717387C1d01
+		real_create_element (clr-namespace:Chess;assembly=ClientBin/Chess.dll, BoardUI)
+		Assembly not available:  ClientBin/Chess.dll
+
+		** (Gecko:25113): WARNING **: PARSER ERROR, STOPPING PARSING:  Unable to resolve custom type BoardUI
+		  line: 15   char: 0
+
+
+		** (Gecko:25113): WARNING **: Attempting to ignore unimplemented type:  BoardUI
+
+		Stacktrace:
+
+		  at (wrapper managed-to-native) Moonlight.Hosting.xaml_create_from_file (string,bool,int&) <0x00004>
+		  at (wrapper managed-to-native) Moonlight.Hosting.xaml_create_from_file (string,bool,int&) <0xffffffff>
+		  at Moonlight.DomainInstance.TryLoad (int&) [0x0004f] in /home/toshok/src/mono/moon/plugin/moonlight.cs:210
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance.TryLoad (object,byte[]&,byte[]&,int&) <0xffffffff>
+		  at (wrapper xdomain-invoke) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+		  at Moonlight.Loader.TryLoad (int&) <0x00040>
+		  at (wrapper runtime-invoke) Moonlight.Loader.runtime_invoke_string_int& (object,intptr,intptr,intptr) <0xffffffff>
+
+	There's nothing prior to it.. maybe the dll doesn't exist on the webserver?
+
+* Laugh-o-Sphere (http://sharepoint.microsoft.com/blogs/mikeg/silverlight1/PopflyMashups/bLaugh-o-Sphere.aspx)
+
+	Just shows the "Get Microsoft Silverlight" badge.  plugin version difference?
+
+* Matrix Digital Rain (http://blogs.sqlxml.org/wpfe/matrix/)
+
+	wpfe (not silverlight) demo?  I see this in the js console:
+
+
+		Error: wpfeControl1Host is not defined
+		Source File: http://blogs.sqlxml.org/wpfe/matrix/
+		Line: 26
+
+* Michael's Journal (http://blogs.msdn.com/Synergist/pages/journal.aspx)
+
+* Office Ribbon (http://xmldocs.net/)
+
+* Photopoints Gallery (http://www.photopoints.com/main/Silverlight_Alpha/)
+
+* Popfly (http://www.popfly.com/)
+
+* Python Console (http://silverlight.net/Samples/1.1/DLR-Console/python/index.htm)
+
+* Reflecting Graph (http://davidbetz.net/reflectinggraphdemo/)
+
+	Loading the page this shows up in the JS console:
+
+		Error: Trying to get unsupported property on scriptable plugin object!
+		Source File: http://davidbetz.net/reflectinggraphdemo/Code/default.js
+		Line: 7
+
+	html controls are unresponsive.
+
+* Sierpinski Triangle (http://www.cjcraft.com/silverlight/SierpinskiTriangle/Default.html)
+
+	crash:
+
+		  at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0x00004>
+		  at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0xffffffff>
+		  at System.Windows.DependencyObject.FindName (string) [0x00000] in /home/toshok/src/mono/olive/class/agclr/System.Windows/DependencyObject.cs:653
+		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00302>
+		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
+		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
+		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
+		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
+		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
+		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
+		  at Clock.Page.Page_Loaded (object,System.EventArgs) <0x0016c>
+		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+
+* Silverlight Airlines Demo (http://delay.members.winisp.net/SilverlightAirlinesDemo/)
+
+	works!
+
+	a few visual glitches, but things should behave as expected.
+
+* Silverlight Chess Game Replay (http://www.vertigo.com/downloads/SilverlightChess/)
+
+	Comes up, shows a little intro animation, then nothing.  JS console shows:
+
+
+		Error: rootElement has no properties
+		Source File: http://www.vertigo.com/downloads/SilverlightChess/Scene.xaml.js
+		Line: 25
+
+* Silverlight Mind Map (http://blogs.msdn.com/synergist/pages/silverlight-map.aspx)
+
+	tons of failed javascript delegate hookup messages, like:
+
+		attempting to hookup delegate javascript:LeaveButton to event MouseLeave on object of type System.Windows.Controls.Canvas
+
+	eventually crashed here:
+
+	        /opt/mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4) [0xb32ea2c4]
+	        /opt/mono/lib/libmono.so.0 [0xb32a104a]
+	        [0xffffe440]
+	        /opt/gnome/lib/libpango-1.0.so.0 [0xb7a15847]
+	        /opt/gnome/lib/libpango-1.0.so.0(pango_renderer_draw_rectangle+0x7a) [0xb7a1476a]
+        	/opt/gnome/lib/libpango-1.0.so.0 [0xb7a148ee]
+	        /opt/gnome/lib/libpango-1.0.so.0(pango_renderer_draw_layout_line+0x5ef) [0xb7a1538f]
+	        /opt/gnome/lib/libpango-1.0.so.0(pango_renderer_draw_layout+0x10a) [0xb7a1556a]
+	        /opt/silverlight/lib/libmoon.so.0(mango_renderer_layout_path+0x47) [0xb2cfa977]
+        	/opt/silverlight/lib/libmoon.so.0(_ZN9TextBlock6LayoutEP6_cairo+0x3cf) [0xb2d0a79f]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN9TextBlock21CalcActualWidthHeightEP6_cairo+0x9c) [0xb2d0aadc]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN9TextBlock19OnCollectionChangedEP10Collection20CollectionChangeTypeP16DependencyObjectP18DependencyProperty+0x2a) [0xb2d0ab1a]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN10Collection20OnSubPropertyChangedEP18DependencyPropertyS1_+0x34) [0xb2cef654]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN16DependencyObject31NotifyAttacheesOfPropertyChangeEP18DependencyProperty+0x3f) [0xb2cf238f]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN3Run17OnPropertyChangedEP18DependencyProperty+0x3c) [0xb2d0af5c]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN16DependencyObject8SetValueEP18DependencyPropertyP5Value+0x1d9) [0xb2cf4169]
+        	/opt/silverlight/lib/libmoon.so.0(_ZN16DependencyObject8SetValueEP18DependencyProperty5Value+0x1f) [0xb2cf23bf]
+	        /opt/silverlight/lib/libmoon.so.0(_Z15flush_char_dataP14XamlParserInfo+0xf3) [0xb2d12973]
+	        /opt/silverlight/lib/libmoon.so.0(_Z19end_element_handlerPvPKc+0x50) [0xb2d12ac0]
+
+* Silverlight Pad (http://silverlight.net/samples/1.0/Silverlight-Pad/default.html)
+
+	UI comes up (and looks snazzy).  This is in JS console:
+
+		Error: Error calling method on NPObject!
+		Source File: http://silverlight.net/samples/1.0/Silverlight-Pad/js/main.js
+		Line: 32
+
+* Silverlight Rocks (http://www.junkship.org:8000/silverlightdemo/)
+
+	Depends on implicitly loaded assembly:
+
+		** (Gecko:7037): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/2D75DF5Fd01 could not be loaded:
+		     Assembly:   Physics    (assemblyref_index=3)
+		     Version:    1.0.0.0
+		     Public Key: (none)
+		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
+	
+	then crashes here:
+
+	        /opt/mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4) [0xb3d0c2c4]
+	        /opt/mono/lib/libmono.so.0 [0xb3cc304a]
+	        [0xffffe440]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN10Storyboard23HookupAnimationsRecurseEP5Clock+0xae) [0xb3704abe]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN10Storyboard23HookupAnimationsRecurseEP5Clock+0xf1) [0xb3704b01]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN10Storyboard5BeginEv+0x8f) [0xb37062ff]
+        	/opt/silverlight/lib/libmoon.so.0(_ZN15BeginStoryboard4FireEv+0x29) [0xb37063c9]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN12EventTrigger26event_trigger_fire_actionsEP11EventObjectPvS2_+0x7b) [0xb372fd4b]
+        	/opt/silverlight/lib/libmoon.so.0(_ZN11EventObject4EmitEiPv+0x4e) [0xb371455e]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN9UIElement8OnLoadedEv+0x39) [0xb3731879]
+        	/opt/silverlight/lib/libmoon.so.0(_ZN5Panel8OnLoadedEv+0x51) [0xb3722c51]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN7Surface6AttachEP9UIElement+0x79) [0xb3724c59]
+	        /opt/silverlight/lib/libmoon.so.0(surface_attach+0x24) [0xb3724e14]
+	
+* SilverNibbles (http://www.wordandspirit.co.uk/SilverNibbles/SilverNibbles.html)
+
+	requires System.Xml.Core, which fails to load:
+
+		** (Gecko:25421): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/C9740E7Ed01 could not be loaded:
+		     Assembly:   System.Xml.Core    (assemblyref_index=4)
+		     Version:    2.1.0.0
+		     Public Key: b77a5c561934e089
+		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
+
+	and crashes here
+
+	        /opt/mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4) [0xb3c502c4]
+	        /opt/mono/lib/libmono.so.0 [0xb3c0704a]
+	        [0xffffe440]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN9UIElement8OnLoadedEv+0x39) [0xb3669879]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN5Panel8OnLoadedEv+0x51) [0xb365ac51]
+	        /opt/silverlight/lib/libmoon.so.0(_ZN7Surface6AttachEP9UIElement+0x79) [0xb365cc59]
+	        /opt/silverlight/lib/libmoon.so.0(surface_attach+0x24) [0xb365ce14]
+
+* Smalltalk in Silverlight (http://vistascript.net/vistascript/test)
+
+	Depends on implicitly loaded assembly:
+
+		** (Gecko:25466): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/71054617d01 could not be loaded:
+		     Assembly:   Desktop    (assemblyref_index=2)
+		     Version:    1.0.0.0
+		     Public Key: (none)
+		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
+
+* Sprawl (http://silverlight.net/samples/1.0/sprawl/default.html)
+
+	javascript: delegate hookup failures.
+
+		attempting to hookup delegate javascript:handleLoad to event Loaded on object of type System.Windows.Controls.Canvas
+		System.ArgumentException: Couldn't bind to method 'javascript:handleLoad'.
+
+		attempting to hookup delegate javascript:keyDown to event KeyDown on object of type System.Windows.Controls.Canvas
+		System.ArgumentException: Couldn't bind to method 'javascript:keyDown'.
+
+	animated UI comes up, this shows up in JS console:
+
+		Warning: Element referenced by ID/NAME in the global scope. Use W3C standard document.getElementById() instead.
+		Source File: http://silverlight.net/samples/1.0/sprawl/js/createsilverlight.js
+		Line: 16
+
+* Surface Prototype (http://silverlight.schwarz-interactive.de/ex02/)
+
+	seems to start up okay, but nothing ever shows.  Maybe Page_Loaded is in fact never called?
+
+* SVG to Silverlight Converter (http://intertwingly.net/stories/2007/05/06/?icon=compass)
+
+	works?  seems to work ok, but the plugin might be too large?
+	we obscure some of the html (but so does the SVG view of the info).
+
+* Telerik RadControls 3D Cube (http://www.telerik.com/demos/aspnet/silverlight/Cube/Examples/RoomDesigner/DefaultCS.aspx)
+
+	Loads up the background fine, but this shows up in the JS console:
+
+		Error: Error calling method on NPObject!
+		Source File: http://www.telerik.com/demos/aspnet/SilverLight/ScriptResource.axd?d=atmQ5J12kUyXdGdNj1t5gO7kyy-1mMyQjNxyHPJokCKIQumnkf1AgJ8PQEqAQ2aoMVJExFu6z-DxRj41Nq3qubpm5EI7FzULDQhpTQFdrJw1&t=633184475610000000
+		Line: 639
+
+* Windows Journal-to-Silverlight Converter (http://www.microsoft.com/downloads/details.aspx?FamilyID=4964cd5f-0dcb-4c22-9378-773100d8e89f&displaylang=en)
+
+	Windows specific conversion tool.  not a web demo.
+
+* Windows Vista Simulator (http://www.windowsvista.si/)
+
+	javascript delegate hookup problems:
+
+		System.ArgumentException: Couldn't bind to method 'javascript:OnLoaded'.
+		System.ArgumentException: Couldn't bind to method 'javascript:OnXAMLLeftMouseDownFunc'.
+
+	lack of OnLoaded callback probably keeps it from starting up
+	correctly.  nothing shown in plugin area.
+
+* XamlWebPad (http://xamlwebpad.peterkellner.net/Default.aspx)
+
+	works!  or appears to anyway.
+
+* XPSViewer (http://delay.members.winisp.net/SimpleSilverlightXpsViewer/)
+
+	this is printed to console:
+
+		Error inside TryLoad: System.ArgumentNullException: Argument cannot be null.
+		Parameter name: baseUri
+
+		Server stack trace:
+		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri, Boolean dontEscape) [0x00582] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:363
+		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri) [0x00000] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:179
+		  at SimpleSilverlightXpsViewer.Page.source_MouseLeftButtonDown (System.Object sender, System.Windows.Input.MouseEventArgs e) [0x00000]
+		  at SimpleSilverlightXpsViewer.Page.Page_Loaded (System.Object obj, System.EventArgs eventArgs) [0x00000]
+		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
+		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
+		  at <0x00000> <unknown method>
+		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
+		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x0014d] in /home/toshok/src/mono/moon/plugin/moonlight.cs:246
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
+		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
+
+	but the app comes up.  clicking in it crashes due to:
+
+		Unhandled Exception: System.ArgumentNullException: Argument cannot be null.
+		Parameter name: baseUri
+		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri, Boolean dontEscape) [0x00582] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:363
+		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri) [0x00000] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:179
+		  at SimpleSilverlightXpsViewer.Page.source_MouseLeftButtonDown (System.Object sender, System.Windows.Input.MouseEventArgs e) [0x00000]
+		  at System.Windows.UIElement.InvokeMouseButtonDown (System.Windows.Input.MouseEventArgs m) [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:350
+		  at Mono.Events.mouse_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:109
+		  at (wrapper native-to-managed) Mono.Events:mouse_button_down_callback (intptr,intptr,intptr)
+
+* Zero Gravity (http://www.ltbennett.com/)
+
+	This show up in the JS console:
+
+		Error: Trying to add unsupported property on scriptable plugin object!
+		Source File: http://www.ltbennett.com/Jumper.html.js
+		Line: 33
+
+		Error: Trying to get unsupported property on scriptable plugin object!
+		Source File: http://www.ltbennett.com/Jumper.html.js
+		Line: 40
