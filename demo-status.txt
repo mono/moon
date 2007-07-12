@@ -228,20 +228,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Sierpinski Triangle (http://www.cjcraft.com/silverlight/SierpinskiTriangle/Default.html)
 
-	crash:
-
-		  at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0x00004>
-		  at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0xffffffff>
-		  at System.Windows.DependencyObject.FindName (string) [0x00000] in /home/toshok/src/mono/olive/class/agclr/System.Windows/DependencyObject.cs:653
-		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00302>
-		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
-		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
-		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
-		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
-		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
-		  at Clock.Page.drawSierpinskiTriangle (int[],int[],int) <0x00582>
-		  at Clock.Page.Page_Loaded (object,System.EventArgs) <0x0016c>
-		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+	works!
 
 * Silverlight Airlines Demo (http://delay.members.winisp.net/SilverlightAirlinesDemo/)
 
