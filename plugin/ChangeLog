@@ -1,5 +1,28 @@
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
+	* moonlight.h (DEBUG_WARN_NOTIMPLEMENTED): add this macro so we
+	can get spew to the console when we hit unimplemented bits.
+
+	* plugin-class.cpp: a couple of changes:
+
+	1. the case of property names is lax too, it seems.  'Children'
+	can be used in the js, as well as 'Children'.  so we need to allow
+	both.
+
+	2. Fix a memory corruption issue with value_to_variant - we need
+	to duplicate the string we give to mozilla, since it'll free it in
+	NPN_ReleaseVariantValue.
+
+	3. Implement proxies between our event handlers and JS event
+	listeners.  We leak like a sieve here, btw.  need to figure out
+	the best way to free up these proxies.  This works for any event
+	that has been Register'ed by an EventObject and which is Emit'ed
+	from C++.
+
+	4. Implement collection.getItem().
+	
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.h, plugin.cpp: add getRootObject to return the
 	MoonlightControlObject.
 
