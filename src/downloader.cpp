@@ -52,17 +52,16 @@
 
 downloader_create_state_func Downloader::create_state = NULL;
 downloader_destroy_state_func Downloader::destroy_state = NULL;
-downloader_open_func Downloader::open = NULL;
-downloader_send_func Downloader::send = NULL;
-downloader_abort_func Downloader::abort = NULL;
-
-struct Listener {
-	downloader_event_notify notify;
-	gpointer closure;
-};
+downloader_open_func Downloader::open_func = NULL;
+downloader_send_func Downloader::send_func = NULL;
+downloader_abort_func Downloader::abort_func = NULL;
 
 Downloader::Downloader ()
 {
+	CompletedEvent               = RegisterEvent ("Completed");
+	DownloadProgressChangedEvent = RegisterEvent ("DownloadProgressChanged");
+	DownloadFailedEvent          = RegisterEvent ("DownloadFailed");
+
 	downloader_state = Downloader::create_state (this);
 	notify_size = NULL;
 	filename = NULL;
@@ -70,7 +69,6 @@ Downloader::Downloader ()
 	this->write = NULL;
 	file_size = -2;
 	total = 0;
-	downloader_events = NULL;
 	part_hash = NULL;
 }
 
@@ -84,13 +82,6 @@ Downloader::~Downloader ()
 {
 	Downloader::destroy_state (downloader_state);
 
-	GSList *l;
-	for (l = downloader_events; l; l = l->next){
-		Listener *listener = (Listener *) l->data;
-
-		delete listener;
-	}
-	g_slist_free (l);
 	g_free (filename);
 
 	// Delete temporary files.
@@ -101,20 +92,20 @@ Downloader::~Downloader ()
 }
 
 void
-downloader_abort (Downloader *dl)
+Downloader::Abort ()
 {
-	dl->abort (dl->downloader_state);
+	abort_func (downloader_state);
 }
 
 void *
-downloader_get_response_text (Downloader *dl, char* PartName, uint64_t *size)
+Downloader::GetResponseText (char* PartName, uint64_t *size)
 {
 	FILE *f = NULL;
 	struct stat buf;
 	long n = 0;
 	void *data = NULL;
 
-	char *fname = downloader_get_response_file (dl, PartName);
+	char *fname = GetResponseFile (PartName);
 	if (fname == NULL)
 		return NULL;
 
@@ -148,8 +139,8 @@ downloader_get_response_text (Downloader *dl, char* PartName, uint64_t *size)
 	return NULL;
 }
 
-static char *
-ll_downloader_get_response_file (Downloader *dl, char *PartName)
+char *
+Downloader::ll_downloader_get_response_file (char *PartName)
 {
 	int fd = -1;
 	char buffer [32*1024];
@@ -157,17 +148,17 @@ ll_downloader_get_response_file (Downloader *dl, char *PartName)
 	char *file = NULL;
 	FILE *f = NULL;
 
-	if (dl->filename == NULL)
+	if (filename == NULL)
 		return NULL;
 
 	// Null or empty, get the original file.
 	if (PartName == NULL || *PartName == 0)
-		return g_strdup (dl->filename);
+		return g_strdup (filename);
 
 	//
 	// Open zip file
 	//
-	unzFile zipfile = unzOpen (dl->filename);
+	unzFile zipfile = unzOpen (filename);
 	if (zipfile == NULL)
 		return NULL;
 
@@ -215,41 +206,88 @@ ll_downloader_get_response_file (Downloader *dl, char *PartName)
 	return file;
 }
 
-//
-// Returns the filename that holds that given file.
-// 
-// Return values:
-//   A newly allocated string containing the filename.
-//
-char *
-downloader_get_response_file (Downloader *dl, char *PartName)
+char*
+Downloader::GetResponseFile (char *PartName)
 {
-	if (dl->part_hash != NULL){
-		char *fname = (char*) g_hash_table_lookup (dl->part_hash, PartName);
+	if (part_hash != NULL){
+		char *fname = (char*) g_hash_table_lookup (part_hash, PartName);
 		if (fname != NULL)
 			return g_strdup (fname);
 	}
 
-	char *part = ll_downloader_get_response_file (dl, PartName);
+	char *part = ll_downloader_get_response_file (PartName);
 	if (part != NULL && PartName != NULL && *PartName != 0){
-		if (dl->part_hash == NULL)
-			dl->part_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-		g_hash_table_insert (dl->part_hash, g_strdup (PartName), g_strdup (part));
+		if (part_hash == NULL)
+			part_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+		g_hash_table_insert (part_hash, g_strdup (PartName), g_strdup (part));
 	}
 	return part;
 }
 
 void
-downloader_open (Downloader *dl, char *verb, char *URI, bool Async)
+Downloader::Open (char *verb, char *URI, bool Async)
 {
-	dl->open (verb, URI, Async, dl->downloader_state);
+	open_func (verb, URI, Async, downloader_state);
 }
 
 void
-downloader_send (Downloader *dl)
+Downloader::Send ()
 {
-	dl->started = true;
-	dl->send (dl->downloader_state);
+	started = true;
+	send_func (downloader_state);
+}
+
+//
+// A zero write means that we are done
+//
+void
+Downloader::Write (guchar *buf, gsize offset, gsize n)
+{
+	if (write)
+		write (buf, offset, n, consumer_closure);
+	
+	// Update progress
+	total += n;
+	double p;
+	if (file_size >= 0)
+		p = total / (double) file_size;
+	else 
+		p = 0;
+
+	SetValue (Downloader::DownloadProgressProperty, Value (p));
+
+	Emit (DownloadProgressChangedEvent);
+}
+
+void
+Downloader::NotifyFinished (const char *fname)
+{
+	filename = g_strdup (fname);
+	
+	// HACK, we should provide the status code
+	SetValue (Downloader::StatusProperty, Value (200));
+	Emit (CompletedEvent, (gpointer)fname);
+}
+
+void
+Downloader::NotifyFailed (const char *msg)
+{
+	// dl->SetValue (Downloader::StatusProperty, Value (400))
+	// For some reason the status is 0, not updated on errors?
+	Emit (DownloadFailedEvent, (gpointer)msg);
+}
+
+void
+Downloader::NotifySize (int64_t size)
+{
+	file_size = size;
+
+	if (notify_size)
+		notify_size (size, consumer_closure);
+
+	SetValue (Downloader::DownloadProgressProperty, Value (0.0));
+
+	Emit (DownloadProgressChangedEvent);
 }
 
 bool
@@ -274,6 +312,67 @@ Downloader::SetWriteFunc (downloader_write_func write,
 	this->consumer_closure = data;
 }
 
+void
+Downloader::SetFunctions (downloader_create_state_func create_state,
+			  downloader_destroy_state_func destroy_state,
+			  downloader_open_func open,
+			  downloader_send_func send,
+			  downloader_abort_func abort,
+			  bool only_if_not_set)
+{
+	if (only_if_not_set &&
+	    (Downloader::create_state != NULL ||
+	     Downloader::destroy_state != NULL ||
+	     Downloader::open_func != NULL ||
+	     Downloader::send_func != NULL ||
+	     Downloader::abort_func != NULL))
+	  return;
+
+	Downloader::create_state = create_state;
+	Downloader::destroy_state = destroy_state;
+	Downloader::open_func = open;
+	Downloader::send_func = send;
+	Downloader::abort_func = abort;
+}
+
+
+void
+downloader_abort (Downloader *dl)
+{
+	dl->Abort ();
+}
+
+//
+// Returns the filename that holds that given file.
+// 
+// Return values:
+//   A newly allocated string containing the filename.
+//
+char *
+downloader_get_response_file (Downloader *dl, char *PartName)
+{
+	return dl->GetResponseFile (PartName);
+}
+
+
+void *
+downloader_get_response_text (Downloader *dl, char* PartName, uint64_t *size)
+{
+	return dl->GetResponseText (PartName, size);
+}
+
+void
+downloader_open (Downloader *dl, char *verb, char *URI, bool Async)
+{
+	dl->Open (verb, URI, Async);
+}
+
+void
+downloader_send (Downloader *dl)
+{
+	dl->Send ();
+}
+
 Downloader*
 downloader_new (void)
 {
@@ -286,87 +385,33 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_send_func send,
 			       downloader_abort_func abort)
 {
-	Downloader::create_state = create_state;
-	Downloader::destroy_state = destroy_state;
-	Downloader::open = open;
-	Downloader::send = send;
-	Downloader::abort = abort;
+	Downloader::SetFunctions (create_state,
+				  destroy_state,
+				  open, send, abort, false);
 }
 
-static void
-downloader_notify (Downloader *dl, int msg, void *extra)
-{
-	GSList *l;
-
-	for (l = dl->downloader_events; l; l = l->next){
-		Listener *listener = (Listener *) l->data;
-
-		listener->notify (msg, listener->closure, extra);
-	}
-}
-
-//
-// A zero write means that we are done
-//
 void
 downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
 {
-	if (dl->write)
-		dl->write (buf, offset, n, dl->consumer_closure);
-	
-	// Update progress
-	dl->total += n;
-	double p;
-	if (dl->file_size >= 0)
-		p = dl->total / (double) dl->file_size;
-	else 
-		p = 0;
-
-	dl->SetValue (Downloader::DownloadProgressProperty, Value (p));
-
-	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED, NULL);
+	dl->Write (buf, offset, n);
 }
 
 void
 downloader_notify_finished (Downloader *dl, const char *fname)
 {
-	dl->filename = g_strdup (fname);
-	
-	// HACK, we should provide the status code
-	dl->SetValue (Downloader::StatusProperty, Value (200));
-	downloader_notify (dl, Downloader::NOTIFY_COMPLETED, (void *) fname);
+	dl->NotifyFinished (fname);
 }
 
 void
 downloader_notify_error (Downloader *dl, const char *msg)
 {
-	// dl->SetValue (Downloader::StatusProperty, Value (400))
-	// For some reason the status is 0, not updated on errors?
-	
-	downloader_notify (dl, Downloader::NOTIFY_DOWNLOAD_FAILED, (void *) msg);
+	dl->NotifyFailed (msg);
 }
 
 void
 downloader_notify_size (Downloader *dl, int64_t size)
 {
-	dl->file_size = size;
-
-	if (dl->notify_size)
-		dl->notify_size (size, dl->consumer_closure);
-
-	dl->SetValue (Downloader::DownloadProgressProperty, Value (0.0));
-
-	downloader_notify (dl, Downloader::NOTIFY_PROGRESS_CHANGED, NULL);
-}
-
-void  
-downloader_want_events (Downloader *dl, downloader_event_notify event_notify, gpointer closure)
-{
-	Listener *l = new Listener ();
-	l->notify = event_notify;
-	l->closure = closure;
-
-	dl->downloader_events = g_slist_append (dl->downloader_events, l);
+	dl->NotifySize (size);
 }
 
 void 
@@ -429,13 +474,10 @@ downloader_init (void)
 	Downloader::StatusTextProperty = DependencyObject::Register (Type::DOWNLOADER, "StatusText", Type::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Type::DOWNLOADER, "Uri", Type::STRING);
 
-	if (Downloader::create_state == NULL && Downloader::destroy_state == NULL && Downloader::open ==  NULL && 
-		Downloader::send == NULL && Downloader::abort == NULL)
-		downloader_set_functions (
-			dummy_downloader_create_state,
-			dummy_downloader_destroy_state,
-			dummy_downloader_open,
-			dummy_downloader_send,
-			dummy_downloader_abort);
+	Downloader::SetFunctions (dummy_downloader_create_state,
+				  dummy_downloader_destroy_state,
+				  dummy_downloader_open,
+				  dummy_downloader_send,
+				  dummy_downloader_abort, true);
 }
 

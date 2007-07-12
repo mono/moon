@@ -601,18 +601,18 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	downloader = (Downloader*) dl;
 	downloader->ref ();
 
-	downloader_want_events (downloader, downloader_event, this);
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 
 	if (downloader->Started ()) {
 		if (downloader->Completed ())
-			DownloaderEvent (Downloader::NOTIFY_COMPLETED, NULL);
+			DownloaderComplete ();
 		
 		UpdateProgress ();
 	} else {
 		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
 		
 		// This is what actually triggers the download
-		downloader_send (downloader);
+		downloader->Send ();
 	}
 }
 
@@ -623,24 +623,22 @@ Image::PixbufWrite (guchar *buf, gsize offset, gsize count)
 }
 
 void
-Image::DownloaderEvent (int kind, void *extra)
+Image::DownloaderComplete ()
 {
-	if (kind == Downloader::NOTIFY_COMPLETED) {
-		char *file = downloader_get_response_file (downloader, part_name);
-		CreateSurface (file);
-		g_free (file);
+	char *file = downloader_get_response_file (downloader, part_name);
+	CreateSurface (file);
+	g_free (file);
 
-		if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
-			SetValue (FrameworkElement::WidthProperty, (double) surface->width);
+	if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
+		SetValue (FrameworkElement::WidthProperty, (double) surface->width);
 
-		if (GetValueNoDefault (FrameworkElement::HeightProperty) == NULL)
-			SetValue (FrameworkElement::HeightProperty, (double) surface->height);
+	if (GetValueNoDefault (FrameworkElement::HeightProperty) == NULL)
+		SetValue (FrameworkElement::HeightProperty, (double) surface->height);
 
-		if (brush)
-			brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
-		else 
-			Invalidate ();
-	}
+	if (brush)
+		brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
+	else 
+		Invalidate ();
 }
 
 #ifdef WORDS_BIGENDIAN
@@ -771,9 +769,9 @@ Image::size_notify (int64_t size, gpointer data)
 }
 
 void
-Image::downloader_event (int kind, gpointer data, gpointer extra)
+Image::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	((Image*)data)->DownloaderEvent (kind, extra);
+	((Image*)closure)->DownloaderComplete ();
 }
 
 void

@@ -1,3 +1,14 @@
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
+	* downloader.h, downloader.cpp: make the Downloader object a bit
+	more C++ friendly, and make all the private data private.
+
+	Also, take this opportunity to switch to using RegisterEvent/Emit
+	to generate events, instead of the custom listeners.  This will
+	let JS hook up to the events.
+
+	* media.h, media.cpp: track the downloader changes.
+
 2007-07-11  Jackson Harper  <jackson@ximian.com>
 
 	* collection.cpp: Comment out the namescope merging stuff for now,

@@ -32,16 +32,6 @@ typedef void     (*downloader_open_func)(char *verb, char *uri, bool async, gpoi
 typedef void     (*downloader_send_func)(gpointer state);
 typedef void     (*downloader_abort_func)(gpointer state);
 
-//
-// downloader_event_notify:
-//    @kind:    indicates the kind of operation that we are being notified about
-//    @cb_data: callback data, this is the closure value passed to SetWriteFunc.
-//    @extra:   Depends on the value of kind:
-//              kind == NOTIFY_COMPLETED, extra = filename that holds the full downloaded data
-//              kind == NOTIFY_DOWNLOAD_FAILED, extra = error message to provide on ErrorArgs
-//
-typedef void     (*downloader_event_notify) (int kind, gpointer cb_data, gpointer extra);
-
 class Downloader : public DependencyObject {
  public:
 	Downloader ();
@@ -49,12 +39,33 @@ class Downloader : public DependencyObject {
 
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
 
+	void Abort ();
+	void* GetResponseText (char* Partname, uint64_t *size);
+	void Open (char *verb, char *URI, bool Async);
+	void Send ();
+
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ResponseTextProperty;
 	static DependencyProperty *StatusProperty;
 	static DependencyProperty *StatusTextProperty;
 	static DependencyProperty *UriProperty;
 
+	// Events you can AddHandler to
+	int CompletedEvent;
+	int DownloadProgressChangedEvent;
+	int DownloadFailedEvent;
+
+
+
+	// the following is stuff not exposed by C#/js, but is useful
+	// when writing unmanaged code for downloader implementations
+	// or data sinks.
+
+	char* GetResponseFile (char *PartName);
+	void Write (guchar *buf, gsize offset, gsize n);
+	void NotifyFinished (const char *fname);
+	void NotifyFailed (const char *msg);
+	void NotifySize (int64_t size);
 
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
@@ -68,15 +79,14 @@ class Downloader : public DependencyObject {
 				  downloader_destroy_state_func destroy_state,
 				  downloader_open_func open,
 				  downloader_send_func send,
-				  downloader_abort_func abort);
+				  downloader_abort_func abort,
+				  bool only_if_not_set);
 
-	enum EventKind {
-		NOTIFY_COMPLETED,
-		NOTIFY_PROGRESS_CHANGED,
-		NOTIFY_DOWNLOAD_FAILED
-	};
+	bool Started ();
+	bool Completed ();
 
-	GSList *downloader_events;
+
+ private:
 	GHashTable *part_hash;
 
 	int64_t file_size;
@@ -95,13 +105,11 @@ class Downloader : public DependencyObject {
 
 	static downloader_create_state_func create_state;
 	static downloader_destroy_state_func destroy_state;
-	static downloader_open_func open;
-	static downloader_send_func send;
-	static downloader_abort_func abort;
+	static downloader_open_func open_func;
+	static downloader_send_func send_func;
+	static downloader_abort_func abort_func;
 
-	bool Started ();
-	bool Completed ();
-
+	char * ll_downloader_get_response_file (char *PartName);
 };
 
 Downloader* downloader_new (void);
@@ -117,8 +125,6 @@ void *downloader_get_response_text (Downloader *dl, char *PartName, uint64_t *si
 char *downloader_get_response_file (Downloader *dl, char *PartName);
 void  downloader_open              (Downloader *dl, char *verb, char *URI, bool Async);
 void  downloader_send              (Downloader *dl);
-
-void  downloader_want_events       (Downloader *dl, downloader_event_notify event_notify, gpointer closure);
 
 //
 // Used to push data to the consumer
