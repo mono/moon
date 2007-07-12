@@ -1141,13 +1141,11 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 	// XXX these next two methods should live in a UIElement
 	// wrapper class, not in the DependencyObject wrapper.
 	else if (name_matches (name, "captureMouse")) {
-		// not yet implemented
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		BOOLEAN_TO_NPVARIANT (((UIElement*)dob)->CaptureMouse (), *result);
 		return true;
 	}
 	else if (name_matches (name, "releaseMouseCapture")) {
-		// not yet implemented
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		BOOLEAN_TO_NPVARIANT (((UIElement*)dob)->ReleaseMouseCapture (), *result);
 		return true;
 	}
 	else

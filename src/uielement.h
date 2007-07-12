@@ -199,7 +199,25 @@ class UIElement : public Visual {
 	//
 	virtual void Leave ();
 
+
 	//
+	// CaptureMouse:
+	//
+	//    Attempts to capture the mouse.  If successful, all mouse
+	//    events will be transmitted directly to this element.
+	//    Leave/Enter events will no longer be sent.
+	//
+	bool CaptureMouse ();
+
+	//
+	// ReleaseMouseCapture:
+	//
+	//    Attempts to release the mouse.  If successful, any
+	//    applicable Leave/Enter events for the current mouse
+	//    position will be sent.
+	//
+	bool ReleaseMouseCapture ();
+
 	// GetTotalOpacity
 	//   Get the cumulative opacity of this element, including all it's parents
 	double GetTotalOpacity ();
@@ -257,6 +275,9 @@ void       uielement_set_opacity          (UIElement *item, double opacity);
 Brush     *uielement_get_opacity_mask     (UIElement *item);
 void       uielement_transform_point      (UIElement *item, double *x, double *y);
 UIElement *uielement_get_parent           (UIElement *item);
+
+bool       uielement_capture_mouse         (UIElement *item);
+bool       uielement_release_mouse_capture (UIElement *item);
 
 void     uielement_init ();
 G_END_DECLS

@@ -108,6 +108,7 @@ Surface::Surface(int w, int h)
 	buffer = NULL;
 
 	toplevel = NULL;
+	capture_element = NULL;
 
 	Realloc ();
 }
@@ -155,6 +156,22 @@ Surface::~Surface ()
 		gtk_widget_destroy (drawing_area);
 		drawing_area = NULL;
 	}
+}
+
+bool
+Surface::SetMouseCapture (UIElement *capture)
+{
+	if (capture != NULL && capture_element != NULL)
+		return false;
+
+	capture_element = capture;
+
+	if (capture_element == NULL) {
+		// generate the proper Enter/Leave events here for the object
+		// under the mouse pointer
+	}
+
+	return true;
 }
 
 void
@@ -359,7 +376,9 @@ Surface::update_input_cb (EventObject *sender, gpointer calldata, gpointer closu
 	Surface *s = (Surface*)closure;
 
 	MouseCursor new_cursor = MouseCursorDefault;
-	s->toplevel->HandleMotion (s->cairo, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
+
+	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
+	input_element->HandleMotion (s->cairo, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
 	s->SetCursor (new_cursor);
 }
 
@@ -488,7 +507,8 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 	s->last_event_state = state;
 
 	MouseCursor new_cursor = MouseCursorDefault;
-	s->toplevel->HandleMotion (s->cairo, state, x, y, &new_cursor);
+	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
+	input_element->HandleMotion (s->cairo, state, x, y, &new_cursor);
 	s->SetCursor (new_cursor);
 
 	return TRUE;
@@ -509,8 +529,14 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		}
 		
 		MouseCursor new_cursor = MouseCursorDefault;
-		s->toplevel->HandleMotion (s->cairo, event->state, x, y, &new_cursor);
-		s->toplevel->Enter (s->cairo, event->state, x, y);
+
+		if (s->capture_element) {
+			s->capture_element->HandleMotion (s->cairo, event->state, x, y, &new_cursor);
+		}
+		else {
+		  	s->toplevel->HandleMotion (s->cairo, event->state, x, y, &new_cursor);
+			s->toplevel->Enter (s->cairo, event->state, x, y);
+		}
 
 		s->SetCursor (new_cursor);
 
@@ -519,7 +545,8 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		s->last_event_state = event->state;
 	
 	} else {
-		s->toplevel->Leave ();
+		if (s->capture_element == NULL)
+			s->toplevel->Leave ();
 	}
 
 	return TRUE;
@@ -569,7 +596,8 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 		x -= widget->allocation.x;
 		y -= widget->allocation.y;
 	}
-	s->toplevel->HandleButtonRelease (s->cairo, button->state, x, y);
+	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
+	input_element->HandleButtonRelease (s->cairo, button->state, x, y);
 	
 	return TRUE;
 }
@@ -590,7 +618,8 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 		x -= widget->allocation.x;
 		y -= widget->allocation.y;
 	}
-	s->toplevel->HandleButtonPress (s->cairo, button->state, x, y);
+	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
+	input_element->HandleButtonPress (s->cairo, button->state, x, y);
 	
 	return FALSE;
 }

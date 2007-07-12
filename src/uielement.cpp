@@ -339,6 +339,29 @@ UIElement::Leave ()
 	Emit (LeaveEvent);
 }
 
+bool
+UIElement::CaptureMouse ()
+{
+	Surface *s = GetSurface ();
+	if (s == NULL)
+		return false;
+
+	return s->SetMouseCapture (this);
+}
+
+bool
+UIElement::ReleaseMouseCapture ()
+{
+	Surface *s = GetSurface ();
+	if (s == NULL)
+		return false;
+
+	if (s->GetMouseCapture() != this)
+		return false;
+
+	return s->SetMouseCapture (NULL);
+}
+
 void
 UIElement::ComputeBounds ()
 {
@@ -515,4 +538,16 @@ UIElement *
 uielement_get_parent (UIElement *item)
 {
 	return item->parent;
+}
+
+bool
+uielement_capture_mouse (UIElement *item)
+{
+	return item->CaptureMouse ();
+}
+
+bool
+uielement_release_mouse_capture (UIElement *item)
+{
+	return item->ReleaseMouseCapture ();
 }

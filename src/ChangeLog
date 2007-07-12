@@ -1,5 +1,11 @@
 2007-07-12  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h, runtime.cpp, uielement.cpp, uielement.h: Add mouse
+	capturing.  This should be on Visual and not UIElement, but we
+	don't dispatch events that way.
+
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
 	* downloader.h, downloader.cpp: make the Downloader object a bit
 	more C++ friendly, and make all the private data private.
 

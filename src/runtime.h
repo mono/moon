@@ -50,6 +50,9 @@ class Surface {
 
 	void SetCursor (MouseCursor cursor);
 
+	bool SetMouseCapture (UIElement *capture);
+	UIElement* GetMouseCapture () { return capture_element; }
+
 	void Resize (int width, int height);
 	int GetWidth () { return width; }
 	int GetHeight () { return height; }
@@ -99,6 +102,10 @@ private:
 
 	// This currently can only be a canvas.
 	UIElement *toplevel;
+
+
+	// The element currently capturing the mouse
+	UIElement *capture_element;
 
 	// the currently shown cursor
 	MouseCursor cursor;

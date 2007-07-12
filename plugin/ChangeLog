@@ -1,5 +1,11 @@
 2007-07-12  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (moonlight_dependency_object_invoke): implement
+	captureMouse/releaseMouseCapture.  going to move these to a
+	UIElement specific wrapper next.
+
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp, plugin-class.h:  a few things:
 
 	refactor the listener proxying stuff to share code.  when creating
