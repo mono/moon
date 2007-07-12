@@ -1,5 +1,11 @@
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::UIElement): the event names need to
+	match those used by microsoft.  makes it easier to handle the
+	event hooking up in the plugin, where the event names are used.
+
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (xaml_set_property_from_str): the plugin does its own
 	resolution of properties now, so it doesn't need to pass the
 	property name.  Change this to take the DependencyProperty*

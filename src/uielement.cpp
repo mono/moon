@@ -56,13 +56,13 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE | UIElement::HIT_TEST_VISIBLE)
 {
 	LoadedEvent = RegisterEvent ("Loaded");
-	MotionEvent = RegisterEvent ("Motion");
-	ButtonPressEvent = RegisterEvent ("ButtonPress");
-	ButtonReleaseEvent = RegisterEvent ("ButtonRelease");
+	MotionEvent = RegisterEvent ("MouseMove");
+	ButtonPressEvent = RegisterEvent ("MouseLeftButtonDown");
+	ButtonReleaseEvent = RegisterEvent ("MouseLeftButtonUp");
 	KeyDownEvent = RegisterEvent ("KeyDown");
 	KeyUpEvent = RegisterEvent ("KeyUp");
-	EnterEvent = RegisterEvent ("Enter");
-	LeaveEvent = RegisterEvent ("Leave");
+	EnterEvent = RegisterEvent ("MouseEnter");
+	LeaveEvent = RegisterEvent ("MouseLeave");
 
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
