@@ -163,7 +163,7 @@ extern MoonlightCollectionType* MoonlightCollectionClass;
 /*** MoonlightStoryboardClass ***************************************************/
 
 struct MoonlightStoryboardType : MoonlightDependencyObjectType {
-  MoonlightStoryboardType ();
+	MoonlightStoryboardType ();
 };
 
 extern MoonlightStoryboardType* MoonlightStoryboardClass;
@@ -171,7 +171,7 @@ extern MoonlightStoryboardType* MoonlightStoryboardClass;
 /*** MoonlightMediaElement ***************************************************/
 
 struct MoonlightMediaElementType : MoonlightDependencyObjectType {
-  MoonlightMediaElementType ();
+	MoonlightMediaElementType ();
 };
 
 extern MoonlightMediaElementType* MoonlightMediaElementClass;
@@ -179,10 +179,30 @@ extern MoonlightMediaElementType* MoonlightMediaElementClass;
 /*** MoonlightDownloader ***************************************************/
 
 struct MoonlightDownloaderType : MoonlightDependencyObjectType {
-  MoonlightDownloaderType ();
+	MoonlightDownloaderType ();
 };
 
 extern MoonlightDownloaderType* MoonlightDownloaderClass;
 
+
+/*** MoonlightScriptableObject ***************************************************/
+
+struct MoonlightScriptableObjectType : MoonlightObjectType {
+	MoonlightScriptableObjectType ();
+};
+
+extern MoonlightScriptableObjectType* MoonlightScriptableObjectClass;
+
+struct MoonlightScriptableObjectObject : public MoonlightObject
+{
+	MoonlightScriptableObjectObject (NPP instance) : MoonlightObject (instance)
+	{
+		scriptable = NULL;
+	}
+
+	// XXX this should be a MonoObject?  what does a GCHandle in
+	// p/invoke result in on the unmanaged side?
+	void *scriptable;
+};
 
 #endif /* PLUGIN_CLASS */

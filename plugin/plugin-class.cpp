@@ -1610,6 +1610,85 @@ MoonlightDownloaderType::MoonlightDownloaderType ()
 
 MoonlightDownloaderType* MoonlightDownloaderClass;
 
+/*** MoonlightScriptableObjectClass ***************************************************/
+
+static NPObject*
+moonlight_scriptable_object_allocate (NPP instance, NPClass*)
+{
+	return new MoonlightScriptableObjectObject (instance);
+}
+
+static void
+moonlight_scriptable_object_deallocate (NPObject *npobj)
+{
+	// XXX is delete broken in plugins?
+	// delete (MoonlightScriptableObjectObject*)npobj;
+}
+
+static void
+moonlight_scriptable_object_invalidate (NPObject *npobj)
+{
+	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
+
+	if (sobj->scriptable) {
+		// XXX unref the scriptable object however we need to.
+	}
+	sobj->scriptable = NULL;
+}
+
+static bool
+moonlight_scriptable_object_has_property (NPObject *npobj, NPIdentifier name)
+{
+	DEBUG_WARN_NOTIMPLEMENTED ();
+	return false;
+}
+
+static bool
+moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	DEBUG_WARN_NOTIMPLEMENTED ();
+	return true;
+}
+
+static bool 
+moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+{
+	DEBUG_WARN_NOTIMPLEMENTED ();
+	return true;
+}
+
+static bool
+moonlight_scriptable_object_has_method (NPObject *npobj, NPIdentifier name)
+{
+	DEBUG_WARN_NOTIMPLEMENTED ();
+	return false;
+}
+
+static bool
+moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
+				    const NPVariant *args, uint32_t argCount,
+				    NPVariant *result)
+{
+	DEBUG_WARN_NOTIMPLEMENTED ();
+	return true;
+}
+
+
+MoonlightScriptableObjectType::MoonlightScriptableObjectType ()
+{
+	allocate = moonlight_scriptable_object_allocate;
+	deallocate = moonlight_scriptable_object_deallocate;
+	invalidate = moonlight_scriptable_object_invalidate;
+
+	hasProperty = moonlight_scriptable_object_has_property;
+	setProperty = moonlight_scriptable_object_set_property;
+	getProperty = moonlight_scriptable_object_get_property;
+
+	hasMethod = moonlight_scriptable_object_has_method;
+	invoke    = moonlight_scriptable_object_invoke;
+}
+
+MoonlightScriptableObjectType* MoonlightScriptableObjectClass;
 
 void
 plugin_init_classes ()
@@ -1625,5 +1704,6 @@ plugin_init_classes ()
 	MoonlightMediaElementClass = new MoonlightMediaElementType ();
 	MoonlightDownloaderClass = new MoonlightDownloaderType ();
 	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
+	MoonlightScriptableObjectClass = new MoonlightScriptableObjectType ();
 }
 
