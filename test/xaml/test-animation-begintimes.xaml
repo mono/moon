@@ -8,6 +8,7 @@
         <BeginStoryboard>
           <Storyboard x:Name="animation">
             <DoubleAnimation
+	      x:Name="first"
 	      BeginTime="0:0:0"
               Storyboard.TargetName="BoxedBox"
               Storyboard.TargetProperty="Width"
@@ -15,6 +16,7 @@
 	      RepeatBehavior="1" AutoReverse="false" />
 
 	    <DoubleAnimation
+	      x:Name="second"
               BeginTime="0:0:4"
               Storyboard.TargetName="BoxedBox"
               Storyboard.TargetProperty="Height"
@@ -34,14 +36,13 @@
               Storyboard.TargetProperty="Height"
               From="300" To="100" Duration="0:0:4"
 	      RepeatBehavior="1" AutoReverse="false" />
-	      
+
 	    <DoubleAnimation
               BeginTime="0:0:16"
               Storyboard.TargetName="BoxedBox"
               Storyboard.TargetProperty="Opacity"
               From="1" To="0" Duration="0:0:2"
 	      RepeatBehavior="1" AutoReverse="true" />
-
           </Storyboard>
         </BeginStoryboard>
       </EventTrigger>
