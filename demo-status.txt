@@ -152,14 +152,10 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Grand Piano (http://silverlight.net/samples/1.0/Grand-Piano/default.html)
 
-	UI Seems to come up, nice piano graphics.  No response from
-	clicks/mouse movement though.  This on the JS Console:
+  	The media player lacks downloader support, so the sounds don't come out.
 
-		Error: this.rootElement has no properties
-		Source File: http://silverlight.net/samples/1.0/Grand-Piano/GrandPiano.xaml.js
-		Line: 27
+	otherwise, it works.
 
-	Also, the media player lacks downloader support
 
 * Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
 
