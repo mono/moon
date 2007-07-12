@@ -2,11 +2,11 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * 2D Physics Simulation (http://odetocode.com/aimages/200705/verlet/default.htm)
 
-	comes up showing the background.  clicking the javascript button results in this in the JS console:
-
-		Error: this.windVector has no properties
-		Source File: http://odetocode.com/aimages/200705/verlet/js/Rope.js
-		Line: 65
+	Sorta works.  animations are definitely there, but clicking on
+        the wind checkbox doesn't do anything, and firefox keeps
+        popping up the "Unresponsive script" dialog.  the checkbox
+        being unresponsive might be because the script is eating too
+        much cpu?
 
 * 3D Teapot Demo (http://www.dolittle.com/Silverlight/3D/TestPage.html)
 
@@ -53,11 +53,15 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 		Javascript controls are broken.  Interacting with them shows this in the JS console:
 
-			Error: _wpfeTest.Content has no properties
+			Error: Trying to get unsupported property on scriptable plugin object!
 			Source File: http://bubblemark.com/silverlight_clr.htm
-			Line: 65
+			Line: 1
 
-		Same with the start/stop links.
+		This is due to "demo" not being available.  looking at the source, they use
+		WebApplication.RegisterScriptableObject, which needs
+	        to install it as a property on the
+		MoonlightContentObject, as it's retrieved in this test
+		using "_wpfTest.Content.demo".
 
 	Silverlight (Javascript) page doesn't start, shows this in the console but doesn't crash:
 
@@ -218,13 +222,9 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Reflecting Graph (http://davidbetz.net/reflectinggraphdemo/)
 
-	Loading the page this shows up in the JS console:
-
-		Error: Trying to get unsupported property on scriptable plugin object!
-		Source File: http://davidbetz.net/reflectinggraphdemo/Code/default.js
-		Line: 7
-
-	html controls are unresponsive.
+	Html controls work, and the graph loads.  Clicking on a graph to
+	select it crashes the browser (or makes it hang indefinitely
+	sometimes.)
 
 * Sierpinski Triangle (http://www.cjcraft.com/silverlight/SierpinskiTriangle/Default.html)
 
