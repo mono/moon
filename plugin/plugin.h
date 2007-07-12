@@ -23,7 +23,7 @@ class PluginInstance
   	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
-	MoonlightControlObject* rootobject;  // Mozilla jscript object wrapper
+	NPObject* rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
 
 	// Property fields
@@ -96,6 +96,8 @@ class PluginInstance
 };
 
 extern GSList *plugin_instances;
+
+#define NPID(x) NPN_GetStringIdentifier (x)
 
 #define STREAM_NOTIFY(x) ((StreamNotify*) x)
 

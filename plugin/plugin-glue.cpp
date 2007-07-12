@@ -12,6 +12,7 @@
 
 #include "moonlight.h"
 #include "plugin.h"
+#include "plugin-class.h"
 #include "moon-mono.h"
 
 NPError 
@@ -223,6 +224,8 @@ NPP_Initialize (void)
 		vm_init ();
 #endif
 		runtime_init ();
+
+		plugin_init_classes ();
 	}
 	TimeManager::Instance()->Start();
 

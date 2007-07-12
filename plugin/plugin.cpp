@@ -165,9 +165,9 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 
 		case NPPVpluginScriptableNPObject:
 			if (rootobject == NULL)
-				rootobject = (MoonlightControlObject*)NPN_CreateObject (instance, MoonlightControlClass::Class());
+				rootobject = NPN_CreateObject (instance, MoonlightControlClass);
 			else
-				NPN_RetainObject ((NPObject*)rootobject);
+				NPN_RetainObject (rootobject);
 
 			*((NPObject **) result) = rootobject;
 			break;
@@ -314,7 +314,7 @@ PluginInstance::JsRunOnload ()
 	DependencyObject *toplevel = surface->GetToplevel ();
 	DEBUGMSG ("In JsRunOnload, toplevel = %p", toplevel);
 
-	MoonlightDependencyObjectObject *depobj = MoonlightDependencyObjectClass::CreateWrapper (instance, surface->GetToplevel());
+	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (instance, surface->GetToplevel());
 	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
 
 	if (NPN_Invoke (instance, object, NPID (expression),
@@ -551,7 +551,7 @@ MoonlightControlObject *
 PluginInstance::getRootObject ()
 {
 	NPN_RetainObject (rootobject);
-	return rootobject;
+	return (MoonlightControlObject*)rootobject;
 }
 
 int32

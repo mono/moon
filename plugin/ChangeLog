@@ -1,5 +1,18 @@
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp, plugin-class.h, plugin-glue.cpp, plugin.h,
+	plugin.cpp: I know this looks like a scary change, but 90% of the
+	code is the same.  I just took advantage of the fact that we
+	already have structs with all the function pointers in them.
+	there's no reason to proxy from a function pointer in the struct
+	to an instance method on a singleton class - just use the function
+	pointer.
+
+	Also, add a binding for Points, which we'll need to wrap mouse
+	events.
+
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
 	* moonlight.h (DEBUG_WARN_NOTIMPLEMENTED): add this macro so we
 	can get spew to the console when we hit unimplemented bits.
 
