@@ -311,6 +311,14 @@ Canvas::Leave ()
 	UIElement::Leave ();
 }
 
+Point
+Canvas::GetTransformOrigin ()
+{
+	Point user_xform_origin = GetRenderTransformOrigin ();
+	return Point (framework_element_get_width (this) * user_xform_origin.x, 
+		      framework_element_get_height (this) * user_xform_origin.y);
+}
+
 static int level = 0;
 
 //#define DEBUG_INVALIDATE 1

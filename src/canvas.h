@@ -39,7 +39,7 @@ class Canvas : public Panel {
 	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
-	virtual Point GetTransformOrigin () { return Point (0, 0); }
+	Point GetTransformOrigin ();
 
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
