@@ -18,20 +18,6 @@
 
 void plugin_init_classes (void);
 
-/*** MoonlightPointClass  **************************************************************/
-struct MoonlightPointType : NPClass {
-	MoonlightPointType ();
-};
-
-extern MoonlightPointType* MoonlightPointClass;
-
-struct MoonlightPoint : NPObject {
-	MoonlightPoint () { x = y = 0.0; }
-
-	double x;
-	double y;
-};
-
 /*** MoonlightObjectClass **************************************************************/
 
 struct MoonlightObjectType : NPClass {
@@ -49,6 +35,51 @@ struct MoonlightObject : public NPObject
 
 	NPP instance;
 };
+
+/*** MoonlightPointClass  **************************************************************/
+struct MoonlightPointType : MoonlightObjectType {
+	MoonlightPointType ();
+};
+
+extern MoonlightPointType* MoonlightPointClass;
+
+struct MoonlightPoint : MoonlightObject {
+	MoonlightPoint (NPP instance) : MoonlightObject(instance), point (Point()) { }
+
+	Point point;
+};
+
+/*** MoonlightRectClass  **************************************************************/
+struct MoonlightRectType : MoonlightObjectType {
+	MoonlightRectType ();
+};
+
+extern MoonlightRectType* MoonlightRectClass;
+
+struct MoonlightRect : MoonlightObject {
+	MoonlightRect (NPP instance) : MoonlightObject(instance), rect (Rect()) { }
+
+	Rect rect;
+};
+
+/*** MoonlightMouseEventArgsClass  **************************************************************/
+struct MoonlightMouseEventArgsType : MoonlightObjectType {
+	MoonlightMouseEventArgsType ();
+};
+
+extern MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
+
+struct MoonlightMouseEventArgsObject : MoonlightObject {
+	MoonlightMouseEventArgsObject (NPP instance)
+	  : MoonlightObject (instance), state (0), position (NULL) { }
+
+	int state;
+
+	NPObject *position;
+};
+
+extern void MouseEventArgsPopuplate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args);
+
 
 /*** MoonlightSettingsClass ***********************************************************/
 

@@ -1,5 +1,10 @@
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp, plugin-class.h: fix up the point and rect
+	wrappings, and implement mouse event proxying.
+
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp, plugin-class.h: wrap the MediaElement enough
 	to provide the start/stop/pause methods.
 

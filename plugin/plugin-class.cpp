@@ -10,6 +10,18 @@
  * 
  */
 
+// XXXXXXXXXXx
+//
+// we leak a lot in this file.
+//
+// all of the wrapper objects we create are leaked, since for some
+// reason delete'ing them doesn't work.
+//
+// Also, the listener proxies we create for dealing with events are
+// leaked.  we need to figure out how to deal with them (where to
+// store them so we can free them on removeListener, etc.)
+// 
+
 #include <ctype.h>
 #include "plugin-class.h"
 #include "plugin.h"
@@ -65,48 +77,52 @@ string_to_npvariant (char *value, NPVariant *result)
 }
 
 /*** Points ***/
-static NPObject* point_allocate (NPP instance, NPClass *)
+static NPObject*
+point_allocate (NPP instance, NPClass *)
 {
-	MoonlightPoint *p = new MoonlightPoint ();
-	p->x = p->y = 0.0;
+	return new MoonlightPoint (instance);
 }
 
-static void point_deallocate (NPObject *npobject)
+static void
+point_deallocate (NPObject *npobject)
 {
 	// XXX is delete broken in plugins?
 	// delete (MoonlightPoint*)npobject;
 }
 
-static bool point_has_property (NPObject *npobj, NPIdentifier name)
+static bool
+point_has_property (NPObject *npobj, NPIdentifier name)
 {
 	return (name_matches (name, "x") ||
 		name_matches (name, "y"));
 }
 
-static bool point_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+static bool
+point_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightPoint *p = (MoonlightPoint*)npobj;
 	if (name_matches (name, "x")) {
-		DOUBLE_TO_NPVARIANT (p->x, *result);
+		DOUBLE_TO_NPVARIANT (p->point.x, *result);
 		return true;
 	}
 	else if (name_matches (name, "y")) {
-		DOUBLE_TO_NPVARIANT (p->y, *result);
+		DOUBLE_TO_NPVARIANT (p->point.y, *result);
 		return true;
 	}
 	else
 		return false;
 }
 
-static bool point_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+static bool
+point_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	MoonlightPoint *p = (MoonlightPoint*)npobj;
 	if (name_matches (name, "x")) {
-		p->x = NPVARIANT_TO_DOUBLE (*value);
+		p->point.x = NPVARIANT_TO_DOUBLE (*value);
 		return true;
 	}
 	else if (name_matches (name, "y")) {
-		p->y = NPVARIANT_TO_DOUBLE (*value);
+		p->point.y = NPVARIANT_TO_DOUBLE (*value);
 		return true;
 	}
 	else
@@ -121,82 +137,269 @@ MoonlightPointType::MoonlightPointType ()
 	hasProperty = point_has_property;
 	getProperty = point_get_property;
 	setProperty = point_set_property;
-
-	invalidate = NULL;
-	hasMethod = NULL;
-	invoke = NULL;
-	invokeDefault = NULL;
 }
 
 MoonlightPointType *MoonlightPointClass;
 
+/*** Rects ***/
+static NPObject*
+rect_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightRect (instance);
+}
+
+static void
+rect_deallocate (NPObject *npobject)
+{
+	// XXX is delete broken in plugins?
+	// delete (MoonlightRect*)npobject;
+}
+
+static bool
+rect_has_property (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "x") ||
+		name_matches (name, "y") ||
+		name_matches (name, "width") ||
+		name_matches (name, "height"));
+}
+
+static bool
+rect_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	MoonlightRect *r = (MoonlightRect*)npobj;
+	if (name_matches (name, "x")) {
+		DOUBLE_TO_NPVARIANT (r->rect.x, *result);
+		return true;
+	}
+	else if (name_matches (name, "y")) {
+		DOUBLE_TO_NPVARIANT (r->rect.y, *result);
+		return true;
+	}
+	else if (name_matches (name, "width")) {
+		DOUBLE_TO_NPVARIANT (r->rect.w, *result);
+		return true;
+	}
+	else if (name_matches (name, "height")) {
+		DOUBLE_TO_NPVARIANT (r->rect.h, *result);
+		return true;
+	}
+	else
+		return false;
+}
+
+static bool
+rect_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+{
+	MoonlightRect *r = (MoonlightRect*)npobj;
+	if (name_matches (name, "x")) {
+		r->rect.x = NPVARIANT_TO_DOUBLE (*value);
+		return true;
+	}
+	else if (name_matches (name, "y")) {
+		r->rect.y = NPVARIANT_TO_DOUBLE (*value);
+		return true;
+	}
+	else if (name_matches (name, "width")) {
+		r->rect.w = NPVARIANT_TO_DOUBLE (*value);
+		return true;
+	}
+	else if (name_matches (name, "height")) {
+		r->rect.h = NPVARIANT_TO_DOUBLE (*value);
+		return true;
+	}
+	else
+		return false;
+}
+
+
+MoonlightRectType::MoonlightRectType ()
+{
+	allocate = rect_allocate;
+	deallocate = rect_deallocate;
+	hasProperty = rect_has_property;
+	getProperty = rect_get_property;
+	setProperty = rect_set_property;
+}
+
+MoonlightRectType *MoonlightRectClass;
+
+/*** MoonlightMouseEventArgsClass  **************************************************************/
+
+static NPObject*
+mouse_event_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightMouseEventArgsObject (instance);
+}
+
+static void
+mouse_event_deallocate (NPObject *npobject)
+{
+	// XXX is delete broken in plugins?
+	// delete (MoonlightMouseEventArgs*)npobject;
+}
+
+static void
+mouse_event_invalidate (NPObject *npobject)
+{
+	MoonlightMouseEventArgsObject *ea = (MoonlightMouseEventArgsObject*)npobject;
+	if (ea->position)
+		NPN_ReleaseObject (ea->position);
+	ea->position = NULL;
+}
+
+static bool
+mouse_event_has_property (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "shift") ||
+		name_matches (name, "ctrl"));
+}
+
+static bool
+mouse_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	MoonlightRect *r = (MoonlightRect*)npobj;
+	if (name_matches (name, "shift")) {
+		DEBUG_WARN_NOTIMPLEMENTED ();
+		BOOLEAN_TO_NPVARIANT (false, *result);
+		return true;
+	}
+	else if (name_matches (name, "ctrl")) {
+		DEBUG_WARN_NOTIMPLEMENTED ();
+		BOOLEAN_TO_NPVARIANT (false, *result);
+		return true;
+	}
+	else
+		return false;
+}
+
+static bool
+mouse_event_has_method (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "getPosition"));
+}
+
+static bool
+mouse_event_invoke (NPObject *npobj, NPIdentifier name,
+		    const NPVariant *args, uint32_t argCount,
+		    NPVariant *result)
+{
+	MoonlightMouseEventArgsObject *ea = (MoonlightMouseEventArgsObject*)npobj;
+
+	if (name_matches (name, "getPosition")) {
+		if (argCount != 1)
+			return true;
+
+		// XXX we need to handle the arg, it'll be an element
+		// to calculate the position with respect to (or null
+		// for screen space)
+
+		NPN_RetainObject (ea->position);
+		
+		MoonlightPoint* point = (MoonlightPoint*)ea->position;
+
+		OBJECT_TO_NPVARIANT (ea->position, *result);
+
+		return true;
+	}
+	else
+		return false;
+}
+
+
+MoonlightMouseEventArgsType::MoonlightMouseEventArgsType ()
+{
+	allocate = mouse_event_allocate;
+	deallocate = mouse_event_deallocate;
+	invalidate = mouse_event_invalidate;
+
+	hasProperty = mouse_event_has_property;
+	getProperty = mouse_event_get_property;
+
+	hasMethod = mouse_event_has_method;
+	invoke = mouse_event_invoke;
+}
+
+MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
+
+void
+MouseEventArgsPopuplate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args)
+{
+	ea->state = args->state;
+
+	MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)ea)->instance, MoonlightPointClass);
+
+	point->point = Point (args->x, args->y);
+	ea->position = point;
+}
+
 
 /*** our object base class */
 NPObject*
-moonlight_object_allocate (NPP instance, NPClass*)
+_allocate (NPP instance, NPClass*)
 {
 	return new MoonlightObject (instance);
 }
 
 static void
-moonlight_object_deallocate (NPObject *npobj)
+_deallocate (NPObject *npobj)
 {
 	// XXX is delete broken in plugins?
 	// delete (MoonlightObject*)npobj;
 }
 
 static void
-moonlight_object_invalidate (NPObject *npobj)
+_invalidate (NPObject *npobj)
 {
 	// nothing to do
 }
 
 static bool
-moonlight_object_has_method (NPObject *npobj, NPIdentifier name)
+_has_method (NPObject *npobj, NPIdentifier name)
 {
 	return false;
 }
 
 static bool
-moonlight_object_has_property (NPObject *npobj, NPIdentifier name)
+_has_property (NPObject *npobj, NPIdentifier name)
 {
 	return false;
 }
 
 static bool
-moonlight_object_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	g_warning ("moonlight_object_get_property reached");
 	return false;
 }
 
 static bool
-moonlight_object_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	g_warning ("moonlight_object_set_property reached");
 	return false;
 }
 
 static bool
-moonlight_object_remove_property (NPObject *npobj, NPIdentifier name)
+_remove_property (NPObject *npobj, NPIdentifier name)
 {
 	g_warning ("moonlight_object_remove_property reached");
 	return false;
 }
 
 static bool
-moonlight_object_invoke (NPObject *npobj, NPIdentifier name,
-			 const NPVariant *args, uint32_t argCount,
-			 NPVariant *result)
+_invoke (NPObject *npobj, NPIdentifier name,
+	 const NPVariant *args, uint32_t argCount,
+	 NPVariant *result)
 {
 	g_warning ("moonlight_object_invoke reached");
 	return false;
 }
 
 static bool
-moonlight_object_invoke_default (NPObject *npobj,
-				 const NPVariant *args, uint32_t argCount,
-				 NPVariant *result)
+_invoke_default (NPObject *npobj,
+		 const NPVariant *args, uint32_t argCount,
+		 NPVariant *result)
 {
 	g_warning ("moonlight_object_invoke_default reached");
 	return false;
@@ -204,16 +407,16 @@ moonlight_object_invoke_default (NPObject *npobj,
 
 MoonlightObjectType::MoonlightObjectType ()
 {
-	allocate       = moonlight_object_allocate;
-	deallocate     = moonlight_object_deallocate;
-	invalidate     = moonlight_object_invalidate;
-	hasMethod      = moonlight_object_has_method;
-	invoke         = moonlight_object_invoke;
-	invokeDefault  = moonlight_object_invoke_default;
-	hasProperty    = moonlight_object_has_property;
-	getProperty    = moonlight_object_get_property;
-	setProperty    = moonlight_object_set_property;
-	removeProperty = moonlight_object_remove_property;
+	allocate       = _allocate;
+	deallocate     = _deallocate;
+	invalidate     = _invalidate;
+	hasMethod      = _has_method;
+	invoke         = _invoke;
+	invokeDefault  = _invoke_default;
+	hasProperty    = _has_property;
+	getProperty    = _get_property;
+	setProperty    = _set_property;
+	removeProperty = _remove_property;
 }
 
 MoonlightObjectType* MoonlightObjectClass;
@@ -222,7 +425,6 @@ MoonlightObjectType* MoonlightObjectClass;
 static NPObject*
 moonlight_control_allocate (NPP instance, NPClass*)
 {
-  printf ("in moonlight_control_allocate!  yay!\n");
 	return new MoonlightControlObject (instance);
 }
 
@@ -250,7 +452,6 @@ moonlight_control_invalidate (NPObject *npobj)
 static bool
 moonlight_control_has_property (NPObject *npobj, NPIdentifier name)
 {
-  printf ("YO NO\n");
 	return (name_matches (name, "settings") ||
 		name_matches (name, "content") ||
 		name_matches (name, "initParams") ||
@@ -261,8 +462,6 @@ moonlight_control_has_property (NPObject *npobj, NPIdentifier name)
 static bool
 moonlight_control_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-  printf ("YO!\n");
-
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 	MoonlightControlObject *rootobj = (MoonlightControlObject*)npobj;
 
@@ -586,9 +785,22 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 	case Type::DOUBLE:
 		DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
 		break;
+
 	case Type::STRING:
 		string_to_npvariant (v->AsString(), result);
 		break;
+
+	case Type::POINT: {
+		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightPointClass);
+		point->point = *v->AsPoint ();
+		break;
+	}
+
+	case Type::RECT: {
+		MoonlightRect *rect = (MoonlightRect*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightRectClass);
+		rect->rect = *v->AsRect ();
+		break;
+	}
 
 	/* more builtins.. */
 	default:
@@ -740,15 +952,9 @@ struct EventListenerProxy {
 };
 
 static void
-proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
+default_proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
 {
 	EventListenerProxy *proxy = (EventListenerProxy*)closure;
-
-	//
-	// XXX we need to proxy the event args (ugh!)
-	//
-	// for now just pass NULL for that arg.
-	//
 
 	NPVariant args[2];
 	NPVariant result;
@@ -756,14 +962,53 @@ proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer c
 	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (proxy->instance,
 										 /* XXX ew */ (DependencyObject*)sender);
 
-	NPN_RetainObject (depobj); // XXX
+	NPN_RetainObject (depobj); // XXX leak?
 
 	OBJECT_TO_NPVARIANT (depobj, args[0]);
-	//NULL_TO_NPVARIANT (args[1]);
+	NULL_TO_NPVARIANT (args[1]);
 
-	NPN_InvokeDefault(proxy->instance, proxy->callback, args, 1, &result);
+	if (NPN_InvokeDefault(proxy->instance, proxy->callback, args, 2, &result))
+		NPN_ReleaseVariantValue (&result);
+}
 
-	NPN_ReleaseVariantValue (&result);
+static void
+mouseevent_proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	EventListenerProxy *proxy = (EventListenerProxy*)closure;
+	MouseEventArgs *ea = (MouseEventArgs*)calldata;
+
+	NPVariant args[2];
+	NPVariant result;
+
+	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (proxy->instance,
+										 /* XXX ew */ (DependencyObject*)sender);
+	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject*)NPN_CreateObject (proxy->instance, MoonlightMouseEventArgsClass);
+	MouseEventArgsPopuplate (jsea, ea);
+
+	NPN_RetainObject (depobj); // XXX leak?
+	NPN_RetainObject (jsea); // XXX leak?
+
+	OBJECT_TO_NPVARIANT (depobj, args[0]);
+	OBJECT_TO_NPVARIANT (jsea, args[1]);
+
+	if (NPN_InvokeDefault(proxy->instance, proxy->callback, args, 2, &result))
+		NPN_ReleaseVariantValue (&result);
+}
+
+static EventHandler
+get_proxy_for_event_name (const char *event_name)
+{
+	if (!strcasecmp ("mousemove", event_name) ||
+	    !strcasecmp ("mouseleftbuttonup", event_name) ||
+	    !strcasecmp ("mouseleftbuttondown", event_name) ||
+	    !strcasecmp ("mouseenter", event_name)) {
+
+		return mouseevent_proxy_listener_to_javascript;
+	}
+	// XXX need to handle key events
+	else {
+		return default_proxy_listener_to_javascript;
+	}
 }
 
 static bool
@@ -804,7 +1049,7 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		NPN_RetainObject (proxy->callback);
 
-		dob->AddHandler (name, proxy_listener_to_javascript, proxy);
+		dob->AddHandler (name, get_proxy_for_event_name (name), proxy);
 
 		g_free (name);
 
@@ -1200,5 +1445,6 @@ plugin_init_classes ()
 	MoonlightCollectionClass = new MoonlightCollectionType ();
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
 	MoonlightMediaElementClass = new MoonlightMediaElementType ();
+	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
 }
 
