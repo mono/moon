@@ -76,6 +76,68 @@ string_to_npvariant (char *value, NPVariant *result)
 	STRINGZ_TO_NPVARIANT (retval, *result);
 }
 
+
+typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *value);
+
+struct EventListenerProxy {
+	NPP instance;
+	NPObject *callback;
+	EventArgsWrapper event_args_wrapper;
+};
+
+static void
+default_wrapper (NPP instance, gpointer calldata, NPVariant *value)
+{
+	NULL_TO_NPVARIANT (*value);
+}
+
+static void
+mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value)
+{
+	MouseEventArgs *ea = (MouseEventArgs*)calldata;
+	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject*)NPN_CreateObject (instance, MoonlightMouseEventArgsClass);
+	MouseEventArgsPopulate (jsea, ea);
+
+	OBJECT_TO_NPVARIANT (jsea, *value);
+}
+
+static void
+proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	EventListenerProxy *proxy = (EventListenerProxy*)closure;
+
+	NPVariant args[2];
+	NPVariant result;
+
+	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (proxy->instance,
+										 /* XXX ew */ (DependencyObject*)sender);
+
+	NPN_RetainObject (depobj); // XXX leak?
+
+	OBJECT_TO_NPVARIANT (depobj, args[0]);
+	proxy->event_args_wrapper (proxy->instance, calldata, &args[1]);
+
+	if (NPN_InvokeDefault(proxy->instance, proxy->callback, args, 2, &result))
+		NPN_ReleaseVariantValue (&result);
+}
+
+static EventArgsWrapper
+get_wrapper_for_event_name (const char *event_name)
+{
+	if (!g_strcasecmp ("mousemove", event_name) ||
+	    !g_strcasecmp ("mouseleftbuttonup", event_name) ||
+	    !g_strcasecmp ("mouseleftbuttondown", event_name) ||
+	    !g_strcasecmp ("mouseenter", event_name)) {
+
+		return mouse_event_wrapper;
+	}
+	// XXX need to handle key events
+	else {
+		return default_wrapper;
+	}
+}
+
+
 /*** Points ***/
 static NPObject*
 point_allocate (NPP instance, NPClass *)
@@ -323,7 +385,7 @@ MoonlightMouseEventArgsType::MoonlightMouseEventArgsType ()
 MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
 
 void
-MouseEventArgsPopuplate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args)
+MouseEventArgsPopulate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args)
 {
 	ea->state = args->state;
 
@@ -506,6 +568,50 @@ moonlight_control_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 	return false;
 }
 
+static bool
+moonlight_control_has_method (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "createObject"));
+}
+
+static bool
+moonlight_control_invoke (NPObject *npobj, NPIdentifier name,
+			  const NPVariant *args, uint32_t argCount,
+			  NPVariant *result)
+{
+	if (name_matches (name, "createObject")) {
+	  printf ("createObject!!$&^!$\n");
+		if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])) {
+			NULL_TO_NPVARIANT (*result);
+			printf ("+ arg mismatch\n");
+			return true;
+		}
+
+		NPObject *obj = NULL;
+		const char *object_type = NPVARIANT_TO_STRING (args[0]).utf8characters;
+		if (!g_strcasecmp ("downloader", object_type)) {
+
+			Downloader *dl = new Downloader ();
+
+
+			obj = DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dl);
+
+			printf ("+ downloader = %p\n", obj);
+			OBJECT_TO_NPVARIANT (obj, *result);
+			return true;
+		}
+		else {
+			printf ("+ not downloader, bah\n");
+			// XXX the docs say we're supposed to throw an exception here,
+			// since downloader is the only type you can create.
+			NULL_TO_NPVARIANT (*result);
+			return true;
+		}
+	}
+	else
+		return false;
+}
+
 MoonlightControlType::MoonlightControlType ()
 {
 	allocate = moonlight_control_allocate;
@@ -515,6 +621,9 @@ MoonlightControlType::MoonlightControlType ()
 	hasProperty = moonlight_control_has_property;
 	getProperty = moonlight_control_get_property;
 	setProperty = moonlight_control_set_property;
+
+	hasMethod   = moonlight_control_has_method;
+	invoke      = moonlight_control_invoke;
 }
 
 MoonlightControlType* MoonlightControlClass;
@@ -692,8 +801,28 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 static bool
 moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
-	// not implemented yet.
 	if (name_matches (name, "fullScreen")) {
+		// not implemented yet.
+		return true;
+	}
+	else if (name_matches (name, "onResize")) {
+#if notyet
+		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
+
+		if (!NPVARIANT_IS_OBJECT (*value)) {
+			DEBUG_WARN_NOTIMPLEMENTED ();
+			return true;
+		}
+
+		EventListenerProxy *proxy = new EventListenerProxy ();
+		proxy->instance = ((MoonlightObject*)npobj)->instance;
+		proxy->callback = NPVARIANT_TO_OBJECT (*value);
+		proxy->event_args_wrapper = get_wrapper_for_event_name ("Resize");
+
+		NPN_RetainObject (proxy->callback);
+
+		plugin->surface->AddHandler ("Resize", proxy_listener_to_javascript, proxy);
+#endif		
 		return true;
 	}
 
@@ -712,6 +841,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 		
+		printf ("findName (%s)\n", name);
 		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
 		if (!element)
 			return true;
@@ -861,7 +991,9 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 		attrname = period + 1;
 
 		Type* type = Type::Find (type_name);
+
 		if (type != NULL) {
+			attrname[0] = toupper (attrname[0]);
 			p = dependency_property_lookup (type->type, attrname);
 		}
 		g_free (type_name);
@@ -917,25 +1049,32 @@ moonlight_dependency_object_set_property (NPObject *npobj, NPIdentifier name, co
 	if (!p)
 		return false;
 
-	char *strvalue = (char *) NPN_MemAlloc (20);
-
-	if (NPVARIANT_IS_BOOLEAN (*value)) {
-		strcpy (strvalue, (NPVARIANT_TO_BOOLEAN (*value) ? "true" : "false"));
-	} else if (NPVARIANT_IS_INT32 (*value)) {
-		sprintf (strvalue, "%d", NPVARIANT_TO_INT32 (*value));
-	} else if (NPVARIANT_IS_DOUBLE (*value)) {
-		sprintf (strvalue, "%d", NPVARIANT_TO_DOUBLE (*value));
-	} else if (NPVARIANT_IS_OBJECT(*value)) {
-		// not implemented yet.
-		DEBUG_WARN_NOTIMPLEMENTED ();
+	if (NPVARIANT_IS_OBJECT (*value)) {
+		MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (*value);
+		dob->SetValue (p, Value(depobj->dob));
 	}
+	else {
+		char *strvalue;
 
-	if (NPVARIANT_IS_STRING (*value))
-		xaml_set_property_from_str (dob, p, (char *) NPVARIANT_TO_STRING (*value).utf8characters);
-	else
-		xaml_set_property_from_str (dob, p, strvalue);
+		if (NPVARIANT_IS_BOOLEAN (*value)) {
+			strvalue = g_strdup (NPVARIANT_TO_BOOLEAN (*value) ? "true" : "false");
+		} else if (NPVARIANT_IS_INT32 (*value)) {
+			strvalue = g_strdup_printf ("%d", NPVARIANT_TO_INT32 (*value));
+		} else if (NPVARIANT_IS_DOUBLE (*value)) {
+			strvalue = g_strdup_printf ("%g", NPVARIANT_TO_DOUBLE (*value));
+		}
+		else if (!NPVARIANT_IS_STRING (*value)) {
+			DEBUG_WARN_NOTIMPLEMENTED ();
+			return true;
+		}
 
-	NPN_MemFree (strvalue);
+		if (NPVARIANT_IS_STRING (*value))
+			xaml_set_property_from_str (dob, p, (char *) NPVARIANT_TO_STRING (*value).utf8characters);
+		else
+			xaml_set_property_from_str (dob, p, strvalue);
+
+		g_free (strvalue);
+	}
 
 	return true;
 }
@@ -946,71 +1085,6 @@ moonlight_dependency_object_has_method (NPObject *npobj, NPIdentifier name)
 	return HAS_METHOD (moonlight_dependency_object_methods, name);
 }
 
-struct EventListenerProxy {
-	NPP instance;
-	NPObject *callback;
-};
-
-static void
-default_proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
-{
-	EventListenerProxy *proxy = (EventListenerProxy*)closure;
-
-	NPVariant args[2];
-	NPVariant result;
-
-	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (proxy->instance,
-										 /* XXX ew */ (DependencyObject*)sender);
-
-	NPN_RetainObject (depobj); // XXX leak?
-
-	OBJECT_TO_NPVARIANT (depobj, args[0]);
-	NULL_TO_NPVARIANT (args[1]);
-
-	if (NPN_InvokeDefault(proxy->instance, proxy->callback, args, 2, &result))
-		NPN_ReleaseVariantValue (&result);
-}
-
-static void
-mouseevent_proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
-{
-	EventListenerProxy *proxy = (EventListenerProxy*)closure;
-	MouseEventArgs *ea = (MouseEventArgs*)calldata;
-
-	NPVariant args[2];
-	NPVariant result;
-
-	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (proxy->instance,
-										 /* XXX ew */ (DependencyObject*)sender);
-	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject*)NPN_CreateObject (proxy->instance, MoonlightMouseEventArgsClass);
-	MouseEventArgsPopuplate (jsea, ea);
-
-	NPN_RetainObject (depobj); // XXX leak?
-	NPN_RetainObject (jsea); // XXX leak?
-
-	OBJECT_TO_NPVARIANT (depobj, args[0]);
-	OBJECT_TO_NPVARIANT (jsea, args[1]);
-
-	if (NPN_InvokeDefault(proxy->instance, proxy->callback, args, 2, &result))
-		NPN_ReleaseVariantValue (&result);
-}
-
-static EventHandler
-get_proxy_for_event_name (const char *event_name)
-{
-	if (!strcasecmp ("mousemove", event_name) ||
-	    !strcasecmp ("mouseleftbuttonup", event_name) ||
-	    !strcasecmp ("mouseleftbuttondown", event_name) ||
-	    !strcasecmp ("mouseenter", event_name)) {
-
-		return mouseevent_proxy_listener_to_javascript;
-	}
-	// XXX need to handle key events
-	else {
-		return default_proxy_listener_to_javascript;
-	}
-}
-
 static bool
 moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 				    const NPVariant *args, uint32_t argCount,
@@ -1019,12 +1093,15 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->dob;
 
 	if (name_matches (name, "findName")) {
+		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
+
 		if (!argCount)
 			return true;
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 		
-		DependencyObject *element = dob->FindName (name);
+		printf ("findName (%s)\n", name);
+		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
 		if (!element)
 			return true;
 
@@ -1046,10 +1123,11 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		EventListenerProxy *proxy = new EventListenerProxy ();
 		proxy->instance = ((MoonlightObject*)npobj)->instance;
 		proxy->callback = NPVARIANT_TO_OBJECT (args[1]);
+		proxy->event_args_wrapper = get_wrapper_for_event_name (name);
 
 		NPN_RetainObject (proxy->callback);
 
-		dob->AddHandler (name, get_proxy_for_event_name (name), proxy);
+		dob->AddHandler (name, proxy_listener_to_javascript, proxy);
 
 		g_free (name);
 
@@ -1111,6 +1189,9 @@ DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj)
 			break;
 		case Type::MEDIAELEMENT:
 			np_class = MoonlightMediaElementClass;
+			break;
+		case Type::DOWNLOADER:
+			np_class = MoonlightDownloaderClass;
 			break;
 		default:
 			np_class = MoonlightDependencyObjectClass;
@@ -1432,6 +1513,103 @@ MoonlightMediaElementType::MoonlightMediaElementType ()
 
 MoonlightMediaElementType* MoonlightMediaElementClass;
 
+/*** MoonlightDownloaderClass ***************************************************/
+
+static const char *const
+moonlight_downloader_methods [] = {
+	"abort",
+	"getResponseText",
+	"open",
+	"send"
+};
+
+static bool
+moonlight_downloader_has_method (NPObject *npobj, NPIdentifier name)
+{
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	printf ("moonlight_downloadeR_has_method (%s)\n", strname);
+
+	if (HAS_METHOD (moonlight_downloader_methods, name))
+		return true;
+
+	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
+}
+
+static bool
+moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount,
+			     NPVariant *result)
+{
+	Downloader *dl = (Downloader*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name_matches (name, "abort")) {
+		if (argCount != 0)
+			return true;
+
+		downloader_abort (dl);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name_matches (name, "open")) {
+	  printf ("OPEN!\n");
+		if (argCount > 3)
+			return true;
+
+		const char *verb = NPVARIANT_TO_STRING (args[0]).utf8characters;
+		const char *uri = NPVARIANT_TO_STRING (args[1]).utf8characters;
+
+		downloader_open (dl, (char*)verb, (char*)uri, true);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name_matches (name, "send")) {
+		if (argCount != 0)
+			return true;
+
+		downloader_send (dl);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name_matches (name, "getResponseText")) {
+		if (argCount != 1)
+			return true;
+
+		const char *part_name = NPVARIANT_TO_STRING (args[0]).utf8characters;
+
+		uint64_t size;
+		char* buf = (char*)downloader_get_response_text (dl, (char*)part_name, &size);
+
+		if (buf) {
+			char *s = (char*)NPN_MemAlloc (size);
+			memcpy (s, buf, size);
+			STRINGN_TO_NPVARIANT (s, size, *result);
+			g_free (buf);
+		}
+		else
+			NULL_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else 
+		return MoonlightDependencyObjectClass->invoke (npobj, name,
+							       args, argCount,
+							       result);
+}
+
+MoonlightDownloaderType::MoonlightDownloaderType ()
+{
+	hasMethod = moonlight_downloader_has_method;
+	invoke = moonlight_downloader_invoke;
+}
+
+MoonlightDownloaderType* MoonlightDownloaderClass;
+
 
 void
 plugin_init_classes ()
@@ -1445,6 +1623,7 @@ plugin_init_classes ()
 	MoonlightCollectionClass = new MoonlightCollectionType ();
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
 	MoonlightMediaElementClass = new MoonlightMediaElementType ();
+	MoonlightDownloaderClass = new MoonlightDownloaderType ();
 	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
 }
 

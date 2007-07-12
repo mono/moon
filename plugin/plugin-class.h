@@ -78,7 +78,7 @@ struct MoonlightMouseEventArgsObject : MoonlightObject {
 	NPObject *position;
 };
 
-extern void MouseEventArgsPopuplate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args);
+extern void MouseEventArgsPopulate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args);
 
 
 /*** MoonlightSettingsClass ***********************************************************/
@@ -92,6 +92,20 @@ extern MoonlightSettingsType* MoonlightSettingsClass;
 
 struct MoonlightContentType : MoonlightObjectType {
 	MoonlightContentType ();
+};
+
+struct MoonlightContentObject : MoonlightObject {
+	MoonlightContentObject (NPP instance)
+	  : MoonlightObject (instance),
+	    resizeScript (NULL), resizeMethodName (NULL),
+	    resizeIsScript (false), resizeSet (false)
+	{
+	}
+
+	NPObject *resizeScript;
+	char *resizeMethodName;
+	bool resizeIsScript;
+	bool resizeSet;
 };
 
 extern MoonlightContentType* MoonlightContentClass;
@@ -161,6 +175,14 @@ struct MoonlightMediaElementType : MoonlightDependencyObjectType {
 };
 
 extern MoonlightMediaElementType* MoonlightMediaElementClass;
+
+/*** MoonlightDownloader ***************************************************/
+
+struct MoonlightDownloaderType : MoonlightDependencyObjectType {
+  MoonlightDownloaderType ();
+};
+
+extern MoonlightDownloaderType* MoonlightDownloaderClass;
 
 
 #endif /* PLUGIN_CLASS */

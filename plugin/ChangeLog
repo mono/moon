@@ -1,3 +1,31 @@
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp, plugin-class.h:  a few things:
+
+	refactor the listener proxying stuff to share code.  when creating
+	a proxy you create the event arg wrapper function, which at
+	present only the mouse event stuff uses.
+
+	wrap Downloader.  events are properly emitted, we should move the
+	Downloader to using EventHandler's instead of its custom list of
+	listeners.
+
+	when looking up an attached property both (or one, or neither!) of
+	the names can be capitalized.  like: foo['canvas.top'],
+	foo['Canvas.Top'], and foo['canvas.Top'].  handle all of them.
+
+	in value_to_variant, when setting a property to an object value,
+	we assume (perhaps incorrectly) that it will be a
+	MoonlightDependencyObjectObject, and handle it that way.  it seems
+	to work for the demos at least.  Also in that same method, stop
+	allocating a 20 byte buffer in the hope that it's enough.  just
+	use g_strdup/g_strdup_printf.
+	
+	add control.createObject support for creating wrapped
+	downloaders.  also, start on the implementation for
+	control.onResize, but we need to shift the surface's resize
+	callback to use an EventHandler.
+
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp, plugin-class.h: fix up the point and rect
