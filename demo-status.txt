@@ -163,11 +163,13 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
 
-	Last thing output to the console is:
+	JS console:
 
-		Moonlight-Message: *** PluginClass::ClassHasMethod version
+		Error: Trying to get unsupported property on scriptable plugin object!
+		Source File: http://labs.infragistics.com/silverlight/
+		Line: 102
 
-	Maybe we're not matching the plugin version required?
+	Same WebApplication.RegisterScriptableObject problem.
 
 * JavaScript/.NET Chess (http://silverlight.net/samples/1.1/chess/run/default.html)
 
