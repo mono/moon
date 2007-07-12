@@ -1,3 +1,8 @@
+2007-07-11  Jackson Harper  <jackson@ximian.com>
+
+	* collection.cpp: Comment out the namescope merging stuff for now,
+	it causes some regressions.
+
 2007-07-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Restart the whole attribute parsing loop when the

@@ -64,14 +64,14 @@ Collection::Add (DependencyObject *data)
 	generation++;
 	list->Append (new Collection::Node (data, this));
 	data->Attach (NULL, this);
-
+/*
 	NameScope *ns = data->FindNameScope ();
 	NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
 	if (ns && con_ns && ns != con_ns) {
 		con_ns->MergeTemporaryScope (ns);
 		NameScope::SetNameScope (data, con_ns);
 	}
-
+*/
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 }
@@ -85,14 +85,14 @@ Collection::Insert (int index, DependencyObject *data)
 	list->Insert (new Collection::Node (data, this), index);
 
 	data->Attach (NULL, this);
-
+/*
 	NameScope *ns = data->FindNameScope ();
 	NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
 	if (ns && con_ns && ns != con_ns) {
 		con_ns->MergeTemporaryScope (ns);
 		NameScope::SetNameScope (data, con_ns);
 	}
-
+*/
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 }
