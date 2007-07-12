@@ -1,5 +1,10 @@
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp, plugin-class.h: wrap the MediaElement enough
+	to provide the start/stop/pause methods.
+
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp, plugin-class.h, plugin-glue.cpp, plugin.h,
 	plugin.cpp: I know this looks like a scary change, but 90% of the
 	code is the same.  I just took advantage of the fact that we

@@ -115,12 +115,21 @@ struct MoonlightCollectionType : MoonlightDependencyObjectType {
 };
 extern MoonlightCollectionType* MoonlightCollectionClass;
 
-/*** MoonlightCollectionClass ***************************************************/
+/*** MoonlightStoryboardClass ***************************************************/
 
 struct MoonlightStoryboardType : MoonlightDependencyObjectType {
   MoonlightStoryboardType ();
 };
 
 extern MoonlightStoryboardType* MoonlightStoryboardClass;
+
+/*** MoonlightMediaElement ***************************************************/
+
+struct MoonlightMediaElementType : MoonlightDependencyObjectType {
+  MoonlightMediaElementType ();
+};
+
+extern MoonlightMediaElementType* MoonlightMediaElementClass;
+
 
 #endif /* PLUGIN_CLASS */

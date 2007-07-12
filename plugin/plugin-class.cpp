@@ -854,13 +854,23 @@ MoonlightDependencyObjectType* MoonlightDependencyObjectClass;
 MoonlightDependencyObjectObject*
 DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj)
 {
-	NPClass *np_class = MoonlightDependencyObjectClass;
+	NPClass *np_class;
 
 	/* for DependencyObject subclasses which have special plugin classes, check here */
 	if (Type::Find (obj->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
 		np_class = MoonlightCollectionClass;
-	else if (obj->GetObjectType() == Type::STORYBOARD)
-		np_class = MoonlightStoryboardClass;
+	else {
+		switch (obj->GetObjectType()) {
+		case Type::STORYBOARD:
+			np_class = MoonlightStoryboardClass;
+			break;
+		case Type::MEDIAELEMENT:
+			np_class = MoonlightMediaElementClass;
+			break;
+		default:
+			np_class = MoonlightDependencyObjectClass;
+		}
+	}
 
 	MoonlightDependencyObjectObject *depobj
 		= (MoonlightDependencyObjectObject*)NPN_CreateObject (instance,
@@ -1107,6 +1117,76 @@ MoonlightStoryboardType::MoonlightStoryboardType ()
 
 MoonlightStoryboardType* MoonlightStoryboardClass;
 
+/*** MoonlightMediaElementClass ***************************************************/
+
+static const char *const
+moonlight_media_element_methods [] = {
+	"stop",
+	"play",
+	"pause"
+};
+
+
+static bool
+moonlight_media_element_has_method (NPObject *npobj, NPIdentifier name)
+{
+	if (HAS_METHOD (moonlight_media_element_methods, name))
+		return true;
+
+	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
+}
+
+static bool
+moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
+				const NPVariant *args, uint32_t argCount,
+				NPVariant *result)
+{
+	MediaElement *media = (MediaElement*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name_matches (name, "play")) {
+		if (argCount != 0)
+			return true;
+
+		media->Play ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name_matches (name, "pause")) {
+		if (argCount != 0)
+			return true;
+
+		media->Pause ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name_matches (name, "stop")) {
+		if (argCount != 0)
+			return true;
+
+		media->Stop ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else 
+		return MoonlightDependencyObjectClass->invoke (npobj, name,
+							       args, argCount,
+							       result);
+}
+
+MoonlightMediaElementType::MoonlightMediaElementType ()
+{
+	hasMethod = moonlight_media_element_has_method;
+	invoke = moonlight_media_element_invoke;
+}
+
+MoonlightMediaElementType* MoonlightMediaElementClass;
+
 
 void
 plugin_init_classes ()
@@ -1119,5 +1199,6 @@ plugin_init_classes ()
 	MoonlightDependencyObjectClass = new MoonlightDependencyObjectType ();
 	MoonlightCollectionClass = new MoonlightCollectionType ();
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
+	MoonlightMediaElementClass = new MoonlightMediaElementType ();
 }
 
