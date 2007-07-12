@@ -2035,6 +2035,8 @@ void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
 	int skip_attribute = -1;
+
+start_parse:
 	for (int i = 0; attr [i]; i += 2) {
 
 		if (i == skip_attribute)
@@ -2064,6 +2066,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			if (reparse) {
 				skip_attribute = i;
 				i = 0;
+				goto start_parse;
 			}
 			continue;
 		}

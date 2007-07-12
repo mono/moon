@@ -1,3 +1,9 @@
+2007-07-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Restart the whole attribute parsing loop when the
+	reparse flag is set, otherwise the first attribute will be
+	skipped.
+
 2007-07-11  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::UIElement): the event names need to
