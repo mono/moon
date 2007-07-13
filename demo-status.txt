@@ -40,12 +40,13 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 		
 * Bubble Factory (http://cosmik.members.winisp.net/BubbleFactory/)
 
-	seems to be unable to hook up the PageLoaded event properly:
+	error to console:
 
 		attempting to hookup delegate splashScreenLoaded to event Loaded on object of type System.Windows.Controls.Canvas
 		System.ArgumentException: Couldn't bind to method 'splashScreenLoaded'.
 
-	no further attempt is made.  Download page shows up but stalls.
+	this is due to the event handler in xaml specifying the name
+	of a JS method to call.
 
 * Bubble Mark (http://bubblemark.com/)
 
@@ -70,7 +71,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Comic Book Viewer (http://mycomix.wintellect.com/Spotlight.aspx?Item=1041)
 
-	Lots of delegates failed to hook up messages.  nothing but an empty plugin area in the browser.
+	errors to the console:
 
 		attempting to hookup delegate OnCanvasLoaded to event Loaded on object of type System.Windows.Controls.Canvas
 		System.ArgumentException: Couldn't bind to method 'OnCanvasLoaded'.
@@ -79,15 +80,23 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 		attempting to hookup delegate OnMouseEnter to event MouseEnter on object of type System.Windows.Shapes.Rectangle
 		System.ArgumentException: Couldn't bind to method 'OnMouseEnter'.
 
+	this is due to the event handler in xaml specifying the name
+	of a JS method to call.
+
 * Destroy All Invaders (http://www.andybeaulieu.com/silverlight/DestroyAll/Default.html)
 
-	crashes here:
+	error to the console:
 
-		at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0x00004>
-		at (wrapper managed-to-native) Mono.NativeMethods.dependency_object_find_name (intptr,string,Mono.Kind&) <0xffffffff>
-		at System.Windows.DependencyObject.FindName (string) [0x00000] in /home/toshok/src/mono/olive/class/agclr/System.Windows/DependencyObject.cs:653
-		at MapGameScroller.Page.Page_Loaded (object,System.EventArgs) <0x00032>
-		at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+		Error inside TryLoad: System.NullReferenceException: Object reference not set to an instance of an object
+
+		Server stack trace:
+		  at MapGameScroller.Page.Page_Loaded (System.Object o, System.EventArgs e) [0x00000]
+		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
+		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
+		  at <0x00000> <unknown method>
+
+	this is due to some weirdness in our FindName implementation.
 
 * Digger (http://www.aisto.com/Roeder/Silverlight/Digger/Default.aspx)
 
@@ -97,7 +106,8 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Disco Dance Floor (http://explosivedog.com/silverlight/discolights/)
 
-	Comes up, shows garbage..  status bar says it's still getting data from explosivedog.com, but nothing's happening..
+	Comes up, but doesn't update.  Uses HtmlTimer, so this is
+	likely why.
 
 * Dr. Green Thumb (http://labs.blitzagency.com/?p=50)
 
@@ -218,6 +228,8 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Photopoints Gallery (http://www.photopoints.com/main/Silverlight_Alpha/)
 
+	Uses WebApplication.RegisterScriptableObject
+
 * Popfly (http://www.popfly.com/)
 
 * Python Console (http://silverlight.net/Samples/1.1/DLR-Console/python/index.htm)
@@ -242,10 +254,12 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 	Comes up, shows a little intro animation, then nothing.  JS console shows:
 
-
-		Error: rootElement has no properties
+		Error: Error setting property on scriptable plugin object!
 		Source File: http://www.vertigo.com/downloads/SilverlightChess/Scene.xaml.js
-		Line: 25
+		Line: 113
+
+	Looks like something is going wrong with the string based
+	event listeners.
 
 * Silverlight Mind Map (http://blogs.msdn.com/synergist/pages/silverlight-map.aspx)
 
