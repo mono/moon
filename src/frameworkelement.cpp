@@ -28,7 +28,18 @@ FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 
 	if (prop == FrameworkElement::WidthProperty ||
 	    prop == FrameworkElement::HeightProperty) {
-		FullInvalidate (false);
+		Point p = GetRenderTransformOrigin ();
+
+		/* normally we'd only update the bounds of this
+		   element on a width/height change, but if the render
+		   transform is someplace other than (0,0), the
+		   transform needs to be updated as well. */
+		if (p.x != 0.0 || p.y != 0.0) {
+			UpdateTransform ();
+		}
+		else {
+			UpdateBounds ();
+		}
 	}
 
 	NotifyAttacheesOfPropertyChange (prop);

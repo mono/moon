@@ -1,3 +1,10 @@
+2007-07-13  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.cpp (FrameworkElement::OnPropertyChanged):
+	normally we'd only update the bounds of this element on a
+	width/height change, but if the render transform is someplace
+	other than (0,0), the transform needs to be updated as well.
+
 2007-07-12  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp, uielement.cpp, uielement.h: Add mouse
