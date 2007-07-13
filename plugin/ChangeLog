@@ -1,5 +1,20 @@
 2007-07-12  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp: implement support for using a string as the
+	second arg in addEventListener.  now you can register callbacks
+	using either:
+
+	object.addEventListener ("EventName", method);
+
+	or
+
+	object.addEventListener ("EventName", "methodName");
+
+	fixes SilverlightChess crashing (since we were trying to
+	InvokeDefault a string.  oops. :)
+
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp (moonlight_dependency_object_invoke): implement
 	captureMouse/releaseMouseCapture.  going to move these to a
 	UIElement specific wrapper next.

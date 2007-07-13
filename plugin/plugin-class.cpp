@@ -81,7 +81,14 @@ typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *val
 
 struct EventListenerProxy {
 	NPP instance;
-	NPObject *callback;
+
+	bool is_func;
+
+	/* if @is_func == true, callback is an NPObject (the function object)
+	   if @is_func == false, callback is a char* (the function name)
+	*/
+	gpointer callback;
+
 	EventArgsWrapper event_args_wrapper;
 };
 
@@ -117,8 +124,24 @@ proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer c
 	OBJECT_TO_NPVARIANT (depobj, args[0]);
 	proxy->event_args_wrapper (proxy->instance, calldata, &args[1]);
 
-	if (NPN_InvokeDefault(proxy->instance, proxy->callback, args, 2, &result))
-		NPN_ReleaseVariantValue (&result);
+	if (proxy->is_func) {
+		/* the event listener was added with a JS function object */
+		if (NPN_InvokeDefault (proxy->instance, (NPObject*)proxy->callback, args, 2, &result))
+			NPN_ReleaseVariantValue (&result);
+	}
+	else {
+		/* the event listener was added with a JS string (the function name) */
+		NPObject *object = NULL;
+		if (NPERR_NO_ERROR != NPN_GetValue(proxy->instance, NPNVWindowNPObject, &object)) {
+			return;
+		}
+
+		if (NPN_Invoke (proxy->instance, object, NPID ((char*)proxy->callback),
+				args, 2, &result))
+			NPN_ReleaseVariantValue (&result);
+
+		NPN_ReleaseObject (object);
+	}
 }
 
 static EventArgsWrapper
@@ -580,10 +603,8 @@ moonlight_control_invoke (NPObject *npobj, NPIdentifier name,
 			  NPVariant *result)
 {
 	if (name_matches (name, "createObject")) {
-	  printf ("createObject!!$&^!$\n");
 		if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])) {
 			NULL_TO_NPVARIANT (*result);
-			printf ("+ arg mismatch\n");
 			return true;
 		}
 
@@ -596,12 +617,10 @@ moonlight_control_invoke (NPObject *npobj, NPIdentifier name,
 
 			obj = DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dl);
 
-			printf ("+ downloader = %p\n", obj);
 			OBJECT_TO_NPVARIANT (obj, *result);
 			return true;
 		}
 		else {
-			printf ("+ not downloader, bah\n");
 			// XXX the docs say we're supposed to throw an exception here,
 			// since downloader is the only type you can create.
 			NULL_TO_NPVARIANT (*result);
@@ -841,7 +860,6 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 		
-		printf ("findName (%s)\n", name);
 		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
 		if (!element)
 			return true;
@@ -1100,7 +1118,6 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 		
-		printf ("findName (%s)\n", name);
 		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
 		if (!element)
 			return true;
@@ -1116,16 +1133,31 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		OBJECT_TO_NPVARIANT ((NPObject*)plugin->getRootObject(), *result);
 	}
 	else if (name_matches (name, "addEventListener")) {
+		if (argCount != 2)
+			return true;
+
+		if (!NPVARIANT_IS_STRING (args[0])
+		    || (!NPVARIANT_IS_STRING (args[1]) && !NPVARIANT_IS_OBJECT (args[1]))) {
+			/* XXX how do we check if args[1] is a function? */
+			return true;
+		}
 		char *name = g_strdup ((char *) NPVARIANT_TO_STRING (args[0]).utf8characters);
 
 		name[0] = toupper(name[0]);
 
 		EventListenerProxy *proxy = new EventListenerProxy ();
 		proxy->instance = ((MoonlightObject*)npobj)->instance;
-		proxy->callback = NPVARIANT_TO_OBJECT (args[1]);
 		proxy->event_args_wrapper = get_wrapper_for_event_name (name);
 
-		NPN_RetainObject (proxy->callback);
+		if (NPVARIANT_IS_OBJECT (args[1])) {
+			proxy->is_func = true;
+			proxy->callback = NPVARIANT_TO_OBJECT (args[1]);
+			NPN_RetainObject ((NPObject*)proxy->callback);
+		}
+		else {
+			proxy->is_func = false;
+			proxy->callback = g_strdup (NPVARIANT_TO_STRING (args[1]).utf8characters);
+		}
 
 		dob->AddHandler (name, proxy_listener_to_javascript, proxy);
 
@@ -1525,7 +1557,6 @@ static bool
 moonlight_downloader_has_method (NPObject *npobj, NPIdentifier name)
 {
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	printf ("moonlight_downloadeR_has_method (%s)\n", strname);
 
 	if (HAS_METHOD (moonlight_downloader_methods, name))
 		return true;
@@ -1551,7 +1582,6 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "open")) {
-	  printf ("OPEN!\n");
 		if (argCount > 3)
 			return true;
 
