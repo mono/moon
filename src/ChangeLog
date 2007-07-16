@@ -1,3 +1,11 @@
+2007-07-16  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.h, frameworkelement.cpp: we need
+	framework_element_new so managed subclasses of FrameworkElement
+	are possible.
+
+	* uielement.h, uielement.cpp: same for this type.
+
 2007-07-13  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.cpp (FrameworkElement::OnPropertyChanged):

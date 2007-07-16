@@ -30,6 +30,8 @@ class FrameworkElement : public UIElement {
 
 G_BEGIN_DECLS
 
+FrameworkElement *framework_element_new (void);
+
 double	framework_element_get_height	(FrameworkElement *framework_element);
 void	framework_element_set_height	(FrameworkElement *framework_element, double height);
 double	framework_element_get_width	(FrameworkElement *framework_element);

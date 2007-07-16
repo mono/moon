@@ -454,6 +454,12 @@ uielement_init (void)
 	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
 }
 
+UIElement*
+uielement_new ()
+{
+	return new UIElement ();
+}
+
 Surface*
 uielement_get_surface (UIElement *item)
 {

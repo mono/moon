@@ -73,6 +73,12 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	*height = y2 - y1;
 }
 
+FrameworkElement *
+framework_element_new ()
+{
+	return new FrameworkElement ();
+}
+
 double
 framework_element_get_height (FrameworkElement *framework_element)
 {

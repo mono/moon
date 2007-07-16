@@ -259,6 +259,7 @@ class UIElement : public Visual {
 
 G_BEGIN_DECLS
 
+UIElement *uielement_new                  (void);
 
 Surface   *uielement_get_surface          (UIElement *item);
 void       uielement_invalidate           (UIElement *item);
