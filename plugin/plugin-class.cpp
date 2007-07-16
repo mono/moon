@@ -160,6 +160,77 @@ get_wrapper_for_event_name (const char *event_name)
 	}
 }
 
+static void
+value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
+{
+	switch (v->GetKind ()) {
+	case Type::BOOL:
+		BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
+		break;
+
+	case Type::INT32:
+		INT32_TO_NPVARIANT (v->AsInt32(), *result);
+		break;
+
+	case Type::DOUBLE:
+		DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
+		break;
+
+	case Type::STRING:
+		string_to_npvariant (v->AsString(), result);
+		break;
+
+	case Type::POINT: {
+		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightPointClass);
+		point->point = *v->AsPoint ();
+		break;
+	}
+
+	case Type::RECT: {
+		MoonlightRect *rect = (MoonlightRect*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightRectClass);
+		rect->rect = *v->AsRect ();
+		break;
+	}
+
+	/* more builtins.. */
+	default:
+		if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
+			MoonlightDependencyObjectObject *depobj =
+				DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance, v->AsDependencyObject ());
+			OBJECT_TO_NPVARIANT (depobj, *result);
+		}
+		break;
+	}
+}
+
+static void
+variant_to_value (NPVariant *v, Value *result)
+{
+	switch (v->type) {
+	case NPVariantType_Void:
+		DEBUG_WARN_NOTIMPLEMENTED ();
+		break;
+	case NPVariantType_Null:
+		DEBUG_WARN_NOTIMPLEMENTED ();
+		*result = Value (Type::DEPENDENCY_OBJECT);
+		break;
+	case NPVariantType_Bool:
+		*result = Value (NPVARIANT_TO_BOOLEAN (*v));
+		break;
+	case NPVariantType_Int32:
+		*result = Value ((gint32)NPVARIANT_TO_INT32(*v));
+		break;
+	case NPVariantType_Double:
+		*result = Value (NPVARIANT_TO_DOUBLE(*v));
+		break;
+	case NPVariantType_String:
+		*result = Value (NPVARIANT_TO_STRING(*v).utf8characters);
+		break;
+	case NPVariantType_Object:
+		DEBUG_WARN_NOTIMPLEMENTED ();
+		break;
+	}
+}
 
 /*** Points ***/
 static NPObject*
@@ -759,6 +830,33 @@ MoonlightSettingsType* MoonlightSettingsClass;
 
 
 /*** MoonlightContentClass ************************************************************/
+static NPObject*
+moonlight_content_allocate (NPP instance, NPClass*)
+{
+	return new MoonlightContentObject (instance);
+}
+
+static void
+moonlight_content_deallocate (NPObject *npobj)
+{
+	// XXX is delete broken in plugins?
+	// delete (MoonlightContentObject*)npobj;
+}
+
+static void
+moonlight_content_invalidate (NPObject *npobj)
+{
+	MoonlightContentObject *content = (MoonlightContentObject*)npobj;
+
+	/* XXX free the registered_scriptable_objects hash */
+
+	/* XXX free resizeMethodName */
+
+
+	if (content->resizeScript)
+		NPN_ReleaseObject (content->resizeScript);
+	content->resizeScript = NULL;
+}
 
 static const char *const
 moonlight_content_properties[] = {
@@ -779,7 +877,13 @@ moonlight_content_methods[] = {
 static bool
 moonlight_content_has_property (NPObject *npobj, NPIdentifier name)
 {
-	return HAS_PROPERTY (moonlight_content_properties, name);
+	if (HAS_PROPERTY (moonlight_content_properties, name))
+		return true;
+
+	MoonlightContentObject *content = (MoonlightContentObject*)npobj;
+
+	return g_hash_table_lookup (content->registered_scriptable_objects,
+				    name) != NULL;
 }
 
 static bool
@@ -813,8 +917,17 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 		NULL_TO_NPVARIANT (*result);
 		return true;
 	}
+	else {
+		MoonlightContentObject *content = (MoonlightContentObject*)npobj;
+		MoonlightScriptableObjectObject *obj =
+			(MoonlightScriptableObjectObject*)g_hash_table_lookup (content->registered_scriptable_objects, name);
+		if (obj == NULL)
+			return false;
 
-	return false;
+		NPN_RetainObject (obj);
+		OBJECT_TO_NPVARIANT (obj, *result);
+		return true;
+	}
 }
 
 static bool
@@ -904,6 +1017,10 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 MoonlightContentType::MoonlightContentType ()
 {
+	allocate = moonlight_content_allocate;
+	deallocate = moonlight_content_deallocate;
+	invalidate = moonlight_content_invalidate;
+
 	hasProperty = moonlight_content_has_property;
 	getProperty = moonlight_content_get_property;
 	setProperty = moonlight_content_set_property;
@@ -917,49 +1034,6 @@ MoonlightContentType* MoonlightContentClass;
 
 
 /*** MoonlightDependencyObjectClass ***************************************************/
-
-static void
-value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
-{
-	switch (v->GetKind ()) {
-	case Type::BOOL:
-		BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
-		break;
-
-	case Type::INT32:
-		INT32_TO_NPVARIANT (v->AsInt32(), *result);
-		break;
-
-	case Type::DOUBLE:
-		DOUBLE_TO_NPVARIANT (v->AsDouble(), *result);
-		break;
-
-	case Type::STRING:
-		string_to_npvariant (v->AsString(), result);
-		break;
-
-	case Type::POINT: {
-		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightPointClass);
-		point->point = *v->AsPoint ();
-		break;
-	}
-
-	case Type::RECT: {
-		MoonlightRect *rect = (MoonlightRect*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightRectClass);
-		rect->rect = *v->AsRect ();
-		break;
-	}
-
-	/* more builtins.. */
-	default:
-		if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
-			MoonlightDependencyObjectObject *depobj =
-				DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance, v->AsDependencyObject ());
-			OBJECT_TO_NPVARIANT (depobj, *result);
-		}
-		break;
-	}
-}
 
 static const char *const
 moonlight_dependency_object_methods [] = {
@@ -1639,6 +1713,20 @@ MoonlightDownloaderType::MoonlightDownloaderType ()
 MoonlightDownloaderType* MoonlightDownloaderClass;
 
 /*** MoonlightScriptableObjectClass ***************************************************/
+struct ScriptableProperty {
+	gpointer property_handle;
+	int property_type;
+	bool can_read;
+	bool can_write;
+};
+
+struct ScriptableMethod {
+	gpointer method_handle;
+	int method_return_type;
+	int *method_parameter_types;
+	int parameter_count;
+};
+
 
 static NPObject*
 moonlight_scriptable_object_allocate (NPP instance, NPClass*)
@@ -1658,22 +1746,34 @@ moonlight_scriptable_object_invalidate (NPObject *npobj)
 {
 	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
 
-	if (sobj->scriptable) {
+	if (sobj->managed_scriptable) {
 		// XXX unref the scriptable object however we need to.
 	}
-	sobj->scriptable = NULL;
+	sobj->managed_scriptable = NULL;
+
+	// XXX free the properties and methods hashes.
 }
 
 static bool
 moonlight_scriptable_object_has_property (NPObject *npobj, NPIdentifier name)
 {
-	DEBUG_WARN_NOTIMPLEMENTED ();
-	return false;
+	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
+
+	return g_hash_table_lookup (sobj->properties, name) != NULL;
 }
 
 static bool
 moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
+	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
+	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (sobj->properties, name);
+	if (!prop)
+		return false;
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DEBUGMSG ("***************** getting scriptable object property %s", strname);
+	NPN_MemFree (strname);
+
 	DEBUG_WARN_NOTIMPLEMENTED ();
 	return true;
 }
@@ -1681,6 +1781,15 @@ moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NP
 static bool 
 moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
+	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (sobj->properties, name);
+	if (!prop)
+		return false;
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DEBUGMSG ("***************** setting scriptable object property %s", strname);
+	NPN_MemFree (strname);
+
 	DEBUG_WARN_NOTIMPLEMENTED ();
 	return true;
 }
@@ -1688,8 +1797,9 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 static bool
 moonlight_scriptable_object_has_method (NPObject *npobj, NPIdentifier name)
 {
-	DEBUG_WARN_NOTIMPLEMENTED ();
-	return false;
+	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
+
+	return g_hash_table_lookup (sobj->methods, name) != NULL;
 }
 
 static bool
@@ -1697,6 +1807,20 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 				    const NPVariant *args, uint32_t argCount,
 				    NPVariant *result)
 {
+	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
+	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (sobj->methods, name);
+	if (!method)
+		return false;
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DEBUGMSG ("***************** invoking scriptable object method %s", strname);
+	NPN_MemFree (strname);
+
+	Value rv;
+
+	sobj->invoke (sobj->managed_scriptable, method->method_handle, NULL, 0, &rv);
+
+	/* XXX do something with rv here if the return type is something other than void */
 	DEBUG_WARN_NOTIMPLEMENTED ();
 	return true;
 }
@@ -1717,6 +1841,85 @@ MoonlightScriptableObjectType::MoonlightScriptableObjectType ()
 }
 
 MoonlightScriptableObjectType* MoonlightScriptableObjectClass;
+
+MoonlightScriptableObjectObject*
+moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,
+					    InvokeDelegate invoke_func,
+					    SetPropertyDelegate setprop_func,
+					    GetPropertyDelegate getprop_func)
+{
+	MoonlightControlObject *root_object = plugin->getRootObject ();
+
+	MoonlightScriptableObjectObject* obj = (MoonlightScriptableObjectObject*)NPN_CreateObject (((MoonlightObject*)root_object)->instance,
+												   MoonlightScriptableObjectClass);
+
+	obj->managed_scriptable = scriptable;
+	obj->invoke = invoke_func;
+	obj->setprop = setprop_func;
+	obj->getprop = getprop_func;
+
+	DEBUGMSG ("creating scriptable object wrapper => %p", obj);
+	return obj;
+}
+
+void
+moonlight_scriptable_object_add_property (PluginInstance *plugin,
+					  MoonlightScriptableObjectObject *obj,
+					  gpointer property_handle,
+					  char *property_name,
+					  int property_type,
+					  bool can_read,
+					  bool can_write)
+{
+	DEBUGMSG ("adding property named %s to scriptable object %p\n", property_name, obj);
+
+	ScriptableProperty *prop = new ScriptableProperty ();
+	prop->property_handle = property_handle;
+	prop->property_type = property_type;
+	prop->can_read = can_read;
+	prop->can_write = can_write;
+
+	g_hash_table_insert (obj->properties, NPID(property_name), prop);
+}
+
+void
+moonlight_scriptable_object_add_method (PluginInstance *plugin,
+					MoonlightScriptableObjectObject *obj,
+					gpointer method_handle,
+					char *method_name,
+					int method_return_type,
+					int *method_parameter_types,
+					int parameter_count)
+
+{
+	DEBUGMSG ("adding method named %s to scriptable object %p\n", method_name, obj);
+
+	ScriptableMethod *method = new ScriptableMethod ();
+	method->method_handle = method_handle;
+	method->method_return_type = method_return_type;
+	method->method_parameter_types = new int[parameter_count];
+	memcpy (method->method_parameter_types, method_parameter_types, sizeof (int) * parameter_count);
+	method->parameter_count = parameter_count;
+
+	g_hash_table_insert (obj->methods, NPID(method_name), method);
+
+}
+
+void
+moonlight_scriptable_object_register (PluginInstance *plugin,
+				      char *name,
+				      MoonlightScriptableObjectObject *obj)
+{
+	DEBUGMSG ("registering scriptable object '%s' => %p", name, obj);
+
+	MoonlightContentObject* content = (MoonlightContentObject*)plugin->getRootObject()->content;
+
+	g_hash_table_insert (content->registered_scriptable_objects,
+			     NPID (name),
+			     obj);
+
+	DEBUGMSG (" => done");
+}
 
 void
 plugin_init_classes ()

@@ -1,3 +1,19 @@
+2007-07-16  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.cs: AppDomain.SetData the plugin instance so
+	WebApplication can get at it.
+
+	* plugin-class.cpp (variant_to_value): pseudo-inverse of
+	value_to_variant.  used by the scriptable object stuff.
+
+	Also, add the first pass at the scriptable object code.  it's
+	really, really rough at this point.
+	
+	* plugin.cpp (PluginInstance::GetValue): switch this to calling
+	getRootObject().
+	(PluginInstance::getRootObject): put the old GetValue (create or
+	retain) logic here.
+
 2007-07-12  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp: implement support for using a string as the

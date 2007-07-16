@@ -164,12 +164,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 			break;
 
 		case NPPVpluginScriptableNPObject:
-			if (rootobject == NULL)
-				rootobject = NPN_CreateObject (instance, MoonlightControlClass);
-			else
-				NPN_RetainObject (rootobject);
-
-			*((NPObject **) result) = rootobject;
+			*((NPObject**) result) = getRootObject ();
 			break;
 		default:
 			err = NPERR_INVALID_PARAM;
@@ -550,7 +545,10 @@ PluginInstance::getActualWidth ()
 MoonlightControlObject *
 PluginInstance::getRootObject ()
 {
-	NPN_RetainObject (rootobject);
+	if (rootobject == NULL)
+		rootobject = NPN_CreateObject (instance, MoonlightControlClass);
+	else
+		NPN_RetainObject (rootobject);
 	return (MoonlightControlObject*)rootobject;
 }
 

@@ -100,7 +100,10 @@ struct MoonlightContentObject : MoonlightObject {
 	    resizeScript (NULL), resizeMethodName (NULL),
 	    resizeIsScript (false), resizeSet (false)
 	{
+		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
+
+	GHashTable *registered_scriptable_objects;
 
 	NPObject *resizeScript;
 	char *resizeMethodName;
@@ -187,6 +190,10 @@ extern MoonlightDownloaderType* MoonlightDownloaderClass;
 
 /*** MoonlightScriptableObject ***************************************************/
 
+typedef void (*InvokeDelegate) (gpointer obj_handle, gpointer method_handle, Value** args, int arg_count, Value* return_value);
+typedef void (*SetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value value);
+typedef void (*GetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value *value);
+
 struct MoonlightScriptableObjectType : MoonlightObjectType {
 	MoonlightScriptableObjectType ();
 };
@@ -197,12 +204,47 @@ struct MoonlightScriptableObjectObject : public MoonlightObject
 {
 	MoonlightScriptableObjectObject (NPP instance) : MoonlightObject (instance)
 	{
-		scriptable = NULL;
+		managed_scriptable = NULL;
+		properties = g_hash_table_new (g_direct_hash, g_direct_equal);
+		methods = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
 
-	// XXX this should be a MonoObject?  what does a GCHandle in
-	// p/invoke result in on the unmanaged side?
-	void *scriptable;
+	gpointer managed_scriptable;
+	GHashTable *properties;
+	GHashTable *methods;
+
+	InvokeDelegate invoke;
+	SetPropertyDelegate setprop;
+	GetPropertyDelegate getprop;
 };
+
+extern "C" {
+	// These are meant to be called by System.Silverlight.dll
+
+	MoonlightScriptableObjectObject* moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,
+										     InvokeDelegate invoke,
+										     SetPropertyDelegate setprop,
+										     GetPropertyDelegate getprop);
+
+	void moonlight_scriptable_object_add_property (PluginInstance *plugin,
+						       MoonlightScriptableObjectObject *obj,
+						       gpointer property_handle,
+						       char *property_name,
+						       int property_type,
+						       bool can_read,
+						       bool can_write);
+
+	void moonlight_scriptable_object_add_method (PluginInstance *plugin,
+						     MoonlightScriptableObjectObject *obj,
+						     gpointer method_handle,
+						     char *method_name,
+						     int method_return_type,
+						     int *method_parameter_types,
+						     int parameter_count);
+
+	void moonlight_scriptable_object_register (PluginInstance *plugin,
+						   char *name,
+						   MoonlightScriptableObjectObject *obj);
+}
 
 #endif /* PLUGIN_CLASS */

@@ -162,6 +162,9 @@ namespace Moonlight {
 		{
 			plugin = _plugin;
 			surface = _surface;
+
+			AppDomain.CurrentDomain.SetData ("PluginInstance", plugin);
+			
 			this.filename = filename;
 			this.contents = contents;
 
