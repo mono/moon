@@ -216,7 +216,7 @@ class UIElement : public Visual {
 	//    applicable Leave/Enter events for the current mouse
 	//    position will be sent.
 	//
-	bool ReleaseMouseCapture ();
+	void ReleaseMouseCapture ();
 
 	// GetTotalOpacity
 	//   Get the cumulative opacity of this element, including all it's parents
@@ -278,7 +278,7 @@ void       uielement_transform_point      (UIElement *item, double *x, double *y
 UIElement *uielement_get_parent           (UIElement *item);
 
 bool       uielement_capture_mouse         (UIElement *item);
-bool       uielement_release_mouse_capture (UIElement *item);
+void       uielement_release_mouse_capture (UIElement *item);
 
 void     uielement_init ();
 G_END_DECLS

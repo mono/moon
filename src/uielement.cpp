@@ -349,17 +349,17 @@ UIElement::CaptureMouse ()
 	return s->SetMouseCapture (this);
 }
 
-bool
+void
 UIElement::ReleaseMouseCapture ()
 {
 	Surface *s = GetSurface ();
 	if (s == NULL)
-		return false;
+		return;
 
 	if (s->GetMouseCapture() != this)
-		return false;
+		return;
 
-	return s->SetMouseCapture (NULL);
+	s->SetMouseCapture (NULL);
 }
 
 void
@@ -552,8 +552,8 @@ uielement_capture_mouse (UIElement *item)
 	return item->CaptureMouse ();
 }
 
-bool
+void
 uielement_release_mouse_capture (UIElement *item)
 {
-	return item->ReleaseMouseCapture ();
+	item->ReleaseMouseCapture ();
 }
