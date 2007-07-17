@@ -14,6 +14,8 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 	successes).  The word "Statistics" shows up in the browser, but
 	nothing else.  No JS Console errors.
 
+	The delegates are probably actually defined in JS.
+
 * Binary Clock (http://explosivedog.com/silverlight/binaryclock/default.html)
 
 	works!
@@ -173,6 +175,8 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
 
+	Some controls appear on the screen.
+
 	JS console:
 
 		Error: Trying to get unsupported property on scriptable plugin object!
@@ -215,20 +219,29 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Matrix Digital Rain (http://blogs.sqlxml.org/wpfe/matrix/)
 
-	wpfe (not silverlight) demo?  I see this in the js console:
-
+	nothing shows in the browser, with this error in the JS console:
 
 		Error: wpfeControl1Host is not defined
 		Source File: http://blogs.sqlxml.org/wpfe/matrix/
 		Line: 26
 
+	This is actually broken Javascript which relies on IE exposing
+	element id's as properties of the page.
+
+	Looking at the javascript in
+	http://blogs.sqlxml.org/wpfe/matrix/ shows that this demo
+	depends on working Glyph stuff, which we lack.
+
 * Michael's Journal (http://blogs.msdn.com/Synergist/pages/journal.aspx)
 
 * Office Ribbon (http://xmldocs.net/)
 
+	JS functions are listed as event handlers in the xaml.
+
 * Photopoints Gallery (http://www.photopoints.com/main/Silverlight_Alpha/)
 
-	Uses WebApplication.RegisterScriptableObject
+	Fails due to missing HtmlPage.DocumentUri (we get a NRE
+	because that getter currently always return null).
 
 * Popfly (http://www.popfly.com/)
 
@@ -236,9 +249,8 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Reflecting Graph (http://davidbetz.net/reflectinggraphdemo/)
 
-	Html controls work, and the graph loads.  Clicking on a graph to
-	select it crashes the browser (or makes it hang indefinitely
-	sometimes.)
+	Html controls work, and the graph loads.  is there no way to
+	interact with the graph?
 
 * Sierpinski Triangle (http://www.cjcraft.com/silverlight/SierpinskiTriangle/Default.html)
 
@@ -293,9 +305,9 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 	UI comes up (and looks snazzy).  This is in JS console:
 
-		Error: Error calling method on NPObject!
-		Source File: http://silverlight.net/samples/1.0/Silverlight-Pad/js/main.js
-		Line: 32
+		Error: this.target.findName("itemXaml" + this.index.toString()) has no properties
+		Source File: file:///home/toshok/pad/js/xamlItem.js
+		Line: 17
 
 * Silverlight Rocks (http://www.junkship.org:8000/silverlightdemo/)
 
