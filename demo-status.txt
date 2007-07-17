@@ -52,19 +52,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Bubble Mark (http://bubblemark.com/)
 
-	Silverlight (CLR) page comes up, 3 fps.
-
-		Javascript controls are broken.  Interacting with them shows this in the JS console:
-
-			Error: Trying to get unsupported property on scriptable plugin object!
-			Source File: http://bubblemark.com/silverlight_clr.htm
-			Line: 1
-
-		This is due to "demo" not being available.  looking at the source, they use
-		WebApplication.RegisterScriptableObject, which needs
-	        to install it as a property on the
-		MoonlightContentObject, as it's retrieved in this test
-		using "_wpfTest.Content.demo".
+	works!
 
 	Silverlight (Javascript) page doesn't start, shows this in the console but doesn't crash:
 
