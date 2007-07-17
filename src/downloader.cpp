@@ -370,6 +370,9 @@ downloader_open (Downloader *dl, char *verb, char *URI, bool Async)
 void
 downloader_send (Downloader *dl)
 {
+	if (!dl->Completed () && dl->Started ())
+		downloader_abort (dl);
+
 	dl->Send ();
 }
 
