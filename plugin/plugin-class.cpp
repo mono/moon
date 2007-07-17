@@ -204,7 +204,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 }
 
 static void
-variant_to_value (NPVariant *v, Value *result)
+variant_to_value (const NPVariant *v, Value *result)
 {
 	switch (v->type) {
 	case NPVariantType_Void:
@@ -1818,8 +1818,18 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 
 	Value rv;
 
-	sobj->invoke (sobj->managed_scriptable, method->method_handle, NULL, 0, &rv);
+	Value* vargs = NULL;
 
+	if (argCount > 0) {
+		vargs = new Value[argCount];
+		for (int i = 0; i < argCount; i ++) {
+			variant_to_value (&args[i], &vargs[i]);
+		}
+	}
+
+	sobj->invoke (sobj->managed_scriptable, method->method_handle, vargs, argCount, &rv);
+
+	delete [] vargs;
 	/* XXX do something with rv here if the return type is something other than void */
 	DEBUG_WARN_NOTIMPLEMENTED ();
 	return true;

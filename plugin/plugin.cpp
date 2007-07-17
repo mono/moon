@@ -309,7 +309,7 @@ PluginInstance::JsRunOnload ()
 	DependencyObject *toplevel = surface->GetToplevel ();
 	DEBUGMSG ("In JsRunOnload, toplevel = %p", toplevel);
 
-	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (instance, surface->GetToplevel());
+	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (instance, toplevel);
 	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
 
 	if (NPN_Invoke (instance, object, NPID (expression),

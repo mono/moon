@@ -1,3 +1,14 @@
+2007-07-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (moonlight_scriptable_object_invoke): deal with
+	function arguments.
+
+	* plugin-class.h: change the type of InvokeDelegate - we pass an
+	array, not an array of pointers.
+
+	* plugin.cpp (JsRunOnload): remove redundant call to
+	surface->GetToplevel().
+
 2007-07-16  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.cs: AppDomain.SetData the plugin instance so
