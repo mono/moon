@@ -1,3 +1,10 @@
+2007-07-16  Miguel de Icaza  <miguel@novell.com>
+
+	* ManagedDownloader.cs: Do not use the auto_reset event after the
+	finished callback, because the downloader might just trigger a new
+	download and we would have pending events in the queue that are
+	never executed.    Fixes loop downloaded crash.
+
 2007-07-06  Miguel de Icaza  <miguel@novell.com>
 
 	* Makefile: add support for uploading the docs to the server.

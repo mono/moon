@@ -90,7 +90,7 @@ namespace Gtk.Moonlight {
 			path = Path.GetTempFileName ();
 			return File.OpenWrite (path);
 		}
-		
+
 		void Download ()
 		{
 			if (request == null)
@@ -108,24 +108,20 @@ namespace Gtk.Moonlight {
 					auto_reset.WaitOne ();
 
 					using (Stream rstream = r.GetResponseStream (), output = GetTempFile (out path)){
-						buffer = new byte [16*1024];
+						buffer = new byte [32*1024];
 						count = 0;
 						
 						while (downloading){
-							lock (buffer){
-								count = rstream.Read (buffer, 0, buffer.Length);
-							}
+							count = rstream.Read (buffer, 0, buffer.Length);
 							if (count == 0){
 								buffer = null;
 								break;
 							}
 							output.Write (buffer, 0, count);
-							
+
 							time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
 								tick_call = null;
-								lock (buffer){
-									downloader_write (downloader, buffer, 0, count);
-								}
+								downloader_write (downloader, buffer, 0, count);
 								auto_reset.Set ();
 							}, IntPtr.Zero);
 							auto_reset.WaitOne ();
@@ -135,11 +131,10 @@ namespace Gtk.Moonlight {
 					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
 						tick_call = null;
 						downloader_notify_finished (downloader, path);
-						auto_reset.Set ();
 					}, IntPtr.Zero);
-					auto_reset.WaitOne ();
 				}
 			} catch (Exception e){
+				Console.Error.WriteLine ("There was an error {0}", e);
 				downloader_notify_error (downloader, e.Message);
 			}
 		}
