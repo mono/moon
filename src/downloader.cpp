@@ -65,6 +65,7 @@ Downloader::Downloader ()
 	downloader_state = Downloader::create_state (this);
 	notify_size = NULL;
 	filename = NULL;
+	failed_msg = NULL;
 	started = false;
 	this->write = NULL;
 	file_size = -2;
@@ -83,6 +84,7 @@ Downloader::~Downloader ()
 	Downloader::destroy_state (downloader_state);
 
 	g_free (filename);
+	g_free (failed_msg);
 
 	// Delete temporary files.
 	if (part_hash != NULL){
@@ -227,12 +229,26 @@ Downloader::GetResponseFile (char *PartName)
 void
 Downloader::Open (char *verb, char *URI, bool Async)
 {
+	started = false;
+	g_free (failed_msg);
+	g_free (filename);
+	failed_msg = NULL;
+	filename = NULL;
 	open_func (verb, URI, Async, downloader_state);
 }
 
 void
 Downloader::Send ()
 {
+	if (filename != NULL){
+		NotifyFinished (filename);
+		return;
+	}
+	if (failed_msg != NULL){
+		Emit (DownloadFailedEvent, failed_msg);
+		return;
+	}
+
 	started = true;
 	send_func (downloader_state);
 }
@@ -274,6 +290,7 @@ Downloader::NotifyFailed (const char *msg)
 {
 	// dl->SetValue (Downloader::StatusProperty, Value (400))
 	// For some reason the status is 0, not updated on errors?
+	failed_msg = g_strdup (msg);
 	Emit (DownloadFailedEvent, (gpointer)msg);
 }
 

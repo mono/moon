@@ -603,7 +603,7 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 
-	if (downloader->Started ()) {
+	if (downloader->Started () || downloader->Completed ()) {
 		if (downloader->Completed ())
 			DownloaderComplete ();
 		

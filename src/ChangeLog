@@ -1,3 +1,14 @@
+2007-07-16  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (SetSource): Also handle Completed.
+
+	* downloader.cpp (Send): If a send operation is performed on an
+	object that has completed its operation, immediately emit the
+	finished event or error event.
+
+	(Open): During open invalidate the state, to
+	ensure that new downloads are properly triggered. 
+
 2007-07-16  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.h, frameworkelement.cpp: we need

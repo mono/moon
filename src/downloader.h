@@ -93,6 +93,7 @@ class Downloader : public DependencyObject {
 	int64_t total;
 
 	char *filename;
+	char *failed_msg;
 	bool  started;
 	
 	// Set by the consumer
