@@ -1,0 +1,15 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Name="root_canvas"
+	x:Class="NestedCanvas;assembly=nested-canvas.dll"
+	Loaded="Canvas_Loaded">
+
+	<Canvas x:Name="child_one" Background="Yellow" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100">
+		<TextBlock x:Name="child_one_text" Text="I am inside child one" />
+	</Canvas>
+
+	<Canvas x:Name="child_two" Background="Green" Canvas.Left="10" Canvas.Top="110" Width="100" Height="100">
+		<TextBlock x:Name="child_two_text" Text="I am inside child two" />
+	</Canvas>
+</Canvas>
+
