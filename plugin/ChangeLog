@@ -1,3 +1,7 @@
+2007-07-18  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Build fix.
+
 2007-07-17  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (moonlight_scriptable_object_invoke): deal with

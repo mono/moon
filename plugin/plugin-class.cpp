@@ -1251,7 +1251,9 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "releaseMouseCapture")) {
-		BOOLEAN_TO_NPVARIANT (((UIElement*)dob)->ReleaseMouseCapture (), *result);
+		((UIElement*)dob)->ReleaseMouseCapture ();
+
+		VOID_TO_NPVARIANT (*result);
 		return true;
 	}
 	else
