@@ -272,13 +272,8 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
 		if (NPVARIANT_IS_STRING (result)) {
-#ifdef RUNTIME
 			mono_loader_object = vm_xaml_str_loader_new (this, this->surface, NPVARIANT_TO_STRING (result).utf8characters);
 			TryLoad ();
-#else	
-			UIElement * element = xaml_create_from_str (NPVARIANT_TO_STRING (result).utf8characters, true, NULL, NULL, NULL, NULL);
-			this->surface->Attach (element);
-#endif
 		}
 
 		NPN_ReleaseVariantValue (&result);
@@ -390,13 +385,8 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		DEBUGMSG ("LoadFromXaml: %s", fname);
-#ifdef RUNTIME
-			mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
-			TryLoad ();
-#else	
-			UIElement *element = xaml_create_from_file (fname, true, NULL, NULL, NULL, NULL);
-			this->surface->Attach (element);
-#endif
+		mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
+		TryLoad ();
 
 		if (!this->isLoaded) {
 			this->isLoaded = true;
@@ -411,7 +401,6 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		downloader_notify_finished (dl, fname);
 	}
 	
-#ifdef RUNTIME
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
 		vm_insert_mapping (mono_loader_object, vm_missing_file, fname);
 		vm_insert_mapping (mono_loader_object, stream->url, fname);
@@ -421,7 +410,6 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		// retry to load
 		TryLoad ();
 	}
-#endif
 }
 
 int32
@@ -547,8 +535,8 @@ PluginInstance::getRootObject ()
 {
 	if (rootobject == NULL)
 		rootobject = NPN_CreateObject (instance, MoonlightControlClass);
-	else
-		NPN_RetainObject (rootobject);
+
+	NPN_RetainObject (rootobject);
 	return (MoonlightControlObject*)rootobject;
 }
 

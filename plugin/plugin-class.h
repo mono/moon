@@ -193,6 +193,7 @@ extern MoonlightDownloaderType* MoonlightDownloaderClass;
 typedef void (*InvokeDelegate) (gpointer obj_handle, gpointer method_handle, Value* args, int arg_count, Value* return_value);
 typedef void (*SetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value value);
 typedef void (*GetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value *value);
+typedef void (*EventHandlerDelegate) (gpointer obj_handle, gpointer event_handle);
 
 struct MoonlightScriptableObjectType : MoonlightObjectType {
 	MoonlightScriptableObjectType ();
@@ -207,15 +208,19 @@ struct MoonlightScriptableObjectObject : public MoonlightObject
 		managed_scriptable = NULL;
 		properties = g_hash_table_new (g_direct_hash, g_direct_equal);
 		methods = g_hash_table_new (g_direct_hash, g_direct_equal);
+		events = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
 
 	gpointer managed_scriptable;
 	GHashTable *properties;
 	GHashTable *methods;
+	GHashTable *events;
 
 	InvokeDelegate invoke;
 	SetPropertyDelegate setprop;
 	GetPropertyDelegate getprop;
+	EventHandlerDelegate addevent;
+	EventHandlerDelegate removeevent;
 };
 
 extern "C" {
@@ -224,7 +229,9 @@ extern "C" {
 	MoonlightScriptableObjectObject* moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,
 										     InvokeDelegate invoke,
 										     SetPropertyDelegate setprop,
-										     GetPropertyDelegate getprop);
+										     GetPropertyDelegate getprop,
+										     EventHandlerDelegate addevent,
+										     EventHandlerDelegate removeevent);
 
 	void moonlight_scriptable_object_add_property (PluginInstance *plugin,
 						       MoonlightScriptableObjectObject *obj,
@@ -233,6 +240,11 @@ extern "C" {
 						       int property_type,
 						       bool can_read,
 						       bool can_write);
+
+	void moonlight_scriptable_object_add_event (PluginInstance *plugin,
+						    MoonlightScriptableObjectObject *obj,
+						    gpointer event_handle,
+						    char *event_name);
 
 	void moonlight_scriptable_object_add_method (PluginInstance *plugin,
 						     MoonlightScriptableObjectObject *obj,

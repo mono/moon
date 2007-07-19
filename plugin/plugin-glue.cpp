@@ -220,9 +220,7 @@ NPP_Initialize (void)
 		already_initialized = true;
 		gtk_init (0, 0);
 		downloader_initialize ();
-#ifdef RUNTIME
 		vm_init ();
-#endif
 		runtime_init ();
 
 		plugin_init_classes ();

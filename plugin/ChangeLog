@@ -1,3 +1,25 @@
+2007-07-19  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h: add some scriptable object event stuff.
+
+	* plugin-class.cpp: a couple of things.
+
+	1) fix the _invalidate and _deallocate methods.  _invalidate
+	shouldn't release objects.  and _deallocate can now call delete
+	again, so we don't leak all our wrapper objects.
+
+	2) add some initial scriptable object event methods (add/remove),
+	but they don't actually do much yet.
+	
+	* plugin.cpp: fix the refcounting of the rootobject, and remove
+	some RUNTIME ifdefs.
+
+	* plugin-glue.cpp (NPP_Initialize): remove the RUNTIME ifdefs.
+
+	* moonlight.h: remove some of the unused ifdefs.  also, we're not
+	going to ever build this with RUNTIME or SCRIPTING not defined, so
+	remove them.
+
 2007-07-18  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: Build fix.

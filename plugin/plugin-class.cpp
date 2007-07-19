@@ -12,12 +12,7 @@
 
 // XXXXXXXXXXx
 //
-// we leak a lot in this file.
-//
-// all of the wrapper objects we create are leaked, since for some
-// reason delete'ing them doesn't work.
-//
-// Also, the listener proxies we create for dealing with events are
+// The listener proxies we create for dealing with events are
 // leaked.  we need to figure out how to deal with them (where to
 // store them so we can free them on removeListener, etc.)
 // 
@@ -242,8 +237,7 @@ point_allocate (NPP instance, NPClass *)
 static void
 point_deallocate (NPObject *npobject)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightPoint*)npobject;
+	delete (MoonlightPoint*)npobject;
 }
 
 static bool
@@ -307,8 +301,7 @@ rect_allocate (NPP instance, NPClass *)
 static void
 rect_deallocate (NPObject *npobject)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightRect*)npobject;
+	delete (MoonlightRect*)npobject;
 }
 
 static bool
@@ -391,16 +384,16 @@ mouse_event_allocate (NPP instance, NPClass *)
 static void
 mouse_event_deallocate (NPObject *npobject)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightMouseEventArgs*)npobject;
+	delete (MoonlightMouseEventArgsObject*)npobject;
 }
 
 static void
 mouse_event_invalidate (NPObject *npobject)
 {
 	MoonlightMouseEventArgsObject *ea = (MoonlightMouseEventArgsObject*)npobject;
-	if (ea->position)
-		NPN_ReleaseObject (ea->position);
+// XXX apparently we don't need to do this?
+//  	if (ea->position)
+//  		NPN_ReleaseObject (ea->position);
 	ea->position = NULL;
 }
 
@@ -500,8 +493,7 @@ _allocate (NPP instance, NPClass*)
 static void
 _deallocate (NPObject *npobj)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightObject*)npobj;
+	delete (MoonlightObject*)npobj;
 }
 
 static void
@@ -587,8 +579,7 @@ moonlight_control_allocate (NPP instance, NPClass*)
 static void
 moonlight_control_deallocate (NPObject *npobj)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightControlObject*)npobj;
+	delete (MoonlightControlObject*)npobj;
 }
 
 static void
@@ -596,12 +587,14 @@ moonlight_control_invalidate (NPObject *npobj)
 {
 	MoonlightControlObject *control = (MoonlightControlObject*)npobj;
 
-	if (control->settings)
-		NPN_ReleaseObject (control->settings);
+// XXX apparently we don't need to do this?
+// 	if (control->settings)
+// 		NPN_ReleaseObject (control->settings);
 	control->settings = NULL;
 
-	if (control->content)
-		NPN_ReleaseObject (control->content);
+// XXX apparently we don't need to do this?
+// 	if (control->content)
+// 		NPN_ReleaseObject (control->content);
 	control->content = NULL;
 }
 
@@ -839,8 +832,7 @@ moonlight_content_allocate (NPP instance, NPClass*)
 static void
 moonlight_content_deallocate (NPObject *npobj)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightContentObject*)npobj;
+	delete (MoonlightContentObject*)npobj;
 }
 
 static void
@@ -853,8 +845,9 @@ moonlight_content_invalidate (NPObject *npobj)
 	/* XXX free resizeMethodName */
 
 
-	if (content->resizeScript)
-		NPN_ReleaseObject (content->resizeScript);
+// XXX apparently we don't need to do this?
+// 	if (content->resizeScript)
+// 		NPN_ReleaseObject (content->resizeScript);
 	content->resizeScript = NULL;
 }
 
@@ -882,8 +875,12 @@ moonlight_content_has_property (NPObject *npobj, NPIdentifier name)
 
 	MoonlightContentObject *content = (MoonlightContentObject*)npobj;
 
-	return g_hash_table_lookup (content->registered_scriptable_objects,
-				    name) != NULL;
+	gpointer p = g_hash_table_lookup (content->registered_scriptable_objects,
+					  name);
+
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DEBUGMSG ("******** OBJECT %s AT %p\n", strname, p);
+	return p != NULL;
 }
 
 static bool
@@ -1054,8 +1051,7 @@ moonlight_dependency_object_allocate (NPP instance, NPClass*)
 static void
 moonlight_dependency_object_deallocate (NPObject *npobj)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightDependencyObjectObject*)npobj;
+	delete (MoonlightDependencyObjectObject*)npobj;
 }
 
 static void
@@ -1722,6 +1718,10 @@ struct ScriptableProperty {
 	bool can_write;
 };
 
+struct ScriptableEvent {
+	gpointer event_handle;
+};
+
 struct ScriptableMethod {
 	gpointer method_handle;
 	int method_return_type;
@@ -1739,8 +1739,7 @@ moonlight_scriptable_object_allocate (NPP instance, NPClass*)
 static void
 moonlight_scriptable_object_deallocate (NPObject *npobj)
 {
-	// XXX is delete broken in plugins?
-	// delete (MoonlightScriptableObjectObject*)npobj;
+	delete (MoonlightScriptableObjectObject*)npobj;
 }
 
 static void
@@ -1753,7 +1752,7 @@ moonlight_scriptable_object_invalidate (NPObject *npobj)
 	}
 	sobj->managed_scriptable = NULL;
 
-	// XXX free the properties and methods hashes.
+	// XXX free the properties, events, and methods hashes.
 }
 
 static bool
@@ -1761,7 +1760,8 @@ moonlight_scriptable_object_has_property (NPObject *npobj, NPIdentifier name)
 {
 	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
 
-	return g_hash_table_lookup (sobj->properties, name) != NULL;
+	return (g_hash_table_lookup (sobj->properties, name) != NULL
+		|| g_hash_table_lookup (sobj->events, name));
 }
 
 static bool
@@ -1784,16 +1784,27 @@ static bool
 moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
+
+	// first we try the property hash
 	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (sobj->properties, name);
-	if (!prop)
-		return false;
+	if (prop) {
+		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+		DEBUGMSG ("***************** setting scriptable object property %s", strname);
+		NPN_MemFree (strname);
 
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("***************** setting scriptable object property %s", strname);
-	NPN_MemFree (strname);
+		DEBUG_WARN_NOTIMPLEMENTED ();
+		return true;
+	}
+	// if that fails, look for the event of that name
+	ScriptableEvent *event = (ScriptableEvent*)g_hash_table_lookup (sobj->events, name);
+	if (event) {
+		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+		DEBUGMSG ("***************** adding scriptable object event %s", strname);
+		NPN_MemFree (strname);
 
-	DEBUG_WARN_NOTIMPLEMENTED ();
-	return true;
+		DEBUG_WARN_NOTIMPLEMENTED ();
+		return true;
+	}
 }
 
 static bool
@@ -1832,8 +1843,9 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 	sobj->invoke (sobj->managed_scriptable, method->method_handle, vargs, argCount, &rv);
 
 	delete [] vargs;
-	/* XXX do something with rv here if the return type is something other than void */
-	DEBUG_WARN_NOTIMPLEMENTED ();
+	if (method->method_return_type != 1 /* XXX this 1 is "void" */) {
+		value_to_variant (sobj, &rv, result);
+	}
 	return true;
 }
 
@@ -1858,7 +1870,10 @@ MoonlightScriptableObjectObject*
 moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,
 					    InvokeDelegate invoke_func,
 					    SetPropertyDelegate setprop_func,
-					    GetPropertyDelegate getprop_func)
+					    GetPropertyDelegate getprop_func,
+					    EventHandlerDelegate addevent_func,
+					    EventHandlerDelegate removeevent_func)
+
 {
 	MoonlightControlObject *root_object = plugin->getRootObject ();
 
@@ -1869,6 +1884,8 @@ moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scr
 	obj->invoke = invoke_func;
 	obj->setprop = setprop_func;
 	obj->getprop = getprop_func;
+	obj->addevent = addevent_func;
+	obj->removeevent = removeevent_func;
 
 	DEBUGMSG ("creating scriptable object wrapper => %p", obj);
 	return obj;
@@ -1883,7 +1900,7 @@ moonlight_scriptable_object_add_property (PluginInstance *plugin,
 					  bool can_read,
 					  bool can_write)
 {
-	DEBUGMSG ("adding property named %s to scriptable object %p\n", property_name, obj);
+	DEBUGMSG ("adding property named %s to scriptable object %p", property_name, obj);
 
 	ScriptableProperty *prop = new ScriptableProperty ();
 	prop->property_handle = property_handle;
@@ -1892,6 +1909,20 @@ moonlight_scriptable_object_add_property (PluginInstance *plugin,
 	prop->can_write = can_write;
 
 	g_hash_table_insert (obj->properties, NPID(property_name), prop);
+}
+
+void
+moonlight_scriptable_object_add_event (PluginInstance *plugin,
+				       MoonlightScriptableObjectObject *obj,
+				       gpointer event_handle,
+				       char *event_name)
+{
+	DEBUGMSG ("adding event named %s to scriptable object %p", event_name, obj);
+
+	ScriptableEvent *event = new ScriptableEvent ();
+	event->event_handle = event_handle;
+
+	g_hash_table_insert (obj->events, NPID(event_name), event);
 }
 
 void
@@ -1904,7 +1935,7 @@ moonlight_scriptable_object_add_method (PluginInstance *plugin,
 					int parameter_count)
 
 {
-	DEBUGMSG ("adding method named %s to scriptable object %p\n", method_name, obj);
+	DEBUGMSG ("adding method named %s (return type = %d) to scriptable object %p", method_name, method_return_type, obj);
 
 	ScriptableMethod *method = new ScriptableMethod ();
 	method->method_handle = method_handle;
@@ -1914,7 +1945,6 @@ moonlight_scriptable_object_add_method (PluginInstance *plugin,
 	method->parameter_count = parameter_count;
 
 	g_hash_table_insert (obj->methods, NPID(method_name), method);
-
 }
 
 void
