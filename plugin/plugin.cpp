@@ -227,7 +227,7 @@ PluginInstance::CreateWindow ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 	this->surface = new Surface (window->width, window->height);
-	this->surface->Attach (new Canvas ());
+	//this->surface->Attach (new Canvas ());
 	gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
 	display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
 	gtk_widget_show_all (this->container);
@@ -376,6 +376,11 @@ PluginInstance::TryLoad ()
 	//
 	// missing file was NULL, if error is set, display some message
 	//
+	if (!this->isLoaded) {
+		this->isLoaded = true;
+		if (this->onLoad)
+			JsRunOnload ();
+	}
 }
 
 void
@@ -387,12 +392,6 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		DEBUGMSG ("LoadFromXaml: %s", fname);
 		mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
 		TryLoad ();
-
-		if (!this->isLoaded) {
-			this->isLoaded = true;
-			if (this->onLoad)
-				JsRunOnload ();
-		}
 	}
 
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
@@ -530,6 +529,20 @@ PluginInstance::getActualWidth ()
 	return window->width;
 }
 
+void
+PluginInstance::getBrowserInformation (char **name, char **version,
+				       char **platform, char **userAgent,
+				       bool *cookieEnabled)
+{
+	*userAgent = (char*)NPN_UserAgent (instance);
+	DEBUG_WARN_NOTIMPLEMENTED ();
+
+	*name = "Foo!";
+	*version = "Foo!";
+	*platform = "Foo!";
+	*cookieEnabled = true;
+}
+
 MoonlightControlObject *
 PluginInstance::getRootObject ()
 {
@@ -550,4 +563,13 @@ int32
 plugin_instance_get_actual_height (PluginInstance *instance)
 {
 	return instance->getActualHeight ();
+}
+
+void
+plugin_instance_get_browser_information (PluginInstance *instance,
+					 char **name, char **version,
+					 char **platform, char **userAgent,
+					 bool *cookieEnabled)
+{
+	instance->getBrowserInformation (name, version, platform, userAgent, cookieEnabled);
 }

@@ -93,6 +93,10 @@ class PluginInstance
 
 	int32 getActualHeight ();
 	int32 getActualWidth ();
+
+	void getBrowserInformation (char **name, char **version,
+				    char **platform, char **userAgent,
+				    bool *cookieEnabled);
 };
 
 extern GSList *plugin_instances;
@@ -136,6 +140,11 @@ G_BEGIN_DECLS
 int32 plugin_instance_get_actual_width (PluginInstance *instance);
 int32 plugin_instance_get_actual_height (PluginInstance *instance);
 
+void plugin_instance_get_browser_information (PluginInstance *instance,
+					      char **name, char **version,
+					      char **platform, char **userAgent,
+					      bool *cookieEnabled);
+					      
 G_END_DECLS
 
 #endif /* MOON_PLUGIN */
