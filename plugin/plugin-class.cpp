@@ -615,11 +615,13 @@ moonlight_control_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 	MoonlightControlObject *rootobj = (MoonlightControlObject*)npobj;
 
 	if (name_matches (name, "settings")) {
+		NPN_RetainObject (rootobj->settings);
 		OBJECT_TO_NPVARIANT (rootobj->settings, *result);
 		return true;
 	} 
 
 	if (name_matches (name, "content")) {
+		NPN_RetainObject (rootobj->content);
 		OBJECT_TO_NPVARIANT (rootobj->content, *result);
 		return true;
 	} 
@@ -879,7 +881,7 @@ moonlight_content_has_property (NPObject *npobj, NPIdentifier name)
 					  name);
 
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("******** OBJECT %s AT %p\n", strname, p);
+	DEBUGMSG ("******** OBJECT %s AT %p", strname, p);
 	return p != NULL;
 }
 

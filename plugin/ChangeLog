@@ -1,5 +1,11 @@
 2007-07-19  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (moonlight_control_get_property): Retain the
+	settings/content objects before returning them.  fixes crash in
+	silverlight chess.
+
+2007-07-19  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.h, plugin.cpp: add getBrowserInformation call, useful for
 	populating the managed BrowserInformation object.  need to flesh
 	out how to get the other info.  userAgent is easy.
