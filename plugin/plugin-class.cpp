@@ -72,29 +72,68 @@ string_to_npvariant (char *value, NPVariant *result)
 }
 
 
-typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *value);
+EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb)
+{
+	this->instance = instance;
+	this->event_name = g_strdup (event_name);
 
-struct EventListenerProxy {
-	NPP instance;
+	if (NPVARIANT_IS_OBJECT (*cb)) {
+		this->is_func = true;
+		this->callback = NPVARIANT_TO_OBJECT (*cb);
+		NPN_RetainObject ((NPObject*)this->callback);
+	}
+	else {
+		this->is_func = false;
+		this->callback = g_strdup (NPVARIANT_TO_STRING (*cb).utf8characters);
+	}
+}
 
-	bool is_func;
+EventListenerProxy::~EventListenerProxy ()
+{
+	if (is_func)
+		NPN_ReleaseObject ((NPObject*)this->callback);
+	else
+		g_free ((char*)this->callback);
 
-	/* if @is_func == true, callback is an NPObject (the function object)
-	   if @is_func == false, callback is a char* (the function name)
-	*/
-	gpointer callback;
+	g_free (event_name);
+}
 
-	EventArgsWrapper event_args_wrapper;
-};
+void
+EventListenerProxy::AddHandler (EventObject *obj)
+{
+	obj->AddHandler (event_name, proxy_listener_to_javascript, this);
+}
 
-static void
-default_wrapper (NPP instance, gpointer calldata, NPVariant *value)
+void
+EventListenerProxy::RemoveHandler (EventObject *obj)
+{
+	obj->RemoveHandler (event_name, proxy_listener_to_javascript, this);
+}
+
+EventArgsWrapper
+EventListenerProxy::get_wrapper_for_event_name (const char *event_name)
+{
+	if (!g_strcasecmp ("mousemove", event_name) ||
+	    !g_strcasecmp ("mouseleftbuttonup", event_name) ||
+	    !g_strcasecmp ("mouseleftbuttondown", event_name) ||
+	    !g_strcasecmp ("mouseenter", event_name)) {
+
+		return mouse_event_wrapper;
+	}
+	// XXX need to handle key events
+	else {
+		return default_wrapper;
+	}
+}
+
+void
+EventListenerProxy::default_wrapper (NPP instance, gpointer calldata, NPVariant *value)
 {
 	NULL_TO_NPVARIANT (*value);
 }
 
-static void
-mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value)
+void
+EventListenerProxy::mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value)
 {
 	MouseEventArgs *ea = (MouseEventArgs*)calldata;
 	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject*)NPN_CreateObject (instance, MoonlightMouseEventArgsClass);
@@ -103,8 +142,8 @@ mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value)
 	OBJECT_TO_NPVARIANT (jsea, *value);
 }
 
-static void
-proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
+void
+EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
 {
 	EventListenerProxy *proxy = (EventListenerProxy*)closure;
 
@@ -117,7 +156,10 @@ proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer c
 	NPN_RetainObject (depobj); // XXX leak?
 
 	OBJECT_TO_NPVARIANT (depobj, args[0]);
-	proxy->event_args_wrapper (proxy->instance, calldata, &args[1]);
+
+	EventArgsWrapper event_args_wrapper = get_wrapper_for_event_name (proxy->event_name);
+
+	event_args_wrapper (proxy->instance, calldata, &args[1]);
 
 	if (proxy->is_func) {
 		/* the event listener was added with a JS function object */
@@ -139,21 +181,6 @@ proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer c
 	}
 }
 
-static EventArgsWrapper
-get_wrapper_for_event_name (const char *event_name)
-{
-	if (!g_strcasecmp ("mousemove", event_name) ||
-	    !g_strcasecmp ("mouseleftbuttonup", event_name) ||
-	    !g_strcasecmp ("mouseleftbuttondown", event_name) ||
-	    !g_strcasecmp ("mouseenter", event_name)) {
-
-		return mouse_event_wrapper;
-	}
-	// XXX need to handle key events
-	else {
-		return default_wrapper;
-	}
-}
 
 static void
 value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
@@ -843,14 +870,11 @@ moonlight_content_invalidate (NPObject *npobj)
 	MoonlightContentObject *content = (MoonlightContentObject*)npobj;
 
 	/* XXX free the registered_scriptable_objects hash */
+	DEBUG_WARN_NOTIMPLEMENTED ();
 
-	/* XXX free resizeMethodName */
-
-
-// XXX apparently we don't need to do this?
-// 	if (content->resizeScript)
-// 		NPN_ReleaseObject (content->resizeScript);
-	content->resizeScript = NULL;
+	if (content->resizeProxy)
+		delete content->resizeProxy;
+	content->resizeProxy = NULL;
 }
 
 static const char *const
@@ -937,26 +961,19 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 		return true;
 	}
 	else if (name_matches (name, "onResize")) {
-#if notyet
+#if notyet /* XXX Surface needs to inherit from DependencyObject */
 		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
+		EventListenerProxy *proxy = new EventListenerProxy (((MoonlightObject*)npobj)->instance,
+								    "Resize",
+								    value);
 
-		if (!NPVARIANT_IS_OBJECT (*value)) {
-			DEBUG_WARN_NOTIMPLEMENTED ();
-			return true;
-		}
+		proxy->AddHandler (plugin->surface);
 
-		EventListenerProxy *proxy = new EventListenerProxy ();
-		proxy->instance = ((MoonlightObject*)npobj)->instance;
-		proxy->callback = NPVARIANT_TO_OBJECT (*value);
-		proxy->event_args_wrapper = get_wrapper_for_event_name ("Resize");
-
-		NPN_RetainObject (proxy->callback);
-
-		plugin->surface->AddHandler ("Resize", proxy_listener_to_javascript, proxy);
-#endif		
+		// XXX store the proxy someplace in this object
+#endif
+		DEBUG_WARN_NOTIMPLEMENTED ();
 		return true;
 	}
-
 	return false;
 }
 
@@ -1217,21 +1234,11 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		name[0] = toupper(name[0]);
 
-		EventListenerProxy *proxy = new EventListenerProxy ();
-		proxy->instance = ((MoonlightObject*)npobj)->instance;
-		proxy->event_args_wrapper = get_wrapper_for_event_name (name);
+		EventListenerProxy *proxy = new EventListenerProxy (((MoonlightObject*)npobj)->instance,
+								    name,
+								    &args[1]);
 
-		if (NPVARIANT_IS_OBJECT (args[1])) {
-			proxy->is_func = true;
-			proxy->callback = NPVARIANT_TO_OBJECT (args[1]);
-			NPN_RetainObject ((NPObject*)proxy->callback);
-		}
-		else {
-			proxy->is_func = false;
-			proxy->callback = g_strdup (NPVARIANT_TO_STRING (args[1]).utf8characters);
-		}
-
-		dob->AddHandler (name, proxy_listener_to_javascript, proxy);
+		proxy->AddHandler (dob);
 
 		g_free (name);
 

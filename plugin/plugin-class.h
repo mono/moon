@@ -18,6 +18,34 @@
 
 void plugin_init_classes (void);
 
+/*** EventListenerProxy */
+typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *value);
+
+class EventListenerProxy {
+ public:
+	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
+	~EventListenerProxy ();
+	void AddHandler (EventObject *obj);
+	void RemoveHandler (EventObject *obj);
+
+ private:
+	NPP instance;
+
+	bool is_func;
+
+	/* if @is_func == true, callback is an NPObject (the function object)
+	   if @is_func == false, callback is a char* (the function name)
+	*/
+	gpointer callback;
+
+	char *event_name;
+
+	static EventArgsWrapper get_wrapper_for_event_name (const char *event_name);
+	static void default_wrapper (NPP instance, gpointer calldata, NPVariant *value);
+	static void mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
+	static void proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure);
+};
+
 /*** MoonlightObjectClass **************************************************************/
 
 struct MoonlightObjectType : NPClass {
@@ -97,18 +125,14 @@ struct MoonlightContentType : MoonlightObjectType {
 struct MoonlightContentObject : MoonlightObject {
 	MoonlightContentObject (NPP instance)
 	  : MoonlightObject (instance),
-	    resizeScript (NULL), resizeMethodName (NULL),
-	    resizeIsScript (false), resizeSet (false)
+	    resizeProxy (NULL)
 	{
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
 
 	GHashTable *registered_scriptable_objects;
 
-	NPObject *resizeScript;
-	char *resizeMethodName;
-	bool resizeIsScript;
-	bool resizeSet;
+	EventListenerProxy *resizeProxy;
 };
 
 extern MoonlightContentType* MoonlightContentClass;

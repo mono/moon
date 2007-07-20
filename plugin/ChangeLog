@@ -1,5 +1,10 @@
 2007-07-19  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.h, plugin-class.cpp: factor out the
+	EventListenerProxy stuff into a separate class.
+
+2007-07-19  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp (moonlight_control_get_property): Retain the
 	settings/content objects before returning them.  fixes crash in
 	silverlight chess.
