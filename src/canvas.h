@@ -32,32 +32,13 @@ class Canvas : public Panel {
 
 	virtual Surface *GetSurface ();
 
-	//
-	// Contains the last element where the mouse entered
-	//
-	UIElement *mouse_over;
-	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
 	Point GetTransformOrigin ();
 
-	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
-	virtual void UpdateTransform ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
-	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
-
-	virtual UIElement* FindMouseOver (cairo_t *cr, double x, double y);
-
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
-
-	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
-	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
-	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
-	virtual void Enter (cairo_t *cr, int state, double x, double y);
-	virtual void Leave ();
-	
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
 	
 	static DependencyProperty* TopProperty;

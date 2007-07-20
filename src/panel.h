@@ -14,6 +14,11 @@
 
 class Panel : public FrameworkElement {
 	Brush *background;
+
+	//
+	// Contains the last element where the mouse entered
+	//
+	UIElement *mouse_over;
  public:
 	Panel ();
 	virtual ~Panel ();
@@ -21,6 +26,22 @@ class Panel : public FrameworkElement {
 
 	VisualCollection *GetChildren ();
 	void SetChildren (VisualCollection *col);
+
+	virtual void UpdateTransform ();
+	virtual void ComputeBounds ();
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+
+	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
+
+	virtual UIElement* FindMouseOver (cairo_t *cr, double x, double y);
+
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
+
+	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
+	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
+	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
+	virtual void Enter (cairo_t *cr, int state, double x, double y);
+	virtual void Leave ();
 
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;

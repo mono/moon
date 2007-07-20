@@ -1,5 +1,20 @@
 2007-07-20  Chris Toshok  <toshok@ximian.com>
 
+	* canvas.cpp, canvas.h, panel.cpp, panel.h: move much of the guts
+	from Canvas to Panel.  I consider this cleaning up the source, as
+	it's entirely possible to write Panel subclasses that aren't
+	Canvas subclasses, but if you did that you'd have no
+	rendering/event handling.
+
+	Now pretty much all logic that involves iterating over the list of
+	children is in Panel.  This also greatly simplifies Canvas.  It is
+	now just a Panel with 2 interesting things about it: 1) it
+	provides 2 attached properties to lay out its children, and 2) it
+	allows the surface to dictate its bounds if it's the toplevel
+	element.
+
+2007-07-20  Chris Toshok  <toshok@ximian.com>
+
 	* downloader.cpp (Open): set the uri of the downloader.
 
 2007-07-20  Chris Toshok  <toshok@ximian.com>
