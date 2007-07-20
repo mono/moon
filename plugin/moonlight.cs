@@ -31,6 +31,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Browser;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Collections;
@@ -353,6 +354,10 @@ namespace Moonlight {
 			if (res == null) {
 				Console.WriteLine ("moonlight.exe: unable to create object instance:  '{0}'", name);
 				return IntPtr.Zero;
+			}
+
+			if (res.GetType().GetCustomAttributes (typeof (ScriptableAttribute), false).Length != 0) {
+				Console.WriteLine ("TODO: we need to register scriptable DependencyObjects using WebApplication.RegisterScriptableObject ('x:Name attribute', instance).");
 			}
 
 			MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").GetMethod ("GetNativeObject",
