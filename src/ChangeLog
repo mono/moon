@@ -1,3 +1,8 @@
+2007-07-20  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp (html_timer_timeout_add): Added helper routine to
+	setup Html timeouts.
+
 2007-07-20  Chris Toshok  <toshok@ximian.com>
 
 	* canvas.cpp, canvas.h, panel.cpp, panel.h: move much of the guts

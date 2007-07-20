@@ -17,6 +17,7 @@
 #include <math.h>
 
 #include <gtk/gtk.h>
+#include <glib.h>
 #define Visual _XVisual
 #include <gdk/gdkx.h>
 
@@ -775,6 +776,23 @@ runtime_init (void)
 	media_init ();
 	panel_init ();
 	stylus_init ();
+}
+
+uint32_t
+html_timer_timeout_add (int32_t interval, GSourceFunc callback, gpointer data)
+{
+#if GLIB_CHECK_VERSION(2,14,0)
+	if (interval > 1000 && ((interval % 1000) == 0))
+		return g_timeout_add_seconds (interval / 1000, callback, data);
+	else
+#endif
+		return g_timeout_add (interval, callback, data);
+}
+
+void
+html_timer_timeout_stop (uint32_t source_id)
+{
+	g_source_remove (source_id);
 }
 
 void
