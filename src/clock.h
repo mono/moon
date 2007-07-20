@@ -204,6 +204,8 @@ class TimeManager : public EventObject {
 
 	TimeManagerOp flags;
 
+	GMutex *tick_call_mutex;
+
 	GList *tick_calls;
 };
 

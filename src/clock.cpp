@@ -71,6 +71,8 @@ TimeManager::TimeManager ()
 {
 	start_time = get_now ();
 
+	tick_call_mutex = g_mutex_new ();
+
 	UpdateInputEvent = RegisterEvent ("update-input");
 	RenderEvent = RegisterEvent ("render");
 }
@@ -129,12 +131,16 @@ void
 TimeManager::InvokeTickCall ()
 {
 	if (tick_calls) {
+		g_mutex_lock (tick_call_mutex);
+
 		TickCall *call = (TickCall*)tick_calls->data;
 
 		// unlink the call first
 		GList *new_tick_calls = tick_calls->next;
 		g_list_free_1 (tick_calls);
 		tick_calls = new_tick_calls;
+
+		g_mutex_unlock (tick_call_mutex);
 
 		// now invoke it
 		call->func (call->data);
@@ -213,7 +219,9 @@ TimeManager::AddTickCall (void (*func)(gpointer), gpointer tick_data)
 	TickCall *call = g_new (TickCall, 1);
 	call->func = func;
 	call->data = tick_data;
+	g_mutex_lock (tick_call_mutex);
 	tick_calls = g_list_append (tick_calls, call);
+	g_mutex_unlock (tick_call_mutex);
 }
 
 void
