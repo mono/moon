@@ -1,5 +1,11 @@
 2007-07-20  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp: allocate the event hash/ptrarray lazily,
+	so the potentially large number of objects which don't register
+	events don't allocate them.
+
+2007-07-20  Chris Toshok  <toshok@ximian.com>
+
 	* clock.h, clock.cpp: lock around access to the tick_call list, so
 	tick calls can be added from other threads.
 
