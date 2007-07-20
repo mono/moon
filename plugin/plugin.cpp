@@ -15,9 +15,40 @@
 #include "moon-mono.h"
 #include "downloader.h"
 
-void 
+/* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
+static const gchar *moonlight_authors[] = {
+	"Andreia Gaita <avidigal@novell.com>",
+	"Atsushi Enomoto <atsushi@ximian.com>",
+	"Chris Toshok <toshok@ximian.com>",
+	"Dick Porter <dick@ximian.com>",
+	"Everaldo Canuto <ecanuto@novell.com>",
+	"Jackson Harper <jackson@ximian.com>",
+	"Jeffrey Stedfast <fejj@novell.com>",
+	"Larry Ewing <lewing@novell.com>",
+	"Marek Habersack <mhabersack@novell.com>",
+	"Miguel de Icaza <miguel@novell.com>",
+	"Rodrigo Kumpera <rkumpera@novell.com>",
+	"Rolf Bjarne Kvinge <RKvinge@novell.com>",
+	"Sebastien Pouliot <sebastien@ximian.com>",
+	NULL
+};
+
+void
 plugin_menu_about (PluginInstance *plugin)
 {
+	GtkAboutDialog *about = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
+
+	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
+	gtk_about_dialog_set_version (about, PLUGIN_OURVERSION);
+
+	gtk_about_dialog_set_copyright (about, "Copyright 2007 Novell, Inc. (http://www.novell.com/)");
+	gtk_about_dialog_set_website (about, "http://mono-project.com/Moonlight/");
+	gtk_about_dialog_set_website_label (about, "Project Website");
+
+	gtk_about_dialog_set_authors (about, moonlight_authors);
+
+	gtk_dialog_run (GTK_DIALOG (about));
+
 	DEBUGMSG ("*** plugin_menu_about");
 }
 
