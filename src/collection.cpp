@@ -150,6 +150,24 @@ Collection::Remove (DependencyObject *data)
 	return true;
 }
 
+bool
+Collection::RemoveAt (int index)
+{
+	Collection::Node *n = (Collection::Node *) list->Index (index);
+
+	generation++;
+	if (n == NULL)
+		return false;
+
+	n->Unlink ();
+	n->obj->Detach (NULL, this);
+	if (closure)
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, n->obj, NULL);
+	
+	delete n;
+	return true;
+}
+
 void
 Collection::Clear ()
 {
@@ -205,6 +223,16 @@ bool
 collection_remove (Collection *collection, DependencyObject *data)
 {
 	return collection->Remove (data);
+}
+
+bool
+collection_remove_at (Collection *collection, int index)
+{
+	if (index > collection->list->Length ())
+		return false;
+
+	collection->RemoveAt (index);
+	return true;
 }
 
 void
@@ -428,6 +456,25 @@ VisualCollection::Remove (DependencyObject *data)
 	return b;
 }
 
+bool
+VisualCollection::RemoveAt (int index)
+{
+	Panel *panel = (Panel *) closure;
+
+	Collection::Node *n = (Collection::Node *) list->Index (index);
+	if (n == NULL)
+		return false;
+	UIElement *item = (UIElement *) n->obj;
+
+ 	item->Invalidate ();
+	bool b = Collection::RemoveAt (index);
+	z_sorted_list->Remove (UIElementNodeFinder, n->obj);
+	if (panel)
+		panel->UpdateBounds ();
+
+	return b;
+}
+
 void
 VisualCollection::Clear ()
 {
@@ -498,6 +545,22 @@ TriggerCollection::Remove (DependencyObject *data)
 	EventTrigger *trigger = (EventTrigger *) data;
 
 	bool b = Collection::Remove (trigger);
+
+	trigger->RemoveTarget (fwe);
+	return b;
+}
+
+bool
+TriggerCollection::RemoveAt (int index)
+{
+	FrameworkElement *fwe = (FrameworkElement *) closure;
+	Collection::Node *n = (Collection::Node *) list->Index (index);
+	if (n == NULL)
+		return false;
+
+	EventTrigger *trigger = (EventTrigger *) n->obj;
+
+	bool b = Collection::RemoveAt (index);
 
 	trigger->RemoveTarget (fwe);
 	return b;

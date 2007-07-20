@@ -54,6 +54,11 @@ p_downloader_open (char *verb, char *uri, bool async, gpointer state)
 {
 	PluginDownloader *pd = (PluginDownloader *) state;
 
+	if (pd->verb)
+		g_free (pd->verb);
+	if (pd->uri)
+		g_free (pd->uri);
+
 	pd->verb = g_strdup (verb);
 	pd->uri = g_strdup (uri);
 }
@@ -63,6 +68,7 @@ p_downloader_send (gpointer state)
 {
 	PluginDownloader *pd = (PluginDownloader *) state;
 
+	fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
 	//
 	// This is a hack: we need the p_downloader_create_state to provide us
 	// with the pointer to this plugin.    Currently we do not track this
@@ -94,6 +100,7 @@ p_downloader_send (gpointer state)
 static void
 p_downloader_abort (gpointer state)
 {
+	fprintf (stderr, "moonlight-pluging: implement downloader abort\n");
 	DEBUGMSG ("downloader_abort");
 }
 

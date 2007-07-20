@@ -1,5 +1,7 @@
 2007-07-20  Miguel de Icaza  <miguel@novell.com>
 
+	* collection.cpp: Add support for RemoveAt. 
+
 	* runtime.cpp (html_timer_timeout_add): Added helper routine to
 	setup Html timeouts.
 

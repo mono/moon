@@ -336,16 +336,19 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 		
 * Smalltalk in Silverlight (http://vistascript.net/vistascript/test)
 
-	Depends on implicitly loaded assembly:
-
-		** (Gecko:25466): WARNING **: The following assembly referenced from /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/71054617d01 could not be loaded:
-		     Assembly:   Desktop    (assemblyref_index=2)
+	Implicit assembly loading seems to fail loading Smalltalk:
+		** (Gecko:2397): WARNING **: The following assembly referenced from
+		/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/8B67FFBEd01 could
+		not be loaded:
+		     Assembly:   Smalltalk    (assemblyref_index=2)
 		     Version:    1.0.0.0
 		     Public Key: (none)
-		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache).
-
-* Sprawl (http://silverlight.net/samples/1.0/sprawl/default.html)
-
+		The assembly was not found in the Global Assembly Cache, a path listed
+		in the MONO_PATH environment variable, or in the location of the
+		executing assembly
+		(/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache).
+		
+		
 	javascript: delegate hookup failures.
 
 		attempting to hookup delegate javascript:handleLoad to event Loaded on object of type System.Windows.Controls.Canvas
@@ -436,3 +439,12 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 		It looks like it's doing the same
 		WebApplication.RegisterScriptable object stuff that
 		bubblemark is doing.
+
+* Lutz Roeder Monotone, http://www.aisto.com/Roeder/Silverlight/Monotone/Default.aspx
+
+	http://www.aisto.com/Roeder/Silverlight/
+
+	Starts up but it does not play back the audio, nor does it show the
+	actual expected animation, the animation flashes in the screen and then
+	vanishes
+

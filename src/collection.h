@@ -41,6 +41,7 @@ class Collection : public DependencyObject {
 
 	virtual void Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
+	virtual bool RemoveAt (int index);
 	virtual void Insert (int index, DependencyObject *data);
 	virtual void Clear  ();
 
@@ -81,6 +82,7 @@ class VisualCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
+	virtual bool RemoveAt (int index);
 	virtual void Insert (int index, DependencyObject *data);
 	virtual void Clear  ();
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
@@ -100,6 +102,7 @@ class TriggerCollection : public Collection {
 
 	virtual void Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
+	virtual bool RemoveAt (int index);
 	virtual void Insert (int index, DependencyObject *data);
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 };
@@ -158,6 +161,7 @@ G_BEGIN_DECLS
 
 void collection_add    (Collection *collection, DependencyObject *data);
 bool collection_remove (Collection *collection, DependencyObject *data);
+bool collection_remove_at (Collection *collection, int index);
 void collection_insert (Collection *collection, int index, DependencyObject *data);
 void collection_clear  (Collection *collection);
 int  collection_count  (Collection *collection);
