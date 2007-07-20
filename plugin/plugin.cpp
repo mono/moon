@@ -48,8 +48,6 @@ plugin_menu_about (PluginInstance *plugin)
 	gtk_about_dialog_set_authors (about, moonlight_authors);
 
 	gtk_dialog_run (GTK_DIALOG (about));
-
-	DEBUGMSG ("*** plugin_menu_about");
 }
 
 gboolean
