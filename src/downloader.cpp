@@ -190,7 +190,7 @@ Downloader::ll_downloader_get_response_file (char *PartName)
 			file = NULL;
 			goto leave1;
 		}
-		if (fwrite (buffer, n, 1, f) != 1){
+		if (n != 0 && fwrite (buffer, n, 1, f) != 1){
 			unlink (file);
 			file = NULL;
 			goto leave1;
