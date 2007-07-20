@@ -230,10 +230,10 @@ variant_to_value (const NPVariant *v, Value *result)
 {
 	switch (v->type) {
 	case NPVariantType_Void:
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("void variant type");
 		break;
 	case NPVariantType_Null:
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("null variant type");
 		*result = Value (Type::DEPENDENCY_OBJECT);
 		break;
 	case NPVariantType_Bool:
@@ -249,7 +249,7 @@ variant_to_value (const NPVariant *v, Value *result)
 		*result = Value (NPVARIANT_TO_STRING(*v).utf8characters);
 		break;
 	case NPVariantType_Object:
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("object variant type");
 		break;
 	}
 }
@@ -436,12 +436,12 @@ mouse_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightRect *r = (MoonlightRect*)npobj;
 	if (name_matches (name, "shift")) {
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("shift MouseEvent property");
 		BOOLEAN_TO_NPVARIANT (false, *result);
 		return true;
 	}
 	else if (name_matches (name, "ctrl")) {
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("ctrl MouseEvent property");
 		BOOLEAN_TO_NPVARIANT (false, *result);
 		return true;
 	}
@@ -829,7 +829,7 @@ moonlight_settings_set_property (NPObject *npobj, NPIdentifier name, const NPVar
 
 	// not implemented yet.
 	if (name_matches (name, "maxFrameRate")) {
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("maxFrameRate property");
 		return true;
 	}
 
@@ -870,7 +870,7 @@ moonlight_content_invalidate (NPObject *npobj)
 	MoonlightContentObject *content = (MoonlightContentObject*)npobj;
 
 	/* XXX free the registered_scriptable_objects hash */
-	DEBUG_WARN_NOTIMPLEMENTED ();
+	DEBUG_WARN_NOTIMPLEMENTED ("need to free registered scriptable objects");
 
 	if (content->resizeProxy)
 		delete content->resizeProxy;
@@ -904,8 +904,6 @@ moonlight_content_has_property (NPObject *npobj, NPIdentifier name)
 	gpointer p = g_hash_table_lookup (content->registered_scriptable_objects,
 					  name);
 
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("******** OBJECT %s AT %p", strname, p);
 	return p != NULL;
 }
 
@@ -971,7 +969,7 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 
 		// XXX store the proxy someplace in this object
 #endif
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("content onResize");
 		return true;
 	}
 	return false;
@@ -1000,7 +998,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 	}
 	else if (name_matches (name, "createObject")) {
 		// not implemented yet
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("content.createObject");
 		return true;
 	}
 	else if (name_matches (name, "createFromXaml")) {
@@ -1024,7 +1022,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 	}
 	else if (name_matches (name, "createFromXamlDownloader")) {
 		// not implemented yet
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("content.createFromXamlDownloader");
 		return true;
 	}
 
@@ -1171,7 +1169,7 @@ moonlight_dependency_object_set_property (NPObject *npobj, NPIdentifier name, co
 			strvalue = g_strdup_printf ("%g", NPVARIANT_TO_DOUBLE (*value));
 		}
 		else if (!NPVARIANT_IS_STRING (*value)) {
-			DEBUG_WARN_NOTIMPLEMENTED ();
+			DEBUG_WARN_NOTIMPLEMENTED ("unhandled variant type in do.set_property");
 			return true;
 		}
 
@@ -1220,6 +1218,8 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 
 		OBJECT_TO_NPVARIANT ((NPObject*)plugin->getRootObject(), *result);
+
+		return true;
 	}
 	else if (name_matches (name, "addEventListener")) {
 		if (argCount != 2)
@@ -1246,7 +1246,7 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 	}
 	else if (name_matches (name, "removeEventlistener")) {
 		// not yet implemented
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("do.removeEventListener");
 		return true;
 	}
 	// XXX these next two methods should live in a UIElement
@@ -1519,7 +1519,7 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 	}
 	else if (name_matches (name, "seek")) {
 		// not yet implemented
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("storyboard.seek");
 #if notyet
 		if (argCount != 1)
 			return true;
@@ -1785,7 +1785,7 @@ moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NP
 	DEBUGMSG ("***************** getting scriptable object property %s", strname);
 	NPN_MemFree (strname);
 
-	DEBUG_WARN_NOTIMPLEMENTED ();
+	DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.get_property");
 	return true;
 }
 
@@ -1801,7 +1801,7 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 		DEBUGMSG ("***************** setting scriptable object property %s", strname);
 		NPN_MemFree (strname);
 
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.set_property");
 		return true;
 	}
 	// if that fails, look for the event of that name
@@ -1811,7 +1811,7 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 		DEBUGMSG ("***************** adding scriptable object event %s", strname);
 		NPN_MemFree (strname);
 
-		DEBUG_WARN_NOTIMPLEMENTED ();
+		DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.register_event");
 		return true;
 	}
 }

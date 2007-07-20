@@ -50,10 +50,10 @@
 #endif
 #define G_LOG_DOMAIN "Moonlight"
 #define DEBUGMSG(x...) g_message (x)
-#define DEBUG_WARN_NOTIMPLEMENTED() g_warning ("functionality not yet implemented:" G_STRLOC)
+#define DEBUG_WARN_NOTIMPLEMENTED(msg) g_warning ("functionality not yet implemented (%s):" G_STRLOC, msg)
 #else
 #define DEBUGMSG(x...)
-#define DEBUG_WARN_NOTIMPLEMENTED()
+#define DEBUG_WARN_NOTIMPLEMENTED(msg)
 #endif
 
 #endif /* PLUGIN_CONFIG */
