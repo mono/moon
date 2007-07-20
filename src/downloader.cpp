@@ -234,6 +234,7 @@ Downloader::Open (char *verb, char *URI, bool Async)
 	g_free (filename);
 	failed_msg = NULL;
 	filename = NULL;
+	SetValue (Downloader::UriProperty, Value(URI));
 	open_func (verb, URI, Async, downloader_state);
 }
 

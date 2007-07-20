@@ -1,5 +1,9 @@
 2007-07-20  Chris Toshok  <toshok@ximian.com>
 
+	* downloader.cpp (Open): set the uri of the downloader.
+
+2007-07-20  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.cpp: allocate the event hash/ptrarray lazily,
 	so the potentially large number of objects which don't register
 	events don't allocate them.
