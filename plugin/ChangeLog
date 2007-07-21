@@ -1,3 +1,9 @@
+2007-07-21  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (variant_to_value): fix this such that it
+	doesn't crash due to c++'s not using a copy ctor when you do "foo
+	= Value()".  the first of the changes are fallout from this.
+
 2007-07-20  Miguel de Icaza  <miguel@novell.com>
 
 	* Fix a memory leak.

@@ -214,8 +214,8 @@ extern MoonlightDownloaderType* MoonlightDownloaderClass;
 
 /*** MoonlightScriptableObject ***************************************************/
 
-typedef void (*InvokeDelegate) (gpointer obj_handle, gpointer method_handle, Value* args, int arg_count, Value* return_value);
-typedef void (*SetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value value);
+typedef void (*InvokeDelegate) (gpointer obj_handle, gpointer method_handle, Value** args, int arg_count, Value* return_value);
+typedef void (*SetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value *value);
 typedef void (*GetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value *value);
 typedef void (*EventHandlerDelegate) (gpointer obj_handle, gpointer event_handle);
 

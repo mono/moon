@@ -226,30 +226,32 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 }
 
 static void
-variant_to_value (const NPVariant *v, Value *result)
+variant_to_value (const NPVariant *v, Value **result)
 {
 	switch (v->type) {
+	case NPVariantType_Bool:
+		*result = new Value (NPVARIANT_TO_BOOLEAN (*v));
+		break;
+	case NPVariantType_Int32:
+		*result = new Value ((gint32)NPVARIANT_TO_INT32(*v));
+		break;
+	case NPVariantType_Double:
+		*result = new Value (NPVARIANT_TO_DOUBLE(*v));
+		break;
+	case NPVariantType_String:
+		*result = new Value (NPVARIANT_TO_STRING(*v).utf8characters);
+		break;
 	case NPVariantType_Void:
 		DEBUG_WARN_NOTIMPLEMENTED ("void variant type");
+		*result = NULL;
 		break;
 	case NPVariantType_Null:
 		DEBUG_WARN_NOTIMPLEMENTED ("null variant type");
-		*result = Value (Type::DEPENDENCY_OBJECT);
-		break;
-	case NPVariantType_Bool:
-		*result = Value (NPVARIANT_TO_BOOLEAN (*v));
-		break;
-	case NPVariantType_Int32:
-		*result = Value ((gint32)NPVARIANT_TO_INT32(*v));
-		break;
-	case NPVariantType_Double:
-		*result = Value (NPVARIANT_TO_DOUBLE(*v));
-		break;
-	case NPVariantType_String:
-		*result = Value (NPVARIANT_TO_STRING(*v).utf8characters);
+		*result = new Value (Type::DEPENDENCY_OBJECT);
 		break;
 	case NPVariantType_Object:
 		DEBUG_WARN_NOTIMPLEMENTED ("object variant type");
+		*result = NULL;
 		break;
 	}
 }
@@ -1518,16 +1520,15 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "seek")) {
-		// not yet implemented
-		DEBUG_WARN_NOTIMPLEMENTED ("storyboard.seek");
-#if notyet
-		if (argCount != 1)
+		// XXX JS doesn't have 64bit ints?
+		if (argCount != 1 || !NPVARIANT_IS_INT32 (args[0]))
 			return true;
 
-		sb->Seek (...);
+		TimeSpan ts = (TimeSpan)NPVARIANT_TO_INT32(args[0]);
+		sb->Seek (ts);
 
 		VOID_TO_NPVARIANT (*result);
-#endif
+
 		return true;
 	}
 	else if (name_matches (name, "stop")) {
@@ -1785,7 +1786,14 @@ moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NP
 	DEBUGMSG ("***************** getting scriptable object property %s", strname);
 	NPN_MemFree (strname);
 
-	DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.get_property");
+	Value v;
+
+	sobj->getprop (sobj->managed_scriptable, prop->property_handle, &v);
+
+	value_to_variant (npobj, &v, result);
+
+	v.FreeValue ();
+
 	return true;
 }
 
@@ -1801,7 +1809,14 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 		DEBUGMSG ("***************** setting scriptable object property %s", strname);
 		NPN_MemFree (strname);
 
-		DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.set_property");
+		Value *v;
+
+		variant_to_value (value, &v);
+		
+		sobj->setprop (sobj->managed_scriptable, prop->property_handle, v);
+
+		delete v;
+
 		return true;
 	}
 	// if that fails, look for the event of that name
@@ -1840,10 +1855,10 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 
 	Value rv;
 
-	Value* vargs = NULL;
+	Value** vargs = NULL;
 
 	if (argCount > 0) {
-		vargs = new Value[argCount];
+		vargs = new Value*[argCount];
 		for (int i = 0; i < argCount; i ++) {
 			variant_to_value (&args[i], &vargs[i]);
 		}
@@ -1851,7 +1866,13 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 
 	sobj->invoke (sobj->managed_scriptable, method->method_handle, vargs, argCount, &rv);
 
-	delete [] vargs;
+	if (argCount > 0) {
+		for (int i = 0; i < argCount; i ++) {
+			delete vargs[i];
+		}
+		delete [] vargs;
+	}
+
 	if (method->method_return_type != 1 /* XXX this 1 is "void" */) {
 		value_to_variant (sobj, &rv, result);
 	}
