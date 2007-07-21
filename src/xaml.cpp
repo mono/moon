@@ -62,7 +62,6 @@ typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *it
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
 
-
 XamlElementInstance *create_custom_element (XamlParserInfo *p, XamlElementInfo *i);
 void  set_custom_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void  custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
@@ -340,15 +339,24 @@ create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
 void
 set_custom_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
-
 }
 
-void  custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
+void
+custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
+	// XXX do we need to do anything here?
 
+
+	// if it's not handled, we definitely need to at least check if the
+	// object is a panel subclass, and if so add it as we would a normal
+	// child.
+	if (parent->item->Is (Type::PANEL) && child->item->Is (Type::UIELEMENT)) {
+		panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
+	}
 }
 
-void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
+void
+custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
 {
 
 }

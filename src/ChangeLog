@@ -1,3 +1,14 @@
+2007-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (custom_add_child): this method is what's called when
+	we add a child to an element of a custom namespace.  Trouble is,
+	it might be a panel subclass.  If it is, and the child is a
+	UIElement subclass, go ahead and add the child using
+	panel_child_add.  This gets the Loaded events working properly in
+	the chess demo (the trouble was that the custom children weren't
+	even added to the tree, so their OnLoaded methods weren't being
+	called)
+
 2007-07-20  Miguel de Icaza  <miguel@novell.com>
 
 	* collection.cpp: Add support for RemoveAt. 
