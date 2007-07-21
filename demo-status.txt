@@ -90,14 +90,18 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Digger (http://www.aisto.com/Roeder/Silverlight/Digger/Default.aspx)
 
-	Comes up but is unresponsive. Missing browser bridge functionality.
+	Comes up, animations start up, many warnings on the screen,
+	and the keyboard input does not work (known issue):
 
-	It makes use of the HtmlTimer class, which we don't have populated yet.
 
 * Disco Dance Floor (http://explosivedog.com/silverlight/discolights/)
 
-	Comes up, but doesn't update.  Uses HtmlTimer, so this is
-	likely why.
+	Comes up, runs slow, and also seems to peg the event loop
+	processing in Firefox.
+
+	Although the disco floor is updated and continues to move and
+	rotate, the event loop seems to be dominated by it, and
+	Mozilla becomes very unresponsive. 
 
 * Dr. Green Thumb (http://labs.blitzagency.com/?p=50)
 
