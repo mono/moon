@@ -167,43 +167,51 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
 
-	Some controls appear on the screen.
+	No JS errors anymore.  clicking on the Aikido button results
+	in an animation that expands the button to the right, then shows a
+	dialog with an image and some text.
 
-	JS console:
-
-		Error: Trying to get unsupported property on scriptable plugin object!
-		Source File: http://labs.infragistics.com/silverlight/
-		Line: 102
-
-	Same WebApplication.RegisterScriptableObject problem.
+	then the browser crashes.  Looks like an animation problem.
 
 * JavaScript/.NET Chess (http://silverlight.net/samples/1.1/chess/run/default.html)
 
-	This shows up on the console:
+	this shows up on the console:
 
-		Loader.TryLoad: 152030272 XAML file=/home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/717387C1d01
-		real_create_element (clr-namespace:Chess;assembly=ClientBin/Chess.dll, BoardUI)
-		Assembly not available:  ClientBin/Chess.dll
+		Error inside TryLoad: System.NullReferenceException: Object reference not set to an instance of an object
 
-		** (Gecko:25113): WARNING **: PARSER ERROR, STOPPING PARSING:  Unable to resolve custom type BoardUI
-		  line: 15   char: 0
+		Server stack trace:
+		  at Chess.Chessboard.AnimatePiece (System.Windows.Controls.Canvas piece, Nullable`1 oldLeft, Nullable`1 oldTop, Nullable`1 newLeft, Nullable`1 newTop, Double oldOpacity, Double newOpacity, Duration animationDuration, System.EventHandler completed) [0x00000]
+		  at Chess.Chessboard.AnimateToNewPosition (GarboChess.Position newPos) [0x00000]
+		  at Chess.Chessboard.set_Position (GarboChess.Position value) [0x00000]
+		  at Chess.ChessGameEngine.set_Chessboard (Chess.Chessboard value) [0x00000]
+		  at Chess.BoardUI.Canvas_Loaded (System.Object sender, System.EventArgs args) [0x00000]
+		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
+		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
+		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
+		  at <0x00000> <unknown method>
+		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
+		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x00139] in /home/toshok/src/mono/moon/plugin/moonlight.cs:249
+		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
+		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
+
+	and then a little later:
+
+		Unhandled Exception: System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentOutOfRangeException: Argument is out of range.
+		Parameter name: index
+		  at System.Collections.Generic.List`1[Chess.IChessPlayer].get_Item (Int32 ) [0x00024] in /home/toshok/src/mono/mcs/class/corlib/System.Collections.Generic/List.cs:623
+		  at Chess.ChessGameEngine.TakeTurn (Int32 which) [0x00000]
+		  at Chess.ChessGameEngine.DoOneTurn () [0x00000]
+		  at Chess.ChessGameEngine.Run () [0x00000]
+		  at <0x00000> <unknown method>
+		  at (wrapper managed-to-native) System.Reflection.MonoMethod:InternalInvoke (object,object[])
+
+	they seem related.
 
 
-		** (Gecko:25113): WARNING **: Attempting to ignore unimplemented type:  BoardUI
+	Also, this demo relies on scriptable event handlers, which
+	don't work yet.
 
-		Stacktrace:
 
-		  at (wrapper managed-to-native) Moonlight.Hosting.xaml_create_from_file (string,bool,int&) <0x00004>
-		  at (wrapper managed-to-native) Moonlight.Hosting.xaml_create_from_file (string,bool,int&) <0xffffffff>
-		  at Moonlight.DomainInstance.TryLoad (int&) [0x0004f] in /home/toshok/src/mono/moon/plugin/moonlight.cs:210
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
-		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance.TryLoad (object,byte[]&,byte[]&,int&) <0xffffffff>
-		  at (wrapper xdomain-invoke) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
-		  at Moonlight.Loader.TryLoad (int&) <0x00040>
-		  at (wrapper runtime-invoke) Moonlight.Loader.runtime_invoke_string_int& (object,intptr,intptr,intptr) <0xffffffff>
-
-	There's nothing prior to it.. maybe the dll doesn't exist on the webserver?
 
 * Laugh-o-Sphere (http://sharepoint.microsoft.com/blogs/mikeg/silverlight1/PopflyMashups/bLaugh-o-Sphere.aspx)
 
@@ -256,14 +264,15 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Silverlight Chess Game Replay (http://www.vertigo.com/downloads/SilverlightChess/)
 
-	Comes up, shows a little intro animation, then nothing.  JS console shows:
+	Comes up, displays chess pieces, shows the intro animation.
+
+	Clicking on the "Start Game button" results in the following in the JS Console:
 
 		Error: Error setting property on scriptable plugin object!
 		Source File: http://www.vertigo.com/downloads/SilverlightChess/Scene.xaml.js
-		Line: 113
+		Line: 252
 
-	Looks like something is going wrong with the string based
-	event listeners.
+	Looks like maybe more namescoping issues?
 
 * Silverlight Mind Map (http://blogs.msdn.com/synergist/pages/silverlight-map.aspx)
 
