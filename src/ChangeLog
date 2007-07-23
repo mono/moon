@@ -1,3 +1,7 @@
+2007-07-23  Miguel de Icaza  <miguel@novell.com>
+
+	* runtime.cpp: Removed the timer code from here, move to plugin.
+
 2007-07-20  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (custom_add_child): this method is what's called when

@@ -97,6 +97,7 @@ class PluginInstance
 	void getBrowserInformation (char **name, char **version,
 				    char **platform, char **userAgent,
 				    bool *cookieEnabled);
+	GSList *timers;
 };
 
 extern GSList *plugin_instances;
@@ -144,7 +145,10 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 					      char **name, char **version,
 					      char **platform, char **userAgent,
 					      bool *cookieEnabled);
-					      
+
+void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
+uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
+
 G_END_DECLS
 
 #endif /* MOON_PLUGIN */

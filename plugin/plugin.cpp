@@ -122,6 +122,8 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->vm_missing_file = NULL;
 	this->mono_loader_object = NULL;
 
+	this->timers = NULL;
+
 	plugin_instances = g_slist_append (plugin_instances, this->instance);
 
 	/* back pointer to us */
@@ -130,6 +132,16 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 PluginInstance::~PluginInstance ()
 {
+	// Kill timers
+	GSList *p;
+	for (p = timers; p != NULL; p = p->next){
+		uint32_t source_id = (uint32_t) p->data;
+
+		g_source_remove (source_id);
+	}
+	g_slist_free (p);
+	
+	// Remove us from the list.
 	plugin_instances = g_slist_remove (plugin_instances, this->instance);
 
 	// 
@@ -593,6 +605,29 @@ plugin_instance_get_actual_height (PluginInstance *instance)
 {
 	return instance->getActualHeight ();
 }
+
+uint32_t
+plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data)
+{
+	uint32_t id;
+
+#if GLIB_CHECK_VERSION(2,14,0)
+	if (interval > 1000 && ((interval % 1000) == 0))
+		id = g_timeout_add_seconds (interval / 1000, callback, data);
+	else
+#endif
+		id = g_timeout_add (interval, callback, data);
+
+	instance->timers = g_slist_append (instance->timers, GINT_TO_POINTER ((int)id));
+}
+
+void
+plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id)
+{
+	g_source_remove (source_id);
+	instance->timers = g_slist_remove (instance->timers, GINT_TO_POINTER (source_id));
+}
+
 
 void
 plugin_instance_get_browser_information (PluginInstance *instance,

@@ -175,12 +175,11 @@ namespace Moonlight {
 
 			Hosting.xaml_set_parser_callbacks (create_element_callback, set_attribute_callback, hookup_event_callback);
 			
-			Type t = typeof (System.Windows.Interop.BrowserHost);
-			MethodInfo m = t.GetMethod ("SetPluginHandle", BindingFlags.Static | BindingFlags.NonPublic);
+			Type t = typeof (System.Windows.Interop.PluginHost);
+			MethodInfo m = t.GetMethod ("SetPluginHandle", BindingFlags.Static | BindingFlags.Public);
 			if (m == null){
-				Console.WriteLine ("Having problems");
+				Console.Error.WriteLine ("Could not find System.Window.Interop.PluginHost::SetPluginHandle");
 			} else {
-				Console.WriteLine ("The plugin handle is {0}", _plugin);
 				m.Invoke (null, new object [] { _plugin });
 			} 
 		}
