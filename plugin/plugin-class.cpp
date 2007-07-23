@@ -59,7 +59,7 @@ index_of_name (NPIdentifier name, const char *const names[], int count)
 }
 
 static void
-string_to_npvariant (char *value, NPVariant *result)
+string_to_npvariant (const char *value, NPVariant *result)
 {
 	char * retval;
 
@@ -255,6 +255,108 @@ variant_to_value (const NPVariant *v, Value **result)
 		break;
 	}
 }
+
+/*** ErrorEventArgs ***/
+static NPObject*
+erroreventargs_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightErrorEventArgs (instance);
+}
+
+static void
+erroreventargs_deallocate (NPObject *npobject)
+{
+	delete (MoonlightErrorEventArgs*)npobject;
+}
+
+static bool
+erroreventargs_has_property (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "errorCode") ||
+		name_matches (name, "errorType") ||
+		name_matches (name, "errorMessage") ||
+		name_matches (name, "lineNumber") ||
+		name_matches (name, "charNumber") ||
+		/* parser errors */
+		name_matches (name, "xamlFile") ||
+		/* runtime errors */
+		name_matches (name, "methodName"));
+}
+
+static bool
+erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	MoonlightErrorEventArgs *ea = (MoonlightErrorEventArgs*)npobj;
+	if (name_matches (name, "errorCode")) {
+		INT32_TO_NPVARIANT (ea->args->error_code, *result);
+		return true;
+	}
+	else if (name_matches (name, "errorType")) {
+	  switch (ea->args->error_type) {
+	  case NoError:          string_to_npvariant ("NoError", result); break;
+	  case UnknownError:     string_to_npvariant ("UnknownError", result); break;
+	  case InitializeError:  string_to_npvariant ("InitializeError", result); break;
+	  case ParserError:      string_to_npvariant ("ParserError", result); break;
+	  case ObjectModelError: string_to_npvariant ("ObjectModelError", result); break;
+	  case RuntimeError:     string_to_npvariant ("RuntimeError", result); break;
+	  case DownloadError:    string_to_npvariant ("DownloadError", result); break;
+	  case MediaError:       string_to_npvariant ("MediaError", result); break;
+	  case ImageError:       string_to_npvariant ("ImageError", result); break;
+	  }
+	  return true;
+	}
+	else if (name_matches (name, "ErrorMessage")) {
+		string_to_npvariant (ea->args->error_message, result);
+		return true;
+	}
+	else if (name_matches (name, "lineNumber")) {
+		if (ea->args->error_type == ParserError) {
+			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)ea->args)->line_number, *result);
+		}
+		else {
+			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.lineNumber");
+			INT32_TO_NPVARIANT (0, *result);
+		}
+		return true;
+	}
+	else if (name_matches (name, "charPosition")) {
+		if (ea->args->error_type == ParserError) {
+			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)ea->args)->char_position, *result);
+		}
+		else {
+			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.charPosition");
+			INT32_TO_NPVARIANT (0, *result);
+			return true;
+		}
+	}
+	else if (name_matches (name, "methodName")) {
+		DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.methodName");
+		INT32_TO_NPVARIANT (0, *result);
+		return true;
+	}
+	else if (name_matches (name, "xamlFile")) {
+		if (ea->args->error_type == ParserError) {
+			string_to_npvariant (((ParserErrorEventArgs*)ea->args)->xaml_file, result);
+		}
+		else {
+			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.xamlFile");
+			NULL_TO_NPVARIANT (*result);
+			return true;
+		}
+	}
+	else
+		return false;
+}
+
+MoonlightErrorEventArgsType::MoonlightErrorEventArgsType ()
+{
+	allocate = erroreventargs_allocate;
+	deallocate = erroreventargs_deallocate;
+	hasProperty = erroreventargs_has_property;
+	getProperty = erroreventargs_get_property;
+}
+
+MoonlightErrorEventArgsType *MoonlightErrorEventArgsClass;
 
 /*** Points ***/
 static NPObject*
@@ -1996,6 +2098,7 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 void
 plugin_init_classes ()
 {
+	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
 	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightObjectClass = new MoonlightObjectType ();
 	MoonlightControlClass = new MoonlightControlType ();

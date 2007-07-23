@@ -15,7 +15,10 @@ libmooninclude_headers = \
 	clock.h		\
 	collection.h	\
 	control.h	\
+	dependencyobject.h \
 	downloader.h	\
+	error.h		\
+	frameworkelement.h \
 	geometry.h	\
 	mango.h		\
 	media.h		\

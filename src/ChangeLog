@@ -1,3 +1,15 @@
+2007-07-23  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmooninclude_headers): add some missing headers.
+
+	* error.h: split out the error classes here.
+
+	* libmoon.h: include error.h
+
+	* xaml.h: remove the error classes from here.
+
+	* xaml.cpp: include error.h
+
 2007-07-23  Miguel de Icaza  <miguel@novell.com>
 
 	* runtime.cpp: Removed the timer code from here, move to plugin.

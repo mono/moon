@@ -1,3 +1,8 @@
+2007-07-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: include error.h, and start out
+	some error event args wrapping stuff.
+
 2007-07-23  Miguel de Icaza  <miguel@novell.com>
 
 	* plugin.cpp (PluginInstance): track the timers on a linked list

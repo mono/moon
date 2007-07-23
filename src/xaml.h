@@ -16,29 +16,6 @@
 #include "enums.h"
 #include "uielement.h"
 
-struct ErrorEventArgs /* : public EventArgs */ {
- public:
-	int error_code;;
-	const char *error_message;
-	ErrorType error_type;
-};
-
-struct ParserErrorEventArgs : public ErrorEventArgs {
- public:
-
-	ParserErrorEventArgs () : char_position (0), line_number (0), xaml_file (NULL),
-	xml_element (NULL), xml_attribute (NULL)
-	{
-		error_type = ParserError;
-	}
-	
-	
-	int char_position;
-	int line_number;
-	const char *xaml_file;
-	const char *xml_element;
-	const char *xml_attribute;
-};
 
 typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
 typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);

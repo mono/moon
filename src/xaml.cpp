@@ -19,6 +19,7 @@
 #include <ctype.h>
 
 #include "xaml.h"
+#include "error.h"
 #include "shape.h"
 #include "animation.h"
 #include "geometry.h"

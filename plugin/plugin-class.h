@@ -14,6 +14,7 @@
 #define PLUGIN_CLASS
 
 #include "moonlight.h"
+#include "error.h"
 #include "plugin.h"
 
 void plugin_init_classes (void);
@@ -62,6 +63,19 @@ struct MoonlightObject : public NPObject
 	}
 
 	NPP instance;
+};
+
+/*** MoonlightErrorEventArgsClass ******************************************************/
+struct MoonlightErrorEventArgsType : MoonlightObjectType {
+	MoonlightErrorEventArgsType ();
+};
+
+extern MoonlightErrorEventArgsType* MoonlightErrorEventArgsClass;
+
+struct MoonlightErrorEventArgs : MoonlightObject {
+	MoonlightErrorEventArgs (NPP instance) : MoonlightObject(instance) { }
+
+	ErrorEventArgs *args;
 };
 
 /*** MoonlightPointClass  **************************************************************/
