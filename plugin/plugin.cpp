@@ -584,14 +584,14 @@ PluginInstance::getBrowserInformation (char **name, char **version,
 	*cookieEnabled = true;
 }
 
-MoonlightControlObject *
+MoonlightScriptControlObject *
 PluginInstance::getRootObject ()
 {
 	if (rootobject == NULL)
-		rootobject = NPN_CreateObject (instance, MoonlightControlClass);
+		rootobject = NPN_CreateObject (instance, MoonlightScriptControlClass);
 
 	NPN_RetainObject (rootobject);
-	return (MoonlightControlObject*)rootobject;
+	return (MoonlightScriptControlObject*)rootobject;
 }
 
 NPP

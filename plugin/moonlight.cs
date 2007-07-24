@@ -59,6 +59,9 @@ namespace Moonlight {
 		[DllImport ("moon")]
 		internal extern static void xaml_set_parser_callbacks (CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue);
 
+		[DllImport ("moonplugin")]
+		internal extern static void event_object_add_javascript_listener (IntPtr target, IntPtr plugin_handle, string event_name, string js_callback);
+
 		[DllImport("moon",EntryPoint="dependency_object_get_type_name")]
 		internal extern static IntPtr _dependency_object_get_type_name (IntPtr obj);
 
@@ -442,20 +445,7 @@ namespace Moonlight {
 			pi.SetValue (target, converter.ConvertFrom (value), null);
 		}
 
-		//
-		// Proxy so that we do not fail.
-		//
 		private void hookup_event (IntPtr target_ptr, string name, string value)
-		{
-			try {
-				real_hookup_event (target_ptr, name, value);
-			} catch (Exception e) {
-				Console.WriteLine (e);
-				Console.Error.WriteLine ("Returning unhappily");
-			}
-		}
-		
-		private void real_hookup_event (IntPtr target_ptr, string name, string value)
 		{
 			MethodInfo m = typeof (DependencyObject).GetMethod ("Lookup",
 					BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] {
@@ -477,13 +467,18 @@ namespace Moonlight {
 				return;
 			}
 
-			Delegate d = Delegate.CreateDelegate (src.EventHandlerType, target, value);
-			if (d == null) {
-				Console.WriteLine ("hookup event unable to create delegate src={0} target={1} value={2}", src.EventHandlerType, target, value);
-				return;
-			}
+			try {
+				Delegate d = Delegate.CreateDelegate (src.EventHandlerType, target, value);
+				if (d == null) {
+					Console.WriteLine ("hookup event unable to create delegate src={0} target={1} value={2}", src.EventHandlerType, target, value);
+					return;
+				}
 
-			src.AddEventHandler (target, d);
+				src.AddEventHandler (target, d);
+			}
+			catch {
+				Hosting.event_object_add_javascript_listener (target_ptr, plugin, name, value);
+			}
 		}
 
 		internal static void ParseXmlns (string xmlns, out string type_name, out string ns, out string asm)

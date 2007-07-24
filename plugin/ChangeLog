@@ -1,3 +1,23 @@
+2007-07-24  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.cs: rework event hookup so that if we fail to hookup
+	with C#, we assume it's a JS event.  hook it up via the
+	EventListenerProxy stuff.
+
+	* plugin.h, plugin.cpp: MoonlightControl -> MoonlightScriptable
+
+	* plugin-class.h, plugin-class.cpp: 
+
+	1. rename MoonlightControl* to MoonlightScriptableControl* to
+	distinguish it from the new MoonlightControl, which is a wrapper
+	for our Control class.  factor out the _set_dependency_property_value
+
+	2. add "getParent", "setValue", and "getValue" methods to the
+	dependencyobject wrapper.
+
+	3. Add a ctor for EventListenerProxy which just takes the callback
+	name for use in hooking up js events from the parser.
+
 2007-07-24  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.h|cpp: Add a getter for the plugin instance

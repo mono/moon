@@ -24,6 +24,7 @@ typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *val
 
 class EventListenerProxy {
  public:
+	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
 	~EventListenerProxy ();
 	void AddHandler (EventObject *obj);
@@ -46,6 +47,10 @@ class EventListenerProxy {
 	static void mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure);
 };
+
+extern "C" {
+  void event_object_add_javascript_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
+}
 
 /*** MoonlightObjectClass **************************************************************/
 
@@ -151,15 +156,15 @@ struct MoonlightContentObject : MoonlightObject {
 
 extern MoonlightContentType* MoonlightContentClass;
 
-/*** MoonlightControlClass **********************************************************/
+/*** MoonlightScriptControlClass **********************************************************/
 
-struct MoonlightControlType : MoonlightObjectType {
-	MoonlightControlType ();
+struct MoonlightScriptControlType : MoonlightObjectType {
+	MoonlightScriptControlType ();
 };
-extern MoonlightControlType* MoonlightControlClass;
+extern MoonlightScriptControlType* MoonlightScriptControlClass;
 
-struct MoonlightControlObject : public MoonlightObject {
-	MoonlightControlObject (NPP instance) : MoonlightObject (instance)
+struct MoonlightScriptControlObject : public MoonlightObject {
+	MoonlightScriptControlObject (NPP instance) : MoonlightObject (instance)
 	{
 		content = NPN_CreateObject (instance, MoonlightContentClass);
 		settings = NPN_CreateObject (instance, MoonlightSettingsClass);
@@ -225,6 +230,22 @@ struct MoonlightDownloaderType : MoonlightDependencyObjectType {
 
 extern MoonlightDownloaderType* MoonlightDownloaderClass;
 
+/*** MoonlightControl ***************************************************/
+
+struct MoonlightControlType : MoonlightDependencyObjectType {
+	MoonlightControlType ();
+};
+
+extern MoonlightControlType* MoonlightControlClass;;
+
+struct MoonlightControlObject : MoonlightDependencyObjectObject {
+	MoonlightControlObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+	{
+		real_object = NULL;
+	}
+
+	NPObject *real_object;
+};
 
 /*** MoonlightScriptableObject ***************************************************/
 

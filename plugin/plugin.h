@@ -15,7 +15,7 @@
 
 #include "moonlight.h"
 
-class MoonlightControlObject;
+class MoonlightScriptControlObject;
 
 class PluginInstance
 {
@@ -69,6 +69,7 @@ class PluginInstance
 	int16 EventHandle (void* event);
 	bool JsRunOnload ();
 
+	NPP getNPP () { return instance; }
 
 	// Gtk controls
 	GtkWidget *container;  // plugin container object
@@ -89,7 +90,7 @@ class PluginInstance
 	bool getEnableHtmlAccess ();
 	bool getWindowless ();
 
-	MoonlightControlObject *getRootObject ();
+	MoonlightScriptControlObject *getRootObject ();
 	NPP getInstance ();
 
 	int32 getActualHeight ();
