@@ -75,6 +75,7 @@ Surface::Surface(int w, int h)
     using_cairo_xlib_surface(0),
     cairo_buffer_surface (NULL), cairo_buffer(NULL),
     cairo_xlib(NULL), cairo (NULL), transparent(false),
+    background_color(NULL),
     cursor (MouseCursorDefault)
 {
 
