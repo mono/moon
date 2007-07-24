@@ -32,7 +32,7 @@ This is not likely the final version of this code.
 * Testing the Managed binding
 
 	Install olive module, in particular you want to compile and
-	install olive/class/agclr to save you some time.
+	install olive/class/ to save you some time.
 
 	You must install the libmoom in src directory
 
