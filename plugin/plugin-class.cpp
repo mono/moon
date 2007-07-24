@@ -139,8 +139,8 @@ variant_to_value (const NPVariant *v, Value **result)
 		*result = new Value (Type::DEPENDENCY_OBJECT);
 		break;
 	case NPVariantType_Object:
-		DEBUG_WARN_NOTIMPLEMENTED ("object variant type");
-		*result = NULL;
+		*result = new Value (Type::NPOBJ, NPVARIANT_TO_OBJECT (*v));
+		NPN_RetainObject (NPVARIANT_TO_OBJECT (*v));
 		break;
 	}
 }

@@ -1,3 +1,8 @@
+2007-07-24  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Implement variants to value on objects. TODO,
+	add a method to release those objects.
+
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: add a wrapper class for
