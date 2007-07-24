@@ -1,6 +1,14 @@
 2007-07-24  Jackson Harper  <jackson@ximian.com>
 
+	* type.h.in: Add the NPOBJ type.
+	* value.h.in: Add the npobj value, it's just stored as a pointer
+	so that we don't become dependent on mozilla.
+	* value.cpp|h,type.h: sync.
+
+2007-07-24  Jackson Harper  <jackson@ximian.com>
+
 	* typegen.cs: Kind.cs lives in agmono now.
+
 
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 

@@ -39,6 +39,7 @@ public:
 		POINT_ARRAY,
 		KEYTIME,
 		MATRIX,
+		NPOBJ,
 
 /*DO_KINDS*/
 	

@@ -54,7 +54,8 @@ public:
 	Value (Point *points, int count);
 	Value (double *values, int count);
 	Value (Matrix* matrix);
-	
+	Value (Type::Kind k, gpointer npobj);
+
 	~Value ();
 
 	bool operator!= (const Value &v) const
@@ -129,6 +130,7 @@ public:
 		PointArray *point_array;
 		DoubleArray *double_array;
 		Matrix* matrix;
+		gpointer npobj;
 	} u;
 
 

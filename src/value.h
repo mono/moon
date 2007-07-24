@@ -168,7 +168,8 @@ public:
 	Value (Point *points, int count);
 	Value (double *values, int count);
 	Value (Matrix* matrix);
-	
+	Value (Type::Kind k, gpointer npobj);
+
 	~Value ();
 
 	bool operator!= (const Value &v) const
@@ -331,7 +332,7 @@ public:
   	Type::Kind GetKind ();
 
 	void FreeValue ();
-
+  
   private:
 	Type::Kind k;
 
@@ -353,6 +354,7 @@ public:
 		PointArray *point_array;
 		DoubleArray *double_array;
 		Matrix* matrix;
+		gpointer npobj;
 	} u;
 
 
@@ -367,5 +369,6 @@ public:
 G_BEGIN_DECLS
 void value_free_value (Value *value);
 G_END_DECLS
+
 
 #endif /* MOON_VALUE_H */

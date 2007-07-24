@@ -16,9 +16,9 @@
 #ifndef __TYPE_H__
 #define __TYPE_H__
 
-#include <glib.h>
-
 G_BEGIN_DECLS
+
+#include <glib.h>
 
 typedef gint64 TimeSpan;
 
@@ -43,6 +43,7 @@ public:
 		POINT_ARRAY,
 		KEYTIME,
 		MATRIX,
+		NPOBJ,
 
 		DEPENDENCY_OBJECT,
 		ANIMATION,

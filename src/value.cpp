@@ -236,6 +236,14 @@ Value::Value (Matrix *matrix)
 	memcpy (u.matrix, matrix, sizeof (Matrix));
 }
 
+Value::Value (Type::Kind k, gpointer npobj)
+{
+	Init ();
+	g_assert (k == Type::NPOBJ);
+
+	u.npobj = npobj;
+}
+
 void
 Value::FreeValue ()
 {
