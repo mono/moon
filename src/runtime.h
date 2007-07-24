@@ -154,8 +154,8 @@ void     measuring_context_destroy (cairo_t *cr);
 
 void runtime_init (void);
 
-uint32_t html_timer_timeout_add (int32_t interval, GSourceFunc callback, gpointer data);
-void     html_timer_timeout_stop (uint32_t source_id);
+uint32_t runtime_html_timer_timeout_add (int32_t interval, GSourceFunc callback, gpointer data);
+void     runtime_html_timer_timeout_stop (uint32_t source_id);
 
 void runtime_shutdown (void);
 

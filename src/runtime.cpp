@@ -778,6 +778,21 @@ runtime_init (void)
 	stylus_init ();
 }
 
+//
+// These are the plugin-less versions of these methods
+//
+uint32_t
+runtime_html_timer_timeout_add (int interval, GSourceFunc callback, gpointer data)
+{
+	return  g_timeout_add (interval, callback, data);
+}
+
+void 
+runtime_html_timer_timeout_stop (uint32_t source_id)
+{
+	g_source_remove (source_id);
+}
+
 void
 runtime_shutdown ()
 {
