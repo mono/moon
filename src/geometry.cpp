@@ -438,6 +438,9 @@ RectangleGeometry::Draw (cairo_t *cr)
 	Geometry::Draw (cr);
 
 	Rect *rect = rectangle_geometry_get_rect (this);
+	if (!rect)
+		return;
+
 	double radius_x = rectangle_geometry_get_radius_x  (this);
 	if (radius_x != 0) {
 		double radius_y = rectangle_geometry_get_radius_y (this);

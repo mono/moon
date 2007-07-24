@@ -1,3 +1,8 @@
+2007-07-24  Chris Toshok  <toshok@ximian.com>
+
+	* geometry.cpp (RectangleGeometry::Draw): if the geometry's rect
+	is NULL, return early.
+
 2007-07-23  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmooninclude_headers): add some missing headers.
