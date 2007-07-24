@@ -1,5 +1,9 @@
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.h, plugin-class.cpp: add a wrapper class for
+	Images, which implements SetSource. also add SetSource handling
+	for the MediaElement wrapper.
+
 	* moonlight.cs: rework event hookup so that if we fail to hookup
 	with C#, we assume it's a JS event.  hook it up via the
 	EventListenerProxy stuff.

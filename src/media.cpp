@@ -49,7 +49,7 @@ media_base_get_source (MediaBase *media)
 }
 
 void
-media_base_set_source (MediaBase *media, char *value)
+media_base_set_source (MediaBase *media, const char *value)
 {
 	media->SetValue (MediaBase::SourceProperty, Value (value));
 }
@@ -183,7 +183,7 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void
-MediaElement::SetSource (DependencyObject *Downloader, char *PartName)
+MediaElement::SetSource (DependencyObject *Downloader, const char *PartName)
 {
 	// if we have something opened already...
 	media_element_set_current_state (this, "Closed");
@@ -341,7 +341,7 @@ media_element_pause (MediaElement *media)
 }
 
 void
-media_element_setsource (MediaElement *media, DependencyObject* Downloader, char* PartName)
+media_element_set_source (MediaElement *media, DependencyObject* Downloader, const char* PartName)
 {
 	media->SetSource (Downloader, PartName);
 }
@@ -586,9 +586,11 @@ Image::UpdateProgress ()
 }
 
 void
-Image::SetSource (DependencyObject *dl, char* PartName)
+Image::SetSource (DependencyObject *dl, const char* PartName)
 {
 	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
+
+	dl->ref ();
 
 	if (downloader)
 		downloader->unref ();
@@ -599,7 +601,6 @@ Image::SetSource (DependencyObject *dl, char* PartName)
 	Invalidate (); 
 
 	downloader = (Downloader*) dl;
-	downloader->ref ();
 
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 
@@ -916,7 +917,7 @@ image_get_download_progress (Image *img)
 }
 
 void
-image_set_source (Image *img, DependencyObject *Downloader, char *PartName)
+image_set_source (Image *img, DependencyObject *Downloader, const char *PartName)
 {
 	img->SetSource (Downloader, PartName);
 }

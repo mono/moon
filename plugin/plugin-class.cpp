@@ -1479,6 +1479,9 @@ DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj)
 		case Type::CONTROL:
 			np_class = MoonlightControlClass;
 			break;
+		case Type::IMAGE:
+			np_class = MoonlightImageClass;
+			break;
 		default:
 			np_class = MoonlightDependencyObjectClass;
 		}
@@ -1740,7 +1743,8 @@ static const char *const
 moonlight_media_element_methods [] = {
 	"stop",
 	"play",
-	"pause"
+	"pause",
+	"setSource"
 };
 
 
@@ -1790,6 +1794,21 @@ moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
+	else if (name_matches (name, "setSource")) {
+		if (argCount != 2
+		    || !NPVARIANT_IS_OBJECT (args[0])
+		    || !NPVARIANT_IS_STRING (args[1]))
+			return true;
+
+		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->dob;
+		const char *part = NPVARIANT_TO_STRING (args[0]).utf8characters;
+	  
+		media->SetSource (downloader, part);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
 	else 
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
@@ -1803,6 +1822,59 @@ MoonlightMediaElementType::MoonlightMediaElementType ()
 }
 
 MoonlightMediaElementType* MoonlightMediaElementClass;
+
+/*** MoonlightImageClass ***************************************************/
+
+static const char *const
+moonlight_image_methods [] = {
+	"setSource"
+};
+
+
+static bool
+moonlight_image_has_method (NPObject *npobj, NPIdentifier name)
+{
+	if (HAS_METHOD (moonlight_image_methods, name))
+		return true;
+
+	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
+}
+
+static bool
+moonlight_image_invoke (NPObject *npobj, NPIdentifier name,
+			const NPVariant *args, uint32_t argCount,
+			NPVariant *result)
+{
+	Image *img = (Image*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name_matches (name, "setSource")) {
+		if (argCount != 2
+		    || !NPVARIANT_IS_OBJECT (args[0])
+		    || !NPVARIANT_IS_STRING (args[1]))
+			return true;
+
+		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->dob;
+		const char *part = NPVARIANT_TO_STRING (args[1]).utf8characters;
+	  
+		img->SetSource (downloader, part);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else 
+		return MoonlightDependencyObjectClass->invoke (npobj, name,
+							       args, argCount,
+							       result);
+}
+
+MoonlightImageType::MoonlightImageType ()
+{
+	hasMethod = moonlight_image_has_method;
+	invoke = moonlight_image_invoke;
+}
+
+MoonlightImageType* MoonlightImageClass;
 
 /*** MoonlightDownloaderClass ***************************************************/
 
@@ -2337,6 +2409,7 @@ plugin_init_classes ()
 	MoonlightCollectionClass = new MoonlightCollectionType ();
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
 	MoonlightMediaElementClass = new MoonlightMediaElementType ();
+	MoonlightImageClass = new MoonlightImageType ();
 	MoonlightDownloaderClass = new MoonlightDownloaderType ();
 	MoonlightControlClass = new MoonlightControlType ();
 	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();

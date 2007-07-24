@@ -222,6 +222,14 @@ struct MoonlightMediaElementType : MoonlightDependencyObjectType {
 
 extern MoonlightMediaElementType* MoonlightMediaElementClass;
 
+/*** MoonlightImage ***************************************************/
+
+struct MoonlightImageType : MoonlightDependencyObjectType {
+	MoonlightImageType ();
+};
+
+extern MoonlightImageType* MoonlightImageClass;
+
 /*** MoonlightDownloader ***************************************************/
 
 struct MoonlightDownloaderType : MoonlightDependencyObjectType {

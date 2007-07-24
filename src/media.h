@@ -44,7 +44,7 @@ public:
 
 MediaBase* media_base_new ();
 char *media_base_get_source (MediaBase *media);
-void media_base_set_source (MediaBase *media, char *value);
+void media_base_set_source (MediaBase *media, const char *value);
 
 Stretch media_base_get_stretch (MediaBase *media);
 void    media_base_set_stretch (MediaBase *media, Stretch value);
@@ -65,7 +65,7 @@ class Image : public MediaBase {
 	
 	cairo_surface_t *GetCairoSurface ();
 
-	void SetSource (DependencyObject *Downloader, char *PartName);
+	void SetSource (DependencyObject *Downloader, const char *PartName);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
@@ -154,7 +154,7 @@ public:
 	
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	
-	void SetSource (DependencyObject *Downloader, char *PartName);
+	void SetSource (DependencyObject *Downloader, const char *PartName);
 	
 	void Pause ();
 	void Play ();
@@ -166,7 +166,7 @@ MediaElement *media_element_new (void);
 void media_element_pause (MediaElement *media);
 void media_element_play (MediaElement *media);
 void media_element_stop (MediaElement *media);
-void media_element_setsource (MediaElement *media, DependencyObject *Downloader, char *PartName);
+void media_element_set_source (MediaElement *media, DependencyObject *Downloader, const char *PartName);
 
 bool media_element_get_auto_play (MediaElement *media);
 void media_element_set_auto_play (MediaElement *media, bool value);

@@ -1,5 +1,11 @@
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
+	* media.h, media.cpp: const-ify the PartName argument of the
+	SetSource methods.  also, ref the new downloader before unreffing
+	the old one in Image::SetSource.  they could be the same object.
+
+2007-07-24  Chris Toshok  <toshok@ximian.com>
+
 	* geometry.cpp (RectangleGeometry::Draw): if the geometry's rect
 	is NULL, return early.
 
