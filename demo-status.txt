@@ -61,17 +61,11 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Comic Book Viewer (http://mycomix.wintellect.com/Spotlight.aspx?Item=1041)
 
-	errors to the console:
+	seems to work.  there is only 1 comic to view.  moving the
+	mouse to the top of the page results in a rating and blurb animating
+	in from the top.
 
-		attempting to hookup delegate OnCanvasLoaded to event Loaded on object of type System.Windows.Controls.Canvas
-		System.ArgumentException: Couldn't bind to method 'OnCanvasLoaded'.
-
-
-		attempting to hookup delegate OnMouseEnter to event MouseEnter on object of type System.Windows.Shapes.Rectangle
-		System.ArgumentException: Couldn't bind to method 'OnMouseEnter'.
-
-	this is due to the event handler in xaml specifying the name
-	of a JS method to call.
+	the progress bar doesn't disappear.  does this happen on windows?
 
 * Destroy All Invaders (http://www.andybeaulieu.com/silverlight/DestroyAll/Default.html)
 
