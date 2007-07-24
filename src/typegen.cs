@@ -180,7 +180,7 @@ class gen {
 
 		File.WriteAllText ("Kind.cs", text.ToString ());
 
-		string realfile = "../../olive/class/agclr/Mono/Kind.cs";
+		string realfile = "../../olive/class/agmono/Mono/Kind.cs";
 		realfile = realfile.Replace ('/', Path.DirectorySeparatorChar);
 		realfile = Path.GetFullPath (realfile);
 		if (File.Exists (realfile)) {
@@ -193,7 +193,7 @@ class gen {
 				Console.WriteLine ("The file '{0}' has been updated, don't forget to commit the changes.", realfile);
 			}			
 		} else {
-			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'olive/class/agclr/Mono/' directory with the Kind.cs file generated here");
+			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'olive/class/agmono/Mono/' directory with the Kind.cs file generated here");
 		}
 	}
 	

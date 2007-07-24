@@ -1,3 +1,7 @@
+2007-07-24  Jackson Harper  <jackson@ximian.com>
+
+	* typegen.cs: Kind.cs lives in agmono now.
+
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
 	* media.h, media.cpp: const-ify the PartName argument of the
