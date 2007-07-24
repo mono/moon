@@ -31,6 +31,7 @@ class PluginInstance
 	bool isLoaded;
 	char *source;
 	char *onLoad;
+	char *background;
 	char *onError;
 
 	bool windowless;

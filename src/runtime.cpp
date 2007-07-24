@@ -26,6 +26,7 @@
 #include "runtime.h"
 #include "canvas.h"
 #include "control.h"
+#include "color.h"
 #include "shape.h"
 #include "transform.h"
 #include "animation.h"
@@ -467,6 +468,15 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 		cairo_set_source_rgba (ctx, 1, 1, 1, 0);
 		cairo_paint (ctx);
 	}
+	else if (s->background_color) {
+		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
+		cairo_set_source_rgba (ctx,
+				       s->background_color->r * s->background_color->a,
+				       s->background_color->g * s->background_color->a,
+				       s->background_color->b * s->background_color->a,
+				       s->background_color->a);
+		cairo_paint (ctx);
+	}
 
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 	s->Paint (ctx, event->area.x, event->area.y, event->area.width, event->area.height);
@@ -707,6 +717,14 @@ Surface::SetTrans (bool trans)
 		gtk_widget_queue_draw (drawing_area);
 }
 
+void
+Surface::SetBackgroundColor (Color *color)
+{
+	printf("YO");
+	background_color = new Color (*color);
+	if (drawing_area)
+		gtk_widget_queue_draw (drawing_area);
+}
 
 void 
 surface_set_trans (Surface *s, bool trans)

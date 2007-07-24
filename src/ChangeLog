@@ -1,5 +1,12 @@
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h, runtime.cpp: permit setting of the the surface's
+	background color, which is used to fill the widget before we
+	render the toplevel canvas.  only do this, though, if the canvas
+	is not transparent.
+
+2007-07-24  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::Attach): call Canvas::SetSurface instead
 	of making the assignment.
 

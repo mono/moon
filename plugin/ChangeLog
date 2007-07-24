@@ -1,3 +1,9 @@
+2007-07-24  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::setBackground): implement.
+	(PluginInstance::CreateWindow): if our args contained a background
+	color, set the surface's background.
+
 2007-07-24  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: Move the window release up, prevents random

@@ -116,6 +116,7 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->source = NULL;
 	this->onLoad = NULL;
 	this->onError = NULL;
+	this->background = NULL;
 
 	this->windowless = false;
 	
@@ -158,6 +159,9 @@ PluginInstance::~PluginInstance ()
 
 	if (rootobject)
 		NPN_ReleaseObject ((NPObject*)rootobject);
+
+	if (background)
+		g_free (background);
 }
 
 void 
@@ -185,6 +189,10 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		// Source url handle.
 		if (!strcasecmp (argn[i], "src") || !strcasecmp (argn[i], "source")) {
 			this->source = argv[i];
+		}
+
+		if (!strcasecmp (argn[i], "background")) {
+			this->background = g_strdup (argv[i]);
 		}
 	}
 }
@@ -268,7 +276,13 @@ PluginInstance::CreateWindow ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 	this->surface = new Surface (window->width, window->height);
-	//this->surface->Attach (new Canvas ());
+
+	if (background) {
+		Color *c = color_from_str (background);
+		surface->SetBackgroundColor (c);
+		delete c;
+	}
+
 	gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
 	display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
 	gtk_widget_show_all (this->container);
@@ -518,14 +532,20 @@ PluginInstance::setSource (const char *value)
 char *
 PluginInstance::getBackground ()
 {
-	char *background = "";
 	return background;
 }
 
 void
 PluginInstance::setBackground (const char *value)
 {
-	// do nothing, our surface theres no backcolor at moment.
+	if (background)
+		g_free (background);
+	background = g_strdup (value);
+	if (surface) {
+		Color *c = color_from_str (background);
+		surface->SetBackgroundColor (c);
+		delete c;
+	}
 }
 
 bool

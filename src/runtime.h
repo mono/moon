@@ -60,6 +60,8 @@ class Surface {
 	void SetTrans (bool trans);
 	bool GetTrans () { return transparent; }
 
+	void SetBackgroundColor (Color *color);
+
 	int GetFrameCount () { return frames; }
 	void ResetFrameCount () { frames = 0; }
 
@@ -96,7 +98,9 @@ private:
 	GdkPixmap *pixmap;
 
 	bool transparent;
-	
+
+	Color *background_color;
+
 	// The widget where we draw.
 	GtkWidget *drawing_area;
 
