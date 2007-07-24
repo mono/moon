@@ -10,11 +10,13 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * 3D Teapot Demo (http://www.dolittle.com/Silverlight/3D/TestPage.html)
 
-	lots of delegate hookup errors (with no subsequence
-	successes).  The word "Statistics" shows up in the browser, but
-	nothing else.  No JS Console errors.
+	The word "Statistics" shows up in the browser, but nothing
+	else.  No JS Console errors.  This shows up on the console:
 
-	The delegates are probably actually defined in JS.
+		** (Gecko:27997): WARNING **: adding handler to event 'MediaEnded', which has not been registered
+
+		video source changed to `silverlightLogoLoop.wmv'
+		cannot open uri `silverlightLogoLoop.wmv': No such file or directory
 
 * Binary Clock (http://explosivedog.com/silverlight/binaryclock/default.html)
 
@@ -42,22 +44,23 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 		
 * Bubble Factory (http://cosmik.members.winisp.net/BubbleFactory/)
 
-	error to console:
+	No JS errors.  I get this on the console.
 
-		attempting to hookup delegate splashScreenLoaded to event Loaded on object of type System.Windows.Controls.Canvas
-		System.ArgumentException: Couldn't bind to method 'splashScreenLoaded'.
+		Assembly not available:  ClientBin/BubbleFactory.dll
 
-	this is due to the event handler in xaml specifying the name
-	of a JS method to call.
+		** (Gecko:28016): WARNING **: PARSER ERROR, STOPPING PARSING:  Unable to resolve x:Class type 'BubbleFactory.Game;assembly=ClientBin/BubbleFactory.dll'
+		  line: 1   char: 1
 
 * Bubble Mark (http://bubblemark.com/)
 
-	works!
+	Silverlight (CLR) works!
 
-	Silverlight (Javascript) page doesn't start, shows this in the console but doesn't crash:
+	Silverlight (Javascript) page doesn't start, but shows at
+	least one bubble.  Also, shows this in the JS console:
 
-		attempting to hookup delegate javascript:wpfeLoaded to event Loaded on object of type System.Windows.Controls.Canvas
-		System.ArgumentException: Couldn't bind to method 'javascript:wpfeLoaded'.
+		Error: Trying to get unsupported property on scriptable plugin object!
+		Source File: http://bubblemark.com/js/wpfe.ball.js
+		Line: 42
 
 * Comic Book Viewer (http://mycomix.wintellect.com/Spotlight.aspx?Item=1041)
 
@@ -113,15 +116,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Glyph Map (http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx)
 
-	Some of the UI comes up.  lots of unattached delegate errors:
-
-		attempting to hookup delegate SkinSlideOut_Completed to event Completed on object of type System.Windows.Media.Animation.Storyboard
-		System.ArgumentException: Couldn't bind to method 'SkinSlideOut_Completed'.
-
-		attempting to hookup delegate SkinSlideIn_Completed to event Completed on object of type System.Windows.Media.Animation.Storyboard
-		System.ArgumentException: Couldn't bind to method 'SkinSlideIn_Completed'.
-
-	with no subsequent successes.
+	Some of the UI comes up
 
 * GOA WinForms Demo (http://community.netikatech.com/demos/)
 
@@ -270,10 +265,6 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Silverlight Mind Map (http://blogs.msdn.com/synergist/pages/silverlight-map.aspx)
 
-	tons of failed javascript delegate hookup messages, like:
-
-		attempting to hookup delegate javascript:LeaveButton to event MouseLeave on object of type System.Windows.Controls.Canvas
-
 	eventually crashed here:
 
 	        /opt/mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4) [0xb32ea2c4]
@@ -355,15 +346,6 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 		executing assembly
 		(/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache).
 		
-		
-	javascript: delegate hookup failures.
-
-		attempting to hookup delegate javascript:handleLoad to event Loaded on object of type System.Windows.Controls.Canvas
-		System.ArgumentException: Couldn't bind to method 'javascript:handleLoad'.
-
-		attempting to hookup delegate javascript:keyDown to event KeyDown on object of type System.Windows.Controls.Canvas
-		System.ArgumentException: Couldn't bind to method 'javascript:keyDown'.
-
 	animated UI comes up, this shows up in JS console:
 
 		Warning: Element referenced by ID/NAME in the global scope. Use W3C standard document.getElementById() instead.
@@ -372,7 +354,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Surface Prototype (http://silverlight.schwarz-interactive.de/ex02/)
 
-	seems to start up okay, but nothing ever shows.  Maybe Page_Loaded is in fact never called?
+	seems to load okay, but nothing ever shows.
 
 * SVG to Silverlight Converter (http://intertwingly.net/stories/2007/05/06/?icon=compass)
 
@@ -393,13 +375,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Windows Vista Simulator (http://www.windowsvista.si/)
 
-	javascript delegate hookup problems:
-
-		System.ArgumentException: Couldn't bind to method 'javascript:OnLoaded'.
-		System.ArgumentException: Couldn't bind to method 'javascript:OnXAMLLeftMouseDownFunc'.
-
-	lack of OnLoaded callback probably keeps it from starting up
-	correctly.  nothing shown in plugin area.
+	nothing shown in plugin area.  no JS errors.
 
 * XamlWebPad (http://xamlwebpad.peterkellner.net/Default.aspx)
 
