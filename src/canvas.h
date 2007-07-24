@@ -24,13 +24,10 @@ class Canvas : public Panel {
  public:
 	Canvas ();
 
-	//
-	// if not-null, this is a toplevel canvas, and this points to the
-	// surface
-	//
-	Surface *surface;
-
 	virtual Surface *GetSurface ();
+
+	// This should only be called on the toplevel surface
+	void SetSurface (Surface *surface);
 
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
@@ -43,6 +40,12 @@ class Canvas : public Panel {
 	
 	static DependencyProperty* TopProperty;
 	static DependencyProperty* LeftProperty;
+ private:
+	//
+	// if not-null, this is a toplevel canvas, and this points to the
+	// surface
+	//
+	Surface *surface;
 };
 
 G_BEGIN_DECLS

@@ -1,5 +1,13 @@
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::Attach): call Canvas::SetSurface instead
+	of making the assignment.
+
+	* canvas.h, canvas.cpp: make surface private, and add SetSurface
+	for runtime.cpp to use.
+
+2007-07-24  Chris Toshok  <toshok@ximian.com>
+
 	* brush.h, brush.cpp: make ImageBrush::SetSource take a const
 	char*.
 

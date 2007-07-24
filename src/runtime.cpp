@@ -273,7 +273,7 @@ Surface::Attach (UIElement *element)
 	Canvas *canvas = (Canvas *) element;
 	canvas->ref ();
 
-	canvas->surface = this;
+	canvas->SetSurface (this);
 	toplevel = canvas;
 
 	// First time we connect the surface, start responding to events

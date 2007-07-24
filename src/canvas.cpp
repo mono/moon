@@ -34,6 +34,12 @@ Canvas::GetSurface ()
 }
 
 void
+Canvas::SetSurface (Surface *surface)
+{
+	this->surface = surface;
+}
+
+void
 Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
 	*result = absolute_xform;
