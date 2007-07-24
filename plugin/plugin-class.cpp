@@ -2468,43 +2468,43 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 void
 html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result)
 {
-	/* we lookup on the window object if no object was supplied */
-	NPObject *win = NULL;
+	NPVariant npresult;
+	NPObject *window = NULL;
+	NPP npp = plugin->getInstance ();
+	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+
 	if (npobj == NULL) {
-		NPN_GetValue (plugin->getInstance (), NPNVWindowNPObject, &win);
-		npobj = win;
+		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		npobj = window;
 	}
 
-	NPVariant *npresult;
-	NPIdentifier str_name = NPN_GetStringIdentifier (name);
-	NPN_GetProperty (plugin->getInstance (), npobj, str_name, npresult);
+	NPN_GetProperty (npp, npobj, identifier, &npresult);
+	if (window)
+		NPN_ReleaseObject (window);
 
 	Value *res;
-	variant_to_value (npresult, &res);
-
+	variant_to_value (&npresult, &res);
 	*result = *res;
-	if (win)
-		NPN_ReleaseObject (win);
 }
 
 void
 html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value)
 {
-	/* we lookup on the window object if no object was supplied */
-	NPObject *win = NULL;
+	NPVariant npvalue;
+	NPObject *window = NULL;
+	NPP npp = plugin->getInstance ();
+	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+
 	if (npobj == NULL) {
-		NPN_GetValue (plugin->getInstance (), NPNVWindowNPObject, &win);
-		npobj = win;
+		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		npobj = window;
 	}
 
-	NPVariant *npvalue;
-	NPIdentifier str_name = NPN_GetStringIdentifier (name);
+	value_to_variant (npobj, value, &npvalue);
 
-	value_to_variant (npobj, value, npvalue);
-	NPN_SetProperty (plugin->getInstance (), npobj, str_name, npvalue);
-
-	if (win)
-		NPN_ReleaseObject (win);
+	NPN_SetProperty (npp, npobj, identifier, &npvalue);
+	if (window)
+		NPN_ReleaseObject (window);
 }
 
 void
