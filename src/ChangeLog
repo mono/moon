@@ -1,3 +1,8 @@
+2007-07-24  Chris Toshok  <toshok@ximian.com>
+
+	* brush.h, brush.cpp: make ImageBrush::SetSource take a const
+	char*.
+
 2007-07-24  Jackson Harper  <jackson@ximian.com>
 
 	* type.h.in: Add the NPOBJ type.

@@ -230,6 +230,14 @@ struct MoonlightImageType : MoonlightDependencyObjectType {
 
 extern MoonlightImageType* MoonlightImageClass;
 
+/*** MoonlightImageBrush ***************************************************/
+
+struct MoonlightImageBrushType : MoonlightDependencyObjectType {
+	MoonlightImageBrushType ();
+};
+
+extern MoonlightImageBrushType* MoonlightImageBrushClass;
+
 /*** MoonlightDownloader ***************************************************/
 
 struct MoonlightDownloaderType : MoonlightDependencyObjectType {
@@ -237,6 +245,15 @@ struct MoonlightDownloaderType : MoonlightDependencyObjectType {
 };
 
 extern MoonlightDownloaderType* MoonlightDownloaderClass;
+
+/*** MoonlightTextBlock ***************************************************/
+
+struct MoonlightTextBlockType : MoonlightDependencyObjectType {
+	MoonlightTextBlockType ();
+};
+
+extern MoonlightTextBlockType* MoonlightTextBlockClass;
+
 
 /*** MoonlightControl ***************************************************/
 

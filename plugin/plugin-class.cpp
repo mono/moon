@@ -1482,6 +1482,12 @@ DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj)
 		case Type::IMAGE:
 			np_class = MoonlightImageClass;
 			break;
+		case Type::IMAGEBRUSH:
+			np_class = MoonlightImageBrushClass;
+			break;
+		case Type::TEXTBLOCK:
+			np_class = MoonlightTextBlockClass;
+			break;
 		default:
 			np_class = MoonlightDependencyObjectClass;
 		}
@@ -1875,6 +1881,111 @@ MoonlightImageType::MoonlightImageType ()
 }
 
 MoonlightImageType* MoonlightImageClass;
+
+/*** MoonlightImageBrushClass ***************************************************/
+
+static const char *const
+moonlight_image_brush_methods [] = {
+	"setSource"
+};
+
+
+static bool
+moonlight_image_brush_has_method (NPObject *npobj, NPIdentifier name)
+{
+	if (HAS_METHOD (moonlight_image_brush_methods, name))
+		return true;
+
+	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
+}
+
+static bool
+moonlight_image_brush_invoke (NPObject *npobj, NPIdentifier name,
+			const NPVariant *args, uint32_t argCount,
+			NPVariant *result)
+{
+	ImageBrush *img = (ImageBrush*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name_matches (name, "setSource")) {
+		if (argCount != 2
+		    || !NPVARIANT_IS_OBJECT (args[0])
+		    || !NPVARIANT_IS_STRING (args[1]))
+			return true;
+
+		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->dob;
+		const char *part = NPVARIANT_TO_STRING (args[1]).utf8characters;
+	  
+		img->SetSource (downloader, part);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else 
+		return MoonlightDependencyObjectClass->invoke (npobj, name,
+							       args, argCount,
+							       result);
+}
+
+MoonlightImageBrushType::MoonlightImageBrushType ()
+{
+	hasMethod = moonlight_image_brush_has_method;
+	invoke = moonlight_image_brush_invoke;
+}
+
+MoonlightImageBrushType* MoonlightImageBrushClass;
+
+
+/*** MoonlightTextBlockClass ***************************************************/
+
+static const char *const
+moonlight_text_block_methods [] = {
+	"setFontSource"
+};
+
+
+static bool
+moonlight_text_block_has_method (NPObject *npobj, NPIdentifier name)
+{
+	if (HAS_METHOD (moonlight_text_block_methods, name))
+		return true;
+
+	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
+}
+
+static bool
+moonlight_text_block_invoke (NPObject *npobj, NPIdentifier name,
+			const NPVariant *args, uint32_t argCount,
+			NPVariant *result)
+{
+	TextBlock *tb = (TextBlock*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name_matches (name, "setFontSource")) {
+		if (argCount != 1
+		    || !NPVARIANT_IS_OBJECT (args[0]))
+			return true;
+
+		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->dob;
+	  
+		tb->SetFontSource (downloader);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else 
+		return MoonlightDependencyObjectClass->invoke (npobj, name,
+							       args, argCount,
+							       result);
+}
+
+MoonlightTextBlockType::MoonlightTextBlockType ()
+{
+	hasMethod = moonlight_text_block_has_method;
+	invoke = moonlight_text_block_invoke;
+}
+
+MoonlightTextBlockType* MoonlightTextBlockClass;
 
 /*** MoonlightDownloaderClass ***************************************************/
 
@@ -2399,20 +2510,22 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 void
 plugin_init_classes ()
 {
-	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
-	MoonlightPointClass = new MoonlightPointType ();
-	MoonlightObjectClass = new MoonlightObjectType ();
-	MoonlightScriptControlClass = new MoonlightScriptControlType ();
-	MoonlightContentClass = new MoonlightContentType ();
-	MoonlightSettingsClass = new MoonlightSettingsType ();
-	MoonlightDependencyObjectClass = new MoonlightDependencyObjectType ();
 	MoonlightCollectionClass = new MoonlightCollectionType ();
-	MoonlightStoryboardClass = new MoonlightStoryboardType ();
-	MoonlightMediaElementClass = new MoonlightMediaElementType ();
-	MoonlightImageClass = new MoonlightImageType ();
-	MoonlightDownloaderClass = new MoonlightDownloaderType ();
+	MoonlightContentClass = new MoonlightContentType ();
 	MoonlightControlClass = new MoonlightControlType ();
+	MoonlightDependencyObjectClass = new MoonlightDependencyObjectType ();
+	MoonlightDownloaderClass = new MoonlightDownloaderType ();
+	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
+	MoonlightImageBrushClass = new MoonlightImageBrushType ();
+	MoonlightImageClass = new MoonlightImageType ();
+	MoonlightMediaElementClass = new MoonlightMediaElementType ();
 	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
+	MoonlightObjectClass = new MoonlightObjectType ();
+	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightScriptableObjectClass = new MoonlightScriptableObjectType ();
+	MoonlightScriptControlClass = new MoonlightScriptControlType ();
+	MoonlightSettingsClass = new MoonlightSettingsType ();
+	MoonlightStoryboardClass = new MoonlightStoryboardType ();
+	MoonlightTextBlockClass = new MoonlightTextBlockType ();
 }
 

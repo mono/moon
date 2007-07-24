@@ -150,7 +150,7 @@ class ImageBrush : public TileBrush {
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
 
-	void SetSource (DependencyObject *dl, char* PartName);
+	void SetSource (DependencyObject *dl, const char* PartName);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
 };

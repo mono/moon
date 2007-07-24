@@ -695,7 +695,7 @@ ImageBrush::~ImageBrush ()
 }
 
 void
-ImageBrush::SetSource (DependencyObject *dl, char* PartName)
+ImageBrush::SetSource (DependencyObject *dl, const char* PartName)
 {
 	image->SetSource (dl, PartName);
 }
