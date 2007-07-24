@@ -1,3 +1,8 @@
+2007-07-24  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.h|cpp: Add a getter for the plugin instance
+	* plugin-class.h|cpp: Property get/setters for html objects.
+
 2007-07-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: include error.h, and start out

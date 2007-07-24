@@ -252,6 +252,7 @@ variant_to_value (const NPVariant *v, Value **result)
 	case NPVariantType_Object:
 		DEBUG_WARN_NOTIMPLEMENTED ("object variant type");
 		*result = NULL;
+
 		break;
 	}
 }
@@ -2093,6 +2094,48 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 			     obj);
 
 	DEBUGMSG (" => done");
+}
+
+void
+html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result)
+{
+	/* we lookup on the window object if no object was supplied */
+	NPObject *win = NULL;
+	if (npobj == NULL) {
+		NPN_GetValue (plugin->getInstance (), NPNVWindowNPObject, &win);
+		npobj = win;
+	}
+
+	NPVariant *npresult;
+	NPIdentifier str_name = NPN_GetStringIdentifier (name);
+	NPN_GetProperty (plugin->getInstance (), npobj, str_name, npresult);
+
+	Value *res;
+	variant_to_value (npresult, &res);
+
+	*result = *res;
+	if (win)
+		NPN_ReleaseObject (win);
+}
+
+void
+html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value)
+{
+	/* we lookup on the window object if no object was supplied */
+	NPObject *win = NULL;
+	if (npobj == NULL) {
+		NPN_GetValue (plugin->getInstance (), NPNVWindowNPObject, &win);
+		npobj = win;
+	}
+
+	NPVariant *npvalue;
+	NPIdentifier str_name = NPN_GetStringIdentifier (name);
+
+	value_to_variant (npobj, value, npvalue);
+	NPN_SetProperty (plugin->getInstance (), npobj, str_name, npvalue);
+
+	if (win)
+		NPN_ReleaseObject (win);
 }
 
 void

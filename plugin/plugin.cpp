@@ -594,6 +594,12 @@ PluginInstance::getRootObject ()
 	return (MoonlightControlObject*)rootobject;
 }
 
+NPP
+PluginInstance::getInstance ()
+{
+	return instance;
+}
+
 int32
 plugin_instance_get_actual_width (PluginInstance *instance)
 {

@@ -90,6 +90,7 @@ class PluginInstance
 	bool getWindowless ();
 
 	MoonlightControlObject *getRootObject ();
+	NPP getInstance ();
 
 	int32 getActualHeight ();
 	int32 getActualWidth ();

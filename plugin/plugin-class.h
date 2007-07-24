@@ -297,4 +297,16 @@ extern "C" {
 						   MoonlightScriptableObjectObject *obj);
 }
 
+
+/*** HtmlObject ***************************************************/
+
+extern "C" {
+	// These are meant to be called by System.Silverlight.dll
+
+	void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
+
+	void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
+
+}
+
 #endif /* PLUGIN_CLASS */
