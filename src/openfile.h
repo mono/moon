@@ -15,11 +15,8 @@
 
 G_BEGIN_DECLS
 
-void    *open_file_dialog_create            ();
-int      open_file_dialog_show              (GtkWidget *widget, const char *title,
-					     bool multsel, const char *filter, int idx);
-char    *open_file_dialog_get_selected_file (GtkWidget *widget);
-void     open_file_dialog_destroy           (GtkWidget *widget);
+char * open_file_dialog_show              (GtkWidget *widget, const char *title,
+					   bool multsel, const char *filter, int idx);
 
 G_END_DECLS
 
