@@ -21,21 +21,20 @@
 char *
 open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx)
 {
-	GtkWidget *widget = gtk_file_chooser_dialog_new ("", NULL, 
+	GtkWidget *widget = gtk_file_chooser_dialog_new (title, NULL, 
 					    GTK_FILE_CHOOSER_ACTION_OPEN, 
 					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 
-	gtk_window_set_title (GTK_WINDOW (widget), title);
-	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER(widget), multsel);
+	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER(widget), multsel != 0);
 
 	gint code = gtk_dialog_run (GTK_DIALOG (widget));
 	char *ret = NULL;
 
-	gtk_widget_destroy (widget);
-
 	if (code == GTK_RESPONSE_ACCEPT)
 		ret = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+
+	gtk_widget_destroy (widget);
 
 	return ret;
 }
