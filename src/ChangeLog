@@ -1,3 +1,8 @@
+2007-07-25  Miguel de Icaza  <miguel@novell.com>
+
+	* openfile.cpp (open_file_dialog_show): Change this method to
+	return an array with all the selected files.   
+
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: permit setting of the the surface's
