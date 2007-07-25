@@ -353,6 +353,8 @@ extern "C" {
 
 	void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
 
+	void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
+
 }
 
 #endif /* PLUGIN_CLASS */

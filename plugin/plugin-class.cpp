@@ -2508,6 +2508,42 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 }
 
 void
+html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
+		Value *args, uint32_t arg_count, Value *result)
+{
+	NPVariant npresult;
+	NPVariant *npargs = NULL;
+	NPObject *window = NULL;
+	NPP npp = plugin->getInstance ();
+	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+
+	if (npobj == NULL) {
+		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		npobj = window;
+	}
+
+	if (arg_count) {
+		npargs = new NPVariant [arg_count];
+		for (int i = 0; i < arg_count; i++)
+			value_to_variant (npobj, &args [i], &npargs [i]);
+	}
+	
+	NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
+
+	if (arg_count) {
+		for (int i = 0; i < arg_count; i++)
+			NPN_ReleaseVariantValue (&npargs [i]);
+	}
+
+	if (window)
+		NPN_ReleaseObject (window);
+
+	Value *res;
+	variant_to_value (&npresult, &res);
+	*result = *res;
+}
+
+void
 plugin_init_classes ()
 {
 	MoonlightCollectionClass = new MoonlightCollectionType ();

@@ -1,3 +1,8 @@
+2007-07-24  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp|h: Add function to invoke methods on
+	htmlobjects from unmanaged code.
+	
 2007-07-24  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::setBackground): implement.
