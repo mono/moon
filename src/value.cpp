@@ -241,6 +241,7 @@ Value::Value (Type::Kind k, gpointer npobj)
 	Init ();
 	g_assert (k == Type::NPOBJ);
 
+	this->k = Type::NPOBJ;
 	u.npobj = npobj;
 }
 

@@ -1,3 +1,7 @@
+2007-07-25  Jackson Harper  <jackson@ximian.com>
+
+	* value.cpp: Assign the kind for NPOBJs.
+
 2007-07-25  Miguel de Icaza  <miguel@novell.com>
 
 	* openfile.cpp (open_file_dialog_show): Change this method to
