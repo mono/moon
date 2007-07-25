@@ -25,6 +25,7 @@ libmooninclude_headers = \
 	list.h		\
 	mplayer.h	\
 	namescope.h	\
+	openfile.h	\
 	point.h		\
 	rect.h		\
 	rsvg.h		\
@@ -59,6 +60,7 @@ libmoon_la_SOURCES = 	\
 	media.cpp	\
 	mplayer.cpp	\
 	namescope.cpp	\
+	openfile.cpp	\
 	panel.cpp	\
 	point.cpp	\
 	rect.cpp	\
