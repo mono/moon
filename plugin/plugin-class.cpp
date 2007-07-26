@@ -156,7 +156,7 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	  cb_name += strlen ("javascript:");
 	this->callback = g_strdup (cb_name);
 
-	printf ("returning event listener proxy from %s - > %s\n", event_name, cb_name);
+// 	printf ("returning event listener proxy from %s - > %s\n", event_name, cb_name);
 }
 
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb)
@@ -692,7 +692,10 @@ _invoke (NPObject *npobj, NPIdentifier name,
 	 const NPVariant *args, uint32_t argCount,
 	 NPVariant *result)
 {
-	g_warning ("moonlight_object_invoke reached");
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	g_warning ("moonlight_object_invoke reached, method %s", strname);
+	NPN_MemFree (strname);
+
 	return false;
 }
 
@@ -1416,7 +1419,7 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "removeEventlistener")) {
+	else if (name_matches (name, "removeEventListener")) {
 		// not yet implemented
 		DEBUG_WARN_NOTIMPLEMENTED ("do.removeEventListener");
 		return true;
@@ -2298,7 +2301,16 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 		DEBUGMSG ("***************** adding scriptable object event %s", strname);
 		NPN_MemFree (strname);
 
-		DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.register_event");
+		if (NPVARIANT_IS_OBJECT (*value)) {
+			NPObject *cb_obj = NPVARIANT_TO_OBJECT (*value);
+
+			NPN_RetainObject (cb_obj);
+
+			sobj->addevent (sobj->managed_scriptable, event->event_handle, sobj, cb_obj);
+		}
+		else {
+			DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.register_event (non-object)");
+		}
 		return true;
 	}
 }
@@ -2463,6 +2475,22 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 			     obj);
 
 	DEBUGMSG (" => done");
+}
+
+void
+moonlight_scriptable_object_emit_event (PluginInstance *plugin,
+					MoonlightScriptableObjectObject *sobj,
+					MoonlightScriptableObjectObject *event_args,
+					NPObject *cb_obj)
+{
+	NPVariant args[2];
+	NPVariant result;
+
+	OBJECT_TO_NPVARIANT (sobj, args[0]);
+	OBJECT_TO_NPVARIANT (event_args, args[1]);
+
+	if (NPN_InvokeDefault (plugin->getNPP(), cb_obj, args, 2, &result))
+		NPN_ReleaseVariantValue (&result);
 }
 
 void

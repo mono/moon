@@ -274,10 +274,12 @@ struct MoonlightControlObject : MoonlightDependencyObjectObject {
 
 /*** MoonlightScriptableObject ***************************************************/
 
-typedef void (*InvokeDelegate) (gpointer obj_handle, gpointer method_handle, Value** args, int arg_count, Value* return_value);
-typedef void (*SetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value *value);
-typedef void (*GetPropertyDelegate) (gpointer obj_handle, gpointer property_handle, Value *value);
-typedef void (*EventHandlerDelegate) (gpointer obj_handle, gpointer event_handle);
+struct MoonlightScriptableObjectObject;
+
+typedef void (*InvokeDelegate) (gpointer managed_obj_handle, gpointer method_handle, Value** args, int arg_count, Value* return_value);
+typedef void (*SetPropertyDelegate) (gpointer managed_obj_handle, gpointer property_handle, Value *value);
+typedef void (*GetPropertyDelegate) (gpointer managed_obj_handle, gpointer property_handle, Value *value);
+typedef void (*EventHandlerDelegate) (gpointer managed_obj_handle, gpointer event_handle, MoonlightScriptableObjectObject* scriptable_obj, gpointer closure);
 
 struct MoonlightScriptableObjectType : MoonlightObjectType {
 	MoonlightScriptableObjectType ();
@@ -341,6 +343,11 @@ extern "C" {
 	void moonlight_scriptable_object_register (PluginInstance *plugin,
 						   char *name,
 						   MoonlightScriptableObjectObject *obj);
+
+	void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
+						     MoonlightScriptableObjectObject *obj,
+						     MoonlightScriptableObjectObject *event_args,
+						     NPObject *cb_obj);
 }
 
 

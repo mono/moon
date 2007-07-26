@@ -1,3 +1,8 @@
+2007-07-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h: implement scriptable events (adding and emitting
+	them, at least).
+
 2007-07-24  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp|h: Add function to invoke methods on
