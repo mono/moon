@@ -10,13 +10,15 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * 3D Teapot Demo (http://www.dolittle.com/Silverlight/3D/TestPage.html)
 
-	The word "Statistics" shows up in the browser, but nothing
-	else.  No JS Console errors.  This shows up on the console:
+	2 things blocking this demo:
 
-		** (Gecko:27997): WARNING **: adding handler to event 'MediaEnded', which has not been registered
+	- downloading media from remote servers
 
 		video source changed to `silverlightLogoLoop.wmv'
 		cannot open uri `silverlightLogoLoop.wmv': No such file or directory
+
+	- the MediaBase.MediaEnded event needs to be raised when the
+	  above .wmv finishes playing.
 
 * Binary Clock (http://explosivedog.com/silverlight/binaryclock/default.html)
 
