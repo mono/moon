@@ -38,7 +38,7 @@ public:
 	static DependencyProperty *SourceProperty;
 	static DependencyProperty *StretchProperty;
 	
-	MediaBase () { }
+	MediaBase ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
 
 	int MediaEndedEvent;
