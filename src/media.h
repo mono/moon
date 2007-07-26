@@ -126,6 +126,18 @@ void   image_set_source (Image *img, DependencyObject *Downloader, const char *P
 
 
 class MediaElement : public MediaBase {
+	Downloader *downloader;
+	char *part_name;
+
+	void StopLoader ();
+	void UpdateProgress ();
+	void DataWrite(guchar *data, gsize n, gsize nn);
+	void DownloaderComplete ();
+	
+	static void data_write(guchar*data, gsize n, gsize nn, void *closure);
+	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
+	static void size_notify (int64_t size, gpointer data);
+	
 public:
 	static DependencyProperty *AttributesProperty;
 	static DependencyProperty *AutoPlayProperty;

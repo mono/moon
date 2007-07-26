@@ -118,12 +118,28 @@ MediaElement::MediaElement ()
 	CurrentStateChangedEvent = RegisterEvent ("CurrentStateChanged");
 	DownloadProgressChangedEvent = RegisterEvent ("DownloadProgressChanged");
 	MarkerReachedEvent = RegisterEvent ("MarkerReached");
+
+	downloader = NULL;
+	part_name = NULL;
+}
+
+void
+MediaElement::StopLoader ()
+{
+	if (downloader){
+		downloader_abort (downloader);
+		downloader->unref ();
+		downloader = NULL;
+	}
 }
 
 MediaElement::~MediaElement ()
 {
 	if (timeout_id != 0)
 		g_source_remove (timeout_id);
+	
+	g_free (part_name);
+	StopLoader ();
 	
 	delete mplayer;
 }
@@ -195,16 +211,96 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 }
 
 void
-MediaElement::SetSource (DependencyObject *Downloader, const char *PartName)
+MediaElement::UpdateProgress ()
 {
+	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
+
+	SetValue (MediaElement::DownloadProgressProperty, Value (progress));
+}
+
+void 
+MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
+{
+	UpdateProgress ();
+}
+
+void 
+MediaElement::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+{
+	((MediaElement*)data)->DataWrite (buf, offset, count);
+}
+
+void
+MediaElement::size_notify (int64_t size, gpointer data)
+{
+	// Do something with it?
+	// if size == -1, we do not know the size of the file, can happen
+	// if the server does not return a Content-Length header
+	printf ("The file size is %lld\n", size);
+}
+
+void
+MediaElement::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	((MediaElement*)closure)->DownloaderComplete ();
+}
+
+void
+MediaElement::DownloaderComplete ()
+{
+	char *file = downloader_get_response_file (downloader, part_name);
+	bool autoplay = media_element_get_auto_play (this);
+		
+	printf ("video source changed to `%s'\n", file);
+		
+	if (mplayer->Open (file)) {
+		printf ("video succesfully opened\n");
+		media_element_set_natural_video_height (this, mplayer->height);
+		media_element_set_natural_video_width (this, mplayer->width);
+		media_element_set_current_state (this, "Buffering");
+	} else {
+		media_element_set_current_state (this, "Error");
+		printf ("video failed to open\n");
+	}
+		
+	Invalidate ();
+
+	if (autoplay)
+		Play ();
+}
+
+void
+MediaElement::SetSource (DependencyObject *dl, const char *PartName)
+{
+	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
+
 	// if we have something opened already...
 	media_element_set_current_state (this, "Closed");
-	
+
+	dl->ref ();
+	if (downloader)
+		downloader->unref ();
+	downloader = (Downloader *) dl;
+	part_name = g_strdup (PartName);
+
 	media_element_set_current_state (this, "Opening");
-	
-	// FIXME: implement me
-	
 	media_element_set_current_state (this, "Buffering");
+
+	Invalidate ();
+
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	if (downloader->Started () || downloader->Completed ()){
+		if (downloader->Completed ())
+			DownloaderComplete ();
+
+		UpdateProgress ();
+	} else {
+		downloader->SetWriteFunc (data_write, size_notify, this);
+		
+		// This is what actually triggers the download
+		downloader->Send ();
+	}
+
 }
 
 void
@@ -223,9 +319,10 @@ MediaElement::Pause ()
 void
 MediaElement::Play ()
 {
-	if (timeout_id == 0 && !mplayer->IsPlaying ()) {
+	if (downloader && downloader->Completed () && timeout_id == 0 && !mplayer->IsPlaying ()) {
 		timeout_id = mplayer->Play (advance_frame, this);
 		media_element_set_current_state (this, "Playing");
+		printf ("video playing, timeout = %d\n", timeout_id);
 	}
 }
 
@@ -249,33 +346,22 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	bool autoplay = false;
 	
 	if (prop == MediaBase::SourceProperty) {
+		StopLoader ();
+
 		char *uri = media_base_get_source (this);
-		
-		autoplay = media_element_get_auto_play (this);
-		
-		printf ("video source changed to `%s'\n", uri);
 		
 		if (timeout_id != 0) {
 			media_element_set_current_state (this, "Closed");
 			g_source_remove (timeout_id);
 			timeout_id = 0;
 		}
-		
 		mplayer->Stop ();
 		
 		media_element_set_current_state (this, "Opening");
 		
-		if (mplayer->Open (uri)) {
-			printf ("video succesfully opened\n");
-			media_element_set_natural_video_height (this, mplayer->height);
-			media_element_set_natural_video_width (this, mplayer->width);
-			media_element_set_current_state (this, "Buffering");
-		} else {
-			media_element_set_current_state (this, "Error");
-			printf ("video failed to open\n");
-		}
-		
-		invalidate = true;
+		Downloader *dl = new Downloader ();
+		downloader_open (dl, "GET", uri, true);
+		SetSource (dl, "");
 	} else if (prop == MediaElement::AutoPlayProperty) {
 		// handled below
 		autoplay = media_element_get_auto_play (this);
@@ -312,9 +398,9 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		// FIXME: implement me
 	}
 	
-	if (autoplay && timeout_id == 0 && !mplayer->IsPlaying ()) {
-		timeout_id = mplayer->Play (advance_frame, this);
-		printf ("video autoplayed, timeout = %d\n", timeout_id);
+	if (autoplay){
+		printf ("video autoplayed\n");
+		Play ();
 	}
 	
 	if (invalidate)
@@ -557,6 +643,11 @@ Image::~Image ()
 void
 Image::StopLoader ()
 {
+	if (downloader){
+		downloader_abort (downloader);
+		downloader->unref ();
+		downloader = NULL;
+	}
 }
 
 
@@ -887,14 +978,9 @@ void
 Image::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == MediaBase::SourceProperty) {
-		if (downloader) {
-			// we have a previously running download.  stop it.
-			downloader_abort (downloader);
-			downloader->unref ();
-			downloader = NULL;
-		}
-		
-		char *source = GetValue (prop)->AsString();
+		StopLoader ();
+
+		char *source = media_base_get_source (this);
 		
 		Downloader *dl = new Downloader ();
 		downloader_open (dl, "GET", source, true);
