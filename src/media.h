@@ -163,6 +163,11 @@ public:
 	void Pause ();
 	void Play ();
 	void Stop ();
+
+	int BufferingProgressChangedEvent;
+	int CurrentStateChangedEvent;
+	int DownloadProgressChangedEvent;
+	int MarkerReachedEvent;
 };
 
 MediaElement *media_element_new (void);

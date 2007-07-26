@@ -1,5 +1,10 @@
 2007-07-25  Chris Toshok  <toshok@ximian.com>
 
+	* media.h, media.cpp: add the MediaElement events,and emit
+	DownloadProgressChanged and CurrentStateChanged.
+
+2007-07-25  Chris Toshok  <toshok@ximian.com>
+
 	* media.h, media.cpp: register the 3 MediaBase events.  now we
 	need to figure out where to emit them.
 

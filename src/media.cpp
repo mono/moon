@@ -113,6 +113,11 @@ MediaElement::MediaElement ()
 {
 	mplayer = new MediaPlayer ();
 	timeout_id = 0;
+
+	BufferingProgressChangedEvent = RegisterEvent ("BufferingProgressChanged");
+	CurrentStateChangedEvent = RegisterEvent ("CurrentStateChanged");
+	DownloadProgressChangedEvent = RegisterEvent ("DownloadProgressChanged");
+	MarkerReachedEvent = RegisterEvent ("MarkerReached");
 }
 
 MediaElement::~MediaElement ()
@@ -284,9 +289,9 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::CanSeekProperty) {
 		// this can only be set by us, no-op
 	} else if (prop == MediaElement::CurrentStateProperty) {
-		// FIXME: raise CurrentStateChanged event
+		Emit (CurrentStateChangedEvent);
 	} else if (prop == MediaElement::DownloadProgressProperty) {
-		// this can only be set by us, no-op
+		Emit (DownloadProgressChangedEvent);
 	} else if (prop == MediaElement::IsMutedProperty) {
 		bool muted = media_element_get_is_muted (this);
 		if (!muted)
