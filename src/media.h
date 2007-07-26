@@ -40,6 +40,10 @@ public:
 	
 	MediaBase () { }
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
+
+	int MediaEndedEvent;
+	int MediaFailedEvent;
+	int MediaOpenedEvent;
 };
 
 MediaBase* media_base_new ();

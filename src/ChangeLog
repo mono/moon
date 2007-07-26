@@ -1,3 +1,8 @@
+2007-07-25  Chris Toshok  <toshok@ximian.com>
+
+	* media.h, media.cpp: register the 3 MediaBase events.  now we
+	need to figure out where to emit them.
+
 2007-07-25  Jackson Harper  <jackson@ximian.com>
 
 	* value.cpp: Assign the kind for NPOBJs.
