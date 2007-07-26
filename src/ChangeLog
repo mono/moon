@@ -1,3 +1,21 @@
+2007-07-26  Miguel de Icaza  <miguel@novell.com>
+
+	This implements support for relative MediaElement sources and
+	makes all of them go through the downloader, like we do for
+	images.
+	
+	* media.cpp (MediaElement): Do an implementation of SetSource
+	similar to the one in Image.   Although there is some code that
+	could be shared, the problem is that some parameters get in the
+	way.   
+
+	(MediaElement::DownloaderComplete): Move the playback here. 
+	
+	(StopLoader): Utility routine, factor this out also on the Image
+	case, and hook this up to the destructor of Image and
+	MediaElement.
+	
+
 2007-07-25  Chris Toshok  <toshok@ximian.com>
 
 	* media.h, media.cpp: add the MediaElement events,and emit

@@ -171,3 +171,8 @@ Feel free to add items to this TODO list
 * Text
 
 	Find out why ligatures are not happening for certain scripts.
+
+* Image::OnPropertyChanges and MediaElement::OnPropertyChanges
+
+	We could avoid clearing the downloader here, and just let
+	SetSource abort old downloaders, and clear the values.

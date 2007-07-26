@@ -151,10 +151,10 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Grand Piano (http://silverlight.net/samples/1.0/Grand-Piano/default.html)
 
-  	The media player lacks downloader support, so the sounds don't come out.
+	Work remotely.
 
-	otherwise, it works.
-
+	If you try to run this locally, nothing shows up, not sure if
+	this is our problem. 
 
 * Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
 
