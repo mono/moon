@@ -36,7 +36,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 NPError 
 NPP_Destroy (NPP instance, NPSavedData** save)
 {
-	DEBUGMSG ("NPP_Destroy, instance=%p\n");
+	DEBUGMSG ("NPP_Destroy, instance=%p\n", instance);
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -190,7 +190,7 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 NPError 
 NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 {
-	DEBUGMSG ("NPP_SetValue %d (%x)", variable, value);
+	DEBUGMSG ("NPP_SetValue %d (%p)", variable, value);
 
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -203,7 +203,7 @@ char *
 NPP_GetMIMEDescription (void)
 {
 	DEBUGMSG ("NPP_GetMIMEDescription");
-    return (MIME_TYPES_HANDLED);
+	return (MIME_TYPES_HANDLED);
 }
 
 void downloader_initialize ();

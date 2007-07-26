@@ -50,7 +50,7 @@ plugin_menu_about (PluginInstance *plugin)
 	gtk_dialog_run (GTK_DIALOG (about));
 }
 
-gboolean
+void
 plugin_show_menu (PluginInstance *plugin)
 {
 	GtkWidget *menu;
@@ -342,7 +342,6 @@ PluginInstance::JsRunOnload ()
 {
 	bool retval = false;
 	NPObject *object = NULL;
-	NPString reference;
 	NPVariant result;
 	const char *expression = onLoad;
 
@@ -645,6 +644,8 @@ plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSour
 		id = g_timeout_add (interval, callback, data);
 
 	instance->timers = g_slist_append (instance->timers, GINT_TO_POINTER ((int)id));
+
+	return id;
 }
 
 void

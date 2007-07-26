@@ -28,7 +28,6 @@ MonoMethod   *moon_insert_mapping;
 gboolean
 vm_init (void)
 {
-	const char *home = g_get_home_dir ();
 	gboolean result = FALSE;
 
 	boot_assembly = g_build_path ("/", PLUGIN_DIR, "plugin", "moonlight.exe", NULL);

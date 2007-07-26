@@ -347,8 +347,8 @@ erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 		else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.charPosition");
 			INT32_TO_NPVARIANT (0, *result);
-			return true;
 		}
+		return true;
 	}
 	else if (name_matches (name, "methodName")) {
 		DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.methodName");
@@ -362,8 +362,8 @@ erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 		else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.xamlFile");
 			NULL_TO_NPVARIANT (*result);
-			return true;
 		}
+		return true;
 	}
 	else
 		return false;
@@ -559,7 +559,6 @@ mouse_event_has_property (NPObject *npobj, NPIdentifier name)
 static bool
 mouse_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
-	MoonlightRect *r = (MoonlightRect*)npobj;
 	if (name_matches (name, "shift")) {
 		DEBUG_WARN_NOTIMPLEMENTED ("shift MouseEvent property");
 		BOOLEAN_TO_NPVARIANT (false, *result);
@@ -597,8 +596,6 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 
 		NPN_RetainObject (ea->position);
 		
-		MoonlightPoint* point = (MoonlightPoint*)ea->position;
-
 		OBJECT_TO_NPVARIANT (ea->position, *result);
 
 		return true;
@@ -1513,6 +1510,9 @@ DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj)
 		((MoonlightControlObject *)depobj)->real_object = DependencyObjectCreateWrapper (instance,
 												 ((Control*)obj)->real_object);
 		break;
+	default:
+		/* nothing to do */
+		break;
 	}
 
 	return depobj;
@@ -2008,8 +2008,6 @@ moonlight_downloader_methods [] = {
 static bool
 moonlight_downloader_has_method (NPObject *npobj, NPIdentifier name)
 {
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-
 	if (HAS_METHOD (moonlight_downloader_methods, name))
 		return true;
 
@@ -2164,7 +2162,7 @@ moonlight_control_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 	if (!p)
 		return false;
 
-	_set_dependency_property_value (dob, p, value);
+	return _set_dependency_property_value (dob, p, value);
 }
 
 static bool
@@ -2318,6 +2316,8 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 		}
 		return true;
 	}
+
+	return false;
 }
 
 static bool
@@ -2348,7 +2348,7 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 
 	if (argCount > 0) {
 		vargs = new Value*[argCount];
-		for (int i = 0; i < argCount; i ++) {
+		for (uint32_t i = 0; i < argCount; i ++) {
 			variant_to_value (&args[i], &vargs[i]);
 		}
 	}
@@ -2356,7 +2356,7 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 	sobj->invoke (sobj->managed_scriptable, method->method_handle, vargs, argCount, &rv);
 
 	if (argCount > 0) {
-		for (int i = 0; i < argCount; i ++) {
+		for (uint32_t i = 0; i < argCount; i ++) {
 			delete vargs[i];
 		}
 		delete [] vargs;
@@ -2557,14 +2557,14 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 
 	if (arg_count) {
 		npargs = new NPVariant [arg_count];
-		for (int i = 0; i < arg_count; i++)
+		for (uint32_t i = 0; i < arg_count; i++)
 			value_to_variant (npobj, &args [i], &npargs [i]);
 	}
 	
 	NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
 
 	if (arg_count) {
-		for (int i = 0; i < arg_count; i++)
+		for (uint32_t i = 0; i < arg_count; i++)
 			NPN_ReleaseVariantValue (&npargs [i]);
 	}
 

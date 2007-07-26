@@ -49,19 +49,19 @@ load ()
 
 	getvalue = (np_getvalue_func) dlsym (real_plugin, "NP_GetValue");
 	if (getvalue == NULL){
-		fprintf (stderr, "NP_GetValue not found %s\n", dlerror);
+		fprintf (stderr, "NP_GetValue not found %s\n", dlerror ());
 		return FALSE;
 	}
 
 	getmime = (np_getmime_func) dlsym (real_plugin, "NP_GetMIMEDescription");
 	if (getmime == NULL){
-		fprintf (stderr, "NP_GetMIMEDescription not found %s\n", dlerror);
+		fprintf (stderr, "NP_GetMIMEDescription not found %s\n", dlerror ());
 		return FALSE;
 	}
 
 	shutdown = (np_shutdown_func) dlsym (real_plugin, "NP_Shutdown");
 	if (shutdown == NULL){
-		fprintf (stderr, "NP_Shutdown not found %s\n", dlerror);
+		fprintf (stderr, "NP_Shutdown not found %s\n", dlerror ());
 		return FALSE;
 	}
 

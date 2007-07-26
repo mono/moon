@@ -8,7 +8,8 @@ pluginlib_DATA=README moonlight.exe moonlight.exe.mdb
 INCLUDES = \
 	-I$(top_srcdir)/src \
 	-I/usr/include/X11 \
-	$(PLUGIN_CFLAGS)
+	$(PLUGIN_CFLAGS) \
+	-Wall
 
 libmoonloader_la_LDFLAGS = \
 	-avoid-version -module
