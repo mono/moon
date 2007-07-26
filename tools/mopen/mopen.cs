@@ -122,14 +122,14 @@ class MonoOpen {
 		GtkSilver.Init ();
 		window = new Window (file);
 
-		string full = Path.GetFullPath (file);
-		string dir = Path.GetDirectoryName (full);
+		string full = System.IO.Path.GetFullPath (file);
+		string dir = System.IO.Path.GetDirectoryName (full);
 		
 		Moonlight.RegisterLoader (delegate (string asm_file) {
-			if (Path.IsPathRooted (asm_file)){
+			if (System.IO.Path.IsPathRooted (asm_file)){
 				return Assembly.LoadFile (asm_file);
 			} else {
-				return Assembly.LoadFile (Path.Combine (dir, asm_file));
+				return Assembly.LoadFile (System.IO.Path.Combine (dir, asm_file));
 			}
 		});
 
@@ -299,7 +299,7 @@ class MonoOpen {
 			return DoLoad (file, cmdargs);
 
 		if (Directory.Exists (file)){
-			string combine = Path.Combine (file, "default.xaml");
+			string combine = System.IO.Path.Combine (file, "default.xaml");
 			if (File.Exists (combine))
 				return DoLoad (combine, cmdargs);
 		}
@@ -307,7 +307,7 @@ class MonoOpen {
 		string path = Environment.GetEnvironmentVariable ("PATH");
 		string [] dirs = path.Split (new char [] {':'});
 		foreach (string dir in dirs){
-			string combine = Path.Combine (dir, "default.xaml");
+			string combine = System.IO.Path.Combine (dir, "default.xaml");
 
 			if (File.Exists (combine))
 				return DoLoad (combine, cmdargs);
