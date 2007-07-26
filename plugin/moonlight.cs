@@ -458,8 +458,8 @@ namespace Moonlight {
 				return;
 			}
 
-			Console.WriteLine ("attempting to hookup delegate {0} to event {1} on object of type {2}",
-					   value, name, target.GetType().FullName);
+// 			Console.WriteLine ("attempting to hookup delegate {0} to event {1} on object of type {2}",
+// 					   value, name, target.GetType().FullName);
 
 			EventInfo src = target.GetType ().GetEvent (name);
 			if (src == null) {
