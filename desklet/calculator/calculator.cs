@@ -113,7 +113,9 @@ namespace Desklet
 
 			Storyboard sb = FindName ("run") as Storyboard;
 			DoubleAnimation timer = new DoubleAnimation ();
-			sb.Children.Add (timer);
+			//sb.Children.Add (timer);
+			((TimelineCollection)sb.GetValue(TimelineGroup.ChildrenProperty)).Add(timer);
+			
 			timer.Duration = new Duration (TimeSpan.FromSeconds (3600));
 
 			sb.Completed += delegate {

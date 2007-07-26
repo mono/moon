@@ -116,7 +116,9 @@ namespace Desklets
 			UpdateInfo (null, null);
 
 			DoubleAnimation timer = new DoubleAnimation ();
-			storyboard.Children.Add (timer);
+			//storyboard.Children.Add (timer);
+			((TimelineCollection)storyboard.GetValue(TimelineGroup.ChildrenProperty)).Add(timer);
+
 			timer.Duration = new Duration (TimeSpan.FromSeconds (1.0));
 			storyboard.Completed += new EventHandler (UpdateInfo);
 			storyboard.Begin ();

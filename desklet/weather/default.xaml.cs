@@ -626,7 +626,8 @@ namespace Desklet.Weather
 			UpdateData (null, null);
 
 			DoubleAnimation timer = new DoubleAnimation ();
-                        run.Children.Add (timer);
+                        //run.Children.Add (timer);
+			((TimelineCollection)run.GetValue(TimelineGroup.ChildrenProperty)).Add(timer);
                         timer.Duration = new Duration (TimeSpan.FromMinutes (defaultUpdateInterval));
                         run.Completed += new EventHandler (UpdateData);
                         run.Begin ();
