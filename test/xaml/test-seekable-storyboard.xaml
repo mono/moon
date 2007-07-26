@@ -1,0 +1,34 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="SeekableCanvas;assembly=seekable-canvas.dll"
+	Loaded="Canvas_Loaded"
+	MouseMove="Canvas_OnMouseMove"
+	MouseLeftButtonDown="Canvas_OnMouseDown"
+	MouseLeftButtonUp="Canvas_OnMouseUp"
+	Width="600"
+	Height="300">
+
+    <Line
+	x:Name="TheAmazingMovingLine"
+	X1="10" Y1="10"
+	X2="10" Y2="200" Stroke="Black">
+
+    </Line>
+
+    <Canvas.Resources>
+          <Storyboard x:Name="animation" Duration="0:0:30">
+            <DoubleAnimation
+              Storyboard.TargetName="TheAmazingMovingLine"
+              Storyboard.TargetProperty="X1"
+              From="10" To="300" By="25" Duration="0:0:10"
+	      AutoReverse="True" RepeatBehavior="Forever" />
+
+	    <DoubleAnimation
+              Storyboard.TargetName="TheAmazingMovingLine"
+              Storyboard.TargetProperty="X2"
+              From="10" To="300" By="25" Duration="0:0:30"
+              AutoReverse="True" RepeatBehavior="Forever" />
+	      
+          </Storyboard>
+    </Canvas.Resources>
+</Canvas>
