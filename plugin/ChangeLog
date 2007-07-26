@@ -1,5 +1,10 @@
 2007-07-25  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (moonlight_dependency_object_invoke): implement
+	"getParent" correctly - it can return NULL.
+
+2007-07-25  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.h: implement scriptable events (adding and emitting
 	them, at least).
 

@@ -1389,10 +1389,15 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "getParent")) {
-		MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance,
-											 dob->GetParent());
+		DependencyObject *parent = dob->GetParent();
+		if (parent) {
+			MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance,
+												 dob->GetParent());
 
-		OBJECT_TO_NPVARIANT (depobj, *result);
+			OBJECT_TO_NPVARIANT (depobj, *result);
+		}
+		else
+			NULL_TO_NPVARIANT (*result);
 
 		return true;
 	}
