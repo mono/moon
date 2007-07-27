@@ -372,8 +372,28 @@ UIElement::ComputeBounds ()
 void
 UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 {
+
+	cairo_pattern_t *mask = NULL;
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
+	if (opacityMask != NULL) {
+		cairo_save (cr);
+		opacityMask->SetupBrush (cr, this);
+		mask = cairo_get_source (cr);
+		cairo_pattern_reference (mask);
+		cairo_push_group (cr);
+	}
+	
 	Render (cr, x, y, width, height);
+
+	if (opacityMask != NULL) {
+		cairo_pop_group_to_source (cr);
+		cairo_rectangle (cr, bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h - 2);
+		cairo_clip (cr);
+		cairo_mask (cr, mask);
+		cairo_pattern_destroy (mask);
+		cairo_restore (cr);
+	}
+
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 
 #if SHOW_BOUNDING_BOXES
