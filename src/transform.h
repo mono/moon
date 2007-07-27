@@ -21,10 +21,21 @@ G_BEGIN_DECLS
 
 class Transform : public DependencyObject {
  public:
- 	Transform () { }
+	Transform () : need_update (true) { }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
-	virtual void GetTransform (cairo_matrix_t *value);
+	virtual void GetTransform (cairo_matrix_t *value) {
+		if (need_update) {
+			UpdateTransform ();
+			need_update = false;
+		}
+		*value = _matrix;
+	};
+
+	virtual void UpdateTransform ();
+ protected:
+	cairo_matrix_t _matrix;
+	bool need_update;
 };
 
 Transform* transform_new ();
@@ -35,12 +46,11 @@ class RotateTransform : public Transform {
 
 	RotateTransform () { }
 	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; };
+	virtual void UpdateTransform ();
 
 	static DependencyProperty* AngleProperty;
 	static DependencyProperty* CenterXProperty;
 	static DependencyProperty* CenterYProperty;
-
-	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 RotateTransform * rotate_transform_new ();
@@ -59,11 +69,10 @@ class TranslateTransform : public Transform {
 
 	TranslateTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; };
+	virtual void UpdateTransform ();
 
 	static DependencyProperty* XProperty;
 	static DependencyProperty* YProperty;
-
-	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 TranslateTransform *translate_transform_new ();
@@ -79,13 +88,12 @@ public:
 
 	ScaleTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
+	virtual void UpdateTransform ();
 
 	static DependencyProperty* ScaleXProperty;
 	static DependencyProperty* ScaleYProperty;
 	static DependencyProperty* CenterXProperty;
 	static DependencyProperty* CenterYProperty;
-
-	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 ScaleTransform * scale_transform_new ();
@@ -107,13 +115,12 @@ public:
 
 	SkewTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; };
+	virtual void UpdateTransform ();
 
 	static DependencyProperty* AngleXProperty;
 	static DependencyProperty* AngleYProperty;
 	static DependencyProperty* CenterXProperty;
 	static DependencyProperty* CenterYProperty;
-
-	virtual void GetTransform (cairo_matrix_t *value);
 };
 
 SkewTransform * skew_transform_new ();
@@ -139,8 +146,7 @@ class MatrixTransform : public Transform {
 	/* these are dependency properties
 	   Matrix matrix;
 	*/
-
-	virtual void GetTransform (cairo_matrix_t *value);
+	virtual void UpdateTransform ();
 };
 
 MatrixTransform *matrix_transform_new ();
@@ -166,7 +172,7 @@ public:
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void GetTransform (cairo_matrix_t *value);
+	virtual void UpdateTransform ();
 };
 
 TransformGroup *transform_group_new ();

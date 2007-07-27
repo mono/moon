@@ -28,6 +28,7 @@ Transform::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
+	need_update = true;
 	//
 	// If the transform changes, we need to notify our owners
 	// that they must repaint (all of our properties have
@@ -43,14 +44,15 @@ Transform::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
+Transform::UpdateTransform ()
+{
+	g_warning ("Transform:UpdateTransform has been called. The derived class should have overridden it.");
+}
+
+void
 transform_get_transform (Transform *t, cairo_matrix_t *value)
 {
 	t->GetTransform (value);
-}
-void 
-Transform::GetTransform (cairo_matrix_t *value)
-{
-	g_warning ("Transform:GetTransform has been called. The derived class should have overridden it.");
 }
 
 Transform *
@@ -66,7 +68,7 @@ DependencyProperty* RotateTransform::CenterYProperty;
 DependencyProperty* RotateTransform::AngleProperty;
 
 void
-RotateTransform::GetTransform (cairo_matrix_t *value)
+RotateTransform::UpdateTransform ()
 {
 	double angle, center_x, center_y;
 	double radians;
@@ -78,13 +80,13 @@ RotateTransform::GetTransform (cairo_matrix_t *value)
 	radians = angle / 180.0 * M_PI;
 
 	if (center_x == 0.0 && center_y == 0.0) {
-		cairo_matrix_init_rotate (value, radians);
+		cairo_matrix_init_rotate (&_matrix, radians);
 	}
 	else {
-		cairo_matrix_init_identity (value);
-		cairo_matrix_translate (value, center_x, center_y);
-		cairo_matrix_rotate (value, radians);
-		cairo_matrix_translate (value, -center_x, -center_y);
+		cairo_matrix_init_identity (&_matrix);
+		cairo_matrix_translate (&_matrix, center_x, center_y);
+		cairo_matrix_rotate (&_matrix, radians);
+		cairo_matrix_translate (&_matrix, -center_x, -center_y);
 	}
 	//printf ("Returning2 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
@@ -138,12 +140,12 @@ DependencyProperty* TranslateTransform::XProperty;
 DependencyProperty* TranslateTransform::YProperty;
 
 void
-TranslateTransform::GetTransform (cairo_matrix_t *value)
+TranslateTransform::UpdateTransform ()
 {
 	double x = translate_transform_get_x (this);
 	double y = translate_transform_get_y (this);
 
-	cairo_matrix_init_translate (value, x, y);
+	cairo_matrix_init_translate (&_matrix, x, y);
 	//printf ("translating dx %g dy %g", x, y);
 	//printf ("TranslateTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
@@ -186,7 +188,7 @@ DependencyProperty* ScaleTransform::ScaleXProperty;
 DependencyProperty* ScaleTransform::ScaleYProperty;
 
 void
-ScaleTransform::GetTransform (cairo_matrix_t *value)
+ScaleTransform::UpdateTransform ()
 {
 	double sx = scale_transform_get_scale_x (this);
 	double sy = scale_transform_get_scale_y (this);
@@ -206,13 +208,13 @@ ScaleTransform::GetTransform (cairo_matrix_t *value)
 	double cy = scale_transform_get_center_y (this);
 
 	if (cx == 0.0 && cy == 0.0) {
-		cairo_matrix_init_scale (value, sx, sy);
+		cairo_matrix_init_scale (&_matrix, sx, sy);
 	}
 	else {
-		cairo_matrix_init_identity (value);
-		cairo_matrix_translate (value, cx, cy);
-		cairo_matrix_scale (value, sx, sy);
-		cairo_matrix_translate (value, -cx, -cy);
+		cairo_matrix_init_identity (&_matrix);
+		cairo_matrix_translate (&_matrix, cx, cy);
+		cairo_matrix_scale (&_matrix, sx, sy);
+		cairo_matrix_translate (&_matrix, -cx, -cy);
 	}
 	//printf ("scaling sx %g sy %g at center cx %g cy %g\n", sx, sy, cx, cy);
 	//printf ("ScaleTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
@@ -281,27 +283,27 @@ DependencyProperty* SkewTransform::CenterXProperty;
 DependencyProperty* SkewTransform::CenterYProperty;
 
 void
-SkewTransform::GetTransform (cairo_matrix_t *value)
+SkewTransform::UpdateTransform ()
 {
-	cairo_matrix_init_identity (value);
+	cairo_matrix_init_identity (&_matrix);
 
 	double cx = skew_transform_get_center_x (this);
 	double cy = skew_transform_get_center_y (this);
 
 	bool translation = ((cx != 0.0) || (cy != 0.0));
 	if (translation)
-		cairo_matrix_translate (value, cx, cy);
+		cairo_matrix_translate (&_matrix, cx, cy);
 
 	double ax = skew_transform_get_angle_x (this);
 	if (ax != 0.0)
-		value->xy = tan (ax * M_PI / 180);
+		_matrix.xy = tan (ax * M_PI / 180);
 
 	double ay = skew_transform_get_angle_y (this);
 	if (ay != 0.0)
-		value->yx = tan (ay * M_PI / 180);
+		_matrix.yx = tan (ay * M_PI / 180);
 
 	if (translation)
-		cairo_matrix_translate (value, -cx, -cy);
+		cairo_matrix_translate (&_matrix, -cx, -cy);
 
 	//printf ("SkewTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
@@ -365,13 +367,13 @@ skew_transform_get_center_y (SkewTransform *t)
 DependencyProperty* MatrixTransform::MatrixProperty;
 
 void
-MatrixTransform::GetTransform (cairo_matrix_t *value)
+MatrixTransform::UpdateTransform ()
 {
 	cairo_matrix_t* matrix = matrix_transform_get_matrix (this);
 	if (matrix)
-		memcpy (value, matrix, sizeof (cairo_matrix_t));
+		_matrix = *matrix;
 	else
-		cairo_matrix_init_identity (value);
+		cairo_matrix_init_identity (&_matrix);
 	//printf ("Returning1 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
@@ -421,6 +423,8 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
+
+		need_update = true;
 	}
 
 	NotifyAttacheesOfPropertyChange (prop);
@@ -429,23 +433,24 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 void
 TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
+	need_update = true;
 	NotifyAttacheesOfPropertyChange (subprop);
 }
 
 void
-TransformGroup::GetTransform (cairo_matrix_t *value)
+TransformGroup::UpdateTransform ()
 {
 	TransformCollection *children = GetValue (TransformGroup::ChildrenProperty)->AsTransformCollection ();
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	
-	cairo_matrix_init_identity (value);
+	cairo_matrix_init_identity (&_matrix);
 	
 	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
 		Transform *transform = (Transform *) node->obj;
 		cairo_matrix_t matrix;
 		
 		transform->GetTransform (&matrix);
-		cairo_matrix_multiply (value, value, &matrix);
+		cairo_matrix_multiply (&_matrix, &_matrix, &matrix);
 	}
 }
 

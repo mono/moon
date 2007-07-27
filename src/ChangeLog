@@ -1,3 +1,12 @@
+2007-07-27  Chris Toshok  <toshok@ximian.com>
+
+	* transform.h, transform.cpp: cache the transformation matrix once
+	we recompute it.  This gives us the responsiveness of delayed
+	updating without the cost of calculating the matrix once per
+	object associated with it.  a property change just sets the
+	"need_update" flag, which causes a recompute on the next
+	GetTransform call.
+
 2007-07-27  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp: implement initial support for OpacityMask.
