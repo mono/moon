@@ -1917,7 +1917,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 	{
 		// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
 		int val;
-		enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, value);
+		enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, prop->name);
 
 		if (emu)
 			val = enum_from_str (emu, value);

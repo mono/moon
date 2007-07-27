@@ -1,5 +1,10 @@
 2007-07-27  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (xaml_set_property_from_str): look up the enum map from
+	the property name, not the value.
+
+2007-07-27  Chris Toshok  <toshok@ximian.com>
+
 	* transform.h, transform.cpp: cache the transformation matrix once
 	we recompute it.  This gives us the responsiveness of delayed
 	updating without the cost of calculating the matrix once per
