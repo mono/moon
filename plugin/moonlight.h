@@ -35,12 +35,12 @@
 #define DEBUG
 
 // Plugin information
-#define PLUGIN_NAME         "WPFe Plug-In"
+#define PLUGIN_NAME         "Silverlight Plug-In"
 #define PLUGIN_VERSION      "0.99.0"
 #define PLUGIN_OURNAME      "Novell Moonlight"
 #define PLUGIN_OURVERSION   "0.1"
 #define PLUGIN_DESCRIPTION  "Novell Moonlight is Mono's Free/Open Source implementation of SilverLight"
-#define MIME_TYPES_HANDLED  "application/ag-plugin:xaml:Novell MoonLight"
+#define MIME_TYPES_HANDLED  "application/x-silverlight:xaml:Novell MoonLight"
 
 #define MAX_STREAM_SIZE 65536
 
