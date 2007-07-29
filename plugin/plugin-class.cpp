@@ -812,7 +812,8 @@ moonlight_scriptable_control_set_property (NPObject *npobj, NPIdentifier name, c
 static bool
 moonlight_scriptable_control_has_method (NPObject *npobj, NPIdentifier name)
 {
-	return (name_matches (name, "createObject"));
+	return (name_matches (name, "createObject") ||
+		name_matches (name, "isVersionSupported"));
 }
 
 static bool
@@ -844,6 +845,16 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 			NULL_TO_NPVARIANT (*result);
 			return true;
 		}
+	}
+	else if (name_matches (name, "isVersionSupported")) {
+		BOOLEAN_TO_NPVARIANT (false, *result);
+		if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])) {
+			printf ("invalid arg types\n");
+			return true;
+		}
+		if (!strcmp (NPVARIANT_TO_STRING (args[0]).utf8characters, "1.1"))
+			BOOLEAN_TO_NPVARIANT (true, *result);
+		return true;
 	}
 	else
 		return false;
