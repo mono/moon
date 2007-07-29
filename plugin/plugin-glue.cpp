@@ -18,8 +18,6 @@
 NPError 
 NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
 {
-	DEBUGMSG ("NPP_New");
-
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -36,8 +34,6 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 NPError 
 NPP_Destroy (NPP instance, NPSavedData** save)
 {
-	DEBUGMSG ("NPP_Destroy, instance=%p\n", instance);
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -53,8 +49,6 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 NPError 
 NPP_SetWindow (NPP instance, NPWindow* window)
 {
-	DEBUGMSG ("NPP_SetWindow %d %d", window->width, window->height);
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -65,8 +59,6 @@ NPP_SetWindow (NPP instance, NPWindow* window)
 NPError
 NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {
-	DEBUGMSG ("NPP_NewStream");
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -77,8 +69,6 @@ NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable,
 NPError
 NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
 {
-	DEBUGMSG ("NPP_DestroyStream");
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -89,8 +79,6 @@ NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
 void
 NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 {
-	DEBUGMSG ("NPP_StreamAsFile");
-
 	if (instance == NULL)
 		return;
 
@@ -101,8 +89,6 @@ NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 int32
 NPP_WriteReady (NPP instance, NPStream* stream)
 {
-	DEBUGMSG ("NPP_WriteReady");
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -113,8 +99,6 @@ NPP_WriteReady (NPP instance, NPStream* stream)
 int32
 NPP_Write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer)
 {
-	DEBUGMSG ("NPP_Write");
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -125,8 +109,6 @@ NPP_Write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer
 void
 NPP_Print (NPP instance, NPPrint* platformPrint)
 {
-	DEBUGMSG ("NPP_Print");
-
 	if (instance == NULL)
 		return;
 
@@ -137,8 +119,6 @@ NPP_Print (NPP instance, NPPrint* platformPrint)
 void
 NPP_URLNotify (NPP instance, const char* url, NPReason reason, void* notifyData)
 {
-	DEBUGMSG ("NPP_URLNotify");
-
 	if (instance == NULL)
 		return;
 
@@ -150,8 +130,6 @@ NPP_URLNotify (NPP instance, const char* url, NPReason reason, void* notifyData)
 int16 
 NPP_HandleEvent (NPP instance, void* event)
 {
-	DEBUGMSG ("NPP_HandleEvent");
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -162,8 +140,6 @@ NPP_HandleEvent (NPP instance, void* event)
 NPError 
 NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 {
-	DEBUGMSG ("NPP_GetValue %d (%x)", variable, variable);
-
 	NPError err = NPERR_NO_ERROR;
 
 	switch (variable) {
@@ -190,8 +166,6 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 NPError 
 NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 {
-	DEBUGMSG ("NPP_SetValue %d (%p)", variable, value);
-
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
@@ -202,7 +176,6 @@ NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 char *
 NPP_GetMIMEDescription (void)
 {
-	DEBUGMSG ("NPP_GetMIMEDescription");
 	return (MIME_TYPES_HANDLED);
 }
 
@@ -213,8 +186,6 @@ static bool already_initialized = false;
 NPError
 NPP_Initialize (void)
 {
-	DEBUGMSG ("NP_Initialize");
-
 	// We dont need to initialize mono vm and gtk more than one time.
 	if (!already_initialized) {
 		already_initialized = true;
@@ -233,8 +204,6 @@ NPP_Initialize (void)
 void
 NPP_Shutdown (void)
 {
-	DEBUGMSG ("NP_Shutdown");
-	
 	// runtime_shutdown is broken at moment so let us just shutdown TimeManager,
 	// when fixed please uncomment above line and remove time manger shutdown.
 	//runtime_shutdown ();
