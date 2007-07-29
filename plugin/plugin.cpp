@@ -468,7 +468,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 int32
 PluginInstance::WriteReady (NPStream* stream)
 {
-	DEBUGMSG ("WriteReady (%d)", stream->end);
+	//DEBUGMSG ("WriteReady (%d)", stream->end);
 
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 
@@ -486,7 +486,7 @@ PluginInstance::WriteReady (NPStream* stream)
 int32
 PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 {
-	DEBUGMSG ("Write size: %d offset: %d len: %d", stream->end, offset, len);
+	//DEBUGMSG ("Write size: %d offset: %d len: %d", stream->end, offset, len);
 
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 
