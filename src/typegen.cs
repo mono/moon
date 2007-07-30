@@ -297,6 +297,8 @@ class gen {
 		v = v.Replace ("DEPENDENCYOBJECT", "DEPENDENCY_OBJECT");
 		if (v.Length > "COLLECTION".Length)
 			v = v.Replace ("COLLECTION", "_COLLECTION");
+		if (v.Length > "DICTIONARY".Length)
+			v = v.Replace ("DICTIONARY", "_DICTIONARY");
 		return v;
 	}
 }
