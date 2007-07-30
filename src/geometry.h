@@ -202,8 +202,6 @@ class PathFigure : public DependencyObject {
 PathFigure* path_figure_new ();
 bool	path_figure_get_is_closed	(PathFigure *path_figure);
 void	path_figure_set_is_closed	(PathFigure *path_figure, bool closed);
-bool	path_figure_get_is_filled	(PathFigure *path_figure);
-void	path_figure_set_is_filled	(PathFigure *path_figure, bool filled);
 Point*	path_figure_get_start_point	(PathFigure *path_figure);
 void	path_figure_set_start_point	(PathFigure *path_figure, Point *point);
 PathSegmentCollection	*path_figure_get_segments	(PathFigure *path_figure);

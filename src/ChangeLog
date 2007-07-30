@@ -1,5 +1,9 @@
 2007-07-30  Chris Toshok  <toshok@ximian.com>
 
+	* geometry.h, geometry.cpp: PathFigure.IsFilled is gone in RC1.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
 	* brush.h, brush.cpp: track breaking change of the
 	Brush.Transform/RelativeTransform properties - they're speced to
 	be Transforms, not TransformGroups.

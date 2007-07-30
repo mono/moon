@@ -458,7 +458,6 @@ RectangleGeometry::Draw (cairo_t *cr)
 //
 
 DependencyProperty* PathFigure::IsClosedProperty;
-DependencyProperty* PathFigure::IsFilledProperty;
 DependencyProperty* PathFigure::SegmentsProperty;
 DependencyProperty* PathFigure::StartPointProperty;
 
@@ -537,22 +536,6 @@ void
 path_figure_set_is_closed (PathFigure *path_figure, bool closed)
 {
 	path_figure->SetValue (PathFigure::IsClosedProperty, Value (closed));
-}
-
-bool
-path_figure_get_is_filled (PathFigure *path_figure)
-{
-	// FIXME
-	g_warning ("Ignored in Mix, will be removed in 1.0. See http://blogs.msdn.com/jstegman/archive/2007/06/06/more-v-1-0-changes.aspx");
-	return path_figure->GetValue (PathFigure::IsFilledProperty)->AsBool();
-}
-
-void
-path_figure_set_is_filled (PathFigure *path_figure, bool filled)
-{
-	// FIXME
-	g_warning ("Ignored in Mix, will be removed in 1.0. See http://blogs.msdn.com/jstegman/archive/2007/06/06/more-v-1-0-changes.aspx");
-	path_figure->SetValue (PathFigure::IsFilledProperty, Value (filled));
 }
 
 PathSegmentCollection*
@@ -1066,7 +1049,6 @@ geometry_init ()
 
 	/* PathFigure fields */
 	PathFigure::IsClosedProperty = DependencyObject::Register (Type::PATHFIGURE, "IsClosed", new Value (false));
-	PathFigure::IsFilledProperty = DependencyObject::Register (Type::PATHFIGURE, "IsFilled", new Value (true));
 	PathFigure::SegmentsProperty = DependencyObject::Register (Type::PATHFIGURE, "Segments", Type::PATHSEGMENT_COLLECTION);
 	PathFigure::StartPointProperty = DependencyObject::Register (Type::PATHFIGURE, "StartPoint", Type::POINT);
 

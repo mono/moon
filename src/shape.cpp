@@ -1164,11 +1164,6 @@ Path::CleanupCache ()
 	}
 }
 
-/*
- * Paths are filled by default but PathFigure, inside a collection in a 
- * PathGeometry, can be unfilled (IsFilled property). In this case PathGeometry
- * will have deal with filling, or not, each of it's figure.
- */
 bool
 Path::CanFill ()
 {
