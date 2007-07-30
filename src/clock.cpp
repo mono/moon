@@ -253,6 +253,7 @@ Clock::Clock (Timeline *tl)
     current_state (Clock::Stopped), new_state (Clock::Stopped),
     current_progress (0.0), new_progress (0.0),
     current_time (0), new_time (0),
+    seeking (false), seek_time (0),
     current_speed (1.0), new_speed (1.0),
     parent_clock (NULL),
     is_paused (false),
@@ -306,16 +307,27 @@ Clock::Tick ()
 
 	last_parent_time = new_parent_time;
 
-	if (current_state == Clock::Stopped)
-		return;
+	if (seeking) {
+		if (current_state != Clock::Active) {
+			new_state = Clock::Active;
+			QueueEvent (CURRENT_STATE_INVALIDATED);
+		}
 
+		new_time = seek_time;
 
-	new_time = current_time;
+		seeking = false;
+	}
+	else {
+		if (current_state == Clock::Stopped)
+			return;
 
-	if (is_reversed)
-		new_time -= our_delta;
-	else
-		new_time += our_delta;
+		new_time = current_time;
+
+		if (is_reversed)
+			new_time -= our_delta;
+		else
+			new_time += our_delta;
+	}
 
 	/* if we were filling and ended up back in our Active period,
 	   switch our state and return. */
@@ -498,6 +510,13 @@ Clock::Resume ()
 void
 Clock::Seek (TimeSpan timespan)
 {
+	seeking = true;
+
+	/* calculate our resulting time based on our
+	   duration/repeatbehavior/etc */
+	//int active_segments = timespan % duration;
+
+	seek_time = timespan;
 }
 
 void
@@ -563,6 +582,17 @@ ClockGroup::Begin ()
 				c->Begin ();
 			}
 		}
+	}
+}
+
+void
+ClockGroup::Seek (TimeSpan timespan)
+{
+	Clock::Seek (timespan);
+
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+		c->Seek (seek_time);
 	}
 }
 

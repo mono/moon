@@ -1,5 +1,10 @@
 2007-07-30  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h, clock.cpp: add very naive, probably broken first pass
+	at Clock::Seek.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
 	* geometry.h, geometry.cpp: PathFigure.IsFilled is gone in RC1.
 
 2007-07-30  Chris Toshok  <toshok@ximian.com>

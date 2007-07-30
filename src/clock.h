@@ -255,7 +255,7 @@ class Clock : public DependencyObject {
 	void Pause ();
 	void Remove ();
 	void Resume ();
-	void Seek (TimeSpan timespan);
+	virtual void Seek (TimeSpan timespan);
 	void SeekAlignedToLastTick ();
 	void SkipToFill ();
 	void Stop ();
@@ -296,10 +296,14 @@ class Clock : public DependencyObject {
 	TimeSpan current_time;
 	TimeSpan new_time;
 
+	bool seeking;
+	TimeSpan seek_time;
+
 	double current_speed;
 	double new_speed;
 
  private:
+
 	Clock *parent_clock;
 	TimeSpan last_parent_time;
 
@@ -327,6 +331,7 @@ class ClockGroup : public Clock {
 	void RemoveChild (Clock *clock);
 
 	virtual void Begin ();
+	virtual void Seek (TimeSpan timespan);
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
