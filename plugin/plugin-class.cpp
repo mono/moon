@@ -847,15 +847,30 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 		}
 	}
 	else if (name_matches (name, "isVersionSupported")) {
+		/* we support all 1.0.* and 1.1.* versions. */
 		BOOLEAN_TO_NPVARIANT (false, *result);
 		if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])) {
 			printf ("invalid arg types\n");
 			return true;
 		}
-		if (!strcmp (NPVARIANT_TO_STRING (args[0]).utf8characters, "0.9") ||
-		    !strcmp (NPVARIANT_TO_STRING (args[0]).utf8characters, "1.0") ||
-		    !strcmp (NPVARIANT_TO_STRING (args[0]).utf8characters, "1.1"))
+
+		gchar** versions = g_strsplit (NPVARIANT_TO_STRING (args[0]).utf8characters,
+					       ".", 3);
+
+		if (versions[0] == NULL || versions[1] == NULL) {
+			g_strfreev (versions);
+			return true;
+		}
+
+		if (!strcmp (versions[0], "1") &&
+		    (!strcmp (versions[1], "0")
+		     || !strcmp (versions[1], "1"))) {
+
 			BOOLEAN_TO_NPVARIANT (true, *result);
+		}
+
+		g_strfreev (versions);
+
 		return true;
 	}
 	else
