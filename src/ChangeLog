@@ -1,3 +1,8 @@
+2007-07-30  Larry Ewing  <lewing@novell.com>
+
+	* color.cpp: make sure that we size expand 3 digit color
+	specifications properly.
+
 2007-07-30  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h, uielement.cpp: remove InsideObject from here, and

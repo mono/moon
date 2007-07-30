@@ -177,6 +177,7 @@ named_colors_t named_colors [] = {
  * If no color is found, Color.Transparent is returned.
  */
 Color*
+
 color_from_str (const char *name)
 {
 	if (!name)
@@ -191,9 +192,9 @@ color_from_str (const char *name)
 		switch (strlen (name + 1)) {
 		case 3:
 			// rgb
-			r [1] = '0'; r [0] = name [1];
-			g [1] = '0'; g [0] = name [2];
-			b [1] = '0'; b [0] = name [3];
+			r [1] = r [0] = name [1];
+			g [1] = g [0] = name [2];
+			b [1] = b [0] = name [3];
 			break;
 		case 4:
 			// argb
