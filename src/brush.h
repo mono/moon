@@ -69,10 +69,10 @@ class Brush : public DependencyObject {
 Brush *		brush_new			(void);
 double		brush_get_opacity		(Brush *brush);
 void		brush_set_opacity		(Brush *brush, double opacity);
-TransformGroup	*brush_get_relative_transform	(Brush *brush);
-void		brush_set_relative_transform	(Brush *brush, TransformGroup* transform_group);
-TransformGroup	*brush_get_transform		(Brush *brush);
-void		brush_set_transform		(Brush *brush, TransformGroup* transform_group);
+Transform	*brush_get_relative_transform	(Brush *brush);
+void		brush_set_relative_transform	(Brush *brush, TransformGroup* transform);
+Transform	*brush_get_transform		(Brush *brush);
+void		brush_set_transform		(Brush *brush, TransformGroup* transform);
 
 
 class SolidColorBrush : public Brush {

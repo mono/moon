@@ -76,30 +76,30 @@ brush_set_opacity (Brush *brush, double opacity)
 	brush->SetValue (Brush::OpacityProperty, Value (opacity));
 }
 
-TransformGroup *
+Transform *
 brush_get_relative_transform (Brush *brush)
 {
 	Value *value = brush->GetValue (Brush::RelativeTransformProperty);
-	return value ? value->AsTransformGroup() : NULL;
+	return value ? value->AsTransform() : NULL;
 }
 
 void
-brush_set_relative_transform (Brush *brush, TransformGroup* transform_group)
+brush_set_relative_transform (Brush *brush, Transform* transform)
 {
-	brush->SetValue (Brush::RelativeTransformProperty, Value (transform_group));
+	brush->SetValue (Brush::RelativeTransformProperty, Value (transform));
 }
 
-TransformGroup *
+Transform *
 brush_get_transform (Brush *brush)
 {
 	Value *value = brush->GetValue (Brush::TransformProperty);
-	return value ? value->AsTransformGroup() : NULL;
+	return value ? value->AsTransform() : NULL;
 }
 
 void
-brush_set_transform (Brush *brush, TransformGroup* transform_group)
+brush_set_transform (Brush *brush, Transform* transform)
 {
-	brush->SetValue (Brush::TransformProperty, Value (transform_group));
+	brush->SetValue (Brush::TransformProperty, Value (transform));
 }
 
 /*
@@ -1024,8 +1024,8 @@ brush_init (void)
 {
 	/* Brush fields */
 	Brush::OpacityProperty = DependencyObject::Register (Type::BRUSH, "Opacity", new Value (1.0));
-	Brush::RelativeTransformProperty = DependencyObject::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORMGROUP);
-	Brush::TransformProperty = DependencyObject::Register (Type::BRUSH, "Transform", Type::TRANSFORMGROUP);
+	Brush::RelativeTransformProperty = DependencyObject::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORM);
+	Brush::TransformProperty = DependencyObject::Register (Type::BRUSH, "Transform", Type::TRANSFORM);
 	Brush::ChangedProperty = DependencyObject::Register (Type::BRUSH, "Changed", Type::BOOL);
 	
 	/* SolidColorBrush fields */

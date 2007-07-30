@@ -1,3 +1,9 @@
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* brush.h, brush.cpp: track breaking change of the
+	Brush.Transform/RelativeTransform properties - they're speced to
+	be Transforms, not TransformGroups.
+
 2007-07-29  Chris Toshok  <toshok@ximian.com>
 
 	* collection.h, collection.cpp: change "ResourceCollection" to
