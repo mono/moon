@@ -334,7 +334,7 @@ main (int argc, char *argv [])
 
 		sb = new Storyboard ();
 
-		canvas->GetValue(UIElement::ResourcesProperty)->AsResourceCollection()->Add (sb);
+		canvas->GetValue(UIElement::ResourcesProperty)->AsResourceDictionary()->Add (sb);
 
 		DoubleAnimation *r_anim = new DoubleAnimation ();
 		DoubleAnimation *t_anim = new DoubleAnimation ();
