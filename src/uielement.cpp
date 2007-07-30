@@ -68,7 +68,7 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	cairo_matrix_init_identity (&absolute_xform);
 
 	this->SetValue (UIElement::TriggersProperty, Value (new TriggerCollection ()));
-	this->SetValue (UIElement::ResourcesProperty, Value (new ResourceCollection ()));
+	this->SetValue (UIElement::ResourcesProperty, Value (new ResourceDictionary ()));
 }
 
 UIElement::~UIElement ()
@@ -95,23 +95,21 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		switch (GetValue (prop)->AsInt32()) {
 		case VisibilityVisible:
 			flags |= UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE;
+			Invalidate ();
 			break;
 		case VisibilityHidden:
 			flags &= ~UIElement::RENDER_VISIBLE;
 			flags |= UIElement::LAYOUT_VISIBLE;
+			Invalidate ();
 			break;
 		case VisibilityCollapsed:
 			flags &= ~(UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE);
-			UpdateBounds (true);
+			FullInvalidate (true);
 			break;
 		default:
 			g_assert_not_reached ();
 			break;
 		}
-
-		// XXX we need a FullInvalidate if this is changing
-		// from or to Collapsed, but as there's no way to tell that...
-		FullInvalidate (true);
 	}
 	else if (prop == UIElement::IsHitTestVisibleProperty) {
 		if (GetValue (prop)->AsBool())
@@ -151,7 +149,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	}
 	else if (prop == ResourcesProperty) {
 		Value *v = GetValue (prop);
-		ResourceCollection *newcol = v ? v->AsResourceCollection() : NULL;
+		ResourceDictionary *newcol = v ? v->AsResourceDictionary() : NULL;
 
 		if (newcol) {
 			if  (newcol->closure)
@@ -470,7 +468,7 @@ uielement_init (void)
 	UIElement::CursorProperty = DependencyObject::Register (Type::UIELEMENT, "Cursor", new Value ((gint32)MouseCursorDefault));
 	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", new Value (true));
 	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
-	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_COLLECTION);
+	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
 	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
 }
 

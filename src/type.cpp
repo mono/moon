@@ -21,7 +21,6 @@
 #include <cairo.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include "runtime.h"
 #include "type.h"
 
 /*
@@ -263,7 +262,7 @@ types_init (void)
 	Type::RegisterType ("RadialGradientBrush", Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH);
 	Type::RegisterType ("Rectangle", Type::RECTANGLE, Type::SHAPE);
 	Type::RegisterType ("RectangleGeometry", Type::RECTANGLEGEOMETRY, Type::GEOMETRY);
-	Type::RegisterType ("ResourceCollection", Type::RESOURCE_COLLECTION, Type::COLLECTION);
+	Type::RegisterType ("ResourceDictionary", Type::RESOURCE_DICTIONARY, Type::COLLECTION);
 	Type::RegisterType ("RotateTransform", Type::ROTATETRANSFORM, Type::TRANSFORM);
 	Type::RegisterType ("Run", Type::RUN, Type::INLINE);
 	Type::RegisterType ("ScaleTransform", Type::SCALETRANSFORM, Type::TRANSFORM);

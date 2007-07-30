@@ -584,8 +584,8 @@ collection_new (Type::Kind kind)
 		return new PathFigureCollection ();
 	case Type::PATHSEGMENT_COLLECTION:
 		return new PathSegmentCollection ();
-	case Type::RESOURCE_COLLECTION:
-		return new ResourceCollection ();
+	case Type::RESOURCE_DICTIONARY:
+		return new ResourceDictionary ();
 	case Type::STROKE_COLLECTION:
 		return new StrokeCollection ();
 	case Type::STYLUSPOINT_COLLECTION:
@@ -625,10 +625,10 @@ trigger_action_collection_new (void)
 	return new TriggerActionCollection ();
 }
 
-ResourceCollection *
-resource_collection_new (void)
+ResourceDictionary *
+resource_dictionary_new (void)
 {
-	return new ResourceCollection ();
+	return new ResourceDictionary ();
 }
 
 StrokeCollection *

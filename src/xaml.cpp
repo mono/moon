@@ -2269,7 +2269,7 @@ xaml_init (void)
 	XamlElementInfo *fw = register_ghost_element ("FrameworkElement", ui, Type::FRAMEWORKELEMENT);
 	XamlElementInfo *shape = register_ghost_element ("Shape", fw, Type::SHAPE);
 
-	rdoe (dem, "ResourceCollection", col, Type::RESOURCE_COLLECTION, (create_item_func) resource_collection_new);
+	rdoe (dem, "ResourceDictionary", col, Type::RESOURCE_DICTIONARY, (create_item_func) resource_dictionary_new);
 
 	///
 	/// Shapes

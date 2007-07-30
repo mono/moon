@@ -105,7 +105,7 @@ class QuadraticBezierSegment;
 class RadialGradientBrush;
 class Rectangle;
 class RectangleGeometry;
-class ResourceCollection;
+class ResourceDictionary;
 class RotateTransform;
 class Run;
 class ScaleTransform;
@@ -293,7 +293,7 @@ public:
 	RadialGradientBrush*           AsRadialGradientBrush () { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
 	Rectangle*                     AsRectangle () { checked_get_subclass (Type::RECTANGLE, Rectangle) }
 	RectangleGeometry*             AsRectangleGeometry () { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
-	ResourceCollection*            AsResourceCollection () { checked_get_subclass (Type::RESOURCE_COLLECTION, ResourceCollection) }
+	ResourceDictionary*            AsResourceDictionary () { checked_get_subclass (Type::RESOURCE_DICTIONARY, ResourceDictionary) }
 	RotateTransform*               AsRotateTransform () { checked_get_subclass (Type::ROTATETRANSFORM, RotateTransform) }
 	Run*                           AsRun () { checked_get_subclass (Type::RUN, Run) }
 	ScaleTransform*                AsScaleTransform () { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }

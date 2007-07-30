@@ -1,3 +1,14 @@
+2007-07-29  Chris Toshok  <toshok@ximian.com>
+
+	* collection.h, collection.cpp: change "ResourceCollection" to
+	"ResourceDictionary".
+
+	* uielement.cpp: same.
+
+	* type.cpp, type.h, value.cpp, value.h: same.
+
+	* xaml.cpp: same.
+
 2007-07-27  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (xaml_set_property_from_str): look up the enum map from

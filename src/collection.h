@@ -115,10 +115,10 @@ class TriggerActionCollection : public Collection {
 	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
 };
 
-class ResourceCollection : public Collection {
+class ResourceDictionary : public Collection {
  public:
-	ResourceCollection () {}
-	virtual Type::Kind GetObjectType () { return Type::RESOURCE_COLLECTION; }
+	ResourceDictionary () {}
+	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
@@ -183,7 +183,7 @@ Collection *collection_new (Type::Kind kind);
 VisualCollection *visual_collection_new (void);
 TriggerCollection *trigger_collection_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
-ResourceCollection *resource_collection_new (void);
+ResourceDictionary *resource_dictionary_new (void);
 StrokeCollection *stroke_collection_new (void);
 StylusPointCollection *stylus_point_collection_new (void);
 TimelineMarkerCollection *timeline_marker_collection_new (void);
