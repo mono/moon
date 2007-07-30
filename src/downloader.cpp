@@ -227,7 +227,7 @@ Downloader::GetResponseFile (char *PartName)
 }
 
 void
-Downloader::Open (char *verb, char *URI, bool Async)
+Downloader::Open (const char *verb, const char *URI)
 {
 	started = false;
 	g_free (failed_msg);
@@ -235,7 +235,7 @@ Downloader::Open (char *verb, char *URI, bool Async)
 	failed_msg = NULL;
 	filename = NULL;
 	SetValue (Downloader::UriProperty, Value(URI));
-	open_func (verb, URI, Async, downloader_state);
+	open_func (verb, URI, downloader_state);
 }
 
 void
@@ -380,9 +380,9 @@ downloader_get_response_text (Downloader *dl, char* PartName, uint64_t *size)
 }
 
 void
-downloader_open (Downloader *dl, char *verb, char *URI, bool Async)
+downloader_open (Downloader *dl, const char *verb, const char *URI)
 {
-	dl->Open (verb, URI, Async);
+	dl->Open (verb, URI);
 }
 
 void
@@ -460,7 +460,7 @@ dummy_downloader_destroy_state (gpointer state)
 	g_warning ("downloader_set_function has never been called.\n");
 }
 void
-dummy_downloader_open (char *verb, char *uri, bool async, gpointer state)
+dummy_downloader_open (const char *verb, const char *uri, gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }

@@ -27,7 +27,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 * Browser Poker (http://support.newsgator.com/nickh/browserpoker/browserpoker.html)
 
 	Starts up, but crashes when it tries to access
-	IsolatedStorage:
+	IsolatedStorage.
 
 		Unhandled Exception: System.IO.IsolatedStorage.IsolatedStorageException: No ApplicationIdentity available for AppDomain.
 		at System.IO.IsolatedStorage.IsolatedStorage.InitStore (System.IO.IsolatedStorage.IsolatedStorageScope,System.Type) [0x0002e] in /home/cvs/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorage.cs:157

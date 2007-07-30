@@ -98,7 +98,7 @@ button_motion_event (GtkWidget *widget, GdkEventMotion *e, gpointer data)
 
 static gpointer downloader_create_state (Downloader* dl);
 static void downloader_destroy_state (gpointer data);
-static void downloader_open (char *verb, char *uri, bool async, gpointer state);
+static void downloader_open (const char *verb, const char *uri, gpointer state);
 static void downloader_send (gpointer state);
 static void downloader_abort (gpointer state);
 static void downloader_abort (gpointer state);
@@ -527,7 +527,7 @@ class FileDownloadState {
 
 	void Abort () { Close (); }
 	char* GetResponseText (char *fname, char* PartName) { return NULL; } // XXX
-	void Open (char *verb, char *uri, bool async)
+	void Open (const char *verb, const char *uri)
 	{
 		int fd = open (uri, O_RDONLY);
 		if (fd == -1) {
@@ -571,9 +571,9 @@ downloader_destroy_state (gpointer data)
 }
 
 static void
-downloader_open (char *verb, char *uri, bool async, gpointer state)
+downloader_open (const char *verb, const char *uri, gpointer state)
 {
-	((FileDownloadState*)state)->Open (verb, uri, async);
+	((FileDownloadState*)state)->Open (verb, uri);
 }
 
 static void

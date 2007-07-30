@@ -50,7 +50,7 @@ p_downloader_destroy_state (gpointer data)
 }
 
 static void
-p_downloader_open (char *verb, char *uri, bool async, gpointer state)
+p_downloader_open (const char *verb, const char *uri, gpointer state)
 {
 	PluginDownloader *pd = (PluginDownloader *) state;
 

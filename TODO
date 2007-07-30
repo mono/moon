@@ -12,6 +12,16 @@ Feel free to add items to this TODO list
 		* Page turner sample
 		* Stock wizard-generated video players.
 
+	See demo-status.txt for more samples and their status.
+
+* IsolatedStorage
+
+	The class hierarchy of IsolatedStorage in 2.1 is different
+	than in 2.0 and in particular the ApplicationIdentity class
+	does not exist, which probably makes things simpler, but also
+	means that we will need a 2.1 mscorlib before we can get these
+	apps running properly.	
+
 * Plugin
 
 	Need to destroy the appdomain when the instance is destroyed.

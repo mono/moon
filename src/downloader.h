@@ -28,7 +28,7 @@ typedef void     (*downloader_notify_size_func)(int64_t size, gpointer cb_data);
 
 typedef gpointer (*downloader_create_state_func) (Downloader* dl);
 typedef void     (*downloader_destroy_state_func) (gpointer state);
-typedef void     (*downloader_open_func)(char *verb, char *uri, bool async, gpointer state);
+typedef void     (*downloader_open_func)(const char *verb, const char *uri, gpointer state);
 typedef void     (*downloader_send_func)(gpointer state);
 typedef void     (*downloader_abort_func)(gpointer state);
 
@@ -41,7 +41,7 @@ class Downloader : public DependencyObject {
 
 	void Abort ();
 	void* GetResponseText (char* Partname, uint64_t *size);
-	void Open (char *verb, char *URI, bool Async);
+	void Open (const char *verb, const char *URI);
 	void Send ();
 
 	static DependencyProperty *DownloadProgressProperty;
@@ -124,7 +124,7 @@ void downloader_set_functions (downloader_create_state_func create_state,
 void  downloader_abort             (Downloader *dl);
 void *downloader_get_response_text (Downloader *dl, char *PartName, uint64_t *size);
 char *downloader_get_response_file (Downloader *dl, char *PartName);
-void  downloader_open              (Downloader *dl, char *verb, char *URI, bool Async);
+void  downloader_open              (Downloader *dl, const char *verb, const char *URI);
 void  downloader_send              (Downloader *dl);
 
 //

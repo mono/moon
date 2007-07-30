@@ -360,7 +360,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		media_element_set_current_state (this, "Opening");
 		
 		Downloader *dl = new Downloader ();
-		downloader_open (dl, "GET", uri, true);
+		downloader_open (dl, "GET", uri);
 		SetSource (dl, "");
 	} else if (prop == MediaElement::AutoPlayProperty) {
 		// handled below
@@ -983,7 +983,7 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 		char *source = media_base_get_source (this);
 		
 		Downloader *dl = new Downloader ();
-		downloader_open (dl, "GET", source, true);
+		downloader_open (dl, "GET", source);
 		SetSource (dl, "");
 	}
 

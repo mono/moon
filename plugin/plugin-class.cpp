@@ -2051,7 +2051,7 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 		const char *verb = NPVARIANT_TO_STRING (args[0]).utf8characters;
 		const char *uri = NPVARIANT_TO_STRING (args[1]).utf8characters;
 
-		downloader_open (dl, (char*)verb, (char*)uri, true);
+		downloader_open (dl, (char*)verb, (char*)uri);
 
 		VOID_TO_NPVARIANT (*result);
 
