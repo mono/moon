@@ -198,10 +198,10 @@ color_from_str (const char *name)
 			break;
 		case 4:
 			// argb
-			a [1] = '0'; a [0] = name [1];
-			r [1] = '0'; r [0] = name [2];
-			g [1] = '0'; g [0] = name [3];
-			b [1] = '0'; b [0] = name [4];
+			a [1] = a [0] = name [1];
+			r [1] = r [0] = name [2];
+			g [1] = g [0] = name [3];
+			b [1] = b [0] = name [4];
 			break;
 		case 6:
 			// rrggbb
