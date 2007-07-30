@@ -74,6 +74,7 @@ libmoon_la_SOURCES = 	\
 	type.cpp	\
 	uielement.cpp	\
 	value.cpp	\
+	visual.cpp	\
 	xaml.cpp	\
 	zip/ioapi.c	\
 	zip/ioapi.h	\

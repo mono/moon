@@ -1,3 +1,13 @@
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h, uielement.cpp: remove InsideObject from here, and
+	move its warning to Visual::InsideObject instead.
+
+	* visual.h, visual.cpp: add visual.cpp, and move implementation of
+	InsideObject there.
+
+	* Makefile.am (libmoon_la_SOURCES): add visual.cpp
+
 2007-07-30  Larry Ewing  <lewing@novell.com>
 
 	* xaml.cpp: correct smooth path segments to use the correct value for
