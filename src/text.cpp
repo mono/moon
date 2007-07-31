@@ -994,8 +994,8 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 		double y = glyphs_get_origin_y (this);
 		printf ("Glyphs::OriginY property changed to %g\n", y);
 	} else if (prop == Glyphs::StyleSimulationsProperty) {
-		char *sims = glyphs_get_style_simulations (this);
-		printf ("Glyphs::StyleSimulations property changed to %s\n", sims);
+		StyleSimulations sims = glyphs_get_style_simulations (this);
+		printf ("Glyphs::StyleSimulations property changed to %d\n", sims);
 	} else if (prop == Glyphs::UnicodeStringProperty) {
 		char *str = glyphs_get_unicode_string (this);
 		printf ("Glyphs::UnicodeString property changed to %s\n", str);
@@ -1088,16 +1088,16 @@ glyphs_set_origin_y (Glyphs *glyphs, double value)
 	glyphs->SetValue (Glyphs::OriginYProperty, Value (value));
 }
 
-char *
+StyleSimulations
 glyphs_get_style_simulations (Glyphs *glyphs)
 {
 	Value *value = glyphs->GetValue (Glyphs::StyleSimulationsProperty);
 	
-	return value ? (char *) value->AsString () : NULL;
+	return value ? (StyleSimulations) value->AsInt32 () : StyleSimulationsNone;
 }
 
 void
-glyphs_set_style_simulations (Glyphs *glyphs, char *value)
+glyphs_set_style_simulations (Glyphs *glyphs, StyleSimulations value)
 {
 	glyphs->SetValue (Glyphs::StyleSimulationsProperty, Value (value));
 }
@@ -1157,6 +1157,6 @@ text_init (void)
 	Glyphs::IndicesProperty = DependencyObject::Register (Type::GLYPHS, "Indices", Type::STRING);
 	Glyphs::OriginXProperty = DependencyObject::Register (Type::GLYPHS, "OriginX", new Value (0.0));
 	Glyphs::OriginYProperty = DependencyObject::Register (Type::GLYPHS, "OriginY", new Value (0.0));
-	Glyphs::StyleSimulationsProperty = DependencyObject::Register (Type::GLYPHS, "StyleSimulations", Type::STRING);
+	Glyphs::StyleSimulationsProperty = DependencyObject::Register (Type::GLYPHS, "StyleSimulations", Type::INT32);
 	Glyphs::UnicodeStringProperty = DependencyObject::Register (Type::GLYPHS, "UnicodeString", Type::STRING);
 }

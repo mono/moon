@@ -57,6 +57,10 @@ enum FontWeights {
 	FontWeightsUltraBlack = 950
 };
 
+enum StyleSimulations {
+	StyleSimulationsNone
+};
+
 enum TextDecorations {
 	TextDecorationsNone,
 	TextDecorationsUnderline
@@ -267,8 +271,8 @@ void glyphs_set_origin_x (Glyphs *glyphs, double value);
 double glyphs_get_origin_y (Glyphs *glyphs);
 void glyphs_set_origin_y (Glyphs *glyphs, double value);
 
-char *glyphs_get_style_simulations (Glyphs *glyphs);
-void glyphs_set_style_simulations (Glyphs *glyphs, char *value);
+StyleSimulations glyphs_get_style_simulations (Glyphs *glyphs);
+void glyphs_set_style_simulations (Glyphs *glyphs, StyleSimulations value);
 
 char *glyphs_get_unicode_string (Glyphs *glyphs);
 void glyphs_set_unicode_string (Glyphs *glyphs, char *value);

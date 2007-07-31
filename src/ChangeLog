@@ -1,3 +1,10 @@
+2007-07-31  Chris Toshok  <toshok@ximian.com>
+
+	* text.h, text.cpp: Glyph.StyleSimulations changed from a char* to
+	enum StyleSimulations.
+
+	* xaml.cpp: add stylesimulations enum map.
+
 2007-07-30  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp, uielement.h: add the Tag property.

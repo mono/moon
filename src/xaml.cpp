@@ -1709,6 +1709,11 @@ enum_map_t visibility_map [] = {
 	{ NULL, 0 },
 };
 
+enum_map_t stylesimulations_map [] = {
+	{ "None", 0 },
+	{ NULL, 0 },
+};
+
 int enum_from_str (const enum_map_t *emu, const char *str)
 {
 	for (int i = 0; emu [i].name; i++) {
@@ -2496,6 +2501,7 @@ xaml_init (void)
 	
 	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", GINT_TO_POINTER (pen_line_join_map));
 	g_hash_table_insert (enum_map, (char *) "Stretch", GINT_TO_POINTER (stretch_map));
+	g_hash_table_insert (enum_map, (char *) "StyleSimulations", GINT_TO_POINTER (stylesimulations_map));
 	g_hash_table_insert (enum_map, (char *) "SweepDirection", GINT_TO_POINTER (sweep_direction_map));
 	g_hash_table_insert (enum_map, (char *) "DeviceType", GINT_TO_POINTER (tablet_device_type_map));
 	g_hash_table_insert (enum_map, (char *) "TextDecorations", GINT_TO_POINTER (text_decorations_map));
