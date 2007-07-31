@@ -259,10 +259,10 @@ class KeyFrame : public DependencyObject {
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
-
 class KeyFrameCollection : public Collection {
 	List *sorted_list;
  public:
+
 	KeyFrameCollection ();
 	~KeyFrameCollection ();
 
@@ -275,6 +275,33 @@ class KeyFrameCollection : public Collection {
 	virtual void Clear ();
 
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
+};
+
+class ColorKeyFrameCollection : public KeyFrameCollection {
+ public:
+	ColorKeyFrameCollection () { }
+	~ColorKeyFrameCollection () { }
+
+	virtual Type::Kind GetObjectType() { return Type::COLORKEYFRAME_COLLECTION; }
+	virtual Type::Kind GetElementType() { return Type::COLORKEYFRAME; }
+};
+
+class DoubleKeyFrameCollection : public KeyFrameCollection {
+ public:
+	DoubleKeyFrameCollection () { }
+	~DoubleKeyFrameCollection () { }
+
+	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME_COLLECTION; }
+	virtual Type::Kind GetElementType() { return Type::DOUBLEKEYFRAME; }
+};
+
+class PointKeyFrameCollection : public KeyFrameCollection {
+ public:
+	PointKeyFrameCollection () { }
+	~PointKeyFrameCollection () { }
+
+	virtual Type::Kind GetObjectType() { return Type::POINTKEYFRAME_COLLECTION; }
+	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
 };
 
 class DoubleKeyFrame : public KeyFrame {
@@ -528,7 +555,10 @@ ColorAnimation*  color_animation_new (void);
 PointAnimation*  point_animation_new (void);
 
 KeyFrame* key_frame_new ();
-KeyFrameCollection *key_frame_collection_new (void);
+
+ColorKeyFrameCollection *color_key_frame_collection_new (void);
+DoubleKeyFrameCollection *double_key_frame_collection_new (void);
+PointKeyFrameCollection *point_key_frame_collection_new (void);
 
 DoubleKeyFrame* double_key_frame_new ();
 ColorKeyFrame*  color_key_frame_new ();

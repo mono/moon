@@ -200,6 +200,7 @@ types_init (void)
 	Type::RegisterType ("ColorAnimation", Type::COLORANIMATION, Type::ANIMATION);
 	Type::RegisterType ("ColorAnimationUsingKeyFrames", Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION);
 	Type::RegisterType ("ColorKeyFrame", Type::COLORKEYFRAME, Type::KEYFRAME);
+	Type::RegisterType ("ColorKeyFrameCollection", Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION);
 	Type::RegisterType ("Control", Type::CONTROL, Type::FRAMEWORKELEMENT);
 	Type::RegisterType ("DiscreteColorKeyFrame", Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME);
 	Type::RegisterType ("DiscreteDoubleKeyFrame", Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME);
@@ -207,6 +208,7 @@ types_init (void)
 	Type::RegisterType ("DoubleAnimation", Type::DOUBLEANIMATION, Type::ANIMATION);
 	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION);
 	Type::RegisterType ("DoubleKeyFrame", Type::DOUBLEKEYFRAME, Type::KEYFRAME);
+	Type::RegisterType ("DoubleKeyFrameCollection", Type::DOUBLEKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION);
 	Type::RegisterType ("Downloader", Type::DOWNLOADER, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("DrawingAttributes", Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("Ellipse", Type::ELLIPSE, Type::SHAPE);
@@ -253,6 +255,7 @@ types_init (void)
 	Type::RegisterType ("PointAnimation", Type::POINTANIMATION, Type::ANIMATION);
 	Type::RegisterType ("PointAnimationUsingKeyFrames", Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION);
 	Type::RegisterType ("PointKeyFrame", Type::POINTKEYFRAME, Type::KEYFRAME);
+	Type::RegisterType ("PointKeyFrameCollection", Type::POINTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION);
 	Type::RegisterType ("PolyBezierSegment", Type::POLYBEZIERSEGMENT, Type::PATHSEGMENT);
 	Type::RegisterType ("Polygon", Type::POLYGON, Type::SHAPE);
 	Type::RegisterType ("Polyline", Type::POLYLINE, Type::SHAPE);

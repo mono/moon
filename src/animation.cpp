@@ -767,10 +767,22 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 	return current_keyframe;
 }
 
-KeyFrameCollection *
-key_frame_collection_new (void)
+ColorKeyFrameCollection*
+color_key_frame_collection_new ()
 {
-	return new KeyFrameCollection ();
+	return new ColorKeyFrameCollection ();
+}
+
+DoubleKeyFrameCollection*
+double_key_frame_collection_new ()
+{
+	return new DoubleKeyFrameCollection ();
+}
+
+PointKeyFrameCollection*
+point_key_frame_collection_new ()
+{
+	return new PointKeyFrameCollection ();
 }
 
 DependencyProperty* DoubleKeyFrame::ValueProperty;
@@ -1035,7 +1047,7 @@ DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
 {
-	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (new KeyFrameCollection ()));
+	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (new DoubleKeyFrameCollection ()));
 }
 
 DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
@@ -1051,7 +1063,7 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	if (prop == KeyFramesProperty) {
-		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
+		DoubleKeyFrameCollection *newcol = GetValue (prop)->AsDoubleKeyFrameCollection();
 
 		if (newcol) {
 			if (newcol->closure)
@@ -1066,7 +1078,7 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 {
-	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
 
 	key_frames->Add (frame);
 }
@@ -1074,7 +1086,7 @@ DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 void
 DoubleAnimationUsingKeyFrames::RemoveKeyFrame (DoubleKeyFrame *frame)
 {
-	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
 
 	key_frames->Remove (frame);
 }
@@ -1083,7 +1095,7 @@ Value*
 DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 						AnimationClock* animationClock)
 {
-	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
 
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
@@ -1131,7 +1143,7 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 Duration
 DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
-	KeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
 	Duration d = Duration::Automatic;
 	Collection::Node *node;
 	TimeSpan ts = 0;
@@ -1162,7 +1174,7 @@ DependencyProperty* ColorAnimationUsingKeyFrames::KeyFramesProperty;
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
-	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (new KeyFrameCollection ()));
+	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (new ColorKeyFrameCollection ()));
 }
 
 ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
@@ -1178,7 +1190,7 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	if (prop == KeyFramesProperty) {
-		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
+		ColorKeyFrameCollection *newcol = GetValue (prop)->AsColorKeyFrameCollection();
 
 		if (newcol) {
 			if (newcol->closure)
@@ -1193,7 +1205,7 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 {
-	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
 
 	key_frames->Add (frame);
 }
@@ -1201,7 +1213,7 @@ ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 void
 ColorAnimationUsingKeyFrames::RemoveKeyFrame (ColorKeyFrame *frame)
 {
-	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
 
 	key_frames->Remove (frame);
 }
@@ -1210,7 +1222,7 @@ Value*
 ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
-	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	ColorKeyFrame *current_keyframe;
@@ -1257,7 +1269,7 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 Duration
 ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 {
-	KeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
 	Duration d = Duration::Automatic;
 	Collection::Node *node;
 	TimeSpan ts = 0;
@@ -1290,7 +1302,7 @@ DependencyProperty* PointAnimationUsingKeyFrames::KeyFramesProperty;
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
-	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (new KeyFrameCollection ()));
+	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (new PointKeyFrameCollection ()));
 }
 
 PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
@@ -1306,7 +1318,7 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	if (prop == KeyFramesProperty) {
-		KeyFrameCollection *newcol = GetValue (prop)->AsKeyFrameCollection();
+		PointKeyFrameCollection *newcol = GetValue (prop)->AsPointKeyFrameCollection();
 
 		if (newcol) {
 			if (newcol->closure)
@@ -1321,7 +1333,7 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 void
 PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
 {
-	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
 
 	key_frames->Add (frame);
 }
@@ -1329,7 +1341,7 @@ PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
 void
 PointAnimationUsingKeyFrames::RemoveKeyFrame (PointKeyFrame *frame)
 {
-	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
 
 	key_frames->Remove (frame);
 }
@@ -1338,7 +1350,7 @@ Value*
 PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
-	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	PointKeyFrame *current_keyframe;
@@ -1385,7 +1397,7 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 Duration
 PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
-	KeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
 	Duration d = Duration::Automatic;
 	Collection::Node *node;
 	TimeSpan ts = 0;
@@ -1461,9 +1473,9 @@ animation_init (void)
  	SplinePointKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
 
 	/* KeyFrame animation properties */
-	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);
-	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);
-	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::KEYFRAME_COLLECTION);
+	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
+	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::DOUBLEKEYFRAME_COLLECTION);
+	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::POINTKEYFRAME_COLLECTION);
 }
 
 

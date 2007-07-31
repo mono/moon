@@ -43,6 +43,7 @@ class Collection;
 class ColorAnimation;
 class ColorAnimationUsingKeyFrames;
 class ColorKeyFrame;
+class ColorKeyFrameCollection;
 class Control;
 class DiscreteColorKeyFrame;
 class DiscreteDoubleKeyFrame;
@@ -50,6 +51,7 @@ class DiscretePointKeyFrame;
 class DoubleAnimation;
 class DoubleAnimationUsingKeyFrames;
 class DoubleKeyFrame;
+class DoubleKeyFrameCollection;
 class Downloader;
 class DrawingAttributes;
 class Ellipse;
@@ -96,6 +98,7 @@ class PathSegmentCollection;
 class PointAnimation;
 class PointAnimationUsingKeyFrames;
 class PointKeyFrame;
+class PointKeyFrameCollection;
 class PolyBezierSegment;
 class Polygon;
 class Polyline;
@@ -231,6 +234,7 @@ public:
 	ColorAnimation*                AsColorAnimation () { checked_get_subclass (Type::COLORANIMATION, ColorAnimation) }
 	ColorAnimationUsingKeyFrames*  AsColorAnimationUsingKeyFrames () { checked_get_subclass (Type::COLORANIMATIONUSINGKEYFRAMES, ColorAnimationUsingKeyFrames) }
 	ColorKeyFrame*                 AsColorKeyFrame () { checked_get_subclass (Type::COLORKEYFRAME, ColorKeyFrame) }
+	ColorKeyFrameCollection*       AsColorKeyFrameCollection () { checked_get_subclass (Type::COLORKEYFRAME_COLLECTION, ColorKeyFrameCollection) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame () { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
 	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame () { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
@@ -238,6 +242,7 @@ public:
 	DoubleAnimation*               AsDoubleAnimation () { checked_get_subclass (Type::DOUBLEANIMATION, DoubleAnimation) }
 	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames () { checked_get_subclass (Type::DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames) }
 	DoubleKeyFrame*                AsDoubleKeyFrame () { checked_get_subclass (Type::DOUBLEKEYFRAME, DoubleKeyFrame) }
+	DoubleKeyFrameCollection*      AsDoubleKeyFrameCollection () { checked_get_subclass (Type::DOUBLEKEYFRAME_COLLECTION, DoubleKeyFrameCollection) }
 	Downloader*                    AsDownloader () { checked_get_subclass (Type::DOWNLOADER, Downloader) }
 	DrawingAttributes*             AsDrawingAttributes () { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
 	Ellipse*                       AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
@@ -284,6 +289,7 @@ public:
 	PointAnimation*                AsPointAnimation () { checked_get_subclass (Type::POINTANIMATION, PointAnimation) }
 	PointAnimationUsingKeyFrames*  AsPointAnimationUsingKeyFrames () { checked_get_subclass (Type::POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames) }
 	PointKeyFrame*                 AsPointKeyFrame () { checked_get_subclass (Type::POINTKEYFRAME, PointKeyFrame) }
+	PointKeyFrameCollection*       AsPointKeyFrameCollection () { checked_get_subclass (Type::POINTKEYFRAME_COLLECTION, PointKeyFrameCollection) }
 	PolyBezierSegment*             AsPolyBezierSegment () { checked_get_subclass (Type::POLYBEZIERSEGMENT, PolyBezierSegment) }
 	Polygon*                       AsPolygon () { checked_get_subclass (Type::POLYGON, Polygon) }
 	Polyline*                      AsPolyline () { checked_get_subclass (Type::POLYLINE, Polyline) }

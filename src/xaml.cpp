@@ -2344,8 +2344,12 @@ xaml_init (void)
 
 	XamlElementInfo *paukf = rdoe (dem, "PointAnimationUsingKeyFrames", pa, Type::POINTANIMATIONUSINGKEYFRAMES, (create_item_func) point_animation_using_key_frames_new);
 	paukf->content_property = "KeyFrames";
-	
-	rdoe (dem, "KeyFrameCollection", col, Type::KEYFRAME_COLLECTION, (create_item_func) key_frame_collection_new);
+
+	XamlElementInfo *kfcol = register_ghost_element ("KeyFrameCollection", col, Type::KEYFRAME_COLLECTION);
+
+	rdoe (dem, "ColorKeyFrameCollection", kfcol, Type::COLORKEYFRAME_COLLECTION, (create_item_func) color_key_frame_collection_new);
+	rdoe (dem, "DoubleKeyFrameCollection", kfcol, Type::DOUBLEKEYFRAME_COLLECTION, (create_item_func) double_key_frame_collection_new);
+	rdoe (dem, "PointKeyFrameCollection", kfcol, Type::POINTKEYFRAME_COLLECTION, (create_item_func) point_key_frame_collection_new);
 
 	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Type::KEYFRAME);
 

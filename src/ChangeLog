@@ -1,3 +1,15 @@
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h, animation.cpp: add the three KeyFrameCollection
+	subclass types, and switch all references to "KeyFrameCollection"
+	to the more specific types.
+
+	* xaml.cpp (xaml_init): make KeyFrameCollection a ghost element
+	with Color/Double/PointKeyFrameCollections as subclasses.
+
+	* value.h, type.h, type.cpp: sync up with the KeyFrameCollection
+	type changes.
+	
 2007-07-30  Larry Ewing  <lewing@novell.com>
 
 	* color.cpp: make sure that we size expand 3 digit color
