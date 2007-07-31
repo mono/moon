@@ -436,31 +436,33 @@ UIElement::GetSurface ()
 	return parent == NULL ? NULL : parent->GetSurface();
 }
 
-DependencyProperty* UIElement::RenderTransformProperty;
-DependencyProperty* UIElement::OpacityProperty;
 DependencyProperty* UIElement::ClipProperty;
-DependencyProperty* UIElement::OpacityMaskProperty;
-DependencyProperty* UIElement::TriggersProperty;
-DependencyProperty* UIElement::RenderTransformOriginProperty;
 DependencyProperty* UIElement::CursorProperty;
 DependencyProperty* UIElement::IsHitTestVisibleProperty;
-DependencyProperty* UIElement::VisibilityProperty;
+DependencyProperty* UIElement::OpacityMaskProperty;
+DependencyProperty* UIElement::OpacityProperty;
+DependencyProperty* UIElement::RenderTransformOriginProperty;
+DependencyProperty* UIElement::RenderTransformProperty;
 DependencyProperty* UIElement::ResourcesProperty;
+DependencyProperty* UIElement::TagProperty;
+DependencyProperty* UIElement::TriggersProperty;
+DependencyProperty* UIElement::VisibilityProperty;
 DependencyProperty* UIElement::ZIndexProperty;
 
 void
 uielement_init (void)
 {
-	UIElement::RenderTransformProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransform", Type::TRANSFORM);
-	UIElement::OpacityProperty = DependencyObject::Register (Type::UIELEMENT, "Opacity", new Value(1.0));
 	UIElement::ClipProperty = DependencyObject::Register (Type::UIELEMENT, "Clip", Type::GEOMETRY);
-	UIElement::OpacityMaskProperty = DependencyObject::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
-	UIElement::TriggersProperty = DependencyObject::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
-	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransformOrigin", Type::POINT);
 	UIElement::CursorProperty = DependencyObject::Register (Type::UIELEMENT, "Cursor", new Value ((gint32)MouseCursorDefault));
 	UIElement::IsHitTestVisibleProperty = DependencyObject::Register (Type::UIELEMENT, "IsHitTestVisible", new Value (true));
-	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
+	UIElement::OpacityMaskProperty = DependencyObject::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
+	UIElement::OpacityProperty = DependencyObject::Register (Type::UIELEMENT, "Opacity", new Value(1.0));
+	UIElement::RenderTransformOriginProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransformOrigin", Type::POINT);
+	UIElement::RenderTransformProperty = DependencyObject::Register (Type::UIELEMENT, "RenderTransform", Type::TRANSFORM);
 	UIElement::ResourcesProperty = DependencyObject::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
+	UIElement::TagProperty = DependencyObject::Register (Type::UIELEMENT, "Tag", Type::STRING);
+	UIElement::TriggersProperty = DependencyObject::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
+	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
 }
 

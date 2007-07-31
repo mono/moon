@@ -1,5 +1,9 @@
 2007-07-30  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp, uielement.h: add the Tag property.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
 	* animation.h, animation.cpp: add the three KeyFrameCollection
 	subclass types, and switch all references to "KeyFrameCollection"
 	to the more specific types.

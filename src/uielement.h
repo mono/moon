@@ -237,6 +237,7 @@ class UIElement : public Visual {
 	static DependencyProperty* IsHitTestVisibleProperty;
 	static DependencyProperty* VisibilityProperty;
 	static DependencyProperty* ResourcesProperty;
+	static DependencyProperty* TagProperty;
 	static DependencyProperty* TriggersProperty;
 	static DependencyProperty* ZIndexProperty;
 
