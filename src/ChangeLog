@@ -1,3 +1,8 @@
+2007-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp: NaturalDuration is actually a TimeSpan, not a
+	Duration.
+
 2007-07-31  Chris Toshok  <toshok@ximian.com>
 
 	* media.h, media.cpp: move the MediaBase events to MediaElement.

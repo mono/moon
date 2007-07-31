@@ -556,14 +556,14 @@ media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value)
 	media->SetValue (MediaElement::MarkersProperty, Value (value));
 }
 
-Duration *
+TimeSpan
 media_element_get_natural_duration (MediaElement *media)
 {
-	return (Duration *) media->GetValue (MediaElement::NaturalDurationProperty)->AsDuration ();
+	return (TimeSpan) media->GetValue (MediaElement::NaturalDurationProperty)->AsTimeSpan ();
 }
 
 void
-media_element_set_natural_duration (MediaElement *media, Duration value)
+media_element_set_natural_duration (MediaElement *media, TimeSpan value)
 {
 	media->SetValue (MediaElement::NaturalDurationProperty, Value (value));
 }
@@ -1057,7 +1057,7 @@ media_init (void)
 	MediaElement::DownloadProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
 	MediaElement::IsMutedProperty = DependencyObject::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
 	MediaElement::MarkersProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
-	MediaElement::NaturalDurationProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalDuration", Type::DURATION);
+	MediaElement::NaturalDurationProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalDuration", Type::TIMESPAN);
 	MediaElement::NaturalVideoHeightProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoHeight", Type::DOUBLE);
 	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoWidth", Type::DOUBLE);
 	MediaElement::PositionProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
