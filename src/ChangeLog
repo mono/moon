@@ -1,3 +1,8 @@
+2007-07-31  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Attach): attach a namescope to the toplevel canvas
+	if there isn't one when it's attached.
+
 2007-07-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp: NaturalDuration is actually a TimeSpan, not a

@@ -275,6 +275,12 @@ Surface::Attach (UIElement *element)
 	Canvas *canvas = (Canvas *) element;
 	canvas->ref ();
 
+	// make sure we have a namescope at the toplevel so that names
+	// can be registered/resolved properly.
+	if (NameScope::GetNameScope (canvas) == NULL) {
+		NameScope::SetNameScope (canvas, new NameScope());
+	}
+
 	canvas->SetSurface (this);
 	toplevel = canvas;
 
