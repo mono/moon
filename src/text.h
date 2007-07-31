@@ -58,6 +58,9 @@ enum FontWeights {
 };
 
 enum StyleSimulations {
+	StyleSimulationsBoldItalicSimulation,
+	StyleSimulationsBoldSimulation,
+	StyleSimulationsItalicSimulation,
 	StyleSimulationsNone
 };
 

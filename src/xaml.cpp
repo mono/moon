@@ -1646,6 +1646,14 @@ enum_map_t font_weights_map [] = {
 	{ NULL, 0 },
 };
 
+enum_map_t style_simulations_map [] = {
+	{ "BoldItalicSimulation", 0 },
+	{ "BoldSimulation",       1 },
+	{ "ItalicSimulation",     2 },
+	{ "None",                 3 },
+	{ NULL,                   0 },
+};
+
 enum_map_t gradient_spread_method_map [] = {
 	{ "Pad", 0 },
 	{ "Reflect", 1 },
@@ -1706,11 +1714,6 @@ enum_map_t visibility_map [] = {
 	{ "Visible", 0 },
 	{ "Collapsed", 1 },
 	{ "Hidden", 2 },
-	{ NULL, 0 },
-};
-
-enum_map_t stylesimulations_map [] = {
-	{ "None", 0 },
 	{ NULL, 0 },
 };
 
@@ -2501,7 +2504,7 @@ xaml_init (void)
 	
 	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", GINT_TO_POINTER (pen_line_join_map));
 	g_hash_table_insert (enum_map, (char *) "Stretch", GINT_TO_POINTER (stretch_map));
-	g_hash_table_insert (enum_map, (char *) "StyleSimulations", GINT_TO_POINTER (stylesimulations_map));
+	g_hash_table_insert (enum_map, (char *) "StyleSimulations", GINT_TO_POINTER (style_simulations_map));
 	g_hash_table_insert (enum_map, (char *) "SweepDirection", GINT_TO_POINTER (sweep_direction_map));
 	g_hash_table_insert (enum_map, (char *) "DeviceType", GINT_TO_POINTER (tablet_device_type_map));
 	g_hash_table_insert (enum_map, (char *) "TextDecorations", GINT_TO_POINTER (text_decorations_map));

@@ -1,3 +1,9 @@
+2007-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.h: Added StyleSimulations enum values.
+
+	* xaml.cpp: Updated the StyleSimulations enum mapping.
+
 2007-07-31  Chris Toshok  <toshok@ximian.com>
 
 	* text.h, text.cpp: Glyph.StyleSimulations changed from a char* to
