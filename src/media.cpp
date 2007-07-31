@@ -36,9 +36,6 @@ DependencyProperty *MediaBase::StretchProperty;
 
 MediaBase::MediaBase()
 {
-	MediaEndedEvent = RegisterEvent ("MediaEnded");
-	MediaFailedEvent = RegisterEvent ("MediaFailed");
-	MediaOpenedEvent = RegisterEvent ("MediaOpened");
 }
 
 MediaBase *
@@ -118,6 +115,9 @@ MediaElement::MediaElement ()
 	CurrentStateChangedEvent = RegisterEvent ("CurrentStateChanged");
 	DownloadProgressChangedEvent = RegisterEvent ("DownloadProgressChanged");
 	MarkerReachedEvent = RegisterEvent ("MarkerReached");
+	MediaEndedEvent = RegisterEvent ("MediaEnded");
+	MediaFailedEvent = RegisterEvent ("MediaFailed");
+	MediaOpenedEvent = RegisterEvent ("MediaOpened");
 
 	downloader = NULL;
 	part_name = NULL;
