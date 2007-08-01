@@ -185,6 +185,12 @@ Collection::Clear ()
 }
 
 void
+collection_init ()
+{
+	Collection::CountProperty = DependencyObject::Register (Type::COLLECTION, "Count", Type::INT32);
+}
+
+void
 collection_add (Collection *collection, DependencyObject *data)
 {
 	collection->Add (data);

@@ -52,6 +52,8 @@ class Collection : public DependencyObject {
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
+	static DependencyProperty *CountProperty;
+	
  private:
 	void SharedAdd (DependencyObject *data);
 };
