@@ -1,3 +1,7 @@
+2007-08-01  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp: don't ever make the previous point relative.
+
 2007-08-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.h: Removed deprecated enum values for FontWeights

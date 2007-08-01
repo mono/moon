@@ -1337,7 +1337,6 @@ geometry_from_str (const char *str)
 				Point *p = prev->GetValue (BezierSegment::Point2Property)->AsPoint ();
 				cp1.x = 2 * cp.x - p->x;
 				cp1.y = 2 * cp.y - p->y;
-				if (relative) make_relative (&cp, &cp1);
 			} else
 				cp1 = cp;
 
