@@ -193,6 +193,7 @@ Collection::Clear ()
 		closure->OnCollectionChanged (this, CollectionChangeTypeChanged, NULL, NULL);
 }
 
+DependencyProperty *Collection::CountProperty;
 void
 collection_init ()
 {
