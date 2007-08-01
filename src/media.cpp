@@ -75,10 +75,13 @@ media_base_set_stretch (MediaBase *media, Stretch value)
 // MediaElement
 
 DependencyProperty *MediaElement::AttributesProperty;
+DependencyProperty *MediaElement::AudioStreamCountProperty;
+DependencyProperty *MediaElement::AudioStreamIndexProperty;
 DependencyProperty *MediaElement::AutoPlayProperty;
 DependencyProperty *MediaElement::BalanceProperty;
 DependencyProperty *MediaElement::BufferingProgressProperty;
 DependencyProperty *MediaElement::BufferingTimeProperty;
+DependencyProperty *MediaElement::CanPauseProperty;
 DependencyProperty *MediaElement::CanSeekProperty;
 DependencyProperty *MediaElement::CurrentStateProperty;
 DependencyProperty *MediaElement::DownloadProgressProperty;
@@ -109,8 +112,12 @@ advance_frame (void *user_data)
 MediaElement::MediaElement ()
 {
 	mplayer = new MediaPlayer ();
+	mplayer->SetBalance (media_element_get_balance (this));
+	mplayer->SetVolume (media_element_get_volume (this));
+	
+	updating_props = false;
 	timeout_id = 0;
-
+	
 	BufferingProgressChangedEvent = RegisterEvent ("BufferingProgressChanged");
 	CurrentStateChangedEvent = RegisterEvent ("CurrentStateChanged");
 	DownloadProgressChangedEvent = RegisterEvent ("DownloadProgressChanged");
@@ -118,7 +125,7 @@ MediaElement::MediaElement ()
 	MediaEndedEvent = RegisterEvent ("MediaEnded");
 	MediaFailedEvent = RegisterEvent ("MediaFailed");
 	MediaOpenedEvent = RegisterEvent ("MediaOpened");
-
+	
 	downloader = NULL;
 	part_name = NULL;
 }
@@ -126,7 +133,7 @@ MediaElement::MediaElement ()
 void
 MediaElement::StopLoader ()
 {
-	if (downloader){
+	if (downloader) {
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;
@@ -227,7 +234,7 @@ MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
 void 
 MediaElement::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
 {
-	((MediaElement*)data)->DataWrite (buf, offset, count);
+	((MediaElement*) data)->DataWrite (buf, offset, count);
 }
 
 void
@@ -242,21 +249,32 @@ MediaElement::size_notify (int64_t size, gpointer data)
 void
 MediaElement::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	((MediaElement*)closure)->DownloaderComplete ();
+	((MediaElement*) closure)->DownloaderComplete ();
 }
 
 void
 MediaElement::DownloaderComplete ()
 {
-	char *file = downloader_get_response_file (downloader, part_name);
+	char *filename = downloader_get_response_file (downloader, part_name);
+	int idx = media_element_get_audio_stream_index (this);
 	bool autoplay = media_element_get_auto_play (this);
-		
-	printf ("video source changed to `%s'\n", file);
-		
-	if (mplayer->Open (file)) {
+	
+	printf ("video source changed to `%s'\n", filename);
+	
+	// FIXME: specify which audio stream index the player should use
+	
+	if (mplayer->Open (filename)) {
 		printf ("video succesfully opened\n");
+		
+		updating_props = true;
+		media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
+		if (idx < 0)
+			media_element_set_audio_stream_index (this, mplayer->GetAudioStreamIndex ());
+		media_element_set_natural_duration (this, (TimeSpan) mplayer->Duration ());
 		media_element_set_natural_video_height (this, mplayer->height);
 		media_element_set_natural_video_width (this, mplayer->width);
+		updating_props = false;
+		
 		media_element_set_current_state (this, "Buffering");
 	} else {
 		media_element_set_current_state (this, "Error");
@@ -289,7 +307,7 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 	Invalidate ();
 
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-	if (downloader->Started () || downloader->Completed ()){
+	if (downloader->Started () || downloader->Completed ()) {
 		if (downloader->Completed ())
 			DownloaderComplete ();
 
@@ -300,12 +318,14 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 		// This is what actually triggers the download
 		downloader->Send ();
 	}
-
 }
 
 void
 MediaElement::Pause ()
 {
+	if (!mplayer->CanPause ())
+		return;
+	
 	mplayer->Pause ();
 	
 	if (timeout_id != 0) {
@@ -347,7 +367,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	
 	if (prop == MediaBase::SourceProperty) {
 		StopLoader ();
-
+		
 		char *uri = media_base_get_source (this);
 		
 		if (timeout_id != 0) {
@@ -355,6 +375,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 			g_source_remove (timeout_id);
 			timeout_id = 0;
 		}
+		
 		mplayer->Stop ();
 		
 		media_element_set_current_state (this, "Opening");
@@ -362,18 +383,27 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		Downloader *dl = new Downloader ();
 		downloader_open (dl, "GET", uri);
 		SetSource (dl, "");
+	} else if (prop == MediaElement::AudioStreamCountProperty) {
+		// read-only property
+	} else if (prop == MediaElement::AudioStreamIndexProperty) {
+		if (!updating_props) {
+			// FIXME: set the audio stream index
+		}
 	} else if (prop == MediaElement::AutoPlayProperty) {
 		// handled below
 		autoplay = media_element_get_auto_play (this);
 	} else if (prop == MediaElement::BalanceProperty) {
-		// FIXME: implement me
-		// audio balance?
+		mplayer->SetBalance (media_element_get_balance (this));
 	} else if (prop == MediaElement::BufferingProgressProperty) {
-		// this can only be set by us, no-op
+		// read-only property
 	} else if (prop == MediaElement::BufferingTimeProperty) {
-		// FIXME: set amount of time to buffer
+		if (!updating_props) {
+			// FIXME: set the buffering time
+		}
+	} else if (prop == MediaElement::CanPauseProperty) {
+		// read-only property
 	} else if (prop == MediaElement::CanSeekProperty) {
-		// this can only be set by us, no-op
+		// read-only property
 	} else if (prop == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
 	} else if (prop == MediaElement::DownloadProgressProperty) {
@@ -385,20 +415,24 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		else
 			mplayer->Mute ();
 	} else if (prop == MediaElement::MarkersProperty) {
-		// FIXME: implement
+		if (!updating_props) {
+			// FIXME: set the markers
+		}
 	} else if (prop == MediaElement::NaturalDurationProperty) {
-		// this can only be set by us, no-op
+		// read-only property
 	} else if (prop == MediaElement::NaturalVideoHeightProperty) {
-		// this can only be set by us, no-op
+		// read-only property
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
-		// this can only be set by us, no-op
+		// read-only property
 	} else if (prop == MediaElement::PositionProperty) {
-		// FIXME: needs to seek?
+		if (!updating_props) {
+			// FIXME: seek to the requested position
+		}
 	} else if (prop == MediaElement::VolumeProperty) {
-		// FIXME: implement me
+		mplayer->SetVolume (media_element_get_volume (this));
 	}
 	
-	if (autoplay){
+	if (autoplay) {
 		printf ("video autoplayed\n");
 		Play ();
 	}
@@ -442,6 +476,35 @@ void
 media_element_set_source (MediaElement *media, DependencyObject* Downloader, const char* PartName)
 {
 	media->SetSource (Downloader, PartName);
+}
+
+int
+media_element_get_audio_stream_count (MediaElement *media)
+{
+	return (int) media->GetValue (MediaElement::AudioStreamCountProperty)->AsInt32 ();
+}
+
+void
+media_element_set_audio_stream_count (MediaElement *media, int value)
+{
+	media->SetValue (MediaElement::AudioStreamCountProperty, Value (value));
+}
+
+int
+media_element_get_audio_stream_index (MediaElement *media)
+{
+	int idx = (int) media->GetValue (MediaElement::AudioStreamIndexProperty)->AsInt32 ();
+	
+	return idx < 0 ? -1 : idx;
+}
+
+void
+media_element_set_audio_stream_index (MediaElement *media, int value)
+{
+	if (value >= 0)
+		media->SetValue (MediaElement::AudioStreamIndexProperty, Value (value));
+	else
+		media->SetValue (MediaElement::AudioStreamIndexProperty, Value (-1));
 }
 
 bool
@@ -490,6 +553,18 @@ void
 media_element_set_buffering_time (MediaElement *media, TimeSpan value)
 {
 	media->SetValue (MediaElement::BufferingTimeProperty, Value (value, Type::TIMESPAN));
+}
+
+bool
+media_element_get_can_pause (MediaElement *media)
+{
+	return (bool) media->GetValue (MediaElement::CanPauseProperty)->AsBool ();
+}
+
+void
+media_element_set_can_pause (MediaElement *media, bool value)
+{
+	media->SetValue (MediaElement::CanPauseProperty, Value (value));
 }
 
 bool
@@ -565,7 +640,7 @@ media_element_get_natural_duration (MediaElement *media)
 void
 media_element_set_natural_duration (MediaElement *media, TimeSpan value)
 {
-	media->SetValue (MediaElement::NaturalDurationProperty, Value (value));
+	media->SetValue (MediaElement::NaturalDurationProperty, Value (value, Type::TIMESPAN));
 }
 
 double
@@ -1048,10 +1123,13 @@ media_init (void)
 	
 	/* MediaElement */
 	MediaElement::AttributesProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Attributes", Type::MEDIAATTRIBUTE_COLLECTION);
+	MediaElement::AudioStreamCountProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AudioStreamCount", new Value (0));
+	MediaElement::AudioStreamIndexProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AudioStreamIndex", new Value (-1));
 	MediaElement::AutoPlayProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
 	MediaElement::BalanceProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
 	MediaElement::BufferingProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
 	MediaElement::BufferingTimeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingTime", Type::TIMESPAN);
+	MediaElement::CanPauseProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanPause", new Value (true));
 	MediaElement::CanSeekProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanSeek", new Value (false));
 	MediaElement::CurrentStateProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CurrentState", Type::STRING);
 	MediaElement::DownloadProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0));

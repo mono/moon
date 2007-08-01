@@ -136,10 +136,13 @@ class MediaElement : public MediaBase {
 	
 public:
 	static DependencyProperty *AttributesProperty;
+	static DependencyProperty *AudioStreamCountProperty;
+	static DependencyProperty *AudioStreamIndexProperty;
 	static DependencyProperty *AutoPlayProperty;
 	static DependencyProperty *BalanceProperty;
 	static DependencyProperty *BufferingProgressProperty;
 	static DependencyProperty *BufferingTimeProperty;
+	static DependencyProperty *CanPauseProperty;
 	static DependencyProperty *CanSeekProperty;
 	static DependencyProperty *CurrentStateProperty;
 	static DependencyProperty *DownloadProgressProperty;
@@ -153,6 +156,7 @@ public:
 	
 	// technically private
 	MediaPlayer *mplayer;
+	bool updating_props;
 	guint timeout_id;
 	
 	MediaElement ();
@@ -171,7 +175,7 @@ public:
 	void Pause ();
 	void Play ();
 	void Stop ();
-
+	
 	int BufferingProgressChangedEvent;
 	int CurrentStateChangedEvent;
 	int DownloadProgressChangedEvent;
@@ -188,6 +192,12 @@ void media_element_play (MediaElement *media);
 void media_element_stop (MediaElement *media);
 void media_element_set_source (MediaElement *media, DependencyObject *Downloader, const char *PartName);
 
+int media_element_get_audio_stream_count (MediaElement *media);
+void media_element_set_audio_stream_count (MediaElement *media, int value);
+
+int media_element_get_audio_stream_index (MediaElement *media);
+void media_element_set_audio_stream_index (MediaElement *media, int value);
+
 bool media_element_get_auto_play (MediaElement *media);
 void media_element_set_auto_play (MediaElement *media, bool value);
 
@@ -199,6 +209,9 @@ void media_element_set_buffering_progress (MediaElement *media, double value);
 
 TimeSpan media_element_get_buffering_time (MediaElement *media);
 void media_element_set_buffering_time (MediaElement *media, TimeSpan value);
+
+bool media_element_get_can_pause (MediaElement *media);
+void media_element_set_can_pause (MediaElement *media, bool value);
 
 bool media_element_get_can_seek (MediaElement *media);
 void media_element_set_can_seek (MediaElement *media, bool value);

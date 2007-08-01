@@ -1629,20 +1629,20 @@ enum_map_t font_styles_map [] = {
 enum_map_t font_weights_map [] = {
 	{ "Thin",       100 },
 	{ "ExtraLight", 200 },
-	{ "UltraLight", 200 },
+	{ "UltraLight", 200 },  /* deprecated as of July 2007 */
 	{ "Light",      300 },
 	{ "Normal",     400 },
-	{ "Regular",    400 },
+	{ "Regular",    400 },  /* deprecated as of July 2007 */
 	{ "Medium",     500 },
 	{ "SemiBold",   600 },
-	{ "DemiBold",   600 },
+	{ "DemiBold",   600 },  /* deprecated as of July 2007 */
 	{ "Bold",       700 },
 	{ "ExtraBold",  800 },
-	{ "UltraBold",  800 },
+	{ "UltraBold",  800 },  /* deprecated as of July 2007 */
  	{ "Black",      900 },
-	{ "Heavy",      900 },
+	{ "Heavy",      900 },  /* deprecated as of July 2007 */
 	{ "ExtraBlack", 950 },
-	{ "UltraBlack", 950 },
+	{ "UltraBlack", 950 },  /* deprecated as of July 2007 */
 	{ NULL, 0 },
 };
 

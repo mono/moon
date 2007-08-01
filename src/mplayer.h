@@ -14,6 +14,7 @@
 #include <glib.h>
 #include <cairo.h>
 #include <stdint.h>
+#include <pthread.h>
 
 struct AVFormatContext;
 struct Audio;
@@ -23,7 +24,7 @@ class MediaPlayer {
 public:
 	char *uri;
 	
-	GStaticMutex pause_mutex;
+	pthread_mutex_t pause_mutex;
 	bool paused;
 	
 	bool stop;
@@ -42,6 +43,8 @@ public:
 	
 	uint64_t target_pts;
 	
+	/* Public API */
+	
 	// read-only
 	int width, height;
 	bool opened;
@@ -59,6 +62,7 @@ public:
 	
 	bool IsPlaying ();
 	guint Play (GSourceFunc callback, void *user_data);
+	bool CanPause ();
 	void Pause ();
 	void Stop ();
 	
@@ -70,6 +74,9 @@ public:
 	void Mute ();
 	void UnMute ();
 	bool IsMuted ();
+	
+	int GetAudioStreamCount ();
+	int GetAudioStreamIndex ();
 	
 	double GetBalance ();
 	void SetBalance (double balance);

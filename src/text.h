@@ -41,20 +41,14 @@ enum FontStyles {
 enum FontWeights {
 	FontWeightsThin       = 100,
 	FontWeightsExtraLight = 200,
-	FontWeightsUltraLight = 200,
 	FontWeightsLight      = 300,
 	FontWeightsNormal     = 400,
-	FontWeightsRegular    = 400,
 	FontWeightsMedium     = 500,
 	FontWeightsSemiBold   = 600,
-	FontWeightsDemiBold   = 600,
 	FontWeightsBold       = 700,
 	FontWeightsExtraBold  = 800,
-	FontWeightsUltraBold  = 800,
 	FontWeightsBlack      = 900,
-	FontWeightsHeavy      = 900,
 	FontWeightsExtraBlack = 950,
-	FontWeightsUltraBlack = 950
 };
 
 enum StyleSimulations {

@@ -62,6 +62,7 @@ struct Audio {
 	bool muted;
 	
 	// input
+	int stream_count;
 	AVStream *stream;
 	AVCodec *codec;
 	int stream_id;
@@ -118,8 +119,8 @@ MediaPlayer::MediaPlayer ()
 	
 	uri = NULL;
 	
-	g_static_mutex_init (&pause_mutex);
-	g_static_mutex_lock (&pause_mutex);
+	pthread_mutex_init (&pause_mutex, NULL);
+	pthread_mutex_lock (&pause_mutex);
 	opened = false;
 	paused = true;
 	stop = false;
@@ -137,6 +138,7 @@ MediaPlayer::MediaPlayer ()
 	audio->balance = 0.0f;
 	audio->volume = 0.0f;
 	audio->muted = false;
+	audio->stream_count = 0;
 	audio->stream_id = -1;
 	audio->stream = NULL;
 	audio->codec = NULL;
@@ -171,7 +173,7 @@ MediaPlayer::~MediaPlayer ()
 {
 	Close ();
 	
-	g_static_mutex_unlock (&pause_mutex);
+	pthread_mutex_unlock (&pause_mutex);
 	
 	if (audio->pcm != NULL)
 		snd_pcm_close (audio->pcm);
@@ -219,6 +221,8 @@ MediaPlayer::Open ()
 		
 		switch (encoding->codec_type) {
 		case CODEC_TYPE_AUDIO:
+			audio->stream_count++;
+			
 			if (audio->stream_id != -1)
 				break;
 			
@@ -319,7 +323,7 @@ MediaPlayer::Close ()
 	stop = true;
 	
 	if (paused) {
-		g_static_mutex_unlock (&pause_mutex);
+		pthread_mutex_unlock (&pause_mutex);
 		paused = false;
 	}
 	
@@ -365,6 +369,7 @@ MediaPlayer::Close ()
 	
 	opened = false;
 	
+	audio->stream_count = 0;
 	audio->stream_id = -1;
 	audio->stream = NULL;
 	audio->codec = NULL;
@@ -383,7 +388,7 @@ MediaPlayer::Close ()
 	target_pts = 0;
 	
 	// enter paused state
-	g_static_mutex_lock (&pause_mutex);
+	pthread_mutex_lock (&pause_mutex);
 	paused = true;
 }
 
@@ -500,7 +505,7 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	if (!paused || !opened)
 		return 0;
 	
-	g_static_mutex_unlock (&pause_mutex);
+	pthread_mutex_unlock (&pause_mutex);
 	paused = false;
 	
 	start_time += (av_gettime () - pause_time);
@@ -511,13 +516,20 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	return 0;
 }
 
+bool
+MediaPlayer::CanPause ()
+{
+	// FIXME: should return false if it is streaming media
+	return true;
+}
+
 void
 MediaPlayer::Pause ()
 {
-	if (paused)
+	if (paused || !CanPause ())
 		return;
 	
-	g_static_mutex_lock (&pause_mutex);
+	pthread_mutex_lock (&pause_mutex);
 	paused = true;
 	
 	pause_time = av_gettime ();
@@ -533,13 +545,16 @@ MediaPlayer::Stop ()
 bool
 MediaPlayer::CanSeek ()
 {
-	// FIXME: implement seeking
-	return false;
+	// FIXME: should return false if it is streaming media
+	return true;
 }
 
 void
 MediaPlayer::Seek (int64_t position)
 {
+	if (!CanSeek ())
+		return;
+	
 	// FIXME: implement me
 }
 
@@ -583,6 +598,18 @@ bool
 MediaPlayer::IsMuted ()
 {
 	return audio->muted;
+}
+
+int
+MediaPlayer::GetAudioStreamCount ()
+{
+	return audio->stream_count;
+}
+
+int
+MediaPlayer::GetAudioStreamIndex ()
+{
+	return audio->stream_id;
 }
 
 double
@@ -820,10 +847,10 @@ audio_loop (void *data)
 	mplayer->target_pts = audio->initial_pts;
 	
 	while (!mplayer->stop) {
-		g_static_mutex_lock (&mplayer->pause_mutex);
+		pthread_mutex_lock (&mplayer->pause_mutex);
 		
 		if (mplayer->stop) {
-			g_static_mutex_unlock (&mplayer->pause_mutex);
+			pthread_mutex_unlock (&mplayer->pause_mutex);
 			break;
 		}
 		
@@ -849,7 +876,7 @@ audio_loop (void *data)
 			}
 		}
 		
-		g_static_mutex_unlock (&mplayer->pause_mutex);
+		pthread_mutex_unlock (&mplayer->pause_mutex);
 	}
 	
 	g_free (ufds);
