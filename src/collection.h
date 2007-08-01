@@ -49,6 +49,7 @@ class Collection : public DependencyObject {
 	// Returns the old value
 	//
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
+	virtual Value *GetValue (DependencyProperty *property);
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 

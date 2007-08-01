@@ -130,6 +130,15 @@ Collection::SetVal (int index, DependencyObject *data)
 	return obj;
 }
 
+Value *
+Collection::GetValue (DependencyProperty *prop)
+{
+	if (prop == CountProperty){
+		return new Value (list->Length ());
+	}
+	return DependencyObject::GetValue (prop);
+}
+
 bool
 Collection::Remove (DependencyObject *data)
 {
