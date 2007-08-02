@@ -270,6 +270,8 @@ MediaElement::DownloaderComplete ()
 	if (mplayer->Open (filename)) {
 		printf ("video succesfully opened\n");
 		
+		media_element_set_can_seek (this, mplayer->CanSeek ());
+		media_element_set_can_pause (this, mplayer->CanPause ());
 		media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
 		media_element_set_natural_duration (this, (TimeSpan) mplayer->Duration ());
 		media_element_set_natural_video_height (this, mplayer->height);
@@ -282,6 +284,11 @@ MediaElement::DownloaderComplete ()
 	}
 	
 	Invalidate ();
+	
+	// FIXME: if the Source finishes downloading before the xaml
+	// parser gets to the AutoPlay="False" property, then we start
+	// autoplaying (we need to somehow wait until all properties
+	// are read?)
 	
 	if (autoplay)
 		Play ();

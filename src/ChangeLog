@@ -1,5 +1,8 @@
 2007-08-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (DownloaderComplete): Set the CanPause and CanSeek
+	properties.
+
 	* mplayer.cpp (~MediaPlayer): Destroy the pause_mutex
 	(IsPaused): New method.
 
