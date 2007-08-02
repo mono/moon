@@ -785,6 +785,7 @@ runtime_init (void)
 	types_init ();
 	namescope_init ();
 	uielement_init ();
+	collection_init ();
 	framework_element_init ();
 	canvas_init ();
 	dependencyobject_init();

@@ -194,6 +194,8 @@ GradientStopCollection *gradient_stop_collection_new (void);
 MediaAttributeCollection *media_attribute_collection_new (void);
 Inlines *inlines_new (void);
 
+void collection_init ();
+
 G_END_DECLS
 
 #endif /* __MOON_COLLECTION_H__ */
