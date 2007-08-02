@@ -24,10 +24,10 @@ class Canvas : public Panel {
  public:
 	Canvas ();
 
-	virtual Surface *GetSurface ();
+	virtual Surface *GetSurface () { return surface ? surface : UIElement::GetSurface(); };
 
 	// This should only be called on the toplevel surface
-	void SetSurface (Surface *surface);
+	void SetSurface (Surface *surface) { this->surface = surface; }
 
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 

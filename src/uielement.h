@@ -61,7 +61,7 @@ class UIElement : public Visual {
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
 
-	virtual Surface *GetSurface ();
+	virtual Surface *GetSurface () { return parent ? parent->GetSurface() : NULL; }
 
 	//
 	// UpdateTransform:

@@ -24,21 +24,6 @@ Canvas::Canvas () : surface (NULL)
 {
 }
 
-Surface*
-Canvas::GetSurface ()
-{
-	if (surface)
-		return surface;
-	else
-		return UIElement::GetSurface ();
-}
-
-void
-Canvas::SetSurface (Surface *surface)
-{
-	this->surface = surface;
-}
-
 void
 Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {

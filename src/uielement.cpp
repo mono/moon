@@ -430,12 +430,6 @@ UIElement::GetTotalOpacity ()
 	return opacity;
 }
 
-Surface*
-UIElement::GetSurface ()
-{
-	return parent == NULL ? NULL : parent->GetSurface();
-}
-
 DependencyProperty* UIElement::ClipProperty;
 DependencyProperty* UIElement::CursorProperty;
 DependencyProperty* UIElement::IsHitTestVisibleProperty;

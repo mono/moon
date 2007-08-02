@@ -1,5 +1,10 @@
 2007-08-02  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp, canvas.h, canvas.cpp: inline
+	GetSurface/SetSurface.
+
+2007-08-02  Chris Toshok  <toshok@ximian.com>
+
 	* canvas.cpp (Canvas::OnChildPropertyChanged): return true if we
 	handle the property changing.
 
