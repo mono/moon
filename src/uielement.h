@@ -105,8 +105,9 @@ class UIElement : public Visual {
 
 	//
 	// UpdateBounds:
-	//   Updates the bounds of a item by requesting bounds update
-	//   to all of its parents.
+	//   Recomputes the bounds of this element, and if they're
+	//   different chains up to its parent telling it to update
+	//   its bounds.
 	//
 	void UpdateBounds (bool force_redraw_of_new_bounds = false);
 
