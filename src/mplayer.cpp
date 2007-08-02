@@ -174,6 +174,7 @@ MediaPlayer::~MediaPlayer ()
 	Close ();
 	
 	pthread_mutex_unlock (&pause_mutex);
+	pthread_mutex_destroy (&pause_mutex);
 	
 	if (audio->pcm != NULL)
 		snd_pcm_close (audio->pcm);
@@ -521,6 +522,12 @@ MediaPlayer::CanPause ()
 {
 	// FIXME: should return false if it is streaming media
 	return true;
+}
+
+bool
+MediaPlayer::IsPaused ()
+{
+	return paused;
 }
 
 void

@@ -98,13 +98,18 @@ advance_frame (void *user_data)
 {
 	MediaElement *media = (MediaElement *) user_data;
 	double opacity = media->GetTotalOpacity ();
-	int64_t pos;
+	int64_t position;
 	
 	if (media->mplayer->AdvanceFrame () && opacity > 0.0f)
 		media->Invalidate ();
 	
-	pos = media->mplayer->Position ();
-	media_element_set_position (media, pos);
+	media->updating = true;
+	position = media->mplayer->Position ();		
+	media_element_set_position (media, position);
+	media->updating = false;
+	
+	// FIXME: need to disconnect the timeout if the video is complete
+	//        and set the CurrentState to "Stopped"?
 	
 	return true;
 }
@@ -115,7 +120,7 @@ MediaElement::MediaElement ()
 	mplayer->SetBalance (media_element_get_balance (this));
 	mplayer->SetVolume (media_element_get_volume (this));
 	
-	updating_props = false;
+	updating = false;
 	timeout_id = 0;
 	
 	BufferingProgressChangedEvent = RegisterEvent ("BufferingProgressChanged");
@@ -155,8 +160,8 @@ void
 MediaElement::ComputeBounds ()
 {
 	double x1, y1, x2, y2;
-	cairo_t* cr = measuring_context_create ();
-
+	cairo_t *cr = measuring_context_create ();
+	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	cairo_rectangle (cr, 0, 0, mplayer->width, mplayer->height);
@@ -167,7 +172,7 @@ MediaElement::ComputeBounds ()
 	cairo_restore (cr);
 	
 	bounds = Rect (x1 - 1, y1 - 1, x2-x1 + 2, y2-y1 + 2);
-
+	
 	measuring_context_destroy (cr);
 }
 
@@ -256,7 +261,6 @@ void
 MediaElement::DownloaderComplete ()
 {
 	char *filename = downloader_get_response_file (downloader, part_name);
-	int idx = media_element_get_audio_stream_index (this);
 	bool autoplay = media_element_get_auto_play (this);
 	
 	printf ("video source changed to `%s'\n", filename);
@@ -266,23 +270,19 @@ MediaElement::DownloaderComplete ()
 	if (mplayer->Open (filename)) {
 		printf ("video succesfully opened\n");
 		
-		updating_props = true;
 		media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
-		if (idx < 0)
-			media_element_set_audio_stream_index (this, mplayer->GetAudioStreamIndex ());
 		media_element_set_natural_duration (this, (TimeSpan) mplayer->Duration ());
 		media_element_set_natural_video_height (this, mplayer->height);
 		media_element_set_natural_video_width (this, mplayer->width);
-		updating_props = false;
 		
 		media_element_set_current_state (this, "Buffering");
 	} else {
 		media_element_set_current_state (this, "Error");
 		printf ("video failed to open\n");
 	}
-		
+	
 	Invalidate ();
-
+	
 	if (autoplay)
 		Play ();
 }
@@ -291,26 +291,26 @@ void
 MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 {
 	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
-
+	
 	// if we have something opened already...
 	media_element_set_current_state (this, "Closed");
-
+	
 	dl->ref ();
 	if (downloader)
 		downloader->unref ();
 	downloader = (Downloader *) dl;
 	part_name = g_strdup (PartName);
-
+	
 	media_element_set_current_state (this, "Opening");
 	media_element_set_current_state (this, "Buffering");
-
+	
 	Invalidate ();
-
+	
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 	if (downloader->Started () || downloader->Completed ()) {
 		if (downloader->Completed ())
 			DownloaderComplete ();
-
+		
 		UpdateProgress ();
 	} else {
 		downloader->SetWriteFunc (data_write, size_notify, this);
@@ -342,13 +342,16 @@ MediaElement::Play ()
 	if (downloader && downloader->Completed () && timeout_id == 0 && !mplayer->IsPlaying ()) {
 		timeout_id = mplayer->Play (advance_frame, this);
 		media_element_set_current_state (this, "Playing");
-		printf ("video playing, timeout = %d\n", timeout_id);
+		printf ("video playing, timeout_id = %d\n", timeout_id);
 	}
 }
 
 void
 MediaElement::Stop ()
 {
+	if (!mplayer->IsPlaying () && !mplayer->IsPaused ())
+		return;
+	
 	mplayer->Stop ();
 	
 	if (timeout_id != 0) {
@@ -357,6 +360,51 @@ MediaElement::Stop ()
 	}
 	
 	media_element_set_current_state (this, "Stopped");
+}
+
+Value *
+MediaElement::GetValue (DependencyProperty *prop)
+{
+	if (prop == MediaElement::PositionProperty) {
+		int64_t position = mplayer->Position ();
+		Value v = Value (position, Type::TIMESPAN);
+		
+		updating = true;
+		SetValue (prop, &v);
+		updating = false;
+	}
+	
+	return MediaBase::GetValue (prop);
+}
+
+void
+MediaElement::SetValue (DependencyProperty *prop, Value value)
+{
+	MediaBase::SetValue (prop, value);
+}
+
+void
+MediaElement::SetValue (DependencyProperty *prop, Value *value)
+{
+	Value v;
+	
+	if (prop == MediaElement::PositionProperty) {
+		TimeSpan duration = media_element_get_natural_duration (this);
+		TimeSpan position = value->AsTimeSpan ();
+		
+		if (position > duration)
+			position = duration;
+		else if (position < 0)
+			position = 0;
+		
+		if (position != value->AsTimeSpan ()) {
+			v = Value (position, Type::TIMESPAN);
+			MediaBase::SetValue (prop, &v);
+			return;
+		}
+	}
+	
+	MediaBase::SetValue (prop, value);
 }
 
 void
@@ -386,7 +434,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::AudioStreamCountProperty) {
 		// read-only property
 	} else if (prop == MediaElement::AudioStreamIndexProperty) {
-		if (!updating_props) {
+		if (!updating) {
 			// FIXME: set the audio stream index
 		}
 	} else if (prop == MediaElement::AutoPlayProperty) {
@@ -397,7 +445,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::BufferingProgressProperty) {
 		// read-only property
 	} else if (prop == MediaElement::BufferingTimeProperty) {
-		if (!updating_props) {
+		if (!updating) {
 			// FIXME: set the buffering time
 		}
 	} else if (prop == MediaElement::CanPauseProperty) {
@@ -415,7 +463,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		else
 			mplayer->Mute ();
 	} else if (prop == MediaElement::MarkersProperty) {
-		if (!updating_props) {
+		if (!updating) {
 			// FIXME: set the markers
 		}
 	} else if (prop == MediaElement::NaturalDurationProperty) {
@@ -425,8 +473,10 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
 	} else if (prop == MediaElement::PositionProperty) {
-		if (!updating_props) {
-			// FIXME: seek to the requested position
+		if (!updating) {
+			TimeSpan position = media_element_get_position (this);
+			
+			mplayer->Seek (position);
 		}
 	} else if (prop == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (media_element_get_volume (this));

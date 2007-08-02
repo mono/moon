@@ -122,15 +122,16 @@ void   image_set_source (Image *img, DependencyObject *Downloader, const char *P
 
 
 class MediaElement : public MediaBase {
+	// downloader methods/data
 	Downloader *downloader;
 	char *part_name;
-
+	
 	void StopLoader ();
 	void UpdateProgress ();
-	void DataWrite(guchar *data, gsize n, gsize nn);
+	void DataWrite (guchar *data, gsize n, gsize nn);
 	void DownloaderComplete ();
 	
-	static void data_write(guchar*data, gsize n, gsize nn, void *closure);
+	static void data_write (guchar *data, gsize n, gsize nn, void *closure);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
@@ -156,8 +157,8 @@ public:
 	
 	// technically private
 	MediaPlayer *mplayer;
-	bool updating_props;
 	guint timeout_id;
+	bool updating;
 	
 	MediaElement ();
 	~MediaElement ();
@@ -168,6 +169,9 @@ public:
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	
+	virtual Value *GetValue (DependencyProperty *prop);
+	virtual void SetValue (DependencyProperty *prop, Value value);
+	virtual void SetValue (DependencyProperty *prop, Value *value);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	
 	void SetSource (DependencyObject *Downloader, const char *PartName);

@@ -1,3 +1,16 @@
+2007-08-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (~MediaPlayer): Destroy the pause_mutex
+	(IsPaused): New method.
+
+	* media.cpp (MediaElement::GetValue): If the Position is being
+	requested, query the MediaPlayer.
+	(MediaElement::SetValue): Make sure the PositionProperty value is
+	within bounds and force it to be if not.
+	(MediaElement::Stop): Do nothing if we aren't playing/paused.
+	(MediaElement::OnPropertyChanged): Call mplayer->Seek() if the
+	position changed.
+
 2007-08-02  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h, uielement.cpp: propagate opacity changes the way we

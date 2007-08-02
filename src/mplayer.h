@@ -63,6 +63,7 @@ public:
 	bool IsPlaying ();
 	guint Play (GSourceFunc callback, void *user_data);
 	bool CanPause ();
+	bool IsPaused ();
 	void Pause ();
 	void Stop ();
 	

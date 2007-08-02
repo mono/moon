@@ -69,7 +69,7 @@ class DependencyObject : public EventObject {
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
 	static DependencyProperty *NameProperty;
 	virtual void SetValue (DependencyProperty *property, Value *value);
-	void SetValue (DependencyProperty *property, Value value);
+	virtual void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);
 	void SetValue (const char *name, Value value);
 	virtual Value *GetValue (DependencyProperty *property);
