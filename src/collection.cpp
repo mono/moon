@@ -400,6 +400,7 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	
 	item->parent = panel;
 	item->UpdateTransform ();
+	item->UpdateTotalOpacity ();
 	item->Invalidate ();
 	panel->UpdateBounds ();
 }

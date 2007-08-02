@@ -43,6 +43,8 @@ class Panel : public FrameworkElement {
 	virtual void Enter (cairo_t *cr, int state, double x, double y);
 	virtual void Leave ();
 
+	virtual void UpdateTotalOpacity ();
+
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;
 

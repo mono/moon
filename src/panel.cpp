@@ -63,6 +63,23 @@ Panel::~Panel ()
 	}
 }
 
+void
+Panel::UpdateTotalOpacity ()
+{
+	VisualCollection *children = GetChildren ();
+	FrameworkElement::UpdateTotalOpacity ();
+	Collection::Node *n;
+
+	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
+	n = (Collection::Node *) children->list->First ();
+	while (n != NULL) {
+		UIElement *item = (UIElement *) n->obj;
+		
+		item->UpdateTotalOpacity ();
+		
+		n = (Collection::Node *) n->Next ();
+	}
+}
 
 void
 Panel::UpdateTransform ()

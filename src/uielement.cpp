@@ -69,6 +69,8 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 
 	this->SetValue (UIElement::TriggersProperty, Value (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value (new ResourceDictionary ()));
+
+	UpdateTotalOpacity ();
 }
 
 UIElement::~UIElement ()
@@ -87,8 +89,10 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 	  
-	if (prop == UIElement::OpacityProperty ||
-	    prop == UIElement::ZIndexProperty) {
+	if (prop == UIElement::OpacityProperty) {
+		UpdateTotalOpacity ();
+	}
+	else if (prop == UIElement::ZIndexProperty) {
 		Invalidate ();
 	}
 	else if (prop == UIElement::VisibilityProperty) {
@@ -176,6 +180,14 @@ UIElement::DumpHierarchy (UIElement *obj)
 	return n + 4;
 }
 #endif
+
+void
+UIElement::UpdateTotalOpacity ()
+{
+	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+	total_opacity = local_opacity * (parent ? parent->GetTotalOpacity () : 1.0);
+	Invalidate ();
+}
 
 void
 UIElement::UpdateTransform ()
@@ -411,23 +423,6 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 		   GetTypeName ());
 	*height = 
 	  *width = 0.0;
-}
-
-double
-UIElement::GetTotalOpacity ()
-{
-	double opacity = uielement_get_opacity (this);
-	// this is recursive to parents
-	UIElement *uielement = this->parent;
-	while (uielement) {
-		double parent_opacity = uielement_get_opacity (uielement);
-		if (parent_opacity < 1.0)
-			opacity *= parent_opacity;
-		// FIXME: we should be calling FrameworkElement::Parent
-		uielement = uielement->parent;
-	}
-
-	return opacity;
 }
 
 DependencyProperty* UIElement::ClipProperty;

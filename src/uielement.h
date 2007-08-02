@@ -33,6 +33,8 @@ struct MouseEventArgs {
 
 class UIElement : public Visual {
 	Brush *opacityMask;
+
+	double total_opacity;
  public:
 	UIElement ();
 	~UIElement ();
@@ -62,6 +64,17 @@ class UIElement : public Visual {
 	cairo_matrix_t absolute_xform;
 
 	virtual Surface *GetSurface () { return parent ? parent->GetSurface() : NULL; }
+
+	//
+	// UpdateTotalOpacity:
+	//   Updates the opacity on this item based on its parent's
+	//   opacity as well as the value of its OpacityProperty.
+	//
+	virtual void UpdateTotalOpacity ();
+
+	// GetTotalOpacity
+	//   Get the cumulative opacity of this element, including all it's parents
+	double GetTotalOpacity () { return total_opacity; }
 
 	//
 	// UpdateTransform:
@@ -213,10 +226,6 @@ class UIElement : public Visual {
 	//
 	void ReleaseMouseCapture ();
 
-	// GetTotalOpacity
-	//   Get the cumulative opacity of this element, including all it's parents
-	double GetTotalOpacity ();
-	
 	virtual void OnLoaded ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);

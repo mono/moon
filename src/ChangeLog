@@ -1,5 +1,20 @@
 2007-08-02  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp: propagate opacity changes the way we
+	do transform changes.  Store the total opacity of an item in the
+	item, as we do with absolute_xform.  This keeps us from doing a
+	walk up to the root of the hierarchy every time we have to draw an
+	element (which we we were doing before in
+	UIElement::GetTotalOpacity.)
+
+	* panel.cpp, panel.h: when we update our total opacity, loop over
+	the children telling them to update as well.
+
+	* collection.cpp: propagate the panel's total opacity downward
+	into the newly added subtree.
+
+2007-08-02  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h, uielement.cpp, canvas.h, canvas.cpp: inline
 	GetSurface/SetSurface.
 
