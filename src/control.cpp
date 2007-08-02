@@ -22,55 +22,34 @@
 #include "control.h"
 
 void 
-Control::UpdateTransform ()
-{
-	if (real_object){
-		real_object->UpdateTransform ();
-		absolute_xform = real_object->absolute_xform;
-	}
-}
-
-void 
 Control::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-  if (!GetVisible ())
-    printf ("wtf?\n");
 	if (real_object)
 		real_object->DoRender (cr, x, y, width, height);
-}
-
-Rect
-Control::GetBounds ()
-{
-	if (real_object)
-		return real_object->GetBounds();
-	else
-		return Rect (0,0,0,0);
 }
 
 void 
 Control::ComputeBounds ()
 {
-	/* nothing to do here */
+	if (real_object)
+		bounds = real_object->GetBounds ();
+	else
+		bounds = Rect (0, 0, 0, 0);
 }
 
-void 
+void
+Control::UpdateTransform ()
+{
+	FrameworkElement::UpdateTransform ();
+
+	if (real_object)
+		real_object->UpdateTransform ();
+}
+
+void
 Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	if (parent != NULL){
-		parent->GetTransformFor (this, result);
-	} else {
-		cairo_matrix_init_identity (result);
-	}
-}
-
-Point 
-Control::GetTransformOrigin ()
-{
-	if (real_object)
-		return real_object->GetTransformOrigin ();
-	else
-		return Point (0, 0);
+	*result = absolute_xform;
 }
 
 bool 
@@ -124,36 +103,6 @@ Control::Leave ()
 	}
 }
 
-void 
-Control::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (real_object)
-		real_object->OnPropertyChanged (prop);
-}
-
-void 
-Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
-{
-	NotifyAttacheesOfPropertyChange (subprop);
-}
-
-void
-Control::SetValue (DependencyProperty *property, Value *value)
-{
-	FrameworkElement::SetValue (property, value);
-	if (real_object)
-		real_object->SetValue (property, value);
-}
-
-Value*
-Control::GetValue (DependencyProperty *property)
-{
-	if (real_object)
-		return real_object->GetValue (property);
-	else
-		return FrameworkElement::GetValue (property);
-}
-
 void
 Control::OnLoaded ()
 {
@@ -186,10 +135,11 @@ Control::InitializeFromXaml (const char *xaml,
 	real_object = (FrameworkElement *) element;
 	real_object->parent = this;
 
-	real_object->Attach (NULL, this);
-
 	// sink the ref, we own this
 	base_ref (real_object);
+
+	real_object->UpdateTransform ();
+	UpdateBounds ();
 
 	return element;
 }

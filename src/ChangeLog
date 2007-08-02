@@ -1,3 +1,14 @@
+2007-08-02  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::OnChildPropertyChanged): return true if we
+	handle the property changing.
+
+	* control.h, control.cpp: rip out all the proxying behavior.
+	Control now works as a very specialized container.  Imagine if
+	Panel had only 1 child, and no generalized way of manipulating it
+	(other than initializing it from a xaml fragment), and you have
+	Control.
+
 2007-08-01  Larry Ewing  <lewing@novell.com>
 
 	* xaml.cpp: don't ever make the previous point relative.

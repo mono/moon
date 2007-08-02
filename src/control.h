@@ -24,25 +24,18 @@ class Control : public FrameworkElement {
 	~Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
-	virtual void UpdateTransform ();
+
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
-	virtual Rect GetBounds ();
-
+	virtual void UpdateTransform ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
-	virtual Point GetTransformOrigin ();
+
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
 	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
 	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
 	virtual void Enter (cairo_t *cr, int state, double x, double y);
 	virtual void Leave ();
-
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
-
-	virtual void SetValue (DependencyProperty *property, Value *value);
-	virtual Value *GetValue (DependencyProperty *property);
 
 	virtual bool GetVisible () { return real_object && real_object->GetVisible(); }
 	virtual bool GetLayoutVisible () { return real_object && real_object->GetLayoutVisible(); }

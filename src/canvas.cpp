@@ -81,6 +81,8 @@ Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *chil
 		UIElement *ui = (UIElement *) child;
 
 		ui->UpdateTransform ();
+
+		return true;
 	}
 	
 	return false;
