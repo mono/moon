@@ -49,7 +49,7 @@ UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 void
 UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	printf ("get_xform_for called on a non-container, you must implement this in your container\n");
+	printf ("GetTransformFor called on a non-container, you must implement this in your container\n");
 	exit (1);
 }
 
