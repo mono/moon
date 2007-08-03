@@ -314,6 +314,11 @@ namespace Moonlight {
 			
 			foreach (AssemblyName an in clientlib.GetReferencedAssemblies ()){
 
+				if (an.Name == "agclr" || an.Name == "mscorlib" ||
+				    an.Name == "System.Xml.Core" || an.Name == "System" ||
+				    an.Name == "Microsoft.Scripting"
+				    an.Name == "System.SilverLight")
+					continue;
 				//
 				// This is not the best probing mechanism.
 				// I do not like depending on an.Name and adding .dll
