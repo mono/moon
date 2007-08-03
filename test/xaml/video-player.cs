@@ -116,6 +116,7 @@ public class VideoPlayer : Canvas {
 	{
 		SetPlayShape ();
 		video.Stop ();
+		video.Position = TimeSpan.Zero;
 	}
 
 	private void Play ()
