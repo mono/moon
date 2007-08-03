@@ -316,7 +316,7 @@ namespace Moonlight {
 
 				if (an.Name == "agclr" || an.Name == "mscorlib" ||
 				    an.Name == "System.Xml.Core" || an.Name == "System" ||
-				    an.Name == "Microsoft.Scripting"
+				    an.Name == "Microsoft.Scripting" ||
 				    an.Name == "System.SilverLight")
 					continue;
 				//
