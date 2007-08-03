@@ -1,5 +1,16 @@
 2007-08-02  Chris Toshok  <toshok@ximian.com>
 
+	* control.cpp (GetTransformFor, OnSubPropertyChanged): now, before
+	you get your panties in a twist, check this out.  If you have a
+	control and set both its Canvas.LeftProperty and that of its root
+	object (the return value of InitializeFromXaml), the effects are
+	*additive*, yet GetValue on each object returns exactly what you'd
+	expect - the value you set on it.  The only reasonable explanation
+	for this is that Control has Canvas's layout algorithm c&p'ed into
+	it.
+
+2007-08-02  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.h, xaml.cpp: switch the xaml_create_from_{file,str}
 	functions to returning DependencyObjects instead of UIElements.
 	in javascript you can create arbitrary xaml hierarchies (transform

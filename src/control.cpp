@@ -20,6 +20,7 @@
 #undef Visual
 #include "runtime.h"
 #include "control.h"
+#include "canvas.h"
 
 void 
 Control::Render (cairo_t *cr, int x, int y, int width, int height)
@@ -38,6 +39,14 @@ Control::ComputeBounds ()
 }
 
 void
+Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (subprop == Canvas::TopProperty || subprop == Canvas::LeftProperty) {
+		real_object->UpdateTransform ();
+	}
+}
+
+void
 Control::UpdateTransform ()
 {
 	FrameworkElement::UpdateTransform ();
@@ -49,7 +58,19 @@ Control::UpdateTransform ()
 void
 Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
+	// XXX this is copied from the canvas implementation due to some
+	// funky, funky behavior we're seeing.
+
 	*result = absolute_xform;
+
+	// Compute left/top if its attached to the item
+	Value *val_top = item->GetValue (Canvas::TopProperty);
+	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
+
+	Value *val_left = item->GetValue (Canvas::LeftProperty);
+	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
+		
+	cairo_matrix_translate (result, left, top);
 }
 
 void
@@ -145,6 +166,8 @@ Control::InitializeFromXaml (const char *xaml,
 	// sink the ref, we own this
 	base_ref (real_object);
 
+	real_object->Attach (NULL,this);
+	real_object->UpdateTotalOpacity ();
 	real_object->UpdateTransform ();
 	UpdateBounds ();
 
