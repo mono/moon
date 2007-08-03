@@ -701,11 +701,11 @@ print_tree (XamlElementInstance *el, int depth)
 	}
 }
 
-UIElement *
+DependencyObject *
 xaml_create_from_file (const char *xaml_file, bool create_namescope,
 		       Type::Kind *element_type)
 {
-	UIElement *res = NULL;
+	DependencyObject *res = NULL;
 	FILE *fp;
 	char buffer [READ_BUFFER];
 	int len, done;
@@ -777,7 +777,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 
 	if (parser_info->top_element) {
 	
-		res = (UIElement *) parser_info->top_element->item;
+		res = parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_element->info->dependency_type;
 
@@ -798,13 +798,13 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 	return res;
 }
 
-UIElement *
+DependencyObject *
 xaml_create_from_str (const char *xaml, bool create_namescope,
 		      Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
 	XamlParserInfo *parser_info = NULL;
-	UIElement *res = NULL;
+	DependencyObject *res = NULL;
 
 	if (!p) {
 #ifdef DEBUG_XAML
@@ -849,7 +849,7 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 	}
 
 	if (parser_info->top_element) {
-		res = (UIElement *) parser_info->top_element->item;
+		res = parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_element->info->dependency_type;
 

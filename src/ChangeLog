@@ -1,5 +1,14 @@
 2007-08-02  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.h, xaml.cpp: switch the xaml_create_from_{file,str}
+	functions to returning DependencyObjects instead of UIElements.
+	in javascript you can create arbitrary xaml hierarchies (transform
+	groups, brushes, etc).
+
+	* control.cpp: need a cast here due to the above change.
+
+2007-08-02  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h, runtime.cpp (Surface::Invalidate): add this call, and
 	stuff the gtk_widget_queue_draw_area call there.
 

@@ -23,8 +23,8 @@ typedef void xaml_hookup_event_callback (void *target, const char *ename, const 
 
 G_BEGIN_DECLS
 
-UIElement  *xaml_create_from_file (const char *xaml, bool create_namescope, Type::Kind *element_type);
-UIElement  *xaml_create_from_str  (const char *xaml, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_create_from_file (const char *xaml, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_create_from_str  (const char *xaml, bool create_namescope, Type::Kind *element_type);
 void        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
 
 void        xaml_set_parser_callbacks (xaml_create_custom_element_callback *cecb,
