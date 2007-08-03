@@ -32,6 +32,7 @@
 
 // Events
 #include <nsIDOMEvent.h>
+#include <nsIDOMMouseEvent.h>
 #include <nsIDOMEventTarget.h>
 #include <nsIDOMEventListener.h>
 
@@ -2565,20 +2566,42 @@ class DomEventWrapper : public nsIDOMEventListener {
 
 NS_IMPL_ISUPPORTS1(DomEventWrapper, nsIDOMEventListener)
 
-static void
-dom_event_wrapper_invoke_callback (DomEventWrapper *source, callback_dom_event *cb)
-{
-	cb (source);
-}
-
 NS_IMETHODIMP
 DomEventWrapper::HandleEvent (nsIDOMEvent* aDOMEvent)
 {
 	nsString str_event;
-	aDOMEvent->GetType (str_event);
-	printf ("handling event: %s\n", NS_ConvertUTF16toUTF8 (str_event).get ());
+	int client_x, client_y, offset_x, offset_y, mouse_button;
+	gboolean alt_key, ctrl_key, shift_key;
 
-	callback (this);
+	aDOMEvent->GetType (str_event);
+
+	client_x = client_y = offset_x = offset_y = mouse_button = 0;
+	alt_key = ctrl_key = shift_key = FALSE;
+
+	nsCOMPtr<nsIDOMMouseEvent> mouse_event = do_QueryInterface (aDOMEvent);
+	if (mouse_event != nsnull) {
+		int screen_x, screen_y;
+		
+		mouse_event->GetScreenX (&screen_x);
+		mouse_event->GetScreenY (&screen_y);
+
+		mouse_event->GetClientX (&client_x);
+		mouse_event->GetClientY (&client_y);
+
+		offset_x = screen_x - client_x;
+		offset_y = screen_y - client_y;
+
+		mouse_event->GetAltKey (&alt_key);
+		mouse_event->GetCtrlKey (&ctrl_key);
+		mouse_event->GetShiftKey (&shift_key);
+
+		PRUint16 umouse_button;
+		mouse_event->GetButton (&umouse_button);
+		mouse_button = umouse_button;
+	}
+	
+	callback (strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
+			alt_key, ctrl_key, shift_key, mouse_button);
 
 	return NS_OK;
 }
@@ -2600,9 +2623,13 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	if (window)
 		NPN_ReleaseObject (window);
 
-	Value *res;
-	variant_to_value (&npresult, &res);
-	*result = *res;
+	Value *res = NULL;
+	if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
+		variant_to_value (&npresult, &res);
+		*result = *res;
+	} else {
+		*result = Value (Type::INVALID);
+	}
 }
 
 void
@@ -2656,9 +2683,13 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	if (window)
 		NPN_ReleaseObject (window);
 
-	Value *res;
-	variant_to_value (&npresult, &res);
-	*result = *res;
+	Value *res = NULL;
+	if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
+		variant_to_value (&npresult, &res);
+		*result = *res;
+	} else {
+		*result = Value (Type::INVALID);
+	}
 }
 
 static nsCOMPtr<nsIDOMDocument>

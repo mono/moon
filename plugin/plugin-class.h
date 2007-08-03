@@ -354,7 +354,10 @@ extern "C" {
 
 /*** HtmlObject ***************************************************/
 
-typedef void callback_dom_event (gpointer source);
+// int clientX, int clientY,
+
+typedef void callback_dom_event (char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
+		gboolean ctrl_key, gboolean shift_key, int mouse_button);
 
 extern "C" {
 	// These are meant to be called by System.Silverlight.dll
