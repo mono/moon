@@ -261,14 +261,20 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 
 	EventArgsWrapper event_args_wrapper = get_wrapper_for_event_name (proxy->event_name);
 
+	//	printf ("proxying event %s to javascript\n", proxy->event_name);
+
+	//	printf ("sender == %p (%s)\n", sender, ((DependencyObject*)sender)->GetTypeName());
+
 	event_args_wrapper (proxy->instance, calldata, &args[1]);
 
 	if (proxy->is_func) {
+	  //	  printf ("proxy->is_func\n");
 		/* the event listener was added with a JS function object */
 		if (NPN_InvokeDefault (proxy->instance, (NPObject*)proxy->callback, args, 2, &result))
 			NPN_ReleaseVariantValue (&result);
 	}
 	else {
+	  //	  printf ("!proxy->is_func\n");
 		/* the event listener was added with a JS string (the function name) */
 		NPObject *object = NULL;
 		if (NPERR_NO_ERROR != NPN_GetValue(proxy->instance, NPNVWindowNPObject, &object)) {
@@ -2044,12 +2050,50 @@ MoonlightTextBlockType* MoonlightTextBlockClass;
 /*** MoonlightDownloaderClass ***************************************************/
 
 static const char *const
+moonlight_downloader_properties [] = {
+	"responseText"
+};
+
+static const char *const
 moonlight_downloader_methods [] = {
 	"abort",
-	"getResponseText",
 	"open",
+	"getResponseText",
 	"send"
 };
+
+static bool
+moonlight_downloader_has_property (NPObject *npobj, NPIdentifier name)
+{
+	if (HAS_METHOD (moonlight_downloader_properties, name))
+		return true;
+
+	return MoonlightDependencyObjectClass->hasProperty (npobj, name);
+}
+
+static bool
+moonlight_downloader_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	Downloader *dl = (Downloader*)((MoonlightDependencyObjectObject*)npobj)->dob;
+
+	if (name_matches (name, "responseText")) {
+		uint64_t size;
+		char* buf = (char*)downloader_get_response_text (dl, NULL, &size);
+
+		if (buf) {
+			char *s = (char*)NPN_MemAlloc (size);
+			memcpy (s, buf, size);
+			STRINGN_TO_NPVARIANT (s, size, *result);
+			g_free (buf);
+		}
+		else
+			NULL_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else
+		return MoonlightDependencyObjectClass->getProperty (npobj, name, result);
+}
 
 static bool
 moonlight_downloader_has_method (NPObject *npobj, NPIdentifier name)
@@ -2128,6 +2172,8 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 
 MoonlightDownloaderType::MoonlightDownloaderType ()
 {
+	hasProperty = moonlight_downloader_has_property;
+	getProperty = moonlight_downloader_get_property;
 	hasMethod = moonlight_downloader_has_method;
 	invoke = moonlight_downloader_invoke;
 }
