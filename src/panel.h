@@ -31,6 +31,8 @@ class Panel : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 
+	virtual void ChildInvalidated (UIElement *child, Rect r);
+
 	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 
 	virtual UIElement* FindMouseOver (cairo_t *cr, double x, double y);

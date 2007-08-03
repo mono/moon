@@ -29,6 +29,7 @@ class Control : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual void UpdateTransform ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
+	virtual void ChildInvalidated (UIElement *item, Rect r);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);

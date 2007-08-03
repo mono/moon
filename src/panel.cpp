@@ -182,6 +182,13 @@ Panel::ComputeBounds ()
 }
 
 
+void
+Panel::ChildInvalidated (UIElement *child, Rect r)
+{
+	if (parent)
+		parent->ChildInvalidated (child, r);
+}
+
 static int level = 0;
 
 //#define DEBUG_INVALIDATE 1

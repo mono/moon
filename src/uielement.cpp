@@ -259,16 +259,16 @@ UIElement::FullInvalidate (bool rendertransform)
 	UpdateBounds (true /* force an invalidate here, even if the bounds don't change */);
 }
 
+void
+UIElement::ChildInvalidated (UIElement *item, Rect r)
+{
+	printf ("ChildInvalidated called on a non-container, you must implement this in your container\n");
+	exit (1);
+}
 
-// XXX this should really intersect with the bounding rect.
 void
 UIElement::Invalidate (Rect r)
 {
-	Surface *s = GetSurface ();
-	
-	if (s == NULL)
-		return;
-
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		this, Type::Find(GetObjectType())->name,
@@ -276,9 +276,8 @@ UIElement::Invalidate (Rect r)
 		(int)(r.w+2), (int)(r.h+2));
 #endif
 
-	gtk_widget_queue_draw_area (s->GetDrawingArea (),
-				    (int) r.x, (int)r.y, 
-				    (int)(r.w+2), (int)(r.h+2));
+	if (parent)
+		parent->ChildInvalidated (this, r);
 }
 
 void

@@ -65,6 +65,8 @@ class Surface {
 	int GetFrameCount () { return frames; }
 	void ResetFrameCount () { frames = 0; }
 
+	void Invalidate (Rect r);
+
 	GtkWidget* GetDrawingArea () { return drawing_area; }
 	UIElement* GetToplevel() { return toplevel; }
 

@@ -147,6 +147,8 @@ class UIElement : public Visual {
 
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
+	virtual void ChildInvalidated (UIElement *item, Rect r);
+
 	//
 	// Recomputes the bounding box, requests redraws, 
 	// the parameter determines if we should also update the transformation

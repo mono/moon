@@ -24,14 +24,15 @@ class Canvas : public Panel {
  public:
 	Canvas ();
 
-	virtual Surface *GetSurface () { return surface ? surface : UIElement::GetSurface(); };
+	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
+	virtual Surface *GetSurface () { return surface ? surface : UIElement::GetSurface(); };
 	// This should only be called on the toplevel surface
 	void SetSurface (Surface *surface) { this->surface = surface; }
 
-	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
-
 	Point GetTransformOrigin ();
+
+	virtual void ChildInvalidated (UIElement *child, Rect r);
 
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);

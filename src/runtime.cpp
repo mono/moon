@@ -324,6 +324,14 @@ Surface::Attach (UIElement *element)
 }
 
 void
+Surface::Invalidate (Rect r)
+{
+	gtk_widget_queue_draw_area (drawing_area,
+				    (int) r.x, (int)r.y, 
+				    (int)(r.w+2), (int)(r.h+2));
+}
+
+void
 Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 {
 	toplevel->DoRender (ctx, x, y, width, height);

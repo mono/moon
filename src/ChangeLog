@@ -1,3 +1,22 @@
+2007-08-02  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp (Surface::Invalidate): add this call, and
+	stuff the gtk_widget_queue_draw_area call there.
+
+	* uielement.h, uielement.cpp, canvas.h, canvas.cpp, panel.h,
+	panel.cpp, control.h, control.cpp: change the way
+	UIElement::Invalidate works.  It used to call GetSurface() which
+	would recurse up the tree to the root, and return the Surface*
+	back down.  It would then call gtk_widget_queue_draw_area there.
+	This left little room for optimization.  Switch everything over to
+	using a new method implemented by all container classes,
+	ChildInvalidated.  Basically Invalidate's recurse up to the root
+	as before, but the actual gtk call happens at the root (well, 1
+	level above it.  at the Surface itself).  In the future we can
+	freeze Invalidates in container elements when they do things like
+	update their transform so we'll just send 1 Invalidate up the
+	tree, not N Invalidates for N children.
+	
 2007-08-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (DownloaderComplete): Set the CanPause and CanSeek

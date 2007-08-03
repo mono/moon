@@ -40,6 +40,15 @@ Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 }
 
 void
+Canvas::ChildInvalidated (UIElement *item, Rect r)
+{
+	if (surface)
+		surface->Invalidate (r);
+	else
+		Panel::ChildInvalidated (item, r);
+}
+
+void
 Canvas::ComputeBounds ()
 {
 	if (surface) {
