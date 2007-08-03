@@ -1,5 +1,17 @@
 2007-08-03  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp (Collection::Add, Collection::Insert): reinstate
+	jackson's merging code, but only do it if @data's namescope is
+	temporary.
+
+	* namescope.h, namescope.cpp: Add {Set,Get}Temporary.
+
+	* xaml.cpp (xaml_create_from_str): set the namescope to be
+	temporary if create_namescope is false.
+	(xaml_create_from_file): same.
+
+2007-08-03  Chris Toshok  <toshok@ximian.com>
+
 	* panel.h, panel.cpp: add an optimization for the 2 updates that
 	travel down the tree (UpdateTotalOpacity and UpdateTransform).
 	Since we're already invalidating the panel's bounds (in fact we do

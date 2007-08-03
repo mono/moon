@@ -64,14 +64,16 @@ Collection::Add (DependencyObject *data)
 	generation++;
 	list->Append (new Collection::Node (data, this));
 	data->Attach (NULL, this);
-/*
-	NameScope *ns = data->FindNameScope ();
-	NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
-	if (ns && con_ns && ns != con_ns) {
-		con_ns->MergeTemporaryScope (ns);
-		NameScope::SetNameScope (data, con_ns);
+
+	NameScope *ns = NameScope::GetNameScope (data);
+	if (ns && ns->GetTemporary ()) {
+		NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
+		if (con_ns) {
+			con_ns->MergeTemporaryScope (ns);
+			NameScope::SetNameScope (data, con_ns); // we really want to delete the namescope on data
+		}
 	}
-*/
+
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 }
@@ -85,14 +87,16 @@ Collection::Insert (int index, DependencyObject *data)
 	list->Insert (new Collection::Node (data, this), index);
 
 	data->Attach (NULL, this);
-/*
-	NameScope *ns = data->FindNameScope ();
-	NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
-	if (ns && con_ns && ns != con_ns) {
-		con_ns->MergeTemporaryScope (ns);
-		NameScope::SetNameScope (data, con_ns);
+
+	NameScope *ns = NameScope::GetNameScope (data);
+	if (ns && ns->GetTemporary ()) {
+		NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
+		if (con_ns) {
+			con_ns->MergeTemporaryScope (ns);
+			NameScope::SetNameScope (data, con_ns); // we really want to delete the namescope on data
+		}
 	}
-*/
+
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 }

@@ -25,6 +25,9 @@ class NameScope : public DependencyObject {
 
 	DependencyObject* FindName (const char *name);
 
+	void SetTemporary (bool flag) { temporary = flag; }
+	bool GetTemporary () { return temporary; }
+
 	void MergeTemporaryScope (NameScope *scope);
 
 	static NameScope* GetNameScope (DependencyObject *obj);
@@ -34,6 +37,7 @@ class NameScope : public DependencyObject {
 	
  private:
 	GHashTable *names;
+	bool temporary;
 };
 
 G_BEGIN_DECLS

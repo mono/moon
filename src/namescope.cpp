@@ -15,6 +15,7 @@
 NameScope::NameScope ()
 {
 	names = g_hash_table_new (g_str_hash, g_str_equal);
+	temporary = false;
 }
 
 NameScope::~NameScope ()

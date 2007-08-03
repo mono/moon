@@ -738,6 +738,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 
 	parser_info = new XamlParserInfo (p, xaml_file);
 	
+	parser_info->namescope->SetTemporary (!create_namescope);
 
 	parser_info->custom_element_callback = installed_custom_element_callback;
 	parser_info->custom_attribute_callback = installed_custom_attribute_callback;
@@ -814,6 +815,8 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 	}
 
 	parser_info = new XamlParserInfo (p, NULL);
+
+	parser_info->namescope->SetTemporary (!create_namescope);
 
 	parser_info->custom_element_callback = installed_custom_element_callback;
 	parser_info->custom_attribute_callback = installed_custom_attribute_callback;
