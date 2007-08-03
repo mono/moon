@@ -70,19 +70,19 @@ public class VideoPlayer : Canvas {
 		geometry.Figures.Add(f);
 
 		LineSegment m = new LineSegment();
-		m.Point = new Point(2, 2);
+		m.Point = new Point(3, 2);
 		f.Segments.Add(m);
 
 		m = new LineSegment();	
-		m.Point = new Point(15, 8.5);
+		m.Point = new Point(14, 8.5);
 		f.Segments.Add(m);
 
 		m = new LineSegment();	
-		m.Point = new Point(2, 15);
+		m.Point = new Point(3, 15);
 		f.Segments.Add(m);
 
 		m = new LineSegment();	
-		m.Point = new Point(2, 2);
+		m.Point = new Point(3, 2);
 		f.Segments.Add(m);
 
 		play.Children.Add(p);
