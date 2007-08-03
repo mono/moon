@@ -5,7 +5,7 @@
 	MouseLeftButtonDown="OnMouseDown"
 	Width="320" Height="260">
 
-  <MediaElement x:Name="Video" AutoPlay="False" Source="file:///tmp/BoxerSmacksdownInhoffe.wmv"
+  <MediaElement x:Name="Video" AutoPlay="False" Source="file:///tmp/sample.avi"
 		Opacity="0.0" IsHitTestVisible="False"/>
 
   <Rectangle Width="320" Height="240" Stroke="Blue">
@@ -14,7 +14,7 @@
     </Rectangle.Fill>
   </Rectangle>
 
-  <Rectangle x:Name="PlayButton" Canvas.Left="1" Canvas.Top="242" Width="17" Height="17" Stroke="Black"/>
+  <Canvas x:Name="PlayButton" Canvas.Left="1" Canvas.Top="242" Width="17" Height="17" Stroke="Black"/>
 
   <Rectangle x:Name="StopButton" Canvas.Left="19" Canvas.Top="242" Width="17" Height="17" Stroke="Black"/>
   <Rectangle x:Name="StopIcon" Canvas.Left="24" Canvas.Top="247" Width="7" Height="7" Stroke="Black" Fill="Black"/>

@@ -6,17 +6,19 @@ using System.Windows.Shapes;
 using System.Windows.Controls;
 
 public class VideoPlayer : Canvas {
-	Rectangle progress, play, stop;
+	Rectangle progress, stop;
+	Canvas play;
 	MediaElement video;
 	bool playing;
 	
 	public void OnLoaded (object sender, EventArgs e)
 	{
 		progress = (Rectangle) FindName ("ProgressBar");
-		play = (Rectangle) FindName ("PlayButton");
+		play = (Canvas) FindName ("PlayButton");
 		stop = (Rectangle) FindName ("StopButton");
 		video = (MediaElement) FindName ("Video");
 		playing = video.AutoPlay;
+		SetPlayShape ();
 	}
 	
 	bool WasClicked (FrameworkElement item, double x, double y)
@@ -42,13 +44,88 @@ public class VideoPlayer : Canvas {
 			video.Position = new TimeSpan ((long) ((double) duration.Ticks * percent));
 		} else if (WasClicked (play, x, y)) {
 			if (playing)
-				video.Pause ();
+				Pause();
 			else
-				video.Play ();
+				Play();
 			playing = !playing;
 		} else if (WasClicked (stop, x, y)) {
-			video.Stop ();
+			Stop();
 			playing = false;
 		}
+	}
+
+	private void SetPlayShape()
+	{
+		play.Children.Clear ();
+
+		Path p = new Path();
+		PathGeometry geometry = new PathGeometry ();
+		PathFigure f = new PathFigure ();	
+		f.Segments = new PathSegmentCollection ();
+
+		p.Data = geometry;
+		p.Fill = new SolidColorBrush(Colors.Red);
+		p.Stroke = new SolidColorBrush(Colors.Black);
+		geometry.Figures = new PathFigureCollection ();
+		geometry.Figures.Add(f);
+
+		LineSegment m = new LineSegment();
+		m.Point = new Point(2, 2);
+		f.Segments.Add(m);
+
+		m = new LineSegment();	
+		m.Point = new Point(15, 8.5);
+		f.Segments.Add(m);
+
+		m = new LineSegment();	
+		m.Point = new Point(2, 15);
+		f.Segments.Add(m);
+
+		m = new LineSegment();	
+		m.Point = new Point(2, 2);
+		f.Segments.Add(m);
+
+		play.Children.Add(p);
+	}
+
+	private void SetPauseShape()
+	{
+		play.Children.Clear ();
+
+		Rectangle r = new Rectangle ();
+		r.Width = 4;
+		r.Height = 12;
+		r.SetValue<double>(Canvas.TopProperty, 2.5);
+		r.SetValue<double>(Canvas.LeftProperty, 3);
+		r.Fill = new SolidColorBrush(Colors.Red);
+		r.Stroke = new SolidColorBrush(Colors.Black);
+		play.Children.Add (r);
+
+		r = new Rectangle ();
+		r.Width = 4;
+		r.Height = 12;
+		r.SetValue<double>(Canvas.TopProperty, 2.5);
+		r.SetValue<double>(Canvas.LeftProperty, 10);
+		r.Fill = new SolidColorBrush(Colors.Red);
+		r.Stroke = new SolidColorBrush(Colors.Black);
+		play.Children.Add (r);
+	}
+
+	private void Stop ()
+	{
+		SetPlayShape ();
+		video.Stop ();
+	}
+
+	private void Play ()
+	{
+		SetPauseShape ();
+		video.Play ();
+	}
+
+	private void Pause ()
+	{
+		SetPlayShape ();	
+		video.Pause ();
 	}
 }
