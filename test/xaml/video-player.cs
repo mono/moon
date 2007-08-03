@@ -39,9 +39,10 @@ public class VideoPlayer : Canvas {
 		
 		if (WasClicked (progress, x, y)) {
 			double percent = mouse.GetPosition (progress).X / progress.Width;
-			TimeSpan duration = video.NaturalDuration;
-			
-			video.Position = new TimeSpan ((long) ((double) duration.Ticks * percent));
+			Duration duration = video.NaturalDuration;
+		
+			if (duration.HasTimeSpan)	
+				video.Position = new TimeSpan ((long) ((double) duration.TimeSpan.Ticks * percent));
 		} else if (WasClicked (play, x, y)) {
 			if (playing)
 				Pause();
