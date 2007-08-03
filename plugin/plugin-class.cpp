@@ -1161,19 +1161,16 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "createFromXaml")) {
-		// create a Control object
-
 		if (argCount < 1)
 			return true;
 
 		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
-		Control *control = new Control ();
 		Type::Kind element_type;
-		control->InitializeFromXaml (xaml, &element_type);
+		DependencyObject *dep = xaml_create_from_str (xaml, false, &element_type);
 
 		MoonlightDependencyObjectObject *depobj =
-			DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance, control);
+			DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dep);
 
 		OBJECT_TO_NPVARIANT (depobj, *result);
 

@@ -1,3 +1,13 @@
+2007-08-02  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (moonlight_content_invoke): createFromXaml
+	doesn't create a control object - it parses the xaml you pass in
+	and returns the root element, so it can be used for any xaml
+	content.
+
+	* plugin.h, plugin.cpp: add plugin_instance_get_init_params for
+	use in WebApplication.StartupArgs.
+
 2007-07-29  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.h: track the 1.1 refresh changes.

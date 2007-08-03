@@ -631,6 +631,12 @@ plugin_instance_get_actual_height (PluginInstance *instance)
 	return instance->getActualHeight ();
 }
 
+char*
+plugin_instance_get_init_params  (PluginInstance *instance)
+{
+	return instance->getInitParams();
+}
+
 uint32_t
 plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data)
 {
