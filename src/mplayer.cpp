@@ -120,6 +120,7 @@ MediaPlayer::MediaPlayer ()
 	uri = NULL;
 	
 	pthread_mutex_init (&pause_mutex, NULL);
+	pthread_cond_init (&pause_cond, NULL);
 	pthread_mutex_lock (&pause_mutex);
 	opened = false;
 	paused = true;
@@ -175,6 +176,7 @@ MediaPlayer::~MediaPlayer ()
 	
 	pthread_mutex_unlock (&pause_mutex);
 	pthread_mutex_destroy (&pause_mutex);
+	pthread_cond_destroy (&pause_cond);
 	
 	if (audio->pcm != NULL)
 		snd_pcm_close (audio->pcm);
@@ -324,8 +326,9 @@ MediaPlayer::Close ()
 	stop = true;
 	
 	if (paused) {
-		pthread_mutex_unlock (&pause_mutex);
 		paused = false;
+		pthread_cond_signal (&pause_cond);
+		pthread_mutex_unlock (&pause_mutex);
 	}
 	
 	if (io_thread != NULL) {
@@ -506,8 +509,9 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	if (!paused || !opened)
 		return 0;
 	
-	pthread_mutex_unlock (&pause_mutex);
 	paused = false;
+	pthread_cond_signal (&pause_cond);
+	pthread_mutex_unlock (&pause_mutex);
 	
 	start_time += (av_gettime () - pause_time);
 	
@@ -536,8 +540,8 @@ MediaPlayer::Pause ()
 	if (paused || !CanPause ())
 		return;
 	
-	pthread_mutex_lock (&pause_mutex);
 	paused = true;
+	pthread_cond_wait (&pause_cond, &pause_mutex);
 	
 	pause_time = av_gettime ();
 }
@@ -856,6 +860,9 @@ audio_loop (void *data)
 	while (!mplayer->stop) {
 		pthread_mutex_lock (&mplayer->pause_mutex);
 		
+		if (mplayer->paused)
+			pthread_cond_wait (&mplayer->pause_cond, &mplayer->pause_mutex);
+		
 		if (mplayer->stop) {
 			pthread_mutex_unlock (&mplayer->pause_mutex);
 			break;
@@ -882,6 +889,9 @@ audio_loop (void *data)
 				audio->pkt = NULL;
 			}
 		}
+		
+		if (mplayer->paused)
+			pthread_cond_signal (&mplayer->pause_cond);
 		
 		pthread_mutex_unlock (&mplayer->pause_mutex);
 	}

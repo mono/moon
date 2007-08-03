@@ -1,3 +1,10 @@
+2007-08-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp: Whenever we change the 'paused' state, signal to
+	the other thread(s) that it has changed so that they can go on
+	with their lives immediately rather than waiting for the kernel to
+	context switch.
+
 2007-08-02  Chris Toshok  <toshok@ximian.com>
 
 	* control.cpp (GetTransformFor, OnSubPropertyChanged): now, before

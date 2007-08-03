@@ -25,6 +25,7 @@ public:
 	char *uri;
 	
 	pthread_mutex_t pause_mutex;
+	pthread_cond_t pause_cond;
 	bool paused;
 	
 	bool stop;
