@@ -45,12 +45,12 @@ public class VideoPlayer : Canvas {
 				video.Position = new TimeSpan ((long) ((double) duration.TimeSpan.Ticks * percent));
 		} else if (WasClicked (play, x, y)) {
 			if (playing)
-				Pause();
+				Pause ();
 			else
-				Play();
+				Play ();
 			playing = !playing;
 		} else if (WasClicked (stop, x, y)) {
-			Stop();
+			Stop ();
 			playing = false;
 		}
 	}
@@ -95,18 +95,18 @@ public class VideoPlayer : Canvas {
 
 		Rectangle r = new Rectangle ();
 		r.Width = 4;
-		r.Height = 12;
-		r.SetValue<double>(Canvas.TopProperty, 2.5);
-		r.SetValue<double>(Canvas.LeftProperty, 3);
+		r.Height = 10;
+		r.SetValue<double>(Canvas.TopProperty, 3.5);
+		r.SetValue<double>(Canvas.LeftProperty, 2);
 		r.Fill = new SolidColorBrush(Colors.Red);
 		r.Stroke = new SolidColorBrush(Colors.Black);
 		play.Children.Add (r);
 
 		r = new Rectangle ();
 		r.Width = 4;
-		r.Height = 12;
-		r.SetValue<double>(Canvas.TopProperty, 2.5);
-		r.SetValue<double>(Canvas.LeftProperty, 10);
+		r.Height = 10;
+		r.SetValue<double>(Canvas.TopProperty, 3.5);
+		r.SetValue<double>(Canvas.LeftProperty, 9);
 		r.Fill = new SolidColorBrush(Colors.Red);
 		r.Stroke = new SolidColorBrush(Colors.Black);
 		play.Children.Add (r);

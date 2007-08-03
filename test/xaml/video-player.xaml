@@ -5,7 +5,7 @@
 	MouseLeftButtonDown="OnMouseDown"
 	Width="320" Height="260">
 
-  <MediaElement x:Name="Video" AutoPlay="False" Source="file:///tmp/sample.avi"
+  <MediaElement x:Name="Video" AutoPlay="False" Source="file:///tmp/BoxerSmacksdownInhoffe.wmv"
 		Opacity="0.0" IsHitTestVisible="False"/>
 
   <Rectangle Width="320" Height="240" Stroke="Blue">
