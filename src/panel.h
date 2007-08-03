@@ -19,6 +19,8 @@ class Panel : public FrameworkElement {
 	// Contains the last element where the mouse entered
 	//
 	UIElement *mouse_over;
+
+	bool ignore_invalidates;
  public:
 	Panel ();
 	virtual ~Panel ();

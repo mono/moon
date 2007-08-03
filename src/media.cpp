@@ -273,7 +273,7 @@ MediaElement::DownloaderComplete ()
 		media_element_set_can_seek (this, mplayer->CanSeek ());
 		media_element_set_can_pause (this, mplayer->CanPause ());
 		media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
-		media_element_set_natural_duration (this, (TimeSpan) mplayer->Duration ());
+		media_element_set_natural_duration (this, Duration (mplayer->Duration ()));
 		media_element_set_natural_video_height (this, mplayer->height);
 		media_element_set_natural_video_width (this, mplayer->width);
 		
@@ -396,16 +396,16 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 	Value v;
 	
 	if (prop == MediaElement::PositionProperty) {
-		TimeSpan duration = media_element_get_natural_duration (this);
+		Duration* duration = media_element_get_natural_duration (this);
 		TimeSpan position = value->AsTimeSpan ();
 		
-		if (position > duration)
-			position = duration;
+		if (duration->HasTimeSpan() && position > duration->GetTimeSpan())
+			position = duration->GetTimeSpan();
 		else if (position < 0)
 			position = 0;
 		
-		if (position != value->AsTimeSpan ()) {
-			v = Value (position, Type::TIMESPAN);
+		if (position != value->AsTimeSpan()) {
+			v = Value (position);
 			MediaBase::SetValue (prop, &v);
 			return;
 		}
@@ -688,16 +688,16 @@ media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value)
 	media->SetValue (MediaElement::MarkersProperty, Value (value));
 }
 
-TimeSpan
+Duration*
 media_element_get_natural_duration (MediaElement *media)
 {
-	return (TimeSpan) media->GetValue (MediaElement::NaturalDurationProperty)->AsTimeSpan ();
+	return media->GetValue (MediaElement::NaturalDurationProperty)->AsDuration ();
 }
 
 void
-media_element_set_natural_duration (MediaElement *media, TimeSpan value)
+media_element_set_natural_duration (MediaElement *media, Duration value)
 {
-	media->SetValue (MediaElement::NaturalDurationProperty, Value (value, Type::TIMESPAN));
+	media->SetValue (MediaElement::NaturalDurationProperty, Value (value));
 }
 
 double
@@ -1192,7 +1192,7 @@ media_init (void)
 	MediaElement::DownloadProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
 	MediaElement::IsMutedProperty = DependencyObject::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
 	MediaElement::MarkersProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
-	MediaElement::NaturalDurationProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalDuration", Type::TIMESPAN);
+	MediaElement::NaturalDurationProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalDuration", new Value(Duration::Automatic));
 	MediaElement::NaturalVideoHeightProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoHeight", Type::DOUBLE);
 	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoWidth", Type::DOUBLE);
 	MediaElement::PositionProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);

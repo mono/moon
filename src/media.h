@@ -232,8 +232,8 @@ void media_element_set_is_muted (MediaElement *media, bool value);
 TimelineMarkerCollection *media_element_get_markers (MediaElement *media);
 void media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value);
 
-TimeSpan media_element_get_natural_duration (MediaElement *media);
-void media_element_set_natural_duration (MediaElement *media, TimeSpan value);
+Duration* media_element_get_natural_duration (MediaElement *media);
+void media_element_set_natural_duration (MediaElement *media, Duration value);
 
 double media_element_get_natural_video_height (MediaElement *media);
 void media_element_set_natural_video_height (MediaElement *media, double value);

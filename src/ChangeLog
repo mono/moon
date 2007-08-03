@@ -1,3 +1,14 @@
+2007-08-03  Chris Toshok  <toshok@ximian.com>
+
+	* panel.h, panel.cpp: add an optimization for the 2 updates that
+	travel down the tree (UpdateTotalOpacity and UpdateTransform).
+	Since we're already invalidating the panel's bounds (in fact we do
+	it before traversing), we can ignore the invalidates which come
+	back up the tree from the children.
+
+	* media.cpp, media.h: make NaturalDuration a Duration.  this gets
+	the last of roeder's demos sorta working.
+
 2007-08-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp: Whenever we change the 'paused' state, signal to

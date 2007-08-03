@@ -53,6 +53,7 @@ Panel::Panel ()
 	this->SetValue (Panel::ChildrenProperty, Value (new VisualCollection ()));
 	background = NULL;
 	mouse_over = NULL;
+	ignore_invalidates = false;
 }
 
 Panel::~Panel ()
@@ -70,6 +71,8 @@ Panel::UpdateTotalOpacity ()
 	FrameworkElement::UpdateTotalOpacity ();
 	Collection::Node *n;
 
+	ignore_invalidates = true;
+
 	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
 	n = (Collection::Node *) children->list->First ();
 	while (n != NULL) {
@@ -79,6 +82,8 @@ Panel::UpdateTotalOpacity ()
 		
 		n = (Collection::Node *) n->Next ();
 	}
+
+	ignore_invalidates = false;
 }
 
 void
@@ -87,6 +92,8 @@ Panel::UpdateTransform ()
 	VisualCollection *children = GetChildren ();
 	FrameworkElement::UpdateTransform ();
 	Collection::Node *n;
+
+	ignore_invalidates = true;
 
 	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
 	n = (Collection::Node *) children->list->First ();
@@ -97,6 +104,8 @@ Panel::UpdateTransform ()
 		
 		n = (Collection::Node *) n->Next ();
 	}
+
+	ignore_invalidates = false;
 }
 
 #define DEBUG_BOUNDS 0
@@ -185,6 +194,9 @@ Panel::ComputeBounds ()
 void
 Panel::ChildInvalidated (UIElement *child, Rect r)
 {
+ 	if (ignore_invalidates)
+ 		return;
+
 	if (parent)
 		parent->ChildInvalidated (child, r);
 }
