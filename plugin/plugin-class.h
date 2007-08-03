@@ -17,6 +17,7 @@
 #include "error.h"
 #include "plugin.h"
 
+
 void plugin_init_classes (void);
 
 /*** EventListenerProxy */
@@ -353,14 +354,15 @@ extern "C" {
 
 /*** HtmlObject ***************************************************/
 
+typedef void callback_dom_event (gpointer source);
+
 extern "C" {
 	// These are meant to be called by System.Silverlight.dll
 
 	void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
-
 	void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
-
 	void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
+	gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb);
 
 }
 

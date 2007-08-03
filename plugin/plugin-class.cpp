@@ -22,6 +22,20 @@
 #include "plugin.h"
 #include "plstr.h"
 
+#include <nsCOMPtr.h>
+#include <nsIDOMElement.h>
+#include <nsIDOMDocument.h>
+#include <nsIDOMWindow.h>
+#include <nsStringAPI.h>
+#include <nsIDOMHTMLDocument.h>
+#include <nsIDOMNodeList.h>
+
+// Events
+#include <nsIDOMEvent.h>
+#include <nsIDOMEventTarget.h>
+#include <nsIDOMEventListener.h>
+
+
 #define HAS_PROPERTY(x,v) \
 		(index_of_name (v, x, (sizeof (x) / sizeof (char *))) > -1)
 #define HAS_METHOD(x,v) \
@@ -2529,6 +2543,46 @@ moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 		NPN_ReleaseVariantValue (&result);
 }
 
+
+/****************************** HtmlObject *************************/
+
+
+class DomEventWrapper : public nsIDOMEventListener {
+
+	NS_DECL_ISUPPORTS
+	NS_DECL_NSIDOMEVENTLISTENER
+
+ public:
+
+	DomEventWrapper () {
+		callback = NULL;
+
+		NS_INIT_ISUPPORTS ();
+	}
+
+	callback_dom_event *callback;
+};
+
+NS_IMPL_ISUPPORTS1(DomEventWrapper, nsIDOMEventListener)
+
+static void
+dom_event_wrapper_invoke_callback (DomEventWrapper *source, callback_dom_event *cb)
+{
+	cb (source);
+}
+
+NS_IMETHODIMP
+DomEventWrapper::HandleEvent (nsIDOMEvent* aDOMEvent)
+{
+	nsString str_event;
+	aDOMEvent->GetType (str_event);
+	printf ("handling event: %s\n", NS_ConvertUTF16toUTF8 (str_event).get ());
+
+	callback (this);
+
+	return NS_OK;
+}
+
 void
 html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result)
 {
@@ -2605,6 +2659,99 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	Value *res;
 	variant_to_value (&npresult, &res);
 	*result = *res;
+}
+
+static nsCOMPtr<nsIDOMDocument>
+get_dom_document (NPP npp)
+{
+	nsCOMPtr<nsIDOMWindow> dom_window;
+	NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST(nsIDOMWindow **, getter_AddRefs(dom_window)));
+	if (!dom_window) {
+		DEBUGMSG ("No DOM window available\n");
+		return NULL;
+	}
+
+	nsCOMPtr<nsIDOMDocument> dom_document;
+	dom_window->GetDocument (getter_AddRefs (dom_document));
+	if (dom_document == nsnull) {
+		DEBUGMSG ("No DOM document available\n");
+		return NULL;
+	}
+
+	return dom_document;
+}
+
+gpointer
+html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb)
+{
+	nsresult rv;
+	NPVariant npresult;
+	NPP npp = plugin->getInstance ();
+	NPIdentifier id_identifier = NPN_GetStringIdentifier ("id");
+	nsCOMPtr<nsISupports> item;
+
+	NPN_GetProperty (npp, npobj, id_identifier, &npresult);
+
+	if (NPVARIANT_IS_STRING (npresult) && strlen (NPVARIANT_TO_STRING (npresult).utf8characters) > 0) {
+		NPString np_id = NPVARIANT_TO_STRING (npresult);
+		
+		nsString ns_id = NS_ConvertUTF8toUTF16 (np_id.utf8characters, strlen (np_id.utf8characters));
+		nsCOMPtr<nsIDOMDocument> dom_document = get_dom_document (npp);
+
+		nsCOMPtr<nsIDOMElement> element;
+		rv = dom_document->GetElementById (ns_id, getter_AddRefs (element));
+		if (NS_FAILED (rv) || element == nsnull) {
+			return NULL;
+		}
+
+		item = element;
+	} else {
+		NPObject *window = NULL;
+		NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
+
+		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+
+		if (npobj == window) {
+			NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST (nsISupports **, getter_AddRefs (item)));
+		} else {
+			NPVariant docresult;
+			NPN_GetProperty (npp, window, document_identifier, &docresult);
+
+			if (npobj == NPVARIANT_TO_OBJECT (docresult)) {
+				item = get_dom_document (npp);
+			} else {
+				char *temp_id = "__moonlight_temp_id";
+				NPVariant npvalue;
+
+				string_to_npvariant (temp_id, &npvalue);
+				NPN_SetProperty (npp, npobj, id_identifier, &npvalue);
+				NPN_ReleaseVariantValue (&npvalue);
+
+				nsString ns_id = NS_ConvertUTF8toUTF16 (temp_id, strlen (temp_id));
+				nsCOMPtr<nsIDOMDocument> dom_document = get_dom_document (npp);
+
+				nsCOMPtr<nsIDOMElement> element;
+				dom_document->GetElementById (ns_id, getter_AddRefs (element));
+				if (element == nsnull) {
+					DEBUGMSG ("Unable to find temp_id element\n");
+					return NULL;
+				}
+
+				item = element;
+
+				// reset to it's original empty value
+				NPN_SetProperty (npp, npobj, id_identifier, &npresult);
+			}
+		}
+	}
+
+	DomEventWrapper *wrapper = new DomEventWrapper ();
+	wrapper->callback = cb;
+
+	nsCOMPtr<nsIDOMEventTarget> target = do_QueryInterface (item);
+	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
+
+	return wrapper;
 }
 
 void
