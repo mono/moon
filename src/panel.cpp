@@ -194,11 +194,10 @@ Panel::ComputeBounds ()
 void
 Panel::ChildInvalidated (UIElement *child, Rect r)
 {
- 	if (ignore_invalidates)
- 		return;
+  	if (ignore_invalidates)
+  		return;
 
-	if (parent)
-		parent->ChildInvalidated (child, r);
+	FrameworkElement::Invalidate (r);
 }
 
 static int level = 0;

@@ -1,3 +1,13 @@
+2007-08-04  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::ChildInvalidated): for the Invalidated stuff
+	to work properly, panel needs to call
+	FrameworkElement::Invalidate, not parent->ChildInvalidated
+	directly.
+
+	* uielement.h, uielement.cpp: add an Invalidated event for use by
+	the visual brush.
+	
 2007-08-03  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp (Collection::Add, Collection::Insert): reinstate

@@ -63,6 +63,7 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	KeyUpEvent = RegisterEvent ("KeyUp");
 	EnterEvent = RegisterEvent ("MouseEnter");
 	LeaveEvent = RegisterEvent ("MouseLeave");
+	InvalidatedEvent = RegisterEvent("Invalidated");
 
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
@@ -278,6 +279,8 @@ UIElement::Invalidate (Rect r)
 
 	if (parent)
 		parent->ChildInvalidated (this, r);
+
+	Emit (InvalidatedEvent);
 }
 
 void

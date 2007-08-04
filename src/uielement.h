@@ -262,6 +262,7 @@ class UIElement : public Visual {
 	int KeyUpEvent;
 	int EnterEvent;
 	int LeaveEvent;
+	int InvalidatedEvent;
 };
 
 G_BEGIN_DECLS
