@@ -1,0 +1,32 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="MyCanvas;assembly=VisualBrushTest.dll"
+        Loaded="PageLoaded" Width="400" Height="410">
+
+
+    <Canvas x:Name="Normal" Width="400" Height="202">
+        <MediaElement x:Name="ExampleVideo" Source="file:///tmp/BoxerSmacksdownInhoffe.wmv"
+                      Opacity="0.0" IsHitTestVisible="False"/>
+
+        <TextBlock Text="TextBlock" FontSize="100" FontWidth="Bold">
+          <TextBlock.Foreground>
+                <VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill"/>
+          </TextBlock.Foreground>
+          <LineBreak/>
+          <Run FontSize="40" Foreground="black">Black-</Run>
+          <Run FontSize="40">Video-</Run>
+          <Run FontSize="40" Foreground="black">Black-</Run>
+          <Run FontSize="40">Video</Run>
+        </TextBlock>
+    </Canvas>
+
+    <Rectangle x:Name="Reflected" Width="400" Height="202">
+	<Rectangle.Stroke Thickness="1">
+		<SolidColorBrush Color="Red" />
+	</Rectangle.Stroke>
+	<Rectangle.RenderTransform>
+		<TranslateTransform Y="203" X="0" />
+	</Rectangle.RenderTransform>
+    </Rectangle>
+
+</Canvas>
