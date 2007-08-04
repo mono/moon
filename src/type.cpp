@@ -298,6 +298,7 @@ types_init (void)
 	Type::RegisterType ("UIElement", Type::UIELEMENT, Type::VISUAL);
 	Type::RegisterType ("VideoBrush", Type::VIDEOBRUSH, Type::TILEBRUSH);
 	Type::RegisterType ("Visual", Type::VISUAL, Type::DEPENDENCY_OBJECT);
+	Type::RegisterType ("VisualBrush", Type::VISUALBRUSH, Type::TILEBRUSH);
 	Type::RegisterType ("VisualCollection", Type::VISUAL_COLLECTION, Type::COLLECTION);
 	types_init_manually ();
 }

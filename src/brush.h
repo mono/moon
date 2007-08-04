@@ -251,6 +251,27 @@ void	gradient_stop_set_color		(GradientStop *stop, Color *color);
 double	gradient_stop_get_offset	(GradientStop *stop);
 void	gradient_stop_set_offset	(GradientStop *stop, double offset);
 
+
+class VisualBrush : public TileBrush {
+	cairo_surface_t *surface;
+
+	static void update_brush (EventObject *, gpointer, gpointer closure);
+
+ public:
+	static DependencyProperty* VisualProperty;
+
+	VisualBrush () { };
+
+	virtual Type::Kind GetObjectType () { return Type::VISUALBRUSH; };
+
+	virtual bool SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+};
+
+VisualBrush	*visual_brush_new (void);
+Visual          *visual_brush_get_visual (VisualBrush *visual_brush);
+void             visual_brush_set_visual (VisualBrush *visual_brush, Visual *visual);
+
 void brush_init (void);
 
 G_END_DECLS

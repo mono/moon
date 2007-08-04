@@ -141,6 +141,7 @@ class TriggerCollection;
 class UIElement;
 class VideoBrush;
 class Visual;
+class VisualBrush;
 class VisualCollection;
 
 
@@ -332,6 +333,7 @@ public:
 	UIElement*                     AsUIElement () { checked_get_subclass (Type::UIELEMENT, UIElement) }
 	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	Visual*                        AsVisual () { checked_get_subclass (Type::VISUAL, Visual) }
+	VisualBrush*                   AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
 	VisualCollection*              AsVisualCollection () { checked_get_subclass (Type::VISUAL_COLLECTION, VisualCollection) }
 
   

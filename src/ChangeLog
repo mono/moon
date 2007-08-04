@@ -1,5 +1,13 @@
 2007-08-04  Chris Toshok  <toshok@ximian.com>
 
+	* brush.h, brush.cpp: add VisualBrush.
+
+	* xaml.cpp (xaml_init): hookup VisualBrush parsing.
+
+	* value.h, type.h, type.cpp: sync up the VisualBrush stuff.
+
+2007-08-04  Chris Toshok  <toshok@ximian.com>
+
 	* panel.cpp (Panel::ChildInvalidated): for the Invalidated stuff
 	to work properly, panel needs to call
 	FrameworkElement::Invalidate, not parent->ChildInvalidated

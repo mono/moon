@@ -2439,6 +2439,7 @@ xaml_init (void)
 	rdoe (dem, "TileBrush", brush, Type::TILEBRUSH, (create_item_func) tile_brush_new);
 	rdoe (dem, "ImageBrush", brush, Type::IMAGEBRUSH, (create_item_func) image_brush_new);
 	rdoe (dem, "VideoBrush", brush, Type::VIDEOBRUSH, (create_item_func) video_brush_new);
+	rdoe (dem, "VisualBrush", brush, Type::VISUALBRUSH, (create_item_func) visual_brush_new);
 
 	///
 	/// Media

@@ -1015,6 +1015,115 @@ video_brush_set_source_name (VideoBrush *brush, const char *value)
 	brush->SetValue (VideoBrush::SourceNameProperty, Value (value));
 }
 
+
+//
+// VisualBrush
+//
+
+DependencyProperty* VisualBrush::VisualProperty;
+
+bool
+VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+{
+	UIElement *ui = (UIElement*)GetValue (VisualProperty)->AsVisual ();
+	if (!ui) {
+		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		return TRUE;
+	}
+	
+	// XXX we should create a similar cairo surface to the one we're rendering to
+	// XXX also, we should cache the surface so that it can be
+	// used multiple times without having to re-render each time.
+	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, (int)ui->GetBounds().w, (int)ui->GetBounds().h);
+	Rect bounds = ui->GetBounds();
+	cairo_t *surface_cr = cairo_create (surface);
+	ui->Render (surface_cr, 0, 0, (int)bounds.w + 1, (int)bounds.h + 1);
+	cairo_destroy (surface_cr);
+
+// MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
+	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
+
+	Stretch stretch = tile_brush_get_stretch (this);
+
+	AlignmentX ax = tile_brush_get_alignment_x (this);
+	AlignmentY ay = tile_brush_get_alignment_y (this);
+
+	Transform *transform = brush_get_transform (this);
+	
+	double width, height;
+	
+	if (uielement) {
+		uielement->GetSizeForBrush (cairo, &width, &height);
+	} else {
+		double x1, y1, x2, y2;
+		
+		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
+		
+		height = fabs (y2 - y1);
+		width = fabs (x2 - x1);
+	}
+	
+ 	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface,
+							       cairo_image_surface_get_width (surface),
+							       cairo_image_surface_get_height (surface), opacity);
+
+	cairo_matrix_t matrix;
+ 	image_brush_compute_pattern_matrix (&matrix,
+					    width, height,
+					    cairo_image_surface_get_width (surface),
+					    cairo_image_surface_get_height (surface),
+					    stretch, ax, ay, transform);
+ 	cairo_pattern_set_matrix (pattern, &matrix);
+
+ 	cairo_set_source (cairo, pattern);
+ 	cairo_pattern_destroy (pattern);
+
+	cairo_surface_destroy (surface);
+
+ 	return (opacity > 0.0);
+}
+
+void
+VisualBrush::update_brush (EventObject *, gpointer, gpointer closure)
+{
+	((VisualBrush*)closure)->NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
+}
+
+void
+VisualBrush::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type != Type::VISUALBRUSH) {
+		TileBrush::OnPropertyChanged (prop);
+		return;
+	}
+
+	if (prop == VisualBrush::VisualProperty) {
+		// XXX we really need a way to disconnect from the preview visual
+		Visual *v = GetValue (prop)->AsVisual();
+		v->AddHandler (((UIElement*)v)->InvalidatedEvent, update_brush, this);
+	}
+
+	NotifyAttacheesOfPropertyChange (prop);
+}
+
+Visual *
+visual_brush_get_visual (VisualBrush *visual_brush)
+{
+	return visual_brush->GetValue (VisualBrush::VisualProperty)->AsVisual();
+}
+
+void
+visualbrush_set_color (VisualBrush *visual_brush, Visual *visual)
+{
+	visual_brush->SetValue (VisualBrush::VisualProperty, Value (visual));
+}
+
+VisualBrush*
+visual_brush_new (void)
+{
+	return new VisualBrush ();
+}
+
 //
 //
 //
@@ -1062,4 +1171,7 @@ brush_init (void)
 	TileBrush::AlignmentXProperty = DependencyObject::Register (Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
 	TileBrush::AlignmentYProperty = DependencyObject::Register (Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter));
 	TileBrush::StretchProperty = DependencyObject::Register (Type::TILEBRUSH, "Stretch", new Value (StretchFill));
+
+	/* VisualBrush */
+	VisualBrush::VisualProperty = DependencyObject::Register (Type::VISUALBRUSH, "Visual", new Value (Type::VISUAL));
 }
