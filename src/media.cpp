@@ -645,7 +645,7 @@ media_element_get_current_state (MediaElement *media)
 }
 
 void
-media_element_set_current_state (MediaElement *media, char *value)
+media_element_set_current_state (MediaElement *media, const char *value)
 {
 	media->SetValue (MediaElement::CurrentStateProperty, Value (value));
 }

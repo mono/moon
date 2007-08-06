@@ -30,7 +30,7 @@
 Type** Type::types;
 GHashTable* Type::types_by_name = NULL;
 
-Type::Type (char *name, Type::Kind type, Type::Kind parent)
+Type::Type (const char *name, Type::Kind type, Type::Kind parent)
 {
 	this->name = strdup (name);
 	this->type = type;
@@ -43,7 +43,7 @@ Type::~Type()
 }
 
 Type *
-Type::RegisterType (char *name, Type::Kind type, bool value_type)
+Type::RegisterType (const char *name, Type::Kind type, bool value_type)
 {
 	return RegisterType (name, type, Type::INVALID, value_type);
 }
@@ -55,13 +55,13 @@ Type::free_type (gpointer type)
 }
 
 Type *
-Type::RegisterType (char *name, Type::Kind type, Type::Kind parent)
+Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent)
 {
 	return RegisterType (name, type, parent, false);
 }
 
 Type *
-Type::RegisterType (char *name, Type::Kind type, Type::Kind parent, bool value_type)
+Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, bool value_type)
 {
 	if (types == NULL) {
 		types = (Type**)calloc (Type::LASTTYPE, sizeof (Type*));
@@ -103,7 +103,7 @@ Type::IsSubclassOf (Type::Kind super)
 }
 
 Type *
-Type::Find (char *name)
+Type::Find (const char *name)
 {
 	Type *result;
 

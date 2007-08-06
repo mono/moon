@@ -850,7 +850,7 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 }
 
 int
-EventObject::RegisterEvent (char *event_name)
+EventObject::RegisterEvent (const char *event_name)
 {
 	if (events == NULL) {
 		event_name_hash = g_hash_table_new (g_str_hash, g_str_equal);

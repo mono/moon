@@ -221,7 +221,7 @@ bool media_element_get_can_seek (MediaElement *media);
 void media_element_set_can_seek (MediaElement *media, bool value);
 
 char *media_element_get_current_state (MediaElement *media);
-void media_element_set_current_state (MediaElement *media, char *value);
+void media_element_set_current_state (MediaElement *media, const char *value);
 
 double media_element_get_download_progress (MediaElement *media);
 void media_element_set_download_progress (MediaElement *media, double value);

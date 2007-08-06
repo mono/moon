@@ -1,3 +1,11 @@
+2007-08-06  Larry Ewing  <lewing@novell.com>
+
+	* dependencyobject.h:
+	* dependencyobject.cpp:
+	* media.cpp:
+	* type.h: 
+	* type.cpp: add const to the various string apis.
+
 2007-08-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp: Fixes to make it work with media files w/ no audio

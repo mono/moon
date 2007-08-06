@@ -44,7 +44,7 @@ class EventObject : public Base {
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 
  protected:
-	int  RegisterEvent (char *event_name);
+	int  RegisterEvent (const char *event_name);
 	void Emit (char *event_name, gpointer calldata = NULL);
 	void Emit (int event_id, gpointer calldata = NULL);
 
