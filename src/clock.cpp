@@ -586,6 +586,15 @@ ClockGroup::Begin ()
 }
 
 void
+ClockGroup::SkipToFill ()
+{
+	if (child_clocks == NULL)
+		Stop ();
+	else
+		Clock::SkipToFill ();
+}
+
+void
 ClockGroup::Seek (TimeSpan timespan)
 {
 	Clock::Seek (timespan);

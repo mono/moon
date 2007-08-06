@@ -1,3 +1,10 @@
+2007-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp, clock.h: this might be completely wrong and break
+	other demos... but childless clockgroups Stop when they hit their
+	duration, they don't SkipToFill.  fixes the silverlightclr balls
+	demo.
+
 2007-08-06  Larry Ewing  <lewing@novell.com>
 
 	* dependencyobject.h:

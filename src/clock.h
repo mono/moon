@@ -257,7 +257,7 @@ class Clock : public DependencyObject {
 	void Resume ();
 	virtual void Seek (TimeSpan timespan);
 	void SeekAlignedToLastTick ();
-	void SkipToFill ();
+	virtual void SkipToFill ();
 	void Stop ();
 
 
@@ -332,6 +332,7 @@ class ClockGroup : public Clock {
 
 	virtual void Begin ();
 	virtual void Seek (TimeSpan timespan);
+	virtual void SkipToFill ();
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
