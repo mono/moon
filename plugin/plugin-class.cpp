@@ -2362,8 +2362,6 @@ moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NP
 
 	value_to_variant (npobj, &v, result);
 
-	v.FreeValue ();
-
 	return true;
 }
 

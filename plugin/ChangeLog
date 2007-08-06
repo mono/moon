@@ -1,5 +1,10 @@
 2007-08-06  Jackson Harper  <jackson@ximian.com>
 
+	* plugin-class.cpp: We don't need to explicitly free the value
+	because the dtor will for us.
+
+2007-08-06  Jackson Harper  <jackson@ximian.com>
+
 	* plugin-class.cpp|h: Add functionality for detaching events and
 	for releasing object references.
 	- When looking up on the window object, do not release it.  It
