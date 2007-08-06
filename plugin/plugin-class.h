@@ -366,7 +366,17 @@ extern "C" {
 	void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
 	void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
 	gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb);
+	void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
+	void html_object_release (PluginInstance *plugin, NPObject *npobj);
 
+}
+
+
+/*** Browser interaction utility classes ***/
+
+extern "C" {
+
+	void browser_do_alert (PluginInstance *plugin, char *msg);
 }
 
 #endif /* PLUGIN_CLASS */

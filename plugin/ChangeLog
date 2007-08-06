@@ -1,3 +1,11 @@
+2007-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp|h: Add functionality for detaching events and
+	for releasing object references.
+	- When looking up on the window object, do not release it.  It
+	doesn't need to be released because it is never retained.
+	- Add a new function for creating a browser alert message.
+
 2007-08-03  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (moonlight_downloader_*): add

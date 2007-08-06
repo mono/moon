@@ -2608,6 +2608,7 @@ class DomEventWrapper : public nsIDOMEventListener {
 	}
 
 	callback_dom_event *callback;
+	nsCOMPtr<nsIDOMEventTarget> target;
 };
 
 NS_IMPL_ISUPPORTS1(DomEventWrapper, nsIDOMEventListener)
@@ -2666,8 +2667,6 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	}
 
 	NPN_GetProperty (npp, npobj, identifier, &npresult);
-	if (window)
-		NPN_ReleaseObject (window);
 
 	Value *res = NULL;
 	if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
@@ -2694,8 +2693,6 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	value_to_variant (npobj, value, &npvalue);
 
 	NPN_SetProperty (npp, npobj, identifier, &npvalue);
-	if (window)
-		NPN_ReleaseObject (window);
 }
 
 void
@@ -2725,9 +2722,6 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 		for (uint32_t i = 0; i < arg_count; i++)
 			NPN_ReleaseVariantValue (&npargs [i]);
 	}
-
-	if (window)
-		NPN_ReleaseObject (window);
 
 	Value *res = NULL;
 	if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
@@ -2822,14 +2816,46 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 		}
 	}
 
+	nsCOMPtr<nsIDOMEventTarget> target = do_QueryInterface (item);
+
 	DomEventWrapper *wrapper = new DomEventWrapper ();
 	wrapper->callback = cb;
-
-	nsCOMPtr<nsIDOMEventTarget> target = do_QueryInterface (item);
+	wrapper->target = target;
+	
 	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
 
 	return wrapper;
 }
+
+void
+html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener_ptr)
+{
+	DomEventWrapper *wrapper = (DomEventWrapper *) listener_ptr;
+
+	wrapper->target->RemoveEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
+}
+
+void
+html_object_release (PluginInstance *plugin, NPObject *npobj)
+{
+	NPN_ReleaseObject (npobj);
+}
+
+void
+browser_alert (PluginInstance *plugin, char *msg)
+{
+	NPVariant npresult;
+	NPVariant *npargs = new NPVariant [1];
+	NPObject *window = NULL;
+	NPP npp = plugin->getInstance ();
+	NPIdentifier identifier = NPN_GetStringIdentifier ("alert");
+
+	NPN_GetValue (npp, NPNVWindowNPObject, &window);
+	string_to_npvariant (msg, &npargs [0]);
+	
+	NPN_Invoke (npp, window, identifier, npargs, 1, &npresult);
+}
+
 
 void
 plugin_init_classes ()
