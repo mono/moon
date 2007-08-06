@@ -828,7 +828,7 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return TRUE;
+		return true;
 	}
 
 // MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
@@ -1027,8 +1027,9 @@ VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	UIElement *ui = (UIElement*)GetValue (VisualProperty)->AsVisual ();
 	if (!ui) {
+		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return TRUE;
+		return true;
 	}
 	
 	// XXX we should create a similar cairo surface to the one we're rendering to
