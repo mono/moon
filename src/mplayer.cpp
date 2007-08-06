@@ -96,7 +96,7 @@ struct Video {
 	// sync
 	uint64_t initial_pts;
 	int usec_per_frame;
-	int usec_to_pts;
+	double usec_to_pts;
 };
 
 
@@ -271,7 +271,7 @@ MediaPlayer::Open ()
 			video->usec_per_frame = (int) (1000 / av_q2d (stream->r_frame_rate));
 			
 			// usec -> pts conversion
-			video->usec_to_pts = (int) av_q2d (encoding->time_base);
+			video->usec_to_pts = (double) encoding->time_base.num / (double) encoding->time_base.den;
 			break;
 		default:
 			break;
@@ -434,7 +434,7 @@ MediaPlayer::AdvanceFrame ()
 		uint64_t now = av_gettime ();
 		
 		uint64_t elapsed_usec = now - start_time;
-		uint64_t elapsed_pts = elapsed_usec * video->usec_to_pts;
+		uint64_t elapsed_pts = (uint64_t) (elapsed_usec * video->usec_to_pts);
 		
 		target_pts = video->initial_pts + elapsed_pts;
 		this->target_pts = target_pts;
@@ -541,7 +541,10 @@ MediaPlayer::Pause ()
 		return;
 	
 	paused = true;
-	pthread_cond_wait (&pause_cond, &pause_mutex);
+	if (audio_thread != NULL)
+		pthread_cond_wait (&pause_cond, &pause_mutex);
+	else
+		pthread_mutex_lock (&pause_mutex);
 	
 	pause_time = av_gettime ();
 }
@@ -572,13 +575,7 @@ MediaPlayer::Seek (int64_t position)
 int64_t
 MediaPlayer::Position ()
 {
-	if (audio->stream_id != -1)
-		return (target_pts - audio->initial_pts);
-	
-	if (video->stream_id != -1)
-		return (target_pts - video->initial_pts);
-	
-	return 0;
+	return target_pts;
 }
 
 int64_t

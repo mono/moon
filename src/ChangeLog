@@ -1,3 +1,8 @@
+2007-08-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp: Fixes to make it work with media files w/ no audio
+	(or where we are unable to play the audio).
+
 2007-08-04  Chris Toshok  <toshok@ximian.com>
 
 	* brush.h, brush.cpp: add VisualBrush.
