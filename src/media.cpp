@@ -104,7 +104,8 @@ advance_frame (void *user_data)
 		media->Invalidate ();
 	
 	media->updating = true;
-	position = media->mplayer->Position ();		
+	if ((position = media->mplayer->Position ()) < 0)
+		position = 0;
 	media_element_set_position (media, position);
 	media->updating = false;
 	
@@ -395,16 +396,18 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 {
 	Value v;
 	
-	if (prop == MediaElement::PositionProperty) {
-		Duration* duration = media_element_get_natural_duration (this);
+	if (prop == MediaElement::PositionProperty && !updating) {
+		Duration *duration = media_element_get_natural_duration (this);
 		TimeSpan position = value->AsTimeSpan ();
 		
-		if (duration->HasTimeSpan() && position > duration->GetTimeSpan())
-			position = duration->GetTimeSpan();
+		if (duration->HasTimeSpan () && position > duration->GetTimeSpan ())
+			position = duration->GetTimeSpan ();
 		else if (position < 0)
 			position = 0;
 		
-		if (position != value->AsTimeSpan()) {
+		mplayer->Seek (position);
+		
+		if (position != value->AsTimeSpan ()) {
 			v = Value (position);
 			MediaBase::SetValue (prop, &v);
 			return;
@@ -480,11 +483,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
 	} else if (prop == MediaElement::PositionProperty) {
-		if (!updating) {
-			TimeSpan position = media_element_get_position (this);
-			
-			mplayer->Seek (position);
-		}
+		// handled elsewhere...
 	} else if (prop == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (media_element_get_volume (this));
 	}

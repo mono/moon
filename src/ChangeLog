@@ -1,3 +1,36 @@
+2007-08-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (SetValue): Only crop position values if we're not
+	updating state from the media player (we're allowed to set values
+	outside of the duration range from the media player). Also, do our
+	seeking here.
+	(OnPropertyChanged): Don't do our seeking here because we can't
+	get the actual seek position as GetValue()'s override will
+	re-query the media player for its actual position.
+
+	* mplayer.cpp (Open): Don't create the threads here anymore,
+	create them in Play() instead. Also calculate ahead of time the
+	new audio->pts_per_frame value which allows the video to keep even
+	better sync with the audio (we used to base this on actual time
+	spent playing the audio frame rather which could sometimes be off
+	a smidgen).
+	(AdvanceFrame): If seek_pts is non-zero, then we need to base
+	target_pts on it rather than video->initial_pts (assuming we have
+	no audio to sync to).
+	(Play): Set playing = true and create the audio/io threads.
+	(Close): A lot of the logic has been moved into a new method,
+	StopThreads().
+	(StopThreads): Stop the threads and reset minimal state.
+	(Stop): Call StopThreads() and seek back to the beginning of the
+	av stream.
+	(Seek): Implemented.
+	(Position): Back to subtracting the initial_pts so that we always
+	have a range of 0:duration. If seek_pts is set and >target_pts,
+	use that rather than target_pts so even if we are in a stopped
+	state, querying the position will return expected results.
+	(audio_play): Return audio->pts_per_frame rather than the actual
+	time difference.
+
 2007-08-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: add VisualCollections.

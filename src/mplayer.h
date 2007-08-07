@@ -28,6 +28,7 @@ public:
 	pthread_cond_t pause_cond;
 	bool paused;
 	
+	bool playing;
 	bool stop;
 	
 	AVFormatContext *av_ctx;
@@ -43,6 +44,7 @@ public:
 	uint64_t start_time;  
 	
 	uint64_t target_pts;
+	uint64_t seek_pts;
 	
 	/* Public API */
 	
@@ -85,6 +87,10 @@ public:
 	
 	double GetVolume ();
 	void SetVolume (double volume);
+	
+private:
+	
+	void StopThreads ();
 };
 
 #endif /* __MOON_MPLAYER_H__ */
