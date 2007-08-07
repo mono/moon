@@ -1,3 +1,7 @@
+2007-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: add VisualCollections.
+
 2007-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp, clock.h: this might be completely wrong and break
