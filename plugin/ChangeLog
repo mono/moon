@@ -1,3 +1,8 @@
+2007-08-07  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight.cs: Add another system library to the do-not-download
+	list.
+
 2007-08-06  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: We don't need to explicitly free the value

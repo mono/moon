@@ -317,7 +317,8 @@ namespace Moonlight {
 				if (an.Name == "agclr" || an.Name == "mscorlib" ||
 				    an.Name == "System.Xml.Core" || an.Name == "System" ||
 				    an.Name == "Microsoft.Scripting" ||
-				    an.Name == "System.SilverLight")
+				    an.Name == "System.SilverLight" ||
+				    an.Name == "System.Core")
 					continue;
 				//
 				// This is not the best probing mechanism.
@@ -327,6 +328,7 @@ namespace Moonlight {
 				//
 				string req = dirname + an.Name + ".dll";
 				string local = (string) h [req];
+
 				if (local != null){
 					// Ensure we load it.
 					try {
