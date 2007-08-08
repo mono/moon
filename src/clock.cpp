@@ -462,7 +462,12 @@ Clock::Begin ()
 	/* we're starting.  initialize our last_parent_time and current_time fields */
 	last_parent_time = parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
 
-	current_time = new_time = last_parent_time - GetBeginTime ();
+	if (seeking) {
+		current_time = new_time = seek_time;
+	}
+	else {
+		current_time = new_time = last_parent_time - GetBeginTime ();
+	}
 
 #if CLOCK_DEBUG
 	printf (" + it's current time at that point will be %lld\n", current_time);

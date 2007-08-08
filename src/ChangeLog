@@ -1,5 +1,10 @@
 2007-08-08  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp (Begin): make sure we handle clocks that seek in the
+	first tick.
+
+2007-08-08  Chris Toshok  <toshok@ximian.com>
+
 	* canvas.cpp (Canvas::Canvas): create a temporary namescope
 	whenever we create a canvas.  We need this for animations that are
 	started before the canvas is attached to the tree, or in any case
