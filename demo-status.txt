@@ -365,11 +365,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Telerik RadControls 3D Cube (http://www.telerik.com/demos/aspnet/silverlight/Cube/Examples/RoomDesigner/DefaultCS.aspx)
 
-	Loads up the background fine, but this shows up in the JS console:
-
-		Error: Trying to get unsupported property on scriptable plugin object!
-		Source File: http://www.telerik.com/demos/aspnet/SilverLight/ScriptResource.axd?d=0Rf4uiCnTpeIPcFuMvqcel050Qxo7yElfFCjXGcGdhRxTRM6cgq_aDrdPO6rLtkbfBvUevHkxAadST9ZbqKnizmJzbofXGCk877_pn4IJ4Y1&t=633184475610000000
-		Line: 666
+	Loads up the background fine, no errors to the consoles, but nothing else shows up.
 
 * Windows Journal-to-Silverlight Converter (http://www.microsoft.com/downloads/details.aspx?FamilyID=4964cd5f-0dcb-4c22-9378-773100d8e89f&displaylang=en)
 
@@ -417,13 +413,15 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Zero Gravity (http://www.ltbennett.com/)
 
-	This show up in the JS console:
+	Goes immediately to the "You Won" screen, for some reason.
 
-		Error: Trying to get unsupported property on scriptable plugin object!
+	This shows in console beforehand, and might be the reason:
 
-		It looks like it's doing the same
-		WebApplication.RegisterScriptable object stuff that
-		bubblemark is doing.
+		** (Gecko:8234): WARNING **: Missing method System.Net.HttpWebRequest::GetResponse() in assembly /opt/mono/lib/mono/gac/System/2.0.0.0__b77a5c561934e089/System.dll, referenced in assembly /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/3C2C0E28d01
+		System.MissingMethodException: Method not found: 'System.Net.HttpWebRequest.GetResponse'.
+		at <0x00000> <unknown method>
+		at SpaceJumper.GameMain.setupIntro () [0x00000]
+		at SpaceJumper.GameMain.gameAssetsLoaded (System.Object sender, System.EventArgs args) [0x00000]
 
 * Lutz Roeder Monotone, http://www.aisto.com/Roeder/Silverlight/Monotone/Default.aspx
 
