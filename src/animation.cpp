@@ -124,21 +124,35 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		AnimationClock *ac = (AnimationClock*)clock;
 
 		char *targetProperty = Storyboard::GetTargetProperty (ac->GetTimeline());
-		if (!targetProperty)
+		if (!targetProperty) {
+			printf ("no target property\n");
 			return;
+		}
 
-		char *targetName = Storyboard::GetTargetName (ac->GetTimeline());
-		if (!targetName)
+		char *targetName = NULL;
+
+		for (Clock *c = ac; c; c = c->GetParent()) {
+			targetName = Storyboard::GetTargetName (c->GetTimeline());
+			if (targetName)
+				break;
+		}
+		if (!targetName) {
+			printf ("no target name\n");
 			return;
+		}
 
 		//printf ("Got %s %s\n", targetProperty, targetName);
 		DependencyObject *o = FindName (targetName);
-		if (!o)
+		if (!o) {
+			printf ("no object named %s\n", targetName);
 			return;
+		}
 
 		DependencyProperty *prop = resolve_property_path (&o, targetProperty);
-		if (!prop)
+		if (!prop) {
+			printf ("no property named %s\n", targetProperty);
 			return;
+		}
 
 
 		ac->HookupStorage (o, prop);

@@ -1,3 +1,16 @@
+2007-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::Canvas): create a temporary namescope
+	whenever we create a canvas.  We need this for animations that are
+	started before the canvas is attached to the tree, or in any case
+	where FindName is called on code associated with a subtree before
+	it's added to the surface.
+
+	* animation.cpp (Storyboard::HookupAnimationsRecurse): turns out
+	Storyboard.TargetName can be assigned to the parent storyboard as
+	well as the animation.  Loop up the clock hierarchy when looking
+	for the targetname.
+	
 2007-08-07  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp, animation.h

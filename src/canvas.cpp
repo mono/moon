@@ -18,10 +18,14 @@
 #include "rect.h"
 #include "canvas.h"
 #include "runtime.h"
+#include "namescope.h"
 #include "collection.h"
 
 Canvas::Canvas () : surface (NULL)
 {
+	NameScope *ns = new NameScope ();
+	ns->SetTemporary (true);
+	NameScope::SetNameScope (this, ns);
 }
 
 void
