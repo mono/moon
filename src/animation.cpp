@@ -1144,22 +1144,12 @@ Duration
 DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
 	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
-	Duration d = Duration::Automatic;
-	Collection::Node *node;
-	TimeSpan ts = 0;
-	
-	node = (Collection::Node *) key_frames->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
-		DoubleKeyFrame *dkf = (DoubleKeyFrame *) node->obj;
-		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
-		
-		if (dk_ts > ts) {
-			ts = dk_ts;
-			d = Duration (ts);
-		}
-	}
-	
-	return d;
+
+	KeyFrameNode *node = (KeyFrameNode*)key_frames->sorted_list->Last ();
+	if (node)
+		return node->key_frame->GetKeyTime()->GetTimeSpan();
+	else
+		return Duration::Automatic;
 }
 
 DoubleAnimationUsingKeyFrames *
@@ -1270,22 +1260,12 @@ Duration
 ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 {
 	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
-	Duration d = Duration::Automatic;
-	Collection::Node *node;
-	TimeSpan ts = 0;
-	
-	node = (Collection::Node *) key_frames->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
-		ColorKeyFrame *dkf = (ColorKeyFrame *) node->obj;
-		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
-		
-		if (dk_ts > ts) {
-			ts = dk_ts;
-			d = Duration (ts);
-		}
-	}
-	
-	return d;
+
+	KeyFrameNode *node = (KeyFrameNode*)key_frames->sorted_list->Last ();
+	if (node)
+		return node->key_frame->GetKeyTime()->GetTimeSpan();
+	else
+		return Duration::Automatic;
 }
 
 
@@ -1398,22 +1378,12 @@ Duration
 PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
 	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
-	Duration d = Duration::Automatic;
-	Collection::Node *node;
-	TimeSpan ts = 0;
-	
-	node = (Collection::Node *) key_frames->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
-		PointKeyFrame *dkf = (PointKeyFrame *) node->obj;
-		TimeSpan dk_ts = dkf->GetKeyTime()->GetTimeSpan ();
-		
-		if (dk_ts > ts) {
-			ts = dk_ts;
-			d = Duration (ts);
-		}
-	}
-	
-	return d;
+
+	KeyFrameNode *node = (KeyFrameNode*)key_frames->sorted_list->Last ();
+	if (node)
+		return node->key_frame->GetKeyTime()->GetTimeSpan();
+	else
+		return Duration::Automatic;
 }
 
 

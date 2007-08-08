@@ -1,3 +1,10 @@
+2007-08-07  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp, animation.h
+	(*AnimationUsingKeyFrames::GetNaturalDurationCore): no need to
+	iterate over all the keyframes looking for the last one - just
+	look at the last one in the sorted list.
+
 2007-08-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (SetValue): Only crop position values if we're not

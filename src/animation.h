@@ -260,7 +260,6 @@ class KeyFrame : public DependencyObject {
 };
 
 class KeyFrameCollection : public Collection {
-	List *sorted_list;
  public:
 
 	KeyFrameCollection ();
@@ -273,6 +272,8 @@ class KeyFrameCollection : public Collection {
 	virtual bool Remove (DependencyObject *obj);
 	virtual void Insert (int index, DependencyObject *data);
 	virtual void Clear ();
+
+	List *sorted_list;
 
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
 };
