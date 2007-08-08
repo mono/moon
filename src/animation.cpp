@@ -155,6 +155,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		}
 
 
+		((Animation*)ac->GetTimeline())->Resolve ();
 		ac->HookupStorage (o, prop);
 		break;
 	}
@@ -687,8 +688,8 @@ static int
 KeyFrameNodeComparer (List::Node *kfn1, List::Node *kfn2)
 {
 	// Assumes timespan keytimes only
-	TimeSpan ts1 = ((KeyFrameNode *) kfn1)->key_frame->GetKeyTime()->GetTimeSpan ();
-	TimeSpan ts2 = ((KeyFrameNode *) kfn2)->key_frame->GetKeyTime()->GetTimeSpan ();
+	TimeSpan ts1 = ((KeyFrameNode *) kfn1)->key_frame->resolved_keytime;
+	TimeSpan ts2 = ((KeyFrameNode *) kfn2)->key_frame->resolved_keytime;
 	TimeSpan tsdiff = ts1 - ts2;
 	
 	if (tsdiff == 0)
@@ -699,15 +700,10 @@ KeyFrameNodeComparer (List::Node *kfn1, List::Node *kfn2)
 		return 1;
 }
 
-static bool
-KeyFrameNodeFinder (List::Node *kfn, void *data)
-{
-	return ((KeyFrameNode *) kfn)->key_frame == (KeyFrame *) data;
-}
-
 KeyFrameCollection::KeyFrameCollection ()
 {
 	sorted_list = new List ();
+	resolved = false;
 }
 
 KeyFrameCollection::~KeyFrameCollection ()
@@ -720,20 +716,18 @@ void
 KeyFrameCollection::Add (DependencyObject *data)
 {
 	KeyFrameNode *kfn = new KeyFrameNode ((KeyFrame *) data);
-	
+
+	resolved = false;
 	Collection::Add (data);
-	
-	sorted_list->InsertSorted (kfn, KeyFrameNodeComparer);
 }
 
 void
 KeyFrameCollection::Insert (int index, DependencyObject *data)
 {
 	KeyFrameNode *kfn = new KeyFrameNode ((KeyFrame *) data);
-	
+
+	resolved = false;
 	Collection::Insert (index, data);
-	
-	sorted_list->InsertSorted (kfn, KeyFrameNodeComparer);
 }
 
 bool
@@ -741,13 +735,15 @@ KeyFrameCollection::Remove (DependencyObject *data)
 {
 	KeyFrame *kf = (KeyFrame *) data;
 	
-	sorted_list->Remove (KeyFrameNodeFinder, kf);
+	resolved = false;
+
 	return Collection::Remove (kf);
 }
 
 void
 KeyFrameCollection::Clear ()
 {
+	resolved = false;
 	sorted_list->Clear (true);
 	Collection::Clear ();
 }
@@ -762,7 +758,7 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 	/* figure out what segment to use (this assumes the list is sorted) */
 	for (cur = sorted_list->First (); cur; prev = cur, cur = cur->Next ()) {
 		KeyFrame *keyframe = ((KeyFrameNode *) cur)->key_frame;
-		TimeSpan key_end_time = keyframe->GetKeyTime()->GetTimeSpan();
+		TimeSpan key_end_time = keyframe->resolved_keytime;
 		
 		if (key_end_time >= t) {
 			current_keyframe = keyframe;
@@ -1057,6 +1053,120 @@ spline_point_key_frame_new (void)
 }
 
 
+/* implements the algorithm specified at the bottom of this page:
+   http://msdn2.microsoft.com/en-us/library/ms742524.aspx
+*/
+static void
+KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCollection *col)
+{
+	if (col->resolved)
+		return;
+
+	col->resolved = true;
+
+	TimeSpan total_interpolation_time;
+	bool has_timespan_keyframe = false;
+	TimeSpan highest_keytime_timespan = 0;
+	List::Node *cur;
+
+	for (cur = col->list->First (); cur; cur = cur->Next ()) {
+		KeyFrame *keyframe = ((KeyFrameNode *) cur)->key_frame;
+		keyframe->resolved_keytime = 0;
+		keyframe->resolved = false;
+	}
+
+	/* resolve TimeSpan keyframes (step 1 from url) */
+	for (cur = col->list->First (); cur; cur = cur->Next ()) {
+		KeyFrame *keyframe = ((KeyFrameNode *) cur)->key_frame;
+		if (keyframe->GetKeyTime()->HasTimeSpan()) {
+			has_timespan_keyframe = true;
+			TimeSpan ts = keyframe->GetKeyTime()->GetTimeSpan ();
+			if (ts > highest_keytime_timespan)
+				highest_keytime_timespan = ts;
+
+			keyframe->resolved_keytime = ts;
+			keyframe->resolved = true;
+		}
+	}
+ 	
+	/* calculate total animation interpolation time (step 2 from url) */
+	Duration *d = animation->GetDuration();
+	if (d->HasTimeSpan ()) {
+		total_interpolation_time = d->GetTimeSpan ();
+	}
+	else if (has_timespan_keyframe) {
+		total_interpolation_time = highest_keytime_timespan;
+	}
+	else {
+		total_interpolation_time = TimeSpan_FromSeconds (1);
+	}
+
+
+	/* use the total interpolation time to resolve percent keytime keyframes (step 3 from url) */
+	for (cur = col->list->First (); cur; cur = cur->Next ()) {
+		KeyFrame *keyframe = ((KeyFrameNode *) cur)->key_frame;
+		if (keyframe->GetKeyTime()->HasPercent()) {
+			keyframe->resolved_keytime = (TimeSpan)(total_interpolation_time * keyframe->GetKeyTime()->GetPercent ());
+			keyframe->resolved = true;
+ 		}
+ 	}
+
+	/* step 4 from url */
+	KeyFrame *keyframe;
+	KeyTime *kt;
+	/* if the last frame is KeyTime Uniform or Paced, resolve it
+	   to be equal to the total interpolation time */
+	keyframe = ((KeyFrameNode *)col->list->Last ())->key_frame;
+	kt = keyframe->GetKeyTime ();
+	if (*kt == KeyTime::Paced || *kt == KeyTime::Uniform) {
+		keyframe->resolved_keytime = total_interpolation_time;
+		keyframe->resolved = true;
+	}
+
+
+	/* if the first frame is KeyTime::Paced:
+	**   1. if there is only 1 frame, its KeyTime is the total interpolation time.
+	**   2. if there is more than 1 frame, its KeyTime is 0.
+	**
+	** note 1 is handled in the above block so we only have to
+	** handle 2 here.
+	*/
+	keyframe = ((KeyFrameNode *)col->list->First ())->key_frame;
+	kt = keyframe->GetKeyTime ();
+
+	if (!keyframe->resolved && *kt == KeyTime::Paced) {
+		keyframe->resolved_keytime = 0;
+		keyframe->resolved = true;
+	}
+
+	/* XXX resolve remaining KeyTime::Uniform frames (step 5 from url) */
+
+	/* XXX resolve frames with unspecified keytimes (step 6 from url)
+
+	   -- is this possible?  is the default keytime NULL?  it
+              seems to be Uniform? */
+
+	/* XXX resolve remaining KeyTime::Paced frames (step 7 from url) */
+
+	/* insert the nodes into the sorted list using a stable sort
+	   with resolved keytime as primary key, declaration order as
+	   secondary key (step 8 from url) */
+	col->sorted_list->Clear (false);
+
+	for (cur = col->list->First (); cur; cur = cur->Next ()) {
+		KeyFrame *keyframe = ((KeyFrameNode *) cur)->key_frame;
+		if (!keyframe->resolved) {
+			g_warning ("***** unresolved keyframe!");
+		}
+
+		KeyFrameNode *kfn = new KeyFrameNode (keyframe);
+
+		col->sorted_list->InsertSorted (kfn, KeyFrameNodeComparer);
+	}
+}
+
+
+
 DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
@@ -1119,10 +1229,12 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	Value *baseValue;
 
 	current_keyframe = (DoubleKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
-	if (current_keyframe == NULL)
+	if (current_keyframe == NULL) {
+	  abort ();
 		return NULL; /* XXX */
+	}
 
-	TimeSpan key_end_time = current_keyframe->GetKeyTime()->GetTimeSpan(); /* XXX this assumes a timespan keyframe */
+	TimeSpan key_end_time = current_keyframe->resolved_keytime;
 	TimeSpan key_start_time;
 
 	if (previous_keyframe == NULL) {
@@ -1134,7 +1246,7 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 		/* start at the previous keyframe's target value */
 		baseValue = new Value(*previous_keyframe->GetValue ());
 		/* XXX DoubleKeyFrame::Value is nullable */
-		key_start_time = previous_keyframe->GetKeyTime()->GetTimeSpan ();
+		key_start_time = previous_keyframe->resolved_keytime;
 	}
 
 	double progress;
@@ -1159,12 +1271,22 @@ DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
 	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
 
+	KeyFrameAnimation_ResolveKeyFrames (this, key_frames);
+
 	KeyFrameNode *node = (KeyFrameNode*)key_frames->sorted_list->Last ();
 	if (node)
-		return node->key_frame->GetKeyTime()->GetTimeSpan();
+		return node->key_frame->resolved_keytime;
 	else
 		return Duration::Automatic;
 }
+
+void
+DoubleAnimationUsingKeyFrames::Resolve ()
+{
+	KeyFrameAnimation_ResolveKeyFrames (this,
+					    GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ());
+}
+
 
 DoubleAnimationUsingKeyFrames *
 double_animation_using_key_frames_new (void)
@@ -1238,7 +1360,7 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	if (current_keyframe == NULL)
 		return NULL; /* XXX */
 
-	TimeSpan key_end_time = current_keyframe->GetKeyTime()->GetTimeSpan(); /* XXX this assumes a timespan keyframe */
+	TimeSpan key_end_time = current_keyframe->resolved_keytime;
 	TimeSpan key_start_time;
 
 	if (previous_keyframe == NULL) {
@@ -1250,7 +1372,7 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 		/* start at the previous keyframe's target value */
 		baseValue = new Value(*previous_keyframe->GetValue ());
 		/* XXX ColorKeyFrame::Value is nullable */
-		key_start_time = previous_keyframe->GetKeyTime()->GetTimeSpan ();
+		key_start_time = previous_keyframe->resolved_keytime;
 	}
 
 	double progress;
@@ -1277,11 +1399,17 @@ ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 
 	KeyFrameNode *node = (KeyFrameNode*)key_frames->sorted_list->Last ();
 	if (node)
-		return node->key_frame->GetKeyTime()->GetTimeSpan();
+		return node->key_frame->resolved_keytime;
 	else
 		return Duration::Automatic;
 }
 
+void
+ColorAnimationUsingKeyFrames::Resolve ()
+{
+	KeyFrameAnimation_ResolveKeyFrames (this,
+					    GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ());
+}
 
 ColorAnimationUsingKeyFrames *
 color_animation_using_key_frames_new (void)
@@ -1356,7 +1484,7 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	if (current_keyframe == NULL)
 		return NULL; /* XXX */
 
-	TimeSpan key_end_time = current_keyframe->GetKeyTime()->GetTimeSpan(); /* XXX this assumes a timespan keyframe */
+	TimeSpan key_end_time = current_keyframe->resolved_keytime;
 	TimeSpan key_start_time;
 
 	if (previous_keyframe == NULL) {
@@ -1368,7 +1496,7 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 		/* start at the previous keyframe's target value */
 		baseValue = new Value(*previous_keyframe->GetValue ());
 		/* XXX PointKeyFrame::Value is nullable */
-		key_start_time = previous_keyframe->GetKeyTime()->GetTimeSpan ();
+		key_start_time = previous_keyframe->resolved_keytime;
 	}
 
 	double progress;
@@ -1395,11 +1523,17 @@ PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 
 	KeyFrameNode *node = (KeyFrameNode*)key_frames->sorted_list->Last ();
 	if (node)
-		return node->key_frame->GetKeyTime()->GetTimeSpan();
+		return node->key_frame->resolved_keytime;
 	else
 		return Duration::Automatic;
 }
 
+void
+PointAnimationUsingKeyFrames::Resolve ()
+{
+	KeyFrameAnimation_ResolveKeyFrames (this,
+					    GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ());
+}
 
 PointAnimationUsingKeyFrames *
 point_animation_using_key_frames_new (void)

@@ -92,7 +92,10 @@ struct KeyTime {
 		}
 	}
 
+	bool HasPercent () { return k == PERCENT; }
 	double GetPercent () { return percent; }
+
+	bool HasTimeSpan () { return k == TIMESPAN; }
 	TimeSpan GetTimeSpan () { return timespan; }
 
   private:
@@ -164,6 +167,9 @@ class Animation/*Timeline*/ : public Timeline {
 					AnimationClock* animationClock);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
+
+
+	virtual void Resolve () { };
 };
 
 
@@ -257,6 +263,9 @@ class KeyFrame : public DependencyObject {
 	static DependencyProperty *KeyTimeProperty;
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+	bool resolved;
+	TimeSpan resolved_keytime;
 };
 
 class KeyFrameCollection : public Collection {
@@ -274,6 +283,8 @@ class KeyFrameCollection : public Collection {
 	virtual void Clear ();
 
 	List *sorted_list;
+
+	bool resolved;
 
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
 };
@@ -454,6 +465,8 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
+	virtual void Resolve ();
+
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 };
 
@@ -475,6 +488,8 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
+	virtual void Resolve ();
+
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 };
 
@@ -493,6 +508,8 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 					AnimationClock* animationClock);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 };
