@@ -122,29 +122,43 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * GOA WinForms Demo (http://community.netikatech.com/demos/)
 
-	Missing browser bridge functionality.  Requires HtmlTimer, which isn't fleshed out.
-
-	This shows up on the console:
-
-		Error inside TryLoad: System.Exception: Unknown class
-
-		Server stack trace:
-		  at NETiKA.Silverlight.WinFormHost.c (System.Object A_0, System.EventArgs A_1) [0x00000]
-		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
-		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
-		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
-		  at <0x00000> <unknown method>
-		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
-		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x0014d] in /home/toshok/src/mono/moon/plugin/moonlight.cs:246
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
-		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
-
-		Exception rethrown at [0]:
-
-		  at (wrapper xdomain-invoke) Moonlight.DomainInstance:TryLoad (int&)
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
-		  at Moonlight.Loader.TryLoad (System.Int32& error) [0x0000f] in /home/toshok/src/mono/moon/plugin/moonlight.cs:130
-
+	** (Gecko:4903): WARNING **: adding handler to event 'GotFocus', which
+	   has not been registered
+	
+	
+	** (Gecko:4903): WARNING **: adding handler to event 'LostFocus',
+	   which has not been registered
+	
+	Error inside TryLoad: System.Exception: Unknown class
+	
+	Server stack trace:
+	  at NETiKA.Silverlight.WinFormHost.c (System.Object A_0,
+	  System.EventArgs A_1) [0x00000]
+	  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in
+	  /home/cvs/olive/class/agclr/System.Windows/UIElement.cs:391
+	  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata,
+	  IntPtr closure) [0x00014] in
+	  /home/cvs/olive/class/agclr/Mono/Events.cs:72
+	  at (wrapper native-to-managed) Mono.Events:loaded_callback
+	  (intptr,intptr,intptr)
+	  at <0x00000> <unknown method>
+	  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach
+	  (intptr,intptr)
+	  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x00139]
+	  in /home/cvs/moon/plugin/moonlight.cs:251
+	  at (wrapper remoting-invoke-with-check)
+	  Moonlight.DomainInstance:TryLoad (int&)
+	  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad
+	  (object,byte[]&,byte[]&,int&)
+	
+	Exception rethrown at [0]:
+	
+	  at (wrapper xdomain-invoke) Moonlight.DomainInstance:TryLoad (int&)
+	  at (wrapper remoting-invoke-with-check)
+	  Moonlight.DomainInstance:TryLoad (int&)
+	  at Moonlight.Loader.TryLoad (System.Int32& error) [0x0000f] in
+	  /home/cvs/moon/p
+	
 * Gradient Animation Demo (http://www.zillinois.com/blog/2007/05/16/YetAnotherSilverLightXAMLDemo.aspx)
 
 	works!
@@ -158,6 +172,78 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
 
+Stacktrace:
+
+  at (wrapper managed-to-native) Moonlight.Hosting.surface_attach
+	(intptr,intptr) <0x00004>
+  at (wrapper managed-to-native) Moonlight.Hosting.surface_attach
+	(intptr,intptr) <0xffffffff>
+  at Moonlight.DomainInstance.TryLoad (int&) [0x00139] in
+	/home/cvs/moon/plugin/moonlight.cs:251
+  at (wrapper remoting-invoke-with-check)
+	Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+  at (wrapper xdomain-dispatch) Moonlight.DomainInstance.TryLoad
+	(object,byte[]&,byte[]&,int&) <0xffffffff>
+  at (wrapper xdomain-invoke) Moonlight.DomainInstance.TryLoad (int&)
+	<0xffffffff>
+  at (wrapper remoting-invoke-with-check)
+	Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
+  at Moonlight.Loader.TryLoad (int&) <0x00040>
+  at (wrapper runtime-invoke)
+	Moonlight.Loader.runtime_invoke_string_int&
+	(object,intptr,intptr,intptr) <0xffffffff>
+
+Native stacktrace:
+
+        /mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4)
+	[0xb2b6bf14]
+        /mono/lib/libmono.so.0(mono_arch_handle_altstack_exception+0xc1) [0xb2b87e01]
+        /mono/lib/libmono.so.0 [0xb2b225e8]
+        [0xffffe440]
+        /mono/lib/libmoon.so.0(surface_attach+0x24) [0xb2584a14]
+        [0xb03177e9]
+        [0xb3027297]
+        [0xb3026fe6]
+        [0xb3026f02]
+        [0xb3038494]
+        [0xb303837e]
+        [0xb3038171]
+        [0xb30380c6]
+        /mono/lib/libmono.so.0 [0xb2b4731a]
+        /mono/lib/libmono.so.0(mono_runtime_invoke+0x33) [0xb2bb6543]
+        /mono/lib/moon/plugin/libmoonplugin.so(vm_loader_try+0x44)
+	[0xb4aaa674]
+        /mono/lib/moon/plugin/libmoonplugin.so(_ZN14PluginInstance7TryLoadEv+0x2f) [0xb4aab2bf]
+        /mono/lib/moon/plugin/libmoonplugin.so(_ZN14PluginInstance12StreamAsFileEP9_NPStreamPKc+0xbf) [0xb4aab3df]
+        /mono/lib/moon/plugin/libmoonplugin.so(NPP_StreamAsFile+0x31)
+	[0xb4aaccc1]
+        /usr/lib/firefox/firefox-bin [0x824aa02]
+        /usr/lib/firefox/firefox-bin [0x8237dd0]
+        /usr/lib/firefox/firefox-bin [0x8242142]
+        /usr/lib/firefox/firefox-bin [0x81869b5]
+        /usr/lib/firefox/firefox-bin [0x813871a]
+        /usr/lib/firefox/firefox-bin [0x8138975]
+        /usr/lib/firefox/libxpcom_core.so(_ZN23nsInputStreamReadyEvent12EventHandlerEP7PLEvent+0x34) [0xb7e213c0]
+        /usr/lib/firefox/libxpcom_core.so(PL_HandleEvent+0x22)
+	[0xb7e3a2e1]
+        /usr/lib/firefox/libxpcom_core.so(PL_ProcessPendingEvents+0x74) [0xb7e3a56a]
+        /usr/lib/firefox/libxpcom_core.so [0xb7e3ba7d]
+        /usr/lib/firefox/firefox-bin [0x825f9d2]
+        /opt/gnome/lib/libglib-2.0.so.0 [0xb786fa5d]
+        /opt/gnome/lib/libglib-2.0.so.0(g_main_context_dispatch+0x16d)
+	[0xb7846bcd]
+        /opt/gnome/lib/libglib-2.0.so.0 [0xb7849dcf]
+        /opt/gnome/lib/libglib-2.0.so.0(g_main_loop_run+0x1a9)
+	[0xb784a179]
+        /opt/gnome/lib/libgtk-x11-2.0.so.0(IA__gtk_main+0xb4)
+	[0xb7b78034]
+        /usr/lib/firefox/firefox-bin [0x825fd1e]
+        /usr/lib/firefox/firefox-bin [0x867ebc2]
+        /usr/lib/firefox/firefox-bin [0x80881a6]
+        /usr/lib/firefox/firefox-bin [0x80842d4]
+        /lib/libc.so.6(__libc_start_main+0xdc) [0xb71e187c]
+        /usr/lib/firefox/firefox-bin [0x8084231]
+
 	No JS errors anymore.  clicking on the Aikido button results
 	in an animation that expands the button to the right, then shows a
 	dialog with an image and some text.
@@ -166,44 +252,10 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * JavaScript/.NET Chess (http://silverlight.net/samples/1.1/chess/run/default.html)
 
-	this shows up on the console:
-
-		Error inside TryLoad: System.NullReferenceException: Object reference not set to an instance of an object
-
-		Server stack trace:
-		  at Chess.Chessboard.AnimatePiece (System.Windows.Controls.Canvas piece, Nullable`1 oldLeft, Nullable`1 oldTop, Nullable`1 newLeft, Nullable`1 newTop, Double oldOpacity, Double newOpacity, Duration animationDuration, System.EventHandler completed) [0x00000]
-		  at Chess.Chessboard.AnimateToNewPosition (GarboChess.Position newPos) [0x00000]
-		  at Chess.Chessboard.set_Position (GarboChess.Position value) [0x00000]
-		  at Chess.ChessGameEngine.set_Chessboard (Chess.Chessboard value) [0x00000]
-		  at Chess.BoardUI.Canvas_Loaded (System.Object sender, System.EventArgs args) [0x00000]
-		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
-		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
-		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
-		  at <0x00000> <unknown method>
-		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
-		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x00139] in /home/toshok/src/mono/moon/plugin/moonlight.cs:249
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
-		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
-
-	and then a little later:
-
-		Unhandled Exception: System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentOutOfRangeException: Argument is out of range.
-		Parameter name: index
-		  at System.Collections.Generic.List`1[Chess.IChessPlayer].get_Item (Int32 ) [0x00024] in /home/toshok/src/mono/mcs/class/corlib/System.Collections.Generic/List.cs:623
-		  at Chess.ChessGameEngine.TakeTurn (Int32 which) [0x00000]
-		  at Chess.ChessGameEngine.DoOneTurn () [0x00000]
-		  at Chess.ChessGameEngine.Run () [0x00000]
-		  at <0x00000> <unknown method>
-		  at (wrapper managed-to-native) System.Reflection.MonoMethod:InternalInvoke (object,object[])
-
-	they seem related.
-
-
-	Also, this demo relies on scriptable event handlers, which
-	don't work yet.
-
-
-
+	This mostly works, with a few exceptions, these are tracked in
+	the sldemos/chess/port/issues.txt (support for Javascript
+	inside x:Code and animations are not working).
+	
 * Laugh-o-Sphere (http://sharepoint.microsoft.com/blogs/mikeg/silverlight1/PopflyMashups/bLaugh-o-Sphere.aspx)
 
 	Just shows the "Get Microsoft Silverlight" badge.  plugin version difference?
@@ -227,7 +279,9 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Office Ribbon (http://xmldocs.net/)
 
-	JS functions are listed as event handlers in the xaml.
+	This seems to work now, but the media player seems to get the
+	downloaded completed notification many times for the same
+	file. 
 
 * Photopoints Gallery (http://www.photopoints.com/main/Silverlight_Alpha/)
 
