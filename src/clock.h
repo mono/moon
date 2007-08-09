@@ -17,6 +17,8 @@
 
 G_BEGIN_DECLS
 
+#define TimeSpan_FromSeconds(s)  ((TimeSpan)(s) * 10000000)
+
 // misc types
 typedef gint32 FillBehavior;
 enum {
@@ -70,7 +72,7 @@ struct Duration {
 
 
 	// This should live in a TimeSpan class, but oh well.. */
-	static Duration FromSeconds (int seconds) { return Duration ((TimeSpan)seconds * 10000000); }
+	static Duration FromSeconds (int seconds) { return Duration (TimeSpan_FromSeconds (seconds)); }
 
  private:
 	DurationKind k;
