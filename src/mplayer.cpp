@@ -479,7 +479,7 @@ MediaPlayer::GetSurface ()
 bool
 MediaPlayer::IsPlaying ()
 {
-	return playing;
+	return playing && !paused;
 }
 
 guint
@@ -488,16 +488,21 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	if (!paused || !opened)
 		return 0;
 	
-	playing = true;
-	
-	if (audio->pcm != NULL && audio->stream_id != -1) {
-		pthread_mutex_lock (&audio->init_mutex);
-		audio_thread = g_thread_create (audio_loop, this, true, NULL);
-		pthread_cond_wait (&audio->init_cond, &audio->init_mutex);
-		pthread_mutex_unlock (&audio->init_mutex);
+	if (!playing) {
+		// Start up the decoder/audio threads
+		if (audio->pcm != NULL && audio->stream_id != -1) {
+			pthread_mutex_lock (&audio->init_mutex);
+			audio_thread = g_thread_create (audio_loop, this, true, NULL);
+			pthread_cond_wait (&audio->init_cond, &audio->init_mutex);
+			pthread_mutex_unlock (&audio->init_mutex);
+		}
+		
+		io_thread = g_thread_create (io_loop, this, true, NULL);
+		
+		playing = true;
+	} else {
+		// We are simply paused...
 	}
-	
-	io_thread = g_thread_create (io_loop, this, true, NULL);
 	
 	paused = false;
 	pthread_cond_signal (&pause_cond);
@@ -616,7 +621,7 @@ void
 MediaPlayer::Seek (int64_t position)
 {
 	int64_t initial_pts, duration;
-	bool pause = paused;
+	bool resume = !paused;
 	int stream_id;
 	
 	if (!CanSeek () || av_ctx == NULL)
@@ -657,7 +662,8 @@ MediaPlayer::Seek (int64_t position)
 		
 		io_thread = g_thread_create (io_loop, this, true, NULL);
 		
-		if (!pause) {
+		if (resume) {
+			// Resume playback
 			paused = false;
 			pthread_cond_signal (&pause_cond);
 			pthread_mutex_unlock (&pause_mutex);
@@ -964,15 +970,17 @@ audio_loop (void *data)
 	pthread_cond_signal (&mplayer->audio->init_cond);
 	pthread_mutex_unlock (&mplayer->audio->init_mutex);
 	
+	pthread_mutex_lock (&mplayer->pause_mutex);
+	
 	while (!mplayer->stop) {
-		pthread_mutex_lock (&mplayer->pause_mutex);
-		
-		if (mplayer->paused)
-			pthread_cond_wait (&mplayer->pause_cond, &mplayer->pause_mutex);
-		
-		if (mplayer->stop) {
+		if (mplayer->paused) {
+			// allow main thread to take pause lock
+			pthread_cond_signal (&mplayer->pause_cond);
 			pthread_mutex_unlock (&mplayer->pause_mutex);
-			break;
+			
+			// wait for main thread to relinquish pause lock
+			pthread_cond_wait (&mplayer->pause_cond, &mplayer->pause_mutex);
+			continue;
 		}
 		
 		play = mplayer->target_pts >= mplayer->seek_pts;
@@ -998,12 +1006,9 @@ audio_loop (void *data)
 				audio->pkt = NULL;
 			}
 		}
-		
-		if (mplayer->paused)
-			pthread_cond_signal (&mplayer->pause_cond);
-		
-		pthread_mutex_unlock (&mplayer->pause_mutex);
 	}
+	
+	pthread_mutex_unlock (&mplayer->pause_mutex);
 	
 	g_free (ufds);
 	

@@ -1,3 +1,12 @@
+2007-08-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (Play): Only start up the io/audio threads if we
+	aren't simply paused (e.g. if they are already alive).
+	(IsPlaying): Return true only if playing && !paused.
+	(audio_loop): Changed the locking logic to lock outside of the
+	loop rather than inside. We now only release the lock inside the
+	loop if/when the paused state changes.
+
 2007-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h: sprinkle Resolve() methods and resolved flags

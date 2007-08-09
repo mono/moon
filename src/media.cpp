@@ -298,7 +298,7 @@ MediaElement::DownloaderComplete ()
 void
 MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 {
-	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
+	g_return_if_fail (dl->GetObjectType () == Type::DOWNLOADER);
 	
 	// if we have something opened already...
 	media_element_set_current_state (this, "Closed");
