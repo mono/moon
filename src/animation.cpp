@@ -760,7 +760,7 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 		KeyFrame *keyframe = ((KeyFrameNode *) cur)->key_frame;
 		TimeSpan key_end_time = keyframe->resolved_keytime;
 		
-		if (key_end_time >= t) {
+		if (key_end_time >= t || cur->Next() == NULL) {
 			current_keyframe = keyframe;
 			
 			if (prev)
