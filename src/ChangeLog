@@ -1,3 +1,8 @@
+2007-08-09  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h, animation.cpp: if any keyframe's keytime changes,
+	we need to re-resolve the collection.
+
 2007-08-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (Play): Only start up the io/audio threads if we

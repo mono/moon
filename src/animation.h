@@ -287,6 +287,8 @@ class KeyFrameCollection : public Collection {
 	bool resolved;
 
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
+
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 };
 
 class ColorKeyFrameCollection : public KeyFrameCollection {

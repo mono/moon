@@ -777,6 +777,16 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 	return current_keyframe;
 }
 
+void
+KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+{
+	if (subprop == KeyFrame::KeyTimeProperty) {
+		resolved = false;
+	}
+
+	Collection::OnSubPropertyChanged (prop, subprop);
+}
+
 ColorKeyFrameCollection*
 color_key_frame_collection_new ()
 {
