@@ -639,7 +639,8 @@ resolve_property_path (DependencyObject **o, const char *path)
 	bool expression_found = false;
 	DependencyProperty *res = NULL;
 	DependencyObject *lu = *o;
-
+	const char *prop = path;
+	
 	for (int i = 0; i < len; i++) {
 		switch (path [i]) {
 		case '(':
@@ -663,7 +664,6 @@ resolve_property_path (DependencyObject **o, const char *path)
 
 			i = c;
 			
-
 			Type *t = NULL;
 			if (typen) {
 				t = Type::Find (typen);
@@ -678,6 +678,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 		case '.':
 			lu = lu->GetValue (res)->AsDependencyObject ();
 			expression_found = false;
+			prop = path + (i + 1);
 			// we can ignore this, since we pull the lookup object when we finish a ( ) block
 			break;
 		case '[':
@@ -705,7 +706,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 	}
 
 	if (!expression_found)
-		res = DependencyObject::GetDependencyProperty (lu->GetObjectType (), path);
+		res = DependencyObject::GetDependencyProperty (lu->GetObjectType (), prop);
 
 	*o = lu;
 	return res;

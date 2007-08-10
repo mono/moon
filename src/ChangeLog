@@ -1,3 +1,10 @@
+2007-08-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (resolve_property_path): Keep track of the
+	last '.' so that when we go to get the DependencyProperty, we can
+	pass the property name component rather than the full path of the
+	property name. Fixes the color fades in Monotone.
+
 2007-08-09  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h, animation.cpp: if any keyframe's keytime changes,

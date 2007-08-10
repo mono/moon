@@ -34,7 +34,7 @@ void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, d
 DependencyProperty *MediaBase::SourceProperty;
 DependencyProperty *MediaBase::StretchProperty;
 
-MediaBase::MediaBase()
+MediaBase::MediaBase ()
 {
 }
 
@@ -227,7 +227,7 @@ void
 MediaElement::UpdateProgress ()
 {
 	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
-
+	
 	SetValue (MediaElement::DownloadProgressProperty, Value (progress));
 }
 
