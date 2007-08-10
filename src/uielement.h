@@ -196,7 +196,17 @@ class UIElement : public Visual {
 	//   objects).
 	//
 	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
-	
+
+	//
+	// HandleKeyDown:
+	//
+	virtual void HandleKeyDown (cairo_t *cr, int state, Key key, int platform_key_code);
+
+	//
+	// HandleKeyDown:
+	//
+	virtual void HandleKeyUp (cairo_t *cr, int state, Key key, int platform_key_code);
+
 	//
 	// Enter:
 	//   Invoked when the mouse first enters this given object

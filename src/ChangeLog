@@ -1,3 +1,16 @@
+2007-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp (key_press_callback): map the gdk keyval
+	to the silverlight Key and call s->toplevel->HandleKeyDown.
+	(key_release_callback): same.
+	(gdk_keyval_to_key): new function, to map between gdk and
+	silverlight.
+	
+	* uielement.h, uielement.cpp: add HandleKeyDown/HandleKeyUp, which
+	just package up the args into a structure and Emit the event.
+
+	* enums.h: add the Key enum from the silverlight docs.
+
 2007-08-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (resolve_property_path): Keep track of the

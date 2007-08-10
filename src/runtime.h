@@ -126,6 +126,8 @@ private:
 
 	void CreateSimilarSurface ();
 
+	static Key gdk_keyval_to_key (guint keyval);
+
 	static void render_cb (EventObject *sender, gpointer calldata, gpointer closure);
 	static void update_input_cb (EventObject *sender, gpointer calldata, gpointer closure);
 	static void drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);

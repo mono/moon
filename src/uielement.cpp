@@ -327,6 +327,28 @@ UIElement::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
 }
 
 void
+UIElement::HandleKeyDown (cairo_t *cr, int state, Key key, int platform_key_code)
+{
+	KeyboardEventArgs e;
+	e.state = state;
+	e.key = key;
+	e.platformcode = platform_key_code;
+
+	Emit (KeyDownEvent, &e);
+}
+
+void
+UIElement::HandleKeyUp (cairo_t *cr, int state, Key key, int platform_key_code)
+{
+	KeyboardEventArgs e;
+	e.state = state;
+	e.key = key;
+	e.platformcode = platform_key_code;
+
+	Emit (KeyUpEvent, &e);
+}
+
+void
 UIElement::Enter (cairo_t *cr, int state, double x, double y)
 {
 	MouseEventArgs e;
