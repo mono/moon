@@ -194,7 +194,7 @@ GradientStopCollection *gradient_stop_collection_new (void);
 MediaAttributeCollection *media_attribute_collection_new (void);
 Inlines *inlines_new (void);
 
-void collection_init ();
+void collection_init (void);
 
 G_END_DECLS
 

@@ -103,19 +103,20 @@ class DependencyObject : public EventObject {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop) { }
 
 	virtual Type::Kind GetObjectType ();
-	Type* GetType ()
+	Type *GetType ()
 	{
 		return Type::Find (GetObjectType ());
-	};
-	char* GetTypeName ()
+	}
+	
+	char *GetTypeName ()
 	{
 		return Type::Find (GetObjectType ())->name;
 	}
 
-	const char* GetName ()
+	const char *GetName ()
 	{
 		Value *v = GetValue (DependencyObject::NameProperty);
-		return v ? (v->AsString () ? v->AsString() : "(null)") : "(null)";
+		return v ? v->AsString () : NULL;
 	}
 	
 	void SetParent (DependencyObject *parent);

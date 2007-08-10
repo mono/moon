@@ -137,9 +137,9 @@ Collection::SetVal (int index, DependencyObject *data)
 Value *
 Collection::GetValue (DependencyProperty *prop)
 {
-	if (prop == CountProperty){
+	if (prop == CountProperty)
 		return new Value (list->Length ());
-	}
+	
 	return DependencyObject::GetValue (prop);
 }
 
@@ -167,11 +167,11 @@ bool
 Collection::RemoveAt (int index)
 {
 	Collection::Node *n = (Collection::Node *) list->Index (index);
-
+	
 	generation++;
 	if (n == NULL)
 		return false;
-
+	
 	n->Unlink ();
 	n->obj->Detach (NULL, this);
 	if (closure)
@@ -185,9 +185,16 @@ void
 Collection::Clear ()
 {
 	Collection::Node *n;
-
+	const char *name;
+	NameScope *ns;
+	
 	generation++;
 	for (n = (Collection::Node*)list->First(); n; n = (Collection::Node*)n->Next()) {
+		if ((ns = NameScope::GetNameScope (n->obj)) != NULL) {
+			if ((name = n->obj->GetName ()) != NULL)
+				ns->UnregisterName (name);
+		}
+		
 		n->obj->Detach (NULL, this);
 	}
 
@@ -199,7 +206,7 @@ Collection::Clear ()
 
 DependencyProperty *Collection::CountProperty;
 void
-collection_init ()
+collection_init (void)
 {
 	Collection::CountProperty = DependencyObject::Register (Type::COLLECTION, "Count", Type::INT32);
 }
@@ -250,7 +257,7 @@ collection_remove_at (Collection *collection, int index)
 {
 	if (index > collection->list->Length ())
 		return false;
-
+	
 	collection->RemoveAt (index);
 	return true;
 }
@@ -481,10 +488,11 @@ bool
 VisualCollection::RemoveAt (int index)
 {
 	Panel *panel = (Panel *) closure;
-
+	
 	Collection::Node *n = (Collection::Node *) list->Index (index);
 	if (n == NULL)
 		return false;
+	
 	UIElement *item = (UIElement *) n->obj;
 
  	item->Invalidate ();
