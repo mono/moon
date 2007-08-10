@@ -89,8 +89,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Digger (http://www.aisto.com/Roeder/Silverlight/Digger/Default.aspx)
 
-	Comes up, animations start up, many warnings on the screen,
-	and the keyboard input does not work (known issue):
+	works.
 
 
 * Disco Dance Floor (http://explosivedog.com/silverlight/discolights/)
