@@ -1,3 +1,8 @@
+2007-08-11  Miguel de Icaza  <miguel@novell.com>
+
+	* moonligth.cs: Use the new helper method from agmono instead of
+	duplicating code here.
+
 2007-08-07  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight.cs: Add another system library to the do-not-download
