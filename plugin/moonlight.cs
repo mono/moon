@@ -101,10 +101,10 @@ namespace Moonlight {
 		
 		public Loader (IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
-			AppDomain a = AppDomain.CreateDomain ("moonlight-" + plugin);
+			AppDomain a = Helper.CreateDomain (plugin);
 
-			rl =  (DomainInstance) a.CreateInstanceAndUnwrap (
-				Assembly.GetExecutingAssembly ().FullName,
+			rl = (DomainInstance) Helper.CreateInstanceAndUnwrap (
+				a, Assembly.GetExecutingAssembly ().FullName,
 				"Moonlight.DomainInstance");
 
 			rl.Setup (plugin, surface, filename, contents);
@@ -465,14 +465,7 @@ namespace Moonlight {
 	}
 		
 	class Moonlight {
-		
 		static int count;
-		
-		static void CreateInstance ()
-		{
-			// 1. Create a new AppDomain.
-			// 2. Invoke a method in the new AppDomain to load the XAML file
-		}
 		
 		static void Main ()
 		{
