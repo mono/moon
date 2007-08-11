@@ -68,7 +68,7 @@ namespace Moonlight {
 		internal static string dependency_object_get_type_name (IntPtr obj)
 		{
 			IntPtr p = _dependency_object_get_type_name (obj);
-			return Marshal.PtrToStringAuto (p);
+			return Marshal.PtrToStringAnsi (p);
 		}
 		
                 // [DONE] 1. Load XAML file 

@@ -1,5 +1,8 @@
 2007-08-11  Miguel de Icaza  <miguel@novell.com>
 
+	* moonlight.cs: use Ansi here because we only run on Linux not on
+	Windows and the Auto API is gone from 2.1
+
 	* moonligth.cs: Use the new helper method from agmono instead of
 	duplicating code here.
 
