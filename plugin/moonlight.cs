@@ -298,7 +298,7 @@ namespace Moonlight {
 			}
 
 			Console.WriteLine ("asm_path={0} asm_name={1}", asm_path, asm_name);
-			Assembly clientlib = Assembly.LoadFile (asm_path);
+			Assembly clientlib = Helper.LoadFile (asm_path);
 			if (clientlib == null) {
 				Console.WriteLine ("could not load client library: '{0}'", asm_path);
 				return IntPtr.Zero;
@@ -312,7 +312,7 @@ namespace Moonlight {
 			if (p != -1)
 				dirname = asm_name.Substring (0, p + 1);
 			
-			foreach (AssemblyName an in clientlib.GetReferencedAssemblies ()){
+			foreach (AssemblyName an in Helper.GetReferencedAssemblies (clientlib)){
 
 				if (an.Name == "agclr" || an.Name == "mscorlib" ||
 				    an.Name == "System.Xml.Core" || an.Name == "System" ||
@@ -332,7 +332,7 @@ namespace Moonlight {
 				if (local != null){
 					// Ensure we load it.
 					try {
-						Assembly.LoadFile (local);
+						Helper.LoadFile (local);
 					} catch {
 						Console.WriteLine ("moonlight.exe: Error loading referenced {0} library (from {1})", local, req);
 						return IntPtr.Zero;
