@@ -845,9 +845,8 @@ Value*
 DiscreteDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	double *to = GetValue();
-	/* XXX GetValue can return NULL */
 
-	if (keyFrameProgress == 1.0)
+	if (to && keyFrameProgress == 1.0)
 		return new Value(*to);
 	else
 		return new Value (baseValue->AsDouble());
@@ -865,12 +864,8 @@ Value*
 DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	Color *to = GetValue();
-	/* XXX GetValue can return NULL */
 
-	//printf ("DiscreteColorKeyFrame::InterpolateValue (progress = %f)\n", keyFrameProgress);
-
-
-	if (keyFrameProgress == 1.0)
+	if (to && keyFrameProgress == 1.0)
 		return new Value(*to);
 	else
 		return new Value (*baseValue->AsColor());
@@ -888,9 +883,8 @@ Value*
 DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	Point *to = GetValue();
-	/* XXX GetValue can return NULL */
 
-	if (keyFrameProgress == 1.0)
+	if (to && keyFrameProgress == 1.0)
 		return new Value(*to);
 	else
 		return new Value (*baseValue->AsPoint());
@@ -909,7 +903,9 @@ Value*
 LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	double *to = GetValue();
-	/* XXX GetValue can return NULL */
+
+	if (!to)
+		return new Value (baseValue->AsDouble());
 
 	double start, end;
 
@@ -931,7 +927,9 @@ Value*
 LinearColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	Color *to = GetValue();
-	/* XXX GetValue can return NULL */
+
+	if (!to)
+		return new Value (*baseValue->AsColor());
 
 	Color start, end;
 
@@ -953,7 +951,9 @@ Value*
 LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	Point *to = GetValue();
-	/* XXX GetValue can return NULL */
+
+	if (!to)
+		return new Value (*baseValue->AsPoint());
 
 	Point start, end;
 
@@ -984,7 +984,9 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
 
 	double *to = GetValue();
-	/* XXX GetValue can return NULL */
+
+	if (!to)
+		return new Value (baseValue->AsDouble());
 
 	double start, end;
 
@@ -1015,7 +1017,9 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
 
 	Color *to = GetValue();
-	/* XXX GetValue can return NULL */
+
+	if (!to)
+		return new Value (*baseValue->AsColor());
 
 	Color start, end;
 
@@ -1046,7 +1050,9 @@ SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	double splineProgress = GetKeySpline ()->GetSplineProgress (keyFrameProgress);
 
 	Point *to = GetValue();
-	/* XXX GetValue can return NULL */
+
+	if (!to)
+		return new Value (*baseValue->AsPoint());
 
 	Point start, end;
 

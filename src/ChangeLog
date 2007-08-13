@@ -1,5 +1,11 @@
 2007-08-13  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp (*KeyFrame::InterpolateValue): for all the
+	keyframes, if we don't have a Value defined, don't bother
+	interpolating anything, just return baseValue.
+
+2007-08-13  Chris Toshok  <toshok@ximian.com>
+
 	* collection.cpp: fix merging/unmerging of child namescopes.
 
 	* namescope.h, namescope.cpp: add a flag (merged) and a list of
