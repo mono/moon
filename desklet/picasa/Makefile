@@ -15,7 +15,7 @@ download-google:
 
 $(ASSEMBLY): $(DSOURCES)
 	mkdir -p bin
-	gmcs -debug -target:library -r:$(LIBS) -pkg:silver -pkg:gconf-sharp-2.0 -pkg:gtk-sharp-2.0 -out:$(ASSEMBLY) $(DSOURCES) -r:../desklets.dll
+	gmcs -debug -target:library -r:$(LIBS) -pkg:silverdesktop -pkg:gconf-sharp-2.0 -pkg:gtk-sharp-2.0 -out:$(ASSEMBLY) $(DSOURCES) -r:../desklets.dll
 
 postcompile:
 	cp -a ../desklets.dll bin/

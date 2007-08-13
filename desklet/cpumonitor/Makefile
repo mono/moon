@@ -11,7 +11,7 @@ LOPTIONS = --debug
 all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(DSOURCES)
-	gmcs -debug -target:library -pkg:silver -r:../desklets.dll $(DSOURCES)
+	gmcs -debug -target:library -pkg:silverdesktop -r:../desklets.dll $(DSOURCES)
 	cp -a ../desklets.dll .
 
 run: $(ASSEMBLY)

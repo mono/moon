@@ -17,7 +17,7 @@ $(ASSEMBLY): $(DSOURCES)
 	mkdir -p bin
 	$(MAKE) -C.. desklets.dll
 	cp -rap ../desklets.dll bin
-	gmcs -debug -target:library -pkg:silver -pkg:gtk-sharp-2.0 -r:bin/desklets.dll -out:$@ $^
+	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtk-sharp-2.0 -r:bin/desklets.dll -out:$@ $^
 
 clean:
 	rm -f $(ASSEMBLY)
