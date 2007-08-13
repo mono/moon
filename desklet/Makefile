@@ -8,7 +8,7 @@ clean:
 	-rm desklets.tree desklets.zip desklets.dll desklets.xml
 
 desklets.dll desklets.xml: desklets.cs
-	gmcs -debug -doc:desklets.xml -target:library desklets.cs -pkg:silver -pkg:gtk-sharp-2.0 -pkg:gconf-sharp-2.0
+	gmcs -debug -doc:desklets.xml -target:library desklets.cs -pkg:silverdesktop -pkg:gtk-sharp-2.0 -pkg:gconf-sharp-2.0
 
 docs/Mono.Desklets.xml: desklets.xml desklets.dll
 	monodocer -importslashdoc:desklets.xml -path:docs -assembly:desklets.dll
