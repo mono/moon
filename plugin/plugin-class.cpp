@@ -36,6 +36,7 @@
 #include <nsIDOMEventTarget.h>
 #include <nsIDOMEventListener.h>
 
+#define DEBUG_SCRIPTABLE 0
 
 #define HAS_PROPERTY(x,v) \
 		(index_of_name (v, x, (sizeof (x) / sizeof (char *))) > -1)
@@ -2358,9 +2359,11 @@ moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NP
 	if (!prop)
 		return false;
 
+#if DEBUG_SCRIPTABLE
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	DEBUGMSG ("***************** getting scriptable object property %s", strname);
 	NPN_MemFree (strname);
+#endif
 
 	Value v;
 
@@ -2379,9 +2382,11 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 	// first we try the property hash
 	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (sobj->properties, name);
 	if (prop) {
+#if DEBUG_SCRIPTABLE
 		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 		DEBUGMSG ("***************** setting scriptable object property %s", strname);
 		NPN_MemFree (strname);
+#endif
 
 		Value *v;
 
@@ -2396,9 +2401,11 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 	// if that fails, look for the event of that name
 	ScriptableEvent *event = (ScriptableEvent*)g_hash_table_lookup (sobj->events, name);
 	if (event) {
+#if DEBUG_SCRIPTABLE
 		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 		DEBUGMSG ("***************** adding scriptable object event %s", strname);
 		NPN_MemFree (strname);
+#endif
 
 		if (NPVARIANT_IS_OBJECT (*value)) {
 			NPObject *cb_obj = NPVARIANT_TO_OBJECT (*value);
@@ -2434,9 +2441,11 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 	if (!method)
 		return false;
 
+#if DEBUG_SCRIPTABLE
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	DEBUGMSG ("***************** invoking scriptable object method %s", strname);
 	NPN_MemFree (strname);
+#endif
 
 	Value rv;
 
@@ -2502,7 +2511,9 @@ moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scr
 	obj->addevent = addevent_func;
 	obj->removeevent = removeevent_func;
 
+#if DEBUG_SCRIPTABLE
 	DEBUGMSG ("creating scriptable object wrapper => %p", obj);
+#endif
 	return obj;
 }
 
@@ -2515,7 +2526,9 @@ moonlight_scriptable_object_add_property (PluginInstance *plugin,
 					  bool can_read,
 					  bool can_write)
 {
+#if DEBUG_SCRIPTABLE
 	DEBUGMSG ("adding property named %s to scriptable object %p", property_name, obj);
+#endif
 
 	ScriptableProperty *prop = new ScriptableProperty ();
 	prop->property_handle = property_handle;
@@ -2532,7 +2545,9 @@ moonlight_scriptable_object_add_event (PluginInstance *plugin,
 				       gpointer event_handle,
 				       char *event_name)
 {
+#if DEBUG_SCRIPTABLE
 	DEBUGMSG ("adding event named %s to scriptable object %p", event_name, obj);
+#endif
 
 	ScriptableEvent *event = new ScriptableEvent ();
 	event->event_handle = event_handle;
@@ -2550,7 +2565,9 @@ moonlight_scriptable_object_add_method (PluginInstance *plugin,
 					int parameter_count)
 
 {
+#if DEBUG_SCRIPTABLE
 	DEBUGMSG ("adding method named %s (return type = %d) to scriptable object %p", method_name, method_return_type, obj);
+#endif
 
 	ScriptableMethod *method = new ScriptableMethod ();
 	method->method_handle = method_handle;
@@ -2567,7 +2584,9 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 				      char *name,
 				      MoonlightScriptableObjectObject *obj)
 {
+#if DEBUG_SCRIPTABLE
 	DEBUGMSG ("registering scriptable object '%s' => %p", name, obj);
+#endif
 
 	MoonlightContentObject* content = (MoonlightContentObject*)plugin->getRootObject()->content;
 
@@ -2575,7 +2594,9 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 			     NPID (name),
 			     obj);
 
+#if DEBUG_SCRIPTABLE
 	DEBUGMSG (" => done");
+#endif
 }
 
 void
