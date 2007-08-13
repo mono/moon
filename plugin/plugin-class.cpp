@@ -1427,7 +1427,7 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 		
-		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
+		DependencyObject *element = dob->FindName (name);
 		if (!element)
 			return true;
 
