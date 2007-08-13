@@ -1351,8 +1351,14 @@ moonlight_dependency_object_get_property (NPObject *npobj, NPIdentifier name, NP
 		return false;
 
 	Value *value = dob->GetValue (p);
-	if (!value)
+	if (!value) {
+		// strings aren't null, they seem to just be empty strings
+		if (p->value_type == Type::STRING) {
+			string_to_npvariant ("", result);
+			return true;
+		}
 		return false;
+	}
 
 	value_to_variant (npobj, value, result);
 

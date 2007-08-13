@@ -1,3 +1,8 @@
+2007-08-13  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: For dependency object strings don't return
+	null, just return an empty string.
+
 2007-08-11  Miguel de Icaza  <miguel@novell.com>
 
 	* moonlight.cs: Use the new Appdomain helper methods too.
