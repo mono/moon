@@ -65,25 +65,26 @@ Collection::Add (DependencyObject *data)
 	list->Append (new Collection::Node (data, this));
 	data->Attach (NULL, this);
 
-	NameScope *ns = NameScope::GetNameScope (data);
-	/* this should always be true for Canvas subclasses */
-	if (ns) {
-		if (ns->GetTemporary ()) {
+	if (closure) {
+		NameScope *ns = NameScope::GetNameScope (data);
+		/* this should always be true for Canvas subclasses */
+		if (ns) {
+			if (ns->GetTemporary ()) {
+				NameScope *con_ns = closure->FindNameScope ();
+				if (con_ns)
+					con_ns->MergeTemporaryScope (ns);
+			}
+		}
+		else {
+			const char *n = data->GetName();
 			NameScope *con_ns = closure->FindNameScope ();
-			if (con_ns)
-				con_ns->MergeTemporaryScope (ns);
+			if (con_ns && n) {
+				con_ns->RegisterName (n, data);
+			}
 		}
-	}
-	else {
-		const char *n = data->GetName();
-		NameScope *con_ns = closure->FindNameScope ();
-		if (con_ns && n) {
-			con_ns->RegisterName (n, data);
-		}
-	}
 
-	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+	}
 }
 
 void
@@ -96,15 +97,16 @@ Collection::Insert (int index, DependencyObject *data)
 
 	data->Attach (NULL, this);
 
-	NameScope *ns = NameScope::GetNameScope (data);
-	if (ns && ns->GetTemporary ()) {
-		NameScope *con_ns = closure->FindNameScope ();
-		if (con_ns)
-			con_ns->MergeTemporaryScope (ns);
-	}
+	if (closure) {
+		NameScope *ns = NameScope::GetNameScope (data);
+		if (ns && ns->GetTemporary ()) {
+			NameScope *con_ns = closure->FindNameScope ();
+			if (con_ns)
+				con_ns->MergeTemporaryScope (ns);
+		}
 
-	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+	}
 }
 
 void
@@ -162,15 +164,16 @@ Collection::Remove (DependencyObject *data)
 
 	data->Detach (NULL, this);
 
-	NameScope *ns = NameScope::GetNameScope (data);
-	if (ns && ns->GetMerged ()) {
-		NameScope *con_ns = closure->FindNameScope();
-		if (con_ns)
-			con_ns->UnmergeTemporaryScope (ns);
-	}
+	if (closure) {
+		NameScope *ns = NameScope::GetNameScope (data);
+		if (ns && ns->GetMerged ()) {
+			NameScope *con_ns = closure->FindNameScope();
+			if (con_ns)
+				con_ns->UnmergeTemporaryScope (ns);
+		}
 
-	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, data, NULL);
+	}
 	
 	delete n;
 	return true;
@@ -189,15 +192,16 @@ Collection::RemoveAt (int index)
 
 	n->obj->Detach (NULL, this);
 
-	NameScope *ns = NameScope::GetNameScope (n->obj);
-	if (ns && ns->GetMerged ()) {
-		NameScope *con_ns = closure->FindNameScope();
-		if (con_ns)
-			con_ns->UnmergeTemporaryScope (ns);
-	}
+	if (closure) {
+		NameScope *ns = NameScope::GetNameScope (n->obj);
+		if (ns && ns->GetMerged ()) {
+			NameScope *con_ns = closure->FindNameScope();
+			if (con_ns)
+				con_ns->UnmergeTemporaryScope (ns);
+		}
 
-	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, n->obj, NULL);
+	}
 	
 	delete n;
 	return true;
