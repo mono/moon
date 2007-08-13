@@ -7,20 +7,19 @@ public class SeekableCanvas : Canvas
 {
 	public void Canvas_Loaded (object sender, EventArgs ea) {
 		sb = (Storyboard)FindName ("animation");
-
-		MouseMove += Canvas_OnMouseMove;
+		sb.Begin ();
 	}
 
 	public void Canvas_OnMouseDown (object sender, MouseEventArgs me) {
-		Console.WriteLine ("mousedown");
 		CaptureMouse ();
 		active = true;
+		sb.Pause ();
 	}
 
 	public void Canvas_OnMouseUp (object sender, MouseEventArgs me) {
-		Console.WriteLine ("mouseup");
 		ReleaseMouseCapture ();
 		active = false;
+		sb.Resume ();
 	}
 
 	public void Canvas_OnMouseMove (object sender, MouseEventArgs me) {
@@ -29,9 +28,8 @@ public class SeekableCanvas : Canvas
 
 		double p = me.GetPosition(this).X / Width;
 
-		Console.WriteLine ("updating storyboard to {0}", p);
-
 		sb.Seek (TimeSpan.FromTicks ((long)(p * sb.Duration.TimeSpan.Ticks)));
+		sb.Pause ();
 	}
 
 	Storyboard sb;
