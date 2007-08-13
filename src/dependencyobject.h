@@ -75,6 +75,7 @@ class DependencyObject : public EventObject {
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValueNoDefault (DependencyProperty *property);
 	Value *GetValue (const char *name);
+	void ClearValue (DependencyProperty *property);
 	bool HasProperty (const char *name, bool inherits);
 	DependencyProperty *GetDependencyProperty (const char *name);
 	DependencyObject *FindName (const char *name);
@@ -120,7 +121,7 @@ class DependencyObject : public EventObject {
 	}
 	
 	void SetParent (DependencyObject *parent);
-	DependencyObject* GetParent ();
+	DependencyObject* GetParent () { return parent; }
 
 	//
 	// Is:

@@ -1,3 +1,23 @@
+2007-08-13  Chris Toshok  <toshok@ximian.com>
+
+	* collection.cpp: fix merging/unmerging of child namescopes.
+
+	* namescope.h, namescope.cpp: add a flag (merged) and a list of
+	child merged namescopes which are searched any time this namescope
+	is searched.  Reimplement merge as list->Append, and unmerge as
+	list->Remove.
+
+	* dependencyobject.h: add ClearValue, and make GetParent
+	inlineable.
+
+	* dependencyobject.cpp: add impl for ClearValue, and remove
+	GetParent.  Also, when finding a name we only check non-merged
+	namescopes.  The merged ones in the hieararchy will be checked as
+	the children of the non-merged ones.  Given that the set of names
+	in merged scopes can't overlap, I'm not strictly sure this is
+	necessary, except to reproduce Silverlight's faulty lookups after
+	subtree removal.
+
 2007-08-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* collection.cpp (Clear): Unregister the object names.

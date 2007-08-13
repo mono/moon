@@ -66,11 +66,19 @@ Collection::Add (DependencyObject *data)
 	data->Attach (NULL, this);
 
 	NameScope *ns = NameScope::GetNameScope (data);
-	if (ns && ns->GetTemporary ()) {
-		NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
-		if (con_ns) {
-			con_ns->MergeTemporaryScope (ns);
-			NameScope::SetNameScope (data, con_ns); // we really want to delete the namescope on data
+	/* this should always be true for Canvas subclasses */
+	if (ns) {
+		if (ns->GetTemporary ()) {
+			NameScope *con_ns = closure->FindNameScope ();
+			if (con_ns)
+				con_ns->MergeTemporaryScope (ns);
+		}
+	}
+	else {
+		const char *n = data->GetName();
+		NameScope *con_ns = closure->FindNameScope ();
+		if (con_ns && n) {
+			con_ns->RegisterName (n, data);
 		}
 	}
 
@@ -90,11 +98,9 @@ Collection::Insert (int index, DependencyObject *data)
 
 	NameScope *ns = NameScope::GetNameScope (data);
 	if (ns && ns->GetTemporary ()) {
-		NameScope *con_ns = ((DependencyObject *) closure)->FindNameScope ();
-		if (con_ns) {
+		NameScope *con_ns = closure->FindNameScope ();
+		if (con_ns)
 			con_ns->MergeTemporaryScope (ns);
-			NameScope::SetNameScope (data, con_ns); // we really want to delete the namescope on data
-		}
 	}
 
 	if (closure)
@@ -156,6 +162,13 @@ Collection::Remove (DependencyObject *data)
 
 	data->Detach (NULL, this);
 
+	NameScope *ns = NameScope::GetNameScope (data);
+	if (ns && ns->GetMerged ()) {
+		NameScope *con_ns = closure->FindNameScope();
+		if (con_ns)
+			con_ns->UnmergeTemporaryScope (ns);
+	}
+
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, data, NULL);
 	
@@ -173,7 +186,16 @@ Collection::RemoveAt (int index)
 		return false;
 	
 	n->Unlink ();
+
 	n->obj->Detach (NULL, this);
+
+	NameScope *ns = NameScope::GetNameScope (n->obj);
+	if (ns && ns->GetMerged ()) {
+		NameScope *con_ns = closure->FindNameScope();
+		if (con_ns)
+			con_ns->UnmergeTemporaryScope (ns);
+	}
+
 	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, n->obj, NULL);
 	
@@ -185,17 +207,17 @@ void
 Collection::Clear ()
 {
 	Collection::Node *n;
-	const char *name;
-	NameScope *ns;
-	
+
 	generation++;
 	for (n = (Collection::Node*)list->First(); n; n = (Collection::Node*)n->Next()) {
-		if ((ns = NameScope::GetNameScope (n->obj)) != NULL) {
-			if ((name = n->obj->GetName ()) != NULL)
-				ns->UnregisterName (name);
-		}
-		
 		n->obj->Detach (NULL, this);
+
+		NameScope *ns = NameScope::GetNameScope (n->obj);
+		if (ns && ns->GetMerged ()) {
+			NameScope *parent_ns = n->obj->FindNameScope();
+			if (parent_ns)
+				parent_ns->UnmergeTemporaryScope (ns);
+		}
 	}
 
 	list->Clear (true);

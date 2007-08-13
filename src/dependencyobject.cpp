@@ -231,6 +231,39 @@ DependencyObject::GetValue (const char *name)
 	return GetValue (property);
 }
 
+void
+DependencyObject::ClearValue (DependencyProperty *property)
+{
+	Value *current_value = GetValueNoDefault (property);
+
+	if (current_value == NULL) {
+		/* the property has the default value, nothing to do */
+		return;
+	}
+
+	// much of this logic is c&p from SetValue.
+
+	if (current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
+		DependencyObject *dob = current_value->AsDependencyObject();
+
+		if (dob != NULL)
+			dob->Detach (property, this);
+	}
+
+	g_hash_table_remove (current_values, property->name);
+
+	attachees_notified = false;
+
+	OnPropertyChanged (property);
+
+	if (!attachees_notified)
+		g_warning ("setting property %s::%s on object of type %s didn't result in attachees being notified\n",
+			   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
+
+	if (property->is_attached_property)
+		NotifyParentOfPropertyChange (property, true);
+}
+
 void 
 DependencyObject::SetValue (const char *name, Value value)
 {
@@ -340,7 +373,7 @@ DependencyObject::FindName (const char *name)
 	NameScope *scope = NameScope::GetNameScope (this);
 	DependencyObject *rv = NULL;
 
-	if (scope)
+	if (scope && !scope->GetMerged())
 		rv = scope->FindName (name);
 
 	if (rv)
@@ -508,12 +541,6 @@ DependencyObject::Shutdown ()
 {
 	g_hash_table_destroy (DependencyObject::properties);
 	DependencyObject::properties = NULL;
-}
-
-DependencyObject *
-DependencyObject::GetParent ()
-{
-	return parent;
 }
 
 void
