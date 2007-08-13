@@ -8,6 +8,8 @@
 	Width="600"
 	Height="300">
 
+    <Rectangle Width="600" Height="300" Fill="Green" />
+
     <Line
 	x:Name="TheAmazingMovingLine"
 	X1="10" Y1="10"
@@ -20,13 +22,13 @@
             <DoubleAnimation
               Storyboard.TargetName="TheAmazingMovingLine"
               Storyboard.TargetProperty="X1"
-              From="10" To="300" By="25" Duration="0:0:10"
+              From="10" To="300" Duration="0:0:10"
 	      AutoReverse="True" RepeatBehavior="Forever" />
 
 	    <DoubleAnimation
               Storyboard.TargetName="TheAmazingMovingLine"
               Storyboard.TargetProperty="X2"
-              From="10" To="300" By="25" Duration="0:0:30"
+              From="10" To="300" Duration="0:0:30"
               AutoReverse="True" RepeatBehavior="Forever" />
 	      
           </Storyboard>
