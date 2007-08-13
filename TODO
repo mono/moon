@@ -46,10 +46,6 @@ Feel free to add items to this TODO list
 
 	Investigate Exception: what happens if you call "Send" without calling Open first?
 
-* Collections:
-
-	Do not allow iterators to continue working after a collection mutation.
-
 * Managed Downloader
 
 	Implement a cache for uris to avoid downloading the same file more
@@ -86,15 +82,13 @@ Feel free to add items to this TODO list
 * Mouse events
 
 	Since we are going to be using the linker to thin out various
-	libraries maybe we should think out AGCLR as well, and by default
+	libraries maybe we should thin out AGCLR as well, and by default
 	install a more capable AGCLR.
 
 	In particular this would be interesting for handling other
 	mouse events other than "button1".
 
 * Video Player:
-
-	Add support for seeking
 
 	Expose properties to managed world.
 
@@ -136,48 +130,18 @@ Feel free to add items to this TODO list
 	this will eventually need to be merged into a single 
 	representation
 
-* Managed side
-
-	UIElement should probably flag when the frist event is set to
-	avoid having the native code send any events when we are not
-	interested in them.
-
-	Something like on "add" we would do:
-
-		NativeMethods.UIElement_register_interest_in_events (...)
-
-* Mouse
-
-	Implement mouse grabs
-
 * Gtk Hackery
 
 	For some reason I cant get moon/test/demo.exe program to focus the
 	Silverlight widget even if I click on it and I do a
 	gtk_widget_grab_focus, am probably missing something.
 
-* Optimizing Events
+* Visibility
 
-	Currently we emit the mouse events to every widget, regardless
-	of whether they are interested in the event.
-
-	We should avoid doing this if the widget is not interested in them,
-	this could be done like this:
-
-		* Provide Explicit implementaiton of the add/remove event
-		  handlers.
-
-		* Notify the unmanaged API when we register our interest
-		  in the event
-
-		* Unmanaged could use the flags variable that is part of
-	   	  the UIElement to store this information
+	Find out how to remove the Hidden enum member (maybe make it
+	== 255 or something out of range, and remove it with the
+	tuner?)
 	
-
-* Visibility:
-
-	Implement all three modes
-
 * Text
 
 	Find out why ligatures are not happening for certain scripts.
