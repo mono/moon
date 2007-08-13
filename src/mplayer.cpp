@@ -396,9 +396,9 @@ convert_to_rgb (Video *video, AVFrame *frame)
 bool
 MediaPlayer::AdvanceFrame ()
 {
+	AVFrame *frame = NULL;
 	bool advanced = false;
 	uint64_t target_pts;
-	AVFrame *frame;
 	int redraw = 0;
 	Packet *pkt;
 	uint64_t pts;
