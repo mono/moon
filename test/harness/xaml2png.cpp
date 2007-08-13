@@ -33,18 +33,15 @@ runTest (const char *xaml_file, const char *output_prefix)
 int
 main (int argc, char **argv)
 {
+	bool gen_expected = false;
+
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
 	gdk_threads_init ();
 	runtime_init ();
-
-	char *test = argv[1];
-
-	char *png = g_strconcat (g_path_get_basename (test),
-				 ".png", NULL);
-
 	
-	runTest (test, png);
+	char *test = argv[1];
+	char *png = argv[2];
 
-	g_free (png);
+	runTest (test, png);
 }

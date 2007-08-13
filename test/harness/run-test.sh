@@ -1,0 +1,43 @@
+#!/bin/bash
+
+mode=$1
+tst=$2
+resultprefix=$3
+
+if [ x$mode != "xbaseline" -a x$mode != "xtest" ] ; then
+    echo unknown mode: $mode
+    exit 1
+fi
+
+resultprefix=`basename $tst`
+resultpng=result-$resultprefix.png
+basepng=baseline-$resultprefix.png
+differencespng=differences-$resultprefix.png
+
+if test x$mode == "xbaseline"; then
+    echo -n "    Generating baseline for test $tst... "
+
+    ./xaml2png $tst $basepng
+
+    echo done.
+elif test x$mode == "xtest"; then
+    echo -n "    Running test $tst... "
+
+    rm -f $resultpng $differencespng
+
+    ./xaml2png $tst $resultpng
+
+    convert $resultpng $resultpng.jpg
+    convert $basepng $basepng.jpg
+
+    # and compare to our baseline
+    if diff $resultpng.jpg $basepng.jpg; then
+	echo PASSED.
+	rm -f $resultpng
+    else
+	echo FAILED.
+	convert $resultpng $basepng -compose difference -composite $differencespng
+    fi
+
+    rm $resultpng.jpg $basepng.jpg
+fi
