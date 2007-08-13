@@ -153,6 +153,7 @@ src/Makefile
 gtk/Makefile
 man/Makefile
 gtk/gtksilver.pc
+test/harness/Makefile
 tools/Makefile
 tools/mopen/Makefile
 tools/svg2xaml/Makefile
