@@ -26,7 +26,7 @@ NameScope::NameScope ()
 {
 	names = g_hash_table_new_full (g_str_hash, g_str_equal,
 				       (GDestroyNotify)g_free,
-				       (GDestroyNotify)base_unref);
+				       NULL);
 	merged_child_namescopes = new List ();
 	temporary = false;
 	merged = false;
@@ -42,7 +42,6 @@ NameScope::~NameScope ()
 void
 NameScope::RegisterName (const char *name, DependencyObject *object)
 {
-	base_ref (object);
 	g_hash_table_insert (names, g_strdup (name), object);
 }
 
