@@ -876,6 +876,9 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 			return true;
 		}
 
+		char *v = (char*)NPVARIANT_TO_STRING (args[0]).utf8characters;
+		printf ("version requested = %s\n",v);
+
 		gchar** versions = g_strsplit (NPVARIANT_TO_STRING (args[0]).utf8characters,
 					       ".", 3);
 
@@ -885,7 +888,9 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 		}
 
 		if (/* we advertise support for 0.9x, although this is probably a bad idea.. */
-		    (!strcmp (versions[0], "0") && versions[1][0] == '9')
+		    (!strcmp (versions[0], "0") &&
+		     (versions[1][0] == '9' ||
+		      versions[1][0] == '8'))
 
 		    /* and we should work with any 1.0.* and 1.1.* instance */
 		    || (!strcmp (versions[0], "1") &&
@@ -893,7 +898,6 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 			 || !strcmp (versions[1], "1")))
 		   ){
 
-		  printf ("Yes!\n");
 			BOOLEAN_TO_NPVARIANT (true, *result);
 		}
 
