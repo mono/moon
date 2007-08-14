@@ -223,8 +223,7 @@ namespace Desklet
 
 			downloader.Open (
 				"GET",
-				new Uri (uri),
-				true);
+				new Uri (uri));
 			downloader.Send ();
 		}
 
