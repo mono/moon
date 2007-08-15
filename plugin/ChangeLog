@@ -1,3 +1,8 @@
+2007-08-15  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight.cs: Unref the canvas managed object that was loaded
+	after attaching it.
+
 2007-08-13  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: findName should only look in the dependency
