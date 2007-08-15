@@ -86,19 +86,19 @@ class UIElement : public Visual {
 	// GetVisible:
 	//   Returns true if the Visibility property of this item is "Visible", and false otherwise
 	//
-	virtual bool GetVisible () { return (flags & UIElement::RENDER_VISIBLE) != 0; }
+	bool GetVisible () { return (flags & UIElement::RENDER_VISIBLE) != 0; }
 
 	//
 	// GetLayoutVisible:
 	//   Returns true if the element takes part in layout (if Visibility == Visible or Hidden, but not Collapsed)
 	//
-	virtual bool GetLayoutVisible () { return (flags & UIElement::LAYOUT_VISIBLE) != 0; }
+	bool GetLayoutVisible () { return (flags & UIElement::LAYOUT_VISIBLE) != 0; }
 
 	//
 	// GetHitTestVisible:
 	//   Returns true if the IsHitTestVisible property of this item true, and false otherwise
 	//
-	virtual bool GetHitTestVisible () { return (flags & UIElement::HIT_TEST_VISIBLE) != 0; }
+	bool GetHitTestVisible () { return (flags & UIElement::HIT_TEST_VISIBLE) != 0; }
 
 	//
 	// Render: 
