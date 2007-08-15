@@ -1,5 +1,11 @@
 2007-08-15  Jackson Harper  <jackson@ximian.com>
 
+	* plugin-class.h|cpp: Add support for keyboard arguments in the
+	keyup/keydown events. TODO: Still need to implement shift and
+	control, ideally, in a base class for mouse and keyboard events.
+
+2007-08-15  Jackson Harper  <jackson@ximian.com>
+
 	* plugin.cpp:
 	* downloader.cpp: Raise downloading events.
 

@@ -222,11 +222,10 @@ EventListenerProxy::get_wrapper_for_event_name (const char *event_name)
 	    !g_strcasecmp ("mouseenter", event_name)) {
 
 		return mouse_event_wrapper;
-	}
-	// XXX need to handle key events
-	else {
+	} else if (!g_strcasecmp ("keydown", event_name) || !g_strcasecmp ("keyup", event_name)) {
+		return keyboard_event_wrapper;
+	} else
 		return default_wrapper;
-	}
 }
 
 void
@@ -241,6 +240,16 @@ EventListenerProxy::mouse_event_wrapper (NPP instance, gpointer calldata, NPVari
 	MouseEventArgs *ea = (MouseEventArgs*)calldata;
 	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject*)NPN_CreateObject (instance, MoonlightMouseEventArgsClass);
 	MouseEventArgsPopulate (jsea, ea);
+
+	OBJECT_TO_NPVARIANT (jsea, *value);
+}
+
+void
+EventListenerProxy::keyboard_event_wrapper (NPP instance, gpointer calldata, NPVariant *value)
+{
+	KeyboardEventArgs *ea = (KeyboardEventArgs *) calldata;
+	MoonlightKeyboardEventArgsObject *jsea = (MoonlightKeyboardEventArgsObject*)NPN_CreateObject (instance, MoonlightKeyboardEventArgsClass);
+	KeyboardEventArgsPopulate (jsea, ea);
 
 	OBJECT_TO_NPVARIANT (jsea, *value);
 }
@@ -651,6 +660,99 @@ MouseEventArgsPopulate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args)
 
 	point->point = Point (args->x, args->y);
 	ea->position = point;
+}
+
+/*** MoonlightKeyboardEventArgsClass  **************************************************************/
+
+static NPObject*
+keyboard_event_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightKeyboardEventArgsObject (instance);
+}
+
+static void
+keyboard_event_deallocate (NPObject *npobject)
+{
+	delete (MoonlightKeyboardEventArgsObject*)npobject;
+}
+
+static void
+keyboard_event_invalidate (NPObject *npobject)
+{
+
+}
+
+static bool
+keyboard_event_has_property (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "shift") ||
+		name_matches (name, "ctrl") ||
+		name_matches (name, "key") ||
+		name_matches (name, "platformkeycode"));
+}
+
+static bool
+keyboard_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	MoonlightKeyboardEventArgsObject *ea = (MoonlightKeyboardEventArgsObject*)npobj;
+
+	if (name_matches (name, "shift")) {
+		DEBUG_WARN_NOTIMPLEMENTED ("shift KeyboardEvent property");
+		BOOLEAN_TO_NPVARIANT (false, *result);
+		return true;
+	}
+	else if (name_matches (name, "ctrl")) {
+		DEBUG_WARN_NOTIMPLEMENTED ("ctrl KeyboardEvent property");
+		BOOLEAN_TO_NPVARIANT (false, *result);
+		return true;
+	} if (name_matches (name, "key")) {
+		INT32_TO_NPVARIANT (ea->key, *result);
+		return true;
+	}
+	else if (name_matches (name, "platformkeycode")) {
+		INT32_TO_NPVARIANT (ea->platformcode, *result);
+		return true;
+	}
+	else
+		return false;
+}
+
+static bool
+keyboard_event_has_method (NPObject *npobj, NPIdentifier name)
+{
+	return false;
+}
+
+static bool
+keyboard_event_invoke (NPObject *npobj, NPIdentifier name,
+		    const NPVariant *args, uint32_t argCount,
+		    NPVariant *result)
+{
+	return false;
+}
+
+
+MoonlightKeyboardEventArgsType::MoonlightKeyboardEventArgsType ()
+{
+	allocate = keyboard_event_allocate;
+	deallocate = keyboard_event_deallocate;
+	invalidate = keyboard_event_invalidate;
+
+	hasProperty = keyboard_event_has_property;
+	getProperty = keyboard_event_get_property;
+
+	hasMethod = keyboard_event_has_method;
+	invoke = keyboard_event_invoke;
+}
+
+MoonlightKeyboardEventArgsType* MoonlightKeyboardEventArgsClass;
+
+void
+KeyboardEventArgsPopulate (MoonlightKeyboardEventArgsObject *ea, KeyboardEventArgs *args)
+{
+	ea->state = args->state;
+	ea->platformcode = args->platformcode;
+	ea->key = args->key;
 }
 
 
@@ -1171,7 +1273,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 			return true;
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
-		
+
 		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
 		if (!element)
 			return true;
@@ -2899,6 +3001,7 @@ plugin_init_classes ()
 	MoonlightImageClass = new MoonlightImageType ();
 	MoonlightMediaElementClass = new MoonlightMediaElementType ();
 	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
+	MoonlightKeyboardEventArgsClass = new MoonlightKeyboardEventArgsType ();
 	MoonlightObjectClass = new MoonlightObjectType ();
 	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightScriptableObjectClass = new MoonlightScriptableObjectType ();

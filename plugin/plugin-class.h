@@ -46,6 +46,7 @@ class EventListenerProxy {
 	static EventArgsWrapper get_wrapper_for_event_name (const char *event_name);
 	static void default_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
+	static void keyboard_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure);
 };
 
@@ -127,6 +128,24 @@ struct MoonlightMouseEventArgsObject : MoonlightObject {
 };
 
 extern void MouseEventArgsPopulate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args);
+
+/*** MoonlightKeyboardEventArgsClass  **************************************************************/
+struct MoonlightKeyboardEventArgsType : MoonlightObjectType {
+	MoonlightKeyboardEventArgsType ();
+};
+
+extern MoonlightKeyboardEventArgsType* MoonlightKeyboardEventArgsClass;
+
+struct MoonlightKeyboardEventArgsObject : MoonlightObject {
+	MoonlightKeyboardEventArgsObject (NPP instance)
+	  : MoonlightObject (instance), state (0), key (0), platformcode (0) { }
+
+	int state;
+	int platformcode;
+	int key;
+};
+
+extern void KeyboardEventArgsPopulate (MoonlightKeyboardEventArgsObject *ea, KeyboardEventArgs *args);
 
 
 /*** MoonlightSettingsClass ***********************************************************/
