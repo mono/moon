@@ -86,8 +86,6 @@ p_downloader_send (gpointer state)
 
 	//
 	// TODO:
-	//   Register this download somewhere, so we can match it up in the
-	//   callback for NPN_GetURLNotify.
 	//
 	//   Write the data to the stream, we should reconsider the idea of
 	//   keeping everything in memory as whole documents and zip files
@@ -102,6 +100,22 @@ p_downloader_abort (gpointer state)
 {
 	fprintf (stderr, "moonlight-pluging: implement downloader abort\n");
 	DEBUGMSG ("downloader_abort");
+}
+
+void downloader_notify (const char* url, NPReason reason, StreamNotify *notify)
+{
+	Downloader *dl = (Downloader *) notify->pdata;
+	switch (reason) {
+	case NPRES_DONE:
+		dl->NotifyFinished (url);
+		break;
+	case NPRES_USER_BREAK:
+		dl->NotifyFailed ("User canceled download");
+		break;
+	case NPRES_NETWORK_ERR:
+		dl->NotifyFailed ("Network error occurred");
+		break;
+	}
 }
 
 void
