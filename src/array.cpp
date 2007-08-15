@@ -18,14 +18,17 @@
 static char**
 split_str (const char* s, int *count)
 {
+	char *trimmed = g_strdup (s);
+	g_strstrip (trimmed);
 	int n;
 	// FIXME - what are all the valid separators ? I've seen ',' and ' '
-	char** values = g_strsplit_set (s, ", ", 0);
+	char** values = g_strsplit_set (trimmed, ", ", 0);
 	if (count) {
 		// count non-NULL entries (which means we must skip NULLs later too)
 		for (n = 0; values[n]; n++);
 		*count = n;
 	}
+	g_free (trimmed);
 	return values;
 }
 
