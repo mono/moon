@@ -884,9 +884,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 		if (timeline->GetAutoReverse ())
 			span *= 2;
 
-		Value *v = timeline->GetValue (Timeline::BeginTimeProperty);
-		if (v)
-			span += v->AsTimeSpan();
+		span += timeline->GetBeginTime ();
 		
 		if (duration_span < span) {
 			duration_span = span;
