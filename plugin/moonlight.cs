@@ -250,9 +250,6 @@ namespace Moonlight {
 			error = 0;
 			Hosting.surface_attach (surface, p);
 
-			// Unref here because the managed instance we used to load the assembly is not used
-			NativeMethods.base_unref (p);
-
 			/*
 			m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
 			GetMethod ("SurfaceAttach", BindingFlags.Static | BindingFlags.NonPublic);
