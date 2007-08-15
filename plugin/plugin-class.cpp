@@ -590,14 +590,14 @@ mouse_event_has_property (NPObject *npobj, NPIdentifier name)
 static bool
 mouse_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
+	MoonlightMouseEventArgsObject *ea = (MoonlightMouseEventArgsObject*)npobj;
+
 	if (name_matches (name, "shift")) {
-		DEBUG_WARN_NOTIMPLEMENTED ("shift MouseEvent property");
-		BOOLEAN_TO_NPVARIANT (false, *result);
+		BOOLEAN_TO_NPVARIANT (ea->state & GDK_SHIFT_MASK != 0, *result);
 		return true;
 	}
 	else if (name_matches (name, "ctrl")) {
-		DEBUG_WARN_NOTIMPLEMENTED ("ctrl MouseEvent property");
-		BOOLEAN_TO_NPVARIANT (false, *result);
+		BOOLEAN_TO_NPVARIANT (ea->state & GDK_CONTROL_MASK != 0, *result);
 		return true;
 	}
 	else
@@ -697,13 +697,11 @@ keyboard_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 	MoonlightKeyboardEventArgsObject *ea = (MoonlightKeyboardEventArgsObject*)npobj;
 
 	if (name_matches (name, "shift")) {
-		DEBUG_WARN_NOTIMPLEMENTED ("shift KeyboardEvent property");
-		BOOLEAN_TO_NPVARIANT (false, *result);
+		BOOLEAN_TO_NPVARIANT (ea->state & GDK_SHIFT_MASK != 0, *result);
 		return true;
 	}
 	else if (name_matches (name, "ctrl")) {
-		DEBUG_WARN_NOTIMPLEMENTED ("ctrl KeyboardEvent property");
-		BOOLEAN_TO_NPVARIANT (false, *result);
+		BOOLEAN_TO_NPVARIANT (ea->state & GDK_CONTROL_MASK != 0, *result);
 		return true;
 	} if (name_matches (name, "key")) {
 		INT32_TO_NPVARIANT (ea->key, *result);
