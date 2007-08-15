@@ -368,6 +368,10 @@ TextBlock::SetFontSource (DependencyObject *downloader)
 void
 TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 {
+   	char *t = text_block_get_text (this);
+	if (!t || !*t)
+  		return;
+
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	Paint (cr);
