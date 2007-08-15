@@ -2254,9 +2254,6 @@ void
 xaml_set_parser_callbacks (xaml_create_custom_element_callback *cecb,
 			   xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue)
 {
-	if (installed_custom_element_callback)
-		return;
-
 	installed_custom_element_callback = cecb;
 	installed_custom_attribute_callback = sca;
 	installed_hookup_event_callback = hue;
