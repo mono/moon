@@ -38,7 +38,7 @@ public:
 static gpointer
 p_downloader_create_state (Downloader *dl)
 {
-	DEBUGMSG ("downloader_create_state");
+  //	DEBUGMSG ("downloader_create_state");
 
 	return new PluginDownloader (dl);
 }
@@ -68,7 +68,7 @@ p_downloader_send (gpointer state)
 {
 	PluginDownloader *pd = (PluginDownloader *) state;
 
-	fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
+	//	fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
 	//
 	// This is a hack: we need the p_downloader_create_state to provide us
 	// with the pointer to this plugin.    Currently we do not track this

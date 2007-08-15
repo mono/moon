@@ -381,7 +381,7 @@ PluginInstance::JsRunOnload ()
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {
-	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
+  //	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		*stype = NP_ASFILEONLY;
@@ -440,10 +440,10 @@ PluginInstance::TryLoad ()
 void
 PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 {
-	DEBUGMSG ("StreamAsFile: %s", fname);
+  //	DEBUGMSG ("StreamAsFile: %s", fname);
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-		DEBUGMSG ("LoadFromXaml: %s", fname);
+	  //		DEBUGMSG ("LoadFromXaml: %s", fname);
 		mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
 		TryLoad ();
 	}
