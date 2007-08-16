@@ -39,7 +39,6 @@ static gpointer
 p_downloader_create_state (Downloader *dl)
 {
   //	DEBUGMSG ("downloader_create_state");
-
 	return new PluginDownloader (dl);
 }
 
@@ -100,22 +99,6 @@ p_downloader_abort (gpointer state)
 {
 	fprintf (stderr, "moonlight-pluging: implement downloader abort\n");
 	DEBUGMSG ("downloader_abort");
-}
-
-void downloader_notify (const char* url, NPReason reason, StreamNotify *notify)
-{
-	Downloader *dl = (Downloader *) notify->pdata;
-	switch (reason) {
-	case NPRES_DONE:
-		dl->NotifyFinished (url);
-		break;
-	case NPRES_USER_BREAK:
-		dl->NotifyFailed ("User canceled download");
-		break;
-	case NPRES_NETWORK_ERR:
-		dl->NotifyFailed ("Network error occurred");
-		break;
-	}
 }
 
 void

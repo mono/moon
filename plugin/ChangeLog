@@ -1,5 +1,11 @@
 2007-08-16  Jackson Harper  <jackson@ximian.com>
 
+	* plugin.cpp:
+	* downloader.cpp: Remove my downloader event code, these are
+	raised elsewhere (they were hidden behind another bug yesterday).
+
+2007-08-16  Jackson Harper  <jackson@ximian.com>
+
 	* plugin-class.cpp: Fix cut&paste error that was preventing
 	GetValue from working (get value only needs one arg).
 

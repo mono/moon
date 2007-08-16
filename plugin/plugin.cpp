@@ -498,24 +498,9 @@ PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 	return len;
 }
 
-// Defined in plugin/downloader.cpp
-void downloader_notify (const char* url, NPReason reason, StreamNotify *notify);
-
 void
 PluginInstance::UrlNotify (const char* url, NPReason reason, void* notifyData)
 {
-	StreamNotify *notify = (StreamNotify *) notifyData;
-
-	switch (notify->type) {
-	case StreamNotify::NONE:
-	case StreamNotify::SOURCE:
-	case StreamNotify::REQUEST:
-		// for now I don't think any special actions are needed here
-		break;
-	case StreamNotify::DOWNLOADER:
-		downloader_notify (url, reason, notify);
-		break;
-	}
 }
 
 void
