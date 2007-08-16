@@ -464,8 +464,8 @@ transform_group_new (void)
 // TransformCollection
 //
 
-TransformCollection*
-transform_collection_new ()
+TransformCollection *
+transform_collection_new (void)
 {
 	return new TransformCollection ();
 }

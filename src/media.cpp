@@ -240,7 +240,7 @@ MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
 void 
 MediaElement::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
 {
-	((MediaElement*) data)->DataWrite (buf, offset, count);
+	((MediaElement *) data)->DataWrite (buf, offset, count);
 }
 
 void
@@ -255,7 +255,7 @@ MediaElement::size_notify (int64_t size, gpointer data)
 void
 MediaElement::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	((MediaElement*) closure)->DownloaderComplete ();
+	((MediaElement *) closure)->DownloaderComplete ();
 }
 
 void

@@ -11,6 +11,7 @@
 
 #include <gtk/gtk.h>
 
+#include "garray-ext.h"
 #include "collection.h"
 #include "panel.h"
 #include "geometry.h"
@@ -355,7 +356,7 @@ collection_iterator_reset (CollectionIterator *iterator)
 DependencyObject *
 collection_iterator_get_current (CollectionIterator *iterator, int *error)
 {
-	if (iterator->collection->generation != iterator->generation){
+	if (iterator->collection->generation != iterator->generation) {
 		*error = 1;
 		return NULL;
 	}
@@ -375,13 +376,12 @@ collection_iterator_destroy (CollectionIterator *iterator)
 
 VisualCollection::VisualCollection ()
 {
-	z_sorted_list = new List ();
+	z_sorted = g_ptr_array_new ();
 }
 
 VisualCollection::~VisualCollection ()
 {
-	z_sorted_list->Clear (true);
-	delete z_sorted_list;
+	g_ptr_array_free (z_sorted, true);
 }
 
 class UIElementNode : public List::Node {
@@ -398,12 +398,12 @@ UIElementNodeFinder (List::Node *uin, void *data)
 }
 
 static int
-UIElementNodeComparer (List::Node *ui1, List::Node *ui2)
+UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 {
-	int z1 = ((UIElementNode*)ui1)->item->GetValue(UIElement::ZIndexProperty)->AsInt32();
-	int z2 = ((UIElementNode*)ui2)->item->GetValue(UIElement::ZIndexProperty)->AsInt32();
+	int z1 = (*((UIElement **) ui1))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
+	int z2 = (*((UIElement **) ui2))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
 	int zdiff = z1 - z2;
-
+	
 	if (zdiff == 0)
 		return 0;
 	else if (zdiff < 0)
@@ -415,14 +415,7 @@ UIElementNodeComparer (List::Node *ui1, List::Node *ui2)
 void
 VisualCollection::ResortByZIndex ()
 {
-	z_sorted_list->Clear (true);
-
-	UIElementNode* n = (UIElementNode *) list->First ();
-	while (n != NULL) {
-		z_sorted_list->InsertSorted (new UIElementNode ((UIElement *) n->item), UIElementNodeComparer, true);
-
-		n = (UIElementNode *) n->Next ();
-	}
+	g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
 }
 
 
@@ -446,9 +439,11 @@ void
 VisualCollection::Add (DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
-
+	
 	Collection::Add (item);
-	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
+	
+	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
+	
 	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
@@ -462,11 +457,13 @@ DependencyObject *
 VisualCollection::SetVal (int index, DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
-
+	
 	UIElement *old = (UIElement *) Collection::SetVal (index, item);
-	z_sorted_list->Remove (UIElementNodeFinder, old);
-	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
-
+	
+	g_ptr_array_remove (z_sorted, old);
+	
+	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
+	
 	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
@@ -482,10 +479,11 @@ void
 VisualCollection::Insert (int index, DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
-
+	
 	Collection::Insert (index, item);
-	z_sorted_list->InsertSorted (new UIElementNode (item), UIElementNodeComparer, true);
-
+	
+	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
+	
 	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 		/* emit loaded events on the new item if the tree
 		   we're adding it to has already been "loaded" */
@@ -503,7 +501,9 @@ VisualCollection::Remove (DependencyObject *data)
 
  	item->Invalidate ();
 	bool b = Collection::Remove (item);
-	z_sorted_list->Remove (UIElementNodeFinder, item);
+	
+	g_ptr_array_remove (z_sorted, item);
+	
 	if (panel)
 		panel->UpdateBounds ();
 
@@ -523,7 +523,9 @@ VisualCollection::RemoveAt (int index)
 
  	item->Invalidate ();
 	bool b = Collection::RemoveAt (index);
-	z_sorted_list->Remove (UIElementNodeFinder, n->obj);
+	
+	g_ptr_array_remove (z_sorted, item);
+	
 	if (panel)
 		panel->UpdateBounds ();
 
@@ -535,10 +537,10 @@ VisualCollection::Clear ()
 {
 	if (list->Length() == 0)
 		return;
-
+	
 	Panel *panel = (Panel *) closure;
-
-	z_sorted_list->Clear (true);
+	
+	g_ptr_array_set_size (z_sorted, 0);
 	Collection::Clear ();
 
 	// we need to force the invalidate here if the bounds don't

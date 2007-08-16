@@ -19,6 +19,7 @@ libmooninclude_headers = \
 	downloader.h	\
 	error.h		\
 	frameworkelement.h \
+	garray-ext.h	\
 	geometry.h	\
 	mango.h		\
 	media.h		\
@@ -54,6 +55,7 @@ libmoon_la_SOURCES = 	\
 	dependencyobject.cpp	\
 	downloader.cpp	\
 	frameworkelement.cpp	\
+	garray-ext.cpp	\
 	geometry.cpp	\
 	list.cpp	\
 	mango.cpp	\

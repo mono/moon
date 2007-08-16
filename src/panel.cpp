@@ -16,7 +16,7 @@
 #include "brush.h"
 #include "collection.h"
 
-VisualCollection*
+VisualCollection *
 Panel::GetChildren ()
 {
 	return GetValue (Panel::ChildrenProperty)->AsVisualCollection();
@@ -42,7 +42,7 @@ panel_get_background (Panel *panel)
 	return value ? (Brush *) value->AsBrush () : NULL;
 }
 
-Panel*
+Panel *
 panel_new (void)
 {
 	return new Panel ();
@@ -208,8 +208,7 @@ void
 Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	VisualCollection *children = GetChildren ();
-	Collection::Node *cn;
-
+	
 	cairo_save (cr);  // for UIElement::ClipProperty
 
 	cairo_set_matrix (cr, &absolute_xform);
@@ -245,10 +244,9 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 	// path for the children
 	//
 	cairo_identity_matrix (cr);
-	cn = (Collection::Node *) children->z_sorted_list->First ();
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
-		UIElement *item = (UIElement *) cn->obj;
-
+	for (guint i = 0; i < children->z_sorted->len; i++) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+		
 		if (!item->GetVisible()) {
 #ifdef DEBUG_INVALIDATE
 			printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
@@ -343,15 +341,14 @@ UIElement *
 Panel::FindMouseOver (cairo_t *cr, double x, double y)
 {
 	VisualCollection *children = GetChildren ();
-	Collection::Node *cn;
-
+	
 	// Walk the list in reverse order, since it's sorted in ascending z-index order
 	//
-	for (cn = (Collection::Node *) children->z_sorted_list->Last (); cn != NULL; cn = (Collection::Node *) cn->Prev ()) {
-		UIElement *item = (UIElement *) cn->obj;
+	for (guint i = children->z_sorted->len; i > 0; i--) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
 
 		if (CheckOver (cr, item, x, y)) {
-		  //		  printf (" mouse_over = %s\n", item->GetName());
+			//printf (" mouse_over = %s\n", item->GetName());
 			return item;
 		}
 	}

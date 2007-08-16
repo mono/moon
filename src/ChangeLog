@@ -1,3 +1,19 @@
+2007-08-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* list.cpp (InsertSorted): For the stable evrsion, work backwards
+	instead of forwards (improves performance in the typical case,
+	altho we aren't gonna sue this feature anymore - z-sorted lists
+	will now be GPtrArrays).
+
+	* garray-ext.cpp|h: New src file containing an extension to
+	GPtrArray for inserting an item into a presorted array.
+
+	* collection.cpp (VisualCollection): z_sorted is now a GPtrArray,
+	updated all usages of it.
+
+	* panel.cpp (Render): Updated now that z_sorted is an array
+	instead of a linked list.
+
 2007-08-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Transforms can be set as attributes, they are just a

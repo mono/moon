@@ -181,16 +181,16 @@ List::InsertSorted (List::Node *node, NodeComparer cmp)
 List::Node *
 List::InsertSorted (List::Node *node, NodeComparer cmp, bool stable)
 {
-	List::Node *n = head;
+	List::Node *n = Last ();
 	
-	if (!cmp)
+	if (!cmp || !n)
 		return Append (node);
 	
 	if (!stable)
 		return InsertSorted (node, cmp);
 	
-	while (n->next && cmp (n, node) <= 0)
-		n = n->next;
+	while (n->prev && cmp (n, node) > 0)
+		n = n->prev;
 	
 	node->prev = n->prev;
 	node->next = n;

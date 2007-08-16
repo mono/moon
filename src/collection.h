@@ -91,7 +91,7 @@ class VisualCollection : public Collection {
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 
 	void ResortByZIndex ();
-	List *z_sorted_list;
+	GPtrArray *z_sorted;
 
  private:
 	void VisualUpdate (DependencyObject *data);
