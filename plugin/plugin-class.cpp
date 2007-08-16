@@ -1514,8 +1514,7 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "getValue")) {
-		if (argCount < 2
-		    || !NPVARIANT_IS_STRING (args[0])) {
+		if (argCount < 1 || !NPVARIANT_IS_STRING (args[0])) {
 			return true;
 		}
 

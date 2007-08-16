@@ -1,5 +1,10 @@
 2007-08-16  Jackson Harper  <jackson@ximian.com>
 
+	* plugin-class.cpp: Fix cut&paste error that was preventing
+	GetValue from working (get value only needs one arg).
+
+2007-08-16  Jackson Harper  <jackson@ximian.com>
+
 	* plugin-class.cpp: Add removeAt method to collections.
 
 2007-08-15  Jackson Harper  <jackson@ximian.com>
