@@ -1986,7 +1986,16 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		delete[] points;
 		break;
 	}
-	
+	case Type::TRANSFORM:
+	{
+		Value *mv = matrix_value_from_str (value);
+		MatrixTransform *t = new MatrixTransform ();
+
+		t->SetValue (MatrixTransform::MatrixProperty, mv);
+
+		obj->SetValue (prop, new Value (t));
+		break;
+	}
 	case Type::MATRIX:
 		obj->SetValue (prop, matrix_value_from_str (value));
 		break;
@@ -1996,7 +2005,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		break;
 	}
 	default:
-		printf ("could not find value type for: %s to '%s' %d\n", prop->name, value, prop->value_type);
+		printf ("could not find value type for: %s to '%s' %s\n", prop->name, value, Type::Find (prop->value_type)->name);
 		break;
 	}
 }
@@ -2193,6 +2202,16 @@ start_parse:
 				dep->SetValue (prop, Value (points, count));
 			}
 				break;
+			case Type::TRANSFORM:
+			{
+				Value *mv = matrix_value_from_str (attr [i + 1]);
+				MatrixTransform *t = new MatrixTransform ();
+
+				t->SetValue (MatrixTransform::MatrixProperty, mv);
+
+				dep->SetValue (prop, new Value (t));
+				break;
+			}
 			case Type::MATRIX:
 				dep->SetValue (prop, matrix_value_from_str (attr [i + 1]));
 				break;
@@ -2203,7 +2222,8 @@ start_parse:
 				break;
 			default:
 #ifdef DEBUG_XAML
-				printf ("could not find value type for: %s::%s %d\n", pname, attr [i + 1], prop->value_type);
+				printf ("could not find value type for: %s::%s %s\n", pname, attr [i + 1],
+						Type::Find (prop->value_type)->name);
 #endif
 				continue;
 			}

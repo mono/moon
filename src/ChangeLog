@@ -1,3 +1,10 @@
+2007-08-16  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Transforms can be set as attributes, they are just a
+	matrix in string form, that become a MatrixTransform on the
+	object.
+	- Made the debug a little nicer
+
 2007-08-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Since the callback setting is now a once per a domain
