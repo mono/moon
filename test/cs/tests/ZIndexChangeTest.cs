@@ -22,7 +22,7 @@ public class ZIndexChangeTest  : TestBase
 
 		/* by default, r2 should draw on top of r1, since they both have a
 		   zindex of 0 and r2 was added later. */
-		r1.ZIndex = 10;
+		r1.SetValue<int>(UIElement.ZIndexProperty, 10);
 	}
 
 	private Rectangle CreateRectangle(Point start, Point end)
