@@ -1694,6 +1694,7 @@ static const char *const
 moonlight_collection_methods [] = {
 	"add",
 	"remove",
+	"removeAt",
 	"insert",
 	"clear",
 	"getItem"
@@ -1756,6 +1757,17 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (args[0]);
 		col->Remove (el->dob);
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	}
+	else if (name_matches (name, "removeAt")) {
+		if (argCount < 1)
+			return true;
+
+		int index = NPVARIANT_TO_INT32 (args [0]);
+		col->RemoveAt (index);
 
 		VOID_TO_NPVARIANT (*result);
 

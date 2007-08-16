@@ -1,3 +1,7 @@
+2007-08-16  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Add removeAt method to collections.
+
 2007-08-15  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: Implement ctrl/shift for mouse and keyboard
