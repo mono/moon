@@ -430,7 +430,7 @@ PluginInstance::TryLoad ()
 	//
 	// missing file was NULL, if error is set, display some message
 	//
-	if (!this->isLoaded) {
+	if (!this->isLoaded && surface->GetToplevel ()) {
 		this->isLoaded = true;
 		if (this->onLoad)
 			JsRunOnload ();
