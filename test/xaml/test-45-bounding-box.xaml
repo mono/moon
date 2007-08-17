@@ -1,0 +1,10 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Canvas Background="#FF555555" Width="100" Height="100">
+		<Canvas.RenderTransform>
+			<TransformGroup>
+				<RotateTransform Angle="45" />
+				<TranslateTransform X="150" Y="150" />
+			</TransformGroup>
+		</Canvas.RenderTransform>
+	</Canvas>
+</Canvas>
