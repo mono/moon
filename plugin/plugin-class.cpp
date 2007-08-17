@@ -1167,7 +1167,8 @@ moonlight_content_properties[] = {
 	"actualHeight", // read only
 	"actualWidth",  // read only
 	"fullScreen",   // read write
-	"onResize"
+	"onResize",
+	"root"
 };
 
 static const char *const
@@ -1221,6 +1222,13 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 	else if (name_matches (name, "onResize")) {
 		// not implemented yet.
 		NULL_TO_NPVARIANT (*result);
+		return true;
+	}
+	else if (name_matches (name, "root")) {
+		DependencyObject *top = plugin->surface->GetToplevel ();
+		MoonlightDependencyObjectObject *topobj = DependencyObjectCreateWrapper (((MoonlightObject *) npobj)->instance, top);
+
+		OBJECT_TO_NPVARIANT (topobj, *result);
 		return true;
 	}
 	else {

@@ -1,3 +1,8 @@
+2007-08-17  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Add the Root property to the content
+	object. This just returns the top element.
+
 2007-08-17  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: use smcs to compile moonlight.exe
