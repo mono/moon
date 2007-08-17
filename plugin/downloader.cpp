@@ -53,10 +53,8 @@ p_downloader_open (const char *verb, const char *uri, gpointer state)
 {
 	PluginDownloader *pd = (PluginDownloader *) state;
 
-	if (pd->verb)
-		g_free (pd->verb);
-	if (pd->uri)
-		g_free (pd->uri);
+	g_free (pd->verb);
+	g_free (pd->uri);
 
 	pd->verb = g_strdup (verb);
 	pd->uri = g_strdup (uri);
@@ -97,12 +95,12 @@ p_downloader_send (gpointer state)
 static void
 p_downloader_abort (gpointer state)
 {
-	fprintf (stderr, "moonlight-pluging: implement downloader abort\n");
+	fprintf (stderr, "moonlight-plugin: implement downloader abort\n");
 	DEBUGMSG ("downloader_abort");
 }
 
 void
-downloader_initialize ()
+downloader_initialize (void)
 {
 	downloader_set_functions (
 			p_downloader_create_state,

@@ -31,7 +31,7 @@ static np_shutdown_func   shutdown;
 static np_getmime_func    getmime;
 
 static NPError
-load ()
+load (void)
 {
 	void *real_plugin = dlopen (PLUGIN_DIR "/plugin/libmoonplugin.so", RTLD_NOW);
 
