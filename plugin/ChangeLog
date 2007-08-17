@@ -1,3 +1,9 @@
+2007-08-17  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp|h: Add a duration object that is exposed to the
+	JS.
+	- Fix the value_to_variant to handle durations, rects and points.
+
 2007-08-17  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (moonlight_dependency_object_invoke): add

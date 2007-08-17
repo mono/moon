@@ -1,3 +1,7 @@
+2007-08-17  Jackson Harper  <jackson@ximian.com>
+
+	* clock.h: Add ToSeconds utility functions.
+
 2007-08-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* list.cpp (InsertSorted): For the stable evrsion, work backwards

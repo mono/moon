@@ -110,12 +110,23 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 	case Type::POINT: {
 		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightPointClass);
 		point->point = *v->AsPoint ();
+
+		OBJECT_TO_NPVARIANT (point, *result);
 		break;
 	}
 
 	case Type::RECT: {
 		MoonlightRect *rect = (MoonlightRect*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightRectClass);
 		rect->rect = *v->AsRect ();
+
+		OBJECT_TO_NPVARIANT (rect, *result);
+		break;
+	}
+	case Type::DURATION: {
+		MoonlightDuration *duration = (MoonlightDuration *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightDurationClass);
+		duration->duration = *v->AsDuration ();
+
+		OBJECT_TO_NPVARIANT (duration, *result);
 		break;
 	}
 
@@ -555,6 +566,71 @@ MoonlightRectType::MoonlightRectType ()
 }
 
 MoonlightRectType *MoonlightRectClass;
+
+
+/*** Durations ***/
+static NPObject*
+duration_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightDuration (instance);
+}
+
+static void
+duration_deallocate (NPObject *npobject)
+{
+	delete (MoonlightDuration*)npobject;
+}
+
+static bool
+duration_has_property (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "seconds") ||
+		name_matches (name, "name"));
+}
+
+static bool
+duration_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	MoonlightDuration *r = (MoonlightDuration*)npobj;
+	if (name_matches (name, "name")) {
+		string_to_npvariant ("", result);
+		return true;
+	}
+	else if (name_matches (name, "seconds")) {
+		INT32_TO_NPVARIANT (r->duration.ToSeconds (), *result);
+		return true;
+	}
+	else
+		return false;
+}
+
+static bool
+duration_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+{
+	MoonlightDuration *r = (MoonlightDuration*)npobj;
+	if (name_matches (name, "name")) {
+		return true;
+	}
+	else if (name_matches (name, "seconds")) {
+		r->duration = Duration::FromSeconds (NPVARIANT_TO_DOUBLE (*value));
+		return true;
+	}
+	else
+		return false;
+}
+
+
+MoonlightDurationType::MoonlightDurationType ()
+{
+	allocate = duration_allocate;
+	deallocate = duration_deallocate;
+	hasProperty = duration_has_property;
+	getProperty = duration_get_property;
+	setProperty = duration_set_property;
+}
+
+MoonlightDurationType *MoonlightDurationClass;
+
 
 /*** MoonlightMouseEventArgsClass  **************************************************************/
 
@@ -3031,5 +3107,8 @@ plugin_init_classes ()
 	MoonlightSettingsClass = new MoonlightSettingsType ();
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
 	MoonlightTextBlockClass = new MoonlightTextBlockType ();
+	MoonlightRectClass = new MoonlightRectType ();
+	MoonlightPointClass = new MoonlightPointType ();
+	MoonlightDurationClass = new MoonlightDurationType ();
 }
 

@@ -18,6 +18,7 @@
 G_BEGIN_DECLS
 
 #define TimeSpan_FromSeconds(s)  ((TimeSpan)(s) * 10000000)
+#define TimeSpan_ToSeconds(s)  ((TimeSpan)(s) / 10000000)
 
 // misc types
 typedef gint32 FillBehavior;
@@ -70,6 +71,10 @@ struct Duration {
 		return true;
 	}
 
+	gint32 ToSeconds ()
+	{
+		return TimeSpan_ToSeconds (timespan);
+	}
 
 	// This should live in a TimeSpan class, but oh well.. */
 	static Duration FromSeconds (int seconds) { return Duration (TimeSpan_FromSeconds (seconds)); }
@@ -219,7 +224,6 @@ void time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data);
 //
 // Clocks and timelines
 //
-
 
 class Timeline;
 class TimelineGroup;
