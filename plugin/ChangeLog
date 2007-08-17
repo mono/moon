@@ -1,3 +1,9 @@
+2007-08-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (moonlight_content_has/get/set_property): stub
+	the onFullScreenChange property, to just warn us about the
+	unimplemented functionality.
+
 2007-08-17  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp|h: Add a duration object that is exposed to the

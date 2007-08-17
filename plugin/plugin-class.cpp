@@ -1244,6 +1244,7 @@ moonlight_content_properties[] = {
 	"actualWidth",  // read only
 	"fullScreen",   // read write
 	"onResize",
+	"onFullScreenChange",
 	"root"
 };
 
@@ -1300,6 +1301,11 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 		NULL_TO_NPVARIANT (*result);
 		return true;
 	}
+	else if (name_matches (name, "onFullScreenChange")) {
+		// not implemented yet.
+		NULL_TO_NPVARIANT (*result);
+		return true;
+	}
 	else if (name_matches (name, "root")) {
 		DependencyObject *top = plugin->surface->GetToplevel ();
 		MoonlightDependencyObjectObject *topobj = DependencyObjectCreateWrapper (((MoonlightObject *) npobj)->instance, top);
@@ -1339,6 +1345,10 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 		// XXX store the proxy someplace in this object
 #endif
 		DEBUG_WARN_NOTIMPLEMENTED ("content onResize");
+		return true;
+	}
+	else if (name_matches (name, "onFullScreenChange")) {
+		DEBUG_WARN_NOTIMPLEMENTED ("content onFullScreenChange");
 		return true;
 	}
 	return false;
