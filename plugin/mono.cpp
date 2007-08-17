@@ -25,6 +25,19 @@ MonoMethod   *moon_load_xaml_str;
 MonoMethod   *moon_try_load;
 MonoMethod   *moon_insert_mapping;
 
+static MonoMethod *
+vm_get_method_from_name (const char *name)
+{
+	MonoMethod *method;
+	MonoMethodDesc *desc;
+
+	desc = mono_method_desc_new (name, TRUE);
+	method = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
+	mono_method_desc_free (desc);
+
+	return method;
+}
+
 gboolean
 vm_init (void)
 {
@@ -45,30 +58,15 @@ vm_init (void)
 		argv [1] = NULL;
 
 		mono_jit_exec (moon_domain, moon_boot_assembly, 1, argv);
-		
-		MonoMethodDesc *desc;
 
-		desc = mono_method_desc_new ("Moonlight.Hosting:CreateXamlFileLoader", TRUE);
-		moon_load_xaml_file = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
-		mono_method_desc_free (desc);
-
-		desc = mono_method_desc_new ("Moonlight.Hosting:CreateXamlStrLoader", TRUE);
-		moon_load_xaml_str = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
-		mono_method_desc_free (desc);
-
-		desc = mono_method_desc_new ("Moonlight.Loader:TryLoad", TRUE);
-		moon_try_load = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
-		mono_method_desc_free (desc);
-
-		desc = mono_method_desc_new ("Moonlight.Loader:InsertMapping", TRUE);
-		moon_insert_mapping = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
-		mono_method_desc_free (desc);
+		moon_load_xaml_file = vm_get_method_from_name ("Moonlight.Hosting:CreateXamlFileLoader");
+		moon_load_xaml_str = vm_get_method_from_name ("Moonlight.Hosting:CreateXamlStrLoader");
+		moon_try_load = vm_get_method_from_name ("Moonlight.Loader:TryLoad");
+		moon_insert_mapping = vm_get_method_from_name ("Moonlight.Loader:InsertMapping");
 
 		if (moon_load_xaml_file != NULL && moon_try_load != NULL){
 			result = TRUE;
-		}
-
-		
+		}		
 	}
 	DEBUGMSG ("Mono Runtime: %s", result ? "OK" : "Failed");
 	return result;
