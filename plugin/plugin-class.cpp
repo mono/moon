@@ -1349,7 +1349,8 @@ moonlight_dependency_object_methods [] = {
 	"removeEventListener",
 	"findName",
 	"setValue",
-	"getValue"
+	"getValue",
+	"toString"
 };
 
 static NPObject*
@@ -1546,6 +1547,10 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (((MoonlightObject*)npobj)->instance, element);
 
 		OBJECT_TO_NPVARIANT (depobj, *result);
+		return true;
+	}
+	else if (name_matches (name, "toString")) {
+		string_to_npvariant (dob->GetTypeName(), result);
 		return true;
 	}
 	else if (name_matches (name, "getHost")) {

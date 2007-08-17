@@ -1,3 +1,9 @@
+2007-08-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (moonlight_dependency_object_invoke): add
+	toString method for DependencyObjects, which just returns the type
+	name.
+
 2007-08-17  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: Properties are allowed to be null, so we still
