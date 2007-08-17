@@ -485,6 +485,11 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, Dependen
 {
 	// if a child changes its ZIndex property we need to resort our Children
 	if (prop == UIElement::ZIndexProperty) {
+		// FIXME: it would probably be faster to remove the
+		// changed item and then re-add it using
+		// g_ptr_array_insert_sorted() because
+		// g_ptr_array_sort() uses QuickSort which has poor
+		// performance on nearly-sorted input.
 		GetChildren()->ResortByZIndex ();
 	}
 }
