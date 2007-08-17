@@ -54,4 +54,4 @@ DISTCLEANFILES=moonlight.exe moonlight.exe.mdb
 moonlight_CS=  $(srcdir)/moonlight.cs
 
 moonlight.exe: $(moonlight_CS)
-	gmcs -debug -out:moonlight.exe $(moonlight_CS) -pkg:silver -pkg:agmono
+	smcs -debug -out:moonlight.exe $(moonlight_CS) -pkg:silver -r:agmono
