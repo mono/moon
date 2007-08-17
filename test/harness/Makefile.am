@@ -6,13 +6,10 @@ xaml2png_SOURCES=xaml2png.cpp
 xaml2png_LDADD=$(top_builddir)/src/libmoon.la
 
 MOON_TESTS= \
-	../xaml/nested-canvas.xaml \
 	../xaml/test-brush-linear.xaml \
 	../xaml/test-brush-radial.xaml \
 	../xaml/test-canvas-inside-canvas.xaml \
 	../xaml/test-colors.xaml \
-	../xaml/test-custom-element.xaml \
-	../xaml/test-custom-namespace.xaml \
 	../xaml/test-geometry-collection.xaml \
 	../xaml/test-imagebrush-opacity.xaml \
 	../xaml/test-imagebrush-transform.xaml \
