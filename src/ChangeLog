@@ -1,5 +1,12 @@
 2007-08-17  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp (strcase_equal, strcase_hash): new case
+	insensitive hash functions.
+	(RegisterFull): the property hash tables (per type, used for
+	GetDependencyProperty) need to be case insensitive.
+
+2007-08-17  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp: remove Hidden from the visibility_map.
 	(enum_from_str): if we don't see a name we recognize, try to parse
 	it as a number.  This could maybe be someplace else.

@@ -506,6 +506,26 @@ DependencyObject::RegisterNullable (Type::Kind type, const char *name, Type::Kin
 	return property;
 }
 
+static gboolean
+strcase_equal (gconstpointer  v1,
+	       gconstpointer  v2)
+{
+	return !g_strcasecmp ((char*)v1, (char*)v2);
+}
+
+static guint
+strcase_hash (gconstpointer v)
+{
+	char *case_v = g_strdup ((char*)v);
+
+	for (char *p = case_v; *p != 0; p ++)
+		*p = g_ascii_tolower (*p);
+
+	guint rv = g_str_hash (case_v);
+	g_free (case_v);
+	return rv;
+}
+
 //
 // Register the dependency property that belongs to @type with the name @name
 // The default value is @default_value (if provided) and the type that can be
@@ -526,7 +546,7 @@ DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *defaul
 	table = (GHashTable*) g_hash_table_lookup (properties, &property->type);
 
 	if (table == NULL) {
-		table = g_hash_table_new_full (g_str_hash, g_str_equal,
+		table = g_hash_table_new_full (strcase_hash, strcase_equal,
 					       NULL, free_property);
 		g_hash_table_insert (properties, &property->type, table);
 	}
