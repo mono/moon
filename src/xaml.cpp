@@ -1715,7 +1715,6 @@ enum_map_t text_wrapping_map [] = {
 enum_map_t visibility_map [] = {
 	{ "Visible", 0 },
 	{ "Collapsed", 1 },
-	{ "Hidden", 2 },
 	{ NULL, 0 },
 };
 
@@ -1726,8 +1725,7 @@ int enum_from_str (const enum_map_t *emu, const char *str)
 			return emu [i].value;
 	}
 
-	// This mind wind up being a legal value, so maybe we should blow up here?
-	return -1;
+	return (int) strtol (str, NULL, 10);
 }
 
 XamlElementInstance *

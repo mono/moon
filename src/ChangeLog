@@ -1,3 +1,20 @@
+2007-08-17  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp: remove Hidden from the visibility_map.
+	(enum_from_str): if we don't see a name we recognize, try to parse
+	it as a number.  This could maybe be someplace else.
+
+	* enums.h: remove VisibilityHidden
+
+	* uielement.h, uielement.cpp: remove
+	VisibilityHidden/LAYOUT_VISIBLE
+
+	* control.h: remove GetLayoutVisible.
+
+	* panel.cpp (ComputeBounds): switch from item->GetLayoutVisible to
+	item->GetVisible, since there's no need to distinguish between the
+	two anymore.
+
 2007-08-17  Jackson Harper  <jackson@ximian.com>
 
 	* clock.h: Add ToSeconds utility functions.

@@ -41,7 +41,6 @@ class Control : public FrameworkElement {
 	virtual void Leave ();
 
 	virtual bool GetVisible () { return real_object && real_object->GetVisible(); }
-	virtual bool GetLayoutVisible () { return real_object && real_object->GetLayoutVisible(); }
 	virtual bool GetHitTestVisible () { return real_object && real_object->GetHitTestVisible(); }
 
 	virtual void OnLoaded ();

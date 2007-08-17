@@ -54,8 +54,7 @@ enum SweepDirection {
 
 enum Visibility {
 	VisibilityVisible,
-	VisibilityCollapsed, /* Not handled, treated like Hidden */
-	VisibilityHidden
+	VisibilityCollapsed
 };
 
 enum CollectionChangeType {

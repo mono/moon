@@ -53,7 +53,7 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	exit (1);
 }
 
-UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE | UIElement::HIT_TEST_VISIBLE)
+UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE)
 {
 	LoadedEvent = RegisterEvent ("Loaded");
 	MotionEvent = RegisterEvent ("MouseMove");
@@ -99,16 +99,11 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	else if (prop == UIElement::VisibilityProperty) {
 		switch (GetValue (prop)->AsInt32()) {
 		case VisibilityVisible:
-			flags |= UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE;
-			Invalidate ();
-			break;
-		case VisibilityHidden:
-			flags &= ~UIElement::RENDER_VISIBLE;
-			flags |= UIElement::LAYOUT_VISIBLE;
+			flags |= UIElement::RENDER_VISIBLE;
 			Invalidate ();
 			break;
 		case VisibilityCollapsed:
-			flags &= ~(UIElement::RENDER_VISIBLE | UIElement::LAYOUT_VISIBLE);
+			flags &= ~UIElement::RENDER_VISIBLE;
 			FullInvalidate (true);
 			break;
 		default:

@@ -137,7 +137,7 @@ Panel::ComputeBounds ()
 
 		// if the item doesn't take part in layout
 		// calculations, skip it
-		if (!item->GetLayoutVisible ())
+		if (!item->GetVisible ())
 			continue;
 
 		Rect r = item->GetBounds ();
