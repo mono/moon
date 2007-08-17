@@ -10,8 +10,8 @@ if [ x$mode != "xbaseline" -a x$mode != "xtest" ] ; then
 fi
 
 resultprefix=`basename $tst`
-resultpng=result-$resultprefix.png
-basepng=baseline-$resultprefix.png
+resultpng=results/$resultprefix.png
+basepng=baselines/$resultprefix.png
 differencespng=differences-$resultprefix.png
 
 if test x$mode == "xbaseline"; then
