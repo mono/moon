@@ -1470,7 +1470,7 @@ moonlight_dependency_object_get_property (NPObject *npobj, NPIdentifier name, NP
 			string_to_npvariant ("", result);
 			return true;
 		}
-		return false;
+		return true;
 	}
 
 	value_to_variant (npobj, value, result);

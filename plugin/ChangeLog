@@ -1,5 +1,10 @@
 2007-08-17  Jackson Harper  <jackson@ximian.com>
 
+	* plugin-class.cpp: Properties are allowed to be null, so we still
+	return true if the value is null.
+
+2007-08-17  Jackson Harper  <jackson@ximian.com>
+
 	* plugin-class.cpp: Add the Root property to the content
 	object. This just returns the top element.
 
