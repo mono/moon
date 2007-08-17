@@ -9,7 +9,7 @@ class X {
 		Application.Init ();
 
 		GtkSilver silver = new GtkSilver (400, 400);
-		
+
 		Downloader d = new Downloader ();
 		d.Completed += delegate {
 			Console.WriteLine ("DOWNLOADER: completed");
@@ -26,10 +26,10 @@ class X {
 		};
 
 		if (args.Length == 0){
-			d.Open ("GET", new Uri ("file:///tmp/image.png"), true);
+			d.Open ("GET", new Uri ("file:///tmp/image.png"));
 			d.Send ();
 		} else {
-			d.Open ("GET", new Uri (args [0]), true);
+			d.Open ("GET", new Uri (args [0]));
 			d.Send ();
 		}
 		Application.Run ();
