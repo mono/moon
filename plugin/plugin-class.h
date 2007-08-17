@@ -125,6 +125,19 @@ struct MoonlightDuration : MoonlightObject {
 	Duration duration;
 };
 
+/*** MoonlightTimeSpanClass  **************************************************************/
+struct MoonlightTimeSpanType : MoonlightObjectType {
+	MoonlightTimeSpanType ();
+};
+
+extern MoonlightTimeSpanType* MoonlightTimeSpanClass;
+
+struct MoonlightTimeSpan : MoonlightObject {
+	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), timespan (0) { }
+
+	TimeSpan timespan;
+};
+
 /*** MoonlightMouseEventArgsClass  **************************************************************/
 struct MoonlightMouseEventArgsType : MoonlightObjectType {
 	MoonlightMouseEventArgsType ();

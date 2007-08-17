@@ -130,6 +130,14 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 		break;
 	}
 
+	case Type::TIMESPAN: {
+		MoonlightTimeSpan *timespan = (MoonlightTimeSpan *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightTimeSpanClass);
+		timespan->timespan = v->AsTimeSpan ();
+
+		OBJECT_TO_NPVARIANT (timespan, *result);
+		break;
+	}
+
 	/* more builtins.. */
 	default:
 		if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
@@ -630,6 +638,71 @@ MoonlightDurationType::MoonlightDurationType ()
 }
 
 MoonlightDurationType *MoonlightDurationClass;
+
+
+/*** TimeSpans ***/
+static NPObject*
+timespan_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightTimeSpan (instance);
+}
+
+static void
+timespan_deallocate (NPObject *npobject)
+{
+	delete (MoonlightTimeSpan*)npobject;
+}
+
+static bool
+timespan_has_property (NPObject *npobj, NPIdentifier name)
+{
+	return (name_matches (name, "seconds") ||
+		name_matches (name, "name"));
+}
+
+static bool
+timespan_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	MoonlightTimeSpan *r = (MoonlightTimeSpan*)npobj;
+	if (name_matches (name, "name")) {
+		string_to_npvariant ("", result);
+		return true;
+	}
+	else if (name_matches (name, "seconds")) {
+		INT32_TO_NPVARIANT (TimeSpan_ToSeconds (r->timespan), *result);
+		return true;
+	}
+	else
+		return false;
+}
+
+static bool
+timespan_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
+{
+	MoonlightTimeSpan *r = (MoonlightTimeSpan*)npobj;
+	if (name_matches (name, "name")) {
+		return true;
+	}
+	else if (name_matches (name, "seconds")) {
+		r->timespan = TimeSpan_FromSeconds (NPVARIANT_TO_DOUBLE (*value));
+		return true;
+	}
+	else
+		return false;
+}
+
+
+MoonlightTimeSpanType::MoonlightTimeSpanType ()
+{
+	allocate = timespan_allocate;
+	deallocate = timespan_deallocate;
+	hasProperty = timespan_has_property;
+	getProperty = timespan_get_property;
+	setProperty = timespan_set_property;
+}
+
+MoonlightTimeSpanType *MoonlightTimeSpanClass;
+
 
 
 /*** MoonlightMouseEventArgsClass  **************************************************************/
@@ -3120,5 +3193,6 @@ plugin_init_classes ()
 	MoonlightRectClass = new MoonlightRectType ();
 	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
+	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 }
 
