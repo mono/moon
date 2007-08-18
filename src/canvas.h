@@ -32,8 +32,6 @@ class Canvas : public Panel {
 
 	Point GetTransformOrigin ();
 
-	virtual void ChildInvalidated (UIElement *child, Rect r);
-
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 

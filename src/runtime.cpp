@@ -40,6 +40,7 @@
 #include "value.h"
 #include "namescope.h"
 #include "xaml.h"
+#include "dirty.h"
 
 //#define DEBUG_INVALIDATE 1
 #define DEBUG_REFCNT 0
@@ -335,6 +336,9 @@ Surface::Invalidate (Rect r)
 void
 Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 {
+	if (is_anything_dirty())
+		process_dirty_elements();
+	
 	toplevel->DoRender (ctx, x, y, width, height);
 }
 

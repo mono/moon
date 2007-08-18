@@ -42,6 +42,9 @@ class UIElement : public Visual {
 
 	UIElement *parent;
 
+	int dirty_flags;
+	Rect dirty_rect;
+
 	int DumpHierarchy (UIElement *obj);
 
 	enum UIElementFlags {
@@ -62,6 +65,13 @@ class UIElement : public Visual {
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
 
+	// the transform to be multiplied by our parent transform to compute absolute_xform
+	cairo_matrix_t local_transform;
+
+	cairo_matrix_t parent_transform;
+
+	Point transform_origin;
+
 	virtual Surface *GetSurface () { return parent ? parent->GetSurface() : NULL; }
 
 	//
@@ -70,6 +80,8 @@ class UIElement : public Visual {
 	//   opacity as well as the value of its OpacityProperty.
 	//
 	virtual void UpdateTotalOpacity ();
+
+	void ComputeTotalOpacity ();
 
 	// GetTotalOpacity
 	//   Get the cumulative opacity of this element, including all it's parents
@@ -80,6 +92,9 @@ class UIElement : public Visual {
 	//   Updates the absolute_xform for this item
 	//
 	virtual void UpdateTransform ();
+
+	void ComputeLocalTransform ();
+	void ComputeTransform ();
 
 	//
 	// GetVisible:
@@ -139,8 +154,6 @@ class UIElement : public Visual {
 	//   implemented by containers
 
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
-
-	virtual void ChildInvalidated (UIElement *item, Rect r);
 
 	//
 	// Recomputes the bounding box, requests redraws, 

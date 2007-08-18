@@ -754,7 +754,7 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 {
 	if (prop == TextBlock::ForegroundProperty) {
 		CalcActualWidthHeight (NULL);
-		UpdateBounds (true);
+		Invalidate ();
 	} else
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }

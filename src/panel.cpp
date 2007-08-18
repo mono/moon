@@ -14,6 +14,7 @@
 #include "geometry.h"
 #include "panel.h"
 #include "brush.h"
+#include "math.h"
 #include "collection.h"
 
 VisualCollection *
@@ -53,7 +54,6 @@ Panel::Panel ()
 	this->SetValue (Panel::ChildrenProperty, Value (new VisualCollection ()));
 	background = NULL;
 	mouse_over = NULL;
-	ignore_invalidates = false;
 }
 
 Panel::~Panel ()
@@ -62,50 +62,6 @@ Panel::~Panel ()
 		background->Detach (NULL, this);
 		background->unref ();
 	}
-}
-
-void
-Panel::UpdateTotalOpacity ()
-{
-	VisualCollection *children = GetChildren ();
-	FrameworkElement::UpdateTotalOpacity ();
-	Collection::Node *n;
-
-	ignore_invalidates = true;
-
-	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
-	n = (Collection::Node *) children->list->First ();
-	while (n != NULL) {
-		UIElement *item = (UIElement *) n->obj;
-		
-		item->UpdateTotalOpacity ();
-		
-		n = (Collection::Node *) n->Next ();
-	}
-
-	ignore_invalidates = false;
-}
-
-void
-Panel::UpdateTransform ()
-{
-	VisualCollection *children = GetChildren ();
-	FrameworkElement::UpdateTransform ();
-	Collection::Node *n;
-
-	ignore_invalidates = true;
-
-	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
-	n = (Collection::Node *) children->list->First ();
-	while (n != NULL) {
-		UIElement *item = (UIElement *) n->obj;
-		
-		item->UpdateTransform ();
-		
-		n = (Collection::Node *) n->Next ();
-	}
-
-	ignore_invalidates = false;
 }
 
 #define DEBUG_BOUNDS 0
@@ -144,8 +100,8 @@ Panel::ComputeBounds ()
 
 #if DEBUG_BOUNDS
 		space (levelb + 4);
-		printf ("Item (%s) bounds %g %g %g %g\n", 
-			dependency_object_get_name (item),r.x, r.y, r.w, r.h);
+		printf ("Item (%s, 5s) bounds %g %g %g %g\n", 
+			dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
 #endif
 		if (first) {
 			bounds = r;
@@ -167,7 +123,9 @@ Panel::ComputeBounds ()
 		cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
 		cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
 
-		Rect fw_rect = Rect (x1, y1, x2 - x1, y2 - y1);
+		Rect fw_rect = Rect (MIN (x1, x2), MIN (y1, y2),
+				     MAX (x1, x2) - MIN (x1, x2),
+				     MAX (y1, y2) - MIN (y1, y2));
 
 		if (first)
 			bounds = fw_rect;
@@ -190,15 +148,6 @@ Panel::ComputeBounds ()
 #endif
 }
 
-
-void
-Panel::ChildInvalidated (UIElement *child, Rect r)
-{
-  	if (ignore_invalidates)
-  		return;
-
-	FrameworkElement::Invalidate (r);
-}
 
 static int level = 0;
 

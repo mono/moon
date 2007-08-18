@@ -73,13 +73,6 @@ Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	cairo_matrix_translate (result, left, top);
 }
 
-void
-Control::ChildInvalidated (UIElement *item, Rect r)
-{
-	if (parent)
-		parent->ChildInvalidated (item, r);
-}
-
 bool 
 Control::InsideObject (cairo_t *cr, double x, double y)
 {

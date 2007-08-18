@@ -370,7 +370,7 @@ void
 Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == Shape::FillProperty || prop == Shape::StrokeProperty) {
-		UpdateBounds (true);
+		Invalidate ();
 	}
 	else
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
@@ -563,6 +563,59 @@ Ellipse::Draw (cairo_t *cr)
 	}
 
 	moon_ellipse (cr, 0, 0, w, h);
+}
+
+void
+Ellipse::ComputeBounds ()
+{
+	bounds = Rect (0,0,0,0);
+
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch == StretchNone)
+		return;
+
+	double w = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
+
+	switch (stretch) {
+	case StretchUniform:
+		w = h = (w < h) ? w : h;
+		break;
+	case StretchUniformToFill:
+		w = h = (w > h) ? w : h;
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	case StretchNone:
+		/* not reached */
+		break;
+	}
+
+	double x1, x2, y1, y2;
+	
+	x1 = y1 = 0.0;
+	x2 = w;
+	y2 = h;
+
+	if (x2 != 0.0 && y2 != 0.0) {
+		cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
+		cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
+
+		bounds = Rect (MIN (x1, x2), MIN (y1, y2),
+			       fabs (x2 - x1), fabs (y2 - y1));
+
+		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	}
+
+	/* standard "grow the rectangle by enough to cover our
+	   asses because of cairo's floating point rendering"
+	   thing */
+	bounds.x -= 1;
+	bounds.y -= 1;
+	bounds.w += 2;
+	bounds.h += 2;
 }
 
 Point

@@ -42,6 +42,11 @@ struct Rect {
 		return ((x < rect.x + rect.w) && (x + w > rect.x) && (y < rect.y + rect.h) && (y + h > rect.y));
 	}
 
+	bool IsEmpty ()
+	{
+		return x == 0 && y == 0 && w == 0 && h == 0;
+	}
+
 	Rect Intersection (const Rect& rect)
 	{
 		Rect result = Rect ();
@@ -59,6 +64,17 @@ struct Rect {
 		result.y = y < rect.y ? y : rect.y;
 		result.w = ((x + w > rect.x + rect.w) ? (x + w) : (rect.x + rect.w)) - result.x;
 		result.h = ((y + h > rect.y + rect.h) ? (y + h) : (rect.y + rect.h)) - result.y;
+		return result;
+	}
+
+	Rect GrowBy (double d)
+	{
+		Rect result = *this;
+		result.x -= d;
+		result.y -= d;
+		result.w += 2*d;
+		result.h += 2*d;
+
 		return result;
 	}
 
