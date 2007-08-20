@@ -10,6 +10,8 @@
 #ifndef __MOON_RECT_H__
 #define __MOON_RECT_H__
 
+#include <cairo.h>
+
 // map to System.Windows.Rect
 struct Rect {
  public:
@@ -76,6 +78,7 @@ struct Rect {
 G_BEGIN_DECLS
 
 Rect rect_from_str (const char *s);
+Rect bounding_rect_for_transformed_rect (cairo_matrix_t *transform, Rect r);
 
 G_END_DECLS
 

@@ -164,10 +164,9 @@ Panel::ComputeBounds ()
 	y2 = framework_element_get_height (this);
 
 	if (x2 != 0.0 && y2 != 0.0) {
-		cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
-		cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
 
-		Rect fw_rect = Rect (x1, y1, x2 - x1, y2 - y1);
+		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
+								   Rect (x1,y1,x2,y2));
 
 		if (first)
 			bounds = fw_rect;

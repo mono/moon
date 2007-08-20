@@ -1,3 +1,13 @@
+2007-08-20  Chris Toshok  <toshok@ximian.com>
+
+	* rect.h, rect.cpp (bounding_rect_for_transformed_rect): horrible
+	name, I know, but we need this functionality.  it's not enough to
+	use UL and LR corners of the rectangle when computing the bounding
+	rect for a transformed rectangle.  we have to test all 4 points.
+
+	* panel.cpp (ComputeBounds): use
+	bounding_rect_for_transformed_rect.
+
 2007-08-17  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (strcase_equal, strcase_hash): new case
