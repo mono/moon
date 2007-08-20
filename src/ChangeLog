@@ -1,5 +1,10 @@
 2007-08-20  Chris Toshok  <toshok@ximian.com>
 
+	* rect.cpp (bounding_rect_for_transformed_rect): oops, got
+	MAX2/MIN2 mixed up.
+
+2007-08-20  Chris Toshok  <toshok@ximian.com>
+
 	* rect.h, rect.cpp (bounding_rect_for_transformed_rect): horrible
 	name, I know, but we need this functionality.  it's not enough to
 	use UL and LR corners of the rectangle when computing the bounding
