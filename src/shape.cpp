@@ -255,30 +255,46 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_restore (cr);
 }
 
-void 
+void
 Shape::ComputeBounds ()
 {
-	double x1, y1, x2, y2;
-	cairo_t* cr = measuring_context_create ();
+	bounds = Rect (0,0,0,0);
 
-	cairo_save (cr);
-	// dont do the operation
-	DoDraw (cr, false, true);
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch == StretchNone)
+		return;
 
-	// XXX this next call will hopefully become unnecessary in a
-	// later version of cairo.
-	cairo_identity_matrix (cr);
-	if (stroke)
-		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	else
-		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+	double w = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
 
-	cairo_new_path (cr);
-	cairo_restore (cr);
+	switch (stretch) {
+	case StretchUniform:
+		w = h = (w < h) ? w : h;
+		break;
+	case StretchUniformToFill:
+		w = h = (w > h) ? w : h;
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	case StretchNone:
+		/* not reached */
+		break;
+	}
 
-	bounds = Rect (x1-1, y1-1, x2-x1 + 2, y2-y1 + 2);
+	if (w != 0.0 && h != 0.0) {
 
-	measuring_context_destroy (cr);
+		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+							     Rect (0,0,w,h));
+
+		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	}
+
+	/* standard "grow the rectangle by enough to cover our
+	   asses because of cairo's floating point rendering"
+	   thing */
+	bounds.GrowBy(1);
 }
 
 void
@@ -563,59 +579,6 @@ Ellipse::Draw (cairo_t *cr)
 	}
 
 	moon_ellipse (cr, 0, 0, w, h);
-}
-
-void
-Ellipse::ComputeBounds ()
-{
-	bounds = Rect (0,0,0,0);
-
-	Stretch stretch = shape_get_stretch (this);
-	if (stretch == StretchNone)
-		return;
-
-	double w = framework_element_get_width (this);
-	double h = framework_element_get_height (this);
-
-	switch (stretch) {
-	case StretchUniform:
-		w = h = (w < h) ? w : h;
-		break;
-	case StretchUniformToFill:
-		w = h = (w > h) ? w : h;
-		break;
-	case StretchFill:
-		/* nothing needed here.  the assignment of w/h above
-		   is correct for this case. */
-		break;
-	case StretchNone:
-		/* not reached */
-		break;
-	}
-
-	double x1, x2, y1, y2;
-	
-	x1 = y1 = 0.0;
-	x2 = w;
-	y2 = h;
-
-	if (x2 != 0.0 && y2 != 0.0) {
-		cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
-		cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
-
-		bounds = Rect (MIN (x1, x2), MIN (y1, y2),
-			       fabs (x2 - x1), fabs (y2 - y1));
-
-		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
-	}
-
-	/* standard "grow the rectangle by enough to cover our
-	   asses because of cairo's floating point rendering"
-	   thing */
-	bounds.x -= 1;
-	bounds.y -= 1;
-	bounds.w += 2;
-	bounds.h += 2;
 }
 
 Point

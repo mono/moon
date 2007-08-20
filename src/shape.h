@@ -118,7 +118,6 @@ class Ellipse : public Shape {
 	virtual Point GetTransformOrigin ();
 
 	void Draw (cairo_t *cr);
-	virtual void ComputeBounds ();
 };
 
 Ellipse *ellipse_new (void);
