@@ -168,8 +168,6 @@ namespace Gtk.Moonlight {
 				return;
 			}
 
-			Console.WriteLine ("opening uri " + uri);
-
 			try {
 				try {
 					request = WebRequest.Create (uri);
