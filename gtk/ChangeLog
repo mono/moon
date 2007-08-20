@@ -1,3 +1,9 @@
+2007-08-20  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedDownloader.cs: remove the special case for files - it
+	breaks the async semantics of the downloader class, and keeps
+	mopen from working with monotone.
+
 2007-07-16  Miguel de Icaza  <miguel@novell.com>
 
 	* ManagedDownloader.cs: Do not use the auto_reset event after the

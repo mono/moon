@@ -69,14 +69,7 @@ namespace Gtk.Moonlight {
 		IAsyncResult async_result;
 		volatile bool downloading = true;
 
-		//
-		// Either request is non-null, or fname is non-null.
-		// This is merely an optimization: for fname, instead of going
-		// through FileWebRequest threads and the gtk main loop, we just
-		// emit the ready signal as soon as we can.
-		//
 		WebRequest request = null;
-		string fname;
 		
 		TickCall tick_call;
 
@@ -144,17 +137,6 @@ namespace Gtk.Moonlight {
 		//
 		void Start ()
 		{
-			// Special case: local file, just notify that we are done
-			
-			if (fname != null){
-				if (File.Exists (fname))
-					downloader_notify_finished (downloader, fname);
-				else
-					downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
-
-				return;
-			}
-
 			//
 			// Need to use a separate thread
 			//
@@ -186,21 +168,19 @@ namespace Gtk.Moonlight {
 				return;
 			}
 
+			Console.WriteLine ("opening uri " + uri);
+
 			try {
-				if (uri.StartsWith ("file://"))
-					fname = uri.Substring (7);
-				else {
-					try {
-						request = WebRequest.Create (uri);
-					} catch (UriFormatException){
-						fname = Path.GetFullPath (uri);
-					}
+				try {
+					request = WebRequest.Create (uri);
+				} catch (UriFormatException){
+					request = WebRequest.Create ("file://" + Path.GetFullPath (uri));
 				}
 			} catch (Exception e){
 				Console.WriteLine ("An error happened with the given url {0}", e);
 				// Do something with this
 			}
-			if (request == null && fname == null){
+			if (request == null) {
 				Console.WriteLine ("An error happened with the given url, the result was null");
 				return;
 			}
