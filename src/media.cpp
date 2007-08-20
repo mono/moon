@@ -160,21 +160,8 @@ MediaElement::~MediaElement ()
 void
 MediaElement::ComputeBounds ()
 {
-	double x1, y1, x2, y2;
-	cairo_t *cr = measuring_context_create ();
-	
-	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
-	cairo_rectangle (cr, 0, 0, mplayer->width, mplayer->height);
-	// XXX this next call will hopefully become unnecessary in a
-	// later version of cairo.
-	cairo_identity_matrix (cr);
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	cairo_restore (cr);
-	
-	bounds = Rect (x1 - 1, y1 - 1, x2-x1 + 2, y2-y1 + 2);
-	
-	measuring_context_destroy (cr);
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+						     Rect (0,0,mplayer->width,mplayer->height));
 }
 
 Point

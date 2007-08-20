@@ -120,12 +120,9 @@ Panel::ComputeBounds ()
 	y2 = framework_element_get_height (this);
 
 	if (x2 != 0.0 && y2 != 0.0) {
-		cairo_matrix_transform_point (&absolute_xform, &x1, &y1);
-		cairo_matrix_transform_point (&absolute_xform, &x2, &y2);
 
-		Rect fw_rect = Rect (MIN (x1, x2), MIN (y1, y2),
-				     MAX (x1, x2) - MIN (x1, x2),
-				     MAX (y1, y2) - MIN (y1, y2));
+		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
+								   Rect (x1,y1,x2,y2));
 
 		if (first)
 			bounds = fw_rect;
@@ -136,10 +133,7 @@ Panel::ComputeBounds ()
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
 	   thing */
-	bounds.x -= 1;
-	bounds.y -= 1;
-	bounds.w += 2;
-	bounds.h += 2;
+	bounds.GrowBy (1);
 
 #if DEBUG_BOUNDS
 	space (levelb);
