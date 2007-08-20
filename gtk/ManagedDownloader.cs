@@ -93,6 +93,25 @@ namespace Gtk.Moonlight {
 
 		void Download ()
 		{
+			// Special case: local file, just notify that we are done
+			
+			if (fname != null) {
+				if (File.Exists (fname)) {
+					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						tick_call = null;
+						downloader_notify_finished (downloader, fname);
+					}, IntPtr.Zero);
+				}
+				else {
+					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						tick_call = null;
+						downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
+					}, IntPtr.Zero);
+				}
+				return;
+			}
+
+
 			if (request == null)
 				throw new Exception ("This Downloader has not been configured yet, call Open");
 
@@ -144,17 +163,6 @@ namespace Gtk.Moonlight {
 		//
 		void Start ()
 		{
-			// Special case: local file, just notify that we are done
-			
-			if (fname != null){
-				if (File.Exists (fname))
-					downloader_notify_finished (downloader, fname);
-				else
-					downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
-
-				return;
-			}
-
 			//
 			// Need to use a separate thread
 			//
