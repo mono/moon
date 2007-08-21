@@ -1,0 +1,79 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="10" Canvas.Top="10" Width="1" Height="1" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="15" Canvas.Top="10" Width="5" Height="5" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="30" Canvas.Top="10" Width="10" Height="10" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="50" Canvas.Top="10" Width="15" Height="15" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="75" Canvas.Top="10" Width="20" Height="20" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="105" Canvas.Top="10" Width="25" Height="25" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="140" Canvas.Top="10" Width="30" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="175" Canvas.Top="10" Width="35" Height="35" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="220" Canvas.Top="10" Width="40" Height="40" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="265" Canvas.Top="10" Width="45" Height="45" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="320" Canvas.Top="10" Width="50" Height="50" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="0" Canvas.Left="375" Canvas.Top="10" Width="55" Height="55" />
+
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="10" Canvas.Top="70" Width="1" Height="1" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="15" Canvas.Top="70" Width="5" Height="5" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="30" Canvas.Top="70" Width="10" Height="10" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="50" Canvas.Top="70" Width="15" Height="15" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="75" Canvas.Top="70" Width="20" Height="20" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="105" Canvas.Top="70" Width="25" Height="25" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="140" Canvas.Top="70" Width="30" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="175" Canvas.Top="70" Width="35" Height="35" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="220" Canvas.Top="70" Width="40" Height="40" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="265" Canvas.Top="70" Width="45" Height="45" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="320" Canvas.Top="70" Width="50" Height="50" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="2" Canvas.Left="375" Canvas.Top="70" Width="55" Height="55" />
+
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="10" Canvas.Top="130" Width="1" Height="1" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="15" Canvas.Top="130" Width="5" Height="5" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="30" Canvas.Top="130" Width="10" Height="10" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="50" Canvas.Top="130" Width="15" Height="15" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="75" Canvas.Top="130" Width="20" Height="20" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="105" Canvas.Top="130" Width="25" Height="25" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="140" Canvas.Top="130" Width="30" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="175" Canvas.Top="130" Width="35" Height="35" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="220" Canvas.Top="130" Width="40" Height="40" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="265" Canvas.Top="130" Width="45" Height="45" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="320" Canvas.Top="130" Width="50" Height="50" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="4" Canvas.Left="375" Canvas.Top="130" Width="55" Height="55" />
+
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="10" Canvas.Top="190" Width="1" Height="1" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="15" Canvas.Top="190" Width="5" Height="5" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="30" Canvas.Top="190" Width="10" Height="10" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="50" Canvas.Top="190" Width="15" Height="15" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="75" Canvas.Top="190" Width="20" Height="20" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="105" Canvas.Top="190" Width="25" Height="25" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="140" Canvas.Top="190" Width="30" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="175" Canvas.Top="190" Width="35" Height="35" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="220" Canvas.Top="190" Width="40" Height="40" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="265" Canvas.Top="190" Width="45" Height="45" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="320" Canvas.Top="190" Width="50" Height="50" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="8" Canvas.Left="375" Canvas.Top="190" Width="55" Height="55" />
+
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="10" Canvas.Top="250" Width="1" Height="1" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="15" Canvas.Top="250" Width="5" Height="5" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="30" Canvas.Top="250" Width="10" Height="10" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="50" Canvas.Top="250" Width="15" Height="15" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="75" Canvas.Top="250" Width="20" Height="20" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="105" Canvas.Top="250" Width="25" Height="25" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="140" Canvas.Top="250" Width="30" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="175" Canvas.Top="250" Width="35" Height="35" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="220" Canvas.Top="250" Width="40" Height="40" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="265" Canvas.Top="250" Width="45" Height="45" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="320" Canvas.Top="250" Width="50" Height="50" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="16" Canvas.Left="375" Canvas.Top="250" Width="55" Height="55" />
+
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="10" Canvas.Top="310" Width="1" Height="1" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="15" Canvas.Top="310" Width="5" Height="5" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="30" Canvas.Top="310" Width="10" Height="10" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="50" Canvas.Top="310" Width="15" Height="15" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="75" Canvas.Top="310" Width="20" Height="20" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="105" Canvas.Top="310" Width="25" Height="25" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="140" Canvas.Top="310" Width="30" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="175" Canvas.Top="310" Width="35" Height="35" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="220" Canvas.Top="310" Width="40" Height="40" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="265" Canvas.Top="310" Width="45" Height="45" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="320" Canvas.Top="310" Width="50" Height="50" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="32" Canvas.Left="375" Canvas.Top="310" Width="55" Height="55" />
+</Canvas>
