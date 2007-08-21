@@ -157,6 +157,7 @@ MediaElement::~MediaElement ()
 	delete mplayer;
 }
 
+void
 MediaElement::ComputeBounds ()
 {
 	double h = framework_element_get_height (this);
