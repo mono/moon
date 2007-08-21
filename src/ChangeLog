@@ -1,3 +1,8 @@
+2007-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (ComputeBounds): Use the FrameworkElement width/height
+	unless unspecified, only then should we use video width/height.
+
 2007-08-21  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (DoRender): short-circuit rendering of uielements

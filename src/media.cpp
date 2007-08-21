@@ -157,11 +157,17 @@ MediaElement::~MediaElement ()
 	delete mplayer;
 }
 
-void
 MediaElement::ComputeBounds ()
 {
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     Rect (0,0,mplayer->width,mplayer->height));
+	double h = framework_element_get_height (this);
+	double w = framework_element_get_width (this);
+	
+	if (w == 0.0 && h == 0.0) {
+		h = (double) mplayer->height;
+		w = (double) mplayer->width;
+	}
+	
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, w, h));
 
 	bounds.GrowBy (1);
 }
