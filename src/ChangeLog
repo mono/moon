@@ -1,3 +1,10 @@
+2007-08-21  Chris Toshok  <toshok@ximian.com>
+
+	* shape.h: add Shape::ComputeBoundsSlow, which uses the slow
+	(cairo_*_extents) codepath for computing bounds.  Use this path
+	for polygons, polylines, and paths.  Implement a Line-specific
+	fast ComputeBounds.
+
 2007-08-20  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (MediaElement::ComputeBounds): GrowBy(1).

@@ -298,6 +298,32 @@ Shape::ComputeBounds ()
 }
 
 void
+Shape::ComputeBoundsSlow ()
+{
+	double x1, y1, x2, y2;
+	cairo_t* cr = measuring_context_create ();
+
+	cairo_save (cr);
+	// dont do the operation
+	DoDraw (cr, false, true);
+
+	// XXX this next call will hopefully become unnecessary in a
+	// later version of cairo.
+	cairo_identity_matrix (cr);
+	if (stroke)
+		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	else
+		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+
+	cairo_new_path (cr);
+	cairo_restore (cr);
+
+	bounds = Rect (x1-1, y1-1, x2-x1 + 2, y2-y1 + 2);
+
+	measuring_context_destroy (cr);
+}
+
+void
 Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	double x1, y1, x2, y2;
@@ -720,6 +746,21 @@ DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
 void
+Line::ComputeBounds ()
+{
+	double x1 = line_get_x1 (this);
+	double y1 = line_get_y1 (this);
+	double x2 = line_get_x2 (this);
+	double y2 = line_get_y2 (this);
+
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+						     Rect (MIN(x1,x2), MIN(y1,y2),
+							   fabs (x2-x1), fabs (y2-y1)));
+
+	bounds.GrowBy (shape_get_stroke_thickness (this) + 1);
+}
+
+void
 Line::Draw (cairo_t *cr)
 {
 	// Note: Shape::StretchProperty has no effect on lines
@@ -802,6 +843,12 @@ line_new (void)
 
 DependencyProperty* Polygon::FillRuleProperty;
 DependencyProperty* Polygon::PointsProperty;
+
+void
+Polygon::ComputeBounds ()
+{
+	Shape::ComputeBoundsSlow ();
+}
 
 void
 Polygon::Draw (cairo_t *cr)
@@ -919,6 +966,12 @@ DependencyProperty* Polyline::FillRuleProperty;
 DependencyProperty* Polyline::PointsProperty;
 
 void
+Polyline::ComputeBounds ()
+{
+	Shape::ComputeBoundsSlow ();
+}
+
+void
 Polyline::Draw (cairo_t *cr)
 {
 	int i, count = 0;
@@ -1025,6 +1078,12 @@ DependencyProperty* Path::DataProperty;
 Path::~Path ()
 {
 	CleanupCache ();
+}
+
+void
+Path::ComputeBounds()
+{
+	Shape::ComputeBoundsSlow ();
 }
 
 void
