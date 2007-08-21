@@ -1,3 +1,11 @@
+2007-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (Open): Merged both Open() implementations into a
+	single one. We no longer use Open() without passing a uri (since
+	Stop() has been implemented in a better way).
+	(AdvanceFrame): Keep track of our current pts so that we won't get
+	ahead of the audio if called too often.
+
 2007-08-20  Chris Toshok  <toshok@ximian.com>
 
 	* rect.cpp (bounding_rect_for_transformed_rect): oops, got

@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 G_END_DECLS
 
 #include "mplayer.h"
+//#include "stream.h"
 
 #if GLIB_SIZEOF_VOID_P == 8
 #define ALIGN(addr,size) (uint8_t *) (((uint64_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
@@ -99,7 +100,7 @@ struct Video {
 	
 	// sync
 	uint64_t initial_pts;
-	int usec_per_frame;
+	int msec_per_frame;
 	double usec_to_pts;
 };
 
@@ -167,11 +168,13 @@ MediaPlayer::MediaPlayer ()
 	video->surface = NULL;
 	video->rgb_buffer = NULL;
 	video->initial_pts = 0;
-	video->usec_per_frame = 0;
+	video->msec_per_frame = 0;
 	video->usec_to_pts = 0;
 	
 	pause_time = 0;
 	start_time = 0;
+	
+	current_pts = 0;
 	target_pts = 0;
 	seek_pts = 0;
 	
@@ -203,10 +206,15 @@ MediaPlayer::~MediaPlayer ()
 }
 
 bool
-MediaPlayer::Open ()
+MediaPlayer::Open (const char *uri)
 {
 	AVCodecContext *encoding;
 	AVStream *stream;
+	
+	Close ();
+	
+	g_free (this->uri);
+	this->uri = NULL;
 	
 	if (uri == NULL || *uri == '\0')
 		return false;
@@ -224,6 +232,7 @@ MediaPlayer::Open ()
 		return false;
 	}
 	
+	this->uri = g_strdup (uri);
 	opened = true;
 	
 	av_read_play (av_ctx);
@@ -278,8 +287,8 @@ MediaPlayer::Open ()
 			// starting time
 			video->initial_pts = stream->start_time;
 			
-			// usec per frame
-			video->usec_per_frame = (int) (1000 / av_q2d (stream->r_frame_rate));
+			// msec per frame
+			video->msec_per_frame = (int) (1000 / av_q2d (stream->r_frame_rate));
 			
 			// usec -> pts conversion
 			video->usec_to_pts = (double) encoding->time_base.num / (double) encoding->time_base.den;
@@ -319,17 +328,6 @@ MediaPlayer::Open ()
 	return true;
 }
 
-bool
-MediaPlayer::Open (const char *uri)
-{
-	Close ();
-	
-	g_free (this->uri);
-	this->uri = g_strdup (uri);
-	
-	return Open ();
-}
-
 void
 MediaPlayer::Close ()
 {
@@ -367,11 +365,13 @@ MediaPlayer::Close ()
 	video->stream = NULL;
 	video->codec = NULL;
 	video->initial_pts = 0;
-	video->usec_per_frame = 0;
+	video->msec_per_frame = 0;
 	video->usec_to_pts = 0;
 	
 	pause_time = 0;
 	start_time = 0;
+	
+	current_pts = 0;
 	target_pts = 0;
 	seek_pts = 0;
 }
@@ -399,9 +399,9 @@ MediaPlayer::AdvanceFrame ()
 	AVFrame *frame = NULL;
 	bool advanced = false;
 	uint64_t target_pts;
+	int skipped = 0;
 	int redraw = 0;
 	Packet *pkt;
-	uint64_t pts;
 	
 	if (paused) {
 		// shouldn't happen, but just in case
@@ -427,24 +427,31 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = this->target_pts;
 	}
 	
+	if (current_pts >= target_pts)
+		return false;
+	
 	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue))) {
 		// always decode the frame or we get glitches in the screen
 		frame = avcodec_alloc_frame ();
 		avcodec_decode_video (video->stream->codec, frame,
 				      &redraw, pkt->data, pkt->size);
 		
-		pts = pkt->pts;
+		current_pts = pkt->pts;
 		pkt_free (pkt);
 		
-		if (pts + video->usec_per_frame >= target_pts) {
+		if (current_pts >= target_pts) {
 			// we are in sync (or ahead) of audio playback
 			break;
 		}
+		
+		skipped++;
 		
 		// we are lagging behind, drop this frame
 		av_free (frame);
 		frame = NULL;
 	}
+	
+	printf ("skipped %d frames\n", skipped);
 	
 	if (redraw) {
 		convert_to_rgb (video, frame);
@@ -511,7 +518,7 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	start_time += (av_gettime () - pause_time);
 	
 	if (video->stream_id != -1)
-		return g_timeout_add (video->usec_per_frame, callback, user_data);
+		return g_timeout_add (video->msec_per_frame, callback, user_data);
 	
 	return 0;
 }
@@ -767,6 +774,7 @@ ffmpeg_init (void)
 	avcodec_init ();
 	av_register_all ();
 	avcodec_register_all ();
+	//register_protocol (&stream_protocol);
 	ffmpeg_initialized = true;
 }
 
@@ -1057,6 +1065,8 @@ io_loop (void *data)
 		
 		av_free_packet (&pkt);
 	}
+	
+	printf ("mplayer io_loop exiting\n");
 	
 	return NULL;
 }
