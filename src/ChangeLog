@@ -1,5 +1,12 @@
 2007-08-21  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (DoRender): short-circuit rendering of uielements
+	when their opacity is 0.
+
+	* dirty.cpp (process_dirty_elements): handle controls.
+
+2007-08-21  Chris Toshok  <toshok@ximian.com>
+
 	* shape.h: add Shape::ComputeBoundsSlow, which uses the slow
 	(cairo_*_extents) codepath for computing bounds.  Use this path
 	for polygons, polylines, and paths.  Implement a Line-specific

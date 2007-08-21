@@ -384,6 +384,8 @@ UIElement::ComputeBounds ()
 void
 UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 {
+	if (total_opacity == 0.0)
+		return;
 
 	cairo_pattern_t *mask = NULL;
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);

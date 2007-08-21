@@ -8,6 +8,7 @@
 
 #include "uielement.h"
 #include "panel.h"
+#include "control.h"
 #include "collection.h"
 #include "runtime.h"
 #include "clock.h"
@@ -83,6 +84,11 @@ process_dirty_elements ()
 					n = (Collection::Node *) n->Next ();
 				}
 			}
+			else if (el->Is (Type::CONTROL)) {
+				Control *c = (Control*)el;
+				if (c->real_object)
+					add_dirty_element (c->real_object, DirtyTransform);
+			}
 		}
 
 		if (el->dirty_flags & DirtyOpacity) {
@@ -100,6 +106,11 @@ process_dirty_elements ()
 					((UIElement *) n->obj)->UpdateTotalOpacity ();
 					n = (Collection::Node *) n->Next ();
 				}
+			}
+			else if (el->Is (Type::CONTROL)) {
+				Control *c = (Control*)el;
+				if (c->real_object)
+					c->real_object->UpdateTotalOpacity();
 			}
 		}
 
