@@ -97,17 +97,15 @@ static gboolean
 advance_frame (void *user_data)
 {
 	MediaElement *media = (MediaElement *) user_data;
-	double opacity = media->GetTotalOpacity ();
 	int64_t position;
 	
-	if (media->mplayer->AdvanceFrame () && opacity > 0.0f)
-		media->Invalidate ();
-	
-	media->updating = true;
-	if ((position = media->mplayer->Position ()) < 0)
-		position = 0;
-	media_element_set_position (media, position);
-	media->updating = false;
+	if (media->mplayer->AdvanceFrame ()) {
+		media->updating = true;
+		if ((position = media->mplayer->Position ()) < 0)
+			position = 0;
+		media_element_set_position (media, position);
+		media->updating = false;
+	}
 	
 	// FIXME: need to disconnect the timeout if the video is complete
 	//        and set the CurrentState to "Stopped"?
@@ -160,12 +158,19 @@ MediaElement::~MediaElement ()
 void
 MediaElement::ComputeBounds ()
 {
-	double x1, y1, x2, y2;
+	double h = framework_element_get_height (this);
+	double w = framework_element_get_width (this);
 	cairo_t *cr = measuring_context_create ();
+	double x1, y1, x2, y2;
+	
+	if (w == 0.0 && h == 0.0) {
+		h = (double) mplayer->height;
+		w = (double) mplayer->width;
+	}
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-	cairo_rectangle (cr, 0, 0, mplayer->width, mplayer->height);
+	cairo_rectangle (cr, 0, 0, w, h);
 	// XXX this next call will hopefully become unnecessary in a
 	// later version of cairo.
 	cairo_identity_matrix (cr);
@@ -181,8 +186,15 @@ Point
 MediaElement::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-	return Point (user_xform_origin.x * mplayer->width,
-		      user_xform_origin.y * mplayer->height);
+	double h = framework_element_get_height (this);
+	double w = framework_element_get_width (this);
+	
+	if (w == 0.0 && h == 0.0) {
+		h = (double) mplayer->height;
+		w = (double) mplayer->width;
+	}
+	
+	return Point (user_xform_origin.x * w, user_xform_origin.y * h);
 }
 
 void
@@ -420,7 +432,6 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 void
 MediaElement::OnPropertyChanged (DependencyProperty *prop)
 {
-	bool invalidate = false;
 	bool autoplay = false;
 	
 	if (prop == MediaBase::SourceProperty) {
@@ -483,7 +494,12 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
 	} else if (prop == MediaElement::PositionProperty) {
-		// handled elsewhere...
+		if (timeout_id != 0) {
+			double opacity = GetTotalOpacity ();
+			
+			if (opacity > 0.0f)
+				Invalidate ();
+		}
 	} else if (prop == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (media_element_get_volume (this));
 	}
@@ -492,9 +508,6 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		printf ("video autoplayed\n");
 		Play ();
 	}
-	
-	if (invalidate)
-		Invalidate ();
 	
 	if (prop->type == Type::MEDIAELEMENT) {
 		NotifyAttacheesOfPropertyChange (prop);
