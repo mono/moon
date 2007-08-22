@@ -404,7 +404,10 @@ Clock::Tick ()
 			}
 		}
 
-		new_progress = (double)new_time / duration_timespan;
+		if (duration_timespan == 0)
+			new_progress = 1.0;
+		else
+			new_progress = (double)new_time / duration_timespan;
 	}
 
 	QueueEvent (CURRENT_TIME_INVALIDATED);

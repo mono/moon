@@ -1,3 +1,8 @@
+2007-08-22  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (Tick): guard against division by zero.  gets
+	"monotone" displaying.
+
 2007-08-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Provide GetTransformOrigin on Shape and remove them 
