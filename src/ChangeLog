@@ -1,3 +1,11 @@
+2007-08-22  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (Invalidate): don't actually invalidate the
+	element unless it's visible.
+	(OnPropertyChanged): the above change requires us to invalidate
+	the element before setting the flags (in the case where we're
+	hiding an element).
+
 2007-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (ComputeBounds): Use the FrameworkElement width/height

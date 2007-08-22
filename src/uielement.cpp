@@ -91,8 +91,8 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 			Invalidate ();
 			break;
 		case VisibilityCollapsed:
-			flags &= ~UIElement::RENDER_VISIBLE;
 			FullInvalidate (true);
+			flags &= ~UIElement::RENDER_VISIBLE;
 			break;
 		default:
 			g_assert_not_reached ();
@@ -254,6 +254,9 @@ UIElement::FullInvalidate (bool rendertransform)
 void
 UIElement::Invalidate (Rect r)
 {
+	if (!GetVisible())
+		return;
+
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		this, Type::Find(GetObjectType())->name,
