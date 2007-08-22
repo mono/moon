@@ -1,0 +1,49 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><EllipseGeometry Center="10,60" RadiusX="1" RadiusY="1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><EllipseGeometry Center="20,60" RadiusX="5" RadiusY="5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><EllipseGeometry Center="40,60" RadiusX="10" RadiusY="10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><EllipseGeometry Center="80,60" RadiusX="15" RadiusY="15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><EllipseGeometry Center="130,60" RadiusX="20" RadiusY="20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><EllipseGeometry Center="200,60" RadiusX="25" RadiusY="25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><EllipseGeometry Center="280,60" RadiusX="30" RadiusY="30" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"><Path.Data><EllipseGeometry Center="10,120" RadiusX="1" RadiusY="1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"><Path.Data><EllipseGeometry Center="20,120" RadiusX="5" RadiusY="5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"><Path.Data><EllipseGeometry Center="40,120" RadiusX="10" RadiusY="10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"><Path.Data><EllipseGeometry Center="80,120" RadiusX="15" RadiusY="15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"><Path.Data><EllipseGeometry Center="130,120" RadiusX="20" RadiusY="20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"><Path.Data><EllipseGeometry Center="200,120" RadiusX="25" RadiusY="25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"><Path.Data><EllipseGeometry Center="280,120" RadiusX="30" RadiusY="30" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><EllipseGeometry Center="10,180" RadiusX="1" RadiusY="1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><EllipseGeometry Center="20,180" RadiusX="5" RadiusY="5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><EllipseGeometry Center="40,180" RadiusX="10" RadiusY="10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><EllipseGeometry Center="80,180" RadiusX="15" RadiusY="15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><EllipseGeometry Center="130,180" RadiusX="20" RadiusY="20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><EllipseGeometry Center="200,180" RadiusX="25" RadiusY="25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><EllipseGeometry Center="280,180" RadiusX="30" RadiusY="30" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><EllipseGeometry Center="10,240" RadiusX="1" RadiusY="1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><EllipseGeometry Center="20,240" RadiusX="5" RadiusY="5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><EllipseGeometry Center="40,240" RadiusX="10" RadiusY="10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><EllipseGeometry Center="80,240" RadiusX="15" RadiusY="15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><EllipseGeometry Center="130,240" RadiusX="20" RadiusY="20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><EllipseGeometry Center="200,240" RadiusX="25" RadiusY="25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><EllipseGeometry Center="280,240" RadiusX="30" RadiusY="30" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><EllipseGeometry Center="10,300" RadiusX="1" RadiusY="1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><EllipseGeometry Center="20,300" RadiusX="5" RadiusY="5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><EllipseGeometry Center="40,300" RadiusX="10" RadiusY="10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><EllipseGeometry Center="80,300" RadiusX="15" RadiusY="15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><EllipseGeometry Center="130,300" RadiusX="20" RadiusY="20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><EllipseGeometry Center="200,300" RadiusX="25" RadiusY="25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><EllipseGeometry Center="280,300" RadiusX="30" RadiusY="30" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><EllipseGeometry Center="10,360" RadiusX="1" RadiusY="1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><EllipseGeometry Center="20,360" RadiusX="5" RadiusY="5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><EllipseGeometry Center="40,360" RadiusX="10" RadiusY="10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><EllipseGeometry Center="80,360" RadiusX="15" RadiusY="15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><EllipseGeometry Center="130,360" RadiusX="20" RadiusY="20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><EllipseGeometry Center="200,360" RadiusX="25" RadiusY="25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><EllipseGeometry Center="280,360" RadiusX="30" RadiusY="30" /></Path.Data></Path>
+</Canvas>
