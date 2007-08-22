@@ -1,0 +1,50 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Points="10,10 20,10 20,20 10,20" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Points="10,30 20,30 20,40 10,40" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Points="10,50 20,50 20,60 10,60" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="3" Points="10,70 20,70 20,80 10,80" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="10,90 20,90 20,100 10,100" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Points="10,110 20,110 20,120 10,120" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="6" Points="10,130 20,130 20,140 10,140" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="7" Points="10,150 20,150 20,160 10,160" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="10,170 20,170 20,180 10,180" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="9" Points="10,190 20,190 20,200 10,200" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="10" Points="10,210 20,210 20,220 10,220" />
+
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Points="30,10 200,10 200,20 30,20" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Points="30,30 200,30 200,40 30,40" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Points="30,50 200,50 200,60 30,60" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="3" Points="30,70 200,70 200,80 30,80" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="30,90 200,90 200,100 30,100" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Points="30,110 200,110 200,120 30,120" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="6" Points="30,130 200,130 200,140 30,140" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="7" Points="30,150 200,150 200,160 30,160" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="30,170 200,170 200,180 30,180" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="9" Points="30,190 200,190 200,200 30,200" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="10" Points="30,210 200,210 200,220 30,220" />
+
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Points="220,10 230,10 230,220 220,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Points="240,10 250,10 250,220 240,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Points="260,10 270,10 270,220 260,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="3" Points="280,10 290,10 290,220 280,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="300,10 310,10 310,220 300,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Points="320,10 330,10 330,220 320,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="6" Points="340,10 350,10 350,220 340,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="7" Points="360,10 370,10 370,220 360,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="380,10 390,10 390,220 380,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="9" Points="400,10 410,10 410,220 400,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="9" Points="420,10 430,10 430,220 420,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="10" Points="440,10 450,10 450,220 440,220" />
+
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Points="10,240 50,280 90,240" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Points="110,240 150,280 190,240" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Points="210,240 250,280 290,240" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="310,240 350,280 390,240" />
+
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="10,290 50,330 90,290" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="16" Points="110,290 150,330 190,290" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="32" Points="210,290 250,330 290,290" />
+
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="64" Points="110,360 150,400 190,360" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="128" Points="310,340 350,380 390,340" />
+</Canvas>
