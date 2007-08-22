@@ -1,0 +1,6 @@
+2007-08-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ChangeLog: New. Track changes.
+	* mopen.cs: Add a --parseonly option which is useful to gather stats
+	on xaml loading/processing and before any drawing operations. Can also
+	be useful to know if the xaml file is valid (0) or not (1).

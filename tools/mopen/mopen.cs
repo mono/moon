@@ -59,6 +59,7 @@ class MonoOpen {
 	static int height = -1;
 	static bool transparent = false;	
 	static bool desklet = false;
+	static bool parse_only = false;
 
 	static void Help ()
 	{
@@ -68,7 +69,8 @@ class MonoOpen {
 				   "   --geometry WxH  Overrides the geometry to be W x H pixels\n" +
 				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" +
 				   "   --transparent   Transparent toplevel\n" +
-				   "   --desklet       Remove window decoration for desklets use\n"
+				   "   --desklet       Remove window decoration for desklets use\n" +
+				   "   --parseonly     Only parse (don't display) the XAML input\n"
 				   );
 	}
 
@@ -175,6 +177,9 @@ class MonoOpen {
 			Console.Error.WriteLine ("mopen: No Canvas as root in the specified file");
 			return 1;
 		}
+
+		if (parse_only)
+			return 0;
 
 		GtkSilver silver;
 		Canvas canvas = d as Canvas;
@@ -286,6 +291,10 @@ class MonoOpen {
 				Console.WriteLine ("--host not implemented");
 				break;
 				
+			case "--parseonly": case "--parse-only":
+				parse_only = true;
+				break;
+
 			default:
 				if (file == null)
 					file = args [i];
