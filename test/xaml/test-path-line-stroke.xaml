@@ -1,0 +1,49 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Stroke="#FF00FF" StrokeThickness="0"><Path.Data><LineGeometry StartPoint="10,10" EndPoint="20,10" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="1"><Path.Data><LineGeometry StartPoint="10,30" EndPoint="20,30" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="2"><Path.Data><LineGeometry StartPoint="10,50" EndPoint="20,50" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="3"><Path.Data><LineGeometry StartPoint="10,70" EndPoint="20,70" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="4"><Path.Data><LineGeometry StartPoint="10,90" EndPoint="20,90" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="5"><Path.Data><LineGeometry StartPoint="10,110" EndPoint="20,110" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="6"><Path.Data><LineGeometry StartPoint="10,130" EndPoint="20,130" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="7"><Path.Data><LineGeometry StartPoint="10,150" EndPoint="20,150" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="8"><Path.Data><LineGeometry StartPoint="10,170" EndPoint="20,170" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="9"><Path.Data><LineGeometry StartPoint="10,190" EndPoint="20,190" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="10"><Path.Data><LineGeometry StartPoint="10,210" EndPoint="20,210" /></Path.Data></Path>
+
+	<Path Stroke="#FF00FF" StrokeThickness="0"><Path.Data><LineGeometry StartPoint="30,10" EndPoint="200,10" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="1"><Path.Data><LineGeometry StartPoint="30,30" EndPoint="200,30" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="2"><Path.Data><LineGeometry StartPoint="30,50" EndPoint="200,50" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="3"><Path.Data><LineGeometry StartPoint="30,70" EndPoint="200,70" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="4"><Path.Data><LineGeometry StartPoint="30,90" EndPoint="200,90" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="5"><Path.Data><LineGeometry StartPoint="30,110" EndPoint="200,110" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="6"><Path.Data><LineGeometry StartPoint="30,130" EndPoint="200,130" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="7"><Path.Data><LineGeometry StartPoint="30,150" EndPoint="200,150" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="8"><Path.Data><LineGeometry StartPoint="30,170" EndPoint="200,170" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="9"><Path.Data><LineGeometry StartPoint="30,190" EndPoint="200,190" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="10"><Path.Data><LineGeometry StartPoint="30,210" EndPoint="200,210" /></Path.Data></Path>
+
+	<Path Stroke="#FF00FF" StrokeThickness="0"><Path.Data><LineGeometry StartPoint="220,10" EndPoint="220,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="1"><Path.Data><LineGeometry StartPoint="240,10" EndPoint="240,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="2"><Path.Data><LineGeometry StartPoint="260,10" EndPoint="260,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="3"><Path.Data><LineGeometry StartPoint="280,10" EndPoint="280,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="4"><Path.Data><LineGeometry StartPoint="300,10" EndPoint="300,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="5"><Path.Data><LineGeometry StartPoint="320,10" EndPoint="320,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="6"><Path.Data><LineGeometry StartPoint="340,10" EndPoint="340,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="7"><Path.Data><LineGeometry StartPoint="360,10" EndPoint="360,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="8"><Path.Data><LineGeometry StartPoint="380,10" EndPoint="380,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="9"><Path.Data><LineGeometry StartPoint="400,10" EndPoint="400,220" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="10"><Path.Data><LineGeometry StartPoint="420,10" EndPoint="420,220" /></Path.Data></Path>
+
+	<Path Stroke="#FF00FF" StrokeThickness="0"><Path.Data><LineGeometry StartPoint="10,240" EndPoint="50,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="1"><Path.Data><LineGeometry StartPoint="30,240" EndPoint="70,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="2"><Path.Data><LineGeometry StartPoint="50,240" EndPoint="90,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="3"><Path.Data><LineGeometry StartPoint="70,240" EndPoint="110,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="4"><Path.Data><LineGeometry StartPoint="90,240" EndPoint="130,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="5"><Path.Data><LineGeometry StartPoint="110,240" EndPoint="150,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="6"><Path.Data><LineGeometry StartPoint="130,240" EndPoint="170,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="7"><Path.Data><LineGeometry StartPoint="150,240" EndPoint="190,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="8"><Path.Data><LineGeometry StartPoint="170,240" EndPoint="210,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="9"><Path.Data><LineGeometry StartPoint="190,240" EndPoint="230,280" /></Path.Data></Path>
+	<Path Stroke="#FF00FF" StrokeThickness="10"><Path.Data><LineGeometry StartPoint="210,240" EndPoint="250,280" /></Path.Data></Path>
+</Canvas>
