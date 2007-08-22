@@ -376,6 +376,16 @@ Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subpr
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }
 
+Point
+Shape::GetTransformOrigin ()
+{
+	Point user_xform_origin = GetRenderTransformOrigin ();
+
+	return Point (framework_element_get_width (this) * user_xform_origin.x, 
+		framework_element_get_height (this) * user_xform_origin.y);
+}
+
+
 Brush *
 shape_get_fill (Shape *shape)
 {
@@ -565,15 +575,6 @@ Ellipse::Draw (cairo_t *cr)
 	moon_ellipse (cr, 0, 0, w, h);
 }
 
-Point
-Ellipse::GetTransformOrigin ()
-{
-	Point user_xform_origin = GetRenderTransformOrigin ();
-
-	return Point (framework_element_get_width (this) * user_xform_origin.x, 
-		framework_element_get_height (this) * user_xform_origin.y);
-}
-
 Ellipse *
 ellipse_new (void)
 {
@@ -640,15 +641,6 @@ Rectangle::Draw (cairo_t *cr)
 	cairo_new_path (cr);
 	cairo_rectangle (cr, 0, 0, w, h);
 	cairo_close_path (cr);
-}
-
-Point
-Rectangle::GetTransformOrigin ()
-{
-	Point user_xform_origin = GetRenderTransformOrigin ();
-
-	return Point (framework_element_get_width (this) * user_xform_origin.x, 
-		framework_element_get_height (this) * user_xform_origin.y);
 }
 
 void

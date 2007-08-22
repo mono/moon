@@ -1,3 +1,10 @@
+2007-08-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Provide GetTransformOrigin on Shape and remove them 
+	from Rectangle and Ellipse. Monotone requires that on Path and I can't
+	recall the reason I made this (while all the test cases I made still
+	work that way).
+
 2007-08-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (advance_frame): Don't bother invalidating here, we'll

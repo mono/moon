@@ -63,6 +63,7 @@ class Shape : public FrameworkElement {
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+	virtual Point GetTransformOrigin ();
 	
 	//
 	// new virtual methods for shapes
@@ -115,8 +116,6 @@ class Ellipse : public Shape {
 	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
-	virtual Point GetTransformOrigin ();
-
 	void Draw (cairo_t *cr);
 };
 
@@ -135,8 +134,6 @@ class Rectangle : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
 
 	void Draw (cairo_t *cr);
-
-	virtual Point GetTransformOrigin ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
