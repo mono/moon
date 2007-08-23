@@ -67,9 +67,11 @@ struct MoonlightObject : public NPObject
 	MoonlightObject (NPP instance)
 	{
 		this->instance = instance;
+		this->moonlight_type = Type::INVALID;
 	}
 
 	NPP instance;
+	Type::Kind moonlight_type;
 };
 
 /*** MoonlightErrorEventArgsClass ******************************************************/
@@ -93,7 +95,10 @@ struct MoonlightPointType : MoonlightObjectType {
 extern MoonlightPointType* MoonlightPointClass;
 
 struct MoonlightPoint : MoonlightObject {
-	MoonlightPoint (NPP instance) : MoonlightObject(instance), point (Point()) { }
+	MoonlightPoint (NPP instance) : MoonlightObject(instance), point (Point()) 
+	{
+		moonlight_type = Type::POINT;
+	}
 
 	Point point;
 };
@@ -106,7 +111,10 @@ struct MoonlightRectType : MoonlightObjectType {
 extern MoonlightRectType* MoonlightRectClass;
 
 struct MoonlightRect : MoonlightObject {
-	MoonlightRect (NPP instance) : MoonlightObject(instance), rect (Rect()) { }
+	MoonlightRect (NPP instance) : MoonlightObject(instance), rect (Rect()) 
+	{
+		moonlight_type = Type::RECT;
+	}
 
 	Rect rect;
 };
@@ -120,7 +128,10 @@ struct MoonlightDurationType : MoonlightObjectType {
 extern MoonlightDurationType* MoonlightDurationClass;
 
 struct MoonlightDuration : MoonlightObject {
-	MoonlightDuration (NPP instance) : MoonlightObject (instance), duration (Duration (0)) { }
+	MoonlightDuration (NPP instance) : MoonlightObject (instance), duration (Duration (0)) 
+	{
+		moonlight_type = Type::DURATION;
+	}
 
 	Duration duration;
 };
@@ -133,7 +144,10 @@ struct MoonlightTimeSpanType : MoonlightObjectType {
 extern MoonlightTimeSpanType* MoonlightTimeSpanClass;
 
 struct MoonlightTimeSpan : MoonlightObject {
-	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), timespan (0) { }
+	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), timespan (0) 
+	{
+		moonlight_type = Type::TIMESPAN;
+	}
 
 	TimeSpan timespan;
 };
@@ -233,12 +247,14 @@ struct MoonlightDependencyObjectObject : public MoonlightObject
 	MoonlightDependencyObjectObject (NPP instance) : MoonlightObject (instance)
 	{
 		dob = NULL;
+		moonlight_type = Type::DEPENDENCY_OBJECT;
 	}
 
 	void SetDependencyObject (DependencyObject *dob)
 	{
 		this->dob = dob;
-		dob->ref ();
+		if (dob)
+			dob->ref ();
 	}
 
 	DependencyObject *dob;

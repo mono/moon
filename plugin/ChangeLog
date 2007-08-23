@@ -1,3 +1,12 @@
+2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp|h: Duration and TimeSpan's seconds property
+	is a double, so treat is as such. Add moonlight type information
+	to MoonlightObject (and derived classes), so that the marshalling 
+	knows how to treat them when they come back from js land.
+	_set_dependency_property_value: handle values coming from js land
+	correctly, according to their moonlight type.
+
 2007-08-23  Jb Evain  <jbevain@novell.com>
 
 	* mono.cpp (vm_init): use new method name to initialize

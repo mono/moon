@@ -605,7 +605,7 @@ duration_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 		return true;
 	}
 	else if (name_matches (name, "seconds")) {
-		INT32_TO_NPVARIANT (r->duration.ToSeconds (), *result);
+		DOUBLE_TO_NPVARIANT (r->duration.ToSecondsFloat (), *result);
 		return true;
 	}
 	else
@@ -620,7 +620,7 @@ duration_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *valu
 		return true;
 	}
 	else if (name_matches (name, "seconds")) {
-		r->duration = Duration::FromSeconds (NPVARIANT_TO_DOUBLE (*value));
+		r->duration = Duration::FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
 		return true;
 	}
 	else
@@ -669,7 +669,7 @@ timespan_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 		return true;
 	}
 	else if (name_matches (name, "seconds")) {
-		INT32_TO_NPVARIANT (TimeSpan_ToSeconds (r->timespan), *result);
+		DOUBLE_TO_NPVARIANT (TimeSpan_ToSecondsFloat (r->timespan), *result);
 		return true;
 	}
 	else
@@ -684,7 +684,7 @@ timespan_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *valu
 		return true;
 	}
 	else if (name_matches (name, "seconds")) {
-		r->timespan = TimeSpan_FromSeconds (NPVARIANT_TO_DOUBLE (*value));
+		r->timespan = TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
 		return true;
 	}
 	else
@@ -1565,8 +1565,42 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 {
 
 	if (NPVARIANT_IS_OBJECT (*value)) {
-		MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (*value);
-		dob->SetValue (p, Value(depobj->dob));
+		MoonlightObject *obj = (MoonlightObject*) NPVARIANT_TO_OBJECT (*value);
+		
+		if (obj->moonlight_type >= Type::DEPENDENCY_OBJECT || 
+			obj->moonlight_type == Type::INVALID) {
+			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
+			dob->SetValue (p, Value(depobj->dob));
+
+			return true;
+		}
+
+		switch (obj->moonlight_type) {
+		case Type::TIMESPAN: {
+			MoonlightTimeSpan *ts = (MoonlightTimeSpan*) obj;
+			dob->SetValue (p, Value(ts->timespan, Type::TIMESPAN));
+			break; 
+		}
+		case Type::DURATION: {
+			MoonlightDuration *duration = (MoonlightDuration*) obj;
+			dob->SetValue (p, Value(duration->duration));
+			break;
+		}
+		case Type::RECT: {
+			MoonlightRect *rect = (MoonlightRect*) obj;
+			dob->SetValue (p, Value(rect->rect));
+			break;
+		}
+		case Type::POINT: {
+			MoonlightPoint *point = (MoonlightPoint*) obj;
+			dob->SetValue (p, Value(point->point));
+			break;
+		}
+		default:
+			//printf ("unhandled object type %i - %s in do.set_property\n", obj->moonlight_type, Type::Find (obj->moonlight_type)->name);
+			DEBUG_WARN_NOTIMPLEMENTED ("unhandled object type in do.set_property");
+			return true;
+		}
 	}
 	else {
 		char *strvalue = NULL;
