@@ -1,3 +1,7 @@
+2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp: Implemented volume/balance
+
 2007-08-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Remove unneeded (cairo_close_path) and dead (break) code
@@ -14,6 +18,10 @@
 	from Rectangle and Ellipse. Monotone requires that on Path and I can't
 	recall the reason I made this (while all the test cases I made still
 	work that way).
+
+2007-08-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (MediaPlayer): Init mixer variables.
 
 2007-08-22  Jeffrey Stedfast  <fejj@novell.com>
 
