@@ -1,3 +1,10 @@
+2007-08-23  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: Make Resize use our event system (so the plugin
+	can use it).
+	* dependencyobject.cpp|h: Rename the add/remove handler functions
+	to not require dependencyobjects.
+
 2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (OnPropertyChanged): Don't autoplay here.

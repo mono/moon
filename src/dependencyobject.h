@@ -182,11 +182,6 @@ const char       *dependency_object_get_name  (DependencyObject *obj);
 Type::Kind dependency_object_get_object_type (DependencyObject *obj);
 const char *dependency_object_get_type_name (DependencyObject *obj);
 
-void dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
-void dependency_object_remove_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure);
-
-
-
 DependencyProperty *dependency_property_lookup (Type::Kind type, char *name);
 char *dependency_property_get_name (DependencyProperty* property);
 bool  dependency_property_is_nullable (DependencyProperty* property);
@@ -194,6 +189,11 @@ Type::Kind dependency_property_get_value_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 
 void dependencyobject_init (void);
+
+
+void event_object_add_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure);
+void event_object_remove_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure);
+
 
 G_END_DECLS
 

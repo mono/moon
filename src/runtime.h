@@ -34,9 +34,7 @@ G_BEGIN_DECLS
 #define ENDTIMER(id,str)
 #endif
 
-typedef void (*callback_plain_event)    (UIElement *target);
-
-class Surface {
+class Surface : EventObject {
  public:
 	Surface(int width, int height);
 	
@@ -70,9 +68,7 @@ class Surface {
 	GtkWidget* GetDrawingArea () { return drawing_area; }
 	UIElement* GetToplevel() { return toplevel; }
 
-	void RegisterEvents (callback_plain_event surface_resize);
-
-	callback_plain_event cb_surface_resize;
+	int ResizeEvent;
 
 private:
 	int width, height;
@@ -153,9 +149,6 @@ bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
 
 void    *surface_get_drawing_area (Surface *s);
-
-void     surface_register_events (Surface *s,
-				  callback_plain_event surface_resize);
 
 cairo_t *measuring_context_create (void);
 void     measuring_context_destroy (cairo_t *cr);

@@ -70,9 +70,7 @@ Surface::CreateSimilarSurface ()
 
 
 Surface::Surface(int w, int h)
-  : cb_surface_resize(NULL),
-
-    width (w), height (h), buffer (0), pixbuf (NULL),
+  : width (w), height (h), buffer (0), pixbuf (NULL),
     using_cairo_xlib_surface(0),
     cairo_buffer_surface (NULL), cairo_buffer(NULL),
     cairo_xlib(NULL), cairo (NULL), transparent(false),
@@ -113,6 +111,8 @@ Surface::Surface(int w, int h)
 
 	toplevel = NULL;
 	capture_element = NULL;
+
+	ResizeEvent = RegisterEvent ("Resize");
 
 	Realloc ();
 }
@@ -349,6 +349,8 @@ void
 Surface::Resize (int width, int height)
 {
 	gtk_widget_set_size_request (drawing_area, width, height);
+
+	Emit (ResizeEvent);
 }
 
 void
@@ -373,13 +375,6 @@ Surface::Realloc ()
 		cairo = cairo_xlib;
 	}
 }
-
-void
-Surface::RegisterEvents (callback_plain_event surface_resize)
-{
-	this->cb_surface_resize = surface_resize;
-}
-
 
 void
 Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
@@ -809,13 +804,6 @@ void *
 surface_get_drawing_area (Surface *s)
 {
 	return s->GetDrawingArea ();
-}
-
-void
-surface_register_events (Surface *s,
-			 callback_plain_event surface_resize)
-{
-	s->RegisterEvents (surface_resize);
 }
 
 void
