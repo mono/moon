@@ -37,11 +37,9 @@ public:
 	Value ();
 	Value (const Value& v);
 	Value (Type::Kind k);
-	Value (const Value& v, Type::Kind as);
 	Value (bool z);
 	Value (double d);
-	Value (guint64 i);
-	Value (gint64 i);
+	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
 	Value (gint32 i);
 	Value (Color c);
 	Value (DependencyObject *obj);
@@ -140,6 +138,13 @@ public:
 	// never see the error of your ways).  So do the world a
 	// favor, and don't expose this ctor. :)
 	Value (void* v) { }
+	// You don't want to be using this ctor either.
+	// Use the Value (gint64, Type::Kind) ctor
+	// (Both for TimeSpan and gint64)
+	// This one is bad because it get used by either gint64
+	// and TimeSpan, and the constructor doesn't know which 
+	// of the two types it is.
+	Value (gint64 i) {};
 };
 
 G_BEGIN_DECLS

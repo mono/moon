@@ -45,15 +45,6 @@ Value::Value()
 	Init ();
 }
 
-/* this is needed for the TimeSpan handling in the parser (since
-   timespans are stored as gint64's, we need this to "cast" it as far
-   as the value goes) */
-Value::Value (const Value& v, Type::Kind as)
-{
-	k = as;
-	u = v.u;
-}
-
 Value::Value (const Value& v)
 {
 	k = v.k;
@@ -99,7 +90,7 @@ Value::Value (const Value& v)
 		*u.keytime = KeyTime (*v.u.keytime);
 		break;
 	default:
-		if (k >= Type::DEPENDENCY_OBJECT)
+		if (k >= Type::DEPENDENCY_OBJECT && u.dependency_object)
 			u.dependency_object->ref ();
 		break;
 	}
@@ -125,17 +116,10 @@ Value::Value (double d)
 	u.d = d;
 }
 
-Value::Value (guint64 i)
+Value::Value (gint64 i, Type::Kind as)
 {
 	Init ();
-	k = Type::UINT64;
-	u.ui64 = i;
-}
-
-Value::Value (gint64 i)
-{
-	Init ();
-	k = Type::INT64;
+	k = as;
 	u.i64 = i;
 }
 

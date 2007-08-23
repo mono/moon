@@ -132,6 +132,8 @@ MediaElement::MediaElement ()
 	
 	downloader = NULL;
 	part_name = NULL;
+
+	media_element_set_markers (this, new TimelineMarkerCollection ());
 }
 
 void
@@ -286,7 +288,7 @@ MediaElement::DownloaderComplete ()
 		media_element_set_can_seek (this, mplayer->CanSeek ());
 		media_element_set_can_pause (this, mplayer->CanPause ());
 		media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
-		media_element_set_natural_duration (this, Duration (mplayer->Duration ()));
+		media_element_set_natural_duration (this, Duration (mplayer->Duration () * TIMESPANTICKS_IN_SECOND / 1000));
 		media_element_set_natural_video_height (this, mplayer->height);
 		media_element_set_natural_video_width (this, mplayer->width);
 		
@@ -303,8 +305,13 @@ MediaElement::DownloaderComplete ()
 	// autoplaying (we need to somehow wait until all properties
 	// are read?)
 	
-	if (autoplay)
+	if (autoplay) {
 		Play ();
+	} else {
+		Pause ();
+	}
+
+	Emit (MediaOpenedEvent);
 }
 
 void
@@ -417,10 +424,11 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 		else if (position < 0)
 			position = 0;
 		
-		mplayer->Seek (position);
+		// position is in ticks, while mplayer expects time in milliseconds.
+		mplayer->Seek (position * 1000 / TIMESPANTICKS_IN_SECOND);
 		
 		if (position != value->AsTimeSpan ()) {
-			v = Value (position);
+			v = Value (position, Type::TIMESPAN);
 			MediaBase::SetValue (prop, &v);
 			return;
 		}

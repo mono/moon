@@ -1,5 +1,20 @@
 2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* clock.h: Add defines and methods to convert between timespans and
+	floats.
+	* media.cpp: Create a default (empty) Markers collection. When setting
+	MediaPlayer time values, convert between ticks (in TimeSpans) and 
+	milliseconds (which is what MediaPlayer expects). Emit MediaOpened
+	when we're finished downloading a media, and if we're not autoplaying
+	it, we're pausing it. Update uses of Value (gint64) constructors.
+	* value.cpp|h|h.in: Remove the Value (gint64) constructor and add a 
+	Value (gint64, Type::Kind) constructor to avoid mixups between
+	INT64 and TIMESPAN values. Check for null before unref'ing a 
+	dependency object.
+	* xaml.cpp: Update uses of Value (gint64) constructors.
+	
+2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.[cpp|h].in: Add const's here that were only added manually to the 
 	generated files.
 

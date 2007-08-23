@@ -1916,7 +1916,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		obj->SetValue (prop, Value ((double) strtod (value, NULL)));
 		break;
 	case Type::INT64:
-		obj->SetValue (prop, Value ((gint64) strtol (value, NULL, 10)));
+		obj->SetValue (prop, Value ((gint64) strtol (value, NULL, 10), Type::INT64));
 		break;
 	case Type::TIMESPAN:
 		obj->SetValue (prop, Value (timespan_from_str (value), Type::TIMESPAN));
@@ -2133,7 +2133,7 @@ start_parse:
 				dep->SetValue (prop, Value ((double) strtod (attr [i + 1], NULL)));
 				break;
 			case Type::INT64:
-				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10)));
+				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10), Type::INT64));
 				break;
 			case Type::TIMESPAN:
 				dep->SetValue (prop, Value (timespan_from_str (attr [i + 1]), Type::TIMESPAN));

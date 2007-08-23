@@ -17,8 +17,15 @@
 
 G_BEGIN_DECLS
 
-#define TimeSpan_FromSeconds(s)  ((TimeSpan)(s) * 10000000)
-#define TimeSpan_ToSeconds(s)  ((TimeSpan)(s) / 10000000)
+#define TIMESPANTICKS_IN_SECOND 10000000
+#define TIMESPANTICKS_IN_SECOND_FLOAT 10000000.0
+
+#define TimeSpan_FromSeconds(s)  ((TimeSpan)(s) * TIMESPANTICKS_IN_SECOND)
+#define TimeSpan_ToSeconds(s)  ((TimeSpan)(s) / TIMESPANTICKS_IN_SECOND)
+
+#define TimeSpan_FromSecondsFloat(s)  ((TimeSpan)((s) * TIMESPANTICKS_IN_SECOND_FLOAT))
+#define TimeSpan_ToSecondsFloat(s)  (((TimeSpan)(s)) / TIMESPANTICKS_IN_SECOND_FLOAT)
+
 
 // misc types
 typedef gint32 FillBehavior;
@@ -76,8 +83,14 @@ struct Duration {
 		return TimeSpan_ToSeconds (timespan);
 	}
 
+	double ToSecondsFloat ()
+	{
+		return TimeSpan_ToSecondsFloat (timespan);
+	}
+
 	// This should live in a TimeSpan class, but oh well.. */
 	static Duration FromSeconds (int seconds) { return Duration (TimeSpan_FromSeconds (seconds)); }
+	static Duration FromSecondsFloat (double seconds) { return Duration (TimeSpan_FromSecondsFloat (seconds)); }
 
  private:
 	DurationKind k;
