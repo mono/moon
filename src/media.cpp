@@ -472,6 +472,8 @@ MediaElement::OnLoaded ()
 	} else {
 		printf ("no downloader set\n");
 	}
+	
+	MediaBase::OnLoaded ();
 }
 
 void
