@@ -1,3 +1,12 @@
+2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (DownloaderComplete): If we fail to open, emit the
+	MediaFailedEvent and set some default values.
+	(OnPropertyChanged): Don't StopLoader() here, do that all in
+	SetSource (since SetSource needs to do it anyway).
+	(SetSource): Call StopLoader() here and close the MediaPlayer,
+	etc.
+
 2007-08-23  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: Make Resize use our event system (so the plugin

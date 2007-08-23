@@ -282,21 +282,29 @@ MediaElement::DownloaderComplete ()
 	
 	// FIXME: specify which audio stream index the player should use
 	
-	if (mplayer->Open (filename)) {
-		printf ("video succesfully opened\n");
+	if (!mplayer->Open (filename)) {
+		media_element_set_can_seek (this, false);
+		media_element_set_can_pause (this, false);
+		media_element_set_audio_stream_count (this, 0);
+		media_element_set_natural_duration (this, Duration (0));
+		media_element_set_natural_video_height (this, 0);
+		media_element_set_natural_video_width (this, 0);
 		
-		media_element_set_can_seek (this, mplayer->CanSeek ());
-		media_element_set_can_pause (this, mplayer->CanPause ());
-		media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
-		media_element_set_natural_duration (this, Duration (mplayer->Duration () * TIMESPANTICKS_IN_SECOND / 1000));
-		media_element_set_natural_video_height (this, mplayer->height);
-		media_element_set_natural_video_width (this, mplayer->width);
-		
-		media_element_set_current_state (this, "Buffering");
-	} else {
 		media_element_set_current_state (this, "Error");
-		printf ("video failed to open\n");
+		Emit (MediaFailedEvent);
+		return;
 	}
+	
+	printf ("video succesfully opened\n");
+	
+	media_element_set_can_seek (this, mplayer->CanSeek ());
+	media_element_set_can_pause (this, mplayer->CanPause ());
+	media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
+	media_element_set_natural_duration (this, Duration (mplayer->Duration () * TIMESPANTICKS_IN_SECOND / 1000));
+	media_element_set_natural_video_height (this, mplayer->height);
+	media_element_set_natural_video_width (this, mplayer->width);
+	
+	media_element_set_current_state (this, "Buffering");
 	
 	Invalidate ();
 	
@@ -322,8 +330,18 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 	dl->ref ();
 	
 	if (downloader) {
+		// Abort the current downloader
+		StopLoader ();
+		
+		// Abort the current advance_frame timeout
+		if (timeout_id != 0) {
+			g_source_remove (timeout_id);
+			timeout_id = 0;
+		}
+		
+		// Close the media stream
+		mplayer->Close ();
 		media_element_set_current_state (this, "Closed");
-		downloader->unref ();
 	}
 	
 	downloader = (Downloader *) dl;
@@ -442,21 +460,9 @@ void
 MediaElement::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == MediaBase::SourceProperty) {
-		StopLoader ();
-		
 		char *uri = media_base_get_source (this);
-		
-		if (timeout_id != 0) {
-			media_element_set_current_state (this, "Closed");
-			g_source_remove (timeout_id);
-			timeout_id = 0;
-		}
-		
-		mplayer->Stop ();
-		
-		media_element_set_current_state (this, "Opening");
-		
 		Downloader *dl = new Downloader ();
+		
 		downloader_open (dl, "GET", uri);
 		SetSource (dl, "");
 	} else if (prop == MediaElement::AudioStreamCountProperty) {
