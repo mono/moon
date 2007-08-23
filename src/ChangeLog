@@ -1,3 +1,11 @@
+2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (OnPropertyChanged): Don't autoplay here.
+	(advance_frame): Do ms->TimeSpan conversion here, too.
+	(DownloaderComplete): Instead of calling ::Pause(), just set the
+	pause state since the MediaPlayer already starts out in paused
+	state.
+
 2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* clock.h: Add defines and methods to convert between timespans and
@@ -15,8 +23,8 @@
 	
 2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* type.[cpp|h].in: Add const's here that were only added manually to the 
-	generated files.
+	* type.[cpp|h].in: Add const's here that were only added manually
+	to the generated files.
 
 2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
 
@@ -24,8 +32,8 @@
 
 2007-08-23  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* shape.cpp: Remove unneeded (cairo_close_path) and dead (break) code
-	in Polygon::Draw.
+	* shape.cpp: Remove unneeded (cairo_close_path) and dead (break)
+	code in Polygon::Draw.
 
 2007-08-22  Chris Toshok  <toshok@ximian.com>
 

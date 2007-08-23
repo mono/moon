@@ -103,7 +103,7 @@ advance_frame (void *user_data)
 		media->updating = true;
 		if ((position = media->mplayer->Position ()) < 0)
 			position = 0;
-		media_element_set_position (media, position);
+		media_element_set_position (media, position * TIMESPANTICKS_IN_SECOND / 1000);
 		media->updating = false;
 	}
 	
@@ -132,7 +132,7 @@ MediaElement::MediaElement ()
 	
 	downloader = NULL;
 	part_name = NULL;
-
+	
 	media_element_set_markers (this, new TimelineMarkerCollection ());
 }
 
@@ -308,9 +308,9 @@ MediaElement::DownloaderComplete ()
 	if (autoplay) {
 		Play ();
 	} else {
-		Pause ();
+		media_element_set_current_state (this, "Paused");
 	}
-
+	
 	Emit (MediaOpenedEvent);
 }
 
@@ -319,12 +319,13 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 {
 	g_return_if_fail (dl->GetObjectType () == Type::DOWNLOADER);
 	
-	// if we have something opened already...
-	media_element_set_current_state (this, "Closed");
-	
 	dl->ref ();
-	if (downloader)
+	
+	if (downloader) {
+		media_element_set_current_state (this, "Closed");
 		downloader->unref ();
+	}
+	
 	downloader = (Downloader *) dl;
 	part_name = g_strdup (PartName);
 	
@@ -440,8 +441,6 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 void
 MediaElement::OnPropertyChanged (DependencyProperty *prop)
 {
-	bool autoplay = false;
-	
 	if (prop == MediaBase::SourceProperty) {
 		StopLoader ();
 		
@@ -467,8 +466,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 			// FIXME: set the audio stream index
 		}
 	} else if (prop == MediaElement::AutoPlayProperty) {
-		// handled below
-		autoplay = media_element_get_auto_play (this);
+		// no state to change
 	} else if (prop == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (media_element_get_balance (this));
 	} else if (prop == MediaElement::BufferingProgressProperty) {
@@ -510,11 +508,6 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		}
 	} else if (prop == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (media_element_get_volume (this));
-	}
-	
-	if (autoplay) {
-		printf ("video autoplayed\n");
-		Play ();
 	}
 	
 	if (prop->type == Type::MEDIAELEMENT) {
