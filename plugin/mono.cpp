@@ -47,9 +47,8 @@ vm_init (void)
 	printf ("The file is %s\n", boot_assembly);
 
 	mono_config_parse (NULL);
-	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
-	mono_debug_init_corlib (moon_domain);
+	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
 	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
 	if (moon_boot_assembly){
 		char *argv [2];

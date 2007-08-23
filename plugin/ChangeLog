@@ -1,3 +1,8 @@
+2007-08-23  Jb Evain  <jbevain@novell.com>
+
+	* mono.cpp (vm_init): properly initialize the new debugging
+	code.
+
 2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp|h: Duration and TimeSpan's seconds property
