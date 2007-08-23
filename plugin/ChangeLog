@@ -1,4 +1,9 @@
-2007-08-17  Jb Evain  <jbevain@novell.com>
+2007-08-23  Jb Evain  <jbevain@novell.com>
+
+	* mono.cpp (vm_init): use new method name to initialize
+	the debugger.
+
+2007-08-23  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: use -pkg:agmonosilver to reference agmono.dll
 
