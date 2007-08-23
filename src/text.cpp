@@ -396,9 +396,9 @@ TextBlock::ComputeBounds ()
 	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
 	cairo_new_path (cr);
 	cairo_restore (cr);
-
+	
 	bounds = Rect (x1 - 1, y1 - 1, x2-x1 + 2, y2-y1 + 2);
-
+	
 	measuring_context_destroy (cr);
 }
 
@@ -448,11 +448,8 @@ void
 TextBlock::CalcActualWidthHeight (cairo_t *cr)
 {
 	bool destroy = false;
-
+	
 	if (cr == NULL) {
-		// FIXME: we need better width/height values here
-// 		printf ("CalcActualWidthHeight called before surface available for TextBlock Text=\"%s\"\n",
-// 			text_block_get_text (this));
 		cr = measuring_context_create ();
 		destroy = true;
 	} else {
@@ -740,12 +737,12 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			foreground->ref ();
 		}
 	}
-
+	
 	if (prop != TextBlock::ActualHeightProperty && prop != TextBlock::ActualWidthProperty) {
 		CalcActualWidthHeight (NULL);
 		UpdateBounds (true);
 	}
-
+	
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
