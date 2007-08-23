@@ -1,3 +1,8 @@
+2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.[cpp|h].in: Add const's here that were only added manually to the 
+	generated files.
+
 2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp: Implemented volume/balance

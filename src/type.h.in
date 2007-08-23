@@ -47,10 +47,10 @@ public:
 	// END_MANAGED_MAPPING
 		};
 
-	static Type* RegisterType (char *name, Type::Kind type, Type::Kind parent, bool value_type);
-	static Type* RegisterType (char *name, Type::Kind type, Type::Kind parent);
-	static Type* RegisterType (char *name, Type::Kind type, bool value_type);
-	static Type* Find (char *name);
+	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, bool value_type);
+	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent);
+	static Type* RegisterType (const char *name, Type::Kind type, bool value_type);
+	static Type* Find (const char *name);
 	static Type* Find (Type::Kind type);
 	
 	bool IsSubclassOf (Type::Kind super);	
@@ -61,7 +61,7 @@ public:
 
 	static void Shutdown ();
 private:
-	Type (char *name, Type::Kind type, Type::Kind parent);
+	Type (const char *name, Type::Kind type, Type::Kind parent);
 	~Type ();
 	static Type** types;
 	static GHashTable *types_by_name;
