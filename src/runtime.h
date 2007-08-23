@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 #define ENDTIMER(id,str)
 #endif
 
-class Surface : EventObject {
+class Surface : public EventObject {
  public:
 	Surface(int width, int height);
 	
