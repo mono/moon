@@ -82,7 +82,7 @@ class Image : public MediaBase {
 	void CreateSurface (const char *fname);
 	void CleanupSurface ();
 	void CleanupPattern ();
-	void StopLoader ();
+	void DownloaderAbort ();
 
 	// downloader callbacks
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
@@ -91,9 +91,9 @@ class Image : public MediaBase {
 	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
-
+	
 	Downloader *downloader;
-
+	
 	struct CachedSurface {
 		int ref_cnt;
 
@@ -122,13 +122,18 @@ void   image_set_source (Image *img, DependencyObject *Downloader, const char *P
 
 
 class MediaElement : public MediaBase {
+	bool loaded;
+	
+	virtual void OnLoaded ();
+	
+	void UpdateProgress ();
+	
 	// downloader methods/data
 	Downloader *downloader;
 	char *part_name;
 	
-	void StopLoader ();
-	void UpdateProgress ();
 	void DataWrite (guchar *data, gsize n, gsize nn);
+	void DownloaderAbort ();
 	void DownloaderComplete ();
 	
 	static void data_write (guchar *data, gsize n, gsize nn, void *closure);

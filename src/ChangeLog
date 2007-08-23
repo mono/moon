@@ -1,5 +1,17 @@
 2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (MediaElement): Initialize 'loaded' to false.
+	(SetSource): Don't call DownloaderComplete() if we haven't been
+	loaded yet.
+	(GetValue): Convert to position from ms to TimeSpan ticks.
+	(OnLoaded): Set loaded to true and, if we have a downloader which
+	has completed the download, call DownloaderComplete() which will
+	then open the media file and autoplay if appropriate.
+	(OnPropertyChanged): Protect against creating a downloader for an
+	empty string uri.
+
+2007-08-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* media.cpp (DownloaderComplete): If we fail to open, emit the
 	MediaFailedEvent and set some default values.
 	(OnPropertyChanged): Don't StopLoader() here, do that all in

@@ -119,8 +119,12 @@ MediaElement::MediaElement ()
 	mplayer->SetBalance (media_element_get_balance (this));
 	mplayer->SetVolume (media_element_get_volume (this));
 	
+	loaded = false;
 	updating = false;
 	timeout_id = 0;
+	
+	downloader = NULL;
+	part_name = NULL;
 	
 	BufferingProgressChangedEvent = RegisterEvent ("BufferingProgressChanged");
 	CurrentStateChangedEvent = RegisterEvent ("CurrentStateChanged");
@@ -130,16 +134,15 @@ MediaElement::MediaElement ()
 	MediaFailedEvent = RegisterEvent ("MediaFailed");
 	MediaOpenedEvent = RegisterEvent ("MediaOpened");
 	
-	downloader = NULL;
-	part_name = NULL;
-	
 	media_element_set_markers (this, new TimelineMarkerCollection ());
 }
 
 void
-MediaElement::StopLoader ()
+MediaElement::DownloaderAbort ()
 {
 	if (downloader) {
+		Value *value = downloader->GetValue (Downloader::UriProperty);
+		printf ("aborting downloader for %s\n", value ? value->AsString () : "(null)");
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;
@@ -152,7 +155,7 @@ MediaElement::~MediaElement ()
 		g_source_remove (timeout_id);
 	
 	g_free (part_name);
-	StopLoader ();
+	DownloaderAbort ();
 	
 	delete mplayer;
 }
@@ -263,7 +266,7 @@ MediaElement::size_notify (int64_t size, gpointer data)
 	// Do something with it?
 	// if size == -1, we do not know the size of the file, can happen
 	// if the server does not return a Content-Length header
-	printf ("The file size is %lld\n", size);
+	//printf ("The video size is %lld\n", size);
 }
 
 void
@@ -281,6 +284,8 @@ MediaElement::DownloaderComplete ()
 	printf ("video source changed to `%s'\n", filename);
 	
 	// FIXME: specify which audio stream index the player should use
+	
+	g_assert (loaded == true);
 	
 	if (!mplayer->Open (filename)) {
 		media_element_set_can_seek (this, false);
@@ -306,20 +311,14 @@ MediaElement::DownloaderComplete ()
 	
 	media_element_set_current_state (this, "Buffering");
 	
+	Emit (MediaOpenedEvent);
+	
 	Invalidate ();
 	
-	// FIXME: if the Source finishes downloading before the xaml
-	// parser gets to the AutoPlay="False" property, then we start
-	// autoplaying (we need to somehow wait until all properties
-	// are read?)
+	printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
 	
-	if (autoplay) {
+	if (autoplay)
 		Play ();
-	} else {
-		media_element_set_current_state (this, "Paused");
-	}
-	
-	Emit (MediaOpenedEvent);
 }
 
 void
@@ -331,7 +330,7 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 	
 	if (downloader) {
 		// Abort the current downloader
-		StopLoader ();
+		DownloaderAbort ();
 		
 		// Abort the current advance_frame timeout
 		if (timeout_id != 0) {
@@ -354,7 +353,7 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 	
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 	if (downloader->Started () || downloader->Completed ()) {
-		if (downloader->Completed ())
+		if (loaded && downloader->Completed ())
 			DownloaderComplete ();
 		
 		UpdateProgress ();
@@ -385,6 +384,8 @@ MediaElement::Pause ()
 void
 MediaElement::Play ()
 {
+	printf ("MediaElement::Play() requested\n");
+	
 	if (downloader && downloader->Completed () && timeout_id == 0 && !mplayer->IsPlaying ()) {
 		timeout_id = mplayer->Play (advance_frame, this);
 		media_element_set_current_state (this, "Playing");
@@ -413,7 +414,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 {
 	if (prop == MediaElement::PositionProperty) {
 		int64_t position = mplayer->Position ();
-		Value v = Value (position, Type::TIMESPAN);
+		Value v = Value (position * TIMESPANTICKS_IN_SECOND / 1000, Type::TIMESPAN);
 		
 		updating = true;
 		SetValue (prop, &v);
@@ -457,14 +458,38 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 }
 
 void
+MediaElement::OnLoaded ()
+{
+	loaded = true;
+	
+	printf ("MediaElement::OnLoaded: ");
+	
+	if (downloader && downloader->Completed ()) {
+		printf ("downloader is complete\n");
+		DownloaderComplete ();
+	} else if (downloader) {
+		printf ("downloader not yet completed\n");
+	} else {
+		printf ("no downloader set\n");
+	}
+}
+
+void
 MediaElement::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == MediaBase::SourceProperty) {
 		char *uri = media_base_get_source (this);
-		Downloader *dl = new Downloader ();
 		
-		downloader_open (dl, "GET", uri);
-		SetSource (dl, "");
+		if (uri && *uri) {
+			Downloader *dl = new Downloader ();
+			
+			printf ("setting media source to %s\n", uri);
+			downloader_open (dl, "GET", uri);
+			SetSource (dl, "");
+		} else {
+			printf ("trying to set media source to empty\n");
+			DownloaderAbort ();
+		}
 	} else if (prop == MediaElement::AudioStreamCountProperty) {
 		// read-only property
 	} else if (prop == MediaElement::AudioStreamIndexProperty) {
@@ -473,6 +498,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		}
 	} else if (prop == MediaElement::AutoPlayProperty) {
 		// no state to change
+		printf ("AutoPlay set to %s\n", media_element_get_auto_play (this) ? "true" : "false");
 	} else if (prop == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (media_element_get_balance (this));
 	} else if (prop == MediaElement::BufferingProgressProperty) {
@@ -786,13 +812,13 @@ Image::Image ()
 
 Image::~Image ()
 {
-	StopLoader ();
+	DownloaderAbort ();
 	CleanupSurface ();
 	g_free (part_name);
 }
 
 void
-Image::StopLoader ()
+Image::DownloaderAbort ()
 {
 	if (downloader){
 		downloader_abort (downloader);
@@ -1020,7 +1046,7 @@ Image::size_notify (int64_t size, gpointer data)
 	// Do something with it?
 	// if size == -1, we do not know the size of the file, can happen
 	// if the server does not return a Content-Length header
-	printf ("The file size is %lld\n", size);
+	//printf ("The image size is %lld\n", size);
 }
 
 void
@@ -1129,8 +1155,8 @@ void
 Image::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop == MediaBase::SourceProperty) {
-		StopLoader ();
-
+		DownloaderAbort ();
+		
 		char *source = media_base_get_source (this);
 		
 		Downloader *dl = new Downloader ();
