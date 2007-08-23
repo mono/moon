@@ -798,10 +798,6 @@ Polygon::Draw (cairo_t *cr)
 		for (i = 1; i < count; i++)
 			cairo_line_to (cr, points [i].x, points [i].y);
 		break;
-		// Draw a line from the last point back to the first point if they're not the same
-		if ((points [0].x != points [count-1].x) && (points [0].y != points [count-1].y)) {
-			cairo_line_to (cr, points [0].x, points [0].y);
-		}
 	default:
 		double x = points [0].x;
 		double y = points [0].y;
@@ -809,10 +805,6 @@ Polygon::Draw (cairo_t *cr)
 		for (i = 1; i < count; i++)
 			cairo_line_to (cr, points [i].x - x, points [i].y - y);
 		break;
-		// Draw a line from the last point back to the first point if they're not the same
-		if ((points [count-1].x != 0) && (points [count-1].y != 0)) {
-			cairo_line_to (cr, 0, 0);
-		}
 	}
 
 	cairo_close_path (cr);

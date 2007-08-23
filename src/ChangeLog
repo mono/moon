@@ -1,3 +1,8 @@
+2007-08-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Remove unneeded (cairo_close_path) and dead (break) code
+	in Polygon::Draw.
+
 2007-08-22  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (Tick): guard against division by zero.  gets
