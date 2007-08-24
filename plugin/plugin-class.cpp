@@ -778,7 +778,6 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 
 		double x = ea->x;
 		double y = ea->y;
-		DependencyObject *dob = NULL;
 
 		if (NPVARIANT_IS_OBJECT (args [0])) {
 			DependencyObject *dob = ((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args [0]))->dob;
