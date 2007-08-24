@@ -328,6 +328,28 @@ event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, 
 	proxy->AddHandler (obj);
 }
 
+static NPObject*
+event_listener_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightEventListenerObject (instance);
+}
+
+static void
+event_listener_deallocate (NPObject *npobject)
+{
+	delete (MoonlightEventListenerObject *) npobject;
+}
+
+
+MoonlightEventListenerType::MoonlightEventListenerType ()
+{
+	allocate = event_listener_allocate;
+	deallocate = event_listener_deallocate;
+}
+
+MoonlightEventListenerType *MoonlightEventListenerClass;
+
+
 /*** ErrorEventArgs ***/
 static NPObject*
 erroreventargs_allocate (NPP instance, NPClass *)
@@ -1786,11 +1808,24 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		g_free (name);
 
+		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPN_CreateObject (((MoonlightObject*)npobj)->instance,
+												   MoonlightEventListenerClass);
+		res->proxy = proxy;
+		res->target = dob;
+
+		OBJECT_TO_NPVARIANT (res, *result);
 		return true;
 	}
 	else if (name_matches (name, "removeEventListener")) {
-		// not yet implemented
-		DEBUG_WARN_NOTIMPLEMENTED ("do.removeEventListener");
+		if (argCount < 2)
+			return false;
+
+		if (!NPVARIANT_IS_OBJECT (args [1]))
+			return true;
+
+		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPVARIANT_TO_OBJECT (args [1]);
+		res->proxy->RemoveHandler (res->target);
+
 		return true;
 	}
 	// XXX these next two methods should live in a UIElement
@@ -3227,5 +3262,6 @@ plugin_init_classes ()
 	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
+	MoonlightEventListenerClass = new MoonlightEventListenerType ();
 }
 

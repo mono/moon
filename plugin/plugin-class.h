@@ -23,7 +23,7 @@ void plugin_init_classes (void);
 /*** EventListenerProxy */
 typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *value);
 
-class EventListenerProxy {
+class EventListenerProxy : public List::Node {
  public:
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
@@ -72,6 +72,20 @@ struct MoonlightObject : public NPObject
 
 	NPP instance;
 	Type::Kind moonlight_type;
+};
+
+/*** MoonlightEventListenerObject ******************************************************/
+struct MoonlightEventListenerType : MoonlightObjectType {
+	MoonlightEventListenerType ();
+};
+
+extern MoonlightEventListenerType* MoonlightEventListenerClass;
+
+struct MoonlightEventListenerObject : MoonlightObject {
+	MoonlightEventListenerObject (NPP instance) : MoonlightObject (instance), proxy (NULL), target (NULL) { }
+
+	EventListenerProxy *proxy;
+	EventObject *target;
 };
 
 /*** MoonlightErrorEventArgsClass ******************************************************/
