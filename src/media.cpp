@@ -93,24 +93,33 @@ DependencyProperty *MediaElement::NaturalVideoWidthProperty;
 DependencyProperty *MediaElement::PositionProperty;
 DependencyProperty *MediaElement::VolumeProperty;
 
-static gboolean
-advance_frame (void *user_data)
+
+bool
+MediaElement::AdvanceFrame ()
 {
-	MediaElement *media = (MediaElement *) user_data;
 	int64_t position;
 	
-	if (media->mplayer->AdvanceFrame ()) {
-		media->updating = true;
-		if ((position = media->mplayer->Position ()) < 0)
+	if (mplayer->AdvanceFrame ()) {
+		updating = true;
+		if ((position = mplayer->Position ()) < 0)
 			position = 0;
-		media_element_set_position (media, position * TIMESPANTICKS_IN_SECOND / 1000);
-		media->updating = false;
+		position *= TIMESPANTICKS_IN_SECOND / 1000;
+		media_element_set_position (this, position);
+		updating = false;
 	}
 	
 	// FIXME: need to disconnect the timeout if the video is complete
 	//        and set the CurrentState to "Stopped"?
 	
 	return true;
+}
+
+static gboolean
+advance_frame (void *user_data)
+{
+	MediaElement *media = (MediaElement *) user_data;
+	
+	return (gboolean) media->AdvanceFrame ();
 }
 
 MediaElement::MediaElement ()
@@ -246,6 +255,11 @@ MediaElement::UpdateProgress ()
 	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
 	
 	SetValue (MediaElement::DownloadProgressProperty, Value (progress));
+	
+	// Note: until we start streaming media as we download it,
+	// we'll use the downloader progress as the buffering progress
+	// too.
+	SetValue (MediaElement::BufferingProgressProperty, Value (progress));
 }
 
 void 
@@ -280,6 +294,8 @@ MediaElement::DownloaderComplete ()
 {
 	char *filename = downloader_get_response_file (downloader, part_name);
 	bool autoplay = media_element_get_auto_play (this);
+	
+	UpdateProgress ();
 	
 	printf ("video source changed to `%s'\n", filename);
 	
@@ -357,8 +373,6 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 	if (downloader->Started () || downloader->Completed ()) {
 		if (loaded && downloader->Completed ())
 			DownloaderComplete ();
-		
-		UpdateProgress ();
 	} else {
 		downloader->SetWriteFunc (data_write, size_notify, this);
 		
@@ -506,7 +520,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (media_element_get_balance (this));
 	} else if (prop == MediaElement::BufferingProgressProperty) {
-		// read-only property
+		Emit (BufferingProgressChangedEvent);
 	} else if (prop == MediaElement::BufferingTimeProperty) {
 		if (!updating) {
 			// FIXME: set the buffering time
@@ -526,9 +540,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		else
 			mplayer->Mute ();
 	} else if (prop == MediaElement::MarkersProperty) {
-		if (!updating) {
-			// FIXME: set the markers
-		}
+		// FIXME: keep refs to these?
 	} else if (prop == MediaElement::NaturalDurationProperty) {
 		// read-only property
 	} else if (prop == MediaElement::NaturalVideoHeightProperty) {
@@ -1235,7 +1247,7 @@ media_init (void)
 	MediaElement::BalanceProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
 	MediaElement::BufferingProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
 	MediaElement::BufferingTimeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingTime", Type::TIMESPAN);
-	MediaElement::CanPauseProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanPause", new Value (true));
+	MediaElement::CanPauseProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanPause", new Value (false));
 	MediaElement::CanSeekProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanSeek", new Value (false));
 	MediaElement::CurrentStateProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CurrentState", Type::STRING);
 	MediaElement::DownloadProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0));

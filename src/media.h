@@ -122,6 +122,8 @@ void   image_set_source (Image *img, DependencyObject *Downloader, const char *P
 
 
 class MediaElement : public MediaBase {
+	guint timeout_id;
+	bool updating;
 	bool loaded;
 	
 	virtual void OnLoaded ();
@@ -160,10 +162,8 @@ public:
 	static DependencyProperty *PositionProperty;
 	static DependencyProperty *VolumeProperty;
 	
-	// technically private
+	bool AdvanceFrame ();
 	MediaPlayer *mplayer;
-	guint timeout_id;
-	bool updating;
 	
 	MediaElement ();
 	~MediaElement ();
