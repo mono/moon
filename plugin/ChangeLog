@@ -1,3 +1,7 @@
+2007-08-23  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: We can now hookup to the resize event.
+
 2007-08-23  Jb Evain  <jbevain@novell.com>
 
 	* mono.cpp (vm_init): properly initialize the new debugging

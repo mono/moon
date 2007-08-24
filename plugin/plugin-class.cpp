@@ -1407,17 +1407,15 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 		return true;
 	}
 	else if (name_matches (name, "onResize")) {
-#if notyet /* XXX Surface needs to inherit from DependencyObject */
+		MoonlightContentObject *obj = (MoonlightContentObject *) npobj;
 		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 		EventListenerProxy *proxy = new EventListenerProxy (((MoonlightObject*)npobj)->instance,
 								    "Resize",
 								    value);
 
 		proxy->AddHandler (plugin->surface);
-
-		// XXX store the proxy someplace in this object
-#endif
-		DEBUG_WARN_NOTIMPLEMENTED ("content onResize");
+		obj->resizeProxy = proxy;
+		
 		return true;
 	}
 	else if (name_matches (name, "onFullScreenChange")) {
