@@ -1,3 +1,8 @@
+2007-08-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: mouse_event_invoke (getPosition):
+	use the argument to calculate the position if provided.
+
 2007-08-23  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: We can now hookup to the resize event.

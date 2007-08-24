@@ -770,13 +770,56 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 		if (argCount != 1)
 			return true;
 
-		// XXX we need to handle the arg, it'll be an element
+		// The argument is an element
 		// to calculate the position with respect to (or null
 		// for screen space)
 
-		NPN_RetainObject (ea->position);
-		
-		OBJECT_TO_NPVARIANT (ea->position, *result);
+
+		Value* varg = NULL;
+		variant_to_value (&args[0], &varg);
+
+		Point origin = Point (0, 0);
+		DependencyObject *dob = NULL;
+
+		//printf ("mouse_event_invoke (varg: %s, kind: %s)\n", varg == NULL ? "null" : "something", varg == NULL ? "n/a" : Type::Find (varg->GetKind ())->name);
+
+		if (varg != NULL) {
+			if (varg->GetKind () == Type::NPOBJ) {
+				MoonlightObject *obj = (MoonlightObject*) varg->AsNPObj ();
+				if (obj != NULL && obj->moonlight_type >= Type::DEPENDENCY_OBJECT) {
+					dob = ((MoonlightDependencyObjectObject*) obj)->dob;
+				}
+			} else if (varg->GetKind () >= Type::DEPENDENCY_OBJECT) {
+				dob = varg->AsDependencyObject ();
+			}
+		}
+		if (dob != NULL && dob->Is (Type::UIELEMENT)) {
+			UIElement *uielement = (UIElement*) dob;
+			//printf ("mouse_event_invoke (element: %s)\n", uielement != NULL ? "something" : "null");
+			if (uielement != NULL) {
+				Rect bounds = uielement->GetBounds ();
+				origin.x = bounds.x;
+				origin.y = bounds.y;
+				//printf ("mouse_event_invoke (bounds: %f, %f, %f, %f)\n", bounds.x, bounds.y, bounds.w, bounds.h);
+			}
+		}
+	
+		delete varg;
+
+		//printf ("mouse_event_invoke (origin: %f, %f)\n", origin.x, origin.y);
+
+		MoonlightPoint *mouse_location = (MoonlightPoint*) ea->position;
+		Point position = origin;
+		if (mouse_location != NULL) {
+			position.x = mouse_location->point.x - origin.x;
+			position.y = mouse_location->point.y - origin.y;
+			//printf ("mouse_event_invoke (position: %f, %f)\n", position.x, position.y);
+		}
+
+		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightPointClass);
+		point->point = position;
+
+		OBJECT_TO_NPVARIANT (point, *result);
 
 		return true;
 	}
