@@ -631,6 +631,8 @@ MediaPlayer::StopThreads ()
 	
 	pause_time = 0;
 	start_time = 0;
+	
+	current_pts = 0;
 	target_pts = 0;
 	seek_pts = 0;
 	

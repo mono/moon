@@ -1,5 +1,8 @@
 2007-08-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mplayer.cpp (StopThreads): Need to reset current_pts to 0 so the
+	video frames will update if we seek backwards.
+
 	* uielement.cpp (DoRender): Shortcut out if total_opacity == 0.0
 
 	* media.cpp (UpdateProgress): Use the downloader progress value as
