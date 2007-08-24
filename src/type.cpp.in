@@ -157,7 +157,7 @@ types_init_manually (void)
 	Type::RegisterType ("double*", Type::DOUBLE_ARRAY, false);
 	Type::RegisterType ("Point*", Type::POINT_ARRAY, false);
 	Type::RegisterType ("Matrix", Type::MATRIX, true);
-
+	Type::RegisterType ("NPObj", Type::NPOBJ, false);
 #if DEBUG
 	for (int i = 1; i < Type::LASTTYPE; i++) {
 		if (Type::types [i] != NULL)

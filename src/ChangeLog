@@ -1,5 +1,10 @@
 2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* value.h[.in]: Added AsNPObj.
+	* type.cpp[.in]: Initialize Type::NPOBJ correctly.
+
+2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* media.cpp: (DownloaderCompleted): The initial state of media
 	elements that aren't autoplayed is 'Paused'.
 

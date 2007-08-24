@@ -94,6 +94,7 @@ public:
 	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
 	Matrix*		AsMatrix ()	{ checked_get_exact (Type::MATRIX, NULL, u.matrix); }
+	gpointer	AsNPObj ()	{ checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
 
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
