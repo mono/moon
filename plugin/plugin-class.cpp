@@ -776,31 +776,15 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 		// to calculate the position with respect to (or null
 		// for screen space)
 
-
-		Value* varg = NULL;
-		variant_to_value (&args[0], &varg);
-
 		double x = ea->x;
 		double y = ea->y;
 		DependencyObject *dob = NULL;
 
-		//printf ("mouse_event_invoke (varg: %s, kind: %s)\n", varg == NULL ? "null" : "something", varg == NULL ? "n/a" : Type::Find (varg->GetKind ())->name);
-
-		if (varg != NULL) {
-			if (varg->GetKind () == Type::NPOBJ) {
-				MoonlightObject *obj = (MoonlightObject*) varg->AsNPObj ();
-				if (obj != NULL && obj->moonlight_type >= Type::DEPENDENCY_OBJECT) {
-					dob = ((MoonlightDependencyObjectObject*) obj)->dob;
-				}
-			} else if (varg->GetKind () >= Type::DEPENDENCY_OBJECT) {
-				dob = varg->AsDependencyObject ();
-			}
+		if (NPVARIANT_IS_OBJECT (args [0])) {
+			DependencyObject *dob = ((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args [0]))->dob;
+			if (dob->Is (Type::UIELEMENT))
+				uielement_transform_point ((UIElement*) dob, &x, &y);
 		}
-		if (dob != NULL && dob->Is (Type::UIELEMENT)) {
-			uielement_transform_point ((UIElement*) dob, &x, &y);
-		}
-	
-		delete varg;
 
 		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightPointClass);
 		point->point = Point (x, y);

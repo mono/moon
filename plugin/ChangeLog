@@ -3,6 +3,8 @@
 	* plugin-class.cpp|h: Now that getPosition works as intended, we
 	don't need to store the position as an NPObject on the
 	MouseEventArgs.
+	- Eliminate the variant_to_value so that we don't need to do a
+	bunch of extra casting.
 
 2007-08-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
