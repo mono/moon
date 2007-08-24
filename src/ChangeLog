@@ -1,3 +1,17 @@
+2007-08-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uielement.cpp (DoRender): Shortcut out if total_opacity == 0.0
+
+	* media.cpp (UpdateProgress): Use the downloader progress value as
+	the buffering progress value as well (since we don't yet stream).
+	(DownloaderComplete): Call UpdateProgres() here so that we can
+	flush the 100% progress value.
+
+	* downloader.cpp (Write): Update the progress first, so that the
+	writer callback can query the actual progress (all data read up to
+	and /including/ this point in time).
+	(NotifyFinished): Set progress to 100% and emit an event.
+
 2007-08-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* value.h[.in]: Added AsNPObj.
