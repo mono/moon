@@ -161,14 +161,12 @@ extern MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
 
 struct MoonlightMouseEventArgsObject : MoonlightObject {
 	MoonlightMouseEventArgsObject (NPP instance)
-	  : MoonlightObject (instance), state (0), position (NULL) { }
+	  : MoonlightObject (instance), state (0), x (-1), y (-1) { }
 
 	int state;
-
-	NPObject *position;
+	double x;
+	double y;
 };
-
-extern void MouseEventArgsPopulate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args);
 
 /*** MoonlightKeyboardEventArgsClass  **************************************************************/
 struct MoonlightKeyboardEventArgsType : MoonlightObjectType {

@@ -258,7 +258,8 @@ EventListenerProxy::mouse_event_wrapper (NPP instance, gpointer calldata, NPVari
 {
 	MouseEventArgs *ea = (MouseEventArgs*)calldata;
 	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject*)NPN_CreateObject (instance, MoonlightMouseEventArgsClass);
-	MouseEventArgsPopulate (jsea, ea);
+	jsea->x = ea->x;
+	jsea->y = ea->y;
 
 	OBJECT_TO_NPVARIANT (jsea, *value);
 }
@@ -726,7 +727,8 @@ mouse_event_invalidate (NPObject *npobject)
 // XXX apparently we don't need to do this?
 //  	if (ea->position)
 //  		NPN_ReleaseObject (ea->position);
-	ea->position = NULL;
+	ea->x = -1;
+	ea->y = -1;
 }
 
 static bool
@@ -778,7 +780,8 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 		Value* varg = NULL;
 		variant_to_value (&args[0], &varg);
 
-		Point origin = Point (0, 0);
+		double x = ea->x;
+		double y = ea->y;
 		DependencyObject *dob = NULL;
 
 		//printf ("mouse_event_invoke (varg: %s, kind: %s)\n", varg == NULL ? "null" : "something", varg == NULL ? "n/a" : Type::Find (varg->GetKind ())->name);
@@ -794,30 +797,13 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 			}
 		}
 		if (dob != NULL && dob->Is (Type::UIELEMENT)) {
-			UIElement *uielement = (UIElement*) dob;
-			//printf ("mouse_event_invoke (element: %s)\n", uielement != NULL ? "something" : "null");
-			if (uielement != NULL) {
-				Rect bounds = uielement->GetBounds ();
-				origin.x = bounds.x;
-				origin.y = bounds.y;
-				//printf ("mouse_event_invoke (bounds: %f, %f, %f, %f)\n", bounds.x, bounds.y, bounds.w, bounds.h);
-			}
+			uielement_transform_point ((UIElement*) dob, &x, &y);
 		}
 	
 		delete varg;
 
-		//printf ("mouse_event_invoke (origin: %f, %f)\n", origin.x, origin.y);
-
-		MoonlightPoint *mouse_location = (MoonlightPoint*) ea->position;
-		Point position = origin;
-		if (mouse_location != NULL) {
-			position.x = mouse_location->point.x - origin.x;
-			position.y = mouse_location->point.y - origin.y;
-			//printf ("mouse_event_invoke (position: %f, %f)\n", position.x, position.y);
-		}
-
 		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)npobj)->instance, MoonlightPointClass);
-		point->point = position;
+		point->point = Point (x, y);
 
 		OBJECT_TO_NPVARIANT (point, *result);
 
@@ -842,17 +828,6 @@ MoonlightMouseEventArgsType::MoonlightMouseEventArgsType ()
 }
 
 MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
-
-void
-MouseEventArgsPopulate (MoonlightMouseEventArgsObject *ea, MouseEventArgs *args)
-{
-	ea->state = args->state;
-
-	MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (((MoonlightObject*)ea)->instance, MoonlightPointClass);
-
-	point->point = Point (args->x, args->y);
-	ea->position = point;
-}
 
 /*** MoonlightKeyboardEventArgsClass  **************************************************************/
 
