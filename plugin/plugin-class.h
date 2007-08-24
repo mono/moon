@@ -182,8 +182,8 @@ struct MoonlightKeyboardEventArgsObject : MoonlightObject {
 	  : MoonlightObject (instance), state (0), key (0), platformcode (0) { }
 
 	int state;
-	int platformcode;
 	int key;
+	int platformcode;
 };
 
 extern void KeyboardEventArgsPopulate (MoonlightKeyboardEventArgsObject *ea, KeyboardEventArgs *args);
