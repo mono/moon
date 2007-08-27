@@ -533,6 +533,8 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	
 	if (video->stream_id != -1)
 		return g_timeout_add (video->msec_per_frame, callback, user_data);
+	else
+		return g_timeout_add (33, callback, user_data);
 	
 	return 0;
 }

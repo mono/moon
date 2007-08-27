@@ -1,5 +1,9 @@
 2007-08-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mplayer.cpp (Play): Always add a timeout, even for audio-only
+	media, so that the callback can check if the media has ended and
+	emit the MediaEnded event.
+
 	* media.cpp (AdvanceFrame): Emit the MediaEndedEvent.
 
 	* mplayer.cpp (MediaEnded): New convenience function.
