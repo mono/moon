@@ -106,10 +106,12 @@ MediaElement::AdvanceFrame ()
 		position *= TIMESPANTICKS_IN_SECOND / 1000;
 		media_element_set_position (this, position);
 		updating = false;
+	} else if (mplayer->MediaEnded ()) {
+		// FIXME: we need to do the same for audio-only media
+		media_element_set_current_state (this, "Stopped");
+		Emit (MediaEndedEvent);
+		return false;
 	}
-	
-	// FIXME: need to disconnect the timeout if the video is complete
-	//        and set the CurrentState to "Stopped"?
 	
 	return true;
 }

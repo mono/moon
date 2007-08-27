@@ -1,7 +1,14 @@
+2007-08-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (AdvanceFrame): Emit the MediaEndedEvent.
+
+	* mplayer.cpp (MediaEnded): New convenience function.
+
 2007-08-27  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* shape.cpp: Remove cairo_new_path call in moon_rounded_rectangle as this
-	clear any path data in the context (see test-path-group.xaml)
+	* shape.cpp: Remove cairo_new_path call in moon_rounded_rectangle
+	as this clear any path data in the context (see
+	test-path-group.xaml)
 
 2007-08-27  Jeffrey Stedfast  <fejj@novell.com>
 
@@ -12,10 +19,11 @@
 
 2007-08-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* panel.cpp: InsideObject: only skip checking the children if the point is
-	  not in the clipped area.
-	* uielement.h, uielement.cpp: Added InsideClip, and moved the corresponding
-	  code from InsideObject to InsideClip.
+	* panel.cpp: InsideObject: only skip checking the children if the
+	  point is not in the clipped area.
+
+	* uielement.h, uielement.cpp: Added InsideClip, and moved the
+	  corresponding code from InsideObject to InsideClip.
 
 2007-08-27  Sebastien Pouliot  <sebastien@ximian.com>
 

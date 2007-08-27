@@ -492,6 +492,17 @@ MediaPlayer::IsPlaying ()
 	return playing && !paused;
 }
 
+bool
+MediaPlayer::MediaEnded ()
+{
+	if (audio->pcm != NULL && audio->stream_id != -1)
+		return target_pts >= audio->initial_pts + audio->stream->duration;
+	else if (video->stream_id != -1)
+		return target_pts >= video->initial_pts + video->stream->duration;
+	else
+		return true;
+}
+
 guint
 MediaPlayer::Play (GSourceFunc callback, void *user_data)
 {

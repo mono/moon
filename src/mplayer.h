@@ -64,6 +64,7 @@ public:
 	void Close ();
 	
 	bool IsPlaying ();
+	bool MediaEnded ();
 	guint Play (GSourceFunc callback, void *user_data);
 	bool CanPause ();
 	bool IsPaused ();
