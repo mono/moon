@@ -1,3 +1,10 @@
+2007-08-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (audio_play): Implement software balance/volume here
+	rather than using the system's mixer (as that changes the
+	balance/volume for all applications which is a bad thing). Fixes
+	bug #82602.
+
 2007-08-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* panel.cpp: InsideObject: only skip checking the children if the point is

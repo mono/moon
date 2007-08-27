@@ -26,6 +26,7 @@
 
 G_BEGIN_DECLS
 #include <stdint.h>
+#include <limits.h>
 #include <avformat.h>
 #include <avcodec.h>
 #include <swscale.h>
@@ -41,6 +42,8 @@ G_END_DECLS
 #endif
 
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
+
+#define SET_VOLUME(chdata, volume) CLAMP (((((int32_t) (chdata)) * volume) >> 13), SHRT_MIN, SHRT_MAX)
 
 struct Packet {
 	int stream_id;
@@ -80,11 +83,6 @@ struct Audio {
 	snd_pcm_t *pcm;
 	snd_pcm_uframes_t sample_size;
 	
-	// mixer
-	snd_mixer_t *mixer;
-	snd_mixer_elem_t *volctl;
-	long vol_min, vol_max;
-	
 	// sync
 	uint64_t initial_pts;
 	uint64_t pts_per_frame;
@@ -117,8 +115,6 @@ static void ffmpeg_init (void);
 // packets in a/v queues
 static Packet *pkt_new (AVPacket *avpkt);
 #define pkt_free(x) g_free (x)
-
-static void audio_set_channel_volumes (Audio *audio);
 
 // threads
 static void *audio_loop (void *data);
@@ -163,10 +159,6 @@ MediaPlayer::MediaPlayer ()
 	audio->outptr = audio->outbuf;
 	audio->pcm = NULL;
 	audio->sample_size = 0;
-	audio->mixer = NULL;
-	audio->volctl = NULL;
-	audio->vol_min = 0;
-	audio->vol_max = 0;
 	audio->initial_pts = 0;
 	audio->pts_per_frame = 0;
 	
@@ -206,9 +198,6 @@ MediaPlayer::~MediaPlayer ()
 	
 	if (audio->pcm != NULL)
 		snd_pcm_close (audio->pcm);
-	
-	if (audio->mixer != NULL)
-		snd_mixer_close (audio->mixer);
 	
 	g_async_queue_unref (audio->queue);
 	g_async_queue_unref (video->queue);
@@ -322,7 +311,6 @@ MediaPlayer::Open (const char *uri)
 	
 	if (audio->pcm != NULL && audio->stream_id != -1) {
 		snd_pcm_uframes_t buf_size;
-		snd_mixer_elem_t *elem;
 		
 		encoding = audio->stream->codec;
 		
@@ -338,25 +326,6 @@ MediaPlayer::Open (const char *uri)
 		audio->pts_per_frame = (buf_size * 2 * 2) / (encoding->sample_rate / 100);
 		
 		target_pts = audio->initial_pts;
-		
-		// open the mixer
-		snd_mixer_open (&audio->mixer, 0);
-		snd_mixer_attach (audio->mixer, "default");
-		snd_mixer_selem_register (audio->mixer, NULL, NULL);
-		snd_mixer_load (audio->mixer);
-		
-		for (elem = snd_mixer_first_elem (audio->mixer); elem != NULL; elem = snd_mixer_elem_next (elem)) {
-			if (!snd_mixer_selem_is_active (elem))
-				continue;
-			
-			if (snd_mixer_selem_has_playback_volume (elem)) {
-				snd_mixer_selem_get_playback_volume_range (elem, &audio->vol_min, &audio->vol_max);
-				audio->volctl = elem;
-				break;
-			}
-		}
-		
-		audio_set_channel_volumes (audio);
 	}
 	
 	return true;
@@ -772,59 +741,6 @@ MediaPlayer::GetAudioStreamIndex ()
 	return audio->stream_id;
 }
 
-static void
-audio_set_channel_volume (Audio *audio, int channel, double volume)
-{
-	long vol = (long) ((audio->vol_max - audio->vol_min) * volume) + audio->vol_min;
-	
-	snd_mixer_selem_set_playback_volume (audio->volctl, (snd_mixer_selem_channel_id_t) channel, vol);
-}
-
-static void
-audio_set_channel_volumes (Audio *audio)
-{
-	double left, right;
-	int channel;
-	
-	if (!audio->mixer || !audio->volctl)
-		return;
-	
-	printf ("balance = %f, volume = %f\n", audio->balance, audio->volume);
-	
-	if (audio->balance < 0.0) {
-		right = (1.0 + audio->balance) * audio->volume;
-		left = audio->volume;
-	} else if (audio->balance > 0.0) {
-		left = (1.0 - audio->balance) * audio->volume;
-		right = audio->volume;
-	} else {
-		left = right = audio->volume;
-	}
-	
-	for (channel = 0; channel < (int) SND_MIXER_SCHN_LAST; channel++) {
-		if (!snd_mixer_selem_has_playback_channel (audio->volctl, (snd_mixer_selem_channel_id_t) channel))
-			continue;
-		
-		switch ((snd_mixer_selem_channel_id_t) channel) {
-		case SND_MIXER_SCHN_FRONT_LEFT:
-		case SND_MIXER_SCHN_REAR_LEFT:
-		case SND_MIXER_SCHN_SIDE_LEFT:
-			printf ("setting a left channel volume\n");
-			audio_set_channel_volume (audio, channel, left);
-			break;
-		case SND_MIXER_SCHN_FRONT_RIGHT:
-		case SND_MIXER_SCHN_REAR_RIGHT:
-		case SND_MIXER_SCHN_SIDE_RIGHT:
-			printf ("setting a right channel volume\n");
-			audio_set_channel_volume (audio, channel, right);
-			break;
-		default:
-			audio_set_channel_volume (audio, channel, audio->volume);
-			break;
-		}
-	}
-}
-
 double
 MediaPlayer::GetBalance ()
 {
@@ -840,8 +756,6 @@ MediaPlayer::SetBalance (double balance)
 		balance = 1.0;
 	
 	audio->balance = balance;
-	
-	audio_set_channel_volumes (audio);
 }
 
 double
@@ -859,8 +773,6 @@ MediaPlayer::SetVolume (double volume)
 		volume = 1.0;
 	
 	audio->volume = volume;
-	
-	audio_set_channel_volumes (audio);
 }
 
 
@@ -993,8 +905,31 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 		goto finished;
 	}
 	
-	if (audio->muted)
+	if (!audio->muted) {
+		// set balance/volume
+		int16_t volume = (uint16_t) (audio->volume * 8192);
+		int16_t *inptr = (int16_t *) audio->outbuf;
+		int16_t leftvol, rightvol;
+		
+		if (audio->balance < 0.0) {
+			rightvol = (uint16_t) (1.0 + audio->balance) * volume;
+			leftvol = volume;
+		} else if (audio->balance > 0.0) {
+			leftvol = (uint16_t) (1.0 - audio->balance) * volume;
+			rightvol = volume;
+		} else {
+			leftvol = rightvol = volume;
+		}
+		
+		for (n = 0; n < frame_size / 2; n++) {
+			if (n & 0x1)
+				*inptr++ = (int16_t) SET_VOLUME (*inptr, rightvol);
+			else
+				*inptr++ = (int16_t) SET_VOLUME (*inptr, leftvol);
+		}
+	} else {
 		memset (audio->outbuf, 0, frame_size);
+	}
 	
 	// play only 1 frame
 	while (samples > 0) {
