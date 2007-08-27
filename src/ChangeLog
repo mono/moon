@@ -1,3 +1,9 @@
+2007-08-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* panel.cpp: Panel::HandleMotion, if we're the captured element, handle the
+	  motion event even though the mouse isn't over us.
+	* runtime.h: Add a public Surface::GetCapturedElement.
+
 2007-08-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (StopThreads): Need to reset current_pts to 0 so the

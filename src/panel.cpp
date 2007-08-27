@@ -15,6 +15,7 @@
 #include "panel.h"
 #include "brush.h"
 #include "collection.h"
+#include "runtime.h"
 
 VisualCollection *
 Panel::GetChildren ()
@@ -358,7 +359,17 @@ Panel::FindMouseOver (cairo_t *cr, double x, double y)
 void
 Panel::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
 {
-	UIElement *new_over = FindMouseOver (cr, x, y);
+	Surface *s = GetSurface ();
+	UIElement *new_over;
+	bool captured = false;
+
+	if (s != NULL && s->GetCapturedElement () == this) {
+		captured = true;
+		new_over = this;
+	} else {
+		new_over = FindMouseOver (cr, x, y);
+	}
+
 
 	if (new_over != mouse_over) {
 		if (mouse_over)
@@ -376,7 +387,7 @@ Panel::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cu
 	if (mouse_over)
 		mouse_over->HandleMotion (cr, state, x, y, cursor);
 
-	if (mouse_over || InsideObject (cr, x, y))
+	if (mouse_over || captured || InsideObject (cr, x, y))
 		FrameworkElement::HandleMotion (cr, state, x, y, NULL);
 }
 

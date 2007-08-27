@@ -68,6 +68,8 @@ class Surface : public EventObject {
 	GtkWidget* GetDrawingArea () { return drawing_area; }
 	UIElement* GetToplevel() { return toplevel; }
 
+	UIElement* GetCapturedElement () { return capture_element; }
+
 	int ResizeEvent;
 
 private:
