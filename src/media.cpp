@@ -107,7 +107,9 @@ MediaElement::AdvanceFrame ()
 		media_element_set_position (this, position);
 		updating = false;
 	} else if (mplayer->MediaEnded ()) {
-		// FIXME: we need to do the same for audio-only media
+		mplayer->Stop ();
+		g_source_remove (timeout_id);
+		timeout_id = 0;
 		media_element_set_current_state (this, "Stopped");
 		Emit (MediaEndedEvent);
 		return false;
