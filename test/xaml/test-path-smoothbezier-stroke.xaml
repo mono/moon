@@ -1,0 +1,8 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"  Data="M10,60  C10,10  160,10  160,60  S310,110 310,60 z"/>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1"  Data="M10,110 C10,60  160,60  160,110 S310,160 310,110 z"/>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"  Data="M10,160 C10,110 160,110 160,160 S310,210 310,160 z"/>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"  Data="M10,210 C10,160 160,160 160,210 S310,260 310,210 z"/>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"  Data="M10,260 C10,210 160,210 160,260 S310,310 310,260 z"/>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16" Data="M10,310 C10,260 160,260 160,310 S310,360 310,310 z"/>
+</Canvas>
