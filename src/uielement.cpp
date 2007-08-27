@@ -234,7 +234,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 }
 
 bool 
-UIElement::InsideObject (cairo_t *cr, double x, double y)
+UIElement::InsideClip (cairo_t *cr, double x, double y)
 {
 	Value* clip_geometry = GetValue (ClipProperty);
 	Geometry* clip;
@@ -269,6 +269,11 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 	cairo_restore (cr);
 
 	return ret;
+}
+bool 
+UIElement::InsideObject (cairo_t *cr, double x, double y)
+{
+	return InsideClip (cr, x, y);
 }
 
 void

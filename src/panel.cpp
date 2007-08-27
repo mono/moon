@@ -309,7 +309,13 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 		return true;
 	}
 
-	return false;
+	bool is_inside_clip = InsideClip (cr, x, y);
+	if (!is_inside_clip)
+		return false;
+	
+	UIElement* mouseover = FindMouseOver (cr, x, y);
+	
+	return mouseover != NULL;
 }
 
 bool

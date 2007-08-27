@@ -1,3 +1,10 @@
+2007-08-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* panel.cpp: InsideObject: only skip checking the children if the point is
+	  not in the clipped area.
+	* uielement.h, uielement.cpp: Added InsideClip, and moved the corresponding
+	  code from InsideObject to InsideClip.
+
 2007-08-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Fix calculation for smooth quadatric bezier (T) as seen in

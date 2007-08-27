@@ -151,6 +151,13 @@ class UIElement : public Visual {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	//
+	// Checks if the point is inside the Clip region.
+	// Returns true if no Clip region is defined
+	// (which is actually an infinitely big Clip region).
+	// 
+	bool InsideClip (cairo_t *cr, double x, double y);
+
+	//
 	// Invalidates a subrectangle of this element
 	//
 	void Invalidate (Rect r);
