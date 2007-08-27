@@ -1,5 +1,14 @@
 2007-08-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* uielement.h, uielement.cpp: Implement InsideObject here too, the same
+	  implementation as Shape has (for our Clip property).
+	* frameworkelement.cpp: InsideObject: call new base implementation as well.
+	* panel.cpp: InsideObject: don't check our children, the mouse may be over
+	  them, but they're not visible for some reason (the parent object might
+	  be clipped, etc).
+
+2007-08-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* panel.cpp: Panel::HandleMotion, if we're the captured element, handle the
 	  motion event even though the mouse isn't over us.
 	* runtime.h: Add a public Surface::GetCapturedElement.

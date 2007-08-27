@@ -54,7 +54,7 @@ FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 	if (nx < 0 || ny < 0 || nx > framework_element_get_width (this) || ny > framework_element_get_height (this))
 		return false;
 
-	return true;
+	return UIElement::InsideObject (cr, x, y);
 }
 
 void

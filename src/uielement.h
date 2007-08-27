@@ -148,6 +148,7 @@ class UIElement : public Visual {
 	//
 	void FullInvalidate (bool render_xform);
 
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	//
 	// Invalidates a subrectangle of this element

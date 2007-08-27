@@ -309,10 +309,7 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 		return true;
 	}
 
-	/* otherwise we try to figure out if we're inside one of our child elements */
-	UIElement *mouseover = FindMouseOver (cr, x, y);
-
-	return mouseover != NULL;
+	return false;
 }
 
 bool

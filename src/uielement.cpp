@@ -18,6 +18,7 @@
 #include "brush.h"
 #include "transform.h"
 #include "runtime.h"
+#include "geometry.h"
 
 #define SHOW_BOUNDING_BOXES 0
 
@@ -230,6 +231,44 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 	}
 	
 	Visual::OnSubPropertyChanged (prop, subprop);
+}
+
+bool 
+UIElement::InsideObject (cairo_t *cr, double x, double y)
+{
+	Value* clip_geometry = GetValue (ClipProperty);
+	Geometry* clip;
+	bool ret = false;
+	double nx = x;
+	double ny = y;
+	
+	if (clip_geometry == NULL) {
+		return true;
+	}
+
+	clip = clip_geometry->AsGeometry ();
+	
+	if (clip == NULL) {
+		return true;
+	}
+	
+	cairo_save (cr);
+
+	clip->Draw (cr);
+
+	cairo_matrix_t inverse = absolute_xform;
+	cairo_matrix_invert (&inverse);
+
+	cairo_matrix_transform_point (&inverse, &nx, &ny);
+
+	if (cairo_in_stroke (cr, nx, ny) || (clip->CanFill () && cairo_in_fill (cr, nx, ny)))
+		ret = true;
+	
+	cairo_new_path (cr);
+
+	cairo_restore (cr);
+
+	return ret;
 }
 
 void
