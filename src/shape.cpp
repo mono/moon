@@ -122,7 +122,6 @@ moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, dou
 	double c1 = ARC_TO_BEZIER * radius_x;
 	double c2 = ARC_TO_BEZIER * radius_y;
 
-	cairo_new_path (cr);
 	cairo_move_to (cr, x + radius_x, y);
 	cairo_rel_line_to (cr, w - 2 * radius_x, 0.0);
 	cairo_rel_curve_to (cr, c1, 0.0, radius_x, c2, radius_x, radius_y);
