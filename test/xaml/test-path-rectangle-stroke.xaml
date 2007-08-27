@@ -1,0 +1,79 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="10,10,1,1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="15,10,5,5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="30,10,10,10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="50,10,15,15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="75,10,20,20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="105,10,25,25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="140,10,30,30" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="175,10,35,35" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="220,10,40,40" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="265,10,45,45" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="320,10,50,50" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0"><Path.Data><RectangleGeometry Rect="375,10,55,55" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="10,70,1,1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="15,70,5,5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="30,70,10,10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="50,70,15,15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="75,70,20,20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="105,70,25,25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="140,70,30,30" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="175,70,35,35" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="220,70,40,40" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="265,70,45,45" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="320,70,50,50" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2"><Path.Data><RectangleGeometry Rect="375,70,55,55" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="10,130,1,1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="15,130,5,5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="30,130,10,10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="50,130,15,15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="75,130,20,20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="105,130,25,25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="140,130,30,30" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="175,130,35,35" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="220,130,40,40" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="265,130,45,45" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="320,130,50,50" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4"><Path.Data><RectangleGeometry Rect="375,130,55,55" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="10,200,1,1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="15,200,5,5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="30,200,10,10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="50,200,15,15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="75,200,20,20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="105,200,25,25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="140,200,30,30" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="175,200,35,35" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="220,200,40,40" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="265,200,45,45" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="320,200,50,50" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8"><Path.Data><RectangleGeometry Rect="375,200,55,55" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="10,270,1,1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="15,270,5,5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="30,270,10,10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="50,270,15,15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="75,270,20,20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="105,270,25,25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="140,270,30,30" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="175,270,35,35" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="220,270,40,40" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="265,270,45,45" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="320,270,50,50" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16"><Path.Data><RectangleGeometry Rect="375,270,55,55" /></Path.Data></Path>
+
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="10,360,1,1" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="15,360,5,5" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="30,360,10,10" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="50,360,15,15" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="75,360,20,20" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="105,360,25,25" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="140,360,30,30" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="175,360,35,35" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="220,360,40,40" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="265,360,45,45" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="320,360,50,50" /></Path.Data></Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32"><Path.Data><RectangleGeometry Rect="375,360,55,55" /></Path.Data></Path>
+</Canvas>
