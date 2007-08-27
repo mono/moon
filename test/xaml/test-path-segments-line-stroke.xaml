@@ -1,0 +1,37 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Stroke="#FF00FF" StrokeThickness="0"  Data="M 10,10  L 110,10" />
+	<Path Stroke="#FF00FF" StrokeThickness="1"  Data="M 10,20  L 110,20" />
+	<Path Stroke="#FF00FF" StrokeThickness="2"  Data="M 10,30  L 110,30" />
+	<Path Stroke="#FF00FF" StrokeThickness="3"  Data="M 10,40  L 110,40" />
+	<Path Stroke="#FF00FF" StrokeThickness="4"  Data="M 10,50  L 110,50" />
+	<Path Stroke="#FF00FF" StrokeThickness="5"  Data="M 10,60  L 110,60" />
+	<Path Stroke="#FF00FF" StrokeThickness="6"  Data="M 10,70  L 110,70" />
+	<Path Stroke="#FF00FF" StrokeThickness="7"  Data="M 10,80  L 110,80" />
+	<Path Stroke="#FF00FF" StrokeThickness="8"  Data="M 10,90  L 110,90" />
+	<Path Stroke="#FF00FF" StrokeThickness="9"  Data="M 10,100 L 110,100" />
+	<Path Stroke="#FF00FF" StrokeThickness="10" Data="M 10,110 L 110,110" />
+
+	<Path Stroke="#FF00FF" StrokeThickness="0"  Data="M 120,10  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="1"  Data="M 120,20  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="2"  Data="M 120,30  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="3"  Data="M 120,40  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="4"  Data="M 120,50  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="5"  Data="M 120,60  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="6"  Data="M 120,70  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="7"  Data="M 120,80  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="8"  Data="M 120,90  H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="9"  Data="M 120,100 H 220" />
+	<Path Stroke="#FF00FF" StrokeThickness="10" Data="M 120,110 H 220" />
+
+	<Path Stroke="#FF00FF" StrokeThickness="0"  Data="M 230,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="1"  Data="M 240,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="2"  Data="M 250,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="3"  Data="M 260,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="4"  Data="M 270,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="5"  Data="M 280,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="6"  Data="M 290,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="7"  Data="M 300,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="8"  Data="M 310,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="9"  Data="M 320,10 V 110" />
+	<Path Stroke="#FF00FF" StrokeThickness="10" Data="M 330,10 V 110" />
+</Canvas>
