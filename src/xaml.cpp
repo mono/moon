@@ -1434,7 +1434,7 @@ geometry_from_str (const char *str)
 			if (relative) make_relative (&cp, &cp2);
 
 			if (prev && prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
-				Point *p = prev->GetValue (QuadraticBezierSegment::Point2Property)->AsPoint ();
+				Point *p = prev->GetValue (QuadraticBezierSegment::Point1Property)->AsPoint ();
 				cp1.x = 2 * cp.x - p->x;
 				cp1.y = 2 * cp.y - p->y;
 			} else

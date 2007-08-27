@@ -1,3 +1,8 @@
+2007-08-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix calculation for smooth quadatric bezier (T) as seen in
+	tests/xaml/test-path-smoothquadraticbezier.xaml
+
 2007-08-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* uielement.h, uielement.cpp: Implement InsideObject here too, the same
