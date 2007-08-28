@@ -564,6 +564,15 @@ DependencyObject::SetParent (DependencyObject *parent)
 	this->parent = parent;
 }
 
+DependencyObject*
+DependencyObject::GetParent ()
+{
+	DependencyObject *res = parent;
+	while (res && Type::Find (res->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
+		res = res->GetParent ();
+	return res;
+}
+
 void
 DependencyObject::NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type)
 {

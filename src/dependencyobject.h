@@ -121,7 +121,7 @@ class DependencyObject : public EventObject {
 	}
 	
 	void SetParent (DependencyObject *parent);
-	DependencyObject* GetParent () { return parent; }
+	DependencyObject* GetParent ();
 
 	//
 	// Is:
