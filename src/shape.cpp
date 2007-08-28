@@ -222,6 +222,19 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 
 	bool drawn = false;
 
+	// we need to use clipping to implement StretchUniformToFill
+	if (shape_get_stretch (this) == StretchUniformToFill) {
+		double w = framework_element_get_width (this);
+		if (w > 0.0) {
+			double h = framework_element_get_height (this);
+			if (h > 0.0) {
+				cairo_rectangle (cr, 0, 0, w, h);
+				cairo_clip (cr);
+				cairo_new_path (cr);
+			}
+		}
+	}
+
 	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
 	// unless there is no stroke brush assigned, which requires us to fill and use cairo_fill_extents
 	// also not every shapes can be filled, e.g. polylines, CallFill

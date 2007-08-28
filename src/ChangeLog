@@ -1,3 +1,7 @@
+2007-08-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Fix StretchUniformToFill
+
 2007-08-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Fix StrokeDashArray and StrokeDashOffset as they now
