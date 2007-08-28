@@ -216,7 +216,7 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 	Value *value = GetValue (UIElement::ClipProperty);
 	if (value) {
 		Geometry *geometry = value->AsGeometry ();
-		geometry->Draw (cr);
+		geometry->Draw (NULL, cr);
 		cairo_clip (cr);
 	}
 

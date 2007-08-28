@@ -51,7 +51,12 @@ class UIElement : public Visual {
 		RENDER_VISIBLE   = 0x02,
 
 		// the HitTestVisible property
-		HIT_TEST_VISIBLE = 0x04
+		HIT_TEST_VISIBLE = 0x04,
+
+		SHAPE_EMPTY      = 0x10,	// there's is nothing to draw, the cached path may be NULL
+		SHAPE_NORMAL     = 0x20,	// normal drawing
+		SHAPE_DEGENERATE = 0x40,	// degenerate drawing, use the Stroke brush for filling
+		SHAPE_MASK       = 0x70
 	};
 	
 	int flags;

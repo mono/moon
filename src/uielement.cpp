@@ -254,7 +254,7 @@ UIElement::InsideClip (cairo_t *cr, double x, double y)
 	
 	cairo_save (cr);
 
-	clip->Draw (cr);
+	clip->Draw (NULL, cr);
 
 	cairo_matrix_t inverse = absolute_xform;
 	cairo_matrix_invert (&inverse);

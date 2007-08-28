@@ -33,7 +33,7 @@ class Geometry : public DependencyObject {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Draw (Path *path, cairo_t *cr);
 
 	virtual bool IsFilled () { return true; };
 };
@@ -61,14 +61,13 @@ class GeometryGroup : public Geometry {
 	static DependencyProperty* ChildrenProperty;
 
 	GeometryGroup ();
-	~GeometryGroup ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Draw (Path *path, cairo_t *cr);
 };
 GeometryGroup		*geometry_group_new		();
 GeometryCollection	*geometry_group_get_children	(GeometryGroup *geometry_group);
@@ -86,7 +85,7 @@ class EllipseGeometry : public Geometry {
 	EllipseGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; };
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Draw (Path *path, cairo_t *cr);
 };
 EllipseGeometry* ellipse_geometry_new ();
 Point* ellipse_geometry_get_center (EllipseGeometry *ellipse_geometry);
@@ -107,7 +106,7 @@ class LineGeometry : public Geometry {
 	LineGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; };
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Draw (Path *path, cairo_t *cr);
 };
 LineGeometry* line_geometry_new ();
 Point* line_geometry_get_end_point (LineGeometry* line_geometry);
@@ -134,12 +133,11 @@ class PathGeometry : public Geometry {
 	static DependencyProperty* FiguresProperty;
 
 	PathGeometry ();
-	~PathGeometry ();
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
-	virtual void Draw (cairo_t *cr);
+	virtual void Draw (Path *path, cairo_t *cr);
 
 	// this is an element-by-element decision
 	virtual bool IsFilled () { return true; }
@@ -160,7 +158,9 @@ class RectangleGeometry : public Geometry {
 	RectangleGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; };
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Draw (Path *path, cairo_t *cr);
+
+	bool GetRadius (double *rx, double *ry);
 };
 RectangleGeometry* rectangle_geometry_new ();
 double rectangle_geometry_get_radius_x (RectangleGeometry *rectangle_geometry);
@@ -197,7 +197,7 @@ class PathFigure : public DependencyObject {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
-	virtual void Draw (cairo_t *cr);
+	virtual void Draw (Path *path, cairo_t *cr);
 };
 PathFigure* path_figure_new ();
 bool	path_figure_get_is_closed	(PathFigure *path_figure);

@@ -58,7 +58,7 @@ geometry_set_transform (Geometry *geometry, Transform *transform)
 }
 
 void
-Geometry::Draw (cairo_t *cr)
+Geometry::Draw (Path *path, cairo_t *cr)
 {
 	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
 	Transform* transform = geometry_get_transform (this);
@@ -90,10 +90,6 @@ geometry_group_new ()
 GeometryGroup::GeometryGroup ()
 {
 	this->SetValue (GeometryGroup::ChildrenProperty, Value (new GeometryCollection ()));
-}
-
-GeometryGroup::~GeometryGroup ()
-{
 }
 
 void
@@ -132,17 +128,17 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 }
 
 void
-GeometryGroup::Draw (cairo_t *cr)
+GeometryGroup::Draw (Path *path, cairo_t *cr)
 {
 	GeometryCollection *children = geometry_group_get_children (this);
 	Collection::Node *node;
 	
-	Geometry::Draw (cr);
+	Geometry::Draw (path, cr);
 	
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
 		Geometry *geometry = (Geometry *) node->obj;
-		geometry->Draw (cr);
+		geometry->Draw (path, cr);
 	}
 }
 
@@ -241,9 +237,9 @@ ellipse_geometry_new ()
 }
 
 void
-EllipseGeometry::Draw (cairo_t *cr)
+EllipseGeometry::Draw (Path *path, cairo_t *cr)
 {
-	Geometry::Draw (cr);
+	Geometry::Draw (path, cr);
 
 	Point *pt = ellipse_geometry_get_center (this);
 	double rx = ellipse_geometry_get_radius_x (this);
@@ -292,9 +288,9 @@ line_geometry_new ()
 }
 
 void
-LineGeometry::Draw (cairo_t *cr)
+LineGeometry::Draw (Path *path, cairo_t *cr)
 {
-	Geometry::Draw (cr);
+	Geometry::Draw (path, cr);
 
 	Point *p1 = line_geometry_get_start_point (this);
 	Point *p2 = line_geometry_get_end_point (this);
@@ -318,10 +314,6 @@ path_geometry_new ()
 PathGeometry::PathGeometry ()
 {
 	this->SetValue (PathGeometry::FiguresProperty, Value (new PathFigureCollection ()));
-}
-
-PathGeometry::~PathGeometry ()
-{
 }
 
 void
@@ -354,17 +346,17 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 }
 
 void
-PathGeometry::Draw (cairo_t *cr)
+PathGeometry::Draw (Path *path, cairo_t *cr)
 {
 	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
 	Collection::Node *node;
 	
-	Geometry::Draw (cr);
+	Geometry::Draw (path, cr);
 	
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
 		PathFigure *pf = (PathFigure *) node->obj;
-		pf->Draw (cr);
+		pf->Draw (path, cr);
 	}
 }
 
@@ -433,24 +425,53 @@ rectangle_geometry_new ()
 }
 
 void
-RectangleGeometry::Draw (cairo_t *cr)
+RectangleGeometry::Draw (Path *path, cairo_t *cr)
 {
-	Geometry::Draw (cr);
+	Geometry::Draw (path, cr);
 
 	Rect *rect = rectangle_geometry_get_rect (this);
 	if (!rect)
 		return;
 
-	double radius_x = rectangle_geometry_get_radius_x  (this);
-	if (radius_x != 0) {
-		double radius_y = rectangle_geometry_get_radius_y (this);
-		if (radius_y != 0) {
-			moon_rounded_rectangle (cr, rect->x, rect->y, rect->w, rect->h, radius_x, radius_y);
-			return;
+	double half_thick = 0.0;
+	// path is optional (e.g. not available for clipping)
+	if (path) {
+		double thick = shape_get_stroke_thickness (path);
+		if ((thick > rect->w) || (thick > rect->h)) {
+			half_thick = thick / 2.0;
+			rect->x -= half_thick;
+			rect->y -= half_thick;
+			rect->w += thick;
+			rect->h += thick;
+/* FIXME
+ * - this doesn't match MS-SL if mixed with some "normal" (non-degenerated) geometry
+ */
+			path->SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 		}
 	}
-	// normal rectangle
-	cairo_rectangle (cr, rect->x, rect->y, rect->w, rect->h);
+
+	double radius_x, radius_y;
+	if (GetRadius (&radius_x, &radius_y)) {
+		moon_rounded_rectangle (cr, rect->x, rect->y, rect->w, rect->h, radius_x + half_thick, radius_y + half_thick);
+	} else {
+		cairo_rectangle (cr, rect->x, rect->y, rect->w, rect->h);
+	}
+}
+
+bool
+RectangleGeometry::GetRadius (double *rx, double *ry)
+{
+	Value *value = GetValueNoDefault (RectangleGeometry::RadiusXProperty);
+	if (!value)
+		return false;
+	*rx = value->AsDouble ();
+
+	value = GetValueNoDefault (RectangleGeometry::RadiusYProperty);
+	if (!value)
+		return false;
+	*ry = value->AsDouble ();
+
+	return ((*rx != 0.0) && (*ry != 0.0));
 }
 
 //
@@ -506,7 +527,7 @@ PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, Dep
 }
 
 void
-PathFigure::Draw (cairo_t *cr)
+PathFigure::Draw (Path *path, cairo_t *cr)
 {
 	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
 	Point *start = path_figure_get_start_point (this);

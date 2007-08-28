@@ -1,3 +1,15 @@
+2007-08-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.h: Add a Path* parameter to Draw as we need to know some 
+	stuff (e.g. stroke thickness) in order to detect degenerate cases.
+	* geometry.cpp: Handle degenerate case for RectangleGeometry.
+	* panel.cpp, uielementy.cpp: Adjust Draw calls for optional Path 
+	element (NULL in the case of clipping).
+	* shape.cpp|h: Move cairo_path_t caching logic from Path to Shape
+	class. Add GetFillRule method. Handle most cases where a large stroke
+	thickness change the SL drawing behaviour (wrt Cairo behaviour)
+	* uielement.h: Add flags for empty/normal/degenerate shapes
+
 2007-08-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* panel.cpp: InsideObject: The point is only inside us if we have a

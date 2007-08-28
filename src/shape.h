@@ -39,6 +39,9 @@ void moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h
 class Shape : public FrameworkElement {
 	void DoDraw (cairo_t *cr, bool do_op, bool consider_fill);
 	Brush *stroke, *fill;
+ protected:
+	cairo_path_t *path;
+	void InvalidatePathCache ();
  public: 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;
@@ -70,6 +73,7 @@ class Shape : public FrameworkElement {
 	//
 	
 	virtual bool IsFilled ();
+	virtual FillRule GetFillRule () { return FillRuleNonzero; }
 
 	//
 	// Draw: draws the Shape in the cairo context (affine transforms are set before this
@@ -78,10 +82,17 @@ class Shape : public FrameworkElement {
 	// This is called multiple times: one for fills, one for strokes
 	// if they are both set.   It will also be called to compute the bounding box.
 	//
-	virtual void Draw (cairo_t *cr) = 0;
+	virtual void Draw (cairo_t *cr);
+	virtual void BuildPath (cairo_t *cr) {};
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+
+	//
+	bool IsEmpty () { return (flags & UIElement::SHAPE_EMPTY); };
+	bool IsNormal () { return (flags & UIElement::SHAPE_NORMAL); };
+	bool IsDegenerate () { return (flags & UIElement::SHAPE_DEGENERATE); };
+	void SetShapeFlags (UIElementFlags sf) { flags &= ~UIElement::SHAPE_MASK; flags |= sf; };
 };
 
 Brush	       *shape_get_fill			(Shape *shape);
@@ -116,7 +127,7 @@ class Ellipse : public Shape {
 	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
-	void Draw (cairo_t *cr);
+	virtual void BuildPath (cairo_t *cr);
 };
 
 Ellipse *ellipse_new (void);
@@ -133,9 +144,11 @@ class Rectangle : public Shape {
 	Rectangle ();
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
 
-	void Draw (cairo_t *cr);
+	virtual void BuildPath (cairo_t *cr);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	bool GetRadius (double *rx, double *ry);
 };
 
 Rectangle *rectangle_new          (void);
@@ -192,7 +205,10 @@ class Polygon : public Shape {
 	// Polygon has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
 
-	void Draw (cairo_t *cr);
+	virtual void BuildPath (cairo_t *cr);
+
+	virtual FillRule GetFillRule ();
+
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 };
@@ -218,7 +234,9 @@ class Polyline : public Shape {
 	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
 
-	void Draw (cairo_t *cr);
+	virtual void BuildPath (cairo_t *cr);
+
+	virtual FillRule GetFillRule ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
@@ -235,24 +253,21 @@ void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 // Path
 //
 class Path : public Shape {
-	cairo_path_t *path;
-
-	void BuildPath (cairo_t *cr, Geometry* geometry);
-	void CleanupCache ();
  public:
 	static DependencyProperty* DataProperty;
 
-	Path () : path (NULL) {};
-	~Path ();
+	Path () {};
 
 	virtual Type::Kind GetObjectType () { return Type::PATH; };
 
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
 
-	void Draw (cairo_t *cr);
+	virtual void BuildPath (cairo_t *cr);
 
 	virtual bool IsFilled ();
+	virtual FillRule GetFillRule ();
+
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 };

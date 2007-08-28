@@ -82,6 +82,7 @@ moon_ellipse (cairo_t *cr, double x, double y, double w, double h)
 	double cx = x + rx;
 	double cy = y + ry;
 
+	// cairo_new_sub_path (cr); unrequired with the cairo_move_to call
 	cairo_move_to (cr, cx + rx, cy);
 
 	/* an approximate of the ellipse by drawing a curve in each
@@ -122,6 +123,7 @@ moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, dou
 	double c1 = ARC_TO_BEZIER * radius_x;
 	double c2 = ARC_TO_BEZIER * radius_y;
 
+	// cairo_new_sub_path (cr); unrequired with the cairo_move_to call
 	cairo_move_to (cr, x + radius_x, y);
 	cairo_rel_line_to (cr, w - 2 * radius_x, 0.0);
 	cairo_rel_curve_to (cr, c1, 0.0, radius_x, c2, radius_x, radius_y);
@@ -154,6 +156,8 @@ Shape::Shape ()
 {
 	stroke = NULL;
 	fill = NULL;
+	path = NULL;
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
 }
 
 Shape::~Shape ()
@@ -167,6 +171,25 @@ Shape::~Shape ()
 		fill->Detach (NULL, this);
 		fill->unref ();
 	}
+	if (path) {
+		cairo_path_destroy (path);
+	}
+}
+
+void
+Shape::Draw (cairo_t *cr)
+{
+#if FALSE
+	// yes that leaks but it's for debugging purpose only
+	BuildPath (cr);
+#else
+	if (path) {
+		cairo_new_path (cr);
+		cairo_append_path (cr, path);
+	} else {
+		BuildPath (cr);
+	}
+#endif
 }
 
 bool
@@ -184,6 +207,11 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 {
 	cairo_set_matrix (cr, &absolute_xform);
 
+	if (IsEmpty ()) {
+		cairo_new_path (cr);
+		return;
+	}
+
 	//printf ("Draw, xform: %g %g %g %g %g %g\n", 
 	//	absolute_xform.xy,
 	//	absolute_xform.xx,
@@ -193,15 +221,17 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	//	absolute_xform.y0);
 
 	bool drawn = false;
+
 	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
 	// unless there is no stroke brush assigned, which requires us to fill and use cairo_fill_extents
 	// also not every shapes can be filled, e.g. polylines, CallFill
-	if ((consider_fill || !stroke) && IsFilled ()) {
+	if (!IsDegenerate () && (consider_fill || !stroke) && IsFilled ()) {
 		if (fill) {
 			Draw (cr);
 			drawn = true;
 			if (do_op) {
 				fill->SetupBrush (cr, this);
+				cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
 				cairo_fill_preserve (cr);
 			}
 		}
@@ -215,7 +245,10 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 			return;
 		}
 
-		cairo_set_line_width (cr, thickness);
+		if (IsDegenerate ())
+			cairo_set_line_width (cr, 1.0);
+		else
+			cairo_set_line_width (cr, thickness);
 
 		int count = 0;
 		double offset = 0.0;
@@ -243,6 +276,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 			Draw (cr);
 		if (do_op) {
 			stroke->SetupBrush (cr, this);
+			if (IsDegenerate ())
+				cairo_fill_preserve (cr);
 			cairo_stroke (cr);
 		}
 	}
@@ -278,7 +313,6 @@ Shape::ComputeBounds ()
 	else
 		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
 
-	cairo_new_path (cr);
 	cairo_restore (cr);
 
 	bounds = Rect (x1-1, y1-1, x2-x1 + 2, y2-y1 + 2);
@@ -326,11 +360,15 @@ void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type != Type::SHAPE) {
+		if ((prop == FrameworkElement::HeightProperty) || (prop == FrameworkElement::WidthProperty))
+			InvalidatePathCache ();
+
 		FrameworkElement::OnPropertyChanged (prop);
 		return;
 	}
 
 	if (prop == Shape::StretchProperty) {
+		InvalidatePathCache ();
 		UpdateBounds ();
 	}
 	else if (prop == Shape::StrokeProperty) {
@@ -357,12 +395,14 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 		}
 
 		UpdateBounds ();
+	} else if (prop == Shape::StrokeThicknessProperty) {
+		InvalidatePathCache ();
+		UpdateBounds ();
 	} else if (prop == Shape::StrokeDashCapProperty
 		   || prop == Shape::StrokeEndLineCapProperty
 		   || prop == Shape::StrokeLineJoinProperty
 		   || prop == Shape::StrokeMiterLimitProperty
-		   || prop == Shape::StrokeStartLineCapProperty
-		   || prop == Shape::StrokeThicknessProperty) {
+		   || prop == Shape::StrokeStartLineCapProperty) {
 		UpdateBounds ();
 	}
 	
@@ -390,6 +430,16 @@ Shape::GetTransformOrigin ()
 		framework_element_get_height (this) * user_xform_origin.y);
 }
 
+
+void
+Shape::InvalidatePathCache ()
+{
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
+	if (path) {
+		cairo_path_destroy (path);
+		path = NULL;
+	}
+}
 
 Brush *
 shape_get_fill (Shape *shape)
@@ -548,14 +598,35 @@ Ellipse::Ellipse ()
 }
 
 void
-Ellipse::Draw (cairo_t *cr)
+Ellipse::BuildPath (cairo_t *cr)
 {
 	Stretch stretch = shape_get_stretch (this);
-	if (stretch == StretchNone)
+	if (stretch == StretchNone) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
+	}
 
+	double x = 0.0;
+	double y = 0.0;
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
+
+	double t = shape_get_stroke_thickness (this);
+	double t2 = t * 2.0;
+
+	if ((t2 > w) || (t2 > h)) {
+		if (w < t)
+			w = t;
+		if (h < t)
+			h = t;
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+	} else {
+		double half = t / 2;
+		x = y = half;
+		w -= t;
+		h -= t;
+		SetShapeFlags (UIElement::SHAPE_NORMAL);
+	}
 
 	switch (stretch) {
 	case StretchUniform:
@@ -577,7 +648,15 @@ Ellipse::Draw (cairo_t *cr)
 		break;
 	}
 
-	moon_ellipse (cr, 0, 0, w, h);
+	cairo_new_path (cr);
+	if (IsDegenerate ()) {
+		double radius = t / 2;
+		moon_rounded_rectangle (cr, x, y, w, h, radius, radius);
+	} else {
+		moon_ellipse (cr, x, y, w, h);
+	}
+	// note: both moon_rounded_rectangle and moon_ellipse calls cairo_close_path
+	path = cairo_copy_path (cr);
 }
 
 Ellipse *
@@ -598,54 +677,145 @@ Rectangle::Rectangle ()
 	SetValue (Shape::StretchProperty, Value (StretchFill));
 }
 
+/*
+ * rendering notes:
+ * - a Width="0" or a Height="0" can be rendered differently from not specifying Width or Height
+ * - if a rectangle has only a Width or only a Height it is NEVER rendered
+ */
 void
-Rectangle::Draw (cairo_t *cr)
+Rectangle::BuildPath (cairo_t *cr)
 {
-	Stretch stretch = shape_get_stretch (this);
-	double w, h;
-	
-	if (stretch == StretchNone) {
-		// this gets us a single colored point at X,Y
-		w = 0.5;
-		h = 0.5;
-	} else {
-		w = framework_element_get_width (this);
-		h = framework_element_get_height (this);
+	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
 
-		switch (stretch) {
-		case StretchUniform:
-			w = h = (w < h) ? w : h;
-			break;
-		case StretchUniformToFill:
-			// this gets an ellipse larger than it's dimension, relative
-			// scaling is ok but we need to clip to it's original size
-			cairo_rectangle (cr, 0, 0, w, h);
-			cairo_clip (cr);
-			w = h = (w > h) ? w : h;
-			break;
-		case StretchFill:
-			/* nothing needed here.  the assignment of w/h above
-			   is correct for this case. */
-			break;
-		case StretchNone:
-			/* not reached */
-			break;
+	// nothing is drawn if only the width or only the height is specified
+	if ((!width && height) || (width && !height)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
+	Stretch stretch = shape_get_stretch (this);
+	double t = shape_get_stroke_thickness (this);
+
+	// nothing is drawn (nor filled) if no StrokeThickness="0"
+	// unless both Width and Height are specified or when no streching is required
+	if ((t == 0.0) && (!width || !height || (stretch == StretchNone))) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
+	double x = 0.5, y = 0.5;
+	double w, h;
+	double radius_x, radius_y;
+	bool compute_origin = false;
+	// degenerate cases are handled differently for round-corner rectangles
+	bool round = GetRadius (&radius_x, &radius_y);
+
+	cairo_new_path (cr);
+
+	// if both width and height are missing then the width and height are equal (on screen) to the thickness
+	if ((!width && !height) || (stretch == StretchNone)) {
+		// don't make invisible points
+		x = 0.5;
+		if (t <= 1.0) {
+			if (t > 0.0)
+				y = 0.0;
+			w = h = 0.5;
+		} else {
+			w = h = (t - 1.0);
 		}
 
-		double radius_x = rectangle_get_radius_x (this);
-		if (radius_x != 0) {
-			double radius_y = rectangle_get_radius_y (this);
-			if (radius_y != 0) {
-				moon_rounded_rectangle (cr, 0, 0, w, h, radius_x, radius_y);
-				return;
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+		goto shape;
+	}
+
+	w = width->AsDouble ();
+	h = height->AsDouble ();
+
+	// there are two kinds of degenerations 
+	// (a) the thickness is larger (or equal) to the width or height
+	if ((t > w) || (t > h)) {
+		// in this case we must adjust the values to make a (much) larger rectangle
+		x -= t / 2.0;
+		y -= t / 2.0 - 1.0;
+		if (stretch == StretchUniform) {
+			w = h = ((w < h) ? w : h) + t;
+		} else {
+			w += (t - 1.0);
+			h += (t - 1.0);
+			if (round)
+				radius_x = radius_y = t / 2;
+		}
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+		goto shape;
+	} else {
+		// (b) the thickness is larger (or equal) to half the width or half the height
+		double t2 = t * 2.0;
+		if ((t2 >= w) || (t2 >= h)) {
+			x = 0.5;
+			if (stretch == StretchUniform) {
+				w = h = (w < h) ? w : h;
+			} else {
+				w -= 1.0;
+				h -= 1.0;
+				if (round) {
+					radius_x = w;
+					radius_y = h;
+				}
 			}
+			SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+			goto shape;
 		}
 	}
-	
-	// normal rectangle
-	cairo_new_path (cr);
-	cairo_rectangle (cr, 0, 0, w, h);
-	cairo_close_path (cr);
+
+	// both Width and Height are specified
+	if (stretch != StretchNone) {
+		compute_origin = true;
+		if (t > w - t) {
+			t = w / 2.0;
+		}
+		w -= t;
+		if (t > h - t) {
+			t = h / 2.0;
+		}
+		h -= t;
+	}
+
+	switch (stretch) {
+	case StretchNone:
+		break;
+	case StretchUniform:
+		w = h = (w < h) ? w : h;
+		break;
+	case StretchUniformToFill:
+		// this gets an ellipse larger than it's dimension, relative
+		// scaling is ok but we need to clip to it's original size
+		cairo_rectangle (cr, 0, 0, w + t, h + t);
+		cairo_clip (cr);
+		w = h = (w > h) ? w : h;
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	}
+
+	if ((t != 0.0) && compute_origin) {
+		x = t / 2.0;
+		y = x - 0.5;
+	}
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
+
+shape:
+	// rounded-corner rectangle ?
+	if (round) {
+		moon_rounded_rectangle (cr, x, y, w, h, radius_x, radius_y);
+	} else {
+		cairo_rectangle (cr, x, y, w, h);
+	}
+
+	// no need to call cairo_close_path (cr) since both mono_rounded_rectangle and cairo_rectangle calls it
+	path = cairo_copy_path (cr);
 }
 
 void
@@ -655,10 +825,29 @@ Rectangle::OnPropertyChanged (DependencyProperty *prop)
 		Shape::OnPropertyChanged (prop);
 		return;
 	}
+
+	if ((prop == Rectangle::RadiusXProperty) || (prop == Rectangle::RadiusYProperty))
+		InvalidatePathCache ();
 	
 	Invalidate ();
 
 	NotifyAttacheesOfPropertyChange (prop);
+}
+
+bool
+Rectangle::GetRadius (double *rx, double *ry)
+{
+	Value *value = GetValueNoDefault (Rectangle::RadiusXProperty);
+	if (!value)
+		return false;
+	*rx = value->AsDouble ();
+
+	value = GetValueNoDefault (Rectangle::RadiusYProperty);
+	if (!value)
+		return false;
+	*ry = value->AsDouble ();
+
+	return ((*rx != 0.0) && (*ry != 0.0));
 }
 
 double
@@ -784,17 +973,25 @@ line_new (void)
 DependencyProperty* Polygon::FillRuleProperty;
 DependencyProperty* Polygon::PointsProperty;
 
+FillRule
+Polygon::GetFillRule ()
+{
+	return polygon_get_fill_rule (this);
+}
+
 void
-Polygon::Draw (cairo_t *cr)
+Polygon::BuildPath (cairo_t *cr)
 {
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
 
-	if (!points || (count < 1))
+	if (!points || (count < 1)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
+	}
 
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_new_path (cr);
-	cairo_set_fill_rule (cr, convert_fill_rule (polygon_get_fill_rule (this)));
 
 	Stretch stretch = shape_get_stretch (this);
 	switch (stretch) {
@@ -813,6 +1010,7 @@ Polygon::Draw (cairo_t *cr)
 	}
 
 	cairo_close_path (cr);
+	path = cairo_copy_path (cr);
 }
 
 void
@@ -823,15 +1021,12 @@ Polygon::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop->type == Type::POLYGON) {
-		if (prop == Polygon::PointsProperty) {
-			UpdateBounds (true /* force one here, even if the bounds don't change */);
-		}
-		else {
-			Invalidate ();
-		}
+	if (prop == Polygon::PointsProperty) {
+		InvalidatePathCache ();
+		UpdateBounds (true /* force one here, even if the bounds don't change */);
 	}
 
+	Invalidate ();
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
@@ -891,16 +1086,24 @@ polygon_new (void)
 DependencyProperty* Polyline::FillRuleProperty;
 DependencyProperty* Polyline::PointsProperty;
 
+FillRule
+Polyline::GetFillRule ()
+{
+	return polyline_get_fill_rule (this);
+}
+
 void
-Polyline::Draw (cairo_t *cr)
+Polyline::BuildPath (cairo_t *cr)
 {
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
 
-	if (!points || (count < 1))
+	if (!points || (count < 1)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
+	}
 
-	cairo_set_fill_rule (cr, convert_fill_rule (polyline_get_fill_rule (this)));
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_new_path (cr);
 
 	Stretch stretch = shape_get_stretch (this);
@@ -929,13 +1132,11 @@ Polyline::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	if (prop == Polyline::PointsProperty) {
+		InvalidatePathCache ();
 		UpdateBounds (true /* force one here, even if the bounds don't change */);
-		Invalidate ();
-	}
-	else {
-		Invalidate ();
 	}
 
+	Invalidate ();
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
@@ -995,31 +1196,24 @@ polyline_new (void)
 
 DependencyProperty* Path::DataProperty;
 
-Path::~Path ()
+FillRule
+Path::GetFillRule ()
 {
-	CleanupCache ();
+	Geometry* geometry = path_get_data (this);
+	return geometry ? geometry_get_fill_rule (geometry) : Shape::GetFillRule ();
 }
 
 void
-Path::Draw (cairo_t *cr)
+Path::BuildPath (cairo_t *cr)
 {
-	Geometry* data = path_get_data (this);
-	if (!data)
+	Geometry* geometry = path_get_data (this);
+	if (!geometry) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
+	}
 
-	// compute and cache the path as some options, like stretch, can be very expansive
-	// to compute multiple times (e.g. fill, stroke and getbounds)
-	if (!path)
-		BuildPath (cr, data);
-
-	cairo_new_path (cr);
-	cairo_append_path (cr, path);
-}
-
-void
-Path::BuildPath (cairo_t *cr, Geometry* geometry)
-{
-	geometry->Draw (cr);
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
+	geometry->Draw (this, cr);
 
 	path = cairo_copy_path (cr);
 
@@ -1092,9 +1286,6 @@ Path::BuildPath (cairo_t *cr, Geometry* geometry)
 		break;
 	case StretchUniform:
 		sw = sh = (sw < sh) ? sw : sh;
-		if (sw < sh) {
-		} else {
-		}
 		break;
 	case StretchUniformToFill:
 		cairo_new_path (cr);
@@ -1139,17 +1330,7 @@ Path::BuildPath (cairo_t *cr, Geometry* geometry)
 			break;
 		case CAIRO_PATH_CLOSE_PATH:
 			break;
-			break;
 		}
-	}
-}
-
-void
-Path::CleanupCache ()
-{
-	if (path) {
-		cairo_path_destroy (path);
-		path = NULL;
 	}
 }
 
@@ -1163,18 +1344,12 @@ Path::IsFilled ()
 void
 Path::OnPropertyChanged (DependencyProperty *prop)
 {
-	/* base class property we have special code to handle */
-	if (prop == Shape::StretchProperty) {
-		CleanupCache ();
-	}
-
 	if (prop->type != Type::PATH) {
 		Shape::OnPropertyChanged (prop);
 		return;
 	}
 
-
-	CleanupCache ();
+	InvalidatePathCache ();
 	FullInvalidate (false);
 
 	NotifyAttacheesOfPropertyChange (prop);
@@ -1184,7 +1359,7 @@ void
 Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == Path::DataProperty) {
-		CleanupCache ();
+		InvalidatePathCache ();
 		FullInvalidate (false);
 	}
 	else
