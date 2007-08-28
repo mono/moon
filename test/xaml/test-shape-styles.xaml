@@ -29,4 +29,13 @@
 	<Line Stroke="Red" StrokeThickness="5" StrokeStartLineCap="Triangle" X1="130" Y1="110" X2="130" Y2="200" />
 	<Line Stroke="Green" Fill="Red" StrokeThickness="5" StrokeEndLineCap="Triangle" X1="140" Y1="110" X2="140" Y2="200" />
 	<Line Stroke="Blue" Fill="Red" StrokeThickness="5" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" X1="150" Y1="110" X2="150" Y2="200" />
+
+	<Line Stroke="Black" StrokeThickness="0.5" StrokeDashArray="24,24" StrokeDashOffset="0" X1="10" Y1="210" X2="10" Y2="300" />
+	<Line Stroke="Blue" StrokeThickness="1" StrokeDashArray="12,12" StrokeDashOffset="1" X1="20" Y1="210" X2="20" Y2="300" />
+	<Line Stroke="Brown" StrokeThickness="2" StrokeDashArray="6,6" StrokeDashOffset="2" X1="30" Y1="210" X2="30" Y2="300" />
+	<Line Stroke="Cyan" StrokeThickness="3" StrokeDashArray="4,4" StrokeDashOffset="3" X1="40" Y1="210" X2="40" Y2="300" />
+	<Line Stroke="DarkGray" StrokeThickness="4" StrokeDashArray="3,3" StrokeDashOffset="4" X1="50" Y1="210" X2="50" Y2="300" />
+	<Line Stroke="Gray" StrokeThickness="6" StrokeDashArray="2,2" StrokeDashOffset="5" X1="60" Y1="210" X2="60" Y2="300" />
+	<Line Stroke="Green" StrokeThickness="12" StrokeDashArray="1,1" StrokeDashOffset="6" X1="80" Y1="210" X2="80" Y2="300" />
+	<Line Stroke="LightGray" StrokeThickness="24." StrokeDashArray="0.5,0.5" StrokeDashOffset="7" X1="100" Y1="210" X2="100" Y2="300" />
 </Canvas>
