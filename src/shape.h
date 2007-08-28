@@ -69,7 +69,7 @@ class Shape : public FrameworkElement {
 	// new virtual methods for shapes
 	//
 	
-	virtual bool CanFill () { return true; }
+	virtual bool IsFilled ();
 
 	//
 	// Draw: draws the Shape in the cairo context (affine transforms are set before this
@@ -163,7 +163,7 @@ class Line : public Shape {
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
 
-	virtual bool CanFill () { return false; }
+	virtual bool IsFilled () { return false; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -252,7 +252,7 @@ class Path : public Shape {
 
 	void Draw (cairo_t *cr);
 
-	virtual bool CanFill ();
+	virtual bool IsFilled ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 };

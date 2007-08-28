@@ -169,6 +169,12 @@ Shape::~Shape ()
 	}
 }
 
+bool
+Shape::IsFilled ()
+{
+	return shape_get_fill (this) != NULL; 
+}
+
 //
 // This routine is useful for Shape derivatives: it can be used
 // to either get the bounding box from cairo, or to paint it
@@ -190,7 +196,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
 	// unless there is no stroke brush assigned, which requires us to fill and use cairo_fill_extents
 	// also not every shapes can be filled, e.g. polylines, CallFill
-	if ((consider_fill || !stroke) && CanFill ()) {
+	if ((consider_fill || !stroke) && IsFilled ()) {
 		if (fill) {
 			Draw (cr);
 			drawn = true;
@@ -307,7 +313,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
 
-	if (cairo_in_stroke (cr, nx, ny) || (CanFill () && cairo_in_fill (cr, nx, ny)))
+	if (cairo_in_stroke (cr, nx, ny) || (IsFilled () && cairo_in_fill (cr, nx, ny)))
 		ret = TRUE;
 	
 	cairo_new_path (cr);
@@ -1148,10 +1154,10 @@ Path::CleanupCache ()
 }
 
 bool
-Path::CanFill ()
+Path::IsFilled ()
 {
 	Geometry* data = path_get_data (this);
-	return (data ? data->CanFill () : false);
+	return (data ? data->IsFilled () : false);
 }
 
 void

@@ -35,7 +35,7 @@ class Geometry : public DependencyObject {
 
 	virtual void Draw (cairo_t *cr);
 
-	virtual bool CanFill () { return true; };
+	virtual bool IsFilled () { return true; };
 };
 FillRule geometry_get_fill_rule (Geometry *geometry);
 void geometry_set_fill_rule (Geometry *geometry, FillRule fill_rule);
@@ -142,7 +142,7 @@ class PathGeometry : public Geometry {
 	virtual void Draw (cairo_t *cr);
 
 	// this is an element-by-element decision
-	virtual bool CanFill () { return true; }
+	virtual bool IsFilled () { return true; }
 };
 PathGeometry		*path_geometry_new ();
 PathFigureCollection	*path_geometry_get_figures	(PathFigureCollection *path_geometry);

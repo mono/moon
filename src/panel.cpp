@@ -306,7 +306,10 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 {
 	/* if we have explicitly set width/height, we check them */
 	if (FrameworkElement::InsideObject (cr, x, y)) {
-		return true;
+		/* we're inside, check if we're actually painting any background,
+		   or, we're just transparent due to no painting. */
+		if (panel_get_background (this) != NULL)
+			return true;
 	}
 
 	bool is_inside_clip = InsideClip (cr, x, y);

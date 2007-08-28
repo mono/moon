@@ -1,3 +1,14 @@
+2007-08-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* panel.cpp: InsideObject: The point is only inside us if we have a
+	  background, otherwise we act like if we were transparent (which is what
+	  we are if we aren't painting anything inside us).
+	* geometry.h, uielement.cpp, shape.h: Rename CanFill to IsFilled so that
+	  it's closer to what it actually does.
+	* shape.cpp: Changed implementation of Shape::CanFill to return true only if
+	  we're actually filled, and rename CanFill to IsFilled so that it's
+	  closer to what it actually does. 
+
 2007-08-27  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.cpp|h: Don't return Collections when getting
