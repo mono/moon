@@ -337,7 +337,7 @@ TextBlock::TextBlock ()
 	pango_font_description_set_style (font, font_style (style));
 	FontWeights weight = text_block_get_font_weight (this);
 	pango_font_description_set_weight (font, font_weight (weight));
-
+	
 	// this has to come last, since in our OnPropertyChanged
 	// method we update our bounds.
 	Brush *brush = default_foreground ();
@@ -368,10 +368,11 @@ TextBlock::SetFontSource (DependencyObject *downloader)
 void
 TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-   	char *t = text_block_get_text (this);
-	if (!t || !*t)
-  		return;
-
+	const char *text = pango_layout_get_text (layout);
+	
+	if (!text || !text[0])
+		return;
+	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	Paint (cr);
@@ -715,12 +716,12 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == TextBlock::FontWeightProperty) {
 		FontWeights weight = text_block_get_font_weight (this);
 		pango_font_description_set_weight (font, font_weight (weight));
-	} else if (prop == TextBlock::TextProperty && layout != NULL) {
-		char *text = text_block_get_text (this);
-		pango_layout_set_text (layout, text ? text : "", -1);
+	} else if (prop == TextBlock::TextProperty) {
+		CalcActualWidthHeight (NULL);
+		UpdateBounds (true);
 	} else if (prop == TextBlock::InlinesProperty) {
-		Inlines *newcol = GetValue (prop)->AsInlines();
-
+		Inlines *newcol = GetValue (prop)->AsInlines ();
+		
 		if (newcol) {
 			if (newcol->closure)
 				printf ("Warning we attached a property that was already attached\n");

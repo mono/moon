@@ -1,3 +1,12 @@
+2007-08-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Render): Fixed the "no text to render" optimization:
+	don't check TextBlock::TextProperty to see if we have any text to
+	render, instead check TextBlock::layout (which will have any text
+	from inlines as well).
+	(OnPropertyChanged): If the TextProperty changes, recalculate the
+	layout and bounds.
+
 2007-08-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.h: Add a Path* parameter to Draw as we need to know some 
