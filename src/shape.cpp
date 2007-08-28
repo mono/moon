@@ -251,16 +251,27 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 			cairo_set_line_width (cr, thickness);
 
 		int count = 0;
-		double offset = 0.0;
 		double *dashes = shape_get_stroke_dash_array (this, &count);
 		if (dashes && (count > 0)) {
 			/* FIXME: cairo doesn't support line cap for dashes */
-			offset = shape_get_stroke_dash_offset (this);
+			double offset = shape_get_stroke_dash_offset (this) * thickness;
 			// special case or cairo stops drawing
-			if ((count == 1) && (*dashes == 0.0))
-				count = 0;
+			if ((count == 1) && (*dashes == 0.0)) {
+				if (drawn)
+					cairo_new_path (cr);
+				return;
+			}
+
+			// multiply dashes length with thickness
+			double *dmul = new double [count];
+			for (int i=0; i < count; i++) {
+				dmul [i] = dashes [i] * thickness;
+			}
+			cairo_set_dash (cr, dmul, count, offset);
+			delete dmul;
+		} else {
+			cairo_set_dash (cr, NULL, 0, 0.0);
 		}
-		cairo_set_dash (cr, dashes, count, offset);
 
 		cairo_set_miter_limit (cr, shape_get_stroke_miter_limit (this));
 		cairo_set_line_join (cr, convert_line_join (shape_get_stroke_line_join (this)));

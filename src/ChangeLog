@@ -1,3 +1,9 @@
+2007-08-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Fix StrokeDashArray and StrokeDashOffset as they now
+	(new since refresh?) need to be multiplied with the stroke's 
+	thickness
+
 2007-08-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Render): Fixed the "no text to render" optimization:
