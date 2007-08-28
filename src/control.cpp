@@ -39,7 +39,6 @@ Control::ComputeBounds ()
 		bounds = Rect (0, 0, 0, 0);
 	}
 
-	// If we found nothing.
 	double x1, x2, y1, y2;
 	
 	x1 = y1 = 0.0;
