@@ -1,0 +1,17 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#770000FF" Stroke="#77777777" StrokeThickness="3">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 100 100" />
+				<LineGeometry StartPoint="10,60" EndPoint="110,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+<!-- with silverlight both GeometryGroup seems to be merged and the second FillRule is ignored -->
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="130,200" RadiusX="30" RadiusY="100" />
+				<LineGeometry StartPoint="60,10" EndPoint="60,110" />
+				<RectangleGeometry Rect="120,140,100,100" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+</Canvas>

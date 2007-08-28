@@ -1,0 +1,114 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Canvas.Top="0" Canvas.Left="0">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Canvas.Top="0" Canvas.Left="100">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Canvas.Top="0" Canvas.Left="200">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Canvas.Top="0" Canvas.Left="300">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Canvas.Top="100" Canvas.Left="0">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="16" Canvas.Top="100" Canvas.Left="100">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="32" Canvas.Top="200" Canvas.Left="50">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="64" Canvas.Top="150" Canvas.Left="250">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 20" />
+				<LineGeometry StartPoint="10,60" EndPoint="60,60" />
+				<EllipseGeometry Center="25,25" RadiusX="5" RadiusY="5" />
+			</GeometryGroup>
+			<GeometryGroup FillRule="Nonzero">
+				<RectangleGeometry Rect="50,20,50,50" RadiusX="20" RadiusY="20" />
+				<EllipseGeometry Center="50,20" RadiusX="30" RadiusY="10" />              
+				<LineGeometry StartPoint="60,10" EndPoint="60,60" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+</Canvas>
