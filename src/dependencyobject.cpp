@@ -434,19 +434,6 @@ dependency_object_get_type_name (DependencyObject *obj)
 	return obj->GetTypeName ();
 }
 
-void
-dependency_object_add_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure)
-{
-	o->AddHandler (event, handler, closure);
-}
-
-void
-dependency_object_remove_event_handler (DependencyObject *o, char *event, EventHandler handler, gpointer closure)
-{
-	o->RemoveHandler (event, handler, closure);
-}
-
-
 //
 // Use this for values that can be null
 //
@@ -956,3 +943,16 @@ EventObject::Emit (int event_id, gpointer calldata)
 
 	g_list_free (copy);
 }
+
+void
+event_object_add_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure)
+{
+	o->AddHandler (event, handler, closure);
+}
+
+void
+event_object_remove_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure)
+{
+	o->RemoveHandler (event, handler, closure);
+}
+

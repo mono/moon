@@ -1,3 +1,17 @@
+2007-08-28  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp (process_dirty_elements): use a different method for
+	checking if against the toplevel canvas, and also use
+	UIElement::parent instead of DependencyObject::GetParent() to get
+	controls working a little better than before.
+
+	* control.h, control.cpp: remove UpdateTransform.  this is handled
+	by the dirty.cpp code now.
+
+	* dependencyobject.h, dependencyobject.cpp: copy over the
+	event_object_{add,remove}_event_handler change from the trunk so
+	we can continue to work with HEAD olive.
+
 2007-08-22  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (Invalidate): don't actually invalidate the
