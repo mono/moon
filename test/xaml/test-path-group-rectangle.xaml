@@ -1,0 +1,22 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#770000FF" Stroke="#77777777" StrokeThickness="3">
+		<Path.Data>
+			<!-- group FillRule overides it's childs -->
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 200 200" FillRule="Nonzero" />
+				<RectangleGeometry Rect="50,20,100,100" RadiusX="20" RadiusY="20" FillRule="Nonzero" />
+				<RectangleGeometry Rect="100,100 100 100" FillRule="Nonzero" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#3300FF00" Stroke="#33333333" StrokeThickness="10">
+		<Path.Data>
+			<!-- group FillRule overides it's childs -->
+			<GeometryGroup FillRule="Nonzero">
+				<RectangleGeometry Rect="120,140 200 200" FillRule="EvenOdd" />
+				<RectangleGeometry Rect="150,120,100,100" RadiusX="20" RadiusY="20" FillRule="EvenOdd" />
+				<RectangleGeometry Rect="200,200 100 100" FillRule="EvenOdd" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+</Canvas>

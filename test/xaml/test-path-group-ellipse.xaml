@@ -1,0 +1,22 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Path Fill="#770000FF" Stroke="#77777777" StrokeThickness="3">
+		<Path.Data>
+			<!-- group FillRule overides it's childs -->
+			<GeometryGroup FillRule="EvenOdd">
+				<EllipseGeometry Center="120,40" RadiusX="20" RadiusY="20" FillRule="Nonzero" />
+				<EllipseGeometry Center="240,160" RadiusX="200" RadiusY="150" FillRule="Nonzero" />
+				<EllipseGeometry Center="360,40" RadiusX="20" RadiusY="20" FillRule="Nonzero" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#3300FF00" Stroke="#33333333" StrokeThickness="10">
+		<Path.Data>
+			<!-- group FillRule overides it's childs -->
+			<GeometryGroup FillRule="Nonzero">
+				<EllipseGeometry Center="120,380" RadiusX="20" RadiusY="20" FillRule="EvenOdd" />
+				<EllipseGeometry Center="240,260" RadiusX="200" RadiusY="150" FillRule="EvenOdd" />
+				<EllipseGeometry Center="360,380" RadiusX="20" RadiusY="20" FillRule="EvenOdd" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+</Canvas>
