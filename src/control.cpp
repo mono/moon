@@ -68,11 +68,6 @@ Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *sub
 void
 Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	// XXX this is copied from the canvas implementation due to some
-	// funky, funky behavior we're seeing.
-
-	*result = absolute_xform;
-
 	// Compute left/top if its attached to the item
 	Value *val_top = item->GetValue (Canvas::TopProperty);
 	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
@@ -80,7 +75,7 @@ Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	Value *val_left = item->GetValue (Canvas::LeftProperty);
 	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
 		
-	cairo_matrix_translate (result, left, top);
+	cairo_matrix_init_translate (result, left, top);
 }
 
 bool 

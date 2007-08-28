@@ -1,5 +1,12 @@
 2007-08-28  Chris Toshok  <toshok@ximian.com>
 
+	* control.cpp (GetTransformFor): change this to act as
+	Canvas::GetTransformFor does - we only put in the transform from
+	parent to child here - don't include the parent's transform as
+	well.  Fixes the airlines demo.
+
+2007-08-28  Chris Toshok  <toshok@ximian.com>
+
 	* dirty.cpp (process_dirty_elements): use a different method for
 	checking if against the toplevel canvas, and also use
 	UIElement::parent instead of DependencyObject::GetParent() to get
