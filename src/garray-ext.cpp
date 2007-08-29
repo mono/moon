@@ -1,5 +1,5 @@
 /*
- * mplayer.cpp: 
+ * garray-ext.cpp: 
  *
  * Author: Jeffrey Stedfast <fejj@novell.com>
  *

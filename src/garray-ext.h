@@ -14,6 +14,10 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
+
+G_END_DECLS
 
 #endif /* __MOON_GARRAY_EXT_H__ */
