@@ -1,3 +1,8 @@
+2007-08-29  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Fix ComputeBoundsFast to consider the stroke 
+	thickness
+
 2007-08-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Fix Path::BuildPath cairo_path_t caching as we modify 
@@ -6,7 +11,7 @@
 
 2007-08-29  Jeffrey Stedfast  <fejj@novell.com>
 
-	* media.cpp (Render): Cache the pettern matrix.
+	* media.cpp (Render): Cache the pattern matrix.
 	(DownloaderComplete): Remove the assert and simply handle that
 	case by returning (which defers the call until OnLoaded).
 

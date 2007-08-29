@@ -326,8 +326,6 @@ Shape::ComputeBoundsFast ()
 	bounds = Rect (0,0,0,0);
 
 	Stretch stretch = shape_get_stretch (this);
-	if (stretch == StretchNone)
-		return;
 
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
@@ -344,9 +342,11 @@ Shape::ComputeBoundsFast ()
 		   is correct for this case. */
 		break;
 	case StretchNone:
-		/* not reached */
 		break;
 	}
+
+	if ((w == 0.0) && (h == 0.0))
+		w = h = shape_get_stroke_thickness (this);
 
 	if (w != 0.0 && h != 0.0) {
 
