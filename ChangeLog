@@ -1,3 +1,7 @@
+2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mdp, moon.mds: Created a MonoDevelop project with the source files.
+
 2007-06-30  Marek Habersack  <mhabersack@novell.com>
 
 	* desklet/desklets.cs: added the FindElement method to look up

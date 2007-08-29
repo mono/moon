@@ -1,0 +1,13 @@
+<Combine name="moon" fileversion="2.0">
+  <Configurations active="Default">
+    <Configuration name="Default" ctype="CombineConfiguration">
+      <Entry build="True" name="moon" configuration="Default" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="moon" single="True">
+    <Execute type="None" entry="moon" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./moon.mdp" />
+  </Entries>
+</Combine>
