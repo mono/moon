@@ -53,6 +53,8 @@ libmoon_la_SOURCES = 	\
 	collection.cpp	\
 	control.cpp	\
 	dependencyobject.cpp	\
+	dirty.h	\
+	dirty.cpp	\
 	downloader.cpp	\
 	frameworkelement.cpp	\
 	garray-ext.cpp	\

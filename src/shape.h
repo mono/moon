@@ -37,6 +37,7 @@ void moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h
 // Shape class 
 // 
 class Shape : public FrameworkElement {
+ private:
 	void DoDraw (cairo_t *cr, bool do_op, bool consider_fill);
 	Brush *stroke, *fill;
  protected:
@@ -65,6 +66,8 @@ class Shape : public FrameworkElement {
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
+	void ComputeBoundsSlow (); /* uses the cairo_*_extents calls */
+	void ComputeBoundsFast (); /* uses the bounding rect */
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	
@@ -171,6 +174,8 @@ class Line : public Shape {
 	Line () { };
 	virtual Type::Kind GetObjectType () { return Type::LINE; };
 	
+	virtual void ComputeBounds ();
+
 	void Draw (cairo_t *cr);
 
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
@@ -209,6 +214,8 @@ class Polygon : public Shape {
 
 	virtual FillRule GetFillRule ();
 
+	virtual void ComputeBounds ();
+
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 };
@@ -235,6 +242,8 @@ class Polyline : public Shape {
 	// virtual Point GetTransformOrigin ();
 
 	virtual void BuildPath (cairo_t *cr);
+
+	virtual void ComputeBounds ();
 
 	virtual FillRule GetFillRule ();
 
@@ -264,6 +273,8 @@ class Path : public Shape {
 	// virtual Point GetTransformOrigin ();
 
 	virtual void BuildPath (cairo_t *cr);
+
+	virtual void ComputeBounds ();
 
 	virtual bool IsFilled ();
 	virtual FillRule GetFillRule ();

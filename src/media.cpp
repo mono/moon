@@ -178,26 +178,15 @@ MediaElement::ComputeBounds ()
 {
 	double h = framework_element_get_height (this);
 	double w = framework_element_get_width (this);
-	cairo_t *cr = measuring_context_create ();
-	double x1, y1, x2, y2;
 	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->height;
 		w = (double) mplayer->width;
 	}
 	
-	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
-	cairo_rectangle (cr, 0, 0, w, h);
-	// XXX this next call will hopefully become unnecessary in a
-	// later version of cairo.
-	cairo_identity_matrix (cr);
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	cairo_restore (cr);
-	
-	bounds = Rect (x1 - 1, y1 - 1, x2-x1 + 2, y2-y1 + 2);
-	
-	measuring_context_destroy (cr);
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, w, h));
+
+	bounds.GrowBy (1);
 }
 
 Point
@@ -1137,23 +1126,12 @@ Image::Render (cairo_t *cr, int, int, int, int)
 void
 Image::ComputeBounds ()
 {
-	double x1, y1, x2, y2;
-	cairo_t* cr = measuring_context_create ();
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+						     Rect (0,0,
+							   framework_element_get_width (this),
+							   framework_element_get_height (this)));
 
-	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
-	cairo_set_line_width (cr, 1.0);
-	cairo_rectangle (cr, 0, 0, framework_element_get_width (this), framework_element_get_height (this));
-	// XXX this next call will hopefully become unnecessary in a
-	// later version of cairo.
-	cairo_identity_matrix (cr);
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	cairo_new_path (cr);
-	cairo_restore (cr);
-	
-	bounds = Rect (x1 - 1, y1 - 1, x2-x1 + 2, y2-y1 + 2);
-
-	measuring_context_destroy (cr);
+	bounds.GrowBy (1);
 }
 
 Point

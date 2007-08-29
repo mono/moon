@@ -19,32 +19,16 @@
 #include "transform.h"
 #include "runtime.h"
 #include "geometry.h"
+#include "dirty.h"
 
 #define SHOW_BOUNDING_BOXES 0
 
 void
 UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 {
-	Rect obounds = bounds;
-	
-	ComputeBounds ();
-	
-	//
-	// If we changed, notify the parent to recompute its bounds
-	//
-	if (bounds != obounds) {
-		// Invalidate the old bounds
-		Invalidate (obounds);
-
-		// And the new rect
-		Invalidate (bounds);
-
-		if (parent != NULL)
-			parent->UpdateBounds();
-	}
-	else if (force_redraw_of_new_bounds) {
-		Invalidate (bounds);
-	}
+	add_dirty_element (this, DirtyBounds);
+	if (force_redraw_of_new_bounds)
+		add_dirty_element (this, DirtyInvalidate);
 }
 
 void
@@ -69,10 +53,14 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 
+	dirty_flags = 0;
+	dirty_rect = Rect (0,0,0,0);
+
 	this->SetValue (UIElement::TriggersProperty, Value (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value (new ResourceDictionary ()));
 
-	UpdateTotalOpacity ();
+	ComputeLocalTransform ();
+	ComputeTotalOpacity ();
 }
 
 UIElement::~UIElement ()
@@ -104,8 +92,8 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 			Invalidate ();
 			break;
 		case VisibilityCollapsed:
-			flags &= ~UIElement::RENDER_VISIBLE;
 			FullInvalidate (true);
+			flags &= ~UIElement::RENDER_VISIBLE;
 			break;
 		default:
 			g_assert_not_reached ();
@@ -181,41 +169,49 @@ UIElement::DumpHierarchy (UIElement *obj)
 void
 UIElement::UpdateTotalOpacity ()
 {
+	add_dirty_element (this, DirtyOpacity);
+}
+
+void
+UIElement::ComputeTotalOpacity ()
+{
 	double local_opacity = GetValue (OpacityProperty)->AsDouble();
 	total_opacity = local_opacity * (parent ? parent->GetTotalOpacity () : 1.0);
-	Invalidate ();
 }
 
 void
 UIElement::UpdateTransform ()
 {
-	cairo_matrix_t user_transform;
-	
-	//
-	// What is more important, the space used by 6 doubles,
-	// or the time spent calling the parent (that will call
-	// DependencyObject->GetProperty to get the positions?
-	//
-	// Currently we go for thiner, but if we decide to go
-	// for reduced computation, we should introduce the 
-	// base transform in UIElement that will be updated by the
-	// container on demand
-	//
-	uielement_get_render_affine (this, &user_transform);
+	add_dirty_element (this, DirtyLocalTransform);
+}
+
+void
+UIElement::ComputeLocalTransform ()
+{
+	uielement_get_render_affine (this, &local_transform);
+	transform_origin = GetTransformOrigin ();
 
 	if (parent != NULL)
-		parent->GetTransformFor (this, &absolute_xform);
+		parent->GetTransformFor (this, &parent_transform);
+	else
+		cairo_matrix_init_identity (&parent_transform);
+}
+
+void
+UIElement::ComputeTransform ()
+{
+	if (parent != NULL)
+		absolute_xform = parent->absolute_xform;
 	else
 		cairo_matrix_init_identity (&absolute_xform);
-	
-	Point p = GetTransformOrigin ();
-	cairo_matrix_translate (&absolute_xform, p.x, p.y);
-	cairo_matrix_multiply (&absolute_xform, &user_transform, &absolute_xform);
-	cairo_matrix_translate (&absolute_xform, -p.x, -p.y);
+
+	cairo_matrix_multiply (&absolute_xform, &parent_transform, &absolute_xform);
+	cairo_matrix_translate (&absolute_xform, transform_origin.x, transform_origin.y);
+	cairo_matrix_multiply (&absolute_xform, &local_transform, &absolute_xform);
+	cairo_matrix_translate (&absolute_xform, -transform_origin.x, -transform_origin.y);
 	//printf ("      Final position for %s x=%g y=%g\n", GetTypeName(), absolute_xform.x0, absolute_xform.y0);
 
 	// a change in transform requires a change in our bounds, more than likely
-	UpdateBounds ();
 }
 
 void
@@ -300,15 +296,11 @@ UIElement::FullInvalidate (bool rendertransform)
 }
 
 void
-UIElement::ChildInvalidated (UIElement *item, Rect r)
-{
-	printf ("ChildInvalidated called on a non-container, you must implement this in your container\n");
-	exit (1);
-}
-
-void
 UIElement::Invalidate (Rect r)
 {
+	if (!GetVisible())
+		return;
+
 #ifdef DEBUG_INVALIDATE
 	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
 		this, Type::Find(GetObjectType())->name,
@@ -316,8 +308,11 @@ UIElement::Invalidate (Rect r)
 		(int)(r.w+2), (int)(r.h+2));
 #endif
 
-	if (parent)
-		parent->ChildInvalidated (this, r);
+	add_dirty_element (this, DirtyInvalidate);
+	if (dirty_rect.IsEmpty())
+		dirty_rect = r;
+	else
+		dirty_rect = dirty_rect.Union (r);
 
 	Emit (InvalidatedEvent);
 }
@@ -325,7 +320,6 @@ UIElement::Invalidate (Rect r)
 void
 UIElement::Invalidate ()
 {
-	// invalidate the full bounds of this UIElement.
 	Invalidate (bounds);
 }
 

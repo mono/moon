@@ -19,6 +19,9 @@
 
 #include "clock.h"
 
+#include "uielement.h"
+#include "dirty.h"
+
 //#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 //#endif
@@ -186,7 +189,10 @@ TimeManager::Tick ()
 	}
 
 	if (flags & TIME_MANAGER_RENDER) {
+	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
+		process_dirty_elements ();
+
 		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}

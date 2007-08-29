@@ -19,8 +19,6 @@ class Panel : public FrameworkElement {
 	// Contains the last element where the mouse entered
 	//
 	UIElement *mouse_over;
-
-	bool ignore_invalidates;
  public:
 	Panel ();
 	virtual ~Panel ();
@@ -29,11 +27,8 @@ class Panel : public FrameworkElement {
 	VisualCollection *GetChildren ();
 	void SetChildren (VisualCollection *col);
 
-	virtual void UpdateTransform ();
 	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-
-	virtual void ChildInvalidated (UIElement *child, Rect r);
 
 	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 
@@ -46,8 +41,6 @@ class Panel : public FrameworkElement {
 	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
 	virtual void Enter (cairo_t *cr, int state, double x, double y);
 	virtual void Leave ();
-
-	virtual void UpdateTotalOpacity ();
 
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;

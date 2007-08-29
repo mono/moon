@@ -179,17 +179,13 @@ Shape::~Shape ()
 void
 Shape::Draw (cairo_t *cr)
 {
-#if FALSE
-	// yes that leaks but it's for debugging purpose only
-	BuildPath (cr);
-#else
+	if (!path)
+		BuildPath (cr);
+
 	if (path) {
 		cairo_new_path (cr);
 		cairo_append_path (cr, path);
-	} else {
-		BuildPath (cr);
 	}
-#endif
 }
 
 bool
@@ -212,13 +208,13 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 		return;
 	}
 
-	//printf ("Draw, xform: %g %g %g %g %g %g\n", 
-	//	absolute_xform.xy,
-	//	absolute_xform.xx,
-	//	absolute_xform.yx,
-	//	absolute_xform.yy,
-	//	absolute_xform.x0,
-	//	absolute_xform.y0);
+// 	printf ("Draw, xform: %g %g %g %g %g %g\n", 
+// 		absolute_xform.xy,
+// 		absolute_xform.xx,
+// 		absolute_xform.yx,
+// 		absolute_xform.yy,
+// 		absolute_xform.x0,
+// 		absolute_xform.y0);
 
 	bool drawn = false;
 
@@ -319,8 +315,56 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_restore (cr);
 }
 
-void 
+void
 Shape::ComputeBounds ()
+{
+	ComputeBoundsFast ();
+}
+
+void
+Shape::ComputeBoundsFast ()
+{
+	bounds = Rect (0,0,0,0);
+
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch == StretchNone)
+		return;
+
+	double w = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
+
+	switch (stretch) {
+	case StretchUniform:
+		w = h = (w < h) ? w : h;
+		break;
+	case StretchUniformToFill:
+		w = h = (w > h) ? w : h;
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	case StretchNone:
+		/* not reached */
+		break;
+	}
+
+	if (w != 0.0 && h != 0.0) {
+
+		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+							     Rect (0,0,w,h));
+
+		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	}
+
+	/* standard "grow the rectangle by enough to cover our
+	   asses because of cairo's floating point rendering"
+	   thing */
+	bounds.GrowBy(1);
+}
+
+void
+Shape::ComputeBoundsSlow ()
 {
 	double x1, y1, x2, y2;
 	cairo_t* cr = measuring_context_create ();
@@ -339,7 +383,9 @@ Shape::ComputeBounds ()
 
 	cairo_restore (cr);
 
-	bounds = Rect (x1-1, y1-1, x2-x1 + 2, y2-y1 + 2);
+	bounds = Rect (x1, y1, x2-x1, y2-y1);
+
+	bounds.GrowBy (1);
 
 	measuring_context_destroy (cr);
 }
@@ -439,7 +485,7 @@ void
 Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == Shape::FillProperty || prop == Shape::StrokeProperty) {
-		UpdateBounds (true);
+		Invalidate ();
 	}
 	else
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
@@ -914,6 +960,25 @@ DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
 void
+Line::ComputeBounds ()
+{
+#if notyet
+	double x1 = line_get_x1 (this);
+	double y1 = line_get_y1 (this);
+	double x2 = line_get_x2 (this);
+	double y2 = line_get_y2 (this);
+
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+						     Rect (MIN(x1,x2), MIN(y1,y2),
+							   fabs (x2-x1), fabs (y2-y1)));
+
+	bounds.GrowBy (shape_get_stroke_thickness (this) + 1);
+#else
+	Shape::ComputeBounds ();
+#endif
+}
+
+void
 Line::Draw (cairo_t *cr)
 {
 	// Note: Shape::StretchProperty has no effect on lines
@@ -1001,6 +1066,12 @@ FillRule
 Polygon::GetFillRule ()
 {
 	return polygon_get_fill_rule (this);
+}
+
+void
+Polygon::ComputeBounds ()
+{
+	Shape::ComputeBoundsSlow ();
 }
 
 void
@@ -1117,6 +1188,12 @@ Polyline::GetFillRule ()
 }
 
 void
+Polyline::ComputeBounds ()
+{
+	Shape::ComputeBoundsSlow ();
+}
+
+void
 Polyline::BuildPath (cairo_t *cr)
 {
 	int i, count = 0;
@@ -1225,6 +1302,12 @@ Path::GetFillRule ()
 {
 	Geometry* geometry = path_get_data (this);
 	return geometry ? geometry_get_fill_rule (geometry) : Shape::GetFillRule ();
+}
+
+void
+Path::ComputeBounds()
+{
+	Shape::ComputeBoundsSlow ();
 }
 
 void

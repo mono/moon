@@ -27,9 +27,7 @@ class Control : public FrameworkElement {
 
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
-	virtual void UpdateTransform ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
-	virtual void ChildInvalidated (UIElement *item, Rect r);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 

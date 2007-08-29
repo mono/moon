@@ -8,6 +8,7 @@
 
 #include "uielement.h"
 #include "panel.h"
+#include "control.h"
 #include "collection.h"
 #include "runtime.h"
 #include "clock.h"
@@ -25,8 +26,9 @@ is_anything_dirty ()
 void
 add_dirty_element (UIElement *element, DirtyType dirt)
 {
-	if (element->dirty_flags & dirt)
-		return;
+  // XXX this should really be here...
+//  	if (element->dirty_flags & dirt)
+//  		return;
 
 	element->dirty_flags |= dirt;
 
@@ -49,7 +51,6 @@ add_dirty_element (UIElement *element, DirtyType dirt)
 void
 process_dirty_elements ()
 {
-  TimeSpan before = get_now ();
 	/* push down the transforms and opacity changes first */
 	while (down_dirty) {
 		GSList *link = down_dirty;
@@ -66,9 +67,8 @@ process_dirty_elements ()
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
 
-			add_dirty_element (el, DirtyBounds);
-
 			el->ComputeTransform ();
+			el->UpdateBounds ();
 
 			if (el->Is (Type::PANEL)) {
 				Panel *p = (Panel*)el;
@@ -76,18 +76,25 @@ process_dirty_elements ()
 
 				Collection::Node* n = (Collection::Node *) children->list->First ();
 				while (n != NULL) {
+					// we don't call n->obj->UpdateTransform here
+					// because that causes the element to recompute
+					// its local transform as well, which isn't necessary.
 					add_dirty_element ((UIElement *) n->obj, DirtyTransform);
 					n = (Collection::Node *) n->Next ();
 				}
+			}
+			else if (el->Is (Type::CONTROL)) {
+				Control *c = (Control*)el;
+				if (c->real_object)
+					add_dirty_element (c->real_object, DirtyTransform);
 			}
 		}
 
 		if (el->dirty_flags & DirtyOpacity) {
 			el->dirty_flags &= ~DirtyOpacity;
 
-			add_dirty_element (el, DirtyInvalidate);
-
 			el->ComputeTotalOpacity ();
+			el->Invalidate ();
 
 			if (el->Is (Type::PANEL)) {
 				Panel *p = (Panel*)el;
@@ -95,9 +102,14 @@ process_dirty_elements ()
 
 				Collection::Node* n = (Collection::Node *) children->list->First ();
 				while (n != NULL) {
-					add_dirty_element ((UIElement *) n->obj, DirtyOpacity);
+					((UIElement *) n->obj)->UpdateTotalOpacity ();
 					n = (Collection::Node *) n->Next ();
 				}
+			}
+			else if (el->Is (Type::CONTROL)) {
+				Control *c = (Control*)el;
+				if (c->real_object)
+					c->real_object->UpdateTotalOpacity();
 			}
 		}
 
@@ -111,61 +123,60 @@ process_dirty_elements ()
 		GSList *link = up_dirty;
 		UIElement* el = (UIElement*)link->data;
 
-		//printf ("up processing element element %p (%s)\n", el, el->GetTypeName());
+//   		printf ("up processing element element %p (%s)\n", el, el->GetName());
+// 		printf ("el->parent = %p\n", el->parent);
 
 		if (el->dirty_flags & DirtyBounds) {
+//   		  printf (" + bounds\n");
 			el->dirty_flags &= ~DirtyBounds;
-			
-			Rect obounds = el->GetBounds ();
 
-			el->ComputeBounds ();
+			if (!el->Is(Type::CANVAS)
+			    || el->parent
+			    || !el->GetSurface()
+			    || el->GetSurface()->GetToplevel() != el) {
 
-			if (obounds != el->GetBounds()) {
-				if (el->GetParent ()) {
-					DependencyObject *p = el->GetParent ();
-					if (p->Is (Type::COLLECTION)) {
-						p = ((Collection*)p)->closure;
+				Rect obounds = el->GetBounds ();
+
+				el->ComputeBounds ();
+
+// 				printf (" + + obounds = %f %f %f %f, nbounds = %f %f %f %f\n",
+// 					obounds.x, obounds.y, obounds.w, obounds.h,
+// 					el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
+
+ 				if (obounds != el->GetBounds()) {
+					if (el->parent) {
+// 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
+						el->parent->UpdateBounds();
+						el->parent->Invalidate(obounds);
 					}
 
-					add_dirty_element ((UIElement*)p, DirtyBounds);
-				}
-
- 				el->dirty_flags |= DirtyInvalidate;
-				if (el->dirty_rect.IsEmpty()) {
-					el->dirty_rect = el->GetBounds();
-				}
-				else {
-					el->dirty_rect.Union (el->GetBounds());
-				}
+					el->Invalidate ();
+ 				}
 			}
 		}
 
 		if (el->dirty_flags & DirtyInvalidate) {
+// 		  printf (" + invalidate\n");
+
 			el->dirty_flags &= ~DirtyInvalidate;
 
-			if (el->GetParent ()) {
-				DependencyObject *p = el->GetParent ();
-				if (p->Is (Type::COLLECTION)) {
-					p = ((Collection*)p)->closure;
-				}
-
-				UIElement *parent = (UIElement*)p;
-
-				if (parent->dirty_flags & DirtyInvalidate) {
-					parent->dirty_rect.Union (el->dirty_rect);
-				}
-				else {
-					parent->dirty_rect = el->dirty_rect;
-
-					add_dirty_element (parent, DirtyInvalidate);
-				}
-				el->dirty_rect = Rect (0,0,0,0);
+			if (el->parent) {
+// 			  printf (" + + invalidating parent (%f,%f,%f,%f)\n",
+// 				  el->dirty_rect.x,
+// 				  el->dirty_rect.y,
+// 				  el->dirty_rect.w,
+// 				  el->dirty_rect.h);
+				el->parent->Invalidate (el->dirty_rect.GrowBy(1));
 			}
-			else {
-				if (el->GetSurface ()) {
-					el->GetSurface()->Invalidate (el->dirty_rect);
-				}
+			else if (el->Is (Type::CANVAS) &&
+				 el->parent == NULL &&
+				 el->GetSurface() &&
+				 el->GetSurface()->GetToplevel() == el) {
+
+				el->GetSurface()->Invalidate (el->dirty_rect.GrowBy(1));
 			}
+
+			el->dirty_rect = Rect (0,0,0,0);
 		}
 
 
@@ -177,8 +188,4 @@ process_dirty_elements ()
 
 	g_assert (!up_dirty);
 	g_assert (!down_dirty);
-
-  TimeSpan after = get_now ();
-
-  //  fprintf (stderr, "process_dirty_elements took %lld ticks\n", after - before); fflush (stderr);
 }

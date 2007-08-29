@@ -32,10 +32,29 @@ Control::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 Control::ComputeBounds ()
 {
-	if (real_object)
+	if (real_object) {
 		bounds = real_object->GetBounds ();
-	else
+	}
+	else {
 		bounds = Rect (0, 0, 0, 0);
+	}
+
+	double x1, x2, y1, y2;
+	
+	x1 = y1 = 0.0;
+	x2 = framework_element_get_width (this);
+	y2 = framework_element_get_height (this);
+
+	if (x2 != 0.0 && y2 != 0.0) {
+
+		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
+								   Rect (x1,y1,x2,y2));
+
+		if (real_object)
+			bounds = bounds.Union (fw_rect);
+		else
+			bounds = fw_rect;
+	}
 }
 
 void
@@ -47,22 +66,8 @@ Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *sub
 }
 
 void
-Control::UpdateTransform ()
-{
-	FrameworkElement::UpdateTransform ();
-
-	if (real_object)
-		real_object->UpdateTransform ();
-}
-
-void
 Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	// XXX this is copied from the canvas implementation due to some
-	// funky, funky behavior we're seeing.
-
-	*result = absolute_xform;
-
 	// Compute left/top if its attached to the item
 	Value *val_top = item->GetValue (Canvas::TopProperty);
 	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
@@ -70,14 +75,7 @@ Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	Value *val_left = item->GetValue (Canvas::LeftProperty);
 	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
 		
-	cairo_matrix_translate (result, left, top);
-}
-
-void
-Control::ChildInvalidated (UIElement *item, Rect r)
-{
-	if (parent)
-		parent->ChildInvalidated (item, r);
+	cairo_matrix_init_translate (result, left, top);
 }
 
 bool 

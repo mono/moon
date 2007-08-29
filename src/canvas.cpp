@@ -31,8 +31,6 @@ Canvas::Canvas () : surface (NULL)
 void
 Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	*result = absolute_xform;
-
 	// Compute left/top if its attached to the item
 	Value *val_top = item->GetValue (Canvas::TopProperty);
 	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
@@ -40,16 +38,7 @@ Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	Value *val_left = item->GetValue (Canvas::LeftProperty);
 	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
 		
-	cairo_matrix_translate (result, left, top);
-}
-
-void
-Canvas::ChildInvalidated (UIElement *item, Rect r)
-{
-	if (surface)
-		surface->Invalidate (r);
-	else
-		Panel::ChildInvalidated (item, r);
+	cairo_matrix_init_translate (result, left, top);
 }
 
 void

@@ -1002,6 +1002,24 @@ duration_from_str (const char *str)
 	return Duration (timespan_from_str (str));
 }
 
+KeyTime
+keytime_from_str (const char* str)
+{
+	if (!g_strcasecmp ("Uniform", str))
+		return KeyTime::Uniform;
+	if (!g_strcasecmp ("Paced", str))
+		return KeyTime::Paced;
+	/* check for a percentage first */
+	const char *last = str + strlen(str) - 1;
+	if (*last == '%') {
+		char *ep;
+		double pct = strtod (str, &ep);
+		if (ep == last)
+			return KeyTime (pct);
+	}
+	return KeyTime (timespan_from_str (str));
+}
+
 KeySpline *
 key_spline_from_str (const char *str)
 {
@@ -1947,7 +1965,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		obj->SetValue (prop, Value (duration_from_str (value)));
 		break;
 	case Type::KEYTIME:
-		obj->SetValue (prop, Value (KeyTime (timespan_from_str (value))));
+		obj->SetValue (prop, Value (keytime_from_str (value)));
 		break;
 	case Type::KEYSPLINE:
 		obj->SetValue (prop, Value (key_spline_from_str (value)));
@@ -1974,6 +1992,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		int count = 0;
 		double *doubles = double_array_from_str (value, &count);
 		obj->SetValue (prop, Value (doubles, count));
+		delete[] doubles;
 		break;
 	}
 	case Type::POINT_ARRAY:
@@ -2164,7 +2183,7 @@ start_parse:
 				dep->SetValue (prop, Value (duration_from_str (attr [i + 1])));
 				break;
 			case Type::KEYTIME:
-				dep->SetValue (prop, Value (KeyTime (timespan_from_str (attr [i + 1]))));
+				dep->SetValue (prop, Value (keytime_from_str (attr [i + 1])));
 				break;
 			case Type::KEYSPLINE:
 				dep->SetValue (prop, Value (key_spline_from_str (attr [i + 1])));

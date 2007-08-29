@@ -31,7 +31,7 @@ elif test x$mode == "xtest"; then
     convert $basepng $basepng.jpg
 
     # and compare to our baseline
-    if diff $resultpng.jpg $basepng.jpg; then
+    if diff $resultpng.jpg $basepng.jpg>/dev/null; then
 	echo PASSED.
 	rm -f $resultpng
     else

@@ -14,6 +14,7 @@
 #include "geometry.h"
 #include "panel.h"
 #include "brush.h"
+#include "math.h"
 #include "collection.h"
 #include "runtime.h"
 
@@ -54,7 +55,6 @@ Panel::Panel ()
 	this->SetValue (Panel::ChildrenProperty, Value (new VisualCollection ()));
 	background = NULL;
 	mouse_over = NULL;
-	ignore_invalidates = false;
 }
 
 Panel::~Panel ()
@@ -63,50 +63,6 @@ Panel::~Panel ()
 		background->Detach (NULL, this);
 		background->unref ();
 	}
-}
-
-void
-Panel::UpdateTotalOpacity ()
-{
-	VisualCollection *children = GetChildren ();
-	FrameworkElement::UpdateTotalOpacity ();
-	Collection::Node *n;
-
-	ignore_invalidates = true;
-
-	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
-	n = (Collection::Node *) children->list->First ();
-	while (n != NULL) {
-		UIElement *item = (UIElement *) n->obj;
-		
-		item->UpdateTotalOpacity ();
-		
-		n = (Collection::Node *) n->Next ();
-	}
-
-	ignore_invalidates = false;
-}
-
-void
-Panel::UpdateTransform ()
-{
-	VisualCollection *children = GetChildren ();
-	FrameworkElement::UpdateTransform ();
-	Collection::Node *n;
-
-	ignore_invalidates = true;
-
-	//printf ("Am the canvas, and the xform is: %g %g\n", absolute_xform.x0, absolute_xform.y0);
-	n = (Collection::Node *) children->list->First ();
-	while (n != NULL) {
-		UIElement *item = (UIElement *) n->obj;
-		
-		item->UpdateTransform ();
-		
-		n = (Collection::Node *) n->Next ();
-	}
-
-	ignore_invalidates = false;
 }
 
 #define DEBUG_BOUNDS 0
@@ -145,8 +101,8 @@ Panel::ComputeBounds ()
 
 #if DEBUG_BOUNDS
 		space (levelb + 4);
-		printf ("Item (%s) bounds %g %g %g %g\n", 
-			dependency_object_get_name (item),r.x, r.y, r.w, r.h);
+		printf ("Item (%s, 5s) bounds %g %g %g %g\n", 
+			dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
 #endif
 		if (first) {
 			bounds = r;
@@ -178,10 +134,7 @@ Panel::ComputeBounds ()
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
 	   thing */
-	bounds.x -= 1;
-	bounds.y -= 1;
-	bounds.w += 2;
-	bounds.h += 2;
+	bounds.GrowBy (1);
 
 #if DEBUG_BOUNDS
 	space (levelb);
@@ -190,15 +143,6 @@ Panel::ComputeBounds ()
 #endif
 }
 
-
-void
-Panel::ChildInvalidated (UIElement *child, Rect r)
-{
-  	if (ignore_invalidates)
-  		return;
-
-	FrameworkElement::Invalidate (r);
-}
 
 static int level = 0;
 

@@ -1,3 +1,75 @@
+2007-08-29  Chris Toshok  <toshok@ximian.com>
+
+	* merged delayed-rendering-branch branch to head.  ChangeLog is:
+	
+	2007-08-28  Chris Toshok  <toshok@ximian.com>
+
+		* control.cpp (GetTransformFor): change this to act as
+		Canvas::GetTransformFor does - we only put in the transform from
+		parent to child here - don't include the parent's transform as
+		well.  Fixes the airlines demo.
+
+	2007-08-28  Chris Toshok  <toshok@ximian.com>
+
+		* dirty.cpp (process_dirty_elements): use a different method for
+		checking if against the toplevel canvas, and also use
+		UIElement::parent instead of DependencyObject::GetParent() to get
+		controls working a little better than before.
+
+		* control.h, control.cpp: remove UpdateTransform.  this is handled
+		by the dirty.cpp code now.
+
+		* dependencyobject.h, dependencyobject.cpp: copy over the
+		event_object_{add,remove}_event_handler change from the trunk so
+		we can continue to work with HEAD olive.
+
+	2007-08-22  Chris Toshok  <toshok@ximian.com>
+
+		* uielement.cpp (Invalidate): don't actually invalidate the
+		element unless it's visible.
+		(OnPropertyChanged): the above change requires us to invalidate
+		the element before setting the flags (in the case where we're
+		hiding an element).
+
+	2007-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
+		* media.cpp (ComputeBounds): Use the FrameworkElement width/height
+		unless unspecified, only then should we use video width/height.
+
+	2007-08-21  Chris Toshok  <toshok@ximian.com>
+
+		* uielement.cpp (DoRender): short-circuit rendering of uielements
+		when their opacity is 0.
+
+		* dirty.cpp (process_dirty_elements): handle controls.
+
+	2007-08-21  Chris Toshok  <toshok@ximian.com>
+
+		* shape.h: add Shape::ComputeBoundsSlow, which uses the slow
+		(cairo_*_extents) codepath for computing bounds.  Use this path
+		for polygons, polylines, and paths.  Implement a Line-specific
+		fast ComputeBounds.
+
+	2007-08-20  Chris Toshok  <toshok@ximian.com>
+
+		* media.cpp (MediaElement::ComputeBounds): GrowBy(1).
+		(Image::ComputeBounds): use bounding_rect_for_transformed_rect.
+
+	2007-08-20  Chris Toshok  <toshok@ximian.com>
+
+		* rect.h, rect.cpp: add bounding_rect_from_transformed_rect.
+
+		* panel.cpp (Panel::ComputeBounds): use the bounding_rect
+		call, and Rect::GrowBy
+
+		* media.cpp (MediaElement::ComputeBounds): use the bounding_rect
+		call.
+
+	2007-08-20  Chris Toshok  <toshok@ximian.com>
+
+		* shape.h, shape.cpp: move the ellipse bound computing to shape
+		instead.
+
 2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* clock.h: Implement TimeManager::GetObjectType.
