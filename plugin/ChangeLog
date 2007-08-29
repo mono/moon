@@ -1,5 +1,11 @@
 2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin-class.cpp: Javascript expects the sender of a FullScreenChange
+	  event to be the toplevel canvas, so when the Surface emits this event,
+	  change the sender to the toplevel canvas.
+
+2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin.cpp: Don't delete the surface, unref it.
 	* plugin-class.cpp, plugin-class.h: Create a MoonlightEventObject* and make
 	  MoonlightDependencyObject* inherit from it. Change all event usage to

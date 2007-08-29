@@ -288,8 +288,16 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 	NPVariant args[2];
 	NPVariant result;
 
-	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (proxy->instance,
-										 (EventObject*)sender);
+	EventObject *js_sender = sender;
+	if (js_sender->GetObjectType () == Type::SURFACE) {
+		// This is somewhat hackish, but is required for
+		// the FullScreenChanged event (js expects the
+		// sender to be the toplevel canvas, not the surface, 
+		// nor the content).
+		js_sender = ((Surface*) js_sender)->GetToplevel ();
+	}
+
+	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (proxy->instance, js_sender);
 
 	NPN_RetainObject (depobj); // XXX leak?
 

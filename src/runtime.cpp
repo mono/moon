@@ -117,6 +117,9 @@ Surface::Surface(int w, int h)
 	FullScreenChangeEvent = RegisterEvent ("FullScreenChange");
 
 	Realloc ();
+	
+	full_screen = false;
+	can_full_screen = false;
 }
 
 Surface::~Surface ()
