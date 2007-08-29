@@ -179,12 +179,11 @@ Shape::~Shape ()
 void
 Shape::Draw (cairo_t *cr)
 {
-	if (!path)
-		BuildPath (cr);
-
 	if (path) {
 		cairo_new_path (cr);
 		cairo_append_path (cr, path);
+	} else {
+		BuildPath (cr);
 	}
 }
 
@@ -704,9 +703,7 @@ Ellipse::BuildPath (cairo_t *cr)
 		break;
 	case StretchUniformToFill:
 		// this gets an ellipse larger than it's dimension, relative
-		// scaling is ok but we need to clip to it's original size
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_clip (cr);
+		// scaling is ok but we need Shape::Draw to clip to it's original size
 		w = h = (w > h) ? w : h;
 		break;
 	case StretchFill:
@@ -859,9 +856,7 @@ Rectangle::BuildPath (cairo_t *cr)
 		break;
 	case StretchUniformToFill:
 		// this gets an ellipse larger than it's dimension, relative
-		// scaling is ok but we need to clip to it's original size
-		cairo_rectangle (cr, 0, 0, w + t, h + t);
-		cairo_clip (cr);
+		// scaling is ok but we need Shape::Draw to clip to it's original size
 		w = h = (w > h) ? w : h;
 		break;
 	case StretchFill:
@@ -1382,12 +1377,10 @@ Path::BuildPath (cairo_t *cr)
 	double actual_width = maxx - minx;
 
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	double requested_height = (vh ? vh->AsDouble () : actual_height);
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	double requested_width = (vw ? vw->AsDouble () : actual_width);
 
-	double sh = vh ? (requested_height / actual_height) : 1.0;
-	double sw = vw ? (requested_width / actual_width) : 1.0;
+	double sh = vh ? (vh->AsDouble () / actual_height) : 1.0;
+	double sw = vw ? (vw->AsDouble () / actual_width) : 1.0;
 	switch (stretch) {
 	case StretchFill:
 		break;
@@ -1395,9 +1388,6 @@ Path::BuildPath (cairo_t *cr)
 		sw = sh = (sw < sh) ? sw : sh;
 		break;
 	case StretchUniformToFill:
-		cairo_new_path (cr);
-		cairo_rectangle (cr, 0, 0, requested_width, requested_height);
-		cairo_clip (cr);
 		sw = sh = (sw > sh) ? sw : sh;
 		break;
 	case StretchNone:
@@ -1439,6 +1429,10 @@ Path::BuildPath (cairo_t *cr)
 			break;
 		}
 	}
+
+	// path was modified, replay...
+	cairo_new_path (cr);
+	cairo_append_path (cr, path);
 }
 
 bool

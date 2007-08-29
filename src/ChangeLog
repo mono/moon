@@ -1,3 +1,9 @@
+2007-08-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Fix Path::BuildPath cairo_path_t caching as we modify 
+	the path after we get a copy of it. Remove the now unrequired 
+	clipping inside the *::BuildPath for StretchUniformToFill.
+
 2007-08-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (Render): Cache the pettern matrix.
