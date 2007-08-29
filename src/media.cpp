@@ -23,6 +23,9 @@
 #include "media.h"
 #include "downloader.h"
 
+#define ENABLE_ZENTIMER
+#include "zentimer.h"
+
 // still too ugly to be exposed in the header files ;-)
 cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
@@ -99,6 +102,15 @@ MediaElement::AdvanceFrame ()
 {
 	int64_t position;
 	
+	static ztime_t start = 0;
+	static int nframes = 0;
+	ztime_t now;
+	
+	if (start == 0)
+		ztime (&start);
+	
+	nframes++;
+	
 	if (mplayer->AdvanceFrame ()) {
 		updating = true;
 		if ((position = mplayer->Position ()) < 0)
@@ -113,6 +125,16 @@ MediaElement::AdvanceFrame ()
 		media_element_set_current_state (this, "Stopped");
 		Emit (MediaEndedEvent);
 		return false;
+	}
+	
+	ztime (&now);
+	
+	if (now - start >= ZTIME_USEC_PER_SEC) {
+		printf ("MediaElement::AdvanceFrame() called %d times in %f seconds, roughly %f FPS\n",
+			nframes, (float) (now - start) / (1.0f * ZTIME_USEC_PER_SEC),
+			(float) nframes / ((float) (now - start) / (1.0f * ZTIME_USEC_PER_SEC)));
+		nframes = 0;
+		start = now;
 	}
 	
 	return true;
@@ -215,6 +237,14 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	double opacity = GetTotalOpacity ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
+	static ztime_t start = 0;
+	static int nframes = 0;
+	ztime_t now;
+	
+	if (start == 0)
+		ztime (&start);
+	
+	nframes++;
 	
 	if (!(surface = mplayer->GetSurface ()))
 		return;
@@ -246,6 +276,18 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	cairo_fill (cr);
 	cairo_restore (cr);
+	
+	ztime (&now);
+	
+	if (now - start >= ZTIME_USEC_PER_SEC) {
+		printf ("MediaElement::Render() called %d times in %f seconds, roughly %f FPS\n",
+			nframes, (float) (now - start) / (1.0f * ZTIME_USEC_PER_SEC),
+			(float) nframes / ((float) (now - start) / (1.0f * ZTIME_USEC_PER_SEC)));
+		nframes = 0;
+		start = now;
+	} else {
+		printf ("boo\n");
+	}
 }
 
 void
@@ -294,13 +336,14 @@ MediaElement::DownloaderComplete ()
 	char *filename = downloader_get_response_file (downloader, part_name);
 	bool autoplay = media_element_get_auto_play (this);
 	
+	if (!loaded)
+		return;
+	
 	UpdateProgress ();
 	
 	printf ("video source changed to `%s'\n", filename);
 	
 	// FIXME: specify which audio stream index the player should use
-	
-	g_assert (loaded == true);
 	
 	if (!mplayer->Open (filename)) {
 		media_element_set_can_seek (this, false);

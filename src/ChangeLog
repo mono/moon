@@ -7,6 +7,8 @@
 2007-08-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (Render): Cache the pettern matrix.
+	(DownloaderComplete): Remove the assert and simply handle that
+	case by returning (which defers the call until OnLoaded).
 
 2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
