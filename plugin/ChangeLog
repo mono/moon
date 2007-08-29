@@ -1,3 +1,15 @@
+2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: Don't delete the surface, unref it.
+	* plugin-class.cpp, plugin-class.h: Create a MoonlightEventObject* and make
+	  MoonlightDependencyObject* inherit from it. Change all event usage to
+	  the new class, enables events for objects that aren't DependencyObjects
+	  (but are EventObjects, such as Surface). Implement FullScreen support in
+	  the plugin.  Remove the dob field from MoonlightDependencyObject, the
+	  MoonlightEventObject has an eo field that fits the purpose, and
+	  implement a MoonlightDependencyObject.GetDependencyObject () that does
+	  what dob did earlier (and change all usages).
+
 2007-08-24  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp|h: Add a new EventListenerObject that we can

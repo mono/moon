@@ -30,7 +30,7 @@ class EventListenerProxy : public List::Node {
 	~EventListenerProxy ();
 	void AddHandler (EventObject *obj);
 	void RemoveHandler (EventObject *obj);
-
+	NPObject* GetCallbackAsNPObject ();
  private:
 	NPP instance;
 
@@ -217,7 +217,8 @@ struct MoonlightContentType : MoonlightObjectType {
 struct MoonlightContentObject : MoonlightObject {
 	MoonlightContentObject (NPP instance)
 	  : MoonlightObject (instance),
-	    resizeProxy (NULL)
+	    resizeProxy (NULL), 
+	    fullScreenChangeProxy (NULL)
 	{
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
@@ -225,6 +226,7 @@ struct MoonlightContentObject : MoonlightObject {
 	GHashTable *registered_scriptable_objects;
 
 	EventListenerProxy *resizeProxy;
+	EventListenerProxy *fullScreenChangeProxy;
 };
 
 extern MoonlightContentType* MoonlightContentClass;
@@ -247,29 +249,55 @@ struct MoonlightScriptControlObject : public MoonlightObject {
 	NPObject *settings;
 };
 
-/*** MoonlightDependencyObjectClass ***************************************************/
+/*** MoonlightEventObjectClass ***************************************************/
+struct MoonlightEventObjectType : MoonlightObjectType {
+	MoonlightEventObjectType ();
+};
+extern MoonlightEventObjectType *MoonlightEventObjectClass;
 
-struct MoonlightDependencyObjectType : MoonlightObjectType {
+struct MoonlightEventObjectObject : public MoonlightObject
+{
+	MoonlightEventObjectObject (NPP instance) : MoonlightObject (instance)
+	{
+		eo = NULL;
+		moonlight_type = Type::EVENTOBJECT;
+	}
+
+	void SetEventObject (EventObject *eo)
+	{
+		this->eo = eo;
+		if (eo)
+			eo->ref ();
+	}
+
+	EventObject *eo;
+};
+static void moonlight_event_object_invalidate (NPObject *npobj);
+extern MoonlightEventObjectObject* EventObjectCreateWrapper (NPP instance, EventObject *obj);
+
+/*** MoonlightDependencyObjectClass ***************************************************/
+struct MoonlightDependencyObjectType : MoonlightEventObjectType {
 	MoonlightDependencyObjectType ();
 };
 extern MoonlightDependencyObjectType *MoonlightDependencyObjectClass;
 
-struct MoonlightDependencyObjectObject : public MoonlightObject
+struct MoonlightDependencyObjectObject : public MoonlightEventObjectObject
 {
-	MoonlightDependencyObjectObject (NPP instance) : MoonlightObject (instance)
+	MoonlightDependencyObjectObject (NPP instance) : MoonlightEventObjectObject (instance)
 	{
-		dob = NULL;
 		moonlight_type = Type::DEPENDENCY_OBJECT;
 	}
 
 	void SetDependencyObject (DependencyObject *dob)
 	{
-		this->dob = dob;
-		if (dob)
-			dob->ref ();
+		SetEventObject (dob);
 	}
-
-	DependencyObject *dob;
+	
+	DependencyObject* GetDependencyObject ()
+	{
+		g_assert (eo->GetObjectType () >= Type::DEPENDENCY_OBJECT);
+		return (DependencyObject*) eo;
+	}
 };
 
 extern MoonlightDependencyObjectObject* DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj);

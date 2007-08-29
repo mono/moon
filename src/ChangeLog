@@ -1,3 +1,15 @@
+2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.h: Implement TimeManager::GetObjectType.
+	* dependencyobject.h, dependencyobject.cpp: Move all type management down to
+	  Base (GetObjectType, Is, GetType, GetTypeName), and implement
+	  GetObjectType in the classes that don't do it already. Remove
+	  BASE_FLOATS, simplifying ref counting.
+	* type.cpp.in, type.h, type.cpp, type.h.in: Added Base and inherited classes
+	  that don't already inherit from DependencyObject.
+	* runtime.h, runtime.cpp: Add the Fullscreen API (not implemented yet, only
+	  raises events), and implement GetObjectType.
+
 2007-08-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Fix StretchUniformToFill

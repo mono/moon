@@ -19,17 +19,42 @@ typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer c
 
 //
 // This guy provide reference counting
-//
-#define BASE_FLOATS 0x80000000
+// and type management.
+// 
+// An object starts out with a reference
+// count of 1 (no need to ref it after 
+// creation), and will be deleted once
+// the count reaches 0.
 
 class Base {
  public:	
 	guint32 refcount;
-	Base () : refcount(BASE_FLOATS) { }
+	Base () : refcount(1) { }
 	virtual ~Base () { }
 	
 	void ref ();
 	void unref ();
+	
+	virtual Type::Kind GetObjectType () = 0;
+	
+	//
+	// Is:
+	//    Similar to C#'s is: it checks if this object is of this kind or 
+	//    a derived class.
+	
+	bool Is(Type::Kind k) {
+		return GetType ()->IsSubclassOf (k);
+	};
+
+	Type *GetType ()
+	{
+		return Type::Find (GetObjectType ());
+	}
+	
+	char *GetTypeName ()
+	{
+		return Type::Find (GetObjectType ())->name;
+	}
 };
 
 class EventObject : public Base {
@@ -43,6 +68,8 @@ class EventObject : public Base {
 	void AddHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 
+	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
+	
  protected:
 	int  RegisterEvent (const char *event_name);
 	void Emit (char *event_name, gpointer calldata = NULL);
@@ -104,15 +131,6 @@ class DependencyObject : public EventObject {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop) { }
 
 	virtual Type::Kind GetObjectType ();
-	Type *GetType ()
-	{
-		return Type::Find (GetObjectType ());
-	}
-	
-	char *GetTypeName ()
-	{
-		return Type::Find (GetObjectType ())->name;
-	}
 
 	const char *GetName ()
 	{
@@ -122,15 +140,6 @@ class DependencyObject : public EventObject {
 	
 	void SetParent (DependencyObject *parent);
 	DependencyObject* GetParent ();
-
-	//
-	// Is:
-	//    Similar to C#'s is: it checks if this object is of this kind or 
-	//    a derived class.
-	
-	bool Is(Type::Kind k) {
-		return GetType ()->IsSubclassOf (k);
-	};
 
 	static void Shutdown ();
 

@@ -194,6 +194,8 @@ class TimeManager : public EventObject {
 	int UpdateInputEvent;
 	int RenderEvent;
 
+	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
+	
  private:
 	TimeManager ();
 

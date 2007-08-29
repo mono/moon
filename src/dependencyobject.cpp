@@ -22,33 +22,27 @@
 void 
 Base::ref ()
 {
-	if (refcount & BASE_FLOATS)
-		refcount = 1;
-	else
-		refcount++;
+	refcount++;
 
 #if DEBUG_REFCNT
-	printf ("refcount++ %p (%s), refcnt = %d\n", this,
-		Type::Find (((DependencyObject *) this)->GetObjectType ())->name, refcount);
+	printf ("refcount++ %p (%s), refcnt = %d\n", this, GetTypeName (), refcount);
 #endif
 }
 
 void
 Base::unref ()
 {
-	if (refcount == BASE_FLOATS || refcount == 1) {
+	refcount--;
+	
 #if DEBUG_REFCNT
-		printf ("destroying object %p (%s)\n", this,
-			Type::Find (((DependencyObject *) this)->GetObjectType ())->name);
+		printf ("refcount-- %p (%s), refcnt = %d\n", this, GetTypeName (), refcount);
+#endif
+
+	if (refcount == 0) {
+#if DEBUG_REFCNT
+		printf ("destroying object %p (%s)\n", this, GetTypeName ());
 #endif
 		delete this;
-	} else {
-		refcount--;
-#if DEBUG_REFCNT
-		printf ("refcount-- %p (%s), refcnt = %d\n", this,
-			Type::Find (((DependencyObject *) this)->GetObjectType ())->name,
-			refcount);
-#endif
 	}
 }
 

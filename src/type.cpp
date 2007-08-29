@@ -163,6 +163,10 @@ types_init_manually (void)
 	Type::RegisterType ("Point*", Type::POINT_ARRAY, false);
 	Type::RegisterType ("Matrix", Type::MATRIX, true);
 	Type::RegisterType ("NPObj", Type::NPOBJ, false);
+	Type::RegisterType ("Base", Type::BASE, false);
+	Type::RegisterType ("EventObject", Type::EVENTOBJECT, Type::BASE);
+	Type::RegisterType ("TimeManager", Type::TIMEMANAGER, Type::EVENTOBJECT);
+	Type::RegisterType ("Surface", Type::SURFACE, Type::EVENTOBJECT);
 #if DEBUG
 	for (int i = 1; i < Type::LASTTYPE; i++) {
 		if (Type::types [i] != NULL)

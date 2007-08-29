@@ -40,6 +40,10 @@ public:
 		KEYTIME,
 		MATRIX,
 		NPOBJ,
+		BASE,
+		EVENTOBJECT,
+		SURFACE,
+		TIMEMANAGER,
 
 /*DO_KINDS*/
 	

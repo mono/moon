@@ -71,7 +71,14 @@ class Surface : public EventObject {
 	UIElement* GetCapturedElement () { return capture_element; }
 
 	int ResizeEvent;
-
+	int FullScreenChangeEvent;
+	
+	bool GetFullScreen () { return full_screen; }
+	void SetFullScreen (bool value);
+	void SetCanFullScreen (bool value) { can_full_screen = value; }
+	bool FullScreenKeyHandled (GdkEventKey *key);
+	
+	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
 private:
 	int width, height;
 
@@ -114,6 +121,13 @@ private:
 	// the currently shown cursor
 	MouseCursor cursor;
 
+	// Fullscreen support
+	bool full_screen;
+	// Should be set to true only while executing MouseLeftButtonDown, 
+	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
+	bool can_full_screen; 
+	void UpdateFullScreen (bool value);
+	
 	int frames;
 
 	int last_event_state;

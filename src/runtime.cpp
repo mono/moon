@@ -113,6 +113,7 @@ Surface::Surface(int w, int h)
 	capture_element = NULL;
 
 	ResizeEvent = RegisterEvent ("Resize");
+	FullScreenChangeEvent = RegisterEvent ("FullScreenChange");
 
 	Realloc ();
 }
@@ -374,6 +375,33 @@ Surface::Realloc ()
 		CreateSimilarSurface ();
 		cairo = cairo_xlib;
 	}
+}
+
+void
+Surface::SetFullScreen (bool value)
+{
+	if (value && !can_full_screen) {
+		g_warning ("You're not allowed to switch to fullscreen from where you're doing it.");
+		return;
+	}
+	
+	UpdateFullScreen (value);
+	
+}
+
+void
+Surface::UpdateFullScreen (bool value)
+{
+	if (value == full_screen)
+		return;
+	
+	if (value) {
+		g_warning ("Fullscreen mode not implemented yet.");
+	} else {
+		g_warning ("Fullscreen mode not implemented yet.");
+	}
+	full_screen = value;
+	Emit (FullScreenChangeEvent);
 }
 
 void
@@ -669,17 +697,38 @@ Surface::gdk_keyval_to_key (guint keyval)
 	}
 }
 
+bool
+Surface::FullScreenKeyHandled (GdkEventKey *key)
+{
+	if (!GetFullScreen ())
+		return false;
+		
+	// If we're in fullscreen mode no key events are passed through.
+	// We only handle Esc, to exit fullscreen mode.
+	if (key->keyval == GDK_Escape) {
+		SetFullScreen (false);
+	}
+	return true;
+}
+
 gboolean 
 Surface::key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
+	if (s->FullScreenKeyHandled (key))
+		return TRUE;
+
+	s->SetCanFullScreen (true);
 	// 
 	// I could not write a test that would send the output elsewhere, for now
 	// just send to the toplevel
 	//
 	s->toplevel->HandleKeyDown (s->cairo,
 				    key->state, gdk_keyval_to_key (key->keyval), key->hardware_keycode);
+				    
+	s->SetCanFullScreen (false);
+	
 	return TRUE;
 }
 
@@ -688,12 +737,20 @@ Surface::key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer dat
 {
 	Surface *s = (Surface *) data;
 
+	if (s->FullScreenKeyHandled (key))
+		return TRUE;
+
+	s->SetCanFullScreen (true);
+	
 	// 
 	// I could not write a test that would send the output elsewhere, for now
 	// just send to the toplevel
 	//
 	s->toplevel->HandleKeyUp (s->cairo,
 				    key->state, gdk_keyval_to_key (key->keyval), key->hardware_keycode);
+				    				    
+	s->SetCanFullScreen (false);
+	
 	return TRUE;
 }
 
@@ -705,6 +762,8 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 	if (button->button != 1)
 		return FALSE;
 
+	s->SetCanFullScreen (true);
+	
 	double x = button->x;
 	double y = button->y;
 	if (GTK_WIDGET_NO_WINDOW (widget)){
@@ -713,6 +772,8 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 	}
 	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
 	input_element->HandleButtonRelease (s->cairo, button->state, x, y);
+	
+	s->SetCanFullScreen (false);
 	
 	return TRUE;
 }
@@ -727,6 +788,8 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 	if (button->button != 1)
 		return FALSE;
 
+	s->SetCanFullScreen (true);
+	
 	double x = button->x;
 	double y = button->y;
 	if (GTK_WIDGET_NO_WINDOW (widget)){
@@ -735,6 +798,8 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 	}
 	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
 	input_element->HandleButtonPress (s->cairo, button->state, x, y);
+	
+	s->SetCanFullScreen (false);
 	
 	return FALSE;
 }

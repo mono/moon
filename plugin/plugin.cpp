@@ -152,7 +152,7 @@ PluginInstance::~PluginInstance ()
 	fprintf (stderr, "Destroying the plugin: %p\n", surface);
 	if (surface != NULL){
 		//gdk_error_trap_push ();
-		delete surface;
+		surface->unref ();
 		//gdk_display_sync (this->display);
 		//gdk_error_trap_pop ();
 	}
@@ -358,7 +358,7 @@ PluginInstance::JsRunOnload ()
 	DependencyObject *toplevel = surface->GetToplevel ();
 	DEBUGMSG ("In JsRunOnload, toplevel = %p", toplevel);
 
-	MoonlightDependencyObjectObject *depobj = DependencyObjectCreateWrapper (instance, toplevel);
+	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, toplevel);
 	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
 
 	if (NPN_Invoke (instance, object, NPID (expression),
