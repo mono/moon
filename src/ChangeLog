@@ -1,7 +1,11 @@
+2007-08-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (Render): Cache the pettern matrix.
+
 2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* runtime.cpp: Initialize the FullScreen variables. Helps a lot in making
-	  things consistent.
+	* runtime.cpp: Initialize the FullScreen variables. Helps a lot in
+	  making things consistent.
 
 2007-08-29  Chris Toshok  <toshok@ximian.com>
 

@@ -122,6 +122,8 @@ void   image_set_source (Image *img, DependencyObject *Downloader, const char *P
 
 
 class MediaElement : public MediaBase {
+	bool recalculate_matrix;
+	cairo_matrix_t matrix;
 	guint timeout_id;
 	bool updating;
 	bool loaded;

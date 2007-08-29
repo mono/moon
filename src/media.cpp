@@ -132,6 +132,8 @@ MediaElement::MediaElement ()
 	mplayer->SetBalance (media_element_get_balance (this));
 	mplayer->SetVolume (media_element_get_volume (this));
 	
+	recalculate_matrix = true;
+	
 	loaded = false;
 	updating = false;
 	timeout_id = 0;
@@ -213,7 +215,6 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	double opacity = GetTotalOpacity ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
-	cairo_matrix_t matrix;
 	
 	if (!(surface = mplayer->GetSurface ()))
 		return;
@@ -227,8 +228,13 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, opacity);
-	image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch, 
-					    AlignmentXCenter, AlignmentYCenter, NULL);
+	
+	if (recalculate_matrix) {
+		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch,
+						    AlignmentXCenter, AlignmentYCenter, NULL);
+		recalculate_matrix = false;
+	}
+	
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	cairo_set_source (cr, pattern);
@@ -501,6 +507,8 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 			printf ("trying to set media source to empty\n");
 			DownloaderAbort ();
 		}
+		
+		recalculate_matrix = true;
 	} else if (prop == MediaElement::AudioStreamCountProperty) {
 		// read-only property
 	} else if (prop == MediaElement::AudioStreamIndexProperty) {
@@ -556,6 +564,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else {
 		// propagate to parent class
 		MediaBase::OnPropertyChanged (prop);
+		recalculate_matrix = true;
 	}
 }
 
