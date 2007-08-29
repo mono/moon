@@ -1,3 +1,12 @@
+2007-08-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (OnPropertyChanged): Don't recalculate width/height nor
+	bounds on TextProperty change explicitly, it should already be
+	recalculated later in the function in the same place it gets
+	reclauclated for other property changes.
+	(ComputeBounds): Updated to work the same as the rest of the
+	elements work.
+
 2007-08-29  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Fix ComputeBoundsFast to consider the stroke 

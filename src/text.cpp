@@ -382,25 +382,8 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::ComputeBounds ()
 {
-	cairo_t *cr = measuring_context_create ();
-	double x1, y1, x2, y2;
-	
-	// optimization: use the cached width/height and draw
-	// a simple rectangle to get bounding box
-	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
-	cairo_set_line_width (cr, 1);
-	cairo_rectangle (cr, 0, 0, actual_width, actual_height);
-	// XXX this next call will hopefully become unnecessary in a
-	// later version of cairo.
-	cairo_identity_matrix (cr);
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	cairo_new_path (cr);
-	cairo_restore (cr);
-	
-	bounds = Rect (x1 - 1, y1 - 1, x2-x1 + 2, y2-y1 + 2);
-	
-	measuring_context_destroy (cr);
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, actual_width, actual_height));
+	bounds.GrowBy (1);
 }
 
 Point
@@ -717,8 +700,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		FontWeights weight = text_block_get_font_weight (this);
 		pango_font_description_set_weight (font, font_weight (weight));
 	} else if (prop == TextBlock::TextProperty) {
-		CalcActualWidthHeight (NULL);
-		UpdateBounds (true);
+		// will be updated later in Layout()
 	} else if (prop == TextBlock::InlinesProperty) {
 		Inlines *newcol = GetValue (prop)->AsInlines ();
 		
