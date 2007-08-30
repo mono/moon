@@ -782,8 +782,7 @@ Rectangle::BuildPath (cairo_t *cr)
 	double w, h;
 	double radius_x, radius_y;
 	bool compute_origin = false;
-	// degenerate cases are handled differently for round-corner rectangles
-	bool round = GetRadius (&radius_x, &radius_y);
+	bool round = FALSE;
 
 	cairo_new_path (cr);
 
@@ -800,8 +799,12 @@ Rectangle::BuildPath (cairo_t *cr)
 		}
 
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+		// note: in this case the Radius[X|Y] properties are ignored
 		goto shape;
 	}
+
+	// degenerate cases are handled differently for round-corner rectangles
+	round = GetRadius (&radius_x, &radius_y);
 
 	w = width->AsDouble ();
 	h = height->AsDouble ();

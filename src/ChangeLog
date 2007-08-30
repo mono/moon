@@ -1,3 +1,8 @@
+2007-08-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: In some degenerate cases Radius[X|Y] can be ignored 
+	for rectangles.
+
 2007-08-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (AdvanceFrame): If there is no video stream, return
