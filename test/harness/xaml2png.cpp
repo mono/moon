@@ -102,6 +102,7 @@ void
 runTest (const char *xaml_file, const char *output_prefix)
 {
 	Surface *s = new Surface (TEST_WIDTH, TEST_HEIGHT);
+	GdkPixbuf *pixbuf;
 	Type::Kind type;
 
 	DependencyObject *dob = xaml_create_from_file (xaml_file, true, &type);
@@ -121,6 +122,11 @@ runTest (const char *xaml_file, const char *output_prefix)
 	cairo_destroy (cr);
 
 	delete s;
+
+	pixbuf = gdk_pixbuf_new_from_file (output_prefix, NULL);
+	unlink (output_prefix);
+	gdk_pixbuf_save (pixbuf, output_prefix, "png", NULL, NULL);
+	g_object_unref (pixbuf);
 }
 
 int
