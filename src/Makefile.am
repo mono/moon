@@ -15,6 +15,7 @@ libmooninclude_headers = \
 	clock.h		\
 	collection.h	\
 	control.h	\
+	debug.h		\
 	dependencyobject.h \
 	downloader.h	\
 	error.h		\
@@ -53,6 +54,7 @@ libmoon_la_SOURCES = 	\
 	clock.cpp	\
 	collection.cpp	\
 	control.cpp	\
+	debug.cpp	\
 	dependencyobject.cpp	\
 	dirty.h	\
 	dirty.cpp	\

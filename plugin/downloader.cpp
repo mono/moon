@@ -110,3 +110,7 @@ downloader_initialize (void)
 			p_downloader_abort);
 }
 
+void 
+downloader_destroy ()
+{
+}

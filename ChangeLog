@@ -1,3 +1,7 @@
+2007-08-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mdp: Added debug.*.
+
 2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moon.mdp, moon.mds: Created a MonoDevelop project with the source files.

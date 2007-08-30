@@ -22,7 +22,7 @@
 	Type implementation
 */
 
-Type** Type::types;
+Type** Type::types = NULL;
 GHashTable* Type::types_by_name = NULL;
 
 Type::Type (const char *name, Type::Kind type, Type::Kind parent)

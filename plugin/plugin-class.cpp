@@ -3370,9 +3370,36 @@ plugin_init_classes ()
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
 	MoonlightTextBlockClass = new MoonlightTextBlockType ();
 	MoonlightRectClass = new MoonlightRectType ();
-	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 	MoonlightEventListenerClass = new MoonlightEventListenerType ();
 }
 
+void
+plugin_destroy_classes ()
+{
+	
+	delete MoonlightCollectionClass; MoonlightCollectionClass = NULL;
+	delete MoonlightContentClass; MoonlightContentClass = NULL;
+	delete MoonlightControlClass; MoonlightControlClass = NULL;
+	delete MoonlightEventObjectClass; MoonlightEventObjectClass = NULL;
+	delete MoonlightDependencyObjectClass; MoonlightDependencyObjectClass = NULL;
+	delete MoonlightDownloaderClass; MoonlightDownloaderClass = NULL;
+	delete MoonlightErrorEventArgsClass; MoonlightErrorEventArgsClass = NULL;
+	delete MoonlightImageBrushClass; MoonlightImageBrushClass = NULL;
+	delete MoonlightImageClass; MoonlightImageClass = NULL;
+	delete MoonlightMediaElementClass; MoonlightMediaElementClass = NULL;
+	delete MoonlightMouseEventArgsClass; MoonlightMouseEventArgsClass = NULL;
+	delete MoonlightKeyboardEventArgsClass; MoonlightKeyboardEventArgsClass = NULL;
+	delete MoonlightObjectClass; MoonlightObjectClass = NULL;
+	delete MoonlightScriptableObjectClass; MoonlightScriptableObjectClass = NULL;
+	delete MoonlightScriptControlClass; MoonlightScriptControlClass = NULL;
+	delete MoonlightSettingsClass; MoonlightSettingsClass = NULL;
+	delete MoonlightStoryboardClass; MoonlightStoryboardClass = NULL;
+	delete MoonlightTextBlockClass; MoonlightTextBlockClass = NULL;
+	delete MoonlightRectClass; MoonlightRectClass = NULL;
+	delete MoonlightPointClass; MoonlightPointClass = NULL;
+	delete MoonlightDurationClass; MoonlightDurationClass = NULL;
+	delete MoonlightTimeSpanClass; MoonlightTimeSpanClass = NULL;
+	delete MoonlightEventListenerClass; MoonlightEventListenerClass = NULL;
+}

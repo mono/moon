@@ -147,6 +147,7 @@ class XamlParserInfo {
 			g_string_free (char_data_buffer, TRUE);
 		if (top_element)
 			delete top_element;
+		namescope->unref ();
 	}
 };
 

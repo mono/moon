@@ -168,6 +168,8 @@
     <File name="./TODO" subtype="Code" buildaction="Nothing" />
     <File name="./wishlist" subtype="Code" buildaction="Nothing" />
     <File name="./AUTHORS" subtype="Code" buildaction="Nothing" />
+    <File name="./src/debug.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="./src/debug.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="./">
     <BuildFilesVar />

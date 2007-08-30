@@ -180,23 +180,33 @@ NPP_GetMIMEDescription (void)
 }
 
 void downloader_initialize ();
+void downloader_destroy ();
 
+static bool vm_initialized = false;
+static bool gtk_initialized = false;
 static bool already_initialized = false;
+static bool runtime_initialized = false;
 
 NPError
 NPP_Initialize (void)
 {
 	// We dont need to initialize mono vm and gtk more than one time.
-	if (!already_initialized) {
-		already_initialized = true;
+	if (!gtk_initialized) {
+		gtk_initialized = true;
 		gtk_init (0, 0);
-		downloader_initialize ();
-		vm_init ();
-		runtime_init ();
-
-		plugin_init_classes ();
 	}
-	TimeManager::Instance()->Start();
+	if (!vm_initialized) {
+		vm_initialized = true;
+		vm_init ();
+	}
+	downloader_initialize ();
+	
+	if (!runtime_initialized) {
+		runtime_initialized = true;
+		runtime_init ();
+	}
+	
+	plugin_init_classes ();
 
 	return NPERR_NO_ERROR;
 }
@@ -204,8 +214,11 @@ NPP_Initialize (void)
 void
 NPP_Shutdown (void)
 {
+	plugin_destroy_classes ();
 	// runtime_shutdown is broken at moment so let us just shutdown TimeManager,
 	// when fixed please uncomment above line and remove time manger shutdown.
-	//runtime_shutdown ();
-	TimeManager::Instance()->Shutdown ();
+	runtime_shutdown ();
+	//TimeManager::Instance()->Shutdown ();
+	runtime_initialized = false;
+	downloader_destroy ();
 }

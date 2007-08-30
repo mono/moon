@@ -8,7 +8,6 @@
  */
 
 #include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,14 +18,45 @@
 #include "collection.h"
 #include "dependencyobject.h"
 
+#if OBJECT_TRACKING
+// Define the ID of the object you want to track
+// Object creation, destruction and all ref/unrefs
+// are logged to the console, with a stacktrace.
+#define OBJECT_TRACK_ID 23
+
+int Base::objects_created = 0;
+int Base::objects_destroyed = 0;
+GList* Base::objects_alive = NULL;
+
+void
+Base::Track (const char* done, const char* typname)
+{
+#if OBJECT_TRACK_ID
+	if (id == OBJECT_TRACK_ID) {
+		printf ("%s tracked object of type '%s': %i, current refcount: %i\n", done, typname, id, refcount);
+		PrintStackTrace ();
+	}
+#endif
+}
+
+char* 
+Base::GetStackTrace (const char* prefix)
+{
+	return get_stack_trace_prefix (prefix);
+}
+
+void
+Base::PrintStackTrace ()
+{
+	print_stack_trace ();
+}
+
 void 
 Base::ref ()
 {
 	refcount++;
-
-#if DEBUG_REFCNT
-	printf ("refcount++ %p (%s), refcnt = %d\n", this, GetTypeName (), refcount);
-#endif
+	
+	Track ("Ref", GetTypeName ());
 }
 
 void
@@ -34,17 +64,27 @@ Base::unref ()
 {
 	refcount--;
 	
-#if DEBUG_REFCNT
-		printf ("refcount-- %p (%s), refcnt = %d\n", this, GetTypeName (), refcount);
-#endif
+	Track ("Unref", GetTypeName ());
 
 	if (refcount == 0) {
-#if DEBUG_REFCNT
-		printf ("destroying object %p (%s)\n", this, GetTypeName ());
-#endif
 		delete this;
 	}
 }
+
+Base::Base () : refcount(1)
+{
+	id = ++objects_created;
+	objects_alive = g_list_prepend (objects_alive, this);
+	Track ("Created", "");
+}
+
+Base::~Base () 
+{
+	objects_destroyed++;
+	objects_alive = g_list_remove (objects_alive, this);
+	Track ("Destroyed", "");
+}
+#endif
 
 void 
 base_ref (Base *base)
@@ -75,6 +115,7 @@ DependencyObject::Attach (DependencyProperty *property, DependencyObject *contai
 {
 	Attachee *att = new Attachee ();
 	att->dob = container;
+	att->dob->ref ();
 	att->prop = property;
 	attached_list = g_slist_append (attached_list, att);
 }
@@ -87,6 +128,7 @@ DependencyObject::Detach (DependencyProperty *property, DependencyObject *contai
 
 		if (att->dob == container && att->prop == property) {
 			attached_list = g_slist_remove_link (attached_list, l);
+			att->dob->unref ();
 			delete att;
 			break;
 		}
@@ -305,9 +347,18 @@ DependencyObject::GetObjectType ()
 	return Type::DEPENDENCY_OBJECT; 
 }
 
+void free_attachee (gpointer data, gpointer user_data)
+{
+	delete (Attachee*) data;
+}
+
 DependencyObject::~DependencyObject ()
 {
 	g_hash_table_destroy (current_values);
+	if (attached_list != NULL) {
+		g_slist_foreach (attached_list, free_attachee, NULL);
+		g_slist_free (attached_list);
+	}
 }
 
 DependencyProperty *

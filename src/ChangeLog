@@ -1,3 +1,23 @@
+2007-08-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp: Unref the namescope.
+	* debug.h, debug.cpp: Added. Implemented get_stack_trace and
+	  print_stack_trace.
+	* clock.cpp: Unref the _instance.
+	* dependencyobject.h, dependencyobject.cpp: Implement object tracking for
+	  debug purposes. It's able to log to console object creation,
+	  destruction, ref/unrefs with a stacktrace with C++ unmangled function
+	  names, file and line number. Keep a count of created and destroyed
+	  objects, and a list of objects still alive. Ref and unref attached
+	  objects, and free the attachees when we're deleted.
+	* animation.h, animation.cpp: Add animation_destroy, and destroy the default
+	  dependency property for a few properties.
+	* type.cpp, type.cpp.in: Initialize Type::types to NULL.
+	* runtime.cpp: Add a g_type_inited to avoid initializing g_types several
+	  types. Call animation_destroy on shutdown, and add some object tracking
+	  output to runtime_init and runtime_shutdown.
+	* Makefile.am: Added debug.*.
+
 2007-08-30  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: In some degenerate cases Radius[X|Y] can be ignored 

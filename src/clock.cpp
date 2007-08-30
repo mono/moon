@@ -121,6 +121,9 @@ TimeManager::Shutdown ()
 	}
 	
 	child_clocks = NULL;
+	
+	_instance->unref ();
+	_instance = NULL;
 }
 
 gboolean

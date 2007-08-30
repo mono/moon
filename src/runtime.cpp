@@ -923,7 +923,7 @@ measuring_context_destroy (cairo_t *cr)
 }
 
 static bool inited = false;
-
+static bool g_type_inited = false;
 void
 runtime_init (void)
 {
@@ -937,10 +937,20 @@ runtime_init (void)
 		printf ("*** is being run against version %s.\n", cairo_version_string ());
 		printf ("*** Proceed at your own risk\n");
 	}
+	
+#if OBJECT_TRACKING
+	printf ("Runtime created. Object tracking summary:\n");
+	printf ("\tObjects created: %i\n", Base::objects_created);
+	printf ("\tObjects destroyed: %i\n", Base::objects_destroyed);
+	printf ("\tDifference: %i\n", Base::objects_created - Base::objects_destroyed);
+#endif
 
 	inited = true;
 
-	g_type_init ();
+	if (!g_type_inited) {
+		g_type_inited = true;
+		g_type_init ();
+	}
 
 	TimeManager::Instance()->Start();
 
@@ -981,16 +991,38 @@ runtime_html_timer_timeout_stop (uint32_t source_id)
 	g_source_remove (source_id);
 }
 
+#if OBJECT_TRACKING
+void 
+print_object_data (gpointer key, gpointer user_data)
+{
+	Base* obj = (Base*) key;
+	if (--*(int*)user_data >= 0)
+		printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->refcount);
+}
+#endif
+
 void
 runtime_shutdown ()
 {
 	if (!inited)
 		return;
-
+	
+	animation_destroy ();
 	TimeManager::Instance()->Shutdown ();
-	Type::Shutdown ();
 	DependencyObject::Shutdown ();
 
+#if OBJECT_TRACKING
+	printf ("Runtime destroyed. Object tracking summary:\n");
+	printf ("\tObjects created: %i\n", Base::objects_created);
+	printf ("\tObjects destroyed: %i\n", Base::objects_destroyed);
+	printf ("\tDifference: %i\n", Base::objects_created - Base::objects_destroyed);
+	int counter = 10;
+	Base::objects_alive = g_list_reverse (Base::objects_alive);
+	g_list_foreach (Base::objects_alive, print_object_data, &counter);
+#endif
+
+	Type::Shutdown ();
 	inited = false;
 	
+
 }

@@ -612,6 +612,7 @@ void        storyboard_stop   (Storyboard *sb);
 
 
 void animation_init (void);
+void animation_destroy (void);
 
 G_END_DECLS
 

@@ -19,6 +19,7 @@
 
 
 void plugin_init_classes (void);
+void plugin_destroy_classes (void);
 
 /*** EventListenerProxy */
 typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *value);

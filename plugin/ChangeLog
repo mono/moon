@@ -1,3 +1,11 @@
+2007-08-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.cpp: Added downloader_destroy.
+	* plugin-class.cpp, plugin-class.h: Add plugin_destroy_classes, and remove a
+	  duplicate creation of MoonlightPointClass.
+	* plugin-glue.cpp: Try shutting down everything correctly, if it can be
+	  shutdown, if not, don't initialize twice (vm and gtk).
+
 2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: Javascript expects the sender of a FullScreenChange

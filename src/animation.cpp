@@ -1612,6 +1612,13 @@ animation_init (void)
 	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::POINTKEYFRAME_COLLECTION);
 }
 
+void
+animation_destroy ()
+{
+	SplineDoubleKeyFrame::KeySplineProperty->default_value->AsDependencyObject ()->unref ();
+	SplineColorKeyFrame::KeySplineProperty->default_value->AsDependencyObject ()->unref ();
+	SplinePointKeyFrame::KeySplineProperty->default_value->AsDependencyObject ()->unref ();
+}
 
 /* The nullable setters/getters for the various animation types */
 SET_NULLABLE_FUNC(double)

@@ -12,6 +12,11 @@
 
 #include "value.h"
 #include "enums.h"
+#include "debug.h"
+
+#if STACK_DEBUG
+#define OBJECT_TRACKING 1
+#endif
 
 class EventObject;
 
@@ -29,11 +34,33 @@ typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer c
 class Base {
  public:	
 	guint32 refcount;
-	Base () : refcount(1) { }
-	virtual ~Base () { }
+
+#if OBJECT_TRACKING
+	static int objects_created;
+	static int objects_destroyed;
+	static GList* objects_alive;
+	int id;
+
+	char* GetStackTrace (const char* prefix);
+	char* GetStackTrace () { return GetStackTrace (""); }
+	void PrintStackTrace ();
+	void Track (const char* done, const char* typname);
 	
+	Base (); 
+	virtual ~Base ();
 	void ref ();
 	void unref ();
+#else
+	Base () : refcount(1) {} 
+	virtual ~Base () {}
+	void ref () { refcount++; }
+	void unref ()
+	{
+		refcount--;
+		if (refcount == 0)
+			delete this;
+	}
+#endif
 	
 	virtual Type::Kind GetObjectType () = 0;
 	
