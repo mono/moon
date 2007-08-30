@@ -1,3 +1,8 @@
+2007-08-30  Chris Toshok  <toshok@ximian.com>
+
+	* collection.cpp (Collection::Add): make the warning a lot more
+	useful if the child isn't of the right type.
+
 2007-08-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml.cpp: Unref the namescope.

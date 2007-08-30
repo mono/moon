@@ -60,7 +60,11 @@ Collection::~Collection ()
 void
 Collection::Add (DependencyObject *data)
 {
-	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
+	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
+		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
+			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
+		return;
+	}
 	
 	generation++;
 	list->Append (new Collection::Node (data, this));
