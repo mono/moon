@@ -712,32 +712,30 @@ KeyFrameCollection::~KeyFrameCollection ()
 	delete sorted_list;
 }
 
-void
+bool
 KeyFrameCollection::Add (DependencyObject *data)
 {
-	KeyFrameNode *kfn = new KeyFrameNode ((KeyFrame *) data);
-
-	resolved = false;
-	Collection::Add (data);
+	bool b = Collection::Add (data);
+	if (b)
+		resolved = false;
+	return b;
 }
 
-void
+bool
 KeyFrameCollection::Insert (int index, DependencyObject *data)
 {
-	KeyFrameNode *kfn = new KeyFrameNode ((KeyFrame *) data);
-
-	resolved = false;
-	Collection::Insert (index, data);
+	bool b = Collection::Insert (index, data);
+	if (b)
+		resolved = false;
+	return b;
 }
 
 bool
 KeyFrameCollection::Remove (DependencyObject *data)
 {
-	KeyFrame *kf = (KeyFrame *) data;
-	
-	resolved = false;
-
-	return Collection::Remove (kf);
+	bool b = Collection::Remove (data);
+	if (b)
+		resolved = false;
 }
 
 void

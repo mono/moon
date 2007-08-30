@@ -277,9 +277,9 @@ class KeyFrameCollection : public Collection {
 	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
 
-	virtual void Add (DependencyObject *obj);
+	virtual bool Add (DependencyObject *obj);
 	virtual bool Remove (DependencyObject *obj);
-	virtual void Insert (int index, DependencyObject *data);
+	virtual bool Insert (int index, DependencyObject *data);
 	virtual void Clear ();
 
 	List *sorted_list;

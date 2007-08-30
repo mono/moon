@@ -57,13 +57,13 @@ Collection::~Collection ()
 	delete list;
 }
 
-void
+bool
 Collection::Add (DependencyObject *data)
 {
 	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
 		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
 			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
-		return;
+		return false;
 	}
 	
 	generation++;
@@ -90,12 +90,18 @@ Collection::Add (DependencyObject *data)
 
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 	}
+
+	return true;
 }
 
-void
+bool
 Collection::Insert (int index, DependencyObject *data)
 {
-	g_return_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()));
+	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
+		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
+			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
+		return false;
+	}
 	
 	generation++;
 	list->Insert (new Collection::Node (data, this), index);
@@ -112,6 +118,8 @@ Collection::Insert (int index, DependencyObject *data)
 
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 	}
+
+	return true;
 }
 
 void
@@ -127,7 +135,11 @@ Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *
 DependencyObject *
 Collection::SetVal (int index, DependencyObject *data)
 {
-	g_return_val_if_fail (Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType()), NULL);
+	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
+		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
+			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
+		return NULL;
+	}
 
 	generation++;
 	Node *old = (Collection::Node *) list->Replace (new Collection::Node (data, this), index);
@@ -189,10 +201,11 @@ Collection::RemoveAt (int index)
 {
 	Collection::Node *n = (Collection::Node *) list->Index (index);
 	
-	generation++;
 	if (n == NULL)
 		return false;
 	
+	generation++;
+
 	n->Unlink ();
 
 	n->obj->Detach (NULL, this);
@@ -236,16 +249,17 @@ Collection::Clear ()
 }
 
 DependencyProperty *Collection::CountProperty;
+
 void
 collection_init (void)
 {
 	Collection::CountProperty = DependencyObject::Register (Type::COLLECTION, "Count", Type::INT32);
 }
 
-void
+bool
 collection_add (Collection *collection, DependencyObject *data)
 {
-	collection->Add (data);
+	return collection->Add (data);
 }
 
 int
@@ -293,10 +307,10 @@ collection_remove_at (Collection *collection, int index)
 	return true;
 }
 
-void
+bool
 collection_insert (Collection *collection, int index, DependencyObject *data)
 {
-	collection->Insert (index, data);
+	return collection->Insert (index, data);
 }
 
 //
@@ -439,22 +453,25 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	panel->UpdateBounds ();
 }
 
-void
+bool
 VisualCollection::Add (DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
 	
-	Collection::Add (item);
-	
-	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-	
-	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
-		/* emit loaded events on the new item if the tree
-		   we're adding it to has already been "loaded" */
-		item->OnLoaded ();
-	}
+	bool b = Collection::Add (item);
 
-	VisualUpdate (data);
+	if (b) {
+		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
+	
+		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+			/* emit loaded events on the new item if the tree
+			   we're adding it to has already been "loaded" */
+			item->OnLoaded ();
+		}
+
+		VisualUpdate (data);
+	}
+	return b;
 }
 
 DependencyObject *
@@ -464,37 +481,43 @@ VisualCollection::SetVal (int index, DependencyObject *data)
 	
 	UIElement *old = (UIElement *) Collection::SetVal (index, item);
 	
-	g_ptr_array_remove (z_sorted, old);
+	if (old) {
+		g_ptr_array_remove (z_sorted, old);
 	
-	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
+		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
 	
-	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
-		/* emit loaded events on the new item if the tree
-		   we're adding it to has already been "loaded" */
-		item->OnLoaded ();
-	}
+		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+			/* emit loaded events on the new item if the tree
+			   we're adding it to has already been "loaded" */
+			item->OnLoaded ();
+		}
 
-	VisualUpdate (data);
+		VisualUpdate (data);
+	}
 
 	return old;
 }
 
-void
+bool
 VisualCollection::Insert (int index, DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
 	
-	Collection::Insert (index, item);
+	bool b = Collection::Insert (index, item);
+
+	if (b) {
+		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
 	
-	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-	
-	if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
-		/* emit loaded events on the new item if the tree
-		   we're adding it to has already been "loaded" */
-		item->OnLoaded ();
+		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
+			/* emit loaded events on the new item if the tree
+			   we're adding it to has already been "loaded" */
+			item->OnLoaded ();
+		}
+
+		VisualUpdate (data);
 	}
 
-	VisualUpdate (data);
+	return b;
 }
 
 bool
@@ -506,10 +529,12 @@ VisualCollection::Remove (DependencyObject *data)
  	item->Invalidate ();
 	bool b = Collection::Remove (item);
 	
-	g_ptr_array_remove (z_sorted, item);
+	if (b) {
+		g_ptr_array_remove (z_sorted, item);
 	
-	if (panel)
-		panel->UpdateBounds ();
+		if (panel)
+			panel->UpdateBounds ();
+	}
 
 	return b;
 }
@@ -527,11 +552,13 @@ VisualCollection::RemoveAt (int index)
 
  	item->Invalidate ();
 	bool b = Collection::RemoveAt (index);
+
+	if (b) {
+		g_ptr_array_remove (z_sorted, item);
 	
-	g_ptr_array_remove (z_sorted, item);
-	
-	if (panel)
-		panel->UpdateBounds ();
+		if (panel)
+			panel->UpdateBounds ();
+	}
 
 	return b;
 }
@@ -555,75 +582,82 @@ VisualCollection::Clear ()
 }
 
 
-void
+bool
 TriggerCollection::Add (DependencyObject *data)
 {
-	FrameworkElement *fwe = (FrameworkElement *) closure;
-	
-	printf ("Adding %p\n", data);
-	EventTrigger *trigger = (EventTrigger *) data;
+	bool b = Collection::Add (data);
 
-	Collection::Add (trigger);
+	if (b) {
+		FrameworkElement *fwe = (FrameworkElement *) closure;
+		EventTrigger *trigger = (EventTrigger *) data;
 
-	trigger->SetTarget (fwe);
+		trigger->SetTarget (fwe);
+	}
+
+	return b;
 }
 
 DependencyObject *
 TriggerCollection::SetVal (int index, DependencyObject *data)
 {
-	FrameworkElement *fwe = (FrameworkElement *) closure;
-	
-	printf ("Inserting %p\n", data);
-	EventTrigger *trigger = (EventTrigger *) data;
+	FrameworkElement *old = (FrameworkElement *) Collection::SetVal (index, data);
 
-	FrameworkElement *old = (FrameworkElement *) Collection::SetVal (index, trigger);
+	if (old) {
+		FrameworkElement *fwe = (FrameworkElement *) closure;
+		EventTrigger *trigger = (EventTrigger *) data;
 
-	trigger->SetTarget (fwe);
+		trigger->SetTarget (fwe);
 
-	trigger->RemoveTarget (old);
+		trigger->RemoveTarget (old);
+	}
 
 	return old;
 }
 
-void
+bool
 TriggerCollection::Insert (int index, DependencyObject *data)
 {
-	FrameworkElement *fwe = (FrameworkElement *) closure;
-	
-	printf ("Inserting %p\n", data);
-	EventTrigger *trigger = (EventTrigger *) data;
+	bool b = Collection::Insert (index, data);
+	if (b) {
+		FrameworkElement *fwe = (FrameworkElement *) closure;
+		EventTrigger *trigger = (EventTrigger *) data;
 
-	Collection::Insert (index, trigger);
+		trigger->SetTarget (fwe);
+	}
 
-	trigger->SetTarget (fwe);
+	return b;
 }
 
 bool
 TriggerCollection::Remove (DependencyObject *data)
 {
-	FrameworkElement *fwe = (FrameworkElement *) closure;
-	
-	EventTrigger *trigger = (EventTrigger *) data;
+	bool b = Collection::Remove (data);
 
-	bool b = Collection::Remove (trigger);
+	if (b) {
+		FrameworkElement *fwe = (FrameworkElement *) closure;
+		EventTrigger *trigger = (EventTrigger *) data;
 
-	trigger->RemoveTarget (fwe);
+		trigger->RemoveTarget (fwe);
+	}
+
 	return b;
 }
 
 bool
 TriggerCollection::RemoveAt (int index)
 {
-	FrameworkElement *fwe = (FrameworkElement *) closure;
 	Collection::Node *n = (Collection::Node *) list->Index (index);
 	if (n == NULL)
 		return false;
 
-	EventTrigger *trigger = (EventTrigger *) n->obj;
-
 	bool b = Collection::RemoveAt (index);
 
-	trigger->RemoveTarget (fwe);
+	if (b) {
+		FrameworkElement *fwe = (FrameworkElement *) closure;
+		EventTrigger *trigger = (EventTrigger *) n->obj;
+		trigger->RemoveTarget (fwe);
+	}
+
 	return b;
 }
 

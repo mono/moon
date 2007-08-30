@@ -1,5 +1,15 @@
 2007-08-30  Chris Toshok  <toshok@ximian.com>
 
+	* collection.h, collection.cpp: change the prototype of
+	Collection::Add, ::Insert, and ::SetVal to return bool.  Make the
+	subclasses check the return value before doing their type specific
+	handling of the child.  Fixes the crash from invalid xaml in
+	alan's testcase.
+
+	* animation.h, animation.cpp: track collection api change.
+
+2007-08-30  Chris Toshok  <toshok@ximian.com>
+
 	* collection.cpp (Collection::Add): make the warning a lot more
 	useful if the child isn't of the right type.
 

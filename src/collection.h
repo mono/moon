@@ -39,10 +39,10 @@ class Collection : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 
-	virtual void Add    (DependencyObject *data);
+	virtual bool Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
 	virtual bool RemoveAt (int index);
-	virtual void Insert (int index, DependencyObject *data);
+	virtual bool Insert (int index, DependencyObject *data);
 	virtual void Clear  ();
 
 	//
@@ -54,9 +54,6 @@ class Collection : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 
 	static DependencyProperty *CountProperty;
-	
- private:
-	void SharedAdd (DependencyObject *data);
 };
 
 bool CollectionNodeFinder (List::Node *n, void *data);
@@ -83,10 +80,10 @@ class VisualCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::VISUAL; }
 
-	virtual void Add    (DependencyObject *data);
+	virtual bool Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
 	virtual bool RemoveAt (int index);
-	virtual void Insert (int index, DependencyObject *data);
+	virtual bool Insert (int index, DependencyObject *data);
 	virtual void Clear  ();
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 
@@ -103,10 +100,10 @@ class TriggerCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
 
-	virtual void Add    (DependencyObject *data);
+	virtual bool Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
 	virtual bool RemoveAt (int index);
-	virtual void Insert (int index, DependencyObject *data);
+	virtual bool Insert (int index, DependencyObject *data);
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 };
 
@@ -162,10 +159,10 @@ class Inlines : public Collection {
 
 G_BEGIN_DECLS
 
-void collection_add    (Collection *collection, DependencyObject *data);
+bool collection_add    (Collection *collection, DependencyObject *data);
 bool collection_remove (Collection *collection, DependencyObject *data);
 bool collection_remove_at (Collection *collection, int index);
-void collection_insert (Collection *collection, int index, DependencyObject *data);
+bool collection_insert (Collection *collection, int index, DependencyObject *data);
 void collection_clear  (Collection *collection);
 int  collection_count  (Collection *collection);
 
