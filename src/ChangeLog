@@ -1,3 +1,11 @@
+2007-08-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (AdvanceFrame): If there is no video stream, return
+	based on audio state. Also, if current_pts >= target_pts already,
+	return true rather than false to pretend we advanced a frame (it's
+	really not that important to our caller, all the value is used for
+	is updating position).
+
 2007-08-30  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Handle negative values for Height and Width (not 

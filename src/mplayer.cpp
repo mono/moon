@@ -402,7 +402,6 @@ MediaPlayer::AdvanceFrame ()
 	AVFrame *frame = NULL;
 	bool advanced = false;
 	uint64_t target_pts;
-	int skipped = 0;
 	int redraw = 0;
 	Packet *pkt;
 	
@@ -426,12 +425,17 @@ MediaPlayer::AdvanceFrame ()
 		
 		this->target_pts = target_pts;
 	} else {
+		if (video->stream_id == -1) {
+			// No video, return false if we've reached the end of the audio or true otherwise
+			return !MediaEnded ();
+		}
+		
 		// use target_pts as set by audio thread
 		target_pts = this->target_pts;
 	}
 	
 	if (current_pts >= target_pts)
-		return false;
+		return true;
 	
 	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue))) {
 		// always decode the frame or we get glitches in the screen
@@ -447,14 +451,10 @@ MediaPlayer::AdvanceFrame ()
 			break;
 		}
 		
-		skipped++;
-		
 		// we are lagging behind, drop this frame
 		av_free (frame);
 		frame = NULL;
 	}
-	
-	printf ("skipped %d frames\n", skipped);
 	
 	if (redraw) {
 		convert_to_rgb (video, frame);
