@@ -1,0 +1,56 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Fill="#FF00FFFF" Stroke="#FFFF00FF" Canvas.Left="10" Canvas.Top="10" Width="50" Height="50" />
+	<Rectangle Fill="#FF00FFFF" Stroke="#FFFF00FF" Canvas.Left="70" Canvas.Top="10" Width="-50" Height="50" />
+	<Rectangle Fill="#FF00FFFF" Stroke="#FFFF00FF" Canvas.Left="130" Canvas.Top="10" Width="50" Height="-50" />
+	<Rectangle Fill="#FF00FFFF" Stroke="#FFFF00FF" Canvas.Left="190" Canvas.Top="10" Width="-50" Height="-50" />
+
+	<Rectangle Fill="#FF00FF00" Stroke="#FFFF0000" Canvas.Left="10" Canvas.Top="70" Width="50" Height="50" RadiusX="20" RadiusY="20"  />
+	<Rectangle Fill="#FF00FF00" Stroke="#FFFF0000" Canvas.Left="70" Canvas.Top="70" Width="-50" Height="50" RadiusX="20" RadiusY="20"  />
+	<Rectangle Fill="#FF00FF00" Stroke="#FFFF0000" Canvas.Left="130" Canvas.Top="70" Width="50" Height="-50" RadiusX="20" RadiusY="20"  />
+	<Rectangle Fill="#FF00FF00" Stroke="#FFFF0000" Canvas.Left="190" Canvas.Top="70" Width="-50" Height="-50" RadiusX="20" RadiusY="20"  />
+	<Rectangle Fill="#FF00FF00" Stroke="#FFFF0000" Canvas.Left="250" Canvas.Top="70" Width="50" Height="50" RadiusX="-20" RadiusY="20"  />
+	<Rectangle Fill="#FF00FF00" Stroke="#FFFF0000" Canvas.Left="310" Canvas.Top="70" Width="50" Height="50" RadiusX="20" RadiusY="-20"  />
+	<Rectangle Fill="#FF00FF00" Stroke="#FFFF0000" Canvas.Left="370" Canvas.Top="70" Width="50" Height="50" RadiusX="-20" RadiusY="-20"  />
+
+	<Ellipse Fill="#FFFF00FF" Stroke="#FF00FF00" Canvas.Left="10" Canvas.Top="130" Width="50" Height="50" />
+	<Ellipse Fill="#FFFF00FF" Stroke="#FF00FF00" Canvas.Left="70" Canvas.Top="130" Width="-50" Height="50" />
+	<Ellipse Fill="#FFFF00FF" Stroke="#FF00FF00" Canvas.Left="130" Canvas.Top="130" Width="50" Height="-50" />
+	<Ellipse Fill="#FFFF00FF" Stroke="#FF00FF00" Canvas.Left="190" Canvas.Top="130" Width="-50" Height="-50" />
+
+	<Path Fill="#FFFFFF00" Stroke="#FF00FFFF" Stretch="Uniform" Canvas.Top="190" Canvas.Left="10" Width="40" Height="40">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 80" />
+				<LineGeometry StartPoint="10,60" EndPoint="40,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#FFFFFF00" Stroke="#FF00FFFF" Stretch="Uniform" Canvas.Top="190" Canvas.Left="70" Width="-40" Height="40">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 80" />
+				<LineGeometry StartPoint="10,60" EndPoint="40,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#FFFFFF00" Stroke="#FF00FFFF" Stretch="Uniform" Canvas.Top="190" Canvas.Left="70" Width="40" Height="-40">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 80" />
+				<LineGeometry StartPoint="10,60" EndPoint="40,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+	<Path Fill="#FFFFFF00" Stroke="#FF00FFFF" Stretch="Uniform" Canvas.Top="190" Canvas.Left="70" Width="-40" Height="-40">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 80" />
+				<LineGeometry StartPoint="10,60" EndPoint="40,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+</Canvas>
