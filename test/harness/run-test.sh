@@ -27,17 +27,12 @@ elif test x$mode == "xtest"; then
 
     ./xaml2png $tst $resultpng
 
-    convert $resultpng $resultpng.jpg
-    convert $basepng $basepng.jpg
-
     # and compare to our baseline
-    if diff $resultpng.jpg $basepng.jpg>/dev/null; then
+    if diff $resultpng $basepng >/dev/null; then
 	echo PASSED.
 	rm -f $resultpng
     else
 	echo FAILED.
 	convert $resultpng $basepng -compose difference -composite $differencespng
     fi
-
-    rm $resultpng.jpg $basepng.jpg
 fi
