@@ -1,3 +1,11 @@
+2007-08-30  Jb Evain  <jbevain@novell.com> 
+
+	* media.h, media.cpp: introduce a new MediaSource class that a
+	MediaElement uses, so we can have either a SingleMedia or a Playlist
+	as a source.
+	* playlist.cpp, playlist.h: added
+	* Makefile.am: add the previous files.
+
 2007-08-30  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Fix small rectangle fills when no stroke brush is 

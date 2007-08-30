@@ -21,12 +21,13 @@ libmooninclude_headers = \
 	frameworkelement.h \
 	garray-ext.h	\
 	geometry.h	\
+	list.h		\
 	mango.h		\
 	media.h		\
-	list.h		\
 	mplayer.h	\
 	namescope.h	\
 	openfile.h	\
+	playlist.h	\
 	point.h		\
 	rect.h		\
 	rsvg.h		\
@@ -67,6 +68,7 @@ libmoon_la_SOURCES = 	\
 	openfile.cpp	\
 	panel.cpp	\
 	point.cpp	\
+	playlist.cpp	\
 	rect.cpp	\
 	rsvg.cpp	\
 	runtime.cpp	\

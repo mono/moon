@@ -22,6 +22,7 @@
 #include "runtime.h"
 #include "media.h"
 #include "downloader.h"
+#include "playlist.h"
 
 // still too ugly to be exposed in the header files ;-)
 cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
@@ -70,6 +71,46 @@ media_base_set_stretch (MediaBase *media, Stretch value)
 	media->SetValue (MediaBase::StretchProperty, Value (value));
 }
 
+// MediaSource
+
+MediaSource::MediaSource (MediaElement *element, char *source_name)
+{
+	this->element = element;
+	this->source_name = g_strdup (source_name);
+}
+
+MediaSource::~MediaSource ()
+{
+	g_free (source_name);
+}
+
+const char *
+MediaSource::GetSource ()
+{
+	return source_name;
+}
+
+MediaSource *
+MediaSource::CreateSource (MediaElement *element, char *source)
+{
+	if (Playlist::IsPlaylistFile (source))
+		return new Playlist (element, source);
+
+	return new SingleMedia (element, source);
+}
+
+// SingleMedia
+
+SingleMedia::SingleMedia (MediaElement *element, char *source_name)
+	: MediaSource (element, source_name)
+{
+}
+
+bool
+SingleMedia::Open ()
+{
+	return element->mplayer->Open (source_name);
+}
 
 
 // MediaElement
@@ -140,6 +181,7 @@ MediaElement::MediaElement ()
 	
 	downloader = NULL;
 	part_name = NULL;
+	source = NULL;
 	
 	BufferingProgressChangedEvent = RegisterEvent ("BufferingProgressChanged");
 	CurrentStateChangedEvent = RegisterEvent ("CurrentStateChanged");
@@ -172,6 +214,7 @@ MediaElement::~MediaElement ()
 	g_free (part_name);
 	DownloaderAbort ();
 	
+	delete source;
 	delete mplayer;
 }
 
@@ -298,12 +341,17 @@ MediaElement::DownloaderComplete ()
 		return;
 	
 	UpdateProgress ();
+
+	if (source)
+		delete source;
+
+	source = MediaSource::CreateSource (this, filename);
 	
 	printf ("video source changed to `%s'\n", filename);
 	
 	// FIXME: specify which audio stream index the player should use
 	
-	if (!mplayer->Open (filename)) {
+	if (!source->Open ()) {
 		media_element_set_can_seek (this, false);
 		media_element_set_can_pause (this, false);
 		media_element_set_audio_stream_count (this, 0);
