@@ -75,7 +75,8 @@ class Shape : public FrameworkElement {
 	// new virtual methods for shapes
 	//
 	
-	virtual bool IsFilled ();
+	virtual bool IsFilled () { return fill; }
+	virtual bool IsStroked () { return stroke; }
 	virtual FillRule GetFillRule () { return FillRuleNonzero; }
 
 	//

@@ -187,12 +187,6 @@ Shape::Draw (cairo_t *cr)
 	}
 }
 
-bool
-Shape::IsFilled ()
-{
-	return shape_get_fill (this) != NULL; 
-}
-
 //
 // This routine is useful for Shape derivatives: it can be used
 // to either get the bounding box from cairo, or to paint it
@@ -762,7 +756,7 @@ Rectangle::BuildPath (cairo_t *cr)
 	}
 
 	Stretch stretch = shape_get_stretch (this);
-	double t = shape_get_stroke_thickness (this);
+	double t = IsStroked () ? shape_get_stroke_thickness (this) : 0.0;
 
 	// nothing is drawn (nor filled) if no StrokeThickness="0"
 	// unless both Width and Height are specified or when no streching is required
@@ -855,7 +849,7 @@ Rectangle::BuildPath (cairo_t *cr)
 		w = h = (w < h) ? w : h;
 		break;
 	case StretchUniformToFill:
-		// this gets an ellipse larger than it's dimension, relative
+		// this gets an rectangle larger than it's dimension, relative
 		// scaling is ok but we need Shape::Draw to clip to it's original size
 		w = h = (w > h) ? w : h;
 		break;
@@ -865,7 +859,7 @@ Rectangle::BuildPath (cairo_t *cr)
 		break;
 	}
 
-	if ((t != 0.0) && compute_origin) {
+	if ((!IsStroked () || (t != 0.0)) && compute_origin) {
 		x = t / 2.0;
 		y = x - 0.5;
 	}
