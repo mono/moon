@@ -117,7 +117,7 @@
 <!-- StrokeThickness larger than width (but smaller than height) -->
 	<!-- Stretch="None" -->
 		<!-- no width, no height -->
-		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="None" Canvas.Left="10" Canvas.Top="90" />
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="None" Canvas.Left="10" Canvas.Top="130" />
 		<!-- width only -->
 		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="15" Stretch="None" Canvas.Left="30" Canvas.Top="130" Width="10" />
 		<!-- height only -->
