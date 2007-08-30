@@ -113,6 +113,11 @@ moon_ellipse (cairo_t *cr, double x, double y, double w, double h)
 void
 moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, double radius_x, double radius_y)
 {
+	if (radius_x < 0.0)
+		radius_x = -radius_x;
+	if (radius_y < 0.0)
+		radius_y = -radius_y;
+
 	// test limits (without using multiplications)
 	if (radius_x > w - radius_x)
 		radius_x = w / 2;
@@ -323,6 +328,9 @@ Shape::ComputeBoundsFast ()
 
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
+
+	if ((w < 0.0) || (h < 0.0))
+		return;
 
 	switch (stretch) {
 	case StretchUniform:
@@ -674,6 +682,11 @@ Ellipse::BuildPath (cairo_t *cr)
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
+	if ((w < 0.0) || (h < 0.0)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
 	double t = shape_get_stroke_thickness (this);
 	double t2 = t * 2.0;
 
@@ -792,6 +805,11 @@ Rectangle::BuildPath (cairo_t *cr)
 
 	w = width->AsDouble ();
 	h = height->AsDouble ();
+
+	if ((w < 0.0) || (h < 0.0)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
 
 	// there are two kinds of degenerations 
 	// (a) the thickness is larger (or equal) to the width or height
@@ -1308,6 +1326,13 @@ Path::BuildPath (cairo_t *cr)
 		return;
 	}
 
+	double w = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
+	if ((w < 0.0) || (h < 0.0)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	geometry->Draw (this, cr);
 
@@ -1373,8 +1398,8 @@ Path::BuildPath (cairo_t *cr)
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 
-	double sh = vh ? (vh->AsDouble () / actual_height) : 1.0;
-	double sw = vw ? (vw->AsDouble () / actual_width) : 1.0;
+	double sh = vh ? (h / actual_height) : 1.0;
+	double sw = vw ? (w / actual_width) : 1.0;
 	switch (stretch) {
 	case StretchFill:
 		break;

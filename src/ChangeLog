@@ -1,3 +1,8 @@
+2007-08-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Handle negative values for Height and Width (not 
+	drawn) and for Radius[X|Y] (absolute values).
+
 2007-08-30  Jb Evain  <jbevain@novell.com> 
 
 	* media.h, media.cpp: introduce a new MediaSource class that a
