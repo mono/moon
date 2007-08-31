@@ -58,7 +58,7 @@ NameScope::FindName (const char *name)
 	if (o)
 		return o;
 
-	for (NameScopeNode *n = (NameScopeNode*)merged_child_namescopes->First(); n; n = (NameScopeNode*)n->Next()) {
+	for (NameScopeNode *n = (NameScopeNode *) merged_child_namescopes->First (); n; n = (NameScopeNode *) n->next) {
 		o = n->ns->FindName (name);
 		if (o)
 			return o;

@@ -13,68 +13,42 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
 
 #include "list.h"
 
 
 List::Node::Node ()
 {
-	next = this;
-	prev = this;
-}
-
-
-List::Node *
-List::Node::Next ()
-{
-	return next->next ? next : 0;
-}
-
-
-List::Node *
-List::Node::Prev ()
-{
-	return prev->prev ? prev : 0;
-}
-
-
-List::Node *
-List::Node::Unlink ()
-{
-	next->prev = prev;
-	prev->next = next;
-	
-	return this;
+	next = 0;
+	prev = 0;
 }
 
 
 List::List ()
 {
-	head = (List::Node *) &tail;
+	head = 0;
 	tail = 0;
-	tailpred = (List::Node *) &head;
 }
 
 
 List::Node *
 List::First ()
 {
-	return head->next ? head : 0;
+	return head;
 }
 
 
 List::Node *
 List::Last ()
 {
-	return head->next ? tailpred : 0;
+	return tail;
 }
 
 
 bool
 List::IsEmpty ()
 {
-	return head == (List::Node *) &tail;
+	return !head;
 }
 
 
@@ -85,7 +59,7 @@ List::Length ()
 	int n = 0;
 	
 	node = head;
-	while (node->next) {
+	while (node) {
 		node = node->next;
 		n++;
 	}
@@ -101,26 +75,30 @@ List::Clear (bool freeNodes)
 		List::Node *n, *nn;
 		
 		n = head;
-		while (n->next) {
+		while (n) {
 			nn = n->next;
 			delete n;
 			n = nn;
 		}
 	}
 	
-	head = (List::Node *) &tail;
+	head = 0;
 	tail = 0;
-	tailpred = (List::Node *) &head;
 }
 
 
 List::Node *
 List::Append (List::Node *node)
 {
-	node->next = (List::Node *) &tail;
-	node->prev = tailpred;
-	tailpred->next = node;
-	tailpred = node;
+	node->prev = tail;
+	node->next = 0;
+	
+	if (tail)
+		tail->next = node;
+	else
+		head = node;
+	
+	tail = node;
 	
 	return node;
 }
@@ -130,8 +108,13 @@ List::Node *
 List::Prepend (List::Node *node)
 {
 	node->next = head;
-	node->prev = (List::Node *) &head;
-	head->prev = node;
+	node->prev = 0;
+	
+	if (head)
+		head->prev = node;
+	else
+		tail = node;
+	
 	head = node;
 	
 	return node;
@@ -144,61 +127,34 @@ List::Insert (List::Node *node, int index)
 	List::Node *n = head;
 	int i = 0;
 	
-	while (n->next && i < index) {
-		n = n->next;
-		i++;
+	if (head) {
+		while (n->next && i < index) {
+			n = n->next;
+			i++;
+		}
+		
+		if (i == index) {
+			if (n == tail)
+				tail = node;
+			
+			n->prev->next = node;
+			node->prev = n->prev;
+			node->next = n;
+			n->prev = node;
+		} else {
+			tail = n->next = node;
+			node->prev = n;
+			node->next = 0;
+		}
+	} else {
+		head = tail = node;
+		node->next = 0;
+		node->prev = 0;
 	}
 	
-	node->prev = n->prev;
-	node->next = n;
-	n->prev->next = node;
-	n->prev = node;
-	
 	return node;
 }
 
-
-List::Node *
-List::InsertSorted (List::Node *node, NodeComparer cmp)
-{
-	List::Node *n = head;
-	
-	if (!cmp)
-		return Append (node);
-	
-	while (n->next && cmp (n, node) < 0)
-		n = n->next;
-	
-	node->prev = n->prev;
-	node->next = n;
-	n->prev->next = node;
-	n->prev = node;
-	
-	return node;
-}
-
-
-List::Node *
-List::InsertSorted (List::Node *node, NodeComparer cmp, bool stable)
-{
-	List::Node *n = Last ();
-	
-	if (!cmp || !n)
-		return Append (node);
-	
-	if (!stable)
-		return InsertSorted (node, cmp);
-	
-	while (n->prev && cmp (n, node) > 0)
-		n = n->prev;
-	
-	node->prev = n->prev;
-	node->next = n;
-	n->prev->next = node;
-	n->prev = node;
-	
-	return node;
-}
 
 List::Node *
 List::Replace (List::Node *node, int index)
@@ -210,11 +166,19 @@ List::Replace (List::Node *node, int index)
 	
 	node->next = n->next;
 	node->prev = n->prev;
-	n->prev->next = node;
-	n->next->prev = node;
 	
-	n->next = n;
-	n->prev = n;
+	if (n->prev)
+		n->prev->next = node;
+	else
+		head = node;
+	
+	if (n->next)
+		n->next->prev = node;
+	else
+		tail = node;
+	
+	n->next = 0;
+	n->prev = 0;
 	
 	return n;
 }
@@ -227,7 +191,7 @@ List::Find (NodeFinder find, void *data)
 	if (!find)
 		return 0;
 	
-	while (n->next) {
+	while (n) {
 		if (find (n, data))
 			return n;
 		
@@ -244,10 +208,25 @@ List::Remove (NodeFinder find, void *data)
 	List::Node *n;
 	
 	if ((n = Find (find, data))) {
-		n->Unlink ();
+		Unlink (n);
 		delete n;
 	}
 }
+
+
+void
+List::Unlink (List::Node *node)
+{
+	if (head == node)
+		head = node->next;
+	
+	if (tail == node)
+		tail = node->prev;
+	
+	node->prev = 0;
+	node->next = 0;
+}
+
 
 List::Node *
 List::Index (int index)
@@ -258,7 +237,7 @@ List::Index (int index)
 	if (index < 0)
 		return 0;
 	
-	while (n->next && i < index) {
+	while (n && i < index) {
 		n = n->next;
 		i++;
 	}
@@ -275,7 +254,7 @@ List::IndexOf (List::Node *node)
 	List::Node *n = head;
 	int i = 0;
 	
-	while (n->next && n != node) {
+	while (n && n != node) {
 		n = n->next;
 		i++;
 	}
@@ -293,7 +272,7 @@ List::IndexOf (NodeFinder find, void *data)
 	if (!find)
 		return -1;
 	
-	while (n->next) {
+	while (n) {
 		if (find (n, data))
 			return i;
 		
@@ -304,29 +283,6 @@ List::IndexOf (NodeFinder find, void *data)
 	return -1;
 }
 
-
-
-
-void
-Stack::Push (List::Node *node)
-{
-	Prepend (node);
-}
-
-
-List::Node *
-Stack::Pop ()
-{
-	List::Node *n = head;
-	
-	if (!n->next)
-		return 0;
-	
-	n->next->prev = n->prev;
-	head = n->next;
-	
-	return n;
-}
 
 
 //#define TEST_PROGRAM
@@ -361,24 +317,22 @@ int main (int argc, char **argv)
 	
 	node = list->Append (new IntNode (1));
 	printf ("appended node with id = %d\n", ((IntNode *) node)->id);
-	node = list->Append (new IntNode (4));
+	node = list->Append (new IntNode (3));
 	printf ("appended node with id = %d\n", ((IntNode *) node)->id);
-	node = list->Append (new IntNode (5));
+	node = list->Append (new IntNode (4));
 	printf ("appended node with id = %d\n", ((IntNode *) node)->id);
 	node = list->Insert (new IntNode (2), 1);
 	printf ("inserted node with id = %d at index = %d\n",
 		((IntNode *) node)->id, list->IndexOf (node));
 	node = list->Prepend (new IntNode (0));
 	printf ("prepended node with id = %d\n", ((IntNode *) node)->id);
-	node = list->InsertSorted (new IntNode (3), IntNodeCompare);
-	printf ("insert sorted node with id = %d\n", ((IntNode *) node)->id);
 	
 	printf ("\nlist contains (in order):\n");
-	for (node = list->First (); node != NULL; node = node->Next ())
+	for (node = list->First (); node != NULL; node = node->next)
 		printf ("node id = %d\n", ((IntNode *) node)->id);
 	
 	printf ("\nlist contains (in reverse order):\n");
-	for (node = list->Last (); node != NULL; node = node->Prev ())
+	for (node = list->Last (); node != NULL; node = node->prev)
 		printf ("node id = %d\n", ((IntNode *) node)->id);
 	
 	list->Clear (true);

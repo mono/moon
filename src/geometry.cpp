@@ -136,7 +136,7 @@ GeometryGroup::Draw (Path *path, cairo_t *cr)
 	Geometry::Draw (path, cr);
 	
 	node = (Collection::Node *) children->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Geometry *geometry = (Geometry *) node->obj;
 		geometry->Draw (path, cr);
 	}
@@ -354,7 +354,7 @@ PathGeometry::Draw (Path *path, cairo_t *cr)
 	Geometry::Draw (path, cr);
 	
 	node = (Collection::Node *) children->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathFigure *pf = (PathFigure *) node->obj;
 		pf->Draw (path, cr);
 	}
@@ -538,7 +538,7 @@ PathFigure::Draw (Path *path, cairo_t *cr)
 	cairo_move_to (cr, start->x, start->y);
 	
 	node = (Collection::Node *) children->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathSegment *ps = (PathSegment *) node->obj;
 		ps->Draw (cr);
 	}

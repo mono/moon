@@ -97,12 +97,12 @@ class XamlElementInstance : public List::Node {
 		children = new List ();
 	}
 	
-	~XamlElementInstance ()
+	virtual ~XamlElementInstance ()
 	{
 		children->Clear (true);
 		delete children;
-		if (instance_name)
-			delete instance_name;
+		// if (instance_name)
+		//	delete instance_name;
 		// if (element_name && element_type == PROPERTY)
 		//	delete element_name;
 	}
@@ -594,7 +594,7 @@ end_element_handler (void *data, const char *el)
 			else
 				g_warning ("Attempting to set property on unknown type %s\n",
 						info->current_element->parent->element_name);
-			walk = walk->Next ();
+			walk = walk->next;
 		}
 		break;
 	}
@@ -696,7 +696,7 @@ print_tree (XamlElementInstance *el, int depth)
 		v = el->item->GetValue (DependencyObject::NameProperty);
 	printf ("%s  (%s)\n", el->element_name, v ? v->AsString () : "-no name-");
 	
-	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->Next ()) {
+	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->next) {
 		XamlElementInstance *el = (XamlElementInstance *) walk;
 		print_tree (el, depth + 1);
 	}

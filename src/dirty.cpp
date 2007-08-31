@@ -80,7 +80,7 @@ process_dirty_elements ()
 					// because that causes the element to recompute
 					// its local transform as well, which isn't necessary.
 					add_dirty_element ((UIElement *) n->obj, DirtyTransform);
-					n = (Collection::Node *) n->Next ();
+					n = (Collection::Node *) n->next;
 				}
 			}
 			else if (el->Is (Type::CONTROL)) {
@@ -103,7 +103,7 @@ process_dirty_elements ()
 				Collection::Node* n = (Collection::Node *) children->list->First ();
 				while (n != NULL) {
 					((UIElement *) n->obj)->UpdateTotalOpacity ();
-					n = (Collection::Node *) n->Next ();
+					n = (Collection::Node *) n->next;
 				}
 			}
 			else if (el->Is (Type::CONTROL)) {

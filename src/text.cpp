@@ -634,7 +634,7 @@ TextBlock::Layout (cairo_t *cr)
 			pango_attr_list_insert (attrs, fg_attr);
 			
 		loop:
-			node = (Collection::Node *) node->Next ();
+			node = (Collection::Node *) node->next;
 		}
 	}
 	

@@ -17,26 +17,20 @@ class List {
 public:
 	class Node {
 	public:
-		// these should be treated as private
 		Node *next;
 		Node *prev;
 		
 		// public
 		Node ();
-		
-		Node *Next ();
-		Node *Prev ();
-		
-		Node *Unlink ();
+		virtual ~Node () { }
 	};
 	
-	typedef int (* NodeComparer) (Node *n0, Node *n1);
 	typedef bool (* NodeFinder) (Node *node, void *data);
 	
 protected:
 	Node *head;
 	Node *tail;
-	Node *tailpred;
+	
 public:
 	// constructors
 	List ();
@@ -53,30 +47,17 @@ public:
 	Node *Append (Node *node);
 	Node *Prepend (Node *node);
 	Node *Insert (Node *node, int index);
-	Node *InsertSorted (Node *node, NodeComparer cmp);
-	Node *InsertSorted (Node *node, NodeComparer cmp, bool stable);
 	
 	Node *Replace (Node *node, int index);
 	
 	Node *Find (NodeFinder find, void *data);
 	void Remove (NodeFinder find, void *data);
+	void Unlink (Node *node);
 	
 	Node *Index (int index);
 	
 	int IndexOf (Node *node);
 	int IndexOf (NodeFinder find, void *data);
 };
-
-
-class Stack : public List {
-public:
-	// constructors
-	Stack () { }
-	
-	// methods
-	void Push (Node *node);
-	Node *Pop ();
-};
-
 
 #endif /* __LIST_H__ */

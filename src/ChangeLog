@@ -1,3 +1,24 @@
+2007-08-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	*.cpp: Updated for the slightly different List API (list nodes no
+	longer have Next() or Prev() methods, just access the pointers
+	directly).
+
+	* animation.cpp: Made sorted_list a GPtrArray and updated to sue
+	g_ptr_array_insert_sorted(). Also, a lot of the 'list' (not
+	sorted_list) accesses assumed nodes were of type KeyFrameNode,
+	which they were not. Fixed.
+
+	* xaml.cpp: Made XamlElementInstance.dtor virtual.
+
+	* collection.h: Made the Collection::Node.dtor virtual.
+
+	* list.cpp: Rewritten, if we add a virtual .dtor to List::Node, we
+	can no longer guarantee that List::Node->next will have the same
+	address as the List::Node object and so the list implementation
+	broke. This rewrite is a bit less fancy, but doesn't rely on that
+	feature.
+
 2007-08-31  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* media.cpp, panel.cpp, shape.cpp, text.cpp: Calling GrowBy 

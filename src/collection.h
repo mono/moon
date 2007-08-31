@@ -26,7 +26,7 @@ class Collection : public DependencyObject {
 		DependencyObject *obj;
 		
 		Node (DependencyObject *dob, DependencyObject *parent);
-		~Node ();
+		virtual ~Node ();
 	};
 
 	int generation;

@@ -445,7 +445,7 @@ TransformGroup::UpdateTransform ()
 	
 	cairo_matrix_init_identity (&_matrix);
 	
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Transform *transform = (Transform *) node->obj;
 		cairo_matrix_t matrix;
 		

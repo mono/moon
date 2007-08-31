@@ -835,7 +835,7 @@ TimelineGroup::CreateClock ()
 	Collection::Node *node;
 	
 	node = (Collection::Node *) collection->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ())
+	for ( ; node != NULL; node = (Collection::Node *) node->next)
 		group->AddChild (((Timeline *) node->obj)->AllocateClock ());
 	
 	return group;
@@ -870,7 +870,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	if (!node)
 		return Duration::FromSeconds (0);
 	
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Timeline *timeline = (Timeline *) node->obj;
 
 		Duration duration = timeline->GetNaturalDuration (clock);

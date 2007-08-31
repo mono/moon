@@ -69,7 +69,7 @@ EventTrigger::event_trigger_fire_actions (EventObject *sender, gpointer calldata
 	TriggerActionCollection *actions = trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection();
 	Collection::Node *n = (Collection::Node *) actions->list->First ();
 	
-	for ( ; n != NULL; n = (Collection::Node *) n->Next ()) {
+	for ( ; n != NULL; n = (Collection::Node *) n->next) {
 		TriggerAction *action = (TriggerAction *) n->obj;
 		action->Fire ();
 	}

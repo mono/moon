@@ -143,13 +143,11 @@ Collection::SetVal (int index, DependencyObject *data)
 
 	generation++;
 	Node *old = (Collection::Node *) list->Replace (new Collection::Node (data, this), index);
-
-	old->Unlink ();
-
+	
 	data->Attach (NULL, this);
 	old->obj->Detach (NULL, this);
-
-	if (closure){
+	
+	if (closure) {
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, old->obj, NULL);
 		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
 	}
@@ -177,7 +175,7 @@ Collection::Remove (DependencyObject *data)
 	if (!(n = (Collection::Node *) list->Find (CollectionNodeFinder, data)))
 		return false;
 	
-	n->Unlink ();
+	list->Unlink (n);
 
 	data->Detach (NULL, this);
 
@@ -206,8 +204,8 @@ Collection::RemoveAt (int index)
 	
 	generation++;
 
-	n->Unlink ();
-
+	list->Unlink (n);
+	
 	n->obj->Detach (NULL, this);
 
 	if (closure) {
@@ -231,7 +229,7 @@ Collection::Clear ()
 	Collection::Node *n;
 
 	generation++;
-	for (n = (Collection::Node*)list->First(); n; n = (Collection::Node*)n->Next()) {
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
 		n->obj->Detach (NULL, this);
 
 		NameScope *ns = NameScope::GetNameScope (n->obj);
@@ -350,7 +348,7 @@ collection_iterator_move_next (CollectionIterator *iterator)
 		return 1;
 	}
 
-	List::Node *next = iterator->current->Next ();
+	List::Node *next = iterator->current->next;
 
 	if (next == NULL)
 		return 0;
@@ -408,12 +406,6 @@ public:
 	
 	UIElementNode (UIElement *v) : item (v) { }
 };
-
-static bool
-UIElementNodeFinder (List::Node *uin, void *data)
-{
-	return ((UIElementNode *) uin)->item == (UIElement *) data;
-}
 
 static int
 UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)

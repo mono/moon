@@ -89,7 +89,7 @@ Panel::ComputeBounds ()
 	printf ("Panel: Enter ComputeBounds\n");
 #endif
 	cn = (Collection::Node *) children->list->First ();
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
 		UIElement *item = (UIElement *) cn->obj;
 
 		// if the item doesn't take part in layout
@@ -462,7 +462,7 @@ Panel::OnLoaded ()
 	Collection::Node *cn;
 
 	cn = (Collection::Node *) children->list->First ();
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->Next ()) {
+	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
 		UIElement *item = (UIElement *) cn->obj;
 
 		item->OnLoaded ();

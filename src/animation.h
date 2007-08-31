@@ -282,7 +282,7 @@ class KeyFrameCollection : public Collection {
 	virtual bool Insert (int index, DependencyObject *data);
 	virtual void Clear ();
 
-	List *sorted_list;
+	GPtrArray *sorted_list;
 
 	bool resolved;
 

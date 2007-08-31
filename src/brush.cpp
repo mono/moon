@@ -307,7 +307,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 
 	double opacity = GetTotalOpacity (uielement);
 	node = (Collection::Node *) children->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->Next ()) {
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		GradientStop *stop = (GradientStop *) node->obj;
 		Color *color = gradient_stop_get_color (stop);
 		double offset = gradient_stop_get_offset (stop);
