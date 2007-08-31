@@ -383,7 +383,7 @@ void
 TextBlock::ComputeBounds ()
 {
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, actual_width, actual_height));
-	bounds.GrowBy (1);
+// no-op	bounds.GrowBy (1);
 }
 
 Point

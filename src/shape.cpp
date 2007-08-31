@@ -368,7 +368,7 @@ Shape::ComputeBoundsFast ()
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
 	   thing */
-	bounds.GrowBy(1);
+// no-op	bounds.GrowBy(1);
 }
 
 void
@@ -397,7 +397,7 @@ Shape::ComputeBoundsSlow ()
 
 	bounds = Rect (x1, y1, x2-x1, y2-y1);
 
-	bounds.GrowBy (1);
+// no-op	bounds.GrowBy (1);
 
 	measuring_context_destroy (cr);
 }
@@ -1027,7 +1027,7 @@ Line::ComputeBounds ()
 						     Rect (MIN(x1,x2), MIN(y1,y2),
 							   fabs (x2-x1), fabs (y2-y1)));
 
-	bounds.GrowBy (shape_get_stroke_thickness (this) + 1);
+// no-op	bounds.GrowBy (shape_get_stroke_thickness (this) + 1);
 #else
 	Shape::ComputeBounds ();
 #endif

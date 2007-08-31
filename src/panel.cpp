@@ -134,7 +134,7 @@ Panel::ComputeBounds ()
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
 	   thing */
-	bounds.GrowBy (1);
+// nop-op	bounds.GrowBy (1);
 
 #if DEBUG_BOUNDS
 	space (levelb);

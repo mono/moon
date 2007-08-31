@@ -1,3 +1,9 @@
+2007-08-31  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* media.cpp, panel.cpp, shape.cpp, text.cpp: Calling GrowBy 
+	doesn't	change the current rectangle (but returns a new one).
+	However everything seems to work, so they are probably not needed.
+
 2007-08-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (OnPropertyChanged): Need to Invalidate() too.

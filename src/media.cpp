@@ -231,7 +231,7 @@ MediaElement::ComputeBounds ()
 	
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, w, h));
 
-	bounds.GrowBy (1);
+// no-op	bounds.GrowBy (1);
 }
 
 Point
@@ -1189,7 +1189,7 @@ Image::ComputeBounds ()
 							   framework_element_get_width (this),
 							   framework_element_get_height (this)));
 
-	bounds.GrowBy (1);
+// no-op	bounds.GrowBy (1);
 }
 
 Point
