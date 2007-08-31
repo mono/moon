@@ -231,7 +231,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 
 	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
 	// unless there is no stroke brush assigned, which requires us to fill and use cairo_fill_extents
-	// also not every shapes can be filled, e.g. polylines, CallFill
+	// also not every shapes can be filled
 	if (!IsDegenerate () && (consider_fill || !stroke) && IsFilled ()) {
 		if (fill) {
 			Draw (cr);
@@ -246,11 +246,17 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	
 	if (stroke) {
 		double thickness = shape_get_stroke_thickness (this);
+#if FALSE
+// this optimization is broken wrt ComputeBoundsSlow since
+// - thickness isn't checked there (fixed) and
+// - the new_path clears the data for a cairo_fill_extents call anyway
+// e.g. <Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Points="10,10 20,10 20,20 10,20" />
 		if (thickness == 0) {
 			if (drawn)
 				cairo_new_path (cr);
 			return;
 		}
+#endif
 
 		if (IsDegenerate ())
 			cairo_set_line_width (cr, 1.0);
@@ -368,6 +374,9 @@ Shape::ComputeBoundsFast ()
 void
 Shape::ComputeBoundsSlow ()
 {
+	if (IsEmpty ())
+		return;
+
 	double x1, y1, x2, y2;
 	cairo_t* cr = measuring_context_create ();
 
@@ -378,7 +387,8 @@ Shape::ComputeBoundsSlow ()
 	// XXX this next call will hopefully become unnecessary in a
 	// later version of cairo.
 	cairo_identity_matrix (cr);
-	if (stroke)
+	// note: a stroke brush may be present, but it doesn't means it will get used
+	if (stroke && (shape_get_stroke_thickness (this) > 0.0))
 		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
 	else
 		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);

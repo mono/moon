@@ -1,3 +1,10 @@
+2007-08-31  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: #ifdef out an optimization that doesn't work with
+	ComputeBoundsSlow (a specified stroke brush, with a thickness of 0,
+	wouldn't render at all with it's fill brush). Added same shortcut 
+	(as before) for Shape::ComputeBoundsSlow.
+
 2007-08-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Added a shortcut in Shape::ComputeBoundsFast when shapes
