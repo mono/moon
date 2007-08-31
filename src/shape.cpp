@@ -418,7 +418,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
 
-	if (cairo_in_stroke (cr, nx, ny) || (IsFilled () && cairo_in_fill (cr, nx, ny)))
+	if (cairo_in_stroke (cr, nx, ny) || (CanFill () && cairo_in_fill (cr, nx, ny)))
 		ret = TRUE;
 	
 	cairo_new_path (cr);

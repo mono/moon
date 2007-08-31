@@ -77,6 +77,7 @@ class Shape : public FrameworkElement {
 	
 	virtual bool IsFilled () { return fill; }
 	virtual bool IsStroked () { return stroke; }
+	virtual bool CanFill () { return false; }
 	virtual FillRule GetFillRule () { return FillRuleNonzero; }
 
 	//
@@ -132,6 +133,7 @@ class Ellipse : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
 	virtual void BuildPath (cairo_t *cr);
+	virtual bool CanFill () { return true; }
 };
 
 Ellipse *ellipse_new (void);
@@ -153,6 +155,7 @@ class Rectangle : public Shape {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	bool GetRadius (double *rx, double *ry);
+	virtual bool CanFill () { return true; }
 };
 
 Rectangle *rectangle_new          (void);
@@ -215,6 +218,7 @@ class Polygon : public Shape {
 
 	virtual FillRule GetFillRule ();
 
+	virtual bool CanFill () { return true; }
 	virtual void ComputeBounds ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -244,6 +248,7 @@ class Polyline : public Shape {
 
 	virtual void BuildPath (cairo_t *cr);
 
+	virtual bool CanFill () { return true; }
 	virtual void ComputeBounds ();
 
 	virtual FillRule GetFillRule ();
@@ -277,6 +282,7 @@ class Path : public Shape {
 
 	virtual void ComputeBounds ();
 
+	virtual bool CanFill () { return true; }
 	virtual bool IsFilled ();
 	virtual FillRule GetFillRule ();
 
