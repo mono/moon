@@ -724,6 +724,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	if (prop != TextBlock::ActualHeightProperty && prop != TextBlock::ActualWidthProperty) {
 		CalcActualWidthHeight (NULL);
 		UpdateBounds (true);
+		Invalidate ();
 	}
 	
 	NotifyAttacheesOfPropertyChange (prop);

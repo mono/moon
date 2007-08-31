@@ -1,3 +1,7 @@
+2007-08-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (OnPropertyChanged): Need to Invalidate() too.
+
 2007-08-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* runtime.h, runtime.cpp: Implement fullscreen support, drawing_area does

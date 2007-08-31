@@ -119,6 +119,7 @@ void   image_set_download_progress (Image *img, double progress);
 double image_get_download_progress (Image *img);
 void   image_set_source (Image *img, DependencyObject *Downloader, const char *PartName);
 
+
 class MediaSource {
 protected:
 	MediaElement *element;
@@ -136,12 +137,14 @@ public:
 	static MediaSource * CreateSource (MediaElement *element, char *source_name);
 };
 
+
 class SingleMedia : public MediaSource {
 public:
 	SingleMedia (MediaElement *element, char *source_name);
 
 	virtual bool Open ();
 };
+
 
 class MediaElement : public MediaBase {
 	bool recalculate_matrix;
