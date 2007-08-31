@@ -23,7 +23,6 @@ public:
 		
 		// public
 		Node ();
-		virtual ~Node ();
 		
 		Node *Next ();
 		Node *Prev ();
