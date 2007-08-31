@@ -1,3 +1,8 @@
+2007-08-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Better degenerate handling for round-rectangles and 
+	for ellipses.
+
 2007-08-30  Chris Toshok  <toshok@ximian.com>
 
 	* collection.h, collection.cpp: change the prototype of

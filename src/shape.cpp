@@ -217,7 +217,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	bool drawn = false;
 
 	// we need to use clipping to implement StretchUniformToFill
-	if (shape_get_stretch (this) == StretchUniformToFill) {
+	if (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill)) {
 		double w = framework_element_get_width (this);
 		if (w > 0.0) {
 			double h = framework_element_get_height (this);
@@ -671,25 +671,48 @@ Ellipse::Ellipse ()
 void
 Ellipse::BuildPath (cairo_t *cr)
 {
-	Stretch stretch = shape_get_stretch (this);
-	if (stretch == StretchNone) {
+	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+
+	// nothing is drawn if only the width or only the height is specified
+	if ((!width && height) || (width && !height)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
 	}
 
+	Stretch stretch = shape_get_stretch (this);
 	double x = 0.0;
 	double y = 0.0;
-	double w = framework_element_get_width (this);
-	double h = framework_element_get_height (this);
+	double w = 0.0;
+	double h = 0.0;
+	double t = shape_get_stroke_thickness (this);
+	double t2;
+
+	// if both width and height are missing then the width and height are equal (on screen) to the thickness
+	if ((!width && !height) || (stretch == StretchNone)) {
+		// don't make invisible points
+		x = 0.5;
+		if (t <= 1.0) {
+			if (t > 0.0)
+				y = 0.0;
+			w = h = 0.5;
+		} else {
+			w = h = (t - 1.0);
+		}
+
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+		goto shape;
+	}
+
+	w = width->AsDouble ();
+	h = height->AsDouble ();
 
 	if ((w < 0.0) || (h < 0.0)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
 	}
 
-	double t = shape_get_stroke_thickness (this);
-	double t2 = t * 2.0;
-
+	t2 = t * 2.0;
 	if ((t2 > w) || (t2 > h)) {
 		if (w < t)
 			w = t;
@@ -722,6 +745,7 @@ Ellipse::BuildPath (cairo_t *cr)
 		break;
 	}
 
+shape:
 	cairo_new_path (cr);
 	if (IsDegenerate ()) {
 		double radius = t / 2;
@@ -803,9 +827,6 @@ Rectangle::BuildPath (cairo_t *cr)
 		goto shape;
 	}
 
-	// degenerate cases are handled differently for round-corner rectangles
-	round = GetRadius (&radius_x, &radius_y);
-
 	w = width->AsDouble ();
 	h = height->AsDouble ();
 
@@ -814,19 +835,32 @@ Rectangle::BuildPath (cairo_t *cr)
 		return;
 	}
 
+	// degenerate cases are handled differently for round-corner rectangles
+	round = GetRadius (&radius_x, &radius_y);
+
 	// there are two kinds of degenerations 
 	// (a) the thickness is larger (or equal) to the width or height
 	if ((t > w) || (t > h)) {
 		// in this case we must adjust the values to make a (much) larger rectangle
 		x -= t / 2.0;
 		y -= t / 2.0 - 1.0;
-		if (stretch == StretchUniform) {
+		switch (stretch) {
+		case StretchUniform:
 			w = h = ((w < h) ? w : h) + t;
-		} else {
+			if (round)
+				radius_x = radius_y = w / 3;	// FIXME - not quite correct
+			break;
+		case StretchUniformToFill:
+			w = h = ((w > h) ? w : h) + t - 1;
+			if (round)
+				radius_x = radius_y = w / 3;	// FIXME - not quite correct
+			break;
+		default:
 			w += (t - 1.0);
 			h += (t - 1.0);
 			if (round)
 				radius_x = radius_y = t / 2;
+			break;
 		}
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 		goto shape;
