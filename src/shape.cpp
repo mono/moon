@@ -323,8 +323,8 @@ void
 Shape::ComputeBoundsFast ()
 {
 	bounds = Rect (0,0,0,0);
-
-	Stretch stretch = shape_get_stretch (this);
+	if (IsEmpty ())
+		return;
 
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
@@ -332,6 +332,7 @@ Shape::ComputeBoundsFast ()
 	if ((w < 0.0) || (h < 0.0))
 		return;
 
+	Stretch stretch = shape_get_stretch (this);
 	switch (stretch) {
 	case StretchUniform:
 		w = h = (w < h) ? w : h;
