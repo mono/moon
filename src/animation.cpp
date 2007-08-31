@@ -736,6 +736,7 @@ KeyFrameCollection::Remove (DependencyObject *data)
 	bool b = Collection::Remove (data);
 	if (b)
 		resolved = false;
+	return b;
 }
 
 void
