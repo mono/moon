@@ -25,6 +25,13 @@ List::Node::Node ()
 }
 
 
+List::Node::~Node ()
+{
+	next->prev = prev;
+	prev->next = next;
+}
+
+
 List::Node *
 List::Node::Next ()
 {

@@ -1,3 +1,7 @@
+2007-08-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* list.cpp (Node): Added virtual destructor.
+
 2007-08-31  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* media.cpp, panel.cpp, shape.cpp, text.cpp: Calling GrowBy 
