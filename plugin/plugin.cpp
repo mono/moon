@@ -136,7 +136,7 @@ PluginInstance::~PluginInstance ()
 	// Kill timers
 	GSList *p;
 	for (p = timers; p != NULL; p = p->next){
-		uint32_t source_id = (uint32_t) p->data;
+		uint32_t source_id = GPOINTER_TO_INT (p->data);
 
 		g_source_remove (source_id);
 	}
