@@ -52,8 +52,8 @@ class Surface : public EventObject {
 	UIElement* GetMouseCapture () { return capture_element; }
 
 	void Resize (int width, int height);
-	int GetWidth () { return width; }
-	int GetHeight () { return height; }
+	int GetWidth () { return normal_width; }
+	int GetHeight () { return normal_height; }
 
 	void SetTrans (bool trans);
 	bool GetTrans () { return transparent; }
@@ -77,9 +77,16 @@ class Surface : public EventObject {
 	void SetFullScreen (bool value);
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
 	bool FullScreenKeyHandled (GdkEventKey *key);
+	int GetActualWidth () { return width; }
+	int GetActualHeight () { return height; }
 	
 	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
 private:
+	int normal_width, normal_height;
+	int screen_width, screen_height;
+	// the actual size of the drawing area, 
+	// screen size in fullscreen mode,
+	// otherwise normal size.
 	int width, height;
 
 	// The data lives here
@@ -127,14 +134,22 @@ private:
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool can_full_screen; 
 	void UpdateFullScreen (bool value);
+	// Here we keep a reference to the normal drawing area when
+	// we are in fullscreen mode.
+	GtkWidget *drawing_area_normal;
+	// We set drawing_area to this whenever we are in
+	// fullscreen mode.
+	GtkWidget *drawing_area_fullscreen;
 	
 	int frames;
 
 	int last_event_state;
 	double last_event_x, last_event_y;
 
-	void ConnectEvents ();
+	void ConnectEvents (bool realization_signals);
 	void Realloc ();
+	void InitializeDrawingArea (GtkWidget* drawing_area);
+	void DestroyDrawingArea (GtkWidget* drawing_area);
 
 	void CreateSimilarSurface ();
 

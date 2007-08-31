@@ -52,6 +52,9 @@
 void
 Surface::CreateSimilarSurface ()
 {
+	if (drawing_area == NULL || drawing_area->window == NULL)
+		return;
+		
     cairo_t *ctx = gdk_cairo_create (drawing_area->window);
 
     if (cairo_xlib){
@@ -76,39 +79,20 @@ Surface::Surface(int w, int h)
     cairo_buffer_surface (NULL), cairo_buffer(NULL),
     cairo_xlib(NULL), cairo (NULL), transparent(false),
     background_color(NULL),
-    cursor (MouseCursorDefault)
+    cursor (MouseCursorDefault),
+    drawing_area_normal (NULL),
+    drawing_area_fullscreen (NULL)
 {
 
 	drawing_area = gtk_event_box_new ();
 
-	// don't let gtk clear the window we'll do all the drawing.
-	gtk_widget_set_app_paintable (drawing_area, TRUE);
+	InitializeDrawingArea (drawing_area);
 
-	//
-	// Set to true, need to change that to FALSE later when we start
-	// repainting again.   
-	//
-	gtk_event_box_set_visible_window (GTK_EVENT_BOX (drawing_area), TRUE);
-
-	gtk_signal_connect (GTK_OBJECT (drawing_area), "size_allocate",
-			    G_CALLBACK(drawing_area_size_allocate), this);
-	gtk_signal_connect (GTK_OBJECT (drawing_area), "destroy",
-			    G_CALLBACK(drawing_area_destroyed), this);
-
-	gtk_widget_add_events (drawing_area, 
-			       GDK_POINTER_MOTION_MASK |
-			       GDK_POINTER_MOTION_HINT_MASK |
-			       GDK_KEY_PRESS_MASK |
-			       GDK_KEY_RELEASE_MASK |
-			       GDK_BUTTON_PRESS_MASK |
-			       GDK_BUTTON_RELEASE_MASK);
-	GTK_WIDGET_SET_FLAGS (drawing_area, GTK_CAN_FOCUS);
-	//gtk_widget_set_double_buffered (drawing_area, FALSE);
-
-	gtk_widget_show (drawing_area);
-
-	gtk_widget_set_size_request (drawing_area, width, height);
 	buffer = NULL;
+
+	normal_width = width;
+	normal_height = height;
+	screen_width = screen_height = 0;
 
 	toplevel = NULL;
 	capture_element = NULL;
@@ -157,14 +141,11 @@ Surface::~Surface ()
 	cairo_surface_destroy (cairo_buffer_surface);
 	cairo_buffer_surface = NULL;
 
-	if (drawing_area != NULL){
-		g_signal_handlers_disconnect_matched (drawing_area,
-						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
-						      0, 0, NULL, NULL, this);
-
-		gtk_widget_destroy (drawing_area);
-		drawing_area = NULL;
-	}
+	DestroyDrawingArea (drawing_area_fullscreen);
+	drawing_area_fullscreen = NULL;
+	
+	DestroyDrawingArea (drawing_area);
+	drawing_area = NULL;
 }
 
 bool
@@ -225,7 +206,7 @@ Surface::SetCursor (MouseCursor new_cursor)
 }
 
 void
-Surface::ConnectEvents ()
+Surface::ConnectEvents (bool realization_signals)
 {
 	gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
 			    G_CALLBACK (Surface::expose_event_callback), this);
@@ -251,14 +232,16 @@ Surface::ConnectEvents ()
 	gtk_signal_connect (GTK_OBJECT (drawing_area), "button_release_event",
 			    G_CALLBACK (button_release_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (drawing_area), "realize",
-			    G_CALLBACK (realized_callback), this);
+	if (realization_signals) {
+		gtk_signal_connect (GTK_OBJECT (drawing_area), "realize",
+				    G_CALLBACK (realized_callback), this);
 
-	gtk_signal_connect (GTK_OBJECT (drawing_area), "unrealize",
-			    G_CALLBACK (unrealized_callback), this);
+		gtk_signal_connect (GTK_OBJECT (drawing_area), "unrealize",
+				    G_CALLBACK (unrealized_callback), this);
 
-	if (GTK_WIDGET_REALIZED (drawing_area)){
-		realized_callback (drawing_area, this);
+		if (GTK_WIDGET_REALIZED (drawing_area)){
+			realized_callback (drawing_area, this);
+		}
 	}
 }
 
@@ -292,7 +275,7 @@ Surface::Attach (UIElement *element)
 
 	// First time we connect the surface, start responding to events
 	if (first)
-		ConnectEvents ();
+		ConnectEvents (true);
 
 	canvas->OnLoaded ();
 
@@ -300,26 +283,31 @@ Surface::Attach (UIElement *element)
 	//
 	// If the did not get a size specified
 	//
-	if (width == 0){
+	if (normal_width == 0){
 		Value *v = toplevel->GetValue (FrameworkElement::WidthProperty);
 
 		if (v){
-			width = (int) v->AsDouble ();
-			if (width < 0)
-				width = 0;
+			normal_width = (int) v->AsDouble ();
+			if (normal_width < 0)
+				normal_width = 0;
 			change_size = true;
 		}
 	}
 
-	if (height == 0){
+	if (normal_height == 0){
 		Value *v = toplevel->GetValue (FrameworkElement::HeightProperty);
 
 		if (v){
-			height = (int) v->AsDouble ();
-			if (height < 0)
-				height = 0;
+			normal_height = (int) v->AsDouble ();
+			if (normal_height < 0)
+				normal_height = 0;
 			change_size = true;
 		}
+	}
+
+	if (!full_screen) {
+		height = normal_height;
+		width = normal_width;
 	}
 
 	if (change_size)
@@ -358,7 +346,8 @@ Surface::Resize (int width, int height)
 {
 	gtk_widget_set_size_request (drawing_area, width, height);
 
-	Emit (ResizeEvent);
+	if (!full_screen)
+		Emit (ResizeEvent);
 }
 
 void
@@ -403,12 +392,90 @@ Surface::UpdateFullScreen (bool value)
 		return;
 	
 	if (value) {
-		g_warning ("Fullscreen mode not implemented yet.");
+		drawing_area_fullscreen = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+		
+		// Flip the drawing area
+		drawing_area_normal = drawing_area;
+		drawing_area = drawing_area_fullscreen;
+		
+		// Get the screen size
+		screen_width = gdk_screen_get_width (gdk_screen_get_default ());
+		screen_height = gdk_screen_get_height (gdk_screen_get_default ());
+		
+		//screen_width = (int) (screen_width * 0.8);
+		//screen_height = (int) (screen_height * 0.8);
+		
+		width = screen_width;
+		height = screen_height;
+		
+		gtk_widget_set_size_request (drawing_area, screen_width, screen_height);
+		gtk_window_set_decorated ((GtkWindow*) drawing_area, FALSE);
+		gtk_window_set_keep_above ((GtkWindow*) drawing_area, TRUE);
+		
+		InitializeDrawingArea (drawing_area);
+	
+		ConnectEvents (false);
 	} else {
-		g_warning ("Fullscreen mode not implemented yet.");
+		// Flip back.
+		drawing_area = drawing_area_normal;
+
+		// Destroy the fullscreen widget.
+		GtkWidget * fs = drawing_area_fullscreen;
+		drawing_area_fullscreen = NULL;
+		DestroyDrawingArea (fs);
+		
+		width = normal_width;
+		height = normal_height;
 	}
 	full_screen = value;
+	
+	Realloc ();
+		
 	Emit (FullScreenChangeEvent);
+}
+
+void 
+Surface::DestroyDrawingArea (GtkWidget* drawing_area)
+{
+	if (drawing_area) {
+		g_signal_handlers_disconnect_matched (drawing_area,
+						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
+						      0, 0, NULL, NULL, this);
+		gtk_widget_destroy (drawing_area);
+	}
+}
+
+void
+Surface::InitializeDrawingArea (GtkWidget* drawing_area)
+{
+	// don't let gtk clear the window we'll do all the drawing.
+	gtk_widget_set_app_paintable (drawing_area, TRUE);
+
+	//
+	// Set to true, need to change that to FALSE later when we start
+	// repainting again.   
+	//
+	if (GTK_IS_EVENT_BOX (drawing_area)) {
+		gtk_event_box_set_visible_window (GTK_EVENT_BOX (drawing_area), TRUE);
+	}
+
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "size_allocate",
+			    G_CALLBACK(drawing_area_size_allocate), this);
+	gtk_signal_connect (GTK_OBJECT (drawing_area), "destroy",
+			    G_CALLBACK(drawing_area_destroyed), this);
+
+	gtk_widget_add_events (drawing_area, 
+			       GDK_POINTER_MOTION_MASK |
+			       GDK_POINTER_MOTION_HINT_MASK |
+			       GDK_KEY_PRESS_MASK |
+			       GDK_KEY_RELEASE_MASK |
+			       GDK_BUTTON_PRESS_MASK |
+			       GDK_BUTTON_RELEASE_MASK);
+	GTK_WIDGET_SET_FLAGS (drawing_area, GTK_CAN_FOCUS);
+
+	gtk_widget_show (drawing_area);
+
+	gtk_widget_set_size_request (drawing_area, width, height);
 }
 
 void
@@ -469,6 +536,9 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	if (event->area.x > s->width || event->area.y > s->height)
 		return TRUE;
 
+	if (widget->window == NULL)
+		return TRUE;
+		
 #if TIME_REDRAW
 	STARTTIMER (expose, "redraw");
 #endif
@@ -837,7 +907,17 @@ Surface::drawing_area_destroyed (GtkWidget *widget, gpointer data)
 
 	// This is never called, why?
 	printf ("------------------ WE ARE DESTROYED ---------------\n");
-	s->drawing_area = NULL;
+	if (s->drawing_area_normal != NULL && s->drawing_area_normal != widget) {
+		// The fullscreen area have been destroyed.
+		// If we are destroying it, drawing_area_fullscreen is NULL.
+		// If we're not, we have to call UpdateFullScreen to raise events,
+		// change sizes, etc.
+		if (s->drawing_area_fullscreen != NULL) {
+			s->UpdateFullScreen (false);
+		}
+	} else {
+		s->drawing_area = NULL;
+	}
 }
 
 

@@ -1,3 +1,16 @@
+2007-08-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.h, runtime.cpp: Implement fullscreen support, drawing_area does
+	  now reference either the fullscreen drawing area or the normal drawing
+	  area. Refactored drawing area initialization and destruction into
+	  seperate methods. Modified ConnectEvent to be able to specify whether
+	  the drawing area should attach to realize/unrealize events (fullscreen
+	  drawing area shouldn't). Only emit ResizeEvent if we're not in
+	  fullscreen mode. Added normal_height/width, contains the size of the
+	  surface when not in fullscreen (as opposed to screen_height/width for
+	  fullscreen mode). Height/width now contains the actual size of the area
+	  where we draw, whether in fullscreen mode or not.
+
 2007-08-31  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: #ifdef out an optimization that doesn't work with

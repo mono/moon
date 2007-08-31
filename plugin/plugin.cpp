@@ -580,13 +580,13 @@ PluginInstance::getWindowless ()
 int32
 PluginInstance::getActualHeight ()
 {
-	return window->height;
+	return surface->GetActualHeight ();
 }
 
 int32
 PluginInstance::getActualWidth ()
 {
-	return window->width;
+	return surface->GetActualWidth ();
 }
 
 void

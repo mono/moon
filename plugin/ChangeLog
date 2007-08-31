@@ -1,3 +1,7 @@
+2007-08-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: Get the actual size from the surface.
+
 2007-08-31  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* plugin.cpp: Fix pointer cast for 64-bit arch. 
