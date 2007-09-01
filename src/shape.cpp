@@ -1360,7 +1360,7 @@ Path::GetFillRule ()
 }
 
 void
-Path::ComputeBounds()
+Path::ComputeBounds ()
 {
 	Shape::ComputeBoundsSlow ();
 }
@@ -1446,8 +1446,8 @@ Path::BuildPath (cairo_t *cr)
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 
-	double sh = vh ? (h / actual_height) : 1.0;
-	double sw = vw ? (w / actual_width) : 1.0;
+	double sh = (vh && (actual_height > 0.0)) ? (h / actual_height) : 1.0;
+	double sw = (vw && (actual_width > 0.0)) ? (w / actual_width) : 1.0;
 	switch (stretch) {
 	case StretchFill:
 		break;

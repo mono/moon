@@ -1,3 +1,10 @@
+2007-09-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* rect.cpp: Fix union with empty rectangles (so x and y are not
+	assigned to 0 resulting in large bounds). Fix IsEmpty.
+	* shape.cpp: Fix possible division by 0, resulting in infinite 
+	values (and much too large bounds)
+
 2007-08-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	*.cpp: Updated for the slightly different List API (list nodes no

@@ -46,7 +46,7 @@ struct Rect {
 
 	bool IsEmpty ()
 	{
-		return x == 0 && y == 0 && w == 0 && h == 0;
+		return ((w == 0) || (h == 0));
 	}
 
 	Rect Intersection (const Rect& rect)
@@ -61,6 +61,10 @@ struct Rect {
 
 	Rect Union (const Rect& rect)
 	{
+		if (IsEmpty ())
+			return Rect (rect);
+		if ((rect.w == 0) || (rect.h == 0))
+			return Rect (*this);
 		Rect result = Rect ();
 		result.x = x < rect.x ? x : rect.x;
 		result.y = y < rect.y ? y : rect.y;
