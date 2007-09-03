@@ -1010,12 +1010,6 @@ Image::DownloaderComplete ()
 		g = ((color & 0x0000ff00) >> 8); \
 		b = (color & 0x000000ff); \
 	} while(0)
-#define get_pixel_rgba(color, b, g, r, a) do { \
-		a = ((color & 0xff000000) >> 24); \
-		b = ((color & 0x00ff0000) >> 16); \
-		g = ((color & 0x0000ff00) >> 8); \
-		r = (color & 0x000000ff); \
-	} while(0)
 
 #include "alpha-premul-table.inc"
 
@@ -1077,7 +1071,7 @@ Image::CreateSurface (const char *fname)
 				guint32 color = *(guint32*)p;
 				guchar r, g, b, a;
 
-				get_pixel_rgba (color, r, g, b, a);
+				get_pixel_bgra (color, b, g, r, a);
 
 				/* pre-multipled alpha */
 				if (a == 0) {
@@ -1085,8 +1079,8 @@ Image::CreateSurface (const char *fname)
 				}
 				else if (a < 255) {
 					r = pre_multiplied_table [r][a];
-					g = pre_multiplied_table [b][a];
-					b = pre_multiplied_table [g][a];
+					g = pre_multiplied_table [g][a];
+					b = pre_multiplied_table [b][a];
 				}
 
 				/* store it back, swapping red and blue */

@@ -1,3 +1,7 @@
+2007-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.cpp: Fix premul and remove confusing macro.
+
 2007-09-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* clock.cpp, uielement.cpp, trigger.cpp, panel.cpp, animation.cpp,
