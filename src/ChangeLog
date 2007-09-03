@@ -1,3 +1,7 @@
+2007-09-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* list.cpp: List::Unlink: Link my neighbours to eachother.
+
 2007-09-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* rect.cpp: Fix union with empty rectangles (so x and y are not

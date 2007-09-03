@@ -219,9 +219,13 @@ List::Unlink (List::Node *node)
 {
 	if (head == node)
 		head = node->next;
+	else
+		node->prev->next = node->next;
 	
 	if (tail == node)
 		tail = node->prev;
+	else
+		node->next->prev = node->prev;
 	
 	node->prev = 0;
 	node->next = 0;
