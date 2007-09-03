@@ -1,3 +1,10 @@
+2007-09-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* rect.cpp: Safer IsEmpty (handles negative values)
+	* shape.cpp: In Shape::ComputeBoundsSlow make empty shape returns
+	empty bounds. In Shape::DoDraw avoid call to  cairo_set_matrix if 
+	shape is empty.
+
 2007-09-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* media.cpp: Fix premul and remove confusing macro.

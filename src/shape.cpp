@@ -199,12 +199,12 @@ Shape::Draw (cairo_t *cr)
 void 
 Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 {
-	cairo_set_matrix (cr, &absolute_xform);
-
 	if (IsEmpty ()) {
 		cairo_new_path (cr);
 		return;
 	}
+
+	cairo_set_matrix (cr, &absolute_xform);
 
 // 	printf ("Draw, xform: %g %g %g %g %g %g\n", 
 // 		absolute_xform.xy,
@@ -374,8 +374,10 @@ Shape::ComputeBoundsFast ()
 void
 Shape::ComputeBoundsSlow ()
 {
-	if (IsEmpty ())
+	if (IsEmpty ()) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
 		return;
+	}
 
 	double x1, y1, x2, y2;
 	cairo_t* cr = measuring_context_create ();
