@@ -52,7 +52,7 @@ panel_new (void)
 
 Panel::Panel ()
 {
-	this->SetValue (Panel::ChildrenProperty, Value (new VisualCollection ()));
+	this->SetValue (Panel::ChildrenProperty, Value::CreateUnref (new VisualCollection ()));
 	background = NULL;
 	mouse_over = NULL;
 }

@@ -1305,7 +1305,7 @@ DependencyProperty* ColorAnimationUsingKeyFrames::KeyFramesProperty;
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
-	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (new ColorKeyFrameCollection ()));
+	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new ColorKeyFrameCollection ()));
 }
 
 ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
@@ -1591,9 +1591,9 @@ animation_init (void)
  	ColorKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
 
 	/* Spline keyframe properties */
-	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
- 	SplineColorKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
- 	SplinePointKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", new Value (new KeySpline (0, 0, 1, 0)));
+	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 0)));
+ 	SplineColorKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 0)));
+ 	SplinePointKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 0)));
 
 	/* KeyFrame animation properties */
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
@@ -1604,9 +1604,6 @@ animation_init (void)
 void
 animation_destroy ()
 {
-	SplineDoubleKeyFrame::KeySplineProperty->default_value->AsDependencyObject ()->unref ();
-	SplineColorKeyFrame::KeySplineProperty->default_value->AsDependencyObject ()->unref ();
-	SplinePointKeyFrame::KeySplineProperty->default_value->AsDependencyObject ()->unref ();
 }
 
 /* The nullable setters/getters for the various animation types */

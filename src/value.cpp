@@ -27,6 +27,24 @@
  * Value implementation
  */
 
+Value*
+Value::CreateUnrefPtr (DependencyObject* dob)
+{
+	Value* result = new Value (dob);
+	dob->unref ();
+	g_assert (dob->refcount == 1);
+	return result;
+}
+
+Value
+Value::CreateUnref (DependencyObject* dob)
+{
+	Value result = Value (dob);
+	dob->unref ();
+	g_assert (dob->refcount == 1);
+	return result;
+}
+
 Type::Kind
 Value::GetKind ()
 {

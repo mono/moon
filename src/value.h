@@ -174,6 +174,15 @@ public:
 
 	~Value ();
 
+	// Use these to create Values with dependency objects with
+	// a reference count of 1 (giving the ownership of the object
+	// to Value).
+	// Useful in cases like this:
+	//   SetValue (SomeProperty, new DependencyObject ())
+	// in which case we have to unref the newly created object.
+	static Value* CreateUnrefPtr (DependencyObject* dob);
+	static Value  CreateUnref (DependencyObject* dob);
+
 	bool operator!= (const Value &v) const
 	{
 		return !(*this == v);

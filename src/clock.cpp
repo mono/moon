@@ -799,7 +799,7 @@ DependencyProperty* TimelineGroup::ChildrenProperty;
 
 TimelineGroup::TimelineGroup ()
 {
-	this->SetValue (TimelineGroup::ChildrenProperty, Value (new TimelineCollection ()));
+	this->SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
 }
 
 TimelineGroup::~TimelineGroup ()

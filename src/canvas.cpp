@@ -26,6 +26,7 @@ Canvas::Canvas () : surface (NULL)
 	NameScope *ns = new NameScope ();
 	ns->SetTemporary (true);
 	NameScope::SetNameScope (this, ns);
+	ns->unref ();
 }
 
 void

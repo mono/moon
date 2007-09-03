@@ -1,5 +1,16 @@
 2007-09-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* clock.cpp, uielement.cpp, trigger.cpp, panel.cpp, animation.cpp,
+	  canvas.cpp, namescope.cpp: Plug some leaks.
+	* value.h.in, value.h, value.cpp: Added CreateUnrefRef and CreateUnref.
+	* dependencyobject.cpp: free_attachee: unref the contained dob. Use
+	  base_unref () instead of accessing the pointer in a few places to allow
+	  for null pointers.
+	* debug.cpp: get_stack_trace is now able to get meaningful data for managed
+	  parts of the stack trace as well.
+
+2007-09-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* list.cpp: List::Unlink: Link my neighbours to eachother.
 
 2007-09-01  Sebastien Pouliot  <sebastien@ximian.com>

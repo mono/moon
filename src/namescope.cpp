@@ -17,8 +17,14 @@ public:
 	NameScopeNode (NameScope *ns)
 	{
 		this->ns = ns;
+		this->ns->ref ();
 	}
 
+	virtual ~NameScopeNode ()
+	{
+		this->ns->unref ();
+	}
+	
 	NameScope *ns;
 };
 

@@ -11,6 +11,67 @@
  
 #if STACK_DEBUG
 
+// Type safety at it's best.
+#define MonoMethod void
+#define MonoJitInfo void
+#define MonoDomain void
+typedef struct _MonoDebugSourceLocation	MonoDebugSourceLocation;
+
+// Very very hackish, but it seems to work.
+extern "C" char* mono_pmip (void *ip);
+extern "C" MonoMethod* mono_jit_info_get_method (MonoJitInfo* ji);
+extern "C" MonoDomain* mono_domain_get ();
+extern "C" MonoJitInfo* mono_jit_info_table_find (MonoDomain* domain, void* ip);
+extern "C" char* mono_method_full_name (MonoMethod *method, gboolean signature);
+
+extern "C" MonoDebugSourceLocation * mono_debug_lookup_source_location (MonoMethod *method, guint32 address, MonoDomain *domain);
+extern "C" void mono_debug_free_source_location (MonoDebugSourceLocation *location);
+
+extern "C" gpointer mono_jit_info_get_code_start (MonoJitInfo* ji);
+
+extern "C" int mono_jit_info_get_code_size (MonoJitInfo* ji);
+
+struct _MonoDebugSourceLocation {
+	gchar *source_file;
+	guint32 row, column;
+	guint32 il_offset;
+};
+
+static char*
+get_method_from_ip (void *ip)
+{
+	MonoJitInfo *ji;
+	MonoMethod *mi;
+	char *method;
+	char *res;
+	gpointer jit_start;
+	int jit_size;
+	MonoDomain *domain = mono_domain_get ();
+	MonoDebugSourceLocation *location;
+	
+	ji = mono_jit_info_table_find (domain, (char*) ip);
+	if (!ji) {
+		return NULL;
+	}
+	mi = mono_jit_info_get_method (ji);
+	jit_start = mono_jit_info_get_code_start (ji);
+	jit_size = mono_jit_info_get_code_size (ji);
+	method = mono_method_full_name (mi, TRUE);
+	
+	location = mono_debug_lookup_source_location (mi, (guint32)((guint8*)ip - (guint8*)jit_start), domain);
+
+	if (location) {
+		res = g_strdup_printf (" %s in %s:%i,%i", method, location->source_file, location->row, location->column);
+	} else {
+		res = g_strdup_printf (" %s + 0x%x", method, (int)((char*)ip - (char*)jit_start));
+	}
+	mono_debug_free_source_location (location);
+	
+	g_free (method);
+
+	return res;
+}
+
 char* get_stack_trace () 
 {
 	return get_stack_trace_prefix ("\t"); 
@@ -121,7 +182,7 @@ addr2line (gpointer ip)
 		
 		if (!g_spawn_async_with_pipes (NULL, (char**)addr_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL,
 				&child_pid, &ch_in, &ch_out, NULL, NULL)) {
-			return g_strdup (binary);
+			return NULL;
 		}
 		
 		addr2line = g_new0 (Addr2LineData, 1);
@@ -151,10 +212,10 @@ addr2line (gpointer ip)
 	result = fgets (buf, sizeof (buf), addr2line->pipeout);
 	
 	if (result == NULL)
-		return g_strdup (binary);
+		return NULL;
 	
 	if (result [0] == '?' || result [0] == 0)
-		return g_strdup (binary);
+		return NULL;
 
 	result_length = strlen (result);
 	result [result_length - 1] = 0;
@@ -163,7 +224,7 @@ addr2line (gpointer ip)
 	result = fgets (buf + result_length, sizeof (buf) - result_length, addr2line->pipeout);
 	
 	if (result == NULL)
-		return g_strdup (first);
+		return NULL;
 
 	result_length = strlen (result);
 	result [result_length - 1] = 0;
@@ -174,6 +235,12 @@ addr2line (gpointer ip)
 	// printf ("Final result: %s\n", res);
 
 	return res;
+}
+
+char*
+get_managed_frame (gpointer ip)
+{
+	return get_method_from_ip (ip);
 }
 
 char* 
@@ -194,7 +261,10 @@ get_stack_trace_prefix (const char* prefix)
 
 		char* frame = addr2line (ip);
 		
-		if (frame == NULL || strlen (frame) == 0 || strcmp ("??", frame) == 0) {
+		if (frame == NULL)
+			frame = get_managed_frame (ip);
+		
+		if (frame == NULL || strlen (frame) == 0 || frame [0] == '?') {
 			g_free (frame);	
 			names = backtrace_symbols (&ip, 1);
 			frame = g_strdup (names [0]);

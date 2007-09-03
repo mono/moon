@@ -56,8 +56,8 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	dirty_flags = 0;
 	dirty_rect = Rect (0,0,0,0);
 
-	this->SetValue (UIElement::TriggersProperty, Value (new TriggerCollection ()));
-	this->SetValue (UIElement::ResourcesProperty, Value (new ResourceDictionary ()));
+	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
+	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 
 	ComputeLocalTransform ();
 	ComputeTotalOpacity ();

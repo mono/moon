@@ -17,7 +17,7 @@
 
 EventTrigger::EventTrigger ()
 {
-	this->SetValue (EventTrigger::ActionsProperty, Value (new TriggerActionCollection ()));
+	this->SetValue (EventTrigger::ActionsProperty, Value::CreateUnref (new TriggerActionCollection ()));
 }
 
 //
