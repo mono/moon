@@ -1,3 +1,9 @@
+
+Tue Sep 4 17:50:24 CEST 2007 Paolo Molaro <lupus@ximian.com>
+
+	* media.cpp: fix memory leaks and crashes when a download gets
+	aborted.
+
 2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp: Changed all pts variables to int64_t from uint64_t

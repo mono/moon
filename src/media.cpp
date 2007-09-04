@@ -337,9 +337,15 @@ MediaElement::DownloaderComplete ()
 {
 	char *filename = downloader_get_response_file (downloader, part_name);
 	bool autoplay = media_element_get_auto_play (this);
-	
-	if (!loaded)
+
+	/* the download was aborted */
+	if (!filename)
 		return;
+
+	if (!loaded) {
+		g_free (filename);
+		return;
+	}
 	
 	UpdateProgress ();
 
@@ -349,6 +355,7 @@ MediaElement::DownloaderComplete ()
 	source = MediaSource::CreateSource (this, filename);
 	
 	printf ("video source changed to `%s'\n", filename);
+	g_free (filename);
 	
 	// FIXME: specify which audio stream index the player should use
 	
@@ -981,6 +988,9 @@ void
 Image::DownloaderComplete ()
 {
 	char *file = downloader_get_response_file (downloader, part_name);
+	/* the download was abosrted */
+	if (!file)
+		return;
 	CreateSurface (file);
 	g_free (file);
 
