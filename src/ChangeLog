@@ -1,3 +1,10 @@
+2007-09-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* text.h|cpp: TextBlock actual_[height|width] are already cached 
+	because they're expansive to calculate. Make sure we don't compute
+	them until they're really required (e.g. when a lot of properties
+	changes when loading an XAML file).
+
 2007-09-04  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp (KeyFrameAnimation_ResolveKeyFrames): add the

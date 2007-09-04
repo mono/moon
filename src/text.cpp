@@ -324,6 +324,7 @@ TextBlock::TextBlock ()
 	
 	actual_height = 0.0;
 	actual_width = 0.0;
+	dirty_actual_values = true;
 	
 	/* initialize the font description */
 	font = pango_font_description_new ();
@@ -382,7 +383,7 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::ComputeBounds ()
 {
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, actual_width, actual_height));
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, GetActualWidth (), GetActualHeight ()));
 // no-op	bounds.GrowBy (1);
 }
 
@@ -391,7 +392,7 @@ TextBlock::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (user_xform_origin.x * actual_width, user_xform_origin.y * actual_height);
+	return Point (user_xform_origin.x * GetActualWidth (), user_xform_origin.y * GetActualHeight ());
 }
 
 bool
@@ -424,8 +425,8 @@ TextBlock::InsideObject (cairo_t *cr, double x, double y)
 void
 TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*height = actual_height;
-	*width = actual_width;
+	*height = GetActualHeight ();
+	*width = GetActualWidth ();
 }
 
 void
@@ -450,9 +451,6 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 		cairo_new_path (cr);
 		cairo_restore (cr);
 	}
-	
-	text_block_set_actual_height (this, actual_height);
-	text_block_set_actual_width (this, actual_width);
 }
 
 void
@@ -649,22 +647,23 @@ TextBlock::Layout (cairo_t *cr)
 	mango_renderer_layout_path (renderer, layout);
 	pango_layout_get_pixel_size (layout, &w, &h);
 	
-	actual_height = (double) h;
-	actual_width = (double) w;
-	
-	if (clip && actual_height > clip_height)
-		actual_height = clip_height;
+	if (clip && (h > clip_height))
+		text_block_set_actual_height (this, (double)clip_height);
+	else
+		text_block_set_actual_height (this, (double)h);
+	text_block_set_actual_width (this, (double)w);
+	dirty_actual_values = false;
 }
 
 void
 TextBlock::Paint (cairo_t *cr)
 {
 	TextWrapping wrapping = text_block_get_text_wrapping (this);
-	double h = framework_element_get_height (this);
+	double h = GetActualHeight ();
 	double w = framework_element_get_width (this);
 
-	if (wrapping == TextWrappingWrapWithOverflow)
-		h = actual_height;
+	if (wrapping != TextWrappingWrapWithOverflow)
+		h = framework_element_get_height (this);
 	
 	if (w > 0.0 && h > 0.0) {
 		cairo_rectangle (cr, 0, 0, w, h);
@@ -722,7 +721,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	if (prop != TextBlock::ActualHeightProperty && prop != TextBlock::ActualWidthProperty) {
-		CalcActualWidthHeight (NULL);
+		dirty_actual_values = true;
 		UpdateBounds (true);
 		Invalidate ();
 	}
@@ -734,7 +733,7 @@ void
 TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == TextBlock::ForegroundProperty) {
-		CalcActualWidthHeight (NULL);
+		dirty_actual_values = true;
 		Invalidate ();
 	} else
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
@@ -743,9 +742,37 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
-	CalcActualWidthHeight (NULL);
+	dirty_actual_values = true;
 	UpdateBounds (true);
 }
+
+Value *
+TextBlock::GetValue (DependencyProperty *property)
+{
+	if (dirty_actual_values && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
+		CalcActualWidthHeight (NULL);
+
+	return DependencyObject::GetValue (property);
+}
+
+void
+TextBlock::SetValue (DependencyProperty *property, Value *value)
+{
+	if (value) {
+		if (property == TextBlock::ActualHeightProperty)
+			actual_height = value->AsDouble ();
+		else if (property == TextBlock::ActualWidthProperty)
+			actual_width = value->AsDouble ();
+	}
+	return DependencyObject::SetValue (property, value);
+}
+
+void
+TextBlock::SetValue (DependencyProperty *property, Value value)
+{
+	SetValue (property, &value);
+}
+
 
 TextBlock *
 text_block_new (void)

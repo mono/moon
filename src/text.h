@@ -169,18 +169,37 @@ public:
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	
+	virtual Value *GetValue (DependencyProperty *property);
+	virtual void SetValue (DependencyProperty *property, Value *value);
+	virtual void SetValue (DependencyProperty *property, Value value);
+
 private:
 	PangoFontDescription *font;
 	MangoRenderer *renderer;
 	PangoLayout *layout;
 	Brush *foreground;
 	
+	bool dirty_actual_values;
 	double actual_height;
 	double actual_width;
 	
 	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
+
+	double GetActualWidth ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return actual_width;
+	}
+
+	double GetActualHeight ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return actual_height;
+	}
 };
 
 TextBlock *text_block_new (void);
