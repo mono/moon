@@ -1,3 +1,10 @@
+2007-09-04  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* collection.cpp (Clear): Use list->IsEmpty () as it is cheaper
+	than comparing the Length() to 0.
+
+	* list.cpp: Added more tests.
+
 2007-09-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* rect.cpp: Safer IsEmpty (handles negative values)

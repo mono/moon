@@ -217,15 +217,15 @@ List::Remove (NodeFinder find, void *data)
 void
 List::Unlink (List::Node *node)
 {
-	if (head == node)
-		head = node->next;
-	else
+	if (node->prev)
 		node->prev->next = node->next;
-	
-	if (tail == node)
-		tail = node->prev;
 	else
+		head = node->next;
+	
+	if (node->next)
 		node->next->prev = node->prev;
+	else
+		tail = node->prev;
 	
 	node->prev = 0;
 	node->next = 0;
@@ -311,6 +311,14 @@ IntNodeCompare (List::Node *n0, List::Node *n1)
 	return in0->id - in1->id;
 }
 
+static bool
+IntNodeFinder (List::Node *node, void *data)
+{
+	int val = *((int *) data);
+	
+	return ((IntNode *) node)->id == val;
+}
+
 
 int main (int argc, char **argv)
 {
@@ -319,17 +327,84 @@ int main (int argc, char **argv)
 	
 	list = new List ();
 	
-	node = list->Append (new IntNode (1));
-	printf ("appended node with id = %d\n", ((IntNode *) node)->id);
-	node = list->Append (new IntNode (3));
+	node = list->Append (new IntNode (2));
 	printf ("appended node with id = %d\n", ((IntNode *) node)->id);
 	node = list->Append (new IntNode (4));
 	printf ("appended node with id = %d\n", ((IntNode *) node)->id);
-	node = list->Insert (new IntNode (2), 1);
+	node = list->Append (new IntNode (5));
+	printf ("appended node with id = %d\n", ((IntNode *) node)->id);
+	node = list->Insert (new IntNode (3), 1);
 	printf ("inserted node with id = %d at index = %d\n",
 		((IntNode *) node)->id, list->IndexOf (node));
+	node = list->Prepend (new IntNode (1));
+	printf ("prepended node with id = %d\n", ((IntNode *) node)->id);
 	node = list->Prepend (new IntNode (0));
 	printf ("prepended node with id = %d\n", ((IntNode *) node)->id);
+	node = list->Insert (new IntNode (6), 6);
+	printf ("inserted node with id = %d at index = %d\n",
+		((IntNode *) node)->id, list->IndexOf (node));
+	
+	printf ("\nlist contains (in order):\n");
+	for (node = list->First (); node != NULL; node = node->next)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nlist contains (in reverse order):\n");
+	for (node = list->Last (); node != NULL; node = node->prev)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nunlinking the last item in the list\n");
+	list->Unlink (list->Last ());
+	
+	printf ("\nlist contains (in order):\n");
+	for (node = list->First (); node != NULL; node = node->next)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nlist contains (in reverse order):\n");
+	for (node = list->Last (); node != NULL; node = node->prev)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nunlinking the first item in the list\n");
+	list->Unlink (list->First ());
+	
+	printf ("\nlist contains (in order):\n");
+	for (node = list->First (); node != NULL; node = node->next)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nlist contains (in reverse order):\n");
+	for (node = list->Last (); node != NULL; node = node->prev)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nreplacing 4 with 8\n");
+	int id = 4;
+	int index = list->IndexOf (IntNodeFinder, &id);
+	if ((node = list->Replace (new IntNode (8), index)))
+		delete node;
+	else
+		printf ("unsuccessful\n");
+	
+	printf ("\nlist contains (in order):\n");
+	for (node = list->First (); node != NULL; node = node->next)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nlist contains (in reverse order):\n");
+	for (node = list->Last (); node != NULL; node = node->prev)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nremoving 5\n");
+	id = 5;
+	list->Remove (IntNodeFinder, &id);
+	
+	printf ("\nlist contains (in order):\n");
+	for (node = list->First (); node != NULL; node = node->next)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nlist contains (in reverse order):\n");
+	for (node = list->Last (); node != NULL; node = node->prev)
+		printf ("node id = %d\n", ((IntNode *) node)->id);
+	
+	printf ("\nremoving 1\n");
+	id = 1;
+	list->Remove (IntNodeFinder, &id);
 	
 	printf ("\nlist contains (in order):\n");
 	for (node = list->First (); node != NULL; node = node->next)

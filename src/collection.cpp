@@ -558,7 +558,7 @@ VisualCollection::RemoveAt (int index)
 void
 VisualCollection::Clear ()
 {
-	if (list->Length() == 0)
+	if (list->IsEmpty ())
 		return;
 	
 	Panel *panel = (Panel *) closure;
