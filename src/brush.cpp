@@ -733,7 +733,6 @@ image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, in
 									  sw, sh);
 
 		pattern = cairo_pattern_create_for_surface (surface);
-		cairo_pattern_set_filter (pattern, CAIRO_FILTER_FAST);
 		cairo_t *cr = cairo_create (blending);
 		cairo_set_source (cr, pattern);
 		cairo_paint_with_alpha (cr, opacity);
@@ -744,8 +743,6 @@ image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, in
 	} else {
 		pattern = cairo_pattern_create_for_surface (surface);
 	}
-	
-	cairo_pattern_set_filter (pattern, CAIRO_FILTER_FAST);
 	
 	return pattern;
 }

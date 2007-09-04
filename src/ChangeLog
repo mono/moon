@@ -1,3 +1,8 @@
+2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp (image_brush_create_pattern): Revert previous patch as
+	it broke test suite.
+
 2007-09-04  Jb Evain  <jbevain@novell.com>
 
 	* list.h, list.cpp: add a List::ForEach method.
@@ -92,7 +97,7 @@ Tue Sep 4 17:50:24 CEST 2007 Paolo Molaro <lupus@ximian.com>
 	longer have Next() or Prev() methods, just access the pointers
 	directly).
 
-	* animation.cpp: Made sorted_list a GPtrArray and updated to sue
+	* animation.cpp: Made sorted_list a GPtrArray and updated to use
 	g_ptr_array_insert_sorted(). Also, a lot of the 'list' (not
 	sorted_list) accesses assumed nodes were of type KeyFrameNode,
 	which they were not. Fixed.
