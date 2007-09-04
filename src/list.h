@@ -25,7 +25,7 @@ public:
 		virtual ~Node () { }
 	};
 	
-	typedef bool (* NodeFinder) (Node *node, void *data);
+	typedef bool (* NodeAction) (Node *node, void *data);
 	
 protected:
 	Node *head;
@@ -50,14 +50,16 @@ public:
 	
 	Node *Replace (Node *node, int index);
 	
-	Node *Find (NodeFinder find, void *data);
-	void Remove (NodeFinder find, void *data);
+	Node *Find (NodeAction find, void *data);
+	void Remove (NodeAction find, void *data);
 	void Unlink (Node *node);
 	
 	Node *Index (int index);
 	
 	int IndexOf (Node *node);
-	int IndexOf (NodeFinder find, void *data);
+	int IndexOf (NodeAction find, void *data);
+
+	void ForEach (NodeAction action, void *data);
 };
 
 #endif /* __LIST_H__ */

@@ -189,7 +189,7 @@ List::Replace (List::Node *node, int index)
 }
 
 List::Node *
-List::Find (NodeFinder find, void *data)
+List::Find (NodeAction find, void *data)
 {
 	List::Node *n = head;
 	
@@ -208,7 +208,7 @@ List::Find (NodeFinder find, void *data)
 
 
 void
-List::Remove (NodeFinder find, void *data)
+List::Remove (NodeAction find, void *data)
 {
 	List::Node *n;
 	
@@ -273,7 +273,7 @@ List::IndexOf (List::Node *node)
 
 
 int
-List::IndexOf (NodeFinder find, void *data)
+List::IndexOf (NodeAction find, void *data)
 {
 	List::Node *n = head;
 	int i = 0;
@@ -292,7 +292,22 @@ List::IndexOf (NodeFinder find, void *data)
 	return -1;
 }
 
+void
+List::ForEach (NodeAction action, void *data)
+{
+	List::Node *node = head;
+	bool move = true;
 
+	if (!action)
+		return;
+
+	while (node && move) {
+		if (!action (node, data))
+			move = false;
+		else
+			node = node->next;
+	}
+}
 
 //#define TEST_PROGRAM
 #ifdef TEST_PROGRAM

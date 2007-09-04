@@ -1,3 +1,7 @@
+2007-09-04  Jb Evain  <jbevain@novell.com>
+
+	* list.h, list.cpp: add a List::ForEach method.
+
 2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* brush.cpp (image_brush_create_pattern): Set CAIRO_FILTER_FAST
