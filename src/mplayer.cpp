@@ -84,7 +84,7 @@ struct Audio {
 	snd_pcm_uframes_t sample_size;
 	
 	// sync
-	uint64_t initial_pts;
+	int64_t initial_pts;
 	uint64_t pts_per_frame;
 };
 
@@ -102,7 +102,7 @@ struct Video {
 	uint8_t *rgb_buffer;
 	
 	// sync
-	uint64_t initial_pts;
+	int64_t initial_pts;
 	int msec_per_frame;
 	double usec_to_pts;
 };
@@ -134,6 +134,7 @@ MediaPlayer::MediaPlayer ()
 	opened = false;
 	paused = true;
 	stop = false;
+	eof = false;
 	
 	av_ctx = NULL;
 	
@@ -260,7 +261,10 @@ MediaPlayer::Open (const char *uri)
 			audio->stream_id = i;
 			
 			// starting time
-			audio->initial_pts = stream->start_time;
+			if (stream->start_time >= 0)
+				audio->initial_pts = stream->start_time;
+			else
+				printf ("audio start pts is invalid? %lld\n", stream->start_time);
 			break;
 		case CODEC_TYPE_VIDEO:
 			if (video->stream_id != -1)
@@ -288,7 +292,10 @@ MediaPlayer::Open (const char *uri)
 				width, height, width * 4);
 			
 			// starting time
-			video->initial_pts = stream->start_time;
+			if (stream->start_time >= 0)
+				video->initial_pts = stream->start_time;
+			else
+				printf ("video start pts is invalid? %lld\n", stream->start_time);
 			
 			// msec per frame
 			video->msec_per_frame = (int) (1000 / av_q2d (stream->r_frame_rate));
@@ -355,6 +362,7 @@ MediaPlayer::Close ()
 	
 	playing = false;
 	opened = false;
+	eof = false;
 	
 	audio->stream_count = 0;
 	audio->stream_id = -1;
@@ -400,8 +408,7 @@ bool
 MediaPlayer::AdvanceFrame ()
 {
 	AVFrame *frame = NULL;
-	bool advanced = false;
-	uint64_t target_pts;
+	int64_t target_pts;
 	int redraw = 0;
 	Packet *pkt;
 	
@@ -434,7 +441,7 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = this->target_pts;
 	}
 	
-	if (current_pts >= target_pts)
+	if (current_pts >= seek_pts && current_pts >= target_pts)
 		return true;
 	
 	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue))) {
@@ -456,15 +463,15 @@ MediaPlayer::AdvanceFrame ()
 		frame = NULL;
 	}
 	
-	if (redraw) {
+	if (redraw)
 		convert_to_rgb (video, frame);
-		advanced = true;
+	
+	if (frame != NULL) {
+		av_free (frame);
+		return true;
 	}
 	
-	if (frame != NULL)
-		av_free (frame);
-	
-	return advanced;
+	return !eof;
 }
 
 void
@@ -495,12 +502,16 @@ MediaPlayer::IsPlaying ()
 bool
 MediaPlayer::MediaEnded ()
 {
-	if (audio->pcm != NULL && audio->stream_id != -1)
-		return target_pts >= audio->initial_pts + audio->stream->duration;
-	else if (video->stream_id != -1)
-		return target_pts >= video->initial_pts + video->stream->duration;
-	else
-		return true;
+	if (!eof)
+		return false;
+	
+	if ((audio->queue && g_async_queue_length (audio->queue) > 0))
+		return false;
+	
+	if ((video->queue && g_async_queue_length (video->queue) > 0))
+		return false;
+	
+	return true;
 }
 
 guint
@@ -619,6 +630,7 @@ MediaPlayer::StopThreads ()
 	seek_pts = 0;
 	
 	stop = false;
+	eof = false;
 }
 
 void
@@ -1097,6 +1109,7 @@ io_loop (void *data)
 		
 		if (av_read_frame (mplayer->av_ctx, &pkt) < 0) {
 			// stream is complete (or error) - nothing left to decode.
+			mplayer->eof = true;
 			break;
 		}
 		

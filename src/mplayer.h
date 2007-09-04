@@ -30,6 +30,7 @@ public:
 	
 	bool playing;
 	bool stop;
+	bool eof;
 	
 	AVFormatContext *av_ctx;
 	
@@ -43,9 +44,9 @@ public:
 	uint64_t pause_time;
 	uint64_t start_time;  
 	
-	uint64_t current_pts;
-	uint64_t target_pts;
-	uint64_t seek_pts;
+	int64_t current_pts;
+	int64_t target_pts;
+	int64_t seek_pts;
 	
 	/* Public API */
 	

@@ -1,3 +1,10 @@
+2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp: Changed all pts variables to int64_t from uint64_t
+	as that seems to be what ffmpeg uses internally. Also added a new
+	'eof' state so that we can easily tell if we've reached the end of
+	the media stream (eof is true and no packets queued).
+
 2007-09-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.h, media.cpp: If we get a play request before the media is loaded,
