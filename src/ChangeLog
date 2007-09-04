@@ -1,3 +1,8 @@
+2007-09-04  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (KeyFrameAnimation_ResolveKeyFrames): add the
+	keyframes in reverse order so the sort works.
+
 2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* list.cpp (Insert): Fixed.

@@ -1160,7 +1160,7 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	   secondary key (step 8 from url) */
 	g_ptr_array_set_size (col->sorted_list, 0);
 	
-	for (cur = col->list->First (); cur; cur = cur->next) {
+	for (cur = col->list->Last (); cur; cur = cur->prev) {
 		KeyFrame *keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
 		if (!keyframe->resolved) {
 			g_warning ("***** unresolved keyframe!");
