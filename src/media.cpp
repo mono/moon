@@ -149,7 +149,6 @@ MediaElement::AdvanceFrame ()
 		updating = false;
 	} else if (mplayer->MediaEnded ()) {
 		mplayer->Stop ();
-		g_source_remove (timeout_id);
 		timeout_id = 0;
 		media_element_set_current_state (this, "Stopped");
 		Emit (MediaEndedEvent);
@@ -441,6 +440,7 @@ void
 MediaElement::Pause ()
 {
 	play_pending = false;
+	
 	if (!mplayer->CanPause ())
 		return;
 	

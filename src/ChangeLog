@@ -1,3 +1,9 @@
+2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (render_cb): Added some "FPS" debug spew.
+
+	* media.cpp (AdvanceFrame): On MediaEnded, don't remove the source
+	timeout id, by returning false, it is removed for us.
 
 Tue Sep 4 17:50:24 CEST 2007 Paolo Molaro <lupus@ximian.com>
 

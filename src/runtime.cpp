@@ -481,8 +481,25 @@ Surface::InitializeDrawingArea (GtkWidget* drawing_area)
 void
 Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	Surface *s = (Surface*)closure;
+	Surface *s = (Surface*) closure;
+	static int64_t start = 0;
+	static int nframes = 0;
+	int64_t now;
+	
+	if (start == 0)
+		start = get_now ();
+	
 	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
+	
+	nframes++;
+	
+	if ((now = get_now ()) > (start + TIMESPANTICKS_IN_SECOND)) {
+		printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes,
+			(now - start) / TIMESPANTICKS_IN_SECOND_FLOAT,
+			nframes / ((now - start) / TIMESPANTICKS_IN_SECOND_FLOAT));
+		nframes = 0;
+		start = now;
+	}
 }
 
 void
