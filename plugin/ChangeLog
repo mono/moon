@@ -1,3 +1,11 @@
+2007-09-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Added some special debug code, enabling basic printf
+	  functionality from javascript code. No need to synchronize console
+	  output with firebug output anymore.
+	* debug.js: Added, a printf function for javascript, specially crafted for
+	  moonlight.
+
 2007-08-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: Get the actual size from the surface.

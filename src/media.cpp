@@ -178,6 +178,7 @@ MediaElement::MediaElement ()
 	loaded = false;
 	updating = false;
 	timeout_id = 0;
+	play_pending = false;
 	
 	downloader = NULL;
 	part_name = NULL;
@@ -381,7 +382,7 @@ MediaElement::DownloaderComplete ()
 	
 	printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
 	
-	if (autoplay)
+	if (autoplay || play_pending)
 		Play ();
 	else
 		media_element_set_current_state (this, "Paused");
@@ -432,6 +433,7 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 void
 MediaElement::Pause ()
 {
+	play_pending = false;
 	if (!mplayer->CanPause ())
 		return;
 	
@@ -454,12 +456,17 @@ MediaElement::Play ()
 		timeout_id = mplayer->Play (advance_frame, this);
 		media_element_set_current_state (this, "Playing");
 		printf ("video playing, timeout_id = %d\n", timeout_id);
+		play_pending = false;
+	} else {
+		play_pending = true;
 	}
 }
 
 void
 MediaElement::Stop ()
 {
+	play_pending = false;
+	
 	if (!mplayer->IsPlaying () && !mplayer->IsPaused ())
 		return;
 	

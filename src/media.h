@@ -152,6 +152,7 @@ class MediaElement : public MediaBase {
 	guint timeout_id;
 	bool updating;
 	bool loaded;
+	bool play_pending;
 	
 	virtual void OnLoaded ();
 	

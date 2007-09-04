@@ -37,6 +37,7 @@
 #include <nsIDOMEventListener.h>
 
 #define DEBUG_SCRIPTABLE 0
+#define DEBUG_JAVASCRIPT 1
 
 #define HAS_PROPERTY(x,v) \
 		(index_of_name (v, x, (sizeof (x) / sizeof (char *))) > -1)
@@ -1763,6 +1764,22 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		    || !NPVARIANT_IS_STRING (args[0])) {
 			return true;
 		}
+
+#if DEBUG_JAVASCRIPT
+		// Some debug code...
+		// with this it is possible to do obj.setValue ("printf", "msg") from js
+		const NPUTF8* pf = NPVARIANT_TO_STRING (args[0]).utf8characters;
+		if (strcmp ((char*) pf, "printf") == 0) {
+			NPIdentifier message = NPID (NPVARIANT_TO_STRING (args [1]).utf8characters);
+			NPUTF8 *strname = NPN_UTF8FromIdentifier (message);
+			strname[0] = toupper(strname[0]);
+			printf ("JS message: %s\n", strname);
+			NPN_MemFree (strname);
+		
+			VOID_TO_NPVARIANT (*result);
+			return true;
+		}
+#endif
 
 		moonlight_dependency_object_set_property (npobj,
 							  NPID (NPVARIANT_TO_STRING (args[0]).utf8characters),

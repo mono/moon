@@ -1,3 +1,9 @@
+2007-09-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.h, media.cpp: If we get a play request before the media is loaded,
+	  save the request and start playing when the media is loaded. Hopefully
+	  this is what MS is doing.
+
 2007-09-04  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* collection.cpp (Clear): Use list->IsEmpty () as it is cheaper
