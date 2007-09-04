@@ -134,19 +134,24 @@ List::Insert (List::Node *node, int index)
 		}
 		
 		if (i == index) {
-			if (n == tail)
-				tail = node;
-			
-			n->prev->next = node;
+			// Inserting @node before @n
 			node->prev = n->prev;
 			node->next = n;
+			
+			if (n->prev)
+				n->prev->next = node;
+			else
+				head = node;
+			
 			n->prev = node;
 		} else {
+			// Inserting @node after @n (means @n was the tail)
 			tail = n->next = node;
 			node->prev = n;
 			node->next = 0;
 		}
 	} else {
+		// @node will be the only node in the list
 		head = tail = node;
 		node->next = 0;
 		node->prev = 0;

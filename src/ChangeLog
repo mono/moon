@@ -1,5 +1,7 @@
 2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* list.cpp (Insert): Fixed.
+
 	* runtime.cpp (render_cb): Added some "FPS" debug spew.
 
 	* media.cpp (AdvanceFrame): On MediaEnded, don't remove the source
