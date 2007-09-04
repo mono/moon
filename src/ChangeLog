@@ -1,5 +1,10 @@
 2007-09-04  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (xaml_set_property_from_str): delete the color.
+	(dependency_object_set_attributes): same.
+
+2007-09-04  Chris Toshok  <toshok@ximian.com>
+
 	* media.cpp (Image::CreateSurface): if we need to create a new
 	surface, make sure to unref the old one.
 

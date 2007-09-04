@@ -1957,8 +1957,12 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		obj->SetValue (prop, Value (value));
 		break;
 	case Type::COLOR:
-		obj->SetValue (prop, Value (*color_from_str (value)));
+	{
+		Color *c = color_from_str (value);
+		obj->SetValue (prop, Value (*c));
+		delete c;
 		break;
+	}
 	case Type::REPEATBEHAVIOR:
 		obj->SetValue (prop, Value (repeat_behavior_from_str (value)));
 		break;
@@ -2175,8 +2179,12 @@ start_parse:
 				dep->SetValue (prop, Value (attr [i + 1]));
 				break;
 			case Type::COLOR:
-				dep->SetValue (prop, Value (*color_from_str (attr [i + 1])));
+			{
+				Color *c = color_from_str (attr [i + 1]);
+				dep->SetValue (prop, Value (*c));
+				delete c;
 				break;
+			}
 			case Type::REPEATBEHAVIOR:
 				dep->SetValue (prop, Value (repeat_behavior_from_str (attr [i + 1])));
 				break;
