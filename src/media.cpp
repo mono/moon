@@ -1077,6 +1077,7 @@ Image::CreateSurface (const char *fname)
 					      0, 0, surface->width, surface->height,
 					      pb,
 					      0, 0);
+			gdk_pixbuf_unref (pixbuf);
 			pixbuf = pb;
 		}
 

@@ -313,7 +313,7 @@ path_geometry_new ()
 
 PathGeometry::PathGeometry ()
 {
-	this->SetValue (PathGeometry::FiguresProperty, Value (new PathFigureCollection ()));
+	this->SetValue (PathGeometry::FiguresProperty, Value::CreateUnrefPtr (new PathFigureCollection ()));
 }
 
 void
@@ -490,7 +490,7 @@ path_figure_new ()
 
 PathFigure::PathFigure ()
 {
-	this->SetValue (PathFigure::SegmentsProperty, Value (new PathSegmentCollection ()));
+	this->SetValue (PathFigure::SegmentsProperty, Value::CreateUnrefPtr (new PathSegmentCollection ()));
 }
 
 PathFigure::~PathFigure ()
