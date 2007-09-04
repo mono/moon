@@ -1,3 +1,8 @@
+2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp (image_brush_create_pattern): Set CAIRO_FILTER_FAST
+	(based on lewings performance patch).
+
 2007-09-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* text.h|cpp: TextBlock actual_[height|width] are already cached 

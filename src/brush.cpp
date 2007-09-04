@@ -722,7 +722,7 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 }
 
 // ripped apart to be reusable for Image and VideoBrush classes
-cairo_pattern_t*
+cairo_pattern_t *
 image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity)
 {
 	cairo_pattern_t *pattern;
@@ -733,17 +733,20 @@ image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, in
 									  sw, sh);
 
 		pattern = cairo_pattern_create_for_surface (surface);
+		cairo_pattern_set_filter (pattern, CAIRO_FILTER_FAST);
 		cairo_t *cr = cairo_create (blending);
 		cairo_set_source (cr, pattern);
 		cairo_paint_with_alpha (cr, opacity);
-		cairo_destroy(cr);
+		cairo_destroy (cr);
 		cairo_pattern_destroy (pattern);
-
+		
 		pattern = cairo_pattern_create_for_surface (blending);
 	} else {
 		pattern = cairo_pattern_create_for_surface (surface);
 	}
-
+	
+	cairo_pattern_set_filter (pattern, CAIRO_FILTER_FAST);
+	
 	return pattern;
 }
 
