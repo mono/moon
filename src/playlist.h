@@ -23,6 +23,7 @@ private:
 	char *title;
 	char *author;
 	char *abstract;
+	char *copyright;
 public:
 	PlaylistContent ();
 	~PlaylistContent ();
@@ -35,6 +36,9 @@ public:
 
 	const char *GetAbstract ();
 	void SetAbstract (char *abstract);
+
+	const char *GetCopyright ();
+	void SetCopyright (char *copyright);
 };
 
 class PlaylistEntry : public List::Node, public PlaylistContent {

@@ -67,6 +67,18 @@ PlaylistContent::SetAbstract (char *abstract)
 	this->abstract = abstract;
 }
 
+const char *
+PlaylistContent::GetCopyright ()
+{
+	return copyright;
+}
+
+void
+PlaylistContent::SetCopyright (char *copyright)
+{
+	this->copyright = copyright;
+}
+
 // PlaylistEntry
 
 PlaylistEntry::PlaylistEntry ()
