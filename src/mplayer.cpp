@@ -214,6 +214,7 @@ MediaPlayer::Open (const char *uri)
 {
 	AVCodecContext *encoding;
 	AVStream *stream;
+	int rv;
 	
 	Close ();
 	
@@ -223,8 +224,8 @@ MediaPlayer::Open (const char *uri)
 	if (uri == NULL || *uri == '\0')
 		return false;
 	
-	if (av_open_input_file (&av_ctx, uri, NULL, 0, NULL) < 0) {
-		fprintf (stderr, "cannot open uri `%s': %s\n", uri, strerror (errno));
+	if ((rv = av_open_input_file (&av_ctx, uri, NULL, 0, NULL)) < 0) {
+		fprintf (stderr, "cannot open uri `%s': %s\n", uri, strerror (AVERROR (rv)));
 		av_ctx = NULL;
 		return false;
 	}
