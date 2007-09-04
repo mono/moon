@@ -13,32 +13,72 @@
 
 G_BEGIN_DECLS
 
+#include <expat.h>
+
 #include "downloader.h"
 #include "media.h"
 
-class Playlist : public MediaSource {
-	List *items;
+class PlaylistContent {
+private:
+	char *title;
+	char *author;
+	char *abstract;
+public:
+	PlaylistContent ();
+	~PlaylistContent ();
+
+	const char *GetTitle ();
+	void SetTitle (char *title);
+
+	const char *GetAuthor ();
+	void SetAuthor (char *author);
+
+	const char *GetAbstract ();
+	void SetAbstract (char *abstract);
+};
+
+class PlaylistEntry : public List::Node, public PlaylistContent {
+private:
+	char *source;
+	gint64 start_time;
+public:
+	PlaylistEntry ();
+	~PlaylistEntry ();
+
+	const char *GetSource ();
+	void SetSource (char *file);
+
+	gint64 GetStartTime ();
+	void SetStartTime (gint64 start_time);
+};
+
+class Playlist : public MediaSource, public PlaylistContent {
+	List *items; // list of PlaylistEntries
 public:
 	Playlist (MediaElement *element, char *source_name);
 	virtual ~Playlist ();
-	
+
 	virtual bool Open ();
 
 	static bool IsPlaylistFile (const char *file_name);
 private:
 	bool Parse ();
+};
 
-	static void parser_on_start_element (GMarkupParseContext *context, const gchar *element_name,
-										  const gchar **attributes_names, const gchar **attributes_values,
-										  gpointer user_data, GError **error);
+class PlaylistParser {
+private:
+	Playlist *playlist;
+	XML_Parser parser;
+	char *base;
 
-	static void parser_on_end_element (GMarkupParseContext *context, const gchar *element_name,
-										gpointer user_data, GError **error);
+	static void on_start_element (gpointer user_data, const char *name, const char **attrs);
+	static void on_end_element (gpointer user_data, const char *name);
+	static void on_text (gpointer user_data, const char *text, int len);
+public:
+	PlaylistParser (Playlist *list);
+	~PlaylistParser ();
 
-	static void parser_on_text (GMarkupParseContext *context, const gchar *text, gsize text_len,
-								 gpointer user_data, GError **error);
-
-	static void parser_on_error (GMarkupParseContext *context, GError *error, gpointer user_data);
+	void Parse (const char *text, int len);
 };
 
 G_END_DECLS

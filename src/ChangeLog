@@ -1,3 +1,7 @@
+2007-09-04  Jb Evain  <jbevain@novell.com>
+
+	* playlist.h, playlist.cpp: Work on the overall design.
+
 2007-09-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* brush.cpp (image_brush_create_pattern): Revert previous patch as
