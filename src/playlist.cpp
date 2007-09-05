@@ -229,39 +229,45 @@ PlaylistParser::~PlaylistParser ()
 	XML_ParserFree (parser);
 }
 
+static bool
+str_match (const char *candidate, const char *tag)
+{
+	return g_strcasecmp (candidate, tag) == 0;
+}
+
 void
 PlaylistParser::on_start_element (gpointer user_data, const char *name, const char **attrs)
 {
 	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
 	PlaylistNodeKind kind;
 	//printf ("on_start_element, name: %s\n", name);
-	if (!strcmp (name, "ABSTRACT")) {
+	if (str_match (name, "ABSTRACT")) {
 		kind = Abstract;
-	} else if (!strcmp (name, "ASX")) {
+	} else if (str_match (name, "ASX")) {
 		kind = Asx;
-	} else if (!strcmp (name, "AUTHOR")) {
+	} else if (str_match (name, "AUTHOR")) {
 		kind = Author;
-	} else if (!strcmp (name, "BANNER")) {
+	} else if (str_match (name, "BANNER")) {
 		kind = Banner;
-	} else if (!strcmp (name, "BASE")) {
+	} else if (str_match (name, "BASE")) {
 		kind = Base;
-	} else if (!strcmp (name, "COPYRIGHT")) {
+	} else if (str_match (name, "COPYRIGHT")) {
 		kind = Copyright;
-	} else if (!strcmp (name, "DURATION")) {
+	} else if (str_match (name, "DURATION")) {
 		kind = Duration;
-	} else if (!strcmp (name, "ENTRY")) {
+	} else if (str_match (name, "ENTRY")) {
 		kind = Entry;
-	} else if (!strcmp (name, "ENTRYREF")) {
+	} else if (str_match (name, "ENTRYREF")) {
 		kind = EntryRef;
-	} else if (!strcmp (name, "LOGURL")) {
+	} else if (str_match (name, "LOGURL")) {
 		kind = LogUrl;
-	} else if (!strcmp (name, "MOREINFO")) {
+	} else if (str_match (name, "MOREINFO")) {
 		kind = MoreInfo;
-	} else if (!strcmp (name, "STARTTIME")) {
+	} else if (str_match (name, "STARTTIME")) {
 		kind = StartTime;
-	} else if (!strcmp (name, "REF")) {
+	} else if (str_match (name, "REF")) {
 		kind = Ref;
-		if (attrs && !strcmp (*attrs, "HREF"))
+		if (attrs && str_match (*attrs, "HREF"))
 			parser->GetCurrentEntry ()->SetSource (g_strdup (*(attrs + 1)));
 	} else if (!strcmp (name, "TITLE")) {
 		kind = Title;

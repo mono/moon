@@ -1,3 +1,8 @@
+2007-09-05  Jb Evain  <jbevain@novell.com>
+
+	* playlist.cpp: the asx format is case insensitive, parse it
+	accordingly.
+
 2007-09-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* animation.h: Make KeySpline::GetObjectType virtual.
