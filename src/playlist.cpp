@@ -278,6 +278,9 @@ PlaylistParser::on_end_element (gpointer user_data, const char *name)
 	switch (parser->GetCurrentKind ()) {
 	case Entry:
 		parser->EndEntry ();
+		break;
+	default:
+		break;
 	}
 	parser->PopCurrentKind ();
 }
