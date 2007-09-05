@@ -269,7 +269,7 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 		kind = Ref;
 		if (attrs && str_match (*attrs, "HREF"))
 			parser->GetCurrentEntry ()->SetSource (g_strdup (*(attrs + 1)));
-	} else if (!strcmp (name, "TITLE")) {
+	} else if (str_match (name, "TITLE")) {
 		kind = Title;
 	} else {
 		kind = Unknown;
