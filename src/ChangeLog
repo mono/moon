@@ -1,3 +1,7 @@
+2007-09-05  Jb Evain  <jbevain@novell.com>
+
+	* list.h, list.cpp: add Remove(Node) and RemoveAt(int) method.
+
 2007-09-04  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (Image::Render): unref the backing pixbuf as soon as

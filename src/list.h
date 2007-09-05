@@ -52,6 +52,8 @@ public:
 	
 	Node *Find (NodeAction find, void *data);
 	void Remove (NodeAction find, void *data);
+	void Remove (Node *node);
+	void RemoveAt (int index);
 	void Unlink (Node *node);
 	
 	Node *Index (int index);

@@ -218,6 +218,26 @@ List::Remove (NodeAction find, void *data)
 	}
 }
 
+void
+List::Remove (List::Node *node)
+{
+	if (IndexOf (node) == -1)
+		return;
+
+	Unlink (node);
+	delete node;
+}
+
+void
+List::RemoveAt (int index)
+{
+	List::Node *node;
+	if (!(node = Index (index)))
+		return;
+	
+	Unlink (node);
+	delete node;
+}
 
 void
 List::Unlink (List::Node *node)
