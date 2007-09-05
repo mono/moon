@@ -235,7 +235,7 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
 	PlaylistNodeKind kind;
 	//printf ("on_start_element, name: %s\n", name);
-	if (!strcmp (name, "Abstract")) {
+	if (!strcmp (name, "ABSTRACT")) {
 		kind = Abstract;
 	} else if (!strcmp (name, "ASX")) {
 		kind = Asx;
