@@ -1,5 +1,9 @@
 2007-09-05  Jb Evain  <jbevain@novell.com>
 
+	* xaml.h: export timespan_from_str.
+
+2007-09-05  Jb Evain  <jbevain@novell.com>
+
 	* list.h, list.cpp: add Remove(Node) and RemoveAt(int) method.
 
 2007-09-04  Chris Toshok  <toshok@ximian.com>

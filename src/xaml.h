@@ -32,6 +32,8 @@ void        xaml_set_parser_callbacks (xaml_create_custom_element_callback *cecb
 
 void        xaml_init (void);
 
+gint64		timespan_from_str (const char *str);
+
 G_END_DECLS
 
 #endif /* __MOON_XAML_H__ */
