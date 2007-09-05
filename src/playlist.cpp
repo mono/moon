@@ -261,7 +261,8 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 		kind = StartTime;
 	} else if (!strcmp (name, "REF")) {
 		kind = Ref;
-		parser->GetCurrentEntry ()->SetSource (NULL); // get source from href attribute
+		if (attrs && !strcmp (*attrs, "HREF"))
+			parser->GetCurrentEntry ()->SetSource (g_strdup (*(attrs + 1)));
 	} else if (!strcmp (name, "TITLE")) {
 		kind = Title;
 	} else {
