@@ -121,7 +121,8 @@ private:
 	static void on_end_element (gpointer user_data, const char *name);
 	static void on_text (gpointer user_data, const char *text, int len);
 
-	void AddEntry ();
+	void OnEntry ();
+	void EndEntry ();
 	PlaylistEntry *GetCurrentEntry ();
 
 	PlaylistContent *GetCurrentContent ();

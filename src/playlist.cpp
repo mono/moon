@@ -275,6 +275,10 @@ void
 PlaylistParser::on_end_element (gpointer user_data, const char *name)
 {
 	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+	switch (parser->GetCurrentKind ()) {
+	case Entry:
+		parser->EndEntry ();
+	}
 	parser->PopCurrentKind ();
 }
 
@@ -306,7 +310,7 @@ PlaylistParser::on_text (gpointer user_data, const char *data, int len)
 		break;
 	case Entry:
 		parser->AssertParentKind (Asx);
-		parser->AddEntry ();
+		parser->OnEntry ();
 		break;
 	case StartTime:
 		parser->AssertParentKind (Entry);
@@ -347,11 +351,16 @@ PlaylistParser::GetCurrentEntry ()
 }
 
 void
-PlaylistParser::AddEntry ()
+PlaylistParser::OnEntry ()
 {
 	PlaylistEntry *entry = new PlaylistEntry ();
 	playlist->AddEntry (entry);
 	this->entry = entry;
+}
+
+void PlaylistParser::EndEntry ()
+{
+	this->entry = NULL;
 }
 
 void
