@@ -20,6 +20,7 @@ G_BEGIN_DECLS
 
 class PlaylistContent {
 private:
+	char *base;
 	char *title;
 	char *author;
 	char *abstract;
@@ -27,6 +28,9 @@ private:
 public:
 	PlaylistContent ();
 	~PlaylistContent ();
+
+	const char *GetBase ();
+	void SetBase (char *base);
 
 	const char *GetTitle ();
 	void SetTitle (char *title);
@@ -45,6 +49,7 @@ class PlaylistEntry : public List::Node, public PlaylistContent {
 private:
 	char *source;
 	gint64 start_time;
+	gint64 duration;
 public:
 	PlaylistEntry ();
 	~PlaylistEntry ();
@@ -54,35 +59,84 @@ public:
 
 	gint64 GetStartTime ();
 	void SetStartTime (gint64 start_time);
+
+	gint64 GetDuration ();
+	void SetDuration (gint64 duration);
 };
 
 class Playlist : public MediaSource, public PlaylistContent {
-	List *items; // list of PlaylistEntries
+private:
+	List *entries;
+
+	bool Parse ();
 public:
 	Playlist (MediaElement *element, char *source_name);
 	virtual ~Playlist ();
 
 	virtual bool Open ();
 
+	void AddEntry (PlaylistEntry *entry);
+
 	static bool IsPlaylistFile (const char *file_name);
-private:
-	bool Parse ();
 };
 
 class PlaylistParser {
 private:
 	Playlist *playlist;
+	PlaylistEntry *entry;
 	XML_Parser parser;
-	char *base;
+
+	enum PlaylistNodeKind {
+		Unknown		= 0,
+		Root		= 1 << 0,
+		Abstract	= 1 << 1,
+		Asx			= 1 << 2,
+		Author		= 1 << 3,
+		Banner		= 1 << 4,
+		Base		= 1 << 5,
+		Copyright	= 1 << 6,
+		Duration	= 1 << 7,
+		Entry		= 1 << 8,
+		EntryRef	= 1 << 9,
+		LogUrl		= 1 << 10,
+		MoreInfo	= 1 << 11,
+		Ref			= 1 << 12,
+		StartTime	= 1 << 13,
+		Title		= 1 << 14,
+	};
+
+	class KindNode : public List::Node {
+	public:
+		PlaylistNodeKind kind;
+		
+		KindNode (PlaylistNodeKind kind)
+		{
+			this->kind = kind;
+		}
+	};
+
+	List *kind_stack;
 
 	static void on_start_element (gpointer user_data, const char *name, const char **attrs);
 	static void on_end_element (gpointer user_data, const char *name);
 	static void on_text (gpointer user_data, const char *text, int len);
+
+	void AddEntry ();
+	PlaylistEntry *GetCurrentEntry ();
+
+	PlaylistContent *GetCurrentContent ();
+
+	void PushCurrentKind (PlaylistNodeKind kind);
+	void PopCurrentKind ();
+	PlaylistNodeKind GetCurrentKind ();
+	PlaylistNodeKind GetParentKind ();
+	void AssertParentKind (int kind);
+
 public:
 	PlaylistParser (Playlist *list);
 	~PlaylistParser ();
 
-	void Parse (const char *text, int len);
+	bool Parse (const char *text, int len);
 };
 
 G_END_DECLS

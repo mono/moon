@@ -1,5 +1,9 @@
 2007-09-05  Jb Evain  <jbevain@novell.com>
 
+	* playlist.cpp, playlist.h: work on playlist parsing.
+
+2007-09-05  Jb Evain  <jbevain@novell.com>
+
 	* xaml.h: export timespan_from_str.
 
 2007-09-05  Jb Evain  <jbevain@novell.com>
