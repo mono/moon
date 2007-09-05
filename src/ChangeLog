@@ -1,5 +1,12 @@
 2007-09-04  Chris Toshok  <toshok@ximian.com>
 
+	* media.cpp (Image::Render): unref the backing pixbuf as soon as
+	possible.
+	(Image::CleanupSurface): guard against double unreffing the
+	backing pixbuf.
+
+2007-09-04  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (xaml_set_property_from_str): delete the color.
 	(dependency_object_set_attributes): same.
 

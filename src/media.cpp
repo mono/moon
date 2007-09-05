@@ -930,7 +930,8 @@ Image::CleanupSurface ()
 			g_hash_table_remove (surface_cache, surface->fname);
 			g_free (surface->fname);
 			cairo_surface_destroy (surface->cairo);
-			g_object_unref (surface->backing_pixbuf);
+			if (surface->backing_pixbuf)
+				g_object_unref (surface->backing_pixbuf);
 			g_free (surface);
 		}
 
@@ -1077,7 +1078,7 @@ Image::CreateSurface (const char *fname)
 					      0, 0, surface->width, surface->height,
 					      pb,
 					      0, 0);
-			gdk_pixbuf_unref (pixbuf);
+			g_object_unref (pixbuf);
 			pixbuf = pb;
 		}
 
@@ -1158,6 +1159,8 @@ Image::Render (cairo_t *cr, int, int, int, int)
 		cairo_fill (cr);
 		cairo_destroy (cr);
 		cairo_surface_destroy (surface->cairo);
+		g_object_unref (surface->backing_pixbuf);
+		surface->backing_pixbuf = NULL;
 		surface->cairo = xlib_surface;
 	}
 
