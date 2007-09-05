@@ -26,7 +26,7 @@ class KeySpline : public DependencyObject {
 	KeySpline (Point controlPoint1, Point controlPoint2);
 	KeySpline (double x1, double y1, double x2, double y2);
 
-	Type::Kind GetObjectType () { return Type::KEYSPLINE; }
+	virtual Type::Kind GetObjectType () { return Type::KEYSPLINE; }
 
 	double GetSplineProgress (double linearProgress);
 
