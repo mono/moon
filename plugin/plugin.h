@@ -37,7 +37,7 @@ class PluginInstance
 	bool windowless;
 
 	//
-	// The XAML loader, contains a MonoObject *
+	// The XAML loader, contains a handle to a MonoObject *
 	//
 	gpointer mono_loader_object;
 

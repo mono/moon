@@ -1,4 +1,9 @@
 
+Thu Sep 6 16:19:58 CEST 2007 Paolo Molaro <lupus@ximian.com>
+
+	* mono.cpp, moon-mono.h, plugin.cpp, plugin.h: correct use of mono
+	objects: they can't be stored in unmanaged memory.
+
 Thu Sep 6 15:22:20 CEST 2007 Paolo Molaro <lupus@ximian.com>
 
 	* mono.cpp, moon-mono.h: cleanup of some code and localized the mono

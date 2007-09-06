@@ -19,5 +19,6 @@ gpointer    vm_xaml_str_loader_new (gpointer plugin, gpointer surface, const cha
 
 char       *vm_loader_try      (gpointer loader_object, int *error);
 void        vm_insert_mapping  (gpointer loader_object, const char *key, const char *value);
+void        vm_loader_destroy  (gpointer loader_object);
 
 G_END_DECLS

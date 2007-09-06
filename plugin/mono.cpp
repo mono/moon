@@ -85,6 +85,7 @@ vm_init (void)
 gpointer
 vm_xaml_file_loader_new (gpointer plugin, gpointer surface, const char *file)
 {
+	MonoObject *loader;
 	if (moon_load_xaml_file == NULL)
 		return NULL;
 
@@ -92,12 +93,14 @@ vm_xaml_file_loader_new (gpointer plugin, gpointer surface, const char *file)
 	params [0] = &plugin;
 	params [1] = &surface;
 	params [2] = mono_string_new (moon_domain, file);
-	return mono_runtime_invoke (moon_load_xaml_file, NULL, params, NULL);
+	loader = mono_runtime_invoke (moon_load_xaml_file, NULL, params, NULL);
+	return GUINT_TO_POINTER (mono_gchandle_new (loader, FALSE));
 }
 
 gpointer
 vm_xaml_str_loader_new (gpointer plugin, gpointer surface, const char *str)
 {
+	MonoObject *loader;
 	if (moon_load_xaml_str == NULL)
 		return NULL;
 
@@ -105,7 +108,8 @@ vm_xaml_str_loader_new (gpointer plugin, gpointer surface, const char *str)
 	params [0] = &plugin;
 	params [1] = &surface;
 	params [2] = mono_string_new (moon_domain, str);
-	return mono_runtime_invoke (moon_load_xaml_str, NULL, params, NULL);
+	loader = mono_runtime_invoke (moon_load_xaml_str, NULL, params, NULL);
+	return GUINT_TO_POINTER (mono_gchandle_new (loader, FALSE));
 }
 
 char *
@@ -117,7 +121,7 @@ vm_loader_try (gpointer loader_object, int *error)
 	void *params [1];
 	params [0] = &error;
 
-	MonoString *ret = (MonoString *) mono_runtime_invoke (moon_try_load, loader_object, params, NULL);
+	MonoString *ret = (MonoString *) mono_runtime_invoke (moon_try_load, mono_gchandle_get_target (GPOINTER_TO_UINT (loader_object)), params, NULL);
 	
 	return mono_string_to_utf8 (ret);
 }
@@ -133,5 +137,14 @@ vm_insert_mapping (gpointer loader_object, const char *key, const char *value)
 	params [0] = mono_string_new (moon_domain, key);
 	params [1] = mono_string_new (moon_domain, value);
 
-	mono_runtime_invoke (moon_insert_mapping, loader_object, params, NULL);
+	mono_runtime_invoke (moon_insert_mapping, mono_gchandle_get_target (GPOINTER_TO_UINT (loader_object)), params, NULL);
 }
+
+void
+vm_loader_destroy (gpointer loader_object)
+{
+	guint32 loader = GPOINTER_TO_UINT (loader_object);
+	if (loader)
+		mono_gchandle_free (loader);
+}
+

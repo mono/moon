@@ -162,6 +162,8 @@ PluginInstance::~PluginInstance ()
 
 	if (background)
 		g_free (background);
+
+	vm_loader_destroy (mono_loader_object);
 }
 
 void 
