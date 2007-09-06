@@ -1,5 +1,10 @@
 2007-09-06  Chris Toshok  <toshok@ximian.com>
 
+	* dirty.cpp (process_dirty_elements): some guards against unioning
+	an empty rectangle.
+
+2007-09-06  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::Invalidate): only invalidate the actual
 	rectangle.  The +1/-2 stuff is done in dirty.cpp, if it needs to
 	be.

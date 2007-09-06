@@ -164,7 +164,10 @@ process_dirty_elements ()
 			Rect dirty = el->dirty_rect;
 			if (el->UseAA() && !dirty.IsEmpty())
 				dirty = dirty.GrowBy (1);
-			dirty = dirty.Union (el->children_dirty_rect);
+			if (dirty.IsEmpty())
+				dirty = el->children_dirty_rect;
+			else if (!el->children_dirty_rect.IsEmpty())
+				dirty = dirty.Union (el->children_dirty_rect);
 
 			if (el->parent) {
 // 			  printf (" + + invalidating parent (%f,%f,%f,%f)\n",
