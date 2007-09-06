@@ -163,7 +163,7 @@ process_dirty_elements ()
 
 			Rect dirty = el->dirty_rect;
 			if (el->UseAA() && !dirty.IsEmpty())
-				dirty = dirty.GrowBy (1);
+				dirty = dirty.GrowBy (2);
 			if (dirty.IsEmpty())
 				dirty = el->children_dirty_rect;
 			else if (!el->children_dirty_rect.IsEmpty())
