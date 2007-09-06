@@ -14,12 +14,14 @@
 #include <stdlib.h>
 #include <glib.h>
 #include "moon-mono.h"
+G_BEGIN_DECLS
 #include <mono/jit/jit.h>
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/mono-debug.h>
 #include <mono/metadata/mono-config.h>
+G_END_DECLS
 
 static MonoDomain   *moon_domain;
 static MonoAssembly *moon_boot_assembly;
