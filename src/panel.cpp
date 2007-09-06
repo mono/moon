@@ -14,6 +14,7 @@
 #include "geometry.h"
 #include "panel.h"
 #include "brush.h"
+#include "color.h"
 #include "math.h"
 #include "collection.h"
 #include "runtime.h"
@@ -63,18 +64,19 @@ Panel::~Panel ()
 		background->Detach (NULL, this);
 		background->unref ();
 	}
+
+	VisualCollection *children = GetChildren ();
+	children->Clear();
 }
 
 #define DEBUG_BOUNDS 0
 
-#if DEBUG_BOUNDS
-void space (int n)
+static void space (int n)
 {
 	for (int i = 0; i < n; i++)
 		putchar (' ');
 }
 static int levelb = 0;
-#endif
 
 void
 Panel::ComputeBounds ()
@@ -148,6 +150,70 @@ static int level = 0;
 
 //#define DEBUG_INVALIDATE 1
 
+#define USE_STARTING_ELEMENT 1
+
+int
+Panel::FindStartingElement (Rect for_rect)
+{
+#if USE_STARTING_ELEMENT
+	VisualCollection *children = GetChildren ();
+	
+	for (gint i = children->z_sorted->len - 1; i >= 0; i --) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+		// if the exposed rectangle is completely within the bounds
+		// of a child that has opacity == 1.0 and lacks an opacity
+		// mask, we start rendering from there.
+		if (item->GetVisible ()
+		    && for_rect == item->GetBounds().Floor().Intersection(for_rect)
+		    && item->absolute_xform.xx == item->absolute_xform.yy /* no rotation */
+		    && (item->absolute_xform.yx == 0 && item->absolute_xform.xy == 0) /* no skew */
+		    && uielement_get_opacity (item) == 1.0
+		    && uielement_get_opacity_mask (item) == NULL) {
+			// there are actually some more type
+			// specific checks required.  we need
+			// to further limit it to elements
+			// which are truly rectangular to
+			// begin with (images, panels,
+			// mediaelements), and which aren't
+			// rotated/skewed.  also, make sure
+			// panel backgrounds are
+			// non-translucent.
+			Type::Kind type = item->GetObjectType();
+
+			if (type == Type::PANEL || type == Type::CANVAS) {
+				bool panel_works = false;
+#if notyet
+				Brush *bg = panel_get_background ((Panel*)item);
+				if (bg && bg->GetObjectType() == Type::SOLIDCOLORBRUSH) {
+					Color *c = solid_color_brush_get_color ((SolidColorBrush*)bg);
+					if (c && c->a == 1.0) {
+						/* we're good */
+						panel_works = true;
+					}
+				}
+#endif
+
+				if (!panel_works) {
+					/* look one level down and see if
+					** there's a child of this the child
+					** panel that completely encompasses
+					** the rectangle.
+					*/
+					if (-1 == ((Panel*)item)->FindStartingElement (for_rect))
+						continue;
+				}
+			}
+			else if (type != Type::MEDIAELEMENT) {
+				continue;
+			}
+			return i;
+		}
+	}
+#endif
+
+	return -1;
+}
+
 void
 Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 {
@@ -181,26 +247,31 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 
 	Rect render_rect (x, y, width, height);
 
-	level += 4;
+	gint start_element = FindStartingElement (render_rect);
+	if (start_element == -1)
+		start_element = 0;
+
+// 	space (levelb);
+// 	printf (" + starting at child %d\n", start_element);
+
+// 	levelb += 4;
 
 	//
 	// from this point on, we use the identity matrix to set the clipping
 	// path for the children
 	//
 	cairo_identity_matrix (cr);
-	for (guint i = 0; i < children->z_sorted->len; i++) {
+	for (guint i = start_element; i < children->z_sorted->len; i++) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
 		
-		if (!item->GetVisible()) {
+		if (!item->GetVisible()
+		    || item->GetTotalOpacity () == 0.0) {
 #ifdef DEBUG_INVALIDATE
 			printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
 #endif
 			continue;
 		}
 
-		//space (level);
-		//printf ("%s %g %g %g %g\n", dependency_object_get_name (item), item->x1, item->y1, item->x2, item->y2);
-		
 		if (render_rect.IntersectsWith (item->GetBounds())) {
 			Rect inter = render_rect.Intersection(item->GetBounds());
 #if CAIRO_CLIP
@@ -212,13 +283,20 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
 			// at the very least we need to clip based on the expose area.
 			// there's also a UIElement::ClipProperty
-			cairo_rectangle (cr, inter.x-1, inter.y-1, inter.w + 2, inter.h + 2);
+			cairo_rectangle (cr, inter.x, inter.y, inter.w, inter.h);
 			cairo_clip (cr);
 #if TIME_CLIP
 			ENDTIMER(clip, "cairo clip setup");
 #endif
 #endif
-			item->DoRender (cr, (int)inter.x-1, (int)inter.y-1, (int)inter.w + 2, (int)inter.h + 2);
+// 			space (levelb);
+// 			printf ("%p %s (%s), bounds = %g %g %g %g, inter = %g %g %g %g\n",
+// 				item, item->GetTypeName(), item->GetName(),
+// 				item->GetBounds().x, item->GetBounds().y, item->GetBounds().w, item->GetBounds().h,
+// 				inter.x, inter.y, inter.w, inter.h);
+		
+
+			item->DoRender (cr, (int)inter.x, (int)inter.y, (int)inter.w, (int)inter.h);
 
 #if CAIRO_CLIP
 #if TIME_CLIP
@@ -238,10 +316,11 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 #endif
 
 	}
+
 	//printf ("RENDER: LEAVE\n");
 	//draw_grid (cr);
 
-	level -= 4;
+	levelb -= 4;
 	cairo_restore (cr);
 }
 

@@ -19,6 +19,9 @@ class Panel : public FrameworkElement {
 	// Contains the last element where the mouse entered
 	//
 	UIElement *mouse_over;
+
+	int FindStartingElement (Rect for_rect);
+
  public:
 	Panel ();
 	virtual ~Panel ();

@@ -44,6 +44,7 @@ class UIElement : public Visual {
 
 	int dirty_flags;
 	Rect dirty_rect;
+	Rect children_dirty_rect;
 
 	int DumpHierarchy (UIElement *obj);
 
@@ -78,6 +79,8 @@ class UIElement : public Visual {
 	Point transform_origin;
 
 	virtual Surface *GetSurface () { return parent ? parent->GetSurface() : NULL; }
+
+	virtual bool UseAA() { return true; }
 
 	//
 	// UpdateTotalOpacity:
@@ -174,6 +177,8 @@ class UIElement : public Visual {
 	// (which is actually an infinitely big Clip region).
 	// 
 	bool InsideClip (cairo_t *cr, double x, double y);
+
+	void ChildInvalidated (Rect r);
 
 	//
 	// Invalidates a subrectangle of this element

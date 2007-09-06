@@ -73,6 +73,12 @@ struct Rect {
 		return result;
 	}
 
+	Rect Floor ()
+	{
+		Rect result ((int)x, (int)y, (int)w, (int)h);
+		return result;
+	}
+
 	Rect GrowBy (double d)
 	{
 		Rect result = *this;

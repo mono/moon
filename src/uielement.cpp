@@ -55,6 +55,7 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 
 	dirty_flags = 0;
 	dirty_rect = Rect (0,0,0,0);
+	children_dirty_rect = Rect (0,0,0,0);
 
 	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
@@ -279,6 +280,21 @@ UIElement::OnLoaded ()
 		flags |= UIElement::IS_LOADED;
 		Emit (LoadedEvent);
 	}
+}
+
+void
+UIElement::ChildInvalidated (Rect r)
+{
+	if (!GetVisible ())
+		return;
+
+	add_dirty_element (this, DirtyInvalidate);
+	if (children_dirty_rect.IsEmpty())
+		children_dirty_rect = r;
+	else
+		children_dirty_rect = children_dirty_rect.Union (r);
+
+	Emit (InvalidatedEvent);
 }
 
 //

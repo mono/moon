@@ -156,9 +156,15 @@ process_dirty_elements ()
 		}
 
 		if (el->dirty_flags & DirtyInvalidate) {
-// 		  printf (" + invalidate\n");
+//  			printf (" + invalidating %p (%s) %s, %f %f %f %f\n",
+// 				el, el->GetTypeName(), el->GetName(), el->dirty_rect.x, el->dirty_rect.y, el->dirty_rect.w, el->dirty_rect.h);
 
 			el->dirty_flags &= ~DirtyInvalidate;
+
+			Rect dirty = el->dirty_rect;
+			if (el->UseAA() && !dirty.IsEmpty())
+				dirty = dirty.GrowBy (1);
+			dirty = dirty.Union (el->children_dirty_rect);
 
 			if (el->parent) {
 // 			  printf (" + + invalidating parent (%f,%f,%f,%f)\n",
@@ -166,17 +172,18 @@ process_dirty_elements ()
 // 				  el->dirty_rect.y,
 // 				  el->dirty_rect.w,
 // 				  el->dirty_rect.h);
-				el->parent->Invalidate (el->dirty_rect.GrowBy(1));
+				el->parent->ChildInvalidated (dirty);
 			}
 			else if (el->Is (Type::CANVAS) &&
 				 el->parent == NULL &&
 				 el->GetSurface() &&
 				 el->GetSurface()->GetToplevel() == el) {
 
-				el->GetSurface()->Invalidate (el->dirty_rect.GrowBy(1));
+				el->GetSurface()->Invalidate (dirty);
 			}
 
 			el->dirty_rect = Rect (0,0,0,0);
+			el->children_dirty_rect = Rect (0,0,0,0);
 		}
 
 

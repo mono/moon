@@ -322,7 +322,7 @@ Surface::Invalidate (Rect r)
 {
 	gtk_widget_queue_draw_area (drawing_area,
 				    (int) r.x, (int)r.y, 
-				    (int)(r.w+2), (int)(r.h+2));
+				    (int) r.w, (int)r.h);
 }
 
 void

@@ -211,6 +211,12 @@ public:
 	void Pause ();
 	void Play ();
 	void Stop ();
+
+	virtual bool UseAA()
+	{
+		return !(absolute_xform.xx == absolute_xform.yy /* no rotation */
+			 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */);
+	}
 	
 	int BufferingProgressChangedEvent;
 	int CurrentStateChangedEvent;

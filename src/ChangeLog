@@ -1,3 +1,34 @@
+2007-09-06  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::Invalidate): only invalidate the actual
+	rectangle.  The +1/-2 stuff is done in dirty.cpp, if it needs to
+	be.
+
+	* rect.h (Rect::Floor): drop fractional part of all values.
+
+	* media.h,media.cpp: we cheat and turn off AA on MediaElements
+	when they aren't rotated or skewed.
+
+	* uielement.h, uielement.cpp: we need to keep track of 2
+	dirty_rects.  one for the element itself, which is GrowBy(1)'ed in
+	dirty.cpp if the child uses AA, and one for children who have
+	passed their invalidation rect up the tree (we don't grow this
+	one).  Also, add the default UseAA method, which returns true, and
+	the ChildInvalidated method, which mirrors Invalidate(Rect r) but
+	uses the children_dirt_rect.
+
+	* panel.h, panel.cpp (Panel::~Panel): clear our children
+	collection.
+	(Panel::FindStartingElement): the meat of the optimization hack -
+	we determine if we can skip parts of the tree if the expose
+	rectangle exists completely within the bounds of an opaque
+	element, unrotated, unskewed element.
+	
+	* dirty.cpp (process_dirty_elements): handle
+	item->children_dirty_rect as well as item->dirty_rect.  Also, Grow
+	the item's dirty_rect by 1 before combining them, if the item uses
+	AA.
+
 2007-09-05  Jb Evain  <jbevain@novell.com>
 
 	* playlist.cpp: the asx format is case insensitive, parse it

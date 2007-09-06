@@ -268,6 +268,9 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	}
 	
 	cairo_save (cr);
+	if (!UseAA())
+		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, opacity);
