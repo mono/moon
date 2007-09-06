@@ -14,16 +14,22 @@
 #include <stdlib.h>
 #include <glib.h>
 #include "moon-mono.h"
+#include <mono/jit/jit.h>
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/mono-debug.h>
+#include <mono/metadata/mono-config.h>
 
-MonoDomain   *moon_domain;
-MonoAssembly *moon_boot_assembly;
+static MonoDomain   *moon_domain;
+static MonoAssembly *moon_boot_assembly;
 static char *boot_assembly;
 
 // Methods
-MonoMethod   *moon_load_xaml_file;
-MonoMethod   *moon_load_xaml_str;
-MonoMethod   *moon_try_load;
-MonoMethod   *moon_insert_mapping;
+static MonoMethod   *moon_load_xaml_file;
+static MonoMethod   *moon_load_xaml_str;
+static MonoMethod   *moon_try_load;
+static MonoMethod   *moon_insert_mapping;
 
 static MonoMethod *
 vm_get_method_from_name (const char *name)
