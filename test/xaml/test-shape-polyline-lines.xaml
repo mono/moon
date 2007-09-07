@@ -1,0 +1,23 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- zero point polylines, i.e. empty (invisible) -->
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="" />
+
+	<!-- one point polylines, i.e. a move to (invisible) -->
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="10,10" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="90,10" />
+
+	<!-- two points polylines, i.e. lines -->
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="40,40 80,80" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="80,80 120,40" />
+
+	<!-- same shape, notice the filling and the line join -->
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="40,140 80,180 120,140" />
+
+	<!-- two points polylines, i.e. lines -->
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="220,40 260,80" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="260,80 300,40" />
+
+	<!-- same shape, notice the filling and the line join -->
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="220,140 260,180 300,140" />
+</Canvas>

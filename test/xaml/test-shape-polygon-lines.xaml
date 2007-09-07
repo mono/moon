@@ -1,0 +1,25 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- zero point polygons, i.e. empty (invisible) -->
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" />
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="" />
+
+	<!-- one point polygons, i.e. a move to (invisible) -->
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="10,10" />
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="90,10" />
+
+	<!-- two points polygons, i.e. a line - but a long longer than expected! -->
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="40,40 80,80" />
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="80,80 120,40" />
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="120,40 40,40" />
+
+	<!-- same shape, notice the filling and the short (point respecting) lines -->
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="40,140 80,180 120,140" />
+
+	<!-- two points polygons, i.e. a line - but a long longer than expected! -->
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="220,40 260,80" />
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="260,80 300,40" />
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="300,40 220,40" />
+
+	<!-- same shape, notice the filling and the short (point respecting) lines -->
+	<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="220,140 260,180 300,140" />
+</Canvas>
