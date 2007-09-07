@@ -1,3 +1,12 @@
+2007-09-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Fixed Polygon "special" case when it only has to draw
+	a line. Fixed Line::ComputeBound (Shape::ComputeBoundFast wasn't 
+	working) which is now 10x faster than calling ComputeBoundSlow (the
+	working alternative). Started to reuse the same concept for Polyline
+	and Polygon but the (#def-out) code doesn't yet handle line joins 
+	correctly (so it still use the correct ComputeBoundSlow);
+
 2007-09-06  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.cpp (process_dirty_elements): some guards against unioning

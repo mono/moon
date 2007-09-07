@@ -1016,23 +1016,47 @@ DependencyProperty* Line::Y1Property;
 DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
+static void
+calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
+{
+	if (x1 == x2) {
+		bounds->x = x1 - thickness / 2.0;
+		bounds->y = MIN (y1, y2);
+		bounds->w = thickness;
+		bounds->h = fabs (y2 - y1);
+	} else 	if (y1 == y2) {
+		bounds->x = MIN (x1, x2);
+		bounds->y = y1 - thickness / 2.0;
+		bounds->w = fabs (x2 - x1);
+		bounds->h = thickness;
+	} else {
+		double m = fabs ((y1 - y2) / (x1 - x2));
+		double dx = (m > 1.0) ? thickness : thickness * m;
+		double dy = (m < 1.0) ? thickness : thickness / m;
+
+		bounds->x = MIN (x1, x2) - dx / 2.0;
+		bounds->y = MIN (y1, y2) - dy / 2.0;
+		bounds->w = fabs (x2 - x1) + dx;
+		bounds->h = fabs (y2 - y1) + dy;
+	}
+}
+
 void
 Line::ComputeBounds ()
 {
-#if notyet
+	double thickness = shape_get_stroke_thickness (this);
+	if (thickness <= 0.0) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
 	double x1 = line_get_x1 (this);
 	double y1 = line_get_y1 (this);
 	double x2 = line_get_x2 (this);
 	double y2 = line_get_y2 (this);
+	calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     Rect (MIN(x1,x2), MIN(y1,y2),
-							   fabs (x2-x1), fabs (y2-y1)));
-
-// no-op	bounds.GrowBy (shape_get_stroke_thickness (this) + 1);
-#else
-	Shape::ComputeBounds ();
-#endif
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
 }
 
 void
@@ -1125,10 +1149,108 @@ Polygon::GetFillRule ()
 	return polygon_get_fill_rule (this);
 }
 
+// special case when a polygon has a single line in it (it's drawn longer than it should)
+// e.g. <Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="260,80 300,40" />
+static void
+polygon_extend_line (double *x1, double *x2, double *y1, double *y2, double thickness)
+{
+	// not sure why it's a 5 ? afaik it's not related to the line length or any other property
+	double t5 = thickness * 5.0;
+	double dx = *x1 - *x2;
+	double dy = *y1 - *y2;
+
+	if (dy == 0.0) {
+		t5 -= thickness / 2.0;
+		if (dx > 0.0) {
+			*x1 += t5;
+			*x2 -= t5;
+		} else {
+			*x1 -= t5;
+			*x2 += t5;
+		}
+	} else if (dx == 0.0) {
+		t5 -= thickness / 2.0;
+		if (dy > 0.0) {
+			*y1 += t5;
+			*y2 -= t5;
+		} else {
+			*y1 -= t5;
+			*y2 += t5;
+		}
+	} else {
+		double angle = atan (dy / dx);
+		double ax = fabs (sin (angle) * t5);
+		if (dx > 0.0) {
+			*x1 += ax;
+			*x2 -= ax;
+		} else {
+			*x1 -= ax;
+			*x2 += ax;
+		}
+		double ay = fabs (sin ((M_PI / 2.0) - angle)) * t5;
+		if (dy > 0.0) {
+			*y1 += ay;
+			*y2 -= ay;
+		} else {
+			*y1 -= ay;
+			*y2 += ay;
+		}
+	}
+}
+
 void
 Polygon::ComputeBounds ()
 {
+#if TRUE
 	Shape::ComputeBoundsSlow ();
+#else
+	bounds = Rect (0.0, 0.0, 0.0, 0.0);
+
+	double thickness = shape_get_stroke_thickness (this);
+	if (thickness <= 0.0)
+		return;
+
+	int i, count = 0;
+	Point *points = polygon_get_points (this, &count);
+
+	// the first point is a move to, resulting in an empty shape
+	if (!points || (count < 2))
+		return;
+
+	double x0 = points [0].x;
+	double y0 = points [0].y;
+
+	if (count == 2) {
+		double x1 = points [1].x;
+		double y1 = points [1].y;
+
+		polygon_extend_line (&x0, &x1, &y0, &y1, thickness);
+		calc_line_bounds (x0, x1, y0, y1, thickness, &bounds);
+	} else {
+		double x1 = x0;
+		double y1 = y0;
+		// FIXME: line joins makes this more difficult than a simple union between lines
+		Rect line_bounds;
+		for (i = 1; i < count; i++) {
+			double x2 = points [i].x;
+			double y2 = points [i].y;
+			calc_line_bounds (x1, x2, y1, y2, thickness, &line_bounds);
+			bounds = bounds.Union (line_bounds);
+			x1 = x2;
+			y1 = y2;
+		}
+		// a polygon is a closed shape (unless it's a line)
+		calc_line_bounds (x1, x0, y1, y0, thickness, &line_bounds);
+		bounds = bounds.Union (line_bounds);
+	}
+
+	if (shape_get_stretch (this) != StretchNone) {
+		bounds.x -= x0;
+		bounds.y -= y0;
+	}
+
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
+#endif
 }
 
 void
@@ -1137,7 +1259,8 @@ Polygon::BuildPath (cairo_t *cr)
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
 
-	if (!points || (count < 1)) {
+	// the first point is a move to, resulting in an empty shape
+	if (!points || (count < 2)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
 	}
@@ -1145,20 +1268,33 @@ Polygon::BuildPath (cairo_t *cr)
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_new_path (cr);
 
-	Stretch stretch = shape_get_stretch (this);
-	switch (stretch) {
-	case StretchNone:
-		cairo_move_to (cr, points [0].x, points [0].y);
-		for (i = 1; i < count; i++)
-			cairo_line_to (cr, points [i].x, points [i].y);
-		break;
-	default:
-		double x = points [0].x;
-		double y = points [0].y;
-		cairo_move_to (cr, 0, 0);
-		for (i = 1; i < count; i++)
-			cairo_line_to (cr, points [i].x - x, points [i].y - y);
-		break;
+	// special case, both the starting and ending points are 5 * thickness than the actual points
+	if (count == 2) {
+		double x1 = points [0].x;
+		double y1 = points [0].y;
+		double x2 = points [1].x;
+		double y2 = points [1].y;
+
+		polygon_extend_line (&x1, &x2, &y1, &y2, shape_get_stroke_thickness (this));
+
+		cairo_move_to (cr, x1, y1);
+		cairo_line_to (cr, x2, y2);
+	} else {
+		Stretch stretch = shape_get_stretch (this);
+		switch (stretch) {
+		case StretchNone:
+			cairo_move_to (cr, points [0].x, points [0].y);
+			for (i = 1; i < count; i++)
+				cairo_line_to (cr, points [i].x, points [i].y);
+			break;
+		default:
+			double x = points [0].x;
+			double y = points [0].y;
+			cairo_move_to (cr, 0, 0);
+			for (i = 1; i < count; i++)
+				cairo_line_to (cr, points [i].x - x, points [i].y - y);
+			break;
+		}
 	}
 
 	cairo_close_path (cr);
@@ -1247,7 +1383,56 @@ Polyline::GetFillRule ()
 void
 Polyline::ComputeBounds ()
 {
+#if TRUE
 	Shape::ComputeBoundsSlow ();
+#else
+//TimeSpan id_t_start = get_now(); printf ("timing of '%s' started at %lld\n", "", id_t_start);
+//for (int i=0; i < 100000; i++) {
+//	Shape::ComputeBoundsSlow ();
+	bounds = Rect (0.0, 0.0, 0.0, 0.0);
+
+	double thickness = shape_get_stroke_thickness (this);
+	if (thickness <= 0.0)
+		return;
+
+	int i, count = 0;
+	Point *points = polyline_get_points (this, &count);
+
+	// the first point is a move to, resulting in an empty shape
+	if (!points || (count < 2))
+		return;
+
+	double x1 = points [0].x;
+	double y1 = points [0].y;
+
+	if (count == 2) {
+		// this is a "simple" line (move to + line to)
+		double x2 = points [1].x;
+		double y2 = points [1].y;
+		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
+	} else {
+		// FIXME: line joins makes this more difficult than a simple union between lines
+		Rect line_bounds;
+		for (i = 1; i < count; i++) {
+			double x2 = points [i].x;
+			double y2 = points [i].y;
+			calc_line_bounds (x1, x2, y1, y2, thickness, &line_bounds);
+			bounds = bounds.Union (line_bounds);
+			x1 = x2;
+			y1 = y2;
+		}
+	}
+
+	if (shape_get_stretch (this) != StretchNone) {
+		bounds.x -= points [0].x;
+		bounds.y -= points [0].y;
+	}
+
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
+g_warning ("extents %g %g %g %g", bounds.x, bounds.y, bounds.w, bounds.h);
+//}
+//TimeSpan id_t_end = get_now(); printf ("timing of '%s' ended at %lld (%f seconds)\n", "", id_t_end, (double)(id_t_end - id_t_start) / 1000000);
+#endif
 }
 
 void
@@ -1256,7 +1441,8 @@ Polyline::BuildPath (cairo_t *cr)
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
 
-	if (!points || (count < 1)) {
+	// the first point is a move to, resulting in an empty shape
+	if (!points || (count < 2)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
 	}
