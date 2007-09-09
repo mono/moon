@@ -1531,8 +1531,31 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "createFromXamlDownloader")) {
-		// not implemented yet
-		DEBUG_WARN_NOTIMPLEMENTED ("content.createFromXamlDownloader");
+		NULL_TO_NPVARIANT (*result);
+
+		if (argCount < 2)
+			return true;
+	    
+		Downloader *down = (Downloader*)((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args [0]))->GetDependencyObject ();
+
+		Type::Kind element_type;
+
+		DependencyObject* dep = NULL;
+
+		char *fname = down->GetResponseFile ((char *) NPVARIANT_TO_STRING (args[1]).utf8characters);
+		if (fname != NULL) {
+			dep = xaml_create_from_file (fname, false, &element_type);
+
+			g_free (fname);
+		}
+
+		if (dep == NULL)
+			return true;
+
+		MoonlightEventObjectObject *depobj =
+			EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dep);
+
+		OBJECT_TO_NPVARIANT (depobj, *result);
 		return true;
 	}
 
