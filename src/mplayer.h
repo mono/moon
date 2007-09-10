@@ -83,6 +83,7 @@ public:
 	
 	int GetAudioStreamCount ();
 	int GetAudioStreamIndex ();
+	bool HasVideo ();
 	
 	double GetBalance ();
 	void SetBalance (double balance);

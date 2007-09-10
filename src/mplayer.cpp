@@ -767,6 +767,12 @@ MediaPlayer::GetAudioStreamIndex ()
 	return audio->stream_id;
 }
 
+bool
+MediaPlayer::HasVideo ()
+{
+	return video->stream_id != -1;
+}
+
 double
 MediaPlayer::GetBalance ()
 {

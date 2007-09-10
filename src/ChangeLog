@@ -1,3 +1,12 @@
+2007-09-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (OnPropertyChanged): Only Invalidate() on
+	PositionProperty changes if we have video content to render. Fixes
+	bug #82474.
+
+	* mplayer.cpp (HasVideo): New method that returns true if the
+	media source has video content.
+
 2007-09-10  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* mplayer.cpp (Duration): Only use audio duration as the defacto

@@ -616,7 +616,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
 	} else if (prop == MediaElement::PositionProperty) {
-		if (timeout_id != 0) {
+		if (timeout_id != 0 && mplayer->HasVideo ()) {
 			double opacity = GetTotalOpacity ();
 			
 			if (opacity > 0.0f)
