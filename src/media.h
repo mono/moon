@@ -51,35 +51,9 @@ void    media_base_set_stretch (MediaBase *media, Stretch value);
 
 
 class Image : public MediaBase {
- public:
-	static DependencyProperty *DownloadProgressProperty;
-	
-	Image ();
-	virtual ~Image ();
-
-	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
-	
-	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void ComputeBounds ();
-	virtual Point GetTransformOrigin ();
-	
-	cairo_surface_t *GetCairoSurface ();
-
-	void SetSource (DependencyObject *Downloader, const char *PartName);
-
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-
-	int GetHeight () { return surface ? surface->height : 0; };
-	int GetWidth  () { return surface ? surface->width : 0; };
-
-	ImageBrush *brush;
-
-	static GHashTable *surface_cache;
-
- private:
 	bool create_xlib_surface;
 
-	void CreateSurface (const char *fname);
+	bool CreateSurface (const char *fname);
 	void CleanupSurface ();
 	void CleanupPattern ();
 	void DownloaderAbort ();
@@ -112,6 +86,33 @@ class Image : public MediaBase {
 	// pattern caching
 	cairo_pattern_t *pattern;
 	double pattern_opacity;
+
+ public:
+	static DependencyProperty *DownloadProgressProperty;
+	
+	Image ();
+	virtual ~Image ();
+
+	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
+	
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void ComputeBounds ();
+	virtual Point GetTransformOrigin ();
+	
+	cairo_surface_t *GetCairoSurface ();
+
+	void SetSource (DependencyObject *Downloader, const char *PartName);
+
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	int GetHeight () { return surface ? surface->height : 0; };
+	int GetWidth  () { return surface ? surface->width : 0; };
+
+	ImageBrush *brush;
+
+	static GHashTable *surface_cache;
+
+	int ImageFailedEvent;
 };
 
 Image *image_new (void);

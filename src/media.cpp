@@ -21,6 +21,7 @@
 
 #include "runtime.h"
 #include "media.h"
+#include "error.h"
 #include "downloader.h"
 #include "playlist.h"
 
@@ -884,14 +885,15 @@ GHashTable* Image::surface_cache = NULL;
 DependencyProperty* Image::DownloadProgressProperty;
 
 Image::Image ()
-  : brush (NULL),
-    create_xlib_surface (true),
+  : create_xlib_surface (true),
     downloader (NULL),
     surface (NULL),
     part_name(NULL),
     pattern (NULL),
-    pattern_opacity (1.0)
+    pattern_opacity (1.0),
+    brush (NULL)
 {
+	ImageFailedEvent = RegisterEvent ("ImageFailed");
 }
 
 Image::~Image ()
@@ -992,11 +994,16 @@ void
 Image::DownloaderComplete ()
 {
 	char *file = downloader_get_response_file (downloader, part_name);
-	/* the download was abosrted */
-	if (!file)
+	/* the download was aborted */
+	if (!file) {
+		/* XXX should this emit ImageFailed? */
 		return;
-	CreateSurface (file);
+	}
+
+	bool ok = CreateSurface (file);
 	g_free (file);
+	if (!ok)
+		return;
 
 	if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
 		SetValue (FrameworkElement::WidthProperty, (double) surface->width);
@@ -1035,12 +1042,12 @@ Image::DownloaderComplete ()
 #include "alpha-premul-table.inc"
 
 
-void
+bool
 Image::CreateSurface (const char *fname)
 {
 	if (surface) {
-		printf ("surface already created..\n");
-		return;
+		// image surface already created
+		return true;
 	}
 
 	CleanupPattern ();
@@ -1056,10 +1063,20 @@ Image::CreateSurface (const char *fname)
 		GError *error = NULL;
 
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (fname, &error);
-		fprintf (stderr, "TODO/WARNING: We need to register Image callbacks to raise events in managed land\n");
 		if (!pixbuf){
-			printf ("Failed to load image %s\n", fname);
-			return;
+			char *msg;
+
+			if (error && error->message)
+				msg = g_strdup_printf ("Failed to load image %s: %s", fname, error->message);
+			else
+				msg = g_strdup_printf ("Failed to load image %s", fname);
+		  
+			ImageErrorEventArgs *ea = new ImageErrorEventArgs (msg);
+
+			Emit (ImageFailedEvent, ea);
+
+			delete ea;
+			return false;
 		}
 
 		surface = g_new0 (CachedSurface, 1);
@@ -1121,6 +1138,8 @@ Image::CreateSurface (const char *fname)
 
 		g_hash_table_insert (surface_cache, surface->fname, surface);
 	}
+
+	return true;
 }
 
 void

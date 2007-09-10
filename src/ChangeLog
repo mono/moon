@@ -1,3 +1,23 @@
+2007-09-10  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (HookupAnimationsRecurse): make the message
+	involving failure to hookup a property more verbose.  Looks like
+	MS is treating a TranslateTransform as a ScaleTransform in popfly
+	- that is, they're trying to animate ScaleX on a
+	TranslateTransform (which is oddly enough named "scale".)
+
+	* media.cpp: Emit ImageFailedEvent if we failed to load the image.
+	Remove that damn TODO printf.
+
+	* media.h: add ImageFailedEvent to Image, and change signature of
+	CreateSurface so we can return false if there's an error.
+
+	* xaml.cpp (parser_error): use the new ParserErrorEventArgs ctor.
+
+	* error.h: make these classes instead of structs, and also make
+	them copy/free the type specific strings.  it'll result in more
+	allocations but it cleans up the code using them.
+
 2007-09-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Fixed Polygon "special" case when it only has to draw

@@ -16,28 +16,62 @@
 
 #include "enums.h"
 
-struct ErrorEventArgs /* : public EventArgs */ {
+class ErrorEventArgs /* : public EventArgs */ {
  public:
-	int error_code;;
-	const char *error_message;
+	ErrorEventArgs (ErrorType type, int code, const char *msg)
+	{
+		error_type = type;
+		error_code = code;
+		error_message = g_strdup (msg);
+	}
+	
+	~ErrorEventArgs ()
+	{
+		g_free (error_message);
+	}
+
+	int error_code;
+	char *error_message;
 	ErrorType error_type;
 };
 
-struct ParserErrorEventArgs : public ErrorEventArgs {
+class ImageErrorEventArgs : public ErrorEventArgs {
+  public:
+	ImageErrorEventArgs (const char *msg)
+	  : ErrorEventArgs (ImageError, 0, msg)
+	{
+	}
+};
+
+class ParserErrorEventArgs : public ErrorEventArgs {
  public:
 
-	ParserErrorEventArgs () : char_position (0), line_number (0), xaml_file (NULL),
-	xml_element (NULL), xml_attribute (NULL)
+	ParserErrorEventArgs (const char *msg,
+			      const char *file,
+			      int line, int column,
+			      const char *element,
+			      const char *attribute)
+	  : ErrorEventArgs (ParserError, 0, msg),
+	  char_position (column),
+	  line_number (line),
+	  xaml_file (g_strdup(file)),
+	  xml_element (g_strdup (element)),
+	  xml_attribute (g_strdup (attribute))
+	  {
+	  }
+
+	~ParserErrorEventArgs ()
 	{
-		error_type = ParserError;
+		g_free (xaml_file);
+		g_free (xml_element);
+		g_free (xml_attribute);
 	}
-	
 	
 	int char_position;
 	int line_number;
-	const char *xaml_file;
-	const char *xml_element;
-	const char *xml_attribute;
+	char *xaml_file;
+	char *xml_element;
+	char *xml_attribute;
 };
 
 #endif /* __MOON_ERROR_H__ */

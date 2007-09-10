@@ -151,7 +151,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 
 		DependencyProperty *prop = resolve_property_path (&o, targetProperty);
 		if (!prop) {
-			printf ("no property named %s\n", targetProperty);
+			printf ("no property named %s on object %s, which has type %s\n", targetProperty, targetName, o->GetTypeName());
 			return;
 		}
 

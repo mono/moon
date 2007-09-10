@@ -381,14 +381,11 @@ is_instance_of (XamlElementInstance *item, Type::Kind kind)
 void
 parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message)
 {
-	p->error_args = new ParserErrorEventArgs ();
-
-	p->error_args->line_number = XML_GetCurrentLineNumber (p->parser);
-	p->error_args->char_position = XML_GetCurrentColumnNumber (p->parser);
-	p->error_args->xaml_file = p->file_name ? strdup (p->file_name) : NULL;
-	p->error_args->xml_element = el ? strdup (el) : NULL;
-	p->error_args->xml_attribute = attr ? strdup (attr) : NULL;
-	p->error_args->error_message = message;
+	p->error_args = new ParserErrorEventArgs (message,
+						  p->file_name,
+						  XML_GetCurrentLineNumber (p->parser),
+						  XML_GetCurrentColumnNumber (p->parser),
+						  el, attr);
 
 	g_warning ("PARSER ERROR, STOPPING PARSING:  %s  line: %d   char: %d\n", message,
 			p->error_args->line_number, p->error_args->char_position);
