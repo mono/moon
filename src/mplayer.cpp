@@ -728,7 +728,7 @@ MediaPlayer::Position ()
 int64_t
 MediaPlayer::Duration ()
 {
-	if (audio->stream_id != -1)
+	if (audio->pcm != NULL && audio->stream_id != -1)
 		return audio->stream->duration;
 	
 	if (video->stream_id != -1)
