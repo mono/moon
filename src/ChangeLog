@@ -1,5 +1,12 @@
 2007-09-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mplayer.cpp (StopThreads): When resetting current_pts and
+	target_pts, use the audio (or video) initial_pts value rather than
+	0 since they are meant to be absolute pts values, not
+	relative. This fixes a bug in the halo3 site where pressing Stop
+	would cause the current time string to become "59:55" when it
+	should have been "00:00".
+
 	* media.cpp (OnPropertyChanged): Only Invalidate() on
 	PositionProperty changes if we have video content to render. Fixes
 	bug #82474.

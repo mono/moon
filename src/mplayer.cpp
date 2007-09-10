@@ -266,6 +266,7 @@ MediaPlayer::Open (const char *uri)
 				audio->initial_pts = stream->start_time;
 			else
 				printf ("audio start pts is invalid? %lld\n", stream->start_time);
+			printf ("audio initial_pts = %lld\n", audio->initial_pts);
 			break;
 		case CODEC_TYPE_VIDEO:
 			if (video->stream_id != -1)
@@ -582,6 +583,7 @@ MediaPlayer::Pause ()
 void
 MediaPlayer::StopThreads ()
 {
+	int64_t initial_pts;
 	Packet *pkt;
 	
 	stop = true;
@@ -626,8 +628,13 @@ MediaPlayer::StopThreads ()
 	pause_time = 0;
 	start_time = 0;
 	
-	current_pts = 0;
-	target_pts = 0;
+	if (audio->pcm != NULL && audio->stream_id != -1)
+		initial_pts = audio->initial_pts;
+	else
+		initial_pts = video->initial_pts;
+	
+	current_pts = initial_pts;
+	target_pts = initial_pts;
 	seek_pts = 0;
 	
 	stop = false;
