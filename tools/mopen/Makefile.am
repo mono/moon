@@ -1,6 +1,6 @@
 moondir = $(prefix)/lib/moon
 
-moon_DATA = mopen.exe mopen.exe.config
+moon_DATA = mopen.exe mopen.exe.mdb mopen.exe.config
 
 bin_SCRIPTS = mopen
 
