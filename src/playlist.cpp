@@ -151,6 +151,8 @@ Playlist::Playlist (MediaElement *element, char *source_name)
 {
 	entries = new List ();
 	downloader = new Downloader ();
+	downloader->SetWriteFunc (on_downloader_data_write, on_downloader_size_notify, this);
+	downloader->AddHandler (downloader->CompletedEvent, on_downloader_complete, this);
 }
 
 Playlist::~Playlist ()
@@ -161,24 +163,27 @@ Playlist::~Playlist ()
 }
 
 bool
-Playlist::Open ()
+Playlist::Parse ()
 {
-	if (!Parse ())
+	gchar *text;
+	gsize len;
+	bool error;
+
+	if (!g_file_get_contents (source_name, &text, &len, NULL))
 		return false;
 
-	if (entries->Length () == 0)
-		return false;
+	PlaylistParser *parser = new PlaylistParser (this);
+	error = !parser->Parse (text, len);
 
-	g_warning ("playlists are not implemented\n");
-	// TODO: download the first entry
-	return false;
+	delete parser;
+	g_free (text);
+
+	return !error;
 }
 
-guint
-Playlist::Play ()
+void
+Playlist::OnDownloaderComplete ()
 {
-	// TODO: play the first entry
-	return MediaSource::Play ();
 }
 
 bool
@@ -194,29 +199,77 @@ Playlist::IsPlaylistFile (const char * file_name)
 }
 
 void
-Playlist::AddEntry (PlaylistEntry *entry)
+Playlist::on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata)
 {
-	entries->Append (entry);
+	Playlist *playlist = reinterpret_cast<Playlist *> (userdata);
+	playlist->OnDownloaderComplete ();
+}
+
+void
+Playlist::on_downloader_data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+{
+}
+
+void
+Playlist::on_downloader_size_notify (int64_t size, gpointer data)
+{
+}
+
+static bool
+check_base_for_entry (GString *uri, const char *base)
+{
+	if (base == NULL || !strlen (base))
+		return false;
+
+	g_string_append (uri, base);
+	g_string_append_c (uri, '/');
+	return true;
+}
+
+void
+Playlist::OpenEntry (PlaylistEntry *entry)
+{
+	GString *uri;
+
+	uri = g_string_new ("");
+	if (!check_base_for_entry (uri, entry->GetBase ()))
+		check_base_for_entry (uri, this->GetBase ());
+
+	g_string_append (uri, entry->GetSource ());
+
+	downloader->Open ("GET", uri->str);
+	downloader->Send ();
+
+	g_string_free (uri, true);
 }
 
 bool
-Playlist::Parse ()
+Playlist::Open ()
 {
-	gchar *text;
-	gsize len;
-	bool error = false;
-
-	if (!g_file_get_contents (source_name, &text, &len, NULL))
+	if (!Parse ())
 		return false;
 
-	PlaylistParser *parser = new PlaylistParser (this);
-	if (!parser->Parse (text, len))
-		error = true;
+	if (entries->Length () == 0)
+		return false;
 
-	delete parser;
-	g_free (text);
+	OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
 
-	return !error;
+	g_warning ("playlists are not implemented\n");
+	// TODO: download the first entry
+	return false;
+}
+
+guint
+Playlist::Play ()
+{
+	// TODO: play the first entry
+	return MediaSource::Play ();
+}
+
+void
+Playlist::AddEntry (PlaylistEntry *entry)
+{
+	entries->Append (entry);
 }
 
 // PlaylistParser

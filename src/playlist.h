@@ -70,6 +70,12 @@ private:
 	Downloader *downloader;
 
 	bool Parse ();
+	void OpenEntry (PlaylistEntry *entry);
+	void OnDownloaderComplete ();
+
+	static void on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata);
+	static void on_downloader_data_write (guchar *buf, gsize offset, gsize count, gpointer data);
+	static void on_downloader_size_notify (int64_t size, gpointer data);
 public:
 	Playlist (MediaElement *element, char *source_name);
 	virtual ~Playlist ();
