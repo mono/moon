@@ -166,6 +166,9 @@ Playlist::Open ()
 	if (!Parse ())
 		return false;
 
+	if (entries->Length () == 0)
+		return false;
+
 	g_warning ("playlists are not implemented\n");
 	// TODO: download the first entry
 	return false;
@@ -412,6 +415,9 @@ PlaylistParser::GetParentKind ()
 void
 PlaylistParser::AssertParentKind (int kind)
 {
+	if (GetParentKind () & kind)
+		return;
+
+	XML_StopParser (parser, false);
 	printf ("AssertParentKind, current: %d kind %d\n", GetParentKind (), kind);
-	g_assert (GetParentKind () & kind);
 }
