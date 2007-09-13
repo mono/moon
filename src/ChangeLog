@@ -1,3 +1,7 @@
+2007-09-13  Jb Evain  <jbevain@novell.com>
+
+	* media.cpp|h, playlist.cpp|h: Work on playlist integration.
+
 2007-09-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (StopThreads): When resetting current_pts and

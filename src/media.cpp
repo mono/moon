@@ -91,6 +91,24 @@ MediaSource::GetSource ()
 	return source_name;
 }
 
+guint
+MediaSource::Play ()
+{
+	return element->mplayer->Play (media_element_advance_frame, element);
+}
+
+void
+MediaSource::Pause ()
+{
+	element->mplayer->Pause ();
+}
+
+void
+MediaSource::Stop ()
+{
+	element->mplayer->Stop ();
+}
+
 MediaSource *
 MediaSource::CreateSource (MediaElement *element, char *source)
 {
@@ -112,7 +130,6 @@ SingleMedia::Open ()
 {
 	return element->mplayer->Open (source_name);
 }
-
 
 // MediaElement
 
@@ -159,8 +176,8 @@ MediaElement::AdvanceFrame ()
 	return true;
 }
 
-static gboolean
-advance_frame (void *user_data)
+gboolean
+media_element_advance_frame (void *user_data)
 {
 	MediaElement *media = (MediaElement *) user_data;
 	
@@ -448,7 +465,7 @@ MediaElement::Pause ()
 	if (!mplayer->CanPause ())
 		return;
 	
-	mplayer->Pause ();
+	source->Pause ();
 	
 	if (timeout_id != 0) {
 		g_source_remove (timeout_id);
@@ -464,7 +481,7 @@ MediaElement::Play ()
 	printf ("MediaElement::Play() requested\n");
 	
 	if (downloader && downloader->Completed () && timeout_id == 0 && !mplayer->IsPlaying ()) {
-		timeout_id = mplayer->Play (advance_frame, this);
+		timeout_id = source->Play ();
 		media_element_set_current_state (this, "Playing");
 		printf ("video playing, timeout_id = %d\n", timeout_id);
 		play_pending = false;
@@ -481,7 +498,7 @@ MediaElement::Stop ()
 	if (!mplayer->IsPlaying () && !mplayer->IsPaused ())
 		return;
 	
-	mplayer->Stop ();
+	source->Stop ();
 	
 	if (timeout_id != 0) {
 		g_source_remove (timeout_id);

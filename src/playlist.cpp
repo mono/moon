@@ -150,12 +150,14 @@ Playlist::Playlist (MediaElement *element, char *source_name)
 	: MediaSource (element, source_name)
 {
 	entries = new List ();
+	downloader = new Downloader ();
 }
 
 Playlist::~Playlist ()
 {
 	entries->Clear (true);
 	delete entries;
+	delete downloader;
 }
 
 bool
@@ -165,7 +167,15 @@ Playlist::Open ()
 		return false;
 
 	g_warning ("playlists are not implemented\n");
+	// TODO: download the first entry
 	return false;
+}
+
+guint
+Playlist::Play ()
+{
+	// TODO: play the first entry
+	return MediaSource::Play ();
 }
 
 bool

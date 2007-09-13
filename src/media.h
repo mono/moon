@@ -133,6 +133,9 @@ public:
 	const char *GetSource ();
 
 	virtual bool Open () = 0;
+	virtual guint Play ();
+	virtual void Pause ();
+	virtual void Stop ();
 
 	static MediaSource * CreateSource (MediaElement *element, char *source_name);
 };
@@ -234,6 +237,8 @@ void media_element_pause (MediaElement *media);
 void media_element_play (MediaElement *media);
 void media_element_stop (MediaElement *media);
 void media_element_set_source (MediaElement *media, DependencyObject *Downloader, const char *PartName);
+
+gboolean media_element_advance_frame (gpointer data);
 
 int media_element_get_audio_stream_count (MediaElement *media);
 void media_element_set_audio_stream_count (MediaElement *media, int value);

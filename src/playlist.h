@@ -67,6 +67,7 @@ public:
 class Playlist : public MediaSource, public PlaylistContent {
 private:
 	List *entries;
+	Downloader *downloader;
 
 	bool Parse ();
 public:
@@ -74,6 +75,7 @@ public:
 	virtual ~Playlist ();
 
 	virtual bool Open ();
+	virtual guint Play ();
 
 	void AddEntry (PlaylistEntry *entry);
 
