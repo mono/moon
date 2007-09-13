@@ -323,6 +323,7 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 		kind = Duration;
 	} else if (str_match (name, "ENTRY")) {
 		kind = Entry;
+		parser->OnEntry ();
 	} else if (str_match (name, "ENTRYREF")) {
 		kind = EntryRef;
 	} else if (str_match (name, "LOGURL")) {
@@ -386,7 +387,6 @@ PlaylistParser::on_text (gpointer user_data, const char *data, int len)
 		break;
 	case Entry:
 		parser->AssertParentKind (Asx);
-		parser->OnEntry ();
 		break;
 	case StartTime:
 		parser->AssertParentKind (Entry);
