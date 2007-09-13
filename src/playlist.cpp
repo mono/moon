@@ -150,9 +150,11 @@ Playlist::Playlist (MediaElement *element, char *source_name)
 	: MediaSource (element, source_name)
 {
 	entries = new List ();
+	current_entry = NULL;
 	downloader = new Downloader ();
 	downloader->SetWriteFunc (on_downloader_data_write, on_downloader_size_notify, this);
 	downloader->AddHandler (downloader->CompletedEvent, on_downloader_complete, this);
+	element->AddHandler(element->MediaEndedEvent, on_media_ended, this);
 }
 
 Playlist::~Playlist ()
@@ -182,6 +184,15 @@ Playlist::Parse ()
 }
 
 void
+Playlist::OnMediaEnded ()
+{
+	if (!current_entry || !current_entry->next)
+		return;
+
+	OpenEntry (dynamic_cast<PlaylistEntry *> (current_entry->next));
+}
+
+void
 Playlist::OnDownloaderComplete ()
 {
 }
@@ -196,6 +207,13 @@ Playlist::IsPlaylistFile (const char * file_name)
 			return true;
 
 	return false;
+}
+
+void
+Playlist::on_media_ended (EventObject *sender, gpointer calldata, gpointer userdata)
+{
+	Playlist *playlist = reinterpret_cast<Playlist *> (userdata);
+	playlist->OnMediaEnded ();
 }
 
 void
@@ -216,8 +234,12 @@ Playlist::on_downloader_size_notify (int64_t size, gpointer data)
 }
 
 static bool
-check_base_for_entry (GString *uri, const char *base)
+check_base (GString *uri, PlaylistContent *content)
 {
+	const char *base;
+
+	base = content->GetBase ();
+
 	if (base == NULL || !strlen (base))
 		return false;
 
@@ -231,9 +253,11 @@ Playlist::OpenEntry (PlaylistEntry *entry)
 {
 	GString *uri;
 
+	current_entry = entry;
+
 	uri = g_string_new ("");
-	if (!check_base_for_entry (uri, entry->GetBase ()))
-		check_base_for_entry (uri, this->GetBase ());
+	if (!check_base (uri, entry))
+		check_base (uri, this);
 
 	g_string_append (uri, entry->GetSource ());
 

@@ -67,12 +67,15 @@ public:
 class Playlist : public MediaSource, public PlaylistContent {
 private:
 	List *entries;
+	PlaylistEntry *current_entry;
 	Downloader *downloader;
 
 	bool Parse ();
 	void OpenEntry (PlaylistEntry *entry);
+	void OnMediaEnded ();
 	void OnDownloaderComplete ();
 
+	static void on_media_ended (EventObject *sender, gpointer calldata, gpointer userdata);
 	static void on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata);
 	static void on_downloader_data_write (guchar *buf, gsize offset, gsize count, gpointer data);
 	static void on_downloader_size_notify (int64_t size, gpointer data);
