@@ -1,3 +1,8 @@
+2007-09-14  Miguel de Icaza  <miguel@novell.com>
+
+	* media.cpp (Stop, Pause): Do not dereference source if it is not
+	yet set (TopBanana does this).
+
 2007-09-13  Jb Evain  <jbevain@novell.com>
 
 	* media.cpp|h, playlist.cpp|h: Work on playlist integration.

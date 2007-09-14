@@ -472,8 +472,9 @@ MediaElement::Pause ()
 	
 	if (!mplayer->CanPause ())
 		return;
-	
-	source->Pause ();
+
+	if (source)	
+		source->Pause ();
 	
 	if (timeout_id != 0) {
 		g_source_remove (timeout_id);
@@ -506,7 +507,8 @@ MediaElement::Stop ()
 	if (!mplayer->IsPlaying () && !mplayer->IsPaused ())
 		return;
 	
-	source->Stop ();
+	if (source)
+		source->Stop ();
 	
 	if (timeout_id != 0) {
 		g_source_remove (timeout_id);
