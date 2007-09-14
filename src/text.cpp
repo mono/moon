@@ -648,10 +648,10 @@ TextBlock::Layout (cairo_t *cr)
 	pango_layout_get_pixel_size (layout, &w, &h);
 	
 	if (clip && (h > clip_height))
-		text_block_set_actual_height (this, (double)clip_height);
+		text_block_set_actual_height (this, (double) clip_height);
 	else
-		text_block_set_actual_height (this, (double)h);
-	text_block_set_actual_width (this, (double)w);
+		text_block_set_actual_height (this, (double) h);
+	text_block_set_actual_width (this, (double) w);
 	dirty_actual_values = false;
 }
 

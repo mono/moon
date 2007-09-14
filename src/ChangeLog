@@ -1,3 +1,8 @@
+2007-09-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp|h: New font/text rendering engine (e.g. replacement for
+	pango). Nowhere near complete yet.
+
 2007-09-14  Miguel de Icaza  <miguel@novell.com>
 
 	* media.cpp (Stop, Pause): Do not dereference source if it is not

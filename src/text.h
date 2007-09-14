@@ -172,7 +172,7 @@ public:
 	virtual Value *GetValue (DependencyProperty *property);
 	virtual void SetValue (DependencyProperty *property, Value *value);
 	virtual void SetValue (DependencyProperty *property, Value value);
-
+	
 private:
 	PangoFontDescription *font;
 	MangoRenderer *renderer;
