@@ -47,21 +47,25 @@ public:
 
 class PlaylistEntry : public List::Node, public PlaylistContent {
 private:
-	char *source;
+	char *source_name;
 	gint64 start_time;
 	gint64 duration;
+	MediaSource *source;
 public:
 	PlaylistEntry ();
 	~PlaylistEntry ();
 
-	const char *GetSource ();
-	void SetSource (char *file);
+	const char *GetSourceName ();
+	void SetSourceName (char *file);
 
 	gint64 GetStartTime ();
 	void SetStartTime (gint64 start_time);
 
 	gint64 GetDuration ();
 	void SetDuration (gint64 duration);
+
+	MediaSource *GetSource ();
+	void SetSource (MediaSource *source);
 };
 
 class Playlist : public MediaSource, public PlaylistContent {
@@ -80,7 +84,7 @@ private:
 	static void on_downloader_data_write (guchar *buf, gsize offset, gsize count, gpointer data);
 	static void on_downloader_size_notify (int64_t size, gpointer data);
 public:
-	Playlist (MediaElement *element, char *source_name);
+	Playlist (MediaElement *element, const char *source_name, const char *file_name);
 	virtual ~Playlist ();
 
 	virtual bool Open ();

@@ -105,19 +105,20 @@ PlaylistEntry::PlaylistEntry ()
 
 PlaylistEntry::~PlaylistEntry ()
 {
-	g_free (source);
+	delete source;
+	g_free (source_name);
 }
 
 const char *
-PlaylistEntry::GetSource ()
+PlaylistEntry::GetSourceName ()
 {
-	return source;
+	return source_name;
 }
 
 void
-PlaylistEntry::SetSource (char *source)
+PlaylistEntry::SetSourceName (char *source_name)
 {
-	this->source = source;
+	this->source_name = source_name;
 }
 
 gint64
@@ -144,10 +145,22 @@ PlaylistEntry::SetDuration (gint64 duration)
 	this->duration = duration;
 }
 
+MediaSource *
+PlaylistEntry::GetSource ()
+{
+	return source;
+}
+
+void
+PlaylistEntry::SetSource (MediaSource *source)
+{
+	this->source = source;
+}
+
 // Playlist
 
-Playlist::Playlist (MediaElement *element, char *source_name)
-	: MediaSource (element, source_name)
+Playlist::Playlist (MediaElement *element, const char *source_name, const char *file_name)
+	: MediaSource (element, source_name, file_name)
 {
 	entries = new List ();
 	current_entry = NULL;
@@ -195,6 +208,15 @@ Playlist::OnMediaEnded ()
 void
 Playlist::OnDownloaderComplete ()
 {
+	if (current_entry == NULL)
+		return;
+
+	char *file_name = downloader->GetResponseFile ("");
+	if (file_name == NULL)
+		return;
+
+	MediaSource *source = MediaSource::CreateSource (element, current_entry->GetSourceName (), file_name);
+	current_entry->SetSource (source);
 }
 
 bool
@@ -259,10 +281,12 @@ Playlist::OpenEntry (PlaylistEntry *entry)
 	if (!check_base (uri, entry))
 		check_base (uri, this);
 
-	g_string_append (uri, entry->GetSource ());
+	g_string_append (uri, entry->GetSourceName ());
 
-	downloader->Open ("GET", uri->str);
-	downloader->Send ();
+//	printf ("open entry at uri: %s\n");
+
+//	downloader->Open ("GET", uri->str);
+//	downloader->Send ();
 
 	g_string_free (uri, true);
 }
@@ -279,15 +303,16 @@ Playlist::Open ()
 	OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
 
 	g_warning ("playlists are not implemented\n");
-	// TODO: download the first entry
 	return false;
 }
 
 guint
 Playlist::Play ()
 {
-	// TODO: play the first entry
-	return MediaSource::Play ();
+	if (current_entry == NULL ||  current_entry->GetSource () == NULL)
+		return 0;
+
+	return current_entry->GetSource ()->Play ();
 }
 
 void
@@ -359,7 +384,7 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 	} else if (str_match (name, "REF")) {
 		kind = Ref;
 		if (attrs && str_match (*attrs, "HREF"))
-			parser->GetCurrentEntry ()->SetSource (g_strdup (*(attrs + 1)));
+			parser->GetCurrentEntry ()->SetSourceName (g_strdup (*(attrs + 1)));
 	} else if (str_match (name, "TITLE")) {
 		kind = Title;
 	} else {

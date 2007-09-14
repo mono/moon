@@ -74,21 +74,29 @@ media_base_set_stretch (MediaBase *media, Stretch value)
 
 // MediaSource
 
-MediaSource::MediaSource (MediaElement *element, char *source_name)
+MediaSource::MediaSource (MediaElement *element, const char *source_name, const char *file_name)
 {
 	this->element = element;
 	this->source_name = g_strdup (source_name);
+	this->file_name = g_strdup (file_name);
 }
 
 MediaSource::~MediaSource ()
 {
 	g_free (source_name);
+	g_free (file_name);
 }
 
 const char *
-MediaSource::GetSource ()
+MediaSource::GetSourceName ()
 {
 	return source_name;
+}
+
+const char *
+MediaSource::GetFileName ()
+{
+	return file_name;
 }
 
 guint
@@ -110,18 +118,18 @@ MediaSource::Stop ()
 }
 
 MediaSource *
-MediaSource::CreateSource (MediaElement *element, char *source)
+MediaSource::CreateSource (MediaElement *element, const char *source_name, const char *file_name)
 {
-	if (Playlist::IsPlaylistFile (source))
-		return new Playlist (element, source);
+	if (Playlist::IsPlaylistFile (source_name))
+		return new Playlist (element, source_name, file_name);
 
-	return new SingleMedia (element, source);
+	return new SingleMedia (element, source_name, file_name);
 }
 
 // SingleMedia
 
-SingleMedia::SingleMedia (MediaElement *element, char *source_name)
-	: MediaSource (element, source_name)
+SingleMedia::SingleMedia (MediaElement *element, const char *source_name, const char *file_name)
+	: MediaSource (element, source_name, file_name)
 {
 }
 
@@ -372,7 +380,7 @@ MediaElement::DownloaderComplete ()
 	if (source)
 		delete source;
 
-	source = MediaSource::CreateSource (this, filename);
+	source = MediaSource::CreateSource (this, media_base_get_source (this), filename);
 	
 	printf ("video source changed to `%s'\n", filename);
 	g_free (filename);

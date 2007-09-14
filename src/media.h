@@ -124,25 +124,27 @@ class MediaSource {
 protected:
 	MediaElement *element;
 	char *source_name;
+	char *file_name;
 
-	MediaSource (MediaElement *element, char *source_name);
+	MediaSource (MediaElement *element, const char *source_name, const char *file_name);
 
 public:
 	virtual ~MediaSource ();
 
-	const char *GetSource ();
+	const char *GetSourceName ();
+	const char *GetFileName ();
 
 	virtual bool Open () = 0;
 	virtual guint Play ();
 	virtual void Pause ();
 	virtual void Stop ();
 
-	static MediaSource * CreateSource (MediaElement *element, char *source_name);
+	static MediaSource * CreateSource (MediaElement *element, const char *source_name, const char *file_name);
 };
 
 class SingleMedia : public MediaSource {
 public:
-	SingleMedia (MediaElement *element, char *source_name);
+	SingleMedia (MediaElement *element, const char *source_name, const char *file_name);
 
 	virtual bool Open ();
 };
