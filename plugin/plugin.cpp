@@ -121,7 +121,7 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->windowless = false;
 	
 	this->vm_missing_file = NULL;
-	this->mono_loader_object = NULL;
+	this->xaml_loader = NULL;
 
 	this->timers = NULL;
 
@@ -163,7 +163,7 @@ PluginInstance::~PluginInstance ()
 	if (background)
 		g_free (background);
 
-	vm_loader_destroy (mono_loader_object);
+	delete xaml_loader;
 }
 
 void 
@@ -329,7 +329,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
 		if (NPVARIANT_IS_STRING (result)) {
-			mono_loader_object = vm_xaml_str_loader_new (this, this->surface, NPVARIANT_TO_STRING (result).utf8characters);
+			xaml_loader = PluginXamlLoader::FromStr (NPVARIANT_TO_STRING (result).utf8characters, this, this->surface);
 			TryLoad ();
 		}
 
@@ -421,7 +421,7 @@ PluginInstance::TryLoad ()
 {
 	int error = 0;
 
-	vm_missing_file = vm_loader_try (mono_loader_object, &error);
+	vm_missing_file = xaml_loader->TryLoad (&error);
 
 	if (vm_missing_file != NULL){
 		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
@@ -446,7 +446,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 	  //		DEBUGMSG ("LoadFromXaml: %s", fname);
-		mono_loader_object = vm_xaml_file_loader_new (this, this->surface, fname);
+		xaml_loader = PluginXamlLoader::FromFilename (fname, this, this->surface);
 		TryLoad ();
 	}
 
@@ -457,8 +457,8 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	}
 	
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
-		vm_insert_mapping (mono_loader_object, vm_missing_file, fname);
-		vm_insert_mapping (mono_loader_object, stream->url, fname);
+		xaml_loader->InsertMapping (vm_missing_file, fname);
+		xaml_loader->InsertMapping (stream->url, fname);
 		g_free (vm_missing_file);
 		vm_missing_file = NULL;
 
@@ -672,3 +672,168 @@ plugin_instance_get_browser_information (PluginInstance *instance,
 {
 	instance->getBrowserInformation (name, version, platform, userAgent, cookieEnabled);
 }
+
+
+/*
+	XamlLoader
+*/
+
+//
+// On error it sets the @error ref to 1
+// Returns the filename that we are missing
+//
+char*
+PluginXamlLoader::TryLoad (int *error)
+{
+	g_assert (GetFilename () == NULL ^ GetString () == NULL);
+	
+	*error = 0;
+
+	if (!InitializeLoader ()) {
+		*error = 1;
+		return NULL;
+	}
+	
+#if INCLUDE_MONO_RUNTIME
+	return vm_loader_try (managed_loader, error); 
+#else
+	DependencyObject* element;
+	Type::Kind element_type;
+	
+	printf ("XamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ());
+	
+	if (GetFilename ()) {
+		element = xaml_create_from_file (this, GetFilename (), true, &element_type);
+	} else if (GetString ()) {
+		element = xaml_create_from_str (this, GetString (), true, &element_type);
+	} else {
+		*error = 1;
+		return NULL;
+	}
+	
+	if (!element) {
+		printf ("XamlLoader::TryLoad: Could not load xaml %s: %s\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString ());
+		return NULL;
+	}
+	
+	if (element_type != Type::CANVAS) {
+		printf ("XamlLoader::TryLoad: Return value is not a Canvas, its a %s\n", element->GetTypeName ());
+		element->unref ();
+		return NULL;
+	}
+	
+	surface_attach (GetSurface (), (Canvas*) element);
+	
+	element->unref ();
+	
+	return NULL;
+#endif
+}
+
+void
+PluginXamlLoader::InsertMapping (const char* key, const char* value)
+{
+#if INCLUDE_MONO_RUNTIME
+	if (InitializeLoader ()) {
+		vm_insert_mapping  (managed_loader, key, value);
+	}
+#endif
+}
+
+DependencyObject* 
+PluginXamlLoader::CreateElement (const char* xmlns, const char* name)
+{
+#if INCLUDE_MONO_RUNTIME
+	if (create_element_callback)
+		return create_element_callback (xmlns, name);
+#endif
+	printf ("PluginXamlLoader::CreateElement (%s, %s)\n", xmlns, name);
+}
+
+void 
+PluginXamlLoader::SetAttribute (void* target, const char* name, const char* value)
+{
+#if INCLUDE_MONO_RUNTIME
+	if (set_attribute_callback) {
+		set_attribute_callback (target, name, value);
+		return;
+	}		
+#endif
+	printf ("PluginXamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
+}
+
+void 
+PluginXamlLoader::HookupEvent (void* target, const char* name, const char* value)
+{
+#if INCLUDE_MONO_RUNTIME
+	if (hookup_event_callback) {
+		hookup_event_callback (target, name, value);
+		return;
+	}		
+#endif
+	printf ("PluginXamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
+	event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);
+}
+
+bool
+PluginXamlLoader::InitializeLoader ()
+{
+	if (initialized)
+		return TRUE;
+		
+#if INCLUDE_MONO_RUNTIME
+	if (managed_loader)
+		return TRUE;
+		
+	if (GetFilename ()) {
+		managed_loader = vm_xaml_file_loader_new (this, plugin, GetSurface (), GetFilename ());
+	} else if (GetString ()) {
+		managed_loader = vm_xaml_str_loader_new (this, plugin, GetSurface (), GetString ());
+	} else {
+		return FALSE;
+	}
+	
+	initialized = managed_loader != NULL;
+#else
+	initialized = TRUE;
+#endif
+
+	return initialized;
+}
+
+PluginXamlLoader::PluginXamlLoader (const char* filename, const char* str, PluginInstance* plugin, Surface* surface) : XamlLoader (filename, str, surface)
+{
+	this->plugin = plugin;
+	this->initialized = FALSE;
+#if INCLUDE_MONO_RUNTIME
+	this->managed_loader = NULL;
+	this->create_element_callback = NULL;
+	this->set_attribute_callback = NULL;
+	this->hookup_event_callback = NULL;
+#endif
+}
+
+PluginXamlLoader::~PluginXamlLoader ()
+{
+#if INCLUDE_MONO_RUNTIME
+	if (managed_loader) {
+		vm_loader_destroy (managed_loader);
+	}
+#endif
+}
+
+#if INCLUDE_MONO_RUNTIME
+void 
+plugin_set_xaml_loader_callbacks (PluginXamlLoader* loader, plugin_create_custom_element_callback *cecb,
+			   plugin_set_custom_attribute_callback *sca, plugin_hookup_event_callback *hue)
+{
+	if (!loader) {
+		printf ("Trying to set callbacks for a null object\n");
+		return;
+	}
+	
+	loader->create_element_callback = cecb;
+	loader->set_attribute_callback = sca;
+	loader->hookup_event_callback = hue;
+}
+#endif

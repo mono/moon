@@ -105,7 +105,7 @@ runTest (const char *xaml_file, const char *output_prefix)
 	GdkPixbuf *pixbuf;
 	Type::Kind type;
 
-	DependencyObject *dob = xaml_create_from_file (xaml_file, true, &type);
+	DependencyObject *dob = xaml_create_from_file (NULL, xaml_file, true, &type);
 
 	s->Attach ((UIElement*)dob);
 

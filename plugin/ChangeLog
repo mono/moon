@@ -1,3 +1,20 @@
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	[Removed mono dependency for 1.0 moonlight applications. 
+	We now have a native [Plugin]XamlLoader that is the native counterpart of the 
+	managed Loader object, the native loader handles xaml loading when the 
+	mono runtime isn't loaded.]
+
+	* plugin.cpp, plugin.h: Added PluginXamlLoader that can forward calls into
+	  the managed loader if the mono runtime is loaded.
+	* plugin-class.cpp: isVersionSupported: if built without mono runtime
+	  support, we only support 1.0 applications. Update according to API
+	  change.
+	* moonlight.h, mono.cpp, moon-mono.h: Update according to API change.
+	* moonlight.cs: Update according to API change. Added Hosting.base_unref and
+	  unref a few objects.
+	* plugin-glue.cpp: Don't initialize the mono runtime for 1.0 applications.
+
 2007-09-09  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (moonlight_content_invoke): implement

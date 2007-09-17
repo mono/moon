@@ -33,6 +33,7 @@
 #include "color.h"
 #include "namescope.h"
 #include "stylus.h"
+#include "runtime.h"
 
 #define READ_BUFFER 1024
 
@@ -48,11 +49,6 @@ class XNamespace;
 
 static DefaultNamespace *default_namespace = NULL;
 static XNamespace *x_namespace = NULL;
-
-static xaml_create_custom_element_callback * installed_custom_element_callback = NULL;
-static xaml_set_custom_attribute_callback * installed_custom_attribute_callback = NULL;
-static xaml_hookup_event_callback * installed_hookup_event_callback = NULL;
-
 
 typedef DependencyObject *(*create_item_func) (void);
 typedef XamlElementInstance *(*create_element_instance_func) (XamlParserInfo *p, XamlElementInfo *i);
@@ -127,16 +123,14 @@ class XamlParserInfo {
 
 	ParserErrorEventArgs *error_args;
 
-	xaml_create_custom_element_callback *custom_element_callback;
-	xaml_set_custom_attribute_callback *custom_attribute_callback;
-	xaml_hookup_event_callback *hookup_event_callback; 
+	XamlLoader* loader;
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
 	  
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
 		char_data_buffer (NULL), implicit_default_namespace (false), error_args (NULL),
-		custom_element_callback (NULL), custom_attribute_callback (NULL), hookup_event_callback (NULL)
+		loader (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
@@ -253,7 +247,10 @@ class XNamespace : public XamlNamespace {
 			DependencyObject *old = item->item;
 			
 			item->item = NULL;
-			DependencyObject *dob = p->custom_element_callback (value, NULL);
+			DependencyObject *dob = NULL;
+			if (p->loader)
+				dob = p->loader->CreateElement (value, NULL);
+
 			if (!dob) {
 				parser_error (p, item->element_name, attr,
 						g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
@@ -301,7 +298,9 @@ class CustomNamespace : public XamlNamespace {
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
-		DependencyObject *dob = p->custom_element_callback (xmlns, el);
+		DependencyObject *dob = NULL;
+		if (p->loader)
+			dob = p->loader->CreateElement (xmlns, el);
 
 		if (!dob) {
 			parser_error (p, el, NULL, g_strdup_printf ("Unable to resolve custom type %s\n", el));
@@ -321,9 +320,47 @@ class CustomNamespace : public XamlNamespace {
 
 	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
-		p->custom_attribute_callback (item->item, attr, value);
+		if (p->loader)
+			p->loader->SetAttribute (item->item, attr, value);
 	}
 };
+
+
+/*
+	XamlLoader
+*/
+DependencyObject* 
+XamlLoader::CreateElement (const char* xmlns, const char* name)
+{
+	printf ("XamlLoader::CreateElement (%s, %s)\n", xmlns, name);
+}
+
+void 
+XamlLoader::SetAttribute (void* target, const char* name, const char* value)
+{
+	printf ("XamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
+}
+
+void 
+XamlLoader::HookupEvent (void* target, const char* name, const char* value)
+{
+	printf ("XamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
+}
+
+XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
+{
+	this->filename = g_strdup (filename);
+	this->str = g_strdup (str);
+	this->surface = surface;
+	this->surface->ref ();
+}
+
+XamlLoader::~XamlLoader ()
+{
+	g_free (filename);
+	g_free (str);
+	this->surface->unref ();
+}
 
 XamlElementInstance *
 create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
@@ -664,7 +701,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
-		if (!p->custom_element_callback)
+		if (!p->loader)
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
 					g_strdup_printf ("No custom element callback installed to handle %s", uri));
 
@@ -700,7 +737,7 @@ print_tree (XamlElementInstance *el, int depth)
 }
 
 DependencyObject *
-xaml_create_from_file (const char *xaml_file, bool create_namescope,
+xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_namescope,
 		       Type::Kind *element_type)
 {
 	DependencyObject *res = NULL;
@@ -738,9 +775,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 	
 	parser_info->namescope->SetTemporary (!create_namescope);
 
-	parser_info->custom_element_callback = installed_custom_element_callback;
-	parser_info->custom_attribute_callback = installed_custom_attribute_callback;
-	parser_info->hookup_event_callback = installed_hookup_event_callback;
+	parser_info->loader = loader;
 
 	// TODO: This is just in here temporarily, to make life less difficult for everyone
 	// while we are developing.  
@@ -798,7 +833,7 @@ xaml_create_from_file (const char *xaml_file, bool create_namescope,
 }
 
 DependencyObject *
-xaml_create_from_str (const char *xaml, bool create_namescope,
+xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescope,
 		      Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
@@ -816,10 +851,8 @@ xaml_create_from_str (const char *xaml, bool create_namescope,
 
 	parser_info->namescope->SetTemporary (!create_namescope);
 
-	parser_info->custom_element_callback = installed_custom_element_callback;
-	parser_info->custom_attribute_callback = installed_custom_attribute_callback;
-	parser_info->hookup_event_callback = installed_hookup_event_callback;
-
+	parser_info->loader = loader;
+	
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
 
@@ -1814,6 +1847,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		Value *col_v = obj->GetValue (dep);
 		Collection *col = (Collection *) col_v->AsCollection ();
 		col->Add ((DependencyObject*)child->item);
+		child->item->unref ();
 		return;
 	}
 
@@ -2063,14 +2097,15 @@ bool
 dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, const char *name, const char *value)
 {
 	if (is_valid_event_name (name)) {
-		if (!p->hookup_event_callback) {
+		if (!p->loader) {
 			// void parser_error (XamlParserInfo *p, const char *el, const char *attr, const char *message);
 			parser_error (p, item->element_name, name,
 					g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n", name));
 			return true;
 		}
 
-		p->hookup_event_callback (item->item, name, value);
+		if (p->loader)
+			p->loader->HookupEvent (item->item, name, value);
 	}
 
 	return false;
@@ -2290,16 +2325,6 @@ register_dependency_object_element (GHashTable *table, const char *name, XamlEle
 	g_hash_table_insert (table, (char *) name, GINT_TO_POINTER (res));
 
 	return res;
-}
-
-
-void
-xaml_set_parser_callbacks (xaml_create_custom_element_callback *cecb,
-			   xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue)
-{
-	installed_custom_element_callback = cecb;
-	installed_custom_attribute_callback = sca;
-	installed_hookup_event_callback = hue;
 }
 
 void

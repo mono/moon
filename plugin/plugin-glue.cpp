@@ -195,10 +195,12 @@ NPP_Initialize (void)
 		gtk_initialized = true;
 		gtk_init (0, 0);
 	}
+#if INCLUDE_MONO_RUNTIME
 	if (!vm_initialized) {
 		vm_initialized = true;
 		vm_init ();
 	}
+#endif
 	downloader_initialize ();
 	
 	if (!runtime_initialized) {

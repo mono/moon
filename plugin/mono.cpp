@@ -13,6 +13,8 @@
 #include "moonlight.h"
 #include <stdlib.h>
 #include <glib.h>
+
+#if INCLUDE_MONO_RUNTIME
 #include "moon-mono.h"
 G_BEGIN_DECLS
 #include <mono/jit/jit.h>
@@ -85,31 +87,33 @@ vm_init (void)
 // that the plugin uses (instead of just <embed src>)
 //
 gpointer
-vm_xaml_file_loader_new (gpointer plugin, gpointer surface, const char *file)
+vm_xaml_file_loader_new (XamlLoader* native_loader, gpointer plugin, gpointer surface, const char *file)
 {
 	MonoObject *loader;
 	if (moon_load_xaml_file == NULL)
 		return NULL;
 
-	void *params [3];
-	params [0] = &plugin;
-	params [1] = &surface;
-	params [2] = mono_string_new (moon_domain, file);
+	void *params [4];
+	params [0] = &native_loader;
+	params [1] = &plugin;
+	params [2] = &surface;
+	params [3] = mono_string_new (moon_domain, file);
 	loader = mono_runtime_invoke (moon_load_xaml_file, NULL, params, NULL);
 	return GUINT_TO_POINTER (mono_gchandle_new (loader, FALSE));
 }
 
 gpointer
-vm_xaml_str_loader_new (gpointer plugin, gpointer surface, const char *str)
+vm_xaml_str_loader_new (XamlLoader* native_loader, gpointer plugin, gpointer surface, const char *str)
 {
 	MonoObject *loader;
 	if (moon_load_xaml_str == NULL)
 		return NULL;
 
-	void *params [3];
-	params [0] = &plugin;
-	params [1] = &surface;
-	params [2] = mono_string_new (moon_domain, str);
+	void *params [4];
+	params [0] = &native_loader;
+	params [1] = &plugin;
+	params [2] = &surface;
+	params [3] = mono_string_new (moon_domain, str);
 	loader = mono_runtime_invoke (moon_load_xaml_str, NULL, params, NULL);
 	return GUINT_TO_POINTER (mono_gchandle_new (loader, FALSE));
 }
@@ -149,4 +153,4 @@ vm_loader_destroy (gpointer loader_object)
 	if (loader)
 		mono_gchandle_free (loader);
 }
-
+#endif

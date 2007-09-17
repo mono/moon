@@ -1,3 +1,7 @@
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* harness/xaml2png.cpp: Update according to API change.
+
 2007-06-15  Miguel de Icaza  <miguel@novell.com>
 
 	* ManagedDownloader.cs: Fixed so that the download happens in

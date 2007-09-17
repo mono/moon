@@ -1180,7 +1180,11 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 		    /* and we should work with any 1.0.* and 1.1.* instance */
 		    || (!strcmp (versions[0], "1") &&
 			(!strcmp (versions[1], "0")
-			 || !strcmp (versions[1], "1")))
+			/* If we don't include the mono runtime, we won't work with 1.1.* instances */
+#if INCLUDE_MONO_RUNTIME
+			 || !strcmp (versions[1], "1")
+#endif
+			 ))
 		   ){
 
 			BOOLEAN_TO_NPVARIANT (true, *result);
@@ -1521,7 +1525,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
 		Type::Kind element_type;
-		DependencyObject *dep = xaml_create_from_str (xaml, false, &element_type);
+		DependencyObject *dep = xaml_create_from_str (NULL, xaml, false, &element_type);
 
 		MoonlightEventObjectObject *depobj =
 			EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dep);
@@ -1544,7 +1548,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *fname = down->GetResponseFile ((char *) NPVARIANT_TO_STRING (args[1]).utf8characters);
 		if (fname != NULL) {
-			dep = xaml_create_from_file (fname, false, &element_type);
+			dep = xaml_create_from_file (NULL, fname, false, &element_type);
 
 			g_free (fname);
 		}

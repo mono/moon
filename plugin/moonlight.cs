@@ -49,15 +49,16 @@ namespace Moonlight {
 		internal extern static IntPtr surface_attach (IntPtr surface, IntPtr toplevel);
 
 		[DllImport ("moon")]
-		internal extern static IntPtr xaml_create_from_file (string file, bool create_namescope,
-								     ref int kind_type);
+		internal extern static IntPtr xaml_create_from_file (IntPtr xml_loader, string file, bool create_namescope, ref int kind_type);
 
 		[DllImport ("moon")]
-		internal extern static IntPtr xaml_create_from_str (string file, bool create_namescope,
-								    ref int kind_type);
+		internal extern static IntPtr xaml_create_from_str (IntPtr xml_loader, string file, bool create_namescope, ref int kind_type);
+
+		[DllImport ("moonplugin")]
+		internal extern static void plugin_set_xaml_loader_callbacks (IntPtr native_object, CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue);
 
 		[DllImport ("moon")]
-		internal extern static void xaml_set_parser_callbacks (CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue);
+		internal extern static IntPtr base_unref (IntPtr base_ptr);
 
 		[DllImport ("moonplugin")]
 		internal extern static void event_object_add_javascript_listener (IntPtr target, IntPtr plugin_handle, string event_name, string js_callback);
@@ -81,16 +82,16 @@ namespace Moonlight {
                 // 6. Run the method
                 // 7. If none of those properties are there, we can return
 
-		public static Loader CreateXamlFileLoader (IntPtr plugin, IntPtr surface, string filename)
+		public static Loader CreateXamlFileLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename)
 		{
-			Loader loader = new Loader (plugin, surface, filename, "");
+			Loader loader = new Loader (native_loader, plugin, surface, filename, "");
 
 			return loader;
 		}
 
-		public static Loader CreateXamlStrLoader (IntPtr plugin, IntPtr surface, string contents)
+		public static Loader CreateXamlStrLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string contents)
 		{
-			Loader loader = new Loader (plugin, surface, "", contents);
+			Loader loader = new Loader (native_loader, plugin, surface, "", contents);
 
 			return loader;
 		}
@@ -99,7 +100,7 @@ namespace Moonlight {
 	public class Loader {
 		DomainInstance rl;
 		
-		public Loader (IntPtr plugin, IntPtr surface, string filename, string contents)
+		public Loader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			AppDomain a = Helper.CreateDomain (plugin);
 
@@ -107,7 +108,7 @@ namespace Moonlight {
 				a, Assembly.GetExecutingAssembly ().FullName,
 				"Moonlight.DomainInstance");
 
-			rl.Setup (plugin, surface, filename, contents);
+			rl.Setup (native_loader, plugin, surface, filename, contents);
 		}
 
 		//
@@ -142,6 +143,7 @@ namespace Moonlight {
 	
 	public class DomainInstance : MarshalByRefObject {
 		static IntPtr plugin, surface;
+		IntPtr native_loader;
 		string filename;
 		string contents;
 		string missing;
@@ -162,8 +164,9 @@ namespace Moonlight {
 		{
 		}
 		
-		public void Setup (IntPtr _plugin, IntPtr _surface, string filename, string contents)
+		public void Setup (IntPtr _native_loader, IntPtr _plugin, IntPtr _surface, string filename, string contents)
 		{
+			native_loader = _native_loader;
 			plugin = _plugin;
 			surface = _surface;
 
@@ -176,7 +179,7 @@ namespace Moonlight {
 			set_attribute_callback = new SetAttributeCallback (set_attribute);
 			hookup_event_callback = new HookupEventCallback (hookup_event);
 
-			Hosting.xaml_set_parser_callbacks (create_element_callback, set_attribute_callback, hookup_event_callback);
+			Hosting.plugin_set_xaml_loader_callbacks (native_loader, create_element_callback, set_attribute_callback, hookup_event_callback);
 			
 			Type t = typeof (System.Windows.Interop.PluginHost);
 			MethodInfo m = t.GetMethod ("SetPluginHandle", BindingFlags.Static | BindingFlags.Public);
@@ -212,9 +215,9 @@ namespace Moonlight {
 			
 			IntPtr element;
 			if (filename != String.Empty)
-				element = Hosting.xaml_create_from_file (filename, true, ref kind);
+				element = Hosting.xaml_create_from_file (native_loader, filename, true, ref kind);
 			else
-				element = Hosting.xaml_create_from_str (contents, true, ref kind);
+				element = Hosting.xaml_create_from_str (native_loader, contents, true, ref kind);
 
 			// HERE:
 			//     Insert code to check the output of from_file
@@ -231,6 +234,7 @@ namespace Moonlight {
 
 			string xname = Hosting.dependency_object_get_type_name (element);
 			if (xname != "Canvas"){
+				Hosting.base_unref (element);
 				Console.WriteLine ("return value is not a Canvas, its a {0}", xname);
 				return null;
 			}
@@ -250,6 +254,7 @@ namespace Moonlight {
 			error = 0;
 			Hosting.surface_attach (surface, p);
 
+			Hosting.base_unref (element); // c just incremented element's refcount, so delete ours (since we still have c).
 			/*
 			m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
 			GetMethod ("SurfaceAttach", BindingFlags.Static | BindingFlags.NonPublic);

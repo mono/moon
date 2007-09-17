@@ -1,5 +1,20 @@
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	[Removed mono dependency for 1.0 moonlight applications. 
+	We now have a native [Plugin]XamlLoader that is the native counterpart of the 
+	managed Loader object, the native loader handles xaml loading when the 
+	mono runtime isn't loaded.]
+
+	* xaml.cpp, xaml.h: Added a XamlLoader class that replaces the callbacks.
+	  Changed xaml_create_from* to take a loader (XamlLoader*) argument. This
+	  was necessary because the callback handler isn't given enough
+	  information (it needs to know the plugin, but this information is not
+	  passed on), and it now also avoids the potential problem of overwriting
+	  static callbacks when several plugins are created simultanously.
+	* control.cpp, demo.cpp: Update according to API change.
+
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* panel.cpp, dependencyobject.cpp, dirty.cpp: Add some null checks.
 
 2007-09-14  Jeffrey Stedfast  <fejj@novell.com>

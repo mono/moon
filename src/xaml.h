@@ -16,24 +16,39 @@
 #include "enums.h"
 #include "uielement.h"
 
-
-typedef DependencyObject *xaml_create_custom_element_callback (const char *xmlns, const char *name);
-typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
-typedef void xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
+class XamlLoader;
 
 G_BEGIN_DECLS
 
-DependencyObject  *xaml_create_from_file (const char *xaml, bool create_namescope, Type::Kind *element_type);
-DependencyObject  *xaml_create_from_str  (const char *xaml, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_create_from_file (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_create_from_str  (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
 void        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
-
-void        xaml_set_parser_callbacks (xaml_create_custom_element_callback *cecb,
-				       xaml_set_custom_attribute_callback *sca, xaml_hookup_event_callback *hue);
 
 void        xaml_init (void);
 
 gint64		timespan_from_str (const char *str);
 
 G_END_DECLS
+
+class XamlLoader
+{
+	private:
+		Surface* surface;
+		char* filename;
+		char* str;
+		
+	protected:
+		XamlLoader (const char* filename, const char* str, Surface* surface);
+		
+	public:		
+		virtual ~XamlLoader ();
+		virtual DependencyObject* CreateElement (const char* xmlns, const char* name);
+		virtual void SetAttribute (void* target, const char* name, const char* value);
+		virtual void HookupEvent (void* target, const char* name, const char* value);
+		
+		char* GetFilename () { return filename; }
+		char* GetString () { return str; }
+		Surface* GetSurface () { return surface; }
+};
 
 #endif /* __MOON_XAML_H__ */

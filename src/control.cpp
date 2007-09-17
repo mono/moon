@@ -149,7 +149,7 @@ Control::InitializeFromXaml (const char *xaml,
 			     Type::Kind *element_type)
 {
 	// No callback, figure out how this will work in the plugin to satisfy deps
-	UIElement *element = (UIElement*)xaml_create_from_str (xaml, false, element_type);
+	UIElement *element = (UIElement*)xaml_create_from_str (NULL, xaml, false, element_type);
 	if (element == NULL)
 		return NULL;
 
