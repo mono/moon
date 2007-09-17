@@ -222,6 +222,19 @@ Font::unref ()
 		delete this;
 }
 
+int
+Font::EmSize ()
+{
+	return face->units_per_EM;
+}
+
+int
+Font::Height ()
+{
+	return face->height;
+}
+
+
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
 
 const GlyphInfo *
@@ -682,91 +695,82 @@ FontDescription::ToString ()
 }
 
 
-TextAttr::TextAttr (Brush *fg, int start, int end)
+TextRun::TextRun (const char *uft8, int len, TextDecorations deco, Font *font, Brush *fg)
 {
-	type = TextAttrForeground;
-	attr.fg = fg;
-	fg.ref ();
+	type = Run;
 	
-	start = start;
-	end = end;
-}
-
-TextAttr::TextAttr (Font *font, int start, int end)
-{
-	type = TextAttrFont;
-	attr.font = font;
-	font.ref ();
+	text = g_utf8_to_ucs4_fast (utf8, len, NULL);
 	
-	start = start;
-	end = end;
+	this->height = font->Height ();
+	this->deco = deco;
+	this->font = font;
+	this->fg = fg;
 }
 
-TextAttr::TextAttr (bool uline, int start, int end)
+TextRun::TextRun (TextDecorations deco, Font *font, Brush *fg)
 {
-	type = TextAttrUnderline;
-	attr.uline = uline;
+	type = LineBreak;
 	
-	start = start;
-	end = end;
+	this->height = font->Height ();
+	this->text = NULL;
+	this->deco = deco;
+	this->font = font;
+	this->fg = fg;
 }
 
-TextAttr::~TextAttr ()
+TextRun::~TextRun ()
 {
-	switch (type) {
-	case TextAttrForeground:
-		attr.fg->unref ();
-		break;
-	case TextAttrFont:
-		attr.font->unref ();
-		break;
-	default:
-		break;
-	}
+	g_free (text);
 }
 
 
-//
-// Notes: a TextSegment should represent a substring of text that
-// shares identical font/uline/fg attrs. A new TextSegment should be
-// created anytime a LineBreak is needed (either because we encounter
-// a '\n' or because we need to satisfy the TextWrapping rules). I'm
-// thinking that we might also want to create new segments for '\t' as
-// well?
-//
-// For LineBreaks, we'll want to add some "MoveTo"-type info - e.g.,
-// 'x' would be 0 and we'd want a 'dy' to represent the offset to the
-// next baseline.
-//
-// For '\t', if we go that route, we'd want to have a 'dx'.
-//
-
-enum TextSegmentType {
-	LineBreak,
-	Text,
-	Tab,
-};
 
 class TextSegment : public List::Node {
 public:
-	TextSegmentType type;
-	
+	TextDecorations deco;
+	const uint32_t *text;
+	int start, end;
 	Font *font;
-	bool uline;
 	Brush *fg;
 	
-	int start;
-	int end;
-	
-	// post-rendered width/height of this segment (if Text)
 	int height;
-	int width;
 	
-	// For MoveTo-type segments
-	int x, dx, dy;
+	TextSegment (TextRun *run, int start);
 };
 
+TextSegment::TextSegment (TextRun *run, int start)
+{
+	deco = run->deco;
+	text = run->text;
+	font = run->font;
+	fg = run->fg;
+	
+	this->start = start;
+	this->end = -1;
+	
+	height = -1;
+}
 
+class TextLine : public List::Node {
+public:
+	List *segments;
+	int height;
+	
+	TextLine ();
+	~TextLine ();
+};
+
+TextLine::TextLine ()
+{
+	segments = new List ();
+	height = -1;
+}
+
+TextLine::~TextLine ()
+{
+	segments->Clear ();
+	delete segments;
+}
 
 TextLayout::TextLayout ()
 {
@@ -774,29 +778,23 @@ TextLayout::TextLayout ()
 	max_height = -1;
 	max_width = -1;
 	
-	attrs = NULL;
-	text = NULL;
+	runs = NULL;
 	
-	utext = NULL;
-	segments = new List ();
+	lines = new List ();
 	
-	dirty = true;
 	height = -1;
 	width = -1;
 }
 
 TextLayout::~TextLayout ()
 {
-	if (attrs) {
-		attrs->Clear (true);
-		delete attrs;
+	if (runs) {
+		runs->Clear (true);
+		delete runs;
 	}
 	
-	segments->Clear (true);
-	delete segments;
-	
-	g_free (utext);
-	g_free (text);
+	lines->Clear (true);
+	delete lines;
 }
 
 int
@@ -806,13 +804,14 @@ TextLayout::GetMaxWidth ()
 }
 
 void
-TextLayout::SetMaxWidth (int width)
+TextLayout::SetMaxWidth (int max)
 {
-	if (max_width == width)
+	if (max_width == max)
 		return;
 	
 	max_width = width;
-	dirty = true;
+	height = -1;
+	width = -1;
 }
 
 int
@@ -822,67 +821,279 @@ TextLayout::GetMaxHeight ()
 }
 
 void
-TextLayout::SetMaxHeight (int height)
+TextLayout::SetMaxHeight (int max)
 {
-	if (max_height == height)
+	if (max_height == max)
 		return;
 	
-	max_height = height;
-	dirty = true;
+	max_height = max;
+	height = -1;
+	width = -1;
 }
 
-const char *
-TextLayout::GetText ()
+TextWrapping
+TextLayout::GetWrapping ()
 {
-	return text;
+	return wrapping;
 }
 
 void
-TextLayout::SetText (const char *text)
+TextLayout::SetWrapping (TextWrapping wrapping)
 {
-	if ((this->text && text && !strcmp (this->text, text))
-	    || (!this->text && !text)) {
-		// text is identical, no-op
+	if (this->wrapping == wrapping)
 		return;
-	}
 	
-	g_free (this->utext);
-	g_free (this->text);
-	
-	if (text) {
-		this->utext = g_utf8_to_ucs4_fast (text, -1, NULL);
-		this->text = g_strdup (text);
-	} else {
-		this->utext = NULL;
-		this->text = NULL;
-	}
-	
-	dirty = true;
+	this->wrapping = wrapping;
+	height = -1;
+	width = -1;
 }
 
-const List *
-TextLayout::GetAttributes ()
+List *
+TextLayout::GetTextRuns ()
 {
-	return attrs;
+	return runs;
 }
 
 void
-TextLayout::SetAttributes (List *attrs)
+TextLayout::SetTextRuns (List *runs)
 {
-	if (!this->attrs && !attrs)
-		return;
+	this->runs->Clear (true);
+	delete this->runs;
 	
-	if (this->attrs) {
-		this->attrs->Clear (true);
-		delete this->attrs;
-	}
+	this->runs = runs;
 	
-	this->attrs = attrs;
-	dirty = true;
+	height = -1;
+	width = -1;
 }
 
 void
 TextLayout::GetPixelSize (int *w, int *h)
 {
+	if (w)
+		*w = width;
 	
+	if (h)
+		*h = height;
+}
+
+struct Space {
+	int index;
+	int width;
+};
+
+void
+TextLayout::Layout ()
+{
+	TextSegment *segment;
+	GlyphInfo *glyph;
+	TextLine *line;
+	TextRun *run;
+	int lw, lh;
+	Space spc;
+	int i;
+	
+	if (width != -1 && height != -1)
+		return;
+	
+	lines->Clear (true);
+	lh = height = 0;
+	lw = width = 0;
+	
+	if (!runs || runs->IsEmpty ())
+		return;
+	
+	line = new TextLine ();
+	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
+		lh = MAX (lh, run->font->Height ());
+		
+		if (run->type == LineBreak) {
+			lines->Append (line);
+			line->height = lh;
+			
+			width = MAX (width, lw);
+			
+			if (run->next)
+				line = new TextLine ();
+			else
+				line = 0;
+			
+			lw = lh = 0;
+			continue;
+		}
+		
+		if (!text[0])
+			continue;
+		
+		spc.index = -1;
+		segment = new TextSegment (run, 0);
+		for (i = 0; run->text[i]; i++) {
+			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
+				continue;
+			
+			if (g_unichar_isspace (run->text[i])) {
+				spc.index = i;
+				spc.width = lw;
+			}
+			
+			if ((lw + glyph->metrics.horiAdvance) <= max_width) {
+				// this glyph fits nicely on this line
+				lw += glyph->metrics.horiAdvance;
+				continue;
+			}
+			
+			// need to wrap
+			if (spc.index != -1) {
+				segment->end = spc.index;
+				lw = spc->width;
+				i = spc.index;
+			} else {
+				segment->end = i;
+				i--;
+			}
+			
+			// end this line
+			if (segment->end > segment->start) {
+				line->segments->Append (segment);
+				segment = new TextSegment (run, i + 1);
+			}
+			
+			lines->Append (line);
+			line->height = lh;
+			
+			width = MAX (width, lw);
+			height += lh;
+			
+			// create a new line
+			line = new TextLine ();
+			spc.index = -1;
+			lw = lh = 0;
+		}
+		
+		segment->end = i;
+		line->segments->Append (segment);
+	}
+	
+	if (line)
+		lines->Append (line);
+}
+
+void
+TextLayout::Render (cairo_t *cr)
+{
+	Layout ();
+	
+	
+}
+
+
+
+
+
+
+
+
+void
+TextLayout::Layout ()
+{
+	bool new_segment = true;
+	TextAttr *uline = NULL;
+	TextAttr *font = NULL;
+	TextAttr *fg = NULL;
+	TextSegment *segment;
+	GlyphInfo *glyph;
+	TextAttr *attr;
+	int i = 0;
+	int w, h;
+	
+	if (!dirty)
+		return;
+	
+	segments->Clear (true);
+	h = height = 0;
+	w = width = 0;
+	
+	if (!text || !text[0])
+		return;
+	
+	attr = (TextAttr *) attrs->First ();
+	
+	while (utext[i]) {
+		if (uline && uline->end <= i)
+			uline = NULL;
+		if (font && font->end <= i)
+			font = NULL;
+		if (fg && fg->end <= i)
+			fg = NULL;
+		
+		while (attr) {
+			if (attr->start > i)
+				break;
+			
+			switch (attr->type) {
+			case TextAttrForeground:
+				new_segment = true;
+				fg = attr;
+				break;
+			case TextAttrUnderline:
+				new_segment = true;
+				uline = attr;
+				break;
+			case TextAttrFont:
+				new_segment = true;
+				font = attr;
+				break;
+			}
+			
+			attr = (TextAttr *) attr->next;
+		}
+		
+		// we always need a font and an fg
+		g_assert (font != NULL);
+		g_assert (fg != NULL);
+		
+		if (new_segment) {
+			if (segment)
+				segment->end = i;
+			
+			segment = new TextSegment (Text, i);
+			segment->uline = uline ? true : false;
+			segment->font = font->font;
+			segment->fg = fg->fg;
+			
+			segments->Append (segment);
+			
+			new_segment = false;
+		}
+		
+		if (utext[i] == '\n') {
+			// insert a LineBreak segment
+			if (segment->start < i) {
+				segment = new TextSegment (LineBreak, i);
+				segment->uline = uline ? true : false;
+				segment->font = font->font;
+				segment->fg = fg->fg;
+				
+				segments->Append (segment);
+			} else {
+				// current Text segment had no text
+				segment->type = LineBreak;
+			}
+			
+			width = MAX (width, w);
+			segment->end = ++i;
+			w = 0;
+			
+			segment = new TextSegment (Text, i);
+			segment->uline = uline ? true : false;
+			segment->font = font->font;
+			segment->fg = fg->fg;
+			
+			segments->Append (segment);
+			
+			continue;
+		}
+		
+		glyph = font->font->GlyphInfo (utext[i]);
+		i++;
+	}
 }

@@ -102,6 +102,9 @@ public:
 	
 	const GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
+	int EmSize ();
+	int Height ();
+	
 	void Render (cairo_t *cr, const GlyphInfo *glyph);
 	void Render (cairo_t *cr, uint32_t unichar);
 };
@@ -158,29 +161,25 @@ public:
 };
 
 
-enum TextAttrType {
-	TextAttrForeground,
-	TextAttrUnderline,
-	TextAttrFont,
+enum TextRunType {
+	LineBreak,
+	Run,
 };
 
-
-class TextAttr : public List::Node {
+class TextRun : public List::Node {
 public:
-	TextAttrType type;
-	union {
-		Brush *fg;
-		Font *font;
-		bool uline;
-	} attr;
-	int start;
-	int end;
+	TextRunType type;
 	
-	TextAttr (Brush *fg, int start, int end);
-	TextAttr (Font *font, int start, int end);
-	TextAttr (bool uline, int start, int end);
+	TextDecorations deco;
+	uint32_t *text;
+	Font *font;
+	Brush *fg;
 	
-	virtual ~TextAttr ();
+	int height;
+	
+	TextRun (const char *uft8, int len, TextDecorations deco, Font *font, Brush *fg);
+	TextRun (TextDecorations deco, Font *font, Brush *fg);
+	~TextRun ();
 };
 
 
@@ -189,16 +188,12 @@ class TextLayout {
 	TextWrapping wrapping;
 	int max_height;
 	int max_width;
+	List *runs;
 	
-	List *attrs;
-	char *text;
-	
-	// internal representation
-	uint32_t *utext;
-	List *segments;
+	// Internal representation
+	List *lines;
 	
 	// cached info
-	bool dirty;
 	int height;
 	int width;
 	
@@ -213,17 +208,15 @@ public:
 	int GetMaxHeight ();
 	void SetMaxHeight (int height);
 	
-	const char *GetText ();
-	void SetText (const char *text);
+	TextWrapping GetWrapping ();
+	void SetWrapping (TextWrapping wrapping);
 	
-	const List *GetAttributes ();
-	void SetAttributes (List *attrs);
+	List *GetTextRuns ();
+	void SetTextRuns (List *runs);
 	
+	void Layout ();
 	void GetPixelSize (int *w, int *h);
-};
-
-
-class TextRenderer {
+	void Render (cairo_t *cr);
 };
 
 #endif /* __FONT_H__ */
