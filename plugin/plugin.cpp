@@ -164,6 +164,7 @@ PluginInstance::~PluginInstance ()
 		g_free (background);
 
 	delete xaml_loader;
+	xaml_loader = NULL;
 }
 
 void 
@@ -329,6 +330,8 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
 		if (NPVARIANT_IS_STRING (result)) {
+			if (xaml_loader)
+				delete xaml_loader;
 			xaml_loader = PluginXamlLoader::FromStr (NPVARIANT_TO_STRING (result).utf8characters, this, this->surface);
 			TryLoad ();
 		}
@@ -422,7 +425,7 @@ PluginInstance::TryLoad ()
 	int error = 0;
 
 	vm_missing_file = xaml_loader->TryLoad (&error);
-
+	
 	if (vm_missing_file != NULL){
 		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
 		NPN_GetURLNotify (instance, vm_missing_file, NULL, notify);
@@ -446,6 +449,8 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 	  //		DEBUGMSG ("LoadFromXaml: %s", fname);
+	  	if (xaml_loader)
+	  		delete xaml_loader;
 		xaml_loader = PluginXamlLoader::FromFilename (fname, this, this->surface);
 		TryLoad ();
 	}
@@ -748,6 +753,7 @@ PluginXamlLoader::CreateElement (const char* xmlns, const char* name)
 		return create_element_callback (xmlns, name);
 #endif
 	printf ("PluginXamlLoader::CreateElement (%s, %s)\n", xmlns, name);
+	return NULL;
 }
 
 void 

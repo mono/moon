@@ -333,6 +333,7 @@ DependencyObject*
 XamlLoader::CreateElement (const char* xmlns, const char* name)
 {
 	printf ("XamlLoader::CreateElement (%s, %s)\n", xmlns, name);
+	return NULL;
 }
 
 void 

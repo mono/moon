@@ -1,5 +1,9 @@
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* xaml.cpp: Fix warning.
+
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	[Removed mono dependency for 1.0 moonlight applications. 
 	We now have a native [Plugin]XamlLoader that is the native counterpart of the 
 	managed Loader object, the native loader handles xaml loading when the 

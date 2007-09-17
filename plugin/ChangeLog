@@ -1,5 +1,10 @@
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* downloader.cpp: Removed warning.
+	* plugin.cpp: Delete the current xaml_loader if we create a new one.
+
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	
 
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
