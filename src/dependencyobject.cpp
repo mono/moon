@@ -22,7 +22,7 @@
 // Define the ID of the object you want to track
 // Object creation, destruction and all ref/unrefs
 // are logged to the console, with a stacktrace.
-#define OBJECT_TRACK_ID 23
+#define OBJECT_TRACK_ID (-1)
 
 int Base::objects_created = 0;
 int Base::objects_destroyed = 0;
@@ -448,6 +448,8 @@ DependencyObject::FindNameScope ()
 DependencyObject *
 dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_kind)
 {
+	if (obj == NULL)
+		return NULL;
 	//printf ("Looking up in %p the string %p\n", obj, name);
 	//printf ("        String: %s\n", name);
 	DependencyObject *ret = obj->FindName (name);

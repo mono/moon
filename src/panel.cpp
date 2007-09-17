@@ -22,7 +22,10 @@
 VisualCollection *
 Panel::GetChildren ()
 {
-	return GetValue (Panel::ChildrenProperty)->AsVisualCollection();
+	Value* children = GetValue (Panel::ChildrenProperty);
+	if (children)
+		return children->AsVisualCollection ();
+	return NULL;
 }
 
 void
@@ -90,28 +93,30 @@ Panel::ComputeBounds ()
 	space (levelb);
 	printf ("Panel: Enter ComputeBounds\n");
 #endif
-	cn = (Collection::Node *) children->list->First ();
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-		UIElement *item = (UIElement *) cn->obj;
+	if (children != NULL) {
+		cn = (Collection::Node *) children->list->First ();
+		for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
+			UIElement *item = (UIElement *) cn->obj;
 
-		// if the item doesn't take part in layout
-		// calculations, skip it
-		if (!item->GetVisible ())
-			continue;
+			// if the item doesn't take part in layout
+			// calculations, skip it
+			if (!item->GetVisible ())
+				continue;
 
-		Rect r = item->GetBounds ();
+			Rect r = item->GetBounds ();
 
 #if DEBUG_BOUNDS
-		space (levelb + 4);
-		printf ("Item (%s, 5s) bounds %g %g %g %g\n", 
-			dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
+			space (levelb + 4);
+			printf ("Item (%s, 5s) bounds %g %g %g %g\n", 
+				dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
 #endif
-		if (first) {
-			bounds = r;
-			first = false;
-		}
-		else {
-			bounds = bounds.Union (r);
+			if (first) {
+				bounds = r;
+				first = false;
+			}
+			else {
+				bounds = bounds.Union (r);
+			}
 		}
 	}
 

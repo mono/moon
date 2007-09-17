@@ -74,13 +74,15 @@ process_dirty_elements ()
 				Panel *p = (Panel*)el;
 				VisualCollection *children = p->GetChildren();
 
-				Collection::Node* n = (Collection::Node *) children->list->First ();
-				while (n != NULL) {
-					// we don't call n->obj->UpdateTransform here
-					// because that causes the element to recompute
-					// its local transform as well, which isn't necessary.
-					add_dirty_element ((UIElement *) n->obj, DirtyTransform);
-					n = (Collection::Node *) n->next;
+				if (children != NULL) {
+					Collection::Node* n = (Collection::Node *) children->list->First ();
+					while (n != NULL) {
+						// we don't call n->obj->UpdateTransform here
+						// because that causes the element to recompute
+						// its local transform as well, which isn't necessary.
+						add_dirty_element ((UIElement *) n->obj, DirtyTransform);
+						n = (Collection::Node *) n->next;
+					}
 				}
 			}
 			else if (el->Is (Type::CONTROL)) {

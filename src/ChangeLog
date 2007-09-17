@@ -1,3 +1,7 @@
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* panel.cpp, dependencyobject.cpp, dirty.cpp: Add some null checks.
+
 2007-09-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp|h: New font/text rendering engine (e.g. replacement for
