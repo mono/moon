@@ -1,5 +1,9 @@
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* xaml.cpp, xaml.h: Move callbacks from PluginXamlLoader back to XamlLoader.
+
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* xaml.cpp: Fix warning.
 
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 

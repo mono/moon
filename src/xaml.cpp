@@ -332,6 +332,9 @@ class CustomNamespace : public XamlNamespace {
 DependencyObject* 
 XamlLoader::CreateElement (const char* xmlns, const char* name)
 {
+	if (create_element_callback)
+		return create_element_callback (xmlns, name);
+		
 	printf ("XamlLoader::CreateElement (%s, %s)\n", xmlns, name);
 	return NULL;
 }
@@ -339,12 +342,20 @@ XamlLoader::CreateElement (const char* xmlns, const char* name)
 void 
 XamlLoader::SetAttribute (void* target, const char* name, const char* value)
 {
+	if (set_attribute_callback) {
+		set_attribute_callback (target, name, value);
+		return;
+	}
 	printf ("XamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
 }
 
 void 
 XamlLoader::HookupEvent (void* target, const char* name, const char* value)
 {
+	if (hookup_event_callback) {
+		hookup_event_callback (target, name, value);
+		return;
+	}
 	printf ("XamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
 }
 
@@ -353,14 +364,44 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 	this->filename = g_strdup (filename);
 	this->str = g_strdup (str);
 	this->surface = surface;
-	this->surface->ref ();
+	base_ref (this->surface);
+	this->create_element_callback = NULL;
+	this->set_attribute_callback = NULL;
+	this->hookup_event_callback = NULL;
+	
 }
 
 XamlLoader::~XamlLoader ()
 {
 	g_free (filename);
 	g_free (str);
-	this->surface->unref ();
+	base_unref (this->surface);
+}
+
+XamlLoader* 
+xaml_loader_new (const char* filename, const char* str, Surface* surface)
+{
+	return new XamlLoader (filename, str, surface);
+}
+
+void
+xaml_loader_free (XamlLoader* loader)
+{
+	delete loader;
+}
+
+void 
+xaml_set_parser_callbacks (XamlLoader* loader, plugin_create_custom_element_callback *cecb,
+			   plugin_set_custom_attribute_callback *sca, plugin_hookup_event_callback *hue)
+{
+	if (!loader) {
+		printf ("Trying to set callbacks for a null object\n");
+		return;
+	}
+	
+	loader->create_element_callback = cecb;
+	loader->set_attribute_callback = sca;
+	loader->hookup_event_callback = hue;
 }
 
 XamlElementInstance *

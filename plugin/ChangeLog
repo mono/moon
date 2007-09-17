@@ -1,5 +1,10 @@
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin.cpp, plugin.h, moonlight.cs: Move callbacks from PluginXamlLoader
+	  back to XamlLoader.
+
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* downloader.cpp: Removed warning.
 	* plugin.cpp: Delete the current xaml_loader if we create a new one.
 

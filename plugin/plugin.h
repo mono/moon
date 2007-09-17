@@ -140,12 +140,6 @@ class StreamNotify
 	void *pdata;
 };
 
-#if INCLUDE_MONO_RUNTIME
-typedef DependencyObject *plugin_create_custom_element_callback (const char *xmlns, const char *name);
-typedef void plugin_set_custom_attribute_callback (void *target, const char *name, const char *value);
-typedef void plugin_hookup_event_callback (void *target, const char *ename, const char *evalue);
-#endif
-
 class PluginXamlLoader : XamlLoader
 {
 	private: 
@@ -155,10 +149,6 @@ class PluginXamlLoader : XamlLoader
 		bool initialized;
 #if INCLUDE_MONO_RUNTIME
 		gpointer managed_loader;
-	public:
-		plugin_create_custom_element_callback *create_element_callback;
-		plugin_set_custom_attribute_callback *set_attribute_callback;
-		plugin_hookup_event_callback *hookup_event_callback;
 #endif
 	public:
 		virtual ~PluginXamlLoader ();
@@ -194,10 +184,6 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
 uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
 
-#if INCLUDE_MONO_RUNTIME
-void plugin_set_xaml_loader_callbacks (PluginXamlLoader* loader, plugin_create_custom_element_callback *cecb,
-			   plugin_set_custom_attribute_callback *sca, plugin_hookup_event_callback *hue);
-#endif
 G_END_DECLS
 
 #endif /* MOON_PLUGIN */

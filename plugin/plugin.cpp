@@ -813,9 +813,6 @@ PluginXamlLoader::PluginXamlLoader (const char* filename, const char* str, Plugi
 	this->initialized = FALSE;
 #if INCLUDE_MONO_RUNTIME
 	this->managed_loader = NULL;
-	this->create_element_callback = NULL;
-	this->set_attribute_callback = NULL;
-	this->hookup_event_callback = NULL;
 #endif
 }
 
@@ -828,18 +825,3 @@ PluginXamlLoader::~PluginXamlLoader ()
 #endif
 }
 
-#if INCLUDE_MONO_RUNTIME
-void 
-plugin_set_xaml_loader_callbacks (PluginXamlLoader* loader, plugin_create_custom_element_callback *cecb,
-			   plugin_set_custom_attribute_callback *sca, plugin_hookup_event_callback *hue)
-{
-	if (!loader) {
-		printf ("Trying to set callbacks for a null object\n");
-		return;
-	}
-	
-	loader->create_element_callback = cecb;
-	loader->set_attribute_callback = sca;
-	loader->hookup_event_callback = hue;
-}
-#endif

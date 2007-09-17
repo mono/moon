@@ -54,8 +54,8 @@ namespace Moonlight {
 		[DllImport ("moon")]
 		internal extern static IntPtr xaml_create_from_str (IntPtr xml_loader, string file, bool create_namescope, ref int kind_type);
 
-		[DllImport ("moonplugin")]
-		internal extern static void plugin_set_xaml_loader_callbacks (IntPtr native_object, CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue);
+		[DllImport ("moon")]
+		internal extern static void xaml_set_parser_callbacks (IntPtr native_object, CreateElementCallback ce, SetAttributeCallback sa, HookupEventCallback hue);
 
 		[DllImport ("moon")]
 		internal extern static IntPtr base_unref (IntPtr base_ptr);
@@ -179,7 +179,7 @@ namespace Moonlight {
 			set_attribute_callback = new SetAttributeCallback (set_attribute);
 			hookup_event_callback = new HookupEventCallback (hookup_event);
 
-			Hosting.plugin_set_xaml_loader_callbacks (native_loader, create_element_callback, set_attribute_callback, hookup_event_callback);
+			Hosting.xaml_set_parser_callbacks (native_loader, create_element_callback, set_attribute_callback, hookup_event_callback);
 			
 			Type t = typeof (System.Windows.Interop.PluginHost);
 			MethodInfo m = t.GetMethod ("SetPluginHandle", BindingFlags.Static | BindingFlags.Public);
