@@ -79,10 +79,14 @@ font_weight (FontWeights weight)
 static Brush *
 default_foreground (void)
 {
-	SolidColorBrush *brush = new SolidColorBrush ();
-	Color *color = color_from_str ("black");
-	solid_color_brush_set_color (brush, color);
-	delete color;
+	static SolidColorBrush *brush = NULL;
+	
+	if (!brush) {
+		brush = new SolidColorBrush ();
+		Color *color = color_from_str ("black");
+		solid_color_brush_set_color (brush, color);
+		delete color;
+	}
 	
 	return (Brush *) brush;
 }
@@ -471,12 +475,10 @@ TextBlock::Layout (cairo_t *cr)
 	Brush *fg;
 	int w, h;
 	
-	if (foreground == NULL) {
+	if (foreground == NULL)
 		fg = default_foreground ();
-	} else {
+	else
 		fg = foreground;
-		fg->ref ();
-	}
 	
 	if (layout == NULL)
 		layout = pango_cairo_create_layout (cr);

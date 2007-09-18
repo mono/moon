@@ -1,3 +1,14 @@
+2007-09-18  Jeffrey Stedfast  <fejj@gnome.org>
+
+	Continued fixes to go along with Rolf's other TextBlock leak
+	fixes.
+
+	* mango.cpp (mango_attr_foreground_new): Don't ref the fg.
+	(mango_attr_foreground_destroy): Don't unref the fg.
+
+	* text.cpp (default_foreground): Make return a static reference.
+	(Layout): Don't ref the fg.
+
 2007-09-17  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* font.cpp: more progress on text layout.
