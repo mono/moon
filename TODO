@@ -150,3 +150,7 @@ Feel free to add items to this TODO list
 
 	We could avoid clearing the downloader here, and just let
 	SetSource abort old downloaders, and clear the values.
+
+* Fullscreen
+	
+	Implement the "You're now in fullscreen mode, press ESC to exit" message.
