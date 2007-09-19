@@ -15,6 +15,8 @@ G_BEGIN_DECLS
 
 #include <string.h>
 
+#include <gdk/gdkpixbuf.h>
+
 #include "mplayer.h"
 #include "enums.h"
 #include "clock.h"
