@@ -184,7 +184,7 @@ Playlist::Parse ()
 	gsize len;
 	bool error;
 
-	if (!g_file_get_contents (source_name, &text, &len, NULL))
+	if (!g_file_get_contents (file_name, &text, &len, NULL))
 		return false;
 
 	PlaylistParser *parser = new PlaylistParser (this);
