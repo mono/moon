@@ -11,8 +11,6 @@
 #ifndef __PLAYLIST_H__
 #define __PLAYLIST_H__
 
-G_BEGIN_DECLS
-
 #include <expat.h>
 
 #include "downloader.h"
@@ -154,7 +152,5 @@ public:
 
 	bool Parse (const char *text, int len);
 };
-
-G_END_DECLS
 
 #endif /* __PLAYLIST_H__ */
