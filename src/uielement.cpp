@@ -70,6 +70,8 @@ UIElement::~UIElement ()
 		opacityMask->Detach (NULL, this);
 		opacityMask->unref ();
 	}
+
+	remove_dirty_element (this);
 }
 
 void

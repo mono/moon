@@ -49,6 +49,13 @@ add_dirty_element (UIElement *element, DirtyType dirt)
 }
 
 void
+remove_dirty_element (UIElement *element)
+{
+	up_dirty = g_slist_remove (up_dirty, element);
+	down_dirty = g_slist_remove (down_dirty, element);
+}
+
+void
 process_dirty_elements ()
 {
 	/* push down the transforms and opacity changes first */

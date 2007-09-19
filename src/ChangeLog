@@ -1,3 +1,10 @@
+2007-09-19  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (~UIElement): remove this from the dirty lists.
+
+	* dirty.h, dirty.cpp (remove_dirty_element): new function, remove
+	element from both the up and down dirty lists.
+
 2007-09-19  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* font.cpp: More hackery.
