@@ -759,12 +759,9 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
-		if (!p->loader) {
-			printf ("No loader.\n");
-			print_stack_trace ();
+		if (!p->loader)
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
 					g_strdup_printf ("No custom element callback installed to handle %s", uri));
-	}
 
 		CustomNamespace *c = new CustomNamespace (g_strdup (uri));
 		g_hash_table_insert (p->namespace_map, c->xmlns, c);
