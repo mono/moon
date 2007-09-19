@@ -1,3 +1,10 @@
+2007-09-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp: More fixes to make stuff build/work (more or less).
+
+	* text.patch: Patch to make text layout/rendering use my new code
+	rather than pango.
+
 2007-09-19  Chris Toshok  <toshok@ximian.com>
 
 	* text.cpp (TextBlock::Layout): don't insert multiple fg_attrs.

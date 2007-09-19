@@ -12,9 +12,16 @@
 #define __FONT_H__
 
 #include <stdint.h>
+
+#include <cairo.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <fontconfig/fontconfig.h>
+#include <fontconfig/fcfreetype.h>
+
+#include "uielement.h"
+#include "brush.h"
+#include "list.h"
 
 enum FontStretches {
 	FontStretchesUltraCondensed = 1,
@@ -76,12 +83,13 @@ enum FontMask {
 };
 
 
+G_BEGIN_DECLS
 void font_init (void);
-
+G_END_DECLS
 
 struct GlyphInfo;
 
-class Font {
+class TextFont {
 	int ref_count;
 	
 	FcPattern *pattern;
@@ -89,16 +97,16 @@ class Font {
 	
 	GlyphInfo *glyphs;
 	
-	Font (FcPattern *pattern, double size);
+	TextFont (FcPattern *pattern, double size);
 	
 public:
 	
-	~Font ();
+	~TextFont ();
 	
 	void ref ();
 	void unref ();
 	
-	static Font *Load (FcPattern *pattern, double size);
+	static TextFont *Load (FcPattern *pattern, double size);
 	
 	const GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
@@ -110,8 +118,8 @@ public:
 };
 
 
-class FontDescription {
-	Font *font;
+class TextFontDescription {
+	TextFont *font;
 	
 	// bitmask of set attributes
 	uint8_t set;
@@ -127,17 +135,17 @@ class FontDescription {
 	FcPattern *CreatePattern ();
 	
 public:
-	FontDescription ();
-	FontDescription (const char *str);
-	~FontDescription ();
+	TextFontDescription ();
+	TextFontDescription (const char *str);
+	~TextFontDescription ();
 	
-	const Font *GetFont ();
+	TextFont *GetFont ();
 	
 	uint8_t GetFields ();
 	
 	void UnsetFields (uint8_t mask);
 	
-	void Merge (FontDescription *font, bool replace);
+	void Merge (TextFontDescription *desc, bool replace);
 	
 	const char *GetFilename ();
 	void SetFilename (const char *filename);
@@ -151,8 +159,8 @@ public:
 	FontWeights GetWeight ();
 	void SetWeight (FontWeights weight);
 	
-	FontStretchs GetStretch ();
-	void SetStretch (FontStretchs stretch);
+	FontStretches GetStretch ();
+	void SetStretch (FontStretches stretch);
 	
 	double GetSize ();
 	void SetSize (double size);
@@ -161,24 +169,15 @@ public:
 };
 
 
-enum TextRunType {
-	LineBreak,
-	Run,
-};
-
 class TextRun : public List::Node {
 public:
-	TextRunType type;
-	
 	TextDecorations deco;
 	uint32_t *text;
-	Font *font;
+	TextFont *font;
 	Brush *fg;
 	
-	int height;
-	
-	TextRun (const char *uft8, int len, TextDecorations deco, Font *font, Brush *fg);
-	TextRun (TextDecorations deco, Font *font, Brush *fg);
+	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg);
+	TextRun (TextDecorations deco, TextFontDescription *font, Brush *fg);
 	~TextRun ();
 };
 
@@ -216,7 +215,7 @@ public:
 	
 	void Layout ();
 	void GetPixelSize (int *w, int *h);
-	void Render (cairo_t *cr, UIElement *element);
+	void Render (cairo_t *cr, UIElement *element, double x, double y);
 };
 
 #endif /* __FONT_H__ */

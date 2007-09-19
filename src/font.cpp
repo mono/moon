@@ -18,7 +18,7 @@
 #include "font.h"
 
 
-static GHashTable *font_hash = NULL;
+static GHashTable *font_cache = NULL;
 static bool initialized = false;
 static FT_Library libft2;
 static double dpi;
@@ -37,7 +37,7 @@ font_init (void)
 		return;
 	}
 	
-	font_hash = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
+	font_cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
 	
 	pattern = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "Sans",
 				  FC_SIZE, FcTypeDouble, 10.0, NULL);
@@ -100,8 +100,10 @@ fc_stretch (FontStretches stretch)
 		return FC_WIDTH_SEMICONDENSED;
 	case FontStretchesNormal:
 		return FC_WIDTH_NORMAL;
+#if 0
 	case FontStretchesMedium:
 		return FC_WIDTH_NORMAL;
+#endif
 	case FontStretchesSemiExpanded:
 		return FC_WIDTH_SEMIEXPANDED;
 	case FontStretchesExpanded:
@@ -128,26 +130,23 @@ struct GlyphInfo {
 
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
 
-Font::Font (FcPattern *pattern, double size)
+TextFont::TextFont (FcPattern *pattern, double size)
 {
 	const char *filename = NULL;
 	FcPattern *matched, *sans;
 	bool retried = false;
 	FcResult result;
 	//double size;
-	int flags;
 	int id;
 	
 	FcPatternReference (pattern);
 	matched = pattern;
 	
-	flags = FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL;
-	
 	//FcPatternGetDouble (matched, FC_PIXEL_SIZE, 0, &size);
 	
 retry:
 	
-	if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
+	if (FcPatternGetString (matched, FC_FILE, 0, (FcChar8 **) &filename) != FcResultMatch)
 		goto fail;
 	
 	if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
@@ -172,7 +171,7 @@ retry:
 	
 	FcPatternDestroy (matched);
 	
-	FT_Set_Pixel_Sizes (face, 0, size);
+	FT_Set_Pixel_Sizes (face, 0, (int) size);
 	
 	glyphs = g_new0 (GlyphInfo, 256);
 	glyphs[0].unichar = 1; /* invalidate */
@@ -183,7 +182,7 @@ retry:
 	ref_count = 1;
 }
 
-Font::~Font ()
+TextFont::~TextFont ()
 {
 	int i;
 	
@@ -197,27 +196,27 @@ Font::~Font ()
 	FcPatternDestroy (pattern);
 }
 
-Font *
-Font::Load (FcPattern *pattern, double size)
+TextFont *
+TextFont::Load (FcPattern *pattern, double size)
 {
-	Font *font;
+	TextFont *font;
 	
-	if ((font = (Font *) g_hash_table_lookup (font_cache, pattern))) {
+	if ((font = (TextFont *) g_hash_table_lookup (font_cache, pattern))) {
 		font->ref ();
 		return font;
 	}
 	
-	return new Font (pattern, size);
+	return new TextFont (pattern, size);
 }
 
 void
-Font::ref ()
+TextFont::ref ()
 {
 	ref_count++;
 }
 
 void
-Font::unref ()
+TextFont::unref ()
 {
 	ref_count--;
 	
@@ -226,19 +225,19 @@ Font::unref ()
 }
 
 int
-Font::EmSize ()
+TextFont::EmSize ()
 {
 	return face->units_per_EM;
 }
 
 int
-Font::Height ()
+TextFont::Height ()
 {
-	return face->height;
+	return face->height / 64;
 }
 
 const GlyphInfo *
-Font::GetGlyphInfo (uint32_t unichar)
+TextFont::GetGlyphInfo (uint32_t unichar)
 {
 	GlyphInfo *glyph;
 	uint32_t index;
@@ -255,17 +254,49 @@ Font::GetGlyphInfo (uint32_t unichar)
 		
 		g_free (glyph->bitmap.buffer);
 		
-		if (FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) == 0) {
+		if (glyph->index > 0 && FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) == 0) {
 			if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
 				goto unavail;
 			
-			memcpy (&glyph->metrics, &face->glyph->metrics, sizeof (&glyph->metrics));
+			//memcpy (&glyph->metrics, &face->glyph->metrics, sizeof (glyph->metrics));
+			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64;
+			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY / 64;
+			glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64;
+			glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY / 64;
+			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance / 64;
+			glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64;
+			glyph->metrics.height = face->glyph->metrics.height / 64;
+			glyph->metrics.width = face->glyph->metrics.width / 64;
 			
 			glyph->bitmap = face->glyph->bitmap;
-			glyph->bitmap.buffer = g_memdup (face->glyph->bitmap.buffer,
-							 face->glyph->bitmap.rows * face->glyph->bitmap.pitch);
+			glyph->bitmap.buffer = (unsigned char *) g_memdup (face->glyph->bitmap.buffer,
+									   face->glyph->bitmap.rows *
+									   face->glyph->bitmap.pitch);
 			glyph->bitmap_left = face->glyph->bitmap_left;
 			glyph->bitmap_top = face->glyph->bitmap_top;
+		} else if (glyph->index == 0 && (unichar == 0x20 || unichar == 0x09)) {
+			glyph->metrics.horiBearingX = 0;
+			glyph->metrics.horiBearingY = 0;
+			glyph->metrics.horiBearingX = 0;
+			glyph->metrics.horiBearingY = 0;
+			
+			memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
+			glyph->bitmap_left = 0;
+			glyph->bitmap_top = 0;
+			
+			if (unichar == 0x20) {
+				// Space
+				glyph->metrics.horiAdvance = face->max_advance_width / 64;
+				glyph->metrics.vertAdvance = face->max_advance_height / 64;
+				glyph->metrics.height = face->max_advance_height / 64;
+				glyph->metrics.width = face->max_advance_width / 64;
+			} else if (unichar == 0x09) {
+				// Tab
+				glyph->metrics.horiAdvance = face->max_advance_width / 8;
+				glyph->metrics.vertAdvance = face->max_advance_height / 64;
+				glyph->metrics.height = face->max_advance_height / 64;
+				glyph->metrics.width = face->max_advance_width / 8;
+			}
 		} else {
 		unavail:
 			memset (&glyph->metrics, 0, sizeof (&glyph->metrics));
@@ -275,20 +306,20 @@ Font::GetGlyphInfo (uint32_t unichar)
 		}
 	}
 	
-	if (glyph->bitmap.buffer)
+	if (glyph->metrics.horiAdvance > 0)
 		return glyph;
 	
 	return NULL;
 }
 
 void
-Font::Render (cairo_t *cr, const GlyphInfo *glyph)
+TextFont::Render (cairo_t *cr, const GlyphInfo *glyph)
 {
 	// FIXME: render the glyph
 }
 
 void
-Font::Render (cairo_t *cr, uint32_t unichar)
+TextFont::Render (cairo_t *cr, uint32_t unichar)
 {
 	const GlyphInfo *glyph;
 	
@@ -299,7 +330,7 @@ Font::Render (cairo_t *cr, uint32_t unichar)
 }
 
 
-FontDescription::FontDescription ()
+TextFontDescription::TextFontDescription ()
 {
 	font = NULL;
 	
@@ -312,12 +343,12 @@ FontDescription::FontDescription ()
 	size = 14.666f;
 }
 
-FontDescription::FontDescription (const char *str)
+TextFontDescription::TextFontDescription (const char *str)
 {
 	// FIXME: implement me
 }
 
-FontDescription::~FontDescription ()
+TextFontDescription::~TextFontDescription ()
 {
 	if (font != NULL)
 		font->unref ();
@@ -327,7 +358,7 @@ FontDescription::~FontDescription ()
 }
 
 FcPattern *
-FontDescription::CreatePattern ()
+TextFontDescription::CreatePattern ()
 {
 	FcPattern *pattern;
 	char **families;
@@ -337,11 +368,11 @@ FontDescription::CreatePattern ()
 	FcPatternAddDouble (pattern, FC_DPI, dpi);
 	
 	if (set & FontMaskFilename)
-		FcPatternAddString (pattern, FC_FILE, filename);
+		FcPatternAddString (pattern, FC_FILE, (FcChar8 *) filename);
 	
-	families = g_strsplit (GetFamily (), ',', -1);
+	families = g_strsplit (GetFamily (), ",", -1);
 	for (i = 0; families[i]; i++)
-		FcPatternAddString (pattern, FC_FAMILY, families[i]);
+		FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) families[i]);
 	g_strfreev (families);
 	
 	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
@@ -352,28 +383,30 @@ FontDescription::CreatePattern ()
 	return pattern;
 }
 
-const Font *
-FontDescription::GetFont ()
+TextFont *
+TextFontDescription::GetFont ()
 {
 	FcPattern *pattern;
 	
 	if (font == NULL) {
 		pattern = CreatePattern ();
-		font = Font::Load (pattern, size);
+		font = TextFont::Load (pattern, size);
 		FcPatternDestroy (pattern);
 	}
+	
+	font->ref ();
 	
 	return font;
 }
 
 uint8_t
-FontDescription::GetFields ()
+TextFontDescription::GetFields ()
 {
 	return set;
 }
 
 void
-FontDescription::UnsetFields (uint8_t mask)
+TextFontDescription::UnsetFields (uint8_t mask)
 {
 	if (!(set & mask))
 		return;
@@ -397,60 +430,60 @@ FontDescription::UnsetFields (uint8_t mask)
 }
 
 void
-FontDescription::Merge (FontDescription *font, bool replace)
+TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 {
 	bool changed = false;
 	
-	if ((font->set & FontMaskFilename) && (!(set & FontMaskFilename) || replace)) {
-		if (strcmp (filename, font->filename) != 0) {
+	if ((desc->set & FontMaskFilename) && (!(set & FontMaskFilename) || replace)) {
+		if (!filename || strcmp (filename, desc->filename) != 0) {
 			g_free (filename);
-			filename = g_strdup (font->filename);
+			filename = g_strdup (desc->filename);
 			changed = true;
 		}
 		
 		set |= FontMaskFilename;
 	}
 	
-	if ((font->set & FontMaskFamily) && (!(set & FontMaskFamily) || replace)) {
-		if (strcmp (family, font->family) != 0) {
+	if ((desc->set & FontMaskFamily) && (!(set & FontMaskFamily) || replace)) {
+		if (!family || strcmp (family, desc->family) != 0) {
 			g_free (family);
-			family = g_strdup (font->family);
+			family = g_strdup (desc->family);
 			changed = true;
 		}
 		
 		set |= FontMaskFamily;
 	}
 	
-	if ((font->set & FontMaskStyle) && (!(set & FontMaskStyle) || replace)) {
-		if (style != font->style) {
-			style = font->style;
+	if ((desc->set & FontMaskStyle) && (!(set & FontMaskStyle) || replace)) {
+		if (style != desc->style) {
+			style = desc->style;
 			changed = true;
 		}
 		
 		set |= FontMaskStyle;
 	}
 	
-	if ((font->set & FontMaskWeight) && (!(set & FontMaskWeight) || replace)) {
-		if (weight != font->weight) {
-			weight = font->weight;
+	if ((desc->set & FontMaskWeight) && (!(set & FontMaskWeight) || replace)) {
+		if (weight != desc->weight) {
+			weight = desc->weight;
 			changed = true;
 		}
 		
 		set |= FontMaskWeight;
 	}
 	
-	if ((font->set & FontMaskStretch) && (!(set & FontMaskStretch) || replace)) {
-		if (stretch != font->stretch) {
-			stretch = font->stretch;
+	if ((desc->set & FontMaskStretch) && (!(set & FontMaskStretch) || replace)) {
+		if (stretch != desc->stretch) {
+			stretch = desc->stretch;
 			changed = true;
 		}
 		
 		set |= FontMaskStretch;
 	}
 	
-	if ((font->set & FontMaskSize) && (!(set & FontMaskSize) || replace)) {
-		if (size != font->size) {
-			size = font->size;
+	if ((desc->set & FontMaskSize) && (!(set & FontMaskSize) || replace)) {
+		if (size != desc->size) {
+			size = desc->size;
 			changed = true;
 		}
 		
@@ -464,7 +497,7 @@ FontDescription::Merge (FontDescription *font, bool replace)
 }
 
 const char *
-FontDescription::GetFilename ()
+TextFontDescription::GetFilename ()
 {
 	if (set & FontMaskFilename)
 		return filename;
@@ -473,7 +506,7 @@ FontDescription::GetFilename ()
 }
 
 void
-FontDescription::SetFilename (const char *filename)
+TextFontDescription::SetFilename (const char *filename)
 {
 	g_free (this->filename);
 	
@@ -487,7 +520,7 @@ FontDescription::SetFilename (const char *filename)
 }
 
 const char *
-FontDescription::GetFamily ()
+TextFontDescription::GetFamily ()
 {
 	if (set & FontMaskFamily)
 		return family;
@@ -496,7 +529,7 @@ FontDescription::GetFamily ()
 }
 
 void
-FontDescription::SetFamily (const char *family)
+TextFontDescription::SetFamily (const char *family)
 {
 	g_free (this->family);
 	
@@ -510,59 +543,59 @@ FontDescription::SetFamily (const char *family)
 }
 
 FontStyles
-FontDescription::GetStyle ()
+TextFontDescription::GetStyle ()
 {
 	return style;
 }
 
 void
-FontDescription::SetStyle (FontStyles style)
+TextFontDescription::SetStyle (FontStyles style)
 {
 	this->style = style;
 	set |= FontMaskStyle;
 }
 
 FontWeights
-FontDescription::GetWeight ()
+TextFontDescription::GetWeight ()
 {
 	return weight;
 }
 
 void
-FontDescription::SetWeight (FontWeights weight)
+TextFontDescription::SetWeight (FontWeights weight)
 {
 	this->weight = weight;
 	set |= FontMaskWeight;
 }
 
-FontStretchs
-FontDescription::GetStretch ()
+FontStretches
+TextFontDescription::GetStretch ()
 {
 	return stretch;
 }
 
 void
-FontDescription::SetStretch (FontStretchs stretch)
+TextFontDescription::SetStretch (FontStretches stretch)
 {
 	this->stretch = stretch;
 	set |= FontMaskStretch;
 }
 
 double
-FontDescription::GetSize ()
+TextFontDescription::GetSize ()
 {
 	return size;
 }
 
 void
-FontDescription::SetSize (double size)
+TextFontDescription::SetSize (double size)
 {
 	this->size = size;
 	set |= FontMaskSize;
 }
 
 char *
-FontDescription::ToString ()
+TextFontDescription::ToString ()
 {
 	bool attrs = false;
 	GString *str;
@@ -644,7 +677,7 @@ FontDescription::ToString ()
 			g_string_append (str, "ExtraBlack");
 			break;
 		default:
-			g_string_append_printf (str, "%d", (int) wieght);
+			g_string_append_printf (str, "%d", (int) weight);
 			break;
 		}
 	}
@@ -671,9 +704,11 @@ FontDescription::ToString ()
 			break;
 		case FontStretchesNormal:
 			break;
+#if 0
 		case FontStretchesMedium:
 			g_string_append (str, "Medium");
 			break;
+#endif
 		case FontStretchesSemiExpanded:
 			g_string_append (str, "SemiExpanded");
 			break;
@@ -695,26 +730,19 @@ FontDescription::ToString ()
 }
 
 
-TextRun::TextRun (const char *uft8, int len, TextDecorations deco, Font *font, Brush *fg)
+TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg)
 {
-	type = Run;
-	
 	text = g_utf8_to_ucs4_fast (utf8, len, NULL);
-	
-	this->height = font->Height ();
+	this->font = font->GetFont ();
 	this->deco = deco;
-	this->font = font;
 	this->fg = fg;
 }
 
-TextRun::TextRun (TextDecorations deco, Font *font, Brush *fg)
+TextRun::TextRun (TextDecorations deco, TextFontDescription *font, Brush *fg)
 {
-	type = LineBreak;
-	
-	this->height = font->Height ();
+	this->font = font->GetFont ();
 	this->text = NULL;
 	this->deco = deco;
-	this->font = font;
 	this->fg = fg;
 }
 
@@ -730,7 +758,7 @@ public:
 	TextDecorations deco;
 	const uint32_t *text;
 	int start, end;
-	Font *font;
+	TextFont *font;
 	Brush *fg;
 	
 	int height;
@@ -768,7 +796,7 @@ TextLine::TextLine ()
 
 TextLine::~TextLine ()
 {
-	segments->Clear ();
+	segments->Clear (true);
 	delete segments;
 }
 
@@ -857,8 +885,10 @@ TextLayout::GetTextRuns ()
 void
 TextLayout::SetTextRuns (List *runs)
 {
-	this->runs->Clear (true);
-	delete this->runs;
+	if (this->runs) {
+		this->runs->Clear (true);
+		delete this->runs;
+	}
 	
 	this->runs = runs;
 	
@@ -884,11 +914,11 @@ struct Space {
 void
 TextLayout::Layout ()
 {
+	const GlyphInfo *glyph;
 	TextSegment *segment;
-	GlyphInfo *glyph;
+	int lw, lh, myb;
 	TextLine *line;
 	TextRun *run;
-	int lw, lh;
 	Space spc;
 	int i;
 	
@@ -898,15 +928,16 @@ TextLayout::Layout ()
 	lines->Clear (true);
 	lh = height = 0;
 	lw = width = 0;
+	myb = 0;
 	
-	if (!runs || runs->IsEmpty ())
+	if (!runs || runs->IsEmpty () || max_width == 0 || max_height == 0)
 		return;
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		lh = MAX (lh, run->font->Height ());
 		
-		if (run->type == LineBreak) {
+		if (run->text == NULL /* LineBreak */) {
 			lines->Append (line);
 			line->height = lh;
 			
@@ -921,21 +952,24 @@ TextLayout::Layout ()
 			continue;
 		}
 		
-		if (!text[0])
+		if (!run->text[0])
 			continue;
 		
 		spc.index = -1;
+		spc.width = -1;
 		segment = new TextSegment (run, 0);
 		for (i = 0; run->text[i]; i++) {
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
 				continue;
+			
+			myb = MAX (myb, glyph->metrics.horiBearingY);
 			
 			if (g_unichar_isspace (run->text[i])) {
 				spc.index = i;
 				spc.width = lw;
 			}
 			
-			if ((lw + glyph->metrics.horiAdvance) <= max_width) {
+			if (max_width < 0 || (lw + glyph->metrics.horiAdvance) <= max_width) {
 				// this glyph fits nicely on this line
 				lw += glyph->metrics.horiAdvance;
 				continue;
@@ -943,12 +977,18 @@ TextLayout::Layout ()
 			
 			// need to wrap
 			if (spc.index != -1) {
+				// wrap at the last lwsp char
 				segment->end = spc.index;
-				lw = spc->width;
+				lw = spc.width;
 				i = spc.index;
-			} else {
+			} else if (segment->start < i) {
+				// have to break the word across lines
 				segment->end = i;
 				i--;
+			} else {
+				// glyphs are too large to fit within @max_width
+				// we will have to limit 1 glyph per line
+				segment->end = i + 1;
 			}
 			
 			// end this line
@@ -971,23 +1011,39 @@ TextLayout::Layout ()
 		
 		segment->end = i;
 		line->segments->Append (segment);
+		
+		width = MAX (width, lw);
+		
+		if (max_height > 0 && height > max_height)
+			break;
 	}
 	
-	if (line)
+	if (line) {
 		lines->Append (line);
+		line->height = lh;
+		height += lh;
+	}
+	
+	if (lh > 0)
+		height += (lh - myb);
+	
+	height++;
+	width++;
+	
+	printf ("layout extents are %d, %d\n", width, height);
 }
 
 void
 TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 {
-	cairo_image_surface_t *surface;
 	int width, height, stride;
+	cairo_surface_t *surface;
+	const FT_Bitmap *bitmap;
+	const GlyphInfo *glyph;
 	TextSegment *segment;
 	TextDecorations deco;
-	FT_Bitmap *bitmap;
-	Font *font = NULL;
+	TextFont *font = NULL;
 	Brush *fg = NULL;
-	GlyphInfo *glyph;
 	TextLine *line;
 	double dx, dy;
 	int i;
@@ -1013,25 +1069,36 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 				if (!(glyph = font->GetGlyphInfo (segment->text[i])))
 					continue;
 				
-				bitmap = &glyph->bitmap;
+				if (glyph->index > 0) {
+					bitmap = &glyph->bitmap;
+					
+					height = bitmap->rows;
+					width = bitmap->width;
+					stride = bitmap->pitch;
+					
+					cairo_move_to (cr, x + dx, y + dy - glyph->metrics.horiBearingY);
+					
+					// Render the glyph
+					// FIXME: set the surface on the cached glyph?
+					surface = cairo_image_surface_create_for_data (bitmap->buffer,
+										       CAIRO_FORMAT_A8,
+										       width, height,
+										       stride);
+					
+					cairo_save (cr);
+					cairo_set_source_surface (cr, surface, x + dx, y + dy - glyph->metrics.horiBearingY);
+					
+					cairo_new_path (cr);
+					cairo_rectangle (cr, x + dx, y + dy - glyph->metrics.horiBearingY,
+							 (double) width, (double) height);
+					cairo_close_path (cr);
+					cairo_fill (cr);
+					
+					cairo_surface_destroy (surface);
+					cairo_restore (cr);
+				}
 				
-				height = bitmap->rows;
-				width = bitmap->width;
-				stride = bitmap->pitch;
-				
-				cairo_move_to (cr, x + dx, y + dy);
-				
-				// Render the glyph
-				surface = cairo_image_surface_create_for_data (bitmap->buffer,
-									       CAIRO_FORMAT_A8,
-									       width, height,
-									       stride);
-				
-				cairo_set_source_surface (cr, surface, glyph->bitmap_left, glyph->bitmap_top);
-				
-				cairo_surface_destroy (surface);
-				
-				dx += (double) glyph->metrics->horiAdvance;
+				dx += (double) glyph->metrics.horiAdvance;
 			}
 			
 			segment = (TextSegment *) segment->next;
@@ -1042,117 +1109,3 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 		dx = 0.0f;
 	}
 }
-
-
-
-
-
-
-
-#if 0
-void
-TextLayout::Layout ()
-{
-	bool new_segment = true;
-	TextAttr *uline = NULL;
-	TextAttr *font = NULL;
-	TextAttr *fg = NULL;
-	TextSegment *segment;
-	GlyphInfo *glyph;
-	TextAttr *attr;
-	int i = 0;
-	int w, h;
-	
-	if (!dirty)
-		return;
-	
-	segments->Clear (true);
-	h = height = 0;
-	w = width = 0;
-	
-	if (!text || !text[0])
-		return;
-	
-	attr = (TextAttr *) attrs->First ();
-	
-	while (utext[i]) {
-		if (uline && uline->end <= i)
-			uline = NULL;
-		if (font && font->end <= i)
-			font = NULL;
-		if (fg && fg->end <= i)
-			fg = NULL;
-		
-		while (attr) {
-			if (attr->start > i)
-				break;
-			
-			switch (attr->type) {
-			case TextAttrForeground:
-				new_segment = true;
-				fg = attr;
-				break;
-			case TextAttrUnderline:
-				new_segment = true;
-				uline = attr;
-				break;
-			case TextAttrFont:
-				new_segment = true;
-				font = attr;
-				break;
-			}
-			
-			attr = (TextAttr *) attr->next;
-		}
-		
-		// we always need a font and an fg
-		g_assert (font != NULL);
-		g_assert (fg != NULL);
-		
-		if (new_segment) {
-			if (segment)
-				segment->end = i;
-			
-			segment = new TextSegment (Text, i);
-			segment->uline = uline ? true : false;
-			segment->font = font->font;
-			segment->fg = fg->fg;
-			
-			segments->Append (segment);
-			
-			new_segment = false;
-		}
-		
-		if (utext[i] == '\n') {
-			// insert a LineBreak segment
-			if (segment->start < i) {
-				segment = new TextSegment (LineBreak, i);
-				segment->uline = uline ? true : false;
-				segment->font = font->font;
-				segment->fg = fg->fg;
-				
-				segments->Append (segment);
-			} else {
-				// current Text segment had no text
-				segment->type = LineBreak;
-			}
-			
-			width = MAX (width, w);
-			segment->end = ++i;
-			w = 0;
-			
-			segment = new TextSegment (Text, i);
-			segment->uline = uline ? true : false;
-			segment->font = font->font;
-			segment->fg = fg->fg;
-			
-			segments->Append (segment);
-			
-			continue;
-		}
-		
-		glyph = font->font->GlyphInfo (utext[i]);
-		i++;
-	}
-}
-#endif
