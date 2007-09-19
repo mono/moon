@@ -47,6 +47,12 @@ plugin_menu_about (PluginInstance *plugin)
 
 	gtk_about_dialog_set_authors (about, moonlight_authors);
 
+	/* Newer gtk+ versions require this for the close button to work */
+	g_signal_connect_swapped (about,
+							  "response", 
+							  G_CALLBACK (gtk_widget_destroy),
+							  about);
+
 	gtk_dialog_run (GTK_DIALOG (about));
 }
 
