@@ -632,8 +632,6 @@ TextBlock::Layout (cairo_t *cr)
 				fg_attr->end_index = end;
 			}
 			
-			pango_attr_list_insert (attrs, fg_attr);
-			
 		loop:
 			node = (Collection::Node *) node->next;
 		}

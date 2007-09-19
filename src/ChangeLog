@@ -1,3 +1,7 @@
+2007-09-19  Chris Toshok  <toshok@ximian.com>
+
+	* text.cpp (TextBlock::Layout): don't insert multiple fg_attrs.
+
 2007-09-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-path.c|h: New. Create simple or complex paths without a
