@@ -1,6 +1,6 @@
 the first column from here: http://blogs.msdn.com/tims/default.aspx
 
-* 2D Physics Simulation (http://odetocode.com/aimages/200705/verlet/default.htm)
+* 2D Physics Simulation (http://www.chriscavanagh.com/Chris/Silverlight/Physics2D-1/TestPage.html
 
 	Sorta works.  animations are definitely there, but clicking on
         the wind checkbox doesn't do anything, and firefox keeps
