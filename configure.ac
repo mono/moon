@@ -42,6 +42,14 @@ else
    exit 1
 fi
 
+AC_MSG_CHECKING(alsa)
+if pkg-config alsa ; then
+   AC_MSG_RESULT(found)
+else
+   echo alsa development kit is missing
+   exit 1
+fi
+
 AC_MSG_CHECKING(Mono)
 if pkg-config mono; then
    AC_MSG_RESULT(found)
