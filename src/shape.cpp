@@ -1657,25 +1657,6 @@ Path::ComputeBounds ()
 }
 
 void
-Path::BuildPath ()
-{
-	Geometry* geometry = path_get_data (this);
-	if (!geometry) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	double w = framework_element_get_width (this);
-	double h = framework_element_get_height (this);
-	if ((w < 0.0) || (h < 0.0)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	SetShapeFlags (UIElement::SHAPE_NORMAL);
-}
-
-void
 Path::Draw (cairo_t *cr)
 {
 	cairo_new_path (cr);

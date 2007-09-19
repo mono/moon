@@ -1,3 +1,7 @@
+2007-09-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Remove dead code.
+
 2007-09-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: More fixes to make stuff build/work (more or less).

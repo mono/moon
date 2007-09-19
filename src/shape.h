@@ -282,7 +282,6 @@ class Path : public Shape {
 	// virtual Point GetTransformOrigin ();
 
 	virtual void Draw (cairo_t *cr);
-	virtual void BuildPath ();
 
 	virtual void ComputeBounds ();
 
