@@ -216,7 +216,7 @@ public:
 	
 	void Layout ();
 	void GetPixelSize (int *w, int *h);
-	void Render (cairo_t *cr);
+	void Render (cairo_t *cr, UIElement *element);
 };
 
 #endif /* __FONT_H__ */

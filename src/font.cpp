@@ -126,6 +126,8 @@ struct GlyphInfo {
 };
 
 
+#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
+
 Font::Font (FcPattern *pattern, double size)
 {
 	const char *filename = NULL;
@@ -190,6 +192,7 @@ Font::~Font ()
 	g_free (glyphs);
 	
 	FT_Done_Face (face);
+	
 	g_hash_table_remove (font_cache, pattern);
 	FcPatternDestroy (pattern);
 }
@@ -233,9 +236,6 @@ Font::Height ()
 {
 	return face->height;
 }
-
-
-#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
 
 const GlyphInfo *
 Font::GetGlyphInfo (uint32_t unichar)
@@ -978,11 +978,69 @@ TextLayout::Layout ()
 }
 
 void
-TextLayout::Render (cairo_t *cr)
+TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 {
+	cairo_image_surface_t *surface;
+	int width, height, stride;
+	TextSegment *segment;
+	TextDecorations deco;
+	FT_Bitmap *bitmap;
+	Font *font = NULL;
+	Brush *fg = NULL;
+	GlyphInfo *glyph;
+	TextLine *line;
+	double dx, dy;
+	int i;
+	
 	Layout ();
 	
+	if ((line = (TextLine *) lines->First ()))
+		dy = (double) line->height;
+	dx = 0.0f;
 	
+	while (line) {
+		segment = (TextSegment *) line->segments->First ();
+		while (segment) {
+			deco = segment->deco;
+			font = segment->font;
+			
+			if (segment->fg != fg) {
+				fg = segment->fg;
+				fg->SetupBrush (cr, element);
+			}
+			
+			for (i = segment->start; i < segment->end; i++) {
+				if (!(glyph = font->GetGlyphInfo (segment->text[i])))
+					continue;
+				
+				bitmap = &glyph->bitmap;
+				
+				height = bitmap->rows;
+				width = bitmap->width;
+				stride = bitmap->pitch;
+				
+				cairo_move_to (cr, x + dx, y + dy);
+				
+				// Render the glyph
+				surface = cairo_image_surface_create_for_data (bitmap->buffer,
+									       CAIRO_FORMAT_A8,
+									       width, height,
+									       stride);
+				
+				cairo_set_source_surface (cr, surface, glyph->bitmap_left, glyph->bitmap_top);
+				
+				cairo_surface_destroy (surface);
+				
+				dx += (double) glyph->metrics->horiAdvance;
+			}
+			
+			segment = (TextSegment *) segment->next;
+		}
+		
+		if ((line = (TextLine *) line->next))
+			dy += (double) line->height;
+		dx = 0.0f;
+	}
 }
 
 
@@ -991,7 +1049,7 @@ TextLayout::Render (cairo_t *cr)
 
 
 
-
+#if 0
 void
 TextLayout::Layout ()
 {
@@ -1097,3 +1155,4 @@ TextLayout::Layout ()
 		i++;
 	}
 }
+#endif

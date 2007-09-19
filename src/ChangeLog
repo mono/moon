@@ -1,3 +1,7 @@
+2007-09-19  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* font.cpp: More hackery.
+
 2007-09-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* panel.cpp: Add a null check.

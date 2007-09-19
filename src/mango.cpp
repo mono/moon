@@ -262,9 +262,6 @@ mango_attr_foreground_destroy (PangoAttribute *attr)
 {
 	MangoAttrForeground *fg = (MangoAttrForeground *) attr;
 	
-	if (fg->foreground)
-		fg->foreground->unref ();
-	
 	g_free (attr);
 }
 
@@ -306,9 +303,6 @@ mango_attr_foreground_new (UIElement *element, Brush *foreground)
 	
 	attr = g_new (MangoAttrForeground, 1);
 	attr->attr.klass = &klass;
-	
-	if (foreground)
-		foreground->ref ();
 	
 	attr->element = element;
 	attr->foreground = foreground;
