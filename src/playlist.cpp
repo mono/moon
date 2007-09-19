@@ -326,7 +326,7 @@ Playlist::AddEntry (PlaylistEntry *entry)
 PlaylistParser::PlaylistParser (Playlist *playlist)
 {
 	this->playlist = playlist;
-	entry = NULL;
+	current_entry = NULL;
 
 	parser = XML_ParserCreate (NULL);
 	kind_stack = new List ();
@@ -463,8 +463,8 @@ PlaylistParser::Parse (const char *text, int len)
 PlaylistContent *
 PlaylistParser::GetCurrentContent ()
 {
-	if (entry != NULL)
-		return entry;
+	if (current_entry != NULL)
+		return current_entry;
 
 	return playlist;
 }
@@ -472,7 +472,7 @@ PlaylistParser::GetCurrentContent ()
 PlaylistEntry *
 PlaylistParser::GetCurrentEntry ()
 {
-	return entry;
+	return current_entry;
 }
 
 void
@@ -480,12 +480,12 @@ PlaylistParser::OnEntry ()
 {
 	PlaylistEntry *entry = new PlaylistEntry ();
 	playlist->AddEntry (entry);
-	this->entry = entry;
+	current_entry = entry;
 }
 
 void PlaylistParser::EndEntry ()
 {
-	this->entry = NULL;
+	this->current_entry = NULL;
 }
 
 void

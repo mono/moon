@@ -96,7 +96,7 @@ public:
 class PlaylistParser {
 private:
 	Playlist *playlist;
-	PlaylistEntry *entry;
+	PlaylistEntry *current_entry;
 	XML_Parser parser;
 
 	enum PlaylistNodeKind {
