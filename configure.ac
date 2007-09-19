@@ -50,6 +50,26 @@ else
    exit 1
 fi
 
+#
+# FontConfig and FreeType2 are used directly by the text rendering code (instead of going thru pango)
+#
+AC_MSG_CHECKING(freetype2)
+if pkg-config freetype2; then
+   AC_MSG_RESULT(found)
+else
+   echo freetype2 development kit is missing
+   exit 1
+fi
+
+AC_MSG_CHECKING(fontconfig)
+if pkg-config fontconfig; then
+   AC_MSG_RESULT(found)
+else
+   echo fontconfig development kit is missing
+   exit 1
+fi
+
+
 AC_MSG_CHECKING(Mono)
 if pkg-config mono; then
    AC_MSG_RESULT(found)
@@ -132,7 +152,7 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
-MOON_PKGS="cairo >= $CAIRO_VERSION gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa"
+MOON_PKGS="cairo >= $CAIRO_VERSION gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa freetype2 fontconfig"
 MOON_CFLAGS=`pkg-config --cflags $MOON_PKGS`
 MOON_LIBS=`pkg-config --libs $MOON_PKGS`
 
