@@ -1,5 +1,5 @@
 <Canvas xmlns="http://schemas.microsoft.com/client/2007">
-  <Image Source="/tmp/mono.png" Cursor="IBeam">
+  <Image Source="mono.png" Cursor="IBeam">
 	<Image.RenderTransform>
 		<RotateTransform Angle="45" />
 	</Image.RenderTransform>
