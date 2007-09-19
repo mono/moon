@@ -74,73 +74,6 @@ convert_fill_rule (FillRule fill_rule)
 	}
 }
 
-void
-moon_ellipse (cairo_t *cr, double x, double y, double w, double h)
-{
-	double rx = w / 2;
-	double ry = h / 2;
-	double cx = x + rx;
-	double cy = y + ry;
-
-	// cairo_new_sub_path (cr); unrequired with the cairo_move_to call
-	cairo_move_to (cr, cx + rx, cy);
-
-	/* an approximate of the ellipse by drawing a curve in each
-	 * quadrants */
-	cairo_curve_to (cr,
-			cx + rx, cy - ARC_TO_BEZIER * ry,
-			cx + ARC_TO_BEZIER * rx, cy - ry,
-			cx, cy - ry);
-        
-	cairo_curve_to (cr,
-			cx - ARC_TO_BEZIER * rx, cy - ry,
-			cx - rx, cy - ARC_TO_BEZIER * ry,
-			cx - rx, cy);
-
-	cairo_curve_to (cr,
-			cx - rx, cy + ARC_TO_BEZIER * ry,
-			cx - ARC_TO_BEZIER * rx, cy + ry,
-			cx, cy + ry);
-                
-	cairo_curve_to (cr,
-			cx + ARC_TO_BEZIER * rx, cy + ry,
-			cx + rx, cy + ARC_TO_BEZIER * ry,
-			cx + rx, cy);
-
-	cairo_close_path (cr);
-}
-
-void
-moon_rounded_rectangle (cairo_t *cr, double x, double y, double w, double h, double radius_x, double radius_y)
-{
-	if (radius_x < 0.0)
-		radius_x = -radius_x;
-	if (radius_y < 0.0)
-		radius_y = -radius_y;
-
-	// test limits (without using multiplications)
-	if (radius_x > w - radius_x)
-		radius_x = w / 2;
-	if (radius_y > h - radius_y)
-		radius_y = h / 2;
-
-	// approximate (quite close) the arc using a bezier curve
-	double c1 = ARC_TO_BEZIER * radius_x;
-	double c2 = ARC_TO_BEZIER * radius_y;
-
-	// cairo_new_sub_path (cr); unrequired with the cairo_move_to call
-	cairo_move_to (cr, x + radius_x, y);
-	cairo_rel_line_to (cr, w - 2 * radius_x, 0.0);
-	cairo_rel_curve_to (cr, c1, 0.0, radius_x, c2, radius_x, radius_y);
-	cairo_rel_line_to (cr, 0, h - 2 * radius_y);
-	cairo_rel_curve_to (cr, 0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
-	cairo_rel_line_to (cr, -w + 2 * radius_x, 0);
-	cairo_rel_curve_to (cr, -c1, 0, -radius_x, -c2, -radius_x, -radius_y);
-	cairo_rel_line_to (cr, 0, -h + 2 * radius_y);
-	cairo_rel_curve_to (cr, 0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
-	cairo_close_path (cr);
-}
-
 //
 // Shape
 //
@@ -176,20 +109,19 @@ Shape::~Shape ()
 		fill->Detach (NULL, this);
 		fill->unref ();
 	}
-	if (path) {
-		cairo_path_destroy (path);
-	}
+	InvalidatePathCache ();
 }
 
 void
 Shape::Draw (cairo_t *cr)
 {
-	if (path) {
-		cairo_new_path (cr);
-		cairo_append_path (cr, path);
-	} else {
-		BuildPath (cr);
-	}
+	if (!path)
+		BuildPath ();
+
+	cairo_new_path (cr);
+	cairo_append_path (cr, &path->cairo);
+
+//	moon_path_display (path);
 }
 
 //
@@ -322,12 +254,6 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 Shape::ComputeBounds ()
 {
-	ComputeBoundsFast ();
-}
-
-void
-Shape::ComputeBoundsFast ()
-{
 	bounds = Rect (0,0,0,0);
 	if (IsEmpty ())
 		return;
@@ -369,39 +295,6 @@ Shape::ComputeBoundsFast ()
 	   asses because of cairo's floating point rendering"
 	   thing */
 // no-op	bounds.GrowBy(1);
-}
-
-void
-Shape::ComputeBoundsSlow ()
-{
-	if (IsEmpty ()) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-		return;
-	}
-
-	double x1, y1, x2, y2;
-	cairo_t* cr = measuring_context_create ();
-
-	cairo_save (cr);
-	// dont do the operation
-	DoDraw (cr, false, true);
-
-	// XXX this next call will hopefully become unnecessary in a
-	// later version of cairo.
-	cairo_identity_matrix (cr);
-	// note: a stroke brush may be present, but it doesn't means it will get used
-	if (stroke && (shape_get_stroke_thickness (this) > 0.0))
-		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	else
-		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
-
-	cairo_restore (cr);
-
-	bounds = Rect (x1, y1, x2-x1, y2-y1);
-
-// no-op	bounds.GrowBy (1);
-
-	measuring_context_destroy (cr);
 }
 
 void
@@ -520,7 +413,7 @@ Shape::InvalidatePathCache ()
 {
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	if (path) {
-		cairo_path_destroy (path);
+		moon_path_destroy (path);
 		path = NULL;
 	}
 }
@@ -682,7 +575,7 @@ Ellipse::Ellipse ()
 }
 
 void
-Ellipse::BuildPath (cairo_t *cr)
+Ellipse::BuildPath ()
 {
 	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
 	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
@@ -759,15 +652,30 @@ Ellipse::BuildPath (cairo_t *cr)
 	}
 
 shape:
-	cairo_new_path (cr);
+	if (path)
+		moon_path_destroy (path);
+
 	if (IsDegenerate ()) {
 		double radius = t / 2;
-		moon_rounded_rectangle (cr, x, y, w, h, radius, radius);
+		path = moon_path_new (MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+		moon_rounded_rectangle (path, x, y, w, h, radius, radius);
 	} else {
-		moon_ellipse (cr, x, y, w, h);
+		path = moon_path_new (MOON_PATH_ELLIPSE_LENGTH);
+		moon_ellipse (path, x, y, w, h);
 	}
-	// note: both moon_rounded_rectangle and moon_ellipse calls cairo_close_path
-	path = cairo_copy_path (cr);
+	// note: both moon_rounded_rectangle and moon_ellipse close the path
+}
+
+void
+Ellipse::OnPropertyChanged (DependencyProperty *prop)
+{
+	if ((prop == Shape::StrokeThicknessProperty) || (prop == Shape::StretchProperty) ||
+		(prop == FrameworkElement::WidthProperty) || (prop == FrameworkElement::HeightProperty)) {
+		BuildPath ();
+	}
+
+	// Ellipse has no property of it's own
+	Shape::OnPropertyChanged (prop);
 }
 
 Ellipse *
@@ -794,7 +702,7 @@ Rectangle::Rectangle ()
  * - if a rectangle has only a Width or only a Height it is NEVER rendered
  */
 void
-Rectangle::BuildPath (cairo_t *cr)
+Rectangle::BuildPath ()
 {
 	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
 	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
@@ -820,8 +728,6 @@ Rectangle::BuildPath (cairo_t *cr)
 	double radius_x, radius_y;
 	bool compute_origin = false;
 	bool round = FALSE;
-
-	cairo_new_path (cr);
 
 	// if both width and height are missing then the width and height are equal (on screen) to the thickness
 	if ((!width && !height) || (stretch == StretchNone)) {
@@ -934,15 +840,16 @@ Rectangle::BuildPath (cairo_t *cr)
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 shape:
+	if (path)
+		moon_path_destroy (path);
 	// rounded-corner rectangle ?
 	if (round) {
-		moon_rounded_rectangle (cr, x, y, w, h, radius_x, radius_y);
+		path = moon_path_new (MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+		moon_rounded_rectangle (path, x, y, w, h, radius_x, radius_y);
 	} else {
-		cairo_rectangle (cr, x, y, w, h);
+		path = moon_path_new (MOON_PATH_RECTANGLE_LENGTH);
+		moon_rectangle (path, x, y, w, h);
 	}
-
-	// no need to call cairo_close_path (cr) since both mono_rounded_rectangle and cairo_rectangle calls it
-	path = cairo_copy_path (cr);
 }
 
 void
@@ -1016,6 +923,30 @@ DependencyProperty* Line::Y1Property;
 DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
+#define LINE_X1		data[1].point.x
+#define LINE_Y1		data[1].point.y
+#define LINE_X2		data[3].point.x
+#define LINE_Y2		data[3].point.y
+
+Line::Line ()
+{
+	// The number of points in a line never changes (no degenerate case either)
+	data [0].header.type = CAIRO_PATH_MOVE_TO;
+	data [0].header.length = MOON_PATH_MOVE_TO_LENGTH;
+	LINE_X1 = 0.0;
+	LINE_Y1 = 0.0;
+	data [2].header.type = CAIRO_PATH_LINE_TO;
+	data [2].header.length = MOON_PATH_LINE_TO_LENGTH;
+	LINE_X2 = 0.0;
+	LINE_Y2 = 0.0;
+
+	mp.cairo.status = CAIRO_STATUS_SUCCESS;
+	mp.cairo.data = (cairo_path_data_t*)&data;
+	mp.cairo.num_data = 4;
+	mp.allocated = 0;
+	path = &mp;
+}
+
 static void
 calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
 {
@@ -1050,23 +981,8 @@ Line::ComputeBounds ()
 		return;
 	}
 
-	double x1 = line_get_x1 (this);
-	double y1 = line_get_y1 (this);
-	double x2 = line_get_x2 (this);
-	double y2 = line_get_y2 (this);
-	calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
-
+	calc_line_bounds (LINE_X1, LINE_X2, LINE_Y1, LINE_Y2, thickness, &bounds);
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
-}
-
-void
-Line::Draw (cairo_t *cr)
-{
-	// Note: Shape::StretchProperty has no effect on lines
-	// Note: SL 1.1 alpha considers X2,Y2 as the start point (when drawing end line caps)
-	//	This doesn't affect us because Cairo doesn't support separate start/end line caps
-	cairo_move_to (cr, line_get_x1 (this), line_get_y1 (this));
-	cairo_line_to (cr, line_get_x2 (this), line_get_y2 (this));
 }
 
 void
@@ -1077,57 +993,117 @@ Line::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
+	// so it means X1, X2, Y1 or Y2
 	FullInvalidate (false);
-
 	NotifyAttacheesOfPropertyChange (prop);
+}
+
+Value *
+Line::GetValue (DependencyProperty *property)
+{
+	if (property == Line::X1Property)
+		return new Value (LINE_X1);
+	else if (property == Line::Y1Property)
+		return new Value (LINE_Y1);
+	else if (property == Line::X2Property)
+		return new Value (LINE_X2);
+	else if (property == Line::Y2Property)
+		return new Value (LINE_Y2);
+
+	return DependencyObject::GetValue (property);
+}
+
+void
+Line::SetValue (DependencyProperty *property, Value *value)
+{
+	double *dp = NULL;
+
+	if (property == Line::X1Property)
+		dp = &LINE_X1;
+	else if (property == Line::Y1Property)
+		dp = &LINE_Y1;
+	else if (property == Line::X2Property)
+		dp = &LINE_X2;
+	else if (property == Line::Y2Property)
+		dp = &LINE_Y2;
+
+	if (dp) {
+		double d = value ? value->AsDouble () : 0.0;
+		if (d != *dp) {
+			*dp = d;
+			OnPropertyChanged (property);
+		}
+	} else {
+		DependencyObject::SetValue (property, value);
+	}
 }
 
 double
 line_get_x1 (Line *line)
 {
-	return line->GetValue (Line::X1Property)->AsDouble();
+	// return line->GetValue (Line::X1Property)->AsDouble();
+	return line->LINE_X1;
 }
 
 void
 line_set_x1 (Line *line, double value)
 {
-	line->SetValue (Line::X1Property, Value (value));
+	// line->SetValue (Line::X1Property, Value (value));
+	if (line->LINE_X1 != value) {
+		line->LINE_X1 = value;
+		line->OnPropertyChanged (Line::X1Property);
+	}
 }
 
 double
 line_get_y1 (Line *line)
 {
-	return line->GetValue (Line::Y1Property)->AsDouble();
+	//return line->GetValue (Line::Y1Property)->AsDouble();
+	return line->LINE_Y1;
 }
 
 void
 line_set_y1 (Line *line, double value)
 {
-	line->SetValue (Line::Y1Property, Value (value));
+	//line->SetValue (Line::Y1Property, Value (value));
+	if (line->LINE_Y1 != value) {
+		line->LINE_Y1 = value;
+		line->OnPropertyChanged (Line::Y1Property);
+	}
 }
 
 double
 line_get_x2 (Line *line)
 {
-	return line->GetValue (Line::X2Property)->AsDouble();
+	//return line->GetValue (Line::X2Property)->AsDouble();
+	return line->LINE_X2;
 }
 
 void
 line_set_x2 (Line *line, double value)
 {
-	line->SetValue (Line::X2Property, Value (value));
+	//line->SetValue (Line::X2Property, Value (value));
+	if (line->LINE_X2 != value) {
+		line->LINE_X2 = value;
+		line->OnPropertyChanged (Line::X2Property);
+	}
 }
 
 double
 line_get_y2 (Line *line)
 {
-	return line->GetValue (Line::Y2Property)->AsDouble();
+	//return line->GetValue (Line::Y2Property)->AsDouble();
+	return line->LINE_Y2;
 }
 
 void
 line_set_y2 (Line *line, double value)
 {
-	line->SetValue (Line::Y2Property, Value (value));
+	//line->SetValue (Line::Y2Property, Value (value));
+	if (line->LINE_Y2 != value) {
+		line->LINE_Y2 = value;
+		line->OnPropertyChanged (Line::Y2Property);
+	}
 }
 
 Line *
@@ -1198,17 +1174,76 @@ polygon_extend_line (double *x1, double *x2, double *y1, double *y2, double thic
 	}
 }
 
+static void
+calc_offsets (double x1, double y1, double x2, double y2, double thickness, double *x, double *y)
+{
+	double dx = x1 - x2;
+	double dy = y1 - y2;
+	double t2 = thickness / 2.0;
+	if (dx == 0.0) {
+		*x = 0.0;
+		*y = t2;
+	} else if (dy == 0.0) {
+		*x = t2;
+		*y = 0.0;
+	} else {
+		double angle = atan (dy / dx);
+		*x = t2 / sin (angle);
+		*y = t2 / sin (M_PI / 2.0 - angle);
+	}
+}
+
+static void
+calc_line_bounds_with_joins (double x1, double y1, double x2, double y2, double x3, double y3, double thickness, Rect *bounds)
+{
+	double dx1, dy1;
+	calc_offsets (x1, y1, x2, y2, thickness, &dx1, &dy1);
+
+	double dx2, dy2;
+	calc_offsets (x2, y2, x3, y3, thickness, &dx2, &dy2);
+
+	double xi = x2;
+	if (x1 < x2)
+		xi += fabs (dx1);
+	else
+		xi -= fabs (dx1);
+	if (x3 < x2)
+		xi += fabs (dx2);
+	else
+		xi -= fabs (dx2);
+
+	double yi = y2;
+	if (y1 < y2)
+		yi += fabs (dy1);
+	else
+		yi -= fabs (dy1);
+	if (y3 < y2)
+		yi += fabs (dy2);
+	else
+		yi -= fabs (dy2);
+
+	if (bounds->x > xi) {
+		bounds->w += (bounds->x - xi);
+		bounds->x = xi;
+	}
+	double dx = bounds->x + bounds->w - xi;
+	if (dx < 0.0) {
+		bounds->w -= dx;
+	}
+	if (bounds->y > yi) {
+		bounds->h += (bounds->y - yi);
+		bounds->y = yi;
+	}
+	double dy = bounds->y + bounds->h - yi; 
+	if (dy < 0.0) {
+		bounds->h -= dy;
+	}
+}
+
 void
 Polygon::ComputeBounds ()
 {
-#if TRUE
-	Shape::ComputeBoundsSlow ();
-#else
 	bounds = Rect (0.0, 0.0, 0.0, 0.0);
-
-	double thickness = shape_get_stroke_thickness (this);
-	if (thickness <= 0.0)
-		return;
 
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
@@ -1217,31 +1252,56 @@ Polygon::ComputeBounds ()
 	if (!points || (count < 2))
 		return;
 
+	double thickness = shape_get_stroke_thickness (this);
+	if (thickness == 0.0)
+		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
+
 	double x0 = points [0].x;
 	double y0 = points [0].y;
+	double x1, y1;
 
 	if (count == 2) {
-		double x1 = points [1].x;
-		double y1 = points [1].y;
+		x1 = points [1].x;
+		y1 = points [1].y;
 
 		polygon_extend_line (&x0, &x1, &y0, &y1, thickness);
 		calc_line_bounds (x0, x1, y0, y1, thickness, &bounds);
 	} else {
-		double x1 = x0;
-		double y1 = y0;
-		// FIXME: line joins makes this more difficult than a simple union between lines
+		bounds.x = x1 = x0;
+		bounds.y = y1 = y0;
+		// FIXME: we're too big for large thickness and/or steep angle
 		Rect line_bounds;
-		for (i = 1; i < count; i++) {
-			double x2 = points [i].x;
-			double y2 = points [i].y;
-			calc_line_bounds (x1, x2, y1, y2, thickness, &line_bounds);
-			bounds = bounds.Union (line_bounds);
+		double x2 = points [1].x;
+		double y2 = points [1].y;
+		double x3 = points [2].x;
+		double y3 = points [2].y;
+
+		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
+		for (i = 3; i < count; i++) {
 			x1 = x2;
 			y1 = y2;
+			x2 = x3;
+			y2 = y3;
+			x3 = points [i].x;
+			y3 = points [i].y;
+			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 		}
 		// a polygon is a closed shape (unless it's a line)
-		calc_line_bounds (x1, x0, y1, y0, thickness, &line_bounds);
-		bounds = bounds.Union (line_bounds);
+		x1 = x2;
+		y1 = y2;
+		x2 = x3;
+		y2 = y3;
+		x3 = x0;
+		y3 = y0;
+		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
+
+		x1 = points [count-1].x;
+		y1 = points [count-1].y;
+		x2 = x0;
+		y2 = y0;
+		x3 = points [1].x;
+		y3 = points [1].y;
+		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 	}
 
 	if (shape_get_stretch (this) != StretchNone) {
@@ -1250,11 +1310,10 @@ Polygon::ComputeBounds ()
 	}
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
-#endif
 }
 
 void
-Polygon::BuildPath (cairo_t *cr)
+Polygon::BuildPath ()
 {
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
@@ -1266,7 +1325,11 @@ Polygon::BuildPath (cairo_t *cr)
 	}
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
-	cairo_new_path (cr);
+
+	if (path)
+		moon_path_destroy (path);
+	// 2 data per [move|line]_to + 1 for close path
+	path = moon_path_new (count * 2 + 1);
 
 	// special case, both the starting and ending points are 5 * thickness than the actual points
 	if (count == 2) {
@@ -1277,34 +1340,36 @@ Polygon::BuildPath (cairo_t *cr)
 
 		polygon_extend_line (&x1, &x2, &y1, &y2, shape_get_stroke_thickness (this));
 
-		cairo_move_to (cr, x1, y1);
-		cairo_line_to (cr, x2, y2);
+		moon_move_to (path, x1, y1);
+		moon_line_to (path, x2, y2);
 	} else {
 		Stretch stretch = shape_get_stretch (this);
 		switch (stretch) {
 		case StretchNone:
-			cairo_move_to (cr, points [0].x, points [0].y);
+			moon_move_to (path, points [0].x, points [0].y);
 			for (i = 1; i < count; i++)
-				cairo_line_to (cr, points [i].x, points [i].y);
+				moon_line_to (path, points [i].x, points [i].y);
 			break;
 		default:
 			double x = points [0].x;
 			double y = points [0].y;
-			cairo_move_to (cr, 0, 0);
+			moon_move_to (path, 0.0, 0.0);
 			for (i = 1; i < count; i++)
-				cairo_line_to (cr, points [i].x - x, points [i].y - y);
+				moon_line_to (path, points [i].x - x, points [i].y - y);
 			break;
 		}
 	}
-
-	cairo_close_path (cr);
-	path = cairo_copy_path (cr);
+	moon_close_path (path);
 }
 
 void
 Polygon::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type != Type::POLYGON) {
+		if (prop == Shape::StretchProperty) {
+			InvalidatePathCache ();
+			UpdateBounds (true);
+		}
 		Shape::OnPropertyChanged (prop);
 		return;
 	}
@@ -1370,6 +1435,15 @@ polygon_new (void)
 //
 // Polyline
 //
+// rules
+// * the internal path must be rebuilt when
+//	- Polyline::PointsProperty is changed
+//	- Shape::StretchProperty is changed
+//
+// * bounds calculation is based on
+//	- Polyline::PointsProperty
+//	- Shape::StretchProperty
+//	- Shape::StrokeThickness
 
 DependencyProperty* Polyline::FillRuleProperty;
 DependencyProperty* Polyline::PointsProperty;
@@ -1383,17 +1457,7 @@ Polyline::GetFillRule ()
 void
 Polyline::ComputeBounds ()
 {
-#if TRUE
-	Shape::ComputeBoundsSlow ();
-#else
-//TimeSpan id_t_start = get_now(); printf ("timing of '%s' started at %lld\n", "", id_t_start);
-//for (int i=0; i < 100000; i++) {
-//	Shape::ComputeBoundsSlow ();
 	bounds = Rect (0.0, 0.0, 0.0, 0.0);
-
-	double thickness = shape_get_stroke_thickness (this);
-	if (thickness <= 0.0)
-		return;
 
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
@@ -1401,6 +1465,10 @@ Polyline::ComputeBounds ()
 	// the first point is a move to, resulting in an empty shape
 	if (!points || (count < 2))
 		return;
+
+	double thickness = shape_get_stroke_thickness (this);
+	if (thickness == 0.0)
+		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
 	double x1 = points [0].x;
 	double y1 = points [0].y;
@@ -1411,16 +1479,22 @@ Polyline::ComputeBounds ()
 		double y2 = points [1].y;
 		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
 	} else {
-		// FIXME: line joins makes this more difficult than a simple union between lines
+		// FIXME: we're too big for large thickness and/or steep angle
 		Rect line_bounds;
-		for (i = 1; i < count; i++) {
-			double x2 = points [i].x;
-			double y2 = points [i].y;
-			calc_line_bounds (x1, x2, y1, y2, thickness, &line_bounds);
-			bounds = bounds.Union (line_bounds);
+		double x2 = points [1].x;
+		double y2 = points [1].y;
+		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
+		for (i = 2; i < count; i++) {
+			double x3 = points [i].x;
+			double y3 = points [i].y;
+			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 			x1 = x2;
 			y1 = y2;
+			x2 = x3;
+			y2 = y3;
 		}
+		calc_line_bounds (x1, x2, y1, y2, thickness, &line_bounds);
+		bounds = bounds.Union (line_bounds);
 	}
 
 	if (shape_get_stretch (this) != StretchNone) {
@@ -1429,14 +1503,10 @@ Polyline::ComputeBounds ()
 	}
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
-g_warning ("extents %g %g %g %g", bounds.x, bounds.y, bounds.w, bounds.h);
-//}
-//TimeSpan id_t_end = get_now(); printf ("timing of '%s' ended at %lld (%f seconds)\n", "", id_t_end, (double)(id_t_end - id_t_start) / 1000000);
-#endif
 }
 
 void
-Polyline::BuildPath (cairo_t *cr)
+Polyline::BuildPath ()
 {
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
@@ -1448,21 +1518,25 @@ Polyline::BuildPath (cairo_t *cr)
 	}
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
-	cairo_new_path (cr);
+
+	if (path)
+		moon_path_destroy (path);
+	// 2 data per [move|line]_to
+	path = moon_path_new (count * 2);
 
 	Stretch stretch = shape_get_stretch (this);
 	switch (stretch) {
 	case StretchNone:
-		cairo_move_to (cr, points [0].x, points [0].y);
+		moon_move_to (path, points [0].x, points [0].y);
 		for (i = 1; i < count; i++)
-			cairo_line_to (cr, points [i].x, points [i].y);
+			moon_line_to (path, points [i].x, points [i].y);
 		break;
 	default:
 		double x = points [0].x;
 		double y = points [0].y;
-		cairo_move_to (cr, 0, 0);
+		moon_move_to (path, 0.0, 0.0);
 		for (i = 1; i < count; i++)
-			cairo_line_to (cr, points [i].x - x, points [i].y - y);
+			moon_line_to (path, points [i].x - x, points [i].y - y);
 		break;
 	}
 }
@@ -1471,6 +1545,10 @@ void
 Polyline::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type != Type::POLYLINE) {
+		if (prop == Shape::StretchProperty) {
+			InvalidatePathCache ();
+			UpdateBounds (true);
+		}
 		Shape::OnPropertyChanged (prop);
 		return;
 	}
@@ -1550,11 +1628,36 @@ Path::GetFillRule ()
 void
 Path::ComputeBounds ()
 {
-	Shape::ComputeBoundsSlow ();
+	if (IsEmpty ()) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
+	double x1, y1, x2, y2;
+	cairo_t* cr = measuring_context_create ();
+
+	cairo_save (cr);
+	// dont do the operation
+	DoDraw (cr, false, true);
+
+	// XXX this next call will hopefully become unnecessary in a
+	// later version of cairo.
+	cairo_identity_matrix (cr);
+	// note: a stroke brush may be present, but it doesn't means it will get used
+	if (stroke && (shape_get_stroke_thickness (this) > 0.0))
+		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	else
+		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+
+	cairo_restore (cr);
+
+	bounds = Rect (x1, y1, x2-x1, y2-y1);
+
+	measuring_context_destroy (cr);
 }
 
 void
-Path::BuildPath (cairo_t *cr)
+Path::BuildPath ()
 {
 	Geometry* geometry = path_get_data (this);
 	if (!geometry) {
@@ -1570,124 +1673,18 @@ Path::BuildPath (cairo_t *cr)
 	}
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
-	geometry->Draw (this, cr);
+}
 
-	path = cairo_copy_path (cr);
+void
+Path::Draw (cairo_t *cr)
+{
+	cairo_new_path (cr);
 
-	Stretch stretch = shape_get_stretch (this);
-	if (stretch == StretchNone)
+	Geometry* geometry = path_get_data (this);
+	if (!geometry)
 		return;
 
-	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
-	 * (resulting in something even more complex).
-	 */
-	double minx = G_MAXDOUBLE;
-	double miny = G_MAXDOUBLE;
-	double maxx = G_MINDOUBLE;
-	double maxy = G_MINDOUBLE;
-
-	// find origin (minimums) and actual width/height (maximums - minimums)
-	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
-		cairo_path_data_t *data = &path->data[i];
-		switch (data->header.type) {
-		case CAIRO_PATH_CURVE_TO:
-			// minimum
-			if (minx > data[3].point.x)
-				minx = data[3].point.x;
-			if (miny > data[3].point.y)
-				miny = data[3].point.y;
-			if (minx > data[2].point.x)
-				minx = data[2].point.x;
-			if (miny > data[2].point.y)
-				miny = data[2].point.y;
-			// maximum
-			if (maxx < data[3].point.x)
-				maxx = data[3].point.x;
-			if (maxy < data[3].point.y)
-				maxy = data[3].point.y;
-			if (maxx < data[2].point.x)
-				maxx = data[2].point.x;
-			if (maxy < data[2].point.y)
-				maxy = data[2].point.y;
-			/* fallthru */
-		case CAIRO_PATH_LINE_TO:
-		case CAIRO_PATH_MOVE_TO:
-			// minimum
-			if (minx > data[1].point.x)
-				minx = data[1].point.x;
-			if (miny > data[1].point.y)
-				miny = data[1].point.y;
-			// maximum
-			if (maxx < data[1].point.x)
-				maxx = data[1].point.x;
-			if (maxy < data[1].point.y)
-				maxy = data[1].point.y;
-			break;
-		case CAIRO_PATH_CLOSE_PATH:
-			break;
-		}
-	}
-
-	double actual_height = maxy - miny;
-	double actual_width = maxx - minx;
-
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-
-	double sh = (vh && (actual_height > 0.0)) ? (h / actual_height) : 1.0;
-	double sw = (vw && (actual_width > 0.0)) ? (w / actual_width) : 1.0;
-	switch (stretch) {
-	case StretchFill:
-		break;
-	case StretchUniform:
-		sw = sh = (sw < sh) ? sw : sh;
-		break;
-	case StretchUniformToFill:
-		sw = sh = (sw > sh) ? sw : sh;
-		break;
-	case StretchNone:
-		/* not reached */
-		break;
-	}
-
-	bool stretch_horz = (vw || (sw != 1.0));
-	bool stretch_vert = (vh || (sh != 1.0));
-
-	// substract origin (min[x|y]) and scale to requested dimensions (if specified)
-	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
-		cairo_path_data_t *data = &path->data[i];
-		switch (data->header.type) {
-		case CAIRO_PATH_CURVE_TO:
-			data[3].point.x -= minx;
-			data[3].point.y -= miny;
-			data[2].point.x -= minx;
-			data[2].point.y -= miny;
-			if (stretch_horz) {
-				data[3].point.x *= sw;
-				data[2].point.x *= sw;
-			}
-			if (stretch_vert) {
-				data[3].point.y *= sh;
-				data[2].point.y *= sh;
-			}
-			/* fallthru */
-		case CAIRO_PATH_LINE_TO:
-		case CAIRO_PATH_MOVE_TO:
-			data[1].point.x -= minx;
-			data[1].point.y -= miny;
-			if (stretch_horz)
-				data[1].point.x *= sw;
-			if (stretch_vert)
-				data[1].point.y *= sh;
-			break;
-		case CAIRO_PATH_CLOSE_PATH:
-			break;
-		}
-	}
-
-	// path was modified, replay...
-	cairo_new_path (cr);
-	cairo_append_path (cr, path);
+	geometry->Draw (this, cr);
 }
 
 bool

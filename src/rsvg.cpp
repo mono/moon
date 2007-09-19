@@ -27,7 +27,7 @@
 #include "rsvg.h"
 
 static void
-rsvg_path_arc_segment (cairo_t *ctx,
+rsvg_path_arc_segment (moon_path *path,
 		      double xc, double yc,
 		      double th0, double th1,
 		      double rx, double ry, double x_axis_rotation)
@@ -54,7 +54,7 @@ rsvg_path_arc_segment (cairo_t *ctx,
   y3 = yc + sin (th1);
   x2 = x3 + t * sin (th1);
   y2 = y3 - t * cos (th1);
-  cairo_curve_to (ctx,
+  moon_curve_to (path,
 				  a00 * x1 + a01 * y1, a10 * x1 + a11 * y1,
 				  a00 * x2 + a01 * y2, a10 * x2 + a11 * y2,
 				  a00 * x3 + a01 * y3, a10 * x3 + a11 * y3);
@@ -73,7 +73,7 @@ rsvg_path_arc_segment (cairo_t *ctx,
  *
  **/
 void
-rsvg_arc_to (cairo_t *ctx, double rx, double ry, double x_axis_rotation, int large_arc_flag, int sweep_flag,
+rsvg_arc_to (moon_path *path, double rx, double ry, double x_axis_rotation, int large_arc_flag, int sweep_flag,
 	double x, double y)
 {
   double sin_th, cos_th;
@@ -99,7 +99,7 @@ rsvg_arc_to (cairo_t *ctx, double rx, double ry, double x_axis_rotation, int lar
   a11 = cos_th / ry;
 
 	double cpx, cpy;
-	cairo_get_current_point (ctx, &cpx, &cpy);
+	moon_get_current_point (path, &cpx, &cpy);
 
   x0 = a00 * cpx + a01 * cpy;
   y0 = a10 * cpx + a11 * cpy;
@@ -131,7 +131,7 @@ rsvg_arc_to (cairo_t *ctx, double rx, double ry, double x_axis_rotation, int lar
   n_segs = (int)ceil (fabs (th_arc / (M_PI * 0.5 + 0.001)));
 
   for (i = 0; i < n_segs; i++)
-    rsvg_path_arc_segment (ctx, xc, yc,
+    rsvg_path_arc_segment (path, xc, yc,
 			  th0 + i * th_arc / n_segs,
 			  th0 + (i + 1) * th_arc / n_segs,
 			  rx, ry, x_axis_rotation);

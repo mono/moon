@@ -18,24 +18,44 @@ G_BEGIN_DECLS
 #include <stdint.h>
 #include <cairo.h>
 #include "enums.h"
+#include "rect.h"
 #include "transform.h"
+#include "moon-path.h"
 
 //
 // Geometry
 //
 class Geometry : public DependencyObject {
+ protected:
+/*	enum GeometryFlags {
+		GEOMETRY_NORMAL     = 0x01,	// normal drawing
+		GEOMETRY_DEGENERATE = 0x02,	// degenerate drawing, use the Stroke brush for filling
+		GEOMETRY_MASK       = 0x02
+	};
+
+	int flags;
+	bool IsDegenerate () { return (flags & Geometry::GEOMETRY_DEGENERATE); };
+	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; };
+*/
+	moon_path *path;
+	void StretchAdjust (Path *shape);
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* TransformProperty;
 
-	Geometry () { };
+	Geometry () : path (NULL) {};
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	virtual void Draw (Path *path, cairo_t *cr);
+//	virtual Rect ComputeBounds (Path *path) { return Rect (0.0, 0.0, 0.0, 0.0); };
 
 	virtual bool IsFilled () { return true; };
+
+	virtual void Build (Path *path) {}
+	virtual bool IsBuilt () {return ( path != NULL); }
+	virtual cairo_path_t* GetCairoPath () { return (path) ? &path->cairo : NULL; }
 };
 FillRule geometry_get_fill_rule (Geometry *geometry);
 void geometry_set_fill_rule (Geometry *geometry, FillRule fill_rule);
@@ -68,6 +88,7 @@ class GeometryGroup : public Geometry {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 
 	virtual void Draw (Path *path, cairo_t *cr);
+//	virtual Rect ComputeBounds (Path *path);
 };
 GeometryGroup		*geometry_group_new		();
 GeometryCollection	*geometry_group_get_children	(GeometryGroup *geometry_group);
@@ -77,6 +98,8 @@ void			geometry_group_set_children	(GeometryGroup *geometry_group, GeometryColle
 // EllipseGeometry
 //
 class EllipseGeometry : public Geometry {
+ protected:
+	virtual void Build (Path *path);
  public:
 	static DependencyProperty* CenterProperty;
 	static DependencyProperty* RadiusXProperty;
@@ -85,7 +108,7 @@ class EllipseGeometry : public Geometry {
 	EllipseGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; };
 
-	virtual void Draw (Path *path, cairo_t *cr);
+//	virtual Rect ComputeBounds (Path *path);
 };
 EllipseGeometry* ellipse_geometry_new ();
 Point* ellipse_geometry_get_center (EllipseGeometry *ellipse_geometry);
@@ -99,6 +122,8 @@ void ellipse_geometry_set_radius_y (EllipseGeometry *ellipse_geometry, double ra
 // LineGeometry
 //
 class LineGeometry : public Geometry {
+ protected:
+	virtual void Build (Path *path);
  public:
 	static DependencyProperty* EndPointProperty;
 	static DependencyProperty* StartPointProperty;
@@ -106,7 +131,7 @@ class LineGeometry : public Geometry {
 	LineGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; };
 
-	virtual void Draw (Path *path, cairo_t *cr);
+//	virtual Rect ComputeBounds (Path *path);
 };
 LineGeometry* line_geometry_new ();
 Point* line_geometry_get_end_point (LineGeometry* line_geometry);
@@ -138,6 +163,7 @@ class PathGeometry : public Geometry {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	virtual void Draw (Path *path, cairo_t *cr);
+//	virtual Rect ComputeBounds (Path *path);
 
 	// this is an element-by-element decision
 	virtual bool IsFilled () { return true; }
@@ -150,6 +176,8 @@ void			path_geometry_set_figures	(PathFigureCollection *path_geometry, PathFigur
 // RectangleGeometry
 //
 class RectangleGeometry : public Geometry {
+ protected:
+	virtual void Build (Path *path);
  public:
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
@@ -158,7 +186,7 @@ class RectangleGeometry : public Geometry {
 	RectangleGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; };
 
-	virtual void Draw (Path *path, cairo_t *cr);
+//	virtual Rect ComputeBounds (Path *path);
 
 	bool GetRadius (double *rx, double *ry);
 };
@@ -185,6 +213,9 @@ PathSegmentCollection* path_segment_collection_new ();
 // PathFigure
 //
 class PathFigure : public DependencyObject {
+ protected:
+	int path_size;
+	moon_path *path;
  public:
 	static DependencyProperty* IsClosedProperty;
 	static DependencyProperty* IsFilledProperty;
@@ -192,12 +223,16 @@ class PathFigure : public DependencyObject {
 	static DependencyProperty* StartPointProperty;
 
 	PathFigure ();
-	~PathFigure ();
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
-	virtual void Draw (Path *path, cairo_t *cr);
+	virtual void Build (Path *shape);
+
+	virtual bool IsBuilt () {return ( path != NULL); }
+	virtual cairo_path_t* GetCairoPath () { return (path) ? &path->cairo : NULL; }
+
+//	Rect ComputeBounds (Path *shape);
 };
 PathFigure* path_figure_new ();
 bool	path_figure_get_is_closed	(PathFigure *path_figure);
@@ -211,9 +246,13 @@ void			path_figure_set_segments	(PathFigure *path_figure, PathSegmentCollection*
 // PathSegment
 //
 class PathSegment : public DependencyObject {
+	virtual void Build (Path *path) {};
  public:
-	virtual void Draw (cairo_t *cr) {}
-	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT; };
+	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT; }
+
+	virtual void Append (moon_path *path) {}
+	virtual int GetSize () { return 0; }
+	virtual Rect ComputeBounds (Path *shape) { return Rect (0.0, 0.0, 0.0, 0.0); }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -231,8 +270,9 @@ class ArcSegment : public PathSegment {
 
 	ArcSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::ARCSEGMENT; };
+	virtual int GetSize () { return 4 * MOON_PATH_CURVE_TO_LENGTH; } // non-optimal size, depends on angle
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Append (moon_path *path);
 };
 ArcSegment	*arc_segment_new		();
 bool		arc_segment_get_is_large_arc	(ArcSegment *segment);
@@ -257,8 +297,9 @@ class BezierSegment : public PathSegment {
 
 	BezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::BEZIERSEGMENT; };
+	virtual int GetSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Append (moon_path *path);
 };
 BezierSegment	*bezier_segment_new		();
 Point*		bezier_segment_get_point1	(BezierSegment *segment);
@@ -277,8 +318,9 @@ class LineSegment : public PathSegment {
 
 	LineSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::LINESEGMENT; };
+	virtual int GetSize () { return MOON_PATH_LINE_TO_LENGTH; }
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Append (moon_path *path);
 };
 LineSegment	*line_segment_new	();
 Point*		line_segment_get_point	(LineSegment *segment);
@@ -294,8 +336,9 @@ class PolyBezierSegment : public PathSegment {
 
 	PolyBezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::POLYBEZIERSEGMENT; };
+	virtual int GetSize ();
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Append (moon_path *path);
 };
 PolyBezierSegment	*poly_bezier_segment_new	();
 Point*			poly_bezier_segment_get_points	(PolyBezierSegment *segment, int *count);
@@ -311,8 +354,9 @@ class PolyLineSegment : public PathSegment {
 
 	PolyLineSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::POLYLINESEGMENT; };
+	virtual int GetSize ();
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Append (moon_path *path);
 };
 PolyLineSegment	*poly_line_segment_new	();
 Point*		poly_line_segment_get_points	(PolyLineSegment *segment, int *count);
@@ -328,8 +372,9 @@ class PolyQuadraticBezierSegment : public PathSegment {
 
 	PolyQuadraticBezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::POLYQUADRATICBEZIERSEGMENT; };
+	virtual int GetSize ();
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Append (moon_path *path);
 };
 PolyQuadraticBezierSegment	*poly_quadratic_bezier_segment_new	();
 Point*	poly_quadratic_bezier_segment_get_points	(PolyQuadraticBezierSegment *segment, int *count);
@@ -346,8 +391,9 @@ class QuadraticBezierSegment : public PathSegment {
 
 	QuadraticBezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::QUADRATICBEZIERSEGMENT; };
+	virtual int GetSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 
-	virtual void Draw (cairo_t *cr);
+	virtual void Append (moon_path *path);
 };
 QuadraticBezierSegment	*quadratic_bezier_segment_new	();
 Point*	quadratic_bezier_segment_get_point1	(QuadraticBezierSegment *segment);

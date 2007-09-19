@@ -16,6 +16,7 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "runtime.h"
 #include "geometry.h"
@@ -58,7 +59,7 @@ geometry_set_transform (Geometry *geometry, Transform *transform)
 }
 
 void
-Geometry::Draw (Path *path, cairo_t *cr)
+Geometry::Draw (Path *shape, cairo_t *cr)
 {
 	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
 	Transform* transform = geometry_get_transform (this);
@@ -67,12 +68,154 @@ Geometry::Draw (Path *path, cairo_t *cr)
 		transform->GetTransform (&matrix);
 		cairo_transform (cr, &matrix);
 	}
+
+	if (!path) {
+		Build (shape);
+		// note: shape can be NULL when Geometry is used for clipping
+		if (shape)
+			StretchAdjust (shape);
+	}
+	if (path)
+		cairo_append_path (cr, &path->cairo);
 }
 
 void
 Geometry::OnPropertyChanged (DependencyProperty *prop)
 {
 	NotifyAttacheesOfPropertyChange (prop);
+}
+
+static void
+path_stretch_adjust (Path *shape, cairo_path_t *path)
+{
+	if (!path) {
+		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
+	double w = framework_element_get_width (shape);
+	double h = framework_element_get_height (shape);
+	if ((w < 0.0) || (h < 0.0)) {
+		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
+	Stretch stretch = shape_get_stretch (shape);
+	if (stretch == StretchNone)
+		return;
+
+	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
+	 * (resulting in something even more complex).
+	 */
+	double minx = G_MAXDOUBLE;
+	double miny = G_MAXDOUBLE;
+	double maxx = G_MINDOUBLE;
+	double maxy = G_MINDOUBLE;
+
+	// find origin (minimums) and actual width/height (maximums - minimums)
+	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
+		cairo_path_data_t *data = &path->data[i];
+		switch (data->header.type) {
+		case CAIRO_PATH_CURVE_TO:
+			// minimum
+			if (minx > data[3].point.x)
+				minx = data[3].point.x;
+			if (miny > data[3].point.y)
+				miny = data[3].point.y;
+			if (minx > data[2].point.x)
+				minx = data[2].point.x;
+			if (miny > data[2].point.y)
+				miny = data[2].point.y;
+			// maximum
+			if (maxx < data[3].point.x)
+				maxx = data[3].point.x;
+			if (maxy < data[3].point.y)
+				maxy = data[3].point.y;
+			if (maxx < data[2].point.x)
+				maxx = data[2].point.x;
+			if (maxy < data[2].point.y)
+				maxy = data[2].point.y;
+			/* fallthru */
+		case CAIRO_PATH_LINE_TO:
+		case CAIRO_PATH_MOVE_TO:
+			// minimum
+			if (minx > data[1].point.x)
+				minx = data[1].point.x;
+			if (miny > data[1].point.y)
+				miny = data[1].point.y;
+			// maximum
+			if (maxx < data[1].point.x)
+				maxx = data[1].point.x;
+			if (maxy < data[1].point.y)
+				maxy = data[1].point.y;
+			break;
+		case CAIRO_PATH_CLOSE_PATH:
+			break;
+		}
+	}
+
+	double actual_height = maxy - miny;
+	double actual_width = maxx - minx;
+
+	Value *vh = shape->GetValueNoDefault (FrameworkElement::HeightProperty);
+	Value *vw = shape->GetValueNoDefault (FrameworkElement::WidthProperty);
+
+	double sh = (vh && ((int)actual_height > 0.0)) ? (h / actual_height) : 1.0;
+	double sw = (vw && ((int)actual_width > 0.0)) ? (w / actual_width) : 1.0;
+	switch (stretch) {
+	case StretchFill:
+		break;
+	case StretchUniform:
+		sw = sh = (sw < sh) ? sw : sh;
+		break;
+	case StretchUniformToFill:
+		sw = sh = (sw > sh) ? sw : sh;
+		break;
+	case StretchNone:
+		/* not reached */
+		break;
+	}
+
+	bool stretch_horz = (vw || (sw != 1.0));
+	bool stretch_vert = (vh || (sh != 1.0));
+
+	// substract origin (min[x|y]) and scale to requested dimensions (if specified)
+	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
+		cairo_path_data_t *data = &path->data[i];
+		switch (data->header.type) {
+		case CAIRO_PATH_CURVE_TO:
+			data[3].point.x -= minx;
+			data[3].point.y -= miny;
+			data[2].point.x -= minx;
+			data[2].point.y -= miny;
+			if (stretch_horz) {
+				data[3].point.x *= sw;
+				data[2].point.x *= sw;
+			}
+			if (stretch_vert) {
+				data[3].point.y *= sh;
+				data[2].point.y *= sh;
+			}
+			/* fallthru */
+		case CAIRO_PATH_LINE_TO:
+		case CAIRO_PATH_MOVE_TO:
+			data[1].point.x -= minx;
+			data[1].point.y -= miny;
+			if (stretch_horz)
+				data[1].point.x *= sw;
+			if (stretch_vert)
+				data[1].point.y *= sh;
+			break;
+		case CAIRO_PATH_CLOSE_PATH:
+			break;
+		}
+	}
+}
+
+void
+Geometry::StretchAdjust (Path *shape)
+{
+	path_stretch_adjust (shape, &path->cairo);
 }
 
 //
@@ -127,20 +270,61 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 		NotifyAttacheesOfPropertyChange (GeometryGroup::ChildrenProperty);
 }
 
+// FIXME: we should cache the path in the group (i.e. a Build method) to avoid
+// rebuilding and reapplying the strech every time
 void
-GeometryGroup::Draw (Path *path, cairo_t *cr)
+GeometryGroup::Draw (Path *shape, cairo_t *cr)
 {
+	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		cairo_transform (cr, &matrix);
+	}
+
 	GeometryCollection *children = geometry_group_get_children (this);
 	Collection::Node *node;
-	
-	Geometry::Draw (path, cr);
 	
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Geometry *geometry = (Geometry *) node->obj;
-		geometry->Draw (path, cr);
+
+		if (!geometry->IsBuilt ())
+			geometry->Build (shape);
+		cairo_append_path (cr, geometry->GetCairoPath ());
+	}
+
+	// can be NULL for clipping
+	if (!shape)
+		return;
+
+	Stretch stretch = shape_get_stretch (shape);
+	if (stretch != StretchNone) {
+		// Group must be processed as a single item
+		cairo_path_t* cp = cairo_copy_path (cr);
+		path_stretch_adjust (shape, cp);
+		cairo_new_path (cr);
+		cairo_append_path (cr, cp);
+		cairo_path_destroy (cp);
 	}
 }
+
+#if FALSE
+Rect
+GeometryGroup::ComputeBounds (Path *path)
+{
+	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	GeometryCollection *children = geometry_group_get_children (this);
+	Collection::Node *node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
+		Geometry *geometry = (Geometry *) node->obj;
+		bounds = bounds.Union (geometry->ComputeBounds (path));
+	}
+//g_warning ("GeometryGroup::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
+	return bounds;
+}
+#endif
 
 GeometryCollection*
 geometry_group_get_children (GeometryGroup *geometry_group)
@@ -237,16 +421,31 @@ ellipse_geometry_new ()
 }
 
 void
-EllipseGeometry::Draw (Path *path, cairo_t *cr)
+EllipseGeometry::Build (Path *shape)
 {
-	Geometry::Draw (path, cr);
-
 	Point *pt = ellipse_geometry_get_center (this);
 	double rx = ellipse_geometry_get_radius_x (this);
 	double ry = ellipse_geometry_get_radius_y (this);
 
-	moon_ellipse (cr, pt->x - rx, pt->y - ry, rx * 2, ry * 2);
+	if (path)
+		moon_path_destroy (path);
+	path = moon_path_new (MOON_PATH_ELLIPSE_LENGTH);
+	moon_ellipse (path, pt->x - rx, pt->y - ry, rx * 2.0, ry * 2.0);
 }
+
+#if FALSE
+Rect
+EllipseGeometry::ComputeBounds (Path *path)
+{
+	// code written to minimize divisions
+	double ht = shape_get_stroke_thickness (path) / 2.0;
+	double hw = ellipse_geometry_get_radius_x (this) + ht;
+	double hh = ellipse_geometry_get_radius_y (this) + ht;
+	// point is at center, so left-top corner is minus half width / half height
+	Point *pt = ellipse_geometry_get_center (this);
+	return Rect (pt->x - hw, pt->y - hh, hw * 2.0, hh * 2.0);
+}
+#endif
 
 //
 // LineGeometry
@@ -288,16 +487,49 @@ line_geometry_new ()
 }
 
 void
-LineGeometry::Draw (Path *path, cairo_t *cr)
+LineGeometry::Build (Path *shape)
 {
-	Geometry::Draw (path, cr);
-
 	Point *p1 = line_geometry_get_start_point (this);
 	Point *p2 = line_geometry_get_end_point (this);
 
-	cairo_move_to (cr, p1->x, p1->y);
-	cairo_line_to (cr, p2->x, p2->y);
+	if (path)
+		moon_path_destroy (path);
+	path = moon_path_new (MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
+	moon_move_to (path, p1->x, p1->y);
+	moon_line_to (path, p2->x, p2->y);
 }
+
+#if FALSE
+Rect
+LineGeometry::ComputeBounds (Path *path)
+{
+	Point *p1 = line_geometry_get_start_point (this);
+	Point *p2 = line_geometry_get_end_point (this);
+	double thickness = shape_get_stroke_thickness (path);
+
+	if (thickness <= 0.0)
+		return Rect (0.0, 0.0, 0.0, 0.0);
+
+	double dx = p1->x - p2->x;
+	double dy = p1->y - p2->y;
+
+	if (thickness <= 1.0)
+		return Rect (MIN (p1->x, p2->x), MIN (p1->y, p2->y), fabs (dx), fabs (dy));
+
+	thickness /= 2.0;
+	// vertical line
+	if (dx == 0.0)
+		return Rect (p1->x - thickness, MIN (p1->y, p2->y), thickness * 2.0, fabs (dy));
+	// horizontal line
+	if (dy == 0.0)
+		return Rect (MIN (p1->x, p2->x), p1->y - thickness, fabs (dx), thickness * 2.0);
+
+	// slopped line
+	double m = dy / dx;
+// FIXME
+	return Rect (MIN (p1->x, p2->x), MIN (p1->y, p2->y), fabs (dx), fabs (dy));
+}
+#endif
 
 //
 // PathGeometry
@@ -345,20 +577,60 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 		NotifyAttacheesOfPropertyChange (PathGeometry::FiguresProperty);
 }
 
+// FIXME: we should cache the path in the group (i.e. a Build method) to avoid
+// rebuilding and reapplying the strech every time
 void
-PathGeometry::Draw (Path *path, cairo_t *cr)
+PathGeometry::Draw (Path *shape, cairo_t *cr)
 {
+	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		cairo_transform (cr, &matrix);
+	}
+
 	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
-	Collection::Node *node;
-	
-	Geometry::Draw (path, cr);
-	
-	node = (Collection::Node *) children->list->First ();
+	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathFigure *pf = (PathFigure *) node->obj;
-		pf->Draw (path, cr);
+		if (!pf->IsBuilt ())
+			pf->Build (shape);
+		cairo_append_path (cr, pf->GetCairoPath ());
+	}
+
+	// can be NULL for clipping
+	if (!shape)
+		return;
+
+	Stretch stretch = shape_get_stretch (shape);
+	if (stretch != StretchNone) {
+		cairo_path_t* cp = cairo_copy_path (cr);
+		path_stretch_adjust (shape, cp);
+		cairo_new_path (cr);
+		cairo_append_path (cr, cp);
+		cairo_path_destroy (cp);
 	}
 }
+
+#if FALSE
+Rect
+PathGeometry::ComputeBounds (Path *shape)
+{
+	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
+	Collection::Node *node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
+		PathFigure *pf = (PathFigure *) node->obj;
+		bounds = bounds.Union (pf->ComputeBounds (shape));
+	}
+
+//g_warning ("PathGeometry::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
+	// some AA glitches occurs when no stroke is present or when drawning unfilled curves
+	// (e.g. arcs) adding 1.0 will cover the extra pixels used by Cairo's AA
+	return bounds.GrowBy (1.0);
+}
+#endif
 
 PathFigureCollection *
 path_geometry_get_figures (PathGeometry *path_geometry)
@@ -425,18 +697,16 @@ rectangle_geometry_new ()
 }
 
 void
-RectangleGeometry::Draw (Path *path, cairo_t *cr)
+RectangleGeometry::Build (Path *shape)
 {
-	Geometry::Draw (path, cr);
-
 	Rect *rect = rectangle_geometry_get_rect (this);
 	if (!rect)
 		return;
 
 	double half_thick = 0.0;
-	// path is optional (e.g. not available for clipping)
-	if (path) {
-		double thick = shape_get_stroke_thickness (path);
+	// shape is optional (e.g. not available for clipping)
+	if (shape) {
+		double thick = shape_get_stroke_thickness (shape);
 		if ((thick > rect->w) || (thick > rect->h)) {
 			half_thick = thick / 2.0;
 			rect->x -= half_thick;
@@ -446,17 +716,39 @@ RectangleGeometry::Draw (Path *path, cairo_t *cr)
 /* FIXME
  * - this doesn't match MS-SL if mixed with some "normal" (non-degenerated) geometry
  */
-			path->SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+			shape->SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 		}
 	}
 
+	if (path)
+		moon_path_destroy (path);
+
 	double radius_x, radius_y;
 	if (GetRadius (&radius_x, &radius_y)) {
-		moon_rounded_rectangle (cr, rect->x, rect->y, rect->w, rect->h, radius_x + half_thick, radius_y + half_thick);
+		path = moon_path_new (MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+		moon_rounded_rectangle (path, rect->x, rect->y, rect->w, rect->h, radius_x + half_thick, radius_y + half_thick);
 	} else {
-		cairo_rectangle (cr, rect->x, rect->y, rect->w, rect->h);
+		path = moon_path_new (MOON_PATH_RECTANGLE_LENGTH);
+		moon_rectangle (path, rect->x, rect->y, rect->w, rect->h);
 	}
 }
+
+#if FALSE
+Rect
+RectangleGeometry::ComputeBounds (Path *path)
+{
+	Rect *rect = rectangle_geometry_get_rect (this);
+	if (!rect)
+		return Rect (0.0, 0.0, 0.0, 0.0);
+
+	double thickness = shape_get_stroke_thickness (path);
+	// UIElement::SHAPE_DEGENERATE flags may be unset at this stage
+	if ((thickness > rect->w) || (thickness > rect->h))
+		thickness += 2.0;
+
+	return rect->GrowBy (thickness / 2.0);
+}
+#endif
 
 bool
 RectangleGeometry::GetRadius (double *rx, double *ry)
@@ -490,11 +782,9 @@ path_figure_new ()
 
 PathFigure::PathFigure ()
 {
+	path = NULL;
+	path_size = 0;
 	this->SetValue (PathFigure::SegmentsProperty, Value::CreateUnref (new PathSegmentCollection ()));
-}
-
-PathFigure::~PathFigure ()
-{
 }
 
 void
@@ -527,25 +817,53 @@ PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, Dep
 }
 
 void
-PathFigure::Draw (Path *path, cairo_t *cr)
+PathFigure::Build (Path *shape)
 {
 	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
-	Point *start = path_figure_get_start_point (this);
 	Collection::Node *node;
-	
-	// should not be required because of the cairo_move_to
-	//cairo_new_sub_path (cr);
-	cairo_move_to (cr, start->x, start->y);
+
+	path_size = MOON_PATH_MOVE_TO_LENGTH;
+	node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
+		PathSegment *ps = (PathSegment *) node->obj;
+		path_size += ps->GetSize ();
+	}
+	bool close = path_figure_get_is_closed (this);
+	if (close)
+		path_size += MOON_PATH_CLOSE_PATH_LENGTH;
+//g_warning ("PathFigure::Draw %d", path_size);
+	if (path)
+		moon_path_destroy (path);
+	path = moon_path_new (path_size);
+
+	Point *start = path_figure_get_start_point (this);
+	moon_move_to (path, start->x, start->y);
 	
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathSegment *ps = (PathSegment *) node->obj;
-		ps->Draw (cr);
+		ps->Append (path);
 	}
 	
-	if (path_figure_get_is_closed (this))
-		cairo_close_path (cr);
+	if (close)
+		moon_close_path (path);
 }
+
+#if FALSE
+Rect
+PathFigure::ComputeBounds (Path *shape)
+{
+	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
+	Collection::Node *node = (Collection::Node *) children->list->First ();
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
+		PathSegment *ps = (PathSegment *) node->obj;
+		bounds = bounds.Union (ps->ComputeBounds (path));
+	}
+//g_warning ("PathFigure::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
+	return bounds;
+}
+#endif
 
 bool
 path_figure_get_is_closed (PathFigure *path_figure)
@@ -589,7 +907,8 @@ path_figure_set_start_point (PathFigure *path_figure, Point *point)
 // PathSegment
 //
 
-void PathSegment::OnPropertyChanged (DependencyProperty *prop)
+void
+PathSegment::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type == Type::DEPENDENCY_OBJECT) {
 		DependencyObject::OnPropertyChanged (prop);
@@ -678,7 +997,7 @@ arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
 }
 
 void
-ArcSegment::Draw (cairo_t *cr)
+ArcSegment::Append (moon_path *path)
 {
 	Point *size = arc_segment_get_size (this);
 	double angle = arc_segment_get_rotation_angle (this);
@@ -687,8 +1006,9 @@ ArcSegment::Draw (cairo_t *cr)
 	Point* p = arc_segment_get_point (this);
 
 	// FIXME: there's no cairo_arc_to so we reuse librsvg code (see rsvg.cpp)
-	rsvg_arc_to (cr, size->x, size->y, angle, large, direction, p->x, p->y); 
+	rsvg_arc_to (path, size->x, size->y, angle, large, direction, p->x, p->y); 
 }
+
 
 //
 // BezierSegment
@@ -744,7 +1064,7 @@ bezier_segment_set_point3 (BezierSegment *segment, Point *point)
 }
 
 void
-BezierSegment::Draw (cairo_t *cr)
+BezierSegment::Append (moon_path *path)
 {
 	Point *p1 = bezier_segment_get_point1 (this);
 	Point *p2 = bezier_segment_get_point2 (this);
@@ -757,7 +1077,7 @@ BezierSegment::Draw (cairo_t *cr)
 	double x3 = p3 ? p3->x : 0.0;
 	double y3 = p3 ? p3->y : 0.0;
 
-	cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
+	moon_curve_to (path, x1, y1, x2, y2, x3, y3);
 }
 
 //
@@ -786,14 +1106,14 @@ line_segment_set_point (LineSegment *segment, Point *point)
 }
 
 void
-LineSegment::Draw (cairo_t *cr)
+LineSegment::Append (moon_path *path)
 {
 	Point *p = line_segment_get_point (this);
 
 	double x = p ? p->x : 0.0;
 	double y = p ? p->y : 0.0;
 
-	cairo_line_to (cr, x, y);
+	moon_line_to (path, x, y);
 }
 
 //
@@ -834,7 +1154,7 @@ poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int c
 }
 
 void
-PolyBezierSegment::Draw (cairo_t *cr)
+PolyBezierSegment::Append (moon_path *path)
 {
 	int count = 0;
 	Point* points = poly_bezier_segment_get_points (this, &count);
@@ -844,9 +1164,17 @@ PolyBezierSegment::Draw (cairo_t *cr)
 		return;
 
 	for (int i=0; i < count - 2; i+=3) {
-		cairo_curve_to (cr, points[i].x, points[i].y, points[i+1].x, points[i+1].y,
+		moon_curve_to (path, points[i].x, points[i].y, points[i+1].x, points[i+1].y,
 			points[i+2].x, points[i+2].y);
 	}
+}
+
+int
+PolyBezierSegment::GetSize ()
+{
+	int count = 0;
+	poly_bezier_segment_get_points (this, &count);
+	return (count / 3) * MOON_PATH_CURVE_TO_LENGTH;
 }
 
 //
@@ -887,14 +1215,22 @@ poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int count
 }
 
 void
-PolyLineSegment::Draw (cairo_t *cr)
+PolyLineSegment::Append (moon_path *path)
 {
 	int count = 0;
 	Point* points = poly_line_segment_get_points (this, &count);
 
 	for (int i=0; i < count; i++) {
-		cairo_line_to (cr, points[i].x, points[i].y);
+		moon_line_to (path, points[i].x, points[i].y);
 	}
+}
+
+int
+PolyLineSegment::GetSize ()
+{
+	int count = 0;
+	poly_line_segment_get_points (this, &count);
+	return count * MOON_PATH_LINE_TO_LENGTH;
 }
 
 //
@@ -937,7 +1273,7 @@ poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, P
 // quadratic to cubic bezier, the original control point and the end control point are the same
 // http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
 void
-PolyQuadraticBezierSegment::Draw (cairo_t *cr)
+PolyQuadraticBezierSegment::Append (moon_path *path)
 {
 	int count = 0;
 	Point* points = poly_quadratic_bezier_segment_get_points (this, &count);
@@ -947,7 +1283,7 @@ PolyQuadraticBezierSegment::Draw (cairo_t *cr)
 	// origin
 	double x0 = 0.0;
 	double y0 = 0.0;
-	cairo_get_current_point (cr, &x0, &y0);
+	moon_get_current_point (path, &x0, &y0);
 
 	// we need at least 2 points
 	for (int i=0; i < count - 1; i+=2) {
@@ -963,12 +1299,20 @@ PolyQuadraticBezierSegment::Draw (cairo_t *cr)
 		x1 = x0 + 2 * (x1 - x0) / 3;
 		y1 = y0 + 2 * (y1 - y0) / 3;
 
-		cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
+		moon_curve_to (path, x1, y1, x2, y2, x3, y3);
 
 		// set new origin
 		x0 = x3;
 		y0 = y3;
 	}
+}
+
+int
+PolyQuadraticBezierSegment::GetSize ()
+{
+	int count = 0;
+	poly_quadratic_bezier_segment_get_points (this, &count);
+	return (count / 2) * MOON_PATH_CURVE_TO_LENGTH;
 }
 
 //
@@ -1011,7 +1355,7 @@ quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *poi
 }
 
 void
-QuadraticBezierSegment::Draw (cairo_t *cr)
+QuadraticBezierSegment::Append (moon_path *path)
 {
 	Point *p1 = quadratic_bezier_segment_get_point1 (this);
 	Point *p2 = quadratic_bezier_segment_get_point2 (this);
@@ -1020,7 +1364,7 @@ QuadraticBezierSegment::Draw (cairo_t *cr)
 	// http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
 	double x0 = 0.0;
 	double y0 = 0.0;
-	cairo_get_current_point (cr, &x0, &y0);
+	moon_get_current_point (path, &x0, &y0);
 
 	double x1 = p1 ? p1->x : 0.0;
 	double y1 = p1 ? p1->y : 0.0;
@@ -1034,7 +1378,7 @@ QuadraticBezierSegment::Draw (cairo_t *cr)
 	x1 = x0 + 2 * (x1 - x0) / 3;
 	y1 = y0 + 2 * (y1 - y0) / 3;
 
-	cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
+	moon_curve_to (path, x1, y1, x2, y2, x3, y3);
 }
 
 //

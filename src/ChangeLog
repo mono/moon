@@ -1,9 +1,15 @@
-2007-09-19  Chris Toshok  <toshok@ximian.com>
+2007-09-19  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* uielement.cpp (~UIElement): remove this from the dirty lists.
-
-	* dirty.h, dirty.cpp (remove_dirty_element): new function, remove
-	element from both the up and down dirty lists.
+	* moon-path.c|h: New. Create simple or complex paths without a
+	(expensive) cairo_context_t using an API similar to cairo.
+	* geometry.cpp|h: Use moon_path functions. Added (still inactive)
+	code to compute	bounds for paths.
+	* shape.cpp|h: Use moon_path functions. Avoid Cairo extents API 
+	for Polylines and Polygons. Still not perfect for large thickness 
+	and steep angles but 8-10x faster and better (no artifact left) 
+	than previous code, see new xaml animation tests).
+	* rsvg.cpp|h: Adapt to use moon-path functions.
+	* Makefile.am: Add moon-path.c and moon-path.h to the build.
 
 2007-09-19  Jeffrey Stedfast  <fejj@gnome.org>
 

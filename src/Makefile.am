@@ -25,6 +25,7 @@ libmooninclude_headers = \
 	list.h		\
 	mango.h		\
 	media.h		\
+	moon-path.h	\
 	mplayer.h	\
 	namescope.h	\
 	openfile.h	\
@@ -65,6 +66,7 @@ libmoon_la_SOURCES = 	\
 	list.cpp	\
 	mango.cpp	\
 	media.cpp	\
+	moon-path.c	\
 	mplayer.cpp	\
 	namescope.cpp	\
 	openfile.cpp	\
