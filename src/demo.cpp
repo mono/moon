@@ -1,5 +1,5 @@
-#define VIDEO_DEMO
-#define XAML_DEMO
+//#define VIDEO_DEMO
+//#define XAML_DEMO
 #include <config.h>
 #include <string.h>
 #include <gtk/gtk.h>
@@ -62,21 +62,6 @@ button_press_event (GtkWidget *widget, GdkEventButton *e, gpointer data)
 	if (sb)
 		sb->Pause ();
 	//sb->Seek ((TimeSpan)e->x * 100000);
-}
-
-static void
-button_press_event2 (GtkWidget *widget, GdkEventButton *e, gpointer data)
-{
-	Surface *t = (Surface *) data;
-	Type::Kind kind;
-
-	printf ("button_press_event\n");
-
-	printf ("Loading...\n");
-	UIElement *ee = xaml_create_from_file ("../test/xaml/test-shape-ellipse.xaml", true, &kind);
-	printf ("Loading... %p\n", ee);
-	if (ee != NULL)
-		t->Attach (ee);
 }
 
 static void
@@ -212,7 +197,7 @@ main (int argc, char *argv [])
 
 		gtk_window_set_title (GTK_WINDOW (w), file);
 		
-		UIElement *e = xaml_create_from_file (file, true, &kind);
+		UIElement *e = (UIElement*)xaml_create_from_file (NULL, file, true, &kind);
 		if (e == NULL){
 			printf ("Was not able to load the file\n");
 			return 1;
@@ -222,7 +207,6 @@ main (int argc, char *argv [])
 			return 1;
 		}
 
-		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "button_press_event", G_CALLBACK (button_press_event2), t);
 		t->Attach (e);
 	} else {
 		NameScope *namescope = new NameScope();
@@ -311,7 +295,7 @@ main (int argc, char *argv [])
 		panel_child_add (canvas, tb);
 		
 #ifdef XAML_DEMO
-		panel_child_add (canvas, xaml_create_from_str (NULL, "<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", false, NULL));
+		panel_child_add (canvas, (UIElement*)xaml_create_from_str (NULL, "<Line Stroke='Blue' X1='10' Y1='10' X2='10' Y2='300' />", false, NULL));
 #endif
 		
 #ifdef VIDEO_DEMO
