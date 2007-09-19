@@ -26,11 +26,12 @@ Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 	dob->SetParent (parent);
 	dob->ref ();
 	obj = dob;
+	this->parent = parent;
 }
 
 Collection::Node::~Node ()
 {
-	obj->Detach (NULL, obj->GetParent ());
+	obj->Detach (NULL, parent);
 	obj->SetParent (NULL);
 	obj->unref ();
 }

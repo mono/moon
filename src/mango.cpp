@@ -42,6 +42,32 @@ static PangoAttrType mango_attr_foreground_type;
 G_DEFINE_TYPE (MangoRenderer, mango_renderer, PANGO_TYPE_RENDERER)
 
 
+/*
+	This is not the right way of doing this.
+	If libmoon is reloaded, the function callbacks registered with
+	glib might be pointing to anywhere.
+	This only works if libmoon is reloaded to where it was first loaded.
+*/
+GType
+mango_renderer_get_type_safe ()
+{
+	static GType type = 0;
+	
+	if (type != 0)
+		return type;
+		
+	type = g_type_from_name ("MangoRenderer");
+	
+	if (type != 0) {
+		mango_renderer_parent_class = g_type_class_peek (g_type_parent (type));
+		return type;
+	}
+		
+	type = mango_renderer_get_type ();
+	return type;
+}
+
+
 static void
 mango_renderer_class_init (MangoRendererClass *klass)
 {
@@ -236,8 +262,8 @@ mango_attr_foreground_destroy (PangoAttribute *attr)
 {
 	MangoAttrForeground *fg = (MangoAttrForeground *) attr;
 	
-	if (fg->element)
-		fg->element->unref ();
+	if (fg->foreground)
+		fg->foreground->unref ();
 	
 	g_free (attr);
 }
@@ -281,8 +307,8 @@ mango_attr_foreground_new (UIElement *element, Brush *foreground)
 	attr = g_new (MangoAttrForeground, 1);
 	attr->attr.klass = &klass;
 	
-	if (element)
-		element->ref ();
+	if (foreground)
+		foreground->ref ();
 	
 	attr->element = element;
 	attr->foreground = foreground;

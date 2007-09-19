@@ -250,6 +250,9 @@ Surface::Attach (UIElement *element)
 {
 	bool first = FALSE;
 
+	if (!element)
+		return;
+
 	if (!Type::Find (element->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
 		printf ("Unsupported toplevel\n");
 		return;
@@ -986,7 +989,7 @@ Surface::SetTrans (bool trans)
 void
 Surface::SetBackgroundColor (Color *color)
 {
-	printf("YO");
+	//printf("YO");
 	background_color = new Color (*color);
 	if (drawing_area)
 		gtk_widget_queue_draw (drawing_area);
@@ -1105,6 +1108,7 @@ runtime_shutdown ()
 		return;
 	
 	animation_destroy ();
+	text_destroy ();
 	TimeManager::Instance()->Shutdown ();
 	DependencyObject::Shutdown ();
 
@@ -1112,7 +1116,7 @@ runtime_shutdown ()
 	printf ("Runtime destroyed. Object tracking summary:\n");
 	printf ("\tObjects created: %i\n", Base::objects_created);
 	printf ("\tObjects destroyed: %i\n", Base::objects_destroyed);
-	printf ("\tDifference: %i\n", Base::objects_created - Base::objects_destroyed);
+	printf ("\tDifference: %i (%.1f%%)\n", Base::objects_created - Base::objects_destroyed, (100.0 * Base::objects_destroyed) / Base::objects_created);
 	int counter = 10;
 	Base::objects_alive = g_list_reverse (Base::objects_alive);
 	g_list_foreach (Base::objects_alive, print_object_data, &counter);

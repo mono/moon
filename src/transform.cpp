@@ -400,7 +400,7 @@ DependencyProperty* TransformGroup::ChildrenProperty;
 
 TransformGroup::TransformGroup ()
 {
-	this->SetValue (TransformGroup::ChildrenProperty, Value (new TransformCollection ()));
+	this->SetValue (TransformGroup::ChildrenProperty, Value::CreateUnref (new TransformCollection ()));
 }
 
 TransformGroup::~TransformGroup ()

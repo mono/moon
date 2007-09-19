@@ -300,8 +300,6 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 
 	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (proxy->instance, js_sender);
 
-	NPN_RetainObject (depobj); // XXX leak?
-
 	OBJECT_TO_NPVARIANT (depobj, args[0]);
 
 	EventArgsWrapper event_args_wrapper = get_wrapper_for_event_name (proxy->event_name);
@@ -320,17 +318,15 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 	  //	  printf ("!proxy->is_func\n");
 		/* the event listener was added with a JS string (the function name) */
 		NPObject *object = NULL;
-		if (NPERR_NO_ERROR != NPN_GetValue(proxy->instance, NPNVWindowNPObject, &object)) {
-			return;
+		if (NPERR_NO_ERROR == NPN_GetValue(proxy->instance, NPNVWindowNPObject, &object)) {
+			if (NPN_Invoke (proxy->instance, object, NPID ((char*)proxy->callback),
+					args, 2, &result))
+				NPN_ReleaseVariantValue (&result);
 		}
-
-		if (NPN_Invoke (proxy->instance, object, NPID ((char*)proxy->callback),
-				args, 2, &result))
-			NPN_ReleaseVariantValue (&result);
-
-		// XXX not needed
-		// NPN_ReleaseObject (object);
 	}
+	
+	NPN_ReleaseObject (depobj);
+	NPN_ReleaseObject (NPVARIANT_TO_OBJECT (args [1]));
 }
 
 
@@ -347,17 +343,9 @@ event_listener_allocate (NPP instance, NPClass *)
 	return new MoonlightEventListenerObject (instance);
 }
 
-static void
-event_listener_deallocate (NPObject *npobject)
-{
-	delete (MoonlightEventListenerObject *) npobject;
-}
-
-
 MoonlightEventListenerType::MoonlightEventListenerType ()
 {
 	allocate = event_listener_allocate;
-	deallocate = event_listener_deallocate;
 }
 
 MoonlightEventListenerType *MoonlightEventListenerClass;
@@ -370,11 +358,6 @@ erroreventargs_allocate (NPP instance, NPClass *)
 	return new MoonlightErrorEventArgs (instance);
 }
 
-static void
-erroreventargs_deallocate (NPObject *npobject)
-{
-	delete (MoonlightErrorEventArgs*)npobject;
-}
 
 static bool
 erroreventargs_has_property (NPObject *npobj, NPIdentifier name)
@@ -458,7 +441,6 @@ erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 MoonlightErrorEventArgsType::MoonlightErrorEventArgsType ()
 {
 	allocate = erroreventargs_allocate;
-	deallocate = erroreventargs_deallocate;
 	hasProperty = erroreventargs_has_property;
 	getProperty = erroreventargs_get_property;
 }
@@ -470,12 +452,6 @@ static NPObject*
 point_allocate (NPP instance, NPClass *)
 {
 	return new MoonlightPoint (instance);
-}
-
-static void
-point_deallocate (NPObject *npobject)
-{
-	delete (MoonlightPoint*)npobject;
 }
 
 static bool
@@ -521,7 +497,6 @@ point_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 MoonlightPointType::MoonlightPointType ()
 {
 	allocate = point_allocate;
-	deallocate = point_deallocate;
 	hasProperty = point_has_property;
 	getProperty = point_get_property;
 	setProperty = point_set_property;
@@ -534,12 +509,6 @@ static NPObject*
 rect_allocate (NPP instance, NPClass *)
 {
 	return new MoonlightRect (instance);
-}
-
-static void
-rect_deallocate (NPObject *npobject)
-{
-	delete (MoonlightRect*)npobject;
 }
 
 static bool
@@ -603,7 +572,6 @@ rect_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 MoonlightRectType::MoonlightRectType ()
 {
 	allocate = rect_allocate;
-	deallocate = rect_deallocate;
 	hasProperty = rect_has_property;
 	getProperty = rect_get_property;
 	setProperty = rect_set_property;
@@ -617,12 +585,6 @@ static NPObject*
 duration_allocate (NPP instance, NPClass *)
 {
 	return new MoonlightDuration (instance);
-}
-
-static void
-duration_deallocate (NPObject *npobject)
-{
-	delete (MoonlightDuration*)npobject;
 }
 
 static bool
@@ -667,7 +629,6 @@ duration_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *valu
 MoonlightDurationType::MoonlightDurationType ()
 {
 	allocate = duration_allocate;
-	deallocate = duration_deallocate;
 	hasProperty = duration_has_property;
 	getProperty = duration_get_property;
 	setProperty = duration_set_property;
@@ -681,12 +642,6 @@ static NPObject*
 timespan_allocate (NPP instance, NPClass *)
 {
 	return new MoonlightTimeSpan (instance);
-}
-
-static void
-timespan_deallocate (NPObject *npobject)
-{
-	delete (MoonlightTimeSpan*)npobject;
 }
 
 static bool
@@ -731,7 +686,6 @@ timespan_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *valu
 MoonlightTimeSpanType::MoonlightTimeSpanType ()
 {
 	allocate = timespan_allocate;
-	deallocate = timespan_deallocate;
 	hasProperty = timespan_has_property;
 	getProperty = timespan_get_property;
 	setProperty = timespan_set_property;
@@ -749,21 +703,13 @@ mouse_event_allocate (NPP instance, NPClass *)
 	return new MoonlightMouseEventArgsObject (instance);
 }
 
-static void
-mouse_event_deallocate (NPObject *npobject)
+void
+MoonlightMouseEventArgsObject::Dispose ()
 {
-	delete (MoonlightMouseEventArgsObject*)npobject;
-}
+	MoonlightObject::Dispose ();
 
-static void
-mouse_event_invalidate (NPObject *npobject)
-{
-	MoonlightMouseEventArgsObject *ea = (MoonlightMouseEventArgsObject*)npobject;
-// XXX apparently we don't need to do this?
-//  	if (ea->position)
-//  		NPN_ReleaseObject (ea->position);
-	ea->x = -1;
-	ea->y = -1;
+	x = -1;
+	y = -1;
 }
 
 static bool
@@ -835,8 +781,6 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightMouseEventArgsType::MoonlightMouseEventArgsType ()
 {
 	allocate = mouse_event_allocate;
-	deallocate = mouse_event_deallocate;
-	invalidate = mouse_event_invalidate;
 
 	hasProperty = mouse_event_has_property;
 	getProperty = mouse_event_get_property;
@@ -855,16 +799,10 @@ keyboard_event_allocate (NPP instance, NPClass *)
 	return new MoonlightKeyboardEventArgsObject (instance);
 }
 
-static void
-keyboard_event_deallocate (NPObject *npobject)
+void
+MoonlightKeyboardEventArgsObject::Dispose ()
 {
-	delete (MoonlightKeyboardEventArgsObject*)npobject;
-}
-
-static void
-keyboard_event_invalidate (NPObject *npobject)
-{
-
+	MoonlightObject::Dispose ();
 }
 
 static bool
@@ -918,8 +856,6 @@ keyboard_event_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightKeyboardEventArgsType::MoonlightKeyboardEventArgsType ()
 {
 	allocate = keyboard_event_allocate;
-	deallocate = keyboard_event_deallocate;
-	invalidate = keyboard_event_invalidate;
 
 	hasProperty = keyboard_event_has_property;
 	getProperty = keyboard_event_get_property;
@@ -949,13 +885,33 @@ _allocate (NPP instance, NPClass*)
 static void
 _deallocate (NPObject *npobj)
 {
+	MoonlightObject* obj = (MoonlightObject*) npobj;
+	if (!obj->disposed)
+		obj->Dispose ();	
 	delete (MoonlightObject*)npobj;
+}
+
+MoonlightObject::~MoonlightObject ()
+{
+	if (!disposed) {
+		// Can't call Dispose from here, since the derived classes' vtbls have already
+		// been destroyed.
+		printf ("Undisposed object.\n");
+		// print_stack_trace ();
+	}
+}
+
+void
+MoonlightObject::Dispose ()
+{
+	disposed = true;
 }
 
 static void
 _invalidate (NPObject *npobj)
 {
-	// nothing to do
+	MoonlightObject* o = (MoonlightObject*) npobj;
+	o->Dispose ();
 }
 
 static bool
@@ -1035,26 +991,18 @@ moonlight_scriptable_control_allocate (NPP instance, NPClass*)
 	return new MoonlightScriptControlObject (instance);
 }
 
-static void
-moonlight_scriptable_control_deallocate (NPObject *npobj)
+void
+MoonlightScriptControlObject::Dispose ()
 {
-	delete (MoonlightScriptControlObject*)npobj;
-}
+	MoonlightObject::Dispose ();
 
-static void
-moonlight_scriptable_control_invalidate (NPObject *npobj)
-{
-	MoonlightScriptControlObject *control = (MoonlightScriptControlObject*)npobj;
+ 	if (settings)
+ 		NPN_ReleaseObject (settings);
+	settings = NULL;
 
-// XXX apparently we don't need to do this?
-// 	if (control->settings)
-// 		NPN_ReleaseObject (control->settings);
-	control->settings = NULL;
-
-// XXX apparently we don't need to do this?
-// 	if (control->content)
-// 		NPN_ReleaseObject (control->content);
-	control->content = NULL;
+ 	if (content)
+ 		NPN_ReleaseObject (content);
+	content = NULL;
 }
 
 static bool
@@ -1201,8 +1149,6 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightScriptControlType::MoonlightScriptControlType ()
 {
 	allocate = moonlight_scriptable_control_allocate;
-	deallocate = moonlight_scriptable_control_deallocate;
-	invalidate = moonlight_scriptable_control_invalidate;
 
 	hasProperty = moonlight_scriptable_control_has_property;
 	getProperty = moonlight_scriptable_control_get_property;
@@ -1332,26 +1278,20 @@ moonlight_content_allocate (NPP instance, NPClass*)
 	return new MoonlightContentObject (instance);
 }
 
-static void
-moonlight_content_deallocate (NPObject *npobj)
+void
+MoonlightContentObject::Dispose ()
 {
-	delete (MoonlightContentObject*)npobj;
-}
-
-static void
-moonlight_content_invalidate (NPObject *npobj)
-{
-	MoonlightContentObject *content = (MoonlightContentObject*)npobj;
+	MoonlightObject::Dispose ();
 
 	/* XXX free the registered_scriptable_objects hash */
-	DEBUG_WARN_NOTIMPLEMENTED ("need to free registered scriptable objects");
+	//DEBUG_WARN_NOTIMPLEMENTED ("need to free registered scriptable objects");
 
-	if (content->resizeProxy)
-		delete content->resizeProxy;
-	content->resizeProxy = NULL;
-	if (content->fullScreenChangeProxy)
-		delete content->fullScreenChangeProxy;
-	content->fullScreenChangeProxy = NULL;
+	if (resizeProxy)
+		delete resizeProxy;
+	resizeProxy = NULL;
+	if (fullScreenChangeProxy)
+		delete fullScreenChangeProxy;
+	fullScreenChangeProxy = NULL;
 }
 
 static const char *const
@@ -1529,6 +1469,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		MoonlightEventObjectObject *depobj =
 			EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dep);
+		dep->unref ();
 
 		OBJECT_TO_NPVARIANT (depobj, *result);
 
@@ -1569,8 +1510,6 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightContentType::MoonlightContentType ()
 {
 	allocate = moonlight_content_allocate;
-	deallocate = moonlight_content_deallocate;
-	invalidate = moonlight_content_invalidate;
 
 	hasProperty = moonlight_content_has_property;
 	getProperty = moonlight_content_get_property;
@@ -1606,16 +1545,10 @@ moonlight_dependency_object_allocate (NPP instance, NPClass*)
 	return new MoonlightDependencyObjectObject (instance);
 }
 
-static void
-moonlight_dependency_object_deallocate (NPObject *npobj)
+void
+MoonlightDependencyObjectObject::Dispose ()
 {
-	delete (MoonlightDependencyObjectObject*)npobj;
-}
-
-static void
-moonlight_dependency_object_invalidate (NPObject *npobj)
-{
-	moonlight_event_object_invalidate (npobj);
+	MoonlightEventObjectObject::Dispose ();
 }
 
 static DependencyProperty*
@@ -1929,8 +1862,6 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightDependencyObjectType::MoonlightDependencyObjectType ()
 {
 	allocate = moonlight_dependency_object_allocate;
-	deallocate = moonlight_dependency_object_deallocate;
-	invalidate = moonlight_dependency_object_invalidate;
 
 	hasProperty = moonlight_dependency_object_has_property;
 	setProperty = moonlight_dependency_object_set_property;
@@ -1951,20 +1882,14 @@ moonlight_event_object_allocate (NPP instance, NPClass*)
 	return new MoonlightEventObjectObject (instance);
 }
 
-static void
-moonlight_event_object_deallocate (NPObject *npobj)
+void 
+MoonlightEventObjectObject::Dispose ()
 {
-	delete (MoonlightEventObjectObject*)npobj;
-}
-
-static void
-moonlight_event_object_invalidate (NPObject *npobj)
-{
-	MoonlightEventObjectObject *eo = (MoonlightEventObjectObject*)npobj;
-
-	if (eo->eo)
-		eo->eo->unref ();
-	eo->eo = NULL;
+	MoonlightObject::Dispose ();
+	
+	if (eo)
+		eo->unref ();
+	eo = NULL;
 }
 
 static bool
@@ -2001,8 +1926,6 @@ moonlight_event_object_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightEventObjectType::MoonlightEventObjectType ()
 {
 	allocate = moonlight_event_object_allocate;
-	deallocate = moonlight_event_object_deallocate;
-	invalidate = moonlight_event_object_invalidate;
 
 	hasProperty = moonlight_event_object_has_property;
 	setProperty = moonlight_event_object_set_property;
@@ -2704,12 +2627,6 @@ moonlight_control_allocate (NPP instance, NPClass *)
 	return new MoonlightControlObject (instance);
 }
 
-static void
-moonlight_control_deallocate (NPObject *npobject)
-{
-	delete (MoonlightControlObject*)npobject;
-}
-
 static bool
 moonlight_control_has_property (NPObject *npobj, NPIdentifier name)
 {
@@ -2795,7 +2712,6 @@ moonlight_control_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightControlType::MoonlightControlType ()
 {
 	allocate = moonlight_control_allocate;
-	deallocate = moonlight_control_deallocate;
 	hasProperty = moonlight_control_has_property;
 	getProperty = moonlight_control_get_property;
 	setProperty = moonlight_control_set_property;
@@ -2832,21 +2748,15 @@ moonlight_scriptable_object_allocate (NPP instance, NPClass*)
 	return new MoonlightScriptableObjectObject (instance);
 }
 
-static void
-moonlight_scriptable_object_deallocate (NPObject *npobj)
+void
+MoonlightScriptableObjectObject::Dispose ()
 {
-	delete (MoonlightScriptableObjectObject*)npobj;
-}
+	MoonlightObject::Dispose ();
 
-static void
-moonlight_scriptable_object_invalidate (NPObject *npobj)
-{
-	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
-
-	if (sobj->managed_scriptable) {
+	if (managed_scriptable) {
 		// XXX unref the scriptable object however we need to.
 	}
-	sobj->managed_scriptable = NULL;
+	managed_scriptable = NULL;
 
 	// XXX free the properties, events, and methods hashes.
 }
@@ -2986,8 +2896,6 @@ moonlight_scriptable_object_invoke (NPObject *npobj, NPIdentifier name,
 MoonlightScriptableObjectType::MoonlightScriptableObjectType ()
 {
 	allocate = moonlight_scriptable_object_allocate;
-	deallocate = moonlight_scriptable_object_deallocate;
-	invalidate = moonlight_scriptable_object_invalidate;
 
 	hasProperty = moonlight_scriptable_object_has_property;
 	setProperty = moonlight_scriptable_object_set_property;

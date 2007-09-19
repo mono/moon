@@ -23,7 +23,7 @@ class Collection : public DependencyObject {
  public:
 	class Node : public List::Node {
 	public:
-		DependencyObject *obj;
+		DependencyObject *obj, *parent;
 		
 		Node (DependencyObject *dob, DependencyObject *parent);
 		virtual ~Node ();

@@ -104,6 +104,12 @@ class XamlElementInstance : public List::Node {
 	}
 };
 
+void 
+unref_xaml_element (gpointer data, gpointer user_data)
+{
+	DependencyObject* dob = (DependencyObject*) data;
+	base_unref (dob);
+}
 
 class XamlParserInfo {
  public:
@@ -124,19 +130,29 @@ class XamlParserInfo {
 	ParserErrorEventArgs *error_args;
 
 	XamlLoader* loader;
+	GList* created_elements;
+
+	void AddCreatedElement (DependencyObject* element)
+	{
+		created_elements = g_list_prepend (created_elements, element);
+	}
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
 	  
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
 		char_data_buffer (NULL), implicit_default_namespace (false), error_args (NULL),
-		loader (NULL)
+		loader (NULL), created_elements (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
 	}
 
 	~XamlParserInfo ()
 	{
+		created_elements = g_list_reverse (created_elements);
+		g_list_foreach (created_elements, unref_xaml_element, NULL);
+		g_list_free (created_elements);
+		
 		if (char_data_buffer)
 			g_string_free (char_data_buffer, TRUE);
 		if (top_element)
@@ -743,9 +759,12 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
-		if (!p->loader)
+		if (!p->loader) {
+			printf ("No loader.\n");
+			print_stack_trace ();
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
 					g_strdup_printf ("No custom element callback installed to handle %s", uri));
+	}
 
 		CustomNamespace *c = new CustomNamespace (g_strdup (uri));
 		g_hash_table_insert (p->namespace_map, c->xmlns, c);
@@ -861,6 +880,8 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 			*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
+		
+		res->ref ();
 	}
 
  cleanup_and_return:
@@ -934,6 +955,8 @@ xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescop
 			*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
+		
+		res->ref ();
 	}
 
  cleanup_and_return:
@@ -1224,6 +1247,7 @@ geometry_from_str (const char *str)
 	PathGeometry *pg = new PathGeometry ();
 	PathFigureCollection *pfc = new PathFigureCollection ();
 	pg->SetValue (PathGeometry::FiguresProperty, pfc);
+	pfc->unref ();
 
 	geometry_set_fill_rule (pg, FillRuleEvenOdd);
 
@@ -1245,12 +1269,15 @@ geometry_from_str (const char *str)
 			get_point (&cp1, &data);
 			if (relative) make_relative (&cp, &cp1);
 
-			if (pf)
+			if (pf) {
 				pfc->Add (pf);
+				pf->unref ();
+			}
 
 			pf = new PathFigure ();
 			psc = new PathSegmentCollection ();
 			pf->SetValue (PathFigure::SegmentsProperty, psc);
+			psc->unref ();
 
 			pf->SetValue (PathFigure::StartPointProperty, Value (cp1));
 
@@ -1268,6 +1295,7 @@ geometry_from_str (const char *str)
 				ls->SetValue (LineSegment::PointProperty, Value (cp1));
 
 				psc->Add (ls);
+				ls->unref ();
 				prev = ls;
 			}
 
@@ -1299,6 +1327,7 @@ geometry_from_str (const char *str)
 				pls->SetValue (PolyLineSegment::PointsProperty, Value (pts, count));
 
 				psc->Add (pls);
+				pls->unref ();
 				prev = pls;
 
 				cp.x = last.x;
@@ -1310,6 +1339,7 @@ geometry_from_str (const char *str)
 				ls->SetValue (LineSegment::PointProperty, Value (cp1));
 
 				psc->Add (ls);
+				ls->unref ();
 				prev = ls;
 
 				cp.x = cp1.x;
@@ -1335,6 +1365,7 @@ geometry_from_str (const char *str)
 			ls->SetValue (LineSegment::PointProperty, Value (cp));
 
 			psc->Add (ls);
+			ls->unref ();
 			prev = ls;
 
 			break;
@@ -1355,6 +1386,7 @@ geometry_from_str (const char *str)
 			ls->SetValue (LineSegment::PointProperty, Value (cp));
 
 			psc->Add (ls);
+			ls->unref ();
 			prev = ls;
 
 			break;
@@ -1391,6 +1423,7 @@ geometry_from_str (const char *str)
 				pbs->SetValue (PolyBezierSegment::PointsProperty, Value (pts, count));
 
 				psc->Add (pbs);
+				pbs->unref ();
 				prev = pbs;
 
 				cp.x = last.x;
@@ -1404,6 +1437,7 @@ geometry_from_str (const char *str)
 				bs->SetValue (BezierSegment::Point3Property, Value (cp3));
 
 				psc->Add (bs);
+				bs->unref ();
 				prev = bs;
 
 				cp.x = cp3.x;
@@ -1449,6 +1483,7 @@ geometry_from_str (const char *str)
 				pbs->SetValue (PolyBezierSegment::PointsProperty, Value (pts, count));
 
 				psc->Add (pbs);
+				pbs->unref ();
 				prev = pbs;
 
 				cp.x = last.x;
@@ -1462,6 +1497,7 @@ geometry_from_str (const char *str)
 				bs->SetValue (BezierSegment::Point3Property, Value (cp3));
 
 				psc->Add (bs);
+				bs->unref ();
 				prev = bs;
 
 				cp.x = cp3.x;
@@ -1496,6 +1532,7 @@ geometry_from_str (const char *str)
 				pqbs->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (pts, count));
 
 				psc->Add (pqbs);
+				pqbs->unref ();
 				prev = pqbs;
 
 				cp.x = last.x;
@@ -1508,6 +1545,7 @@ geometry_from_str (const char *str)
 				qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
 
 				psc->Add (qbs);
+				qbs->unref ();
 				prev = qbs;
 
 				cp.x = cp2.x;
@@ -1546,6 +1584,7 @@ geometry_from_str (const char *str)
 				pqbs->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (pts, count));
 
 				psc->Add (pqbs);
+				pqbs->unref ();
 				prev = pqbs;
 
 				cp.x = last.x;
@@ -1558,6 +1597,7 @@ geometry_from_str (const char *str)
 				qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
 
 				psc->Add (qbs);
+				qbs->unref ();
 				prev = qbs;
 
 				cp.x = cp2.x;
@@ -1595,6 +1635,7 @@ geometry_from_str (const char *str)
 				arc->SetValue (ArcSegment::PointProperty, cp2);
 
 				psc->Add (arc);
+				arc->unref ();
 				prev = arc;
 					
 				cp.x = cp2.x;
@@ -1619,8 +1660,10 @@ geometry_from_str (const char *str)
 		}
 	}
 
-	if (pf)
+	if (pf) {
 		pfc->Add (pf);
+		pf->unref ();
+	}
 	
 	return pg;
 }
@@ -1856,8 +1899,10 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 		}
 	}
 
-	if (!inst->item)
+	if (!inst->item) {
 		inst->item = i->create_item ();
+		p->AddCreatedElement (inst->item);
+	}
 
 	return inst;
 }
@@ -1889,7 +1934,6 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		Value *col_v = obj->GetValue (dep);
 		Collection *col = (Collection *) col_v->AsCollection ();
 		col->Add ((DependencyObject*)child->item);
-		child->item->unref ();
 		return;
 	}
 
@@ -2046,7 +2090,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		obj->SetValue (prop, Value (keytime_from_str (value)));
 		break;
 	case Type::KEYSPLINE:
-		obj->SetValue (prop, Value (key_spline_from_str (value)));
+		obj->SetValue (prop, Value::CreateUnref (key_spline_from_str (value)));
 		break;
 	case Type::BRUSH:
 	case Type::SOLIDCOLORBRUSH:
@@ -2057,6 +2101,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		solid_color_brush_set_color (scb, c); // copies c
 		delete c;
 		obj->SetValue (prop, Value (scb));
+		scb->unref ();
 		break;
 	}
 	case Type::POINT:
@@ -2096,7 +2141,9 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		break;
 	case Type::GEOMETRY:
 	{
-		obj->SetValue (prop, geometry_from_str (value));
+		Geometry* geometry = geometry_from_str (value);
+		obj->SetValue (prop, geometry);
+		geometry->unref ();
 		break;
 	}
 	default:
@@ -2269,7 +2316,7 @@ start_parse:
 				dep->SetValue (prop, Value (keytime_from_str (attr [i + 1])));
 				break;
 			case Type::KEYSPLINE:
-				dep->SetValue (prop, Value (key_spline_from_str (attr [i + 1])));
+				dep->SetValue (prop, Value::CreateUnref (key_spline_from_str (attr [i + 1])));
 				break;
 			case Type::BRUSH:
 			case Type::SOLIDCOLORBRUSH:
@@ -2280,6 +2327,7 @@ start_parse:
 				solid_color_brush_set_color (scb, c); // copies c
 				delete c;
 				dep->SetValue (prop, Value (scb));
+				scb->unref ();
 			}
 				break;
 			case Type::POINT:
@@ -2317,7 +2365,9 @@ start_parse:
 				break;
 			case Type::GEOMETRY:
 			{
-				dep->SetValue (prop, geometry_from_str (attr [i + 1]));
+				Geometry* geometry = geometry_from_str (attr [i + 1]);
+				dep->SetValue (prop, geometry);
+				geometry->unref ();
 			}
 				break;
 			default:

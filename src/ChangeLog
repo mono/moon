@@ -1,3 +1,37 @@
+2007-09-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* panel.cpp: Add a null check.
+	* xaml.cpp: Created a list that contains most created elements in order to
+	  unref them once parsing is finished (we need to unref all created
+	  elements except the top one, but the parser callback functions don't
+	  know which is the top one, so we delay the unrefing until the end). If
+	  parsing is done manually (*_from_str, etc), just use unref.
+	* text.h, text.cpp: Add text_destroy to properly destroy the default
+	  foreground brush on shutdown.
+	* clock.cpp: When we allocate a clock, unref it after adding it to the
+	  group.
+	* collection.h: Store the parent in the Node, since we can't call
+	  obj->GetParent () in a destructor (it will walk up the hierarchy using
+	  the type system, but since the parent can be in the destructor, the type
+	  system isn't reliable anymore).
+	* mango.h, mango.cpp: MangoAttrForeground: hold a reference to the
+	  foreground brush, not to the element. Add a mango_renderer_get_type_safe
+	  that can reinitialize static variables (after a libmoon reload) from
+	  glib.
+	* geometry.cpp, transform.cpp, brush.cpp: Use Value::CreateUnref for default
+	  values.
+	* collection.cpp: Store the parent in the Node, since we can't call
+	  obj->GetParent () in a destructor (it will walk up the hierarchy using
+	  the type system, but since the parent can be in the destructor itself,
+	  the type system isn't reliable anymore).
+	* dependencyobject.cpp: Attachee: don't hold a ref to the container anymore.
+	* media.cpp: Sprinkle a few unrefs here and there.
+	* animation.cpp: Don't ref root_clock, CreateClock already gives us a ref.
+	  Add a null check in the Storyboard destructor. Use Value::CreateUnref
+	  for default values.
+	* runtime.cpp: Attach: Don't attach a null element. Call text_destroy on
+	  shutdown.
+
 2007-09-18  Jeffrey Stedfast  <fejj@gnome.org>
 
 	Continued fixes to go along with Rolf's other TextBlock leak

@@ -115,7 +115,6 @@ DependencyObject::Attach (DependencyProperty *property, DependencyObject *contai
 {
 	Attachee *att = new Attachee ();
 	att->dob = container;
-	base_ref (att->dob);
 	att->prop = property;
 	attached_list = g_slist_append (attached_list, att);
 }
@@ -128,7 +127,6 @@ DependencyObject::Detach (DependencyProperty *property, DependencyObject *contai
 
 		if (att->dob == container && att->prop == property) {
 			attached_list = g_slist_remove_link (attached_list, l);
-			base_unref (att->dob);
 			delete att;
 			break;
 		}
@@ -350,7 +348,6 @@ DependencyObject::GetObjectType ()
 void free_attachee (gpointer data, gpointer user_data)
 {
 	Attachee* att = (Attachee*) data;
-	base_unref (att->dob);
 	delete att;
 }
 

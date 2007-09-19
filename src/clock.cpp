@@ -835,8 +835,11 @@ TimelineGroup::CreateClock ()
 	Collection::Node *node;
 	
 	node = (Collection::Node *) collection->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next)
-		group->AddChild (((Timeline *) node->obj)->AllocateClock ());
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
+		Clock* clock = ((Timeline *) node->obj)->AllocateClock ();
+		group->AddChild (clock);
+		clock->unref ();
+	}
 	
 	return group;
 }

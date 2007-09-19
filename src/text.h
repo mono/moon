@@ -68,7 +68,7 @@ enum TextWrapping {
 
 
 void text_init (void);
-
+void text_destroy (void);
 
 class Inline : public DependencyObject {
  public:

@@ -69,11 +69,16 @@ struct MoonlightObject : public NPObject
 	{
 		this->instance = instance;
 		this->moonlight_type = Type::INVALID;
+		this->disposed = false;
 	}
+	virtual void Dispose ();
+	virtual ~MoonlightObject ();
 
 	NPP instance;
 	Type::Kind moonlight_type;
+	bool disposed;
 };
+static void _invalidate (NPObject *npobj);
 
 /*** MoonlightEventListenerObject ******************************************************/
 struct MoonlightEventListenerType : MoonlightObjectType {
@@ -178,6 +183,7 @@ struct MoonlightMouseEventArgsObject : MoonlightObject {
 	MoonlightMouseEventArgsObject (NPP instance)
 	  : MoonlightObject (instance), state (0), x (-1), y (-1) { }
 
+	virtual void Dispose ();
 	int state;
 	double x;
 	double y;
@@ -194,6 +200,7 @@ struct MoonlightKeyboardEventArgsObject : MoonlightObject {
 	MoonlightKeyboardEventArgsObject (NPP instance)
 	  : MoonlightObject (instance), state (0), key (0), platformcode (0) { }
 
+	virtual void Dispose ();
 	int state;
 	int key;
 	int platformcode;
@@ -223,6 +230,7 @@ struct MoonlightContentObject : MoonlightObject {
 	{
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
+	virtual void Dispose ();
 
 	GHashTable *registered_scriptable_objects;
 
@@ -246,6 +254,7 @@ struct MoonlightScriptControlObject : public MoonlightObject {
 		settings = NPN_CreateObject (instance, MoonlightSettingsClass);
 	}
 
+	virtual void Dispose ();
 	NPObject *content;
 	NPObject *settings;
 };
@@ -264,12 +273,17 @@ struct MoonlightEventObjectObject : public MoonlightObject
 		moonlight_type = Type::EVENTOBJECT;
 	}
 
-	void SetEventObject (EventObject *eo)
+	void SetEventObject (EventObject *eventobject)
 	{
-		this->eo = eo;
+		if (eo)
+			eo->unref ();
+
+		eo = eventobject;
 		if (eo)
 			eo->ref ();
 	}
+
+	virtual void Dispose ();
 
 	EventObject *eo;
 };
@@ -299,6 +313,7 @@ struct MoonlightDependencyObjectObject : public MoonlightEventObjectObject
 		g_assert (eo->GetObjectType () >= Type::DEPENDENCY_OBJECT);
 		return (DependencyObject*) eo;
 	}
+	virtual void Dispose ();
 };
 
 extern MoonlightDependencyObjectObject* DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj);
@@ -400,6 +415,7 @@ struct MoonlightScriptableObjectObject : public MoonlightObject
 		methods = g_hash_table_new (g_direct_hash, g_direct_equal);
 		events = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
+	virtual void Dispose ();
 
 	gpointer managed_scriptable;
 	GHashTable *properties;

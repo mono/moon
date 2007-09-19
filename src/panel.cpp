@@ -69,7 +69,8 @@ Panel::~Panel ()
 	}
 
 	VisualCollection *children = GetChildren ();
-	children->Clear();
+	if (children)
+		children->Clear();
 }
 
 #define DEBUG_BOUNDS 0

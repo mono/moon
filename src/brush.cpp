@@ -257,7 +257,7 @@ gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method)
 
 GradientBrush::GradientBrush ()
 {
-	this->SetValue (GradientBrush::GradientStopsProperty, Value (new GradientStopCollection ()));
+	this->SetValue (GradientBrush::GradientStopsProperty, Value::CreateUnref (new GradientStopCollection ()));
 }
 
 GradientBrush::~GradientBrush ()

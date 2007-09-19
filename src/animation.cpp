@@ -194,7 +194,6 @@ Storyboard::Begin ()
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
 	root_clock = CreateClock ();
-	root_clock->ref ();
 	root_clock->AddHandler (root_clock->CompletedEvent, invoke_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
@@ -301,11 +300,13 @@ Storyboard::GetTargetName (DependencyObject *o)
 
 Storyboard::~Storyboard ()
 {
-	printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
-	Stop ();
-	TimeManager::Instance()->RemoveChild (root_clock);
-	printf ("Unrefing Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
-	root_clock->unref ();
+	if (root_clock) {
+		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
+		Stop ();
+		TimeManager::Instance()->RemoveChild (root_clock);
+		//printf ("Unrefing Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
+		root_clock->unref ();
+	}
 }
 
 DependencyProperty* BeginStoryboard::StoryboardProperty;
@@ -1176,7 +1177,7 @@ DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
 {
-	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (new DoubleKeyFrameCollection ()));
+	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new DoubleKeyFrameCollection ()));
 }
 
 DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()

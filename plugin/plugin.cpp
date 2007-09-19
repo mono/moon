@@ -777,7 +777,7 @@ PluginXamlLoader::HookupEvent (void* target, const char* name, const char* value
 		return;
 	}		
 #endif
-	printf ("PluginXamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
+	//printf ("PluginXamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
 	event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);
 }
 

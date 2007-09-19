@@ -217,7 +217,9 @@ MediaElement::MediaElement ()
 	MediaFailedEvent = RegisterEvent ("MediaFailed");
 	MediaOpenedEvent = RegisterEvent ("MediaOpened");
 	
-	media_element_set_markers (this, new TimelineMarkerCollection ());
+	TimelineMarkerCollection* col = new TimelineMarkerCollection ();
+	media_element_set_markers (this, col);
+	col->unref ();
 }
 
 void
@@ -225,7 +227,7 @@ MediaElement::DownloaderAbort ()
 {
 	if (downloader) {
 		Value *value = downloader->GetValue (Downloader::UriProperty);
-		printf ("aborting downloader for %s\n", value ? value->AsString () : "(null)");
+		//printf ("aborting downloader for %s\n", value ? value->AsString () : "(null)");
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;
@@ -382,7 +384,7 @@ MediaElement::DownloaderComplete ()
 
 	source = MediaSource::CreateSource (this, media_base_get_source (this), filename);
 	
-	printf ("video source changed to `%s'\n", filename);
+	//printf ("video source changed to `%s'\n", filename);
 	g_free (filename);
 	
 	// FIXME: specify which audio stream index the player should use
@@ -400,7 +402,7 @@ MediaElement::DownloaderComplete ()
 		return;
 	}
 	
-	printf ("video succesfully opened\n");
+	//printf ("video succesfully opened\n");
 	
 	media_element_set_can_seek (this, mplayer->CanSeek ());
 	media_element_set_can_pause (this, mplayer->CanPause ());
@@ -415,7 +417,7 @@ MediaElement::DownloaderComplete ()
 	
 	Invalidate ();
 	
-	printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
+	//printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
 	
 	if (autoplay || play_pending)
 		Play ();
@@ -487,12 +489,12 @@ MediaElement::Pause ()
 void
 MediaElement::Play ()
 {
-	printf ("MediaElement::Play() requested\n");
+	//printf ("MediaElement::Play() requested\n");
 	
 	if (downloader && downloader->Completed () && timeout_id == 0 && !mplayer->IsPlaying ()) {
 		timeout_id = source->Play ();
 		media_element_set_current_state (this, "Playing");
-		printf ("video playing, timeout_id = %d\n", timeout_id);
+		//printf ("video playing, timeout_id = %d\n", timeout_id);
 		play_pending = false;
 	} else {
 		play_pending = true;
@@ -571,15 +573,15 @@ MediaElement::OnLoaded ()
 {
 	loaded = true;
 	
-	printf ("MediaElement::OnLoaded: ");
+	//printf ("MediaElement::OnLoaded: ");
 	
 	if (downloader && downloader->Completed ()) {
-		printf ("downloader is complete\n");
+		//printf ("downloader is complete\n");
 		DownloaderComplete ();
 	} else if (downloader) {
-		printf ("downloader not yet completed\n");
+		//printf ("downloader not yet completed\n");
 	} else {
-		printf ("no downloader set\n");
+		//printf ("no downloader set\n");
 	}
 	
 	MediaBase::OnLoaded ();
@@ -594,11 +596,12 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		if (uri && *uri) {
 			Downloader *dl = new Downloader ();
 			
-			printf ("setting media source to %s\n", uri);
+			//printf ("setting media source to %s\n", uri);
 			downloader_open (dl, "GET", uri);
 			SetSource (dl, "");
+			dl->unref ();
 		} else {
-			printf ("trying to set media source to empty\n");
+			//printf ("trying to set media source to empty\n");
 			DownloaderAbort ();
 		}
 		
@@ -611,7 +614,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		}
 	} else if (prop == MediaElement::AutoPlayProperty) {
 		// no state to change
-		printf ("AutoPlay set to %s\n", media_element_get_auto_play (this) ? "true" : "false");
+		//printf ("AutoPlay set to %s\n", media_element_get_auto_play (this) ? "true" : "false");
 	} else if (prop == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (media_element_get_balance (this));
 	} else if (prop == MediaElement::BufferingProgressProperty) {
@@ -1282,6 +1285,7 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 		Downloader *dl = new Downloader ();
 		downloader_open (dl, "GET", source);
 		SetSource (dl, "");
+		dl->unref ();
 	}
 
 	if (prop->type != Type::IMAGE) {

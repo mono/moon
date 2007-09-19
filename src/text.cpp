@@ -76,19 +76,20 @@ font_weight (FontWeights weight)
 }
 
 
+SolidColorBrush *default_foreground_brush = NULL;
+	
 static Brush *
 default_foreground (void)
 {
-	static SolidColorBrush *brush = NULL;
 	
-	if (!brush) {
-		brush = new SolidColorBrush ();
+	if (!default_foreground_brush) {
+		default_foreground_brush = new SolidColorBrush ();
 		Color *color = color_from_str ("black");
-		solid_color_brush_set_color (brush, color);
+		solid_color_brush_set_color (default_foreground_brush, color);
 		delete color;
 	}
 	
-	return (Brush *) brush;
+	return (Brush *) default_foreground_brush;
 }
 
 
@@ -648,6 +649,7 @@ TextBlock::Layout (cairo_t *cr)
 	mango_renderer_set_cairo_context (renderer, cr);
 	mango_renderer_layout_path (renderer, layout);
 	pango_layout_get_pixel_size (layout, &w, &h);
+	pango_attr_list_unref (attrs);
 	
 	if (clip && (h > clip_height))
 		text_block_set_actual_height (this, (double) clip_height);
@@ -1130,6 +1132,12 @@ glyphs_set_unicode_string (Glyphs *glyphs, char *value)
 	glyphs->SetValue (Glyphs::UnicodeStringProperty, Value (value));
 }
 
+void
+text_destroy (void)
+{
+	base_unref (default_foreground_brush);
+	default_foreground_brush = NULL;
+}
 
 
 void

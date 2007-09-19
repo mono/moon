@@ -1,3 +1,17 @@
+2007-09-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: Remove a printf.
+	* plugin-class.cpp, plugin-class.h: Apparently invalidate isn't always
+	  called for our MoonlightObjects (though deallocate is). Create a Dispose
+	  method that does what invalidate did (and call it from Invalidate), and
+	  keep track if it has been called or not (allows deallocate to call it if
+	  invalidate wasn't called by mozilla). Make Dispose virtual so that the
+	  base deallocator can call it for all derived classes (which also means
+	  that we only need the base invalidate method), and add a virtual
+	  destructor so that the base deallocator can also delete the object (and
+	  remove all other *_deallocator methods). proxy_listener_to_javascript:
+	  release objects at the end of the method.
+
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp, plugin.h, moonlight.cs: Move callbacks from PluginXamlLoader
