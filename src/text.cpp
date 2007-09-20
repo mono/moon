@@ -680,6 +680,9 @@ TextBlock::Paint (cairo_t *cr)
 void
 TextBlock::OnPropertyChanged (DependencyProperty *prop)
 {
+	bool recalc_actual = true;
+	bool invalidate = true;
+	
 	if (prop->type != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (prop);
 		return;
@@ -720,10 +723,20 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			foreground->Attach (NULL, this);
 			foreground->ref ();
 		}
+		
+		recalc_actual = false;
+	} else if (prop == TextBlock::ActualHeightProperty) {
+		recalc_actual = false;
+		invalidate = false;
+	} else if (prop == TextBlock::ActualWidthProperty) {
+		recalc_actual = false;
+		invalidate = false;
 	}
+		
 	
-	if (prop != TextBlock::ActualHeightProperty && prop != TextBlock::ActualWidthProperty) {
-		dirty_actual_values = true;
+	if (invalidate) {
+		if (recalc_actual)
+			dirty_actual_values = true;
 		UpdateBounds (true);
 		Invalidate ();
 	}
@@ -734,10 +747,9 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 void
 TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	if (prop == TextBlock::ForegroundProperty) {
-		dirty_actual_values = true;
+	if (prop == TextBlock::ForegroundProperty)
 		Invalidate ();
-	} else
+	else
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }
 

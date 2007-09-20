@@ -1,5 +1,9 @@
 2007-09-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (OnPropertyChanged): Don't dirty actual width/height on
+	foreground changes.
+	(OnSubPropertyChanged): Same.
+
 	* font.cpp (GetFont): No longer need to pass the size to
 	TextFont::Load().
 	(TextFont::Load): No longer needs the size argument.
