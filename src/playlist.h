@@ -1,5 +1,5 @@
 /*
- * playlist.h: 
+ * playlist.h:
  *
  * Author: Jb Evain <jbevain@novell.com>
  *
@@ -24,23 +24,67 @@ private:
 	char *abstract;
 	char *copyright;
 public:
-	PlaylistContent ();
-	~PlaylistContent ();
+	PlaylistContent () : base (NULL), title (NULL), author (NULL), abstract (NULL), copyright (NULL)
+	{
+	}
 
-	const char *GetBase ();
-	void SetBase (char *base);
+	~PlaylistContent ()
+	{
+		g_free (base);
+		g_free (title);
+		g_free (author);
+		g_free (abstract);
+	}
 
-	const char *GetTitle ();
-	void SetTitle (char *title);
+	const char *GetBase ()
+	{
+		return base;
+	}
 
-	const char *GetAuthor ();
-	void SetAuthor (char *author);
+	void SetBase (char *base)
+	{
+		this->base = base;
+	}
 
-	const char *GetAbstract ();
-	void SetAbstract (char *abstract);
+	const char *GetTitle ()
+	{
+		return title;
+	}
 
-	const char *GetCopyright ();
-	void SetCopyright (char *copyright);
+	void SetTitle (char *title)
+	{
+		this->title = title;
+	}
+
+	const char *GetAuthor ()
+	{
+		return author;
+	}
+
+	void SetAuthor (char *author)
+	{
+		this->author = author;
+	}
+
+	const char *GetAbstract ()
+	{
+		return abstract;
+	}
+
+	void SetAbstract (char *abstract)
+	{
+		this->abstract = abstract;
+	}
+
+	const char *GetCopyright ()
+	{
+		return copyright;
+	}
+
+	void SetCopyright (char *copyright)
+	{
+		this->copyright = copyright;
+	}
 };
 
 class PlaylistEntry : public List::Node, public PlaylistContent {
@@ -50,20 +94,55 @@ private:
 	gint64 duration;
 	MediaSource *source;
 public:
-	PlaylistEntry ();
-	~PlaylistEntry ();
+	PlaylistEntry () : source_name (NULL), start_time (0), duration (0), source (NULL)
+	{
+	}
 
-	const char *GetSourceName ();
-	void SetSourceName (char *file);
+	~PlaylistEntry ()
+	{
+		delete source;
+		g_free (source_name);
+	}
 
-	gint64 GetStartTime ();
-	void SetStartTime (gint64 start_time);
+	const char *GetSourceName ()
+	{
+		return source_name;
+	}
 
-	gint64 GetDuration ();
-	void SetDuration (gint64 duration);
+	void SetSourceName (char *source_name)
+	{
+		this->source_name = source_name;
+	}
 
-	MediaSource *GetSource ();
-	void SetSource (MediaSource *source);
+	gint64 GetStartTime ()
+	{
+		return start_time;
+	}
+
+	void SetStartTime (gint64 start_time)
+	{
+		this->start_time = start_time;
+	}
+
+	gint64 GetDuration ()
+	{
+		return duration;
+	}
+
+	void SetDuration (gint64 duration)
+	{
+		this->duration = duration;
+	}
+
+	MediaSource *GetSource ()
+	{
+		return source;
+	}
+
+	void SetSource (MediaSource *source)
+	{
+		this->source = source;
+	}
 };
 
 class Playlist : public MediaSource, public PlaylistContent {
@@ -121,7 +200,7 @@ private:
 	class KindNode : public List::Node {
 	public:
 		PlaylistNodeKind kind;
-		
+
 		KindNode (PlaylistNodeKind kind)
 		{
 			this->kind = kind;
