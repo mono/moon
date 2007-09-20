@@ -67,15 +67,22 @@ int
 Type::LookupEvent (const char *event_name)
 {
 	gpointer key, value;
-	if (!g_hash_table_lookup_extended (event_name_hash,
-					   event_name,
-					   &key,
-					   &value)) {
+	if (event_name_hash &&
+	    g_hash_table_lookup_extended (event_name_hash,
+					  event_name,
+					  &key,
+					  &value)) {
+
+		return GPOINTER_TO_INT (value) + GetEventBase();
+	}
+	
+	if (parent == Type::INVALID) {
 		printf ("type lookup of event '%s' failed\n", event_name);
 		return -1;
 	}
-
-	return GPOINTER_TO_INT (value) + GetEventBase();
+	else {
+		return Type::Find (parent)->LookupEvent (event_name);
+	}
 }
 
 int

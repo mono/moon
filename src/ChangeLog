@@ -1,3 +1,8 @@
+2007-09-20  Chris Toshok  <toshok@ximian.com>
+
+	* type.cpp.in, type.cpp (LookupEvent): fix this to check in parent
+	type event hashes as well if we don't find it in ours.
+
 2007-09-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Implemented MappingMode for LinearGradientBrush.
