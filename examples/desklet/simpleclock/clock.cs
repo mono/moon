@@ -74,7 +74,7 @@ namespace Clock {
 			
 			if (ampm != null) {
 				if (use24h)
-					ampm.Visibility = Visibility.Hidden;
+					ampm.Visibility = Visibility.Collapsed;
 				else
 					isAm = ampm.Text.ToLower () == "am";
 			}

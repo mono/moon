@@ -1,3 +1,7 @@
+2007-09-20  Zoltan Varga  <vargaz@gmail.com>
+
+	* clock.cs: Use Visibility.Collapsed instead of Hidden.
+
 2007-06-29  Everaldo Canuto  <ecanuto@novell.com>
 
 	* default.xaml: Fix main rectangle size to better look.
