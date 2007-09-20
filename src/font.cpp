@@ -139,12 +139,12 @@ TextFont::TextFont (FcPattern *pattern, double size)
 	//double size;
 	int id;
 	
-	FcPatternReference (pattern);
-	matched = pattern;
+	//FcPatternReference (pattern);
+	//matched = pattern;
 	
 	//FcPatternGetDouble (matched, FC_PIXEL_SIZE, 0, &size);
 	
-	//matched = FcFontMatch (NULL, pattern, &result);
+	matched = FcFontMatch (NULL, pattern, &result);
 	
 retry:
 	
@@ -235,13 +235,13 @@ TextFont::EmSize ()
 int
 TextFont::Ascender ()
 {
-	return face->ascender / 64;
+	return face->ascender / 128;
 }
 
 int
 TextFont::Height ()
 {
-	return face->height / 64;
+	return face->height / 128;
 }
 
 const GlyphInfo *
@@ -924,9 +924,9 @@ TextLayout::Layout ()
 {
 	const GlyphInfo *glyph;
 	TextSegment *segment;
-	int lw, lh, myb;
 	TextLine *line;
 	TextRun *run;
+	int lw, lh;
 	Space spc;
 	int i;
 	
@@ -936,7 +936,6 @@ TextLayout::Layout ()
 	lines->Clear (true);
 	lh = height = 0;
 	lw = width = 0;
-	myb = 0;
 	
 	if (!runs || runs->IsEmpty () || max_width == 0 || max_height == 0)
 		return;
@@ -948,6 +947,7 @@ TextLayout::Layout ()
 		if (run->text == NULL /* LineBreak */) {
 			lines->Append (line);
 			line->height = lh;
+			height += lh;
 			
 			width = MAX (width, lw);
 			
@@ -969,8 +969,6 @@ TextLayout::Layout ()
 		for (i = 0; run->text[i]; i++) {
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
 				continue;
-			
-			myb = MAX (myb, glyph->metrics.horiBearingY);
 			
 			if (g_unichar_isspace (run->text[i])) {
 				spc.index = i;
@@ -1007,9 +1005,9 @@ TextLayout::Layout ()
 			
 			lines->Append (line);
 			line->height = lh;
+			height += lh;
 			
 			width = MAX (width, lw);
-			height += lh;
 			
 			// create a new line
 			line = new TextLine ();
@@ -1022,6 +1020,9 @@ TextLayout::Layout ()
 		
 		width = MAX (width, lw);
 		
+		// FIXME: maybe we should keep going anyway? then, if
+		// max_height gets changed later, we don't have to
+		// recalc the layout, we can simply change the clip.
 		if (max_height > 0 && height > max_height)
 			break;
 	}
@@ -1031,12 +1032,6 @@ TextLayout::Layout ()
 		line->height = lh;
 		height += lh;
 	}
-	
-	if (lh > 0)
-		height += (lh - myb);
-	
-	height++;
-	width++;
 	
 	printf ("layout extents are %d, %d\n", width, height);
 }
