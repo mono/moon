@@ -110,11 +110,11 @@ Animation/*Timeline*/::GetNaturalDurationCore (Clock* clock)
 
 DependencyProperty* Storyboard::TargetNameProperty;
 DependencyProperty* Storyboard::TargetPropertyProperty;
+int                 Storyboard::CompletedEvent = -1;
 
 Storyboard::Storyboard ()
   : root_clock (NULL)
 {
-	CompletedEvent = RegisterEvent ("Completed");
 }
 
 void
@@ -1600,6 +1600,9 @@ animation_init (void)
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
 	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::DOUBLEKEYFRAME_COLLECTION);
 	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::POINTKEYFRAME_COLLECTION);
+
+	/* lookup events */
+	Storyboard::CompletedEvent = Type::Find(Type::STORYBOARD)->LookupEvent ("Completed");
 }
 
 void

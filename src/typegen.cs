@@ -275,6 +275,7 @@ class gen {
 			}	
 		}
 		text.AppendLine ("\ttypes_init_manually ();");
+		text.AppendLine ("\ttypes_init_register_events ();");
 		text.AppendLine ("}");
 		File.WriteAllText ("type.cpp", text.ToString ());
 	}

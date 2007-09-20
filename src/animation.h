@@ -539,7 +539,7 @@ class Storyboard : public ParallelTimeline {
 	static char* GetTargetProperty (DependencyObject *o);
 
 	// events you can AddHandler to
-	int CompletedEvent;
+	static int CompletedEvent;
 
  private:
 	void HookupAnimationsRecurse (Clock *clock);

@@ -64,6 +64,8 @@ get_now (void)
 
 
 TimeManager* TimeManager::_instance = NULL;
+int TimeManager::UpdateInputEvent = -1;
+int TimeManager::RenderEvent = -1;
 
 TimeManager::TimeManager ()
   : child_clocks (NULL),
@@ -75,9 +77,6 @@ TimeManager::TimeManager ()
 	start_time = get_now ();
 
 	tick_call_mutex = g_mutex_new ();
-
-	UpdateInputEvent = RegisterEvent ("update-input");
-	RenderEvent = RegisterEvent ("render");
 }
 
 void
@@ -255,6 +254,10 @@ TimeManager::RemoveChild (Clock *child)
 
 
 
+int Clock::CurrentTimeInvalidatedEvent = -1;
+int Clock::CurrentStateInvalidatedEvent = -1;
+int Clock::CurrentGlobalSpeedInvalidatedEvent = -1;
+int Clock::CompletedEvent = -1;
 
 
 Clock::Clock (Timeline *tl)
@@ -271,11 +274,6 @@ Clock::Clock (Timeline *tl)
     queued_events (0),
     is_reversed (false)
 {
-	CurrentTimeInvalidatedEvent = RegisterEvent ("CurrentTimeInvalidated");
-	CurrentStateInvalidatedEvent = RegisterEvent ("CurrentStateInvalidated");
-	CurrentGlobalSpeedInvalidatedEvent = RegisterEvent ("CurrentGlobalSpeedInvalidated");
-	CompletedEvent = RegisterEvent ("Completed");
-
 	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
 		// remaining_iterations is an int.. GetCount returns a double.  badness?
@@ -954,4 +952,16 @@ clock_init (void)
 	TimelineMarker::TextProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Text", Type::STRING);
 	TimelineMarker::TimeProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Time", Type::TIMESPAN);
 	TimelineMarker::TypeProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Type", Type::STRING);
+
+	/* lookup events */
+
+	Type *t = Type::Find (Type::TIMEMANAGER);
+	TimeManager::UpdateInputEvent = t->LookupEvent ("update-input");
+	TimeManager::RenderEvent = t->LookupEvent ("render");
+
+	t = Type::Find (Type::CLOCK);
+	Clock::CurrentTimeInvalidatedEvent = t->LookupEvent ("CurrentTimeInvalidated");
+	Clock::CurrentStateInvalidatedEvent = t->LookupEvent ("CurrentStateInvalidated");
+	Clock::CurrentGlobalSpeedInvalidatedEvent = t->LookupEvent ("CurrentGlobalSpeedInvalidated");
+	Clock::CompletedEvent = t->LookupEvent ("Completed");
 }

@@ -114,7 +114,7 @@ class Image : public MediaBase {
 
 	static GHashTable *surface_cache;
 
-	int ImageFailedEvent;
+	static int ImageFailedEvent;
 };
 
 Image *image_new (void);
@@ -226,13 +226,13 @@ public:
 			 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */);
 	}
 	
-	int BufferingProgressChangedEvent;
-	int CurrentStateChangedEvent;
-	int DownloadProgressChangedEvent;
-	int MarkerReachedEvent;
-	int MediaEndedEvent;
-	int MediaFailedEvent;
-	int MediaOpenedEvent;
+	static int BufferingProgressChangedEvent;
+	static int CurrentStateChangedEvent;
+	static int DownloadProgressChangedEvent;
+	static int MarkerReachedEvent;
+	static int MediaEndedEvent;
+	static int MediaFailedEvent;
+	static int MediaOpenedEvent;
 };
 
 MediaElement *media_element_new (void);

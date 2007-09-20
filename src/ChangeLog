@@ -1,3 +1,38 @@
+2007-09-20  Chris Toshok  <toshok@ximian.com>
+
+	* typegen.cs (GenerateTypeCpp): add a call to
+	types_init_register_events.
+
+	* type.h.in, type.cpp.in: add Type::RegisterEvent,
+	Type::LookupEvent, Type::GetEventCount, and Type::GetEventBase.
+
+	* type.cpp.in: add types_init_register_events, which registers all
+	the events we care about for all the types.  we do it here to
+	guarantee that events have been registered by the time any
+	instance code is run for any type.
+	
+	* dependencyobject.h, dependencyobject.cpp: remove the event
+	registration from EventObject, it's moving to Type.  so the Type
+	will contain the name to id hash, and the EventObject will only
+	contain an array of GSLists, where the index into that array is
+	the event's id.
+	
+	* clock.cpp (clock_init): lookup the static events here.
+
+	* runtime.cpp (runtime_init): same.
+
+	* animation.cpp (animation_init): same.
+
+	* downloader.cpp (downloader_init): same.
+
+	* uielement.cpp (uielement_init): same.
+
+	* src/clock.h, src/uielement.h, src/media.h, src/animation.h,
+	src/type.h, src/runtime.h, src/downloader.h: events are static to
+	the classes now, instead of being per-instance.
+
+	* src/types.h src/types.cpp: regen.
+	
 2007-09-20  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Avoid re-allocating path memory when possible.

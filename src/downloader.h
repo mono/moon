@@ -51,9 +51,9 @@ class Downloader : public DependencyObject {
 	static DependencyProperty *UriProperty;
 
 	// Events you can AddHandler to
-	int CompletedEvent;
-	int DownloadProgressChangedEvent;
-	int DownloadFailedEvent;
+	static int CompletedEvent;
+	static int DownloadProgressChangedEvent;
+	static int DownloadFailedEvent;
 
 
 

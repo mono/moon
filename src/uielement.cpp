@@ -23,6 +23,16 @@
 
 #define SHOW_BOUNDING_BOXES 0
 
+int UIElement::LoadedEvent = -1;
+int UIElement::MotionEvent = -1;
+int UIElement::ButtonPressEvent = -1;
+int UIElement::ButtonReleaseEvent = -1;
+int UIElement::KeyDownEvent = -1;
+int UIElement::KeyUpEvent = -1;
+int UIElement::EnterEvent = -1;
+int UIElement::LeaveEvent = -1;
+int UIElement::InvalidatedEvent = -1;
+
 void
 UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 {
@@ -40,16 +50,6 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 
 UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE)
 {
-	LoadedEvent = RegisterEvent ("Loaded");
-	MotionEvent = RegisterEvent ("MouseMove");
-	ButtonPressEvent = RegisterEvent ("MouseLeftButtonDown");
-	ButtonReleaseEvent = RegisterEvent ("MouseLeftButtonUp");
-	KeyDownEvent = RegisterEvent ("KeyDown");
-	KeyUpEvent = RegisterEvent ("KeyUp");
-	EnterEvent = RegisterEvent ("MouseEnter");
-	LeaveEvent = RegisterEvent ("MouseLeave");
-	InvalidatedEvent = RegisterEvent("Invalidated");
-
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 
@@ -531,6 +531,18 @@ uielement_init (void)
 	UIElement::TriggersProperty = DependencyObject::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
+
+	/* lookup events */
+	Type* t = Type::Find (Type::UIELEMENT);
+	UIElement::LoadedEvent = t->LookupEvent ("Loaded");
+	UIElement::MotionEvent = t->LookupEvent ("MouseMove");
+	UIElement::ButtonPressEvent = t->LookupEvent ("MouseLeftButtonDown");
+	UIElement::ButtonReleaseEvent = t->LookupEvent ("MouseLeftButtonUp");
+	UIElement::KeyDownEvent = t->LookupEvent ("KeyDown");
+	UIElement::KeyUpEvent = t->LookupEvent ("KeyUp");
+	UIElement::EnterEvent = t->LookupEvent ("MouseEnter");
+	UIElement::LeaveEvent = t->LookupEvent ("MouseLeave");
+	UIElement::InvalidatedEvent = t->LookupEvent("Invalidated");
 }
 
 UIElement*

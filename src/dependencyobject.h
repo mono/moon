@@ -96,15 +96,13 @@ class EventObject : public Base {
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
-	
+
  protected:
-	int  RegisterEvent (const char *event_name);
 	void Emit (char *event_name, gpointer calldata = NULL);
 	void Emit (int event_id, gpointer calldata = NULL);
 
  private:
-	GHashTable *event_name_hash;
-	GPtrArray *events;
+	GSList **events;
 };
 
 
@@ -229,7 +227,6 @@ void dependencyobject_init (void);
 
 void event_object_add_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure);
 void event_object_remove_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure);
-
 
 G_END_DECLS
 

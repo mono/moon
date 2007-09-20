@@ -49,6 +49,9 @@
 #define TIME_CLIP 0
 #define TIME_REDRAW 1
 
+int Surface::ResizeEvent = -1;
+int Surface::FullScreenChangeEvent = -1;
+
 void
 Surface::CreateSimilarSurface ()
 {
@@ -83,7 +86,6 @@ Surface::Surface(int w, int h)
     drawing_area_normal (NULL),
     drawing_area_fullscreen (NULL)
 {
-
 	drawing_area = gtk_event_box_new ();
 
 	InitializeDrawingArea (drawing_area);
@@ -96,9 +98,6 @@ Surface::Surface(int w, int h)
 
 	toplevel = NULL;
 	capture_element = NULL;
-
-	ResizeEvent = RegisterEvent ("Resize");
-	FullScreenChangeEvent = RegisterEvent ("FullScreenChange");
 
 	Realloc ();
 	
@@ -1052,8 +1051,6 @@ runtime_init (void)
 		g_type_init ();
 	}
 
-	TimeManager::Instance()->Start();
-
 	types_init ();
 	namescope_init ();
 	uielement_init ();
@@ -1074,6 +1071,13 @@ runtime_init (void)
 	media_init ();
 	panel_init ();
 	stylus_init ();
+
+	/* lookup surface events */
+	Type *t = Type::Find (Type::SURFACE);
+	Surface::ResizeEvent = t->LookupEvent ("Resize");
+	Surface::FullScreenChangeEvent = t->LookupEvent ("FullScreenChange");
+
+	TimeManager::Instance()->Start();
 }
 
 //

@@ -160,6 +160,14 @@ DependencyProperty *MediaElement::NaturalVideoWidthProperty;
 DependencyProperty *MediaElement::PositionProperty;
 DependencyProperty *MediaElement::VolumeProperty;
 
+int MediaElement::BufferingProgressChangedEvent = -1;
+int MediaElement::CurrentStateChangedEvent = -1;
+int MediaElement::DownloadProgressChangedEvent = -1;
+int MediaElement::MarkerReachedEvent = -1;
+int MediaElement::MediaEndedEvent = -1;
+int MediaElement::MediaFailedEvent = -1;
+int MediaElement::MediaOpenedEvent = -1;
+
 
 bool
 MediaElement::AdvanceFrame ()
@@ -208,15 +216,7 @@ MediaElement::MediaElement ()
 	downloader = NULL;
 	part_name = NULL;
 	source = NULL;
-	
-	BufferingProgressChangedEvent = RegisterEvent ("BufferingProgressChanged");
-	CurrentStateChangedEvent = RegisterEvent ("CurrentStateChanged");
-	DownloadProgressChangedEvent = RegisterEvent ("DownloadProgressChanged");
-	MarkerReachedEvent = RegisterEvent ("MarkerReached");
-	MediaEndedEvent = RegisterEvent ("MediaEnded");
-	MediaFailedEvent = RegisterEvent ("MediaFailed");
-	MediaOpenedEvent = RegisterEvent ("MediaOpened");
-	
+
 	TimelineMarkerCollection* col = new TimelineMarkerCollection ();
 	media_element_set_markers (this, col);
 	col->unref ();
@@ -913,6 +913,7 @@ media_element_set_volume (MediaElement *media, double value)
 //
 GHashTable* Image::surface_cache = NULL;
 DependencyProperty* Image::DownloadProgressProperty;
+int Image::ImageFailedEvent = -1;
 
 Image::Image ()
   : create_xlib_surface (true),
@@ -923,7 +924,6 @@ Image::Image ()
     pattern_opacity (1.0),
     brush (NULL)
 {
-	ImageFailedEvent = RegisterEvent ("ImageFailed");
 }
 
 Image::~Image ()
@@ -1366,4 +1366,17 @@ media_init (void)
 	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoWidth", Type::DOUBLE);
 	MediaElement::PositionProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
+
+	/* lookup events */
+	Type *t = Type::Find(Type::MEDIAELEMENT);
+	MediaElement::BufferingProgressChangedEvent = t->LookupEvent ("BufferingProgressChanged");
+	MediaElement::CurrentStateChangedEvent = t->LookupEvent ("CurrentStateChanged");
+	MediaElement::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
+	MediaElement::MarkerReachedEvent = t->LookupEvent ("MarkerReached");
+	MediaElement::MediaEndedEvent = t->LookupEvent ("MediaEnded");
+	MediaElement::MediaFailedEvent = t->LookupEvent ("MediaFailed");
+	MediaElement::MediaOpenedEvent = t->LookupEvent ("MediaOpened");
+
+	t = Type::Find (Type::IMAGE);
+	Image::ImageFailedEvent = t->LookupEvent ("ImageFailed");
 }

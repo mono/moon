@@ -35,11 +35,69 @@ Type::Type (const char *name, Type::Kind type, Type::Kind parent)
 	this->name = strdup (name);
 	this->type = type;
 	this->parent = parent;
+
+	local_event_count = 0;
+	local_event_base = -1;
+	type_event_count = -1;
+	event_name_hash = NULL;
 }
 
 Type::~Type()
 {
+	if (event_name_hash) {
+		g_hash_table_foreach (event_name_hash, (GHFunc)g_free, NULL);
+		g_hash_table_destroy (event_name_hash);
+	}
+
+	event_name_hash = NULL;
+
 	free (name);
+}
+
+void
+Type::RegisterEvent (const char *event_name)
+{
+	if (event_name_hash == NULL)
+		event_name_hash = g_hash_table_new (g_str_hash, g_str_equal);
+
+	g_hash_table_insert (event_name_hash, g_strdup (event_name), GINT_TO_POINTER (local_event_count++));
+}
+
+int
+Type::LookupEvent (const char *event_name)
+{
+	gpointer key, value;
+	if (!g_hash_table_lookup_extended (event_name_hash,
+					   event_name,
+					   &key,
+					   &value)) {
+		printf ("type lookup of event '%s' failed\n", event_name);
+		return -1;
+	}
+
+	return GPOINTER_TO_INT (value) + GetEventBase();
+}
+
+int
+Type::GetEventBase ()
+{
+	if (local_event_base == -1) {
+		if (parent == Type::INVALID)
+			local_event_base = 0;
+		else
+			local_event_base = Type::Find(parent)->GetEventCount();
+	}
+
+	return local_event_base;
+}
+
+int
+Type::GetEventCount ()
+{
+	if (type_event_count == -1)
+		type_event_count = GetEventBase() + local_event_count;
+
+	return type_event_count;
 }
 
 Type *
@@ -140,7 +198,7 @@ type_get_value_type (Type::Kind type)
 	return Type::Find (type)->value_type;
 }
 
-void 
+static void 
 types_init_manually (void)
 {
 	// Put types that does not inherit from DependencyObject here (manually)
@@ -178,6 +236,57 @@ types_init_manually (void)
 			printf ("Type %i is not initialized\n", i);
 	}
 #endif
+}
+
+static void 
+types_init_register_events (void)
+{
+	Type* t;
+
+	t = Type::Find (Type::STORYBOARD);
+	t->RegisterEvent ("Completed");
+
+	t = Type::Find (Type::TIMEMANAGER);
+	t->RegisterEvent ("update-input");
+	t->RegisterEvent ("render");
+
+	t = Type::Find (Type::CLOCK);
+	t->RegisterEvent ("CurrentTimeInvalidated");
+	t->RegisterEvent ("CurrentStateInvalidated");
+	t->RegisterEvent ("CurrentGlobalSpeedInvalidated");
+	t->RegisterEvent ("Completed");
+
+	t = Type::Find (Type::DOWNLOADER);
+	t->RegisterEvent ("Completed");
+	t->RegisterEvent ("DownloadProgressChanged");
+	t->RegisterEvent ("DownloadFailed");
+
+	t = Type::Find (Type::MEDIAELEMENT);
+	t->RegisterEvent ("BufferingProgressChanged");
+	t->RegisterEvent ("CurrentStateChanged");
+	t->RegisterEvent ("DownloadProgressChanged");
+	t->RegisterEvent ("MarkerReached");
+	t->RegisterEvent ("MediaEnded");
+	t->RegisterEvent ("MediaFailed");
+	t->RegisterEvent ("MediaOpened");
+
+	t = Type::Find (Type::IMAGE);
+	t->RegisterEvent ("ImageFailed");
+
+	t = Type::Find(Type::SURFACE);
+	t->RegisterEvent ("Resize");
+	t->RegisterEvent ("FullScreenChange");
+
+	t = Type::Find(Type::UIELEMENT);
+	t->RegisterEvent ("Loaded");
+	t->RegisterEvent ("MouseMove");
+	t->RegisterEvent ("MouseLeftButtonDown");
+	t->RegisterEvent ("MouseLeftButtonUp");
+	t->RegisterEvent ("KeyDown");
+	t->RegisterEvent ("KeyUp");
+	t->RegisterEvent ("MouseEnter");
+	t->RegisterEvent ("MouseLeave");
+	t->RegisterEvent ("Invalidated");
 }
 
 //
@@ -305,4 +414,5 @@ types_init (void)
 	Type::RegisterType ("VisualBrush", Type::VISUALBRUSH, Type::TILEBRUSH);
 	Type::RegisterType ("VisualCollection", Type::VISUAL_COLLECTION, Type::COLLECTION);
 	types_init_manually ();
+	types_init_register_events ();
 }

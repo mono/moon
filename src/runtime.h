@@ -70,8 +70,8 @@ class Surface : public EventObject {
 
 	UIElement* GetCapturedElement () { return capture_element; }
 
-	int ResizeEvent;
-	int FullScreenChangeEvent;
+	static int ResizeEvent;
+	static int FullScreenChangeEvent;
 	
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);

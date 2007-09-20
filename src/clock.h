@@ -191,8 +191,8 @@ class TimeManager : public EventObject {
 	void AddTickCall (void (*func)(gpointer), gpointer tick_data);
 
 	// Events you can AddHandler to
-	int UpdateInputEvent;
-	int RenderEvent;
+	static int UpdateInputEvent;
+	static int RenderEvent;
 
 	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
 	
@@ -288,10 +288,10 @@ class Clock : public DependencyObject {
 	void SetParent (Clock *parent) { parent_clock = parent; }
 
 	// Events you can AddHandler to
-	int CurrentTimeInvalidatedEvent;
-	int CurrentStateInvalidatedEvent;
-	int CurrentGlobalSpeedInvalidatedEvent;
-	int CompletedEvent;
+	static int CurrentTimeInvalidatedEvent;
+	static int CurrentStateInvalidatedEvent;
+	static int CurrentGlobalSpeedInvalidatedEvent;
+	static int CompletedEvent;
 
  protected:
 	// events to queue up

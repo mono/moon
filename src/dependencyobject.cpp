@@ -832,7 +832,6 @@ typedef struct {
 EventObject::EventObject ()
 {
 	events = NULL;
-	event_name_hash = NULL;
 }
 
 static void
@@ -841,37 +840,24 @@ deleter (gpointer data)
 	delete (EventClosure *) data;
 }
 
-static void
-event_list_delete (gpointer l)
-{
-	g_list_foreach ((GList*)l, (GFunc)deleter, NULL);
-}
-
 EventObject::~EventObject ()
 {
-	if (event_name_hash) {
-		g_hash_table_foreach (event_name_hash, (GHFunc)g_free, NULL);
-		g_hash_table_destroy (event_name_hash);
-	}
 	if (events) {
-		g_ptr_array_foreach (events, (GFunc)event_list_delete, NULL);
+		for (int i = 0; i < GetType()->GetEventCount(); i ++)
+			g_slist_foreach (events[i], (GFunc)deleter, NULL);
+		g_free (events);
 	}
 }
 
 void
 EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
 {
-	gpointer key, value;
+	int id = GetType()->LookupEvent (event_name);
 
-	//printf ("**** Removing handler %s pointing to %p with data %p\n");
-	if (!event_name_hash ||
-	    !g_hash_table_lookup_extended (event_name_hash, event_name,
-					   &key, &value)) {
+	if (id == -1) {
 		g_warning ("adding handler to event '%s', which has not been registered\n", event_name);
 		return;
 	}
-
-	int id = GPOINTER_TO_INT (value);
 
 	AddHandler (id, handler, data);
 }
@@ -879,36 +865,31 @@ EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
 void
 EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 { 
-	if (!events) {
+	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
 		return;
 	}
 
-	GList *event_list = (GList*)g_ptr_array_index (events, event_id);
+	if (events == NULL) {
+		events = (GSList**)g_new0 (GSList*, GetType()->GetEventCount());
+	}
 
 	EventClosure *closure = new EventClosure ();
 	closure->func = handler;
 	closure->data = data;
 
-	event_list = g_list_append (event_list, closure);
-
-	g_ptr_array_index (events, event_id) = event_list;
+	events[event_id] = g_slist_append (events[event_id], closure);
 }
 
 void
 EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer data)
 {
-	gpointer key, value;
+	int id = GetType()->LookupEvent (event_name);
 
-	//printf ("**** Removing handler %s pointing to %p with data %p\n");
-	if (!event_name_hash ||
-	    !g_hash_table_lookup_extended (event_name_hash, event_name,
-					   &key, &value)) {
+	if (id == -1) {
 		g_warning ("removing handler for event '%s', which has not been registered\n", event_name);
 		return;
 	}
-
-	int id = GPOINTER_TO_INT (value);
 
 	RemoveHandler (id, handler, data);
 }
@@ -916,15 +897,16 @@ EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer dat
 void
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
-	if (!events) {
+	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return;
 	}
 
-	GList *event_list = (GList*)g_ptr_array_index (events, event_id);
+	if (events == NULL)
+		return;
 
-	GList *l;
-	for (l = event_list; l; l = l->next) {
+	GSList *l;
+	for (l = events[event_id]; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
 		if (closure->func == handler && closure->data == data)
 			break;
@@ -934,44 +916,18 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 		return;
 
 	delete (EventClosure*)l->data;
-	event_list = g_list_delete_link (event_list, l);
-
-	g_ptr_array_index (events, event_id) = event_list;
-}
-
-int
-EventObject::RegisterEvent (const char *event_name)
-{
-	if (events == NULL) {
-		event_name_hash = g_hash_table_new (g_str_hash, g_str_equal);
-		events = g_ptr_array_new ();
-	}
-
-	int id = events->len;
-
-	g_hash_table_insert (event_name_hash, g_strdup (event_name), GINT_TO_POINTER (id));
-
-	g_ptr_array_add (events, NULL);
-
-	return id;
+	events[event_id] = g_slist_delete_link (events[event_id], l);
 }
 
 void
 EventObject::Emit (char *event_name, gpointer calldata)
 {
-	if (events == NULL) {
+	int id = GetType()->LookupEvent (event_name);
+
+	if (id == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
 		return;
 	}
-
-	gpointer key, value;
-	if (!g_hash_table_lookup_extended (event_name_hash,
-					   event_name,
-					   &key,
-					   &value))
-		return;
-
-	int id = GPOINTER_TO_INT (value);
 
 	Emit (id, calldata);
 }
@@ -979,24 +935,22 @@ EventObject::Emit (char *event_name, gpointer calldata)
 void
 EventObject::Emit (int event_id, gpointer calldata)
 {
-	if (events == NULL) {
+	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
 		return;
 	}
 
-	GList *event_list = (GList*)g_ptr_array_index (events, event_id);
-
-	if (event_list == NULL)
+	if (events == NULL || events[event_id] == NULL)
 		return;
 	
-	GList *copy = g_list_copy (event_list);
+	GSList *copy = g_slist_copy (events[event_id]);
 
-	for (GList *l = copy; l; l = l->next) {
+	for (GSList *l = copy; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
 		closure->func (this, calldata, closure->data);
 	}
 
-	g_list_free (copy);
+	g_slist_free (copy);
 }
 
 void
@@ -1010,4 +964,3 @@ event_object_remove_event_handler (EventObject *o, char *event, EventHandler han
 {
 	o->RemoveHandler (event, handler, closure);
 }
-

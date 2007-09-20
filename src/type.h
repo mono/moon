@@ -181,6 +181,11 @@ public:
 	char *name;
 	bool value_type;
 
+	void RegisterEvent (const char *event_name);
+	int LookupEvent (const char *event_name);
+	int GetEventCount ();
+	int GetEventBase ();
+
 	static void Shutdown ();
 private:
 	Type (const char *name, Type::Kind type, Type::Kind parent);
@@ -188,6 +193,10 @@ private:
 	static Type** types;
 	static GHashTable *types_by_name;
 	static void free_type (gpointer v);
+	GHashTable *event_name_hash;
+	int local_event_base;
+	int local_event_count;
+	int type_event_count; /* local_event_base + local_event_count */
 };
 
 bool type_get_value_type (Type::Kind type);
