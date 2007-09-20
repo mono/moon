@@ -80,6 +80,7 @@ main()
   PRINT_SIZEOF (LineGeometry);
   PRINT_SIZEOF (PathFigureCollection);
   PRINT_SIZEOF (PathGeometry);
+  PRINT_SIZEOF (Rect);
   PRINT_SIZEOF (RectangleGeometry);
   PRINT_SIZEOF (PathSegmentCollection);
   PRINT_SIZEOF (PathFigure);
