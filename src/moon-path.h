@@ -14,6 +14,7 @@
 #define __MOON_PATH_H__
 
 #include <math.h>
+#include <string.h>
 #include <glib.h>
 #include <cairo.h>
 
@@ -42,6 +43,8 @@ typedef struct {
  */
 
 moon_path*	moon_path_new (int size);
+moon_path*	moon_path_renew (moon_path* path, int size);
+void		moon_path_clear (moon_path* path);
 void		moon_path_destroy (moon_path* path);
 void		moon_get_current_point (moon_path *path, double *x, double *y);
 void		moon_move_to (moon_path *path, double x, double y);

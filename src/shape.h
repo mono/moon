@@ -37,7 +37,7 @@ class Shape : public FrameworkElement {
 	void DoDraw (cairo_t *cr, bool do_op, bool consider_fill);
 
 	moon_path *path;
-	virtual void InvalidatePathCache ();
+	virtual void InvalidatePathCache (bool free = false);
  public: 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;
@@ -167,7 +167,7 @@ void       rectangle_set_radius_y (Rectangle *rectangle, double value);
 // 
 class Line : public Shape {
  protected:
-	virtual void InvalidatePathCache () {};
+	virtual void InvalidatePathCache (bool free) {};
  public:
 	static DependencyProperty* X1Property;
 	static DependencyProperty* Y1Property;

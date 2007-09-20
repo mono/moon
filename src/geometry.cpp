@@ -427,9 +427,7 @@ EllipseGeometry::Build (Path *shape)
 	double rx = ellipse_geometry_get_radius_x (this);
 	double ry = ellipse_geometry_get_radius_y (this);
 
-	if (path)
-		moon_path_destroy (path);
-	path = moon_path_new (MOON_PATH_ELLIPSE_LENGTH);
+	path = moon_path_renew (path, MOON_PATH_ELLIPSE_LENGTH);
 	moon_ellipse (path, pt->x - rx, pt->y - ry, rx * 2.0, ry * 2.0);
 }
 
@@ -492,9 +490,7 @@ LineGeometry::Build (Path *shape)
 	Point *p1 = line_geometry_get_start_point (this);
 	Point *p2 = line_geometry_get_end_point (this);
 
-	if (path)
-		moon_path_destroy (path);
-	path = moon_path_new (MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
+	path = moon_path_renew (path, MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
 	moon_move_to (path, p1->x, p1->y);
 	moon_line_to (path, p2->x, p2->y);
 }
@@ -720,15 +716,12 @@ RectangleGeometry::Build (Path *shape)
 		}
 	}
 
-	if (path)
-		moon_path_destroy (path);
-
 	double radius_x, radius_y;
 	if (GetRadius (&radius_x, &radius_y)) {
-		path = moon_path_new (MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
 		moon_rounded_rectangle (path, rect->x, rect->y, rect->w, rect->h, radius_x + half_thick, radius_y + half_thick);
 	} else {
-		path = moon_path_new (MOON_PATH_RECTANGLE_LENGTH);
+		path = moon_path_renew (path, MOON_PATH_RECTANGLE_LENGTH);
 		moon_rectangle (path, rect->x, rect->y, rect->w, rect->h);
 	}
 }
@@ -832,9 +825,8 @@ PathFigure::Build (Path *shape)
 	if (close)
 		path_size += MOON_PATH_CLOSE_PATH_LENGTH;
 //g_warning ("PathFigure::Draw %d", path_size);
-	if (path)
-		moon_path_destroy (path);
-	path = moon_path_new (path_size);
+
+	path = moon_path_renew (path, path_size);
 
 	Point *start = path_figure_get_start_point (this);
 	moon_move_to (path, start->x, start->y);

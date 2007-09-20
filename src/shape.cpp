@@ -109,13 +109,13 @@ Shape::~Shape ()
 		fill->Detach (NULL, this);
 		fill->unref ();
 	}
-	InvalidatePathCache ();
+	InvalidatePathCache (true);
 }
 
 void
 Shape::Draw (cairo_t *cr)
 {
-	if (!path)
+	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
 
 	cairo_new_path (cr);
@@ -409,12 +409,16 @@ Shape::GetTransformOrigin ()
 
 
 void
-Shape::InvalidatePathCache ()
+Shape::InvalidatePathCache (bool free)
 {
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	if (path) {
-		moon_path_destroy (path);
-		path = NULL;
+		if (free) {
+			moon_path_destroy (path);
+			path = NULL;
+		} else {
+			moon_path_clear (path);
+		}
 	}
 }
 
@@ -652,15 +656,12 @@ Ellipse::BuildPath ()
 	}
 
 shape:
-	if (path)
-		moon_path_destroy (path);
-
 	if (IsDegenerate ()) {
 		double radius = t / 2;
-		path = moon_path_new (MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
 		moon_rounded_rectangle (path, x, y, w, h, radius, radius);
 	} else {
-		path = moon_path_new (MOON_PATH_ELLIPSE_LENGTH);
+		path = moon_path_renew (path, MOON_PATH_ELLIPSE_LENGTH);
 		moon_ellipse (path, x, y, w, h);
 	}
 	// note: both moon_rounded_rectangle and moon_ellipse close the path
@@ -840,14 +841,12 @@ Rectangle::BuildPath ()
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 shape:
-	if (path)
-		moon_path_destroy (path);
 	// rounded-corner rectangle ?
 	if (round) {
-		path = moon_path_new (MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
 		moon_rounded_rectangle (path, x, y, w, h, radius_x, radius_y);
 	} else {
-		path = moon_path_new (MOON_PATH_RECTANGLE_LENGTH);
+		path = moon_path_renew (path, MOON_PATH_RECTANGLE_LENGTH);
 		moon_rectangle (path, x, y, w, h);
 	}
 }
@@ -856,15 +855,20 @@ void
 Rectangle::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type != Type::RECTANGLE) {
+		if (prop == Shape::StretchProperty) {
+			InvalidatePathCache ();
+			UpdateBounds (true);
+		}
 		Shape::OnPropertyChanged (prop);
 		return;
 	}
 
-	if ((prop == Rectangle::RadiusXProperty) || (prop == Rectangle::RadiusYProperty))
+	if ((prop == Rectangle::RadiusXProperty) || (prop == Rectangle::RadiusYProperty)) {
 		InvalidatePathCache ();
-	
-	Invalidate ();
+		// note: changing the X and/or Y radius doesn't affect the bounds
+	}
 
+	Invalidate ();
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
@@ -916,6 +920,14 @@ rectangle_new (void)
 
 //
 // Line
+//
+// rules
+// * the internal path must be rebuilt when
+//	- Line::X1Property, Line::Y1Property, Line::X2Property or Line::Y2Property is changed
+//
+// * bounds calculation is based on
+//	- Line::X1Property, Line::Y1Property, Line::X2Property and Line::Y2Property
+//	- Shape::StrokeThickness
 //
 
 DependencyProperty* Line::X1Property;
@@ -1114,6 +1126,16 @@ line_new (void)
 
 //
 // Polygon
+//
+// rules
+// * the internal path must be rebuilt when
+//	- Polygon::PointsProperty is changed
+//	- Shape::StretchProperty is changed
+//
+// * bounds calculation is based on
+//	- Polygon::PointsProperty
+//	- Shape::StretchProperty
+//	- Shape::StrokeThickness
 //
 
 DependencyProperty* Polygon::FillRuleProperty;
@@ -1326,10 +1348,8 @@ Polygon::BuildPath ()
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
-	if (path)
-		moon_path_destroy (path);
 	// 2 data per [move|line]_to + 1 for close path
-	path = moon_path_new (count * 2 + 1);
+	path = moon_path_renew (path, count * 2 + 1);
 
 	// special case, both the starting and ending points are 5 * thickness than the actual points
 	if (count == 2) {
@@ -1387,6 +1407,7 @@ void
 Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
 	UpdateBounds (true);
+	Invalidate ();
 }
 
 FillRule
@@ -1519,10 +1540,8 @@ Polyline::BuildPath ()
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
-	if (path)
-		moon_path_destroy (path);
 	// 2 data per [move|line]_to
-	path = moon_path_new (count * 2);
+	path = moon_path_renew (path, count * 2);
 
 	Stretch stretch = shape_get_stretch (this);
 	switch (stretch) {
@@ -1628,6 +1647,13 @@ Path::GetFillRule ()
 void
 Path::ComputeBounds ()
 {
+#if FALSE
+	Geometry* geometry = path_get_data (this);
+	if (geometry)
+		bounds = geometry->ComputeBounds (this);
+	else
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+#else
 	if (IsEmpty ()) {
 		bounds = Rect (0.0, 0.0, 0.0, 0.0);
 		return;
@@ -1654,6 +1680,7 @@ Path::ComputeBounds ()
 	bounds = Rect (x1, y1, x2-x1, y2-y1);
 
 	measuring_context_destroy (cr);
+#endif
 }
 
 void

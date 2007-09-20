@@ -1,3 +1,10 @@
+2007-09-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.cpp: Avoid re-allocating path memory when possible.
+	* moon-path.c|h: Added documentation and new moon_path_renew and 
+	moon_path_clear functions to reduce memory re-allocations.
+	* shape.cpp|h: Avoid re-allocating path memory when possible.
+
 2007-09-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp|h: Implemented MappingMode for RadialGradientBrush.
