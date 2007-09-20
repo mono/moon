@@ -16,8 +16,6 @@
 #ifndef __TYPE_H__
 #define __TYPE_H__
 
-G_BEGIN_DECLS
-
 #include <glib.h>
 
 typedef gint64 TimeSpan;
@@ -198,6 +196,8 @@ private:
 	int local_event_count;
 	int type_event_count; /* local_event_base + local_event_count */
 };
+
+G_BEGIN_DECLS
 
 bool type_get_value_type (Type::Kind type);
 
