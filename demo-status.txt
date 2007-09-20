@@ -57,12 +57,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 	Silverlight (CLR) works!
 
-	Silverlight (Javascript) page doesn't start, but shows at
-	least one bubble.  Also, shows this in the JS console:
-
-		Error: Trying to get unsupported property on scriptable plugin object!
-		Source File: http://bubblemark.com/js/wpfe.ball.js
-		Line: 42
+	Silverlight (Javascript) works too :)
 
 * Comic Book Viewer (http://mycomix.wintellect.com/Spotlight.aspx?Item=1041)
 
@@ -440,6 +435,8 @@ Native stacktrace:
 
 	works?  seems to work ok, but the plugin might be too large?
 	we obscure some of the html (but so does the SVG view of the info).
+
+	Note: application hasn't been updated for SL 1.0 (i.e. it still requires the old plugin)
 
 * Telerik RadControls 3D Cube (http://www.telerik.com/demos/aspnet/silverlight/Cube/Examples/RoomDesigner/DefaultCS.aspx)
 
