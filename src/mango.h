@@ -15,9 +15,7 @@ G_BEGIN_DECLS
 
 #include "brush.h"
 
-GType mango_renderer_get_type_safe ();
-
-#define MOON_TYPE_MANGO_RENDERER            (mango_renderer_get_type_safe ())
+#define MOON_TYPE_MANGO_RENDERER            (mango_renderer_get_type ())
 #define MANGO_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), MOON_TYPE_MANGO_RENDERER, MangoRenderer))
 #define MOON_IS_MANGO_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), MOON_TYPE_MANGO_RENDERER))
 #define MANGO_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MOON_TYPE_MANGO_RENDERER, MangoRendererClass))
