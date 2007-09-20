@@ -1,7 +1,7 @@
 
 libmoonincludedir=$(includedir)/libmoon
 
-#noinst_PROGRAMS = demo
+noinst_PROGRAMS = demo sizes
 
 lib_LTLIBRARIES = libmoon.la
 
@@ -103,6 +103,8 @@ demo_SOURCES = \
 libmoon_la_LIBADD = $(MOON_LIBS)
 
 demo_LDADD = -lmoon 
+
+sizes_LDADD = -lmoon 
 
 debug:
 	LD_LIBRARY_PATH=.libs gdb .libs/demo
