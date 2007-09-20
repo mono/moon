@@ -144,6 +144,8 @@ TextFont::TextFont (FcPattern *pattern, double size)
 	
 	//FcPatternGetDouble (matched, FC_PIXEL_SIZE, 0, &size);
 	
+	//matched = FcFontMatch (NULL, pattern, &result);
+	
 retry:
 	
 	if (FcPatternGetString (matched, FC_FILE, 0, (FcChar8 **) &filename) != FcResultMatch)
@@ -228,6 +230,12 @@ int
 TextFont::EmSize ()
 {
 	return face->units_per_EM;
+}
+
+int
+TextFont::Ascender ()
+{
+	return face->ascender / 64;
 }
 
 int
@@ -1045,20 +1053,25 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	TextFont *font = NULL;
 	Brush *fg = NULL;
 	TextLine *line;
+	int bx, by, oy;
 	double dx, dy;
+	int ascend;
 	int i;
 	
 	Layout ();
 	
-	if ((line = (TextLine *) lines->First ()))
-		dy = (double) line->height;
+	line = (TextLine *) lines->First ();
+	
 	dx = 0.0f;
+	dy = 0.0f;
 	
 	while (line) {
 		segment = (TextSegment *) line->segments->First ();
 		while (segment) {
 			deco = segment->deco;
 			font = segment->font;
+			
+			ascend = font->Ascender ();
 			
 			if (segment->fg != fg) {
 				fg = segment->fg;
@@ -1076,7 +1089,13 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					width = bitmap->width;
 					stride = bitmap->pitch;
 					
-					cairo_move_to (cr, x + dx, y + dy - glyph->metrics.horiBearingY);
+					bx = glyph->metrics.horiBearingX;
+					by = glyph->metrics.horiBearingY;
+					
+					// y-offset for the top of the glyph
+					oy = ascend - (line->height - ascend) - by;
+					
+					cairo_move_to (cr, x + dx + bx, y + dy + oy);
 					
 					// Render the glyph
 					// FIXME: set the surface on the cached glyph?
@@ -1086,10 +1105,10 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 										       stride);
 					
 					cairo_save (cr);
-					cairo_set_source_surface (cr, surface, x + dx, y + dy - glyph->metrics.horiBearingY);
+					cairo_set_source_surface (cr, surface, x + dx + bx, y + dy + oy);
 					
 					cairo_new_path (cr);
-					cairo_rectangle (cr, x + dx, y + dy - glyph->metrics.horiBearingY,
+					cairo_rectangle (cr, x + dx + bx, y + dy + oy,
 							 (double) width, (double) height);
 					cairo_close_path (cr);
 					cairo_fill (cr);
@@ -1104,8 +1123,9 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 			segment = (TextSegment *) segment->next;
 		}
 		
-		if ((line = (TextLine *) line->next))
-			dy += (double) line->height;
+		dy += (double) line->height;
+		
+		line = (TextLine *) line->next;
 		dx = 0.0f;
 	}
 }

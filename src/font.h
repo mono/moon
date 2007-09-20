@@ -110,6 +110,7 @@ public:
 	
 	const GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
+	int Ascender ();
 	int EmSize ();
 	int Height ();
 	
