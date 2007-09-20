@@ -260,10 +260,6 @@ GradientBrush::GradientBrush ()
 	this->SetValue (GradientBrush::GradientStopsProperty, Value::CreateUnref (new GradientStopCollection ()));
 }
 
-GradientBrush::~GradientBrush ()
-{
-}
-
 void
 GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -301,8 +297,6 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 	cairo_pattern_set_extend (pattern, convert_gradient_spread_method (gsm));
 	Collection::Node *node;
 	
-	// TODO - BrushMappingMode is ignore (use a matrix)
-
 	// TODO - ColorInterpolationModeProperty is ignored (map to ?)
 
 	double opacity = GetTotalOpacity (uielement);
@@ -383,13 +377,26 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 
+	cairo_matrix_t matrix;
+	switch (gradient_brush_get_mapping_mode (this)) {
+	case BrushMappingModeAbsolute:
+		cairo_matrix_init_identity (&matrix);
+		break;
+	case BrushMappingModeRelativeToBoundingBox:
+		// FIXME - need test case
+		cairo_matrix_init_identity (&matrix);
+		break;
+	}
+
 	Transform *transform = brush_get_transform (this);
 	if (transform) {
-		cairo_matrix_t matrix;
-		transform_get_transform (transform, &matrix);
-		cairo_matrix_invert (&matrix);
-		cairo_pattern_set_matrix (pattern, &matrix);
+		cairo_matrix_t tm;
+		transform_get_transform (transform, &tm);
+		// TODO - optimization, check for empty/identity matrix too ?
+		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
+	cairo_matrix_invert (&matrix);
+	cairo_pattern_set_matrix (pattern, &matrix);
 
 	bool visible = GradientBrush::SetupGradient (pattern, uielement);
 
@@ -510,7 +517,14 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	}
 
 	cairo_matrix_t matrix;
-	cairo_matrix_init (&matrix, w * rx / ry, 0, 0, h, 0, 0);
+	switch (gradient_brush_get_mapping_mode (this)) {
+	case BrushMappingModeAbsolute:
+		cairo_matrix_init_identity (&matrix);
+		break;
+	case BrushMappingModeRelativeToBoundingBox:
+		cairo_matrix_init (&matrix, w * rx / ry, 0, 0, h, 0, 0);
+		break;
+	}
 
 	Transform *transform = brush_get_transform (this);
 	if (transform) {
@@ -1144,7 +1158,7 @@ brush_init (void)
 	/* GradientBrush fields */
 	GradientBrush::ColorInterpolationModeProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "ColorInterpolationMode",  new Value (0));
 	GradientBrush::GradientStopsProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "GradientStops", Type::GRADIENTSTOP_COLLECTION);
-	GradientBrush::MappingModeProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "MappingMode",  new Value (0));
+	GradientBrush::MappingModeProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "MappingMode",  new Value (BrushMappingModeRelativeToBoundingBox));
 	GradientBrush::SpreadMethodProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "SpreadMethod",  new Value (0));
 
 	/* LinearGradientBrush fields */

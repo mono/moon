@@ -101,7 +101,6 @@ class GradientBrush : public Brush {
 	static DependencyProperty* SpreadMethodProperty;
 
 	GradientBrush ();
-	~GradientBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
 

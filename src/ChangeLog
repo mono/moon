@@ -1,3 +1,8 @@
+2007-09-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp|h: Implemented MappingMode for RadialGradientBrush.
+	Bubbles from bubblemark.com are now rendered correctly.
+
 2007-09-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Remove dead code.
