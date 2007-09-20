@@ -63,9 +63,10 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 	seems to work.  there is only 1 comic to view.  moving the
 	mouse to the top of the page results in a rating and blurb animating
-	in from the top.
+	in from the top. That panel should be on top of the comic (and tranparent),
+	not behind it.
 
-	the progress bar doesn't disappear.  does this happen on windows?
+	On SL using the mouse-scroll can zoom in and out the comic picture.
 
 * Destroy All Invaders (http://www.andybeaulieu.com/silverlight/DestroyAll/Default.html)
 
@@ -96,19 +97,19 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 	rotate, the event loop seems to be dominated by it, and
 	Mozilla becomes very unresponsive. 
 
+	Note: URL requires the older (pre release) plugin
+
 * Dr. Green Thumb (http://labs.blitzagency.com/?p=50)
 
-	page comes up telling you to install WPF/e.  plugin isn't being recognized?
+	page comes up telling you to install WPF/e.
+
+	Note: same thing happens on SL (web page was updated to confirm this).
 
 * Dr. Popper (http://www.bluerosegames.com/brg/drpopper/)
 
 	comes up, but is unresponsive to mouse clicks.  there's an
 	"overlay" canvas over the entire UI which eats all mouse
 	events. Not sure how they're passed through on MS.
-
-	a few little visual problems.  all the button text is
-	"Button", and the button highlights are missing, due to our
-	not handling the Absolute BrushMapping mode.
 
 * Glyph Map (http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx)
 
