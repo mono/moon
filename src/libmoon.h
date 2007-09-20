@@ -28,6 +28,7 @@
 #include "media.h"
 #include "mplayer.h"
 #include "namescope.h"
+#include "playlist.h"
 #include "point.h"
 #include "rect.h"
 #include "rsvg.h"
