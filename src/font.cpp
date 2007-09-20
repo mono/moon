@@ -130,21 +130,18 @@ struct GlyphInfo {
 
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
 
-TextFont::TextFont (FcPattern *pattern, double size)
+TextFont::TextFont (FcPattern *pattern)
 {
 	const char *filename = NULL;
 	FcPattern *matched, *sans;
 	bool retried = false;
 	FcResult result;
-	//double size;
+	double size;
 	int id;
 	
-	//FcPatternReference (pattern);
-	//matched = pattern;
-	
-	//FcPatternGetDouble (matched, FC_PIXEL_SIZE, 0, &size);
-	
-	matched = FcFontMatch (NULL, pattern, &result);
+	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
+	FcPatternReference (pattern);
+	matched = pattern;
 	
 retry:
 	
@@ -199,7 +196,7 @@ TextFont::~TextFont ()
 }
 
 TextFont *
-TextFont::Load (FcPattern *pattern, double size)
+TextFont::Load (FcPattern *pattern)
 {
 	TextFont *font;
 	
@@ -208,7 +205,7 @@ TextFont::Load (FcPattern *pattern, double size)
 		return font;
 	}
 	
-	return new TextFont (pattern, size);
+	return new TextFont (pattern);
 }
 
 void
@@ -235,13 +232,13 @@ TextFont::EmSize ()
 int
 TextFont::Ascender ()
 {
-	return face->ascender / 128;
+	return face->size->metrics.ascender / 64;
 }
 
 int
 TextFont::Height ()
 {
-	return face->height / 128;
+	return face->size->metrics.height / 64;
 }
 
 const GlyphInfo *
@@ -368,8 +365,9 @@ TextFontDescription::~TextFontDescription ()
 FcPattern *
 TextFontDescription::CreatePattern ()
 {
-	FcPattern *pattern;
+	FcPattern *pattern, *matched;
 	char **families;
+	FcResult result;
 	int i;
 	
 	pattern = FcPatternCreate ();
@@ -388,7 +386,12 @@ TextFontDescription::CreatePattern ()
 	FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
 	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
 	
-	return pattern;
+	if (!(matched = FcFontMatch (NULL, pattern, &result)))
+		return pattern;
+	
+	FcPatternDestroy (pattern);
+	
+	return matched;
 }
 
 TextFont *
@@ -398,11 +401,12 @@ TextFontDescription::GetFont ()
 	
 	if (font == NULL) {
 		pattern = CreatePattern ();
-		font = TextFont::Load (pattern, size);
+		font = TextFont::Load (pattern);
 		FcPatternDestroy (pattern);
 	}
 	
-	font->ref ();
+	if (font)
+		font->ref ();
 	
 	return font;
 }
@@ -942,9 +946,12 @@ TextLayout::Layout ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		lh = MAX (lh, run->font->Height ());
+		//lh = MAX (lh, run->font->Height ());
 		
 		if (run->text == NULL /* LineBreak */) {
+			if (lh == 0)
+				lh = run->font->Height ();
+			
 			lines->Append (line);
 			line->height = lh;
 			height += lh;
@@ -962,6 +969,8 @@ TextLayout::Layout ()
 		
 		if (!run->text[0])
 			continue;
+		
+		lh = MAX (lh, run->font->Height ());
 		
 		spc.index = -1;
 		spc.width = -1;
@@ -1023,17 +1032,80 @@ TextLayout::Layout ()
 		// FIXME: maybe we should keep going anyway? then, if
 		// max_height gets changed later, we don't have to
 		// recalc the layout, we can simply change the clip.
-		if (max_height > 0 && height > max_height)
-			break;
+		//if (max_height > 0 && height > max_height)
+		//	break;
 	}
 	
 	if (line) {
+		width = MAX (width, lw);
 		lines->Append (line);
 		line->height = lh;
 		height += lh;
 	}
 	
 	printf ("layout extents are %d, %d\n", width, height);
+}
+
+#define CAIRO_BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+
+void
+TextLayout::RenderGlyphBitmap (cairo_t *cr, const GlyphInfo *glyph, double x, double y)
+{
+	int width, height, stride;
+	cairo_surface_t *surface;
+	const FT_Bitmap *bitmap;
+	cairo_format_t format;
+	
+	bitmap = &glyph->bitmap;
+	
+	height = bitmap->rows;
+	width = bitmap->width;
+	stride = bitmap->pitch;
+	
+	//cairo_move_to (cr, x, y);
+	
+	switch (bitmap->pixel_mode) {
+	case FT_PIXEL_MODE_MONO:
+		//printf ("pixel_mode is FT_PIXEL_MODE_MONO\n");
+		stride = (((width + 31) & ~31) >> 3);
+		format = CAIRO_FORMAT_A1;
+		
+		{
+			unsigned char *d = bitmap->buffer;
+			int count = stride * height;
+			
+			while (count--) {
+				*d = CAIRO_BITSWAP8 (*d);
+				d++;
+			}
+		}
+		break;
+	case FT_PIXEL_MODE_LCD:
+	case FT_PIXEL_MODE_LCD_V:
+	case FT_PIXEL_MODE_GRAY:
+		//printf ("pixel_mode is FT_PIXEL_MODE_GRAY\n");
+		stride = bitmap->pitch;
+		format = CAIRO_FORMAT_A8;
+		break;
+	default:
+		printf ("unknown pixel format\n");
+		return;
+	}
+	
+	cairo_save (cr);
+	
+	// Render the glyph
+	// FIXME: set the surface on the cached glyph?
+	surface = cairo_image_surface_create_for_data (bitmap->buffer, format, width, height, stride);
+	cairo_set_source_surface (cr, surface, x, y);
+	
+	cairo_new_path (cr);
+	cairo_rectangle (cr, x, y, (double) width, (double) height);
+	cairo_close_path (cr);
+	cairo_fill (cr);
+	
+	cairo_surface_destroy (surface);
+	cairo_restore (cr);
 }
 
 void
@@ -1078,38 +1150,16 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					continue;
 				
 				if (glyph->index > 0) {
-					bitmap = &glyph->bitmap;
-					
-					height = bitmap->rows;
-					width = bitmap->width;
-					stride = bitmap->pitch;
-					
 					bx = glyph->metrics.horiBearingX;
 					by = glyph->metrics.horiBearingY;
 					
 					// y-offset for the top of the glyph
 					oy = ascend - (line->height - ascend) - by;
 					
-					cairo_move_to (cr, x + dx + bx, y + dy + oy);
+					//printf ("'%c' lh = %d, ascend = %d, height = %d, by = %d, oy = %d\n",
+					//	(char) segment->text[i], line->height, ascend, glyph->bitmap.rows, by, oy);
 					
-					// Render the glyph
-					// FIXME: set the surface on the cached glyph?
-					surface = cairo_image_surface_create_for_data (bitmap->buffer,
-										       CAIRO_FORMAT_A8,
-										       width, height,
-										       stride);
-					
-					cairo_save (cr);
-					cairo_set_source_surface (cr, surface, x + dx + bx, y + dy + oy);
-					
-					cairo_new_path (cr);
-					cairo_rectangle (cr, x + dx + bx, y + dy + oy,
-							 (double) width, (double) height);
-					cairo_close_path (cr);
-					cairo_fill (cr);
-					
-					cairo_surface_destroy (surface);
-					cairo_restore (cr);
+					RenderGlyphBitmap (cr, glyph, x + dx + bx, y + dy + oy);
 				}
 				
 				dx += (double) glyph->metrics.horiAdvance;

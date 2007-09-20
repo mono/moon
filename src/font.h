@@ -97,7 +97,7 @@ class TextFont {
 	
 	GlyphInfo *glyphs;
 	
-	TextFont (FcPattern *pattern, double size);
+	TextFont (FcPattern *pattern);
 	
 public:
 	
@@ -106,7 +106,7 @@ public:
 	void ref ();
 	void unref ();
 	
-	static TextFont *Load (FcPattern *pattern, double size);
+	static TextFont *Load (FcPattern *pattern);
 	
 	const GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
@@ -196,6 +196,8 @@ class TextLayout {
 	// cached info
 	int height;
 	int width;
+	
+	void RenderGlyphBitmap (cairo_t *cr, const GlyphInfo *glyph, double x, double y);
 	
 public:
 	

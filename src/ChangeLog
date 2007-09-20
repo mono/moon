@@ -1,3 +1,18 @@
+2007-09-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (GetFont): No longer need to pass the size to
+	TextFont::Load().
+	(TextFont::Load): No longer needs the size argument.
+	(TextFont::.ctor): We just get the size from the pattern now.
+	(TextFontDescription::CreatePattern): Call FcFontMatch() on our
+	generated font pattern here instead of having our lower-level
+	TextFont::.ctor do it.
+	(TextFont::Ascender): Use the size metrics so that this always
+	works properly (at least it seems to).
+	(TextFont::Height): Same.
+	(TextLayout::Layout): Changed line-height logic a bit for
+	LineBreaks.
+
 2007-09-20  Chris Toshok  <toshok@ximian.com>
 
 	* type.cpp.in, type.cpp (LookupEvent): fix this to check in parent
