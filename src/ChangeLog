@@ -1,5 +1,14 @@
 2007-09-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mango.cpp (mango_renderer_draw_glyphs): Cache the paths that we
+	render.
+	(mango_renderer_show_layout): Instead of having pango render the
+	text, do it ourselves using our cached paths from the previous
+	call to mango_renderer_layout_path().
+	(mango_renderer_layout_path): Clear our cache paths.
+
+2007-09-20  Jeffrey Stedfast  <fejj@novell.com>
+
 	* text.cpp (OnPropertyChanged): Don't dirty actual width/height on
 	foreground changes.
 	(OnSubPropertyChanged): Same.

@@ -18,12 +18,32 @@
 
 #include "brush.h"
 #include "mango.h"
+#include "list.h"
 
+
+class MangoPath : public List::Node {
+public:
+	cairo_path_t *path;
+	UIElement *elem;
+	Brush *brush;
+	
+	MangoPath (UIElement *elem, Brush *brush, cairo_path_t *path)
+	{
+		this->elem = elem;
+		this->brush = brush;
+		this->path = path;
+	}
+	
+	~MangoPath ()
+	{
+		cairo_path_destroy (path);
+	}
+};
 
 struct _MangoRendererPrivate {
 	MangoAttrForeground *fg;
+	List *cache;
 	cairo_t *cr;
-	bool show;
 };
 
 
@@ -60,7 +80,7 @@ static void
 mango_renderer_init (MangoRenderer *mango)
 {
 	mango->priv = g_new (MangoRendererPrivate, 1);
-	mango->priv->show = false;
+	mango->priv->cache = new List ();
 	mango->priv->cr = NULL;
 	mango->priv->fg = NULL;
 }
@@ -74,6 +94,9 @@ mango_renderer_finalize (GObject *object)
 	if (priv->cr)
 		cairo_destroy (priv->cr);
 	
+	priv->cache->Clear (true);
+	delete priv->cache;
+	
 	g_free (priv);
 	
 	G_OBJECT_CLASS (mango_renderer_parent_class)->finalize (object);
@@ -84,13 +107,15 @@ mango_renderer_draw_glyphs (PangoRenderer *renderer, PangoFont *font, PangoGlyph
 {
 	MangoRenderer *mango = (MangoRenderer *) renderer;
 	MangoRendererPrivate *priv = mango->priv;
+	cairo_path_t *path;
 	
+	cairo_new_path (priv->cr);
 	cairo_move_to (priv->cr, (double) x / PANGO_SCALE, (double) y / PANGO_SCALE);
+	pango_cairo_glyph_string_path (priv->cr, font, glyphs);
 	
-	if (priv->show)
-		pango_cairo_show_glyph_string (priv->cr, font, glyphs);
-	else
-		pango_cairo_glyph_string_path (priv->cr, font, glyphs);
+	path = cairo_copy_path (priv->cr);
+	priv->cache->Append (new MangoPath (priv->fg->element, priv->fg->foreground, path));
+	cairo_close_path (priv->cr);
 }
 
 #if 0
@@ -163,9 +188,6 @@ mango_renderer_prepare_run (PangoRenderer *renderer, PangoLayoutRun *run)
 		pango_renderer_part_changed (renderer, PANGO_RENDER_PART_FOREGROUND);
 		pango_renderer_part_changed (renderer, PANGO_RENDER_PART_UNDERLINE);
 		
-		if (priv->show)
-			fg->foreground->SetupBrush (priv->cr, fg->element);
-		
 		priv->fg = fg;
 	}
 	
@@ -202,12 +224,14 @@ mango_renderer_set_cairo_context (MangoRenderer *mango, cairo_t *cr)
 void
 mango_renderer_show_layout (MangoRenderer *mango, PangoLayout *layout)
 {
-	PangoRenderer *renderer = (PangoRenderer *) mango;
-	bool show = mango->priv->show;
+	MangoRendererPrivate *priv = mango->priv;
+	MangoPath *path;
 	
-	mango->priv->show = true;
-	pango_renderer_draw_layout (renderer, layout, 0, 0);
-	mango->priv->show = show;
+	for (path = (MangoPath *) priv->cache->First (); path; path = (MangoPath *) path->next) {
+		path->brush->SetupBrush (priv->cr, path->elem);
+		cairo_append_path (priv->cr, path->path);
+		cairo_fill (priv->cr);
+	}
 }
 
 
@@ -215,11 +239,9 @@ void
 mango_renderer_layout_path (MangoRenderer *mango, PangoLayout *layout)
 {
 	PangoRenderer *renderer = (PangoRenderer *) mango;
-	bool show = mango->priv->show;
 	
-	mango->priv->show = false;
+	mango->priv->cache->Clear (true);
 	pango_renderer_draw_layout (renderer, layout, 0, 0);
-	mango->priv->show = show;
 }
 
 
@@ -234,8 +256,6 @@ mango_attr_foreground_copy (const PangoAttribute *attr)
 static void
 mango_attr_foreground_destroy (PangoAttribute *attr)
 {
-	MangoAttrForeground *fg = (MangoAttrForeground *) attr;
-	
 	g_free (attr);
 }
 
