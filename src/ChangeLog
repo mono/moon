@@ -1,3 +1,8 @@
+2007-09-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Implemented MappingMode for LinearGradientBrush.
+	Buttons from Dr Popper are now rendered correctly.
+
 2007-09-20  Chris Toshok  <toshok@ximian.com>
 
 	* typegen.cs (GenerateTypeCpp): add a call to

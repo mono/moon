@@ -380,10 +380,9 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_matrix_t matrix;
 	switch (gradient_brush_get_mapping_mode (this)) {
 	case BrushMappingModeAbsolute:
-		cairo_matrix_init_identity (&matrix);
+		cairo_matrix_init (&matrix, 1.0 / w, 0, 0, 1.0 / h, 0, 0);
 		break;
 	case BrushMappingModeRelativeToBoundingBox:
-		// FIXME - need test case
 		cairo_matrix_init_identity (&matrix);
 		break;
 	}
