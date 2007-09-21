@@ -1,3 +1,7 @@
+2007-09-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mdp: Updated.
+
 2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* examples/desklet/rules.make: Make desklet use 3.0 instead of 2.1 so that
