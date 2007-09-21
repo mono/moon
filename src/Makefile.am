@@ -100,7 +100,10 @@ EXTRA_DIST = alpha-premul-table.inc zip/README zip/ChangeLogUnzip
 demo_SOURCES = \
 	demo.cpp
 
-libmoon_la_LIBADD = $(MOON_LIBS)
+sizes_SOURCES = \
+	sizes.cpp
+
+libmoon_la_LIBADD = $(MOON_LIBS) -L/usr/X11R6/lib -lXext -lXv
 
 demo_LDADD = -lmoon 
 
