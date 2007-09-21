@@ -301,7 +301,7 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, opacity);
+	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, 1.0);
 	
 	if (recalculate_matrix) {
 		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch,
@@ -318,7 +318,12 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_rectangle (cr, 0, 0, w, h);
 	cairo_close_path (cr);
 	
-	cairo_fill (cr);
+	if (opacity < 1.0) {
+		cairo_clip (cr);
+		cairo_paint_with_alpha (cr, opacity);
+	} else {
+		cairo_fill (cr);
+	}
 	cairo_restore (cr);
 }
 
