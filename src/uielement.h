@@ -297,6 +297,8 @@ class UIElement : public Visual {
 	static int EnterEvent;
 	static int LeaveEvent;
 	static int InvalidatedEvent;
+	static int GotFocusEvent;
+	static int LostFocusEvent;
 };
 
 G_BEGIN_DECLS

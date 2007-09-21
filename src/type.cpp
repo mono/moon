@@ -294,6 +294,8 @@ types_init_register_events (void)
 	t->RegisterEvent ("MouseEnter");
 	t->RegisterEvent ("MouseLeave");
 	t->RegisterEvent ("Invalidated");
+	t->RegisterEvent ("GotFocus");
+	t->RegisterEvent ("LostFocus");
 }
 
 //

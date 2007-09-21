@@ -32,6 +32,8 @@ int UIElement::KeyUpEvent = -1;
 int UIElement::EnterEvent = -1;
 int UIElement::LeaveEvent = -1;
 int UIElement::InvalidatedEvent = -1;
+int UIElement::GotFocusEvent = -1;
+int UIElement::LostFocusEvent = -1;
 
 void
 UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
@@ -543,6 +545,8 @@ uielement_init (void)
 	UIElement::EnterEvent = t->LookupEvent ("MouseEnter");
 	UIElement::LeaveEvent = t->LookupEvent ("MouseLeave");
 	UIElement::InvalidatedEvent = t->LookupEvent("Invalidated");
+	UIElement::GotFocusEvent = t->LookupEvent("GotFocus");
+	UIElement::LostFocusEvent = t->LookupEvent("LostFocus");
 }
 
 UIElement*

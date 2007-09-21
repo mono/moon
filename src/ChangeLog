@@ -1,3 +1,12 @@
+2007-09-20  Chris Toshok  <toshok@ximian.com>
+
+	* type.cpp, type.cpp.in (types_init_register_events):register the
+	LostFocus/GotFocus events.
+
+	* uielement.h: add LostFocusEvent/GotFocusEvent.
+
+	* uielement.cpp (uielement_init): lookup LostFocus/GotFocus events.
+
 2007-09-20  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (InsideObject): Removed.
