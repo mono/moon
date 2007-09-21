@@ -400,33 +400,6 @@ TextBlock::GetTransformOrigin ()
 	return Point (user_xform_origin.x * GetActualWidth (), user_xform_origin.y * GetActualHeight ());
 }
 
-bool
-TextBlock::InsideObject (cairo_t *cr, double x, double y)
-{
-	// FIXME: this code probably doesn't work
-	cairo_matrix_t inverse = absolute_xform;
-	bool ret = false;
-	double nx = x;
-	double ny = y;
-	
-	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
-	
-	Layout (cr);
-	
-	cairo_matrix_invert (&inverse);
-	cairo_matrix_transform_point (&inverse, &nx, &ny);
-	
-	if (cairo_in_stroke (cr, nx, ny) || cairo_in_fill (cr, nx, ny))
-		ret = true;
-	
-	cairo_new_path (cr);
-	
-	cairo_restore (cr);
-	
-	return ret;
-}
-
 void
 TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {

@@ -1,5 +1,7 @@
 2007-09-20  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* text.cpp (InsideObject): Removed.
+
 	* font.cpp (Layout): Add the horiBearingX value of the last glyph
 	in each line to the width of said line.
 	(RenderGlyphBitmap): Cache the surface and use it as a mask when

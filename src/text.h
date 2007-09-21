@@ -164,7 +164,6 @@ public:
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
