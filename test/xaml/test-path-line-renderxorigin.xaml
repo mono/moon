@@ -1,0 +1,44 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+	<Path Stroke="#f00" Fill="#7700" Canvas.Left="100" Canvas.Top="20">
+		<Path.Data>
+			<LineGeometry StartPoint="10,10" EndPoint="100,50" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="#00f" Fill="#7007" Canvas.Left="200" Canvas.Top="20">
+		<Path.Data>
+			<LineGeometry StartPoint="10,10" EndPoint="100,50" />
+		</Path.Data>
+		<Path.RenderTransform>
+			<RotateTransform Angle="45"/>
+		</Path.RenderTransform>
+	</Path>
+
+	<Path Stroke="#f00" Fill="#7700" Canvas.Left="100" Canvas.Top="100">
+		<Path.Data>
+			<LineGeometry StartPoint="10,10" EndPoint="100,50" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="#00f" Fill="#7007" Canvas.Left="200" Canvas.Top="100" RenderTransformOrigin="1,1">
+		<Path.Data>
+			<LineGeometry StartPoint="10,10" EndPoint="100,50" />
+		</Path.Data>
+		<Path.RenderTransform>
+			<RotateTransform Angle="45"/>
+		</Path.RenderTransform>
+	</Path>
+
+	<Path Stroke="#f00" Fill="#7700" Canvas.Left="100" Canvas.Top="180">
+		<Path.Data>
+			<LineGeometry StartPoint="10,10" EndPoint="100,50" />
+		</Path.Data>
+	</Path>
+	<Path Stroke="#00f" Fill="#7007" Canvas.Left="200" Canvas.Top="180" RenderTransformOrigin="0,1">
+		<Path.Data>
+			<LineGeometry StartPoint="10,10" EndPoint="100,50" />
+		</Path.Data>
+		<Path.RenderTransform>
+			<RotateTransform Angle="45" CenterX="40"/>
+ 		</Path.RenderTransform>
+	</Path>
+</Canvas>

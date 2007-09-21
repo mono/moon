@@ -1,0 +1,17 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,20 60,60 100,20" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="200,20 120,20 160,60" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="260,60 300,20 220,20" />
+
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,100 20,140 100,140" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="200,140 120,100 120,140" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="220,100 300,140 220,140" />
+
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="100,180 20,180 20,220" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="120,180 120,220 200,180" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="220,220 300,180 220,180" />
+
+<!-- FIXME: line join differs between SL (uncut) and Cairo (cut) -->
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,300 300,260 20,260" />
+	<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="360,320 60,360 360,360" />
+</Canvas>
