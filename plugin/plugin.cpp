@@ -430,7 +430,14 @@ PluginInstance::TryLoad ()
 {
 	int error = 0;
 
-	vm_missing_file = xaml_loader->TryLoad (&error);
+	//
+	// Only try to load if there's no missing files.
+	//
+
+	if (vm_missing_file == NULL)
+		vm_missing_file = g_strdup (xaml_loader->TryLoad (&error));
+	
+	//printf ("PluginInstance::TryLoad, vm_missing_file: %s, error: %i\n", vm_missing_file, error);
 	
 	if (vm_missing_file != NULL){
 		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
@@ -468,13 +475,40 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	}
 	
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
-		xaml_loader->InsertMapping (vm_missing_file, fname);
-		xaml_loader->InsertMapping (stream->url, fname);
-		g_free (vm_missing_file);
+		bool reload = true;
+		// printf ("PluginInstance::StreamAsFile: vm_missing_file: '%s', url: '%s', fname: '%s'.\n", vm_missing_file, stream->url, fname);
+
+		if (!vm_missing_file)
+			reload = false;
+			
+		if (reload && xaml_loader->GetMapping (vm_missing_file) != NULL) {
+			// printf ("PluginInstance::StreamAsFile: the file '%s' has already been downloaded, won't try to reload xaml. Mapped to: '%s' (new url: '%s').", vm_missing_file, xaml_loader->GetMapping (vm_missing_file), stream->url);
+			reload = false;
+		}
+		if (reload && xaml_loader->GetMapping (stream->url) != NULL) {
+			// printf ("PluginInstance::StreamAsFile: the url '%s' has already been downloaded, won't try to reload xaml. Mapped to: '%s' (new url: '%s').", vm_missing_file, xaml_loader->GetMapping (stream->url), stream->url);
+			reload = false;
+		}
+		
+		if (vm_missing_file)
+			xaml_loader->RemoveMissing (vm_missing_file);
+
+		char* missing = vm_missing_file;
 		vm_missing_file = NULL;
 
-		// retry to load
-		TryLoad ();
+		if (reload) {
+			// There may be more missing files.
+			vm_missing_file = g_strdup (xaml_loader->GetMissing ());
+
+			xaml_loader->InsertMapping (missing, fname);
+			xaml_loader->InsertMapping (stream->url, fname);
+			// printf ("PluginInstance::StreamAsFile: retry xaml loading, downloaded: %s to %s\n", missing, stream->url);
+			
+			// retry to load
+			TryLoad ();
+		}
+
+		g_free (missing);
 	}
 }
 
@@ -689,29 +723,36 @@ plugin_instance_get_browser_information (PluginInstance *instance,
 	XamlLoader
 */
 
+
+bool
+PluginXamlLoader::LoadVM ()
+{
+#if INCLUDE_MONO_RUNTIME
+	if (!vm_is_loaded ())
+		vm_init ();
+		
+	if (vm_is_loaded ())
+		return InitializeLoader ();
+#endif
+
+	return FALSE;
+}
+
 //
 // On error it sets the @error ref to 1
 // Returns the filename that we are missing
 //
-char*
+const char*
 PluginXamlLoader::TryLoad (int *error)
 {
 	g_assert (GetFilename () == NULL ^ GetString () == NULL);
 	
 	*error = 0;
 
-	if (!InitializeLoader ()) {
-		*error = 1;
-		return NULL;
-	}
-	
-#if INCLUDE_MONO_RUNTIME
-	return vm_loader_try (managed_loader, error); 
-#else
 	DependencyObject* element;
 	Type::Kind element_type;
 	
-	printf ("XamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ());
+	printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ());
 	
 	if (GetFilename ()) {
 		element = xaml_create_from_file (this, GetFilename (), true, &element_type);
@@ -723,12 +764,12 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 	
 	if (!element) {
-		printf ("XamlLoader::TryLoad: Could not load xaml %s: %s\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString ());
-		return NULL;
+		printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());
+		return GetMissing ();
 	}
 	
 	if (element_type != Type::CANVAS) {
-		printf ("XamlLoader::TryLoad: Return value is not a Canvas, its a %s\n", element->GetTypeName ());
+		printf ("PluginXamlLoader::TryLoad: Return value is not a Canvas, its a %s\n", element->GetTypeName ());
 		element->unref ();
 		return NULL;
 	}
@@ -738,53 +779,15 @@ PluginXamlLoader::TryLoad (int *error)
 	element->unref ();
 	
 	return NULL;
-#endif
 }
 
-void
-PluginXamlLoader::InsertMapping (const char* key, const char* value)
-{
-#if INCLUDE_MONO_RUNTIME
-	if (InitializeLoader ()) {
-		vm_insert_mapping  (managed_loader, key, value);
-	}
-#endif
-}
-
-DependencyObject* 
-PluginXamlLoader::CreateElement (const char* xmlns, const char* name)
-{
-#if INCLUDE_MONO_RUNTIME
-	if (create_element_callback)
-		return create_element_callback (xmlns, name);
-#endif
-	printf ("PluginXamlLoader::CreateElement (%s, %s)\n", xmlns, name);
-	return NULL;
-}
-
-void 
-PluginXamlLoader::SetAttribute (void* target, const char* name, const char* value)
-{
-#if INCLUDE_MONO_RUNTIME
-	if (set_attribute_callback) {
-		set_attribute_callback (target, name, value);
-		return;
-	}		
-#endif
-	printf ("PluginXamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
-}
-
-void 
+bool
 PluginXamlLoader::HookupEvent (void* target, const char* name, const char* value)
 {
-#if INCLUDE_MONO_RUNTIME
-	if (hookup_event_callback) {
-		hookup_event_callback (target, name, value);
-		return;
-	}		
-#endif
-	//printf ("PluginXamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
-	event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);
+	if (!XamlLoader::HookupEvent (target, name, value))
+		event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);
+		
+	return true;
 }
 
 bool
@@ -794,6 +797,9 @@ PluginXamlLoader::InitializeLoader ()
 		return TRUE;
 		
 #if INCLUDE_MONO_RUNTIME
+	if (!vm_is_loaded ())
+		return FALSE;
+		
 	if (managed_loader)
 		return TRUE;
 		

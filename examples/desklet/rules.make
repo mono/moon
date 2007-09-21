@@ -13,7 +13,7 @@ all: $(ASSEMBLY) postcompile
 
 $(ASSEMBLY): $(DSOURCES)
 	mkdir -p bin
-	gmcs -debug -target:library -pkg:silver -out:$(ASSEMBLY) $(foreach a,$(EXTRA_ASSEMBLIES),-r:$(a)) $(DSOURCES)
+	gmcs -debug -target:library -pkg:silverdesktop -out:$(ASSEMBLY) $(foreach a,$(EXTRA_ASSEMBLIES),-r:$(a)) $(DSOURCES)
 
 clean:
 	rm -f $(ASSEMBLY)

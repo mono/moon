@@ -140,7 +140,7 @@ class StreamNotify
 	void *pdata;
 };
 
-class PluginXamlLoader : XamlLoader
+class PluginXamlLoader : public XamlLoader
 {
 	private: 
 		PluginXamlLoader (const char* filename, const char* str, PluginInstance* plugin, Surface* surface);
@@ -152,8 +152,7 @@ class PluginXamlLoader : XamlLoader
 #endif
 	public:
 		virtual ~PluginXamlLoader ();
-		char* TryLoad (int *error);
-		void InsertMapping (const char* key, const char* value);
+		const char* TryLoad (int *error);		
 				
 		static PluginXamlLoader* FromFilename (const char* filename, PluginInstance* plugin, Surface* surface)
 		{
@@ -164,9 +163,8 @@ class PluginXamlLoader : XamlLoader
 			return new PluginXamlLoader (NULL, str, plugin, surface);
 		}
 		
-		virtual DependencyObject* CreateElement (const char* xmlns, const char* name);
-		virtual void SetAttribute (void* target, const char* name, const char* value);
-		virtual void HookupEvent (void* target, const char* name, const char* value);
+		virtual bool HookupEvent (void* target, const char* name, const char* value);
+		virtual bool LoadVM ();
 };
 
 G_BEGIN_DECLS

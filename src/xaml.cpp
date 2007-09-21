@@ -108,6 +108,7 @@ void
 unref_xaml_element (gpointer data, gpointer user_data)
 {
 	DependencyObject* dob = (DependencyObject*) data;
+	//printf ("unref_xaml_element: %i\n", dob->id);
 	base_unref (dob);
 }
 
@@ -265,7 +266,7 @@ class XNamespace : public XamlNamespace {
 			item->item = NULL;
 			DependencyObject *dob = NULL;
 			if (p->loader)
-				dob = p->loader->CreateElement (value, NULL);
+				dob = p->loader->CreateManagedObject (value, NULL);
 
 			if (!dob) {
 				parser_error (p, item->element_name, attr,
@@ -279,7 +280,6 @@ class XNamespace : public XamlNamespace {
 				NameScope::SetNameScope (dob, ns);
 			item->item = dob;
 
- 			delete old;
 			*reparse = true;
 			return;
 		}
@@ -316,7 +316,7 @@ class CustomNamespace : public XamlNamespace {
 	{
 		DependencyObject *dob = NULL;
 		if (p->loader)
-			dob = p->loader->CreateElement (xmlns, el);
+			dob = p->loader->CreateManagedObject (xmlns, el);
 
 		if (!dob) {
 			parser_error (p, el, NULL, g_strdup_printf ("Unable to resolve custom type %s\n", el));
@@ -346,33 +346,145 @@ class CustomNamespace : public XamlNamespace {
 	XamlLoader
 */
 DependencyObject* 
-XamlLoader::CreateElement (const char* xmlns, const char* name)
+XamlLoader::CreateManagedObject (const char* xmlns, const char* name)
 {
-	if (create_element_callback)
-		return create_element_callback (xmlns, name);
+	DependencyObject* result = NULL;
+	char *assembly = NULL, *ns = NULL, *type_name = NULL;
+	const char *assembly_path = NULL;
+	
+	//printf ("XamlLoader::CreateManagedObject (%s, %s)\n", xmlns, name);
+
+	xaml_parse_xmlns (xmlns, &type_name, &ns, &assembly);
+	
+	//printf ("XamlLoader::CreateManagedObject: assembly: %s, ns: %s, typename: %s\n", assembly, ns, type_name);
+
+	if (!assembly) {
+		//printf ("XamlLoader::CreateManagedObject (%s, %s): Invalid assembly: %s\n", xmlns, name, assembly);
+		goto cleanup;
+	}
+	
+	if (!vm_loaded && !LoadVM ())
+		return NULL;
+	
+	assembly_path = GetMapping (assembly);
+	
+	if (!assembly_path) {
+		assembly_path = assembly;
+	}
+	
+	if (type_name == NULL)
+		type_name = g_strdup (name);
+	
+	//printf ("XamlLoader::CreateManagedObject: assembly_path: %s\n", assembly_path);
+	
+	result = CreateManagedObject (assembly, assembly_path, ns, type_name);
+	
+cleanup:
+	g_free (assembly);
+	g_free (type_name);
+	g_free (ns);
+	
+	return result;
+
+}
+
+DependencyObject*
+XamlLoader::CreateManagedObject (const char* asm_name, const char* asm_path, const char* name, const char* type_name)
+{
+	//printf ("XamlLoader::CreateManagedObject (%s, %s, %s, %s)\n", asm_name, asm_path, name, type_name);
+	
+	if (callbacks.load_managed_object) {
+		return callbacks.load_managed_object (asm_name, asm_path, name, type_name);
+	}
 		
-	printf ("XamlLoader::CreateElement (%s, %s)\n", xmlns, name);
 	return NULL;
 }
 
 void 
 XamlLoader::SetAttribute (void* target, const char* name, const char* value)
 {
-	if (set_attribute_callback) {
-		set_attribute_callback (target, name, value);
+	if (callbacks.set_custom_attribute) {
+		callbacks.set_custom_attribute (target, name, value);
 		return;
 	}
-	printf ("XamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
+	//printf ("XamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
+}
+
+bool
+XamlLoader::HookupEvent (void* target, const char* name, const char* value)
+{
+	if (callbacks.hookup_event) {
+		return callbacks.hookup_event (target, name, value);
+	}
+	//printf ("XamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
+	return false;
+}
+
+void
+XamlLoader::AddMissing (const char* assembly)
+{		
+	//printf ("XamlLoader::AddMissing (%s).\n", assembly);
+	
+	if (!vm_loaded)
+		LoadVM ();
+	
+	if (!missing_assemblies)
+		missing_assemblies = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+		
+	g_hash_table_insert (missing_assemblies, g_strdup (assembly), g_strdup (assembly));
 }
 
 void 
-XamlLoader::HookupEvent (void* target, const char* name, const char* value)
+XamlLoader::RemoveMissing (const char* assembly)
 {
-	if (hookup_event_callback) {
-		hookup_event_callback (target, name, value);
-		return;
+	//printf ("XamlLoader::RemoveMissing ('%s').\n", assembly);
+
+	g_hash_table_remove (missing_assemblies, assembly);
+}
+
+gboolean
+xaml_loader_find_any (gpointer key, gpointer value, gpointer user_data)
+{
+	return TRUE;
+}
+
+const char*
+XamlLoader::GetMissing ()
+{
+	if (!missing_assemblies)
+		return NULL;
+
+	return (const char*) g_hash_table_find (missing_assemblies, xaml_loader_find_any, NULL);
+}
+
+void
+XamlLoader::InsertMapping (const char* key, const char* value)
+{
+	//printf ("XamlLoader::InsertMapping (%s, %s), insert_mapping: %p, mappings: %p\n", key, value, callbacks.insert_mapping, mappings);
+	
+	if (!mappings)
+		mappings = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+	g_hash_table_insert (mappings, g_strdup (key), g_strdup (value));
+	
+	if (callbacks.insert_mapping)
+		callbacks.insert_mapping (key, value);
+}
+
+const char*
+XamlLoader::GetMapping (const char* key)
+{
+	
+	char* result;
+	if (mappings) {
+		result = (char*) g_hash_table_lookup (mappings, key);
+		if (result)
+			return result;
 	}
-	printf ("XamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
+	
+	if (callbacks.get_mapping)
+		return callbacks.get_mapping (key);
+	else
+		return NULL;
 }
 
 XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
@@ -381,10 +493,9 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 	this->str = g_strdup (str);
 	this->surface = surface;
 	base_ref (this->surface);
-	this->create_element_callback = NULL;
-	this->set_attribute_callback = NULL;
-	this->hookup_event_callback = NULL;
-	
+	this->missing_assemblies = NULL;
+	this->mappings = NULL;
+	this->vm_loaded = false;
 }
 
 XamlLoader::~XamlLoader ()
@@ -392,6 +503,22 @@ XamlLoader::~XamlLoader ()
 	g_free (filename);
 	g_free (str);
 	base_unref (this->surface);
+	if (missing_assemblies)
+		g_hash_table_destroy (missing_assemblies);
+	if (mappings)
+		g_hash_table_destroy (mappings);
+	
+	mappings = NULL;
+	missing_assemblies = NULL;
+	surface = NULL;
+	filename = NULL;
+	str = NULL;
+}
+
+bool
+XamlLoader::LoadVM ()
+{
+	return false;
 }
 
 XamlLoader* 
@@ -406,18 +533,27 @@ xaml_loader_free (XamlLoader* loader)
 	delete loader;
 }
 
+void
+xaml_loader_add_missing (XamlLoader* loader, const char* file)
+{
+	if (!loader) {
+		printf ("Trying to add missing file '%s' to a null loader.\n", file);
+		return;
+	}
+	
+	loader->AddMissing (file);
+}
+
 void 
-xaml_set_parser_callbacks (XamlLoader* loader, plugin_create_custom_element_callback *cecb,
-			   plugin_set_custom_attribute_callback *sca, plugin_hookup_event_callback *hue)
+xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 {
 	if (!loader) {
 		printf ("Trying to set callbacks for a null object\n");
 		return;
 	}
 	
-	loader->create_element_callback = cecb;
-	loader->set_attribute_callback = sca;
-	loader->hookup_event_callback = hue;
+	loader->callbacks = callbacks;
+	loader->vm_loaded = true;
 }
 
 XamlElementInstance *
@@ -792,6 +928,38 @@ print_tree (XamlElementInstance *el, int depth)
 		XamlElementInstance *el = (XamlElementInstance *) walk;
 		print_tree (el, depth + 1);
 	}
+}
+
+void		
+xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembly)
+{
+	const char delimiters[]  = ";";
+	char* decl;
+	char* buffer = g_strdup (xmlns);
+	
+	*type_name = NULL;
+	*ns = NULL;
+	*assembly = NULL;
+	
+	decl = strtok (buffer, delimiters);
+	while (decl != NULL) {
+		if (strstr (decl, "clr-namespace:") == decl) {
+			if (*ns)
+				g_free (*ns);
+			*ns = g_strdup (decl + 14);
+		} else if (strstr (decl, "assembly=") == decl) {
+			if (*assembly)
+				g_free (*assembly);
+			*assembly = g_strdup (decl + 9);
+		} else {
+			if (*type_name)
+				g_free (*type_name);
+			*type_name = g_strdup (decl);			
+		}
+		
+		decl = strtok (NULL, delimiters);
+	}
+	g_free (buffer);
 }
 
 DependencyObject *

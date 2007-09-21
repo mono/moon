@@ -287,7 +287,7 @@ struct MoonlightEventObjectObject : public MoonlightObject
 
 	EventObject *eo;
 };
-static void moonlight_event_object_invalidate (NPObject *npobj);
+
 extern MoonlightEventObjectObject* EventObjectCreateWrapper (NPP instance, EventObject *obj);
 
 /*** MoonlightDependencyObjectClass ***************************************************/

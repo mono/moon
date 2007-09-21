@@ -28,12 +28,10 @@ G_END_DECLS
 static MonoDomain   *moon_domain;
 static MonoAssembly *moon_boot_assembly;
 static char *boot_assembly;
+static bool moon_vm_loaded = FALSE;
 
 // Methods
-static MonoMethod   *moon_load_xaml_file;
-static MonoMethod   *moon_load_xaml_str;
-static MonoMethod   *moon_try_load;
-static MonoMethod   *moon_insert_mapping;
+static MonoMethod   *moon_load_xaml;
 
 static MonoMethod *
 vm_get_method_from_name (const char *name)
@@ -48,10 +46,19 @@ vm_get_method_from_name (const char *name)
 	return method;
 }
 
+bool
+vm_is_loaded (void)
+{
+	return moon_vm_loaded;
+}
+
 gboolean
 vm_init (void)
 {
 	gboolean result = FALSE;
+
+	if (moon_vm_loaded)
+		return TRUE;
 
 	boot_assembly = g_build_path ("/", PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
 	printf ("The file is %s\n", boot_assembly);
@@ -68,16 +75,16 @@ vm_init (void)
 
 		mono_jit_exec (moon_domain, moon_boot_assembly, 1, argv);
 
-		moon_load_xaml_file = vm_get_method_from_name ("Moonlight.Hosting:CreateXamlFileLoader");
-		moon_load_xaml_str = vm_get_method_from_name ("Moonlight.Hosting:CreateXamlStrLoader");
-		moon_try_load = vm_get_method_from_name ("Moonlight.Loader:TryLoad");
-		moon_insert_mapping = vm_get_method_from_name ("Moonlight.Loader:InsertMapping");
+		moon_load_xaml = vm_get_method_from_name ("Moonlight.Loader:CreateXamlLoader");
 
-		if (moon_load_xaml_file != NULL && moon_try_load != NULL){
+		if (moon_load_xaml != NULL) {
 			result = TRUE;
 		}		
 	}
 	DEBUGMSG ("Mono Runtime: %s", result ? "OK" : "Failed");
+	
+	moon_vm_loaded = TRUE;
+	
 	return result;
 }
 
@@ -89,61 +96,30 @@ vm_init (void)
 gpointer
 vm_xaml_file_loader_new (XamlLoader* native_loader, gpointer plugin, gpointer surface, const char *file)
 {
-	MonoObject *loader;
-	if (moon_load_xaml_file == NULL)
-		return NULL;
-
-	void *params [4];
-	params [0] = &native_loader;
-	params [1] = &plugin;
-	params [2] = &surface;
-	params [3] = mono_string_new (moon_domain, file);
-	loader = mono_runtime_invoke (moon_load_xaml_file, NULL, params, NULL);
-	return GUINT_TO_POINTER (mono_gchandle_new (loader, FALSE));
+	return vm_xaml_loader_new (native_loader, plugin, surface, file, NULL);
 }
 
 gpointer
 vm_xaml_str_loader_new (XamlLoader* native_loader, gpointer plugin, gpointer surface, const char *str)
 {
+	return vm_xaml_loader_new (native_loader, plugin, surface, NULL, str);
+}
+
+gpointer
+vm_xaml_loader_new (XamlLoader* native_loader, gpointer plugin, gpointer surface, const char *file, const char *str)
+{
 	MonoObject *loader;
-	if (moon_load_xaml_str == NULL)
+	if (moon_load_xaml == NULL)
 		return NULL;
 
-	void *params [4];
+	void *params [5];
 	params [0] = &native_loader;
 	params [1] = &plugin;
 	params [2] = &surface;
-	params [3] = mono_string_new (moon_domain, str);
-	loader = mono_runtime_invoke (moon_load_xaml_str, NULL, params, NULL);
+	params [3] = file ? mono_string_new (moon_domain, file) : NULL;
+	params [4] = str ? mono_string_new (moon_domain, str) : NULL;
+	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
 	return GUINT_TO_POINTER (mono_gchandle_new (loader, FALSE));
-}
-
-char *
-vm_loader_try (gpointer loader_object, int *error)
-{
-	if (moon_try_load == NULL)
-		return NULL;
-
-	void *params [1];
-	params [0] = &error;
-
-	MonoString *ret = (MonoString *) mono_runtime_invoke (moon_try_load, mono_gchandle_get_target (GPOINTER_TO_UINT (loader_object)), params, NULL);
-	
-	return mono_string_to_utf8 (ret);
-}
-
-//
-// Inserts the original file request with its mapping into the
-// managed loader hashtable  (bin/MyAssembly.dll, ~/.mozilla/tmp/xxx.dll)
-//
-void
-vm_insert_mapping (gpointer loader_object, const char *key, const char *value)
-{
-	void *params [2];
-	params [0] = mono_string_new (moon_domain, key);
-	params [1] = mono_string_new (moon_domain, value);
-
-	mono_runtime_invoke (moon_insert_mapping, mono_gchandle_get_target (GPOINTER_TO_UINT (loader_object)), params, NULL);
 }
 
 void

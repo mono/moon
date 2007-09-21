@@ -14,13 +14,13 @@
 #if INCLUDE_MONO_RUNTIME
 G_BEGIN_DECLS
 
+bool		vm_is_loaded (void);
 gboolean    vm_init (void);
+gpointer	vm_xaml_loader_new (XamlLoader* loader, gpointer plugin, gpointer surface, const char *file, const char *str);
 gpointer    vm_xaml_file_loader_new (XamlLoader* loader, gpointer plugin, gpointer surface, const char *file);
 gpointer    vm_xaml_str_loader_new (XamlLoader* loader, gpointer plugin, gpointer surface, const char *str);
 
-char       *vm_loader_try      (gpointer loader_object, int *error);
-void        vm_insert_mapping  (gpointer loader_object, const char *key, const char *value);
-void        vm_loader_destroy  (gpointer loader_object);
+void			vm_loader_destroy  (gpointer loader_object);
 
 G_END_DECLS
 #endif

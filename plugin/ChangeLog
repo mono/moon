@@ -1,3 +1,24 @@
+2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: If an assembly already has been downloaded once, don't try to
+	  reload the xaml (otherwise might cause a loop if loading the xaml failed
+	  due to a reason other than that the assembly wasn't already downloaded).
+	  Added PluginXamlLoader::LoadVM.  PluginXamlLoader::TryLoad: don't call
+	  into the vm here, since it might not be loaded yet. Move implementation
+	  of InsertMapping, CreateElement and SetAttribute to XamlLoader.
+	  InitializeLoader: don't create a managed loader if the vm hasn't been
+	  loaded.
+	* plugin.h: Move implementation of InsertMapping, CreateElement and
+	  SetAttribute to XamlLoader.
+	* plugin-class.h: Remove unused function declaration.
+	* mono.cpp, moon-mono.h: Remove all managed methods except moon_load_xaml,
+	  which sets the methods as callbacks on the xaml loader with delegates
+	  now. Guard against loading the vm twice.
+	* moonlight.cs: Moved code to agclr, just kept a simple stub here that
+	  creates the new AppDomain.
+	* plugin-glue.cpp: Don't initialize the vm when the plugin is initialized,
+	  it's initialized on demand.
+
 2007-09-19  Zoltan Varga  <vargaz@gmail.com>
 
 	* plugin.cpp (plugin_menu_about): Make the close button work on some gtk versions.

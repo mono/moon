@@ -182,7 +182,6 @@ NPP_GetMIMEDescription (void)
 void downloader_initialize ();
 void downloader_destroy ();
 
-static bool vm_initialized = false;
 static bool gtk_initialized = false;
 static bool already_initialized = false;
 static bool runtime_initialized = false;
@@ -195,12 +194,6 @@ NPP_Initialize (void)
 		gtk_initialized = true;
 		gtk_init (0, 0);
 	}
-#if INCLUDE_MONO_RUNTIME
-	if (!vm_initialized) {
-		vm_initialized = true;
-		vm_init ();
-	}
-#endif
 	downloader_initialize ();
 	
 	if (!runtime_initialized) {

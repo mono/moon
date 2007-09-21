@@ -1,3 +1,15 @@
+2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp, xaml.h: Added a XamlLoaderCalbacks structure that contains all
+	  the callbacks XamlLoader needs. Added xaml_loader_set_callbacks for
+	  managed code to set them. Keep track of mappings in native code, call
+	  into managed code only if a mapping is not found here. Keep a list of
+	  missing assemblies, allows managed code to request downloading of
+	  several assemblies before trying to parse xaml again. Added
+	  XamlLoader::CreateManagedObject, tries to parse xmlns/name, if
+	  successful (and only then), requests a vm to be loaded, before calling
+	  into managed code to actually create the managed object.
+
 2007-09-20  Chris Toshok  <toshok@ximian.com>
 
 	* type.cpp, type.cpp.in (types_init_register_events):register the
