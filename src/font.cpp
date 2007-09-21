@@ -855,7 +855,7 @@ TextLayout::SetMaxWidth (int max)
 	if (max_width == max)
 		return;
 	
-	max_width = width;
+	max_width = max;
 	height = -1;
 	width = -1;
 }
@@ -1039,9 +1039,10 @@ TextLayout::Layout ()
 			width = MAX (width, lw);
 			
 			// create a new line
+			lh = run->font->Height ();
 			line = new TextLine ();
 			spc.index = -1;
-			lw = lh = 0;
+			lw = 0;
 		}
 		
 		segment->end = i;
@@ -1139,8 +1140,11 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	TextLine *line;
 	int bx, by, oy;
 	double dx, dy;
+	GString *str;
 	int ascend;
 	int i;
+	
+	str = g_string_new ("");
 	
 	Layout ();
 	
@@ -1166,6 +1170,8 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 				if (!(glyph = font->GetGlyphInfo (segment->text[i])))
 					continue;
 				
+				g_string_append_c (str, (char) segment->text[i]);
+				
 				if (glyph->index > 0) {
 					bx = glyph->metrics.horiBearingX;
 					by = glyph->metrics.horiBearingY;
@@ -1189,5 +1195,11 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 		
 		line = (TextLine *) line->next;
 		dx = 0.0f;
+		
+		if (line)
+			g_string_append_c (str, '\n');
 	}
+	
+	printf ("rendered text (%d, %d) (%d, %d): \"%s\"\n", width, height, max_width, max_height, str->str);
+	g_string_free (str, true);
 }

@@ -1,3 +1,10 @@
+2007-09-21  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* font.cpp (SetMaxWidth): Oops, set max_width = max (rather than
+	the old width extents).
+	(Layout): When breaking a long line, the new line height should
+	not be set to 0 (duh), it should be set to the font height.
+
 2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml.cpp, xaml.h: Added a XamlLoaderCalbacks structure that contains all
@@ -12,7 +19,7 @@
 
 2007-09-20  Chris Toshok  <toshok@ximian.com>
 
-	* type.cpp, type.cpp.in (types_init_register_events):register the
+	* type.cpp, type.cpp.in (types_init_register_events): register the
 	LostFocus/GotFocus events.
 
 	* uielement.h: add LostFocusEvent/GotFocusEvent.
