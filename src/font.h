@@ -108,14 +108,14 @@ public:
 	
 	static TextFont *Load (FcPattern *pattern);
 	
-	const GlyphInfo *GetGlyphInfo (uint32_t unichar);
+	GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
 	int Ascender ();
 	int EmSize ();
 	int Height ();
 	
-	void Render (cairo_t *cr, const GlyphInfo *glyph);
-	void Render (cairo_t *cr, uint32_t unichar);
+	void Render (cairo_t *cr, GlyphInfo *glyph, double x, double y);
+	void Render (cairo_t *cr, uint32_t unichar, double x, double y);
 };
 
 
@@ -197,7 +197,7 @@ class TextLayout {
 	int height;
 	int width;
 	
-	void RenderGlyphBitmap (cairo_t *cr, const GlyphInfo *glyph, double x, double y);
+	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	
 public:
 	

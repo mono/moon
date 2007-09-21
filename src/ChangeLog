@@ -1,3 +1,10 @@
+2007-09-20  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* font.cpp (Layout): Add the horiBearingX value of the last glyph
+	in each line to the width of said line.
+	(RenderGlyphBitmap): Cache the surface and use it as a mask when
+	filling so that the true source pattern shows thru.
+
 2007-09-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mango.cpp (mango_renderer_draw_glyphs): Cache the paths that we
