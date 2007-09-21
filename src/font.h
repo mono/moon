@@ -198,6 +198,7 @@ class TextLayout {
 	int width;
 	
 	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
+	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	
 public:
 	

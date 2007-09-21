@@ -137,13 +137,21 @@ moon_get_current_point (moon_path *path, double *x, double *y)
 void
 moon_move_to (moon_path *path, double x, double y)
 {
-	if (!path || !CHECK_SPACE (path, MOON_PATH_MOVE_TO_LENGTH)) {
-		g_warning ("moon_move_to(%p,%g,%g)", path, x, y);
-		return;
-	}
-
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_MOVE_TO_LENGTH)) {
+		while (n < pos + MOON_PATH_MOVE_TO_LENGTH)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
+	}
+	
 	data[pos].header.type = CAIRO_PATH_MOVE_TO;
 	data[pos].header.length = MOON_PATH_MOVE_TO_LENGTH;
 	pos++;
@@ -163,13 +171,21 @@ moon_move_to (moon_path *path, double x, double y)
 void
 moon_line_to (moon_path *path, double x, double y)
 {
-	if (!path || !CHECK_SPACE (path, MOON_PATH_LINE_TO_LENGTH)) {
-		g_warning ("moon_line_to(%p,%g,%g)", path, x, y);
-		return;
-	}
-
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_LINE_TO_LENGTH)) {
+		while (n < pos + MOON_PATH_LINE_TO_LENGTH)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
+	}
+	
 	data[pos].header.type = CAIRO_PATH_LINE_TO;
 	data[pos].header.length = MOON_PATH_MOVE_TO_LENGTH;
 	pos++;
@@ -190,13 +206,21 @@ moon_line_to (moon_path *path, double x, double y)
 void
 moon_curve_to (moon_path *path, double x1, double y1, double x2, double y2, double x3, double y3)
 {
-	if (!path || !CHECK_SPACE (path, MOON_PATH_CURVE_TO_LENGTH)) {
-		g_warning ("moon_curve_to(%p,%g,%g,%g,%g,%g,%g)", path, x1, y1, x2, y2, x3, y3);
-		return;
-	}
-
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_CURVE_TO_LENGTH)) {
+		while (n < pos + MOON_PATH_CURVE_TO_LENGTH)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
+	}
+	
 	data[pos].header.type = CAIRO_PATH_CURVE_TO;
 	data[pos].header.length = MOON_PATH_CURVE_TO_LENGTH;
 	pos++;
@@ -225,20 +249,27 @@ moon_curve_to (moon_path *path, double x1, double y1, double x2, double y2, doub
 void
 moon_ellipse (moon_path *path, double x, double y, double w, double h)
 {
-	if (!path || !CHECK_SPACE (path, MOON_PATH_ELLIPSE_LENGTH)) {
-		g_warning ("moon_ellipse(%p,%g,%g,%g,%g)", path, x, y, w, h);
-		return;
-	}
-
+	cairo_path_data_t *data = path->cairo.data;
+	int pos = path->cairo.num_data;
 	double rx = w / 2.0;
 	double ry = h / 2.0;
 	double cx = x + rx;
 	double cy = y + ry;
 	double brx = ARC_TO_BEZIER * rx;
 	double bry = ARC_TO_BEZIER * ry;
-
-	cairo_path_data_t *data = path->cairo.data;
-	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_ELLIPSE_LENGTH)) {
+		while (n < pos + MOON_PATH_ELLIPSE_LENGTH)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
+	}
+	
 	data[pos].header.type = CAIRO_PATH_MOVE_TO;
 	data[pos].header.length = MOON_PATH_MOVE_TO_LENGTH;
 	pos++;
@@ -312,13 +343,21 @@ moon_ellipse (moon_path *path, double x, double y, double w, double h)
 void
 moon_rectangle (moon_path *path, double x, double y, double w, double h)
 {
-	if (!path || !CHECK_SPACE (path, MOON_PATH_RECTANGLE_LENGTH)) {
-		g_warning ("moon_rectangle(%p,%g,%g,%g,%g)", path, x, y, w, h);
-		return;
-	}
-
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_RECTANGLE_LENGTH)) {
+		while (n < pos + MOON_PATH_RECTANGLE_LENGTH)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
+	}
+	
 	data[pos].header.type = CAIRO_PATH_MOVE_TO;
 	data[pos].header.length = MOON_PATH_MOVE_TO_LENGTH;
 	pos++;
@@ -364,11 +403,21 @@ moon_rectangle (moon_path *path, double x, double y, double w, double h)
 void
 moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h, double radius_x, double radius_y)
 {
-	if (!path || !CHECK_SPACE (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH)) {
-		g_warning ("moon_rounded_rectangle(%p,%g,%g,%g,%g,%g,%g)", path, x, y, w, h, radius_x, radius_y);
-		return;
+	cairo_path_data_t *data = path->cairo.data;
+	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH)) {
+		while (n < pos + MOON_PATH_ROUNDED_RECTANGLE_LENGTH)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
 	}
-
+	
 	if (radius_x < 0.0)
 		radius_x = -radius_x;
 	if (radius_y < 0.0)
@@ -383,9 +432,7 @@ moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h,
 	// approximate (quite close) the arc using a bezier curve
 	double c1 = ARC_TO_BEZIER * radius_x;
 	double c2 = ARC_TO_BEZIER * radius_y;
-
-	cairo_path_data_t *data = path->cairo.data;
-	int pos = path->cairo.num_data;
+	
 	data[pos].header.type = CAIRO_PATH_MOVE_TO;
 	data[pos].header.length = MOON_PATH_MOVE_TO_LENGTH;
 	pos++;
@@ -479,13 +526,21 @@ moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h,
 void
 moon_close_path (moon_path *path)
 {
-	if (!path || !CHECK_SPACE (path, MOON_PATH_CLOSE_PATH_LENGTH)) {
-		g_warning ("moon_close_path(%p)", path);
-		return;
-	}
-
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_CLOSE_PATH_LENGTH)) {
+		while (n < pos + MOON_PATH_CLOSE_PATH_LENGTH)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
+	}
+	
 	data[pos].header.type = CAIRO_PATH_CLOSE_PATH;
 	data[pos].header.length = MOON_PATH_CLOSE_PATH_LENGTH;
 	path->cairo.num_data += MOON_PATH_CLOSE_PATH_LENGTH;

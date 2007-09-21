@@ -15,7 +15,10 @@
 #include <glib.h>
 #include <string.h>
 
+#include "moon-path.h"
 #include "font.h"
+
+#include FT_OUTLINE_H
 
 
 static GHashTable *font_cache = NULL;
@@ -122,10 +125,16 @@ struct GlyphInfo {
 	FT_Glyph_Metrics metrics;
 	uint32_t unichar;
 	uint32_t index;
+	moon_path *path;
 	cairo_surface_t *surface;
 	FT_Bitmap bitmap;
 	int bitmap_left;
 	int bitmap_top;
+};
+
+static const FT_Matrix invert_y = {
+        65535, 0,
+        0, -65535,
 };
 
 
@@ -242,6 +251,94 @@ TextFont::Height ()
 	return face->size->metrics.height / 64;
 }
 
+static int
+font_move_to (FT_Vector *to, void *user_data)
+{
+	moon_path *path = (moon_path *) user_data;
+	double x, y;
+	
+	x = to->x / 64.0;
+	y = to->y / 64.0;
+	
+	moon_move_to (path, x, y);
+	
+	return 0;
+}
+
+static int
+font_line_to (FT_Vector *to, void *user_data)
+{
+	moon_path *path = (moon_path *) user_data;
+	double x, y;
+	
+	x = to->x / 64.0;
+	y = to->y / 64.0;
+	
+	moon_line_to (path, x, y);
+	
+	return 0;
+}
+
+static int
+font_conic_to (FT_Vector *control, FT_Vector *to, void *user_data)
+{
+	moon_path *path = (moon_path *) user_data;
+	double x0, y0;
+	double x1, y1;
+	double x2, y2;
+	double x3, y3;
+	double x, y;
+	
+	moon_get_current_point (path, &x0, &y0);
+	
+	x = control->x / 64.0;
+	y = control->y / 64.0;
+	
+	x3 = to->x / 64.0;
+	y3 = to->y / 64.0;
+	
+	x1 = x0 + 2.0/3.0 * (x - x0);
+	y1 = y0 + 2.0/3.0 * (y - y0);
+	
+	x2 = x3 + 2.0/3.0 * (x - x3);
+	y2 = y3 + 2.0/3.0 * (y - y3);
+	
+	moon_curve_to (path, x1, y1, x2, y2, x3, y3);
+	
+	return 0;
+}
+
+static int
+font_cubic_to (FT_Vector *control1, FT_Vector *control2, FT_Vector *to, void *user_data)
+{
+	moon_path *path = (moon_path *) user_data;
+	double x0, y0;
+	double x1, y1;
+	double x2, y2;
+	
+	x0 = control1->x / 64.0;
+	y0 = control1->y / 64.0;
+	
+	x1 = control2->x / 64.0;
+	y1 = control2->y / 64.0;
+	
+	x2 = to->x / 64.0;
+	y2 = to->y / 64.0;
+	
+	moon_curve_to (path, x0, y0, x1, y1, x2, y2);
+	
+	return 0;
+}
+
+static const FT_Outline_Funcs outline_funcs = {
+        (FT_Outline_MoveToFunc) font_move_to,
+        (FT_Outline_LineToFunc) font_line_to,
+        (FT_Outline_ConicToFunc) font_conic_to,
+        (FT_Outline_CubicToFunc) font_cubic_to,
+        0, /* shift */
+        0, /* delta */
+};
+
 GlyphInfo *
 TextFont::GetGlyphInfo (uint32_t unichar)
 {
@@ -263,11 +360,22 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			glyph->surface = NULL;
 		}
 		
+		if (glyph->path) {
+			moon_path_destroy (glyph->path);
+			glyph->path = NULL;
+		}
+		
 		g_free (glyph->bitmap.buffer);
 		
 		if (glyph->index > 0 && FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) == 0) {
 			if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
 				goto unavail;
+			
+			if (face->face_flags & FT_FACE_FLAG_SCALABLE) {
+				glyph->path = moon_path_new (16);
+				FT_Outline_Transform (&face->glyph->outline, &invert_y);
+				FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
+			}
 			
 			//memcpy (&glyph->metrics, &face->glyph->metrics, sizeof (glyph->metrics));
 			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64;
@@ -1130,6 +1238,20 @@ TextLayout::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y
 }
 
 void
+TextLayout::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y)
+{
+	cairo_save (cr);
+	
+	cairo_new_path (cr);
+	cairo_translate (cr, x, y);
+	cairo_append_path (cr, &glyph->path->cairo);
+	cairo_close_path (cr);
+	cairo_fill (cr);
+	
+	cairo_restore (cr);
+}
+
+void
 TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 {
 	TextSegment *segment;
@@ -1140,11 +1262,8 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	TextLine *line;
 	int bx, by, oy;
 	double dx, dy;
-	GString *str;
 	int ascend;
 	int i;
-	
-	str = g_string_new ("");
 	
 	Layout ();
 	
@@ -1170,8 +1289,6 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 				if (!(glyph = font->GetGlyphInfo (segment->text[i])))
 					continue;
 				
-				g_string_append_c (str, (char) segment->text[i]);
-				
 				if (glyph->index > 0) {
 					bx = glyph->metrics.horiBearingX;
 					by = glyph->metrics.horiBearingY;
@@ -1179,10 +1296,17 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					// y-offset for the top of the glyph
 					oy = ascend - (line->height - ascend) - by;
 					
-					//printf ("'%c' lh = %d, ascend = %d, height = %d, by = %d, oy = %d\n",
-					//	(char) segment->text[i], line->height, ascend, glyph->bitmap.rows, by, oy);
-					
-					RenderGlyphBitmap (cr, glyph, x + dx + bx, y + dy + oy);
+					if (glyph->path) {
+						// y-offset for the bottom of the glyph
+						oy = ascend - (line->height - ascend);
+						
+						RenderGlyphPath (cr, glyph, x + dx + bx, y + dy + oy);
+					} else {
+						// y-offset for the top of the glyph
+						oy = ascend - (line->height - ascend) - by;
+						
+						RenderGlyphBitmap (cr, glyph, x + dx + bx, y + dy + oy);
+					}
 				}
 				
 				dx += (double) glyph->metrics.horiAdvance;
@@ -1195,11 +1319,5 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 		
 		line = (TextLine *) line->next;
 		dx = 0.0f;
-		
-		if (line)
-			g_string_append_c (str, '\n');
 	}
-	
-	printf ("rendered text (%d, %d) (%d, %d): \"%s\"\n", width, height, max_width, max_height, str->str);
-	g_string_free (str, true);
 }
