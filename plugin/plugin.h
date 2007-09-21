@@ -17,6 +17,9 @@
 
 class MoonlightScriptControlObject;
 class PluginXamlLoader;
+class PluginInstance;
+
+typedef void plugin_unload_callback (PluginInstance* plugin);
 
 class PluginInstance
 {
@@ -41,6 +44,10 @@ class PluginInstance
 	// The XAML loader, contains a handle to a MonoObject *
 	//
 	PluginXamlLoader* xaml_loader;
+	// 
+	// A (managed) callback to call when the plugin is unloaded.
+	//
+	plugin_unload_callback* plugin_unload;
 
 	// The name of the file that we are missing, and we requested to be loaded
 	char *vm_missing_file;
@@ -54,6 +61,7 @@ class PluginInstance
  public:	
 	PluginInstance (NPP instance, uint16 mode);
 	~PluginInstance ();
+	void SetUnloadCallback (plugin_unload_callback* puc);
 	void Initialize (int argc, char* const argn[], char* const argv[]);
 	void Finalize ();
 
@@ -181,6 +189,7 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
 uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
+void     plugin_set_unload_callback (PluginInstance* instance, plugin_unload_callback* puc);
 
 G_END_DECLS
 

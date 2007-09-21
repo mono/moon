@@ -105,6 +105,17 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 
 GSList *plugin_instances = NULL;
 
+void
+plugin_set_unload_callback (PluginInstance* plugin, plugin_unload_callback* puc)
+{
+	if (!plugin) {
+		printf ("Trying to set plugin unload callback on a null plugin.\n");
+		return;
+	}
+	
+	plugin->SetUnloadCallback (puc);
+}
+
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
 {
 	this->mode = mode;
@@ -128,6 +139,7 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	
 	this->vm_missing_file = NULL;
 	this->xaml_loader = NULL;
+	this->plugin_unload = NULL;
 
 	this->timers = NULL;
 
@@ -155,7 +167,7 @@ PluginInstance::~PluginInstance ()
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
 	// we might have another source of problems
 	//
-	fprintf (stderr, "Destroying the plugin: %p\n", surface);
+	fprintf (stderr, "Destroying the surface: %p, plugin: %p\n", surface, this);
 	if (surface != NULL){
 		//gdk_error_trap_push ();
 		surface->unref ();
@@ -171,6 +183,15 @@ PluginInstance::~PluginInstance ()
 
 	delete xaml_loader;
 	xaml_loader = NULL;
+	
+	if (plugin_unload)
+		plugin_unload (this);
+}
+
+void
+PluginInstance::SetUnloadCallback (plugin_unload_callback* puc)
+{
+	plugin_unload = puc;
 }
 
 void 

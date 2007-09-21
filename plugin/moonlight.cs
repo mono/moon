@@ -39,10 +39,15 @@ using System.Collections;
 using System.ComponentModel;
 
 namespace Moonlight {
-
 	public class Loader {
+		[DllImport ("moonplugin")]
+		static extern void plugin_set_unload_callback (IntPtr plugin, plugin_unload puc);
+		delegate void plugin_unload (IntPtr plugin);
+		
+		static Hashtable domains = new Hashtable ();
+		
 		Mono.Xaml.XamlLoader rl;
-		AppDomain domain;
+		plugin_unload unload_callback;
 		
 		// [DONE] 1. Load XAML file 
 		// 2. Make sure XAML file exposes a few new properites:
@@ -64,19 +69,28 @@ namespace Moonlight {
 			}
 		}
 		
-		public static void DisposeXamlLoader (Loader loader)
+		private AppDomain GetDomain (IntPtr plugin)
 		{
-			try {
-				loader.Dispose ();
-			} catch (Exception ex) {
-				Console.Error.WriteLine ("Loader::Dispose: Unable to dispose: {0}.", ex.Message);
+			AppDomain domain;
+			if (domains.Contains (plugin)) {
+				domain = (AppDomain) domains [plugin];
+			} else {
+				domain = Helper.CreateDomain (plugin);
+				domains [plugin] = domain;
+				if (plugin != IntPtr.Zero) {
+					// Set the plugin unload callback so that we get a chance to unload the domain when 
+					// the plugin unloads.
+					unload_callback = new plugin_unload (UnloadDomain);
+					plugin_set_unload_callback (plugin, unload_callback);
+				}
 			}
+			return domain;
 		}
-		
+				
 		public Loader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
-			domain = Helper.CreateDomain (plugin);
-
+			AppDomain domain = GetDomain (plugin);
+			
 			rl = (Mono.Xaml.XamlLoader) Helper.CreateInstanceAndUnwrap (
 				domain, typeof (DependencyObject).Assembly.FullName, 
 				"Mono.Xaml.ManagedXamlLoader");
@@ -84,19 +98,18 @@ namespace Moonlight {
 			rl.Setup (native_loader, plugin, surface, filename, contents);
 		}
 		
-		public void Dispose ()
+		public static void UnloadDomain (IntPtr plugin)
 		{
-			if (domain != null) {
-				Helper.UnloadDomain (domain);
-				domain = null;
+			try {
+				AppDomain domain = (AppDomain) domains [plugin];
+				if (domain != null) {
+					Console.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): {1}.", plugin, domain.FriendlyName);
+					domains.Remove (plugin);
+					Helper.UnloadDomain (domain);
+				}
+			} catch (Exception ex) {
+				Console.Error.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): Unable to unload domain: {1}.", plugin, ex.Message);
 			}
-			rl = null;
-			GC.SuppressFinalize (this);
-		}
-		
-		~Loader ()
-		{
-			Dispose ();
 		}
 	}
 

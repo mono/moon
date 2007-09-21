@@ -1,3 +1,12 @@
+2007-09-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp, plugin.h: Add a plugin_unload_callback to PluginInstance, and
+	  call it in the dtor.
+	* moonlight.cs: Added UnloadDomain: unloads the domain that was loaded for a
+	  specific plugin, and set the corresponding native callback. Keep a hash
+	  table of all created domains so that we know which domain to unload,
+	  Delete some dead code (DisposeXamlLoader, ~Loader, Dispose)
+
 2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: If an assembly already has been downloaded once, don't try to
