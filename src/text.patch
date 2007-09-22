@@ -1,6 +1,6 @@
 Index: text.h
 ===================================================================
---- text.h	(revision 86046)
+--- text.h	(revision 86192)
 +++ text.h	(working copy)
 @@ -17,56 +17,8 @@
  #include <pango/pango.h>
@@ -102,7 +102,7 @@ Index: text.h
  public:
  	static DependencyProperty *ActualHeightProperty;
  	static DependencyProperty *ActualWidthProperty;
-@@ -172,34 +150,6 @@
+@@ -171,34 +149,6 @@
  	virtual Value *GetValue (DependencyProperty *property);
  	virtual void SetValue (DependencyProperty *property, Value *value);
  	virtual void SetValue (DependencyProperty *property, Value value);
@@ -139,7 +139,7 @@ Index: text.h
  TextBlock *text_block_new (void);
 Index: text.cpp
 ===================================================================
---- text.cpp	(revision 86046)
+--- text.cpp	(revision 86192)
 +++ text.cpp	(working copy)
 @@ -22,66 +22,11 @@
  #include "text.h"
@@ -310,7 +310,7 @@ Index: text.cpp
  	cairo_save (cr);
  	cairo_set_matrix (cr, &absolute_xform);
  	Paint (cr);
-@@ -461,17 +397,12 @@
+@@ -434,17 +370,12 @@
  void
  TextBlock::Layout (cairo_t *cr)
  {
@@ -331,7 +331,7 @@ Index: text.cpp
  	char *text;
  	Brush *fg;
  	int w, h;
-@@ -482,68 +413,39 @@
+@@ -455,68 +386,40 @@
  		fg = foreground;
  	
  	if (layout == NULL)
@@ -349,9 +349,11 @@ Index: text.cpp
  			clip = true;
  	case TextWrappingWrapWithOverflow:
 -		pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
--		
- 		width = framework_element_get_width (this);
++		if ((width = framework_element_get_width (this)) <= 0.0f)
++			width = -1.0f;
  		
+-		width = framework_element_get_width (this);
+-		
 -		if (width > 0.0)
 -			pango_layout_set_width (layout, (int) width * PANGO_SCALE);
 -		else
@@ -411,7 +413,7 @@ Index: text.cpp
  		TextDecorations deco;
  		Value *value;
  		Inline *item;
-@@ -552,103 +454,53 @@
+@@ -525,103 +428,53 @@
  		while (node != NULL) {
  			item = (Inline *) node->obj;
  			
@@ -539,7 +541,7 @@ Index: text.cpp
  	if (clip && (h > clip_height))
  		text_block_set_actual_height (this, (double) clip_height);
  	else
-@@ -663,7 +515,7 @@
+@@ -636,7 +489,7 @@
  	TextWrapping wrapping = text_block_get_text_wrapping (this);
  	double h = GetActualHeight ();
  	double w = framework_element_get_width (this);
@@ -548,7 +550,7 @@ Index: text.cpp
  	if (wrapping != TextWrappingWrapWithOverflow)
  		h = framework_element_get_height (this);
  	
-@@ -672,9 +524,7 @@
+@@ -645,9 +498,7 @@
  		cairo_clip (cr);
  	}
  	
@@ -559,7 +561,7 @@ Index: text.cpp
  }
  
  void
-@@ -687,19 +537,19 @@
+@@ -663,19 +514,19 @@
  	
  	if (prop == TextBlock::FontFamilyProperty) {
  		char *family = text_block_get_font_family (this);
@@ -584,7 +586,7 @@ Index: text.cpp
  	} else if (prop == TextBlock::TextProperty) {
  		// will be updated later in Layout()
  	} else if (prop == TextBlock::InlinesProperty) {
-@@ -1141,6 +991,8 @@
+@@ -1126,6 +977,8 @@
  void
  text_init (void)
  {
