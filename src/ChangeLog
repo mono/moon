@@ -1,3 +1,8 @@
+2007-09-22  Zoltan Varga  <vargaz@gmail.com>
+
+	* xaml.h xaml.cpp: Add support for parsing x:Code elements and passing them to
+	managed code.
+
 2007-09-21  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* mplayer.cpp (audio_play): Slightly optimized the volume

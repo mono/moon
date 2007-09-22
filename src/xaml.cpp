@@ -64,7 +64,8 @@ void  set_custom_attributes (XamlParserInfo *p, XamlElementInstance *item, const
 void  custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 
-
+XamlElementInstance *create_x_code_directive_element (XamlParserInfo *p, XamlElementInfo *i);
+void process_x_code_directive (XamlParserInfo *p, const char **attr);
 
 class XamlElementInstance : public List::Node {
  public:
@@ -79,6 +80,7 @@ class XamlElementInstance : public List::Node {
 	enum ElementType {
 		ELEMENT,
 		PROPERTY,
+		X_CODE_DIRECTIVE,
 		UNKNOWN
 	};
 
@@ -241,13 +243,13 @@ class XNamespace : public XamlNamespace {
  public:
 	GHashTable *element_map;
 
-	XNamespace () { }
+	XNamespace (GHashTable *element_map) : element_map (element_map) { }
 
 	virtual ~XNamespace () { }
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
-		return NULL;
+		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
 	}
 
 	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
@@ -487,6 +489,13 @@ XamlLoader::GetMapping (const char* key)
 		return NULL;
 }
 
+void
+XamlLoader::LoadCode (const char *source, const char *type)
+{
+	if (callbacks.load_code)
+		return callbacks.load_code (source, type);
+}
+
 XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 {
 	this->filename = g_strdup (filename);
@@ -594,6 +603,35 @@ custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementIn
 
 }
 
+XamlElementInstance *
+create_x_code_directive_element (XamlParserInfo *p, XamlElementInfo *i)
+{
+	XamlElementInstance *inst = new XamlElementInstance (i);
+	inst->element_type = XamlElementInstance::X_CODE_DIRECTIVE;
+
+	return inst;
+}
+
+void
+process_x_code_directive (XamlParserInfo *p, const char **attr)
+{
+	const char *source = NULL;
+	const char *type = NULL;
+	int i;
+
+	i = 0;
+	while (attr [i]) {
+		if (!strcmp (attr [i], "Source"))
+			source = attr [i + 1];
+		else if (!strcmp (attr [i], "Type"))
+			type = attr [i + 1];
+		i += 2;
+	}
+
+	if (p->loader)
+		p->loader->LoadCode (source, type);
+}
+
 bool
 is_instance_of (XamlElementInstance *item, Type::Kind kind)
 {
@@ -655,7 +693,17 @@ start_element (void *data, const char *el, const char **attr)
 
 		inst = elem->create_element (p, elem);
 
-		if (!inst || !inst->item)
+		if (!inst)
+			return;
+
+		if (inst->element_type == XamlElementInstance::X_CODE_DIRECTIVE) {
+			process_x_code_directive (p, attr);
+			inst->parent = p->current_element;
+			p->current_element = inst;
+			return;
+		}
+
+		if (!inst->item)
 			return;
 
 		if (!p->top_element) {
@@ -812,7 +860,7 @@ end_element_handler (void *data, const char *el)
 	case XamlElementInstance::ELEMENT:
 		flush_char_data (info);
 		break;
-	case XamlElementInstance::PROPERTY:
+	case XamlElementInstance::PROPERTY: {
 		List::Node *walk = info->current_element->children->First ();
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk;
@@ -824,6 +872,10 @@ end_element_handler (void *data, const char *el)
 						info->current_element->parent->element_name);
 			walk = walk->next;
 		}
+		break;
+	}
+	case XamlElementInstance::X_CODE_DIRECTIVE:
+		/* Nothing to do */
 		break;
 	}
 
@@ -2584,10 +2636,23 @@ register_dependency_object_element (GHashTable *table, const char *name, XamlEle
 	return res;
 }
 
+XamlElementInfo *
+register_x_code_element (GHashTable *table)
+{
+	XamlElementInfo *res = new XamlElementInfo ("Code", NULL, Type::INVALID);
+
+	res->create_element = create_x_code_directive_element;
+
+	g_hash_table_insert (table, (char *) "Code", res);
+
+	return res;
+}
+
 void
 xaml_init (void)
 {
 	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
+	GHashTable *x_dem = g_hash_table_new (g_str_hash, g_str_equal); // x element map
 	enum_map = g_hash_table_new (g_str_hash, g_str_equal);
 
 	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Type::COLLECTION);
@@ -2800,12 +2865,17 @@ xaml_init (void)
 	rdoe (dem, "InkPresenter", canvas, Type::INKPRESENTER, (create_item_func) ink_presenter_new);
 	rdoe (dem, "StrokeCollection", col, Type::STROKE_COLLECTION, (create_item_func) stroke_collection_new);
 	rdoe (dem, "StylusPointCollection", col, Type::STYLUSPOINT_COLLECTION, (create_item_func) stylus_point_collection_new);
+
+	//
+	// Code
+	//
+	// FIXME: Make this v1.1 only
+	register_x_code_element (x_dem);
 	
 #undef rdoe
 	
 	default_namespace = new DefaultNamespace (dem);
-	x_namespace = new XNamespace ();
-
+	x_namespace = new XNamespace (x_dem);
 	
 	///
 	/// ENUMS

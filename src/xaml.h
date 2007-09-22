@@ -24,6 +24,7 @@ typedef void xaml_set_custom_attribute_callback (void *target, const char *name,
 typedef bool xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
 typedef void xaml_insert_mapping_callback (const char* key, const char* value); 
 typedef const char* xaml_get_mapping_callback (const char* key);
+typedef void xaml_load_code_callback (const char *source, const char *type);
 
 G_BEGIN_DECLS
 
@@ -50,11 +51,12 @@ public:
 	xaml_hookup_event_callback *hookup_event;
 	xaml_get_mapping_callback *get_mapping;
 	xaml_insert_mapping_callback *insert_mapping;
-	
+	xaml_load_code_callback *load_code;
+
 	XamlLoaderCallbacks () :
 		load_managed_object (NULL), set_custom_attribute (NULL),
 		hookup_event (NULL), get_mapping (NULL),
-		insert_mapping (NULL)
+		insert_mapping (NULL), load_code (NULL)
 	{
 	}
 };
@@ -114,6 +116,7 @@ public:
 	virtual bool HookupEvent (void* target, const char* name, const char* value);
 	virtual void InsertMapping (const char* key, const char* value);
 	const char* GetMapping (const char* key);
+	void LoadCode (const char *source, const char *type);
 	
 	char* GetFilename () { return filename; }
 	char* GetString () { return str; }
