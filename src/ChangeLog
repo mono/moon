@@ -1,5 +1,8 @@
 2007-09-21  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* mplayer.cpp (audio_play): Slightly optimized the volume
+	adjustment loop.
+
 	* font.cpp (Layout): Keep track of the line ascend and pad our
 	extents with an extra pixel on all sides to account for hinting.
 	(Render): Starts rendering glyphs 1 pixel in. Also modified the

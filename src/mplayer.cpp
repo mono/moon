@@ -960,11 +960,9 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 			leftvol = rightvol = volume;
 		}
 		
-		for (n = 0; n < frame_size / 2; n++) {
-			if (n & 0x1)
-				*inptr++ = (int16_t) SET_VOLUME (*inptr, rightvol);
-			else
-				*inptr++ = (int16_t) SET_VOLUME (*inptr, leftvol);
+		for (n = 0; n < frame_size / 2; n += 2) {
+			*inptr++ = (int16_t) SET_VOLUME (*inptr, leftvol);
+			*inptr++ = (int16_t) SET_VOLUME (*inptr, rightvol);
 		}
 	} else {
 		memset (audio->outbuf, 0, frame_size);
