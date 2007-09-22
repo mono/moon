@@ -1,3 +1,11 @@
+2007-09-21  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* font.cpp (Layout): Keep track of the line ascend and pad our
+	extents with an extra pixel on all sides to account for hinting.
+	(Render): Starts rendering glyphs 1 pixel in. Also modified the
+	logic such that we didn't have to treat path/bitmap glyphs
+	differently.
+
 2007-09-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: Now handles scalable fonts by rendering their outline

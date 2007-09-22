@@ -908,6 +908,7 @@ TextSegment::TextSegment (TextRun *run, int start)
 class TextLine : public List::Node {
 public:
 	List *segments;
+	int ascend;
 	int height;
 	
 	TextLine ();
@@ -917,6 +918,7 @@ public:
 TextLine::TextLine ()
 {
 	segments = new List ();
+	ascend = -1;
 	height = -1;
 }
 
@@ -1037,15 +1039,18 @@ struct Space {
 	int width;
 };
 
+#define BBOX_MARGIN 1
+#define BBOX_PADDING 2
+
 void
 TextLayout::Layout ()
 {
 	TextSegment *segment;
 	GlyphInfo *glyph;
 	TextLine *line;
+	int lw, lh, la;
 	TextRun *run;
 	int advance;
-	int lw, lh;
 	Space spc;
 	int i;
 	
@@ -1053,7 +1058,7 @@ TextLayout::Layout ()
 		return;
 	
 	lines->Clear (true);
-	lh = height = 0;
+	la = lh = height = 0;
 	lw = width = 0;
 	
 	if (!runs || runs->IsEmpty () || max_width == 0 || max_height == 0)
@@ -1064,10 +1069,13 @@ TextLayout::Layout ()
 		//lh = MAX (lh, run->font->Height ());
 		
 		if (run->text == NULL /* LineBreak */) {
-			if (lh == 0)
+			if (lh == 0) {
+				la = run->font->Ascender ();
 				lh = run->font->Height ();
+			}
 			
 			lines->Append (line);
+			line->ascend = la;
 			line->height = lh;
 			height += lh;
 			
@@ -1078,13 +1086,14 @@ TextLayout::Layout ()
 			else
 				line = 0;
 			
-			lw = lh = 0;
+			lw = lh = la = 0;
 			continue;
 		}
 		
 		if (!run->text[0])
 			continue;
 		
+		la = MAX (la, run->font->Ascender ());
 		lh = MAX (lh, run->font->Height ());
 		
 		spc.index = -1;
@@ -1102,9 +1111,9 @@ TextLayout::Layout ()
 			advance = glyph->metrics.horiAdvance;
 			
 			if (run->text[i + 1] == 0)
-				advance += glyph->metrics.horiBearingX;
+				advance += ABS (glyph->metrics.horiBearingX);
 			
-			if (max_width < 0 || (lw + advance) <= max_width) {
+			if (max_width < 0 || (lw + advance + BBOX_PADDING) < max_width) {
 				// this glyph fits nicely on this line
 				lw += advance;
 				continue;
@@ -1125,7 +1134,7 @@ TextLayout::Layout ()
 					j--;
 				
 				// and add the horiBearingX value to the line width
-				lw += glyph->metrics.horiBearingX;
+				lw += ABS (glyph->metrics.horiBearingX);
 				segment->end = i;
 				i--;
 			} else {
@@ -1141,12 +1150,14 @@ TextLayout::Layout ()
 			}
 			
 			lines->Append (line);
+			line->ascend = la;
 			line->height = lh;
 			height += lh;
 			
 			width = MAX (width, lw);
 			
 			// create a new line
+			la = run->font->Ascender ();
 			lh = run->font->Height ();
 			line = new TextLine ();
 			spc.index = -1;
@@ -1168,9 +1179,16 @@ TextLayout::Layout ()
 	if (line) {
 		width = MAX (width, lw);
 		lines->Append (line);
+		line->ascend = la;
 		line->height = lh;
 		height += lh;
 	}
+	
+	if (width > 0)
+		width += BBOX_PADDING;
+	
+	if (height > 0)
+		height += BBOX_PADDING;
 	
 	printf ("layout extents are %d, %d\n", width, height);
 }
@@ -1224,6 +1242,12 @@ TextLayout::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y
 								      width, height, stride);
 	}
 	
+	// take horiBearingX into consideration
+	x += glyph->metrics.horiBearingX;
+	
+	// Bitmap glyphs are rendered from the top down
+	y -= glyph->metrics.horiBearingY;
+	
 	cairo_save (cr);
 	
 	cairo_mask_surface (cr, glyph->surface, x, y);
@@ -1260,17 +1284,17 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	GlyphInfo *glyph;
 	Brush *fg = NULL;
 	TextLine *line;
-	int bx, by, oy;
-	double dx, dy;
+	double x1, y1;
 	int ascend;
+	int height;
 	int i;
 	
 	Layout ();
 	
-	line = (TextLine *) lines->First ();
+	x1 = x + BBOX_MARGIN;
+	y += BBOX_MARGIN;
 	
-	dx = 0.0f;
-	dy = 0.0f;
+	line = (TextLine *) lines->First ();
 	
 	while (line) {
 		segment = (TextSegment *) line->segments->First ();
@@ -1279,6 +1303,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 			font = segment->font;
 			
 			ascend = font->Ascender ();
+			height = font->Height ();
 			
 			if (segment->fg != fg) {
 				fg = segment->fg;
@@ -1290,34 +1315,27 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					continue;
 				
 				if (glyph->index > 0) {
-					bx = glyph->metrics.horiBearingX;
-					by = glyph->metrics.horiBearingY;
+					// set y1 to the baseline
+					y1 = y + line->ascend;
 					
-					// y-offset for the top of the glyph
-					oy = ascend - (line->height - ascend) - by;
+					// move to the bottom of the glyph
+					y1 -= (height - ascend);
 					
-					if (glyph->path) {
-						// y-offset for the bottom of the glyph
-						oy = ascend - (line->height - ascend);
-						
-						RenderGlyphPath (cr, glyph, x + dx + bx, y + dy + oy);
-					} else {
-						// y-offset for the top of the glyph
-						oy = ascend - (line->height - ascend) - by;
-						
-						RenderGlyphBitmap (cr, glyph, x + dx + bx, y + dy + oy);
-					}
+					if (glyph->path)
+						RenderGlyphPath (cr, glyph, x1, y1);
+					else
+						RenderGlyphBitmap (cr, glyph, x1, y1);
 				}
 				
-				dx += (double) glyph->metrics.horiAdvance;
+				x1 += (double) glyph->metrics.horiAdvance;
 			}
 			
 			segment = (TextSegment *) segment->next;
 		}
 		
-		dy += (double) line->height;
+		y += (double) line->height;
 		
 		line = (TextLine *) line->next;
-		dx = 0.0f;
+		x1 = x + BBOX_MARGIN;
 	}
 }
