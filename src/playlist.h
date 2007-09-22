@@ -152,9 +152,9 @@ private:
 	Downloader *downloader;
 
 	bool Parse ();
-	void OpenEntry (PlaylistEntry *entry);
+	bool OpenEntry (PlaylistEntry *entry);
 	void OnMediaEnded ();
-	void OnDownloaderComplete ();
+	void OnMediaDownloaded ();
 
 	static void on_media_ended (EventObject *sender, gpointer calldata, gpointer userdata);
 	static void on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata);
@@ -166,6 +166,7 @@ public:
 
 	virtual bool Open ();
 	virtual guint Play ();
+	virtual void Stop ();
 
 	void AddEntry (PlaylistEntry *entry);
 

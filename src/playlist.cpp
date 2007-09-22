@@ -25,6 +25,7 @@ Playlist::Playlist (MediaElement *element, const char *source_name, const char *
 	entries = new List ();
 	current_entry = NULL;
 	downloader = new Downloader ();
+	downloader->ref ();
 	downloader->SetWriteFunc (on_downloader_data_write, on_downloader_size_notify, this);
 	downloader->AddHandler (downloader->CompletedEvent, on_downloader_complete, this);
 	element->AddHandler(element->MediaEndedEvent, on_media_ended, this);
@@ -33,6 +34,7 @@ Playlist::Playlist (MediaElement *element, const char *source_name, const char *
 Playlist::~Playlist ()
 {
 	entries->Clear (true);
+	downloader->unref ();
 	delete entries;
 	delete downloader;
 }
@@ -66,7 +68,7 @@ Playlist::OnMediaEnded ()
 }
 
 void
-Playlist::OnDownloaderComplete ()
+Playlist::OnMediaDownloaded ()
 {
 	if (current_entry == NULL)
 		return;
@@ -75,8 +77,12 @@ Playlist::OnDownloaderComplete ()
 	if (file_name == NULL)
 		return;
 
+	printf ("OnMediaDownloaded, file: %s\n", file_name);
+
 	MediaSource *source = MediaSource::CreateSource (element, current_entry->GetSourceName (), file_name);
 	current_entry->SetSource (source);
+	if (source->Open ())
+		source->Play ();
 }
 
 bool
@@ -102,7 +108,7 @@ void
 Playlist::on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata)
 {
 	Playlist *playlist = reinterpret_cast<Playlist *> (userdata);
-	playlist->OnDownloaderComplete ();
+	playlist->OnMediaDownloaded ();
 }
 
 void
@@ -130,12 +136,19 @@ check_base (GString *uri, PlaylistContent *content)
 	return true;
 }
 
-void
+bool
 Playlist::OpenEntry (PlaylistEntry *entry)
 {
 	GString *uri;
+	MediaSource *source;
 
 	current_entry = entry;
+
+	source = current_entry->GetSource ();
+
+	// if the source if already downloaded, no need to go further
+	if (source)
+		return source->Open ();
 
 	uri = g_string_new ("");
 	if (!check_base (uri, entry))
@@ -143,12 +156,14 @@ Playlist::OpenEntry (PlaylistEntry *entry)
 
 	g_string_append (uri, entry->GetSourceName ());
 
-//	printf ("open entry at uri: %s\n");
+	printf ("open entry at uri: %s\n", uri->str);
 
-//	downloader->Open ("GET", uri->str);
-//	downloader->Send ();
+	downloader->Open ("GET", uri->str);
+	downloader->Send ();
 
 	g_string_free (uri, true);
+
+	return true;
 }
 
 bool
@@ -160,10 +175,7 @@ Playlist::Open ()
 	if (entries->Length () == 0)
 		return false;
 
-	OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
-
-	g_warning ("playlists are not implemented\n");
-	return false;
+	return OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
 }
 
 guint
@@ -173,6 +185,13 @@ Playlist::Play ()
 		return 0;
 
 	return current_entry->GetSource ()->Play ();
+}
+
+void
+Playlist::Stop ()
+{
+	MediaSource::Stop ();
+	OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
 }
 
 void

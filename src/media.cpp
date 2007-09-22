@@ -136,7 +136,7 @@ SingleMedia::SingleMedia (MediaElement *element, const char *source_name, const 
 bool
 SingleMedia::Open ()
 {
-	return element->mplayer->Open (source_name);
+	return element->mplayer->Open (file_name);
 }
 
 // MediaElement
