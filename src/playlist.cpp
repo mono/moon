@@ -229,6 +229,18 @@ str_match (const char *candidate, const char *tag)
 	return g_strcasecmp (candidate, tag) == 0;
 }
 
+static bool
+has_href (const char **attrs)
+{
+	return attrs && str_match (*attrs, "HREF");
+}
+
+static char *
+get_href (const char **attrs)
+{
+	return g_strdup (*(attrs + 1));
+}
+
 void
 PlaylistParser::on_start_element (gpointer user_data, const char *name, const char **attrs)
 {
@@ -245,6 +257,8 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 		kind = Banner;
 	} else if (str_match (name, "BASE")) {
 		kind = Base;
+		if (has_href (attrs))
+			parser->GetCurrentContent ()->SetBase (get_href (attrs));
 	} else if (str_match (name, "COPYRIGHT")) {
 		kind = Copyright;
 	} else if (str_match (name, "DURATION")) {
@@ -262,8 +276,8 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 		kind = StartTime;
 	} else if (str_match (name, "REF")) {
 		kind = Ref;
-		if (attrs && str_match (*attrs, "HREF"))
-			parser->GetCurrentEntry ()->SetSourceName (g_strdup (*(attrs + 1)));
+		if (has_href (attrs))
+			parser->GetCurrentEntry ()->SetSourceName (get_href (attrs));
 	} else if (str_match (name, "TITLE")) {
 		kind = Title;
 	} else {
@@ -303,7 +317,6 @@ PlaylistParser::on_text (gpointer user_data, const char *data, int len)
 		break;
 	case Base:
 		parser->AssertParentKind (Asx | Entry);
-		parser->GetCurrentContent ()->SetBase (g_strndup (data, len));
 		break;
 	case Copyright:
 		parser->AssertParentKind (Asx | Entry);
