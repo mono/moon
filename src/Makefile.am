@@ -7,6 +7,10 @@ lib_LTLIBRARIES = libmoon.la
 
 INCLUDES = $(MOON_CFLAGS) -Wall
 
+if USE_XRANDR
+INCLUDES += -DUSE_XRANDR
+endif
+
 libmooninclude_headers = \
 	animation.h	\
 	array.h		\
@@ -103,7 +107,7 @@ demo_SOURCES = \
 sizes_SOURCES = \
 	sizes.cpp
 
-libmoon_la_LIBADD = $(MOON_LIBS) -L/usr/X11R6/lib -lXext -lXv
+libmoon_la_LIBADD = $(MOON_LIBS)
 
 demo_LDADD = -lmoon 
 
