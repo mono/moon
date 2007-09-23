@@ -38,7 +38,7 @@
 #endif
 
 
-#define DESIRED_FPS 20
+#define DEFAULT_FPS 30
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 
@@ -70,13 +70,26 @@ int TimeManager::RenderEvent = -1;
 TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
-    current_timeout (FPS_TO_DELAY (DESIRED_FPS)),  /* something suitably small */
+    current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
 {
 	start_time = get_now ();
 
 	tick_call_mutex = g_mutex_new ();
+}
+
+void
+TimeManager::SetMaximumRefreshRate (int hz)
+{
+	if (current_timeout == FPS_TO_DELAY (hz))
+		return;
+
+	current_timeout = FPS_TO_DELAY (hz);
+	if (tick_id != -1) {
+		RemoveTimeout ();
+		AddTimeout ();
+	}
 }
 
 void

@@ -190,6 +190,8 @@ class TimeManager : public EventObject {
 
 	void AddTickCall (void (*func)(gpointer), gpointer tick_data);
 
+	void SetMaximumRefreshRate (int hz);
+
 	// Events you can AddHandler to
 	static int UpdateInputEvent;
 	static int RenderEvent;

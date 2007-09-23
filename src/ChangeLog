@@ -1,3 +1,14 @@
+2007-09-22  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (USE_XRANDR): define USE_XRANDR.
+
+	* runtime.cpp (Surface::realized_callback): get the RANDR screen
+	config info, and set the TimeManager's max refresh to match the
+	screen's .
+
+	* clock.h, clock.cpp (TimeManager::SetMaximumRefreshRate): new
+	method.
+
 2007-09-22  Zoltan Varga  <vargaz@gmail.com>
 
 	* xaml.h xaml.cpp: Add support for parsing x:Code elements and passing them to

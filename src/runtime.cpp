@@ -42,6 +42,10 @@
 #include "xaml.h"
 #include "dirty.h"
 
+#ifdef USE_XRANDR
+#include <X11/extensions/Xrandr.h>
+#endif
+
 //#define DEBUG_INVALIDATE 1
 #define DEBUG_REFCNT 0
 
@@ -523,6 +527,21 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 
 	s->CreateSimilarSurface ();
 	s->cairo = s->cairo_xlib;
+
+#ifdef USE_XRANDR
+	int event_base, error_base;
+	GdkWindow *gdk_root = gtk_widget_get_root_window (widget);
+	Display *dpy = GDK_WINDOW_XDISPLAY(gdk_root);
+	Window root = GDK_WINDOW_XID (gdk_root);
+	if (XRRQueryExtension (dpy, &event_base, &error_base)) {
+		XRRScreenConfiguration *info = XRRGetScreenInfo (dpy,
+								 root);
+		short rate = XRRConfigCurrentRate (info);
+		printf ("screen refresh rate = %d\n", rate);
+		TimeManager::Instance()->SetMaximumRefreshRate (rate);
+		XRRFreeScreenConfigInfo (info);
+	}
+#endif
 
 	TimeManager::Instance()->AddHandler (TimeManager::Instance()->RenderEvent, render_cb, s);
 	TimeManager::Instance()->AddHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, s);
