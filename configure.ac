@@ -30,6 +30,16 @@ else
    exit 1
 fi
 
+AC_MSG_CHECKING(X RANDR extension)
+if pkg-config xrandr; then
+  AC_MSG_RESULT(found)
+  AM_CONDITIONAL(USE_XRANDR, true)
+  RANDR_PKG="xrandr"
+else
+  AC_MSG_RESULT(not found, using default max fps of 30)
+  RANDR_PKG=""
+fi
+
 #
 # these come from ffmpeg
 #
@@ -152,7 +162,7 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
-MOON_PKGS="cairo >= $CAIRO_VERSION gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa freetype2 fontconfig"
+MOON_PKGS="cairo >= $CAIRO_VERSION gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa freetype2 fontconfig $RANDR_PKG"
 MOON_CFLAGS=`pkg-config --cflags $MOON_PKGS`
 MOON_LIBS=`pkg-config --libs $MOON_PKGS`
 
