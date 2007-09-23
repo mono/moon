@@ -1,3 +1,7 @@
+2007-09-23  Jb Evain  <jbevain@novell.com>
+
+	* plugin.cpp: Pride sin, add my name to the contributors.
+
 2007-09-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp, plugin.h: Add a plugin_unload_callback to PluginInstance, and
