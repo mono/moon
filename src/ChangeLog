@@ -1,5 +1,12 @@
 2007-09-24  Jb Evain  <jbevain@novell.com>
 
+	* media.cpp|h, playlist.cpp|h: refactor MediaSource so that
+	only a SingleMedia deals with the MediaPlay directly. A playlist
+	being a collection of either other playlist or singlemedias,
+	playing one at a time.
+
+2007-09-24  Jb Evain  <jbevain@novell.com>
+
 	* media.cpp, playlist.cpp: let the Media Sources change
 	the state of the MediaElement (Playing/Paused/Stopped).
 

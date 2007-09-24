@@ -152,6 +152,7 @@ private:
 	Downloader *downloader;
 
 	bool Parse ();
+	bool HasMediaSource ();
 	bool OpenEntry (PlaylistEntry *entry);
 	void OnMediaEnded ();
 	void OnMediaDownloaded ();
@@ -166,8 +167,10 @@ public:
 	Playlist (MediaElement *element, const char *source_name, const char *file_name);
 	virtual ~Playlist ();
 
-	virtual guint Play ();
+	virtual void Play ();
+	virtual void Pause ();
 	virtual void Stop ();
+	virtual void Close ();
 
 	void AddEntry (PlaylistEntry *entry);
 

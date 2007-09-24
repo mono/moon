@@ -137,27 +137,6 @@ MediaSource::Open ()
 	return true;
 }
 
-guint
-MediaSource::Play ()
-{
-	media_element_set_current_state (element, "Playing");
-	return element->mplayer->Play (media_element_advance_frame, element);
-}
-
-void
-MediaSource::Pause ()
-{
-	media_element_set_current_state (element, "Paused");
-	element->mplayer->Pause ();
-}
-
-void
-MediaSource::Stop ()
-{
-	media_element_set_current_state (element, "Stopped");
-	element->mplayer->Stop ();
-}
-
 MediaSource *
 MediaSource::CreateSource (MediaElement *element, const char *source_name, const char *file_name)
 {
@@ -172,12 +151,59 @@ MediaSource::CreateSource (MediaElement *element, const char *source_name, const
 SingleMedia::SingleMedia (MediaElement *element, const char *source_name, const char *file_name)
 	: MediaSource (element, source_name, file_name)
 {
+	advance_frame_timeout_id = 0;
+}
+
+SingleMedia::~SingleMedia ()
+{
+	ClearTimeout ();
 }
 
 bool
 SingleMedia::OpenSource ()
 {
 	return element->mplayer->Open (file_name);
+}
+
+void
+SingleMedia::ClearTimeout ()
+{
+	if (advance_frame_timeout_id == 0)
+		return;
+
+	g_source_remove (advance_frame_timeout_id);
+	advance_frame_timeout_id = 0;
+}
+
+void
+SingleMedia::Play ()
+{
+	advance_frame_timeout_id = element->mplayer->Play (media_element_advance_frame, element);
+	media_element_set_current_state (element, "Playing");
+}
+
+void
+SingleMedia::Pause ()
+{
+	element->mplayer->Pause ();
+	media_element_set_current_state (element, "Paused");
+	ClearTimeout ();
+}
+
+void
+SingleMedia::Stop ()
+{
+	element->mplayer->Stop ();
+	media_element_set_current_state (element, "Stopped");
+	ClearTimeout ();
+}
+
+void
+SingleMedia::Close ()
+{
+	element->mplayer->Stop ();
+	media_element_set_current_state (element, "Closed");
+	ClearTimeout ();
 }
 
 // MediaElement
@@ -223,9 +249,8 @@ MediaElement::AdvanceFrame ()
 		media_element_set_position (this, position);
 		updating = false;
 	} else if (mplayer->MediaEnded ()) {
-		mplayer->Stop ();
-		timeout_id = 0;
-		media_element_set_current_state (this, "Stopped");
+		if (source)
+			source->Stop ();
 		Emit (MediaEndedEvent);
 		return false;
 	}
@@ -251,7 +276,6 @@ MediaElement::MediaElement ()
 	
 	loaded = false;
 	updating = false;
-	timeout_id = 0;
 	play_pending = false;
 	
 	downloader = NULL;
@@ -277,9 +301,6 @@ MediaElement::DownloaderAbort ()
 
 MediaElement::~MediaElement ()
 {
-	if (timeout_id != 0)
-		g_source_remove (timeout_id);
-	
 	g_free (part_name);
 	DownloaderAbort ();
 	
@@ -459,15 +480,8 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 		// Abort the current downloader
 		DownloaderAbort ();
 		
-		// Abort the current advance_frame timeout
-		if (timeout_id != 0) {
-			g_source_remove (timeout_id);
-			timeout_id = 0;
-		}
-		
-		// Close the media stream
-		mplayer->Close ();
-		media_element_set_current_state (this, "Closed");
+		if (source)
+			source->Close ();
 	}
 	
 	downloader = (Downloader *) dl;
@@ -498,13 +512,10 @@ MediaElement::Pause ()
 	if (!mplayer->CanPause ())
 		return;
 
-	if (source)	
-		source->Pause ();
-	
-	if (timeout_id != 0) {
-		g_source_remove (timeout_id);
-		timeout_id = 0;
-	}
+	if (!source)
+		return;
+
+	source->Pause ();
 }
 
 void
@@ -512,9 +523,8 @@ MediaElement::Play ()
 {
 	//printf ("MediaElement::Play() requested\n");
 	
-	if (downloader && downloader->Completed () && timeout_id == 0 && !mplayer->IsPlaying ()) {
-		timeout_id = source->Play ();
-		//printf ("video playing, timeout_id = %d\n", timeout_id);
+	if (downloader && downloader->Completed () && !mplayer->IsPlaying ()) {
+		source->Play ();
 		play_pending = false;
 	} else {
 		play_pending = true;
@@ -529,13 +539,10 @@ MediaElement::Stop ()
 	if (!mplayer->IsPlaying () && !mplayer->IsPaused ())
 		return;
 	
-	if (source)
-		source->Stop ();
-	
-	if (timeout_id != 0) {
-		g_source_remove (timeout_id);
-		timeout_id = 0;
-	}
+	if (!source)
+		return;
+
+	source->Stop ();
 }
 
 Value *
@@ -664,7 +671,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
 	} else if (prop == MediaElement::PositionProperty) {
-		if (timeout_id != 0 && mplayer->HasVideo ()) {
+		if (mplayer->IsPlaying() && mplayer->HasVideo ()) {
 			double opacity = GetTotalOpacity ();
 			
 			if (opacity > 0.0f)

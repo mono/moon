@@ -183,22 +183,53 @@ Playlist::OpenSource ()
 	return OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
 }
 
-guint
+bool
+Playlist::HasMediaSource ()
+{
+	if (current_entry == NULL)
+		return false;
+
+	return current_entry->GetSource () != NULL;
+}
+
+void
 Playlist::Play ()
 {
-	if (current_entry == NULL ||  current_entry->GetSource () == NULL)
-		return 0;
+	if (!HasMediaSource ())
+		return;
 
 	element->Invalidate ();
 
-	return current_entry->GetSource ()->Play ();
+	current_entry->GetSource ()->Play ();
+}
+
+void
+Playlist::Pause ()
+{
+	if (!HasMediaSource ())
+		return;
+
+	current_entry->GetSource ()->Pause ();
 }
 
 void
 Playlist::Stop ()
 {
-	MediaSource::Stop ();
+	if (!HasMediaSource ())
+		return;
+
+	current_entry->GetSource ()->Stop ();
+
 	OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
+}
+
+void
+Playlist::Close ()
+{
+	if (!HasMediaSource ())
+		return;
+
+	current_entry->GetSource ()->Close ();
 }
 
 void

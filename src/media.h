@@ -141,18 +141,29 @@ public:
 	const char *GetFileName ();
 
 	virtual bool Open ();
-	virtual guint Play ();
-	virtual void Pause ();
-	virtual void Stop ();
+	virtual void Play () = 0;
+	virtual void Pause () = 0;
+	virtual void Stop () = 0;
+	virtual void Close () = 0;
 
 	static MediaSource * CreateSource (MediaElement *element, const char *source_name, const char *file_name);
 };
 
 class SingleMedia : public MediaSource {
+private:
+	guint advance_frame_timeout_id;
+
+	void ClearTimeout ();
 protected:
 	virtual bool OpenSource ();
 public:
 	SingleMedia (MediaElement *element, const char *source_name, const char *file_name);
+	virtual ~SingleMedia ();
+
+	virtual void Play ();
+	virtual void Pause ();
+	virtual void Stop ();
+	virtual void Close ();
 };
 
 
@@ -161,7 +172,6 @@ class MediaElement : public MediaBase {
 
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
-	guint timeout_id;
 	bool updating;
 	bool loaded;
 	bool play_pending;
