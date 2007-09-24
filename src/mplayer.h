@@ -44,6 +44,7 @@ public:
 	uint64_t pause_time;
 	uint64_t start_time;  
 	
+	pthread_mutex_t target_pts_lock;
 	int64_t current_pts;
 	int64_t target_pts;
 	int64_t seek_pts;
