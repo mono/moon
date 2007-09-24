@@ -390,6 +390,9 @@ MediaPlayer::Close ()
 	current_pts = 0;
 	target_pts = 0;
 	seek_pts = 0;
+
+	height = 0;
+	width = 0;
 }
 
 //

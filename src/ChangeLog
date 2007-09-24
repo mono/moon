@@ -1,3 +1,7 @@
+2007-09-24  Jb Evain  <jbevain@novell.com>
+
+	* mplayer.cpp: on Close, reset height and width to zero.
+
 2007-09-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (OnPropertyChanged): Set recalculate_matrix to true if
