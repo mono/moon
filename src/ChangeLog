@@ -1,3 +1,9 @@
+2007-09-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (Render): Fixed some y1 offset logic that didn't amke
+	any sense (and was wrong afaict anyway). We now render exactly
+	like Microsoft Silverlight.
+
 2007-09-24  Jb Evain  <jbevain@novell.com>
 
 	* playlist.cpp: close the previous source before playing

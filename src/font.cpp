@@ -1337,9 +1337,6 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					// set y1 to the baseline
 					y1 = y + line->ascend;
 					
-					// move to the bottom of the glyph
-					y1 -= (height - ascend);
-					
 					if (glyph->path)
 						RenderGlyphPath (cr, glyph, x1, y1);
 					else
