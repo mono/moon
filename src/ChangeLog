@@ -1,3 +1,8 @@
+2007-09-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (OnPropertyChanged): Set recalculate_matrix to true if
+	either the NaturalWidth or NaturalHeight changes.
+
 2007-09-24  Jb Evain  <jbevain@novell.com>
 
 	* media.cpp|h, playlist.cpp|h: refactor MediaSource so that

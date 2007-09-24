@@ -357,9 +357,9 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	}
 	
 	cairo_save (cr);
-	if (!UseAA())
+	if (!UseAA ())
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-
+	
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, 1.0);
@@ -667,8 +667,10 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		// read-only property
 	} else if (prop == MediaElement::NaturalVideoHeightProperty) {
 		// read-only property
+		recalculate_matrix = true;
 	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
+		recalculate_matrix = true;
 	} else if (prop == MediaElement::PositionProperty) {
 		if (mplayer->IsPlaying() && mplayer->HasVideo ()) {
 			double opacity = GetTotalOpacity ();
