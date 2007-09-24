@@ -81,10 +81,8 @@ Playlist::OnMediaDownloaded ()
 
 	MediaSource *source = MediaSource::CreateSource (element, current_entry->GetSourceName (), file_name);
 	current_entry->SetSource (source);
-	if (source->Open ()) {
-		element->Invalidate ();
-		source->Play ();
-	}
+	if (source->Open ())
+		Play ();
 }
 
 bool
@@ -155,6 +153,8 @@ Playlist::OpenEntry (PlaylistEntry *entry)
 	if (source)
 		return source->Open ();
 
+	media_element_set_current_state (element, "Buffering");
+
 	uri = g_string_new ("");
 	if (!check_base (uri, entry))
 		check_base (uri, this);
@@ -188,6 +188,8 @@ Playlist::Play ()
 {
 	if (current_entry == NULL ||  current_entry->GetSource () == NULL)
 		return 0;
+
+	element->Invalidate ();
 
 	return current_entry->GetSource ()->Play ();
 }

@@ -1,5 +1,10 @@
 2007-09-24  Jb Evain  <jbevain@novell.com>
 
+	* media.cpp, playlist.cpp: let the Media Sources change
+	the state of the MediaElement (Playing/Paused/Stopped).
+
+2007-09-24  Jb Evain  <jbevain@novell.com>
+
 	* media.h: let the media source change the properties
 	of the media element. Make MediaSource friend of MediaElement
 	to do so.

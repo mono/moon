@@ -140,18 +140,21 @@ MediaSource::Open ()
 guint
 MediaSource::Play ()
 {
+	media_element_set_current_state (element, "Playing");
 	return element->mplayer->Play (media_element_advance_frame, element);
 }
 
 void
 MediaSource::Pause ()
 {
+	media_element_set_current_state (element, "Paused");
 	element->mplayer->Pause ();
 }
 
 void
 MediaSource::Stop ()
 {
+	media_element_set_current_state (element, "Stopped");
 	element->mplayer->Stop ();
 }
 
@@ -502,8 +505,6 @@ MediaElement::Pause ()
 		g_source_remove (timeout_id);
 		timeout_id = 0;
 	}
-	
-	media_element_set_current_state (this, "Paused");
 }
 
 void
@@ -513,7 +514,6 @@ MediaElement::Play ()
 	
 	if (downloader && downloader->Completed () && timeout_id == 0 && !mplayer->IsPlaying ()) {
 		timeout_id = source->Play ();
-		media_element_set_current_state (this, "Playing");
 		//printf ("video playing, timeout_id = %d\n", timeout_id);
 		play_pending = false;
 	} else {
@@ -536,8 +536,6 @@ MediaElement::Stop ()
 		g_source_remove (timeout_id);
 		timeout_id = 0;
 	}
-	
-	media_element_set_current_state (this, "Stopped");
 }
 
 Value *
