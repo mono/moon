@@ -131,8 +131,6 @@ MediaSource::Open ()
 	media_element_set_natural_video_height (element, mplayer->height);
 	media_element_set_natural_video_width (element, mplayer->width);
 
-	media_element_set_current_state (element, "Buffering");
-
 	element->Emit (MediaElement::MediaOpenedEvent);
 	return true;
 }
@@ -178,6 +176,7 @@ SingleMedia::ClearTimeout ()
 void
 SingleMedia::Play ()
 {
+	element->Invalidate ();
 	advance_frame_timeout_id = element->mplayer->Play (media_element_advance_frame, element);
 	media_element_set_current_state (element, "Playing");
 }

@@ -65,6 +65,8 @@ Playlist::OnMediaEnded ()
 		return;
 
 	OpenEntry (dynamic_cast<PlaylistEntry *> (current_entry->next));
+	if (HasMediaSource ())
+		current_entry->GetSource ()->Play ();
 }
 
 void
@@ -197,8 +199,6 @@ Playlist::Play ()
 {
 	if (!HasMediaSource ())
 		return;
-
-	element->Invalidate ();
 
 	current_entry->GetSource ()->Play ();
 }
