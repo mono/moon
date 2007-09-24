@@ -64,6 +64,8 @@ Playlist::OnMediaEnded ()
 	if (!current_entry || !current_entry->next)
 		return;
 
+	current_entry->GetSource ()->Close ();
+
 	OpenEntry (dynamic_cast<PlaylistEntry *> (current_entry->next));
 	if (HasMediaSource ())
 		current_entry->GetSource ()->Play ();

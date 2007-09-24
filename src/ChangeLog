@@ -1,5 +1,10 @@
 2007-09-24  Jb Evain  <jbevain@novell.com>
 
+	* playlist.cpp: close the previous source before playing
+	the next one.
+
+2007-09-24  Jb Evain  <jbevain@novell.com>
+
 	* mplayer.cpp: on Close, reset height and width to zero.
 
 2007-09-24  Jeffrey Stedfast  <fejj@novell.com>
