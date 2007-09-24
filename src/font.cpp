@@ -1080,7 +1080,14 @@ TextLayout::Layout ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		//lh = MAX (lh, run->font->Height ());
+#if 0
+		if (max_height >= 0 && height > max_height) {
+			// Stop calculating layout at this point, any
+			// text beyond this point won't be rendered
+			// anyway.
+			break;
+		}
+#endif
 		
 		if (run->text == NULL /* LineBreak */) {
 			if (lh == 0) {
@@ -1125,7 +1132,7 @@ TextLayout::Layout ()
 			advance = glyph->metrics.horiAdvance;
 			advance += run->font->Kerning (prev, glyph->index);
 			
-			if (max_width < 0 || (lw + advance + BBOX_PADDING) < max_width) {
+			if (max_width < 0 || (lw + advance + BBOX_PADDING) <= max_width) {
 				// this glyph fits nicely on this line
 				prev = glyph->index;
 				lw += advance;
@@ -1148,8 +1155,6 @@ TextLayout::Layout ()
 				while (j >= 0 && !(glyph = run->font->GetGlyphInfo (run->text[j])))
 					j--;
 				
-				// and add the horiBearingX value to the line width
-				lw += ABS (glyph->metrics.horiBearingX);
 				segment->end = i;
 				i--;
 			} else {
@@ -1158,7 +1163,7 @@ TextLayout::Layout ()
 				segment->end = i + 1;
 			}
 			
-			// end this line
+			// end this segment and line
 			if (segment->end > segment->start) {
 				line->segments->Append (segment);
 				segment = new TextSegment (run, i + 1);
@@ -1183,12 +1188,6 @@ TextLayout::Layout ()
 		line->segments->Append (segment);
 		
 		width = MAX (width, lw);
-		
-		// FIXME: maybe we should keep going anyway? then, if
-		// max_height gets changed later, we don't have to
-		// recalc the layout, we can simply change the clip.
-		//if (max_height > 0 && height > max_height)
-		//	break;
 	}
 	
 	if (line) {
