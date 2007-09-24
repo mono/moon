@@ -21,7 +21,7 @@
 #include "geometry.h"
 #include "dirty.h"
 
-#define SHOW_BOUNDING_BOXES 1
+#define SHOW_BOUNDING_BOXES 0
 
 int UIElement::LoadedEvent = -1;
 int UIElement::MotionEvent = -1;
