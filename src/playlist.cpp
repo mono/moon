@@ -81,14 +81,19 @@ Playlist::OnMediaDownloaded ()
 
 	MediaSource *source = MediaSource::CreateSource (element, current_entry->GetSourceName (), file_name);
 	current_entry->SetSource (source);
-	if (source->Open ())
+	if (source->Open ()) {
+		element->Invalidate ();
 		source->Play ();
+	}
 }
 
 bool
 Playlist::IsPlaylistFile (const char * file_name)
 {
 	static const char *exts [] = {".asx", ".wax", ".wvx", ".wmx"};
+
+	if (!file_name)
+		return false;
 
 	for (int i = 0; i < 4; i++)
 		if (g_str_has_suffix (file_name, exts [i]))
@@ -244,8 +249,9 @@ get_href (const char **attrs)
 void
 PlaylistParser::on_start_element (gpointer user_data, const char *name, const char **attrs)
 {
-	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
 	PlaylistNodeKind kind;
+	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+
 	//printf ("on_start_element, name: %s\n", name);
 	if (str_match (name, "ABSTRACT")) {
 		kind = Abstract;
@@ -291,6 +297,7 @@ void
 PlaylistParser::on_end_element (gpointer user_data, const char *name)
 {
 	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+
 	switch (parser->GetCurrentKind ()) {
 	case Entry:
 		parser->EndEntry ();
