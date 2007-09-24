@@ -1,3 +1,7 @@
+2007-09-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* configure.ac: Fix XRANDR support.
+
 2007-09-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moon.mdp: Updated.

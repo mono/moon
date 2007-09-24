@@ -30,13 +30,14 @@ else
    exit 1
 fi
 
-AC_MSG_CHECKING(X RANDR extension)
+AC_MSG_CHECKING(XRANDR extension)
 if pkg-config xrandr; then
   AC_MSG_RESULT(found)
   AM_CONDITIONAL(USE_XRANDR, true)
   RANDR_PKG="xrandr"
 else
   AC_MSG_RESULT(not found, using default max fps of 30)
+  AM_CONDITIONAL(USE_XRANDR, false)
   RANDR_PKG=""
 fi
 
