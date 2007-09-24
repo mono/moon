@@ -7,6 +7,8 @@
 
 2007-09-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp: Added kerning.
+
 	* mplayer.cpp: Added mutex locking for the target_pts variable.
 
 2007-09-24  Jb Evain  <jbevain@novell.com>

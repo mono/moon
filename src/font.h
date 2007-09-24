@@ -110,6 +110,7 @@ public:
 	
 	GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
+	int Kerning (uint32_t left, uint32_t right);
 	int Ascender ();
 	int EmSize ();
 	int Height ();

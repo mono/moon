@@ -240,6 +240,19 @@ TextFont::EmSize ()
 }
 
 int
+TextFont::Kerning (uint32_t left, uint32_t right)
+{
+	FT_Vector kerning;
+	
+	if (!FT_HAS_KERNING (face) || left == 0 || right == 0)
+		return 0;
+	
+	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
+	
+	return kerning.x / 64;
+}
+
+int
 TextFont::Ascender ()
 {
 	return face->size->metrics.ascender / 64;
@@ -1046,6 +1059,7 @@ void
 TextLayout::Layout ()
 {
 	TextSegment *segment;
+	uint32_t prev = 0;
 	GlyphInfo *glyph;
 	TextLine *line;
 	int lw, lh, la;
@@ -1099,7 +1113,7 @@ TextLayout::Layout ()
 		spc.index = -1;
 		spc.width = -1;
 		segment = new TextSegment (run, 0);
-		for (i = 0; run->text[i]; i++) {
+		for (i = 0, prev = 0; run->text[i]; i++) {
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
 				continue;
 			
@@ -1109,15 +1123,16 @@ TextLayout::Layout ()
 			}
 			
 			advance = glyph->metrics.horiAdvance;
-			
-			if (run->text[i + 1] == 0)
-				advance += ABS (glyph->metrics.horiBearingX);
+			advance += run->font->Kerning (prev, glyph->index);
 			
 			if (max_width < 0 || (lw + advance + BBOX_PADDING) < max_width) {
 				// this glyph fits nicely on this line
+				prev = glyph->index;
 				lw += advance;
 				continue;
 			}
+			
+			prev = 0;
 			
 			// need to wrap
 			if (spc.index != -1) {
@@ -1281,6 +1296,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	TextSegment *segment;
 	TextDecorations deco;
 	TextFont *font = NULL;
+	uint32_t prev = 0;
 	GlyphInfo *glyph;
 	Brush *fg = NULL;
 	TextLine *line;
@@ -1310,11 +1326,14 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 				fg->SetupBrush (cr, element);
 			}
 			
-			for (i = segment->start; i < segment->end; i++) {
+			for (i = segment->start, prev = 0; i < segment->end; i++) {
 				if (!(glyph = font->GetGlyphInfo (segment->text[i])))
 					continue;
 				
 				if (glyph->index > 0) {
+					x1 += font->Kerning (prev, glyph->index);
+					prev = glyph->index;
+					
 					// set y1 to the baseline
 					y1 = y + line->ascend;
 					
