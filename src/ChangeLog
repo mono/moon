@@ -1,3 +1,10 @@
+2007-09-24  Jb Evain  <jbevain@novell.com>
+
+	* media.h: let the media source change the properties
+	of the media element. Make MediaSource friend of MediaElement
+	to do so.
+	* playlist.h, playlist.cpp: adjus to the changes in MediaSource.
+
 2007-09-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp: Added mutex locking for the target_pts variable.

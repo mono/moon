@@ -99,6 +99,44 @@ MediaSource::GetFileName ()
 	return file_name;
 }
 
+MediaPlayer *
+MediaSource::GetMediaPlayer ()
+{
+	g_assert (element != NULL);
+	return element->mplayer;
+}
+
+bool
+MediaSource::Open ()
+{
+	if (!OpenSource ()) {
+		media_element_set_can_seek (element, false);
+		media_element_set_can_pause (element, false);
+		media_element_set_audio_stream_count (element, 0);
+		media_element_set_natural_duration (element, Duration (0));
+		media_element_set_natural_video_height (element, 0);
+		media_element_set_natural_video_width (element, 0);
+		
+		media_element_set_current_state (element, "Error");
+		element->Emit (MediaElement::MediaFailedEvent);
+		return false;
+	}
+
+	MediaPlayer *mplayer = GetMediaPlayer ();
+
+	media_element_set_can_seek (element, mplayer->CanSeek ());
+	media_element_set_can_pause (element, mplayer->CanPause ());
+	media_element_set_audio_stream_count (element, mplayer->GetAudioStreamCount ());
+	media_element_set_natural_duration (element, Duration (mplayer->Duration () * TIMESPANTICKS_IN_SECOND / 1000));
+	media_element_set_natural_video_height (element, mplayer->height);
+	media_element_set_natural_video_width (element, mplayer->width);
+
+	media_element_set_current_state (element, "Buffering");
+
+	element->Emit (MediaElement::MediaOpenedEvent);
+	return true;
+}
+
 guint
 MediaSource::Play ()
 {
@@ -134,7 +172,7 @@ SingleMedia::SingleMedia (MediaElement *element, const char *source_name, const 
 }
 
 bool
-SingleMedia::Open ()
+SingleMedia::OpenSource ()
 {
 	return element->mplayer->Open (file_name);
 }
@@ -393,32 +431,9 @@ MediaElement::DownloaderComplete ()
 	g_free (filename);
 	
 	// FIXME: specify which audio stream index the player should use
-	
-	if (!source->Open ()) {
-		media_element_set_can_seek (this, false);
-		media_element_set_can_pause (this, false);
-		media_element_set_audio_stream_count (this, 0);
-		media_element_set_natural_duration (this, Duration (0));
-		media_element_set_natural_video_height (this, 0);
-		media_element_set_natural_video_width (this, 0);
-		
-		media_element_set_current_state (this, "Error");
-		Emit (MediaFailedEvent);
+
+	if (!source->Open ())
 		return;
-	}
-	
-	//printf ("video succesfully opened\n");
-	
-	media_element_set_can_seek (this, mplayer->CanSeek ());
-	media_element_set_can_pause (this, mplayer->CanPause ());
-	media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
-	media_element_set_natural_duration (this, Duration (mplayer->Duration () * TIMESPANTICKS_IN_SECOND / 1000));
-	media_element_set_natural_video_height (this, mplayer->height);
-	media_element_set_natural_video_width (this, mplayer->width);
-	
-	media_element_set_current_state (this, "Buffering");
-	
-	Emit (MediaOpenedEvent);
 	
 	Invalidate ();
 	

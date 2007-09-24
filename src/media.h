@@ -130,13 +130,17 @@ protected:
 
 	MediaSource (MediaElement *element, const char *source_name, const char *file_name);
 
+	MediaPlayer *GetMediaPlayer ();
+
+	virtual bool OpenSource () = 0;
+
 public:
 	virtual ~MediaSource ();
 
 	const char *GetSourceName ();
 	const char *GetFileName ();
 
-	virtual bool Open () = 0;
+	virtual bool Open ();
 	virtual guint Play ();
 	virtual void Pause ();
 	virtual void Stop ();
@@ -145,14 +149,16 @@ public:
 };
 
 class SingleMedia : public MediaSource {
+protected:
+	virtual bool OpenSource ();
 public:
 	SingleMedia (MediaElement *element, const char *source_name, const char *file_name);
-
-	virtual bool Open ();
 };
 
 
 class MediaElement : public MediaBase {
+	friend class MediaSource;
+
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
 	guint timeout_id;
