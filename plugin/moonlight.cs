@@ -105,7 +105,11 @@ namespace Moonlight {
 				if (domain != null) {
 					Console.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): {1}.", plugin, domain.FriendlyName);
 					domains.Remove (plugin);
-					Helper.UnloadDomain (domain);
+					// XXX this causes firefox to
+					// exit when navigating away
+					// from a plugin.  commenting
+					// for now.
+					// Helper.UnloadDomain (domain);
 				}
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): Unable to unload domain: {1}.", plugin, ex.Message);
