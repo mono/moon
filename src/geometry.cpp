@@ -58,6 +58,12 @@ geometry_set_transform (Geometry *geometry, Transform *transform)
 	geometry->SetValue (Geometry::TransformProperty, Value (transform));
 }
 
+Geometry::~Geometry ()
+{
+	if (path)
+		moon_path_destroy (path);
+}
+
 void
 Geometry::Draw (Path *shape, cairo_t *cr)
 {
@@ -69,7 +75,7 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 		cairo_transform (cr, &matrix);
 	}
 
-	if (!path) {
+	if (!path || (path->cairo.num_data == 0)) {
 		Build (shape);
 		// note: shape can be NULL when Geometry is used for clipping
 		if (shape)
@@ -82,31 +88,20 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 void
 Geometry::OnPropertyChanged (DependencyProperty *prop)
 {
+	// no need to clear the path for Geometry itself as FillRule and Transform properties are 
+	// only used when drawing, i.e. they do not affect the path itself
+	if ((prop->type != Type::GEOMETRY) && path)
+		moon_path_clear (path);
+
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
 static void
-path_stretch_adjust (Path *shape, cairo_path_t *path)
+path_get_extents (cairo_path_t *path, double *min_x, double *min_y, double *max_x, double *max_y)
 {
-	if (!path) {
-		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	double w = framework_element_get_width (shape);
-	double h = framework_element_get_height (shape);
-	if ((w < 0.0) || (h < 0.0)) {
-		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	Stretch stretch = shape_get_stretch (shape);
-	if (stretch == StretchNone)
+	if (!path)
 		return;
 
-	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
-	 * (resulting in something even more complex).
-	 */
 	double minx = G_MAXDOUBLE;
 	double miny = G_MAXDOUBLE;
 	double maxx = G_MINDOUBLE;
@@ -153,6 +148,37 @@ path_stretch_adjust (Path *shape, cairo_path_t *path)
 			break;
 		}
 	}
+
+	if (min_x) *min_x = minx;
+	if (min_y) *min_y = miny;
+	if (max_x) *max_x = maxx;
+	if (max_y) *max_y = maxy;
+}
+
+static void
+path_stretch_adjust (Path *shape, cairo_path_t *path)
+{
+	if (!path) {
+		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
+	double w = framework_element_get_width (shape);
+	double h = framework_element_get_height (shape);
+	if ((w < 0.0) || (h < 0.0)) {
+		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
+	Stretch stretch = shape_get_stretch (shape);
+	if (stretch == StretchNone)
+		return;
+
+	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
+	 * (resulting in something even more complex).
+	 */
+	double minx, maxx, miny, maxy;
+	path_get_extents (path, &minx, &miny, &maxx, &maxy);
 
 	double actual_height = maxy - miny;
 	double actual_width = maxx - minx;
@@ -270,8 +296,6 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 		NotifyAttacheesOfPropertyChange (GeometryGroup::ChildrenProperty);
 }
 
-// FIXME: we should cache the path in the group (i.e. a Build method) to avoid
-// rebuilding and reapplying the strech every time
 void
 GeometryGroup::Draw (Path *shape, cairo_t *cr)
 {
@@ -310,7 +334,6 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 	}
 }
 
-#if FALSE
 Rect
 GeometryGroup::ComputeBounds (Path *path)
 {
@@ -324,7 +347,6 @@ GeometryGroup::ComputeBounds (Path *path)
 //g_warning ("GeometryGroup::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
 	return bounds;
 }
-#endif
 
 GeometryCollection*
 geometry_group_get_children (GeometryGroup *geometry_group)
@@ -431,7 +453,6 @@ EllipseGeometry::Build (Path *shape)
 	moon_ellipse (path, pt->x - rx, pt->y - ry, rx * 2.0, ry * 2.0);
 }
 
-#if FALSE
 Rect
 EllipseGeometry::ComputeBounds (Path *path)
 {
@@ -443,7 +464,6 @@ EllipseGeometry::ComputeBounds (Path *path)
 	Point *pt = ellipse_geometry_get_center (this);
 	return Rect (pt->x - hw, pt->y - hh, hw * 2.0, hh * 2.0);
 }
-#endif
 
 //
 // LineGeometry
@@ -495,7 +515,6 @@ LineGeometry::Build (Path *shape)
 	moon_line_to (path, p2->x, p2->y);
 }
 
-#if FALSE
 Rect
 LineGeometry::ComputeBounds (Path *path)
 {
@@ -521,11 +540,11 @@ LineGeometry::ComputeBounds (Path *path)
 		return Rect (MIN (p1->x, p2->x), p1->y - thickness, fabs (dx), thickness * 2.0);
 
 	// slopped line
-	double m = dy / dx;
-// FIXME
-	return Rect (MIN (p1->x, p2->x), MIN (p1->y, p2->y), fabs (dx), fabs (dy));
+	double m = fabs (dy / dx);
+	double tx = (m > 1.0) ? thickness : thickness * m;
+	double ty = (m < 1.0) ? thickness : thickness / m;
+	return Rect (MIN (p1->x, p2->x) - tx / 2.0, MIN (p1->y, p2->y) - ty / 2.0, fabs (dx) + tx, fabs (dy) + ty);
 }
-#endif
 
 //
 // PathGeometry
@@ -609,7 +628,6 @@ PathGeometry::Draw (Path *shape, cairo_t *cr)
 	}
 }
 
-#if FALSE
 Rect
 PathGeometry::ComputeBounds (Path *shape)
 {
@@ -626,7 +644,6 @@ PathGeometry::ComputeBounds (Path *shape)
 	// (e.g. arcs) adding 1.0 will cover the extra pixels used by Cairo's AA
 	return bounds.GrowBy (1.0);
 }
-#endif
 
 PathFigureCollection *
 path_geometry_get_figures (PathGeometry *path_geometry)
@@ -726,7 +743,6 @@ RectangleGeometry::Build (Path *shape)
 	}
 }
 
-#if FALSE
 Rect
 RectangleGeometry::ComputeBounds (Path *path)
 {
@@ -741,7 +757,6 @@ RectangleGeometry::ComputeBounds (Path *path)
 
 	return rect->GrowBy (thickness / 2.0);
 }
-#endif
 
 bool
 RectangleGeometry::GetRadius (double *rx, double *ry)
@@ -780,6 +795,12 @@ PathFigure::PathFigure ()
 	this->SetValue (PathFigure::SegmentsProperty, Value::CreateUnref (new PathSegmentCollection ()));
 }
 
+PathFigure::~PathFigure ()
+{
+	if (path)
+		moon_path_destroy (path);
+}
+
 void
 PathFigure::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -798,12 +819,16 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
+	if (path)
+		moon_path_clear (path);
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
 void
 PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
+	if (path)
+		moon_path_clear (path);
 	// PathFigure only has one collection, so let's save the hash lookup
 	//if (col == GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection())
 		NotifyAttacheesOfPropertyChange (PathFigure::SegmentsProperty);
@@ -824,7 +849,6 @@ PathFigure::Build (Path *shape)
 	bool close = path_figure_get_is_closed (this);
 	if (close)
 		path_size += MOON_PATH_CLOSE_PATH_LENGTH;
-//g_warning ("PathFigure::Draw %d", path_size);
 
 	path = moon_path_renew (path, path_size);
 
@@ -841,21 +865,19 @@ PathFigure::Build (Path *shape)
 		moon_close_path (path);
 }
 
-#if FALSE
 Rect
 PathFigure::ComputeBounds (Path *shape)
 {
-	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
-	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
-	Collection::Node *node = (Collection::Node *) children->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		PathSegment *ps = (PathSegment *) node->obj;
-		bounds = bounds.Union (ps->ComputeBounds (path));
-	}
-//g_warning ("PathFigure::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
-	return bounds;
+	if (!path || (path->cairo.num_data == 0))
+		Build (shape);
+
+	double minx, miny, maxx, maxy;
+	path_get_extents (&path->cairo, &minx, &miny, &maxx, &maxy);
+
+	Rect bounds = Rect (minx, miny, maxx - minx, maxy - miny);
+	double thickness = shape_get_stroke_thickness (shape);
+	return bounds.GrowBy (thickness / 2.0);
 }
-#endif
 
 bool
 path_figure_get_is_closed (PathFigure *path_figure)
@@ -1000,7 +1022,6 @@ ArcSegment::Append (moon_path *path)
 	// FIXME: there's no cairo_arc_to so we reuse librsvg code (see rsvg.cpp)
 	rsvg_arc_to (path, size->x, size->y, angle, large, direction, p->x, p->y); 
 }
-
 
 //
 // BezierSegment

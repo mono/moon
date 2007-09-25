@@ -1647,40 +1647,34 @@ Path::GetFillRule ()
 void
 Path::ComputeBounds ()
 {
-#if FALSE
 	Geometry* geometry = path_get_data (this);
-	if (geometry)
-		bounds = geometry->ComputeBounds (this);
-	else
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-#else
-	if (IsEmpty ()) {
+	if (!geometry) {
 		bounds = Rect (0.0, 0.0, 0.0, 0.0);
 		return;
 	}
 
-	double x1, y1, x2, y2;
-	cairo_t* cr = measuring_context_create ();
+	bounds = geometry->ComputeBounds (this);
 
-	cairo_save (cr);
-	// dont do the operation
-	DoDraw (cr, false, true);
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch != StretchNone) {
+		double t = shape_get_stroke_thickness (this);
+		double ht = t / -2.0;
+		bounds.x = ht;
+		bounds.y = ht;
 
-	// XXX this next call will hopefully become unnecessary in a
-	// later version of cairo.
-	cairo_identity_matrix (cr);
-	// note: a stroke brush may be present, but it doesn't means it will get used
-	if (stroke && (shape_get_stroke_thickness (this) > 0.0))
-		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	else
-		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+		if (vh)
+			bounds.h = MIN (vh->AsDouble (), bounds.h);
+		
+		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+		if (vw)
+			bounds.w = MIN (vw->AsDouble (), bounds.w);
 
-	cairo_restore (cr);
+		bounds.w += t;
+		bounds.h += t;
+	}
 
-	bounds = Rect (x1, y1, x2-x1, y2-y1);
-
-	measuring_context_destroy (cr);
-#endif
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
 }
 
 void

@@ -1,3 +1,8 @@
+2007-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.h|cpp, shape.cpp: Implement GetBounds without a cairo 
+	context.
+
 2007-09-26  Zoltan Varga  <vargaz@gmail.com>
 
 	* text.cpp (TextBlock): Set an empty string as a default Text property.
