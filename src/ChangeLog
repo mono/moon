@@ -1,3 +1,8 @@
+2007-09-26  Zoltan Varga  <vargaz@gmail.com>
+
+	* text.cpp (TextBlock): Set an empty string as a default Text property.
+	(InsideObject): Implement this for text blocks.
+
 2007-09-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* font.cpp: Fix warning.

@@ -343,6 +343,8 @@ TextBlock::TextBlock ()
 	pango_font_description_set_style (font, font_style (style));
 	FontWeights weight = text_block_get_font_weight (this);
 	pango_font_description_set_weight (font, font_weight (weight));
+
+	text_block_set_text (this, (char*)"");
 	
 	// this has to come last, since in our OnPropertyChanged
 	// method we update our bounds.
@@ -390,6 +392,28 @@ TextBlock::ComputeBounds ()
 {
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, GetActualWidth (), GetActualHeight ()));
 // no-op	bounds.GrowBy (1);
+}
+
+bool
+TextBlock::InsideObject (cairo_t *cr, double x, double y)
+{
+	bool ret = false;
+
+	cairo_save (cr);
+
+	double nx = x;
+	double ny = y;
+
+	cairo_matrix_t inverse = absolute_xform;
+	cairo_matrix_invert (&inverse);
+
+	cairo_matrix_transform_point (&inverse, &nx, &ny);
+
+	if (nx >= 0.0 && ny >= 0.0 && nx < GetActualWidth () && ny < GetActualHeight ())
+		ret = true;
+
+	cairo_restore (cr);
+	return ret;
 }
 
 Point
