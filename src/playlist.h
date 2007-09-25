@@ -228,6 +228,7 @@ private:
 	static void on_start_element (gpointer user_data, const char *name, const char **attrs);
 	static void on_end_element (gpointer user_data, const char *name);
 	static void on_text (gpointer user_data, const char *text, int len);
+	static char *get_href_attribute (gpointer user_data, const char **attrs);
 
 	void OnEntry ();
 	void EndEntry ();
@@ -241,6 +242,7 @@ private:
 	PlaylistNodeKind GetParentKind ();
 	void AssertParentKind (int kind);
 
+	void ParsingError ();
 public:
 	PlaylistParser (Playlist *list);
 	~PlaylistParser ();

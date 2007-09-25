@@ -305,6 +305,18 @@ get_href (const char **attrs)
 	return g_strdup (*(attrs + 1));
 }
 
+char *
+PlaylistParser::get_href_attribute (gpointer user_data, const char **attrs)
+{
+	if (!has_href (attrs)) {
+		PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+		parser->ParsingError ();
+		return NULL;
+	}
+
+	return get_href (attrs);
+}
+
 void
 PlaylistParser::on_start_element (gpointer user_data, const char *name, const char **attrs)
 {
@@ -322,8 +334,7 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 		kind = Banner;
 	} else if (str_match (name, "BASE")) {
 		kind = Base;
-		if (has_href (attrs))
-			parser->GetCurrentContent ()->SetBase (get_href (attrs));
+		parser->GetCurrentContent ()->SetBase (get_href_attribute (parser, attrs));
 	} else if (str_match (name, "COPYRIGHT")) {
 		kind = Copyright;
 	} else if (str_match (name, "DURATION")) {
@@ -341,8 +352,7 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 		kind = StartTime;
 	} else if (str_match (name, "REF")) {
 		kind = Ref;
-		if (has_href (attrs))
-			parser->GetCurrentEntry ()->SetSourceName (get_href (attrs));
+		parser->GetCurrentEntry ()->SetSourceName (get_href_attribute (parser, attrs));
 	} else if (str_match (name, "TITLE")) {
 		kind = Title;
 	} else {
@@ -478,6 +488,12 @@ PlaylistParser::AssertParentKind (int kind)
 	if (GetParentKind () & kind)
 		return;
 
-	XML_StopParser (parser, false);
+	ParsingError ();
 	printf ("AssertParentKind, current: %d kind %d\n", GetParentKind (), kind);
+}
+
+void
+PlaylistParser::ParsingError ()
+{
+	XML_StopParser (parser, false);
 }
