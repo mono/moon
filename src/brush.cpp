@@ -1094,12 +1094,12 @@ VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		width = fabs (x2 - x1);
 	}
 	
- 	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, bounds.w, bounds.h, opacity);
+ 	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, (int)bounds.w, (int)bounds.h, opacity);
 
 	cairo_matrix_t matrix;
  	image_brush_compute_pattern_matrix (&matrix,
 					    width, height,
-					    bounds.w, bounds.h,
+					    (int)bounds.w, (int)bounds.h,
 					    stretch, ax, ay, transform);
 
  	cairo_pattern_set_matrix (pattern, &matrix);
