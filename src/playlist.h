@@ -93,8 +93,9 @@ private:
 	gint64 start_time;
 	gint64 duration;
 	MediaSource *source;
+	bool play_when_available;
 public:
-	PlaylistEntry () : source_name (NULL), start_time (0), duration (0), source (NULL)
+	PlaylistEntry () : source_name (NULL), start_time (0), duration (0), source (NULL), play_when_available (true)
 	{
 	}
 
@@ -142,6 +143,16 @@ public:
 	void SetSource (MediaSource *source)
 	{
 		this->source = source;
+	}
+
+	bool PlayWhenAvailable ()
+	{
+		return play_when_available;
+	}
+
+	void PlayWhenAvailable (bool play_when_available)
+	{
+		this->play_when_available = play_when_available;
 	}
 };
 

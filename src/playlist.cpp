@@ -61,14 +61,20 @@ Playlist::Parse ()
 void
 Playlist::OnMediaEnded ()
 {
-	if (!current_entry || !current_entry->next)
+	if (!current_entry)
 		return;
 
 	current_entry->GetSource ()->Close ();
 
+	if (!current_entry->next)
+		return;
+
 	OpenEntry (dynamic_cast<PlaylistEntry *> (current_entry->next));
-	if (HasMediaSource ())
-		current_entry->GetSource ()->Play ();
+
+	if (!HasMediaSource ())
+		return;
+
+	Play ();
 }
 
 void
@@ -85,8 +91,11 @@ Playlist::OnMediaDownloaded ()
 
 	MediaSource *source = MediaSource::CreateSource (element, current_entry->GetSourceName (), file_name);
 	current_entry->SetSource (source);
-	if (source->Open ())
-		Play ();
+	if (!source->Open ())
+		return;
+
+	if (current_entry->PlayWhenAvailable ())
+		source->Play ();
 }
 
 bool
@@ -199,6 +208,11 @@ Playlist::HasMediaSource ()
 void
 Playlist::Play ()
 {
+	if (!current_entry)
+		return;
+
+	current_entry->PlayWhenAvailable (true);
+
 	if (!HasMediaSource ())
 		return;
 
@@ -208,6 +222,11 @@ Playlist::Play ()
 void
 Playlist::Pause ()
 {
+	if (!current_entry)
+		return;
+
+	current_entry->PlayWhenAvailable (false);
+
 	if (!HasMediaSource ())
 		return;
 
@@ -217,6 +236,11 @@ Playlist::Pause ()
 void
 Playlist::Stop ()
 {
+	if (!current_entry)
+		return;
+
+	current_entry->PlayWhenAvailable (false);
+
 	if (!HasMediaSource ())
 		return;
 

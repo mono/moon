@@ -465,7 +465,7 @@ MediaElement::DownloaderComplete ()
 	if (autoplay || play_pending)
 		Play ();
 	else
-		media_element_set_current_state (this, "Paused");
+		Pause ();
 }
 
 void
