@@ -1,5 +1,10 @@
 2007-09-25  Jb Evain  <jbevain@novell.com>
 
+	* media.cpp|h: let the MediaElement be the only one to trigger
+	its own events, terminate its friendship with MediaBase.
+
+2007-09-25  Jb Evain  <jbevain@novell.com>
+
 	* playlist.cpp|h: trigger a parsing error when no href attribute
 	is found for base and ref elements.
 

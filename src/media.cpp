@@ -118,7 +118,6 @@ MediaSource::Open ()
 		media_element_set_natural_video_width (element, 0);
 		
 		media_element_set_current_state (element, "Error");
-		element->Emit (MediaElement::MediaFailedEvent);
 		return false;
 	}
 
@@ -131,7 +130,6 @@ MediaSource::Open ()
 	media_element_set_natural_video_height (element, mplayer->height);
 	media_element_set_natural_video_width (element, mplayer->width);
 
-	element->Emit (MediaElement::MediaOpenedEvent);
 	return true;
 }
 
@@ -290,7 +288,7 @@ void
 MediaElement::DownloaderAbort ()
 {
 	if (downloader) {
-		Value *value = downloader->GetValue (Downloader::UriProperty);
+		//Value *value = downloader->GetValue (Downloader::UriProperty);
 		//printf ("aborting downloader for %s\n", value ? value->AsString () : "(null)");
 		downloader_abort (downloader);
 		downloader->unref ();
@@ -455,9 +453,13 @@ MediaElement::DownloaderComplete ()
 	
 	// FIXME: specify which audio stream index the player should use
 
-	if (!source->Open ())
+	if (!source->Open ()) {
+		Emit (MediaElement::MediaFailedEvent);
 		return;
-	
+	}
+
+	Emit (MediaElement::MediaOpenedEvent);
+
 	Invalidate ();
 	
 	//printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
@@ -482,10 +484,10 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 		if (source)
 			source->Close ();
 	}
-	
+
 	downloader = (Downloader *) dl;
 	part_name = g_strdup (PartName);
-	
+
 	media_element_set_current_state (this, "Opening");
 	media_element_set_current_state (this, "Buffering");
 	

@@ -168,8 +168,6 @@ public:
 
 
 class MediaElement : public MediaBase {
-	friend class MediaSource;
-
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
 	bool updating;
