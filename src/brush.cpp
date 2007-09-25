@@ -736,7 +736,6 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 
 cairo_surface_t *image_brush_create_similar (cairo_t *cairo, int width, int height)
 {
-#define USE_OPT_IMAGE_ONLY 0
 #if USE_OPT_IMAGE_ONLY
 	return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
 #else
