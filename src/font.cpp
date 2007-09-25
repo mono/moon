@@ -142,7 +142,7 @@ static const FT_Matrix invert_y = {
 
 TextFont::TextFont (FcPattern *pattern)
 {
-	const char *filename = NULL;
+	FcChar8 *filename = NULL;
 	FcPattern *matched, *sans;
 	bool retried = false;
 	FcResult result;
@@ -155,13 +155,13 @@ TextFont::TextFont (FcPattern *pattern)
 	
 retry:
 	
-	if (FcPatternGetString (matched, FC_FILE, 0, (FcChar8 **) &filename) != FcResultMatch)
+	if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 		goto fail;
 	
 	if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 		goto fail;
 	
-	if (FT_New_Face (libft2, filename, id, &face) != 0) {
+	if (FT_New_Face (libft2, (const char*)filename, id, &face) != 0) {
 	fail:
 		if (retried)
 			exit (1);
