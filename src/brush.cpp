@@ -734,6 +734,19 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
+cairo_surface_t *image_brush_create_similar (cairo_t *cairo, int width, int height)
+{
+#define USE_OPT_IMAGE_ONLY 0
+#if USE_OPT_IMAGE_ONLY
+	return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+#else
+	return cairo_surface_create_similar (cairo_get_target (cairo),
+					     CAIRO_CONTENT_COLOR_ALPHA,
+					     width,
+					     height);
+#endif
+}
+
 // ripped apart to be reusable for Image and VideoBrush classes
 cairo_pattern_t *
 image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity)
@@ -741,18 +754,20 @@ image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, in
 	cairo_pattern_t *pattern;
 
 	if (opacity < 1.0) {
-		cairo_surface_t *blending = cairo_surface_create_similar (cairo_get_target (cairo),
-									  CAIRO_CONTENT_COLOR_ALPHA,
-									  sw, sh);
+		cairo_surface_t *blending = image_brush_create_similar (cairo, sw, sh);
 
-		pattern = cairo_pattern_create_for_surface (surface);
 		cairo_t *cr = cairo_create (blending);
-		cairo_set_source (cr, pattern);
+		cairo_set_source_surface (cr, surface, 0.0, 0.0);
+
+		//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+
 		cairo_paint_with_alpha (cr, opacity);
 		cairo_destroy (cr);
-		cairo_pattern_destroy (pattern);
-		
+
 		pattern = cairo_pattern_create_for_surface (blending);
+
+		cairo_surface_destroy (blending);
 	} else {
 		pattern = cairo_pattern_create_for_surface (surface);
 	}
@@ -1045,11 +1060,13 @@ VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		return true;
 	}
 	
-	// XXX we should create a similar cairo surface to the one we're rendering to
-	// XXX also, we should cache the surface so that it can be
+	// XXX we should cache the surface so that it can be
 	// used multiple times without having to re-render each time.
-	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, (int)ui->GetBounds().w, (int)ui->GetBounds().h);
 	Rect bounds = ui->GetBounds();
+	surface = image_brush_create_similar (cairo,
+					      (int)bounds.w, 
+					      (int)bounds.h);
+
 	cairo_t *surface_cr = cairo_create (surface);
 	ui->Render (surface_cr, 0, 0, (int)bounds.w + 1, (int)bounds.h + 1);
 	cairo_destroy (surface_cr);
@@ -1077,16 +1094,14 @@ VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		width = fabs (x2 - x1);
 	}
 	
- 	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface,
-							       cairo_image_surface_get_width (surface),
-							       cairo_image_surface_get_height (surface), opacity);
+ 	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, bounds.w, bounds.h, opacity);
 
 	cairo_matrix_t matrix;
  	image_brush_compute_pattern_matrix (&matrix,
 					    width, height,
-					    cairo_image_surface_get_width (surface),
-					    cairo_image_surface_get_height (surface),
+					    bounds.w, bounds.h,
 					    stretch, ax, ay, transform);
+
  	cairo_pattern_set_matrix (pattern, &matrix);
 
  	cairo_set_source (cairo, pattern);

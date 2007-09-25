@@ -1,3 +1,13 @@
+2007-09-25  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp|h: add image_brush_create_similar to simplify creating
+	similar surfaces.  Use it where appropriate.
+
+	* media.ccp: use image_brush_create_similar where possible. In
+	MediaElement::Render draw with opacity directly rather than
+	creating a temporary surface for every frame. Rework image opacity
+	cache so that we don't have to recreate the surface every time. 
+
 2007-09-25  Jb Evain  <jbevain@novell.com>
 
 	* media.cpp|h: let the MediaElement be the only one to trigger

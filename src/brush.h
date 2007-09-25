@@ -119,7 +119,6 @@ void gradient_brush_set_mapping_mode (GradientBrush *brush, BrushMappingMode mod
 GradientSpreadMethod gradient_brush_get_spread (GradientBrush *brush);
 void gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method);
 
-
 class TileBrush : public Brush {
  public:
 	static DependencyProperty* AlignmentXProperty;
@@ -159,7 +158,7 @@ double	image_brush_get_download_progress	(ImageBrush *brush);
 void	image_brush_set_download_progress	(ImageBrush *brush, double progress);
 char*	image_brush_get_image_source		(ImageBrush *brush);
 void	image_brush_set_image_source		(ImageBrush *brush, const char* source);
-
+cairo_surface_t *image_brush_create_similar     (cairo_t *, int width, int height);
 
 class VideoBrush : public TileBrush {
 	MediaElement *media;

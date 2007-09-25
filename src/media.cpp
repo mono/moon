@@ -342,9 +342,15 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	Stretch stretch = media_base_get_stretch (this);
 	double h = framework_element_get_height (this);
 	double w = framework_element_get_width (this);
-	double opacity = GetTotalOpacity ();
+	double pattern_opacity = 1.0;
+        double render_opacity = GetTotalOpacity ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
+
+#if USE_OPT_INDIRECT_COMPOSE
+	pattern_opacity = render_opacity;
+	render_opacity = 1.0;
+#endif
 	
 	if (!(surface = mplayer->GetSurface ()))
 		return;
@@ -359,8 +365,8 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	
 	cairo_set_matrix (cr, &absolute_xform);
-	
-	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, 1.0);
+
+	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, pattern_opacity);
 	
 	if (recalculate_matrix) {
 		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch,
@@ -372,16 +378,15 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
-	
-	cairo_new_path (cr);
-	cairo_rectangle (cr, 0, 0, w, h);
-	cairo_close_path (cr);
-	
-	if (opacity < 1.0) {
-		cairo_clip (cr);
-		cairo_paint_with_alpha (cr, opacity);
+
+	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+
+	// NOTE: Some servers seem to have extreme perfomance issues
+	// when paint_with_alpha (cr, 1.0) is called even accidentally
+	if (render_opacity < 1.0) {
+		cairo_paint_with_alpha (cr, render_opacity);
 	} else {
-		cairo_fill (cr);
+		cairo_paint (cr);
 	}
 	cairo_restore (cr);
 }
@@ -1143,8 +1148,10 @@ Image::CreateSurface (const char *fname)
 		surface->fname = g_strdup (fname);
 		surface->height = gdk_pixbuf_get_height (pixbuf);
 		surface->width = gdk_pixbuf_get_width (pixbuf);
+		
+		bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
 
-		if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
+		if (has_alpha) {
 			g_object_ref (pixbuf);
 		} else {
 			/* gdk-pixbuf packs its pixel data into 24 bits for
@@ -1189,7 +1196,11 @@ Image::CreateSurface (const char *fname)
 
 		surface->backing_pixbuf = pixbuf;
 		surface->cairo = cairo_image_surface_create_for_data (pb_pixels,
+#if USE_OPT_RGB24
+								      /has_alpha ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24,
+#else
 								      CAIRO_FORMAT_ARGB32,
+#endif
 								      surface->width,
 								      surface->height,
 								      gdk_pixbuf_get_rowstride (pixbuf));
@@ -1230,14 +1241,17 @@ Image::Render (cairo_t *cr, int, int, int, int)
 	if (create_xlib_surface && !surface->xlib_surface_created) {
 		surface->xlib_surface_created = true;
 
-		cairo_surface_t *xlib_surface = cairo_surface_create_similar (cairo_get_target (cr),
-									      CAIRO_CONTENT_COLOR_ALPHA,
-									      surface->width, surface->height);
+		cairo_surface_t *xlib_surface = image_brush_create_similar (cr, surface->width, surface->height);
 		cairo_t *cr = cairo_create (xlib_surface);
+
 		cairo_set_source_surface (cr, surface->cairo, 0, 0);
-		cairo_rectangle (cr, 0, 0, surface->width, surface->height);
-		cairo_fill (cr);
+
+		//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+
+		cairo_paint (cr);
 		cairo_destroy (cr);
+
 		cairo_surface_destroy (surface->cairo);
 		g_object_unref (surface->backing_pixbuf);
 		surface->backing_pixbuf = NULL;
@@ -1255,9 +1269,42 @@ Image::Render (cairo_t *cr, int, int, int, int)
 
 	double opacity = GetTotalOpacity ();
 	if (!pattern || (pattern_opacity != opacity)) {
-		if (pattern)
+		// don't share surfaces until they are of the correct type
+		if (pattern && !surface->xlib_surface_created) {
 			cairo_pattern_destroy (pattern);
-		pattern = image_brush_create_pattern (cr, surface->cairo, surface->width, surface->height, opacity);
+			pattern = NULL;
+		}
+		
+		if (pattern) {
+			cairo_surface_t *dest = NULL;
+			cairo_pattern_get_surface (pattern, &dest);
+			
+			// If the pattern holds a temporary surface that meets our needs use it.
+			// It is safe to assume if the pattern is there that it is the right size
+			// because changing the source will invalidate the cached surface.
+
+			if (surface->cairo != dest && opacity < 1.0) {
+				//g_warning ("sharing (%f, %f)", opacity, pattern_opacity);
+				cairo_t *temp = cairo_create (dest);
+				cairo_set_source_surface (temp, surface->cairo, 0, 0);
+
+				cairo_set_operator (temp, CAIRO_OPERATOR_SOURCE);
+				cairo_pattern_set_filter (cairo_get_source (temp), CAIRO_FILTER_FAST);
+				
+				cairo_paint_with_alpha (temp, opacity);
+
+				cairo_destroy (temp);
+			} else {
+				cairo_pattern_destroy (pattern);
+				pattern = NULL;
+			}
+		}
+		
+		if (!pattern) {
+			//g_warning ("new pattern %f", opacity);
+			pattern = image_brush_create_pattern (cr, surface->cairo, surface->width, surface->height, opacity);
+		}
+		
 		pattern_opacity = opacity;
 	}
 
@@ -1268,11 +1315,7 @@ Image::Render (cairo_t *cr, int, int, int, int)
 
 	cairo_set_source (cr, pattern);
 
-	cairo_new_path (cr);
-	cairo_rectangle (cr, 0, 0, w, h);
-	cairo_close_path (cr);
-
-	cairo_fill (cr);
+	cairo_paint (cr);
 	cairo_restore (cr);
 }
 
