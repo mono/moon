@@ -729,6 +729,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, Depe
 {
 	dirty_actual_values = true;
 	UpdateBounds (true);
+	Invalidate ();
 }
 
 Value *

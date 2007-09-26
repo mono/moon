@@ -1,3 +1,7 @@
+2007-09-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (OnCollectionChanged): Needs to call Invalidate().
+
 2007-09-26  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp: initialize the min_timeout based on a good default
