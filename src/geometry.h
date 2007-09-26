@@ -219,7 +219,6 @@ class PathFigure : public DependencyObject {
 	moon_path *path;
  public:
 	static DependencyProperty* IsClosedProperty;
-	static DependencyProperty* IsFilledProperty;
 	static DependencyProperty* SegmentsProperty;
 	static DependencyProperty* StartPointProperty;
 
