@@ -137,6 +137,7 @@ class TextFontDescription {
 	FontWeights weight;
 	FontStretches stretch;
 	double size;
+	int index;
 	
 	FcPattern *CreatePattern ();
 	
@@ -155,6 +156,9 @@ public:
 	
 	const char *GetFilename ();
 	void SetFilename (const char *filename);
+	
+	int GetIndex ();
+	void SetIndex (int index);
 	
 	const char *GetFamily ();
 	void SetFamily (const char *family);

@@ -581,6 +581,7 @@ TextFontDescription::TextFontDescription ()
 	weight = FontWeightsNormal;
 	stretch = FontStretchesNormal;
 	size = 14.666f;
+	index = 0;
 }
 
 TextFontDescription::TextFontDescription (const char *str)
@@ -608,8 +609,10 @@ TextFontDescription::CreatePattern ()
 	pattern = FcPatternCreate ();
 	FcPatternAddDouble (pattern, FC_DPI, dpi);
 	
-	if (set & FontMaskFilename)
+	if (set & FontMaskFilename) {
 		FcPatternAddString (pattern, FC_FILE, (FcChar8 *) filename);
+		FcPatternAddInteger (pattern, FC_INDEX, index);
+	}
 	
 	families = g_strsplit (GetFamily (), ",", -1);
 	for (i = 0; families[i]; i++)
@@ -666,6 +669,7 @@ TextFontDescription::UnsetFields (uint8_t mask)
 	if (mask & FontMaskFilename) {
 		g_free (filename);
 		filename = NULL;
+		index = 0;
 	}
 	
 	if (mask & FontMaskFamily) {
@@ -687,6 +691,8 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 			filename = g_strdup (desc->filename);
 			changed = true;
 		}
+		
+		index = desc->index;
 		
 		set |= FontMaskFilename;
 	}
@@ -764,6 +770,18 @@ TextFontDescription::SetFilename (const char *filename)
 		this->filename = NULL;
 		set &= ~FontMaskFilename;
 	}
+}
+
+int
+TextFontDescription::GetIndex ()
+{
+	return index;
+}
+
+void
+TextFontDescription::SetIndex (int index)
+{
+	this->index = index;
 }
 
 const char *
@@ -855,6 +873,7 @@ TextFontDescription::ToString ()
 	if (set & FontMaskFilename) {
 		g_string_append (str, "font:");
 		g_string_append (str, filename);
+		g_string_append_printf (str, "?index=%d", index);
 		g_string_append (str, "?family=");
 	}
 	
@@ -867,7 +886,7 @@ TextFontDescription::ToString ()
 			g_string_append (str, family);
 		}
 	} else if (!(set & FontMaskFilename)) {
-		g_string_append (str, "Lucida Sans");
+		g_string_append (str, "\"Lucida Sans Unicode, Lucida Sans\"");
 	}
 	
 	if ((set & FontMaskStyle) && style != FontStylesNormal) {
