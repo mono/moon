@@ -166,30 +166,21 @@ void       rectangle_set_radius_y (Rectangle *rectangle, double value);
 // Line class 
 // 
 class Line : public Shape {
- protected:
-	virtual void InvalidatePathCache (bool free) {};
  public:
 	static DependencyProperty* X1Property;
 	static DependencyProperty* Y1Property;
 	static DependencyProperty* X2Property;
 	static DependencyProperty* Y2Property;
 
-	moon_path mp;
-	cairo_path_data_t data[4];
-
-	Line ();
 	virtual Type::Kind GetObjectType () { return Type::LINE; };
 	
+	virtual void BuildPath ();
 	virtual void ComputeBounds ();
-
-	virtual Value* GetValue (DependencyProperty *property);
-	virtual void SetValue (DependencyProperty *property, Value *value);
 
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
 
 	virtual bool IsFilled () { return false; }
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 Line *line_new  (void);

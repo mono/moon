@@ -935,30 +935,6 @@ DependencyProperty* Line::Y1Property;
 DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
-#define LINE_X1		data[1].point.x
-#define LINE_Y1		data[1].point.y
-#define LINE_X2		data[3].point.x
-#define LINE_Y2		data[3].point.y
-
-Line::Line ()
-{
-	// The number of points in a line never changes (no degenerate case either)
-	data [0].header.type = CAIRO_PATH_MOVE_TO;
-	data [0].header.length = MOON_PATH_MOVE_TO_LENGTH;
-	LINE_X1 = 0.0;
-	LINE_Y1 = 0.0;
-	data [2].header.type = CAIRO_PATH_LINE_TO;
-	data [2].header.length = MOON_PATH_LINE_TO_LENGTH;
-	LINE_X2 = 0.0;
-	LINE_Y2 = 0.0;
-
-	mp.cairo.status = CAIRO_STATUS_SUCCESS;
-	mp.cairo.data = (cairo_path_data_t*)&data;
-	mp.cairo.num_data = 4;
-	mp.allocated = 0;
-	path = &mp;
-}
-
 static void
 calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
 {
@@ -985,6 +961,17 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 }
 
 void
+Line::BuildPath ()
+{
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
+
+	path = moon_path_renew (path, MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
+
+	moon_move_to (path, line_get_x1 (this), line_get_y1 (this));
+	moon_line_to (path, line_get_x2 (this), line_get_y2 (this));
+}
+
+void
 Line::ComputeBounds ()
 {
 	double thickness = shape_get_stroke_thickness (this);
@@ -993,129 +980,56 @@ Line::ComputeBounds ()
 		return;
 	}
 
-	calc_line_bounds (LINE_X1, LINE_X2, LINE_Y1, LINE_Y2, thickness, &bounds);
+	calc_line_bounds (line_get_x1 (this), line_get_x2 (this), line_get_y1 (this), line_get_y2 (this), thickness, &bounds);
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
-}
-
-void
-Line::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::LINE) {
-		Shape::OnPropertyChanged (prop);
-		return;
-	}
-
-	// so it means X1, X2, Y1 or Y2
-	FullInvalidate (false);
-	NotifyAttacheesOfPropertyChange (prop);
-}
-
-Value *
-Line::GetValue (DependencyProperty *property)
-{
-	if (property == Line::X1Property)
-		return new Value (LINE_X1);
-	else if (property == Line::Y1Property)
-		return new Value (LINE_Y1);
-	else if (property == Line::X2Property)
-		return new Value (LINE_X2);
-	else if (property == Line::Y2Property)
-		return new Value (LINE_Y2);
-
-	return DependencyObject::GetValue (property);
-}
-
-void
-Line::SetValue (DependencyProperty *property, Value *value)
-{
-	double *dp = NULL;
-
-	if (property == Line::X1Property)
-		dp = &LINE_X1;
-	else if (property == Line::Y1Property)
-		dp = &LINE_Y1;
-	else if (property == Line::X2Property)
-		dp = &LINE_X2;
-	else if (property == Line::Y2Property)
-		dp = &LINE_Y2;
-
-	if (dp) {
-		double d = value ? value->AsDouble () : 0.0;
-		if (d != *dp) {
-			*dp = d;
-			OnPropertyChanged (property);
-		}
-	} else {
-		DependencyObject::SetValue (property, value);
-	}
 }
 
 double
 line_get_x1 (Line *line)
 {
-	// return line->GetValue (Line::X1Property)->AsDouble();
-	return line->LINE_X1;
+	return line->GetValue (Line::X1Property)->AsDouble();
 }
 
 void
 line_set_x1 (Line *line, double value)
 {
-	// line->SetValue (Line::X1Property, Value (value));
-	if (line->LINE_X1 != value) {
-		line->LINE_X1 = value;
-		line->OnPropertyChanged (Line::X1Property);
-	}
+	line->SetValue (Line::X1Property, Value (value));
 }
 
 double
 line_get_y1 (Line *line)
 {
-	//return line->GetValue (Line::Y1Property)->AsDouble();
-	return line->LINE_Y1;
+	return line->GetValue (Line::Y1Property)->AsDouble();
 }
 
 void
 line_set_y1 (Line *line, double value)
 {
-	//line->SetValue (Line::Y1Property, Value (value));
-	if (line->LINE_Y1 != value) {
-		line->LINE_Y1 = value;
-		line->OnPropertyChanged (Line::Y1Property);
-	}
+	line->SetValue (Line::Y1Property, Value (value));
 }
 
 double
 line_get_x2 (Line *line)
 {
-	//return line->GetValue (Line::X2Property)->AsDouble();
-	return line->LINE_X2;
+	return line->GetValue (Line::X2Property)->AsDouble();
 }
 
 void
 line_set_x2 (Line *line, double value)
 {
-	//line->SetValue (Line::X2Property, Value (value));
-	if (line->LINE_X2 != value) {
-		line->LINE_X2 = value;
-		line->OnPropertyChanged (Line::X2Property);
-	}
+	line->SetValue (Line::X2Property, Value (value));
 }
 
 double
 line_get_y2 (Line *line)
 {
-	//return line->GetValue (Line::Y2Property)->AsDouble();
-	return line->LINE_Y2;
+	return line->GetValue (Line::Y2Property)->AsDouble();
 }
 
 void
 line_set_y2 (Line *line, double value)
 {
-	//line->SetValue (Line::Y2Property, Value (value));
-	if (line->LINE_Y2 != value) {
-		line->LINE_Y2 = value;
-		line->OnPropertyChanged (Line::Y2Property);
-	}
+	line->SetValue (Line::Y2Property, Value (value));
 }
 
 Line *
