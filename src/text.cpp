@@ -278,7 +278,7 @@ Run::OnPropertyChanged (DependencyProperty *prop)
 		Inline::OnPropertyChanged (prop);
 		return;
 	}
-    
+
 	NotifyAttacheesOfPropertyChange (prop);
 }
 
@@ -477,7 +477,7 @@ TextBlock::Layout (cairo_t *cr)
 		fg = default_foreground ();
 	else
 		fg = foreground;
-	
+
 	if (layout == NULL)
 		layout = pango_cairo_create_layout (cr);
 	
@@ -507,34 +507,6 @@ TextBlock::Layout (cairo_t *cr)
 	
 	font_mask = pango_font_description_get_set_fields (font);
 	decorations = text_block_get_text_decorations (this);
-	text = text_block_get_text (this);
-	if (text && *text) {
-		g_string_append (block, text);
-		end = block->len;
-		start = 0;
-		
-		font_attr = pango_attr_font_desc_new (font);
-		font_attr->start_index = start;
-		font_attr->end_index = end;
-		
-		pango_attr_list_insert (attrs, font_attr);
-		
-		if (decorations == TextDecorationsUnderline) {
-			uline_attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
-			uline_attr->start_index = start;
-			uline_attr->end_index = end;
-			
-			pango_attr_list_insert (attrs, uline_attr);
-		} else {
-			uline_attr = NULL;
-		}
-		
-		fg_attr = mango_attr_foreground_new (this, fg);
-		fg_attr->start_index = start;
-		fg_attr->end_index = end;
-		
-		pango_attr_list_insert (attrs, fg_attr);
-	}
 	
 	Inlines *inlines = text_block_get_inlines (this);
 	
@@ -721,7 +693,8 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			foreground->ref ();
 		}
 		
-		recalc_actual = false;
+		// This will force a call to Layout ()
+		//recalc_actual = false;
 	} else if (prop == TextBlock::ActualHeightProperty) {
 		recalc_actual = false;
 		invalidate = false;
@@ -729,7 +702,6 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		recalc_actual = false;
 		invalidate = false;
 	}
-		
 	
 	if (invalidate) {
 		if (recalc_actual)
@@ -763,6 +735,51 @@ TextBlock::GetValue (DependencyProperty *property)
 	if (dirty_actual_values && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
 		CalcActualWidthHeight (NULL);
 
+	if (property == TextBlock::TextProperty) {
+		GString *block;
+		Value *res;
+
+		// The Text property is a concatenation of the Inlines */
+		Inlines *inlines = text_block_get_inlines (this);
+	
+		block = g_string_new ("");
+
+		if (inlines != NULL) {
+			Collection::Node *node = (Collection::Node *) inlines->list->First ();
+			Inline *item;
+			Run *run;
+			char *text;
+		
+			while (node != NULL) {
+				item = (Inline *) node->obj;
+			
+				switch (item->GetObjectType ()) {
+				case Type::RUN:
+					run = (Run *) item;
+				
+					text = run_get_text (run);
+				
+					if (text == NULL || *text == '\0') {
+					} else {
+						g_string_append (block, text);
+					}
+					break;
+				case Type::LINEBREAK:
+					g_string_append_c (block, '\n');
+					break;
+				default:
+					break;
+				}
+
+				node = (Collection::Node *) node->next;
+			}
+		}
+
+		res = new Value (block->str);
+		g_string_free (block, true);
+		return res;
+	}
+
 	return DependencyObject::GetValue (property);
 }
 
@@ -775,6 +792,26 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		else if (property == TextBlock::ActualWidthProperty)
 			actual_width = value->AsDouble ();
 	}
+
+	if (property == TextBlock::TextProperty) {
+		// Text is a virtual property and setting it deletes all current runs,
+		// creating a new run
+		Run *run = new Run ();
+		if (value)
+			run_set_text (run, value->AsString ());
+
+		Inlines *inlines = text_block_get_inlines (this);
+
+		if (!inlines) {
+			inlines = new Inlines ();
+			text_block_set_inlines (this, inlines);
+		} else {
+			inlines->Clear ();
+		}
+		inlines->Add (run);
+		return;
+	}
+
 	return DependencyObject::SetValue (property, value);
 }
 
@@ -909,7 +946,7 @@ char *
 text_block_get_text (TextBlock *textblock)
 {
 	Value *value = textblock->GetValue (TextBlock::TextProperty);
-	
+
 	return value ? (char *) value->AsString () : NULL;
 }
 
