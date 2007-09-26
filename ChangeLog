@@ -1,5 +1,9 @@
 2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* cairo/: Added pristine cairo-1.4.10 sources
+
+2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* Makefile.am: Added test/harness to SUBDIRS for dist tarball
 	* tools/xamlg/Makefile.am, tools/mopen/Makefile.am:
 	  Added missing files for dist tarball
