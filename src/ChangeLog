@@ -1,3 +1,7 @@
+2007-09-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp: Unref collections and matrix transforms we create.
+
 2007-09-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.h|cpp, shape.cpp: Implement GetBounds without a cairo 

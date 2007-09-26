@@ -267,8 +267,11 @@ class XNamespace : public XamlNamespace {
 			
 			item->item = NULL;
 			DependencyObject *dob = NULL;
-			if (p->loader)
+			if (p->loader) {
+				// The managed DependencyObject will unref itself
+				// once it's finalized, so don't unref anything here.
 				dob = p->loader->CreateManagedObject (value, NULL);
+			}
 
 			if (!dob) {
 				parser_error (p, item->element_name, attr,
@@ -476,17 +479,21 @@ const char*
 XamlLoader::GetMapping (const char* key)
 {
 	
-	char* result;
+	const char* result = NULL;
 	if (mappings) {
-		result = (char*) g_hash_table_lookup (mappings, key);
-		if (result)
+		result = (const char*) g_hash_table_lookup (mappings, key);
+		if (result) {
+			// printf ("XamlLoader::GetMapping (%s): returning cached result: %s\n", key, result);
 			return result;
+		}
 	}
 	
-	if (callbacks.get_mapping)
-		return callbacks.get_mapping (key);
-	else
-		return NULL;
+	if (callbacks.get_mapping) {
+		result = callbacks.get_mapping (key);
+		 // printf ("XamlLoader::GetMapping (%s): returning managed result: %s\n", key, result);
+	}
+
+	return result;
 }
 
 void
@@ -947,9 +954,12 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
-		if (!p->loader)
+		if (!p->loader) {
+			//printf ("No custom element callback installed to handle %s.\n", uri);
+			//print_stack_trace ();
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix,
 					g_strdup_printf ("No custom element callback installed to handle %s", uri));
+		}
 
 		CustomNamespace *c = new CustomNamespace (g_strdup (uri));
 		g_hash_table_insert (p->namespace_map, c->xmlns, c);
@@ -2190,6 +2200,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			if (!col_v) {
 				col = collection_new (dep->value_type);
 				obj->SetValue (dep, Value (col));
+				col->unref ();
 			} else {
 				col = (Collection *) col_v->AsCollection ();
 			}
@@ -2574,7 +2585,8 @@ start_parse:
 
 				t->SetValue (MatrixTransform::MatrixProperty, mv);
 
-				dep->SetValue (prop, new Value (t));
+				dep->SetValue (prop, Value (t));
+				t->unref ();
 				break;
 			}
 			case Type::MATRIX:
