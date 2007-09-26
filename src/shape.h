@@ -52,7 +52,7 @@ class Shape : public FrameworkElement {
 	static DependencyProperty* StrokeThicknessProperty;
 
 	Shape ();
-	~Shape ();
+	virtual ~Shape ();
 	virtual Type::Kind GetObjectType () { return Type::SHAPE; };
 
 	//

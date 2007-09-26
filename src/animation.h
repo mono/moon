@@ -139,7 +139,7 @@ class Animation/*Timeline*/;
 class AnimationClock : public Clock {
  public:
 	AnimationClock (Animation/*Timeline*/ *timeline);
-	~AnimationClock ();
+	virtual ~AnimationClock ();
 	virtual Type::Kind GetObjectType () { return Type::ANIMATIONCLOCK; };
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
@@ -272,7 +272,7 @@ class KeyFrameCollection : public Collection {
  public:
 
 	KeyFrameCollection ();
-	~KeyFrameCollection ();
+	virtual ~KeyFrameCollection ();
 
 	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
@@ -294,7 +294,7 @@ class KeyFrameCollection : public Collection {
 class ColorKeyFrameCollection : public KeyFrameCollection {
  public:
 	ColorKeyFrameCollection () { }
-	~ColorKeyFrameCollection () { }
+	virtual ~ColorKeyFrameCollection () { }
 
 	virtual Type::Kind GetObjectType() { return Type::COLORKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::COLORKEYFRAME; }
@@ -303,7 +303,7 @@ class ColorKeyFrameCollection : public KeyFrameCollection {
 class DoubleKeyFrameCollection : public KeyFrameCollection {
  public:
 	DoubleKeyFrameCollection () { }
-	~DoubleKeyFrameCollection () { }
+	virtual ~DoubleKeyFrameCollection () { }
 
 	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::DOUBLEKEYFRAME; }
@@ -312,7 +312,7 @@ class DoubleKeyFrameCollection : public KeyFrameCollection {
 class PointKeyFrameCollection : public KeyFrameCollection {
  public:
 	PointKeyFrameCollection () { }
-	~PointKeyFrameCollection () { }
+	virtual ~PointKeyFrameCollection () { }
 
 	virtual Type::Kind GetObjectType() { return Type::POINTKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
@@ -454,7 +454,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
 	DoubleAnimationUsingKeyFrames ();
-	~DoubleAnimationUsingKeyFrames ();
+	virtual ~DoubleAnimationUsingKeyFrames ();
 	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (DoubleKeyFrame *frame);
@@ -477,7 +477,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
  public:
 	ColorAnimationUsingKeyFrames ();
-	~ColorAnimationUsingKeyFrames();
+	virtual ~ColorAnimationUsingKeyFrames();
 	virtual Type::Kind GetObjectType () { return Type::COLORANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (ColorKeyFrame *frame);
@@ -498,7 +498,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 class PointAnimationUsingKeyFrames : public PointAnimation {
  public:
 	PointAnimationUsingKeyFrames ();
-	~PointAnimationUsingKeyFrames();
+	virtual ~PointAnimationUsingKeyFrames();
 	virtual Type::Kind GetObjectType () { return Type::POINTANIMATIONUSINGKEYFRAMES; };
 
 	void AddKeyFrame (PointKeyFrame *frame);
@@ -526,7 +526,7 @@ class Storyboard : public ParallelTimeline {
 	void Resume ();
 	void Seek (TimeSpan timespan);
 	void Stop ();
-	~Storyboard ();
+	virtual ~Storyboard ();
 
 	static DependencyProperty* TargetNameProperty;
 	static DependencyProperty* TargetPropertyProperty;
@@ -553,7 +553,7 @@ class Storyboard : public ParallelTimeline {
 class BeginStoryboard : public TriggerAction {
  public:
 	BeginStoryboard () { }
-	~BeginStoryboard ();
+	virtual ~BeginStoryboard ();
 	
 	virtual Type::Kind GetObjectType () { return Type::BEGINSTORYBOARD; };
 

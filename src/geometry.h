@@ -44,7 +44,7 @@ class Geometry : public DependencyObject {
 	static DependencyProperty* TransformProperty;
 
 	Geometry () : path (NULL) {};
-	~Geometry ();
+	virtual ~Geometry ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -224,7 +224,7 @@ class PathFigure : public DependencyObject {
 	static DependencyProperty* StartPointProperty;
 
 	PathFigure ();
-	~PathFigure ();
+	virtual ~PathFigure ();
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);

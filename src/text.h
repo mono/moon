@@ -81,7 +81,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *TextDecorationsProperty;
 	
 	Inline ();
-	~Inline ();
+	virtual ~Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
@@ -152,7 +152,7 @@ public:
 	static DependencyProperty *TextWrappingProperty;
 	
 	TextBlock ();
-	~TextBlock ();
+	virtual ~TextBlock ();
 	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
 	
 	void SetFontSource (DependencyObject *downloader);

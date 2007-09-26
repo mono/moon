@@ -252,7 +252,7 @@ class TimelineGroup;
 class Clock : public DependencyObject {
  public:
 	Clock (Timeline *timeline);
-	~Clock () {  }
+	virtual ~Clock () {  }
 	
 	virtual Type::Kind GetObjectType () { return Type::CLOCK; };
 
@@ -349,7 +349,7 @@ class Clock : public DependencyObject {
 class ClockGroup : public Clock {
  public:
 	ClockGroup (TimelineGroup *timeline);
-	~ClockGroup ();
+	virtual ~ClockGroup ();
 	virtual Type::Kind GetObjectType () { return Type::CLOCKGROUP; };
 
 	void AddChild (Clock *clock);
@@ -420,7 +420,7 @@ TimelineCollection * timeline_collection_new ();
 class TimelineGroup : public Timeline {
  public:
 	TimelineGroup ();
-	~TimelineGroup ();
+	virtual ~TimelineGroup ();
 	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; };
 

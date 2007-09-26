@@ -20,7 +20,7 @@ G_BEGIN_DECLS
 class StylusInfo : public DependencyObject {
  public:
 	StylusInfo () { }
-	~StylusInfo () { };
+	virtual ~StylusInfo () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSINFO; };
 
@@ -33,7 +33,7 @@ StylusInfo* stylus_info_new ();
 class StylusPoint : public DependencyObject {
  public:
 	StylusPoint () { }
-	~StylusPoint () { };
+	virtual ~StylusPoint () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT; };
 
@@ -47,7 +47,7 @@ StylusPoint* stylus_point_new ();
 class Stroke : public DependencyObject {
  public:
 	Stroke () { }
-	~Stroke () { };
+	virtual ~Stroke () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::STROKE; };
 
@@ -60,7 +60,7 @@ Stroke* stroke_new ();
 class DrawingAttributes : public DependencyObject {
  public:
 	DrawingAttributes () { }
-	~DrawingAttributes () { };
+	virtual ~DrawingAttributes () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; };
 
@@ -75,7 +75,7 @@ DrawingAttributes* drawing_attributes_new ();
 class InkPresenter : public Canvas {
  public:
 	InkPresenter () { }
-	~InkPresenter () { };
+	virtual ~InkPresenter () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
 

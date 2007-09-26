@@ -37,7 +37,7 @@ class UIElement : public Visual {
 	double total_opacity;
  public:
 	UIElement ();
-	~UIElement ();
+	virtual ~UIElement ();
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };
 
 	UIElement *parent;

@@ -167,7 +167,7 @@ public:
 	static DependencyProperty* ChildrenProperty;
 
 	TransformGroup ();
-	~TransformGroup ();
+	virtual ~TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);

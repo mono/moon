@@ -21,7 +21,7 @@ class Control : public FrameworkElement {
 	FrameworkElement *real_object;
 
 	Control () : real_object (NULL) { };
-	~Control ();
+	virtual ~Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 

@@ -215,7 +215,7 @@ public:
 	MediaPlayer *mplayer;
 	
 	MediaElement ();
-	~MediaElement ();
+	virtual ~MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
 	
 	// overrides

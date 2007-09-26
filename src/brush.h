@@ -144,7 +144,7 @@ class ImageBrush : public TileBrush {
 	static DependencyProperty *ImageSourceProperty;
 
 	ImageBrush ();
-	~ImageBrush ();
+	virtual ~ImageBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
 
@@ -166,7 +166,7 @@ public:
 	static DependencyProperty *SourceNameProperty;
 	
 	VideoBrush ();
-	~VideoBrush ();
+	virtual ~VideoBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::VIDEOBRUSH; }
 	
