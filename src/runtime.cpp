@@ -529,6 +529,13 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 	s->cairo = s->cairo_xlib;
 
 #ifdef USE_XRANDR
+#if INTEL_DRIVERS_STOP_SUCKING
+	// apparently the i965 drivers blank external screens when
+	// getting the screen info (um, ugh?).  needless to say, this
+	// annoyance is worse than not using the monitor's refresh as
+	// the upper bound for our fps.
+	//
+	// http://lists.freedesktop.org/archives/xorg/2007-August/027616.html
 	int event_base, error_base;
 	GdkWindow *gdk_root = gtk_widget_get_root_window (widget);
 	Display *dpy = GDK_WINDOW_XDISPLAY(gdk_root);
@@ -538,9 +545,12 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 								 root);
 		short rate = XRRConfigCurrentRate (info);
 		printf ("screen refresh rate = %d\n", rate);
-		TimeManager::Instance()->SetMaximumRefreshRate (rate);
+ 		TimeManager::Instance()->SetMaximumRefreshRate (rate);
 		XRRFreeScreenConfigInfo (info);
 	}
+#else
+	TimeManager::Instance()->SetMaximumRefreshRate (60);
+#endif
 #endif
 
 	TimeManager::Instance()->AddHandler (TimeManager::Instance()->RenderEvent, render_cb, s);
