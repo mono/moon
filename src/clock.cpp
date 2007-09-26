@@ -40,6 +40,7 @@
 
 #define MINIMUM_FPS 10
 #define DEFAULT_FPS 30
+#define MAXIMUM_FPS 60
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 #define DELAY_TO_FPS(delay) (1000.0 / delay)
@@ -73,6 +74,7 @@ TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
     current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
+    min_timeout (FPS_TO_DELAY (MAXIMUM_FPS)),
     strikes (0),
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
@@ -233,22 +235,24 @@ TimeManager::Tick ()
 			/* it took us longer than our current_timeout to run through
 			   the clock update/render loop.  we need to scale back our
 			   timeout (lower fps) */
-			new_timeout = current_timeout + FPS_TO_DELAY (FPS_ADJUSTMENT);
+			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) + FPS_ADJUSTMENT);
 		}
 		else if (strikes < -STRIKE_COUNT) {
 			/* it took us less time than our
 			   current_timeout to run through the clock
 			   update/render loop.  let's make the timeout
 			   less (higher fps). */
-			new_timeout = current_timeout - FPS_TO_DELAY (FPS_ADJUSTMENT);
+			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) - FPS_ADJUSTMENT);
 		}
 
 		strikes = 0;
 
-		if (new_timeout < min_timeout)
+		if (new_timeout < min_timeout) {
 			new_timeout = min_timeout;
-		else if (new_timeout > FPS_TO_DELAY (MINIMUM_FPS))
+		}
+		else if (new_timeout > FPS_TO_DELAY (MINIMUM_FPS)) {
 			new_timeout = FPS_TO_DELAY (MINIMUM_FPS);
+		}
 		  
 		if (new_timeout != current_timeout) {
 			current_timeout = new_timeout;

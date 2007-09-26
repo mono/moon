@@ -548,8 +548,6 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
  		TimeManager::Instance()->SetMaximumRefreshRate (rate);
 		XRRFreeScreenConfigInfo (info);
 	}
-#else
-	TimeManager::Instance()->SetMaximumRefreshRate (60);
 #endif
 #endif
 

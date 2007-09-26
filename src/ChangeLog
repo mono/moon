@@ -1,3 +1,12 @@
+2007-09-26  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp: initialize the min_timeout based on a good default
+	max fps (60 in our case).  Also, calculate the fps adjustments in
+	a nicer way.
+
+	* runtime.cpp: remove the non-xrandr SetMaximumRefreshRate call -
+	it's handled by TimeManager's default.
+
 2007-09-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: A bunch of fixes/changes to mimic Microsoft's
