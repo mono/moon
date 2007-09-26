@@ -220,13 +220,16 @@ TimeManager::Tick ()
 	ENDTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan post_tick = get_now();
 
-	if (post_tick - pre_tick > (TimeSpan)(current_timeout * 10000))
+	/* we only count strikes for higher/lower fps if the frame
+	   took more than 50ms over our timeour, or less than 50ms
+	   under our timeout. */
+	if (post_tick - pre_tick > (TimeSpan)(current_timeout * 10000) + 50000)
 		strikes ++;
-	else
+	else if (post_tick - pre_tick < (TimeSpan)(current_timeout * 10000) - 50000)
 		strikes --;
 
-#define STRIKE_COUNT 5
-#define FPS_ADJUSTMENT 4
+#define STRIKE_COUNT 20
+#define FPS_ADJUSTMENT 3
 
 	if (strikes > STRIKE_COUNT || strikes < -STRIKE_COUNT) {
 		int new_timeout = current_timeout;
@@ -235,14 +238,14 @@ TimeManager::Tick ()
 			/* it took us longer than our current_timeout to run through
 			   the clock update/render loop.  we need to scale back our
 			   timeout (lower fps) */
-			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) + FPS_ADJUSTMENT);
+			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) - FPS_ADJUSTMENT);
 		}
 		else if (strikes < -STRIKE_COUNT) {
 			/* it took us less time than our
 			   current_timeout to run through the clock
 			   update/render loop.  let's make the timeout
 			   less (higher fps). */
-			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) - FPS_ADJUSTMENT);
+			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) + FPS_ADJUSTMENT);
 		}
 
 		strikes = 0;
