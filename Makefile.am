@@ -1,4 +1,4 @@
-SUBDIRS = src gtk plugin tools man
+SUBDIRS = src gtk plugin tools man test/harness
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc

@@ -1,3 +1,9 @@
+2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Added test/harness to SUBDIRS for dist tarball
+	* tools/xamlg/Makefile.am, tools/mopen/Makefile.am:
+	  Added missing files for dist tarball
+
 2007-09-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* configure.ac: Fix XRANDR support.

@@ -4,7 +4,9 @@ bin_SCRIPTS = xamlg
 
 moon_DATA = xamlg.exe
 
-EXTRA_DIST = xamlg.in
+EXTRA_DIST = \
+	xamlg.in \
+	$(xamlg_exe_CS)
 
 CLEANFILES = xamlg xamlg.exe
 

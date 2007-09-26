@@ -18,10 +18,12 @@ libmooninclude_headers = \
 	canvas.h	\
 	clock.h		\
 	collection.h	\
+	color.h		\
 	control.h	\
 	debug.h		\
 	dependencyobject.h \
 	downloader.h	\
+	enums.h		\
 	error.h		\
 	font.h		\
 	frameworkelement.h \
@@ -34,6 +36,7 @@ libmooninclude_headers = \
 	mplayer.h	\
 	namescope.h	\
 	openfile.h	\
+	panel.h		\
 	playlist.h	\
 	point.h		\
 	rect.h		\
@@ -43,9 +46,11 @@ libmooninclude_headers = \
 	stylus.h	\
 	text.h		\
 	transform.h	\
+	trigger.h	\
 	type.h		\
 	uielement.h	\
 	value.h		\
+	visual.h	\
 	xaml.h		\
 	libmoon.h
 
@@ -98,8 +103,11 @@ libmoon_la_SOURCES = 	\
 	zip/unzip.h	\
 	zip/crypt.h
 
-
-EXTRA_DIST = alpha-premul-table.inc zip/README zip/ChangeLogUnzip
+EXTRA_DIST = \
+	alpha-premul-table.inc \
+	zip/README \
+	zip/ChangeLogUnzip \
+	$(libmooninclude_headers)
 
 demo_SOURCES = \
 	demo.cpp

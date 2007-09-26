@@ -1,3 +1,7 @@
+2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Added missing files for dist tarball
+
 2007-09-26  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: add some very naive, rather lame fps tuning.

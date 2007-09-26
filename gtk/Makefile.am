@@ -26,7 +26,7 @@ gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll docs/Gtk.Moonlight.xml
 	mdassembler --ecma docs/ --out gtksilver
 
 install-data-local:
-	gacutil -gacdir $(prefix) -i gtksilver.dll
+	gacutil -gacdir $(DESTDIR)$(prefix) -i gtksilver.dll
 
 dist-hook:
 	mkdir $(distdir)/docs

@@ -4,7 +4,10 @@ moon_DATA = mopen.exe mopen.exe.mdb mopen.exe.config
 
 bin_SCRIPTS = mopen
 
-EXTRA_DIST = mopen.in
+EXTRA_DIST = \
+	mopen.in \
+	mopen.exe.config \
+	$(mopen_exe_CS)
 
 CLEANFILES = mopen mopen.exe mopen.exe.mdb
 DISTCLEANFILES=$(CLEANFILES)

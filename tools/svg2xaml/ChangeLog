@@ -1,3 +1,7 @@
+2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Added missing files for dist tarball
+
 2007-06-29  Andreia Gaita  <avidigal@novell.com>
 
 	* svg2xaml.xslt, svg2xaml_standalone.xslt:

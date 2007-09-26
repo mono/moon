@@ -4,7 +4,12 @@ bin_SCRIPTS = svg2xaml svg2xaml-gui
 
 moon_DATA = svg2xaml.exe svg2xaml-gui.exe
 
-EXTRA_DIST = svg2xaml.in svg2xaml-gui.in
+EXTRA_DIST = \
+	svg2xaml.in \
+	svg2xaml-gui.in \
+	$(svg2xaml_exe_CS) \
+	$(svg2xaml_gui_exe_CS) \
+	svg2xaml.xslt
 
 CLEANFILES = svg2xaml svg2xaml.exe
 
