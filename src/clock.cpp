@@ -73,6 +73,7 @@ TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
     current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
+    strikes (0),
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
 {
@@ -160,8 +161,6 @@ TimeManager::InvokeTickCall ()
 		g_free (call);
 	}
 }
-
-int strikes = 0;
 
 void
 TimeManager::Tick ()
