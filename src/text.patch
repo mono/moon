@@ -1,12 +1,11 @@
 Index: text.h
 ===================================================================
---- text.h	(revision 86192)
+--- text.h	(revision 86426)
 +++ text.h	(working copy)
-@@ -17,56 +17,8 @@
- #include <pango/pango.h>
+@@ -18,55 +18,9 @@
  
  #include "brush.h"
--#include "mango.h"
+ #include "mango.h"
 +#include "font.h"
  
 -enum FontStretches {
@@ -21,7 +20,7 @@ Index: text.h
 -	FontStretchesExtraExpanded  = 8,
 -	FontStretchesUltraExpanded  = 9
 -};
--
+ 
 -enum FontStyles {
 -	FontStylesNormal,
 -	FontStylesOblique,
@@ -60,7 +59,7 @@ Index: text.h
  void text_init (void);
  void text_destroy (void);
  
-@@ -86,7 +38,7 @@
+@@ -86,7 +40,7 @@
  	virtual void OnPropertyChanged (DependencyProperty *prop);
  	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
  
@@ -69,7 +68,7 @@ Index: text.h
  	Brush *foreground;
  };
  
-@@ -137,6 +89,32 @@
+@@ -137,6 +91,48 @@
  
  
  class TextBlock : public FrameworkElement {
@@ -80,6 +79,8 @@ Index: text.h
 +	bool dirty_actual_values;
 +	double actual_height;
 +	double actual_width;
++	double bbox_height;
++	double bbox_width;
 +	
 +	void CalcActualWidthHeight (cairo_t *cr);
 +	void Layout (cairo_t *cr);
@@ -99,10 +100,24 @@ Index: text.h
 +		return actual_height;
 +	}
 +	
++	double GetBoundingWidth ()
++	{
++		if (dirty_actual_values)
++			CalcActualWidthHeight (NULL);
++		return bbox_width;
++	}
++	
++	double GetBoundingHeight ()
++	{
++		if (dirty_actual_values)
++			CalcActualWidthHeight (NULL);
++		return bbox_height;
++	}
++	
  public:
  	static DependencyProperty *ActualHeightProperty;
  	static DependencyProperty *ActualWidthProperty;
-@@ -171,34 +149,6 @@
+@@ -172,34 +168,6 @@
  	virtual Value *GetValue (DependencyProperty *property);
  	virtual void SetValue (DependencyProperty *property, Value *value);
  	virtual void SetValue (DependencyProperty *property, Value value);
@@ -139,9 +154,9 @@ Index: text.h
  TextBlock *text_block_new (void);
 Index: text.cpp
 ===================================================================
---- text.cpp	(revision 86192)
+--- text.cpp	(revision 86426)
 +++ text.cpp	(working copy)
-@@ -22,66 +22,11 @@
+@@ -22,62 +22,8 @@
  #include "text.h"
  
  
@@ -205,11 +220,7 @@ Index: text.cpp
  static Brush *
  default_foreground (void)
  {
--	
- 	if (!default_foreground_brush) {
- 		default_foreground_brush = new SolidColorBrush ();
- 		Color *color = color_from_str ("black");
-@@ -108,12 +53,12 @@
+@@ -108,12 +54,12 @@
  	foreground = NULL;
  	
  	/* initialize the font description */
@@ -224,8 +235,12 @@ Index: text.cpp
  	
  	if (foreground != NULL) {
  		foreground->Detach (NULL, this);
-@@ -131,19 +76,19 @@
-     
+@@ -128,22 +74,22 @@
+ 		DependencyObject::OnPropertyChanged (prop);
+ 		return;
+ 	}
+-    
++	
  	if (prop == Inline::FontFamilyProperty) {
  		char *family = inline_get_font_family (this);
 -		pango_font_description_set_family (font, family);
@@ -249,7 +264,7 @@ Index: text.cpp
  	} else if (prop == Inline::ForegroundProperty) {
  		if (foreground != NULL) {
  			foreground->Detach (NULL, this);
-@@ -321,8 +266,6 @@
+@@ -321,31 +267,31 @@
  
  TextBlock::TextBlock ()
  {
@@ -257,48 +272,63 @@ Index: text.cpp
 -	
  	foreground = NULL;
  	
- 	layout = NULL;
-@@ -332,17 +275,17 @@
- 	dirty_actual_values = true;
+-	layout = NULL;
++	layout = new TextLayout ();
+ 	
++	dirty_actual_values = true;
+ 	actual_height = 0.0;
+ 	actual_width = 0.0;
+-	dirty_actual_values = true;
++	bbox_height = 0.0;
++	bbox_width = 0.0;
  	
  	/* initialize the font description */
 -	font = pango_font_description_new ();
-+	font = new TextFontDescription ();
- 	char *family = text_block_get_font_family (this);
+-	char *family = text_block_get_font_family (this);
 -	pango_font_description_set_family (font, family);
-+	font->SetFamily (family);
- 	double size = text_block_get_font_size (this);
+-	double size = text_block_get_font_size (this);
 -	pango_font_description_set_absolute_size (font, size * PANGO_SCALE);
-+	font->SetSize (size);
- 	FontStretches stretch = text_block_get_font_stretch (this);
+-	FontStretches stretch = text_block_get_font_stretch (this);
 -	pango_font_description_set_stretch (font, font_stretch (stretch));
-+	font->SetStretch (stretch);
- 	FontStyles style = text_block_get_font_style (this);
+-	FontStyles style = text_block_get_font_style (this);
 -	pango_font_description_set_style (font, font_style (style));
++	font = new TextFontDescription ();
++ 	char *family = text_block_get_font_family (this);
++	font->SetFamily (family);
++ 	double size = text_block_get_font_size (this);
++	font->SetSize (size);
++ 	FontStretches stretch = text_block_get_font_stretch (this);
++	font->SetStretch (stretch);
++ 	FontStyles style = text_block_get_font_style (this);
 +	font->SetStyle (style);
  	FontWeights weight = text_block_get_font_weight (this);
 -	pango_font_description_set_weight (font, font_weight (weight));
+-
+-	text_block_set_text (this, (char*)"");
 +	font->SetWeight (weight);
  	
++	text_block_set_text (this, (char *) "");
++	
  	// this has to come last, since in our OnPropertyChanged
  	// method we update our bounds.
-@@ -352,13 +295,11 @@
+ 	Brush *brush = default_foreground ();
+@@ -354,13 +300,10 @@
  
  TextBlock::~TextBlock ()
  {
 -	pango_font_description_free (font);
 +	delete font;
  	
- 	if (layout)
+-	if (layout)
 -		g_object_unref (layout);
-+		delete layout;
++	delete layout;
  	
 -	g_object_unref (renderer);
 -	
  	if (foreground != NULL) {
  		foreground->Detach (NULL, this);
  		foreground->unref ();
-@@ -374,11 +315,6 @@
+@@ -376,11 +319,6 @@
  void
  TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
  {
@@ -310,7 +340,53 @@ Index: text.cpp
  	cairo_save (cr);
  	cairo_set_matrix (cr, &absolute_xform);
  	Paint (cr);
-@@ -434,17 +370,12 @@
+@@ -390,7 +328,7 @@
+ void 
+ TextBlock::ComputeBounds ()
+ {
+-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, GetActualWidth (), GetActualHeight ()));
++	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ()));
+ // no-op	bounds.GrowBy (1);
+ }
+ 
+@@ -398,20 +336,20 @@
+ TextBlock::InsideObject (cairo_t *cr, double x, double y)
+ {
+ 	bool ret = false;
+-
++	
+ 	cairo_save (cr);
+-
++	
+ 	double nx = x;
+ 	double ny = y;
+-
++	
+ 	cairo_matrix_t inverse = absolute_xform;
+ 	cairo_matrix_invert (&inverse);
+-
++	
+ 	cairo_matrix_transform_point (&inverse, &nx, &ny);
+-
+-	if (nx >= 0.0 && ny >= 0.0 && nx < GetActualWidth () && ny < GetActualHeight ())
++	
++	if (nx >= 0.0 && ny >= 0.0 && nx < GetBoundingWidth () && ny < GetBoundingHeight ())
+ 		ret = true;
+-
++	
+ 	cairo_restore (cr);
+ 	return ret;
+ }
+@@ -421,7 +359,7 @@
+ {
+ 	Point user_xform_origin = GetRenderTransformOrigin ();
+ 	
+-	return Point (user_xform_origin.x * GetActualWidth (), user_xform_origin.y * GetActualHeight ());
++	return Point (user_xform_origin.x * GetBoundingWidth (), user_xform_origin.y * GetBoundingHeight ());
+ }
+ 
+ void
+@@ -458,61 +396,40 @@
  void
  TextBlock::Layout (cairo_t *cr)
  {
@@ -319,90 +395,66 @@ Index: text.cpp
 -	PangoAttribute *fg_attr = NULL;
 -	PangoAttribute *attr = NULL;
  	TextDecorations decorations;
- 	double clip_height, width;
+-	double clip_height, width;
 -	PangoFontMask font_mask;
 -	PangoAttrList *attrs;
 -	size_t start, end;
-+	TextWrapping wrapping;
-+	uint8_t font_mask;
- 	bool clip = false;
+-	bool clip = false;
 -	GString *block;
++	TextWrapping wrapping;
++	double height, width;
++	uint8_t font_mask;
 +	List *runs;
  	char *text;
  	Brush *fg;
- 	int w, h;
-@@ -455,68 +386,40 @@
+-	int w, h;
+ 	
+ 	if (foreground == NULL)
+ 		fg = default_foreground ();
+ 	else
  		fg = foreground;
- 	
- 	if (layout == NULL)
+-
+-	if (layout == NULL)
 -		layout = pango_cairo_create_layout (cr);
-+		layout = new TextLayout ();
  	
- 	clip_height = framework_element_get_height (this);
+-	clip_height = framework_element_get_height (this);
 -	switch (text_block_get_text_wrapping (this)) {
-+	wrapping = text_block_get_text_wrapping (this);
-+	layout->SetWrapping (wrapping);
-+	switch (wrapping) {
- 	case TextWrappingWrap:
- 		// same as w/ Overflow except we clip height (if defined)
- 		if (clip_height > 0.0)
- 			clip = true;
- 	case TextWrappingWrapWithOverflow:
+-	case TextWrappingWrap:
+-		// same as w/ Overflow except we clip height (if defined)
+-		if (clip_height > 0.0)
+-			clip = true;
+-	case TextWrappingWrapWithOverflow:
 -		pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
-+		if ((width = framework_element_get_width (this)) <= 0.0f)
-+			width = -1.0f;
- 		
+-		
 -		width = framework_element_get_width (this);
 -		
 -		if (width > 0.0)
 -			pango_layout_set_width (layout, (int) width * PANGO_SCALE);
 -		else
 -			pango_layout_set_width (layout, -1);
-+		layout->SetMaxWidth ((int) width);
- 		break;
- 	default:
+-		break;
+-	default:
 -		pango_layout_set_width (layout, -1);
-+		layout->SetMaxWidth (-1);
- 		break;
- 	}
+-		break;
+-	}
++	wrapping = text_block_get_text_wrapping (this);
++	layout->SetWrapping (wrapping);
  	
 -	block = g_string_new ("");
 -	attrs = pango_attr_list_new ();
-+	runs = new List ();
++	height = framework_element_get_height (this);
++	width = framework_element_get_width (this);
  	
 -	font_mask = pango_font_description_get_set_fields (font);
-+	font_mask = font->GetFields ();
++	if (width > 0.0f)
++		layout->SetMaxWidth (width);
++	else
++		layout->SetMaxWidth (-1.0);
++	
++	runs = new List ();
++	
  	decorations = text_block_get_text_decorations (this);
- 	text = text_block_get_text (this);
--	if (text && *text) {
--		g_string_append (block, text);
--		end = block->len;
--		start = 0;
--		
--		font_attr = pango_attr_font_desc_new (font);
--		font_attr->start_index = start;
--		font_attr->end_index = end;
--		
--		pango_attr_list_insert (attrs, font_attr);
--		
--		if (decorations == TextDecorationsUnderline) {
--			uline_attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
--			uline_attr->start_index = start;
--			uline_attr->end_index = end;
--			
--			pango_attr_list_insert (attrs, uline_attr);
--		} else {
--			uline_attr = NULL;
--		}
--		
--		fg_attr = mango_attr_foreground_new (this, fg);
--		fg_attr->start_index = start;
--		fg_attr->end_index = end;
--		
--		pango_attr_list_insert (attrs, fg_attr);
--	}
-+	if (text && *text)
-+		runs->Append (new TextRun (text, -1, decorations, font, fg));
++	font_mask = font->GetFields ();
  	
  	Inlines *inlines = text_block_get_inlines (this);
  	
@@ -413,10 +465,11 @@ Index: text.cpp
  		TextDecorations deco;
  		Value *value;
  		Inline *item;
-@@ -525,103 +428,53 @@
+@@ -521,129 +438,62 @@
  		while (node != NULL) {
  			item = (Inline *) node->obj;
  			
+-			switch (item->GetObjectType ()) {
 +			// Inlines inherit their parent TextBlock's font properties if
 +			// they don't specify their own.
 +			run_mask = item->font->GetFields ();
@@ -428,7 +481,7 @@ Index: text.cpp
 +			value = item->GetValue (Inline::TextDecorationsProperty);
 +			deco = value ? (TextDecorations) value->AsInt32 () : decorations;
 +			
- 			switch (item->GetObjectType ()) {
++ 			switch (item->GetObjectType ()) {
  			case Type::RUN:
  				run = (Run *) item;
  				
@@ -437,16 +490,17 @@ Index: text.cpp
 -				if (text == NULL || *text == '\0') {
 -					// optimization
 -					goto loop;
+-				}
+-				
+-				start = block->len;
+-				g_string_append (block, text);
+-				end = block->len;
 +				if (text && text[0]) {
 +					if (item->foreground)
 +						runs->Append (new TextRun (text, -1, deco, item->font, item->foreground));
 +					else
 +						runs->Append (new TextRun (text, -1, deco, item->font, fg));
- 				}
- 				
--				start = block->len;
--				g_string_append (block, text);
--				end = block->len;
++ 				}
  				break;
  			case Type::LINEBREAK:
 -				start = block->len;
@@ -530,30 +584,41 @@ Index: text.cpp
 +	layout->Layout ();
  	
 -	pango_layout_set_attributes (layout, attrs);
-+	layout->GetPixelSize (&w, &h);
- 	
+-	
 -	pango_cairo_update_layout (cr, layout);
 -	mango_renderer_set_cairo_context (renderer, cr);
 -	mango_renderer_layout_path (renderer, layout);
 -	pango_layout_get_pixel_size (layout, &w, &h);
 -	pango_attr_list_unref (attrs);
 -	
- 	if (clip && (h > clip_height))
- 		text_block_set_actual_height (this, (double) clip_height);
- 	else
-@@ -636,7 +489,7 @@
- 	TextWrapping wrapping = text_block_get_text_wrapping (this);
- 	double h = GetActualHeight ();
- 	double w = framework_element_get_width (this);
--
+-	if (clip && (h > clip_height))
+-		text_block_set_actual_height (this, (double) clip_height);
+-	else
+-		text_block_set_actual_height (this, (double) h);
+-	text_block_set_actual_width (this, (double) w);
++	layout->GetActualExtents (&actual_width, &actual_height);
++	layout->GetLayoutExtents (&bbox_width, &bbox_height);
+ 	dirty_actual_values = false;
 +	
- 	if (wrapping != TextWrappingWrapWithOverflow)
- 		h = framework_element_get_height (this);
- 	
-@@ -645,9 +498,7 @@
- 		cairo_clip (cr);
- 	}
- 	
++	text_block_set_actual_height (this, actual_height);
++	text_block_set_actual_width (this, actual_width);
+ }
+ 
+ void
+ TextBlock::Paint (cairo_t *cr)
+ {
+-	TextWrapping wrapping = text_block_get_text_wrapping (this);
+-	double h = GetActualHeight ();
+-	double w = framework_element_get_width (this);
+-
+-	if (wrapping != TextWrappingWrapWithOverflow)
+-		h = framework_element_get_height (this);
+-	
+-	if (w > 0.0 && h > 0.0) {
+-		cairo_rectangle (cr, 0, 0, w, h);
+-		cairo_clip (cr);
+-	}
+-	
 -	pango_cairo_update_layout (cr, layout);
 -	mango_renderer_set_cairo_context (renderer, cr);
 -	mango_renderer_show_layout (renderer, layout);
@@ -561,7 +626,7 @@ Index: text.cpp
  }
  
  void
-@@ -663,19 +514,19 @@
+@@ -659,19 +509,19 @@
  	
  	if (prop == TextBlock::FontFamilyProperty) {
  		char *family = text_block_get_font_family (this);
@@ -586,7 +651,113 @@ Index: text.cpp
  	} else if (prop == TextBlock::TextProperty) {
  		// will be updated later in Layout()
  	} else if (prop == TextBlock::InlinesProperty) {
-@@ -1126,6 +977,8 @@
+@@ -693,7 +543,9 @@
+ 			foreground->ref ();
+ 		}
+ 		
+-		// This will force a call to Layout ()
++		// Note: Until we find a way to update fg brushes in
++		// the Layout when they change here and/or in the
++		// inlines, we have to re-layout (which sucks).
+ 		//recalc_actual = false;
+ 	} else if (prop == TextBlock::ActualHeightProperty) {
+ 		recalc_actual = false;
+@@ -734,35 +586,33 @@
+ {
+ 	if (dirty_actual_values && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
+ 		CalcActualWidthHeight (NULL);
+-
++	
+ 	if (property == TextBlock::TextProperty) {
+ 		GString *block;
+ 		Value *res;
+-
++		
+ 		// The Text property is a concatenation of the Inlines */
+ 		Inlines *inlines = text_block_get_inlines (this);
+-	
++		
+ 		block = g_string_new ("");
+-
++		
+ 		if (inlines != NULL) {
+ 			Collection::Node *node = (Collection::Node *) inlines->list->First ();
+ 			Inline *item;
+-			Run *run;
+ 			char *text;
+-		
++			Run *run;
++			
+ 			while (node != NULL) {
+ 				item = (Inline *) node->obj;
+-			
++				
+ 				switch (item->GetObjectType ()) {
+ 				case Type::RUN:
+ 					run = (Run *) item;
+-				
++					
+ 					text = run_get_text (run);
+-				
+-					if (text == NULL || *text == '\0') {
+-					} else {
++					
++					if (text && text[0])
+ 						g_string_append (block, text);
+-					}
+ 					break;
+ 				case Type::LINEBREAK:
+ 					g_string_append_c (block, '\n');
+@@ -770,16 +620,16 @@
+ 				default:
+ 					break;
+ 				}
+-
++				
+ 				node = (Collection::Node *) node->next;
+ 			}
+ 		}
+-
++		
+ 		res = new Value (block->str);
+ 		g_string_free (block, true);
+ 		return res;
+ 	}
+-
++	
+ 	return DependencyObject::GetValue (property);
+ }
+ 
+@@ -792,16 +642,16 @@
+ 		else if (property == TextBlock::ActualWidthProperty)
+ 			actual_width = value->AsDouble ();
+ 	}
+-
++	
+ 	if (property == TextBlock::TextProperty) {
+ 		// Text is a virtual property and setting it deletes all current runs,
+ 		// creating a new run
+ 		Run *run = new Run ();
+ 		if (value)
+ 			run_set_text (run, value->AsString ());
+-
++		
+ 		Inlines *inlines = text_block_get_inlines (this);
+-
++		
+ 		if (!inlines) {
+ 			inlines = new Inlines ();
+ 			text_block_set_inlines (this, inlines);
+@@ -811,7 +661,7 @@
+ 		inlines->Add (run);
+ 		return;
+ 	}
+-
++	
+ 	return DependencyObject::SetValue (property, value);
+ }
+ 
+@@ -1187,6 +1037,8 @@
  void
  text_init (void)
  {
@@ -595,3 +766,12 @@ Index: text.cpp
  	// Inline
  	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", Type::STRING);
  	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", Type::DOUBLE);
+@@ -1204,7 +1056,7 @@
+ 	// TextBlock
+ 	TextBlock::ActualHeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualHeight", Type::DOUBLE);
+ 	TextBlock::ActualWidthProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualWidth", Type::DOUBLE);
+-	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans"));
++	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans Unicode, Lucida Sans"));
+ 	TextBlock::FontSizeProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontSize", new Value (14.666));
+ 	TextBlock::FontStretchProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
+ 	TextBlock::FontStyleProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
