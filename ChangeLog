@@ -1,5 +1,10 @@
 2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* cairo/: Removed ... we'll use wget to grab the pristine tar and then
+	patch it if we don't have a cairo-1.4.10 directory
+
+2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* cairo/: Added pristine cairo-1.4.10 sources
 
 2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
