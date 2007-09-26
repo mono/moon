@@ -38,9 +38,11 @@
 #endif
 
 
+#define MINIMUM_FPS 10
 #define DEFAULT_FPS 30
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
+#define DELAY_TO_FPS(delay) (1000.0 / delay)
 
 typedef struct {
   void (*func)(gpointer);
@@ -82,14 +84,7 @@ TimeManager::TimeManager ()
 void
 TimeManager::SetMaximumRefreshRate (int hz)
 {
-	if (current_timeout == FPS_TO_DELAY (hz))
-		return;
-
-	current_timeout = FPS_TO_DELAY (hz);
-	if (tick_id != -1) {
-		RemoveTimeout ();
-		AddTimeout ();
-	}
+	min_timeout = FPS_TO_DELAY (hz);
 }
 
 void
@@ -166,10 +161,13 @@ TimeManager::InvokeTickCall ()
 	}
 }
 
+int strikes = 0;
+
 void
 TimeManager::Tick ()
 {
 	STARTTICKTIMER (tick, "TimeManager::Tick");
+	TimeSpan pre_tick = get_now();
 	if (flags & TIME_MANAGER_UPDATE_CLOCKS) {
 		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 		current_global_time = get_now ();
@@ -219,6 +217,47 @@ TimeManager::Tick ()
 	}
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
+	TimeSpan post_tick = get_now();
+
+	if (post_tick - pre_tick > (TimeSpan)(current_timeout * 10000))
+		strikes ++;
+	else
+		strikes --;
+
+#define STRIKE_COUNT 5
+#define FPS_ADJUSTMENT 4
+
+	if (strikes > STRIKE_COUNT || strikes < -STRIKE_COUNT) {
+		int new_timeout;
+
+		if (strikes > STRIKE_COUNT) {
+			/* it took us longer than our current_timeout to run through
+			   the clock update/render loop.  we need to scale back our
+			   timeout (lower fps) */
+			new_timeout = current_timeout + FPS_TO_DELAY (FPS_ADJUSTMENT);
+		}
+		else if (strikes < -STRIKE_COUNT) {
+			/* it took us less time than our
+			   current_timeout to run through the clock
+			   update/render loop.  let's make the timeout
+			   less (higher fps). */
+			new_timeout = current_timeout - FPS_TO_DELAY (FPS_ADJUSTMENT);
+		}
+
+		strikes = 0;
+
+		if (new_timeout < min_timeout)
+			new_timeout = min_timeout;
+		else if (new_timeout > FPS_TO_DELAY (MINIMUM_FPS))
+			new_timeout = FPS_TO_DELAY (MINIMUM_FPS);
+		  
+		if (new_timeout != current_timeout) {
+			current_timeout = new_timeout;
+			RemoveTimeout();
+			AddTimeout();
+			printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
+		}
+	}
 }
 
 void

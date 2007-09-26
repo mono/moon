@@ -1,3 +1,11 @@
+2007-09-26  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: add some very naive, rather lame fps tuning.
+	we just adjust fps by a fixed amount (4fps) either up or down, if
+	a certain number (5, by default) of ticks in a row take either
+	less or more time to complete (respectively), than the current
+	timeout.
+
 2007-09-26  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* moon-path.c: Fix typos.

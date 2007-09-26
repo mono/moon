@@ -218,6 +218,8 @@ class TimeManager : public EventObject {
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
 	int current_timeout;
+	int min_timeout; /* corresponds to maximum FPS, as set by the monitor's refresh rate */
+	int strikes; /* used by our lame fps tuning code */
 
 	enum TimeManagerOp {
 		TIME_MANAGER_UPDATE_CLOCKS = 0x01,
