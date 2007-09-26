@@ -72,7 +72,7 @@ void
 moon_path_clear (moon_path* path)
 {
 	if (!path)
-		g_warning ("mono_path_clear(NULL)");
+		g_warning ("moon_path_clear(NULL)");
 
 	path->cairo.status = CAIRO_STATUS_SUCCESS;
 	memset (path->cairo.data, 0, path->allocated * sizeof (cairo_path_data_t));
@@ -89,7 +89,7 @@ void
 moon_path_destroy (moon_path* path)
 {
 	if (!path)
-		g_warning ("mono_path_destory(NULL)");
+		g_warning ("moon_path_destory(NULL)");
 
 	if (path->allocated > 0)
 		g_free (path->cairo.data);

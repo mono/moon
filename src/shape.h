@@ -61,8 +61,6 @@ class Shape : public FrameworkElement {
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
-	void ComputeBoundsSlow (); /* uses the cairo_*_extents calls */
-	void ComputeBoundsFast (); /* uses the bounding rect */
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	

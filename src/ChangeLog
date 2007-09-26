@@ -1,3 +1,8 @@
+2007-09-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* moon-path.c: Fix typos.
+	* shape.h: Remove old ComputeBounds[Slow|Fast] from header.
+
 2007-09-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.h|cpp: Remove Line (direct path manipulation) hack.
