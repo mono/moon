@@ -227,7 +227,7 @@ TimeManager::Tick ()
 #define FPS_ADJUSTMENT 4
 
 	if (strikes > STRIKE_COUNT || strikes < -STRIKE_COUNT) {
-		int new_timeout;
+		int new_timeout = current_timeout;
 
 		if (strikes > STRIKE_COUNT) {
 			/* it took us longer than our current_timeout to run through
