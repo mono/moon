@@ -273,15 +273,7 @@ struct MoonlightEventObjectObject : public MoonlightObject
 		moonlight_type = Type::EVENTOBJECT;
 	}
 
-	void SetEventObject (EventObject *eventobject)
-	{
-		if (eo)
-			eo->unref ();
-
-		eo = eventobject;
-		if (eo)
-			eo->ref ();
-	}
+	void SetEventObject (EventObject *eventobject);
 
 	virtual void Dispose ();
 

@@ -1,3 +1,15 @@
+2007-09-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: PluginInstance::UrlNotify: delete the StreamNotify when we're
+	  done with it. Added plugin_xaml_loader_from_str.
+	* plugin-class.cpp: moonlight_scriptable_control_invoke: unref the
+	  Downloader we create once the object wrapper has it. Move implementation
+	  of MoonlightEventObjectObject::SetEventObject here.
+	* plugin.h: StreamNotify: ref the DependencyObject we get, and unref on
+	  destruction. Added plugin_xaml_loader_from_str.
+	* plugin-class.h: Move implementation of
+	  MoonlightEventObjectObject::SetEventObject to the cpp file.
+
 2007-09-23  Jb Evain  <jbevain@novell.com>
 
 	* plugin.cpp: Pride sin, add my name to the contributors.

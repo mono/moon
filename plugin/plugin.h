@@ -143,6 +143,15 @@ class StreamNotify
 	StreamNotify (void* data) : type (NONE), pdata (data) {};
 	StreamNotify (StreamNotifyFlags type) : type (type), pdata (NULL) {};
 	StreamNotify (StreamNotifyFlags type, void* data) : type (type), pdata (data) {};
+	StreamNotify (StreamNotifyFlags type, DependencyObject* dob) : type (type), pdata (dob)
+	{
+		base_ref (dob);
+	}
+	~StreamNotify () 
+	{
+		if (type == DOWNLOADER)
+			base_unref ((DependencyObject*) pdata);
+	}
 
 	StreamNotifyFlags type;
 	void *pdata;
@@ -190,6 +199,7 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
 uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
 void     plugin_set_unload_callback (PluginInstance* instance, plugin_unload_callback* puc);
+PluginXamlLoader* plugin_xaml_loader_from_str (const char* str, PluginInstance* plugin, Surface* surface);
 
 G_END_DECLS
 

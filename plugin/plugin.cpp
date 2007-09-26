@@ -570,6 +570,10 @@ PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
 void
 PluginInstance::UrlNotify (const char* url, NPReason reason, void* notifyData)
 {
+	StreamNotify* notify = STREAM_NOTIFY (notifyData);
+
+	if (notify) 
+		delete notify;
 }
 
 void
@@ -858,4 +862,11 @@ PluginXamlLoader::~PluginXamlLoader ()
 	}
 #endif
 }
+
+PluginXamlLoader* 
+plugin_xaml_loader_from_str (const char* str, PluginInstance* plugin, Surface* surface)
+{
+	return PluginXamlLoader::FromStr (str, plugin, surface);
+}
+
 

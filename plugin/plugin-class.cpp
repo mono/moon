@@ -1090,6 +1090,7 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 
 
 			obj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dl);
+			dl->unref ();
 
 			OBJECT_TO_NPVARIANT (obj, *result);
 			return true;
@@ -1890,6 +1891,18 @@ MoonlightEventObjectObject::Dispose ()
 	if (eo)
 		eo->unref ();
 	eo = NULL;
+}
+
+void 
+MoonlightEventObjectObject::SetEventObject (EventObject *eventobject)
+{
+	if (eo)
+		eo->unref ();
+
+	eo = eventobject;
+
+	if (eo)
+		eo->ref ();
 }
 
 static bool
