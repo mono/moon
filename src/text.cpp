@@ -76,12 +76,11 @@ font_weight (FontWeights weight)
 }
 
 
-SolidColorBrush *default_foreground_brush = NULL;
+static SolidColorBrush *default_foreground_brush = NULL;
 	
 static Brush *
 default_foreground (void)
 {
-	
 	if (!default_foreground_brush) {
 		default_foreground_brush = new SolidColorBrush ();
 		Color *color = color_from_str ("black");
@@ -343,8 +342,8 @@ TextBlock::TextBlock ()
 	pango_font_description_set_style (font, font_style (style));
 	FontWeights weight = text_block_get_font_weight (this);
 	pango_font_description_set_weight (font, font_weight (weight));
-
-	text_block_set_text (this, (char*)"");
+	
+	text_block_set_text (this, (char *) "");
 	
 	// this has to come last, since in our OnPropertyChanged
 	// method we update our bounds.
@@ -398,20 +397,20 @@ bool
 TextBlock::InsideObject (cairo_t *cr, double x, double y)
 {
 	bool ret = false;
-
+	
 	cairo_save (cr);
-
+	
 	double nx = x;
 	double ny = y;
-
+	
 	cairo_matrix_t inverse = absolute_xform;
 	cairo_matrix_invert (&inverse);
-
+	
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
-
+	
 	if (nx >= 0.0 && ny >= 0.0 && nx < GetActualWidth () && ny < GetActualHeight ())
 		ret = true;
-
+	
 	cairo_restore (cr);
 	return ret;
 }
@@ -632,7 +631,7 @@ TextBlock::Paint (cairo_t *cr)
 	TextWrapping wrapping = text_block_get_text_wrapping (this);
 	double h = GetActualHeight ();
 	double w = framework_element_get_width (this);
-
+	
 	if (wrapping != TextWrappingWrapWithOverflow)
 		h = framework_element_get_height (this);
 	
@@ -694,6 +693,9 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		}
 		
 		// This will force a call to Layout ()
+		// Note: Until we find a way to update fg brushes in
+		// the Layout when they change here and/or in the
+		// inlines, we have to re-layout (which sucks).
 		//recalc_actual = false;
 	} else if (prop == TextBlock::ActualHeightProperty) {
 		recalc_actual = false;
@@ -734,35 +736,33 @@ TextBlock::GetValue (DependencyProperty *property)
 {
 	if (dirty_actual_values && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
 		CalcActualWidthHeight (NULL);
-
+	
 	if (property == TextBlock::TextProperty) {
 		GString *block;
 		Value *res;
-
+		
 		// The Text property is a concatenation of the Inlines */
 		Inlines *inlines = text_block_get_inlines (this);
-	
+		
 		block = g_string_new ("");
-
+		
 		if (inlines != NULL) {
 			Collection::Node *node = (Collection::Node *) inlines->list->First ();
 			Inline *item;
-			Run *run;
 			char *text;
-		
+			Run *run;
+			
 			while (node != NULL) {
 				item = (Inline *) node->obj;
-			
+				
 				switch (item->GetObjectType ()) {
 				case Type::RUN:
 					run = (Run *) item;
-				
+					
 					text = run_get_text (run);
-				
-					if (text == NULL || *text == '\0') {
-					} else {
+					
+					if (text && text[0])
 						g_string_append (block, text);
-					}
 					break;
 				case Type::LINEBREAK:
 					g_string_append_c (block, '\n');
@@ -770,16 +770,16 @@ TextBlock::GetValue (DependencyProperty *property)
 				default:
 					break;
 				}
-
+				
 				node = (Collection::Node *) node->next;
 			}
 		}
-
+		
 		res = new Value (block->str);
 		g_string_free (block, true);
 		return res;
 	}
-
+	
 	return DependencyObject::GetValue (property);
 }
 
@@ -792,26 +792,27 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		else if (property == TextBlock::ActualWidthProperty)
 			actual_width = value->AsDouble ();
 	}
-
+	
 	if (property == TextBlock::TextProperty) {
 		// Text is a virtual property and setting it deletes all current runs,
 		// creating a new run
 		Run *run = new Run ();
 		if (value)
 			run_set_text (run, value->AsString ());
-
+		
 		Inlines *inlines = text_block_get_inlines (this);
-
+		
 		if (!inlines) {
 			inlines = new Inlines ();
 			text_block_set_inlines (this, inlines);
 		} else {
 			inlines->Clear ();
 		}
+		
 		inlines->Add (run);
 		return;
 	}
-
+	
 	return DependencyObject::SetValue (property, value);
 }
 
@@ -1204,7 +1205,7 @@ text_init (void)
 	// TextBlock
 	TextBlock::ActualHeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualHeight", Type::DOUBLE);
 	TextBlock::ActualWidthProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualWidth", Type::DOUBLE);
-	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans"));
+	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans Unicode, Lucida Sans"));
 	TextBlock::FontSizeProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontSize", new Value (14.666));
 	TextBlock::FontStretchProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
 	TextBlock::FontStyleProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));

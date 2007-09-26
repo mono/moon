@@ -186,14 +186,14 @@ private:
 	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
-
+	
 	double GetActualWidth ()
 	{
 		if (dirty_actual_values)
 			CalcActualWidthHeight (NULL);
 		return actual_width;
 	}
-
+	
 	double GetActualHeight ()
 	{
 		if (dirty_actual_values)
