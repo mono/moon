@@ -87,7 +87,7 @@ class Base {
 class EventObject : public Base {
  public:
 	EventObject ();
-	~EventObject ();
+	virtual ~EventObject ();
 	
 	void AddHandler (char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (char *event_name, EventHandler handler, gpointer data);
