@@ -34,4 +34,16 @@
 	<Path Stroke="#FF00FF" StrokeThickness="8"  Data="M 310,10 V 110" />
 	<Path Stroke="#FF00FF" StrokeThickness="9"  Data="M 320,10 V 110" />
 	<Path Stroke="#FF00FF" StrokeThickness="10" Data="M 330,10 V 110" />
+
+	<Path Stroke="#FF00FF" StrokeThickness="0"  Data="M 10,240  L 50,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="1"  Data="M 30,240  L 70,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="2"  Data="M 50,240  L 90,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="3"  Data="M 70,240  L 110,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="4"  Data="M 90,240  L 130,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="5"  Data="M 110,240  L 150,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="6"  Data="M 130,240  L 170,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="7"  Data="M 150,240  L 190,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="8"  Data="M 170,240  L 210,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="9"  Data="M 190,240  L 230,280" />
+	<Path Stroke="#FF00FF" StrokeThickness="10"  Data="M 210,240  L 250,280" />
 </Canvas>
