@@ -110,10 +110,11 @@ public:
 	
 	GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
-	int Kerning (uint32_t left, uint32_t right);
-	int Ascender ();
+	double Kerning (uint32_t left, uint32_t right);
+	double Descender ();
+        double Ascender ();
+	double Height ();
 	int EmSize ();
-	int Height ();
 	
 	void Render (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void Render (cairo_t *cr, uint32_t unichar, double x, double y);
@@ -187,16 +188,18 @@ public:
 class TextLayout {
 	// User-set data;
 	TextWrapping wrapping;
-	int max_height;
-	int max_width;
+	double max_height;
+	double max_width;
 	List *runs;
 	
 	// Internal representation
 	List *lines;
 	
 	// cached info
-	int height;
-	int width;
+	double bbox_height;
+	double bbox_width;
+	double height;
+	double width;
 	
 	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
@@ -206,11 +209,11 @@ public:
 	TextLayout ();
 	~TextLayout ();
 	
-	int GetMaxWidth ();
-	void SetMaxWidth (int width);
+	double GetMaxWidth ();
+	void SetMaxWidth (double width);
 	
-	int GetMaxHeight ();
-	void SetMaxHeight (int height);
+	double GetMaxHeight ();
+	void SetMaxHeight (double height);
 	
 	TextWrapping GetWrapping ();
 	void SetWrapping (TextWrapping wrapping);
@@ -219,7 +222,8 @@ public:
 	void SetTextRuns (List *runs);
 	
 	void Layout ();
-	void GetPixelSize (int *w, int *h);
+	void GetActualExtents (double *width, double *height);
+	void GetLayoutExtents (double *width, double *height);
 	void Render (cairo_t *cr, UIElement *element, double x, double y);
 };
 

@@ -158,10 +158,12 @@ retry:
 	if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 		goto fail;
 	
+	printf ("loading font from `%s'\n", filename);
+	
 	if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 		goto fail;
 	
-	if (FT_New_Face (libft2, (const char*)filename, id, &face) != 0) {
+	if (FT_New_Face (libft2, (const char *) filename, id, &face) != 0) {
 	fail:
 		if (retried)
 			exit (1);
@@ -239,29 +241,35 @@ TextFont::EmSize ()
 	return face->units_per_EM;
 }
 
-int
+double
 TextFont::Kerning (uint32_t left, uint32_t right)
 {
 	FT_Vector kerning;
 	
 	if (!FT_HAS_KERNING (face) || left == 0 || right == 0)
-		return 0;
+		return 0.0;
 	
 	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
 	
-	return kerning.x / 64;
+	return (double) kerning.x / 64;
 }
 
-int
+double
+TextFont::Descender ()
+{
+	return (double) face->size->metrics.descender / 64;
+}
+
+double
 TextFont::Ascender ()
 {
-	return face->size->metrics.ascender / 64;
+	return (double) face->size->metrics.ascender / 64;
 }
 
-int
+double
 TextFont::Height ()
 {
-	return face->size->metrics.height / 64;
+	return (double) face->size->metrics.height / 64;
 }
 
 static int
@@ -505,7 +513,7 @@ TextFontDescription::CreatePattern ()
 	
 	families = g_strsplit (GetFamily (), ",", -1);
 	for (i = 0; families[i]; i++)
-		FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) families[i]);
+		FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) g_strstrip (families[i]));
 	g_strfreev (families);
 	
 	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
@@ -664,7 +672,7 @@ TextFontDescription::GetFamily ()
 	if (set & FontMaskFamily)
 		return family;
 	
-	return "Lucida Sans";
+	return "Lucida Sans Unicode, Lucida Sans";
 }
 
 void
@@ -900,8 +908,6 @@ public:
 	TextFont *font;
 	Brush *fg;
 	
-	int height;
-	
 	TextSegment (TextRun *run, int start);
 };
 
@@ -913,16 +919,15 @@ TextSegment::TextSegment (TextRun *run, int start)
 	fg = run->fg;
 	
 	this->start = start;
-	this->end = -1;
-	
-	height = -1;
+	this->end = start;
 }
 
 class TextLine : public List::Node {
 public:
 	List *segments;
-	int ascend;
-	int height;
+	double descend;
+	//double ascend;
+	double height;
 	
 	TextLine ();
 	~TextLine ();
@@ -931,8 +936,9 @@ public:
 TextLine::TextLine ()
 {
 	segments = new List ();
-	ascend = -1;
-	height = -1;
+	descend = 0.0;
+	//ascend = -1.0;
+	height = -1.0;
 }
 
 TextLine::~TextLine ()
@@ -944,15 +950,17 @@ TextLine::~TextLine ()
 TextLayout::TextLayout ()
 {
 	wrapping = TextWrappingNoWrap;
-	max_height = -1;
-	max_width = -1;
+	max_height = -1.0;
+	max_width = -1.0;
 	
 	runs = NULL;
 	
 	lines = new List ();
 	
-	height = -1;
-	width = -1;
+	bbox_height = -1.0;
+	bbox_width = -1.0;
+	height = -1.0;
+	width = -1.0;
 }
 
 TextLayout::~TextLayout ()
@@ -966,38 +974,44 @@ TextLayout::~TextLayout ()
 	delete lines;
 }
 
-int
+double
 TextLayout::GetMaxWidth ()
 {
 	return max_width;
 }
 
 void
-TextLayout::SetMaxWidth (int max)
+TextLayout::SetMaxWidth (double max)
 {
 	if (max_width == max)
 		return;
 	
 	max_width = max;
-	height = -1;
-	width = -1;
+	
+	bbox_height = -1.0;
+	bbox_width = -1.0;
+	height = -1.0;
+	width = -1.0;
 }
 
-int
+double
 TextLayout::GetMaxHeight ()
 {
 	return max_height;
 }
 
 void
-TextLayout::SetMaxHeight (int max)
+TextLayout::SetMaxHeight (double max)
 {
 	if (max_height == max)
 		return;
 	
 	max_height = max;
-	height = -1;
-	width = -1;
+	
+	bbox_height = -1.0;
+	bbox_width = -1.0;
+	height = -1.0;
+	width = -1.0;
 }
 
 TextWrapping
@@ -1013,8 +1027,11 @@ TextLayout::SetWrapping (TextWrapping wrapping)
 		return;
 	
 	this->wrapping = wrapping;
-	height = -1;
-	width = -1;
+	
+	bbox_height = -1.0;
+	bbox_width = -1.0;
+	height = -1.0;
+	width = -1.0;
 }
 
 List *
@@ -1033,23 +1050,45 @@ TextLayout::SetTextRuns (List *runs)
 	
 	this->runs = runs;
 	
-	height = -1;
-	width = -1;
+	bbox_height = -1.0;
+	bbox_width = -1.0;
+	height = -1.0;
+	width = -1.0;
 }
 
+/**
+ * TextLayout::GetActualExtents:
+ * @width:
+ * @height:
+ *
+ * Gets the actual width and height extents required for rendering the
+ * full text.
+ **/
 void
-TextLayout::GetPixelSize (int *w, int *h)
+TextLayout::GetActualExtents (double *width, double *height)
 {
-	if (w)
-		*w = width;
-	
-	if (h)
-		*h = height;
+	*height = this->height;
+	*width = this->width;
+}
+
+/**
+ * TextLayout::GetLayoutExtents:
+ * @width:
+ * @height:
+ *
+ * Gets the width and height extents suitable for rendering the text
+ * w/ the current wrapping model.
+ **/
+void
+TextLayout::GetLayoutExtents (double *width, double *height)
+{
+	*height = this->bbox_height;
+	*width = this->bbox_width;
 }
 
 struct Space {
+	double width;
 	int index;
-	int width;
 };
 
 #define BBOX_MARGIN 1
@@ -1059,21 +1098,26 @@ void
 TextLayout::Layout ()
 {
 	TextSegment *segment;
+	bool clipped = false;
 	uint32_t prev = 0;
 	GlyphInfo *glyph;
 	TextLine *line;
-	int lw, lh, la;
+	double advance;
+	double descend;
+	double lw, lh;
+	bool is_space;
 	TextRun *run;
-	int advance;
 	Space spc;
+	bool wrap;
 	int i;
 	
 	if (width != -1 && height != -1)
 		return;
 	
 	lines->Clear (true);
-	la = lh = height = 0;
-	lw = width = 0;
+	lh = height = 0.0;
+	lw = width = 0.0;
+	descend = 0.0;
 	
 	if (!runs || runs->IsEmpty () || max_width == 0 || max_height == 0)
 		return;
@@ -1081,7 +1125,7 @@ TextLayout::Layout ()
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 #if 0
-		if (max_height >= 0 && height > max_height) {
+		if (max_height >= 0.0 && height > max_height) {
 			// Stop calculating layout at this point, any
 			// text beyond this point won't be rendered
 			// anyway.
@@ -1090,13 +1134,15 @@ TextLayout::Layout ()
 #endif
 		
 		if (run->text == NULL /* LineBreak */) {
-			if (lh == 0) {
-				la = run->font->Ascender ();
+			if (lh == 0.0) {
+				descend = run->font->Descender ();
+				//ascend = run->font->Ascender ();
 				lh = run->font->Height ();
 			}
 			
 			lines->Append (line);
-			line->ascend = la;
+			line->descend = descend;
+			//line->ascend = ascend;
 			line->height = lh;
 			height += lh;
 			
@@ -1107,84 +1153,122 @@ TextLayout::Layout ()
 			else
 				line = 0;
 			
-			lw = lh = la = 0;
+			clipped = false;
+			lw = lh = 0.0;
+			descend = 0.0;
+			//ascend = 0.0;
 			continue;
 		}
 		
 		if (!run->text[0])
 			continue;
 		
-		la = MAX (la, run->font->Ascender ());
+		descend = MIN (descend, run->font->Descender ());
+		//ascend = MAX (ascend, run->font->Ascender ());
 		lh = MAX (lh, run->font->Height ());
 		
 		spc.index = -1;
-		spc.width = -1;
+		spc.width = -1.0;
 		segment = new TextSegment (run, 0);
 		for (i = 0, prev = 0; run->text[i]; i++) {
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
 				continue;
 			
-			if (g_unichar_isspace (run->text[i])) {
+			if ((is_space = g_unichar_isspace (run->text[i]))) {
 				spc.index = i;
 				spc.width = lw;
 			}
 			
-			advance = glyph->metrics.horiAdvance;
+			advance = (double) glyph->metrics.horiAdvance;
 			advance += run->font->Kerning (prev, glyph->index);
 			
-			if (max_width < 0 || (lw + advance + BBOX_PADDING) <= max_width) {
-				// this glyph fits nicely on this line
-				prev = glyph->index;
-				lw += advance;
-				continue;
-			}
-			
-			prev = 0;
-			
-			// need to wrap
-			if (spc.index != -1) {
-				// wrap at the last lwsp char
-				segment->end = spc.index;
-				lw = spc.width;
-				i = spc.index;
-			} else if (segment->start < i) {
-				// have to break the word across lines
-				int j = i - 1;
-				
-				// get the last glyph we will successfully render on this line
-				while (j >= 0 && !(glyph = run->font->GetGlyphInfo (run->text[j])))
-					j--;
-				
-				segment->end = i;
-				i--;
+			if (max_width >= 0.0 && (lw + advance) > max_width) {
+				switch (wrapping) {
+				case TextWrappingWrapWithOverflow:
+					// We can stretch the width as wide as we have to
+					// in order to fit the current word.
+					if (spc.index != -1 && (i - spc.index) <= 2) {
+						// We've only got 1 char from the word...
+						// wrap at the previous char (which is a space).
+						segment->end = spc.index;
+						lw = spc.width;
+						i = spc.index;
+						wrap = true;
+					} else if (is_space) {
+						// Perfect place to wrap
+						segment->end = i;
+						wrap = true;
+					} else {
+						// In the middle of a word, can't wrap here.
+						wrap = false;
+					}
+					break;
+				case TextWrappingWrap:
+					// We cannot allow line width > max_width.
+					if (spc.index != -1 && (i - spc.index) <= 2) {
+						// We've only got 1 char from the word...
+						// wrap at the previous char (which is a space).
+						segment->end = spc.index;
+						lw = spc.width;
+						i = spc.index;
+					} else {
+						// Force wrap in the middle of the word.
+						segment->end = i;
+						i--;
+					}
+					
+					wrap = true;
+					break;
+				case TextWrappingNoWrap:
+				default:
+					// Never wrap.
+					
+					if (is_space && !clipped) {
+						if (lw > bbox_width)
+							bbox_width = lw;
+						
+						segment->end = i;
+						clipped = true;
+					}
+					
+					wrap = false;
+					break;
+				}
 			} else {
-				// glyphs are too large to fit within @max_width
-				// we will have to limit 1 glyph per line
-				segment->end = i + 1;
+				wrap = false;
 			}
 			
-			// end this segment and line
-			if (segment->end > segment->start) {
+			if (wrap) {
+				// end this segment and line
 				line->segments->Append (segment);
 				segment = new TextSegment (run, i + 1);
+				
+				width = MAX (width, lw);
+				lines->Append (line);
+				line->descend = descend;
+				//line->ascend = ascend;
+				line->height = lh;
+				height += lh;
+				
+				// create a new line
+				descend = run->font->Descender ();
+				//ascend = run->font->Ascender ();
+				lh = run->font->Height ();
+				line = new TextLine ();
+				spc.index = -1;
+				lw = 0.0;
+				
+				prev = 0;
+			} else {
+				// add this glyph to the current line
+				prev = glyph->index;
+				lw += advance;
 			}
-			
-			lines->Append (line);
-			line->ascend = la;
-			line->height = lh;
-			height += lh;
-			
-			width = MAX (width, lw);
-			
-			// create a new line
-			la = run->font->Ascender ();
-			lh = run->font->Height ();
-			line = new TextLine ();
-			spc.index = -1;
-			lw = 0;
 		}
 		
-		segment->end = i;
+		if (!clipped)
+			segment->end = i;
+		
 		line->segments->Append (segment);
 		
 		width = MAX (width, lw);
@@ -1193,18 +1277,20 @@ TextLayout::Layout ()
 	if (line) {
 		width = MAX (width, lw);
 		lines->Append (line);
-		line->ascend = la;
+		line->descend = descend;
+		//line->ascend = ascend;
 		line->height = lh;
 		height += lh;
 	}
 	
-	if (width > 0)
-		width += BBOX_PADDING;
+	// height is never clipped
+	bbox_height = height;
 	
-	if (height > 0)
-		height += BBOX_PADDING;
+	// width is only clipped if TextWrapping is set to NoWrap
+	if (bbox_width == -1.0)
+		bbox_width = width;
 	
-	printf ("layout extents are %d, %d\n", width, height);
+	printf ("layout extents are %.3f, %.3f, bounding box extents are %.3f, %.3f\n", width, height, bbox_width, bbox_height);
 }
 
 #define BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
@@ -1299,15 +1385,13 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	GlyphInfo *glyph;
 	Brush *fg = NULL;
 	TextLine *line;
+	double height;
 	double x1, y1;
-	int ascend;
-	int height;
 	int i;
 	
 	Layout ();
 	
-	x1 = x + BBOX_MARGIN;
-	y += BBOX_MARGIN;
+	x1 = x;
 	
 	line = (TextLine *) lines->First ();
 	
@@ -1317,7 +1401,6 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 			deco = segment->deco;
 			font = segment->font;
 			
-			ascend = font->Ascender ();
 			height = font->Height ();
 			
 			if (segment->fg != fg) {
@@ -1333,8 +1416,8 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					x1 += font->Kerning (prev, glyph->index);
 					prev = glyph->index;
 					
-					// set y1 to the baseline
-					y1 = y + line->ascend;
+					// set y1 to the baseline (descend is a negative value)
+					y1 = y + line->height + line->descend;
 					
 					if (glyph->path)
 						RenderGlyphPath (cr, glyph, x1, y1);
@@ -1351,6 +1434,6 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 		y += (double) line->height;
 		
 		line = (TextLine *) line->next;
-		x1 = x + BBOX_MARGIN;
+		x1 = x;
 	}
 }

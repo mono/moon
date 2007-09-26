@@ -1,3 +1,8 @@
+2007-09-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp: A bunch of fixes/changes to mimic Microsoft's
+	Silverlight TextBlock layout logic.
+
 2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Added missing files for dist tarball
