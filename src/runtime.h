@@ -36,9 +36,9 @@ G_BEGIN_DECLS
 
 class Surface : public EventObject {
  public:
-	Surface(int width, int height);
-	
-	~Surface();
+	Surface (int width, int height);
+
+	virtual ~Surface ();
 
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
