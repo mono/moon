@@ -452,21 +452,121 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 	return NULL;
 }
 
+#define BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+
 void
-TextFont::Render (cairo_t *cr, GlyphInfo *glyph, double x, double y)
+TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y)
 {
-	// FIXME: render the glyph
+	int width, height, stride;
+	cairo_format_t format;
+	FT_Bitmap *bitmap;
+	unsigned char *d;
+	int count;
+	
+	bitmap = &glyph->bitmap;
+	
+	height = bitmap->rows;
+	width = bitmap->width;
+	
+	if (!glyph->surface) {
+		switch (bitmap->pixel_mode) {
+		case FT_PIXEL_MODE_MONO:
+			//printf ("pixel_mode is FT_PIXEL_MODE_MONO\n");
+			stride = (((width + 31) & ~31) >> 3);
+			format = CAIRO_FORMAT_A1;
+			
+#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+			count = stride * height;
+			d = bitmap->buffer;
+			
+			while (count--) {
+				*d = BITSWAP8 (*d);
+				d++;
+			}
+#endif
+			break;
+		case FT_PIXEL_MODE_LCD:
+		case FT_PIXEL_MODE_LCD_V:
+		case FT_PIXEL_MODE_GRAY:
+			//printf ("pixel_mode is FT_PIXEL_MODE_GRAY\n");
+			stride = bitmap->pitch;
+			format = CAIRO_FORMAT_A8;
+			break;
+		default:
+			printf ("unknown pixel format\n");
+			return;
+		}
+		
+		glyph->surface = cairo_image_surface_create_for_data (bitmap->buffer, format,
+								      width, height, stride);
+	}
+	
+	// take horiBearingX into consideration
+	x += glyph->metrics.horiBearingX;
+	
+	// Bitmap glyphs are rendered from the top down
+	y -= glyph->metrics.horiBearingY;
+	
+	cairo_save (cr);
+	
+	cairo_mask_surface (cr, glyph->surface, x, y);
+	cairo_set_operator (cr, CAIRO_OPERATOR_SATURATE);
+	
+	cairo_new_path (cr);
+	cairo_rectangle (cr, x, y, (double) width, (double) height);
+	cairo_close_path (cr);
+	cairo_fill (cr);
+	
+	// FIXME: implement TextDecorations
+	
+	cairo_restore (cr);
 }
 
 void
-TextFont::Render (cairo_t *cr, uint32_t unichar, double x, double y)
+TextFont::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y)
+{
+	cairo_save (cr);
+	
+	cairo_new_path (cr);
+	cairo_translate (cr, x, y);
+	cairo_append_path (cr, &glyph->path->cairo);
+	cairo_close_path (cr);
+	cairo_fill (cr);
+	
+	if (deco == TextDecorationsUnderline) {
+		double position = (double) -face->underline_position / 64.0;
+		cairo_antialias_t aa = cairo_get_antialias (cr);
+		int thickness = face->underline_thickness / 64;
+		
+		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+		cairo_move_to (cr, 0.0, position);
+		cairo_set_line_width (cr, (double) thickness);
+		cairo_line_to (cr, (double) glyph->metrics.horiAdvance, position);
+		cairo_stroke (cr);
+		cairo_set_antialias (cr, aa);
+	}
+	
+	cairo_restore (cr);
+}
+
+void
+TextFont::Render (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y)
+{
+	if (glyph->path)
+		RenderGlyphPath (cr, glyph, deco, x, y);
+	else
+		RenderGlyphBitmap (cr, glyph, deco, x, y);
+}
+
+void
+TextFont::Render (cairo_t *cr, uint32_t unichar, TextDecorations deco, double x, double y)
 {
 	GlyphInfo *glyph;
 	
 	if (!(glyph = GetGlyphInfo (unichar)))
 		return;
 	
-	Render (cr, glyph, x, y);
+	Render (cr, glyph, deco, x, y);
 }
 
 
@@ -1174,13 +1274,13 @@ TextLayout::Layout ()
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
 				continue;
 			
-			if ((is_space = g_unichar_isspace (run->text[i]))) {
-				spc.index = i;
-				spc.width = lw;
-			}
-			
 			advance = (double) glyph->metrics.horiAdvance;
 			advance += run->font->Kerning (prev, glyph->index);
+			
+			if ((is_space = g_unichar_isspace (run->text[i]))) {
+				spc.width = lw + advance;
+				spc.index = i;
+			}
 			
 			if (max_width >= 0.0 && (lw + advance) > max_width) {
 				switch (wrapping) {
@@ -1188,15 +1288,11 @@ TextLayout::Layout ()
 					// We can stretch the width as wide as we have to
 					// in order to fit the current word.
 					if (spc.index != -1 && (i - spc.index) <= 2) {
-						// We've only got 1 char from the word...
+						// We've only got max 2 chars from the word...
 						// wrap at the previous char (which is a space).
-						segment->end = spc.index;
+						segment->end = spc.index + 1;
 						lw = spc.width;
 						i = spc.index;
-						wrap = true;
-					} else if (is_space) {
-						// Perfect place to wrap
-						segment->end = i;
 						wrap = true;
 					} else {
 						// In the middle of a word, can't wrap here.
@@ -1208,7 +1304,7 @@ TextLayout::Layout ()
 					if (spc.index != -1 && (i - spc.index) <= 2) {
 						// We've only got 1 char from the word...
 						// wrap at the previous char (which is a space).
-						segment->end = spc.index;
+						segment->end = spc.index + 1;
 						lw = spc.width;
 						i = spc.index;
 					} else {
@@ -1224,10 +1320,11 @@ TextLayout::Layout ()
 					// Never wrap.
 					
 					if (is_space && !clipped) {
+						lw += advance;
 						if (lw > bbox_width)
 							bbox_width = lw;
 						
-						segment->end = i;
+						segment->end = i + 1;
 						clipped = true;
 					}
 					
@@ -1293,88 +1390,6 @@ TextLayout::Layout ()
 	//printf ("layout extents are %.3f, %.3f, bounding box extents are %.3f, %.3f\n", width, height, bbox_width, bbox_height);
 }
 
-#define BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
-
-void
-TextLayout::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y)
-{
-	int width, height, stride;
-	cairo_format_t format;
-	FT_Bitmap *bitmap;
-	unsigned char *d;
-	int count;
-	
-	bitmap = &glyph->bitmap;
-	
-	height = bitmap->rows;
-	width = bitmap->width;
-	
-	if (!glyph->surface) {
-		switch (bitmap->pixel_mode) {
-		case FT_PIXEL_MODE_MONO:
-			//printf ("pixel_mode is FT_PIXEL_MODE_MONO\n");
-			stride = (((width + 31) & ~31) >> 3);
-			format = CAIRO_FORMAT_A1;
-			
-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-			count = stride * height;
-			d = bitmap->buffer;
-			
-			while (count--) {
-				*d = BITSWAP8 (*d);
-				d++;
-			}
-#endif
-			break;
-		case FT_PIXEL_MODE_LCD:
-		case FT_PIXEL_MODE_LCD_V:
-		case FT_PIXEL_MODE_GRAY:
-			//printf ("pixel_mode is FT_PIXEL_MODE_GRAY\n");
-			stride = bitmap->pitch;
-			format = CAIRO_FORMAT_A8;
-			break;
-		default:
-			printf ("unknown pixel format\n");
-			return;
-		}
-		
-		glyph->surface = cairo_image_surface_create_for_data (bitmap->buffer, format,
-								      width, height, stride);
-	}
-	
-	// take horiBearingX into consideration
-	x += glyph->metrics.horiBearingX;
-	
-	// Bitmap glyphs are rendered from the top down
-	y -= glyph->metrics.horiBearingY;
-	
-	cairo_save (cr);
-	
-	cairo_mask_surface (cr, glyph->surface, x, y);
-	cairo_set_operator (cr, CAIRO_OPERATOR_SATURATE);
-	
-	cairo_new_path (cr);
-	cairo_rectangle (cr, x, y, (double) width, (double) height);
-	cairo_close_path (cr);
-	cairo_fill (cr);
-	
-	cairo_restore (cr);
-}
-
-void
-TextLayout::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y)
-{
-	cairo_save (cr);
-	
-	cairo_new_path (cr);
-	cairo_translate (cr, x, y);
-	cairo_append_path (cr, &glyph->path->cairo);
-	cairo_close_path (cr);
-	cairo_fill (cr);
-	
-	cairo_restore (cr);
-}
-
 void
 TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 {
@@ -1419,10 +1434,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					// set y1 to the baseline (descend is a negative value)
 					y1 = y + line->height + line->descend;
 					
-					if (glyph->path)
-						RenderGlyphPath (cr, glyph, x1, y1);
-					else
-						RenderGlyphBitmap (cr, glyph, x1, y1);
+					font->Render (cr, glyph, deco, x1, y1);
 				}
 				
 				x1 += (double) glyph->metrics.horiAdvance;

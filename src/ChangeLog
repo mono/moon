@@ -1,3 +1,12 @@
+2007-09-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (Layout): Include the space char on the line before
+	wrapping, this is noticable when TextDecorations="Underline" is
+	enabled.
+	(TextLayout::RenderGlyphBitmap): Moved to TextFont class.
+	(TextLayout::RenderGlyphPath): Same. Also implemented underlining.
+	(TextFont::Render): Implemented.
+
 2007-09-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.h: PathFigure::IsFilledProperty doesn't exist anymore
