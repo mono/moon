@@ -800,17 +800,19 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		Run *run = new Run ();
 		if (value)
 			run_set_text (run, value->AsString ());
-		
+
 		Inlines *inlines = text_block_get_inlines (this);
 		
 		if (!inlines) {
 			inlines = new Inlines ();
 			text_block_set_inlines (this, inlines);
+			inlines->unref ();
 		} else {
 			inlines->Clear ();
 		}
 		
 		inlines->Add (run);
+		run->unref ();
 		return;
 	}
 	

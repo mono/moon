@@ -161,9 +161,6 @@ Control::InitializeFromXaml (const char *xaml,
 	real_object = (FrameworkElement *) element;
 	real_object->parent = this;
 
-	// sink the ref, we own this
-	base_ref (real_object);
-
 	real_object->Attach (NULL,this);
 	real_object->UpdateTotalOpacity ();
 	real_object->UpdateTransform ();

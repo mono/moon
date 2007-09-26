@@ -400,12 +400,12 @@ PluginInstance::JsRunOnload ()
 		DEBUGMSG ("NPN_Invoke succeeded");
 		NPN_ReleaseVariantValue (&result);
 
-		return true;
+		retval = true;
 	}
 	else {
 		DEBUGMSG ("NPN_Invoke failed");
 	}
-
+	NPN_ReleaseVariantValue (&args [0]);
 	NPN_ReleaseObject (object);
 	
 	return retval;

@@ -1,3 +1,8 @@
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* text.cpp: Unref a few newly created objects.
+	* control.cpp: Remove an unnecessary ref.
+
 2007-09-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (Layout): Include the space char on the line before
