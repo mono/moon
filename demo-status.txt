@@ -8,6 +8,8 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
         being unresponsive might be because the script is eating too
         much cpu?
 
+	Note: page seems empty (possibly wrong plugin)
+
 * 3D Teapot Demo (http://www.dolittle.com/Silverlight/3D/TestPage.html)
 
 	2 things blocking this demo:
@@ -19,6 +21,8 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 	- the MediaBase.MediaEnded event needs to be raised when the
 	  above .wmv finishes playing.
+
+	Note: URL requires the older (pre release) plugin
 
 * Binary Clock (http://explosivedog.com/silverlight/binaryclock/default.html)
 
@@ -285,6 +289,8 @@ Native stacktrace:
 
 * Popfly (http://www.popfly.com/)
 
+	Note: requires FF 2.0 minimum (doesn't accept FF 1.5 as a "valid" browser)
+
 * Python Console (http://silverlight.net/Samples/1.1/DLR-Console/python/index.htm)
 
 * Reflecting Graph (http://davidbetz.net/reflectinggraphdemo/)
@@ -295,6 +301,8 @@ Native stacktrace:
 * Sierpinski Triangle (http://www.cjcraft.com/silverlight/SierpinskiTriangle/Default.html)
 
 	works!
+
+	note: requires an older version of the plugin.
 
 * Silverlight Airlines Demo (http://delay.members.winisp.net/SilverlightAirlinesDemo/)
 
@@ -441,7 +449,10 @@ Native stacktrace:
 
 * Telerik RadControls 3D Cube (http://www.telerik.com/demos/aspnet/silverlight/Cube/Examples/RoomDesigner/DefaultCS.aspx)
 
-	Loads up the background fine, no errors to the consoles, but nothing else shows up.
+	Loads up the background fine but nothing else shows up.
+
+	Firebug reports "this.get_Canvas() has no properties
+	this.get_Canvas().setValue("Opacity",this.get_Opacity());"
 
 * Windows Journal-to-Silverlight Converter (http://www.microsoft.com/downloads/details.aspx?FamilyID=4964cd5f-0dcb-4c22-9378-773100d8e89f&displaylang=en)
 
