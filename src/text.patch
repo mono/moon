@@ -1,6 +1,6 @@
 Index: text.h
 ===================================================================
---- text.h	(revision 86426)
+--- text.h	(revision 86430)
 +++ text.h	(working copy)
 @@ -18,55 +18,9 @@
  
@@ -135,14 +135,14 @@ Index: text.h
 -	void CalcActualWidthHeight (cairo_t *cr);
 -	void Layout (cairo_t *cr);
 -	void Paint (cairo_t *cr);
--
+-	
 -	double GetActualWidth ()
 -	{
 -		if (dirty_actual_values)
 -			CalcActualWidthHeight (NULL);
 -		return actual_width;
 -	}
--
+-	
 -	double GetActualHeight ()
 -	{
 -		if (dirty_actual_values)
@@ -154,9 +154,9 @@ Index: text.h
  TextBlock *text_block_new (void);
 Index: text.cpp
 ===================================================================
---- text.cpp	(revision 86426)
+--- text.cpp	(revision 86430)
 +++ text.cpp	(working copy)
-@@ -22,62 +22,8 @@
+@@ -22,65 +22,12 @@
  #include "text.h"
  
  
@@ -185,8 +185,7 @@ Index: text.cpp
 -		return PANGO_STRETCH_ULTRA_EXPANDED;
 -	}
 -}
-+static SolidColorBrush *default_foreground_brush = NULL;
- 
+-
 -static PangoStyle
 -font_style (FontStyles style)
 -{
@@ -215,12 +214,17 @@ Index: text.cpp
 -}
 -
 -
--SolidColorBrush *default_foreground_brush = NULL;
+ static SolidColorBrush *default_foreground_brush = NULL;
 -	
++
  static Brush *
  default_foreground (void)
  {
-@@ -108,12 +54,12 @@
++	
+ 	if (!default_foreground_brush) {
+ 		default_foreground_brush = new SolidColorBrush ();
+ 		Color *color = color_from_str ("black");
+@@ -107,12 +54,12 @@
  	foreground = NULL;
  	
  	/* initialize the font description */
@@ -235,7 +239,7 @@ Index: text.cpp
  	
  	if (foreground != NULL) {
  		foreground->Detach (NULL, this);
-@@ -128,22 +74,22 @@
+@@ -127,22 +74,22 @@
  		DependencyObject::OnPropertyChanged (prop);
  		return;
  	}
@@ -264,7 +268,7 @@ Index: text.cpp
  	} else if (prop == Inline::ForegroundProperty) {
  		if (foreground != NULL) {
  			foreground->Detach (NULL, this);
-@@ -321,31 +267,31 @@
+@@ -320,28 +267,28 @@
  
  TextBlock::TextBlock ()
  {
@@ -303,16 +307,11 @@ Index: text.cpp
 +	font->SetStyle (style);
  	FontWeights weight = text_block_get_font_weight (this);
 -	pango_font_description_set_weight (font, font_weight (weight));
--
--	text_block_set_text (this, (char*)"");
 +	font->SetWeight (weight);
  	
-+	text_block_set_text (this, (char *) "");
-+	
- 	// this has to come last, since in our OnPropertyChanged
- 	// method we update our bounds.
- 	Brush *brush = default_foreground ();
-@@ -354,13 +300,10 @@
+ 	text_block_set_text (this, (char *) "");
+ 	
+@@ -353,13 +300,10 @@
  
  TextBlock::~TextBlock ()
  {
@@ -328,7 +327,7 @@ Index: text.cpp
  	if (foreground != NULL) {
  		foreground->Detach (NULL, this);
  		foreground->unref ();
-@@ -376,11 +319,6 @@
+@@ -375,11 +319,6 @@
  void
  TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
  {
@@ -340,7 +339,7 @@ Index: text.cpp
  	cairo_save (cr);
  	cairo_set_matrix (cr, &absolute_xform);
  	Paint (cr);
-@@ -390,7 +328,7 @@
+@@ -389,7 +328,7 @@
  void 
  TextBlock::ComputeBounds ()
  {
@@ -349,35 +348,16 @@ Index: text.cpp
  // no-op	bounds.GrowBy (1);
  }
  
-@@ -398,20 +336,20 @@
- TextBlock::InsideObject (cairo_t *cr, double x, double y)
- {
- 	bool ret = false;
--
-+	
- 	cairo_save (cr);
--
-+	
- 	double nx = x;
- 	double ny = y;
--
-+	
- 	cairo_matrix_t inverse = absolute_xform;
- 	cairo_matrix_invert (&inverse);
--
-+	
+@@ -408,7 +347,7 @@
+ 	
  	cairo_matrix_transform_point (&inverse, &nx, &ny);
--
+ 	
 -	if (nx >= 0.0 && ny >= 0.0 && nx < GetActualWidth () && ny < GetActualHeight ())
-+	
 +	if (nx >= 0.0 && ny >= 0.0 && nx < GetBoundingWidth () && ny < GetBoundingHeight ())
  		ret = true;
--
-+	
+ 	
  	cairo_restore (cr);
- 	return ret;
- }
-@@ -421,7 +359,7 @@
+@@ -420,7 +359,7 @@
  {
  	Point user_xform_origin = GetRenderTransformOrigin ();
  	
@@ -386,7 +366,7 @@ Index: text.cpp
  }
  
  void
-@@ -458,61 +396,40 @@
+@@ -457,61 +396,40 @@
  void
  TextBlock::Layout (cairo_t *cr)
  {
@@ -465,7 +445,7 @@ Index: text.cpp
  		TextDecorations deco;
  		Value *value;
  		Inline *item;
-@@ -521,129 +438,62 @@
+@@ -520,129 +438,62 @@
  		while (node != NULL) {
  			item = (Inline *) node->obj;
  			
@@ -610,7 +590,7 @@ Index: text.cpp
 -	TextWrapping wrapping = text_block_get_text_wrapping (this);
 -	double h = GetActualHeight ();
 -	double w = framework_element_get_width (this);
--
+-	
 -	if (wrapping != TextWrappingWrapWithOverflow)
 -		h = framework_element_get_height (this);
 -	
@@ -626,7 +606,7 @@ Index: text.cpp
  }
  
  void
-@@ -659,19 +509,19 @@
+@@ -658,19 +509,19 @@
  	
  	if (prop == TextBlock::FontFamilyProperty) {
  		char *family = text_block_get_font_family (this);
@@ -651,113 +631,23 @@ Index: text.cpp
  	} else if (prop == TextBlock::TextProperty) {
  		// will be updated later in Layout()
  	} else if (prop == TextBlock::InlinesProperty) {
-@@ -693,7 +543,9 @@
+@@ -692,7 +543,6 @@
  			foreground->ref ();
  		}
  		
 -		// This will force a call to Layout ()
-+		// Note: Until we find a way to update fg brushes in
-+		// the Layout when they change here and/or in the
-+		// inlines, we have to re-layout (which sucks).
- 		//recalc_actual = false;
- 	} else if (prop == TextBlock::ActualHeightProperty) {
- 		recalc_actual = false;
-@@ -734,35 +586,33 @@
- {
- 	if (dirty_actual_values && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
- 		CalcActualWidthHeight (NULL);
--
-+	
- 	if (property == TextBlock::TextProperty) {
- 		GString *block;
- 		Value *res;
--
-+		
- 		// The Text property is a concatenation of the Inlines */
- 		Inlines *inlines = text_block_get_inlines (this);
--	
-+		
- 		block = g_string_new ("");
--
-+		
- 		if (inlines != NULL) {
- 			Collection::Node *node = (Collection::Node *) inlines->list->First ();
- 			Inline *item;
--			Run *run;
- 			char *text;
--		
-+			Run *run;
-+			
- 			while (node != NULL) {
- 				item = (Inline *) node->obj;
--			
-+				
- 				switch (item->GetObjectType ()) {
- 				case Type::RUN:
- 					run = (Run *) item;
--				
-+					
- 					text = run_get_text (run);
--				
--					if (text == NULL || *text == '\0') {
--					} else {
-+					
-+					if (text && text[0])
- 						g_string_append (block, text);
--					}
- 					break;
- 				case Type::LINEBREAK:
- 					g_string_append_c (block, '\n');
-@@ -770,16 +620,16 @@
- 				default:
- 					break;
- 				}
--
-+				
- 				node = (Collection::Node *) node->next;
- 			}
+ 		// Note: Until we find a way to update fg brushes in
+ 		// the Layout when they change here and/or in the
+ 		// inlines, we have to re-layout (which sucks).
+@@ -808,7 +658,6 @@
+ 		} else {
+ 			inlines->Clear ();
  		}
--
-+		
- 		res = new Value (block->str);
- 		g_string_free (block, true);
- 		return res;
- 	}
--
-+	
- 	return DependencyObject::GetValue (property);
- }
- 
-@@ -792,16 +642,16 @@
- 		else if (property == TextBlock::ActualWidthProperty)
- 			actual_width = value->AsDouble ();
- 	}
--
-+	
- 	if (property == TextBlock::TextProperty) {
- 		// Text is a virtual property and setting it deletes all current runs,
- 		// creating a new run
- 		Run *run = new Run ();
- 		if (value)
- 			run_set_text (run, value->AsString ());
--
-+		
- 		Inlines *inlines = text_block_get_inlines (this);
--
-+		
- 		if (!inlines) {
- 			inlines = new Inlines ();
- 			text_block_set_inlines (this, inlines);
-@@ -811,7 +661,7 @@
+-		
  		inlines->Add (run);
  		return;
  	}
--
-+	
- 	return DependencyObject::SetValue (property, value);
- }
- 
-@@ -1187,6 +1037,8 @@
+@@ -1188,6 +1037,8 @@
  void
  text_init (void)
  {
@@ -766,12 +656,3 @@ Index: text.cpp
  	// Inline
  	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", Type::STRING);
  	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", Type::DOUBLE);
-@@ -1204,7 +1056,7 @@
- 	// TextBlock
- 	TextBlock::ActualHeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualHeight", Type::DOUBLE);
- 	TextBlock::ActualWidthProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualWidth", Type::DOUBLE);
--	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans"));
-+	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans Unicode, Lucida Sans"));
- 	TextBlock::FontSizeProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontSize", new Value (14.666));
- 	TextBlock::FontStretchProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
- 	TextBlock::FontStyleProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
