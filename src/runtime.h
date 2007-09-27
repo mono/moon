@@ -34,6 +34,11 @@ G_BEGIN_DECLS
 #define ENDTIMER(id,str)
 #endif
 
+enum RuntimeInitFlags {
+	RUNTIME_INIT_BROWSER = 0x1,
+};
+
+
 class Surface : public EventObject {
  public:
 	Surface (int width, int height);
@@ -184,7 +189,7 @@ void    *surface_get_drawing_area (Surface *s);
 cairo_t *measuring_context_create (void);
 void     measuring_context_destroy (cairo_t *cr);
 
-void runtime_init (void);
+void runtime_init (guint32 flags);
 
 uint32_t runtime_html_timer_timeout_add (int32_t interval, GSourceFunc callback, gpointer data);
 void     runtime_html_timer_timeout_stop (uint32_t source_id);

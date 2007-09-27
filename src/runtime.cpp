@@ -1050,8 +1050,10 @@ measuring_context_destroy (cairo_t *cr)
 
 static bool inited = false;
 static bool g_type_inited = false;
+guint32 moonlight_flags = 0;
+
 void
-runtime_init (void)
+runtime_init (guint32 flags)
 {
 	if (inited)
 		return;
@@ -1059,9 +1061,19 @@ runtime_init (void)
 	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
 		printf ("*** WARNING ***\n");
 		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
-		printf ("*** Moon was configured to use Cairo version %d.%d.%d, but\n", CAIRO_VERSION_MAJOR, CAIRO_VERSION_MINOR, CAIRO_VERSION_MICRO);
+		printf ("*** Moon was configured to use Cairo version %d.%d.%d, but\n",
+			CAIRO_VERSION_MAJOR, CAIRO_VERSION_MINOR, CAIRO_VERSION_MICRO);
 		printf ("*** is being run against version %s.\n", cairo_version_string ());
 		printf ("*** Proceed at your own risk\n");
+	}
+	
+	if (!(flags & RUNTIME_INIT_BROWSER) && pango_version () < PANGO_VERSION_ENCODE (1,16,0)) {
+		printf ("*** WARNING ***\n");
+		printf ("*** Pango versions < 1.16.0 may have rendering glitches.\n");
+		printf ("*** Moon was configured to use Pango version %d.%d.%d, but\n",
+			PANGO_VERSION_MAJOR, PANGO_VERSION_MINOR, PANGO_VERSION_MICRO);
+		printf ("*** is being run against version %s.\n", pango_version_string ());
+		printf ("*** It is suggested that you upgrade.\n");
 	}
 	
 #if OBJECT_TRACKING
@@ -1072,12 +1084,14 @@ runtime_init (void)
 #endif
 
 	inited = true;
-
+	
 	if (!g_type_inited) {
 		g_type_inited = true;
 		g_type_init ();
 	}
-
+	
+	moonlight_flags = flags;
+	
 	types_init ();
 	namescope_init ();
 	uielement_init ();
