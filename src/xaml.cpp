@@ -1131,6 +1131,7 @@ xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescop
 	XML_Parser p = XML_ParserCreateNS (NULL, '|');
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
+	char *start = (char*)xaml;
 
 	if (!p) {
 #ifdef DEBUG_XAML
@@ -1158,8 +1159,10 @@ xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescop
 	XML_SetProcessingInstructionHandler (p, proc_handler);
 	*/
 
+	// don't freak out if the <?xml ... ?> isn't on the first line (see #328907)
+	for (; *start && isspace (*start); start++);
 
-	if (!XML_Parse (p, xaml, strlen (xaml), TRUE)) {
+	if (!XML_Parse (p, start, strlen (start), TRUE)) {
 		parser_error (parser_info, NULL, NULL, g_strdup_printf (XML_ErrorString (XML_GetErrorCode (p))));
 		printf ("error parsing:  %s\n\n", xaml);
 		goto cleanup_and_return;

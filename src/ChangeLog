@@ -1,3 +1,8 @@
+2007-09-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Don't freak out if <?xml ... ?> isn't on the first 
+	line. Fix bug #328907.
+
 2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* control.h, control.cpp: Added control_initialize_from_xaml_callbacks, and
