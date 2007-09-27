@@ -1052,9 +1052,22 @@ static bool inited = false;
 static bool g_type_inited = false;
 guint32 moonlight_flags = 0;
 
+static struct {
+	const char *override;
+	guint32 flag;
+	bool set;
+} overrides[] = {
+	{ "text=pango",       RUNTIME_INIT_PANGO_TEXT_LAYOUT, true  },
+	{ "text=silverlight", RUNTIME_INIT_PANGO_TEXT_LAYOUT, false },
+	{ "codecs=microsoft", RUNTIME_INIT_MICROSOFT_CODECS,  true  },
+	{ "codecs=ffmpeg",    RUNTIME_INIT_MICROSOFT_CODECS,  false },
+};
+
 void
 runtime_init (guint32 flags)
 {
+	const char *env;
+	
 	if (inited)
 		return;
 	
@@ -1067,13 +1080,40 @@ runtime_init (guint32 flags)
 		printf ("*** Proceed at your own risk\n");
 	}
 	
-	if (!(flags & RUNTIME_INIT_BROWSER) && pango_version () < PANGO_VERSION_ENCODE (1,16,0)) {
-		printf ("*** WARNING ***\n");
-		printf ("*** Pango versions < 1.16.0 may have rendering glitches.\n");
-		printf ("*** Moon was configured to use Pango version %d.%d.%d, but\n",
-			PANGO_VERSION_MAJOR, PANGO_VERSION_MINOR, PANGO_VERSION_MICRO);
-		printf ("*** is being run against version %s.\n", pango_version_string ());
-		printf ("*** It is suggested that you upgrade.\n");
+	// Allow the user to override the flags via his/her environment
+	if ((env = g_getenv ("MOONLIGHT_OVERRIDES"))) {
+		const char *flag = env;
+		const char *inptr;
+		size_t n;
+		int i;
+		
+		while (*flag == ',')
+			flag++;
+		
+		inptr = flag;
+		
+		while (*flag) {
+			while (*inptr && *inptr != ',')
+				inptr++;
+			
+			n = (inptr - flag);
+			for (i = 0; i < G_N_ELEMENTS (overrides); i++) {
+				if (n != strlen (overrides[i].override))
+					continue;
+				
+				if (!strncmp (overrides[i].override, flag, n)) {
+					if (!overrides[i].set)
+						flags &= ~overrides[i].flag;
+					else
+						flags |= overrides[i].flag;
+				}
+			}
+			
+			while (*inptr == ',')
+				inptr++;
+			
+			flag = inptr;
+		}
 	}
 	
 #if OBJECT_TRACKING

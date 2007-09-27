@@ -1,5 +1,14 @@
 2007-09-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp (runtime_init): Don't check pango version info,
+	we're just gonna statically link in pango (and/or do
+	configure-time checks if the user decides to link to a system
+	pango). Implemented some preliminary environment variable parsing
+	action to decide if the user wnts to use ffmpeg vs ms codecs,
+	pango vs my "silverlight" text layout engine, etc.
+
+2007-09-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* runtime.cpp (runtime_init): Now takes a flags argument for
 	enabling/disabling features. If RUNTIME_INIT_BROWSER is not set,
 	then make sure pango is recent enough (if not, print a warning
