@@ -22,6 +22,27 @@
 #include "text.h"
 
 
+extern guint32 moonlight_flags;
+
+#define RENDER_USING_PANGO (moonlight_flags & RUNTIME_INIT_PANGO_TEXT_LAYOUT)
+
+
+static SolidColorBrush *default_foreground_brush = NULL;
+
+static Brush *
+default_foreground (void)
+{
+	if (!default_foreground_brush) {
+		default_foreground_brush = new SolidColorBrush ();
+		Color *color = color_from_str ("black");
+		solid_color_brush_set_color (default_foreground_brush, color);
+		delete color;
+	}
+	
+	return (Brush *) default_foreground_brush;
+}
+
+
 static PangoStretch
 font_stretch (FontStretches stretch)
 {
@@ -76,22 +97,6 @@ font_weight (FontWeights weight)
 }
 
 
-static SolidColorBrush *default_foreground_brush = NULL;
-	
-static Brush *
-default_foreground (void)
-{
-	if (!default_foreground_brush) {
-		default_foreground_brush = new SolidColorBrush ();
-		Color *color = color_from_str ("black");
-		solid_color_brush_set_color (default_foreground_brush, color);
-		delete color;
-	}
-	
-	return (Brush *) default_foreground_brush;
-}
-
-
 // Inline
 
 DependencyProperty *Inline::FontFamilyProperty;
@@ -107,12 +112,18 @@ Inline::Inline ()
 	foreground = NULL;
 	
 	/* initialize the font description */
-	font = pango_font_description_new ();
+	if (RENDER_USING_PANGO)
+		font.pango = pango_font_description_new ();
+	else
+		font.custom = new TextFontDescription ();
 }
 
 Inline::~Inline ()
 {
-	pango_font_description_free (font);
+	if (RENDER_USING_PANGO)
+		pango_font_description_free (font.pango);
+	else
+		delete font.custom;
 	
 	if (foreground != NULL) {
 		foreground->Detach (NULL, this);
@@ -127,22 +138,37 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 		DependencyObject::OnPropertyChanged (prop);
 		return;
 	}
-    
+	
 	if (prop == Inline::FontFamilyProperty) {
 		char *family = inline_get_font_family (this);
-		pango_font_description_set_family (font, family);
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_family (font.pango, family);
+		else
+			font.custom->SetFamily (family);
 	} else if (prop == Inline::FontSizeProperty) {
 		double size = inline_get_font_size (this);
-		pango_font_description_set_absolute_size (font, size * PANGO_SCALE);
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
+		else
+			font.custom->SetSize (size);
 	} else if (prop == Inline::FontStretchProperty) {
 		FontStretches stretch = inline_get_font_stretch (this);
-		pango_font_description_set_stretch (font, font_stretch (stretch));
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_stretch (font.pango, font_stretch (stretch));
+		else
+			font.custom->SetStretch (stretch);
 	} else if (prop == Inline::FontStyleProperty) {
 		FontStyles style = inline_get_font_style (this);
-		pango_font_description_set_style (font, font_style (style));
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_style (font.pango, font_style (style));
+		else
+			font.custom->SetStyle (style);
 	} else if (prop == Inline::FontWeightProperty) {
 		FontWeights weight = inline_get_font_weight (this);
-		pango_font_description_set_weight (font, font_weight (weight));
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_weight (font.pango, font_weight (weight));
+		else
+			font.custom->SetWeight (weight);
 	} else if (prop == Inline::ForegroundProperty) {
 		if (foreground != NULL) {
 			foreground->Detach (NULL, this);
@@ -320,28 +346,44 @@ DependencyProperty *TextBlock::TextWrappingProperty;
 
 TextBlock::TextBlock ()
 {
-	renderer = (MangoRenderer *) mango_renderer_new ();
+	FontStretches stretch = text_block_get_font_stretch (this);
+	FontWeights weight = text_block_get_font_weight (this);
+	FontStyles style = text_block_get_font_style (this);
+	char *family = text_block_get_font_family (this);
+	double size = text_block_get_font_size (this);
 	
 	foreground = NULL;
 	
-	layout = NULL;
-	
+	dirty_actual_values = true;
 	actual_height = 0.0;
 	actual_width = 0.0;
-	dirty_actual_values = true;
+	bbox_height = 0.0;
+	bbox_width = 0.0;
 	
-	/* initialize the font description */
-	font = pango_font_description_new ();
-	char *family = text_block_get_font_family (this);
-	pango_font_description_set_family (font, family);
-	double size = text_block_get_font_size (this);
-	pango_font_description_set_absolute_size (font, size * PANGO_SCALE);
-	FontStretches stretch = text_block_get_font_stretch (this);
-	pango_font_description_set_stretch (font, font_stretch (stretch));
-	FontStyles style = text_block_get_font_style (this);
-	pango_font_description_set_style (font, font_style (style));
-	FontWeights weight = text_block_get_font_weight (this);
-	pango_font_description_set_weight (font, font_weight (weight));
+	/* initialize the font description and layout */
+	if (RENDER_USING_PANGO) {
+		layout.pango = NULL;
+		
+		renderer = (MangoRenderer *) mango_renderer_new ();
+		
+		font.pango = pango_font_description_new ();
+		pango_font_description_set_family (font.pango, family);
+		pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
+		pango_font_description_set_stretch (font.pango, font_stretch (stretch));
+		pango_font_description_set_style (font.pango, font_style (style));
+		pango_font_description_set_weight (font.pango, font_weight (weight));
+	} else {
+		layout.custom = new TextLayout ();
+		
+		renderer = NULL;
+		
+		font.custom = new TextFontDescription ();
+		font.custom->SetFamily (family);
+		font.custom->SetSize (size);
+		font.custom->SetStretch (stretch);
+		font.custom->SetStyle (style);
+		font.custom->SetWeight (weight);
+	}
 	
 	text_block_set_text (this, (char *) "");
 	
@@ -353,12 +395,17 @@ TextBlock::TextBlock ()
 
 TextBlock::~TextBlock ()
 {
-	pango_font_description_free (font);
-	
-	if (layout)
-		g_object_unref (layout);
-	
-	g_object_unref (renderer);
+	if (RENDER_USING_PANGO) {
+		if (layout.pango != NULL)
+			g_object_unref (layout.pango);
+		
+		pango_font_description_free (font.pango);
+		
+		g_object_unref (renderer);
+	} else {
+		delete layout.custom;
+		delete font.custom;
+	}
 	
 	if (foreground != NULL) {
 		foreground->Detach (NULL, this);
@@ -375,11 +422,6 @@ TextBlock::SetFontSource (DependencyObject *downloader)
 void
 TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-	const char *text = pango_layout_get_text (layout);
-	
-	if (!text || !text[0])
-		return;
-	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	Paint (cr);
@@ -389,8 +431,7 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::ComputeBounds ()
 {
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, GetActualWidth (), GetActualHeight ()));
-// no-op	bounds.GrowBy (1);
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ()));
 }
 
 bool
@@ -408,7 +449,7 @@ TextBlock::InsideObject (cairo_t *cr, double x, double y)
 	
 	cairo_matrix_transform_point (&inverse, &nx, &ny);
 	
-	if (nx >= 0.0 && ny >= 0.0 && nx < GetActualWidth () && ny < GetActualHeight ())
+	if (nx >= 0.0 && ny >= 0.0 && nx < GetBoundingWidth () && ny < GetBoundingHeight ())
 		ret = true;
 	
 	cairo_restore (cr);
@@ -420,7 +461,7 @@ TextBlock::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (user_xform_origin.x * GetActualWidth (), user_xform_origin.y * GetActualHeight ());
+	return Point (user_xform_origin.x * GetBoundingWidth (), user_xform_origin.y * GetBoundingHeight ());
 }
 
 void
@@ -455,19 +496,123 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 }
 
 void
-TextBlock::Layout (cairo_t *cr)
+TextBlock::LayoutSilverlight (cairo_t *cr)
 {
+	TextFontDescription *font = this->font.custom;
+	TextLayout *layout = this->layout.custom;
+	TextDecorations decorations;
+	TextWrapping wrapping;
+	double height, width;
+	uint8_t font_mask;
+	List *runs;
+	char *text;
+	Brush *fg;
+	
+	if (foreground == NULL)
+		fg = default_foreground ();
+	else
+		fg = foreground;
+	
+	wrapping = text_block_get_text_wrapping (this);
+	layout->SetWrapping (wrapping);
+	
+	height = framework_element_get_height (this);
+	width = framework_element_get_width (this);
+	
+	if (width > 0.0f)
+		layout->SetMaxWidth (width);
+	else
+		layout->SetMaxWidth (-1.0);
+	
+	runs = new List ();
+	
+	decorations = text_block_get_text_decorations (this);
+	font_mask = font->GetFields ();
+	
+	Inlines *inlines = text_block_get_inlines (this);
+	
+	if (inlines != NULL) {
+		Collection::Node *node = (Collection::Node *) inlines->list->First ();
+		uint8_t run_mask, inherited_mask;
+		TextFontDescription *ifont;
+		TextDecorations deco;
+		Value *value;
+		Inline *item;
+		Run *run;
+		
+		while (node != NULL) {
+			item = (Inline *) node->obj;
+			
+			ifont = item->font.custom;
+			
+			// Inlines inherit their parent TextBlock's font properties if
+			// they don't specify their own.
+			run_mask = ifont->GetFields ();
+			ifont->Merge (font, false);
+			
+			inherited_mask = (FontMask) (font_mask & ~run_mask);
+			
+			// Inherit the TextDecorations from the parent TextBlock if unset
+			value = item->GetValue (Inline::TextDecorationsProperty);
+			deco = value ? (TextDecorations) value->AsInt32 () : decorations;
+			
+ 			switch (item->GetObjectType ()) {
+			case Type::RUN:
+				run = (Run *) item;
+				
+				text = run_get_text (run);
+				
+				if (text && text[0]) {
+					if (item->foreground)
+						runs->Append (new TextRun (text, -1, deco, ifont, item->foreground));
+					else
+						runs->Append (new TextRun (text, -1, deco, ifont, fg));
+ 				}
+				break;
+			case Type::LINEBREAK:
+				if (item->foreground)
+					runs->Append (new TextRun (deco, ifont, item->foreground));
+				else
+					runs->Append (new TextRun (deco, ifont, fg));
+				break;
+			default:
+				break;
+			}
+			
+			if (inherited_mask != 0)
+				ifont->UnsetFields (inherited_mask);
+			
+			node = (Collection::Node *) node->next;
+		}
+	}
+	
+	layout->SetTextRuns (runs);
+	layout->Layout ();
+	
+	layout->GetActualExtents (&actual_width, &actual_height);
+	layout->GetLayoutExtents (&bbox_width, &bbox_height);
+	
+	text_block_set_actual_height (this, actual_height);
+	text_block_set_actual_width (this, actual_width);
+	
+	dirty_actual_values = false;
+}
+
+void
+TextBlock::LayoutPango (cairo_t *cr)
+{
+	PangoFontDescription *font = this->font.pango;
 	PangoAttribute *uline_attr = NULL;
 	PangoAttribute *font_attr = NULL;
 	PangoAttribute *fg_attr = NULL;
 	PangoAttribute *attr = NULL;
 	TextDecorations decorations;
-	double clip_height, width;
 	PangoFontMask font_mask;
 	PangoAttrList *attrs;
+	PangoLayout *layout;
 	size_t start, end;
-	bool clip = false;
 	GString *block;
+	double width;
 	char *text;
 	Brush *fg;
 	int w, h;
@@ -476,16 +621,13 @@ TextBlock::Layout (cairo_t *cr)
 		fg = default_foreground ();
 	else
 		fg = foreground;
-
-	if (layout == NULL)
-		layout = pango_cairo_create_layout (cr);
 	
-	clip_height = framework_element_get_height (this);
+	if (this->layout.pango == NULL)
+		this->layout.pango = pango_cairo_create_layout (cr);
+	layout = this->layout.pango;
+	
 	switch (text_block_get_text_wrapping (this)) {
 	case TextWrappingWrap:
-		// same as w/ Overflow except we clip height (if defined)
-		if (clip_height > 0.0)
-			clip = true;
 	case TextWrappingWrapWithOverflow:
 		pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
 		
@@ -512,6 +654,7 @@ TextBlock::Layout (cairo_t *cr)
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		PangoFontMask run_mask, inherited_mask;
+		PangoFontDescription *ifont;
 		TextDecorations deco;
 		Value *value;
 		Inline *item;
@@ -545,13 +688,15 @@ TextBlock::Layout (cairo_t *cr)
 				break;
 			}
 			
+			ifont = item->font.pango;
+			
 			// Inlines inherit their parent TextBlock's font properties if
 			// they don't specify their own.
-			run_mask = pango_font_description_get_set_fields (item->font);
-			pango_font_description_merge (item->font, font, false);
+			run_mask = pango_font_description_get_set_fields (ifont);
+			pango_font_description_merge (ifont, font, false);
 			inherited_mask = (PangoFontMask) (font_mask & ~run_mask);
 			
-			attr = pango_attr_font_desc_new (item->font);
+			attr = pango_attr_font_desc_new (ifont);
 			attr->start_index = start;
 			attr->end_index = end;
 			
@@ -564,7 +709,7 @@ TextBlock::Layout (cairo_t *cr)
 			}
 			
 			if (inherited_mask != 0)
-				pango_font_description_unset_fields (item->font, inherited_mask);
+				pango_font_description_unset_fields (ifont, inherited_mask);
 			
 			// Inherit the TextDecorations from the parent TextBlock if unset
 			value = item->GetValue (Inline::TextDecorationsProperty);
@@ -617,32 +762,32 @@ TextBlock::Layout (cairo_t *cr)
 	pango_layout_get_pixel_size (layout, &w, &h);
 	pango_attr_list_unref (attrs);
 	
-	if (clip && (h > clip_height))
-		text_block_set_actual_height (this, (double) clip_height);
-	else
-		text_block_set_actual_height (this, (double) h);
+	text_block_set_actual_height (this, (double) h);
 	text_block_set_actual_width (this, (double) w);
 	dirty_actual_values = false;
+	bbox_height = actual_height;
+	bbox_width = actual_width;
+}
+
+void
+TextBlock::Layout (cairo_t *cr)
+{
+	if (!RENDER_USING_PANGO)
+		LayoutSilverlight (cr);
+	else
+		LayoutPango (cr);
 }
 
 void
 TextBlock::Paint (cairo_t *cr)
 {
-	TextWrapping wrapping = text_block_get_text_wrapping (this);
-	double h = GetActualHeight ();
-	double w = framework_element_get_width (this);
-	
-	if (wrapping != TextWrappingWrapWithOverflow)
-		h = framework_element_get_height (this);
-	
-	if (w > 0.0 && h > 0.0) {
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_clip (cr);
+	if (RENDER_USING_PANGO) {
+		pango_cairo_update_layout (cr, layout.pango);
+		mango_renderer_set_cairo_context (renderer, cr);
+		mango_renderer_show_layout (renderer, layout.pango);
+	} else {
+		layout.custom->Render (cr, this, 0.0, 0.0);
 	}
-	
-	pango_cairo_update_layout (cr, layout);
-	mango_renderer_set_cairo_context (renderer, cr);
-	mango_renderer_show_layout (renderer, layout);
 }
 
 void
@@ -658,21 +803,36 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	
 	if (prop == TextBlock::FontFamilyProperty) {
 		char *family = text_block_get_font_family (this);
-		pango_font_description_set_family (font, family);
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_family (font.pango, family);
+		else
+			font.custom->SetFamily (family);
 	} else if (prop == TextBlock::FontSizeProperty) {
 		double size = text_block_get_font_size (this);
-		pango_font_description_set_absolute_size (font, size * PANGO_SCALE);
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
+		else
+			font.custom->SetSize (size);
 	} else if (prop == TextBlock::FontStretchProperty) {
 		FontStretches stretch = text_block_get_font_stretch (this);
-		pango_font_description_set_stretch (font, font_stretch (stretch));
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_stretch (font.pango, font_stretch (stretch));
+		else
+			font.custom->SetStretch (stretch);
 	} else if (prop == TextBlock::FontStyleProperty) {
 		FontStyles style = text_block_get_font_style (this);
-		pango_font_description_set_style (font, font_style (style));
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_style (font.pango, font_style (style));
+		else
+			font.custom->SetStyle (style);
 	} else if (prop == TextBlock::FontWeightProperty) {
 		FontWeights weight = text_block_get_font_weight (this);
-		pango_font_description_set_weight (font, font_weight (weight));
+		if (RENDER_USING_PANGO)
+			pango_font_description_set_weight (font.pango, font_weight (weight));
+		else
+			font.custom->SetWeight (weight);
 	} else if (prop == TextBlock::TextProperty) {
-		// will be updated later in Layout()
+		// handled elsewhere
 	} else if (prop == TextBlock::InlinesProperty) {
 		Inlines *newcol = GetValue (prop)->AsInlines ();
 		
@@ -692,7 +852,6 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			foreground->ref ();
 		}
 		
-		// This will force a call to Layout ()
 		// Note: Until we find a way to update fg brushes in
 		// the Layout when they change here and/or in the
 		// inlines, we have to re-layout (which sucks).
@@ -1191,6 +1350,9 @@ text_destroy (void)
 void
 text_init (void)
 {
+	if (!RENDER_USING_PANGO)
+		font_init ();
+	
 	// Inline
 	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", Type::STRING);
 	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", Type::DOUBLE);

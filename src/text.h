@@ -18,53 +18,7 @@ G_BEGIN_DECLS
 
 #include "brush.h"
 #include "mango.h"
-
-enum FontStretches {
-	FontStretchesUltraCondensed = 1,
-	FontStretchesExtraCondensed = 2,
-	FontStretchesCondensed      = 3,
-	FontStretchesSemiCondensed  = 4,
-	FontStretchesNormal         = 5,
-	FontStretchesMedium         = 5,
-	FontStretchesSemiExpanded   = 6,
-	FontStretchesExpanded       = 7,
-	FontStretchesExtraExpanded  = 8,
-	FontStretchesUltraExpanded  = 9
-};
-
-enum FontStyles {
-	FontStylesNormal,
-	FontStylesOblique,
-	FontStylesItalic
-};
-
-enum FontWeights {
-	FontWeightsThin       = 100,
-	FontWeightsExtraLight = 200,
-	FontWeightsLight      = 300,
-	FontWeightsNormal     = 400,
-	FontWeightsMedium     = 500,
-	FontWeightsSemiBold   = 600,
-	FontWeightsBold       = 700,
-	FontWeightsExtraBold  = 800,
-	FontWeightsBlack      = 900,
-	FontWeightsExtraBlack = 950,
-};
-
-enum StyleSimulations {
-	StyleSimulationsNone
-};
-
-enum TextDecorations {
-	TextDecorationsNone,
-	TextDecorationsUnderline
-};
-
-enum TextWrapping {
-	TextWrappingWrap,
-	TextWrappingNoWrap,
-	TextWrappingWrapWithOverflow
-};
+#include "font.h"
 
 
 void text_init (void);
@@ -85,8 +39,12 @@ class Inline : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
-
-	PangoFontDescription *font;
+	
+	union {
+		PangoFontDescription *pango;
+		TextFontDescription *custom;
+	} font;
+	
 	Brush *foreground;
 };
 
@@ -137,6 +95,58 @@ void run_set_text (Run *run, char *value);
 
 
 class TextBlock : public FrameworkElement {
+	union {
+		PangoFontDescription *pango;
+		TextFontDescription *custom;
+	} font;
+	union {
+		PangoLayout *pango;
+		TextLayout *custom;
+	} layout;
+	MangoRenderer *renderer;
+	Brush *foreground;
+	
+	bool dirty_actual_values;
+	double actual_height;
+	double actual_width;
+	double bbox_height;
+	double bbox_width;
+	
+	void CalcActualWidthHeight (cairo_t *cr);
+	void Layout (cairo_t *cr);
+	void Paint (cairo_t *cr);
+	
+	double GetActualWidth ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return actual_width;
+	}
+	
+	double GetActualHeight ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return actual_height;
+	}
+	
+	double GetBoundingWidth ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return bbox_width;
+	}
+	
+	double GetBoundingHeight ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return bbox_height;
+	}
+	
+	void LayoutPango (cairo_t *cr);
+	void LayoutSilverlight (cairo_t *cr);
+	
 public:
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;
@@ -172,34 +182,6 @@ public:
 	virtual Value *GetValue (DependencyProperty *property);
 	virtual void SetValue (DependencyProperty *property, Value *value);
 	virtual void SetValue (DependencyProperty *property, Value value);
-	
-private:
-	PangoFontDescription *font;
-	MangoRenderer *renderer;
-	PangoLayout *layout;
-	Brush *foreground;
-	
-	bool dirty_actual_values;
-	double actual_height;
-	double actual_width;
-	
-	void CalcActualWidthHeight (cairo_t *cr);
-	void Layout (cairo_t *cr);
-	void Paint (cairo_t *cr);
-	
-	double GetActualWidth ()
-	{
-		if (dirty_actual_values)
-			CalcActualWidthHeight (NULL);
-		return actual_width;
-	}
-	
-	double GetActualHeight ()
-	{
-		if (dirty_actual_values)
-			CalcActualWidthHeight (NULL);
-		return actual_height;
-	}
 };
 
 TextBlock *text_block_new (void);

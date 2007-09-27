@@ -1,6 +1,6 @@
 Index: text.h
 ===================================================================
---- text.h	(revision 86433)
+--- text.h	(revision 86521)
 +++ text.h	(working copy)
 @@ -18,55 +18,9 @@
  
@@ -156,7 +156,7 @@ Index: text.h
  TextBlock *text_block_new (void);
 Index: text.cpp
 ===================================================================
---- text.cpp	(revision 86434)
+--- text.cpp	(revision 86521)
 +++ text.cpp	(working copy)
 @@ -22,62 +22,8 @@
  #include "text.h"
@@ -637,18 +637,7 @@ Index: text.cpp
  		// Note: Until we find a way to update fg brushes in
  		// the Layout when they change here and/or in the
  		// inlines, we have to re-layout (which sucks).
-@@ -811,6 +660,10 @@
- 		}
- 		
- 		inlines->Add (run);
-+		
-+		//dirty_actual_values = true;
-+		//UpdateBounds (true);
-+		//Invalidate ();
- 		return;
- 	}
- 	
-@@ -1189,6 +1042,8 @@
+@@ -1191,6 +1040,8 @@
  void
  text_init (void)
  {
