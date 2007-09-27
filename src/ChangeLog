@@ -1,3 +1,8 @@
+2007-09-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* array.cpp: Fix issues on double parsing, including bug #328915 and
+	test cases in /moon/test/xaml/points-torture.xaml
+
 2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* animation.cpp: Add a few null checks.
