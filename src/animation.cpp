@@ -52,7 +52,11 @@ void
 AnimationStorage::UpdatePropertyValue ()
 {
 	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
-	targetobj->SetValue (targetprop, *current_value);
+	if (current_value != NULL)
+		targetobj->SetValue (targetprop, *current_value);
+	//else
+	//	targetobj->SetValue (targetprop, NULL);
+		
 	delete current_value;
 }
 
@@ -1124,13 +1128,15 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	KeyTime *kt;
 	/* if the last frame is KeyTime Uniform or Paced, resolve it
 	   to be equal to the total interpolation time */
-	keyframe = (KeyFrame *) ((Collection::Node *) col->list->Last ())->obj;
-	kt = keyframe->GetKeyTime ();
-	if (*kt == KeyTime::Paced || *kt == KeyTime::Uniform) {
-		keyframe->resolved_keytime = total_interpolation_time;
-		keyframe->resolved = true;
+	cur = col->list->Last ();
+	if (cur) {
+		keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
+		kt = keyframe->GetKeyTime ();
+		if (*kt == KeyTime::Paced || *kt == KeyTime::Uniform) {
+			keyframe->resolved_keytime = total_interpolation_time;
+			keyframe->resolved = true;
+		}
 	}
-
 
 	/* if the first frame is KeyTime::Paced:
 	**   1. if there is only 1 frame, its KeyTime is the total interpolation time.
@@ -1139,14 +1145,17 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	** note 1 is handled in the above block so we only have to
 	** handle 2 here.
 	*/
-	keyframe = (KeyFrame *) ((Collection::Node *) col->list->First ())->obj;
-	kt = keyframe->GetKeyTime ();
+	cur = (Collection::Node*) col->list->First ();
+	if (cur) {
+		keyframe = (KeyFrame *) ((Collection::Node*) cur)->obj;
+		kt = keyframe->GetKeyTime ();
 
-	if (!keyframe->resolved && *kt == KeyTime::Paced) {
-		keyframe->resolved_keytime = 0;
-		keyframe->resolved = true;
+		if (!keyframe->resolved && *kt == KeyTime::Paced) {
+			keyframe->resolved_keytime = 0;
+			keyframe->resolved = true;
+		}
 	}
-
+	
 	/* XXX resolve remaining KeyTime::Uniform frames (step 5 from url) */
 
 	/* XXX resolve frames with unspecified keytimes (step 6 from url)
@@ -1236,7 +1245,7 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 
 	current_keyframe = (DoubleKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
 	if (current_keyframe == NULL) {
-	  abort ();
+	  //abort ();
 		return NULL; /* XXX */
 	}
 

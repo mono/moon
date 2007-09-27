@@ -1,3 +1,7 @@
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* animation.cpp: Add a few null checks.
+
 2007-09-27  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp: Don't mark our download progress as 100% until we've
