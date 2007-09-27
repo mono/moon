@@ -1,3 +1,11 @@
+2007-09-27  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp: Don't mark our download progress as 100% until we've
+	been notified by the downloader that it is complete.  Some
+	programs check download progress to decide when they can safely
+	poke at the media element properties.
+	* downloader.cpp: set the final downloader progress to 1.0 not 100.
+
 2007-09-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Don't freak out if <?xml ... ?> isn't on the first 

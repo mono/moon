@@ -407,7 +407,12 @@ MediaElement::UpdateProgress ()
 void 
 MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
 {
-	UpdateProgress ();
+	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
+
+	// Delay the propogating progress 1.0 until
+	// the downloader has notified us it is done.
+	if (progress < 1.0)
+		UpdateProgress ();
 }
 
 void 
@@ -446,8 +451,6 @@ MediaElement::DownloaderComplete ()
 		return;
 	}
 	
-	UpdateProgress ();
-
 	if (source)
 		delete source;
 
@@ -463,6 +466,7 @@ MediaElement::DownloaderComplete ()
 		return;
 	}
 
+	UpdateProgress ();
 	Emit (MediaElement::MediaOpenedEvent);
 
 	Invalidate ();
