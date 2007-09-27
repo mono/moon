@@ -198,7 +198,7 @@ NPP_Initialize (void)
 	
 	if (!runtime_initialized) {
 		runtime_initialized = true;
-		runtime_init ();
+		runtime_init (RUNTIME_INIT_BROWSER);
 	}
 	
 	plugin_init_classes ();

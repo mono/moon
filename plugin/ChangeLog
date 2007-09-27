@@ -1,3 +1,8 @@
+2007-09-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-glue.cpp (NPP_Initialize): Call runtime_init() with
+	RUNTIME_INIT_BROWSER.
+
 2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: Properly release a MoonlightObject.
