@@ -25,7 +25,6 @@ Playlist::Playlist (MediaElement *element, const char *source_name, const char *
 	entries = new List ();
 	current_entry = NULL;
 	downloader = new Downloader ();
-	downloader->ref ();
 	downloader->SetWriteFunc (on_downloader_data_write, on_downloader_size_notify, this);
 	downloader->AddHandler (downloader->CompletedEvent, on_downloader_complete, this);
 	element->AddHandler(element->MediaEndedEvent, on_media_ended, this);
@@ -34,7 +33,6 @@ Playlist::Playlist (MediaElement *element, const char *source_name, const char *
 Playlist::~Playlist ()
 {
 	entries->Clear (true);
-	downloader->unref ();
 	delete entries;
 	delete downloader;
 }
