@@ -1,5 +1,9 @@
 2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* xaml.cpp: More unrefs.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* text.cpp: Unref a few newly created objects.
 	* control.cpp: Remove an unnecessary ref.
 

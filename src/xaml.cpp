@@ -801,9 +801,11 @@ flush_char_data (XamlParserInfo *p)
 					if (!inlines) {
 						inlines = new Inlines ();
 						text_block_set_inlines ((TextBlock *) p->current_element->item, inlines);
+						inlines->unref ();
 					}
 
 					inlines->Add (run);
+					run->unref ();
 				}
 			}
 			
