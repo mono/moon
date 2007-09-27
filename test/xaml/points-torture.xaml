@@ -19,4 +19,7 @@
 	<!-- points can have new lines to separate points and extra spaces at the end -->
         <Polyline Stroke="Blue" Fill="Lime" Points=" 10,210, 110,210	110,310
 10,310    " />
+
+	<!-- points can be separated using the minus sign but the separator isn't skipped in this case -->
+        <Polyline Stroke="Blue" Fill="Gray" Points=" 10,210, 110,210-10,150" />
 </Canvas>
