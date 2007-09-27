@@ -1,3 +1,7 @@
+2007-09-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* harness/xaml2png.cpp (main): Updated runtime_init() call.
+
 2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* harness/xaml2png.cpp: Update according to API change.

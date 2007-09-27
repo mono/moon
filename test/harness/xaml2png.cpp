@@ -137,7 +137,8 @@ main (int argc, char **argv)
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
 	gdk_threads_init ();
-	runtime_init ();
+	
+	runtime_init (RUNTIME_INIT_BROWSER);
 
 	downloader_set_functions (downloader_create_state,
 				  downloader_destroy_state,
