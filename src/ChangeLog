@@ -1,5 +1,10 @@
 2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* control.h, control.cpp: Added control_initialize_from_xaml_callbacks, and
+	  change InitializeFromXaml to take a XamlLoader argument.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* xaml.cpp: More unrefs.
 
 2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 

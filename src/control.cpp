@@ -146,10 +146,10 @@ Control::~Control ()
 
 UIElement*
 Control::InitializeFromXaml (const char *xaml,
-			     Type::Kind *element_type)
+			     Type::Kind *element_type, XamlLoader *loader)
 {
 	// No callback, figure out how this will work in the plugin to satisfy deps
-	UIElement *element = (UIElement*)xaml_create_from_str (NULL, xaml, false, element_type);
+	UIElement *element = (UIElement*)xaml_create_from_str (loader, xaml, false, element_type);
 	if (element == NULL)
 		return NULL;
 
@@ -173,7 +173,14 @@ UIElement*
 control_initialize_from_xaml (Control *control, const char *xaml,
 			      Type::Kind *element_type)
 {
-	return control->InitializeFromXaml (xaml, element_type);
+	return control->InitializeFromXaml (xaml, element_type, NULL);
+}
+
+UIElement* 
+control_initialize_from_xaml_callbacks (Control *control, const char *xaml,
+			      Type::Kind *element_type, XamlLoader *loader)
+{
+	return control->InitializeFromXaml (xaml, element_type, loader);
 }
 
 Control *

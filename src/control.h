@@ -44,7 +44,7 @@ class Control : public FrameworkElement {
 	virtual void OnLoaded ();
 
 	UIElement* InitializeFromXaml (const char *xaml,
-				       Type::Kind *element_type);
+				       Type::Kind *element_type, XamlLoader* loader);
 };
 
 G_BEGIN_DECLS
@@ -52,7 +52,8 @@ G_BEGIN_DECLS
 Control *control_new (void);
 UIElement* control_initialize_from_xaml (Control *control, const char *xaml,
 					 Type::Kind *element_type);
-
+UIElement* control_initialize_from_xaml_callbacks (Control *control, const char *xaml, 
+					Type::Kind *element_type, XamlLoader* loader);
 G_END_DECLS
 
 #endif /* __MOON_CONTROL_H__ */
