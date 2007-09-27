@@ -126,7 +126,7 @@ class XamlParserInfo {
 	XamlElementInstance *current_element;
 
 	GHashTable *namespace_map;
-	GString *char_data_buffer;
+	GString *cdata;
 
 	bool implicit_default_namespace;
 
@@ -144,7 +144,7 @@ class XamlParserInfo {
 	  
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
-		char_data_buffer (NULL), implicit_default_namespace (false), error_args (NULL),
+		cdata (NULL), implicit_default_namespace (false), error_args (NULL),
 		loader (NULL), created_elements (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
@@ -156,8 +156,8 @@ class XamlParserInfo {
 		g_list_foreach (created_elements, unref_xaml_element, NULL);
 		g_list_free (created_elements);
 		
-		if (char_data_buffer)
-			g_string_free (char_data_buffer, TRUE);
+		if (cdata)
+			g_string_free (cdata, TRUE);
 		if (top_element)
 			delete top_element;
 		namescope->unref ();
@@ -773,45 +773,39 @@ start_element (void *data, const char *el, const char **attr)
 void
 flush_char_data (XamlParserInfo *p)
 {
-	if (p->char_data_buffer && p->char_data_buffer->len) {
-			bool has_content = false;
-			for (uint i = 0; i < p->char_data_buffer->len; i++) {
-				if (g_ascii_isspace (p->char_data_buffer->str [i]))
-					continue;
-				has_content = true;
-				break;
-			}
-
-			const char *cp = p->current_element->info->content_property;
-			if (has_content && cp) {
-				DependencyProperty *con = DependencyObject::GetDependencyProperty (p->current_element->info->dependency_type, cp);
-				// TODO: There might be other types that can be specified here,
-				// but string is all i have found so far.  If you can specify other
-				// types, i should pull the property setting out of set_attributes
-				// and use that code
-
-				if ((con->value_type) == Type::STRING)
-					p->current_element->item->SetValue (con, Value (p->char_data_buffer->str));
-				else if (is_instance_of (p->current_element, Type::TEXTBLOCK)) {
-					Run *run = new Run ();
-					run_set_text (run, p->char_data_buffer->str);
-
-					Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
-
-					if (!inlines) {
-						inlines = new Inlines ();
-						text_block_set_inlines ((TextBlock *) p->current_element->item, inlines);
-						inlines->unref ();
-					}
-
-					inlines->Add (run);
-					run->unref ();
-				}
-			}
+	if (p->cdata && p->cdata->len) {
+		g_strchomp (p->cdata->str);
+		
+		const char *cp = p->current_element->info->content_property;
+		if (cp && p->cdata->str[0]) {
+			DependencyProperty *con = DependencyObject::GetDependencyProperty (p->current_element->info->dependency_type, cp);
+			// TODO: There might be other types that can be specified here,
+			// but string is all i have found so far.  If you can specify other
+			// types, i should pull the property setting out of set_attributes
+			// and use that code
 			
-			g_string_free (p->char_data_buffer, FALSE);
-			p->char_data_buffer = NULL;
+			if ((con->value_type) == Type::STRING) {
+				p->current_element->item->SetValue (con, Value (p->cdata->str));
+			} else if (is_instance_of (p->current_element, Type::TEXTBLOCK)) {
+				Run *run = new Run ();
+				run_set_text (run, p->cdata->str);
+				
+				Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
+				
+				if (!inlines) {
+					inlines = new Inlines ();
+					text_block_set_inlines ((TextBlock *) p->current_element->item, inlines);
+					inlines->unref ();
+				}
+				
+				inlines->Add (run);
+				run->unref ();
+			}
 		}
+		
+		g_string_free (p->cdata, FALSE);
+		p->cdata = NULL;
+	}
 }
 
 void
@@ -904,7 +898,7 @@ char_data_handler (void *data, const char *in, int inlen)
 	if (p->error_args)
 		return;
 	
-	if (!p->char_data_buffer) {
+	if (!p->cdata) {
 		// unless we already have significant char data, ignore lwsp
 		while (g_ascii_isspace (*inptr) && inptr < inend)
 			inptr++;
@@ -912,15 +906,15 @@ char_data_handler (void *data, const char *in, int inlen)
 		if (inptr == inend)
 			return;
 		
-		p->char_data_buffer = g_string_new_len (inptr, inend - inptr);
+		p->cdata = g_string_new_len (inptr, inend - inptr);
 	} else {
-		len = p->char_data_buffer->len;
-		g_string_append_len (p->char_data_buffer, in, inlen);
-		lwsp = g_ascii_isspace (p->char_data_buffer->str[len - 1]);
+		len = p->cdata->len;
+		g_string_append_len (p->cdata, in, inlen);
+		lwsp = g_ascii_isspace (p->cdata->str[len - 1]);
 	}
 	
 	// Condense multi-lwsp blocks into a single space (and make all lwsp chars a literal space, not '\n', etc)
-	s = d = p->char_data_buffer->str + len;
+	s = d = p->cdata->str + len;
 	while (*s != '\0') {
 		if (g_ascii_isspace (*s)) {
 			if (!lwsp)
@@ -933,7 +927,7 @@ char_data_handler (void *data, const char *in, int inlen)
 		}
 	}
 	
-	g_string_truncate (p->char_data_buffer, d - p->char_data_buffer->str);
+	g_string_truncate (p->cdata, d - p->cdata->str);
 }
 
 void

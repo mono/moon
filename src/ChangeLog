@@ -1,5 +1,8 @@
 2007-09-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp (flush_char_data): g_strchomp() the cdata (as
+	Silverlight does).
+
 	* text.cpp: Merged with custom text layout code - layout algorithm
 	is chosen at runtime_init() via flags or environment variable.
 
