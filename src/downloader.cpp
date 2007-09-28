@@ -270,7 +270,7 @@ Downloader::Write (guchar *buf, gsize offset, gsize n)
 	
 	SetValue (Downloader::DownloadProgressProperty, Value (p));
 	Emit (DownloadProgressChangedEvent);
-	
+
 	if (write)
 		write (buf, offset, n, consumer_closure);
 }
@@ -280,7 +280,7 @@ Downloader::NotifyFinished (const char *fname)
 {
 	filename = g_strdup (fname);
 	
-	SetValue (Downloader::DownloadProgressProperty, Value (100.0));
+	SetValue (Downloader::DownloadProgressProperty, Value (1.0));
 	Emit (DownloadProgressChangedEvent);
 	
 	// HACK, we should provide the status code
