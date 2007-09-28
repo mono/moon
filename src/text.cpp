@@ -389,7 +389,7 @@ TextBlock::TextBlock ()
 	
 	Brush *brush = new SolidColorBrush ();
 	Color *color = color_from_str ("black");
-	solid_color_brush_set_color (brush, color);
+	solid_color_brush_set_color ((SolidColorBrush *) brush, color);
 	SetValue (TextBlock::ForegroundProperty, Value (brush));
 }
 
@@ -506,12 +506,6 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 	uint8_t font_mask;
 	List *runs;
 	char *text;
-	Brush *fg;
-	
-	if (foreground == NULL)
-		fg = default_foreground ();
-	else
-		fg = foreground;
 	
 	wrapping = text_block_get_text_wrapping (this);
 	layout->SetWrapping (wrapping);
@@ -562,12 +556,9 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 				
 				text = run_get_text (run);
 				
-				if (text && text[0]) {
-					if (item->foreground)
-						runs->Append (new TextRun (text, -1, deco, ifont, item->foreground));
-					else
-						runs->Append (new TextRun (text, -1, deco, ifont, fg));
- 				}
+				if (text && text[0])
+					runs->Append (new TextRun (text, -1, deco, ifont, &item->foreground));
+				
 				break;
 			case Type::LINEBREAK:
 				runs->Append (new TextRun (ifont));
@@ -601,7 +592,6 @@ TextBlock::LayoutPango (cairo_t *cr)
 	PangoFontDescription *font = this->font.pango;
 	PangoAttribute *uline_attr = NULL;
 	PangoAttribute *font_attr = NULL;
-	PangoAttribute *fg_attr = NULL;
 	PangoAttribute *attr = NULL;
 	TextDecorations decorations;
 	PangoFontMask font_mask;
@@ -611,13 +601,7 @@ TextBlock::LayoutPango (cairo_t *cr)
 	GString *block;
 	double width;
 	char *text;
-	Brush *fg;
 	int w, h;
-	
-	if (foreground == NULL)
-		fg = default_foreground ();
-	else
-		fg = foreground;
 	
 	if (this->layout.pango == NULL)
 		this->layout.pango = pango_cairo_create_layout (cr);
@@ -725,22 +709,11 @@ TextBlock::LayoutPango (cairo_t *cr)
 				uline_attr = NULL;
 			}
 			
-			// Inlines also inherit their Foreground property from their parent
-			// TextBlock if not set explicitly
-			if (item->foreground)
-				attr = mango_attr_foreground_new (this, item->foreground);
-			else
-				attr = mango_attr_foreground_new (this, fg);
+			attr = mango_attr_foreground_new (this, &item->foreground);
 			attr->start_index = start;
 			attr->end_index = end;
 			
-			if (!fg_attr || !pango_attribute_equal ((const PangoAttribute *) fg_attr, (const PangoAttribute *) attr)) {
-				pango_attr_list_insert (attrs, attr);
-				fg_attr = attr;
-			} else {
-				pango_attribute_destroy (attr);
-				fg_attr->end_index = end;
-			}
+			pango_attr_list_insert (attrs, attr);
 			
 		loop:
 			node = (Collection::Node *) node->next;
@@ -778,12 +751,17 @@ TextBlock::Layout (cairo_t *cr)
 void
 TextBlock::Paint (cairo_t *cr)
 {
+	Brush *fg;
+	
+	if (!(fg = foreground))
+		fg = default_foreground ();
+	
 	if (RENDER_USING_PANGO) {
 		pango_cairo_update_layout (cr, layout.pango);
 		mango_renderer_set_cairo_context (renderer, cr);
-		mango_renderer_show_layout (renderer, layout.pango);
+		mango_renderer_show_layout (renderer, layout.pango, fg);
 	} else {
-		layout.custom->Render (cr, this, 0.0, 0.0);
+		layout.custom->Render (cr, this, fg, 0.0, 0.0);
 	}
 }
 
@@ -849,10 +827,8 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			foreground->ref ();
 		}
 		
-		// Note: Until we find a way to update fg brushes in
-		// the Layout when they change here and/or in the
-		// inlines, we have to re-layout (which sucks).
-		//recalc_actual = false;
+		// Foreground property changes do not require a re-layout of the text
+		recalc_actual = false;
 	} else if (prop == TextBlock::ActualHeightProperty) {
 		recalc_actual = false;
 		invalidate = false;
@@ -862,9 +838,11 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	if (invalidate) {
-		if (recalc_actual)
+		if (recalc_actual) {
 			dirty_actual_values = true;
-		UpdateBounds (true);
+			UpdateBounds (true);
+		}
+		
 		Invalidate ();
 	}
 	
@@ -883,8 +861,11 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
-	dirty_actual_values = true;
-	UpdateBounds (true);
+	if (prop != Inline::ForegroundProperty) {
+		dirty_actual_values = true;
+		UpdateBounds (true);
+	}
+	
 	Invalidate ();
 }
 
@@ -1339,7 +1320,7 @@ glyphs_set_unicode_string (Glyphs *glyphs, char *value)
 void
 text_destroy (void)
 {
-	base_unref (default_foreground_brush);
+	default_foreground_brush->unref ();
 	default_foreground_brush = NULL;
 }
 

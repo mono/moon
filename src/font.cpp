@@ -170,7 +170,7 @@ retry:
 	if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 		goto fail;
 	
-	printf ("loading font from `%s'\n", filename);
+	//printf ("loading font from `%s'\n", filename);
 	
 	if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 		goto fail;
@@ -1048,7 +1048,7 @@ TextFontDescription::ToString ()
 }
 
 
-TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg)
+TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
 {
 	this->text = g_utf8_to_ucs4_fast (utf8, len, NULL);
 	this->font = font->GetFont ();
@@ -1471,15 +1471,16 @@ TextLayout::Layout ()
 }
 
 void
-TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
+TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y)
 {
 	TextSegment *segment;
 	TextDecorations deco;
 	TextFont *font = NULL;
 	const uint32_t *text;
 	uint32_t prev = 0;
-	GlyphInfo *glyph;
+	Brush *cur_fg = NULL;
 	Brush *fg = NULL;
+	GlyphInfo *glyph;
 	TextLine *line;
 	double height;
 	double x1, y1;
@@ -1502,9 +1503,14 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 			
 			height = font->Height ();
 			
-			if (segment->run->fg != fg) {
-				fg = segment->run->fg;
+			if (segment->run->fg && *segment->run->fg)
+				fg = *segment->run->fg;
+			else
+				fg = default_fg;
+			
+			if (fg != cur_fg) {
 				fg->SetupBrush (cr, element);
+				cur_fg = fg;
 			}
 			
 			if (!segment->path) {

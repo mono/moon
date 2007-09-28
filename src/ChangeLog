@@ -1,5 +1,33 @@
 2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	Optimization hack that saves time by not recalculating the layout
+	when the foreground brush changes (since we'd have exactly the
+	same layout).
+
+	* font.cpp (TextRun): Now takes the address of the brush than the
+	brush itself, so that when brushes change on the Inline, we get
+	the brush change for free.
+
+	* text.cpp (LayoutSilverlight): Pass the addresses of the
+	foreground brushes to TextRun ctor and don't bother with the
+	default foreground brush here, save that for ::Paint-time.
+	(LayoutPango): Same idea as LayoutSilverlight().
+	(Paint): Get the default foreground and pass that off to the
+	pango/silverlight text renderers.
+	(OnPropertyChanged): Don't force a re-layout if the property that
+	changed was the TextBlock::ForegroundProperty.
+	(OnCollectionChanged): Same (but for Inline::ForegroundProperty).
+
+	* mango.cpp (mango_renderer_show_layout): Now takes a default_fg
+	argument so that we don't have to specify it in the creation of
+	our layout attributes (this saving us a re-layout when a brush
+	changes).
+	(mango_attr_foreground_new): Now takes the address of the brush
+	rather than the brush itself, so that when brushes change on the
+	Inline, we get the brush change for free.
+
+2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* text.cpp (TextBlock): We cannot re-use the
 	default_foreground_brush here because we cannot allow it to be
 	altered in any way.

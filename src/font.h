@@ -192,9 +192,9 @@ public:
 	TextDecorations deco;
 	uint32_t *text;
 	TextFont *font;
-	Brush *fg;
+	Brush **fg;
 	
-	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg);
+	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg);
 	TextRun (TextFontDescription *font);
 	~TextRun ();
 };
@@ -236,7 +236,7 @@ public:
 	void Layout ();
 	void GetActualExtents (double *width, double *height);
 	void GetLayoutExtents (double *width, double *height);
-	void Render (cairo_t *cr, UIElement *element, double x, double y);
+	void Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y);
 };
 
 #endif /* __FONT_H__ */

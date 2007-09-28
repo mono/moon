@@ -25,9 +25,9 @@ class MangoPath : public List::Node {
 public:
 	cairo_path_t *path;
 	UIElement *elem;
-	Brush *brush;
+	Brush **brush;
 	
-	MangoPath (UIElement *elem, Brush *brush, cairo_path_t *path)
+	MangoPath (UIElement *elem, Brush **brush, cairo_path_t *path)
 	{
 		this->elem = elem;
 		this->brush = brush;
@@ -222,13 +222,24 @@ mango_renderer_set_cairo_context (MangoRenderer *mango, cairo_t *cr)
 
 
 void
-mango_renderer_show_layout (MangoRenderer *mango, PangoLayout *layout)
+mango_renderer_show_layout (MangoRenderer *mango, PangoLayout *layout, Brush *default_fg)
 {
 	MangoRendererPrivate *priv = mango->priv;
+	Brush *cur_fg = NULL;
+	Brush *fg = NULL;
 	MangoPath *path;
 	
 	for (path = (MangoPath *) priv->cache->First (); path; path = (MangoPath *) path->next) {
-		path->brush->SetupBrush (priv->cr, path->elem);
+		if (path->brush && *path->brush)
+			fg = *path->brush;
+		else
+			fg = default_fg;
+		
+		if (fg != cur_fg) {
+			fg->SetupBrush (priv->cr, path->elem);
+			cur_fg = fg;
+		}
+		
 		cairo_append_path (priv->cr, path->path);
 		cairo_fill (priv->cr);
 	}
@@ -280,7 +291,7 @@ mango_attr_foreground_equal (const PangoAttribute *attr1, const PangoAttribute *
  * Return value: new #PangoAttribute
  **/
 PangoAttribute *
-mango_attr_foreground_new (UIElement *element, Brush *foreground)
+mango_attr_foreground_new (UIElement *element, Brush **foreground)
 {
 	MangoAttrForeground *attr;
 	static PangoAttrClass klass = {

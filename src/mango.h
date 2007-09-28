@@ -44,7 +44,7 @@ GType mango_renderer_get_type (void) G_GNUC_CONST;
 PangoRenderer *mango_renderer_new (void);
 
 void mango_renderer_set_cairo_context (MangoRenderer *mango, cairo_t *cr);
-void mango_renderer_show_layout (MangoRenderer *mango, PangoLayout *layout);
+void mango_renderer_show_layout (MangoRenderer *mango, PangoLayout *layout, Brush *default_fg);
 void mango_renderer_layout_path (MangoRenderer *mango, PangoLayout *layout);
 
 
@@ -56,10 +56,10 @@ struct _MangoAttrForeground {
 	PangoAttribute attr;
 	
 	UIElement *element;
-	Brush *foreground;
+	Brush **foreground;
 };
 
-PangoAttribute *mango_attr_foreground_new (UIElement *element, Brush *foreground);
+PangoAttribute *mango_attr_foreground_new (UIElement *element, Brush **foreground);
 
 G_END_DECLS
 
