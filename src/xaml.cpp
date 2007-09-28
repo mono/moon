@@ -1447,11 +1447,14 @@ get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, P
 		t = (Point *) pl->data;
 		pts [i].x = t->x;
 		pts [i].y = t->y;
-		
+
+		// locally allocated points needs to be deleted
+		if (i >= *count)
+			delete t;
 		pl = pl->next;
 	}
 
-	last = t;
+	last = &pts [c - 1];
 	*count = c;
 
 	return pts;
