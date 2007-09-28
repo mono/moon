@@ -11,7 +11,7 @@ This is not likely the final version of this code.
 
 	If you want to use the plugin, you need this patch:
 
-		http://pastebin.com/m45bb628b
+		http://tirania.org/tmp/mono-delegate-appdomain-patch
 
 	To your Mono runtime
 
