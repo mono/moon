@@ -24,7 +24,8 @@ typedef void xaml_set_custom_attribute_callback (void *target, const char *name,
 typedef bool xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
 typedef void xaml_insert_mapping_callback (const char* key, const char* value); 
 typedef const char* xaml_get_mapping_callback (const char* key);
-typedef void xaml_load_code_callback (const char *source, const char *type);
+typedef bool xaml_load_code_callback (const char *source, const char *type);
+typedef void xaml_set_name_attribute_callback (void *target, const char *name);
 
 G_BEGIN_DECLS
 
@@ -52,11 +53,13 @@ public:
 	xaml_get_mapping_callback *get_mapping;
 	xaml_insert_mapping_callback *insert_mapping;
 	xaml_load_code_callback *load_code;
+	xaml_set_name_attribute_callback *set_name_attribute;
 
 	XamlLoaderCallbacks () :
 		load_managed_object (NULL), set_custom_attribute (NULL),
 		hookup_event (NULL), get_mapping (NULL),
-		insert_mapping (NULL), load_code (NULL)
+		insert_mapping (NULL), load_code (NULL),
+		set_name_attribute (NULL) 
 	{
 	}
 };
@@ -113,10 +116,11 @@ public:
 	virtual DependencyObject* CreateManagedObject (const char* xmlns, const char* name);
 	virtual DependencyObject* CreateManagedObject (const char* asm_name, const char* asm_path, const char* name, const char* type_name);
 	virtual void SetAttribute (void* target, const char* name, const char* value);
+	virtual void SetNameAttribute (void* target, const char* name);
 	virtual bool HookupEvent (void* target, const char* name, const char* value);
 	virtual void InsertMapping (const char* key, const char* value);
 	const char* GetMapping (const char* key);
-	void LoadCode (const char *source, const char *type);
+	bool LoadCode (const char *source, const char *type);
 	
 	char* GetFilename () { return filename; }
 	char* GetString () { return str; }

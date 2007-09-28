@@ -1,3 +1,9 @@
+2007-09-28  Zoltan Varga  <vargaz@gmail.com>
+
+	* xaml.cpp (SetNameAttribute): New callback to enable managed code to process
+	x:Name attributes.
+	(LoadCode): Change return type to bool to indicate a loading error.
+
 2007-09-28  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* media.cpp (SingleMedia::~SingleMedia): Close the media stream.
@@ -89,6 +95,14 @@
 	* text.cpp: Unref a few newly created objects.
 	* control.cpp: Remove an unnecessary ref.
 
+2007-09-26  Zoltan Varga  <vargaz@gmail.com>
+
+	* text.cpp (SetValue): Implement proper handling of the Text property.
+	(GetValue): Ditto.
+	(OnPropertyChanged): Force a relayout when the foreground property changes.
+	(Layout): Remove the laying out of the contents of the Text property, since the
+	text is now contained in the first inline.
+	
 2007-09-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (Layout): Include the space char on the line before

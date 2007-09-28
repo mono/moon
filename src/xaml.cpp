@@ -259,6 +259,8 @@ class XNamespace : public XamlNamespace {
 		if (!strcmp ("Name", attr)) {
 			p->namescope->RegisterName (value, (DependencyObject *) item->item);
 			item->item->SetValue (DependencyObject::NameProperty, Value (value));
+			if (p->loader)
+				p->loader->SetNameAttribute (item->item, value);
 			return;
 		}
 
@@ -415,6 +417,15 @@ XamlLoader::SetAttribute (void* target, const char* name, const char* value)
 	//printf ("XamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
 }
 
+void 
+XamlLoader::SetNameAttribute (void* target, const char* name)
+{
+	if (callbacks.set_name_attribute) {
+		callbacks.set_name_attribute (target, name);
+		return;
+	}
+}
+
 bool
 XamlLoader::HookupEvent (void* target, const char* name, const char* value)
 {
@@ -496,11 +507,15 @@ XamlLoader::GetMapping (const char* key)
 	return result;
 }
 
-void
+bool
 XamlLoader::LoadCode (const char *source, const char *type)
 {
+	if (!vm_loaded)
+		LoadVM ();
+
 	if (callbacks.load_code)
 		return callbacks.load_code (source, type);
+	return false;
 }
 
 XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
@@ -625,6 +640,7 @@ process_x_code_directive (XamlParserInfo *p, const char **attr)
 	const char *source = NULL;
 	const char *type = NULL;
 	int i;
+	bool res;
 
 	i = 0;
 	while (attr [i]) {
@@ -635,8 +651,13 @@ process_x_code_directive (XamlParserInfo *p, const char **attr)
 		i += 2;
 	}
 
-	if (p->loader)
-		p->loader->LoadCode (source, type);
+	if (p->loader) {
+		res = p->loader->LoadCode (source, type);
+
+		if (!res)
+			parser_error (p, "", "",
+						  g_strdup_printf ("Unable to load '%s'\n", source));
+	}
 }
 
 bool
