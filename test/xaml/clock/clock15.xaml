@@ -1,0 +1,34 @@
+<Canvas x:Name="parentCanvas"
+        xmlns="http://schemas.microsoft.com/client/2007" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	Width="640" Height="200">
+
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:05" />
+				</Storyboard>
+			</BeginStoryboard>
+			<BeginStoryboard>
+				<Storyboard BeginTime="00:00:5">
+					<ColorAnimation Storyboard.TargetName="rectFill" Storyboard.TargetProperty="Color" To="Black" Duration="00:00:00.5"/>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+
+		<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="600" Height="3" Fill="Black" />
+		<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="110" Width="600" Height="3" Fill="Black" />
+	<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100">
+		<Rectangle.Fill>
+			<SolidColorBrush x:Name="rectFill" Color="Red" />
+		</Rectangle.Fill>
+	</Rectangle>
+
+	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30">
+		<Run Text="The red block should take 5 seconds to move to the right, and stay there."/>
+		<LineBreak/>
+		<Run Text="After the block reaches the right, over 0.5 seconds it turns to Black."/>
+	</TextBlock>
+</Canvas>

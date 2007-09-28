@@ -1,0 +1,38 @@
+<html>
+
+<head>
+	<title>Moonlight Browser Plugin</title>
+	<script type="text/javascript" src="tests.js"></script>
+</head>
+
+<body bgcolor="gray" onload="AfterLoadTests()">
+
+	<h2>Moonlight Browser Plugin Test</h2>
+
+	<object id="moonControl1" width="400" height="180" type="application/ag-plugin">
+		<param name="background" value="#c0c0c0" />
+		<param name="source" value="circle.xaml" />
+	</object>
+
+	<object id="moonControl2" width="200" height="190" type="application/ag-plugin">
+		<param name="background" value="#ffebcd" />
+		<param name="enableFramerateCounter" value="true" />
+		<param name="enableHtmlAccess" value="true" />
+		<param name="initParams" value="paramValue1, paramValue2" />
+		<param name="maxFrameRate" value="30" />
+		<param name="onError" value="myErrorHandler" />
+		<param name="onLoad" value="onLoad" />
+		<param name="source" value="emote.xaml" />
+		<param name="windowless" value="false" />
+	</object>
+
+	<form name="form">
+		<textarea id="outputtext" rows="30" cols="80"></textarea>
+	</form>
+
+    <script type="text/javascript">
+		SetupTests ();
+    </script>
+
+</body>
+</html>
