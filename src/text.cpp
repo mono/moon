@@ -570,10 +570,7 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
  				}
 				break;
 			case Type::LINEBREAK:
-				if (item->foreground)
-					runs->Append (new TextRun (deco, ifont, item->foreground));
-				else
-					runs->Append (new TextRun (deco, ifont, fg));
+				runs->Append (new TextRun (ifont));
 				break;
 			default:
 				break;

@@ -1,3 +1,13 @@
+2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (LayoutSilverlight): LineBreaks don't really care about
+	TextDecorations or Foreground properties.
+
+	* font.cpp (TextRun::~TextRun): unref the font.
+	(TextSegment): now references the original TextRun instead of
+	copying pointers/values.
+	(TextLayout::Render): Updated for above change.
+
 2007-09-28  Zoltan Varga  <vargaz@gmail.com>
 
 	* xaml.cpp (SetNameAttribute): New callback to enable managed code to process

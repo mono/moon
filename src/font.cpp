@@ -1026,22 +1026,24 @@ TextFontDescription::ToString ()
 
 TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg)
 {
-	text = g_utf8_to_ucs4_fast (utf8, len, NULL);
+	this->text = g_utf8_to_ucs4_fast (utf8, len, NULL);
 	this->font = font->GetFont ();
 	this->deco = deco;
 	this->fg = fg;
 }
 
-TextRun::TextRun (TextDecorations deco, TextFontDescription *font, Brush *fg)
+TextRun::TextRun (TextFontDescription *font)
 {
+	// This TextRun will represent a LineBreak
+	this->deco = TextDecorationsNone;
 	this->font = font->GetFont ();
 	this->text = NULL;
-	this->deco = deco;
-	this->fg = fg;
+	this->fg = NULL;
 }
 
 TextRun::~TextRun ()
 {
+	font->unref ();
 	g_free (text);
 }
 
@@ -1049,22 +1051,15 @@ TextRun::~TextRun ()
 
 class TextSegment : public List::Node {
 public:
-	TextDecorations deco;
-	const uint32_t *text;
 	int start, end;
-	TextFont *font;
-	Brush *fg;
+	TextRun *run;
 	
 	TextSegment (TextRun *run, int start);
 };
 
 TextSegment::TextSegment (TextRun *run, int start)
 {
-	deco = run->deco;
-	text = run->text;
-	font = run->font;
-	fg = run->fg;
-	
+	this->run = run;
 	this->start = start;
 	this->end = start;
 }
@@ -1446,6 +1441,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	TextSegment *segment;
 	TextDecorations deco;
 	TextFont *font = NULL;
+	const uint32_t *text;
 	uint32_t prev = 0;
 	GlyphInfo *glyph;
 	Brush *fg = NULL;
@@ -1463,18 +1459,19 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	while (line) {
 		segment = (TextSegment *) line->segments->First ();
 		while (segment) {
-			deco = segment->deco;
-			font = segment->font;
+			text = segment->run->text;
+			deco = segment->run->deco;
+			font = segment->run->font;
 			
 			height = font->Height ();
 			
-			if (segment->fg != fg) {
-				fg = segment->fg;
+			if (segment->run->fg != fg) {
+				fg = segment->run->fg;
 				fg->SetupBrush (cr, element);
 			}
 			
 			for (i = segment->start, prev = 0; i < segment->end; i++) {
-				if (!(glyph = font->GetGlyphInfo (segment->text[i])))
+				if (!(glyph = font->GetGlyphInfo (text[i])))
 					continue;
 				
 				if (glyph->index > 0) {

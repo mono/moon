@@ -187,7 +187,7 @@ public:
 	Brush *fg;
 	
 	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg);
-	TextRun (TextDecorations deco, TextFontDescription *font, Brush *fg);
+	TextRun (TextFontDescription *font);
 	~TextRun ();
 };
 
