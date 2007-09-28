@@ -387,9 +387,9 @@ TextBlock::TextBlock ()
 	
 	text_block_set_text (this, (char *) "");
 	
-	// this has to come last, since in our OnPropertyChanged
-	// method we update our bounds.
-	Brush *brush = default_foreground ();
+	Brush *brush = new SolidColorBrush ();
+	Color *color = color_from_str ("black");
+	solid_color_brush_set_color (brush, color);
 	SetValue (TextBlock::ForegroundProperty, Value (brush));
 }
 

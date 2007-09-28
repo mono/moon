@@ -1,5 +1,11 @@
 2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (TextBlock): We cannot re-use the
+	default_foreground_brush here because we cannot allow it to be
+	altered in any way.
+
+2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* font.cpp (TextFont::IsScalable): New method.
 	(TextFont::Path): Paths a glyph but does not stroke or fill. Only
 	available if the font is scalable.
