@@ -99,8 +99,8 @@ class TextFont {
 	
 	TextFont (FcPattern *pattern);
 	
-	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y);
-	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y);
+	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
+	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	
 public:
 	
@@ -119,8 +119,11 @@ public:
 	double Height ();
 	int EmSize ();
 	
-	void Render (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y);
-	void Render (cairo_t *cr, uint32_t unichar, TextDecorations deco, double x, double y);
+	double UnderlinePosition ();
+	double UnderlineThickness ();
+	
+	void Render (cairo_t *cr, GlyphInfo *glyph, double x, double y);
+	void Render (cairo_t *cr, uint32_t unichar, double x, double y);
 };
 
 

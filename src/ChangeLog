@@ -1,5 +1,15 @@
 2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (RenderGlyphBitmap): No longer takes a TextDecorations
+	argument.
+	(RenderGlyphPath): Same.
+	(UnderlinePosition): New method.
+	(UnderlineThickness): New method.
+	(TextLayout::Render): Draw our underline here in 1 stroke (haha, I
+	made a funny).
+
+2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* text.cpp (LayoutSilverlight): LineBreaks don't really care about
 	TextDecorations or Foreground properties.
 

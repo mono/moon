@@ -476,10 +476,23 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 	return NULL;
 }
 
+double
+TextFont::UnderlinePosition ()
+{
+	return (double) -face->underline_position / 64.0;
+}
+
+double
+TextFont::UnderlineThickness ()
+{
+	// Note: integer math seems to match more closely with Silverlight here.
+	return (double) (face->underline_thickness / 64);
+}
+
 #define BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
 
 void
-TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y)
+TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
 	int width, height, stride;
 	cairo_format_t format;
@@ -541,13 +554,11 @@ TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco
 	cairo_close_path (cr);
 	cairo_fill (cr);
 	
-	// FIXME: implement TextDecorations
-	
 	cairo_restore (cr);
 }
 
 void
-TextFont::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y)
+TextFont::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
 	cairo_save (cr);
 	
@@ -557,40 +568,27 @@ TextFont::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, 
 	cairo_close_path (cr);
 	cairo_fill (cr);
 	
-	if (deco == TextDecorationsUnderline) {
-		double position = (double) -face->underline_position / 64.0;
-		cairo_antialias_t aa = cairo_get_antialias (cr);
-		int thickness = face->underline_thickness / 64;
-		
-		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-		cairo_move_to (cr, 0.0, position);
-		cairo_set_line_width (cr, (double) thickness);
-		cairo_line_to (cr, (double) glyph->metrics.horiAdvance, position);
-		cairo_stroke (cr);
-		cairo_set_antialias (cr, aa);
-	}
-	
 	cairo_restore (cr);
 }
 
 void
-TextFont::Render (cairo_t *cr, GlyphInfo *glyph, TextDecorations deco, double x, double y)
+TextFont::Render (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
 	if (glyph->path)
-		RenderGlyphPath (cr, glyph, deco, x, y);
+		RenderGlyphPath (cr, glyph, x, y);
 	else
-		RenderGlyphBitmap (cr, glyph, deco, x, y);
+		RenderGlyphBitmap (cr, glyph, x, y);
 }
 
 void
-TextFont::Render (cairo_t *cr, uint32_t unichar, TextDecorations deco, double x, double y)
+TextFont::Render (cairo_t *cr, uint32_t unichar, double x, double y)
 {
 	GlyphInfo *glyph;
 	
 	if (!(glyph = GetGlyphInfo (unichar)))
 		return;
 	
-	Render (cr, glyph, deco, x, y);
+	Render (cr, glyph, x, y);
 }
 
 
@@ -1448,6 +1446,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 	TextLine *line;
 	double height;
 	double x1, y1;
+	double x0;
 	int i;
 	
 	Layout ();
@@ -1462,6 +1461,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 			text = segment->run->text;
 			deco = segment->run->deco;
 			font = segment->run->font;
+			x0 = x1;
 			
 			height = font->Height ();
 			
@@ -1481,10 +1481,25 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 					// set y1 to the baseline (descend is a negative value)
 					y1 = y + line->height + line->descend;
 					
-					font->Render (cr, glyph, deco, x1, y1);
+					font->Render (cr, glyph, x1, y1);
 				}
 				
-				x1 += (double) glyph->metrics.horiAdvance;
+				x1 += glyph->metrics.horiAdvance;
+			}
+			
+			if (deco == TextDecorationsUnderline) {
+				cairo_antialias_t aa = cairo_get_antialias (cr);
+				double thickness = font->UnderlineThickness ();
+				double pos = font->UnderlinePosition ();
+				
+				pos += y + line->height + line->descend;
+				
+				cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+				cairo_set_line_width (cr, thickness);
+				cairo_move_to (cr, x0, pos);
+				cairo_line_to (cr, x1, pos);
+				cairo_stroke (cr);
+				cairo_set_antialias (cr, aa);
 			}
 			
 			segment = (TextSegment *) segment->next;
