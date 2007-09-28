@@ -247,6 +247,12 @@ TextFont::unref ()
 		delete this;
 }
 
+bool
+TextFont::IsScalable ()
+{
+	return (face->face_flags & FT_FACE_FLAG_SCALABLE);
+}
+
 int
 TextFont::EmSize ()
 {
@@ -560,15 +566,10 @@ TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 void
 TextFont::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
-	cairo_save (cr);
-	
 	cairo_new_path (cr);
-	cairo_translate (cr, x, y);
-	cairo_append_path (cr, &glyph->path->cairo);
+	Path (cr, glyph, x, y);
 	cairo_close_path (cr);
 	cairo_fill (cr);
-	
-	cairo_restore (cr);
 }
 
 void
@@ -589,6 +590,31 @@ TextFont::Render (cairo_t *cr, uint32_t unichar, double x, double y)
 		return;
 	
 	Render (cr, glyph, x, y);
+}
+
+void
+TextFont::Path (cairo_t *cr, GlyphInfo *glyph, double x, double y)
+{
+	if (!glyph->path)
+		return;
+	
+	cairo_save (cr);
+	
+	cairo_translate (cr, x, y);
+	cairo_append_path (cr, &glyph->path->cairo);
+	
+	cairo_restore (cr);
+}
+
+void
+TextFont::Path (cairo_t *cr, uint32_t unichar, double x, double y)
+{
+	GlyphInfo *glyph;
+	
+	if (!(glyph = GetGlyphInfo (unichar)))
+		return;
+	
+	Path (cr, glyph, x, y);
 }
 
 
@@ -1049,17 +1075,28 @@ TextRun::~TextRun ()
 
 class TextSegment : public List::Node {
 public:
+	cairo_path_t *path;
 	int start, end;
 	TextRun *run;
+	double width;
 	
 	TextSegment (TextRun *run, int start);
+	~TextSegment ();
 };
 
 TextSegment::TextSegment (TextRun *run, int start)
 {
+	this->width = 0.0;
+	this->path = NULL;
 	this->run = run;
 	this->start = start;
 	this->end = start;
+}
+
+TextSegment::~TextSegment ()
+{
+	if (path)
+		cairo_path_destroy (path);
 }
 
 class TextLine : public List::Node {
@@ -1314,7 +1351,7 @@ TextLayout::Layout ()
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
 				continue;
 			
-			advance = (double) glyph->metrics.horiAdvance;
+			advance = glyph->metrics.horiAdvance;
 			advance += run->font->Kerning (prev, glyph->index);
 			
 			if ((is_space = g_unichar_isspace (run->text[i]))) {
@@ -1470,21 +1507,42 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 				fg->SetupBrush (cr, element);
 			}
 			
-			for (i = segment->start, prev = 0; i < segment->end; i++) {
-				if (!(glyph = font->GetGlyphInfo (text[i])))
-					continue;
+			if (!segment->path) {
+				if (font->IsScalable ())
+					cairo_new_path (cr);
 				
-				if (glyph->index > 0) {
-					x1 += font->Kerning (prev, glyph->index);
-					prev = glyph->index;
+				for (i = segment->start, prev = 0; i < segment->end; i++) {
+					if (!(glyph = font->GetGlyphInfo (text[i])))
+						continue;
 					
-					// set y1 to the baseline (descend is a negative value)
-					y1 = y + line->height + line->descend;
+					if (glyph->index > 0) {
+						x1 += font->Kerning (prev, glyph->index);
+						prev = glyph->index;
+						
+						// set y1 to the baseline (descend is a negative value)
+						y1 = y + line->height + line->descend;
+						
+						if (!font->IsScalable ())
+							font->Render (cr, glyph, x1, y1);
+						else
+							font->Path (cr, glyph, x1, y1);
+					}
 					
-					font->Render (cr, glyph, x1, y1);
+					x1 += glyph->metrics.horiAdvance;
 				}
 				
-				x1 += glyph->metrics.horiAdvance;
+				if (font->IsScalable ()) {
+					cairo_close_path (cr);
+
+					segment->path = cairo_copy_path (cr);
+					segment->width = x1 - x0;
+					
+					cairo_fill (cr);
+				}
+			} else {
+				cairo_append_path (cr, segment->path);
+				x1 = x0 + segment->width;
+				cairo_fill (cr);
 			}
 			
 			if (deco == TextDecorationsUnderline) {
@@ -1496,9 +1554,12 @@ TextLayout::Render (cairo_t *cr, UIElement *element, double x, double y)
 				
 				cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 				cairo_set_line_width (cr, thickness);
+				
+				cairo_new_path (cr);
 				cairo_move_to (cr, x0, pos);
 				cairo_line_to (cr, x1, pos);
 				cairo_stroke (cr);
+				
 				cairo_set_antialias (cr, aa);
 			}
 			

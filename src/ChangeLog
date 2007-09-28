@@ -1,5 +1,15 @@
 2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextFont::IsScalable): New method.
+	(TextFont::Path): Paths a glyph but does not stroke or fill. Only
+	available if the font is scalable.
+	(TextLayout::Render): Cache each segment's cairo_path_t so that
+	future renders do not have to do it on a glyph-by-glyph basis
+	(avoids possible glyph cache misses). May also save time by doing
+	a single fill rather than a fill per glyph.
+
+2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* font.cpp (RenderGlyphBitmap): No longer takes a TextDecorations
 	argument.
 	(RenderGlyphPath): Same.

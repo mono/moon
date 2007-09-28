@@ -113,6 +113,8 @@ public:
 	
 	GlyphInfo *GetGlyphInfo (uint32_t unichar);
 	
+	bool IsScalable ();
+	
 	double Kerning (uint32_t left, uint32_t right);
 	double Descender ();
         double Ascender ();
@@ -121,6 +123,9 @@ public:
 	
 	double UnderlinePosition ();
 	double UnderlineThickness ();
+	
+	void Path (cairo_t *cr, GlyphInfo *glyph, double x, double y);
+	void Path (cairo_t *cr, uint32_t unichar, double x, double y);
 	
 	void Render (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void Render (cairo_t *cr, uint32_t unichar, double x, double y);
