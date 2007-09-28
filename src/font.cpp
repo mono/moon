@@ -662,9 +662,9 @@ TextFontDescription::GetFont ()
 	FcPattern *pattern;
 	
 	if (font == NULL) {
-		char *str = ToString ();
-		printf ("requested font: %s\n", str);
-		g_free (str);
+		//char *str = ToString ();
+		//printf ("requested font: %s\n", str);
+		//g_free (str);
 		
 		pattern = CreatePattern ();
 		font = TextFont::Load (pattern);

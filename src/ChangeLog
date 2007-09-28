@@ -1,5 +1,14 @@
 2007-09-28  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* media.cpp (SingleMedia::~SingleMedia): Close the media stream.
+	(MediaElement::AdvanceFrame): If mplayer->AdvanceFrame() returns
+	false, then it signifies MediaEnded, no need to explicitly check.
+	(MediaElement::SetSource): Delete the current source here.
+	(MediaElement::~MediaElement): C++ `delete' operator doesn't
+	handle freeing NULL pointers.
+	(MediaElement::DownloaderComplete): No need to delete the source
+	here, done in SetSource() instead.
+
 	* font.cpp: Created my own GlyphMetrics struct which uses doubles
 	instead of ints for more accurate layout/rendering calculations.
 	(Layout): When comparing to max_width, add 1.0 to account for

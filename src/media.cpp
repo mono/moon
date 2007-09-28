@@ -152,7 +152,7 @@ SingleMedia::SingleMedia (MediaElement *element, const char *source_name, const 
 
 SingleMedia::~SingleMedia ()
 {
-	ClearTimeout ();
+	Close ();
 }
 
 bool
@@ -245,7 +245,7 @@ MediaElement::AdvanceFrame ()
 		position *= TIMESPANTICKS_IN_SECOND / 1000;
 		media_element_set_position (this, position);
 		updating = false;
-	} else if (mplayer->MediaEnded ()) {
+	} else {
 		if (source)
 			source->Stop ();
 		Emit (MediaEndedEvent);
@@ -278,8 +278,8 @@ MediaElement::MediaElement ()
 	downloader = NULL;
 	part_name = NULL;
 	source = NULL;
-
-	TimelineMarkerCollection* col = new TimelineMarkerCollection ();
+	
+	TimelineMarkerCollection *col = new TimelineMarkerCollection ();
 	media_element_set_markers (this, col);
 	col->unref ();
 }
@@ -301,7 +301,9 @@ MediaElement::~MediaElement ()
 	g_free (part_name);
 	DownloaderAbort ();
 	
-	delete source;
+	if (source)
+		delete source;
+	
 	delete mplayer;
 }
 
@@ -317,8 +319,6 @@ MediaElement::ComputeBounds ()
 	}
 	
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, w, h));
-
-// no-op	bounds.GrowBy (1);
 }
 
 Point
@@ -346,7 +346,7 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
         double render_opacity = GetTotalOpacity ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
-
+	
 #if USE_OPT_INDIRECT_COMPOSE
 	pattern_opacity = render_opacity;
 	render_opacity = 1.0;
@@ -361,11 +361,11 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	}
 	
 	cairo_save (cr);
-	if (!UseAA ())
+	if (!EnableAntiAlias ())
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	
 	cairo_set_matrix (cr, &absolute_xform);
-
+	
 	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, pattern_opacity);
 	
 	if (recalculate_matrix) {
@@ -378,16 +378,16 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
-
+	
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
-
+	
 	// NOTE: Some servers seem to have extreme perfomance issues
 	// when paint_with_alpha (cr, 1.0) is called even accidentally
-	if (render_opacity < 1.0) {
+	if (render_opacity < 1.0)
 		cairo_paint_with_alpha (cr, render_opacity);
-	} else {
+	else
 		cairo_paint (cr);
-	}
+	
 	cairo_restore (cr);
 }
 
@@ -408,7 +408,7 @@ void
 MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
 {
 	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
-
+	
 	// Delay the propogating progress 1.0 until
 	// the downloader has notified us it is done.
 	if (progress < 1.0)
@@ -441,34 +441,32 @@ MediaElement::DownloaderComplete ()
 {
 	char *filename = downloader_get_response_file (downloader, part_name);
 	bool autoplay = media_element_get_auto_play (this);
-
+	
 	/* the download was aborted */
 	if (!filename)
 		return;
-
+	
 	if (!loaded) {
+		// MediaElement not yet loaded, delay till then
 		g_free (filename);
 		return;
 	}
 	
-	if (source)
-		delete source;
-
 	source = MediaSource::CreateSource (this, media_base_get_source (this), filename);
 	
 	//printf ("video source changed to `%s'\n", filename);
 	g_free (filename);
 	
 	// FIXME: specify which audio stream index the player should use
-
+	
 	if (!source->Open ()) {
 		Emit (MediaElement::MediaFailedEvent);
 		return;
 	}
-
+	
 	UpdateProgress ();
 	Emit (MediaElement::MediaOpenedEvent);
-
+	
 	Invalidate ();
 	
 	//printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
@@ -489,14 +487,19 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 	if (downloader) {
 		// Abort the current downloader
 		DownloaderAbort ();
-		
-		if (source)
-			source->Close ();
 	}
-
+	
+	if (source) {
+		// FIXME: is it expected that the next source will
+		// continue playing if this source was?
+		//play_pending = mplayer->IsPlaying ();
+		delete source;
+		source = NULL;
+	}
+	
 	downloader = (Downloader *) dl;
 	part_name = g_strdup (PartName);
-
+	
 	media_element_set_current_state (this, "Opening");
 	media_element_set_current_state (this, "Buffering");
 	
@@ -517,14 +520,16 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 void
 MediaElement::Pause ()
 {
+	//printf ("MediaElement::Pause() requested\n");
+	
 	play_pending = false;
 	
 	if (!mplayer->CanPause ())
 		return;
-
+	
 	if (!source)
 		return;
-
+	
 	source->Pause ();
 }
 
@@ -544,6 +549,8 @@ MediaElement::Play ()
 void
 MediaElement::Stop ()
 {
+	//printf ("MediaElement::Stop() requested\n");
+	
 	play_pending = false;
 	
 	if (!mplayer->IsPlaying () && !mplayer->IsPaused ())
