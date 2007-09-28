@@ -1,5 +1,12 @@
 2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (CreatePattern): If a filename has been specified for
+	loading a font, don't set family values. Also, call
+	FcDefaultSubstitute() on the pattern before trying to find a
+	match.
+
+2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	Optimization hack that saves time by not recalculating the layout
 	when the foreground brush changes (since we'd have exactly the
 	same layout).

@@ -170,7 +170,7 @@ retry:
 	if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 		goto fail;
 	
-	//printf ("loading font from `%s'\n", filename);
+	printf ("loading font from `%s'\n", filename);
 	
 	if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 		goto fail;
@@ -660,17 +660,19 @@ TextFontDescription::CreatePattern ()
 	if (set & FontMaskFilename) {
 		FcPatternAddString (pattern, FC_FILE, (FcChar8 *) filename);
 		FcPatternAddInteger (pattern, FC_INDEX, index);
+	} else {
+		families = g_strsplit (GetFamily (), ",", -1);
+		for (i = 0; families[i]; i++)
+			FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) g_strstrip (families[i]));
+		g_strfreev (families);
 	}
-	
-	families = g_strsplit (GetFamily (), ",", -1);
-	for (i = 0; families[i]; i++)
-		FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) g_strstrip (families[i]));
-	g_strfreev (families);
 	
 	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
 	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
 	FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
 	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
+	
+	FcDefaultSubstitute (pattern);
 	
 	if (!(matched = FcFontMatch (NULL, pattern, &result)))
 		return pattern;
