@@ -1,5 +1,7 @@
 2007-09-28  Zoltan Varga  <vargaz@gmail.com>
 
+	* plugin.cpp (UrlNotify): Add some debug messages here.
+	
 	* plugin.cpp (ReportException): New helper function to display exception details
 	using dynamic html above the plugin frame.
 

@@ -644,6 +644,11 @@ PluginInstance::UrlNotify (const char* url, NPReason reason, void* notifyData)
 {
 	StreamNotify* notify = STREAM_NOTIFY (notifyData);
 
+	if (reason == NPRES_DONE)
+		DEBUGMSG ("URL %s downloaded successfully.", url);
+	else
+		DEBUGMSG ("Download of URL %s failed.", url);
+
 	if (notify) 
 		delete notify;
 }
