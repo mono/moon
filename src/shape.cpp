@@ -178,17 +178,11 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	
 	if (stroke) {
 		double thickness = shape_get_stroke_thickness (this);
-#if FALSE
-// this optimization is broken wrt ComputeBoundsSlow since
-// - thickness isn't checked there (fixed) and
-// - the new_path clears the data for a cairo_fill_extents call anyway
-// e.g. <Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Points="10,10 20,10 20,20 10,20" />
 		if (thickness == 0) {
 			if (drawn)
 				cairo_new_path (cr);
 			return;
 		}
-#endif
 
 		if (IsDegenerate ())
 			cairo_set_line_width (cr, 1.0);
