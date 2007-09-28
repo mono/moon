@@ -78,6 +78,7 @@ class PluginInstance
 	void Print (NPPrint* platformPrint);
 	int16 EventHandle (void* event);
 	bool JsRunOnload ();
+	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
 
 	NPP getNPP () { return instance; }
 
@@ -196,11 +197,12 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 					      char **platform, char **userAgent,
 					      bool *cookieEnabled);
 
+void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
+
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
 uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
 void     plugin_set_unload_callback (PluginInstance* instance, plugin_unload_callback* puc);
 PluginXamlLoader* plugin_xaml_loader_from_str (const char* str, PluginInstance* plugin, Surface* surface);
-
 G_END_DECLS
 
 #endif /* MOON_PLUGIN */

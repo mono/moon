@@ -1,3 +1,8 @@
+2007-09-28  Zoltan Varga  <vargaz@gmail.com>
+
+	* plugin.cpp (ReportException): New helper function to display exception details
+	using dynamic html above the plugin frame.
+
 2007-09-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-glue.cpp (NPP_Initialize): Call runtime_init() with

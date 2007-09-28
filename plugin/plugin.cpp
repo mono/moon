@@ -281,7 +281,7 @@ PluginInstance::SetWindow (NPWindow* window)
 void 
 PluginInstance::CreateWindow ()
 {
-	DEBUGMSG ("*** creating window (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
+	DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
 	//  GtkPlug container and surface inside
 	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
@@ -475,6 +475,78 @@ PluginInstance::TryLoad ()
 		if (this->onLoad)
 			JsRunOnload ();
 	}
+}
+
+char*
+escape_quotes (char *s)
+{
+	char **parts;
+	char *res;
+
+	if (strchr (s, '\'') == NULL)
+		return g_strdup (s);
+
+	parts = g_strsplit (s, "'", 0);
+	res = g_strjoinv ("\\'", parts);
+	g_strfreev (parts);
+
+	return res;
+}
+
+void
+PluginInstance::ReportException (char *msg, char *details, char **stack_trace, int num_frames)
+{
+	NPObject *object = NULL;
+	NPVariant result;
+	char *script, *row_js, *msg_escaped, *details_escaped;
+	char **stack_trace_escaped;
+	NPString str;
+	int i;
+	bool res;
+
+	// Get a reference to our element
+	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
+		DEBUGMSG ("*** Failed to get plugin element object");
+		return;
+	}
+
+	// FIXME:
+	// - make sure the variables do not become global
+	// - handle multiple calls
+
+	// Remove ' from embedded strings
+	msg_escaped = escape_quotes (msg);
+	details_escaped = escape_quotes (details);
+	stack_trace_escaped = g_new0 (char*, num_frames);
+	for (i = 0; i < num_frames; ++i)
+		stack_trace_escaped [i] = escape_quotes (stack_trace [i]);
+
+	// JS code to create our elements
+	row_js = g_strdup (" ");
+	for (i = 0; i < num_frames; ++i) {
+		char *s;
+
+		s = g_strdup_printf ("%s%s%s", row_js, (i == 0) ? "" : "\\n ", stack_trace_escaped [i]);
+		g_free (row_js);
+		row_js = s;
+	}
+
+	script = g_strdup_printf ("text1 = document.createTextNode ('%s'); text2 = document.createTextNode ('Exception Details: '); text3 = document.createTextNode ('%s'); text4 = document.createTextNode ('Stack Trace:'); parent = this.parentNode; a = document.createElement ('div'); parent.insertBefore (a, this); a.appendChild (document.createElement ('hr')); msg = document.createElement ('font'); a.appendChild (msg); h2 = document.createElement ('h2'); i = document.createElement ('i'); b = document.createElement ('b'); msg.appendChild (h2); msg.appendChild (b); msg.appendChild (text3); msg.appendChild (document.createElement ('br')); msg.appendChild (document.createElement ('br')); b2 = document.createElement ('b'); b2.appendChild (text4); msg.appendChild (b2); b.appendChild (text2); h2.appendChild (i); i.appendChild (text1); msg.appendChild (document.createElement ('br')); msg.appendChild (document.createElement ('br')); a.appendChild (document.createElement ('hr')); table = document.createElement ('table'); msg.appendChild (table); table.width = '100%%'; table.bgColor = '#ffffcc'; tbody = document.createElement ('tbody'); table.appendChild (tbody); tr = document.createElement ('tr'); tbody.appendChild (tr); td = document.createElement ('td'); tr.appendChild (td); pre = document.createElement ('pre'); td.appendChild (pre); text = document.createTextNode ('%s'); pre.appendChild (text);", msg_escaped, details_escaped, row_js);
+
+	g_free (msg_escaped);
+	g_free (details_escaped);
+	for (i = 0; i < num_frames; ++i)
+		g_free (stack_trace_escaped [i]);
+	g_free (stack_trace_escaped);
+	g_free (row_js);
+
+	str.utf8characters = script;
+	str.utf8length = strlen (script);
+
+	res = NPN_Evaluate (instance, object, &str, &result);
+	if (res)
+		NPN_ReleaseVariantValue (&result);
+	NPN_ReleaseObject (object);
 }
 
 void
@@ -744,6 +816,11 @@ plugin_instance_get_browser_information (PluginInstance *instance,
 	instance->getBrowserInformation (name, version, platform, userAgent, cookieEnabled);
 }
 
+void
+plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames)
+{
+	instance->ReportException (msg, details, stack_trace, num_frames);
+}
 
 /*
 	XamlLoader
@@ -790,7 +867,7 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 	
 	if (!element) {
-		printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());
+		printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());		
 		return GetMissing ();
 	}
 	
