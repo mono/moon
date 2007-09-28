@@ -1085,7 +1085,7 @@ runtime_init (guint32 flags)
 		const char *flag = env;
 		const char *inptr;
 		size_t n;
-		int i;
+		uint i;
 		
 		while (*flag == ',')
 			flag++;
