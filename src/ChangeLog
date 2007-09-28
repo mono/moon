@@ -1,3 +1,11 @@
+2007-09-28  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* font.cpp: Created my own GlyphMetrics struct which uses doubles
+	instead of ints for more accurate layout/rendering calculations.
+	(Layout): When comparing to max_width, add 1.0 to account for
+	rounding errors/hinting. Add 1.0 to the Actual/BoundingBox
+	width/height values for the same reason.
+
 2007-09-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Free locally allocated Points inside get_point_array.

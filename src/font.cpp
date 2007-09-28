@@ -122,11 +122,22 @@ fc_stretch (FontStretches stretch)
 }
 
 
+struct GlyphMetrics {
+	double horiBearingX;
+	double horiBearingY;
+	double horiAdvance;
+	double vertBearingX;
+	double vertBearingY;
+	double vertAdvance;
+	double height;
+	double width;
+};
+
 struct GlyphInfo {
-	FT_Glyph_Metrics metrics;
 	uint32_t unichar;
 	uint32_t index;
 	moon_path *path;
+	GlyphMetrics metrics;
 	cairo_surface_t *surface;
 	FT_Bitmap bitmap;
 	int bitmap_left;
@@ -410,19 +421,19 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 				glyph->bitmap_top = face->glyph->bitmap_top;
 			}
 			
-			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64;
-			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY / 64;
-			glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64;
-			glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY / 64;
-			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance / 64;
-			glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64;
-			glyph->metrics.height = face->glyph->metrics.height / 64;
-			glyph->metrics.width = face->glyph->metrics.width / 64;
+			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64.0;
+			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY / 64.0;
+			glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64.0;
+			glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY / 64.0;
+			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance / 64.0;
+			glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64.0;
+			glyph->metrics.height = face->glyph->metrics.height / 64.0;
+			glyph->metrics.width = face->glyph->metrics.width / 64.0;
 		} else if (glyph->index == 0 && (unichar == 0x20 || unichar == 0x09)) {
-			glyph->metrics.horiBearingX = 0;
-			glyph->metrics.horiBearingY = 0;
-			glyph->metrics.horiBearingX = 0;
-			glyph->metrics.horiBearingY = 0;
+			glyph->metrics.horiBearingX = 0.0;
+			glyph->metrics.horiBearingY = 0.0;
+			glyph->metrics.vertBearingX = 0.0;
+			glyph->metrics.vertBearingY = 0.0;
 			
 			glyph->path = NULL;
 			memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
@@ -431,20 +442,27 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			
 			if (unichar == 0x20) {
 				// Space
-				glyph->metrics.horiAdvance = face->max_advance_width / 64;
-				glyph->metrics.vertAdvance = face->max_advance_height / 64;
-				glyph->metrics.height = face->max_advance_height / 64;
-				glyph->metrics.width = face->max_advance_width / 64;
+				glyph->metrics.horiAdvance = face->max_advance_width / 64.0;
+				glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
+				glyph->metrics.height = face->max_advance_height / 64.0;
+				glyph->metrics.width = face->max_advance_width / 64.0;
 			} else if (unichar == 0x09) {
 				// Tab
-				glyph->metrics.horiAdvance = face->max_advance_width / 8;
-				glyph->metrics.vertAdvance = face->max_advance_height / 64;
-				glyph->metrics.height = face->max_advance_height / 64;
-				glyph->metrics.width = face->max_advance_width / 8;
+				glyph->metrics.horiAdvance = face->max_advance_width / 8.0;
+				glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
+				glyph->metrics.height = face->max_advance_height / 64.0;
+				glyph->metrics.width = face->max_advance_width / 8.0;
 			}
 		} else {
 		unavail:
-			memset (&glyph->metrics, 0, sizeof (&glyph->metrics));
+			glyph->metrics.horiBearingX = 0.0;
+			glyph->metrics.horiBearingY = 0.0;
+			glyph->metrics.vertBearingX = 0.0;
+			glyph->metrics.vertBearingY = 0.0;
+			glyph->metrics.horiAdvance = 0.0;
+			glyph->metrics.vertAdvance = 0.0;
+			glyph->metrics.height = 0.0;
+			glyph->metrics.width = 0.0;
 			memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
 			glyph->bitmap_left = 0;
 			glyph->bitmap_top = 0;
@@ -644,6 +662,10 @@ TextFontDescription::GetFont ()
 	FcPattern *pattern;
 	
 	if (font == NULL) {
+		char *str = ToString ();
+		printf ("requested font: %s\n", str);
+		g_free (str);
+		
 		pattern = CreatePattern ();
 		font = TextFont::Load (pattern);
 		FcPatternDestroy (pattern);
@@ -1236,7 +1258,7 @@ TextLayout::Layout ()
 	bool wrap;
 	int i;
 	
-	if (width != -1 && height != -1)
+	if (width != -1.0 && height != -1.0)
 		return;
 	
 	lines->Clear (true);
@@ -1307,7 +1329,7 @@ TextLayout::Layout ()
 				spc.index = i;
 			}
 			
-			if (max_width >= 0.0 && (lw + advance) > max_width) {
+			if (max_width >= 0.0 && (lw + advance + 1.0) > max_width) {
 				switch (wrapping) {
 				case TextWrappingWrapWithOverflow:
 					// We can stretch the width as wide as we have to
@@ -1404,6 +1426,9 @@ TextLayout::Layout ()
 		line->height = lh;
 		height += lh;
 	}
+	
+	height += 1.0;
+	width += 1.0;
 	
 	// height is never clipped
 	bbox_height = height;
