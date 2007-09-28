@@ -14,6 +14,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include "moon-path.h"
 #include "font.h"
@@ -365,6 +366,7 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 {
 	GlyphInfo *glyph;
 	uint32_t index;
+	size_t size;
 	
 	if (unichar == 0)
 		return NULL;
@@ -381,10 +383,8 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			glyph->surface = NULL;
 		}
 		
-		if (glyph->path) {
+		if (glyph->path)
 			moon_path_destroy (glyph->path);
-			glyph->path = NULL;
-		}
 		
 		g_free (glyph->bitmap.buffer);
 		
@@ -393,12 +393,23 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 				goto unavail;
 			
 			if (face->face_flags & FT_FACE_FLAG_SCALABLE) {
-				glyph->path = moon_path_new (16);
+				glyph->path = moon_path_new (8);
 				FT_Outline_Transform (&face->glyph->outline, &invert_y);
 				FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
+				memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
+				glyph->bitmap_left = 0;
+				glyph->bitmap_top = 0;
+			} else {
+				glyph->path = NULL;
+				glyph->bitmap = face->glyph->bitmap;
+				
+				size = face->glyph->bitmap.rows * face->glyph->bitmap.pitch;
+				glyph->bitmap.buffer = (unsigned char *) g_malloc (size);
+				memcpy (glyph->bitmap.buffer, face->glyph->bitmap.buffer, size);
+				glyph->bitmap_left = face->glyph->bitmap_left;
+				glyph->bitmap_top = face->glyph->bitmap_top;
 			}
 			
-			//memcpy (&glyph->metrics, &face->glyph->metrics, sizeof (glyph->metrics));
 			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64;
 			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY / 64;
 			glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64;
@@ -407,19 +418,13 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64;
 			glyph->metrics.height = face->glyph->metrics.height / 64;
 			glyph->metrics.width = face->glyph->metrics.width / 64;
-			
-			glyph->bitmap = face->glyph->bitmap;
-			glyph->bitmap.buffer = (unsigned char *) g_memdup (face->glyph->bitmap.buffer,
-									   face->glyph->bitmap.rows *
-									   face->glyph->bitmap.pitch);
-			glyph->bitmap_left = face->glyph->bitmap_left;
-			glyph->bitmap_top = face->glyph->bitmap_top;
 		} else if (glyph->index == 0 && (unichar == 0x20 || unichar == 0x09)) {
 			glyph->metrics.horiBearingX = 0;
 			glyph->metrics.horiBearingY = 0;
 			glyph->metrics.horiBearingX = 0;
 			glyph->metrics.horiBearingY = 0;
 			
+			glyph->path = NULL;
 			memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
 			glyph->bitmap_left = 0;
 			glyph->bitmap_top = 0;
@@ -443,6 +448,7 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
 			glyph->bitmap_left = 0;
 			glyph->bitmap_top = 0;
+			glyph->path = NULL;
 		}
 	}
 	
