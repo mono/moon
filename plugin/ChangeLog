@@ -1,3 +1,8 @@
+2007-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.h (INCLUDE_MONO_RUNTIME): remove #define from here.
+	it's now a configure arg (and the define lives in config.h).
+
 2007-09-28  Zoltan Varga  <vargaz@gmail.com>
 
 	* plugin.cpp (UrlNotify): Add some debug messages here.

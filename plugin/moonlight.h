@@ -42,8 +42,6 @@
 #define PLUGIN_DESCRIPTION  "Novell Moonlight is Mono's Free/Open Source implementation of SilverLight"
 #define MIME_TYPES_HANDLED  "application/x-silverlight:xaml:Novell MoonLight"
 
-#define INCLUDE_MONO_RUNTIME 1
-
 #define MAX_STREAM_SIZE 65536
 
 #ifdef DEBUG

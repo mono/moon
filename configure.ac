@@ -14,6 +14,18 @@ PKG_PROG_PKG_CONFIG
 CAIRO_VERSION=1.4.0
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
 
+MONO_RUNTIME=no
+AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable support for Silverlight 1.1],[
+	if test x$with_mono_runtime = xyes; then
+	      MONO_RUNTIME=yes
+	fi
+])
+
+if test $MONO_RUNTIME = yes; then
+AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (and enable Silverlight 1.1 plugin usage)])
+fi
+
+
 AC_MSG_CHECKING(cairo 1.4.x)
 if pkg-config "cairo >= $CAIRO_VERSION"; then
    AC_MSG_RESULT(found)
@@ -81,6 +93,7 @@ else
 fi
 
 
+if test $MONO_RUNTIME = "yes"; then
 AC_MSG_CHECKING(Mono)
 if pkg-config mono; then
    AC_MSG_RESULT(found)
@@ -96,6 +109,10 @@ else
    echo You are missing Mono project Olive module with Silverlight support
    echo I was looking for silver.pc file
 fi
+
+MONO_PKGS="mono"
+
+fi # MONO_RUNTIME
 
 AC_MSG_CHECKING(Mozilla NSPR pkg-config module name)
 mozilla_nspr_pcs="nspr mozilla-nspr firefox-nspr xulrunner-nspr seamonkey-nspr"
@@ -170,8 +187,8 @@ MOON_LIBS=`pkg-config --libs $MOON_PKGS`
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
 
-PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS mono`
-PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS mono`
+PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS $MONO_PKGS`
+PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS $MONO_PKGS`
 PLUGIN_CFLAGS="$PLUGIN_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)

@@ -1,3 +1,10 @@
+2007-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: add --with-mono-runtime configure argument.  by
+	default we build a 1.0 system.  with --with-mono-runtime on the
+	command line, the 1.1 environment (the mono runtime) is available
+	for the plugin.
+
 2007-09-26  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* cairo/: Removed ... we'll use wget to grab the pristine tar and then
