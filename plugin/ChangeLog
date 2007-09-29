@@ -1,3 +1,7 @@
+2007-09-30  Zoltan Varga  <vargaz@gmail.com>
+
+	* plugin.cpp (ReportException): Handle multiple calls correctly.
+
 2007-09-28  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: wrap moonlight.exe stuff in "if
