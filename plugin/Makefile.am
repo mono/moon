@@ -3,7 +3,11 @@ SUBDIRS = test samples
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
-pluginlib_DATA=README moonlight.exe moonlight.exe.mdb
+pluginlib_DATA=README
+
+if INCLUDE_MONO_RUNTIME
+pluginlib_DATA += moonlight.exe moonlight.exe.mdb
+endif
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
@@ -53,5 +57,8 @@ DISTCLEANFILES=moonlight.exe moonlight.exe.mdb
 
 moonlight_CS=  $(srcdir)/moonlight.cs
 
+if INCLUDE_MONO_RUNTIME
 moonlight.exe: $(moonlight_CS)
 	smcs -debug -out:moonlight.exe $(moonlight_CS) -pkg:silver -pkg:agmonosilver
+CLEANFILES=moonlight.exe moonlight.exe.mdb
+endif

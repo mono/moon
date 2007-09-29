@@ -1,5 +1,11 @@
 2007-09-28  Chris Toshok  <toshok@ximian.com>
 
+	* configure.ac: we need an AM_CONDITIONAL for the
+	INCLUDE_MONO_RUNTIME stuff, since we don't need
+	plugin/moonlight.exe in the 1.0 case.
+
+2007-09-28  Chris Toshok  <toshok@ximian.com>
+
 	* configure.ac: move away from using an AM_CONDITIONAL for xrandr
 	stuff.  it should modify config.h so we have adequate dependency
 	tracking.

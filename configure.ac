@@ -24,7 +24,7 @@ AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable su
 if test $MONO_RUNTIME = yes; then
 AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (and enable Silverlight 1.1 plugin usage)])
 fi
-
+AM_CONDITIONAL(INCLUDE_MONO_RUNTIME, test $MONO_RUNTIME = yes)
 
 AC_MSG_CHECKING(cairo 1.4.x)
 if pkg-config "cairo >= $CAIRO_VERSION"; then
