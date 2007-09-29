@@ -14,10 +14,13 @@ PKG_PROG_PKG_CONFIG
 CAIRO_VERSION=1.4.0
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
 
-MONO_RUNTIME=no
+MONO_RUNTIME=yes
 AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable support for Silverlight 1.1],[
 	if test x$with_mono_runtime = xyes; then
 	      MONO_RUNTIME=yes
+	fi
+	if test x$with_mono_runtime = xno; then
+	      MONO_RUNTIME=no
 	fi
 ])
 
@@ -217,3 +220,11 @@ plugin/Makefile
 plugin/test/Makefile
 plugin/samples/Makefile
 ])
+
+cat <<EOF
+Moonlight configuration:
+
+	Support for 1.0: yes
+	Support for 1.1: $MONO_RUNTIME
+
+EOF
