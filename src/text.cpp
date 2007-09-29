@@ -1320,8 +1320,10 @@ glyphs_set_unicode_string (Glyphs *glyphs, char *value)
 void
 text_destroy (void)
 {
-	default_foreground_brush->unref ();
-	default_foreground_brush = NULL;
+	if (default_foreground_brush) {
+		default_foreground_brush->unref ();
+		default_foreground_brush = NULL;
+	}
 }
 
 
