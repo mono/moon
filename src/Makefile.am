@@ -7,10 +7,6 @@ lib_LTLIBRARIES = libmoon.la
 
 INCLUDES = $(MOON_CFLAGS) -Wall
 
-if USE_XRANDR
-INCLUDES += -DUSE_XRANDR
-endif
-
 libmooninclude_headers = \
 	animation.h	\
 	array.h		\

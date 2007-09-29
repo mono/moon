@@ -1,3 +1,8 @@
+2007-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: remove the XRANDR conditional here.  it's #defined
+	in config.h now.
+
 2007-09-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (CreatePattern): If a filename has been specified for

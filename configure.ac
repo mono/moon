@@ -45,11 +45,10 @@ fi
 AC_MSG_CHECKING(XRANDR extension)
 if pkg-config xrandr; then
   AC_MSG_RESULT(found)
-  AM_CONDITIONAL(USE_XRANDR, true)
+  AC_DEFINE([USE_XRANDR], [1], [Include support for the XRANDR extension for querying a monitor's refresh rate)])
   RANDR_PKG="xrandr"
 else
   AC_MSG_RESULT(not found, using default max fps of 30)
-  AM_CONDITIONAL(USE_XRANDR, false)
   RANDR_PKG=""
 fi
 
