@@ -1,5 +1,7 @@
 2007-09-30  Zoltan Varga  <vargaz@gmail.com>
 
+	* xaml.cpp (CreateManagedObject): Move the call to GetMapping () to managed code.
+
 	* text.cpp (text_destroy): Avoid crash if default_foreground_brush is not set.
 
 2007-09-28  Chris Toshok  <toshok@ximian.com>

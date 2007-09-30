@@ -357,7 +357,6 @@ XamlLoader::CreateManagedObject (const char* xmlns, const char* name)
 {
 	DependencyObject* result = NULL;
 	char *assembly = NULL, *ns = NULL, *type_name = NULL;
-	const char *assembly_path = NULL;
 	
 	//printf ("XamlLoader::CreateManagedObject (%s, %s)\n", xmlns, name);
 
@@ -373,18 +372,12 @@ XamlLoader::CreateManagedObject (const char* xmlns, const char* name)
 	if (!vm_loaded && !LoadVM ())
 		return NULL;
 	
-	assembly_path = GetMapping (assembly);
-	
-	if (!assembly_path) {
-		assembly_path = assembly;
-	}
-	
 	if (type_name == NULL)
 		type_name = g_strdup (name);
 	
-	//printf ("XamlLoader::CreateManagedObject: assembly_path: %s\n", assembly_path);
+	//printf ("XamlLoader::CreateManagedObject: assembly: %s\n", assembly);
 	
-	result = CreateManagedObject (assembly, assembly_path, ns, type_name);
+	result = CreateManagedObject (assembly, assembly, ns, type_name);
 	
 cleanup:
 	g_free (assembly);
