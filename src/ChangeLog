@@ -1,5 +1,8 @@
 2007-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (LayoutPango): Fixed Wrap vs WrapWithOverflow text
+	wrapping.
+
 	* font.cpp (Layout): Fixed the TextWrapping="Wrap" case.
 
 2007-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 

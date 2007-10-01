@@ -609,8 +609,17 @@ TextBlock::LayoutPango (cairo_t *cr)
 	
 	switch (text_block_get_text_wrapping (this)) {
 	case TextWrappingWrap:
-	case TextWrappingWrapWithOverflow:
 		pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+		
+		width = framework_element_get_width (this);
+		
+		if (width > 0.0)
+			pango_layout_set_width (layout, (int) width * PANGO_SCALE);
+		else
+			pango_layout_set_width (layout, -1);
+		break;
+	case TextWrappingWrapWithOverflow:
+		pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
 		
 		width = framework_element_get_width (this);
 		
