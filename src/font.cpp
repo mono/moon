@@ -1367,8 +1367,7 @@ TextLayout::Layout ()
 					// We can stretch the width as wide as we have to
 					// in order to fit the current word.
 					if (spc.index != -1 && (i - spc.index) <= 2) {
-						// We've only got max 2 chars from the word...
-						// wrap at the previous char (which is a space).
+						// wrap at the Space
 						segment->end = spc.index + 1;
 						lw = spc.width;
 						i = spc.index;
@@ -1379,20 +1378,26 @@ TextLayout::Layout ()
 					}
 					break;
 				case TextWrappingWrap:
-					// We cannot allow line width > max_width.
-					if (spc.index != -1 && (i - spc.index) <= 2) {
-						// We've only got 1 char from the word...
-						// wrap at the previous char (which is a space).
+					// Wrap at word boundaries if at all possible, failing that break the word.
+					if (run->text[i + 1] == 0) {
+						// Force-fit this last char
+						wrap = false;
+					} else if (spc.index != -1) {
+						// Wrap at the Space
 						segment->end = spc.index + 1;
 						lw = spc.width;
 						i = spc.index;
-					} else {
-						// Force wrap in the middle of the word.
+						wrap = true;
+					} else if (i > segment->start) {
+						// Wrap before this char
 						segment->end = i;
+						wrap = true;
 						i--;
+					} else {
+						// Wrap after this char
+						segment->end = i + 1;
+						wrap = true;
 					}
-					
-					wrap = true;
 					break;
 				case TextWrappingNoWrap:
 				default:

@@ -1,6 +1,11 @@
+2007-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (Layout): Fixed the TextWrapping="Wrap" case.
+
 2007-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* runtime.cpp: Only show the server as the url in the fullscreen message.
+	* runtime.cpp: Only show the server as the url in the fullscreen
+	message.
 
 2007-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
@@ -19,9 +24,11 @@
 
 2007-09-30  Zoltan Varga  <vargaz@gmail.com>
 
-	* xaml.cpp (CreateManagedObject): Move the call to GetMapping () to managed code.
+	* xaml.cpp (CreateManagedObject): Move the call to GetMapping ()
+	to managed code.
 
-	* text.cpp (text_destroy): Avoid crash if default_foreground_brush is not set.
+	* text.cpp (text_destroy): Avoid crash if default_foreground_brush
+	is not set.
 
 2007-09-28  Chris Toshok  <toshok@ximian.com>
 
