@@ -170,28 +170,24 @@ process_dirty_elements ()
 //   		  printf (" + bounds\n");
 			el->dirty_flags &= ~DirtyBounds;
 
-			if (!el->Is(Type::CANVAS)
-			    || el->parent
-			    || !el->GetSurface()
-			    || el->GetSurface()->GetToplevel() != el) {
+			Rect obounds = el->GetBounds ();
 
-				Rect obounds = el->GetBounds ();
-
-				el->ComputeBounds ();
+			el->ComputeBounds ();
 
 // 				printf (" + + obounds = %f %f %f %f, nbounds = %f %f %f %f\n",
 // 					obounds.x, obounds.y, obounds.w, obounds.h,
 // 					el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
 
- 				if (obounds != el->GetBounds()) {
-					if (el->parent) {
+			if (obounds != el->GetBounds()) {
+			  if (el->parent) {
 // 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
-						el->parent->UpdateBounds();
-						el->parent->Invalidate(obounds);
-					}
+			    el->parent->UpdateBounds();
+			    el->parent->Invalidate(obounds);
+			  }
 
-					el->Invalidate ();
- 				}
+			  printf ("invalidating bounds, which are now %g %g %g %g\n", 
+				  el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
+			  el->Invalidate ();
 			}
 		}
 

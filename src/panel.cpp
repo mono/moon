@@ -510,7 +510,6 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 			background->ref ();
 		}
 		
-		ComputeBounds ();
 		Invalidate ();
 	}
 }
@@ -519,7 +518,6 @@ void
 Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	if (prop == Panel::BackgroundProperty) {
-		ComputeBounds ();
 		Invalidate ();
 	}
 	else {
