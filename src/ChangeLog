@@ -1,3 +1,7 @@
+2007-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (Layout): Made WrapWithOverflow closer to Silverlight's.
+
 2007-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Remove Path::IsFilled since the property 

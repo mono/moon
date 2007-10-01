@@ -1270,8 +1270,8 @@ struct Space {
 	int index;
 };
 
-#define BBOX_MARGIN 1
-#define BBOX_PADDING 2
+#define BBOX_MARGIN 1.0
+#define BBOX_PADDING 2.0
 
 void
 TextLayout::Layout ()
@@ -1366,7 +1366,7 @@ TextLayout::Layout ()
 				case TextWrappingWrapWithOverflow:
 					// We can stretch the width as wide as we have to
 					// in order to fit the current word.
-					if (spc.index != -1 && (i - spc.index) <= 2) {
+					if (spc.index != -1) {
 						// wrap at the Space
 						segment->end = spc.index + 1;
 						lw = spc.width;
@@ -1546,7 +1546,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 				
 				if (font->IsScalable ()) {
 					cairo_close_path (cr);
-
+					
 					segment->path = cairo_copy_path (cr);
 					segment->width = x1 - x0;
 					
