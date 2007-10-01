@@ -1,3 +1,7 @@
+2007-10-02  Jb Evain  <jbevain@novell.com>
+
+	* playlist.cpp: deal with non lowercase file exts.
+
 2007-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: Reduced Glyph table memory usage.

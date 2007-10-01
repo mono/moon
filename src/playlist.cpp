@@ -69,10 +69,8 @@ Playlist::OnMediaEnded ()
 
 	OpenEntry (dynamic_cast<PlaylistEntry *> (current_entry->next));
 
-	if (!HasMediaSource ())
-		return;
-
-	Play ();
+	if (HasMediaSource ())
+		Play ();
 }
 
 void
@@ -101,13 +99,21 @@ Playlist::IsPlaylistFile (const char * file_name)
 {
 	static const char *exts [] = {".asx", ".wax", ".wvx", ".wmx"};
 
+	char *file_name_lower; 
+
 	if (!file_name)
 		return false;
 
-	for (int i = 0; i < 4; i++)
-		if (g_str_has_suffix (file_name, exts [i]))
-			return true;
+	file_name_lower = g_ascii_strdown (file_name, -1);
 
+	for (int i = 0; i < 4; i++) {
+		if (g_str_has_suffix (file_name_lower, exts [i])) {
+			g_free (file_name_lower);
+			return true;
+		}
+	}
+
+	g_free (file_name_lower);
 	return false;
 }
 
