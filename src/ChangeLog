@@ -1,3 +1,8 @@
+2007-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* panel.cpp: Call ComputeBounds before invalidating on Background 
+	changes. Fix parts of #327691 (like BubbleMark-CLR and Monotone).
+
 2007-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* fullscreen.h, fullscreen.xaml: Added.
