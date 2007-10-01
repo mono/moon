@@ -275,7 +275,6 @@ class Path : public Shape {
 	virtual void ComputeBounds ();
 
 	virtual bool CanFill () { return true; }
-	virtual bool IsFilled ();
 	virtual FillRule GetFillRule ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);

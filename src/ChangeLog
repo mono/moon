@@ -1,3 +1,8 @@
+2007-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Remove Path::IsFilled since the property 
+	PathFigure::IsFilledProperty doesn't exists anymore.
+
 2007-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (LayoutPango): Fixed Wrap vs WrapWithOverflow text

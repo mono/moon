@@ -1597,13 +1597,6 @@ Path::Draw (cairo_t *cr)
 	geometry->Draw (this, cr);
 }
 
-bool
-Path::IsFilled ()
-{
-	Geometry* data = path_get_data (this);
-	return (data ? data->IsFilled () : false);
-}
-
 void
 Path::OnPropertyChanged (DependencyProperty *prop)
 {
