@@ -116,20 +116,6 @@ class TextBlock : public FrameworkElement {
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
 	
-	double GetActualWidth ()
-	{
-		if (dirty_actual_values)
-			CalcActualWidthHeight (NULL);
-		return actual_width;
-	}
-	
-	double GetActualHeight ()
-	{
-		if (dirty_actual_values)
-			CalcActualWidthHeight (NULL);
-		return actual_height;
-	}
-	
 	double GetBoundingWidth ()
 	{
 		if (dirty_actual_values)
@@ -166,6 +152,20 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
 	
 	void SetFontSource (DependencyObject *downloader);
+	
+	double GetActualWidth ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return actual_width;
+	}
+	
+	double GetActualHeight ()
+	{
+		if (dirty_actual_values)
+			CalcActualWidthHeight (NULL);
+		return actual_height;
+	}
 	
 	//
 	// Overrides

@@ -76,6 +76,7 @@ class Surface : public EventObject {
 
 	GtkWidget* GetDrawingArea () { return drawing_area; }
 	UIElement* GetToplevel() { return toplevel; }
+	bool IsTopLevel (UIElement* top);
 
 	UIElement* GetCapturedElement () { return capture_element; }
 
@@ -85,6 +86,7 @@ class Surface : public EventObject {
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
+	void SetSourceLocation (const char* location);
 	bool FullScreenKeyHandled (GdkEventKey *key);
 	int GetActualWidth () { return width; }
 	int GetActualHeight () { return height; }
@@ -139,6 +141,8 @@ private:
 
 	// Fullscreen support
 	bool full_screen;
+	Canvas* full_screen_message;
+	char* source_location;
 	// Should be set to true only while executing MouseLeftButtonDown, 
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool can_full_screen; 
@@ -159,6 +163,8 @@ private:
 	void Realloc ();
 	void InitializeDrawingArea (GtkWidget* drawing_area);
 	void DestroyDrawingArea (GtkWidget* drawing_area);
+	void ShowFullScreenMessage ();
+	void HideFullScreenMessage ();
 
 	void CreateSimilarSurface ();
 

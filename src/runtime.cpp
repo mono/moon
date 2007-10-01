@@ -41,6 +41,7 @@
 #include "namescope.h"
 #include "xaml.h"
 #include "dirty.h"
+#include "fullscreen.h"
 
 #ifdef USE_XRANDR
 #include <X11/extensions/Xrandr.h>
@@ -107,6 +108,8 @@ Surface::Surface(int w, int h)
 	
 	full_screen = false;
 	can_full_screen = false;
+	full_screen_message = NULL;
+	source_location = NULL;
 }
 
 Surface::~Surface ()
@@ -137,7 +140,16 @@ Surface::~Surface ()
 		free (buffer);
 		buffer = NULL;
 	}
+	
+	if (full_screen_message) {
+		HideFullScreenMessage ();
+	}
 
+	if (source_location) {
+		g_free (source_location);
+		source_location = NULL;
+	}
+	
 	cairo_destroy (cairo_buffer);
 	cairo_buffer = NULL;
 
@@ -338,6 +350,10 @@ Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 		process_dirty_elements();
 	
 	toplevel->DoRender (ctx, x, y, width, height);
+	
+	if (full_screen_message) {
+		full_screen_message->DoRender (ctx, x, y, width, height);
+	}
 }
 
 //
@@ -391,6 +407,94 @@ Surface::SetFullScreen (bool value)
 	
 }
 
+bool
+Surface::IsTopLevel (UIElement* top)
+{
+	if (top == NULL)
+		return FALSE;
+		
+	return top == toplevel || top == full_screen_message;
+}
+
+void
+Surface::ShowFullScreenMessage ()
+{
+	g_assert (full_screen_message == NULL);
+	g_assert (toplevel && toplevel->Is (Type::PANEL));
+	
+	Type::Kind dummy;
+	DependencyObject* message = xaml_create_from_str (NULL, FULLSCREEN_MESSAGE, false, &dummy);
+	
+	if (!message) {
+		printf ("Unable to create fullscreen message.\n");
+		return;
+	}
+	
+	if (!message->Is (Type::CANVAS)) {
+		printf ("Unable to create fullscreen message, got a %s, expected at least a UIElement.\n", message->GetTypeName ());
+		message->unref ();
+		return;
+	}
+	
+	Panel* top = (Panel*) toplevel;
+	
+	full_screen_message = (Canvas*) message;
+	
+	DependencyObject* message_object = full_screen_message->FindName ("message");
+	DependencyObject* url_object = full_screen_message->FindName ("url");
+	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
+	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
+	
+	Value* tmp = full_screen_message->GetValue (UIElement::RenderTransformProperty);
+	Transform* transform = tmp != NULL ? tmp->AsTransform () : NULL;// full_screen_message->uielement_get_render_transform (full_screen_message);
+	
+	double box_width = framework_element_get_width (full_screen_message);
+	double box_height = framework_element_get_height (full_screen_message);
+	
+	// Set the url in the box
+	if (url_block != NULL)  {
+		text_block_set_text (url_block, source_location ? source_location : (char*) "file://");
+	}
+	
+	// FIXME: make the box wider if the url doesn't fit?
+	
+	// Center the url block
+	if (url_block != NULL) {
+		double url_width = url_block->GetActualWidth ();
+		url_block->SetValue (Canvas::LeftProperty, (box_width - url_width) / 2);	
+	}
+	// Center the message block
+	if (message_block != NULL) {
+		double message_width = message_block->GetActualWidth ();
+		message_block->SetValue (Canvas::LeftProperty, (box_width - message_width) / 2);
+	}	
+
+	// Put the box in the middle of the screen
+	transform->SetValue (TranslateTransform::XProperty, (width - box_width) / 2);
+	transform->SetValue (TranslateTransform::YProperty, (height - box_height) / 2);
+	
+	full_screen_message->SetSurface (this);
+	full_screen_message->OnLoaded ();
+	full_screen_message->Invalidate ();
+}
+
+void
+Surface::SetSourceLocation (const char* location)
+{
+	if (source_location)
+		g_free (source_location);
+	source_location = g_strdup (location);
+}
+
+void 
+Surface::HideFullScreenMessage ()
+{
+	if (full_screen_message) {
+		full_screen_message->unref ();
+		full_screen_message = NULL;
+	}
+}
+
 void
 Surface::UpdateFullScreen (bool value)
 {
@@ -420,8 +524,12 @@ Surface::UpdateFullScreen (bool value)
 		
 		InitializeDrawingArea (drawing_area);
 	
+		ShowFullScreenMessage ();
+		
 		ConnectEvents (false);
 	} else {
+		HideFullScreenMessage ();
+		
 		// Flip back.
 		drawing_area = drawing_area_normal;
 

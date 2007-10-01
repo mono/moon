@@ -220,7 +220,7 @@ process_dirty_elements ()
 			else if (el->Is (Type::CANVAS) &&
 				 el->parent == NULL &&
 				 el->GetSurface() &&
-				 el->GetSurface()->GetToplevel() == el) {
+				 el->GetSurface()->IsTopLevel (el)) {
 
 				el->GetSurface()->Invalidate (dirty);
 			}

@@ -1,3 +1,13 @@
+2007-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* fullscreen.h, fullscreen.xaml: Added.
+	* text.h: Make GetActualHeight and GetActualWidth public.
+	* runtime.h, runtime.cpp: Added IsTopLevel (since there can be two toplevel
+	  objects now: the fullscreen message and the toplevle canvas),
+	  SetSourceLocation and Show/HideFullScreenMessage.
+	* dirty.cpp: Use Surface::IsTopLevel instead of comparing directly agains
+	  Surface::GetTopLevel.
+
 2007-09-30  Zoltan Varga  <vargaz@gmail.com>
 
 	* xaml.cpp (CreateManagedObject): Move the call to GetMapping () to managed code.

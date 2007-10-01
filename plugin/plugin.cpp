@@ -278,6 +278,32 @@ PluginInstance::SetWindow (NPWindow* window)
 	return NPERR_NO_ERROR;
 }
 
+void
+PluginInstance::SetPageURL ()
+{
+	// From: http://developer.mozilla.org/en/docs/Getting_the_page_URL_in_NPAPI_plugin
+	
+	NPObject *window;
+	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
+	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
+	NPVariant location_property;
+	NPVariant location_object;
+	
+	if (NPERR_NO_ERROR != NPN_GetValue (instance, NPNVWindowNPObject, &window)) {
+		return;
+	}
+
+	// Get the location property from the window object (which is another object).
+	if (NPN_GetProperty (instance, window, str_location, &location_property)) {
+		// Get the location property from the location object.
+		if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {	
+			surface->SetSourceLocation (NPVARIANT_TO_STRING (location_object).utf8characters);
+			NPN_ReleaseVariantValue (&location_object);
+		}
+		NPN_ReleaseVariantValue (&location_property);
+	}
+}
+
 void 
 PluginInstance::CreateWindow ()
 {
@@ -314,6 +340,8 @@ PluginInstance::CreateWindow ()
 		delete c;
 	}
 
+	SetPageURL ();
+		
 	gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
 	display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
 	gtk_widget_show_all (this->container);

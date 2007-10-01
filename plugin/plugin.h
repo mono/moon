@@ -57,6 +57,7 @@ class PluginInstance
 	void UpdateSource ();
 	void UpdateSourceByReference (const char *value);
 	void TryLoad ();
+	void SetPageURL ();
 
  public:	
 	PluginInstance (NPP instance, uint16 mode);
