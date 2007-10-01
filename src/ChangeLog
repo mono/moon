@@ -1,3 +1,7 @@
+2007-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.cpp: Only show the server as the url in the fullscreen message.
+
 2007-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* panel.cpp: Call ComputeBounds before invalidating on Background 

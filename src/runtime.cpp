@@ -453,10 +453,28 @@ Surface::ShowFullScreenMessage ()
 	
 	// Set the url in the box
 	if (url_block != NULL)  {
-		text_block_set_text (url_block, source_location ? source_location : (char*) "file://");
+		char* url = NULL;
+		if (g_str_has_prefix (source_location, "http://")) {
+			char* path = strchr (source_location + 7, '/');
+			if (path != NULL && path > source_location + 7) {
+				url = g_strndup (source_location, path - source_location);  
+			} else {
+				url = g_strdup (source_location);
+			}
+		} else if (g_str_has_prefix (source_location, "file://")) {
+			url = g_strdup ("file://");
+		} else {
+			url = g_strdup (source_location);
+		}
+		text_block_set_text (url_block, url ? url : (char*) "file://");
+		g_free (url);
 	}
 	
-	// FIXME: make the box wider if the url doesn't fit?
+	// The box is not made bigger if the url doesn't fit.
+	// MS has an interesting text rendering if the url doesn't
+	// fit: the text is overflown to the left.
+	// Since only the server is shown, this shouldn't
+	// happen on a regular basis though.
 	
 	// Center the url block
 	if (url_block != NULL) {
