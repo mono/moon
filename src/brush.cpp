@@ -118,11 +118,10 @@ Brush::GetTotalOpacity (UIElement *uielement)
 	return opacity;
 }
 
-bool
+void
 Brush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	g_warning ("Brush:SetupBrush has been called. The derived class should have overridden it.");
-	return FALSE;
 }
 
 void
@@ -147,7 +146,7 @@ Brush::OnPropertyChanged (DependencyProperty *prop)
 
 DependencyProperty* SolidColorBrush::ColorProperty;
 
-bool
+void
 SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 {
 	Color *color = solid_color_brush_get_color (this);
@@ -158,7 +157,6 @@ SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
 	cairo_set_source_rgba (target, color->r, color->g, color->b, alpha);
 
 	// [Relative]Transform do not apply to solid color brush
-	return (alpha > 0.0);
 }
 
 void 
@@ -289,7 +287,7 @@ GradientBrush::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 		NotifyAttacheesOfPropertyChange (GradientBrush::GradientStopsProperty);
 }
 
-bool
+void
 GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 {
 	GradientStopCollection *children = GetValue (GradientBrush::GradientStopsProperty)->AsGradientStopCollection ();
@@ -309,7 +307,6 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r,
 						   color->g, color->b, alpha);
 	}
-	return (opacity > 0.0);
 }
 
 //
@@ -351,7 +348,7 @@ linear_gradient_brush_set_start_point (LinearGradientBrush *brush, Point *point)
 	brush->SetValue (LinearGradientBrush::StartPointProperty, Value (*point));
 }
 
-bool
+void
 LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	double w, h;
@@ -397,12 +394,10 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
-	bool visible = GradientBrush::SetupGradient (pattern, uielement);
+	GradientBrush::SetupGradient (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
-
-	return visible;
 }
 
 void 
@@ -486,7 +481,7 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 	brush->SetValue (RadialGradientBrush::RadiusYProperty, Value (radiusY));
 }
 
-bool
+void
 RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
@@ -535,12 +530,10 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
-	bool visible = GradientBrush::SetupGradient (pattern, uielement);
+	GradientBrush::SetupGradient (pattern, uielement);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
-
-	return visible;
 }
 
 void 
@@ -848,14 +841,13 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 	}
 }
 
-bool
+void
 ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	cairo_surface_t *surface = image->GetCairoSurface ();
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return true;
 	}
 
 // MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
@@ -889,8 +881,6 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
-
-	return (opacity > 0.0);
 }
 
 //
@@ -913,7 +903,7 @@ VideoBrush::~VideoBrush ()
 	}
 }
 
-bool
+void
 VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	MediaPlayer *mplayer = media ? media->mplayer : NULL;
@@ -933,7 +923,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		name = video_brush_get_source_name (this);
 		
 		if (name == NULL || *name == '\0')
-			return false;
+			return;
 		
 		if ((obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->Attach (MediaElement::PositionProperty, this);
@@ -951,7 +941,7 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	if (!mplayer || !(surface = mplayer->GetSurface ())) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return true;
+		return;
 	}
 	
 	if (uielement) {
@@ -973,8 +963,6 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);
-	
-	return (opacity > 0.0);
 }
 
 void
@@ -1049,14 +1037,14 @@ video_brush_set_source_name (VideoBrush *brush, const char *value)
 
 DependencyProperty* VisualBrush::VisualProperty;
 
-bool
+void
 VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
 	UIElement *ui = (UIElement*)GetValue (VisualProperty)->AsVisual ();
 	if (!ui) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
-		return true;
+		return;
 	}
 	
 	// XXX we should cache the surface so that it can be
@@ -1107,8 +1095,6 @@ VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
  	cairo_pattern_destroy (pattern);
 
 	cairo_surface_destroy (surface);
-
- 	return (opacity > 0.0);
 }
 
 void
