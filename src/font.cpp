@@ -133,15 +133,21 @@ struct GlyphMetrics {
 	double width;
 };
 
+struct GlyphBitmap {
+	cairo_surface_t *surface;
+	unsigned char *buffer;
+	int height;
+	int width;
+	int left;
+	int top;
+};
+
 struct GlyphInfo {
 	uint32_t unichar;
 	uint32_t index;
-	moon_path *path;
 	GlyphMetrics metrics;
-	cairo_surface_t *surface;
-	FT_Bitmap bitmap;
-	int bitmap_left;
-	int bitmap_top;
+	GlyphBitmap *bitmap;
+	moon_path *path;
 };
 
 static const FT_Matrix invert_y = {
@@ -209,8 +215,18 @@ TextFont::~TextFont ()
 {
 	int i;
 	
-	for (i = 0; i < 256; i++)
-		g_free (glyphs[i].bitmap.buffer);
+	for (i = 0; i < 256; i++) {
+		if (glyphs[i].path)
+			moon_path_destroy (glyphs[i].path);
+		
+		if (glyphs[i].bitmap) {
+			if (glyphs[i].bitmap->surface)
+				cairo_surface_destroy (glyphs[i].bitmap->surface);
+			
+			g_free (glyphs[i].bitmap->buffer);
+			g_free (glyphs[i].bitmap);
+		}
+	}
 	g_free (glyphs);
 	
 	FT_Done_Face (face);
@@ -378,12 +394,62 @@ static const FT_Outline_Funcs outline_funcs = {
         0, /* delta */
 };
 
+#define BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+
+static void
+prepare_bitmap (GlyphInfo *glyph, FT_Bitmap *bitmap)
+{
+	int width, height, stride;
+	unsigned char *buffer, *d;
+	cairo_format_t format;
+	size_t size;
+	int count;
+	
+	height = bitmap->rows;
+	width = bitmap->width;
+	
+	size = bitmap->rows * bitmap->pitch;
+	buffer = glyph->bitmap->buffer = (unsigned char *) g_malloc (size);
+	memcpy (buffer, bitmap->buffer, size);
+	
+	switch (bitmap->pixel_mode) {
+	case FT_PIXEL_MODE_MONO:
+		//printf ("pixel_mode is FT_PIXEL_MODE_MONO\n");
+		stride = (((width + 31) & ~31) >> 3);
+		format = CAIRO_FORMAT_A1;
+		
+#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+		count = stride * height;
+		d = buffer;
+		
+		while (count--) {
+			*d = BITSWAP8 (*d);
+			d++;
+		}
+#endif
+		break;
+	case FT_PIXEL_MODE_LCD:
+	case FT_PIXEL_MODE_LCD_V:
+	case FT_PIXEL_MODE_GRAY:
+		//printf ("pixel_mode is FT_PIXEL_MODE_GRAY\n");
+		stride = bitmap->pitch;
+		format = CAIRO_FORMAT_A8;
+		break;
+	default:
+		printf ("unknown pixel format\n");
+		return;
+	}
+	
+	glyph->bitmap->surface = cairo_image_surface_create_for_data (buffer, format, width, height, stride);
+	glyph->bitmap->height = height;
+	glyph->bitmap->width = width;
+}
+
 GlyphInfo *
 TextFont::GetGlyphInfo (uint32_t unichar)
 {
 	GlyphInfo *glyph;
 	uint32_t index;
-	size_t size;
 	
 	if (unichar == 0)
 		return NULL;
@@ -395,15 +461,24 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 		glyph->index = FcFreeTypeCharIndex (face, unichar);
 		glyph->unichar = unichar;
 		
-		if (glyph->surface) {
-			cairo_surface_destroy (glyph->surface);
-			glyph->surface = NULL;
+		if (glyph->bitmap) {
+			if (glyph->bitmap->surface) {
+				cairo_surface_destroy (glyph->bitmap->surface);
+				glyph->bitmap->surface = NULL;
+			}
+			
+			g_free (glyph->bitmap->buffer);
+			glyph->bitmap->buffer = NULL;
+			
+			// Don't free the bitmap as we'll just be amlloc'ing it again anyway
+			//g_free (glyph->bitmap);
+			//glyph->bitmap = NULL;
 		}
 		
-		if (glyph->path)
+		if (glyph->path) {
 			moon_path_destroy (glyph->path);
-		
-		g_free (glyph->bitmap.buffer);
+			glyph->path = NULL;
+		}
 		
 		if (glyph->index > 0 && FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) == 0) {
 			if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
@@ -413,25 +488,20 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 				glyph->path = moon_path_new (8);
 				FT_Outline_Transform (&face->glyph->outline, &invert_y);
 				FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
-				memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
-				glyph->bitmap_left = 0;
-				glyph->bitmap_top = 0;
 			} else {
-				glyph->path = NULL;
-				glyph->bitmap = face->glyph->bitmap;
+				if (glyph->bitmap == NULL)
+					glyph->bitmap = g_new (GlyphBitmap, 1);
 				
-				size = face->glyph->bitmap.rows * face->glyph->bitmap.pitch;
-				glyph->bitmap.buffer = (unsigned char *) g_malloc (size);
-				memcpy (glyph->bitmap.buffer, face->glyph->bitmap.buffer, size);
-				glyph->bitmap_left = face->glyph->bitmap_left;
-				glyph->bitmap_top = face->glyph->bitmap_top;
+				glyph->bitmap->left = face->glyph->bitmap_left;
+				glyph->bitmap->top = face->glyph->bitmap_top;
+				prepare_bitmap (glyph, &face->glyph->bitmap);
 			}
 			
 			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64.0;
 			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY / 64.0;
+			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance / 64.0;
 			glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64.0;
 			glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY / 64.0;
-			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance / 64.0;
 			glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64.0;
 			glyph->metrics.height = face->glyph->metrics.height / 64.0;
 			glyph->metrics.width = face->glyph->metrics.width / 64.0;
@@ -441,10 +511,12 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			glyph->metrics.vertBearingX = 0.0;
 			glyph->metrics.vertBearingY = 0.0;
 			
-			glyph->path = NULL;
-			memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
-			glyph->bitmap_left = 0;
-			glyph->bitmap_top = 0;
+			if (glyph->bitmap) {
+				glyph->bitmap->height = 0;
+				glyph->bitmap->width = 0;
+				glyph->bitmap->left = 0;
+				glyph->bitmap->top = 0;
+			}
 			
 			if (unichar == 0x20) {
 				// Space
@@ -461,6 +533,13 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			}
 		} else {
 		unavail:
+			if (glyph->bitmap) {
+				glyph->bitmap->height = 0;
+				glyph->bitmap->width = 0;
+				glyph->bitmap->left = 0;
+				glyph->bitmap->top = 0;
+			}
+			
 			glyph->metrics.horiBearingX = 0.0;
 			glyph->metrics.horiBearingY = 0.0;
 			glyph->metrics.vertBearingX = 0.0;
@@ -469,14 +548,10 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			glyph->metrics.vertAdvance = 0.0;
 			glyph->metrics.height = 0.0;
 			glyph->metrics.width = 0.0;
-			memset (&glyph->bitmap, 0, sizeof (&glyph->bitmap));
-			glyph->bitmap_left = 0;
-			glyph->bitmap_top = 0;
-			glyph->path = NULL;
 		}
 	}
 	
-	if (glyph->metrics.horiAdvance > 0)
+	if (glyph->metrics.horiAdvance > 0.0)
 		return glyph;
 	
 	return NULL;
@@ -495,55 +570,9 @@ TextFont::UnderlineThickness ()
 	return (double) (face->underline_thickness / 64);
 }
 
-#define BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
-
 void
 TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
-	int width, height, stride;
-	cairo_format_t format;
-	FT_Bitmap *bitmap;
-	unsigned char *d;
-	int count;
-	
-	bitmap = &glyph->bitmap;
-	
-	height = bitmap->rows;
-	width = bitmap->width;
-	
-	if (!glyph->surface) {
-		switch (bitmap->pixel_mode) {
-		case FT_PIXEL_MODE_MONO:
-			//printf ("pixel_mode is FT_PIXEL_MODE_MONO\n");
-			stride = (((width + 31) & ~31) >> 3);
-			format = CAIRO_FORMAT_A1;
-			
-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-			count = stride * height;
-			d = bitmap->buffer;
-			
-			while (count--) {
-				*d = BITSWAP8 (*d);
-				d++;
-			}
-#endif
-			break;
-		case FT_PIXEL_MODE_LCD:
-		case FT_PIXEL_MODE_LCD_V:
-		case FT_PIXEL_MODE_GRAY:
-			//printf ("pixel_mode is FT_PIXEL_MODE_GRAY\n");
-			stride = bitmap->pitch;
-			format = CAIRO_FORMAT_A8;
-			break;
-		default:
-			printf ("unknown pixel format\n");
-			return;
-		}
-		
-		glyph->surface = cairo_image_surface_create_for_data (bitmap->buffer, format,
-								      width, height, stride);
-	}
-	
 	// take horiBearingX into consideration
 	x += glyph->metrics.horiBearingX;
 	
@@ -552,11 +581,11 @@ TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 	
 	cairo_save (cr);
 	
-	cairo_mask_surface (cr, glyph->surface, x, y);
+	cairo_mask_surface (cr, glyph->bitmap->surface, x, y);
 	cairo_set_operator (cr, CAIRO_OPERATOR_SATURATE);
 	
 	cairo_new_path (cr);
-	cairo_rectangle (cr, x, y, (double) width, (double) height);
+	cairo_rectangle (cr, x, y, (double) glyph->bitmap->width, (double) glyph->bitmap->height);
 	cairo_close_path (cr);
 	cairo_fill (cr);
 	

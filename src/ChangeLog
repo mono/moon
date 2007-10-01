@@ -1,3 +1,7 @@
+2007-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp: Reduced Glyph table memory usage.
+
 2007-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp|h: Change SetupBrush and SetupGradient signatures to 
