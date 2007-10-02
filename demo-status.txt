@@ -74,18 +74,7 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Destroy All Invaders (http://www.andybeaulieu.com/silverlight/DestroyAll/Default.html)
 
-	error to the console:
-
-		Error inside TryLoad: System.NullReferenceException: Object reference not set to an instance of an object
-
-		Server stack trace:
-		  at MapGameScroller.Page.Page_Loaded (System.Object o, System.EventArgs e) [0x00000]
-		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
-		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
-		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
-		  at <0x00000> <unknown method>
-
-	this is due to some weirdness in our FindName implementation.
+	* Works, but the chopper crashes as soon as the game start.
 
 * Digger (http://www.aisto.com/Roeder/Silverlight/Digger/Default.aspx)
 
@@ -171,83 +160,51 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 * Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
 
-Stacktrace:
+	Crashes firefox with:
 
-  at (wrapper managed-to-native) Moonlight.Hosting.surface_attach
-	(intptr,intptr) <0x00004>
-  at (wrapper managed-to-native) Moonlight.Hosting.surface_attach
-	(intptr,intptr) <0xffffffff>
-  at Moonlight.DomainInstance.TryLoad (int&) [0x00139] in
-	/home/cvs/moon/plugin/moonlight.cs:251
-  at (wrapper remoting-invoke-with-check)
-	Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
-  at (wrapper xdomain-dispatch) Moonlight.DomainInstance.TryLoad
-	(object,byte[]&,byte[]&,int&) <0xffffffff>
-  at (wrapper xdomain-invoke) Moonlight.DomainInstance.TryLoad (int&)
-	<0xffffffff>
-  at (wrapper remoting-invoke-with-check)
-	Moonlight.DomainInstance.TryLoad (int&) <0xffffffff>
-  at Moonlight.Loader.TryLoad (int&) <0x00040>
-  at (wrapper runtime-invoke)
-	Moonlight.Loader.runtime_invoke_string_int&
-	(object,intptr,intptr,intptr) <0xffffffff>
+	ManagedXamlLoader::LoadObject (ClientBin/Infragistics.Silverlight.dll, ClientBin/Infragistics.Silverlight.dll, , Infragistics.Silverlight.TechEd.MainPage) failed: Exception has been thrown by the target of an invocation. (System.Reflection.TargetInvocationException).
 
-Native stacktrace:
+	** (Gecko:25612): WARNING **: PARSER ERROR, STOPPING PARSING:  Unable to resolve x:Class type 'Infragistics.Silverlight.TechEd.MainPage;assembly=ClientBin/Infragistics.Silverlight.dll'
+	  line: 1   char: 1
 
-        /mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4)
-	[0xb2b6bf14]
-        /mono/lib/libmono.so.0(mono_arch_handle_altstack_exception+0xc1) [0xb2b87e01]
-        /mono/lib/libmono.so.0 [0xb2b225e8]
-        [0xffffe440]
-        /mono/lib/libmoon.so.0(surface_attach+0x24) [0xb2584a14]
-        [0xb03177e9]
-        [0xb3027297]
-        [0xb3026fe6]
-        [0xb3026f02]
-        [0xb3038494]
-        [0xb303837e]
-        [0xb3038171]
-        [0xb30380c6]
-        /mono/lib/libmono.so.0 [0xb2b4731a]
-        /mono/lib/libmono.so.0(mono_runtime_invoke+0x33) [0xb2bb6543]
-        /mono/lib/moon/plugin/libmoonplugin.so(vm_loader_try+0x44)
-	[0xb4aaa674]
-        /mono/lib/moon/plugin/libmoonplugin.so(_ZN14PluginInstance7TryLoadEv+0x2f) [0xb4aab2bf]
-        /mono/lib/moon/plugin/libmoonplugin.so(_ZN14PluginInstance12StreamAsFileEP9_NPStreamPKc+0xbf) [0xb4aab3df]
-        /mono/lib/moon/plugin/libmoonplugin.so(NPP_StreamAsFile+0x31)
-	[0xb4aaccc1]
-        /usr/lib/firefox/firefox-bin [0x824aa02]
-        /usr/lib/firefox/firefox-bin [0x8237dd0]
-        /usr/lib/firefox/firefox-bin [0x8242142]
-        /usr/lib/firefox/firefox-bin [0x81869b5]
-        /usr/lib/firefox/firefox-bin [0x813871a]
-        /usr/lib/firefox/firefox-bin [0x8138975]
-        /usr/lib/firefox/libxpcom_core.so(_ZN23nsInputStreamReadyEvent12EventHandlerEP7PLEvent+0x34) [0xb7e213c0]
-        /usr/lib/firefox/libxpcom_core.so(PL_HandleEvent+0x22)
-	[0xb7e3a2e1]
-        /usr/lib/firefox/libxpcom_core.so(PL_ProcessPendingEvents+0x74) [0xb7e3a56a]
-        /usr/lib/firefox/libxpcom_core.so [0xb7e3ba7d]
-        /usr/lib/firefox/firefox-bin [0x825f9d2]
-        /opt/gnome/lib/libglib-2.0.so.0 [0xb786fa5d]
-        /opt/gnome/lib/libglib-2.0.so.0(g_main_context_dispatch+0x16d)
-	[0xb7846bcd]
-        /opt/gnome/lib/libglib-2.0.so.0 [0xb7849dcf]
-        /opt/gnome/lib/libglib-2.0.so.0(g_main_loop_run+0x1a9)
-	[0xb784a179]
-        /opt/gnome/lib/libgtk-x11-2.0.so.0(IA__gtk_main+0xb4)
-	[0xb7b78034]
-        /usr/lib/firefox/firefox-bin [0x825fd1e]
-        /usr/lib/firefox/firefox-bin [0x867ebc2]
-        /usr/lib/firefox/firefox-bin [0x80881a6]
-        /usr/lib/firefox/firefox-bin [0x80842d4]
-        /lib/libc.so.6(__libc_start_main+0xdc) [0xb71e187c]
-        /usr/lib/firefox/firefox-bin [0x8084231]
 
-	No JS errors anymore.  clicking on the Aikido button results
-	in an animation that expands the button to the right, then shows a
-	dialog with an image and some text.
+	** (Gecko:25612): WARNING **: PARSER ERROR, STOPPING PARSING:  parsing aborted  line: 6   char: 27
 
-	then the browser crashes.  Looks like an animation problem.
+	PluginXamlLoader::TryLoad: Could not load xaml file: /home/jbevain/.mozilla/firefox/82jmj387.default/Cache/8DAB8540d01 (missing_assembly: (null))
+	Stacktrace:
+
+
+	Native stacktrace:
+
+			/home/jbevain/devel/mono/lib/libmono.so.0 [0xb22c2924]
+			/home/jbevain/devel/mono/lib/libmono.so.0 [0xb22df1c1]
+			/home/jbevain/devel/mono/lib/libmono.so.0 [0xb2273798]
+			[0xb7fd7440]
+			/home/jbevain/devel/mono/lib/moon/plugin/libmoonplugin.so(_ZN14PluginInstance12StreamAsFileEP9_NPStreamPKc+0x1ab) [0xb223b07b]
+			/home/jbevain/devel/mono/lib/moon/plugin/libmoonplugin.so(NPP_StreamAsFile+0x31) [0xb223c621]
+			/usr/lib/firefox/firefox-bin [0x8240368]
+			/usr/lib/firefox/firefox-bin [0x822ceec]
+			/usr/lib/firefox/firefox-bin [0x8236b34]
+			/usr/lib/firefox/firefox-bin [0x817b805]
+			/usr/lib/firefox/firefox-bin [0x812d576]
+			/usr/lib/firefox/firefox-bin [0x812d7d1]
+			/usr/lib/firefox/libxpcom_core.so [0xb7ef2644]
+			/usr/lib/firefox/libxpcom_core.so(PL_HandleEvent+0x22) [0xb7f0b435]
+			/usr/lib/firefox/libxpcom_core.so(PL_ProcessPendingEvents+0x74) [0xb7f0b6be]
+			/usr/lib/firefox/libxpcom_core.so [0xb7f0cda3]
+			/usr/lib/firefox/firefox-bin [0x8254f66]
+			/usr/lib/libglib-2.0.so.0 [0xb78f912d]
+			/usr/lib/libglib-2.0.so.0(g_main_context_dispatch+0x182) [0xb78cfad2]
+			/usr/lib/libglib-2.0.so.0 [0xb78d2a9f]
+			/usr/lib/libglib-2.0.so.0(g_main_loop_run+0x1b7) [0xb78d2e57]
+			/usr/lib/libgtk-x11-2.0.so.0(gtk_main+0xb4) [0xb7c155f4]
+			/usr/lib/firefox/firefox-bin [0x82552b2]
+			/usr/lib/firefox/firefox-bin [0x86771f2]
+			/usr/lib/firefox/firefox-bin [0x807cf2a]
+			/usr/lib/firefox/firefox-bin [0x8078e54]
+			/lib/libc.so.6(__libc_start_main+0xdc) [0xb7291f9c]
+			/usr/lib/firefox/firefox-bin [0x8078db1]
+
 
 * JavaScript/.NET Chess (http://silverlight.net/samples/1.1/chess/run/default.html)
 
@@ -293,6 +250,9 @@ Native stacktrace:
 
 * Python Console (http://silverlight.net/Samples/1.1/DLR-Console/python/index.htm)
 
+		ManagedXamlLoader.load_code: 'DLRConsole.py' 'text/python'
+		ManagedXamlLoader.load_code: Ignoring request to load code.
+
 * Reflecting Graph (http://davidbetz.net/reflectinggraphdemo/)
 
 	Html controls work, and the graph loads.  is there no way to
@@ -324,81 +284,31 @@ Native stacktrace:
 
 * Silverlight Mind Map (http://blogs.msdn.com/synergist/pages/silverlight-map.aspx)
 
-	eventually crashed here:
-
-	        /opt/mono/lib/libmono.so.0(mono_handle_native_sigsegv+0xf4) [0xb32ea2c4]
-	        /opt/mono/lib/libmono.so.0 [0xb32a104a]
-	        [0xffffe440]
-	        /opt/gnome/lib/libpango-1.0.so.0 [0xb7a15847]
-	        /opt/gnome/lib/libpango-1.0.so.0(pango_renderer_draw_rectangle+0x7a) [0xb7a1476a]
-        	/opt/gnome/lib/libpango-1.0.so.0 [0xb7a148ee]
-	        /opt/gnome/lib/libpango-1.0.so.0(pango_renderer_draw_layout_line+0x5ef) [0xb7a1538f]
-	        /opt/gnome/lib/libpango-1.0.so.0(pango_renderer_draw_layout+0x10a) [0xb7a1556a]
-	        /opt/silverlight/lib/libmoon.so.0(mango_renderer_layout_path+0x47) [0xb2cfa977]
-        	/opt/silverlight/lib/libmoon.so.0(_ZN9TextBlock6LayoutEP6_cairo+0x3cf) [0xb2d0a79f]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN9TextBlock21CalcActualWidthHeightEP6_cairo+0x9c) [0xb2d0aadc]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN9TextBlock19OnCollectionChangedEP10Collection20CollectionChangeTypeP16DependencyObjectP18DependencyProperty+0x2a) [0xb2d0ab1a]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN10Collection20OnSubPropertyChangedEP18DependencyPropertyS1_+0x34) [0xb2cef654]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN16DependencyObject31NotifyAttacheesOfPropertyChangeEP18DependencyProperty+0x3f) [0xb2cf238f]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN3Run17OnPropertyChangedEP18DependencyProperty+0x3c) [0xb2d0af5c]
-	        /opt/silverlight/lib/libmoon.so.0(_ZN16DependencyObject8SetValueEP18DependencyPropertyP5Value+0x1d9) [0xb2cf4169]
-        	/opt/silverlight/lib/libmoon.so.0(_ZN16DependencyObject8SetValueEP18DependencyProperty5Value+0x1f) [0xb2cf23bf]
-	        /opt/silverlight/lib/libmoon.so.0(_Z15flush_char_dataP14XamlParserInfo+0xf3) [0xb2d12973]
-	        /opt/silverlight/lib/libmoon.so.0(_Z19end_element_handlerPvPKc+0x50) [0xb2d12ac0]
+	* Seems to work, still the nodes are using the strange Hand Written font.
 
 * Silverlight Pad (http://silverlight.net/samples/1.0/Silverlight-Pad/default.html)
 
-	UI comes up (and looks snazzy).  This is in JS console:
+	* Displayed using a strange Hand Written like font.
+	* Mouse wheel doesn't zoom.
+	* Xaml and JavaScript are not displayed in the bottom tabs.
+	* Clicking on items on the left doesn't work.
 
-		Error: this.target.findName("itemXaml" + this.index.toString()) has no properties
-		Source File: file:///home/toshok/pad/js/xamlItem.js
-		Line: 17
 
 * Silverlight Rocks (http://www.junkship.org:8000/silverlightdemo/)
 
-	Loads and the UI comes up.  In the console we see:
+	Shows a blue bg, prints:
 
-		Error inside TryLoad: System.TypeInitializationException: An exception was thrown by the type initializer for Tarantula.MVP.Resource.BookCache
+		ManagedXamlLoader::LoadAssembly (tarantula.dll, tarantula.dll): requesting download of 'Physics.dll' (exception: Could not load file or assembly 'Physics, Version=1.0.0.0, Culture=neutral' or one of its dependencies. The system cannot find the file specified.).
 
-		Server stack trace:
-		  at <0x00000> <unknown method>
-		  at Tarantula.MVP.Presenter.AmazonBookWebPresenter..ctor (System.Windows.Controls.Canvas canvas, Double top, Double left, Double width, Double height, System.String serviceURL) [0x00000]
-		  at Tarantula.Page.Page_Loaded (System.Object o, System.EventArgs e) [0x00000]
-		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:405
-		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:79
-		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
-		  at <0x00000> <unknown method>
-		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
-		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x00139] in /home/toshok/src/mono/moon/plugin/moonlight.cs:251
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
-		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
-
-		Exception rethrown at [0]:
-		 ---> System.IO.IsolatedStorage.IsolatedStorageException: No ApplicationIdentity available for AppDomain.
-		  at System.IO.IsolatedStorage.IsolatedStorage.InitStore (IsolatedStorageScope scope, System.Type appEvidenceType) [0x0002e] in /home/toshok/src/mono/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorage.cs:157
-		  at (wrapper remoting-invoke-with-check) System.IO.IsolatedStorage.IsolatedStorage:InitStore (System.IO.IsolatedStorage.IsolatedStorageScope,System.Type)
-		  at System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication () [0x0000a] in /home/toshok/src/mono/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorageFile.cs:220
-		  at Tarantula.MVP.Model.SecondaryCache.LoadCache (System.Collections.Generic.Dictionary`2 books, System.Collections.Generic.Dictionary`2 textSearches, System.Collections.Generic.Dictionary`2 similaritySearches) [0x00000]
-		  at Tarantula.MVP.Resource.BookCache..ctor () [0x00000]
-		  at Tarantula.MVP.Resource.BookCache..cctor () [0x00000] --- End of inner exception stack trace ---
-
-		  at (wrapper xdomain-invoke) Moonlight.DomainInstance:TryLoad (int&)
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
-		  at Moonlight.Loader.TryLoad (System.Int32& error) [0x0000f] in /home/toshok/src/mono/moon/plugin/moonlight.cs:134
-
-
-	clicking either the clear or new search buttons results in:
-
-		Unhandled Exception: System.NullReferenceException: Object reference not set to an instance of an object
-		  at Tarantula.MVP.View.Controls.ButtonBase.OnMouseLeftButtonDown (System.Object sender, System.Windows.Input.MouseEventArgs e) [0x00000]
-		  at System.Windows.UIElement.InvokeMouseButtonDown (System.Windows.Input.MouseEventArgs m) [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:350
-		  at Mono.Events.mouse_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:109
-		  at (wrapper native-to-managed) Mono.Events:mouse_button_down_callback (intptr,intptr,intptr)
+		** (Gecko:25326): WARNING **: The following assembly referenced from /home/jbevain/.mozilla/firefox/82jmj387.default/Cache/2D75DF5Fd01 could not be loaded:
+			 Assembly:   Physics    (assemblyref_index=3)
+			 Version:    1.0.0.0
+			 Public Key: (none)
+		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/jbevain/.mozilla/firefox/82jmj387.default/Cache).
 
 * SilverNibbles (http://www.wordandspirit.co.uk/SilverNibbles/SilverNibbles.html)
 
 	fails with:
-
 
 		Server stack trace:
 		  at System.IO.IsolatedStorage.IsolatedStorage.InitStore (IsolatedStorageScope scope, System.Type appEvidenceType) [0x0002e] in /home/toshok/src/mono/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorage.cs:157
@@ -460,7 +370,8 @@ Native stacktrace:
 
 * Windows Vista Simulator (http://www.windowsvista.si/)
 
-	nothing shown in plugin area.  no JS errors.
+	Application appears, but nothing happen when clicking on the FreeTime or WorkTime graphics.
+	No tooltip appear when I leave the mouse on those either.
 
 * XamlWebPad (http://xamlwebpad.peterkellner.net/Default.aspx)
 
@@ -468,53 +379,28 @@ Native stacktrace:
 
 * XPSViewer (http://delay.members.winisp.net/SimpleSilverlightXpsViewer/)
 
-	this is printed to console:
-
-		Error inside TryLoad: System.ArgumentNullException: Argument cannot be null.
-		Parameter name: baseUri
-
-		Server stack trace:
-		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri, Boolean dontEscape) [0x00582] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:363
-		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri) [0x00000] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:179
-		  at SimpleSilverlightXpsViewer.Page.source_MouseLeftButtonDown (System.Object sender, System.Windows.Input.MouseEventArgs e) [0x00000]
-		  at SimpleSilverlightXpsViewer.Page.Page_Loaded (System.Object obj, System.EventArgs eventArgs) [0x00000]
-		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:378
-		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:72
-		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
-		  at <0x00000> <unknown method>
-		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
-		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x0014d] in /home/toshok/src/mono/moon/plugin/moonlight.cs:246
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
-		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
-
-	but the app comes up.  clicking in it crashes due to:
-
-		Unhandled Exception: System.ArgumentNullException: Argument cannot be null.
-		Parameter name: baseUri
-		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri, Boolean dontEscape) [0x00582] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:363
-		  at System.Uri..ctor (System.Uri baseUri, System.String relativeUri) [0x00000] in /home/toshok/src/mono/mcs/class/System/System/Uri.cs:179
-		  at SimpleSilverlightXpsViewer.Page.source_MouseLeftButtonDown (System.Object sender, System.Windows.Input.MouseEventArgs e) [0x00000]
-		  at System.Windows.UIElement.InvokeMouseButtonDown (System.Windows.Input.MouseEventArgs m) [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:350
-		  at Mono.Events.mouse_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:109
-		  at (wrapper native-to-managed) Mono.Events:mouse_button_down_callback (intptr,intptr,intptr)
+	* Visually works. Yet it triggers a NotImplementedException that the application
+	catches, but doesn't give more details about it yet.
 
 * Zero Gravity (http://www.ltbennett.com/)
 
-	Goes immediately to the "You Won" screen, for some reason.
+	When playing, I got:
 
-	This shows in console beforehand, and might be the reason:
-
-		** (Gecko:8234): WARNING **: Missing method System.Net.HttpWebRequest::GetResponse() in assembly /opt/mono/lib/mono/gac/System/2.0.0.0__b77a5c561934e089/System.dll, referenced in assembly /home/toshok/.mozilla/firefox/79nl6cuy.default/Cache/3C2C0E28d01
-		System.MissingMethodException: Method not found: 'System.Net.HttpWebRequest.GetResponse'.
-		at <0x00000> <unknown method>
-		at SpaceJumper.GameMain.setupIntro () [0x00000]
-		at SpaceJumper.GameMain.gameAssetsLoaded (System.Object sender, System.EventArgs args) [0x00000]
+		Unhandled Exception: System.NullReferenceException: Object reference not set to an instance of an object
+		  at SpaceJumper.Tiles.SwitchPaddleControl.rotatePaddleAnimation (Int32 toRotate, Boolean state) [0x00000] 
+		  at SpaceJumper.View.Gameboard.animatePaddles (System.Collections.Generic.List`1 sp) [0x00000] 
+		  at SpaceJumper.View.DisplayStack.animatePaddles (System.Collections.Generic.List`1 sp) [0x00000] 
+		  at SpaceJumper.GameMain.playerAnimated (System.Object sender, System.EventArgs args) [0x00000] 
+		  at SpaceJumper.View.DisplayStack.playerAnimated (System.Object o, System.EventArgs evt) [0x00000] 
+		  at SpaceJumper.View.Gameboard.playerAnimated (System.Object o, System.EventArgs evt) [0x00000] 
+		  at SpaceJumper.Tiles.PlayerControl.returnToIdleAnimationComplete (System.Object sender, System.EventArgs evt) [0x00000] 
+		  at System.Windows.Media.Animation.Storyboard.InvokeCompleted () [0x0001c] in /home/jbevain/sources/olive/class/agclr/System.Windows.Media.Animation/Storyboard.cs:107 
+		  at System.Windows.Media.Animation.Storyboard.UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/jbevain/sources/olive/class/agclr/System.Windows.Media.Animation/Storyboard.cs:100 
+		  at (wrapper native-to-managed) System.Windows.Media.Animation.Storyboard:UnmanagedCompleted (intptr,intptr,intptr)
 
 * Lutz Roeder Monotone, http://www.aisto.com/Roeder/Silverlight/Monotone/Default.aspx
 
 	http://www.aisto.com/Roeder/Silverlight/
 
-	Starts up but it does not play back the audio, nor does it show the
-	actual expected animation, the animation flashes in the screen and then
-	vanishes
+	Works. At least better than Silverlight which crashes on this for me.
 
