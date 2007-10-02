@@ -1486,13 +1486,10 @@ geometry_from_str (const char *str)
 	PathSegment *prev = NULL;
 	PathSegmentCollection *psc = NULL;
 	
-
 	PathGeometry *pg = new PathGeometry ();
 	PathFigureCollection *pfc = new PathFigureCollection ();
 	pg->SetValue (PathGeometry::FiguresProperty, pfc);
 	pfc->unref ();
-
-	geometry_set_fill_rule (pg, FillRuleEvenOdd);
 
 	while (*data) {
 		if (g_ascii_isspace (*data))
@@ -1504,6 +1501,20 @@ geometry_from_str (const char *str)
 		bool relative = false;
 
 		switch (*data) {
+		case 'f':
+		case 'F':
+			data++;
+			if (!*data)
+				break;
+
+			if (*data == '0')
+				geometry_set_fill_rule (pg, FillRuleEvenOdd);
+			else if (*data == '1')
+				geometry_set_fill_rule (pg, FillRuleNonzero);
+			// FIXME: else it's a bad value and nothing should be rendered
+			data++;
+			break;
+
 		case 'm':
 			relative = true;
 		case 'M':

@@ -1,3 +1,9 @@
+2007-10-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Add support for 'F' in the PML parser to enable setting
+	the FillMode of Geometry objects. Removed default value set as it is 
+	identical to the default property value.
+
 2007-10-02  Jb Evain  <jbevain@novell.com>
 
 	* playlist.cpp|h: implemented start time for playlist entries.
