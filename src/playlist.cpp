@@ -189,7 +189,7 @@ Playlist::OpenEntry (PlaylistEntry *entry)
 }
 
 bool
-Playlist::OpenSource ()
+Playlist::OpenInternal ()
 {
 	if (!Parse ())
 		return false;

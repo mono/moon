@@ -1,3 +1,7 @@
+2007-10-02  Jb Evain  <jbevain@novell.com>
+
+	* playlist.cpp|h, media.cpp|h: rename MediaSource::OpenSource to OpenInternal.
+
 2007-10-02  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (UIElement::Invalidate): Only invalidate if

@@ -132,7 +132,7 @@ protected:
 
 	MediaPlayer *GetMediaPlayer ();
 
-	virtual bool OpenSource () = 0;
+	virtual bool OpenInternal () = 0;
 
 public:
 	virtual ~MediaSource ();
@@ -155,7 +155,7 @@ private:
 
 	void ClearTimeout ();
 protected:
-	virtual bool OpenSource ();
+	virtual bool OpenInternal ();
 public:
 	SingleMedia (MediaElement *element, const char *source_name, const char *file_name);
 	virtual ~SingleMedia ();

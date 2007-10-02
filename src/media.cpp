@@ -109,7 +109,7 @@ MediaSource::GetMediaPlayer ()
 bool
 MediaSource::Open ()
 {
-	if (!OpenSource ()) {
+	if (!OpenInternal ()) {
 		media_element_set_can_seek (element, false);
 		media_element_set_can_pause (element, false);
 		media_element_set_audio_stream_count (element, 0);
@@ -156,7 +156,7 @@ SingleMedia::~SingleMedia ()
 }
 
 bool
-SingleMedia::OpenSource ()
+SingleMedia::OpenInternal ()
 {
 	return element->mplayer->Open (file_name);
 }
