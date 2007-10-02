@@ -160,15 +160,12 @@ bool
 Playlist::OpenEntry (PlaylistEntry *entry)
 {
 	GString *uri;
-	MediaSource *source;
 
 	current_entry = entry;
 
-	source = current_entry->GetSource ();
-
 	// if the source if already downloaded, no need to go further
-	if (source)
-		return source->Open ();
+	if (HasMediaSource ())
+		return OpenCurrentSource ();
 
 	media_element_set_current_state (element, "Buffering");
 
@@ -186,6 +183,27 @@ Playlist::OpenEntry (PlaylistEntry *entry)
 	g_string_free (uri, true);
 
 	return true;
+}
+
+bool
+Playlist::OpenCurrentSource ()
+{
+	bool success;
+	MediaSource *source;
+
+	if (!current_entry)
+		return false;
+	
+	source = current_entry->GetSource ();
+
+	if (!source)
+		return false;
+
+	success = source->Open ();
+	if (success)
+		element->mplayer->Seek (current_entry->GetStartTime ());
+
+	return success;
 }
 
 bool

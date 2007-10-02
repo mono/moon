@@ -165,6 +165,7 @@ private:
 	bool Parse ();
 	bool HasMediaSource ();
 	bool OpenEntry (PlaylistEntry *entry);
+	bool OpenCurrentSource ();
 	void OnMediaEnded ();
 	void OnMediaDownloaded ();
 
