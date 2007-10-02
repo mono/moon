@@ -1,3 +1,7 @@
+2007-10-01  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* src/Makefile.am: Added fullscreen.h to dist
+
 2007-09-28  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: we need an AM_CONDITIONAL for the

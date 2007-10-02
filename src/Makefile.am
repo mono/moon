@@ -23,6 +23,7 @@ libmooninclude_headers = \
 	error.h		\
 	font.h		\
 	frameworkelement.h \
+	fullscreen.h	\
 	garray-ext.h	\
 	geometry.h	\
 	list.h		\
