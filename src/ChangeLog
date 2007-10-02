@@ -1,3 +1,10 @@
+2007-10-02  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (UIElement::Invalidate): Only invalidate if
+	opacity is > 0.
+	* dirty.cpp (process_dirty_elements): be sure to invalidate before
+	and after the opacity change.
+
 2007-10-02  Jb Evain  <jbevain@novell.com>
 
 	* playlist.cpp: deal with non lowercase file exts.

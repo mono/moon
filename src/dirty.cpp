@@ -133,6 +133,7 @@ process_dirty_elements ()
 		if (el->dirty_flags & DirtyOpacity) {
 			el->dirty_flags &= ~DirtyOpacity;
 
+			el->Invalidate ();
 			el->ComputeTotalOpacity ();
 			el->Invalidate ();
 

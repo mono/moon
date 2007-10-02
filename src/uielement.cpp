@@ -318,7 +318,7 @@ UIElement::FullInvalidate (bool rendertransform)
 void
 UIElement::Invalidate (Rect r)
 {
-	if (!GetVisible())
+	if (!GetVisible() || GetTotalOpacity() <= 0.0)
 		return;
 
 #ifdef DEBUG_INVALIDATE
