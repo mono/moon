@@ -1,5 +1,16 @@
 2007-10-02  Chris Toshok  <toshok@ximian.com>
 
+	* animation.h, animation.cpp: override Stop() on AnimationClocks
+	so we can reset the property value to the baseValue stored in our
+	AnimationStorage.
+
+	* clock.h, clock.cpp: fix the starting of stopped clockgroups when
+	there are active children (fixes the storyboards running for 1
+	tick then stopping).  Add more convoluted code in order to get the
+	expected behavior when FillBehavior=Stop on a storyboard.
+
+2007-10-02  Chris Toshok  <toshok@ximian.com>
+
 	* clock.h, clock.cpp: a few changes.  quit with all the delay
 	computation in the throttling code, and just deal with fps until
 	we're ready to switch to delays.  it simplifies everything a

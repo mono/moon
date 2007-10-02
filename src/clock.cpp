@@ -327,6 +327,8 @@ output_clock (Clock *clock, int level)
 		printf ("(%p), ", clock);
 	}
 
+	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
+
 	switch (clock->GetClockState()) {
 	case Clock::Active:
 		printf ("Active");
@@ -338,6 +340,9 @@ output_clock (Clock *clock, int level)
 		printf ("Stopped");
 		break;
 	}
+
+	if (clock->GetIsPaused())
+		printf (" (paused)");
 
 	printf ("\n");
 
@@ -658,8 +663,15 @@ Clock::SkipToFill ()
 #if CLOCK_DEBUG
 	printf ("filling clock %p after this tick\n", this);
 #endif
-	new_state = Clock::Filling;
-	QueueEvent (CURRENT_STATE_INVALIDATED);
+	switch (timeline->GetFillBehavior()) {
+	case FillBehaviorHoldEnd:
+		new_state = Clock::Filling;
+		QueueEvent (CURRENT_STATE_INVALIDATED);		
+		break;
+	case FillBehaviorStop:
+		Stop ();
+		break;
+	}
 }
 
 void
@@ -734,6 +746,15 @@ ClockGroup::Seek (TimeSpan timespan)
 }
 
 void
+ClockGroup::Stop ()
+{
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+		c->Stop ();
+	}
+}
+
+void
 ClockGroup::Tick ()
 {
 	/* recompute our current_time */
@@ -764,11 +785,11 @@ ClockGroup::Tick ()
 	if (*duration == Duration::Automatic) {
 		for (GList *l = child_clocks; l; l = l->next) {
 			Clock *c = (Clock*)l->data;
-			if (!c->GetHasStarted () || c->GetClockState() == Clock::Active)
+			if (!c->GetHasStarted () || c->GetClockState() == Clock::Active || c->GetNewClockState() == Clock::Active)
 				return;
 		}
 
-		Stop ();
+		Clock::Stop ();
 	}
 }
 

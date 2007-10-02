@@ -61,6 +61,12 @@ AnimationStorage::UpdatePropertyValue ()
 	delete current_value;
 }
 
+void
+AnimationStorage::ResetPropertyValue ()
+{
+	targetobj->SetValue (targetprop, *baseValue);
+}
+
 AnimationStorage::~AnimationStorage ()
 {
 	if (baseValue)
@@ -86,6 +92,13 @@ Value*
 AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue)
 {
 	return timeline->GetCurrentValue (defaultOriginValue, defaultDestinationValue, this);
+}
+
+void
+AnimationClock::Stop ()
+{
+	storage->ResetPropertyValue();
+	Clock::Stop();
 }
 
 AnimationClock::~AnimationClock ()

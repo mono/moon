@@ -119,6 +119,7 @@ class AnimationStorage {
 			  DependencyObject *targetobj, DependencyProperty *targetprop);
 	~AnimationStorage ();
 	
+	void ResetPropertyValue ();
  private:
 	void UpdatePropertyValue ();
 	static void update_property_value (EventObject *sender, gpointer calldata, gpointer data);
@@ -145,6 +146,8 @@ class AnimationClock : public Clock {
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
 	void HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+
+	virtual void Stop ();
  private:
 	Animation/*Timeline*/ *timeline;
 	AnimationStorage *storage;

@@ -274,6 +274,7 @@ class Clock : public DependencyObject {
 		Stopped  /* time is no longer progressing */
 	};
 	ClockState GetClockState () { return current_state; }
+	ClockState GetNewClockState () { return new_state; }
 
 	virtual void SpeedChanged () { }
 
@@ -285,7 +286,7 @@ class Clock : public DependencyObject {
 	virtual void Seek (TimeSpan timespan);
 	void SeekAlignedToLastTick ();
 	virtual void SkipToFill ();
-	void Stop ();
+	virtual void Stop ();
 
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
@@ -360,6 +361,7 @@ class ClockGroup : public Clock {
 	virtual void Begin ();
 	virtual void Seek (TimeSpan timespan);
 	virtual void SkipToFill ();
+	virtual void Stop ();
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
