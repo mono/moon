@@ -1,3 +1,7 @@
+2007-10-02  Jackson Harper  <jackson@ximian.com>
+
+	* media.cpp: Some default values to avoid nullref exceptions.
+
 2007-10-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Add support for 'F' in the PML parser to enable setting
