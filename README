@@ -319,22 +319,6 @@ This is not likely the final version of this code.
 	To support software rendering we should re-implement this code and
 	and add support for byte swapping to the format required by gdk_draw_pixbuf
 
-* Usage of C++
-
-	I do not know how to initialize instance fields in a structure
-	with the contructor, so there is code like this:
-
-	    struct {
-		Agg2D *graphics;
-	    }
-
-	Then:
-
-		something->graphics = new Agg2D ()
-
-	Followed by uses of graphics in that way, there is probably a
-	better way.
-
 * Demo
 
 	The demo has a couple of hardcoded videos for now, you must
@@ -350,21 +334,7 @@ This is not likely the final version of this code.
 	You will notice some rectangles painting, thats where the
 	video should be, it is also not clear why those move
 
-* Debugging
-
-	It is recommended that for now you do not `make install' as there
-	is not much to use.
-
-	To debug, use:
-
-		cd src
-
-		make debug
-
 * Mozilla plugin
-
-	It is recommended that for now you do not `make install' as there
-	is not much to use.
 
 	To browser plugin installation, use:
 
