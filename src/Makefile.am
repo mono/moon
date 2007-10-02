@@ -46,6 +46,7 @@ libmooninclude_headers = \
 	trigger.h	\
 	type.h		\
 	uielement.h	\
+	uri.h		\
 	value.h		\
 	visual.h	\
 	xaml.h		\
@@ -91,6 +92,7 @@ libmoon_la_SOURCES = 	\
 	trigger.cpp	\
 	type.cpp	\
 	uielement.cpp	\
+	uri.cpp		\
 	value.cpp	\
 	visual.cpp	\
 	xaml.cpp	\
