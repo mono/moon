@@ -1,3 +1,31 @@
+2007-10-02  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: a few changes.  quit with all the delay
+	computation in the throttling code, and just deal with fps until
+	we're ready to switch to delays.  it simplifies everything a
+	bunch.  Also, narrow the type for Clock::Get/SetParent to
+	ClockGroup.  Add some rudimentary code for printing out the state
+	of all clocks (use TimeManager::Instance()->ListClocks() or
+	time_manager_list_clocks()).  Also, remove the TimeManager::Tick
+	code which started clocks.  This commit changes the way
+	storyboards are registered, so the only things in the
+	TimeManager's list should be the per-surface ClockGroups, which
+	are started in Storyboard::Begin (if they aren't already running.)
+
+	* collection.cpp (VisualCollection::Add): this is a bug waiting to
+	happen.  Call VisualUpdate (thereby setting the child's parent and
+	initializing the transforms/opacity) before emitting Loaded on the
+	child.
+
+	* animation.h, animation.cpp: Storyboards now add their clocks to
+	the per-surface ClockGroup.  This involves some groveling to find
+	the surface, but it's nothing we haven't seen before.  There's no
+	direct TimeManager calls here now - stopping the surface's
+	ClockGroup will stop all animations running on it.
+
+	* runtime.h, runtime.cpp: add the per-surface ClockGroup.  all
+	storyboards attach to this, and this attaches to the TimeManager.
+	
 2007-10-02  Jackson Harper  <jackson@ximian.com>
 
 	* media.cpp: Some default values to avoid nullref exceptions.
@@ -30,6 +58,17 @@
 2007-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: Reduced Glyph table memory usage.
+
+2007-10-01  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp (process_dirty_elements): remove the special if checks
+	which kept the ComputeBounds/Invalidate code from running on the
+	toplevel surface.  Canvas::ComputeBounds() does the right thing
+	for the toplevel surface, so we just trust it.  fixes invalidation
+	of root canvases.
+
+	* panel.cpp (OnPropertyChanged): remove the ComputeBounds call.
+	(OnSubPropertyChanged): same.
 
 2007-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 

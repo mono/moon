@@ -90,7 +90,9 @@ class Surface : public EventObject {
 	bool FullScreenKeyHandled (GdkEventKey *key);
 	int GetActualWidth () { return width; }
 	int GetActualHeight () { return height; }
-	
+
+	ClockGroup* GetClockGroup () { return clock_group; }
+
 	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
 private:
 	int normal_width, normal_height;
@@ -132,7 +134,6 @@ private:
 	// This currently can only be a canvas.
 	UIElement *toplevel;
 
-
 	// The element currently capturing the mouse
 	UIElement *capture_element;
 
@@ -146,14 +147,22 @@ private:
 	// Should be set to true only while executing MouseLeftButtonDown, 
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool can_full_screen; 
+
 	void UpdateFullScreen (bool value);
+
 	// Here we keep a reference to the normal drawing area when
 	// we are in fullscreen mode.
 	GtkWidget *drawing_area_normal;
+
 	// We set drawing_area to this whenever we are in
 	// fullscreen mode.
 	GtkWidget *drawing_area_fullscreen;
-	
+
+	// The clock group (toplevel clock) for this surface.
+	// Registered with the TimeManager.  All storyboards created
+	// within this surface are children of this ClockGroup.
+	ClockGroup *clock_group;
+
 	int frames;
 
 	int last_event_state;

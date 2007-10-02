@@ -161,7 +161,7 @@ class Animation/*Timeline*/ : public Timeline {
 	Animation/*Timeline*/ () { };
 	virtual Type::Kind GetObjectType () { return Type::ANIMATION; };
 
-	virtual Clock *AllocateClock () { return new AnimationClock (this); }
+	virtual Clock *AllocateClock ();
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
@@ -542,6 +542,8 @@ class Storyboard : public ParallelTimeline {
 	static int CompletedEvent;
 
  private:
+	Surface *FindSurface ();
+
 	void HookupAnimationsRecurse (Clock *clock);
 	Clock *root_clock;
 

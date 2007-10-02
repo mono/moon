@@ -197,7 +197,8 @@ class TimeManager : public EventObject {
 	static int RenderEvent;
 
 	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
-	
+
+	void ListClocks ();
  private:
 	TimeManager ();
 
@@ -217,8 +218,9 @@ class TimeManager : public EventObject {
 
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
+	double current_fps;
 	int current_timeout;
-	int min_timeout; /* corresponds to maximum FPS, as set by the monitor's refresh rate */
+	int max_fps;
 	int strikes; /* used by our lame fps tuning code */
 
 	enum TimeManagerOp {
@@ -237,7 +239,7 @@ class TimeManager : public EventObject {
 
 void time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data);
 
-
+void time_manager_list_clocks ();
 
 
 //
@@ -252,17 +254,17 @@ class TimelineGroup;
 class Clock : public DependencyObject {
  public:
 	Clock (Timeline *timeline);
-	virtual ~Clock () {  }
+	virtual ~Clock () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::CLOCK; };
 
-	Clock*    GetParent ()          { return parent_clock; }
-	double    GetCurrentProgress () { return current_progress; }
-	TimeSpan  GetCurrentTime ()     { return current_time; }
-	Timeline* GetTimeline ()        { return timeline; }
-	Duration  GetNaturalDuration () { return natural_duration; }
-	bool      GetIsPaused ()        { return is_paused; }
-	bool      GetHasStarted ()      { return has_started; }
+	ClockGroup* GetParent ()          { return parent_clock; }
+	double      GetCurrentProgress () { return current_progress; }
+	TimeSpan    GetCurrentTime ()     { return current_time; }
+	Timeline*   GetTimeline ()        { return timeline; }
+	Duration    GetNaturalDuration () { return natural_duration; }
+	bool        GetIsPaused ()        { return is_paused; }
+	bool        GetHasStarted ()      { return has_started; }
 
 	TimeSpan GetBeginTime ();
 
@@ -289,7 +291,7 @@ class Clock : public DependencyObject {
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
 	virtual void Tick ();
-	void SetParent (Clock *parent) { parent_clock = parent; }
+	void SetParent (ClockGroup *parent) { parent_clock = parent; }
 
 	// Events you can AddHandler to
 	static int CurrentTimeInvalidatedEvent;
@@ -329,7 +331,7 @@ class Clock : public DependencyObject {
 
  private:
 
-	Clock *parent_clock;
+	ClockGroup *parent_clock;
 	TimeSpan last_parent_time;
 
 	bool is_paused;

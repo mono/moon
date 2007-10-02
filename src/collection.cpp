@@ -455,14 +455,14 @@ VisualCollection::Add (DependencyObject *data)
 
 	if (b) {
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-	
+
+		VisualUpdate (data);
+
 		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 			/* emit loaded events on the new item if the tree
 			   we're adding it to has already been "loaded" */
 			item->OnLoaded ();
 		}
-
-		VisualUpdate (data);
 	}
 	return b;
 }

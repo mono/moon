@@ -38,8 +38,8 @@
 #endif
 
 
-#define MINIMUM_FPS 10
-#define DEFAULT_FPS 30
+#define MINIMUM_FPS 5
+#define DEFAULT_FPS 20
 #define MAXIMUM_FPS 60
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
@@ -73,8 +73,9 @@ int TimeManager::RenderEvent = -1;
 TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
+    current_fps (DEFAULT_FPS),
     current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
-    min_timeout (FPS_TO_DELAY (MAXIMUM_FPS)),
+    max_fps (MAXIMUM_FPS),
     strikes (0),
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
@@ -87,7 +88,7 @@ TimeManager::TimeManager ()
 void
 TimeManager::SetMaximumRefreshRate (int hz)
 {
-	min_timeout = FPS_TO_DELAY (hz);
+	max_fps = hz;
 }
 
 void
@@ -176,17 +177,10 @@ TimeManager::Tick ()
 		// triggering them to queue up their events) using the
 		// value of current_global_time...
 
-		TimeSpan cur = GetCurrentTime ();
 		for (GList *l = child_clocks; l; l = l->next) {
-			/* start the child clock here if we need to,
-			   otherwise just call its Tick
-			   method */
 			Clock *c = (Clock*)l->data;
 			if (c->GetClockState() != Clock::Stopped) {
 				c->Tick ();
-			}
-			else if ((c->GetClockState() == Clock::Stopped) && (!c->GetHasStarted() && c->GetBeginTime() <= cur)) {
-				c->Begin ();
 			}
 		}
 
@@ -223,45 +217,49 @@ TimeManager::Tick ()
 	/* we only count strikes for higher/lower fps if the frame
 	   took more than 50ms over our timeour, or less than 50ms
 	   under our timeout. */
-	if (post_tick - pre_tick > (TimeSpan)(current_timeout * 10000) + 50000)
+	if (post_tick - pre_tick > (TimeSpan)(current_timeout * 10000))
 		strikes ++;
-	else if (post_tick - pre_tick < (TimeSpan)(current_timeout * 10000) - 50000)
+	else if (post_tick - pre_tick < (TimeSpan)(current_timeout * 10000) - 100000)
 		strikes --;
+	else {
+//  	  if (strikes < 0) strikes++;
+//  	  else if (strikes > 0) strikes--;
+	}
 
-#define STRIKE_COUNT 20
+#define STRIKE_COUNT 10
 #define FPS_ADJUSTMENT 3
 
 	if (strikes > STRIKE_COUNT || strikes < -STRIKE_COUNT) {
 		int new_timeout = current_timeout;
-
+		
 		if (strikes > STRIKE_COUNT) {
 			/* it took us longer than our current_timeout to run through
 			   the clock update/render loop.  we need to scale back our
 			   timeout (lower fps) */
-			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) - FPS_ADJUSTMENT);
+			current_fps -= FPS_ADJUSTMENT;
 		}
 		else if (strikes < -STRIKE_COUNT) {
 			/* it took us less time than our
 			   current_timeout to run through the clock
 			   update/render loop.  let's make the timeout
 			   less (higher fps). */
-			new_timeout = FPS_TO_DELAY (DELAY_TO_FPS (current_timeout) + FPS_ADJUSTMENT);
+			current_fps += FPS_ADJUSTMENT;
 		}
 
+		if (current_fps < MINIMUM_FPS)
+			current_fps = MINIMUM_FPS;
+		else if (current_fps > max_fps)
+			current_fps = max_fps;
+
+		new_timeout = FPS_TO_DELAY (current_fps);
 		strikes = 0;
 
-		if (new_timeout < min_timeout) {
-			new_timeout = min_timeout;
-		}
-		else if (new_timeout > FPS_TO_DELAY (MINIMUM_FPS)) {
-			new_timeout = FPS_TO_DELAY (MINIMUM_FPS);
-		}
-		  
 		if (new_timeout != current_timeout) {
+// 			printf ("current_fps = %2.3ffps\n", current_fps);
 			current_timeout = new_timeout;
 			RemoveTimeout();
 			AddTimeout();
-			printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
+// 			printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
 		}
 	}
 }
@@ -310,7 +308,64 @@ TimeManager::RemoveChild (Clock *child)
 	child->unref ();
 }
 
+static void
+spaces (int n)
+{
+	while (n--) putchar (' ');
 
+}
+
+static void
+output_clock (Clock *clock, int level)
+{
+	spaces (level);
+	printf (clock->Is(Type::CLOCKGROUP) ? "ClockGroup " : "Clock ");
+	if (clock->GetName ()) {
+		printf ("'%s', ", clock->GetName());
+	}
+	else {
+		printf ("(%p), ", clock);
+	}
+
+	switch (clock->GetClockState()) {
+	case Clock::Active:
+		printf ("Active");
+		break;
+	case Clock::Filling:
+		printf ("Filling");
+		break;
+	case Clock::Stopped:
+		printf ("Stopped");
+		break;
+	}
+
+	printf ("\n");
+
+	if (clock->Is(Type::CLOCKGROUP)) {
+		ClockGroup *cg = (ClockGroup*)clock;
+		level += 2;
+		for (GList *l = cg->child_clocks; l; l = l->next) {
+			output_clock ((Clock*)l->data, level);
+		}
+	}
+}
+
+void
+TimeManager::ListClocks()
+{
+	printf ("Currently registered clocks:\n");
+	printf ("============================\n");
+
+	for (GList *l = child_clocks; l; l = l->next) {
+		output_clock ((Clock*)l->data, 2);
+	}
+}
+
+void
+time_manager_list_clocks ()
+{
+	TimeManager::Instance()->ListClocks();
+}
 
 int Clock::CurrentTimeInvalidatedEvent = -1;
 int Clock::CurrentStateInvalidatedEvent = -1;

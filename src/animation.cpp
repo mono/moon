@@ -21,6 +21,7 @@
 #include "garray-ext.h"
 #include "animation.h"
 #include "color.h"
+#include "runtime.h"
 
 #define LERP(f,t,p) ((f) + ((t) - (f)) * (p))
 
@@ -93,9 +94,20 @@ AnimationClock::~AnimationClock ()
 		delete storage;
 }
 
+Clock*
+Animation/*Timeline*/::AllocateClock()
+{
+	Clock *clock = new AnimationClock (this);
+	char *name = g_strdup_printf ("AnimationClock for %s, targetobject = %s, targetproperty = %s", GetTypeName(),
+				      Storyboard::GetTargetName (this), Storyboard::GetTargetProperty (this));
+	clock->SetValue (DependencyObject::NameProperty, name);
+	g_free (name);
+	return clock;
+}
+
 Value*
 Animation/*Timeline*/::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue,
-				    AnimationClock* animationClock)
+					AnimationClock* animationClock)
 {
 	return NULL;
 }
@@ -186,12 +198,25 @@ Storyboard::invoke_completed (EventObject *, gpointer, gpointer closure)
 void
 Storyboard::Begin ()
 {
+	ClockGroup *group = NULL;
+
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
 	if (root_clock) {
-		TimeManager::Instance()->RemoveChild (root_clock);
+		group = root_clock->GetParent();
+		group->RemoveChild (root_clock);
 		root_clock->unref ();
+		root_clock = NULL;
+	}
+
+	if (!group) {
+		Surface *surface = FindSurface ();
+		if (surface == NULL) {
+			g_warning ("unable to find surface to add storyboard clock to.");
+			return;
+		}
+		group = surface->GetClockGroup();
 	}
 
 	// This creates the clock tree for the hierarchy.  if a
@@ -204,9 +229,15 @@ Storyboard::Begin ()
 	// creating AnimationStorage's for AnimationClocks.
 	HookupAnimationsRecurse (root_clock);
 
-	// hack to make storyboards work..  we need to attach them to
-	// TimeManager's list of clocks
-	TimeManager::Instance()->AddChild (root_clock);
+	group->AddChild (root_clock);
+
+	// we delay starting the surface's ClockGroup until the first
+	// child has been added.  otherwise we run into timing issues
+	// between timelines that explicitly set a BeginTime and those
+	// that don't (and so default to 00:00:00).
+	if (group->GetClockState() != Clock::Active) {
+		group->Begin ();
+	}
 }
 
 void
@@ -302,14 +333,35 @@ Storyboard::GetTargetName (DependencyObject *o)
 	return v == NULL ? NULL : v->AsString();
 }
 
+static Surface*
+find_surface_recurse (DependencyObject *obj)
+{
+	if (obj == NULL)
+		return NULL;
+	else if (obj->Is(Type::UIELEMENT)) {
+		return ((UIElement*)obj)->GetSurface();
+	}
+	else {
+		obj = obj->GetParent();
+		return find_surface_recurse (obj);
+	}
+}
+
+Surface*
+Storyboard::FindSurface ()
+{
+	return find_surface_recurse (this);
+}
+
 Storyboard::~Storyboard ()
 {
 	if (root_clock) {
 		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		Stop ();
-		TimeManager::Instance()->RemoveChild (root_clock);
+		root_clock->GetParent()->RemoveChild (root_clock);
 		//printf ("Unrefing Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		root_clock->unref ();
+		root_clock = NULL;
 	}
 }
 

@@ -108,6 +108,17 @@ Surface::Surface(int w, int h)
 	
 	full_screen = false;
 	can_full_screen = false;
+
+	ParallelTimeline *timeline = new ParallelTimeline();
+	timeline->SetDuration (Duration::Forever);
+	clock_group = new ClockGroup (timeline);
+	char *name = g_strdup_printf ("Surface clock group for surface (%p)", this);
+	clock_group->SetValue(DependencyObject::NameProperty, name);
+	g_free (name);
+	//timeline->unref();
+
+	TimeManager::Instance()->AddChild (clock_group);
+
 	full_screen_message = NULL;
 	source_location = NULL;
 }
@@ -144,6 +155,9 @@ Surface::~Surface ()
 	if (full_screen_message) {
 		HideFullScreenMessage ();
 	}
+
+	clock_group->unref();
+	clock_group = NULL;
 
 	if (source_location) {
 		g_free (source_location);
