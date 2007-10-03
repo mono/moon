@@ -486,7 +486,7 @@ TextFont::GetGlyphInfo (gunichar unichar)
 			glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64.0;
 			glyph->metrics.height = face->glyph->metrics.height / 64.0;
 			glyph->metrics.width = face->glyph->metrics.width / 64.0;
-		} else if (glyph->index == 0 && (unichar == 0x20 || unichar == 0x09)) {
+		} else if (unichar == 0x20 || unichar == 0x09) {
 			glyph->metrics.horiBearingX = 0.0;
 			glyph->metrics.horiBearingY = 0.0;
 			glyph->metrics.vertBearingX = 0.0;
