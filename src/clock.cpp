@@ -478,7 +478,6 @@ Clock::Tick ()
 		printf ("+ clock %p (%s) duration is %lld, and new_time == %lld\n", this, timeline->GetName(), duration_timespan, new_time);
 #endif
 		if (new_time >= duration_timespan) {
-		  printf ("eh\n");
 #if CLOCK_DEBUG
 			printf ("+ clock %p (%s) hit its duration\n", this, timeline->GetName());
 #endif
