@@ -288,7 +288,7 @@ GradientBrush::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 }
 
 void
-GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
+GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bool single)
 {
 	GradientStopCollection *children = GetValue (GradientBrush::GradientStopsProperty)->AsGradientStopCollection ();
 	GradientSpreadMethod gsm = gradient_brush_get_spread (this);
@@ -298,7 +298,15 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement)
 	// TODO - ColorInterpolationModeProperty is ignored (map to ?)
 
 	double opacity = GetTotalOpacity (uielement);
-	node = (Collection::Node *) children->list->First ();
+
+	if (single) {
+		// if a single color is shown (e.g. start == end point) Cairo will,
+		// by default, use the start color while SL use the end color
+		node = (Collection::Node *) children->list->Last ();
+	} else {
+		node = (Collection::Node *) children->list->First ();
+	}
+
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		GradientStop *stop = (GradientStop *) node->obj;
 		Color *color = gradient_stop_get_color (stop);
@@ -394,7 +402,8 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
-	GradientBrush::SetupGradient (pattern, uielement);
+	bool only_start = (x0 == x1 && y0 == y1);
+	GradientBrush::SetupGradient (pattern, uielement, only_start);
 
 	cairo_set_source (cairo, pattern);
 	cairo_pattern_destroy (pattern);

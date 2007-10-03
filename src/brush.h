@@ -106,7 +106,7 @@ class GradientBrush : public Brush {
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
-	virtual void SetupGradient (cairo_pattern_t *pattern, UIElement *uielement);
+	virtual void SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bool single = false);
 };
 
 GradientBrush* gradient_brush_new (void);

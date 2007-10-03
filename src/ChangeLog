@@ -1,3 +1,10 @@
+2007-10-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp|h: SL and Cairo defaults to different values (end 
+	color versus start color) when a gradiant is restricted to a 
+	single color (e.g. if the start and end points of a linear 
+	gradient are identical).
+
 2007-10-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp: Implemented the Glyphs element.
