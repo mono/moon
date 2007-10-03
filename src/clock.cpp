@@ -428,7 +428,7 @@ Clock::Tick ()
 {
 	TimeSpan new_parent_time = parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
 
-	TimeSpan our_delta = (TimeSpan)((new_parent_time - last_parent_time) * current_speed);
+	TimeSpan our_delta = (TimeSpan)((new_parent_time - last_parent_time) * current_speed * timeline->GetSpeedRatio());
 
 	last_parent_time = new_parent_time;
 
@@ -478,6 +478,7 @@ Clock::Tick ()
 		printf ("+ clock %p (%s) duration is %lld, and new_time == %lld\n", this, timeline->GetName(), duration_timespan, new_time);
 #endif
 		if (new_time >= duration_timespan) {
+		  printf ("eh\n");
 #if CLOCK_DEBUG
 			printf ("+ clock %p (%s) hit its duration\n", this, timeline->GetName());
 #endif
@@ -879,6 +880,18 @@ Timeline::GetDuration ()
 	return GetValue (Timeline::DurationProperty)->AsDuration();
 }
 
+void
+Timeline::SetSpeedRatio (double ratio)
+{
+	SetValue (Timeline::SpeedRatioProperty, Value(ratio));
+}
+
+double
+Timeline::GetSpeedRatio ()
+{
+	return GetValue (Timeline::SpeedRatioProperty)->AsDouble();
+}
+
 FillBehavior
 Timeline::GetFillBehavior ()
 {
@@ -1031,8 +1044,10 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 		if (timeline->GetAutoReverse ())
 			span *= 2;
 
+		span /= timeline->GetSpeedRatio();
+
 		span += timeline->GetBeginTime ();
-		
+
 		if (duration_span < span) {
 			duration_span = span;
 			d = Duration (duration_span);

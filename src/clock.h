@@ -401,6 +401,9 @@ class Timeline : public DependencyObject {
 	TimeSpan GetBeginTime ();
 	bool HasBeginTime ();
 
+	void SetSpeedRatio (double ratio);
+	double GetSpeedRatio ();
+	
 	Duration GetNaturalDuration (Clock *clock);
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 

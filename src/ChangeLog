@@ -1,3 +1,8 @@
+2007-10-02  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: add Timeline::Get/SetSpeedRatio methods, and
+	use them to make test/xaml/clock8.xaml work.
+
 2007-10-02  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Path::ComputeBounds): use the specified width/height
