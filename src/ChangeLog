@@ -1,5 +1,9 @@
 2007-10-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (EmSize): Removed, not needed.
+	(GetGlyphInfo): Commented out vertical glyph metrics, saves a fair
+	bit of memory that we aren't using.
+
 	* text.cpp (TextBlock::SetFontSource): Implemented.
 	(text_init): Default StyleSimulations to None.
 

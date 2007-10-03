@@ -94,9 +94,9 @@ struct GlyphMetrics {
 	double horiBearingX;
 	double horiBearingY;
 	double horiAdvance;
-	double vertBearingX;
-	double vertBearingY;
-	double vertAdvance;
+	//double vertBearingX;
+	//double vertBearingY;
+	//double vertAdvance;
 	double height;
 	double width;
 };
@@ -140,7 +140,6 @@ public:
 	double Descender ();
         double Ascender ();
 	double Height ();
-	int EmSize ();
 	
 	double UnderlinePosition ();
 	double UnderlineThickness ();

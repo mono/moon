@@ -250,12 +250,6 @@ TextFont::IsScalable ()
 	return (face->face_flags & FT_FACE_FLAG_SCALABLE);
 }
 
-int
-TextFont::EmSize ()
-{
-	return face->units_per_EM;
-}
-
 double
 TextFont::Kerning (gunichar left, gunichar right)
 {
@@ -481,16 +475,16 @@ TextFont::GetGlyphInfo (gunichar unichar)
 			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64.0;
 			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY / 64.0;
 			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance / 64.0;
-			glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64.0;
-			glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY / 64.0;
-			glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64.0;
+			//glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64.0;
+			//glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY / 64.0;
+			//glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64.0;
 			glyph->metrics.height = face->glyph->metrics.height / 64.0;
 			glyph->metrics.width = face->glyph->metrics.width / 64.0;
 		} else if (unichar == 0x20 || unichar == 0x09) {
 			glyph->metrics.horiBearingX = 0.0;
 			glyph->metrics.horiBearingY = 0.0;
-			glyph->metrics.vertBearingX = 0.0;
-			glyph->metrics.vertBearingY = 0.0;
+			//glyph->metrics.vertBearingX = 0.0;
+			//glyph->metrics.vertBearingY = 0.0;
 			
 			if (glyph->bitmap) {
 				glyph->bitmap->height = 0;
@@ -502,13 +496,13 @@ TextFont::GetGlyphInfo (gunichar unichar)
 			if (unichar == 0x20) {
 				// Space
 				glyph->metrics.horiAdvance = face->max_advance_width / 64.0;
-				glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
+				//glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
 				glyph->metrics.height = face->max_advance_height / 64.0;
 				glyph->metrics.width = face->max_advance_width / 64.0;
 			} else if (unichar == 0x09) {
 				// Tab
 				glyph->metrics.horiAdvance = face->max_advance_width / 8.0;
-				glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
+				//glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
 				glyph->metrics.height = face->max_advance_height / 64.0;
 				glyph->metrics.width = face->max_advance_width / 8.0;
 			}
@@ -523,10 +517,10 @@ TextFont::GetGlyphInfo (gunichar unichar)
 			
 			glyph->metrics.horiBearingX = 0.0;
 			glyph->metrics.horiBearingY = 0.0;
-			glyph->metrics.vertBearingX = 0.0;
-			glyph->metrics.vertBearingY = 0.0;
+			//glyph->metrics.vertBearingX = 0.0;
+			//glyph->metrics.vertBearingY = 0.0;
 			glyph->metrics.horiAdvance = 0.0;
-			glyph->metrics.vertAdvance = 0.0;
+			//glyph->metrics.vertAdvance = 0.0;
 			glyph->metrics.height = 0.0;
 			glyph->metrics.width = 0.0;
 		}
