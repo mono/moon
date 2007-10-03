@@ -197,7 +197,7 @@ process_dirty_elements ()
 			el->dirty_flags &= ~DirtyInvalidate;
 
 			Rect dirty = el->dirty_rect;
-			if (el->UseAA() && !dirty.IsEmpty())
+			if (el->EnableAntiAlias() && !dirty.IsEmpty())
 				dirty = dirty.GrowBy (2);
 			if (dirty.IsEmpty())
 				dirty = el->children_dirty_rect;

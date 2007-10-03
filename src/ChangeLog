@@ -1,3 +1,13 @@
+2007-10-03  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h: rename UseAA() to EnableAntiAlias().  it's
+	arguably a better name, and more importantly it's the name that
+	media.cpp/h changed it too, which broke the AA hack used in
+	dirty.cpp.
+
+	* dirty.cpp (process_dirty_elements): rename UseAA() to
+	EnableAntiAlias().
+
 2007-10-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* array.cpp: Move double array allocations back to new/delete.

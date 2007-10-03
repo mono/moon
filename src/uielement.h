@@ -80,7 +80,7 @@ class UIElement : public Visual {
 
 	virtual Surface *GetSurface () { return parent ? parent->GetSurface() : NULL; }
 
-	virtual bool UseAA() { return true; }
+	virtual bool EnableAntiAlias() { return true; }
 
 	//
 	// UpdateTotalOpacity:
