@@ -1,3 +1,15 @@
+2007-10-03  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.h, plugin-entry.cpp, plugin-proxy.cpp: if we're using
+	libmoonloader.so, we need to rename the 4 symbols we proxy in
+	plugin-entry.cpp, and load them up via our mangled names in
+	plugin-proxy.cpp.  This is so mozilla doesn't try to load
+	libmoonplugin.so as a plugin itself.  It should only load
+	libmoonloader.so.  Also, add code in plugin-proxy.cpp to handle
+	the case where the .so lives in ~/.mozilla/plugins.  This requires
+	#define PLUGIN_INSTALL 1 to be used, so we should figure out how
+	to build with that when building the XPI.
+
 2007-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp, plugin.h: Added SetPageURL, updates the Surface' source

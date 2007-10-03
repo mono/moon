@@ -16,6 +16,8 @@
 #include "npapi.h"
 #include "npupp.h"
 
+#include "moonlight.h"
+
 // Version information
 #define NP_VERSION_MIN_SUPPORTED  13
 #define NP_VERSION_HAS_RUNTIME    14
@@ -288,22 +290,22 @@ NPN_PopPopupsEnabledState (NPP instance)
 /*** These functions are located automagically by mozilla *********************/
 
 char*
-NP_GetMIMEDescription (void)
+LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void)
 {
 	return NPP_GetMIMEDescription ();
 }
 
 NPError
-NP_GetValue (void *future, NPPVariable variable, void *value)
+LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value)
 {
 	return NPP_GetValue ((NPP) future, variable, value);
 }
 
 NPError OSCALL
 #ifdef XP_UNIX
-NP_Initialize (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs)
+LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs)
 #else
-NP_Initialize (NPNetscapeFuncs *mozilla_funcs)
+LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 #endif
 {
 	if (mozilla_funcs == NULL || plugin_funcs == NULL)
@@ -422,7 +424,7 @@ NP_Initialize (NPNetscapeFuncs *mozilla_funcs)
 }
 
 NPError OSCALL
-NP_Shutdown (void)
+LOADER_RENAMED_SYM(NP_Shutdown) (void)
 { 
 	NPP_Shutdown ();
 	return NPERR_NO_ERROR;

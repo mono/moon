@@ -16,6 +16,8 @@
 #include "npapi.h"
 #include "npupp.h"
 
+#include "moonlight.h"
+
 #ifdef XP_UNIX
 typedef NPError (*np_initialize_func) (void *a, void *b);
 #else
@@ -33,33 +35,43 @@ static np_getmime_func    getmime;
 static NPError
 load (void)
 {
-	void *real_plugin = dlopen (PLUGIN_DIR "/plugin/libmoonplugin.so", RTLD_NOW);
+	char *plugin_path;
+
+#if PLUGIN_INSTALL
+	plugin_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/libmoonplugin.so", NULL);
+#else
+	plugin_path = g_strdup (PLUGIN_DIR "/plugin/libmoonplugin.so");
+#endif
+
+	void *real_plugin = dlopen (plugin_path, RTLD_NOW);
+
+	g_free (plugin_path);
 
 	if (real_plugin == NULL){
 		fprintf (stderr, "Unable to load the real plugin %s\n", dlerror ());
 		return FALSE;
 	}
 
-	initialize = (np_initialize_func) dlsym (real_plugin, "NP_Initialize");
+	initialize = (np_initialize_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_Initialize));
 	if (initialize == NULL){
-		fprintf (stderr, "NP_Initialize not found %s", dlerror ());
+		fprintf (stderr, "NP_Initialize not found %s\n", dlerror ());
 		return FALSE;
 	}
 
 
-	getvalue = (np_getvalue_func) dlsym (real_plugin, "NP_GetValue");
+	getvalue = (np_getvalue_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_GetValue));
 	if (getvalue == NULL){
 		fprintf (stderr, "NP_GetValue not found %s\n", dlerror ());
 		return FALSE;
 	}
 
-	getmime = (np_getmime_func) dlsym (real_plugin, "NP_GetMIMEDescription");
+	getmime = (np_getmime_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_GetMIMEDescription));
 	if (getmime == NULL){
 		fprintf (stderr, "NP_GetMIMEDescription not found %s\n", dlerror ());
 		return FALSE;
 	}
 
-	shutdown = (np_shutdown_func) dlsym (real_plugin, "NP_Shutdown");
+	shutdown = (np_shutdown_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_Shutdown));
 	if (shutdown == NULL){
 		fprintf (stderr, "NP_Shutdown not found %s\n", dlerror ());
 		return FALSE;

@@ -44,6 +44,20 @@
 
 #define MAX_STREAM_SIZE 65536
 
+#define USE_LIBMOONLOADER 1
+
+#if USE_LIBMOONLOADER
+#define LOADER_RENAMED_SYM(x) Plugin_##x
+#define LOADER_QUOTE(x) #x
+#define LOADER_RENAMED_NAME(x) LOADER_QUOTE(Plugin_##x)
+
+// define his to 1 if we're building the xpi, leave it 0 if we're not
+#define PLUGIN_INSTALL 0
+#else
+#define LOADER_RENAMED_SYM(x) x
+#define LOADER_RENAMED_NAME(x) #x
+#endif
+
 #ifdef DEBUG
 #ifdef G_LOG_DOMAIN
 #undef G_LOG_DOMAIN
