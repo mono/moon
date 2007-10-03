@@ -1,3 +1,9 @@
+2007-10-02  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Path::ComputeBounds): use the specified width/height
+	if stretch is != StretchNone.  Fixes rendering issues with halo
+	and several other sites.
+
 2007-10-02  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h, animation.cpp: override Stop() on AnimationClocks

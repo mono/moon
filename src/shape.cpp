@@ -1572,11 +1572,23 @@ Path::ComputeBounds ()
 
 		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 		if (vh)
-			bounds.h = MIN (vh->AsDouble (), bounds.h);
+			bounds.h = vh->AsDouble ();
 		
 		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 		if (vw)
-			bounds.w = MIN (vw->AsDouble (), bounds.w);
+			bounds.w = vw->AsDouble ();
+		
+		switch (stretch) {
+		case StretchUniform:
+			bounds.h = bounds.w = MIN (bounds.w, bounds.h);
+			break;
+		case StretchUniformToFill:
+			bounds.h = bounds.w = MAX (bounds.w, bounds.h);
+			break;
+		default:
+			// bounds are already set correctly
+			break;
+		}
 
 		bounds.w += t;
 		bounds.h += t;
