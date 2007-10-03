@@ -1,5 +1,11 @@
 2007-10-02  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::UpdateFullScreen): just call
+	gtk_window_fullscreen instead of setting decorations/above
+	manually.  this puts us on top of the panel.
+
+2007-10-02  Chris Toshok  <toshok@ximian.com>
+
 	* clock.h, clock.cpp: rip out the old stupid throttling code and
 	replace it with an exponential moving average of the delays.
 

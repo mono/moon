@@ -551,8 +551,7 @@ Surface::UpdateFullScreen (bool value)
 		height = screen_height;
 		
 		gtk_widget_set_size_request (drawing_area, screen_width, screen_height);
-		gtk_window_set_decorated ((GtkWindow*) drawing_area, FALSE);
-		gtk_window_set_keep_above ((GtkWindow*) drawing_area, TRUE);
+		gtk_window_fullscreen (GTK_WINDOW (drawing_area));
 		
 		InitializeDrawingArea (drawing_area);
 	
