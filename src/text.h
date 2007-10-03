@@ -16,6 +16,8 @@ G_BEGIN_DECLS
 #include <cairo.h>
 #include <pango/pango.h>
 
+#include "downloader.h"
+#include "moon-path.h"
 #include "brush.h"
 #include "mango.h"
 #include "font.h"
@@ -106,11 +108,11 @@ class TextBlock : public FrameworkElement {
 	MangoRenderer *renderer;
 	Brush *foreground;
 	
-	bool dirty_actual_values;
 	double actual_height;
 	double actual_width;
 	double bbox_height;
 	double bbox_width;
+	bool dirty;
 	
 	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);
@@ -118,14 +120,14 @@ class TextBlock : public FrameworkElement {
 	
 	double GetBoundingWidth ()
 	{
-		if (dirty_actual_values)
+		if (dirty)
 			CalcActualWidthHeight (NULL);
 		return bbox_width;
 	}
 	
 	double GetBoundingHeight ()
 	{
-		if (dirty_actual_values)
+		if (dirty)
 			CalcActualWidthHeight (NULL);
 		return bbox_height;
 	}
@@ -155,14 +157,14 @@ public:
 	
 	double GetActualWidth ()
 	{
-		if (dirty_actual_values)
+		if (dirty)
 			CalcActualWidthHeight (NULL);
 		return actual_width;
 	}
 	
 	double GetActualHeight ()
 	{
-		if (dirty_actual_values)
+		if (dirty)
 			CalcActualWidthHeight (NULL);
 		return actual_height;
 	}
@@ -226,6 +228,33 @@ void text_block_set_font_source (TextBlock *textblock, DependencyObject *Downloa
 
 
 class Glyphs : public FrameworkElement {
+	TextFontDescription *desc;
+	Downloader *downloader;
+	TextFont *font;
+	
+	cairo_path_t *path;
+	gunichar *text;
+	List *attrs;
+	Brush *fill;
+	
+	bool origin_y_specified;
+	double origin_x;
+	double origin_y;
+	double height;
+	double width;
+	
+	bool invalid;
+	bool dirty;
+	
+	void Layout ();
+	void SetIndices (const char *in);
+	
+	void DownloaderComplete ();
+	
+	static void data_write (guchar *data, gsize n, gsize nn, void *closure);
+	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
+	static void size_notify (int64_t size, gpointer data);
+	
 public:
 	static DependencyProperty *FillProperty;
 	static DependencyProperty *FontRenderingEmSizeProperty;
@@ -236,7 +265,9 @@ public:
 	static DependencyProperty *StyleSimulationsProperty;
 	static DependencyProperty *UnicodeStringProperty;
 	
-	Glyphs () { }
+	Glyphs ();
+	~Glyphs ();
+	
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
 	
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);

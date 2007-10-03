@@ -22,6 +22,16 @@
 #include FT_OUTLINE_H
 
 
+struct GlyphBitmap {
+	cairo_surface_t *surface;
+	unsigned char *buffer;
+	int height;
+	int width;
+	int left;
+	int top;
+};
+
+
 static GHashTable *font_cache = NULL;
 static bool initialized = false;
 static FT_Library libft2;
@@ -120,35 +130,6 @@ fc_stretch (FontStretches stretch)
 		return FC_WIDTH_NORMAL;
 	}
 }
-
-
-struct GlyphMetrics {
-	double horiBearingX;
-	double horiBearingY;
-	double horiAdvance;
-	double vertBearingX;
-	double vertBearingY;
-	double vertAdvance;
-	double height;
-	double width;
-};
-
-struct GlyphBitmap {
-	cairo_surface_t *surface;
-	unsigned char *buffer;
-	int height;
-	int width;
-	int left;
-	int top;
-};
-
-struct GlyphInfo {
-	uint32_t unichar;
-	uint32_t index;
-	GlyphMetrics metrics;
-	GlyphBitmap *bitmap;
-	moon_path *path;
-};
 
 static const FT_Matrix invert_y = {
         65535, 0,
@@ -276,7 +257,7 @@ TextFont::EmSize ()
 }
 
 double
-TextFont::Kerning (uint32_t left, uint32_t right)
+TextFont::Kerning (gunichar left, gunichar right)
 {
 	FT_Vector kerning;
 	
@@ -446,19 +427,19 @@ prepare_bitmap (GlyphInfo *glyph, FT_Bitmap *bitmap)
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfo (uint32_t unichar)
+TextFont::GetGlyphInfo (gunichar unichar)
 {
 	GlyphInfo *glyph;
-	uint32_t index;
+	uint32_t i;
 	
-	if (unichar == 0)
-		return NULL;
-	
-	index = unichar & 0xff;
-	glyph = &glyphs[index];
+	i = unichar & 0xff;
+	glyph = &glyphs[i];
 	
 	if (glyph->unichar != unichar) {
-		glyph->index = FcFreeTypeCharIndex (face, unichar);
+		if (unichar)
+			glyph->index = FcFreeTypeCharIndex (face, unichar);
+		else
+			glyph->index = 0;
 		glyph->unichar = unichar;
 		
 		if (glyph->bitmap) {
@@ -480,7 +461,7 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 			glyph->path = NULL;
 		}
 		
-		if (glyph->index > 0 && FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) == 0) {
+		if (FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) == 0) {
 			if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
 				goto unavail;
 			
@@ -557,6 +538,26 @@ TextFont::GetGlyphInfo (uint32_t unichar)
 	return NULL;
 }
 
+GlyphInfo *
+TextFont::GetGlyphInfoByIndex (uint32_t index)
+{
+	gunichar unichar;
+	uint32_t idx;
+	
+	if (index != 0) {
+		unichar = FT_Get_First_Char (face, &idx);
+		while (idx != index && idx != 0)
+			unichar = FT_Get_Next_Char (face, unichar, &idx);
+		
+		if (idx == 0)
+			return NULL;
+	} else {
+		unichar = 0;
+	}
+	
+	return GetGlyphInfo (unichar);
+}
+
 double
 TextFont::UnderlinePosition ()
 {
@@ -611,7 +612,7 @@ TextFont::Render (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 }
 
 void
-TextFont::Render (cairo_t *cr, uint32_t unichar, double x, double y)
+TextFont::Render (cairo_t *cr, gunichar unichar, double x, double y)
 {
 	GlyphInfo *glyph;
 	
@@ -636,7 +637,7 @@ TextFont::Path (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 }
 
 void
-TextFont::Path (cairo_t *cr, uint32_t unichar, double x, double y)
+TextFont::Path (cairo_t *cr, gunichar unichar, double x, double y)
 {
 	GlyphInfo *glyph;
 	
@@ -702,6 +703,9 @@ TextFontDescription::CreatePattern ()
 	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
 	
 	FcDefaultSubstitute (pattern);
+	
+	if ((set & FontMaskFilename))
+		return pattern;
 	
 	if (!(matched = FcFontMatch (NULL, pattern, &result)))
 		return pattern;
@@ -1307,7 +1311,7 @@ TextLayout::Layout ()
 {
 	TextSegment *segment;
 	bool clipped = false;
-	uint32_t prev = 0;
+	gunichar prev = 0;
 	GlyphInfo *glyph;
 	TextLine *line;
 	double advance;
@@ -1512,8 +1516,8 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 	TextSegment *segment;
 	TextDecorations deco;
 	TextFont *font = NULL;
-	const uint32_t *text;
-	uint32_t prev = 0;
+	const gunichar *text;
+	gunichar prev = 0;
 	Brush *cur_fg = NULL;
 	Brush *fg = NULL;
 	GlyphInfo *glyph;

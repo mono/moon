@@ -15,11 +15,13 @@
 #include <gtk/gtk.h>
 #include <cairo.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "runtime.h"
 #include "color.h"
 #include "text.h"
+#include "uri.h"
 
 
 extern guint32 moonlight_flags;
@@ -354,7 +356,7 @@ TextBlock::TextBlock ()
 	
 	foreground = NULL;
 	
-	dirty_actual_values = true;
+	dirty = true;
 	actual_height = 0.0;
 	actual_width = 0.0;
 	bbox_height = 0.0;
@@ -583,7 +585,7 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 	text_block_set_actual_height (this, actual_height);
 	text_block_set_actual_width (this, actual_width);
 	
-	dirty_actual_values = false;
+	dirty = false;
 }
 
 void
@@ -743,9 +745,9 @@ TextBlock::LayoutPango (cairo_t *cr)
 	
 	text_block_set_actual_height (this, (double) h);
 	text_block_set_actual_width (this, (double) w);
-	dirty_actual_values = false;
 	bbox_height = actual_height;
 	bbox_width = actual_width;
+	dirty = false;
 }
 
 void
@@ -777,7 +779,6 @@ TextBlock::Paint (cairo_t *cr)
 void
 TextBlock::OnPropertyChanged (DependencyProperty *prop)
 {
-	bool recalc_actual = true;
 	bool invalidate = true;
 	
 	if (prop->type != Type::TEXTBLOCK) {
@@ -791,32 +792,43 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			pango_font_description_set_family (font.pango, family);
 		else
 			font.custom->SetFamily (family);
+		
+		dirty = true;
 	} else if (prop == TextBlock::FontSizeProperty) {
 		double size = text_block_get_font_size (this);
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
 		else
 			font.custom->SetSize (size);
+		
+		dirty = true;
 	} else if (prop == TextBlock::FontStretchProperty) {
 		FontStretches stretch = text_block_get_font_stretch (this);
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_stretch (font.pango, font_stretch (stretch));
 		else
 			font.custom->SetStretch (stretch);
+		
+		dirty = true;
 	} else if (prop == TextBlock::FontStyleProperty) {
 		FontStyles style = text_block_get_font_style (this);
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_style (font.pango, font_style (style));
 		else
 			font.custom->SetStyle (style);
+		
+		dirty = true;
 	} else if (prop == TextBlock::FontWeightProperty) {
 		FontWeights weight = text_block_get_font_weight (this);
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_weight (font.pango, font_weight (weight));
 		else
 			font.custom->SetWeight (weight);
+		
+		dirty = true;
 	} else if (prop == TextBlock::TextProperty) {
 		// handled elsewhere
+		dirty = true;
 	} else if (prop == TextBlock::InlinesProperty) {
 		Inlines *newcol = GetValue (prop)->AsInlines ();
 		
@@ -825,6 +837,8 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
+		
+		dirty = true;
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {
 			foreground->Detach (NULL, this);
@@ -835,22 +849,15 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			foreground->Attach (NULL, this);
 			foreground->ref ();
 		}
-		
-		// Foreground property changes do not require a re-layout of the text
-		recalc_actual = false;
 	} else if (prop == TextBlock::ActualHeightProperty) {
-		recalc_actual = false;
 		invalidate = false;
 	} else if (prop == TextBlock::ActualWidthProperty) {
-		recalc_actual = false;
 		invalidate = false;
 	}
 	
 	if (invalidate) {
-		if (recalc_actual) {
-			dirty_actual_values = true;
+		if (dirty)
 			UpdateBounds (true);
-		}
 		
 		Invalidate ();
 	}
@@ -871,7 +878,7 @@ void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
 	if (prop != Inline::ForegroundProperty) {
-		dirty_actual_values = true;
+		dirty = true;
 		UpdateBounds (true);
 	}
 	
@@ -881,7 +888,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, Depe
 Value *
 TextBlock::GetValue (DependencyProperty *property)
 {
-	if (dirty_actual_values && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
+	if (dirty && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
 		CalcActualWidthHeight (NULL);
 	
 	if (property == TextBlock::TextProperty) {
@@ -946,7 +953,7 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		Run *run = new Run ();
 		if (value)
 			run_set_text (run, value->AsString ());
-
+		
 		Inlines *inlines = text_block_get_inlines (this);
 		
 		if (!inlines) {
@@ -959,6 +966,7 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		
 		inlines->Add (run);
 		run->unref ();
+		dirty = true;
 		return;
 	}
 	
@@ -1148,17 +1156,303 @@ DependencyProperty *Glyphs::OriginYProperty;
 DependencyProperty *Glyphs::StyleSimulationsProperty;
 DependencyProperty *Glyphs::UnicodeStringProperty;
 
+enum GlyphAttrMask {
+	Index   = 1 << 1,
+	Advance = 1 << 2,
+	uOffset = 1 << 3,
+	vOffset = 1 << 4,
+};
+
+class GlyphAttr : public List::Node {
+public:
+	uint32_t index;
+	double advance;
+	double uoffset;
+	double voffset;
+	uint8_t set;
+	
+	GlyphAttr ();
+};
+
+GlyphAttr::GlyphAttr ()
+{
+	set = 0;
+}
+
+Glyphs::Glyphs ()
+{
+	desc = new TextFontDescription ();
+	desc->SetSize (0.0);
+	downloader = NULL;
+	font = NULL;
+	
+	fill = NULL;
+	path = NULL;
+	
+	attrs = new List ();
+	text = NULL;
+	
+	origin_y_specified = false;
+	origin_x = 0.0;
+	origin_y = 0.0;
+	
+	height = 0.0;
+	width = 0.0;
+	
+	invalid = false;
+	dirty = false;
+}
+
+Glyphs::~Glyphs ()
+{
+	if (fill)
+		fill->unref ();
+	
+	if (font)
+		font->unref ();
+	
+	if (path)
+		cairo_path_destroy (path);
+	
+	if (downloader) {
+		downloader_abort (downloader);
+		downloader->unref ();
+	}
+	
+	attrs->Clear (true);
+	delete attrs;
+	
+	g_free (text);
+	
+	delete desc;
+}
+
+void
+Glyphs::Layout ()
+{
+	double x, y, w, h;
+	GlyphInfo *glyph;
+	GlyphAttr *attr;
+	int n = 0;
+	
+	invalid = false;
+	dirty = false;
+	
+	height = 0.0;
+	width = 0.0;
+	
+	if (font) {
+		font->unref ();
+		font = NULL;
+	}
+	
+	if (path) {
+		cairo_path_destroy (path);
+		path = NULL;
+	}
+	
+	if (!desc->GetFilename () || desc->GetSize () == 0.0) {
+		// required font fields have not been set
+		return;
+	}
+	
+	if (((!text || !text[0]) && attrs->IsEmpty ())) {
+		// no glyphs to render
+		return;
+	}
+	
+	if (fill == NULL) {
+		// no fill specified (unlike TextBlock, there is no default brush)
+		return;
+	}
+	
+	font = desc->GetFont ();
+	
+	x = origin_x;
+	if (!origin_y_specified)
+		y = font->Height ();
+	else
+		y = origin_y;
+	
+	h = y - font->Descender ();
+	w = x;
+	
+	attr = (GlyphAttr *) attrs->First ();
+	
+	if (text && text[0]) {
+		gunichar *c = text;
+		
+		while (*c != 0) {
+			if (attr && (attr->set & Index))
+				glyph = font->GetGlyphInfoByIndex (attr->index);
+			else
+				glyph = font->GetGlyphInfo (*c);
+			
+			if (!glyph)
+				goto next1;
+			
+			if (attr && (attr->set & vOffset))
+				h = MAX (y - attr->voffset, h);
+			
+			if (attr && (attr->set & uOffset))
+				x += attr->uoffset;
+			
+			w = MAX (x + glyph->metrics.horiAdvance, w);
+			
+			if (attr && (attr->set & Advance))
+				x += attr->advance;
+			else
+				x += glyph->metrics.horiAdvance;
+			
+		next1:
+			
+			attr = attr ? (GlyphAttr *) attr->next : NULL;
+			n++;
+			c++;
+		}
+	}
+	
+	while (attr) {
+		if (!(attr->set & Index)) {
+			fprintf (stderr, "No index specified for glyph %d\n", n + 1);
+			invalid = true;
+			return;
+		}
+		
+		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
+			goto next2;
+		
+		if ((attr->set & vOffset))
+			h = MAX (y - attr->voffset, h);
+		
+		if ((attr->set & uOffset))
+			x += attr->uoffset;
+		
+		w = MAX (x + glyph->metrics.horiAdvance, w);
+		
+		if ((attr->set & Advance))
+			x += attr->advance;
+		else
+			x += glyph->metrics.horiAdvance;
+		
+	next2:
+		
+		attr = (GlyphAttr *) attr->next;
+		n++;
+	}
+	
+	height = h > 0.0 ? h : 0.0;
+	width = w;
+}
+
 void
 Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-	// FIXME: implement me
+	GlyphInfo *glyph;
+	GlyphAttr *attr;
+	double x0, y0;
+	double y1;
+	
+	if ((width == 0.0 && height == 0.0) || invalid)
+		return;
+	
+	fill->SetupBrush (cr, this);
+	
+	if (path) {
+		cairo_append_path (cr, path);
+		cairo_fill (cr);
+		return;
+	}
+	
+	x0 = origin_x;
+	if (!origin_y_specified)
+		y0 = font->Height ();
+	else
+		y0 = origin_y;
+	
+	attr = (GlyphAttr *) attrs->First ();
+	
+	if (font->IsScalable ())
+		cairo_new_path (cr);
+	
+	if (text && text[0]) {
+		gunichar *c = text;
+		
+		while (*c != 0) {
+			if (attr && (attr->set & Index)) {
+				printf ("glyph index %lu was specified to use in place of char %c\n", attr->index, (char) *c);
+				glyph = font->GetGlyphInfoByIndex (attr->index);
+			} else
+				glyph = font->GetGlyphInfo (*c);
+			
+			if (!glyph)
+				goto next1;
+			
+			if (attr && (attr->set & vOffset))
+				y1 = y0 - attr->voffset;
+			else
+				y1 = y0;
+			
+			if (attr && (attr->set & uOffset))
+				x0 += attr->uoffset;
+			
+			font->Path (cr, glyph, x0, y1);
+			
+			if (attr && (attr->set & Advance))
+				x0 += attr->advance;
+			else
+				x0 += glyph->metrics.horiAdvance;
+			
+		next1:
+			
+			attr = attr ? (GlyphAttr *) attr->next : NULL;
+			c++;
+		}
+	}
+	
+	while (attr) {
+		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
+			goto next2;
+		
+		if ((attr->set & vOffset))
+			y1 = y0 - attr->voffset;
+		else
+			y1 = y0;
+		
+		if ((attr->set & uOffset))
+			x0 += attr->uoffset;
+		
+		if (!font->IsScalable ())
+			font->Render (cr, glyph, x0, y1);
+		else
+			font->Path (cr, glyph, x0, y1);
+		
+		if ((attr->set & Advance))
+			x0 += attr->advance;
+		else
+			x0 += glyph->metrics.horiAdvance;
+		
+	next2:
+		
+		attr = (GlyphAttr *) attr->next;
+	}
+	
+	if (font->IsScalable ()) {
+		cairo_close_path (cr);
+		
+		path = cairo_copy_path (cr);
+		
+		cairo_fill (cr);
+	}
 }
 
 void 
 Glyphs::ComputeBounds ()
 {
-	// FIXME: implement me
-	bounds = Rect (0, 0, 0, 0);
+	if (dirty)
+		Layout ();
+	
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, width, height));
 }
 
 Point
@@ -1171,48 +1465,238 @@ Glyphs::GetTransformOrigin ()
 void
 Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	if (prop == Glyphs::FillProperty) {
-		printf ("Glyphs::FillProperty subproperty changed\n");
-	}
+	if (prop == Glyphs::FillProperty)
+		Invalidate ();
 	else
 		FrameworkElement::OnSubPropertyChanged (prop, subprop);
 }
 
 void
+Glyphs::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+{
+	;
+}
+
+void
+Glyphs::size_notify (int64_t size, gpointer data)
+{
+	;
+}
+
+void
+Glyphs::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	((Glyphs *) closure)->DownloaderComplete ();
+}
+
+void
+Glyphs::DownloaderComplete ()
+{
+	char *filename = downloader_get_response_file (downloader, "");
+	Value *value = downloader->GetValue (Downloader::UriProperty);
+	const char *str;
+	int id = 0;
+	Uri *uri;
+	
+	/* the download was aborted */
+	if (!filename)
+		return;
+	
+	if (value && (str = value->AsString ())) {
+		uri = new Uri ();
+		
+		if (uri->Parse (str) && uri->fragment) {
+			if ((id = strtol (uri->fragment, NULL, 10)) < 0)
+				id = 0;
+		}
+		
+		delete uri;
+	}
+	
+	desc->SetFilename (filename);
+	desc->SetIndex (id);
+	g_free (filename);
+	dirty = true;
+	
+	UpdateBounds (true);
+	Invalidate ();
+}
+
+void
+Glyphs::SetIndices (const char *in)
+{
+	register const char *inptr = in;
+	GlyphAttr *glyph;
+	double value;
+	char *end;
+	uint bit;
+	int n;
+	
+	attrs->Clear (true);
+	
+	if (in == NULL)
+		return;
+	
+	while (g_ascii_isspace (*inptr))
+		inptr++;
+	
+	while (*inptr) {
+		glyph = new GlyphAttr ();
+		
+		while (g_ascii_isspace (*inptr))
+			inptr++;
+		
+		glyph->index = strtoul (inptr, &end, 10);
+		if (end > inptr)
+			glyph->set |= Index;
+		
+		inptr = end;
+		while (g_ascii_isspace (*inptr))
+			inptr++;
+		
+		bit = (uint) Advance;
+		n = 0;
+		
+		while (*inptr == ',' && n < 3) {
+			inptr++;
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+			
+			value = strtod (inptr, &end);
+			
+			if (end > inptr) {
+				switch ((GlyphAttrMask) bit) {
+				case Advance:
+					glyph->advance = value / 4.0;
+					glyph->set |= Advance;
+					break;
+				case uOffset:
+					glyph->uoffset = value / 4.0;
+					glyph->set |= uOffset;
+					break;
+				case vOffset:
+					glyph->voffset = value / 4.0;
+					glyph->set |= vOffset;
+					break;
+				default:
+					break;
+				}
+			}
+			
+			inptr = end;
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+			
+			bit <<= 1;
+			n++;
+		}
+		
+		attrs->Append (glyph);
+		
+		while (g_ascii_isspace (*inptr))
+			inptr++;
+		
+		if (*inptr != ';') {
+			if (*inptr) {
+				int i;
+				
+				fprintf (stderr, "Parse error: %s\n", in);
+				fprintf (stderr, "             ");
+				for (i = 0; i < (inptr - in); i++)
+					fputc (' ', stderr);
+				fprintf (stderr, "^\n");
+			}
+			
+			break;
+		}
+		
+		inptr++;
+	}
+}
+
+void
 Glyphs::OnPropertyChanged (DependencyProperty *prop)
 {
+	bool invalidate = true;
+	
 	if (prop->type != Type::GLYPHS) {
 		FrameworkElement::OnPropertyChanged (prop);
 		return;
 	}
 	
-	if (prop == Glyphs::FillProperty) {
-		printf ("Glyphs::Fill property changed\n");
-	} else if (prop == Glyphs::FontRenderingEmSizeProperty) {
-		double size = glyphs_get_font_rendering_em_size (this);
-		printf ("Glyphs::FontRenderingEmSize property changed to %g\n", size);
-	} else if (prop == Glyphs::FontUriProperty) {
+	if (prop == Glyphs::FontUriProperty) {
 		char *uri = glyphs_get_font_uri (this);
-		printf ("Glyphs::FontUri property changed to %s\n", uri);
-	} else if (prop == Glyphs::IndicesProperty) {
-		char *indices = glyphs_get_indices (this);
-		printf ("Glyphs::Indicies property changed to %s\n", indices);
-	} else if (prop == Glyphs::OriginXProperty) {
-		double x = glyphs_get_origin_x (this);
-		printf ("Glyphs::OriginX property changed to %g\n", x);
-	} else if (prop == Glyphs::OriginXProperty) {
-		double y = glyphs_get_origin_y (this);
-		printf ("Glyphs::OriginY property changed to %g\n", y);
-	} else if (prop == Glyphs::StyleSimulationsProperty) {
-		StyleSimulations sims = glyphs_get_style_simulations (this);
-		printf ("Glyphs::StyleSimulations property changed to %d\n", sims);
+		
+		if (downloader) {
+			downloader_abort (downloader);
+			downloader->unref ();
+			downloader = NULL;
+		}
+		
+		if (uri && *uri) {
+			downloader = new Downloader ();
+			
+			//printf ("setting media source to %s\n", uri);
+			downloader_open (downloader, "GET", uri);
+			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+			if (downloader->Started () || downloader->Completed ()) {
+				if (downloader->Completed ())
+					DownloaderComplete ();
+			} else {
+				downloader->SetWriteFunc (data_write, size_notify, this);
+				
+				// This is what actually triggers the download
+				downloader->Send ();
+			}
+		}
+		
+		invalidate = false;
+	} else if (prop == Glyphs::FillProperty) {
+		if (fill != NULL) {
+			fill->Detach (NULL, this);
+			fill->unref ();
+		}
+		
+		if ((fill = glyphs_get_fill (this)) != NULL) {
+			fill->Attach (NULL, this);
+			fill->ref ();
+		}
 	} else if (prop == Glyphs::UnicodeStringProperty) {
 		char *str = glyphs_get_unicode_string (this);
-		printf ("Glyphs::UnicodeString property changed to %s\n", str);
+		g_free (text);
+		
+		if (str != NULL)
+			text = g_utf8_to_ucs4_fast (str, -1, NULL);
+		else
+			text = NULL;
+		
+		dirty = true;
+	} else if (prop == Glyphs::IndicesProperty) {
+		char *str = glyphs_get_indices (this);
+		SetIndices (str);
+		dirty = true;
+	} else if (prop == Glyphs::FontRenderingEmSizeProperty) {
+		double size = glyphs_get_font_rendering_em_size (this);
+		desc->SetSize (size);
+		dirty = true;
+	} else if (prop == Glyphs::OriginXProperty) {
+		origin_x = glyphs_get_origin_x (this);
+		dirty = true;
+	} else if (prop == Glyphs::OriginYProperty) {
+		origin_y = glyphs_get_origin_y (this);
+		origin_y_specified = true;
+		dirty = true;
+	} else if (prop == Glyphs::StyleSimulationsProperty) {
+		// Silverlight 1.0 does not implement this property
+		invalidate = false;
 	}
 	
-	FullInvalidate (false);
-
+	if (invalidate)
+		Invalidate ();
+	
+	if (dirty)
+		UpdateBounds (true);
+	
 	NotifyAttacheesOfPropertyChange (prop);
 }
 

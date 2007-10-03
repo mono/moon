@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 
+#include <glib.h>
 #include <cairo.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -87,7 +88,26 @@ G_BEGIN_DECLS
 void font_init (void);
 G_END_DECLS
 
-struct GlyphInfo;
+struct GlyphBitmap;
+
+struct GlyphMetrics {
+	double horiBearingX;
+	double horiBearingY;
+	double horiAdvance;
+	double vertBearingX;
+	double vertBearingY;
+	double vertAdvance;
+	double height;
+	double width;
+};
+
+struct GlyphInfo {
+	gunichar unichar;
+	uint32_t index;
+	GlyphMetrics metrics;
+	GlyphBitmap *bitmap;
+	moon_path *path;
+};
 
 class TextFont {
 	int ref_count;
@@ -111,11 +131,12 @@ public:
 	
 	static TextFont *Load (FcPattern *pattern);
 	
-	GlyphInfo *GetGlyphInfo (uint32_t unichar);
+	GlyphInfo *GetGlyphInfo (gunichar unichar);
+	GlyphInfo *GetGlyphInfoByIndex (uint32_t index);
 	
 	bool IsScalable ();
 	
-	double Kerning (uint32_t left, uint32_t right);
+	double Kerning (gunichar left, gunichar right);
 	double Descender ();
         double Ascender ();
 	double Height ();
@@ -125,10 +146,10 @@ public:
 	double UnderlineThickness ();
 	
 	void Path (cairo_t *cr, GlyphInfo *glyph, double x, double y);
-	void Path (cairo_t *cr, uint32_t unichar, double x, double y);
+	void Path (cairo_t *cr, gunichar unichar, double x, double y);
 	
 	void Render (cairo_t *cr, GlyphInfo *glyph, double x, double y);
-	void Render (cairo_t *cr, uint32_t unichar, double x, double y);
+	void Render (cairo_t *cr, gunichar unichar, double x, double y);
 };
 
 
@@ -190,7 +211,7 @@ public:
 class TextRun : public List::Node {
 public:
 	TextDecorations deco;
-	uint32_t *text;
+	gunichar *text;
 	TextFont *font;
 	Brush **fg;
 	

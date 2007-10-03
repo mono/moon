@@ -1,3 +1,14 @@
+2007-10-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: Implemented the Glyphs element.
+
+	* font.cpp: Made GlyphMetrics and GlyphInfo structs public for use
+	with the the Glyphs element implemented in text.cpp.
+	(GetGlyphInfo): Fixes to allow loading of the index=0 glyph.
+	(GetGlyphInfoByIndex): New method.
+	(CreatePattern): If the filename is specified, don't call
+	FcFontMatch(), simply return the constructed pattern.
+
 2007-10-02  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: remove TimeManager::current_fps, it's
