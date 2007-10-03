@@ -1,3 +1,7 @@
+2007-10-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* array.cpp: Move double array allocations back to new/delete.
+
 2007-10-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (EmSize): Removed, not needed.

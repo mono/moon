@@ -49,7 +49,7 @@ double_array_from_str (const char *s, int *count)
 {
 	int n = 16;
 	int pos = 0;
-	double *doubles = (double*)g_malloc (n * sizeof (double));
+	double *doubles = new double [n];
 	char *start = (char*)s;
 	char *end = NULL;
 
@@ -71,8 +71,12 @@ double_array_from_str (const char *s, int *count)
 			if (errno != 0 || (start == end))
 				goto error;
 			if (pos == n) {
-				n <<= 1; // double array size
-				doubles = (double*)g_realloc (doubles, n * sizeof (double));
+				int new_size = n << 1; // double array size
+				double *newdoubles = new double [new_size];
+				memcpy (newdoubles, doubles, n * sizeof (double));
+				delete[] doubles;
+				doubles = newdoubles;
+				n = new_size;
 			}
 			doubles[pos++] = dv;
 		}
@@ -81,7 +85,7 @@ double_array_from_str (const char *s, int *count)
 	*count = pos;
 	return doubles;
 error:
-	g_free (doubles);
+	delete [] doubles;
 	*count = 0;
 	return NULL;
 }
@@ -95,7 +99,7 @@ point_array_new (int count, Point *points)
 	p->basic.refcount = 1;
 	memcpy (p->points, points, sizeof (Point) * count);
 	return p;
-};
+}
 
 
 Point *
@@ -109,7 +113,7 @@ point_array_from_str (const char *s, int* count)
 	}
 	// invalid if doubles are not in pair
 	if ((n & 1) == 1) {
-		g_free (doubles);
+		delete [] doubles;
 		*count = 0;
 		return NULL;
 	}
@@ -120,7 +124,7 @@ point_array_from_str (const char *s, int* count)
 		points[j].x = doubles [i++];
 		points[j].y = doubles [i++];
 	}
-	g_free (doubles);
+	delete [] doubles;
 	*count = n;
 	return points;
 }
