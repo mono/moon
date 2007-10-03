@@ -39,7 +39,7 @@
 
 
 #define MINIMUM_FPS 5
-#define DEFAULT_FPS 20
+#define DEFAULT_FPS 60
 #define MAXIMUM_FPS 60
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
@@ -76,13 +76,13 @@ TimeManager::TimeManager ()
     current_fps (DEFAULT_FPS),
     current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
     max_fps (MAXIMUM_FPS),
-    strikes (0),
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
 {
 	start_time = get_now ();
 
 	tick_call_mutex = g_mutex_new ();
+	first_tick = true;
 }
 
 void
@@ -214,54 +214,45 @@ TimeManager::Tick ()
 	ENDTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan post_tick = get_now();
 
-	/* we only count strikes for higher/lower fps if the frame
-	   took more than 50ms over our timeour, or less than 50ms
-	   under our timeout. */
-	if (post_tick - pre_tick > (TimeSpan)(current_timeout * 10000))
-		strikes ++;
-	else if (post_tick - pre_tick < (TimeSpan)(current_timeout * 10000) - 100000)
-		strikes --;
-	else {
-//  	  if (strikes < 0) strikes++;
-//  	  else if (strikes > 0) strikes--;
+	/* implement an exponential moving average by way of simple
+	   exponential smoothing:
+
+	   s(0) = x(0)
+	   s(t) = alpha * x(t) + (1 - alpha) * s(t-1)
+
+	   where 0 < alpha < 1.
+
+	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
+	*/
+
+#define SMOOTHING_ALPHA 0.60 /* we probably want to play with this value some.. - toshok */
+
+
+	TimeSpan xt = post_tick - pre_tick;
+
+	/* the s(0) case */
+	if (first_tick) {
+		first_tick = false;
+		previous_smoothed = xt;
+		return;
 	}
 
-#define STRIKE_COUNT 10
-#define FPS_ADJUSTMENT 3
+	/* the s(t) case */
+	TimeSpan current_smoothed = SMOOTHING_ALPHA * xt + (1 - SMOOTHING_ALPHA) * previous_smoothed;
 
-	if (strikes > STRIKE_COUNT || strikes < -STRIKE_COUNT) {
-		int new_timeout = current_timeout;
-		
-		if (strikes > STRIKE_COUNT) {
-			/* it took us longer than our current_timeout to run through
-			   the clock update/render loop.  we need to scale back our
-			   timeout (lower fps) */
-			current_fps -= FPS_ADJUSTMENT;
-		}
-		else if (strikes < -STRIKE_COUNT) {
-			/* it took us less time than our
-			   current_timeout to run through the clock
-			   update/render loop.  let's make the timeout
-			   less (higher fps). */
-			current_fps += FPS_ADJUSTMENT;
-		}
+	/* current_smoothed now contains the prediction for what our next delay should be */
 
-		if (current_fps < MINIMUM_FPS)
-			current_fps = MINIMUM_FPS;
-		else if (current_fps > max_fps)
-			current_fps = max_fps;
+	current_timeout = current_smoothed / 10000;
+	if (current_timeout < FPS_TO_DELAY (max_fps))
+		current_timeout = FPS_TO_DELAY (max_fps);
+	else if (current_timeout > FPS_TO_DELAY (MINIMUM_FPS))
+		current_timeout = FPS_TO_DELAY (MINIMUM_FPS);
 
-		new_timeout = FPS_TO_DELAY (current_fps);
-		strikes = 0;
+	//	printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
+	RemoveTimeout();
+	AddTimeout();
 
-		if (new_timeout != current_timeout) {
-// 			printf ("current_fps = %2.3ffps\n", current_fps);
-			current_timeout = new_timeout;
-			RemoveTimeout();
-			AddTimeout();
-// 			printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
-		}
-	}
+	previous_smoothed = current_smoothed;
 }
 
 void

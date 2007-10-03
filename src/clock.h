@@ -221,7 +221,9 @@ class TimeManager : public EventObject {
 	double current_fps;
 	int current_timeout;
 	int max_fps;
-	int strikes; /* used by our lame fps tuning code */
+	bool first_tick;
+
+	TimeSpan previous_smoothed;
 
 	enum TimeManagerOp {
 		TIME_MANAGER_UPDATE_CLOCKS = 0x01,

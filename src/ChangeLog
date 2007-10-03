@@ -1,5 +1,10 @@
 2007-10-02  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h, clock.cpp: rip out the old stupid throttling code and
+	replace it with an exponential moving average of the delays.
+
+2007-10-02  Chris Toshok  <toshok@ximian.com>
+
 	* clock.h, clock.cpp: add Timeline::Get/SetSpeedRatio methods, and
 	use them to make test/xaml/clock8.xaml work.
 
