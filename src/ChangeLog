@@ -1,6 +1,7 @@
 2007-10-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::SetFontSource): Implemented.
+	(text_init): Default StyleSimulations to None.
 
 2007-10-03  Sebastien Pouliot  <sebastien@ximian.com>
 

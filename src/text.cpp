@@ -1852,9 +1852,7 @@ glyphs_set_origin_y (Glyphs *glyphs, double value)
 StyleSimulations
 glyphs_get_style_simulations (Glyphs *glyphs)
 {
-	Value *value = glyphs->GetValue (Glyphs::StyleSimulationsProperty);
-	
-	return value ? (StyleSimulations) value->AsInt32 () : StyleSimulationsNone;
+	return (StyleSimulations) glyphs->GetValue (Glyphs::StyleSimulationsProperty)->AsInt32 ();
 }
 
 void
@@ -1929,6 +1927,6 @@ text_init (void)
 	Glyphs::IndicesProperty = DependencyObject::Register (Type::GLYPHS, "Indices", Type::STRING);
 	Glyphs::OriginXProperty = DependencyObject::Register (Type::GLYPHS, "OriginX", new Value (0.0));
 	Glyphs::OriginYProperty = DependencyObject::Register (Type::GLYPHS, "OriginY", new Value (0.0));
-	Glyphs::StyleSimulationsProperty = DependencyObject::Register (Type::GLYPHS, "StyleSimulations", Type::INT32);
+	Glyphs::StyleSimulationsProperty = DependencyObject::Register (Type::GLYPHS, "StyleSimulations", new Value (StyleSimulationsNone));
 	Glyphs::UnicodeStringProperty = DependencyObject::Register (Type::GLYPHS, "UnicodeString", Type::STRING);
 }
