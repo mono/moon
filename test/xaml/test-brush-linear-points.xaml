@@ -1,0 +1,181 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+   <TextBlock Canvas.Left="0" Canvas.Top="0" Text="S 0,0 E 0,0" />
+   <Rectangle Canvas.Left="0" Canvas.Top="20" Stroke="Black" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="0,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="100" Canvas.Top="0" Text="S 0,0 E 0,1" />
+   <Rectangle Stroke="Black" Canvas.Left="100" Canvas.Top="20" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+          </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="200" Canvas.Top="0" Text="S 0,0 E 1,0" />
+   <Rectangle Stroke="Black" Canvas.Left="200" Canvas.Top="20" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="300" Canvas.Top="0" Text="S 0,0 E 1,1" />
+   <Rectangle Stroke="Black" Canvas.Left="300" Canvas.Top="20" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+
+   <TextBlock Canvas.Left="0" Canvas.Top="80" Text="S 0,1 E 0,0" />
+   <Rectangle Canvas.Left="0" Canvas.Top="100" Stroke="Black" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="100" Canvas.Top="80" Text="S 0,1 E 0,1" />
+   <Rectangle Stroke="Black" Canvas.Left="100" Canvas.Top="100" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,1" EndPoint="0,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+          </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="200" Canvas.Top="80" Text="S 0,1 E 1,0" />
+   <Rectangle Stroke="Black" Canvas.Left="200" Canvas.Top="100" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="300" Canvas.Top="80" Text="S 0,1 E 1,1" />
+   <Rectangle Stroke="Black" Canvas.Left="300" Canvas.Top="100" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,1" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+
+   <TextBlock Canvas.Left="0" Canvas.Top="160" Text="S 1,0 E 0,0" />
+   <Rectangle Canvas.Left="0" Canvas.Top="180" Stroke="Black" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="100" Canvas.Top="160" Text="S 1,0 E 0,1" />
+   <Rectangle Stroke="Black" Canvas.Left="100" Canvas.Top="180" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+          </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="200" Canvas.Top="160" Text="S 1,0 E 1,0" />
+   <Rectangle Stroke="Black" Canvas.Left="200" Canvas.Top="180" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,0" EndPoint="1,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="300" Canvas.Top="160" Text="S 1,0 E 1,1" />
+   <Rectangle Stroke="Black" Canvas.Left="300" Canvas.Top="180" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+
+   <TextBlock Canvas.Left="0" Canvas.Top="240" Text="S 1,1 E 0,0" />
+   <Rectangle Canvas.Left="0" Canvas.Top="260" Stroke="Black" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,1" EndPoint="0,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="100" Canvas.Top="240" Text="S 1,1 E 0,1" />
+   <Rectangle Stroke="Black" Canvas.Left="100" Canvas.Top="260" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,1" EndPoint="0,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+          </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="200" Canvas.Top="240" Text="S 1,1 E 1,0" />
+   <Rectangle Stroke="Black" Canvas.Left="200" Canvas.Top="260" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,1" EndPoint="1,0">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <TextBlock Canvas.Left="300" Canvas.Top="240" Text="S 1,1 E 1,1" />
+   <Rectangle Stroke="Black" Canvas.Left="300" Canvas.Top="260" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="1,1" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+</Canvas>
