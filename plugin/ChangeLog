@@ -1,5 +1,10 @@
 2007-10-03  Chris Toshok  <toshok@ximian.com>
 
+	* moonlight.h: need to wrap the renamed symbols in an extern "C"
+	block.
+
+2007-10-03  Chris Toshok  <toshok@ximian.com>
+
 	* moonlight.h, plugin-entry.cpp, plugin-proxy.cpp: if we're using
 	libmoonloader.so, we need to rename the 4 symbols we proxy in
 	plugin-entry.cpp, and load them up via our mangled names in
