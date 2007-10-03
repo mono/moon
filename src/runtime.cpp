@@ -450,8 +450,6 @@ Surface::ShowFullScreenMessage ()
 		return;
 	}
 	
-	Panel* top = (Panel*) toplevel;
-	
 	full_screen_message = (Canvas*) message;
 	
 	DependencyObject* message_object = full_screen_message->FindName ("message");
