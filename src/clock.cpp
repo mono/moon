@@ -73,7 +73,6 @@ int TimeManager::RenderEvent = -1;
 TimeManager::TimeManager ()
   : child_clocks (NULL),
     tick_id (-1),
-    current_fps (DEFAULT_FPS),
     current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
     max_fps (MAXIMUM_FPS),
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),

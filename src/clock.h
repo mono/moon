@@ -218,7 +218,6 @@ class TimeManager : public EventObject {
 
 	static gboolean tick_timeout (gpointer data);
 	gint tick_id;
-	double current_fps;
 	int current_timeout;
 	int max_fps;
 	bool first_tick;
