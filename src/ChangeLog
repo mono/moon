@@ -1,3 +1,7 @@
+2007-10-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::SetFontSource): Implemented.
+
 2007-10-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp|h: SL and Cairo defaults to different values (end 

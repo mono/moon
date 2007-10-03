@@ -106,6 +106,7 @@ class TextBlock : public FrameworkElement {
 		TextLayout *custom;
 	} layout;
 	MangoRenderer *renderer;
+	Downloader *downloader;
 	Brush *foreground;
 	
 	double actual_height;
@@ -134,6 +135,12 @@ class TextBlock : public FrameworkElement {
 	
 	void LayoutPango (cairo_t *cr);
 	void LayoutSilverlight (cairo_t *cr);
+	
+	void DownloaderComplete ();
+	
+	static void data_write (guchar *data, gsize n, gsize nn, void *closure);
+	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
+	static void size_notify (int64_t size, gpointer data);
 	
 public:
 	static DependencyProperty *ActualHeightProperty;

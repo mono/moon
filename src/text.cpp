@@ -355,6 +355,7 @@ TextBlock::TextBlock ()
 	double size = text_block_get_font_size (this);
 	
 	foreground = NULL;
+	downloader = NULL;
 	
 	dirty = true;
 	actual_height = 0.0;
@@ -409,6 +410,11 @@ TextBlock::~TextBlock ()
 		delete font.custom;
 	}
 	
+	if (downloader != NULL) {
+		downloader_abort (downloader);
+		downloader->unref ();
+	}
+	
 	if (foreground != NULL) {
 		foreground->Detach (NULL, this);
 		foreground->unref ();
@@ -416,9 +422,37 @@ TextBlock::~TextBlock ()
 }
 
 void
-TextBlock::SetFontSource (DependencyObject *downloader)
+TextBlock::SetFontSource (DependencyObject *dl)
 {
-	;
+	if (RENDER_USING_PANGO) {
+		fprintf (stderr, "TextBlock::SetFontSource() not supported using the Pango text layout/rendering engine.\n");
+		return;
+	}
+	
+	if (downloader == (Downloader *) dl)
+		return;
+	
+	if (downloader) {
+		downloader_abort (downloader);
+		downloader->unref ();
+		downloader = NULL;
+	}
+	
+	if (dl) {
+		downloader = (Downloader *) dl;
+		downloader->ref ();
+		
+		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		if (downloader->Started () || downloader->Completed ()) {
+			if (downloader->Completed ())
+				DownloaderComplete ();
+		} else {
+			downloader->SetWriteFunc (data_write, size_notify, this);
+			
+			// This is what actually triggers the download
+			downloader->Send ();
+		}
+	}
 }
 
 void
@@ -979,6 +1013,40 @@ TextBlock::SetValue (DependencyProperty *property, Value value)
 	SetValue (property, &value);
 }
 
+void
+TextBlock::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+{
+	;
+}
+
+void
+TextBlock::size_notify (int64_t size, gpointer data)
+{
+	;
+}
+
+void
+TextBlock::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	((TextBlock *) closure)->DownloaderComplete ();
+}
+
+void
+TextBlock::DownloaderComplete ()
+{
+	char *filename = downloader_get_response_file (downloader, "");
+	
+	/* the download was aborted */
+	if (!filename)
+		return;
+	
+	font.custom->SetFilename (filename);
+	g_free (filename);
+	dirty = true;
+	
+	UpdateBounds (true);
+	Invalidate ();
+}
 
 TextBlock *
 text_block_new (void)
@@ -1379,10 +1447,9 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		gunichar *c = text;
 		
 		while (*c != 0) {
-			if (attr && (attr->set & Index)) {
-				printf ("glyph index %lu was specified to use in place of char %c\n", attr->index, (char) *c);
+			if (attr && (attr->set & Index))
 				glyph = font->GetGlyphInfoByIndex (attr->index);
-			} else
+			else
 				glyph = font->GetGlyphInfo (*c);
 			
 			if (!glyph)
