@@ -459,12 +459,15 @@ MediaElement::DownloaderComplete ()
 	
 	// FIXME: specify which audio stream index the player should use
 	
+	media_element_set_current_state (this, "Opening");
+	
 	if (!source->Open ()) {
 		Emit (MediaElement::MediaFailedEvent);
 		return;
 	}
 	
 	UpdateProgress ();
+	
 	Emit (MediaElement::MediaOpenedEvent);
 	
 	Invalidate ();
