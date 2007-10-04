@@ -252,6 +252,8 @@ TimeManager::Tick ()
 	AddTimeout();
 
 	previous_smoothed = current_smoothed;
+
+//  	time_manager_list_clocks();
 }
 
 void
@@ -310,11 +312,9 @@ output_clock (Clock *clock, int level)
 {
 	spaces (level);
 	printf (clock->Is(Type::CLOCKGROUP) ? "ClockGroup " : "Clock ");
+	printf ("(%p) ", clock);
 	if (clock->GetName ()) {
 		printf ("'%s', ", clock->GetName());
-	}
-	else {
-		printf ("(%p), ", clock);
 	}
 
 	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
@@ -467,7 +467,7 @@ Clock::Tick ()
 #if CLOCK_DEBUG
 		printf ("+ clock %p (%s) duration is %lld, and new_time == %lld\n", this, timeline->GetName(), duration_timespan, new_time);
 #endif
-		if (new_time >= duration_timespan) {
+		if (!is_reversed && new_time >= duration_timespan) {
 #if CLOCK_DEBUG
 			printf ("+ clock %p (%s) hit its duration\n", this, timeline->GetName());
 #endif
@@ -506,7 +506,7 @@ Clock::Tick ()
 				}
 			}
 		}
-		else if (new_time <= 0) {
+		else if (is_reversed && new_time <= 0) {
 			is_reversed = false;
 			new_time = -new_time;
 
@@ -758,7 +758,7 @@ ClockGroup::Tick ()
 		   otherwise just call its Tick
 		   method */
 		Clock *c = (Clock*)l->data;
-		if (c->GetClockState() != Clock::Stopped) {
+		if (c->GetClockState() != Clock::Stopped && c->GetNewClockState() != Clock::Stopped) {
 			c->Tick ();
 		}
 		else if ((c->GetClockState() == Clock::Stopped) && (!c->GetHasStarted() && c->GetBeginTime () <= current_time)) {

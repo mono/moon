@@ -1,3 +1,10 @@
+2007-10-04  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp: lots of little changes.  fixes clock16.xaml, and
+	therefor the score animation in dr.popper goes away properly.
+	also fixes a few other issues with FillBehavior (checked by our
+	clock xaml tests.)
+
 2007-10-04  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (Glyphs::.ctor): We no longer have a TextFont member
