@@ -211,6 +211,7 @@ class Polygon : public Shape {
 	virtual FillRule GetFillRule ();
 
 	virtual bool CanFill () { return true; }
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -241,6 +242,7 @@ class Polyline : public Shape {
 	virtual void BuildPath ();
 
 	virtual bool CanFill () { return true; }
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
 
 	virtual FillRule GetFillRule ();
@@ -272,6 +274,7 @@ class Path : public Shape {
 
 	virtual void Draw (cairo_t *cr);
 
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
 
 	virtual bool CanFill () { return true; }

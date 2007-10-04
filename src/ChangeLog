@@ -1,3 +1,9 @@
+2007-10-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Shapes that uses their Width and Height must use
+	them for brush size. Fix brush rendering when used with 
+	UIElement.RenderTransform property.
+
 2007-10-03  Chris Toshok  <toshok@ximian.com>
 
 	* text.cpp: make Glyphs usable even when text=pango.  "usable"

@@ -294,12 +294,8 @@ Shape::ComputeBounds ()
 void
 Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	double x1, y1, x2, y2;
-	
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	
-	*height = fabs (y2 - y1);
-	*width = fabs (x2 - x1);
+	*height = framework_element_get_height (this);
+	*width = framework_element_get_width (this);
 }
 
 bool
@@ -1318,6 +1314,17 @@ Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, Depend
 	Invalidate ();
 }
 
+void
+Polygon::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	double x1, y1, x2, y2;
+	
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	
+	*height = fabs (y2 - y1);
+	*width = fabs (x2 - x1);
+}
+
 FillRule
 polygon_get_fill_rule (Polygon *polygon)
 {
@@ -1496,6 +1503,17 @@ Polyline::OnCollectionChanged (Collection *col, CollectionChangeType type, Depen
 	Invalidate ();
 }
 
+void
+Polyline::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	double x1, y1, x2, y2;
+	
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	
+	*height = fabs (y2 - y1);
+	*width = fabs (x2 - x1);
+}
+
 FillRule
 polyline_get_fill_rule (Polyline *polyline)
 {
@@ -1632,6 +1650,17 @@ Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subpro
 	}
 	else
 		Shape::OnSubPropertyChanged (prop, subprop);
+}
+
+void
+Path::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	double x1, y1, x2, y2;
+	
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	
+	*height = fabs (y2 - y1);
+	*width = fabs (x2 - x1);
 }
 
 Geometry *
