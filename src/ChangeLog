@@ -1,3 +1,15 @@
+2007-10-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp: Added new macros xaml_isspace, xaml_isalpha(),
+	xaml_isalnum() and xaml_isdigit() to use in place of the
+	g_ascii_is*() functions which are locale dependant.
+	(more_points_available): Simplified by looping while
+	isspace. Also, update our input pointer if we have to scan over
+	lwsp.
+	(get_point): Now returns bool based on whether it manages to
+	extract a point or not.
+	(geometry_from_str): Updated.
+
 2007-10-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Points after the initial two line points should

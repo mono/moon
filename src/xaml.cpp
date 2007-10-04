@@ -37,6 +37,13 @@
 
 #define READ_BUFFER 1024
 
+#define xaml_isalpha(c) ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+#define xaml_isdigit(c) (c >= '0' && c <= '9')
+#define xaml_isspace(c) (c == ' ' || c == '\t' || c == '\f' || c == '\n' || c == '\r')
+#define xaml_isalnum(c) (xaml_isalpha (c) || xaml_isdigit (c))
+
+
+
 static GHashTable *enum_map = NULL;
 
 class XamlElementInfo;
@@ -914,7 +921,7 @@ char_data_handler (void *data, const char *in, int inlen)
 	
 	if (!p->cdata) {
 		// unless we already have significant char data, ignore lwsp
-		while (g_ascii_isspace (*inptr) && inptr < inend)
+		while (xaml_isspace (*inptr) && inptr < inend)
 			inptr++;
 		
 		if (inptr == inend)
@@ -924,13 +931,13 @@ char_data_handler (void *data, const char *in, int inlen)
 	} else {
 		len = p->cdata->len;
 		g_string_append_len (p->cdata, in, inlen);
-		lwsp = g_ascii_isspace (p->cdata->str[len - 1]);
+		lwsp = xaml_isspace (p->cdata->str[len - 1]);
 	}
 	
 	// Condense multi-lwsp blocks into a single space (and make all lwsp chars a literal space, not '\n', etc)
 	s = d = p->cdata->str + len;
 	while (*s != '\0') {
-		if (g_ascii_isspace (*s)) {
+		if (xaml_isspace (*s)) {
 			if (!lwsp)
 				*d++ = ' ';
 			lwsp = true;
@@ -1393,26 +1400,39 @@ matrix_value_from_str (const char *str)
 
 
 void
-advance (char **data)
+advance (char **in)
 {
-	char *d = *data;
-
-	while (*d && !g_ascii_isalnum (*d) && *d != '.' && *d != '-')
-		d++;
-
-	*data = d;
+	char *inptr = *in;
+	
+	while (*inptr && !xaml_isalnum (*inptr) && *inptr != '.' && *inptr != '-')
+		inptr++;
+	
+	*in = inptr;
 }
 
-void
-get_point (Point *p, char **data)
+bool
+get_point (Point *p, char **in)
 {
-	char *d = *data;
-
-	p->x = strtod (d, &d);
-	advance (&d);
-	p->y = strtod (d, &d);
-
-	*data = d;
+	char *end, *inptr = *in;
+	double x, y;
+	
+	x = strtod (inptr, &end);
+	if (end == inptr)
+		return false;
+	
+	advance (&end);
+	inptr = end;
+	
+	y = strtod (inptr, &end);
+	if (end == inptr)
+		return false;
+	
+	p->x = x;
+	p->y = y;
+	
+	*in = inptr;
+	
+	return true;
 }
 
 void
@@ -1423,32 +1443,33 @@ make_relative (const Point *cp, Point *mv)
 }
 
 bool
-more_points_available (char *data)
+more_points_available (char **in)
 {
-	char *d  = data;
-	while (*d) {
-		if (g_ascii_isalpha (*d))
-			return false;
-		if (g_ascii_isdigit (*d) || *d == '.' || *d == '-')
-			return true;
-		// otherwise we are whitespace
-		d++;
-	}
-
-	return false;
+	char *inptr = *in;
+	
+	while (xaml_isspace (*inptr))
+		inptr++;
+	
+	*in = inptr;
+	
+	return (xaml_isdigit (*inptr) || *inptr == '.' || *inptr == '-');
 }
 
 Point *
-get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, Point *last)
+get_point_array (char *in, GSList *pl, int *count, bool relative, Point *cp, Point *last)
 {
 	int c = *count;
 
-	while (more_points_available (data)) {
+	while (more_points_available (&in)) {
 		Point *n = new Point ();
-
-		get_point (n, &data);
-		advance (&data);
-
+		
+		if (!get_point (n, &in)) {
+			delete n;
+			break;
+		}
+		
+		advance (&in);
+		
 		if (relative) make_relative (cp, n);
 
 		pl = g_slist_append (pl, n);
@@ -1477,10 +1498,11 @@ get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, P
 Geometry *
 geometry_from_str (const char *str)
 {
-	char *data = (char*)str;
+	char *inptr = (char *) str;
 	//int s; // FOr starting expression markers
 	Point cp = Point (0, 0);
 	Point cp1, cp2, cp3;
+	char *end;
 
 	PathFigure *pf = NULL;
 	PathSegment *prev = NULL;
@@ -1491,36 +1513,34 @@ geometry_from_str (const char *str)
 	pg->SetValue (PathGeometry::FiguresProperty, pfc);
 	pfc->unref ();
 
-	while (*data) {
-		if (g_ascii_isspace (*data))
-			data++;
-
-		if (!*data)
+	while (*inptr) {
+		if (xaml_isspace (*inptr))
+			inptr++;
+		
+		if (!inptr[0])
 			break;
-
+		
 		bool relative = false;
-
-		switch (*data) {
+		
+		inptr++;
+		
+		switch (inptr[-1]) {
 		case 'f':
 		case 'F':
-			data++;
-			if (!*data)
-				break;
-
-			if (*data == '0')
+			if (*inptr == '0')
 				geometry_set_fill_rule (pg, FillRuleEvenOdd);
-			else if (*data == '1')
+			else if (*inptr == '1')
 				geometry_set_fill_rule (pg, FillRuleNonzero);
 			// FIXME: else it's a bad value and nothing should be rendered
-			data++;
+			inptr++;
 			break;
 
 		case 'm':
 			relative = true;
 		case 'M':
-			data++;
-
-			get_point (&cp1, &data);
+			if (!get_point (&cp1, &inptr))
+				break;
+			
 			if (relative) make_relative (&cp, &cp1);
 
 			if (pf) {
@@ -1540,11 +1560,13 @@ geometry_from_str (const char *str)
 			cp.x = cp1.x;
 			cp.y = cp1.y;
 
-			advance (&data);
-			while (more_points_available (data)) {
-				get_point (&cp1, &data);
+			advance (&inptr);
+			while (more_points_available (&inptr)) {
+				if (!get_point (&cp1, &inptr))
+					break;
+				
 				if (relative) make_relative (&cp, &cp1);
-
+				
 				LineSegment* ls = new LineSegment ();
 				ls->SetValue (LineSegment::PointProperty, Value (cp1));
 
@@ -1561,12 +1583,10 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'L':
 		{
-			data++;
-
-			while (more_points_available (data)) {
-
-				get_point (&cp1, &data);
-
+			while (more_points_available (&inptr)) {
+				if (!get_point (&cp1, &inptr))
+					break;
+				
 				if (relative) make_relative (&cp, &cp1);
 
 				LineSegment* ls = new LineSegment ();
@@ -1579,18 +1599,21 @@ geometry_from_str (const char *str)
 				cp.x = cp1.x;
 				cp.y = cp1.y;
 
-				advance (&data);
+				advance (&inptr);
 			}
 			break;
 		}
+		
 		case 'h':
 			relative = true;
 		case 'H':
 		{
-			data++;
-
-			double x = strtod (data, &data);
-
+			double x = strtod (inptr, &end);
+			if (end == inptr)
+				break;
+			
+			inptr = end;
+			
 			if (relative)
 				x += cp.x;
 			cp = Point (x, cp.y);
@@ -1603,15 +1626,18 @@ geometry_from_str (const char *str)
 			prev = ls;
 
 			break;
-		}		
+		}
+		
 		case 'v':
 			relative = true;
 		case 'V':
 		{
-			data++;
-
-			double y = strtod (data, &data);
-
+			double y = strtod (inptr, &end);
+			if (end == inptr)
+				break;
+			
+			inptr = end;
+			
 			if (relative)
 				y += cp.y;
 			cp = Point (cp.x, y);
@@ -1625,25 +1651,33 @@ geometry_from_str (const char *str)
 
 			break;
 		}
+		
 		case 'c':
 			relative = true;
 		case 'C':
 		{
-			data++;
-
-			get_point (&cp1, &data);
+			if (!get_point (&cp1, &inptr))
+				break;
+			
 			if (relative) make_relative (&cp, &cp1);
 			
-			advance (&data);
-			get_point (&cp2, &data);
+			advance (&inptr);
+			
+			if (!get_point (&cp2, &inptr))
+				break;
+			
 			if (relative) make_relative (&cp, &cp2);
-
-			advance (&data);
-			get_point (&cp3, &data);
+			
+			advance (&inptr);
+			
+			if (!get_point (&cp3, &inptr))
+				break;
+			
 			if (relative) make_relative (&cp, &cp3);
-
-			advance (&data);
-			if (more_points_available (data)) {
+			
+			advance (&inptr);
+			
+			if (more_points_available (&inptr)) {
 				GSList *pl = NULL;
 				int count = 3;
 
@@ -1652,7 +1686,7 @@ geometry_from_str (const char *str)
 				pl = g_slist_append (pl, &cp3);
 
 				Point last;
-				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
+				Point *pts = get_point_array (inptr, pl, &count, relative, &cp, &last);
 				PolyBezierSegment *pbs = new PolyBezierSegment ();
 				pbs->SetValue (PolyBezierSegment::PointsProperty, Value (pts, count));
 
@@ -1677,7 +1711,6 @@ geometry_from_str (const char *str)
 				cp.x = cp3.x;
 				cp.y = cp3.y;
 			}
-
 			
 			break;
 		}
@@ -1685,16 +1718,17 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'S':
 		{
-			data++;
-
-			while (more_points_available (data)) {
-				get_point (&cp2, &data);
-
+			while (more_points_available (&inptr)) {
+				if (!get_point (&cp2, &inptr))
+					break;
+				
 				if (relative) make_relative (&cp, &cp2);
 
-				advance (&data);
-
-				get_point (&cp3, &data);
+				advance (&inptr);
+				
+				if (!get_point (&cp3, &inptr))
+					break;
+				
 				if (relative) make_relative (&cp, &cp3);
 
 				if (prev && prev->GetObjectType () == Type::BEZIERSEGMENT) {
@@ -1716,7 +1750,7 @@ geometry_from_str (const char *str)
 				cp.x = cp3.x;
 				cp.y = cp3.y;
 
-				advance (&data);
+				advance (&inptr);
 			}
 			break;
 		}
@@ -1724,17 +1758,20 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'Q':
 		{
-			data++;
-
-			get_point (&cp1, &data);
+			if (!get_point (&cp1, &inptr))
+				break;
+			
 			if (relative) make_relative (&cp, &cp1);
 
-			advance (&data);
-			get_point (&cp2, &data);
+			advance (&inptr);
+			
+			if (!get_point (&cp2, &inptr))
+				break;
+			
 			if (relative) make_relative (&cp, &cp2);
-
-			advance (&data);
-			if (more_points_available (data)) {
+			
+			advance (&inptr);
+			if (more_points_available (&inptr)) {
 				GSList *pl = NULL;
 				int count = 2;
 
@@ -1742,7 +1779,7 @@ geometry_from_str (const char *str)
 				pl = g_slist_append (pl, &cp2);
 
 				Point last;
-				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
+				Point *pts = get_point_array (inptr, pl, &count, relative, &cp, &last);
 				PolyQuadraticBezierSegment *pqbs = new PolyQuadraticBezierSegment ();
 				pqbs->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (pts, count));
 
@@ -1772,10 +1809,10 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'T':
 		{
-			data++;
-
-			while (more_points_available (data)) {
-				get_point (&cp2, &data);
+			while (more_points_available (&inptr)) {
+				if (!get_point (&cp2, &inptr))
+					break;
+				
 				if (relative) make_relative (&cp, &cp2);
 
 				if (prev && prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
@@ -1796,7 +1833,7 @@ geometry_from_str (const char *str)
 				cp.x = cp2.x;
 				cp.y = cp2.y;
 
-				advance (&data);
+				advance (&inptr);
 			}
 				
 			break;
@@ -1805,22 +1842,36 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'A':
 		{
-			data++;
-
-			while (more_points_available (data)) {
-				get_point (&cp1, &data);
-
-				advance (&data);
-				double angle = strtod (data, &data);
-
-				advance (&data);
-				int is_large = strtol (data, &data, 10);
-
-				advance (&data);
-				int sweep = strtol (data, &data, 10);
-
-				advance (&data);
-				get_point (&cp2, &data);
+			while (more_points_available (&inptr)) {
+				if (!get_point (&cp1, &inptr))
+					break;
+				
+				advance (&inptr);
+				
+				double angle = strtod (inptr, &end);
+				if (end == inptr)
+					break;
+				
+				inptr = end;
+				advance (&inptr);
+				
+				int is_large = strtol (inptr, &end, 10);
+				if (end == inptr)
+					break;
+				
+				inptr = end;
+				advance (&inptr);
+				
+				int sweep = strtol (inptr, &end, 10);
+				if (end == inptr)
+					break;
+				
+				inptr = end;
+				advance (&inptr);
+				
+				if (!get_point (&cp2, &inptr))
+					break;
+				
 				if (relative) make_relative (&cp, &cp2);
 
 				ArcSegment *arc = new ArcSegment ();
@@ -1837,22 +1888,17 @@ geometry_from_str (const char *str)
 				cp.x = cp2.x;
 				cp.y = cp2.y;
 
-				advance (&data);
+				advance (&inptr);
 			}
 			break;
 		}
 		case 'z':
 		case 'Z':
-			data++;
-
 			prev = NULL;
 			path_figure_set_is_closed (pf, true);
 			break;
-
 		default:
-			data++;
 			break;
-			
 		}
 	}
 
