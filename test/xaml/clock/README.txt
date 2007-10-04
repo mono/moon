@@ -12,3 +12,5 @@ clock11 - same as clock10, but with the instantaneous animation having FillBehav
 clock12 - same as clock1, but it takes 2 seconds, and the block makes the journey over and over.
 clock13 - same as clock12, but specifies the RepeatBehavior as a double.  Fails on windows (with an alert)
 clock14 - same as clock12, but specifies the RepeatBehavior as a timespan/duration.  Fails on windows (the red box stays on the right side.)
+clock15 - tests a non-zero BeginTime on a storyboard along with a 0 BeginTime.
+clock16 - tests a storyboard with a longer duration than its consituent Animation, with a FillBehavior of Stop (animations have the default fill behavior)
