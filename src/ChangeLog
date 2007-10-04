@@ -1,3 +1,7 @@
+2007-10-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle repeated bezier segments properly.
+
 2007-10-04  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp: lots of little changes.  fixes clock16.xaml, and

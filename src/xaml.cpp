@@ -1473,7 +1473,7 @@ get_point_array (char *data, GSList *pl, int *count, bool relative, Point *cp, P
 
 	return pts;
 }
-		
+
 Geometry *
 geometry_from_str (const char *str)
 {
@@ -1707,44 +1707,23 @@ geometry_from_str (const char *str)
 		{
 			data++;
 
-			get_point (&cp2, &data);
-			if (relative) make_relative (&cp, &cp2);
+			while (more_points_available (data)) {
+				get_point (&cp2, &data);
 
-			advance (&data);
+				if (relative) make_relative (&cp, &cp2);
 
-			get_point (&cp3, &data);
-			if (relative) make_relative (&cp, &cp3);
+				advance (&data);
 
-			if (prev && prev->GetObjectType () == Type::BEZIERSEGMENT) {
-				Point *p = prev->GetValue (BezierSegment::Point2Property)->AsPoint ();
-				cp1.x = 2 * cp.x - p->x;
-				cp1.y = 2 * cp.y - p->y;
-			} else
-				cp1 = cp;
+				get_point (&cp3, &data);
+				if (relative) make_relative (&cp, &cp3);
 
-			advance (&data);
-			if (more_points_available (data)) {
-				GSList *pl = NULL;
-				int count = 3;
+				if (prev && prev->GetObjectType () == Type::BEZIERSEGMENT) {
+					Point *p = prev->GetValue (BezierSegment::Point2Property)->AsPoint ();
+					cp1.x = 2 * cp.x - p->x;
+					cp1.y = 2 * cp.y - p->y;
+				} else
+					cp1 = cp;
 
-				pl = g_slist_append (pl, &cp1);
-				pl = g_slist_append (pl, &cp2);
-				pl = g_slist_append (pl, &cp3);
-
-				Point last;
-				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
-				PolyBezierSegment *pbs = new PolyBezierSegment ();
-				pbs->SetValue (PolyBezierSegment::PointsProperty, Value (pts, count));
-
-				psc->Add (pbs);
-				pbs->unref ();
-				prev = pbs;
-
-				cp.x = last.x;
-				cp.y = last.y;
-
-				g_slist_free (pl);
-			} else {
 				BezierSegment *bs = new BezierSegment ();
 				bs->SetValue (BezierSegment::Point1Property, Value (cp1));
 				bs->SetValue (BezierSegment::Point2Property, Value (cp2));
@@ -1756,6 +1735,8 @@ geometry_from_str (const char *str)
 
 				cp.x = cp3.x;
 				cp.y = cp3.y;
+
+				advance (&data);
 			}
 			break;
 		}
@@ -1813,39 +1794,17 @@ geometry_from_str (const char *str)
 		{
 			data++;
 
-			get_point (&cp2, &data);
-			if (relative) make_relative (&cp, &cp2);
+			while (more_points_available (data)) {
+				get_point (&cp2, &data);
+				if (relative) make_relative (&cp, &cp2);
 
-			if (prev && prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
-				Point *p = prev->GetValue (QuadraticBezierSegment::Point1Property)->AsPoint ();
-				cp1.x = 2 * cp.x - p->x;
-				cp1.y = 2 * cp.y - p->y;
-			} else
-				cp1 = cp;
+				if (prev && prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
+					Point *p = prev->GetValue (QuadraticBezierSegment::Point1Property)->AsPoint ();
+					cp1.x = 2 * cp.x - p->x;
+					cp1.y = 2 * cp.y - p->y;
+				} else
+					cp1 = cp;
 
-			advance (&data);
-
-			if (more_points_available (data)) {
-				GSList *pl = NULL;
-				int count = 2;
-
-				pl = g_slist_append (pl, &cp1);
-				pl = g_slist_append (pl, &cp2);
-
-				Point last;
-				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
-				PolyQuadraticBezierSegment *pqbs = new PolyQuadraticBezierSegment ();
-				pqbs->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (pts, count));
-
-				psc->Add (pqbs);
-				pqbs->unref ();
-				prev = pqbs;
-
-				cp.x = last.x;
-				cp.y = last.y;
-
-				g_slist_free (pl);
-			} else {
 				QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
 				qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
 				qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
@@ -1856,7 +1815,10 @@ geometry_from_str (const char *str)
 
 				cp.x = cp2.x;
 				cp.y = cp2.y;
+
+				advance (&data);
 			}
+				
 			break;
 		}
 		case 'a':
