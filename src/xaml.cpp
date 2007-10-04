@@ -1563,32 +1563,12 @@ geometry_from_str (const char *str)
 		{
 			data++;
 
-			get_point (&cp1, &data);
-			if (relative)
-				make_relative (&cp, &cp1);
+			while (more_points_available (data)) {
 
-			advance (&data);
-			if (more_points_available (data)) {
-				GSList *pl = NULL;
+				get_point (&cp1, &data);
 
-				pl = g_slist_append (pl, &cp1);
+				if (relative) make_relative (&cp, &cp1);
 
-				Point last;
-				int count = 1;
-				Point *pts = get_point_array (data, pl, &count, relative, &cp, &last);
-				
-				PolyLineSegment *pls = new PolyLineSegment ();
-				pls->SetValue (PolyLineSegment::PointsProperty, Value (pts, count));
-
-				psc->Add (pls);
-				pls->unref ();
-				prev = pls;
-
-				cp.x = last.x;
-				cp.y = last.y;
-
-				g_slist_free (pl);
-			} else {
 				LineSegment* ls = new LineSegment ();
 				ls->SetValue (LineSegment::PointProperty, Value (cp1));
 
@@ -1598,9 +1578,9 @@ geometry_from_str (const char *str)
 
 				cp.x = cp1.x;
 				cp.y = cp1.y;
-			}
 
-			
+				advance (&data);
+			}
 			break;
 		}
 		case 'h':
