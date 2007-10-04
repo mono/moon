@@ -1434,7 +1434,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	double x0, y0;
 	double y1;
 	
-	if ((width == 0.0 && height == 0.0) || invalid)
+	if (font == NULL || (width == 0.0 && height == 0.0) || invalid)
 		return;
 	
 	fill->SetupBrush (cr, this);

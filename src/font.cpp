@@ -625,7 +625,10 @@ TextFont::Path (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 	cairo_save (cr);
 	
 	cairo_translate (cr, x, y);
-	cairo_append_path (cr, &glyph->path->cairo);
+
+	// cairo doesn't like appending paths with NULL data
+	if ((&glyph->path->cairo)->data)
+		cairo_append_path (cr, &glyph->path->cairo);
 	
 	cairo_restore (cr);
 }
@@ -1580,7 +1583,10 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 					cairo_fill (cr);
 				}
 			} else {
-				cairo_append_path (cr, segment->path);
+				// it is an error to append a path with no data
+				if (segment->path->data)
+					cairo_append_path (cr, segment->path);
+
 				x1 = x0 + segment->width;
 				cairo_fill (cr);
 			}
