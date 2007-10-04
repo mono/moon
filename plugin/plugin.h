@@ -80,6 +80,7 @@ class PluginInstance
 	int16 EventHandle (void* event);
 	bool JsRunOnload ();
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
+	void *LoadUrl (char *url, gint32 *length);
 
 	NPP getNPP () { return instance; }
 
@@ -199,6 +200,7 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 					      bool *cookieEnabled);
 
 void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
+void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
 
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
 uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);

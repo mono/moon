@@ -1,3 +1,9 @@
+2007-10-04  Zoltan Varga  <vargaz@gmail.com>
+
+	* plugin.cpp (LoadUrl): New method to download stuff synchronously using the browser.
+	(plugin_instance_load_url): C wrapper for the above.
+	(ReportException): Fix a leak.
+
 2007-10-03  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.h: need to wrap the renamed symbols in an extern "C"
