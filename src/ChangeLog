@@ -1,3 +1,7 @@
+2007-10-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shape.cpp (DoDraw): Use 'delete []' to free dmul.
+
 2007-10-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Handle repeated bezier segments properly.

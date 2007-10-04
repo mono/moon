@@ -207,7 +207,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 				dmul [i] = dashes [i] * thickness;
 			}
 			cairo_set_dash (cr, dmul, count, offset);
-			delete dmul;
+			delete [] dmul;
 		} else {
 			cairo_set_dash (cr, NULL, 0, 0.0);
 		}
