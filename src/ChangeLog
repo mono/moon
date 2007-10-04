@@ -1,3 +1,12 @@
+2007-10-04  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* text.cpp (Glyphs::.ctor): We no longer have a TextFont member
+	variable.
+	(Layout): Use a local TextFont variable.
+	(Render): Same.
+	(text_init): Always call font_init() as Glyphs use it even when
+	text=pango is specified.
+
 2007-10-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Shapes that uses their Width and Height must use

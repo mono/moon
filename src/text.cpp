@@ -1249,8 +1249,9 @@ GlyphAttr::GlyphAttr ()
 
 Glyphs::Glyphs ()
 {
+	desc = new TextFontDescription ();
+	desc->SetSize (0.0);
 	downloader = NULL;
-	font = NULL;
 	
 	fill = NULL;
 	path = NULL;
@@ -1267,23 +1268,12 @@ Glyphs::Glyphs ()
 	
 	invalid = false;
 	dirty = false;
-
-	if (RENDER_USING_PANGO) {
-		desc = NULL;
-		return;
-	}
-
-	desc = new TextFontDescription ();
-	desc->SetSize (0.0);
 }
 
 Glyphs::~Glyphs ()
 {
 	if (fill)
 		fill->unref ();
-	
-	if (font)
-		font->unref ();
 	
 	if (path)
 		cairo_path_destroy (path);
@@ -1298,19 +1288,16 @@ Glyphs::~Glyphs ()
 	
 	g_free (text);
 	
-	if (desc)
-		delete desc;
+	delete desc;
 }
 
 void
 Glyphs::Layout ()
 {
-	if (RENDER_USING_PANGO)
-		return;
-
 	double x, y, w, h;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
+	TextFont *font;
 	int n = 0;
 	
 	invalid = false;
@@ -1318,11 +1305,6 @@ Glyphs::Layout ()
 	
 	height = 0.0;
 	width = 0.0;
-	
-	if (font) {
-		font->unref ();
-		font = NULL;
-	}
 	
 	if (path) {
 		cairo_path_destroy (path);
@@ -1394,7 +1376,7 @@ Glyphs::Layout ()
 		if (!(attr->set & Index)) {
 			fprintf (stderr, "No index specified for glyph %d\n", n + 1);
 			invalid = true;
-			return;
+			goto done;
 		}
 		
 		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
@@ -1421,20 +1403,22 @@ Glyphs::Layout ()
 	
 	height = h > 0.0 ? h : 0.0;
 	width = w;
+	
+done:
+	
+	font->unref ();
 }
 
 void
 Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-	if (RENDER_USING_PANGO)
-		return;
-
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
+	TextFont *font;
 	double x0, y0;
 	double y1;
 	
-	if (font == NULL || (width == 0.0 && height == 0.0) || invalid)
+	if ((width == 0.0 && height == 0.0) || invalid)
 		return;
 	
 	fill->SetupBrush (cr, this);
@@ -1444,6 +1428,8 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		cairo_fill (cr);
 		return;
 	}
+	
+	font = desc->GetFont ();
 	
 	x0 = origin_x;
 	if (!origin_y_specified)
@@ -1524,14 +1510,13 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		
 		cairo_fill (cr);
 	}
+	
+	font->unref ();
 }
 
 void 
 Glyphs::ComputeBounds ()
 {
-	if (RENDER_USING_PANGO)
-		return;
-
 	if (dirty)
 		Layout ();
 	
@@ -1596,10 +1581,8 @@ Glyphs::DownloaderComplete ()
 		delete uri;
 	}
 	
-	if (desc) {
-		desc->SetFilename (filename);
-		desc->SetIndex (id);
-	}
+	desc->SetFilename (filename);
+	desc->SetIndex (id);
 	g_free (filename);
 	dirty = true;
 	
@@ -1761,11 +1744,9 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 		SetIndices (str);
 		dirty = true;
 	} else if (prop == Glyphs::FontRenderingEmSizeProperty) {
-		if (desc) {
-			double size = glyphs_get_font_rendering_em_size (this);
-			desc->SetSize (size);
-			dirty = true;
-		}
+		double size = glyphs_get_font_rendering_em_size (this);
+		desc->SetSize (size);
+		dirty = true;
 	} else if (prop == Glyphs::OriginXProperty) {
 		origin_x = glyphs_get_origin_x (this);
 		dirty = true;
@@ -1908,8 +1889,7 @@ text_destroy (void)
 void
 text_init (void)
 {
-	if (!RENDER_USING_PANGO)
-		font_init ();
+	font_init ();
 	
 	// Inline
 	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", Type::STRING);

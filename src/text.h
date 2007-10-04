@@ -237,7 +237,6 @@ void text_block_set_font_source (TextBlock *textblock, DependencyObject *Downloa
 class Glyphs : public FrameworkElement {
 	TextFontDescription *desc;
 	Downloader *downloader;
-	TextFont *font;
 	
 	cairo_path_t *path;
 	gunichar *text;
