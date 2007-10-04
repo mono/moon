@@ -7,7 +7,7 @@
 		<EventTrigger RoutedEvent="Canvas.Loaded">
 			<BeginStoryboard>
 				<Storyboard>
-					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:10" SpeedRatio="2.0"/>
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:05" SpeedRatio="2.0"/>
 				</Storyboard>
 			</BeginStoryboard>
 		</EventTrigger>
@@ -18,5 +18,5 @@
 		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" />
 		
 	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30"
-			   Text="The red block should take 5 seconds to move to the right, and stay there."/>
+			   Text="The red block should take 2.5 seconds to move to the right, and stay there."/>
 </Canvas>
