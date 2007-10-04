@@ -1,5 +1,10 @@
 2007-10-03  Chris Toshok  <toshok@ximian.com>
 
+	* text.cpp: make Glyphs usable even when text=pango.  "usable"
+	means "don't crash" :)
+
+2007-10-03  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h: rename UseAA() to EnableAntiAlias().  it's
 	arguably a better name, and more importantly it's the name that
 	media.cpp/h changed it too, which broke the AA hack used in

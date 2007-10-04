@@ -1249,8 +1249,6 @@ GlyphAttr::GlyphAttr ()
 
 Glyphs::Glyphs ()
 {
-	desc = new TextFontDescription ();
-	desc->SetSize (0.0);
 	downloader = NULL;
 	font = NULL;
 	
@@ -1269,6 +1267,14 @@ Glyphs::Glyphs ()
 	
 	invalid = false;
 	dirty = false;
+
+	if (RENDER_USING_PANGO) {
+		desc = NULL;
+		return;
+	}
+
+	desc = new TextFontDescription ();
+	desc->SetSize (0.0);
 }
 
 Glyphs::~Glyphs ()
@@ -1292,12 +1298,16 @@ Glyphs::~Glyphs ()
 	
 	g_free (text);
 	
-	delete desc;
+	if (desc)
+		delete desc;
 }
 
 void
 Glyphs::Layout ()
 {
+	if (RENDER_USING_PANGO)
+		return;
+
 	double x, y, w, h;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
@@ -1416,6 +1426,9 @@ Glyphs::Layout ()
 void
 Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
+	if (RENDER_USING_PANGO)
+		return;
+
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
 	double x0, y0;
@@ -1516,6 +1529,9 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 Glyphs::ComputeBounds ()
 {
+	if (RENDER_USING_PANGO)
+		return;
+
 	if (dirty)
 		Layout ();
 	
@@ -1580,8 +1596,10 @@ Glyphs::DownloaderComplete ()
 		delete uri;
 	}
 	
-	desc->SetFilename (filename);
-	desc->SetIndex (id);
+	if (desc) {
+		desc->SetFilename (filename);
+		desc->SetIndex (id);
+	}
 	g_free (filename);
 	dirty = true;
 	
@@ -1743,9 +1761,11 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 		SetIndices (str);
 		dirty = true;
 	} else if (prop == Glyphs::FontRenderingEmSizeProperty) {
-		double size = glyphs_get_font_rendering_em_size (this);
-		desc->SetSize (size);
-		dirty = true;
+		if (desc) {
+			double size = glyphs_get_font_rendering_em_size (this);
+			desc->SetSize (size);
+			dirty = true;
+		}
 	} else if (prop == Glyphs::OriginXProperty) {
 		origin_x = glyphs_get_origin_x (this);
 		dirty = true;
