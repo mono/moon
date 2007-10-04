@@ -37,13 +37,6 @@
 
 #define READ_BUFFER 1024
 
-#define xaml_isalpha(c) ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
-#define xaml_isdigit(c) (c >= '0' && c <= '9')
-#define xaml_isspace(c) (c == ' ' || c == '\t' || c == '\f' || c == '\n' || c == '\r')
-#define xaml_isalnum(c) (xaml_isalpha (c) || xaml_isdigit (c))
-
-
-
 static GHashTable *enum_map = NULL;
 
 class XamlElementInfo;
@@ -921,7 +914,7 @@ char_data_handler (void *data, const char *in, int inlen)
 	
 	if (!p->cdata) {
 		// unless we already have significant char data, ignore lwsp
-		while (xaml_isspace (*inptr) && inptr < inend)
+		while (g_ascii_isspace (*inptr) && inptr < inend)
 			inptr++;
 		
 		if (inptr == inend)
@@ -931,13 +924,13 @@ char_data_handler (void *data, const char *in, int inlen)
 	} else {
 		len = p->cdata->len;
 		g_string_append_len (p->cdata, in, inlen);
-		lwsp = xaml_isspace (p->cdata->str[len - 1]);
+		lwsp = g_ascii_isspace (p->cdata->str[len - 1]);
 	}
 	
 	// Condense multi-lwsp blocks into a single space (and make all lwsp chars a literal space, not '\n', etc)
 	s = d = p->cdata->str + len;
 	while (*s != '\0') {
-		if (xaml_isspace (*s)) {
+		if (g_ascii_isspace (*s)) {
 			if (!lwsp)
 				*d++ = ' ';
 			lwsp = true;
@@ -1332,7 +1325,7 @@ repeat_behavior_from_str (const char *str)
 {
 	if (!g_strcasecmp ("Forever", str))
 		return RepeatBehavior::Forever;
-	return RepeatBehavior (strtod (str, NULL));
+	return RepeatBehavior (g_ascii_strtod (str, NULL));
 }
 
 Duration
@@ -1356,7 +1349,7 @@ keytime_from_str (const char* str)
 	const char *last = str + strlen(str) - 1;
 	if (*last == '%') {
 		char *ep;
-		double pct = strtod (str, &ep);
+		double pct = g_ascii_strtod (str, &ep);
 		if (ep == last)
 			return KeyTime (pct);
 	}
@@ -1404,7 +1397,7 @@ advance (char **in)
 {
 	char *inptr = *in;
 	
-	while (*inptr && !xaml_isalnum (*inptr) && *inptr != '.' && *inptr != '-')
+	while (*inptr && !g_ascii_isalnum (*inptr) && *inptr != '.' && *inptr != '-')
 		inptr++;
 	
 	*in = inptr;
@@ -1416,14 +1409,14 @@ get_point (Point *p, char **in)
 	char *end, *inptr = *in;
 	double x, y;
 	
-	x = strtod (inptr, &end);
+	x = g_ascii_strtod (inptr, &end);
 	if (end == inptr)
 		return false;
 	
 	advance (&end);
 	inptr = end;
 	
-	y = strtod (inptr, &end);
+	y = g_ascii_strtod (inptr, &end);
 	if (end == inptr)
 		return false;
 	
@@ -1447,12 +1440,12 @@ more_points_available (char **in)
 {
 	char *inptr = *in;
 	
-	while (xaml_isspace (*inptr))
+	while (g_ascii_isspace (*inptr))
 		inptr++;
 	
 	*in = inptr;
 	
-	return (xaml_isdigit (*inptr) || *inptr == '.' || *inptr == '-');
+	return (g_ascii_isdigit (*inptr) || *inptr == '.' || *inptr == '-');
 }
 
 Point *
@@ -1514,7 +1507,7 @@ geometry_from_str (const char *str)
 	pfc->unref ();
 
 	while (*inptr) {
-		if (xaml_isspace (*inptr))
+		if (g_ascii_isspace (*inptr))
 			inptr++;
 		
 		if (!inptr[0])
@@ -1608,7 +1601,7 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'H':
 		{
-			double x = strtod (inptr, &end);
+			double x = g_ascii_strtod (inptr, &end);
 			if (end == inptr)
 				break;
 			
@@ -1632,7 +1625,7 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'V':
 		{
-			double y = strtod (inptr, &end);
+			double y = g_ascii_strtod (inptr, &end);
 			if (end == inptr)
 				break;
 			
@@ -1848,7 +1841,7 @@ geometry_from_str (const char *str)
 				
 				advance (&inptr);
 				
-				double angle = strtod (inptr, &end);
+				double angle = g_ascii_strtod (inptr, &end);
 				if (end == inptr)
 					break;
 				
@@ -2292,7 +2285,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		obj->SetValue (prop, Value ((bool) !g_strcasecmp ("true", value)));
 		break;
 	case Type::DOUBLE:
-		obj->SetValue (prop, Value ((double) strtod (value, NULL)));
+		obj->SetValue (prop, Value ((double) g_ascii_strtod (value, NULL)));
 		break;
 	case Type::INT64:
 		obj->SetValue (prop, Value ((gint64) strtol (value, NULL, 10), Type::INT64));
@@ -2518,7 +2511,7 @@ start_parse:
 				dep->SetValue (prop, Value ((bool) !g_strcasecmp ("true", attr [i + 1])));
 				break;
 			case Type::DOUBLE:
-				dep->SetValue (prop, Value ((double) strtod (attr [i + 1], NULL)));
+				dep->SetValue (prop, Value ((double) g_ascii_strtod (attr [i + 1], NULL)));
 				break;
 			case Type::INT64:
 				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10), Type::INT64));
