@@ -1,5 +1,10 @@
 2007-10-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (TextBlock): Can't use GetValue() here yet as stuff
+	hasn't completely been initialized.
+	(Glyphs::SetIndices): Do not do scaling here, this seems to be
+	font size dependant.
+
 	* shape.cpp (DoDraw): Use 'delete []' to free dmul.
 
 2007-10-04  Jackson Harper  <jackson@ximian.com>

@@ -24,6 +24,13 @@
 #include "uri.h"
 
 
+#define TEXTBLOCK_FONT_FAMILY  "Lucida Sans Unicode, Lucida Sans"
+#define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
+#define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
+#define TEXTBLOCK_FONT_STYLE   FontStylesNormal
+#define TEXTBLOCK_FONT_SIZE    14.666
+
+
 extern guint32 moonlight_flags;
 
 #define RENDER_USING_PANGO (moonlight_flags & RUNTIME_INIT_PANGO_TEXT_LAYOUT)
@@ -348,12 +355,6 @@ DependencyProperty *TextBlock::TextWrappingProperty;
 
 TextBlock::TextBlock ()
 {
-	FontStretches stretch = text_block_get_font_stretch (this);
-	FontWeights weight = text_block_get_font_weight (this);
-	FontStyles style = text_block_get_font_style (this);
-	char *family = text_block_get_font_family (this);
-	double size = text_block_get_font_size (this);
-	
 	foreground = NULL;
 	downloader = NULL;
 	
@@ -370,22 +371,22 @@ TextBlock::TextBlock ()
 		renderer = (MangoRenderer *) mango_renderer_new ();
 		
 		font.pango = pango_font_description_new ();
-		pango_font_description_set_family (font.pango, family);
-		pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
-		pango_font_description_set_stretch (font.pango, font_stretch (stretch));
-		pango_font_description_set_style (font.pango, font_style (style));
-		pango_font_description_set_weight (font.pango, font_weight (weight));
+		pango_font_description_set_family (font.pango, TEXTBLOCK_FONT_FAMILY);
+		pango_font_description_set_absolute_size (font.pango, TEXTBLOCK_FONT_SIZE * PANGO_SCALE);
+		pango_font_description_set_stretch (font.pango, font_stretch (TEXTBLOCK_FONT_STRETCH));
+		pango_font_description_set_weight (font.pango, font_weight (TEXTBLOCK_FONT_WEIGHT));
+		pango_font_description_set_style (font.pango, font_style (TEXTBLOCK_FONT_STYLE));
 	} else {
 		layout.custom = new TextLayout ();
 		
 		renderer = NULL;
 		
 		font.custom = new TextFontDescription ();
-		font.custom->SetFamily (family);
-		font.custom->SetSize (size);
-		font.custom->SetStretch (stretch);
-		font.custom->SetStyle (style);
-		font.custom->SetWeight (weight);
+		font.custom->SetFamily (TEXTBLOCK_FONT_FAMILY);
+		font.custom->SetStretch (TEXTBLOCK_FONT_STRETCH);
+		font.custom->SetWeight (TEXTBLOCK_FONT_WEIGHT);
+		font.custom->SetStyle (TEXTBLOCK_FONT_STYLE);
+		font.custom->SetSize (TEXTBLOCK_FONT_SIZE);
 	}
 	
 	text_block_set_text (this, (char *) "");
@@ -1433,7 +1434,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	x0 = origin_x;
 	if (!origin_y_specified)
-		y0 = font->Height ();
+		y0 = font->Height () + font->Descender ();
 	else
 		y0 = origin_y;
 	
@@ -1635,15 +1636,15 @@ Glyphs::SetIndices (const char *in)
 			if (end > inptr) {
 				switch ((GlyphAttrMask) bit) {
 				case Advance:
-					glyph->advance = value / 4.0;
+					glyph->advance = value;
 					glyph->set |= Advance;
 					break;
 				case uOffset:
-					glyph->uoffset = value / 4.0;
+					glyph->uoffset = value;
 					glyph->set |= uOffset;
 					break;
 				case vOffset:
-					glyph->voffset = value / 4.0;
+					glyph->voffset = value;
 					glyph->set |= vOffset;
 					break;
 				default:
@@ -1908,11 +1909,11 @@ text_init (void)
 	// TextBlock
 	TextBlock::ActualHeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualHeight", Type::DOUBLE);
 	TextBlock::ActualWidthProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualWidth", Type::DOUBLE);
-	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value ("Lucida Sans Unicode, Lucida Sans"));
-	TextBlock::FontSizeProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontSize", new Value (14.666));
-	TextBlock::FontStretchProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStretch", new Value (FontStretchesNormal));
-	TextBlock::FontStyleProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStyle", new Value (FontStylesNormal));
-	TextBlock::FontWeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontWeight", new Value (FontWeightsNormal));
+	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
+	TextBlock::FontSizeProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
+	TextBlock::FontStretchProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
+	TextBlock::FontStyleProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
+	TextBlock::FontWeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
 	TextBlock::ForegroundProperty = DependencyObject::Register (Type::TEXTBLOCK, "Foreground", Type::BRUSH);
 	TextBlock::InlinesProperty = DependencyObject::Register (Type::TEXTBLOCK, "Inlines", Type::INLINES);
 	TextBlock::TextProperty = DependencyObject::Register (Type::TEXTBLOCK, "Text", Type::STRING);
