@@ -109,8 +109,6 @@ MediaSource::GetMediaPlayer ()
 bool
 MediaSource::Open ()
 {
-	media_element_set_current_state (element, "Opening");
-
 	if (!OpenInternal ()) {
 		media_element_set_can_seek (element, false);
 		media_element_set_can_pause (element, false);

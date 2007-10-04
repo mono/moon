@@ -1,7 +1,3 @@
-2007-10-05  Jb Evain  <jbevain@novell.com>
-
-	* media.cpp: correctly advertise 'Opening' state of MediaElement.
-
 2007-10-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp: Added new macros xaml_isspace, xaml_isalpha(),
