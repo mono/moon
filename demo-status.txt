@@ -361,9 +361,6 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 	Loads up the background fine but nothing else shows up.
 
-	Firebug reports "this.get_Canvas() has no properties
-	this.get_Canvas().setValue("Opacity",this.get_Opacity());"
-
 * Windows Journal-to-Silverlight Converter (http://www.microsoft.com/downloads/details.aspx?FamilyID=4964cd5f-0dcb-4c22-9378-773100d8e89f&displaylang=en)
 
 	Windows specific conversion tool.  not a web demo.
@@ -404,3 +401,11 @@ the first column from here: http://blogs.msdn.com/tims/default.aspx
 
 	Works. At least better than Silverlight which crashes on this for me.
 
+* Silverlight Learn Videos
+
+	http://silverlight.net/learn/learnvideo.aspx?video=125
+
+	* Black background, instead of transparent, in the plugin (XAML works fine)
+	* Some LinearGradientBrush issues when
+		* using MappingMode="Absolute" and a Transform
+		* using two GradientStop at the same offset
