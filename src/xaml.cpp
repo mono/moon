@@ -1447,24 +1447,12 @@ more_points_available (char **in)
 {
 	char *inptr = *in;
 	
-	while (*inptr) {
-		if (g_ascii_isalpha (*inptr)) {
-			*in = inptr;
-			return false;
-		}
-		
-		if (g_ascii_isdigit (*inptr) || *inptr == '.' || *inptr == '-' || *inptr == '+') {
-			*in = inptr;
-			return true;
-		}
-		
-		// otherwise we are whitespace
+	while (g_ascii_isspace (*inptr))
 		inptr++;
-	}
 	
 	*in = inptr;
 	
-	return false;
+	return (g_ascii_isdigit (*inptr) || *inptr == '.' || *inptr == '-' || *inptr == '+');
 }
 
 Point *
