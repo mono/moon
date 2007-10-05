@@ -5,7 +5,7 @@ monodocdir   = $(prefix)/lib/monodoc/sources
 gtksilver_DATA = gtksilver.dll 
 pkgconfig_DATA = gtksilver.pc
 
-EXTRA_DIST= $(gtksilver_dll_CS) $(mopen_exe_CS) gtksilver.snk gtksilver.source
+EXTRA_DIST= $(gtksilver_dll_CS) gtksilver.snk gtksilver.source
 
 CLEANFILES=gtksilver.dll gtksilver.dll.mdb gtksilver.tree gtksilver.zip
 DISTCLEANFILES=$(CLEANFILES)
