@@ -1,3 +1,8 @@
+2007-10-04  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp: fix a couple of compilation warnings, and tighten up
+	the list_clocks output.
+
 2007-10-04  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (SetIndices): Use g_ascii_strtod() instead of strtod()

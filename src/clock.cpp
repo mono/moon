@@ -237,7 +237,7 @@ TimeManager::Tick ()
 	}
 
 	/* the s(t) case */
-	TimeSpan current_smoothed = SMOOTHING_ALPHA * xt + (1 - SMOOTHING_ALPHA) * previous_smoothed;
+	TimeSpan current_smoothed = (TimeSpan)(SMOOTHING_ALPHA * xt + (1 - SMOOTHING_ALPHA) * previous_smoothed);
 
 	/* current_smoothed now contains the prediction for what our next delay should be */
 
@@ -252,6 +252,8 @@ TimeManager::Tick ()
 	AddTimeout();
 
 	previous_smoothed = current_smoothed;
+
+	time_manager_list_clocks ();
 }
 
 void
@@ -310,24 +312,22 @@ output_clock (Clock *clock, int level)
 {
 	spaces (level);
 	printf (clock->Is(Type::CLOCKGROUP) ? "ClockGroup " : "Clock ");
+	printf ("(%p) ", clock);
 	if (clock->GetName ()) {
-		printf ("'%s', ", clock->GetName());
-	}
-	else {
-		printf ("(%p), ", clock);
+		printf ("'%s' ", clock->GetName());
 	}
 
 	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
 
 	switch (clock->GetClockState()) {
 	case Clock::Active:
-		printf ("Active");
+		printf ("A");
 		break;
 	case Clock::Filling:
-		printf ("Filling");
+		printf ("F");
 		break;
 	case Clock::Stopped:
-		printf ("Stopped");
+		printf ("S");
 		break;
 	}
 
@@ -1033,7 +1033,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 		if (timeline->GetAutoReverse ())
 			span *= 2;
 
-		span /= timeline->GetSpeedRatio();
+		span = (TimeSpan)(span / timeline->GetSpeedRatio());
 
 		span += timeline->GetBeginTime ();
 
