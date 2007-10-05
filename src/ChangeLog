@@ -1,5 +1,12 @@
 2007-10-04  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* text.cpp (SetIndices): Use g_ascii_strtod() instead of strtod()
+	since it is not locale dependant.
+
+	* rect.cpp (rect_from_str): Same.
+
+	* point.cpp (point_from_str): Same.
+
 	* xaml.cpp (get_point): Fixed to update *in properly on success.
 
 2007-10-05  Jb Evain  <jbevain@novell.com>

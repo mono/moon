@@ -19,21 +19,21 @@ rect_from_str (const char *s)
 {
 	// FIXME - not robust enough for production
 	char *next = NULL;
-	double x = strtod (s, &next);
+	double x = g_ascii_strtod (s, &next);
 	double y = 0.0;
 	if (next) {
 		++next;
-		y = strtod (next, &next);
+		y = g_ascii_strtod (next, &next);
 	}
 	double w = 0.0;
 	if (next) {
 		++next;
-		w = strtod (next, &next);
+		w = g_ascii_strtod (next, &next);
 	}
 	double h = 0.0;
 	if (next) {
 		++next;
-		h = strtod (next, &next);
+		h = g_ascii_strtod (next, &next);
 	}
 	return Rect (x, y, w, h);
 }

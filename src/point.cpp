@@ -19,10 +19,10 @@ point_from_str (const char *s)
 {
 	// FIXME - not robust enough for production
 	char *next = NULL;
-	double x = strtod (s, &next);
+	double x = g_ascii_strtod (s, &next);
 	double y = 0.0;
 	if (next)
-		y = strtod (++next, NULL);
+		y = g_ascii_strtod (++next, NULL);
 	return Point (x, y);
 }
 

@@ -1631,7 +1631,7 @@ Glyphs::SetIndices (const char *in)
 			while (g_ascii_isspace (*inptr))
 				inptr++;
 			
-			value = strtod (inptr, &end);
+			value = g_ascii_strtod (inptr, &end);
 			
 			if (end > inptr) {
 				switch ((GlyphAttrMask) bit) {
