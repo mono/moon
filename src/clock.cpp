@@ -253,7 +253,7 @@ TimeManager::Tick ()
 
 	previous_smoothed = current_smoothed;
 
-	time_manager_list_clocks ();
+	//time_manager_list_clocks ();
 }
 
 void
