@@ -1,0 +1,38 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="640" Height="200">
+
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:05" />
+				</Storyboard>
+			</BeginStoryboard>
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimationUsingKeyFrames Storyboard.TargetName="rectRotate" Storyboard.TargetProperty="(RotateTransform.Angle)">
+						<DiscreteDoubleKeyFrame Value="30" KeyTime="00:00:01.5" />
+						<DiscreteDoubleKeyFrame Value="60" KeyTime="00:00:03.75" />
+						<DiscreteDoubleKeyFrame Value="90" KeyTime="00:00:05" />
+					</DoubleAnimationUsingKeyFrames>					
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+
+		<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="600" Height="3" Fill="Black" />
+		<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="110" Width="600" Height="3" Fill="Black" />
+		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" RenderTransformOrigin="0.5,0.5">
+			<Rectangle.RenderTransform>
+				<RotateTransform x:Name="rectRotate" Angle="0" />
+			</Rectangle.RenderTransform>
+		</Rectangle>
+		
+
+	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="140" Width="600" Height="50">
+		<Run Text="The red block should take 5 seconds to move to the right,"/>
+		<LineBreak/>
+		<Run Text="and rotate 90 degrees in three discrete stops, 30, 60, and 90"/>
+	</TextBlock>
+</Canvas>
