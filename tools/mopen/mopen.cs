@@ -134,7 +134,7 @@ class MonoOpen {
 				return Assembly.LoadFile (System.IO.Path.Combine (dir, asm_file));
 			}
 		}, delegate (string path) {
-            if (System.IO.Path.IsPathRooted (path)){
+			if (System.IO.Path.IsPathRooted (path)){
 				return new FileStream (path, FileMode.Open, FileAccess.Read);
 			} else {
 				return new FileStream (System.IO.Path.Combine (dir, path), FileMode.Open, FileAccess.Read);
