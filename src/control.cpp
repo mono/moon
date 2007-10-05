@@ -63,6 +63,8 @@ Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *sub
 	if (subprop == Canvas::TopProperty || subprop == Canvas::LeftProperty) {
 		real_object->UpdateTransform ();
 	}
+
+	UIElement::OnSubPropertyChanged (prop, subprop);
 }
 
 void
