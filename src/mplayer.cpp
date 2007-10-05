@@ -416,9 +416,10 @@ bool
 MediaPlayer::AdvanceFrame ()
 {
 	AVFrame *frame = NULL;
+	bool update = false;
 	int64_t target_pts;
-	int redraw = 0;
 	Packet *pkt;
+	int redraw;
 	
 	if (paused) {
 		// shouldn't happen, but just in case
@@ -459,8 +460,12 @@ MediaPlayer::AdvanceFrame ()
 	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue))) {
 		// always decode the frame or we get glitches in the screen
 		frame = avcodec_alloc_frame ();
+		
+		redraw = 0;
 		avcodec_decode_video (video->stream->codec, frame,
 				      &redraw, pkt->data, pkt->size);
+		
+		update = update || redraw;
 		
 		current_pts = pkt->pts;
 		pkt_free (pkt);
@@ -475,7 +480,7 @@ MediaPlayer::AdvanceFrame ()
 		frame = NULL;
 	}
 	
-	if (redraw)
+	if (update)
 		convert_to_rgb (video, frame);
 	
 	if (frame != NULL) {
@@ -484,6 +489,50 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	return !eof;
+}
+
+void
+MediaPlayer::DisplayFrame ()
+{
+	AVFrame *frame;
+	AVPacket pkt;
+	int redraw;
+	int rv;
+	
+	if (playing || video->stream_id == -1)
+		return;
+	
+	if (audio->pcm != NULL && audio->stream_id != -1)
+		av_seek_frame (av_ctx, audio->stream_id, seek_pts, AVSEEK_FLAG_BACKWARD);
+	else
+		av_seek_frame (av_ctx, video->stream_id, seek_pts, AVSEEK_FLAG_BACKWARD);
+	
+	while (av_read_frame (av_ctx, &pkt) >= 0) {
+		if (pkt.stream_index != video->stream_id) {
+			av_free_packet (&pkt);
+			continue;
+		}
+		
+		redraw = 0;
+		frame = avcodec_alloc_frame ();
+		
+		rv = avcodec_decode_video (video->stream->codec, frame, &redraw, pkt.data, pkt.size);
+		
+		if (rv > 0 && redraw) {
+			convert_to_rgb (video, frame);
+			av_free_packet (&pkt);
+			av_free (frame);
+			break;
+		}
+		
+		av_free_packet (&pkt);
+		av_free (frame);
+	}
+	
+	if (audio->pcm != NULL && audio->stream_id != -1)
+		av_seek_frame (av_ctx, audio->stream_id, seek_pts, AVSEEK_FLAG_BACKWARD);
+	else
+		av_seek_frame (av_ctx, video->stream_id, seek_pts, AVSEEK_FLAG_BACKWARD);
 }
 
 void
@@ -659,9 +708,10 @@ MediaPlayer::Stop ()
 	playing = false;
 	
 	if (av_ctx != NULL) {
-		int stream_id = audio->stream_id != -1 ? audio->stream_id : video->stream_id;
-		
-		av_seek_frame (av_ctx, stream_id, 0, AVSEEK_FLAG_BACKWARD);
+		if (audio->pcm != NULL && audio->stream_id != -1)
+			av_seek_frame (av_ctx, audio->stream_id, 0, AVSEEK_FLAG_BACKWARD);
+		else
+			av_seek_frame (av_ctx, video->stream_id, 0, AVSEEK_FLAG_BACKWARD);
 	}
 }
 

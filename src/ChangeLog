@@ -1,3 +1,17 @@
+2007-10-05  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* media.cpp (DownloaderComplete): Call mplayer->DisplayFrame() in
+	the paused case.
+	(Stop): Here too.
+	(SetValue): And here too after a Seek() (altho it won't work if
+	the media is paused).
+
+	* mplayer.cpp (AdvanceFrame): Introduced a new bool variable,
+	update, which is true if any avcodec_decode_video() sets redraw to
+	true.
+	(DisplayFrame): New method largely based on JB's work to load the
+	current video frame into the mplayer surface.
+
 2007-10-05  Jb Evain  <jbevain@novell.com>
 
 	* media.cpp|h, playlist.cpp|h: Don't open the first entry

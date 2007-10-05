@@ -472,10 +472,13 @@ MediaElement::DownloaderComplete ()
 	
 	//printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
 	
-	if (autoplay || play_pending)
+	if (autoplay || play_pending) {
 		Play ();
-	else
+	} else {
 		Pause ();
+		mplayer->DisplayFrame ();
+		Invalidate ();
+	}
 }
 
 void
@@ -559,8 +562,11 @@ MediaElement::Stop ()
 	
 	if (!source)
 		return;
-
+	
 	source->Stop (false);
+	
+	mplayer->DisplayFrame ();
+	Invalidate ();
 }
 
 Value *
@@ -600,6 +606,8 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 		
 		// position is in ticks, while mplayer expects time in milliseconds.
 		mplayer->Seek (position * 1000 / TIMESPANTICKS_IN_SECOND);
+		mplayer->DisplayFrame ();
+		Invalidate ();
 		
 		if (position != value->AsTimeSpan ()) {
 			v = Value (position, Type::TIMESPAN);

@@ -59,6 +59,7 @@ public:
 	~MediaPlayer ();
 	
 	bool AdvanceFrame ();
+	void DisplayFrame ();
 	void Render (cairo_t *cr);
 	cairo_surface_t *GetSurface ();
 	
