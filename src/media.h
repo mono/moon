@@ -146,7 +146,7 @@ public:
 	virtual void Stop () = 0;
 	virtual void Close () = 0;
 
-	static MediaSource * CreateSource (MediaElement *element, const char *source_name, const char *file_name);
+	static MediaSource *CreateSource (MediaElement *element, const char *source_name, const char *file_name);
 };
 
 class SingleMedia : public MediaSource {

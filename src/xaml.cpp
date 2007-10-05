@@ -1397,7 +1397,7 @@ advance (char **in)
 {
 	char *inptr = *in;
 	
-	while (*inptr && !g_ascii_isalnum (*inptr) && *inptr != '.' && *inptr != '-')
+	while (*inptr && !g_ascii_isalnum (*inptr) && *inptr != '.' && *inptr != '-' && *inptr != '+')
 		inptr++;
 	
 	*in = inptr;
@@ -1413,8 +1413,15 @@ get_point (Point *p, char **in)
 	if (end == inptr)
 		return false;
 	
-	advance (&end);
 	inptr = end;
+	while (g_ascii_isspace (*inptr))
+		inptr++;
+	
+	if (*inptr == ',')
+		inptr++;
+	
+	while (g_ascii_isspace (*inptr))
+		inptr++;
 	
 	y = g_ascii_strtod (inptr, &end);
 	if (end == inptr)
@@ -1423,7 +1430,7 @@ get_point (Point *p, char **in)
 	p->x = x;
 	p->y = y;
 	
-	*in = inptr;
+	*in = end;
 	
 	return true;
 }
@@ -1440,12 +1447,24 @@ more_points_available (char **in)
 {
 	char *inptr = *in;
 	
-	while (g_ascii_isspace (*inptr))
+	while (*inptr) {
+		if (g_ascii_isalpha (*inptr)) {
+			*in = inptr;
+			return false;
+		}
+		
+		if (g_ascii_isdigit (*inptr) || *inptr == '.' || *inptr == '-' || *inptr == '+') {
+			*in = inptr;
+			return true;
+		}
+		
+		// otherwise we are whitespace
 		inptr++;
+	}
 	
 	*in = inptr;
 	
-	return (g_ascii_isdigit (*inptr) || *inptr == '.' || *inptr == '-');
+	return false;
 }
 
 Point *

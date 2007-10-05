@@ -1,13 +1,14 @@
+2007-10-04  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* xaml.cpp (get_point): Fixed to update *in properly on success.
+
 2007-10-05  Jb Evain  <jbevain@novell.com>
 
 	* media.cpp: correctly advertise 'Opening' state of MediaElement.
 
 2007-10-04  Jeffrey Stedfast  <fejj@novell.com>
 
-	* xaml.cpp: Added new macros xaml_isspace, xaml_isalpha(),
-	xaml_isalnum() and xaml_isdigit() to use in place of the
-	g_ascii_is*() functions which are locale dependant.
-	(more_points_available): Simplified by looping while
+	* xaml.cpp: (more_points_available): Simplified by looping while
 	isspace. Also, update our input pointer if we have to scan over
 	lwsp.
 	(get_point): Now returns bool based on whether it manages to
