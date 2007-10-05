@@ -1,3 +1,9 @@
+2007-10-05  Jb Evain  <jbevain@novell.com>
+
+	* media.cpp|h, playlist.cpp|h: Don't open the first entry
+	when a playlist entry has been stopped before switching to
+	the next one.
+
 2007-10-04  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp: fix a couple of compilation warnings, and tighten up

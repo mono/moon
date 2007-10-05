@@ -143,7 +143,7 @@ public:
 	virtual bool Open ();
 	virtual void Play () = 0;
 	virtual void Pause () = 0;
-	virtual void Stop () = 0;
+	virtual void Stop (bool media_ended) = 0;
 	virtual void Close () = 0;
 
 	static MediaSource *CreateSource (MediaElement *element, const char *source_name, const char *file_name);
@@ -162,7 +162,7 @@ public:
 
 	virtual void Play ();
 	virtual void Pause ();
-	virtual void Stop ();
+	virtual void Stop (bool media_ended);
 	virtual void Close ();
 };
 

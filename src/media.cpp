@@ -174,9 +174,9 @@ SingleMedia::ClearTimeout ()
 void
 SingleMedia::Play ()
 {
-	element->Invalidate ();
 	advance_frame_timeout_id = element->mplayer->Play (media_element_advance_frame, element);
 	media_element_set_current_state (element, "Playing");
+	element->Invalidate ();
 }
 
 void
@@ -188,7 +188,7 @@ SingleMedia::Pause ()
 }
 
 void
-SingleMedia::Stop ()
+SingleMedia::Stop (bool media_ended)
 {
 	element->mplayer->Stop ();
 	media_element_set_current_state (element, "Stopped");
@@ -247,7 +247,7 @@ MediaElement::AdvanceFrame ()
 		updating = false;
 	} else {
 		if (source)
-			source->Stop ();
+			source->Stop (true);
 		Emit (MediaEndedEvent);
 		return false;
 	}
@@ -470,8 +470,6 @@ MediaElement::DownloaderComplete ()
 	
 	Emit (MediaElement::MediaOpenedEvent);
 	
-	Invalidate ();
-	
 	//printf ("DownloaderComplete: autoplay = %s\n", autoplay ? "true" : "false");
 	
 	if (autoplay || play_pending)
@@ -562,7 +560,7 @@ MediaElement::Stop ()
 	if (!source)
 		return;
 
-	source->Stop ();
+	source->Stop (false);
 }
 
 Value *

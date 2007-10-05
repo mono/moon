@@ -256,7 +256,7 @@ Playlist::Pause ()
 }
 
 void
-Playlist::Stop ()
+Playlist::Stop (bool media_ended)
 {
 	if (!current_entry)
 		return;
@@ -266,9 +266,10 @@ Playlist::Stop ()
 	if (!HasMediaSource ())
 		return;
 
-	current_entry->GetSource ()->Stop ();
+	current_entry->GetSource ()->Stop (media_ended);
 
-	OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
+	if (!media_ended || (media_ended && current_entry == entries->Last ()))
+		OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
 }
 
 void

@@ -181,7 +181,7 @@ public:
 
 	virtual void Play ();
 	virtual void Pause ();
-	virtual void Stop ();
+	virtual void Stop (bool media_ended);
 	virtual void Close ();
 
 	void AddEntry (PlaylistEntry *entry);
