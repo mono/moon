@@ -1,3 +1,9 @@
+2007-10-05  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (TimeManager::Tick): I have no idea how this is
+	possible, but the throttle code is *completely* screwing up the
+	Airlines demo animations.
+
 2007-10-05  Jackson Harper  <jackson@ximian.com>
 
 	* control.cpp: need to pass this down.  Fixes dragging controls in

@@ -211,6 +211,10 @@ TimeManager::Tick ()
 	}
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
+#if THROTTLING_WORKS
+	// for some reason this code completely breaks the airlines demo...
+	// we need to figure out what the hell it's doing.
+
 	TimeSpan post_tick = get_now();
 
 	/* implement an exponential moving average by way of simple
@@ -254,6 +258,7 @@ TimeManager::Tick ()
 	previous_smoothed = current_smoothed;
 
 	//time_manager_list_clocks ();
+#endif
 }
 
 void
