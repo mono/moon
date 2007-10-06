@@ -24,6 +24,7 @@
 #include "error.h"
 #include "downloader.h"
 #include "playlist.h"
+#include "geometry.h"
 
 // still too ugly to be exposed in the header files ;-)
 cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
@@ -1281,6 +1282,13 @@ Image::Render (cairo_t *cr, int, int, int, int)
 	cairo_save (cr);
 
 	cairo_set_matrix (cr, &absolute_xform);
+
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (value) {
+		Geometry *geometry = value->AsGeometry ();
+		geometry->Draw (NULL, cr);
+		cairo_clip (cr);
+	}
 
 	Stretch stretch = media_base_get_stretch (this);
 
