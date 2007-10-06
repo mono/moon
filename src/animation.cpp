@@ -752,8 +752,8 @@ static int
 KeyFrameComparer (gconstpointer kf1, gconstpointer kf2)
 {
 	// Assumes timespan keytimes only
-	TimeSpan ts1 = ((KeyFrame *) kf1)->resolved_keytime;
-	TimeSpan ts2 = ((KeyFrame *) kf2)->resolved_keytime;
+	TimeSpan ts1 = (*(KeyFrame **) kf1)->resolved_keytime;
+	TimeSpan ts2 = (*(KeyFrame **) kf2)->resolved_keytime;
 	TimeSpan tsdiff = ts1 - ts2;
 	
 	if (tsdiff == 0)
@@ -817,6 +817,8 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 	KeyFrame *previous_keyframe = NULL;
 	guint i;
 	
+	*prev_frame = NULL;
+
 	/* figure out what segment to use (this assumes the list is sorted) */
 	for (i = 0; i < sorted_list->len; i++) {
 		KeyFrame *keyframe = (KeyFrame *) sorted_list->pdata[i];

@@ -1,5 +1,15 @@
 2007-10-05  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp (KeyFrameComparer): fix airlines (and probably a
+	host of other keyframe usage besides).  The problem was that this
+	function was treating its args as keyframe*'s, when in actuality
+	they were keyframe**'s.  that explains the intermittent nature of
+	the bug, as well as the faulty sorting I was experiencing earlier.
+
+	* clock.cpp (TimeManager::Tick): reinstate the throttling, yay.
+
+2007-10-05  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp (TimeManager::Tick): I have no idea how this is
 	possible, but the throttle code is *completely* screwing up the
 	Airlines demo animations.
