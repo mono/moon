@@ -1,3 +1,14 @@
+2007-10-07  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (Clock::Tick): make sure we're reversed before
+	switching to Fill if the clock is at 0 (and make sure we're not
+	reversed before switching to Fill on the other end of the
+	timespan).  Some animations were skipping directly to fill without
+	ever running.
+	(ClockGroup::Tick): don't Tick a child clock if it's about to
+	Stop.  the new tick might cause it to fill.. this needs work
+	still.
+
 2007-10-06  Jb Evain  <jbevain@novell.com>
 
 	* media.cpp (Image::Render): Deal with clipping.
