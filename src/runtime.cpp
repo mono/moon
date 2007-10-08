@@ -768,12 +768,16 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 		cairo_paint (ctx);
 	}
 	else if (s->background_color) {
+		// Here since we are not transparent we start with a white
+		// background and blend the specified background on top of
+		// it.  Alternatively we could let gtk fill the background
+		// but we need a test case first.
 		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
-		cairo_set_source_rgba (ctx,
-				       s->background_color->r * s->background_color->a,
-				       s->background_color->g * s->background_color->a,
-				       s->background_color->b * s->background_color->a,
-				       s->background_color->a);
+		double base = 1.0 - s->background_color->a;
+		cairo_set_source_rgb (ctx,
+				      base + s->background_color->r * s->background_color->a,
+				      base + s->background_color->g * s->background_color->a,
+				      base + s->background_color->b * s->background_color->a);
 		cairo_paint (ctx);
 	}
 

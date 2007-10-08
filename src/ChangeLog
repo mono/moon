@@ -1,5 +1,9 @@
 2007-10-08  Larry Ewing  <lewing@novell.com>
 
+	* src/runtime.cpp: draw the background color blended over white.
+
+2007-10-08  Larry Ewing  <lewing@novell.com>
+
 	* media.cpp: render clip paths on media elements.
 
 2007-10-07  Larry Ewing  <lewing@novell.com>

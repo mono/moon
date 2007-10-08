@@ -24,7 +24,6 @@ rect_from_str (const char *s)
 		       g_array_index (values, double, 3));
 	
 	g_array_free (values, true);
-
 	return r;
 }
 
