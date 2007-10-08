@@ -1,5 +1,10 @@
 2007-10-08  Larry Ewing  <lewing@novell.com>
 
+	* src/runtime.cpp: change previous logic to drop the alpha
+	completely here until more testing can be done.
+
+2007-10-08  Larry Ewing  <lewing@novell.com>
+
 	* src/runtime.cpp: draw the background color blended over white.
 
 2007-10-08  Larry Ewing  <lewing@novell.com>
