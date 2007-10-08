@@ -3,7 +3,9 @@
 	* xaml.cpp:
 	* rect.cpp:
 	* point.cpp:
-	* array.cpp: use g_utf8_next_char in some places.
+	* array.cpp: use g_utf8_next_char in some places to start making
+	the parsers more utf8 safe.  Make rect/point_from_str more robust
+	against separator characters
 
 2007-10-07  Chris Toshok  <toshok@ximian.com>
 
