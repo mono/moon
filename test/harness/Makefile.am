@@ -27,6 +27,7 @@ MOON_TESTS= \
 	../xaml/test-path-group-empty.xaml \
 	../xaml/test-path-group-rectangle.xaml \
 	../xaml/test-path-group-stretch.xaml \
+	../xaml/test-path-group-torture.xaml \
 	../xaml/test-path-group.xaml \
 	../xaml/test-path-line-stretch.xaml \
 	../xaml/test-path-line-stroke.xaml \

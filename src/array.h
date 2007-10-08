@@ -43,6 +43,7 @@ PointArray *point_array_new (int count, Point *points);
 Point* point_array_from_str (const char *s, int* count);
 
 double* double_array_from_str   (const char *s, int* count);
+GArray* double_garray_from_str   (const char *s, gint max);
 DoubleArray *double_array_new   (int count, double *values);
 
 G_END_DECLS

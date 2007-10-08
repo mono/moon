@@ -11,31 +11,21 @@
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
-
+#include "array.h"
 #include "rect.h"
 
 Rect
 rect_from_str (const char *s)
 {
-	// FIXME - not robust enough for production
-	char *next = NULL;
-	double x = g_ascii_strtod (s, &next);
-	double y = 0.0;
-	if (next) {
-		++next;
-		y = g_ascii_strtod (next, &next);
-	}
-	double w = 0.0;
-	if (next) {
-		++next;
-		w = g_ascii_strtod (next, &next);
-	}
-	double h = 0.0;
-	if (next) {
-		++next;
-		h = g_ascii_strtod (next, &next);
-	}
-	return Rect (x, y, w, h);
+	GArray *values = double_garray_from_str (s, 4);
+	Rect r = Rect (g_array_index (values, double, 0), 
+		       g_array_index (values, double, 1),
+		       g_array_index (values, double, 2),
+		       g_array_index (values, double, 3));
+	
+	g_array_free (values, true);
+
+	return r;
 }
 
 Rect

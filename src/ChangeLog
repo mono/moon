@@ -1,3 +1,10 @@
+2007-10-07  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp:
+	* rect.cpp:
+	* point.cpp:
+	* array.cpp: use g_utf8_next_char in some places.
+
 2007-10-07  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (Clock::Tick): make sure we're reversed before

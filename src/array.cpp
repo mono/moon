@@ -27,67 +27,53 @@ double_array_new (int count, double *values)
 	return p;
 }
 
-
-static bool
-is_separator (char c)
+GArray *double_garray_from_str (const char *s, gint max)
 {
-	switch (c) {
-	case ',':
-	case ' ':
-	case '\r':
-	case '\n':
-	case '\t':
-		return true;
-	default:
-		return false;
-	}
-}
+	char *next = (char *)s;
+	GArray *values = g_array_sized_new (false, true, sizeof (double), max > 0 ? max : 16);
+	double coord = 0.0;
+	guint end = max > 0 ? max : G_MAXINT;
 
+	while (next && values->len < end) {
+		while (g_ascii_isspace (*next) || *next == ',')
+			next = g_utf8_next_char (next);
+
+		if (next) {
+			errno = 0;
+			char *prev = next;
+			coord = g_ascii_strtod (prev, &next);
+			if (errno != 0 || next == prev)
+				goto error;
+
+			g_array_append_val (values, coord);
+		}
+	}
+
+error:
+	while (values->len < (guint) max) {
+		coord = 0.0;
+		g_array_append_val (values, coord);
+	}
+
+	return values;
+}
 
 double *
 double_array_from_str (const char *s, int *count)
 {
-	int n = 16;
-	int pos = 0;
-	double *doubles = new double [n];
-	char *start = (char*)s;
-	char *end = NULL;
+	GArray *values = double_garray_from_str (s, 0);
 
-	errno = 0;
-	// note: we use g_ascii_strtod because in some locale, like french, 
-	// comma is used as the decimal point
-	double dv = g_ascii_strtod (start, &end);
-	if (errno != 0 || (start == end))
-		goto error;
-
-	doubles[pos++] = dv;
-	while (*end) {
-		if (is_separator (*end)) {
-			end++;
-		} else {
-			start = end;
-			errno = 0;
-			dv = g_ascii_strtod (start, &end);
-			if (errno != 0 || (start == end))
-				goto error;
-			if (pos == n) {
-				int new_size = n << 1; // double array size
-				double *newdoubles = new double [new_size];
-				memcpy (newdoubles, doubles, n * sizeof (double));
-				delete[] doubles;
-				doubles = newdoubles;
-				n = new_size;
-			}
-			doubles[pos++] = dv;
-		}
+	if (values->len == 0) {
+		*count = 0;
+		return NULL;
 	}
 
-	*count = pos;
+	double *doubles = new double [values->len];
+	memcpy (doubles, values->data, values->len * sizeof (double));
+	*count = values->len;
+	g_array_free (values, true);
+
 	return doubles;
-error:
-	delete [] doubles;
-	*count = 0;
-	return NULL;
 }
 
 
@@ -106,25 +92,22 @@ Point *
 point_array_from_str (const char *s, int* count)
 {
 	int i, j, n = 0;
-	double *doubles = double_array_from_str (s, &n);
-	if (!doubles) {
-		*count = 0;
-		return NULL;
-	}
-	// invalid if doubles are not in pair
-	if ((n & 1) == 1) {
-		delete [] doubles;
+	GArray *values = double_garray_from_str (s, 0);
+
+	n = values->len / 2;
+	if (n == 0 || n % 1 == 1) {
+		g_array_free (values, true);
 		*count = 0;
 		return NULL;
 	}
 
-	n >>= 1; // 2 doubles for each point
 	Point *points = new Point [n];
 	for (i = 0, j = 0; j < n; j++) {
-		points[j].x = doubles [i++];
-		points[j].y = doubles [i++];
+		points[j].x = g_array_index (values, double, i++);
+		points[j].y = g_array_index (values, double, i++);
 	}
-	delete [] doubles;
+
+	g_array_free (values, true);
 	*count = n;
 	return points;
 }

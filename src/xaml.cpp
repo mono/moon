@@ -1398,7 +1398,7 @@ advance (char **in)
 	char *inptr = *in;
 	
 	while (*inptr && !g_ascii_isalnum (*inptr) && *inptr != '.' && *inptr != '-' && *inptr != '+')
-		inptr++;
+		inptr = g_utf8_next_char (inptr);
 	
 	*in = inptr;
 }
@@ -1522,9 +1522,10 @@ geometry_from_str (const char *str)
 		
 		bool relative = false;
 		
-		inptr++;
+		char c = *inptr;
+		inptr = g_utf8_next_char (inptr);
 		
-		switch (inptr[-1]) {
+		switch (c) {
 		case 'f':
 		case 'F':
 			if (*inptr == '0')
@@ -1532,7 +1533,7 @@ geometry_from_str (const char *str)
 			else if (*inptr == '1')
 				geometry_set_fill_rule (pg, FillRuleNonzero);
 			// FIXME: else it's a bad value and nothing should be rendered
-			inptr++;
+			inptr = g_utf8_next_char (inptr);
 			break;
 
 		case 'm':
