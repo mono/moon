@@ -173,32 +173,27 @@ class MonoOpen {
 			return 1;
 		}
 
-		DependencyObject d = XamlReader.Load (xaml);
-		if (d == null){
-			Console.Error.WriteLine ("mopen: No dependency object returned from XamlReader");
-			return 1;
-		}
-		
-		if (!(d is Canvas)){
-			Console.Error.WriteLine ("mopen: No Canvas as root in the specified file");
+		GtkSilver silver = new GtkSilver (400, 400);
+		Canvas canvas;
+
+		if (!silver.LoadXaml (xaml, out canvas)) {
+			Console.Error.WriteLine ("mopen: Could not load xaml");
 			return 1;
 		}
 
 		if (parse_only)
 			return 0;
 
-		GtkSilver silver;
-		Canvas canvas = d as Canvas;
+		if (width == -1)
+			width = (int) canvas.Width;
+		if (height == -1)
+			height = (int) canvas.Height;
 
-		if (width != -1 && height != -1){
-			silver = new GtkSilver (width, height);
+		if (width > 0 && height > 0) {
+			silver.Resize (width, height);
 			window.Resize (width, height);
-		} else if (canvas.Width > 0 && canvas.Height > 0) {
-			window.Resize ((int) canvas.Width, (int) canvas.Height);
-			silver = new GtkSilver ((int) canvas.Width, (int) canvas.Height);
-		} else {
-			silver = new GtkSilver (400, 400);
-		}
+		} 
+
 		if (transparent){
 			silver.AppPaintable = true;
 			silver.Transparent = true;
@@ -211,7 +206,6 @@ class MonoOpen {
 		}
 
 		window.Add (silver);
-		silver.Attach (canvas);
 
 		window.ShowAll ();
 		Application.Run ();
