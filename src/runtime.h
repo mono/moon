@@ -114,7 +114,7 @@ class Surface : public EventObject {
 		if (surface) {
 			return surface->CreateDownloader ();
 		} else {
-			printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n", element, element ? element->id : 0);
+			//printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n", element, element ? element->id : 0);
 			//print_stack_trace ();
 			return new Downloader ();
 		}
