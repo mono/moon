@@ -1,3 +1,8 @@
+2007-10-08  Zoltan Varga  <vargaz@gmail.com>
+
+	* text.cpp (OnPropertyChanged): Do a relayout if the Width property
+	changes and text wrapping is enabled.
+
 2007-10-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (Open): If the media has video, load the first video
