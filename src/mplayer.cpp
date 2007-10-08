@@ -340,6 +340,9 @@ MediaPlayer::Open (const char *uri)
 		target_pts = audio->initial_pts;
 	}
 	
+	if (video->stream_id != -1)
+		LoadVideoFrame ();
+	
 	return true;
 }
 
@@ -455,7 +458,7 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	if (current_pts >= seek_pts && current_pts >= target_pts)
-		return true;
+		return g_async_queue_length (video->queue) > 0;
 	
 	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue))) {
 		// always decode the frame or we get glitches in the screen
@@ -492,14 +495,14 @@ MediaPlayer::AdvanceFrame ()
 }
 
 void
-MediaPlayer::DisplayFrame ()
+MediaPlayer::LoadVideoFrame ()
 {
 	AVFrame *frame;
 	AVPacket pkt;
 	int redraw;
 	int rv;
 	
-	if (playing || video->stream_id == -1)
+	if (video->stream_id == -1)
 		return;
 	
 	if (audio->pcm != NULL && audio->stream_id != -1)
@@ -752,9 +755,13 @@ MediaPlayer::Seek (int64_t position)
 	
 	StopThreads ();
 	
-	// seek to position
-	av_seek_frame (av_ctx, stream_id, position, 0);
-	seek_pts = position;
+	if (video->stream_id != -1) {
+		seek_pts = position;
+		LoadVideoFrame ();
+	} else {
+		av_seek_frame (av_ctx, stream_id, position, 0);
+		seek_pts = position;
+	}
 	
 	if (playing) {
 		// Restart the audio/io threads
