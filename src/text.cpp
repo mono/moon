@@ -818,7 +818,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	
 	if (prop->type != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (prop);
-		if ((prop == FrameworkElement::WidthProperty) && text_block_get_text_wrapping (this) != TextWrappingNoWrap)
+		if (prop == FrameworkElement::WidthProperty)
 			dirty = true;
 		else
 			return;

@@ -1,3 +1,8 @@
+2007-10-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (OnPropertyChanged): We may need to relayout even if
+	the wrapping is set to NoWrap.
+
 2007-10-08  Zoltan Varga  <vargaz@gmail.com>
 
 	* text.cpp (OnPropertyChanged): Do a relayout if the Width property
