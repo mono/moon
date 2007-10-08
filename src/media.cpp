@@ -366,6 +366,12 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	
 	cairo_set_matrix (cr, &absolute_xform);
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (value) {
+		Geometry *geometry = value->AsGeometry ();
+		geometry->Draw (NULL, cr);
+		cairo_clip (cr);
+	}
 	
 	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, pattern_opacity);
 	
