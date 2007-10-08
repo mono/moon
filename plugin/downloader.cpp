@@ -77,7 +77,7 @@ p_downloader_send (gpointer state)
 	} else if (plugin_instances && plugin_instances->data) {
 		// TODO: Review if we really should allowing download with the first plugin.
 		plugin = (NPP_t*) plugin_instances->data;
-		printf ("DOWNLOADING WITH FIRST PLUGIN (%p), (Downloader->id: %i): %s\n", plugin, pd->dl->id, pd->uri);
+		//printf ("DOWNLOADING WITH FIRST PLUGIN (%p), (Downloader->id: %i): %s\n", plugin, pd->dl->id, pd->uri);
 	}
 	if (plugin && pd) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
