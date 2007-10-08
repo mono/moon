@@ -15,6 +15,7 @@ MOON_TESTS= \
 	../xaml/test-imagebrush-transform.xaml \
 	../xaml/test-imagebrush.xaml \
 	../xaml/test-image.xaml \
+	../xaml/test-mediaelement-clip.xaml \
 	../xaml/test-monkey.xaml \
 	../xaml/test-path-ellipse-renderxorigin.xaml \
 	../xaml/test-path-ellipse-stretch.xaml \
