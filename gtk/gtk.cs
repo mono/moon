@@ -45,23 +45,6 @@ namespace Gtk.Moonlight {
         ///    widget with your Gtk# code.
 	/// </remarks>
 public class GtkSilver : EventBox {
-	[DllImport ("moon")]
-	extern static IntPtr surface_new (int w, int h);
-
-	[DllImport ("moon")]
-	extern static IntPtr surface_get_drawing_area (IntPtr surface);
-
-	[DllImport ("moon")]
-	extern static IntPtr xaml_create_from_file (string file, ref int kind_type);
-	
-	[DllImport ("moon")]
-	extern static void surface_paint (IntPtr surface, IntPtr ctx, int x, int y, int width, int height);
-
-	[DllImport ("moon")]
-	extern static void surface_set_trans (IntPtr surface, bool trans);
-	[DllImport ("moon")]
-	extern static bool surface_get_trans (IntPtr surface);
-	
 	IntPtr surface;
 
 	//
@@ -132,8 +115,8 @@ public class GtkSilver : EventBox {
 	/// </remarks>
 	public GtkSilver (int width, int height)
 	{
-		surface = surface_new (width, height);
-		Raw = surface_get_drawing_area (surface);
+		surface = NativeMethods.surface_new (width, height);
+		Raw = NativeMethods.surface_get_drawing_area (surface);
 	}
 
 	/// <summary>
@@ -146,18 +129,18 @@ public class GtkSilver : EventBox {
 	/// </remarks>
 	public bool Transparent {
 		get {
-			return surface_get_trans (surface);
+			return NativeMethods.surface_get_trans (surface);
 		}
 
 		set {
-			surface_set_trans (surface, value);
+			NativeMethods.surface_set_trans (surface, value);
 		}
 	}
 	
 	// This is a quick hack for f-spot code it will be cleaned up soon
 	public void Print (IntPtr ctx, Gdk.Rectangle area)
 	{
-		surface_paint (surface, ctx, area.X, area.Y, area.Width, area.Height);
+		NativeMethods.surface_paint (surface, ctx, area.X, area.Y, area.Width, area.Height);
 	}
 
 	/// <summary>
@@ -181,6 +164,55 @@ public class GtkSilver : EventBox {
 	}
 
 	/// <summary>
+	///    Resizes the surface to the specified size.
+	/// </summary>
+	/// <param name="width">The new width.</param>
+	/// <param name="height">The new height.</param>
+	public void Resize (int width, int height)
+	{
+		NativeMethods.surface_resize (surface, width, height);
+	}
+
+	/// <summary>
+	///    Initializes the GtkSilver widget from the XAML contents in a string
+	/// </summary>
+	/// <param name="xaml">The contents of the string.</param>
+	/// <param name="canvas">The created canvas, if the creation of the xaml string was successful.</param>
+	/// <remarks>
+	///   This uses the XAML parser to load the given string and display it on 
+	///   the GtkSilver widget.
+	/// </remarks>
+	public bool LoadXaml (string xaml, out Canvas canvas)
+	{
+		canvas = null;
+
+		if (xaml == null)
+			throw new ArgumentNullException ("file");
+
+		Mono.Kind k;
+	
+		IntPtr loader = NativeMethods.xaml_loader_new (null, xaml, surface);
+		IntPtr x = NativeMethods.xaml_create_from_str (loader, xaml, true, out k);
+		NativeMethods.xaml_loader_free (loader);
+
+		if (x == IntPtr.Zero)
+			return false;
+
+		// TODO: Check that x is a Canvas
+
+		MethodInfo m = typeof (Canvas).GetMethod ("FromPtr", BindingFlags.Static | BindingFlags.NonPublic);
+		Canvas c = (Canvas) m.Invoke (null, new object [] { x });
+		if (c == null)
+			return false;
+	
+		Attach (c);
+	
+		canvas = c;
+
+		return true;
+	}
+
+	/// <summary>
 	///    Initializes the GtkSilver widget from the XAML contents in a file
 	/// </summary>
 	/// <param name="file">The name of a file in your file system.</param>
@@ -192,9 +224,13 @@ public class GtkSilver : EventBox {
 	{
 		if (file == null)
 			throw new ArgumentNullException ("file");
-		int k = 1;
+
+		Mono.Kind k;
 		
-		IntPtr x = xaml_create_from_file (file, ref k);
+		IntPtr loader = NativeMethods.xaml_loader_new (file, null, surface);
+		IntPtr x = NativeMethods.xaml_create_from_file (loader, file, true, out k);
+		NativeMethods.xaml_loader_free (loader);
+
 		if (x == IntPtr.Zero)
 			return false;
 
