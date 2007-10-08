@@ -89,7 +89,8 @@ Surface::Surface(int w, int h)
     background_color(NULL),
     cursor (MouseCursorDefault),
     drawing_area_normal (NULL),
-    drawing_area_fullscreen (NULL)
+    drawing_area_fullscreen (NULL),
+    downloader_context (NULL)
 {
 	drawing_area = gtk_event_box_new ();
 

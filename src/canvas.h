@@ -14,8 +14,8 @@
 #define __MOON_CANVAS_H__
 
 #include "panel.h"
+#include "runtime.h"
 
-class Surface;
 //
 // Canvas Class, the only purpose is to have the Left/Top properties that
 // children can use
@@ -26,10 +26,6 @@ class Canvas : public Panel {
 
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
-	virtual Surface *GetSurface () { return surface ? surface : UIElement::GetSurface(); };
-	// This should only be called on the toplevel surface
-	void SetSurface (Surface *surface) { this->surface = surface; }
-
 	Point GetTransformOrigin ();
 
 	virtual void ComputeBounds ();
@@ -39,12 +35,6 @@ class Canvas : public Panel {
 	
 	static DependencyProperty* TopProperty;
 	static DependencyProperty* LeftProperty;
- private:
-	//
-	// if not-null, this is a toplevel canvas, and this points to the
-	// surface
-	//
-	Surface *surface;
 };
 
 G_BEGIN_DECLS

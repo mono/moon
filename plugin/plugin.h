@@ -84,6 +84,16 @@ class PluginInstance
 
 	NPP getNPP () { return instance; }
 
+	static Downloader* CreateDownloader (PluginInstance* instance)
+	{
+		if (instance) {
+			return instance->surface->CreateDownloader ();
+		} else {
+			printf ("PluginInstance::CreateDownloader (%p): Unable to create contextual downloader.\n", instance);
+			return new Downloader ();
+		}
+	}
+	
 	// Gtk controls
 	GtkWidget *container;  // plugin container object
  	Surface *surface;      // plugin surface object

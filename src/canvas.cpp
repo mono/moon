@@ -21,7 +21,7 @@
 #include "namescope.h"
 #include "collection.h"
 
-Canvas::Canvas () : surface (NULL)
+Canvas::Canvas ()
 {
 	NameScope *ns = new NameScope ();
 	ns->SetTemporary (true);
@@ -45,7 +45,8 @@ Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 void
 Canvas::ComputeBounds ()
 {
-	if (surface) {
+	Surface *surface = GetSurface ();
+	if (surface && surface->IsTopLevel (this)) {
 		// toplevel canvas don't subscribe to the same bounds computation as others
 		bounds = Rect (0, 0, surface->GetWidth(), surface->GetHeight());
 	}

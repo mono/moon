@@ -1085,9 +1085,8 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 		NPObject *obj = NULL;
 		const char *object_type = NPVARIANT_TO_STRING (args[0]).utf8characters;
 		if (!g_strcasecmp ("downloader", object_type)) {
-
-			Downloader *dl = new Downloader ();
-
+			PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
+			Downloader *dl = PluginInstance::CreateDownloader (plugin);
 
 			obj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dl);
 			dl->unref ();
@@ -1437,9 +1436,9 @@ static bool
 moonlight_content_invoke (NPObject *npobj, NPIdentifier name, 
 			  const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
+	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
+	
 	if (name_matches (name, "findName")) {
-		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
-
 		if (!argCount)
 			return true;
 
@@ -1466,11 +1465,15 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
 		Type::Kind element_type;
-		DependencyObject *dep = xaml_create_from_str (NULL, xaml, false, &element_type);
+		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->surface);
+		DependencyObject *dep = xaml_create_from_str (loader, xaml, false, &element_type);
+		delete loader;
 
-		MoonlightEventObjectObject *depobj =
-			EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dep);
-		dep->unref ();
+		MoonlightEventObjectObject *depobj = NULL;
+		if (dep != NULL) {
+			depobj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, dep);
+			dep->unref ();
+		}
 
 		OBJECT_TO_NPVARIANT (depobj, *result);
 
@@ -1490,7 +1493,9 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *fname = down->GetResponseFile ((char *) NPVARIANT_TO_STRING (args[1]).utf8characters);
 		if (fname != NULL) {
-			dep = xaml_create_from_file (NULL, fname, false, &element_type);
+			XamlLoader* loader = PluginXamlLoader::FromFilename (fname, plugin, plugin->surface);
+			dep = xaml_create_from_file (loader, fname, false, &element_type);
+			delete loader;
 
 			g_free (fname);
 		}

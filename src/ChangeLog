@@ -1,3 +1,14 @@
+2007-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp: Set the surface of newly created objects (where applicable).
+	* canvas.h, uielement.h, canvas.cpp: Move the surface field to Visual.
+	* playlist.cpp, media.cpp, text.cpp: Create the downloader using Surface'
+	  brand new CreateDownloader method.
+	* visual.h: Added a surface field, complete with setters and getters.
+	* downloader.cpp, downloader.h: Add a context field.
+	* runtime.h: Add a downloader_context field, and CreateDownloader methods.
+	* runtime.cpp: Add a downloader_context field.
+
 2007-10-08  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: change previous logic to drop the alpha

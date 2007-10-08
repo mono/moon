@@ -22,12 +22,14 @@ public:
 		this->dl = dl;
 		this->verb = NULL;
 		this->uri = NULL;
+		//base_ref (dl);
 	}
 
 	~PluginDownloader ()
 	{
 		g_free (verb);
 		g_free (uri);
+		//base_unref (dl);
 	}
 
 	Downloader *dl;
@@ -67,18 +69,19 @@ p_downloader_send (gpointer state)
 
 	//	fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
 	//
-	// This is a hack: we need the p_downloader_create_state to provide us
-	// with the pointer to this plugin.    Currently we do not track this
-	// information, but we will
-	//
-	// At this point, we merely steal the first plugin to do this,
-	// but that is wrong (if that instance is killed, its download
-	// will not complete
-	//
 
-	if (plugin_instances->data) {
+	NPP_t* plugin = NULL;
+	if (pd && pd->dl && pd->dl->GetContext ()) {
+		// Get the context from the downloader.
+		plugin = ((PluginInstance*) pd->dl->GetContext ())->getInstance ();
+	} else if (plugin_instances && plugin_instances->data) {
+		// TODO: Review if we really should allowing download with the first plugin.
+		plugin = (NPP_t*) plugin_instances->data;
+		printf ("DOWNLOADING WITH FIRST PLUGIN (%p), (Downloader->id: %i): %s\n", plugin, pd->dl->id, pd->uri);
+	}
+	if (plugin && pd) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
-		NPN_GetURLNotify ((NPP_t *) plugin_instances->data, pd->uri, NULL, notify);
+		NPN_GetURLNotify (plugin, pd->uri, NULL, notify);
 	}
 
 	//

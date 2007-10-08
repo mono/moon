@@ -24,6 +24,7 @@ G_BEGIN_DECLS
 #include "value.h"
 #include "type.h"
 #include "list.h"
+#include "downloader.h"
 
 #define TIMERS 0
 #if TIMERS
@@ -94,7 +95,34 @@ class Surface : public EventObject {
 	ClockGroup* GetClockGroup () { return clock_group; }
 
 	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
+	
+	void SetDownloaderContext (gpointer context) { downloader_context = context; }
+	gpointer GetDownloaderContext () { return downloader_context; }
+	Downloader* CreateDownloader () 
+	{
+		Downloader *downloader = new Downloader ();
+		downloader->SetContext (downloader_context);
+		return downloader;
+	}
+	
+	static Downloader* CreateDownloader (UIElement* element)
+	{
+		Surface* surface = NULL;
+		if (element) {
+			surface = element->GetSurface ();
+		}
+		if (surface) {
+			return surface->CreateDownloader ();
+		} else {
+			printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n", element, element ? element->id : 0);
+			//print_stack_trace ();
+			return new Downloader ();
+		}
+	}
+	
 private:
+	gpointer downloader_context;
+	
 	int normal_width, normal_height;
 	int screen_width, screen_height;
 	// the actual size of the drawing area, 

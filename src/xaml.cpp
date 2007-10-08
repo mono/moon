@@ -520,6 +520,10 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 	this->missing_assemblies = NULL;
 	this->mappings = NULL;
 	this->vm_loaded = false;
+	
+	if (!surface) {
+		printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n", filename, str, surface);
+	}
 }
 
 XamlLoader::~XamlLoader ()
@@ -2144,6 +2148,8 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 
 	if (!inst->item) {
 		inst->item = i->create_item ();
+		if (inst->item->Is (Type::UIELEMENT) && p->loader)
+			((UIElement*) inst->item)->SetSurface (p->loader->GetSurface ());
 		p->AddCreatedElement (inst->item);
 	}
 

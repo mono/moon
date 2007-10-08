@@ -71,6 +71,7 @@ Downloader::Downloader ()
 	file_size = -2;
 	total = 0;
 	part_hash = NULL;
+	context = NULL;
 }
 
 static void 

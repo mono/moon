@@ -17,7 +17,7 @@
 
 class Visual : public DependencyObject {
  public:
-	Visual () {};
+	Visual () : surface (NULL) {};
 	virtual Type::Kind GetObjectType () { return Type::VISUAL; };	
 
 	//
@@ -25,6 +25,11 @@ class Visual : public DependencyObject {
 	//   Returns whether the position x, y is inside the object
 	//
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+	
+	Surface *GetSurface () { return surface; }
+	void SetSurface (Surface *surface) { this->surface = surface; }
+private:
+	Surface* surface;
 };
 
 

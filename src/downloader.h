@@ -85,6 +85,8 @@ class Downloader : public DependencyObject {
 	bool Started ();
 	bool Completed ();
 
+	void     SetContext (gpointer context) { this->context = context;}
+	gpointer GetContext () { return context; }
 
  private:
 	GHashTable *part_hash;
@@ -111,6 +113,8 @@ class Downloader : public DependencyObject {
 	static downloader_abort_func abort_func;
 
 	char * ll_downloader_get_response_file (char *PartName);
+	
+	gpointer context;
 };
 
 Downloader* downloader_new (void);

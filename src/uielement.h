@@ -78,8 +78,6 @@ class UIElement : public Visual {
 
 	Point transform_origin;
 
-	virtual Surface *GetSurface () { return parent ? parent->GetSurface() : NULL; }
-
 	virtual bool EnableAntiAlias() { return true; }
 
 	//

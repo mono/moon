@@ -652,7 +652,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		char *uri = media_base_get_source (this);
 		
 		if (uri && *uri) {
-			Downloader *dl = new Downloader ();
+			Downloader *dl = Surface::CreateDownloader (this);
 			
 			//printf ("setting media source to %s\n", uri);
 			downloader_open (dl, "GET", uri);
@@ -1387,7 +1387,7 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 		
 		char *source = media_base_get_source (this);
 		
-		Downloader *dl = new Downloader ();
+		Downloader *dl = Surface::CreateDownloader (this);
 		downloader_open (dl, "GET", source);
 		SetSource (dl, "");
 		dl->unref ();

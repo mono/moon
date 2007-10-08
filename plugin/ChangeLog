@@ -1,3 +1,12 @@
+2007-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: Set the downloader context of the surface.
+	* downloader.cpp: Ref/unref the downloader we store. Get the context stored
+	  in the downloader if possible, and use it to get the plugin instance.
+	* plugin-class.cpp: Use the brand new PluginInstance::CreateDownloader, and
+	  provide xaml loaders for the xaml_create_from* methods.
+	* plugin.h: Add a CreateDownloader method.
+
 2007-10-04  Zoltan Varga  <vargaz@gmail.com>
 
 	* plugin.cpp (LoadUrl): New method to download stuff synchronously using the browser.

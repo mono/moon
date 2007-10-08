@@ -333,6 +333,7 @@ PluginInstance::CreateWindow ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 	this->surface = new Surface (window->width, window->height);
+	this->surface->SetDownloaderContext (this);
 
 	if (background) {
 		Color *c = color_from_str (background);
@@ -754,7 +755,7 @@ PluginInstance::UrlNotify (const char* url, NPReason reason, void* notifyData)
 	if (reason == NPRES_DONE)
 		DEBUGMSG ("URL %s downloaded successfully.", url);
 	else
-		DEBUGMSG ("Download of URL %s failed.", url);
+		DEBUGMSG ("Download of URL %s failed: %i (%s)", url, reason, reason == NPRES_USER_BREAK ? "user break" : (reason == NPRES_NETWORK_ERR ? "network error" : "other error"));
 
 	if (notify) 
 		delete notify;

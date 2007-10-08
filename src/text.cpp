@@ -1703,7 +1703,7 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 		}
 		
 		if (uri && *uri) {
-			downloader = new Downloader ();
+			downloader = Surface::CreateDownloader (this);
 			
 			//printf ("setting media source to %s\n", uri);
 			downloader_open (downloader, "GET", uri);
