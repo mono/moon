@@ -1,3 +1,10 @@
+2007-10-09  Jb Evain  <jbevain@novell.com>
+
+	* uielement.h: define new methods RenderClipPath and
+	IntersectBoundsWithClipPath.
+	* uielement.cpp: implement them.
+	* panel.cpp, shape.cpp, media.cpp: use them.
+
 2007-10-09  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp, trigger.cpp, uielement.cpp, geometry.cpp, shape.cpp,

@@ -320,13 +320,9 @@ MediaElement::ComputeBounds ()
 
 	Rect box = Rect (0, 0, w, h);
 	
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        box = box.Intersection (geometry->ComputeBounds (NULL));
-	}
-	
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, box);
+
+	IntersectBoundsWithClipPath ();
 }
 
 Point
@@ -373,12 +369,8 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	
 	cairo_set_matrix (cr, &absolute_xform);
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-		geometry->Draw (NULL, cr);
-		cairo_clip (cr);
-	}
+
+	RenderClipPath (cr);
 	
 	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, pattern_opacity);
 	
@@ -1293,12 +1285,7 @@ Image::Render (cairo_t *cr, int, int, int, int)
 
 	cairo_set_matrix (cr, &absolute_xform);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-		geometry->Draw (NULL, cr);
-		cairo_clip (cr);
-	}
+	RenderClipPath (cr);
 
 	Stretch stretch = media_base_get_stretch (this);
 
@@ -1363,15 +1350,10 @@ Image::ComputeBounds ()
 	Rect box = Rect (0,0,
 			 framework_element_get_width (this),
 			 framework_element_get_height (this));
-	
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        box = box.Intersection (geometry->ComputeBounds (NULL));
-	}
-							   
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     box);
+								   
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, box);
+
+	IntersectBoundsWithClipPath ();
 // no-op	bounds.GrowBy (1);
 }
 

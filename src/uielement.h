@@ -35,7 +35,10 @@ class UIElement : public Visual {
 	Brush *opacityMask;
 
 	double total_opacity;
- public:
+protected:
+	void IntersectBoundsWithClipPath ();
+	void RenderClipPath (cairo_t *cr);
+public:
 	UIElement ();
 	virtual ~UIElement ();
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };

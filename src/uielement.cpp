@@ -77,6 +77,31 @@ UIElement::~UIElement ()
 }
 
 void
+UIElement::IntersectBoundsWithClipPath ()
+{
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (!value)
+		return;
+
+	Geometry *geometry = value->AsGeometry ();
+	Rect box = geometry->ComputeBounds (NULL);
+	box = bounding_rect_for_transformed_rect (&absolute_xform, box);
+	bounds = box.Intersection (bounds);
+}
+
+void
+UIElement::RenderClipPath (cairo_t *cr)
+{
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (!value)
+		return;
+
+	Geometry *geometry = value->AsGeometry ();
+	geometry->Draw (NULL, cr);
+	cairo_clip (cr);
+}
+
+void
 UIElement::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type != Type::UIELEMENT) {

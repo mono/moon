@@ -139,15 +139,7 @@ Panel::ComputeBounds ()
 			bounds = bounds.Union (fw_rect);
 	}
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        Rect box = geometry->ComputeBounds (NULL);
-		box = bounding_rect_for_transformed_rect (&absolute_xform,
-							  box);
-		bounds = box.Intersection (bounds);
-	}
-
+	IntersectBoundsWithClipPath ();
 
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
@@ -239,14 +231,9 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 
 	cairo_set_matrix (cr, &absolute_xform);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-		geometry->Draw (NULL, cr);
-		cairo_clip (cr);
-	}
+	RenderClipPath (cr);
 
-	value = GetValue (Panel::BackgroundProperty);
+	Value *value = GetValue (Panel::BackgroundProperty);
 	if (value) {
 		double fwidth = framework_element_get_width (this);
 		double fheight = framework_element_get_height (this);

@@ -138,12 +138,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 
 	cairo_set_matrix (cr, &absolute_xform);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-		geometry->Draw (NULL, cr);
-		cairo_clip (cr);
-	}
+	RenderClipPath (cr);
 
 // 	printf ("Draw, xform: %g %g %g %g %g %g\n", 
 // 		absolute_xform.xy,
@@ -292,14 +287,7 @@ Shape::ComputeBounds ()
 		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 	}
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        Rect box = geometry->ComputeBounds (NULL);
-		box = bounding_rect_for_transformed_rect (&absolute_xform,
-							  box);
-		bounds = box.Intersection (bounds);
-	}
+	IntersectBoundsWithClipPath ();
 
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
@@ -992,14 +980,7 @@ Line::ComputeBounds ()
 	calc_line_bounds (line_get_x1 (this), line_get_x2 (this), line_get_y1 (this), line_get_y2 (this), thickness, &bounds);
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        Rect box = geometry->ComputeBounds (NULL);
-		box = bounding_rect_for_transformed_rect (&absolute_xform,
-							  box);
-		bounds = box.Intersection (bounds);
-	}
+	IntersectBoundsWithClipPath ();
 }
 
 double
@@ -1265,14 +1246,7 @@ Polygon::ComputeBounds ()
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        Rect box = geometry->ComputeBounds (NULL);
-		box = bounding_rect_for_transformed_rect (&absolute_xform,
-							  box);
-		bounds = box.Intersection (bounds);
-	}
+	IntersectBoundsWithClipPath ();
 }
 
 void
@@ -1477,14 +1451,7 @@ Polyline::ComputeBounds ()
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        Rect box = geometry->ComputeBounds (NULL);
-		box = bounding_rect_for_transformed_rect (&absolute_xform,
-							  box);
-		bounds = box.Intersection (bounds);
-	}
+	IntersectBoundsWithClipPath ();
 }
 
 void
@@ -1660,14 +1627,7 @@ Path::ComputeBounds ()
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (value) {
-		Geometry *geometry = value->AsGeometry ();
-	        Rect box = geometry->ComputeBounds (NULL);
-		box = bounding_rect_for_transformed_rect (&absolute_xform,
-							  box);
-		bounds = box.Intersection (bounds);
-	}
+	IntersectBoundsWithClipPath ();
 }
 
 void
