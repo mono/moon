@@ -760,6 +760,11 @@ resolve_property_path (DependencyObject **o, const char *path)
 			} else
 				t = Type::Find (lu->GetObjectType ());
 
+			if (!t) {
+				g_free (propn);
+				return NULL;
+			}
+	
 			res = DependencyObject::GetDependencyProperty (t->type, propn);
 			g_free (propn);
 			break;

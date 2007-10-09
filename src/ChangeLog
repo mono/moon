@@ -1,5 +1,9 @@
 2007-10-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp: resolve_property_path: Add a nullcheck.
+
+2007-10-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* debug.cpp, debug.h: Conditionally compile support for managed stack
 	  frames.
 
