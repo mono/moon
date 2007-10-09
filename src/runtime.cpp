@@ -47,6 +47,7 @@
 #include <X11/extensions/Xrandr.h>
 #endif
 
+//#define DEBUG_EXPOSE 1
 //#define DEBUG_INVALIDATE 1
 #define DEBUG_REFCNT 0
 
@@ -772,16 +773,31 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 		// FIXME dropping the alpha seems the closest to correct we
 		// have at the moment.
 		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
-		cairo_set_source_rgba (ctx,
-				       s->background_color->r,
-				       s->background_color->g,
-				       s->background_color->b,
-				       s->transparent ? s->background_color->a : 1.0);
+		if (s->transparent)
+			cairo_set_source_rgba (ctx,
+					       s->background_color->r,
+					       s->background_color->g,
+					       s->background_color->b,
+					       s->background_color->a);
+		else
+			cairo_set_source_rgb (ctx,
+					      s->background_color->r,
+					      s->background_color->g,
+					      s->background_color->b);
+
 		cairo_paint (ctx);
 	}
 
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 	s->Paint (ctx, event->area.x, event->area.y, event->area.width, event->area.height);
+
+#if DEBUG_EXPOSE
+	gdk_cairo_region (ctx, event->region);
+	cairo_set_line_width (ctx, 2.0);
+	cairo_set_source_rgb (ctx, (double)(s->frames % 2), (double)((s->frames + 1) % 2), (double)((s->frames / 3) % 2));
+	cairo_stroke (ctx);
+#endif
+
 	cairo_destroy (ctx);
 
 #if TIME_REDRAW
