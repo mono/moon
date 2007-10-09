@@ -168,6 +168,9 @@ Control::InitializeFromXaml (const char *xaml,
 	real_object->UpdateTransform ();
 	UpdateBounds ();
 
+	if (loader)
+		SetSurface (loader->GetSurface ());
+
 	return element;
 }
 
