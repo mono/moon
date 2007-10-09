@@ -1,3 +1,9 @@
+2007-10-09  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (ClockGroup::Stop): If the clock group has children we
+	depend on stopping them first.  But if the clock group is without
+	children, chain up to Clock::Stop here.
+
 2007-10-09  Jb Evain  <jbevain@novell.com>
 
 	* uielement.h: define new methods RenderClipPath and

@@ -739,10 +739,14 @@ ClockGroup::Seek (TimeSpan timespan)
 void
 ClockGroup::Stop ()
 {
-	for (GList *l = child_clocks; l; l = l->next) {
-		Clock *c = (Clock*)l->data;
-		c->Stop ();
+	if (child_clocks) {
+		for (GList *l = child_clocks; l; l = l->next) {
+			Clock *c = (Clock*)l->data;
+			c->Stop ();
+		}
 	}
+	else
+		Clock::Stop ();
 }
 
 void
