@@ -5,6 +5,8 @@ pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
 pluginlib_DATA=README
 
+noinst_DATA = novell-moonlight.xpi
+
 if INCLUDE_MONO_RUNTIME
 pluginlib_DATA += moonlight.exe moonlight.exe.mdb
 endif
@@ -41,6 +43,11 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.h 	\
 	downloader.cpp
 
+novell_moonlight_xpi_CONTENTS = $(srcdir)/install.js .libs/libmoonloader.so .libs/libmoonplugin.so
+
+novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
+	zip -j -9 $@ $(novell_moonlight_xpi_CONTENTS)
+
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
@@ -52,7 +59,7 @@ untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonloader.so
 	rm -rf ~/.mozilla/plugin/moonlight.exe
 
-EXTRA_DIST = moonlight.cs
+EXTRA_DIST = moonlight.cs install.js
 DISTCLEANFILES=moonlight.exe moonlight.exe.mdb
 
 moonlight_CS=  $(srcdir)/moonlight.cs

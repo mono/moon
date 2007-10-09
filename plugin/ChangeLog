@@ -1,3 +1,8 @@
+2007-10-09  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Build the firefox xpi plugin installer (unsigned)
+	* install.js: First draft install script for xpi
+
 2007-10-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* TODO: Update, fullScreen is now implemented.
