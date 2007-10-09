@@ -4,7 +4,6 @@
 * Not properly working properties
 
 	control.settings.windowless
-	control.content.fullScreen
 
 * Reload page and free memory stuff
 

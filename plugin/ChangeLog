@@ -1,3 +1,7 @@
+2007-10-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TODO: Update, fullScreen is now implemented.
+
 2007-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: Set the downloader context of the surface.
