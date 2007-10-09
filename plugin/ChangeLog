@@ -1,5 +1,10 @@
 2007-10-09  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* Makefile.am: Can't use the -MM (fail if patterns not matched) because it
+	is a newer feature.
+
+2007-10-09  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* Makefile.am: Make zip fail if one of the files is not found
 
 2007-10-09  Andrew Jorgensen  <ajorgensen@novell.com>
