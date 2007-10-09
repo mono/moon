@@ -1140,7 +1140,7 @@ DependencyObject *
 xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescope,
 		      Type::Kind *element_type)
 {
-	XML_Parser p = XML_ParserCreateNS (NULL, '|');
+	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
 	char *start = (char*)xaml;

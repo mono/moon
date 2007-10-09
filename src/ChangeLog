@@ -1,3 +1,10 @@
+2007-10-09  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When we are creating objects from a string, set the
+	encoding to utf8 so that expat doesn't try to determine the
+	encoding from the ?xml declaration (which will be incorrect
+	because the string is in utf8).
+
 2007-10-09  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (ClockGroup::Stop): If the clock group has children we
@@ -40,6 +47,11 @@
 
 	* font.cpp (Layout): Only break words on ASCII lwsp, we should not
 	break on nbsp's for example.
+
+2007-10-09  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Make sure the Surface gets set on custom created
+	UIElements.  Also add them to the created list, so they get freed.
 
 2007-10-09  Jackson Harper  <jackson@ximian.com>
 
