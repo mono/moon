@@ -513,6 +513,9 @@ shape_set_stroke_miter_limit (Shape *shape, double value)
 double
 shape_get_stroke_thickness (Shape *shape)
 {
+	if (!shape)
+		return 0.0;
+
 	return shape->GetValue (Shape::StrokeThicknessProperty)->AsDouble();
 }
 

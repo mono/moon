@@ -313,13 +313,20 @@ MediaElement::ComputeBounds ()
 {
 	double h = framework_element_get_height (this);
 	double w = framework_element_get_width (this);
-	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->height;
 		w = (double) mplayer->width;
 	}
+
+	Rect box = Rect (0, 0, w, h);
 	
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, w, h));
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (value) {
+		Geometry *geometry = value->AsGeometry ();
+	        box = box.Intersection (geometry->ComputeBounds (NULL));
+	}
+	
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, box);
 }
 
 Point
@@ -1353,11 +1360,18 @@ Image::Render (cairo_t *cr, int, int, int, int)
 void
 Image::ComputeBounds ()
 {
+	Rect box = Rect (0,0,
+			 framework_element_get_width (this),
+			 framework_element_get_height (this));
+	
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (value) {
+		Geometry *geometry = value->AsGeometry ();
+	        box = box.Intersection (geometry->ComputeBounds (NULL));
+	}
+							   
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     Rect (0,0,
-							   framework_element_get_width (this),
-							   framework_element_get_height (this)));
-
+						     box);
 // no-op	bounds.GrowBy (1);
 }
 

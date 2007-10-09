@@ -139,6 +139,16 @@ Panel::ComputeBounds ()
 			bounds = bounds.Union (fw_rect);
 	}
 
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (value) {
+		Geometry *geometry = value->AsGeometry ();
+	        Rect box = geometry->ComputeBounds (NULL);
+		box = bounding_rect_for_transformed_rect (&absolute_xform,
+							  box);
+		bounds = box.Intersection (bounds);
+	}
+
+
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
 	   thing */

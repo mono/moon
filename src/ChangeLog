@@ -30,6 +30,15 @@
 
 2007-10-08  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp:
+	* panel.cpp: intersect the bounds with the clip path to
+	optimize the invalidated region.
+
+	* shape.cpp: return 0.0 when shape_get_stroke_thickness is called
+	with a NULL.
+
+2007-10-08  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp: change previous logic to drop the alpha
 	completely here until more testing can be done.
 
