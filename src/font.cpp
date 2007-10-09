@@ -1295,6 +1295,9 @@ TextLayout::GetLayoutExtents (double *width, double *height)
 	*width = this->bbox_width;
 }
 
+// ASCII lwsp characters
+#define isSpace(c) (((c) >= 0x09 && (c) <= 0x0D) || (c) == 0x20)
+
 struct Space {
 	double width;
 	int index;
@@ -1386,7 +1389,7 @@ TextLayout::Layout ()
 			advance = glyph->metrics.horiAdvance;
 			advance += run->font->Kerning (prev, glyph->index);
 			
-			if ((is_space = g_unichar_isspace (run->text[i]))) {
+			if ((is_space = isSpace (run->text[i]))) {
 				spc.width = lw + advance;
 				spc.index = i;
 			}
