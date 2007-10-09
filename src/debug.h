@@ -24,13 +24,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_STACK_FRAMES 15
+#define MAX_STACK_FRAMES 30
 
 char* get_stack_trace_prefix (const char* prefix);
 void print_stack_trace_prefix (const char* prefix); 
 
+G_BEGIN_DECLS
+
 char* get_stack_trace ();
 void print_stack_trace ();
+void enable_vm_stack_trace (bool enable);
+
+G_END_DECLS
 
 #endif
 

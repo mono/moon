@@ -11,7 +11,10 @@
  
 #if STACK_DEBUG
 
+#define MONO_STACK_ENABLED 1
+
 // Type safety at it's best.
+#if MONO_STACK_ENABLED
 #define MonoMethod void
 #define MonoJitInfo void
 #define MonoDomain void
@@ -36,10 +39,22 @@ struct _MonoDebugSourceLocation {
 	guint32 row, column;
 	guint32 il_offset;
 };
+#endif
+
+static bool vm_stack_trace_enabled = FALSE;
+void
+enable_vm_stack_trace (bool enable)
+{
+	vm_stack_trace_enabled = enable;
+}
 
 static char*
 get_method_from_ip (void *ip)
 {
+	if (!vm_stack_trace_enabled)
+		return NULL;
+	
+#if MONO_STACK_ENABLED
 	MonoJitInfo *ji;
 	MonoMethod *mi;
 	char *method;
@@ -70,6 +85,9 @@ get_method_from_ip (void *ip)
 	g_free (method);
 
 	return res;
+#else
+	return NULL;
+#endif
 }
 
 char* get_stack_trace () 
@@ -157,9 +175,20 @@ library_of_ip (gpointer ip, gpointer* base_address)
 	return result;
 }
 
+static char* addr2line_offset (gpointer ip, bool use_offset);
+
+static char* 
+addr2line (gpointer ip) 
+{
+	char* result = addr2line_offset (ip, true);
+	if (result == NULL)
+		result = addr2line_offset (ip, false);
+	return result;
+}
+
 
 static char*
-addr2line (gpointer ip)
+addr2line_offset (gpointer ip, bool use_offset)
 {
 	char *res;
 	Addr2LineData *addr2line;
@@ -196,7 +225,10 @@ addr2line (gpointer ip)
 	}
 		
 	gpointer offset;
-	offset = (gpointer) (((size_t) ip) - ((size_t) addr2line->base));
+	if (use_offset)
+		offset = (gpointer) (((size_t) ip) - ((size_t) addr2line->base));
+	else
+		offset = ip;
 	
 	// printf ("Checking ip: %p, offset: %p, base: %p\n", ip, offset, addr2line->base);
 	fprintf (addr2line->pipein, "%p\n", offset);
