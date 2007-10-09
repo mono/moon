@@ -54,6 +54,11 @@ Collection::Collection ()
 
 Collection::~Collection ()
 {
+	Collection::Node *n;
+
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next)
+		n->obj->Detach (NULL, this);
+
 	list->Clear (true);
 	delete list;
 }

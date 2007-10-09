@@ -40,7 +40,7 @@ Transform::OnPropertyChanged (DependencyProperty *prop)
 	// of transform from C#, and in that case, we would only
 	// be slower.
 	//
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -427,14 +427,14 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 		need_update = true;
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
 TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
 	need_update = true;
-	NotifyAttacheesOfPropertyChange (subprop);
+	NotifyAttachersOfPropertyChange (subprop);
 }
 
 void
@@ -473,7 +473,7 @@ transform_collection_new (void)
 void
 TransformCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	NotifyAttacheesOfPropertyChange (subprop);
+	NotifyAttachersOfPropertyChange (subprop);
 }
 
 void

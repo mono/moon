@@ -721,7 +721,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	if (prop->type == Type::MEDIAELEMENT) {
-		NotifyAttacheesOfPropertyChange (prop);
+		NotifyAttachersOfPropertyChange (prop);
 	} else {
 		// propagate to parent class
 		MediaBase::OnPropertyChanged (prop);
@@ -1410,7 +1410,7 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	// we need to notify attachees if our DownloadProgress changed.
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 Image *

@@ -375,7 +375,7 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 	
 	Invalidate ();
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -862,7 +862,7 @@ Rectangle::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	Invalidate ();
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 bool
@@ -1307,7 +1307,7 @@ Polygon::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	Invalidate ();
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -1496,7 +1496,7 @@ Polyline::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	Invalidate ();
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -1641,7 +1641,7 @@ Path::OnPropertyChanged (DependencyProperty *prop)
 	InvalidatePathCache ();
 	FullInvalidate (false);
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

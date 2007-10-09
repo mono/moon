@@ -37,7 +37,7 @@ EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

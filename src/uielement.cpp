@@ -153,7 +153,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 #if true

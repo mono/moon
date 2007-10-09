@@ -1278,7 +1278,7 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -1407,7 +1407,7 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -1531,7 +1531,7 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

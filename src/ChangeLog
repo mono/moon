@@ -1,3 +1,28 @@
+2007-10-09  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp, trigger.cpp, uielement.cpp, geometry.cpp, shape.cpp,
+	frameworkelement.cpp, transform.cpp, media.cpp, animation.cpp,
+	brush.cpp, text.cpp: s/Attachee/Attacher.
+
+	* dependencyobject.h: couple of Detach changes: 1) Add a DetachAll
+	call that is used at dtor time to call Detach on all
+	DependencyObject-subclassed Values, and 2) make NULL available in
+	detach as a wildcard - passing NULL for the property detaches all
+	properties that the current object might be watching on.
+
+	Also, correct a longstanding problem in terminology/api.  if A's
+	code calls B->Attach (..., this), then A is the Attacher, not the
+	Attachee.  Basically s/Attachee/Attacher in all places,
+	everywhere.
+
+	* dependencyobject.cpp: same changes as above.  Also, change the
+	current_values hash table to key off the DependencyProperty, not
+	off the DependencyProperty name.  This allows us to use a direct
+	hash, as opposed to a string hash.
+	
+	* collection.cpp (dtor): make sure sure to detach from all the
+	list elements before we clear the list.
+
 2007-10-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (Layout): Only break words on ASCII lwsp, we should not

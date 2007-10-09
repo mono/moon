@@ -190,7 +190,7 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 	
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -199,7 +199,7 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subp
 	if (prop == Inline::ForegroundProperty) {
 		// this isn't exactly what we want, I don't
 		// think... but it'll have to do.
-		NotifyAttacheesOfPropertyChange (prop);
+		NotifyAttachersOfPropertyChange (prop);
 	}
 }
 
@@ -313,7 +313,7 @@ Run::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 Run *
@@ -900,7 +900,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		Invalidate ();
 	}
 	
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -1769,7 +1769,7 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 	if (dirty)
 		UpdateBounds (true);
 	
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 Glyphs *

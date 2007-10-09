@@ -93,7 +93,7 @@ Geometry::OnPropertyChanged (DependencyProperty *prop)
 	if ((prop->type != Type::GEOMETRY) && path)
 		moon_path_clear (path);
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 static void
@@ -279,13 +279,13 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
 GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
 {
-	NotifyAttacheesOfPropertyChange (subprop);
+	NotifyAttachersOfPropertyChange (subprop);
 }
 
 void
@@ -293,7 +293,7 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 {
 	// GeometryGroup only has one collection, so let's save the hash lookup
 	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
-		NotifyAttacheesOfPropertyChange (GeometryGroup::ChildrenProperty);
+		NotifyAttachersOfPropertyChange (GeometryGroup::ChildrenProperty);
 }
 
 void
@@ -581,7 +581,7 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -589,7 +589,7 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 {
 	// PathGeometry only has one collection, so let's save the hash lookup
 	//if (col == GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection ())
-		NotifyAttacheesOfPropertyChange (PathGeometry::FiguresProperty);
+		NotifyAttachersOfPropertyChange (PathGeometry::FiguresProperty);
 }
 
 // FIXME: we should cache the path in the group (i.e. a Build method) to avoid
@@ -821,7 +821,7 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 
 	if (path)
 		moon_path_clear (path);
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -831,7 +831,7 @@ PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, Dep
 		moon_path_clear (path);
 	// PathFigure only has one collection, so let's save the hash lookup
 	//if (col == GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection())
-		NotifyAttacheesOfPropertyChange (PathFigure::SegmentsProperty);
+		NotifyAttachersOfPropertyChange (PathFigure::SegmentsProperty);
 }
 
 void
@@ -929,7 +929,7 @@ PathSegment::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 //

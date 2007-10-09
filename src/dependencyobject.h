@@ -172,8 +172,10 @@ class DependencyObject : public EventObject {
 	void Detach (DependencyProperty *property, DependencyObject *container);
 	
  protected:
-	void NotifyAttacheesOfPropertyChange (DependencyProperty *property);
+	void NotifyAttachersOfPropertyChange (DependencyProperty *property);
 	void NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type);
+
+	void DetachAll ();
 
  private:
 	GHashTable        *current_values;

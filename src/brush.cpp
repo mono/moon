@@ -137,7 +137,7 @@ Brush::OnPropertyChanged (DependencyProperty *prop)
 	// owners that they must repaint (all of our properties have
 	// a visible effect
 	//
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 //
@@ -167,7 +167,7 @@ SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 Color *
@@ -276,7 +276,7 @@ GradientBrush::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -284,7 +284,7 @@ GradientBrush::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 {
 	// GeometryGroup only has one collection, so let's save the hash lookup
 	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
-		NotifyAttacheesOfPropertyChange (GradientBrush::GradientStopsProperty);
+		NotifyAttachersOfPropertyChange (GradientBrush::GradientStopsProperty);
 }
 
 void
@@ -422,7 +422,7 @@ LinearGradientBrush::OnPropertyChanged (DependencyProperty *prop)
 	// owners that they must repaint (all of our properties have
 	// a visible effect
 	//
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 //
@@ -558,7 +558,7 @@ RadialGradientBrush::OnPropertyChanged (DependencyProperty *prop)
 	// owners that they must repaint (all of our properties have
 	// a visible effect
 	//
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 //
@@ -733,7 +733,7 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 		image->SetValue (MediaBase::SourceProperty, Value (source));
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 cairo_surface_t *image_brush_create_similar (cairo_t *cairo, int width, int height)
@@ -1003,7 +1003,7 @@ VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -1013,7 +1013,7 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *
 		// We to changes in this MediaElement property so we
 		// can notify whoever is using us to paint that they
 		// need to redraw themselves.
-		NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
+		NotifyAttachersOfPropertyChange (Brush::ChangedProperty);
 	}
 	
 	TileBrush::OnSubPropertyChanged (prop, subprop);
@@ -1109,7 +1109,7 @@ VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 void
 VisualBrush::update_brush (EventObject *, gpointer, gpointer closure)
 {
-	((VisualBrush*)closure)->NotifyAttacheesOfPropertyChange (Brush::ChangedProperty);
+	((VisualBrush*)closure)->NotifyAttachersOfPropertyChange (Brush::ChangedProperty);
 }
 
 void
@@ -1126,7 +1126,7 @@ VisualBrush::OnPropertyChanged (DependencyProperty *prop)
 		v->AddHandler (((UIElement*)v)->InvalidatedEvent, update_brush, this);
 	}
 
-	NotifyAttacheesOfPropertyChange (prop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 Visual *

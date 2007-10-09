@@ -105,7 +105,7 @@ GHashTable *DependencyObject::properties = NULL;
 typedef struct {
 	DependencyObject *dob;
 	DependencyProperty *prop;
-} Attachee;
+} Attacher;
 
 //
 // Attaches the dependency object to the container on the given property.
@@ -113,7 +113,7 @@ typedef struct {
 void
 DependencyObject::Attach (DependencyProperty *property, DependencyObject *container)
 {
-	Attachee *att = new Attachee ();
+	Attacher *att = new Attacher ();
 	att->dob = container;
 	att->prop = property;
 	attached_list = g_slist_append (attached_list, att);
@@ -123,24 +123,44 @@ void
 DependencyObject::Detach (DependencyProperty *property, DependencyObject *container)
 {
 	for (GSList *l = attached_list; l; l = l->next) {
-		Attachee *att = (Attachee*)l->data;
+		Attacher *att = (Attacher*)l->data;
 
-		if (att->dob == container && att->prop == property) {
+		if (att->dob == container && (property == NULL || att->prop == property)) {
 			attached_list = g_slist_remove_link (attached_list, l);
 			delete att;
-			break;
 		}
 	}
 }
 
-static bool attachees_notified;
+static void
+detach_depobj_values (gpointer  key,
+		      gpointer  value,
+		      gpointer  user_data)
+{
+	DependencyObject *this_obj = (DependencyObject*)user_data;
+	//DependencyProperty *prop = (DependencyProperty*)key;
+	Value *v = (Value*)value;
+
+	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
+		//printf ("detaching from property %s\n", prop->name);
+		v->AsDependencyObject()->Detach (NULL, this_obj);
+	}
+}
 
 void
-DependencyObject::NotifyAttacheesOfPropertyChange (DependencyProperty *subproperty)
+DependencyObject::DetachAll ()
 {
-	attachees_notified = true;
+	g_hash_table_foreach (current_values, detach_depobj_values, this);
+}
+
+static bool attachers_notified;
+
+void
+DependencyObject::NotifyAttachersOfPropertyChange (DependencyProperty *subproperty)
+{
+	attachers_notified = true;
 	for (GSList *l = attached_list; l != NULL; l = l->next){
-		Attachee *att = (Attachee*)l->data;
+		Attacher *att = (Attacher*)l->data;
 
 		att->dob->OnSubPropertyChanged (att->prop, subproperty);
 	}
@@ -163,7 +183,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		}
 	}
 
-	Value *current_value = (Value*)g_hash_table_lookup (current_values, property->name);
+	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
 
 	if (current_value != NULL && current_value->GetKind () >= Type::DEPENDENCY_OBJECT) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
@@ -194,7 +214,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			store = new Value (*value);
 		}
 
-		g_hash_table_insert (current_values, property->name, store);
+		g_hash_table_insert (current_values, property, store);
 
 		if (value) {
 			if (value->GetKind () >= Type::DEPENDENCY_OBJECT){
@@ -205,12 +225,12 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			}
 		}
 
-		attachees_notified = false;
+		attachers_notified = false;
 
 		OnPropertyChanged (property);
 
-		if (!attachees_notified)
-			g_warning ("setting property %s::%s on object of type %s didn't result in attachees being notified\n",
+		if (!attachers_notified)
+			g_warning ("setting property %s::%s on object of type %s didn't result in attachers being notified\n",
 				   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
 
 		if (property->is_attached_property)
@@ -230,7 +250,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 	void *value = NULL;
 
 	bool found;
-	found = g_hash_table_lookup_extended (current_values, property->name, NULL, &value);
+	found = g_hash_table_lookup_extended (current_values, property, NULL, &value);
 
 	if (found)
 		return (Value*)value;
@@ -243,7 +263,7 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
 	Value *value = NULL;
 
-	value = (Value *) g_hash_table_lookup (current_values, property->name);
+	value = (Value *) g_hash_table_lookup (current_values, property);
 
 	if (value != NULL)
 		return value;
@@ -284,14 +304,14 @@ DependencyObject::ClearValue (DependencyProperty *property)
 			dob->Detach (property, this);
 	}
 
-	g_hash_table_remove (current_values, property->name);
+	g_hash_table_remove (current_values, property);
 
-	attachees_notified = false;
+	attachers_notified = false;
 
 	OnPropertyChanged (property);
 
-	if (!attachees_notified)
-		g_warning ("setting property %s::%s on object of type %s didn't result in attachees being notified\n",
+	if (!attachers_notified)
+		g_warning ("setting property %s::%s on object of type %s didn't result in attachers being notified\n",
 			   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
 
 	if (property->is_attached_property)
@@ -326,7 +346,7 @@ free_value (void *v)
 
 DependencyObject::DependencyObject ()
 {
-	current_values = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_value);
+	current_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, free_value);
 	this->attached_list = NULL;
 	this->parent = NULL;
 }
@@ -345,17 +365,19 @@ DependencyObject::GetObjectType ()
 	return Type::DEPENDENCY_OBJECT; 
 }
 
-void free_attachee (gpointer data, gpointer user_data)
+void free_attacher (gpointer data, gpointer user_data)
 {
-	Attachee* att = (Attachee*) data;
+	Attacher* att = (Attacher*) data;
 	delete att;
 }
 
 DependencyObject::~DependencyObject ()
 {
+	DetachAll ();
+
 	g_hash_table_destroy (current_values);
 	if (attached_list != NULL) {
-		g_slist_foreach (attached_list, free_attachee, NULL);
+		g_slist_foreach (attached_list, free_attacher, NULL);
 		g_slist_free (attached_list);
 	}
 }
@@ -818,7 +840,7 @@ DependencyObject::OnPropertyChanged (DependencyProperty *property)
 			scope->RegisterName (v->AsString (), this);
 	}
 
-	NotifyAttacheesOfPropertyChange (property);
+	NotifyAttachersOfPropertyChange (property);
 }
 
 void
