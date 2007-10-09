@@ -38,7 +38,6 @@
 	<Path.Data>
 	    <PathGeometry>
 		<PathFigure StartPoint="30,30">
-		
 		    <PathFigure.Segments>
 			<PathSegmentCollection>
 			    <LineSegment Point="130,30" />
