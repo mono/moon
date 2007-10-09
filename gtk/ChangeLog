@@ -1,3 +1,7 @@
+2007-10-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* gtk.cs: Use the XamlLoader in agclr.
+
 2007-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* gtk.cs: Use platform invokes in agmono instead of declaring them

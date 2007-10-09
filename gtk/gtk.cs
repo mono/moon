@@ -187,27 +187,18 @@ public class GtkSilver : EventBox {
 		canvas = null;
 
 		if (xaml == null)
-			throw new ArgumentNullException ("file");
+			throw new ArgumentNullException ("xaml");
 
-		Mono.Kind k;
-	
-		IntPtr loader = NativeMethods.xaml_loader_new (null, xaml, surface);
-		IntPtr x = NativeMethods.xaml_create_from_str (loader, xaml, true, out k);
-		NativeMethods.xaml_loader_free (loader);
+		DependencyObject dob = XamlReader.Load (xaml, true);
 
-		if (x == IntPtr.Zero)
+		if (dob == null)
 			return false;
 
-		// TODO: Check that x is a Canvas
-
-		MethodInfo m = typeof (Canvas).GetMethod ("FromPtr", BindingFlags.Static | BindingFlags.NonPublic);
-		Canvas c = (Canvas) m.Invoke (null, new object [] { x });
-		if (c == null)
+		canvas = dob as Canvas;
+		if (canvas == null)
 			return false;
 	
-		Attach (c);
-	
-		canvas = c;
+		Attach (canvas);
 
 		return true;
 	}
