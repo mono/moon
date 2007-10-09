@@ -1,5 +1,9 @@
 2007-10-09  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* Makefile.am: Make zip fail if one of the files is not found
+
+2007-10-09  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* Makefile.am: Build the firefox xpi plugin installer (unsigned)
 	* install.js: First draft install script for xpi
 

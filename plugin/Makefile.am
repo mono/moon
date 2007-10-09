@@ -46,7 +46,7 @@ libmoonplugin_la_SOURCES = \
 novell_moonlight_xpi_CONTENTS = $(srcdir)/install.js .libs/libmoonloader.so .libs/libmoonplugin.so
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
-	zip -j -9 $@ $(novell_moonlight_xpi_CONTENTS)
+	zip -j -9 -MM $@ $(novell_moonlight_xpi_CONTENTS)
 
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
