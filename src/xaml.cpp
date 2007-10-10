@@ -594,6 +594,10 @@ create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
 	inst->element_type = XamlElementInstance::ELEMENT;
 	inst->item = c->dependency_object;
 
+	if (inst->item->Is (Type::UIELEMENT) && p->loader)
+		((UIElement*) inst->item)->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
 	return inst;
 }
 

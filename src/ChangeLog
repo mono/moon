@@ -1,5 +1,10 @@
 2007-10-09  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: When we create custom elements we also need to set the
+	surface on them and mark them for cleanup.
+
+2007-10-09  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: When we are creating objects from a string, set the
 	encoding to utf8 so that expat doesn't try to determine the
 	encoding from the ?xml declaration (which will be incorrect
