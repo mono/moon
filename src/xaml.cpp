@@ -87,10 +87,11 @@ class XamlElementInstance : public List::Node {
 	int element_type;
 	DependencyObject *item;
 
+	GHashTable *set_properties;
 
 	XamlElementInstance (XamlElementInfo *info) : element_name (NULL), instance_name (NULL),
 						      info (info), parent (NULL), element_type (UNKNOWN),
-						      item (NULL)
+						      item (NULL), set_properties (NULL)
 	{
 		children = new List ();
 	}
@@ -99,10 +100,30 @@ class XamlElementInstance : public List::Node {
 	{
 		children->Clear (true);
 		delete children;
+
+		if (set_properties)
+			g_hash_table_destroy (set_properties);
+
 		// if (instance_name)
 		//	delete instance_name;
 		// if (element_name && element_type == PROPERTY)
 		//	delete element_name;
+	}
+
+	bool IsPropertySet (const char *name)
+	{
+		if (!set_properties)
+			return false;
+
+		return g_hash_table_lookup (set_properties, name) != NULL;
+	}
+
+	void MarkPropertyAsSet (char *name, DependencyObject *value)
+	{
+		if (!set_properties)
+			set_properties = g_hash_table_new (g_str_hash, g_str_equal);
+
+		g_hash_table_insert (set_properties, name, value);
 	}
 };
 
@@ -2277,8 +2298,15 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	if (prop) {
 		if (is_instance_of (value, prop->value_type)) {
 			// an empty collection can be NULL and valid
-			if (value->item)
-				dep->SetValue (prop, Value ((DependencyObject *) value->item));
+			if (value->item) {
+				if (item->IsPropertySet (prop->name)) {
+					parser_error (p, item->element_name, NULL,
+						g_strdup_printf ("Attempting to set property '%s' twice\n", prop->name));
+				} else {
+					dep->SetValue (prop, Value (value->item));
+					item->MarkPropertyAsSet (prop->name, value->item);
+				}
+			}
 		} else {
 			// TODO: Do some error checking in here, this is a valid place to be
 			// if we are adding a non collection to a collection, so the non collection
