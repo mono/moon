@@ -1,5 +1,10 @@
 2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: When updating the MediaElement's progress, get the Downloader's
+	  DownloadProgressProperty.
+
+2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* visual.cpp, visual.h: Added visual_set_surface, and guard against
 	  overwriting a set surface with null.
 

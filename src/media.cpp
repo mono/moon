@@ -399,7 +399,7 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 MediaElement::UpdateProgress ()
 {
-	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
+	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
 	
 	SetValue (MediaElement::DownloadProgressProperty, Value (progress));
 	
@@ -412,7 +412,7 @@ MediaElement::UpdateProgress ()
 void 
 MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
 {
-	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
+	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
 	
 	// Delay the propogating progress 1.0 until
 	// the downloader has notified us it is done.
