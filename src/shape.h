@@ -175,6 +175,8 @@ class Line : public Shape {
 	virtual void BuildPath ();
 	virtual void ComputeBounds ();
 
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
 
