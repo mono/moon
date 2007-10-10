@@ -1,3 +1,8 @@
+2007-10-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Handle GradientStop with negative offset like 
+	Silverlight (seems to) do.
+
 2007-10-10  Chris Toshok  <toshok@ximian.com>
 
 	* panel.cpp (Panel::~Panel): no need to clear our Children

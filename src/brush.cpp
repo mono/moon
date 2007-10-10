@@ -307,13 +307,41 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		node = (Collection::Node *) children->list->First ();
 	}
 
+	// negative value are "mostly" ignored, the one nearest to zero may ne used
+	int n = 0;
+	GradientStop *negative = NULL;
+
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		GradientStop *stop = (GradientStop *) node->obj;
-		Color *color = gradient_stop_get_color (stop);
 		double offset = gradient_stop_get_offset (stop);
+		if (offset >= 0.0) {
+			Color *color = gradient_stop_get_color (stop);
+			double alpha = (opacity < 1.0) ? color->a * opacity : color->a;
+			cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
+			n++;
+		} else if (n < 2) {
+			// we don't have enough stops so we might need the negative one
+			if (!negative) {
+				// keep in mind our first stop with a negative offset
+				negative = stop;
+			} else {
+				// keep the stop with the negative offset closer to zero
+				if (offset > gradient_stop_get_offset (negative))
+					negative = stop;
+			}
+		} else {
+			// we have at least 2 stops so we don't need to consider negative ones
+			negative = NULL;
+		}
+	}
+
+	// if the negative stop is required...
+	if (negative && (n < 2)) {
+		// add it to the mix
+		double offset = gradient_stop_get_offset (negative);
+		Color *color = gradient_stop_get_color (negative);
 		double alpha = (opacity < 1.0) ? color->a * opacity : color->a;
-		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r,
-						   color->g, color->b, alpha);
+		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
 	}
 }
 
