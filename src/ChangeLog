@@ -1,5 +1,9 @@
 2007-10-10  Jackson Harper  <jackson@ximian.com>
 
+	* collection.cpp: Set the surface when adding a visual element.
+
+2007-10-10  Jackson Harper  <jackson@ximian.com>
+
 	* shape.cpp: We need to do something when line properties are
 	changed. Fixes test-animation-line.xaml
 

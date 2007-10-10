@@ -448,6 +448,7 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	item->UpdateTransform ();
 	item->UpdateTotalOpacity ();
 	item->Invalidate ();
+	item->SetSurface (panel->GetSurface ());
 	panel->UpdateBounds ();
 }
 
