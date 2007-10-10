@@ -111,11 +111,12 @@ public class GtkSilver : EventBox {
 	///
 	///    <para>The widget is initially empty, you must call the <see cref="Attach"/>
 	///    method with a System.Windows.Controls.Canvas instance (you can create
-	///    those programatically, using XAML, or using the <see cref="LoadFile"/> method).</para>
+	///    those programatically, using XAML, or using the <see cref="LoadFile(System.String)"/> method).</para>
 	/// </remarks>
 	public GtkSilver (int width, int height)
 	{
 		surface = NativeMethods.surface_new (width, height);
+		Mono.Xaml.XamlLoader.SurfaceInDomain = surface;
 		Raw = NativeMethods.surface_get_drawing_area (surface);
 	}
 
@@ -207,34 +208,31 @@ public class GtkSilver : EventBox {
 	///    Initializes the GtkSilver widget from the XAML contents in a file
 	/// </summary>
 	/// <param name="file">The name of a file in your file system.</param>
+	/// <param name="canvas">The created canvas, if the creation of the xaml string was successful.</param>
+	/// <remarks>
+	///   This uses the XAML parser to load the given file and display it on 
+	///   the GtkSilver widget.
+	/// </remarks>
+	public bool LoadFile (string file, out Canvas canvas)
+	{
+		if (file == null)
+			throw new ArgumentNullException ("file");
+
+		return LoadXaml (System.IO.File.ReadAllText (file), out canvas);
+	}
+
+	/// <summary>
+	///    Initializes the GtkSilver widget from the XAML contents in a file
+	/// </summary>
+	/// <param name="file">The name of a file in your file system.</param>
 	/// <remarks>
 	///   This uses the XAML parser to load the given file and display it on 
 	///   the GtkSilver widget.
 	/// </remarks>
 	public bool LoadFile (string file)
 	{
-		if (file == null)
-			throw new ArgumentNullException ("file");
-
-		Mono.Kind k;
-		
-		IntPtr loader = NativeMethods.xaml_loader_new (file, null, surface);
-		IntPtr x = NativeMethods.xaml_create_from_file (loader, file, true, out k);
-		NativeMethods.xaml_loader_free (loader);
-
-		if (x == IntPtr.Zero)
-			return false;
-
-		// TODO: Check that x is a Canvas
-
-		MethodInfo m = typeof (Canvas).GetMethod ("FromPtr", BindingFlags.Static | BindingFlags.NonPublic);
-		Canvas c = (Canvas) m.Invoke (null, new object [] { x });
-		if (c == null)
-			return false;
-		
-		Attach (c);
-		
-		return true;
+		Canvas canvas;
+		return LoadFile (file, out canvas);
 	}
 }
 }
