@@ -48,8 +48,8 @@ Control::ComputeBounds ()
 	if (x2 != 0.0 && y2 != 0.0) {
 
 		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
-								   Rect (x1,y1,x2,y2));
-
+								   IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false));
+		
 		if (real_object)
 			bounds = bounds.Union (fw_rect);
 		else

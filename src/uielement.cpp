@@ -76,17 +76,21 @@ UIElement::~UIElement ()
 	remove_dirty_element (this);
 }
 
-void
-UIElement::IntersectBoundsWithClipPath ()
+Rect
+UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 {
 	Value *value = GetValue (UIElement::ClipProperty);
 	if (!value)
-		return;
+		return unclipped;
 
 	Geometry *geometry = value->AsGeometry ();
 	Rect box = geometry->ComputeBounds (NULL);
-	box = bounding_rect_for_transformed_rect (&absolute_xform, box);
-	bounds = box.Intersection (bounds);
+
+	if (transform)
+		box = bounding_rect_for_transformed_rect (&absolute_xform,
+							  box);
+
+	return box.Intersection (unclipped);
 }
 
 void
@@ -488,13 +492,17 @@ UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 		mask = cairo_get_source (cr);
 		cairo_pattern_reference (mask);
 		cairo_push_group (cr);
+
 	}
 	
 	Render (cr, x, y, width, height);
 
 	if (opacityMask != NULL) {
 		cairo_pop_group_to_source (cr);
-		cairo_rectangle (cr, bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h - 2);
+		cairo_set_matrix (cr, &absolute_xform);
+		RenderClipPath (cr);
+		cairo_identity_matrix (cr);
+		cairo_rectangle (cr, bounds.x, bounds.y, bounds.w, bounds.h);
 		cairo_clip (cr);
 		cairo_mask (cr, mask);
 		cairo_pattern_destroy (mask);

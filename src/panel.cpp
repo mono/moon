@@ -105,7 +105,7 @@ Panel::ComputeBounds ()
 				continue;
 
 			Rect r = item->GetBounds ();
-
+			r = IntersectBoundsWithClipPath (r, true);
 #if DEBUG_BOUNDS
 			space (levelb + 4);
 			printf ("Item (%s, 5s) bounds %g %g %g %g\n", 
@@ -129,17 +129,15 @@ Panel::ComputeBounds ()
 	y2 = framework_element_get_height (this);
 
 	if (x2 != 0.0 && y2 != 0.0) {
-
 		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
-								   Rect (x1,y1,x2,y2));
+								   IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false));
+
 
 		if (first)
 			bounds = fw_rect;
 		else
 			bounds = bounds.Union (fw_rect);
 	}
-
-	IntersectBoundsWithClipPath ();
 
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
@@ -230,7 +228,6 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_save (cr);  // for UIElement::ClipProperty
 
 	cairo_set_matrix (cr, &absolute_xform);
-
 	RenderClipPath (cr);
 
 	Value *value = GetValue (Panel::BackgroundProperty);
@@ -239,6 +236,8 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 		double fheight = framework_element_get_height (this);
 
 		if (fwidth > 0 && fheight > 0){
+
+
 			Brush *background = value->AsBrush ();
 			background->SetupBrush (cr, this);
 

@@ -36,7 +36,7 @@ class UIElement : public Visual {
 
 	double total_opacity;
 protected:
-	void IntersectBoundsWithClipPath ();
+	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr);
 public:
 	UIElement ();

@@ -461,6 +461,7 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
+	RenderClipPath (cr);
 	Paint (cr);
 	cairo_restore (cr);
 }
@@ -468,7 +469,8 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::ComputeBounds ()
 {
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ()));
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
+						     IntersectBoundsWithClipPath (Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ()), false));
 }
 
 bool
@@ -866,6 +868,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		dirty = true;
 	} else if (prop == TextBlock::TextProperty) {
 		// handled elsewhere
+
 		dirty = true;
 	} else if (prop == TextBlock::InlinesProperty) {
 		Inlines *newcol = GetValue (prop)->AsInlines ();
@@ -984,10 +987,13 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		else if (property == TextBlock::ActualWidthProperty)
 			actual_width = value->AsDouble ();
 	}
-	
 	if (property == TextBlock::TextProperty) {
 		// Text is a virtual property and setting it deletes all current runs,
 		// creating a new run
+		//Value *old = GetValue (TextBlock::TextProperty);
+		//if (value && old->AsString () == value->AsString ())
+		//	return;
+
 		Run *run = new Run ();
 		if (value)
 			run_set_text (run, value->AsString ());
@@ -1421,15 +1427,20 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	TextFont *font;
 	double x0, y0;
 	double y1;
-	
+
 	if ((width == 0.0 && height == 0.0) || invalid)
 		return;
 	
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	RenderClipPath (cr);
+
 	fill->SetupBrush (cr, this);
 	
 	if (path) {
 		cairo_append_path (cr, path);
 		cairo_fill (cr);
+		cairo_restore (cr);
 		return;
 	}
 	
@@ -1516,6 +1527,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	}
 	
 	font->unref ();
+	cairo_restore (cr);
 }
 
 void 
@@ -1524,7 +1536,8 @@ Glyphs::ComputeBounds ()
 	if (dirty)
 		Layout ();
 	
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, Rect (0, 0, width, height));
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
+						     IntersectBoundsWithClipPath (Rect (0, 0, width, height), false));
 }
 
 Point

@@ -280,14 +280,11 @@ Shape::ComputeBounds ()
 		w = h = shape_get_stroke_thickness (this);
 
 	if (w != 0.0 && h != 0.0) {
-
 		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-							     Rect (0,0,w,h));
+		       IntersectBoundsWithClipPath (Rect (0, 0, w, h), false));
 
 		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 	}
-
-	IntersectBoundsWithClipPath ();
 
 	/* standard "grow the rectangle by enough to cover our
 	   asses because of cairo's floating point rendering"
@@ -978,9 +975,9 @@ Line::ComputeBounds ()
 	}
 
 	calc_line_bounds (line_get_x1 (this), line_get_x2 (this), line_get_y1 (this), line_get_y2 (this), thickness, &bounds);
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
-
-	IntersectBoundsWithClipPath ();
+	
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
+						     IntersectBoundsWithClipPath (bounds, false));
 }
 
 void
@@ -1265,9 +1262,8 @@ Polygon::ComputeBounds ()
 		bounds.y -= y0;
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
-
-	IntersectBoundsWithClipPath ();
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
+						     IntersectBoundsWithClipPath (bounds, false));
 }
 
 void
@@ -1470,9 +1466,8 @@ Polyline::ComputeBounds ()
 		bounds.y -= points [0].y;
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
-
-	IntersectBoundsWithClipPath ();
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
+						     IntersectBoundsWithClipPath (bounds, false));
 }
 
 void
@@ -1646,9 +1641,9 @@ Path::ComputeBounds ()
 		bounds.h += t;
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, bounds);
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+						     IntersectBoundsWithClipPath (bounds, false));
 
-	IntersectBoundsWithClipPath ();
 }
 
 void
