@@ -155,28 +155,10 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		string xaml = "";
-		
-		try {
-			using (FileStream fs = File.OpenRead (file)){
-				using (StreamReader sr = new StreamReader (fs)){
-					xaml = sr.ReadToEnd ();
-				}
-			}
-		} catch (Exception e) {
-			Console.Error.WriteLine ("mopen: Error loading XAML file {0}: {1}", file, e.GetType());
-			return 1;
-		}
-		
-		if (xaml == null){
-			Console.Error.WriteLine ("mopen: Error loading XAML file {0}", file);
-			return 1;
-		}
-
 		GtkSilver silver = new GtkSilver (400, 400);
 		Canvas canvas;
 
-		if (!silver.LoadXaml (xaml, out canvas)) {
+		if (!silver.LoadFile (file, out canvas)) {
 			Console.Error.WriteLine ("mopen: Could not load xaml");
 			return 1;
 		}

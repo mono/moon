@@ -1,3 +1,8 @@
+2007-10-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mopen.cs: Use GtkSilver's LoadFile method instead of
+	LoadXaml, simplifies code a bit.
+
 2007-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mopen.cs: Use the GtkSilver methods to load the xaml.
