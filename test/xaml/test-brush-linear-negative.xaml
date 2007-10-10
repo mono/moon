@@ -1,0 +1,98 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+
+<!-- all negative - nearest to zero color is used exclusively -->
+
+	<Rectangle Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Red" Offset="-0.1" />
+			<GradientStop Color="Green" Offset="-0.5" />
+			<GradientStop Color="Blue" Offset="-1" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Canvas.Left="110" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Green" Offset="-0.5" />
+			<GradientStop Color="Blue" Offset="-1" />
+			<GradientStop Color="Red" Offset="-0.1" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Canvas.Left="220" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Blue" Offset="-1" />
+			<GradientStop Color="Red" Offset="-0.1" />
+			<GradientStop Color="Green" Offset="-0.5" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+<!-- negatives + one positive, nearest to zero color is used with positive color -->
+
+	<Rectangle Canvas.Top="20" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Red" Offset="-0.1" />
+			<GradientStop Color="Green" Offset="-0.5" />
+			<GradientStop Color="Blue" Offset="1" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Canvas.Top="20" Canvas.Left="110" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Green" Offset="-0.5" />
+			<GradientStop Color="Blue" Offset="1" />
+			<GradientStop Color="Red" Offset="-0.1" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Canvas.Top="20" Canvas.Left="220" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Blue" Offset="1" />
+			<GradientStop Color="Red" Offset="-0.1" />
+			<GradientStop Color="Green" Offset="-0.5" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+<!-- negative, zero and positive, zero color is used with positive color -->
+
+	<Rectangle Canvas.Top="40" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Red" Offset="-1" />
+			<GradientStop Color="Green" Offset="0" />
+			<GradientStop Color="Blue" Offset="1" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Canvas.Top="40" Canvas.Left="110" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Green" Offset="-0" />
+			<GradientStop Color="Blue" Offset="1" />
+			<GradientStop Color="Red" Offset="-1" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<Rectangle Canvas.Top="40" Canvas.Left="220" Width="100" Height="10">
+	<Rectangle.Fill>
+		<LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,0" EndPoint="1,1" >
+			<GradientStop Color="Blue" Offset="1" />
+			<GradientStop Color="Red" Offset="-1" />
+			<GradientStop Color="Green" Offset="0" />
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+</Canvas>
