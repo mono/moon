@@ -1,3 +1,9 @@
+2007-10-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (EventListenerProxy::~EventListenerProxy):
+	don't NPN_ReleaseObject the callback.  the browser does this for
+	us.
+
 2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: Fix e-mail.

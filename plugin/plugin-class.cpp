@@ -219,9 +219,7 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 
 EventListenerProxy::~EventListenerProxy ()
 {
-	if (is_func)
-		NPN_ReleaseObject ((NPObject*)this->callback);
-	else
+	if (!is_func)
 		g_free ((char*)this->callback);
 
 	g_free (event_name);
