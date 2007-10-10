@@ -27,13 +27,15 @@ class Visual : public DependencyObject {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	Surface *GetSurface () { return surface; }
-	void SetSurface (Surface *surface) { this->surface = surface; }
+	void SetSurface (Surface *surface);
 private:
 	Surface* surface;
 };
 
 
 G_BEGIN_DECLS
+
+void visual_set_surface (Visual* visual, Surface* surface);
 
 G_END_DECLS
 
