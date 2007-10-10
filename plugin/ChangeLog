@@ -1,3 +1,7 @@
+2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: Fix e-mail.
+
 2007-10-09  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Can't use the -MM (fail if patterns not matched) because it

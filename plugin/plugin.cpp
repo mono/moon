@@ -2,7 +2,7 @@
  * moon-plugin.cpp: MoonLight browser plugin.
  *
  * Author:
- *   Everaldo Canuto (everaldo@novell.com)
+ *   Everaldo Canuto (ecanuto@novell.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
