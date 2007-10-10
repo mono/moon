@@ -1,3 +1,8 @@
+2007-10-10  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::~Panel): no need to clear our Children
+	collection.  the normal dtor stuff will do that for us.
+
 2007-10-10  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp: Fill with the element extents don't just paint the

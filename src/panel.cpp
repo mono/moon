@@ -67,10 +67,6 @@ Panel::~Panel ()
 		background->Detach (NULL, this);
 		background->unref ();
 	}
-
-	VisualCollection *children = GetChildren ();
-	if (children)
-		children->Clear();
 }
 
 #define DEBUG_BOUNDS 0
