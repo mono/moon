@@ -388,11 +388,15 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	// NOTE: Some servers seem to have extreme perfomance issues
 	// when paint_with_alpha (cr, 1.0) is called even accidentally
-	if (render_opacity < 1.0)
+	if (render_opacity < 1.0) {
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_clip (cr);
 		cairo_paint_with_alpha (cr, render_opacity);
-	else
-		cairo_paint (cr);
-	
+	} else {
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_fill (cr);
+	}
+
 	cairo_restore (cr);
 }
 
@@ -1335,11 +1339,13 @@ Image::Render (cairo_t *cr, int, int, int, int)
 	cairo_matrix_t matrix;
 	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
 		AlignmentXCenter, AlignmentYCenter, NULL);
+
 	cairo_pattern_set_matrix (pattern, &matrix);
-
 	cairo_set_source (cr, pattern);
+	
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_fill (cr);
 
-	cairo_paint (cr);
 	cairo_restore (cr);
 }
 

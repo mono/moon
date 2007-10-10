@@ -1,3 +1,9 @@
+2007-10-10  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp: Fill with the element extents don't just paint the
+	surface because if the stretch is specified we may end up painting
+	outside the proper area.
+
 2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: When updating the MediaElement's progress, get the Downloader's
@@ -131,6 +137,15 @@
 
 	* media.cpp: add clipping to shape::DoDraw and to the bounds
 	computations.
+
+2007-10-08  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp:
+	* panel.cpp: intersect the bounds with the clip path to
+	optimize the invalidated region.
+
+	* shape.cpp: return 0.0 when shape_get_stroke_thickness is called
+	with a NULL.
 
 2007-10-08  Larry Ewing  <lewing@novell.com>
 
