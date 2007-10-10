@@ -1,5 +1,10 @@
 2007-10-10  Jackson Harper  <jackson@ximian.com>
 
+	* shape.cpp: We need to do something when line properties are
+	changed. Fixes test-animation-line.xaml
+
+2007-10-10  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Don't allow the same property to be set twice.
 
 2007-10-09  Jackson Harper  <jackson@ximian.com>

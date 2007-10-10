@@ -983,6 +983,27 @@ Line::ComputeBounds ()
 	IntersectBoundsWithClipPath ();
 }
 
+void
+Line::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type != Type::LINE) {
+		if (prop == Shape::StretchProperty) {
+			InvalidatePathCache ();
+			UpdateBounds (true);
+		}
+		Shape::OnPropertyChanged (prop);
+		return;
+	}
+
+	if ((prop == Line::X1Property) || (prop == Line::X2Property) || prop == Line::Y1Property || prop == Line::Y2Property) {
+		InvalidatePathCache ();
+		UpdateBounds (true);
+	}
+
+	Invalidate ();
+	NotifyAttachersOfPropertyChange (prop);
+}
+
 double
 line_get_x1 (Line *line)
 {
