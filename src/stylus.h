@@ -3,6 +3,7 @@
  *
  * Author:
  *   Rolf Bjarne Kvinge  (RKvinge@novell.com)
+ *   Sebastien Pouliot  <sebastien@ximian.com>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -16,6 +17,13 @@
 #include "canvas.h"
 
 G_BEGIN_DECLS
+
+typedef enum {
+	TabletDeviceTypeMouse,
+	TabletDeviceTypeStylus,
+	TabletDeviceTypeTouch
+} TabletDeviceType;
+
 
 class StylusInfo : public DependencyObject {
  public:
@@ -43,19 +51,12 @@ class StylusPoint : public DependencyObject {
 };
 
 StylusPoint* stylus_point_new ();
-
-class Stroke : public DependencyObject {
- public:
-	Stroke () { }
-	virtual ~Stroke () { };
-	
-	virtual Type::Kind GetObjectType () { return Type::STROKE; };
-
-	static DependencyProperty* DrawingAttributesProperty;
-	static DependencyProperty* StylusPointsProperty;
-};
-
-Stroke* stroke_new ();
+double	stylus_point_get_x (StylusPoint *stylus_point);
+void	stylus_point_set_x (StylusPoint *stylus_point, double x);
+double	stylus_point_get_y (StylusPoint *stylus_point);
+void	stylus_point_set_y (StylusPoint *stylus_point, double y);
+double	stylus_point_get_pressure_factor (StylusPoint *stylus_point);
+void	stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure);
 
 class DrawingAttributes : public DependencyObject {
  public:
@@ -71,6 +72,29 @@ class DrawingAttributes : public DependencyObject {
 };
 
 DrawingAttributes* drawing_attributes_new ();
+Color*	drawing_attributes_get_color (DrawingAttributes* da);
+void	drawing_attributes_set_color (DrawingAttributes* da, Color *color);
+Color*	drawing_attributes_get_outline_color (DrawingAttributes* da);
+void	drawing_attributes_set_outline_color (DrawingAttributes* da, Color *color);
+double	drawing_attributes_get_height (DrawingAttributes* da);
+void	drawing_attributes_set_height (DrawingAttributes* da, double height);
+double	drawing_attributes_get_width (DrawingAttributes* da);
+void	drawing_attributes_set_width (DrawingAttributes* da, double width);
+
+class Stroke : public DependencyObject {
+ public:
+	Stroke () { }
+	virtual ~Stroke () { };
+	
+	virtual Type::Kind GetObjectType () { return Type::STROKE; };
+
+	static DependencyProperty* DrawingAttributesProperty;
+	static DependencyProperty* StylusPointsProperty;
+};
+
+Stroke* stroke_new ();
+DrawingAttributes* stroke_get_drawing_attributes (Stroke *stroke);
+void stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes);
 
 class InkPresenter : public Canvas {
  public:
@@ -78,6 +102,9 @@ class InkPresenter : public Canvas {
 	virtual ~InkPresenter () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
+
+	virtual void RenderChildren (cairo_t *cr, int x, int y, int width, int height);
+	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
 
 	static DependencyProperty* StrokesProperty;
 };

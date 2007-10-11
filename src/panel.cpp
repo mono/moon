@@ -104,7 +104,7 @@ Panel::ComputeBounds ()
 			r = IntersectBoundsWithClipPath (r, true);
 #if DEBUG_BOUNDS
 			space (levelb + 4);
-			printf ("Item (%s, 5s) bounds %g %g %g %g\n", 
+			printf ("Item (%s, %s) bounds %g %g %g %g\n", 
 				dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
 #endif
 			if (first) {
@@ -182,7 +182,7 @@ Panel::FindStartingElement (Rect for_rect)
 			// non-translucent.
 			Type::Kind type = item->GetObjectType();
 
-			if (type == Type::PANEL || type == Type::CANVAS) {
+			if (type == Type::PANEL || type == Type::CANVAS || type == Type::INKPRESENTER) {
 				bool panel_works = false;
 #if notyet
 				Brush *bg = panel_get_background ((Panel*)item);
@@ -219,8 +219,6 @@ Panel::FindStartingElement (Rect for_rect)
 void
 Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-	VisualCollection *children = GetChildren ();
-	
 	cairo_save (cr);  // for UIElement::ClipProperty
 
 	cairo_set_matrix (cr, &absolute_xform);
@@ -242,6 +240,16 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 			cairo_fill (cr);
 		}
 	}
+
+	RenderChildren (cr, x, y, width, height);
+
+	cairo_restore (cr);
+}
+
+void
+Panel::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
+{
+	VisualCollection *children = GetChildren ();
 
 	Rect render_rect (x, y, width, height);
 
@@ -318,8 +326,7 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 	//printf ("RENDER: LEAVE\n");
 	//draw_grid (cr);
 
-	levelb -= 4;
-	cairo_restore (cr);
+//	levelb -= 4;
 }
 
 bool

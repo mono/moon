@@ -1,3 +1,10 @@
+2007-10-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* panel.cpp|h: Split Render into Render and RenderChildren, so 
+	the later can be overriden in InkPresenter.
+	* stylus.cpp|h: A quick (see FIXME) implementation to render 
+	ink found in some xaml files.
+
 2007-10-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp: Updated to use the new Queue class.

@@ -32,6 +32,7 @@ class Panel : public FrameworkElement {
 
 	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void RenderChildren (cairo_t *cr, int x, int y, int width, int height);
 
 	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 
