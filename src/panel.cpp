@@ -124,7 +124,8 @@ Panel::ComputeBounds ()
 	x2 = framework_element_get_width (this);
 	y2 = framework_element_get_height (this);
 
-	if (x2 != 0.0 && y2 != 0.0) {
+	Value *value = GetValue (Panel::BackgroundProperty);
+	if (value && x2 != 0.0 && y2 != 0.0) {
 		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
 								   IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false));
 
@@ -289,7 +290,8 @@ Panel::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
 			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
 			// at the very least we need to clip based on the expose area.
 			// there's also a UIElement::ClipProperty
-			cairo_rectangle (cr, inter.x, inter.y, inter.w, inter.h);
+			cairo_rectangle (cr, floor (inter.x), floor (inter.y), ceiling (inter.w), ceiling (inter.h));
+
 			cairo_clip (cr);
 #if TIME_CLIP
 			ENDTIMER(clip, "cairo clip setup");
