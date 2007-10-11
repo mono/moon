@@ -33,7 +33,7 @@ typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer c
 
 class Base {
  public:	
-	guint32 refcount;
+	gint32 refcount;
 
 #if OBJECT_TRACKING
 	static int objects_created;
@@ -70,17 +70,19 @@ class Base {
 
 	void ref ()
 	{
-		refcount++;
+		g_atomic_int_inc (&refcount);
 		OBJECT_TRACK ("Ref", GetTypeName ());
 	}
 
 	void unref ()
 	{
-		refcount--;
+		bool delete_me;
+
+		delete_me = g_atomic_int_dec_and_test (&refcount);
 	
 		OBJECT_TRACK ("Unref", GetTypeName ());
 
-		if (refcount == 0)
+		if (delete_me)
 			delete this;
 	}
 

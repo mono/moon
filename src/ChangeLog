@@ -1,3 +1,10 @@
+2007-10-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: base_unref_delayed: do nothing if base is NULL,
+	  matches base_unref behaviour.
+	* dependencyobject.h: Use g_atomic_int* to make ref counting atomic
+	  operations.
+
 2007-10-10  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (runtime_shutdown): explicitly drain all remaining

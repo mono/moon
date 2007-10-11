@@ -83,6 +83,9 @@ drain_unrefs_tick_call (gpointer data)
 void
 base_unref_delayed (Base *base)
 {
+	if (!base)
+		return;
+		
 	g_static_rec_mutex_lock (&delayed_unref_mutex);
 	pending_unrefs = g_slist_prepend (pending_unrefs, base);
 
