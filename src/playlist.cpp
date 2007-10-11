@@ -68,7 +68,7 @@ Playlist::OnMediaEnded ()
 	if (!current_entry->next)
 		return;
 
-	OpenEntry (dynamic_cast<PlaylistEntry *> (current_entry->next));
+	OpenEntry ((PlaylistEntry *) current_entry->next);
 
 	if (HasMediaSource ())
 		Play ();
@@ -121,14 +121,14 @@ Playlist::IsPlaylistFile (const char * file_name)
 void
 Playlist::on_media_ended (EventObject *sender, gpointer calldata, gpointer userdata)
 {
-	Playlist *playlist = reinterpret_cast<Playlist *> (userdata);
+	Playlist *playlist = (Playlist *) userdata;
 	playlist->OnMediaEnded ();
 }
 
 void
 Playlist::on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata)
 {
-	Playlist *playlist = reinterpret_cast<Playlist *> (userdata);
+	Playlist *playlist = (Playlist *) userdata;
 	playlist->OnMediaDownloaded ();
 }
 
@@ -216,7 +216,7 @@ Playlist::OpenInternal ()
 	if (entries->Length () == 0)
 		return false;
 
-	return OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
+	return OpenEntry ((PlaylistEntry *) entries->First ());
 }
 
 bool
@@ -270,7 +270,7 @@ Playlist::Stop (bool media_ended)
 	current_entry->GetSource ()->Stop (media_ended);
 
 	if (!media_ended || (media_ended && current_entry == entries->Last ()))
-		OpenEntry (dynamic_cast<PlaylistEntry *> (entries->First ()));
+		OpenEntry ((PlaylistEntry *) entries->First ());
 }
 
 void
@@ -333,7 +333,7 @@ char *
 PlaylistParser::get_href_attribute (gpointer user_data, const char **attrs)
 {
 	if (!has_href (attrs)) {
-		PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+		PlaylistParser *parser = (PlaylistParser *) user_data;
 		parser->ParsingError ();
 		return NULL;
 	}
@@ -345,7 +345,7 @@ void
 PlaylistParser::on_start_element (gpointer user_data, const char *name, const char **attrs)
 {
 	PlaylistNodeKind kind;
-	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+	PlaylistParser *parser = (PlaylistParser *) user_data;
 
 	//printf ("on_start_element, name: %s\n", name);
 	if (str_match (name, "ABSTRACT")) {
@@ -389,7 +389,7 @@ PlaylistParser::on_start_element (gpointer user_data, const char *name, const ch
 void
 PlaylistParser::on_end_element (gpointer user_data, const char *name)
 {
-	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+	PlaylistParser *parser = (PlaylistParser *) user_data;
 
 	switch (parser->GetCurrentKind ()) {
 	case Entry:
@@ -404,7 +404,7 @@ PlaylistParser::on_end_element (gpointer user_data, const char *name)
 void
 PlaylistParser::on_text (gpointer user_data, const char *data, int len)
 {
-	PlaylistParser *parser = reinterpret_cast<PlaylistParser *> (user_data);
+	PlaylistParser *parser = (PlaylistParser *) user_data;
 	//printf ("on_text, text: %s\n", g_strndup (data, len));
 	switch (parser->GetCurrentKind ()) {
 	case Abstract:
@@ -495,14 +495,14 @@ PlaylistParser::PopCurrentKind ()
 PlaylistParser::PlaylistNodeKind
 PlaylistParser::GetCurrentKind ()
 {
-	KindNode *node = dynamic_cast<KindNode *> (kind_stack->Last ());
+	KindNode *node = (KindNode *) kind_stack->Last ();
 	return node->kind;
 }
 
 PlaylistParser::PlaylistNodeKind
 PlaylistParser::GetParentKind ()
 {
-	KindNode *node = dynamic_cast<KindNode *> (kind_stack->Last ()->prev);
+	KindNode *node = (KindNode *) kind_stack->Last ()->prev;
 	return node->kind;
 }
 

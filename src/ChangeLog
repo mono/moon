@@ -1,5 +1,9 @@
 2007-10-11  Jb Evain  <jbevain@novell.com>
 
+	* playlist.cpp: replace C++ casts to plain casts.
+
+2007-10-11  Jb Evain  <jbevain@novell.com>
+
 	* collection.cpp: replace dynamic_casts with plain casts
 	as per Miguel suggestion.
 
