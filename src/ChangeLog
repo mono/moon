@@ -1,3 +1,8 @@
+2007-10-11  Jb Evain  <jbevain@novell.com>
+
+	* collection.cpp|h: add, implement and expose the
+	MediaAttributeCollection::GetItemByName method.
+
 2007-10-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* downloader.cpp, downloader.h: Fix some const char/char mismatch warnings.

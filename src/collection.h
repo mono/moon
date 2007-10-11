@@ -144,10 +144,12 @@ class TimelineMarkerCollection : public Collection {
 };
 
 class MediaAttributeCollection : public Collection {
- public:
-       MediaAttributeCollection () {}
-       virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
-       virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
+public:
+	MediaAttributeCollection () {}
+	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
+
+	MediaAttribute *GetItemByName (const char *name);
 };
 
 class Inlines : public Collection {
@@ -188,8 +190,10 @@ StrokeCollection *stroke_collection_new (void);
 StylusPointCollection *stylus_point_collection_new (void);
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 GradientStopCollection *gradient_stop_collection_new (void);
-MediaAttributeCollection *media_attribute_collection_new (void);
 Inlines *inlines_new (void);
+
+MediaAttributeCollection *media_attribute_collection_new (void);
+MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name);
 
 void collection_init (void);
 

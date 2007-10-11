@@ -660,6 +660,30 @@ TriggerCollection::RemoveAt (int index)
 	return b;
 }
 
+static bool
+media_attribute_by_name_finder (List::Node *node, void *data)
+{
+	Collection::Node *cn = dynamic_cast<Collection::Node *> (node);
+	MediaAttribute *attribute = dynamic_cast<MediaAttribute *> (cn->obj);
+	const char *name = reinterpret_cast<const char *> (data);
+
+	Value *value = attribute->GetValue (DependencyObject::NameProperty);
+	if (!value)
+		return false;
+
+	return !strcmp (name, value->AsString ());
+}
+
+MediaAttribute *
+MediaAttributeCollection::GetItemByName (const char *attribute_name)
+{
+	char *name = (char *) attribute_name;
+	List::Node *node = list->Find (media_attribute_by_name_finder, name);
+	Collection::Node *cn = dynamic_cast<Collection::Node *> (node);
+
+	return dynamic_cast<MediaAttribute *> (cn->obj);
+}
+
 Collection *
 collection_new (Type::Kind kind)
 {
@@ -747,6 +771,12 @@ MediaAttributeCollection *
 media_attribute_collection_new (void)
 {
 	return new MediaAttributeCollection ();
+}
+
+MediaAttribute *
+media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name)
+{
+	return collection->GetItemByName (name);
 }
 
 Inlines *
