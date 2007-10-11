@@ -1,5 +1,10 @@
 2007-10-11  Jb Evain  <jbevain@novell.com>
 
+	* collection.cpp: replace dynamic_casts with plain casts
+	as per Miguel suggestion.
+
+2007-10-11  Jb Evain  <jbevain@novell.com>
+
 	* collection.cpp|h: add, implement and expose the
 	MediaAttributeCollection::GetItemByName method.
 

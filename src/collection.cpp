@@ -663,9 +663,9 @@ TriggerCollection::RemoveAt (int index)
 static bool
 media_attribute_by_name_finder (List::Node *node, void *data)
 {
-	Collection::Node *cn = dynamic_cast<Collection::Node *> (node);
-	MediaAttribute *attribute = dynamic_cast<MediaAttribute *> (cn->obj);
-	const char *name = reinterpret_cast<const char *> (data);
+	Collection::Node *cn = (Collection::Node *) node;
+	MediaAttribute *attribute = (MediaAttribute *) cn->obj;
+	const char *name = (const char *) data;
 
 	Value *value = attribute->GetValue (DependencyObject::NameProperty);
 	if (!value)
@@ -675,13 +675,13 @@ media_attribute_by_name_finder (List::Node *node, void *data)
 }
 
 MediaAttribute *
-MediaAttributeCollection::GetItemByName (const char *attribute_name)
+MediaAttributeCollection::GetItemByName (const char *name)
 {
-	char *name = (char *) attribute_name;
-	List::Node *node = list->Find (media_attribute_by_name_finder, name);
-	Collection::Node *cn = dynamic_cast<Collection::Node *> (node);
+	Collection::Node *cn = (Collection::Node *) list->Find (media_attribute_by_name_finder, (char *) name);
+	if (!cn)
+		return NULL;
 
-	return dynamic_cast<MediaAttribute *> (cn->obj);
+	return (MediaAttribute *) cn->obj;
 }
 
 Collection *
