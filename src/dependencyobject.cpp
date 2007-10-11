@@ -17,6 +17,7 @@
 #include "list.h"
 #include "collection.h"
 #include "dependencyobject.h"
+#include "clock.h"
 
 #if OBJECT_TRACKING
 // Define the ID of the object you want to track
@@ -50,40 +51,6 @@ Base::PrintStackTrace ()
 {
 	print_stack_trace ();
 }
-
-void 
-Base::ref ()
-{
-	refcount++;
-	
-	Track ("Ref", GetTypeName ());
-}
-
-void
-Base::unref ()
-{
-	refcount--;
-	
-	Track ("Unref", GetTypeName ());
-
-	if (refcount == 0) {
-		delete this;
-	}
-}
-
-Base::Base () : refcount(1)
-{
-	id = ++objects_created;
-	objects_alive = g_list_prepend (objects_alive, this);
-	Track ("Created", "");
-}
-
-Base::~Base () 
-{
-	objects_destroyed++;
-	objects_alive = g_list_remove (objects_alive, this);
-	Track ("Destroyed", "");
-}
 #endif
 
 void 
@@ -92,12 +59,52 @@ base_ref (Base *base)
 	if (base != NULL)
 		base->ref ();
 }
- 
+
 void
 base_unref (Base *base)
 {
 	if (base != NULL)
 		base->unref ();
+}
+
+static GStaticRecMutex delayed_unref_mutex = G_STATIC_REC_MUTEX_INIT;
+static bool drain_tick_call_added = false;
+static GSList *pending_unrefs = NULL;
+
+static void
+drain_unrefs_tick_call (gpointer data)
+{
+	g_static_rec_mutex_lock (&delayed_unref_mutex);
+	drain_unrefs ();
+	drain_tick_call_added = false;
+	g_static_rec_mutex_unlock (&delayed_unref_mutex);
+}
+
+void
+base_unref_delayed (Base *base)
+{
+	g_static_rec_mutex_lock (&delayed_unref_mutex);
+	pending_unrefs = g_slist_prepend (pending_unrefs, base);
+
+#if OBJECT_TRACKING
+	base->Track ("DelayedUnref", base->GetTypeName ());
+#endif
+
+	if (!drain_tick_call_added) {
+		time_manager_add_tick_call (drain_unrefs_tick_call, NULL);
+		drain_tick_call_added = true;
+	}
+	g_static_rec_mutex_unlock (&delayed_unref_mutex);
+}
+
+void
+drain_unrefs ()
+{
+	g_static_rec_mutex_lock (&delayed_unref_mutex);
+	g_slist_foreach (pending_unrefs, (GFunc)base_unref, NULL);
+	g_slist_free (pending_unrefs);
+	pending_unrefs = NULL;
+	g_static_rec_mutex_unlock (&delayed_unref_mutex);
 }
 
 GHashTable *DependencyObject::properties = NULL;
@@ -373,13 +380,13 @@ void free_attacher (gpointer data, gpointer user_data)
 
 DependencyObject::~DependencyObject ()
 {
-	DetachAll ();
-
-	g_hash_table_destroy (current_values);
 	if (attached_list != NULL) {
 		g_slist_foreach (attached_list, free_attacher, NULL);
 		g_slist_free (attached_list);
 	}
+
+	DetachAll ();
+	g_hash_table_destroy (current_values);
 }
 
 DependencyProperty *

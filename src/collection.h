@@ -43,7 +43,7 @@ class Collection : public DependencyObject {
 	virtual bool Remove (DependencyObject *data);
 	virtual bool RemoveAt (int index);
 	virtual bool Insert (int index, DependencyObject *data);
-	virtual void Clear  ();
+	virtual void Clear  (bool emit_event = true);
 
 	//
 	// Returns the old value

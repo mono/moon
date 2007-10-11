@@ -1,3 +1,29 @@
+2007-10-10  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (runtime_shutdown): explicitly drain all remaining
+	pending managed unrefs.
+
+	* dependencyobject.cpp: remove the Base::ref/unref implementations
+	from here.  Add the threadsafe base_unref_delayed code, as well as
+	code to manage a tick call to free up the instances on the next
+	clock tick.  Also provide an external api (drain_unrefs -- bad
+	name, fix me plz k thx) so that runtime.cpp can explicitly unref
+	everything when we shutdown (if they haven't already been dealt
+	with.)
+
+	* dependencyobject.h: clean up the OBJECT_TRACKING ifdefs so that
+	we don't have 2 implementations of all these methods.  Instead,
+	just ifdef the relevant portions of the methods, and keep them in
+	dependencyobject.h.  Also, add prototypes for drain_unrefs and
+	base_unref_delayed, which is called from managed code.
+
+	* collection.h, collection.cpp: make Clear take an optional
+	"emit_event" argument (default = true.)  Call Clear instead of
+	list->Clear(true) in our dtor so we clean up the namespaces and
+	Detach properly.
+
+	* debug.cpp: use an extern "C" block. looks nicer.
+
 2007-10-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Handle GradientStop with negative offset like 

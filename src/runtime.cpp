@@ -1347,6 +1347,8 @@ runtime_shutdown ()
 {
 	if (!inited)
 		return;
+
+	drain_unrefs ();
 	
 	animation_destroy ();
 	text_destroy ();

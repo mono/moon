@@ -45,23 +45,45 @@ class Base {
 	char* GetStackTrace () { return GetStackTrace (""); }
 	void PrintStackTrace ();
 	void Track (const char* done, const char* typname);
-	
-	Base (); 
-	virtual ~Base ();
-	void ref ();
-	void unref ();
+#define OBJECT_TRACK(x,y) Track((x),(y))
 #else
-	Base () : refcount(1) {} 
-	virtual ~Base () {}
-	void ref () { refcount++; }
+#define OBJECT_TRACK(x,y)
+#endif
+
+	Base () : refcount(1)
+	{
+#if OBJECT_TRACKING
+		id = ++objects_created;
+		objects_alive = g_list_prepend (objects_alive, this);
+#endif
+		OBJECT_TRACK ("Created", "");
+	}
+
+	virtual ~Base ()
+	{
+#if OBJECT_TRACKING
+		objects_destroyed++;
+		objects_alive = g_list_remove (objects_alive, this);
+#endif
+		OBJECT_TRACK ("Destroyed", "");
+	}
+
+	void ref ()
+	{
+		refcount++;
+		OBJECT_TRACK ("Ref", GetTypeName ());
+	}
+
 	void unref ()
 	{
 		refcount--;
+	
+		OBJECT_TRACK ("Unref", GetTypeName ());
+
 		if (refcount == 0)
 			delete this;
 	}
-#endif
-	
+
 	virtual Type::Kind GetObjectType () = 0;
 	
 	//
@@ -206,7 +228,9 @@ G_BEGIN_DECLS
 
 void base_ref (Base *base);
 void base_unref (Base *base);
+void base_unref_delayed (Base *base);
 
+void drain_unrefs ();
 
 Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);
 Value *dependency_object_get_value_no_default (DependencyObject *object, DependencyProperty *prop);

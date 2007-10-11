@@ -21,18 +21,20 @@
 typedef struct _MonoDebugSourceLocation	MonoDebugSourceLocation;
 
 // Very very hackish, but it seems to work.
-extern "C" char* mono_pmip (void *ip);
-extern "C" MonoMethod* mono_jit_info_get_method (MonoJitInfo* ji);
-extern "C" MonoDomain* mono_domain_get ();
-extern "C" MonoJitInfo* mono_jit_info_table_find (MonoDomain* domain, void* ip);
-extern "C" char* mono_method_full_name (MonoMethod *method, gboolean signature);
+extern "C" {
+	extern char* mono_pmip (void *ip);
+	extern MonoMethod* mono_jit_info_get_method (MonoJitInfo* ji);
+	extern MonoDomain* mono_domain_get ();
+	extern MonoJitInfo* mono_jit_info_table_find (MonoDomain* domain, void* ip);
+	extern char* mono_method_full_name (MonoMethod *method, gboolean signature);
 
-extern "C" MonoDebugSourceLocation * mono_debug_lookup_source_location (MonoMethod *method, guint32 address, MonoDomain *domain);
-extern "C" void mono_debug_free_source_location (MonoDebugSourceLocation *location);
+	extern MonoDebugSourceLocation * mono_debug_lookup_source_location (MonoMethod *method, guint32 address, MonoDomain *domain);
+	extern void mono_debug_free_source_location (MonoDebugSourceLocation *location);
 
-extern "C" gpointer mono_jit_info_get_code_start (MonoJitInfo* ji);
+	extern gpointer mono_jit_info_get_code_start (MonoJitInfo* ji);
 
-extern "C" int mono_jit_info_get_code_size (MonoJitInfo* ji);
+	extern int mono_jit_info_get_code_size (MonoJitInfo* ji);
+};
 
 struct _MonoDebugSourceLocation {
 	gchar *source_file;
