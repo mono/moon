@@ -329,6 +329,91 @@ List::ForEach (NodeAction action, void *data)
 	}
 }
 
+
+Queue::Queue ()
+{
+	pthread_mutex_init (&lock, NULL);
+	list = new List ();
+}
+
+Queue::~Queue ()
+{
+	pthread_mutex_destroy (&lock);
+	delete list;
+}
+
+bool
+Queue::IsEmpty ()
+{
+	bool empty;
+	
+	Lock ();
+	empty = list->IsEmpty ();
+	Unlock ();
+	
+	return empty;
+}
+
+int
+Queue::Length ()
+{
+	int length;
+	
+	Lock ();
+	length = list->Length ();
+	Unlock ();
+	
+	return length;
+}
+
+void
+Queue::Clear (bool freeNodes)
+{
+	Lock ();
+	list->Clear (freeNodes);
+	Unlock ();
+}
+
+void
+Queue::Push (List::Node *node)
+{
+	Lock ();
+	list->Append (node);
+	Unlock ();
+}
+
+List::Node *
+Queue::Pop ()
+{
+	List::Node *node;
+	
+	Lock ();
+	if ((node = list->First ()))
+		list->Unlink (node);
+	Unlock ();
+	
+	return node;
+}
+
+void
+Queue::Lock ()
+{
+	pthread_mutex_lock (&lock);
+}
+
+void
+Queue::Unlock ()
+{
+	pthread_mutex_unlock (&lock);
+}
+
+List *
+Queue::LinkedList ()
+{
+	return list;
+}
+
+
 //#define TEST_PROGRAM
 #ifdef TEST_PROGRAM
 

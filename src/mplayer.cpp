@@ -34,6 +34,7 @@ G_END_DECLS
 
 #include "mplayer.h"
 //#include "stream.h"
+#include "list.h"
 
 #if GLIB_SIZEOF_VOID_P == 8
 #define ALIGN(addr,size) (uint8_t *) (((uint64_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
@@ -45,16 +46,37 @@ G_END_DECLS
 
 #define SET_VOLUME(chdata, volume) CLAMP (((((int32_t) (chdata)) * volume) >> 13), SHRT_MIN, SHRT_MAX)
 
-struct Packet {
+class Packet : public List::Node {
+public:
 	int stream_id;
 	int duration;
 	int64_t pts;
 	size_t size;
-	uint8_t data[1];
+	uint8_t *data;
+	
+	Packet (AVPacket *pkt);
+	~Packet ();
 };
 
+Packet::Packet (AVPacket *pkt)
+{
+	stream_id = pkt->stream_index;
+	duration = pkt->duration;
+	size = pkt->size;
+	pts = pkt->pts;
+	
+	data = (uint8_t *) g_malloc (size);
+	memcpy (data, pkt->data, size);
+}
+
+Packet::~Packet ()
+{
+	g_free (data);
+}
+
+
 struct Audio {
-	GAsyncQueue *queue;
+	Queue *queue;
 	
 	pthread_mutex_t init_mutex;
 	pthread_cond_t init_cond;
@@ -96,7 +118,7 @@ Audio::Audio ()
 	pthread_mutex_init (&init_mutex, NULL);
 	pthread_cond_init (&init_cond, NULL);
 	
-	queue = g_async_queue_new ();
+	queue = new Queue ();
 	
 	pkt = NULL;
 	inleft = 0;
@@ -131,11 +153,11 @@ Audio::~Audio ()
 	if (pcm != NULL)
 		snd_pcm_close (pcm);
 	
-	g_async_queue_unref (queue);
+	delete queue;
 }
 
 struct Video {
-	GAsyncQueue *queue;
+	Queue *queue;
 	
 	// input
 	AVStream *stream;
@@ -158,7 +180,7 @@ struct Video {
 
 Video::Video ()
 {
-	queue = g_async_queue_new ();
+	queue = new Queue ();
 	
 	stream = NULL;
 	codec = NULL;
@@ -175,17 +197,13 @@ Video::Video ()
 
 Video::~Video ()
 {
-	g_async_queue_unref (queue);
+	delete queue;
 }
 
 
 static bool ffmpeg_initialized = false;
 
 static void ffmpeg_init (void);
-
-// packets in a/v queues
-static Packet *pkt_new (AVPacket *avpkt);
-#define pkt_free(x) g_free (x)
 
 // threads
 static void *audio_loop (void *data);
@@ -450,10 +468,10 @@ bool
 MediaPlayer::AdvanceFrame ()
 {
 	AVFrame *frame = NULL;
-	AVFrame *prev = NULL;
 	bool update = false;
 	int64_t target_pts;
-	Packet *pkt;
+	Packet *pkt, *npkt;
+	List *list;
 	int redraw;
 	
 	if (paused) {
@@ -490,45 +508,51 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	if (current_pts >= seek_pts && current_pts >= target_pts)
-		return g_async_queue_length (video->queue) > 0;
+		return !video->queue->IsEmpty ();
 	
-	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue))) {
-		// always decode the frame or we get glitches in the screen
-		frame = avcodec_alloc_frame ();
-		
-		redraw = 0;
-		avcodec_decode_video (video->stream->codec, frame,
-				      &redraw, pkt->data, pkt->size);
-		
-		update = update || redraw;
-		
-		current_pts = pkt->pts;
-		pkt_free (pkt);
-		
-		if (current_pts >= target_pts) {
-			// we are in sync (or ahead) of audio playback
-			break;
-		}
-		
-		// we are lagging behind, drop this frame
-		
-		if (prev)
-			av_free (prev);
-		
-		prev = frame;
-		frame = NULL;
+	video->queue->Lock ();
+	
+	list = video->queue->LinkedList ();
+	
+	if ((pkt = (Packet *) list->First ())) {
+		do {
+			// always decode the frame or we get glitches in the screen
+			frame = avcodec_alloc_frame ();
+			
+			redraw = 0;
+			avcodec_decode_video (video->stream->codec, frame,
+					      &redraw, pkt->data, pkt->size);
+			
+			update = update || redraw;
+			
+			current_pts = pkt->pts;
+			
+			npkt = (Packet *) pkt->next;
+			list->Unlink (pkt);
+			delete pkt;
+			
+			if (!npkt) {
+				// no more packets in queue, this frame is the most recent we have available
+				break;
+			}
+			
+			if (current_pts >= target_pts) {
+				// we are in sync (or ahead) of audio playback
+				break;
+			}
+			
+			// we are lagging behind, drop this frame
+			av_free (frame);
+			frame = NULL;
+			
+			pkt = npkt;
+		} while (pkt);
 	}
 	
-	if (!frame) {
-		frame = prev;
-		prev = NULL;
-	}
+	video->queue->Unlock ();
 	
 	if (update)
 		convert_to_rgb (video, frame);
-	
-	if (prev != NULL)
-		av_free (prev);
 	
 	if (frame != NULL) {
 		av_free (frame);
@@ -613,10 +637,10 @@ MediaPlayer::MediaEnded ()
 	if (!eof)
 		return false;
 	
-	if ((audio->queue && g_async_queue_length (audio->queue) > 0))
+	if ((audio->queue && !audio->queue->IsEmpty ()))
 		return false;
 	
-	if ((video->queue && g_async_queue_length (video->queue) > 0))
+	if ((video->queue && !video->queue->IsEmpty ()))
 		return false;
 	
 	return true;
@@ -690,7 +714,6 @@ void
 MediaPlayer::StopThreads ()
 {
 	int64_t initial_pts;
-	Packet *pkt;
 	
 	stop = true;
 	
@@ -712,18 +735,15 @@ MediaPlayer::StopThreads ()
 	
 	// de-queue audio/video packets
 	if (audio->pkt != NULL) {
-		pkt_free (audio->pkt);
-		audio->inptr = NULL;
-		audio->inleft = 0;
+		delete audio->pkt;
 		audio->pkt = NULL;
+		
+		audio->inptr = NULL;
 		audio->inleft = 0;
 	}
 	
-	while ((pkt = (Packet *) g_async_queue_try_pop (audio->queue)))
-		pkt_free (pkt);
-	
-	while ((pkt = (Packet *) g_async_queue_try_pop (video->queue)))
-		pkt_free (pkt);
+	audio->queue->Clear (true);
+	video->queue->Clear (true);
 	
 	// enter paused state
 	pthread_mutex_lock (&pause_mutex);
@@ -937,22 +957,6 @@ ffmpeg_init (void)
 	avcodec_register_all ();
 	//register_protocol (&stream_protocol);
 	ffmpeg_initialized = true;
-}
-
-static Packet *
-pkt_new (AVPacket *av_pkt)
-{
-	Packet *pkt;
-	
-	pkt = (Packet *) g_malloc (sizeof (Packet) + av_pkt->size);
-	pkt->stream_id = av_pkt->stream_index;
-	pkt->duration = av_pkt->duration;
-	pkt->size = av_pkt->size;
-	pkt->pts = av_pkt->pts;
-	
-	memcpy (pkt->data, av_pkt->data, av_pkt->size);
-	
-	return pkt;
 }
 
 
@@ -1184,7 +1188,7 @@ audio_loop (void *data)
 			//printf ("calculated target_pts = %llu\n", mplayer->target_pts);
 		} else {
 			// decode an audio packet
-			if (!audio->pkt && (pkt = (Packet *) g_async_queue_try_pop (audio->queue))) {
+			if (!audio->pkt && (pkt = (Packet *) audio->queue->Pop ())) {
 				audio->inleft = pkt->size;
 				audio->inptr = pkt->data;
 				audio->pkt = pkt;
@@ -1196,7 +1200,7 @@ audio_loop (void *data)
 			}
 			
 			if (audio->pkt && audio_decode (audio)) {
-				pkt_free (audio->pkt);
+				delete audio->pkt;
 				audio->pkt = NULL;
 			}
 		}
@@ -1216,7 +1220,7 @@ static void *
 io_loop (void *data)
 {
 	MediaPlayer *mplayer = (MediaPlayer *) data;
-	GAsyncQueue *audio_q, *video_q;
+	Queue *audio_q, *video_q;
 	int audio_id, video_id;
 	AVPacket pkt;
 	
@@ -1227,8 +1231,8 @@ io_loop (void *data)
 	video_q = video_id != -1 ? mplayer->video->queue : NULL;
 	
 	while (!mplayer->stop) {
-		if ((!audio_q || g_async_queue_length (audio_q) > 100) &&
-		    (!video_q || g_async_queue_length (video_q) > 100)) {
+		if ((!audio_q || audio_q->Length () > 100) &&
+		    (!video_q || video_q->Length () > 100)) {
 			// throttle ourselves
 			g_usleep (1000);
 			continue;
@@ -1242,10 +1246,10 @@ io_loop (void *data)
 		
 		if (pkt.stream_index == audio_id) {
 			if (audio_q)
-				g_async_queue_push (audio_q, pkt_new (&pkt));
+				audio_q->Push (new Packet (&pkt));
 		} else if (pkt.stream_index == video_id) {
 			if (video_q)
-				g_async_queue_push (video_q, pkt_new (&pkt));
+				video_q->Push (new Packet (&pkt));
 		} else {
 			// unhandled stream
 		}

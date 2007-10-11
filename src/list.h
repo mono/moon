@@ -12,6 +12,8 @@
 #ifndef __LIST_H__
 #define __LIST_H__
 
+#include <pthread.h>
+
 
 class List {
 public:
@@ -26,7 +28,7 @@ public:
 	};
 	
 	typedef bool (* NodeAction) (Node *node, void *data);
-	
+
 protected:
 	Node *head;
 	Node *tail;
@@ -60,8 +62,35 @@ public:
 	
 	int IndexOf (Node *node);
 	int IndexOf (NodeAction find, void *data);
-
+	
 	void ForEach (NodeAction action, void *data);
+};
+
+class Queue {
+protected:
+	pthread_mutex_t lock;
+	List *list;
+	
+public:
+	
+	Queue ();
+	~Queue ();
+	
+	// convenience properties
+	bool IsEmpty ();
+	int Length ();
+	
+	// convenience methods
+	void Clear (bool freeNodes);
+	
+	void Push (List::Node *node);
+	List::Node *Pop ();
+	
+	void Lock ();
+	void Unlock ();
+	
+	// accessing the internal linked list directly requires manual Locking/Unlocking.
+	List *LinkedList ();
 };
 
 #endif /* __LIST_H__ */

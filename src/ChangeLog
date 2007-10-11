@@ -1,5 +1,15 @@
 2007-10-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mplayer.cpp: Updated to use the new Queue class.
+	(AdvanceFrame): Accessing the queue directly as a linked list
+	allows us to simplify the loop a little so that we don't have to
+	keep a reference to the previous packet's decoded frame.
+
+	* list.cpp: Added a new Queue class which will replace GAsyncQueue
+	in mplayer.cpp.
+
+2007-10-11  Jeffrey Stedfast  <fejj@novell.com>
+
 	* mplayer.cpp: Added ctors/dtors for Audio and Video structs.
 	(AdvanceFrame): Keep a reference to the previous frame in case we
 	reach the end of the queue.
