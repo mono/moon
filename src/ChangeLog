@@ -1,3 +1,9 @@
+2007-10-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp: Added ctors/dtors for Audio and Video structs.
+	(AdvanceFrame): Keep a reference to the previous frame in case we
+	reach the end of the queue.
+
 2007-10-11  Jb Evain  <jbevain@novell.com>
 
 	* dependencyobject.cpp|h: add dependency_object_set_name.

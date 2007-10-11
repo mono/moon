@@ -86,7 +86,53 @@ struct Audio {
 	// sync
 	int64_t initial_pts;
 	uint64_t pts_per_frame;
+	
+	Audio ();
+	~Audio ();
 };
+
+Audio::Audio ()
+{
+	pthread_mutex_init (&init_mutex, NULL);
+	pthread_cond_init (&init_cond, NULL);
+	
+	queue = g_async_queue_new ();
+	
+	pkt = NULL;
+	inleft = 0;
+	inptr = NULL;
+	
+	balance = 0.0f;
+	volume = 1.0f;
+	muted = false;
+	
+	stream_count = 0;
+	stream_id = -1;
+	stream = NULL;
+	
+	codec = NULL;
+	
+	memset (buffer, 0, AUDIO_BUFLEN + 1);
+	outbuf = ALIGN (buffer, 2);
+	outptr = outbuf;
+	
+	pcm = NULL;
+	sample_size = 0;
+	
+	initial_pts = 0;
+	pts_per_frame = 0;
+}
+
+Audio::~Audio ()
+{
+	pthread_mutex_destroy (&init_mutex);
+	pthread_cond_destroy (&init_cond);
+	
+	if (pcm != NULL)
+		snd_pcm_close (pcm);
+	
+	g_async_queue_unref (queue);
+}
 
 struct Video {
 	GAsyncQueue *queue;
@@ -105,7 +151,32 @@ struct Video {
 	int64_t initial_pts;
 	int msec_per_frame;
 	double usec_to_pts;
+	
+	Video ();
+	~Video ();
 };
+
+Video::Video ()
+{
+	queue = g_async_queue_new ();
+	
+	stream = NULL;
+	codec = NULL;
+	stream_id = -1;
+	
+	scaler = NULL;
+	surface = NULL;
+	rgb_buffer = NULL;
+	
+	initial_pts = 0;
+	msec_per_frame = 0;
+	usec_to_pts = 0;
+}
+
+Video::~Video ()
+{
+	g_async_queue_unref (queue);
+}
 
 
 static bool ffmpeg_initialized = false;
@@ -142,38 +213,7 @@ MediaPlayer::MediaPlayer ()
 	io_thread = NULL;
 	
 	audio = new Audio ();
-	pthread_mutex_init (&audio->init_mutex, NULL);
-	pthread_cond_init (&audio->init_cond, NULL);
-	audio->queue = g_async_queue_new ();
-	audio->pkt = NULL;
-	audio->inleft = 0;
-	audio->inptr = NULL;
-	audio->balance = 0.0f;
-	audio->volume = 1.0f;
-	audio->muted = false;
-	audio->stream_count = 0;
-	audio->stream_id = -1;
-	audio->stream = NULL;
-	audio->codec = NULL;
-	memset (audio->buffer, 0, AUDIO_BUFLEN + 1);
-	audio->outbuf = ALIGN (audio->buffer, 2);
-	audio->outptr = audio->outbuf;
-	audio->pcm = NULL;
-	audio->sample_size = 0;
-	audio->initial_pts = 0;
-	audio->pts_per_frame = 0;
-	
 	video = new Video ();
-	video->queue = g_async_queue_new ();
-	video->stream_id = -1;
-	video->stream = NULL;
-	video->codec = NULL;
-	video->scaler = NULL;
-	video->surface = NULL;
-	video->rgb_buffer = NULL;
-	video->initial_pts = 0;
-	video->msec_per_frame = 0;
-	video->usec_to_pts = 0;
 	
 	pause_time = 0;
 	start_time = 0;
@@ -196,15 +236,6 @@ MediaPlayer::~MediaPlayer ()
 	pthread_mutex_unlock (&pause_mutex);
 	pthread_mutex_destroy (&pause_mutex);
 	pthread_cond_destroy (&pause_cond);
-	
-	pthread_mutex_destroy (&audio->init_mutex);
-	pthread_cond_destroy (&audio->init_cond);
-	
-	if (audio->pcm != NULL)
-		snd_pcm_close (audio->pcm);
-	
-	g_async_queue_unref (audio->queue);
-	g_async_queue_unref (video->queue);
 	
 	g_free (uri);
 	
@@ -419,6 +450,7 @@ bool
 MediaPlayer::AdvanceFrame ()
 {
 	AVFrame *frame = NULL;
+	AVFrame *prev = NULL;
 	bool update = false;
 	int64_t target_pts;
 	Packet *pkt;
@@ -479,12 +511,24 @@ MediaPlayer::AdvanceFrame ()
 		}
 		
 		// we are lagging behind, drop this frame
-		av_free (frame);
+		
+		if (prev)
+			av_free (prev);
+		
+		prev = frame;
 		frame = NULL;
+	}
+	
+	if (!frame) {
+		frame = prev;
+		prev = NULL;
 	}
 	
 	if (update)
 		convert_to_rgb (video, frame);
+	
+	if (prev != NULL)
+		av_free (prev);
 	
 	if (frame != NULL) {
 		av_free (frame);
