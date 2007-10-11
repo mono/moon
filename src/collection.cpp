@@ -54,7 +54,12 @@ Collection::Collection ()
 
 Collection::~Collection ()
 {
-	Clear (false);
+	Collection::Node *n;
+
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next)
+		n->obj->Detach (NULL, this);
+
+	list->Clear(true);
 	delete list;
 }
 
@@ -225,7 +230,7 @@ Collection::RemoveAt (int index)
 }
 
 void
-Collection::Clear (bool emit_event)
+Collection::Clear ()
 {
 	Collection::Node *n;
 
@@ -243,7 +248,7 @@ Collection::Clear (bool emit_event)
 
 	list->Clear (true);
 
-	if (closure && emit_event)
+	if (closure)
 		closure->OnCollectionChanged (this, CollectionChangeTypeChanged, NULL, NULL);
 }
 
