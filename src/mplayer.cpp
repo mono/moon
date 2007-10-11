@@ -60,13 +60,22 @@ public:
 
 Packet::Packet (AVPacket *pkt)
 {
+	size_t msize;
+	
 	stream_id = pkt->stream_index;
 	duration = pkt->duration;
 	size = pkt->size;
 	pts = pkt->pts;
 	
-	data = (uint8_t *) g_malloc (size);
+	// pad to allow 32bit-word sized reads
+	msize = (size + 3) & ~0x3;
+	
+	// add another word as padding
+	msize += 4;
+	
+	data = (uint8_t *) g_malloc (msize);
 	memcpy (data, pkt->data, size);
+	memset (data + size, 0, msize - size);
 }
 
 Packet::~Packet ()
@@ -457,7 +466,7 @@ convert_to_rgb (Video *video, AVFrame *frame)
 	uint8_t *rgb_dest[3] = { video->rgb_buffer, NULL, NULL};
 	int rgb_stride [3] = { cc->width * 4, 0, 0 };
 	
-	if (frame->data == NULL)
+	if (frame->data == NULL || frame->data[1] == NULL || frame->data[2] == NULL)
 		return;
 	
 	sws_scale (video->scaler, frame->data, frame->linesize, 0,
