@@ -91,6 +91,8 @@ Playlist::OnMediaDownloaded ()
 	if (!source->Open ())
 		return;
 
+	PopulateMediaAttributes ();
+
 	if (current_entry->PlayWhenAvailable ())
 		source->Play ();
 }
@@ -140,6 +142,42 @@ Playlist::on_downloader_data_write (guchar *buf, gsize offset, gsize count, gpoi
 void
 Playlist::on_downloader_size_notify (int64_t size, gpointer data)
 {
+}
+
+static void
+add_attribute (MediaAttributeCollection *attributes, const char *name, const char *attr)
+{
+	if (!attr)
+		return;
+
+	MediaAttribute *attribute = new MediaAttribute ();
+	dependency_object_set_name (attribute, name);
+	media_attribute_set_value (attribute, g_strdup (attr));
+
+	attributes->Add (attribute);
+}
+
+void
+Playlist::PopulateMediaAttributes ()
+{
+	if (!current_entry)
+		return;
+
+	MediaAttributeCollection *attributes;
+
+	Value *value = element->GetValue (MediaElement::AttributesProperty);
+	if (!value) {
+		attributes = new MediaAttributeCollection ();
+		element->SetValue (MediaElement::AttributesProperty, Value (attributes));
+	} else {
+		attributes = value->AsMediaAttributeCollection ();
+		attributes->Clear ();
+	}
+
+	add_attribute (attributes, "Title", current_entry->GetTitle ());
+	add_attribute (attributes, "Author", current_entry->GetAuthor ());
+	add_attribute (attributes, "Abstract", current_entry->GetAbstract ());
+	add_attribute (attributes, "Copyright", current_entry->GetCopyright ());
 }
 
 static bool
@@ -201,8 +239,10 @@ Playlist::OpenCurrentSource ()
 		return false;
 
 	success = source->Open ();
-	if (success)
+	if (success) {
+		PopulateMediaAttributes ();
 		element->mplayer->Seek (current_entry->GetStartTime ());
+	}
 
 	return success;
 }

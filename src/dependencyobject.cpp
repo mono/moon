@@ -512,6 +512,13 @@ dependency_object_get_type_name (DependencyObject *obj)
 	return obj->GetTypeName ();
 }
 
+// Used by routines which need to create DO from code
+void
+dependency_object_set_name (DependencyObject *obj, const char *name)
+{
+	obj->SetValue (DependencyObject::NameProperty, Value (name));
+}
+
 //
 // Use this for values that can be null
 //

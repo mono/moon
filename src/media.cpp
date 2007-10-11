@@ -1435,12 +1435,24 @@ media_attribute_new (void)
 	return new MediaAttribute ();
 }
 
+const char *
+media_attribute_get_value (MediaAttribute *attribute)
+{
+	Value * value = attribute->GetValue (MediaAttribute::ValueProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+media_attribute_set_value (MediaAttribute *attribute, const char *value)
+{
+	attribute->SetValue (MediaAttribute::ValueProperty, Value (value));
+}
 
 void
 media_init (void)
 {
 	/* MediaAttribute */
-	MediaAttribute::ValueProperty = DependencyObject::Register (Type::MEDIAATTRIBUTE, "Value", new Value (""));
+	MediaAttribute::ValueProperty = DependencyObject::Register (Type::MEDIAATTRIBUTE, "Value", Type::STRING);
 	
 	/* MediaBase */
 	MediaBase::SourceProperty = DependencyObject::Register (Type::MEDIABASE, "Source", Type::STRING);

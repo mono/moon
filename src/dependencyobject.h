@@ -240,6 +240,7 @@ void   dependency_object_set_value (DependencyObject *object, DependencyProperty
 
 DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_type);
 const char       *dependency_object_get_name  (DependencyObject *obj);
+void dependency_object_set_name (DependencyObject *obj, const char *name);
 
 Type::Kind dependency_object_get_object_type (DependencyObject *obj);
 const char *dependency_object_get_type_name (DependencyObject *obj);

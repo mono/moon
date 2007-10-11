@@ -1,3 +1,13 @@
+2007-10-11  Jb Evain  <jbevain@novell.com>
+
+	* dependencyobject.cpp|h: add dependency_object_set_name.
+
+	* media.cpp|h: add media_attribute_get_value and
+	media_attribute_set_value
+
+	* playlist.cpp|h: populate MediaAttributeCollection when
+	a playlist entry is opened.
+
 2007-10-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Let InkPresenter handle childs like a Canvas (from 

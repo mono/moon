@@ -33,7 +33,8 @@ class MediaAttribute : public DependencyObject {
 };
 
 MediaAttribute *media_attribute_new ();
-
+const char *media_attribute_get_value (MediaAttribute *attribute);
+void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
 class MediaBase : public FrameworkElement {
 public:
