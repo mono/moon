@@ -1,0 +1,8 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="400" Height="200" Background="Black">
+	<!-- InkPresenter draws like a canvas (and more) -->
+	<InkPresenter Canvas.Top="50" Canvas.Left="50" Width="300" Height="100" Background="White">
+		<Rectangle Width="100" Height="100" Fill="Red" />
+		<Ellipse Canvas.Left="100" Width="100" Height="100" Fill="Green" />
+		<Rectangle Canvas.Left="200" Width="100" Height="100" Fill="Blue" RadiusX="10" RadiusY="10" />
+	</InkPresenter>
+</Canvas>
