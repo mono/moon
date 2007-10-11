@@ -101,7 +101,7 @@ Downloader::Abort ()
 }
 
 void *
-Downloader::GetResponseText (char* PartName, uint64_t *size)
+Downloader::GetResponseText (const char* PartName, uint64_t *size)
 {
 	FILE *f = NULL;
 	struct stat buf;
@@ -143,7 +143,7 @@ Downloader::GetResponseText (char* PartName, uint64_t *size)
 }
 
 char *
-Downloader::ll_downloader_get_response_file (char *PartName)
+Downloader::ll_downloader_get_response_file (const char *PartName)
 {
 	int fd = -1;
 	char buffer [32*1024];
@@ -210,7 +210,7 @@ Downloader::ll_downloader_get_response_file (char *PartName)
 }
 
 char*
-Downloader::GetResponseFile (char *PartName)
+Downloader::GetResponseFile (const char *PartName)
 {
 	if (part_hash != NULL){
 		char *fname = (char*) g_hash_table_lookup (part_hash, PartName);
@@ -370,14 +370,14 @@ downloader_abort (Downloader *dl)
 //   A newly allocated string containing the filename.
 //
 char *
-downloader_get_response_file (Downloader *dl, char *PartName)
+downloader_get_response_file (Downloader *dl, const char *PartName)
 {
 	return dl->GetResponseFile (PartName);
 }
 
 
 void *
-downloader_get_response_text (Downloader *dl, char* PartName, uint64_t *size)
+downloader_get_response_text (Downloader *dl, const char* PartName, uint64_t *size)
 {
 	return dl->GetResponseText (PartName, size);
 }

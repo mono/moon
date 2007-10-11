@@ -1,5 +1,9 @@
 2007-10-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* downloader.cpp, downloader.h: Fix some const char/char mismatch warnings.
+
+2007-10-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* text.h, animation.h, text.cpp: Fix some const char/char mismatch warnings.
 	* dependencyobject.h, dependencyobject.cpp, animation.cpp: Remove some const
 	  char/char mismatch warnings.

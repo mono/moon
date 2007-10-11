@@ -40,7 +40,7 @@ class Downloader : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
 
 	void Abort ();
-	void* GetResponseText (char* Partname, uint64_t *size);
+	void* GetResponseText (const char* Partname, uint64_t *size);
 	void Open (const char *verb, const char *URI);
 	void Send ();
 
@@ -61,7 +61,7 @@ class Downloader : public DependencyObject {
 	// when writing unmanaged code for downloader implementations
 	// or data sinks.
 
-	char* GetResponseFile (char *PartName);
+	char* GetResponseFile (const char *PartName);
 	void Write (guchar *buf, gsize offset, gsize n);
 	void NotifyFinished (const char *fname);
 	void NotifyFailed (const char *msg);
@@ -112,7 +112,7 @@ class Downloader : public DependencyObject {
 	static downloader_send_func send_func;
 	static downloader_abort_func abort_func;
 
-	char * ll_downloader_get_response_file (char *PartName);
+	char * ll_downloader_get_response_file (const char *PartName);
 	
 	gpointer context;
 };
@@ -126,8 +126,8 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_abort_func abort);
 
 void  downloader_abort             (Downloader *dl);
-void *downloader_get_response_text (Downloader *dl, char *PartName, uint64_t *size);
-char *downloader_get_response_file (Downloader *dl, char *PartName);
+void *downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size);
+char *downloader_get_response_file (Downloader *dl, const char *PartName);
 void  downloader_open              (Downloader *dl, const char *verb, const char *URI);
 void  downloader_send              (Downloader *dl);
 
