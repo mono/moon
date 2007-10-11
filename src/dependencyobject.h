@@ -113,8 +113,8 @@ class EventObject : public Base {
 	EventObject ();
 	virtual ~EventObject ();
 	
-	void AddHandler (char *event_name, EventHandler handler, gpointer data);
-	void RemoveHandler (char *event_name, EventHandler handler, gpointer data);
+	void AddHandler (const char *event_name, EventHandler handler, gpointer data);
+	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
 	void AddHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
@@ -253,8 +253,8 @@ DependencyProperty *resolve_property_path (DependencyObject **o, const char *pat
 void dependencyobject_init (void);
 
 
-void event_object_add_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure);
-void event_object_remove_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure);
+void event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);
+void event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);
 
 G_END_DECLS
 

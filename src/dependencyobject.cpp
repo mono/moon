@@ -887,7 +887,7 @@ EventObject::~EventObject ()
 }
 
 void
-EventObject::AddHandler (char *event_name, EventHandler handler, gpointer data)
+EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data)
 {
 	int id = GetType()->LookupEvent (event_name);
 
@@ -919,7 +919,7 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 }
 
 void
-EventObject::RemoveHandler (char *event_name, EventHandler handler, gpointer data)
+EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpointer data)
 {
 	int id = GetType()->LookupEvent (event_name);
 
@@ -991,13 +991,13 @@ EventObject::Emit (int event_id, gpointer calldata)
 }
 
 void
-event_object_add_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure)
+event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
 {
 	o->AddHandler (event, handler, closure);
 }
 
 void
-event_object_remove_event_handler (EventObject *o, char *event, EventHandler handler, gpointer closure)
+event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
 {
 	o->RemoveHandler (event, handler, closure);
 }

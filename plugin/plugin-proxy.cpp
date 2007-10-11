@@ -89,7 +89,7 @@ NP_GetMIMEDescription (void)
 	if (getmime != NULL){
 		return (*getmime)();
 	}
-	return "";
+	return (char *) "";
 }
 
 NPError

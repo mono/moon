@@ -144,10 +144,10 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 
 	switch (variable) {
 		case NPPVpluginNameString:
-			*((char **)result) = PLUGIN_NAME;
+			*((char **)result) = (char *) PLUGIN_NAME;
 			break;
 		case NPPVpluginDescriptionString:
-			*((char **)result) = PLUGIN_DESCRIPTION;
+			*((char **)result) = (char *) PLUGIN_DESCRIPTION;
 			break;
 		case NPPVpluginNeedsXEmbed:
 			*((PRBool *)result) = PR_TRUE;
@@ -176,14 +176,13 @@ NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 char *
 NPP_GetMIMEDescription (void)
 {
-	return (MIME_TYPES_HANDLED);
+	return (char *) (MIME_TYPES_HANDLED);
 }
 
 void downloader_initialize ();
 void downloader_destroy ();
 
 static bool gtk_initialized = false;
-static bool already_initialized = false;
 static bool runtime_initialized = false;
 
 NPError
@@ -216,4 +215,5 @@ NPP_Shutdown (void)
 	//TimeManager::Instance()->Shutdown ();
 	runtime_initialized = false;
 	downloader_destroy ();
+	//MoonlightObject::Summarize ();
 }

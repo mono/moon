@@ -855,9 +855,9 @@ PluginInstance::getBrowserInformation (char **name, char **version,
 	*userAgent = (char*)NPN_UserAgent (instance);
 	DEBUG_WARN_NOTIMPLEMENTED ("pluginInstance.getBrowserInformation");
 
-	*name = "Foo!";
-	*version = "Foo!";
-	*platform = "Foo!";
+	*name = (char *) "Foo!";
+	*version = (char *) "Foo!";
+	*platform = (char *) "Foo!";
 	*cookieEnabled = true;
 }
 

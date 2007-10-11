@@ -320,7 +320,7 @@ storyboard_stop   (Storyboard *sb)
 
 void
 Storyboard::SetTargetProperty (DependencyObject *o,
-			       char *targetProperty)
+			       const char *targetProperty)
 {
 	o->SetValue (Storyboard::TargetPropertyProperty, Value (targetProperty));
 }
@@ -334,7 +334,7 @@ Storyboard::GetTargetProperty (DependencyObject *o)
 
 void
 Storyboard::SetTargetName (DependencyObject *o,
-			   char *targetName)
+			   const char *targetName)
 {
 	o->SetValue (Storyboard::TargetNameProperty, Value (targetName));
 }

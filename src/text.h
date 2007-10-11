@@ -51,7 +51,7 @@ class Inline : public DependencyObject {
 };
 
 char *inline_get_font_family (Inline *inline_);
-void inline_set_font_family (Inline *inline_, char *value);
+void inline_set_font_family (Inline *inline_, const char *value);
 
 double inline_get_font_size (Inline *inline_);
 void inline_set_font_size (Inline *inline_, double value);
@@ -93,7 +93,7 @@ public:
 Run *run_new (void);
 
 char *run_get_text (Run *run);
-void run_set_text (Run *run, char *value);
+void run_set_text (Run *run, const char *value);
 
 
 class TextBlock : public FrameworkElement {
@@ -223,7 +223,7 @@ Inlines *text_block_get_inlines (TextBlock *textblock);
 void text_block_set_inlines (TextBlock *textblock, Inlines *value);
 
 char *text_block_get_text (TextBlock *textblock);
-void text_block_set_text (TextBlock *textblock, char *value);
+void text_block_set_text (TextBlock *textblock, const char *value);
 
 TextDecorations text_block_get_text_decorations (TextBlock *textblock);
 void text_block_set_text_decorations (TextBlock *textblock, TextDecorations value);

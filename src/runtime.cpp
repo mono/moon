@@ -83,15 +83,15 @@ Surface::CreateSimilarSurface ()
 
 
 Surface::Surface(int w, int h)
-  : width (w), height (h), buffer (0), pixbuf (NULL),
+  : downloader_context (NULL),
+    width (w), height (h), buffer (0), pixbuf (NULL),
     using_cairo_xlib_surface(0),
     cairo_buffer_surface (NULL), cairo_buffer(NULL),
     cairo_xlib(NULL), cairo (NULL), transparent(false),
     background_color(NULL),
     cursor (MouseCursorDefault),
     drawing_area_normal (NULL),
-    drawing_area_fullscreen (NULL),
-    downloader_context (NULL)
+    drawing_area_fullscreen (NULL)
 {
 	drawing_area = gtk_event_box_new ();
 
@@ -639,9 +639,11 @@ Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 	nframes++;
 	
 	if ((now = get_now ()) > (start + TIMESPANTICKS_IN_SECOND)) {
+		/*
 		printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes,
 			(now - start) / TIMESPANTICKS_IN_SECOND_FLOAT,
 			nframes / ((now - start) / TIMESPANTICKS_IN_SECOND_FLOAT));
+			*/
 		nframes = 0;
 		start = now;
 	}

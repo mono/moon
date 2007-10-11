@@ -13,7 +13,6 @@
 
 #include "libmoon.h"
 
-static UIElement *v;
 static Rectangle *r;
 static Rectangle *square;
 

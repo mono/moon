@@ -536,9 +536,9 @@ class Storyboard : public ParallelTimeline {
 
 	// XXX event Completed
 
-	static void SetTargetName (DependencyObject *o, char *targetName);
+	static void SetTargetName (DependencyObject *o, const char *targetName);
 	static char* GetTargetName (DependencyObject *o);
-	static void SetTargetProperty (DependencyObject *o, char *targetProperty);
+	static void SetTargetProperty (DependencyObject *o, const char *targetProperty);
 	static char* GetTargetProperty (DependencyObject *o);
 
 	// events you can AddHandler to

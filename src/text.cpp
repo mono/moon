@@ -212,7 +212,7 @@ inline_get_font_family (Inline *inline_)
 }
 
 void
-inline_set_font_family (Inline *inline_, char *value)
+inline_set_font_family (Inline *inline_, const char *value)
 {
 	inline_->SetValue (Inline::FontFamilyProperty, Value (value));
 }
@@ -331,7 +331,7 @@ run_get_text (Run *run)
 }
 
 void
-run_set_text (Run *run, char *value)
+run_set_text (Run *run, const char *value)
 {
 	run->SetValue (Run::TextProperty, Value (value));
 }
@@ -389,7 +389,7 @@ TextBlock::TextBlock ()
 		font.custom->SetSize (TEXTBLOCK_FONT_SIZE);
 	}
 	
-	text_block_set_text (this, (char *) "");
+	text_block_set_text (this, "");
 	
 	Brush *brush = new SolidColorBrush ();
 	Color *color = color_from_str ("black");
@@ -1187,7 +1187,7 @@ text_block_get_text (TextBlock *textblock)
 }
 
 void
-text_block_set_text (TextBlock *textblock, char *value)
+text_block_set_text (TextBlock *textblock, const char *value)
 {
 	textblock->SetValue (TextBlock::TextProperty, Value (value));
 }

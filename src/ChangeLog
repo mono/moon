@@ -1,5 +1,14 @@
 2007-10-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* text.h, animation.h, text.cpp: Fix some const char/char mismatch warnings.
+	* dependencyobject.h, dependencyobject.cpp, animation.cpp: Remove some const
+	  char/char mismatch warnings.
+	* visual.cpp: Fix no newline warning.
+	* runtime.cpp: Fix a initialization warning.
+	* demo.cpp: Remove unused variable.
+
+2007-10-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.cpp: base_unref_delayed: do nothing if base is NULL,
 	  matches base_unref behaviour.
 	* dependencyobject.h: Use g_atomic_int* to make ref counting atomic
