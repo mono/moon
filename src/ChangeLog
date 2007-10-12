@@ -1,3 +1,7 @@
+2007-10-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Only set miter limit if line join is set to miter.
+
 2007-10-12  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp: move the panel logic away from VisualCollection.

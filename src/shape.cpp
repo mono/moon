@@ -214,8 +214,10 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 			cairo_set_dash (cr, NULL, 0, 0.0);
 		}
 
-		cairo_set_miter_limit (cr, shape_get_stroke_miter_limit (this));
-		cairo_set_line_join (cr, convert_line_join (shape_get_stroke_line_join (this)));
+		cairo_line_join_t lj = convert_line_join (shape_get_stroke_line_join (this));
+		if (lj == CAIRO_LINE_JOIN_MITER)
+			cairo_set_miter_limit (cr, shape_get_stroke_miter_limit (this));
+		cairo_set_line_join (cr, lj);
 
 		/* FIXME: cairo doesn't have separate line cap for the start and end */
 		PenLineCap cap = shape_get_stroke_end_line_cap (this);
