@@ -168,7 +168,7 @@ SingleMedia::ClearTimeout ()
 	if (advance_frame_timeout_id == 0)
 		return;
 
-	g_source_remove (advance_frame_timeout_id);
+	TimeManager::Instance()->RemoveTimeout (advance_frame_timeout_id);
 	advance_frame_timeout_id = 0;
 }
 

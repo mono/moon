@@ -1,3 +1,16 @@
+2007-10-12  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: add some Timeout functions (AddTimeout,
+	RemoveTimeout) which wrap the glib timeout calls we were making.
+	This lets us keep track of active timeout ids and remove them all
+	when the TimeManager shuts down.  So, if we leak MediaElements
+	(which seems to be happening in TopBanana), we don't crash.
+
+	* mplayer.cpp: use the new TimeManager timeout call instead of the
+	glib mainloop directly.
+
+	* media.cpp: same.
+	
 2007-10-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (downloader_init): Default the DownloadProgress

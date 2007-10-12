@@ -188,7 +188,10 @@ class TimeManager : public EventObject {
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
 
-	void AddTickCall (void (*func)(gpointer), gpointer tick_data);
+	guint AddTimeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
+	void  AddTickCall (void (*func)(gpointer), gpointer tick_data);
+
+	void RemoveTimeout (guint timeout_id);
 
 	void SetMaximumRefreshRate (int hz);
 
@@ -202,10 +205,12 @@ class TimeManager : public EventObject {
  private:
 	TimeManager ();
 
-	void AddTimeout ();
-	void RemoveTimeout ();
+	void AddGlibTimeout ();
+	void RemoveGlibTimeout ();
 
 	void RaiseEnqueuedEvents ();
+
+	void RemoveAllRegisteredTimeouts ();
 
 	void InvokeTickCall ();
 
@@ -236,9 +241,14 @@ class TimeManager : public EventObject {
 	GMutex *tick_call_mutex;
 
 	GList *tick_calls;
+
+	GList *registered_timeouts;
 };
 
 void time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data);
+
+guint time_manager_add_timeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
+void  time_manager_remove_timeout (guint timeout_id);
 
 void time_manager_list_clocks ();
 

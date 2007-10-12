@@ -81,6 +81,7 @@ TimeManager::TimeManager ()
 	start_time = get_now ();
 
 	tick_call_mutex = g_mutex_new ();
+	registered_timeouts = NULL;
 	first_tick = true;
 }
 
@@ -94,11 +95,11 @@ void
 TimeManager::Start()
 {
 	current_global_time = get_now ();
-	AddTimeout ();
+	AddGlibTimeout ();
 }
 
 void
-TimeManager::AddTimeout ()
+TimeManager::AddGlibTimeout ()
 {
 	if (tick_id != -1)
 		return;
@@ -107,7 +108,7 @@ TimeManager::AddTimeout ()
 }
 
 void
-TimeManager::RemoveTimeout ()
+TimeManager::RemoveGlibTimeout ()
 {
 	if (tick_id != -1){
 		g_source_remove (tick_id);
@@ -118,7 +119,7 @@ TimeManager::RemoveTimeout ()
 void
 TimeManager::Shutdown ()
 {
-	RemoveTimeout ();
+	RemoveGlibTimeout ();
 
         GList *node = child_clocks;
         GList *next;
@@ -130,6 +131,8 @@ TimeManager::Shutdown ()
 		node = next;
 	}
 	
+	RemoveAllRegisteredTimeouts ();
+
 	child_clocks = NULL;
 	
 	_instance->unref ();
@@ -205,9 +208,9 @@ TimeManager::Tick ()
 	}
 
 	if (flags & TIME_MANAGER_TICK_CALL) {
-		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTick");
+		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 		InvokeTickCall ();
-		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTick");
+		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
@@ -251,8 +254,8 @@ TimeManager::Tick ()
 		current_timeout = FPS_TO_DELAY (MINIMUM_FPS);
 
 	//	printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
-	RemoveTimeout();
-	AddTimeout();
+	RemoveGlibTimeout();
+	AddGlibTimeout();
 
 	previous_smoothed = current_smoothed;
 
@@ -275,6 +278,44 @@ TimeManager::RaiseEnqueuedEvents ()
 	}
 	g_list_foreach (copy, (GFunc)base_unref, NULL);
 	g_list_free (copy);
+}
+
+guint
+TimeManager::AddTimeout (guint ms_interval, GSourceFunc func, gpointer tick_data)
+{
+	guint rv = gtk_timeout_add (ms_interval, func, tick_data);
+	registered_timeouts = g_list_prepend (registered_timeouts, GUINT_TO_POINTER (rv));
+	return rv;
+}
+
+void
+TimeManager::RemoveTimeout (guint timeout_id)
+{
+	g_source_remove (timeout_id);
+	registered_timeouts = g_list_remove_all (registered_timeouts, GUINT_TO_POINTER (timeout_id));
+}
+
+void
+TimeManager::RemoveAllRegisteredTimeouts ()
+{
+	GList *t;
+	for (t = registered_timeouts; t; t = t->next)
+		g_source_remove (GPOINTER_TO_UINT (t->data));
+
+	g_list_free (registered_timeouts);
+	registered_timeouts = NULL;
+}
+
+guint
+time_manager_add_timeout (guint ms_interval, GSourceFunc func, gpointer timeout_data)
+{
+	return TimeManager::Instance ()->AddTimeout (ms_interval, func, timeout_data);
+}
+
+void
+time_manager_remove_timeout (guint timeout_id)
+{
+	return TimeManager::Instance ()->RemoveTimeout (timeout_id);
 }
 
 void

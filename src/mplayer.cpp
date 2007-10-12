@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 #include <swscale.h>
 G_END_DECLS
 
+#include "clock.h"
 #include "mplayer.h"
 //#include "stream.h"
 #include "list.h"
@@ -684,9 +685,9 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	start_time += (av_gettime () - pause_time);
 	
 	if (video->stream_id != -1)
-		return g_timeout_add (video->msec_per_frame, callback, user_data);
+		return TimeManager::Instance()->AddTimeout (video->msec_per_frame, callback, user_data);
 	else
-		return g_timeout_add (33, callback, user_data);
+		return TimeManager::Instance()->AddTimeout (33, callback, user_data);
 	
 	return 0;
 }
