@@ -449,7 +449,6 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	item->UpdateTotalOpacity ();
 	item->Invalidate ();
 	item->SetSurface (panel->GetSurface ());
-	panel->UpdateBounds ();
 }
 
 bool
@@ -522,18 +521,13 @@ VisualCollection::Insert (int index, DependencyObject *data)
 bool
 VisualCollection::Remove (DependencyObject *data)
 {
-	Panel *panel = (Panel *) closure;
 	UIElement *item = (UIElement *) data;
 
  	item->Invalidate ();
 	bool b = Collection::Remove (item);
 	
-	if (b) {
+	if (b)
 		g_ptr_array_remove (z_sorted, item);
-	
-		if (panel)
-			panel->UpdateBounds ();
-	}
 
 	return b;
 }
@@ -541,8 +535,6 @@ VisualCollection::Remove (DependencyObject *data)
 bool
 VisualCollection::RemoveAt (int index)
 {
-	Panel *panel = (Panel *) closure;
-	
 	Collection::Node *n = (Collection::Node *) list->Index (index);
 	if (n == NULL)
 		return false;
@@ -552,12 +544,8 @@ VisualCollection::RemoveAt (int index)
  	item->Invalidate ();
 	bool b = Collection::RemoveAt (index);
 
-	if (b) {
+	if (b)
 		g_ptr_array_remove (z_sorted, item);
-	
-		if (panel)
-			panel->UpdateBounds ();
-	}
 
 	return b;
 }
@@ -568,16 +556,8 @@ VisualCollection::Clear ()
 	if (list->IsEmpty ())
 		return;
 	
-	Panel *panel = (Panel *) closure;
-	
 	g_ptr_array_set_size (z_sorted, 0);
 	Collection::Clear ();
-
-	// we need to force the invalidate here if the bounds don't
-	// change, as it means the canvas has width/height explicitly
-	// set.
-	if (panel)
-		panel->UpdateBounds (true);
 }
 
 

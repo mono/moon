@@ -39,8 +39,7 @@ void
 UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 {
 	add_dirty_element (this, DirtyBounds);
-	if (force_redraw_of_new_bounds)
-		add_dirty_element (this, DirtyInvalidate);
+	force_invalidate_of_new_bounds = force_redraw_of_new_bounds;
 }
 
 void

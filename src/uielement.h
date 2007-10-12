@@ -48,6 +48,7 @@ public:
 	int dirty_flags;
 	Rect dirty_rect;
 	Rect children_dirty_rect;
+	bool force_invalidate_of_new_bounds;
 
 	int DumpHierarchy (UIElement *obj);
 

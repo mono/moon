@@ -1,5 +1,20 @@
 2007-10-12  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp: move the panel logic away from VisualCollection.
+	It belongs in Panel::OnCollectionChanged.
+
+	* panel.cpp: flesh out Panel::OnCollectionChanged, making it do
+	everything the VisualCollection code used to do on its behalf.
+
+	* uielement.h, uielement.cpp: introduce a new field for use with
+	the dirty code - force_redraw_of_new_bounds.  Basically, we set
+	the field according to the parameter passed to UpdateBounds.
+
+	* dirty.cpp (UpdateBounds): force an invalidate if
+	el->force_redraw_of_new_bounds is set.
+
+2007-10-12  Chris Toshok  <toshok@ximian.com>
+
 	* clock.h, clock.cpp: add some Timeout functions (AddTimeout,
 	RemoveTimeout) which wrap the glib timeout calls we were making.
 	This lets us keep track of active timeout ids and remove them all

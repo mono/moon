@@ -179,13 +179,16 @@ process_dirty_elements ()
 // 					obounds.x, obounds.y, obounds.w, obounds.h,
 // 					el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
 
-			if (obounds != el->GetBounds()) {
-				if (el->parent) {
+			if (obounds != el->GetBounds() || el->force_invalidate_of_new_bounds) {
+				if (obounds != el->GetBounds()) {
+					if (el->parent) {
 // 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
-				  el->parent->UpdateBounds();
-				  el->parent->Invalidate(obounds);
+						el->parent->UpdateBounds();
+						el->parent->Invalidate(obounds);
+					}
 				}
 
+				el->force_invalidate_of_new_bounds = false;
 				el->Invalidate ();
 			}
 		}
