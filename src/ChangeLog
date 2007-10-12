@@ -1,3 +1,8 @@
+2007-10-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (downloader_init): Default the DownloadProgress
+	to 0.0.
+
 2007-10-12  Jackson Harper  <jackson@ximian.com>
 
 	* downloader.h: Add an access to the downloader state.  I need
