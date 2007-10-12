@@ -14,6 +14,9 @@
 #include "runtime.h"
 #include "downloader.h"
 #include "plugin.h"
+#include "plugin-class.h"
+
+bool downloader_shutdown = false;
 
 class PluginDownloader {
 public:
@@ -22,6 +25,11 @@ public:
 		this->dl = dl;
 		this->verb = NULL;
 		this->uri = NULL;
+
+		// these are set after the stream is created, and used for destroying the stream
+		this->npp = NULL;
+		this->stream = NULL;
+		
 		//base_ref (dl);
 	}
 
@@ -35,6 +43,8 @@ public:
 	Downloader *dl;
 	char *uri;
 	char *verb;
+	NPStream *stream;
+	NPP npp;
 };
 
 static gpointer
@@ -98,9 +108,25 @@ p_downloader_send (gpointer state)
 static void
 p_downloader_abort (gpointer state)
 {
-	fprintf (stderr, "moonlight-plugin: implement downloader abort\n");
-	DEBUGMSG ("downloader_abort");
+	PluginDownloader *pd = (PluginDownloader *) state;
+
+	if (downloader_shutdown)
+		return;
+
+	if (pd->npp && pd->stream)
+		NPN_DestroyStream (pd->npp, pd->stream, NPRES_USER_BREAK);
+	else
+		fprintf (stderr, "moonlight-plugin: no stream available for downloader abort  %s\n", pd->uri);
 }
+
+void
+downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream)
+{
+	PluginDownloader *pd = (PluginDownloader *) downloader->GetDownloaderState ();
+	pd->npp = npp;
+	pd->stream = stream;
+}
+
 
 void
 downloader_initialize (void)
@@ -116,4 +142,6 @@ downloader_initialize (void)
 void 
 downloader_destroy ()
 {
+	downloader_shutdown = true;
 }
+

@@ -208,12 +208,12 @@ NPP_Initialize (void)
 void
 NPP_Shutdown (void)
 {
+	downloader_destroy ();
 	plugin_destroy_classes ();
 	// runtime_shutdown is broken at moment so let us just shutdown TimeManager,
 	// when fixed please uncomment above line and remove time manger shutdown.
 	runtime_shutdown ();
 	//TimeManager::Instance()->Shutdown ();
 	runtime_initialized = false;
-	downloader_destroy ();
 	//MoonlightObject::Summarize ();
 }

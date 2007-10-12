@@ -440,6 +440,9 @@ PluginInstance::JsRunOnload ()
 	return retval;
 }
 
+void
+downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);
+
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
 {
@@ -452,6 +455,8 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
 		*stype = NP_ASFILE;
+		StreamNotify *notify = (StreamNotify *) stream->notifyData;
+		downloader_set_stream_data ((Downloader *) notify->pdata, instance, stream);
 		return NPERR_NO_ERROR;
 	} 
 
