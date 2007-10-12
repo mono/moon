@@ -255,6 +255,13 @@ TimeManager::Tick ()
 	AddTimeout();
 
 	previous_smoothed = current_smoothed;
+
+#if SHOW_SMOOTHING_COST
+	TimeSpan post_smooth = get_now();
+
+	printf ("for a clock tick of %lld, we spent %lld computing the smooth delay\n",
+		xt, post_smooth - post_tick);
+#endif
 }
 
 void
