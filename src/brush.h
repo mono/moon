@@ -172,7 +172,7 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::VIDEOBRUSH; }
 	
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
 };
 

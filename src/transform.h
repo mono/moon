@@ -157,7 +157,7 @@ Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
 class TransformCollection : public Collection {
  public:
 	TransformCollection () {}
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
 };
 TransformCollection* transform_collection_new ();
@@ -170,7 +170,7 @@ public:
 	virtual ~TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void UpdateTransform ();
 };

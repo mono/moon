@@ -431,10 +431,10 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	need_update = true;
-	NotifyAttachersOfPropertyChange (subprop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
@@ -471,9 +471,9 @@ transform_collection_new (void)
 }
 
 void
-TransformCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyProperty *subprop)
+TransformCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
-	NotifyAttachersOfPropertyChange (subprop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

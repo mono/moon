@@ -1,3 +1,24 @@
+2007-10-12  Chris Toshok  <toshok@ximian.com>
+
+	* control.[h,cpp], brush.[h,cpp], text.[h,cpp], geometry.[h,cpp],
+	dependencyobject.[h,cpp], shape.[h,cpp], animation.[h,cpp],
+	transform.[h,cpp]: add an extra parameter to OnSubPropertyChanged,
+	which gives the actual object whose property changed.  Also, in a
+	few instances fix the NotifyAttachersOnPropertyChanged call that
+	some classes used to not use the subprop, but the prop.  The
+	subprop doesn't refer to "this" in those instances, but to @obj.
+	@prop refers to "this".
+
+	* collection.[h,cpp]: use the above change to correctly support
+	the DependencyObject parameter of OnCollectionChanged (when the
+	change type is ItemChanged).
+	
+	* uielement.[h,cpp], panel.[h,cpp]: use the above two changes to
+	move the ZIndex property support from UIElement to Panel, which
+	makes more logical sense (and is likely the reason MS removed the
+	property from UIElement in 1.1) -- ZIndex is about what happens to
+	this UIElement in relation to its siblings.
+	
 2007-10-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Only set miter limit if line join is set to miter.

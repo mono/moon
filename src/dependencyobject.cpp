@@ -172,7 +172,7 @@ DependencyObject::NotifyAttachersOfPropertyChange (DependencyProperty *subproper
 	for (GSList *l = attached_list; l != NULL; l = l->next){
 		Attacher *att = (Attacher*)l->data;
 
-		att->dob->OnSubPropertyChanged (att->prop, subproperty);
+		att->dob->OnSubPropertyChanged (att->prop, this, subproperty);
 	}
 }
 

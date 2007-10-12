@@ -115,9 +115,6 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	if (prop == UIElement::OpacityProperty) {
 		UpdateTotalOpacity ();
 	}
-	else if (prop == UIElement::ZIndexProperty) {
-		Invalidate ();
-	}
 	else if (prop == UIElement::VisibilityProperty) {
 		switch (GetValue (prop)->AsInt32()) {
 		case VisibilityVisible:
@@ -248,7 +245,7 @@ UIElement::ComputeTransform ()
 }
 
 void
-UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (prop == UIElement::RenderTransformProperty) {
 		UpdateTransform ();
@@ -259,7 +256,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *s
 		Invalidate ();
 	}
 	
-	Visual::OnSubPropertyChanged (prop, subprop);
+	Visual::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 bool 

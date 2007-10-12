@@ -382,13 +382,13 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (prop == Shape::FillProperty || prop == Shape::StrokeProperty) {
 		Invalidate ();
 	}
 	else
-		FrameworkElement::OnSubPropertyChanged (prop, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 Point
@@ -1675,14 +1675,14 @@ Path::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (prop == Path::DataProperty) {
 		InvalidatePathCache ();
 		FullInvalidate (false);
 	}
 	else
-		Shape::OnSubPropertyChanged (prop, subprop);
+		Shape::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 void

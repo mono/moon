@@ -40,7 +40,7 @@ class Inline : public DependencyObject {
 	virtual ~Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	
 	union {
 		PangoFontDescription *pango;
@@ -185,7 +185,7 @@ public:
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	
 	virtual Value *GetValue (DependencyProperty *property);
@@ -280,7 +280,7 @@ public:
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 };
 
 Glyphs *glyphs_new (void);

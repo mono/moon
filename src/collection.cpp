@@ -129,12 +129,12 @@ Collection::Insert (int index, DependencyObject *data)
 }
 
 void
-Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (closure) {
 		/* unfortunately OnSubPropertyChanged doesn't give us
 		   enough info to fill in the obj parameter here */
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemChanged, NULL, subprop);
+		closure->OnCollectionChanged (this, CollectionChangeTypeItemChanged, obj, subprop);
 	}
 }
 

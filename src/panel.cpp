@@ -516,13 +516,13 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (prop == Panel::BackgroundProperty) {
 		Invalidate ();
 	}
 	else {
-		FrameworkElement::OnSubPropertyChanged (prop, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
 	}
 }
 
@@ -545,8 +545,7 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, Dependen
 			// g_ptr_array_sort() uses QuickSort which has poor
 			// performance on nearly-sorted input.
 			GetChildren()->ResortByZIndex ();
-
-			//((UIElement*)obj)->Invalidate();
+			((UIElement*)obj)->Invalidate();
 		}
 		break;
 	}

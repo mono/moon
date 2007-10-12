@@ -267,7 +267,7 @@ public:
 	virtual void OnLoaded ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 
 	Point GetRenderTransformOrigin () {
 		Value *vu = GetValue (UIElement::RenderTransformOriginProperty);

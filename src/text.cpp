@@ -194,7 +194,7 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (prop == Inline::ForegroundProperty) {
 		// this isn't exactly what we want, I don't
@@ -907,12 +907,12 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (prop == TextBlock::ForegroundProperty)
 		Invalidate ();
 	else
-		FrameworkElement::OnSubPropertyChanged (prop, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 void
@@ -1548,12 +1548,12 @@ Glyphs::GetTransformOrigin ()
 }
 
 void
-Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (prop == Glyphs::FillProperty)
 		Invalidate ();
 	else
-		FrameworkElement::OnSubPropertyChanged (prop, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 void

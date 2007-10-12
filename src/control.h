@@ -29,7 +29,7 @@ class Control : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);

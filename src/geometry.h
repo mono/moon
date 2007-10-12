@@ -85,7 +85,7 @@ class GeometryGroup : public Geometry {
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 
 	virtual void Draw (Path *path, cairo_t *cr);

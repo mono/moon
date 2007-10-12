@@ -51,7 +51,7 @@ class Collection : public DependencyObject {
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 	virtual Value *GetValue (DependencyProperty *property);
 	
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 
 	static DependencyProperty *CountProperty;
 };

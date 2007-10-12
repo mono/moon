@@ -283,9 +283,9 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
-	NotifyAttachersOfPropertyChange (subprop);
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

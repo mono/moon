@@ -58,13 +58,13 @@ Control::ComputeBounds ()
 }
 
 void
-Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (subprop == Canvas::TopProperty || subprop == Canvas::LeftProperty) {
 		real_object->UpdateTransform ();
 	}
 
-	UIElement::OnSubPropertyChanged (prop, subprop);
+	UIElement::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 void

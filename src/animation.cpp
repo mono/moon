@@ -841,13 +841,13 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 }
 
 void
-KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (subprop == KeyFrame::KeyTimeProperty) {
 		resolved = false;
 	}
 
-	Collection::OnSubPropertyChanged (prop, subprop);
+	Collection::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 ColorKeyFrameCollection*

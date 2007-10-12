@@ -84,7 +84,7 @@ class Shape : public FrameworkElement {
 	virtual void BuildPath () {};
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 
 	//
 	bool IsEmpty () { return (flags & UIElement::SHAPE_EMPTY); };
@@ -283,7 +283,7 @@ class Path : public Shape {
 	virtual FillRule GetFillRule ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 };
 
 Path *path_new (void);

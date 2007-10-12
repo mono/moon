@@ -1041,7 +1041,7 @@ VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 }
 
 void
-VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *subprop)
+VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	if (subprop == MediaElement::PositionProperty) {
 		// We to changes in this MediaElement property so we
@@ -1050,7 +1050,7 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyProperty *
 		NotifyAttachersOfPropertyChange (Brush::ChangedProperty);
 	}
 	
-	TileBrush::OnSubPropertyChanged (prop, subprop);
+	TileBrush::OnSubPropertyChanged (prop, obj, subprop);
 }
 
 VideoBrush *
