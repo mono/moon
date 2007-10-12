@@ -724,6 +724,12 @@ image_brush_set_image_source (ImageBrush *brush, const char* source)
 	brush->SetValue (ImageBrush::ImageSourceProperty, Value (source));
 }
 
+void
+image_brush_set_source (ImageBrush *brush, DependencyObject *dl, const char *PartName)
+{
+	brush->SetSource (dl, PartName);
+}
+
 ImageBrush::ImageBrush ()
 {
 	image = new Image ();

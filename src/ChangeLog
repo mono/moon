@@ -1,3 +1,7 @@
+2007-10-12  Jb Evain  <jbevain@novell.com>
+
+	* brush.cpp|h: add image_brush_set_source.
+
 2007-10-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (convert_to_rgb): Worked around an swscaler crash
