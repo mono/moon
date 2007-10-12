@@ -1,3 +1,8 @@
+2007-10-12  Jackson Harper  <jackson@ximian.com>
+
+	* downloader.h: Add an access to the downloader state.  I need
+	this in the plugin.
+
 2007-10-12  Jb Evain  <jbevain@novell.com>
 
 	* brush.cpp|h: add image_brush_set_source.

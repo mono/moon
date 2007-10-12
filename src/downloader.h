@@ -87,6 +87,7 @@ class Downloader : public DependencyObject {
 
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }
+	gpointer GetDownloaderState () { return downloader_state; }
 
  private:
 	GHashTable *part_hash;
