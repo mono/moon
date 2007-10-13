@@ -1,3 +1,12 @@
+2007-10-13  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (balf): fix bug 325175 by not taking the square
+	root of a negative number (fixes the flashing in the credits for
+	Monotone.)  Also clean up this code so that we're not using
+	globals to communicate parameters (through Simpson) between balf
+	and BezierArcLength, and lower the tolerance (I doubt we need
+	*that* much precision).
+
 2007-10-12  Chris Toshok  <toshok@ximian.com>
 
 	* control.[h,cpp], brush.[h,cpp], text.[h,cpp], geometry.[h,cpp],

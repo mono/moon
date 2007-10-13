@@ -633,17 +633,15 @@ key_spline_new (void)
 
 #define _ABS(x) (x < 0 ? -x : x)
 
-const double TOLERANCE = 0.0000001;  // Application specific tolerance
-
-static double q1, q2, q3, q4, q5;      // These belong to balf()
+const double TOLERANCE = 0.0001;  // Application specific tolerance
 
 
 //---------------------------------------------------------------------------
 static double
-balf(double t)                   // Bezier Arc Length Function
+balf(double t, double q1, double q2, double q3, double q4, double q5) // Bezier Arc Length Function
 {
 	double result = q5 + t*(q4 + t*(q3 + t*(q2 + t*q1)));
-	result = sqrt(result);
+	result = sqrt(_ABS(result));
 	return result;
 }
 
@@ -652,17 +650,18 @@ balf(double t)                   // Bezier Arc Length Function
 //                      if n_limit isn't a power of 2 it will be act like the next higher
 //                      power of two.
 static double
-Simpson (double (*f)(double),
+Simpson (double (*f)(double, double, double, double, double, double),
 	 double a,
 	 double b,
-	 int n_limit)
+	 int n_limit,
+	 double q1, double q2, double q3, double q4, double q5)
 {
 	int n = 1;
 	double multiplier = (b - a)/6.0;
-	double endsum = f(a) + f(b);
+	double endsum = f(a, q1, q2, q3, q4, q5) + f(b, q1, q2, q3, q4, q5);
 	double interval = (b - a)/2.0;
 	double asum = 0;
-	double bsum = f(a + interval);
+	double bsum = f(a + interval, q1, q2, q3, q4, q5);
 	double est1 = multiplier * (endsum + 2 * asum + 4 * bsum);
 	double est0 = 2 * est1;
 
@@ -678,7 +677,7 @@ Simpson (double (*f)(double),
 
 		for (int i = 1; i < 2 * n; i += 2) {
 			double t = a + i * interval_div_2n;
-			bsum += f(t);
+			bsum += f(t, q1, q2, q3, q4, q5);
 		}
 
 		est1 = multiplier*(endsum + 2*asum + 4*bsum);
@@ -697,13 +696,14 @@ BezierArcLength(Point p1, Point p2, Point p3, Point p4, double t)
 	k3 = (p2 - p1)*3;
 	k4 = p1;
 
-	q1 = 9.0*(sqr(k1.x) + sqr(k1.y));
-	q2 = 12.0*(k1.x*k2.x + k1.y*k2.y);
-	q3 = 3.0*(k1.x*k3.x + k1.y*k3.y) + 4.0*(sqr(k2.x) + sqr(k2.y));
-	q4 = 4.0*(k2.x*k3.x + k2.y*k3.y);
-	q5 = sqr(k3.x) + sqr(k3.y);
+	double q1 = 9.0*(sqr(k1.x) + sqr(k1.y));
+	double q2 = 12.0*(k1.x*k2.x + k1.y*k2.y);
+	double q3 = 3.0*(k1.x*k3.x + k1.y*k3.y) + 4.0*(sqr(k2.x) + sqr(k2.y));
+	double q4 = 4.0*(k2.x*k3.x + k2.y*k3.y);
+	double q5 = sqr(k3.x) + sqr(k3.y);
 
-	return Simpson(balf, 0, t, 1024);
+	return Simpson(balf, 0, t, 1024,
+		       q1, q2, q3, q4, q5);
 }
 
 double
