@@ -863,6 +863,9 @@ DependencyObject::OnPropertyChanged (DependencyProperty *property)
 void
 dependencyobject_init(void)
 {
+	Type *t = Type::Find(Type::EVENTOBJECT);
+	EventObject::DestroyedEvent = t->LookupEvent ("Destroyed");
+
 	DependencyObject::NameProperty = DependencyObject::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 }
 
@@ -872,6 +875,8 @@ typedef struct {
 	EventHandler func;
 	gpointer data;
 } EventClosure;
+
+int EventObject::DestroyedEvent = -1;
 
 EventObject::EventObject ()
 {
@@ -886,6 +891,8 @@ deleter (gpointer data)
 
 EventObject::~EventObject ()
 {
+	Emit (DestroyedEvent);
+
 	if (events) {
 		for (int i = 0; i < GetType()->GetEventCount(); i ++)
 			g_slist_foreach (events[i], (GFunc)deleter, NULL);

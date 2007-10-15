@@ -1,3 +1,8 @@
+2007-10-15  Chris Toshok  <toshok@ximian.com>
+
+	* TODO: add blurb about collapsing Base and EventObject into 1
+	class.
+
 2007-10-01  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* src/Makefile.am: Added fullscreen.h to dist

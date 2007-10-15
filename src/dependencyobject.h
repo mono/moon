@@ -121,6 +121,8 @@ class EventObject : public Base {
 
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
 
+	static int DestroyedEvent;
+
  protected:
 	void Emit (char *event_name, gpointer calldata = NULL);
 	void Emit (int event_id, gpointer calldata = NULL);

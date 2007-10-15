@@ -1,3 +1,21 @@
+2007-10-15  Chris Toshok  <toshok@ximian.com>
+
+	* animation.[h,cpp]: remove the strong reference from
+	AnimationStorage to its target object, and instead use the
+	EventObject::DestroyEvent to implement a weak reference.  See the
+	TODO for a blurb about generalizing this.
+
+	* typegen.cs (GenerateTypeCpp): remove the special case code that
+	makes INVALID the parent of DEPENDENCY_OBJECT - we need it to have
+	EVENTOBJECT as the parent for the DestroyedEvent to line up
+	properly in the event tables.
+
+	* type.cpp.in, type.cpp (types_init_register_events): register the
+	Destroyed event.
+
+	* dependencyobject.[h,cpp]: add EventObject::DestroyedEvent,
+	emitted just before we clean up the EventObject's event list.
+
 2007-10-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Layout): I think I finally figured out the scaling to

@@ -250,6 +250,9 @@ types_init_register_events (void)
 {
 	Type* t;
 
+	t = Type::Find (Type::EVENTOBJECT);
+	t->RegisterEvent ("Destroyed");
+
 	t = Type::Find (Type::STORYBOARD);
 	t->RegisterEvent ("Completed");
 
@@ -308,7 +311,7 @@ types_init_register_events (void)
 void
 types_init (void)
 {
-	Type::RegisterType ("DependencyObject", Type::DEPENDENCY_OBJECT, false);
+	Type::RegisterType ("DependencyObject", Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT);
 	Type::RegisterType ("Animation", Type::ANIMATION, Type::TIMELINE);
 	Type::RegisterType ("AnimationClock", Type::ANIMATIONCLOCK, Type::CLOCK);
 	Type::RegisterType ("ArcSegment", Type::ARCSEGMENT, Type::PATHSEGMENT);

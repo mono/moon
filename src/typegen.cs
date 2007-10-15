@@ -268,11 +268,9 @@ class gen {
 			if (hash.ContainsKey (c))
 				p = (string) hash [c];
 
-			if (p != null && p != string.Empty && c != "DependencyObject") {
+			if (p != null && p != string.Empty) {
 				text.AppendLine (string.Format ("\tType::RegisterType (\"{0}\", Type::{1}, Type::{2});", c, getU(c), getU (p)));
-			} else if (c == "DependencyObject"){
-				text.AppendLine (string.Format ("\tType::RegisterType (\"{0}\", Type::{1}, false);", c, getU(c)));
-			}	
+			}
 		}
 		text.AppendLine ("\ttypes_init_manually ();");
 		text.AppendLine ("\ttypes_init_register_events ();");

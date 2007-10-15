@@ -245,6 +245,9 @@ types_init_register_events (void)
 {
 	Type* t;
 
+	t = Type::Find (Type::EVENTOBJECT);
+	t->RegisterEvent ("Destroyed");
+
 	t = Type::Find (Type::STORYBOARD);
 	t->RegisterEvent ("Completed");
 

@@ -1,6 +1,16 @@
 
 Feel free to add items to this TODO list
 
+* Base classes / Reference counting:
+
+	Right now we have two base classes below DependencyObject
+	(Base and EventObject).  These should be merged into 1 class
+	that provides both sets of functionality (reference counting
+	and events, respectively.)  This would allow us to write a
+	more general weak reference system instead of the special case
+	one that exists now (The EventObject::DestroyedEvent stuff
+	used by the AnimationStorage class).
+
 * Samples:
 
 	Although we are going to need to have API coverage through
