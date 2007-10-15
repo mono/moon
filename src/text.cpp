@@ -1304,10 +1304,11 @@ Glyphs::~Glyphs ()
 void
 Glyphs::Layout ()
 {
-	double x, y, w, h;
+	double x, y, w, h, v;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
 	TextFont *font;
+	double scale;
 	int n = 0;
 	
 	invalid = false;
@@ -1338,6 +1339,8 @@ Glyphs::Layout ()
 	
 	font = desc->GetFont ();
 	
+	scale = desc->GetSize () * 20.0 / 2048.0;
+	
 	x = origin_x;
 	if (!origin_y_specified)
 		y = font->Height ();
@@ -1361,16 +1364,21 @@ Glyphs::Layout ()
 			if (!glyph)
 				goto next1;
 			
-			if (attr && (attr->set & vOffset))
-				h = MAX (y - attr->voffset, h);
+			if (attr && (attr->set & vOffset)) {
+				v = y - (attr->voffset * scale);
+				h = MAX (v, h);
+			}
 			
 			if (attr && (attr->set & uOffset))
-				x += attr->uoffset;
+				v = x + (attr->uoffset * scale);
+			else
+				v = x;
 			
-			w = MAX (x + glyph->metrics.horiAdvance, w);
+			v += glyph->metrics.horiAdvance;
+			w = MAX (v, w);
 			
 			if (attr && (attr->set & Advance))
-				x += attr->advance;
+				x += attr->advance * scale;
 			else
 				x += glyph->metrics.horiAdvance;
 			
@@ -1392,16 +1400,21 @@ Glyphs::Layout ()
 		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next2;
 		
-		if ((attr->set & vOffset))
-			h = MAX (y - attr->voffset, h);
+		if ((attr->set & vOffset)) {
+			v = y - (attr->voffset * scale);
+			h = MAX (v, h);
+		}
 		
 		if ((attr->set & uOffset))
-			x += attr->uoffset;
+			v = x + (attr->uoffset * scale);
+		else
+			v = x;
 		
-		w = MAX (x + glyph->metrics.horiAdvance, w);
+		v += glyph->metrics.horiAdvance;
+		w = MAX (v, w);
 		
 		if ((attr->set & Advance))
-			x += attr->advance;
+			x += attr->advance * scale;
 		else
 			x += glyph->metrics.horiAdvance;
 		
@@ -1426,15 +1439,16 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	GlyphAttr *attr;
 	TextFont *font;
 	double x0, y0;
-	double y1;
-
+	double x1, y1;
+	double scale;
+	
 	if ((width == 0.0 && height == 0.0) || invalid)
 		return;
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	RenderClipPath (cr);
-
+	
 	fill->SetupBrush (cr, this);
 	
 	if (path) {
@@ -1445,6 +1459,8 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	}
 	
 	font = desc->GetFont ();
+	
+	scale = desc->GetSize () * 20.0 / 2048.0;
 	
 	x0 = origin_x;
 	if (!origin_y_specified)
@@ -1470,17 +1486,19 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 				goto next1;
 			
 			if (attr && (attr->set & vOffset))
-				y1 = y0 - attr->voffset;
+				y1 = y0 - (attr->voffset * scale);
 			else
 				y1 = y0;
 			
 			if (attr && (attr->set & uOffset))
-				x0 += attr->uoffset;
+				x1 = x0 + (attr->uoffset * scale);
+			else
+				x1 = x0;
 			
-			font->Path (cr, glyph, x0, y1);
+			font->Path (cr, glyph, x1, y1);
 			
 			if (attr && (attr->set & Advance))
-				x0 += attr->advance;
+				x0 += attr->advance * scale;
 			else
 				x0 += glyph->metrics.horiAdvance;
 			
@@ -1496,20 +1514,22 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 			goto next2;
 		
 		if ((attr->set & vOffset))
-			y1 = y0 - attr->voffset;
+			y1 = y0 - (attr->voffset * scale);
 		else
 			y1 = y0;
 		
 		if ((attr->set & uOffset))
-			x0 += attr->uoffset;
+			x1 = x0 + (attr->uoffset * scale);
+		else
+			x1 = x0;
 		
 		if (!font->IsScalable ())
-			font->Render (cr, glyph, x0, y1);
+			font->Render (cr, glyph, x1, y1);
 		else
-			font->Path (cr, glyph, x0, y1);
+			font->Path (cr, glyph, x1, y1);
 		
 		if ((attr->set & Advance))
-			x0 += attr->advance;
+			x0 += attr->advance * scale;
 		else
 			x0 += glyph->metrics.horiAdvance;
 		

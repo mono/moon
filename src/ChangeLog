@@ -1,3 +1,11 @@
+2007-10-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Layout): I think I finally figured out the scaling to
+	apply to the units provided in the Indices property and also
+	discovered that the Advance is not applied at the uOffset, it is
+	applied independently of the uOffset.
+	(Render): Same fixes as in Layout().
+
 2007-10-13  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp (balf): fix bug 325175 by not taking the square
