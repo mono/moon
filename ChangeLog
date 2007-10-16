@@ -1,3 +1,8 @@
+2007-10-16  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: gtk and tools should only build if we are including
+	the mono runtime (1.1 profile)
+
 2007-10-15  Chris Toshok  <toshok@ximian.com>
 
 	* TODO: add blurb about collapsing Base and EventObject into 1
