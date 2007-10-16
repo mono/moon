@@ -863,7 +863,10 @@ ClockGroup::~ClockGroup ()
 	GList *next;
 	
 	while (node != NULL) {
-		((Base *) node->data)->unref ();
+		Clock *clock = (Clock*)node->data;
+		clock->SetParent (NULL);
+		clock->unref ();
+
 		next = node->next;
 		g_list_free_1 (node);
 		node = next;

@@ -27,7 +27,7 @@
 
 int Base::objects_created = 0;
 int Base::objects_destroyed = 0;
-GList* Base::objects_alive = NULL;
+GHashTable* Base::objects_alive = NULL;
 
 void
 Base::Track (const char* done, const char* typname)
@@ -153,7 +153,9 @@ detach_depobj_values (gpointer  key,
 
 	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
 		//printf ("detaching from property %s\n", prop->name);
-		v->AsDependencyObject()->Detach (NULL, this_obj);
+		DependencyObject *obj = v->AsDependencyObject ();
+		obj->Detach (NULL, this_obj);
+		obj->SetParent (NULL);
 	}
 }
 

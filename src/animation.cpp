@@ -386,7 +386,8 @@ Storyboard::~Storyboard ()
 	if (root_clock) {
 		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		Stop ();
-		root_clock->GetParent()->RemoveChild (root_clock);
+		if (root_clock->GetParent())
+			root_clock->GetParent()->RemoveChild (root_clock);
 		//printf ("Unrefing Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		root_clock->unref ();
 		root_clock = NULL;

@@ -1,3 +1,32 @@
+2007-10-16  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (detach_depobj_values): call
+	obj->SetParent(NULL) here as well, so we don't reference a
+	destroyed parent.
+
+	* runtime.cpp (Surface::Surface): use Surface::timeline instead of
+	a local variable.
+	(Surface::~Surface): make sure to remove the surface's clock_group
+	from the time manager.  Also, unref the timeline we create in the
+	ctor.
+	(runtime_shutdown): reimplement the oldest 10 alive object
+	printing stuff in the face of using a hashtable.
+
+	* runtime.h: add Surface::timeline, so we can clean it up in
+	~Surface.
+
+	* dependencyobject.h (Base::) use a hash table to track alive
+	objects instead of a list.  this speeds up things immensely.
+
+	* clock.cpp (ClockGroup::~ClockGroup): call SetParent(NULL) on our
+	children so any further GetParent() calls won't return a destroyed
+	object.
+
+	* animation.cpp (Storyboard::~Storyboard): guard against a crash
+	when a parent clock is freed before the child clock.
+
+	* text.cpp (TextBlock::TextBlock): plug a couple memory leaks.
+
 2007-10-15  Chris Toshok  <toshok@ximian.com>
 
 	* animation.[h,cpp]: remove the strong reference from

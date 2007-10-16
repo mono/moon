@@ -38,7 +38,7 @@ class Base {
 #if OBJECT_TRACKING
 	static int objects_created;
 	static int objects_destroyed;
-	static GList* objects_alive;
+	static GHashTable* objects_alive;
 	int id;
 
 	char* GetStackTrace (const char* prefix);
@@ -54,7 +54,9 @@ class Base {
 	{
 #if OBJECT_TRACKING
 		id = ++objects_created;
-		objects_alive = g_list_prepend (objects_alive, this);
+		if (objects_alive == NULL)
+			objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
+		g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
 #endif
 		OBJECT_TRACK ("Created", "");
 	}
@@ -63,7 +65,7 @@ class Base {
 	{
 #if OBJECT_TRACKING
 		objects_destroyed++;
-		objects_alive = g_list_remove (objects_alive, this);
+		g_hash_table_remove (objects_alive, this);
 #endif
 		OBJECT_TRACK ("Destroyed", "");
 	}

@@ -42,6 +42,7 @@
 #include "xaml.h"
 #include "dirty.h"
 #include "fullscreen.h"
+#include "garray-ext.h"
 
 #ifdef USE_XRANDR
 #include <X11/extensions/Xrandr.h>
@@ -111,13 +112,12 @@ Surface::Surface(int w, int h)
 	full_screen = false;
 	can_full_screen = false;
 
-	ParallelTimeline *timeline = new ParallelTimeline();
+	timeline = new ParallelTimeline();
 	timeline->SetDuration (Duration::Forever);
 	clock_group = new ClockGroup (timeline);
 	char *name = g_strdup_printf ("Surface clock group for surface (%p)", this);
 	clock_group->SetValue(DependencyObject::NameProperty, name);
 	g_free (name);
-	//timeline->unref();
 
 	TimeManager::Instance()->AddChild (clock_group);
 
@@ -158,8 +158,12 @@ Surface::~Surface ()
 		HideFullScreenMessage ();
 	}
 
+	TimeManager::Instance()->RemoveChild (clock_group);
 	clock_group->unref();
 	clock_group = NULL;
+
+	timeline->unref();
+	timeline = NULL;
 
 	if (source_location) {
 		g_free (source_location);
@@ -1335,12 +1339,30 @@ runtime_html_timer_timeout_stop (uint32_t source_id)
 }
 
 #if OBJECT_TRACKING
-void 
-print_object_data (gpointer key, gpointer user_data)
+static int
+IdComparer (gconstpointer base1, gconstpointer base2)
 {
-	Base* obj = (Base*) key;
-	if (--*(int*)user_data >= 0)
-		printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->refcount);
+	int id1 = (*(Base **) base1)->id;
+	int id2 = (*(Base **) base2)->id;
+
+	int iddiff = id1 - id2;
+	
+	if (iddiff == 0)
+		return 0;
+	else if (iddiff < 0)
+		return -1;
+	else
+		return 1;
+}
+
+static void
+accumulate_last_n (gpointer key,
+		   gpointer value,
+		   gpointer user_data)
+{
+	GPtrArray *last_n = (GPtrArray*)user_data;
+
+	g_ptr_array_insert_sorted (last_n, IdComparer, key);
 }
 #endif
 
@@ -1362,9 +1384,22 @@ runtime_shutdown ()
 	printf ("\tObjects created: %i\n", Base::objects_created);
 	printf ("\tObjects destroyed: %i\n", Base::objects_destroyed);
 	printf ("\tDifference: %i (%.1f%%)\n", Base::objects_created - Base::objects_destroyed, (100.0 * Base::objects_destroyed) / Base::objects_created);
-	int counter = 10;
-	Base::objects_alive = g_list_reverse (Base::objects_alive);
-	g_list_foreach (Base::objects_alive, print_object_data, &counter);
+
+	GPtrArray* last_n = g_ptr_array_new ();
+
+	g_hash_table_foreach (Base::objects_alive, accumulate_last_n, last_n);
+
+ 	uint counter = 10;
+	counter = MIN(counter, last_n->len);
+	if (counter) {
+		printf ("\tOldest %d objects alive:\n", counter);
+		for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
+			Base* obj = (Base *) last_n->pdata[i];
+			printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->refcount);
+		}
+	}
+
+	g_ptr_array_free (last_n, true);
 #endif
 
 	Type::Shutdown ();

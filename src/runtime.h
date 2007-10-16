@@ -190,6 +190,7 @@ private:
 	// Registered with the TimeManager.  All storyboards created
 	// within this surface are children of this ClockGroup.
 	ClockGroup *clock_group;
+	TimelineGroup *timeline;
 
 	int frames;
 
