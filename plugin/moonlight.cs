@@ -1,10 +1,11 @@
 //
-// NativeMethods.cs
+// moonlight.cs
 //
 // Author:
 //   Miguel de Icaza (miguel@ximian.com)
 //   Jackson Harper  (jackson@ximian.com)
 //   Rolf Bjarne Kvinge  (RKvinge@novell.com)
+//   Jb Evain        (jbevain@novell.com)
 //
 // Copyright 2007 Novell, Inc.
 //
@@ -27,28 +28,31 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
+
 using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Browser;
-using System.Windows.Media;
-using System.Windows.Controls;
-using System.Collections;
-using System.ComponentModel;
 
 namespace Moonlight {
+
 	public class Loader {
+
+		delegate void PluginUnloadCallback (IntPtr plugin);
+
 		[DllImport ("moonplugin")]
-		static extern void plugin_set_unload_callback (IntPtr plugin, plugin_unload puc);
-		delegate void plugin_unload (IntPtr plugin);
-		
-		static Hashtable domains = new Hashtable ();
-		
+		static extern void plugin_set_unload_callback (IntPtr plugin, PluginUnloadCallback puc);
+
+		static Dictionary<IntPtr, PluginUnloadCallback> callbacks = new Dictionary<IntPtr, PluginUnloadCallback> ();
+		static Dictionary<IntPtr, AppDomain> domains = new Dictionary<IntPtr, AppDomain> ();
+
+		static string agclr_fullname = typeof (DependencyObject).Assembly.FullName;
+
 		Mono.Xaml.XamlLoader rl;
-		plugin_unload unload_callback;
-		
+
 		// [DONE] 1. Load XAML file 
 		// 2. Make sure XAML file exposes a few new properites:
 		//    a. Loaded  (this is the method to call)
@@ -68,47 +72,62 @@ namespace Moonlight {
 				return null;
 			}
 		}
-		
-		private AppDomain GetDomain (IntPtr plugin)
+
+		static AppDomain CreateDomain (IntPtr plugin)
 		{
-			AppDomain domain;
-			if (domains.Contains (plugin)) {
-				domain = (AppDomain) domains [plugin];
-			} else {
-				domain = Helper.CreateDomain (plugin);
-				domains [plugin] = domain;
-				if (plugin != IntPtr.Zero) {
-					// Set the plugin unload callback so that we get a chance to unload the domain when 
-					// the plugin unloads.
-					unload_callback = new plugin_unload (UnloadDomain);
-					plugin_set_unload_callback (plugin, unload_callback);
-				}
-			}
+			AppDomain domain = Helper.CreateDomain (plugin);
+			if (plugin == IntPtr.Zero)
+				return null;
+
+			// Set the plugin unload callback so that we get a chance to unload the domain when 
+			// the plugin unloads.
+			PluginUnloadCallback callback = new PluginUnloadCallback (UnloadDomain);
+			plugin_set_unload_callback (plugin, callback);
+			callbacks.Add (plugin, callback);
 			return domain;
 		}
-				
-		public Loader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
+
+		static AppDomain GetDomain (IntPtr plugin)
+		{
+			AppDomain domain;
+			if (domains.TryGetValue (plugin, out domain))
+				return domain;
+
+			domain = CreateDomain (plugin);
+			domains.Add (plugin, domain);
+			return domain;
+		}
+
+		Loader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			AppDomain domain = GetDomain (plugin);
 			
 			rl = (Mono.Xaml.XamlLoader) Helper.CreateInstanceAndUnwrap (
-				domain, typeof (DependencyObject).Assembly.FullName, 
-				"Mono.Xaml.ManagedXamlLoader");
+				domain, agclr_fullname, "Mono.Xaml.ManagedXamlLoader");
 
 			rl.Setup (native_loader, plugin, surface, filename, contents);
 		}
-		
-		public static void UnloadDomain (IntPtr plugin)
+
+		static void UnloadDomain (IntPtr plugin, AppDomain domain)
+		{
+			Console.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): {1}.", plugin, domain.FriendlyName);
+
+			domains.Remove (plugin);
+			callbacks.Remove (plugin);
+
+			Helper.UnloadDomain (domain);
+		}
+
+		static void UnloadDomain (IntPtr plugin)
 		{
 			try {
-				AppDomain domain = (AppDomain) domains [plugin];
-				if (domain != null) {
-					Console.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): {1}.", plugin, domain.FriendlyName);
-					domains.Remove (plugin);
-					Helper.UnloadDomain (domain);
-				}
+				AppDomain domain;
+				if (!domains.TryGetValue (plugin, out domain))
+					return;
+
+				UnloadDomain (plugin, domain);
 			} catch (Exception ex) {
-				Console.Error.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): Unable to unload domain: {1}.", plugin, ex.Message);
+				Console.Error.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): Unable to unload domain:\n {1}.", plugin, ex);
 			}
 		}
 	}
@@ -120,7 +139,7 @@ namespace Moonlight {
 		{
 			Console.WriteLine ("Running Moonlight.cs {0}", count++);
 			Console.WriteLine ("mscorlib: {0}", typeof (object).Module.FullyQualifiedName);
-			Console.WriteLine ("agclr: {0}", typeof (Canvas).Module.FullyQualifiedName);
+			Console.WriteLine ("agclr: {0}", typeof (DependencyObject).Module.FullyQualifiedName);
 			Console.WriteLine ("agmono: {0}", typeof (Helper).Module.FullyQualifiedName);
 		}
 	}

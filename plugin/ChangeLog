@@ -1,3 +1,8 @@
+2007-10-16  Jb Evain  <jbevain@novell.com>
+
+	* moonlight.cs: Keep track of all plugin unload callbacks.
+	Don't use Hashtable and refactor some code.
+
 2007-10-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp, plugin-proxy.cpp: Remove some const char/char mismatch
