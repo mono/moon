@@ -1,5 +1,9 @@
 2007-10-16  Jb Evain  <jbevain@novell.com>
 
+	* plugin.cpp: add plugin_instance_get_browser_runtime_settings.
+
+2007-10-16  Jb Evain  <jbevain@novell.com>
+
 	* moonlight.cs: Keep track of all plugin unload callbacks.
 	Don't use Hashtable and refactor some code.
 

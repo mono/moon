@@ -935,6 +935,13 @@ plugin_instance_get_browser_information (PluginInstance *instance,
 }
 
 void
+plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
+											  bool *httpnet_access, bool *script_access)
+{
+	*debug = *html_access = *httpnet_access = *script_access = false;
+}
+
+void
 plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames)
 {
 	instance->ReportException (msg, details, stack_trace, num_frames);
