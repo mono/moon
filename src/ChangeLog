@@ -1,3 +1,27 @@
+2007-10-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (OnPropertyChanged): Listen for RenderTransformProperty
+	changes and apply the y-scale to the font so that we can more
+	accurately path the font glyphs at the scale we intend to render
+	them at.
+
+	* font.cpp (TextFont): Cache the scale here.
+	(Kerning): Apply the scale.
+	(Descender): Here too.
+	(Ascender): And here.
+	(Height): Same.
+	(GetGlyphInfo): Create and apply the scale/invert matrix. Also
+	scale the glyph metrics.
+	(UnderlinePosition): Apply the scale.
+	(UnderlineThickness): Same here.
+	(TextFontDescription): Added a scale, default to 1.0
+	(CreatePattern): Set the scale on the pattern.
+	(UnsetFields): When unsetting values, restore them to their
+	default values.
+	(Merge): Merge the scale.
+	(GetScale): New method.
+	(SetScale): New method.
+
 2007-10-16  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (detach_depobj_values): call

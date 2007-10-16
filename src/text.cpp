@@ -822,10 +822,19 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 	
 	if (prop->type != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (prop);
-		if (prop == FrameworkElement::WidthProperty)
+		if (prop == UIElement::RenderTransformProperty) {
+			if (!RENDER_USING_PANGO) {
+				cairo_matrix_t matrix;
+				
+				uielement_get_render_affine (this, &matrix);
+				font.custom->SetScale (matrix.yy);
+				dirty = true;
+			}
+		} else if (prop == FrameworkElement::WidthProperty) {
 			dirty = true;
-		else
+		} else {
 			return;
+		}
 	}
 	
 	if (prop == TextBlock::FontFamilyProperty) {
@@ -870,7 +879,6 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		dirty = true;
 	} else if (prop == TextBlock::TextProperty) {
 		// handled elsewhere
-
 		dirty = true;
 	} else if (prop == TextBlock::InlinesProperty) {
 		Inlines *newcol = GetValue (prop)->AsInlines ();

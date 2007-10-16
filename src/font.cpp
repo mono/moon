@@ -149,6 +149,7 @@ TextFont::TextFont (FcPattern *pattern)
 	int id;
 	
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
+	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
 	FcPatternReference (pattern);
 	matched = pattern;
 	
@@ -260,25 +261,25 @@ TextFont::Kerning (gunichar left, gunichar right)
 	
 	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
 	
-	return (double) kerning.x / 64;
+	return (double) (kerning.x / scale) / 64;
 }
 
 double
 TextFont::Descender ()
 {
-	return (double) face->size->metrics.descender / 64;
+	return (double) (face->size->metrics.descender / scale) / 64;
 }
 
 double
 TextFont::Ascender ()
 {
-	return (double) face->size->metrics.ascender / 64;
+	return (double) (face->size->metrics.ascender / scale) / 64;
 }
 
 double
 TextFont::Height ()
 {
-	return (double) face->size->metrics.height / 64;
+	return (double) (face->size->metrics.height / scale) / 64;
 }
 
 static int
@@ -423,6 +424,7 @@ prepare_bitmap (GlyphInfo *glyph, FT_Bitmap *bitmap)
 GlyphInfo *
 TextFont::GetGlyphInfo (gunichar unichar)
 {
+	double scale = 1.0 / (64.0 * this->scale);
 	GlyphInfo *glyph;
 	uint32_t i;
 	
@@ -460,8 +462,16 @@ TextFont::GetGlyphInfo (gunichar unichar)
 				goto unavail;
 			
 			if (face->face_flags & FT_FACE_FLAG_SCALABLE) {
+				FT_Matrix matrix;
+				
+				// FIXME: can the scale ever overflow the 16.16 Fixed type?
+				matrix.xx = (FT_Fixed) (65535 / this->scale);
+				matrix.xy = 0;
+				matrix.yy = (FT_Fixed) (-65535 / this->scale);
+				matrix.yx = 0;
+				
 				glyph->path = moon_path_new (8);
-				FT_Outline_Transform (&face->glyph->outline, &invert_y);
+				FT_Outline_Transform (&face->glyph->outline, &matrix);
 				FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
 			} else {
 				if (glyph->bitmap == NULL)
@@ -472,14 +482,14 @@ TextFont::GetGlyphInfo (gunichar unichar)
 				prepare_bitmap (glyph, &face->glyph->bitmap);
 			}
 			
-			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX / 64.0;
-			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY / 64.0;
-			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance / 64.0;
-			//glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX / 64.0;
-			//glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY / 64.0;
-			//glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance / 64.0;
-			glyph->metrics.height = face->glyph->metrics.height / 64.0;
-			glyph->metrics.width = face->glyph->metrics.width / 64.0;
+			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX * scale;
+			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY * scale;
+			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance * scale;
+			//glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX * scale;
+			//glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY * scale;
+			//glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance * scale;
+			glyph->metrics.height = face->glyph->metrics.height * scale;
+			glyph->metrics.width = face->glyph->metrics.width * scale;
 		} else if (unichar == 0x20 || unichar == 0x09) {
 			glyph->metrics.horiBearingX = 0.0;
 			glyph->metrics.horiBearingY = 0.0;
@@ -495,16 +505,16 @@ TextFont::GetGlyphInfo (gunichar unichar)
 			
 			if (unichar == 0x20) {
 				// Space
-				glyph->metrics.horiAdvance = face->max_advance_width / 64.0;
-				//glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
-				glyph->metrics.height = face->max_advance_height / 64.0;
-				glyph->metrics.width = face->max_advance_width / 64.0;
+				glyph->metrics.horiAdvance = face->max_advance_width * scale;
+				//glyph->metrics.vertAdvance = face->max_advance_height * scale;
+				glyph->metrics.height = face->max_advance_height * scale;
+				glyph->metrics.width = face->max_advance_width * scale;
 			} else if (unichar == 0x09) {
 				// Tab
-				glyph->metrics.horiAdvance = face->max_advance_width / 8.0;
-				//glyph->metrics.vertAdvance = face->max_advance_height / 64.0;
-				glyph->metrics.height = face->max_advance_height / 64.0;
-				glyph->metrics.width = face->max_advance_width / 8.0;
+				glyph->metrics.horiAdvance = face->max_advance_width * (scale / 8.0);
+				//glyph->metrics.vertAdvance = face->max_advance_height * scale;
+				glyph->metrics.height = face->max_advance_height * scale;
+				glyph->metrics.width = face->max_advance_width * (scale / 8.0);
 			}
 		} else {
 		unavail:
@@ -555,14 +565,14 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 double
 TextFont::UnderlinePosition ()
 {
-	return (double) -face->underline_position / 64.0;
+	return (double) -((face->underline_position / scale) / 64.0);
 }
 
 double
 TextFont::UnderlineThickness ()
 {
 	// Note: integer math seems to match more closely with Silverlight here.
-	return (double) (face->underline_thickness / 64);
+	return (double) ((face->underline_thickness / scale) / 64);
 }
 
 void
@@ -656,6 +666,7 @@ TextFontDescription::TextFontDescription ()
 	weight = FontWeightsNormal;
 	stretch = FontStretchesNormal;
 	size = 14.666f;
+	scale = 1.0f;
 	index = 0;
 }
 
@@ -697,7 +708,8 @@ TextFontDescription::CreatePattern ()
 	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
 	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
 	FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
-	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
+	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size * scale);
+	FcPatternAddDouble (pattern, FC_SCALE, scale);
 	
 	FcDefaultSubstitute (pattern);
 	
@@ -760,6 +772,21 @@ TextFontDescription::UnsetFields (uint8_t mask)
 		g_free (family);
 		family = NULL;
 	}
+	
+	if (mask & FontMaskStretch)
+		stretch = FontStretchesNormal;
+	
+	if (mask & FontMaskWeight)
+		weight = FontWeightsNormal;
+	
+	if (mask & FontMaskStyle)
+		style = FontStylesNormal;
+	
+	if (mask & FontMaskSize)
+		size = 14.666f;
+	
+	if (mask & FontMaskScale)
+		scale = 1.0f;
 	
 	set &= ~mask;
 }
@@ -825,6 +852,15 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 		}
 		
 		set |= FontMaskSize;
+	}
+	
+	if ((desc->set & FontMaskScale) && (!(set & FontMaskScale) || replace)) {
+		if (scale != desc->scale) {
+			scale = desc->scale;
+			changed = true;
+		}
+		
+		set |= FontMaskScale;
 	}
 	
 	if (changed && font != NULL) {
@@ -941,6 +977,19 @@ TextFontDescription::SetSize (double size)
 {
 	this->size = size;
 	set |= FontMaskSize;
+}
+
+double
+TextFontDescription::GetScale ()
+{
+	return scale;
+}
+
+void
+TextFontDescription::SetScale (double scale)
+{
+	this->scale = scale;
+	set |= FontMaskScale;
 }
 
 char *

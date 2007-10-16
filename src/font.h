@@ -75,12 +75,11 @@ enum TextWrapping {
 enum FontMask {
 	FontMaskFamily   = 1 << 0,
 	FontMaskStyle    = 1 << 1,
-	FontMaskVariant  = 1 << 2,  /* unused */
-	FontMaskWeight   = 1 << 3,
-	FontMaskStretch  = 1 << 4,
-	FontMaskSize     = 1 << 5,
-	FontMaskGravity  = 1 << 6,  /* unused */
-	FontMaskFilename = 1 << 7
+	FontMaskWeight   = 1 << 2,
+	FontMaskStretch  = 1 << 3,
+	FontMaskSize     = 1 << 4,
+	FontMaskFilename = 1 << 5,
+	FontMaskScale    = 1 << 6,
 };
 
 
@@ -114,6 +113,8 @@ class TextFont {
 	
 	FcPattern *pattern;
 	FT_Face face;
+	
+	double scale;
 	
 	GlyphInfo *glyphs;
 	
@@ -164,6 +165,7 @@ class TextFontDescription {
 	FontStyles style;
 	FontWeights weight;
 	FontStretches stretch;
+	double scale;
 	double size;
 	int index;
 	
@@ -202,6 +204,9 @@ public:
 	
 	double GetSize ();
 	void SetSize (double size);
+	
+	double GetScale ();
+	void SetScale (double scale);
 	
 	char *ToString ();
 };
