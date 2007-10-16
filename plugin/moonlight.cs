@@ -49,8 +49,6 @@ namespace Moonlight {
 		static Dictionary<IntPtr, PluginUnloadCallback> callbacks = new Dictionary<IntPtr, PluginUnloadCallback> ();
 		static Dictionary<IntPtr, AppDomain> domains = new Dictionary<IntPtr, AppDomain> ();
 
-		static string agclr_fullname = typeof (DependencyObject).Assembly.FullName;
-
 		Mono.Xaml.XamlLoader rl;
 
 		// [DONE] 1. Load XAML file 
@@ -103,7 +101,7 @@ namespace Moonlight {
 			AppDomain domain = GetDomain (plugin);
 			
 			rl = (Mono.Xaml.XamlLoader) Helper.CreateInstanceAndUnwrap (
-				domain, agclr_fullname, "Mono.Xaml.ManagedXamlLoader");
+				domain, typeof (DependencyObject).Assembly.FullName, "Mono.Xaml.ManagedXamlLoader");
 
 			rl.Setup (native_loader, plugin, surface, filename, contents);
 		}
