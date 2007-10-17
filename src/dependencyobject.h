@@ -18,6 +18,12 @@
 #define OBJECT_TRACKING 1
 #endif
 
+#if OBJECT_TRACKING
+#define GET_OBJ_ID(x) (x ? x->id : 0)
+#else
+#define GET_OBJ_ID(x) (-1)
+#endif
+
 class EventObject;
 
 typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer closure);

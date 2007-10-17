@@ -1,3 +1,10 @@
+2007-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.h: Add a GET_OBJ_ID macro that resolves to -1 if
+	  OBJECT_TRACKING isn't defined.
+	* runtime.h: Enable the contextual downloader warning again.
+	* dependencyobject.cpp: Fix build when DEBUG is defined.
+
 2007-10-16  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* text.cpp (OnPropertyChanged): When intercepting non-TextBlock

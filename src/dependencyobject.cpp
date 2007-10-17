@@ -643,7 +643,7 @@ DependencyObject::SetParent (DependencyObject *parent)
 #if DEBUG
 	// Check for circular families
 	DependencyObject *current = parent;
-	do while (current != NULL) {
+	while (current != NULL) {
 		g_assert (current != this);
 		current = current->GetParent ();
 	} 
