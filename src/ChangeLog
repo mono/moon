@@ -1,3 +1,8 @@
+2007-10-17  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* cairo-embed.h, pixman-embed.h: Added symbol renaming headers
+	based on the ones from libgdiplus.
+
 2007-10-17  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XNamespace::SetAttribute): make sure to add the newly

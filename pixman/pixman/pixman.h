@@ -69,6 +69,8 @@ SOFTWARE.
 #ifndef PIXMAN_H__
 #define PIXMAN_H__
 
+#include "../../src/pixman-embed.h"
+
 /*
  * Standard integers
  */
