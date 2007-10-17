@@ -3,7 +3,7 @@ INCLUDES=@MOON_CFLAGS@ -I$(srcdir)/../../src
 
 noinst_PROGRAMS=xaml2png
 xaml2png_SOURCES=xaml2png.cpp
-xaml2png_LDADD=$(top_builddir)/src/libmoon.la
+xaml2png_LDADD=$(top_builddir)/src/libmoon.la $(MOON_PROG_LIBS)
 
 MOON_TESTS= \
 	../xaml/test-brush-linear.xaml \

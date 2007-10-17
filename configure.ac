@@ -195,6 +195,8 @@ PLUGIN_CFLAGS="$PLUGIN_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
 
+MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS`
+AC_SUBST(MOON_PROG_LIBS)
 
 #CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 #CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"

@@ -1,3 +1,7 @@
+2007-10-17  Chris Toshok  <toshok@ximian.com>
+
+	* harness/Makefile.am (xaml2png_LDADD): add MOON_PROG_LIBS.
+
 2007-09-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* harness/xaml2png.cpp (main): Updated runtime_init() call.

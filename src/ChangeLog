@@ -1,3 +1,8 @@
+2007-10-17  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (demo_LDADD): add MOON_PROG_LIBS.
+	(sizes_LDADD): same.
+
 2007-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.h: Add a GET_OBJ_ID macro that resolves to -1 if

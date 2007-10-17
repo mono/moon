@@ -1,3 +1,10 @@
+2007-10-17  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: define MOON_PROG_LIBS for the unmanaged programs
+	that we compile during the build (test/harness/xaml2png,
+	src/sizes, src/demo) that may need to pull in the mono libraries
+	to resolve symbols.
+
 2007-10-16  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: gtk and tools should only build if we are including

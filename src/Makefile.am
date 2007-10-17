@@ -116,9 +116,9 @@ sizes_SOURCES = \
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 
-demo_LDADD = -lmoon 
+demo_LDADD = -lmoon $(MOON_PROG_LIBS)
 
-sizes_LDADD = -lmoon 
+sizes_LDADD = -lmoon $(MOON_PROG_LIBS)
 
 debug:
 	LD_LIBRARY_PATH=.libs gdb .libs/demo
