@@ -827,14 +827,15 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 				cairo_matrix_t matrix;
 				
 				uielement_get_render_affine (this, &matrix);
-				font.custom->SetScale (matrix.yy);
-				dirty = true;
+				if (matrix.yy >= 1.0)
+					font.custom->SetScale (matrix.yy);
 			}
 		} else if (prop == FrameworkElement::WidthProperty) {
-			dirty = true;
-		} else {
-			return;
+			UpdateBounds (true);
+			Invalidate ();
 		}
+		
+		return;
 	}
 	
 	if (prop == TextBlock::FontFamilyProperty) {

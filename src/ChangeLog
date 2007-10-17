@@ -1,3 +1,11 @@
+2007-10-16  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* text.cpp (OnPropertyChanged): When intercepting non-TextBlock
+	properties changing value, don't fall thru to the rest of the
+	checks (as then we'd re-emit it to sublisteners which isn't what
+	we want I don't think). Also, don't change the font scale unless
+	it's >= 1.0 (e.g. don't down-scale). Fixes an infinite loop.
+
 2007-10-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (OnPropertyChanged): Listen for RenderTransformProperty
