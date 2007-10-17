@@ -209,6 +209,9 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 					      char **platform, char **userAgent,
 					      bool *cookieEnabled);
 
+void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
+							bool *httpnet_access, bool *script_access);
+
 void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
 void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
 
