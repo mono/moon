@@ -1,3 +1,8 @@
+2007-10-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginXamlLoader::TryLoad): use ->Attach instead of
+	surface_attach, and add a comment about element->unref().
+
 2007-10-16  Jb Evain  <jbevain@novell.com>
 
 	* plugin.cpp: add plugin_instance_get_browser_runtime_settings.

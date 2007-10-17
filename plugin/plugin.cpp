@@ -1010,8 +1010,10 @@ PluginXamlLoader::TryLoad (int *error)
 	
 	printf ("PluginXamlLoader::TryLoad () succeeded.\n");
 
-	surface_attach (GetSurface (), (Canvas*) element);
+	GetSurface ()->Attach ((Canvas*) element);
 	
+	// xaml_create_from_* passed us a ref which we don't need to
+	// keep.
 	element->unref ();
 	
 	return NULL;
