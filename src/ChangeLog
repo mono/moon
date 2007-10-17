@@ -1,5 +1,13 @@
 2007-10-17  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (XNamespace::SetAttribute): make sure to add the newly
+	created managed dob to the created_elements list so it gets
+	unrefed properly.
+	(XamlLoader::XamlLoader): use ->ref() instead of base_ref().
+	(XamlLoader::~XamlLoader): use ->unref() instead of base_unref().
+
+2007-10-17  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (demo_LDADD): add MOON_PROG_LIBS.
 	(sizes_LDADD): same.
 

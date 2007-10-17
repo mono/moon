@@ -287,7 +287,7 @@ class XNamespace : public XamlNamespace {
 
 		if (!strcmp ("Class", attr)) {
 			DependencyObject *old = item->item;
-			
+
 			item->item = NULL;
 			DependencyObject *dob = NULL;
 			if (p->loader) {
@@ -307,6 +307,8 @@ class XNamespace : public XamlNamespace {
 			if (ns)
 				NameScope::SetNameScope (dob, ns);
 			item->item = dob;
+
+			p->AddCreatedElement (item->item);
 
 			*reparse = true;
 			return;
@@ -537,7 +539,7 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 	this->filename = g_strdup (filename);
 	this->str = g_strdup (str);
 	this->surface = surface;
-	base_ref (this->surface);
+	surface->ref ();
 	this->missing_assemblies = NULL;
 	this->mappings = NULL;
 	this->vm_loaded = false;
@@ -551,7 +553,7 @@ XamlLoader::~XamlLoader ()
 {
 	g_free (filename);
 	g_free (str);
-	base_unref (this->surface);
+	surface->unref ();
 	if (missing_assemblies)
 		g_hash_table_destroy (missing_assemblies);
 	if (mappings)
