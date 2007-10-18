@@ -146,12 +146,6 @@ Feel free to add items to this TODO list
 	Silverlight widget even if I click on it and I do a
 	gtk_widget_grab_focus, am probably missing something.
 
-* Visibility
-
-	Find out how to remove the Hidden enum member (maybe make it
-	== 255 or something out of range, and remove it with the
-	tuner?)
-	
 * Text
 
 	Find out why ligatures are not happening for certain scripts.
