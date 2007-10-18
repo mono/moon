@@ -490,19 +490,6 @@ Clock::Tick ()
 			new_time += our_delta;
 	}
 
-	/* if we were filling and ended up back in our Active period,
-	   switch our state and return. */
-	if (current_state == Clock::Filling) {
-		if (natural_duration.HasTimeSpan ())
-			current_progress = new_progress = (double)new_time / natural_duration.GetTimeSpan();
-		else
-			current_progress = new_progress = 0.0;
-
-		new_state = Clock::Active;
-		QueueEvent (CURRENT_STATE_INVALIDATED | CURRENT_TIME_INVALIDATED);
-	}
-
-
 #if CLOCK_DEBUG
 	printf ("Clock %p updated to time %lld\n", this, new_time);
 #endif

@@ -37,6 +37,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
   
 {
 	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+	clock->AddHandler (clock->CurrentStateInvalidatedEvent, reset_property_value, this);
 	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
@@ -76,12 +77,19 @@ AnimationStorage::UpdatePropertyValue ()
 }
 
 void
+AnimationStorage::reset_property_value (EventObject *, gpointer, gpointer closure)
+{
+	((AnimationStorage*)closure)->ResetPropertyValue ();
+}
+
+void
 AnimationStorage::ResetPropertyValue ()
 {
 	if (targetobj == NULL)
 		return;
 
-	targetobj->SetValue (targetprop, *baseValue);
+	if (clock->GetClockState() == Clock::Stopped)
+		targetobj->SetValue (targetprop, *baseValue);
 }
 
 AnimationStorage::~AnimationStorage ()
@@ -107,13 +115,6 @@ Value*
 AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue)
 {
 	return timeline->GetCurrentValue (defaultOriginValue, defaultDestinationValue, this);
-}
-
-void
-AnimationClock::Stop ()
-{
-	storage->ResetPropertyValue();
-	Clock::Stop();
 }
 
 AnimationClock::~AnimationClock ()

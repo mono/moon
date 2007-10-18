@@ -1,3 +1,17 @@
+2007-10-18  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: fix comment.
+
+	* animation.h, animation.cpp: use the
+	Clock::CurrentStateInvalidated event to reset the property value
+	to baseValue instead of overriding the Clock::Stop method.  This
+	fixes clocks with FillBehavior="Stop" instead of storyboard with
+	FillBehavior="Fill".
+
+	* clock.cpp (Clock::Tick): remove a stupid block of code that was
+	causing clocks which were Filling to spontaneously end up in their
+	Active state again.
+
 2007-10-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp: New code to handle arc segments. No known issues

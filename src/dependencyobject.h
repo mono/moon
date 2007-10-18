@@ -185,7 +185,7 @@ class DependencyObject : public EventObject {
 
 
 	//
-	// OnCollectionPropertyChanged:
+	// OnCollectionChanged:
 	//
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop) { }
 
