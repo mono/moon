@@ -17,17 +17,17 @@
 #include <string.h>
 #include <config.h>
 
-#include "npapi.h"
-#include "npupp.h"
-#include "npruntime.h"
+#include <npapi.h>
+#include <npupp.h>
+#include <npruntime.h>
 
-#include "glib.h"
+#include <glib.h>
 
 #if GLIB_SIZEOF_VOID_P == 8
 #define GDK_NATIVE_WINDOW_POINTER 1
 #endif
 
-#include "gtk/gtk.h"
+#include <gtk/gtk.h>
 
 #include "libmoon.h"
 
