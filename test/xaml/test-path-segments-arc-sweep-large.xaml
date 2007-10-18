@@ -1,0 +1,14 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+<!-- http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands -->
+	<Ellipse Stroke="Black" StrokeThickness="1" Canvas.Left="25" Canvas.Top="25" Width="200" Height="100" />
+	<Path Stroke="Red" StrokeThickness="6" Data="M 25,75 a100,50 0 0,0 100,50" />
+
+	<Ellipse Stroke="Black" StrokeThickness="1" Canvas.Left="250" Canvas.Top="25" Width="200" Height="100" />
+	<Path Stroke="Red" StrokeThickness="6" Data="M 350,25 a100,50 0 0,1 100,50" />
+
+	<Ellipse Stroke="Black" StrokeThickness="1" Canvas.Left="25" Canvas.Top="175" Width="200" Height="100" />
+	<Path Stroke="Red" StrokeThickness="6" Data="M 125,175 a100,50 0 1,0 100,50" />
+
+	<Ellipse Stroke="Black" StrokeThickness="1" Canvas.Left="250" Canvas.Top="175" Width="200" Height="100" />
+	<Path Stroke="Red" StrokeThickness="6" Data="M 250,225 a100,50 0 1,1 100,50" />
+</Canvas>

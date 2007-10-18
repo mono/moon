@@ -1,0 +1,39 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+
+<!-- same start and end points (absolute and relative), no drawing required -->
+        <Path Stroke="Blue" Data="M 10 10 A 10 10 10 1 1 10 10"/>
+        <Path Stroke="Blue" Data="M 10 20 a 10 10 10 1 1 0 0"/>
+
+<!-- almost the same, drawn -->
+        <Path Stroke="Blue" Data="M 60 10 A 10 10 10 1 1 60.000004 10"/>
+        <Path Stroke="Blue" Data="M 60 20 a 10 10 10 1 1 0 0.000003"/>
+
+<!-- very small diff, not drawn -->
+        <Path Stroke="Blue" Data="M 80 10 A 10 10 10 1 1 80.000003 10"/>
+        <Path Stroke="Blue" Data="M 80 20 a 10 10 10 1 1 0 0.000002"/>
+
+<!-- arcs can be replaced with lines if RX or RY is 0.0 -->
+        <Path Stroke="Green" Data="M 10 30 A 0 10 10 1 1 20 30"/>
+        <Path Stroke="Green" Data="M 10 40 a 0 10 10 1 1 0 10"/>
+        <Path Stroke="Green" Data="M 10 60 A 0 10 10 1 1 10 70"/>
+        <Path Stroke="Green" Data="M 10 80 a 0 10 10 1 1 10 0"/>
+
+        <Path Stroke="Green" Data="M 30 30 A 10 0 10 1 1 40 30"/>
+        <Path Stroke="Green" Data="M 30 40 a 10 0 10 1 1 0 10"/>
+        <Path Stroke="Green" Data="M 30 60 A 10 0 10 1 1 30 70"/>
+        <Path Stroke="Green" Data="M 30 80 a 10 0 10 1 1 10 0"/>
+
+<!-- find out what's "good-enough" for SL as a zero value -->
+        <Path Stroke="Red" Data="M 100 100 a 0.1 10 10 1 1 20 30"/>
+        <Path Stroke="Red" Data="M 120 100 a 0.01 10 10 1 1 20 30"/>
+        <Path Stroke="Red" Data="M 140 100 a 0.001 10 10 1 1 20 30"/>
+        <Path Stroke="Red" Data="M 160 100 a 0.00012 10 10 1 1 20 30"/>
+	<!-- not shown !?!? on Silverlight, too small to be useful but not small enough to be 0.0 -->
+        <Path Stroke="Purple" Data="M 180 100 a 0.000116 10 10 1 1 20 30"/>
+        <Path Stroke="Purple" Data="M 200 100 a 0.0001 10 10 1 1 20 30"/>
+        <Path Stroke="Purple" Data="M 220 100 a 0.000019 10 10 1 1 20 30"/>
+	<!-- treated as 0.0 -->
+        <Path Stroke="Blue" Data="M 240 100 a 0.000018 10 10 1 1 20 30"/>
+        <Path Stroke="Blue" Data="M 260 100 a 0.000001 10 10 1 1 20 30"/>
+        <Path Stroke="Blue" Data="M 280 100 a 0.0000001 10 10 1 1 20 30"/>
+</Canvas>
