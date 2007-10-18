@@ -1540,7 +1540,10 @@ moonlight_dependency_object_methods [] = {
 	"findName",
 	"setValue",
 	"getValue",
-	"toString"
+	"toString",
+#if DEBUG_JAVASCRIPT
+	"printf"
+#endif
 };
 
 static NPObject*
@@ -1722,28 +1725,23 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 {
 	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
+#if DEBUG_JAVASCRIPT
+	// Some debug code...
+	// with this it is possible to do obj.printf ("msg") from js
+	if (name_matches (name, "printf")) {
+		printf ("JS message: %s\n", NPVARIANT_TO_STRING (args [0]).utf8characters);
+		VOID_TO_NPVARIANT (*result);
+		return true;
+	}
+#endif
+
+
 	if (name_matches (name, "setValue")) {
 		/* obj.setValue (prop, val) is another way of writing obj[prop] = val (or obj.prop = val) */
 		if (argCount < 2
 		    || !NPVARIANT_IS_STRING (args[0])) {
 			return true;
 		}
-
-#if DEBUG_JAVASCRIPT
-		// Some debug code...
-		// with this it is possible to do obj.setValue ("printf", "msg") from js
-		const NPUTF8* pf = NPVARIANT_TO_STRING (args[0]).utf8characters;
-		if (strcmp ((char*) pf, "printf") == 0) {
-			NPIdentifier message = NPID (NPVARIANT_TO_STRING (args [1]).utf8characters);
-			NPUTF8 *strname = NPN_UTF8FromIdentifier (message);
-			strname[0] = toupper(strname[0]);
-			printf ("JS message: %s\n", strname);
-			NPN_MemFree (strname);
-		
-			VOID_TO_NPVARIANT (*result);
-			return true;
-		}
-#endif
 
 		moonlight_dependency_object_set_property (npobj,
 							  NPID (NPVARIANT_TO_STRING (args[0]).utf8characters),
@@ -1763,8 +1761,6 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 	else if (name_matches (name, "findName")) {
-		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
-
 		if (!argCount)
 			return true;
 
@@ -1794,7 +1790,7 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		DependencyObject *parent = dob->GetParent();
 		if (parent) {
 			MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance,
-												 dob->GetParent());
+										       dob->GetParent());
 
 			OBJECT_TO_NPVARIANT (depobj, *result);
 		}
@@ -1891,21 +1887,32 @@ MoonlightEventObjectObject::Dispose ()
 {
 	MoonlightObject::Dispose ();
 	
-	if (eo)
+	if (eo) {
+		PluginInstance *plugin = (PluginInstance*) instance->pdata;
+		plugin->RemoveWrappedObject (eo);
 		eo->unref ();
+	}
 	eo = NULL;
 }
 
 void 
 MoonlightEventObjectObject::SetEventObject (EventObject *eventobject)
 {
-	if (eo)
+	PluginInstance *plugin = (PluginInstance*) instance->pdata;
+
+	// we shouldn't need to worry about this case, right?  we create
+	// wrapper objects whenever we need them, and don't reuse them...
+	if (eo) {
+		plugin->RemoveWrappedObject (eo);
 		eo->unref ();
+	}
 
 	eo = eventobject;
 
-	if (eo)
+	if (eo) {
+		plugin->AddWrappedObject (eo, this);
 		eo->ref ();
+	}
 }
 
 static bool
@@ -1956,7 +1963,16 @@ MoonlightEventObjectType* MoonlightEventObjectClass;
 MoonlightEventObjectObject*
 EventObjectCreateWrapper (NPP instance, EventObject *obj)
 {
+	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 	NPClass *np_class;
+	MoonlightEventObjectObject *depobj;
+
+	depobj = (MoonlightEventObjectObject *)plugin->LookupWrappedObject (obj);
+
+	if (depobj) {
+		NPN_RetainObject (depobj);
+		return depobj;
+	}
 
 	/* for EventObject subclasses which have special plugin classes, check here */
 	if (Type::Find (obj->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
@@ -1993,9 +2009,8 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 		}
 	}
 
-	MoonlightEventObjectObject *depobj
-		= (MoonlightEventObjectObject*)NPN_CreateObject (instance,
-								      np_class);
+	depobj = (MoonlightEventObjectObject*)NPN_CreateObject (instance,
+								np_class);
 
 	depobj->SetEventObject (obj);
 
@@ -2003,7 +2018,7 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	switch (obj->GetObjectType()) {
 	case Type::CONTROL:
 		((MoonlightControlObject *)depobj)->real_object = EventObjectCreateWrapper (instance,
-												 ((Control*)obj)->real_object);
+											    ((Control*)obj)->real_object);
 		break;
 	default:
 		/* nothing to do */
@@ -2140,7 +2155,7 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 		Collection::Node *n = (Collection::Node*)col->list->Index (index);
 
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance,
-											 n->obj);
+									       n->obj);
 		
 		OBJECT_TO_NPVARIANT ((NPObject*)depobj, *result);
 

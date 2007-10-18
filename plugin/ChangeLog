@@ -1,3 +1,22 @@
+2007-10-18  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (moonlight_dependency_object_invoke): make the
+	debug "printf" method its own method, instead of a hack on
+	setValue.
+	(MoonlightEventObjectObject::Dispose): remove the wrapped object
+	from the cache.
+	(MoonlightEventObjectObject::SetEventObject): update the cache.
+	(EventObjectCreateWrapper): check the cache before creating a new
+	js wrapper object.
+
+	* debug.js: convert from
+		printf_proxy.setValue ("printf", message);
+	to
+		printf_proxy.printf (message);
+
+	* plugin.cpp, plugin.h: add {Add,Remove,Lookup}WrappedObject
+	methods to cache the JS objects we use for a given EventObject*.
+
 2007-10-17  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginXamlLoader::TryLoad): use ->Attach instead of

@@ -144,6 +144,8 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 
 	this->timers = NULL;
 
+	this->wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+
 	plugin_instances = g_slist_append (plugin_instances, this->instance);
 
 	/* back pointer to us */
@@ -161,6 +163,8 @@ PluginInstance::~PluginInstance ()
 	}
 	g_slist_free (p);
 	
+	g_hash_table_destroy (wrapped_objects);
+
 	// Remove us from the list.
 	plugin_instances = g_slist_remove (plugin_instances, this->instance);
 
@@ -776,6 +780,24 @@ int16
 PluginInstance::EventHandle (void* event)
 {
 	return 0;
+}
+
+void
+PluginInstance::AddWrappedObject (EventObject *obj, NPObject *wrapper)
+{
+	g_hash_table_insert (wrapped_objects, obj, wrapper);
+}
+
+void
+PluginInstance::RemoveWrappedObject (EventObject *obj)
+{
+	g_hash_table_remove (wrapped_objects, obj);
+}
+
+NPObject*
+PluginInstance::LookupWrappedObject (EventObject *obj)
+{
+	return (NPObject*)g_hash_table_lookup (wrapped_objects, obj);
 }
 
 /*** Getters and Setters ******************************************************/

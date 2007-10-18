@@ -25,5 +25,5 @@ function printf (obj, message)
 		}
 	}
 
-	printf_proxy.setValue ("printf", message);
+	printf_proxy.printf (message);
 }

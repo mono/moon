@@ -30,6 +30,8 @@ class PluginInstance
 	NPObject* rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
 
+	GHashTable *wrapped_objects; // wrapped object cache
+
 	// Property fields
 	char *initParams;
 	bool isLoaded;
@@ -81,6 +83,10 @@ class PluginInstance
 	bool JsRunOnload ();
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
 	void *LoadUrl (char *url, gint32 *length);
+
+	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
+	void      RemoveWrappedObject (EventObject *obj);
+	NPObject* LookupWrappedObject (EventObject *obj);
 
 	NPP getNPP () { return instance; }
 
