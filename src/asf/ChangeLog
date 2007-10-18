@@ -1,0 +1,7 @@
+2007-10-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.h, asf-structures.h, asf-ffmpeg.h, asf.sh, asf-guids.cpp,
+	  asf-generated.cpp, ChangeLog, asf-guids.h, asf.cpp, asf-generated.h,
+	  asf-structures.cpp, asf-ffmpeg.cpp, asf.cs, Makefile: Backup current asf
+	  code. Not really working at all yet.
+
