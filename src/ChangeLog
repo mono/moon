@@ -1,3 +1,11 @@
+2007-10-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp: New code to handle arc segments. No known issues
+	(except the handling of near zero values which doesn't seems to
+	be constant).
+	* libmoon.h, Makefile.am: Remove reference to rsvg.h
+	* rsvg.cpp|h: Remove from SVN.
+
 2007-10-17  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* cairo-embed.h, pixman-embed.h: Added symbol renaming headers

@@ -31,7 +31,6 @@
 #include "playlist.h"
 #include "point.h"
 #include "rect.h"
-#include "rsvg.h"
 #include "runtime.h"
 #include "shape.h"
 #include "stylus.h"

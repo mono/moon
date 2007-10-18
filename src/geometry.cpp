@@ -24,8 +24,6 @@
 #include "shape.h"
 #include "array.h"
 
-#include "rsvg.h"
-
 //
 // Geometry
 //
@@ -1010,17 +1008,181 @@ arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
 	segment->SetValue (ArcSegment::SweepDirectionProperty, Value (direction));
 }
 
+// is it true only for arcs or for everything ? if so using the same values ?
+#define IS_ZERO(x)	(fabs(x) < 0.000019)
+#define IS_TOO_SMALL(x)	(fabs(x) < 0.000117)
+
 void
 ArcSegment::Append (moon_path *path)
 {
-	Point *size = arc_segment_get_size (this);
-	double angle = arc_segment_get_rotation_angle (this);
-	int large = arc_segment_get_is_large_arc (this) ? 1 : 0;
-	int direction = arc_segment_get_sweep_direction (this) == SweepDirectionCounterclockwise ? 0 : 1;
-	Point* p = arc_segment_get_point (this);
+	// from tests it seems that Silverlight closely follows SVG arc 
+	// behavior (which is very different from the model used with GDI+)
+	// some helpful stuff is available here:
+	// http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
 
-	// FIXME: there's no cairo_arc_to so we reuse librsvg code (see rsvg.cpp)
-	rsvg_arc_to (path, size->x, size->y, angle, large, direction, p->x, p->y); 
+	// get start point from the existing path
+	double sx, sy;
+	moon_get_current_point (path, &sx, &sy);
+	// end point
+	Point* ep = arc_segment_get_point (this);
+
+	// if start and end points are identical, then no arc is drawn
+	// FIXME: what's the logic (if any) to compare points
+	// e.g. 60 and 60.000002 are drawn while 80 and 80.000003 aren't
+	if (IS_ZERO (ep->x - sx) && IS_ZERO (ep->y - sy))
+		return;
+
+	Point *size = arc_segment_get_size (this);
+	// Correction of out-of-range radii, see F6.6 (step 1)
+	if (IS_ZERO (size->x) || IS_ZERO (size->y)) {
+		// treat this as a straight line (to end point)
+		moon_line_to (path, ep->x, ep->y);
+		return;
+	}
+
+	// Silverlight "too small to be useful"
+	if (IS_TOO_SMALL (size->x) || IS_TOO_SMALL (size->y)) {
+		// yes it does mean there's a hole between "normal" FP values and "zero" FP values
+		// and SL doesn't render anything in this twilight sonze
+		return;
+	}
+
+	// Correction of out-of-range radii, see F6.6.1 (step 2)
+	double rx = fabs (size->x);
+	double ry = fabs (size->y);
+
+	// convert angle into radians
+	double angle = arc_segment_get_rotation_angle (this) * M_PI / 180.0;
+
+	// variables required for F6.3.1
+	double cos_phi = cos (angle);
+	double sin_phi = sin (angle);
+	double dx2 = (sx - ep->x) / 2.0;
+	double dy2 = (sy - ep->y) / 2.0;
+	double x1p = cos_phi * dx2 + sin_phi * dy2;
+	double y1p = cos_phi * dy2 - sin_phi * dx2;
+	double x1p2 = x1p * x1p;
+	double y1p2 = y1p * y1p;
+	double rx2 = rx * rx;
+	double ry2 = ry * ry;
+
+	// Correction of out-of-range radii, see F6.6.2 (step 4)
+	double lambda = (x1p2 / rx2) + (y1p2 / ry2);
+	if (lambda > 1.0) {
+		// see F6.6.3
+		double lambda_root = sqrt (lambda);
+		rx *= lambda_root;
+		ry *= lambda_root;
+		// update rx2 and ry2
+		rx2 = rx * rx;
+		ry2 = ry * ry;
+	}
+
+	bool sweep = arc_segment_get_sweep_direction (this);
+	double cxp, cyp, cx, cy;
+	double c = (rx2 * ry2) - (rx2 * y1p2) - (ry2 * x1p2);
+
+	// check if there is no possible solution (i.e. we can't do a square root of a negative value)
+	if (c < 0.0) {
+		// scale uniformly until we have a single solution (see F6.2) i.e. when c == 0.0
+		double scale = sqrt (1.0 - c / (rx2 * ry2));
+		rx *= scale;
+		ry *= scale;
+		// update rx2 and ry2
+		rx2 = rx * rx;
+		ry2 = ry * ry;
+
+		// step 2 (F6.5.2) - simplified since c == 0.0
+		cxp = 0.0;
+		cyp = 0.0;
+
+		// step 3 (F6.5.3 first part) - simplified since cxp and cyp == 0.0
+		cx = 0.0;
+		cy = 0.0;
+	} else {
+		// complete c calculation
+		c = sqrt (c / ((rx2 * y1p2) + (ry2 * x1p2)));
+
+		// inverse sign if Fa == Fs
+		if (arc_segment_get_is_large_arc (this) == sweep)
+			c = -c;
+
+		// step 2 (F6.5.2)
+		cxp = c * ( rx * y1p / ry);
+		cyp = c * (-ry * x1p / rx);
+
+		// step 3 (F6.5.3 first part)
+		cx = cos_phi * cxp - sin_phi * cyp;
+		cy = sin_phi * cxp + cos_phi * cyp;
+	}
+
+	// step 3 (F6.5.3 second part) we now have the center point of the ellipse
+	cx += (sx + ep->x) / 2.0;
+	cy += (sy + ep->y) / 2.0;
+
+	// step 4 (F6.5.4)
+	// we dont' use arccos (as per w3c doc), see http://www.euclideanspace.com/maths/algebra/vectors/angleBetween/index.htm
+	// note: atan2 (0.0, 1.0) == 0.0
+	double at = atan2 (((y1p - cyp) / ry), ((x1p - cxp) / rx));
+	double theta1 = (at < 0.0) ? 2.0 * M_PI + at : at;
+
+	double nat = atan2 (((-y1p - cyp) / ry), ((-x1p - cxp) / rx));
+	double delta_theta = (nat < at) ? 2.0 * M_PI - at + nat : nat - at;
+
+	if (sweep) {
+		// ensure delta theta < 0 or else add 360 degrees
+		if (delta_theta < 0.0)
+			delta_theta += 2.0 * M_PI;
+	} else {
+		// ensure delta theta > 0 or else substract 360 degrees
+		if (delta_theta > 0.0)
+			delta_theta -= 2.0 * M_PI;
+	}
+
+	// add several cubic bezier to approximate the arc (smaller than 90 degrees)
+	// we add one extra segment because we want something smaller than 90deg (i.e. not 90 itself)
+	int segments = (int) (fabs (delta_theta / M_PI_2)) + 1;
+	double delta = delta_theta / segments;
+
+	// http://www.stillhq.com/ctpfaq/2001/comp.text.pdf-faq-2001-04.txt (section 2.13)
+	double bcp = 4.0 / 3 * (1 - cos (delta / 2)) / sin (delta / 2);
+
+	double cos_phi_rx = cos_phi * rx;
+	double cos_phi_ry = cos_phi * ry;
+	double sin_phi_rx = sin_phi * rx;
+	double sin_phi_ry = sin_phi * ry;
+
+	double cos_theta1 = cos (theta1);
+	double sin_theta1 = sin (theta1);
+
+	for (int i = 0; i < segments; ++i) {
+		// end angle (for this segment) = current + delta
+		double theta2 = theta1 + delta;
+		double cos_theta2 = cos (theta2);
+		double sin_theta2 = sin (theta2);
+
+		// first control point (based on start point sx,sy)
+		double c1x = sx - bcp * (cos_phi_rx * sin_theta1 + sin_phi_ry * cos_theta1);
+		double c1y = sy + bcp * (cos_phi_ry * cos_theta1 - sin_phi_rx * sin_theta1);
+
+		// end point (for this segment)
+		double ex = cx + (cos_phi_rx * cos_theta2 - sin_phi_ry * sin_theta2);
+		double ey = cy + (sin_phi_rx * cos_theta2 + cos_phi_ry * sin_theta2);
+
+		// second control point (based on end point ex,ey)
+		double c2x = ex + bcp * (cos_phi_rx * sin_theta2 + sin_phi_ry * cos_theta2);
+		double c2y = ey + bcp * (sin_phi_rx * sin_theta2 - cos_phi_ry * cos_theta2);
+
+		moon_curve_to (path, c1x, c1y, c2x, c2y, ex, ey);
+
+		// next start point is the current end point (same for angle)
+		sx = ex;
+		sy = ey;
+		theta1 = theta2;
+		// avoid recomputations
+		cos_theta1 = cos_theta2;
+		sin_theta1 = sin_theta2;
+	}
 }
 
 //

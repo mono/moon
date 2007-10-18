@@ -37,7 +37,6 @@ libmooninclude_headers = \
 	playlist.h	\
 	point.h		\
 	rect.h		\
-	rsvg.h		\
 	runtime.h	\
 	shape.h		\
 	stylus.h	\
@@ -83,7 +82,6 @@ libmoon_la_SOURCES = 	\
 	point.cpp	\
 	playlist.cpp	\
 	rect.cpp	\
-	rsvg.cpp	\
 	runtime.cpp	\
 	shape.cpp	\
 	stylus.cpp	\
