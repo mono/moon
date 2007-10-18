@@ -78,7 +78,6 @@ struct MoonlightObject : public NPObject
 	Type::Kind moonlight_type;
 	bool disposed;
 };
-static void _invalidate (NPObject *npobj);
 
 /*** MoonlightEventListenerObject ******************************************************/
 struct MoonlightEventListenerType : MoonlightObjectType {
