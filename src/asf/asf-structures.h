@@ -68,6 +68,17 @@ struct BITMAPINFOHEADER {
 	asf_dword ver_pixels_per_meter;
 	asf_dword colors_used;
 	asf_dword important_colors_used;
+	
+	gint32 get_extra_data_size ()
+	{
+		return size - sizeof (BITMAPINFOHEADER);
+	}
+	void* get_extra_data ()
+	{
+		if (get_extra_data_size () <= 0)
+			return NULL;
+		return sizeof (BITMAPINFOHEADER) + ((char*) this);
+	}
 };
 
 struct asf_video_stream_data {

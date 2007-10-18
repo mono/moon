@@ -65,184 +65,184 @@ bool asf_object_validate_exact (const asf_object* obj, ASFParser* parser)
 /* Debug functions */ 
 void asf_header_dump (const asf_header* obj)
 {
-	printf ("ASF_HEADER\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\tobject_count = %u\n", (asf_dword) obj->object_count);
-	printf ("\treserved1 = %u\n", (asf_dword) obj->reserved1);
-	printf ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
+	ASF_DUMP ("ASF_HEADER\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tobject_count = %u\n", (asf_dword) obj->object_count);
+	ASF_DUMP ("\treserved1 = %u\n", (asf_dword) obj->reserved1);
+	ASF_DUMP ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
 }
 
 void asf_file_properties_dump (const asf_file_properties* obj)
 {
-	printf ("ASF_FILE_PROPERTIES\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\tfile_id = %s\n", asf_guid_tostring (&obj->file_id));
-	printf ("\tfile_size = %llu\n", obj->file_size);
-	printf ("\tcreation_date = %llu\n", obj->creation_date);
-	printf ("\tdata_packet_count = %llu\n", obj->data_packet_count);
-	printf ("\tplay_duration = %llu\n", obj->play_duration);
-	printf ("\tsend_duration = %llu\n", obj->send_duration);
-	printf ("\tpreroll = %llu\n", obj->preroll);
-	printf ("\tflags = %u\n", (asf_dword) obj->flags);
-	printf ("\tmin_packet_size = %u\n", (asf_dword) obj->min_packet_size);
-	printf ("\tmax_packet_size = %u\n", (asf_dword) obj->max_packet_size);
-	printf ("\tmax_bitrate = %u\n", (asf_dword) obj->max_bitrate);
+	ASF_DUMP ("ASF_FILE_PROPERTIES\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tfile_id = %s\n", asf_guid_tostring (&obj->file_id));
+	ASF_DUMP ("\tfile_size = %llu\n", obj->file_size);
+	ASF_DUMP ("\tcreation_date = %llu\n", obj->creation_date);
+	ASF_DUMP ("\tdata_packet_count = %llu\n", obj->data_packet_count);
+	ASF_DUMP ("\tplay_duration = %llu\n", obj->play_duration);
+	ASF_DUMP ("\tsend_duration = %llu\n", obj->send_duration);
+	ASF_DUMP ("\tpreroll = %llu\n", obj->preroll);
+	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
+	ASF_DUMP ("\tmin_packet_size = %u\n", (asf_dword) obj->min_packet_size);
+	ASF_DUMP ("\tmax_packet_size = %u\n", (asf_dword) obj->max_packet_size);
+	ASF_DUMP ("\tmax_bitrate = %u\n", (asf_dword) obj->max_bitrate);
 }
 
 void asf_stream_properties_dump (const asf_stream_properties* obj)
 {
-	printf ("ASF_STREAM_PROPERTIES\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\tstream_type = %s\n", asf_guid_tostring (&obj->stream_type));
-	printf ("\terror_correction_type = %s\n", asf_guid_tostring (&obj->error_correction_type));
-	printf ("\ttime_offset = %llu\n", obj->time_offset);
-	printf ("\ttype_specific_data_length = %u\n", (asf_dword) obj->type_specific_data_length);
-	printf ("\terror_correction_data_length = %u\n", (asf_dword) obj->error_correction_data_length);
-	printf ("\tflags = %u\n", (asf_dword) obj->flags);
-	printf ("\treserved = %u\n", (asf_dword) obj->reserved);
+	ASF_DUMP ("ASF_STREAM_PROPERTIES\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tstream_type = %s\n", asf_guid_tostring (&obj->stream_type));
+	ASF_DUMP ("\terror_correction_type = %s\n", asf_guid_tostring (&obj->error_correction_type));
+	ASF_DUMP ("\ttime_offset = %llu\n", obj->time_offset);
+	ASF_DUMP ("\ttype_specific_data_length = %u\n", (asf_dword) obj->type_specific_data_length);
+	ASF_DUMP ("\terror_correction_data_length = %u\n", (asf_dword) obj->error_correction_data_length);
+	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
+	ASF_DUMP ("\treserved = %u\n", (asf_dword) obj->reserved);
 }
 
 void asf_header_extension_dump (const asf_header_extension* obj)
 {
-	printf ("ASF_HEADER_EXTENSION\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\treserved1 = %s\n", asf_guid_tostring (&obj->reserved1));
-	printf ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
-	printf ("\tdata_size = %u\n", (asf_dword) obj->data_size);
+	ASF_DUMP ("ASF_HEADER_EXTENSION\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\treserved1 = %s\n", asf_guid_tostring (&obj->reserved1));
+	ASF_DUMP ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
+	ASF_DUMP ("\tdata_size = %u\n", (asf_dword) obj->data_size);
 }
 
 void asf_codec_list_dump (const asf_codec_list* obj)
 {
-	printf ("ASF_CODEC_LIST\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
-	printf ("\tentries_count = %u\n", (asf_dword) obj->entries_count);
+	ASF_DUMP ("ASF_CODEC_LIST\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
+	ASF_DUMP ("\tentries_count = %u\n", (asf_dword) obj->entries_count);
 }
 
 void asf_script_command_dump (const asf_script_command* obj)
 {
-	printf ("ASF_SCRIPT_COMMAND\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
-	printf ("\tcommand_count = %u\n", (asf_dword) obj->command_count);
-	printf ("\tcommand_type_count = %u\n", (asf_dword) obj->command_type_count);
+	ASF_DUMP ("ASF_SCRIPT_COMMAND\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
+	ASF_DUMP ("\tcommand_count = %u\n", (asf_dword) obj->command_count);
+	ASF_DUMP ("\tcommand_type_count = %u\n", (asf_dword) obj->command_type_count);
 }
 
 void asf_marker_dump (const asf_marker* obj)
 {
-	printf ("ASF_MARKER\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
-	printf ("\tmarker_count = %u\n", (asf_dword) obj->marker_count);
-	printf ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
-	printf ("\tname_length = %u\n", (asf_dword) obj->name_length);
+	ASF_DUMP ("ASF_MARKER\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
+	ASF_DUMP ("\tmarker_count = %u\n", (asf_dword) obj->marker_count);
+	ASF_DUMP ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
+	ASF_DUMP ("\tname_length = %u\n", (asf_dword) obj->name_length);
 }
 
 void asf_bitrate_mutual_exclusion_dump (const asf_bitrate_mutual_exclusion* obj)
 {
-	printf ("ASF_BITRATE_MUTUAL_EXCLUSION\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\texclusion_type = %s\n", asf_guid_tostring (&obj->exclusion_type));
-	printf ("\tstream_number_count = %u\n", (asf_dword) obj->stream_number_count);
+	ASF_DUMP ("ASF_BITRATE_MUTUAL_EXCLUSION\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\texclusion_type = %s\n", asf_guid_tostring (&obj->exclusion_type));
+	ASF_DUMP ("\tstream_number_count = %u\n", (asf_dword) obj->stream_number_count);
 }
 
 void asf_error_correction_dump (const asf_error_correction* obj)
 {
-	printf ("ASF_ERROR_CORRECTION\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\terror_correction_type = %s\n", asf_guid_tostring (&obj->error_correction_type));
-	printf ("\terror_correction_data_length = %u\n", (asf_dword) obj->error_correction_data_length);
+	ASF_DUMP ("ASF_ERROR_CORRECTION\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\terror_correction_type = %s\n", asf_guid_tostring (&obj->error_correction_type));
+	ASF_DUMP ("\terror_correction_data_length = %u\n", (asf_dword) obj->error_correction_data_length);
 }
 
 void asf_content_description_dump (const asf_content_description* obj)
 {
-	printf ("ASF_CONTENT_DESCRIPTION\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\ttitle_length = %u\n", (asf_dword) obj->title_length);
-	printf ("\tauthor_length = %u\n", (asf_dword) obj->author_length);
-	printf ("\tcopyright_length = %u\n", (asf_dword) obj->copyright_length);
-	printf ("\tdescription_length = %u\n", (asf_dword) obj->description_length);
-	printf ("\trating_length = %u\n", (asf_dword) obj->rating_length);
+	ASF_DUMP ("ASF_CONTENT_DESCRIPTION\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\ttitle_length = %u\n", (asf_dword) obj->title_length);
+	ASF_DUMP ("\tauthor_length = %u\n", (asf_dword) obj->author_length);
+	ASF_DUMP ("\tcopyright_length = %u\n", (asf_dword) obj->copyright_length);
+	ASF_DUMP ("\tdescription_length = %u\n", (asf_dword) obj->description_length);
+	ASF_DUMP ("\trating_length = %u\n", (asf_dword) obj->rating_length);
 }
 
 void asf_extended_content_description_dump (const asf_extended_content_description* obj)
 {
-	printf ("ASF_EXTENDED_CONTENT_DESCRIPTION\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\tcontent_descriptors_count = %u\n", (asf_dword) obj->content_descriptors_count);
+	ASF_DUMP ("ASF_EXTENDED_CONTENT_DESCRIPTION\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tcontent_descriptors_count = %u\n", (asf_dword) obj->content_descriptors_count);
 }
 
 void asf_stream_bitrate_properties_dump (const asf_stream_bitrate_properties* obj)
 {
-	printf ("ASF_STREAM_BITRATE_PROPERTIES\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\tbitrate_records_count = %u\n", (asf_dword) obj->bitrate_records_count);
+	ASF_DUMP ("ASF_STREAM_BITRATE_PROPERTIES\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tbitrate_records_count = %u\n", (asf_dword) obj->bitrate_records_count);
 }
 
 void asf_data_dump (const asf_data* obj)
 {
-	printf ("ASF_DATA\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
-	printf ("\tfile_id = %s\n", asf_guid_tostring (&obj->file_id));
-	printf ("\tdata_packet_count = %llu\n", obj->data_packet_count);
-	printf ("\treserved = %u\n", (asf_dword) obj->reserved);
+	ASF_DUMP ("ASF_DATA\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tfile_id = %s\n", asf_guid_tostring (&obj->file_id));
+	ASF_DUMP ("\tdata_packet_count = %llu\n", obj->data_packet_count);
+	ASF_DUMP ("\treserved = %u\n", (asf_dword) obj->reserved);
 }
 
 void asf_object_dump (const asf_object* obj)
 {
-	printf ("ASF_OBJECT\n");
-	printf ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	printf ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("ASF_OBJECT\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
 }
 
 void WAVEFORMATEX_dump (const WAVEFORMATEX* obj)
 {
-	printf ("WAVEFORMATEX\n");
-	printf ("\tcodec_id = %u\n", (asf_dword) obj->codec_id);
-	printf ("\tchannels = %u\n", (asf_dword) obj->channels);
-	printf ("\tsamples_per_second = %u\n", (asf_dword) obj->samples_per_second);
-	printf ("\tbytes_per_second = %u\n", (asf_dword) obj->bytes_per_second);
-	printf ("\tblock_alignment = %u\n", (asf_dword) obj->block_alignment);
-	printf ("\tbits_per_sample = %u\n", (asf_dword) obj->bits_per_sample);
-	printf ("\tcodec_specific_data_size = %u\n", (asf_dword) obj->codec_specific_data_size);
+	ASF_DUMP ("WAVEFORMATEX\n");
+	ASF_DUMP ("\tcodec_id = %u\n", (asf_dword) obj->codec_id);
+	ASF_DUMP ("\tchannels = %u\n", (asf_dword) obj->channels);
+	ASF_DUMP ("\tsamples_per_second = %u\n", (asf_dword) obj->samples_per_second);
+	ASF_DUMP ("\tbytes_per_second = %u\n", (asf_dword) obj->bytes_per_second);
+	ASF_DUMP ("\tblock_alignment = %u\n", (asf_dword) obj->block_alignment);
+	ASF_DUMP ("\tbits_per_sample = %u\n", (asf_dword) obj->bits_per_sample);
+	ASF_DUMP ("\tcodec_specific_data_size = %u\n", (asf_dword) obj->codec_specific_data_size);
 }
 
 void BITMAPINFOHEADER_dump (const BITMAPINFOHEADER* obj)
 {
-	printf ("BITMAPINFOHEADER\n");
-	printf ("\tsize = %u\n", (asf_dword) obj->size);
-	printf ("\timage_width = %u\n", (asf_dword) obj->image_width);
-	printf ("\timage_height = %u\n", (asf_dword) obj->image_height);
-	printf ("\treserved = %u\n", (asf_dword) obj->reserved);
-	printf ("\tbits_per_pixel = %u\n", (asf_dword) obj->bits_per_pixel);
-	printf ("\tcompression_id = %u\n", (asf_dword) obj->compression_id);
-	printf ("\timage_size = %u\n", (asf_dword) obj->image_size);
-	printf ("\thor_pixels_per_meter = %u\n", (asf_dword) obj->hor_pixels_per_meter);
-	printf ("\tver_pixels_per_meter = %u\n", (asf_dword) obj->ver_pixels_per_meter);
-	printf ("\tcolors_used = %u\n", (asf_dword) obj->colors_used);
-	printf ("\timportant_colors_used = %u\n", (asf_dword) obj->important_colors_used);
+	ASF_DUMP ("BITMAPINFOHEADER\n");
+	ASF_DUMP ("\tsize = %u\n", (asf_dword) obj->size);
+	ASF_DUMP ("\timage_width = %u\n", (asf_dword) obj->image_width);
+	ASF_DUMP ("\timage_height = %u\n", (asf_dword) obj->image_height);
+	ASF_DUMP ("\treserved = %u\n", (asf_dword) obj->reserved);
+	ASF_DUMP ("\tbits_per_pixel = %u\n", (asf_dword) obj->bits_per_pixel);
+	ASF_DUMP ("\tcompression_id = %u\n", (asf_dword) obj->compression_id);
+	ASF_DUMP ("\timage_size = %u\n", (asf_dword) obj->image_size);
+	ASF_DUMP ("\thor_pixels_per_meter = %u\n", (asf_dword) obj->hor_pixels_per_meter);
+	ASF_DUMP ("\tver_pixels_per_meter = %u\n", (asf_dword) obj->ver_pixels_per_meter);
+	ASF_DUMP ("\tcolors_used = %u\n", (asf_dword) obj->colors_used);
+	ASF_DUMP ("\timportant_colors_used = %u\n", (asf_dword) obj->important_colors_used);
 }
 
 void asf_video_stream_data_dump (const asf_video_stream_data* obj)
 {
-	printf ("ASF_VIDEO_STREAM_DATA\n");
-	printf ("\timage_width = %u\n", (asf_dword) obj->image_width);
-	printf ("\timage_height = %u\n", (asf_dword) obj->image_height);
-	printf ("\tflags = %u\n", (asf_dword) obj->flags);
-	printf ("\tformat_data_size = %u\n", (asf_dword) obj->format_data_size);
+	ASF_DUMP ("ASF_VIDEO_STREAM_DATA\n");
+	ASF_DUMP ("\timage_width = %u\n", (asf_dword) obj->image_width);
+	ASF_DUMP ("\timage_height = %u\n", (asf_dword) obj->image_height);
+	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
+	ASF_DUMP ("\tformat_data_size = %u\n", (asf_dword) obj->format_data_size);
 }
 
 

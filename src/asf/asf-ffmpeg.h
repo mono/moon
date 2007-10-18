@@ -14,6 +14,12 @@
 
 #include <config.h>
 
+#if log_ffmpeg || true
+#define FFMPEG_LOG(...) ASF_LOG (__VA_ARGS__)
+#else
+#define FFMPEG_LOG(...)
+#endif
+
 extern "C" 
 {
 #include "avio.h"
@@ -22,6 +28,12 @@ extern "C"
 
 #include "asf.h"
 #include <glib.h>
+
+void AVFormatContext_dump (AVFormatContext* c);
+void AVStream_dump (AVStream* s, int t);
+void AVCodecContext_dump (AVCodecContext* s, int t);
+void AVPacket_dump (AVPacket* s, int t);
+
 
 int ffmpeg_asf_probe(AVProbeData *pd);
 int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap);
@@ -42,17 +54,15 @@ class FFMPEGPacket : public ASFPacket {
 public:
 	FFMPEGPacket ()
 	{
-		current_stream = 0;
-		stream_count = 0;
+		current_payload = 0;
 	}
 	virtual ~FFMPEGPacket ()
 	{
 	}
 	
 	// Initialized to 0
-	// Set to -1 when all streams have been read.
-	int current_stream;
-	int stream_count;
+	// Set to -1 when all payloads have been read.
+	int current_payload;
 };
 
 class FFMPEGParser : public ASFParser {
@@ -71,31 +81,31 @@ public:
 	{
 		// asf_stream_index range from 1 to 127
 		if (asf_stream_index < 1 || asf_stream_index > 127) {
-			printf ("FFMPEGParser::AddStreamIndex (%i, %i): Invalid asf stream index.\n", ffmpeg_stream_index, asf_stream_index);
+			FFMPEG_LOG ("FFMPEGParser::AddStreamIndex (%i, %i): Invalid asf stream index.\n", ffmpeg_stream_index, asf_stream_index);
 			return;
 		}
 			
-		printf ("FFMPEGParser::AddStreamIndex (%i, %i).\n", ffmpeg_stream_index, asf_stream_index);
+		FFMPEG_LOG ("FFMPEGParser::AddStreamIndex (%i, %i).\n", ffmpeg_stream_index, asf_stream_index);
 		ffmpeg_stream_indices [asf_stream_index] = ffmpeg_stream_index;
 	}
 	
 	gint32 ConvertStreamIndex (gint32 asf_stream_index)
 	{
 		if (asf_stream_index < 1 || asf_stream_index > 127) {
-			printf ("FFMPEGParser::ConvertStreamIndex (%i, %i): Invalid asf stream index.\n", asf_stream_index, asf_stream_index);
+			FFMPEG_LOG ("FFMPEGParser::ConvertStreamIndex (%i, %i): Invalid asf stream index.\n", asf_stream_index, asf_stream_index);
 			return -1;
 		}
 		
-		printf ("FFMPEGParser::ConvertStreamIndex (%i): %i.\n", asf_stream_index, ffmpeg_stream_indices [asf_stream_index]);
+		FFMPEG_LOG ("FFMPEGParser::ConvertStreamIndex (%i): %i.\n", asf_stream_index, ffmpeg_stream_indices [asf_stream_index]);
 		return ffmpeg_stream_indices [asf_stream_index];
 	}
 	
 	gint32 ConvertFFMpegStreamIndex (gint32 ffmpeg_stream_index)
 	{
-		printf ("FFMPEGParser::ConvertFFMpegStreamIndex (%i).\n", ffmpeg_stream_index);
+		FFMPEG_LOG ("FFMPEGParser::ConvertFFMpegStreamIndex (%i).\n", ffmpeg_stream_index);
 		for (int i = 1; i < 128; i++) {
 			gint32 val = ffmpeg_stream_indices [i];
-			printf ("FFMPEGParser::ConvertFFMPegStreamIndex (%i), i = %i, value = %i.\n", ffmpeg_stream_index, i,val);
+			FFMPEG_LOG ("FFMPEGParser::ConvertFFMPegStreamIndex (%i), i = %i, value = %i.\n", ffmpeg_stream_index, i,val);
 			if (val == ffmpeg_stream_index) 
 				return i;
 		}

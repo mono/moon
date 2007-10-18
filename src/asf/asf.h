@@ -35,8 +35,22 @@ class ASFSource;
 #include "asf-guids.h"
 #include "asf-structures.h"
 
+#define ASF_ERROR_VAL(fail, ...) { fprintf (stderr, __VA_ARGS__); return fail; }
+#define ASF_ERROR(...) ASF_ERROR_VAL(false, __VA_ARGS__)
+
+#define ASF_CHECK_VAL(condition, val, ...) if (condition) { ASF_ERROR_VAL (val, __VA_ARGS__); }
+#define ASF_CHECK(condition, ...) if (condition) { ASF_ERROR (__VA_ARGS__); }
+
+#if log// || true
 #define ASF_LOG(...) printf (__VA_ARGS__)
-#define ASF_ERROR(...) fprintf (stderr, __VA_ARGS__)
+#else
+#define ASF_LOG(...)
+#endif
+#if dump// || true
+#define ASF_DUMP(...) printf (__VA_ARGS__)
+#else
+#define ASF_DUMP(...)
+#endif
 
 /* Debug & tostring functions */ 
 void  asf_printfree (char *message);
@@ -113,6 +127,21 @@ public:
 		payloads = NULL;
 	}
 	
+	gint32 GetPayloadCount ()
+	{
+		if (!payloads)
+			return 0;
+		return payloads->get_number_of_payloads ();
+	}
+	
+	asf_single_payload* GetPayload (gint32 index /* 0 based */)
+	{
+		if (index >= 0 && index < GetPayloadCount ())
+			return payloads->payloads [index];
+			
+		return NULL;
+	}
+	
 	asf_multiple_payloads* payloads;
 	int64_t index;
 		
@@ -185,6 +214,17 @@ public:
 	ASFPacket* GetCurrentPacket ()
 	{
 		return current_packet;
+	}
+	
+	void SetCurrentPacket (ASFPacket* packet)
+	{
+		current_packet = packet;
+	}
+	
+	void FreeCurrentPacket ()
+	{
+		delete current_packet;
+		current_packet = NULL;
 	}
 	
 	asf_header* GetHeader ()

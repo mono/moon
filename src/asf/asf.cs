@@ -170,9 +170,9 @@ class asf
 			foreach (string str in debug_structs) {
 				writer.WriteLine ("void " + str + "_dump (const " + str + "* obj)");
 				writer.WriteLine ("{");
-				writer.WriteLine ("\tprintf (\"" + str.ToUpper ()  + "\\n\");");
+				writer.WriteLine ("\tASF_DUMP (\"" + str.ToUpper ()  + "\\n\");");
 				foreach (Field field in ReadFields (str)) {
-					writer.WriteLine ("\tprintf (\"\\t" + field.name + " = " + field.get_format () + "\\n\", " + field.get_access ("obj->") + ");");
+					writer.WriteLine ("\tASF_DUMP (\"\\t" + field.name + " = " + field.get_format () + "\\n\", " + field.get_access ("obj->") + ");");
 				}
 				writer.WriteLine ("}");
 				writer.WriteLine ("");

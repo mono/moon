@@ -23,8 +23,9 @@ int main(int argc, char *argv[])
 	ASFParser* parser = new ASFParser (filename);
 	parser->ReadHeader ();
 	parser->ReadData ();
-	while (parser->ReadPacket ())
-		printf ("One more packet read.\n");
+	while (parser->ReadPacket ()) {
+		ASF_LOG ("One more packet read.\n");
+	}
 	delete parser;
 }
 
@@ -41,7 +42,7 @@ asf_printfree (char *message)
 
 ASFParser::ASFParser (const char* filename)
 {
-	printf ("ASFParser::ASFParser ('%s'), this: %p.\n", filename, this);
+	ASF_LOG ("ASFParser::ASFParser ('%s'), this: %p.\n", filename, this);
 	source = new ASFFileSource (this, filename);
 	header = NULL;
 	data = NULL;
@@ -58,7 +59,7 @@ ASFParser::ASFParser (const char* filename)
 
 ASFParser::~ASFParser ()
 {
-	printf ("ASFParser::~ASFParser ().\n");
+	ASF_LOG ("ASFParser::~ASFParser ().\n");
 	delete source;
 	source = NULL;
 		
@@ -74,16 +75,13 @@ ASFParser::~ASFParser ()
 	g_free (header_objects);
 	header_objects = NULL;
 	
-	g_free (current_packet);
-	current_packet = NULL;
+	FreeCurrentPacket ();
 }
 
 asf_object*
 ASFParser::ReadObject (asf_object* obj)
 {
-#if DEBUG
-	printf ("ASFParser::ReadObject ('%s', %llu)\n", asf_guid_tostring (&obj->id), obj->size);
-#endif
+	ASF_LOG ("ASFParser::ReadObject ('%s', %llu)\n", asf_guid_tostring (&obj->id), obj->size);
 
 	asf_object* result = NULL;
 	ASFTypes type = asf_get_guid_type (&obj->id);
@@ -123,17 +121,14 @@ ASFParser::ReadPacket ()
 bool
 ASFParser::ReadPacket (ASFPacket* next_packet)
 {
-	printf ("ASFParser::ReadPacket (%p), data: %p\n", next_packet, data);
+	ASF_LOG ("ASFParser::ReadPacket (%p), data: %p\n", next_packet, data);
 	
 	if (!data && !ReadData ())
 		return false;
 
-	if (current_packet) {
-		delete current_packet;
-		current_packet = NULL;
-	}
+	FreeCurrentPacket ();
 	
-	printf ("ASFParser::ReadPacket (): Reading packet at %lld (index: %i) of %lld packets.\n", source->Position (), GetPacketIndex (source->Position ()), data->data_packet_count);
+	ASF_LOG ("ASFParser::ReadPacket (): Reading packet at %lld (index: %i) of %lld packets.\n", source->Position (), GetPacketIndex (source->Position ()), data->data_packet_count);
 	
 	asf_error_correction_data ecd;
 	asf_payload_parsing_information ppi;
@@ -158,12 +153,12 @@ ASFParser::ReadPacket (ASFPacket* next_packet)
 	
 	asf_multiple_payloads* mp = new asf_multiple_payloads ();
 	if (ppi.is_multiple_payloads_present ()) {
-		printf ("ASFParser::ReadPacket (), reading multiple payloads.\n");
+		ASF_LOG ("ASFParser::ReadPacket (), reading multiple payloads.\n");
 		if (!mp->FillInAll (source, &ecd, ppi)) {
 			return false;
 		}
 	} else {
-		printf ("ASFParser::ReadPacket (), reading single payload.\n");
+		ASF_LOG ("ASFParser::ReadPacket (), reading single payload.\n");
 		asf_single_payload* sp = new asf_single_payload ();
 		if (!sp->FillInAll (source, &ecd, ppi, NULL)) {
 			asf_single_payload_dump (sp);
@@ -182,7 +177,7 @@ ASFParser::ReadPacket (ASFPacket* next_packet)
 	
 	current_packet = next_packet;
 	
-	printf ("ASFParser::ReadPacket (): Current position (end of packet): %llx (%lld), start position was: %llx (%lld), difference: %llx (%lld)\n", 
+	ASF_LOG ("ASFParser::ReadPacket (): Current position (end of packet): %llx (%lld), start position was: %llx (%lld), difference: %llx (%lld)\n", 
 		source->Position (), source->Position (), 
 		start_position, start_position,
 		source->Position () - start_position, source->Position () - start_position);
@@ -193,20 +188,20 @@ ASFParser::ReadPacket (ASFPacket* next_packet)
 bool
 ASFParser::ReadData ()
 {
-	printf ("ASFParser::ReadData ().\n");
+	ASF_LOG ("ASFParser::ReadData ().\n");
 	
 	asf_data* data = NULL;
 	if (!source->Seek (header->size, SEEK_SET)) {
 		return false;
 	}
-	printf ("Current position: %llx (%lld)\n", source->Position (), source->Position ());
+	ASF_LOG ("Current position: %llx (%lld)\n", source->Position (), source->Position ());
 	data = (asf_data*) g_malloc0 (sizeof (asf_data));
 	if (!source->Read (data, sizeof (asf_data)))
 		return false;
 	
 	asf_object_dump_exact (data);
 	
-	printf ("Data %p has %lld packets.\n", data, data->data_packet_count);
+	ASF_LOG ("Data %p has %lld packets.\n", data, data->data_packet_count);
 	
 	this->data = data;
 	
@@ -216,7 +211,7 @@ ASFParser::ReadData ()
 bool
 ASFParser::ReadHeader ()
 {
-	printf ("ASFParser::ReadHeader ().\n");
+	ASF_LOG ("ASFParser::ReadHeader ().\n");
 	
 	header = (asf_header*) g_malloc0 (sizeof (asf_header));
 	
@@ -226,9 +221,7 @@ ASFParser::ReadHeader ()
 	asf_header_dump (header);
 
 	if (!asf_header_validate (header, this)) {
-#if DEBUG
-		printf ("Header validation failed, error: '%s'\n", GetLastError ());
-#endif
+		ASF_LOG ("Header validation failed, error: '%s'\n", GetLastError ());
 		return false;
 	}
 	
@@ -259,7 +252,7 @@ ASFParser::ReadHeader ()
 	packet_offset = data_offset + sizeof (asf_data);
 	packet_offset_end = packet_offset + file_properties->data_packet_count * file_properties->min_packet_size;
 
-	printf ("ASFParser::ReadHeader (): Header read successfully.\n");
+	ASF_LOG ("ASFParser::ReadHeader (): Header read successfully.\n");
 	
 	return true;
 }
@@ -275,9 +268,7 @@ ASFParser::AddError (const char* err)
 {
 	// FIXME: Ability to report more than one error.
 	
-#if DEBUG
-	printf ("ASFParser::AddError ('%s').\n", err);
-#endif
+	ASF_LOG ("ASFParser::AddError ('%s').\n", err);
 	
 	if (last_error)
 		g_free (last_error);

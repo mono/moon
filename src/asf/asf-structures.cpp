@@ -245,15 +245,15 @@ asf_error_correction_data::FillInAll (ASFSource* source)
 
 void asf_error_correction_data_dump (asf_error_correction_data* obj)
 {
-	printf ("ASF_ERROR_CORRECTION_DATA\n");
-	printf ("\tdata = 0x%X\n", (asf_dword) obj->data);
-	printf ("\tdata = 0b%s\n",  obj->tostring ());
-	printf ("\t\tis_error_correction_present: %i\n", obj->is_error_correction_present ());
-	printf ("\t\tis_opaque_data_present: %i\n", obj->is_opaque_data_present ());
-	printf ("\t\tdata_length: %i\n", obj->get_data_length ());
-	printf ("\t\tlength_type: %i\n", obj->get_error_correction_length_type ());
-	printf ("\tfirst = %X\n", (asf_dword) obj->first);
-	printf ("\tsecond = %X\n", (asf_dword) obj->second);
+	ASF_DUMP ("ASF_ERROR_CORRECTION_DATA\n");
+	ASF_DUMP ("\tdata = 0x%X\n", (asf_dword) obj->data);
+	ASF_DUMP ("\tdata = 0b%s\n",  obj->tostring ());
+	ASF_DUMP ("\t\tis_error_correction_present: %i\n", obj->is_error_correction_present ());
+	ASF_DUMP ("\t\tis_opaque_data_present: %i\n", obj->is_opaque_data_present ());
+	ASF_DUMP ("\t\tdata_length: %i\n", obj->get_data_length ());
+	ASF_DUMP ("\t\tlength_type: %i\n", obj->get_error_correction_length_type ());
+	ASF_DUMP ("\tfirst = %X\n", (asf_dword) obj->first);
+	ASF_DUMP ("\tsecond = %X\n", (asf_dword) obj->second);
 }
 
 bool
@@ -292,22 +292,22 @@ asf_payload_parsing_information::FillInAll (ASFSource* source)
 
 void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
 {
-	printf ("ASF_PAYLOAD_PARSING_INFORMATION\n");
-	printf ("\tlength_type_flags = %X\n", (asf_dword) obj->length_type_flags);
-	printf ("\t\tmultiple_payloads_present = %i\n", obj->is_multiple_payloads_present ());
-	printf ("\t\tsequence_type = %i\n", obj->get_sequence_type ());
-	printf ("\t\tpadding_length_type = %i\n", obj->get_padding_length_type ());
-	printf ("\t\tpacket_length_type = %i\n", obj->get_packet_length_type ());
-	printf ("\tproperty_flags = %X\n", (asf_dword) obj->property_flags);
-	printf ("\t\treplicated_data_length_type = %i\n", obj->get_replicated_data_length_type ());
-	printf ("\t\toffset_into_media_object_length_type = %i\n", obj->get_offset_into_media_object_length_type ());
-	printf ("\t\tmedia_object_number_length_type = %i\n", obj->get_media_object_number_length_type ());
-	printf ("\t\tstream_number_length_type = %i\n", obj->get_stream_number_length_type ());
-	printf ("\tpacket_length = %u\n", (asf_dword) obj->packet_length);
-	printf ("\tsequence = %u\n", (asf_dword) obj->sequence);
-	printf ("\tpadding_length = %u\n", (asf_dword) obj->padding_length);
-	printf ("\tsend_time = %u\n", (asf_dword) obj->send_time);
-	printf ("\tduration = %u\n", (asf_dword) obj->duration);
+	ASF_DUMP ("ASF_PAYLOAD_PARSING_INFORMATION\n");
+	ASF_DUMP ("\tlength_type_flags = %X\n", (asf_dword) obj->length_type_flags);
+	ASF_DUMP ("\t\tmultiple_payloads_present = %i\n", obj->is_multiple_payloads_present ());
+	ASF_DUMP ("\t\tsequence_type = %i\n", obj->get_sequence_type ());
+	ASF_DUMP ("\t\tpadding_length_type = %i\n", obj->get_padding_length_type ());
+	ASF_DUMP ("\t\tpacket_length_type = %i\n", obj->get_packet_length_type ());
+	ASF_DUMP ("\tproperty_flags = %X\n", (asf_dword) obj->property_flags);
+	ASF_DUMP ("\t\treplicated_data_length_type = %i\n", obj->get_replicated_data_length_type ());
+	ASF_DUMP ("\t\toffset_into_media_object_length_type = %i\n", obj->get_offset_into_media_object_length_type ());
+	ASF_DUMP ("\t\tmedia_object_number_length_type = %i\n", obj->get_media_object_number_length_type ());
+	ASF_DUMP ("\t\tstream_number_length_type = %i\n", obj->get_stream_number_length_type ());
+	ASF_DUMP ("\tpacket_length = %u\n", (asf_dword) obj->packet_length);
+	ASF_DUMP ("\tsequence = %u\n", (asf_dword) obj->sequence);
+	ASF_DUMP ("\tpadding_length = %u\n", (asf_dword) obj->padding_length);
+	ASF_DUMP ("\tsend_time = %u\n", (asf_dword) obj->send_time);
+	ASF_DUMP ("\tduration = %u\n", (asf_dword) obj->duration);
 }
 
 bool
@@ -320,7 +320,7 @@ asf_single_payload::FillInAll (ASFSource* source, asf_error_correction_data* ecd
 	stream_number = stream_number & 0x7F;
 	
 	if (!source->parser->IsValidStream (stream_number)) {
-		printf ("asf_single_payload::FillInAll: Invalid stream number (%i).\n", (asf_dword) stream_number);
+		ASF_LOG ("asf_single_payload::FillInAll: Invalid stream number (%i).\n", (asf_dword) stream_number);
 		return false;
 	}
 	
@@ -376,7 +376,7 @@ asf_single_payload::FillInAll (ASFSource* source, asf_error_correction_data* ecd
 		payload_length -= replicated_data_length; // TODO: when compressed?
 		// minus the Padding Length.
 		payload_length -= ppi.padding_length;
-		printf ("payload_length: %i. packet_length: %i, ppi.get_struct_size: %i, replicated_data_length: %i, padding_length: %i, ecd.get_struct_size: %i\n",
+		ASF_LOG ("payload_length: %i. packet_length: %i, ppi.get_struct_size: %i, replicated_data_length: %i, padding_length: %i, ecd.get_struct_size: %i\n",
 			payload_length, ppi.packet_length, ppi.get_struct_size (), replicated_data_length, ppi.padding_length, ecd->get_struct_size ());
 			
 		if (payload_length < 0) {
@@ -408,16 +408,16 @@ asf_single_payload::~asf_single_payload ()
 void
 asf_single_payload_dump (asf_single_payload* obj)
 {
-	printf ("ASF_SINGLE_PAYLOAD\n");
-	printf ("\tstream_number = %u\n", (asf_dword) obj->stream_number);
-	printf ("\tis_key_frame = %s\n", obj->is_key_frame ? "true" : "false");
-	printf ("\tmedia_object_number = %u\n", (asf_dword) obj->media_object_number);
-	printf ("\toffset_into_media_object = %u\n", (asf_dword) obj->offset_into_media_object);
-	printf ("\treplicated_data_length = %u\n", (asf_dword) obj->replicated_data_length);
-	printf ("\treplicated_data = %p\n", obj->replicated_data);
-	printf ("\tpayload_data_length = %u\n", (asf_dword) obj->payload_data_length);
-	printf ("\tpayload_data = %p\n", obj->payload_data);
-	printf ("\tget_presentation_time = %i\n", obj->get_presentation_time ());
+	ASF_DUMP ("ASF_SINGLE_PAYLOAD\n");
+	ASF_DUMP ("\tstream_number = %u\n", (asf_dword) obj->stream_number);
+	ASF_DUMP ("\tis_key_frame = %s\n", obj->is_key_frame ? "true" : "false");
+	ASF_DUMP ("\tmedia_object_number = %u\n", (asf_dword) obj->media_object_number);
+	ASF_DUMP ("\toffset_into_media_object = %u\n", (asf_dword) obj->offset_into_media_object);
+	ASF_DUMP ("\treplicated_data_length = %u\n", (asf_dword) obj->replicated_data_length);
+	ASF_DUMP ("\treplicated_data = %p\n", obj->replicated_data);
+	ASF_DUMP ("\tpayload_data_length = %u\n", (asf_dword) obj->payload_data_length);
+	ASF_DUMP ("\tpayload_data = %p\n", obj->payload_data);
+	ASF_DUMP ("\tget_presentation_time = %i\n", obj->get_presentation_time ());
 }
 
 bool
@@ -437,14 +437,14 @@ asf_multiple_payloads::FillInAll (ASFSource* source, asf_error_correction_data* 
 
 	payloads = (asf_single_payload**) g_malloc0 (sizeof (asf_single_payload*) * (count + 1));
 	
-	printf ("asf_multiple_payloads::FillInAll (): Reading %i payloads...\n", count); 
+	ASF_LOG ("asf_multiple_payloads::FillInAll (): Reading %i payloads...\n", count); 
 	
 	for (int i = 0; i < count; i++) {
 		payloads [i] = new asf_single_payload ();
 		if (!payloads [i]->FillInAll (source, ecd, ppi, this))
 			return false;
-		//printf ("-Payload #%i:\n", i + 1);
-		//asf_single_payload_dump (payloads [i]);
+		ASF_DUMP ("-Payload #%i:\n", i + 1);
+		asf_single_payload_dump (payloads [i]);
 	}
 	
 	return true;
@@ -452,19 +452,19 @@ asf_multiple_payloads::FillInAll (ASFSource* source, asf_error_correction_data* 
 
 void asf_multiple_payloads_dump (asf_multiple_payloads* obj)
 {
-	printf ("ASF_MULTIPLE_PAYLOADS\n");
-	printf ("\tpayload_flags = %u\n", (asf_dword) obj->payload_flags);
-	printf ("\t\tnumber of payloads = %i\n", obj->get_number_of_payloads ());
-	printf ("\t\tpayload_length_type = %i\n", obj->get_payload_length_type ());
+	ASF_DUMP ("ASF_MULTIPLE_PAYLOADS\n");
+	ASF_DUMP ("\tpayload_flags = %u\n", (asf_dword) obj->payload_flags);
+	ASF_DUMP ("\t\tnumber of payloads = %i\n", obj->get_number_of_payloads ());
+	ASF_DUMP ("\t\tpayload_length_type = %i\n", obj->get_payload_length_type ());
 	
 	if (obj->payloads) {
 		int i = 0;
 		while (obj->payloads [i] != NULL) {
-			printf ("\tpayload #%i:\n", i + 1);
+			ASF_DUMP ("\tpayload #%i:\n", i + 1);
 			asf_single_payload_dump (obj->payloads [i++]);
 		}
 	} else {
-		printf ("\t<no payloads here>\n");
+		ASF_DUMP ("\t<no payloads here>\n");
 	}
 }
 
