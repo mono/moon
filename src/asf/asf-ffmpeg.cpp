@@ -192,6 +192,38 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	MoonASFContext *context = (MoonASFContext*) s->priv_data;
 	FFMPEGParser* parser = context->parser;
 	FFMPEGPacket* packet = NULL;
+	ASFFrameReader* reader = parser->reader;
+	
+	if (!reader->Advance ())
+		return -1;
+		
+	AVPacket* pkt = new AVPacket ();
+	
+	av_new_packet (pkt, reader->Size ());
+		
+	pkt->pts = reader->Pts ();
+	pkt->dts = 0;
+	pkt->stream_index = parser->ConvertStreamIndex (reader->StreamNumber ()); 
+	pkt->pos = -1;
+	pkt->size = reader->Size ();
+	reader->Write (pkt->data);
+	if (reader->IsKeyFrame () || s->streams [pkt->stream_index]->codec->codec_type == CODEC_TYPE_AUDIO) {
+		pkt->flags |= PKT_FLAG_KEY;
+	}
+		
+	//AVPacket_dump (pkt, 1);
+	
+	*av_packet = *pkt; 
+	
+	return 0;
+	
+	//////////////
+	
+#if 0
+	
+	MoonASFContext *context = (MoonASFContext*) s->priv_data;
+	FFMPEGParser* parser = context->parser;
+	FFMPEGPacket* packet = NULL;
 	
 	packet = (FFMPEGPacket*) parser->GetCurrentPacket ();
 	
@@ -215,6 +247,7 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 		if (!parser->ReadPacket (packet)) {
 			return -1;
 		}
+		parser->SetCurrentPacket (packet);
 		parser->packets_read++;
 		FFMPEG_LOG ("ffmpeg_asf_read_packet: Created new packet %p with %i payloads.\n", packet, packet->GetPayloadCount ());
 	}
@@ -230,16 +263,16 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	
 	FFMPEG_LOG ("ffmpeg_asf_read_packet: Reading payload #%i/%i with size %u.\n", current_payload, packet->GetPayloadCount (), payload_size);
 	
-	if (false && packet->current_payload == packet->GetPayloadCount ()) {
+	if (packet->current_payload == packet->GetPayloadCount ()) {
 		int64_t pos = parser->GetPacketOffset (parser->packets_read);
 		parser->source->Seek (pos, SEEK_SET);
-		
+		parser->SetCurrentPacket (NULL);
 		if (parser->ReadPacket (new FFMPEGPacket ())) {
 			parser->packets_read++;
 			
 			asf_single_payload* next_payload;
 			packet = (FFMPEGPacket*) parser->GetCurrentPacket ();
-			next_payload = packet->GetPayload (++packet->current_payload);
+			next_payload = packet->GetPayload (packet->current_payload++);
 			if (next_payload != NULL && 
 				next_payload->media_object_number == payload->media_object_number &&
 				next_payload->stream_number == payload->stream_number) {
@@ -262,7 +295,7 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	if (payload->is_key_frame || s->streams [pkt->stream_index]->codec->codec_type == CODEC_TYPE_AUDIO) {
 		pkt->flags |= PKT_FLAG_KEY;
 	}
-	printf ("pkt: %p, pkt->data: %p, payload_size: %i, next_data_size: %i\n", pkt, pkt->data, payload_size, next_data_size);
+	//printf ("pkt: %p, pkt->data: %p, payload_size: %i, next_data_size: %i\n", pkt, pkt->data, payload_size, next_data_size);
 	memcpy (pkt->data, payload->payload_data, payload_size);
 	if (next_data_size > 0) {
 		memcpy (pkt->data + payload_size, next_data, next_data_size);
@@ -270,13 +303,14 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	}
 		
 	//AVPacket_dump (pkt, 1);
-	if (packet->current_payload == packet->GetPayloadCount ()) {
+	if (false && packet->current_payload == packet->GetPayloadCount ()) {
 		parser->FreeCurrentPacket ();
 	}
 	
 	*av_packet = *pkt; 
 	
 	return 0;
+#endif
 }
 
 int ffmpeg_asf_read_close(AVFormatContext *s)
@@ -297,12 +331,10 @@ int ffmpeg_asf_read_seek(AVFormatContext *s, int stream_index, int64_t pts, int 
 	
 	FFMPEG_LOG ("ffmpeg_asf_read_seek (%p, %i, %lld, %i).\n", s, stream_index, pts, flags);
 	
+	if (parser->reader->Seek (parser->ConvertFFMpegStreamIndex (stream_index), pts))
+		return 0;
 	
-	printf ("FIXME: Seeking to the first packet. This will normally not be correct.\n");
-	parser->packets_read = 0;
-	parser->FreeCurrentPacket ();
-	
-	return 0;
+	return -1;
 }
 
 int64_t ffmpeg_asf_read_pts(AVFormatContext *s, int ffmpeg_stream_index, int64_t *start_pos, int64_t pos_limit)
@@ -352,17 +384,16 @@ int64_t ffmpeg_asf_read_pts(AVFormatContext *s, int ffmpeg_stream_index, int64_t
 	
 	bool is_audio_stream = parser->GetStream (stream_index)->is_audio ();
 	int64_t result = AV_NOPTS_VALUE;
-	ASFPacket* old_packet = parser->GetCurrentPacket ();
-	parser->SetCurrentPacket (NULL);
 	while (packet_offset > pos_limit) {
 		packet_offset += file_properties->min_packet_size;
 		packet_index++;
-		if (!parser->ReadPacket ()) {
+		
+		ASFPacket* packet = new ASFPacket ();
+		if (!parser->ReadPacket (packet)) {
 			FFMPEG_LOG ("ffmpeg_asf_read_pts: could not read packet index %lld at position %lld.\n", packet_index, packet_offset);
+			delete packet;
 			return AV_NOPTS_VALUE;
 		}
-		
-		ASFPacket* packet = parser->GetCurrentPacket ();
 		
 		if (!is_audio_stream && !packet->payloads->is_key_frame (stream_index))
 			continue;
@@ -370,11 +401,11 @@ int64_t ffmpeg_asf_read_pts(AVFormatContext *s, int ffmpeg_stream_index, int64_t
 		*start_pos = packet_offset;
 		
 		result = packet->payloads->get_presentation_time (stream_index);
+		
+		delete packet;
+		
 		break;
 	}
-	parser->FreeCurrentPacket ();
-	
-	parser->SetCurrentPacket (old_packet);
 		
 	FFMPEG_LOG ("fmpeg_asf_read_pts: found pts (%lld) of packet index %lld.\n", pts, packet_index);
 	

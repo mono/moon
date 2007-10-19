@@ -142,9 +142,129 @@ public:
 		return NULL;
 	}
 	
-	asf_multiple_payloads* payloads;
-	int64_t index;
+	// Gets the pts of the first payload.
+	int64_t GetPts (gint32 stream_number)
+	{
+		if (!payloads)
+			return -1;
 		
+		asf_single_payload* first = GetFirstPayload (stream_number);
+		if (!first)
+			return -1;
+			
+		return first->get_presentation_time ();
+	}
+	
+	asf_single_payload* GetFirstPayload (gint32 stream_number)
+	{
+		if (!payloads)
+			return NULL;
+			
+		int index = 0;
+		while (payloads->payloads [index] != NULL) {
+			if (payloads->payloads [index]->stream_number == stream_number)
+				return payloads->payloads [index];
+			index++;
+		}
+		return NULL;
+	}
+	
+	asf_multiple_payloads* payloads;
+	
+	gint32 index; // The index of this packet. -1 if not known.
+	gint64 position; // The position of this packet. -1 if not known.
+		
+};
+
+struct ASFFrameReaderData {
+	asf_single_payload* payload;
+	ASFFrameReaderData* prev;
+	ASFFrameReaderData* next;
+	
+	ASFFrameReaderData (asf_single_payload* load)
+	{
+		payload = load;
+		prev = NULL;
+		next = NULL;
+	}
+	
+	~ASFFrameReaderData ()
+	{
+		delete payload;
+	}
+};
+
+class ASFFrameReader {
+public:
+	ASFFrameReader (ASFParser* parser);
+	virtual ~ASFFrameReader ();
+	
+	// Can we seek?
+	bool CanSeek () { return true; }
+	
+	// Seek to the frame with the provided pts 
+	bool Seek (gint32 stream_number, guint64 pts);
+	
+	// Advance to the next frame
+	bool Advance ();
+	
+	// Write the frame's data to a the destination
+	bool Write (void* destination);
+	
+	// Information about the current frame
+	guint64 Size () { return size; }
+	bool IsKeyFrame () { return is_key_frame; }
+	gint64 Pts () { return pts; }
+	gint32 StreamNumber () { return stream_number; }
+	
+private:
+	ASFParser* parser;
+	
+	gint32 current_packet_index;
+	
+	// The queue of payloads we've built.
+	ASFFrameReaderData* first;
+	ASFFrameReaderData* last;
+	
+	// A list of the payloads in the current frame
+	asf_single_payload** payloads;
+	gint32 payloads_size;
+	
+	// Information about the current frame.
+	guint64 size;
+	bool is_key_frame;
+	gint64 pts;
+	gint32 stream_number;
+	
+	// Reads another packet and fills data at the end 
+	bool ReadMore ();
+	
+	void RemoveAll ()
+	{
+		ASFFrameReaderData* current = first, *next = NULL;
+		while (current = NULL) {
+			next = current->next;
+			delete current;
+			current = next;
+		}
+		first = NULL;
+		last = NULL;
+	}
+	
+	void Remove (ASFFrameReaderData* data)
+	{
+		if (data->prev != NULL)
+			data->prev->next = data->next;
+		
+		if (data->next != NULL)
+			data->next->prev = data->prev;
+			
+		if (data == first)
+			first = data->next;
+			
+		if (data == last)
+			last = data->prev;
+	}
 };
 
 class ASFParser {
@@ -154,26 +274,17 @@ public:
 	
 	bool ReadHeader ();
 	bool ReadData ();
-	bool ReadPacket ();
+	// Reads the packet at the current position.
 	bool ReadPacket (ASFPacket* packet);
+	// Seeks to the packet index (as long as the packet index >= 0), then reads it.
+	// If the packet index is < 0, then just read at the current position
+	bool ReadPacket (ASFPacket* packet, gint32 packet_index); 
+	
 	asf_object* ReadObject (asf_object* guid);
 	const char* GetLastError ();
 	void AddError (const char* err); // Makes a copy of the provided error string.
 	void AddError (char* err); // Frees the provided error string.
 
-	ASFSource* source;
-	
-	asf_header* header;
-	int64_t data_offset; // location of data object
-	int64_t packet_offset; // location of first packet
-	int64_t packet_offset_end; // location of the end of the last packet
-	asf_data* data;
-	asf_file_properties* file_properties;
-	
-	asf_stream_properties* stream_properties [127];
-	
-	ASFPacket* current_packet;
-	
 	// Stream index from 1 to 127
 	asf_stream_properties* GetStream (gint32 stream_index)
 	{
@@ -197,8 +308,14 @@ public:
 		return GetStream (stream_index) != NULL;
 	}
 	
-	int64_t GetPacketOffset (int64_t packet_index)
+	// Returns 0 on failure, otherwise the offset of the packet index.
+	guint64 GetPacketOffset (gint32 packet_index)
 	{
+		if (packet_index < 0 || packet_index >= file_properties->data_packet_count) {
+			AddError (g_strdup_printf ("ASFParser::GetPacketOffset (%i): Invalid packet index (there are %llu packets).", packet_index, file_properties->data_packet_count)); 
+			return 0;
+		}
+
 		return packet_offset + packet_index * file_properties->min_packet_size;
 	}
 	
@@ -211,20 +328,26 @@ public:
 		return (offset - packet_offset) / file_properties->min_packet_size;
 	}
 	
-	ASFPacket* GetCurrentPacket ()
+	// Returns the packet index where the desired pts is found.
+	// Returns -1 on failure.
+	gint32 GetPacketIndexOfPts (gint32 stream_number, gint64 pts)
 	{
-		return current_packet;
-	}
-	
-	void SetCurrentPacket (ASFPacket* packet)
-	{
-		current_packet = packet;
-	}
-	
-	void FreeCurrentPacket ()
-	{
-		delete current_packet;
-		current_packet = NULL;
+		int result = 0;
+		ASFPacket* packet = NULL;
+		
+		// Read packets until we find the packet which has a pts
+		// greater than the one we're looking for.
+		
+		while (ReadPacket (packet, result)) {
+			gint64 current_pts = packet->GetPts (stream_number);
+			if (current_pts < 0) // Can't read pts for some reason.
+				return -1;
+			if (current_pts > pts) // We've found the packet after the one we're looking for
+				return result - 1; // return the previous one.
+			result++;
+		}
+		
+		return -1;
 	}
 	
 	asf_header* GetHeader ()
@@ -271,11 +394,22 @@ public:
 			return NULL;
 		return header_objects [index];
 	}
+
+	ASFSource* source;
 	
-	
-private:
 	asf_object** header_objects;
-	char* last_error;	
+	asf_header* header;
+	asf_data* data;
+	asf_file_properties* file_properties;
+	
+	asf_stream_properties* stream_properties [127];
+	
+	guint64 data_offset; // location of data object
+	guint64 packet_offset; // location of the beginning of the first packet
+	guint64 packet_offset_end; // location of the end of the last packet
+	
+	
+	char* last_error;
 };
 
 

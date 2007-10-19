@@ -1,3 +1,8 @@
+2007-10-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-structures.h, asf.cpp, asf-ffmpeg.cpp, asf.h, asf-ffmpeg.h: Today's
+	  work.
+
 2007-10-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.h, asf-generated.cpp, asf.mdp, asf.cpp, asf.mds,

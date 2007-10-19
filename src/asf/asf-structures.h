@@ -192,12 +192,12 @@ struct asf_single_payload {
 	
 	bool FillInAll (ASFSource* source, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
 	
-	asf_dword get_presentation_time ()
+	gint64 get_presentation_time ()
 	{
 		if (replicated_data_length >= 8) {
 			return * (((asf_dword*) replicated_data) + 1);
 		}
-		return 0;
+		return -1;
 	}
 	
 	asf_single_payload () 
@@ -311,6 +311,13 @@ struct asf_multiple_payloads {
 			index++;
 		}
 		return false;
+	}
+	
+	asf_single_payload** steal_payloads ()
+	{
+		asf_single_payload** result = payloads;
+		payloads = NULL;
+		return result;
 	}
 
 };

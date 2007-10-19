@@ -70,11 +70,13 @@ public:
 	FFMPEGParser (const char* filename) : ASFParser (filename)
 	{
 		memset (ffmpeg_stream_indices, -1, 128);
-		packets_read = 0;
+		reader = new ASFFrameReader (this);
 	}
 	
 	virtual ~FFMPEGParser ()
 	{
+		delete reader;
+		reader = NULL;
 	}
 	
 	void AddStreamIndex (gint32 ffmpeg_stream_index, gint32 asf_stream_index)
@@ -114,7 +116,7 @@ public:
 	
 	gint32 ffmpeg_stream_indices [128];
 	
-	int64_t packets_read;
+	ASFFrameReader* reader;
 };
 
 class FFMPEGSource : public ASFSource {
