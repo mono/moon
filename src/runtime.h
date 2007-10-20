@@ -17,6 +17,7 @@ G_BEGIN_DECLS
 
 #include <stdint.h>
 #include <cairo.h>
+#include <gtk/gtk.h>
 
 #include "point.h"
 #include "uielement.h"
