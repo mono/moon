@@ -1,0 +1,205 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="400" Height="400" Background="Black">
+	<!-- InkPresenter draws like a canvas (and more) -->
+	<InkPresenter Width="400" Height="400" Background="White">
+	<InkPresenter.Strokes>
+		<StrokeCollection>
+			<!-- a single red point, no pressure factor (default) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- a single red point with a black outline, no pressure factor (default) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFF0000" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- a single green point with a black outline, 0 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF00FF00" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="60" Y="20" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- a single blue point with a black outline, 0.5 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="80" Y="20" PressureFactor="0.5" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- a single white point with a black outline, 0.5 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFFFFFF" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="100" Y="20" PressureFactor="1.0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+
+			<!-- two red points, no pressure factor (default) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="40" />
+                                        <StylusPoint X="20" Y="60" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- two red points with a black outline, no pressure factor (default) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFF0000" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="40" />
+                                        <StylusPoint X="40" Y="60" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- two green points with a black outline, 0 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF00FF00" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="60" Y="40" PressureFactor="0" />
+                                        <StylusPoint X="60" Y="60" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- two blue points with a black outline, 0.5 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="80" Y="40" PressureFactor="0.5" />
+                                        <StylusPoint X="80" Y="60" PressureFactor="0.5" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- two white points with a black outline, 0.5 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFFFFFF" OutlineColor="#FF000000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="100" Y="40" PressureFactor="1.0" />
+                                        <StylusPoint X="100" Y="60" PressureFactor="1.0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+
+			<!-- three red points, no pressure factor (default) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFF0000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="80" />
+                                        <StylusPoint X="40" Y="100" />
+                                        <StylusPoint X="20" Y="120" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- three red points with a black outline, no pressure factor (default) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFF0000" OutlineColor="#FF000000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="80" />
+                                        <StylusPoint X="60" Y="100" />
+                                        <StylusPoint X="40" Y="120" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- three green points with a black outline, 0 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF00FF00" OutlineColor="#FF000000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="60" Y="80" PressureFactor="0" />
+                                        <StylusPoint X="80" Y="100" PressureFactor="0" />
+                                        <StylusPoint X="60" Y="120" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- three blue points with a black outline, 0.5 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FF000000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="80" Y="80" PressureFactor="0.5" />
+                                        <StylusPoint X="100" Y="100" PressureFactor="0.5" />
+                                        <StylusPoint X="80" Y="120" PressureFactor="0.5" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+			<!-- three white points with a black outline, 0.5 pressure factor -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FFFFFFFF" OutlineColor="#FF000000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="100" Y="80" PressureFactor="1.0" />
+                                        <StylusPoint X="120" Y="100" PressureFactor="1.0" />
+                                        <StylusPoint X="100" Y="120" PressureFactor="1.0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+		</StrokeCollection>
+	</InkPresenter.Strokes>
+	</InkPresenter>
+</Canvas>

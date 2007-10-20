@@ -1,0 +1,112 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="400" Height="400" Background="Black">
+	<InkPresenter Width="400" Height="400" Background="White">
+	<InkPresenter.Strokes>
+		<StrokeCollection>
+
+<!-- no drawing attributes == small black point -->
+			<Stroke>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- drawing attributes (transparent colors) == no point -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#00000000" OutlineColor="#00000000" Height="1" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- drawing attributes (black with transparent outline) == very small grey point -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF000000" OutlineColor="#00000000" Height="1" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="60" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- drawing attributes (transparent with black outline) == quite big black point -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#00000000" OutlineColor="#FF000000" Height="1" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="80" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- drawing attributes (transparent with black outline) == identical to above (quite big black point) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF000000" OutlineColor="#FF000000" Height="1" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="100" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- drawing attributes (black with transparent outline) == invisible -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF000000" OutlineColor="#00000000" Height="0" Width="0"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- drawing attributes (transparent with black outline) == small black point (but bigger than no drawing attributes) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#00000000" OutlineColor="#FF000000" Height="0" Width="0"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- drawing attributes (transparent with black outline) == identical to above (quite big black point) -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF000000" OutlineColor="#FF000000" Height="0" Width="0"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="160" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+		</StrokeCollection>
+	</InkPresenter.Strokes>
+
+<!-- cloned points using round rectangles -->
+
+	<Rectangle Fill="#FF000000" Canvas.Left="18.5" Canvas.Top="29.5" Height="3" Width="3" RadiusX="1.5" RadiusY="1.5" />
+
+	<Rectangle Fill="#FFcccccc" Canvas.Left="59" Canvas.Top="30" Height="2" Width="2" RadiusX="1" RadiusY="1" />
+	<Rectangle Fill="#FF000000" Stroke="#FF000000" Canvas.Left="77.5" Canvas.Top="29.5" Height="5" Width="5" RadiusX="2.5" RadiusY="2.5" />
+	<Rectangle Fill="#FF000000" Stroke="#FF000000" Canvas.Left="97.5" Canvas.Top="29.5" Height="5" Width="5" RadiusX="2.5" RadiusY="2.5" />
+
+	<Rectangle Fill="#FF000000" Stroke="#FF000000" Canvas.Left="138" Canvas.Top="30" Height="4" Width="4" RadiusX="2" RadiusY="2" />
+	<Rectangle Fill="#FF000000" Stroke="#FF000000" Canvas.Left="158" Canvas.Top="30" Height="4" Width="4" RadiusX="2" RadiusY="2" />
+	</InkPresenter>
+</Canvas>

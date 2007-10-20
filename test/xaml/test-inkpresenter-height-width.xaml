@@ -1,0 +1,572 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="400" Height="400" Background="Black">
+	<InkPresenter Width="400" Height="400" Background="White">
+	<InkPresenter.Strokes>
+		<StrokeCollection>
+
+<!-- single point width-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="0" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) width-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="0" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="40" />
+                                        <StylusPoint X="20" Y="80" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) width-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="0" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="20" />
+                                        <StylusPoint X="80" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) width-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="0" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="40" />
+                                        <StylusPoint X="80" Y="80" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- single point height-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="0"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) height-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="0"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="40" />
+                                        <StylusPoint X="120" Y="80" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) height-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="0"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="20" />
+                                        <StylusPoint X="180" Y="20" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) height-only stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="0"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="40" />
+                                        <StylusPoint X="180" Y="80" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+
+<!-- single point large-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="1" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="120" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) large-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="1" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="140" />
+                                        <StylusPoint X="20" Y="180" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) large-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="1" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="120" />
+                                        <StylusPoint X="80" Y="120" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) large-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="1" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="140" />
+                                        <StylusPoint X="80" Y="180" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- single point large-height stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="120" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) large-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="140" />
+                                        <StylusPoint X="120" Y="180" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) large-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="120" />
+                                        <StylusPoint X="180" Y="120" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) large-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="1"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="140" />
+                                        <StylusPoint X="180" Y="180" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+
+<!-- single point double-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="5" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="220" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) double-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="5" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="240" />
+                                        <StylusPoint X="20" Y="280" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) double-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="5" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="220" />
+                                        <StylusPoint X="80" Y="220" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) double-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="5" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="240" />
+                                        <StylusPoint X="80" Y="280" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- single point double-height stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="220" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) double-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="240" />
+                                        <StylusPoint X="120" Y="280" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) double-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="220" />
+                                        <StylusPoint X="180" Y="220" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) double-width stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="5"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="240" />
+                                        <StylusPoint X="180" Y="280" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+
+<!-- single point stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="320" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="20" Y="340" />
+                                        <StylusPoint X="20" Y="380" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="320" />
+                                        <StylusPoint X="80" Y="320" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) stroke -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="40" Y="340" />
+                                        <StylusPoint X="80" Y="380" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- single point stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="320" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="340" PressureFactor="0" />
+                                        <StylusPoint X="120" Y="380" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) double-width stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="320" PressureFactor="0" />
+                                        <StylusPoint X="180" Y="320" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="340" PressureFactor="0" />
+                                        <StylusPoint X="180" Y="380" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- single point stroke, half-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="220" Y="320" PressureFactor="0.5" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) stroke, half-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="220" Y="340" PressureFactor="0.5" />
+                                        <StylusPoint X="220" Y="380" PressureFactor="0.5" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) double-width stroke, half-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="240" Y="320" PressureFactor="0.5" />
+                                        <StylusPoint X="280" Y="320" PressureFactor="0.5" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) stroke, half-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="240" Y="340" PressureFactor="0.5" />
+                                        <StylusPoint X="280" Y="380" PressureFactor="0.5" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- single point stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="320" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="120" Y="340" PressureFactor="0" />
+                                        <StylusPoint X="120" Y="380" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) double-width stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="320" PressureFactor="0" />
+                                        <StylusPoint X="180" Y="320" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) stroke, no pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="140" Y="340" PressureFactor="0" />
+                                        <StylusPoint X="180" Y="380" PressureFactor="0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- single point stroke, full-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="320" Y="320" PressureFactor="1.0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (vertical line) stroke, full-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="320" Y="340" PressureFactor="1.0" />
+                                        <StylusPoint X="320" Y="380" PressureFactor="1.0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (horizontal line) double-width stroke, full-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="340" Y="320" PressureFactor="1.0" />
+                                        <StylusPoint X="380" Y="320" PressureFactor="1.0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+
+<!-- two points (diagonal line) stroke, full-pressure -->
+			<Stroke>
+			<Stroke.DrawingAttributes>
+				<DrawingAttributes Color="#FF0000FF" OutlineColor="#FFFF0000" Height="10" Width="10"/>
+			</Stroke.DrawingAttributes>
+			<Stroke.StylusPoints>
+				<StylusPointCollection>
+                                        <StylusPoint X="340" Y="340" PressureFactor="1.0" />
+                                        <StylusPoint X="380" Y="380" PressureFactor="1.0" />
+				</StylusPointCollection>
+			</Stroke.StylusPoints>
+			</Stroke>
+		</StrokeCollection>
+	</InkPresenter.Strokes>
+	</InkPresenter>
+</Canvas>

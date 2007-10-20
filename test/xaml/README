@@ -1,12 +1,18 @@
 NON-WORKING
 
-* test-path-group-2.xaml, 
+* test-path-group-2.xaml
 
 	The XAML parser replace the first GeometryGroup with the second
-	instead of merging both. Bug #82612
+	instead of merging both. Bug #325279
 
 * test-path-group-stoke.xaml
 
 	Degenerate cases works like individual shapes being rendered (i.e.
 	no FillRule is applied) and some geometries can be non-degenerated.
-	Note: also suffers from #82612
+	Note: also suffers from #325279
+
+* test-inkpresenter.xaml
+* test-inkpresenter-drawingattributes.xaml
+* test-inkpresenter-height-width.xaml
+
+	Work in progress
