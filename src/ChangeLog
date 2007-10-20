@@ -1,3 +1,9 @@
+2007-10-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.h: Add gtk.h (since it depended on stylus.h to get it)
+	* stylus.cpp|h: Add some missing functions. Rendering changes 
+	(not active, work in progress).
+
 2007-10-18  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h: fix comment.

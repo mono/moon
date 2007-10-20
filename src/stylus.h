@@ -37,6 +37,11 @@ class StylusInfo : public DependencyObject {
 };
 
 StylusInfo* stylus_info_new ();
+TabletDeviceType stylus_info_get_device_type (StylusInfo* stylus_info);
+void	stylus_info_set_device_type	(StylusInfo* stylus_info, TabletDeviceType type);
+bool	stylus_info_get_inverted	(StylusInfo* stylus_info);
+void	stylus_info_set_inverted	(StylusInfo* stylus_info, bool inverted);
+
 
 class StylusPoint : public DependencyObject {
  public:
@@ -95,6 +100,9 @@ class Stroke : public DependencyObject {
 Stroke* stroke_new ();
 DrawingAttributes* stroke_get_drawing_attributes (Stroke *stroke);
 void stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes);
+StylusPointCollection* stroke_get_stylus_points (Stroke *stroke);
+void stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection);
+
 
 class InkPresenter : public Canvas {
  public:
@@ -110,6 +118,9 @@ class InkPresenter : public Canvas {
 };
 
 InkPresenter* ink_presenter_new ();
+StrokeCollection* ink_presenter_get_strokes (InkPresenter *ink_presenter);
+void ink_presenter_set_strokes (InkPresenter *ink_presenter, StrokeCollection* collection);
+
 
 void stylus_init (void);
 
