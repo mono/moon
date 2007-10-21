@@ -41,6 +41,8 @@ libmoonplugin_la_SOURCES = \
 	plugin-glue.cpp 	\
 	plugin-class.cpp 	\
 	plugin-class.h 	\
+	browser-http.h	\
+	browser-http.cpp	\
 	downloader.cpp
 
 novell_moonlight_xpi_CONTENTS = $(srcdir)/install.js .libs/libmoonloader.so .libs/libmoonplugin.so

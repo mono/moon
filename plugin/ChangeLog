@@ -1,3 +1,10 @@
+2007-10-21  Jb Evain  <jbevain@novell.com>
+
+	* browser-http.cpp|h: add the files where the unmanaged
+	implementation of BrowserHttpRequest will live.
+
+	* Makefile.am: add them to the build.
+
 2007-10-18  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (moonlight_dependency_object_invoke): make the
