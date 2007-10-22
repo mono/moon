@@ -43,20 +43,15 @@ public:
 
 class SyncBrowserHttpResponse : public BrowserHttpResponse {
 private:
-	char *data;
-	PRUint32 length;
-
 	nsCOMPtr<nsIInputStream> response_stream;
 
 public:
-	SyncBrowserHttpResponse (nsCOMPtr<nsIChannel> channel, nsCOMPtr<nsIInputStream> response) : BrowserHttpResponse (channel), data (NULL)
+	SyncBrowserHttpResponse (nsCOMPtr<nsIChannel> channel, nsCOMPtr<nsIInputStream> response) : BrowserHttpResponse (channel)
 	{
 		this->response_stream = response;
 	}
 
-	virtual ~SyncBrowserHttpResponse ();
-
-	char *Read (int *length);
+	void *Read (int *length);
 };
 
 class AsyncBrowserHttpResponse : public BrowserHttpResponse {

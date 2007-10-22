@@ -14,20 +14,11 @@
 
 // SyncBrowserHttpResponse
 
-SyncBrowserHttpResponse::~SyncBrowserHttpResponse ()
-{
-	NS_Free (data);
-}
-
-char *
+void *
 SyncBrowserHttpResponse::Read (int *size)
 {
-	if (data != NULL) {
-		*size = this->length;
-		return data;
-	}
-
 	PRUint32 read = 0;
+	char *data;
 
 	while (true) {
 		PRUint32 available, len;
@@ -49,7 +40,6 @@ SyncBrowserHttpResponse::Read (int *size)
 		read += len;
 	}
 
-	length = read;
 	*size = read;
 
 	return data;
@@ -161,7 +151,7 @@ browser_http_test ()
 	SyncBrowserHttpResponse *response = req->GetResponse ();
 
 	int len;
-	char *data = response->Read (&len);
+	const char *data = response->Read (&len);
 
 	char *text = g_strndup (data, len);
 
