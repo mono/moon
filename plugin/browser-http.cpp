@@ -18,7 +18,7 @@ void *
 SyncBrowserHttpResponse::Read (int *size)
 {
 	PRUint32 read = 0;
-	char *data;
+	char *data = NULL;
 
 	while (true) {
 		PRUint32 available, len;
@@ -151,9 +151,9 @@ browser_http_test ()
 	SyncBrowserHttpResponse *response = req->GetResponse ();
 
 	int len;
-	const char *data = response->Read (&len);
+	void *data = response->Read (&len);
 
-	char *text = g_strndup (data, len);
+	char *text = g_strndup ((char *) data, len);
 
 	//printf ("response: \n%s", text);
 
