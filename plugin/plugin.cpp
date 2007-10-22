@@ -14,7 +14,6 @@
 #include "plugin-class.h"
 #include "moon-mono.h"
 #include "downloader.h"
-#include "browser-http.h"
 
 /* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
 static const gchar *moonlight_authors[] = {
@@ -594,24 +593,77 @@ PluginInstance::ReportException (char *msg, char *details, char **stack_trace, i
 void*
 PluginInstance::LoadUrl (char *url, gint32 *length)
 {
-	void *data;
-	char *url_escaped;
+	NPObject *object = NULL;
+	NPVariant result;
+	char *script, *url_escaped;
+	void *load_res = NULL;
+	NPString str;
+	int i;
+	bool res;
 
+	*length = 0;
+
+	// Get a reference to our element
+	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
+		DEBUGMSG ("*** Failed to get plugin element object");
+		return NULL;
+	}
+
+	//
+	// Since NPAPI doesn't contain the neccessary functionality, we use the JS XMLHttpRequest
+	// object of AJAX fame. Some info on downloading binary data:
+	// http://mgran.blogspot.com/2006/08/downloading-binary-streams-with.html
+	// This can only load stuff below our base URL.
+	// During the call, the UI will freeze, which is a problem, but this is the price we
+	// pay for synchronous access.
+
+	// FIXME:
+	// - make sure the variables do not become global
 	url_escaped = escape_quotes (url);
-	
-	printf ("LOAD URL: %s", url_escaped);
+	script = g_strdup_printf ("var req = new XMLHttpRequest(); req.open('GET', '%s', false); req.overrideMimeType('text/plain; charset=x-user-defined'); req.send (null); req.responseText;", url_escaped);
 
-	BrowserHttpRequest *request = new BrowserHttpRequest (url_escaped, "GET");
-	SyncBrowserHttpResponse *response = request->GetResponse ();
+	str.utf8characters = script;
+	str.utf8length = strlen (script);
 
-	data = response->Read (length);	
+	res = NPN_Evaluate (instance, object, &str, &result);
+	if (res) {
+		if (NPVARIANT_IS_STRING (result)) {
+			char *s, *in, *arr;
+			int arr_len, len;
 
+			len = NPVARIANT_TO_STRING (result).utf8length;
+			s = (char*)NPVARIANT_TO_STRING (result).utf8characters;
+
+			// Convert the utf8 string into an ASCII string
+			// See the blog entry above for why this is needed
+			in = s;
+			arr_len = 0;
+			while (in - s < len) {
+				in = g_utf8_next_char (in);
+				arr_len ++;
+			}
+
+			arr = (char*)g_malloc (arr_len);
+
+			in = s;
+			i = 0;
+			while (in - s < len) {
+				arr [i] = g_utf8_get_char (in);
+      
+				in = g_utf8_next_char (in);
+				i ++;
+			}
+
+			load_res = arr;
+			*length = arr_len;
+		}
+		NPN_ReleaseVariantValue (&result);
+	}
+	NPN_ReleaseObject (object);
+	g_free (script);
 	g_free (url_escaped);
 
-	delete request;
-	delete response;
-
-	return data;
+	return load_res;
 }
 
 void
