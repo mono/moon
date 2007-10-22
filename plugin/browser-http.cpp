@@ -29,7 +29,7 @@ SyncBrowserHttpResponse::Read (int *size)
 		} else if (available == 0) {
 			break;
 		} else {
-			NS_Realloc (data, read + available);
+			data = (char *) NS_Realloc (data, read + available);
 		}
 
 		response_stream->Read (data + read, available, &len);
@@ -146,7 +146,6 @@ browser_http_request_get_response (BrowserHttpRequest *request)
 void
 browser_http_test ()
 {
-	printf ("test \n");
 	BrowserHttpRequest *req = new BrowserHttpRequest ("GET", "http://evain.net/gdb.txt");
 	SyncBrowserHttpResponse *response = req->GetResponse ();
 
@@ -155,8 +154,9 @@ browser_http_test ()
 
 	char *text = g_strndup ((char *) data, len);
 
-	//printf ("response: \n%s", text);
+	printf ("response: \n%s", text);
 
+	g_free (data);
 	g_free (text);
 
 	delete response;
