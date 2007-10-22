@@ -1,9 +1,9 @@
 if INCLUDE_MONO_RUNTIME
-MONO_SUBDIRS = gtk tools
+MONO_SUBDIRS = gtk tools man
 endif
 
 DIST_SUBDIRS = $(subdirs) src gtk tools plugin man test/harness
-SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) plugin man test/harness
+SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) plugin test/harness
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc
