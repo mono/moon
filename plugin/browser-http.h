@@ -51,6 +51,12 @@ public:
 		this->response_stream = response;
 	}
 
+	virtual ~SyncBrowserHttpResponse ()
+	{
+		if (response_stream)
+			response_stream->Close ();
+	}
+
 	void *Read (int *length);
 };
 
@@ -94,6 +100,8 @@ BrowserHttpRequest *browser_http_request_new (const char *method, const char *ur
 void browser_http_request_destroy (BrowserHttpRequest *request);
 void browser_http_request_set_header (BrowserHttpRequest *request, const char *name, const char *value);
 SyncBrowserHttpResponse *browser_http_request_get_response (BrowserHttpRequest *request);
+void *browser_http_sync_response_read (SyncBrowserHttpResponse *response, int *size);
+void browser_http_response_destroy (BrowserHttpResponse *response);
 
 void browser_http_test ();
 
