@@ -38,7 +38,7 @@
 #ifndef CAIRO_H
 #define CAIRO_H
 
-#include "../../src/cairo-embed.h"
+#include "cairo-embed.h"
 
 #include <cairo-features.h>
 #include <cairo-deprecated.h>

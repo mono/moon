@@ -1,5 +1,11 @@
 2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* pixman, cairo: Moved pixman-embed.h and cairo-embed.h into the
+	pixman/pixman and cairo/src directories because they really don't
+	belong in our src directory
+
+2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* configure.ac: Disable pdf, svg, and ps in cairo
 	* pixman, cairo: Only build the actual sources and don't install
 	anything (this time we do it the correct way!)
