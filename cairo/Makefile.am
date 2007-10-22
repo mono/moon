@@ -5,6 +5,8 @@ if CAIRO_HAS_PNG_FUNCTIONS
 SUBDIRS += boilerplate test perf
 endif
 
+.PHONY: install-recursive
+install-recursive: all
 
 .PHONY: doc test retest recheck check-valgrind
 # We have some generated header files, so we really need to build the

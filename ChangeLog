@@ -1,5 +1,9 @@
 2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* cairo, pixman: Don't install either of these
+
+2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* cairo, pixman: Fixed to build convenience (noinst) libraries for
 	static linking
 	* configure.ac: Build and link against internal pixman and cairo

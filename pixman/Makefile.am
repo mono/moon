@@ -4,3 +4,6 @@ pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA=pixman-1.pc
 
 $(pkgconfig_DATA): pixman-1.pc.in
+
+.PHONY: install-recursive
+install-recursive: all
