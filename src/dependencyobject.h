@@ -37,7 +37,7 @@ typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer c
 // creation), and will be deleted once
 // the count reaches 0.
 
-class Base {
+class EventObject {
  public:	
 	gint32 refcount;
 
@@ -56,7 +56,7 @@ class Base {
 #define OBJECT_TRACK(x,y)
 #endif
 
-	Base () : refcount(1)
+	EventObject () : refcount(1)
 	{
 #if OBJECT_TRACKING
 		id = ++objects_created;
@@ -65,15 +65,21 @@ class Base {
 		g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
 #endif
 		OBJECT_TRACK ("Created", "");
+
+		events = NULL;
 	}
 
-	virtual ~Base ()
+	virtual ~EventObject ()
 	{
 #if OBJECT_TRACKING
 		objects_destroyed++;
 		g_hash_table_remove (objects_alive, this);
 #endif
 		OBJECT_TRACK ("Destroyed", "");
+
+		Emit (DestroyedEvent);
+
+		FreeHandlers ();
 	}
 
 	void ref ()
@@ -94,8 +100,6 @@ class Base {
 			delete this;
 	}
 
-	virtual Type::Kind GetObjectType () = 0;
-	
 	//
 	// Is:
 	//    Similar to C#'s is: it checks if this object is of this kind or 
@@ -114,13 +118,7 @@ class Base {
 	{
 		return Type::Find (GetObjectType ())->name;
 	}
-};
 
-class EventObject : public Base {
- public:
-	EventObject ();
-	virtual ~EventObject ();
-	
 	void AddHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
@@ -136,6 +134,8 @@ class EventObject : public Base {
 	void Emit (int event_id, gpointer calldata = NULL);
 
  private:
+	void FreeHandlers ();
+
 	GSList **events;
 };
 
@@ -238,9 +238,9 @@ class DependencyProperty {
 
 G_BEGIN_DECLS
 
-void base_ref (Base *base);
-void base_unref (Base *base);
-void base_unref_delayed (Base *base);
+void base_ref (EventObject *obj);
+void base_unref (EventObject *obj);
+void base_unref_delayed (EventObject *obj);
 
 void drain_unrefs ();
 

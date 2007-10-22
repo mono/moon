@@ -126,7 +126,7 @@ TimeManager::Shutdown ()
 	
 	while (node != NULL) {
 		next = node->next;
-		((Base *) node->data)->unref ();
+		((Clock*)node->data)->unref ();
 		g_list_free_1 (node);
 		node = next;
 	}

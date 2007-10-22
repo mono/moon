@@ -25,12 +25,12 @@
 // are logged to the console, with a stacktrace.
 #define OBJECT_TRACK_ID (-1)
 
-int Base::objects_created = 0;
-int Base::objects_destroyed = 0;
-GHashTable* Base::objects_alive = NULL;
+int EventObject::objects_created = 0;
+int EventObject::objects_destroyed = 0;
+GHashTable* EventObject::objects_alive = NULL;
 
 void
-Base::Track (const char* done, const char* typname)
+EventObject::Track (const char* done, const char* typname)
 {
 #if OBJECT_TRACK_ID
 	if (id == OBJECT_TRACK_ID) {
@@ -41,30 +41,170 @@ Base::Track (const char* done, const char* typname)
 }
 
 char* 
-Base::GetStackTrace (const char* prefix)
+EventObject::GetStackTrace (const char* prefix)
 {
 	return get_stack_trace_prefix (prefix);
 }
 
 void
-Base::PrintStackTrace ()
+EventObject::PrintStackTrace ()
 {
 	print_stack_trace ();
 }
 #endif
 
-void 
-base_ref (Base *base)
+// event handlers for c++
+typedef struct {
+	EventHandler func;
+	gpointer data;
+} EventClosure;
+
+int EventObject::DestroyedEvent = -1;
+
+static void
+deleter (gpointer data)
 {
-	if (base != NULL)
-		base->ref ();
+	delete (EventClosure *) data;
 }
 
 void
-base_unref (Base *base)
+EventObject::FreeHandlers ()
 {
-	if (base != NULL)
-		base->unref ();
+	if (events) {
+		for (int i = 0; i < GetType()->GetEventCount(); i ++)
+			g_slist_foreach (events[i], (GFunc)deleter, NULL);
+		g_free (events);
+	}
+}
+
+void
+EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data)
+{
+	int id = GetType()->LookupEvent (event_name);
+
+	if (id == -1) {
+		g_warning ("adding handler to event '%s', which has not been registered\n", event_name);
+		return;
+	}
+
+	AddHandler (id, handler, data);
+}
+
+void
+EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
+{ 
+	if (GetType()->GetEventCount() <= 0) {
+		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events == NULL) {
+		events = (GSList**)g_new0 (GSList*, GetType()->GetEventCount());
+	}
+
+	EventClosure *closure = new EventClosure ();
+	closure->func = handler;
+	closure->data = data;
+
+	events[event_id] = g_slist_append (events[event_id], closure);
+}
+
+void
+EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpointer data)
+{
+	int id = GetType()->LookupEvent (event_name);
+
+	if (id == -1) {
+		g_warning ("removing handler for event '%s', which has not been registered\n", event_name);
+		return;
+	}
+
+	RemoveHandler (id, handler, data);
+}
+
+void
+EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
+{
+	if (GetType()->GetEventCount() <= 0) {
+		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events == NULL)
+		return;
+
+	GSList *l;
+	for (l = events[event_id]; l; l = l->next) {
+		EventClosure *closure = (EventClosure*)l->data;
+		if (closure->func == handler && closure->data == data)
+			break;
+	}
+
+	if (l == NULL) /* we didn't find it */
+		return;
+
+	delete (EventClosure*)l->data;
+	events[event_id] = g_slist_delete_link (events[event_id], l);
+}
+
+void
+EventObject::Emit (char *event_name, gpointer calldata)
+{
+	int id = GetType()->LookupEvent (event_name);
+
+	if (id == -1) {
+		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
+		return;
+	}
+
+	Emit (id, calldata);
+}
+
+void
+EventObject::Emit (int event_id, gpointer calldata)
+{
+	if (GetType()->GetEventCount() <= 0) {
+		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events == NULL || events[event_id] == NULL)
+		return;
+	
+	GSList *copy = g_slist_copy (events[event_id]);
+
+	for (GSList *l = copy; l; l = l->next) {
+		EventClosure *closure = (EventClosure*)l->data;
+		closure->func (this, calldata, closure->data);
+	}
+
+	g_slist_free (copy);
+}
+
+void
+event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
+{
+	o->AddHandler (event, handler, closure);
+}
+
+void
+event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
+{
+	o->RemoveHandler (event, handler, closure);
+}
+
+void 
+base_ref (EventObject *obj)
+{
+	if (obj != NULL)
+		obj->ref ();
+}
+
+void
+base_unref (EventObject *obj)
+{
+	if (obj != NULL)
+		obj->unref ();
 }
 
 static GStaticRecMutex delayed_unref_mutex = G_STATIC_REC_MUTEX_INIT;
@@ -81,16 +221,16 @@ drain_unrefs_tick_call (gpointer data)
 }
 
 void
-base_unref_delayed (Base *base)
+base_unref_delayed (EventObject *obj)
 {
-	if (!base)
+	if (!obj)
 		return;
 		
 	g_static_rec_mutex_lock (&delayed_unref_mutex);
-	pending_unrefs = g_slist_prepend (pending_unrefs, base);
+	pending_unrefs = g_slist_prepend (pending_unrefs, obj);
 
 #if OBJECT_TRACKING
-	base->Track ("DelayedUnref", base->GetTypeName ());
+	obj->Track ("DelayedUnref", obj->GetTypeName ());
 #endif
 
 	if (!drain_tick_call_added) {
@@ -869,151 +1009,4 @@ dependencyobject_init(void)
 	EventObject::DestroyedEvent = t->LookupEvent ("Destroyed");
 
 	DependencyObject::NameProperty = DependencyObject::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
-}
-
-
-// event handlers for c++
-typedef struct {
-	EventHandler func;
-	gpointer data;
-} EventClosure;
-
-int EventObject::DestroyedEvent = -1;
-
-EventObject::EventObject ()
-{
-	events = NULL;
-}
-
-static void
-deleter (gpointer data)
-{
-	delete (EventClosure *) data;
-}
-
-EventObject::~EventObject ()
-{
-	Emit (DestroyedEvent);
-
-	if (events) {
-		for (int i = 0; i < GetType()->GetEventCount(); i ++)
-			g_slist_foreach (events[i], (GFunc)deleter, NULL);
-		g_free (events);
-	}
-}
-
-void
-EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data)
-{
-	int id = GetType()->LookupEvent (event_name);
-
-	if (id == -1) {
-		g_warning ("adding handler to event '%s', which has not been registered\n", event_name);
-		return;
-	}
-
-	AddHandler (id, handler, data);
-}
-
-void
-EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
-{ 
-	if (GetType()->GetEventCount() <= 0) {
-		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
-		return;
-	}
-
-	if (events == NULL) {
-		events = (GSList**)g_new0 (GSList*, GetType()->GetEventCount());
-	}
-
-	EventClosure *closure = new EventClosure ();
-	closure->func = handler;
-	closure->data = data;
-
-	events[event_id] = g_slist_append (events[event_id], closure);
-}
-
-void
-EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpointer data)
-{
-	int id = GetType()->LookupEvent (event_name);
-
-	if (id == -1) {
-		g_warning ("removing handler for event '%s', which has not been registered\n", event_name);
-		return;
-	}
-
-	RemoveHandler (id, handler, data);
-}
-
-void
-EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
-{
-	if (GetType()->GetEventCount() <= 0) {
-		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
-		return;
-	}
-
-	if (events == NULL)
-		return;
-
-	GSList *l;
-	for (l = events[event_id]; l; l = l->next) {
-		EventClosure *closure = (EventClosure*)l->data;
-		if (closure->func == handler && closure->data == data)
-			break;
-	}
-
-	if (l == NULL) /* we didn't find it */
-		return;
-
-	delete (EventClosure*)l->data;
-	events[event_id] = g_slist_delete_link (events[event_id], l);
-}
-
-void
-EventObject::Emit (char *event_name, gpointer calldata)
-{
-	int id = GetType()->LookupEvent (event_name);
-
-	if (id == -1) {
-		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
-		return;
-	}
-
-	Emit (id, calldata);
-}
-
-void
-EventObject::Emit (int event_id, gpointer calldata)
-{
-	if (GetType()->GetEventCount() <= 0) {
-		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
-		return;
-	}
-
-	if (events == NULL || events[event_id] == NULL)
-		return;
-	
-	GSList *copy = g_slist_copy (events[event_id]);
-
-	for (GSList *l = copy; l; l = l->next) {
-		EventClosure *closure = (EventClosure*)l->data;
-		closure->func (this, calldata, closure->data);
-	}
-
-	g_slist_free (copy);
-}
-
-void
-event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
-{
-	o->AddHandler (event, handler, closure);
-}
-
-void
-event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
-{
-	o->RemoveHandler (event, handler, closure);
 }

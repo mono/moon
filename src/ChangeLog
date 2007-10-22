@@ -1,3 +1,12 @@
+2007-10-22  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (TimeManager::Shutdown): don't cast to Base anymore..
+	we can just cast to Clock here.
+
+	* dependencyobject.h, dependencyobject.cpp: remove the Base class,
+	and make roll EventObject and Base into one class (still called
+	EventObject).
+
 2007-10-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.h: Add gtk.h (since it depended on stylus.h to get it)
