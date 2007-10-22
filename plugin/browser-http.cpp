@@ -14,17 +14,44 @@
 
 // SyncBrowserHttpResponse
 
-char *
-SyncBrowserHttpResponse::Read ()
+SyncBrowserHttpResponse::~SyncBrowserHttpResponse ()
 {
-	if (data != NULL)
+	NS_Free (data);
+}
+
+char *
+SyncBrowserHttpResponse::Read (int *size)
+{
+	if (data != NULL) {
+		*size = this->length;
 		return data;
+	}
 
-	PRUint32 available, length;
-	response_stream->Available (&available);
+	PRUint32 read = 0;
 
-	data = new char [available];
-	response_stream->Read (data, available, &length);
+	while (true) {
+		PRUint32 available, len;
+		response_stream->Available (&available);
+
+		if (data == NULL) {
+			data = (char *) NS_Alloc (available);
+		} else if (available == 0) {
+			break;
+		} else {
+			NS_Realloc (data, read + available);
+		}
+
+		response_stream->Read (data + read, available, &len);
+
+		if (len == 0)
+			break;
+
+		read += len;
+	}
+
+	length = read;
+	*size = read;
+
 	return data;
 }
 
@@ -38,6 +65,7 @@ BrowserHttpRequest::CreateChannel ()
 	rv = NS_GetServiceManager (getter_AddRefs (mgr));
 	if (NS_FAILED (rv)) {
 		printf ("failed to ge a ServiceManager \n");
+		return;
 	}
 
 	nsCOMPtr<nsIIOService> ioservice;
@@ -46,6 +74,7 @@ BrowserHttpRequest::CreateChannel ()
 
 	if (NS_FAILED (rv)) {
 		printf ("failed to get a IOService \n");
+		return;
 	}
 
 	nsEmbedCString url;
@@ -131,7 +160,14 @@ browser_http_test ()
 	BrowserHttpRequest *req = new BrowserHttpRequest ("GET", "http://evain.net/gdb.txt");
 	SyncBrowserHttpResponse *response = req->GetResponse ();
 
-	printf (response->Read ());
+	int len;
+	char *data = response->Read (&len);
+
+	char *text = g_strndup (data, len);
+
+	//printf ("response: \n%s", text);
+
+	g_free (text);
 
 	delete response;
 	delete req;

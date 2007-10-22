@@ -1,3 +1,9 @@
+2007-10-22  Jb Evain  <jbevain@novell.com>
+
+	* browser-http.cpp|h (SyncBrowserHttpRequest::Read):
+	do read the entire input stream even if it's a buffered
+	input stream.
+
 2007-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: If we're leaking NPObjects make sure we don't crash in

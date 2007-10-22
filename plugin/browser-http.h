@@ -44,6 +44,8 @@ public:
 class SyncBrowserHttpResponse : public BrowserHttpResponse {
 private:
 	char *data;
+	PRUint32 length;
+
 	nsCOMPtr<nsIInputStream> response_stream;
 
 public:
@@ -52,12 +54,9 @@ public:
 		this->response_stream = response;
 	}
 
-	virtual ~SyncBrowserHttpResponse ()
-	{
-		delete [] data;
-	}
+	virtual ~SyncBrowserHttpResponse ();
 
-	char *Read ();
+	char *Read (int *length);
 };
 
 class AsyncBrowserHttpResponse : public BrowserHttpResponse {
