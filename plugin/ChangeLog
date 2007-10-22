@@ -1,3 +1,8 @@
+2007-10-23  Jb Evain  <jbevain@novell.com>
+
+	* browser-http.cpp: add browser_http_response_destroy and
+	browser_http_sync_response_read.
+
 2007-10-22  Jb Evain  <jbevain@novell.com>
 
 	* browser-http.cpp|h (SyncBrowserHttpRequest::Read):
