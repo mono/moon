@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libpixman-1.la
+noinst_LTLIBRARIES = libpixman-1.la $(WRAPPER_LTLIB) $(MMX_LTLIB)
 libpixman_1_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
 libpixman_1_la_LIBADD = @DEP_LIBS@ -lm libpixmanwrapper.la
 libpixman_1_la_SOURCES =		\
@@ -19,7 +19,7 @@ libpixmanincludedir = $(includedir)/pixman-1/
 libpixmaninclude_HEADERS = pixman.h
 
 # wrapper library
-noinst_LTLIBRARIES = libpixmanwrapper.la
+WRAPPER_LTLIB = libpixmanwrapper.la
 libpixmanwrapper_la_SOURCES =	\
 	pixman-compose.c	\
 	pixman-edge.c
@@ -29,7 +29,7 @@ libpixmanwrapper_la_CFLAGS = $(DEP_CFLAGS) -DPIXMAN_FB_ACCESSORS
 
 # mmx code
 if USE_MMX
-noinst_LTLIBRARIES += libpixman-mmx.la
+MMX_LTLIB = libpixman-mmx.la
 libpixman_mmx_la_SOURCES = \
 	pixman-mmx.c \
 	pixman-mmx.h

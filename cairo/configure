@@ -882,8 +882,6 @@ FFLAGS
 ac_ct_F77
 LIBTOOL
 PKG_CONFIG
-pixman_CFLAGS
-pixman_LIBS
 xlib_CFLAGS
 xlib_LIBS
 XMKMF
@@ -1011,8 +1009,6 @@ CXXCPP
 F77
 FFLAGS
 PKG_CONFIG
-pixman_CFLAGS
-pixman_LIBS
 xlib_CFLAGS
 xlib_LIBS
 XMKMF
@@ -1704,9 +1700,6 @@ Some influential environment variables:
   F77         Fortran 77 compiler command
   FFLAGS      Fortran 77 compiler flags
   PKG_CONFIG  path to pkg-config utility
-  pixman_CFLAGS
-              C compiler flags for pixman, overriding pkg-config
-  pixman_LIBS linker flags for pixman, overriding pkg-config
   xlib_CFLAGS C compiler flags for xlib, overriding pkg-config
   xlib_LIBS   linker flags for xlib, overriding pkg-config
   XMKMF       Path to xmkmf, Makefile generator for X Window System
@@ -4920,7 +4913,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4923 "configure"' > conftest.$ac_ext
+  echo '#line 4916 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7722,11 +7715,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7725: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7718: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7729: \$? = $ac_status" >&5
+   echo "$as_me:7722: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8012,11 +8005,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8015: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8008: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8019: \$? = $ac_status" >&5
+   echo "$as_me:8012: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8116,11 +8109,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8119: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8112: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8123: \$? = $ac_status" >&5
+   echo "$as_me:8116: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10478,7 +10471,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10481 "configure"
+#line 10474 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10578,7 +10571,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10581 "configure"
+#line 10574 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12998,11 +12991,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13001: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12994: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13005: \$? = $ac_status" >&5
+   echo "$as_me:12998: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13102,11 +13095,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13105: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13098: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13109: \$? = $ac_status" >&5
+   echo "$as_me:13102: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14679,11 +14672,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14682: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14675: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14686: \$? = $ac_status" >&5
+   echo "$as_me:14679: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14783,11 +14776,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14786: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14779: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14790: \$? = $ac_status" >&5
+   echo "$as_me:14783: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16983,11 +16976,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16986: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16979: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16990: \$? = $ac_status" >&5
+   echo "$as_me:16983: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17273,11 +17266,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17276: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17269: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17280: \$? = $ac_status" >&5
+   echo "$as_me:17273: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17377,11 +17370,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17380: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17373: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:17384: \$? = $ac_status" >&5
+   echo "$as_me:17377: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21331,89 +21324,17 @@ CAIRO_CFLAGS=$CAIRO_NONPKGCONFIG_CFLAGS
 CAIRO_LIBS=$CAIRO_NONPKGCONFIG_LIBS
 
 
-PIXMAN_VERSION="0.9.4"
-PIXMAN_REQUIRES="pixman-1 >= $PIXMAN_VERSION"
+#PIXMAN_VERSION="0.9.4"
+#PIXMAN_REQUIRES="pixman-1 >= $PIXMAN_VERSION"
+#PKG_CHECK_MODULES(pixman, $PIXMAN_REQUIRES, ,
+#	[AC_MSG_ERROR([pixman >= $PIXMAN_VERSION is required
+#(http://xorg.freedesktop.org/releases/individual/lib/pixman-$PIXMAN_VERSION.tar.gz)])])
 
-pkg_failed=no
-{ echo "$as_me:$LINENO: checking for pixman" >&5
-echo $ECHO_N "checking for pixman... $ECHO_C" >&6; }
+#CAIRO_REQUIRES="$PIXMAN_REQUIRES $CAIRO_REQUIRES"
 
-if test -n "$PKG_CONFIG"; then
-    if test -n "$pixman_CFLAGS"; then
-        pkg_cv_pixman_CFLAGS="$pixman_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"\$PIXMAN_REQUIRES\"") >&5
-  ($PKG_CONFIG --exists --print-errors "$PIXMAN_REQUIRES") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_pixman_CFLAGS=`$PKG_CONFIG --cflags "$PIXMAN_REQUIRES" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$pixman_LIBS"; then
-        pkg_cv_pixman_LIBS="$pixman_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"\$PIXMAN_REQUIRES\"") >&5
-  ($PKG_CONFIG --exists --print-errors "$PIXMAN_REQUIRES") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_pixman_LIBS=`$PKG_CONFIG --libs "$PIXMAN_REQUIRES" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
+pixman_CFLAGS='-I$(top_srcdir)/../pixman/pixman'
+pixman_LIBS='$(top_builddir)/../pixman/pixman/libpixman-1.la'
 
-
-
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        pixman_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "$PIXMAN_REQUIRES"`
-        else
-	        pixman_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "$PIXMAN_REQUIRES"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$pixman_PKG_ERRORS" >&5
-
-	{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-                { { echo "$as_me:$LINENO: error: pixman >= $PIXMAN_VERSION is required
-(http://xorg.freedesktop.org/releases/individual/lib/pixman-$PIXMAN_VERSION.tar.gz)" >&5
-echo "$as_me: error: pixman >= $PIXMAN_VERSION is required
-(http://xorg.freedesktop.org/releases/individual/lib/pixman-$PIXMAN_VERSION.tar.gz)" >&2;}
-   { (exit 1); exit 1; }; }
-elif test $pkg_failed = untried; then
-	{ { echo "$as_me:$LINENO: error: pixman >= $PIXMAN_VERSION is required
-(http://xorg.freedesktop.org/releases/individual/lib/pixman-$PIXMAN_VERSION.tar.gz)" >&5
-echo "$as_me: error: pixman >= $PIXMAN_VERSION is required
-(http://xorg.freedesktop.org/releases/individual/lib/pixman-$PIXMAN_VERSION.tar.gz)" >&2;}
-   { (exit 1); exit 1; }; }
-else
-	pixman_CFLAGS=$pkg_cv_pixman_CFLAGS
-	pixman_LIBS=$pkg_cv_pixman_LIBS
-        { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-	:
-fi
-
-CAIRO_REQUIRES="$PIXMAN_REQUIRES $CAIRO_REQUIRES"
 CAIRO_CFLAGS="$pixman_CFLAGS $CAIRO_CFLAGS"
 CAIRO_LIBS="$pixman_LIBS $CAIRO_LIBS"
 
@@ -31531,8 +31452,6 @@ FFLAGS!$FFLAGS$ac_delim
 ac_ct_F77!$ac_ct_F77$ac_delim
 LIBTOOL!$LIBTOOL$ac_delim
 PKG_CONFIG!$PKG_CONFIG$ac_delim
-pixman_CFLAGS!$pixman_CFLAGS$ac_delim
-pixman_LIBS!$pixman_LIBS$ac_delim
 xlib_CFLAGS!$xlib_CFLAGS$ac_delim
 xlib_LIBS!$xlib_LIBS$ac_delim
 XMKMF!$XMKMF$ac_delim
@@ -31612,6 +31531,8 @@ POPPLER_LIBS!$POPPLER_LIBS$ac_delim
 CAIRO_CAN_TEST_PDF_SURFACE_TRUE!$CAIRO_CAN_TEST_PDF_SURFACE_TRUE$ac_delim
 CAIRO_CAN_TEST_PDF_SURFACE_FALSE!$CAIRO_CAN_TEST_PDF_SURFACE_FALSE$ac_delim
 CAIRO_HAS_MULTI_PAGE_SURFACES_TRUE!$CAIRO_HAS_MULTI_PAGE_SURFACES_TRUE$ac_delim
+CAIRO_HAS_MULTI_PAGE_SURFACES_FALSE!$CAIRO_HAS_MULTI_PAGE_SURFACES_FALSE$ac_delim
+CAIRO_HAS_SVG_SURFACE_TRUE!$CAIRO_HAS_SVG_SURFACE_TRUE$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -31653,8 +31574,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-CAIRO_HAS_MULTI_PAGE_SURFACES_FALSE!$CAIRO_HAS_MULTI_PAGE_SURFACES_FALSE$ac_delim
-CAIRO_HAS_SVG_SURFACE_TRUE!$CAIRO_HAS_SVG_SURFACE_TRUE$ac_delim
 CAIRO_HAS_SVG_SURFACE_FALSE!$CAIRO_HAS_SVG_SURFACE_FALSE$ac_delim
 LIBRSVG_CFLAGS!$LIBRSVG_CFLAGS$ac_delim
 LIBRSVG_LIBS!$LIBRSVG_LIBS$ac_delim
@@ -31686,7 +31605,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 31; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 29; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

@@ -1,3 +1,9 @@
+2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* cairo, pixman: Fixed to build convenience (noinst) libraries for
+	static linking
+	* configure.ac: Build and link against internal pixman and cairo
+
 2007-10-17  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* cairo/src/cairo.h,cairoint.h, pixman/pixman/pixman.h: patched to

@@ -33,10 +33,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-
-# mmx code
 @USE_MMX_TRUE@am__append_1 = libpixman-mmx.la
-@USE_MMX_TRUE@am__append_2 = libpixman-mmx.la
 subdir = pixman
 DIST_COMMON = $(libpixmaninclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -47,17 +44,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" \
-	"$(DESTDIR)$(libpixmanincludedir)"
-libLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
-libpixman_1_la_DEPENDENCIES = libpixmanwrapper.la $(am__append_2)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libpixman_1_la_DEPENDENCIES = libpixmanwrapper.la $(am__append_1)
 am_libpixman_1_la_OBJECTS = pixman-region.lo pixman-image.lo \
 	pixman-compose.lo pixman-pict.lo pixman-utils.lo \
 	pixman-edge.lo pixman-trap.lo pixman-compute-region.lo \
@@ -102,6 +90,13 @@ SOURCES = $(libpixman_1_la_SOURCES) $(libpixman_mmx_la_SOURCES) \
 DIST_SOURCES = $(libpixman_1_la_SOURCES) \
 	$(am__libpixman_mmx_la_SOURCES_DIST) \
 	$(libpixmanwrapper_la_SOURCES)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(libpixmanincludedir)"
 libpixmanincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(libpixmaninclude_HEADERS)
 ETAGS = etags
@@ -221,10 +216,10 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = libpixman-1.la
+noinst_LTLIBRARIES = libpixman-1.la $(WRAPPER_LTLIB) $(MMX_LTLIB)
 libpixman_1_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
 libpixman_1_la_LIBADD = @DEP_LIBS@ -lm libpixmanwrapper.la \
-	$(am__append_2)
+	$(am__append_1)
 libpixman_1_la_SOURCES = \
 	pixman.h		\
 	pixman-region.c		\
@@ -243,12 +238,15 @@ libpixmanincludedir = $(includedir)/pixman-1/
 libpixmaninclude_HEADERS = pixman.h
 
 # wrapper library
-noinst_LTLIBRARIES = libpixmanwrapper.la $(am__append_1)
+WRAPPER_LTLIB = libpixmanwrapper.la
 libpixmanwrapper_la_SOURCES = \
 	pixman-compose.c	\
 	pixman-edge.c
 
 libpixmanwrapper_la_CFLAGS = $(DEP_CFLAGS) -DPIXMAN_FB_ACCESSORS
+
+# mmx code
+@USE_MMX_TRUE@MMX_LTLIB = libpixman-mmx.la
 @USE_MMX_TRUE@libpixman_mmx_la_SOURCES = \
 @USE_MMX_TRUE@	pixman-mmx.c \
 @USE_MMX_TRUE@	pixman-mmx.h
@@ -288,33 +286,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-libLTLIBRARIES: $(lib_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(libdir)" || $(MKDIR_P) "$(DESTDIR)$(libdir)"
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=$(am__strip_dir) \
-	    echo " $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(libdir)/$$f'"; \
-	    $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(libdir)/$$f"; \
-	  else :; fi; \
-	done
-
-uninstall-libLTLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
-	  p=$(am__strip_dir) \
-	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$p'"; \
-	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$p"; \
-	done
-
-clean-libLTLIBRARIES:
-	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
-	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
-	  test "$$dir" != "$$p" || dir=.; \
-	  echo "rm -f \"$${dir}/so_locations\""; \
-	  rm -f "$${dir}/so_locations"; \
-	done
 
 clean-noinstLTLIBRARIES:
 	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
@@ -325,7 +296,7 @@ clean-noinstLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libpixman-1.la: $(libpixman_1_la_OBJECTS) $(libpixman_1_la_DEPENDENCIES) 
-	$(libpixman_1_la_LINK) -rpath $(libdir) $(libpixman_1_la_OBJECTS) $(libpixman_1_la_LIBADD) $(LIBS)
+	$(libpixman_1_la_LINK)  $(libpixman_1_la_OBJECTS) $(libpixman_1_la_LIBADD) $(LIBS)
 libpixman-mmx.la: $(libpixman_mmx_la_OBJECTS) $(libpixman_mmx_la_DEPENDENCIES) 
 	$(libpixman_mmx_la_LINK) $(am_libpixman_mmx_la_rpath) $(libpixman_mmx_la_OBJECTS) $(libpixman_mmx_la_LIBADD) $(LIBS)
 libpixmanwrapper.la: $(libpixmanwrapper_la_OBJECTS) $(libpixmanwrapper_la_DEPENDENCIES) 
@@ -493,7 +464,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libpixmanincludedir)"; do \
+	for dir in "$(DESTDIR)$(libpixmanincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -522,8 +493,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	clean-noinstLTLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -545,7 +516,7 @@ install-data-am: install-libpixmanincludeHEADERS
 
 install-dvi: install-dvi-am
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am:
 
 install-html: install-html-am
 
@@ -577,26 +548,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES \
-	uninstall-libpixmanincludeHEADERS
+uninstall-am: uninstall-libpixmanincludeHEADERS
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool clean-noinstLTLIBRARIES \
-	ctags distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-libLTLIBRARIES \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
 	install-libpixmanincludeHEADERS install-man install-pdf \
 	install-pdf-am install-ps install-ps-am install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-libLTLIBRARIES \
-	uninstall-libpixmanincludeHEADERS
+	tags uninstall uninstall-am uninstall-libpixmanincludeHEADERS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

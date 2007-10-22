@@ -11,7 +11,6 @@ AC_PROG_LIBTOOL
 
 PKG_PROG_PKG_CONFIG
 
-CAIRO_VERSION=1.4.0
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
 
 MONO_RUNTIME=yes
@@ -29,13 +28,7 @@ AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (a
 fi
 AM_CONDITIONAL(INCLUDE_MONO_RUNTIME, test $MONO_RUNTIME = yes)
 
-AC_MSG_CHECKING(cairo 1.4.x)
-if pkg-config "cairo >= $CAIRO_VERSION"; then
-   AC_MSG_RESULT(found)
-else
-   echo Cairo 1.4.x development kit is missing
-   exit 1
-fi
+AC_CONFIG_SUBDIRS([pixman cairo])
 
 AC_MSG_CHECKING(Gtk+ 2.0)
 if pkg-config gtk+-2.0; then
@@ -182,9 +175,12 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
-MOON_PKGS="cairo >= $CAIRO_VERSION gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa freetype2 fontconfig $RANDR_PKG"
-MOON_CFLAGS=`pkg-config --cflags $MOON_PKGS`
-MOON_LIBS=`pkg-config --libs $MOON_PKGS`
+CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
+CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
+
+MOON_PKGS="gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa freetype2 fontconfig $RANDR_PKG"
+MOON_CFLAGS="$CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS)"
+MOON_LIBS="$CAIRO_LIBS $(pkg-config --libs $MOON_PKGS)"
 
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)

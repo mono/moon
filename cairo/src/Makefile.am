@@ -101,7 +101,7 @@ libcairo_beos_headers = cairo-beos.h
 libcairo_beos_sources += cairo-beos-surface.cpp
 backend_pkgconfigs += cairo-beos.pc
 
-noinst_LTLIBRARIES = libcairo_beos.la
+BEOS_LTLIB = libcairo_beos.la
 libcairo_beos_la_SOURCES = $(libcairo_beos_sources)
 # BeOS system headers trigger this warning
 libcairo_beos_la_CXXFLAGS = -Wno-multichar
@@ -163,7 +163,7 @@ cairoinclude_HEADERS =			\
 nodist_cairoinclude_HEADERS =		\
 	cairo-features.h
 
-lib_LTLIBRARIES = libcairo.la
+noinst_LTLIBRARIES = libcairo.la $(BEOS_LTLIB)
 
 libcairo_la_base_sources =			\
 	cairo.c					\
@@ -272,9 +272,9 @@ libcairo_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined $(export_symbol
 
 libcairo_la_CFLAGS = -I$(srcdir) $(CAIRO_CFLAGS)
 
-libcairo_la_LIBADD = $(CAIRO_LIBS) $(noinst_LTLIBRARIES) $(CAIRO_LDADD)
+libcairo_la_LIBADD = $(CAIRO_LIBS) $(BEOS_LTLIB) $(CAIRO_LDADD)
 
-libcairo_la_DEPENDENCIES = $(cairo_def_dependency) $(noinst_LTLIBRARIES)
+libcairo_la_DEPENDENCIES = $(cairo_def_dependency) $(BEOS_LTLIB)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cairo.pc $(backend_pkgconfigs)
