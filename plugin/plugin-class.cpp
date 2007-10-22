@@ -1889,8 +1889,10 @@ MoonlightEventObjectObject::Dispose ()
 	
 	if (eo) {
 		PluginInstance *plugin = (PluginInstance*) instance->pdata;
-		plugin->RemoveWrappedObject (eo);
-		eo->unref ();
+		if (plugin != NULL) {
+			plugin->RemoveWrappedObject (eo);
+			eo->unref ();
+		}
 	}
 	eo = NULL;
 }

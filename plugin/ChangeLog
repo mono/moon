@@ -1,3 +1,9 @@
+2007-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: If we're leaking NPObjects make sure we don't crash in
+	  invalidate, since FF will call invalidate long after shutting down
+	  moonlight.
+
 2007-10-21  Jb Evain  <jbevain@novell.com>
 
 	* browser-http.cpp|h: add the files where the unmanaged
