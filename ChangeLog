@@ -1,3 +1,9 @@
+2007-10-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Added a --with flag for enabling Pango
+	support (disabled by default) because it will pull in the system
+	cairo which will break us.
+
 2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* cairo, pixman: Don't install either of these

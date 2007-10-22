@@ -88,6 +88,16 @@ else
 fi
 
 
+#
+# Enable/Disable linking with Pango as an alternative text rendering engine
+# (accessable via environment variable)
+#
+AC_ARG_WITH(pango-support,[ --with-pango-support=yes,no   Include Pango text rendering support],with_pango_support=yes,with_pango_support=no)
+if test x$with_pango_support != xno; then
+   	AC_DEFINE(ENABLE_PANGO_SUPPORT, 1, [Include Pango text rendering support])
+fi
+
+
 if test $MONO_RUNTIME = "yes"; then
 AC_MSG_CHECKING(Mono)
 if pkg-config mono; then
