@@ -15,8 +15,8 @@ libpixman_1_la_SOURCES =		\
 	pixman-compute-region.c \
 	pixman-timer.c
 
-libpixmanincludedir = $(includedir)/pixman-1/
-libpixmaninclude_HEADERS = pixman.h
+#libpixmanincludedir = $(includedir)/pixman-1/
+noinst_HEADERS = pixman.h
 
 # wrapper library
 WRAPPER_LTLIB = libpixmanwrapper.la

@@ -55,7 +55,7 @@ host_triplet = @host@
 @CAIRO_HAS_FT_FONT_TRUE@am__append_18 = cairo-ft.pc
 @CAIRO_HAS_ATSUI_FONT_TRUE@am__append_19 = cairo-atsui.pc
 subdir = src
-DIST_COMMON = $(am__cairoinclude_HEADERS_DIST) $(srcdir)/Makefile.am \
+DIST_COMMON = $(am__noinst_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/cairo.pc.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -231,24 +231,13 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 SOURCES = $(libcairo_la_SOURCES) $(libcairo_beos_la_SOURCES)
 DIST_SOURCES = $(am__libcairo_la_SOURCES_DIST) \
 	$(am__libcairo_beos_la_SOURCES_DIST)
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(pkgconfigdir)" \
-	"$(DESTDIR)$(cairoincludedir)" "$(DESTDIR)$(cairoincludedir)"
-pkgconfigDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(pkgconfig_DATA)
-am__cairoinclude_HEADERS_DIST = cairo-deprecated.h cairo.h \
-	cairo-atsui.h cairo-ft.h cairo-glitz.h cairo-pdf.h cairo-svg.h \
-	cairo-ps.h cairo-quartz.h cairo-win32.h cairo-os2.h \
-	cairo-beos.h cairo-xcb.h cairo-xcb-xrender.h cairo-xlib.h \
+DATA = $(noinst_DATA)
+am__noinst_HEADERS_DIST = cairo-deprecated.h cairo.h cairo-atsui.h \
+	cairo-ft.h cairo-glitz.h cairo-pdf.h cairo-svg.h cairo-ps.h \
+	cairo-quartz.h cairo-win32.h cairo-os2.h cairo-beos.h \
+	cairo-xcb.h cairo-xcb-xrender.h cairo-xlib.h \
 	cairo-xlib-xrender.h cairo-directfb.h
-cairoincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-nodist_cairoincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(cairoinclude_HEADERS) $(nodist_cairoinclude_HEADERS)
+HEADERS = $(nodist_noinst_HEADERS) $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -498,12 +487,13 @@ cairo_headers = \
 	$(libcairo_xlib_xrender_headers)	\
 	$(libcairo_directfb_headers)
 
-cairoincludedir = $(includedir)/cairo
-cairoinclude_HEADERS = \
+
+#cairoincludedir = $(includedir)/cairo
+noinst_HEADERS = \
 	cairo-deprecated.h		\
 	$(cairo_headers)
 
-nodist_cairoinclude_HEADERS = \
+nodist_noinst_HEADERS = \
 	cairo-features.h
 
 noinst_LTLIBRARIES = libcairo.la $(BEOS_LTLIB)
@@ -615,8 +605,9 @@ libcairo_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined $(export_symbol
 libcairo_la_CFLAGS = -I$(srcdir) $(CAIRO_CFLAGS)
 libcairo_la_LIBADD = $(CAIRO_LIBS) $(BEOS_LTLIB) $(CAIRO_LDADD)
 libcairo_la_DEPENDENCIES = $(cairo_def_dependency) $(BEOS_LTLIB)
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = cairo.pc $(backend_pkgconfigs)
+
+#pkgconfigdir = $(libdir)/pkgconfig
+noinst_DATA = cairo.pc $(backend_pkgconfigs)
 DISTCLEANFILES = $(backend_pkgconfigs) cairo-features.h
 EXTRA_DIST = cairo-backend.pc.in $(TESTS)
 CLEANFILES = cairo.def
@@ -1311,57 +1302,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-pkgconfigDATA: $(pkgconfig_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(pkgconfigdir)" || $(MKDIR_P) "$(DESTDIR)$(pkgconfigdir)"
-	@list='$(pkgconfig_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(pkgconfigDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgconfigdir)/$$f'"; \
-	  $(pkgconfigDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgconfigdir)/$$f"; \
-	done
-
-uninstall-pkgconfigDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(pkgconfig_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkgconfigdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgconfigdir)/$$f"; \
-	done
-install-cairoincludeHEADERS: $(cairoinclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(cairoincludedir)" || $(MKDIR_P) "$(DESTDIR)$(cairoincludedir)"
-	@list='$(cairoinclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(cairoincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(cairoincludedir)/$$f'"; \
-	  $(cairoincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(cairoincludedir)/$$f"; \
-	done
-
-uninstall-cairoincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(cairoinclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(cairoincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(cairoincludedir)/$$f"; \
-	done
-install-nodist_cairoincludeHEADERS: $(nodist_cairoinclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(cairoincludedir)" || $(MKDIR_P) "$(DESTDIR)$(cairoincludedir)"
-	@list='$(nodist_cairoinclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(nodist_cairoincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(cairoincludedir)/$$f'"; \
-	  $(nodist_cairoincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(cairoincludedir)/$$f"; \
-	done
-
-uninstall-nodist_cairoincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nodist_cairoinclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(cairoincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(cairoincludedir)/$$f"; \
-	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -1515,9 +1455,6 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(cairoincludedir)" "$(DESTDIR)$(cairoincludedir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -1565,8 +1502,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-cairoincludeHEADERS install-data-local \
-	install-nodist_cairoincludeHEADERS install-pkgconfigDATA
+install-data-am: install-data-local
 
 install-dvi: install-dvi-am
 
@@ -1602,8 +1538,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-cairoincludeHEADERS \
-	uninstall-nodist_cairoincludeHEADERS uninstall-pkgconfigDATA
+uninstall-am:
 
 .MAKE: install-am install-strip
 
@@ -1611,18 +1546,15 @@ uninstall-am: uninstall-cairoincludeHEADERS \
 	clean-generic clean-libtool clean-noinstLTLIBRARIES ctags \
 	distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am \
-	install-cairoincludeHEADERS install-data install-data-am \
-	install-data-local install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-nodist_cairoincludeHEADERS \
-	install-pdf install-pdf-am install-pkgconfigDATA install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-cairoincludeHEADERS \
-	uninstall-nodist_cairoincludeHEADERS uninstall-pkgconfigDATA
+	html-am info info-am install install-am install-data \
+	install-data-am install-data-local install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am
 
 $(backend_pkgconfigs): $(top_srcdir)/configure
 	cd $(top_builddir) && ./config.status --recheck

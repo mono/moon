@@ -1,12 +1,9 @@
-DIST_SUBDIRS = src boilerplate test perf doc util
-SUBDIRS = src doc
+DIST_SUBDIRS = src #boilerplate test perf doc util
+SUBDIRS = src #doc
 # libpng is required for our test programs
 if CAIRO_HAS_PNG_FUNCTIONS
-SUBDIRS += boilerplate test perf
+#SUBDIRS += boilerplate test perf
 endif
-
-.PHONY: install-recursive
-install-recursive: all
 
 .PHONY: doc test retest recheck check-valgrind
 # We have some generated header files, so we really need to build the

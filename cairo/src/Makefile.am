@@ -155,12 +155,12 @@ cairo_headers =				\
 	$(libcairo_xlib_xrender_headers)	\
 	$(libcairo_directfb_headers)
 
-cairoincludedir = $(includedir)/cairo
-cairoinclude_HEADERS =			\
+#cairoincludedir = $(includedir)/cairo
+noinst_HEADERS =			\
 	cairo-deprecated.h		\
 	$(cairo_headers)
 
-nodist_cairoinclude_HEADERS =		\
+nodist_noinst_HEADERS =		\
 	cairo-features.h
 
 noinst_LTLIBRARIES = libcairo.la $(BEOS_LTLIB)
@@ -276,8 +276,8 @@ libcairo_la_LIBADD = $(CAIRO_LIBS) $(BEOS_LTLIB) $(CAIRO_LDADD)
 
 libcairo_la_DEPENDENCIES = $(cairo_def_dependency) $(BEOS_LTLIB)
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = cairo.pc $(backend_pkgconfigs)
+#pkgconfigdir = $(libdir)/pkgconfig
+noinst_DATA = cairo.pc $(backend_pkgconfigs)
 DISTCLEANFILES = $(backend_pkgconfigs)
 EXTRA_DIST = cairo-backend.pc.in
 $(backend_pkgconfigs): $(top_srcdir)/configure

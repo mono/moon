@@ -28,6 +28,7 @@ AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (a
 fi
 AM_CONDITIONAL(INCLUDE_MONO_RUNTIME, test $MONO_RUNTIME = yes)
 
+ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps"
 AC_CONFIG_SUBDIRS([pixman cairo])
 
 AC_MSG_CHECKING(Gtk+ 2.0)

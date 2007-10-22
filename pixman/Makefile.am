@@ -1,9 +1,6 @@
-SUBDIRS = pixman test
+SUBDIRS = pixman
 
-pkgconfigdir=$(libdir)/pkgconfig
-pkgconfig_DATA=pixman-1.pc
+#pkgconfigdir=$(libdir)/pkgconfig
+noinst_DATA=pixman-1.pc
 
 $(pkgconfig_DATA): pixman-1.pc.in
-
-.PHONY: install-recursive
-install-recursive: all

@@ -38,8 +38,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-# libpng is required for our test programs
-@CAIRO_HAS_PNG_FUNCTIONS_TRUE@am__append_1 = boilerplate test perf
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/ChangeLog.mk \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(top_srcdir)/configure AUTHORS COPYING \
@@ -245,8 +243,8 @@ xlib_CFLAGS = @xlib_CFLAGS@
 xlib_LIBS = @xlib_LIBS@
 xlib_xrender_CFLAGS = @xlib_xrender_CFLAGS@
 xlib_xrender_LIBS = @xlib_xrender_LIBS@
-DIST_SUBDIRS = src boilerplate test perf doc util
-SUBDIRS = src doc $(am__append_1)
+DIST_SUBDIRS = src #boilerplate test perf doc util
+SUBDIRS = src #doc
 EXTRA_DIST = \
 	AUTHORS \
 	BIBLIOGRAPHY \
@@ -752,9 +750,8 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am
 
-
-.PHONY: install-recursive
-install-recursive: all
+# libpng is required for our test programs
+#SUBDIRS += boilerplate test perf
 
 .PHONY: doc test retest recheck check-valgrind
 # We have some generated header files, so we really need to build the
