@@ -140,6 +140,7 @@ XRENDER_LIBS=@XRENDER_LIBS@
 
 cairo_headers =				\
 	cairo.h				\
+	cairo-embed.h			\
 	$(libcairo_atsui_headers)	\
 	$(libcairo_ft_headers)		\
 	$(libcairo_glitz_headers)	\

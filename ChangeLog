@@ -1,5 +1,10 @@
 2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* pixman, cairo: Put the embed headers in the list of required headers
+	so that it gets included in make dist
+
+2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* pixman, cairo: Moved pixman-embed.h and cairo-embed.h into the
 	pixman/pixman and cairo/src directories because they really don't
 	belong in our src directory

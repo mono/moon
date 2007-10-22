@@ -3,6 +3,7 @@ libpixman_1_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
 libpixman_1_la_LIBADD = @DEP_LIBS@ -lm libpixmanwrapper.la
 libpixman_1_la_SOURCES =		\
 	pixman.h		\
+	pixman-embed.h		\
 	pixman-region.c		\
 	pixman-private.h	\
 	pixman-image.c		\

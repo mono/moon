@@ -232,10 +232,10 @@ SOURCES = $(libcairo_la_SOURCES) $(libcairo_beos_la_SOURCES)
 DIST_SOURCES = $(am__libcairo_la_SOURCES_DIST) \
 	$(am__libcairo_beos_la_SOURCES_DIST)
 DATA = $(noinst_DATA)
-am__noinst_HEADERS_DIST = cairo-deprecated.h cairo.h cairo-atsui.h \
-	cairo-ft.h cairo-glitz.h cairo-pdf.h cairo-svg.h cairo-ps.h \
-	cairo-quartz.h cairo-win32.h cairo-os2.h cairo-beos.h \
-	cairo-xcb.h cairo-xcb-xrender.h cairo-xlib.h \
+am__noinst_HEADERS_DIST = cairo-deprecated.h cairo.h cairo-embed.h \
+	cairo-atsui.h cairo-ft.h cairo-glitz.h cairo-pdf.h cairo-svg.h \
+	cairo-ps.h cairo-quartz.h cairo-win32.h cairo-os2.h \
+	cairo-beos.h cairo-xcb.h cairo-xcb-xrender.h cairo-xlib.h \
 	cairo-xlib-xrender.h cairo-directfb.h
 HEADERS = $(nodist_noinst_HEADERS) $(noinst_HEADERS)
 ETAGS = etags
@@ -472,6 +472,7 @@ libcairo_beos_sources = $(am__append_14)
 XRENDER_LIBS = @XRENDER_LIBS@
 cairo_headers = \
 	cairo.h				\
+	cairo-embed.h			\
 	$(libcairo_atsui_headers)	\
 	$(libcairo_ft_headers)		\
 	$(libcairo_glitz_headers)	\

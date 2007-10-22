@@ -214,6 +214,7 @@ libpixman_1_la_LIBADD = @DEP_LIBS@ -lm libpixmanwrapper.la \
 	$(am__append_1)
 libpixman_1_la_SOURCES = \
 	pixman.h		\
+	pixman-embed.h		\
 	pixman-region.c		\
 	pixman-private.h	\
 	pixman-image.c		\
