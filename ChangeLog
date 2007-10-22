@@ -1,3 +1,9 @@
+2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Disable pdf, svg, and ps in cairo
+	* pixman, cairo: Only build the actual sources and don't install
+	anything (this time we do it the correct way!)
+
 2007-10-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Added a --with flag for enabling Pango
