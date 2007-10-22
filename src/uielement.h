@@ -104,7 +104,7 @@ public:
 	virtual void UpdateTransform ();
 
 	void ComputeLocalTransform ();
-	void ComputeTransform ();
+	virtual void ComputeTransform ();
 
 	//
 	// GetVisible:

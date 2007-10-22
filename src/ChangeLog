@@ -1,3 +1,12 @@
+2007-10-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: Don't allow Pango rendering if disabled at
+	configure-time.
+	(TextBlock::ComputeTransform): Moved the scale logic here from
+	OnPropertyChanged() so that we catch all transform changes.
+
+	* uielement.h: Made ComputeTransform() virtual.
+
 2007-10-22  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (TimeManager::Shutdown): don't cast to Base anymore..

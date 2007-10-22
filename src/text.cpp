@@ -33,7 +33,11 @@
 
 extern guint32 moonlight_flags;
 
+#ifdef ENABLE_PANGO_SUPPORT
 #define RENDER_USING_PANGO (moonlight_flags & RUNTIME_INIT_PANGO_TEXT_LAYOUT)
+#else
+#define RENDER_USING_PANGO false
+#endif
 
 
 static SolidColorBrush *default_foreground_brush = NULL;
@@ -816,21 +820,36 @@ TextBlock::Paint (cairo_t *cr)
 }
 
 void
+TextBlock::ComputeTransform ()
+{
+	cairo_matrix_t matrix;
+	
+	UIElement::ComputeTransform ();
+	
+	// We extract the scale component of the transform matrix
+	// and apply it to the font so that if we are scaling up,
+	// the rendered glyphs don't look really bad. The font
+	// itself will reverse-scale the rendering so that once
+	// the trasnform is applied, it renders at the correct
+	// size.
+	uielement_get_render_affine (this, &matrix);
+	
+	if (!RENDER_USING_PANGO) {
+		if (matrix.yy <= 1.0)
+			font.custom->UnsetFields (FontMaskScale);
+		else
+			font.custom->SetScale (matrix.yy);
+	}
+}
+
+void
 TextBlock::OnPropertyChanged (DependencyProperty *prop)
 {
 	bool invalidate = true;
 	
 	if (prop->type != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (prop);
-		if (prop == UIElement::RenderTransformProperty) {
-			if (!RENDER_USING_PANGO) {
-				cairo_matrix_t matrix;
-				
-				uielement_get_render_affine (this, &matrix);
-				if (matrix.yy >= 1.0)
-					font.custom->SetScale (matrix.yy);
-			}
-		} else if (prop == FrameworkElement::WidthProperty) {
+		if (prop == FrameworkElement::WidthProperty) {
 			UpdateBounds (true);
 			Invalidate ();
 		}
