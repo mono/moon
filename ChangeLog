@@ -1,5 +1,9 @@
 2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* Makefile.am: Don't install manpages if we don't install the tools
+
+2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* pixman, cairo: Fixes for builds out of dist, don't try to generate
 	the files under directories that aren't there.
 
