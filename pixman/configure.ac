@@ -127,5 +127,4 @@ AC_SUBST(DEP_LIBS)
 		  
 AC_OUTPUT([pixman-1.pc
            Makefile
-	   pixman/Makefile
-	   test/Makefile])
+	   pixman/Makefile])

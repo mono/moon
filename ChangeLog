@@ -1,5 +1,10 @@
 2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* pixman, cairo: Fixes for builds out of dist, don't try to generate
+	the files under directories that aren't there.
+
+2007-10-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* pixman, cairo: Put the embed headers in the list of required headers
 	so that it gets included in make dist
 
