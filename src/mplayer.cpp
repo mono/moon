@@ -46,8 +46,6 @@ G_END_DECLS
 
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
-#define SET_VOLUME(chdata, volume) CLAMP (((((int32_t) (chdata)) * volume) >> 13), SHRT_MIN, SHRT_MAX)
-
 extern guint32 moonlight_flags;
 
 class Packet : public List::Node {
@@ -1079,6 +1077,7 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 		int16_t volume = (uint16_t) (audio->volume * 8192);
 		int16_t *inptr = (int16_t *) audio->outbuf;
 		int16_t leftvol, rightvol;
+		int32_t vol;
 		
 		if (audio->balance < 0.0) {
 			rightvol = (uint16_t) (1.0 + audio->balance) * volume;
@@ -1091,8 +1090,11 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 		}
 		
 		for (n = 0; n < frame_size / 2; n += 2) {
-			*inptr++ = (int16_t) SET_VOLUME (*inptr, leftvol);
-			*inptr++ = (int16_t) SET_VOLUME (*inptr, rightvol);
+			vol = (((int32_t) *inptr) * ((int32_t) leftvol)) >> 13;
+			*inptr++ = (int16_t) CLAMP (vol, -32768, 32767);
+			
+			vol = (((int32_t) *inptr) * ((int32_t) rightvol)) >> 13;
+			*inptr++ = (int16_t) CLAMP (vol, -32768, 32767);
 		}
 	} else {
 		memset (audio->outbuf, 0, frame_size);

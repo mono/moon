@@ -1,3 +1,8 @@
+2007-10-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer.cpp (audio_play): Instead of using the SET_VOLUME()
+	macro, just do it w/o so that we hush the compiler warning.
+
 2007-10-23  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (Clock::GetBeginTime): stop treating the BeginTime of
