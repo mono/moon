@@ -635,14 +635,14 @@ void
 Surface::InitializeDrawingArea (GtkWidget* drawing_area)
 {
 	// don't let gtk clear the window we'll do all the drawing.
-	gtk_widget_set_app_paintable (drawing_area, TRUE);
+	//gtk_widget_set_app_paintable (drawing_area, TRUE);
 	gtk_widget_set_double_buffered (drawing_area, FALSE);
 	//
 	// Set to true, need to change that to FALSE later when we start
 	// repainting again.   
 	//
 	if (GTK_IS_EVENT_BOX (drawing_area)) {
-		gtk_event_box_set_visible_window (GTK_EVENT_BOX (drawing_area), TRUE);
+		gtk_event_box_set_visible_window (GTK_EVENT_BOX (drawing_area), FALSE);
 	}
 
 	gtk_signal_connect (GTK_OBJECT (drawing_area), "size_allocate",
@@ -844,7 +844,6 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	cairo_stroke (ctx);
 #endif
 	GdkGC *gc = gdk_gc_new (pixmap);
-	gint x_offset, y_offset;
 
 	gdk_gc_set_clip_region (gc, event->region);
 
@@ -854,7 +853,7 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 			   event->area.width, event->area.height);
 	
 	g_object_unref (pixmap);
-  
+	g_object_unref (gc);
 	cairo_destroy (ctx);
 
 #if TIME_REDRAW
@@ -881,11 +880,6 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 		x = event->x;
 		y = event->y;
 
-		if (GTK_WIDGET_NO_WINDOW (widget)){
-			x -= widget->allocation.x;
-			y -= widget->allocation.y;
-		}
-
 		state = (GdkModifierType)event->state;
 	}
 
@@ -910,11 +904,6 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		double x = event->x;
 		double y = event->y;
 
-		if (GTK_WIDGET_NO_WINDOW (widget)){
-			x -= widget->allocation.x;
-			y -= widget->allocation.y;
-		}
-		
 		MouseCursor new_cursor = MouseCursorDefault;
 
 		if (s->capture_element) {
@@ -1103,10 +1092,7 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 	
 	double x = button->x;
 	double y = button->y;
-	if (GTK_WIDGET_NO_WINDOW (widget)){
-		x -= widget->allocation.x;
-		y -= widget->allocation.y;
-	}
+
 	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
 	input_element->HandleButtonRelease (s->cairo, button->state, x, y);
 	
@@ -1129,10 +1115,7 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 	
 	double x = button->x;
 	double y = button->y;
-	if (GTK_WIDGET_NO_WINDOW (widget)){
-		x -= widget->allocation.x;
-		y -= widget->allocation.y;
-	}
+
 	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
 	input_element->HandleButtonPress (s->cairo, button->state, x, y);
 	
