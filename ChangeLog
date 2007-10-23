@@ -1,5 +1,9 @@
 2007-10-23  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* cairo, pixman: svn:ignore autotools generated files
+
+2007-10-23  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* cairo, pixman, autogen.sh: Remove generated files, add autogen
 	scripts from upstream, and call them from our autogen.sh
 
