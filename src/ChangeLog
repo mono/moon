@@ -1,3 +1,11 @@
+2007-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (ManualTimeSource::SetCurrentTime): call
+	g_main_context_iteration as a stopgap to make video elements show
+	up.
+	(TimeManager::TimeManager): remove spew.
+	(TimeManager::Tick): re-enable the clock throttling.  oops.
+
 2007-10-23  Larry Ewing  <lewing@novell.com>
 
 	* src/runtime.cpp: clear the background in more cases.

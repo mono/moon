@@ -165,6 +165,8 @@ void
 ManualTimeSource::SetCurrentTime (TimeSpan current_time)
 {
 	this->current_time = current_time;
+	g_main_context_iteration (g_main_context_default(),
+				  TRUE);
 	Emit (TimeSource::TickEvent);
 }
 
@@ -191,10 +193,8 @@ TimeManager::TimeManager ()
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
 {
-	if (moonlight_flags & RUNTIME_INIT_TIMESOURCE_MANUAL) {
-	  printf ("MANUAL\n");
+	if (moonlight_flags & RUNTIME_INIT_TIMESOURCE_MANUAL)
 		source = new ManualTimeSource();
-	}
 	else
 		source = new SystemTimeSource();
 
@@ -332,7 +332,6 @@ TimeManager::Tick ()
 
 	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
 	*/
-#if 0
 
 #define SMOOTHING_ALPHA 0.60 /* we probably want to play with this value some.. - toshok */
 
@@ -368,7 +367,6 @@ TimeManager::Tick ()
 
 	printf ("for a clock tick of %lld, we spent %lld computing the smooth delay\n",
 		xt, post_smooth - post_tick);
-#endif
 #endif
 }
 
