@@ -1332,9 +1332,9 @@ runtime_init (guint32 flags)
 	
 #if OBJECT_TRACKING
 	printf ("Runtime created. Object tracking summary:\n");
-	printf ("\tObjects created: %i\n", Base::objects_created);
-	printf ("\tObjects destroyed: %i\n", Base::objects_destroyed);
-	printf ("\tDifference: %i\n", Base::objects_created - Base::objects_destroyed);
+	printf ("\tObjects created: %i\n", EventObject::objects_created);
+	printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
+	printf ("\tDifference: %i\n", EventObject::objects_created - EventObject::objects_destroyed);
 #endif
 
 	inited = true;
@@ -1394,8 +1394,8 @@ runtime_html_timer_timeout_stop (uint32_t source_id)
 static int
 IdComparer (gconstpointer base1, gconstpointer base2)
 {
-	int id1 = (*(Base **) base1)->id;
-	int id2 = (*(Base **) base2)->id;
+	int id1 = (*(EventObject **) base1)->id;
+	int id2 = (*(EventObject **) base2)->id;
 
 	int iddiff = id1 - id2;
 	
@@ -1433,20 +1433,20 @@ runtime_shutdown ()
 
 #if OBJECT_TRACKING
 	printf ("Runtime destroyed. Object tracking summary:\n");
-	printf ("\tObjects created: %i\n", Base::objects_created);
-	printf ("\tObjects destroyed: %i\n", Base::objects_destroyed);
-	printf ("\tDifference: %i (%.1f%%)\n", Base::objects_created - Base::objects_destroyed, (100.0 * Base::objects_destroyed) / Base::objects_created);
+	printf ("\tObjects created: %i\n", EventObject::objects_created);
+	printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
+	printf ("\tDifference: %i (%.1f%%)\n", EventObject::objects_created - EventObject::objects_destroyed, (100.0 * EventObject::objects_destroyed) / EventObject::objects_created);
 
 	GPtrArray* last_n = g_ptr_array_new ();
 
-	g_hash_table_foreach (Base::objects_alive, accumulate_last_n, last_n);
+	g_hash_table_foreach (EventObject::objects_alive, accumulate_last_n, last_n);
 
  	uint counter = 10;
 	counter = MIN(counter, last_n->len);
 	if (counter) {
 		printf ("\tOldest %d objects alive:\n", counter);
 		for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
-			Base* obj = (Base *) last_n->pdata[i];
+			EventObject* obj = (EventObject *) last_n->pdata[i];
 			printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->refcount);
 		}
 	}
