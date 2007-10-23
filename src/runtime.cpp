@@ -680,11 +680,9 @@ Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 	nframes++;
 	
 	if ((now = get_now ()) > (start + TIMESPANTICKS_IN_SECOND)) {
-		/*
 		printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes,
 			(now - start) / TIMESPANTICKS_IN_SECOND_FLOAT,
 			nframes / ((now - start) / TIMESPANTICKS_IN_SECOND_FLOAT));
-			*/
 		nframes = 0;
 		start = now;
 	}
@@ -1254,10 +1252,12 @@ static struct {
 	guint32 flag;
 	bool set;
 } overrides[] = {
-	{ "text=pango",       RUNTIME_INIT_PANGO_TEXT_LAYOUT, true  },
-	{ "text=silverlight", RUNTIME_INIT_PANGO_TEXT_LAYOUT, false },
-	{ "codecs=microsoft", RUNTIME_INIT_MICROSOFT_CODECS,  true  },
-	{ "codecs=ffmpeg",    RUNTIME_INIT_MICROSOFT_CODECS,  false },
+	{ "text=pango",        RUNTIME_INIT_PANGO_TEXT_LAYOUT, true  },
+	{ "text=silverlight",  RUNTIME_INIT_PANGO_TEXT_LAYOUT, false },
+	{ "codecs=microsoft",  RUNTIME_INIT_MICROSOFT_CODECS,  true  },
+	{ "codecs=ffmpeg",     RUNTIME_INIT_MICROSOFT_CODECS,  false },
+	{ "timesource=manual", RUNTIME_INIT_TIMESOURCE_MANUAL, true },
+	{ "timesource=system", RUNTIME_INIT_TIMESOURCE_MANUAL, false },
 };
 
 void

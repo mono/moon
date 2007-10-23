@@ -164,6 +164,56 @@ struct RepeatBehavior {
 	TimeSpan duration;
 };
 
+class TimeSource : public EventObject {
+ public:
+	TimeSource ();
+	virtual ~TimeSource ();
+
+	virtual void Start ();
+	virtual void Stop ();
+	virtual void SetTimerFrequency (int timeout);
+
+	virtual TimeSpan GetNow ();
+
+	static int TickEvent;
+
+	virtual Type::Kind GetObjectType () { return Type::TIMESOURCE; };
+};
+
+class SystemTimeSource : public TimeSource {
+ public:
+	SystemTimeSource ();
+	virtual ~SystemTimeSource ();
+
+	virtual void Start ();
+	virtual void Stop ();
+	virtual void SetTimerFrequency (int timeout);
+
+	virtual TimeSpan GetNow ();
+
+	virtual Type::Kind GetObjectType () { return Type::SYSTEMTIMESOURCE; };
+
+ private:
+	int gtk_timeout;
+	int frequency;
+	static gboolean tick_timeout (gpointer data);
+};
+
+class ManualTimeSource : public TimeSource {
+ public:
+	ManualTimeSource ();
+	virtual ~ManualTimeSource ();
+
+	virtual TimeSpan GetNow ();
+
+	void SetCurrentTime (TimeSpan current_time);
+
+	virtual Type::Kind GetObjectType () { return Type::MANUALTIMESOURCE; };
+
+ private:
+	TimeSpan current_time;
+};
+
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
 class Clock;
@@ -181,7 +231,10 @@ class TimeManager : public EventObject {
 		return _instance;
 	}
 
+	TimeSource *GetSource() { return source; }
+
 	TimeSpan GetCurrentTime () { return current_global_time - start_time; }
+	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
 
 	static TimeSpan GetCurrentGlobalTime () { return Instance()->current_global_time; }
 
@@ -221,8 +274,10 @@ class TimeManager : public EventObject {
 	TimeSpan current_global_time;
 	TimeSpan start_time;
 
-	static gboolean tick_timeout (gpointer data);
-	gint tick_id;
+	TimeSpan current_global_time_usec;
+	TimeSpan start_time_usec;
+
+	static void tick_callback (EventObject *sender, gpointer calldata, gpointer closure);
 	int current_timeout;
 	int max_fps;
 	bool first_tick;
@@ -237,6 +292,8 @@ class TimeManager : public EventObject {
 	};
 
 	TimeManagerOp flags;
+
+	TimeSource *source;
 
 	GMutex *tick_call_mutex;
 

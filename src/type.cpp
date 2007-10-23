@@ -228,8 +228,10 @@ types_init_manually (void)
 	Type::RegisterType ("Point*", Type::POINT_ARRAY, false);
 	Type::RegisterType ("Matrix", Type::MATRIX, true);
 	Type::RegisterType ("NPObj", Type::NPOBJ, false);
-	Type::RegisterType ("Base", Type::BASE, false);
-	Type::RegisterType ("EventObject", Type::EVENTOBJECT, Type::BASE);
+	Type::RegisterType ("EventObject", Type::EVENTOBJECT, false);
+	Type::RegisterType ("TimeSource", Type::TIMESOURCE, Type::EVENTOBJECT);
+	Type::RegisterType ("ManualTimeSource", Type::MANUALTIMESOURCE, Type::TIMESOURCE);
+	Type::RegisterType ("SystemTimeSource", Type::SYSTEMTIMESOURCE, Type::TIMESOURCE);
 	Type::RegisterType ("TimeManager", Type::TIMEMANAGER, Type::EVENTOBJECT);
 	Type::RegisterType ("Surface", Type::SURFACE, Type::EVENTOBJECT);
 #if DEBUG
@@ -259,6 +261,9 @@ types_init_register_events (void)
 	t = Type::Find (Type::TIMEMANAGER);
 	t->RegisterEvent ("update-input");
 	t->RegisterEvent ("render");
+
+	t = Type::Find (Type::TIMESOURCE);
+	t->RegisterEvent ("Tick");
 
 	t = Type::Find (Type::CLOCK);
 	t->RegisterEvent ("CurrentTimeInvalidated");

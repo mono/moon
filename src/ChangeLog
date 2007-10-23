@@ -1,3 +1,28 @@
+2007-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* mplayer.cpp: replace all occurences of av_gettime with
+	TimeManager::Instance()->GetCurrentTimeUsec().
+
+	* runtime.cpp (overrides): add the "timesource=manual" OVERRIDE
+	thingy.
+	(render_cb): re-enable the fps on the console.  oops.
+
+	* runtime.h (RuntimeInitFlags): add
+	RUNTIME_INIT_TIMESOURCE_MANUAL.
+
+	* type.h.in, type.cpp.in: remove BASE (should have happened on my
+	last commit), and add in the TIMESOURCE's, and TIMESOURCE's "Tick"
+	event.
+
+	* type.h, type.cpp: sync to the .in files.
+
+	* clock.h, clock.cpp: add the idea of a TimeSource to the
+	TimeManager.  Two are written - SystemTimeSource, which uses the
+	gtk timeout, and ManualTimeSource, which allows code to set what
+	the global time should be.  Also, add GetCurrentTimeUsec() for use
+	by mplayer, so we can switch it away from av_gettime and make it
+	possible for video to sync to the ManualTimeSource.
+
 2007-10-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* runtime.cpp: Base -> EventObject changes when OBJECT_TRACKING is defined.

@@ -374,10 +374,10 @@ MediaPlayer::Open (const char *uri)
 	
 	// Prepare audio playback
 	if (audio->pcm == NULL && audio->stream_id != -1) {
-		if (snd_pcm_open (&audio->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
-			fprintf (stderr, "cannot open audio device: %s\n", strerror (errno));
-			audio->pcm = NULL;
-		}
+// 		if (snd_pcm_open (&audio->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
+// 			fprintf (stderr, "cannot open audio device: %s\n", strerror (errno));
+// 			audio->pcm = NULL;
+// 		}
 	}
 	
 	if (audio->pcm != NULL && audio->stream_id != -1) {
@@ -492,7 +492,7 @@ MediaPlayer::AdvanceFrame ()
 	
 	if (!audio_thread) {
 		// no audio to sync to
-		uint64_t now = av_gettime ();
+		uint64_t now = TimeManager::Instance()->GetCurrentTimeUsec();
 		
 		uint64_t elapsed_usec = now - start_time;
 		uint64_t elapsed_pts = (uint64_t) (elapsed_usec * video->usec_to_pts);
@@ -682,7 +682,7 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	pthread_cond_signal (&pause_cond);
 	pthread_mutex_unlock (&pause_mutex);
 	
-	start_time += (av_gettime () - pause_time);
+	start_time += (TimeManager::Instance()->GetCurrentTimeUsec() - pause_time);
 	
 	if (video->stream_id != -1)
 		return TimeManager::Instance()->AddTimeout (video->msec_per_frame, callback, user_data);
@@ -717,7 +717,7 @@ MediaPlayer::Pause ()
 	else
 		pthread_mutex_lock (&pause_mutex);
 	
-	pause_time = av_gettime ();
+	pause_time = TimeManager::Instance()->GetCurrentTimeUsec();
 }
 
 void
@@ -854,7 +854,7 @@ MediaPlayer::Seek (int64_t position)
 			pthread_cond_signal (&pause_cond);
 			pthread_mutex_unlock (&pause_mutex);
 			
-			start_time = av_gettime ();
+			start_time = TimeManager::Instance()->GetCurrentTimeUsec();
 		}
 	}
 }

@@ -21,6 +21,7 @@
 
 #include "uielement.h"
 #include "dirty.h"
+#include "runtime.h"
 
 //#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -45,13 +46,10 @@
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 #define DELAY_TO_FPS(delay) (1000.0 / delay)
 
-typedef struct {
-  void (*func)(gpointer);
-  gpointer data;
-} TickCall;
+extern guint32 moonlight_flags;
 
 TimeSpan
-get_now (void)
+get_now()
 {
         struct timeval tv;
         TimeSpan res;
@@ -66,19 +64,143 @@ get_now (void)
 }
 
 
+int TimeSource::TickEvent = -1;
+
+TimeSource::TimeSource ()
+{
+}
+
+TimeSource::~TimeSource ()
+{
+}
+
+void
+TimeSource::Start ()
+{
+}
+
+void
+TimeSource::Stop ()
+{
+}
+
+void
+TimeSource::SetTimerFrequency (int frequency)
+{
+}
+
+TimeSpan
+TimeSource::GetNow ()
+{
+	return 0;
+}
+
+SystemTimeSource::SystemTimeSource ()
+{
+	gtk_timeout = -1;
+}
+
+SystemTimeSource::~SystemTimeSource ()
+{
+	Stop();
+}
+
+void
+SystemTimeSource::SetTimerFrequency (int timeout)
+{
+	bool running = false;
+	if (gtk_timeout != -1)
+		running = true;
+
+	if (running)
+		Stop ();
+
+	frequency = timeout;
+
+	if (running)
+		Start ();
+}
+
+void
+SystemTimeSource::Start ()
+{
+	if (gtk_timeout != -1)
+		return;
+
+	gtk_timeout = gtk_timeout_add (frequency, SystemTimeSource::tick_timeout, this);
+}
+
+void
+SystemTimeSource::Stop ()
+{
+	if (gtk_timeout != -1){
+		g_source_remove (gtk_timeout);
+		gtk_timeout = -1;
+	}
+}
+
+TimeSpan
+SystemTimeSource::GetNow ()
+{
+	return get_now ();
+}
+
+gboolean
+SystemTimeSource::tick_timeout (gpointer data)
+{
+	((SystemTimeSource*)data)->Emit (TimeSource::TickEvent);
+	return TRUE;
+}
+
+ManualTimeSource::ManualTimeSource ()
+{
+	current_time = 0;
+}
+
+ManualTimeSource::~ManualTimeSource ()
+{
+}
+
+void
+ManualTimeSource::SetCurrentTime (TimeSpan current_time)
+{
+	this->current_time = current_time;
+	Emit (TimeSource::TickEvent);
+}
+
+TimeSpan
+ManualTimeSource::GetNow ()
+{
+	return current_time;
+}
+
+
+typedef struct {
+	void (*func)(gpointer);
+	gpointer data;
+} TickCall;
+
 TimeManager* TimeManager::_instance = NULL;
 int TimeManager::UpdateInputEvent = -1;
 int TimeManager::RenderEvent = -1;
 
 TimeManager::TimeManager ()
   : child_clocks (NULL),
-    tick_id (-1),
     current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
     max_fps (MAXIMUM_FPS),
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
 {
-	start_time = get_now ();
+	if (moonlight_flags & RUNTIME_INIT_TIMESOURCE_MANUAL) {
+	  printf ("MANUAL\n");
+		source = new ManualTimeSource();
+	}
+	else
+		source = new SystemTimeSource();
+
+	start_time = source->GetNow ();
+	start_time_usec = start_time / 10;
+	source->AddHandler (TimeSource::TickEvent, tick_callback, this);
 
 	tick_call_mutex = g_mutex_new ();
 	registered_timeouts = NULL;
@@ -94,32 +216,16 @@ TimeManager::SetMaximumRefreshRate (int hz)
 void
 TimeManager::Start()
 {
-	current_global_time = get_now ();
-	AddGlibTimeout ();
-}
-
-void
-TimeManager::AddGlibTimeout ()
-{
-	if (tick_id != -1)
-		return;
-
-	tick_id = gtk_timeout_add (current_timeout, TimeManager::tick_timeout, this);
-}
-
-void
-TimeManager::RemoveGlibTimeout ()
-{
-	if (tick_id != -1){
-		g_source_remove (tick_id);
-		tick_id = -1;
-	}
+	current_global_time = source->GetNow();
+	current_global_time_usec = current_global_time / 10;
+	source->SetTimerFrequency (current_timeout);
+	source->Start ();
 }
 
 void
 TimeManager::Shutdown ()
 {
-	RemoveGlibTimeout ();
+	source->unref ();
 
         GList *node = child_clocks;
         GList *next;
@@ -139,11 +245,10 @@ TimeManager::Shutdown ()
 	_instance = NULL;
 }
 
-gboolean
-TimeManager::tick_timeout (gpointer data)
+void
+TimeManager::tick_callback (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	((TimeManager*)data)->Tick ();
-	return TRUE;
+	((TimeManager*)closure)->Tick ();
 }
 
 void
@@ -171,10 +276,11 @@ void
 TimeManager::Tick ()
 {
 	STARTTICKTIMER (tick, "TimeManager::Tick");
-	TimeSpan pre_tick = get_now();
+	TimeSpan pre_tick = source->GetNow();
 	if (flags & TIME_MANAGER_UPDATE_CLOCKS) {
 		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
-		current_global_time = get_now ();
+		current_global_time = source->GetNow();
+		current_global_time_usec = current_global_time / 10;
 		// loop over all toplevel clocks, updating their time (and
 		// triggering them to queue up their events) using the
 		// value of current_global_time...
@@ -214,7 +320,7 @@ TimeManager::Tick ()
 	}
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
-	TimeSpan post_tick = get_now();
+	TimeSpan post_tick = source->GetNow();
 
 	/* implement an exponential moving average by way of simple
 	   exponential smoothing:
@@ -226,6 +332,7 @@ TimeManager::Tick ()
 
 	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
 	*/
+#if 0
 
 #define SMOOTHING_ALPHA 0.60 /* we probably want to play with this value some.. - toshok */
 
@@ -251,16 +358,17 @@ TimeManager::Tick ()
 		current_timeout = FPS_TO_DELAY (MINIMUM_FPS);
 
 	//	printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
-	RemoveGlibTimeout();
-	AddGlibTimeout();
+
+	source->SetTimerFrequency (current_timeout);
 
 	previous_smoothed = current_smoothed;
 
 #if SHOW_SMOOTHING_COST
-	TimeSpan post_smooth = get_now();
+	TimeSpan post_smooth = source->GetNow();
 
 	printf ("for a clock tick of %lld, we spent %lld computing the smooth delay\n",
 		xt, post_smooth - post_tick);
+#endif
 #endif
 }
 
@@ -1142,4 +1250,7 @@ clock_init (void)
 	Clock::CurrentStateInvalidatedEvent = t->LookupEvent ("CurrentStateInvalidated");
 	Clock::CurrentGlobalSpeedInvalidatedEvent = t->LookupEvent ("CurrentGlobalSpeedInvalidated");
 	Clock::CompletedEvent = t->LookupEvent ("Completed");
+
+	t = Type::Find (Type::TIMESOURCE);
+	TimeSource::TickEvent = t->LookupEvent ("Tick");
 }
