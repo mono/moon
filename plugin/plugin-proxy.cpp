@@ -38,7 +38,18 @@ load (void)
 	char *plugin_path;
 
 #if PLUGIN_INSTALL
-	plugin_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/libmoonplugin.so", NULL);
+	plugin_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libmoonplugin.so", NULL);
+
+	char *moon_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libmoon.so", NULL);
+
+	void *real_moon = dlopen (moon_path, RTLD_NOW | RTLD_GLOBAL);
+
+	if (real_moon == NULL){
+		fprintf (stderr, "Unable to load the libmoon %s\n", dlerror ());
+		return FALSE;
+	}
+
+	g_free (moon_path);
 #else
 	plugin_path = g_strdup (PLUGIN_DIR "/plugin/libmoonplugin.so");
 #endif

@@ -1,3 +1,13 @@
+2007-10-23  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* install.js: Install the libraries under ~/.mozilla/plugins/moonlight
+	so that they are not loaded by mozilla
+	* moonlight.h: Don't define PLUGIN_INSTALL unless it is not defined
+	* plugin-proxy.cpp: dlopen libmoon.so from the user's
+	plugins/moonlight directory if we are building the user plugin
+	* Makefile.am: Use the PLUGIN_INSTALL flag to control building of the
+	XPI or not
+
 2007-10-23  Jb Evain  <jbevain@novell.com>
 
 	* browser-http.cpp|h: Add support for Abort and SetBody.

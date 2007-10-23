@@ -28,6 +28,18 @@ AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (a
 fi
 AM_CONDITIONAL(INCLUDE_MONO_RUNTIME, test $MONO_RUNTIME = yes)
 
+AC_ARG_ENABLE(user-plugin, [AS_HELP_STRING([--enable-user-plugin], [Build the plugin as installable in ~/.mozilla/plugins])],
+[case "${enable_user_plugin}" in
+	yes) user_plugin=yes ;;
+	no) user_plugin=no ;;
+	*) AC_MSG_ERROR([bad value ${enable_user_plugin} for --enable-user-plugin]) ;;
+esac],[user_plugin=no])
+
+if test $user_plugin = yes; then
+AC_DEFINE([PLUGIN_INSTALL], [1], [Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])
+fi
+AM_CONDITIONAL([PLUGIN_INSTALL], [test $user_plugin = yes])
+
 ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps"
 AC_CONFIG_SUBDIRS([pixman cairo])
 

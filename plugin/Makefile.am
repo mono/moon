@@ -1,11 +1,14 @@
 SUBDIRS = test samples
+CLEANFILES =
 
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
 pluginlib_DATA=README
 
+if PLUGIN_INSTALL
 noinst_DATA = novell-moonlight.xpi
+endif
 
 if INCLUDE_MONO_RUNTIME
 pluginlib_DATA += moonlight.exe moonlight.exe.mdb
@@ -29,7 +32,11 @@ libmoonplugin_la_LDFLAGS = \
 	-avoid-version \
 	-module
 
-libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon.la $(MOON_LIBS) $(PLUGIN_LIBS)
+if !PLUGIN_INSTALL
+MAYBE_LIBMOON = $(top_builddir)/src/libmoon.la
+endif
+
+libmoonplugin_la_LIBADD = $(MAYBE_LIBMOON) $(MOON_LIBS) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
 	moonlight.h		\
@@ -45,10 +52,15 @@ libmoonplugin_la_SOURCES = \
 	browser-http.cpp	\
 	downloader.cpp
 
-novell_moonlight_xpi_CONTENTS = $(srcdir)/install.js .libs/libmoonloader.so .libs/libmoonplugin.so
+if PLUGIN_INSTALL
+novell_moonlight_xpi_CONTENTS = $(srcdir)/install.js $(builddir)/.libs/libmoonloader.so $(builddir)/.libs/libmoonplugin.so $(top_builddir)/src/.libs/libmoon.so
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
+	-rm -f $@
 	zip -j -9 $@ $(novell_moonlight_xpi_CONTENTS)
+
+CLEANFILES += novell-moonlight.xpi
+endif
 
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
@@ -69,5 +81,5 @@ moonlight_CS=  $(srcdir)/moonlight.cs
 if INCLUDE_MONO_RUNTIME
 moonlight.exe: $(moonlight_CS)
 	smcs -debug -out:moonlight.exe $(moonlight_CS) -pkg:silver -pkg:agmonosilver
-CLEANFILES=moonlight.exe moonlight.exe.mdb
+CLEANFILES += moonlight.exe moonlight.exe.mdb
 endif
