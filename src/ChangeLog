@@ -1,5 +1,8 @@
 2007-10-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (TextBlock::ComputeTransform): If the scale has
+	changed, set dirty = true so that we recalculate the layout.
+
 	* mplayer.cpp (audio_play): Instead of using the SET_VOLUME()
 	macro, just do it w/o so that we hush the compiler warning.
 

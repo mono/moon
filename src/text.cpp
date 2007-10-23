@@ -835,10 +835,16 @@ TextBlock::ComputeTransform ()
 	uielement_get_render_affine (this, &matrix);
 	
 	if (!RENDER_USING_PANGO) {
-		if (matrix.yy <= 1.0)
-			font.custom->UnsetFields (FontMaskScale);
-		else
-			font.custom->SetScale (matrix.yy);
+		double scale = font.custom->GetScale ();
+		
+		if (matrix.yy != scale) {
+			if (matrix.yy <= 1.0)
+				font.custom->UnsetFields (FontMaskScale);
+			else
+				font.custom->SetScale (matrix.yy);
+			
+			dirty = true;
+		}
 	}
 }
 
