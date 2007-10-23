@@ -374,10 +374,10 @@ MediaPlayer::Open (const char *uri)
 	
 	// Prepare audio playback
 	if (audio->pcm == NULL && audio->stream_id != -1) {
-// 		if (snd_pcm_open (&audio->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
-// 			fprintf (stderr, "cannot open audio device: %s\n", strerror (errno));
-// 			audio->pcm = NULL;
-// 		}
+ 		if (snd_pcm_open (&audio->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
+ 			fprintf (stderr, "cannot open audio device: %s\n", strerror (errno));
+ 			audio->pcm = NULL;
+ 		}
 	}
 	
 	if (audio->pcm != NULL && audio->stream_id != -1) {
