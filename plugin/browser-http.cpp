@@ -126,7 +126,7 @@ BrowserHttpRequest::SetHttpHeader (const char *name, const char *value)
 }
 
 void
-BrowserHttpRequest::SetBody (const char *body)
+BrowserHttpRequest::SetBody (const char *body, int size)
 {
 	nsCOMPtr<nsIUploadChannel> upload = do_QueryInterface (channel);
 	if (!upload)
@@ -134,8 +134,20 @@ BrowserHttpRequest::SetBody (const char *body)
 
 	nsEmbedCString type;
 
-	// TODO: find a way to create a nsIInputStream and feed it with body
-	upload->SetUploadStream (NULL, type, -1);
+	nsCOMPtr<nsIStorageStream> storage;
+	nsresult rv = NS_NewStorageStream (2048, PR_UINT32_MAX, getter_AddRefs (storage));
+
+
+	nsCOMPtr<nsIOutputStream> output;
+	storage->GetOutputStream (0, getter_AddRefs (output));
+
+	PRUint32 written;
+	output->Write (body, size, &written);
+
+    nsCOMPtr<nsIInputStream> input;
+    rv = storage->NewInputStream (0, getter_AddRefs (input));
+
+	upload->SetUploadStream (input, type, -1);
 }
 
 BrowserHttpRequest *
@@ -157,9 +169,9 @@ browser_http_request_set_header (BrowserHttpRequest *request, const char *name, 
 }
 
 void
-browser_http_request_set_body (BrowserHttpRequest *request, const char *body)
+browser_http_request_set_body (BrowserHttpRequest *request, const char *body, int size)
 {
-	request->SetBody (body);
+	request->SetBody (body, size);
 }
 
 void
