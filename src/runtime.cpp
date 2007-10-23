@@ -59,13 +59,49 @@
 int Surface::ResizeEvent = -1;
 int Surface::FullScreenChangeEvent = -1;
 
+cairo_t *
+runtime_cairo_create (GdkWindow *drawable)
+{
+      GdkVisual *visual = NULL;
+      int width, height;
+      cairo_surface_t *surface;
+      cairo_t *cr;
+
+      visual = gdk_drawable_get_visual (drawable);
+
+      gdk_drawable_get_size (drawable, &width, &height);
+      surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
+					   gdk_x11_drawable_get_xid (drawable),
+					   GDK_VISUAL_XVISUAL (visual),
+					   width, height);
+
+
+      cr = cairo_create (surface);
+
+      return cr;
+}
+
+void
+runtime_cairo_region (cairo_t *cr, GdkRegion *region)
+{
+	int i, count;
+	GdkRectangle *rects;
+	
+	gdk_region_get_rectangles (region, &rects, &i);
+
+	for (count = 0; count < i; count++)
+		cairo_rectangle (cr, rects [count].x, rects [count].y, rects [count].width, rects [count].height);
+	
+	g_free (rects);
+}
+
 void
 Surface::CreateSimilarSurface ()
 {
 	if (drawing_area == NULL || drawing_area->window == NULL)
 		return;
 		
-    cairo_t *ctx = gdk_cairo_create (drawing_area->window);
+    cairo_t *ctx = runtime_cairo_create (drawing_area->window);
 
     if (cairo_xlib){
 	cairo_destroy (cairo_xlib);
@@ -599,7 +635,7 @@ Surface::InitializeDrawingArea (GtkWidget* drawing_area)
 {
 	// don't let gtk clear the window we'll do all the drawing.
 	gtk_widget_set_app_paintable (drawing_area, TRUE);
-
+	gtk_widget_set_double_buffered (drawing_area, FALSE);
 	//
 	// Set to true, need to change that to FALSE later when we start
 	// repainting again.   
@@ -746,9 +782,12 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
+	GdkPixmap *pixmap = gdk_pixmap_new (widget->window, MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
+	cairo_t *ctx = runtime_cairo_create (pixmap);
+	cairo_surface_set_device_offset (cairo_get_target (ctx),
+					 -event->area.x, - event->area.y);
 
-	cairo_t *ctx = gdk_cairo_create (widget->window);
-	gdk_cairo_region (ctx, event->region);
+	runtime_cairo_region (ctx, event->region);
 	cairo_clip (ctx);
 
 	//
@@ -771,14 +810,14 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	// windowless
 	//
 	if (s->transparent && !GTK_WIDGET_NO_WINDOW (widget)){
-		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
+		//cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
 		cairo_set_source_rgba (ctx, 1, 1, 1, 0);
 		cairo_paint (ctx);
 	}
 	else if (s->background_color) {
 		// FIXME dropping the alpha seems the closest to correct we
 		// have at the moment.
-		cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
+		//cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
 		if (s->transparent)
 			cairo_set_source_rgba (ctx,
 					       s->background_color->r,
@@ -798,18 +837,30 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	s->Paint (ctx, event->area.x, event->area.y, event->area.width, event->area.height);
 
 #if DEBUG_EXPOSE
-	gdk_cairo_region (ctx, event->region);
+	runtime_cairo_region (ctx, event->region);
 	cairo_set_line_width (ctx, 2.0);
 	cairo_set_source_rgb (ctx, (double)(s->frames % 2), (double)((s->frames + 1) % 2), (double)((s->frames / 3) % 2));
 	cairo_stroke (ctx);
 #endif
+	GdkGC *gc = gdk_gc_new (pixmap);
+	gint x_offset, y_offset;
 
+	gdk_gc_set_clip_region (gc, event->region);
+
+	gdk_draw_drawable (widget->window, gc, pixmap,
+			   0, 0,
+			   event->area.x, event->area.y,
+			   event->area.width, event->area.height);
+	
+	g_object_unref (pixmap);
+  
 	cairo_destroy (ctx);
 
 #if TIME_REDRAW
 	ENDTIMER (expose, "redraw");
 #endif
 
+	
 	return TRUE;
 }
 

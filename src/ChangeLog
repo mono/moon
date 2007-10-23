@@ -1,3 +1,8 @@
+2007-10-23  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: avoid making gdk calls that pull in the platform
+	cairo.
+
 2007-10-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp: Don't allow Pango rendering if disabled at
