@@ -1,5 +1,12 @@
 2007-10-23  Chris Toshok  <toshok@ximian.com>
 
+	* mplayer.cpp (Open): if RUNTIME_INIT_AUDIO_DISABLE, don't use
+	audio (so we sync to the clock).
+
+	* runtime.h: add RUNTIME_INIT_AUDIO_DISABLE.
+
+2007-10-23  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp (ManualTimeSource::SetCurrentTime): call
 	g_main_context_iteration as a stopgap to make video elements show
 	up.

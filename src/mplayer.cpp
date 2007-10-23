@@ -35,6 +35,7 @@ G_END_DECLS
 #include "clock.h"
 #include "mplayer.h"
 //#include "stream.h"
+#include "runtime.h"
 #include "list.h"
 
 #if GLIB_SIZEOF_VOID_P == 8
@@ -46,6 +47,8 @@ G_END_DECLS
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
 #define SET_VOLUME(chdata, volume) CLAMP (((((int32_t) (chdata)) * volume) >> 13), SHRT_MIN, SHRT_MAX)
+
+extern guint32 moonlight_flags;
 
 class Packet : public List::Node {
 public:
@@ -373,7 +376,7 @@ MediaPlayer::Open (const char *uri)
 	}
 	
 	// Prepare audio playback
-	if (audio->pcm == NULL && audio->stream_id != -1) {
+	if ((moonlight_flags & RUNTIME_INIT_AUDIO_DISABLE) == 0 && audio->pcm == NULL && audio->stream_id != -1) {
  		if (snd_pcm_open (&audio->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
  			fprintf (stderr, "cannot open audio device: %s\n", strerror (errno));
  			audio->pcm = NULL;
