@@ -578,6 +578,7 @@ MediaPlayer::AdvanceFrame ()
 void
 MediaPlayer::LoadVideoFrame ()
 {
+	bool update = false;
 	AVFrame *frame;
 	AVPacket pkt;
 	int redraw;
@@ -601,8 +602,9 @@ MediaPlayer::LoadVideoFrame ()
 		frame = avcodec_alloc_frame ();
 		
 		rv = avcodec_decode_video (video->stream->codec, frame, &redraw, pkt.data, pkt.size);
+		update = update || redraw;
 		
-		if (rv > 0 && redraw) {
+		if (rv > 0 && update && pkt.pts >= seek_pts) {
 			convert_to_rgb (video, frame);
 			av_free_packet (&pkt);
 			av_free (frame);
