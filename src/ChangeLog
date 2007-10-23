@@ -1,5 +1,14 @@
 2007-10-23  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp (Clock::GetBeginTime): stop treating the BeginTime of
+	a clock in absolute terms.  instead, offset it from the current
+	time of the parent clock (or time manager).
+	(Clock::Begin): clamp progress to 1.0
+	(SMOOTHING_ALPHA): switch this to 0.30 to see if that helps things
+	by making it less sensitive to immediate changes.
+
+2007-10-23  Chris Toshok  <toshok@ximian.com>
+
 	* mplayer.cpp (Open): if RUNTIME_INIT_AUDIO_DISABLE, don't use
 	audio (so we sync to the clock).
 

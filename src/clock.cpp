@@ -333,7 +333,7 @@ TimeManager::Tick ()
 	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
 	*/
 
-#define SMOOTHING_ALPHA 0.60 /* we probably want to play with this value some.. - toshok */
+#define SMOOTHING_ALPHA 0.30 /* we probably want to play with this value some.. - toshok */
 
 
 	TimeSpan xt = post_tick - pre_tick;
@@ -534,6 +534,8 @@ Clock::Clock (Timeline *tl)
     queued_events (0),
     is_reversed (false)
 {
+	begin_time = -1;
+
 	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
 		// remaining_iterations is an int.. GetCount returns a double.  badness?
@@ -698,12 +700,16 @@ Clock::RaiseAccumulatedEvents ()
 TimeSpan
 Clock::GetBeginTime ()
 {
-	if (timeline->HasBeginTime ()) {
-		return timeline->GetBeginTime ();
+	if (begin_time < 0) {
+		TimeSpan offset = 0;
+
+		if (timeline->HasBeginTime ()) {
+			offset = timeline->GetBeginTime ();
+		}
+
+		begin_time = (parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime()) + offset;
 	}
-	else {
-		return parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
-	}
+	return begin_time;
 }
 
 void
@@ -729,8 +735,12 @@ Clock::Begin ()
 #if CLOCK_DEBUG
 	printf (" + it's current time at that point will be %lld\n", current_time);
 #endif
-	if (natural_duration.HasTimeSpan ())
+	if (natural_duration.HasTimeSpan ()) {
 		current_progress = new_progress = (double)current_time / natural_duration.GetTimeSpan();
+		if (current_progress > 1.0) {
+			current_progress = new_progress = 1.0;
+		}
+	}
 	else
 		current_progress = new_progress = 0.0;
 

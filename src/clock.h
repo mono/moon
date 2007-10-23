@@ -336,6 +336,8 @@ class Clock : public DependencyObject {
 
 	TimeSpan GetBeginTime ();
 
+	TimeSpan begin_time;
+
 	enum ClockState {
 		Active,  /* time is progressing.  each tick results in a property value changing */
 		Filling, /* time is progressing.  each tick results in NO property value changing */
