@@ -130,6 +130,17 @@ if test -d $srcdir/libgc; then
   echo Done running libgc/autogen.sh ...
 fi
 
+if test -d $srcdir/pixman; then
+  echo Running pixman/autogen.sh ...
+  (cd $srcdir/pixman ; ./autogen.sh "$@")
+  echo Done running pixman/autogen.sh ...
+fi
+
+if test -d $srcdir/cairo; then
+  echo Running cairo/autogen.sh ...
+  (cd $srcdir/cairo ; ./autogen.sh "$@")
+  echo Done running cairo/autogen.sh ...
+fi
 
 conf_flags="--enable-maintainer-mode --enable-compile-warnings" #--enable-iso-c
 
