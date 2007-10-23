@@ -12,8 +12,6 @@
 #ifndef _ASF_FFMPEG_MOONLIGHT_H
 #define _ASF_FFMPEG_MOONLIGHT_H
 
-#include <config.h>
-
 #if log_ffmpeg || true
 #define FFMPEG_LOG(...) ASF_LOG (__VA_ARGS__)
 #else

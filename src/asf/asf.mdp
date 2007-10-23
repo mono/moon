@@ -30,6 +30,8 @@
     <File name="asf-structures.h" subtype="Code" buildaction="Nothing" />
     <File name="asf-structures.cpp" subtype="Code" buildaction="Compile" />
     <File name="asf-guids.cpp" subtype="Code" buildaction="Compile" />
+    <File name="debug.cpp" subtype="Code" buildaction="Compile" />
+    <File name="debug.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

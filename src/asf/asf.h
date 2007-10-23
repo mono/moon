@@ -11,7 +11,6 @@
 #ifndef _ASF_MOONLIGHT_H
 #define _ASF_MOONLIGHT_H
 
-#include <config.h>
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
@@ -34,6 +33,7 @@ class ASFSource;
 #include "asf-generated.h"
 #include "asf-guids.h"
 #include "asf-structures.h"
+#include "debug.h"
 
 #define ASF_ERROR_VAL(fail, ...) { fprintf (stderr, __VA_ARGS__); return fail; }
 #define ASF_ERROR(...) ASF_ERROR_VAL(false, __VA_ARGS__)
@@ -115,7 +115,7 @@ private:
 
 class ASFPacket {
 public:
-	ASFPacket ()
+	ASFPacket () : ot ("ASFPacket")
 	{
 		payloads = NULL;
 		index = 0;
@@ -173,6 +173,8 @@ public:
 	
 	gint32 index; // The index of this packet. -1 if not known.
 	gint64 position; // The position of this packet. -1 if not known.
+	
+	ObjectTracker ot;// ("ASFPacket");
 		
 };
 
@@ -181,7 +183,8 @@ struct ASFFrameReaderData {
 	ASFFrameReaderData* prev;
 	ASFFrameReaderData* next;
 	
-	ASFFrameReaderData (asf_single_payload* load)
+	ObjectTracker ot;
+	ASFFrameReaderData (asf_single_payload* load) : ot ("ASFFrameReaderData")
 	{
 		payload = load;
 		prev = NULL;
@@ -218,6 +221,8 @@ public:
 	gint32 StreamNumber () { return stream_number; }
 	
 private:
+	ObjectTracker ot;
+
 	ASFParser* parser;
 	
 	gint32 current_packet_index;
@@ -242,7 +247,7 @@ private:
 	void RemoveAll ()
 	{
 		ASFFrameReaderData* current = first, *next = NULL;
-		while (current = NULL) {
+		while (current != NULL) {
 			next = current->next;
 			delete current;
 			current = next;
@@ -264,6 +269,8 @@ private:
 			
 		if (data == last)
 			last = data->prev;
+			
+		//delete data;
 	}
 };
 
@@ -311,7 +318,7 @@ public:
 	// Returns 0 on failure, otherwise the offset of the packet index.
 	guint64 GetPacketOffset (gint32 packet_index)
 	{
-		if (packet_index < 0 || packet_index >= file_properties->data_packet_count) {
+		if (packet_index < 0 || (gint32) packet_index >= (gint32) file_properties->data_packet_count) {
 			AddError (g_strdup_printf ("ASFParser::GetPacketOffset (%i): Invalid packet index (there are %llu packets).", packet_index, file_properties->data_packet_count)); 
 			return 0;
 		}
@@ -319,11 +326,11 @@ public:
 		return packet_offset + packet_index * file_properties->min_packet_size;
 	}
 	
-	gint32 GetPacketIndex (int64_t offset)
+	gint32 GetPacketIndex (guint64 offset)
 	{
 		if (offset < packet_offset)
 			return -1;
-		if (offset > packet_offset_end)
+		if (offset > (guint64) packet_offset_end)
 			return file_properties->data_packet_count;
 		return (offset - packet_offset) / file_properties->min_packet_size;
 	}
@@ -410,6 +417,7 @@ public:
 	
 	
 	char* last_error;
+	GSList* errors;
 };
 
 

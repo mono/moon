@@ -11,6 +11,7 @@
 #ifndef _ASF_STRUCTURES_MOONLIGHT_H
 #define _ASF_STRUCTURES_MOONLIGHT_H
 
+#include "debug.h"
 
 void asf_error_correction_data_dump (asf_error_correction_data* obj);
 void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj);
@@ -200,7 +201,9 @@ struct asf_single_payload {
 		return -1;
 	}
 	
-	asf_single_payload () 
+	ObjectTracker ot;
+	
+	asf_single_payload () : ot ("asf_single_payload") 
 	{
 		stream_number = 0; media_object_number = 0; offset_into_media_object = 0;
 		replicated_data_length = 0; replicated_data = 0; payload_data_length = 0;
@@ -221,13 +224,15 @@ struct asf_multiple_payloads {
 	
 	bool FillInAll (ASFSource* source, asf_error_correction_data* ecd, asf_payload_parsing_information ppi);
 	asf_multiple_payloads () { payload_flags = 0; payloads = NULL; }
+	
 	~asf_multiple_payloads () 
 	{
 		if (payloads) {
-			int i = 0;
-			while (payloads [i] != NULL)
-				g_free (payloads [i++]);
+			int i = -1;
+			while (payloads [++i] != NULL)
+				delete payloads [i];
 			g_free (payloads);
+			payloads = NULL;
 		}
 	}
 	

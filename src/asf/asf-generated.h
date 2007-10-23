@@ -37,6 +37,7 @@ struct asf_data;
 class ASFSource;
 class ASFFileSource;
 class ASFPacket;
+class ASFFrameReader;
 class ASFParser;
 
  /* Validation functions */ 

@@ -6,13 +6,17 @@ default: asf-generated.h
 	g++ $(ASF_COMPILER_ARGUMENTS) asf-generated.cpp -o asf-generated.o
 	g++ $(ASF_COMPILER_ARGUMENTS) asf-guids.cpp -o asf-guids.o
 	g++ $(ASF_COMPILER_ARGUMENTS) asf-structures.cpp -o asf-structures.o
-	g++ -o $(ASF_BIN) asf.o asf-generated.o asf-guids.o asf-structures.o -lglib-2.0
+	g++ $(ASF_COMPILER_ARGUMENTS) debug.cpp -o debug.o
+	g++ -o $(ASF_BIN) asf.o asf-generated.o asf-guids.o asf-structures.o debug.o -lglib-2.0
 
 debug: default
 	gdb --eval-command=run --args $(ASF_BIN)
 
 valgrind: default
 	valgrind --tool=memcheck -v --leak-check=full --log-file=v.log --smc-check=all $(ASF_BIN)
+
+gdb: default
+	gdb --eval-command=run --args $(ASF_BIN)
 
 run: default
 	$(ASF_BIN)

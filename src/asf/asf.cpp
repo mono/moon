@@ -20,14 +20,34 @@ int main(int argc, char *argv[])
 	if (argc >= 2)
 		filename = argv [1];
 	
+	printf ("File: %s\n", filename);
 	ASFParser* parser = new ASFParser (filename);
 	parser->ReadHeader ();
 	parser->ReadData ();
-	ASFPacket* packet;
-	while ((packet = new ASFPacket ()) && parser->ReadPacket (packet)) {
+	ASFPacket* packet = new ASFPacket ();
+	while (parser->ReadPacket (packet) == true) {
 		delete packet;
+		packet = new ASFPacket ();
 	}
+	delete packet;
+	
+	printf ("Read all packets.\n");
+	ASFFrameReader* reader = new ASFFrameReader (parser);
+	while (reader->Advance ()) {
+	}
+	delete reader;
+	printf ("Read all frames.\n");
+	
+	printf ("Done.\n");
+	
 	delete parser;
+	
+	ObjectTracker::PrintStatus ("ASFPacket");
+	ObjectTracker::PrintStatus ("ASFFrameReader");
+	ObjectTracker::PrintStatus ("ASFFrameReaderData");
+	ObjectTracker::PrintStatus ("asf_single_payload");
+	
+	return 0;
 }
 
 void
@@ -53,7 +73,7 @@ ASFParser::ASFParser (const char* filename)
 	header_objects = NULL;
 	last_error = NULL;
 	file_properties = NULL;
-	
+	errors = NULL;
 	memset (stream_properties, 0, sizeof (asf_stream_properties*) * 127);
 }
 
@@ -63,8 +83,15 @@ ASFParser::~ASFParser ()
 	delete source;
 	source = NULL;
 		
-	g_free (last_error);
-	last_error = NULL;
+	if (errors) {
+		GSList* current = errors;
+		while (current != NULL) {
+			g_free (current->data);
+			current = current->next;
+		}
+		g_slist_free (errors);
+		errors = NULL;
+	}
 	
 	g_free (header);
 	header = NULL;
@@ -72,8 +99,14 @@ ASFParser::~ASFParser ()
 	g_free (data);
 	data = NULL;
 	
-	g_free (header_objects);
-	header_objects = NULL;
+	if (header_objects) {
+		int i = -1;
+		while (header_objects [++i] != NULL)
+			g_free (header_objects [i]);
+			
+		g_free (header_objects);
+		header_objects = NULL;
+	}
 }
 
 asf_object*
@@ -149,6 +182,7 @@ ASFParser::ReadPacket (ASFPacket* packet)
 	if (ppi.is_multiple_payloads_present ()) {
 		ASF_LOG ("ASFParser::ReadPacket (), reading multiple payloads.\n");
 		if (!mp->FillInAll (source, &ecd, ppi)) {
+			delete mp;
 			return false;
 		}
 	} else {
@@ -156,6 +190,8 @@ ASFParser::ReadPacket (ASFPacket* packet)
 		asf_single_payload* sp = new asf_single_payload ();
 		if (!sp->FillInAll (source, &ecd, ppi, NULL)) {
 			asf_single_payload_dump (sp);
+			delete sp;
+			delete mp;
 			return false;
 		}
 		//asf_single_payload_dump (sp);
@@ -182,14 +218,24 @@ ASFParser::ReadData ()
 {
 	ASF_LOG ("ASFParser::ReadData ().\n");
 	
-	asf_data* data = NULL;
+	if (this->data != NULL) {
+		AddError ("ReadData has already been called.\n");
+		return false;
+	}
+	
 	if (!source->Seek (header->size, SEEK_SET)) {
 		return false;
 	}
+	
 	ASF_LOG ("Current position: %llx (%lld)\n", source->Position (), source->Position ());
+	
 	data = (asf_data*) g_malloc0 (sizeof (asf_data));
-	if (!source->Read (data, sizeof (asf_data)))
+	
+	if (!source->Read (data, sizeof (asf_data))) {
+		g_free (data);
+		data = NULL;
 		return false;
+	}
 	
 	asf_object_dump_exact (data);
 	
@@ -235,11 +281,18 @@ ASFParser::ReadHeader ()
 			SetStream (stream->get_stream_number (), stream);
 		}
 		
+		if (asf_guid_compare (&asf_guids_file_properties, &header_objects [i]->id)) {
+			if (file_properties != NULL) {
+				AddError ("Multiple file property streams in the asf streams.");
+				return false;
+			}
+			file_properties = (asf_file_properties*) header_objects [i];
+		}
+		
 		asf_object_dump_exact (header_objects [i]);
 	}
 	
 	// TODO: Validate existence of mandatory header objects
-	file_properties = (asf_file_properties*) GetHeaderObject (&asf_guids_file_properties); 
 	data_offset = header->size;
 	packet_offset = data_offset + sizeof (asf_data);
 	packet_offset_end = packet_offset + file_properties->data_packet_count * file_properties->min_packet_size;
@@ -260,15 +313,12 @@ ASFParser::GetLastError ()
 
 void
 ASFParser::AddError (const char* err)
-{
-	// FIXME: Ability to report more than one error.
-	
+{	
 	ASF_LOG ("ASFParser::AddError ('%s').\n", err);
 	
-	if (last_error)
-		g_free (last_error);
-
-	last_error = g_strdup (err);
+	// Don't use prepend, this is not a performance bottleneck,
+	// and it makes things easier to have the list chronologically ordered.
+	errors = g_slist_append (errors, (gpointer) g_strdup (err));
 }
 
 void
@@ -284,7 +334,8 @@ ASFParser::AddError (char* err)
 
 ASFFileSource::ASFFileSource (ASFParser* parser, const char* fn) : ASFSource (parser)
 {
-	filename = g_strdup (fn);	
+	filename = g_strdup (fn);
+	fd = NULL;
 }
 
 ASFFileSource::~ASFFileSource ()
@@ -403,7 +454,7 @@ ASFSource::ReadEncoded (int length, asf_dword* destination)
 	ASFFrameReader
 */
 
-ASFFrameReader::ASFFrameReader (ASFParser* p)
+ASFFrameReader::ASFFrameReader (ASFParser* p) : ot ("ASFFrameReader")
 {
 	parser = p;
 	first = NULL;
@@ -505,7 +556,10 @@ ASFFrameReader::Advance ()
 	bool end = false;
 	ASFFrameReaderData *current = first->next;
 	
-	Remove (first);
+	ASFFrameReaderData* tmp2 = first;
+	Remove (tmp2);
+	tmp2->payload = NULL;
+	delete tmp2;
 	
 	while (!end) {
 		// Loop through payloads until we find a payload with the same stream number.
@@ -595,6 +649,7 @@ ASFFrameReader::ReadMore ()
 			last = node;
 		}
 	}
+	g_free (payloads);
 	
 	ASF_LOG ("ASFFrameReader::ReadMore (): read %i payloads.\n", i);
 		
