@@ -1,3 +1,10 @@
+2007-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* harness/xaml2png.cpp: fix up a lot of this.  allow timespans to
+	be places on the command line after the xaml file + output file
+	args, and use the manual time source to move the timemanager to
+	those times before dumping pngs.
+
 2007-10-17  Chris Toshok  <toshok@ximian.com>
 
 	* harness/Makefile.am (xaml2png_LDADD): add MOON_PROG_LIBS.

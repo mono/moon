@@ -52,9 +52,9 @@ class FileDownloadState {
 
 		struct stat sb;
 		fstat (fd, &sb);
-		close (fd);
 		size = sb.st_size;
 		downloader_notify_size (downloader, size);
+		close (fd);
 	}
 
 	void Send () {
@@ -100,62 +100,118 @@ downloader_abort (gpointer state)
 	((FileDownloadState*)state)->Abort ();
 }
 
+void
+strip_metadata (const char *png_filename)
+{
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (png_filename, NULL);
+	unlink (png_filename);
+	gdk_pixbuf_save (pixbuf, png_filename, "png", NULL, NULL);
+	g_object_unref (pixbuf);
+}
 
 void
-runTest (const char *xaml_file, const char *output_prefix)
+runTest (const char *xaml_file, const char *output_prefix, TimeSpan timestamps[])
 {
 	Surface *s = new Surface (TEST_WIDTH, TEST_HEIGHT);
-	GdkPixbuf *pixbuf;
 	Type::Kind type;
 
 	XamlLoader* loader = new XamlLoader (xaml_file, NULL, s);
-	DependencyObject *dob = xaml_create_from_file (loader, xaml_file, true, &type);
+	Canvas *canvas = (Canvas*)xaml_create_from_file (loader, xaml_file, true, &type);
 	delete loader;
 
-	s->Attach ((UIElement*)dob);
+	s->Attach (canvas);
+
+	int width = TEST_WIDTH;
+	int height = TEST_HEIGHT;
+
+	if (framework_element_get_width (canvas) > 0 &&
+	    framework_element_get_height (canvas) > 0) {
+
+		width = (int)framework_element_get_width (canvas);
+		height = (int)framework_element_get_height (canvas);
+	}
 
 	cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-							    s->GetWidth (), s->GetHeight ());
+							    width, height);
 
-	cairo_t *cr = cairo_create (surf);
+	cairo_t * cr = cairo_create (surf);
 
-	s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
+	if (timestamps) {
+		int i = 0;
+		while (timestamps[i] > 0) {
+		  printf ("generating image for timestamp %lld\n", timestamps[i]);
+			((ManualTimeSource*)TimeManager::Instance()->GetSource())->SetCurrentTime (timestamps[i]);
+			cr = cairo_create (surf);
 
-	cairo_surface_write_to_png (surf, output_prefix);
+			s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
+
+			char *timestamped_filename = g_strdup_printf ("%s-%lld", output_prefix, timestamps[i]);
+			cairo_surface_write_to_png (surf, timestamped_filename);
+
+			strip_metadata (timestamped_filename);
+			g_free (timestamped_filename);
+			i++;
+
+			cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+			cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+			cairo_rectangle (cr, 0, 0, s->GetWidth(), s->GetHeight());
+			cairo_paint (cr);
+		}
+	}
+	else {
+		s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
+
+		cairo_status_t stat = cairo_surface_write_to_png (surf, output_prefix);
+
+		printf ("stat = %d\n", stat);
+
+		strip_metadata (output_prefix);
+	}
 
 	cairo_surface_destroy (surf);
 	cairo_destroy (cr);
 
 	delete s;
-
-	pixbuf = gdk_pixbuf_new_from_file (output_prefix, NULL);
-	unlink (output_prefix);
-	gdk_pixbuf_save (pixbuf, output_prefix, "png", NULL, NULL);
-	g_object_unref (pixbuf);
 }
 
 int
 main (int argc, char **argv)
 {
+	if (argc < 3) {
+		printf ("usage:  xaml2png file.xaml output.png\n");
+		exit (1);
+	}
+
 	bool gen_expected = false;
 
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
 	gdk_threads_init ();
 	
-	runtime_init (RUNTIME_INIT_BROWSER);
+	runtime_init (RUNTIME_INIT_BROWSER | RUNTIME_INIT_TIMESOURCE_MANUAL);
 
 	downloader_set_functions (downloader_create_state,
 				  downloader_destroy_state,
 				  downloader_open,
 				  downloader_send,
 				  downloader_abort);
-	
+
 	char *test = argv[1];
 	char *png = argv[2];
+
+	TimeSpan *timestamps;
+
+	timestamps = NULL;
+
+	if (argc > 3) {
+		timestamps = new TimeSpan[argc - 3 + 1];
+		for (int i = 3; i < argc; i ++)
+			timestamps[i-3] = atoll(argv[i]);
+		timestamps[argc - 3] = -1;
+	}
 
 	testdir = g_path_get_dirname (test);
 	if (!strcmp ("", testdir))
 		testdir = g_get_current_dir();
-	runTest (test, png);
+	runTest (test, png, timestamps);
 }
