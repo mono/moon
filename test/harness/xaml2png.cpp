@@ -31,6 +31,9 @@ class FileDownloadState {
 	{
 		uri = g_strdup (URI);
 
+		if (g_str_has_prefix (uri, "file://"))
+			uri += 7;
+
 		int fd = open (uri, O_RDONLY);
 		if (fd == -1) {
 			if (!g_path_is_absolute (uri)) {
@@ -105,7 +108,9 @@ runTest (const char *xaml_file, const char *output_prefix)
 	GdkPixbuf *pixbuf;
 	Type::Kind type;
 
-	DependencyObject *dob = xaml_create_from_file (NULL, xaml_file, true, &type);
+	XamlLoader* loader = new XamlLoader (xaml_file, NULL, s);
+	DependencyObject *dob = xaml_create_from_file (loader, xaml_file, true, &type);
+	delete loader;
 
 	s->Attach ((UIElement*)dob);
 
