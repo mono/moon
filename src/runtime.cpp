@@ -77,7 +77,8 @@ runtime_cairo_create (GdkWindow *drawable)
 
 
       cr = cairo_create (surface);
-
+      cairo_surface_destroy (surface);
+			    
       return cr;
 }
 
