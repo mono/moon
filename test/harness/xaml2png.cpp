@@ -188,7 +188,7 @@ main (int argc, char **argv)
 	g_thread_init (NULL);
 	gdk_threads_init ();
 	
-	runtime_init (RUNTIME_INIT_BROWSER | RUNTIME_INIT_TIMESOURCE_MANUAL);
+	runtime_init (RUNTIME_INIT_BROWSER | RUNTIME_INIT_TIMESOURCE_MANUAL | RUNTIME_INIT_AUDIO_DISABLE);
 
 	downloader_set_functions (downloader_create_state,
 				  downloader_destroy_state,
