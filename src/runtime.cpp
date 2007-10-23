@@ -133,6 +133,8 @@ Surface::Surface(int w, int h)
 {
 	drawing_area = gtk_event_box_new ();
 
+	background_color = new Color (1, 1, 1, 0);
+
 	InitializeDrawingArea (drawing_area);
 
 	buffer = NULL;
@@ -808,29 +810,20 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	// The second part is for coping with the future: when we support being 
 	// windowless
 	//
-	if (s->transparent && !GTK_WIDGET_NO_WINDOW (widget)){
-		//cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
-		cairo_set_source_rgba (ctx, 1, 1, 1, 0);
-		cairo_paint (ctx);
-	}
-	else if (s->background_color) {
-		// FIXME dropping the alpha seems the closest to correct we
-		// have at the moment.
-		//cairo_set_operator (ctx, CAIRO_OPERATOR_SOURCE);
-		if (s->transparent)
-			cairo_set_source_rgba (ctx,
-					       s->background_color->r,
-					       s->background_color->g,
-					       s->background_color->b,
-					       s->background_color->a);
-		else
-			cairo_set_source_rgb (ctx,
-					      s->background_color->r,
-					      s->background_color->g,
-					      s->background_color->b);
 
-		cairo_paint (ctx);
-	}
+	if (s->transparent)
+		cairo_set_source_rgba (ctx,
+				       s->background_color->r,
+				       s->background_color->g,
+				       s->background_color->b,
+				       s->background_color->a);
+	else
+		cairo_set_source_rgb (ctx,
+				      s->background_color->r,
+				      s->background_color->g,
+				      s->background_color->b);
+
+	cairo_paint (ctx);
 
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 	s->Paint (ctx, event->area.x, event->area.y, event->area.width, event->area.height);

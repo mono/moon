@@ -1,3 +1,12 @@
+2007-10-23  Larry Ewing  <lewing@novell.com>
+
+	* src/runtime.cpp: clear the background in more cases.
+
+2007-10-23  Larry Ewing  <lewing@novell.com>
+
+	* src/runtime.cpp: make the eventbox windowless and remove the
+	stale event code.  Let gtk do the clearing.
+
 2007-10-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer.cpp (MediaPlayer::Open): Re-enable audio :)
