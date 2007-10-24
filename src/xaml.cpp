@@ -945,7 +945,7 @@ char_data_handler (void *data, const char *in, int inlen)
 	
 	if (!p->cdata) {
 		// unless we already have significant char data, ignore lwsp
-		while (g_ascii_isspace (*inptr) && inptr < inend)
+		while (inptr < inend && g_ascii_isspace (*inptr))
 			inptr++;
 		
 		if (inptr == inend)
