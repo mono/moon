@@ -1,3 +1,7 @@
+2007-10-24  Jb Evain  <jbevain@novell.com>
+
+	* browser-http.cpp|h: work on asynchronous requests.
+
 2007-10-23  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* install.js: Install the libraries under ~/.mozilla/plugins/moonlight
