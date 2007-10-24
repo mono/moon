@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "clock.h"
+
 #define TEST_WIDTH 400
 #define TEST_HEIGHT 400
 
@@ -110,7 +112,16 @@ strip_metadata (const char *png_filename)
 }
 
 void
-runTest (const char *xaml_file, const char *output_prefix, TimeSpan timestamps[])
+fill_background (Surface *s, cairo_t *cr)
+{
+	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+	cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0);
+	cairo_rectangle (cr, 0, 0, s->GetWidth(), s->GetHeight());
+	cairo_paint (cr);
+}
+
+void
+runTest (const char *xaml_file, const char *output_prefix, bool multiple, int delta, int max)
 {
 	Surface *s = new Surface (TEST_WIDTH, TEST_HEIGHT);
 	Type::Kind type;
@@ -136,29 +147,31 @@ runTest (const char *xaml_file, const char *output_prefix, TimeSpan timestamps[]
 
 	cairo_t * cr = cairo_create (surf);
 
-	if (timestamps) {
-		int i = 0;
-		while (timestamps[i] > 0) {
-		  printf ("generating image for timestamp %lld\n", timestamps[i]);
-			((ManualTimeSource*)TimeManager::Instance()->GetSource())->SetCurrentTime (timestamps[i]);
-			cr = cairo_create (surf);
+	if (multiple) {
+		TimeSpan delta_t = (TimeSpan)(TIMESPANTICKS_IN_SECOND_FLOAT / 1000 * delta);
+		TimeSpan t = 0;
+
+		for (int i = 0; i < max; i ++) {
+			fill_background (s, cr);
+
+			printf ("generating image for timestamp %lld\n", t);
+
+			((ManualTimeSource*)TimeManager::Instance()->GetSource())->SetCurrentTime (t);
 
 			s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
 
-			char *timestamped_filename = g_strdup_printf ("%s-%lld", output_prefix, timestamps[i]);
+			char *timestamped_filename = g_strdup_printf ("%s-%lld", output_prefix, t);
 			cairo_surface_write_to_png (surf, timestamped_filename);
 
 			strip_metadata (timestamped_filename);
 			g_free (timestamped_filename);
-			i++;
 
-			cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-			cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
-			cairo_rectangle (cr, 0, 0, s->GetWidth(), s->GetHeight());
-			cairo_paint (cr);
+			t += delta_t;
 		}
 	}
 	else {
+		fill_background (s, cr);
+
 		s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
 
 		cairo_status_t stat = cairo_surface_write_to_png (surf, output_prefix);
@@ -177,8 +190,8 @@ runTest (const char *xaml_file, const char *output_prefix, TimeSpan timestamps[]
 int
 main (int argc, char **argv)
 {
-	if (argc < 3) {
-		printf ("usage:  xaml2png file.xaml output.png\n");
+	if (argc < 3 || argc > 4) {
+		printf ("usage:  xaml2png file.xaml output.png millis,max\n");
 		exit (1);
 	}
 
@@ -199,19 +212,24 @@ main (int argc, char **argv)
 	char *test = argv[1];
 	char *png = argv[2];
 
-	TimeSpan *timestamps;
+	int millis = 0;
+	int max = 0;
+	bool multiple = false;
 
-	timestamps = NULL;
+	if (argc == 4) {
+		char *arg = g_strdup (argv[3]);
+		char *comma;
+		comma = strchr (arg, ',');
+		*comma = '\0';
+		millis = atoi (arg);
+		max = atoi (comma + 1);
+		multiple = true;
 
-	if (argc > 3) {
-		timestamps = new TimeSpan[argc - 3 + 1];
-		for (int i = 3; i < argc; i ++)
-			timestamps[i-3] = atoll(argv[i]);
-		timestamps[argc - 3] = -1;
+		printf ("generating %d images, one image every %d milliseconds\n", max, millis);
 	}
 
 	testdir = g_path_get_dirname (test);
 	if (!strcmp ("", testdir))
 		testdir = g_get_current_dir();
-	runTest (test, png, timestamps);
+	runTest (test, png, multiple, millis, max);
 }

@@ -1,3 +1,10 @@
+2007-10-24  Chris Toshok  <toshok@ximian.com>
+
+	* harness/xaml2png.cpp: fill the background with white so we look
+	like mopen.  Also, use the MS way of specifying timespecs -
+	"100,15" == generate image every 100 milliseconds, up to 15
+	images.
+
 2007-10-23  Chris Toshok  <toshok@ximian.com>
 
 	* harness/xaml2png.cpp (main): use RUNTIME_INIT_AUDIO_DISABLE so
