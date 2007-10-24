@@ -239,6 +239,26 @@ type_get_value_type (Type::Kind type)
 	return Type::Find (type)->value_type;
 }
 
+DependencyObject *
+type_create_instance (Type *type)
+{
+        return type->CreateInstance ();
+}
+
+DependencyObject *
+type_create_instance_from_kind (Type::Kind kind)
+{
+        Type *t = Type::Find (kind);
+
+        if (t == NULL) {
+                g_warning ("Unable to create instance of type %d. Type not found.", kind);
+                return NULL;
+        }
+
+        return t->CreateInstance ();
+}
+
+
 static void 
 types_init_manually (void)
 {

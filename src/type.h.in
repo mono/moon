@@ -92,6 +92,8 @@ private:
 G_BEGIN_DECLS
 
 bool type_get_value_type (Type::Kind type);
+DependencyObject *type_create_instance (Type *type);
+DependencyObject *type_create_instance_from_kind (Type::Kind kind);
 
 void types_init (void);
 

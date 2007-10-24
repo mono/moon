@@ -1,5 +1,10 @@
 2007-10-24  Jackson Harper  <jackson@ximian.com>
 
+	* type.cpp.in/h.in: Add some c-style functions for creating
+	instances.
+
+2007-10-24  Jackson Harper  <jackson@ximian.com>
+
 	* typegen.cs:
 	* type.cpp.in/h.in: Add a create instance call to types.  This
 	will allow the parser to use our Type object instead of creating
