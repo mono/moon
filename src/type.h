@@ -18,7 +18,11 @@
 
 #include <glib.h>
 
+class DependencyObject;
+
 typedef gint64 TimeSpan;
+typedef DependencyObject *create_inst_func (void);
+
 
 class Type {
 public:
@@ -169,7 +173,8 @@ public:
 	// END_MANAGED_MAPPING
 		};
 
-	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, bool value_type);
+	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, bool value_type);
+	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst);
 	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent);
 	static Type* RegisterType (const char *name, Type::Kind type, bool value_type);
 	static Type* Find (const char *name);
@@ -186,6 +191,8 @@ public:
 	int GetEventCount ();
 	int GetEventBase ();
 
+	DependencyObject *CreateInstance ();
+
 	static void Shutdown ();
 private:
 	Type (const char *name, Type::Kind type, Type::Kind parent);
@@ -197,6 +204,7 @@ private:
 	int local_event_base;
 	int local_event_count;
 	int type_event_count; /* local_event_base + local_event_count */
+	create_inst_func *create_inst;
 };
 
 G_BEGIN_DECLS

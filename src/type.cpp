@@ -23,6 +23,26 @@
 #include <stdlib.h>
 #include "type.h"
 
+#include "runtime.h"
+#include "canvas.h"
+#include "control.h"
+#include "color.h"
+#include "shape.h"
+#include "transform.h"
+#include "animation.h"
+#include "downloader.h"
+#include "frameworkelement.h"
+#include "stylus.h"
+#include "rect.h"
+#include "text.h"
+#include "panel.h"
+#include "value.h"
+#include "namescope.h"
+#include "xaml.h"
+
+
+
+
 /*
 	Type implementation
 */
@@ -68,10 +88,10 @@ Type::LookupEvent (const char *event_name)
 {
 	gpointer key, value;
 	if (event_name_hash &&
-	    g_hash_table_lookup_extended (event_name_hash,
-					  event_name,
-					  &key,
-					  &value)) {
+                        g_hash_table_lookup_extended (event_name_hash,
+					event_name,
+					&key,
+					&value)) {
 
 		return GPOINTER_TO_INT (value) + GetEventBase();
 	}
@@ -110,7 +130,7 @@ Type::GetEventCount ()
 Type *
 Type::RegisterType (const char *name, Type::Kind type, bool value_type)
 {
-	return RegisterType (name, type, Type::INVALID, value_type);
+	return RegisterType (name, type, Type::INVALID, NULL, value_type);
 }
 
 void
@@ -122,11 +142,17 @@ Type::free_type (gpointer type)
 Type *
 Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent)
 {
-	return RegisterType (name, type, parent, false);
+	return RegisterType (name, type, parent, NULL, false);
 }
 
 Type *
-Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, bool value_type)
+Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst)
+{
+	return RegisterType (name, type, parent, create_inst, false);
+}
+
+Type *
+Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, bool value_type)
 {
 	if (types == NULL) {
 		types = (Type**)calloc (Type::LASTTYPE, sizeof (Type*));
@@ -143,6 +169,8 @@ Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, bool v
 
 	types [type] = result;
 	g_hash_table_insert (types_by_name, result->name, result);
+
+	result->create_inst = create_inst;
 
 	return result;
 }
@@ -184,6 +212,17 @@ Type *
 Type::Find (Type::Kind type)
 {
 	return types [type];
+}
+
+DependencyObject *
+Type::CreateInstance ()
+{
+        if (!create_inst) {
+                g_warning ("Unable to create an instance of type: %s\n", name);
+                return NULL;
+        }
+
+        return create_inst ();
 }
 
 void
@@ -319,117 +358,117 @@ types_init (void)
 	Type::RegisterType ("DependencyObject", Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT);
 	Type::RegisterType ("Animation", Type::ANIMATION, Type::TIMELINE);
 	Type::RegisterType ("AnimationClock", Type::ANIMATIONCLOCK, Type::CLOCK);
-	Type::RegisterType ("ArcSegment", Type::ARCSEGMENT, Type::PATHSEGMENT);
-	Type::RegisterType ("BeginStoryboard", Type::BEGINSTORYBOARD, Type::TRIGGERACTION);
-	Type::RegisterType ("BezierSegment", Type::BEZIERSEGMENT, Type::PATHSEGMENT);
-	Type::RegisterType ("Brush", Type::BRUSH, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Canvas", Type::CANVAS, Type::PANEL);
+	Type::RegisterType ("ArcSegment", Type::ARCSEGMENT, Type::PATHSEGMENT, (create_inst_func *) arc_segment_new);
+	Type::RegisterType ("BeginStoryboard", Type::BEGINSTORYBOARD, Type::TRIGGERACTION, (create_inst_func *) begin_storyboard_new);
+	Type::RegisterType ("BezierSegment", Type::BEZIERSEGMENT, Type::PATHSEGMENT, (create_inst_func *) bezier_segment_new);
+	Type::RegisterType ("Brush", Type::BRUSH, Type::DEPENDENCY_OBJECT, (create_inst_func *) brush_new);
+	Type::RegisterType ("Canvas", Type::CANVAS, Type::PANEL, (create_inst_func *) canvas_new);
 	Type::RegisterType ("Clock", Type::CLOCK, Type::DEPENDENCY_OBJECT);
 	Type::RegisterType ("ClockGroup", Type::CLOCKGROUP, Type::CLOCK);
 	Type::RegisterType ("Collection", Type::COLLECTION, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("ColorAnimation", Type::COLORANIMATION, Type::ANIMATION);
-	Type::RegisterType ("ColorAnimationUsingKeyFrames", Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION);
-	Type::RegisterType ("ColorKeyFrame", Type::COLORKEYFRAME, Type::KEYFRAME);
-	Type::RegisterType ("ColorKeyFrameCollection", Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION);
-	Type::RegisterType ("Control", Type::CONTROL, Type::FRAMEWORKELEMENT);
-	Type::RegisterType ("DiscreteColorKeyFrame", Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME);
-	Type::RegisterType ("DiscreteDoubleKeyFrame", Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME);
-	Type::RegisterType ("DiscretePointKeyFrame", Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME);
-	Type::RegisterType ("DoubleAnimation", Type::DOUBLEANIMATION, Type::ANIMATION);
-	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION);
-	Type::RegisterType ("DoubleKeyFrame", Type::DOUBLEKEYFRAME, Type::KEYFRAME);
-	Type::RegisterType ("DoubleKeyFrameCollection", Type::DOUBLEKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION);
-	Type::RegisterType ("Downloader", Type::DOWNLOADER, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("DrawingAttributes", Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Ellipse", Type::ELLIPSE, Type::SHAPE);
-	Type::RegisterType ("EllipseGeometry", Type::ELLIPSEGEOMETRY, Type::GEOMETRY);
-	Type::RegisterType ("EventTrigger", Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("FrameworkElement", Type::FRAMEWORKELEMENT, Type::UIELEMENT);
+	Type::RegisterType ("ColorAnimation", Type::COLORANIMATION, Type::ANIMATION, (create_inst_func *) color_animation_new);
+	Type::RegisterType ("ColorAnimationUsingKeyFrames", Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, (create_inst_func *) color_animation_using_key_frames_new);
+	Type::RegisterType ("ColorKeyFrame", Type::COLORKEYFRAME, Type::KEYFRAME, (create_inst_func *) color_key_frame_new);
+	Type::RegisterType ("ColorKeyFrameCollection", Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, (create_inst_func *) color_key_frame_collection_new);
+	Type::RegisterType ("Control", Type::CONTROL, Type::FRAMEWORKELEMENT, (create_inst_func *) control_new);
+	Type::RegisterType ("DiscreteColorKeyFrame", Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, (create_inst_func *) discrete_color_key_frame_new);
+	Type::RegisterType ("DiscreteDoubleKeyFrame", Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, (create_inst_func *) discrete_double_key_frame_new);
+	Type::RegisterType ("DiscretePointKeyFrame", Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, (create_inst_func *) discrete_point_key_frame_new);
+	Type::RegisterType ("DoubleAnimation", Type::DOUBLEANIMATION, Type::ANIMATION, (create_inst_func *) double_animation_new);
+	Type::RegisterType ("DoubleAnimationUsingKeyFrames", Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION, (create_inst_func *) double_animation_using_key_frames_new);
+	Type::RegisterType ("DoubleKeyFrame", Type::DOUBLEKEYFRAME, Type::KEYFRAME, (create_inst_func *) double_key_frame_new);
+	Type::RegisterType ("DoubleKeyFrameCollection", Type::DOUBLEKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, (create_inst_func *) double_key_frame_collection_new);
+	Type::RegisterType ("Downloader", Type::DOWNLOADER, Type::DEPENDENCY_OBJECT, (create_inst_func *) downloader_new);
+	Type::RegisterType ("DrawingAttributes", Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, (create_inst_func *) drawing_attributes_new);
+	Type::RegisterType ("Ellipse", Type::ELLIPSE, Type::SHAPE, (create_inst_func *) ellipse_new);
+	Type::RegisterType ("EllipseGeometry", Type::ELLIPSEGEOMETRY, Type::GEOMETRY, (create_inst_func *) ellipse_geometry_new);
+	Type::RegisterType ("EventTrigger", Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT, (create_inst_func *) event_trigger_new);
+	Type::RegisterType ("FrameworkElement", Type::FRAMEWORKELEMENT, Type::UIELEMENT, (create_inst_func *) framework_element_new);
 	Type::RegisterType ("Geometry", Type::GEOMETRY, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("GeometryCollection", Type::GEOMETRY_COLLECTION, Type::COLLECTION);
+	Type::RegisterType ("GeometryCollection", Type::GEOMETRY_COLLECTION, Type::COLLECTION, (create_inst_func *) geometry_collection_new);
 	Type::RegisterType ("GeometryGroup", Type::GEOMETRYGROUP, Type::GEOMETRY);
-	Type::RegisterType ("Glyphs", Type::GLYPHS, Type::FRAMEWORKELEMENT);
-	Type::RegisterType ("GradientBrush", Type::GRADIENTBRUSH, Type::BRUSH);
-	Type::RegisterType ("GradientStop", Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("GradientStopCollection", Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("Image", Type::IMAGE, Type::MEDIABASE);
-	Type::RegisterType ("ImageBrush", Type::IMAGEBRUSH, Type::TILEBRUSH);
-	Type::RegisterType ("InkPresenter", Type::INKPRESENTER, Type::CANVAS);
+	Type::RegisterType ("Glyphs", Type::GLYPHS, Type::FRAMEWORKELEMENT, (create_inst_func *) glyphs_new);
+	Type::RegisterType ("GradientBrush", Type::GRADIENTBRUSH, Type::BRUSH, (create_inst_func *) gradient_brush_new);
+	Type::RegisterType ("GradientStop", Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, (create_inst_func *) gradient_stop_new);
+	Type::RegisterType ("GradientStopCollection", Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION, (create_inst_func *) gradient_stop_collection_new);
+	Type::RegisterType ("Image", Type::IMAGE, Type::MEDIABASE, (create_inst_func *) image_new);
+	Type::RegisterType ("ImageBrush", Type::IMAGEBRUSH, Type::TILEBRUSH, (create_inst_func *) image_brush_new);
+	Type::RegisterType ("InkPresenter", Type::INKPRESENTER, Type::CANVAS, (create_inst_func *) ink_presenter_new);
 	Type::RegisterType ("Inline", Type::INLINE, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Inlines", Type::INLINES, Type::COLLECTION);
-	Type::RegisterType ("KeyFrame", Type::KEYFRAME, Type::DEPENDENCY_OBJECT);
+	Type::RegisterType ("Inlines", Type::INLINES, Type::COLLECTION, (create_inst_func *) inlines_new);
+	Type::RegisterType ("KeyFrame", Type::KEYFRAME, Type::DEPENDENCY_OBJECT, (create_inst_func *) key_frame_new);
 	Type::RegisterType ("KeyFrameCollection", Type::KEYFRAME_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("KeySpline", Type::KEYSPLINE, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Line", Type::LINE, Type::SHAPE);
-	Type::RegisterType ("LinearColorKeyFrame", Type::LINEARCOLORKEYFRAME, Type::COLORKEYFRAME);
-	Type::RegisterType ("LinearDoubleKeyFrame", Type::LINEARDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME);
-	Type::RegisterType ("LinearGradientBrush", Type::LINEARGRADIENTBRUSH, Type::GRADIENTBRUSH);
-	Type::RegisterType ("LinearPointKeyFrame", Type::LINEARPOINTKEYFRAME, Type::POINTKEYFRAME);
-	Type::RegisterType ("LineBreak", Type::LINEBREAK, Type::INLINE);
-	Type::RegisterType ("LineGeometry", Type::LINEGEOMETRY, Type::GEOMETRY);
-	Type::RegisterType ("LineSegment", Type::LINESEGMENT, Type::PATHSEGMENT);
-	Type::RegisterType ("MatrixTransform", Type::MATRIXTRANSFORM, Type::TRANSFORM);
-	Type::RegisterType ("MediaAttribute", Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("MediaAttributeCollection", Type::MEDIAATTRIBUTE_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("MediaBase", Type::MEDIABASE, Type::FRAMEWORKELEMENT);
-	Type::RegisterType ("MediaElement", Type::MEDIAELEMENT, Type::MEDIABASE);
+	Type::RegisterType ("KeySpline", Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, (create_inst_func *) key_spline_new);
+	Type::RegisterType ("Line", Type::LINE, Type::SHAPE, (create_inst_func *) line_new);
+	Type::RegisterType ("LinearColorKeyFrame", Type::LINEARCOLORKEYFRAME, Type::COLORKEYFRAME, (create_inst_func *) linear_color_key_frame_new);
+	Type::RegisterType ("LinearDoubleKeyFrame", Type::LINEARDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, (create_inst_func *) linear_double_key_frame_new);
+	Type::RegisterType ("LinearGradientBrush", Type::LINEARGRADIENTBRUSH, Type::GRADIENTBRUSH, (create_inst_func *) linear_gradient_brush_new);
+	Type::RegisterType ("LinearPointKeyFrame", Type::LINEARPOINTKEYFRAME, Type::POINTKEYFRAME, (create_inst_func *) linear_point_key_frame_new);
+	Type::RegisterType ("LineBreak", Type::LINEBREAK, Type::INLINE, (create_inst_func *) line_break_new);
+	Type::RegisterType ("LineGeometry", Type::LINEGEOMETRY, Type::GEOMETRY, (create_inst_func *) line_geometry_new);
+	Type::RegisterType ("LineSegment", Type::LINESEGMENT, Type::PATHSEGMENT, (create_inst_func *) line_segment_new);
+	Type::RegisterType ("MatrixTransform", Type::MATRIXTRANSFORM, Type::TRANSFORM, (create_inst_func *) matrix_transform_new);
+	Type::RegisterType ("MediaAttribute", Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, (create_inst_func *) media_attribute_new);
+	Type::RegisterType ("MediaAttributeCollection", Type::MEDIAATTRIBUTE_COLLECTION, Type::COLLECTION, (create_inst_func *) media_attribute_collection_new);
+	Type::RegisterType ("MediaBase", Type::MEDIABASE, Type::FRAMEWORKELEMENT, (create_inst_func *) media_base_new);
+	Type::RegisterType ("MediaElement", Type::MEDIAELEMENT, Type::MEDIABASE, (create_inst_func *) media_element_new);
 	Type::RegisterType ("NameScope", Type::NAMESCOPE, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("Panel", Type::PANEL, Type::FRAMEWORKELEMENT);
-	Type::RegisterType ("ParallelTimeline", Type::PARALLELTIMELINE, Type::TIMELINEGROUP);
-	Type::RegisterType ("Path", Type::PATH, Type::SHAPE);
-	Type::RegisterType ("PathFigure", Type::PATHFIGURE, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("PathFigureCollection", Type::PATHFIGURE_COLLECTION, Type::COLLECTION);
+	Type::RegisterType ("Panel", Type::PANEL, Type::FRAMEWORKELEMENT, (create_inst_func *) panel_new);
+	Type::RegisterType ("ParallelTimeline", Type::PARALLELTIMELINE, Type::TIMELINEGROUP, (create_inst_func *) parallel_timeline_new);
+	Type::RegisterType ("Path", Type::PATH, Type::SHAPE, (create_inst_func *) path_new);
+	Type::RegisterType ("PathFigure", Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, (create_inst_func *) path_figure_new);
+	Type::RegisterType ("PathFigureCollection", Type::PATHFIGURE_COLLECTION, Type::COLLECTION, (create_inst_func *) path_figure_collection_new);
 	Type::RegisterType ("PathGeometry", Type::PATHGEOMETRY, Type::GEOMETRY);
 	Type::RegisterType ("PathSegment", Type::PATHSEGMENT, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("PathSegmentCollection", Type::PATHSEGMENT_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("PointAnimation", Type::POINTANIMATION, Type::ANIMATION);
-	Type::RegisterType ("PointAnimationUsingKeyFrames", Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION);
-	Type::RegisterType ("PointKeyFrame", Type::POINTKEYFRAME, Type::KEYFRAME);
-	Type::RegisterType ("PointKeyFrameCollection", Type::POINTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION);
-	Type::RegisterType ("PolyBezierSegment", Type::POLYBEZIERSEGMENT, Type::PATHSEGMENT);
+	Type::RegisterType ("PathSegmentCollection", Type::PATHSEGMENT_COLLECTION, Type::COLLECTION, (create_inst_func *) path_segment_collection_new);
+	Type::RegisterType ("PointAnimation", Type::POINTANIMATION, Type::ANIMATION, (create_inst_func *) point_animation_new);
+	Type::RegisterType ("PointAnimationUsingKeyFrames", Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION, (create_inst_func *) point_animation_using_key_frames_new);
+	Type::RegisterType ("PointKeyFrame", Type::POINTKEYFRAME, Type::KEYFRAME, (create_inst_func *) point_key_frame_new);
+	Type::RegisterType ("PointKeyFrameCollection", Type::POINTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, (create_inst_func *) point_key_frame_collection_new);
+	Type::RegisterType ("PolyBezierSegment", Type::POLYBEZIERSEGMENT, Type::PATHSEGMENT, (create_inst_func *) poly_bezier_segment_new);
 	Type::RegisterType ("Polygon", Type::POLYGON, Type::SHAPE);
 	Type::RegisterType ("Polyline", Type::POLYLINE, Type::SHAPE);
-	Type::RegisterType ("PolyLineSegment", Type::POLYLINESEGMENT, Type::PATHSEGMENT);
-	Type::RegisterType ("PolyQuadraticBezierSegment", Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT);
-	Type::RegisterType ("QuadraticBezierSegment", Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT);
-	Type::RegisterType ("RadialGradientBrush", Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH);
-	Type::RegisterType ("Rectangle", Type::RECTANGLE, Type::SHAPE);
-	Type::RegisterType ("RectangleGeometry", Type::RECTANGLEGEOMETRY, Type::GEOMETRY);
-	Type::RegisterType ("ResourceDictionary", Type::RESOURCE_DICTIONARY, Type::COLLECTION);
-	Type::RegisterType ("RotateTransform", Type::ROTATETRANSFORM, Type::TRANSFORM);
-	Type::RegisterType ("Run", Type::RUN, Type::INLINE);
-	Type::RegisterType ("ScaleTransform", Type::SCALETRANSFORM, Type::TRANSFORM);
+	Type::RegisterType ("PolyLineSegment", Type::POLYLINESEGMENT, Type::PATHSEGMENT, (create_inst_func *) poly_line_segment_new);
+	Type::RegisterType ("PolyQuadraticBezierSegment", Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, (create_inst_func *) poly_quadratic_bezier_segment_new);
+	Type::RegisterType ("QuadraticBezierSegment", Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, (create_inst_func *) quadratic_bezier_segment_new);
+	Type::RegisterType ("RadialGradientBrush", Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, (create_inst_func *) radial_gradient_brush_new);
+	Type::RegisterType ("Rectangle", Type::RECTANGLE, Type::SHAPE, (create_inst_func *) rectangle_new);
+	Type::RegisterType ("RectangleGeometry", Type::RECTANGLEGEOMETRY, Type::GEOMETRY, (create_inst_func *) rectangle_geometry_new);
+	Type::RegisterType ("ResourceDictionary", Type::RESOURCE_DICTIONARY, Type::COLLECTION, (create_inst_func *) resource_dictionary_new);
+	Type::RegisterType ("RotateTransform", Type::ROTATETRANSFORM, Type::TRANSFORM, (create_inst_func *) rotate_transform_new);
+	Type::RegisterType ("Run", Type::RUN, Type::INLINE, (create_inst_func *) run_new);
+	Type::RegisterType ("ScaleTransform", Type::SCALETRANSFORM, Type::TRANSFORM, (create_inst_func *) scale_transform_new);
 	Type::RegisterType ("Shape", Type::SHAPE, Type::FRAMEWORKELEMENT);
-	Type::RegisterType ("SkewTransform", Type::SKEWTRANSFORM, Type::TRANSFORM);
-	Type::RegisterType ("SolidColorBrush", Type::SOLIDCOLORBRUSH, Type::BRUSH);
-	Type::RegisterType ("SplineColorKeyFrame", Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME);
-	Type::RegisterType ("SplineDoubleKeyFrame", Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME);
-	Type::RegisterType ("SplinePointKeyFrame", Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME);
-	Type::RegisterType ("Storyboard", Type::STORYBOARD, Type::PARALLELTIMELINE);
-	Type::RegisterType ("Stroke", Type::STROKE, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("StrokeCollection", Type::STROKE_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("StylusInfo", Type::STYLUSINFO, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("StylusPoint", Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("StylusPointCollection", Type::STYLUSPOINT_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("TextBlock", Type::TEXTBLOCK, Type::FRAMEWORKELEMENT);
-	Type::RegisterType ("TileBrush", Type::TILEBRUSH, Type::BRUSH);
+	Type::RegisterType ("SkewTransform", Type::SKEWTRANSFORM, Type::TRANSFORM, (create_inst_func *) skew_transform_new);
+	Type::RegisterType ("SolidColorBrush", Type::SOLIDCOLORBRUSH, Type::BRUSH, (create_inst_func *) solid_color_brush_new);
+	Type::RegisterType ("SplineColorKeyFrame", Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, (create_inst_func *) spline_color_key_frame_new);
+	Type::RegisterType ("SplineDoubleKeyFrame", Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, (create_inst_func *) spline_double_key_frame_new);
+	Type::RegisterType ("SplinePointKeyFrame", Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME, (create_inst_func *) spline_point_key_frame_new);
+	Type::RegisterType ("Storyboard", Type::STORYBOARD, Type::PARALLELTIMELINE, (create_inst_func *) storyboard_new);
+	Type::RegisterType ("Stroke", Type::STROKE, Type::DEPENDENCY_OBJECT, (create_inst_func *) stroke_new);
+	Type::RegisterType ("StrokeCollection", Type::STROKE_COLLECTION, Type::COLLECTION, (create_inst_func *) stroke_collection_new);
+	Type::RegisterType ("StylusInfo", Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, (create_inst_func *) stylus_info_new);
+	Type::RegisterType ("StylusPoint", Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, (create_inst_func *) stylus_point_new);
+	Type::RegisterType ("StylusPointCollection", Type::STYLUSPOINT_COLLECTION, Type::COLLECTION, (create_inst_func *) stylus_point_collection_new);
+	Type::RegisterType ("TextBlock", Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, (create_inst_func *) text_block_new);
+	Type::RegisterType ("TileBrush", Type::TILEBRUSH, Type::BRUSH, (create_inst_func *) tile_brush_new);
 	Type::RegisterType ("Timeline", Type::TIMELINE, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TimelineCollection", Type::TIMELINE_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("TimelineGroup", Type::TIMELINEGROUP, Type::TIMELINE);
-	Type::RegisterType ("TimelineMarker", Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TimelineMarkerCollection", Type::TIMELINEMARKER_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("Transform", Type::TRANSFORM, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TransformCollection", Type::TRANSFORM_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("TransformGroup", Type::TRANSFORMGROUP, Type::TRANSFORM);
-	Type::RegisterType ("TranslateTransform", Type::TRANSLATETRANSFORM, Type::TRANSFORM);
+	Type::RegisterType ("TimelineCollection", Type::TIMELINE_COLLECTION, Type::COLLECTION, (create_inst_func *) timeline_collection_new);
+	Type::RegisterType ("TimelineGroup", Type::TIMELINEGROUP, Type::TIMELINE, (create_inst_func *) timeline_group_new);
+	Type::RegisterType ("TimelineMarker", Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT, (create_inst_func *) timeline_marker_new);
+	Type::RegisterType ("TimelineMarkerCollection", Type::TIMELINEMARKER_COLLECTION, Type::COLLECTION, (create_inst_func *) timeline_marker_collection_new);
+	Type::RegisterType ("Transform", Type::TRANSFORM, Type::DEPENDENCY_OBJECT, (create_inst_func *) transform_new);
+	Type::RegisterType ("TransformCollection", Type::TRANSFORM_COLLECTION, Type::COLLECTION, (create_inst_func *) transform_collection_new);
+	Type::RegisterType ("TransformGroup", Type::TRANSFORMGROUP, Type::TRANSFORM, (create_inst_func *) transform_group_new);
+	Type::RegisterType ("TranslateTransform", Type::TRANSLATETRANSFORM, Type::TRANSFORM, (create_inst_func *) translate_transform_new);
 	Type::RegisterType ("TriggerAction", Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("TriggerActionCollection", Type::TRIGGERACTION_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("TriggerCollection", Type::TRIGGER_COLLECTION, Type::COLLECTION);
-	Type::RegisterType ("UIElement", Type::UIELEMENT, Type::VISUAL);
-	Type::RegisterType ("VideoBrush", Type::VIDEOBRUSH, Type::TILEBRUSH);
+	Type::RegisterType ("TriggerActionCollection", Type::TRIGGERACTION_COLLECTION, Type::COLLECTION, (create_inst_func *) trigger_action_collection_new);
+	Type::RegisterType ("TriggerCollection", Type::TRIGGER_COLLECTION, Type::COLLECTION, (create_inst_func *) trigger_collection_new);
+	Type::RegisterType ("UIElement", Type::UIELEMENT, Type::VISUAL, (create_inst_func *) uielement_new);
+	Type::RegisterType ("VideoBrush", Type::VIDEOBRUSH, Type::TILEBRUSH, (create_inst_func *) video_brush_new);
 	Type::RegisterType ("Visual", Type::VISUAL, Type::DEPENDENCY_OBJECT);
-	Type::RegisterType ("VisualBrush", Type::VISUALBRUSH, Type::TILEBRUSH);
-	Type::RegisterType ("VisualCollection", Type::VISUAL_COLLECTION, Type::COLLECTION);
+	Type::RegisterType ("VisualBrush", Type::VISUALBRUSH, Type::TILEBRUSH, (create_inst_func *) visual_brush_new);
+	Type::RegisterType ("VisualCollection", Type::VISUAL_COLLECTION, Type::COLLECTION, (create_inst_func *) visual_collection_new);
 	types_init_manually ();
 	types_init_register_events ();
 }

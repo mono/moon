@@ -1,19 +1,22 @@
+
 using System;
 using System.Text;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 class gen {
 	static void Main ()
 	{
 		ArrayList classes = new ArrayList ();
 		Hashtable bases = new Hashtable ();
+		Hashtable cctors = new Hashtable ();
 
-		GetClasses (classes, bases);
+		GetClasses (classes, bases, cctors);
 
-		GenerateTypeCpp (classes, bases);	
+		GenerateTypeCpp (classes, bases, cctors);
 		GenerateValueH (classes, bases);	
 		GenerateValueCpp (classes, bases);
 		GenerateTypeH (classes, bases);
@@ -73,7 +76,7 @@ class gen {
 		}
 	}
 
-	static void GetClasses (ArrayList classes, Hashtable bases)
+	static void GetClasses (ArrayList classes, Hashtable bases, Hashtable cctors)
 	{
 		string [] files = Directory.GetFiles (Environment.CurrentDirectory, "*.h");
 		ArrayList tmp = new ArrayList ();
@@ -82,9 +85,20 @@ class gen {
 			string [] lines = File.ReadAllLines (file);
 			foreach (string line in lines) {
 				string l = line;
+
 				// This could probably be replaced by a regexp
-				if (!l.Trim ().StartsWith ("class "))
+				if (!l.Trim ().StartsWith ("class ")) {
+				// Console.WriteLine ("line:  " + l);
+                                        if (Regex.IsMatch (l, "_new\\s*\\(\\s*(void)?\\s*\\);")) {
+				// cctors [CToPascal (l.Trim ())] = CCtor (l.Trim ());
+				// Console.WriteLine ("{0}  == {1}", CToPascal (l.Trim ()), CCtor (l.Trim ()));
+				//				ClassNameFromCCtor (l.Trim ());
+				// CCtor (l.Trim ());
+
+                                                MapClassNameToCCtor (l.Trim (), cctors);
+                                        }
 					continue;
+				}
 
 				if (!l.Contains (":"))
 					continue;
@@ -252,7 +266,7 @@ class gen {
 //		File.WriteAllText (file, text.ToString ());
 	}
 
-	static void GenerateTypeCpp (ArrayList classes, Hashtable hash)
+	static void GenerateTypeCpp (ArrayList classes, Hashtable hash, Hashtable cctors)
 	{
 		StringBuilder text = new StringBuilder ();
 		text.AppendLine ("/*");
@@ -269,7 +283,9 @@ class gen {
 				p = (string) hash [c];
 
 			if (p != null && p != string.Empty) {
-				text.AppendLine (string.Format ("\tType::RegisterType (\"{0}\", Type::{1}, Type::{2});", c, getU(c), getU (p)));
+                                string cctor = cctors [c] as string;
+				text.AppendLine (String.Format ("\tType::RegisterType (\"{0}\", Type::{1}, Type::{2}{3});", c, getU(c), getU (p),
+                                                cctor != null ? String.Concat (", (create_inst_func *) ", cctor) : String.Empty));
 			}
 		}
 		text.AppendLine ("\ttypes_init_manually ();");
@@ -300,4 +316,24 @@ class gen {
 			v = v.Replace ("DICTIONARY", "_DICTIONARY");
 		return v;
 	}
+
+	static void MapClassNameToCCtor (string line, Hashtable cctors)
+	{
+		string cn;
+		StringBuilder cctor = new StringBuilder ();
+		int i = line.IndexOf ("*");
+	
+		if (Char.IsWhiteSpace (line [--i]))
+                        --i;
+
+		cn = line.Substring (0, i + 1);
+
+		while (line [++i] == '*' || Char.IsWhiteSpace (line [i])) { }
+
+		while (!Char.IsWhiteSpace (line [i]) && line [i] != '(')
+                        cctor.Append (line [i++]);
+
+		cctors [cn] = cctor.ToString ();
+	}
+
 }
