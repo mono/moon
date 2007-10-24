@@ -1,3 +1,8 @@
+2007-10-24  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* README: Added a section about the plugin installer and the
+	--enable-user-plugin configure option
+
 2007-10-23  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* cairo, pixman: svn:ignore autotools generated files

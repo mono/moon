@@ -359,6 +359,20 @@ This is not likely the final version of this code.
 		
 	This is OK and is perfectly harmless, type "cont" to
 	resume execution.
+
+* Mozilla plugin installer (user plugin)
+
+	To build a mozilla plugin installer (XPI) configure with
+	--enable-user-plugin and build as above.  This modifies the libraries
+	to open the libraries it needs from ~/.mozilla/plugins and builds an
+	unsigned .xpi file which you may use to install the plugin in your
+	browser.
+
+	To install the plugin open the plugin/novell-moonlight.xpi with	your
+	mozilla-based browser and follow the prompts.
+
+	Currently this only works properly when moonlight is built without
+	mono runtime (Silverlight 1.1) support (--without-mono-runtime).
 	
 ----------------------------------------------------------------------------------
 Issues
