@@ -1444,6 +1444,8 @@ TextLayout::Layout ()
 			}
 			
 			if (max_width >= 0.0 && (lw + advance + 1.0) > max_width) {
+				double overflow = (lw + advance) - max_width;
+				
 				switch (wrapping) {
 				case TextWrappingWrapWithOverflow:
 					// We can stretch the width as wide as we have to
@@ -1461,7 +1463,7 @@ TextLayout::Layout ()
 					break;
 				case TextWrappingWrap:
 					// Wrap at word boundaries if at all possible, failing that break the word.
-					if (run->text[i + 1] == 0) {
+					if (overflow <= 1.0 && (run->text[i + 1] == 0 || isSpace (run->text[i + 1]))) {
 						// Force-fit this last char
 						wrap = false;
 					} else if (spc.index != -1) {
@@ -1638,7 +1640,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 				// it is an error to append a path with no data
 				if (segment->path->data)
 					cairo_append_path (cr, segment->path);
-
+				
 				x1 = x0 + segment->width;
 				cairo_fill (cr);
 			}

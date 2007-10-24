@@ -1,3 +1,7 @@
+2007-10-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextLayout::Layout): Slight fix for Wrap mode.
+
 2007-10-24  Jackson Harper  <jackson@ximian.com>
 
 	* type.cpp.in/h.in: Add some c-style functions for creating
