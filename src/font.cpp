@@ -635,7 +635,7 @@ TextFont::Path (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 	cairo_save (cr);
 	
 	cairo_translate (cr, x, y);
-
+	
 	// cairo doesn't like appending paths with NULL data
 	if ((&glyph->path->cairo)->data)
 		cairo_append_path (cr, &glyph->path->cairo);

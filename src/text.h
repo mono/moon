@@ -277,6 +277,7 @@ public:
 	
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
 	
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();

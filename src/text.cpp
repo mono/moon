@@ -1023,13 +1023,10 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		else if (property == TextBlock::ActualWidthProperty)
 			actual_width = value->AsDouble ();
 	}
+	
 	if (property == TextBlock::TextProperty) {
 		// Text is a virtual property and setting it deletes all current runs,
 		// creating a new run
-		//Value *old = GetValue (TextBlock::TextProperty);
-		//if (value && old->AsString () == value->AsString ())
-		//	return;
-
 		Run *run = new Run ();
 		if (value)
 			run_set_text (run, value->AsString ());
@@ -1469,6 +1466,16 @@ done:
 }
 
 void
+Glyphs::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	if (dirty)
+		Layout ();
+	
+	*height = this->height;
+	*width = this->width;
+}
+
+void
 Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	GlyphInfo *glyph;
@@ -1488,8 +1495,11 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	fill->SetupBrush (cr, this);
 	
 	if (path) {
-		cairo_append_path (cr, path);
-		cairo_fill (cr);
+		if (path->data) {
+			cairo_append_path (cr, path);
+			cairo_fill (cr);
+		}
+		
 		cairo_restore (cr);
 		return;
 	}
@@ -1521,6 +1531,9 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 			if (!glyph)
 				goto next1;
 			
+			
+			printf ("0x%x,", glyph->unichar);
+			
 			if (attr && (attr->set & vOffset))
 				y1 = y0 - (attr->voffset * scale);
 			else
@@ -1549,6 +1562,8 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next2;
 		
+		printf ("%c", (char) glyph->unichar);
+		
 		if ((attr->set & vOffset))
 			y1 = y0 - (attr->voffset * scale);
 		else
@@ -1574,12 +1589,13 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		attr = (GlyphAttr *) attr->next;
 	}
 	
+	printf ("\n\n");
+	
 	if (font->IsScalable ()) {
 		cairo_close_path (cr);
 		
-		path = cairo_copy_path (cr);
-		
-		cairo_fill (cr);
+		if ((path = cairo_copy_path (cr)) && path->data)
+			cairo_fill (cr);
 	}
 	
 	font->unref ();

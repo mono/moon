@@ -1,5 +1,7 @@
 2007-10-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Glyphs::GetSizeForBrush): Implemented.
+
 	* font.cpp (TextLayout::Layout): Slight fix for Wrap mode.
 
 2007-10-24  Jackson Harper  <jackson@ximian.com>
