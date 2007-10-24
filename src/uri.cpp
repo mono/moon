@@ -103,7 +103,7 @@ url_decode (char *in, const char *url)
 bool
 Uri::Parse (const char *uri)
 {
-	char *protocol, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
+	char *name, *value, *protocol, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	register const char *start, *inptr;
 	GData *params = NULL;
 	int port = 0;
@@ -111,8 +111,18 @@ Uri::Parse (const char *uri)
 	
 	start = uri;
 	if (!(inptr = strchr (start, ':'))) {
-		g_warning ("No protocol detected in url: %s", uri);
-		return false;
+		protocol = g_strdup ("file");
+		
+		/* canonicalise and save the path component */
+		if ((n = strlen (start))) {
+			value = g_strndup (start, n);
+			url_decode (value, uri);
+			
+			if (!(path = canon_path (value, true)))
+				g_free (value);
+		}
+		
+		goto done;
 	}
 	
 	protocol = g_ascii_strdown (start, inptr - start);
@@ -237,8 +247,6 @@ Uri::Parse (const char *uri)
 	}
 	
 	if (*inptr == '/') {
-		char *name, *value;
-		
 		/* look for params, query, or fragment */
 		start = inptr;
 		while (*inptr && *inptr != ';' && *inptr != '?' && *inptr != '#')

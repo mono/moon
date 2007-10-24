@@ -1,3 +1,7 @@
+2007-10-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (Uri::Parse): Treat uri's w/o a protocol as file uri's.
+
 2007-10-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::ComputeTransform): If the scale has
