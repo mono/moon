@@ -99,6 +99,7 @@ AsyncBrowserHttpResponse::OnStartRequest (nsIRequest *request, nsISupports *cont
 NS_IMETHODIMP
 AsyncBrowserHttpResponse::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
+	// TODO: check the status, and store it in the response
 	handler (this, this->context);
 	return NS_OK;
 }
@@ -115,6 +116,8 @@ AsyncBrowserHttpResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 	PRUint32 length;
 
 	input->Read (buffer + size, count, &length);
+
+	size += length;
 
 	return NS_OK;
 }
