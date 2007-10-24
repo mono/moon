@@ -153,6 +153,10 @@ void *browser_http_response_read (BrowserHttpResponse *response, int *size);
 void browser_http_response_visit_headers (BrowserHttpResponse *response, HttpHeaderHandler handler);
 void browser_http_response_destroy (BrowserHttpResponse *response);
 
+#if BROWSER_HTTP_TEST
+
 void browser_http_test ();
+
+#endif
 
 G_END_DECLS;
