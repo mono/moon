@@ -151,6 +151,7 @@ class ImageBrush : public TileBrush {
 	void SetSource (DependencyObject *dl, const char* PartName);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void SetSurface (Surface *surface);
 };
 
 ImageBrush* image_brush_new (void);

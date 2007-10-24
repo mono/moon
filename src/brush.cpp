@@ -750,6 +750,13 @@ ImageBrush::SetSource (DependencyObject *dl, const char* PartName)
 }
 
 void
+ImageBrush::SetSurface (Surface *surface)
+{
+	image->SetSurface (surface);
+	DependencyObject::SetSurface (surface);
+}
+
+void
 ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 {
 	if (prop->type != Type::IMAGEBRUSH) {

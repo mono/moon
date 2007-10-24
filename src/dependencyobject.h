@@ -1,4 +1,4 @@
-/*
+ /*
  * dependencyobject.h: 
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
@@ -205,6 +205,9 @@ class DependencyObject : public EventObject {
 	void Attach (DependencyProperty *property, DependencyObject *container);
 	void Detach (DependencyProperty *property, DependencyObject *container);
 	
+	virtual Surface *GetSurface () { return NULL; }
+	virtual void SetSurface (Surface *surface) { } // Do nothing here.
+
  protected:
 	void NotifyAttachersOfPropertyChange (DependencyProperty *property);
 	void NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type);

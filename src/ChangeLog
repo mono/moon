@@ -1,3 +1,15 @@
+2007-10-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp: No need to check if the created object is an UIElement before
+	  calling SetSurface anymore.
+	* visual.h: Update SetSurface to virtual.
+	* brush.cpp, brush.h: Override SetSurface so that we can forward the call to
+	  our Image object.
+	* dependencyobject.h: Add virtual Set/GetSurface to DependencyObject (here
+	  the methods do nothing, the surface is still stored in Visual, but this
+	  allows classes that do not inherit from Visual to correctly set the
+	  surface on their members which do inherit from Visual).
+
 2007-10-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uri.cpp (Uri::Parse): Treat uri's w/o a protocol as file uri's.

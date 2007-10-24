@@ -26,8 +26,8 @@ class Visual : public DependencyObject {
 	//
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
-	Surface *GetSurface () { return surface; }
-	void SetSurface (Surface *surface);
+	virtual Surface *GetSurface () { return surface; }
+	virtual void SetSurface (Surface *surface);
 private:
 	Surface* surface;
 };
