@@ -166,7 +166,9 @@ ManualTimeSource::SetCurrentTime (TimeSpan current_time)
 {
 	this->current_time = current_time;
 	g_main_context_iteration (g_main_context_default(),
-				  TRUE);
+				  FALSE);
+	Emit (TimeSource::TickEvent);
+	Emit (TimeSource::TickEvent);
 	Emit (TimeSource::TickEvent);
 }
 

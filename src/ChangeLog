@@ -1,3 +1,10 @@
+2007-10-24  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (ManualTimeSource::SetCurrentTime): pass FALSE to
+	g_main_context_iteration so we don't block if there isn't anything
+	to do.  also, emit 3 TickEvents to make sure the tick is
+	propagated down into the animations.
+
 2007-10-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml.cpp: No need to check if the created object is an UIElement before
