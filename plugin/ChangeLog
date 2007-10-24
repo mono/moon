@@ -1,3 +1,8 @@
+2007-10-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Unref the event object even though the plugin is
+	  deleted.
+
 2007-10-24  Jb Evain  <jbevain@novell.com>
 
 	* browser-http.cpp|h: work on asynchronous requests.
