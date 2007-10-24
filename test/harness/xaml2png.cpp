@@ -174,9 +174,7 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 
 		s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
 
-		cairo_status_t stat = cairo_surface_write_to_png (surf, output_prefix);
-
-		printf ("stat = %d\n", stat);
+		cairo_surface_write_to_png (surf, output_prefix);
 
 		strip_metadata (output_prefix);
 	}
