@@ -265,6 +265,18 @@ browser_http_request_get_response (BrowserHttpRequest *request)
 }
 
 void
+browser_http_request_get_async_response (BrowserHttpRequest *request, AsyncResponseAvailableHandler handler, gpointer context)
+{
+	request->GetAsyncResponse (handler, context);
+}
+
+void
+browser_http_response_visit_headers (BrowserHttpResponse *response, HttpHeaderHandler handler)
+{
+	response->VisitHeaders (handler);
+}
+
+void
 browser_http_response_destroy (BrowserHttpResponse *response)
 {
 	delete response;

@@ -148,7 +148,9 @@ void browser_http_request_abort (BrowserHttpRequest *request);
 void browser_http_request_set_header (BrowserHttpRequest *request, const char *name, const char *value);
 void browser_http_request_set_body (BrowserHttpRequest *request, const char *body, int size);
 BrowserHttpResponse *browser_http_request_get_response (BrowserHttpRequest *request);
+void browser_http_request_get_async_response (BrowserHttpRequest *request, AsyncResponseAvailableHandler handler, gpointer context);
 void *browser_http_response_read (BrowserHttpResponse *response, int *size);
+void browser_http_response_visit_headers (BrowserHttpResponse *response, HttpHeaderHandler handler);
 void browser_http_response_destroy (BrowserHttpResponse *response);
 
 void browser_http_test ();
