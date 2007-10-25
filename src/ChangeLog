@@ -1,5 +1,9 @@
 2007-10-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextLayout::Layout): Always calculate segment->width
+	here.
+	(TextLayout::Render): Not here.
+
 	* text.cpp (Glyphs::GetTransformOrigin): Implemented.
 
 2007-10-25  Jackson Harper  <jackson@ximian.com>

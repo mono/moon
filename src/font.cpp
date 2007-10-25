@@ -1167,7 +1167,7 @@ public:
 
 TextSegment::TextSegment (TextRun *run, int start)
 {
-	this->width = 0.0;
+	this->width = -1.0;
 	this->path = NULL;
 	this->run = run;
 	this->start = start;
@@ -1361,11 +1361,11 @@ TextLayout::Layout ()
 	TextSegment *segment;
 	bool clipped = false;
 	gunichar prev = 0;
+	double lw, lh, sx;
 	GlyphInfo *glyph;
 	TextLine *line;
 	double advance;
 	double descend;
-	double lw, lh;
 	bool is_space;
 	TextRun *run;
 	Space spc;
@@ -1428,6 +1428,7 @@ TextLayout::Layout ()
 		//ascend = MAX (ascend, run->font->Ascender ());
 		lh = MAX (lh, run->font->Height ());
 		
+		sx = lw;
 		spc.index = -1;
 		spc.width = -1.0;
 		segment = new TextSegment (run, 0);
@@ -1506,6 +1507,8 @@ TextLayout::Layout ()
 			if (wrap) {
 				// end this segment and line
 				line->segments->Append (segment);
+				segment->width = lw - sx;
+				
 				segment = new TextSegment (run, i + 1);
 				
 				width = MAX (width, lw);
@@ -1535,6 +1538,7 @@ TextLayout::Layout ()
 			segment->end = i;
 		
 		line->segments->Append (segment);
+		segment->width = lw - sx;
 		
 		width = MAX (width, lw);
 	}
@@ -1630,10 +1634,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 				
 				if (font->IsScalable ()) {
 					cairo_close_path (cr);
-					
 					segment->path = cairo_copy_path (cr);
-					segment->width = x1 - x0;
-					
 					cairo_fill (cr);
 				}
 			} else {
