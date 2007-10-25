@@ -1,3 +1,10 @@
+2007-10-25  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Don't link against mozilla libraries for a browser
+	plugin because they could be named differently on different systems
+	Symbols will resolve properly because a plugin runs inside a browser
+	which already has these libraries loaded
+
 2007-10-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* README: Add Ink-related comments and update status about Cairo
