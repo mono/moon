@@ -3317,7 +3317,7 @@ html_object_release (PluginInstance *plugin, NPObject *npobj)
 }
 
 void
-browser_alert (PluginInstance *plugin, char *msg)
+browser_do_alert (PluginInstance *plugin, char *msg)
 {
 	NPVariant npresult;
 	NPVariant *npargs = new NPVariant [1];
