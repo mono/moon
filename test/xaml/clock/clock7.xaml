@@ -6,8 +6,8 @@
 		<EventTrigger RoutedEvent="Canvas.Loaded">
 			<BeginStoryboard>
 				<Storyboard AutoReverse="true">
-					<DoubleAnimation x:Name="right" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:05"/>
-					<DoubleAnimation x:Name="down" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Top)" By="100" BeginTime="00:00:05" Duration="00:00:05"/>
+					<DoubleAnimation x:Name="right" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:02"/>
+					<DoubleAnimation x:Name="down" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Top)" By="100" BeginTime="00:00:02" Duration="00:00:02"/>
 				</Storyboard>
 			</BeginStoryboard>
 		</EventTrigger>
@@ -20,15 +20,15 @@
 		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" />
 
 	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="140" Width="600" Height="100">
-		<Run Text="The red block should take 5 seconds to move to the right,"/>
+		<Run Text="The red block should take 2 seconds to move to the right,"/>
 		<LineBreak/>
-		<Run Text="then take 5 seconds to move to the bottom."/>
+		<Run Text="then take 2 seconds to move to the bottom."/>
 		
 		<LineBreak/>
 		<LineBreak/>
 		
-		<Run Text="Then it reverses, taking 5 seconds to move back up"/>
+		<Run Text="Then it reverses, taking 2 seconds to move back up"/>
 		<LineBreak/>
-		<Run Text="and 5 seconds to move to the left."/>
+		<Run Text="and 2 seconds to move to the left."/>
 	</TextBlock>
 </Canvas>
