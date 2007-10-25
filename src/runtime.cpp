@@ -58,6 +58,7 @@
 
 int Surface::ResizeEvent = -1;
 int Surface::FullScreenChangeEvent = -1;
+int Surface::ErrorEvent = -1;
 
 cairo_t *
 runtime_cairo_create (GdkWindow *drawable)
@@ -1347,6 +1348,7 @@ runtime_init (guint32 flags)
 	Type *t = Type::Find (Type::SURFACE);
 	Surface::ResizeEvent = t->LookupEvent ("Resize");
 	Surface::FullScreenChangeEvent = t->LookupEvent ("FullScreenChange");
+	Surface::ErrorEvent = t->LookupEvent ("Error");
 
 	TimeManager::Instance()->Start();
 }

@@ -350,6 +350,7 @@ types_init_register_events (void)
 	t = Type::Find(Type::SURFACE);
 	t->RegisterEvent ("Resize");
 	t->RegisterEvent ("FullScreenChange");
+	t->RegisterEvent ("Error");
 
 	t = Type::Find(Type::UIELEMENT);
 	t->RegisterEvent ("Loaded");

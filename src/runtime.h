@@ -86,7 +86,8 @@ class Surface : public EventObject {
 
 	static int ResizeEvent;
 	static int FullScreenChangeEvent;
-	
+	static int ErrorEvent;
+
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
