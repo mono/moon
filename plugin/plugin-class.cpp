@@ -1290,6 +1290,9 @@ MoonlightContentObject::Dispose ()
 	if (fullScreenChangeProxy)
 		delete fullScreenChangeProxy;
 	fullScreenChangeProxy = NULL;
+	if (errorProxy)
+		delete errorProxy;
+	errorProxy = NULL;
 }
 
 static const char *const
@@ -1363,6 +1366,14 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 			OBJECT_TO_NPVARIANT (obj->fullScreenChangeProxy->GetCallbackAsNPObject (), *result);
 		return true;
 	}
+	else if (name_matches (name, "onError")) {
+		MoonlightContentObject* obj = (MoonlightContentObject *) npobj;
+		if (obj->errorProxy == NULL)
+			NULL_TO_NPVARIANT (*result);
+		else
+			OBJECT_TO_NPVARIANT (obj->errorProxy->GetCallbackAsNPObject (), *result);
+		return true;
+	}
 	else if (name_matches (name, "root")) {
 		DependencyObject *top = plugin->surface->GetToplevel ();
 		MoonlightEventObjectObject *topobj = EventObjectCreateWrapper (((MoonlightObject *) npobj)->instance, top);
@@ -1425,6 +1436,22 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 			obj->fullScreenChangeProxy->AddHandler (plugin->surface);
 		}
 		
+		return true;
+	}
+	else if (name_matches (name, "onError")) {
+		MoonlightContentObject *obj = (MoonlightContentObject *) npobj;
+		
+		if (obj->errorProxy != NULL) {
+			obj->errorProxy->RemoveHandler (plugin->surface);
+			delete obj->errorProxy;
+			obj->errorProxy = NULL;
+		}
+
+		if (!NPVARIANT_IS_NULL (*value)) {
+			obj->errorProxy = new EventListenerProxy (obj->instance, "OnError", value);
+			obj->errorProxy->AddHandler (plugin->surface);
+		}
+
 		return true;
 	}
 	return false;
@@ -3266,7 +3293,7 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 			if (npobj == NPVARIANT_TO_OBJECT (docresult)) {
 				item = get_dom_document (npp);
 			} else {
-				char *temp_id = "__moonlight_temp_id";
+				const char *temp_id = "__moonlight_temp_id";
 				NPVariant npvalue;
 
 				string_to_npvariant (temp_id, &npvalue);

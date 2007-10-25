@@ -235,6 +235,7 @@ struct MoonlightContentObject : MoonlightObject {
 
 	EventListenerProxy *resizeProxy;
 	EventListenerProxy *fullScreenChangeProxy;
+	EventListenerProxy *errorProxy;
 };
 
 extern MoonlightContentType* MoonlightContentClass;

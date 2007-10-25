@@ -1,5 +1,10 @@
 2007-10-25  Jackson Harper  <jackson@ximian.com>
 
+	* plugin-class.h:
+	* plugin-class.cpp: Add the onError event to the content object.
+
+2007-10-25  Jackson Harper  <jackson@ximian.com>
+
 	* plugin-class.cpp: Fix function name.
 
 2007-10-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
