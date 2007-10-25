@@ -1,3 +1,7 @@
+2007-10-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Glyphs::GetTransformOrigin): Implemented.
+
 2007-10-25  Jackson Harper  <jackson@ximian.com>
 
 	* type.cpp|.in:
@@ -5,7 +9,7 @@
 	event will cause the plugins onError handler to be invoked, the
 	default onError handler notifies the user of the error with a
 	javascript alert.
-	
+
 2007-10-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* stylus.cpp|h: Keep the semi-working code as a fast path to

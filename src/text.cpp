@@ -1615,8 +1615,9 @@ Glyphs::ComputeBounds ()
 Point
 Glyphs::GetTransformOrigin ()
 {
-	// FIXME: implement me
-	return Point (0.0, 0.0);
+	Point user_xform_origin = GetRenderTransformOrigin ();
+	
+	return Point (user_xform_origin.x * width, user_xform_origin.y * height);
 }
 
 void
