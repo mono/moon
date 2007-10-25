@@ -273,6 +273,8 @@
 #define cairo_xlib_surface_set_drawable			moonlight_cairo_xlib_surface_set_drawable
 #define cairo_xlib_surface_set_size			moonlight_cairo_xlib_surface_set_size
 
+#define _cairo_error                                    _moonlight_cairo_error
+#define _cairo_set_error                                _moonlight_cairo_set_error
 #define _cairo_ps_test_force_fallbacks			_moonlight_cairo_ps_test_force_fallbacks
 #define _cairo_scaled_font_test_set_max_glyphs_cached_per_font	_moonlight_cairo_scaled_font_test_set_max_glyphs_cached_per_font
 #define _cairo_xlib_test_disable_render			_moonlight_cairo_xlib_test_disable_render
