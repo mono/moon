@@ -273,6 +273,32 @@
 #define cairo_xlib_surface_set_drawable			moonlight_cairo_xlib_surface_set_drawable
 #define cairo_xlib_surface_set_size			moonlight_cairo_xlib_surface_set_size
 
+#define cairo_analysis_surface_backend  		moonlight_cairo_analysis_surface_backend
+#define cairo_bo_event_compare_abstract 		moonlight_cairo_bo_event_compare_abstract
+#define cairo_bo_event_compare_pointers 		moonlight_cairo_bo_event_compare_pointers
+#define cairo_color_black       			moonlight_cairo_color_black
+#define cairo_color_transparent 			moonlight_cairo_color_transparent
+#define cairo_color_white       			moonlight_cairo_color_white
+#define cairo_ft_scaled_font_backend    		moonlight_cairo_ft_scaled_font_backend
+#define cairo_ft_unscaled_font_backend  		moonlight_cairo_ft_unscaled_font_backend
+#define cairo_ft_unscaled_font_map      		moonlight_cairo_ft_unscaled_font_map
+#define cairo_image_surface_backend     		moonlight_cairo_image_surface_backend
+#define cairo_meta_surface_backend      		moonlight_cairo_meta_surface_backend
+#define cairo_paginated_surface_backend 		moonlight_cairo_paginated_surface_backend
+#define cairo_path_display      			moonlight_cairo_path_display
+#define cairo_pattern_none      			moonlight_cairo_pattern_none
+#define cairo_scaled_font_map   			moonlight_cairo_scaled_font_map
+#define cairo_toy_font_face_hash_table  		moonlight_cairo_toy_font_face_hash_table
+#define cairo_xlib_surface_backend      		moonlight_cairo_xlib_surface_backend
+
+#define _cairo_atomic_mutex     		moonlight__cairo_atomic_mutex
+#define _cairo_font_face_mutex  		moonlight__cairo_font_face_mutex
+#define _cairo_ft_unscaled_font_map_mutex       moonlight__cairo_ft_unscaled_font_map_mutex
+#define _cairo_pattern_solid_pattern_cache_lock moonlight__cairo_pattern_solid_pattern_cache_lock
+#define _cairo_pattern_solid_surface_cache_lock moonlight__cairo_pattern_solid_surface_cache_lock
+#define _cairo_scaled_font_map_mutex    	moonlight__cairo_scaled_font_map_mutex
+#define _cairo_xlib_display_mutex       	moonlight__cairo_xlib_display_mutex
+
 #define _cairo_error                                    _moonlight_cairo_error
 #define _cairo_set_error                                _moonlight_cairo_set_error
 #define _cairo_ps_test_force_fallbacks			_moonlight_cairo_ps_test_force_fallbacks
