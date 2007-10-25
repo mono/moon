@@ -424,6 +424,13 @@ Issues
 	- cairo dashes (cairo_set_dash) do not support line cap. SL
 	support this (StrokeDashCap).
 
+	- cairo gradient brushes, like radial, don't behave the same
+	if the center point is outside the circle
+
+	- cairo currently doesn't have an implementation of the
+	documented cairo_stroke_to_path which is needed to be able
+	to render the ink's strokes outline color.
+
 * Rendering Considerations
 
 	Currently we draw in an off-screen cairo surface when the
@@ -433,6 +440,18 @@ Issues
 	Should we have a if (!realized) return in those places and
 	merely have a single cairo context that we paint to?
 
+* Ink
+
+	It seems that Silverlight ignores pressure information when
+	rendering static ink.
+
+	We currently hack around the OutlineColor (draw Outline then
+	draw inner color on top of it) so we can use a big pen (line
+	width) to draw strokes (otherwise we would need 
+	cairo_stroke_to_path).
+
+	We don't (yet) support different Height/Width but that could
+	be added using a transform (and adjusting the coordinates).
 
 * Optimization Ideas
 

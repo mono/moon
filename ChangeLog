@@ -1,3 +1,7 @@
+2007-10-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* README: Add Ink-related comments and update status about Cairo
+
 2007-10-24  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* README: Added a section about the plugin installer and the
