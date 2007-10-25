@@ -1577,7 +1577,6 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 	Brush *fg = NULL;
 	GlyphInfo *glyph;
 	TextLine *line;
-	double height;
 	double x1, y1;
 	double x0;
 	int i;
@@ -1594,9 +1593,11 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 			text = segment->run->text;
 			deco = segment->run->deco;
 			font = segment->run->font;
-			x0 = x1;
 			
-			height = font->Height ();
+			// set y1 to the baseline (descend is a negative value)
+			y1 = y + line->height + line->descend;
+			
+			x0 = x1;
 			
 			if (segment->run->fg && *segment->run->fg)
 				fg = *segment->run->fg;
@@ -1619,9 +1620,6 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 					if (glyph->index > 0) {
 						x1 += font->Kerning (prev, glyph->index);
 						prev = glyph->index;
-						
-						// set y1 to the baseline (descend is a negative value)
-						y1 = y + line->height + line->descend;
 						
 						if (!font->IsScalable ())
 							font->Render (cr, glyph, x1, y1);
@@ -1649,9 +1647,7 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 			if (deco == TextDecorationsUnderline) {
 				cairo_antialias_t aa = cairo_get_antialias (cr);
 				double thickness = font->UnderlineThickness ();
-				double pos = font->UnderlinePosition ();
-				
-				pos += y + line->height + line->descend;
+				double pos = y1 + font->UnderlinePosition ();
 				
 				cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 				cairo_set_line_width (cr, thickness);
