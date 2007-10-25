@@ -70,6 +70,9 @@ class DrawingAttributes : public DependencyObject {
 	
 	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; };
 
+	void Render (cairo_t *cr, StylusPointCollection* collection);
+	static void RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointCollection* collection);
+
 	static DependencyProperty* ColorProperty;
 	static DependencyProperty* OutlineColorProperty;
 	static DependencyProperty* HeightProperty;

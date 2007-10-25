@@ -1,3 +1,9 @@
+2007-10-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* stylus.cpp|h: Keep the semi-working code as a fast path to
+	render strokes (if no outline color is used and when width ==
+	height). Added a hack to support OutlineColor.
+
 2007-10-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Glyphs::Render): We want to check this->width and

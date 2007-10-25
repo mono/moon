@@ -80,12 +80,14 @@ stylus_point_set_y (StylusPoint *stylus_point, double y)
 	stylus_point->SetValue (StylusPoint::YProperty, Value (y));
 }
 
+// NOTE: this seems unused in Silverlight (at least as far as rendering is concerned)
 double
 stylus_point_get_pressure_factor (StylusPoint *stylus_point)
 {
 	return stylus_point->GetValue (StylusPoint::PressureFactorProperty)->AsDouble();
 }
 
+// NOTE: this seems unused in Silverlight (at least as far as rendering is concerned)
 void
 stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure)
 {
@@ -167,6 +169,76 @@ drawing_attributes_set_width (DrawingAttributes* da, double width)
 	da->SetValue (DrawingAttributes::WidthProperty, Value (width));
 }
 
+static void
+drawing_attributes_quick_render (cairo_t *cr, double thickness, Color *color, StylusPointCollection *collection)
+{
+	Collection::Node *cnp = (Collection::Node *) collection->list->First ();
+	if (!cnp)
+		return;
+
+	StylusPoint *stylus_point = (StylusPoint*) cnp->obj;
+	double x = stylus_point_get_x (stylus_point);
+	double y = stylus_point_get_y (stylus_point);
+	cairo_move_to (cr, x, y);
+
+	if (!cnp->next) {
+		cairo_line_to (cr, x, y);
+	} else {
+		for (cnp = (Collection::Node *) cnp->next; cnp != NULL; cnp = (Collection::Node *) cnp->next) {
+			StylusPoint *stylus_point = (StylusPoint*) cnp->obj;
+			cairo_line_to (cr, stylus_point_get_x (stylus_point), stylus_point_get_y (stylus_point));
+		}
+	}
+
+	if (color)
+		cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+
+	// NOTE: as far as I can see MS Silverlight doesn't use pressure to draw it's stylus points
+	cairo_set_line_width (cr, thickness);
+	cairo_stroke (cr);
+}
+
+static void
+drawing_attributes_normal_render (cairo_t *cr, double width, double height, Color *color, Color *outline, StylusPointCollection *collection)
+{
+// FIXME: use cairo_stroke_to_path once available
+// until then draw bigger with the outline color and smaller with the inner color
+	drawing_attributes_quick_render (cr, height + 2.0, outline, collection);
+	drawing_attributes_quick_render (cr, height - 2.0, color, collection);
+}
+
+void
+DrawingAttributes::Render (cairo_t *cr, StylusPointCollection* collection)
+{
+	if (!collection)
+		return;
+
+	double height = drawing_attributes_get_height (this);
+	double width = drawing_attributes_get_width (this);
+	Color *color = drawing_attributes_get_color (this);
+	Color *outline = drawing_attributes_get_outline_color (this);
+
+	// we can render very quickly if the pen is round, i.e. Width==Height (circle)
+	// and when no OutlineColor are specified (e.g. NULL, transparent)
+	if ((!outline || outline->a == 0x00) && (height == width)) {
+		drawing_attributes_quick_render (cr, height, color, collection);
+// TODO - we could add another fast-path in the case where height!=width and without an outline
+// in this case we would need a scaling transform (for the pen) and adjust the coordinates
+	} else {
+		drawing_attributes_normal_render (cr, width, height, color, outline, collection);
+	}
+}
+
+void
+DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointCollection *collection)
+{
+	// default values that (seems to) match the output when no DrawingAttributes are specified
+	drawing_attributes_quick_render (cr, 2.0, NULL, collection);
+}
+
+
 StylusPointCollection*
 stroke_get_stylus_points (Stroke *stroke)
 {
@@ -180,7 +252,6 @@ stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection)
 	stroke->SetValue (Stroke::StylusPointsProperty, Value (collection));
 }
 
-#if TRUE
 void
 InkPresenter::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
 {
@@ -202,203 +273,21 @@ InkPresenter::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
 	// for each stroke in collection
 	Collection::Node *cn = (Collection::Node *) strokes->list->First ();
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-		double thickness = 1.0;
 		Stroke *stroke = (Stroke *) cn->obj;
-		// set drawing attributes
+
 		value = stroke->GetValue (Stroke::DrawingAttributesProperty);
-		if (value) {
-			DrawingAttributes *da = value->AsDrawingAttributes ();
-			if (da) {
-// FIXME: we need a brush that will respect width|height and both colors
-				thickness = drawing_attributes_get_height (da);
-				Color *color = drawing_attributes_get_color (da);
-				cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
-			}
-		}
-		// for each stylus point in stroke
+		DrawingAttributes *da = value ? value->AsDrawingAttributes () : NULL;
+
 		value = stroke->GetValue (Stroke::StylusPointsProperty);
-		if (value) {
-			StylusPointCollection *spc = value->AsStylusPointCollection ();
-			if (spc) {
-				Collection::Node *cnp = (Collection::Node *) spc->list->First ();
-				if (!cnp)
-					continue;
+		StylusPointCollection *spc = value ? value->AsStylusPointCollection () : NULL;
 
-				StylusPoint *stylus_point = (StylusPoint*) cnp->obj;
-				cairo_move_to (cr, stylus_point_get_x (stylus_point), stylus_point_get_y (stylus_point));
-				cnp = (Collection::Node *) cnp->next;
-
-				for ( ; cnp != NULL; cnp = (Collection::Node *) cnp->next) {
-					StylusPoint *stylus_point = (StylusPoint*) cnp->obj;
-
-					cairo_set_line_width (cr, thickness * (1.0 + stylus_point_get_pressure_factor (stylus_point)));
-					cairo_line_to (cr, stylus_point_get_x (stylus_point), stylus_point_get_y (stylus_point));
-				}
-
-				cairo_stroke (cr);
-			}
+		if (da) {
+			da->Render (cr, spc);
+		} else {
+			DrawingAttributes::RenderWithoutDrawingAttributes (cr, spc);
 		}
 	}
 }
-#else
-void
-InkPresenter::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
-{
-	// Canvas elements are supported inside the InkPresenter
-	Panel::RenderChildren (cr, x, y, width, height);
-
-	Value* value = GetValue (InkPresenter::StrokesProperty);
-	if (!value)
-		return;
-
-	StrokeCollection *strokes = value->AsStrokeCollection ();
-	if (!strokes)
-		return;
-
-	cairo_set_matrix (cr, &absolute_xform);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-	cairo_set_line_width (cr, 2.0);
-
-	moon_path *path = moon_path_new (10);
-
-	// for each stroke in collection
-	Collection::Node *cn = (Collection::Node *) strokes->list->First ();
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-		double thickness = 1.0;
-		Color *color = NULL;
-		Color *outline_color = NULL;
-
-		float rx = 2.0;
-		float ry = 2.0;
-
-		Stroke *stroke = (Stroke *) cn->obj;
-		// set drawing attributes
-		value = stroke->GetValue (Stroke::DrawingAttributesProperty);
-		if (value) {
-			DrawingAttributes *da = value->AsDrawingAttributes ();
-			if (da) {
-// FIXME: we need a brush that will respect width|height and both colors
-				rx += drawing_attributes_get_width (da);
-				ry += drawing_attributes_get_height (da);
-				color = drawing_attributes_get_color (da);
-				outline_color = drawing_attributes_get_outline_color (da);
-			}
-		}
-		// for each stylus point in stroke
-		value = stroke->GetValue (Stroke::StylusPointsProperty);
-		if (value) {
-			StylusPointCollection *spc = value->AsStylusPointCollection ();
-			if (spc) {
-				Collection::Node *cnp = (Collection::Node *) spc->list->First ();
-				if (!cnp)
-					continue;
-
-				StylusPoint *stylus_point = (StylusPoint*) cnp->obj;
-
-				double c1x = stylus_point_get_x (stylus_point);
-				double c1y = stylus_point_get_y (stylus_point);
-
-				// ellipse are drawn by specifying the upper-left corner, stylus points are at center
-				double hrx = (rx / 2.0);
-				double hry = (ry / 2.0);
-				double ex = c1x - hrx;
-				double ey = c1y - hry;
-
-				if (!cnp->next) {
-					// this is a single point stroke, replace by ellipse
-					moon_ellipse (path, ex, ey, rx, ry);
-				} else {
-					moon_ellipse (path, ex, ey, rx, ry);
-
-					for (cnp = (Collection::Node *) cnp->next ; cnp != NULL; cnp = (Collection::Node *) cnp->next) {
-						StylusPoint *stylus_point = (StylusPoint*) cnp->obj;
-
-						double c2x = stylus_point_get_x (stylus_point);
-						double c2y = stylus_point_get_y (stylus_point);
-
-						double x1, y1, x2, y2;
-						if (c2x - c1x == 0) {
-							x1 = c1x + hrx;
-							y1 = c1y;
-							x2 = c2x + hrx;							
-							y2 = c2y;
-						} else if (c2y - c1y == 0) {
-							x1 = c1x;
-							y1 = c1y + hry;
-							x2 = c2x;							
-							y2 = c2y + hry;
-						} else {
-							double m = (c2y - c1y) / (c2x - c1x);
-							double angle = atan (1.0 / m);
-							x1 = c1x + hrx * cos (angle);
-							y1 = c1y - hry * sin (angle);
-							x2 = c2x + hrx * cos (angle);
-							y2 = c2y - hry * sin (angle);
-						}
-						moon_move_to (path, x1, y1);
-						moon_line_to (path, x2, y2);
-
-//						cairo_set_line_width (cr, ry * (1.0 + stylus_point_get_pressure_factor (stylus_point)));
-						ex = c2x - hrx;
-						ey = c2y - hry;
-						moon_ellipse (path, ex, ey, rx, ry);
-					}
-
-					cnp = (Collection::Node *) spc->list->Last ();
-					for ( ; cnp != NULL; cnp = (Collection::Node *) cnp->prev) {
-						StylusPoint *stylus_point = (StylusPoint*) cnp->obj;
-
-						double c2x = stylus_point_get_x (stylus_point);
-						double c2y = stylus_point_get_y (stylus_point);
-
-						double x1, y1, x2, y2;
-						if (c2x - c1x == 0) {
-							x1 = c1x - hrx;
-							y1 = c1y;
-							x2 = c2x - hrx;							
-							y2 = c2y;
-						} else if (c2y - c1y == 0) {
-							x1 = c1x;
-							y1 = c1y - hry;
-							x2 = c2x;							
-							y2 = c2y - hry;
-						} else {
-							double m = (c2y - c1y) / (c2x - c1x);
-							double angle = atan (1.0 / m);
-							x1 = c1x - hrx * cos (angle);
-							y1 = c1y + hry * sin (angle);
-							x2 = c2x - hrx * cos (angle);
-							y2 = c2y + hry * sin (angle);
-						}
-						moon_move_to (path, x1, y1);
-						moon_line_to (path, x2, y2);
-
-//						cairo_set_line_width (cr, ry * (1.0 + stylus_point_get_pressure_factor (stylus_point)));
-						ex = c2x - hrx;
-						ey = c2y - hry;
-						moon_ellipse (path, ex, ey, rx, ry);
-					}
-				}
-			}
-
-			cairo_new_path (cr);
-			cairo_append_path (cr, &path->cairo);
-
-			if (color) {
-				cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
-				cairo_fill_preserve (cr);
-			}
-			if (outline_color) {
-				cairo_set_source_rgba (cr, outline_color->r, outline_color->g, outline_color->b, outline_color->a);
-				cairo_stroke (cr);
-			}
-			moon_path_clear (path);
-		}
-	}
-	moon_path_destroy (path);
-}
-#endif
 
 bool
 InkPresenter::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child)
