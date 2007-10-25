@@ -1524,7 +1524,7 @@ TextLayout::Layout ()
 				lh = run->font->Height ();
 				line = new TextLine ();
 				spc.index = -1;
-				lw = 0.0;
+				sx = lw = 0.0;
 				
 				prev = 0;
 			} else {
