@@ -1485,7 +1485,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	double x1, y1;
 	double scale;
 	
-	if ((width == 0.0 && height == 0.0) || invalid)
+	if ((this->width == 0.0 && this->height == 0.0) || invalid)
 		return;
 	
 	cairo_save (cr);
@@ -1531,9 +1531,6 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 			if (!glyph)
 				goto next1;
 			
-			
-			printf ("0x%x,", glyph->unichar);
-			
 			if (attr && (attr->set & vOffset))
 				y1 = y0 - (attr->voffset * scale);
 			else
@@ -1544,7 +1541,10 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 			else
 				x1 = x0;
 			
-			font->Path (cr, glyph, x1, y1);
+			if (!font->IsScalable ())
+				font->Render (cr, glyph, x1, y1);
+			else
+				font->Path (cr, glyph, x1, y1);
 			
 			if (attr && (attr->set & Advance))
 				x0 += attr->advance * scale;
@@ -1561,8 +1561,6 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	while (attr) {
 		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next2;
-		
-		printf ("%c", (char) glyph->unichar);
 		
 		if ((attr->set & vOffset))
 			y1 = y0 - (attr->voffset * scale);
@@ -1589,13 +1587,15 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		attr = (GlyphAttr *) attr->next;
 	}
 	
-	printf ("\n\n");
-	
 	if (font->IsScalable ()) {
 		cairo_close_path (cr);
 		
-		if ((path = cairo_copy_path (cr)) && path->data)
+		if ((path = cairo_copy_path (cr)) && path->data) {
 			cairo_fill (cr);
+		} else if (path) {
+			cairo_path_destroy (path);
+			path = NULL;
+		}
 	}
 	
 	font->unref ();

@@ -387,26 +387,26 @@ linear_gradient_brush_set_start_point (LinearGradientBrush *brush, Point *point)
 void
 LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 {
+	double x0, y0, x1, y1;
 	double w, h;
 	
 	if (uielement) {
+		w = h = 0.0;
 		uielement->GetSizeForBrush (cairo, &w, &h);
 	} else {
-		double x1, y1, x2, y2;
+		cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
 		
-		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
-		
-		h = fabs (y2 - y1);
-		w = fabs (x2 - x1);
+		h = fabs (y1 - y0);
+		w = fabs (x1 - x0);
 	}
 	
 	Point *start = linear_gradient_brush_get_start_point (this);
-	double x0 = start ? (start->x * w) : 0.0;
-	double y0 = start ? (start->y * h) : 0.0;
+	x0 = start ? (start->x * w) : 0.0;
+	y0 = start ? (start->y * h) : 0.0;
 
 	Point *end = linear_gradient_brush_get_end_point (this);
-	double x1 = end ? (end->x * w) : w;
-	double y1 = end ? (end->y * h) : h;
+	x1 = end ? (end->x * w) : w;
+	y1 = end ? (end->y * h) : h;
 
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 
@@ -806,7 +806,7 @@ image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, in
 
 		cairo_paint_with_alpha (cr, opacity);
 		cairo_destroy (cr);
-
+		
 		pattern = cairo_pattern_create_for_surface (blending);
 
 		cairo_surface_destroy (blending);
@@ -898,6 +898,7 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		return;
 	}
 
 // MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
@@ -924,7 +925,7 @@ ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	}
 	
 	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, image->GetWidth (), image->GetHeight (), opacity);
-
+	
 	cairo_matrix_t matrix;
 	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetWidth (), image->GetHeight (), stretch, ax, ay, transform);
 	cairo_pattern_set_matrix (pattern, &matrix);

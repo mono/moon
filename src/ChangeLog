@@ -1,3 +1,13 @@
+2007-10-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Glyphs::Render): We want to check this->width and
+	this->height, not the width/height arguments.
+
+	* brush.cpp (ImageBrush::SetupBrush): If the image isn't loaded
+	yet (surface = NULL), return.
+	(LinearGradientBrush::SetupBrush): Get rid of some of the valgrind
+	warnings.
+
 2007-10-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Glyphs::GetSizeForBrush): Implemented.
