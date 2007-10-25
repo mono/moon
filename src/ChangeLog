@@ -6,6 +6,9 @@
 
 2007-10-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* brush.cpp (Brush::SetupBrush): Now takes width and height
+	arguments. Updated all brushes.
+
 	* text.cpp (Glyphs::Render): We want to check this->width and
 	this->height, not the width/height arguments.
 

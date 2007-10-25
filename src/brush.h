@@ -60,7 +60,8 @@ class Brush : public DependencyObject {
 	Brush () { }
 	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
 
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	void SetupBrush (cairo_t *cr, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	
 	double GetTotalOpacity (UIElement *uielement);
@@ -83,7 +84,7 @@ class SolidColorBrush : public Brush {
 
 	virtual Type::Kind GetObjectType () { return Type::SOLIDCOLORBRUSH; };
 
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -150,7 +151,7 @@ class ImageBrush : public TileBrush {
 
 	void SetSource (DependencyObject *dl, const char* PartName);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void SetSurface (Surface *surface);
 };
 
@@ -174,7 +175,7 @@ public:
 	
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 };
 
 VideoBrush *video_brush_new (void);
@@ -190,7 +191,7 @@ class LinearGradientBrush : public GradientBrush {
 	LinearGradientBrush () {};
 	virtual Type::Kind GetObjectType () { return Type::LINEARGRADIENTBRUSH; }
 
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -211,7 +212,7 @@ class RadialGradientBrush : public GradientBrush {
 	RadialGradientBrush () {};
 	virtual Type::Kind GetObjectType () { return Type::RADIALGRADIENTBRUSH; }
 
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
@@ -264,7 +265,7 @@ class VisualBrush : public TileBrush {
 
 	virtual Type::Kind GetObjectType () { return Type::VISUALBRUSH; };
 
-	virtual void SetupBrush (cairo_t *cairo, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 

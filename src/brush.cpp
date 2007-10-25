@@ -119,9 +119,27 @@ Brush::GetTotalOpacity (UIElement *uielement)
 }
 
 void
-Brush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+Brush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	g_warning ("Brush:SetupBrush has been called. The derived class should have overridden it.");
+}
+
+void
+Brush::SetupBrush (cairo_t *cr, UIElement *uielement)
+{
+	double x0, y0, x1, y1;
+	double w, h;
+	
+	if (uielement) {
+		uielement->GetSizeForBrush (cr, &w, &h);
+	} else {
+		cairo_stroke_extents (cr, &x0, &y0, &x1, &y1);
+		
+		h = fabs (y1 - y0);
+		w = fabs (x1 - x0);
+	}
+	
+	SetupBrush (cr, uielement, w, h);
 }
 
 void
@@ -147,15 +165,15 @@ Brush::OnPropertyChanged (DependencyProperty *prop)
 DependencyProperty* SolidColorBrush::ColorProperty;
 
 void
-SolidColorBrush::SetupBrush (cairo_t *target, UIElement *uielement)
+SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	Color *color = solid_color_brush_get_color (this);
-
+	
 	// apply UIElement opacity and Brush opacity on color's alpha
 	double alpha = color->a * GetTotalOpacity (uielement);
-
-	cairo_set_source_rgba (target, color->r, color->g, color->b, alpha);
-
+	
+	cairo_set_source_rgba (cr, color->r, color->g, color->b, alpha);
+	
 	// [Relative]Transform do not apply to solid color brush
 }
 
@@ -385,41 +403,27 @@ linear_gradient_brush_set_start_point (LinearGradientBrush *brush, Point *point)
 }
 
 void
-LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
-	double x0, y0, x1, y1;
-	double w, h;
-	
-	if (uielement) {
-		w = h = 0.0;
-		uielement->GetSizeForBrush (cairo, &w, &h);
-	} else {
-		cairo_stroke_extents (cairo, &x0, &y0, &x1, &y1);
-		
-		h = fabs (y1 - y0);
-		w = fabs (x1 - x0);
-	}
-	
 	Point *start = linear_gradient_brush_get_start_point (this);
-	x0 = start ? (start->x * w) : 0.0;
-	y0 = start ? (start->y * h) : 0.0;
-
 	Point *end = linear_gradient_brush_get_end_point (this);
-	x1 = end ? (end->x * w) : w;
-	y1 = end ? (end->y * h) : h;
-
+	double y0 = start ? (start->y * height) : 0.0;
+	double x0 = start ? (start->x * width) : 0.0;
+	double y1 = end ? (end->y * height) : height;
+	double x1 = end ? (end->x * width) : width;
+	
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
-
+	
 	cairo_matrix_t matrix;
 	switch (gradient_brush_get_mapping_mode (this)) {
 	case BrushMappingModeAbsolute:
-		cairo_matrix_init (&matrix, 1.0 / w, 0, 0, 1.0 / h, 0, 0);
+		cairo_matrix_init (&matrix, 1.0 / width, 0, 0, 1.0 / height, 0, 0);
 		break;
 	case BrushMappingModeRelativeToBoundingBox:
 		cairo_matrix_init_identity (&matrix);
 		break;
 	}
-
+	
 	Transform *transform = brush_get_transform (this);
 	if (transform) {
 		cairo_matrix_t tm;
@@ -427,13 +431,14 @@ LinearGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 		// TODO - optimization, check for empty/identity matrix too ?
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
+	
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
-
+	
 	bool only_start = (x0 == x1 && y0 == y1);
 	GradientBrush::SetupGradient (pattern, uielement, only_start);
-
-	cairo_set_source (cairo, pattern);
+	
+	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 }
 
@@ -519,44 +524,31 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 }
 
 void
-RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
 	double ox = (origin ? origin->x : 0.5);
 	double oy = (origin ? origin->y : 0.5);
-
+	
 	Point *center = radial_gradient_brush_get_center (this);
 	double cx = (center ? center->x : 0.5);
 	double cy = (center ? center->y : 0.5);
-
+	
 	double rx = radial_gradient_brush_get_radius_x (this);
 	double ry = radial_gradient_brush_get_radius_y (this);
-
+	
 	cairo_pattern_t *pattern = cairo_pattern_create_radial (ox, oy, 0.0, cx, cy, ry);
-
-	double w, h;
-
-	if (uielement) {
-		uielement->GetSizeForBrush (cairo, &w, &h);
-	} else {
-		double x1, y1, x2, y2;
-		
-		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
-		
-		h = fabs (y2 - y1);
-		w = fabs (x2 - x1);
-	}
-
+	
 	cairo_matrix_t matrix;
 	switch (gradient_brush_get_mapping_mode (this)) {
 	case BrushMappingModeAbsolute:
 		cairo_matrix_init_identity (&matrix);
 		break;
 	case BrushMappingModeRelativeToBoundingBox:
-		cairo_matrix_init (&matrix, w * rx / ry, 0, 0, h, 0, 0);
+		cairo_matrix_init (&matrix, width * rx / ry, 0, 0, height, 0, 0);
 		break;
 	}
-
+	
 	Transform *transform = brush_get_transform (this);
 	if (transform) {
 		cairo_matrix_t tm;
@@ -566,10 +558,10 @@ RadialGradientBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	}
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
-
+	
 	GradientBrush::SetupGradient (pattern, uielement);
-
-	cairo_set_source (cairo, pattern);
+	
+	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 }
 
@@ -892,45 +884,32 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 }
 
 void
-ImageBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+ImageBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	cairo_surface_t *surface = image->GetCairoSurface ();
 	if (!surface) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
-		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.5);
 		return;
 	}
-
+	
 // MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
 	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
-
+	
 	Stretch stretch = tile_brush_get_stretch (this);
-
+	
 	AlignmentX ax = tile_brush_get_alignment_x (this);
 	AlignmentY ay = tile_brush_get_alignment_y (this);
-
+	
 	Transform *transform = brush_get_transform (this);
 	
-	double width, height;
-	
-	if (uielement) {
-		uielement->GetSizeForBrush (cairo, &width, &height);
-	} else {
-		double x1, y1, x2, y2;
-		
-		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
-		
-		height = fabs (y2 - y1);
-		width = fabs (x2 - x1);
-	}
-	
-	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, image->GetWidth (), image->GetHeight (), opacity);
+	cairo_pattern_t *pattern = image_brush_create_pattern (cr, surface, image->GetWidth (), image->GetHeight (), opacity);
 	
 	cairo_matrix_t matrix;
 	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetWidth (), image->GetHeight (), stretch, ax, ay, transform);
 	cairo_pattern_set_matrix (pattern, &matrix);
-
-	cairo_set_source (cairo, pattern);
+	
+	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 }
 
@@ -955,17 +934,17 @@ VideoBrush::~VideoBrush ()
 }
 
 void
-VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	MediaPlayer *mplayer = media ? media->mplayer : NULL;
 	Transform *transform = brush_get_transform (this);
 	AlignmentX ax = tile_brush_get_alignment_x (this);
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 	Stretch stretch = tile_brush_get_stretch (this);
-	double opacity, width, height;
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
+	double opacity;
 	
 	if (media == NULL) {
 		DependencyObject *obj;
@@ -991,28 +970,20 @@ VideoBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
 	
 	if (!mplayer || !(surface = mplayer->GetSurface ())) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
-		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.5);
 		return;
 	}
 	
-	if (uielement) {
-		uielement->GetSizeForBrush (cairo, &width, &height);
+	if (uielement)
 		opacity = uielement->GetTotalOpacity ();
-	} else {
-		double x1, y1, x2, y2;
-		
-		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
-		height = fabs (y2 - y1);
-		width = fabs (x2 - x1);
-		
+	else
 		opacity = 1.0;
-	}
 	
-	pattern = image_brush_create_pattern (cairo, surface, mplayer->width, mplayer->height, opacity);
+	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, opacity);
 	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->width, mplayer->height, stretch, ax, ay, transform);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
-	cairo_set_source (cairo, pattern);
+	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 }
 
@@ -1089,60 +1060,44 @@ video_brush_set_source_name (VideoBrush *brush, const char *value)
 DependencyProperty* VisualBrush::VisualProperty;
 
 void
-VisualBrush::SetupBrush (cairo_t *cairo, UIElement *uielement)
+VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	UIElement *ui = (UIElement*)GetValue (VisualProperty)->AsVisual ();
 	if (!ui) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
-		cairo_set_source_rgba (cairo, 0.5, 0.5, 0.5, 0.5);
+		cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.5);
 		return;
 	}
 	
 	// XXX we should cache the surface so that it can be
 	// used multiple times without having to re-render each time.
 	Rect bounds = ui->GetBounds();
-	surface = image_brush_create_similar (cairo,
-					      (int)bounds.w, 
-					      (int)bounds.h);
-
+	surface = image_brush_create_similar (cr, (int) bounds.w, (int) bounds.h);
+	
 	cairo_t *surface_cr = cairo_create (surface);
 	ui->Render (surface_cr, 0, 0, (int)bounds.w + 1, (int)bounds.h + 1);
 	cairo_destroy (surface_cr);
-
+	
 // MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
 	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
-
+	
 	Stretch stretch = tile_brush_get_stretch (this);
-
+	
 	AlignmentX ax = tile_brush_get_alignment_x (this);
 	AlignmentY ay = tile_brush_get_alignment_y (this);
-
+	
 	Transform *transform = brush_get_transform (this);
 	
-	double width, height;
-	
-	if (uielement) {
-		uielement->GetSizeForBrush (cairo, &width, &height);
-	} else {
-		double x1, y1, x2, y2;
-		
-		cairo_stroke_extents (cairo, &x1, &y1, &x2, &y2);
-		
-		height = fabs (y2 - y1);
-		width = fabs (x2 - x1);
-	}
-	
- 	cairo_pattern_t *pattern = image_brush_create_pattern (cairo, surface, (int)bounds.w, (int)bounds.h, opacity);
+ 	cairo_pattern_t *pattern = image_brush_create_pattern (cr, surface, (int)bounds.w, (int)bounds.h, opacity);
 
 	cairo_matrix_t matrix;
- 	image_brush_compute_pattern_matrix (&matrix,
-					    width, height,
+ 	image_brush_compute_pattern_matrix (&matrix, width, height,
 					    (int)bounds.w, (int)bounds.h,
 					    stretch, ax, ay, transform);
 
  	cairo_pattern_set_matrix (pattern, &matrix);
 
- 	cairo_set_source (cairo, pattern);
+ 	cairo_set_source (cr, pattern);
  	cairo_pattern_destroy (pattern);
 
 	cairo_surface_destroy (surface);
