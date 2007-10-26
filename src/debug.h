@@ -7,8 +7,8 @@
  * 
  */
 
-#ifndef __MONOLIGHT_DEBUG_H__
-#define __MONOLIGHT_DEBUG_H__
+#ifndef __MOONLIGHT_DEBUG_H__
+#define __MOONLIGHT_DEBUG_H__
 
 // Define STACK_DEBUG here to enable debugging with stack frames.
 // Object tracking depends on this being defined in order to work.
@@ -33,9 +33,14 @@ G_BEGIN_DECLS
 
 char* get_stack_trace ();
 void print_stack_trace ();
-void enable_vm_stack_trace (bool enable);
-
+void enable_vm_stack_trace ();
+void print_gdb_trace ();
 G_END_DECLS
+
+#else
+
+#define enable_vm_stack_trace()
+#define print_stack_trace()
 
 #endif
 

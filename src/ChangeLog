@@ -1,3 +1,9 @@
+2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* debug.cpp: Added print_gdb_trace with an explaining comment.
+	* debug.h: Make print_stack_trace compile (to nothing) when STACK_DEBUG
+	  isn't defined.
+
 2007-10-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextLayout::Render): Set y1 before creating/appending

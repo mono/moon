@@ -11,7 +11,12 @@
  
 #if STACK_DEBUG
 
+#if INCLUDE_MONO_RUNTIME
+// Define to enable stack traces for managed frames.
+// You'll also need to call enable_vm_stack_trace when the vm is loaded
+// (since we don't link with mono, you'll get some unresolved externals errors otherwise). 
 #define MONO_STACK_ENABLED 1
+#endif
 
 // Type safety at it's best.
 #if MONO_STACK_ENABLED
@@ -43,11 +48,12 @@ struct _MonoDebugSourceLocation {
 };
 #endif
 
-static bool vm_stack_trace_enabled = FALSE;
+static bool vm_stack_trace_enabled = false;
+
 void
-enable_vm_stack_trace (bool enable)
+enable_vm_stack_trace ()
 {
-	vm_stack_trace_enabled = enable;
+	vm_stack_trace_enabled = true;
 }
 
 static char*
@@ -333,6 +339,32 @@ print_stack_trace_prefix (const char* prefix)
 	char* st = get_stack_trace_prefix (prefix);
 	printf (st);
 	g_free (st);
+}
+
+void
+print_gdb_trace ()
+{
+	/*
+
+Put this in your ~/.gdbinit file and then do "gdb --eval-command=gdb_trace whatever.exe"
+then it will print stacktraces whenever you call print_gdb_trace in the code. 
+
+////////////////////////////
+define mono_run
+    pst
+    run
+end
+
+define gdb_trace
+        break print_gdb_trace
+        commands
+                bt 40
+                c
+        end
+end
+////////////////////////////
+	
+	*/
 }
 
 #endif
