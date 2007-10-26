@@ -1,5 +1,9 @@
 2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mono.cpp: Enable vm stacktraces after mono has been loaded.
+
+2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* downloader.cpp: Ref/unref the downloader.
 
 2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
