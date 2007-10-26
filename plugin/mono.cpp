@@ -84,9 +84,11 @@ vm_init (void)
 	DEBUGMSG ("Mono Runtime: %s", result ? "OK" : "Failed");
 	
 	moon_vm_loaded = TRUE;
-	
+
+#if STACK_DEBUG
 	enable_vm_stack_trace ();
-	
+#endif
+
 	return result;
 }
 
