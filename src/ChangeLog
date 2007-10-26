@@ -1,3 +1,9 @@
+2007-10-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (RenderLine): Split out from TextLayout::Render() and
+	made to reset the brush at each segment to match Silverlight's
+	behaviour.
+
 2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* debug.cpp: Added print_gdb_trace with an explaining comment.

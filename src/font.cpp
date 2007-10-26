@@ -1565,6 +1565,7 @@ TextLayout::Layout ()
 	//printf ("layout extents are %.3f, %.3f, bounding box extents are %.3f, %.3f\n", width, height, bbox_width, bbox_height);
 }
 
+#if 0
 void
 TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y)
 {
@@ -1669,3 +1670,123 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 		x1 = x;
 	}
 }
+
+#else
+
+static inline void
+RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, double x, double y)
+{
+	TextFont *font = NULL;
+	TextDecorations deco;
+	TextSegment *segment;
+	const gunichar *text;
+	gunichar prev = 0;
+	GlyphInfo *glyph;
+	double x1, y1;
+	double x0, y0;
+	Brush *fg;
+	int i;
+	
+	// set y0 to the line's baseline (descend is a negative value)
+	y0 = y + line->height + line->descend;
+	
+	x0 = x;
+	
+	segment = (TextSegment *) line->segments->First ();
+	
+	while (segment) {
+		text = segment->run->text;
+		deco = segment->run->deco;
+		font = segment->run->font;
+		
+		cairo_save (cr);
+		cairo_translate (cr, x0, y0 - font->Ascender ());
+		
+		// set y1 to the baseline relative to the translation matrix
+		y1 = font->Ascender ();
+		x1 = 0.0;
+		
+		if (segment->run->fg && *segment->run->fg)
+			fg = *segment->run->fg;
+		else
+			fg = default_fg;
+		
+		fg->SetupBrush (cr, element, segment->width, font->Height ());
+		
+		if (!segment->path) {
+			if (font->IsScalable ())
+				cairo_new_path (cr);
+			
+			for (i = segment->start, prev = 0; i < segment->end; i++) {
+				if (!(glyph = font->GetGlyphInfo (text[i])))
+					continue;
+				
+				if (glyph->index > 0) {
+					x1 += font->Kerning (prev, glyph->index);
+					prev = glyph->index;
+					
+					if (!font->IsScalable ())
+						font->Render (cr, glyph, x1, y1);
+					else
+						font->Path (cr, glyph, x1, y1);
+				}
+				
+				x1 += glyph->metrics.horiAdvance;
+			}
+			
+			if (font->IsScalable ()) {
+				cairo_close_path (cr);
+				segment->path = cairo_copy_path (cr);
+				cairo_fill (cr);
+			}
+		} else {
+			// it is an error to append a path with no data
+			if (segment->path->data)
+				cairo_append_path (cr, segment->path);
+			
+			x1 = segment->width;
+			cairo_fill (cr);
+		}
+		
+		if (deco == TextDecorationsUnderline) {
+			cairo_antialias_t aa = cairo_get_antialias (cr);
+			double thickness = font->UnderlineThickness ();
+			double pos = y1 + font->UnderlinePosition ();
+			
+			cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+			cairo_set_line_width (cr, thickness);
+			
+			cairo_new_path (cr);
+			cairo_move_to (cr, 0.0, pos);
+			cairo_line_to (cr, x1, pos);
+			cairo_stroke (cr);
+			
+			cairo_set_antialias (cr, aa);
+		}
+		
+		segment = (TextSegment *) segment->next;
+		cairo_restore (cr);
+		x0 += x1;
+	}
+}
+
+void
+TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y)
+{
+	TextLine *line;
+	double y1 = y;
+	
+	Layout ();
+	
+	line = (TextLine *) lines->First ();
+	
+	while (line) {
+		RenderLine (cr, element, line, default_fg, x, y1);
+		y1 += (double) line->height;
+		
+		line = (TextLine *) line->next;
+	}
+}
+
+#endif
+
