@@ -1,0 +1,21 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <Canvas.RenderTransform>
+    <TransformGroup>
+      <ScaleTransform ScaleX="3" ScaleY="3"/>
+      <TranslateTransform X="20" Y="20"/>
+    </TransformGroup>
+  </Canvas.RenderTransform>
+
+  <TextBlock TextWrapping="Wrap" Width="250" FontFamily="arial" FontSize="13">
+    <TextBlock.Foreground>
+      <RadialGradientBrush Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+        <RadialGradientBrush.GradientStops>
+          <GradientStop Color="Red" Offset="0"/>
+          <GradientStop Color="Blue" Offset="1"/>
+        </RadialGradientBrush.GradientStops>
+      </RadialGradientBrush>
+    </TextBlock.Foreground>
+    <Run>The cat sat on the mat and the cow jumped over the moon.</Run>
+    <Run>The little dog laughed to see such fun and the dish ran away with the spoon.</Run>
+  </TextBlock>
+</Canvas>
