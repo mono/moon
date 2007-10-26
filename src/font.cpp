@@ -1572,13 +1572,13 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 	TextDecorations deco;
 	TextFont *font = NULL;
 	const gunichar *text;
-	gunichar prev = 0;
 	Brush *cur_fg = NULL;
-	Brush *fg = NULL;
+	gunichar prev = 0;
 	GlyphInfo *glyph;
 	TextLine *line;
 	double x1, y1;
 	double x0;
+	Brush *fg;
 	int i;
 	
 	Layout ();
@@ -1589,14 +1589,14 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 	
 	while (line) {
 		segment = (TextSegment *) line->segments->First ();
+		
+		// set y1 to the baseline (descend is a negative value)
+		y1 = y + line->height + line->descend;
+		
 		while (segment) {
 			text = segment->run->text;
 			deco = segment->run->deco;
 			font = segment->run->font;
-			
-			// set y1 to the baseline (descend is a negative value)
-			y1 = y + line->height + line->descend;
-			
 			x0 = x1;
 			
 			if (segment->run->fg && *segment->run->fg)
