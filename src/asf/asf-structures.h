@@ -11,10 +11,19 @@
 #ifndef _ASF_STRUCTURES_MOONLIGHT_H
 #define _ASF_STRUCTURES_MOONLIGHT_H
 
-#include "debug.h"
+#include <glib.h>
+
+#include "asf-debug.h"
+#include "asf.h"
 
 void asf_error_correction_data_dump (asf_error_correction_data* obj);
 void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj);
+
+// Converts from ASF's WCHAR fields to a utf8 string.
+// The returned string must be freed with g_free.
+G_BEGIN_DECLS
+char* wchar_to_utf8 (void* unicode, guint32 length);
+G_END_DECLS
 
 #define ASF_DECODE_PACKED_SIZE(x) ((x == 3 ? 4 : x))
 
@@ -201,9 +210,7 @@ struct asf_single_payload {
 		return -1;
 	}
 	
-	ObjectTracker ot;
-	
-	asf_single_payload () : ot ("asf_single_payload") 
+	asf_single_payload () 
 	{
 		stream_number = 0; media_object_number = 0; offset_into_media_object = 0;
 		replicated_data_length = 0; replicated_data = 0; payload_data_length = 0;
@@ -333,6 +340,7 @@ struct asf_object {
 	asf_guid id;
 	asf_qword size;
 };
+			
 
 struct asf_header : public asf_object {
 	asf_dword object_count;
@@ -433,12 +441,95 @@ struct asf_codec_list : public asf_object {
 	// data follows
 };
 
+struct asf_script_command_entry {
+	asf_dword pts;
+	asf_word type_index;
+	asf_word name_length;
+	
+	char* get_name ()
+	{
+		return wchar_to_utf8 (sizeof (asf_script_command_entry) + (char*) this, name_length);
+	}
+};
+
 struct asf_script_command : public asf_object {
 	asf_guid reserved;
 	asf_word command_count;
 	asf_word command_type_count;
 	
 	// data follows
+	
+	// A NULL terminated array of command types.
+	// Free all elements and the array of strings with g_free.
+	char** get_command_types ()
+	{
+		if (command_type_count == 0)
+			return NULL;
+
+		char** result = (char**) g_malloc0 (sizeof (char*) * (command_type_count + 1));
+		
+		char* next = sizeof (asf_script_command) + (char*) this;
+		for (gint32 i = 0; i < command_type_count; i++) {
+			asf_word length = * (asf_word*) next;
+			result [i] = wchar_to_utf8 (next + sizeof (asf_word), length);
+			next += length + sizeof (asf_word);
+		}
+		
+		return result;
+	}
+	
+	// A NULL terminaded array of commands.
+	// Free the array with g_free (do NOT free each element).
+	// command_types: an array of strings, use g_free on the elements and the array.
+	asf_script_command_entry** get_commands (char*** command_types)
+	{
+		asf_script_command_entry** result = (asf_script_command_entry**) g_malloc0 (sizeof (char*) * (command_count + 1));
+		
+		char** types = (char**) g_malloc0 (sizeof (char*) * (command_type_count + 1));
+		
+		if (command_types != NULL) 
+			*command_types = types;
+
+		// Walk past by the command type table.
+		char* start = (sizeof (asf_script_command) + (char*) this);
+		for (gint32 i = 0; i < command_type_count; i++) {
+			asf_word length = * (asf_word*) start;
+			types [i] = wchar_to_utf8 (start + sizeof (asf_word), length);
+			start += (length * sizeof (guint16) + sizeof (asf_word));
+		}
+		
+		// Fill in the commands table
+		asf_script_command_entry* next = (asf_script_command_entry*) start;
+		for (gint32 i = 0; i < command_count; i++) {
+			result [i] = next;
+			
+			char* tmp = (char*) next;
+			tmp += sizeof (asf_script_command_entry);
+			tmp += (next->name_length * sizeof (guint16));
+			next = (asf_script_command_entry*) tmp;
+		}
+		
+		return result;
+	}
+};
+
+struct asf_marker_entry {
+	asf_qword offset;
+	asf_qword pts;
+	asf_word entry_length;
+	asf_dword send_time;
+	asf_dword flags;
+	asf_dword marker_description_length;
+		
+	char* get_marker_description ()
+	{
+		char* result = NULL;
+		
+		char* md = sizeof (asf_marker_entry) + (char*) this;
+		result = wchar_to_utf8 (md, marker_description_length);
+		
+		return result;
+	}
 };
 
 struct asf_marker : public asf_object {
@@ -447,7 +538,35 @@ struct asf_marker : public asf_object {
 	asf_word reserved2;
 	asf_word name_length;
 	
-	// data follows
+	char* get_name ()
+	{
+		char* result = NULL;
+		
+		char* md = sizeof (asf_marker) + (char*) this;
+		result = wchar_to_utf8 (md, name_length);
+				
+		return result;
+	}
+	
+	asf_marker_entry* get_entry (guint32 index) 
+	{
+		asf_marker_entry* result = NULL;
+		
+		if (marker_count < index + 1)
+			return NULL;
+		
+		asf_marker_entry* tmp = (asf_marker_entry*) (sizeof (asf_marker) + name_length + (char*) this);	
+		for (guint32 i = 0; i < index; i++) {
+			char* next = (char*) tmp;
+			next += sizeof (asf_marker_entry);
+			next += (tmp->marker_description_length * sizeof (guint16));
+			tmp = (asf_marker_entry*) next;
+		}
+		result = tmp;
+		
+		return result;
+	}
+	
 };
 
 struct asf_bitrate_mutual_exclusion : public asf_object {

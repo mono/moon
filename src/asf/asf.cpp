@@ -10,46 +10,6 @@
 #include <config.h>
 #include "asf.h"
 
-int main(int argc, char *argv[])
-{
-	print_sizes ();
-	
-	const char* filename = "/tmp/BoxerSmacksdownInhoffe.wmv";
-	filename = "/mono/head/moon/tmp/media/StarryNightTVCM_400kbps.wmv";
-	
-	if (argc >= 2)
-		filename = argv [1];
-	
-	printf ("File: %s\n", filename);
-	ASFParser* parser = new ASFParser (filename);
-	parser->ReadHeader ();
-	parser->ReadData ();
-	ASFPacket* packet = new ASFPacket ();
-	while (parser->ReadPacket (packet) == true) {
-		delete packet;
-		packet = new ASFPacket ();
-	}
-	delete packet;
-	
-	printf ("Read all packets.\n");
-	ASFFrameReader* reader = new ASFFrameReader (parser);
-	while (reader->Advance ()) {
-	}
-	delete reader;
-	printf ("Read all frames.\n");
-	
-	printf ("Done.\n");
-	
-	delete parser;
-	
-	ObjectTracker::PrintStatus ("ASFPacket");
-	ObjectTracker::PrintStatus ("ASFFrameReader");
-	ObjectTracker::PrintStatus ("ASFFrameReaderData");
-	ObjectTracker::PrintStatus ("asf_single_payload");
-	
-	return 0;
-}
-
 void
 asf_printfree (char *message)
 {
@@ -71,6 +31,9 @@ ASFParser::ASFParser (const char* filename)
 	packet_offset = 0;
 	packet_offset_end = 0;
 	header_objects = NULL;
+	header_extension = NULL;
+	script_command = NULL;
+	marker = NULL;
 	last_error = NULL;
 	file_properties = NULL;
 	errors = NULL;
@@ -118,7 +81,9 @@ ASFParser::ReadObject (asf_object* obj)
 	ASFTypes type = asf_get_guid_type (&obj->id);
 	
 	if (type == ASF_NONE) {
-		AddError (g_strdup_printf ("Unrecognized guid: %s.\n", asf_guid_tostring (&obj->id)));
+		char* g = asf_guid_tostring (&obj->id);
+		AddError (g_strdup_printf ("Unrecognized guid: %s.\n", g));
+		g_free (g);
 		return NULL;
 	}
 	
@@ -205,11 +170,11 @@ ASFParser::ReadPacket (ASFPacket* packet)
 //	if (!source->Skip (ppi.padding_length))
 //		return false;
 	
-	ASF_LOG ("ASFParser::ReadPacket (): Current position (end of packet): %llx (%lld), start position was: %llx (%lld), difference: %llx (%lld)\n", 
+/*	ASF_LOG ("ASFParser::ReadPacket (): Current position (end of packet): %llx (%lld), start position was: %llx (%lld), difference: %llx (%lld)\n", 
 		source->Position (), source->Position (), 
 		start_position, start_position,
 		source->Position () - start_position, source->Position () - start_position);
-	
+	*/
 	return true;
 }
 
@@ -265,6 +230,7 @@ ASFParser::ReadHeader ()
 	
 	header_objects = (asf_object**) g_malloc0 ((header->object_count + 1) * sizeof (asf_object*));
 	
+	bool any_streams = false;
 	for (asf_dword i = 0; i < header->object_count; i++) {
 		asf_object tmp;
 		if (!source->Read (&tmp, sizeof (asf_object))) {
@@ -279,20 +245,63 @@ ASFParser::ReadHeader ()
 		if (asf_guid_compare (&asf_guids_stream_properties, &header_objects [i]->id)) {
 			asf_stream_properties* stream = (asf_stream_properties*) header_objects [i];
 			SetStream (stream->get_stream_number (), stream);
+			any_streams = true;
 		}
 		
 		if (asf_guid_compare (&asf_guids_file_properties, &header_objects [i]->id)) {
 			if (file_properties != NULL) {
-				AddError ("Multiple file property streams in the asf streams.");
+				AddError ("Multiple file property object in the asf data.");
 				return false;
 			}
 			file_properties = (asf_file_properties*) header_objects [i];
 		}
 		
+		if (asf_guid_compare (&asf_guids_header_extension, &header_objects [i]->id)) {
+			if (header_extension != NULL) {
+				AddError ("Multiple header extension objects in the asf data.");
+				return false;
+			}
+			header_extension = (asf_header_extension*) header_objects [i];
+		}
+		
+		if (asf_guid_compare (&asf_guids_marker, &header_objects [i]->id)) {
+			if (marker != NULL) {
+				AddError ("Multiple marker objects in the asf data.");
+				return false;
+			}
+			marker = (asf_marker*) header_objects [i];
+		}
+		
+		if (asf_guid_compare (&asf_guids_script_command, &header_objects [i]->id)) {
+			if (script_command != NULL) {
+				AddError ("Multiple script command objects in the asf data.");
+				return false;
+			}
+			script_command = (asf_script_command*) header_objects [i];
+		}
+		
 		asf_object_dump_exact (header_objects [i]);
 	}
+
+	// Check for required objects.
 	
-	// TODO: Validate existence of mandatory header objects
+	if (file_properties == NULL) {
+		AddError ("No file property object in the asf data.");
+		return false;
+	}
+	
+	if (header_extension == NULL) {
+		AddError ("No header extension object in the asf data.");
+		return false;
+	}
+	
+	if (!any_streams) {
+		AddError ("No streams in the asf data.");
+		return false;
+	}
+
+	// 
+	
 	data_offset = header->size;
 	packet_offset = data_offset + sizeof (asf_data);
 	packet_offset_end = packet_offset + file_properties->data_packet_count * file_properties->min_packet_size;
@@ -454,7 +463,7 @@ ASFSource::ReadEncoded (int length, asf_dword* destination)
 	ASFFrameReader
 */
 
-ASFFrameReader::ASFFrameReader (ASFParser* p) : ot ("ASFFrameReader")
+ASFFrameReader::ASFFrameReader (ASFParser* p)
 {
 	parser = p;
 	first = NULL;
@@ -485,7 +494,7 @@ ASFFrameReader::~ASFFrameReader ()
 }
 
 bool
-ASFFrameReader::Seek (gint32 stream_number, guint64 pts)
+ASFFrameReader::Seek (gint32 stream_number, gint64 pts)
 {
 	ASF_LOG ("ASFFrameReader::Seek (%i, %llu).\n", stream_number, pts);
 	
@@ -544,7 +553,7 @@ ASFFrameReader::Advance ()
 	}
 	gint32 payload_count = 1;
 	payloads [0] = first->payload;
-	gint32 media_object_number = payloads [0]->media_object_number;
+	guint32 media_object_number = payloads [0]->media_object_number;
 	size = payloads [0]->payload_data_length;
 	is_key_frame = payloads [0]->is_key_frame;
 	pts = payloads [0]->get_presentation_time ();
@@ -663,7 +672,7 @@ ASFFrameReader::Write (void* destination)
 	if (payloads == NULL)
 		return false;
 
-	void* start = destination;
+	//void* start = destination;
 	gint32 i = -1;
 	while (payloads [++i] != NULL) {
 		memcpy (destination, payloads [i]->payload_data, payloads [i]->payload_data_length);

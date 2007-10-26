@@ -11,6 +11,8 @@
 #ifndef _ASF_DEBUG_MOONLIGHT_H
 #define _ASF_DEBUG_MOONLIGHT_H
 
+#if DEBUG
+
 #include <glib.h>
 #include <stdio.h>
 
@@ -49,6 +51,8 @@ public:
 				g_hash_table_foreach (list, print, &max_items);
 			}
 			return count == 0;
+		} else {
+			printf ("ObjectTracking::PrintStatus (%s): No objects tracked.\n", tn);
 		}
 		
 		return true;
@@ -133,5 +137,7 @@ private:
 	static GHashTable* current_ids;
 	static GHashTable* current_objects;
 };
+
+#endif
 
 #endif

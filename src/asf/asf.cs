@@ -168,14 +168,16 @@ class asf
 			
 			writer.WriteLine ("/* Debug functions */ ");
 			foreach (string str in debug_structs) {
-				writer.WriteLine ("void " + str + "_dump (const " + str + "* obj)");
-				writer.WriteLine ("{");
-				writer.WriteLine ("\tASF_DUMP (\"" + str.ToUpper ()  + "\\n\");");
-				foreach (Field field in ReadFields (str)) {
-					writer.WriteLine ("\tASF_DUMP (\"\\t" + field.name + " = " + field.get_format () + "\\n\", " + field.get_access ("obj->") + ");");
+				if (!File.ReadAllText ("asf-structures.cpp").Contains ("void " + str + "_dump (")) {
+					writer.WriteLine ("void " + str + "_dump (const " + str + "* obj)");
+					writer.WriteLine ("{");
+					writer.WriteLine ("\tASF_DUMP (\"" + str.ToUpper ()  + "\\n\");");
+					foreach (Field field in ReadFields (str)) {
+						writer.WriteLine ("\tASF_DUMP (\"\\t" + field.name + " = " + field.get_format () + "\\n\", " + field.get_access ("obj->") + ");");
+					}
+					writer.WriteLine ("}");
+					writer.WriteLine ("");
 				}
-				writer.WriteLine ("}");
-				writer.WriteLine ("");
 			}
 			writer.WriteLine ("");
 
@@ -245,7 +247,7 @@ class asf
 		List<Field> result = new List<Field> ();
 		bool in_struct = false;
 		int line_number = 0;
-		bool is_obj = false;
+		//bool is_obj = false;
 		foreach (string l in ReadAllLines ("asf-structures.h")) {
 			string line = l;
 			line = line.Trim ();

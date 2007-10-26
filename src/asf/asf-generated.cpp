@@ -124,27 +124,6 @@ void asf_codec_list_dump (const asf_codec_list* obj)
 	ASF_DUMP ("\tentries_count = %u\n", (asf_dword) obj->entries_count);
 }
 
-void asf_script_command_dump (const asf_script_command* obj)
-{
-	ASF_DUMP ("ASF_SCRIPT_COMMAND\n");
-	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	ASF_DUMP ("\tsize = %llu\n", obj->size);
-	ASF_DUMP ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
-	ASF_DUMP ("\tcommand_count = %u\n", (asf_dword) obj->command_count);
-	ASF_DUMP ("\tcommand_type_count = %u\n", (asf_dword) obj->command_type_count);
-}
-
-void asf_marker_dump (const asf_marker* obj)
-{
-	ASF_DUMP ("ASF_MARKER\n");
-	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	ASF_DUMP ("\tsize = %llu\n", obj->size);
-	ASF_DUMP ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
-	ASF_DUMP ("\tmarker_count = %u\n", (asf_dword) obj->marker_count);
-	ASF_DUMP ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
-	ASF_DUMP ("\tname_length = %u\n", (asf_dword) obj->name_length);
-}
-
 void asf_bitrate_mutual_exclusion_dump (const asf_bitrate_mutual_exclusion* obj)
 {
 	ASF_DUMP ("ASF_BITRATE_MUTUAL_EXCLUSION\n");

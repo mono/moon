@@ -40,6 +40,16 @@ int ffmpeg_asf_probe(AVProbeData *pd)
 	return 0;
 }
 
+ASFParser* ffmpeg_asf_last_parser = NULL;
+
+ASFParser* 
+ffmpeg_asf_get_last_parser ()
+{
+	ASFParser* result = ffmpeg_asf_last_parser;
+	ffmpeg_asf_last_parser = NULL;
+	return result;
+}
+
 int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 {
 	FFMPEG_LOG ("ffmpeg_asf_read_header (%p, %p).\n", s, ap);
@@ -47,6 +57,8 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 	FFMPEGParser *parser = new FFMPEGParser (s->filename);
 	MoonASFContext *context = (MoonASFContext*) s->priv_data;
 	context->parser = parser;
+	
+	ffmpeg_asf_last_parser = parser;
 	
 	parser->source = new FFMPEGSource (parser, &s->pb);
 	

@@ -30,10 +30,6 @@ class ASFParser;
 class ASFFileSource;
 class ASFSource;
 
-#include "asf-generated.h"
-#include "asf-guids.h"
-#include "asf-structures.h"
-#include "debug.h"
 
 #define ASF_ERROR_VAL(fail, ...) { fprintf (stderr, __VA_ARGS__); return fail; }
 #define ASF_ERROR(...) ASF_ERROR_VAL(false, __VA_ARGS__)
@@ -41,16 +37,21 @@ class ASFSource;
 #define ASF_CHECK_VAL(condition, val, ...) if (condition) { ASF_ERROR_VAL (val, __VA_ARGS__); }
 #define ASF_CHECK(condition, ...) if (condition) { ASF_ERROR (__VA_ARGS__); }
 
-#if log// || true
+#if log //|| true
 #define ASF_LOG(...) printf (__VA_ARGS__)
 #else
 #define ASF_LOG(...)
 #endif
-#if dump// || true
+#if dump //|| true
 #define ASF_DUMP(...) printf (__VA_ARGS__)
 #else
 #define ASF_DUMP(...)
 #endif
+
+#include "asf-generated.h"
+#include "asf-guids.h"
+#include "asf-structures.h"
+#include "asf-debug.h"
 
 /* Debug & tostring functions */ 
 void  asf_printfree (char *message);
@@ -115,7 +116,7 @@ private:
 
 class ASFPacket {
 public:
-	ASFPacket () : ot ("ASFPacket")
+	ASFPacket ()
 	{
 		payloads = NULL;
 		index = 0;
@@ -172,10 +173,7 @@ public:
 	asf_multiple_payloads* payloads;
 	
 	gint32 index; // The index of this packet. -1 if not known.
-	gint64 position; // The position of this packet. -1 if not known.
-	
-	ObjectTracker ot;// ("ASFPacket");
-		
+	gint64 position; // The position of this packet. -1 if not known.		
 };
 
 struct ASFFrameReaderData {
@@ -183,8 +181,7 @@ struct ASFFrameReaderData {
 	ASFFrameReaderData* prev;
 	ASFFrameReaderData* next;
 	
-	ObjectTracker ot;
-	ASFFrameReaderData (asf_single_payload* load) : ot ("ASFFrameReaderData")
+	ASFFrameReaderData (asf_single_payload* load) 
 	{
 		payload = load;
 		prev = NULL;
@@ -206,7 +203,7 @@ public:
 	bool CanSeek () { return true; }
 	
 	// Seek to the frame with the provided pts 
-	bool Seek (gint32 stream_number, guint64 pts);
+	bool Seek (gint32 stream_number, gint64 pts);
 	
 	// Advance to the next frame
 	bool Advance ();
@@ -221,8 +218,6 @@ public:
 	gint32 StreamNumber () { return stream_number; }
 	
 private:
-	ObjectTracker ot;
-
 	ASFParser* parser;
 	
 	gint32 current_packet_index;
@@ -408,8 +403,10 @@ public:
 	asf_header* header;
 	asf_data* data;
 	asf_file_properties* file_properties;
-	
+	asf_header_extension* header_extension;
 	asf_stream_properties* stream_properties [127];
+	asf_marker* marker;
+	asf_script_command* script_command;
 	
 	guint64 data_offset; // location of data object
 	guint64 packet_offset; // location of the beginning of the first packet

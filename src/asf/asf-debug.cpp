@@ -8,7 +8,11 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#include "debug.h"
+#include "asf-debug.h"
+
+#if DEBUG
 
 GHashTable* ObjectTracker::current_ids = NULL;
 GHashTable* ObjectTracker::current_objects = NULL;
+
+#endif

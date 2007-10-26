@@ -10,6 +10,24 @@
 
 #include "asf.h"
 
+char*
+wchar_to_utf8 (void* unicode, guint32 length)
+{
+	char* result = NULL;
+	
+	if (length <= 0)
+		return NULL;
+	
+	GError* err = NULL;
+	result = g_utf16_to_utf8 ((const gunichar2*) unicode, length, NULL, NULL, &err);
+	if (result == NULL) {
+		ASF_LOG ("Could not convert to utf8from utf16: %s\n", err->message);
+		g_error_free (err);
+		err = NULL;
+	}
+	
+	return result;
+}
 
 bool
 asf_header_validate (const asf_header* header, ASFParser* parser)
@@ -30,7 +48,7 @@ asf_header_validate (const asf_header* header, ASFParser* parser)
 		parser->AddError (g_strdup_printf ("Invalid reserved2 value (expected 0x02, got: %x).\n", header->reserved2));
 		return false;
 	}
-		
+	
 	return true;
 }
 
@@ -45,6 +63,21 @@ asf_file_properties_validate (const asf_file_properties* obj, ASFParser* parser)
 	// SPEC: Valid values are at least 104 bytes
 	if (obj->size < 104) {
 		parser->AddError (g_strdup_printf ("Invalid size (expected >= 104, got %llu).\n", obj->size));
+		return false;
+	}
+
+	// SPEC: the values for the Minimum Data Packet Size and Maximum Data Packet Size 
+	// fields shall be set to the same value, and this value should be set to the packet size, 
+	// even when the Broadcast Flag in the Flags field is set to 1.
+	if (obj->min_packet_size != obj->max_packet_size) {
+		// This is not logical at all, but it's what the spec says.
+		// besides, our code depends on it (it makes a few minor things easier).
+		parser->AddError (g_strdup_printf ("The min packet size (%i) is different from the max packet size (%i).\n", obj->min_packet_size, obj->max_packet_size));
+		return false;
+	}
+
+	if (obj->size > parser->header->size) {
+		parser->AddError (g_strdup_printf ("The size of the file property object (%llu) is bigger than the sizeof the entire header itself (%llu).\n", obj->size, parser->header->size)); 
 		return false;
 	}
 
@@ -213,7 +246,7 @@ bool asf_data_validate (const asf_data* obj, ASFParser* parser)
 	}
 	
 	if (!(asf_guid_compare (&obj->file_id, &parser->GetFileProperties ()->file_id))) {
-		parser->AddError ("Data file id and header's file properties file id doesn't match.");
+		parser->AddError ("Data file id and header's file properties file id don't match.");
 		return false;
 	}
 	
@@ -417,7 +450,7 @@ asf_single_payload_dump (asf_single_payload* obj)
 	ASF_DUMP ("\treplicated_data = %p\n", obj->replicated_data);
 	ASF_DUMP ("\tpayload_data_length = %u\n", (asf_dword) obj->payload_data_length);
 	ASF_DUMP ("\tpayload_data = %p\n", obj->payload_data);
-	ASF_DUMP ("\tget_presentation_time = %i\n", obj->get_presentation_time ());
+	ASF_DUMP ("\tget_presentation_time = %lld\n", obj->get_presentation_time ());
 }
 
 bool
@@ -468,5 +501,66 @@ void asf_multiple_payloads_dump (asf_multiple_payloads* obj)
 	}
 }
 
+void asf_marker_entry_dump (const asf_marker_entry* obj)
+{
+	asf_marker_entry* o = (asf_marker_entry*) obj;
+	
+	ASF_DUMP ("\tASF_MARKER_ENTRY\n");
+	ASF_DUMP ("\t\toffset = %llu\n", obj->offset);
+	ASF_DUMP ("\t\tpts = %llu\n", obj->pts);
+	ASF_DUMP ("\t\tentry_length = %i\n", (asf_dword) obj->entry_length);
+	ASF_DUMP ("\t\tsend_time = %i\n", obj->send_time);
+	ASF_DUMP ("\t\tflags = %i\n", obj->flags);
+	ASF_DUMP ("\t\tmarker_description_length = %i\n", o->marker_description_length);
+	ASF_DUMP ("\t\tmarker_description = %s\n", o->get_marker_description ());
+}
 
+void asf_marker_dump (const asf_marker* obj)
+{
+	asf_marker* o = (asf_marker*) obj;
+	
+	ASF_DUMP ("ASF_MARKER\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
+	ASF_DUMP ("\tmarker_count = %u\n", (asf_dword) obj->marker_count);
+	ASF_DUMP ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
+	ASF_DUMP ("\tname_length = %u\n", (asf_dword) obj->name_length);
+	ASF_DUMP ("\tname = %s\n", o->get_name ());
+	
+	for (guint32 i = 0; i < obj->marker_count; i++) {
+		asf_marker_entry_dump (o->get_entry (i));
+	}
+}
+
+void asf_script_command_dump (const asf_script_command* obj)
+{
+	asf_script_command* o = (asf_script_command*) obj;
+	
+	ASF_DUMP ("ASF_SCRIPT_COMMAND\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\treserved = %s\n", asf_guid_tostring (&obj->reserved));
+	ASF_DUMP ("\tcommand_count = %u\n", (asf_dword) obj->command_count);
+	ASF_DUMP ("\tcommand_type_count = %u\n", (asf_dword) obj->command_type_count);
+	
+	char** command_types = NULL;
+	asf_script_command_entry** entries = NULL;
+	
+	entries = o->get_commands (&command_types);
+	
+	for (guint32 i = 0; i < obj->command_type_count; i++) {
+		ASF_DUMP ("\tASF_SCRIPT_COMMAND_TYPE #%i\n", i);
+		ASF_DUMP ("\t\tname = %s\n", command_types [i]);
+	}
+	
+	for (guint32 i = 0; i < obj->command_count; i++) {
+		ASF_DUMP ("\tASF_SCRIPT_COMMAND #%i\n", i);
+		asf_script_command_entry* entry = entries [i];
+		ASF_DUMP ("\t\tpts = %i\n", entry->pts);
+		ASF_DUMP ("\t\ttype_index = %i\n", (asf_dword) entry->type_index);
+		ASF_DUMP ("\t\tname_length = %i\n", (asf_dword) entry->name_length);
+		ASF_DUMP ("\t\tname = %s\n", entry->get_name ());
+	}
+}
 
