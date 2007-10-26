@@ -225,7 +225,8 @@ struct MoonlightContentObject : MoonlightObject {
 	MoonlightContentObject (NPP instance)
 	  : MoonlightObject (instance),
 	    resizeProxy (NULL), 
-	    fullScreenChangeProxy (NULL)
+	    fullScreenChangeProxy (NULL),
+	    errorProxy (NULL)
 	{
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
