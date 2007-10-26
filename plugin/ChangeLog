@@ -1,5 +1,9 @@
 2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* downloader.cpp: Ref/unref the downloader.
+
+2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin-class.h: NULL-initialize a variable, fixing a crash.
 
 2007-10-25  Jackson Harper  <jackson@ximian.com>

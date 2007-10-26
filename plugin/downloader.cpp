@@ -30,14 +30,17 @@ public:
 		this->npp = NULL;
 		this->stream = NULL;
 		
-		//base_ref (dl);
+		base_ref (dl);
 	}
 
 	~PluginDownloader ()
 	{
 		g_free (verb);
+		verb = NULL;
 		g_free (uri);
-		//base_unref (dl);
+		uri = NULL;
+		base_unref (dl);
+		dl = NULL;
 	}
 
 	Downloader *dl;
