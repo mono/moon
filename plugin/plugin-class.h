@@ -48,6 +48,7 @@ class EventListenerProxy : public List::Node {
 	static void default_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void keyboard_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
+	static void timeline_marker_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure);
 };
 
@@ -186,6 +187,29 @@ struct MoonlightMouseEventArgsObject : MoonlightObject {
 	int state;
 	double x;
 	double y;
+};
+
+/*** MoonlightMarkerReachedEventArgsClass ******************************************/
+struct MoonlightMarkerReachedEventArgsType : MoonlightObjectType {
+	MoonlightMarkerReachedEventArgsType ();
+};
+
+extern MoonlightMarkerReachedEventArgsType* MoonlightMarkerReachedEventArgsClass;
+
+struct MoonlightMarkerReachedEventArgsObject : MoonlightObject {
+	MoonlightMarkerReachedEventArgsObject (NPP instance)
+		: MoonlightObject (instance), marker (NULL) {}
+		
+	virtual void Dispose ();
+	void SetMarker (TimelineMarker* tm)
+	{
+		if (marker)
+			marker->unref ();
+		marker = tm;
+		if (marker)
+			marker->ref ();
+	}
+	TimelineMarker* marker;
 };
 
 /*** MoonlightKeyboardEventArgsClass  **************************************************************/

@@ -248,8 +248,20 @@ EventListenerProxy::get_wrapper_for_event_name (const char *event_name)
 		return mouse_event_wrapper;
 	} else if (!g_strcasecmp ("keydown", event_name) || !g_strcasecmp ("keyup", event_name)) {
 		return keyboard_event_wrapper;
+	} else if (!g_strcasecmp ("markerreached", event_name)) {
+		return timeline_marker_wrapper;
 	} else
 		return default_wrapper;
+}
+
+void
+EventListenerProxy::timeline_marker_wrapper (NPP instance, gpointer calldata, NPVariant *value)
+{
+	TimelineMarker* marker = (TimelineMarker*) calldata;
+	MoonlightMarkerReachedEventArgsObject* obj = (MoonlightMarkerReachedEventArgsObject*) NPN_CreateObject (instance, MoonlightMarkerReachedEventArgsClass);
+	obj->SetMarker (marker);
+	
+	OBJECT_TO_NPVARIANT (obj, *value);
 }
 
 void
@@ -789,6 +801,74 @@ MoonlightMouseEventArgsType::MoonlightMouseEventArgsType ()
 
 MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
 
+
+/*** MoonlightMarkerReachedEventArgsClass  **************************************************************/
+
+static NPObject*
+marker_reached_event_allocate (NPP instance, NPClass *)
+{
+	return new MoonlightMarkerReachedEventArgsObject (instance);
+}
+
+void
+MoonlightMarkerReachedEventArgsObject::Dispose ()
+{
+	MoonlightObject::Dispose ();
+	
+	if (marker) {
+		marker->unref ();
+		marker = NULL;
+	}
+}
+
+static bool
+marker_reached_event_has_property (NPObject *npobj, NPIdentifier name)
+{
+	return name_matches (name, "marker");
+}
+
+static bool
+marker_reached_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+{
+	MoonlightMarkerReachedEventArgsObject* obj = (MoonlightMarkerReachedEventArgsObject*) npobj;
+	
+	if (name_matches (name, "marker")) {
+		DependencyObject *marker = obj ? obj->marker : NULL;
+		MoonlightEventObjectObject *meoo = EventObjectCreateWrapper (obj->instance, marker);
+		OBJECT_TO_NPVARIANT (meoo, *result);
+		return true;
+	} else {
+		return false;
+	}
+}
+static bool
+marker_reached_event_has_method (NPObject *npobj, NPIdentifier name)
+{
+	return false;
+}
+
+static bool
+marker_reached_event_invoke (NPObject *npobj, NPIdentifier name,
+		    const NPVariant *args, uint32_t argCount,
+		    NPVariant *result)
+{
+	return false;
+}
+
+
+MoonlightMarkerReachedEventArgsType::MoonlightMarkerReachedEventArgsType ()
+{
+	allocate = marker_reached_event_allocate;
+
+	hasProperty = marker_reached_event_has_property;
+	getProperty = marker_reached_event_get_property;
+
+	hasMethod = marker_reached_event_has_method;
+	invoke = marker_reached_event_invoke;
+}
+
+MoonlightMarkerReachedEventArgsType* MoonlightMarkerReachedEventArgsClass;
+
 /*** MoonlightKeyboardEventArgsClass  **************************************************************/
 
 static NPObject*
@@ -886,7 +966,7 @@ _deallocate (NPObject *npobj)
 	MoonlightObject* obj = (MoonlightObject*) npobj;
 	if (!obj->disposed)
 		obj->Dispose ();	
-	delete (MoonlightObject*)npobj;
+	delete obj;
 }
 
 MoonlightObject::~MoonlightObject ()
@@ -3385,6 +3465,7 @@ plugin_init_classes ()
 	MoonlightDurationClass = new MoonlightDurationType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 	MoonlightEventListenerClass = new MoonlightEventListenerType ();
+	MoonlightMarkerReachedEventArgsClass = new MoonlightMarkerReachedEventArgsType ();
 }
 
 void
@@ -3414,4 +3495,5 @@ plugin_destroy_classes ()
 	delete MoonlightDurationClass; MoonlightDurationClass = NULL;
 	delete MoonlightTimeSpanClass; MoonlightTimeSpanClass = NULL;
 	delete MoonlightEventListenerClass; MoonlightEventListenerClass = NULL;
+	delete MoonlightMarkerReachedEventArgsClass; MoonlightMarkerReachedEventArgsClass = NULL;
 }
