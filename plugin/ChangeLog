@@ -1,3 +1,7 @@
+2007-10-27  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Make onError work.
+
 2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp, plugin-class.h: Implement emission of MarkerReached

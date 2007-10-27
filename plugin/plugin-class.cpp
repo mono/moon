@@ -1382,6 +1382,7 @@ moonlight_content_properties[] = {
 	"fullScreen",   // read write
 	"onResize",
 	"onFullScreenChange",
+	"onError",
 	"root"
 };
 
@@ -1528,7 +1529,7 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 		}
 
 		if (!NPVARIANT_IS_NULL (*value)) {
-			obj->errorProxy = new EventListenerProxy (obj->instance, "OnError", value);
+			obj->errorProxy = new EventListenerProxy (obj->instance, "Error", value);
 			obj->errorProxy->AddHandler (plugin->surface);
 		}
 
