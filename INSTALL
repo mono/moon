@@ -1,0 +1,83 @@
+Moonlight: Core Support
+=======================
+
+	To build Moonlight, you need to install a few dependencies for
+	the basic runtime engine (this is needed to support both API
+	profiles: Silverlight 1.0 and 1.1).
+
+   * Dependencies:
+		
+	You must install ffmpeg, from:
+
+		svn://svn.mplayerhq.hu/ffmpeg/trunk
+		Revision: 9167 is known to work
+
+		svn co -r 9167 svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg
+
+		Then configure/make/make install
+
+	You also need the alsa-devel package for Audio support.
+
+	To build a mozilla plugin installer (XPI) configure with
+	--enable-user-plugin and build as above.  This modifies the libraries
+	to open the libraries it needs from ~/.mozilla/plugins and builds an
+	unsigned .xpi file which you may use to install the plugin in your
+	browser.
+
+	To install the plugin open the plugin/novell-moonlight.xpi with	your
+	mozilla-based browser and follow the prompts.
+
+	Currently this only works properly when moonlight is built without
+	mono runtime (Silverlight 1.1) support (--without-mono-runtime).
+
+Configuration Options
+=====================
+
+	--enable-user-plugin
+
+		The plugin can be built in two ways: one designed to 
+		go into the centralized location for all plugins
+		(relative to a prefix directory) or another that works
+		from the user's plugin directory (~/.mozilla/plugins/)
+
+		If you use this option, the makefiles will also build
+		a Mozilla XPI file that can be used to install the plugin
+		without restarting the browser.
+
+	--with-pango-support
+
+		By default Moonlight uses FreeType as its rendering engine
+		and does not try to render left-to-right languages or do 
+		any advanced glyph rendering.
+
+		Enable pango support to get these features.   
+
+	--with-mono-runtime=yes,no
+
+		By default Moonlight will build the 1.1 profile of Silverlight
+		and will try to link with Mono to provide the required managed
+		support.
+
+		Use this flag to disable support for Mono from your plugin build.
+
+
+Moonlight: Silverlight 1.1 API support
+======================================
+
+	If you want to support the Silverlight 1.1 API (managed
+	support, this includes the Mono runtime and .NET APIs to run
+	apps) you will need in addition to:
+
+		* Install Mono from SVN (you need both the mono and
+	  	  mcs modules).
+
+		  Use the --with-moonlight=yes option to configure
+
+		* You will need to patch your Mono runtime directory
+		  with the following patch:
+
+		http://primates.ximian.com/~lupus/mono-delegate-appdomain.diff
+
+		* Install the "olive" module from SVN, and use the
+		  --with-moonlight=yes option to configure.
+			
