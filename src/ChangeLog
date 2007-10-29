@@ -1,5 +1,9 @@
 2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp, media.h: Fix signedness mismatch warning.
+
+2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.h: Added asf_player field.
 
 2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 

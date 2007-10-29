@@ -284,7 +284,7 @@ cleanup:
 }
 
 void
-MediaElement::CheckMarkers (guint64 from, guint64 to)
+MediaElement::CheckMarkers (gint64 from, gint64 to)
 {
 	//printf ("MediaElement::CheckMarkers (%llu, %llu)\n", from, to);
 	

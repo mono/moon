@@ -194,7 +194,7 @@ class MediaElement : public MediaBase {
 	static void size_notify (int64_t size, gpointer data);
 	
 	void ReadASFMarkers ();
-	void CheckMarkers (guint64 from, guint64 to);
+	void CheckMarkers (gint64 from, gint64 to);
 	
 public:
 	static DependencyProperty *AttributesProperty;
