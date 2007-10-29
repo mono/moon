@@ -116,6 +116,7 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 				stream->codec->block_align = wave->block_alignment;
 				stream->codec->bits_per_sample = wave->bits_per_sample;
 				stream->codec->extradata_size = data_size > wave->codec_specific_data_size ? wave->codec_specific_data_size : data_size;
+				stream->codec->extradata = NULL;
 				if (wave_ex != NULL) {
 					stream->codec->bits_per_sample = wave_ex->Samples.valid_bits_per_sample;
 					stream->codec->extradata_size -= (sizeof (WAVEFORMATEXTENSIBLE) - sizeof (WAVEFORMATEX));
@@ -156,14 +157,14 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 					stream->codec->bits_per_sample = bmp->bits_per_pixel;
 					stream->codec->codec_tag = bmp->compression_id;
 					stream->codec->extradata_size = bmp->get_extra_data_size ();
-					stream->codec->extradata = (uint8_t*) bmp->get_extra_data ();
+					if (stream->codec->extradata_size > 0) {
+						stream->codec->extradata = (uint8_t*) av_mallocz (stream->codec->extradata_size + FF_INPUT_BUFFER_PADDING_SIZE);
+						memcpy (stream->codec->extradata, bmp->get_extra_data (), stream->codec->extradata_size);
+					} else {
+						stream->codec->extradata = NULL;
+					}
 					
-					int tag = stream->codec->codec_tag;
-					char a = *(char*) &tag;
-					char b = *(1 + (char*) &tag);
-					char c = *(2 + (char*) &tag);
-					char d = *(3 + (char*) &tag);
-					FFMPEG_LOG ("Video codec tag: %i (%c %c %c %c).\n", tag, a, b, c, d);
+					FFMPEG_LOG ("Video codec tag: %i (%c %c %c %c).\n", stream->codec->codec_tag, *(char*) &stream->codec->codec_tag, *(1 + (char*) &stream->codec->codec_tag), *(2 + (char*) &stream->codec->codec_tag), *(3 + (char*) &stream->codec->codec_tag));
 					asf_video_stream_data_dump (video_data);
 					BITMAPINFOHEADER_dump (bmp);
 					
@@ -178,7 +179,7 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 					case MKTAG('W', 'M', 'V', 'A'):
 						stream->codec->codec_id = CODEC_ID_VC1; break;
 					default:
-						FFMPEG_LOG ("Unknown video codec: %i (%c%c%c%c).\n", tag, a, b, c, d);
+						FFMPEG_LOG ("Unknown video codec: %i (%c%c%c%c).\n", stream->codec->codec_tag, *(char*) &stream->codec->codec_tag, *(1 + (char*) &stream->codec->codec_tag), *(2 + (char*) &stream->codec->codec_tag), *(3 + (char*) &stream->codec->codec_tag));
 						goto fail;
 					}
 				}
@@ -204,7 +205,6 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	
 	MoonASFContext *context = (MoonASFContext*) s->priv_data;
 	FFMPEGParser* parser = context->parser;
-	FFMPEGPacket* packet = NULL;
 	ASFFrameReader* reader = parser->reader;
 	
 	if (!reader->Advance ())
@@ -334,7 +334,7 @@ int ffmpeg_asf_read_close(AVFormatContext *s)
 	
 	delete parser;
 	
-	return -1;
+	return 0;
 }
 
 int ffmpeg_asf_read_seek(AVFormatContext *s, int stream_index, int64_t pts, int flags)
@@ -359,14 +359,13 @@ int64_t ffmpeg_asf_read_pts(AVFormatContext *s, int ffmpeg_stream_index, int64_t
 	
 	int64_t packet_index = 0;
 	int64_t packet_offset = 0;
-	int64_t pts = 0;
 	int64_t pos = *start_pos;
 	asf_file_properties* file_properties = parser->GetFileProperties ();
 	
 	pos_limit = parser->packet_offset_end;
 	
 	// Find the packet at the start position
-	if (pos < parser->data_offset) {
+	if (pos < (int64_t) parser->data_offset) {
 		FFMPEG_LOG ("ffmpeg_asf_read_pts: start position (%lld) is before start of data (%lld).\n", pos, parser->data_offset);
 		return AV_NOPTS_VALUE;
 	}
@@ -455,7 +454,7 @@ void AVFormatContext_dump (AVFormatContext* c)
 	FFMPEG_DUMP ("\t"  "pb "  "= "  "%p"  "\n", &c->pb); //    ByteIOContext pb;
 	FFMPEG_DUMP ("\t"  "nb_streams "  "= "  "%u"  "\n", c->nb_streams); //    unsigned int nb_streams;
 	FFMPEG_DUMP ("\t"  "streams "  "= "  "%p"  "\n", c->streams); //    AVStream *streams[MAX_STREAMS];
-	for (int i = 0; i < c->nb_streams; i++)
+	for (guint32 i = 0; i < c->nb_streams; i++)
 		AVStream_dump (c->streams [i], 2);
 	FFMPEG_DUMP ("\t"  "filename "  "= "  "%s"  "\n", c->filename); //    char filename[1024]; /**< input or output filename */
 //    /* stream info */

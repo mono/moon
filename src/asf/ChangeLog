@@ -1,3 +1,8 @@
+2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-ffmpeg.cpp: Use ffmpeg's memory allocator when copying bytes into
+	  buffers freed by ffmpeg. Fix a couple of warnings.
+
 2007-10-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.h, asf-debug.h, asf-generated.cpp, asf.mdp, asf.cpp,
