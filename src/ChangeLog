@@ -1,5 +1,9 @@
 2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.h: Added asf_player field.
+
+2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am: Add files in asf/.
 	* media.cpp, media.h: Read ASF markers from the file. Save the position when
 	  advancing frames. Use the difference between the last position and the

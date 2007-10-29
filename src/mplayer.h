@@ -16,6 +16,8 @@
 #include <stdint.h>
 #include <pthread.h>
 
+#include "asf/asf.h"
+
 struct AVFormatContext;
 struct Audio;
 struct Video;
@@ -23,6 +25,7 @@ struct Video;
 class MediaPlayer {
 public:
 	char *uri;
+	ASFParser* asf_parser;
 	
 	pthread_mutex_t pause_mutex;
 	pthread_cond_t pause_cond;
