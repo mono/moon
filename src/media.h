@@ -174,6 +174,7 @@ class MediaElement : public MediaBase {
 	bool updating;
 	bool loaded;
 	bool play_pending;
+	int64_t previous_position;
 	
 	virtual void OnLoaded ();
 	
@@ -191,6 +192,9 @@ class MediaElement : public MediaBase {
 	static void data_write (guchar *data, gsize n, gsize nn, void *closure);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
+	
+	void ReadASFMarkers ();
+	void CheckMarkers (guint64 from, guint64 to);
 	
 public:
 	static DependencyProperty *AttributesProperty;

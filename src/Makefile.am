@@ -10,6 +10,12 @@ INCLUDES = $(MOON_CFLAGS) -Wall
 libmooninclude_headers = \
 	animation.h	\
 	array.h		\
+	asf/asf.h		\
+	asf/asf-ffmpeg.h	\
+	asf/asf-generated.h	\
+	asf/asf-guids.h	\
+	asf/asf-structures.h	\
+	asf/asf-debug.h	\
 	brush.h		\
 	canvas.h	\
 	clock.h		\
@@ -56,6 +62,12 @@ libmoon_la_SOURCES = 	\
 	$(libmoon_la_headers) \
 	animation.cpp	\
 	array.cpp	\
+	asf/asf.cpp		\
+	asf/asf-ffmpeg.cpp	\
+	asf/asf-generated.cpp	\
+	asf/asf-guids.cpp	\
+	asf/asf-structures.cpp	\
+	asf/asf-debug.cpp	\
 	brush.cpp	\
 	canvas.cpp	\
 	color.cpp	\
@@ -123,3 +135,4 @@ debug:
 
 valgrind:
 	LD_LIBRARY_PATH=.libs valgrind .libs/demo
+

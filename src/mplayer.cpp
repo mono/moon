@@ -35,6 +35,7 @@ G_END_DECLS
 #include "clock.h"
 #include "mplayer.h"
 //#include "stream.h"
+#include "asf/asf-ffmpeg.h"
 #include "runtime.h"
 #include "list.h"
 
@@ -226,6 +227,7 @@ MediaPlayer::MediaPlayer ()
 	ffmpeg_init ();
 	
 	uri = NULL;
+	asf_parser = NULL;
 	
 	pthread_mutex_init (&pause_mutex, NULL);
 	pthread_cond_init (&pause_cond, NULL);
@@ -284,11 +286,17 @@ MediaPlayer::Open (const char *uri)
 	g_free (this->uri);
 	this->uri = NULL;
 	
+	// printf ("MediaPlayer::Open ('%s'): opening '%s'\n", uri_in, uri);
+	
 	if (uri == NULL || *uri == '\0')
 		return false;
 	
-	if ((rv = av_open_input_file (&av_ctx, uri, NULL, 0, NULL)) < 0) {
-		fprintf (stderr, "cannot open uri `%s': %s\n", uri, strerror (AVERROR (rv)));
+	rv = av_open_input_file (&av_ctx, uri, NULL, 0, NULL);
+
+	asf_parser = ffmpeg_asf_get_last_parser ();
+
+	if (rv < 0) {
+		fprintf (stderr, "MediaPlayer::Open ('%s'): cannot open uri: %s (%i)\n", uri, strerror (AVERROR (rv)), rv);
 		av_ctx = NULL;
 		return false;
 	}
@@ -317,10 +325,16 @@ MediaPlayer::Open (const char *uri)
 			if (audio->stream_id != -1)
 				break;
 			
-			if (!(audio->codec = avcodec_find_decoder (encoding->codec_id)))
+			if (!(audio->codec = avcodec_find_decoder (encoding->codec_id))) {
+				printf ("MediaPlayer::Open (): could not find audio decoder for codec id: %i\n", encoding->codec_id);
 				break;
+			}
 			
-			avcodec_open (stream->codec, audio->codec);
+			if (avcodec_open (stream->codec, audio->codec) != 0) {
+				printf ("MediaPlayer::Open (): could not open audio decoder for codec id: %i\n", encoding->codec_id);
+				break;
+			}
+
 			audio->stream = stream;
 			audio->stream_id = i;
 			
@@ -335,10 +349,16 @@ MediaPlayer::Open (const char *uri)
 			if (video->stream_id != -1)
 				break;
 			
-			if (!(video->codec = avcodec_find_decoder (encoding->codec_id)))
+			if (!(video->codec = avcodec_find_decoder (encoding->codec_id))) {
+				printf ("MediaPlayer::Open (): could not find video decoder for codec id: %i\n", encoding->codec_id);
 				break;
+			}
 			
-			avcodec_open (stream->codec, video->codec);
+			if (avcodec_open (stream->codec, video->codec) != 0) {
+				printf ("MediaPlayer::Open (): could not open video decoder for codec id: %i\n", encoding->codec_id);
+				break;
+			}
+
 			video->stream = stream;
 			video->stream_id = i;
 			
@@ -367,11 +387,14 @@ MediaPlayer::Open (const char *uri)
 			
 			// usec -> pts conversion
 			video->usec_to_pts = (double) encoding->time_base.num / (double) encoding->time_base.den;
+			//printf ("video initial_pts = %lld\n", video->initial_pts);
 			break;
 		default:
 			break;
 		}
 	}
+	
+	//AVFormatContext_dump (av_ctx);
 	
 	// Prepare audio playback
 	if ((moonlight_flags & RUNTIME_INIT_AUDIO_DISABLE) == 0 && audio->pcm == NULL && audio->stream_id != -1) {
@@ -966,6 +989,9 @@ ffmpeg_init (void)
 		return;
 	
 	avcodec_init ();
+	
+	av_register_input_format (&ffmpeg_asf_demuxer);
+	
 	av_register_all ();
 	avcodec_register_all ();
 	//register_protocol (&stream_protocol);
