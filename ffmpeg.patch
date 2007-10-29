@@ -1,0 +1,133 @@
+diff -Naur ffmpeg-clean/configure moon-ffmpeg-clean/configure
+--- ffmpeg-clean/configure	2007-05-27 10:31:02.000000000 -0600
++++ moon-ffmpeg-clean/configure	2007-10-29 09:35:17.000000000 -0600
+@@ -818,11 +818,11 @@
+ 
+ # non-library system interfaces
+ audio_beos="default"
+-audio_oss="yes"
+-bktr="yes"
+-dv1394="yes"
+-v4l2="yes"
+-v4l="yes"
++audio_oss="no"
++bktr="no"
++dv1394="no"
++v4l2="no"
++v4l="no"
+ 
+ # libraries
+ avisynth="no"
+@@ -847,28 +847,28 @@
+ x11grab="no"
+ x264="no"
+ xvid="no"
+-zlib="yes"
++zlib="no"
+ 
+ # configurable options
+ debug="yes"
+ dostrip="yes"
+ extra_warnings="no"
+-ffmpeg="yes"
+-ffplay="yes"
+-ffserver="yes"
++ffmpeg="no"
++ffplay="no"
++ffserver="no"
+ gpl="no"
+ gprof="no"
+ ipv6="yes"
+-shared="no"
+-static="yes"
++shared="yes"
++static="no"
+ memalign_hack="no"
+-mpegaudio_hp="yes"
+-network="yes"
++mpegaudio_hp="no"
++network="no"
+ optimize="yes"
+ pp="no"
+-protocols="yes"
+-swscaler="no"
+-vhook="default"
++protocols="no"
++swscaler="yes"
++vhook="no"
+ 
+ # threading
+ beosthreads="no"
+@@ -2142,28 +2142,28 @@
+ Version: $version
+ Requires: $requires
+ Conflicts:
+-Libs: \${libdir}/${LIBPREF}${shortname}${LIBSUF} $libs
++Libs: -L\${libdir} $libs
+ Cflags: -I\${includedir}
+ EOF
+ }
+ 
+ pkgconfig_generate libavutil "FFmpeg utility library" "$lavu_version" -lavutil "" ffmpeg
+-pkgconfig_generate_uninstalled libavutil "FFmpeg utility library" "$lavu_version"
++pkgconfig_generate_uninstalled libavutil "FFmpeg utility library" "$lavu_version" -lavutil
+ 
+ pkgconfig_generate libavcodec "FFmpeg codec library" "$lavc_version" "-lavcodec $extralibs" "$pkg_requires libavutil = $lavu_version" ffmpeg
+-pkgconfig_generate_uninstalled libavcodec "FFmpeg codec library" "$lavc_version" "$extralibs" "$pkg_requires libavutil = $lavu_version"
++pkgconfig_generate_uninstalled libavcodec "FFmpeg codec library" "$lavc_version" "-lavcodec $extralibs" "$pkg_requires libavutil = $lavu_version"
+ 
+ pkgconfig_generate libavformat "FFmpeg container format library" "$lavf_version" "-lavformat $extralibs" "$pkg_requires libavcodec = $lavc_version" ffmpeg
+-pkgconfig_generate_uninstalled libavformat "FFmpeg container format library" "$lavf_version" "$extralibs" "$pkg_requires libavcodec = $lavc_version"
++pkgconfig_generate_uninstalled libavformat "FFmpeg container format library" "$lavf_version" "-lavformat $extralibs" "$pkg_requires libavcodec = $lavc_version"
+ 
+ if enabled pp; then
+   pkgconfig_generate libpostproc "FFmpeg post processing library" "$pp_version" -lpostproc "" postproc
+-  pkgconfig_generate_uninstalled libpostproc "FFmpeg post processing library" "$pp_version"
++  pkgconfig_generate_uninstalled libpostproc "FFmpeg post processing library" "$pp_version" -lpostproc
+ fi
+ 
+ if enabled swscaler; then
+   pkgconfig_generate libswscale "FFmpeg image rescaling library" "$sws_version" -lswscale "libavutil = $lavu_version" ffmpeg
+-  pkgconfig_generate_uninstalled libswscale "FFmpeg image rescaling library" "$sws_version" "" "libavutil = $lavu_version"
++  pkgconfig_generate_uninstalled libswscale "FFmpeg image rescaling library" "$sws_version" "-lswscale" "libavutil = $lavu_version"
+ else
+   pkgconfig_generate libswscale "FFmpeg image rescaling library" "$sws_version" "" "$pkg_requires libavcodec = $lavc_version" ffmpeg
+   pkgconfig_generate_uninstalled libswscale "FFmpeg image rescaling library" "$sws_version" "" "$pkg_requires libavcodec = $lavc_version"
+diff -Naur ffmpeg-clean/libavcodec/Makefile moon-ffmpeg-clean/libavcodec/Makefile
+--- ffmpeg-clean/libavcodec/Makefile	2007-05-29 09:01:33.000000000 -0600
++++ moon-ffmpeg-clean/libavcodec/Makefile	2007-10-29 09:35:17.000000000 -0600
+@@ -407,7 +407,7 @@
+                                           bfin/idct_bfin.o   \
+                                           bfin/fdct_bfin.o   \
+ 
+-EXTRALIBS := -L$(BUILD_ROOT)/libavutil -lavutil$(BUILDSUF) $(EXTRALIBS)
++EXTRALIBS := -L$(BUILD_ROOT)/libavutil $(EXTRALIBS)
+ 
+ NAME=avcodec
+ LIBVERSION=$(LAVCVERSION)
+diff -Naur ffmpeg-clean/libavformat/Makefile moon-ffmpeg-clean/libavformat/Makefile
+--- ffmpeg-clean/libavformat/Makefile	2007-05-30 03:44:16.000000000 -0600
++++ moon-ffmpeg-clean/libavformat/Makefile	2007-10-29 09:35:17.000000000 -0600
+@@ -155,8 +155,8 @@
+ 
+ OBJS+= framehook.o
+ 
+-EXTRALIBS := -L$(BUILD_ROOT)/libavutil -lavutil$(BUILDSUF) \
+-             -lavcodec$(BUILDSUF) -L$(BUILD_ROOT)/libavcodec $(EXTRALIBS)
++EXTRALIBS := -L$(BUILD_ROOT)/libavutil \
++             -L$(BUILD_ROOT)/libavcodec $(EXTRALIBS)
+ 
+ CPPOBJS-$(CONFIG_AUDIO_BEOS)             += beosaudio.o
+ 
+diff -Naur ffmpeg-clean/libswscale/Makefile moon-ffmpeg-clean/libswscale/Makefile
+--- ffmpeg-clean/libswscale/Makefile	2007-05-13 13:22:32.000000000 -0600
++++ moon-ffmpeg-clean/libswscale/Makefile	2007-10-29 09:35:17.000000000 -0600
+@@ -5,7 +5,7 @@
+ LIBVERSION=$(SWSVERSION)
+ LIBMAJOR=$(SWSMAJOR)
+ 
+-EXTRALIBS := -L$(BUILD_ROOT)/libavutil -lavutil$(BUILDSUF) $(EXTRALIBS)
++EXTRALIBS := -L$(BUILD_ROOT)/libavutil $(EXTRALIBS)
+ 
+ OBJS= swscale.o rgb2rgb.o
+ 

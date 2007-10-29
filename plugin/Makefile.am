@@ -53,7 +53,14 @@ libmoonplugin_la_SOURCES = \
 	downloader.cpp
 
 if PLUGIN_INSTALL
-novell_moonlight_xpi_CONTENTS = $(srcdir)/install.js $(builddir)/.libs/libmoonloader.so $(builddir)/.libs/libmoonplugin.so $(top_builddir)/src/.libs/libmoon.so
+novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.js \
+				$(builddir)/.libs/libmoonloader.so \
+				$(builddir)/.libs/libmoonplugin.so \
+				$(top_builddir)/src/.libs/libmoon.so \
+				$(avutil_libdir)/libavutil.so \
+				$(swscale_libdir)/libswscale.so \
+				$(avcodec_libdir)/libavcodec.so \
+				$(avformat_libdir)/libavformat.so
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
 	-rm -f $@
@@ -74,7 +81,7 @@ untest-plugin:
 	rm -rf ~/.mozilla/plugin/moonlight.exe
 
 EXTRA_DIST = moonlight.cs install.js
-DISTCLEANFILES=moonlight.exe moonlight.exe.mdb
+DISTCLEANFILES=moonlight.exe moonlight.exe.mdb novell-moonlight.xpi
 
 moonlight_CS=  $(srcdir)/moonlight.cs
 

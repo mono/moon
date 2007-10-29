@@ -73,6 +73,17 @@ else
    exit 1
 fi
 
+if test $user_plugin = yes; then
+avutil_libdir="$(pkg-config --variable=libdir libavutil)"
+swscale_libdir="$(pkg-config --variable=libdir libswscale)"
+avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
+avformat_libdir="$(pkg-config --variable=libdir libavformat)"
+AC_SUBST([avutil_libdir])
+AC_SUBST([swscale_libdir])
+AC_SUBST([avcodec_libdir])
+AC_SUBST([avformat_libdir])
+fi
+
 AC_MSG_CHECKING(alsa)
 if pkg-config alsa ; then
    AC_MSG_RESULT(found)
@@ -198,12 +209,18 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
+FFMPEG_PKGS="libswscale libavcodec libavformat"
+
 CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
 CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
 
-MOON_PKGS="gtk+-2.0 pango libavcodec libavformat gthread-2.0 libswscale alsa freetype2 fontconfig $RANDR_PKG"
-MOON_CFLAGS="$CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS)"
+MOON_PKGS="gtk+-2.0 pango gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
+MOON_CFLAGS="$CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS)"
 MOON_LIBS="$CAIRO_LIBS $(pkg-config --libs $MOON_PKGS)"
+
+if test $user_plugin != yes; then
+MOON_LIBS="$MOON_LIBS $(pkg-config --libs $FFMPEG_PKGS)"
+fi
 
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
@@ -214,7 +231,7 @@ PLUGIN_CFLAGS="$PLUGIN_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
 
-MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS`
+MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS`
 AC_SUBST(MOON_PROG_LIBS)
 
 #CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"

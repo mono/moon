@@ -40,15 +40,49 @@ load (void)
 #if PLUGIN_INSTALL
 	plugin_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libmoonplugin.so", NULL);
 
+	// load libavutil
+	char *avutil_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libavutil.so", NULL);
+	void *real_avutil = dlopen (avutil_path, RTLD_NOW | RTLD_GLOBAL);
+	if (real_avutil == NULL){
+		fprintf (stderr, "Unable to load the libavutil %s\n", dlerror ());
+		return FALSE;
+	}
+	g_free (avutil_path);
+
+	// load libswscale
+	char *swscale_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libswscale.so", NULL);
+	void *real_swscale = dlopen (swscale_path, RTLD_NOW | RTLD_GLOBAL);
+	if (real_swscale == NULL){
+		fprintf (stderr, "Unable to load the libswscale %s\n", dlerror ());
+		return FALSE;
+	}
+	g_free (swscale_path);
+
+	// load libavcodec
+	char *avcodec_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libavcodec.so", NULL);
+	void *real_avcodec = dlopen (avcodec_path, RTLD_NOW | RTLD_GLOBAL);
+	if (real_avcodec == NULL){
+		fprintf (stderr, "Unable to load the libavcodec %s\n", dlerror ());
+		return FALSE;
+	}
+	g_free (avcodec_path);
+	
+	// load libavformat
+	char *avformat_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libavformat.so", NULL);
+	void *real_avformat = dlopen (avformat_path, RTLD_NOW | RTLD_GLOBAL);
+	if (real_avformat == NULL){
+		fprintf (stderr, "Unable to load the libavformat %s\n", dlerror ());
+		return FALSE;
+	}
+	g_free (avformat_path);
+
+	// load libmoon
 	char *moon_path = g_strconcat (g_get_home_dir(), "/.mozilla/plugins/moonlight/libmoon.so", NULL);
-
 	void *real_moon = dlopen (moon_path, RTLD_NOW | RTLD_GLOBAL);
-
 	if (real_moon == NULL){
 		fprintf (stderr, "Unable to load the libmoon %s\n", dlerror ());
 		return FALSE;
 	}
-
 	g_free (moon_path);
 #else
 	plugin_path = g_strdup (PLUGIN_DIR "/plugin/libmoonplugin.so");

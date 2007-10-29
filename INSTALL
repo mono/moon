@@ -44,6 +44,12 @@ Configuration Options
 		a Mozilla XPI file that can be used to install the plugin
 		without restarting the browser.
 
+		For this to actually work you'll need to build a local version
+		of ffmpeg with a few changes, mostly to the way it links.
+		A patch is included (ffmpeg.patch) with the neccessary changes.
+		PKG_CONFIG_PATH must include your build of ffmpeg when you
+		configure moonlight.
+
 	--with-pango-support
 
 		By default Moonlight uses FreeType as its rendering engine
