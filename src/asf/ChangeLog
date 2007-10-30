@@ -1,5 +1,8 @@
 2007-10-30  Jeffrey Stedfast  <fejj@novell.com>
 
+	* asf-structures.cpp (FillInAll): max_packet_size is part of
+	file_properties, not header.
+
 	* asf-structures.h: g++ doesn't like it when you jump over
 	locations where variables are declared (especially when the
 	variables are used at the jump destination). Fixed by declaring

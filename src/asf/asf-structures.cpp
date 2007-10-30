@@ -386,7 +386,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 		source->parser->AddError (g_strdup_printf ("Invalid replicated data length: %i", replicated_data_length));
 		return false;
 	} else if (replicated_data_length >= 8) {
-		if (replicated_data_length > parser->header->max_packet_size) {
+		if (replicated_data_length > parser->file_properties->max_packet_size) {
 			parser->AddError ("Data corruption in payload.");
 			return false;
 		}
@@ -430,7 +430,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 	}
 	
 	if (payload_data_length > 0) {
-		if (payload_data_length >= parser->header->max_packet_size) {
+		if (payload_data_length >= parser->file_properties->max_packet_size) {
 			parser->AddError ("Data corruption in payload.");
 			return false;
 		}
