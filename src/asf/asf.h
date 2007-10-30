@@ -284,6 +284,7 @@ public:
 	
 	asf_object* ReadObject (asf_object* guid);
 	const char* GetLastError ();
+	bool VerifyHeaderDataSize (gint32 size); // Verifies that the requested size is a size that can be inside the header. 
 	void AddError (const char* err); // Makes a copy of the provided error string.
 	void AddError (char* err); // Frees the provided error string.
 
@@ -412,8 +413,6 @@ public:
 	guint64 packet_offset; // location of the beginning of the first packet
 	guint64 packet_offset_end; // location of the end of the last packet
 	
-	
-	char* last_error;
 	GSList* errors;
 };
 

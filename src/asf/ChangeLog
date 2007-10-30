@@ -1,5 +1,10 @@
 2007-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: Only seek to keyframes. Implemented support for multiple
+	  errors. Removed some dead code. Fix an off-by-one zero-fill.
+
+2007-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-ffmpeg.cpp: Make sure it builds with older versions of ffmpeg.
 
 2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 

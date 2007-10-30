@@ -34,7 +34,6 @@ ASFParser::ASFParser (const char* filename)
 	header_extension = NULL;
 	script_command = NULL;
 	marker = NULL;
-	last_error = NULL;
 	file_properties = NULL;
 	errors = NULL;
 	memset (stream_properties, 0, sizeof (asf_stream_properties*) * 127);
@@ -317,7 +316,11 @@ ASFParser::ReadHeader ()
 const char*
 ASFParser::GetLastError ()
 {
-	return last_error;
+	if (errors != NULL) {
+		return (const char*) errors->data;
+	} else {
+		return NULL;
+	}
 }
 
 void
@@ -406,29 +409,11 @@ bool
 ASFSource::Read (void* destination, size_t bytes)
 {
 	bool result;
-		
-	if (bytes == 986)
-		result = false;
-	
-	result = ReadInternal (destination, bytes);
 	
 	//printf ("ASFSource::Read (%.8p, %4i), pp: %lld, cp: %lld, result: %s", destination, bytes, position, Position (), result ? "true" : "false");
-	if (false && result) {
-		if (bytes == 986) {
-			for (guint32 i = 0; i < bytes; i++) {
-				printf (" %.2hhX", (int) *(i + (char*) destination));
-			}
-		} else {
-			for (guint32 i = 0; (i < bytes && i < 10); i++) {
-				printf (" %.2hhX", (int) *(i + (char*) destination));
-			}
-			printf ("; ");
-			for (guint32 i = (bytes > 20 ? bytes - 10 : 10); i < bytes; i++) {
-				printf (" %.2hhX", (int) *(i + (char*) destination));
-			}
-		}
-		printf (".\n");
-	}
+		
+	result = ReadInternal (destination, bytes);
+	
 	
 	return result;
 }
@@ -501,8 +486,8 @@ ASFFrameReader::Seek (gint32 stream_number, gint64 pts)
 	if (!CanSeek ())
 		return false;
 		
-	// Now this is an algorithm that needs some optimization.
-	// We seek from the first frame to the frame AFTER the one we want (counting the numbers of frames)
+	// Now this is an algorithm that might need some optimization.
+	// We seek from the first frame to the key frame AFTER the one we want (counting the numbers of frames)
 	// then we seek again from the first frame until the number of frames counted - 1.	
 	
 	gint32 counter = 0;
@@ -512,7 +497,7 @@ ASFFrameReader::Seek (gint32 stream_number, gint64 pts)
 	RemoveAll ();
 	
 	while (Advance ()) {
-		if (Pts () > pts) {
+		if (Pts () > pts && IsKeyFrame ()) {
 			found = true;
 			break;
 		}
@@ -599,9 +584,10 @@ ASFFrameReader::Advance ()
 				payload_count++;
 				size += current->payload->payload_data_length;
 				if (payload_count > payloads_size) {
+					printf ("Resizing payloads, current count: %i\n", payload_count);
 					gint32 new_size = payload_count + 3;
 					payloads = (asf_single_payload**) g_realloc (payloads, sizeof (asf_single_payload*) * (new_size + 1));
-					memset (payloads + payloads_size, 0, sizeof (asf_single_payload*) * (new_size - payloads_size));
+					memset (payloads + payloads_size, 0, sizeof (asf_single_payload*) * (new_size - payloads_size + 1));
 					payloads_size = new_size;
 				}
 				payloads [payload_count - 1] = current->payload;
