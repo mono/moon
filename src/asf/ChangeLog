@@ -1,3 +1,10 @@
+2007-10-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* asf-structures.h: g++ doesn't like it when you jump over
+	locations where variables are declared (especially when the
+	variables are used at the jump destination). Fixed by declaring
+	the variables at the top of the method.
+
 2007-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.h, asf.cpp, asf.h, asf-structures.cpp: Add consistency
