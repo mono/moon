@@ -10,6 +10,7 @@
  */
  
 #include <config.h>
+#include <inttypes.h>
 #include "asf-ffmpeg.h"
 #include <stdlib.h>
 
@@ -527,8 +528,8 @@ void AVFormatContext_dump (AVFormatContext* c)
 	FFMPEG_DUMP ("\t"  "key "  "= "  "%p"  "\n", c->key); //    const uint8_t *key;
 	FFMPEG_DUMP ("\t"  "keylen "  "= "  "%i"  "\n", c->keylen); //    int keylen;
 //
-	FFMPEG_DUMP ("\t"  "nb_programs "  "= "  "%u"  "\n", c->nb_programs); //    unsigned int nb_programs;
-	FFMPEG_DUMP ("\t"  "programs "  "= "  "%p"  "\n", c->programs); //    AVProgram **programs;
+	//FFMPEG_DUMP ("\t"  "nb_programs "  "= "  "%u"  "\n", c->nb_programs); //    unsigned int nb_programs;
+	//FFMPEG_DUMP ("\t"  "programs "  "= "  "%p"  "\n", c->programs); //    AVProgram **programs;
 //} AVFormatContext;
 }
 
@@ -554,7 +555,7 @@ void AVStream_dump (AVStream* s, int t)
     FFMPEG_DUMP ("%s" "priv_data" " = %p\n", tabs, s->priv_data);//void *priv_data;
 
     /* internal data used in av_find_stream_info() */
-    FFMPEG_DUMP ("%s" "first_dts" " = %lli\n", tabs, s->first_dts);//int64_t first_dts;
+    //FFMPEG_DUMP ("%s" "first_dts" " = %lli\n", tabs, s->first_dts);//int64_t first_dts;
 #if LIBAVFORMAT_VERSION_INT < (52<<16)
     FFMPEG_DUMP ("%s" "codec_info_nb_frames" " = %i\n", tabs, s->codec_info_nb_frames);//int codec_info_nb_frames;
 #endif
@@ -810,7 +811,7 @@ FFMPEG_DUMP ("%sprediction_order_method = %i\n", tabs, s->prediction_order_metho
 FFMPEG_DUMP ("%smin_partition_order = %i\n", tabs, s->min_partition_order);
 FFMPEG_DUMP ("%smax_partition_order = %i\n", tabs, s->max_partition_order);
 FFMPEG_DUMP ("%stimecode_frame_start = %llu\n", tabs, s->timecode_frame_start);
-FFMPEG_DUMP ("%srequest_channels = %i\n", tabs, s->request_channels);
+//FFMPEG_DUMP ("%srequest_channels = %i\n", tabs, s->request_channels);
 
 
 }

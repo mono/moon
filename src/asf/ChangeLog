@@ -1,3 +1,7 @@
+2007-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-ffmpeg.cpp: Make sure it builds with older versions of ffmpeg.
+
 2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-ffmpeg.cpp: Use ffmpeg's memory allocator when copying bytes into
