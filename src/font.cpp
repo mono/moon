@@ -629,17 +629,12 @@ TextFont::Render (cairo_t *cr, gunichar unichar, double x, double y)
 void
 TextFont::Path (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
-	if (!glyph->path)
+	if (!glyph->path || !(&glyph->path->cairo)->data)
 		return;
 	
 	cairo_save (cr);
-	
 	cairo_translate (cr, x, y);
-	
-	// cairo doesn't like appending paths with NULL data
-	if ((&glyph->path->cairo)->data)
-		cairo_append_path (cr, &glyph->path->cairo);
-	
+	cairo_append_path (cr, &glyph->path->cairo);
 	cairo_restore (cr);
 }
 

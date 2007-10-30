@@ -1,3 +1,8 @@
+2007-10-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (Path): Check the path data != NULL before we make any
+	cairo calls, no sense wasting cycles if we will no-op in the end.
+
 2007-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp, media.h: Fix signedness mismatch warning.
