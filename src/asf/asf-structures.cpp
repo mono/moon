@@ -255,8 +255,9 @@ bool asf_data_validate (const asf_data* obj, ASFParser* parser)
 }
 
 bool
-asf_error_correction_data::FillInAll (ASFSource* source)
+asf_error_correction_data::FillInAll (ASFParser* parser)
 {
+	ASFSource* source = parser->source;
 	data = 0;
 	first = 0;
 	second = 0;
@@ -286,12 +287,14 @@ void asf_error_correction_data_dump (asf_error_correction_data* obj)
 	ASF_DUMP ("\t\tdata_length: %i\n", obj->get_data_length ());
 	ASF_DUMP ("\t\tlength_type: %i\n", obj->get_error_correction_length_type ());
 	ASF_DUMP ("\tfirst = %X\n", (asf_dword) obj->first);
+	
 	ASF_DUMP ("\tsecond = %X\n", (asf_dword) obj->second);
 }
 
 bool
-asf_payload_parsing_information::FillInAll (ASFSource* source)
+asf_payload_parsing_information::FillInAll (ASFParser* parser)
 {
+	ASFSource* source = parser->source;
 	// There's no guarantee that these fields will be written to by Read ()
 	
 	packet_length = 0;
@@ -344,8 +347,10 @@ void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
 }
 
 bool
-asf_single_payload::FillInAll (ASFSource* source, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp)
+asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp)
 {	
+	ASFSource* source = parser->source;
+	
 	if (!source->Read (&stream_number, 1))
 		return false;
 	
@@ -381,6 +386,10 @@ asf_single_payload::FillInAll (ASFSource* source, asf_error_correction_data* ecd
 		source->parser->AddError (g_strdup_printf ("Invalid replicated data length: %i", replicated_data_length));
 		return false;
 	} else if (replicated_data_length >= 8) {
+		if (replicated_data_length > parser->header->max_packet_size) {
+			parser->AddError ("Data corruption in payload.");
+			return false;
+		}
 		replicated_data = (asf_byte*) g_malloc0 (replicated_data_length);
 		if (!source->Read (replicated_data, replicated_data_length))
 			return false;
@@ -421,6 +430,11 @@ asf_single_payload::FillInAll (ASFSource* source, asf_error_correction_data* ecd
 	}
 	
 	if (payload_data_length > 0) {
+		if (payload_data_length >= parser->header->max_packet_size) {
+			parser->AddError ("Data corruption in payload.");
+			return false;
+		}
+		
 		payload_data = (asf_byte*) g_malloc0 (payload_data_length);
 		if (!source->Read (payload_data, payload_data_length))
 			return false;
@@ -454,14 +468,15 @@ asf_single_payload_dump (asf_single_payload* obj)
 }
 
 bool
-asf_multiple_payloads::FillInAll (ASFSource* source, asf_error_correction_data* ecd, asf_payload_parsing_information ppi)
+asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi)
 {
+	ASFSource* source = parser->source;
 	int count;
 	
 	if (!source->Read (&payload_flags, 1))
 		return false;
 	
-	count = get_number_of_payloads ();
+	count = get_number_of_payloads (); // number of payloads is encoded in a byte, no need to check for extreme values.
 	
 	if (count <= 0) {
 		source->parser->AddError (g_strdup_printf ("Invalid number of payloads: %i", count));
@@ -474,7 +489,7 @@ asf_multiple_payloads::FillInAll (ASFSource* source, asf_error_correction_data* 
 	
 	for (int i = 0; i < count; i++) {
 		payloads [i] = new asf_single_payload ();
-		if (!payloads [i]->FillInAll (source, ecd, ppi, this))
+		if (!payloads [i]->FillInAll (parser, ecd, ppi, this))
 			return false;
 		ASF_DUMP ("-Payload #%i:\n", i + 1);
 		asf_single_payload_dump (payloads [i]);

@@ -53,9 +53,6 @@ class ASFSource;
 #include "asf-structures.h"
 #include "asf-debug.h"
 
-/* Debug & tostring functions */ 
-void  asf_printfree (char *message);
-
 class ASFSource {
 public: 
 	virtual ~ASFSource ()
@@ -284,7 +281,8 @@ public:
 	
 	asf_object* ReadObject (asf_object* guid);
 	const char* GetLastError ();
-	bool VerifyHeaderDataSize (gint32 size); // Verifies that the requested size is a size that can be inside the header. 
+	bool VerifyHeaderDataSize (gint32 size); // Verifies that the requested size is a size that can be inside the header.
+	bool Malloc (void** mem, gint32 size); // Allocates the requested memory and verifies that the size can actually be contained within the header.
 	void AddError (const char* err); // Makes a copy of the provided error string.
 	void AddError (char* err); // Frees the provided error string.
 

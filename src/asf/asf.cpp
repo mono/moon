@@ -10,13 +10,6 @@
 #include <config.h>
 #include "asf.h"
 
-void
-asf_printfree (char *message)
-{
-	printf (message);
-	g_free (message);
-}
-
 /*
 	ASFParser
 */
@@ -71,6 +64,36 @@ ASFParser::~ASFParser ()
 	}
 }
 
+bool
+ASFParser::VerifyHeaderDataSize (gint32 size)
+{
+	if (header == NULL)
+		return false;
+		
+	return size >= 0 && size < header->size;
+}
+
+bool
+ASFParser::Malloc (void** mem, gint32 size)
+{
+	if (mem == NULL) {
+		AddError ("Memory corruption."); // This shouldn't happen ever.
+		return false;
+	}
+	
+	if (!VerifyHeaderDataSize (size))
+		return false;
+		
+	*mem = g_malloc0 (size);
+	
+	if (*mem == NULL) {
+		AddError ("Out of memory.");
+		return false;
+	}
+	
+	return true;
+}
+
 asf_object*
 ASFParser::ReadObject (asf_object* obj)
 {
@@ -81,12 +104,17 @@ ASFParser::ReadObject (asf_object* obj)
 	
 	if (type == ASF_NONE) {
 		char* g = asf_guid_tostring (&obj->id);
-		AddError (g_strdup_printf ("Unrecognized guid: %s.\n", g));
+		AddError (g_strdup_printf ("Unrecognized guid: %s.", g));
 		g_free (g);
 		return NULL;
 	}
 	
-	result = (asf_object*) g_malloc0 (obj->size);
+	if (!Malloc ((void**)&result, obj->size)) {
+		char* g = asf_guid_tostring (&obj->id);
+		AddError (g_strdup_printf ("Header corrupted (id: %s)", g));
+		g_free (g);
+		return false;
+	}
 	
 	if (result == NULL) {
 		AddError ("Out of memory.\n");
@@ -132,12 +160,12 @@ ASFParser::ReadPacket (ASFPacket* packet)
 	
 	//int64_t start_position = source->Position ();
 	
-	if (!ecd.FillInAll (source))
+	if (!ecd.FillInAll (this))
 		return false;
 	
 	asf_error_correction_data_dump (&ecd);
 	
-	if (!ppi.FillInAll (source))
+	if (!ppi.FillInAll (this))
 		return false;
 	
 	asf_payload_parsing_information_dump (&ppi);
@@ -145,21 +173,24 @@ ASFParser::ReadPacket (ASFPacket* packet)
 	asf_multiple_payloads* mp = new asf_multiple_payloads ();
 	if (ppi.is_multiple_payloads_present ()) {
 		ASF_LOG ("ASFParser::ReadPacket (), reading multiple payloads.\n");
-		if (!mp->FillInAll (source, &ecd, ppi)) {
+		if (!mp->FillInAll (this, &ecd, ppi)) {
 			delete mp;
 			return false;
 		}
 	} else {
 		ASF_LOG ("ASFParser::ReadPacket (), reading single payload.\n");
 		asf_single_payload* sp = new asf_single_payload ();
-		if (!sp->FillInAll (source, &ecd, ppi, NULL)) {
+		if (!sp->FillInAll (this, &ecd, ppi, NULL)) {
 			asf_single_payload_dump (sp);
 			delete sp;
 			delete mp;
 			return false;
 		}
 		//asf_single_payload_dump (sp);
-		mp->payloads = (asf_single_payload**) g_malloc0 (sizeof (asf_single_payload*) * 2);
+		if (!Malloc ((void**) &mp->payloads, sizeof (asf_single_payload*) * 2)) {
+			AddError ("Data corruption in payloads.");
+			return false;
+		}
 		mp->payloads [0] = sp;
 		mp->payload_flags = 1; // 1 payload
 	}
@@ -193,7 +224,10 @@ ASFParser::ReadData ()
 	
 	ASF_LOG ("Current position: %llx (%lld)\n", source->Position (), source->Position ());
 	
-	data = (asf_data*) g_malloc0 (sizeof (asf_data));
+	if (!Malloc ((void**) &data, sizeof (asf_data))) {
+		AddError ("Data corruption in data.");
+		return false;
+	}
 	
 	if (!source->Read (data, sizeof (asf_data))) {
 		g_free (data);
@@ -217,6 +251,11 @@ ASFParser::ReadHeader ()
 	
 	header = (asf_header*) g_malloc0 (sizeof (asf_header));
 	
+	if (header == NULL) {
+		AddError ("Out of memory.");
+		return false;
+	}
+	
 	if (!source->Read (header, sizeof (asf_header)))
 		return false;
 		
@@ -227,7 +266,10 @@ ASFParser::ReadHeader ()
 		return false;
 	}
 	
-	header_objects = (asf_object**) g_malloc0 ((header->object_count + 1) * sizeof (asf_object*));
+	if (!Malloc ((void**) &header_objects, (header->object_count + 1) * sizeof (asf_object*))) {
+		AddError ("Data corruption in header.");
+		return false;
+	}
 	
 	bool any_streams = false;
 	for (asf_dword i = 0; i < header->object_count; i++) {
@@ -460,10 +502,8 @@ ASFFrameReader::ASFFrameReader (ASFParser* p)
 	payloads = NULL;
 	current_packet_index = CanSeek () ? 0 : -1;
 	
-	// Most streams has at least once a media object spanning two payloads.
-	// so we allocate space for two (+ NULL at the end).
-	payloads_size = 2;
-	payloads = (asf_single_payload**) g_malloc0 (sizeof (asf_single_payload*) * (payloads_size + 1));
+	payloads_size = 0;
+	payloads = NULL;
 }
 
 ASFFrameReader::~ASFFrameReader ()
@@ -524,18 +564,30 @@ ASFFrameReader::Advance ()
 {
 	ASF_LOG ("ASFFrameReader::Advance ().\n");
 	// Clear the current list of payloads.
-	int i = -1;
-	while (payloads [++i] != NULL) {
-		delete payloads [i];
-		payloads [i] = NULL;
-	}
 	
+	// Most streams has at least once a media object spanning two payloads.
+	// so we allocate space for two (+ NULL at the end).
+	if (payloads == NULL) {
+		payloads_size = 2;
+		if (!parser->Malloc ((void**) &payloads, sizeof (asf_single_payload*) * (payloads_size + 1))) {
+			parser->AddError ("Data corruption in packets.");
+			return false;
+		}
+	} else {
+		int i = -1;
+		while (payloads [++i] != NULL) {
+			delete payloads [i];
+			payloads [i] = NULL;
+		}
+	}
+		
 	if (first == NULL) {
 		if (!ReadMore ())
 			return false;
 		if (first == NULL)
 			return false;
 	}
+	
 	gint32 payload_count = 1;
 	payloads [0] = first->payload;
 	guint32 media_object_number = payloads [0]->media_object_number;
@@ -584,7 +636,6 @@ ASFFrameReader::Advance ()
 				payload_count++;
 				size += current->payload->payload_data_length;
 				if (payload_count > payloads_size) {
-					printf ("Resizing payloads, current count: %i\n", payload_count);
 					gint32 new_size = payload_count + 3;
 					payloads = (asf_single_payload**) g_realloc (payloads, sizeof (asf_single_payload*) * (new_size + 1));
 					memset (payloads + payloads_size, 0, sizeof (asf_single_payload*) * (new_size - payloads_size + 1));
