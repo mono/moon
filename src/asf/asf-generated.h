@@ -75,7 +75,6 @@ void asf_file_properties_dump (const asf_file_properties* obj);
 void asf_stream_properties_dump (const asf_stream_properties* obj);
 void asf_header_extension_dump (const asf_header_extension* obj);
 void asf_codec_list_dump (const asf_codec_list* obj);
-void asf_script_command_dump (const asf_script_command* obj);
 void asf_marker_dump (const asf_marker* obj);
 void asf_bitrate_mutual_exclusion_dump (const asf_bitrate_mutual_exclusion* obj);
 void asf_error_correction_dump (const asf_error_correction* obj);

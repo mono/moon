@@ -30,7 +30,6 @@ class ASFParser;
 class ASFFileSource;
 class ASFSource;
 
-
 #define ASF_ERROR_VAL(fail, ...) { fprintf (stderr, __VA_ARGS__); return fail; }
 #define ASF_ERROR(...) ASF_ERROR_VAL(false, __VA_ARGS__)
 
@@ -281,8 +280,9 @@ public:
 	
 	asf_object* ReadObject (asf_object* guid);
 	const char* GetLastError ();
-	bool VerifyHeaderDataSize (gint32 size); // Verifies that the requested size is a size that can be inside the header.
-	bool Malloc (void** mem, gint32 size); // Allocates the requested memory and verifies that the size can actually be contained within the header.
+	bool VerifyHeaderDataSize (guint64 size); // Verifies that the requested size is a size that can be inside the header.
+	void* Malloc (gint32 size); // Allocates the requested memory and verifies that the size can actually be contained within the header. Reports an Out of Memory error if the memory can't be allocated, and returns NULL
+	void* MallocVerified (gint32 size); // Allocates the requested memory (no size checking), reports an Out of Memory error if the memory can't be allocated, and returns NULL
 	void AddError (const char* err); // Makes a copy of the provided error string.
 	void AddError (char* err); // Frees the provided error string.
 

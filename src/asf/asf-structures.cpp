@@ -390,7 +390,12 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 			parser->AddError ("Data corruption in payload.");
 			return false;
 		}
-		replicated_data = (asf_byte*) g_malloc0 (replicated_data_length);
+		
+		replicated_data = (asf_byte*) parser->MallocVerified (replicated_data_length);
+		if (replicated_data == NULL) {
+			return false;
+		}
+		
 		if (!source->Read (replicated_data, replicated_data_length))
 			return false;
 	}
@@ -435,7 +440,11 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 			return false;
 		}
 		
-		payload_data = (asf_byte*) g_malloc0 (payload_data_length);
+		payload_data = (asf_byte*) parser->MallocVerified (payload_data_length);
+		if (payload_data == NULL) {
+			return false;
+		}
+		
 		if (!source->Read (payload_data, payload_data_length))
 			return false;
 	}
@@ -483,7 +492,10 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 		return false;
 	}
 
-	payloads = (asf_single_payload**) g_malloc0 (sizeof (asf_single_payload*) * (count + 1));
+	payloads = (asf_single_payload**) parser->MallocVerified (sizeof (asf_single_payload*) * (count + 1));
+	if (payloads == NULL) {
+		return false;
+	}
 	
 	ASF_LOG ("asf_multiple_payloads::FillInAll (): Reading %i payloads...\n", count); 
 	
@@ -515,6 +527,99 @@ void asf_multiple_payloads_dump (asf_multiple_payloads* obj)
 		ASF_DUMP ("\t<no payloads here>\n");
 	}
 }
+
+asf_script_command_entry** 
+asf_script_command::get_commands (ASFParser* parser, char*** command_types)
+{
+	gint32 size_left = size;
+	gint32 size_requested = 0;
+	char** types = NULL;
+	char* start = NULL;
+	asf_script_command_entry** result = NULL;
+	asf_script_command_entry* next = NULL;
+	
+	if (size == sizeof (asf_script_command))
+		return NULL;
+	
+	size_left -= sizeof (asf_script_command);
+	
+	size_requested = sizeof (char*) * (command_count + 1);
+	if (size_requested > size_left) {
+		parser->AddError ("Data corruption in script command.");
+		goto failure;
+	}
+	size_left -= size_requested;
+	result = (asf_script_command_entry**) parser->MallocVerified (size_requested);
+	if (result == NULL)
+		goto failure;
+	
+	size_requested = sizeof (char*) * (command_type_count + 1);
+	if (size_requested > size_left) {
+		parser->AddError ("Data corruption in script command.");
+		goto failure;
+	}
+	size_left -= size_requested;
+	types = (char**) parser->MallocVerified (size_requested);
+	if (types == NULL)
+		goto failure;
+	
+	if (command_types != NULL) 
+		*command_types = types;
+
+	// Walk past by the command type table.
+	start = (sizeof (asf_script_command) + (char*) this);
+	for (gint32 i = 0; i < command_type_count; i++) {
+		asf_word length = * (asf_word*) start;
+		
+		// Verify data
+		size_requested = sizeof (asf_word) + sizeof (guint16) * length;
+		if (size_requested > size_left) {
+			parser->AddError ("Data corruption in script command.");
+			goto failure;
+		}
+		size_left -= size_requested;
+		
+		// Convert strings
+		types [i] = wchar_to_utf8 (start + sizeof (asf_word), length);
+		start += size_requested;
+	}
+	
+	// Fill in the commands table
+	next = (asf_script_command_entry*) start;
+	for (gint32 i = 0; i < command_count; i++) {
+		result [i] = next;
+		
+		char* tmp = (char*) next;
+		tmp += sizeof (asf_script_command_entry);
+		tmp += (next->name_length * sizeof (guint16));
+		
+		size_requested = sizeof (asf_script_command_entry) + next->name_length * sizeof (guint16);
+		if (size_requested > size_left) {
+			parser->AddError ("Data corruption in script command.");
+			goto failure;
+		}
+		size_left -= size_requested;
+		
+		next = (asf_script_command_entry*) tmp;
+	}
+	
+	return result;
+	
+failure:
+	g_free (result);
+	if (types != NULL) {
+		int i = -1;
+		while (types [++i] != NULL)
+			g_free (types [i]);
+		g_free (types);
+	}
+	
+	if (command_types != NULL)
+		*command_types = NULL;
+		
+	return NULL;
+}
+
 
 void asf_marker_entry_dump (const asf_marker_entry* obj)
 {
@@ -548,7 +653,7 @@ void asf_marker_dump (const asf_marker* obj)
 	}
 }
 
-void asf_script_command_dump (const asf_script_command* obj)
+void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 {
 	asf_script_command* o = (asf_script_command*) obj;
 	
@@ -562,7 +667,7 @@ void asf_script_command_dump (const asf_script_command* obj)
 	char** command_types = NULL;
 	asf_script_command_entry** entries = NULL;
 	
-	entries = o->get_commands (&command_types);
+	entries = o->get_commands (parser, &command_types);
 	
 	for (guint32 i = 0; i < obj->command_type_count; i++) {
 		ASF_DUMP ("\tASF_SCRIPT_COMMAND_TYPE #%i\n", i);

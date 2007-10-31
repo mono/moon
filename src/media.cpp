@@ -245,7 +245,7 @@ MediaElement::ReadASFMarkers ()
 	TimelineMarkerCollection* col = NULL;
 	int i = -1;
 	
-	commands = command->get_commands (&command_types);
+	commands = command->get_commands (mplayer->asf_parser, &command_types);
 	
 	if (commands == NULL)
 		goto cleanup;

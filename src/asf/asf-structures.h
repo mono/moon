@@ -335,6 +335,7 @@ struct asf_multiple_payloads {
 };
 
 void asf_multiple_payloads_dump (asf_multiple_payloads* obj);
+void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj);
 
 struct asf_object {
 	asf_guid id;
@@ -462,85 +463,7 @@ struct asf_script_command : public asf_object {
 	// A NULL terminated array of commands.
 	// command_types: an array of strings, use g_free on the elements and the array.
 	// result: Free the array with g_free (do NOT free each element).
-	asf_script_command_entry** get_commands (char*** command_types)
-	{
-		asf_script_command_entry **result = NULL;
-		asf_script_command_entry *next = NULL;
-		gint32 size_left = size;
-		gint32 size_requested = 0;
-		char **types = NULL;
-		char *start = NULL;
-		char *tmp;
-		
-		if (size == sizeof (asf_script_command))
-			return NULL;
-		
-		size_left -= sizeof (asf_script_command);
-		
-		size_requested = sizeof (char*) * (command_count + 1);
-		if (size_requested > size_left) 
-			goto failure;
-		size_left -= size_requested;
-		result = (asf_script_command_entry **) g_malloc0 (size_requested);
-		
-		size_requested = sizeof (char*) * (command_type_count + 1);
-		if (size_requested > size_left)
-			goto failure;
-		size_left -= size_requested;
-		types = (char **) g_malloc0 (size_requested);
-		
-		if (command_types != NULL) 
-			*command_types = types;
-
-		// Walk past by the command type table.
-		start = (sizeof (asf_script_command) + (char *) this);
-		for (gint32 i = 0; i < command_type_count; i++) {
-			asf_word length = * (asf_word*) start;
-			
-			// Verify data
-			size_requested = sizeof (asf_word) + sizeof (guint16) * length;
-			if (size_requested > size_left)
-				goto failure;
-			size_left -= size_requested;
-			
-			// Convert strings
-			types [i] = wchar_to_utf8 (start + sizeof (asf_word), length);
-			start += size_requested;
-		}
-		
-		// Fill in the commands table
-		next = (asf_script_command_entry*) start;
-		for (gint32 i = 0; i < command_count; i++) {
-			result [i] = next;
-			
-			tmp = (char *) next;
-			tmp += sizeof (asf_script_command_entry);
-			tmp += (next->name_length * sizeof (guint16));
-			
-			size_requested = sizeof (asf_script_command_entry) + next->name_length * sizeof (guint16);
-			if (size_requested > size_left)
-				goto failure;
-			size_left -= size_requested;
-			
-			next = (asf_script_command_entry*) tmp;
-		}
-		
-		return result;
-		
-failure:
-		g_free (result);
-		if (types != NULL) {
-			int i = -1;
-			while (types [++i] != NULL)
-				g_free (types [i]);
-			g_free (types);
-		}
-		
-		if (command_types != NULL)
-			*command_types = NULL;
-			
-		return NULL;
-	}
+	asf_script_command_entry** get_commands (ASFParser* parser, char*** command_types);
 };
 
 struct asf_marker_entry {

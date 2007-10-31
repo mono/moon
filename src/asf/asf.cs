@@ -118,7 +118,9 @@ class asf
 			writer.WriteLine ("/* Debug functions */ ");
 			
 			foreach (string str in debug_structs) {
-				writer.WriteLine ("void " + str + "_dump (const " + str + "* obj);");
+				if (!File.ReadAllText ("asf-structures.h").Contains ("void " + str + "_dump (")) {
+					writer.WriteLine ("void " + str + "_dump (const " + str + "* obj);");
+				}
 			}
 			writer.WriteLine ("");
 			
@@ -186,6 +188,8 @@ class asf
 			writer.WriteLine ("\tswitch (asf_get_guid_type (&obj->id)) {");
 			foreach (string str in objects) {
 				if (str == "asf_object")
+					continue;
+				if (File.ReadAllText ("asf-structures.h").Contains ("void " + str + "_dump ("))
 					continue;
 				writer.WriteLine ("\tcase {0}:", str.ToUpper ());
 				writer.WriteLine ("\t\t{0}_dump (({0}*) obj); break;", str);

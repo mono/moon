@@ -1,3 +1,9 @@
+2007-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.cs, asf.h, asf-generated.cpp, asf-generated.h,
+	  asf-structures.cpp, asf-structures.h: Redo ASFParser::Malloc to avoid
+	  warnings, and make sure the return value is always checked.
+
 2007-10-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* asf-structures.cpp (FillInAll): max_packet_size is part of

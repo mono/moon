@@ -238,8 +238,6 @@ void asf_object_dump_exact (const asf_object* obj)
 		asf_header_extension_dump ((asf_header_extension*) obj); break;
 	case ASF_CODEC_LIST:
 		asf_codec_list_dump ((asf_codec_list*) obj); break;
-	case ASF_SCRIPT_COMMAND:
-		asf_script_command_dump ((asf_script_command*) obj); break;
 	case ASF_MARKER:
 		asf_marker_dump ((asf_marker*) obj); break;
 	case ASF_BITRATE_MUTUAL_EXCLUSION:
