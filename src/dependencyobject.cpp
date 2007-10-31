@@ -175,7 +175,8 @@ EventObject::Emit (int event_id, gpointer calldata)
 
 	for (GSList *l = copy; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
-		closure->func (this, calldata, closure->data);
+		if (closure && closure->func)
+			closure->func (this, calldata, closure->data);
 	}
 
 	g_slist_free (copy);
