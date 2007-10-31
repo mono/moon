@@ -1,3 +1,9 @@
+2007-10-31  Chris Toshok  <toshok@ximian.com>
+
+	* trigger.cpp (EventTrigger::SetTarget,
+	EventTrigger::RemoveTarget): use UIElement::LoadedEvent instead of
+	"Loaded".
+
 2007-10-31  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.h|cpp: Give DependencyProperties the ability to

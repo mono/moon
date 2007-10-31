@@ -13,6 +13,7 @@
 
 #include "trigger.h"
 #include "collection.h"
+#include "uielement.h"
 
 
 EventTrigger::EventTrigger ()
@@ -46,7 +47,7 @@ EventTrigger::SetTarget (DependencyObject *target)
 	g_assert (target);
 
 	// Despite the name, it can only be loaded (according to the docs)
-	target->AddHandler ("Loaded", event_trigger_fire_actions, this);
+	target->AddHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
 }
 
 void
@@ -54,7 +55,7 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 {
 	g_assert (target);
 
-	target->RemoveHandler ("Loaded", event_trigger_fire_actions, this);
+	target->RemoveHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
 }
 
 EventTrigger::~EventTrigger ()
