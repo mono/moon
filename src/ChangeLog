@@ -1,3 +1,17 @@
+2007-10-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes for handling lwsp cdata between <Run> elements.
+
+	* xaml.cpp (flush_char_data): Reworked a bit. Now takes a 'start'
+	arg suggesting that we are being called in response to a new
+	element starting vs an element ending.
+	(start_element_handler): Pass true as the start arg to
+	flush_char_data().
+	(end_element_handler): Pass false as the start arg to
+	flush_char_data().
+
+	* text.cpp (SetValue): Only add a run if the string is non-empty.
+
 2007-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: Guard against calling NULL.

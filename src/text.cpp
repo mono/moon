@@ -1027,9 +1027,13 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 	if (property == TextBlock::TextProperty) {
 		// Text is a virtual property and setting it deletes all current runs,
 		// creating a new run
+		const char *str = value ? value->AsString () : NULL;
+		
+		if (!str || !str[0])
+			return;
+		
 		Run *run = new Run ();
-		if (value)
-			run_set_text (run, value->AsString ());
+		run_set_text (run, value->AsString ());
 		
 		Inlines *inlines = text_block_get_inlines (this);
 		

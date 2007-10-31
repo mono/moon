@@ -148,6 +148,7 @@ class XamlParserInfo {
 
 	GHashTable *namespace_map;
 	GString *cdata;
+	bool has_cdata;
 
 	bool implicit_default_namespace;
 
@@ -165,7 +166,7 @@ class XamlParserInfo {
 	  
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
-		cdata (NULL), implicit_default_namespace (false), error_args (NULL),
+		cdata (NULL), has_cdata(false), implicit_default_namespace (false), error_args (NULL),
 		loader (NULL), created_elements (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
@@ -696,7 +697,7 @@ process_x_code_directive (XamlParserInfo *p, const char **attr)
 	}
 }
 
-bool
+static bool
 is_instance_of (XamlElementInstance *item, Type::Kind kind)
 {
 	for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
@@ -761,7 +762,7 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 	parser_error (p, NULL, NULL, error_code, message);
 }
 
-DependencyObject *
+static DependencyObject *
 get_parent (XamlElementInstance *inst)
 {
 	XamlElementInstance *walk = inst;
@@ -775,7 +776,7 @@ get_parent (XamlElementInstance *inst)
 	return NULL;
 }
 
-void
+static void
 start_element (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
@@ -860,47 +861,75 @@ start_element (void *data, const char *el, const char **attr)
 	p->current_element = inst;	
 }
 
-void
-flush_char_data (XamlParserInfo *p)
+static void
+flush_char_data (XamlParserInfo *p, bool start)
 {
-	if (p->cdata && p->cdata->len) {
+	DependencyProperty *content;
+	const char *prop_name;
+	Type::Kind prop_type;
+	
+	if (!p->has_cdata || !p->current_element)
+		return;
+	
+	prop_name = p->current_element->info->content_property;
+	
+	if (!prop_name && p->cdata) {
+		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
+		parser_error (p, NULL, NULL, 2011, err);
+		goto done;
+	} else if (!prop_name) {
+		goto done;
+	}
+	
+	prop_type = p->current_element->info->dependency_type;
+	content = DependencyObject::GetDependencyProperty (prop_type, prop_name);
+	
+	// TODO: There might be other types that can be specified here,
+	// but string is all i have found so far.  If you can specify other
+	// types, i should pull the property setting out of set_attributes
+	// and use that code
+	
+	if ((content->value_type) == Type::STRING && p->cdata) {
 		g_strchomp (p->cdata->str);
-
-		const char *cp = p->current_element->info->content_property;
-		if (cp && p->cdata->str[0]) {
-			DependencyProperty *con = DependencyObject::GetDependencyProperty (p->current_element->info->dependency_type, cp);
-			// TODO: There might be other types that can be specified here,
-			// but string is all i have found so far.  If you can specify other
-			// types, i should pull the property setting out of set_attributes
-			// and use that code
-
-			if ((con->value_type) == Type::STRING) {
-				p->current_element->item->SetValue (con, Value (p->cdata->str));
-			} else if (is_instance_of (p->current_element, Type::TEXTBLOCK)) {
-				Run *run = new Run ();
-				run_set_text (run, p->cdata->str);
-				
-				Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
-				
-				if (!inlines) {
-					inlines = new Inlines ();
-					text_block_set_inlines ((TextBlock *) p->current_element->item, inlines);
-					inlines->unref ();
-				}
-				
-				inlines->Add (run);
-				run->unref ();
-			}
+		p->current_element->item->SetValue (content, Value (p->cdata->str));
+	} else if (p->current_element->item && is_instance_of (p->current_element, Type::TEXTBLOCK)) {
+		Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
+		
+		if (!p->cdata && inlines && !inlines->list->IsEmpty () && start) {
+			// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
+			p->cdata = g_string_new (" ");
+		} else if (p->cdata) {
+			// This is the normal case
+			g_strchomp (p->cdata->str);
 		} else {
-			parser_error (p, NULL, NULL, 2011, g_strdup_printf ("%s does not support text content.", p->current_element->element_name));
+			// This is either LWSP before the first <Run> element or after the last <Run> element
+			goto done;
 		}
 		
+		Run *run = new Run ();
+		run_set_text (run, p->cdata->str);
+		
+		if (!inlines) {
+			inlines = new Inlines ();
+			text_block_set_inlines ((TextBlock *) p->current_element->item, inlines);
+			inlines->unref ();
+		}
+		
+		inlines->Add (run);
+		run->unref ();
+	}
+	
+done:
+	
+	if (p->cdata) {
 		g_string_free (p->cdata, FALSE);
 		p->cdata = NULL;
 	}
+	
+	p->has_cdata = false;
 }
 
-void
+static void
 start_element_handler (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
@@ -911,7 +940,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 	char **name = g_strsplit (el, "|",  -1);
 	char *element = NULL;
 
-	flush_char_data (p);
+	flush_char_data (p, true);
 
 	p->current_namespace = NULL;
 	if (g_strv_length (name) == 2) {
@@ -925,10 +954,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 		element = name [0];
 	}
 
-
-
 	if (!p->current_namespace) {
-
 		if (name [1])
 			parser_error (p, name [1], NULL, -1, g_strdup_printf ("No handlers available for namespace: '%s' (%s)\n", name [0], el));
 		else
@@ -943,7 +969,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 	g_strfreev (name);
 }
 
-void
+static void
 end_element_handler (void *data, const char *el)
 {
 	XamlParserInfo *info = (XamlParserInfo *) data;
@@ -953,7 +979,7 @@ end_element_handler (void *data, const char *el)
 
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
-		flush_char_data (info);
+		flush_char_data (info, false);
 		break;
 	case XamlElementInstance::PROPERTY: {
 		List::Node *walk = info->current_element->children->First ();
@@ -972,7 +998,7 @@ end_element_handler (void *data, const char *el)
 	info->current_element = info->current_element->parent;
 }
 
-void
+static void
 char_data_handler (void *data, const char *in, int inlen)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
@@ -986,6 +1012,8 @@ char_data_handler (void *data, const char *in, int inlen)
 		return;
 	
 	if (!p->cdata) {
+		p->has_cdata = true;
+		
 		// unless we already have significant char data, ignore lwsp
 		while (inptr < inend && g_ascii_isspace (*inptr))
 			inptr++;
@@ -1017,7 +1045,7 @@ char_data_handler (void *data, const char *in, int inlen)
 	g_string_truncate (p->cdata, d - p->cdata->str);
 }
 
-void
+static void
 start_namespace_handler (void *data, const char *prefix, const char *uri)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
@@ -1053,7 +1081,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	}
 }
 
-void
+static void
 start_doctype_handler (void *data,
 		const XML_Char *doctype_name,
 		const XML_Char *sysid,
@@ -1066,7 +1094,7 @@ start_doctype_handler (void *data,
 		parser_error (p, NULL, NULL, 5050, g_strdup ("DTD was found but is prohibited"));
 }
 
-void
+static void
 add_default_namespaces (XamlParserInfo *p)
 {
 	p->implicit_default_namespace = true;
@@ -1074,7 +1102,7 @@ add_default_namespaces (XamlParserInfo *p)
 	g_hash_table_insert (p->namespace_map, (char *) "http://schemas.microsoft.com/winfx/2006/xaml", x_namespace);
 }
 
-void
+static void
 print_tree (XamlElementInstance *el, int depth)
 {
 	for (int i = 0; i < depth; i++)
