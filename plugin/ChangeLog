@@ -1,3 +1,8 @@
+2007-10-31  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Don't link in cairo, pixman, or anything else that we
+	don't need to libmoonplugin
+
 2007-10-29  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* install.js, plugin-proxy.cpp, Makefile.am: Changes to include ffmpeg

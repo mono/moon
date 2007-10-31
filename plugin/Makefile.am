@@ -36,7 +36,7 @@ if !PLUGIN_INSTALL
 MAYBE_LIBMOON = $(top_builddir)/src/libmoon.la
 endif
 
-libmoonplugin_la_LIBADD = $(MAYBE_LIBMOON) $(MOON_LIBS) $(PLUGIN_LIBS)
+libmoonplugin_la_LIBADD = $(MAYBE_LIBMOON) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
 	moonlight.h		\
