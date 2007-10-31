@@ -149,7 +149,7 @@ class DependencyObject : public EventObject {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
-	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached);
+	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly);
 	
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
@@ -228,7 +228,7 @@ class DependencyProperty {
  public:
 	DependencyProperty () {} ;
 	~DependencyProperty ();
-	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached);
+	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly);
 
 	char *name;
 	Value *default_value;
@@ -236,7 +236,12 @@ class DependencyProperty {
 	bool is_attached_property;
 	Type::Kind value_type;
 	bool is_nullable;
+
 	bool IsNullable () { return is_nullable; }
+	bool IsReadOnly () { return is_readonly; }
+
+ private:
+	bool is_readonly;
 };
 
 G_BEGIN_DECLS

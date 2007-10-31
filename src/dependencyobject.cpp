@@ -669,7 +669,7 @@ DependencyObject::Register (Type::Kind type, const char *name, Type::Kind vtype)
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, NULL, vtype, false);
+	return RegisterFull (type, name, NULL, vtype, false, false);
 }
 
 //
@@ -681,7 +681,7 @@ DependencyObject::Register (Type::Kind type, const char *name, Value *default_va
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, default_value->GetKind (), false);
+	return RegisterFull (type, name, default_value, default_value->GetKind (), false, false);
 }
 
 static void
@@ -708,7 +708,7 @@ DependencyObject::Register (Type::Kind type, const char *name, Value *default_va
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, vtype, false);
+	return RegisterFull (type, name, default_value, vtype, false, false);
 }
 
 DependencyProperty *
@@ -746,11 +746,11 @@ strcase_hash (gconstpointer v)
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached)
+DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly)
 {
 	GHashTable *table;
 
-	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached);
+	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached, readonly);
 	
 	/* first add the property to the global 2 level property hash */
 	if (properties == NULL)
@@ -845,13 +845,14 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached)
+DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly)
 {
 	this->type = type;
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->value_type = value_type;
 	this->is_attached_property = attached;
+	this->is_readonly = readonly;
 }
 
 DependencyProperty::~DependencyProperty ()

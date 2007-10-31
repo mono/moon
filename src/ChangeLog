@@ -1,3 +1,10 @@
+2007-10-31  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyobject.h|cpp: Give DependencyProperties the ability to
+	be readonly.
+	* canvas.cpp:
+	* animation.cpp: Signature updates
+	
 2007-10-30  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.h: Add the error args to the loader.

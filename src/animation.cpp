@@ -1671,9 +1671,9 @@ animation_init (void)
 
 	/* Storyboard properties */
 	Storyboard::TargetPropertyProperty = DependencyObject::RegisterFull (Type::STORYBOARD, "TargetProperty", 
-									     NULL, Type::STRING, true);
+									     NULL, Type::STRING, true, false);
 	Storyboard::TargetNameProperty     = DependencyObject::RegisterFull (Type::STORYBOARD, "TargetName", 
-									     NULL, Type::STRING, true);
+									     NULL, Type::STRING, true, false);
 
 	/* BeginStoryboard properties */
 	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Type::BEGINSTORYBOARD, "Storyboard",	Type::STORYBOARD);
