@@ -15,6 +15,7 @@
 
 #include "enums.h"
 #include "uielement.h"
+#include "error.h"
 
 class XamlLoader;
 struct XamlLoaderCallbacks;
@@ -129,10 +130,11 @@ public:
 	const char* GetMissing ();
 	virtual void AddMissing (const char* assembly);
 	void RemoveMissing (const char* assembly);
-	
+
 	bool vm_loaded;
 public:
 	XamlLoaderCallbacks callbacks;
+	ParserErrorEventArgs *error_args;
 };
 
 #endif /* __MOON_XAML_H__ */

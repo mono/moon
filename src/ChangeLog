@@ -1,5 +1,6 @@
 2007-10-30  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.h: Add the error args to the loader.
 	* xaml.cpp: Make most of our parsing errors match Silverlight.
 
 2007-10-30  Jeffrey Stedfast  <fejj@novell.com>
