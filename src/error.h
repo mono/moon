@@ -49,9 +49,10 @@ class ParserErrorEventArgs : public ErrorEventArgs {
 	ParserErrorEventArgs (const char *msg,
 			      const char *file,
 			      int line, int column,
+			      int error_code, 
 			      const char *element,
 			      const char *attribute)
-	  : ErrorEventArgs (ParserError, 0, msg),
+	  : ErrorEventArgs (ParserError, error_code, msg),
 	  char_position (column),
 	  line_number (line),
 	  xaml_file (g_strdup(file)),
