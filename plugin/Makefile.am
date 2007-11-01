@@ -54,8 +54,8 @@ libmoonplugin_la_SOURCES = \
 
 if PLUGIN_INSTALL
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.js \
-				$(builddir)/.libs/libmoonloader.so \
-				$(builddir)/.libs/libmoonplugin.so \
+				.libs/libmoonloader.so \
+				.libs/libmoonplugin.so \
 				$(top_builddir)/src/.libs/libmoon.so \
 				$(avutil_libdir)/libavutil.so \
 				$(swscale_libdir)/libswscale.so \
