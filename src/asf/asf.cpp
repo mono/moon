@@ -18,6 +18,19 @@ ASFParser::ASFParser (const char* filename)
 {
 	ASF_LOG ("ASFParser::ASFParser ('%s'), this: %p.\n", filename, this);
 	source = new ASFFileSource (this, filename);
+	Initialize ();
+}
+
+ASFParser::ASFParser (ASFSource* src)
+{
+	ASF_LOG ("ASFParser::ASFParser ('%p'), this: %p.\n", src, this);
+	source = src;
+	Initialize ();
+}
+
+void
+ASFParser::Initialize ()
+{
 	header = NULL;
 	data = NULL;
 	data_offset = 0;
@@ -35,6 +48,7 @@ ASFParser::ASFParser (const char* filename)
 ASFParser::~ASFParser ()
 {
 	ASF_LOG ("ASFParser::~ASFParser ().\n");
+	
 	delete source;
 	source = NULL;
 		
@@ -154,8 +168,6 @@ ASFParser::ReadPacket (ASFPacket* packet)
 	asf_error_correction_data ecd;
 	asf_payload_parsing_information ppi;
 	
-	//int64_t start_position = source->Position ();
-	
 	if (!ecd.FillInAll (this))
 		return false;
 	
@@ -269,7 +281,7 @@ ASFParser::ReadHeader ()
 	}
 	
 	bool any_streams = false;
-	for (asf_dword i = 0; i < header->object_count; i++) {
+	for (guint32 i = 0; i < header->object_count; i++) {
 		asf_object tmp;
 		if (!source->Read (&tmp, sizeof (asf_object))) {
 			return false;
@@ -379,6 +391,122 @@ ASFParser::AddError (char* err)
 	g_free (err);
 }
 
+asf_stream_properties* 
+ASFParser::GetStream (gint32 stream_index)
+{
+	if (stream_index < 1 || stream_index > 127)
+		return NULL;
+		
+	return stream_properties [stream_index - 1];
+}
+
+void
+ASFParser::SetStream (gint32 stream_index, asf_stream_properties* stream)
+{
+	if (stream_index < 1 || stream_index > 127) {
+		printf ("ASFParser::SetStream (%i, %p): Invalid stream index.\n", stream_index, stream);
+		return;
+	}
+	stream_properties [stream_index - 1] = stream;
+}
+
+bool
+ASFParser::IsValidStream (gint32 stream_index)
+{
+	return GetStream (stream_index) != NULL;
+}
+
+guint64
+ASFParser::GetPacketOffset (gint32 packet_index)
+{
+	if (packet_index < 0 || (gint32) packet_index >= (gint32) file_properties->data_packet_count) {
+		AddError (g_strdup_printf ("ASFParser::GetPacketOffset (%i): Invalid packet index (there are %llu packets).", packet_index, file_properties->data_packet_count)); 
+		return 0;
+	}
+
+	return packet_offset + packet_index * file_properties->min_packet_size;
+}
+
+gint32
+ASFParser::GetPacketIndex (guint64 offset)
+{
+	if (offset < packet_offset)
+		return -1;
+	if (offset > (guint64) packet_offset_end)
+		return file_properties->data_packet_count;
+	return (offset - packet_offset) / file_properties->min_packet_size;
+}
+
+gint32
+ASFParser::GetPacketIndexOfPts (gint32 stream_number, gint64 pts)
+{
+	int result = 0;
+	ASFPacket* packet = NULL;
+	
+	// Read packets until we find the packet which has a pts
+	// greater than the one we're looking for.
+	
+	while (ReadPacket (packet, result)) {
+		gint64 current_pts = packet->GetPts (stream_number);
+		if (current_pts < 0) // Can't read pts for some reason.
+			return -1;
+		if (current_pts > pts) // We've found the packet after the one we're looking for
+			return result - 1; // return the previous one.
+		result++;
+	}
+	
+	return -1;
+}
+
+asf_header* 
+ASFParser::GetHeader ()
+{
+	return header;
+}
+
+asf_file_properties* 
+ASFParser::GetFileProperties ()
+{ 
+	return file_properties;
+}
+
+asf_object* 
+ASFParser::GetHeaderObject (const asf_guid* guid)
+{
+	int index = GetHeaderObjectIndex (guid);
+	if (index >= 0) {
+		return header_objects [index];
+	} else {
+		return NULL;
+	}
+}
+
+int 
+ASFParser::GetHeaderObjectIndex (const asf_guid* guid, int start)
+{
+	int i = start;
+	if (i < 0)
+		return -1;
+		
+	while (header_objects [i] != NULL) {
+		if (asf_guid_compare (guid, &header_objects [i]->id))
+			return i;
+	
+		i++;
+	}
+	
+	return -1;
+}
+
+asf_object* 
+ASFParser::GetHeader (int index) 
+{
+	if (index < 0)
+		return NULL;
+	return header_objects [index];
+}
+
+
 /*
 	ASFFileSource
 */
@@ -400,7 +528,7 @@ ASFFileSource::~ASFFileSource ()
 }
 
 bool
-ASFFileSource::Seek (size_t offset, int mode)
+ASFFileSource::SeekInternal (size_t offset, int mode)
 {
 	if (fseek (fd, offset, mode) != 0) {
 		parser->AddError (g_strdup_printf ("Can't seek to offset %i with mode %i in '%s': %s.\n", offset, mode,  filename, strerror (errno)));
@@ -444,6 +572,33 @@ ASFFileSource::ReadInternal (void* destination, size_t bytes)
 	return true;
 }
 
+/*
+	ASFSource
+*/
+
+ASFSource::ASFSource (ASFParser* asf_parser)
+{
+	parser = asf_parser;
+}
+
+ASFSource::~ASFSource ()
+{
+	parser = NULL;
+}
+
+bool
+ASFSource::Seek (size_t offset)
+{
+	return SeekInternal (offset, SEEK_CUR);
+}
+
+bool
+ASFSource::Seek (size_t offset, int mode)
+{
+	return SeekInternal (offset, mode);
+}
+
+
 bool
 ASFSource::Read (void* destination, size_t bytes)
 {
@@ -458,10 +613,10 @@ ASFSource::Read (void* destination, size_t bytes)
 }
 
 bool 
-ASFSource::ReadEncoded (int length, asf_dword* destination)
+ASFSource::ReadEncoded (gint32 length, guint32* destination)
 {
-	asf_word result2 = 0;
-	asf_byte result1 = 0;
+	guint16 result2 = 0;
+	guint8 result1 = 0;
 	
 	switch (length) {
 	case 0x00: return true;
@@ -484,6 +639,68 @@ ASFSource::ReadEncoded (int length, asf_dword* destination)
 }
 
 /*
+	ASFPacket
+*/
+
+ASFPacket::ASFPacket ()
+{
+	payloads = NULL;
+	index = -1;
+	position = -1;
+}
+
+ASFPacket::~ASFPacket ()
+{
+	delete payloads;
+	payloads = NULL;
+}
+
+gint32
+ASFPacket::GetPayloadCount ()
+{
+	if (!payloads)
+		return 0;
+	return payloads->get_number_of_payloads ();
+}
+
+asf_single_payload* 
+ASFPacket::GetPayload (gint32 index /* 0 based */)
+{
+	if (index >= 0 && index < GetPayloadCount ())
+		return payloads->payloads [index];
+		
+	return NULL;
+}
+
+gint64
+ASFPacket::GetPts (gint32 stream_number)
+{
+	if (!payloads)
+		return -1;
+	
+	asf_single_payload* first = GetFirstPayload (stream_number);
+	if (!first)
+		return -1;
+		
+	return first->get_presentation_time ();
+}
+
+asf_single_payload* 
+ASFPacket::GetFirstPayload (gint32 stream_number /* 1 - 127 */)
+{
+	if (!payloads)
+		return NULL;
+		
+	int index = 0;
+	while (payloads->payloads [index] != NULL) {
+		if (payloads->payloads [index]->stream_number == stream_number)
+			return payloads->payloads [index];
+		index++;
+	}
+	return NULL;
+}
+
+/*
 	ASFFrameReader
 */
 
@@ -493,14 +710,12 @@ ASFFrameReader::ASFFrameReader (ASFParser* p)
 	first = NULL;
 	last = NULL;
 	size = 0;
-	is_key_frame = true;
-	pts = 0;
-	stream_number = 0;
 	payloads = NULL;
 	current_packet_index = CanSeek () ? 0 : -1;
 	
 	payloads_size = 0;
 	payloads = NULL;
+	eof = false;
 }
 
 ASFFrameReader::~ASFFrameReader ()
@@ -513,6 +728,32 @@ ASFFrameReader::~ASFFrameReader ()
 	while (payloads [++i] != NULL)
 		delete payloads [i];
 	g_free (payloads); payloads = NULL;
+}
+
+bool
+ASFFrameReader::ResizeList (gint32 size)
+{
+	asf_single_payload** new_list = NULL;
+	
+	if (payloads_size >= size && size > 0)
+		return true;
+	
+	// Allocate a new list
+	new_list = (asf_single_payload**) parser->Malloc (sizeof (asf_single_payload*) * (size + 1));
+	
+	if (new_list == NULL) {
+		return false;
+	}
+	
+	if (payloads != NULL) {
+		// Copy the old list to the new one
+		memcpy (new_list, payloads, payloads_size * sizeof (asf_single_payload*));
+		g_free (payloads);
+	}
+	payloads = new_list;
+	payloads_size = size;
+	
+	return true;
 }
 
 bool
@@ -565,13 +806,12 @@ ASFFrameReader::Advance ()
 	// Most streams has at least once a media object spanning two payloads.
 	// so we allocate space for two (+ NULL at the end).
 	if (payloads == NULL) {
-		payloads_size = 2;
-		payloads = (asf_single_payload**) parser->Malloc (sizeof (asf_single_payload*) * (payloads_size + 1));
-		if (payloads == NULL) {
+		if (!ResizeList (2)) {
 			parser->AddError ("Data corruption in packets.");
 			return false;
 		}
 	} else {
+		// Free all old payloads, they belong to the previous frame.
 		int i = -1;
 		while (payloads [++i] != NULL) {
 			delete payloads [i];
@@ -587,25 +827,24 @@ ASFFrameReader::Advance ()
 	}
 	
 	gint32 payload_count = 1;
+	guint32 media_object_number = 0;
+	ASFFrameReaderData* current = NULL;
+	gint32 stream_number = 0;
+	
 	payloads [0] = first->payload;
-	guint32 media_object_number = payloads [0]->media_object_number;
+	first->payload = NULL;
+	media_object_number = payloads [0]->media_object_number;
 	size = payloads [0]->payload_data_length;
-	is_key_frame = payloads [0]->is_key_frame;
-	pts = payloads [0]->get_presentation_time ();
-	stream_number = payloads [0]->stream_number;
+	stream_number = StreamNumber ();
 	
 	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i.\n", 
-		size, is_key_frame ? "true" : "false", pts, stream_number);
+		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber ());
 	
-	bool end = false;
-	ASFFrameReaderData *current = first->next;
+	current = first->next;
 	
-	ASFFrameReaderData* tmp2 = first;
-	Remove (tmp2);
-	tmp2->payload = NULL;
-	delete tmp2;
+	Remove (first);
 	
-	while (!end) {
+	while (true) {
 		// Loop through payloads until we find a payload with the same stream number.
 		// if the media number is different, no more payloads in the current frame,
 		// otherwise add the payload to the current frame's payloads and continue looping.
@@ -613,8 +852,7 @@ ASFFrameReader::Advance ()
 			// We went past the end, read another packet to get more data.
 			current = last; // go back to the last element.
 			if (!ReadMore ()) {
-				end = true; // No more data, we've reached the end
-				break;
+				return true; // No more data, we've reached the end
 			} else {
 				if (current == NULL) {
 					// There was no elements before reading more, our next element is the first one
@@ -625,39 +863,28 @@ ASFFrameReader::Advance ()
 			}
 		}
 		
-		if (end)
-			break;
-		
 		if (current->payload->stream_number == stream_number) {
-			if (current->payload->media_object_number == media_object_number) {
-				// Add the payload to the current frame's payloads
-				payload_count++;
-				size += current->payload->payload_data_length;
-				if (payload_count > payloads_size) {
-					gint32 new_size = payload_count + 3;
-					asf_single_payload** new_payloads = NULL;
-					new_payloads = (asf_single_payload**) g_try_realloc (payloads, sizeof (asf_single_payload*) * (new_size + 1));
-					if (new_payloads == NULL) {
-						parser->AddError ("Out of memory.");
-						return false;
-					}
-					payloads = new_payloads;
-					memset (payloads + payloads_size, 0, sizeof (asf_single_payload*) * (new_size - payloads_size + 1));
-					payloads_size = new_size;
-				}
-				payloads [payload_count - 1] = current->payload;
-				
-				// Remove it from the queue
-				ASFFrameReaderData* tmp = current;
-				current = current->prev;
-				
-				tmp->payload = NULL;
-				Remove (tmp);
-				delete tmp;
-			} else {
+			if (current->payload->media_object_number != media_object_number) {
 				// We've found the end of the current frame's payloads
-				end = true;
+				return true;
 			}
+			
+			// Still in the current frame, so
+			// add the payload to the current frame's payloads
+			payload_count++;
+			size += current->payload->payload_data_length;
+			if (payload_count > payloads_size) {
+				if (!ResizeList (payload_count + 3)) {
+					return false;
+				}
+			}
+			payloads [payload_count - 1] = current->payload;
+			current->payload = NULL;
+			
+			// Remove it from the queue
+			ASFFrameReaderData* tmp = current;
+			current = current->prev;
+			Remove (tmp);
 		}
 		
 		if (current != NULL)
@@ -670,9 +897,9 @@ ASFFrameReader::Advance ()
 bool
 ASFFrameReader::ReadMore ()
 {
-	ASFPacket* packet = new ASFPacket ();
-	
 	ASF_LOG ("ASFFrameReader::ReadMore ().\n");
+	
+	ASFPacket* packet = new ASFPacket ();
 	
 	if (!parser->ReadPacket (packet, current_packet_index)) {
 		ASF_LOG ("ASFFrameReader::ReadMore (): could not read more packets.\n");
@@ -713,7 +940,6 @@ ASFFrameReader::Write (void* destination)
 	if (payloads == NULL)
 		return false;
 
-	//void* start = destination;
 	gint32 i = -1;
 	while (payloads [++i] != NULL) {
 		memcpy (destination, payloads [i]->payload_data, payloads [i]->payload_data_length);
@@ -723,3 +949,38 @@ ASFFrameReader::Write (void* destination)
 	return true;
 }
 
+void 
+ASFFrameReader::RemoveAll ()
+{
+	ASFFrameReaderData* current = first, *next = NULL;
+	while (current != NULL) {
+		next = current->next;
+		delete current;
+		current = next;
+	}
+	first = NULL;
+	last = NULL;
+}
+
+void
+ASFFrameReader::Remove (ASFFrameReaderData* data)
+{
+	if (data->prev != NULL)
+		data->prev->next = data->next;
+	
+	if (data->next != NULL)
+		data->next->prev = data->prev;
+		
+	if (data == first)
+		first = data->next;
+		
+	if (data == last)
+		last = data->prev;
+
+	delete data;
+}
+
+	
+	
+	
+	

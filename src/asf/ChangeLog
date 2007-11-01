@@ -1,3 +1,8 @@
+2007-11-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h, asf-ffmpeg.h: Code cleanup, mostly moved implementation to
+	  the cpp file, some refactoring.
+
 2007-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.cs, asf.h, asf-generated.cpp, asf-generated.h,

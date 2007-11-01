@@ -144,7 +144,7 @@ public:
 		return result != 0; // Is this correct
 	}
 	
-	virtual bool Seek (size_t offset, int mode)
+	virtual bool SeekInternal (size_t offset, int mode)
 	{
 		//printf ("FFMPEGSource::Seek (%i, %i).\n", offset, mode);
 		
@@ -152,6 +152,9 @@ public:
 		
 		return result; // Is this correct?
 	}
+	
+	virtual bool Eof () { return url_feof (buffer); }
+	virtual bool CanSeek () { return true; }
 	
 	virtual gint64 Position () 
 	{
