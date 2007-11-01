@@ -30,7 +30,11 @@ public:
 		this->npp = NULL;
 		this->stream = NULL;
 		
-		base_ref (dl);
+		// The Downloader will call destroy_state from it's destructor,
+		// but if we ref the Downloader, its destructor will never get called.
+		// No need to keep a ref, since this instance will never live longer
+		// than its Downloader.
+		// base_ref (dl);
 	}
 
 	~PluginDownloader ()
@@ -39,7 +43,7 @@ public:
 		verb = NULL;
 		g_free (uri);
 		uri = NULL;
-		base_unref (dl);
+		// base_unref (dl);
 		dl = NULL;
 	}
 

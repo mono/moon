@@ -1,3 +1,8 @@
+2007-11-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.cpp: Don't keep a ref to the Downloader, it causes a circular
+	  reference.
+
 2007-10-31  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Don't link in cairo, pixman, or anything else that we
