@@ -1,3 +1,7 @@
+2007-11-01  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Generate install.js from install.js.in
+
 2007-10-29  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Changes to include ffmpeg libs in the XPI package

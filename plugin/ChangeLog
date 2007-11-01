@@ -1,5 +1,10 @@
 2007-11-01  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* install.js.in: Get the version and the target CPU from configure and
+	do some error checking, including checking that the platform matches
+
+2007-11-01  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* Makefile.am: Apparently $(builddir) is a newer autotools feature not
 	available on SuSE 10.1 so we'll just not use it.
 

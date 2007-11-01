@@ -1,0 +1,43 @@
+var NAME = "Novell Moonlight";
+var VERSION = "@VERSION@";
+var PLID = "@novell.com/" + NAME + ",version=" + VERSION;
+var CPU = "@target_cpu@";
+
+var LOADER = "libmoonloader.so";
+var PLUGIN = "libmoonplugin.so";
+var LIB = "libmoon.so";
+var AVUTIL = "libavutil.so";
+var SWSCALE = "libswscale.so";
+var AVCODEC = "libavcodec.so";
+var AVFORMAT = "libavformat.so";
+
+var err = 0;
+
+err += initInstall(NAME, PLID, VERSION);
+
+var re = new RegExp("Linux .*" + CPU);
+if (!re.exec(platform)) {
+	alert("This package supports Linux " + CPU + " but your browser reports that it is " + platform + ".\nPlease use a package that matches your browser's platform.");
+	cancelInstall();
+}
+
+/* For some reason Mozilla can only tell us the global plugin directory,
+ * so we have to guess it from the user's profile. */
+var plugins = getFolder("Profile", "../../plugins");
+err += addFile (PLID, VERSION, LOADER, plugins, null);
+err += addFile (PLID, VERSION, PLUGIN, plugins, "/moonlight/" + PLUGIN);
+err += addFile (PLID, VERSION, LIB, plugins, "/moonlight/" + LIB);
+err += addFile (PLID, VERSION, AVUTIL, plugins, "/moonlight/" + AVUTIL);
+err += addFile (PLID, VERSION, SWSCALE, plugins, "/moonlight/" + SWSCALE);
+err += addFile (PLID, VERSION, AVCODEC, plugins, "/moonlight/" + AVCODEC);
+err += addFile (PLID, VERSION, AVFORMAT, plugins, "/moonlight/" + AVFORMAT);
+
+if (err != 0) {
+	cancelInstall(err);
+} else {
+	err += performInstall ();
+}
+
+if (err == 0) {
+	alert("Succesfully installed " + NAME + " " + VERSION);
+}
