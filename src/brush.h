@@ -94,6 +94,7 @@ void		solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *co
 
 
 // note: abstract in C#
+/* @ContentProperty="GradientStops" */
 class GradientBrush : public Brush {
  public:
 	static DependencyProperty* ColorInterpolationModeProperty;

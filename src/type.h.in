@@ -55,10 +55,11 @@ public:
 	// END_MANAGED_MAPPING
 		};
 
-	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, bool value_type);
-	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst);
+	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, const char *content_property, bool value_type);
+	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, const char *content_property);
 	static Type* RegisterType (const char *name, Type::Kind type, Type::Kind parent);
 	static Type* RegisterType (const char *name, Type::Kind type, bool value_type);
+
 	static Type* Find (const char *name);
 	static Type* Find (Type::Kind type);
 	
@@ -66,6 +67,7 @@ public:
 	Type::Kind parent;
 	Type::Kind type;
 	char *name;
+	const char *content_property;
 	bool value_type;
 
 	void RegisterEvent (const char *event_name);

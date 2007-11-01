@@ -162,6 +162,7 @@ class TransformCollection : public Collection {
 };
 TransformCollection* transform_collection_new ();
 
+/* @ContentProperty="Children" */
 class TransformGroup : public Transform {
 public:
 	static DependencyProperty* ChildrenProperty;

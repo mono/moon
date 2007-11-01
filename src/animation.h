@@ -457,7 +457,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 };
 
 
-
+/* @ContentProperty="KeyFrames" */
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
 	DoubleAnimationUsingKeyFrames ();
@@ -480,7 +480,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 };
 
 
-
+/* ContentProperty="KeyFrames" */
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
  public:
 	ColorAnimationUsingKeyFrames ();
@@ -502,6 +502,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 };
 
+/* @ContentProperty="KeyFrames" */
 class PointAnimationUsingKeyFrames : public PointAnimation {
  public:
 	PointAnimationUsingKeyFrames ();
@@ -523,6 +524,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 };
 
+/* @ContentProperty="Children" */
 class Storyboard : public ParallelTimeline {
  public:
 	Storyboard ();
@@ -559,6 +561,7 @@ class Storyboard : public ParallelTimeline {
 	static void invoke_completed (EventObject *sender, gpointer calldata, gpointer data);
 };
 
+/* @ContentProperty="Storyboard" */
 class BeginStoryboard : public TriggerAction {
  public:
 	BeginStoryboard () { }

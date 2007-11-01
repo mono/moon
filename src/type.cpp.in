@@ -125,7 +125,13 @@ Type::GetEventCount ()
 Type *
 Type::RegisterType (const char *name, Type::Kind type, bool value_type)
 {
-	return RegisterType (name, type, Type::INVALID, NULL, value_type);
+	return RegisterType (name, type, Type::INVALID, NULL, NULL, value_type);
+}
+
+Type *
+Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent)
+{
+	return RegisterType (name, type, parent, NULL, NULL, false);
 }
 
 void
@@ -135,19 +141,13 @@ Type::free_type (gpointer type)
 }
 
 Type *
-Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent)
+Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, const char *content_property)
 {
-	return RegisterType (name, type, parent, NULL, false);
+	return RegisterType (name, type, parent, create_inst, content_property, false);
 }
 
 Type *
-Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst)
-{
-	return RegisterType (name, type, parent, create_inst, false);
-}
-
-Type *
-Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, bool value_type)
+Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create_inst_func *create_inst, const char *content_property, bool value_type)
 {
 	if (types == NULL) {
 		types = (Type**)calloc (Type::LASTTYPE, sizeof (Type*));
@@ -166,6 +166,7 @@ Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create
 	g_hash_table_insert (types_by_name, result->name, result);
 
 	result->create_inst = create_inst;
+	result->content_property = content_property;
 
 	return result;
 }

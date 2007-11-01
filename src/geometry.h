@@ -77,6 +77,7 @@ GeometryCollection* geometry_collection_new ();
 //
 // GeometryGroup
 //
+/* @ContentProperty="Children" */
 class GeometryGroup : public Geometry {
  public:
 	static DependencyProperty* ChildrenProperty;
@@ -154,6 +155,7 @@ PathFigureCollection* path_figure_collection_new ();
 //
 // PathGeometry
 //
+/* @ContentProperty="Figures" */
 class PathGeometry : public Geometry {
  public:
 	static DependencyProperty* FiguresProperty;
@@ -213,6 +215,7 @@ PathSegmentCollection* path_segment_collection_new ();
 //
 // PathFigure
 //
+/* @ContentProperty="Segments" */
 class PathFigure : public DependencyObject {
  protected:
 	int path_size;

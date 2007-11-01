@@ -13,10 +13,11 @@ class gen {
 		ArrayList classes = new ArrayList ();
 		Hashtable bases = new Hashtable ();
 		Hashtable cctors = new Hashtable ();
+		Hashtable contprops = new Hashtable ();
 
-		GetClasses (classes, bases, cctors);
+		GetClasses (classes, bases, cctors, contprops);
 
-		GenerateTypeCpp (classes, bases, cctors);
+		GenerateTypeCpp (classes, bases, cctors, contprops);
 		GenerateValueH (classes, bases);	
 		GenerateValueCpp (classes, bases);
 		GenerateTypeH (classes, bases);
@@ -76,10 +77,11 @@ class gen {
 		}
 	}
 
-	static void GetClasses (ArrayList classes, Hashtable bases, Hashtable cctors)
+	static void GetClasses (ArrayList classes, Hashtable bases, Hashtable cctors, Hashtable contprops)
 	{
 		string [] files = Directory.GetFiles (Environment.CurrentDirectory, "*.h");
 		ArrayList tmp = new ArrayList ();
+		string next_content_property = null;
 
 		foreach (string file in files) {
 			string [] lines = File.ReadAllLines (file);
@@ -88,13 +90,15 @@ class gen {
 
 				// This could probably be replaced by a regexp
 				if (!l.Trim ().StartsWith ("class ")) {
-				// Console.WriteLine ("line:  " + l);
-                                        if (Regex.IsMatch (l, "_new\\s*\\(\\s*(void)?\\s*\\);")) {
-				// cctors [CToPascal (l.Trim ())] = CCtor (l.Trim ());
-				// Console.WriteLine ("{0}  == {1}", CToPascal (l.Trim ()), CCtor (l.Trim ()));
-				//				ClassNameFromCCtor (l.Trim ());
-				// CCtor (l.Trim ());
 
+
+					Match m = Regex.Match (l, "@ContentProperty\\s*=\\s*\"(.*)\"");
+					if (m.Success) {
+						next_content_property = m.Groups [1].Value;
+					}
+
+
+                                        if (Regex.IsMatch (l, "_new\\s*\\(\\s*(void)?\\s*\\);")) {
                                                 MapClassNameToCCtor (l.Trim (), cctors);
                                         }
 					continue;
@@ -126,10 +130,14 @@ class gen {
 					//Console.WriteLine ("Already added " + c);
 				} else {
 					tmp.Add (c.Trim ());
+					if (next_content_property != null) {
+						contprops [c.Trim ()] = next_content_property;
+					}
 				}
 				if (p != null && p != string.Empty) 
 					bases.Add (c.Trim (), p.Trim ());
-				
+
+				next_content_property = null;
 			}
 		}
 		tmp.Sort ();
@@ -266,7 +274,7 @@ class gen {
 //		File.WriteAllText (file, text.ToString ());
 	}
 
-	static void GenerateTypeCpp (ArrayList classes, Hashtable hash, Hashtable cctors)
+	static void GenerateTypeCpp (ArrayList classes, Hashtable hash, Hashtable cctors, Hashtable contprops)
 	{
 		StringBuilder text = new StringBuilder ();
 		text.AppendLine ("/*");
@@ -284,8 +292,10 @@ class gen {
 
 			if (p != null && p != string.Empty) {
                                 string cctor = cctors [c] as string;
-				text.AppendLine (String.Format ("\tType::RegisterType (\"{0}\", Type::{1}, Type::{2}{3});", c, getU(c), getU (p),
-                                                cctor != null ? String.Concat (", (create_inst_func *) ", cctor) : String.Empty));
+				string ctprp = contprops [c] as string;
+				text.AppendLine (String.Format ("\tType::RegisterType (\"{0}\", Type::{1}, Type::{2}, {3}, {4});", c, getU(c), getU (p),
+                                                cctor != null ? String.Concat ("(create_inst_func *) ", cctor) : "NULL",
+						ctprp != null ? String.Concat ("\"", ctprp, "\"") : "NULL"));
 			}
 		}
 		text.AppendLine ("\ttypes_init_manually ();");

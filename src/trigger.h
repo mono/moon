@@ -21,6 +21,7 @@ class TriggerAction : public DependencyObject {
 };
 
 
+/* @ContentProperty="Actions" */
 class EventTrigger : public DependencyObject {
  public:
 	EventTrigger ();

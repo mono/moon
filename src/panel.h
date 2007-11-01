@@ -12,6 +12,7 @@
 
 #include "frameworkelement.h"
 
+/* @ContentProperty="Children" */
 class Panel : public FrameworkElement {
 	Brush *background;
 

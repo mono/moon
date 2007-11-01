@@ -81,6 +81,7 @@ public:
 LineBreak *line_break_new (void);
 
 
+/* @ContentProperty="Text" */
 class Run : public Inline {
 public:
 	static DependencyProperty *TextProperty;
@@ -96,6 +97,7 @@ char *run_get_text (Run *run);
 void run_set_text (Run *run, const char *value);
 
 
+/* @ContentProperty="Inlines" */
 class TextBlock : public FrameworkElement {
 	union {
 		PangoFontDescription *pango;
