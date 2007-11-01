@@ -96,6 +96,15 @@ AnimationStorage::~AnimationStorage ()
 {
 	if (baseValue)
 		delete baseValue;
+	
+	if (clock != NULL) {
+		clock->RemoveHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+		clock->RemoveHandler (clock->CurrentStateInvalidatedEvent, reset_property_value, this);
+	}
+	
+	if (targetobj != NULL) {
+		targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+	}
 }
 
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)

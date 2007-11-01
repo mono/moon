@@ -1,3 +1,8 @@
+2007-11-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* animation.cpp: AnimationStorage: unregister from registered events on
+	  destruction.
+
 2007-11-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::SetValue): Oops - if we are setting an
