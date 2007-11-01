@@ -79,11 +79,6 @@ Moonlight: Silverlight 1.1 API support
 
 		  Use the --with-moonlight=yes option to configure
 
-		* You will need to patch your Mono runtime directory
-		  with the following patch:
-
-		http://primates.ximian.com/~lupus/mono-delegate-appdomain.diff
-
 		* Install the "olive" module from SVN, and use the
 		  --with-moonlight=yes option to configure.
 			
