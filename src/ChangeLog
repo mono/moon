@@ -1,3 +1,9 @@
+2007-11-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::SetValue): Oops - if we are setting an
+	empty string on the Text property, then we need to clear out
+	whatever was there before (if anything).
+
 2007-10-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes for handling lwsp cdata between <Run> elements.
