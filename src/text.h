@@ -189,7 +189,6 @@ public:
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
-	virtual void ComputeTransform ();
 	
 	virtual Value *GetValue (DependencyProperty *property);
 	virtual void SetValue (DependencyProperty *property, Value *value);

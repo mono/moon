@@ -1,5 +1,22 @@
 2007-11-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextFontDescription::SetScale): Removed, this hack
+	wasn't working as well as I'd hoped.
+	(TextFontDescription::GetScale): Same.
+	(TextFontDescription::CreatePattern): If the requested font size
+	is < 41.0 (seems to be the magic number where scaling loses impact
+	on metrics), use FontSize=41.0 and do proper scaling to get the
+	actual size we want. My worry was that asking for small font sizes
+	(smaller than 16.0?) would look ugly with this hack, but that is
+	surprisingly not true. By always requesting a font size that will
+	yield the generic font metrics (e.g. not some hacked font size),
+	we will always be able to wrap identically no matter what FontSize
+	is requested (so long as the width gets scaled appropriately).
+
+	* text.cpp (TextBlock::ComputeTransform): Removed.
+
+2007-11-02  Jeffrey Stedfast  <fejj@novell.com>
+
 	* font.cpp (RenderLine): Render glyphs with index 0 too, so that
 	we render an empty box for glyphs not in the font (just like
 	Silverlight).

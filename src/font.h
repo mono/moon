@@ -79,7 +79,6 @@ enum FontMask {
 	FontMaskStretch  = 1 << 3,
 	FontMaskSize     = 1 << 4,
 	FontMaskFilename = 1 << 5,
-	FontMaskScale    = 1 << 6,
 };
 
 
@@ -165,7 +164,6 @@ class TextFontDescription {
 	FontStyles style;
 	FontWeights weight;
 	FontStretches stretch;
-	double scale;
 	double size;
 	int index;
 	
@@ -204,9 +202,6 @@ public:
 	
 	double GetSize ();
 	void SetSize (double size);
-	
-	double GetScale ();
-	void SetScale (double scale);
 	
 	char *ToString ();
 };

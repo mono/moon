@@ -820,31 +820,6 @@ TextBlock::Paint (cairo_t *cr)
 }
 
 void
-TextBlock::ComputeTransform ()
-{
-	UIElement::ComputeTransform ();
-	
-	// We extract the scale component of the absolute transform
-	// matrix and apply it to the font so that if we are scaling
-	// up, the rendered glyphs don't look really bad. The font
-	// itself will reverse-scale the rendering so that once the
-	// trasnform is applied, it renders at the correct size.
-	
-	if (!RENDER_USING_PANGO) {
-		double scale = font.custom->GetScale ();
-		
-		if (absolute_xform.yy != scale) {
-			if (absolute_xform.yy <= 1.0)
-				font.custom->UnsetFields (FontMaskScale);
-			else
-				font.custom->SetScale (absolute_xform.yy);
-			
-			dirty = true;
-		}
-	}
-}
-
-void
 TextBlock::OnPropertyChanged (DependencyProperty *prop)
 {
 	bool invalidate = true;

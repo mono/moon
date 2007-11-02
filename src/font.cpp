@@ -661,7 +661,6 @@ TextFontDescription::TextFontDescription ()
 	weight = FontWeightsNormal;
 	stretch = FontStretchesNormal;
 	size = 14.666f;
-	scale = 1.0f;
 	index = 0;
 }
 
@@ -678,6 +677,8 @@ TextFontDescription::~TextFontDescription ()
 	g_free (filename);
 	g_free (family);
 }
+
+#define MIN_FONT_SIZE 41.0f
 
 FcPattern *
 TextFontDescription::CreatePattern ()
@@ -703,8 +704,13 @@ TextFontDescription::CreatePattern ()
 	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
 	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
 	FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
-	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size * scale);
-	FcPatternAddDouble (pattern, FC_SCALE, scale);
+	if (size < MIN_FONT_SIZE) {
+		FcPatternAddDouble (pattern, FC_PIXEL_SIZE, MIN_FONT_SIZE);
+		FcPatternAddDouble (pattern, FC_SCALE, MIN_FONT_SIZE / size);
+	} else {
+		FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
+		FcPatternAddDouble (pattern, FC_SCALE, 1.0);
+	}
 	
 	FcDefaultSubstitute (pattern);
 	
@@ -780,9 +786,6 @@ TextFontDescription::UnsetFields (uint8_t mask)
 	if (mask & FontMaskSize)
 		size = 14.666f;
 	
-	if (mask & FontMaskScale)
-		scale = 1.0f;
-	
 	set &= ~mask;
 }
 
@@ -847,15 +850,6 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 		}
 		
 		set |= FontMaskSize;
-	}
-	
-	if ((desc->set & FontMaskScale) && (!(set & FontMaskScale) || replace)) {
-		if (scale != desc->scale) {
-			scale = desc->scale;
-			changed = true;
-		}
-		
-		set |= FontMaskScale;
 	}
 	
 	if (changed && font != NULL) {
@@ -972,19 +966,6 @@ TextFontDescription::SetSize (double size)
 {
 	this->size = size;
 	set |= FontMaskSize;
-}
-
-double
-TextFontDescription::GetScale ()
-{
-	return scale;
-}
-
-void
-TextFontDescription::SetScale (double scale)
-{
-	this->scale = scale;
-	set |= FontMaskScale;
 }
 
 char *
