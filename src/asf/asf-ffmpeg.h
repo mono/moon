@@ -31,7 +31,10 @@ void AVFormatContext_dump (AVFormatContext* c);
 void AVStream_dump (AVStream* s, int t);
 void AVCodecContext_dump (AVCodecContext* s, int t);
 void AVPacket_dump (AVPacket* s, int t);
-
+void AVRational_dump (AVRational* s, int t);
+void AVRational_dump (AVRational s, int t);
+char* AVRational_tostring (AVRational s);
+char* AVFrac_tostring (AVFrac s);
 
 int ffmpeg_asf_probe(AVProbeData *pd);
 int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap);

@@ -1,3 +1,11 @@
+2007-11-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: Add a comment.
+	* asf-ffmpeg.cpp, asf-ffmpeg.h: Set a couple of ffmpeg stream and packet
+	  fields correctly. Update debug code, remove dead code.
+	* asf-test.cpp: Only show object tracking summary if we're actually doing
+	  object tracking.
+
 2007-11-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h, asf-ffmpeg.h: Code cleanup, mostly moved implementation to

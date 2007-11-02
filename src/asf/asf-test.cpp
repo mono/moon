@@ -302,7 +302,7 @@ test_file (const char* filename)
 	delete reader;
 
 	
-#if DEBUG
+#if OBJECT_TRACKING
 	ObjectTracker::PrintStatus ("ASFPacket");
 	ObjectTracker::PrintStatus ("ASFFrameReader");
 	ObjectTracker::PrintStatus ("ASFFrameReaderData");

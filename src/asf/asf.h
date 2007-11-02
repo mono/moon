@@ -36,12 +36,12 @@ class ASFSource;
 #define ASF_CHECK_VAL(condition, val, ...) if (condition) { ASF_ERROR_VAL (val, __VA_ARGS__); }
 #define ASF_CHECK(condition, ...) if (condition) { ASF_ERROR (__VA_ARGS__); }
 
-#if log //|| true
+#if DEBUG && log //|| true
 #define ASF_LOG(...) printf (__VA_ARGS__)
 #else
 #define ASF_LOG(...)
 #endif
-#if dump //|| true
+#if DEBUG && dump //|| true
 #define ASF_DUMP(...) printf (__VA_ARGS__)
 #else
 #define ASF_DUMP(...)
@@ -244,7 +244,9 @@ public:
 	// Returns 0 on failure, otherwise the offset of the packet index.
 	guint64 GetPacketOffset (gint32 packet_index);
 	
+	// Returns the index of the packet at the specified offset (from the beginning of the file)
 	gint32 GetPacketIndex (guint64 offset);
+	
 	// Searches the header objects for the specified guid
 	// returns -1 if nothing is found.
 	int GetHeaderObjectIndex (const asf_guid* guid, int start = 0);

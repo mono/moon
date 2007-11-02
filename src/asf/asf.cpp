@@ -423,7 +423,8 @@ ASFParser::GetPacketOffset (gint32 packet_index)
 		AddError (g_strdup_printf ("ASFParser::GetPacketOffset (%i): Invalid packet index (there are %llu packets).", packet_index, file_properties->data_packet_count)); 
 		return 0;
 	}
-
+	
+	// CHECK: what if min_packet_size != max_packet_size?
 	return packet_offset + packet_index * file_properties->min_packet_size;
 }
 
