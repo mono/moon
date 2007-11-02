@@ -1,5 +1,11 @@
 2007-11-01  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* plugin.cpp: Replace PLUGIN_OURVERSION with VERSION (from config.h)
+	* moonlight.h: Put the version in the description string for the sake
+	of our QA folks
+
+2007-11-01  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* install.js.in: Get the version and the target CPU from configure and
 	do some error checking, including checking that the platform matches
 

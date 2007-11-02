@@ -40,7 +40,7 @@ plugin_menu_about (PluginInstance *plugin)
 	GtkAboutDialog *about = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
 
 	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
-	gtk_about_dialog_set_version (about, PLUGIN_OURVERSION);
+	gtk_about_dialog_set_version (about, VERSION);
 
 	gtk_about_dialog_set_copyright (about, "Copyright 2007 Novell, Inc. (http://www.novell.com/)");
 	gtk_about_dialog_set_website (about, "http://mono-project.com/Moonlight/");
@@ -66,7 +66,7 @@ plugin_show_menu (PluginInstance *plugin)
 
 	menu = gtk_menu_new();
 	
-	name = g_strdup_printf ("%s %s", PLUGIN_OURNAME, PLUGIN_OURVERSION);
+	name = g_strdup_printf ("%s %s", PLUGIN_OURNAME, VERSION);
 	menu_item = gtk_menu_item_new_with_label (name);
 	g_free (name);
 	
