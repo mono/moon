@@ -447,7 +447,7 @@ TextFont::GetGlyphInfo (gunichar unichar)
 			g_free (glyph->bitmap->buffer);
 			glyph->bitmap->buffer = NULL;
 			
-			// Don't free the bitmap as we'll just be amlloc'ing it again anyway
+			// Don't free the bitmap as we'll just be malloc'ing it again anyway
 			//g_free (glyph->bitmap);
 			//glyph->bitmap = NULL;
 		}
@@ -1716,15 +1716,13 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 				if (!(glyph = font->GetGlyphInfo (text[i])))
 					continue;
 				
-				if (glyph->index > 0) {
-					x1 += font->Kerning (prev, glyph->index);
-					prev = glyph->index;
-					
-					if (!font->IsScalable ())
-						font->Render (cr, glyph, x1, y1);
-					else
-						font->Path (cr, glyph, x1, y1);
-				}
+				x1 += font->Kerning (prev, glyph->index);
+				prev = glyph->index;
+				
+				if (!font->IsScalable ())
+					font->Render (cr, glyph, x1, y1);
+				else
+					font->Path (cr, glyph, x1, y1);
 				
 				x1 += glyph->metrics.horiAdvance;
 			}

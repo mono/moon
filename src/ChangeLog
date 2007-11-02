@@ -1,3 +1,12 @@
+2007-11-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (RenderLine): Render glyphs with index 0 too, so that
+	we render an empty box for glyphs not in the font (just like
+	Silverlight).
+
+	* text.cpp (ComputeTransform): Fixed to use the correct matrix for
+	getting the scale values.
+
 2007-11-01  Jackson Harper  <jackson@ximian.com>
 
 	* trigger.h:
