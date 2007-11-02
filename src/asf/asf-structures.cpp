@@ -368,6 +368,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 	replicated_data = NULL;
 	payload_data_length =  0;
 	payload_data = NULL;
+	presentation_time = 0;
 	
 	if (!source->ReadEncoded (ppi.get_media_object_number_length_type (), &media_object_number))
 		return false;
@@ -378,31 +379,34 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 	if (!source->ReadEncoded (ppi.get_replicated_data_length_type (), &replicated_data_length))
 		return false;
 	
-	if (replicated_data_length == 1) {
-		// compressed data
-		source->parser->AddError ("Compressed payload not implemented.");
-		return false;
-	} else if (replicated_data_length >= 2 && replicated_data_length < 7) {
+	if (replicated_data_length >= 2 && replicated_data_length < 7) {
 		source->parser->AddError (g_strdup_printf ("Invalid replicated data length: %i", replicated_data_length));
 		return false;
-	} else if (replicated_data_length >= 8) {
-		if (replicated_data_length > parser->file_properties->max_packet_size) {
-			parser->AddError ("Data corruption in payload.");
-			return false;
-		}
+	} 
 		
-		replicated_data = (asf_byte*) parser->MallocVerified (replicated_data_length);
-		if (replicated_data == NULL) {
-			return false;
-		}
-		
-		if (!source->Read (replicated_data, replicated_data_length))
-			return false;
+	if (replicated_data_length > parser->file_properties->max_packet_size) {
+		parser->AddError ("Data corruption in payload.");
+		return false;
 	}
 	
+	replicated_data = (asf_byte*) parser->MallocVerified (replicated_data_length);
+	if (replicated_data == NULL) {
+		return false;
+	}
+	
+	if (!source->Read (replicated_data, replicated_data_length))
+		return false;
+
+	if (replicated_data_length == 1) {
+		presentation_time = offset_into_media_object;
+	} else if (replicated_data_length >= 8) {
+		presentation_time = *(((asf_dword*) replicated_data) + 1);
+	}
+
 	if (mp != NULL) {
 		if (!source->ReadEncoded (mp->get_payload_length_type (), &payload_data_length))
 			return false;
+			
 		if (payload_data_length == 0) {
 			source->parser->AddError ("Warning: Invalid payload data length: can't be 0.");
 			//return false;
@@ -420,7 +424,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 		payload_length -= ASF_DECODE_PACKED_SIZE (ppi.get_media_object_number_length_type ());
 		payload_length -= ASF_DECODE_PACKED_SIZE (ppi.get_offset_into_media_object_length_type ());
 		payload_length -= ASF_DECODE_PACKED_SIZE (ppi.get_replicated_data_length_type ());
-		payload_length -= replicated_data_length; // TODO: when compressed?
+		payload_length -= replicated_data_length;
 		// minus the Padding Length.
 		payload_length -= ppi.padding_length;
 		ASF_LOG ("payload_length: %i. packet_length: %i, ppi.get_struct_size: %i, replicated_data_length: %i, padding_length: %i, ecd.get_struct_size: %i\n",
@@ -448,7 +452,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 		if (!source->Read (payload_data, payload_data_length))
 			return false;
 	}
-	
+
 	return true;
 }
 
@@ -477,36 +481,177 @@ asf_single_payload_dump (asf_single_payload* obj)
 }
 
 bool
+asf_multiple_payloads::ResizeList (ASFParser* parser, gint32 requested_size)
+{
+	if (requested_size <= payloads_size)
+		return true;
+		
+	asf_single_payload** new_list;
+	
+	new_list = (asf_single_payload**) parser->MallocVerified ((requested_size + 1) * sizeof (asf_single_payload*));
+	
+	if (new_list == NULL) {
+		return false;
+	}
+	
+	if (payloads != NULL) {
+		memcpy (new_list, payloads, sizeof (asf_single_payload*) * payloads_size);		
+		g_free (payloads);
+	}
+	
+	payloads = new_list;
+	payloads_size = requested_size;
+	
+	return true;
+}
+
+gint32 
+asf_multiple_payloads::CountCompressedPayloads (ASFParser* parser, asf_single_payload* payload)
+{
+	asf_byte* data = payload->payload_data;
+	asf_dword length = payload->payload_data_length;
+	asf_byte size = 0;
+	guint32 offset = 0;
+	gint32 counter = 0;
+	
+	if (data == NULL) {
+		parser->AddError ("Compressed payload is corrupted.");
+		return false;
+	}
+	
+	while (true) {
+		counter++;
+		size = *(data + offset);
+		offset += size;
+		if (offset > length) {
+			parser->AddError ("Compressed payloads are corrupted.");
+			return false;
+		} else if (offset == length) {
+			break;
+		}
+	};
+	
+	return counter;
+}
+
+bool
+asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, gint32 count, gint32 start_index)
+{
+	asf_byte* data = first->payload_data;
+	asf_byte size = 0;
+	guint32 offset = 0;
+	asf_single_payload* payload = NULL;
+
+	for (int i = 0; i < count; i++) {
+		size = *(data + offset);
+		offset += size;
+		
+		payload = new asf_single_payload ();
+		payloads [start_index + i] = payload;
+		
+		payload->stream_number = first->stream_number;
+		payload->is_key_frame = first->is_key_frame;
+		payload->media_object_number = first->media_object_number + i;
+		payload->offset_into_media_object = 0;
+		payload->replicated_data_length = 0;
+		payload->replicated_data = NULL;
+		payload->presentation_time = first->presentation_time + i * first->get_presentation_time_delta ();
+		payload->payload_data_length = size;
+		payload->payload_data = (asf_byte*) parser->Malloc (size);
+		if (payload->payload_data == NULL) {
+			return false;
+		}
+		memcpy (data + offset, payload->payload_data, size);
+	}
+	
+	return true;
+}
+
+bool
 asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi)
 {
 	ASFSource* source = parser->source;
-	int count;
+	gint32 count;
 	
-	if (!source->Read (&payload_flags, 1))
-		return false;
-	
-	count = get_number_of_payloads (); // number of payloads is encoded in a byte, no need to check for extreme values.
-	
-	if (count <= 0) {
-		source->parser->AddError (g_strdup_printf ("Invalid number of payloads: %i", count));
-		return false;
-	}
-
-	payloads = (asf_single_payload**) parser->MallocVerified (sizeof (asf_single_payload*) * (count + 1));
-	if (payloads == NULL) {
-		return false;
-	}
-	
-	ASF_LOG ("asf_multiple_payloads::FillInAll (): Reading %i payloads...\n", count); 
-	
-	for (int i = 0; i < count; i++) {
-		payloads [i] = new asf_single_payload ();
-		if (!payloads [i]->FillInAll (parser, ecd, ppi, this))
+	if (ppi.is_multiple_payloads_present ()) {		
+		if (!source->Read (&payload_flags, 1))
 			return false;
-		ASF_DUMP ("-Payload #%i:\n", i + 1);
-		asf_single_payload_dump (payloads [i]);
+		
+		count = payload_flags & 0x3F; // number of payloads is encoded in a byte, no need to check for extreme values.
+		
+		if (count <= 0) {
+			source->parser->AddError (g_strdup_printf ("Invalid number of payloads: %i", count));
+			return false;
+		}
+
+		if (!ResizeList (parser, count)) {
+			return false;
+		}
+		
+		ASF_LOG ("asf_multiple_payloads::FillInAll (): Reading %i payloads...\n", count); 
+		
+		gint32 current_index = 0;
+		for (int i = 0; i < count; i++) {
+			payloads [current_index] = new asf_single_payload ();
+			
+			if (!payloads [current_index]->FillInAll (parser, ecd, ppi, this))
+				return false;
+			
+			if (payloads [current_index]->is_compressed ()) {
+				asf_single_payload* first = payloads [current_index];
+				gint32 number = CountCompressedPayloads (parser, first);
+				if (number <= 0) {
+					return false;
+				}
+				if (!ResizeList (parser, number + payloads_size)) {
+					return false;
+				}
+				if (!ReadCompressedPayload (parser, first, number, current_index)) {
+					return false;
+				}
+				delete first;
+			}
+			
+			ASF_DUMP ("-Payload #%i:\n", current_index + 1);
+			asf_single_payload_dump (payloads [current_index]);
+			
+			current_index++;
+		}
+	} else {
+		asf_single_payload* payload = new asf_single_payload ();
+		if (!payload->FillInAll (parser, ecd, ppi, NULL)) {
+			delete payload;
+			return false;
+		}
+		
+		if (payload->is_compressed ()) {
+			gint32 counter = 0;
+			
+			counter = CountCompressedPayloads (parser, payload);
+			if (counter <= 0) {
+				return false;
+			}
+						
+			if (!ResizeList (parser, counter)) {
+				return false;
+			}
+			
+			if (!ReadCompressedPayload (parser, payload, counter, 0)) {
+				return false;
+			}
+			
+			delete payload;
+			
+		} else {
+			payloads = (asf_single_payload**) parser->MallocVerified (sizeof (asf_single_payload*) * 2);
+			if (payloads == NULL) {
+				return false;
+			}		
+			payloads [0] = payload;
+			
+			payload_flags = 1; //  1 payload
+		}
 	}
-	
 	return true;
 }
 

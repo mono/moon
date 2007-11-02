@@ -199,22 +199,33 @@ struct asf_single_payload {
 	asf_byte* replicated_data;
 	asf_dword payload_data_length;
 	asf_byte* payload_data;
+	asf_dword presentation_time;
 	
 	bool FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
 	
+	guint8 get_presentation_time_delta ()
+	{
+		if (replicated_data_length == 1) {
+			return *payload_data;
+		}
+		return 0;
+	}
+	
 	gint64 get_presentation_time ()
 	{
-		if (replicated_data_length >= 8) {
-			return * (((asf_dword*) replicated_data) + 1);
-		}
-		return -1;
+		return presentation_time;
+	}
+	
+	bool is_compressed ()
+	{
+		return replicated_data_length == 1;
 	}
 	
 	asf_single_payload () 
 	{
 		stream_number = 0; media_object_number = 0; offset_into_media_object = 0;
 		replicated_data_length = 0; replicated_data = 0; payload_data_length = 0;
-		payload_data = 0;
+		payload_data = 0; presentation_time = 0;
 	}
 	~asf_single_payload ();
 };
@@ -225,12 +236,17 @@ struct asf_multiple_payloads {
 	asf_byte payload_flags;
 	
 	asf_single_payload** payloads;
+	gint32 payloads_size;
 	
-	int get_number_of_payloads () { return payload_flags & 0x3F; }
+	int get_number_of_payloads () { return payloads_size; }
 	int get_payload_length_type () { return (payload_flags & 0xC0) >> 6; }
 	
+	bool ResizeList (ASFParser* parser, gint32 requested_size);
 	bool FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi);
-	asf_multiple_payloads () { payload_flags = 0; payloads = NULL; }
+	bool ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, gint32 count, gint32 start_index);
+	gint32 CountCompressedPayloads (ASFParser* parser, asf_single_payload* first); // Returns 0 on failure, values > 0 on success.
+	
+	asf_multiple_payloads () { payload_flags = 0; payloads = NULL; payloads_size = 0;}
 	
 	~asf_multiple_payloads () 
 	{

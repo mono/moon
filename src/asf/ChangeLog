@@ -1,5 +1,12 @@
 2007-11-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf-structures.h, asf.cpp, asf-structures.cpp: Implement reading of
+	  compressed payloads. Untested since I haven't found any asf files with
+	  compressed payloads yet.
+	* asf-ffmpeg.cpp: Comment out some code.
+
+2007-11-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: Add a comment.
 	* asf-ffmpeg.cpp, asf-ffmpeg.h: Set a couple of ffmpeg stream and packet
 	  fields correctly. Update debug code, remove dead code.

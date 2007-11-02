@@ -326,7 +326,7 @@ int64_t ffmpeg_asf_read_pts(AVFormatContext *s, int ffmpeg_stream_index, int64_t
 		break;
 	}
 		
-	FFMPEG_LOG ("fmpeg_asf_read_pts: found pts (%lld) of packet index %lld.\n", pts, packet_index);
+	//FFMPEG_LOG ("fmpeg_asf_read_pts: found pts (%lld) of packet index %lld.\n", pts, packet_index);
 	
 	return result;
 }

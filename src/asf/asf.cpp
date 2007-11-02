@@ -179,35 +179,12 @@ ASFParser::ReadPacket (ASFPacket* packet)
 	asf_payload_parsing_information_dump (&ppi);
 	
 	asf_multiple_payloads* mp = new asf_multiple_payloads ();
-	if (ppi.is_multiple_payloads_present ()) {
-		ASF_LOG ("ASFParser::ReadPacket (), reading multiple payloads.\n");
-		if (!mp->FillInAll (this, &ecd, ppi)) {
-			delete mp;
-			return false;
-		}
-	} else {
-		ASF_LOG ("ASFParser::ReadPacket (), reading single payload.\n");
-		asf_single_payload* sp = new asf_single_payload ();
-		if (!sp->FillInAll (this, &ecd, ppi, NULL)) {
-			asf_single_payload_dump (sp);
-			delete sp;
-			delete mp;
-			return false;
-		}
-		//asf_single_payload_dump (sp);
-		mp->payloads = (asf_single_payload**) Malloc (sizeof (asf_single_payload*) * 2);
-		if (mp->payloads == NULL) {
-			AddError ("Data corruption in payloads.");
-			return false;
-		}
-		mp->payloads [0] = sp;
-		mp->payload_flags = 1; // 1 payload
+	if (!mp->FillInAll (this, &ecd, ppi)) {
+		delete mp;
+		return false;
 	}
-	//asf_multiple_payloads_dump (mp);
+
 	packet->payloads = mp;
-	
-//	if (!source->Skip (ppi.padding_length))
-//		return false;
 	
 /*	ASF_LOG ("ASFParser::ReadPacket (): Current position (end of packet): %llx (%lld), start position was: %llx (%lld), difference: %llx (%lld)\n", 
 		source->Position (), source->Position (), 
