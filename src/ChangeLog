@@ -1,5 +1,12 @@
 2007-11-03  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp (ClockGroup::Tick): instead of calling Clock::Stop,
+	call SkipToFill if we have no active child clocks.
+	(ClockGroup::Stop): simplify this.
+	(ClockGroup::Seek): make this look a little more like ::Stop.
+
+2007-11-03  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (repeat_behavior_from_str): add support for the
 	"ff.ffx" format for repeat behaviors.
 

@@ -945,23 +945,17 @@ ClockGroup::Seek (TimeSpan timespan)
 {
 	Clock::Seek (timespan);
 
-	for (GList *l = child_clocks; l; l = l->next) {
-		Clock *c = (Clock*)l->data;
-		c->Seek (seek_time);
-	}
+	for (GList *l = child_clocks; l; l = l->next)
+		((Clock*)l->data)->Seek (seek_time);
 }
 
 void
 ClockGroup::Stop ()
 {
-	if (child_clocks) {
-		for (GList *l = child_clocks; l; l = l->next) {
-			Clock *c = (Clock*)l->data;
-			c->Stop ();
-		}
-	}
-	else
-		Clock::Stop ();
+	for (GList *l = child_clocks; l; l = l->next)
+		((Clock*)l->data)->Stop ();
+
+	Clock::Stop ();
 }
 
 void
@@ -970,6 +964,7 @@ ClockGroup::Tick ()
 	/* recompute our current_time */
 	this->Clock::Tick ();
 
+	// if we're stopped, return immediately
 	if (GetClockState() == Clock::Stopped)
 		return;
 
@@ -999,7 +994,7 @@ ClockGroup::Tick ()
 				return;
 		}
 
-		Clock::Stop ();
+		SkipToFill ();
 	}
 }
 
