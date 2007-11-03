@@ -58,6 +58,9 @@ struct Duration {
 	bool HasTimeSpan () { return k == TIMESPAN; }
 	TimeSpan GetTimeSpan() { return timespan; }
 
+	bool IsAutomatic () { return k == AUTOMATIC; }
+	bool IsForever () { return k == FOREVER; }
+
 	static Duration Automatic;
 	static Duration Forever;
 
@@ -157,6 +160,8 @@ struct RepeatBehavior {
 	bool HasCount() { return k == COUNT; }
 	bool HasDuration () { return k == DURATION; }
 
+	bool IsForever () { return k == FOREVER; }
+
   private:
 	RepeatKind k;
 	gint32 padding;
@@ -233,10 +238,9 @@ class TimeManager : public EventObject {
 
 	TimeSource *GetSource() { return source; }
 
-	TimeSpan GetCurrentTime () { return current_global_time - start_time; }
+	TimeSpan GetCurrentTime ()     { return current_global_time - start_time; }
 	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
-
-	static TimeSpan GetCurrentGlobalTime () { return Instance()->current_global_time; }
+	TimeSpan GetLastTime ()        { return last_global_time - start_time; }
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
@@ -272,6 +276,7 @@ class TimeManager : public EventObject {
 	GList *child_clocks; // XXX should we just have a ClockGroup?
 
 	TimeSpan current_global_time;
+	TimeSpan last_global_time;
 	TimeSpan start_time;
 
 	TimeSpan current_global_time_usec;
@@ -329,10 +334,12 @@ class Clock : public DependencyObject {
 	ClockGroup* GetParent ()          { return parent_clock; }
 	double      GetCurrentProgress () { return current_progress; }
 	TimeSpan    GetCurrentTime ()     { return current_time; }
+	TimeSpan    GetLastTime ()        { return last_time; }
 	Timeline*   GetTimeline ()        { return timeline; }
 	Duration    GetNaturalDuration () { return natural_duration; }
 	bool        GetIsPaused ()        { return is_paused; }
 	bool        GetHasStarted ()      { return has_started; }
+	bool        GetIsReversed ()      { return !forward; }
 
 	TimeSpan GetBeginTime ();
 
@@ -345,6 +352,9 @@ class Clock : public DependencyObject {
 	};
 	ClockState GetClockState () { return current_state; }
 	ClockState GetNewClockState () { return new_state; }
+
+	TimeSpan GetParentTime ();
+	TimeSpan GetLastParentTime ();
 
 	virtual void SpeedChanged () { }
 
@@ -371,6 +381,8 @@ class Clock : public DependencyObject {
 	static int CompletedEvent;
 
  protected:
+	virtual void DoRepeat ();
+
 	// events to queue up
 	enum {
 		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,
@@ -380,7 +392,6 @@ class Clock : public DependencyObject {
 	};
 	void QueueEvent (int event) { queued_events |= event; }
 
-	Duration *duration;
 	Duration natural_duration;
 
 	TimeSpan begintime;
@@ -393,6 +404,7 @@ class Clock : public DependencyObject {
 
 	TimeSpan current_time;
 	TimeSpan new_time;
+	TimeSpan last_time;
 
 	bool seeking;
 	TimeSpan seek_time;
@@ -403,16 +415,15 @@ class Clock : public DependencyObject {
  private:
 
 	ClockGroup *parent_clock;
-	TimeSpan last_parent_time;
 
 	bool is_paused;
 	bool has_started;
 	Timeline *timeline;
 	int queued_events;
 
-	bool is_reversed;  // if we're presently working our way from 1.0 progress to 0.0
-	bool autoreverse;
-	int remaining_iterations;
+	bool forward;  // if we're presently working our way from 0.0 progress to 1.0.  false if reversed
+	double repeat_count;
+	TimeSpan repeat_time;
 };
 
 
@@ -438,6 +449,9 @@ class ClockGroup : public Clock {
 	virtual void Tick ();
 
 	GList *child_clocks;
+
+ protected:
+	virtual void DoRepeat ();
 
  private:
 	TimelineGroup *timeline;

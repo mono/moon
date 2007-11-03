@@ -1,3 +1,15 @@
+2007-11-03  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (repeat_behavior_from_str): add support for the
+	"ff.ffx" format for repeat behaviors.
+
+	* clock.cpp, clock.h: the first sizeable amount of work done in a
+	while to correct the multitude of tiny bugs in clock handling.
+	this gets AnimationMatrix.xaml maybe 40% working.  Clean up and
+	comment Clock::Tick a lot, and remove a bunch of the old
+	CLOCK_DEBUG spew which was making the code that much more
+	difficult to look at.
+	
 2007-11-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextFontDescription::SetScale): Removed, this hack

@@ -1446,7 +1446,24 @@ repeat_behavior_from_str (const char *str)
 {
 	if (!g_strcasecmp ("Forever", str))
 		return RepeatBehavior::Forever;
-	return RepeatBehavior (g_ascii_strtod (str, NULL));
+
+	// check for "<float>x".
+
+	// XXX more validation work is needed here.. but how do we
+	// report an error?
+	char *x = strchr (str, 'x');
+	if (x) {
+		if (*(x + 1) != '\0') {
+			printf ("invalid repeat behavior\n");
+			return RepeatBehavior (0.0);
+		}
+		else {
+			return RepeatBehavior (g_ascii_strtod (str, NULL));
+		}
+	}
+
+	// anything else is a timespan
+	return RepeatBehavior (timespan_from_str (str));
 }
 
 Duration

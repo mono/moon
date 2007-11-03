@@ -1,5 +1,5 @@
 /*
- * clock.cpp: Clock management
+n * clock.cpp: Clock management
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)
@@ -218,7 +218,7 @@ TimeManager::SetMaximumRefreshRate (int hz)
 void
 TimeManager::Start()
 {
-	current_global_time = source->GetNow();
+	last_global_time = current_global_time = source->GetNow();
 	current_global_time_usec = current_global_time / 10;
 	source->SetTimerFrequency (current_timeout);
 	source->Start ();
@@ -321,6 +321,8 @@ TimeManager::Tick ()
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
+	//	time_manager_list_clocks ();
+
 	ENDTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan post_tick = source->GetNow();
 
@@ -370,6 +372,7 @@ TimeManager::Tick ()
 	printf ("for a clock tick of %lld, we spent %lld computing the smooth delay\n",
 		xt, post_smooth - post_tick);
 #endif
+	last_global_time = current_global_time;
 }
 
 void
@@ -488,6 +491,9 @@ output_clock (Clock *clock, int level)
 	if (clock->GetIsPaused())
 		printf (" (paused)");
 
+	if (clock->GetIsReversed())
+		printf (" (rev)");
+
 	printf ("\n");
 
 	if (clock->Is(Type::CLOCKGROUP)) {
@@ -526,7 +532,7 @@ Clock::Clock (Timeline *tl)
   : natural_duration (Duration::Automatic),
     current_state (Clock::Stopped), new_state (Clock::Stopped),
     current_progress (0.0), new_progress (0.0),
-    current_time (0), new_time (0),
+    current_time (0), new_time (0), last_time (0),
     seeking (false), seek_time (0),
     current_speed (1.0), new_speed (1.0),
     parent_clock (NULL),
@@ -534,51 +540,55 @@ Clock::Clock (Timeline *tl)
     has_started (false),
     timeline (tl),
     queued_events (0),
-    is_reversed (false)
+    forward (true)
 {
 	begin_time = -1;
-
-	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
-	if (repeat->HasCount ()) {
-		// remaining_iterations is an int.. GetCount returns a double.  badness?
-		remaining_iterations = (int)repeat->GetCount ();
-	}
-	else {
-		// XXX treat both Forever and Duration as Forever.
-		remaining_iterations = -1;
-	}
 
 	if (timeline->HasBeginTime ())
 		begintime = timeline->GetBeginTime ();
 	/* otherwise it's filled in when we Begin the clock */
 
-	autoreverse = timeline->GetAutoReverse ();
-
-	duration = timeline->GetDuration ();
+	Duration *duration = timeline->GetDuration ();
 	if (duration->HasTimeSpan ()) {
 		natural_duration = *duration;
-#if CLOCK_DEBUG
-		printf ("Clock %p (%s) has a timespan based duration of %llu\n", this, Type::Find(timeline->GetObjectType())->name, natural_duration.GetTimeSpan ());
-#endif
 	}
 	else {
 		natural_duration = timeline->GetNaturalDuration (this);
-#if CLOCK_DEBUG
-	  printf ("Clock %p (%s) has NON-timespan based duration, computed to be %llu\n", this, Type::Find(timeline->GetObjectType())->name, natural_duration.GetTimeSpan ());
-#endif
 	}
+}
+
+TimeSpan
+Clock::GetParentTime ()
+{
+	if (parent_clock)
+		return parent_clock->GetCurrentTime();
+	else
+		return TimeManager::Instance()->GetCurrentTime();
+}
+
+TimeSpan
+Clock::GetLastParentTime ()
+{
+	if (parent_clock)
+		return parent_clock->GetLastTime();
+	else
+		return TimeManager::Instance()->GetLastTime();
 }
 
 void
 Clock::Tick ()
 {
-	TimeSpan new_parent_time = parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
+	TimeSpan our_delta = (TimeSpan)((GetParentTime() - GetLastParentTime()) * current_speed);
 
-	TimeSpan our_delta = (TimeSpan)((new_parent_time - last_parent_time) * current_speed * timeline->GetSpeedRatio());
+	/* serious voodoo here... */
+	if ((timeline->GetSpeedRatio() > 1 && our_delta > 0)
+	    || (timeline->GetSpeedRatio() < 1)) {
 
-	last_parent_time = new_parent_time;
+		our_delta = (TimeSpan)(our_delta * timeline->GetSpeedRatio());
+	}
 
 	if (seeking) {
+		/* MS starts up animations if you seek them */
 		if (current_state != Clock::Active) {
 			new_state = Clock::Active;
 			QueueEvent (CURRENT_STATE_INVALIDATED);
@@ -594,32 +604,35 @@ Clock::Tick ()
 
 		new_time = current_time;
 
-		if (is_reversed)
-			new_time -= our_delta;
-		else
+		if (forward)
 			new_time += our_delta;
+		else
+			new_time -= our_delta;
 	}
 
-#if CLOCK_DEBUG
-	printf ("Clock %p updated to time %lld\n", this, new_time);
-#endif
+	/* since we updated our time above, queue the invalidated event */
+	QueueEvent (CURRENT_TIME_INVALIDATED);
 
-	if (natural_duration.HasTimeSpan ()) {
-		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
+	/* if our duration is automatic or forever, we're done. */
+	if (!natural_duration.HasTimeSpan())
+		return;
 
-#if CLOCK_DEBUG
-		printf ("+ clock %p (%s) duration is %lld, and new_time == %lld\n", this, timeline->GetName(), duration_timespan, new_time);
-#endif
-		if (!is_reversed && new_time >= duration_timespan) {
-#if CLOCK_DEBUG
-			printf ("+ clock %p (%s) hit its duration\n", this, timeline->GetName());
-#endif
+	// XXX there are a number of missing 'else's in the following
+	// block of code.  it would be nice to figure out if they need
+	// to be there...
+
+	TimeSpan duration_timespan = natural_duration.GetTimeSpan();
+
+	if (forward) {
+		// time is progressing in the normal way
+
+		if (new_time >= duration_timespan) {
 			// we've hit the end point of the clock's timeline
-			if (autoreverse) {
+			if (timeline->GetAutoReverse ()) {
 				/* since autoreverse is true we need
 				   to turn around and head back to
 				   0.0 */
-				is_reversed = true;
+				forward = false;
 				new_time = duration_timespan - (new_time - duration_timespan);
 			}
 			else {
@@ -630,51 +643,85 @@ Clock::Tick ()
 				   not done, force new_time to 0
 				   so we start counting from there
 				   again. */
-				if (remaining_iterations > 0) {
-					remaining_iterations --;
-#if CLOCK_DEBUG
-					printf (" + clock %p remaining iterations = %d\n", this, remaining_iterations);
-#endif
+				if (repeat_count > 0) {
+					repeat_count --;
+					if (repeat_count < 0)
+						repeat_count = 0;
 				}
 
-				if (remaining_iterations == 0) {
-#if CLOCK_DEBUG
-					printf (" + clock %p should fill\n", this);
-#endif
+				if (repeat_count == 0) {
 					new_time = duration_timespan;
 					SkipToFill ();
 				}
 				else {
-					new_time -= duration_timespan;
+					DoRepeat ();
 				}
 			}
 		}
-		else if (is_reversed && new_time <= 0) {
-			is_reversed = false;
+		/* XXX missing else #1 */
+	}
+	else {
+		// we're moving backward in time.
+
+		if (new_time <= 0) {
+			forward = true;
 			new_time = -new_time;
 
-			if (remaining_iterations > 0 && *duration != Duration::Automatic)
-				remaining_iterations --;
+			if (repeat_count > 0 && !timeline->GetDuration()->IsAutomatic()) {
+				repeat_count --;
+				if (repeat_count < 0)
+					repeat_count = 0;
+			}
 
-			if (remaining_iterations == 0) {
+			if (repeat_count == 0) {
 				new_time = 0;
 				SkipToFill ();
 			}
 		}
-
-		if (duration_timespan == 0)
-			new_progress = 1.0;
-		else
-			new_progress = (double)new_time / duration_timespan;
+		/* XXX missing else #2 */
 	}
 
-	QueueEvent (CURRENT_TIME_INVALIDATED);
+	/* once we've calculated our time, make sure we don't
+	   go over our repeat time (if there is one) */
+	if (repeat_time >= 0 && repeat_time <= new_time) {
+		SkipToFill ();
+	}
+		
+	/* calculate our progress based on our time */
+	if (duration_timespan == 0)
+		new_progress = 1.0;
+	else if (current_state == Clock::Active)
+		new_progress = (double)new_time / duration_timespan;
+
+#if false
+	// XXX I think we only need to check repeat_count in
+	// the forward direction.
+	if (forward) {
+		if (repeat_count > 0 && repeat_count <= new_progress) {
+			repeat_count = 0;
+			SkipToFill ();
+		}
+	}
+#endif
+}
+
+void
+Clock::DoRepeat ()
+{
+	if (natural_duration.HasTimeSpan ()) {
+		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
+
+		new_time -= duration_timespan;
+		current_time = last_time = new_time;
+		QueueEvent (CURRENT_TIME_INVALIDATED);
+	}
 }
 
 void
 Clock::RaiseAccumulatedEvents ()
 {
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
+		last_time = current_time;
 		current_time = new_time;
 		current_progress = new_progress;
 
@@ -709,7 +756,7 @@ Clock::GetBeginTime ()
 			offset = timeline->GetBeginTime ();
 		}
 
-		begin_time = (parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime()) + offset;
+		begin_time = GetParentTime() + offset;
 	}
 	return begin_time;
 }
@@ -717,26 +764,14 @@ Clock::GetBeginTime ()
 void
 Clock::Begin ()
 {
-	if (current_state != Clock::Stopped)
-		return;
-
-#if CLOCK_DEBUG
-	printf ("Starting clock %p (%s) on the next tick\n", this, timeline->GetName());
-#endif
-
-	/* we're starting.  initialize our last_parent_time and current_time fields */
-	last_parent_time = parent_clock == NULL ? TimeManager::Instance()->GetCurrentTime() : parent_clock->GetCurrentTime();
-
+	/* we're starting.  initialize our current_time field */
 	if (seeking) {
-		current_time = new_time = seek_time;
+		last_time = current_time = new_time = seek_time;
 	}
 	else {
-		current_time = new_time = last_parent_time - GetBeginTime ();
+		last_time = current_time = new_time = GetParentTime() - GetBeginTime ();
 	}
 
-#if CLOCK_DEBUG
-	printf (" + it's current time at that point will be %lld\n", current_time);
-#endif
 	if (natural_duration.HasTimeSpan ()) {
 		current_progress = new_progress = (double)current_time / natural_duration.GetTimeSpan();
 		if (current_progress > 1.0) {
@@ -746,6 +781,36 @@ Clock::Begin ()
 	else
 		current_progress = new_progress = 0.0;
 
+	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
+	if (repeat->HasCount ()) {
+
+		/* XXX I'd love to be able to do away with the 2
+		   repeat_* variables altogether by just converting
+		   them both to a timespan, but for now it's not
+		   working in the general case.  It *does* work,
+		   however, if the count is < 1, so deal with that
+		   tnow. */
+		if (natural_duration.HasTimeSpan() && repeat->GetCount() < 1) {
+			repeat_count = -1;
+			repeat_time = (TimeSpan)(natural_duration.GetTimeSpan() *
+						 (timeline->GetAutoReverse () ? 2 : 1) *
+						 repeat->GetCount());
+		}
+		else {
+			repeat_count = repeat->GetCount ();
+			repeat_time = -1;
+		}
+	}
+	else if (repeat->HasDuration ()) {
+		repeat_count = -1;
+		repeat_time = repeat->GetDuration();
+	}
+	else {
+		repeat_count = -1;
+		repeat_time = -1;
+	}
+
+	forward = true;
 	new_state = Clock::Active;
 	QueueEvent (CURRENT_STATE_INVALIDATED | CURRENT_TIME_INVALIDATED);
 }
@@ -927,7 +992,7 @@ ClockGroup::Tick ()
 	   CurrentStateInvalidated on the child clocks instead of
 	   looping over them at the end of each Tick call.
 	*/
-	if (*duration == Duration::Automatic) {
+	if (timeline->GetDuration()->IsAutomatic()) {
 		for (GList *l = child_clocks; l; l = l->next) {
 			Clock *c = (Clock*)l->data;
 			if (!c->GetHasStarted () || c->GetClockState() == Clock::Active || c->GetNewClockState() == Clock::Active)
@@ -935,6 +1000,27 @@ ClockGroup::Tick ()
 		}
 
 		Clock::Stop ();
+	}
+}
+
+void
+ClockGroup::DoRepeat ()
+{
+	Clock::DoRepeat ();
+	
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+
+		// restart all active/filling clocks
+		if (c->GetClockState() != Clock::Stopped) {
+			// XXX this is wrong.  begin
+			// time's are only figured into
+			// the initial starting.  not
+			// repeated iterations.
+			c->begin_time = -1;
+
+			c->Begin ();
+		}
 	}
 }
 
@@ -1169,16 +1255,16 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 		Timeline *timeline = (Timeline *) node->obj;
 
 		Duration duration = timeline->GetNaturalDuration (clock);
-		if (duration == Duration::Automatic)
+		if (duration.IsAutomatic())
 			continue;
 
-		if (duration == Duration::Forever)
+		if (duration.IsForever())
 			return Duration::Forever;
 		
 		TimeSpan span = duration.GetTimeSpan ();
 		
 		RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
-		if (*repeat == RepeatBehavior::Forever)
+		if (repeat->IsForever())
 			return Duration::Forever;
 		
 		if (repeat->HasCount ()) {
