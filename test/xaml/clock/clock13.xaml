@@ -7,7 +7,7 @@
 		<EventTrigger RoutedEvent="Canvas.Loaded">
 			<BeginStoryboard>
 				<Storyboard>
-					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:2" RepeatBehavior="4.0"/>
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:2" RepeatBehavior="4.0x"/>
 				</Storyboard>
 			</BeginStoryboard>
 		</EventTrigger>
