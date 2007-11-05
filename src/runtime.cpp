@@ -50,7 +50,7 @@
 #include "garray-ext.h"
 
 
-#define DEBUG_EXPOSE 1
+//#define DEBUG_EXPOSE 1
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
 #define DEBUG_REFCNT 0
