@@ -103,10 +103,10 @@ struct Rect {
 	{
 		GdkRectangle gdk;
 		Rect rect = RoundOut ();
-		gdk.x = rect.x;
-		gdk.y = rect.y;
-		gdk.width = rect.w;
-		gdk.height = rect.h;
+		gdk.x = (gint)rect.x;
+		gdk.y = (gint)rect.y;
+		gdk.width = (gint)rect.w;
+		gdk.height = (gint)rect.h;
 
 		return gdk;
 	}
