@@ -1550,6 +1550,9 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
+		if (!plugin->surface || !plugin->surface->GetToplevel())
+			return true;
+
 		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
 		if (!element)
 			return true;

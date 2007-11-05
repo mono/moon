@@ -1,3 +1,9 @@
+2007-11-05  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (moonlight_content_invoke): don't crash if the
+	surface hasn't been attached (if we haven't finished loading the
+	xaml yet).
+
 2007-11-01  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* plugin.cpp: Replace PLUGIN_OURVERSION with VERSION (from config.h)
