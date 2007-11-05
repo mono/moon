@@ -823,7 +823,6 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 				      s->background_color->r,
 				      s->background_color->g,
 				      s->background_color->b);
-
 	cairo_paint (ctx);
 
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
