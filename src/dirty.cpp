@@ -83,17 +83,6 @@ process_dirty_elements ()
 		GSList *link = down_dirty;
 		UIElement* el = (UIElement*)link->data;
 
-		/*
-		** since we cache N's local (from N's parent to N)
-		** transform, we need to catch if we're changing
-		** something about that local transform and recompute
-		** it.
-		** 
-		** DirtyLocalTransform implies DirtyTransform, since
-		** changing N's local transform requires updating the
-		** transform of all descendents in the subtree rooted
-		** at N.
-		*/
 		if (el->dirty_flags & DirtyOpacity) {
 			el->dirty_flags &= ~DirtyOpacity;
 
@@ -118,6 +107,17 @@ process_dirty_elements ()
 			}
 		}
 
+		/*
+		** since we cache N's local (from N's parent to N)
+		** transform, we need to catch if we're changing
+		** something about that local transform and recompute
+		** it.
+		** 
+		** DirtyLocalTransform implies DirtyTransform, since
+		** changing N's local transform requires updating the
+		** transform of all descendents in the subtree rooted
+		** at N.
+		*/
 		if (el->dirty_flags & DirtyLocalTransform) {
 			el->dirty_flags &= ~DirtyLocalTransform;
 
