@@ -222,12 +222,19 @@ if test $user_plugin != yes; then
 MOON_LIBS="$MOON_LIBS $(pkg-config --libs $FFMPEG_PKGS)"
 fi
 
+# Remove glitz from the link flags (should fix Bug 338506)
+MOON_LIBS="$(echo $MOON_LIBS | sed -e s/-lglitz//g)"
+
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
 
 PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS $MONO_PKGS`
 PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $MOON_PKGS $MONO_PKGS`
 PLUGIN_CFLAGS="$PLUGIN_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
+
+# Remove glitz from the link flags (should fix Bug 338506)
+PLUGIN_LIBS="$(echo $PLUGIN_LIBS | sed -e s/-lglitz//g)"
+
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
 

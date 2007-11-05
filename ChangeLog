@@ -1,3 +1,8 @@
+2007-11-05  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Hack to remove glitz from the link flags
+	should fix Bug 338506
+
 2007-11-01  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Generate install.js from install.js.in
