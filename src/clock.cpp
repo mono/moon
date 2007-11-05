@@ -994,7 +994,7 @@ ClockGroup::Tick ()
 				return;
 		}
 
-		SkipToFill ();
+		Clock::Stop ();
 	}
 }
 
