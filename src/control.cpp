@@ -18,15 +18,16 @@
 #define Visual _XVisual
 #include <cairo-xlib.h>
 #undef Visual
+#include "rect.h"
 #include "runtime.h"
 #include "control.h"
 #include "canvas.h"
 
 void 
-Control::Render (cairo_t *cr, int x, int y, int width, int height)
+Control::Render (cairo_t *cr, Region *region)
 {
 	if (real_object)
-		real_object->DoRender (cr, x, y, width, height);
+		real_object->DoRender (cr, region);
 }
 
 void 

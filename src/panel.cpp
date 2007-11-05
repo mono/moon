@@ -18,6 +18,7 @@
 #include "math.h"
 #include "collection.h"
 #include "runtime.h"
+#include "dirty.h"
 
 VisualCollection *
 Panel::GetChildren ()
@@ -70,6 +71,7 @@ Panel::~Panel ()
 }
 
 #define DEBUG_BOUNDS 0
+#define CAIRO_CLIP 1
 
 static void space (int n)
 {
@@ -152,29 +154,41 @@ Panel::ComputeBounds ()
 static int level = 0;
 
 //#define DEBUG_INVALIDATE 1
+//#define USE_STARTING_ELEMENT 1
 
-#define USE_STARTING_ELEMENT 1
+
 
 int
-Panel::FindStartingElement (Rect for_rect)
+Panel::FindStartingElement (Region *region)
 {
 #if USE_STARTING_ELEMENT
 	VisualCollection *children = GetChildren ();
-	
+
+	if (region->RectIn (GetBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT
+	    || !GetVisible () 
+	    || GetValue (UIElement::ClipProperty) != NULL
+	    || uielement_get_opacity_mask (this) != NULL
+	    //|| GetTotalOpacity () < 1.0
+	    )
+		return -1;
+
 	for (gint i = children->z_sorted->len - 1; i >= 0; i --) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
 		// if the exposed rectangle is completely within the bounds
 		// of a child that has opacity == 1.0 and lacks an opacity
 		// mask, we start rendering from there.
+		//if (item->GetTotalOpacity () > GetTotalOpacity ())
+		//	g_error ("This shouldn't be possible");
+
 		if (item->GetVisible ()
-		    && for_rect == item->GetBounds().Floor().Intersection(for_rect)
-		    && item->absolute_xform.xx == item->absolute_xform.yy /* no rotation */
+		    && region->RectIn (item->GetBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_IN
+		    && item->GetValue (UIElement::ClipProperty) == NULL
 		    && (item->absolute_xform.yx == 0 && item->absolute_xform.xy == 0) /* no skew */
-		    && uielement_get_opacity (item) == 1.0
+		    && item->GetTotalOpacity () >= 1.0
 		    && uielement_get_opacity_mask (item) == NULL) {
 			// there are actually some more type
 			// specific checks required.  we need
-			// to further limit it to elements
+			// to fulsrther limit it to elements
 			// which are truly rectangular to
 			// begin with (images, panels,
 			// mediaelements), and which aren't
@@ -202,7 +216,7 @@ Panel::FindStartingElement (Rect for_rect)
 					** panel that completely encompasses
 					** the rectangle.
 					*/
-					if (-1 == ((Panel*)item)->FindStartingElement (for_rect))
+					if (-1 == ((Panel*)item)->FindStartingElement (region))
 						continue;
 				}
 			}
@@ -218,7 +232,21 @@ Panel::FindStartingElement (Rect for_rect)
 }
 
 void
-Panel::Render (cairo_t *cr, int x, int y, int width, int height)
+Panel::UpdateTotalOpacity ()
+{
+#if 1
+	VisualCollection *children = GetChildren ();
+	for (guint i = 0; i < children->z_sorted->len; i++) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+		item->UpdateTotalOpacity ();
+	}
+#endif
+
+	add_dirty_element (this, DirtyOpacity);
+}
+
+void
+Panel::Render (cairo_t *cr, Region *region)
 {
 	cairo_save (cr);  // for UIElement::ClipProperty
 
@@ -242,21 +270,43 @@ Panel::Render (cairo_t *cr, int x, int y, int width, int height)
 		}
 	}
 
-	RenderChildren (cr, x, y, width, height);
+	RenderChildren (cr, region);
 
 	cairo_restore (cr);
 }
 
 void
-Panel::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
+Panel::RenderChildren (cairo_t *cr, Region *region)
 {
+
 	VisualCollection *children = GetChildren ();
+	
+	if (children->z_sorted->len == 1) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[0];
+		cairo_save (cr);
+		cairo_identity_matrix (cr);
+		//Region * rregion = new Region ();
+		//rregion->Union (region);
+		item->DoRender (cr, region);
+		cairo_restore (cr);
+		return;
+	}
 
-	Rect render_rect (x, y, width, height);
+	Region render_region = Region (GetBounds ());
+	render_region.Intersect (region);
 
-	gint start_element = FindStartingElement (render_rect);
-	if (start_element == -1)
-		start_element = 0;
+	int count;
+	GdkRectangle *zones;
+	render_region.GetRectangles (&zones, &count);
+
+	
+
+	while (count --) {
+		Rect render_rect = Rect (zones[count].x, zones[count].y, zones[count].width, zones[count].height);
+		
+		gint start_element = FindStartingElement (&render_region);
+		if (start_element == -1)
+			start_element = 0;
 
 // 	space (levelb);
 // 	printf (" + starting at child %d\n", start_element);
@@ -267,31 +317,46 @@ Panel::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
 	// from this point on, we use the identity matrix to set the clipping
 	// path for the children
 	//
-	cairo_identity_matrix (cr);
-	for (guint i = start_element; i < children->z_sorted->len; i++) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
-		
-		if (!item->GetVisible()
-		    || item->GetTotalOpacity () == 0.0) {
-#ifdef DEBUG_INVALIDATE
-			printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
-#endif
-			continue;
+		/*
+		int hits = 0;
+		for (guint i = start_element; i < children->z_sorted->len; i++) {
+			UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+			Type::Kind type = item->GetObjectType();
+
+			if (!item->GetVisible() || item->GetTotalOpacity () == 0.0 || !render_rect.IntersectsWith (item->GetBounds ()) || type != Type::CANVAS)
+				continue;
+
+			hits++;
 		}
 
-		if (render_rect.IntersectsWith (item->GetBounds())) {
-			Rect inter = render_rect.Intersection(item->GetBounds());
+
+		printf ("%s(%d) has %d hits %s\n", GetName (), children->z_sorted->len, hits, hits == children->z_sorted->len? "good" : "bad");
+		*/
+		
+
+		cairo_identity_matrix (cr);
+		for (guint i = start_element; i < children->z_sorted->len; i++) {
+			UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+
+			if (!item->GetVisible() || item->GetTotalOpacity () == 0.0 || !render_rect.IntersectsWith (item->GetBounds ().RoundOut())) {
+#ifdef DEBUG_INVALIDATE
+				printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
+#endif
+				continue;
+			}
+
+			Region clipped_region = Region (item->GetBounds ().RoundOut());
+			clipped_region.Intersect (render_rect);
 #if CAIRO_CLIP
 #if TIME_CLIP
 			STARTTIMER(clip, "cairo clip setup");
 #endif
 			cairo_save (cr);
-
+			
 			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
 			// at the very least we need to clip based on the expose area.
 			// there's also a UIElement::ClipProperty
-			cairo_rectangle (cr, floor (inter.x), floor (inter.y), ceiling (inter.w), ceiling (inter.h));
-
+			runtime_cairo_region (cr,clipped_region.gdkregion);
 			cairo_clip (cr);
 #if TIME_CLIP
 			ENDTIMER(clip, "cairo clip setup");
@@ -304,7 +369,7 @@ Panel::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
 // 				inter.x, inter.y, inter.w, inter.h);
 		
 
-			item->DoRender (cr, (int)inter.x, (int)inter.y, (int)inter.w, (int)inter.h);
+			item->DoRender (cr, &clipped_region);
 
 #if CAIRO_CLIP
 #if TIME_CLIP
@@ -317,14 +382,8 @@ Panel::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
 #endif
 #endif
 		}
-#ifdef DEBUG_INVALIDATE
-		else {
-			printf ("skipping object %s: %p (%s)\n", item->GetName(), item, item->GetTypeName());
-		}
-#endif
-
 	}
-
+	g_free (zones);
 	//printf ("RENDER: LEAVE\n");
 	//draw_grid (cr);
 

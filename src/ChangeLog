@@ -1,3 +1,18 @@
+2007-11-05  Larry Ewing  <lewing@novell.com>
+
+	Merge most of dirty region branch.  This makes the dirty logic and
+	rendering code use the new region class to track more complicated
+	shapes than bounding boxes when processing changed areas.
+
+	* media.cpp: switch back to indirect rendering for drawing media
+	elements until a solution to the boundry clipping can be found.
+
+	* panel.cpp: disable FindStartingElement (the buggy) until a more
+	optimal method can be found.
+
+	* dirty.cpp: Use dirty regions.  Process DirtyOpacity first (still
+	needs to be fixed to order dirty children.
+
 2007-11-03  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (ClockGroup::Tick): instead of calling Clock::Stop,
@@ -587,6 +602,15 @@
 	* playlist.cpp|h: populate MediaAttributeCollection when
 	a playlist entry is opened.
 
+2007-10-11  Larry Ewing  <lewing@novell.com>
+
+        * dirty.cpp, uielement.cpp|h: Use gdk_regions to tract dirty
+	areas... have more fun in general.
+	
+	* src/rect.h: replace Floor function with RoundOut function.
+	* panel.cpp, dirty.cpp: use RoundOut where appropriate.  Fixes
+	clipping issue in sprawl.
+
 2007-10-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Let InkPresenter handle childs like a Canvas (from 
@@ -840,16 +864,21 @@
 
 2007-10-08  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp:
+	* panel.cpp: intersect the bounds with the clip path to
+	optimize the invalidated region.
+
+	* shape.cpp: return 0.0 when shape_get_stroke_thickness is called
+	with a NULL.
+
+2007-10-08  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp: change previous logic to drop the alpha
 	completely here until more testing can be done.
 
 2007-10-08  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: draw the background color blended over white.
-
-2007-10-08  Larry Ewing  <lewing@novell.com>
-
-	* src/runtime.cpp: draw the background color blended over white.
 
 2007-10-08  Larry Ewing  <lewing@novell.com>
 

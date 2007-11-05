@@ -18,12 +18,17 @@
 
 #include <gtk/gtk.h>
 #include <glib.h>
-#define Visual _XVisual
-#include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
 
+#define Visual _XVisual
+#define Region _joe_ball
+#include <gdk/gdkx.h>
+
+#include <gdk/gdkkeysyms.h>
+ 
 #include <cairo-xlib.h>
 #undef Visual
+#undef Region
+
 #include "runtime.h"
 #include "canvas.h"
 #include "control.h"
@@ -44,12 +49,10 @@
 #include "fullscreen.h"
 #include "garray-ext.h"
 
-#ifdef USE_XRANDR
-#include <X11/extensions/Xrandr.h>
-#endif
 
-//#define DEBUG_EXPOSE 1
+#define DEBUG_EXPOSE 1
 //#define DEBUG_INVALIDATE 1
+//#define RENDER_INDIVIDUALLY 1
 #define DEBUG_REFCNT 0
 
 #define CAIRO_CLIP 0
@@ -403,16 +406,25 @@ Surface::Invalidate (Rect r)
 				    (int) r.w, (int)r.h);
 }
 
+
 void
 Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
+{
+	Rect r = Rect (x, y, width, height);
+	Region region = Region (r);
+	Paint (ctx, &region);
+}
+
+void
+Surface::Paint (cairo_t *ctx, Region *region)
 {
 	if (is_anything_dirty())
 		process_dirty_elements();
 	
-	toplevel->DoRender (ctx, x, y, width, height);
+	toplevel->DoRender (ctx, region);
 	
 	if (full_screen_message) {
-		full_screen_message->DoRender (ctx, x, y, width, height);
+		full_screen_message->DoRender (ctx, region);
 	}
 }
 
@@ -825,9 +837,12 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 				      s->background_color->b);
 	cairo_paint (ctx);
 
-	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-	s->Paint (ctx, event->area.x, event->area.y, event->area.width, event->area.height);
 
+	cairo_save (ctx);
+	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+	Region *region = new Region (event->region);
+	s->Paint (ctx, region);
+	delete (region);
 #if DEBUG_EXPOSE
 	runtime_cairo_region (ctx, event->region);
 	cairo_set_line_width (ctx, 2.0);

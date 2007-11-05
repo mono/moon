@@ -1,3 +1,8 @@
+2007-11-05  Larry Ewing  <lewing@novell.com>
+
+	* xaml/test-path-group-stretch.xaml: add some stretched paths with
+	incomplete size specifiers.
+
 2007-10-24  Chris Toshok  <toshok@ximian.com>
 
 	* harness/xaml2png.cpp: fill the background with white so we look

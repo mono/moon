@@ -253,10 +253,10 @@ stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection)
 }
 
 void
-InkPresenter::RenderChildren (cairo_t *cr, int x, int y, int width, int height)
+InkPresenter::RenderChildren (cairo_t *cr, Region *region)
 {
 	// Canvas elements are supported inside the InkPresenter
-	Panel::RenderChildren (cr, x, y, width, height);
+	Panel::RenderChildren (cr, region);
 
 	Value* value = GetValue (InkPresenter::StrokesProperty);
 	if (!value)

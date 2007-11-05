@@ -253,15 +253,14 @@ void
 Shape::ComputeBounds ()
 {
 	bounds = Rect (0,0,0,0);
+
 	if (IsEmpty ())
 		return;
 
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
-	if ((w < 0.0) || (h < 0.0))
-		return;
-
+#if FALSE
 	Stretch stretch = shape_get_stretch (this);
 	switch (stretch) {
 	case StretchUniform:
@@ -277,13 +276,13 @@ Shape::ComputeBounds ()
 	case StretchNone:
 		break;
 	}
+#endif
 
-	if ((w == 0.0) && (h == 0.0))
-		w = h = shape_get_stroke_thickness (this);
+	double t = shape_get_stroke_thickness (this) * .5;
 
 	if (w != 0.0 && h != 0.0) {
 		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-		       IntersectBoundsWithClipPath (Rect (0, 0, w, h), false));
+		       IntersectBoundsWithClipPath (Rect (-t, -t, w + 2 * t, h + 2 * t), false));
 
 		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 	}
@@ -1614,33 +1613,42 @@ Path::ComputeBounds ()
 
 	Stretch stretch = shape_get_stretch (this);
 	if (stretch != StretchNone) {
-		double t = shape_get_stroke_thickness (this);
-		double ht = t / -2.0;
-		bounds.x = ht;
-		bounds.y = ht;
+		double t = shape_get_stroke_thickness (this) * .5;
+		bounds.x = -t;
+		bounds.y = -t;
 
 		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+		double vscale = 1.0;
 		if (vh)
-			bounds.h = vh->AsDouble ();
-		
+			vscale = vh->AsDouble () / bounds.h;
+
 		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+		double hscale = 1.0;
 		if (vw)
-			bounds.w = vw->AsDouble ();
+		        hscale = vw->AsDouble () / bounds.w;
 		
+		double scale; 
+
 		switch (stretch) {
 		case StretchUniform:
-			bounds.h = bounds.w = MIN (bounds.w, bounds.h);
+			scale = MIN (vw ? vscale : hscale, vh ? hscale : vscale);
+			bounds.h = (int) ceil(bounds.h * scale);
+			bounds.w = (int) ceil(bounds.w * scale);
 			break;
 		case StretchUniformToFill:
-			bounds.h = bounds.w = MAX (bounds.w, bounds.h);
+			scale = MAX (vw ? vscale : hscale, vh ? hscale : vscale);
+			bounds.h = (int) ceil(bounds.h * scale);
+			bounds.w = (int) ceil(bounds.w * scale);
 			break;
 		default:
 			// bounds are already set correctly
+			bounds.h = bounds.h * vscale;
+			bounds.w = bounds.w * hscale;
 			break;
 		}
 
-		bounds.w += t;
-		bounds.h += t;
+		bounds.w += 2 * t;
+		bounds.h += 2 * t;
 	}
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,

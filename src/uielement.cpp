@@ -22,6 +22,7 @@
 #include "dirty.h"
 
 #define SHOW_BOUNDING_BOXES 0
+//#define DEBUG_INVALIDATE 0
 
 int UIElement::LoadedEvent = -1;
 int UIElement::MotionEvent = -1;
@@ -55,8 +56,8 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	cairo_matrix_init_identity (&absolute_xform);
 
 	dirty_flags = 0;
-	dirty_rect = Rect (0,0,0,0);
-	children_dirty_rect = Rect (0,0,0,0);
+	dirty_region = new Region ();
+	children_dirty_region = new Region ();
 
 	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
@@ -71,6 +72,9 @@ UIElement::~UIElement ()
 		opacityMask->Detach (NULL, this);
 		opacityMask->unref ();
 	}
+	
+	delete dirty_region;
+	delete children_dirty_region;
 
 	remove_dirty_element (this);
 }
@@ -79,11 +83,18 @@ Rect
 UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 {
 	Value *value = GetValue (UIElement::ClipProperty);
-	if (!value)
+	if (!value) {
+		//if (!GetVisible () || total_opacity == 0.0)
+		//	return Rect (0, 0, 0, 0);
+
 		return unclipped;
+	}
 
 	Geometry *geometry = value->AsGeometry ();
 	Rect box = geometry->ComputeBounds (NULL);
+	
+	//if (!GetVisible () || total_opacity == 0.0)
+	//	box = Rect (0, 0, 0, 0);
 
 	if (transform)
 		box = bounding_rect_for_transformed_rect (&absolute_xform,
@@ -205,6 +216,9 @@ UIElement::UpdateTotalOpacity ()
 void
 UIElement::ComputeTotalOpacity ()
 {
+	if (parent)
+		parent->ComputeTotalOpacity ();
+
 	double local_opacity = GetValue (OpacityProperty)->AsDouble();
 	total_opacity = local_opacity * (parent ? parent->GetTotalOpacity () : 1.0);
 }
@@ -312,16 +326,14 @@ UIElement::OnLoaded ()
 }
 
 void
-UIElement::ChildInvalidated (Rect r)
+UIElement::ChildInvalidated (Region *region)
 {
-	if (!GetVisible ())
+	if (!GetVisible() || total_opacity <= 0.0)
 		return;
 
 	add_dirty_element (this, DirtyInvalidate);
-	if (children_dirty_rect.IsEmpty())
-		children_dirty_rect = r;
-	else
-		children_dirty_rect = children_dirty_rect.Union (r);
+
+	children_dirty_region->Union (region);
 
 	Emit (InvalidatedEvent);
 }
@@ -343,7 +355,7 @@ UIElement::FullInvalidate (bool rendertransform)
 void
 UIElement::Invalidate (Rect r)
 {
-	if (!GetVisible() || GetTotalOpacity() <= 0.0)
+	if (!GetVisible() || total_opacity <= 0.0)
 		return;
 
 #ifdef DEBUG_INVALIDATE
@@ -354,10 +366,8 @@ UIElement::Invalidate (Rect r)
 #endif
 
 	add_dirty_element (this, DirtyInvalidate);
-	if (dirty_rect.IsEmpty())
-		dirty_rect = r;
-	else
-		dirty_rect = dirty_rect.Union (r);
+
+	dirty_region->Union (r);
 
 	Emit (InvalidatedEvent);
 }
@@ -474,11 +484,11 @@ UIElement::ComputeBounds ()
 }
 
 void
-UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
+UIElement::DoRender (cairo_t *cr, Region *region)
 {
 	cairo_pattern_t *mask = NULL;
-	
-	if (total_opacity == 0.0)
+
+	if (!GetVisible() || total_opacity == 0.0 || region->RectIn (bounds) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
 	
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
@@ -491,7 +501,7 @@ UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 
 	}
 	
-	Render (cr, x, y, width, height);
+	Render (cr, region);
 
 	if (opacityMask != NULL) {
 		cairo_pop_group_to_source (cr);
@@ -516,6 +526,13 @@ UIElement::DoRender (cairo_t *cr, int x, int y, int width, int height)
 	cairo_stroke (cr);
 	cairo_new_path (cr);
 #endif
+}
+
+void
+UIElement::Render (cairo_t *cr, Region *region)
+{
+        Rect rect = region->ClipBox ();
+	Render (cr, (int)rect.x, (int)rect.y, (int)rect.w, (int)rect.h);
 }
 
 void

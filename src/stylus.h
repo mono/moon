@@ -114,7 +114,7 @@ class InkPresenter : public Canvas {
 	
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
 
-	virtual void RenderChildren (cairo_t *cr, int x, int y, int width, int height);
+	virtual void RenderChildren (cairo_t *cr, Region *region);
 	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child);
 
 	static DependencyProperty* StrokesProperty;

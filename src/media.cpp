@@ -8,16 +8,13 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#define USE_OPT_INDIRECT_COMPOSE 1
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <gtk/gtk.h>
-
-#define Visual _XVisual
-#include <gdk/gdkx.h>
-#include <cairo-xlib.h>
-#undef Visual
 
 #include "runtime.h"
 #include "media.h"
@@ -489,12 +486,20 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	// NOTE: Some servers seem to have extreme perfomance issues
 	// when paint_with_alpha (cr, 1.0) is called even accidentally
 	if (render_opacity < 1.0) {
+#if DRAW_INCORRECTLY 
+		cairo_paint_with_alpha (cr, render_opacity);
+#else
 		cairo_rectangle (cr, 0, 0, w, h);
 		cairo_clip (cr);
 		cairo_paint_with_alpha (cr, render_opacity);
+#endif
 	} else {
+#if DRAW_INCORRECTLY
+		cairo_paint (cr);
+#else
 		cairo_rectangle (cr, 0, 0, w, h);
 		cairo_fill (cr);
+#endif
 	}
 
 	cairo_restore (cr);
@@ -1325,7 +1330,7 @@ Image::CreateSurface (const char *fname)
 		surface->backing_pixbuf = pixbuf;
 		surface->cairo = cairo_image_surface_create_for_data (pb_pixels,
 #if USE_OPT_RGB24
-								      /has_alpha ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24,
+								      has_alpha ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24,
 #else
 								      CAIRO_FORMAT_ARGB32,
 #endif
@@ -1398,7 +1403,7 @@ Image::Render (cairo_t *cr, int, int, int, int)
 	double h = framework_element_get_height (this);
 
 	double opacity = GetTotalOpacity ();
-	if (!pattern || (pattern_opacity != opacity)) {
+	if (!pattern || (floor (pattern_opacity * 255) != floor (opacity * 255))) {
 		// don't share surfaces until they are of the correct type
 		if (pattern && !surface->xlib_surface_created) {
 			cairo_pattern_destroy (pattern);
@@ -1444,10 +1449,13 @@ Image::Render (cairo_t *cr, int, int, int, int)
 
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
-	
+
+#if DRAW_INCORRECTLY
+	cairo_paint (cr);
+#else
 	cairo_rectangle (cr, 0, 0, w, h);
 	cairo_fill (cr);
-
+#endif
 	cairo_restore (cr);
 }
 

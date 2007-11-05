@@ -16,6 +16,7 @@
 #include <glib.h>
 #include <cairo.h>
 #include <ft2build.h>
+#include <gtk/gtk.h>
 #include FT_FREETYPE_H
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>

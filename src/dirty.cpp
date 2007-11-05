@@ -94,6 +94,30 @@ process_dirty_elements ()
 		** transform of all descendents in the subtree rooted
 		** at N.
 		*/
+		if (el->dirty_flags & DirtyOpacity) {
+			el->dirty_flags &= ~DirtyOpacity;
+
+			el->Invalidate ();
+			el->ComputeTotalOpacity ();
+			el->Invalidate ();
+
+			if (el->Is (Type::PANEL)) {
+				Panel *p = (Panel*)el;
+				VisualCollection *children = p->GetChildren();
+
+				Collection::Node* n = (Collection::Node *) children->list->First ();
+				while (n != NULL) {
+					((UIElement *) n->obj)->UpdateTotalOpacity ();
+					n = (Collection::Node *) n->next;
+				}
+			}
+			else if (el->Is (Type::CONTROL)) {
+				Control *c = (Control*)el;
+				if (c->real_object)
+					c->real_object->UpdateTotalOpacity();
+			}
+		}
+
 		if (el->dirty_flags & DirtyLocalTransform) {
 			el->dirty_flags &= ~DirtyLocalTransform;
 
@@ -130,30 +154,6 @@ process_dirty_elements ()
 			}
 		}
 
-		if (el->dirty_flags & DirtyOpacity) {
-			el->dirty_flags &= ~DirtyOpacity;
-
-			el->Invalidate ();
-			el->ComputeTotalOpacity ();
-			el->Invalidate ();
-
-			if (el->Is (Type::PANEL)) {
-				Panel *p = (Panel*)el;
-				VisualCollection *children = p->GetChildren();
-
-				Collection::Node* n = (Collection::Node *) children->list->First ();
-				while (n != NULL) {
-					((UIElement *) n->obj)->UpdateTotalOpacity ();
-					n = (Collection::Node *) n->next;
-				}
-			}
-			else if (el->Is (Type::CONTROL)) {
-				Control *c = (Control*)el;
-				if (c->real_object)
-					c->real_object->UpdateTotalOpacity();
-			}
-		}
-
 		if (!(el->dirty_flags & DownDirtyState)) {
 			el->dirty_flags &= ~DirtyInDownDirtyList;
 			down_dirty = g_slist_delete_link (down_dirty, link);
@@ -187,7 +187,7 @@ process_dirty_elements ()
 						el->parent->Invalidate(obounds);
 					}
 				}
-
+				
 				el->force_invalidate_of_new_bounds = false;
 				el->Invalidate ();
 			}
@@ -199,13 +199,8 @@ process_dirty_elements ()
 
 			el->dirty_flags &= ~DirtyInvalidate;
 
-			Rect dirty = el->dirty_rect;
-			if (el->EnableAntiAlias() && !dirty.IsEmpty())
-				dirty = dirty.GrowBy (2);
-			if (dirty.IsEmpty())
-				dirty = el->children_dirty_rect;
-			else if (!el->children_dirty_rect.IsEmpty())
-				dirty = dirty.Union (el->children_dirty_rect);
+			Region *dirty = el->dirty_region;
+			dirty->Union (el->children_dirty_region);
 
 			if (el->parent) {
 // 			  printf (" + + invalidating parent (%f,%f,%f,%f)\n",
@@ -219,14 +214,30 @@ process_dirty_elements ()
 				 el->parent == NULL &&
 				 el->GetSurface() &&
 				 el->GetSurface()->IsTopLevel (el)) {
-
-				el->GetSurface()->Invalidate (dirty);
+				GdkRectangle *rects;
+				int count;
+				dirty->GetRectangles (&rects, &count);
+				while (count--) {
+					Rect r = Rect ((double)rects [count].x,
+						       (double)rects [count].y,
+						       (double)rects [count].width,
+						       (double)rects [count].height);
+					//printf (" + + invalidating parent (%f,%f,%f,%f)\n",
+					//	r.x,
+					//	r.y,
+					//	r.w,
+					//	r.h);
+					
+					el->GetSurface()->Invalidate (r);					
+				}
+				g_free (rects);
 			}
-
-			el->dirty_rect = Rect (0,0,0,0);
-			el->children_dirty_rect = Rect (0,0,0,0);
+			
+			delete el->dirty_region;
+			el->dirty_region = new Region ();
+			delete el->children_dirty_region;
+			el->children_dirty_region = new Region ();
 		}
-
 
 		if (!(el->dirty_flags & UpDirtyState)) {
 			el->dirty_flags &= ~DirtyInUpDirtyList;

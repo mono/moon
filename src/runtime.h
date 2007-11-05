@@ -56,6 +56,7 @@ class Surface : public EventObject {
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
 	void Paint (cairo_t *ctx, int x, int y, int width, int height);
+	void Paint (cairo_t *ctx, Region *);
 
 	void Attach (UIElement* toplevel);
 
@@ -247,6 +248,7 @@ uint32_t runtime_html_timer_timeout_add (int32_t interval, GSourceFunc callback,
 void     runtime_html_timer_timeout_stop (uint32_t source_id);
 
 void runtime_shutdown (void);
+void runtime_cairo_region (cairo_t *cr, GdkRegion *region);
 
 G_END_DECLS
 

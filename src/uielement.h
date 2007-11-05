@@ -46,9 +46,12 @@ public:
 	UIElement *parent;
 
 	int dirty_flags;
-	Rect dirty_rect;
-	Rect children_dirty_rect;
+
+	//Rect dirty_rect;
+	//Rect children_dirty_rect;
 	bool force_invalidate_of_new_bounds;
+	Region *dirty_region;
+	Region *children_dirty_region;
 
 	int DumpHierarchy (UIElement *obj);
 
@@ -123,11 +126,12 @@ public:
 	//   Renders the given @item on the @surface.  the area that is
 	//   exposed is delimited by x, y, width, height
 	//
+	virtual void Render (cairo_t *cr, Region *region);
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
-	void DoRender (cairo_t *cr, int x, int y, int width, int height);
+	void DoRender (cairo_t *cr, Region *region);
 
 	//
 	// GetSizeForBrush:
@@ -180,7 +184,7 @@ public:
 	// 
 	bool InsideClip (cairo_t *cr, double x, double y);
 
-	void ChildInvalidated (Rect r);
+	void ChildInvalidated (Region *region);
 
 	//
 	// Invalidates a subrectangle of this element

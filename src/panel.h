@@ -21,7 +21,7 @@ class Panel : public FrameworkElement {
 	//
 	UIElement *mouse_over;
 
-	int FindStartingElement (Rect for_rect);
+	int FindStartingElement (Region *region);
 
  public:
 	Panel ();
@@ -32,8 +32,8 @@ class Panel : public FrameworkElement {
 	void SetChildren (VisualCollection *col);
 
 	virtual void ComputeBounds ();
-	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void RenderChildren (cairo_t *cr, int x, int y, int width, int height);
+	virtual void Render (cairo_t *cr, Region *region);
+	virtual void RenderChildren (cairo_t *cr, Region *region);
 
 	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 
@@ -49,6 +49,8 @@ class Panel : public FrameworkElement {
 
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;
+
+	virtual void UpdateTotalOpacity ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);

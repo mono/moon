@@ -1072,10 +1072,14 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 	// XXX we should cache the surface so that it can be
 	// used multiple times without having to re-render each time.
 	Rect bounds = ui->GetBounds();
-	surface = image_brush_create_similar (cr, (int) bounds.w, (int) bounds.h);
-	
+	bounds.RoundOut ();
+
+	surface = image_brush_create_similar (cr,
+					      (int)bounds.w, 
+					      (int)bounds.h);
+
 	cairo_t *surface_cr = cairo_create (surface);
-	ui->Render (surface_cr, 0, 0, (int)bounds.w + 1, (int)bounds.h + 1);
+	ui->Render (surface_cr, 0, 0, (int)bounds.w , (int)bounds.h);
 	cairo_destroy (surface_cr);
 	
 // MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered

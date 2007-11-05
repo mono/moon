@@ -79,4 +79,33 @@
 			</GeometryGroup>
 		</Path.Data>
 	</Path>
+	<Path Fill="Blue" Stroke="Black" StrokeThickness="2" Stretch="Fill" Canvas.Top="360" Width="40">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 80" />
+				<LineGeometry StartPoint="10,60" EndPoint="40,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+
+	<Path Fill="Yellow" Stroke="Black" StrokeThickness="2" Stretch="Uniform" Canvas.Top="360" Canvas.Left="120"  Width="40" Height="40">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 80" />
+				<LineGeometry StartPoint="10,60" EndPoint="40,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
+
+	<Path Fill="Purple" Stroke="Black" StrokeThickness="2" Stretch="UniformToFill" Canvas.Top="360" Canvas.Left="240"  Width="40">
+		<Path.Data>
+			<GeometryGroup FillRule="EvenOdd">
+				<RectangleGeometry Rect="20,40 40 80" />
+				<LineGeometry StartPoint="10,60" EndPoint="40,60" />
+				<EllipseGeometry Center="50,50" RadiusX="10" RadiusY="10" />
+			</GeometryGroup>
+		</Path.Data>
+	</Path>
 </Canvas>

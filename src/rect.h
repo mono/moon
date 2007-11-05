@@ -11,6 +11,8 @@
 #define __MOON_RECT_H__
 
 #include <cairo.h>
+#include <math.h>
+#include <gtk/gtk.h>
 
 // map to System.Windows.Rect
 struct Rect {
@@ -73,9 +75,15 @@ struct Rect {
 		return result;
 	}
 
-	Rect Floor ()
+	Rect RoundOut ()
 	{
-		Rect result ((int)x, (int)y, (int)w, (int)h);
+		Rect result (floor (x), floor (y), ceil (x + w) - floor (x), ceil (y + h) - floor (y));
+		return result;
+	}
+
+	Rect RoundIn ()
+	{
+		Rect result (ceil (x), ceil (y), floor (x + w) - ceil (x), floor (y + h) - ceil (y));
 		return result;
 	}
 
@@ -90,6 +98,19 @@ struct Rect {
 		return result;
 	}
 
+	GdkRectangle 
+	ToGdkRectangle ()
+	{
+		GdkRectangle gdk;
+		Rect rect = RoundOut ();
+		gdk.x = rect.x;
+		gdk.y = rect.y;
+		gdk.width = rect.w;
+		gdk.height = rect.h;
+
+		return gdk;
+	}
+
 	bool operator == (const Rect &rect)
 	{
 		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
@@ -101,6 +122,31 @@ struct Rect {
 	}
 };
 
+class Region {
+public:
+	GdkRegion *gdkregion;
+
+	Region ();
+	Region (Rect rect);
+	Region (GdkRegion *region);
+	Region (double x, double y, double width, double height);
+	
+	~Region ();
+
+	void Union (Rect rect);
+	void Union (GdkRegion *region);
+	void Union (GdkRectangle *rect);
+	void Union (Region *region);
+
+	void Intersect (Region *region);
+	void Intersect (Rect rect);
+
+	void GetRectangles (GdkRectangle **rects, int *count);
+
+	Rect ClipBox ();
+	GdkOverlapType RectIn (Rect rect);
+};
+     
 G_BEGIN_DECLS
 
 Rect rect_from_str (const char *s);
