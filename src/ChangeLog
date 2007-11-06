@@ -1,3 +1,11 @@
+2007-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (GetObjectType): make this g_critical, and
+	also print out a stack trace if STACK_DEBUG is enabled.
+
+	* dependencyobject.h: stop Emitting the DestroyedEvent from the
+	dtor.  instead do it from unref before we delete the object.
+
 2007-11-05  Chris Toshok  <toshok@ximian.com>
 
 	* rect.h (ToGdkRectangle): quiet countless warnings.

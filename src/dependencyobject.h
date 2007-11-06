@@ -77,8 +77,6 @@ class EventObject {
 #endif
 		OBJECT_TRACK ("Destroyed", "");
 
-		Emit (DestroyedEvent);
-
 		FreeHandlers ();
 	}
 
@@ -96,8 +94,11 @@ class EventObject {
 	
 		OBJECT_TRACK ("Unref", GetTypeName ());
 
-		if (delete_me)
+		if (delete_me) {
+			Emit (DestroyedEvent);
+
 			delete this;
+		}
 	}
 
 	//
