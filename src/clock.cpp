@@ -29,6 +29,7 @@ n * clock.cpp: Clock management
 
 #define CLOCK_DEBUG 0
 #define TIME_TICK 0
+#define USE_SMOOTHING 1
 
 #if TIME_TICK
 #define STARTTICKTIMER(id,str) STARTTIMER(id,str)
@@ -336,7 +337,7 @@ TimeManager::Tick ()
 
 	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
 	*/
-
+#ifdef USE_SMOOTHING
 #define SMOOTHING_ALPHA 0.30 /* we probably want to play with this value some.. - toshok */
 
 
@@ -372,6 +373,8 @@ TimeManager::Tick ()
 	printf ("for a clock tick of %lld, we spent %lld computing the smooth delay\n",
 		xt, post_smooth - post_tick);
 #endif
+#endif
+
 	last_global_time = current_global_time;
 }
 

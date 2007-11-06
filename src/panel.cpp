@@ -71,7 +71,7 @@ Panel::~Panel ()
 }
 
 #define DEBUG_BOUNDS 0
-#define CAIRO_CLIP 1
+#define CAIRO_CLIP 0
 
 static void space (int n)
 {
@@ -154,7 +154,7 @@ Panel::ComputeBounds ()
 static int level = 0;
 
 //#define DEBUG_INVALIDATE 1
-//#define USE_STARTING_ELEMENT 1
+#define USE_STARTING_ELEMENT 1
 
 
 
@@ -163,29 +163,36 @@ Panel::FindStartingElement (Region *region)
 {
 #if USE_STARTING_ELEMENT
 	VisualCollection *children = GetChildren ();
+	Rect clip = region->ClipBox ().RoundOut ();
+	
+	gint i = children->z_sorted->len;
+	if (i < 2)
+		return -1;
 
-	if (region->RectIn (GetBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT
+	if (!clip.IntersectsWith (GetBounds().RoundOut())
 	    || !GetVisible () 
 	    || GetValue (UIElement::ClipProperty) != NULL
 	    || uielement_get_opacity_mask (this) != NULL
-	    //|| GetTotalOpacity () < 1.0
+	    || GetTotalOpacity () < .990
 	    )
 		return -1;
 
-	for (gint i = children->z_sorted->len - 1; i >= 0; i --) {
+	for (i --; i >= 0; i --) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
 		// if the exposed rectangle is completely within the bounds
 		// of a child that has opacity == 1.0 and lacks an opacity
 		// mask, we start rendering from there.
-		//if (item->GetTotalOpacity () > GetTotalOpacity ())
-		//	g_error ("This shouldn't be possible");
+		if (item->GetTotalOpacity () > GetTotalOpacity ())
+			g_warning ("Moonlight bug: child opacity greater than parent");
 
 		if (item->GetVisible ()
-		    && region->RectIn (item->GetBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_IN
 		    && item->GetValue (UIElement::ClipProperty) == NULL
 		    && (item->absolute_xform.yx == 0 && item->absolute_xform.xy == 0) /* no skew */
-		    && item->GetTotalOpacity () >= 1.0
-		    && uielement_get_opacity_mask (item) == NULL) {
+		    && item->GetTotalOpacity () >= .990
+		    && uielement_get_opacity_mask (item) == NULL
+		    && clip.IntersectsWith (item->GetBounds ().RoundOut ())
+		    && region->RectIn (item->GetBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_IN
+		    ) {
 			// there are actually some more type
 			// specific checks required.  we need
 			// to fulsrther limit it to elements
@@ -199,7 +206,7 @@ Panel::FindStartingElement (Region *region)
 
 			if (type == Type::PANEL || type == Type::CANVAS || type == Type::INKPRESENTER) {
 				bool panel_works = false;
-#if notyet
+#if 1
 				Brush *bg = panel_get_background ((Panel*)item);
 				if (bg && bg->GetObjectType() == Type::SOLIDCOLORBRUSH) {
 					Color *c = solid_color_brush_get_color ((SolidColorBrush*)bg);
@@ -248,6 +255,9 @@ Panel::UpdateTotalOpacity ()
 void
 Panel::Render (cairo_t *cr, Region *region)
 {
+	//if (!GetVisible () || GetTotalOpacity () <= 0.0)
+	//	return;
+
 	cairo_save (cr);  // for UIElement::ClipProperty
 
 	cairo_set_matrix (cr, &absolute_xform);
@@ -276,118 +286,94 @@ Panel::Render (cairo_t *cr, Region *region)
 }
 
 void
-Panel::RenderChildren (cairo_t *cr, Region *region)
+Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 {
 
 	VisualCollection *children = GetChildren ();
+
+	Region *clipped_region = new Region (GetBounds ());
+	clipped_region->Intersect (parent_region);
+	gint start_element = FindStartingElement (clipped_region);
 	
-	if (children->z_sorted->len == 1) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[0];
-		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		//Region * rregion = new Region ();
-		//rregion->Union (region);
-		item->DoRender (cr, region);
-		cairo_restore (cr);
-		return;
-	}
+	if (start_element <= 0)
+		start_element = 0;
+	else
+		printf ("start_element = %d\n", start_element);
 
-	Region render_region = Region (GetBounds ());
-	render_region.Intersect (region);
-
-	int count;
-	GdkRectangle *zones;
-	render_region.GetRectangles (&zones, &count);
-
-	
-
-	while (count --) {
-		Rect render_rect = Rect (zones[count].x, zones[count].y, zones[count].width, zones[count].height);
+	cairo_identity_matrix (cr);
+	for (guint i = start_element; i < children->z_sorted->len; i++) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
 		
-		gint start_element = FindStartingElement (&render_region);
-		if (start_element == -1)
-			start_element = 0;
+		Region *region = new Region (item->GetBounds ());
+		region->Intersect (clipped_region);
 
-// 	space (levelb);
-// 	printf (" + starting at child %d\n", start_element);
-
-// 	levelb += 4;
-
-	//
-	// from this point on, we use the identity matrix to set the clipping
-	// path for the children
-	//
-		/*
-		int hits = 0;
-		for (guint i = start_element; i < children->z_sorted->len; i++) {
-			UIElement *item = (UIElement *) children->z_sorted->pdata[i];
-			Type::Kind type = item->GetObjectType();
-
-			if (!item->GetVisible() || item->GetTotalOpacity () == 0.0 || !render_rect.IntersectsWith (item->GetBounds ()) || type != Type::CANVAS)
-				continue;
-
-			hits++;
-		}
-
-
-		printf ("%s(%d) has %d hits %s\n", GetName (), children->z_sorted->len, hits, hits == children->z_sorted->len? "good" : "bad");
-		*/
-		
-
-		cairo_identity_matrix (cr);
-		for (guint i = start_element; i < children->z_sorted->len; i++) {
-			UIElement *item = (UIElement *) children->z_sorted->pdata[i];
-
-			if (!item->GetVisible() || item->GetTotalOpacity () == 0.0 || !render_rect.IntersectsWith (item->GetBounds ().RoundOut())) {
+		if (!item->GetVisible() 
+		    || item->GetTotalOpacity () == 0.0 
+		    || gdk_region_empty (region->gdkregion)
+		    ) {
 #ifdef DEBUG_INVALIDATE
-				printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
+			printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
 #endif
-				continue;
-			}
-
-			Region clipped_region = Region (item->GetBounds ().RoundOut());
-			clipped_region.Intersect (render_rect);
+			continue;
+		}
+		
 #if CAIRO_CLIP
 #if TIME_CLIP
-			STARTTIMER(clip, "cairo clip setup");
+		STARTTIMER(clip, "cairo clip setup");
 #endif
-			cairo_save (cr);
-			
-			//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
-			// at the very least we need to clip based on the expose area.
-			// there's also a UIElement::ClipProperty
-			runtime_cairo_region (cr,clipped_region.gdkregion);
-			cairo_clip (cr);
+		cairo_save (cr);
+		
+		//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
+		// at the very least we need to clip based on the expose area.
+		// there's also a UIElement::ClipProperty
+		
+		runtime_cairo_region (cr,region->gdkregion);
+		cairo_clip (cr);
 #if TIME_CLIP
-			ENDTIMER(clip, "cairo clip setup");
+		ENDTIMER(clip, "cairo clip setup");
 #endif
 #endif
-// 			space (levelb);
-// 			printf ("%p %s (%s), bounds = %g %g %g %g, inter = %g %g %g %g\n",
-// 				item, item->GetTypeName(), item->GetName(),
-// 				item->GetBounds().x, item->GetBounds().y, item->GetBounds().w, item->GetBounds().h,
-// 				inter.x, inter.y, inter.w, inter.h);
+		// 			space (levelb);
+		// 			printf ("%p %s (%s), bounds = %g %g %g %g, inter = %g %g %g %g\n",
+		// 				item, item->GetTypeName(), item->GetName(),
+		// 				item->GetBounds().x, item->GetBounds().y, item->GetBounds().w, item->GetBounds().h,
+		// 				inter.x, inter.y, inter.w, inter.h);
 		
 
-			item->DoRender (cr, &clipped_region);
+		Type::Kind type = item->GetObjectType();
+		if (type == Type::PANEL || type == Type::CANVAS)
+			item->DoRender (cr, region);
+		else {
+			int count;
+			GdkRectangle *rects;
+			region->GetRectangles (&rects, &count);
 
+			while (count --) {
+				cairo_save (cr);
+				Region zone = Region (rects [count].x,
+						      rects [count].y,
+						      rects [count].width,
+						      rects [count].height);
+				runtime_cairo_region (cr, zone.gdkregion);
+				cairo_clip (cr);
+				item->DoRender (cr, &zone);
+				cairo_restore (cr);
+			}
+		}
 #if CAIRO_CLIP
 #if TIME_CLIP
-			STARTTIMER(endclip, "cairo clip teardown");
+		STARTTIMER(endclip, "cairo clip teardown");
 #endif			
-			cairo_restore (cr);
-
+		cairo_restore (cr);
+		
 #if TIME_CLIP
-			ENDTIMER(endclip, "cairo clip teardown");
+		ENDTIMER(endclip, "cairo clip teardown");
 #endif
 #endif
-		}
+		delete region;
 	}
-	g_free (zones);
-	//printf ("RENDER: LEAVE\n");
-	//draw_grid (cr);
 
-//	levelb -= 4;
+	delete clipped_region;
 }
 
 bool

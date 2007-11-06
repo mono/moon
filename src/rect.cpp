@@ -125,10 +125,10 @@ void
 Region::GetRectangles (GdkRectangle **rects, int *count)
 {
 	gdk_region_get_rectangles (gdkregion, rects, count);
-	if (*count > 10) {
-		*count = 1;
-		gdk_region_get_clipbox (gdkregion, *rects);
-	}
+	//if (*count > 10) {
+	//	*count = 1;
+	//	gdk_region_get_clipbox (gdkregion, *rects);
+	//}
 }
 
 Rect 
