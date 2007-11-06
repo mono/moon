@@ -1,3 +1,8 @@
+2007-11-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextFont): Fixed to not exit() even when no font could
+	be loaded from FreeType.
+
 2007-11-06  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (GetObjectType): make this g_critical, and

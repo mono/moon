@@ -153,20 +153,23 @@ TextFont::TextFont (FcPattern *pattern)
 	FcPatternReference (pattern);
 	matched = pattern;
 	
-retry:
-	
-	if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
-		goto fail;
-	
-	printf ("loading font from `%s'\n", filename);
-	
-	if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
-		goto fail;
-	
-	if (FT_New_Face (libft2, (const char *) filename, id, &face) != 0) {
+	while (true) {
+		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
+			goto fail;
+		
+		printf ("loading font from `%s'\n", filename);
+		
+		if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
+			goto fail;
+		
+		if (FT_New_Face (libft2, (const char *) filename, id, &face) == 0)
+			break;
+		
 	fail:
-		if (retried)
-			exit (1);
+		if (retried) {
+			face = NULL;
+			break;
+		}
 		
 		sans = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "sans",
 				       FC_PIXEL_SIZE, FcTypeDouble, size,
@@ -177,15 +180,18 @@ retry:
 		FcPatternDestroy (sans);
 		filename = NULL;
 		retried = true;
-		goto retry;
 	}
 	
 	FcPatternDestroy (matched);
 	
-	FT_Set_Pixel_Sizes (face, 0, (int) size);
-	
-	glyphs = g_new0 (GlyphInfo, 256);
-	glyphs[0].unichar = 1; /* invalidate */
+	if (face != NULL) {
+		FT_Set_Pixel_Sizes (face, 0, (int) size);
+		
+		glyphs = g_new0 (GlyphInfo, 256);
+		glyphs[0].unichar = 1; /* invalidate */
+	} else {
+		glyphs = NULL;
+	}
 	
 	g_hash_table_insert (font_cache, pattern, this);
 	FcPatternReference (pattern);
@@ -197,21 +203,25 @@ TextFont::~TextFont ()
 {
 	int i;
 	
-	for (i = 0; i < 256; i++) {
-		if (glyphs[i].path)
-			moon_path_destroy (glyphs[i].path);
-		
-		if (glyphs[i].bitmap) {
-			if (glyphs[i].bitmap->surface)
-				cairo_surface_destroy (glyphs[i].bitmap->surface);
+	if (glyphs) {
+		for (i = 0; i < 256; i++) {
+			if (glyphs[i].path)
+				moon_path_destroy (glyphs[i].path);
 			
-			g_free (glyphs[i].bitmap->buffer);
-			g_free (glyphs[i].bitmap);
+			if (glyphs[i].bitmap) {
+				if (glyphs[i].bitmap->surface)
+					cairo_surface_destroy (glyphs[i].bitmap->surface);
+				
+				g_free (glyphs[i].bitmap->buffer);
+				g_free (glyphs[i].bitmap);
+			}
 		}
+		
+		g_free (glyphs);
 	}
-	g_free (glyphs);
 	
-	FT_Done_Face (face);
+	if (face)
+		FT_Done_Face (face);
 	
 	g_hash_table_remove (font_cache, pattern);
 	FcPatternDestroy (pattern);
@@ -248,6 +258,9 @@ TextFont::unref ()
 bool
 TextFont::IsScalable ()
 {
+	if (!face)
+		return false;
+	
 	return (face->face_flags & FT_FACE_FLAG_SCALABLE);
 }
 
@@ -256,7 +269,7 @@ TextFont::Kerning (gunichar left, gunichar right)
 {
 	FT_Vector kerning;
 	
-	if (!FT_HAS_KERNING (face) || left == 0 || right == 0)
+	if (!face || !FT_HAS_KERNING (face) || left == 0 || right == 0)
 		return 0.0;
 	
 	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
@@ -267,18 +280,27 @@ TextFont::Kerning (gunichar left, gunichar right)
 double
 TextFont::Descender ()
 {
+	if (!face)
+		return 0.0;
+	
 	return (double) (face->size->metrics.descender / scale) / 64;
 }
 
 double
 TextFont::Ascender ()
 {
+	if (!face)
+		return 0.0;
+	
 	return (double) (face->size->metrics.ascender / scale) / 64;
 }
 
 double
 TextFont::Height ()
 {
+	if (!face)
+		return 0.0;
+	
 	return (double) (face->size->metrics.height / scale) / 64;
 }
 
@@ -428,6 +450,9 @@ TextFont::GetGlyphInfo (gunichar unichar)
 	GlyphInfo *glyph;
 	uint32_t i;
 	
+	if (!face)
+		return NULL;
+	
 	i = unichar & 0xff;
 	glyph = &glyphs[i];
 	
@@ -548,6 +573,9 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 	gunichar unichar;
 	uint32_t idx;
 	
+	if (!face)
+		return NULL;
+	
 	if (index != 0) {
 		unichar = FT_Get_First_Char (face, &idx);
 		while (idx != index && idx != 0)
@@ -565,12 +593,18 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 double
 TextFont::UnderlinePosition ()
 {
+	if (!face)
+		return 0.0;
+	
 	return (double) -((face->underline_position / scale) / 64.0);
 }
 
 double
 TextFont::UnderlineThickness ()
 {
+	if (!face)
+		return 0.0;
+	
 	// Note: integer math seems to match more closely with Silverlight here.
 	return (double) ((face->underline_thickness / scale) / 64);
 }
