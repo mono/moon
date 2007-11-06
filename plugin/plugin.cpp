@@ -50,11 +50,17 @@ plugin_menu_about (PluginInstance *plugin)
 
 	/* Newer gtk+ versions require this for the close button to work */
 	g_signal_connect_swapped (about,
-							  "response", 
-							  G_CALLBACK (gtk_widget_destroy),
-							  about);
+				  "response", 
+				  G_CALLBACK (gtk_widget_destroy),
+				  about);
 
 	gtk_dialog_run (GTK_DIALOG (about));
+}
+
+void
+plugin_properties (PluginInstance *plugin)
+{
+	plugin->Properties ();
 }
 
 void
@@ -72,6 +78,10 @@ plugin_show_menu (PluginInstance *plugin)
 	
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_menu_about), plugin);
+
+	menu_item = gtk_menu_item_new_with_label ("Properties");
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_properties), plugin);
 
 	gtk_widget_show_all (menu);
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
@@ -115,6 +125,21 @@ plugin_set_unload_callback (PluginInstance* plugin, plugin_unload_callback* puc)
 	}
 	
 	plugin->SetUnloadCallback (puc);
+}
+
+void
+PluginInstance::Properties ()
+{
+	printf ("initParams: %s\n"
+		"source:     %s\n"
+		"onLoad:     %s\n"
+		"background: %s\n"
+		"onError:    %s\n"
+		"windowless: %s\n",
+		initParams, source, onLoad,
+		background, onError,
+		windowless ? "true" : "false");
+	
 }
 
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
@@ -206,6 +231,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		if (argn[i] == NULL)
 			continue;
 
+		fprintf (stderr, "Initialize: %s=%s\n", argn [i], argv [i]);
 		// initParams.
 		if (!strcasecmp (argn[i], "initParams")) {
 			this->initParams = argv[i];
@@ -229,6 +255,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		if (!strcasecmp (argn[i], "background")) {
 			this->background = g_strdup (argv[i]);
 		}
+
 	}
 }
 
@@ -515,19 +542,38 @@ PluginInstance::TryLoad ()
 	}
 }
 
-char*
-escape_quotes (char *s)
+/*
+ * Prepares a string to be passed to Javascript, escapes the " and '
+ * characters and maps the newline to \n sequence and cr to \r sequence
+ */
+static char*
+string_to_js (char *s)
 {
-	char **parts;
 	char *res;
-
-	if (strchr (s, '\'') == NULL)
+	GString *result;
+	
+	if (strchr (s, '\'') == NULL && strchr (s, '\n') == NULL)
 		return g_strdup (s);
 
-	parts = g_strsplit (s, "'", 0);
-	res = g_strjoinv ("\\'", parts);
-	g_strfreev (parts);
+	result = g_string_new ("");
+	
+	for (char *p = s; *p != 0; *p++){
+		if (*p == '"' || *p == '\''){
+			g_string_append_c (result, '\\');
+			g_string_append_c (result, *p);
+		} else if (*p == '\n'){
+			g_string_append_c (result, '\\');
+			g_string_append_c (result, 'n');
+		} else if (*p == '\r'){
+			g_string_append_c (result, '\\');
+			g_string_append_c (result, 'r');
+		} else
+			g_string_append_c (result, *p);
+	}
 
+	res = result->str;
+	g_string_free (result, FALSE);
+	
 	return res;
 }
 
@@ -552,11 +598,11 @@ PluginInstance::ReportException (char *msg, char *details, char **stack_trace, i
 	// - make sure the variables do not become global
 
 	// Remove ' from embedded strings
-	msg_escaped = escape_quotes (msg);
-	details_escaped = escape_quotes (details);
+	msg_escaped = string_to_js (msg);
+	details_escaped = string_to_js (details);
 	stack_trace_escaped = g_new0 (char*, num_frames);
 	for (i = 0; i < num_frames; ++i)
-		stack_trace_escaped [i] = escape_quotes (stack_trace [i]);
+		stack_trace_escaped [i] = string_to_js (stack_trace [i]);
 
 	// JS code to create our elements
 	row_js = g_strdup (" ");
@@ -619,7 +665,7 @@ PluginInstance::LoadUrl (char *url, gint32 *length)
 
 	// FIXME:
 	// - make sure the variables do not become global
-	url_escaped = escape_quotes (url);
+	url_escaped = string_to_js (url);
 	script = g_strdup_printf ("var req = new XMLHttpRequest(); req.open('GET', '%s', false); req.overrideMimeType('text/plain; charset=x-user-defined'); req.send (null); req.responseText;", url_escaped);
 
 	str.utf8characters = script;
