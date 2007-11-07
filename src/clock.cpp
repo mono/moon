@@ -776,9 +776,14 @@ Clock::Begin ()
 	}
 
 	if (natural_duration.HasTimeSpan ()) {
-		current_progress = new_progress = (double)current_time / natural_duration.GetTimeSpan();
-		if (current_progress > 1.0) {
+		if (natural_duration.GetTimeSpan() == 0) {
 			current_progress = new_progress = 1.0;
+		}
+		else {
+			current_progress = new_progress = (double)current_time / natural_duration.GetTimeSpan();
+			if (current_progress > 1.0) {
+				current_progress = new_progress = 1.0;
+			}
 		}
 	}
 	else

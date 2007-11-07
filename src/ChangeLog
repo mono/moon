@@ -1,5 +1,9 @@
 2007-11-07  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp (Clock::Begin): guard against division by zero.
+
+2007-11-07  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp, runtime.h: make GetWidth()/GetHeight() return the
 	width the canvas tells the surface to be (if it does).  this fixes
 	issues uncovered by larry's improved bounds checking code.  Also,
