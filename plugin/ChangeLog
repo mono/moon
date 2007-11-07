@@ -1,3 +1,8 @@
+2007-11-07  Jb Evain  <jbevain@novell.com>
+
+	* browser-http.cpp|h: implement a GetStatus method for
+	BrowserHttpResponse.
+
 2007-11-06  Miguel de Icaza  <miguel@novell.com>
 
 	* plugin.cpp (string_to_js): rename from escape_quotes, this helps

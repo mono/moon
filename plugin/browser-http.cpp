@@ -33,8 +33,8 @@ BrowserHttpResponse::VisitHeader (const nsACString &header, const nsACString &va
 
 	this->handler (name, val);
 
-	g_free ((gpointer) name);
-	g_free ((gpointer) val);
+	// g_free ((gpointer) name);
+	// g_free ((gpointer) val);
 
     return NS_OK;
 }
@@ -51,6 +51,30 @@ BrowserHttpResponse::VisitHeaders (HttpHeaderHandler handler)
 	httpchannel->VisitResponseHeaders (this);
 
 	this->handler = NULL;
+}
+
+char *
+BrowserHttpResponse::GetStatus (int *code)
+{
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
+	if (!httpchannel) {
+		*code = 0;
+		return NULL;
+	}
+
+	nsEmbedCString status_desc;
+	PRUint32 status;
+	const char *desc;
+	int dl;
+
+	httpchannel->GetResponseStatusText (status_desc);
+
+	dl = NS_CStringGetData (status_desc, &desc);
+
+	httpchannel->GetResponseStatus (&status);
+
+	*code = status;
+	return g_strndup (desc, dl);
 }
 
 // SyncBrowserHttpResponse
@@ -99,7 +123,6 @@ AsyncBrowserHttpResponse::OnStartRequest (nsIRequest *request, nsISupports *cont
 NS_IMETHODIMP
 AsyncBrowserHttpResponse::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
-	// TODO: check the status, and store it in the response
 	handler (this, this->context);
 	return NS_OK;
 }
@@ -189,7 +212,9 @@ BrowserHttpRequest::GetResponse ()
 void
 BrowserHttpRequest::GetAsyncResponse (AsyncResponseAvailableHandler handler, gpointer context)
 {
-	AsyncBrowserHttpResponse *response = new AsyncBrowserHttpResponse (channel, handler, context);
+	AsyncBrowserHttpResponse *response;
+
+	response = new AsyncBrowserHttpResponse (channel, handler, context);
 	channel->AsyncOpen (response, (BrowserHttpResponse *) response);
 }
 
@@ -277,6 +302,12 @@ void
 browser_http_response_visit_headers (BrowserHttpResponse *response, HttpHeaderHandler handler)
 {
 	response->VisitHeaders (handler);
+}
+
+char *
+browser_http_response_get_status (BrowserHttpResponse *response, int *code)
+{
+	return response->GetStatus (code);
 }
 
 void

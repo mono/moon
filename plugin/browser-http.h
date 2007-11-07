@@ -57,6 +57,7 @@ public:
 	}
 
 	void VisitHeaders (HttpHeaderHandler handler);
+	char *GetStatus (int *code);
 
 	virtual void *Read (int *length) = 0;
 };
@@ -151,6 +152,7 @@ BrowserHttpResponse *browser_http_request_get_response (BrowserHttpRequest *requ
 void browser_http_request_get_async_response (BrowserHttpRequest *request, AsyncResponseAvailableHandler handler, gpointer context);
 void *browser_http_response_read (BrowserHttpResponse *response, int *size);
 void browser_http_response_visit_headers (BrowserHttpResponse *response, HttpHeaderHandler handler);
+char *browser_http_response_get_status (BrowserHttpResponse *response, int *code);
 void browser_http_response_destroy (BrowserHttpResponse *response);
 
 #if BROWSER_HTTP_TEST
