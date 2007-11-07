@@ -340,26 +340,17 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 		// 				inter.x, inter.y, inter.w, inter.h);
 		
 
-		Type::Kind type = item->GetObjectType();
-		if (type == Type::PANEL || type == Type::CANVAS)
+		//Type::Kind type = item->GetObjectType();
+		//if (type == Type::PANEL || type == Type::CANVAS)
 			item->DoRender (cr, region);
-		else {
-			int count;
-			GdkRectangle *rects;
-			region->GetRectangles (&rects, &count);
-
-			while (count --) {
-				cairo_save (cr);
-				Region zone = Region (rects [count].x,
-						      rects [count].y,
-						      rects [count].width,
-						      rects [count].height);
-				runtime_cairo_region (cr, zone.gdkregion);
-				cairo_clip (cr);
-				item->DoRender (cr, &zone);
-				cairo_restore (cr);
-			}
-		}
+			//else {
+			//cairo_save (cr);
+			////Region zone = Region (region->ClipBox ());
+			//runtime_cairo_region (cr,region->gdkregion);
+			//cairo_clip (cr);
+			//item->DoRender (cr, region);
+			//cairo_restore (cr);
+			//}
 #if CAIRO_CLIP
 #if TIME_CLIP
 		STARTTIMER(endclip, "cairo clip teardown");

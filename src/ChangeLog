@@ -1,5 +1,10 @@
 2007-11-06  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp: Implement the Region based rendering for MediaElement
+	and Image.
+
+	* panel.cpp: Unconditionally pass the region to the Children.
+
 	* panel.cpp: when rendering children treat panels and other
 	objects differently.  For containers pass the clipped region
 	directly, for elements subdivide the region and paint each block.

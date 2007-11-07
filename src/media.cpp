@@ -437,7 +437,7 @@ MediaElement::GetTransformOrigin ()
 }
 
 void
-MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
+MediaElement::Render (cairo_t *cr, Region *region)
 {
 	Stretch stretch = media_base_get_stretch (this);
 	double h = framework_element_get_height (this);
@@ -482,25 +482,48 @@ MediaElement::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_pattern_destroy (pattern);
 	
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
-	
-	// NOTE: Some servers seem to have extreme perfomance issues
-	// when paint_with_alpha (cr, 1.0) is called even accidentally
-	if (render_opacity < 1.0) {
-#if DRAW_INCORRECTLY 
-		cairo_paint_with_alpha (cr, render_opacity);
-#else
-		cairo_rectangle (cr, 0, 0, w, h);
+	int count = 1;
+	GdkRectangle *rects;
+	region->GetRectangles (&rects, &count);
+
+	cairo_pattern_set_matrix (pattern, &matrix);
+	cairo_set_source (cr, pattern);
+
+#define SPLIT 1
+#if SPLIT
+	//printf ("media");
+	while (count --) {
+		//cairo_save (cr);
+		cairo_identity_matrix (cr);
+		cairo_rectangle (cr, rects[count].x, rects[count].y, rects[count].width, rects[count].height);
+		//runtime_cairo_region (cr, region->gdkregion);
 		cairo_clip (cr);
-		cairo_paint_with_alpha (cr, render_opacity);
+		cairo_set_matrix (cr, &absolute_xform);
 #endif
-	} else {
-#if DRAW_INCORRECTLY
-		cairo_paint (cr);
+		// NOTE: Some servers seem to have extreme perfomance issues
+		// when paint_with_alpha (cr, 1.0) is called even accidentally
+		if (render_opacity < 1.0) {
+#if DRAW_INCORRECTLY 
+			cairo_paint_with_alpha (cr, render_opacity);
 #else
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_fill (cr);
+			cairo_rectangle (cr, 0, 0, w, h);
+			cairo_clip (cr);
+			cairo_paint_with_alpha (cr, render_opacity);
 #endif
+		} else {
+#if DRAW_INCORRECTLY
+			cairo_paint (cr);
+#else
+			cairo_rectangle (cr, 0, 0, w, h);
+			cairo_fill (cr);
+#endif
+		}
+
+#if SPLIT
+		//cairo_restore (cr);
 	}
+	//g_free (rects);
+#endif
 
 	cairo_restore (cr);
 }
@@ -1366,7 +1389,7 @@ Image::pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data)
 }
 
 void
-Image::Render (cairo_t *cr, int, int, int, int)
+Image::Render (cairo_t *cr, Region *region)
 {
 	if (!surface)
 		return;
@@ -1447,15 +1470,32 @@ Image::Render (cairo_t *cr, int, int, int, int)
 	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
 		AlignmentXCenter, AlignmentYCenter, NULL);
 
+
+	int count;
+	GdkRectangle *rects;
+	region->GetRectangles (&rects, &count);
+
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
 
+	//printf ("media");
+	while (count --) {
+		cairo_save (cr);
+		cairo_identity_matrix (cr);
+		cairo_rectangle (cr, rects[count].x, rects[count].y, rects[count].width, rects[count].height);
+		cairo_clip (cr);
+		cairo_set_matrix (cr, &absolute_xform);
+
 #if DRAW_INCORRECTLY
-	cairo_paint (cr);
+		cairo_paint (cr);
 #else
-	cairo_rectangle (cr, 0, 0, w, h);
-	cairo_fill (cr);
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_fill (cr);
 #endif
+		cairo_restore (cr);
+	}
+	g_free (rects);
+
 	cairo_restore (cr);
 }
 
