@@ -154,7 +154,7 @@ Panel::ComputeBounds ()
 static int level = 0;
 
 //#define DEBUG_INVALIDATE 1
-#define USE_STARTING_ELEMENT 1
+//#define USE_STARTING_ELEMENT 1
 
 
 

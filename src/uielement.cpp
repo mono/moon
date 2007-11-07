@@ -84,8 +84,8 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 {
 	Value *value = GetValue (UIElement::ClipProperty);
 	if (!value) {
-		//if (!GetVisible () || total_opacity == 0.0)
-		//	return Rect (0, 0, 0, 0);
+		if (!GetVisible () || total_opacity == 0.0)
+			return Rect (0, 0, 0, 0);
 
 		return unclipped;
 	}
@@ -93,8 +93,8 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 	Geometry *geometry = value->AsGeometry ();
 	Rect box = geometry->ComputeBounds (NULL);
 	
-	//if (!GetVisible () || total_opacity == 0.0)
-	//box = Rect (0, 0, 0, 0);
+	if (!GetVisible () || total_opacity == 0.0)
+		box = Rect (0, 0, 0, 0);
 
 	if (transform)
 		box = bounding_rect_for_transformed_rect (&absolute_xform,

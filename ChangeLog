@@ -1,3 +1,14 @@
+2007-11-06  Larry Ewing  <lewing@novell.com>
+
+	* src/dirty.cpp: call UpdateBounds inside the DirtyOpacity logic
+	since opacity changes can change our bounds now.
+
+	* src/uielement.cpp: make invisible elements have empty bounding
+	boxes.
+
+	* src/panel.cpp: disable FindStartingElement again while the
+	bounds issues are sorted out.
+	
 2007-11-05  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Hack to remove glitz from the link flags

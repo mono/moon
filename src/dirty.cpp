@@ -85,6 +85,7 @@ process_dirty_elements ()
 
 		if (el->dirty_flags & DirtyOpacity) {
 			el->dirty_flags &= ~DirtyOpacity;
+			el->UpdateBounds ();
 
 			el->Invalidate ();
 			el->ComputeTotalOpacity ();
@@ -184,9 +185,10 @@ process_dirty_elements ()
 					if (el->parent) {
 // 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
 						el->parent->UpdateBounds();
-						el->parent->Invalidate(obounds);
+						Region oregion = Region (obounds);
+						el->parent->ChildInvalidated (&oregion);
 					}
-				}
+				} 
 				
 				el->force_invalidate_of_new_bounds = false;
 				el->Invalidate ();
