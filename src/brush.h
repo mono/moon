@@ -86,6 +86,9 @@ class SolidColorBrush : public Brush {
 
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	Color *GetColor ();
+	void   SetColor (Color *color);
 };
 
 SolidColorBrush	*solid_color_brush_new (void);

@@ -189,15 +189,27 @@ SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
 }
 
 Color *
+SolidColorBrush::GetColor ()
+{
+	return GetValue (SolidColorBrush::ColorProperty)->AsColor();
+}
+
+void
+SolidColorBrush::SetColor (Color *color)
+{
+	SetValue (SolidColorBrush::ColorProperty, Value (*color));
+}
+
+Color *
 solid_color_brush_get_color (SolidColorBrush *solid_color_brush)
 {
-	return solid_color_brush->GetValue (SolidColorBrush::ColorProperty)->AsColor();
+	return solid_color_brush->GetColor ();
 }
 
 void
 solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color)
 {
-	solid_color_brush->SetValue (SolidColorBrush::ColorProperty, Value (*color));
+	solid_color_brush->SetColor (color);
 }
 
 SolidColorBrush*

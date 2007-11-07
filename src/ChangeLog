@@ -1,3 +1,8 @@
+2007-11-07  Chris Toshok  <toshok@ximian.com>
+
+	* brush.h, brush.cpp: add some c++ setters/getters to make some
+	code a little smaller.
+
 2007-11-06  Larry Ewing  <lewing@novell.com>
 
 	* src/frameworkelement.cpp: Force a full invalidate if the width
