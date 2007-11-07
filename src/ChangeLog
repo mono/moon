@@ -1,5 +1,13 @@
 2007-11-07  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp, runtime.h: make GetWidth()/GetHeight() return the
+	width the canvas tells the surface to be (if it does).  this fixes
+	issues uncovered by larry's improved bounds checking code.  Also,
+	remove the instance fields for screen_height/width.  they're only
+	used in one place, so make them local to that function.
+
+2007-11-07  Chris Toshok  <toshok@ximian.com>
+
 	* brush.h, brush.cpp: add some c++ setters/getters to make some
 	code a little smaller.
 

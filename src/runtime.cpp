@@ -145,7 +145,6 @@ Surface::Surface(int w, int h)
 
 	normal_width = width;
 	normal_height = height;
-	screen_width = screen_height = 0;
 
 	toplevel = NULL;
 	capture_element = NULL;
@@ -597,8 +596,8 @@ Surface::UpdateFullScreen (bool value)
 		drawing_area = drawing_area_fullscreen;
 		
 		// Get the screen size
-		screen_width = gdk_screen_get_width (gdk_screen_get_default ());
-		screen_height = gdk_screen_get_height (gdk_screen_get_default ());
+		int screen_width = gdk_screen_get_width (gdk_screen_get_default ());
+		int screen_height = gdk_screen_get_height (gdk_screen_get_default ());
 		
 		//screen_width = (int) (screen_width * 0.8);
 		//screen_height = (int) (screen_height * 0.8);

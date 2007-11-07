@@ -66,8 +66,8 @@ class Surface : public EventObject {
 	UIElement* GetMouseCapture () { return capture_element; }
 
 	void Resize (int width, int height);
-	int GetWidth () { return normal_width; }
-	int GetHeight () { return normal_height; }
+	int GetWidth () { return width; }
+	int GetHeight () { return height; }
 
 	void SetTrans (bool trans);
 	bool GetTrans () { return transparent; }
@@ -129,7 +129,6 @@ private:
 	gpointer downloader_context;
 	
 	int normal_width, normal_height;
-	int screen_width, screen_height;
 	// the actual size of the drawing area, 
 	// screen size in fullscreen mode,
 	// otherwise normal size.
