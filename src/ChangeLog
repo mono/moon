@@ -1,5 +1,9 @@
 2007-11-06  Larry Ewing  <lewing@novell.com>
 
+	* src/frameworkelement.cpp: Force a full invalidate if the width
+	or height property because panels include their children in the
+	bounds compution and will pass the dirty check.
+
 	* media.cpp: Implement the Region based rendering for MediaElement
 	and Image.
 
