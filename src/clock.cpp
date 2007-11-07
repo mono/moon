@@ -337,7 +337,7 @@ TimeManager::Tick ()
 
 	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
 	*/
-#ifdef USE_SMOOTHING
+#if USE_SMOOTHING
 #define SMOOTHING_ALPHA 0.30 /* we probably want to play with this value some.. - toshok */
 
 
