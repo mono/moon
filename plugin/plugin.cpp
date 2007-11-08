@@ -950,6 +950,12 @@ PluginInstance::getInstance ()
 	return instance;
 }
 
+Surface *
+plugin_instance_get_surface (PluginInstance *instance)
+{
+	return instance->surface;
+}
+
 int32
 plugin_instance_get_actual_width (PluginInstance *instance)
 {
@@ -1047,12 +1053,10 @@ PluginXamlLoader::LoadVM ()
 const char*
 PluginXamlLoader::TryLoad (int *error)
 {
-	g_assert (GetFilename () == NULL ^ GetString () == NULL);
-	
-	*error = 0;
-
 	DependencyObject* element;
 	Type::Kind element_type;
+
+	*error = 0;
 	
 	printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ());
 	

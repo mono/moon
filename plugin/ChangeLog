@@ -1,3 +1,10 @@
+2007-11-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (plugin_instance_get_surface): New function needed by
+	BrowserHost class.
+	(TryLoad): Removed an unnecessary g_assert() (the code handles the
+	error case properly).
+
 2007-11-07  Jb Evain  <jbevain@novell.com>
 
 	* browser-http.cpp|h: implement a GetStatus method for
