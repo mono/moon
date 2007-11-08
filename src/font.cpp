@@ -157,7 +157,7 @@ TextFont::TextFont (FcPattern *pattern)
 		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 			goto fail;
 		
-		printf ("loading font from `%s'\n", filename);
+		//printf ("loading font from `%s'\n", filename);
 		
 		if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 			goto fail;
@@ -765,10 +765,6 @@ TextFontDescription::GetFont ()
 	FcPattern *pattern;
 	
 	if (font == NULL) {
-		//char *str = ToString ();
-		//printf ("requested font: %s\n", str);
-		//g_free (str);
-		
 		pattern = CreatePattern ();
 		font = TextFont::Load (pattern);
 		FcPatternDestroy (pattern);

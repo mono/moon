@@ -1,3 +1,8 @@
+2007-11-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (Attach): Emit the Resize event.
+	(drawing_area_size_allocate): Emit the Resize event.
+
 2007-11-07  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (Clock::Begin): guard against division by zero.

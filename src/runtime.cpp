@@ -390,8 +390,11 @@ Surface::Attach (UIElement *element)
 		width = normal_width;
 	}
 
-	if (change_size)
+	if (change_size) {
 		Realloc ();
+		
+		Emit (ResizeEvent);
+	}
 
 	canvas->UpdateBounds ();
 	canvas->Invalidate ();
@@ -438,7 +441,7 @@ void
 Surface::Resize (int width, int height)
 {
 	gtk_widget_set_size_request (drawing_area, width, height);
-
+	
 	if (!full_screen)
 		Emit (ResizeEvent);
 }
@@ -744,7 +747,7 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 	}
 #endif
 #endif
-
+	
 	TimeManager::Instance()->AddHandler (TimeManager::Instance()->RenderEvent, render_cb, s);
 	TimeManager::Instance()->AddHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, s);
 	return TRUE;
@@ -1138,8 +1141,10 @@ Surface::drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
         if (s->width != allocation->width || s->height != allocation->height){
                 s->width = allocation->width;
                 s->height = allocation->height;
-
+		
 		s->Realloc ();
+		
+		s->Emit (ResizeEvent);
 	}
 	
 	// if x or y changed we need to recompute the presentation matrix
