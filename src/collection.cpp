@@ -436,10 +436,10 @@ VisualCollection::ResortByZIndex ()
 
 
 void
-VisualCollection::VisualUpdate (DependencyObject *data)
+VisualCollection::VisualAdded (Visual *visual)
 {
 	Panel *panel = (Panel *) closure;
-	UIElement *item = (UIElement *) data;
+	UIElement *item = (UIElement *) visual;
 
 	if (panel == NULL)
 		return;
@@ -449,6 +449,25 @@ VisualCollection::VisualUpdate (DependencyObject *data)
 	item->UpdateTotalOpacity ();
 	item->Invalidate ();
 	item->SetSurface (panel->GetSurface ());
+}
+
+void
+VisualCollection::VisualRemoved (Visual *visual)
+{
+	UIElement *item = (UIElement *) visual;
+
+	if (item->parent == NULL)
+		return;
+
+	// we can't just call item->Invalidate() here, since
+	// dirty.cpp relies on the child->parent link being
+	// present.  Instead we directly call ChildInvalidated
+	// with the entire bounds of the child (which is
+	// likely suboptimal, considering panels without
+	// backgrounds might have a more optimized region we
+	// can redraw).
+	item->parent->ChildInvalidated (item);
+	item->parent = NULL;
 }
 
 bool
@@ -461,7 +480,7 @@ VisualCollection::Add (DependencyObject *data)
 	if (b) {
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
 
-		VisualUpdate (data);
+		VisualAdded (item);
 
 		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 			/* emit loaded events on the new item if the tree
@@ -480,6 +499,8 @@ VisualCollection::SetVal (int index, DependencyObject *data)
 	UIElement *old = (UIElement *) Collection::SetVal (index, item);
 	
 	if (old) {
+		VisualRemoved (old);
+
 		g_ptr_array_remove (z_sorted, old);
 	
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
@@ -490,7 +511,7 @@ VisualCollection::SetVal (int index, DependencyObject *data)
 			item->OnLoaded ();
 		}
 
-		VisualUpdate (data);
+		VisualAdded (item);
 	}
 
 	return old;
@@ -512,7 +533,7 @@ VisualCollection::Insert (int index, DependencyObject *data)
 			item->OnLoaded ();
 		}
 
-		VisualUpdate (data);
+		VisualAdded (item);
 	}
 
 	return b;
@@ -523,7 +544,8 @@ VisualCollection::Remove (DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
 
- 	item->Invalidate ();
+	VisualRemoved (item);
+
 	bool b = Collection::Remove (item);
 	
 	if (b)
@@ -541,7 +563,8 @@ VisualCollection::RemoveAt (int index)
 	
 	UIElement *item = (UIElement *) n->obj;
 
- 	item->Invalidate ();
+	VisualRemoved (item);
+
 	bool b = Collection::RemoveAt (index);
 
 	if (b)
@@ -553,8 +576,9 @@ VisualCollection::RemoveAt (int index)
 void
 VisualCollection::Clear ()
 {
-	if (list->IsEmpty ())
-		return;
+	Collection::Node *n;
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) 
+		VisualRemoved ((UIElement*)n->obj);
 	
 	g_ptr_array_set_size (z_sorted, 0);
 	Collection::Clear ();

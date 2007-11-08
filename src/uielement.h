@@ -184,6 +184,7 @@ public:
 	// 
 	bool InsideClip (cairo_t *cr, double x, double y);
 
+	void ChildInvalidated (UIElement *child);
 	void ChildInvalidated (Region *region);
 
 	//

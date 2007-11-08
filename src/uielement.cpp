@@ -326,6 +326,13 @@ UIElement::OnLoaded ()
 }
 
 void
+UIElement::ChildInvalidated (UIElement *child)
+{
+	Region region (child->GetBounds());
+	ChildInvalidated (&region);
+}
+
+void
 UIElement::ChildInvalidated (Region *region)
 {
 	if (!GetVisible() || total_opacity <= 0.0)

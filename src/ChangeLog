@@ -1,3 +1,21 @@
+2007-11-08  Chris Toshok  <toshok@ximian.com>
+
+	[ may go a long way toward fixing #337714, if it doesn't fix it
+	outright ]
+	
+	* uielement.h, uielement.cpp: add an overload of ChildInvalidated
+	that takes a UIElement* instead of a region.  The implementation
+	just invalidates the entire bounds of the child in the parent.
+
+	* collection.h, collection.cpp: we weren't breaking the
+	item->parent link when removing visuals from a VisualCollection.
+	Add VisualRemoved, which invalidates the child's region (and stop
+	using child->Invalidate, since that won't work once the link to
+	the parent is broken) and breaks the parent link.  Call
+	VisualRemoved from everywhere we remove/replace a visual in our
+	collection.  Also, rename VisualUpdated to VisualAdded, since
+	that's more indicative of why the method is being called.
+	
 2007-11-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (Attach): Emit the Resize event.

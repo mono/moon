@@ -91,7 +91,8 @@ class VisualCollection : public Collection {
 	GPtrArray *z_sorted;
 
  private:
-	void VisualUpdate (DependencyObject *data);
+	void VisualAdded (Visual *visual);
+	void VisualRemoved (Visual *visual);
 };
 
 class TriggerCollection : public Collection {
