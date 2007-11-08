@@ -139,6 +139,23 @@ else
    echo I was looking for silver.pc file
 fi
 
+AC_MSG_CHECKING(gtk-sharp-2.0)
+if pkg-config gtk-sharp-2.0; then
+   AC_MSG_RESULT(found)
+else
+   echo gtk-sharp bindings is missing
+   exit 1
+fi
+
+AC_MSG_CHECKING(rsvg-sharp-2.0)
+if pkg-config rsvg-sharp-2.0; then
+   AC_MSG_RESULT(found)
+else
+   echo rsvg-sharp bindings is missing
+   exit 1
+fi
+
+
 MONO_PKGS="mono"
 
 fi # MONO_RUNTIME
