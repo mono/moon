@@ -1,8 +1,3 @@
-2007-11-08  Larry Ewing  <lewing@novell.com>
-
-	* shape.cpp: always clip to the framework element width/height
-	regardless of the Fill, verified against test cases.
-
 2007-11-08  Chris Toshok  <toshok@ximian.com>
 
 	[ may go a long way toward fixing #337714, if it doesn't fix it

@@ -150,8 +150,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 
 	bool drawn = false;
 
-	// we need to use clipping to implement the various Fills
-	if (!IsDegenerate ()) {
+	// we need to use clipping to implement StretchUniformToFill
+	if (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill)) {
 		double w = framework_element_get_width (this);
 		if (w > 0.0) {
 			double h = framework_element_get_height (this);
@@ -1611,19 +1611,44 @@ Path::ComputeBounds ()
 
 	bounds = geometry->ComputeBounds (this);
 
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	double vscale = 1.0;
-	if (vh)
-		bounds.h = vh->AsDouble ();
-	
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	double hscale = 1.0;
-	if (vw)
-		bounds.w = vw->AsDouble ();
-		       
-	if ((!vh && vw) || (!vw && vh) ||  bounds.w == 0 || bounds.h == 0) {
-		bounds = Rect (0, 0, 0, 0);
-		return;
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch != StretchNone) {
+		double t = shape_get_stroke_thickness (this) * .5;
+		bounds.x = -t;
+		bounds.y = -t;
+
+		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+		double vscale = 1.0;
+		if (vh)
+			vscale = vh->AsDouble () / bounds.h;
+
+		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+		double hscale = 1.0;
+		if (vw)
+		        hscale = vw->AsDouble () / bounds.w;
+		
+		double scale; 
+
+		switch (stretch) {
+		case StretchUniform:
+			scale = MIN (vw ? vscale : hscale, vh ? hscale : vscale);
+			bounds.h = (int) ceil(bounds.h * scale);
+			bounds.w = (int) ceil(bounds.w * scale);
+			break;
+		case StretchUniformToFill:
+			scale = MAX (vw ? vscale : hscale, vh ? hscale : vscale);
+			bounds.h = (int) ceil(bounds.h * scale);
+			bounds.w = (int) ceil(bounds.w * scale);
+			break;
+		default:
+			// bounds are already set correctly
+			bounds.h = bounds.h * vscale;
+			bounds.w = bounds.w * hscale;
+			break;
+		}
+
+		bounds.w += 2 * t;
+		bounds.h += 2 * t;
 	}
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
