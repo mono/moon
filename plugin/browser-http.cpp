@@ -31,7 +31,7 @@ BrowserHttpResponse::VisitHeader (const nsACString &header, const nsACString &va
 	name = g_strndup (name, nl);
 	val = g_strndup (val, vl);
 
-	this->handler (name, val);
+	handler (name, val);
 
 	// g_free ((gpointer) name);
 	// g_free ((gpointer) val);
@@ -177,6 +177,8 @@ BrowserHttpRequest::CreateChannel ()
 	nsEmbedCString url;
 	url = this->uri;
 
+	printf ("BrowserHttpRequest: %s\n", uri);
+
 	nsCOMPtr<nsIURI> uri;
 	rv = ioservice->NewURI (url, nsnull, nsnull, getter_AddRefs (uri));
 
@@ -316,13 +318,13 @@ browser_http_response_destroy (BrowserHttpResponse *response)
 	delete response;
 }
 
-#if BROWSER_HTTP_TEST
-
 void *
 browser_http_response_read (BrowserHttpResponse *response, int *size)
 {
 	return response->Read (size);
 }
+
+#if BROWSER_HTTP_TEST
 
 void
 browser_http_test_print_response (BrowserHttpResponse *response)
