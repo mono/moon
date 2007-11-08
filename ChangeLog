@@ -1,16 +1,7 @@
-<<<<<<< HEAD:ChangeLog
 2007-11-08  Stephane Delcroix  <sdelcroix@novell.com>
-=======
-2007-11-08  Larry Ewing  <lewing@novell.com>
->>>>>>> 2007-11-08 Larry Ewing <lewing@novell.com>:ChangeLog
 
-<<<<<<< HEAD:ChangeLog
 	* configure.ac:  check for gtk-sharp-2.0 and rsvg-sharp-2.0 required
 	for tools/svg2xaml. Fixes bnc #325316.
-=======
-	* src/shape.cpp: always clip to the width/height regardless of the
-	fill type.  Verified against tests.
->>>>>>> 2007-11-08 Larry Ewing <lewing@novell.com>:ChangeLog
 
 2007-11-06  Larry Ewing  <lewing@novell.com>
 
