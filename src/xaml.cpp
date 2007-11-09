@@ -2028,10 +2028,38 @@ geometry_from_str (const char *str)
 			break;
 		}
 		case 'z':
-		case 'Z':
+		case 'Z': {
+			Point *p = path_figure_get_start_point (pf);
+
+			if (!p)
+				p = new Point (0, 0);
+
+			LineSegment* ls = new LineSegment ();
+			ls->SetValue (LineSegment::PointProperty, Value (*p));
+
+			psc->Add (ls);
+			ls->unref ();
+
 			prev = NULL;
 			path_figure_set_is_closed (pf, true);
+
+			cp.x = p->x;
+			cp.y = p->y;
+			
+			if (pf) {
+				pfc->Add (pf);
+				pf->unref ();
+			}
+
+			pf = new PathFigure ();
+			psc = new PathSegmentCollection ();
+			pf->SetValue (PathFigure::SegmentsProperty, psc);
+			psc->unref ();
+
+			path_figure_set_start_point (pf, p);
+
 			break;
+		}
 		default:
 			break;
 		}

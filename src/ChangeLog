@@ -1,5 +1,11 @@
 2007-11-09  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Closepath needs to draw a line to the path's starting
+	point and needs to create a new path figure element at the
+	starting point.
+
+2007-11-09  Jackson Harper  <jackson@ximian.com>
+
 	* type.cpp|h.in: Add an accesor for the ContentProperty name.
 	
 2007-11-09  Jackson Harper  <jackson@ximian.com>
