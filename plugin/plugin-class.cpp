@@ -1698,12 +1698,10 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 static bool
 _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, const NPVariant *value)
 {
-
-	if (NPVARIANT_IS_OBJECT (*value)) {
+	if (NPVARIANT_IS_OBJECT (*value)){ 
 		MoonlightObject *obj = (MoonlightObject*) NPVARIANT_TO_OBJECT (*value);
 		
-		if (obj->moonlight_type >= Type::DEPENDENCY_OBJECT || 
-			obj->moonlight_type == Type::INVALID) {
+		if (obj->moonlight_type >= Type::DEPENDENCY_OBJECT || obj->moonlight_type == Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
 			dob->SetValue (p, Value(depobj->GetDependencyObject ()));
 
@@ -1752,8 +1750,16 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 		else if (NPVARIANT_IS_STRING (*value)) {
 			strvalue = g_strdup (NPVARIANT_TO_STRING (*value).utf8characters);
 		}
+		else if (NPVARIANT_IS_NULL (*value)){
+			DEBUGWARN ("unhandled variant type NULL in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
+			return true;
+		}
+		else if (NPVARIANT_IS_VOID (*value)){
+			DEBUGWARN ("unhandled variant type VOID in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
+			return true;
+		}
 		else {
-			DEBUG_WARN_NOTIMPLEMENTED ("unhandled variant type in do.set_property");
+			DEBUGWARN ("unhandled variant type in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
 			return true;
 		}
 
