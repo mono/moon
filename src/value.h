@@ -194,6 +194,11 @@ public:
 			return false;
 
 		if (k == Type::STRING) {
+			if (u.s == NULL){
+				return v.u.s == NULL;
+			} else if (v.u.s == NULL)
+				return FALSE;
+			
 			return !strcmp (u.s, v.u.s);
 		}
 		else {

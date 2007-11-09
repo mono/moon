@@ -1,3 +1,7 @@
+2007-11-09  Miguel de Icaza  <miguel@novell.com>
+
+	* value.h (struct Value): Cope with NULL strings.
+
 2007-11-09  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Closepath needs to draw a line to the path's starting
