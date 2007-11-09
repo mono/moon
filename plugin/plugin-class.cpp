@@ -1751,7 +1751,19 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 			strvalue = g_strdup (NPVARIANT_TO_STRING (*value).utf8characters);
 		}
 		else if (NPVARIANT_IS_NULL (*value)){
-			DEBUGWARN ("unhandled variant type NULL in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
+			DEBUGMSG ("Setting NULL for (%s::%s)", dob->GetTypeName (), p->name);
+			if (p->value_type >= Type::DEPENDENCY_OBJECT){
+				DependencyObject *val = NULL;
+				
+				dob->SetValue (p, Value (val));
+			} else if (p->value_type == Type::STRING) {
+				char *val = NULL;
+				
+				dob->SetValue (p, Value (val));
+			} else
+				DEBUGWARN ("Setting NULL for unsupported type (%s::%s)", dob->GetTypeName (), p->name);
+				
+				
 			return true;
 		}
 		else if (NPVARIANT_IS_VOID (*value)){
