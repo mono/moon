@@ -185,7 +185,6 @@ public:
 	Type::Kind parent;
 	Type::Kind type;
 	char *name;
-	const char *content_property;
 	bool value_type;
 
 	void RegisterEvent (const char *event_name);
@@ -194,6 +193,7 @@ public:
 	int GetEventBase ();
 
 	DependencyObject *CreateInstance ();
+	const char *GetContentPropertyName ();
 
 	static void Shutdown ();
 private:
@@ -207,6 +207,7 @@ private:
 	int local_event_count;
 	int type_event_count; /* local_event_base + local_event_count */
 	create_inst_func *create_inst;
+	const char *content_property;
 };
 
 G_BEGIN_DECLS

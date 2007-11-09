@@ -221,6 +221,18 @@ Type::CreateInstance ()
         return create_inst ();
 }
 
+const char *
+Type::GetContentPropertyName ()
+{
+	if (content_property)
+		return content_property;
+
+	if (parent == Type::INVALID)
+		return NULL;
+
+	return Find (parent)->GetContentPropertyName ();
+}
+
 void
 Type::Shutdown ()
 {

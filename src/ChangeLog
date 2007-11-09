@@ -1,5 +1,9 @@
 2007-11-09  Jackson Harper  <jackson@ximian.com>
 
+	* type.cpp|h.in: Add an accesor for the ContentProperty name.
+	
+2007-11-09  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Rework to allow unparented properties.  createFromXaml
 	("<Canvas.Background><SolidColorBrush></Canvas.Background") will
 	basically ignore the property and will return the SolidColorBrush
