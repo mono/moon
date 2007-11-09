@@ -76,9 +76,11 @@ extern "C" {
 #endif
 #define G_LOG_DOMAIN "Moonlight"
 #define DEBUGMSG(x...) g_message (x)
+#define DEBUGWARN(x...) g_warning (x)
 #define DEBUG_WARN_NOTIMPLEMENTED(msg) g_warning ("functionality not yet implemented (%s):" G_STRLOC, msg)
 #else
 #define DEBUGMSG(x...)
+#define DEBUGWARN(x...) 
 #define DEBUG_WARN_NOTIMPLEMENTED(msg)
 #endif
 
