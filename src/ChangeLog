@@ -1,3 +1,7 @@
+2007-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* animation.cpp: Fix crash on empty BeginStoryboard (#340384)
+
 2007-11-09  Miguel de Icaza  <miguel@novell.com>
 
 	* value.h (struct Value): Cope with NULL strings.

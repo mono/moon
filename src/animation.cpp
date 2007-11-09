@@ -410,10 +410,8 @@ void
 BeginStoryboard::Fire ()
 {
 	Storyboard *sb = GetStoryboard ();
-
-	g_assert (sb);
-
-	sb->Begin ();
+	if (sb)
+		sb->Begin ();
 }
 
 void
@@ -425,7 +423,8 @@ BeginStoryboard::SetStoryboard (Storyboard *sb)
 Storyboard *
 BeginStoryboard::GetStoryboard ()
 {
-	return GetValue (BeginStoryboard::StoryboardProperty)->AsStoryboard();
+	Value *v = GetValue (BeginStoryboard::StoryboardProperty);
+	return v ? v->AsStoryboard () : NULL;
 }
 
 BeginStoryboard::~BeginStoryboard ()
