@@ -1,0 +1,15 @@
+<Canvas
+   xmlns="http://schemas.microsoft.com/client/2007"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Canvas.Triggers>
+    <EventTrigger RoutedEvent="Canvas.Loaded">
+      <EventTrigger.Actions>
+        <BeginStoryboard>
+        </BeginStoryboard>
+      </EventTrigger.Actions>
+    </EventTrigger>
+  </Canvas.Triggers>
+  <Ellipse x:Name="ellipse"
+      Height="20" Width="20" Canvas.Left="30" Canvas.Top="30"
+      Fill="black"/>
+</Canvas>
