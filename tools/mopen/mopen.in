@@ -4,4 +4,14 @@ if test x$1 = x--debug; then
    shift
 fi
 
+if test x$1 = x--gdb; then
+   shift
+   echo ""
+   echo Type the followig command:
+   echo -n '(gdb) ' 
+   echo run "$MONO_OPTIONS @moondir@/mopen.exe $@"
+   echo ""
+   gdb mono 
+fi
+
 exec mono $DEBUG $MONO_OPTIONS @moondir@/mopen.exe $@
