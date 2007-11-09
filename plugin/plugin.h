@@ -185,6 +185,8 @@ class PluginXamlLoader : public XamlLoader
 		bool InitializeLoader ();
 		PluginInstance* plugin;
 		bool initialized;
+		bool xaml_is_managed;
+		
 #if INCLUDE_MONO_RUNTIME
 		gpointer managed_loader;
 #endif
@@ -200,7 +202,8 @@ class PluginXamlLoader : public XamlLoader
 		{
 			return new PluginXamlLoader (NULL, str, plugin, surface);
 		}
-		
+
+		bool IsManaged () { return xaml_is_managed; } 
 		virtual bool HookupEvent (void* target, const char* name, const char* value);
 		virtual bool LoadVM ();
 };

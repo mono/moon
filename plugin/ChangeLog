@@ -1,3 +1,8 @@
+2007-11-08  Miguel de Icaza  <miguel@novell.com>
+
+	* plugin.cpp (PluginInstance::Properties): Spice this bad boy up.
+	We now can get some info about a XAML surface.
+
 2007-11-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (plugin_instance_get_surface): New function needed by

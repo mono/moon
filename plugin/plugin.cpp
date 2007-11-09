@@ -127,19 +127,64 @@ plugin_set_unload_callback (PluginInstance* plugin, plugin_unload_callback* puc)
 	plugin->SetUnloadCallback (puc);
 }
 
+static void
+table_add (GtkWidget *table, const char *txt, int col, int row)
+{
+	GtkWidget *l = gtk_label_new (txt);
+
+	gtk_misc_set_alignment (GTK_MISC (l), 0.0, 0.5);
+	gtk_table_attach (GTK_TABLE(table), l, col, col+1, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
+}
+
+static GtkWidget *
+title (const char *txt)
+{
+	char *fmt = g_strdup_printf ("<b>%s</b>", txt, NULL);
+	GtkWidget *label = gtk_label_new (NULL);
+
+	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	gtk_label_set_markup (GTK_LABEL (label), fmt);
+	g_free (fmt);
+
+	return label;
+}
+
 void
 PluginInstance::Properties ()
 {
-	printf ("initParams: %s\n"
-		"source:     %s\n"
-		"onLoad:     %s\n"
-		"background: %s\n"
-		"onError:    %s\n"
-		"windowless: %s\n",
-		initParams, source, onLoad,
-		background, onError,
-		windowless ? "true" : "false");
+	GtkWidget *d = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
+						    GTK_DIALOG_NO_SEPARATOR,
+						    GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+	gtk_container_set_border_width (GTK_CONTAINER(d), 8);
+	GtkBox *vb = GTK_BOX (GTK_DIALOG (d)->vbox);
 	
+	gtk_box_pack_start (vb, title ("Properties"), FALSE, FALSE, 0);
+	gtk_box_pack_start (vb, gtk_hseparator_new (), FALSE, FALSE, 8);
+
+	GtkWidget *table = gtk_table_new (8, 2, TRUE);
+	gtk_box_pack_start (vb, table, TRUE, TRUE, 0);
+
+	int row = 0;
+	table_add (table, "Source:", 0, row++);
+	table_add (table, "Width:", 0, row++);
+	table_add (table, "Height:", 0, row++);
+	table_add (table, "Background:", 0, row++);
+	table_add (table, "Kind:", 0, row++);
+	table_add (table, "Windowless:", 0, row++);
+
+	char buffer [40];
+	row = 0;
+	table_add (table, source, 1, row++);
+	snprintf (buffer, sizeof (buffer), "%dpx", getActualWidth ());
+	table_add (table, buffer, 1, row++);
+	snprintf (buffer, sizeof (buffer), "%dpx", getActualHeight ());
+	table_add (table, buffer, 1, row++);
+	table_add (table, background, 1, row++);
+	table_add (table, xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)", 1, row++);
+	table_add (table, windowless ? "yes" : "no", 1, row++);
+
+	g_signal_connect_swapped (d, "response", G_CALLBACK (gtk_widget_destroy), d);
+	gtk_widget_show_all (d);
 }
 
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
@@ -1070,7 +1115,8 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 	
 	if (!element) {
-		printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());		
+		printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());
+		xaml_is_managed = true;
 		return GetMissing ();
 	}
 	
@@ -1133,6 +1179,8 @@ PluginXamlLoader::PluginXamlLoader (const char* filename, const char* str, Plugi
 {
 	this->plugin = plugin;
 	this->initialized = FALSE;
+	this->xaml_is_managed = FALSE;
+	
 #if INCLUDE_MONO_RUNTIME
 	this->managed_loader = NULL;
 #endif
