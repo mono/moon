@@ -1,3 +1,9 @@
+2007-11-09  Jb Evain  <jbevain@novell.com>
+
+	* browser-http.cpp|h: make browser_http_request_get_async_response
+	return a boolean.
+
+
 2007-11-08  Miguel de Icaza  <miguel@novell.com>
 
 	* plugin.cpp (PluginInstance::Properties): Spice this bad boy up.

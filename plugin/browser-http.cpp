@@ -211,13 +211,15 @@ BrowserHttpRequest::GetResponse ()
 	return new SyncBrowserHttpResponse (channel, input);
 }
 
-void
+bool
 BrowserHttpRequest::GetAsyncResponse (AsyncResponseAvailableHandler handler, gpointer context)
 {
+	nsresult rs = NS_OK;
 	AsyncBrowserHttpResponse *response;
 
 	response = new AsyncBrowserHttpResponse (channel, handler, context);
-	channel->AsyncOpen (response, (BrowserHttpResponse *) response);
+	rs = channel->AsyncOpen (response, (BrowserHttpResponse *) response);
+	return !NS_FAILED (rs);
 }
 
 void
@@ -294,10 +296,10 @@ browser_http_request_get_response (BrowserHttpRequest *request)
 	return request->GetResponse ();
 }
 
-void
+bool
 browser_http_request_get_async_response (BrowserHttpRequest *request, AsyncResponseAvailableHandler handler, gpointer context)
 {
-	request->GetAsyncResponse (handler, context);
+	return request->GetAsyncResponse (handler, context);
 }
 
 void
