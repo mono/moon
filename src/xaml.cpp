@@ -789,8 +789,6 @@ start_element (void *data, const char *el, const char **attr)
 		return;
 
 	if (elem) {
-		bool set_top = false;
-
 		inst = elem->create_element (p, elem);
 
 		if (!inst)
@@ -807,10 +805,7 @@ start_element (void *data, const char *el, const char **attr)
 			return;
 
 		if (!p->top_element) {
-			set_top = true;
-
 			p->top_element = inst;
-			p->current_element = inst;
 			NameScope::SetNameScope (inst->item, p->namescope);
 		} else {
 			DependencyObject *parent = get_parent (p->current_element);
@@ -825,16 +820,8 @@ start_element (void *data, const char *el, const char **attr)
 		if (!inst->item)
 			return;
 
-		if (set_top)
-			return;
-
-		if (p->current_element) {
-
-			if (p->current_element->info)
-				p->current_element->info->add_child (p, p->current_element, inst);
-			else
-				g_warning ("attempt to set property of unimplemented type: %s\n", p->current_element->element_name);
-		}
+		if (p->current_element && p->current_element->info)
+			p->current_element->info->add_child (p, p->current_element, inst);
 
 	} else {
 		bool property = false;
@@ -847,7 +834,11 @@ start_element (void *data, const char *el, const char **attr)
 
 		if (property) {
 			inst = new XamlElementInstance (NULL);
-			inst->info = p->current_element->info; // We copy this from our parent
+
+			if (p->current_element)
+				inst->info = p->current_element->info;
+			else
+				inst->info = NULL;
 			inst->element_name = g_strdup (el);
 			inst->element_type = XamlElementInstance::PROPERTY;
 		} else {
@@ -857,7 +848,10 @@ start_element (void *data, const char *el, const char **attr)
 	}
 
 	inst->parent = p->current_element;
-	p->current_element->children->Append (inst);
+
+	if (p->current_element) {
+		p->current_element->children->Append (inst);
+	}
 	p->current_element = inst;	
 }
 
@@ -865,13 +859,14 @@ static void
 flush_char_data (XamlParserInfo *p, bool start)
 {
 	DependencyProperty *content;
-	const char *prop_name;
+	const char *prop_name = NULL;
 	Type::Kind prop_type;
 	
 	if (!p->has_cdata || !p->current_element)
 		return;
-	
-	prop_name = p->current_element->info->content_property;
+
+	if (p->current_element->info)
+		prop_name = p->current_element->info->content_property;
 	
 	if (!prop_name && p->cdata) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
@@ -985,7 +980,8 @@ end_element_handler (void *data, const char *el)
 		List::Node *walk = info->current_element->children->First ();
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk;
-			info->current_element->parent->info->set_property (info, info->current_element->parent,	info->current_element, child);
+			if (info->current_element->parent)
+				info->current_element->parent->info->set_property (info, info->current_element->parent,	info->current_element, child);
 			walk = walk->next;
 		}
 		break;

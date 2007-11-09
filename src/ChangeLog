@@ -1,3 +1,10 @@
+2007-11-09  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Rework to allow unparented properties.  createFromXaml
+	("<Canvas.Background><SolidColorBrush></Canvas.Background") will
+	basically ignore the property and will return the SolidColorBrush
+	as the top element. This fixes 335865.
+
 2007-11-08  Chris Toshok  <toshok@ximian.com>
 
 	[ may go a long way toward fixing #337714, if it doesn't fix it
