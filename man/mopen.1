@@ -57,6 +57,11 @@ The following options are available:
 Passes the flag --debug to the Mono runtime, enabling a line numbers
 and a couple of other debugging features.
 .TP
+.I "--gdb"
+This starts up Mono with gdb and prints out the command that you
+should use to debug mopen.   This is useful when debugging XAML files
+that cause problems with Moonlight.
+.TP
 .I "--desklet", "-d"
 Turns on desklet mode.   In this mode the window decoration is not
 shown and the default rendering mode will enable alpha transparency.
