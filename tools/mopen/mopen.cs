@@ -354,8 +354,6 @@ class MonoOpen {
 				mgr.AddNamespace ("x", xns);
 				XmlNodeList nodes = d.SelectNodes ("//xaml:Storyboard[@x:Name]", mgr);
 				foreach (XmlNode n in nodes){
-					foreach (object x in n.Attributes)
-						Console.WriteLine (x);
 					XmlAttribute a = n.Attributes ["Name", xns];
 					if (a != null)
 						story_names.Add (a.Value);

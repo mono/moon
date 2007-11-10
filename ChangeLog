@@ -1,3 +1,7 @@
+2007-11-09  Miguel de Icaza  <miguel@novell.com>
+
+	* man/mopen.1 (x): 
+
 2007-11-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* configure.ac:  check for gtk-sharp-2.0 and rsvg-sharp-2.0 required

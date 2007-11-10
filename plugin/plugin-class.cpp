@@ -1573,6 +1573,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
+		printf ("----------------------------------\n%s\n--------------------\n", xaml);
 		Type::Kind element_type;
 		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->surface);
 		DependencyObject *dep = xaml_create_from_str (loader, xaml, false, &element_type);
@@ -1700,7 +1701,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 {
 	if (NPVARIANT_IS_OBJECT (*value)){ 
 		MoonlightObject *obj = (MoonlightObject*) NPVARIANT_TO_OBJECT (*value);
-		
+
 		if (obj->moonlight_type >= Type::DEPENDENCY_OBJECT || obj->moonlight_type == Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
 			dob->SetValue (p, Value(depobj->GetDependencyObject ()));
