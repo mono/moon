@@ -85,6 +85,16 @@ Loads the application into the host identified by NAME.   If no host
 is specified this application is loaded into its own virtual machine
 and can not be shared with others.
 .TP
+.I "--story N1[,N2]"
+Runs the storyboard named N1 when the mouse is clicked (this is the
+x:Name property on the XAML file).  The storyboard playback will cycle
+if you keep clicking.   You can use it like this:
+.nf
+.fi
+	mopen --story FadeIn demo.xaml
+	mopen --story FadeIn,FadeOut demo.xaml
+	mopen --story FadeIn --story FadeOut demo.xaml
+.TP
 .I "--transparent", "-t"
 Enables the alpha channel on the rendering surface.   Any areas that
 are rendered with non-opaque values will be properly composited

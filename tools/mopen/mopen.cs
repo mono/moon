@@ -40,11 +40,13 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using Cairo;
 using Gtk.Moonlight;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.IO;
@@ -60,17 +62,21 @@ class MonoOpen {
 	static bool transparent = false;	
 	static bool desklet = false;
 	static bool parse_only = false;
-
+	static List<string> story_names = null;
+	static List<Storyboard> storyboards = null;
+	static int current_storyboard = 0;
+	
 	static void Help ()
 	{
 		Console.WriteLine ("Usage is: mopen [args] [file.xaml|dirname]\n\n" +
 				   "Arguments are:\n" +
+				   "   --desklet       Remove window decoration for desklets use\n" +
 				   "   --fixed         Disable window resizing\n"  +
 				   "   --geometry WxH  Overrides the geometry to be W x H pixels\n" +
 				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" +
-				   "   --transparent   Transparent toplevel\n" +
-				   "   --desklet       Remove window decoration for desklets use\n" +
-				   "   --parseonly     Only parse (don't display) the XAML input\n"
+				   "   --parseonly     Only parse (don't display) the XAML input\n" + 
+				   "   --story N1[,Nx] Plays the storyboard name N1, N2, .. Nx when the clicked\n" +
+				   "   --transparent   Transparent toplevel\n" 
 				   );
 	}
 
@@ -157,7 +163,7 @@ class MonoOpen {
 
 		GtkSilver silver = new GtkSilver (400, 400);
 		Canvas canvas;
-
+		
 		if (!silver.LoadFile (file, out canvas)) {
 			Console.Error.WriteLine ("mopen: Could not load xaml");
 			return 1;
@@ -190,6 +196,34 @@ class MonoOpen {
 		window.Add (silver);
 
 		window.ShowAll ();
+
+		if (story_names != null){
+			storyboards = new List<Storyboard> ();
+			
+			foreach (string story in story_names){
+				object o = canvas.FindName (story);
+				Storyboard sb = o as Storyboard;
+
+				if (sb == null){
+					Console.Error.WriteLine ("mopen: there is no Storyboard object named {0} in the XAML file", story);
+					return 1;
+				}
+				sb.Completed += delegate {
+					window.Title = String.Format ("Storyboard {0} completed", current_storyboard-1);
+				};
+				
+				storyboards.Add (sb);
+			};
+
+			canvas.MouseLeftButtonUp += delegate {
+				window.Title = String.Format ("Storyboard {0} running", current_storyboard);
+				Console.WriteLine ("ENTERING {0}", current_storyboard);
+				if (current_storyboard == storyboards.Count)
+					current_storyboard = 0;
+				storyboards [current_storyboard++].Begin ();
+			};
+		}
+		
 		Application.Run ();
 		return 0;
 	}
@@ -227,6 +261,7 @@ class MonoOpen {
 	static int Main (string [] args)
 	{
 		ArrayList cmdargs = new ArrayList ();
+		string [] names;
 		string file = null;
 		
 		if (args.Length < 1){
@@ -264,6 +299,19 @@ class MonoOpen {
 				else
 					return 1;
 
+			case "--story":
+				if (i+1 == args.Length){
+					Console.Error.WriteLine ("mopen: --story flag takes the name of the storyboard to run");
+					return 1;
+				}
+				i++;
+				if (story_names == null)
+					story_names = new List<string> ();
+				names = args [i].Split (new Char [] { ','});
+				foreach (string s in names)
+					story_names.Add (s);
+				break;
+				
 			case "--host":
 				if (i+1 == args.Length){
 					Console.WriteLine ("mopen: host flag `{0}' takes an argument", args [i]);
