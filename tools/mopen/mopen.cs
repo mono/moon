@@ -53,6 +53,7 @@ using System.IO;
 using System.Collections;
 using Mono;
 using System.Reflection;
+using System.Xml;
 
 class MonoOpen {
 	static Window window;
@@ -65,6 +66,7 @@ class MonoOpen {
 	static List<string> story_names = null;
 	static List<Storyboard> storyboards = null;
 	static int current_storyboard = 0;
+	static bool all_stories = false;
 	
 	static void Help ()
 	{
@@ -76,6 +78,7 @@ class MonoOpen {
 				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" +
 				   "   --parseonly     Only parse (don't display) the XAML input\n" + 
 				   "   --story N1[,Nx] Plays the storyboard name N1, N2, .. Nx when the clicked\n" +
+				   "   --stories       Automatically prepare to play all stories on click\n" + 
 				   "   --transparent   Transparent toplevel\n" 
 				   );
 	}
@@ -311,7 +314,13 @@ class MonoOpen {
 				foreach (string s in names)
 					story_names.Add (s);
 				break;
-				
+
+			case "--stories":
+				if (story_names == null)
+					story_names = new List<string> ();
+				all_stories = true;
+				break;
+					
 			case "--host":
 				if (i+1 == args.Length){
 					Console.WriteLine ("mopen: host flag `{0}' takes an argument", args [i]);
@@ -334,8 +343,27 @@ class MonoOpen {
 			}
 		}
 
-		if (File.Exists (file))
+		if (File.Exists (file)){
+			if (all_stories){
+				string xns = "http://schemas.microsoft.com/winfx/2006/xaml";
+				XmlDocument d = new XmlDocument ();
+				d.Load (file);
+				
+				XmlNamespaceManager mgr = new XmlNamespaceManager (d.NameTable);
+				mgr.AddNamespace ("xaml", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+				mgr.AddNamespace ("x", xns);
+				XmlNodeList nodes = d.SelectNodes ("//xaml:Storyboard[@x:Name]", mgr);
+				foreach (XmlNode n in nodes){
+					foreach (object x in n.Attributes)
+						Console.WriteLine (x);
+					XmlAttribute a = n.Attributes ["Name", xns];
+					if (a != null)
+						story_names.Add (a.Value);
+				}
+			}
+			
 			return DoLoad (file, cmdargs);
+		}
 
 		if (Directory.Exists (file)){
 			string combine = System.IO.Path.Combine (file, "default.xaml");

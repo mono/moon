@@ -85,6 +85,10 @@ Loads the application into the host identified by NAME.   If no host
 is specified this application is loaded into its own virtual machine
 and can not be shared with others.
 .TP
+.I "--stories"
+Triggers one by one all the named Storyboards in the given XAML file
+when you click on the canvas surface. 
+.TP
 .I "--story N1[,N2]"
 Runs the storyboard named N1 when the mouse is clicked (this is the
 x:Name property on the XAML file).  The storyboard playback will cycle
