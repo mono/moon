@@ -16,6 +16,7 @@
 #include "visual.h"
 #include "point.h"
 #include "rect.h"
+#include "list.h"
 
 class Surface;
 
@@ -46,6 +47,8 @@ public:
 	UIElement *parent;
 
 	int dirty_flags;
+	List::Node *up_dirty_node;
+	List::Node *down_dirty_node;
 
 	//Rect dirty_rect;
 	//Rect children_dirty_rect;

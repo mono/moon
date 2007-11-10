@@ -56,6 +56,7 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	cairo_matrix_init_identity (&absolute_xform);
 
 	dirty_flags = 0;
+	up_dirty_node = down_dirty_node = NULL;
 	dirty_region = new Region ();
 	children_dirty_region = new Region ();
 

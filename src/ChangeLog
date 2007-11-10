@@ -1,3 +1,10 @@
+2007-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp, uielement.h, uielement.cpp: glib was hurting my head.
+	convert this over to using our List class.  Also fix a bug where
+	elements with down dirty flags weren't being inserted propertly
+	into the up dirty list.
+
 2007-11-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* animation.cpp: Fix crash on empty BeginStoryboard (#340384)

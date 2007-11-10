@@ -13,19 +13,35 @@
 #include "runtime.h"
 #include "clock.h"
 #include "dirty.h"
+#include "list.h"
 
-GSList *down_dirty = NULL;
-GSList *up_dirty = NULL;
+static List *down_dirty = NULL;
+static List *up_dirty = NULL;
+
+class DirtyNode : public List::Node {
+public:
+	DirtyNode (UIElement *element) { this->element = element; }
+
+	UIElement *element;
+};
 
 bool
 is_anything_dirty ()
 {
-	return down_dirty != NULL || up_dirty != NULL;
+	if (!down_dirty)
+		return false;
+
+	return !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 }
 
 void
 add_dirty_element (UIElement *element, DirtyType dirt)
 {
+	if (!down_dirty) {
+		down_dirty = new List ();
+		up_dirty = new List ();
+	}
+
   // XXX this should really be here...
 //  	if (element->dirty_flags & dirt)
 //  		return;
@@ -34,25 +50,35 @@ add_dirty_element (UIElement *element, DirtyType dirt)
 
 	//printf ("adding element %p (%s) to the dirty list\n", element, element->GetTypeName());
 
-	if (element->dirty_flags & DownDirtyState) {
-		if (element->dirty_flags & DirtyInDownDirtyList)
+	if (dirt & DownDirtyState) {
+		if (element->down_dirty_node)
 			return;
-		element->dirty_flags |= DirtyInDownDirtyList;
-		down_dirty = g_slist_prepend (down_dirty, element);
+		element->down_dirty_node = new DirtyNode (element);
+		down_dirty->Prepend (element->down_dirty_node);
 	}
-	else {
-		if (element->dirty_flags & DirtyInUpDirtyList)
+
+	if (dirt & UpDirtyState) {
+		if (element->up_dirty_node)
 			return;
-		element->dirty_flags |= DirtyInUpDirtyList;
-		up_dirty = g_slist_prepend (up_dirty, element);
+		element->up_dirty_node = new DirtyNode (element);
+		up_dirty->Prepend (element->up_dirty_node);
 	}
 }
 
 void
 remove_dirty_element (UIElement *element)
 {
-	up_dirty = g_slist_remove (up_dirty, element);
-	down_dirty = g_slist_remove (down_dirty, element);
+	if (!down_dirty)
+		return;
+
+	if (element->up_dirty_node) {
+		up_dirty->Remove (element->up_dirty_node); // deletes the node
+		element->up_dirty_node = NULL;
+	}
+	if (element->down_dirty_node) {
+		down_dirty->Remove (element->down_dirty_node); // deletes the node
+		element->down_dirty_node = NULL;
+	}
 }
 
 /*
@@ -78,10 +104,12 @@ remove_dirty_element (UIElement *element)
 void
 process_dirty_elements ()
 {
+	if (!down_dirty)
+		return;
+
 	/* push down the transforms and opacity changes first */
-	while (down_dirty) {
-		GSList *link = down_dirty;
-		UIElement* el = (UIElement*)link->data;
+	while (DirtyNode *node = (DirtyNode*)down_dirty->First()) {
+		UIElement* el = (UIElement*)node->element;
 
 		if (el->dirty_flags & DirtyOpacity) {
 			el->dirty_flags &= ~DirtyOpacity;
@@ -156,14 +184,13 @@ process_dirty_elements ()
 		}
 
 		if (!(el->dirty_flags & DownDirtyState)) {
-			el->dirty_flags &= ~DirtyInDownDirtyList;
-			down_dirty = g_slist_delete_link (down_dirty, link);
+			down_dirty->Remove (node);
+			el->down_dirty_node = NULL;
 		}
 	}
 
-	while (up_dirty) {
-		GSList *link = up_dirty;
-		UIElement* el = (UIElement*)link->data;
+	while (DirtyNode *node = (DirtyNode*)up_dirty->First()) {
+		UIElement* el = (UIElement*)node->element;
 
 //   		printf ("up processing element element %p (%s)\n", el, el->GetName());
 // 		printf ("el->parent = %p\n", el->parent);
@@ -219,6 +246,7 @@ process_dirty_elements ()
 				GdkRectangle *rects;
 				int count;
 				dirty->GetRectangles (&rects, &count);
+				Surface *surface = el->GetSurface ();
 				while (count--) {
 					Rect r = Rect ((double)rects [count].x,
 						       (double)rects [count].y,
@@ -230,11 +258,11 @@ process_dirty_elements ()
 					//	r.w,
 					//	r.h);
 					
-					el->GetSurface()->Invalidate (r);					
+					surface->Invalidate (r);					
 				}
 				g_free (rects);
 			}
-			
+
 			delete el->dirty_region;
 			el->dirty_region = new Region ();
 			delete el->children_dirty_region;
@@ -242,11 +270,11 @@ process_dirty_elements ()
 		}
 
 		if (!(el->dirty_flags & UpDirtyState)) {
-			el->dirty_flags &= ~DirtyInUpDirtyList;
-			up_dirty = g_slist_delete_link (up_dirty, link);
+			up_dirty->Remove (node);
+			el->up_dirty_node = NULL;
 		}
 	}
 
-	g_assert (!up_dirty);
-	g_assert (!down_dirty);
+	g_assert (up_dirty->IsEmpty());
+	g_assert (down_dirty->IsEmpty());
 }
