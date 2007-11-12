@@ -1,5 +1,9 @@
 2007-11-12  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* Makefile.am: Add moon.config to EXTRA_DIST
+
+2007-11-12  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* install.js.in: Just add moonlight directory, not individual files.
 	* mono.cpp: Get moonlight.exe from home dir plugin path.
 	* plugin-proxy.cpp: dlopen libmono and set it's dirs.

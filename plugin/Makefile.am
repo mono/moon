@@ -109,7 +109,7 @@ untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonloader.so
 	rm -rf ~/.mozilla/plugin/moonlight.exe
 
-EXTRA_DIST = moonlight.cs install.js
+EXTRA_DIST = moonlight.cs install.js.in moon.config
 DISTCLEANFILES=moonlight.exe moonlight.exe.mdb novell-moonlight.xpi
 
 moonlight_CS=  $(srcdir)/moonlight.cs
