@@ -1,7 +1,7 @@
 
 libmoonincludedir=$(includedir)/libmoon
 
-noinst_PROGRAMS = 
+noinst_PROGRAMS = demo sizes
 
 lib_LTLIBRARIES = libmoon.la
 
