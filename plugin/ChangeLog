@@ -1,3 +1,13 @@
+2007-11-12  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* install.js.in: Just add moonlight directory, not individual files.
+	* mono.cpp: Get moonlight.exe from home dir plugin path.
+	* plugin-proxy.cpp: dlopen libmono and set it's dirs.
+	* Makefile.am: Build out the full directory structure for the user
+	plugin and zip that.
+	* moon.config: Installed as $sysconfdir/mono/config to tell mono to
+	use the	already dlopened libmoon.so.
+
 2007-11-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp: Fix Moonlight URL (#339929) since it didn't work.

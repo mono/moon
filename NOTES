@@ -338,9 +338,6 @@ This is not likely the final version of this code.
 
 	To install the plugin open the plugin/novell-moonlight.xpi with	your
 	mozilla-based browser and follow the prompts.
-
-	Currently this only works properly when moonlight is built without
-	mono runtime (Silverlight 1.1) support (--without-mono-runtime).
 	
 ----------------------------------------------------------------------------------
 Issues

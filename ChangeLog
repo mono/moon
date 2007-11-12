@@ -1,3 +1,8 @@
+2007-11-12  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* NOTES: 1.1 User Plugin works now, removed caveat
+	* configure.ac: Get mono paths for 1.1 plugin XPI
+
 2007-11-09  Miguel de Icaza  <miguel@novell.com>
 
 	* man/mopen.1 (x): 

@@ -60,7 +60,11 @@ vm_init (void)
 	if (moon_vm_loaded)
 		return TRUE;
 
-	boot_assembly = g_build_path ("/", PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
+#if PLUGIN_INSTALL
+	boot_assembly = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "moonlight.exe", NULL);
+#else
+	boot_assembly = g_build_filename (PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
+#endif
 	printf ("The file is %s\n", boot_assembly);
 
 	mono_config_parse (NULL);

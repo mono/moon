@@ -57,17 +57,46 @@ novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.js \
 				.libs/libmoonloader.so \
 				.libs/libmoonplugin.so \
 				$(top_builddir)/src/.libs/libmoon.so \
+				$(avformat_libdir)/libavformat.so
 				$(avutil_libdir)/libavutil.so \
 				$(swscale_libdir)/libswscale.so \
-				$(avcodec_libdir)/libavcodec.so \
-				$(avformat_libdir)/libavformat.so
+				$(avcodec_libdir)/libavcodec.so
+
+if INCLUDE_MONO_RUNTIME
+novell_moonlight_xpi_CONTENTS += moonlight.exe \
+				$(srcdir)/moon.config
+endif INCLUDE_MONO_RUNTIME
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
 	-rm -f $@
-	zip -j -9 $@ $(novell_moonlight_xpi_CONTENTS)
+	-rm -rf .xpinstall/
+	mkdir -p .xpinstall/
+	cp -L $(srcdir)/install.js .xpinstall/
+	cp -L .libs/libmoonloader.so .xpinstall/
+	mkdir -p .xpinstall/moonlight/
+	cp -L .libs/libmoonplugin.so .xpinstall/moonlight/
+	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/moonlight/
+	cp -L $(avutil_libdir)/libavutil.so .xpinstall/moonlight/
+	cp -L $(swscale_libdir)/libswscale.so .xpinstall/moonlight/
+	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/moonlight/
+	cp -L $(avformat_libdir)/libavformat.so .xpinstall/moonlight/
+if INCLUDE_MONO_RUNTIME
+	cp -L $(mono_libdir)/libmono.so .xpinstall/moonlight/
+	cp -L moonlight.exe .xpinstall/moonlight/
+	mkdir -p .xpinstall/moonlight/mono/2.1/
+	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/moonlight/mono/2.1/
+	find /usr/lib/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -root .xpinstall/moonlight ';'
+	mkdir -p .xpinstall/moonlight/mono/2.0/
+	cp -L $(srcdir)/moon.config .xpinstall/moonlight/mono/config
+	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/moonlight/mono/2.0/
+endif INCLUDE_MONO_RUNTIME
+	cd .xpinstall/ && zip -r9 ../$@ *
 
 CLEANFILES += novell-moonlight.xpi
-endif
+
+clean-local:
+	-rm -rf .xpinstall
+endif PLUGIN_INSTALL
 
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe

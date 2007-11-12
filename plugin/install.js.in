@@ -4,12 +4,7 @@ var PLID = "@novell.com/" + NAME + ",version=" + VERSION;
 var CPU = "@target_cpu@";
 
 var LOADER = "libmoonloader.so";
-var PLUGIN = "libmoonplugin.so";
-var LIB = "libmoon.so";
-var AVUTIL = "libavutil.so";
-var SWSCALE = "libswscale.so";
-var AVCODEC = "libavcodec.so";
-var AVFORMAT = "libavformat.so";
+var DIR = "moonlight";
 
 var err = 0;
 
@@ -24,13 +19,8 @@ if (!re.exec(platform)) {
 /* For some reason Mozilla can only tell us the global plugin directory,
  * so we have to guess it from the user's profile. */
 var plugins = getFolder("Profile", "../../plugins");
-err += addFile (PLID, VERSION, LOADER, plugins, null);
-err += addFile (PLID, VERSION, PLUGIN, plugins, "/moonlight/" + PLUGIN);
-err += addFile (PLID, VERSION, LIB, plugins, "/moonlight/" + LIB);
-err += addFile (PLID, VERSION, AVUTIL, plugins, "/moonlight/" + AVUTIL);
-err += addFile (PLID, VERSION, SWSCALE, plugins, "/moonlight/" + SWSCALE);
-err += addFile (PLID, VERSION, AVCODEC, plugins, "/moonlight/" + AVCODEC);
-err += addFile (PLID, VERSION, AVFORMAT, plugins, "/moonlight/" + AVFORMAT);
+err += addFile (PLID, VERSION, LOADER, plugins, null, true);
+err += addDirectory (PLID, VERSION, DIR, plugins, "moonlight", true);
 
 if (err != 0) {
 	cancelInstall(err);

@@ -78,10 +78,19 @@ avutil_libdir="$(pkg-config --variable=libdir libavutil)"
 swscale_libdir="$(pkg-config --variable=libdir libswscale)"
 avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
 avformat_libdir="$(pkg-config --variable=libdir libavformat)"
+
 AC_SUBST([avutil_libdir])
 AC_SUBST([swscale_libdir])
 AC_SUBST([avcodec_libdir])
 AC_SUBST([avformat_libdir])
+
+mono_libdir="$(pkg-config --variable=libdir mono)"
+mono_dlldir="$(pkg-config --variable=prefix mono)/lib"
+mono_sysconfdir="$(pkg-config --variable=sysconfdir mono)"
+
+AC_SUBST([mono_libdir])
+AC_SUBST([mono_dlldir])
+AC_SUBST([mono_sysconfdir])
 fi
 
 AC_MSG_CHECKING(alsa)
