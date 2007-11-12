@@ -31,15 +31,15 @@ static cairo_line_join_t
 convert_line_join (PenLineJoin pen_line_join)
 {
 	switch (pen_line_join) {
+	default:
+		/* note: invalid values should be trapped in SetValue (see bug #340799) */
+		/* at this stage we use the default value (Miter) for Shape */
 	case PenLineJoinMiter:
 		return CAIRO_LINE_JOIN_MITER;
 	case PenLineJoinBevel:
 		return CAIRO_LINE_JOIN_BEVEL;
 	case PenLineJoinRound:
 		return CAIRO_LINE_JOIN_ROUND;
-	default:
-		/* g++ is stupid */
-		g_assert_not_reached ();
 	}
 }
 
@@ -47,6 +47,9 @@ static cairo_line_cap_t
 convert_line_cap (PenLineCap pen_line_cap)
 {
 	switch (pen_line_cap) {
+	default:
+		/* note: invalid values should be trapped in SetValue (see bug #340799) */
+		/* at this stage we use the default value (Flat) for Shape */
 	case PenLineCapFlat:
 		return CAIRO_LINE_CAP_BUTT;
 	case PenLineCapSquare:
@@ -54,9 +57,6 @@ convert_line_cap (PenLineCap pen_line_cap)
 	case PenLineCapRound:
 	case PenLineCapTriangle: 		/* FIXME: Triangle doesn't exist in Cairo */
 		return CAIRO_LINE_CAP_ROUND;
-	default:
-		/* g++ is stupid */
-		g_assert_not_reached ();
 	}
 }
 
@@ -64,13 +64,13 @@ cairo_fill_rule_t
 convert_fill_rule (FillRule fill_rule)
 {
 	switch (fill_rule) {
+	default:
+		/* note: invalid values should be trapped in SetValue (see bug #340799) */
+		/* at this stage we use the default value (EvenOdd) for Geometry */
 	case FillRuleEvenOdd:
 		return CAIRO_FILL_RULE_EVEN_ODD;
 	case FillRuleNonzero:
 		return CAIRO_FILL_RULE_WINDING;
-	default:
-		/* g++ is stupid */
-		g_assert_not_reached ();
 	}
 }
 

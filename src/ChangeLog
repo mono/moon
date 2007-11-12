@@ -1,3 +1,9 @@
+2007-11-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Removed g_assert_not_reached and, if any bad value is
+	supplied (should be catched well before that, #340799), use the 
+	default value. Fix part of #335413
+
 2007-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.cpp, uielement.h, uielement.cpp: glib was hurting my head.
