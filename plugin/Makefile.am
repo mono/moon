@@ -85,7 +85,9 @@ if INCLUDE_MONO_RUNTIME
 	cp -L moonlight.exe .xpinstall/moonlight/
 	mkdir -p .xpinstall/moonlight/mono/2.1/
 	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/moonlight/mono/2.1/
-	find /usr/lib/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -root .xpinstall/moonlight ';'
+	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -root .xpinstall/moonlight ';'
+	find $(mono_dlldir)/mono/gac -path \*/2.1.\*.dll -exec gacutil -i '{}' -root .xpinstall/moonlight ';'
+	find .xpinstall -name \*.mdb -exec rm '{}' ';'
 	mkdir -p .xpinstall/moonlight/mono/2.0/
 	cp -L $(srcdir)/moon.config .xpinstall/moonlight/mono/config
 	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/moonlight/mono/2.0/
