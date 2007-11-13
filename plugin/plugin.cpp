@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #include "plugin.h"
@@ -50,7 +50,7 @@ plugin_menu_about (PluginInstance *plugin)
 
 	/* Newer gtk+ versions require this for the close button to work */
 	g_signal_connect_swapped (about,
-				  "response", 
+				  "response",
 				  G_CALLBACK (gtk_widget_destroy),
 				  about);
 
@@ -71,11 +71,11 @@ plugin_show_menu (PluginInstance *plugin)
 	char *name;
 
 	menu = gtk_menu_new();
-	
+
 	name = g_strdup_printf ("%s %s", PLUGIN_OURNAME, VERSION);
 	menu_item = gtk_menu_item_new_with_label (name);
 	g_free (name);
-	
+
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_menu_about), plugin);
 
@@ -123,7 +123,7 @@ plugin_set_unload_callback (PluginInstance* plugin, plugin_unload_callback* puc)
 		printf ("Trying to set plugin unload callback on a null plugin.\n");
 		return;
 	}
-	
+
 	plugin->SetUnloadCallback (puc);
 }
 
@@ -157,7 +157,7 @@ PluginInstance::Properties ()
 						    GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
 	gtk_container_set_border_width (GTK_CONTAINER(d), 8);
 	GtkBox *vb = GTK_BOX (GTK_DIALOG (d)->vbox);
-	
+
 	gtk_box_pack_start (vb, title ("Properties"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vb, gtk_hseparator_new (), FALSE, FALSE, 8);
 
@@ -207,7 +207,7 @@ PluginInstance::PluginInstance (NPP instance, uint16 mode)
 	this->background = NULL;
 
 	this->windowless = false;
-	
+
 	this->vm_missing_file = NULL;
 	this->xaml_loader = NULL;
 	this->plugin_unload = NULL;
@@ -232,13 +232,13 @@ PluginInstance::~PluginInstance ()
 		g_source_remove (source_id);
 	}
 	g_slist_free (p);
-	
+
 	g_hash_table_destroy (wrapped_objects);
 
 	// Remove us from the list.
 	plugin_instances = g_slist_remove (plugin_instances, this->instance);
 
-	// 
+	//
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
 	// we might have another source of problems
 	//
@@ -258,7 +258,7 @@ PluginInstance::~PluginInstance ()
 
 	delete xaml_loader;
 	xaml_loader = NULL;
-	
+
 	if (plugin_unload)
 		plugin_unload (this);
 }
@@ -269,7 +269,7 @@ PluginInstance::SetUnloadCallback (plugin_unload_callback* puc)
 	plugin_unload = puc;
 }
 
-void 
+void
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
 	for (int i = 0; i < argc; i++) {
@@ -304,12 +304,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	}
 }
 
-void 
+void
 PluginInstance::Finalize ()
 {
 }
 
-NPError 
+NPError
 PluginInstance::GetValue (NPPVariable variable, void *result)
 {
 	NPError err = NPERR_NO_ERROR;
@@ -335,7 +335,7 @@ PluginInstance::SetValue (NPNVariable variable, void *value)
 	return NPERR_NO_ERROR;
 }
 
-NPError 
+NPError
 PluginInstance::SetWindow (NPWindow* window)
 {
 	if (window == this->window)
@@ -358,13 +358,13 @@ void
 PluginInstance::SetPageURL ()
 {
 	// From: http://developer.mozilla.org/en/docs/Getting_the_page_URL_in_NPAPI_plugin
-	
+
 	NPObject *window;
 	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
 	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
 	NPVariant location_property;
 	NPVariant location_object;
-	
+
 	if (NPERR_NO_ERROR != NPN_GetValue (instance, NPNVWindowNPObject, &window)) {
 		return;
 	}
@@ -372,7 +372,7 @@ PluginInstance::SetPageURL ()
 	// Get the location property from the window object (which is another object).
 	if (NPN_GetProperty (instance, window, str_location, &location_property)) {
 		// Get the location property from the location object.
-		if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {	
+		if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
 			surface->SetSourceLocation (NPVARIANT_TO_STRING (location_object).utf8characters);
 			NPN_ReleaseVariantValue (&location_object);
 		}
@@ -380,7 +380,7 @@ PluginInstance::SetPageURL ()
 	}
 }
 
-void 
+void
 PluginInstance::CreateWindow ()
 {
 	DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
@@ -393,10 +393,10 @@ PluginInstance::CreateWindow ()
 
 	gtk_widget_add_events (
 		this->container,
-		GDK_BUTTON_PRESS_MASK | 
+		GDK_BUTTON_PRESS_MASK |
 		GDK_BUTTON_RELEASE_MASK |
-		GDK_KEY_PRESS_MASK | 
-		GDK_KEY_RELEASE_MASK | 
+		GDK_KEY_PRESS_MASK |
+		GDK_KEY_RELEASE_MASK |
 		GDK_POINTER_MOTION_MASK |
 		GDK_SCROLL_MASK |
 		GDK_EXPOSURE_MASK |
@@ -418,14 +418,14 @@ PluginInstance::CreateWindow ()
 	}
 
 	SetPageURL ();
-		
+
 	gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
 	display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
 	gtk_widget_show_all (this->container);
 	this->UpdateSource ();
 }
 
-void 
+void
 PluginInstance::UpdateSource ()
 {
 	if (!this->source)
@@ -441,7 +441,7 @@ PluginInstance::UpdateSource ()
 	}
 }
 
-void 
+void
 PluginInstance::UpdateSourceByReference (const char *value)
 {
 	NPObject *object = NULL;
@@ -512,7 +512,7 @@ PluginInstance::JsRunOnload ()
 	}
 	NPN_ReleaseVariantValue (&args [0]);
 	NPN_ReleaseObject (object);
-	
+
 	return retval;
 }
 
@@ -527,14 +527,14 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
-	} 
+	}
 
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
 		*stype = NP_ASFILE;
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
 		downloader_set_stream_data ((Downloader *) notify->pdata, instance, stream);
 		return NPERR_NO_ERROR;
-	} 
+	}
 
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
 		*stype = NP_ASFILEONLY;
@@ -568,9 +568,9 @@ PluginInstance::TryLoad ()
 
 	if (vm_missing_file == NULL)
 		vm_missing_file = g_strdup (xaml_loader->TryLoad (&error));
-	
+
 	//printf ("PluginInstance::TryLoad, vm_missing_file: %s, error: %i\n", vm_missing_file, error);
-	
+
 	if (vm_missing_file != NULL){
 		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
 		NPN_GetURLNotify (instance, vm_missing_file, NULL, notify);
@@ -596,12 +596,12 @@ string_to_js (char *s)
 {
 	char *res;
 	GString *result;
-	
+
 	if (strchr (s, '\'') == NULL && strchr (s, '\n') == NULL)
 		return g_strdup (s);
 
 	result = g_string_new ("");
-	
+
 	for (char *p = s; *p != 0; *p++){
 		if (*p == '"' || *p == '\''){
 			g_string_append_c (result, '\\');
@@ -618,7 +618,7 @@ string_to_js (char *s)
 
 	res = result->str;
 	g_string_free (result, FALSE);
-	
+
 	return res;
 }
 
@@ -740,7 +740,7 @@ PluginInstance::LoadUrl (char *url, gint32 *length)
 			i = 0;
 			while (in - s < len) {
 				arr [i] = g_utf8_get_char (in);
-      
+
 				in = g_utf8_next_char (in);
 				i ++;
 			}
@@ -775,14 +775,14 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 
 		downloader_notify_finished (dl, fname);
 	}
-	
+
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
 		bool reload = true;
 		// printf ("PluginInstance::StreamAsFile: vm_missing_file: '%s', url: '%s', fname: '%s'.\n", vm_missing_file, stream->url, fname);
 
 		if (!vm_missing_file)
 			reload = false;
-			
+
 		if (reload && xaml_loader->GetMapping (vm_missing_file) != NULL) {
 			// printf ("PluginInstance::StreamAsFile: the file '%s' has already been downloaded, won't try to reload xaml. Mapped to: '%s' (new url: '%s').", vm_missing_file, xaml_loader->GetMapping (vm_missing_file), stream->url);
 			reload = false;
@@ -791,7 +791,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 			// printf ("PluginInstance::StreamAsFile: the url '%s' has already been downloaded, won't try to reload xaml. Mapped to: '%s' (new url: '%s').", vm_missing_file, xaml_loader->GetMapping (stream->url), stream->url);
 			reload = false;
 		}
-		
+
 		if (vm_missing_file)
 			xaml_loader->RemoveMissing (vm_missing_file);
 
@@ -805,7 +805,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 			xaml_loader->InsertMapping (missing, fname);
 			xaml_loader->InsertMapping (stream->url, fname);
 			// printf ("PluginInstance::StreamAsFile: retry xaml loading, downloaded: %s to %s\n", missing, stream->url);
-			
+
 			// retry to load
 			TryLoad ();
 		}
@@ -826,7 +826,7 @@ PluginInstance::WriteReady (NPStream* stream)
 		downloader_notify_size (dl, stream->end);
 		return MAX_STREAM_SIZE;
 	}
-	
+
 	NPN_DestroyStream (instance, stream, NPRES_DONE);
 
 	return -1L;
@@ -857,7 +857,7 @@ PluginInstance::UrlNotify (const char* url, NPReason reason, void* notifyData)
 	else
 		DEBUGMSG ("Download of URL %s failed: %i (%s)", url, reason, reason == NPRES_USER_BREAK ? "user break" : (reason == NPRES_NETWORK_ERR ? "network error" : "other error"));
 
-	if (notify) 
+	if (notify)
 		delete notify;
 }
 
@@ -1083,7 +1083,7 @@ PluginXamlLoader::LoadVM ()
 #if INCLUDE_MONO_RUNTIME
 	if (!vm_is_loaded ())
 		vm_init ();
-		
+
 	if (vm_is_loaded ())
 		return InitializeLoader ();
 #endif
@@ -1102,9 +1102,9 @@ PluginXamlLoader::TryLoad (int *error)
 	Type::Kind element_type;
 
 	*error = 0;
-	
+
 	printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ());
-	
+
 	if (GetFilename ()) {
 		element = xaml_create_from_file (this, GetFilename (), true, &element_type);
 	} else if (GetString ()) {
@@ -1113,27 +1113,27 @@ PluginXamlLoader::TryLoad (int *error)
 		*error = 1;
 		return NULL;
 	}
-	
+
 	if (!element) {
 		printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());
 		xaml_is_managed = true;
 		return GetMissing ();
 	}
-	
+
 	if (element_type != Type::CANVAS) {
 		printf ("PluginXamlLoader::TryLoad: Return value is not a Canvas, its a %s\n", element->GetTypeName ());
 		element->unref ();
 		return NULL;
 	}
-	
+
 	printf ("PluginXamlLoader::TryLoad () succeeded.\n");
 
 	GetSurface ()->Attach ((Canvas*) element);
-	
+
 	// xaml_create_from_* passed us a ref which we don't need to
 	// keep.
 	element->unref ();
-	
+
 	return NULL;
 }
 
@@ -1142,7 +1142,7 @@ PluginXamlLoader::HookupEvent (void* target, const char* name, const char* value
 {
 	if (!XamlLoader::HookupEvent (target, name, value))
 		event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);
-		
+
 	return true;
 }
 
@@ -1151,14 +1151,14 @@ PluginXamlLoader::InitializeLoader ()
 {
 	if (initialized)
 		return TRUE;
-		
+
 #if INCLUDE_MONO_RUNTIME
 	if (!vm_is_loaded ())
 		return FALSE;
-		
+
 	if (managed_loader)
 		return TRUE;
-		
+
 	if (GetFilename ()) {
 		managed_loader = vm_xaml_file_loader_new (this, plugin, GetSurface (), GetFilename ());
 	} else if (GetString ()) {
@@ -1166,7 +1166,7 @@ PluginXamlLoader::InitializeLoader ()
 	} else {
 		return FALSE;
 	}
-	
+
 	initialized = managed_loader != NULL;
 #else
 	initialized = TRUE;
@@ -1180,7 +1180,7 @@ PluginXamlLoader::PluginXamlLoader (const char* filename, const char* str, Plugi
 	this->plugin = plugin;
 	this->initialized = FALSE;
 	this->xaml_is_managed = FALSE;
-	
+
 #if INCLUDE_MONO_RUNTIME
 	this->managed_loader = NULL;
 #endif
@@ -1195,7 +1195,7 @@ PluginXamlLoader::~PluginXamlLoader ()
 #endif
 }
 
-PluginXamlLoader* 
+PluginXamlLoader*
 plugin_xaml_loader_from_str (const char* str, PluginInstance* plugin, Surface* surface)
 {
 	return PluginXamlLoader::FromStr (str, plugin, surface);

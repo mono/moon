@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #ifndef PLUGIN_CLASS
@@ -115,7 +115,7 @@ struct MoonlightPointType : MoonlightObjectType {
 extern MoonlightPointType* MoonlightPointClass;
 
 struct MoonlightPoint : MoonlightObject {
-	MoonlightPoint (NPP instance) : MoonlightObject(instance), point (Point()) 
+	MoonlightPoint (NPP instance) : MoonlightObject(instance), point (Point())
 	{
 		moonlight_type = Type::POINT;
 	}
@@ -131,7 +131,7 @@ struct MoonlightRectType : MoonlightObjectType {
 extern MoonlightRectType* MoonlightRectClass;
 
 struct MoonlightRect : MoonlightObject {
-	MoonlightRect (NPP instance) : MoonlightObject(instance), rect (Rect()) 
+	MoonlightRect (NPP instance) : MoonlightObject(instance), rect (Rect())
 	{
 		moonlight_type = Type::RECT;
 	}
@@ -148,7 +148,7 @@ struct MoonlightDurationType : MoonlightObjectType {
 extern MoonlightDurationType* MoonlightDurationClass;
 
 struct MoonlightDuration : MoonlightObject {
-	MoonlightDuration (NPP instance) : MoonlightObject (instance), duration (Duration (0)) 
+	MoonlightDuration (NPP instance) : MoonlightObject (instance), duration (Duration (0))
 	{
 		moonlight_type = Type::DURATION;
 	}
@@ -164,7 +164,7 @@ struct MoonlightTimeSpanType : MoonlightObjectType {
 extern MoonlightTimeSpanType* MoonlightTimeSpanClass;
 
 struct MoonlightTimeSpan : MoonlightObject {
-	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), timespan (0) 
+	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), timespan (0)
 	{
 		moonlight_type = Type::TIMESPAN;
 	}
@@ -199,7 +199,7 @@ extern MoonlightMarkerReachedEventArgsType* MoonlightMarkerReachedEventArgsClass
 struct MoonlightMarkerReachedEventArgsObject : MoonlightObject {
 	MoonlightMarkerReachedEventArgsObject (NPP instance)
 		: MoonlightObject (instance), marker (NULL) {}
-		
+
 	virtual void Dispose ();
 	void SetMarker (TimelineMarker* tm)
 	{
@@ -248,7 +248,7 @@ struct MoonlightContentType : MoonlightObjectType {
 struct MoonlightContentObject : MoonlightObject {
 	MoonlightContentObject (NPP instance)
 	  : MoonlightObject (instance),
-	    resizeProxy (NULL), 
+	    resizeProxy (NULL),
 	    fullScreenChangeProxy (NULL),
 	    errorProxy (NULL)
 	{
@@ -324,7 +324,7 @@ struct MoonlightDependencyObjectObject : public MoonlightEventObjectObject
 	{
 		SetEventObject (dob);
 	}
-	
+
 	DependencyObject* GetDependencyObject ()
 	{
 		g_assert (eo->GetObjectType () >= Type::DEPENDENCY_OBJECT);

@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 // XXXXXXXXXXx
@@ -15,7 +15,7 @@
 // The listener proxies we create for dealing with events are
 // leaked.  we need to figure out how to deal with them (where to
 // store them so we can free them on removeListener, etc.)
-// 
+//
 
 #include <ctype.h>
 #include "plugin-class.h"
@@ -260,7 +260,7 @@ EventListenerProxy::timeline_marker_wrapper (NPP instance, gpointer calldata, NP
 	TimelineMarker* marker = (TimelineMarker*) calldata;
 	MoonlightMarkerReachedEventArgsObject* obj = (MoonlightMarkerReachedEventArgsObject*) NPN_CreateObject (instance, MoonlightMarkerReachedEventArgsClass);
 	obj->SetMarker (marker);
-	
+
 	OBJECT_TO_NPVARIANT (obj, *value);
 }
 
@@ -303,7 +303,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 	if (js_sender->GetObjectType () == Type::SURFACE) {
 		// This is somewhat hackish, but is required for
 		// the FullScreenChanged event (js expects the
-		// sender to be the toplevel canvas, not the surface, 
+		// sender to be the toplevel canvas, not the surface,
 		// nor the content).
 		js_sender = ((Surface*) js_sender)->GetToplevel ();
 	}
@@ -334,7 +334,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 				NPN_ReleaseVariantValue (&result);
 		}
 	}
-	
+
 	NPN_ReleaseObject (depobj);
 	NPN_ReleaseObject (NPVARIANT_TO_OBJECT (args [1]));
 }
@@ -814,7 +814,7 @@ void
 MoonlightMarkerReachedEventArgsObject::Dispose ()
 {
 	MoonlightObject::Dispose ();
-	
+
 	if (marker) {
 		marker->unref ();
 		marker = NULL;
@@ -831,7 +831,7 @@ static bool
 marker_reached_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightMarkerReachedEventArgsObject* obj = (MoonlightMarkerReachedEventArgsObject*) npobj;
-	
+
 	if (name_matches (name, "marker")) {
 		DependencyObject *marker = obj ? obj->marker : NULL;
 		MoonlightEventObjectObject *meoo = EventObjectCreateWrapper (obj->instance, marker);
@@ -965,7 +965,7 @@ _deallocate (NPObject *npobj)
 {
 	MoonlightObject* obj = (MoonlightObject*) npobj;
 	if (!obj->disposed)
-		obj->Dispose ();	
+		obj->Dispose ();
 	delete obj;
 }
 
@@ -1103,28 +1103,28 @@ moonlight_scriptable_control_get_property (NPObject *npobj, NPIdentifier name, N
 		NPN_RetainObject (rootobj->settings);
 		OBJECT_TO_NPVARIANT (rootobj->settings, *result);
 		return true;
-	} 
+	}
 
 	if (name_matches (name, "content")) {
 		NPN_RetainObject (rootobj->content);
 		OBJECT_TO_NPVARIANT (rootobj->content, *result);
 		return true;
-	} 
+	}
 
 	if (name_matches (name, "initParams")) {
 		string_to_npvariant (plugin->getInitParams (), result);
 		return true;
-	} 
+	}
 
 	if (name_matches (name, "isLoaded")) {
 		BOOLEAN_TO_NPVARIANT (plugin->getIsLoaded (), *result);
 		return true;
-	} 
+	}
 
 	if (name_matches (name, "source")) {
 		string_to_npvariant (plugin->getSource (), result);
 		return true;
-	} 
+	}
 
 	return false;
 }
@@ -1270,17 +1270,17 @@ moonlight_settings_get_property (NPObject *npobj, NPIdentifier name, NPVariant *
 	if (name_matches (name, "enableFramerateCounter")) {
 		BOOLEAN_TO_NPVARIANT (plugin->getEnableFramerateCounter (), *result);
 		return true;
-	} 
+	}
 
 	if (name_matches (name, "enableRedrawRegions")) {
 		BOOLEAN_TO_NPVARIANT (plugin->getEnableRedrawRegions (), *result);
 		return true;
-	} 
+	}
 
 	if (name_matches (name, "enableHtmlAccess")) {
 		BOOLEAN_TO_NPVARIANT (plugin->getEnableHtmlAccess (), *result);
 		return true;
-	} 
+	}
 
 	// not implemented yet, just return 0.
 	if (name_matches (name, "maxFrameRate")) {
@@ -1296,12 +1296,12 @@ moonlight_settings_get_property (NPObject *npobj, NPIdentifier name, NPVariant *
 	if (name_matches (name, "windowless")) {
 		BOOLEAN_TO_NPVARIANT (plugin->getWindowless (), *result);
 		return true;
-	} 
+	}
 
 	return false;
 }
 
-static bool 
+static bool
 moonlight_settings_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
@@ -1313,17 +1313,17 @@ moonlight_settings_set_property (NPObject *npobj, NPIdentifier name, const NPVar
 	// Cant be set after initialization so return true
 	if (name_matches (name, "enableFramerateCounter")) {
 		return true;
-	} 
+	}
 
 	if (name_matches (name, "enableRedrawRegions")) {
 		plugin->setEnableRedrawRegions (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
-	} 
+	}
 
 	// Cant be set after initialization so return true
 	if (name_matches (name, "enableHtmlAccess")) {
 		return true;
-	} 
+	}
 
 	// not implemented yet.
 	if (name_matches (name, "maxFrameRate")) {
@@ -1334,7 +1334,7 @@ moonlight_settings_set_property (NPObject *npobj, NPIdentifier name, const NPVar
 	// Cant be set after initialization so return true
 	if (name_matches (name, "windowless")) {
 		return true;
-	} 
+	}
 
 	return false;
 }
@@ -1433,7 +1433,7 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 	}
 	else if (name_matches (name, "onResize")) {
 		MoonlightContentObject* obj = (MoonlightContentObject*) npobj;
-		if (obj->resizeProxy == NULL) 
+		if (obj->resizeProxy == NULL)
 			NULL_TO_NPVARIANT (*result);
 		else
 			OBJECT_TO_NPVARIANT (obj->resizeProxy->GetCallbackAsNPObject (), *result);
@@ -1441,7 +1441,7 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 	}
 	else if (name_matches (name, "onFullScreenChange")) {
 		MoonlightContentObject* obj = (MoonlightContentObject*) npobj;
-		if (obj->fullScreenChangeProxy == NULL) 
+		if (obj->fullScreenChangeProxy == NULL)
 			NULL_TO_NPVARIANT (*result);
 		else
 			OBJECT_TO_NPVARIANT (obj->fullScreenChangeProxy->GetCallbackAsNPObject (), *result);
@@ -1485,20 +1485,20 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 	}
 	else if (name_matches (name, "onResize")) {
 		MoonlightContentObject *obj = (MoonlightContentObject *) npobj;
-		
+
 		// If we have a handler, remove it.
 		if (obj->resizeProxy != NULL) {
 			obj->resizeProxy->RemoveHandler (plugin->surface);
 			delete obj->resizeProxy;
 			obj->resizeProxy = NULL;
 		}
-		
+
 		if (!NPVARIANT_IS_NULL (*value)) {
 			obj->resizeProxy = new EventListenerProxy (((MoonlightObject*)npobj)->instance,
 								    "Resize", value);
 			obj->resizeProxy->AddHandler (plugin->surface);
 		}
-		
+
 		return true;
 	}
 	else if (name_matches (name, "onFullScreenChange")) {
@@ -1510,18 +1510,18 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 			delete obj->fullScreenChangeProxy;
 			obj->fullScreenChangeProxy = NULL;
 		}
-		
+
 		if (!NPVARIANT_IS_NULL (*value)) {
 			obj->fullScreenChangeProxy = new EventListenerProxy (obj->instance,
 									    "FullScreenChange", value);
 			obj->fullScreenChangeProxy->AddHandler (plugin->surface);
 		}
-		
+
 		return true;
 	}
 	else if (name_matches (name, "onError")) {
 		MoonlightContentObject *obj = (MoonlightContentObject *) npobj;
-		
+
 		if (obj->errorProxy != NULL) {
 			obj->errorProxy->RemoveHandler (plugin->surface);
 			delete obj->errorProxy;
@@ -1539,11 +1539,11 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 }
 
 static bool
-moonlight_content_invoke (NPObject *npobj, NPIdentifier name, 
+moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 			  const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
-	
+
 	if (name_matches (name, "findName")) {
 		if (!argCount)
 			return true;
@@ -1593,7 +1593,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 
 		if (argCount < 2)
 			return true;
-	    
+
 		Downloader *down = (Downloader*)((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args [0]))->GetDependencyObject ();
 
 		Type::Kind element_type;
@@ -1698,9 +1698,9 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 static bool
 _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, const NPVariant *value)
 {
-	if (NPVARIANT_IS_OBJECT (*value)){ 
+	if (NPVARIANT_IS_OBJECT (*value)){
 		MoonlightObject *obj = (MoonlightObject*) NPVARIANT_TO_OBJECT (*value);
-		
+
 		if (obj->moonlight_type >= Type::DEPENDENCY_OBJECT || obj->moonlight_type == Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
 			dob->SetValue (p, Value(depobj->GetDependencyObject ()));
@@ -1712,7 +1712,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 		case Type::TIMESPAN: {
 			MoonlightTimeSpan *ts = (MoonlightTimeSpan*) obj;
 			dob->SetValue (p, Value(ts->timespan, Type::TIMESPAN));
-			break; 
+			break;
 		}
 		case Type::DURATION: {
 			MoonlightDuration *duration = (MoonlightDuration*) obj;
@@ -1754,16 +1754,16 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 			DEBUGMSG ("Setting NULL for (%s::%s)", dob->GetTypeName (), p->name);
 			if (p->value_type >= Type::DEPENDENCY_OBJECT){
 				DependencyObject *val = NULL;
-				
+
 				dob->SetValue (p, Value (val));
 			} else if (p->value_type == Type::STRING) {
 				char *val = NULL;
-				
+
 				dob->SetValue (p, Value (val));
 			} else
 				DEBUGWARN ("Setting NULL for unsupported type (%s::%s)", dob->GetTypeName (), p->name);
-				
-				
+
+
 			return true;
 		}
 		else if (NPVARIANT_IS_VOID (*value)){
@@ -1825,7 +1825,7 @@ moonlight_dependency_object_get_property (NPObject *npobj, NPIdentifier name, NP
 	return true;
 }
 
-static bool 
+static bool
 moonlight_dependency_object_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
@@ -1894,7 +1894,7 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 			return true;
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
-		
+
 		DependencyObject *element = dob->FindName (name);
 		if (!element)
 			return true;
@@ -2011,11 +2011,11 @@ moonlight_event_object_allocate (NPP instance, NPClass*)
 	return new MoonlightEventObjectObject (instance);
 }
 
-void 
+void
 MoonlightEventObjectObject::Dispose ()
 {
 	MoonlightObject::Dispose ();
-	
+
 	if (eo) {
 		PluginInstance *plugin = (PluginInstance*) instance->pdata;
 		if (plugin != NULL) {
@@ -2026,7 +2026,7 @@ MoonlightEventObjectObject::Dispose ()
 	eo = NULL;
 }
 
-void 
+void
 MoonlightEventObjectObject::SetEventObject (EventObject *eventobject)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
@@ -2071,7 +2071,7 @@ moonlight_event_object_set_property (NPObject *npobj, NPIdentifier name, const N
 }
 
 static bool
-moonlight_event_object_invoke (NPObject *npobj, NPIdentifier name, 
+moonlight_event_object_invoke (NPObject *npobj, NPIdentifier name,
 			  const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	return false;
@@ -2193,7 +2193,7 @@ moonlight_collection_get_property (NPObject *npobj, NPIdentifier name, NPVariant
 	Collection *col = (Collection*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
 	if (name_matches (name, "count")) {
-		INT32_TO_NPVARIANT (col->list->Length(), *result);	  
+		INT32_TO_NPVARIANT (col->list->Length(), *result);
 		return true;
 	}
 	else
@@ -2287,7 +2287,7 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance,
 									       n->obj);
-		
+
 		OBJECT_TO_NPVARIANT ((NPObject*)depobj, *result);
 
 		return true;
@@ -2469,14 +2469,14 @@ moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
 		const char *part = NPVARIANT_TO_STRING (args[0]).utf8characters;
-	  
+
 		media->SetSource (downloader, part);
 
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
 	}
-	else 
+	else
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
@@ -2522,14 +2522,14 @@ moonlight_image_invoke (NPObject *npobj, NPIdentifier name,
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
 		const char *part = NPVARIANT_TO_STRING (args[1]).utf8characters;
-	  
+
 		img->SetSource (downloader, part);
 
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
 	}
-	else 
+	else
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
@@ -2575,14 +2575,14 @@ moonlight_image_brush_invoke (NPObject *npobj, NPIdentifier name,
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
 		const char *part = NPVARIANT_TO_STRING (args[1]).utf8characters;
-	  
+
 		img->SetSource (downloader, part);
 
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
 	}
-	else 
+	else
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
@@ -2627,14 +2627,14 @@ moonlight_text_block_invoke (NPObject *npobj, NPIdentifier name,
 			return true;
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
-	  
+
 		tb->SetFontSource (downloader);
 
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
 	}
-	else 
+	else
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
@@ -2765,7 +2765,7 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else 
+	else
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
@@ -2955,7 +2955,7 @@ moonlight_scriptable_object_get_property (NPObject *npobj, NPIdentifier name, NP
 	return true;
 }
 
-static bool 
+static bool
 moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	MoonlightScriptableObjectObject *sobj = (MoonlightScriptableObjectObject*)npobj;
@@ -2972,7 +2972,7 @@ moonlight_scriptable_object_set_property (NPObject *npobj, NPIdentifier name, co
 		Value *v;
 
 		variant_to_value (value, &v);
-		
+
 		sobj->setprop (sobj->managed_scriptable, prop->property_handle, v);
 
 		delete v;
@@ -3232,7 +3232,7 @@ DomEventWrapper::HandleEvent (nsIDOMEvent* aDOMEvent)
 	nsCOMPtr<nsIDOMMouseEvent> mouse_event = do_QueryInterface (aDOMEvent);
 	if (mouse_event != nsnull) {
 		int screen_x, screen_y;
-		
+
 		mouse_event->GetScreenX (&screen_x);
 		mouse_event->GetScreenY (&screen_y);
 
@@ -3250,7 +3250,7 @@ DomEventWrapper::HandleEvent (nsIDOMEvent* aDOMEvent)
 		mouse_event->GetButton (&umouse_button);
 		mouse_button = umouse_button;
 	}
-	
+
 	callback (strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
 			alt_key, ctrl_key, shift_key, mouse_button);
 
@@ -3319,7 +3319,7 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 		for (uint32_t i = 0; i < arg_count; i++)
 			value_to_variant (npobj, &args [i], &npargs [i]);
 	}
-	
+
 	NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
 
 	if (arg_count) {
@@ -3369,7 +3369,7 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 
 	if (NPVARIANT_IS_STRING (npresult) && strlen (NPVARIANT_TO_STRING (npresult).utf8characters) > 0) {
 		NPString np_id = NPVARIANT_TO_STRING (npresult);
-		
+
 		nsString ns_id = NS_ConvertUTF8toUTF16 (np_id.utf8characters, strlen (np_id.utf8characters));
 		nsCOMPtr<nsIDOMDocument> dom_document = get_dom_document (npp);
 
@@ -3425,7 +3425,7 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 	DomEventWrapper *wrapper = new DomEventWrapper ();
 	wrapper->callback = cb;
 	wrapper->target = target;
-	
+
 	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
 
 	return wrapper;
@@ -3456,7 +3456,7 @@ browser_do_alert (PluginInstance *plugin, char *msg)
 
 	NPN_GetValue (npp, NPNVWindowNPObject, &window);
 	string_to_npvariant (msg, &npargs [0]);
-	
+
 	NPN_Invoke (npp, window, identifier, npargs, 1, &npresult);
 }
 
@@ -3493,7 +3493,7 @@ plugin_init_classes ()
 void
 plugin_destroy_classes ()
 {
-	
+
 	delete MoonlightCollectionClass; MoonlightCollectionClass = NULL;
 	delete MoonlightContentClass; MoonlightContentClass = NULL;
 	delete MoonlightControlClass; MoonlightControlClass = NULL;

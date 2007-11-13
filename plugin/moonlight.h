@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #ifndef PLUGIN_CONFIG
@@ -80,7 +80,7 @@ extern "C" {
 #define DEBUG_WARN_NOTIMPLEMENTED(msg) g_warning ("functionality not yet implemented (%s):" G_STRLOC, msg)
 #else
 #define DEBUGMSG(x...)
-#define DEBUGWARN(x...) 
+#define DEBUGWARN(x...)
 #define DEBUG_WARN_NOTIMPLEMENTED(msg)
 #endif
 

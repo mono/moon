@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 #define NP_VERSION_HAS_POPUP      16
 
 // Global function table
-static NPNetscapeFuncs MozillaFuncs; 
+static NPNetscapeFuncs MozillaFuncs;
 
 /*** Wrapper functions ********************************************************/
 
@@ -37,7 +37,7 @@ void NPN_Version (int* plugin_major, int* plugin_minor, int* netscape_major, int
 }
 
 NPError
-NPN_GetValue (NPP instance, NPNVariable variable, void *r_value) 
+NPN_GetValue (NPP instance, NPNVariable variable, void *r_value)
 {
 	return CallNPN_GetValueProc (MozillaFuncs.getvalue, instance, variable, r_value);
 }
@@ -55,7 +55,7 @@ NPN_GetURL (NPP instance, const char* url, const char* window)
 }
 
 NPError
-NPN_GetURLNotify (NPP instance, const char* url, 
+NPN_GetURLNotify (NPP instance, const char* url,
                           const char* window, void* notifyData)
 {
 	return CallNPN_GetURLNotifyProc (MozillaFuncs.geturlnotify, instance,
@@ -70,7 +70,7 @@ NPN_PostURL (NPP instance, const char* url, const char* window,
 }
 
 NPError
-NPN_PostURLNotify (NPP instance, const char* url, const char* window, 
+NPN_PostURLNotify (NPP instance, const char* url, const char* window,
                            uint32 len, const char* buf, NPBool file, void* notifyData)
 {
 	return CallNPN_PostURLNotifyProc (MozillaFuncs.posturlnotify, instance, url,
@@ -86,7 +86,7 @@ NPN_RequestRead (NPStream* stream, NPByteRange* rangeList)
 NPError
 NPN_NewStream (NPP instance, NPMIMEType type, const char *window, NPStream** stream_ptr)
 {
-	return CallNPN_NewStreamProc (MozillaFuncs.newstream, instance, 
+	return CallNPN_NewStreamProc (MozillaFuncs.newstream, instance,
 	                            type, window, stream_ptr);
 }
 
@@ -334,7 +334,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 
 	// GTK+ ?
 	err = CallNPN_GetValueProc (mozilla_funcs->getvalue, NULL,
-								NPNVToolkit, 
+								NPNVToolkit,
 								(void *)&toolkit);
 
 	if (err != NPERR_NO_ERROR || toolkit != NPNVGtk2)
@@ -392,11 +392,8 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 	}
 
 #ifdef XP_UNIX
-	if (plugin_funcs->size < sizeof (NPPluginFuncs)) {
-		fprintf (stderr, "xine-plugin: plugin function table too small (%d)!\n",
-		            plugin_funcs->size);
+	if (plugin_funcs->size < sizeof (NPPluginFuncs))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
-	}
 
 	plugin_funcs->version       = ((NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR);
 	plugin_funcs->size          = sizeof (NPPluginFuncs);
@@ -425,7 +422,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 
 NPError OSCALL
 LOADER_RENAMED_SYM(NP_Shutdown) (void)
-{ 
+{
 	NPP_Shutdown ();
 	return NPERR_NO_ERROR;
 }

@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #ifndef MOON_PLUGIN
@@ -46,7 +46,7 @@ class PluginInstance
 	// The XAML loader, contains a handle to a MonoObject *
 	//
 	PluginXamlLoader* xaml_loader;
-	// 
+	//
 	// A (managed) callback to call when the plugin is unloaded.
 	//
 	plugin_unload_callback* plugin_unload;
@@ -61,7 +61,7 @@ class PluginInstance
 	void TryLoad ();
 	void SetPageURL ();
 
- public:	
+ public:
 	PluginInstance (NPP instance, uint16 mode);
 	~PluginInstance ();
 	void SetUnloadCallback (plugin_unload_callback* puc);
@@ -89,7 +89,7 @@ class PluginInstance
 	NPObject* LookupWrappedObject (EventObject *obj);
 
 	void Properties ();
-	
+
 	NPP getNPP () { return instance; }
 
 	static Downloader* CreateDownloader (PluginInstance* instance)
@@ -101,7 +101,7 @@ class PluginInstance
 			return new Downloader ();
 		}
 	}
-	
+
 	// Gtk controls
 	GtkWidget *container;  // plugin container object
  	Surface *surface;      // plugin surface object
@@ -168,7 +168,7 @@ class StreamNotify
 	{
 		base_ref (dob);
 	}
-	~StreamNotify () 
+	~StreamNotify ()
 	{
 		if (type == DOWNLOADER)
 			base_unref ((DependencyObject*) pdata);
@@ -180,20 +180,20 @@ class StreamNotify
 
 class PluginXamlLoader : public XamlLoader
 {
-	private: 
+	private:
 		PluginXamlLoader (const char* filename, const char* str, PluginInstance* plugin, Surface* surface);
 		bool InitializeLoader ();
 		PluginInstance* plugin;
 		bool initialized;
 		bool xaml_is_managed;
-		
+
 #if INCLUDE_MONO_RUNTIME
 		gpointer managed_loader;
 #endif
 	public:
 		virtual ~PluginXamlLoader ();
-		const char* TryLoad (int *error);		
-				
+		const char* TryLoad (int *error);
+
 		static PluginXamlLoader* FromFilename (const char* filename, PluginInstance* plugin, Surface* surface)
 		{
 			return new PluginXamlLoader (filename, NULL, plugin, surface);
@@ -203,7 +203,7 @@ class PluginXamlLoader : public XamlLoader
 			return new PluginXamlLoader (NULL, str, plugin, surface);
 		}
 
-		bool IsManaged () { return xaml_is_managed; } 
+		bool IsManaged () { return xaml_is_managed; }
 		virtual bool HookupEvent (void* target, const char* name, const char* value);
 		virtual bool LoadVM ();
 };

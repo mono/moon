@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #include "moonlight.h"
@@ -83,10 +83,10 @@ vm_init (void)
 
 		if (moon_load_xaml != NULL) {
 			result = TRUE;
-		}		
+		}
 	}
 	DEBUGMSG ("Mono Runtime: %s", result ? "OK" : "Failed");
-	
+
 	moon_vm_loaded = TRUE;
 
 #if STACK_DEBUG

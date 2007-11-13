@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #include "moonlight.h"
@@ -15,7 +15,7 @@
 #include "plugin-class.h"
 #include "moon-mono.h"
 
-NPError 
+NPError
 NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
 {
 	if (!instance)
@@ -31,7 +31,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 	return NPERR_NO_ERROR;
 }
 
-NPError 
+NPError
 NPP_Destroy (NPP instance, NPSavedData** save)
 {
 	if (instance == NULL)
@@ -46,7 +46,7 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 	return NPERR_NO_ERROR;
 }
 
-NPError 
+NPError
 NPP_SetWindow (NPP instance, NPWindow* window)
 {
 	if (instance == NULL)
@@ -127,7 +127,7 @@ NPP_URLNotify (NPP instance, const char* url, NPReason reason, void* notifyData)
 }
 
 
-int16 
+int16
 NPP_HandleEvent (NPP instance, void* event)
 {
 	if (instance == NULL)
@@ -137,7 +137,7 @@ NPP_HandleEvent (NPP instance, void* event)
 	return plugin->EventHandle (event);
 }
 
-NPError 
+NPError
 NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 {
 	NPError err = NPERR_NO_ERROR;
@@ -163,7 +163,7 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 	return err;
 }
 
-NPError 
+NPError
 NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 {
 	if (instance == NULL)
@@ -194,12 +194,12 @@ NPP_Initialize (void)
 		gtk_init (0, 0);
 	}
 	downloader_initialize ();
-	
+
 	if (!runtime_initialized) {
 		runtime_initialized = true;
 		runtime_init (RUNTIME_INIT_BROWSER);
 	}
-	
+
 	plugin_init_classes ();
 
 	return NPERR_NO_ERROR;

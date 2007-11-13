@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #include "moonlight.h"
@@ -29,7 +29,7 @@ public:
 		// these are set after the stream is created, and used for destroying the stream
 		this->npp = NULL;
 		this->stream = NULL;
-		
+
 		// The Downloader will call destroy_state from it's destructor,
 		// but if we ref the Downloader, its destructor will never get called.
 		// No need to keep a ref, since this instance will never live longer
@@ -109,7 +109,7 @@ p_downloader_send (gpointer state)
 	//   can be transfered (see the XPS reader for silverlight):
 	//              http://tinyurl.com/2n55mp
 	//
-	//   
+	//
 }
 
 static void
@@ -146,7 +146,7 @@ downloader_initialize (void)
 			p_downloader_abort);
 }
 
-void 
+void
 downloader_destroy ()
 {
 	downloader_shutdown = true;

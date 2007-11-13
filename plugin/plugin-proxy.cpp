@@ -7,7 +7,7 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -70,7 +70,7 @@ load (void)
 		return FALSE;
 	}
 	g_free (avcodec_path);
-	
+
 	// load libavformat
 	char *avformat_path = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "libavformat.so", NULL);
 	void *real_avformat = dlopen (avformat_path, RTLD_NOW | RTLD_GLOBAL);
@@ -192,7 +192,7 @@ NP_Initialize (NPNetscapeFuncs *mozilla_funcs)
 
 NPError OSCALL
 NP_Shutdown (void)
-{ 
+{
 	if (shutdown == NULL)
 		load ();
 	if (shutdown != NULL)
