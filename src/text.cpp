@@ -1000,11 +1000,10 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 		// creating a new run
 		const char *str = value ? value->AsString () : NULL;
 		Inlines *inlines = text_block_get_inlines (this);
+		char *inptr, *text, *d;
+		Inline *run;
 		
 		if (str && str[0]) {
-			Run *run = new Run ();
-			run_set_text (run, value->AsString ());
-			
 			if (!inlines) {
 				inlines = new Inlines ();
 				text_block_set_inlines (this, inlines);
@@ -1013,8 +1012,37 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 				inlines->Clear ();
 			}
 			
-			inlines->Add (run);
-			run->unref ();
+			d = text = (char *) g_malloc (strlen (str) + 1);
+			while (*str) {
+				if (*str != '\r')
+					*d++ = *str;
+				str++;
+			}
+			*d = '\n';
+			
+			inptr = text;
+			while (inptr < d) {
+				str = inptr;
+				while (*inptr != '\n')
+					inptr++;
+				
+				if (inptr > str) {
+					*inptr = '\0';
+					run = new Run ();
+					run_set_text ((Run *) run, str);
+					inlines->Add (run);
+					run->unref ();
+				}
+				
+				if (inptr < d) {
+					run = new LineBreak ();
+					inlines->Add (run);
+					run->unref ();
+					inptr++;
+				}
+			}
+			
+			g_free (text);
 			dirty = true;
 		} else if (inlines) {
 			inlines->Clear ();
