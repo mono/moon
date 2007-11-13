@@ -1,3 +1,9 @@
+2007-11-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp|h: Do not compute brush bounds for a SolidColorBrush 
+	as this is unrequired (API wise) and can be expensive (it was enough
+	to add custom bound calculation code to shapes and geometries).
+
 2007-11-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Removed g_assert_not_reached and, if any bad value is

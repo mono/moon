@@ -60,7 +60,7 @@ class Brush : public DependencyObject {
 	Brush () { }
 	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
 
-	void SetupBrush (cairo_t *cr, UIElement *uielement);
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	
@@ -84,6 +84,7 @@ class SolidColorBrush : public Brush {
 
 	virtual Type::Kind GetObjectType () { return Type::SOLIDCOLORBRUSH; };
 
+	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 

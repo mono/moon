@@ -165,7 +165,7 @@ Brush::OnPropertyChanged (DependencyProperty *prop)
 DependencyProperty* SolidColorBrush::ColorProperty;
 
 void
-SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement)
 {
 	Color *color = solid_color_brush_get_color (this);
 	
@@ -175,6 +175,14 @@ SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, do
 	cairo_set_source_rgba (cr, color->r, color->g, color->b, alpha);
 	
 	// [Relative]Transform do not apply to solid color brush
+}
+
+void
+SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+{
+	// note: avoid computing width and height since it can be very expansive
+	// (e.g. complex paths) and not required for a SolidColorBrush
+	SetupBrush (cr, uielement);
 }
 
 void 
