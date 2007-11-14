@@ -276,7 +276,6 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		if (argn[i] == NULL)
 			continue;
 
-		fprintf (stderr, "Initialize: %s=%s\n", argn [i], argv [i]);
 		// initParams.
 		if (!strcasecmp (argn[i], "initParams")) {
 			this->initParams = argv[i];
