@@ -1,5 +1,12 @@
 2007-11-14  Jb Evain  <jbevain@novell.com>
 
+	* type.cpp.in, type.cpp, media.h, media.cpp: Move
+	DownloadProgressProperty and DownloadProgressChangedEvent
+	to MediaBase so it gets shared for both Image and MediaElement.
+	Fixes #325255.
+
+2007-11-14  Jb Evain  <jbevain@novell.com>
+
 	* value.h.in: update code template to match current value.h.
 
 2007-11-14  Sebastien Pouliot  <sebastien@ximian.com> 

@@ -348,10 +348,12 @@ types_init_register_events (void)
 	t->RegisterEvent ("DownloadProgressChanged");
 	t->RegisterEvent ("DownloadFailed");
 
+	t = Type::Find (Type::MEDIABASE);
+	t->RegisterEvent ("DownloadProgressChanged");
+
 	t = Type::Find (Type::MEDIAELEMENT);
 	t->RegisterEvent ("BufferingProgressChanged");
 	t->RegisterEvent ("CurrentStateChanged");
-	t->RegisterEvent ("DownloadProgressChanged");
 	t->RegisterEvent ("MarkerReached");
 	t->RegisterEvent ("MediaEnded");
 	t->RegisterEvent ("MediaFailed");

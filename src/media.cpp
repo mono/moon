@@ -1,7 +1,9 @@
 /*
  * media.cpp: 
  *
- * Author: Jeffrey Stedfast <fejj@novell.com>
+ * Authors:
+ *   Jeffrey Stedfast <fejj@novell.com>
+ *   Jb Evain <jbevain@novell.com>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -33,9 +35,23 @@ void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, d
 
 DependencyProperty *MediaBase::SourceProperty;
 DependencyProperty *MediaBase::StretchProperty;
+DependencyProperty *MediaBase::DownloadProgressProperty;
+
+int MediaBase::DownloadProgressChangedEvent = -1;
 
 MediaBase::MediaBase ()
 {
+}
+
+void
+MediaBase::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop == MediaElement::DownloadProgressProperty) {
+		// printf ("DownloadProgressChanged! value: %e\n", GetValue (prop)->AsDouble ());
+		Emit (DownloadProgressChangedEvent);
+	}
+
+	FrameworkElement::OnPropertyChanged (prop);
 }
 
 MediaBase *
@@ -213,7 +229,6 @@ DependencyProperty *MediaElement::BufferingTimeProperty;
 DependencyProperty *MediaElement::CanPauseProperty;
 DependencyProperty *MediaElement::CanSeekProperty;
 DependencyProperty *MediaElement::CurrentStateProperty;
-DependencyProperty *MediaElement::DownloadProgressProperty;
 DependencyProperty *MediaElement::IsMutedProperty;
 DependencyProperty *MediaElement::MarkersProperty;
 DependencyProperty *MediaElement::NaturalDurationProperty;
@@ -224,7 +239,6 @@ DependencyProperty *MediaElement::VolumeProperty;
 
 int MediaElement::BufferingProgressChangedEvent = -1;
 int MediaElement::CurrentStateChangedEvent = -1;
-int MediaElement::DownloadProgressChangedEvent = -1;
 int MediaElement::MarkerReachedEvent = -1;
 int MediaElement::MediaEndedEvent = -1;
 int MediaElement::MediaFailedEvent = -1;
@@ -816,8 +830,6 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		// read-only property
 	} else if (prop == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
-	} else if (prop == MediaElement::DownloadProgressProperty) {
-		Emit (DownloadProgressChangedEvent);
 	} else if (prop == MediaElement::IsMutedProperty) {
 		bool muted = media_element_get_is_muted (this);
 		if (!muted)
@@ -1101,7 +1113,7 @@ media_element_set_volume (MediaElement *media, double value)
 // Image
 //
 GHashTable* Image::surface_cache = NULL;
-DependencyProperty* Image::DownloadProgressProperty;
+
 int Image::ImageFailedEvent = -1;
 
 Image::Image ()
@@ -1607,9 +1619,7 @@ media_init (void)
 	/* MediaBase */
 	MediaBase::SourceProperty = DependencyObject::Register (Type::MEDIABASE, "Source", Type::STRING);
 	MediaBase::StretchProperty = DependencyObject::Register (Type::MEDIABASE, "Stretch", new Value (StretchUniform));
-	
-	/* Image */
-	Image::DownloadProgressProperty = DependencyObject::Register (Type::IMAGE, "DownloadProgress", new Value (0.0));
+	MediaBase::DownloadProgressProperty = DependencyObject::Register (Type::MEDIABASE, "DownloadProgress", new Value (0.0));
 	
 	/* MediaElement */
 	MediaElement::AttributesProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Attributes", Type::MEDIAATTRIBUTE_COLLECTION);
@@ -1622,7 +1632,6 @@ media_init (void)
 	MediaElement::CanPauseProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanPause", new Value (false));
 	MediaElement::CanSeekProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanSeek", new Value (false));
 	MediaElement::CurrentStateProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CurrentState", Type::STRING);
-	MediaElement::DownloadProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
 	MediaElement::IsMutedProperty = DependencyObject::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
 	MediaElement::MarkersProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
 	MediaElement::NaturalDurationProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalDuration", new Value(Duration::FromSeconds (0)));
@@ -1632,10 +1641,12 @@ media_init (void)
 	MediaElement::VolumeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
 
 	/* lookup events */
-	Type *t = Type::Find(Type::MEDIAELEMENT);
+	Type *t = Type::Find (Type::MEDIABASE);
+	MediaBase::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
+	
+	t = Type::Find (Type::MEDIAELEMENT);
 	MediaElement::BufferingProgressChangedEvent = t->LookupEvent ("BufferingProgressChanged");
 	MediaElement::CurrentStateChangedEvent = t->LookupEvent ("CurrentStateChanged");
-	MediaElement::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
 	MediaElement::MarkerReachedEvent = t->LookupEvent ("MarkerReached");
 	MediaElement::MediaEndedEvent = t->LookupEvent ("MediaEnded");
 	MediaElement::MediaFailedEvent = t->LookupEvent ("MediaFailed");

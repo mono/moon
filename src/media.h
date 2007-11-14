@@ -40,9 +40,14 @@ class MediaBase : public FrameworkElement {
 public:
 	static DependencyProperty *SourceProperty;
 	static DependencyProperty *StretchProperty;
+	static DependencyProperty *DownloadProgressProperty;
+	
+	static int DownloadProgressChangedEvent;
 	
 	MediaBase ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
+	
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 MediaBase* media_base_new ();
@@ -91,8 +96,6 @@ class Image : public MediaBase {
 	double pattern_opacity;
 
  public:
-	static DependencyProperty *DownloadProgressProperty;
-	
 	Image ();
 	virtual ~Image ();
 
@@ -207,7 +210,6 @@ public:
 	static DependencyProperty *CanPauseProperty;
 	static DependencyProperty *CanSeekProperty;
 	static DependencyProperty *CurrentStateProperty;
-	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *IsMutedProperty;
 	static DependencyProperty *MarkersProperty;
 	static DependencyProperty *NaturalDurationProperty;
@@ -247,7 +249,6 @@ public:
 	
 	static int BufferingProgressChangedEvent;
 	static int CurrentStateChangedEvent;
-	static int DownloadProgressChangedEvent;
 	static int MarkerReachedEvent;
 	static int MediaEndedEvent;
 	static int MediaFailedEvent;
