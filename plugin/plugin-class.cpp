@@ -39,40 +39,153 @@
 #define DEBUG_SCRIPTABLE 0
 #define DEBUG_JAVASCRIPT 1
 
-#define HAS_PROPERTY(x,v) \
-		(index_of_name (v, x, (sizeof (x) / sizeof (char *))) > -1)
-#define HAS_METHOD(x,v) \
-		(index_of_name (v, x, (sizeof (x) / sizeof (char *))) > -1)
+#define COUNT(v)              (sizeof (v) / sizeof (v[0]))
+#define LOOKUP_NAME(obj,n)     ((obj)->LookupName (n))
+#define IS_METHOD(id)         (((id) & 0x8000) != 0)
+#define IS_PROPERTY(id)       (((id) & 0x4000) != 0)
 
 
-static bool
-name_matches (NPIdentifier id, const char *name)
+enum PluginPropertyId {
+	NoMapping = 0,
+
+	// property names
+	MoonId_ErrorCode = 0x4000,
+	MoonId_ErrorType,
+	MoonId_ErrorMessage,
+	MoonId_LineNumber,
+	MoonId_CharPosition,
+	MoonId_XamlFile,
+	MoonId_MethodName,
+	MoonId_X,
+	MoonId_Y,
+	MoonId_Width,
+	MoonId_Height,
+	MoonId_Seconds,
+	MoonId_Name,
+	MoonId_Shift,
+	MoonId_Ctrl,
+	MoonId_Marker,
+	MoonId_Key,
+	MoonId_PlatformKeyCode,
+	MoonId_Settings,
+	MoonId_Content,
+	MoonId_InitParams,
+	MoonId_IsLoaded,
+	MoonId_Source,
+	MoonId_Background,
+	MoonId_EnableFramerateCounter,
+	MoonId_EnableRedrawRegions,
+	MoonId_EnableHtmlAccess,
+	MoonId_MaxFrameRate,
+	MoonId_Version,
+	MoonId_Windowless,
+	MoonId_ActualHeight,
+	MoonId_ActualWidth,
+	MoonId_FullScreen,
+	MoonId_OnResize,
+	MoonId_OnFullScreenChange,
+	MoonId_OnError,
+	MoonId_Root,
+	MoonId_Count,
+	MoonId_ResponseText,
+
+	// method names
+	MoonId_GetPosition = 0x8000,
+	MoonId_CreateObject,
+	MoonId_IsVersionSupported,
+	MoonId_FindName,
+	MoonId_CreateFromXaml,
+	MoonId_CreateFromXamlDownloader,
+	MoonId_GetHost,
+	MoonId_GetParent,
+	MoonId_CaptureMouse,
+	MoonId_ReleaseMouseCapture,
+	MoonId_AddEventListener,
+	MoonId_RemoveEventListener,
+	MoonId_SetValue,
+	MoonId_GetValue,
+	MoonId_ToString,     
+#if DEBUG_JAVASCRIPT
+	MoonId_Printf,
+#endif
+	MoonId_Add,
+	MoonId_Remove,
+	MoonId_RemoveAt,
+	MoonId_Insert,
+	MoonId_Clear,
+	MoonId_GetItem,
+	MoonId_Begin,
+	MoonId_Pause,
+	MoonId_Resume,
+	MoonId_Seek,
+	MoonId_Stop,
+	MoonId_Play,
+	MoonId_SetSource,
+	MoonId_SetFontSource,
+	MoonId_Abort,
+	MoonId_Open,
+	MoonId_GetResponseText,
+	MoonId_Send
+};
+
+static char*
+npidentifier_to_downstr (NPIdentifier id)
 {
-	if (id == NPN_GetStringIdentifier (name))
-		return true;
+	if (!NPN_IdentifierIsString (id))
+		return NULL;
 
-	bool rv = false;
-
-	if (islower (name[0])) {
-		char *n = g_strdup (name);
-		n[0] = toupper (n[0]);
-
-		rv = (id == NPN_GetStringIdentifier (n));
-		g_free (n);
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (id);
+	char *p = strname;
+	while (*p) {
+		*p = g_ascii_tolower (*p);
+		p++;
 	}
 
-	return rv;
+	return strname;
 }
 
+// for some reason enabling bsearch breaks silverlight.net/ShowCase
+// (firebug shows a property access error).  leave it disabled for
+// now.
+#define USE_BSEARCH 0
+
+#if USE_BSEARCH
 static int
-index_of_name (NPIdentifier name, const char *const names[], int count)
+compare_mapping (const void *m1, const void *m2)
 {
+	MoonNameIdMapping *map1 = (MoonNameIdMapping*) m1;
+	MoonNameIdMapping *map2 = (MoonNameIdMapping*) m2;
+	return strcmp(map1->name, map2->name);
+}
+#endif
+
+static int
+map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
+{
+	char *strname = npidentifier_to_downstr (name);
+	if (!strname)
+		return NoMapping;
+
+#if USE_BSEARCH
+	MoonNameIdMapping key, *result;
+
+	key.name = strname;
+	result = (MoonNameIdMapping*)bsearch(&key, mapping, count,
+					     sizeof(MoonNameIdMapping), compare_mapping);
+
+	NPN_MemFree (strname);
+	return result ? result->id : NoMapping;
+#else /* linear search */
 	for (int i = 0; i < count; i++) {
-		if (name_matches (name, names[i]))
-			return i;
+		if (!strcmp (strname, mapping[i].name)) {
+			NPN_MemFree (strname);
+			return mapping[i].id;
+		}
 	}
 
-	return -1;
+	NPN_MemFree (strname);
+	return NoMapping;
+#endif
 }
 
 static void
@@ -365,30 +478,30 @@ erroreventargs_allocate (NPP instance, NPClass *)
 	return new MoonlightErrorEventArgs (instance);
 }
 
-
-static bool
-erroreventargs_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "errorCode") ||
-		name_matches (name, "errorType") ||
-		name_matches (name, "errorMessage") ||
-		name_matches (name, "lineNumber") ||
-		name_matches (name, "charNumber") ||
-		/* parser errors */
-		name_matches (name, "xamlFile") ||
-		/* runtime errors */
-		name_matches (name, "methodName"));
-}
+static const MoonNameIdMapping
+erroreventargs_mapping[] = {
+	{ "charnumber", MoonId_CharPosition },
+	{ "errorcode", MoonId_ErrorCode },
+	{ "errormessage", MoonId_ErrorMessage },
+	{ "errortype", MoonId_ErrorType },
+	{ "linenumber", MoonId_LineNumber },
+	{ "methodname", MoonId_MethodName },
+	{ "xamlfile", MoonId_XamlFile },
+};
 
 static bool
 erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightErrorEventArgs *ea = (MoonlightErrorEventArgs*)npobj;
-	if (name_matches (name, "errorCode")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_ErrorCode:
 		INT32_TO_NPVARIANT (ea->args->error_code, *result);
 		return true;
-	}
-	else if (name_matches (name, "errorType")) {
+
+	case MoonId_ErrorType:
 		switch (ea->args->error_type) {
 		case NoError:          string_to_npvariant ("NoError", result); break;
 		case UnknownError:     string_to_npvariant ("UnknownError", result); break;
@@ -401,12 +514,12 @@ erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 		case ImageError:       string_to_npvariant ("ImageError", result); break;
 		}
 		return true;
-	}
-	else if (name_matches (name, "ErrorMessage")) {
+
+	case MoonId_ErrorMessage:
 		string_to_npvariant (ea->args->error_message, result);
 		return true;
-	}
-	else if (name_matches (name, "lineNumber")) {
+
+	case MoonId_LineNumber:
 		if (ea->args->error_type == ParserError) {
 			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)ea->args)->line_number, *result);
 		}
@@ -415,8 +528,8 @@ erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 			INT32_TO_NPVARIANT (0, *result);
 		}
 		return true;
-	}
-	else if (name_matches (name, "charPosition")) {
+
+	case MoonId_CharPosition:
 		if (ea->args->error_type == ParserError) {
 			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)ea->args)->char_position, *result);
 		}
@@ -425,13 +538,13 @@ erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 			INT32_TO_NPVARIANT (0, *result);
 		}
 		return true;
-	}
-	else if (name_matches (name, "methodName")) {
+
+	case MoonId_MethodName:
 		DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.methodName");
 		INT32_TO_NPVARIANT (0, *result);
 		return true;
-	}
-	else if (name_matches (name, "xamlFile")) {
+
+	case MoonId_XamlFile:
 		if (ea->args->error_type == ParserError) {
 			string_to_npvariant (((ParserErrorEventArgs*)ea->args)->xaml_file, result);
 		}
@@ -440,15 +553,17 @@ erroreventargs_get_property (NPObject *npobj, NPIdentifier name, NPVariant *resu
 			NULL_TO_NPVARIANT (*result);
 		}
 		return true;
-	}
-	else
+	default:
 		return false;
+	}
 }
 
 MoonlightErrorEventArgsType::MoonlightErrorEventArgsType ()
 {
 	allocate = erroreventargs_allocate;
-	hasProperty = erroreventargs_has_property;
+
+	SetMapping (erroreventargs_mapping, COUNT (erroreventargs_mapping));
+
 	getProperty = erroreventargs_get_property;
 }
 
@@ -461,50 +576,60 @@ point_allocate (NPP instance, NPClass *)
 	return new MoonlightPoint (instance);
 }
 
-static bool
-point_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "x") ||
-		name_matches (name, "y"));
-}
+static const MoonNameIdMapping
+point_mapping[] = {
+	{ "x", MoonId_X },
+	{ "y", MoonId_X }
+};
+
 
 static bool
 point_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightPoint *p = (MoonlightPoint*)npobj;
-	if (name_matches (name, "x")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_X:
 		DOUBLE_TO_NPVARIANT (p->point.x, *result);
 		return true;
-	}
-	else if (name_matches (name, "y")) {
+
+	case MoonId_Y:
 		DOUBLE_TO_NPVARIANT (p->point.y, *result);
 		return true;
-	}
-	else
+
+	default:
 		return false;
+	}
 }
 
 static bool
 point_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	MoonlightPoint *p = (MoonlightPoint*)npobj;
-	if (name_matches (name, "x")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_X:
 		p->point.x = NPVARIANT_TO_DOUBLE (*value);
 		return true;
-	}
-	else if (name_matches (name, "y")) {
+	case MoonId_Y:
 		p->point.y = NPVARIANT_TO_DOUBLE (*value);
 		return true;
-	}
-	else
+	default:
 		return false;
+	}
 }
 
 
 MoonlightPointType::MoonlightPointType ()
 {
 	allocate = point_allocate;
-	hasProperty = point_has_property;
+
+	SetMapping (point_mapping, COUNT (point_mapping));
+
 	getProperty = point_get_property;
 	setProperty = point_set_property;
 }
@@ -518,68 +643,79 @@ rect_allocate (NPP instance, NPClass *)
 	return new MoonlightRect (instance);
 }
 
-static bool
-rect_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "x") ||
-		name_matches (name, "y") ||
-		name_matches (name, "width") ||
-		name_matches (name, "height"));
-}
+static const MoonNameIdMapping
+rect_mapping[] = {
+	{ "height", MoonId_Height },
+	{ "width", MoonId_Width },
+	{ "x", MoonId_X },
+	{ "y", MoonId_Y },
+};
 
 static bool
 rect_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightRect *r = (MoonlightRect*)npobj;
-	if (name_matches (name, "x")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_X:
 		DOUBLE_TO_NPVARIANT (r->rect.x, *result);
 		return true;
-	}
-	else if (name_matches (name, "y")) {
+
+	case MoonId_Y:
 		DOUBLE_TO_NPVARIANT (r->rect.y, *result);
 		return true;
-	}
-	else if (name_matches (name, "width")) {
+
+	case MoonId_Width:
 		DOUBLE_TO_NPVARIANT (r->rect.w, *result);
 		return true;
-	}
-	else if (name_matches (name, "height")) {
+
+	case MoonId_Height:
 		DOUBLE_TO_NPVARIANT (r->rect.h, *result);
 		return true;
-	}
-	else
+
+	default:
 		return false;
+	}
 }
 
 static bool
 rect_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	MoonlightRect *r = (MoonlightRect*)npobj;
-	if (name_matches (name, "x")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_X:
 		r->rect.x = NPVARIANT_TO_DOUBLE (*value);
 		return true;
-	}
-	else if (name_matches (name, "y")) {
+
+	case MoonId_Y:
 		r->rect.y = NPVARIANT_TO_DOUBLE (*value);
 		return true;
-	}
-	else if (name_matches (name, "width")) {
+
+	case MoonId_Width:
 		r->rect.w = NPVARIANT_TO_DOUBLE (*value);
 		return true;
-	}
-	else if (name_matches (name, "height")) {
+
+	case MoonId_Height:
 		r->rect.h = NPVARIANT_TO_DOUBLE (*value);
 		return true;
-	}
-	else
+
+	default:
 		return false;
+	}
 }
 
 
 MoonlightRectType::MoonlightRectType ()
 {
 	allocate = rect_allocate;
-	hasProperty = rect_has_property;
+
+	SetMapping (rect_mapping, COUNT (rect_mapping));
+
 	getProperty = rect_get_property;
 	setProperty = rect_set_property;
 }
@@ -594,49 +730,60 @@ duration_allocate (NPP instance, NPClass *)
 	return new MoonlightDuration (instance);
 }
 
-static bool
-duration_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "seconds") ||
-		name_matches (name, "name"));
-}
+static const MoonNameIdMapping
+duration_mapping[] = {
+	{ "name", MoonId_Name },
+	{ "seconds", MoonId_Seconds }
+};
 
 static bool
 duration_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightDuration *r = (MoonlightDuration*)npobj;
-	if (name_matches (name, "name")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Name:
 		string_to_npvariant ("", result);
 		return true;
-	}
-	else if (name_matches (name, "seconds")) {
+
+	case MoonId_Seconds:
 		DOUBLE_TO_NPVARIANT (r->duration.ToSecondsFloat (), *result);
 		return true;
-	}
-	else
+
+	default:
 		return false;
+	}
 }
 
 static bool
 duration_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	MoonlightDuration *r = (MoonlightDuration*)npobj;
-	if (name_matches (name, "name")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Name:
 		return true;
-	}
-	else if (name_matches (name, "seconds")) {
+
+	case MoonId_Seconds:
 		r->duration = Duration::FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
 		return true;
-	}
-	else
+
+	default:
 		return false;
+	}
 }
 
 
 MoonlightDurationType::MoonlightDurationType ()
 {
 	allocate = duration_allocate;
-	hasProperty = duration_has_property;
+
+	SetMapping (duration_mapping, COUNT (duration_mapping));
+
 	getProperty = duration_get_property;
 	setProperty = duration_set_property;
 }
@@ -646,54 +793,63 @@ MoonlightDurationType *MoonlightDurationClass;
 
 /*** TimeSpans ***/
 static NPObject*
-timespan_allocate (NPP instance, NPClass *)
+timespan_allocate (NPP instance, NPClass*)
 {
 	return new MoonlightTimeSpan (instance);
 }
 
-static bool
-timespan_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "seconds") ||
-		name_matches (name, "name"));
-}
+static const MoonNameIdMapping
+timespan_mapping[] = {
+	{ "name", MoonId_Name },
+	{ "seconds", MoonId_Seconds }
+};
 
 static bool
 timespan_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightTimeSpan *r = (MoonlightTimeSpan*)npobj;
-	if (name_matches (name, "name")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Name:
 		string_to_npvariant ("", result);
 		return true;
-	}
-	else if (name_matches (name, "seconds")) {
+	case MoonId_Seconds:
 		DOUBLE_TO_NPVARIANT (TimeSpan_ToSecondsFloat (r->timespan), *result);
 		return true;
-	}
-	else
+	default:
 		return false;
+	}
 }
 
 static bool
 timespan_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	MoonlightTimeSpan *r = (MoonlightTimeSpan*)npobj;
-	if (name_matches (name, "name")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Name:
 		return true;
-	}
-	else if (name_matches (name, "seconds")) {
+
+	case MoonId_Seconds:
 		r->timespan = TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
 		return true;
-	}
-	else
+
+	default:
 		return false;
+	}
 }
 
 
 MoonlightTimeSpanType::MoonlightTimeSpanType ()
 {
 	allocate = timespan_allocate;
-	hasProperty = timespan_has_property;
+
+	SetMapping (timespan_mapping, COUNT (timespan_mapping));
+
 	getProperty = timespan_get_property;
 	setProperty = timespan_set_property;
 }
@@ -719,34 +875,32 @@ MoonlightMouseEventArgsObject::Dispose ()
 	y = -1;
 }
 
-static bool
-mouse_event_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "shift") ||
-		name_matches (name, "ctrl"));
-}
+static const MoonNameIdMapping
+mouse_event_mapping[] = {
+	{ "ctrl", MoonId_Ctrl },
+	{ "getposition", MoonId_GetPosition },
+	{ "shift", MoonId_Shift },
+};
 
 static bool
 mouse_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightMouseEventArgsObject *ea = (MoonlightMouseEventArgsObject*)npobj;
 
-	if (name_matches (name, "shift")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Shift:
 		BOOLEAN_TO_NPVARIANT (ea->state & GDK_SHIFT_MASK != 0, *result);
 		return true;
-	}
-	else if (name_matches (name, "ctrl")) {
+
+	case MoonId_Ctrl:
 		BOOLEAN_TO_NPVARIANT (ea->state & GDK_CONTROL_MASK != 0, *result);
 		return true;
-	}
-	else
-		return false;
-}
 
-static bool
-mouse_event_has_method (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "getPosition"));
+	default:
+		return false;
+	}
 }
 
 static bool
@@ -756,7 +910,10 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 {
 	MoonlightMouseEventArgsObject *ea = (MoonlightMouseEventArgsObject*)npobj;
 
-	if (name_matches (name, "getPosition")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_GetPosition: {
 		if (argCount != 1)
 			return true;
 
@@ -780,8 +937,9 @@ mouse_event_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+	default:
 		return false;
+	}
 }
 
 
@@ -789,10 +947,9 @@ MoonlightMouseEventArgsType::MoonlightMouseEventArgsType ()
 {
 	allocate = mouse_event_allocate;
 
-	hasProperty = mouse_event_has_property;
-	getProperty = mouse_event_get_property;
+	SetMapping (mouse_event_mapping, COUNT (mouse_event_mapping));
 
-	hasMethod = mouse_event_has_method;
+	getProperty = mouse_event_get_property;
 	invoke = mouse_event_invoke;
 }
 
@@ -818,50 +975,37 @@ MoonlightMarkerReachedEventArgsObject::Dispose ()
 	}
 }
 
-static bool
-marker_reached_event_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return name_matches (name, "marker");
-}
+static const MoonNameIdMapping
+marker_reached_event_mapping[] = {
+	{ "marker", MoonId_Marker }
+};
 
 static bool
 marker_reached_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightMarkerReachedEventArgsObject* obj = (MoonlightMarkerReachedEventArgsObject*) npobj;
 
-	if (name_matches (name, "marker")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Marker: {
 		DependencyObject *marker = obj ? obj->marker : NULL;
 		MoonlightEventObjectObject *meoo = EventObjectCreateWrapper (obj->instance, marker);
 		OBJECT_TO_NPVARIANT (meoo, *result);
 		return true;
-	} else {
+	}
+	default:
 		return false;
 	}
 }
-static bool
-marker_reached_event_has_method (NPObject *npobj, NPIdentifier name)
-{
-	return false;
-}
-
-static bool
-marker_reached_event_invoke (NPObject *npobj, NPIdentifier name,
-		    const NPVariant *args, uint32_t argCount,
-		    NPVariant *result)
-{
-	return false;
-}
-
 
 MoonlightMarkerReachedEventArgsType::MoonlightMarkerReachedEventArgsType ()
 {
 	allocate = marker_reached_event_allocate;
 
-	hasProperty = marker_reached_event_has_property;
-	getProperty = marker_reached_event_get_property;
+	SetMapping (marker_reached_event_mapping, COUNT (marker_reached_event_mapping));
 
-	hasMethod = marker_reached_event_has_method;
-	invoke = marker_reached_event_invoke;
+	getProperty = marker_reached_event_get_property;
 }
 
 MoonlightMarkerReachedEventArgsType* MoonlightMarkerReachedEventArgsClass;
@@ -874,69 +1018,51 @@ keyboard_event_allocate (NPP instance, NPClass *)
 	return new MoonlightKeyboardEventArgsObject (instance);
 }
 
-void
-MoonlightKeyboardEventArgsObject::Dispose ()
-{
-	MoonlightObject::Dispose ();
-}
+static const MoonNameIdMapping
+keyboard_event_mapping[] = {
+	{ "ctrl", MoonId_Ctrl },
+	{ "key", MoonId_Key },
+	{ "platformkeycode", MoonId_PlatformKeyCode },
+	{ "shift", MoonId_Shift },
+};
 
-static bool
-keyboard_event_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "shift") ||
-		name_matches (name, "ctrl") ||
-		name_matches (name, "key") ||
-		name_matches (name, "platformkeycode"));
-}
 
 static bool
 keyboard_event_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	MoonlightKeyboardEventArgsObject *ea = (MoonlightKeyboardEventArgsObject*)npobj;
 
-	if (name_matches (name, "shift")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Shift:
 		BOOLEAN_TO_NPVARIANT (ea->state & GDK_SHIFT_MASK != 0, *result);
 		return true;
-	}
-	else if (name_matches (name, "ctrl")) {
+
+	case MoonId_Ctrl:
 		BOOLEAN_TO_NPVARIANT (ea->state & GDK_CONTROL_MASK != 0, *result);
 		return true;
-	} if (name_matches (name, "key")) {
+
+	case MoonId_Key:
 		INT32_TO_NPVARIANT (ea->key, *result);
 		return true;
-	}
-	else if (name_matches (name, "platformkeycode")) {
+
+	case MoonId_PlatformKeyCode:
 		INT32_TO_NPVARIANT (ea->platformcode, *result);
 		return true;
-	}
-	else
+
+	default:
 		return false;
+	}
 }
-
-static bool
-keyboard_event_has_method (NPObject *npobj, NPIdentifier name)
-{
-	return false;
-}
-
-static bool
-keyboard_event_invoke (NPObject *npobj, NPIdentifier name,
-		    const NPVariant *args, uint32_t argCount,
-		    NPVariant *result)
-{
-	return false;
-}
-
 
 MoonlightKeyboardEventArgsType::MoonlightKeyboardEventArgsType ()
 {
 	allocate = keyboard_event_allocate;
 
-	hasProperty = keyboard_event_has_property;
-	getProperty = keyboard_event_get_property;
+	SetMapping (keyboard_event_mapping, COUNT (keyboard_event_mapping));
 
-	hasMethod = keyboard_event_has_method;
-	invoke = keyboard_event_invoke;
+	getProperty = keyboard_event_get_property;
 }
 
 MoonlightKeyboardEventArgsType* MoonlightKeyboardEventArgsClass;
@@ -966,6 +1092,30 @@ _deallocate (NPObject *npobj)
 	delete obj;
 }
 
+int
+MoonlightObject::LookupName (NPIdentifier name)
+{
+	if (last_lookup == name) {
+//  		printf ("%p:  fast %p => %d\n", this, name, last_id);
+		return last_id;
+	}
+
+//  	printf ("%p: slow %p\n", this, name);
+
+
+	int id = ((MoonlightObjectType*)_class)->LookupName (name);
+
+	if (id) {
+		/* only cache hits */
+		last_lookup = name;
+		last_id = id;
+	}
+
+// 	printf (" => %d\n", id);
+
+	return id;
+}
+
 MoonlightObject::~MoonlightObject ()
 {
 	if (!disposed) {
@@ -992,13 +1142,15 @@ _invalidate (NPObject *npobj)
 static bool
 _has_method (NPObject *npobj, NPIdentifier name)
 {
-	return false;
+	MoonlightObject *obj = (MoonlightObject *)npobj;
+	return IS_METHOD (obj->LookupName (name));
 }
 
 static bool
 _has_property (NPObject *npobj, NPIdentifier name)
 {
-	return false;
+	MoonlightObject *obj = (MoonlightObject *)npobj;
+	return IS_PROPERTY (obj->LookupName (name));
 }
 
 static bool
@@ -1055,6 +1207,36 @@ MoonlightObjectType::MoonlightObjectType ()
 	getProperty    = _get_property;
 	setProperty    = _set_property;
 	removeProperty = _remove_property;
+
+	base = NULL;
+	mapping = NULL;
+	mapping_count = 0;
+}
+
+void
+MoonlightObjectType::SetBase (MoonlightObjectType *base)
+{
+	this->base = base;
+}
+
+void
+MoonlightObjectType::SetMapping (const MoonNameIdMapping* mapping, int count)
+{
+	this->mapping = mapping;
+	this->mapping_count = count;
+}
+
+int
+MoonlightObjectType::LookupName (NPIdentifier name)
+{
+	int id = map_name_to_id (name, mapping, mapping_count);
+	if (id != NoMapping)
+		return id;
+
+	if (base)
+		return base->LookupName (name);
+	else
+		return NoMapping;
 }
 
 MoonlightObjectType* MoonlightObjectClass;
@@ -1065,6 +1247,16 @@ moonlight_scriptable_control_allocate (NPP instance, NPClass*)
 {
 	return new MoonlightScriptControlObject (instance);
 }
+
+static const MoonNameIdMapping
+scriptable_control_mapping[] = {
+	{ "content", MoonId_Content },
+	{ "createobject", MoonId_CreateObject },
+	{ "initparams", MoonId_InitParams },
+	{ "isversionsupported", MoonId_IsVersionSupported },
+	{ "settings", MoonId_Settings },
+	{ "source", MoonId_Source },
+};
 
 void
 MoonlightScriptControlObject::Dispose ()
@@ -1081,49 +1273,39 @@ MoonlightScriptControlObject::Dispose ()
 }
 
 static bool
-moonlight_scriptable_control_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "settings") ||
-		name_matches (name, "content") ||
-		name_matches (name, "initParams") ||
-		name_matches (name, "isLoaded") ||
-		name_matches (name, "source"));
-}
-
-static bool
 moonlight_scriptable_control_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 	MoonlightScriptControlObject *rootobj = (MoonlightScriptControlObject*)npobj;
 
-	if (name_matches (name, "settings")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Settings:
 		NPN_RetainObject (rootobj->settings);
 		OBJECT_TO_NPVARIANT (rootobj->settings, *result);
 		return true;
-	}
 
-	if (name_matches (name, "content")) {
+	case MoonId_Content:
 		NPN_RetainObject (rootobj->content);
 		OBJECT_TO_NPVARIANT (rootobj->content, *result);
 		return true;
-	}
 
-	if (name_matches (name, "initParams")) {
+	case MoonId_InitParams:
 		string_to_npvariant (plugin->getInitParams (), result);
 		return true;
-	}
 
-	if (name_matches (name, "isLoaded")) {
+	case MoonId_IsLoaded:
 		BOOLEAN_TO_NPVARIANT (plugin->getIsLoaded (), *result);
 		return true;
-	}
 
-	if (name_matches (name, "source")) {
+	case MoonId_Source:
 		string_to_npvariant (plugin->getSource (), result);
 		return true;
-	}
 
-	return false;
+	default:
+		return false;
+	}
 }
 
 static bool
@@ -1131,27 +1313,26 @@ moonlight_scriptable_control_set_property (NPObject *npobj, NPIdentifier name, c
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 
-	if (name_matches (name, "source")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Source:
 		plugin->setSource (NPVARIANT_TO_STRING (*value).utf8characters);
 		return true;
+	default:
+		return false;
 	}
-
-	return false;
-}
-
-static bool
-moonlight_scriptable_control_has_method (NPObject *npobj, NPIdentifier name)
-{
-	return (name_matches (name, "createObject") ||
-		name_matches (name, "isVersionSupported"));
 }
 
 static bool
 moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
-			  const NPVariant *args, uint32_t argCount,
-			  NPVariant *result)
+				     const NPVariant *args, uint32_t argCount,
+				     NPVariant *result)
 {
-	if (name_matches (name, "createObject")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_CreateObject: {
 		if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])) {
 			NULL_TO_NPVARIANT (*result);
 			return true;
@@ -1176,7 +1357,8 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 			return true;
 		}
 	}
-	else if (name_matches (name, "isVersionSupported")) {
+
+	case MoonId_IsVersionSupported: {
 		/* we support all 1.0.* and 1.1.* versions. */
 		BOOLEAN_TO_NPVARIANT (false, *result);
 		if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])) {
@@ -1217,19 +1399,21 @@ moonlight_scriptable_control_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+
+	default:
 		return false;
+	}
 }
 
 MoonlightScriptControlType::MoonlightScriptControlType ()
 {
 	allocate = moonlight_scriptable_control_allocate;
 
-	hasProperty = moonlight_scriptable_control_has_property;
+	SetMapping (scriptable_control_mapping, COUNT (scriptable_control_mapping));
+
 	getProperty = moonlight_scriptable_control_get_property;
 	setProperty = moonlight_scriptable_control_set_property;
 
-	hasMethod   = moonlight_scriptable_control_has_method;
 	invoke      = moonlight_scriptable_control_invoke;
 }
 
@@ -1237,99 +1421,91 @@ MoonlightScriptControlType* MoonlightScriptControlClass;
 
 /*** MoonlightSettingsClass ***********************************************************/
 
-static const char *const
-moonlight_settings_properties [] = {
-	"background",             // read write
-	"enableFramerateCounter", // read write (cant be set after initialization)
-	"enableRedrawRegions",    // read write
-	"enableHtmlAccess",       // read write (cant be set after initialization)
-	"maxFrameRate",           // read write
-	"version",                // read only
-	"windowless"              // read write (cant be set after initialization)
+static const MoonNameIdMapping
+moonlight_settings_mapping [] = {
+	{ "background", MoonId_Background },
+	{ "enableframeratecounter", MoonId_EnableFramerateCounter },
+	{ "enableredrawregions", MoonId_EnableRedrawRegions },
+	{ "enablehtmlaccess", MoonId_EnableHtmlAccess },
+	{ "maxframerate", MoonId_MaxFrameRate },
+	{ "version", MoonId_Version },
+	{ "windowless", MoonId_Windowless }
 };
-
-static bool
-moonlight_settings_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return HAS_PROPERTY (moonlight_settings_properties, name);
-}
 
 static bool
 moonlight_settings_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 
-	if (name_matches (name, "background")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Background:
 		string_to_npvariant (plugin->getBackground (), result);
 		return true;
-	}
 
-	if (name_matches (name, "enableFramerateCounter")) {
+	case MoonId_EnableFramerateCounter:
 		BOOLEAN_TO_NPVARIANT (plugin->getEnableFramerateCounter (), *result);
 		return true;
-	}
 
-	if (name_matches (name, "enableRedrawRegions")) {
+	case MoonId_EnableRedrawRegions:
 		BOOLEAN_TO_NPVARIANT (plugin->getEnableRedrawRegions (), *result);
 		return true;
-	}
 
-	if (name_matches (name, "enableHtmlAccess")) {
+	case MoonId_EnableHtmlAccess:
 		BOOLEAN_TO_NPVARIANT (plugin->getEnableHtmlAccess (), *result);
 		return true;
-	}
 
 	// not implemented yet, just return 0.
-	if (name_matches (name, "maxFrameRate")) {
+	case MoonId_MaxFrameRate:
 		INT32_TO_NPVARIANT (0, *result);
 		return true;
-	}
 
-	if (name_matches (name, "version")) {
+	case MoonId_Version:
 		string_to_npvariant (PLUGIN_VERSION, result);
 		return true;
-	}
 
-	if (name_matches (name, "windowless")) {
+	case MoonId_Windowless:
 		BOOLEAN_TO_NPVARIANT (plugin->getWindowless (), *result);
 		return true;
-	}
 
-	return false;
+	default:
+		return false;
+	}
 }
 
 static bool
 moonlight_settings_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
-	if (name_matches (name, "background")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+
+	case MoonId_Background:
 		plugin->setBackground (NPVARIANT_TO_STRING (*value).utf8characters);
 		return true;
-	}
 
 	// Cant be set after initialization so return true
-	if (name_matches (name, "enableFramerateCounter")) {
+	case MoonId_EnableFramerateCounter:
 		return true;
-	}
-
-	if (name_matches (name, "enableRedrawRegions")) {
+ 
+	case MoonId_EnableRedrawRegions:
 		plugin->setEnableRedrawRegions (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
-	}
 
 	// Cant be set after initialization so return true
-	if (name_matches (name, "enableHtmlAccess")) {
+	case MoonId_EnableHtmlAccess:
 		return true;
-	}
 
 	// not implemented yet.
-	if (name_matches (name, "maxFrameRate")) {
+	case MoonId_MaxFrameRate:
 		DEBUG_WARN_NOTIMPLEMENTED ("maxFrameRate property");
 		return true;
-	}
 
 	// Cant be set after initialization so return true
-	if (name_matches (name, "windowless")) {
+	case MoonId_Windowless:
 		return true;
 	}
 
@@ -1338,7 +1514,8 @@ moonlight_settings_set_property (NPObject *npobj, NPIdentifier name, const NPVar
 
 MoonlightSettingsType::MoonlightSettingsType ()
 {
-	hasProperty = moonlight_settings_has_property;
+	SetMapping (moonlight_settings_mapping, COUNT (moonlight_settings_mapping));
+
 	getProperty = moonlight_settings_get_property;
 	setProperty = moonlight_settings_set_property;
 }
@@ -1372,33 +1549,30 @@ MoonlightContentObject::Dispose ()
 	errorProxy = NULL;
 }
 
-static const char *const
-moonlight_content_properties[] = {
-	"actualHeight", // read only
-	"actualWidth",  // read only
-	"fullScreen",   // read write
-	"onResize",
-	"onFullScreenChange",
-	"onError",
-	"root"
-};
-
-static const char *const
-moonlight_content_methods[] = {
-	"findName",
-	"createObject",
-	"createFromXaml",
-	"createFromXamlDownloader"
+static const MoonNameIdMapping
+moonlight_content_mapping[] = {
+	{ "actualheight", MoonId_ActualHeight },
+	{ "actualwidth", MoonId_ActualWidth },
+	{ "createfromxamldownloader", MoonId_CreateFromXamlDownloader },
+	{ "createfromxaml", MoonId_CreateFromXaml },
+	{ "createobject", MoonId_CreateObject },
+	{ "findname", MoonId_FindName },
+	{ "fullscreen", MoonId_FullScreen },
+	{ "onerror", MoonId_OnError },
+	{ "onfullscreenchange", MoonId_OnFullScreenChange },
+	{ "onresize", MoonId_OnResize },
+	{ "root", MoonId_Root },
 };
 
 static bool
 moonlight_content_has_property (NPObject *npobj, NPIdentifier name)
 {
-	if (HAS_PROPERTY (moonlight_content_properties, name))
+	if (MoonlightObjectClass->hasProperty (npobj, name))
 		return true;
 
 	MoonlightContentObject *content = (MoonlightContentObject*)npobj;
 
+	// XXX this is still case sensitive (uses a direct hash on the NPIdentifier)
 	gpointer p = g_hash_table_lookup (content->registered_scriptable_objects,
 					  name);
 
@@ -1406,29 +1580,27 @@ moonlight_content_has_property (NPObject *npobj, NPIdentifier name)
 }
 
 static bool
-moonlight_content_has_method (NPObject *npobj, NPIdentifier name)
-{
-	return HAS_METHOD (moonlight_content_methods, name);
-}
-
-static bool
 moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 
-	if (name_matches (name, "actualHeight")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+
+	case MoonId_ActualHeight:
 		INT32_TO_NPVARIANT (plugin->getActualHeight (), *result);
 		return true;
-	}
-	else if (name_matches (name, "actualWidth")) {
+
+	case MoonId_ActualWidth:
 		INT32_TO_NPVARIANT (plugin->getActualWidth (), *result);
 		return true;
-	}
-	else if (name_matches (name, "fullScreen")) {
+
+	case MoonId_FullScreen:
 		BOOLEAN_TO_NPVARIANT (plugin->surface->GetFullScreen (), *result);
 		return true;
-	}
-	else if (name_matches (name, "onResize")) {
+
+	case MoonId_OnResize: {
 		MoonlightContentObject* obj = (MoonlightContentObject*) npobj;
 		if (obj->resizeProxy == NULL)
 			NULL_TO_NPVARIANT (*result);
@@ -1436,7 +1608,8 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 			OBJECT_TO_NPVARIANT (obj->resizeProxy->GetCallbackAsNPObject (), *result);
 		return true;
 	}
-	else if (name_matches (name, "onFullScreenChange")) {
+
+	case MoonId_OnFullScreenChange: {
 		MoonlightContentObject* obj = (MoonlightContentObject*) npobj;
 		if (obj->fullScreenChangeProxy == NULL)
 			NULL_TO_NPVARIANT (*result);
@@ -1444,7 +1617,8 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 			OBJECT_TO_NPVARIANT (obj->fullScreenChangeProxy->GetCallbackAsNPObject (), *result);
 		return true;
 	}
-	else if (name_matches (name, "onError")) {
+
+	case MoonId_OnError: {
 		MoonlightContentObject* obj = (MoonlightContentObject *) npobj;
 		if (obj->errorProxy == NULL)
 			NULL_TO_NPVARIANT (*result);
@@ -1452,14 +1626,15 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 			OBJECT_TO_NPVARIANT (obj->errorProxy->GetCallbackAsNPObject (), *result);
 		return true;
 	}
-	else if (name_matches (name, "root")) {
+
+	case MoonId_Root: {
 		DependencyObject *top = plugin->surface->GetToplevel ();
 		MoonlightEventObjectObject *topobj = EventObjectCreateWrapper (((MoonlightObject *) npobj)->instance, top);
 
 		OBJECT_TO_NPVARIANT (topobj, *result);
 		return true;
 	}
-	else {
+	default: {
 		MoonlightContentObject *content = (MoonlightContentObject*)npobj;
 		MoonlightScriptableObjectObject *obj =
 			(MoonlightScriptableObjectObject*)g_hash_table_lookup (content->registered_scriptable_objects, name);
@@ -1470,17 +1645,22 @@ moonlight_content_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 		OBJECT_TO_NPVARIANT (obj, *result);
 		return true;
 	}
+	}
 }
 
 static bool
 moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
-	if (name_matches (name, "fullScreen")) {
+
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_FullScreen:
 		plugin->surface->SetFullScreen (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
-	}
-	else if (name_matches (name, "onResize")) {
+
+	case MoonId_OnResize: {
 		MoonlightContentObject *obj = (MoonlightContentObject *) npobj;
 
 		// If we have a handler, remove it.
@@ -1498,7 +1678,8 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 
 		return true;
 	}
-	else if (name_matches (name, "onFullScreenChange")) {
+
+	case MoonId_OnFullScreenChange: {
 		MoonlightContentObject *obj = (MoonlightContentObject *) npobj;
 
 		// If we have a handler, remove it.
@@ -1516,7 +1697,7 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 
 		return true;
 	}
-	else if (name_matches (name, "onError")) {
+	case MoonId_OnError: {
 		MoonlightContentObject *obj = (MoonlightContentObject *) npobj;
 
 		if (obj->errorProxy != NULL) {
@@ -1532,7 +1713,9 @@ moonlight_content_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 
 		return true;
 	}
-	return false;
+	default:
+		return false;
+	}
 }
 
 static bool
@@ -1541,7 +1724,10 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 	
-	if (name_matches (name, "findName")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_FindName: {
 		if (!argCount)
 			return true;
 		
@@ -1558,11 +1744,14 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		
 		OBJECT_TO_NPVARIANT (depobj, *result);
 		return true;
-	} else if (name_matches (name, "createObject")) {
+	}
+
+	case MoonId_CreateObject:
 		// not implemented yet
 		DEBUG_WARN_NOTIMPLEMENTED ("content.createObject");
 		return true;
-	} else if (name_matches (name, "createFromXaml")) {
+
+	case MoonId_CreateFromXaml: {
 		if (argCount < 1)
 			return true;
 
@@ -1583,7 +1772,9 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		OBJECT_TO_NPVARIANT (depobj, *result);
 
 		return true;
-	} else if (name_matches (name, "createFromXamlDownloader")) {
+	}
+
+	case MoonId_CreateFromXamlDownloader: {
 		NULL_TO_NPVARIANT (*result);
 
 		if (argCount < 2)
@@ -1614,18 +1805,21 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		return true;
 	}
 
-	return false;
+	default:
+		return false;
+	}
 }
 
 MoonlightContentType::MoonlightContentType ()
 {
 	allocate = moonlight_content_allocate;
 
+	SetMapping (moonlight_content_mapping, COUNT (moonlight_content_mapping));
+
 	hasProperty = moonlight_content_has_property;
 	getProperty = moonlight_content_get_property;
 	setProperty = moonlight_content_set_property;
 
-	hasMethod = moonlight_content_has_method;
 	invoke = moonlight_content_invoke;
 }
 
@@ -1635,21 +1829,21 @@ MoonlightContentType* MoonlightContentClass;
 
 /*** MoonlightDependencyObjectClass ***************************************************/
 
-static const char *const
-moonlight_dependency_object_methods [] = {
-	"getHost",
-	"getParent",
-	"captureMouse",
-	"releaseMouseCapture",
-	"addEventListener",
-	"removeEventListener",
-	"findName",
-	"setValue",
-	"getValue",
-	"toString",
+static const MoonNameIdMapping
+moonlight_dependency_object_mapping [] = {
+	{ "addeventlistener", MoonId_AddEventListener },
+	{ "capturemouse", MoonId_CaptureMouse },
+	{ "findname", MoonId_FindName },
+	{ "gethost", MoonId_GetHost },
+	{ "getparent", MoonId_GetParent },
+	{ "getvalue", MoonId_GetValue },
 #if DEBUG_JAVASCRIPT
-	"printf"
+	{ "printf", MoonId_Printf },
 #endif
+	{ "releasemousecapture", MoonId_ReleaseMouseCapture },
+	{ "removeeventlistener", MoonId_RemoveEventListener },
+	{ "setvalue", MoonId_SetValue },
+	{ "tostring", MoonId_ToString }
 };
 
 static NPObject*
@@ -1667,7 +1861,7 @@ MoonlightDependencyObjectObject::Dispose ()
 static DependencyProperty*
 _get_dependency_property (DependencyObject *obj, char *attrname)
 {
-	attrname[0] = toupper(attrname[0]);
+	// don't need to downcase here since dependency property lookup is already case insensitive
 	DependencyProperty *p = obj->GetDependencyProperty (attrname);
 
 	if (p)
@@ -1680,10 +1874,9 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 
 		Type* type = Type::Find (type_name);
 
-		if (type != NULL) {
-			attrname[0] = toupper (attrname[0]);
+		if (type != NULL)
 			p = dependency_property_lookup (type->type, attrname);
-		}
+
 		g_free (type_name);
 	}
 
@@ -1784,8 +1977,11 @@ moonlight_dependency_object_has_property (NPObject *npobj, NPIdentifier name)
 {
 	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
+	// don't need to downcase here since dependency property lookup is already case insensitive
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper(strname[0]);
+	if (!strname)
+		return false;
+
 	DependencyProperty *p = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
 
@@ -1795,10 +1991,13 @@ moonlight_dependency_object_has_property (NPObject *npobj, NPIdentifier name)
 static bool
 moonlight_dependency_object_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
+	// don't need to downcase here since dependency property lookup is already case insensitive
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	if (!strname)
+		return false;
+
 	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper(strname[0]);
 	DependencyProperty *p = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
 
@@ -1825,8 +2024,8 @@ moonlight_dependency_object_set_property (NPObject *npobj, NPIdentifier name, co
 {
 	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
+	// don't need to downcase here since dependency property lookup is already case insensitive
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper(strname[0]);
 	DependencyProperty *p = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
 
@@ -1837,30 +2036,26 @@ moonlight_dependency_object_set_property (NPObject *npobj, NPIdentifier name, co
 }
 
 static bool
-moonlight_dependency_object_has_method (NPObject *npobj, NPIdentifier name)
-{
-	return HAS_METHOD (moonlight_dependency_object_methods, name);
-}
-
-static bool
 moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 				    const NPVariant *args, uint32_t argCount,
 				    NPVariant *result)
 {
 	DependencyObject *dob = ((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
 #if DEBUG_JAVASCRIPT
 	// Some debug code...
 	// with this it is possible to do obj.printf ("msg") from js
-	if (name_matches (name, "printf")) {
+	case MoonId_Printf:
 		printf ("JS message: %s\n", NPVARIANT_TO_STRING (args [0]).utf8characters);
 		VOID_TO_NPVARIANT (*result);
 		return true;
-	}
 #endif
 
 
-	if (name_matches (name, "setValue")) {
+	case MoonId_SetValue:
 		/* obj.setValue (prop, val) is another way of writing obj[prop] = val (or obj.prop = val) */
 		if (argCount < 2
 		    || !NPVARIANT_IS_STRING (args[0])) {
@@ -1873,8 +2068,8 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		VOID_TO_NPVARIANT (*result);
 		return true;
-	}
-	else if (name_matches (name, "getValue")) {
+
+	case MoonId_GetValue:
 		if (argCount < 1 || !NPVARIANT_IS_STRING (args[0])) {
 			return true;
 		}
@@ -1883,8 +2078,8 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 							  NPID (NPVARIANT_TO_STRING (args[0]).utf8characters),
 							  result);
 		return true;
-	}
-	else if (name_matches (name, "findName")) {
+
+	case MoonId_FindName: {
 		if (!argCount)
 			return true;
 
@@ -1899,18 +2094,20 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		OBJECT_TO_NPVARIANT (depobj, *result);
 		return true;
 	}
-	else if (name_matches (name, "toString")) {
+
+	case MoonId_ToString:
 		string_to_npvariant (dob->GetTypeName(), result);
 		return true;
-	}
-	else if (name_matches (name, "getHost")) {
+
+	case MoonId_GetHost: {
 		PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
 
 		OBJECT_TO_NPVARIANT ((NPObject*)plugin->getRootObject(), *result);
 
 		return true;
 	}
-	else if (name_matches (name, "getParent")) {
+
+	case MoonId_GetParent: {
 		DependencyObject *parent = dob->GetParent();
 		if (parent)
 			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, parent), *result);
@@ -1919,7 +2116,8 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "addEventListener")) {
+
+	case MoonId_AddEventListener: {
 		if (argCount != 2)
 			return true;
 
@@ -1941,14 +2139,15 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 		g_free (name);
 
 		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPN_CreateObject (((MoonlightObject*)npobj)->instance,
-												   MoonlightEventListenerClass);
+												       MoonlightEventListenerClass);
 		res->proxy = proxy;
 		res->target = dob;
 
 		OBJECT_TO_NPVARIANT (res, *result);
 		return true;
 	}
-	else if (name_matches (name, "removeEventListener")) {
+
+	case MoonId_RemoveEventListener: {
 		if (argCount < 2)
 			return false;
 
@@ -1960,22 +2159,24 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
+
 	// XXX these next two methods should live in a UIElement
 	// wrapper class, not in the DependencyObject wrapper.
-	else if (name_matches (name, "captureMouse")) {
+	case MoonId_CaptureMouse:
 		BOOLEAN_TO_NPVARIANT (((UIElement*)dob)->CaptureMouse (), *result);
 		return true;
-	}
-	else if (name_matches (name, "releaseMouseCapture")) {
+
+	case MoonId_ReleaseMouseCapture:
 		((UIElement*)dob)->ReleaseMouseCapture ();
 
 		VOID_TO_NPVARIANT (*result);
 		return true;
-	}
-	else
+	
+	default:
 		return MoonlightObjectClass->invoke (npobj, name,
 						     args, argCount,
 						     result);
+	}
 }
 
 
@@ -1983,11 +2184,12 @@ MoonlightDependencyObjectType::MoonlightDependencyObjectType ()
 {
 	allocate = moonlight_dependency_object_allocate;
 
+	SetMapping (moonlight_dependency_object_mapping, COUNT (moonlight_dependency_object_mapping));
+
 	hasProperty = moonlight_dependency_object_has_property;
 	setProperty = moonlight_dependency_object_set_property;
 	getProperty = moonlight_dependency_object_get_property;
 
-	hasMethod = moonlight_dependency_object_has_method;
 	invoke    = moonlight_dependency_object_invoke;
 }
 
@@ -2038,18 +2240,6 @@ MoonlightEventObjectObject::SetEventObject (EventObject *eventobject)
 }
 
 static bool
-moonlight_event_object_has_property (NPObject *npobj, NPIdentifier name)
-{
-	return false;
-}
-
-static bool
-moonlight_event_object_has_method (NPObject *npobj, NPIdentifier name)
-{
-	return false;
-}
-
-static bool
 moonlight_event_object_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	return false;
@@ -2072,11 +2262,9 @@ MoonlightEventObjectType::MoonlightEventObjectType ()
 {
 	allocate = moonlight_event_object_allocate;
 
-	hasProperty = moonlight_event_object_has_property;
 	setProperty = moonlight_event_object_set_property;
 	getProperty = moonlight_event_object_get_property;
 
-	hasMethod = moonlight_event_object_has_method;
 	invoke    = moonlight_event_object_invoke;
 }
 
@@ -2154,25 +2342,21 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 
 /*** MoonlightCollectionClass ***************************************************/
 
-static const char *const
-moonlight_collection_properties [] = {
-	"count"
-};
-
-static const char *const
-moonlight_collection_methods [] = {
-	"add",
-	"remove",
-	"removeAt",
-	"insert",
-	"clear",
-	"getItem"
+static const MoonNameIdMapping
+moonlight_collection_mapping [] = {
+	{ "count", MoonId_Count },
+	{ "add", MoonId_Add },
+	{ "remove", MoonId_Remove },
+	{ "removeat", MoonId_RemoveAt },
+	{ "insert", MoonId_Insert },
+	{ "clear", MoonId_Clear },
+	{ "getitem", MoonId_GetItem }
 };
 
 static bool
 moonlight_collection_has_property (NPObject *npobj, NPIdentifier name)
 {
-	if (HAS_PROPERTY (moonlight_collection_properties, name))
+	if (MoonlightObjectClass->hasProperty (npobj, name))
 		return true;
 
 	return MoonlightDependencyObjectClass->hasProperty (npobj, name);
@@ -2183,24 +2367,18 @@ moonlight_collection_get_property (NPObject *npobj, NPIdentifier name, NPVariant
 {
 	Collection *col = (Collection*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "count")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Count:
 		INT32_TO_NPVARIANT (col->list->Length(), *result);
 		return true;
-	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->getProperty (npobj, name, result);
+	}
 }
 
-
-
-static bool
-moonlight_collection_has_method (NPObject *npobj, NPIdentifier name)
-{
-	if (HAS_METHOD (moonlight_collection_methods, name))
-		return true;
-
-	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
-}
 
 static bool
 moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
@@ -2209,7 +2387,10 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 {
 	Collection *col = (Collection*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "add")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Add: {
 		if (argCount < 1)
 			return true;
 
@@ -2220,7 +2401,8 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "remove")) {
+
+	case MoonId_Remove: {
 		if (argCount < 1)
 			return true;
 
@@ -2231,7 +2413,7 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "removeAt")) {
+	case MoonId_RemoveAt: {
 		if (argCount < 1)
 			return true;
 
@@ -2242,7 +2424,7 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "insert")) {
+	case MoonId_Insert: {
 		if (argCount < 2)
 			return true;
 
@@ -2255,7 +2437,7 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "clear")) {
+	case MoonId_Clear: {
 		if (argCount != 0)
 		  return true;
 
@@ -2265,7 +2447,7 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "getItem")) {
+	case MoonId_GetItem: {
 		if (argCount < 1)
 			return true;
 
@@ -2283,18 +2465,21 @@ moonlight_collection_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+	default:
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
+	}
 }
 
 
 MoonlightCollectionType::MoonlightCollectionType ()
 {
+	SetMapping (moonlight_collection_mapping, COUNT (moonlight_collection_mapping));
+
 	hasProperty = moonlight_collection_has_property;
 	getProperty = moonlight_collection_get_property;
-	hasMethod = moonlight_collection_has_method;
+
 	invoke = moonlight_collection_invoke;
 }
 
@@ -2303,24 +2488,15 @@ MoonlightCollectionType* MoonlightCollectionClass;
 
 /*** MoonlightStoryboardClass ***************************************************/
 
-static const char *const
-moonlight_storyboard_methods [] = {
-	"begin",
-	"pause",
-	"resume",
-	"seek",
-	"stop"
+static const MoonNameIdMapping
+moonlight_storyboard_mapping [] = {
+	{ "begin", MoonId_Begin },
+	{ "pause", MoonId_Pause },
+	{ "resume", MoonId_Resume },
+	{ "seek", MoonId_Seek },
+	{ "stop", MoonId_Stop }
 };
 
-
-static bool
-moonlight_storyboard_has_method (NPObject *npobj, NPIdentifier name)
-{
-	if (HAS_METHOD (moonlight_storyboard_methods, name))
-		return true;
-
-	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
-}
 
 static bool
 moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
@@ -2329,7 +2505,10 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 {
 	Storyboard *sb = (Storyboard*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "begin")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Begin:
 		if (argCount != 0)
 			return true;
 
@@ -2338,8 +2517,8 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "pause")) {
+
+	case MoonId_Pause:
 		if (argCount != 0)
 			return true;
 
@@ -2348,8 +2527,8 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "resume")) {
+
+	case MoonId_Resume:
 		if (argCount != 0)
 			return true;
 
@@ -2358,8 +2537,8 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "seek")) {
+
+	case MoonId_Seek: {
 		// XXX JS doesn't have 64bit ints?
 		if (argCount != 1 || !NPVARIANT_IS_INT32 (args[0]))
 			return true;
@@ -2371,7 +2550,8 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "stop")) {
+
+	case MoonId_Stop:
 		if (argCount != 0)
 			return true;
 
@@ -2380,16 +2560,18 @@ moonlight_storyboard_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
+	}
 }
 
 MoonlightStoryboardType::MoonlightStoryboardType ()
 {
-	hasMethod = moonlight_storyboard_has_method;
+	SetMapping (moonlight_storyboard_mapping, COUNT (moonlight_storyboard_mapping));
+
 	invoke = moonlight_storyboard_invoke;
 }
 
@@ -2397,23 +2579,13 @@ MoonlightStoryboardType* MoonlightStoryboardClass;
 
 /*** MoonlightMediaElementClass ***************************************************/
 
-static const char *const
-moonlight_media_element_methods [] = {
-	"stop",
-	"play",
-	"pause",
-	"setSource"
+static const MoonNameIdMapping
+moonlight_media_element_mapping [] = {
+	{ "stop", MoonId_Stop }, 
+	{ "play", MoonId_Play }, 
+	{ "pause", MoonId_Pause },
+	{ "setsource", MoonId_SetSource }
 };
-
-
-static bool
-moonlight_media_element_has_method (NPObject *npobj, NPIdentifier name)
-{
-	if (HAS_METHOD (moonlight_media_element_methods, name))
-		return true;
-
-	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
-}
 
 static bool
 moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
@@ -2422,7 +2594,10 @@ moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
 {
 	MediaElement *media = (MediaElement*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "play")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_Play:
 		if (argCount != 0)
 			return true;
 
@@ -2431,8 +2606,8 @@ moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "pause")) {
+
+	case MoonId_Pause:
 		if (argCount != 0)
 			return true;
 
@@ -2441,8 +2616,8 @@ moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "stop")) {
+
+	case MoonId_Stop:
 		if (argCount != 0)
 			return true;
 
@@ -2451,8 +2626,8 @@ moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "setSource")) {
+
+	case MoonId_SetSource: {
 		if (argCount != 2
 		    || !NPVARIANT_IS_OBJECT (args[0])
 		    || !NPVARIANT_IS_STRING (args[1]))
@@ -2467,15 +2642,18 @@ moonlight_media_element_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
+	}
 }
 
 MoonlightMediaElementType::MoonlightMediaElementType ()
 {
-	hasMethod = moonlight_media_element_has_method;
+	SetMapping (moonlight_media_element_mapping, COUNT (moonlight_media_element_mapping));
+
 	invoke = moonlight_media_element_invoke;
 }
 
@@ -2483,20 +2661,11 @@ MoonlightMediaElementType* MoonlightMediaElementClass;
 
 /*** MoonlightImageClass ***************************************************/
 
-static const char *const
-moonlight_image_methods [] = {
-	"setSource"
+static const MoonNameIdMapping
+moonlight_image_mapping [] = {
+	{ "setsource", MoonId_SetSource }
 };
 
-
-static bool
-moonlight_image_has_method (NPObject *npobj, NPIdentifier name)
-{
-	if (HAS_METHOD (moonlight_image_methods, name))
-		return true;
-
-	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
-}
 
 static bool
 moonlight_image_invoke (NPObject *npobj, NPIdentifier name,
@@ -2505,7 +2674,11 @@ moonlight_image_invoke (NPObject *npobj, NPIdentifier name,
 {
 	Image *img = (Image*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "setSource")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+
+	case MoonId_SetSource: {
 		if (argCount != 2
 		    || !NPVARIANT_IS_OBJECT (args[0])
 		    || !NPVARIANT_IS_STRING (args[1]))
@@ -2520,15 +2693,18 @@ moonlight_image_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
+	}
 }
 
 MoonlightImageType::MoonlightImageType ()
 {
-	hasMethod = moonlight_image_has_method;
+	SetMapping (moonlight_image_mapping, COUNT (moonlight_image_mapping));
+
 	invoke = moonlight_image_invoke;
 }
 
@@ -2536,20 +2712,11 @@ MoonlightImageType* MoonlightImageClass;
 
 /*** MoonlightImageBrushClass ***************************************************/
 
-static const char *const
-moonlight_image_brush_methods [] = {
-	"setSource"
+static const MoonNameIdMapping
+moonlight_image_brush_mapping [] = {
+	{ "setsource", MoonId_SetSource }
 };
 
-
-static bool
-moonlight_image_brush_has_method (NPObject *npobj, NPIdentifier name)
-{
-	if (HAS_METHOD (moonlight_image_brush_methods, name))
-		return true;
-
-	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
-}
 
 static bool
 moonlight_image_brush_invoke (NPObject *npobj, NPIdentifier name,
@@ -2558,7 +2725,11 @@ moonlight_image_brush_invoke (NPObject *npobj, NPIdentifier name,
 {
 	ImageBrush *img = (ImageBrush*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "setSource")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+
+	case MoonId_SetSource: {
 		if (argCount != 2
 		    || !NPVARIANT_IS_OBJECT (args[0])
 		    || !NPVARIANT_IS_STRING (args[1]))
@@ -2573,15 +2744,17 @@ moonlight_image_brush_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
+	}
 }
 
 MoonlightImageBrushType::MoonlightImageBrushType ()
 {
-	hasMethod = moonlight_image_brush_has_method;
+	SetMapping (moonlight_image_brush_mapping, COUNT (moonlight_image_brush_mapping));
 	invoke = moonlight_image_brush_invoke;
 }
 
@@ -2590,29 +2763,24 @@ MoonlightImageBrushType* MoonlightImageBrushClass;
 
 /*** MoonlightTextBlockClass ***************************************************/
 
-static const char *const
-moonlight_text_block_methods [] = {
-	"setFontSource"
+static const MoonNameIdMapping
+moonlight_text_block_mapping [] = {
+	{ "setfontsource", MoonId_SetFontSource }
 };
 
 
 static bool
-moonlight_text_block_has_method (NPObject *npobj, NPIdentifier name)
-{
-	if (HAS_METHOD (moonlight_text_block_methods, name))
-		return true;
-
-	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
-}
-
-static bool
 moonlight_text_block_invoke (NPObject *npobj, NPIdentifier name,
-			const NPVariant *args, uint32_t argCount,
-			NPVariant *result)
+			     const NPVariant *args, uint32_t argCount,
+			     NPVariant *result)
 {
 	TextBlock *tb = (TextBlock*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "setFontSource")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+
+	case MoonId_SetFontSource: {
 		if (argCount != 1
 		    || !NPVARIANT_IS_OBJECT (args[0]))
 			return true;
@@ -2625,15 +2793,18 @@ moonlight_text_block_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
+	}
 }
 
 MoonlightTextBlockType::MoonlightTextBlockType ()
 {
-	hasMethod = moonlight_text_block_has_method;
+	SetMapping (moonlight_text_block_mapping, COUNT (moonlight_text_block_mapping));
+
 	invoke = moonlight_text_block_invoke;
 }
 
@@ -2641,23 +2812,19 @@ MoonlightTextBlockType* MoonlightTextBlockClass;
 
 /*** MoonlightDownloaderClass ***************************************************/
 
-static const char *const
-moonlight_downloader_properties [] = {
-	"responseText"
-};
-
-static const char *const
-moonlight_downloader_methods [] = {
-	"abort",
-	"open",
-	"getResponseText",
-	"send"
+static const MoonNameIdMapping
+moonlight_downloader_mapping [] = {
+	{ "responsetext", MoonId_ResponseText },
+	{ "abort", MoonId_Abort },
+	{ "open", MoonId_Open },
+	{ "getresponsetext", MoonId_GetResponseText },
+	{ "send", MoonId_Send }
 };
 
 static bool
 moonlight_downloader_has_property (NPObject *npobj, NPIdentifier name)
 {
-	if (HAS_METHOD (moonlight_downloader_properties, name))
+	if (MoonlightObjectClass->hasProperty (npobj, name))
 		return true;
 
 	return MoonlightDependencyObjectClass->hasProperty (npobj, name);
@@ -2668,7 +2835,10 @@ moonlight_downloader_get_property (NPObject *npobj, NPIdentifier name, NPVariant
 {
 	Downloader *dl = (Downloader*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "responseText")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+	case MoonId_ResponseText: {
 		uint64_t size;
 		char* buf = (char*)downloader_get_response_text (dl, NULL, &size);
 
@@ -2683,17 +2853,10 @@ moonlight_downloader_get_property (NPObject *npobj, NPIdentifier name, NPVariant
 
 		return true;
 	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->getProperty (npobj, name, result);
-}
-
-static bool
-moonlight_downloader_has_method (NPObject *npobj, NPIdentifier name)
-{
-	if (HAS_METHOD (moonlight_downloader_methods, name))
-		return true;
-
-	return MoonlightDependencyObjectClass->hasMethod (npobj, name);
+	}
 }
 
 static bool
@@ -2703,7 +2866,11 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 {
 	Downloader *dl = (Downloader*)((MoonlightDependencyObjectObject*)npobj)->GetDependencyObject ();
 
-	if (name_matches (name, "abort")) {
+	int _id = LOOKUP_NAME ((MoonlightObject*)npobj, name);
+
+	switch (_id) {
+
+	case MoonId_Abort:
 		if (argCount != 0)
 			return true;
 
@@ -2712,8 +2879,8 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "open")) {
+
+	case MoonId_Open: {
 		if (argCount > 3)
 			return true;
 
@@ -2726,7 +2893,8 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else if (name_matches (name, "send")) {
+
+	case MoonId_Send:
 		if (argCount != 0)
 			return true;
 
@@ -2735,8 +2903,8 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 
 		return true;
-	}
-	else if (name_matches (name, "getResponseText")) {
+
+	case MoonId_GetResponseText: {
 		if (argCount != 1)
 			return true;
 
@@ -2756,17 +2924,20 @@ moonlight_downloader_invoke (NPObject *npobj, NPIdentifier name,
 
 		return true;
 	}
-	else
+
+	default:
 		return MoonlightDependencyObjectClass->invoke (npobj, name,
 							       args, argCount,
 							       result);
+	}
 }
 
 MoonlightDownloaderType::MoonlightDownloaderType ()
 {
+	SetMapping (moonlight_downloader_mapping, COUNT (moonlight_downloader_mapping));
+
 	hasProperty = moonlight_downloader_has_property;
 	getProperty = moonlight_downloader_get_property;
-	hasMethod = moonlight_downloader_has_method;
 	invoke = moonlight_downloader_invoke;
 }
 
@@ -2799,8 +2970,10 @@ moonlight_control_get_property (NPObject *npobj, NPIdentifier name, NPVariant *r
 	DependencyObject *real_object = ((MoonlightDependencyObjectObject*)control->real_object)->GetDependencyObject ();
 	DependencyProperty *p;
 
+	// don't need to downcase here since dependency property lookup is already case insensitive
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper(strname[0]);
+	if (!strname)
+		return false;
 
 	p = _get_dependency_property (real_object, strname);
 	if (!p)
@@ -2828,8 +3001,10 @@ moonlight_control_set_property (NPObject *npobj, NPIdentifier name, const NPVari
 	DependencyObject *real_object = ((MoonlightDependencyObjectObject*)control->real_object)->GetDependencyObject ();
 	DependencyProperty *p;
 
+	// don't need to downcase here since dependency property lookup is already case insensitive
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	strname[0] = toupper(strname[0]);
+	if (!strname)
+		return false;
 
 	p = _get_dependency_property (real_object, strname);
 	if (!p)
@@ -2876,6 +3051,9 @@ MoonlightControlType* MoonlightControlClass;
 
 
 /*** MoonlightScriptableObjectClass ***************************************************/
+
+// XXX the property/method hashes here are case sensitive
+
 struct ScriptableProperty {
 	gpointer property_handle;
 	int property_type;
@@ -3455,30 +3633,49 @@ browser_do_alert (PluginInstance *plugin, char *msg)
 void
 plugin_init_classes ()
 {
-	MoonlightCollectionClass = new MoonlightCollectionType ();
-	MoonlightContentClass = new MoonlightContentType ();
-	MoonlightControlClass = new MoonlightControlType ();
-	MoonlightEventObjectClass = new MoonlightEventObjectType ();
-	MoonlightDependencyObjectClass = new MoonlightDependencyObjectType ();
-	MoonlightDownloaderClass = new MoonlightDownloaderType ();
-	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
-	MoonlightImageBrushClass = new MoonlightImageBrushType ();
-	MoonlightImageClass = new MoonlightImageType ();
-	MoonlightMediaElementClass = new MoonlightMediaElementType ();
-	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
-	MoonlightKeyboardEventArgsClass = new MoonlightKeyboardEventArgsType ();
 	MoonlightObjectClass = new MoonlightObjectType ();
+	MoonlightContentClass = new MoonlightContentType ();
+	MoonlightEventObjectClass = new MoonlightEventObjectType ();
+	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
+	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
+	MoonlightMarkerReachedEventArgsClass = new MoonlightMarkerReachedEventArgsType ();
+	MoonlightKeyboardEventArgsClass = new MoonlightKeyboardEventArgsType ();
+
 	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightScriptableObjectClass = new MoonlightScriptableObjectType ();
 	MoonlightScriptControlClass = new MoonlightScriptControlType ();
 	MoonlightSettingsClass = new MoonlightSettingsType ();
-	MoonlightStoryboardClass = new MoonlightStoryboardType ();
-	MoonlightTextBlockClass = new MoonlightTextBlockType ();
 	MoonlightRectClass = new MoonlightRectType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 	MoonlightEventListenerClass = new MoonlightEventListenerType ();
-	MoonlightMarkerReachedEventArgsClass = new MoonlightMarkerReachedEventArgsType ();
+
+	MoonlightDependencyObjectClass = new MoonlightDependencyObjectType ();
+	MoonlightDependencyObjectClass->SetBase (MoonlightEventObjectClass);
+
+	MoonlightControlClass = new MoonlightControlType ();
+	MoonlightControlClass->SetBase (MoonlightDependencyObjectClass);
+
+	MoonlightCollectionClass = new MoonlightCollectionType ();
+	MoonlightCollectionClass->SetBase (MoonlightDependencyObjectClass);
+
+	MoonlightDownloaderClass = new MoonlightDownloaderType ();
+	MoonlightDownloaderClass->SetBase (MoonlightDependencyObjectClass);
+
+	MoonlightImageBrushClass = new MoonlightImageBrushType ();
+	MoonlightImageBrushClass->SetBase (MoonlightDependencyObjectClass);
+
+	MoonlightImageClass = new MoonlightImageType ();
+	MoonlightImageClass->SetBase (MoonlightDependencyObjectClass);
+
+	MoonlightMediaElementClass = new MoonlightMediaElementType ();
+	MoonlightMediaElementClass->SetBase (MoonlightDependencyObjectClass);
+
+	MoonlightStoryboardClass = new MoonlightStoryboardType ();
+	MoonlightStoryboardClass->SetBase (MoonlightDependencyObjectClass);
+
+	MoonlightTextBlockClass = new MoonlightTextBlockType ();
+	MoonlightTextBlockClass->SetBase (MoonlightDependencyObjectClass);
 }
 
 void

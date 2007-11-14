@@ -1,3 +1,15 @@
+2007-11-14  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: substantially rework the way
+	names are looked up.  remove 90% of the has_method/has_property
+	code, and move all the invoke/get_property/set_property to using
+	id's for their work instead of string comparisons.  also make the
+	string lookups case insensitive.  I don't much like the way
+	chaining is done (check out MoonlightObjectType::SetBase and
+	MoonlightObjectType::LookupName), but it's working for now, and
+	should be substantially faster (and easier to maintain) this way
+	than the naive conversion to case insensitivity.
+
 2007-11-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes for the Matrix demo.

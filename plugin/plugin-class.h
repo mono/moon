@@ -21,6 +21,11 @@
 void plugin_init_classes (void);
 void plugin_destroy_classes (void);
 
+typedef struct {
+	const char *name;
+	int id;
+} MoonNameIdMapping;
+
 /*** EventListenerProxy */
 typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *value);
 
@@ -60,6 +65,15 @@ extern "C" {
 
 struct MoonlightObjectType : NPClass {
 	MoonlightObjectType ();
+
+	void SetBase (MoonlightObjectType *base);
+	void SetMapping (const MoonNameIdMapping* mapping, int count);
+
+	int LookupName (NPIdentifier name);
+
+	const MoonNameIdMapping* mapping;
+	int mapping_count;
+	MoonlightObjectType *base;
 };
 
 extern MoonlightObjectType* MoonlightObjectClass;
@@ -71,13 +85,21 @@ struct MoonlightObject : public NPObject
 		this->instance = instance;
 		this->moonlight_type = Type::INVALID;
 		this->disposed = false;
+		this->last_lookup = NULL;
+		this->last_id = 0;
 	}
 	virtual void Dispose ();
 	virtual ~MoonlightObject ();
 
+
+	int LookupName (NPIdentifier name);
+
 	NPP instance;
 	Type::Kind moonlight_type;
 	bool disposed;
+
+	NPIdentifier last_lookup;
+	int last_id;
 };
 
 /*** MoonlightEventListenerObject ******************************************************/
@@ -223,7 +245,6 @@ struct MoonlightKeyboardEventArgsObject : MoonlightObject {
 	MoonlightKeyboardEventArgsObject (NPP instance)
 	  : MoonlightObject (instance), state (0), key (0), platformcode (0) { }
 
-	virtual void Dispose ();
 	int state;
 	int key;
 	int platformcode;
@@ -245,6 +266,8 @@ struct MoonlightContentType : MoonlightObjectType {
 	MoonlightContentType ();
 };
 
+extern MoonlightContentType* MoonlightContentClass;
+
 struct MoonlightContentObject : MoonlightObject {
 	MoonlightContentObject (NPP instance)
 	  : MoonlightObject (instance),
@@ -262,8 +285,6 @@ struct MoonlightContentObject : MoonlightObject {
 	EventListenerProxy *fullScreenChangeProxy;
 	EventListenerProxy *errorProxy;
 };
-
-extern MoonlightContentType* MoonlightContentClass;
 
 /*** MoonlightScriptControlClass **********************************************************/
 
