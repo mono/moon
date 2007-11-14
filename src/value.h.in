@@ -112,7 +112,9 @@ public:
 	gint32*		AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 
 /*DO_AS*/
-  
+
+	char *ToString ();
+
   	Type::Kind GetKind ();
 
 	void FreeValue ();

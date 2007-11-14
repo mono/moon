@@ -1,3 +1,7 @@
+2007-11-14  Jb Evain  <jbevain@novell.com>
+
+	* value.h.in: update code template to match current value.h.
+
 2007-11-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* openfile.cpp: Added support for Filter and FilterIndex.
