@@ -78,7 +78,7 @@ class MonoOpen {
 				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" +
 				   "   --parseonly     Only parse (don't display) the XAML input\n" + 
 				   "   --story N1[,Nx] Plays the storyboard name N1, N2, .. Nx when the clicked\n" +
-				   "   --stories       Automatically prepare to play all stories on click\n" + 
+				   "   -s,--stories    Automatically prepare to play all stories on click\n" + 
 				   "   --transparent   Transparent toplevel\n" 
 				   );
 	}
@@ -219,10 +219,12 @@ class MonoOpen {
 			};
 
 			canvas.MouseLeftButtonUp += delegate {
-				window.Title = String.Format ("Storyboard {0} running", current_storyboard);
-				Console.WriteLine ("ENTERING {0}", current_storyboard);
 				if (current_storyboard == storyboards.Count)
 					current_storyboard = 0;
+				if (current_storyboard == storyboards.Count)
+					return;
+				
+				window.Title = String.Format ("Storyboard {0} running", current_storyboard);
 				storyboards [current_storyboard++].Begin ();
 			};
 		}
@@ -316,6 +318,7 @@ class MonoOpen {
 				break;
 
 			case "--stories":
+			case "-s":
 				if (story_names == null)
 					story_names = new List<string> ();
 				all_stories = true;
