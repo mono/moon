@@ -579,7 +579,7 @@ point_allocate (NPP instance, NPClass *)
 static const MoonNameIdMapping
 point_mapping[] = {
 	{ "x", MoonId_X },
-	{ "y", MoonId_X }
+	{ "y", MoonId_Y }
 };
 
 
