@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "animation.h"
 #include "array.h"
+#include "point.h"
 
 /**
  * Value implementation
@@ -287,6 +288,78 @@ Value::FreeValue ()
 		if (GetKind () >= Type::DEPENDENCY_OBJECT && u.dependency_object)
 			u.dependency_object->unref ();
 	}
+}
+
+char *
+Value::ToString ()
+{
+	GString *str = g_string_new ("");
+	char *t = NULL;
+	
+	switch (k){
+	case Type::STRING:
+		g_string_append (str, u.s);
+		break;
+		
+	case Type::POINT_ARRAY: {
+		char *t = g_strdup_printf ("Points [] = { /* refcount = %d */ ", u.point_array->basic.refcount);
+		g_string_append (str, t);
+		g_free (t);
+		
+		for (uint i = 0; i < u.point_array->basic.refcount; i++)
+			g_string_append_printf (str, "(%g, %g), ", u.point_array->points [i].x, u.point_array->points [i].y);
+
+		g_string_append (str, "}");
+		break;
+	}
+	case Type::DOUBLE_ARRAY: {
+		t = g_strdup_printf ("double [] = { /* refcount = %d */ ", u.double_array->basic.refcount);
+		g_string_append (str, t);
+		g_free (t);
+		
+		for (uint i = 0; i < u.double_array->basic.refcount; i++)
+			g_string_append_printf (str, "%g,  ", u.double_array->values [i]);
+
+		g_string_append (str, "}");
+		break;
+	}		
+	case Type::MATRIX:
+		g_string_append_printf (str, "{ xx = %g, yx = %g, xy = %g, yy = %g, x0 = %g, y0 = %g }",
+					u.matrix->xx, u.matrix->yx, u.matrix->xy,
+					u.matrix->yy, u.matrix->x0, u.matrix->y0);
+		break;
+		
+	case Type::COLOR:
+		g_string_append_printf (str, "{%g/%g/%g/%g}", u.color->r, u.color->g, u.color->b, u.color->a);
+		break;
+	case Type::POINT:
+		g_string_append_printf (str, "{ %g, %g }", (u.point)->x, (u.point)->y);
+		break;
+	case Type::RECT:
+		g_string_append_printf (str, "{ x=%g, y=%g, w=%g, h=%g }", (u.rect)->x, (u.rect)->y, (u.rect)->w, (u.rect)->h);
+		break;
+	case Type::REPEATBEHAVIOR:
+		if (u.repeat->IsForever ())
+			g_string_append (str, "{repeat=forever}");
+		else if ((u.repeat)->HasDuration ())
+			g_string_append_printf (str, "{repeat=duration}");
+		else if ((u.repeat)->HasCount ())
+			g_string_append_printf (str, "{repeat=count %g}", (u.repeat)->GetCount ());
+		break;
+	case Type::DURATION:
+		g_string_append_printf (str, "{duration/TODO}");
+		break;
+	case Type::KEYTIME:
+		g_string_append_printf (str, "{keytime/TODO}");
+		break;
+	default:
+		if (k >= Type::DEPENDENCY_OBJECT && u.dependency_object)
+			g_string_append_printf (str, "[%s]", u.dependency_object->GetName ());
+		else
+			g_string_append_printf (str, "UnknownType");
+		break;
+	}
+	return g_string_free (str, FALSE);
 }
 
 //

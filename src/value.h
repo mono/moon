@@ -349,7 +349,8 @@ public:
 	VisualBrush*                   AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
 	VisualCollection*              AsVisualCollection () { checked_get_subclass (Type::VISUAL_COLLECTION, VisualCollection) }
 
-  
+	char *ToString ();
+	
   	Type::Kind GetKind ();
 
 	void FreeValue ();
