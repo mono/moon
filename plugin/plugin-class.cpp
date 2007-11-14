@@ -1917,12 +1917,8 @@ moonlight_dependency_object_invoke (NPObject *npobj, NPIdentifier name,
 	}
 	else if (name_matches (name, "getParent")) {
 		DependencyObject *parent = dob->GetParent();
-		if (parent) {
-			MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance,
-										       dob->GetParent());
-
-			OBJECT_TO_NPVARIANT (depobj, *result);
-		}
+		if (parent)
+			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, parent), *result);
 		else
 			NULL_TO_NPVARIANT (*result);
 
