@@ -198,7 +198,7 @@ public:
 				return v.u.s == NULL;
 			} else if (v.u.s == NULL)
 				return FALSE;
-			
+
 			return !strcmp (u.s, v.u.s);
 		}
 		else {
@@ -349,8 +349,9 @@ public:
 	VisualBrush*                   AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
 	VisualCollection*              AsVisualCollection () { checked_get_subclass (Type::VISUAL_COLLECTION, VisualCollection) }
 
+
 	char *ToString ();
-	
+
   	Type::Kind GetKind ();
 
 	void FreeValue ();
