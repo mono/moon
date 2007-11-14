@@ -46,8 +46,7 @@ UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
 void
 UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	printf ("GetTransformFor called on a non-container, you must implement this in your container\n");
-	exit (1);
+	g_warning ("GetTransformFor called on a non-container, you must implement this in your container\n");
 }
 
 UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE)
@@ -128,7 +127,12 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		UpdateTotalOpacity ();
 	}
 	else if (prop == UIElement::VisibilityProperty) {
-		switch (GetValue (prop)->AsInt32()) {
+		int v = GetValue (prop)->AsInt32();
+		switch (v) {
+		default:
+			/* note: invalid values should be trapped in SetValue (see bug #340799) */
+			g_warning ("Invalid value (%d) specified for UIElement::VisibilityProperty.", v);
+			/* continue as default (VisibilityVisible) */
 		case VisibilityVisible:
 			flags |= UIElement::RENDER_VISIBLE;
 			Invalidate ();
@@ -136,9 +140,6 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		case VisibilityCollapsed:
 			FullInvalidate (true);
 			flags &= ~UIElement::RENDER_VISIBLE;
-			break;
-		default:
-			g_assert_not_reached ();
 			break;
 		}
 	}

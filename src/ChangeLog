@@ -1,3 +1,12 @@
+2007-11-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* animation.cpp: Replaced g_assert_not_reached with g_warning.
+	At least until #340799 (enum validation) is fixed. Part of #335413
+	* shape.cpp: Add g_warning to replace the g_assert_not_reached 
+	removed earlier. At least until #340799 (enum validation) is fixed.
+	* uielement.cpp: Replaced g_assert_not_reached with g_warning.
+	At least until #340799 (enum validation) is fixed. Part of #335413
+
 2007-11-13  Miguel de Icaza  <miguel@novell.com>
 
 	* value.cpp (Value::ToString): Add method to help debug some

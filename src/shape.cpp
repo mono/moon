@@ -33,6 +33,7 @@ convert_line_join (PenLineJoin pen_line_join)
 	switch (pen_line_join) {
 	default:
 		/* note: invalid values should be trapped in SetValue (see bug #340799) */
+		g_warning ("Invalid value (%d) specified for PenLineJoin, using default.", pen_line_join);
 		/* at this stage we use the default value (Miter) for Shape */
 	case PenLineJoinMiter:
 		return CAIRO_LINE_JOIN_MITER;
@@ -49,6 +50,7 @@ convert_line_cap (PenLineCap pen_line_cap)
 	switch (pen_line_cap) {
 	default:
 		/* note: invalid values should be trapped in SetValue (see bug #340799) */
+		g_warning ("Invalid value (%d) specified for PenLineCap, using default.", pen_line_cap);
 		/* at this stage we use the default value (Flat) for Shape */
 	case PenLineCapFlat:
 		return CAIRO_LINE_CAP_BUTT;
@@ -66,6 +68,7 @@ convert_fill_rule (FillRule fill_rule)
 	switch (fill_rule) {
 	default:
 		/* note: invalid values should be trapped in SetValue (see bug #340799) */
+		g_warning ("Invalid value (%d) specified for FillRule, using default.", fill_rule);
 		/* at this stage we use the default value (EvenOdd) for Geometry */
 	case FillRuleEvenOdd:
 		return CAIRO_FILL_RULE_EVEN_ODD;

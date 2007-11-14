@@ -221,7 +221,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		break;
 	}
 	default:
-		g_assert_not_reached ();
+		g_warning ("Invalid object type (%d) for the specified clock", clock->GetObjectType ());
 		break;
 	}
 }
