@@ -1138,7 +1138,7 @@ PluginXamlLoader::TryLoad (int *error)
 }
 
 bool
-PluginXamlLoader::HookupEvent (void* target, const char* name, const char* value)
+PluginXamlLoader::HookupEvent (void *target, const char *name, const char *value)
 {
 	if (!XamlLoader::HookupEvent (target, name, value))
 		event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);

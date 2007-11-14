@@ -181,7 +181,7 @@ variant_to_value (const NPVariant *v, Value **result)
 	}
 }
 
-NPObject*
+NPObject *
 EventListenerProxy::GetCallbackAsNPObject ()
 {
 	g_assert (is_func);
@@ -195,7 +195,7 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 
 	this->is_func = false;
 	if (!strncmp (cb_name, "javascript:", strlen ("javascript:")))
-	  cb_name += strlen ("javascript:");
+		cb_name += strlen ("javascript:");
 	this->callback = g_strdup (cb_name);
 
 // 	printf ("returning event listener proxy from %s - > %s\n", event_name, cb_name);
@@ -209,9 +209,8 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	if (NPVARIANT_IS_OBJECT (*cb)) {
 		this->is_func = true;
 		this->callback = NPVARIANT_TO_OBJECT (*cb);
-		NPN_RetainObject ((NPObject*)this->callback);
-	}
-	else {
+		NPN_RetainObject ((NPObject *) this->callback);
+	} else {
 		this->is_func = false;
 		this->callback = g_strdup (NPVARIANT_TO_STRING (*cb).utf8characters);
 	}
@@ -219,9 +218,11 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 
 EventListenerProxy::~EventListenerProxy ()
 {
-	if (!is_func)
-		g_free ((char*)this->callback);
-
+	if (is_func)
+		NPN_ReleaseObject ((NPObject *) callback);
+	else
+		g_free (callback);
+	
 	g_free (event_name);
 }
 
@@ -294,12 +295,11 @@ EventListenerProxy::keyboard_event_wrapper (NPP instance, gpointer calldata, NPV
 void
 EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	EventListenerProxy *proxy = (EventListenerProxy*)closure;
-
+	EventListenerProxy *proxy = (EventListenerProxy *) closure;
+	EventObject *js_sender = sender;
 	NPVariant args[2];
 	NPVariant result;
-
-	EventObject *js_sender = sender;
+	
 	if (js_sender->GetObjectType () == Type::SURFACE) {
 		// This is somewhat hackish, but is required for
 		// the FullScreenChanged event (js expects the
@@ -309,28 +309,25 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 	}
 
 	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (proxy->instance, js_sender);
-
+	
 	OBJECT_TO_NPVARIANT (depobj, args[0]);
-
+	
 	EventArgsWrapper event_args_wrapper = get_wrapper_for_event_name (proxy->event_name);
-
-	//	printf ("proxying event %s to javascript, sender = %p (%s)\n", proxy->event_name, sender, ((EventObject*)sender)->GetTypeName());
-
+	
+	//printf ("proxying event %s to javascript, sender = %p (%s)\n", proxy->event_name, sender, sender->GetTypeName ());
+	
 	event_args_wrapper (proxy->instance, calldata, &args[1]);
-
+	
 	if (proxy->is_func) {
-	  //	  printf ("proxy->is_func\n");
 		/* the event listener was added with a JS function object */
-		if (NPN_InvokeDefault (proxy->instance, (NPObject*)proxy->callback, args, 2, &result))
+		if (NPN_InvokeDefault (proxy->instance, (NPObject *) proxy->callback, args, 2, &result))
 			NPN_ReleaseVariantValue (&result);
-	}
-	else {
-	  //	  printf ("!proxy->is_func\n");
+	} else {
 		/* the event listener was added with a JS string (the function name) */
 		NPObject *object = NULL;
-		if (NPERR_NO_ERROR == NPN_GetValue(proxy->instance, NPNVWindowNPObject, &object)) {
-			if (NPN_Invoke (proxy->instance, object, NPID ((char*)proxy->callback),
-					args, 2, &result))
+		
+		if (NPN_GetValue (proxy->instance, NPNVWindowNPObject, &object) == NPERR_NO_ERROR) {
+			if (NPN_Invoke (proxy->instance, object, NPID ((char *) proxy->callback), args, 2, &result))
 				NPN_ReleaseVariantValue (&result);
 		}
 	}
@@ -1543,39 +1540,38 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 			  const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) ((MoonlightObject*)npobj)->instance->pdata;
-
+	
 	if (name_matches (name, "findName")) {
 		if (!argCount)
 			return true;
-
+		
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
-
+		
 		if (!plugin->surface || !plugin->surface->GetToplevel())
 			return true;
-
+		
 		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
 		if (!element)
 			return true;
-
+		
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (((MoonlightObject*)npobj)->instance, element);
-
+		
 		OBJECT_TO_NPVARIANT (depobj, *result);
 		return true;
-	}
-	else if (name_matches (name, "createObject")) {
+	} else if (name_matches (name, "createObject")) {
 		// not implemented yet
 		DEBUG_WARN_NOTIMPLEMENTED ("content.createObject");
 		return true;
-	}
-	else if (name_matches (name, "createFromXaml")) {
+	} else if (name_matches (name, "createFromXaml")) {
 		if (argCount < 1)
 			return true;
 
 		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
-
+		bool create_namescope = argCount >= 2 ? NPVARIANT_TO_BOOLEAN (args[1]) : false;
+		
 		Type::Kind element_type;
 		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->surface);
-		DependencyObject *dep = xaml_create_from_str (loader, xaml, false, &element_type);
+		DependencyObject *dep = xaml_create_from_str (loader, xaml, create_namescope, &element_type);
 		delete loader;
 
 		MoonlightEventObjectObject *depobj = NULL;
@@ -1587,8 +1583,7 @@ moonlight_content_invoke (NPObject *npobj, NPIdentifier name,
 		OBJECT_TO_NPVARIANT (depobj, *result);
 
 		return true;
-	}
-	else if (name_matches (name, "createFromXamlDownloader")) {
+	} else if (name_matches (name, "createFromXamlDownloader")) {
 		NULL_TO_NPVARIANT (*result);
 
 		if (argCount < 2)
