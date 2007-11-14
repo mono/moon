@@ -1466,12 +1466,11 @@ strcase_equal (gconstpointer  v1,
 guint
 strcase_hash (gconstpointer v)
 {
-	char *case_v = g_strdup ((char*)v);
+	guint hash = 0;
+	char *p = (char *) v;
 
-	for (char *p = case_v; *p != 0; p ++)
-		*p = g_ascii_tolower (*p);
+	while (*p++)
+		hash = (hash << 5) - (hash + g_ascii_tolower (*p));
 
-	guint rv = g_str_hash (case_v);
-	g_free (case_v);
-	return rv;
+	return hash;
 }

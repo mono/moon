@@ -1,5 +1,11 @@
 2007-11-14  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (strcase_hash): swap this out for mono's eglib
+	implementation, augmented with g_ascii_tolower, to remove the
+	malloc/free and 2 passes over the string.
+
+2007-11-14  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.cpp: move the strcase_hash/equals functions...
 	
 	* runtime.cpp: here.
