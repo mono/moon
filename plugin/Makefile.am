@@ -70,16 +70,16 @@ endif INCLUDE_MONO_RUNTIME
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
 	-rm -f $@
 	-rm -rf .xpinstall/
-	mkdir -p .xpinstall/
-	cp -L $(srcdir)/install.js .xpinstall/
-	cp -L .libs/libmoonloader.so .xpinstall/
 	mkdir -p .xpinstall/moonlight/
-	cp -L .libs/libmoonplugin.so .xpinstall/moonlight/
-	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/moonlight/
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/moonlight/
 	cp -L $(swscale_libdir)/libswscale.so .xpinstall/moonlight/
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/moonlight/
 	cp -L $(avformat_libdir)/libavformat.so .xpinstall/moonlight/
+	find .xpinstall -name \*.so -exec strip '{}' ';'
+	cp -L $(srcdir)/install.js .xpinstall/
+	cp -L .libs/libmoonloader.so .xpinstall/
+	cp -L .libs/libmoonplugin.so .xpinstall/moonlight/
+	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/moonlight/
 if INCLUDE_MONO_RUNTIME
 	cp -L $(mono_libdir)/libmono.so .xpinstall/moonlight/
 	cp -L moonlight.exe .xpinstall/moonlight/

@@ -6,9 +6,9 @@ var CPU = "@target_cpu@";
 var LOADER = "libmoonloader.so";
 var DIR = "moonlight";
 
-var err = 0;
+var err = SUCCESS;
 
-err += initInstall(NAME, PLID, VERSION);
+err = initInstall(NAME, PLID, VERSION);
 
 var re = new RegExp("Linux .*" + CPU);
 if (!re.exec(platform)) {
@@ -19,15 +19,17 @@ if (!re.exec(platform)) {
 /* For some reason Mozilla can only tell us the global plugin directory,
  * so we have to guess it from the user's profile. */
 var plugins = getFolder("Profile", "../../plugins");
-err += addFile (PLID, VERSION, LOADER, plugins, null, true);
-err += addDirectory (PLID, VERSION, DIR, plugins, "moonlight", true);
+addFile (PLID, VERSION, LOADER, plugins, null, true);
+addDirectory (PLID, VERSION, DIR, plugins, "moonlight", true);
 
-if (err != 0) {
-	cancelInstall(err);
+if (err == SUCCESS) {
+	err = performInstall ();
+	if (err == SUCCESS)
+		refreshPlugins(true);
 } else {
-	err += performInstall ();
+	cancelInstall(err);
 }
 
-if (err == 0) {
+if (err == SUCCESS) {
 	alert("Succesfully installed " + NAME + " " + VERSION);
 }

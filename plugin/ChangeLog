@@ -1,3 +1,11 @@
+2007-11-14  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: strip the ffmpeg libs for the user plugin but do not
+	strip libmoon and libmono, will either add an option to strip those libs
+	later or just make that part of the release process.
+	* install.js.in: Cleaned up error handling and added a call to
+	refreshPlugins(), should make it so nobody has to restart firefox
+
 2007-11-13  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Use the mono_ddldir rather than assuming /usr/lib and
