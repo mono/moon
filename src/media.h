@@ -57,6 +57,8 @@ void media_base_set_source (MediaBase *media, const char *value);
 Stretch media_base_get_stretch (MediaBase *media);
 void    media_base_set_stretch (MediaBase *media, Stretch value);
 
+void   media_base_set_download_progress (MediaBase *media, double progress);
+double media_base_get_download_progress (MediaBase *media);
 
 class Image : public MediaBase {
 	bool create_xlib_surface;
@@ -122,8 +124,6 @@ class Image : public MediaBase {
 };
 
 Image *image_new (void);
-void   image_set_download_progress (Image *img, double progress);
-double image_get_download_progress (Image *img);
 void   image_set_source (Image *img, DependencyObject *Downloader, const char *PartName);
 
 class MediaSource {
@@ -290,9 +290,6 @@ void media_element_set_can_seek (MediaElement *media, bool value);
 
 char *media_element_get_current_state (MediaElement *media);
 void media_element_set_current_state (MediaElement *media, const char *value);
-
-double media_element_get_download_progress (MediaElement *media);
-void media_element_set_download_progress (MediaElement *media, double value);
 
 bool media_element_get_is_muted (MediaElement *media);
 void media_element_set_is_muted (MediaElement *media, bool value);

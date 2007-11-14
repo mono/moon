@@ -86,6 +86,18 @@ media_base_set_stretch (MediaBase *media, Stretch value)
 	media->SetValue (MediaBase::StretchProperty, Value (value));
 }
 
+void
+media_base_set_download_progress (MediaBase *media, double progress)
+{
+	media->SetValue (MediaBase::DownloadProgressProperty, Value (progress));
+}
+
+double
+media_base_get_download_progress (MediaBase *media)
+{
+	return media->GetValue (MediaBase::DownloadProgressProperty)->AsDouble ();
+}
+
 // MediaSource
 
 MediaSource::MediaSource (MediaElement *element, const char *source_name, const char *file_name)
@@ -1011,18 +1023,6 @@ media_element_set_current_state (MediaElement *media, const char *value)
 	media->SetValue (MediaElement::CurrentStateProperty, Value (value));
 }
 
-double
-media_element_get_download_progress (MediaElement *media)
-{
-	return (double) media->GetValue (MediaElement::DownloadProgressProperty)->AsDouble ();
-}
-
-void
-media_element_set_download_progress (MediaElement *media, double value)
-{
-	media->SetValue (MediaElement::DownloadProgressProperty, Value (value));
-}
-
 bool
 media_element_get_is_muted (MediaElement *media)
 {
@@ -1565,18 +1565,6 @@ Image *
 image_new (void)
 {
 	return new Image ();
-}
-
-void
-image_set_download_progress (Image *img, double progress)
-{
-	img->SetValue (Image::DownloadProgressProperty, Value(progress));
-}
-
-double
-image_get_download_progress (Image *img)
-{
-	return img->GetValue (Image::DownloadProgressProperty)->AsDouble();
 }
 
 void

@@ -1,5 +1,10 @@
 2007-11-14  Jb Evain  <jbevain@novell.com>
 
+	* media.cpp|h: remove specific Image and MediaElement
+	accessors for progress property now that the code
+	moved to MediaBase.
+2007-11-14  Jb Evain  <jbevain@novell.com>
+
 	* type.cpp.in, type.cpp, media.h, media.cpp: Move
 	DownloadProgressProperty and DownloadProgressChangedEvent
 	to MediaBase so it gets shared for both Image and MediaElement.
