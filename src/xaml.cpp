@@ -2580,7 +2580,6 @@ is_valid_event_name (const char *name)
 		!strcmp (name, "MarkerReached") ||
 		!strcmp (name, "Completed") ||
 		!strcmp (name, "DownloadFailed") ||
-		!strcmp (name, "DownloadProgressChanged") ||
 		!strcmp (name, "FullScreenChange") ||
 		!strcmp (name, "Resize") ||
 		!strcmp (name, "Completed") ||
