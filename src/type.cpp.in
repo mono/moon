@@ -73,7 +73,7 @@ void
 Type::RegisterEvent (const char *event_name)
 {
 	if (event_name_hash == NULL)
-		event_name_hash = g_hash_table_new (g_str_hash, g_str_equal);
+		event_name_hash = g_hash_table_new (strcase_hash, strcase_equal);
 
 	g_hash_table_insert (event_name_hash, g_strdup (event_name), GINT_TO_POINTER (local_event_count++));
 }
@@ -153,7 +153,7 @@ Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create
 		types = (Type**)calloc (Type::LASTTYPE, sizeof (Type*));
 	}
 	if (types_by_name == NULL) {
-		types_by_name = g_hash_table_new_full (g_str_hash, g_str_equal,
+		types_by_name = g_hash_table_new_full (strcase_hash, strcase_equal,
 						       NULL, free_type);
 	}
 

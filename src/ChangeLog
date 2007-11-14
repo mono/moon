@@ -1,3 +1,14 @@
+2007-11-14  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp: move the strcase_hash/equals functions...
+	
+	* runtime.cpp: here.
+
+	* runtime.h: and make them public.
+
+	* type.cpp.in, type.cpp (RegisterEvent): and use them here
+	(RegisterType): and here.
+
 2007-11-14  Jb Evain  <jbevain@novell.com>
 
 	* media.cpp|h: remove specific Image and MediaElement

@@ -1455,3 +1455,23 @@ runtime_shutdown ()
 	
 
 }
+
+gboolean
+strcase_equal (gconstpointer  v1,
+	       gconstpointer  v2)
+{
+	return !g_strcasecmp ((char*)v1, (char*)v2);
+}
+
+guint
+strcase_hash (gconstpointer v)
+{
+	char *case_v = g_strdup ((char*)v);
+
+	for (char *p = case_v; *p != 0; p ++)
+		*p = g_ascii_tolower (*p);
+
+	guint rv = g_str_hash (case_v);
+	g_free (case_v);
+	return rv;
+}

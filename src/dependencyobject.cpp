@@ -18,6 +18,7 @@
 #include "collection.h"
 #include "dependencyobject.h"
 #include "clock.h"
+#include "runtime.h"
 
 #if OBJECT_TRACKING
 // Define the ID of the object you want to track
@@ -722,26 +723,6 @@ DependencyObject::RegisterNullable (Type::Kind type, const char *name, Type::Kin
 	property = Register (type, name, vtype);
 	property->is_nullable = true;
 	return property;
-}
-
-static gboolean
-strcase_equal (gconstpointer  v1,
-	       gconstpointer  v2)
-{
-	return !g_strcasecmp ((char*)v1, (char*)v2);
-}
-
-static guint
-strcase_hash (gconstpointer v)
-{
-	char *case_v = g_strdup ((char*)v);
-
-	for (char *p = case_v; *p != 0; p ++)
-		*p = g_ascii_tolower (*p);
-
-	guint rv = g_str_hash (case_v);
-	g_free (case_v);
-	return rv;
 }
 
 //
