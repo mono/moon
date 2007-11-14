@@ -139,7 +139,7 @@ table_add (GtkWidget *table, const char *txt, int col, int row)
 static GtkWidget *
 title (const char *txt)
 {
-	char *fmt = g_strdup_printf ("<b>%s</b>", txt, NULL);
+	char *fmt = g_strdup_printf ("<b>%s</b>", txt);
 	GtkWidget *label = gtk_label_new (NULL);
 
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
