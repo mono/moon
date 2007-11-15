@@ -91,7 +91,7 @@ void	drawing_attributes_set_width (DrawingAttributes* da, double width);
 
 class Stroke : public DependencyObject {
  public:
-	Stroke () { }
+	Stroke ();
 	virtual ~Stroke () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::STROKE; };
@@ -109,7 +109,7 @@ void stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection
 
 class InkPresenter : public Canvas {
  public:
-	InkPresenter () { }
+	InkPresenter ();
 	virtual ~InkPresenter () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
