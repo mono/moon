@@ -1553,8 +1553,8 @@ static const MoonNameIdMapping
 moonlight_content_mapping[] = {
 	{ "actualheight", MoonId_ActualHeight },
 	{ "actualwidth", MoonId_ActualWidth },
-	{ "createfromxamldownloader", MoonId_CreateFromXamlDownloader },
 	{ "createfromxaml", MoonId_CreateFromXaml },
+	{ "createfromxamldownloader", MoonId_CreateFromXamlDownloader },
 	{ "createobject", MoonId_CreateObject },
 	{ "findname", MoonId_FindName },
 	{ "fullscreen", MoonId_FullScreen },
@@ -2814,10 +2814,10 @@ MoonlightTextBlockType* MoonlightTextBlockClass;
 
 static const MoonNameIdMapping
 moonlight_downloader_mapping [] = {
-	{ "responsetext", MoonId_ResponseText },
 	{ "abort", MoonId_Abort },
 	{ "open", MoonId_Open },
 	{ "getresponsetext", MoonId_GetResponseText },
+	{ "responsetext", MoonId_ResponseText },
 	{ "send", MoonId_Send }
 };
 
