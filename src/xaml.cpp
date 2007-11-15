@@ -1459,7 +1459,7 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 			errno = 0;
 			double d = g_ascii_strtod (str, &endptr);
 
-			if (errno || endptr == str || *endptr)
+			if (errno || endptr == str)
 				return false;
 
 			*res = RepeatBehavior (d);
