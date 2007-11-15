@@ -1,5 +1,10 @@
 2007-11-15  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Make sure the entire string is validate ie no 25.0XXXX
+	for doubles.
+
+2007-11-15  Jackson Harper  <jackson@ximian.com>
+
 	* point.h|cpp:
 	* rect.h|cpp: Update signatures to allow for error checking when
 	creating types from strings.

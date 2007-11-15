@@ -1459,7 +1459,7 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 			errno = 0;
 			double d = g_ascii_strtod (str, &endptr);
 
-			if (errno || endptr == str)
+			if (errno || endptr == str || *endptr)
 				return false;
 
 			*res = RepeatBehavior (d);
@@ -2344,7 +2344,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		errno = 0;
 		d = g_ascii_strtod (str, &endptr);
 
-		if (errno || endptr == str)
+		if (errno || endptr == str || *endptr)
 			return NULL;
 
 		v = new Value (d);
@@ -2356,7 +2356,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		errno = 0;
 		l = strtol (str, &endptr, 10);
 
-		if (errno || endptr == str)
+		if (errno || endptr == str || *endptr)
 			return NULL;
 
 		v = new Value (l, Type::INT64);
@@ -2385,7 +2385,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 			errno = 0;
 			long l = strtol (str, &endptr, 10);
 
-			if (errno || endptr == str)
+			if (errno || endptr == str || *endptr)
 				return NULL;
 
 			i = (int) l;
