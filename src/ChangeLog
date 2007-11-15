@@ -1,5 +1,9 @@
 2007-11-15  Jackson Harper  <jackson@ximian.com>
 
+	* color.h: Add equality operators.
+
+2007-11-15  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: use isalpha for determining whether or not an int32 is
 	an enum.  This allows things like -1 to work.
 

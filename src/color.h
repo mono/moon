@@ -62,6 +62,16 @@ struct Color {
 			      b * v,
 			      a * v);
 	}
+
+	bool operator!= (const Color &v) const
+	{
+		return (r != v.r || g != v.g || b != v.b || a != v.a);
+	}
+
+	bool operator== (const Color &v) const
+	{
+		return (r == v.r && g == v.g && b == v.b && a == v.a);
+	}
 };
 
 G_BEGIN_DECLS
