@@ -2374,7 +2374,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 	case Type::INT32: {
 		int i;
 
-		if (!isdigit (str [0]) && prop_name) {
+		if (isalpha (str [0]) && prop_name) {
 			enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, prop_name);
 
 			if (emu)

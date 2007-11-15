@@ -1,5 +1,10 @@
 2007-11-15  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: use isalpha for determining whether or not an int32 is
+	an enum.  This allows things like -1 to work.
+
+2007-11-15  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Make sure the entire string is validate ie no 25.0XXXX
 	for doubles.
 
