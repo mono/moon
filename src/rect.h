@@ -149,7 +149,7 @@ public:
      
 G_BEGIN_DECLS
 
-Rect rect_from_str (const char *s);
+bool rect_from_str (const char *s, Rect *r);
 Rect bounding_rect_for_transformed_rect (cairo_matrix_t *transform, Rect r);
 
 G_END_DECLS

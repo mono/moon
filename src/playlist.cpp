@@ -462,17 +462,23 @@ PlaylistParser::on_text (gpointer user_data, const char *data, int len)
 		parser->AssertParentKind (Asx | Entry);
 		parser->GetCurrentContent ()->SetCopyright (g_strndup (data, len));
 		break;
-	case Duration:
+	case Duration: {
 		parser->AssertParentKind (Entry);
-		parser->GetCurrentEntry ()->SetDuration (timespan_from_str (g_strndup (data, len)));
+		TimeSpan ts;
+		time_span_from_str (g_strndup (data, len), &ts);
+		parser->GetCurrentEntry ()->SetDuration (ts);
 		break;
+	}
 	case Entry:
 		parser->AssertParentKind (Asx);
 		break;
-	case StartTime:
+	case StartTime: {
 		parser->AssertParentKind (Entry);
-		parser->GetCurrentEntry ()->SetStartTime (timespan_from_str (g_strndup (data, len)));
+		TimeSpan ts;
+		time_span_from_str (g_strndup (data, len), &ts);
+		parser->GetCurrentEntry ()->SetStartTime (ts);
 		break;
+	}
 	case Title:
 		parser->AssertParentKind (Asx | Entry);
 		parser->GetCurrentContent ()->SetTitle (g_strndup (data, len));

@@ -1,5 +1,15 @@
 2007-11-15  Jackson Harper  <jackson@ximian.com>
 
+	* point.h|cpp:
+	* rect.h|cpp: Update signatures to allow for error checking when
+	creating types from strings.
+	* xaml.h|cpp: Consolidate code to create values from strings, add
+	some error checking.  Update most of the parsing methods so it is
+	possible to return errors when parsing.
+	* playlist.cpp: Sig update.
+	
+2007-11-15  Jackson Harper  <jackson@ximian.com>
+
 	* stylus.h|cpp: Initialize these collections so we don't get NULLs
 	for GetValue on them.
 

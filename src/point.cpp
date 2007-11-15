@@ -15,14 +15,18 @@
 #include "array.h"
 #include "point.h"
 
-Point
-point_from_str (const char *s)
+bool
+point_from_str (const char *s, Point *p)
 {
 	GArray *values = double_garray_from_str (s, 2);
-	Point p = Point (g_array_index (values, double, 0), g_array_index (values, double, 1));
+
+	if (!values)
+		return false;
+
+	*p = Point (g_array_index (values, double, 0), g_array_index (values, double, 1));
 
 	g_array_free (values, true);
 
-	return p;
+	return true;
 }
 

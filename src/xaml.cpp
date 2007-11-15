@@ -60,7 +60,7 @@ void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *i
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
 XamlElementInstance *create_custom_element (XamlParserInfo *p, XamlElementInfo *i);
-void  set_custom_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
+void  custom_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void  custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 
@@ -349,7 +349,6 @@ class CustomNamespace : public XamlNamespace {
 	CustomNamespace (char *xmlns) :
 		xmlns (xmlns)
 	{
-
 	}
 
 	virtual ~CustomNamespace () { }
@@ -368,7 +367,7 @@ class CustomNamespace : public XamlNamespace {
 		CustomElementInfo *info = new CustomElementInfo (g_strdup (el), NULL, dob->GetObjectType ());
 
 		info->create_element = create_custom_element;
-		info->set_attributes = dependency_object_set_attributes;
+		info->set_attributes = custom_set_attributes;
 		info->add_child = custom_add_child;
 		info->set_property = custom_set_property;
 		info->dependency_object = dob;
@@ -638,8 +637,9 @@ create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
 }
 
 void
-set_custom_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
+custom_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
+	dependency_object_set_attributes (p, item, attr);
 }
 
 void
@@ -1387,8 +1387,8 @@ parse_ticks (const char **pp, const char *end)
 	return res;
 }
 
-gint64
-timespan_from_str (const char *str)    
+bool
+time_span_from_str (const char *str, TimeSpan *res)    
 {
 	const char *end = str + strlen (str);
 	const char *p;
@@ -1432,16 +1432,18 @@ timespan_from_str (const char *str)
 	gint64 t = (days * 86400) + (hours * 3600) + (minutes * 60) + seconds;
 	t *= 10000000L;
 
-	t = negative ? (-t - ticks) : (t + ticks);
+	*res = negative ? (-t - ticks) : (t + ticks);
 
-	return t;
+	return true;
 }
 
-RepeatBehavior
-repeat_behavior_from_str (const char *str)
+bool
+repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 {
-	if (!g_strcasecmp ("Forever", str))
-		return RepeatBehavior::Forever;
+	if (!g_strcasecmp ("Forever", str)) {
+		*res = RepeatBehavior::Forever;
+		return true;
+	}
 
 	// check for "<float>x".
 
@@ -1450,56 +1452,98 @@ repeat_behavior_from_str (const char *str)
 	char *x = strchr (str, 'x');
 	if (x) {
 		if (*(x + 1) != '\0') {
-			printf ("invalid repeat behavior\n");
-			return RepeatBehavior (0.0);
+			return false;
 		}
 		else {
-			return RepeatBehavior (g_ascii_strtod (str, NULL));
+			char *endptr;
+			errno = 0;
+			double d = g_ascii_strtod (str, &endptr);
+
+			if (errno || endptr == str)
+				return false;
+
+			*res = RepeatBehavior (d);
+			return true;
 		}
 	}
 
-	// anything else is a timespan
-	return RepeatBehavior (timespan_from_str (str));
+	TimeSpan t;
+	if (!time_span_from_str (str, &t))
+		return false;
+
+	*res = RepeatBehavior (t);
+	return true;
 }
 
-Duration
-duration_from_str (const char *str)
+bool
+duration_from_str (const char *str, Duration *res)
 {
-	if (!g_strcasecmp ("Automatic", str))
-		return Duration::Automatic;
-	if (!g_strcasecmp ("Forever", str))
-		return Duration::Forever;
-	return Duration (timespan_from_str (str));
+	if (!g_strcasecmp ("Automatic", str)) {
+		*res = Duration::Automatic;
+		return true;
+	}
+
+	if (!g_strcasecmp ("Forever", str)) {
+		*res = Duration::Forever;
+		return true;
+	}
+
+	TimeSpan ts;
+	if (!time_span_from_str (str, &ts))
+		return false;
+
+	*res = Duration (ts);
+	return true;
 }
 
-KeyTime
-keytime_from_str (const char* str)
+bool
+keytime_from_str (const char* str, KeyTime *res)
 {
-	if (!g_strcasecmp ("Uniform", str))
-		return KeyTime::Uniform;
-	if (!g_strcasecmp ("Paced", str))
-		return KeyTime::Paced;
+	if (!g_strcasecmp ("Uniform", str)) {
+		*res = KeyTime::Uniform;
+		return true;
+	}
+
+	if (!g_strcasecmp ("Paced", str)) {
+		*res = KeyTime::Paced;
+		return true;
+	}
+
 	/* check for a percentage first */
 	const char *last = str + strlen(str) - 1;
 	if (*last == '%') {
 		char *ep;
 		double pct = g_ascii_strtod (str, &ep);
-		if (ep == last)
-			return KeyTime (pct);
+		if (ep == last) {
+			*res = KeyTime (pct);
+			return true;
+		}
 	}
-	return KeyTime (timespan_from_str (str));
+
+	TimeSpan ts;
+	if (!time_span_from_str (str, &ts))
+		return false;
+
+	*res = KeyTime (ts);
+	return true;
 }
 
-KeySpline *
-key_spline_from_str (const char *str)
+bool
+key_spline_from_str (const char *str, KeySpline **res)
 {
 	int count = 0;
 	Point *pts = point_array_from_str (str, &count);
-	KeySpline *res = new KeySpline (pts [0], pts [1]);
+
+	if (!pts || count != 2) {
+		delete pts;
+		return false;
+	}
+
+	*res = new KeySpline (pts [0], pts [1]);
 	
 	delete [] pts;
 	
-	return res;
+	return true;
 }
 
 // sepcial case, we return a Value, to avoid allocating/freeing a Matrix
@@ -1510,6 +1554,10 @@ matrix_value_from_str (const char *str)
 	int count = 0;
 	
 	double *values = double_array_from_str (str, &count);
+
+	if (!values)
+		return false;
+
 	if (count == 6) {
 		matrix.xx = values [0];
 		matrix.yx = values [1];
@@ -1517,8 +1565,10 @@ matrix_value_from_str (const char *str)
 		matrix.yy = values [3];
 		matrix.x0 = values [4];
 		matrix.y0 = values [5];
-	} else
-		cairo_matrix_init_identity (&matrix);
+	} else {
+		delete [] values;
+		return NULL;
+	}
 	
 	delete [] values;
 	
@@ -2257,7 +2307,8 @@ enum_map_t visibility_map [] = {
 	{ NULL, 0 },
 };
 
-int enum_from_str (const enum_map_t *emu, const char *str)
+int
+enum_from_str (const enum_map_t *emu, const char *str)
 {
 	for (int i = 0; emu [i].name; i++) {
 		if (!g_strcasecmp (emu [i].name, str))
@@ -2265,6 +2316,212 @@ int enum_from_str (const enum_map_t *emu, const char *str)
 	}
 
 	return (int) strtol (str, NULL, 10);
+}
+
+// Will return an INVALID value if there are any errors
+Value *
+value_from_str (Type::Kind type, const char *prop_name, const char *str)
+{
+	Value *v;
+	char *endptr;
+
+	switch (type) {
+	case Type::BOOL: {
+		bool b;
+		if (!g_strcasecmp ("true", str))
+			b = true;
+		else if (!g_strcasecmp ("false", str))
+			b = false;
+		else
+			return NULL;
+
+		v = new Value (b);
+		break;
+	}
+	case Type::DOUBLE: {
+		double d;
+
+		errno = 0;
+		d = g_ascii_strtod (str, &endptr);
+
+		if (errno || endptr == str)
+			return NULL;
+
+		v = new Value (d);
+		break;
+	}
+	case Type::INT64: {
+		gint64 l;
+
+		errno = 0;
+		l = strtol (str, &endptr, 10);
+
+		if (errno || endptr == str)
+			return NULL;
+
+		v = new Value (l, Type::INT64);
+		break;
+	}
+	case Type::TIMESPAN: {
+		TimeSpan ts;
+
+		if (!time_span_from_str (str, &ts))
+			return NULL;
+
+		v = new Value (ts, Type::TIMESPAN);
+		break;
+	}
+	case Type::INT32: {
+		int i;
+
+		if (!isdigit (str [0]) && prop_name) {
+			enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, prop_name);
+
+			if (emu)
+				i = enum_from_str (emu, str);
+			else
+				return NULL;
+		} else {
+			errno = 0;
+			long l = strtol (str, &endptr, 10);
+
+			if (errno || endptr == str)
+				return NULL;
+
+			i = (int) l;
+		}
+
+		v = new Value (i);
+		break;
+	}
+	case Type::STRING: {
+		//v = new Value (str);
+		return new Value (str);
+		break;
+	}
+	case Type::COLOR: {
+		Color *c = color_from_str (str);
+		v = new Value (*c);
+		delete c;
+		break;
+	}
+	case Type::REPEATBEHAVIOR: {
+		RepeatBehavior rb = RepeatBehavior::Forever;
+
+		if (!repeat_behavior_from_str (str, &rb))
+			return NULL;
+
+		v = new Value (rb);
+		break;
+	}
+	case Type::DURATION: {
+		Duration d = Duration::Forever;
+
+		if (!duration_from_str (str, &d))
+			return NULL;
+
+		v = new Value (d);
+		break;
+	}
+	case Type::KEYTIME: {
+		KeyTime kt = KeyTime::Paced;
+
+		if (!keytime_from_str (str, &kt))
+			return NULL;
+
+		v = new Value (kt);
+		break;
+	}
+	case Type::KEYSPLINE: {
+		KeySpline *ks;
+
+		if (!key_spline_from_str (str, &ks))
+			return NULL;
+
+		v = Value::CreateUnrefPtr (ks);
+		break;
+	}
+	case Type::BRUSH:
+	case Type::SOLIDCOLORBRUSH: {
+		// Only solid color brushes can be specified using attribute syntax
+		SolidColorBrush *scb = solid_color_brush_new ();
+		Color *c = color_from_str (str);
+		solid_color_brush_set_color (scb, c); // copies c
+		delete c;
+		v = new Value (scb);
+		scb->unref ();
+		break;
+	}
+	case Type::POINT: {
+		Point p;
+
+		if (!point_from_str (str, &p))
+			return NULL;
+
+		v = new Value (p);
+		break;
+	}
+	case Type::RECT: {
+		Rect rect;
+
+		if (!rect_from_str (str, &rect))
+			return NULL;
+
+		v = new Value (rect);
+		break;
+	}
+	case Type::DOUBLE_ARRAY: {
+		int count = 0;
+		double *doubles = double_array_from_str (str, &count);
+
+		if (!doubles)
+			return NULL;
+
+		v = new Value (doubles, count);
+		break;
+	}
+	case Type::POINT_ARRAY:	{
+		int count = 0;
+		Point *points = point_array_from_str (str, &count);
+
+		if (!points)
+			return NULL;
+
+		v = new Value (points, count);
+		break;
+	}
+	case Type::TRANSFORM: {
+		Value *mv = matrix_value_from_str (str);
+
+		if (!mv)
+			return NULL;
+
+		MatrixTransform *t = new MatrixTransform ();
+		t->SetValue (MatrixTransform::MatrixProperty, mv->AsMatrix ());
+
+		v = new Value (t);
+		t->unref ();
+		break;
+	}
+	case Type::MATRIX: {
+		return matrix_value_from_str (str);
+		break;
+	}
+	case Type::GEOMETRY: {
+		Geometry *geometry = geometry_from_str (str);
+
+		if (!geometry)
+			return NULL;
+
+		v = new Value (geometry);
+		geometry->unref ();
+		break;
+	}
+	default:
+		return NULL;
+	}
+
+	return v;
 }
 
 XamlElementInstance *
@@ -2456,115 +2713,16 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 /// set attributes funcs
 ///
 
-void
+bool
 xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
 {
-	switch (prop->value_type) {
-	case Type::BOOL:
-		obj->SetValue (prop, Value ((bool) !g_strcasecmp ("true", value)));
-		break;
-	case Type::DOUBLE:
-		obj->SetValue (prop, Value ((double) g_ascii_strtod (value, NULL)));
-		break;
-	case Type::INT64:
-		obj->SetValue (prop, Value ((gint64) strtol (value, NULL, 10), Type::INT64));
-		break;
-	case Type::TIMESPAN:
-		obj->SetValue (prop, Value (timespan_from_str (value), Type::TIMESPAN));
-		break;
-	case Type::INT32:
-	{
-		// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
-		int val;
-		enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, prop->name);
+	Value *v = value_from_str (prop->value_type, prop->name, value);
 
-		if (emu)
-			val = enum_from_str (emu, value);
-		else
-			val = (int) strtol (value, NULL, 10);
-		obj->SetValue (prop, Value (val));
-		break;
-	}
-	case Type::STRING:
-		obj->SetValue (prop, Value (value));
-		break;
-	case Type::COLOR:
-	{
-		Color *c = color_from_str (value);
-		obj->SetValue (prop, Value (*c));
-		delete c;
-		break;
-	}
-	case Type::REPEATBEHAVIOR:
-		obj->SetValue (prop, Value (repeat_behavior_from_str (value)));
-		break;
-	case Type::DURATION:
-		obj->SetValue (prop, Value (duration_from_str (value)));
-		break;
-	case Type::KEYTIME:
-		obj->SetValue (prop, Value (keytime_from_str (value)));
-		break;
-	case Type::KEYSPLINE:
-		obj->SetValue (prop, Value::CreateUnref (key_spline_from_str (value)));
-		break;
-	case Type::BRUSH:
-	case Type::SOLIDCOLORBRUSH:
-	{
-		// Only solid color brushes can be specified using attribute syntax
-		SolidColorBrush *scb = solid_color_brush_new ();
-		Color *c = color_from_str (value);
-		solid_color_brush_set_color (scb, c); // copies c
-		delete c;
-		obj->SetValue (prop, Value (scb));
-		scb->unref ();
-		break;
-	}
-	case Type::POINT:
-		obj->SetValue (prop, Value (point_from_str (value)));
-		break;
-	case Type::RECT:
-		obj->SetValue (prop, Value (rect_from_str (value)));
-		break;
-	case Type::DOUBLE_ARRAY:
-	{
-		int count = 0;
-		double *doubles = double_array_from_str (value, &count);
-		obj->SetValue (prop, Value (doubles, count));
-		delete[] doubles;
-		break;
-	}
-	case Type::POINT_ARRAY:
-	{
-		int count = 0;
-		Point *points = point_array_from_str (value, &count);
-		obj->SetValue (prop, Value (points, count));
-		delete[] points;
-		break;
-	}
-	case Type::TRANSFORM:
-	{
-		Value *mv = matrix_value_from_str (value);
-		MatrixTransform *t = new MatrixTransform ();
+	if (!v)
+		return false;
 
-		t->SetValue (MatrixTransform::MatrixProperty, mv);
-
-		obj->SetValue (prop, new Value (t));
-		break;
-	}
-	case Type::MATRIX:
-		obj->SetValue (prop, matrix_value_from_str (value));
-		break;
-	case Type::GEOMETRY:
-	{
-		Geometry* geometry = geometry_from_str (value);
-		obj->SetValue (prop, geometry);
-		geometry->unref ();
-		break;
-	}
-	default:
-		printf ("could not find value type for: %s to '%s' %s\n", prop->name, value, Type::Find (prop->value_type)->name);
-		break;
-	}
+	obj->SetValue (prop, v);
+	return true;
 }
 
 static bool
@@ -2685,124 +2843,26 @@ start_parse:
 		if (prop) {
 
 			if (item->IsPropertySet (prop->name)) {
-				parser_error (p, p->current_element->element_name, attr [i], 2033,
+				parser_error (p, item->element_name, attr [i], 2033,
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
 				return;
 			}
 
-			switch (prop->value_type) {
-			case Type::BOOL:
-				dep->SetValue (prop, Value ((bool) !g_strcasecmp ("true", attr [i + 1])));
-				break;
-			case Type::DOUBLE:
-				dep->SetValue (prop, Value ((double) g_ascii_strtod (attr [i + 1], NULL)));
-				break;
-			case Type::INT64:
-				dep->SetValue (prop, Value ((gint64) strtol (attr [i + 1], NULL, 10), Type::INT64));
-				break;
-			case Type::TIMESPAN:
-				dep->SetValue (prop, Value (timespan_from_str (attr [i + 1]), Type::TIMESPAN));
-				break;
-			case Type::INT32:
-			{
-				// Maybe we should try an [0] != '-' && !isdigit before looking up the enum?
-				int val;
-				enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, attr [i]);
+			Value *v = value_from_str (prop->value_type, prop->name, attr [i + 1]);
 
-				if (emu)
-					val = enum_from_str (emu, attr [i + 1]);
-				else
-					val = (int) strtol (attr [i + 1], NULL, 10);
-				dep->SetValue (prop, Value (val));
-			}
-				break;
-			case Type::STRING:
-				dep->SetValue (prop, Value (attr [i + 1]));
-				break;
-			case Type::COLOR:
-			{
-				Color *c = color_from_str (attr [i + 1]);
-				dep->SetValue (prop, Value (*c));
-				delete c;
-				break;
-			}
-			case Type::REPEATBEHAVIOR:
-				dep->SetValue (prop, Value (repeat_behavior_from_str (attr [i + 1])));
-				break;
-			case Type::DURATION:
-				dep->SetValue (prop, Value (duration_from_str (attr [i + 1])));
-				break;
-			case Type::KEYTIME:
-				dep->SetValue (prop, Value (keytime_from_str (attr [i + 1])));
-				break;
-			case Type::KEYSPLINE:
-				dep->SetValue (prop, Value::CreateUnref (key_spline_from_str (attr [i + 1])));
-				break;
-			case Type::BRUSH:
-			case Type::SOLIDCOLORBRUSH:
-			{
-				// Only solid color brushes can be specified using attribute syntax
-				SolidColorBrush *scb = solid_color_brush_new ();
-				Color *c = color_from_str (attr [i + 1]);
-				solid_color_brush_set_color (scb, c); // copies c
-				delete c;
-				dep->SetValue (prop, Value (scb));
-				scb->unref ();
-			}
-				break;
-			case Type::POINT:
-				dep->SetValue (prop, Value (point_from_str (attr [i + 1])));
-				break;
-			case Type::RECT:
-				dep->SetValue (prop, Value (rect_from_str (attr [i + 1])));
-				break;
-			case Type::DOUBLE_ARRAY:
-			{
-				int count = 0;
-				double *doubles = double_array_from_str (attr [i + 1], &count);
-				dep->SetValue (prop, Value (doubles, count));
-			}
-				break;
-			case Type::POINT_ARRAY:
-			{
-				int count = 0;
-				Point *points = point_array_from_str (attr [i + 1], &count);
-				dep->SetValue (prop, Value (points, count));
-			}
-				break;
-			case Type::TRANSFORM:
-			{
-				Value *mv = matrix_value_from_str (attr [i + 1]);
-				MatrixTransform *t = new MatrixTransform ();
-
-				t->SetValue (MatrixTransform::MatrixProperty, mv);
-
-				dep->SetValue (prop, Value (t));
-				t->unref ();
-				break;
-			}
-			case Type::MATRIX:
-				dep->SetValue (prop, matrix_value_from_str (attr [i + 1]));
-				break;
-			case Type::GEOMETRY:
-			{
-				Geometry* geometry = geometry_from_str (attr [i + 1]);
-				dep->SetValue (prop, geometry);
-				geometry->unref ();
-			}
-				break;
-			default:
-#ifdef DEBUG_XAML
-				printf ("could not find value type for: %s::%s %s\n", pname, attr [i + 1],
-						Type::Find (prop->value_type)->name);
-#endif
-				continue;
+			if (!v) {
+				parser_error (p, item->element_name, attr [i], 2024, g_strdup_printf ("Invalid attribute value %s for property %s.",
+						attr [i + 1], attr [i]));
+				if (atchname)
+					g_free (atchname);
+				return;
 			}
 
+			dep->SetValue (prop, v);
 			item->MarkPropertyAsSet (prop->name);
 		} else {
 			if (dependency_object_hookup_event (p, item, pname, attr [i + 1]))
-				parser_error (p, p->current_element->element_name, attr [i], 2012, g_strdup_printf ("Unknown attribute %s on element %s.",
+				parser_error (p, item->element_name, attr [i], 2012, g_strdup_printf ("Unknown attribute %s on element %s.",
 						attr [i], p->current_element->element_name));
 		}
 

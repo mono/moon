@@ -32,13 +32,13 @@ G_BEGIN_DECLS
 
 DependencyObject  *xaml_create_from_file (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
 DependencyObject  *xaml_create_from_str  (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
-void        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
+bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
 
 void xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks);
 
 void        xaml_init (void);
 
-gint64		timespan_from_str (const char *str);
+bool            time_span_from_str (const char *str, TimeSpan *res);
 XamlLoader* xaml_loader_new (const char* filename, const char* str, Surface* surface);
 void		xaml_loader_free (XamlLoader* loader);
 void		xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembly);

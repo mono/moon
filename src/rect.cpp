@@ -14,17 +14,21 @@
 #include "array.h"
 #include "rect.h"
 
-Rect
-rect_from_str (const char *s)
+bool
+rect_from_str (const char *s, Rect *r)
 {
 	GArray *values = double_garray_from_str (s, 4);
-	Rect r = Rect (g_array_index (values, double, 0), 
+
+	if (!values)
+		return false;
+
+	*r = Rect (g_array_index (values, double, 0), 
 		       g_array_index (values, double, 1),
 		       g_array_index (values, double, 2),
 		       g_array_index (values, double, 3));
 	
 	g_array_free (values, true);
-	return r;
+	return true;
 }
 
 Rect

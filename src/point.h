@@ -48,7 +48,7 @@ public:
 
 G_BEGIN_DECLS
 
-Point point_from_str (const char *s);
+bool point_from_str (const char *s, Point *p);
 
 G_END_DECLS
 
