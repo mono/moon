@@ -1,3 +1,8 @@
+2007-11-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp: Alphabetize all of the mapping tables so that
+	bsearch works properly.
+
 2007-11-14  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: substantially rework the way

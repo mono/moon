@@ -147,7 +147,7 @@ npidentifier_to_downstr (NPIdentifier id)
 // for some reason enabling bsearch breaks silverlight.net/ShowCase
 // (firebug shows a property access error).  leave it disabled for
 // now.
-#define USE_BSEARCH 0
+#define USE_BSEARCH 1
 
 #if USE_BSEARCH
 static int
@@ -1425,8 +1425,8 @@ static const MoonNameIdMapping
 moonlight_settings_mapping [] = {
 	{ "background", MoonId_Background },
 	{ "enableframeratecounter", MoonId_EnableFramerateCounter },
-	{ "enableredrawregions", MoonId_EnableRedrawRegions },
 	{ "enablehtmlaccess", MoonId_EnableHtmlAccess },
+	{ "enableredrawregions", MoonId_EnableRedrawRegions },
 	{ "maxframerate", MoonId_MaxFrameRate },
 	{ "version", MoonId_Version },
 	{ "windowless", MoonId_Windowless }
@@ -2344,13 +2344,13 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 
 static const MoonNameIdMapping
 moonlight_collection_mapping [] = {
-	{ "count", MoonId_Count },
 	{ "add", MoonId_Add },
+	{ "clear", MoonId_Clear },
+	{ "count", MoonId_Count },
+	{ "getitem", MoonId_GetItem },
+	{ "insert", MoonId_Insert },
 	{ "remove", MoonId_Remove },
 	{ "removeat", MoonId_RemoveAt },
-	{ "insert", MoonId_Insert },
-	{ "clear", MoonId_Clear },
-	{ "getitem", MoonId_GetItem }
 };
 
 static bool
@@ -2581,10 +2581,10 @@ MoonlightStoryboardType* MoonlightStoryboardClass;
 
 static const MoonNameIdMapping
 moonlight_media_element_mapping [] = {
-	{ "stop", MoonId_Stop }, 
-	{ "play", MoonId_Play }, 
 	{ "pause", MoonId_Pause },
-	{ "setsource", MoonId_SetSource }
+	{ "play", MoonId_Play },
+	{ "setsource", MoonId_SetSource },
+	{ "stop", MoonId_Stop },
 };
 
 static bool
@@ -2815,8 +2815,9 @@ MoonlightTextBlockType* MoonlightTextBlockClass;
 static const MoonNameIdMapping
 moonlight_downloader_mapping [] = {
 	{ "abort", MoonId_Abort },
-	{ "open", MoonId_Open },
 	{ "getresponsetext", MoonId_GetResponseText },
+	{ "open", MoonId_Open },
+	{ "responsetext", MoonId_ResponseText },
 	{ "responsetext", MoonId_ResponseText },
 	{ "send", MoonId_Send }
 };
