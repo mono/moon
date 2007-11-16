@@ -1,3 +1,9 @@
+2007-11-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* transform.cpp: Use cairo_matrix_init_translate instead of 
+	cairo_matrix_init + cairo_matrix_translate where possible (which
+	avoid the multiplication with the identity matrix).
+
 2007-11-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (surface_get_toplevel): New function needed by the

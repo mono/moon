@@ -83,8 +83,7 @@ RotateTransform::UpdateTransform ()
 		cairo_matrix_init_rotate (&_matrix, radians);
 	}
 	else {
-		cairo_matrix_init_identity (&_matrix);
-		cairo_matrix_translate (&_matrix, center_x, center_y);
+		cairo_matrix_init_translate (&_matrix, center_x, center_y);
 		cairo_matrix_rotate (&_matrix, radians);
 		cairo_matrix_translate (&_matrix, -center_x, -center_y);
 	}
@@ -211,8 +210,7 @@ ScaleTransform::UpdateTransform ()
 		cairo_matrix_init_scale (&_matrix, sx, sy);
 	}
 	else {
-		cairo_matrix_init_identity (&_matrix);
-		cairo_matrix_translate (&_matrix, cx, cy);
+		cairo_matrix_init_translate (&_matrix, cx, cy);
 		cairo_matrix_scale (&_matrix, sx, sy);
 		cairo_matrix_translate (&_matrix, -cx, -cy);
 	}
@@ -285,14 +283,14 @@ DependencyProperty* SkewTransform::CenterYProperty;
 void
 SkewTransform::UpdateTransform ()
 {
-	cairo_matrix_init_identity (&_matrix);
-
 	double cx = skew_transform_get_center_x (this);
 	double cy = skew_transform_get_center_y (this);
 
 	bool translation = ((cx != 0.0) || (cy != 0.0));
 	if (translation)
-		cairo_matrix_translate (&_matrix, cx, cy);
+		cairo_matrix_init_translate (&_matrix, cx, cy);
+	else
+		cairo_matrix_init_identity (&_matrix);
 
 	double ax = skew_transform_get_angle_x (this);
 	if (ax != 0.0)
