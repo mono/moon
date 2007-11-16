@@ -604,13 +604,19 @@ uielement_init (void)
 	UIElement::LostFocusEvent = t->LookupEvent("LostFocus");
 }
 
-UIElement*
-uielement_new ()
+UIElement *
+uielement_new (void)
 {
 	return new UIElement ();
 }
 
-Surface*
+bool
+uielement_get_isloaded (UIElement *item)
+{
+	return (item->flags & UIElement::IS_LOADED);
+}
+
+Surface *
 uielement_get_surface (UIElement *item)
 {
 	return item->GetSurface ();

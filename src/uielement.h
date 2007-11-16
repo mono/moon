@@ -315,6 +315,8 @@ G_BEGIN_DECLS
 
 UIElement *uielement_new                  (void);
 
+bool       uielement_get_isloaded         (UIElement *item);
+
 Surface   *uielement_get_surface          (UIElement *item);
 void       uielement_invalidate           (UIElement *item);
 void       uielement_update_bounds        (UIElement *item);
@@ -334,7 +336,7 @@ UIElement *uielement_get_parent           (UIElement *item);
 bool       uielement_capture_mouse         (UIElement *item);
 void       uielement_release_mouse_capture (UIElement *item);
 
-void     uielement_init ();
+void       uielement_init (void);
 G_END_DECLS
 
 #endif /* __MOON_UIELEMENT_H__ */

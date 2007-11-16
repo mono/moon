@@ -1205,6 +1205,12 @@ surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
 	s->Paint (ctx, x, y, width, height);
 }
 
+UIElement *
+surface_get_toplevel (Surface *s)
+{
+	return s->GetToplevel ();
+}
+
 void *
 surface_get_drawing_area (Surface *s)
 {

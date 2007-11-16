@@ -79,9 +79,9 @@ class Surface : public EventObject {
 
 	void Invalidate (Rect r);
 
-	GtkWidget* GetDrawingArea () { return drawing_area; }
-	UIElement* GetToplevel() { return toplevel; }
-	bool IsTopLevel (UIElement* top);
+	GtkWidget *GetDrawingArea () { return drawing_area; }
+	UIElement *GetToplevel() { return toplevel; }
+	bool IsTopLevel (UIElement *top);
 
 	UIElement* GetCapturedElement () { return capture_element; }
 
@@ -92,7 +92,7 @@ class Surface : public EventObject {
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
-	void SetSourceLocation (const char* location);
+	void SetSourceLocation (const char *location);
 	bool FullScreenKeyHandled (GdkEventKey *key);
 	int GetActualWidth () { return width; }
 	int GetActualHeight () { return height; }
@@ -103,16 +103,16 @@ class Surface : public EventObject {
 	
 	void SetDownloaderContext (gpointer context) { downloader_context = context; }
 	gpointer GetDownloaderContext () { return downloader_context; }
-	Downloader* CreateDownloader () 
+	Downloader *CreateDownloader () 
 	{
 		Downloader *downloader = new Downloader ();
 		downloader->SetContext (downloader_context);
 		return downloader;
 	}
 	
-	static Downloader* CreateDownloader (UIElement* element)
+	static Downloader *CreateDownloader (UIElement* element)
 	{
-		Surface* surface = NULL;
+		Surface *surface = NULL;
 		if (element) {
 			surface = element->GetSurface ();
 		}
@@ -174,8 +174,8 @@ private:
 
 	// Fullscreen support
 	bool full_screen;
-	Canvas* full_screen_message;
-	char* source_location;
+	Canvas *full_screen_message;
+	char *source_location;
 	// Should be set to true only while executing MouseLeftButtonDown, 
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool can_full_screen; 
@@ -203,8 +203,8 @@ private:
 
 	void ConnectEvents (bool realization_signals);
 	void Realloc ();
-	void InitializeDrawingArea (GtkWidget* drawing_area);
-	void DestroyDrawingArea (GtkWidget* drawing_area);
+	void InitializeDrawingArea (GtkWidget *drawing_area);
+	void DestroyDrawingArea (GtkWidget *drawing_area);
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
 
@@ -235,6 +235,8 @@ void     surface_destroy   (Surface *s);
 void     surface_set_trans (Surface *s, bool trans);
 bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
+
+UIElement *surface_get_toplevel (Surface *s);
 
 void    *surface_get_drawing_area (Surface *s);
 

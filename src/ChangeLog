@@ -1,3 +1,13 @@
+2007-11-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (surface_get_toplevel): New function needed by the
+	managed land to implement a bit of a hack for the Resize
+	event (when someone connects to the Resize event, if the toplevel
+	canvas is already loaded, we want to immediately call the
+	handler).
+
+	* uielement.cpp (uielement_get_isloaded): Same.
+
 2007-11-15  Jackson Harper  <jackson@ximian.com>
 
 	* color.h: Add equality operators.
