@@ -37,6 +37,7 @@ class EventListenerProxy : public List::Node {
 	void AddHandler (EventObject *obj);
 	void RemoveHandler (EventObject *obj);
 	NPObject* GetCallbackAsNPObject ();
+
  private:
 	NPP instance;
 
@@ -66,14 +67,17 @@ extern "C" {
 struct MoonlightObjectType : NPClass {
 	MoonlightObjectType ();
 
-	void SetBase (MoonlightObjectType *base);
-	void SetMapping (const MoonNameIdMapping* mapping, int count);
+	~MoonlightObjectType() { g_free (mapping); }
+
+	void AddMapping (const MoonNameIdMapping* mapping, int count);
 
 	int LookupName (NPIdentifier name);
 
-	const MoonNameIdMapping* mapping;
+	MoonNameIdMapping* mapping;
 	int mapping_count;
-	MoonlightObjectType *base;
+
+	NPIdentifier last_lookup;
+	int last_id;
 };
 
 extern MoonlightObjectType* MoonlightObjectClass;
@@ -85,21 +89,22 @@ struct MoonlightObject : public NPObject
 		this->instance = instance;
 		this->moonlight_type = Type::INVALID;
 		this->disposed = false;
-		this->last_lookup = NULL;
-		this->last_id = 0;
 	}
 	virtual void Dispose ();
 	virtual ~MoonlightObject ();
 
+	virtual bool HasProperty (NPIdentifier name);
+	virtual bool GetProperty (int id, NPIdentifier name, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier name, const NPVariant *value);
 
-	int LookupName (NPIdentifier name);
+	virtual bool HasMethod (NPIdentifier unmapped);
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+	int LookupName (NPIdentifier name) { return ((MoonlightObjectType*)_class)->LookupName (name); }
 
 	NPP instance;
 	Type::Kind moonlight_type;
 	bool disposed;
-
-	NPIdentifier last_lookup;
-	int last_id;
 };
 
 /*** MoonlightEventListenerObject ******************************************************/
@@ -124,9 +129,13 @@ struct MoonlightErrorEventArgsType : MoonlightObjectType {
 extern MoonlightErrorEventArgsType* MoonlightErrorEventArgsClass;
 
 struct MoonlightErrorEventArgs : MoonlightObject {
-	MoonlightErrorEventArgs (NPP instance) : MoonlightObject(instance) { }
+	MoonlightErrorEventArgs (NPP instance) : MoonlightObject(instance)
+	{
+	}
 
 	ErrorEventArgs *args;
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
 /*** MoonlightPointClass  **************************************************************/
@@ -141,6 +150,9 @@ struct MoonlightPoint : MoonlightObject {
 	{
 		moonlight_type = Type::POINT;
 	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
 	Point point;
 };
@@ -157,6 +169,9 @@ struct MoonlightRect : MoonlightObject {
 	{
 		moonlight_type = Type::RECT;
 	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
 	Rect rect;
 };
@@ -175,6 +190,9 @@ struct MoonlightDuration : MoonlightObject {
 		moonlight_type = Type::DURATION;
 	}
 
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
 	Duration duration;
 };
 
@@ -191,6 +209,9 @@ struct MoonlightTimeSpan : MoonlightObject {
 		moonlight_type = Type::TIMESPAN;
 	}
 
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
 	TimeSpan timespan;
 };
 
@@ -203,9 +224,17 @@ extern MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
 
 struct MoonlightMouseEventArgsObject : MoonlightObject {
 	MoonlightMouseEventArgsObject (NPP instance)
-	  : MoonlightObject (instance), state (0), x (-1), y (-1) { }
+	  : MoonlightObject (instance), state (0), x (-1), y (-1)
+	{
+	}
 
 	virtual void Dispose ();
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+
 	int state;
 	double x;
 	double y;
@@ -220,7 +249,9 @@ extern MoonlightMarkerReachedEventArgsType* MoonlightMarkerReachedEventArgsClass
 
 struct MoonlightMarkerReachedEventArgsObject : MoonlightObject {
 	MoonlightMarkerReachedEventArgsObject (NPP instance)
-		: MoonlightObject (instance), marker (NULL) {}
+		: MoonlightObject (instance), marker (NULL)
+	{
+	}
 
 	virtual void Dispose ();
 	void SetMarker (TimelineMarker* tm)
@@ -231,6 +262,9 @@ struct MoonlightMarkerReachedEventArgsObject : MoonlightObject {
 		if (marker)
 			marker->ref ();
 	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+
 	TimelineMarker* marker;
 };
 
@@ -243,7 +277,11 @@ extern MoonlightKeyboardEventArgsType* MoonlightKeyboardEventArgsClass;
 
 struct MoonlightKeyboardEventArgsObject : MoonlightObject {
 	MoonlightKeyboardEventArgsObject (NPP instance)
-	  : MoonlightObject (instance), state (0), key (0), platformcode (0) { }
+	  : MoonlightObject (instance), state (0), key (0), platformcode (0)
+	{
+	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 
 	int state;
 	int key;
@@ -259,6 +297,17 @@ struct MoonlightSettingsType : MoonlightObjectType {
 	MoonlightSettingsType ();
 };
 extern MoonlightSettingsType* MoonlightSettingsClass;
+
+struct MoonlightSettingsObject : MoonlightObject {
+	MoonlightSettingsObject (NPP instance)
+	  : MoonlightObject (instance)
+	{
+	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+};
+
 
 /*** MoonlightContentClass ************************************************************/
 
@@ -278,6 +327,13 @@ struct MoonlightContentObject : MoonlightObject {
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
 	virtual void Dispose ();
+
+	virtual bool HasProperty (NPIdentifier unmapped);
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
 	GHashTable *registered_scriptable_objects;
 
@@ -301,6 +357,13 @@ struct MoonlightScriptControlObject : public MoonlightObject {
 	}
 
 	virtual void Dispose ();
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+
 	NPObject *content;
 	NPObject *settings;
 };
@@ -351,7 +414,16 @@ struct MoonlightDependencyObjectObject : public MoonlightEventObjectObject
 		g_assert (eo->GetObjectType () >= Type::DEPENDENCY_OBJECT);
 		return (DependencyObject*) eo;
 	}
+
 	virtual void Dispose ();
+
+	virtual bool HasProperty (NPIdentifier unmapped);
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+
 };
 
 extern MoonlightDependencyObjectObject* DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj);
@@ -363,6 +435,18 @@ struct MoonlightCollectionType : MoonlightDependencyObjectType {
 };
 extern MoonlightCollectionType* MoonlightCollectionClass;
 
+struct MoonlightCollectionObject : public MoonlightDependencyObjectObject {
+	MoonlightCollectionObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::COLLECTION;
+	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
+
 /*** MoonlightStoryboardClass ***************************************************/
 
 struct MoonlightStoryboardType : MoonlightDependencyObjectType {
@@ -370,6 +454,17 @@ struct MoonlightStoryboardType : MoonlightDependencyObjectType {
 };
 
 extern MoonlightStoryboardType* MoonlightStoryboardClass;
+
+struct MoonlightStoryboardObject : MoonlightDependencyObjectObject {
+	MoonlightStoryboardObject (NPP instance)
+	  : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::STORYBOARD;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
 
 /*** MoonlightMediaElement ***************************************************/
 
@@ -379,6 +474,17 @@ struct MoonlightMediaElementType : MoonlightDependencyObjectType {
 
 extern MoonlightMediaElementType* MoonlightMediaElementClass;
 
+struct MoonlightMediaElementObject : MoonlightDependencyObjectObject {
+	MoonlightMediaElementObject (NPP instance)
+	  : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::MEDIAELEMENT;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
+
 /*** MoonlightImage ***************************************************/
 
 struct MoonlightImageType : MoonlightDependencyObjectType {
@@ -386,6 +492,17 @@ struct MoonlightImageType : MoonlightDependencyObjectType {
 };
 
 extern MoonlightImageType* MoonlightImageClass;
+
+struct MoonlightImageObject : MoonlightDependencyObjectObject {
+	MoonlightImageObject (NPP instance)
+	  : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::IMAGE;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
 
 /*** MoonlightImageBrush ***************************************************/
 
@@ -395,6 +512,17 @@ struct MoonlightImageBrushType : MoonlightDependencyObjectType {
 
 extern MoonlightImageBrushType* MoonlightImageBrushClass;
 
+struct MoonlightImageBrushObject : MoonlightDependencyObjectObject {
+	MoonlightImageBrushObject (NPP instance)
+	  : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::IMAGEBRUSH;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
+
 /*** MoonlightDownloader ***************************************************/
 
 struct MoonlightDownloaderType : MoonlightDependencyObjectType {
@@ -402,6 +530,17 @@ struct MoonlightDownloaderType : MoonlightDependencyObjectType {
 };
 
 extern MoonlightDownloaderType* MoonlightDownloaderClass;
+
+struct MoonlightDownloaderObject : public MoonlightDependencyObjectObject {
+	MoonlightDownloaderObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::DOWNLOADER;
+	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
 
 /*** MoonlightTextBlock ***************************************************/
 
@@ -411,6 +550,16 @@ struct MoonlightTextBlockType : MoonlightDependencyObjectType {
 
 extern MoonlightTextBlockType* MoonlightTextBlockClass;
 
+struct MoonlightTextBlockObject : MoonlightDependencyObjectObject {
+	MoonlightTextBlockObject (NPP instance)
+	  : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::TEXTBLOCK;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
 
 /*** MoonlightControl ***************************************************/
 
@@ -426,7 +575,15 @@ struct MoonlightControlObject : MoonlightDependencyObjectObject {
 		real_object = NULL;
 	}
 
-	NPObject *real_object;
+	virtual bool HasProperty (NPIdentifier name);
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	virtual bool HasMethod (NPIdentifier name);
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+
+	MoonlightEventObjectObject *real_object;
 };
 
 /*** MoonlightScriptableObject ***************************************************/
@@ -454,6 +611,14 @@ struct MoonlightScriptableObjectObject : public MoonlightObject
 		events = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
 	virtual void Dispose ();
+
+	virtual bool HasProperty (NPIdentifier name);
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	virtual bool HasMethod (NPIdentifier name);
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
 	gpointer managed_scriptable;
 	GHashTable *properties;

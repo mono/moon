@@ -1,3 +1,15 @@
+2007-11-16  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp, plugin-class.h: switch
+	hasProperty,getProperty,setProperty,hasMethod,invoke to object
+	methods instead of vtable entries on the type.  Also, put the
+	name->id mapping in MoonlightObject's vtable entries, before the
+	call to the virtual object methods (so now we only do name lookups
+	there instead of all over the place) Also, aggregate mappings for
+	all classes up to the root in the hierarchy when we initialize the
+	type.  This means only 1 bsearch per LookupName, instead of 1 per
+	mapping.
+	
 2007-11-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp: Alphabetize all of the mapping tables so that
