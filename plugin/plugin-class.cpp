@@ -1635,19 +1635,19 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	case MoonId_FindName: {
 		if (!argCount)
 			return true;
-		
+
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
-		
-		if (!plugin->surface || !plugin->surface->GetToplevel())
+
+		if (!plugin->surface || !plugin->surface->GetToplevel ())
 			return true;
-		
-		DependencyObject *element = plugin->surface->GetToplevel()->FindName (name);
-		if (!element)
+
+		DependencyObject *element = plugin->surface->GetToplevel ()->FindName (name);
+		if (!element) {
+			NULL_TO_NPVARIANT (*result);
 			return true;
-		
-		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, element);
-		
-		OBJECT_TO_NPVARIANT (depobj, *result);
+		}
+
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, element), *result);
 		return true;
 	}
 
@@ -1668,19 +1668,19 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		DependencyObject *dep = xaml_create_from_str (loader, xaml, create_namescope, &element_type);
 		delete loader;
 
-		MoonlightEventObjectObject *depobj = NULL;
-		if (dep != NULL) {
-			depobj = EventObjectCreateWrapper (instance, dep);
-			dep->unref ();
+		if (!dep) {
+			NULL_TO_NPVARIANT (*result);
+			return true;
 		}
-		
+
+		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, dep);
+		dep->unref ();
+
 		OBJECT_TO_NPVARIANT (depobj, *result);
 		return true;
 	}
 
 	case MoonId_CreateFromXamlDownloader: {
-		NULL_TO_NPVARIANT (*result);
-
 		if (argCount < 2)
 			return true;
 
@@ -1699,13 +1699,12 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 			g_free (fname);
 		}
 
-		if (dep == NULL)
+		if (!dep) {
+			NULL_TO_NPVARIANT (*result);
 			return true;
+		}
 
-		MoonlightEventObjectObject *depobj =
-			EventObjectCreateWrapper (instance, dep);
-
-		OBJECT_TO_NPVARIANT (depobj, *result);
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, dep), *result);
 		return true;
 	}
 
