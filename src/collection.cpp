@@ -456,6 +456,8 @@ VisualCollection::VisualRemoved (Visual *visual)
 {
 	UIElement *item = (UIElement *) visual;
 
+	item->SetSurface (NULL);
+
 	if (item->parent == NULL)
 		return;
 

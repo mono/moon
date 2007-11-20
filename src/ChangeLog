@@ -1,3 +1,19 @@
+2007-11-20  Jb Evain  <jbevain@novell.com>
+
+	* downloader.h (Downloader): override SetSurface and GetSurface
+	to work on a custom surface field.
+	* downloader.cpp (Downloader::Downloader): initialize
+	surface to NULL.
+	* runtime.h (Surface::CreateDownloader): initialize the surface
+	of the downloader.
+	* collection.cpp: when removing an UIElement from an UIElementCollection,
+	clear out its surface to NULL.
+	* visual.cpp: remove null check preventing to set the surface to NULL.
+	* dependencyobject.cpp: (DependencyObject::FindName): if the
+	current DO has no parent, fallback to its surface to try
+	FindName on its top level element (needed to call FindName
+	on a downloader for instance). Fixes #335018.
+
 2007-11-20  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: If we need to reparse the attributes for an element

@@ -19,6 +19,7 @@
 #include "dependencyobject.h"
 #include "clock.h"
 #include "runtime.h"
+#include "uielement.h"
 
 #if OBJECT_TRACKING
 // Define the ID of the object you want to track
@@ -603,8 +604,16 @@ DependencyObject::FindName (const char *name)
 		return rv;
 	else if (parent)
 		return parent->FindName (name);
-	else
+	else {
+		Surface *surface = GetSurface ();
+		if (surface) {
+			UIElement *toplevel = surface->GetToplevel ();
+			if (toplevel && toplevel != this)
+				return toplevel->FindName (name);
+		}
+
 		return NULL;
+	}
 }
 
 NameScope*

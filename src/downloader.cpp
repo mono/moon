@@ -62,6 +62,7 @@ int Downloader::DownloadFailedEvent = -1;
 
 Downloader::Downloader ()
 {
+	surface = NULL;
 	downloader_state = Downloader::create_state (this);
 	notify_size = NULL;
 	filename = NULL;

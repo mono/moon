@@ -27,9 +27,6 @@ Visual::InsideObject (cairo_t *cr, double x, double y)
 void
 Visual::SetSurface (Surface *surface)
 {
-	if (!surface)
-		return;
-		
 	this->surface = surface;
 }
 

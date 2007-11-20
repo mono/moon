@@ -106,6 +106,7 @@ class Surface : public EventObject {
 	Downloader *CreateDownloader () 
 	{
 		Downloader *downloader = new Downloader ();
+		downloader->SetSurface (this);
 		downloader->SetContext (downloader_context);
 		return downloader;
 	}
