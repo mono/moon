@@ -1626,7 +1626,7 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier, const NPVariant *valu
 	}
 }
 
-#define INVOKE_EXCEPTION(meth)	\
+#define THROW_JS_EXCEPTION(meth)	\
 	do {	\
 		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
 		NPN_SetException (this, message);	\
@@ -1643,7 +1643,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 	case MoonId_FindName: {
 		if (!argCount)
-			INVOKE_EXCEPTION ("findName");
+			THROW_JS_EXCEPTION ("findName");
 
 		char *name = STR_FROM_VARIANT (args [0]);
 
@@ -1667,7 +1667,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_CreateFromXaml: {
 		if (!argCount)
-			INVOKE_EXCEPTION ("createFromXaml");
+			THROW_JS_EXCEPTION ("createFromXaml");
 
 		char *xaml = STR_FROM_VARIANT (args [0]);
 		bool create_namescope = argCount >= 2 ? NPVARIANT_TO_BOOLEAN (args[1]) : false;
@@ -1678,7 +1678,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		delete loader;
 
 		if (!dep)
-			INVOKE_EXCEPTION ("createFromXaml");
+			THROW_JS_EXCEPTION ("createFromXaml");
 
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, dep);
 		dep->unref ();
@@ -1689,7 +1689,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_CreateFromXamlDownloader: {
 		if (argCount < 2)
-			INVOKE_EXCEPTION ("createFromXamlDownloader");
+			THROW_JS_EXCEPTION ("createFromXamlDownloader");
 
 		Downloader *down = (Downloader*)((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args [0]))->GetDependencyObject ();
 
@@ -1707,7 +1707,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		}
 
 		if (!dep)
-			INVOKE_EXCEPTION ("createFromXamlDownloader");
+			THROW_JS_EXCEPTION ("createFromXamlDownloader");
 
 		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, dep), *result);
 		return true;
@@ -1960,7 +1960,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	case MoonId_SetValue:
 		/* obj.setValue (prop, val) is another way of writing obj[prop] = val (or obj.prop = val) */
 		if (argCount < 2 || !NPVARIANT_IS_STRING (args[0]))
-			INVOKE_EXCEPTION ("setValue");
+			THROW_JS_EXCEPTION ("setValue");
 
 		_class->setProperty (this,
 				     NPID (STR_FROM_VARIANT (args [0])),
@@ -1971,7 +1971,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_GetValue:
 		if (argCount < 1 || !NPVARIANT_IS_STRING (args[0]))
-			INVOKE_EXCEPTION ("getValue");
+			THROW_JS_EXCEPTION ("getValue");
 
 		_class->getProperty (this,
 				     NPID (STR_FROM_VARIANT (args [0])),
@@ -1980,7 +1980,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_FindName: {
 		if (!argCount)
-			INVOKE_EXCEPTION ("findName");
+			THROW_JS_EXCEPTION ("findName");
 
 		char *name = STR_FROM_VARIANT (args [0]);
 
@@ -2018,12 +2018,12 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_AddEventListener: {
 		if (argCount != 2)
-			INVOKE_EXCEPTION ("addEventListener");
+			THROW_JS_EXCEPTION ("addEventListener");
 
 		if (!NPVARIANT_IS_STRING (args[0])
 		    || (!NPVARIANT_IS_STRING (args[1]) && !NPVARIANT_IS_OBJECT (args[1]))) {
 			/* XXX how do we check if args[1] is a function? */
-			INVOKE_EXCEPTION ("addEventListener");
+			THROW_JS_EXCEPTION ("addEventListener");
 		}
 
 		char *name = g_strdup (STR_FROM_VARIANT (args [0]));
@@ -2049,7 +2049,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_RemoveEventListener: {
 		if (argCount < 2 || !NPVARIANT_IS_OBJECT (args [1]))
-			INVOKE_EXCEPTION ("removeEventListener");
+			THROW_JS_EXCEPTION ("removeEventListener");
 
 		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPVARIANT_TO_OBJECT (args [1]);
 		res->proxy->RemoveHandler (res->target);
@@ -2252,7 +2252,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 	case MoonId_Add: {
 		if (argCount < 1)
-			return true;
+			THROW_JS_EXCEPTION ("add");
 
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (args[0]);
 		col->Add (el->GetDependencyObject ());
@@ -2264,7 +2264,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Remove: {
 		if (argCount < 1)
-			return true;
+			THROW_JS_EXCEPTION ("remove");
 
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (args[0]);
 		col->Remove (el->GetDependencyObject ());
@@ -2275,7 +2275,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	}
 	case MoonId_RemoveAt: {
 		if (argCount < 1)
-			return true;
+			THROW_JS_EXCEPTION ("removeAt");
 
 		int index = NPVARIANT_TO_INT32 (args [0]);
 		col->RemoveAt (index);
@@ -2286,7 +2286,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	}
 	case MoonId_Insert: {
 		if (argCount < 2)
-			return true;
+			THROW_JS_EXCEPTION ("insert");
 
 		int index = NPVARIANT_TO_INT32 (args[0]);
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT (args[1]);
@@ -2299,7 +2299,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	}
 	case MoonId_Clear: {
 		if (argCount != 0)
-		  return true;
+			THROW_JS_EXCEPTION ("clear");
 
 		col->Clear ();
 
@@ -2309,19 +2309,16 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	}
 	case MoonId_GetItem: {
 		if (argCount < 1)
-			return true;
+			THROW_JS_EXCEPTION ("getItem");
 
 		int index = NPVARIANT_TO_INT32 (args[0]);
 
 		if (index < 0 || index >= col->list->Length())
-			return true;
+			THROW_JS_EXCEPTION ("getItem");
 
-		Collection::Node *n = (Collection::Node*)col->list->Index (index);
+		Collection::Node *n = (Collection::Node*) col->list->Index (index);
 
-		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance,
-									       n->obj);
-
-		OBJECT_TO_NPVARIANT ((NPObject*)depobj, *result);
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, n->obj), *result);
 
 		return true;
 	}
@@ -2370,7 +2367,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 	case MoonId_Begin:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("begin");
 
 		sb->Begin ();
 
@@ -2380,7 +2377,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Pause:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("pause");
 
 		sb->Pause ();
 
@@ -2390,7 +2387,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Resume:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("resume");
 
 		sb->Resume ();
 
@@ -2401,7 +2398,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 	case MoonId_Seek: {
 		// XXX JS doesn't have 64bit ints?
 		if (argCount != 1 || !NPVARIANT_IS_INT32 (args[0]))
-			return true;
+			THROW_JS_EXCEPTION ("seek");
 
 		TimeSpan ts = (TimeSpan)NPVARIANT_TO_INT32(args[0]);
 		sb->Seek (ts);
@@ -2413,7 +2410,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Stop:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("stop");
 
 		sb->Stop ();
 
@@ -2463,7 +2460,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 	case MoonId_Play:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("play");
 
 		media->Play ();
 
@@ -2473,7 +2470,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Pause:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("pause");
 
 		media->Pause ();
 
@@ -2483,7 +2480,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Stop:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("stop");
 
 		media->Stop ();
 
@@ -2495,7 +2492,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 2
 		    || !NPVARIANT_IS_OBJECT (args[0])
 		    || !NPVARIANT_IS_STRING (args[1]))
-			return true;
+			THROW_JS_EXCEPTION ("setSource");
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
 		const char *part = STR_FROM_VARIANT (args [0]);
@@ -2550,7 +2547,7 @@ MoonlightImageObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 2
 		    || !NPVARIANT_IS_OBJECT (args[0])
 		    || !NPVARIANT_IS_STRING (args[1]))
-			return true;
+			THROW_JS_EXCEPTION ("setSource");
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
 		const char *part = STR_FROM_VARIANT (args [1]);
@@ -2606,7 +2603,7 @@ MoonlightImageBrushObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 2
 		    || !NPVARIANT_IS_OBJECT (args[0])
 		    || !NPVARIANT_IS_STRING (args[1]))
-			return true;
+			THROW_JS_EXCEPTION ("setSource");
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
 		const char *part = STR_FROM_VARIANT (args [1]);
@@ -2662,7 +2659,7 @@ MoonlightTextBlockObject::Invoke (int id, NPIdentifier name,
 	case MoonId_SetFontSource: {
 		if (argCount != 1
 		    || !NPVARIANT_IS_OBJECT (args[0]))
-			return true;
+			THROW_JS_EXCEPTION ("setFontSource");
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
 
@@ -2746,7 +2743,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Abort:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("abort");
 
 		downloader_abort (dl);
 
@@ -2756,7 +2753,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Open: {
 		if (argCount > 3)
-			return true;
+			THROW_JS_EXCEPTION ("open");
 
 		char *verb = STR_FROM_VARIANT (args [0]);
 		char *uri = STR_FROM_VARIANT (args [1]);
@@ -2770,7 +2767,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_Send:
 		if (argCount != 0)
-			return true;
+			THROW_JS_EXCEPTION ("send");
 
 		downloader_send (dl);
 
@@ -2780,7 +2777,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_GetResponseText: {
 		if (argCount != 1)
-			return true;
+			THROW_JS_EXCEPTION ("getResponseText");
 
 		char *part_name = STR_FROM_VARIANT (args [0]);
 

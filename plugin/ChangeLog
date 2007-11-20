@@ -1,5 +1,10 @@
 2007-11-20  Jb Evain  <jbevain@novell.com>
 
+	* plugin-class.cpp: rename INVOKE_EXCEPTION to
+	THROW_JS_EXCEPTION. Throw more exceptions where needed.
+
+2007-11-20  Jb Evain  <jbevain@novell.com>
+
 	* plugin-class.cpp: throw JS exceptions where SL does.
 
 2007-11-20  Jb Evain  <jbevain@novell.com>
