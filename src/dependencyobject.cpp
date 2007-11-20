@@ -56,10 +56,12 @@ EventObject::PrintStackTrace ()
 #endif
 
 // event handlers for c++
-typedef struct {
+struct EventClosure {
+	EventClosure (EventHandler func, gpointer data) { this->func = func; this->data = data; }
+
 	EventHandler func;
 	gpointer data;
-} EventClosure;
+};
 
 int EventObject::DestroyedEvent = -1;
 
@@ -104,11 +106,7 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 		events = (GSList**)g_new0 (GSList*, GetType()->GetEventCount());
 	}
 
-	EventClosure *closure = new EventClosure ();
-	closure->func = handler;
-	closure->data = data;
-
-	events[event_id] = g_slist_append (events[event_id], closure);
+	events[event_id] = g_slist_append (events[event_id], new EventClosure (handler, data));
 }
 
 void
@@ -173,7 +171,20 @@ EventObject::Emit (int event_id, gpointer calldata)
 	if (events == NULL || events[event_id] == NULL)
 		return;
 	
+	/* XXX yuck. this is 5 passes over the same length list.
+
+	   1 for g_slist_copy
+	   1 to deep copy the EventClosures in the list's data
+	   1 to emit
+	   1 to free up the deep copies
+	   1 to free the list
+	*/
+
 	GSList *copy = g_slist_copy (events[event_id]);
+	for (GSList *l = copy; l; l = l->next) {
+		EventClosure *orig = (EventClosure*)l->data;
+		l->data = new EventClosure (orig->func, orig->data);
+	}
 
 	for (GSList *l = copy; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
@@ -181,6 +192,7 @@ EventObject::Emit (int event_id, gpointer calldata)
 			closure->func (this, calldata, closure->data);
 	}
 
+	g_slist_foreach (copy, (GFunc)deleter, NULL);
 	g_slist_free (copy);
 }
 

@@ -1,3 +1,8 @@
+2007-11-20  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp: add a ctor for EventClosure, and do a deep
+	copy before emitting an event.
+
 2007-11-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (surface_get_toplevel): Removed.
