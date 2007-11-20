@@ -1633,8 +1633,6 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	
 	switch (id) {
 	case MoonId_FindName: {
-		NULL_TO_NPVARIANT (*result);
-
 		if (!argCount)
 			return true;
 		
@@ -1654,15 +1652,11 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_CreateObject:
-		NULL_TO_NPVARIANT (*result);
-
 		// not implemented yet
 		DEBUG_WARN_NOTIMPLEMENTED ("content.createObject");
 		return true;
 
 	case MoonId_CreateFromXaml: {
-		NULL_TO_NPVARIANT (*result);
-
 		if (argCount < 1)
 			return true;
 
@@ -1678,9 +1672,8 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		if (dep != NULL) {
 			depobj = EventObjectCreateWrapper (instance, dep);
 			dep->unref ();
-		} else
-			return true;
-
+		}
+		
 		OBJECT_TO_NPVARIANT (depobj, *result);
 		return true;
 	}
