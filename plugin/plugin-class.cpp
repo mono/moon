@@ -1789,7 +1789,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 {
 	if (NPVARIANT_IS_OBJECT (*value)){
 		MoonlightObject *obj = (MoonlightObject*) NPVARIANT_TO_OBJECT (*value);
-		return true;
+
 		if (obj->moonlight_type >= Type::DEPENDENCY_OBJECT || obj->moonlight_type == Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
 			dob->SetValue (p, Value(depobj->GetDependencyObject ()));
