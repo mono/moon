@@ -24,11 +24,14 @@
 
 #include <nsCOMPtr.h>
 #include <nsIDOMElement.h>
+#include <nsIDOMRange.h>
+#include <nsIDOMDocumentRange.h>
 #include <nsIDOMDocument.h>
 #include <nsIDOMWindow.h>
 #include <nsStringAPI.h>
 #include <nsIDOMHTMLDocument.h>
 #include <nsIDOMNodeList.h>
+#include <nsIDOMHTMLElement.h>
 
 // Events
 #include <nsIDOMEvent.h>
@@ -3367,6 +3370,42 @@ get_dom_document (NPP npp)
 	}
 
 	return dom_document;
+}
+
+const char *
+html_get_element_text (PluginInstance *plugin, const char *element_id)
+{
+	nsresult rv = NS_OK;
+	NPP npp = plugin->getInstance ();
+
+	nsCOMPtr<nsIDOMDocument> document;
+	document = get_dom_document (npp);
+	if (!document)
+		return NULL;
+
+	nsString ns_id = NS_ConvertUTF8toUTF16 (element_id, strlen (element_id));
+	nsCOMPtr<nsIDOMElement> element;
+	rv = document->GetElementById (ns_id, getter_AddRefs (element));
+	if (NS_FAILED (rv))
+		return NULL;
+
+	nsCOMPtr<nsIDOMDocument> owner;
+	element->GetOwnerDocument (getter_AddRefs (owner));
+	
+	nsCOMPtr<nsIDOMDocumentRange> doc_range = do_QueryInterface (owner);
+	if (!doc_range)
+		return NULL;
+
+	nsCOMPtr<nsIDOMRange> range;
+	doc_range->CreateRange (getter_AddRefs (range));
+	if (!range)
+		return NULL;
+
+	range->SelectNodeContents (element);
+
+	nsString text;
+	range->ToString (text);
+	return g_strdup (NS_ConvertUTF16toUTF8 (text).get ());
 }
 
 gpointer

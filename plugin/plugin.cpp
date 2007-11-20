@@ -443,35 +443,19 @@ PluginInstance::UpdateSource ()
 void
 PluginInstance::UpdateSourceByReference (const char *value)
 {
-	NPObject *object = NULL;
-	NPString reference;
-	NPVariant result;
+	const char *xaml;
 
-	if (NPERR_NO_ERROR != NPN_GetValue(this->instance, NPNVWindowNPObject, &object)) {
-		DEBUGMSG ("*** Failed to get window object");
+	xaml = html_get_element_text (this, value);
+	if (!xaml)
 		return;
-	}
 
-	char jscript[strlen (value) + strlen (".text") + 1];
+	if (xaml_loader)
+		delete xaml_loader;
 
-	g_strlcpy (jscript, value, sizeof(jscript));
-	g_strlcat (jscript, ".text", sizeof(jscript));
+	xaml_loader = PluginXamlLoader::FromStr (xaml, this, this->surface);
+	TryLoad ();
 
-	reference.utf8characters = jscript;
-	reference.utf8length = strlen (jscript);
-
-	if (NPN_Evaluate(this->instance, object, &reference, &result)) {
-		if (NPVARIANT_IS_STRING (result)) {
-			if (xaml_loader)
-				delete xaml_loader;
-			xaml_loader = PluginXamlLoader::FromStr (NPVARIANT_TO_STRING (result).utf8characters, this, this->surface);
-			TryLoad ();
-		}
-
-		NPN_ReleaseVariantValue (&result);
-	}
-
-	NPN_ReleaseObject (object);
+	g_free ((gpointer) xaml);
 }
 
 bool

@@ -682,6 +682,9 @@ typedef void callback_dom_event (char *name, int client_x, int client_y, int off
 		gboolean ctrl_key, gboolean shift_key, int mouse_button);
 
 extern "C" {
+
+	const char *html_get_element_text (PluginInstance *plugin, const char *element_id);
+
 	// These are meant to be called by System.Silverlight.dll
 
 	void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);

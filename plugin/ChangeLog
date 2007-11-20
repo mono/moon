@@ -1,3 +1,12 @@
+2007-11-20  Jb Evain  <jbevain@novell.com>
+
+	* plugin-class.h (html_get_element_text): add a function
+	to get the `innerText` of an html element from its id.
+	* plugin-class.cpp (html_get_element_text): implement it.
+	* plugin.cpp (PluginInstance::UpdateSourceByReference):
+	use html_get_element_text to get the inline xaml.
+	Fixes #342349.
+
 2007-11-16  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp, plugin-class.h: switch
