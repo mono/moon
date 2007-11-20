@@ -1,5 +1,9 @@
 2007-11-20  Jb Evain  <jbevain@novell.com>
 
+	* plugin-class.cpp: throw JS exceptions where SL does.
+
+2007-11-20  Jb Evain  <jbevain@novell.com>
+
 	* plugin-class.cpp( MoonlightContentObject::Invoke):
 		return null instead of undefined, like SL 1.0 does.
 

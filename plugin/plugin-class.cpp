@@ -1625,6 +1625,14 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier, const NPVariant *valu
 	}
 }
 
+#define INVOKE_EXCEPTION(meth)	\
+	do {	\
+		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
+		NPN_SetException (this, message);	\
+		g_free (message);	\
+		return true; \
+	} while (0);	\
+
 bool
 MoonlightContentObject::Invoke (int id, NPIdentifier name,
 				const NPVariant *args, uint32_t argCount, NPVariant *result)
@@ -1634,7 +1642,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 	case MoonId_FindName: {
 		if (!argCount)
-			return true;
+			INVOKE_EXCEPTION ("findName");
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
@@ -1657,8 +1665,8 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		return true;
 
 	case MoonId_CreateFromXaml: {
-		if (argCount < 1)
-			return true;
+		if (!argCount)
+			INVOKE_EXCEPTION ("createFromXaml");
 
 		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 		bool create_namescope = argCount >= 2 ? NPVARIANT_TO_BOOLEAN (args[1]) : false;
@@ -1668,10 +1676,8 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		DependencyObject *dep = xaml_create_from_str (loader, xaml, create_namescope, &element_type);
 		delete loader;
 
-		if (!dep) {
-			NULL_TO_NPVARIANT (*result);
-			return true;
-		}
+		if (!dep)
+			INVOKE_EXCEPTION ("createFromXaml");
 
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, dep);
 		dep->unref ();
@@ -1682,7 +1688,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_CreateFromXamlDownloader: {
 		if (argCount < 2)
-			return true;
+			INVOKE_EXCEPTION ("createFromXamlDownloader");
 
 		Downloader *down = (Downloader*)((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args [0]))->GetDependencyObject ();
 
@@ -1699,10 +1705,8 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 			g_free (fname);
 		}
 
-		if (!dep) {
-			NULL_TO_NPVARIANT (*result);
-			return true;
-		}
+		if (!dep)
+			INVOKE_EXCEPTION ("createFromXamlDownloader");
 
 		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, dep), *result);
 		return true;
@@ -1952,13 +1956,10 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		return true;
 #endif
 
-
 	case MoonId_SetValue:
 		/* obj.setValue (prop, val) is another way of writing obj[prop] = val (or obj.prop = val) */
-		if (argCount < 2
-		    || !NPVARIANT_IS_STRING (args[0])) {
-			return true;
-		}
+		if (argCount < 2 || !NPVARIANT_IS_STRING (args[0]))
+			INVOKE_EXCEPTION ("setValue");
 
 		_class->setProperty (this,
 				     NPID (NPVARIANT_TO_STRING (args[0]).utf8characters),
@@ -1968,9 +1969,8 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		return true;
 
 	case MoonId_GetValue:
-		if (argCount < 1 || !NPVARIANT_IS_STRING (args[0])) {
-			return true;
-		}
+		if (argCount < 1 || !NPVARIANT_IS_STRING (args[0]))
+			INVOKE_EXCEPTION ("getValue");
 
 		_class->getProperty (this,
 				     NPID (NPVARIANT_TO_STRING (args[0]).utf8characters),
@@ -1979,17 +1979,15 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_FindName: {
 		if (!argCount)
-			return true;
+			INVOKE_EXCEPTION ("findName");
 
 		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
 
 		DependencyObject *element = dob->FindName (name);
 		if (!element)
-			return true;
+			INVOKE_EXCEPTION ("findName");
 
-		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, element);
-
-		OBJECT_TO_NPVARIANT (depobj, *result);
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, element), *result);
 		return true;
 	}
 
@@ -2017,13 +2015,14 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_AddEventListener: {
 		if (argCount != 2)
-			return true;
+			INVOKE_EXCEPTION ("addEventListener");
 
 		if (!NPVARIANT_IS_STRING (args[0])
 		    || (!NPVARIANT_IS_STRING (args[1]) && !NPVARIANT_IS_OBJECT (args[1]))) {
 			/* XXX how do we check if args[1] is a function? */
-			return true;
+			INVOKE_EXCEPTION ("addEventListener");
 		}
+
 		char *name = g_strdup ((char *) NPVARIANT_TO_STRING (args[0]).utf8characters);
 
 		name[0] = toupper(name[0]);
@@ -2046,11 +2045,8 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_RemoveEventListener: {
-		if (argCount < 2)
-			return false;
-
-		if (!NPVARIANT_IS_OBJECT (args [1]))
-			return true;
+		if (argCount < 2 || !NPVARIANT_IS_OBJECT (args [1]))
+			INVOKE_EXCEPTION ("removeEventListener");
 
 		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPVARIANT_TO_OBJECT (args [1]);
 		res->proxy->RemoveHandler (res->target);
