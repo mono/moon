@@ -129,20 +129,15 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		UpdateTotalOpacity ();
 	}
 	else if (prop == UIElement::VisibilityProperty) {
-		int v = GetValue (prop)->AsInt32();
-		switch (v) {
-		default:
-			/* note: invalid values should be trapped in SetValue (see bug #340799) */
-			g_warning ("Invalid value (%d) specified for UIElement::VisibilityProperty.", v);
-			/* continue as default (VisibilityVisible) */
-		case VisibilityVisible:
+		// note: invalid enum values are only validated in 1.1 (managed code),
+		// the default value for VisibilityProperty is VisibilityCollapsed
+		// (see bug #340799 for more details)
+		if (GetValue (prop)->AsInt32() == VisibilityVisible) {
 			flags |= UIElement::RENDER_VISIBLE;
 			FullInvalidate (false);
-			break;
-		case VisibilityCollapsed:
+		} else {
 			FullInvalidate (true);
 			flags &= ~UIElement::RENDER_VISIBLE;
-			break;
 		}
 	}
 	else if (prop == UIElement::IsHitTestVisibleProperty) {
