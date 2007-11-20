@@ -237,7 +237,7 @@ class XamlNamespace {
 
 	virtual ~XamlNamespace () { }
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
 };
 
 class DefaultNamespace : public XamlNamespace {
@@ -254,9 +254,9 @@ class DefaultNamespace : public XamlNamespace {
 		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
 	}
 
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
-		// We don't have to do anything, since the default framework covers us
+		return false;
 	}
 };
 
@@ -274,7 +274,7 @@ class XNamespace : public XamlNamespace {
 		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
 	}
 
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
 		*reparse = false;
 
@@ -286,15 +286,18 @@ class XNamespace : public XamlNamespace {
 			//
 			// if (p->namescope->FindName (value)) {
 			//	parser_error (p, p->current_element->element_name, "x:Name", 2028, g_strdup_printf ("The name already exists in the tree: %s.", value));
-			//	return;
+			//	return false;
 			// }
 			//
 
 			p->namescope->RegisterName (value, (DependencyObject *) item->item);
 			item->item->SetValue (DependencyObject::NameProperty, Value (value));
-			if (p->loader)
+			if (p->loader) {
 				p->loader->SetNameAttribute (item->item, value);
-			return;
+				return true;
+			}
+
+			return false;
 		}
 
 		if (!strcmp ("Class", attr)) {
@@ -311,7 +314,7 @@ class XNamespace : public XamlNamespace {
 			if (!dob) {
 				parser_error (p, item->element_name, attr, -1,
 						g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
-				return;
+				return false;
 			}
 
 			// Special case the namescope for now, since attached properties aren't copied
@@ -323,8 +326,10 @@ class XNamespace : public XamlNamespace {
 			p->AddCreatedElement (item->item);
 
 			*reparse = true;
-			return;
+			return true;
 		}
+
+		return false;
 	}
 };
 
@@ -375,10 +380,11 @@ class CustomNamespace : public XamlNamespace {
 		return info;
 	}
 
-	virtual void SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
 		if (p->loader)
-			p->loader->SetAttribute (item->item, attr, value);
+			return p->loader->SetAttribute (item->item, attr, value);
+		return false;
 	}
 };
 
@@ -434,14 +440,13 @@ XamlLoader::CreateManagedObject (const char* asm_name, const char* asm_path, con
 	return NULL;
 }
 
-void 
+bool
 XamlLoader::SetAttribute (void* target, const char* name, const char* value)
 {
-	if (callbacks.set_custom_attribute) {
-		callbacks.set_custom_attribute (target, name, value);
-		return;
-	}
-	//printf ("XamlLoader::SetAttribute (%p, %s, %s)\n", target, name, value);
+	if (callbacks.set_custom_attribute)
+		return callbacks.set_custom_attribute (target, name, value);
+
+	return false;
 }
 
 void 
@@ -2318,7 +2323,18 @@ enum_from_str (const enum_map_t *emu, const char *str)
 	return (int) strtol (str, NULL, 10);
 }
 
-// Will return an INVALID value if there are any errors
+Value *
+value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str)
+{
+	Type *t = Type::Find (type_name);
+	if (!t)
+		return NULL;
+
+	return value_from_str (t->type, prop_name, str);
+}
+
+		
+// Will return NULL if there are any errors
 Value *
 value_from_str (Type::Kind type, const char *prop_name, const char *str)
 {
@@ -2772,7 +2788,6 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 }
 
 
-// TODO: Merge more of this code with the above function
 void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
@@ -2861,6 +2876,14 @@ start_parse:
 			dep->SetValue (prop, v);
 			item->MarkPropertyAsSet (prop->name);
 		} else {
+
+			// This might be a property of a managed object
+			if (p->loader && p->loader->SetAttribute (item->item, attr [i], attr [i + 1])) {
+				if (atchname)
+					g_free (atchname);
+				continue;
+			}
+
 			if (dependency_object_hookup_event (p, item, pname, attr [i + 1]))
 				parser_error (p, item->element_name, attr [i], 2012, g_strdup_printf ("Unknown attribute %s on element %s.",
 						attr [i], p->current_element->element_name));

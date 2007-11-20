@@ -21,7 +21,7 @@ class XamlLoader;
 struct XamlLoaderCallbacks;
 
 typedef DependencyObject *xaml_load_managed_object_callback (const char* asm_name, const char* asm_path, const char* name, const char* type_name);
-typedef void xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
+typedef bool xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
 typedef bool xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
 typedef void xaml_insert_mapping_callback (const char* key, const char* value); 
 typedef const char* xaml_get_mapping_callback (const char* key);
@@ -33,6 +33,9 @@ G_BEGIN_DECLS
 DependencyObject  *xaml_create_from_file (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
 DependencyObject  *xaml_create_from_str  (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
 bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
+
+Value*      value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str);
+Value*      value_from_str (Type::Kind type, const char *prop_name, const char *str);
 
 void xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks);
 
@@ -116,7 +119,7 @@ public:
 	virtual bool LoadVM ();
 	virtual DependencyObject* CreateManagedObject (const char* xmlns, const char* name);
 	virtual DependencyObject* CreateManagedObject (const char* asm_name, const char* asm_path, const char* name, const char* type_name);
-	virtual void SetAttribute (void* target, const char* name, const char* value);
+	virtual bool SetAttribute (void* target, const char* name, const char* value);
 	virtual void SetNameAttribute (void* target, const char* name);
 	virtual bool HookupEvent (void* target, const char* name, const char* value);
 	virtual void InsertMapping (const char* key, const char* value);

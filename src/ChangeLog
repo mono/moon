@@ -1,3 +1,13 @@
+2007-11-20  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add new function to create a value from a string
+	without having the Kind available (you still need to have the type
+	in string form).
+	- SetAttribute now ensures that the attribute was set properly
+	- If the object we are trying to set an attribute on is a managed
+	object and there is no DependencyProperty for the attribute, we
+	try setting the attribute on the object.
+
 2007-11-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* uielement.cpp: Ensure the default value for VisibilityProperty
@@ -29,6 +39,12 @@
 	handler).
 
 	* uielement.cpp (uielement_get_isloaded): Same.
+
+2007-11-15  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am:
+	* parsertest.cpp: Some tests I use for checking the parsing
+	functions.
 
 2007-11-15  Jackson Harper  <jackson@ximian.com>
 
