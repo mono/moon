@@ -125,6 +125,11 @@ class XamlElementInstance : public List::Node {
 
 		g_hash_table_insert (set_properties, name, GINT_TO_POINTER (TRUE));
 	}
+
+	void ClearSetProperties ()
+	{
+		g_hash_table_remove_all (set_properties);
+	}
 };
 
 void 
@@ -2823,6 +2828,7 @@ start_parse:
 			if (reparse) {
 				skip_attribute = i;
 				i = 0;
+				item->ClearSetProperties ();
 				goto start_parse;
 			}
 			continue;

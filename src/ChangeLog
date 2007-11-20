@@ -1,5 +1,12 @@
 2007-11-20  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: If we need to reparse the attributes for an element
+	(because we loaded a class and the props need to be set on the new
+	class) we have to clear out the hash of properties that are marked
+	as already set. Otherwise we get a property already set error.
+
+2007-11-20  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Add new function to create a value from a string
 	without having the Kind available (you still need to have the type
 	in string form).
