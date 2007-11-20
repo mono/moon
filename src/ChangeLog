@@ -1,3 +1,9 @@
+2007-11-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (surface_get_toplevel): Removed.
+
+	* uielement.cpp (uielement_get_isloaded): Removed.
+
 2007-11-20  Jb Evain  <jbevain@novell.com>
 
 	* downloader.h (Downloader): override SetSurface and GetSurface

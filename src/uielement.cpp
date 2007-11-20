@@ -607,12 +607,6 @@ uielement_new (void)
 	return new UIElement ();
 }
 
-bool
-uielement_get_isloaded (UIElement *item)
-{
-	return (item->flags & UIElement::IS_LOADED);
-}
-
 Surface *
 uielement_get_surface (UIElement *item)
 {

@@ -237,8 +237,6 @@ void     surface_set_trans (Surface *s, bool trans);
 bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
 
-UIElement *surface_get_toplevel (Surface *s);
-
 void    *surface_get_drawing_area (Surface *s);
 
 cairo_t *measuring_context_create (void);

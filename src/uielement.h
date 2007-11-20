@@ -315,8 +315,6 @@ G_BEGIN_DECLS
 
 UIElement *uielement_new                  (void);
 
-bool       uielement_get_isloaded         (UIElement *item);
-
 Surface   *uielement_get_surface          (UIElement *item);
 void       uielement_invalidate           (UIElement *item);
 void       uielement_update_bounds        (UIElement *item);
