@@ -1,3 +1,8 @@
+2007-11-19  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp: setup the clip before push/pop group so that
+	we reduce the temp surface size.
+
 2007-11-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* transform.cpp: Use cairo_matrix_init_translate instead of 

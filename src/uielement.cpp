@@ -106,6 +106,8 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 void
 UIElement::RenderClipPath (cairo_t *cr)
 {
+	cairo_set_matrix (cr, &absolute_xform);
+
 	Value *value = GetValue (UIElement::ClipProperty);
 	if (!value)
 		return;
@@ -499,26 +501,26 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 
 	if (!GetVisible() || total_opacity == 0.0 || region->RectIn (bounds) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
+
 	
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	if (opacityMask != NULL) {
 		cairo_save (cr);
+		cairo_identity_matrix (cr);
+		Rect clip = bounds;
+		clip.RoundOut ();
+		cairo_rectangle (cr, clip.x, clip.y, clip.w, clip.h);
+		RenderClipPath (cr);
 		opacityMask->SetupBrush (cr, this);
 		mask = cairo_get_source (cr);
 		cairo_pattern_reference (mask);
 		cairo_push_group (cr);
-
 	}
 	
 	Render (cr, region);
 
 	if (opacityMask != NULL) {
 		cairo_pop_group_to_source (cr);
-		cairo_set_matrix (cr, &absolute_xform);
-		RenderClipPath (cr);
-		cairo_identity_matrix (cr);
-		cairo_rectangle (cr, bounds.x, bounds.y, bounds.w, bounds.h);
-		cairo_clip (cr);
 		cairo_mask (cr, mask);
 		cairo_pattern_destroy (mask);
 		cairo_restore (cr);
