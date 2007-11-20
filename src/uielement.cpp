@@ -137,7 +137,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 			/* continue as default (VisibilityVisible) */
 		case VisibilityVisible:
 			flags |= UIElement::RENDER_VISIBLE;
-			Invalidate ();
+			FullInvalidate (false);
 			break;
 		case VisibilityCollapsed:
 			FullInvalidate (true);
