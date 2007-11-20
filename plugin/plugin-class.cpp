@@ -146,6 +146,8 @@ npidentifier_to_downstr (NPIdentifier id)
 	return strname;
 }
 
+#define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
+
 /* for use with bsearch & qsort */
 static int
 compare_mapping (const void *m1, const void *m2)
@@ -262,7 +264,7 @@ variant_to_value (const NPVariant *v, Value **result)
 		*result = new Value (NPVARIANT_TO_DOUBLE(*v));
 		break;
 	case NPVariantType_String:
-		*result = new Value (NPVARIANT_TO_STRING(*v).utf8characters);
+		*result = new Value (STR_FROM_VARIANT (*v));
 		break;
 	case NPVariantType_Void:
 		DEBUG_WARN_NOTIMPLEMENTED ("void variant type");
@@ -310,7 +312,7 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 		NPN_RetainObject ((NPObject *) this->callback);
 	} else {
 		this->is_func = false;
-		this->callback = g_strdup (NPVARIANT_TO_STRING (*cb).utf8characters);
+		this->callback = g_strdup (STR_FROM_VARIANT (*cb));
 	}
 }
 
@@ -1251,7 +1253,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier, const NPVariant
 
 	switch (id) {
 	case MoonId_Source:
-		plugin->setSource (NPVARIANT_TO_STRING (*value).utf8characters);
+		plugin->setSource (STR_FROM_VARIANT (*value));
 		return true;
 	default:
 		return false;
@@ -1271,7 +1273,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 		}
 
 		NPObject *obj = NULL;
-		const char *object_type = NPVARIANT_TO_STRING (args[0]).utf8characters;
+		const char *object_type = STR_FROM_VARIANT (args [0]);
 		if (!g_strcasecmp ("downloader", object_type)) {
 			PluginInstance *plugin = (PluginInstance*) instance->pdata;
 			Downloader *dl = PluginInstance::CreateDownloader (plugin);
@@ -1298,11 +1300,10 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 			return true;
 		}
 
-		char *v = (char*)NPVARIANT_TO_STRING (args[0]).utf8characters;
+		char *v = STR_FROM_VARIANT (args [0]);
 		printf ("version requested = %s\n",v);
 
-		gchar** versions = g_strsplit (NPVARIANT_TO_STRING (args[0]).utf8characters,
-					       ".", 3);
+		gchar** versions = g_strsplit (v, ".", 3);
 
 		if (versions[0] == NULL || versions[1] == NULL) {
 			g_strfreev (versions);
@@ -1413,7 +1414,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier, const NPVariant *val
 	switch (id) {
 
 	case MoonId_Background:
-		plugin->setBackground (NPVARIANT_TO_STRING (*value).utf8characters);
+		plugin->setBackground (STR_FROM_VARIANT (*value));
 		return true;
 
 	// Cant be set after initialization so return true
@@ -1644,7 +1645,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		if (!argCount)
 			INVOKE_EXCEPTION ("findName");
 
-		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
+		char *name = STR_FROM_VARIANT (args [0]);
 
 		if (!plugin->surface || !plugin->surface->GetToplevel ())
 			return true;
@@ -1668,7 +1669,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		if (!argCount)
 			INVOKE_EXCEPTION ("createFromXaml");
 
-		char *xaml = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
+		char *xaml = STR_FROM_VARIANT (args [0]);
 		bool create_namescope = argCount >= 2 ? NPVARIANT_TO_BOOLEAN (args[1]) : false;
 		
 		Type::Kind element_type;
@@ -1696,7 +1697,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 		DependencyObject* dep = NULL;
 
-		char *fname = down->GetResponseFile ((char *) NPVARIANT_TO_STRING (args[1]).utf8characters);
+		char *fname = down->GetResponseFile (STR_FROM_VARIANT (args [1]));
 		if (fname != NULL) {
 			XamlLoader* loader = PluginXamlLoader::FromFilename (fname, plugin, plugin->surface);
 			dep = xaml_create_from_file (loader, fname, false, &element_type);
@@ -1837,7 +1838,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 			strvalue = g_strdup_printf ("%g", NPVARIANT_TO_DOUBLE (*value));
 		}
 		else if (NPVARIANT_IS_STRING (*value)) {
-			strvalue = g_strdup (NPVARIANT_TO_STRING (*value).utf8characters);
+			strvalue = g_strdup (STR_FROM_VARIANT (*value));
 		}
 		else if (NPVARIANT_IS_NULL (*value)){
 			DEBUGMSG ("Setting NULL for (%s::%s)", dob->GetTypeName (), p->name);
@@ -1951,7 +1952,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	// Some debug code...
 	// with this it is possible to do obj.printf ("msg") from js
 	case MoonId_Printf:
-		printf ("JS message: %s\n", NPVARIANT_TO_STRING (args [0]).utf8characters);
+		printf ("JS message: %s\n", STR_FROM_VARIANT (args [0]));
 		VOID_TO_NPVARIANT (*result);
 		return true;
 #endif
@@ -1962,7 +1963,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			INVOKE_EXCEPTION ("setValue");
 
 		_class->setProperty (this,
-				     NPID (NPVARIANT_TO_STRING (args[0]).utf8characters),
+				     NPID (STR_FROM_VARIANT (args [0])),
 				     &args[1]);
 
 		VOID_TO_NPVARIANT (*result);
@@ -1973,7 +1974,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			INVOKE_EXCEPTION ("getValue");
 
 		_class->getProperty (this,
-				     NPID (NPVARIANT_TO_STRING (args[0]).utf8characters),
+				     NPID (STR_FROM_VARIANT (args [0])),
 				     result);
 		return true;
 
@@ -1981,7 +1982,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		if (!argCount)
 			INVOKE_EXCEPTION ("findName");
 
-		char *name = (char *) NPVARIANT_TO_STRING (args[0]).utf8characters;
+		char *name = STR_FROM_VARIANT (args [0]);
 
 		DependencyObject *element = dob->FindName (name);
 		if (!element) {
@@ -2025,7 +2026,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			INVOKE_EXCEPTION ("addEventListener");
 		}
 
-		char *name = g_strdup ((char *) NPVARIANT_TO_STRING (args[0]).utf8characters);
+		char *name = g_strdup (STR_FROM_VARIANT (args [0]));
 
 		name[0] = toupper(name[0]);
 
@@ -2497,7 +2498,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 			return true;
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
-		const char *part = NPVARIANT_TO_STRING (args[0]).utf8characters;
+		const char *part = STR_FROM_VARIANT (args [0]);
 
 		media->SetSource (downloader, part);
 
@@ -2552,7 +2553,7 @@ MoonlightImageObject::Invoke (int id, NPIdentifier name,
 			return true;
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
-		const char *part = NPVARIANT_TO_STRING (args[1]).utf8characters;
+		const char *part = STR_FROM_VARIANT (args [1]);
 
 		img->SetSource (downloader, part);
 
@@ -2608,7 +2609,7 @@ MoonlightImageBrushObject::Invoke (int id, NPIdentifier name,
 			return true;
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
-		const char *part = NPVARIANT_TO_STRING (args[1]).utf8characters;
+		const char *part = STR_FROM_VARIANT (args [1]);
 
 		img->SetSource (downloader, part);
 
@@ -2757,10 +2758,10 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		if (argCount > 3)
 			return true;
 
-		const char *verb = NPVARIANT_TO_STRING (args[0]).utf8characters;
-		const char *uri = NPVARIANT_TO_STRING (args[1]).utf8characters;
+		char *verb = STR_FROM_VARIANT (args [0]);
+		char *uri = STR_FROM_VARIANT (args [1]);
 
-		downloader_open (dl, (char*)verb, (char*)uri);
+		downloader_open (dl, verb, uri);
 
 		VOID_TO_NPVARIANT (*result);
 
@@ -2781,10 +2782,10 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 1)
 			return true;
 
-		const char *part_name = NPVARIANT_TO_STRING (args[0]).utf8characters;
+		char *part_name = STR_FROM_VARIANT (args [0]);
 
 		uint64_t size;
-		char* buf = (char*)downloader_get_response_text (dl, (char*)part_name, &size);
+		char* buf = (char*) downloader_get_response_text (dl, part_name, &size);
 
 		if (buf) {
 			char *s = (char*)NPN_MemAlloc (size);
@@ -3415,7 +3416,7 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 
 	NPN_GetProperty (npp, npobj, id_identifier, &npresult);
 
-	if (NPVARIANT_IS_STRING (npresult) && strlen (NPVARIANT_TO_STRING (npresult).utf8characters) > 0) {
+	if (NPVARIANT_IS_STRING (npresult) && strlen (STR_FROM_VARIANT (npresult)) > 0) {
 		NPString np_id = NPVARIANT_TO_STRING (npresult);
 
 		nsString ns_id = NS_ConvertUTF8toUTF16 (np_id.utf8characters, strlen (np_id.utf8characters));
