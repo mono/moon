@@ -461,14 +461,13 @@ VisualCollection::VisualRemoved (Visual *visual)
 	if (item->parent == NULL)
 		return;
 
-	// we can't just call item->Invalidate() here, since
-	// dirty.cpp relies on the child->parent link being
-	// present.  Instead we directly call ChildInvalidated
-	// with the entire bounds of the child (which is
-	// likely suboptimal, considering panels without
-	// backgrounds might have a more optimized region we
-	// can redraw).
-	item->parent->ChildInvalidated (item);
+	// we can't just call item->Invalidate() here, since dirty.cpp
+	// relies on the child->parent link being present.  Instead we
+	// directly call item->parent->Invalidate with the entire
+	// bounds of the child (which is likely suboptimal,
+	// considering panels without backgrounds might have a more
+	// optimized region we can redraw).
+	item->parent->Invalidate (item->GetBounds());
 	item->parent = NULL;
 }
 

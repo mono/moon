@@ -54,7 +54,6 @@ public:
 	//Rect children_dirty_rect;
 	bool force_invalidate_of_new_bounds;
 	Region *dirty_region;
-	Region *children_dirty_region;
 
 	int DumpHierarchy (UIElement *obj);
 
@@ -187,16 +186,17 @@ public:
 	// 
 	bool InsideClip (cairo_t *cr, double x, double y);
 
-	void ChildInvalidated (UIElement *child);
-	void ChildInvalidated (Region *region);
-
 	//
 	// Invalidates a subrectangle of this element
 	//
 	void Invalidate (Rect r);
+
+	//
+	// Invalidates a subregion of this element
+	void Invalidate (Region *region);
 	
 	//
-	// Invalidates the items bounding rectangle on its surface
+	// Invalidates the entire bounding rectangle of this element
 	//
 	void Invalidate ();
 

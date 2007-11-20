@@ -1,5 +1,21 @@
 2007-11-20  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp (VisualRemoved): switch from using
+	item->parent->ChildInvalidated(UIElement), use
+	item->parent->Invalidate (item->GetBounds()).
+
+	* uielement.h, uielement.cpp: change ChildInvalidated(Region *) to
+	Invalidate (Region*) and update calls to it.  Remove
+	ChildInvalidated(UIElement*).  Also, remove all references to the
+	children_dirty_region field.  everything goes through dirty_region
+	now.
+
+	* dirty.cpp: switch to using item->parent->Invalidate instead of
+	item->parent->ChildInvalidated, and remove references to
+	children_dirty_region.
+
+2007-11-20  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.cpp: add a ctor for EventClosure, and do a deep
 	copy before emitting an event.
 

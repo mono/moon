@@ -43,8 +43,8 @@ add_dirty_element (UIElement *element, DirtyType dirt)
 	}
 
   // XXX this should really be here...
-//  	if (element->dirty_flags & dirt)
-//  		return;
+//	if (element->dirty_flags & dirt)
+//		return;
 
 	element->dirty_flags |= dirt;
 
@@ -213,7 +213,7 @@ process_dirty_elements ()
 // 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
 						el->parent->UpdateBounds();
 						Region oregion = Region (obounds);
-						el->parent->ChildInvalidated (&oregion);
+						el->parent->Invalidate (&oregion);
 					}
 				} 
 				
@@ -229,7 +229,6 @@ process_dirty_elements ()
 			el->dirty_flags &= ~DirtyInvalidate;
 
 			Region *dirty = el->dirty_region;
-			dirty->Union (el->children_dirty_region);
 
 			if (el->parent) {
 // 			  printf (" + + invalidating parent (%f,%f,%f,%f)\n",
@@ -237,7 +236,7 @@ process_dirty_elements ()
 // 				  el->dirty_rect.y,
 // 				  el->dirty_rect.w,
 // 				  el->dirty_rect.h);
-				el->parent->ChildInvalidated (dirty);
+				el->parent->Invalidate (dirty);
 			}
 			else if (el->Is (Type::CANVAS) &&
 				 el->parent == NULL &&
@@ -265,8 +264,6 @@ process_dirty_elements ()
 
 			delete el->dirty_region;
 			el->dirty_region = new Region ();
-			delete el->children_dirty_region;
-			el->children_dirty_region = new Region ();
 		}
 
 		if (!(el->dirty_flags & UpDirtyState)) {

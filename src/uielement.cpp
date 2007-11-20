@@ -57,7 +57,6 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	dirty_flags = 0;
 	up_dirty_node = down_dirty_node = NULL;
 	dirty_region = new Region ();
-	children_dirty_region = new Region ();
 
 	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
@@ -74,7 +73,6 @@ UIElement::~UIElement ()
 	}
 	
 	delete dirty_region;
-	delete children_dirty_region;
 
 	remove_dirty_element (this);
 }
@@ -324,26 +322,6 @@ UIElement::OnLoaded ()
 	}
 }
 
-void
-UIElement::ChildInvalidated (UIElement *child)
-{
-	Region region (child->GetBounds());
-	ChildInvalidated (&region);
-}
-
-void
-UIElement::ChildInvalidated (Region *region)
-{
-	if (!GetVisible() || total_opacity <= 0.0)
-		return;
-
-	add_dirty_element (this, DirtyInvalidate);
-
-	children_dirty_region->Union (region);
-
-	Emit (InvalidatedEvent);
-}
-
 //
 // Queues the invalidate for the current region, performs any 
 // updates to the RenderTransform (optional) and queues a 
@@ -371,9 +349,23 @@ UIElement::Invalidate (Rect r)
 		(int)(r.w+2), (int)(r.h+2));
 #endif
 
+
 	add_dirty_element (this, DirtyInvalidate);
 
 	dirty_region->Union (r);
+
+	Emit (InvalidatedEvent);
+}
+
+void
+UIElement::Invalidate (Region *region)
+{
+	if (!GetVisible() || total_opacity <= 0.0)
+		return;
+
+	add_dirty_element (this, DirtyInvalidate);
+
+	dirty_region->Union (region);
 
 	Emit (InvalidatedEvent);
 }
