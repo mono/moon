@@ -1,3 +1,9 @@
+2007-11-20  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::expose_event_callback): take allocation
+	offsets into account when invalidating and drawing.  Fixes
+	#339010.
+
 2007-11-20  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlElementInstance::ClearSetProperties): in glib <

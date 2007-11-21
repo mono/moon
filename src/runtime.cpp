@@ -404,7 +404,8 @@ void
 Surface::Invalidate (Rect r)
 {
 	gtk_widget_queue_draw_area (drawing_area,
-				    (int) r.x, (int)r.y, 
+				    (int) drawing_area->allocation.x + r.x, 
+				    (int) drawing_area->allocation.y + r.y, 
 				    (int) r.w, (int)r.h);
 }
 
@@ -800,10 +801,14 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 #endif
 	GdkPixmap *pixmap = gdk_pixmap_new (widget->window, MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
 	cairo_t *ctx = runtime_cairo_create (pixmap);
-	cairo_surface_set_device_offset (cairo_get_target (ctx),
-					 -event->area.x, - event->area.y);
+	Region *region = new Region (event->region);
+	gdk_region_offset (region->gdkregion, -widget->allocation.x, -widget->allocation.y);
 
-	runtime_cairo_region (ctx, event->region);
+	cairo_surface_set_device_offset (cairo_get_target (ctx),
+					 widget->allocation.x - event->area.x, 
+					 widget->allocation.y - event->area.y);
+
+	runtime_cairo_region (ctx, region->gdkregion);
 	cairo_clip (ctx);
 
 	//
@@ -842,11 +847,10 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 
 	cairo_save (ctx);
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-	Region *region = new Region (event->region);
 	s->Paint (ctx, region);
 	delete (region);
 #if DEBUG_EXPOSE
-	runtime_cairo_region (ctx, event->region);
+	runtime_cairo_region (ctx, region->gdkregion);
 	cairo_set_line_width (ctx, 2.0);
 	cairo_set_source_rgb (ctx, (double)(s->frames % 2), (double)((s->frames + 1) % 2), (double)((s->frames / 3) % 2));
 	cairo_stroke (ctx);
