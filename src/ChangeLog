@@ -1,5 +1,13 @@
 2007-11-21  Chris Toshok  <toshok@ximian.com>
 
+	* media.cpp (MediaElement::UpdateProgress): only set 1 of
+	DownloadProgressProperty and BufferingProgressProperty.  The
+	former is used if we're playing progressively, the latter if we're
+	buffering before playing.  This fixes the buffering animation on
+	the halo site.
+	
+2007-11-21  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::Invalidate): add the int case around the
 	complete expression to quiet gcc.
 

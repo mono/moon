@@ -558,13 +558,13 @@ void
 MediaElement::UpdateProgress ()
 {
 	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
-	
-	SetValue (MediaElement::DownloadProgressProperty, Value (progress));
-	
-	// Note: until we start streaming media as we download it,
-	// we'll use the downloader progress as the buffering progress
-	// too.
-	SetValue (MediaElement::BufferingProgressProperty, Value (progress));
+
+	if (false /* XXX if we're playing progressively */) {
+		SetValue (MediaElement::DownloadProgressProperty, Value (progress));
+	}
+	else {
+		SetValue (MediaElement::BufferingProgressProperty, Value (progress));
+	}
 }
 
 void 
