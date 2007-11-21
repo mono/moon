@@ -128,7 +128,14 @@ class XamlElementInstance : public List::Node {
 
 	void ClearSetProperties ()
 	{
+#if GLIB_CHECK_VERSION(2,12,0)
 		g_hash_table_remove_all (set_properties);
+#else
+		// this will cause the hash table to be recreated the
+		// next time a property is set.
+		g_hash_table_destroy (set_properties);
+		set_properties = NULL;
+#endif
 	}
 };
 

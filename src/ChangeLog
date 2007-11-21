@@ -1,5 +1,11 @@
 2007-11-20  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (XamlElementInstance::ClearSetProperties): in glib <
+	2.12, destroy the hash table and set it to NULL so we'll recreate
+	it.
+
+2007-11-20  Chris Toshok  <toshok@ximian.com>
+
 	* collection.cpp (VisualRemoved): switch from using
 	item->parent->ChildInvalidated(UIElement), use
 	item->parent->Invalidate (item->GetBounds()).
