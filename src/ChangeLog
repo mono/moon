@@ -1,3 +1,8 @@
+2007-11-22  Jb Evain  <jbevain@novell.com>
+
+	* xaml.cpp (XamlElementInstantce::ClearSetProperties): avoid
+	a glib warning if set_properties is NULL.
+
 2007-11-21  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (MediaElement::UpdateProgress): only set 1 of

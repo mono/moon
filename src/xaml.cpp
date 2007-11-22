@@ -128,6 +128,9 @@ class XamlElementInstance : public List::Node {
 
 	void ClearSetProperties ()
 	{
+		if (!set_properties)
+			return;
+
 #if GLIB_CHECK_VERSION(2,12,0)
 		g_hash_table_remove_all (set_properties);
 #else
