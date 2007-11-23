@@ -17,6 +17,10 @@
 #include <gtk/gtk.h>
 #include "openfile.h"
 
+// FIXME: Silverlight 1.1 (alpha, refresh) doesn't allow the selection(*) of
+// symlinks on Mac OSX. (*) actually it de-selects them on the fly. We should
+// be able to duplicate this with lstat and the selection-changed event.
+
 char **
 open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx)
 {
