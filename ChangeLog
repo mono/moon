@@ -1,3 +1,8 @@
+2007-11-23  Larry Ewing  <lewing@novell.com>
+
+	* src/runtime.cpp (Surface::expose_event_callback): make sure we
+	don't delete the delete the region before we need it.
+
 2007-11-12  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* NOTES: 1.1 User Plugin works now, removed caveat

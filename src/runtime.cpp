@@ -50,7 +50,6 @@
 #include "garray-ext.h"
 
 
-//#define DEBUG_EXPOSE 1
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
 #define DEBUG_REFCNT 0
@@ -62,6 +61,27 @@
 int Surface::ResizeEvent = -1;
 int Surface::FullScreenChangeEvent = -1;
 int Surface::ErrorEvent = -1;
+
+static bool inited = false;
+static bool g_type_inited = false;
+guint32 moonlight_flags = 0;
+
+static struct {
+	const char *override;
+	guint32 flag;
+	bool set;
+} overrides[] = {
+	{ "text=pango",        RUNTIME_INIT_PANGO_TEXT_LAYOUT, true  },
+	{ "text=silverlight",  RUNTIME_INIT_PANGO_TEXT_LAYOUT, false },
+	{ "codecs=microsoft",  RUNTIME_INIT_MICROSOFT_CODECS,  true  },
+	{ "codecs=ffmpeg",     RUNTIME_INIT_MICROSOFT_CODECS,  false },
+	{ "timesource=manual", RUNTIME_INIT_TIMESOURCE_MANUAL, true },
+	{ "timesource=system", RUNTIME_INIT_TIMESOURCE_MANUAL, false },
+	{ "show=expose",       RUNTIME_INIT_SHOW_EXPOSE,       true },
+	{ "show=nothing",      RUNTIME_INIT_SHOW_EXPOSE,       false },
+};
+
+#define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
 
 cairo_t *
 runtime_cairo_create (GdkWindow *drawable)
@@ -848,13 +868,16 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	cairo_save (ctx);
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 	s->Paint (ctx, region);
+
+	if (RENDER_EXPOSE) {
+		runtime_cairo_region (ctx, region->gdkregion);
+		cairo_set_line_width (ctx, 2.0);
+		cairo_set_source_rgb (ctx, (double)(s->frames % 2), (double)((s->frames + 1) % 2), (double)((s->frames / 3) % 2));
+		cairo_stroke (ctx);
+	}
+
 	delete (region);
-#if DEBUG_EXPOSE
-	runtime_cairo_region (ctx, region->gdkregion);
-	cairo_set_line_width (ctx, 2.0);
-	cairo_set_source_rgb (ctx, (double)(s->frames % 2), (double)((s->frames + 1) % 2), (double)((s->frames / 3) % 2));
-	cairo_stroke (ctx);
-#endif
+
 	GdkGC *gc = gdk_gc_new (pixmap);
 
 	gdk_gc_set_clip_region (gc, event->region);
@@ -1258,23 +1281,6 @@ measuring_context_destroy (cairo_t *cr)
 	cairo_surface_destroy (cairo_get_target (cr));
 	cairo_destroy (cr);
 }
-
-static bool inited = false;
-static bool g_type_inited = false;
-guint32 moonlight_flags = 0;
-
-static struct {
-	const char *override;
-	guint32 flag;
-	bool set;
-} overrides[] = {
-	{ "text=pango",        RUNTIME_INIT_PANGO_TEXT_LAYOUT, true  },
-	{ "text=silverlight",  RUNTIME_INIT_PANGO_TEXT_LAYOUT, false },
-	{ "codecs=microsoft",  RUNTIME_INIT_MICROSOFT_CODECS,  true  },
-	{ "codecs=ffmpeg",     RUNTIME_INIT_MICROSOFT_CODECS,  false },
-	{ "timesource=manual", RUNTIME_INIT_TIMESOURCE_MANUAL, true },
-	{ "timesource=system", RUNTIME_INIT_TIMESOURCE_MANUAL, false },
-};
 
 void
 runtime_init (guint32 flags)
