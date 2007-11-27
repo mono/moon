@@ -34,7 +34,7 @@ void
 Control::ComputeBounds ()
 {
 	if (real_object) {
-		bounds = real_object->GetBounds ();
+		bounds = real_object->GetSubtreeBounds ();
 	}
 	else {
 		bounds = Rect (0, 0, 0, 0);

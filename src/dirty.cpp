@@ -107,12 +107,65 @@ process_dirty_elements ()
 	if (!down_dirty)
 		return;
 
-	/* push down the transforms and opacity changes first */
+	/* push down the transforms opacity, and visibility changes first */
 	while (DirtyNode *node = (DirtyNode*)down_dirty->First()) {
 		UIElement* el = (UIElement*)node->element;
 
+		if (el->dirty_flags & DirtyRenderVisibility) {
+			el->dirty_flags &= ~DirtyRenderVisibility;
+			
+			el->UpdateBounds ();
+
+			el->Invalidate ();
+			el->ComputeTotalRenderVisibility ();
+			el->Invalidate ();
+
+			if (el->Is (Type::PANEL)) {
+				Panel *p = (Panel*)el;
+				VisualCollection *children = p->GetChildren();
+
+				Collection::Node* n = (Collection::Node *) children->list->First ();
+				while (n != NULL) {
+					((UIElement *) n->obj)->UpdateTotalRenderVisibility ();
+					n = (Collection::Node *) n->next;
+				}
+			}
+			else if (el->Is (Type::CONTROL)) {
+				Control *c = (Control*)el;
+				if (c->real_object)
+					c->real_object->UpdateTotalRenderVisibility();
+			}
+		}
+
+		if (el->dirty_flags & DirtyHitTestVisibility) {
+			el->dirty_flags &= ~DirtyHitTestVisibility;
+			
+			el->UpdateBounds ();
+
+			el->Invalidate ();
+			el->ComputeTotalHitTestVisibility ();
+			el->Invalidate ();
+
+			if (el->Is (Type::PANEL)) {
+				Panel *p = (Panel*)el;
+				VisualCollection *children = p->GetChildren();
+
+				Collection::Node* n = (Collection::Node *) children->list->First ();
+				while (n != NULL) {
+					((UIElement *) n->obj)->UpdateTotalHitTestVisibility ();
+					n = (Collection::Node *) n->next;
+				}
+			}
+			else if (el->Is (Type::CONTROL)) {
+				Control *c = (Control*)el;
+				if (c->real_object)
+					c->real_object->UpdateTotalHitTestVisibility();
+			}
+		}
+
 		if (el->dirty_flags & DirtyOpacity) {
 			el->dirty_flags &= ~DirtyOpacity;
+
 			el->UpdateBounds ();
 
 			el->Invalidate ();
@@ -200,6 +253,8 @@ process_dirty_elements ()
 			el->dirty_flags &= ~DirtyBounds;
 
 			Rect obounds = el->GetBounds ();
+			Rect osubtreebounds = el->GetSubtreeBounds ();
+			bool parent_bounds_updated = false;
 
 			el->ComputeBounds ();
 
@@ -207,16 +262,26 @@ process_dirty_elements ()
 // 					obounds.x, obounds.y, obounds.w, obounds.h,
 // 					el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
 
-			if (obounds != el->GetBounds() || el->force_invalidate_of_new_bounds) {
-				if (obounds != el->GetBounds()) {
-					if (el->parent) {
+			if (osubtreebounds != el->GetSubtreeBounds ()) {
+				if (el->parent) {
+					el->parent->UpdateBounds ();
+					parent_bounds_updated = true;
+				}
+			}
+
+			if (obounds != el->GetBounds()) {
+				if (el->parent) {
 // 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
+					if (!parent_bounds_updated)
 						el->parent->UpdateBounds();
-						Region oregion = Region (obounds);
-						el->parent->Invalidate (&oregion);
-					}
-				} 
+
+					Region oregion = Region (obounds);
+					el->parent->Invalidate (&oregion);
+				}
+				el->Invalidate ();
+			}
 				
+			if (el->force_invalidate_of_new_bounds) {
 				el->force_invalidate_of_new_bounds = false;
 				el->Invalidate ();
 			}
@@ -230,22 +295,11 @@ process_dirty_elements ()
 
 			Region *dirty = el->dirty_region;
 
-			if (el->parent) {
-// 			  printf (" + + invalidating parent (%f,%f,%f,%f)\n",
-// 				  el->dirty_rect.x,
-// 				  el->dirty_rect.y,
-// 				  el->dirty_rect.w,
-// 				  el->dirty_rect.h);
-				el->parent->Invalidate (dirty);
-			}
-			else if (el->Is (Type::CANVAS) &&
-				 el->parent == NULL &&
-				 el->GetSurface() &&
-				 el->GetSurface()->IsTopLevel (el)) {
-				GdkRectangle *rects;
-				int count;
-				dirty->GetRectangles (&rects, &count);
-				Surface *surface = el->GetSurface ();
+			GdkRectangle *rects;
+			int count;
+			dirty->GetRectangles (&rects, &count);
+			Surface *surface = el->GetSurface ();
+			if (surface) {
 				while (count--) {
 					Rect r = Rect ((double)rects [count].x,
 						       (double)rects [count].y,
@@ -256,7 +310,7 @@ process_dirty_elements ()
 					//	r.y,
 					//	r.w,
 					//	r.h);
-					
+
 					surface->Invalidate (r);					
 				}
 				g_free (rects);

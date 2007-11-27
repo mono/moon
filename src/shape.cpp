@@ -325,6 +325,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	cairo_new_path (cr);
 
 	cairo_restore (cr);
+
 	return ret;
 }
 

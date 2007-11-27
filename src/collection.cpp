@@ -447,6 +447,8 @@ VisualCollection::VisualAdded (Visual *visual)
 	item->parent = panel;
 	item->UpdateTransform ();
 	item->UpdateTotalOpacity ();
+	item->UpdateTotalRenderVisibility ();
+	item->UpdateTotalHitTestVisibility ();
 	item->Invalidate ();
 	item->SetSurface (panel->GetSurface ());
 }
@@ -467,7 +469,7 @@ VisualCollection::VisualRemoved (Visual *visual)
 	// bounds of the child (which is likely suboptimal,
 	// considering panels without backgrounds might have a more
 	// optimized region we can redraw).
-	item->parent->Invalidate (item->GetBounds());
+	item->parent->Invalidate (item->GetSubtreeBounds());
 	item->parent = NULL;
 }
 

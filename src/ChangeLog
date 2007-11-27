@@ -1,3 +1,26 @@
+2007-11-27  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.[cpp,h] panel.[cpp,h], control.[cpp,h], uielement.[cpp,h],
+	canvas.cpp, collection.cpp, shape.cpp:
+
+	rather large change - don't use a large rectangular bounding box
+	encompassing both the panel's frameworkelement bounds as well as
+	the bounds of all its children.  Instead, only worry about the
+	frameworkelement bounds, and let the children invalidate
+	themselves.  but do all this in a way that we still use the
+	subtree's bounding box to prune rendering and hit testing.
+
+	since we won't be invalidating the entire box surrounding all
+	children, we need to propagate visibility information down the
+	tree as we do opacity.
+
+	This should really speed up most animations (such as those in
+	sprawl and airlines) since we'll be invalidating far smaller
+	areas.
+	
+	(this code was stupidly hard for lewing and me to get right.  yay
+	for jet lag.)
+
 2007-11-23  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: add show=expose to toggle expose display.

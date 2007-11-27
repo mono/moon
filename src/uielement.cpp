@@ -58,11 +58,13 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	up_dirty_node = down_dirty_node = NULL;
 	dirty_region = new Region ();
 
+	// XXX bad bad bad.  no virtual method calls in ctors
 	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 
 	ComputeLocalTransform ();
 	ComputeTotalOpacity ();
+	ComputeTotalRenderVisibility ();
 }
 
 UIElement::~UIElement ()
@@ -81,18 +83,14 @@ Rect
 UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 {
 	Value *value = GetValue (UIElement::ClipProperty);
-	if (!value) {
-		if (!GetVisible () || total_opacity == 0.0)
-			return Rect (0, 0, 0, 0);
-
+	if (!value)
 		return unclipped;
-	}
 
 	Geometry *geometry = value->AsGeometry ();
 	Rect box = geometry->ComputeBounds (NULL);
-	
-	if (!GetVisible () || total_opacity == 0.0)
-		box = Rect (0, 0, 0, 0);
+
+	if (!GetRenderVisible())
+		box = Rect (0,0,0,0);
 
 	if (transform)
 		box = bounding_rect_for_transformed_rect (&absolute_xform,
@@ -130,19 +128,18 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		// note: invalid enum values are only validated in 1.1 (managed code),
 		// the default value for VisibilityProperty is VisibilityCollapsed
 		// (see bug #340799 for more details)
-		if (GetValue (prop)->AsInt32() == VisibilityVisible) {
+		if (GetValue (prop)->AsInt32() == VisibilityVisible)
 			flags |= UIElement::RENDER_VISIBLE;
-			FullInvalidate (false);
-		} else {
-			FullInvalidate (true);
+		else
 			flags &= ~UIElement::RENDER_VISIBLE;
-		}
+		UpdateTotalRenderVisibility();
 	}
 	else if (prop == UIElement::IsHitTestVisibleProperty) {
-		if (GetValue (prop)->AsBool())
-			flags |= UIElement::HIT_TEST_VISIBLE;
-		else
-			flags &= ~UIElement::HIT_TEST_VISIBLE;
+               if (GetValue (prop)->AsBool())
+                       flags |= UIElement::HIT_TEST_VISIBLE;
+               else
+                       flags &= ~UIElement::HIT_TEST_VISIBLE;
+		UpdateTotalHitTestVisibility();
 	}
 	else if (prop == UIElement::ClipProperty) {
 		Invalidate ();
@@ -205,6 +202,18 @@ UIElement::DumpHierarchy (UIElement *obj)
 #endif
 
 void
+UIElement::UpdateTotalRenderVisibility ()
+{
+	add_dirty_element (this, DirtyRenderVisibility);
+}
+
+void
+UIElement::UpdateTotalHitTestVisibility ()
+{
+	add_dirty_element (this, DirtyHitTestVisibility);
+}
+
+void
 UIElement::UpdateTotalOpacity ()
 {
 	add_dirty_element (this, DirtyOpacity);
@@ -218,6 +227,40 @@ UIElement::ComputeTotalOpacity ()
 
 	double local_opacity = GetValue (OpacityProperty)->AsDouble();
 	total_opacity = local_opacity * (parent ? parent->GetTotalOpacity () : 1.0);
+}
+
+void
+UIElement::ComputeTotalRenderVisibility ()
+{
+	if (parent)
+		parent->ComputeTotalRenderVisibility ();
+
+	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
+
+	if (parent)
+		visible = visible && parent->GetRenderVisible ();
+
+	if (visible)
+		flags |= UIElement::TOTAL_RENDER_VISIBLE;
+	else
+		flags &= ~UIElement::TOTAL_RENDER_VISIBLE;
+}
+
+void
+UIElement::ComputeTotalHitTestVisibility ()
+{
+	if (parent)
+		parent->ComputeTotalHitTestVisibility ();
+
+	bool visible = (flags & UIElement::HIT_TEST_VISIBLE) != 0;
+
+	if (parent)
+		visible = visible && parent->GetHitTestVisible ();
+
+	if (visible)
+		flags |= UIElement::TOTAL_HIT_TEST_VISIBLE;
+	else
+		flags &= ~UIElement::TOTAL_HIT_TEST_VISIBLE;
 }
 
 void
@@ -339,14 +382,14 @@ UIElement::FullInvalidate (bool rendertransform)
 void
 UIElement::Invalidate (Rect r)
 {
-	if (!GetVisible() || total_opacity <= 0.0)
+	if (!GetRenderVisible() || total_opacity <= 0.0)
 		return;
 
 #ifdef DEBUG_INVALIDATE
-	printf ("Requesting invalidate for object %p (%s) at %d %d - %d %d\n", 
-		this, Type::Find(GetObjectType())->name,
-		(int) r.x, (int)r.y, 
-		(int)(r.w+2), (int)(r.h+2));
+	printf ("Requesting invalidate for object %p %s (%s) at %f %f - %f %f\n", 
+		this, GetName(), GetTypeName(),
+		r.x, r.y, 
+		r.w, r.h);
 #endif
 
 
@@ -360,7 +403,7 @@ UIElement::Invalidate (Rect r)
 void
 UIElement::Invalidate (Region *region)
 {
-	if (!GetVisible() || total_opacity <= 0.0)
+	if (!GetRenderVisible() || total_opacity <= 0.0)
 		return;
 
 	add_dirty_element (this, DirtyInvalidate);
@@ -486,7 +529,7 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 {
 	cairo_pattern_t *mask = NULL;
 
-	if (!GetVisible() || total_opacity == 0.0 || region->RectIn (bounds) == GDK_OVERLAP_RECTANGLE_OUT)
+	if (!GetRenderVisible() || total_opacity == 0.0 || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
 
 	

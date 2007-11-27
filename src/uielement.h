@@ -66,10 +66,13 @@ public:
 		// the HitTestVisible property
 		HIT_TEST_VISIBLE = 0x04,
 
-		SHAPE_EMPTY      = 0x10,	// there's is nothing to draw, the cached path may be NULL
-		SHAPE_NORMAL     = 0x20,	// normal drawing
-		SHAPE_DEGENERATE = 0x40,	// degenerate drawing, use the Stroke brush for filling
-		SHAPE_MASK       = 0x70
+		TOTAL_RENDER_VISIBLE   = 0x08,
+		TOTAL_HIT_TEST_VISIBLE = 0x10,
+
+		SHAPE_EMPTY      = 0x20,	// there's is nothing to draw, the cached path may be NULL
+		SHAPE_NORMAL     = 0x40,	// normal drawing
+		SHAPE_DEGENERATE = 0x80,	// degenerate drawing, use the Stroke brush for filling
+		SHAPE_MASK       = 0xf0
 	};
 	
 	int flags;
@@ -102,6 +105,12 @@ public:
 	//   Get the cumulative opacity of this element, including all it's parents
 	double GetTotalOpacity () { return total_opacity; }
 
+	virtual void UpdateTotalRenderVisibility ();
+	void ComputeTotalRenderVisibility ();
+
+	virtual void UpdateTotalHitTestVisibility ();
+	void ComputeTotalHitTestVisibility ();
+
 	//
 	// UpdateTransform:
 	//   Updates the absolute_xform for this item
@@ -112,16 +121,16 @@ public:
 	virtual void ComputeTransform ();
 
 	//
-	// GetVisible:
+	// GetRenderVisible:
 	//   Returns true if the Visibility property of this item is "Visible", and false otherwise
 	//
-	bool GetVisible () { return (flags & UIElement::RENDER_VISIBLE) != 0; }
+	bool GetRenderVisible () { return (flags & UIElement::TOTAL_RENDER_VISIBLE) != 0; }
 
 	//
 	// GetHitTestVisible:
 	//   Returns true if the IsHitTestVisible property of this item true, and false otherwise
 	//
-	bool GetHitTestVisible () { return (flags & UIElement::HIT_TEST_VISIBLE) != 0; }
+	bool GetHitTestVisible () { return (flags & UIElement::TOTAL_HIT_TEST_VISIBLE) != 0; }
 
 	//
 	// Render: 
@@ -164,6 +173,7 @@ public:
 	// 
 	virtual Rect GetBounds () { return bounds; }
 
+	virtual Rect GetSubtreeBounds () { return bounds; }
 	//
 	// GetTransformFor
 	//   Obtains the affine transform for the given child, this is

@@ -27,6 +27,9 @@ enum DirtyType {
 	// on all children.
 	DirtyOpacity        = 0x08,
 
+	DirtyRenderVisibility  = 0x10,
+	DirtyHitTestVisibility = 0x20,
+
 	// DirtyInvalidate
 	//
 	// element->dirty_rect contains the area needing repaint.  If
@@ -34,15 +37,15 @@ enum DirtyType {
 	// the surface.  Otherwise we pass the rect up to our parent
 	// (and union it in with the parent's dirty_rect), and set
 	// DirtyInvalidate on the parent.
-	DirtyInvalidate     = 0x10,
+	DirtyInvalidate     = 0x40,
 
-	DownDirtyState      = DirtyOpacity | DirtyLocalTransform | DirtyTransform,
+	DownDirtyState      = DirtyOpacity | DirtyLocalTransform | DirtyTransform | DirtyRenderVisibility | DirtyHitTestVisibility,
 	UpDirtyState        = DirtyBounds | DirtyInvalidate,
 
 	DirtyState          = DownDirtyState | UpDirtyState,
 
-	DirtyInUpDirtyList  = 0x40,
-	DirtyInDownDirtyList = 0x80
+	DirtyInUpDirtyList  = 0x80,
+	DirtyInDownDirtyList = 0x100
 };
 
 void add_dirty_element (UIElement *element, DirtyType dirt);

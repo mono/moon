@@ -38,7 +38,7 @@ class Control : public FrameworkElement {
 	virtual void Enter (cairo_t *cr, int state, double x, double y);
 	virtual void Leave ();
 
-	virtual bool GetVisible () { return real_object && real_object->GetVisible(); }
+	virtual bool GetRenderVisible () { return real_object && real_object->GetRenderVisible(); }
 	virtual bool GetHitTestVisible () { return real_object && real_object->GetHitTestVisible(); }
 
 	virtual void OnLoaded ();

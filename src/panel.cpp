@@ -90,19 +90,19 @@ Panel::ComputeBounds ()
 #if DEBUG_BOUNDS
 	levelb += 4;
 	space (levelb);
-	printf ("Panel: Enter ComputeBounds\n");
+	printf ("Panel: Enter ComputeBounds (%s)\n", GetName());
 #endif
 	if (children != NULL) {
 		cn = (Collection::Node *) children->list->First ();
 		for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
 			UIElement *item = (UIElement *) cn->obj;
 
-			// if the item doesn't take part in layout
-			// calculations, skip it
-			if (!item->GetVisible ())
+			// if the item isn't drawn, skip it
+			if (!item->GetRenderVisible ())
 				continue;
 
-			Rect r = item->GetBounds ();
+			Rect r = item->GetSubtreeBounds ();
+				
 			r = IntersectBoundsWithClipPath (r, true);
 #if DEBUG_BOUNDS
 			space (levelb + 4);
@@ -110,16 +110,15 @@ Panel::ComputeBounds ()
 				dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
 #endif
 			if (first) {
-				bounds = r;
+				bounds_with_children = r;
 				first = false;
 			}
 			else {
-				bounds = bounds.Union (r);
+				bounds_with_children = bounds_with_children.Union (r);
 			}
 		}
 	}
 
-	// If we found nothing.
 	double x1, x2, y1, y2;
 	
 	x1 = y1 = 0.0;
@@ -128,24 +127,19 @@ Panel::ComputeBounds ()
 
 	Value *value = GetValue (Panel::BackgroundProperty);
 	if (value && x2 != 0.0 && y2 != 0.0) {
-		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
-								   IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false));
-
-
-		if (first)
-			bounds = fw_rect;
-		else
-			bounds = bounds.Union (fw_rect);
+		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+							     IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2),
+											  false));
 	}
-
-	/* standard "grow the rectangle by enough to cover our
-	   asses because of cairo's floating point rendering"
-	   thing */
-// nop-op	bounds.GrowBy (1);
+	else {
+		bounds = Rect (0,0,0,0);
+	}
 
 #if DEBUG_BOUNDS
 	space (levelb);
 	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	space (levelb);
+	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n", bounds_with_children.x, bounds_with_children.y, bounds_with_children.w, bounds_with_children.h);
 	levelb -= 4;
 #endif
 }
@@ -170,7 +164,7 @@ Panel::FindStartingElement (Region *region)
 		return -1;
 
 	if (!clip.IntersectsWith (GetBounds().RoundOut())
-	    || !GetVisible () 
+	    || !GetRenderVisible () 
 	    || GetValue (UIElement::ClipProperty) != NULL
 	    || uielement_get_opacity_mask (this) != NULL
 	    || GetTotalOpacity () < .990
@@ -185,7 +179,7 @@ Panel::FindStartingElement (Region *region)
 		if (item->GetTotalOpacity () > GetTotalOpacity ())
 			g_warning ("Moonlight bug: child opacity greater than parent");
 
-		if (item->GetVisible ()
+		if (item->GetRenderVisible ()
 		    && item->GetValue (UIElement::ClipProperty) == NULL
 		    && (item->absolute_xform.yx == 0 && item->absolute_xform.xy == 0) /* no skew */
 		    && item->GetTotalOpacity () >= .990
@@ -242,6 +236,7 @@ void
 Panel::UpdateTotalOpacity ()
 {
 #if 1
+	// this really shouldn't need to be here, but our dirty code is broken
 	VisualCollection *children = GetChildren ();
 	for (guint i = 0; i < children->z_sorted->len; i++) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
@@ -249,13 +244,43 @@ Panel::UpdateTotalOpacity ()
 	}
 #endif
 
-	add_dirty_element (this, DirtyOpacity);
+	FrameworkElement::UpdateTotalOpacity ();
+}
+
+void
+Panel::UpdateTotalRenderVisibility ()
+{
+#if 1
+	// this really shouldn't need to be here, but our dirty code is broken
+	VisualCollection *children = GetChildren ();
+	for (guint i = 0; i < children->z_sorted->len; i++) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+		item->UpdateTotalRenderVisibility ();
+	}
+#endif
+
+	FrameworkElement::UpdateTotalRenderVisibility ();
+}
+
+void
+Panel::UpdateTotalHitTestVisibility ()
+{
+#if 1
+	// this really shouldn't need to be here, but our dirty code is broken
+	VisualCollection *children = GetChildren ();
+	for (guint i = 0; i < children->z_sorted->len; i++) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+		item->UpdateTotalHitTestVisibility ();
+	}
+#endif
+
+	FrameworkElement::UpdateTotalHitTestVisibility ();
 }
 
 void
 Panel::Render (cairo_t *cr, Region *region)
 {
-	//if (!GetVisible () || GetTotalOpacity () <= 0.0)
+	//if (!GetRenderVisible () || GetTotalOpacity () <= 0.0)
 	//	return;
 
 	cairo_save (cr);  // for UIElement::ClipProperty
@@ -269,7 +294,6 @@ Panel::Render (cairo_t *cr, Region *region)
 		double fheight = framework_element_get_height (this);
 
 		if (fwidth > 0 && fheight > 0){
-
 
 			Brush *background = value->AsBrush ();
 			background->SetupBrush (cr, this);
@@ -288,10 +312,9 @@ Panel::Render (cairo_t *cr, Region *region)
 void
 Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 {
-
 	VisualCollection *children = GetChildren ();
 
-	Region *clipped_region = new Region (GetBounds ());
+	Region *clipped_region = new Region (bounds_with_children);
 	clipped_region->Intersect (parent_region);
 	gint start_element = FindStartingElement (clipped_region);
 	
@@ -304,10 +327,10 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 	for (guint i = start_element; i < children->z_sorted->len; i++) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
 		
-		Region *region = new Region (item->GetBounds ());
+		Region *region = new Region (item->GetSubtreeBounds());
 		region->Intersect (clipped_region);
 
-		if (!item->GetVisible() 
+		if (!item->GetRenderVisible() 
 		    || item->GetTotalOpacity () == 0.0 
 		    || gdk_region_empty (region->gdkregion)
 		    ) {
@@ -391,7 +414,7 @@ bool
 Panel::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
 {
 	// if the item isn't visible, it's really easy
-	if (!item->GetVisible ())
+	if (!item->GetRenderVisible ())
 		return false;
 
 	// if the item doesn't take part in hit testing, it's also easy
@@ -399,8 +422,8 @@ Panel::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
 		return false;
 
 	// first a quick bounds check
-	if (!item->GetBounds().PointInside (x, y))
-		return false;
+	if (!item->GetSubtreeBounds().PointInside (x, y))
+ 		return false;
 
 	// then, if that passes, a more tailored shape check
 	if (!item->InsideObject (cr, x, y))
@@ -420,7 +443,6 @@ Panel::FindMouseOver (cairo_t *cr, double x, double y)
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
 
 		if (CheckOver (cr, item, x, y)) {
-			//printf (" mouse_over = %s\n", item->GetName());
 			return item;
 		}
 	}
@@ -466,11 +488,13 @@ Panel::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cu
 void
 Panel::HandleButtonPress (cairo_t *cr, int state, double x, double y)
 {
+	mouse_over = FindMouseOver (cr, x, y);
+
 	// not sure if this is correct, but we don't bother updating
 	// the current mouse_over here (and along with that, emitting
 	// enter/leave events).
 	if (mouse_over) {
-		if (mouse_over->GetBounds().PointInside (x, y)
+		if (mouse_over->GetSubtreeBounds().PointInside (x, y)
 		    && mouse_over->InsideObject (cr, x, y)) {
 
 			mouse_over->HandleButtonPress (cr, state, x, y);
@@ -487,7 +511,7 @@ Panel::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
 	// the current mouse_over here (and along with that, emitting
 	// enter/leave events).
 	if (mouse_over) {
-		if (mouse_over->GetBounds().PointInside (x, y)
+		if (mouse_over->GetSubtreeBounds().PointInside (x, y)
 		    && mouse_over->InsideObject (cr, x, y)) {
 
 			mouse_over->HandleButtonRelease (cr, state, x, y);
