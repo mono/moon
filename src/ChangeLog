@@ -1,3 +1,11 @@
+2007-11-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::SetValue): Check the resulting Inlines
+	collection formed from the Text property being set against the old
+	Inlines - if no change, don't set the new Inlines collection,
+	simply keep using the old. The idea is to prevent unnecessary
+	layout re-calculations and invalidates.
+
 2007-11-27  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.[cpp,h] panel.[cpp,h], control.[cpp,h], uielement.[cpp,h],

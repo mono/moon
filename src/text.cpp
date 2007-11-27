@@ -985,6 +985,61 @@ TextBlock::GetValue (DependencyProperty *property)
 	return DependencyObject::GetValue (property);
 }
 
+static bool
+inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
+{
+	Collection::Node *node1, *node2;
+	const char *text1, *text2;
+	Inline *run1, *run2;
+	
+	node1 = (Collection::Node *) curInlines->list->First ();
+	node2 = (Collection::Node *) newInlines->list->First ();
+	
+	while (node1 && node2) {
+		run1 = (Inline *) node1->obj;
+		run2 = (Inline *) node2->obj;
+		
+		if (run1->GetObjectType () != run2->GetObjectType ())
+			return false;
+		
+		if (run1->GetObjectType () == Type::RUN) {
+			text1 = run_get_text ((Run *) run1);
+			text2 = run_get_text ((Run *) run2);
+			
+			if (text1 && text2 && strcmp (text1, text2) != 0)
+				return false;
+			else if ((text1 && !text2) || (!text1 && text2))
+				return false;
+		}
+		
+		// newInlines uses TextBlock font/brush properties, so
+		// if curInlines uses any non-default props then they
+		// are not equal.
+		
+		if (RENDER_USING_PANGO) {
+			if (pango_font_description_get_set_fields (run1->font.pango) != 0)
+				return false;
+		} else {
+			if (run1->font.custom->GetFields () != 0)
+				return false;
+		}
+		
+		if (run1->GetValue (Inline::TextDecorationsProperty) != NULL)
+			return false;
+		
+		if (run1->foreground != NULL)
+			return false;
+		
+		node1 = (Collection::Node *) node1->next;
+		node2 = (Collection::Node *) node2->next;
+	}
+	
+	if (node1 != NULL || node2 != NULL)
+		return false;
+	
+	return true;
+}
+
 void
 TextBlock::SetValue (DependencyProperty *property, Value *value)
 {
@@ -997,20 +1052,15 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 	
 	if (property == TextBlock::TextProperty) {
 		// Text is a virtual property and setting it deletes all current runs,
-		// creating a new run
+		// creating a new collection of runs/linebreaks
 		const char *str = value ? value->AsString () : NULL;
-		Inlines *inlines = text_block_get_inlines (this);
+		Inlines *curInlines = text_block_get_inlines (this);
+		Inlines *inlines = NULL;
 		char *inptr, *text, *d;
 		Inline *run;
 		
 		if (str && str[0]) {
-			if (!inlines) {
-				inlines = new Inlines ();
-				text_block_set_inlines (this, inlines);
-				inlines->unref ();
-			} else {
-				inlines->Clear ();
-			}
+			inlines = new Inlines ();
 			
 			d = text = (char *) g_malloc (strlen (str) + 1);
 			while (*str) {
@@ -1043,9 +1093,18 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 			}
 			
 			g_free (text);
+			
+			if (curInlines && inlines_simple_text_equal (curInlines, inlines)) {
+				// old/new inlines are equal, don't set the new value
+				inlines->unref ();
+				return;
+			}
+			
+			text_block_set_inlines (this, inlines);
+			inlines->unref ();
 			dirty = true;
-		} else if (inlines) {
-			inlines->Clear ();
+		} else if (curInlines) {
+			curInlines->Clear ();
 			dirty = true;
 		}
 		
