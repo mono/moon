@@ -61,7 +61,7 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 	
 	ffmpeg_asf_last_parser = parser;
 	
-	parser->source = new FFMPEGSource (parser, &s->pb);
+	parser->source = new FFMPEGSource (parser, s->pb);
 	
 	if (!parser->ReadHeader ()) {
 		return -1;
@@ -352,7 +352,6 @@ void AVFormatContext_dump (AVFormatContext* s)
 {
 	int t = 1;
 	char* tabs = g_strnfill (t, '\t');
-	char* tabs1 = g_strnfill (t-1, '\t');
 	
 	FFMPEG_DUMP ("AVFormatContext: %p\n", s);
 	if (!s) return;
@@ -439,7 +438,7 @@ void AVStream_dump (AVStream* s, int t)
 	FFMPEG_DUMP ("%sr_frame_rate = %s\n", tabs, AVRational_tostring (s->r_frame_rate));
 	FFMPEG_DUMP ("%spriv_data = %s\n", tabs, s->priv_data == NULL ? "NULL" : "!NULL");
 	//FFMPEG_DUMP ("%scodec_info_duration = %llu\n", tabs, s->codec_info_duration);
-	FFMPEG_DUMP ("%scodec_info_nb_frames = %i\n", tabs, s->codec_info_nb_frames);
+	//FFMPEG_DUMP ("%scodec_info_nb_frames = %i\n", tabs, s->codec_info_nb_frames);
 	FFMPEG_DUMP ("%spts = %s\n", tabs, AVFrac_tostring (s->pts));
 	FFMPEG_DUMP ("%stime_base = %s\n", tabs, AVRational_tostring (s->time_base));
 	FFMPEG_DUMP ("%spts_wrap_bits = %i\n", tabs, s->pts_wrap_bits);
