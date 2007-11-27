@@ -47,7 +47,7 @@
 			</BeginStoryboard>
 		</EventTrigger>
 	</Canvas.Triggers>
-	<TextBlock Width="Auto" Height="18.537" Canvas.Left="242" Canvas.Top="178" Text="Moonlight in 21 Days" TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" x:Name="textBlock">
+	<TextBlock Height="18.537" Canvas.Left="242" Canvas.Top="178" Text="Moonlight in 21 Days" TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" x:Name="textBlock">
 		<TextBlock.RenderTransform>
 			<TransformGroup>
 				<ScaleTransform ScaleX="1" ScaleY="1"/>
