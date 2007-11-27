@@ -61,7 +61,13 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 	
 	ffmpeg_asf_last_parser = parser;
 	
-	parser->source = new FFMPEGSource (parser, s->pb);
+	parser->source = new FFMPEGSource (parser,
+#if LIBAVUTIL_VERSION_INT < (49<<16)+(5<<8)
+					   &s->pb
+#else
+					   s->pb
+#endif
+					   );
 	
 	if (!parser->ReadHeader ()) {
 		return -1;
