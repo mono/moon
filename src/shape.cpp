@@ -306,6 +306,9 @@ Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 bool
 Shape::InsideObject (cairo_t *cr, double x, double y)
 {
+	if (!InsideClip (cr, x, y))
+		return false;
+
 	bool ret = false;
 
 	cairo_save (cr);
