@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x=" http://schemas.microsoft.com/winfx/2006/xaml" Width="978"
+  Height="550" Background="Black">
+
+	<Rectangle Width="200" Height="200" Fill="blue" Stroke="Red">
+	<Rectangle.OpacityMask>
+		<ImageBrush ImageSource="alpha.png" Stretch="None">
+		<ImageBrush.Transform>
+			<TransformGroup>
+				<SkewTransform CenterX="10" CenterY="10" AngleX="5" AngleY="150" />
+				<TranslateTransform X="-20" Y="50" />
+			</TransformGroup>
+		</ImageBrush.Transform>
+		</ImageBrush>
+	</Rectangle.OpacityMask>
+	</Rectangle>
+
+        <TextBlock OpacityMask="#FF000000" Width=" 446.966" Height="32" Canvas.Left="44.377" Canvas.Top="100" FontSize="24" FontWeight="Normal" Foreground="White" Text="Broadband Connection Recommended" TextWrapping="Wrap"/>
+
+        <Rectangle Width="446.966" Height="32" Canvas.Left="44.377" Canvas.Top="150" Fill="Green">
+<Rectangle.OpacityMask>
+                <LinearGradientBrush>
+                <GradientStop Offset="0.25" Color="#00000000"/>
+                <GradientStop Offset="1" Color="#FF000000"/>       
+                </LinearGradientBrush>
+        </Rectangle.OpacityMask>
+        </Rectangle>
+        <Rectangle OpacityMask="#FF000000" Width="446.966" Height="32" Canvas.Left="44.377" Canvas.Top="200" Fill="Red"/>
+        <TextBlock Width=" 446.966" Height="32" Canvas.Left="44.377"
+Canvas.Top="250" FontSize="24" FontWeight="Normal" Foreground="White"
+Text="Broadband Connection Recommended" TextWrapping="Wrap">
+<TextBlock.OpacityMask>
+      <LinearGradientBrush>
+        <GradientStop Offset="0.25" Color="#00000000"/>
+        <GradientStop Offset="1" Color="#FF000000"/>       
+      </LinearGradientBrush>
+    </TextBlock.OpacityMask>
+</TextBlock>           
+
+
+<!--                        <TextBlock OpacityMask="#FF000000" Width=" 446.966" Height="32" Canvas.Left="44.377" Canvas.Top="-87.368" FontSize="24" FontWeight="Normal" Foreground="#FF000000" Text="Broadband Connection Recommended" TextWrapping="Wrap"/>-->
+
+</Canvas>
