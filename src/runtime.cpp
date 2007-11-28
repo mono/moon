@@ -488,6 +488,9 @@ Surface::Realloc ()
 		CreateSimilarSurface ();
 		cairo = cairo_xlib;
 	}
+
+	if (toplevel)
+		toplevel->UpdateBounds();
 }
 
 void
@@ -654,8 +657,10 @@ Surface::UpdateFullScreen (bool value)
 	full_screen = value;
 	
 	Realloc ();
-		
+
+	TimeManager::Instance()->GetSource()->Stop();
 	Emit (FullScreenChangeEvent);
+	TimeManager::Instance()->GetSource()->Start();
 }
 
 void 

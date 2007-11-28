@@ -1,3 +1,14 @@
+2007-11-28  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Realloc): when we Realloc(), we need to tell the
+	toplevel canvas to update its bounds.  This *may* be wrong, but it
+	definitely fixes matrix.
+	(UpdateFullScreen): we need to stop the timesource when emitting
+	the fullscreenchangeevent.  otherwise we can end up stuck in a
+	nested glib mainloop and never return from the emit (actually we
+	never even invoke the JS callback in matrix.  the nested loop
+	happens somewhere deep in the bowels of NPN_Invoke).
+
 2007-11-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::UpdateProgress): Got rid of a hardcoded
