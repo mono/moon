@@ -395,6 +395,7 @@ MediaElement::MediaElement ()
 	
 	loaded = false;
 	updating = false;
+	progressive = false;
 	play_pending = false;
 	
 	downloader = NULL;
@@ -440,7 +441,7 @@ MediaElement::ComputeBounds ()
 		h = (double) mplayer->height;
 		w = (double) mplayer->width;
 	}
-
+	
 	Rect box = Rect (0, 0, w, h);
 	
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
@@ -558,12 +559,14 @@ void
 MediaElement::UpdateProgress ()
 {
 	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
-
-	if (false /* XXX if we're playing progressively */) {
+	
+	if (progressive) {
 		SetValue (MediaElement::DownloadProgressProperty, Value (progress));
-	}
-	else {
+	} else {
 		SetValue (MediaElement::BufferingProgressProperty, Value (progress));
+		
+		if (progress == 1.0)
+			SetValue (MediaElement::DownloadProgressProperty, Value (progress));
 	}
 }
 
@@ -808,6 +811,16 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		
 		if (uri && *uri) {
 			Downloader *dl = Surface::CreateDownloader (this);
+			
+			// FIXME: this is a temporary hack
+#if 0
+			if (!g_ascii_strncasecmp (uri, "mms:", 4))
+				progressive = false; // streaming
+			else
+				progressive = true;
+#else
+			progressive = false;
+#endif
 			
 			//printf ("setting media source to %s\n", uri);
 			downloader_open (dl, "GET", uri);

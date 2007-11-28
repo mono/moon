@@ -174,6 +174,7 @@ public:
 class MediaElement : public MediaBase {
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
+	bool progressive;
 	bool updating;
 	bool loaded;
 	bool play_pending;

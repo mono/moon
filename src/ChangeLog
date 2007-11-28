@@ -1,3 +1,11 @@
+2007-11-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (MediaElement::UpdateProgress): Got rid of a hardcoded
+	hack that forced the assumption of a streaming (vs progressive)
+	media download. Also fixed to emit a DownloadProgressChanged event
+	at progress == 1.0 (which is what th Silverlight book says we're
+	supposed to do).
+
 2007-11-28  Larry Ewing  <lewing@novell.com>
 
 	* src/uielement.cpp (UIElement::DoRender): make sure we don't
