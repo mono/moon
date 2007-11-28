@@ -65,6 +65,7 @@ UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::REN
 	ComputeLocalTransform ();
 	ComputeTotalOpacity ();
 	ComputeTotalRenderVisibility ();
+	ComputeTotalHitTestVisibility ();
 }
 
 UIElement::~UIElement ()
@@ -135,10 +136,10 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		UpdateTotalRenderVisibility();
 	}
 	else if (prop == UIElement::IsHitTestVisibleProperty) {
-               if (GetValue (prop)->AsBool())
-                       flags |= UIElement::HIT_TEST_VISIBLE;
-               else
-                       flags &= ~UIElement::HIT_TEST_VISIBLE;
+		if (GetValue (prop)->AsBool())
+			flags |= UIElement::HIT_TEST_VISIBLE;
+		else
+			flags &= ~UIElement::HIT_TEST_VISIBLE;
 		UpdateTotalHitTestVisibility();
 	}
 	else if (prop == UIElement::ClipProperty) {

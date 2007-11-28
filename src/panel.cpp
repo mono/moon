@@ -119,21 +119,11 @@ Panel::ComputeBounds ()
 		}
 	}
 
-	double x1, x2, y1, y2;
-	
-	x1 = y1 = 0.0;
-	x2 = framework_element_get_width (this);
-	y2 = framework_element_get_height (this);
-
 	Value *value = GetValue (Panel::BackgroundProperty);
-	if (value && x2 != 0.0 && y2 != 0.0) {
-		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-							     IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2),
-											  false));
-	}
-	else {
+	if (value)
+		FrameworkElement::ComputeBounds ();
+	else
 		bounds = Rect (0,0,0,0);
-	}
 
 #if DEBUG_BOUNDS
 	space (levelb);
@@ -406,7 +396,7 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 		return false;
 	
 	UIElement* mouseover = FindMouseOver (cr, x, y);
-	
+
 	return mouseover != NULL;
 }
 
@@ -426,10 +416,7 @@ Panel::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
  		return false;
 
 	// then, if that passes, a more tailored shape check
-	if (!item->InsideObject (cr, x, y))
-		return false;
-
-	return true;
+	return item->InsideObject (cr, x, y);
 }
 
 UIElement *
@@ -488,6 +475,7 @@ Panel::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cu
 void
 Panel::HandleButtonPress (cairo_t *cr, int state, double x, double y)
 {
+	// XXX this is bad.  we should already know the mouse_over..
 	mouse_over = FindMouseOver (cr, x, y);
 
 	// not sure if this is correct, but we don't bother updating
@@ -507,6 +495,10 @@ Panel::HandleButtonPress (cairo_t *cr, int state, double x, double y)
 void
 Panel::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
 {
+	// XXX look above in HandleButtonPress.  it updates mouse_over, but
+	// this doesn't.  figure out which we should do and make it
+	// consistent
+
 	// not sure if this is correct, but we don't bother updating
 	// the current mouse_over here (and along with that, emitting
 	// enter/leave events).

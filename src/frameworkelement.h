@@ -21,6 +21,8 @@ class FrameworkElement : public UIElement {
 	FrameworkElement ();
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
 
+	virtual void ComputeBounds ();
+
 	void OnPropertyChanged (DependencyProperty *prop);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);

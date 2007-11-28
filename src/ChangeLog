@@ -1,3 +1,16 @@
+2007-11-28  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::UIElement): compute the initial total
+	hit test visibility.
+
+	* dirty.cpp (process_dirty_elements): don't invalidate/update
+	bounds when the hit test visibility changes.
+
+	* frameworkelement.(h,cpp): calculate the bounds here using
+	width/height.
+
+	* panel.cpp: chain up to frameworkelement.
+	
 2007-11-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::SetValue): Check the resulting Inlines

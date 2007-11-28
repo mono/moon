@@ -140,11 +140,7 @@ process_dirty_elements ()
 		if (el->dirty_flags & DirtyHitTestVisibility) {
 			el->dirty_flags &= ~DirtyHitTestVisibility;
 			
-			el->UpdateBounds ();
-
-			el->Invalidate ();
 			el->ComputeTotalHitTestVisibility ();
-			el->Invalidate ();
 
 			if (el->Is (Type::PANEL)) {
 				Panel *p = (Panel*)el;

@@ -40,6 +40,21 @@ FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 	NotifyAttachersOfPropertyChange (prop);
 }
 
+void
+FrameworkElement::ComputeBounds ()
+{
+	double x1, x2, y1, y2;
+	
+	x1 = y1 = 0.0;
+	x2 = framework_element_get_width (this);
+	y2 = framework_element_get_height (this);
+
+	if (x2 != 0.0 && y2 != 0.0)
+		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+							     IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2),
+											  false));
+}
+
 bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
