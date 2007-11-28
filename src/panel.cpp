@@ -383,6 +383,10 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 bool
 Panel::InsideObject (cairo_t *cr, double x, double y)
 {
+	bool is_inside_clip = InsideClip (cr, x, y);
+	if (!is_inside_clip)
+		return false;
+	
 	/* if we have explicitly set width/height, we check them */
 	if (FrameworkElement::InsideObject (cr, x, y)) {
 		/* we're inside, check if we're actually painting any background,
@@ -391,10 +395,6 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 			return true;
 	}
 
-	bool is_inside_clip = InsideClip (cr, x, y);
-	if (!is_inside_clip)
-		return false;
-	
 	UIElement* mouseover = FindMouseOver (cr, x, y);
 
 	return mouseover != NULL;
