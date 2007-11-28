@@ -536,11 +536,6 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	if (opacityMask != NULL) {
 		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		Rect clip = bounds;
-		clip.RoundOut ();
-		cairo_rectangle (cr, clip.x, clip.y, clip.w, clip.h);
-		RenderClipPath (cr);
 		opacityMask->SetupBrush (cr, this);
 		mask = cairo_get_source (cr);
 		cairo_pattern_reference (mask);
