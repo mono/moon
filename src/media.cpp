@@ -516,12 +516,13 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
 
-#define SPLIT 1
+#define SPLIT 0
 #if SPLIT
 	//printf ("media");
 	while (count --) {
-		//cairo_save (cr);
+		cairo_save (cr);
 		cairo_identity_matrix (cr);
+		cairo_new_path (cr);
 		cairo_rectangle (cr, rects[count].x, rects[count].y, rects[count].width, rects[count].height);
 		//runtime_cairo_region (cr, region->gdkregion);
 		cairo_clip (cr);
@@ -533,6 +534,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 #if DRAW_INCORRECTLY 
 			cairo_paint_with_alpha (cr, render_opacity);
 #else
+			cairo_new_path (cr);
 			cairo_rectangle (cr, 0, 0, w, h);
 			cairo_clip (cr);
 			cairo_paint_with_alpha (cr, render_opacity);
@@ -547,7 +549,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 		}
 
 #if SPLIT
-		//cairo_restore (cr);
+		cairo_restore (cr);
 	}
 	//g_free (rects);
 #endif
@@ -1505,6 +1507,7 @@ Image::Render (cairo_t *cr, Region *region)
 
 	//printf ("media");
 	while (count --) {
+		cairo_new_path (cr);
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		cairo_rectangle (cr, rects[count].x, rects[count].y, rects[count].width, rects[count].height);

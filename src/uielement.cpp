@@ -103,6 +103,7 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 void
 UIElement::RenderClipPath (cairo_t *cr)
 {
+	cairo_new_path (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 
 	Value *value = GetValue (UIElement::ClipProperty);
