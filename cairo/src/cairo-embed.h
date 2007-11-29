@@ -291,13 +291,14 @@
 #define cairo_toy_font_face_hash_table  		moonlight_cairo_toy_font_face_hash_table
 #define cairo_xlib_surface_backend      		moonlight_cairo_xlib_surface_backend
 
-#define _cairo_atomic_mutex     		moonlight__cairo_atomic_mutex
-#define _cairo_font_face_mutex  		moonlight__cairo_font_face_mutex
-#define _cairo_ft_unscaled_font_map_mutex       moonlight__cairo_ft_unscaled_font_map_mutex
-#define _cairo_pattern_solid_pattern_cache_lock moonlight__cairo_pattern_solid_pattern_cache_lock
-#define _cairo_pattern_solid_surface_cache_lock moonlight__cairo_pattern_solid_surface_cache_lock
-#define _cairo_scaled_font_map_mutex    	moonlight__cairo_scaled_font_map_mutex
-#define _cairo_xlib_display_mutex       	moonlight__cairo_xlib_display_mutex
+#define _cairo_atomic_mutex     			_moonlight_cairo_atomic_mutex
+#define _cairo_font_face_mutex  			_moonlight_cairo_font_face_mutex
+#define _cairo_ft_unscaled_font_map_mutex       	_moonlight_cairo_ft_unscaled_font_map_mutex
+#define _cairo_gstate_stroke				_moonlight_cairo_gstate_stroke
+#define _cairo_pattern_solid_pattern_cache_lock 	_moonlight_cairo_pattern_solid_pattern_cache_lock
+#define _cairo_pattern_solid_surface_cache_lock 	_moonlight_cairo_pattern_solid_surface_cache_lock
+#define _cairo_scaled_font_map_mutex    		_moonlight_cairo_scaled_font_map_mutex
+#define _cairo_xlib_display_mutex       		_moonlight_cairo_xlib_display_mutex
 
 #define _cairo_error                                    _moonlight_cairo_error
 #define _cairo_set_error                                _moonlight_cairo_set_error
