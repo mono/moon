@@ -238,6 +238,17 @@ Storyboard::Begin ()
 {
 	ClockGroup *group = NULL;
 
+#if false
+	if (root_clock && root_clock->GetClockState() == Clock::Stopped) {
+		root_clock->ComputeBeginTime();
+
+		root_clock->Begin();
+		if (root_clock->GetParent()->GetClockState() != Clock::Active) {
+			root_clock->GetParent()->Begin();
+		}
+		return;
+	}
+#else
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
@@ -247,6 +258,7 @@ Storyboard::Begin ()
 		root_clock->unref ();
 		root_clock = NULL;
 	}
+#endif
 
 	if (!group) {
 		Surface *surface = FindSurface ();
@@ -261,6 +273,9 @@ Storyboard::Begin ()
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
 	root_clock = CreateClock ();
+	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
+	root_clock->SetValue (DependencyObject::NameProperty, name);
+	g_free (name);
 	root_clock->AddHandler (root_clock->CompletedEvent, invoke_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
@@ -268,6 +283,7 @@ Storyboard::Begin ()
 	HookupAnimationsRecurse (root_clock);
 
 	group->AddChild (root_clock);
+	root_clock->ComputeBeginTime();
 
 	// we delay starting the surface's ClockGroup until the first
 	// child has been added.  otherwise we run into timing issues
@@ -1504,6 +1520,8 @@ ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 {
 	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
 	
+	KeyFrameAnimation_ResolveKeyFrames (this, key_frames);
+
 	guint len = key_frames->sorted_list->len;
 	if (len > 0)
 		return ((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->resolved_keytime;
@@ -1628,6 +1646,8 @@ PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
 	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
 	
+	KeyFrameAnimation_ResolveKeyFrames (this, key_frames);
+
 	guint len = key_frames->sorted_list->len;
 	if (len > 0)
 		return ((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->resolved_keytime;
