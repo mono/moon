@@ -1,3 +1,13 @@
+2007-11-29  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp (Panel::ComputeBounds): clip the clip the subpath
+	bounds to the clip region as well.
+
+	* control.cpp (Control::ComputeBounds): differenciate between our
+	bounds and our subpath bounds.
+
+	* control.h: add bounds_with_children and GetSubpathBounds ().
+
 2007-11-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextFont::GetGlyphInfoByIndex): If we reach the end of

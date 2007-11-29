@@ -34,10 +34,12 @@ void
 Control::ComputeBounds ()
 {
 	if (real_object) {
-		bounds = real_object->GetSubtreeBounds ();
+		bounds = real_object->GetBounds ();
+		bounds_with_children = real_object->GetSubtreeBounds ();
 	}
 	else {
 		bounds = Rect (0, 0, 0, 0);
+		bounds_with_children = Rect (0, 0, 0, 0);
 	}
 
 	double x1, x2, y1, y2;
@@ -48,14 +50,19 @@ Control::ComputeBounds ()
 
 	if (x2 != 0.0 && y2 != 0.0) {
 
-		Rect fw_rect = bounding_rect_for_transformed_rect (&absolute_xform,
-								   IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false));
+		Rect fw_rect = Rect (x1,y1,x2,y2);
 		
 		if (real_object)
 			bounds = bounds.Union (fw_rect);
 		else
 			bounds = fw_rect;
+	       
 	}
+	
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+						     IntersectBoundsWithClipPath (bounds, false));
+	bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children.Union (bounds), false);
+							    
 }
 
 void

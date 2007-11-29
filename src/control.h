@@ -27,6 +27,7 @@ class Control : public FrameworkElement {
 
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual void ComputeBounds ();
+	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
@@ -45,6 +46,8 @@ class Control : public FrameworkElement {
 
 	UIElement* InitializeFromXaml (const char *xaml,
 				       Type::Kind *element_type, XamlLoader* loader);
+
+	Rect bounds_with_children;
 };
 
 G_BEGIN_DECLS

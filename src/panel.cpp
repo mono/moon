@@ -117,6 +117,7 @@ Panel::ComputeBounds ()
 				bounds_with_children = bounds_with_children.Union (r);
 			}
 		}
+		bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children, true);
 	}
 
 	Value *value = GetValue (Panel::BackgroundProperty);
