@@ -1,3 +1,8 @@
+2007-11-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextFont::GetGlyphInfoByIndex): If we reach the end of
+	the font face charmap, use unichar = 0 rather than returning NULL.
+
 2007-11-28  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Realloc): when we Realloc(), we need to tell the

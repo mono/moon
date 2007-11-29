@@ -582,7 +582,7 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 			unichar = FT_Get_Next_Char (face, unichar, &idx);
 		
 		if (idx == 0)
-			return NULL;
+			unichar = 0;
 	} else {
 		unichar = 0;
 	}
