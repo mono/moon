@@ -15,6 +15,8 @@
 #include "moon-mono.h"
 #include "downloader.h"
 
+extern guint32 moonlight_flags;
+
 /* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
 static const gchar *moonlight_authors[] = {
 	"Andreia Gaita <avidigal@novell.com>",
@@ -149,6 +151,15 @@ title (const char *txt)
 	return label;
 }
 
+static void
+expose_regions (GtkToggleButton *checkbox, gpointer user_data)
+{
+	if (gtk_toggle_button_get_active (checkbox))
+		moonlight_flags |= RUNTIME_INIT_SHOW_EXPOSE;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_SHOW_EXPOSE;
+}
+
 void
 PluginInstance::Properties ()
 {
@@ -161,7 +172,7 @@ PluginInstance::Properties ()
 	gtk_box_pack_start (vb, title ("Properties"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vb, gtk_hseparator_new (), FALSE, FALSE, 8);
 
-	GtkWidget *table = gtk_table_new (8, 2, TRUE);
+	GtkWidget *table = gtk_table_new (11, 2, TRUE);
 	gtk_box_pack_start (vb, table, TRUE, TRUE, 0);
 
 	int row = 0;
@@ -171,7 +182,15 @@ PluginInstance::Properties ()
 	table_add (table, "Background:", 0, row++);
 	table_add (table, "Kind:", 0, row++);
 	table_add (table, "Windowless:", 0, row++);
-
+	
+	row++; // empty row
+	table_add (table, "Runtime Debug Options:", 0, row++);
+	GtkWidget *checkbox = gtk_check_button_new_with_label ("Show Expose Regions");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), NULL);
+	gtk_table_attach (GTK_TABLE (table), checkbox, 0, 2, row, row + 1,
+			  (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
+	
 	char buffer [40];
 	row = 0;
 	table_add (table, source, 1, row++);
@@ -182,7 +201,7 @@ PluginInstance::Properties ()
 	table_add (table, background, 1, row++);
 	table_add (table, xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)", 1, row++);
 	table_add (table, windowless ? "yes" : "no", 1, row++);
-
+	
 	g_signal_connect_swapped (d, "response", G_CALLBACK (gtk_widget_destroy), d);
 	gtk_widget_show_all (d);
 }
