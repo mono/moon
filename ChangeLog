@@ -1,5 +1,8 @@
 2007-11-29  Larry Ewing  <lewing@novell.com>
 
+	* src/runtime.cpp (Surface::expose_event_callback): clear the
+	pixmap in the transparent case.
+
 	* src/media.cpp (MediaElement::Render): Disable (and fix) the
 	SPLIT #define.
 

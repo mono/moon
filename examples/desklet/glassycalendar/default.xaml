@@ -50,7 +50,7 @@
 	
 
 	<!-- border  -->
-	<Rectangle Fill="#33FFFFFF" Stroke="#66FFFFFF" StrokeThickness="1"
+	<Rectangle Stroke="#66FFFFFF" StrokeThickness="1"
 		Canvas.Left="4" Canvas.Top="4" Width="220" Height="180"
 		RadiusX="10" RadiusY="10">
 		<Rectangle.Fill>

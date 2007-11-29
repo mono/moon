@@ -835,7 +835,6 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 
 	runtime_cairo_region (ctx, region->gdkregion);
 	cairo_clip (ctx);
-
 	//
 	// These are temporary while we change this to paint at the offset position
 	// instead of using the old approach of modifying the topmost Canvas (a no-no),
@@ -856,13 +855,19 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	// windowless
 	//
 
-	if (s->transparent)
+
+
+	if (s->transparent) {
+		cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
+		runtime_cairo_region (ctx, region->gdkregion);
+		cairo_paint (ctx);
+
 		cairo_set_source_rgba (ctx,
 				       s->background_color->r,
 				       s->background_color->g,
 				       s->background_color->b,
 				       s->background_color->a);
-	else
+	} else
 		cairo_set_source_rgb (ctx,
 				      s->background_color->r,
 				      s->background_color->g,
