@@ -1,3 +1,8 @@
+2007-11-29  Larry Ewing  <lewing@novell.com>
+
+	* cairo/src/cairo-embed.h: autogenerate the cairo-embed file from
+	nm output.
+
 2007-11-28  Larry Ewing  <lewing@novell.com>
 
 	* src/uielement.cpp (UIElement::DoRender): don't clip to the
