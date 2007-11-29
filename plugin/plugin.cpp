@@ -163,19 +163,25 @@ expose_regions (GtkToggleButton *checkbox, gpointer user_data)
 void
 PluginInstance::Properties ()
 {
-	GtkWidget *d = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
-						    GTK_DIALOG_NO_SEPARATOR,
-						    GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
-	gtk_container_set_border_width (GTK_CONTAINER(d), 8);
-	GtkBox *vb = GTK_BOX (GTK_DIALOG (d)->vbox);
-
-	gtk_box_pack_start (vb, title ("Properties"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vb, gtk_hseparator_new (), FALSE, FALSE, 8);
-
-	GtkWidget *table = gtk_table_new (11, 2, TRUE);
-	gtk_box_pack_start (vb, table, TRUE, TRUE, 0);
-
+	GtkWidget *dialog, *table, *checkbox;
+	char buffer[40];
+	GtkBox *vbox;
 	int row = 0;
+	
+	dialog = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
+					      GTK_DIALOG_NO_SEPARATOR,
+					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
+	
+	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
+	
+	// Silverlight Application properties
+	gtk_box_pack_start (vbox, title ("Properties"), FALSE, FALSE, 0);
+	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
+	
+	table = gtk_table_new (9, 2, TRUE);
+	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
+	
 	table_add (table, "Source:", 0, row++);
 	table_add (table, "Width:", 0, row++);
 	table_add (table, "Height:", 0, row++);
@@ -183,15 +189,6 @@ PluginInstance::Properties ()
 	table_add (table, "Kind:", 0, row++);
 	table_add (table, "Windowless:", 0, row++);
 	
-	row++; // empty row
-	table_add (table, "Runtime Debug Options:", 0, row++);
-	GtkWidget *checkbox = gtk_check_button_new_with_label ("Show Expose Regions");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), NULL);
-	gtk_table_attach (GTK_TABLE (table), checkbox, 0, 2, row, row + 1,
-			  (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-	
-	char buffer [40];
 	row = 0;
 	table_add (table, source, 1, row++);
 	snprintf (buffer, sizeof (buffer), "%dpx", getActualWidth ());
@@ -202,8 +199,17 @@ PluginInstance::Properties ()
 	table_add (table, xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)", 1, row++);
 	table_add (table, windowless ? "yes" : "no", 1, row++);
 	
-	g_signal_connect_swapped (d, "response", G_CALLBACK (gtk_widget_destroy), d);
-	gtk_widget_show_all (d);
+	// Runtime debug options
+	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
+	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
+	
+	checkbox = gtk_check_button_new_with_label ("Show exposed regions");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), NULL);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	
+	g_signal_connect_swapped (dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
+	gtk_widget_show_all (dialog);
 }
 
 PluginInstance::PluginInstance (NPP instance, uint16 mode)
