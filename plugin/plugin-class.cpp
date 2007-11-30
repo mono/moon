@@ -1672,6 +1672,9 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		char *xaml = STR_FROM_VARIANT (args [0]);
 		bool create_namescope = argCount >= 2 ? NPVARIANT_TO_BOOLEAN (args[1]) : false;
 		
+		if (!xaml)
+			THROW_JS_EXCEPTION ("createFromXaml");
+
 		Type::Kind element_type;
 		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->surface);
 		DependencyObject *dep = xaml_create_from_str (loader, xaml, create_namescope, &element_type);
