@@ -1,0 +1,27 @@
+<Canvas x:Name="parentCanvas"
+        xmlns="http://schemas.microsoft.com/client/2007" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	Width="640" Height="230">
+
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard BeginTime="00:00:02">
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:2" RepeatBehavior="Forever"/>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+
+		<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="600" Height="3" Fill="Black" />
+		<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="110" Width="600" Height="3" Fill="Black" />
+		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" />
+		
+	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30">
+		<Run Text="The red block show stay at the left for 2 seconds, then move to the right."/>
+		<LineBreak/>
+		<Run Text="It should take 2 seconds to move to the right, then return"/>
+		<LineBreak/>
+		<Run Text="to the left side and repeat the trip.  forever."/>
+	</TextBlock>
+</Canvas>

@@ -30,6 +30,8 @@
 	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="140" Width="600" Height="50">
 		<Run Text="The red block should take 5 seconds to move to the right,"/>
 		<LineBreak/>
-		<Run Text="and rotate 90 degrees in three discrete stops, 30, 60, and 90"/>
+		<Run Text="at 1.3 seconds, the rectangle over it should start turning translucent"/>
+		<LineBreak/>
+		<Run Text="and green over the next 0.3 seconds."/>
 	</TextBlock>
 </Canvas>

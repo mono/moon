@@ -15,4 +15,8 @@ clock14 - same as clock12, but specifies the RepeatBehavior as a timespan/durati
 clock15 - tests a non-zero BeginTime on a storyboard along with a 0 BeginTime.
 clock16 - tests a storyboard with a longer duration than its consituent Animation, with a FillBehavior of Stop (animations have the default fill behavior)
 clock17 - tests 2 storyboards with keyframe animations in it (one Double with linear keyframes, one Color with discrete keyframes).
-clock18 - tests 2 storyboards, 1 with keyframes (DoubleDiscrete).
+clock18 - tests 2 storyboards, 1 with keyframes (DiscreteDouble).
+clock19 - tests 2 storyboards, 1 with keyframes (SplineDouble)
+clock20 - tests BeginTime set on the storyboard with a repeatforever animation inside it.
+clock21 - tests BeginTime set on the storyboard, which also has repeatforever set on it.
+clock22 - tests BeginTime set on the animation, with repeatforever on the parent storyboard.
