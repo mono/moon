@@ -1,7 +1,6 @@
 2007-12-03  Larry Ewing  <lewing@novell.com>
 
-	* src/brush.cpp (RadialGradientBrush::SetupBrush): add debug spew
-	if we can't invert the matrix but still draw someting.
+	* src/media.cpp (Image::Render): remove accumulated drawing cruft.
 
 2007-11-29  Larry Ewing  <lewing@novell.com>
 

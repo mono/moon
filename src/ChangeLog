@@ -1,3 +1,7 @@
+2007-12-03  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp (Image::Render): remove accumulated drawing cruft.
+
 2007-12-03  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp: put back in the calls to ComputeBeginTime that I
