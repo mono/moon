@@ -160,6 +160,24 @@ expose_regions (GtkToggleButton *checkbox, gpointer user_data)
 		moonlight_flags &= ~RUNTIME_INIT_SHOW_EXPOSE;
 }
 
+static void
+clipping_regions (GtkToggleButton *checkbox, gpointer user_data)
+{
+	if (gtk_toggle_button_get_active (checkbox))
+		moonlight_flags |= RUNTIME_INIT_SHOW_CLIPPING;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_SHOW_CLIPPING;
+}
+
+static void
+bounding_boxes (GtkToggleButton *checkbox, gpointer user_data)
+{
+	if (gtk_toggle_button_get_active (checkbox))
+		moonlight_flags |= RUNTIME_INIT_SHOW_BOUNDING_BOXES;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_SHOW_BOUNDING_BOXES;
+}
+
 void
 PluginInstance::Properties ()
 {
@@ -206,6 +224,16 @@ PluginInstance::Properties ()
 	checkbox = gtk_check_button_new_with_label ("Show exposed regions");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), NULL);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	
+	checkbox = gtk_check_button_new_with_label ("Show clipping regions");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (clipping_regions), NULL);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	
+	checkbox = gtk_check_button_new_with_label ("Show bounding boxes");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (bounding_boxes), NULL);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	g_signal_connect_swapped (dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
