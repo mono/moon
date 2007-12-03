@@ -1,3 +1,8 @@
+2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* clock.cpp (RaiseEnqueuedEvents): Optimized a bit by not
+	iterating thru the list 6 times :)
+
 2007-12-03  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp (Image::Render): remove accumulated drawing cruft.

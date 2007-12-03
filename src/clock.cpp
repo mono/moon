@@ -251,7 +251,7 @@ TimeManager::Shutdown ()
 void
 TimeManager::tick_callback (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	((TimeManager*)closure)->Tick ();
+	((TimeManager *) closure)->Tick ();
 }
 
 void
@@ -380,17 +380,36 @@ TimeManager::Tick ()
 	last_global_time = current_global_time;
 }
 
+typedef struct ClockNode {
+	struct ClockNode *next;
+	Clock *clock;
+} ClockNode;
+
 void
 TimeManager::RaiseEnqueuedEvents ()
 {
-	GList *copy = g_list_copy (child_clocks);
-	g_list_foreach (copy, (GFunc)base_ref, NULL);
-	for (GList *l = copy; l; l = l->next) {
-		Clock *c = (Clock*)l->data;
-		c->RaiseAccumulatedEvents ();
+	ClockNode *list, *tail, *next;
+	GList *n;
+	
+	list = NULL;
+	tail = (ClockNode *) &list;
+	
+	for (n = child_clocks; n != NULL; n = n->next) {
+		tail->next = g_new (ClockNode, 1);
+		tail = tail->next;
+		
+		tail->clock = (Clock *) n->data;
+		tail->clock->ref ();
+		tail->next = NULL;
 	}
-	g_list_foreach (copy, (GFunc)base_unref, NULL);
-	g_list_free (copy);
+	
+	while (list != NULL) {
+		list->clock->RaiseAccumulatedEvents ();
+		list->clock->unref ();
+		next = list->next;
+		g_free (list);
+		list = next;
+	}
 }
 
 guint
@@ -1089,7 +1108,7 @@ ClockGroup::~ClockGroup ()
 	GList *next;
 	
 	while (node != NULL) {
-		Clock *clock = (Clock*)node->data;
+		Clock *clock = (Clock *) node->data;
 		clock->SetParent (NULL);
 		clock->unref ();
 
