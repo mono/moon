@@ -1443,7 +1443,11 @@ TextLayout::Layout ()
 				continue;
 			
 			advance = glyph->metrics.horiAdvance;
-			advance += run->font->Kerning (prev, glyph->index);
+			
+			if (prev != 0)
+				advance += run->font->Kerning (prev, glyph->index);
+			else
+				advance -= glyph->metrics.horiBearingX;
 			
 			if ((is_space = isSpace (run->text[i]))) {
 				spc.width = lw + advance;
@@ -1727,7 +1731,11 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 				if (!(glyph = font->GetGlyphInfo (text[i])))
 					continue;
 				
-				x1 += font->Kerning (prev, glyph->index);
+				if (prev != 0)
+					x1 += font->Kerning (prev, glyph->index);
+				else
+					x1 -= glyph->metrics.horiBearingX;
+				
 				prev = glyph->index;
 				
 				if (!font->IsScalable ())

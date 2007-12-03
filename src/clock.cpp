@@ -50,7 +50,7 @@ n * clock.cpp: Clock management
 extern guint32 moonlight_flags;
 
 TimeSpan
-get_now()
+get_now (void)
 {
         struct timeval tv;
         TimeSpan res;
@@ -520,7 +520,7 @@ TimeManager::ListClocks()
 }
 
 void
-time_manager_list_clocks ()
+time_manager_list_clocks (void)
 {
 	TimeManager::Instance()->ListClocks();
 }
@@ -1313,8 +1313,8 @@ DependencyProperty* TimelineMarker::TextProperty;
 DependencyProperty* TimelineMarker::TimeProperty;
 DependencyProperty* TimelineMarker::TypeProperty;
 
-TimelineMarker*
-timeline_marker_new ()
+TimelineMarker *
+timeline_marker_new (void)
 {
 	return new TimelineMarker ();
 }

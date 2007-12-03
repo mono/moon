@@ -1,3 +1,11 @@
+2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes a bug pointed out by Larry when rendering lines beginning
+	with a 'J', where the tail escapes the bounding box.
+
+	* font.cpp (Layout): Use the horiBearingX font metric.
+	(RenderLine): Same.
+
 2007-12-03  Larry Ewing  <lewing@novell.com>
 
 	* brush.cpp (RadialGradientBrush::SetupBrush): add debug spew

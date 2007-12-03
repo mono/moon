@@ -312,7 +312,7 @@ void time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data);
 guint time_manager_add_timeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
 void  time_manager_remove_timeout (guint timeout_id);
 
-void time_manager_list_clocks ();
+void time_manager_list_clocks (void);
 
 
 //
@@ -506,7 +506,7 @@ class TimelineCollection : public Collection {
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 };
 
-TimelineCollection * timeline_collection_new ();
+TimelineCollection *timeline_collection_new (void);
 
 class TimelineGroup : public Timeline {
  public:
@@ -527,7 +527,7 @@ class TimelineGroup : public Timeline {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
-TimelineGroup * timeline_group_new ();
+TimelineGroup *timeline_group_new (void);
 
 
 
@@ -551,7 +551,7 @@ class TimelineMarker : public DependencyObject {
 	static DependencyProperty* TypeProperty;
 };
 
-TimelineMarker* timeline_marker_new ();
+TimelineMarker *timeline_marker_new (void);
 
 
 /* useful for timing things */
