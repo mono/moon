@@ -11,6 +11,7 @@
  */
 
 #define USE_OPT_INDIRECT_COMPOSE 1
+#define USE_OPT_REGION_CLIP 1
 #define DRAW_INCORRECTLY 0
 
 #ifdef HAVE_CONFIG_H
@@ -510,9 +511,11 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_pattern_destroy (pattern);
 	
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+#if USE_OPT_REGION_CLIP	
 	cairo_identity_matrix (cr);
 	runtime_cairo_region (cr, region->gdkregion);
 	cairo_clip (cr);
+#endif
 	cairo_set_matrix (cr, &absolute_xform);
 
 	cairo_pattern_set_matrix (pattern, &matrix);
@@ -1484,10 +1487,11 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
 
+#if USE_OPT_REGION_CLIP
 	cairo_identity_matrix (cr);
 	runtime_cairo_region (cr, region->gdkregion);
-	
 	cairo_clip (cr);
+#endif
 	cairo_set_matrix (cr, &absolute_xform);
 
 #if DRAW_INCORRECTLY
