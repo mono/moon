@@ -576,11 +576,15 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		// TODO - optimization, check for empty/identity matrix too ?
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
-	cairo_matrix_invert (&matrix);
+	cairo_status_t status = cairo_matrix_invert (&matrix);
+	if (status != CAIRO_STATUS_SUCCESS) {
+		printf ("Moonlight: Error inverting matrix falling back\n");
+		cairo_matrix_init_identity (&matrix);
+	}
 	cairo_pattern_set_matrix (pattern, &matrix);
-	
 	GradientBrush::SetupGradient (pattern, uielement);
 	
+	cairo_set_matrix (cr, &matrix);
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 }
