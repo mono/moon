@@ -71,14 +71,18 @@ static struct {
 	guint32 flag;
 	bool set;
 } overrides[] = {
-	{ "text=pango",        RUNTIME_INIT_PANGO_TEXT_LAYOUT, true  },
-	{ "text=silverlight",  RUNTIME_INIT_PANGO_TEXT_LAYOUT, false },
-	{ "codecs=microsoft",  RUNTIME_INIT_MICROSOFT_CODECS,  true  },
-	{ "codecs=ffmpeg",     RUNTIME_INIT_MICROSOFT_CODECS,  false },
-	{ "timesource=manual", RUNTIME_INIT_TIMESOURCE_MANUAL, true },
-	{ "timesource=system", RUNTIME_INIT_TIMESOURCE_MANUAL, false },
-	{ "show=expose",       RUNTIME_INIT_SHOW_EXPOSE,       true },
-	{ "show=nothing",      RUNTIME_INIT_SHOW_EXPOSE,       false },
+	{ "text=pango",        RUNTIME_INIT_PANGO_TEXT_LAYOUT,     true  },
+	{ "text=silverlight",  RUNTIME_INIT_PANGO_TEXT_LAYOUT,     false },
+	{ "codecs=microsoft",  RUNTIME_INIT_MICROSOFT_CODECS,      true  },
+	{ "codecs=ffmpeg",     RUNTIME_INIT_MICROSOFT_CODECS,      false },
+	{ "timesource=manual", RUNTIME_INIT_MANUAL_TIMESOURCE,     true  },
+	{ "timesource=system", RUNTIME_INIT_MANUAL_TIMESOURCE,     false },
+	{ "expose=show",       RUNTIME_INIT_SHOW_EXPOSE,           true  },
+	{ "expose=hide",       RUNTIME_INIT_SHOW_EXPOSE,           false },
+	{ "clipping=show",     RUNTIME_INIT_SHOW_CLIPPING,         true  },
+	{ "clipping=hide",     RUNTIME_INIT_SHOW_CLIPPING,         false },
+	{ "bbox=show",         RUNTIME_INIT_SHOW_BOUNDING_BOXES,   true  },
+	{ "bbox=hide",         RUNTIME_INIT_SHOW_BOUNDING_BOXES,   false },
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)

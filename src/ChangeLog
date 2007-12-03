@@ -1,3 +1,10 @@
+2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp: Added clipping/bounding-box override values.
+
+	* uielement.cpp (DoRender): Changed optional bounding-box/clipping
+	debugging drawing based on runtime settable bitflags.
+
 2007-12-03  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp: Clean up the debug rendering code for bounding

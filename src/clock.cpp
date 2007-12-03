@@ -196,7 +196,7 @@ TimeManager::TimeManager ()
     flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
     tick_calls (NULL)
 {
-	if (moonlight_flags & RUNTIME_INIT_TIMESOURCE_MANUAL)
+	if (moonlight_flags & RUNTIME_INIT_MANUAL_TIMESOURCE)
 		source = new ManualTimeSource();
 	else
 		source = new SystemTimeSource();
