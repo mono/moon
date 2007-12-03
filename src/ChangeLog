@@ -1,5 +1,12 @@
 2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* dependencyobject.cpp (RemoveHandler): Simplified a little.
+
+	* animation.cpp (Stop): Remove the CompletedEvent root_clock
+	handler. Fixes Simon's GAME OVER! textblock storyboard.
+
+2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* runtime.cpp: Added clipping/bounding-box override values.
 
 	* uielement.cpp (DoRender): Changed optional bounding-box/clipping

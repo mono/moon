@@ -132,19 +132,15 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 
 	if (events == NULL)
 		return;
-
-	GSList *l;
-	for (l = events[event_id]; l; l = l->next) {
+	
+	for (GSList *l = events[event_id]; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
-		if (closure->func == handler && closure->data == data)
+		if (closure->func == handler && closure->data == data) {
+			delete (EventClosure *) l->data;
+			events[event_id] = g_slist_delete_link (events[event_id], l);
 			break;
+		}
 	}
-
-	if (l == NULL) /* we didn't find it */
-		return;
-
-	delete (EventClosure*)l->data;
-	events[event_id] = g_slist_delete_link (events[event_id], l);
 }
 
 void

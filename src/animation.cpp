@@ -227,9 +227,9 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 }
 
 void
-Storyboard::invoke_completed (EventObject *, gpointer, gpointer closure)
+Storyboard::invoke_completed (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	Storyboard* sb = (Storyboard*)closure;
+	Storyboard *sb = (Storyboard *) closure;
 	sb->Emit (sb->CompletedEvent);
 }
 
@@ -314,8 +314,10 @@ Storyboard::Seek (TimeSpan timespan)
 void
 Storyboard::Stop ()
 {
-	if (root_clock)
+	if (root_clock) {
+		root_clock->RemoveHandler (root_clock->CompletedEvent, invoke_completed, this);
 		root_clock->Stop ();
+	}
 }
 
 Storyboard *
