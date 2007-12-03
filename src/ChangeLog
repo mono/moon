@@ -1,3 +1,20 @@
+2007-12-03  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp, clock.h: rework the clock code a bunch.  There are a
+	couple of large changes.
+
+	Get rid of the stupid new_ and current_ fields.  Just update the
+	field immediately.  This cuts down on logic in if checks, and also
+	makes subclocks update much faster in relation to their parent
+	clock (we used to have to wait 1 tick per level in the tree for
+	state to propagate).
+
+	Abstract out all the QueueEvent calls into setters in clock.h.
+
+	Break up Clock::Tick some, so more of the code is reusable from
+	ClockGroup::Tick without having to call Clock::Tick and then work
+	behind its back.
+
 2007-12-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* brush.cpp: Fix breakage introduced in r90549 (the matrix is 

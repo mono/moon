@@ -1,5 +1,5 @@
 /*
-n * clock.cpp: Clock management
+ * clock.cpp: Clock management
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)
@@ -41,8 +41,8 @@ n * clock.cpp: Clock management
 
 
 #define MINIMUM_FPS 5
-#define DEFAULT_FPS 60
-#define MAXIMUM_FPS 60
+#define DEFAULT_FPS 24
+#define MAXIMUM_FPS 24
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 #define DELAY_TO_FPS(delay) (1000.0 / delay)
@@ -310,7 +310,9 @@ TimeManager::Tick ()
 	if (flags & TIME_MANAGER_RENDER) {
 	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
+		STARTTIMER (tick_dirty, "TimeManager::Tick - Dirty");
 		process_dirty_elements ();
+		ENDTIMER (tick_dirty, "TimeManager::Tick - Dirty");
 
 		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
@@ -322,7 +324,7 @@ TimeManager::Tick ()
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
-	//	time_manager_list_clocks ();
+	//time_manager_list_clocks ();
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan post_tick = source->GetNow();
@@ -477,7 +479,7 @@ output_clock (Clock *clock, int level)
 		printf ("'%s' ", clock->GetName());
 	}
 
-	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
+	printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
 
 	switch (clock->GetClockState()) {
 	case Clock::Active:
@@ -503,7 +505,8 @@ output_clock (Clock *clock, int level)
 		ClockGroup *cg = (ClockGroup*)clock;
 		level += 2;
 		for (GList *l = cg->child_clocks; l; l = l->next) {
-			output_clock ((Clock*)l->data, level);
+			if (((Clock*)l->data)->GetClockState () != Clock::Stopped)
+				output_clock ((Clock*)l->data, level);
 		}
 	}
 }
@@ -515,7 +518,8 @@ TimeManager::ListClocks()
 	printf ("============================\n");
 
 	for (GList *l = child_clocks; l; l = l->next) {
-		output_clock ((Clock*)l->data, 2);
+		if (((Clock*)l->data)->GetClockState () != Clock::Filling)
+			output_clock ((Clock*)l->data, 2);
 	}
 }
 
@@ -533,11 +537,11 @@ int Clock::CompletedEvent = -1;
 
 Clock::Clock (Timeline *tl)
   : natural_duration (Duration::Automatic),
-    current_state (Clock::Stopped), new_state (Clock::Stopped),
-    current_progress (0.0), new_progress (0.0),
-    current_time (0), new_time (0), last_time (0),
+    state (Clock::Stopped),
+    progress (0.0),
+    current_time (0), last_time (0),
     seeking (false), seek_time (0),
-    current_speed (1.0), new_speed (1.0),
+    speed (1.0),
     parent_clock (NULL),
     is_paused (false),
     has_started (false),
@@ -581,7 +585,45 @@ Clock::GetLastParentTime ()
 void
 Clock::Tick ()
 {
-	TimeSpan our_delta = (TimeSpan)((GetParentTime() - GetLastParentTime()) * current_speed);
+	last_time = current_time;
+	SetCurrentTime (Clock::ComputeNewTime());
+
+#if false
+	if (GetClockState() == Clock::Active)
+#endif
+		ClampTimeToDuration ();
+	CalcProgress ();
+}
+
+void
+Clock::ClampTimeToDuration ()
+{
+	if (natural_duration.HasTimeSpan()) {
+		if (current_time > natural_duration.GetTimeSpan())
+			SetCurrentTime (natural_duration.GetTimeSpan());
+	}
+}
+
+void
+Clock::CalcProgress ()
+{
+	if (natural_duration.HasTimeSpan()) {
+		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
+		/* calculate our progress based on our time */
+		if (duration_timespan == 0)
+			progress = 1.0;
+		else if (current_time >= duration_timespan)
+			progress = 1.0;
+		else if (state == Clock::Active)
+			progress = (double)current_time / duration_timespan;
+	}
+}
+
+TimeSpan
+Clock::ComputeNewTime ()
+{
+	TimeSpan our_delta = (TimeSpan)((GetParentTime() - GetLastParentTime()) * speed);
+	TimeSpan ret_time = current_time;
 
 	/* serious voodoo here... */
 	if ((timeline->GetSpeedRatio() > 1 && our_delta > 0)
@@ -592,33 +634,23 @@ Clock::Tick ()
 
 	if (seeking) {
 		/* MS starts up animations if you seek them */
-		if (current_state != Clock::Active) {
-			new_state = Clock::Active;
-			QueueEvent (CURRENT_STATE_INVALIDATED);
-		}
+		if (state != Clock::Active)
+			SetClockState (Clock::Active);
 
-		new_time = seek_time;
+		ret_time = seek_time;
 
 		seeking = false;
 	}
 	else {
-		if (current_state == Clock::Stopped)
-			return;
+		if (state == Clock::Stopped)
+			return ret_time;
 
-		new_time = current_time;
-
-		if (forward)
-			new_time += our_delta;
-		else
-			new_time -= our_delta;
+		ret_time = current_time + (forward ? our_delta : -our_delta);
 	}
-
-	/* since we updated our time above, queue the invalidated event */
-	QueueEvent (CURRENT_TIME_INVALIDATED);
 
 	/* if our duration is automatic or forever, we're done. */
 	if (!natural_duration.HasTimeSpan())
-		return;
+		return ret_time;
 
 	// XXX there are a number of missing 'else's in the following
 	// block of code.  it would be nice to figure out if they need
@@ -626,17 +658,17 @@ Clock::Tick ()
 
 	TimeSpan duration_timespan = natural_duration.GetTimeSpan();
 
-	if (forward) {
+	if (our_delta > 0) {
 		// time is progressing in the normal way
 
-		if (new_time >= duration_timespan) {
+		if (ret_time >= duration_timespan) {
 			// we've hit the end point of the clock's timeline
 			if (timeline->GetAutoReverse ()) {
 				/* since autoreverse is true we need
 				   to turn around and head back to
 				   0.0 */
 				forward = false;
-				new_time = duration_timespan - (new_time - duration_timespan);
+				ret_time = duration_timespan - (ret_time - duration_timespan);
 			}
 			else {
 				/* but autoreverse is false. Decrement
@@ -653,48 +685,46 @@ Clock::Tick ()
 				}
 
 				if (repeat_count == 0) {
-					new_time = duration_timespan;
 					SkipToFill ();
 				}
 				else {
 					DoRepeat ();
+					ret_time = current_time;
 				}
 			}
 		}
-		/* XXX missing else #1 */
+		else if (ret_time >= 0 && GetClockState() != Clock::Active) {
+			SetClockState (Clock::Active);
+		}
 	}
 	else {
 		// we're moving backward in time.
 
-		if (new_time <= 0) {
+		if (ret_time <= 0) {
 			forward = true;
-			new_time = -new_time;
+			ret_time = -ret_time;
 
-			if (repeat_count > 0 && !timeline->GetDuration()->IsAutomatic()) {
+			if (repeat_count > 0) {
 				repeat_count --;
 				if (repeat_count < 0)
 					repeat_count = 0;
 			}
 
 			if (repeat_count == 0) {
-				new_time = 0;
 				SkipToFill ();
 			}
 		}
-		/* XXX missing else #2 */
+		else if (ret_time <= duration_timespan && GetClockState() != Clock::Active) {
+			SetClockState (Clock::Active);
+		}
 	}
 
 	/* once we've calculated our time, make sure we don't
 	   go over our repeat time (if there is one) */
-	if (repeat_time >= 0 && repeat_time <= new_time) {
+	if (repeat_time >= 0 && repeat_time <= ret_time)
 		SkipToFill ();
-	}
-		
-	/* calculate our progress based on our time */
-	if (duration_timespan == 0)
-		new_progress = 1.0;
-	else if (current_state == Clock::Active)
-		new_progress = (double)new_time / duration_timespan;
+
+	return ret_time;
 
 #if false
 	// XXX I think we only need to check repeat_count in
@@ -712,11 +742,8 @@ void
 Clock::DoRepeat ()
 {
 	if (natural_duration.HasTimeSpan ()) {
-		TimeSpan duration_timespan = natural_duration.GetTimeSpan();
-
-		new_time -= duration_timespan;
-		current_time = last_time = new_time;
-		QueueEvent (CURRENT_TIME_INVALIDATED);
+		SetCurrentTime (current_time - natural_duration.GetTimeSpan());
+		last_time = current_time;
 	}
 }
 
@@ -724,22 +751,16 @@ void
 Clock::RaiseAccumulatedEvents ()
 {
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
-		last_time = current_time;
-		current_time = new_time;
-		current_progress = new_progress;
-
 		Emit (CurrentTimeInvalidatedEvent);
 	}
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
-		current_state = new_state;
-		if (current_state == Clock::Active)
+		if (state == Clock::Active)
 			has_started = true;
 		Emit (CurrentStateInvalidatedEvent);
 	}
 
 	if ((queued_events & CURRENT_GLOBAL_SPEED_INVALIDATED) != 0) {
-		current_speed = new_speed;
 		SpeedChanged ();
 		Emit (CurrentGlobalSpeedInvalidatedEvent); /* this probably happens in SpeedChanged () */
 	}
@@ -749,45 +770,30 @@ Clock::RaiseAccumulatedEvents ()
 	queued_events = 0;
 }
 
-TimeSpan
-Clock::GetBeginTime ()
-{
-	if (begin_time < 0) {
-		TimeSpan offset = 0;
-
-		if (timeline->HasBeginTime ()) {
-			offset = timeline->GetBeginTime ();
-		}
-
-		begin_time = GetParentTime() + offset;
-	}
-	return begin_time;
-}
-
 void
 Clock::Begin ()
 {
+	seeking = false;
+	has_started = false;
+	is_paused = false;
+	forward = true;
+
 	/* we're starting.  initialize our current_time field */
-	if (seeking) {
-		last_time = current_time = new_time = seek_time;
-	}
-	else {
-		last_time = current_time = new_time = GetParentTime() - GetBeginTime ();
-	}
+	SetCurrentTime (GetParentTime() - GetBeginTime ());
+	last_time = current_time;
 
 	if (natural_duration.HasTimeSpan ()) {
 		if (natural_duration.GetTimeSpan() == 0) {
-			current_progress = new_progress = 1.0;
+			progress = 1.0;
 		}
 		else {
-			current_progress = new_progress = (double)current_time / natural_duration.GetTimeSpan();
-			if (current_progress > 1.0) {
-				current_progress = new_progress = 1.0;
-			}
+			progress = (double)current_time / natural_duration.GetTimeSpan();
+			if (progress > 1.0)
+				progress = 1.0;
 		}
 	}
 	else
-		current_progress = new_progress = 0.0;
+		progress = 0.0;
 
 	RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 	if (repeat->HasCount ()) {
@@ -819,8 +825,18 @@ Clock::Begin ()
 	}
 
 	forward = true;
-	new_state = Clock::Active;
-	QueueEvent (CURRENT_STATE_INVALIDATED | CURRENT_TIME_INVALIDATED);
+	SetClockState (Clock::Active);
+}
+
+void
+Clock::ComputeBeginTime ()
+{
+	TimeSpan offset = 0;
+
+	if (timeline->HasBeginTime ())
+		offset = timeline->GetBeginTime ();
+
+	begin_time = GetParentTime() + offset;
 }
 
 void
@@ -829,11 +845,9 @@ Clock::Pause ()
 	if (is_paused)
 		return;
 
-	// XXX this likely should be updated in RaiseAccumulatedEvents like current_speed is
 	is_paused = true;
 
-	new_speed = 0.0;
-	QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED);
+	SetSpeed (0.0);
 }
 
 void
@@ -847,11 +861,9 @@ Clock::Resume ()
 	if (!is_paused)
 		return;
 
-	// XXX this likely should be updated in RaiseAccumulatedEvents like current_speed is
 	is_paused = false;
 
-	new_speed = 1.0;
-	QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED);
+	SetSpeed (1.0);
 }
 
 void
@@ -879,8 +891,7 @@ Clock::SkipToFill ()
 #endif
 	switch (timeline->GetFillBehavior()) {
 	case FillBehaviorHoldEnd:
-		new_state = Clock::Filling;
-		QueueEvent (CURRENT_STATE_INVALIDATED);		
+		SetClockState (Clock::Filling);
 		break;
 	case FillBehaviorStop:
 		Stop ();
@@ -894,8 +905,7 @@ Clock::Stop ()
 #if CLOCK_DEBUG
 	printf ("stopping clock %p after this tick\n", this);
 #endif
-	new_state = Clock::Stopped;
-	QueueEvent (CURRENT_STATE_INVALIDATED);
+	SetClockState (Clock::Stopped);
 }
 
 
@@ -903,7 +913,8 @@ Clock::Stop ()
 ClockGroup::ClockGroup (TimelineGroup *timeline)
   : Clock (timeline),
     child_clocks (NULL),
-    timeline (timeline)
+    timeline (timeline),
+    emitted_complete (false)
 {
 }
 
@@ -926,16 +937,29 @@ ClockGroup::RemoveChild (Clock *clock)
 void
 ClockGroup::Begin ()
 {
+	emitted_complete = false;
+
 	Clock::Begin ();
 
-	if (current_state == Clock::Stopped && new_state == Clock::Active) {
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+		c->ClearHasStarted ();
+		c->ComputeBeginTime ();
+
 		/* start any clocks that need starting immediately */
-		for (GList *l = child_clocks; l; l = l->next) {
-			Clock *c = (Clock*)l->data;
-			if ((c->GetClockState() == Clock::Stopped) && (!c->GetHasStarted() && c->GetBeginTime() <= current_time)) {
-				c->Begin ();
-			}
+		if (c->GetBeginTime() <= current_time) {
+			c->Begin ();
 		}
+	}
+}
+
+void
+ClockGroup::ComputeBeginTime ()
+{
+	Clock::ComputeBeginTime ();
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+		c->ComputeBeginTime ();
 	}
 }
 
@@ -969,25 +993,32 @@ ClockGroup::Stop ()
 void
 ClockGroup::Tick ()
 {
-	/* recompute our current_time */
-	this->Clock::Tick ();
+	last_time = current_time;
 
-	// if we're stopped, return immediately
-	if (GetClockState() == Clock::Stopped)
-		return;
+	SetCurrentTime (Clock::ComputeNewTime());
 
 	for (GList *l = child_clocks; l; l = l->next) {
 		/* start the child clock here if we need to,
 		   otherwise just call its Tick
 		   method */
 		Clock *c = (Clock*)l->data;
-		if (c->GetClockState() != Clock::Stopped && c->GetNewClockState() != Clock::Stopped) {
+		if (c->GetClockState() != Clock::Stopped) {
 			c->Tick ();
 		}
-		else if ((c->GetClockState() == Clock::Stopped) && (!c->GetHasStarted() && c->GetBeginTime () <= current_time)) {
+		else if (!c->GetHasStarted() && c->GetBeginTime () <= current_time) {
 			c->Begin ();
 		}
 	}
+
+#if false
+	if (GetClockState() == Clock::Active)
+#endif
+		ClampTimeToDuration ();
+
+	CalcProgress ();
+
+	if (GetClockState() == Clock::Stopped)
+		return;
 
 	/* if we're automatic and no child clocks are still running, we need to stop.
 
@@ -995,14 +1026,22 @@ ClockGroup::Tick ()
 	   CurrentStateInvalidated on the child clocks instead of
 	   looping over them at the end of each Tick call.
 	*/
-	if (timeline->GetDuration()->IsAutomatic()) {
+ 	if (timeline->GetDuration()->IsAutomatic()) {
 		for (GList *l = child_clocks; l; l = l->next) {
 			Clock *c = (Clock*)l->data;
-			if (!c->GetHasStarted () || c->GetClockState() == Clock::Active || c->GetNewClockState() == Clock::Active)
+			if (!c->GetHasStarted () || c->GetClockState() == Clock::Active)
 				return;
 		}
 
-		Clock::Stop ();
+		if (repeat_count > 0)
+			repeat_count --;
+
+		if (repeat_count == 0) {
+			Clock::Stop ();
+		}
+		else {
+			DoRepeat ();
+		}
 	}
 }
 
@@ -1014,14 +1053,13 @@ ClockGroup::DoRepeat ()
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
 
-		// restart all active/filling clocks
-		if (c->GetClockState() != Clock::Stopped) {
+		// restart all non-active clocks
+		if (c->GetClockState() != Clock::Active) {
 			// XXX this is wrong.  begin
 			// time's are only figured into
 			// the initial starting.  not
 			// repeated iterations.
-			c->begin_time = -1;
-
+			c->ComputeBeginTime ();
 			c->Begin ();
 		}
 	}
@@ -1030,24 +1068,18 @@ ClockGroup::DoRepeat ()
 void
 ClockGroup::RaiseAccumulatedEvents ()
 {
-	bool need_completed = false;
-	
-	if (new_state == Clock::Stopped && current_state != Clock::Stopped) {
-		need_completed = true;
-	}
-
 	/* raise our events */
 	this->Clock::RaiseAccumulatedEvents ();
 
 	/* now cause our children to raise theirs*/
 	GList *copy = g_list_copy (child_clocks);
-	for (GList *l = copy; l; l = l->next) {
+	for (GList *l = copy; l; l = l->next)
 		((Clock*)l->data)->RaiseAccumulatedEvents ();
-	}
 	g_list_free (copy);
 
-	if (need_completed) {
+	if (GetHasStarted() && state == Clock::Stopped && !emitted_complete) {
 		Emit (CompletedEvent);
+		emitted_complete = true;
 	}
 }
 

@@ -332,16 +332,16 @@ class Clock : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::CLOCK; };
 
 	ClockGroup* GetParent ()          { return parent_clock; }
-	double      GetCurrentProgress () { return current_progress; }
+	double      GetCurrentProgress () { return progress; }
 	TimeSpan    GetCurrentTime ()     { return current_time; }
 	TimeSpan    GetLastTime ()        { return last_time; }
 	Timeline*   GetTimeline ()        { return timeline; }
 	Duration    GetNaturalDuration () { return natural_duration; }
 	bool        GetIsPaused ()        { return is_paused; }
 	bool        GetHasStarted ()      { return has_started; }
+	void        ClearHasStarted ()    { has_started = false; }
 	bool        GetIsReversed ()      { return !forward; }
-
-	TimeSpan GetBeginTime ();
+	TimeSpan    GetBeginTime ()       { return begin_time; }
 
 	TimeSpan begin_time;
 
@@ -350,8 +350,7 @@ class Clock : public DependencyObject {
 		Filling, /* time is progressing.  each tick results in NO property value changing */
 		Stopped  /* time is no longer progressing */
 	};
-	ClockState GetClockState () { return current_state; }
-	ClockState GetNewClockState () { return new_state; }
+	ClockState GetClockState () { return state; }
 
 	TimeSpan GetParentTime ();
 	TimeSpan GetLastParentTime ();
@@ -359,7 +358,7 @@ class Clock : public DependencyObject {
 	virtual void SpeedChanged () { }
 
 	// ClockController methods
-	void Begin ();
+	virtual void Begin ();
 	void Pause ();
 	void Remove ();
 	void Resume ();
@@ -368,6 +367,7 @@ class Clock : public DependencyObject {
 	virtual void SkipToFill ();
 	virtual void Stop ();
 
+	virtual void ComputeBeginTime ();
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
@@ -381,7 +381,14 @@ class Clock : public DependencyObject {
 	static int CompletedEvent;
 
  protected:
+	TimeSpan ComputeNewTime ();
+	void ClampTimeToDuration ();
+	void CalcProgress ();
 	virtual void DoRepeat ();
+
+	void SetClockState (ClockState state) { this->state = state; QueueEvent (CURRENT_STATE_INVALIDATED); }
+	void SetCurrentTime (TimeSpan ts) { this->current_time = ts; QueueEvent (CURRENT_TIME_INVALIDATED); }
+	void SetSpeed (double speed) { this->speed = speed; QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED); }
 
 	// events to queue up
 	enum {
@@ -396,21 +403,20 @@ class Clock : public DependencyObject {
 
 	TimeSpan begintime;
 
-	ClockState current_state;
-	ClockState new_state;
+	ClockState state;
 
-	double current_progress;
-	double new_progress;
+	double progress;
 
 	TimeSpan current_time;
-	TimeSpan new_time;
 	TimeSpan last_time;
 
 	bool seeking;
 	TimeSpan seek_time;
 
-	double current_speed;
-	double new_speed;
+	double speed;
+
+	double repeat_count;
+	TimeSpan repeat_time;
 
  private:
 
@@ -422,8 +428,6 @@ class Clock : public DependencyObject {
 	int queued_events;
 
 	bool forward;  // if we're presently working our way from 0.0 progress to 1.0.  false if reversed
-	double repeat_count;
-	TimeSpan repeat_time;
 };
 
 
@@ -444,6 +448,8 @@ class ClockGroup : public Clock {
 	virtual void SkipToFill ();
 	virtual void Stop ();
 
+	virtual void ComputeBeginTime ();
+
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
 	virtual void Tick ();
@@ -455,6 +461,7 @@ class ClockGroup : public Clock {
 
  private:
 	TimelineGroup *timeline;
+	bool emitted_complete;
 };
 
 
