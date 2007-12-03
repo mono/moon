@@ -242,7 +242,7 @@ CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
 
 MOON_PKGS="gtk+-2.0 pango gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
 MOON_CFLAGS="$CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS)"
-MOON_LIBS="$CAIRO_LIBS $(pkg-config --libs $MOON_PKGS)"
+MOON_LIBS="$(CAIRO_LIBS) $(pkg-config --libs $MOON_PKGS)"
 
 if test $user_plugin != yes; then
 MOON_LIBS="$MOON_LIBS $(pkg-config --libs $FFMPEG_PKGS)"
