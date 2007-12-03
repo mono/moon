@@ -40,7 +40,7 @@ AC_DEFINE([PLUGIN_INSTALL], [1], [Load libraries from ~/.mozilla/plugins and bui
 fi
 AM_CONDITIONAL([PLUGIN_INSTALL], [test $user_plugin = yes])
 
-ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps"
+ac_configure_args="$ac_configure_args --with-pic=yes --disable-png --disable-pdf --disable-svg --disable-ps"
 AC_CONFIG_SUBDIRS([pixman cairo])
 
 AC_MSG_CHECKING(Gtk+ 2.0)

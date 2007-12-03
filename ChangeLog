@@ -1,3 +1,8 @@
+2007-12-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* configure.ac: Disable cairo PNG support since it's unused by 
+	moonlight.
+
 2007-12-03  Larry Ewing  <lewing@novell.com>
 
 	* src/brush.cpp (RadialGradientBrush::SetupBrush): add debug spew
