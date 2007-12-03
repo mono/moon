@@ -49,6 +49,12 @@
 
 extern guint32 moonlight_flags;
 
+struct ClockNode {
+	ClockNode *next;
+	Clock *clock;
+};
+
+
 TimeSpan
 get_now (void)
 {
@@ -379,11 +385,6 @@ TimeManager::Tick ()
 
 	last_global_time = current_global_time;
 }
-
-typedef struct ClockNode {
-	struct ClockNode *next;
-	Clock *clock;
-} ClockNode;
 
 void
 TimeManager::RaiseEnqueuedEvents ()
@@ -1087,15 +1088,33 @@ ClockGroup::DoRepeat ()
 void
 ClockGroup::RaiseAccumulatedEvents ()
 {
+	ClockNode *list, *tail, *next;
+	GList *n;
+	
 	/* raise our events */
 	this->Clock::RaiseAccumulatedEvents ();
-
-	/* now cause our children to raise theirs*/
-	GList *copy = g_list_copy (child_clocks);
-	for (GList *l = copy; l; l = l->next)
-		((Clock*)l->data)->RaiseAccumulatedEvents ();
-	g_list_free (copy);
-
+	
+	/* now cause our children to raise theirs */
+	list = NULL;
+	tail = (ClockNode *) &list;
+	
+	for (n = child_clocks; n != NULL; n = n->next) {
+		tail->next = g_new (ClockNode, 1);
+		tail = tail->next;
+		
+		tail->clock = (Clock *) n->data;
+		tail->clock->ref ();
+		tail->next = NULL;
+	}
+	
+	while (list != NULL) {
+		list->clock->RaiseAccumulatedEvents ();
+		list->clock->unref ();
+		next = list->next;
+		g_free (list);
+		list = next;
+	}
+	
 	if (GetHasStarted() && state == Clock::Stopped && !emitted_complete) {
 		Emit (CompletedEvent);
 		emitted_complete = true;
