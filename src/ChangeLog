@@ -1,3 +1,8 @@
+2007-12-03  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp: Clean up the debug rendering code for bounding
+	boxes and clip regions.
+
 2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes a bug pointed out by Larry when rendering lines beginning

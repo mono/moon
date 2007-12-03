@@ -21,7 +21,8 @@
 #include "geometry.h"
 #include "dirty.h"
 
-#define SHOW_BOUNDING_BOXES 0
+//#define SHOW_BOUNDING_BOXES 1
+//#define SHOW_CLIP_REGIONS 1
 //#define DEBUG_INVALIDATE 0
 
 int UIElement::LoadedEvent = -1;
@@ -533,7 +534,6 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 
 	if (!GetRenderVisible() || total_opacity == 0.0 || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
-
 	
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	if (opacityMask != NULL) {
@@ -562,14 +562,31 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 
-#if SHOW_BOUNDING_BOXES
-	cairo_restore (cr);
+#if SHOW_CLIP_REGIONS
 	cairo_save (cr);
-	cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 1.0);
-	cairo_set_line_width (cr, 2);
-	cairo_rectangle (cr, bounds.x + 1, bounds.y + 1, bounds.w - 2, bounds.h - 2);
-	cairo_stroke (cr);
 	cairo_new_path (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	cairo_set_line_width (cr, 1);
+
+	Value *value = GetValue (UIElement::ClipProperty);
+	if (value) {
+		Geometry *geometry = value->AsGeometry ();
+		geometry->Draw (NULL, cr);
+		cairo_set_source_rgba (cr, 0.0, 1.0, 1.0, 1.0);
+		cairo_stroke (cr);
+	}
+	cairo_restore (cr);
+#endif
+
+#if SHOW_BOUNDING_BOXES
+	cairo_save (cr);
+	//RenderClipPath (cr);
+	cairo_identity_matrix (cr);
+	cairo_set_source_rgba (cr, 1.0, 0.5, 0.2, 1.0);
+	cairo_set_line_width (cr, 1);
+	cairo_rectangle (cr, bounds.x + .5, bounds.y + .5, bounds.w - .5, bounds.h - .5);
+	cairo_stroke (cr);
+	cairo_restore (cr);
 #endif
 }
 
