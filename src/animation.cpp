@@ -240,6 +240,7 @@ Storyboard::Begin ()
 
 #if false
 	if (root_clock && root_clock->GetClockState() == Clock::Stopped) {
+		group->ComputeBeginTime ();
 		root_clock->Begin();
 		if (root_clock->GetParent()->GetClockState() != Clock::Active) {
 			root_clock->GetParent()->Begin();
@@ -281,6 +282,8 @@ Storyboard::Begin ()
 	HookupAnimationsRecurse (root_clock);
 
 	group->AddChild (root_clock);
+	group->ComputeBeginTime ();
+
 	// we delay starting the surface's ClockGroup until the first
 	// child has been added.  otherwise we run into timing issues
 	// between timelines that explicitly set a BeginTime and those

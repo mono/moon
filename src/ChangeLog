@@ -1,5 +1,11 @@
 2007-12-03  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp: put back in the calls to ComputeBeginTime that I
+	accidentally committed a few days ago (and lewing reverted to fix
+	the build).  they're needed with the new clock changes.
+
+2007-12-03  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp, clock.h: rework the clock code a bunch.  There are a
 	couple of large changes.
 
