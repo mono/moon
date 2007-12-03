@@ -1,3 +1,8 @@
+2007-12-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Fix breakage introduced in r90549 (the matrix is 
+	already	set on the pattern).
+
 2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (RemoveHandler): Simplified a little.

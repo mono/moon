@@ -583,8 +583,7 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	}
 	cairo_pattern_set_matrix (pattern, &matrix);
 	GradientBrush::SetupGradient (pattern, uielement);
-	
-	cairo_set_matrix (cr, &matrix);
+
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 }
