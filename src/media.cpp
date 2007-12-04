@@ -1441,7 +1441,7 @@ Image::Render (cairo_t *cr, Region *region)
 	double h = framework_element_get_height (this);
 
 
-#define OPACITY_STABILITY_MAX 3
+#define OPACITY_STABILITY_MAX 5
 
 	double render_opacity = GetTotalOpacity ();
 	double opacity = 1.0;
