@@ -13,6 +13,51 @@ PKG_PROG_PKG_CONFIG
 
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
 
+dnl *************************************
+dnl *** Checks for large file support ***
+dnl *************************************
+AC_SYS_LARGEFILE
+AC_CACHE_CHECK([for _LARGEFILE64_SOURCE value needed for large files], largefile64_source,
+[
+   AC_TRY_COMPILE([
+      #include <sys/types.h>
+      #include <sys/stat.h>
+      #include <fcntl.h>
+   ],[
+      int fd = open ("__o_largefile", O_CREAT | O_RDWR | O_LARGEFILE, 0644);
+   ],[
+      largefile64_source="no"
+   ],[
+      AC_TRY_COMPILE([
+         #define _LARGEFILE64_SOURCE 1
+         #include <sys/types.h>
+         #include <sys/stat.h>
+         #include <fcntl.h>
+      ],[
+         int fd = open ("__o_largefile", O_CREAT | O_RDWR | O_LARGEFILE, 0644);
+      ],[
+         largefile64_source="yes"
+      ],[
+         largefile64_source="undefined"
+      ])
+   ])
+])
+
+if test "x$largefile64_source" = "xyes"; then
+   LARGEFILE_CFLAGS="-D_LARGEFILE64_SOURCE=1"
+elif test "x$largefile64_source" = "xundefined"; then
+   AC_DEFINE(O_LARGEFILE, 0, [Define to 0 if your system does not have the O_LARGEFILE flag])
+fi
+
+if test "x$ac_cv_sys_large_files" != "xno"; then
+   LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_LARGE_FILES=1"
+fi
+
+if test "x$ac_cv_sys_file_offset_bits" != "xno"; then
+   LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
+fi
+
+
 MONO_RUNTIME=yes
 AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable support for Silverlight 1.1],[
 	if test x$with_mono_runtime = xyes; then
@@ -241,7 +286,7 @@ CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
 CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
 
 MOON_PKGS="gtk+-2.0 pango gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
-MOON_CFLAGS="$CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS)"
+MOON_CFLAGS="$LARGEFILE_CFLAGS $CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS)"
 MOON_LIBS="$CAIRO_LIBS $(pkg-config --libs $MOON_PKGS)"
 
 if test $user_plugin != yes; then

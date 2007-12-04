@@ -1,3 +1,7 @@
+2007-12-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Added largefile checks
+
 2007-12-03  Larry Ewing  <lewing@novell.com>
 
 	* src/media.cpp (Image::Render): don't buffer alpha images use
