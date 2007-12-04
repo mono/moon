@@ -1,0 +1,12 @@
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Width="63" Height="76">
+  <Canvas.Background>
+    <ImageBrush ImageSource="mono.png" >
+      <ImageBrush.RelativeTransform>
+        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="45" />
+      </ImageBrush.RelativeTransform>
+    </ImageBrush>
+  </Canvas.Background>
+</Canvas>
