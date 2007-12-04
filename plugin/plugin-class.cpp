@@ -1192,6 +1192,7 @@ moonlight_scriptable_control_allocate (NPP instance, NPClass*)
 static const MoonNameIdMapping
 scriptable_control_mapping[] = {
 	{ "content", MoonId_Content },
+	{ "isloaded", MoonId_IsLoaded },
 	{ "createobject", MoonId_CreateObject },
 	{ "initparams", MoonId_InitParams },
 	{ "isversionsupported", MoonId_IsVersionSupported },

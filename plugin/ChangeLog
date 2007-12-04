@@ -1,3 +1,8 @@
+2007-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Map in IsLoaded, so HasProperty will return
+	true for it.
+
 2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (Properties): Added more runtime debug options.
