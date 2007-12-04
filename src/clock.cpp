@@ -54,6 +54,40 @@ struct ClockNode {
 	Clock *clock;
 };
 
+typedef void (*ClockFunc)(Clock*);
+
+void
+clock_list_foreach (GList *clock_list, ClockFunc func)
+{
+	ClockNode *list, *tail, *next;
+	GList *n;
+	
+	list = NULL;
+	tail = (ClockNode *) &list;
+	
+	for (n = clock_list; n != NULL; n = n->next) {
+		tail->next = g_new (ClockNode, 1);
+		tail = tail->next;
+		
+		tail->clock = (Clock *) n->data;
+		tail->clock->ref ();
+		tail->next = NULL;
+	}
+	
+	while (list != NULL) {
+		func (list->clock);
+		list->clock->unref ();
+		next = list->next;
+		g_free (list);
+		list = next;
+	}
+}
+
+static void
+CallRaiseAccumulatedEvents (Clock *clock)
+{
+	clock->RaiseAccumulatedEvents ();
+}
 
 TimeSpan
 get_now (void)
@@ -389,28 +423,7 @@ TimeManager::Tick ()
 void
 TimeManager::RaiseEnqueuedEvents ()
 {
-	ClockNode *list, *tail, *next;
-	GList *n;
-	
-	list = NULL;
-	tail = (ClockNode *) &list;
-	
-	for (n = child_clocks; n != NULL; n = n->next) {
-		tail->next = g_new (ClockNode, 1);
-		tail = tail->next;
-		
-		tail->clock = (Clock *) n->data;
-		tail->clock->ref ();
-		tail->next = NULL;
-	}
-	
-	while (list != NULL) {
-		list->clock->RaiseAccumulatedEvents ();
-		list->clock->unref ();
-		next = list->next;
-		g_free (list);
-		list = next;
-	}
+	clock_list_foreach (child_clocks, CallRaiseAccumulatedEvents);
 }
 
 guint
@@ -1088,32 +1101,11 @@ ClockGroup::DoRepeat ()
 void
 ClockGroup::RaiseAccumulatedEvents ()
 {
-	ClockNode *list, *tail, *next;
-	GList *n;
-	
 	/* raise our events */
 	this->Clock::RaiseAccumulatedEvents ();
 	
 	/* now cause our children to raise theirs */
-	list = NULL;
-	tail = (ClockNode *) &list;
-	
-	for (n = child_clocks; n != NULL; n = n->next) {
-		tail->next = g_new (ClockNode, 1);
-		tail = tail->next;
-		
-		tail->clock = (Clock *) n->data;
-		tail->clock->ref ();
-		tail->next = NULL;
-	}
-	
-	while (list != NULL) {
-		list->clock->RaiseAccumulatedEvents ();
-		list->clock->unref ();
-		next = list->next;
-		g_free (list);
-		list = next;
-	}
+	clock_list_foreach (child_clocks, CallRaiseAccumulatedEvents);
 	
 	if (GetHasStarted() && state == Clock::Stopped && !emitted_complete) {
 		Emit (CompletedEvent);
