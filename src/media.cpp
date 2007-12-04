@@ -1125,6 +1125,7 @@ Image::Image ()
     part_name(NULL),
     pattern (NULL),
     pattern_opacity (1.0),
+    opacity_stability_count (0),
     brush (NULL)
 {
 }
@@ -1439,15 +1440,32 @@ Image::Render (cairo_t *cr, Region *region)
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
+
+#define OPACITY_STABILITY_MAX 3
+
 	double render_opacity = GetTotalOpacity ();
 	double opacity = 1.0;
 
-#if USE_OPT_BUFFERED_IMAGE
-	opacity = render_opacity;
-	render_opacity = 1.0
-#endif
+	// Here we count the number of times we've been called with the
+	// same opacity and if it is greater than OPACITY_STABILITY_MAX we
+	// render the image to a temporary surface at that opacity, otherwise
+	// we render directly.  The purpose here is to handle opacity animations
+	// with a fair amount of grace while avoiding the overhead of constantly
+	// adding another alpha pass when rendering stable scenes.
 
-	if (!pattern || (floor (pattern_opacity * 255) != floor (opacity * 255))) {
+	if (render_opacity != pattern_opacity) {
+		opacity_stability_count = 0;
+		pattern_opacity = render_opacity;
+	} else {
+		opacity_stability_count ++;
+		if (opacity_stability_count >= OPACITY_STABILITY_MAX) {
+			opacity_stability_count = OPACITY_STABILITY_MAX;
+			opacity = render_opacity;
+			render_opacity = 1.0;
+		}
+	}
+
+	if (!pattern || (opacity_stability_count >= OPACITY_STABILITY_MAX && (floor (pattern_opacity * 255) != floor (opacity * 255)))) {
 		// don't share surfaces until they are of the correct type
 		if (pattern && !surface->xlib_surface_created) {
 			cairo_pattern_destroy (pattern);

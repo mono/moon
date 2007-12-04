@@ -1,3 +1,8 @@
+2007-12-03  Larry Ewing  <lewing@novell.com>
+
+	* src/media.cpp (Image::Render): use paint_with_alpha if opacity
+	is changing, use the old buffered alpha if it is not.
+
 2007-12-04  Jb Evain  <jbevain@novell.com>
 
 	* stylus.cpp|h: add stylus_info_get_current function.
