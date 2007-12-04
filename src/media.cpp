@@ -1439,7 +1439,14 @@ Image::Render (cairo_t *cr, Region *region)
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
-	double opacity = GetTotalOpacity ();
+	double render_opacity = GetTotalOpacity ();
+	double opacity = 1.0;
+
+#if USE_OPT_BUFFERED_IMAGE
+	opacity = render_opacity;
+	render_opacity = 1.0
+#else
+
 	if (!pattern || (floor (pattern_opacity * 255) != floor (opacity * 255))) {
 		// don't share surfaces until they are of the correct type
 		if (pattern && !surface->xlib_surface_created) {
@@ -1494,14 +1501,14 @@ Image::Render (cairo_t *cr, Region *region)
 #endif
 	cairo_set_matrix (cr, &absolute_xform);
 
-#if DRAW_INCORRECTLY
-	cairo_rectangle (cr, 0, 0, w, h);
-	cairo_clip (cr);
-	cairo_paint (cr);
-#else
-	cairo_rectangle (cr, 0, 0, w, h);
-	cairo_fill (cr);
-#endif
+	if (render_opacity < 1.0) {
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_clip (cr);
+		cairo_paint_with_alpha (cr, render_opacity);
+	} else {
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_fill (cr);
+	}
 	cairo_restore (cr);
 }
 

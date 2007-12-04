@@ -1,5 +1,10 @@
 2007-12-03  Larry Ewing  <lewing@novell.com>
 
+	* src/media.cpp (Image::Render): don't buffer alpha images use
+	paint_with_alpha instead.
+	
+2007-12-03  Larry Ewing  <lewing@novell.com>
+
 	* src/media.cpp (Image::Render): remove accumulated drawing cruft.
 
 2007-11-29  Larry Ewing  <lewing@novell.com>
