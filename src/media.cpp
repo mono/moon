@@ -1456,6 +1456,8 @@ Image::Render (cairo_t *cr, Region *region)
 	if (render_opacity != pattern_opacity) {
 		opacity_stability_count = 0;
 		pattern_opacity = render_opacity;
+		cairo_pattern_destroy (pattern);
+		pattern = NULL;
 	} else {
 		opacity_stability_count ++;
 		if (opacity_stability_count >= OPACITY_STABILITY_MAX) {
@@ -1479,7 +1481,10 @@ Image::Render (cairo_t *cr, Region *region)
 			// If the pattern holds a temporary surface that meets our needs use it.
 			// It is safe to assume if the pattern is there that it is the right size
 			// because changing the source will invalidate the cached surface.
-
+			//
+			// NOTE: the opacity stability check above means this case is essentially
+			// never encountered it is left here future where we may use a different
+			// method of testing for animated properties.
 			if (surface->cairo != dest && opacity < 1.0) {
 				//g_warning ("sharing (%f, %f)", opacity, pattern_opacity);
 				cairo_t *temp = cairo_create (dest);
@@ -1502,7 +1507,8 @@ Image::Render (cairo_t *cr, Region *region)
 			pattern = image_brush_create_pattern (cr, surface->cairo, surface->width, surface->height, opacity);
 		}
 		
-		pattern_opacity = opacity;
+		if (opacity_stability_count >= OPACITY_STABILITY_MAX)
+			pattern_opacity = opacity;
 	}
 
 	cairo_matrix_t matrix;
