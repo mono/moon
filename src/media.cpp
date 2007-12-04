@@ -1445,7 +1445,7 @@ Image::Render (cairo_t *cr, Region *region)
 #if USE_OPT_BUFFERED_IMAGE
 	opacity = render_opacity;
 	render_opacity = 1.0
-#else
+#endif
 
 	if (!pattern || (floor (pattern_opacity * 255) != floor (opacity * 255))) {
 		// don't share surfaces until they are of the correct type
