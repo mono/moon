@@ -1,3 +1,9 @@
+2007-12-04  Jb Evain  <jbevain@novell.com>
+
+	* stylus.cpp|h: add stylus_info_get_current function.
+	Right now, it's an hack which always return a StylusInfo
+	of type Mouse, not inverted.
+
 2007-12-03  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: rename ClampTimeToDuration to ClampTime, as

@@ -49,6 +49,16 @@ stylus_info_set_inverted (StylusInfo* stylus_info, bool inverted)
 	stylus_info->SetValue (StylusInfo::IsInvertedProperty, Value (inverted));
 }
 
+StylusInfo *
+stylus_info_get_current ()
+{
+	// HACK: return only a mouse not inverted for now.
+
+	StylusInfo *info = new StylusInfo ();
+	stylus_info_set_device_type (info, TabletDeviceTypeMouse);
+	stylus_info_set_inverted (info, false);
+	return info;
+}
 
 StylusPoint*
 stylus_point_new ()
