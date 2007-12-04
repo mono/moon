@@ -561,6 +561,25 @@ struct MoonlightTextBlockObject : MoonlightDependencyObjectObject {
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 };
 
+/*** MoonlightStylusInfoType ***************************************************/
+
+struct MoonlightStylusInfoType : MoonlightDependencyObjectType {
+	MoonlightStylusInfoType ();
+};
+
+extern MoonlightStylusInfoType *MoonlightStylusInfoClass;
+
+struct MoonlightStylusInfoObject : MoonlightDependencyObjectObject {
+
+	MoonlightStylusInfoObject (NPP instance)
+		: MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::STYLUSINFO;
+	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+};
+
 /*** MoonlightControl ***************************************************/
 
 struct MoonlightControlType : MoonlightDependencyObjectType {

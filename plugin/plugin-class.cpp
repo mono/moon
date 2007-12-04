@@ -90,6 +90,8 @@ enum PluginPropertyId {
 	MoonId_Root,
 	MoonId_Count,
 	MoonId_ResponseText,
+	MoonId_DeviceType,
+	MoonId_IsInverted,
 
 	// method names
 	MoonId_GetPosition = 0x8000,
@@ -100,6 +102,8 @@ enum PluginPropertyId {
 	MoonId_CreateFromXamlDownloader,
 	MoonId_GetHost,
 	MoonId_GetParent,
+	MoonId_GetStylusInfo,
+	MoonId_GetStylusPoints,
 	MoonId_CaptureMouse,
 	MoonId_ReleaseMouseCapture,
 	MoonId_AddEventListener,
@@ -147,6 +151,16 @@ npidentifier_to_downstr (NPIdentifier id)
 }
 
 #define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
+
+#define DEPENDENCY_OBJECT_FROM_VARIANT(obj) (((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (obj))->GetDependencyObject ())
+
+#define THROW_JS_EXCEPTION(meth)	\
+	do {	\
+		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
+		NPN_SetException (this, message);	\
+		g_free (message);	\
+		return true; \
+	} while (0);	\
 
 /* for use with bsearch & qsort */
 static int
@@ -284,7 +298,9 @@ variant_to_value (const NPVariant *v, Value **result)
 NPObject *
 EventListenerProxy::GetCallbackAsNPObject ()
 {
-	g_assert (is_func);
+	if (!is_func)
+		return NULL;
+
 	return (NPObject*) callback;
 }
 
@@ -815,6 +831,8 @@ static const MoonNameIdMapping
 mouse_event_mapping[] = {
 	{ "ctrl", MoonId_Ctrl },
 	{ "getposition", MoonId_GetPosition },
+	{ "getstylusinfo", MoonId_GetStylusInfo },
+	{ "getstyluspoints", MoonId_GetStylusPoints },
 	{ "shift", MoonId_Shift },
 };
 
@@ -853,7 +871,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		double _y = y;
 
 		if (NPVARIANT_IS_OBJECT (args [0])) {
-			DependencyObject *dob = ((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args [0]))->GetDependencyObject ();
+			DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [0]);
 			if (dob->Is (Type::UIELEMENT))
 				uielement_transform_point ((UIElement*) dob, &_x, &_y);
 		}
@@ -863,6 +881,32 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 
 		OBJECT_TO_NPVARIANT (point, *result);
 
+		return true;
+	}
+	case MoonId_GetStylusInfo: {
+		if (argCount != 0)
+			THROW_JS_EXCEPTION ("getStylusInfo");
+
+		MoonlightStylusInfoObject *info = (MoonlightStylusInfoObject *) NPN_CreateObject (instance, MoonlightStylusInfoClass);
+		info->SetDependencyObject (stylus_info_get_current ());
+		
+		OBJECT_TO_NPVARIANT (info, *result);
+		
+		return true;
+	}
+	case MoonId_GetStylusPoints: {
+		if (argCount != 1)
+			THROW_JS_EXCEPTION ("getStylusPoints");
+
+		if (NPVARIANT_IS_OBJECT (args [0])) {
+			DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [0]);
+			if (!dob->Is (Type::INKPRESENTER))
+				THROW_JS_EXCEPTION ("getStylusPoints");
+			
+			InkPresenter *ip = (InkPresenter *) dob;
+			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, ink_presenter_get_strokes (ip)), *result);
+		}
+		
 		return true;
 	}
 	default:
@@ -1626,14 +1670,6 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier, const NPVariant *valu
 		return false;
 	}
 }
-
-#define THROW_JS_EXCEPTION(meth)	\
-	do {	\
-		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
-		NPN_SetException (this, message);	\
-		g_free (message);	\
-		return true; \
-	} while (0);	\
 
 bool
 MoonlightContentObject::Invoke (int id, NPIdentifier name,
@@ -2690,6 +2726,61 @@ MoonlightTextBlockType::MoonlightTextBlockType ()
 
 MoonlightTextBlockType* MoonlightTextBlockClass;
 
+/*** MoonlightStylusInfoClass ***************************************************/
+
+static NPObject*
+moonlight_stylus_info_allocate (NPP instance, NPClass*)
+{
+	return new MoonlightStylusInfoObject (instance);
+}
+
+static const MoonNameIdMapping
+moonlight_stylus_info_mapping [] = {
+	{ "devicetype", MoonId_DeviceType },
+	{ "isinverted", MoonId_IsInverted },
+};
+
+bool
+MoonlightStylusInfoObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	StylusInfo *info = (StylusInfo *) GetDependencyObject ();
+
+	switch (id) {
+	case MoonId_DeviceType: {
+		switch (stylus_info_get_device_type (info)) {
+		case TabletDeviceTypeMouse:
+			string_to_npvariant ("Mouse", result);
+			break;
+		case TabletDeviceTypeStylus:
+			string_to_npvariant ("Stylus", result);
+			break;
+		case TabletDeviceTypeTouch:
+			string_to_npvariant ("Touch", result);
+			break;
+		default:
+			THROW_JS_EXCEPTION ("deviceType");
+		}
+		return true;
+	}
+	case MoonId_IsInverted: {
+		BOOLEAN_TO_NPVARIANT (stylus_info_get_inverted (info), *result);
+		return true;
+	}
+
+	default:
+		return MoonlightDependencyObjectObject::GetProperty (id, name, result);
+	}
+}
+
+MoonlightStylusInfoType::MoonlightStylusInfoType ()
+{
+	AddMapping (moonlight_stylus_info_mapping, COUNT (moonlight_stylus_info_mapping));
+
+	allocate = moonlight_stylus_info_allocate;
+}
+
+MoonlightStylusInfoType* MoonlightStylusInfoClass;
+
 /*** MoonlightDownloaderClass ***************************************************/
 
 static NPObject*
@@ -3536,6 +3627,7 @@ plugin_init_classes ()
 	MoonlightScriptControlClass = new MoonlightScriptControlType ();
 	MoonlightSettingsClass = new MoonlightSettingsType ();
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
+	MoonlightStylusInfoClass = new MoonlightStylusInfoType ();
 	MoonlightTextBlockClass = new MoonlightTextBlockType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 }
@@ -3561,6 +3653,7 @@ plugin_destroy_classes ()
 	delete MoonlightScriptControlClass; MoonlightScriptControlClass = NULL;
 	delete MoonlightSettingsClass; MoonlightSettingsClass = NULL;
 	delete MoonlightStoryboardClass; MoonlightStoryboardClass = NULL;
+	delete MoonlightStylusInfoClass; MoonlightStylusInfoClass = NULL;
 	delete MoonlightTextBlockClass; MoonlightTextBlockClass = NULL;
 	delete MoonlightRectClass; MoonlightRectClass = NULL;
 	delete MoonlightPointClass; MoonlightPointClass = NULL;
