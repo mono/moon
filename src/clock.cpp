@@ -624,17 +624,19 @@ Clock::Tick ()
 #if false
 	if (GetClockState() == Clock::Active)
 #endif
-		ClampTimeToDuration ();
+		ClampTime ();
 	CalcProgress ();
 }
 
 void
-Clock::ClampTimeToDuration ()
+Clock::ClampTime ()
 {
 	if (natural_duration.HasTimeSpan()) {
 		if (current_time > natural_duration.GetTimeSpan())
 			SetCurrentTime (natural_duration.GetTimeSpan());
 	}
+	if (current_time < 0)
+		SetCurrentTime (0);
 }
 
 void
@@ -1046,7 +1048,7 @@ ClockGroup::Tick ()
 #if false
 	if (GetClockState() == Clock::Active)
 #endif
-		ClampTimeToDuration ();
+		ClampTime ();
 
 	CalcProgress ();
 

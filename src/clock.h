@@ -382,7 +382,7 @@ class Clock : public DependencyObject {
 
  protected:
 	TimeSpan ComputeNewTime ();
-	void ClampTimeToDuration ();
+	void ClampTime ();
 	void CalcProgress ();
 	virtual void DoRepeat ();
 

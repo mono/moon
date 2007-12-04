@@ -1,3 +1,9 @@
+2007-12-03  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: rename ClampTimeToDuration to ClampTime, as
+	it now clamps to [0,duration_timespan].  This fixes the Simon
+	"button flying off the screen" bug.
+
 2007-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* clock.cpp (RaiseEnqueuedEvents): Optimized a bit by not
