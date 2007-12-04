@@ -49,7 +49,7 @@ elif test "x$largefile64_source" = "xundefined"; then
    AC_DEFINE(O_LARGEFILE, 0, [Define to 0 if your system does not have the O_LARGEFILE flag])
 fi
 
-if test "x$ac_cv_sys_large_files" != "xno"; then
+if test -n "$ac_cv_sys_large_files" -a "x$ac_cv_sys_large_files" != "xno"; then
    LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_LARGE_FILES=1"
 fi
 
