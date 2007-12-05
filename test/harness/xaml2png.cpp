@@ -130,6 +130,11 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 	Canvas *canvas = (Canvas*)xaml_create_from_file (loader, xaml_file, true, &type);
 	delete loader;
 
+	if (canvas == NULL) {
+		delete s;
+		return;
+	}
+
 	s->Attach (canvas);
 
 	int width = TEST_WIDTH;
