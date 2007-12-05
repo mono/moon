@@ -1,3 +1,9 @@
+2007-12-05  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp, clock.h: handle the case where a clock can be started
+	and then stopped before the next clock tick.  This happens when
+	you move the mouse very quickly over the thumbnails in pageturn.
+
 2007-12-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp: Fix crash when EllipseGeometry is used for clipping

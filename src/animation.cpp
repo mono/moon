@@ -37,10 +37,10 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
   
 {
 	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
-	clock->AddHandler (clock->CurrentStateInvalidatedEvent, reset_property_value, this);
 	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
+	printf ("basevalue %p.%s is %f\n", targetobj, targetprop->name, baseValue->AsDouble());
 }
 
 void
@@ -77,19 +77,14 @@ AnimationStorage::UpdatePropertyValue ()
 }
 
 void
-AnimationStorage::reset_property_value (EventObject *, gpointer, gpointer closure)
-{
-	((AnimationStorage*)closure)->ResetPropertyValue ();
-}
-
-void
 AnimationStorage::ResetPropertyValue ()
 {
 	if (targetobj == NULL)
 		return;
 
-	if (clock->GetClockState() == Clock::Stopped)
-		targetobj->SetValue (targetprop, *baseValue);
+	targetobj->SetValue (targetprop, *baseValue);
+	if (baseValue->GetKind() == Type::DOUBLE)
+		printf ("resetting %p.%s to %f\n", targetobj, targetprop->name, baseValue->AsDouble());
 }
 
 AnimationStorage::~AnimationStorage ()
@@ -99,7 +94,6 @@ AnimationStorage::~AnimationStorage ()
 	
 	if (clock != NULL) {
 		clock->RemoveHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
-		clock->RemoveHandler (clock->CurrentStateInvalidatedEvent, reset_property_value, this);
 	}
 	
 	if (targetobj != NULL) {
@@ -126,6 +120,13 @@ AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestin
 	return timeline->GetCurrentValue (defaultOriginValue, defaultDestinationValue, this);
 }
 
+void
+AnimationClock::Stop ()
+{
+	if (storage)
+		storage->ResetPropertyValue ();
+}
+
 AnimationClock::~AnimationClock ()
 {
 	if (storage)
@@ -136,8 +137,8 @@ Clock*
 Animation/*Timeline*/::AllocateClock()
 {
 	Clock *clock = new AnimationClock (this);
-	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %s, targetprop = %s", GetTypeName(),
-				      Storyboard::GetTargetName (this), Storyboard::GetTargetProperty (this));
+	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
+				      FindName (Storyboard::GetTargetName(this)), Storyboard::GetTargetName (this), Storyboard::GetTargetProperty (this));
 	clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
 	return clock;
@@ -234,6 +235,25 @@ Storyboard::invoke_completed (EventObject *sender, gpointer calldata, gpointer c
 }
 
 void
+Storyboard::TeardownClockGroup ()
+{
+	if (root_clock) {
+		ClockGroup *group = root_clock->GetParent();
+		if (group)
+			group->RemoveChild (root_clock);
+		root_clock->unref ();
+		root_clock = NULL;
+	}
+}
+
+void
+Storyboard::teardown_clockgroup (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	Storyboard *sb = (Storyboard *)closure;
+	sb->TeardownClockGroup ();
+}
+
+void
 Storyboard::Begin ()
 {
 	ClockGroup *group = NULL;
@@ -252,10 +272,12 @@ Storyboard::Begin ()
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
 	if (root_clock) {
-		group = root_clock->GetParent();
-		group->RemoveChild (root_clock);
-		root_clock->unref ();
-		root_clock = NULL;
+		if (root_clock->GetClockState() != Clock::Stopped) {
+			root_clock->RemoveHandler (root_clock->CompletedEvent, teardown_clockgroup, this);
+			root_clock->Stop();
+		}
+
+		TeardownClockGroup ();
 	}
 #endif
 
@@ -276,6 +298,7 @@ Storyboard::Begin ()
 	root_clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
 	root_clock->AddHandler (root_clock->CompletedEvent, invoke_completed, this);
+	root_clock->AddHandler (root_clock->CompletedEvent, teardown_clockgroup, this);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
@@ -413,11 +436,7 @@ Storyboard::~Storyboard ()
 	if (root_clock) {
 		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		Stop ();
-		if (root_clock->GetParent())
-			root_clock->GetParent()->RemoveChild (root_clock);
-		//printf ("Unrefing Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
-		root_clock->unref ();
-		root_clock = NULL;
+		TeardownClockGroup ();
 	}
 }
 

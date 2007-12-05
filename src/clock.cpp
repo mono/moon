@@ -538,7 +538,7 @@ output_clock (Clock *clock, int level)
 		ClockGroup *cg = (ClockGroup*)clock;
 		level += 2;
 		for (GList *l = cg->child_clocks; l; l = l->next) {
-			if (((Clock*)l->data)->GetClockState () != Clock::Stopped)
+// 			if (((Clock*)l->data)->GetClockState () != Clock::Stopped)
 				output_clock ((Clock*)l->data, level);
 		}
 	}
@@ -551,7 +551,7 @@ TimeManager::ListClocks()
 	printf ("============================\n");
 
 	for (GList *l = child_clocks; l; l = l->next) {
-		if (((Clock*)l->data)->GetClockState () != Clock::Filling)
+// 		if (((Clock*)l->data)->GetClockState () != Clock::Filling)
 			output_clock ((Clock*)l->data, 2);
 	}
 }
@@ -582,6 +582,7 @@ Clock::Clock (Timeline *tl)
     queued_events (0),
     forward (true)
 {
+	was_stopped = false;
 	begin_time = -1;
 
 	if (timeline->HasBeginTime ())
@@ -810,6 +811,7 @@ Clock::Begin ()
 {
 	seeking = false;
 	has_started = false;
+	was_stopped = false;
 	is_paused = false;
 	forward = true;
 
@@ -941,6 +943,7 @@ Clock::Stop ()
 	printf ("stopping clock %p after this tick\n", this);
 #endif
 	SetClockState (Clock::Stopped);
+	was_stopped = true;
 }
 
 
@@ -1040,7 +1043,7 @@ ClockGroup::Tick ()
 		if (c->GetClockState() != Clock::Stopped) {
 			c->Tick ();
 		}
-		else if (!c->GetHasStarted() && c->GetBeginTime () <= current_time) {
+		else if (!c->GetHasStarted() && !c->GetWasStopped() && c->GetBeginTime () <= current_time) {
 			c->Begin ();
 		}
 	}
