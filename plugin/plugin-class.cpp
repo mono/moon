@@ -2047,7 +2047,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_GetParent: {
-		DependencyObject *parent = dob->GetParent();
+		DependencyObject *parent = dob->GetLogicalParent();
 		if (parent)
 			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, parent), *result);
 		else

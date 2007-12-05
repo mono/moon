@@ -1,3 +1,9 @@
+2007-12-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Rename DependencyObject::parent/SetParent/GetParent
+	
+	    to logical_parent/SetLogicalParent/GetLogicalParent.
+
 2007-12-04  Jb Evain  <jbevain@novell.com>
 
 	* plugin-class.h: add the definitions of MoonlightStylusInfoType
