@@ -443,24 +443,28 @@ ellipse_geometry_new ()
 void
 EllipseGeometry::Build (Path *shape)
 {
-	Point *pt = ellipse_geometry_get_center (this);
 	double rx = ellipse_geometry_get_radius_x (this);
 	double ry = ellipse_geometry_get_radius_y (this);
+	Point *pt = ellipse_geometry_get_center (this);
+	double x = pt ? pt->x : 0.0;
+	double y = pt ? pt->y : 0.0;
 
 	path = moon_path_renew (path, MOON_PATH_ELLIPSE_LENGTH);
-	moon_ellipse (path, pt->x - rx, pt->y - ry, rx * 2.0, ry * 2.0);
+	moon_ellipse (path, x - rx, y - ry, rx * 2.0, ry * 2.0);
 }
 
 Rect
 EllipseGeometry::ComputeBounds (Path *path)
 {
 	// code written to minimize divisions
-	double ht = shape_get_stroke_thickness (path) / 2.0;
+	double ht = (path ? shape_get_stroke_thickness (path) : 1.0) / 2.0;
 	double hw = ellipse_geometry_get_radius_x (this) + ht;
 	double hh = ellipse_geometry_get_radius_y (this) + ht;
 	// point is at center, so left-top corner is minus half width / half height
 	Point *pt = ellipse_geometry_get_center (this);
-	return Rect (pt->x - hw, pt->y - hh, hw * 2.0, hh * 2.0);
+	double x = pt ? pt->x : 0.0;
+	double y = pt ? pt->y : 0.0;
+	return Rect (x - hw, y - hh, hw * 2.0, hh * 2.0);
 }
 
 //

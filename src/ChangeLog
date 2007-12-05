@@ -1,3 +1,9 @@
+2007-12-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp: Fix crash when EllipseGeometry is used for clipping
+	(no path provided). Fix Build/ComputeBounds when no center point
+	is provided.
+
 2007-12-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* uielement.h, visual.h, uielement.cpp, collection.cpp, control.cpp,
