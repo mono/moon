@@ -164,12 +164,12 @@ Control::InitializeFromXaml (const char *xaml,
 		return NULL;
 
 	if (real_object){
-		real_object->parent = NULL;
+		real_object->SetVisualParent (NULL);
 		base_unref (real_object);
 	}
 
 	real_object = (FrameworkElement *) element;
-	real_object->parent = this;
+	real_object->SetVisualParent (this);
 
 	real_object->Attach (NULL,this);
 	real_object->UpdateTotalOpacity ();

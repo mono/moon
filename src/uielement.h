@@ -44,8 +44,6 @@ public:
 	virtual ~UIElement ();
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };
 
-	UIElement *parent;
-
 	int dirty_flags;
 	List::Node *up_dirty_node;
 	List::Node *down_dirty_node;

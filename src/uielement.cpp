@@ -52,7 +52,7 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	g_warning ("GetTransformFor called on a non-container, you must implement this in your container\n");
 }
 
-UIElement::UIElement () : opacityMask(NULL), parent(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE)
+UIElement::UIElement () : opacityMask(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE)
 {
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
@@ -198,7 +198,7 @@ UIElement::DumpHierarchy (UIElement *obj)
 	if (obj == NULL)
 		return 0;
 	
-	int n = DumpHierarchy (obj->parent);
+	int n = DumpHierarchy (obj->GetVisualParent ());
 	for (int i = 0; i < n; i++)
 		putchar (' ');
 	printf ("%s (%p)\n", obj->GetTypeName(), obj);
@@ -227,23 +227,23 @@ UIElement::UpdateTotalOpacity ()
 void
 UIElement::ComputeTotalOpacity ()
 {
-	if (parent)
-		parent->ComputeTotalOpacity ();
+	if (GetVisualParent ())
+		GetVisualParent ()->ComputeTotalOpacity ();
 
 	double local_opacity = GetValue (OpacityProperty)->AsDouble();
-	total_opacity = local_opacity * (parent ? parent->GetTotalOpacity () : 1.0);
+	total_opacity = local_opacity * (GetVisualParent () ? GetVisualParent ()->GetTotalOpacity () : 1.0);
 }
 
 void
 UIElement::ComputeTotalRenderVisibility ()
 {
-	if (parent)
-		parent->ComputeTotalRenderVisibility ();
+	if (GetVisualParent ())
+		GetVisualParent ()->ComputeTotalRenderVisibility ();
 
 	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
 
-	if (parent)
-		visible = visible && parent->GetRenderVisible ();
+	if (GetVisualParent ())
+		visible = visible && GetVisualParent ()->GetRenderVisible ();
 
 	if (visible)
 		flags |= UIElement::TOTAL_RENDER_VISIBLE;
@@ -254,13 +254,13 @@ UIElement::ComputeTotalRenderVisibility ()
 void
 UIElement::ComputeTotalHitTestVisibility ()
 {
-	if (parent)
-		parent->ComputeTotalHitTestVisibility ();
+	if (GetVisualParent ())
+		GetVisualParent ()->ComputeTotalHitTestVisibility ();
 
 	bool visible = (flags & UIElement::HIT_TEST_VISIBLE) != 0;
 
-	if (parent)
-		visible = visible && parent->GetHitTestVisible ();
+	if (GetVisualParent ())
+		visible = visible && GetVisualParent ()->GetHitTestVisible ();
 
 	if (visible)
 		flags |= UIElement::TOTAL_HIT_TEST_VISIBLE;
@@ -280,8 +280,8 @@ UIElement::ComputeLocalTransform ()
 	uielement_get_render_affine (this, &local_transform);
 	transform_origin = GetTransformOrigin ();
 
-	if (parent != NULL)
-		parent->GetTransformFor (this, &parent_transform);
+	if (GetVisualParent () != NULL)
+		GetVisualParent ()->GetTransformFor (this, &parent_transform);
 	else
 		cairo_matrix_init_identity (&parent_transform);
 }
@@ -289,8 +289,8 @@ UIElement::ComputeLocalTransform ()
 void
 UIElement::ComputeTransform ()
 {
-	if (parent != NULL)
-		absolute_xform = parent->absolute_xform;
+	if (GetVisualParent () != NULL)
+		absolute_xform = GetVisualParent ()->absolute_xform;
 	else
 		cairo_matrix_init_identity (&absolute_xform);
 
@@ -749,7 +749,7 @@ uielement_transform_point (UIElement *item, double *x, double *y)
 UIElement *
 uielement_get_parent (UIElement *item)
 {
-	return item->parent;
+	return item->GetVisualParent ();
 }
 
 bool

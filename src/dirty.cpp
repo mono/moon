@@ -259,20 +259,20 @@ process_dirty_elements ()
 // 					el->GetBounds().x, el->GetBounds().y, el->GetBounds().w, el->GetBounds().h);
 
 			if (osubtreebounds != el->GetSubtreeBounds ()) {
-				if (el->parent) {
-					el->parent->UpdateBounds ();
+				if (el->GetVisualParent ()) {
+					el->GetVisualParent ()->UpdateBounds ();
 					parent_bounds_updated = true;
 				}
 			}
 
 			if (obounds != el->GetBounds()) {
-				if (el->parent) {
+				if (el->GetVisualParent ()) {
 // 						printf (" + + + calling UpdateBounds and Invalidate on parent\n");
 					if (!parent_bounds_updated)
-						el->parent->UpdateBounds();
+						el->GetVisualParent ()->UpdateBounds();
 
 					Region oregion = Region (obounds);
-					el->parent->Invalidate (&oregion);
+					el->GetVisualParent ()->Invalidate (&oregion);
 				}
 				el->Invalidate ();
 			}

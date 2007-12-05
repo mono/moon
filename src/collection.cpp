@@ -444,7 +444,7 @@ VisualCollection::VisualAdded (Visual *visual)
 	if (panel == NULL)
 		return;
 	
-	item->parent = panel;
+	item->SetVisualParent (panel);
 	item->UpdateTransform ();
 	item->UpdateTotalOpacity ();
 	item->UpdateTotalRenderVisibility ();
@@ -460,7 +460,7 @@ VisualCollection::VisualRemoved (Visual *visual)
 
 	item->SetSurface (NULL);
 
-	if (item->parent == NULL)
+	if (item->GetVisualParent () == NULL)
 		return;
 
 	// we can't just call item->Invalidate() here, since dirty.cpp
@@ -469,8 +469,8 @@ VisualCollection::VisualRemoved (Visual *visual)
 	// bounds of the child (which is likely suboptimal,
 	// considering panels without backgrounds might have a more
 	// optimized region we can redraw).
-	item->parent->Invalidate (item->GetSubtreeBounds());
-	item->parent = NULL;
+	item->GetVisualParent ()->Invalidate (item->GetSubtreeBounds());
+	item->SetVisualParent (NULL);
 }
 
 bool

@@ -17,7 +17,7 @@
 
 class Visual : public DependencyObject {
  public:
-	Visual () : surface (NULL) {};
+	Visual () : surface (NULL), visual_parent (NULL) {};
 	virtual Type::Kind GetObjectType () { return Type::VISUAL; };	
 
 	//
@@ -28,8 +28,12 @@ class Visual : public DependencyObject {
 	
 	virtual Surface *GetSurface () { return surface; }
 	virtual void SetSurface (Surface *surface);
+	
+	void SetVisualParent (UIElement* visual_parent) { this->visual_parent = visual_parent; }
+	UIElement* GetVisualParent () { return visual_parent; }
 private:
 	Surface* surface;
+	UIElement *visual_parent;
 };
 
 
