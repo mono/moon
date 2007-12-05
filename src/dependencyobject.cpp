@@ -306,7 +306,7 @@ detach_depobj_values (gpointer  key,
 		//printf ("detaching from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->Detach (NULL, this_obj);
-		obj->SetParent (NULL);
+		obj->SetLogicalParent (NULL);
 	}
 }
 
@@ -351,12 +351,12 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	if (current_value != NULL && current_value->GetKind () >= Type::DEPENDENCY_OBJECT) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
 		if (current_as_dep)
-			current_as_dep->SetParent (NULL);
+			current_as_dep->SetLogicalParent (NULL);
 	}
 	if (value != NULL && value->GetKind () >= Type::DEPENDENCY_OBJECT) {
 		DependencyObject *new_as_dep = value->AsDependencyObject ();
 		
-		new_as_dep->SetParent (this);
+		new_as_dep->SetLogicalParent (this);
 	}
 
 	if ((current_value == NULL && value != NULL) ||
@@ -511,7 +511,7 @@ DependencyObject::DependencyObject ()
 {
 	current_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, free_value);
 	this->attached_list = NULL;
-	this->parent = NULL;
+	this->logical_parent = NULL;
 }
 
 static void
@@ -610,8 +610,8 @@ DependencyObject::FindName (const char *name)
 
 	if (rv)
 		return rv;
-	else if (parent)
-		return parent->FindName (name);
+	else if (logical_parent)
+		return logical_parent->FindName (name);
 	else {
 		Surface *surface = GetSurface ();
 		if (surface) {
@@ -632,8 +632,8 @@ DependencyObject::FindNameScope ()
 	if (scope)
 		return scope;
 
-	if (parent)
-		return parent->FindNameScope ();
+	if (logical_parent)
+		return logical_parent->FindNameScope ();
 
 	return NULL;
 }
@@ -780,32 +780,32 @@ DependencyObject::Shutdown ()
 }
 
 void
-DependencyObject::SetParent (DependencyObject *parent)
+DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
 {
 #if DEBUG
 	// Check for circular families
-	DependencyObject *current = parent;
+	DependencyObject *current = logical_parent;
 	while (current != NULL) {
 		g_assert (current != this);
-		current = current->GetParent ();
+		current = current->GetLogicalParent ();
 	} 
 #endif
-	this->parent = parent;
+	this->logical_parent = logical_parent;
 }
 
 DependencyObject*
-DependencyObject::GetParent ()
+DependencyObject::GetLogicalParent ()
 {
-	DependencyObject *res = parent;
+	DependencyObject *res = logical_parent;
 	while (res && Type::Find (res->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
-		res = res->GetParent ();
+		res = res->GetLogicalParent ();
 	return res;
 }
 
 void
 DependencyObject::NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type)
 {
-	DependencyObject *current = GetParent ();
+	DependencyObject *current = GetLogicalParent ();
 	while (current != NULL) {
 		if (!only_exact_type || property->type == current->GetObjectType ()) {	
 
@@ -813,7 +813,7 @@ DependencyObject::NotifyParentOfPropertyChange (DependencyProperty *property, bo
 			if (only_exact_type && current->OnChildPropertyChanged (property, this))
 				return;
 		}
-		current = current->GetParent ();
+		current = current->GetLogicalParent ();
 	}
 }
 

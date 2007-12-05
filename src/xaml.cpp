@@ -830,7 +830,7 @@ start_element (void *data, const char *el, const char **attr)
 		} else {
 			DependencyObject *parent = get_parent (p->current_element);
 			if (parent) {
-				inst->item->SetParent (parent);
+				inst->item->SetLogicalParent (parent);
 			}
 		}
 

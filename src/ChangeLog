@@ -1,3 +1,9 @@
+2007-12-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp, dependencyobject.h, collection.cpp, dependencyobject.cpp,
+	  animation.cpp: Rename DependencyObject::parent/SetParent/GetParent to
+	  logical_parent/SetLogicalParent/GetLogicalParent.
+
 2007-12-04  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp (Image::Render): fix the conditions for the opacity

@@ -397,7 +397,7 @@ find_surface_recurse (DependencyObject *obj)
 		return ((UIElement*)obj)->GetSurface();
 	}
 	else {
-		obj = obj->GetParent();
+		obj = obj->GetLogicalParent();
 		return find_surface_recurse (obj);
 	}
 }

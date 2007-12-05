@@ -198,8 +198,8 @@ class DependencyObject : public EventObject {
 		return v ? v->AsString () : NULL;
 	}
 	
-	void SetParent (DependencyObject *parent);
-	DependencyObject* GetParent ();
+	void SetLogicalParent (DependencyObject *logical_parent);
+	DependencyObject* GetLogicalParent ();
 
 	static void Shutdown ();
 
@@ -218,7 +218,7 @@ class DependencyObject : public EventObject {
  private:
 	GHashTable        *current_values;
 	GSList            *attached_list;
-	DependencyObject  *parent;
+	DependencyObject  *logical_parent;
 };
 
 

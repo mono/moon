@@ -23,7 +23,7 @@
 Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {
 	dob->Attach (NULL, parent);
-	dob->SetParent (parent);
+	dob->SetLogicalParent (parent);
 	dob->ref ();
 	obj = dob;
 	this->parent = parent;
@@ -32,7 +32,7 @@ Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 Collection::Node::~Node ()
 {
 	obj->Detach (NULL, parent);
-	obj->SetParent (NULL);
+	obj->SetLogicalParent (NULL);
 	obj->unref ();
 }
 
