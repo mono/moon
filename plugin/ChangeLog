@@ -1,3 +1,8 @@
+2007-12-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightCollectionObject::Invoke):
+	Implemented GetItemByName for MediaAttributeCollections.
+
 2007-12-06  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: a few changes.  abstract out
