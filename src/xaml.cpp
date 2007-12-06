@@ -3076,6 +3076,9 @@ xaml_init (void)
 	XamlElementInfo *sb = rdoe (dem, "Storyboard", prltl, Type::STORYBOARD, (create_item_func) storyboard_new);
 	sb->content_property = "Children";
 
+	rdoe (dem, "TimelineMarkerCollection", col, Type::TIMELINEMARKER_COLLECTION, (create_item_func) timeline_marker_collection_new);
+	rdoe (dem, "TimelineMarker", NULL, Type::TIMELINEMARKER, (create_item_func) timeline_marker_new);
+
 	///
 	/// Triggers
 	///
