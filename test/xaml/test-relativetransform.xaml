@@ -32,9 +32,9 @@
   <Rectangle Width="63" Height="76" Canvas.Top="96" Canvas.Left="83">
     <Rectangle.Fill>
      <ImageBrush ImageSource="mono.png" >
-       <ImageBrush.RelativeTransform>
+       <ImageBrush.Transform>
          <SkewTransform CenterX="31.5" CanterY="38" AngleX="45" />
-       </ImageBrush.RelativeTransform>
+       </ImageBrush.Transform>
      </ImageBrush>
     </Rectangle.Fill>
   </Rectangle>
