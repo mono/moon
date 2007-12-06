@@ -20,11 +20,29 @@
      </ImageBrush>
     </Rectangle.Fill>
   </Rectangle>
+  <Rectangle Width="63" Height="76" Canvas.Top="10" Canvas.Left="156">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.RelativeTransform>
+         <SkewTransform CenterX="0.5" CenterY="0.5" AngleX="10" AngleY="10" />
+       </ImageBrush.RelativeTransform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="63" Height="76" Canvas.Top="10" Canvas.Left="229">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.Transform>
+         <SkewTransform CenterX="31.5" CenterY="38" AngleX="10"  AngleY="10"/>
+       </ImageBrush.Transform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
   <Rectangle Width="63" Height="76" Canvas.Top="96" Canvas.Left="10">
     <Rectangle.Fill>
      <ImageBrush ImageSource="mono.png" >
        <ImageBrush.RelativeTransform>
-         <SkewTransform CenterX="0.5" CenterY="0.5" AngleX="45" />
+         <SkewTransform CenterX="0.5" CenterY="0.5" AngleX="45"/>
        </ImageBrush.RelativeTransform>
      </ImageBrush>
     </Rectangle.Fill>
@@ -33,9 +51,53 @@
     <Rectangle.Fill>
      <ImageBrush ImageSource="mono.png" >
        <ImageBrush.Transform>
-         <SkewTransform CenterX="31.5" CenterY="38" AngleX="45" />
+         <SkewTransform CenterX="31.5" CenterY="38" AngleX="45"/>
        </ImageBrush.Transform>
      </ImageBrush>
     </Rectangle.Fill>
   </Rectangle>
+  <Rectangle Width="63" Height="76" Canvas.Top="96" Canvas.Left="156">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.RelativeTransform>
+         <SkewTransform AngleX="45"/>
+       </ImageBrush.RelativeTransform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="63" Height="76" Canvas.Top="96" Canvas.Left="229">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.Transform>
+         <SkewTransform AngleX="45"/>
+       </ImageBrush.Transform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Ellipse Canvas.Top="192" Canvas.Left="10" Width="136" Height="76" Stroke="Orange">
+   <Ellipse.Fill>
+    <LinearGradientBrush StartPoint=".5,0.5" EndPoint="1,1">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0" />
+      <GradientStop Color="Indigo" Offset="1" />
+     </LinearGradientBrush.GradientStops> 
+     <LinearGradientBrush.RelativeTransform>
+      <RotateTransform CenterX="0.5" CenterY="0.5" Angle="117" />
+     </LinearGradientBrush.RelativeTransform>
+    </LinearGradientBrush>
+   </Ellipse.Fill>
+  </Ellipse>
+  <Ellipse Canvas.Top="192" Canvas.Left="156" Width="136" Height="76" Stroke="Orange">
+   <Ellipse.Fill>
+    <LinearGradientBrush StartPoint=".5,0.5" EndPoint="1,1">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0" />
+      <GradientStop Color="Indigo" Offset="1" />
+     </LinearGradientBrush.GradientStops> 
+     <LinearGradientBrush.Transform>
+      <RotateTransform CenterX="78" CenterY="68" Angle="117" />
+     </LinearGradientBrush.Transform>
+    </LinearGradientBrush>
+   </Ellipse.Fill>
+  </Ellipse>
 </Canvas>
