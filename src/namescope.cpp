@@ -60,6 +60,11 @@ NameScope::UnregisterName (const char *name)
 DependencyObject*
 NameScope::FindName (const char *name)
 {
+	if (name == NULL) {
+		g_warning ("NULL passed to FindName");
+		return NULL;
+	}
+
 	DependencyObject *o = (DependencyObject*)g_hash_table_lookup (names, name);
 	if (o)
 		return o;
