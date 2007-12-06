@@ -100,6 +100,7 @@ enum PluginPropertyId {
 	MoonId_FindName,
 	MoonId_CreateFromXaml,
 	MoonId_CreateFromXamlDownloader,
+	MoonId_Equals,
 	MoonId_GetHost,
 	MoonId_GetParent,
 	MoonId_GetStylusInfo,
@@ -1775,6 +1776,7 @@ static const MoonNameIdMapping
 moonlight_dependency_object_mapping [] = {
 	{ "addeventlistener", MoonId_AddEventListener },
 	{ "capturemouse", MoonId_CaptureMouse },
+	{ "equals", MoonId_Equals },
 	{ "findname", MoonId_FindName },
 	{ "gethost", MoonId_GetHost },
 	{ "getparent", MoonId_GetParent },
@@ -1996,6 +1998,21 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 		return true;
 #endif
+
+	case MoonId_Equals: {
+		if (argCount != 1 || !NPVARIANT_IS_OBJECT (args[0]))
+			THROW_JS_EXCEPTION ("equals");
+
+		NPObject *o = NPVARIANT_TO_OBJECT (args[0]);
+		if (o->_class != MoonlightDependencyObjectClass)
+			BOOLEAN_TO_NPVARIANT (false, *result);
+		else {
+			MoonlightDependencyObjectObject *obj = (MoonlightDependencyObjectObject *) o;
+			BOOLEAN_TO_NPVARIANT (obj->GetDependencyObject() == dob, *result);
+		}
+		  
+		return true;
+	}
 
 	case MoonId_SetValue:
 		/* obj.setValue (prop, val) is another way of writing obj[prop] = val (or obj.prop = val) */
