@@ -35,9 +35,10 @@ class EventListenerProxy : public List::Node {
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
 	~EventListenerProxy ();
 	void AddHandler (EventObject *obj);
-	void RemoveHandler (EventObject *obj);
-	NPObject* GetCallbackAsNPObject ();
+	void RemoveHandler ();
+	char* GetCallbackAsString ();
 
+	int GetEventId () { return event_id; }
  private:
 	NPP instance;
 
@@ -49,6 +50,9 @@ class EventListenerProxy : public List::Node {
 	gpointer callback;
 
 	char *event_name;
+
+	int event_id;
+	EventObject *target_object;
 
 	static EventArgsWrapper get_wrapper_for_event_name (const char *event_name);
 	static void default_wrapper (NPP instance, gpointer calldata, NPVariant *value);
@@ -89,6 +93,7 @@ struct MoonlightObject : public NPObject
 		this->instance = instance;
 		this->moonlight_type = Type::INVALID;
 		this->disposed = false;
+		this->event_listener_proxies = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, destroy_proxy);
 	}
 	virtual void Dispose ();
 	virtual ~MoonlightObject ();
@@ -102,9 +107,16 @@ struct MoonlightObject : public NPObject
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType*)_class)->LookupName (name); }
 
+	EventListenerProxy* LookupEventProxy (int event_id);
+	void SetEventProxy (int event_id, EventListenerProxy* proxy);
+	void ClearEventProxy (int event_id);
+
+	static void destroy_proxy (gpointer data);
+
 	NPP instance;
 	Type::Kind moonlight_type;
 	bool disposed;
+	GHashTable *event_listener_proxies;
 };
 
 /*** MoonlightEventListenerObject ******************************************************/
@@ -319,10 +331,7 @@ extern MoonlightContentType* MoonlightContentClass;
 
 struct MoonlightContentObject : MoonlightObject {
 	MoonlightContentObject (NPP instance)
-	  : MoonlightObject (instance),
-	    resizeProxy (NULL),
-	    fullScreenChangeProxy (NULL),
-	    errorProxy (NULL)
+	  : MoonlightObject (instance)
 	{
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
@@ -336,10 +345,6 @@ struct MoonlightContentObject : MoonlightObject {
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
 	GHashTable *registered_scriptable_objects;
-
-	EventListenerProxy *resizeProxy;
-	EventListenerProxy *fullScreenChangeProxy;
-	EventListenerProxy *errorProxy;
 };
 
 /*** MoonlightScriptControlClass **********************************************************/

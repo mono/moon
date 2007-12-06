@@ -1,5 +1,11 @@
 2007-12-06  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.h, dependencyobject.cpp: make
+	EventObject::AddHandler return the id (when using the event_name
+	variant).
+
+2007-12-06  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (xaml_init): register the right constructors for
 	PathSegmentCollection, GeometryCollection, and
 	TransformCollection.

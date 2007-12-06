@@ -81,17 +81,19 @@ EventObject::FreeHandlers ()
 	}
 }
 
-void
+int
 EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data)
 {
 	int id = GetType()->LookupEvent (event_name);
 
 	if (id == -1) {
 		g_warning ("adding handler to event '%s', which has not been registered\n", event_name);
-		return;
+		return -1;
 	}
 
 	AddHandler (id, handler, data);
+
+	return id;
 }
 
 void

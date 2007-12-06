@@ -84,14 +84,35 @@ enum PluginPropertyId {
 	MoonId_ActualHeight,
 	MoonId_ActualWidth,
 	MoonId_FullScreen,
-	MoonId_OnResize,
-	MoonId_OnFullScreenChange,
-	MoonId_OnError,
 	MoonId_Root,
 	MoonId_Count,
 	MoonId_ResponseText,
 	MoonId_DeviceType,
 	MoonId_IsInverted,
+
+	// event names (handled by the property setters)
+	MoonId_BufferingProgressChanged,
+	MoonId_Completed,
+	MoonId_CurrentStateChanged,
+	MoonId_DownloadProgressChanged,
+	MoonId_GotFocus,
+	MoonId_ImageFailed,
+	MoonId_KeyDown,
+	MoonId_KeyUp,
+	MoonId_LostFocus,
+	MoonId_Loaded,
+	MoonId_MarkerReached,
+	MoonId_MediaEnded,
+	MoonId_MediaFailed,
+	MoonId_MediaOpened,
+	MoonId_MouseEnter,
+	MoonId_MouseLeave,
+	MoonId_MouseMove,
+	MoonId_MouseLeftButtonDown,
+	MoonId_MouseLeftButtonUp,
+	MoonId_OnResize,
+	MoonId_OnFullScreenChange,
+	MoonId_OnError,
 
 	// method names
 	MoonId_GetPosition = 0x8000,
@@ -132,7 +153,8 @@ enum PluginPropertyId {
 	MoonId_Abort,
 	MoonId_Open,
 	MoonId_GetResponseText,
-	MoonId_Send
+	MoonId_Send,
+
 };
 
 static char*
@@ -172,7 +194,7 @@ compare_mapping (const void *m1, const void *m2)
 	return strcmp(map1->name, map2->name);
 }
 
-int
+static int
 map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
 {
 	char *strname = npidentifier_to_downstr (name);
@@ -189,6 +211,38 @@ map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
 	NPN_MemFree (strname);
 	return result ? result->id : NoMapping;
 }
+
+static const char *
+map_moon_id_to_event_name (int moon_id)
+{
+	char *name = NULL;
+
+	switch (moon_id) {
+	case MoonId_BufferingProgressChanged: name = "BufferingProgressChanged"; break;
+	case MoonId_CurrentStateChanged:  name = "CurrentStateChanged"; break;
+	case MoonId_DownloadProgressChanged: name = "DownloadProgressCanged"; break;
+	case MoonId_GotFocus: name = "GotFocus"; break;
+	case MoonId_KeyDown: name = "KeyDown"; break;
+	case MoonId_KeyUp: name = "KeyUp"; break;
+	case MoonId_LostFocus: name = "LostFocus"; break;
+	case MoonId_Loaded: name = "Loaded"; break;
+	case MoonId_MarkerReached: name = "MarkerReached"; break;
+	case MoonId_MediaEnded: name = "MediaEnded"; break;
+	case MoonId_MediaFailed: name = "MediaFailed"; break;
+	case MoonId_MediaOpened: name = "MediaOpened"; break;
+	case MoonId_MouseEnter: name = "MouseEnter"; break;
+	case MoonId_MouseLeave: name = "MouseLeave"; break;
+	case MoonId_MouseMove: name = "MouseMove"; break;
+	case MoonId_MouseLeftButtonDown: name = "MouseLeftButtonDown"; break;
+	case MoonId_MouseLeftButtonUp: name = "MouseLeftButtonUp"; break;
+	case MoonId_OnResize: name = "Resize"; break;
+	case MoonId_OnFullScreenChange: name = "FullScreenChange"; break;
+	case MoonId_OnError: name = "Error"; break;
+	}
+
+	return name;
+}
+
 
 static void
 string_to_npvariant (const char *value, NPVariant *result)
@@ -296,19 +350,12 @@ variant_to_value (const NPVariant *v, Value **result)
 	}
 }
 
-NPObject *
-EventListenerProxy::GetCallbackAsNPObject ()
-{
-	if (!is_func)
-		return NULL;
-
-	return (NPObject*) callback;
-}
-
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const char *cb_name)
 {
 	this->instance = instance;
 	this->event_name = g_strdup (event_name);
+	this->event_id = -1;
+	this->target_object = NULL;
 
 	this->is_func = false;
 	if (!strncmp (cb_name, "javascript:", strlen ("javascript:")))
@@ -318,10 +365,20 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 // 	printf ("returning event listener proxy from %s - > %s\n", event_name, cb_name);
 }
 
+char *
+EventListenerProxy::GetCallbackAsString ()
+{
+	if (is_func)
+		return "";
+	return (char *)callback;
+}
+
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb)
 {
 	this->instance = instance;
 	this->event_name = g_strdup (event_name);
+	this->event_id = -1;
+	this->target_object = NULL;
 
 	if (NPVARIANT_IS_OBJECT (*cb)) {
 		this->is_func = true;
@@ -346,13 +403,15 @@ EventListenerProxy::~EventListenerProxy ()
 void
 EventListenerProxy::AddHandler (EventObject *obj)
 {
-	obj->AddHandler (event_name, proxy_listener_to_javascript, this);
+	target_object = obj;
+	event_id = obj->AddHandler (event_name, proxy_listener_to_javascript, this);
 }
 
 void
-EventListenerProxy::RemoveHandler (EventObject *obj)
+EventListenerProxy::RemoveHandler ()
 {
-	obj->RemoveHandler (event_name, proxy_listener_to_javascript, this);
+	if (target_object && event_id != -1)
+		target_object->RemoveHandler (event_id, proxy_listener_to_javascript, this);
 }
 
 EventArgsWrapper
@@ -1060,9 +1119,18 @@ MoonlightObject::~MoonlightObject ()
 }
 
 void
+MoonlightObject::destroy_proxy (gpointer data)
+{
+	EventListenerProxy *proxy = (EventListenerProxy*)data;
+	proxy->RemoveHandler ();
+	delete (EventListenerProxy*)data;
+}
+
+void
 MoonlightObject::Dispose ()
 {
 	disposed = true;
+	g_hash_table_destroy (event_listener_proxies);
 }
 
 bool
@@ -1095,6 +1163,26 @@ MoonlightObject::Invoke (int id, NPIdentifier name,
 {
 	return false;
 }
+
+
+EventListenerProxy*
+MoonlightObject::LookupEventProxy (int event_id)
+{
+	return (EventListenerProxy*)g_hash_table_lookup (event_listener_proxies, GINT_TO_POINTER (event_id));
+}
+
+void
+MoonlightObject::SetEventProxy (int event_id, EventListenerProxy* proxy)
+{
+	g_hash_table_insert (event_listener_proxies, GINT_TO_POINTER (event_id), proxy);
+}
+
+void
+MoonlightObject::ClearEventProxy (int event_id)
+{
+	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (event_id));
+}
+
 
 static void
 _invalidate (NPObject *npobj)
@@ -1511,16 +1599,6 @@ MoonlightContentObject::Dispose ()
 
 	/* XXX free the registered_scriptable_objects hash */
 	//DEBUG_WARN_NOTIMPLEMENTED ("need to free registered scriptable objects");
-
-	if (resizeProxy)
-		delete resizeProxy;
-	resizeProxy = NULL;
-	if (fullScreenChangeProxy)
-		delete fullScreenChangeProxy;
-	fullScreenChangeProxy = NULL;
-	if (errorProxy)
-		delete errorProxy;
-	errorProxy = NULL;
 }
 
 static const MoonNameIdMapping
@@ -1570,25 +1648,14 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		return true;
 
 	case MoonId_OnResize:
-		if (resizeProxy == NULL)
-			NULL_TO_NPVARIANT (*result);
-		else
-			OBJECT_TO_NPVARIANT (resizeProxy->GetCallbackAsNPObject (), *result);
-		return true;
-
 	case MoonId_OnFullScreenChange:
-		if (fullScreenChangeProxy == NULL)
-			NULL_TO_NPVARIANT (*result);
-		else
-			OBJECT_TO_NPVARIANT (fullScreenChangeProxy->GetCallbackAsNPObject (), *result);
+	case MoonId_OnError: {
+		const char *event_name = map_moon_id_to_event_name (id);
+		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+		EventListenerProxy *proxy = LookupEventProxy (event_id);
+		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		return true;
-
-	case MoonId_OnError:
-		if (errorProxy == NULL)
-			NULL_TO_NPVARIANT (*result);
-		else
-			OBJECT_TO_NPVARIANT (errorProxy->GetCallbackAsNPObject (), *result);
-		return true;
+	}
 
 	case MoonId_Root: {
 		DependencyObject *top = plugin->surface->GetToplevel ();
@@ -1623,50 +1690,26 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier, const NPVariant *valu
 		return true;
 
 	case MoonId_OnResize:
-		// If we have a handler, remove it.
-		if (resizeProxy != NULL) {
-			resizeProxy->RemoveHandler (plugin->surface);
-			delete resizeProxy;
-			resizeProxy = NULL;
-		}
-
-		if (!NPVARIANT_IS_NULL (*value)) {
-			resizeProxy = new EventListenerProxy (instance,
-							      "Resize", value);
-			resizeProxy->AddHandler (plugin->surface);
-		}
-
-		return true;
-
 	case MoonId_OnFullScreenChange:
-		// If we have a handler, remove it.
-		if (fullScreenChangeProxy != NULL) {
-			fullScreenChangeProxy->RemoveHandler (plugin->surface);
-			delete fullScreenChangeProxy;
-			fullScreenChangeProxy = NULL;
+	case MoonId_OnError: {
+		const char *event_name = map_moon_id_to_event_name (id);
+		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+
+		if (event_id != -1) {
+			// If we have a handler, remove it.
+			ClearEventProxy (event_id);
+
+			if (!NPVARIANT_IS_NULL (*value)) {
+				EventListenerProxy *proxy = new EventListenerProxy (instance,
+										    event_name,
+										    value);
+				proxy->AddHandler (plugin->surface);
+				SetEventProxy (event_id, proxy);
+			}
+
+			return true;
 		}
-
-		if (!NPVARIANT_IS_NULL (*value)) {
-			fullScreenChangeProxy = new EventListenerProxy (instance,
-									"FullScreenChange", value);
-			fullScreenChangeProxy->AddHandler (plugin->surface);
-		}
-
-		return true;
-
-	case MoonId_OnError:
-		if (errorProxy != NULL) {
-			errorProxy->RemoveHandler (plugin->surface);
-			delete errorProxy;
-			errorProxy = NULL;
-		}
-
-		if (!NPVARIANT_IS_NULL (*value)) {
-			errorProxy = new EventListenerProxy (instance, "Error", value);
-			errorProxy->AddHandler (plugin->surface);
-		}
-
-		return true;
+	}
 	default:
 		return false;
 	}
@@ -1781,6 +1824,16 @@ moonlight_dependency_object_mapping [] = {
 	{ "gethost", MoonId_GetHost },
 	{ "getparent", MoonId_GetParent },
 	{ "getvalue", MoonId_GetValue },
+	{ "gotfocus", MoonId_GotFocus },
+	{ "keydown", MoonId_KeyDown },
+	{ "keyup", MoonId_KeyUp },
+	{ "loaded", MoonId_Loaded },
+	{ "lostfocus", MoonId_LostFocus },
+	{ "mouseenter", MoonId_MouseEnter },
+	{ "mouseleave", MoonId_MouseLeave },
+	{ "mouseleftbuttondown", MoonId_MouseLeftButtonDown },
+	{ "mouseleftbuttonup", MoonId_MouseLeftButtonUp },
+	{ "mousemove", MoonId_MouseMove },
 #if DEBUG_JAVASCRIPT
 	{ "printf", MoonId_Printf },
 #endif
@@ -1948,22 +2001,33 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	DependencyProperty *p = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
 
-	if (!p)
-		return false;
-
-	Value *value = dob->GetValue (p);
-	if (!value) {
-		// strings aren't null, they seem to just be empty strings
-		if (p->value_type == Type::STRING) {
-			string_to_npvariant ("", result);
+	if (p) {
+		Value *value = dob->GetValue (p);
+		if (!value) {
+			// strings aren't null, they seem to just be empty strings
+			if (p->value_type == Type::STRING) {
+				string_to_npvariant ("", result);
+				return true;
+			}
 			return true;
 		}
+
+		value_to_variant (this, value, result);
+
 		return true;
 	}
 
-	value_to_variant (this, value, result);
+	// it wasn't a dependency property.  let's see if it's an
+	// event, and hook it up if it is valid on this object.
+	const char *event_name = map_moon_id_to_event_name (id);
+	int event_id = dob->GetType()->LookupEvent (event_name);
+	if (event_id != -1) {
+		EventListenerProxy *proxy = LookupEventProxy (event_id);
+		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
+		return true;
+	}
 
-	return true;
+	return false;
 }
 
 bool
@@ -1976,10 +2040,31 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	DependencyProperty *p = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
 
-	if (!p)
-		return false;
+	if (p)
+		return _set_dependency_property_value (dob, p, value);
 
-	return _set_dependency_property_value (dob, p, value);
+	// it wasn't a dependency property.  let's see if it's an
+	// event
+	const char *event_name = map_moon_id_to_event_name (id);
+	if (event_name != NULL) {
+		int event_id = dob->GetType()->LookupEvent(event_name);
+		if (event_id != -1) {
+			// If we have a handler, remove it.
+			ClearEventProxy (event_id);
+
+			if (!NPVARIANT_IS_NULL (*value)) {
+				EventListenerProxy *proxy = new EventListenerProxy (instance,
+										    event_name,
+										    value);
+				proxy->AddHandler (dob);
+				SetEventProxy (event_id, proxy);
+			}
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool
@@ -2109,7 +2194,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("removeEventListener");
 
 		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPVARIANT_TO_OBJECT (args [1]);
-		res->proxy->RemoveHandler (res->target);
+		res->proxy->RemoveHandler ();
 
 		return true;
 	}
@@ -2408,6 +2493,7 @@ moonlight_storyboard_allocate (NPP instance, NPClass*)
 static const MoonNameIdMapping
 moonlight_storyboard_mapping [] = {
 	{ "begin", MoonId_Begin },
+	{ "completed", MoonId_Completed },
 	{ "pause", MoonId_Pause },
 	{ "resume", MoonId_Resume },
 	{ "seek", MoonId_Seek },
@@ -2501,6 +2587,13 @@ moonlight_media_element_allocate (NPP instance, NPClass*)
 
 static const MoonNameIdMapping
 moonlight_media_element_mapping [] = {
+	{ "bufferingprogresschanged", MoonId_BufferingProgressChanged },
+	{ "currentstatechanged", MoonId_CurrentStateChanged },
+	{ "downloadprogresschanged", MoonId_DownloadProgressChanged },
+	{ "markerreached", MoonId_MarkerReached },
+	{ "mediaended", MoonId_MediaEnded },
+	{ "mediafailed", MoonId_MediaFailed },
+	{ "mediaopened", MoonId_MediaOpened },
 	{ "pause", MoonId_Pause },
 	{ "play", MoonId_Play },
 	{ "setsource", MoonId_SetSource },
@@ -2587,6 +2680,8 @@ moonlight_image_allocate (NPP instance, NPClass*)
 
 static const MoonNameIdMapping
 moonlight_image_mapping [] = {
+	{ "downloadprogresschanged", MoonId_DownloadProgressChanged },
+	{ "imagefailed", MoonId_ImageFailed },
 	{ "setsource", MoonId_SetSource }
 };
 
@@ -2643,6 +2738,7 @@ moonlight_image_brush_allocate (NPP instance, NPClass*)
 
 static const MoonNameIdMapping
 moonlight_image_brush_mapping [] = {
+	{ "downloadprogresschanged", MoonId_DownloadProgressChanged },
 	{ "setsource", MoonId_SetSource }
 };
 
@@ -2810,6 +2906,8 @@ moonlight_downloader_allocate (NPP instance, NPClass*)
 static const MoonNameIdMapping
 moonlight_downloader_mapping [] = {
 	{ "abort", MoonId_Abort },
+	{ "completed", MoonId_Completed },
+	{ "downloadprogresschanged", MoonId_DownloadProgressChanged },
 	{ "getresponsetext", MoonId_GetResponseText },
 	{ "open", MoonId_Open },
 	{ "responsetext", MoonId_ResponseText },

@@ -120,7 +120,7 @@ class EventObject {
 		return Type::Find (GetObjectType ())->name;
 	}
 
-	void AddHandler (const char *event_name, EventHandler handler, gpointer data);
+	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
 	void AddHandler (int event_id, EventHandler handler, gpointer data);
