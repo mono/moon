@@ -40,7 +40,6 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
-	printf ("basevalue %p.%s is %f\n", targetobj, targetprop->name, baseValue->AsDouble());
 }
 
 void
@@ -83,8 +82,6 @@ AnimationStorage::ResetPropertyValue ()
 		return;
 
 	targetobj->SetValue (targetprop, *baseValue);
-	if (baseValue->GetKind() == Type::DOUBLE)
-		printf ("resetting %p.%s to %f\n", targetobj, targetprop->name, baseValue->AsDouble());
 }
 
 AnimationStorage::~AnimationStorage ()
