@@ -30,7 +30,7 @@
 // still too ugly to be exposed in the header files ;-)
 cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
-					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform);
+					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform, Transform *relative_transform);
 
 
 // MediaBase
@@ -501,7 +501,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	
 	if (recalculate_matrix) {
 		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch,
-						    AlignmentXCenter, AlignmentYCenter, NULL);
+						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		recalculate_matrix = false;
 	}
 	
@@ -1513,7 +1513,7 @@ Image::Render (cairo_t *cr, Region *region)
 
 	cairo_matrix_t matrix;
 	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
-		AlignmentXCenter, AlignmentYCenter, NULL);
+		AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 	
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);

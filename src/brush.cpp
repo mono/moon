@@ -102,6 +102,64 @@ brush_set_transform (Brush *brush, Transform* transform)
 	brush->SetValue (Brush::TransformProperty, Value (transform));
 }
 
+void
+compute_relative_transform (cairo_matrix_t *matrix, double width, double height, Transform *relative_transform, bool invert)
+{
+	// note about de-relativisation of transforms
+	//
+	// applying a transormation with a different center than 0,0 is equ. to : translate the center to 0,0, 
+	// apply the transform, re-translate. So, finding the (relative) center for the transform is solving
+	// the following linear equation
+	//
+	// |  1   0  0 |   | xx yx 0 |   | 1  0  0 |   | xx yx 0 |
+	// |  0   1  0 | x | xy yy 0 | x | 0  1  0 | = | xy yy 0 |
+	// | -rx -ry 1 |   | 0  0  1 |   | rx ry 1 |   | xo y0 1 |
+	//
+	// the de-relativized translation is then tx = width * rx and ty = height * ry
+	//
+	// (at that point, I don't know which method is faster: let cairo recompute T1 x M x T2 or 
+	// substitute the new x0 and y0 in the matrix)
+	//
+	// end of note
+
+	cairo_matrix_t tm;
+	double rx, ry, tx, ty;
+	transform_get_transform (relative_transform, &tm);
+	//printf ("relative_transform       xx: %f, yx: %f, xy: %f, yy: %f, x0: %f, y0: %f\n", tm.xx, tm.yx, tm.xy, tm.yy, tm.x0, tm.y0);
+	if (tm.xx != 1.0) {
+		if (tm.yy - tm.xx*tm.yy + tm.xy*tm.yx + tm.xx != 1 ) {
+			ry = (tm.y0 - tm.xx * tm.y0 + tm.yx * tm.x0) / (1 - tm.xx - tm.yy + tm.yy * tm.yy - tm.xy * tm.yx);
+			rx = (tm.x0 + tm.xy * ry) / (1 - tm.xx);
+		} else { //yy - xxyy + xyyx + xx == 1
+			//indetermined case
+			rx = ry = 0;
+		}
+	} else { //xx == 1
+		if (tm.xy != 0) {
+			ry = -tm.x0 / tm.xy;
+			if (tm.yx != 0) {
+				rx = (tm.x0 * tm.yy / tm.xy - tm.y0 - tm.x0 / tm.xy) / tm.yx;
+			} else { //yx ==0
+				//indetermined case
+				rx = 0;					
+			}
+		} else { //xy == 0
+			//indetermined case
+			rx = ry = 0;	
+		}
+	}
+
+
+	tx = rx * width;
+	ty = ry * height;
+	tm.x0 = (1 - tm.xx) * tx - tm.xy * ty;
+	tm.y0 = (1 - tm.yy) * ty - tm.yx * tx;
+	//printf ("de-relativized_transform xx: %f, yx: %f, xy: %f, yy: %f, x0: %f, y0: %f\n", tm.xx, tm.yx, tm.xy, tm.yy, tm.x0, tm.y0);
+	if (invert)
+		cairo_matrix_invert (&tm);
+	cairo_matrix_multiply (matrix, &tm, matrix);	
+}
+
 /*
  * Combine UIElement Opacity (including all parents) with Brush Opacity
  * NOTE: sadly we cannot handle Opacity at this level, each brush sub-type needs to handle it
@@ -452,6 +510,11 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
 	
+	Transform *relative_transform = brush_get_relative_transform (this);
+	if (relative_transform) {
+		compute_relative_transform (&matrix, width, height, relative_transform, FALSE);
+	}
+	
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
@@ -576,6 +639,11 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		// TODO - optimization, check for empty/identity matrix too ?
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
+
+	//Transform *relative_transform = brush_get_relative_transform (this);
+	//if (relative_transform)
+	//	compute_relative_transform (&matrix, width, height, relative_transform, TRUE);
+	
 	cairo_status_t status = cairo_matrix_invert (&matrix);
 	if (status != CAIRO_STATUS_SUCCESS) {
 		printf ("Moonlight: Error inverting matrix falling back\n");
@@ -834,7 +902,7 @@ image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, in
 
 void
 image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
-	Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform)
+	Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform, Transform *relative_transform)
 {
 	// scale required to "fit" for both axes
 	double sx = sw / width;
@@ -898,11 +966,16 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 		}
 	}
 
-	if (transform) {
+	if (transform || relative_transform) {
 		cairo_matrix_t tm;
-		transform_get_transform (transform, &tm);
-		cairo_matrix_invert (&tm);
-		cairo_matrix_multiply (matrix, &tm, matrix);
+		if (transform) {
+			transform_get_transform (transform, &tm);
+			cairo_matrix_invert (&tm);
+			cairo_matrix_multiply (matrix, &tm, matrix);
+		}
+		if (relative_transform) {
+			compute_relative_transform (matrix, width, height, relative_transform, TRUE);
+		}
 	}
 }
 
@@ -925,11 +998,13 @@ ImageBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 	
 	Transform *transform = brush_get_transform (this);
-	
+
+	Transform *relative_transform = brush_get_relative_transform (this);
+
 	cairo_pattern_t *pattern = image_brush_create_pattern (cr, surface, image->GetWidth (), image->GetHeight (), opacity);
 	
 	cairo_matrix_t matrix;
-	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetWidth (), image->GetHeight (), stretch, ax, ay, transform);
+	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetWidth (), image->GetHeight (), stretch, ax, ay, transform, relative_transform);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	cairo_set_source (cr, pattern);
@@ -961,6 +1036,7 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 {
 	MediaPlayer *mplayer = media ? media->mplayer : NULL;
 	Transform *transform = brush_get_transform (this);
+	Transform *relative_transform = brush_get_relative_transform (this);
 	AlignmentX ax = tile_brush_get_alignment_x (this);
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 	Stretch stretch = tile_brush_get_stretch (this);
@@ -1003,7 +1079,7 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 		opacity = 1.0;
 	
 	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, opacity);
-	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->width, mplayer->height, stretch, ax, ay, transform);
+	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->width, mplayer->height, stretch, ax, ay, transform, relative_transform);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	cairo_set_source (cr, pattern);
@@ -1114,13 +1190,14 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 	
 	Transform *transform = brush_get_transform (this);
+	Transform *relative_transform = brush_get_relative_transform (this);
 	
  	cairo_pattern_t *pattern = image_brush_create_pattern (cr, surface, (int)bounds.w, (int)bounds.h, opacity);
 
 	cairo_matrix_t matrix;
  	image_brush_compute_pattern_matrix (&matrix, width, height,
 					    (int)bounds.w, (int)bounds.h,
-					    stretch, ax, ay, transform);
+					    stretch, ax, ay, transform, relative_transform);
 
  	cairo_pattern_set_matrix (pattern, &matrix);
 

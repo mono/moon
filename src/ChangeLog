@@ -1,3 +1,9 @@
+2007-12-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* media.cpp:
+	* brush.cpp: implement RelativeTransform for image brushes and 
+	LinearGradientBrush. RadialGradientBrush still missing.
+
 2007-12-06  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h, dependencyobject.cpp: make

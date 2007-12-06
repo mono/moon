@@ -2,7 +2,7 @@
   xmlns="http://schemas.microsoft.com/client/2007"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   Width="400" Height="400">
-  <Rectangle Width="63" Height="76" Canvas.Top="10" Canvas.Left="10">
+<!--  <Rectangle Width="63" Height="76" Canvas.Top="10" Canvas.Left="10">
     <Rectangle.Fill>
      <ImageBrush ImageSource="mono.png" >
        <ImageBrush.RelativeTransform>
@@ -98,6 +98,32 @@
       <RotateTransform CenterX="31.5" CenterY="38" Angle="135" />
      </LinearGradientBrush.Transform>
     </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>-->
+  <Rectangle Canvas.Top="192" Canvas.Left="156" Width="63" Height="76">
+   <Rectangle.Fill>
+    <RadialGradientBrush StartPoint=".5,0.5" EndPoint="1,1">
+     <RadialGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0" />
+      <GradientStop Color="Red" Offset="1" />
+     </RadialGradientBrush.GradientStops> 
+     <RadialGradientBrush.RelativeTransform>
+      <RotateTransform CenterX="0.5" CenterY="0.5" Angle="45" />
+     </RadialGradientBrush.RelativeTransform>
+    </RadialGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="192" Canvas.Left="229" Width="63" Height="76">
+   <Rectangle.Fill>
+    <RadialGradientBrush StartPoint=".5,0.5" EndPoint="1,1">
+     <RadialGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0" />
+      <GradientStop Color="Red" Offset="1" />
+     </RadialGradientBrush.GradientStops> 
+     <RadialGradientBrush.Transform>
+      <RotateTransform CenterX="31.5" CenterY="38" Angle="45" />
+     </RadialGradientBrush.Transform>
+    </RadialGradientBrush>
    </Rectangle.Fill>
   </Rectangle>
 </Canvas>
