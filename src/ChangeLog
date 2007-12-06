@@ -1,3 +1,9 @@
+2007-12-06  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (xaml_init): register the right constructors for
+	PathSegmentCollection, GeometryCollection, and
+	TransformCollection.
+
 2007-12-05  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp, animation.h: a couple of fixes.  Move away from

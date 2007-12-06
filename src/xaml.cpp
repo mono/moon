@@ -2992,7 +2992,7 @@ xaml_init (void)
 	gg->content_property = "Children";
 
 
-	/*XamlElementInfo *gc = */ rdoe (dem, "GeometryCollection", col, Type::GEOMETRY_COLLECTION, (create_item_func) geometry_group_new);
+	/*XamlElementInfo *gc = */ rdoe (dem, "GeometryCollection", col, Type::GEOMETRY_COLLECTION, (create_item_func) geometry_collection_new);
 	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Type::PATHGEOMETRY, (create_item_func) path_geometry_new);
 	pg->content_property = "Figures";
 
@@ -3001,7 +3001,7 @@ xaml_init (void)
 	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Type::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->content_property = "Segments";
 
-	/*XamlElementInfo *psc = */ rdoe (dem, "PathSegmentCollection", col, Type::PATHSEGMENT_COLLECTION, (create_item_func) path_figure_new);
+	/*XamlElementInfo *psc = */ rdoe (dem, "PathSegmentCollection", col, Type::PATHSEGMENT_COLLECTION, (create_item_func) path_segment_collection_new);
 
 	XamlElementInfo *ps = register_ghost_element ("PathSegment", NULL, Type::PATHSEGMENT);
 	rdoe (dem, "ArcSegment", ps, Type::ARCSEGMENT, (create_item_func) arc_segment_new);
@@ -3103,7 +3103,7 @@ xaml_init (void)
 	XamlElementInfo *tg = rdoe (dem, "TransformGroup", tf, Type::TRANSFORMGROUP, (create_item_func) transform_group_new);
 	tg->content_property = "Children";
 	
-	rdoe (dem, "TransformCollection", col, Type::TRANSFORM_COLLECTION, (create_item_func) transform_group_new);
+	rdoe (dem, "TransformCollection", col, Type::TRANSFORM_COLLECTION, (create_item_func) transform_collection_new);
 
 
 	///
