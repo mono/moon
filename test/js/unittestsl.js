@@ -4,6 +4,9 @@ Object.extend (Test.Unit.Testcase.prototype, {
 	},
 
 	_slotsMatch: function (model, array, obj) { with (this) {
+		if (!array)
+			return;
+
 		for (var i = 0; i < array.length; i++) {
 			var slot = array [i];
 			assert (obj.hasOwnProperty (slot), model.name + " does not support " + slot);

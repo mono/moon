@@ -1,13 +1,9 @@
 DependencyObject = {
 	name: "DependencyObject",
 
-	isAbstract: true,
-
 	properties: ["Name"],
 
-	methods: [
-		"FindName", "GetHost", "GetValue", "SetValue", "Equals"
-	],
+	methods: ["FindName", "GetHost", "GetValue", "SetValue", "Equals"],
 
 	events: []
 };
@@ -22,8 +18,6 @@ Accessibility = {
 	},
 
 	properties: ["ActionDescription", "Description", "Title"],
-
-	methods: [],
 
 	events: ["PerformAction"]
 };
@@ -44,12 +38,14 @@ Downloader = {
 		"StatusText",
 		"URI"
 	],
+
 	methods: [
 		"Abort",
 		"GetResponseText",
 		"Open",
 		"Send"
 	],
+
 	events: [
 		"Completed",
 		"DownloadProgressChanged"
@@ -59,35 +55,16 @@ Downloader = {
 UIElement = {
 	name: "UIElement",
 
-	isAbstract: true,
-
 	parent: DependencyObject,
 
-	properties: [],
-	methods: [],
-	events: []
-};
-
-Canvas = {
-	name: "Canvas",
-
-	parent: UIElement,
-
-	create: function (plugin) {
-		return plugin.content.createFromXaml ("<Canvas />");
-	},
-
 	properties: [
-		"Background",
 		"Canvas.Left",
 		"Canvas.Top",
 		"Canvas.ZIndex",
-		"Children",
 		"Clip",
 		"Cursor",
 		"Height",
 		"IsHitTestVisible",
-		"Name",
 		"Opacity",
 		"OpacityMask",
 		"RenderTransform",
@@ -102,14 +79,9 @@ Canvas = {
 	methods: [
 		"AddEventListener",
 		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
 		"GetParent",
-		"GetValue",
 		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
+		"RemoveEventListener"
 	],
 
 	events: [
@@ -126,10 +98,23 @@ Canvas = {
 	]
 };
 
+Canvas = {
+	name: "Canvas",
+
+	parent: UIElement,
+
+	create: function (plugin) {
+		return plugin.content.createFromXaml ("<Canvas />");
+	},
+
+	properties: [
+		"Background",
+		"Children"
+	]
+};
+
 Collection = {
 	name: "Collection",
-
-	isAbstract: true,
 
 	parent: DependencyObject,
 
@@ -159,22 +144,7 @@ ColorKeyFrameCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><SplineColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames;
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 DoubleKeyFrameCollection = {
@@ -184,22 +154,7 @@ DoubleKeyFrameCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleKeyFrameCollection />");
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 GeometryCollection = {
@@ -209,22 +164,7 @@ GeometryCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<GeometryCollection />");
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 GradientStopCollection = {
@@ -234,22 +174,7 @@ GradientStopCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<GradientStopCollection />");
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 MediaAttributeCollection = {
@@ -261,14 +186,10 @@ MediaAttributeCollection = {
 		return plugin.content.createFromXaml ("<MediaElement />").attributes;
 	},
 
-	properties: ["Count"],
-
 	methods: [
 		"GetItem",
 		"GetItemByName"
-	],
-
-	events: []
+	]
 };
 
 PathFigureCollection = {
@@ -278,22 +199,7 @@ PathFigureCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PathFigureCollection />");
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 PathSegmentCollection = {
@@ -303,22 +209,7 @@ PathSegmentCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PathSegmentCollection />");
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 PointKeyFrameCollection = {
@@ -328,22 +219,7 @@ PointKeyFrameCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointKeyFrameCollection />");
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 ResourceDictionary = {
@@ -353,22 +229,7 @@ ResourceDictionary = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ResourceDictionary />");
-	},
-
-	properties: ["Count"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 StrokeCollection = {
@@ -380,22 +241,10 @@ StrokeCollection = {
 		return plugin.content.createFromXaml ("<StrokeCollection />");
 	},
 
-	properties: ["Count"],
-
 	methods: [
-		"Add",
-		"Clear",
 		"GetBounds",
-		"GetItem",
-		"GetValue",
 		"HitTest",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 StylusPointCollection = {
@@ -407,23 +256,11 @@ StylusPointCollection = {
 		return plugin.content.createFromXaml ("<StylusPointCollection />");
 	},
 
-	properties: ["Count"],
-
 	methods: [
-		"Add",
-		"AddStylusPoints",
-		"Clear",
+		"AddStylusPoints"
 		//"GetBounds",
-		"GetItem",
-		"GetValue",
 		//"HitTest",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 TimelineCollection = {
@@ -433,22 +270,7 @@ TimelineCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TimelineCollection />");
-	},
-
-	properties: ["Count"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 TimelineMarkerCollection = {
@@ -458,22 +280,7 @@ TimelineMarkerCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TimelineMarkerCollection />");
-	},
-
-	properties: ["Count"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 TransformCollection = {
@@ -483,22 +290,7 @@ TransformCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TransformCollection />");
-	},
-
-	properties: ["Count"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 TriggerActionCollection = {
@@ -508,22 +300,7 @@ TriggerActionCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TriggerActionCollection />");
-	},
-
-	properties: ["Count"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 TriggerCollection = {
@@ -533,22 +310,7 @@ TriggerCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TriggerCollection />");
-	},
-
-	properties: ["Count"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 UIElementCollection = {
@@ -558,94 +320,33 @@ UIElementCollection = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Canvas />").children;
-	},
-
-	properties: ["Count", "Name"],
-
-	methods: [
-		"Add",
-		"Clear",
-		"GetItem",
-		"GetValue",
-		"Insert",
-		"Remove",
-		"RemoveAt",
-		"SetValue"
-	],
-
-	events: []
+	}
 };
 
 KeyFrame = {
 	name: "KeyFrame",
 
-	isAbstract: true,
-
 	parent: DependencyObject,
 
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["KeyTime", "Value"]
 };
 
 ColorKeyFrame = {
 	name: "ColorKeyFrame",
 
-	isAbstract: true,
-
-	parent: KeyFrame,
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	parent: KeyFrame
 }
 
 DoubleKeyFrame = {
 	name: "DoubleKeyFrame",
 
-	isAbstract: true,
-
-	parent: KeyFrame,
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	parent: KeyFrame
 }
 
 PointKeyFrame = {
 	name: "PointKeyFrame",
 
-	isAbstract: true,
-
-	parent: KeyFrame,
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	parent: KeyFrame
 }
 
 DiscreteColorKeyFrame = {
@@ -655,17 +356,7 @@ DiscreteColorKeyFrame = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><DiscreteColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames.getItem (0);
-	},
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 }
 
 DiscreteDoubleKeyFrame = {
@@ -675,17 +366,7 @@ DiscreteDoubleKeyFrame = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames><DiscreteDoubleKeyFrame /></DoubleAnimationUsingKeyFrames>").keyFrames.getItem (0);
-	},
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 }
 
 DiscretePointKeyFrame = {
@@ -695,17 +376,7 @@ DiscretePointKeyFrame = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames><DiscretePointKeyFrame /></PointAnimationUsingKeyFrames>").keyFrames.getItem (0);
-	},
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 }
 
 LinearColorKeyFrame = {
@@ -715,17 +386,7 @@ LinearColorKeyFrame = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><LinearColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames.getItem (0);
-	},
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 }
 
 LinearDoubleKeyFrame = {
@@ -735,17 +396,7 @@ LinearDoubleKeyFrame = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames><LinearDoubleKeyFrame /></DoubleAnimationUsingKeyFrames>").keyFrames.getItem (0);
-	},
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 }
 
 LinearPointKeyFrame = {
@@ -755,17 +406,7 @@ LinearPointKeyFrame = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames><LinearPointKeyFrame /></PointAnimationUsingKeyFrames>").keyFrames.getItem (0);
-	},
-
-	properties: [
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 }
 
 SplineColorKeyFrame = {
@@ -777,16 +418,7 @@ SplineColorKeyFrame = {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><SplineColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	},
 
-	properties: [
-		"KeySpline",
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["KeySpline"]
 }
 
 SplineDoubleKeyFrame = {
@@ -798,16 +430,7 @@ SplineDoubleKeyFrame = {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames><SplineDoubleKeyFrame /></DoubleAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	},
 
-	properties: [
-		"KeySpline",
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["KeySpline"]
 }
 
 SplinePointKeyFrame = {
@@ -819,22 +442,11 @@ SplinePointKeyFrame = {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames><SplinePointKeyFrame /></PointAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	},
 
-	properties: [
-		"KeySpline",
-		"KeyTime",
-		"Name",
-		"Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["KeySpline"]
 }
 
 Timeline = {
 	name: "TimeLine",
-
-	isAbstract: true,
 
 	parent: DependencyObject,
 
@@ -843,16 +455,11 @@ Timeline = {
 		"BeginTime",
 		"Duration",
 		"FillBehavior",
-		"Name",
 		"RepeatBehavior",
 		"SpeedRatio",
 		"StoryBoard.TargetName",
 		"StoryBoard.TargetProperty"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 TimelineGroup = {
@@ -864,14 +471,7 @@ TimelineGroup = {
 		return plugin.content.createFromXaml ("<TimelineGroup />");
 	},
 
-	properties: [
-		"Children",
-		"Name"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Children"]
 };
 
 Storyboard = {
@@ -884,15 +484,7 @@ Storyboard = {
 	},
 
 	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"Children",
-		"Duration",
-		"FillBehavior",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty"
+		"Children"
 	],
 
 	methods: [
@@ -909,28 +501,9 @@ Storyboard = {
 Animation = {
 	name: "Animation",
 
-	isAbstract: true,
-
 	parent: Timeline,
 
-	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"By",
-		"Duration",
-		"FillBehavior",
-		"From",
-		"Name",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty",
-		"To"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["By", "From", "To"]
 };
 
 ColorAnimation = {
@@ -940,26 +513,7 @@ ColorAnimation = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimation />");
-	},
-
-	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"By",
-		"Duration",
-		"FillBehavior",
-		"From",
-		"Name",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty",
-		"To"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 };
 
 ColorAnimationUsingKeyFrames = {
@@ -971,22 +525,7 @@ ColorAnimationUsingKeyFrames = {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames />");
 	},
 
-	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"Duration",
-		"FillBehavior",
-		"KeyFrames",
-		"Name",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty",
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["KeyFrames"]
 };
 
 DoubleAnimation = {
@@ -996,26 +535,7 @@ DoubleAnimation = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimation />");
-	},
-
-	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"By",
-		"Duration",
-		"FillBehavior",
-		"From",
-		"Name",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty",
-		"To"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 };
 
 DoubleAnimationUsingKeyFrames = {
@@ -1027,22 +547,7 @@ DoubleAnimationUsingKeyFrames = {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames />");
 	},
 
-	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"Duration",
-		"FillBehavior",
-		"KeyFrames",
-		"Name",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty",
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["KeyFrames"]
 };
 
 PointAnimation = {
@@ -1052,26 +557,7 @@ PointAnimation = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimation />");
-	},
-
-	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"By",
-		"Duration",
-		"FillBehavior",
-		"From",
-		"Name",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty",
-		"To"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 };
 
 PointAnimationUsingKeyFrames = {
@@ -1083,41 +569,19 @@ PointAnimationUsingKeyFrames = {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames />");
 	},
 
-	properties: [
-		"AutoReverse",
-		"BeginTime",
-		"Duration",
-		"FillBehavior",
-		"KeyFrames",
-		"Name",
-		"RepeatBehavior",
-		"SpeedRatio",
-		"StoryBoard.TargetName",
-		"StoryBoard.TargetProperty",
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["KeyFrames"]
 };
 
 Brush = {
 	name: "Brush",
 
-	isAbstract: true,
-
 	parent: DependencyObject,
 
 	properties: [
-		"Name",
 		"Opacity",
 		"RelativeTransform",
 		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 ImageBrush = {
@@ -1134,14 +598,10 @@ ImageBrush = {
 		"AlignmentY",
 		"DownloadProgress",
 		"ImageSource",
-		"Name",
-		"Opacity",
-		"RelativeTransform",
-		"Stretch",
-		"Transform"
+		"Stretch"
 	],
 
-	methods: ["GetValue", "SetSource", "SetValue"],
+	methods: ["SetSource"],
 
 	events: ["DownloadProgressChanged"]
 };
@@ -1155,17 +615,7 @@ SolidColorBrush = {
 		return plugin.content.createFromXaml ("<SolidColorBrush />");
 	},
 
-	properties: [
-		"Color",
-		"Name",
-		"Opacity",
-		"RelativeTransform",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Color"]
 };
 
 VideoBrush = {
@@ -1178,23 +628,13 @@ VideoBrush = {
 	},
 
 	properties: [
-		"Name",
-		"Opacity",
-		"RelativeTransform",
 		"SourceName",
-		"Stretch",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"Stretch"
+	]
 };
 
 GradientBrush = {
 	name: "GradientBrush",
-
-	isAbstract: true,
 
 	parent: Brush,
 
@@ -1202,16 +642,8 @@ GradientBrush = {
 		"ColorInterpolationMode",
 		"GradientStops",
 		"MappingMode",
-		"Name",
-		"Opacity",
-		"RelativeTransform",
-		"SpreadMethod",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"SpreadMethod"
+	]
 };
 
 LinearGradientBrush = {
@@ -1224,21 +656,9 @@ LinearGradientBrush = {
 	},
 
 	properties: [
-		"ColorInterpolationMode",
-		"EndPoint",
-		"GradientStops",
-		"MappingMode",
-		"Name",
-		"Opacity",
-		"RelativeTransform",
-		"SpreadMethod",
 		"StartPoint",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"EndPoint"
+	]
 };
 
 RadialGradientBrush = {
@@ -1252,36 +672,16 @@ RadialGradientBrush = {
 
 	properties: [
 		"Center",
-		"ColorInterpolationMode",
 		"GradientOrigin",
-		"GradientStops",
-		"MappingMode",
-		"Name",
-		"Opacity",
 		"RadiusX",
-		"RadiusY",
-		"RelativeTransform",
-		"SpreadMethod",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"RadiusY"
+	]
 };
 
 PathSegment = {
 	name: "PathSegment",
 
-	isAbstract: true,
-
 	parent: DependencyObject,
-
-	properties: ["Name"],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
 };
 
 ArcSegment = {
@@ -1295,16 +695,11 @@ ArcSegment = {
 
 	properties: [
 		"IsLargeArc",
-		"Name",
 		"Point",
 		"RotationAngle",
 		"Size",
 		"SweepDirection"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 BezierSegment = {
@@ -1317,15 +712,10 @@ BezierSegment = {
 	},
 
 	properties: [
-		"Name",
 		"Point1",
 		"Point2",
 		"Point3"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 LineSegment = {
@@ -1337,14 +727,7 @@ LineSegment = {
 		return plugin.content.createFromXaml ("<LineSegment />");
 	},
 
-	properties: [
-		"Name",
-		"Point"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Point"]
 };
 
 PolyBezierSegment = {
@@ -1357,13 +740,8 @@ PolyBezierSegment = {
 	},
 
 	properties: [
-		"Name",
 		"Points"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 PolyLineSegment = {
@@ -1375,14 +753,7 @@ PolyLineSegment = {
 		return plugin.content.createFromXaml ("<PolyLineSegment />");
 	},
 
-	properties: [
-		"Name",
-		"Points"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Points"]
 };
 
 PolyQuadraticBezierSegment = {
@@ -1394,14 +765,7 @@ PolyQuadraticBezierSegment = {
 		return plugin.content.createFromXaml ("<PolyQuadraticBezierSegment />");
 	},
 
-	properties: [
-		"Name",
-		"Points"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Points"]
 };
 
 QuadraticBezierSegment = {
@@ -1414,14 +778,9 @@ QuadraticBezierSegment = {
 	},
 
 	properties: [
-		"Name",
 		"Point1",
 		"Point2"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 TriggerAction = {
@@ -1431,16 +790,7 @@ TriggerAction = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TriggerAction />");
-	},
-
-	properties: [
-		//"Count", // sdk doc says there's a count property, but apparently not
-		"Name"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 };
 
 BeginStoryboard = {
@@ -1452,11 +802,7 @@ BeginStoryboard = {
 		return plugin.content.createFromXaml ("<BeginStoryboard />");
 	},
 
-	properties: ["Name", "Storyboard"],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Storyboard"]
 };
 
 DrawingAttributes = {
@@ -1471,37 +817,18 @@ DrawingAttributes = {
 	properties: [
 		"Color",
 		"Height",
-		"Name",
 		"OutlineColor",
 		"Width"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 Shape = {
 	name: "Shape",
 
-	isAbstract: true,
-
-	parent: DependencyObject,
+	parent: UIElement,
 
 	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
 		"Fill",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
 		"Stretch",
 		"Stroke",
 		"StrokeDashArray",
@@ -1511,32 +838,7 @@ Shape = {
 		"StrokeLineJoin",
 		"StrokeMiterLimit",
 		"StrokeStartLineCap",
-		"StrokeThickness",
-		"Tag",
-		"Triggers",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
+		"StrokeThickness"
 	]
 };
 
@@ -1547,58 +849,7 @@ Ellipse = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Ellipse />");
-	},
-
-	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
-		"Fill",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
-		"Stretch",
-		"Stroke",
-		"StrokeDashArray",
-		"StrokeDashCap",
-		"StrokeDashOffset",
-		"StrokeEndLineCap",
-		"StrokeLineJoin",
-		"StrokeMiterLimit",
-		"StrokeStartLineCap",
-		"StrokeThickness",
-		"Tag",
-		"Triggers",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
-	]
+	}
 };
 
 Path = {
@@ -1610,57 +861,7 @@ Path = {
 		return plugin.content.createFromXaml ("<Path />");
 	},
 
-	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
-		"Data",
-		"Fill",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
-		"Stretch",
-		"Stroke",
-		"StrokeDashArray",
-		"StrokeDashCap",
-		"StrokeDashOffset",
-		"StrokeEndLineCap",
-		"StrokeLineJoin",
-		"StrokeMiterLimit",
-		"StrokeStartLineCap",
-		"StrokeThickness",
-		"Tag",
-		"Triggers",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
-	]
+	properties: ["Data"]
 };
 
 Polygon = {
@@ -1672,57 +873,7 @@ Polygon = {
 		return plugin.content.createFromXaml ("<Polygon />");
 	},
 
-	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
-		"Fill",
-		"FillRule",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
-		"Stretch",
-		"Stroke",
-		"StrokeDashArray",
-		"StrokeDashCap",
-		"StrokeDashOffset",
-		"StrokeEndLineCap",
-		"StrokeLineJoin",
-		"StrokeMiterLimit",
-		"StrokeStartLineCap",
-		"StrokeThickness",
-		"Tag",
-		"Triggers",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
-	]
+	properties: ["FillRule"]
 };
 
 Polyline = {
@@ -1734,57 +885,7 @@ Polyline = {
 		return plugin.content.createFromXaml ("<Polyline />");
 	},
 
-	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
-		"Fill",
-		"FillRule",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
-		"Stretch",
-		"Stroke",
-		"StrokeDashArray",
-		"StrokeDashCap",
-		"StrokeDashOffset",
-		"StrokeEndLineCap",
-		"StrokeLineJoin",
-		"StrokeMiterLimit",
-		"StrokeStartLineCap",
-		"StrokeThickness",
-		"Tag",
-		"Triggers",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
-	]
+	properties: ["FillRule"]
 };
 
 Rectangle = {
@@ -1794,72 +895,15 @@ Rectangle = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Rectangle />");
-	},
-
-	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
-		"Fill",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
-		"Stretch",
-		"Stroke",
-		"StrokeDashArray",
-		"StrokeDashCap",
-		"StrokeDashOffset",
-		"StrokeEndLineCap",
-		"StrokeLineJoin",
-		"StrokeMiterLimit",
-		"StrokeStartLineCap",
-		"StrokeThickness",
-		"Tag",
-		"Triggers",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
-	]
+	}
 };
 
 Geometry = {
 	name: "Geometry",
 
-	isAbstract: true,
-
 	parent: DependencyObject,
 
-	properties: ["Name", "Transform"],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Transform"]
 };
 
 GeometryGroup = {
@@ -1871,15 +915,7 @@ GeometryGroup = {
 		return plugin.content.createFromXaml ("<GeometryGroup />");
 	},
 
-	properties: [
-		"Children",
-		"Name",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	properties: ["Children"]
 };
 
 EllipseGeometry = {
@@ -1893,15 +929,9 @@ EllipseGeometry = {
 
 	properties: [
 		"Center",
-		"Name",
 		"RadiusX",
-		"RadiusY",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"RadiusY"
+	]
 };
 
 LineGeometry = {
@@ -1914,15 +944,9 @@ LineGeometry = {
 	},
 
 	properties: [
-		"EndPoint",
-		"Name",
 		"StartPoint",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"EndPoint"
+	]
 };
 
 PathGeometry = {
@@ -1936,14 +960,8 @@ PathGeometry = {
 
 	properties: [
 		"Figures",
-		"FillRule",
-		"Name",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"FillRule"
+	]
 };
 
 RectangleGeometry = {
@@ -1956,16 +974,10 @@ RectangleGeometry = {
 	},
 
 	properties: [
-		"Name",
 		"RadiusX",
 		"RadiusY",
-		"Rect",
-		"Transform"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+		"Rect"
+	]
 };
 
 EventTrigger = {
@@ -1979,70 +991,26 @@ EventTrigger = {
 
 	properties: [
 		"Actions",
-		"Name",
 		"RoutedEvent"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 Glyphs = {
 	name: "Glyphs",
 
-	parent: DependencyObject,
+	parent: UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Glyphs />");
 	},
 
 	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
 		"Fill",
 		"FontRenderingEmSize",
 		"FontUri",
-		"Height",
 		"Indices",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"OriginX",
-		"OriginY",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
 		"StyleSimulations",
-		"Tag",
-		"Triggers",
-		"UnicodeString",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
+		"UnicodeString"
 	]
 };
 
@@ -2057,65 +1025,27 @@ GradientStop = {
 
 	properties: [
 		"Color",
-		"Name",
 		"Offset"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 Image = {
 	name: "Image",
 
-	parent: DependencyObject,
+	parent: UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Image />");
 	},
 
 	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
 		"DownloadProgress",
-		"Height",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
 		"Source",
-		"Stretch",
-		"Tag",
-		"Triggers",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
+		"Stretch"
 	],
 
 	events: [
-		"Loaded",
 		"DownloadProgressChanged",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove",
 		"ImageFailed"
 	]
 };
@@ -2131,51 +1061,8 @@ InkPresenter = {
 
 	properties: [
 		"Background",
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
 		"Children",
-		"Clip",
-		"Cursor",
-		"Height",
-		"IsHitTestVisible",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
-		"Strokes",
-		"Tag",
-		"Triggers",
-		"Visibility",
-		"Width"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"GotFocus",
-		"KeyDown",
-		"KeyUp",
-		"Loaded",
-		"LostFocus",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
+		"Strokes"
 	]
 };
 
@@ -2186,17 +1073,7 @@ KeySpline = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<KeySpline />");
-	},
-
-	properties: [
-		// "KeyTime",
-		"Name",
-		// "Value"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	}
 };
 
 Line = {
@@ -2209,58 +1086,10 @@ Line = {
 	},
 
 	properties: [
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
-		"Fill",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
-		"Stretch",
-		"Stroke",
-		"StrokeDashArray",
-		"StrokeDashCap",
-		"StrokeDashOffset",
-		"StrokeEndLineCap",
-		"StrokeLineJoin",
-		"StrokeMiterLimit",
-		"StrokeStartLineCap",
-		"StrokeThickness",
-		"Tag",
-		"Triggers",
-		"Width",
 		"X1",
 		"X2",
 		"Y1",
 		"Y2"
-	],
-
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
 	]
 };
 
@@ -2280,19 +1109,8 @@ LineBreak = {
 		"FontStyle",
 		"FontWeight",
 		"Foreground",
-		"Name",
 		"TextDecorations"
-	],
-
-	methods: [
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 Run = {
@@ -2311,19 +1129,8 @@ Run = {
 		"FontStyle",
 		"FontWeight",
 		"Foreground",
-		"Name",
 		"TextDecorations"
-	],
-
-	methods: [
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 Matrix = {
@@ -2342,28 +1149,13 @@ Matrix = {
 		"M22",
 		"OffsetX",
 		"OffsetY"
-	],
-
-	methods: [],
-
-	events: []
+	]
 };
 
 Transform = {
 	name: "Transform",
 
-	isAbstract: true,
-
-	parent: DependencyObject,
-
-	properties: ["Name"],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	parent: DependencyObject
 };
 
 MatrixTransform = {
@@ -2375,17 +1167,7 @@ MatrixTransform = {
 		return plugin.content.createFromXaml ("<MatrixTransform />");
 	},
 
-	properties: [
-		"Matrix",
-		"Name",
-	],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	properties: ["Matrix"]
 };
 
 RotateTransform = {
@@ -2401,15 +1183,7 @@ RotateTransform = {
 		"Angle",
 		"CenterX",
 		"CenterY",
-		"Name",
-	],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 ScaleTransform = {
@@ -2424,17 +1198,9 @@ ScaleTransform = {
 	properties: [
 		"CenterX",
 		"CenterY",
-		"Name",
 		"ScaleX",
 		"ScaleY"
-	],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 SkewTransform = {
@@ -2451,15 +1217,7 @@ SkewTransform = {
 		"AngleY",
 		"CenterX",
 		"CenterY",
-		"Name"
-	],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 TransformGroup = {
@@ -2471,14 +1229,7 @@ TransformGroup = {
 		return plugin.content.createFromXaml ("<TransformGroup />");
 	},
 
-	properties: ["Children", "Name"],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	properties: ["Children"]
 };
 
 TranslateTransform = {
@@ -2491,17 +1242,9 @@ TranslateTransform = {
 	},
 
 	properties: [
-		"Name",
 		"X",
 		"Y"
-	],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 MediaAttribute = {
@@ -2513,20 +1256,13 @@ MediaAttribute = {
 		return plugin.content.createFromXaml ("<MediaAttribute />");
 	},
 
-	properties: [
-		"Name",
-		"Value"
-	],
-
-	methods: [],
-
-	events: []
+	properties: ["Value"]
 };
 
 MediaElement = {
 	name: "MediaElement",
 
-	parent: DependencyObject,
+	parent: UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<MediaElement />");
@@ -2541,47 +1277,23 @@ MediaElement = {
 		"BufferingProgress",
 		"BufferingTime",
 		"CanPause",
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
 		"CurrentState",
-		"Cursor",
 		"DownloadProgress",
-		"Height",
 		"IsMuted",
 		"Markers",
 		"NaturalDuration",
 		"NaturalVideoHeight",
 		"NaturalVideoWidth",
-		"Opacity",
-		"OpacityMask",
 		"Position",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
 		"Source",
 		"Stretch",
-		"Tag",
-		"Triggers",
-		"Volume",
-		"Width"
+		"Volume"
 	],
 
 	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
 		"Pause",
 		"Play",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
 		"SetSource",
-		"SetValue",
 		"Stop"
 	],
 
@@ -2589,16 +1301,10 @@ MediaElement = {
 		"BufferingProgressChanged",
 		"CurrentStateChanged",
 		"DownloadProgressChanged",
-		"Loaded",
 		"MarkerReached",
 		"MediaEnded",
 		"MediaFailed",
-		"MediaOpened",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
+		"MediaOpened"
 	]
 };
 
@@ -2613,14 +1319,9 @@ PathFigure = {
 
 	properties: [
 		"IsClosed",
-		"Name",
 		"Segments",
 		"StartPoint"
-	],
-
-	methods: ["GetValue", "SetValue"],
-
-	events: []
+	]
 };
 
 SilverlightPlugin = {
@@ -2696,18 +1397,13 @@ Stroke = {
 
 	properties: [
 		"DrawingAttributes",
-		"Name",
 		"StylusPoints"
 	],
 
 	methods: [
 		"GetBounds",
-		"GetValue",
 		"HitTest",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 StylusInfo = {
@@ -2717,16 +1413,8 @@ StylusInfo = {
 
 	properties: [
 		"IsInverted",
-		"Name",
 		"DeviceType"
-	],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 StylusPoint = {
@@ -2739,24 +1427,16 @@ StylusPoint = {
 	},
 
 	properties: [
-		"Name",
 		"PressureFactor",
 		"X",
 		"Y"
-	],
-
-	methods: [
-		"GetValue",
-		"SetValue"
-	],
-
-	events: []
+	]
 };
 
 TextBlock = {
 	name: "TextBlock",
 
-	parent: DependencyObject,
+	parent: UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TextBlock />");
@@ -2765,55 +1445,18 @@ TextBlock = {
 	properties: [
 		"ActualHeight",
 		"ActualWidth",
-		"Canvas.Left",
-		"Canvas.Top",
-		"Canvas.ZIndex",
-		"Clip",
-		"Cursor",
 		"FontFamily",
 		"FontSize",
 		"FontStretch",
 		"FontStyle",
 		"FontWeight",
 		"Foreground",
-		"Height",
-		"Name",
-		"Opacity",
-		"OpacityMask",
-		"RenderTransform",
-		"RenderTransformOrigin",
-		"Resources",
 		"Text",
 		"TextDecorations",
-		"TextWrapping",
-		"Tag",
-		"Triggers",
-		"Visibility",
-		"Width"
+		"TextWrapping"
 	],
 
-	methods: [
-		"AddEventListener",
-		"CaptureMouse",
-		"Equals",
-		"FindName",
-		"GetHost",
-		"GetParent",
-		"GetValue",
-		"ReleaseMouseCapture",
-		"RemoveEventListener",
-		"SetFontSource",
-		"SetValue"
-	],
-
-	events: [
-		"Loaded",
-		"MouseEnter",
-		"MouseLeave",
-		"MouseLeftButtonDown",
-		"MouseLeftButtonUp",
-		"MouseMove"
-	]
+	methods: ["SetFontSource"]
 };
 
 TimelineMarker = {
@@ -2829,25 +1472,13 @@ TimelineMarker = {
 		"Text",
 		"Time",
 		"Type"
-	],
-
-	methods: [],
-
-	events: []
+	]
 };
 
 EventArgs = {
 	name: "EventArgs",
 
-	isAbstract: true,
-
-	parent: DependencyObject,
-
-	properties: [],
-
-	methods: [],
-
-	events: []
+	parent: DependencyObject
 };
 
 KeyboardEventArgs  = {
@@ -2860,11 +1491,7 @@ KeyboardEventArgs  = {
 		"Key",
 		"PlatformKeyCode",
 		"Shift"
-	],
-
-	methods: [],
-
-	events: []
+	]
 };
 
 MouseEventArgs  = {
@@ -2881,15 +1508,11 @@ MouseEventArgs  = {
 		"GetPosition",
 		"GetStylusInfo",
 		"GetStylusPoints"
-	],
-
-	events: []
+	]
 };
 
 ErrorEventArgs  = {
 	name: "ErrorEventArgs ",
-
-	isAbstract: true,
 
 	parent: EventArgs,
 
@@ -2897,11 +1520,7 @@ ErrorEventArgs  = {
 		"ErrorCode",
 		"ErrorMessage",
 		"ErrorType"
-	],
-
-	methods: [],
-
-	events: []
+	]
 };
 
 ParserErrorEventArgs  = {
@@ -2911,18 +1530,11 @@ ParserErrorEventArgs  = {
 
 	properties: [
 		"CharPosition",
-		"ErrorCode",
-		"ErrorMessage",
-		"ErrorType",
 		"LineNumber",
 		"XamlFile",
 		"XmlAttribute",
 		"XmlElement"
-	],
-
-	methods: [],
-
-	events: []
+	]
 };
 
 RuntimeErrorEventArgs  = {
@@ -2932,14 +1544,7 @@ RuntimeErrorEventArgs  = {
 
 	properties: [
 		"CharPosition",
-		"ErrorCode",
-		"ErrorMessage",
-		"ErrorType",
 		"LineNumber",
 		"MethodName"
-	],
-
-	methods: [],
-
-	events: []
+	]
 };
