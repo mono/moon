@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Moonlight API test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script src="Silverlight.js" type="text/javascript"></script>
+  <script src="prototype.js" type="text/javascript"></script>
+  <script src="unittest.js" type="text/javascript"></script>
+  <script src="codemodel.js" type="text/javascript"></script>
+  <script src="unittestsl.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="test.css" type="text/css" />
+</head>
+<body>
+<h1>Moonlight API test file</h1>
+<p>
+  Test our api against the code model extracted from the Silverlight documentation.
+</p>
+<p>
+ <a href="api.html" style="color:black">General API</a>
+ &nbsp;|&nbsp;
+ <a href="api-ea.html" style="color:black">Events API</a>
+</p>
+
+<div id="MoonlightHost">
+	<script type="text/javascript">
+Silverlight.createObjectEx ({
+	source: "void.xaml",
+	parentElement: document.getElementById("MoonlightHost"),
+	id: "MoonlightControl",
+	properties: {
+		width: "1",
+		height: "1",
+		version: "1.0",
+		background: "#ffffff",
+		isWindowless: "false"
+	},
+	events: {
+		onError: null,
+		onLoad: null
+	}
+});
+	</script>
+</div>
+
+<!-- Log output -->
+<div id="testlog"> </div>
+
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
+var CodeModelTestSuite = Class.create ();
+CodeModelTestSuite.prototype = {
+	testAccessibility: function () {
+		this.assertCodeModel (Accessibility);
+	},
+	testArcSegment: function () {
+		this.assertCodeModel (ArcSegment);
+	},
+	testBeginStoryboard: function () {
+		this.assertCodeModel (BeginStoryboard);
+	},
+	testBezierSegment: function () {
+		this.assertCodeModel (BezierSegment);
+	},
+	testCanvas: function () {
+		this.assertCodeModel (Canvas);
+	},
+	testColorAnimation: function () {
+		this.assertCodeModel (ColorAnimation);
+	},
+	testColorAnimationUsingKeyFrames: function () {
+		this.assertCodeModel (ColorAnimationUsingKeyFrames);
+	},
+	testColorKeyFrameCollection: function () {
+		this.assertCodeModel (ColorKeyFrameCollection);
+	},
+	testDiscreteColorKeyFrame: function () {
+		this.assertCodeModel (DiscreteColorKeyFrame);
+	},
+	testDiscreteDoubleKeyFrame: function () {
+		this.assertCodeModel (DiscreteColorKeyFrame);
+	},
+	testDiscretePointKeyFrame: function () {
+		this.assertCodeModel (DiscretePointKeyFrame);
+	},
+	testDoubleAnimation: function () {
+		this.assertCodeModel (DoubleAnimation);
+	},
+	testDoubleAnimationUsingKeyFrames: function () {
+		this.assertCodeModel (DoubleAnimationUsingKeyFrames);
+	},
+	testDoubleKeyFrameCollection: function () {
+		this.assertCodeModel (DoubleKeyFrameCollection);
+	},
+	testDownloader: function () {
+		this.assertCodeModel (Downloader);
+	},
+	testDrawingAttributes: function () {
+		this.assertCodeModel (DrawingAttributes);
+	},
+	testEllipse: function () {
+		this.assertCodeModel (Ellipse);
+	},
+	testEllipseGeometry: function () {
+		this.assertCodeModel (EllipseGeometry);
+	},
+	testEventTrigger: function () {
+		this.assertCodeModel (EventTrigger);
+	},
+	testGeometryCollection: function () {
+		this.assertCodeModel (GeometryCollection);
+	},
+	testGeometryGroup: function () {
+		this.assertCodeModel (GeometryGroup);
+	},
+	testGlyphs: function () {
+		this.assertCodeModel (Glyphs);
+	},
+	testGradientStop: function () {
+		this.assertCodeModel (GradientStop);
+	},
+	testGradientStopCollection: function () {
+		this.assertCodeModel (GradientStopCollection);
+	},
+	testImage: function () {
+		this.assertCodeModel (Image);
+	},
+	testImageBrush: function () {
+		this.assertCodeModel (ImageBrush);
+	},
+	testInkPresenter: function () {
+		this.assertCodeModel (InkPresenter);
+	},
+	testKeySpline: function () {
+		this.assertCodeModel (KeySpline);
+	},
+	testLine: function () {
+		this.assertCodeModel (Line);
+	},
+	testLinearColorKeyFrame: function () {
+		this.assertCodeModel (LinearColorKeyFrame);
+	},
+	testLinearDoubleKeyFrame: function () {
+		this.assertCodeModel (LinearDoubleKeyFrame);
+	},
+	testLinearGradientBrush: function () {
+		this.assertCodeModel (LinearGradientBrush);
+	},
+	testLinearPointKeyFrame: function () {
+		this.assertCodeModel (LinearPointKeyFrame);
+	},
+	testLineBreak: function () {
+		this.assertCodeModel (LineBreak);
+	},
+	testLineGeometry: function () {
+		this.assertCodeModel (LineGeometry);
+	},
+	testLineSegment: function () {
+		this.assertCodeModel (LineSegment);
+	},
+	testMatrix: function () {
+		this.assertCodeModel (Matrix);
+	},
+	testMatrixTransform: function () {
+		this.assertCodeModel (MatrixTransform);
+	},
+	testMediaAttributeCollection: function () {
+		this.assertCodeModel (MediaAttributeCollection);
+	},
+	testMediaElement: function () {
+		this.assertCodeModel (MediaElement);
+	},
+	testPath: function () {
+		this.assertCodeModel (Path);
+	},
+	testPathFigure: function () {
+		this.assertCodeModel (PathFigure);
+	},
+	testPathGeometry: function () {
+		this.assertCodeModel (PathGeometry);
+	},
+	testPathSegmentCollection: function () {
+		this.assertCodeModel (PathSegmentCollection);
+	},
+	testPointAnimation: function () {
+		this.assertCodeModel (PointAnimation);
+	},
+	testPointAnimationUsingKeyFrames: function () {
+		this.assertCodeModel (PointAnimationUsingKeyFrames);
+	},
+	testPointKeyFrameCollection: function () {
+		this.assertCodeModel (PointKeyFrameCollection);
+	},
+	testPolyBezierSegment: function () {
+		this.assertCodeModel (PolyBezierSegment);
+	},
+	testPolygon: function () {
+		this.assertCodeModel (Polygon);
+	},
+	testPolyline: function () {
+		this.assertCodeModel (Polyline);
+	},
+	testPolyLineSegment: function () {
+		this.assertCodeModel (PolyLineSegment);
+	},
+	testPolyQuadraticBezierSegment: function () {
+		this.assertCodeModel (PolyQuadraticBezierSegment);
+	},
+	testQuadraticBezierSegment: function () {
+		this.assertCodeModel (QuadraticBezierSegment);
+	},
+	testRadialGradientBrush: function () {
+		this.assertCodeModel (RadialGradientBrush);
+	},
+	testRectangle: function () {
+		this.assertCodeModel (Rectangle);
+	},
+	testRectangleGeometry: function () {
+		this.assertCodeModel (RectangleGeometry);
+	},
+	testResourceDictionary: function () {
+		this.assertCodeModel (ResourceDictionary);
+	},
+	testRotateTransform: function () {
+		this.assertCodeModel (RotateTransform);
+	},
+	testRun: function () {
+		this.assertCodeModel (Run);
+	},
+	testScaleTransform: function () {
+		this.assertCodeModel (ScaleTransform);
+	},
+	//testSilverlightPlugin: function () {
+	//	this.assertCodeModel (SilverlightPlugin);
+	//},
+	testSilverlightPluginContent: function () {
+		this.assertCodeModel (SilverlightPluginContent);
+	},
+	testSkewTransform: function () {
+		this.assertCodeModel (SkewTransform);
+	},
+	testSolidColorBrush: function () {
+		this.assertCodeModel (SolidColorBrush);
+	},
+	testSplineColorKeyFrame: function () {
+		this.assertCodeModel (SplineColorKeyFrame);
+	},
+	testSplineDoubleKeyFrame: function () {
+		this.assertCodeModel (SplineDoubleKeyFrame);
+	},
+	testSplinePointKeyFrame: function () {
+		this.assertCodeModel (SplinePointKeyFrame);
+	},
+	testStoryboard: function () {
+		this.assertCodeModel (Storyboard);
+	},
+	testStroke: function () {
+		this.assertCodeModel (Stroke);
+	},
+	testStrokeCollection: function () {
+		this.assertCodeModel (StrokeCollection);
+	},
+	testStylusPoint: function () {
+		this.assertCodeModel (StylusPoint);
+	},
+	testStylusPointCollection: function () {
+		this.assertCodeModel (StylusPointCollection);
+	},
+	testTextBlock: function () {
+		this.assertCodeModel (TextBlock);
+	},
+	testTimelineCollection: function () {
+		this.assertCodeModel (TimelineCollection);
+	},
+	testTimelineMarker: function () {
+		this.assertCodeModel (TimelineMarker);
+	},
+	testTimelineMarkerCollection: function () {
+		this.assertCodeModel (TimelineMarkerCollection);
+	},
+	testTransformGroup: function () {
+		this.assertCodeModel (TransformGroup);
+	},
+	testTransformCollection: function () {
+		this.assertCodeModel (TransformCollection);
+	},
+	testTriggerActionCollection: function () {
+		this.assertCodeModel (TriggerActionCollection);
+	},
+	testTriggerCollection: function () {
+		this.assertCodeModel (TriggerCollection);
+	},
+	testVideoBrush: function () {
+		this.assertCodeModel (VideoBrush);
+	},
+	testUIElementCollection: function () {
+		this.assertCodeModel (UIElementCollection);
+	},
+};
+
+new Test.Unit.Runner (CodeModelTestSuite.prototype, 'testlog');
+</script>
+</body>
+</html>
