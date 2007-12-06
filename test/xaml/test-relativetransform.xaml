@@ -95,7 +95,7 @@
       <GradientStop Color="Indigo" Offset="1" />
      </LinearGradientBrush.GradientStops> 
      <LinearGradientBrush.Transform>
-      <RotateTransform CenterX="78" CenterY="68" Angle="117" />
+      <RotateTransform CenterX="68" CenterY="38" Angle="117" />
      </LinearGradientBrush.Transform>
     </LinearGradientBrush>
    </Ellipse.Fill>
