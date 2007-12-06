@@ -1,12 +1,41 @@
 <Canvas
   xmlns="http://schemas.microsoft.com/client/2007"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Width="63" Height="76">
-  <Canvas.Background>
-    <ImageBrush ImageSource="mono.png" >
-      <ImageBrush.RelativeTransform>
-        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="45" />
-      </ImageBrush.RelativeTransform>
-    </ImageBrush>
-  </Canvas.Background>
+  Width="400" Height="400">
+  <Rectangle Width="63" Height="76" Canvas.Top="10" Canvas.Left="10">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.RelativeTransform>
+         <RotateTransform CenterX="0.5" CenterY="0.5" Angle="45" />
+       </ImageBrush.RelativeTransform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="63" Height="76" Canvas.Top="10" Canvas.Left="83">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.Transform>
+         <RotateTransform CenterX="31.5" CenterY="38" Angle="45" />
+       </ImageBrush.Transform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="63" Height="76" Canvas.Top="96" Canvas.Left="10">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.RelativeTransform>
+         <SkewTransform CenterX="0.5" CenterY="0.5" AngleX="45" />
+       </ImageBrush.RelativeTransform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="63" Height="76" Canvas.Top="96" Canvas.Left="83">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.RelativeTransform>
+         <SkewTransform AngleX="45" />
+       </ImageBrush.RelativeTransform>
+     </ImageBrush>
+    </Rectangle.Fill>
+  </Rectangle>
 </Canvas>
