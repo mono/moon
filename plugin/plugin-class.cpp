@@ -2466,7 +2466,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		if (argCount < 1 || col->GetObjectType () != Type::MEDIAATTRIBUTE_COLLECTION)
 			THROW_JS_EXCEPTION ("getItemByName");
 		
-		const char *name = NPVARIANT_TO_STRING (args[0]);
+		const char *name = STR_FROM_VARIANT (args[0]);
 		
 		DependencyObject *obj = media_attribute_collection_get_item_by_name ((MediaAttributeCollection *) col, name);
 		
