@@ -74,30 +74,30 @@
      </ImageBrush>
     </Rectangle.Fill>
   </Rectangle>
-  <Ellipse Canvas.Top="192" Canvas.Left="10" Width="136" Height="76" Stroke="Orange">
-   <Ellipse.Fill>
+  <Rectangle Canvas.Top="192" Canvas.Left="10" Width="63" Height="76">
+   <Rectangle.Fill>
     <LinearGradientBrush StartPoint=".5,0.5" EndPoint="1,1">
      <LinearGradientBrush.GradientStops>
       <GradientStop Color="Blue" Offset="0" />
-      <GradientStop Color="Indigo" Offset="1" />
+      <GradientStop Color="Red" Offset="1" />
      </LinearGradientBrush.GradientStops> 
      <LinearGradientBrush.RelativeTransform>
-      <RotateTransform CenterX="0.5" CenterY="0.5" Angle="117" />
+      <RotateTransform CenterX="0.5" CenterY="0.5" Angle="135" />
      </LinearGradientBrush.RelativeTransform>
     </LinearGradientBrush>
-   </Ellipse.Fill>
-  </Ellipse>
-  <Ellipse Canvas.Top="192" Canvas.Left="156" Width="136" Height="76" Stroke="Orange">
-   <Ellipse.Fill>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="192" Canvas.Left="83" Width="63" Height="76">
+   <Rectangle.Fill>
     <LinearGradientBrush StartPoint=".5,0.5" EndPoint="1,1">
      <LinearGradientBrush.GradientStops>
       <GradientStop Color="Blue" Offset="0" />
-      <GradientStop Color="Indigo" Offset="1" />
+      <GradientStop Color="Red" Offset="1" />
      </LinearGradientBrush.GradientStops> 
      <LinearGradientBrush.Transform>
-      <RotateTransform CenterX="68" CenterY="38" Angle="117" />
+      <RotateTransform CenterX="31.5" CenterY="38" Angle="135" />
      </LinearGradientBrush.Transform>
     </LinearGradientBrush>
-   </Ellipse.Fill>
-  </Ellipse>
+   </Rectangle.Fill>
+  </Rectangle>
 </Canvas>
