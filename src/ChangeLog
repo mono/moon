@@ -1,5 +1,16 @@
 2007-12-05  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp, animation.h: a couple of fixes.  Move away from
+	watching the clock state in AnimationStorage and resetting the
+	property value there.  instead, just override Clock::Stop in
+	AnimationClock and call ResetPropertyValue on the storage.
+
+	Also, when a storyboard's clock group is stopped, free it and
+	remove it from the parent clock's list of children.  This should
+	keep us from growing the number of clocks over time for
+	storyboards which don't have Begin() called again (the only
+	circumstance under which we destroy the clock).
+
 	* clock.cpp, clock.h: handle the case where a clock can be started
 	and then stopped before the next clock tick.  This happens when
 	you move the mouse very quickly over the thumbnails in pageturn.
