@@ -32,7 +32,7 @@ class MediaAttribute : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; };
 };
 
-MediaAttribute *media_attribute_new ();
+MediaAttribute *media_attribute_new (void);
 const char *media_attribute_get_value (MediaAttribute *attribute);
 void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
@@ -50,7 +50,7 @@ public:
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
-MediaBase* media_base_new ();
+MediaBase *media_base_new (void);
 char *media_base_get_source (MediaBase *media);
 void media_base_set_source (MediaBase *media, const char *value);
 
@@ -62,12 +62,12 @@ double media_base_get_download_progress (MediaBase *media);
 
 class Image : public MediaBase {
 	bool create_xlib_surface;
-
+	
 	bool CreateSurface (const char *fname);
 	void CleanupSurface ();
 	void CleanupPattern ();
 	void DownloaderAbort ();
-
+	
 	// downloader callbacks
 	void PixbufWrite (guchar *bug, gsize offset, gsize count);
 	void DownloaderComplete ();
@@ -80,16 +80,16 @@ class Image : public MediaBase {
 	
 	struct CachedSurface {
 		int ref_cnt;
-
+		
 		char *fname;
 		cairo_surface_t *cairo;
 		bool xlib_surface_created;
 		GdkPixbuf *backing_pixbuf;
-
+		
 		int width;
 		int height;
 	};
-
+	
 	CachedSurface *surface;
 	char *part_name;
 	
@@ -97,11 +97,11 @@ class Image : public MediaBase {
 	cairo_pattern_t *pattern;
 	double pattern_opacity;
 	int opacity_stability_count;
-
+	
  public:
 	Image ();
 	virtual ~Image ();
-
+	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
 	virtual void Render (cairo_t *cr, Region *region);
@@ -109,18 +109,18 @@ class Image : public MediaBase {
 	virtual Point GetTransformOrigin ();
 	
 	cairo_surface_t *GetCairoSurface ();
-
+	
 	void SetSource (DependencyObject *Downloader, const char *PartName);
-
+	
 	virtual void OnPropertyChanged (DependencyProperty *prop);
-
+	
 	int GetHeight () { return surface ? surface->height : 0; };
 	int GetWidth  () { return surface ? surface->width : 0; };
-
+	
 	ImageBrush *brush;
-
+	
 	static GHashTable *surface_cache;
-
+	
 	static int ImageFailedEvent;
 };
 
@@ -132,39 +132,39 @@ protected:
 	MediaElement *element;
 	char *source_name;
 	char *file_name;
-
+	
 	MediaSource (MediaElement *element, const char *source_name, const char *file_name);
-
+	
 	MediaPlayer *GetMediaPlayer ();
-
+	
 	virtual bool OpenInternal () = 0;
-
+	
 public:
 	virtual ~MediaSource ();
-
+	
 	const char *GetSourceName ();
 	const char *GetFileName ();
-
+	
 	virtual bool Open ();
 	virtual void Play () = 0;
 	virtual void Pause () = 0;
 	virtual void Stop (bool media_ended) = 0;
 	virtual void Close () = 0;
-
+	
 	static MediaSource *CreateSource (MediaElement *element, const char *source_name, const char *file_name);
 };
 
 class SingleMedia : public MediaSource {
 private:
 	guint advance_frame_timeout_id;
-
+	
 	void ClearTimeout ();
 protected:
 	virtual bool OpenInternal ();
 public:
 	SingleMedia (MediaElement *element, const char *source_name, const char *file_name);
 	virtual ~SingleMedia ();
-
+	
 	virtual void Play ();
 	virtual void Pause ();
 	virtual void Stop (bool media_ended);
@@ -199,7 +199,7 @@ class MediaElement : public MediaBase {
 	static void size_notify (int64_t size, gpointer data);
 	
 	void ReadASFMarkers ();
-	void CheckMarkers (gint64 from, gint64 to);
+	void CheckMarkers (int64_t from, int64_t to);
 	
 public:
 	static DependencyProperty *AttributesProperty;
@@ -265,6 +265,9 @@ void media_element_stop (MediaElement *media);
 void media_element_set_source (MediaElement *media, DependencyObject *Downloader, const char *PartName);
 
 gboolean media_element_advance_frame (gpointer data);
+
+MediaAttributeCollection *media_element_get_attributes (MediaElement *media);
+void media_element_set_attributes (MediaElement *media, MediaAttributeCollection *value);
 
 int media_element_get_audio_stream_count (MediaElement *media);
 void media_element_set_audio_stream_count (MediaElement *media, int value);

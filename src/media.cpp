@@ -264,10 +264,10 @@ MediaElement::ReadASFMarkers ()
 	if (mplayer == NULL || mplayer->asf_parser == NULL || mplayer->asf_parser->script_command == NULL)
 		return;
 		
-	char** command_types = NULL;
-	asf_script_command_entry ** commands = NULL;
-	asf_script_command * command = mplayer->asf_parser->script_command;
-	TimelineMarkerCollection* col = NULL;
+	char **command_types = NULL;
+	asf_script_command_entry **commands = NULL;
+	asf_script_command *command = mplayer->asf_parser->script_command;
+	TimelineMarkerCollection *col = NULL;
 	int i = -1;
 	
 	commands = command->get_commands (mplayer->asf_parser, &command_types);
@@ -282,8 +282,8 @@ MediaElement::ReadASFMarkers ()
 	
 	i = -1;
 	while (commands [++i] != NULL) {
-		asf_script_command_entry* entry = commands [i];
-		TimelineMarker* marker = new TimelineMarker ();
+		asf_script_command_entry *entry = commands [i];
+		TimelineMarker *marker = new TimelineMarker ();
 		marker->SetValue (TimelineMarker::TextProperty, entry->get_name ());
 		if (entry->type_index + 1 <= command->command_type_count) {
 			marker->SetValue (TimelineMarker::TypeProperty, command_types [entry->type_index]);
@@ -291,9 +291,10 @@ MediaElement::ReadASFMarkers ()
 			marker->SetValue (TimelineMarker::TypeProperty, "");
 		}
 		//printf ("MediaElement::ReadMarkers () Added marker at %i (text: %s, type: %s)\n", entry->pts, entry->get_name (), command_types [entry->type_index]);
-		marker->SetValue (TimelineMarker::TimeProperty, Value((gint64) entry->pts * 10000, Type::TIMESPAN));
+		marker->SetValue (TimelineMarker::TimeProperty, Value ((int64_t) entry->pts * 10000, Type::TIMESPAN));
 		col->Add (marker);
 	}
+	
 	// Docs says we overwrite whatever's been loaded already.
 	SetValue (MarkersProperty, col);
 	
@@ -309,49 +310,47 @@ cleanup:
 }
 
 void
-MediaElement::CheckMarkers (gint64 from, gint64 to)
+MediaElement::CheckMarkers (int64_t from, int64_t to)
 {
 	//printf ("MediaElement::CheckMarkers (%llu, %llu)\n", from, to);
 	
 	if (from == to)
 		return;
 	
-	Value* val = GetValue (MarkersProperty);
+	Value *val = GetValue (MarkersProperty);
 	
 	if (val == NULL)
 		return;
 		
-	TimelineMarkerCollection* col = GetValue (MarkersProperty)->AsTimelineMarkerCollection ();
+	TimelineMarkerCollection *col = GetValue (MarkersProperty)->AsTimelineMarkerCollection ();
 	
 	if (col == NULL)
 		return;
-		
 	
 	// We might want to use a more intelligent algorithm here, 
 	// this code only loops through all markers on every frame.
 	
-	Collection::Node* node = (Collection::Node*) col->list->First ();
+	Collection::Node *node = (Collection::Node *) col->list->First ();
 	while (node != NULL) {
-		TimelineMarker* marker = (TimelineMarker*) node->obj;
+		TimelineMarker *marker = (TimelineMarker *) node->obj;
 		
 		if (marker == NULL)
 			return;
-			
+		
 		val = marker->GetValue (TimelineMarker::TimeProperty);
 		
 		if (val == NULL)
 			return;
 			
-		gint64 pts = (gint64) val->AsTimeSpan ();
+		int64_t pts = (int64_t) val->AsTimeSpan ();
 		
-		if (pts >=from && pts <= to) {
-			printf ("MediaElement::CheckMarkers (%llu, %llu): Hit marker '%s' at '%llu'.\n", from, to, marker->GetValue (TimelineMarker::TextProperty)->AsString (), pts);
+		if (pts >= from && pts <= to) {
 			marker->ref ();
 			Emit (MarkerReachedEvent, marker);
 			marker->unref ();
 		}
 		
-		node = (Collection::Node*) node->next;
+		node = (Collection::Node *) node->next;
 	}
 }
 
@@ -404,9 +403,13 @@ MediaElement::MediaElement ()
 	part_name = NULL;
 	source = NULL;
 	
-	TimelineMarkerCollection *col = new TimelineMarkerCollection ();
-	media_element_set_markers (this, col);
-	col->unref ();
+	MediaAttributeCollection *attrs = new MediaAttributeCollection ();
+	media_element_set_attributes (this, attrs);
+	attrs->unref ();
+	
+	TimelineMarkerCollection *markers = new TimelineMarkerCollection ();
+	media_element_set_markers (this, markers);
+	markers->unref ();
 	
 	previous_position = 0;
 }
@@ -439,6 +442,7 @@ MediaElement::ComputeBounds ()
 {
 	double h = framework_element_get_height (this);
 	double w = framework_element_get_width (this);
+	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->height;
 		w = (double) mplayer->width;
@@ -680,7 +684,7 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 void
 MediaElement::Pause ()
 {
-	//printf ("MediaElement::Pause() requested\n");
+	//printf ("MediaElement(%p)::Pause() requested\n", this);
 	
 	play_pending = false;
 	
@@ -696,7 +700,7 @@ MediaElement::Pause ()
 void
 MediaElement::Play ()
 {
-	//printf ("MediaElement::Play() requested\n");
+	//printf ("MediaElement(%p)::Play() requested\n", this);
 	
 	if (downloader && downloader->Completed () && !mplayer->IsPlaying ()) {
 		source->Play ();
@@ -709,7 +713,7 @@ MediaElement::Play ()
 void
 MediaElement::Stop ()
 {
-	//printf ("MediaElement::Stop() requested\n");
+	//printf ("MediaElement(%p)::Stop() requested\n", this);
 	
 	play_pending = false;
 	
@@ -905,9 +909,23 @@ media_element_pause (MediaElement *media)
 }
 
 void
-media_element_set_source (MediaElement *media, DependencyObject* Downloader, const char* PartName)
+media_element_set_source (MediaElement *media, DependencyObject *Downloader, const char *PartName)
 {
 	media->SetSource (Downloader, PartName);
+}
+
+MediaAttributeCollection *
+media_element_get_attributes (MediaElement *media)
+{
+	Value *value = media->GetValue (MediaElement::AttributesProperty);
+	
+	return value ? (MediaAttributeCollection *) value->AsMediaAttributeCollection () : NULL;
+}
+
+void
+media_element_set_attributes (MediaElement *media, MediaAttributeCollection *value)
+{
+	media->SetValue (MediaElement::AttributesProperty, Value (value));
 }
 
 int
@@ -1051,7 +1069,7 @@ media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value)
 	media->SetValue (MediaElement::MarkersProperty, Value (value));
 }
 
-Duration*
+Duration *
 media_element_get_natural_duration (MediaElement *media)
 {
 	return media->GetValue (MediaElement::NaturalDurationProperty)->AsDuration ();
@@ -1114,7 +1132,7 @@ media_element_set_volume (MediaElement *media, double value)
 //
 // Image
 //
-GHashTable* Image::surface_cache = NULL;
+GHashTable *Image::surface_cache = NULL;
 
 int Image::ImageFailedEvent = -1;
 
@@ -1613,7 +1631,7 @@ media_attribute_new (void)
 const char *
 media_attribute_get_value (MediaAttribute *attribute)
 {
-	Value * value = attribute->GetValue (MediaAttribute::ValueProperty);
+	Value *value = attribute->GetValue (MediaAttribute::ValueProperty);
 	return value ? value->AsString () : NULL;
 }
 

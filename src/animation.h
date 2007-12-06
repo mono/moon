@@ -529,6 +529,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 class Storyboard : public ParallelTimeline {
  public:
 	Storyboard ();
+	virtual ~Storyboard ();
 	virtual Type::Kind GetObjectType () { return Type::STORYBOARD; };
 
 	void Begin ();
@@ -536,8 +537,7 @@ class Storyboard : public ParallelTimeline {
 	void Resume ();
 	void Seek (TimeSpan timespan);
 	void Stop ();
-	virtual ~Storyboard ();
-
+	
 	static DependencyProperty* TargetNameProperty;
 	static DependencyProperty* TargetPropertyProperty;
 

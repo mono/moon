@@ -334,7 +334,6 @@ TimeManager::Tick ()
 				c->Tick ();
 			}
 		}
-
 	
 		// ... then cause all clocks to raise the events they've queued up
 		RaiseEnqueuedEvents ();
@@ -1284,7 +1283,7 @@ TimelineGroup::CreateClock ()
 	
 	node = (Collection::Node *) collection->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		Clock* clock = ((Timeline *) node->obj)->AllocateClock ();
+		Clock *clock = ((Timeline *) node->obj)->AllocateClock ();
 		group->AddChild (clock);
 		clock->unref ();
 	}

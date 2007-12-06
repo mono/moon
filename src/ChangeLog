@@ -1,3 +1,9 @@
+2007-12-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (media_element_get_attributes): Added.
+	(media_element_set_attributes): Added.
+	(MediaElement): Set an empty list of attributes as per the spec.
+
 2007-12-06  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* media.cpp:
