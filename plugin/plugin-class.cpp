@@ -1794,6 +1794,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("createFromXamlDownloader");
 
 		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, dep), *result);
+		dep->unref ();
 		return true;
 	}
 

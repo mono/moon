@@ -2753,6 +2753,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 		return false;
 
 	obj->SetValue (prop, v);
+	delete v;
 	return true;
 }
 
@@ -2890,6 +2891,7 @@ start_parse:
 			}
 
 			dep->SetValue (prop, v);
+			delete v;
 			item->MarkPropertyAsSet (prop->name);
 		} else {
 
