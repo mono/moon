@@ -21,6 +21,8 @@
  <a href="api.html" style="color:black">General API</a>
  &nbsp;|&nbsp;
  <a href="api-ea.html" style="color:black">Events API</a>
+ &nbsp;|&nbsp;
+ <a href="errors.html" style="color:black">Errors</a>
 </p>
 
 <script type="text/javascript">
@@ -38,6 +40,10 @@ function getObjectFromEventStore (model) {
 
 function onBrokenPluginError (sender, args) {
 	eventStore.push ({model: ParserErrorEventArgs, obj: true});
+}
+
+function onPluginError (sender, args) {
+	alert (args);
 }
 
 function eventStoreContains (model) {
@@ -111,7 +117,7 @@ Silverlight.createObjectEx ({
 		isWindowless: "false"
 	},
 	events: {
-		onError: null,
+		onError: onPluginError,
 		onLoad: null
 	}
 });

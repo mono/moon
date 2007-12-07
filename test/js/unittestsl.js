@@ -35,4 +35,13 @@ Object.extend (Test.Unit.Testcase.prototype, {
 
 		return _classMatch (model, obj);
 	}},
+
+	assertException: function (error, code) {
+		try {
+			code ();
+			this.fail ("Expected exception of type:" + error.message);
+		} catch (ex) {
+			this.assert (ex.indexOf (error.message) > -1, "Expected exception of type: " + error.message);
+		}
+	},
 });
