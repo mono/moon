@@ -126,4 +126,30 @@
     </RadialGradientBrush>
    </Rectangle.Fill>
   </Rectangle>
+  <Rectangle Canvas.Top="278" Canvas.Left="10" Width="63" Height="76">
+   <Rectangle.Fill>
+    <LinearGradientBrush StartPoint="20,20" EndPoint="50,50" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0" />
+      <GradientStop Color="Red" Offset="1" />
+     </LinearGradientBrush.GradientStops> 
+     <LinearGradientBrush.RelativeTransform>
+      <RotateTransform CenterX="0.5" CenterY="0.5" Angle="135" />
+     </LinearGradientBrush.RelativeTransform>
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="278" Canvas.Left="83" Width="63" Height="76">
+   <Rectangle.Fill>
+    <LinearGradientBrush StartPoint="20,20" EndPoint="50,50" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0" />
+      <GradientStop Color="Red" Offset="1" />
+     </LinearGradientBrush.GradientStops> 
+     <LinearGradientBrush.Transform>
+      <RotateTransform CenterX="31.5" CenterY="38" Angle="135" />
+     </LinearGradientBrush.Transform>
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
 </Canvas>
