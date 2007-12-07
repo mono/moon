@@ -1566,7 +1566,7 @@ DependencyProperty* PointAnimationUsingKeyFrames::KeyFramesProperty;
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
-	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (new PointKeyFrameCollection ()));
+	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new PointKeyFrameCollection ()));
 }
 
 PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()

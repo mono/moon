@@ -1,3 +1,8 @@
+2007-12-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* animation.cpp, geometry.cpp: Fix a couple of memory leaks, detected by the
+	  javascript tests.
+
 2007-12-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (media_element_get_attributes): Added.

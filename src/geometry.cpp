@@ -256,7 +256,7 @@ geometry_group_new ()
 
 GeometryGroup::GeometryGroup ()
 {
-	this->SetValue (GeometryGroup::ChildrenProperty, Value (new GeometryCollection ()));
+	this->SetValue (GeometryGroup::ChildrenProperty, Value::CreateUnref (new GeometryCollection ()));
 }
 
 void
