@@ -281,9 +281,9 @@ Shape::ComputeBounds ()
 	}
 #endif
 
-	double t = shape_get_stroke_thickness (this) * .5;
-
 	if (w != 0.0 && h != 0.0) {
+		double t = shape_get_stroke_thickness (this) * .5;
+
 		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
 		       IntersectBoundsWithClipPath (Rect (-t, -t, w + 2 * t, h + 2 * t), false));
 
