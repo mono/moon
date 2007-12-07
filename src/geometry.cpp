@@ -161,8 +161,16 @@ path_stretch_adjust (Path *shape, cairo_path_t *path)
 		return;
 	}
 
-	double w = framework_element_get_width (shape);
-	double h = framework_element_get_height (shape);
+	// we draw only if both height and width are specified (or missing)
+	Value *vh = shape->GetValueNoDefault (FrameworkElement::HeightProperty);
+	Value *vw = shape->GetValueNoDefault (FrameworkElement::WidthProperty);
+	if ((vh && !vw) || (!vh && vw)) {
+		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+
+	double w = vw ? vw->AsDouble () : 0.0;
+	double h = vh ? vh->AsDouble () : 0.0;
 	if ((w < 0.0) || (h < 0.0)) {
 		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
@@ -180,9 +188,6 @@ path_stretch_adjust (Path *shape, cairo_path_t *path)
 
 	double actual_height = maxy - miny;
 	double actual_width = maxx - minx;
-
-	Value *vh = shape->GetValueNoDefault (FrameworkElement::HeightProperty);
-	Value *vw = shape->GetValueNoDefault (FrameworkElement::WidthProperty);
 
 	double sh = (vh && ((int)actual_height > 0.0)) ? (h / actual_height) : 1.0;
 	double sw = (vw && ((int)actual_width > 0.0)) ? (w / actual_width) : 1.0;

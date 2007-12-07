@@ -1,3 +1,9 @@
+2007-12-07  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.cpp: Set SHAPE_EMPTY if only Height or Width is specified.
+	* shape.cpp|h: Add Shape and Path NeedsClipping methods. Adjust the
+	bounds calculation on paths when Height *and* Width are present.
+
 2007-12-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: In Shape::ComputeBounds don't compute half thickness

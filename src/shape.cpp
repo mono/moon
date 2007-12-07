@@ -115,6 +115,12 @@ Shape::~Shape ()
 	InvalidatePathCache (true);
 }
 
+bool
+Shape::NeedsClipping ()
+{
+	return (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill));
+}
+
 void
 Shape::Draw (cairo_t *cr)
 {
@@ -153,8 +159,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 
 	bool drawn = false;
 
-	// we need to use clipping to implement StretchUniformToFill
-	if (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill)) {
+	// we need to use clipping to implement StretchUniformToFill and paths that includes Height and Width
+	if (NeedsClipping ()) {
 		double w = framework_element_get_width (this);
 		if (w > 0.0) {
 			double h = framework_element_get_height (this);
@@ -1607,9 +1613,30 @@ Path::GetFillRule ()
 	return geometry ? geometry_get_fill_rule (geometry) : Shape::GetFillRule ();
 }
 
+bool
+Path::NeedsClipping ()
+{
+	if (Shape::NeedsClipping ())
+		return true;
+
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	if (!vh)
+		return false;
+
+	return (GetValueNoDefault (FrameworkElement::WidthProperty) != NULL);
+}
+
 void
 Path::ComputeBounds ()
 {
+	// paths aren't drawn unless both Height and Width are specified (or missing)
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	if ((vh && !vw) || (!vh && vw)) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
 	Geometry* geometry = path_get_data (this);
 	if (!geometry) {
 		bounds = Rect (0.0, 0.0, 0.0, 0.0);
@@ -1624,16 +1651,8 @@ Path::ComputeBounds ()
 		bounds.x = -t;
 		bounds.y = -t;
 
-		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-		double vscale = 1.0;
-		if (vh)
-			vscale = vh->AsDouble () / bounds.h;
-
-		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-		double hscale = 1.0;
-		if (vw)
-		        hscale = vw->AsDouble () / bounds.w;
-		
+		double vscale = vh ? (vh->AsDouble () / bounds.h) : 1.0;
+		double hscale = vw ? (vw->AsDouble () / bounds.w) : 1.0;
 		double scale; 
 
 		switch (stretch) {
@@ -1658,9 +1677,15 @@ Path::ComputeBounds ()
 		bounds.h += 2 * t;
 	}
 
+	// if Height and Width are specified (they could be both missing)
+	// then we must clip the path those values
+	if (vh && vw) {
+		bounds.w = MIN (bounds.w, vw->AsDouble ());
+		bounds.h = MIN (bounds.h, vh->AsDouble ());
+	}
+
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
 						     IntersectBoundsWithClipPath (bounds, false));
-
 }
 
 void

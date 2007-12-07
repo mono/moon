@@ -82,6 +82,7 @@ class Shape : public FrameworkElement {
 	//
 	virtual void Draw (cairo_t *cr);
 	virtual void BuildPath () {};
+	virtual bool NeedsClipping ();
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
@@ -278,6 +279,7 @@ class Path : public Shape {
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
+	virtual bool NeedsClipping ();
 
 	virtual bool CanFill () { return true; }
 	virtual FillRule GetFillRule ();
