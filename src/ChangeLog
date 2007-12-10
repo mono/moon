@@ -1,3 +1,8 @@
+2007-12-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Fix Shape::GetSizeForBrush to adjust to the Stretch
+	property of the Shape. Fix bug #346018
+
 2007-12-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (InitializeDrawingArea): Removed the call to

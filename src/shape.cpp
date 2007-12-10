@@ -305,8 +305,26 @@ Shape::ComputeBounds ()
 void
 Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*height = framework_element_get_height (this);
-	*width = framework_element_get_width (this);
+	double h = framework_element_get_height (this);
+	double w = framework_element_get_width (this);
+	Stretch stretch = shape_get_stretch (this);
+	switch (stretch) {
+	case StretchUniform:
+		w = h = (w < h) ? w : h;
+		break;
+	case StretchUniformToFill:
+		w = h = (w > h) ? w : h;
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	case StretchNone:
+		break;
+	}
+
+	*height = h;
+	*width = w;
 }
 
 bool
