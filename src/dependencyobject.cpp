@@ -57,10 +57,11 @@ EventObject::PrintStackTrace ()
 
 // event handlers for c++
 struct EventClosure {
-	EventClosure (EventHandler func, gpointer data) { this->func = func; this->data = data; }
+	EventClosure (EventHandler func, gpointer data, int token) { this->func = func; this->data = data; this->token = token; }
 
 	EventHandler func;
 	gpointer data;
+	int token;
 };
 
 int EventObject::DestroyedEvent = -1;
@@ -76,7 +77,7 @@ EventObject::FreeHandlers ()
 {
 	if (events) {
 		for (int i = 0; i < GetType()->GetEventCount(); i ++)
-			g_slist_foreach (events[i], (GFunc)deleter, NULL);
+			g_slist_foreach (events[i].event_list, (GFunc)deleter, NULL);
 		g_free (events);
 	}
 }
@@ -91,24 +92,27 @@ EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer 
 		return -1;
 	}
 
-	AddHandler (id, handler, data);
-
-	return id;
+	return AddHandler (id, handler, data);
 }
 
-void
+int
 EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 { 
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
-		return;
+		return -1;
 	}
 
 	if (events == NULL) {
-		events = (GSList**)g_new0 (GSList*, GetType()->GetEventCount());
+		events = (EventList*)g_new0 (EventList, GetType()->GetEventCount());
 	}
 
-	events[event_id] = g_slist_append (events[event_id], new EventClosure (handler, data));
+	int token = events[event_id].current_token ++;
+
+	events[event_id].event_list = g_slist_append (events[event_id].event_list,
+						      new EventClosure (handler, data, token));
+	
+	return token;
 }
 
 void
@@ -125,6 +129,19 @@ EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpoint
 }
 
 void
+EventObject::RemoveHandler (const char *event_name, int token)
+{
+	int id = GetType()->LookupEvent (event_name);
+
+	if (id == -1) {
+		g_warning ("removing handler for event '%s', which has not been registered\n", event_name);
+		return;
+	}
+
+	RemoveHandler (id, token);
+}
+
+void
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
 	if (GetType()->GetEventCount() <= 0) {
@@ -135,11 +152,32 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 	if (events == NULL)
 		return;
 	
-	for (GSList *l = events[event_id]; l; l = l->next) {
+	for (GSList *l = events[event_id].event_list; l; l = l->next) {
 		EventClosure *closure = (EventClosure*)l->data;
 		if (closure->func == handler && closure->data == data) {
 			delete (EventClosure *) l->data;
-			events[event_id] = g_slist_delete_link (events[event_id], l);
+			events[event_id].event_list = g_slist_delete_link (events[event_id].event_list, l);
+			break;
+		}
+	}
+}
+
+void
+EventObject::RemoveHandler (int event_id, int token)
+{
+	if (GetType()->GetEventCount() <= 0) {
+		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events == NULL)
+		return;
+
+	for (GSList *l = events[event_id].event_list; l; l = l->next) {
+		EventClosure *closure = (EventClosure*)l->data;
+		if (closure->token == token) {
+			delete (EventClosure *) l->data;
+			events[event_id].event_list = g_slist_delete_link (events[event_id].event_list, l);
 			break;
 		}
 	}
@@ -166,7 +204,7 @@ EventObject::Emit (int event_id, gpointer calldata)
 		return;
 	}
 
-	if (events == NULL || events[event_id] == NULL)
+	if (events == NULL || events[event_id].event_list == NULL)
 		return;
 	
 	/* XXX yuck. this is 5 passes over the same length list.
@@ -178,10 +216,10 @@ EventObject::Emit (int event_id, gpointer calldata)
 	   1 to free the list
 	*/
 
-	GSList *copy = g_slist_copy (events[event_id]);
+	GSList *copy = g_slist_copy (events[event_id].event_list);
 	for (GSList *l = copy; l; l = l->next) {
 		EventClosure *orig = (EventClosure*)l->data;
-		l->data = new EventClosure (orig->func, orig->data);
+		l->data = new EventClosure (orig->func, orig->data, orig->token);
 	}
 
 	for (GSList *l = copy; l; l = l->next) {

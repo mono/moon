@@ -28,6 +28,11 @@ class EventObject;
 
 typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer closure);
 
+struct EventList {
+	int current_token;
+	GSList *event_list;
+};
+
 //
 // This guy provide reference counting
 // and type management.
@@ -122,9 +127,11 @@ class EventObject {
 
 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
+	void RemoveHandler (const char *event_name, int token);
 
-	void AddHandler (int event_id, EventHandler handler, gpointer data);
+	int AddHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
+	void RemoveHandler (int event_id, int token);
 
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
 
@@ -137,7 +144,7 @@ class EventObject {
  private:
 	void FreeHandlers ();
 
-	GSList **events;
+	EventList *events;
 };
 
 

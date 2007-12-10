@@ -34,7 +34,7 @@ class EventListenerProxy : public List::Node {
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
 	~EventListenerProxy ();
-	void AddHandler (EventObject *obj);
+	int AddHandler (EventObject *obj);
 	void RemoveHandler ();
 	char* GetCallbackAsString ();
 
@@ -51,6 +51,7 @@ class EventListenerProxy : public List::Node {
 
 	char *event_name;
 
+	int token;
 	int event_id;
 	EventObject *target_object;
 
@@ -117,20 +118,6 @@ struct MoonlightObject : public NPObject
 	Type::Kind moonlight_type;
 	bool disposed;
 	GHashTable *event_listener_proxies;
-};
-
-/*** MoonlightEventListenerObject ******************************************************/
-struct MoonlightEventListenerType : MoonlightObjectType {
-	MoonlightEventListenerType ();
-};
-
-extern MoonlightEventListenerType* MoonlightEventListenerClass;
-
-struct MoonlightEventListenerObject : MoonlightObject {
-	MoonlightEventListenerObject (NPP instance) : MoonlightObject (instance), proxy (NULL), target (NULL) { }
-
-	EventListenerProxy *proxy;
-	EventObject *target;
 };
 
 /*** MoonlightErrorEventArgsClass ******************************************************/

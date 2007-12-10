@@ -401,18 +401,20 @@ EventListenerProxy::~EventListenerProxy ()
 	g_free (event_name);
 }
 
-void
+int
 EventListenerProxy::AddHandler (EventObject *obj)
 {
 	target_object = obj;
-	event_id = obj->AddHandler (event_name, proxy_listener_to_javascript, this);
+	event_id = obj->GetType()->LookupEvent (event_name);
+	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this);
+	return token;
 }
 
 void
 EventListenerProxy::RemoveHandler ()
 {
 	if (target_object && event_id != -1)
-		target_object->RemoveHandler (event_id, proxy_listener_to_javascript, this);
+		target_object->RemoveHandler (event_id, token);
 }
 
 EventArgsWrapper
@@ -520,20 +522,6 @@ event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, 
 	EventListenerProxy *proxy = new EventListenerProxy (plugin->getNPP(), event_name, cb_name);
 	proxy->AddHandler (obj);
 }
-
-static NPObject *
-event_listener_allocate (NPP instance, NPClass *klass)
-{
-	return new MoonlightEventListenerObject (instance);
-}
-
-MoonlightEventListenerType::MoonlightEventListenerType ()
-{
-	allocate = event_listener_allocate;
-}
-
-MoonlightEventListenerType *MoonlightEventListenerClass;
-
 
 /*** ErrorEventArgs ***/
 static NPObject *
@@ -2023,9 +2011,16 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	const char *event_name = map_moon_id_to_event_name (id);
 	int event_id = dob->GetType()->LookupEvent (event_name);
 	if (event_id != -1) {
+#if false
 		EventListenerProxy *proxy = LookupEventProxy (event_id);
 		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		return true;
+#else
+		// on silverlight, these seem to always return ""
+		// regardless of how we attempt to set them.
+		string_to_npvariant ("", result);
+		return true;
+#endif
 	}
 
 	return false;
@@ -2044,6 +2039,8 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	if (p)
 		return _set_dependency_property_value (dob, p, value);
 
+	// turns out that on Silverlight you can't set regular events as properties.
+#if false
 	// it wasn't a dependency property.  let's see if it's an
 	// event
 	const char *event_name = map_moon_id_to_event_name (id);
@@ -2064,7 +2061,7 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 			return true;
 		}
 	}
-
+#endif
 	return false;
 }
 
@@ -2177,25 +2174,26 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 								    name,
 								    &args[1]);
 
-		proxy->AddHandler (dob);
+		int token = proxy->AddHandler (dob);
 
 		g_free (name);
 
-		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPN_CreateObject (instance,
-												       MoonlightEventListenerClass);
-		res->proxy = proxy;
-		res->target = dob;
-
-		OBJECT_TO_NPVARIANT (res, *result);
+		INT32_TO_NPVARIANT (token, *result);
 		return true;
 	}
 
 	case MoonId_RemoveEventListener: {
-		if (argCount < 2 || !NPVARIANT_IS_OBJECT (args [1]))
+		if (argCount < 2)
 			THROW_JS_EXCEPTION ("removeEventListener");
-
-		MoonlightEventListenerObject *res = (MoonlightEventListenerObject *) NPVARIANT_TO_OBJECT (args [1]);
-		res->proxy->RemoveHandler ();
+		if (!NPVARIANT_IS_STRING (args[0])
+		    || (!NPVARIANT_IS_INT32 (args [1])
+			&& !NPVARIANT_IS_STRING (args [1])))
+			THROW_JS_EXCEPTION ("removeEventListener");
+		
+		if (NPVARIANT_IS_INT32 (args [1]))
+			dob->RemoveHandler (STR_FROM_VARIANT (args[0]), NPVARIANT_TO_INT32 (args[1]));
+		else
+			g_warning ("removeEventListener for named callbacks is not yet implemented");
 
 		return true;
 	}
@@ -3736,7 +3734,6 @@ plugin_init_classes ()
 	MoonlightDownloaderClass = new MoonlightDownloaderType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
 	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
-	MoonlightEventListenerClass = new MoonlightEventListenerType ();
 	MoonlightEventObjectClass = new MoonlightEventObjectType ();
 	MoonlightImageBrushClass = new MoonlightImageBrushType ();
 	MoonlightImageClass = new MoonlightImageType ();
@@ -3783,6 +3780,5 @@ plugin_destroy_classes ()
 	delete MoonlightPointClass; MoonlightPointClass = NULL;
 	delete MoonlightDurationClass; MoonlightDurationClass = NULL;
 	delete MoonlightTimeSpanClass; MoonlightTimeSpanClass = NULL;
-	delete MoonlightEventListenerClass; MoonlightEventListenerClass = NULL;
 	delete MoonlightMarkerReachedEventArgsClass; MoonlightMarkerReachedEventArgsClass = NULL;
 }

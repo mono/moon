@@ -1,3 +1,10 @@
+2007-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h, dependencyobject.cpp: more event changes.
+	events keep a integer "token" per event, that starts at 0, that is
+	returned from the plugin's addEventListener method, and can be can
+	be passed to the plugin's removeEventListener method.
+
 2007-12-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Fix Shape::GetSizeForBrush to adjust to the Stretch

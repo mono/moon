@@ -1,3 +1,15 @@
+2007-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: more event changes.  return
+	the integer token for adding a handler, and change
+	removeEventListener to accept either a string (unsupported at the
+	moment) or integer second argument.  This allows things like
+	removeEventListener (..., 0) for removing the event handler that's
+	registered in xaml.
+
+	Also, remove MoonlightEventListener{Type,Object} since we don't
+	need to return a wrapped object from addEventListener any longer.
+
 2007-12-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: Plug more leaks.
