@@ -1,3 +1,14 @@
+2007-12-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (InitializeDrawingArea): Removed the call to
+	gtk_widget_set_size_request() - we now call it elsewhere (since
+	going fullscreen requiers us to call set_size_request() /before/
+	calling gtk_window_fullscreen(). When going to fullscreen mode,
+	this was causing the FullScreenMessage item to appear in the
+	upper-left corner rather than centered like it should have been.
+	(Surface): Make the call to gtk_widget_set_size_request() here now
+	that it no longer is called inside InitializeDrawingArea().
+
 2007-12-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Set SHAPE_EMPTY if only Height or Width is specified.
@@ -15,8 +26,8 @@
 
 2007-12-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* animation.cpp, geometry.cpp: Fix a couple of memory leaks, detected by the
-	  javascript tests.
+	* animation.cpp, geometry.cpp: Fix a couple of memory leaks,
+	  detected by the javascript tests.
 
 2007-12-06  Jeffrey Stedfast  <fejj@novell.com>
 

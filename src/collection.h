@@ -60,7 +60,7 @@ bool CollectionNodeFinder (List::Node *n, void *data);
 
 class CollectionIterator {
  public:
-	CollectionIterator (Collection *c){
+	CollectionIterator (Collection *c) {
 		first = true;
 		collection = c;
 		current = c->list->First ();
