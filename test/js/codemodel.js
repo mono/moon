@@ -1,4 +1,6 @@
-var DependencyObject = {
+var CodeModel = {};
+
+CodeModel.DependencyObject = {
 	name: "DependencyObject",
 
 	properties: ["Name"],
@@ -8,10 +10,10 @@ var DependencyObject = {
 	events: []
 };
 
-var Accessibility = {
+CodeModel.Accessibility = {
 	name: "Accessibility",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.accessibility;
@@ -22,10 +24,10 @@ var Accessibility = {
 	events: ["PerformAction"]
 };
 
-var Downloader = {
+CodeModel.Downloader = {
 	name: "Downloader",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.createObject ("Downloader");
@@ -52,10 +54,10 @@ var Downloader = {
 	]
 };
 
-var UIElement = {
+CodeModel.UIElement = {
 	name: "UIElement",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	properties: [
 		"Canvas.Left",
@@ -98,10 +100,10 @@ var UIElement = {
 	]
 };
 
-var Canvas = {
+CodeModel.Canvas = {
 	name: "Canvas",
 
-	parent: UIElement,
+	parent: CodeModel.UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Canvas />");
@@ -113,10 +115,10 @@ var Canvas = {
 	]
 };
 
-var Collection = {
+CodeModel.Collection = {
 	name: "Collection",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	properties: ["Count"],
 
@@ -137,50 +139,50 @@ var Collection = {
 	events: []
 };
 
-var ColorKeyFrameCollection = {
+CodeModel.ColorKeyFrameCollection = {
 	name: "ColorKeyFrameCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><SplineColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames;
 	}
 };
 
-var DoubleKeyFrameCollection = {
+CodeModel.DoubleKeyFrameCollection = {
 	name: "DoubleKeyFrameCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleKeyFrameCollection />");
 	}
 };
 
-var GeometryCollection = {
+CodeModel.GeometryCollection = {
 	name: "GeometryCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<GeometryCollection />");
 	}
 };
 
-var GradientStopCollection = {
+CodeModel.GradientStopCollection = {
 	name: "GradientStopCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<GradientStopCollection />");
 	}
 };
 
-var MediaAttributeCollection = {
+CodeModel.MediaAttributeCollection = {
 	name: "MediaAttributeCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<MediaElement />").attributes;
@@ -192,50 +194,50 @@ var MediaAttributeCollection = {
 	]
 };
 
-var PathFigureCollection = {
+CodeModel.PathFigureCollection = {
 	name: "PathFigureCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PathFigureCollection />");
 	}
 };
 
-var PathSegmentCollection = {
+CodeModel.PathSegmentCollection = {
 	name: "PathSegmentCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PathSegmentCollection />");
 	}
 };
 
-var PointKeyFrameCollection = {
+CodeModel.PointKeyFrameCollection = {
 	name: "PointKeyFrameCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointKeyFrameCollection />");
 	}
 };
 
-var ResourceDictionary = {
+CodeModel.ResourceDictionary = {
 	name: "ResourceDictionary",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ResourceDictionary />");
 	}
 };
 
-var StrokeCollection = {
+CodeModel.StrokeCollection = {
 	name: "StrokeCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<StrokeCollection />");
@@ -247,10 +249,10 @@ var StrokeCollection = {
 	]
 };
 
-var StylusPointCollection = {
+CodeModel.StylusPointCollection = {
 	name: "StylusPointCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<StylusPointCollection />");
@@ -263,156 +265,156 @@ var StylusPointCollection = {
 	]
 };
 
-var TimelineCollection = {
+CodeModel.TimelineCollection = {
 	name: "TimelineCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TimelineCollection />");
 	}
 };
 
-var TimelineMarkerCollection = {
+CodeModel.TimelineMarkerCollection = {
 	name: "TimelineMarkerCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TimelineMarkerCollection />");
 	}
 };
 
-var TransformCollection = {
+CodeModel.TransformCollection = {
 	name: "TransformCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TransformCollection />");
 	}
 };
 
-var TriggerActionCollection = {
+CodeModel.TriggerActionCollection = {
 	name: "TriggerActionCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TriggerActionCollection />");
 	}
 };
 
-var TriggerCollection = {
+CodeModel.TriggerCollection = {
 	name: "TriggerCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TriggerCollection />");
 	}
 };
 
-var UIElementCollection = {
+CodeModel.UIElementCollection = {
 	name: "UIElementCollection",
 
-	parent: Collection,
+	parent: CodeModel.Collection,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Canvas />").children;
 	}
 };
 
-var KeyFrame = {
+CodeModel.KeyFrame = {
 	name: "KeyFrame",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	properties: ["KeyTime", "Value"]
 };
 
-var ColorKeyFrame = {
+CodeModel.ColorKeyFrame = {
 	name: "ColorKeyFrame",
 
-	parent: KeyFrame
+	parent: CodeModel.KeyFrame
 }
 
-var DoubleKeyFrame = {
+CodeModel.DoubleKeyFrame = {
 	name: "DoubleKeyFrame",
 
-	parent: KeyFrame
+	parent: CodeModel.KeyFrame
 }
 
-var PointKeyFrame = {
+CodeModel.PointKeyFrame = {
 	name: "PointKeyFrame",
 
-	parent: KeyFrame
+	parent: CodeModel.KeyFrame
 }
 
-var DiscreteColorKeyFrame = {
+CodeModel.DiscreteColorKeyFrame = {
 	name: "DiscreteColorKeyFrame",
 
-	parent: ColorKeyFrame,
+	parent: CodeModel.ColorKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><DiscreteColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	}
 }
 
-var DiscreteDoubleKeyFrame = {
+CodeModel.DiscreteDoubleKeyFrame = {
 	name: "DiscreteDoubleKeyFrame",
 
-	parent: DoubleKeyFrame,
+	parent: CodeModel.DoubleKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames><DiscreteDoubleKeyFrame /></DoubleAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	}
 }
 
-var DiscretePointKeyFrame = {
+CodeModel.DiscretePointKeyFrame = {
 	name: "DiscretePointKeyFrame",
 
-	parent: PointKeyFrame,
+	parent: CodeModel.PointKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames><DiscretePointKeyFrame /></PointAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	}
 }
 
-var LinearColorKeyFrame = {
+CodeModel.LinearColorKeyFrame = {
 	name: "LinearColorKeyFrame",
 
-	parent: ColorKeyFrame,
+	parent: CodeModel.ColorKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><LinearColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	}
 }
 
-var LinearDoubleKeyFrame = {
+CodeModel.LinearDoubleKeyFrame = {
 	name: "LinearDoubleKeyFrame",
 
-	parent: DoubleKeyFrame,
+	parent: CodeModel.DoubleKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames><LinearDoubleKeyFrame /></DoubleAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	}
 }
 
-var LinearPointKeyFrame = {
+CodeModel.LinearPointKeyFrame = {
 	name: "LinearPointKeyFrame",
 
-	parent: PointKeyFrame,
+	parent: CodeModel.PointKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames><LinearPointKeyFrame /></PointAnimationUsingKeyFrames>").keyFrames.getItem (0);
 	}
 }
 
-var SplineColorKeyFrame = {
+CodeModel.SplineColorKeyFrame = {
 	name: "SplineColorKeyFrame",
 
-	parent: ColorKeyFrame,
+	parent: CodeModel.ColorKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames><SplineColorKeyFrame /></ColorAnimationUsingKeyFrames>").keyFrames.getItem (0);
@@ -421,10 +423,10 @@ var SplineColorKeyFrame = {
 	properties: ["KeySpline"]
 }
 
-var SplineDoubleKeyFrame = {
+CodeModel.SplineDoubleKeyFrame = {
 	name: "SplineDoubleKeyFrame",
 
-	parent: DoubleKeyFrame,
+	parent: CodeModel.DoubleKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames><SplineDoubleKeyFrame /></DoubleAnimationUsingKeyFrames>").keyFrames.getItem (0);
@@ -433,10 +435,10 @@ var SplineDoubleKeyFrame = {
 	properties: ["KeySpline"]
 }
 
-var SplinePointKeyFrame = {
+CodeModel.SplinePointKeyFrame = {
 	name: "SplinePointKeyFrame",
 
-	parent: PointKeyFrame,
+	parent: CodeModel.PointKeyFrame,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames><SplinePointKeyFrame /></PointAnimationUsingKeyFrames>").keyFrames.getItem (0);
@@ -445,10 +447,10 @@ var SplinePointKeyFrame = {
 	properties: ["KeySpline"]
 }
 
-var Timeline = {
+CodeModel.Timeline = {
 	name: "TimeLine",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	properties: [
 		"AutoReverse",
@@ -462,10 +464,10 @@ var Timeline = {
 	]
 };
 
-var TimelineGroup = {
+CodeModel.TimelineGroup = {
 	name: "TimeLineGroup",
 
-	parent: Timeline,
+	parent: CodeModel.Timeline,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TimelineGroup />");
@@ -474,10 +476,10 @@ var TimelineGroup = {
 	properties: ["Children"]
 };
 
-var Storyboard = {
+CodeModel.Storyboard = {
 	name: "Storyboard",
 
-	parent: Timeline,
+	parent: CodeModel.Timeline,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Storyboard />");
@@ -498,28 +500,28 @@ var Storyboard = {
 	events: ["Completed"]
 };
 
-var Animation = {
+CodeModel.Animation = {
 	name: "Animation",
 
-	parent: Timeline,
+	parent: CodeModel.Timeline,
 
 	properties: ["By", "From", "To"]
 };
 
-var ColorAnimation = {
+CodeModel.ColorAnimation = {
 	name: "ColorAnimation",
 
-	parent: Animation,
+	parent: CodeModel.Animation,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimation />");
 	}
 };
 
-var ColorAnimationUsingKeyFrames = {
+CodeModel.ColorAnimationUsingKeyFrames = {
 	name: "ColorAnimationUsingKeyFrames",
 
-	parent: ColorAnimation,
+	parent: CodeModel.ColorAnimation,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ColorAnimationUsingKeyFrames />");
@@ -528,20 +530,20 @@ var ColorAnimationUsingKeyFrames = {
 	properties: ["KeyFrames"]
 };
 
-var DoubleAnimation = {
+CodeModel.DoubleAnimation = {
 	name: "DoubleAnimation",
 
-	parent: Animation,
+	parent: CodeModel.Animation,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimation />");
 	}
 };
 
-var DoubleAnimationUsingKeyFrames = {
+CodeModel.DoubleAnimationUsingKeyFrames = {
 	name: "DoubleAnimationUsingKeyFrames",
 
-	parent: DoubleAnimation,
+	parent: CodeModel.DoubleAnimation,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DoubleAnimationUsingKeyFrames />");
@@ -550,20 +552,20 @@ var DoubleAnimationUsingKeyFrames = {
 	properties: ["KeyFrames"]
 };
 
-var PointAnimation = {
+CodeModel.PointAnimation = {
 	name: "PointAnimation",
 
-	parent: Animation,
+	parent: CodeModel.Animation,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimation />");
 	}
 };
 
-var PointAnimationUsingKeyFrames = {
+CodeModel.PointAnimationUsingKeyFrames = {
 	name: "PointAnimationUsingKeyFrames",
 
-	parent: PointAnimation,
+	parent: CodeModel.PointAnimation,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PointAnimationUsingKeyFrames />");
@@ -572,10 +574,10 @@ var PointAnimationUsingKeyFrames = {
 	properties: ["KeyFrames"]
 };
 
-var Brush = {
+CodeModel.Brush = {
 	name: "Brush",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	properties: [
 		"Opacity",
@@ -584,10 +586,10 @@ var Brush = {
 	]
 };
 
-var ImageBrush = {
+CodeModel.ImageBrush = {
 	name: "ImageBrush",
 
-	parent: Brush,
+	parent: CodeModel.Brush,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ImageBrush />");
@@ -606,10 +608,10 @@ var ImageBrush = {
 	events: ["DownloadProgressChanged"]
 };
 
-var SolidColorBrush = {
+CodeModel.SolidColorBrush = {
 	name: "SolidColorBrush",
 
-	parent: Brush,
+	parent: CodeModel.Brush,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<SolidColorBrush />");
@@ -618,10 +620,10 @@ var SolidColorBrush = {
 	properties: ["Color"]
 };
 
-var VideoBrush = {
+CodeModel.VideoBrush = {
 	name: "VideoBrush",
 
-	parent: Brush,
+	parent: CodeModel.Brush,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<VideoBrush />");
@@ -633,10 +635,10 @@ var VideoBrush = {
 	]
 };
 
-var GradientBrush = {
+CodeModel.GradientBrush = {
 	name: "GradientBrush",
 
-	parent: Brush,
+	parent: CodeModel.Brush,
 
 	properties: [
 		"ColorInterpolationMode",
@@ -646,10 +648,10 @@ var GradientBrush = {
 	]
 };
 
-var LinearGradientBrush = {
+CodeModel.LinearGradientBrush = {
 	name: "LinearGradientBrush",
 
-	parent: GradientBrush,
+	parent: CodeModel.GradientBrush,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<LinearGradientBrush />");
@@ -661,10 +663,10 @@ var LinearGradientBrush = {
 	]
 };
 
-var RadialGradientBrush = {
+CodeModel.RadialGradientBrush = {
 	name: "RadialGradientBrush",
 
-	parent: GradientBrush,
+	parent: CodeModel.GradientBrush,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<RadialGradientBrush />");
@@ -678,16 +680,16 @@ var RadialGradientBrush = {
 	]
 };
 
-var PathSegment = {
+CodeModel.PathSegment = {
 	name: "PathSegment",
 
-	parent: DependencyObject
+	parent: CodeModel.DependencyObject
 };
 
-var ArcSegment = {
+CodeModel.ArcSegment = {
 	name: "ArcSegment",
 
-	parent: PathSegment,
+	parent: CodeModel.PathSegment,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ArcSegment />");
@@ -702,10 +704,10 @@ var ArcSegment = {
 	]
 };
 
-var BezierSegment = {
+CodeModel.BezierSegment = {
 	name: "BezierSegment",
 
-	parent: PathSegment,
+	parent: CodeModel.PathSegment,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<BezierSegment />");
@@ -718,10 +720,10 @@ var BezierSegment = {
 	]
 };
 
-var LineSegment = {
+CodeModel.LineSegment = {
 	name: "LineSegment",
 
-	parent: PathSegment,
+	parent: CodeModel.PathSegment,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<LineSegment />");
@@ -730,10 +732,10 @@ var LineSegment = {
 	properties: ["Point"]
 };
 
-var PolyBezierSegment = {
+CodeModel.PolyBezierSegment = {
 	name: "PolyBezierSegment",
 
-	parent: PathSegment,
+	parent: CodeModel.PathSegment,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PolyBezierSegment />");
@@ -744,10 +746,10 @@ var PolyBezierSegment = {
 	]
 };
 
-var PolyLineSegment = {
+CodeModel.PolyLineSegment = {
 	name: "PolyLineSegment",
 
-	parent: PathSegment,
+	parent: CodeModel.PathSegment,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PolyLineSegment />");
@@ -756,10 +758,10 @@ var PolyLineSegment = {
 	properties: ["Points"]
 };
 
-var PolyQuadraticBezierSegment = {
+CodeModel.PolyQuadraticBezierSegment = {
 	name: "PolyQuadraticBezierSegment",
 
-	parent: PathSegment,
+	parent: CodeModel.PathSegment,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PolyQuadraticBezierSegment />");
@@ -768,10 +770,10 @@ var PolyQuadraticBezierSegment = {
 	properties: ["Points"]
 };
 
-var QuadraticBezierSegment = {
+CodeModel.QuadraticBezierSegment = {
 	name: "QuadraticBezierSegment",
 
-	parent: PathSegment,
+	parent: CodeModel.PathSegment,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<QuadraticBezierSegment />");
@@ -783,20 +785,20 @@ var QuadraticBezierSegment = {
 	]
 };
 
-var TriggerAction = {
+CodeModel.TriggerAction = {
 	name: "TriggerAction",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TriggerAction />");
 	}
 };
 
-var BeginStoryboard = {
+CodeModel.BeginStoryboard = {
 	name: "BeginStoryboard",
 
-	parent: TriggerAction,
+	parent: CodeModel.TriggerAction,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<BeginStoryboard />");
@@ -805,10 +807,10 @@ var BeginStoryboard = {
 	properties: ["Storyboard"]
 };
 
-var DrawingAttributes = {
+CodeModel.DrawingAttributes = {
 	name: "DrawingAttributes",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<DrawingAttributes />");
@@ -822,10 +824,10 @@ var DrawingAttributes = {
 	]
 };
 
-var Shape = {
+CodeModel.Shape = {
 	name: "Shape",
 
-	parent: UIElement,
+	parent: CodeModel.UIElement,
 
 	properties: [
 		"Fill",
@@ -842,20 +844,20 @@ var Shape = {
 	]
 };
 
-var Ellipse = {
+CodeModel.Ellipse = {
 	name: "Ellipse",
 
-	parent: Shape,
+	parent: CodeModel.Shape,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Ellipse />");
 	}
 };
 
-var Path = {
+CodeModel.Path = {
 	name: "Path",
 
-	parent: Shape,
+	parent: CodeModel.Shape,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Path />");
@@ -864,10 +866,10 @@ var Path = {
 	properties: ["Data"]
 };
 
-var Polygon = {
+CodeModel.Polygon = {
 	name: "Polygon",
 
-	parent: Shape,
+	parent: CodeModel.Shape,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Polygon />");
@@ -876,10 +878,10 @@ var Polygon = {
 	properties: ["FillRule"]
 };
 
-var Polyline = {
+CodeModel.Polyline = {
 	name: "Polyline",
 
-	parent: Shape,
+	parent: CodeModel.Shape,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Polyline />");
@@ -888,28 +890,28 @@ var Polyline = {
 	properties: ["FillRule"]
 };
 
-var Rectangle = {
+CodeModel.Rectangle = {
 	name: "Rectangle",
 
-	parent: Shape,
+	parent: CodeModel.Shape,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Rectangle />");
 	}
 };
 
-var Geometry = {
+CodeModel.Geometry = {
 	name: "Geometry",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	properties: ["Transform"]
 };
 
-var GeometryGroup = {
+CodeModel.GeometryGroup = {
 	name: "GeometryGroup",
 
-	parent: Geometry,
+	parent: CodeModel.Geometry,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<GeometryGroup />");
@@ -918,10 +920,10 @@ var GeometryGroup = {
 	properties: ["Children"]
 };
 
-var EllipseGeometry = {
+CodeModel.EllipseGeometry = {
 	name: "EllipseGeometry",
 
-	parent: Geometry,
+	parent: CodeModel.Geometry,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<EllipseGeometry />");
@@ -934,10 +936,10 @@ var EllipseGeometry = {
 	]
 };
 
-var LineGeometry = {
+CodeModel.LineGeometry = {
 	name: "LineGeometry",
 
-	parent: Geometry,
+	parent: CodeModel.Geometry,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<LineGeometry />");
@@ -949,10 +951,10 @@ var LineGeometry = {
 	]
 };
 
-var PathGeometry = {
+CodeModel.PathGeometry = {
 	name: "PathGeometry",
 
-	parent: Geometry,
+	parent: CodeModel.Geometry,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PathGeometry />");
@@ -964,10 +966,10 @@ var PathGeometry = {
 	]
 };
 
-var RectangleGeometry = {
+CodeModel.RectangleGeometry = {
 	name: "RectangleGeometry",
 
-	parent: Geometry,
+	parent: CodeModel.Geometry,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<RectangleGeometry />");
@@ -980,10 +982,10 @@ var RectangleGeometry = {
 	]
 };
 
-var EventTrigger = {
+CodeModel.EventTrigger = {
 	name: "EventTrigger",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<EventTrigger />");
@@ -995,10 +997,10 @@ var EventTrigger = {
 	]
 };
 
-var Glyphs = {
+CodeModel.Glyphs = {
 	name: "Glyphs",
 
-	parent: UIElement,
+	parent: CodeModel.UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Glyphs />");
@@ -1014,10 +1016,10 @@ var Glyphs = {
 	]
 };
 
-var GradientStop = {
+CodeModel.GradientStop = {
 	name: "GradientStop",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<GradientStop />");
@@ -1029,10 +1031,10 @@ var GradientStop = {
 	]
 };
 
-var Image = {
+CodeModel.Image = {
 	name: "Image",
 
-	parent: UIElement,
+	parent: CodeModel.UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Image />");
@@ -1050,10 +1052,10 @@ var Image = {
 	]
 };
 
-var InkPresenter = {
+CodeModel.InkPresenter = {
 	name: "InkPresenter",
 
-	parent: Canvas,
+	parent: CodeModel.Canvas,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<InkPresenter />");
@@ -1066,20 +1068,20 @@ var InkPresenter = {
 	]
 };
 
-var KeySpline = {
+CodeModel.KeySpline = {
 	name: "KeySpline",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<KeySpline />");
 	}
 };
 
-var Line = {
+CodeModel.Line = {
 	name: "Line",
 
-	parent: Shape,
+	parent: CodeModel.Shape,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Line />");
@@ -1093,10 +1095,10 @@ var Line = {
 	]
 };
 
-var LineBreak = {
+CodeModel.LineBreak = {
 	name: "LineBreak",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<LineBreak />");
@@ -1113,10 +1115,10 @@ var LineBreak = {
 	]
 };
 
-var Run = {
+CodeModel.Run = {
 	name: "Run",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Run />");
@@ -1133,10 +1135,10 @@ var Run = {
 	]
 };
 
-var Matrix = {
+CodeModel.Matrix = {
 	name: "Matrix",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Matrix />");
@@ -1152,16 +1154,16 @@ var Matrix = {
 	]
 };
 
-var Transform = {
+CodeModel.Transform = {
 	name: "Transform",
 
-	parent: DependencyObject
+	parent: CodeModel.DependencyObject
 };
 
-var MatrixTransform = {
+CodeModel.MatrixTransform = {
 	name: "MatrixTransform",
 
-	parent: Transform,
+	parent: CodeModel.Transform,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<MatrixTransform />");
@@ -1170,10 +1172,10 @@ var MatrixTransform = {
 	properties: ["Matrix"]
 };
 
-var RotateTransform = {
+CodeModel.RotateTransform = {
 	name: "RotateTransform",
 
-	parent: Transform,
+	parent: CodeModel.Transform,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<RotateTransform />");
@@ -1186,10 +1188,10 @@ var RotateTransform = {
 	]
 };
 
-var ScaleTransform = {
+CodeModel.ScaleTransform = {
 	name: "ScaleTransform",
 
-	parent: Transform,
+	parent: CodeModel.Transform,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<ScaleTransform />");
@@ -1203,10 +1205,10 @@ var ScaleTransform = {
 	]
 };
 
-var SkewTransform = {
+CodeModel.SkewTransform = {
 	name: "SkewTransform",
 
-	parent: Transform,
+	parent: CodeModel.Transform,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<SkewTransform />");
@@ -1220,10 +1222,10 @@ var SkewTransform = {
 	]
 };
 
-var TransformGroup = {
+CodeModel.TransformGroup = {
 	name: "TransformGroup",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TransformGroup />");
@@ -1232,10 +1234,10 @@ var TransformGroup = {
 	properties: ["Children"]
 };
 
-var TranslateTransform = {
+CodeModel.TranslateTransform = {
 	name: "TranslateTransform",
 
-	parent: Transform,
+	parent: CodeModel.Transform,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TranslateTransform />");
@@ -1247,10 +1249,10 @@ var TranslateTransform = {
 	]
 };
 
-var MediaAttribute = {
+CodeModel.MediaAttribute = {
 	name: "MediaAttribute",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<MediaAttribute />");
@@ -1259,10 +1261,10 @@ var MediaAttribute = {
 	properties: ["Value"]
 };
 
-var MediaElement = {
+CodeModel.MediaElement = {
 	name: "MediaElement",
 
-	parent: UIElement,
+	parent: CodeModel.UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<MediaElement />");
@@ -1308,10 +1310,10 @@ var MediaElement = {
 	]
 };
 
-var PathFigure = {
+CodeModel.PathFigure = {
 	name: "PathFigure",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<PathFigure />");
@@ -1324,7 +1326,7 @@ var PathFigure = {
 	]
 };
 
-var SilverlightPlugin = {
+CodeModel.SilverlightPlugin = {
 	name: "SilverlightPlugin",
 
 	create: function (plugin) {
@@ -1359,7 +1361,7 @@ var SilverlightPlugin = {
 	]
 };
 
-var SilverlightPluginContent = {
+CodeModel.SilverlightPluginContent = {
 	name: "SilverlightPluginContent",
 
 	create: function (plugin) {
@@ -1386,10 +1388,10 @@ var SilverlightPluginContent = {
 	]
 };
 
-var Stroke = {
+CodeModel.Stroke = {
 	name: "Stroke",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Stroke />");
@@ -1406,10 +1408,10 @@ var Stroke = {
 	]
 };
 
-var StylusInfo = {
+CodeModel.StylusInfo = {
 	name: "StylusInfo",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	properties: [
 		"IsInverted",
@@ -1417,10 +1419,10 @@ var StylusInfo = {
 	]
 };
 
-var StylusPoint = {
+CodeModel.StylusPoint = {
 	name: "StylusPoint",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<StylusPoint />");
@@ -1433,10 +1435,10 @@ var StylusPoint = {
 	]
 };
 
-var TextBlock = {
+CodeModel.TextBlock = {
 	name: "TextBlock",
 
-	parent: UIElement,
+	parent: CodeModel.UIElement,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TextBlock />");
@@ -1459,10 +1461,10 @@ var TextBlock = {
 	methods: ["SetFontSource"]
 };
 
-var TimelineMarker = {
+CodeModel.TimelineMarker = {
 	name: "TimelineMarker",
 
-	parent: DependencyObject,
+	parent: CodeModel.DependencyObject,
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<TimelineMarker />");
@@ -1475,16 +1477,16 @@ var TimelineMarker = {
 	]
 };
 
-var EventArgs = {
+CodeModel.EventArgs = {
 	name: "EventArgs",
 
-	parent: DependencyObject
+	parent: CodeModel.DependencyObject
 };
 
-var KeyboardEventArgs  = {
+CodeModel.KeyboardEventArgs  = {
 	name: "KeyboardEventArgs ",
 
-	parent: EventArgs,
+	parent: CodeModel.EventArgs,
 
 	properties: [
 		"Ctrl",
@@ -1494,10 +1496,10 @@ var KeyboardEventArgs  = {
 	]
 };
 
-var MouseEventArgs  = {
+CodeModel.MouseEventArgs  = {
 	name: "MouseEventArgs ",
 
-	parent: EventArgs,
+	parent: CodeModel.EventArgs,
 
 	properties: [
 		"Ctrl",
@@ -1511,10 +1513,10 @@ var MouseEventArgs  = {
 	]
 };
 
-var ErrorEventArgs  = {
+CodeModel.ErrorEventArgs  = {
 	name: "ErrorEventArgs ",
 
-	parent: EventArgs,
+	parent: CodeModel.EventArgs,
 
 	properties: [
 		"ErrorCode",
@@ -1523,10 +1525,10 @@ var ErrorEventArgs  = {
 	]
 };
 
-var ParserErrorEventArgs  = {
+CodeModel.ParserErrorEventArgs  = {
 	name: "ParserErrorEventArgs ",
 
-	parent: ErrorEventArgs,
+	parent: CodeModel.ErrorEventArgs,
 
 	properties: [
 		"CharPosition",
@@ -1537,10 +1539,10 @@ var ParserErrorEventArgs  = {
 	]
 };
 
-var RuntimeErrorEventArgs  = {
+CodeModel.RuntimeErrorEventArgs  = {
 	name: "RuntimeErrorEventArgs ",
 
-	parent: ErrorEventArgs,
+	parent: CodeModel.ErrorEventArgs,
 
 	properties: [
 		"CharPosition",

@@ -69,7 +69,7 @@ ErrorsTestSuite.prototype = {
 	},
 	testDownloadGoogle: function () {
 		this.assertException (Errors.AG_E_RUNTIME_METHOD, function () {
-			var dl = Downloader.create (getPlugin ());
+			var dl = CodeModel.Downloader.create (getPlugin ());
 			dl.open ("GET", "http://www.google.com/");
 			dl.send ();
 		});

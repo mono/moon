@@ -38,7 +38,7 @@ function getObjectFromEventStore (model) {
 }
 
 function onBrokenPluginError (sender, args) {
-	eventStore.push ({model: ParserErrorEventArgs, obj: true});
+	eventStore.push ({model: CodeModel.ParserErrorEventArgs, obj: true});
 }
 
 function onPluginError (sender, args) {
@@ -50,8 +50,8 @@ function eventStoreContains (model) {
 }
 
 function checkCompletion () {
-	if (eventStoreContains (KeyboardEventArgs) &&
-		eventStoreContains (MouseEventArgs)) {
+	if (eventStoreContains (CodeModel.KeyboardEventArgs) &&
+		eventStoreContains (CodeModel.MouseEventArgs)) {
 
 		$("MoonlightHost").style.display = "none";
 
@@ -60,38 +60,38 @@ function checkCompletion () {
 }
 
 function onKeyUp (sender, args) {
-	if (eventStoreContains (KeyboardEventArgs))
+	if (eventStoreContains (CodeModel.KeyboardEventArgs))
 		return;
 
 	sender.findName ("Type").foreGround = "#00ff00";
-	eventStore.push ({model: KeyboardEventArgs, obj: args});
+	eventStore.push ({model: CodeModel.KeyboardEventArgs, obj: args});
 	checkCompletion ();
 }
 
 function onMouseEnter (sender, args) {
-	if (eventStoreContains (MouseEventArgs))
+	if (eventStoreContains (CodeModel.MouseEventArgs))
 		return;
 
 	sender.findName ("Mouse").foreGround = "#00ff00";
-	eventStore.push ({model: MouseEventArgs, obj: args});
+	eventStore.push ({model: CodeModel.MouseEventArgs, obj: args});
 	checkCompletion ();
 }
 
 var CodeModelArgsTestSuite = Class.create ();
 CodeModelArgsTestSuite.prototype = {
 	testKeyboardEventArgs: function () {
-		this.assertCodeModel (KeyboardEventArgs, getObjectFromEventStore (KeyboardEventArgs));
+		this.assertCodeModel (CodeModel.KeyboardEventArgs, getObjectFromEventStore (CodeModel.KeyboardEventArgs));
 	},
 	testMouseEventArgs: function () {
-		this.assertCodeModel (MouseEventArgs, getObjectFromEventStore (MouseEventArgs));
+		this.assertCodeModel (CodeModel.MouseEventArgs, getObjectFromEventStore (CodeModel.MouseEventArgs));
 	},
 	testStylusInfo: function () {
-		var mea = getObjectFromEventStore (MouseEventArgs);
-		this.assertCodeModel (StylusInfo, mea.getStylusInfo ());
+		var mea = getObjectFromEventStore (CodeModel.MouseEventArgs);
+		this.assertCodeModel (CodeModel.StylusInfo, mea.getStylusInfo ());
 	},
 	testParserErrorEventArgs: function () {
-		this.assert (eventStoreContains (ParserErrorEventArgs), "onError not triggered for broken xaml");
-		//this.assertCodeModel (ParserErrorEventArgs, getObjectFromEventStore (ParserErrorEventArgs));
+		this.assert (eventStoreContains (CodeModel.ParserErrorEventArgs), "onError not triggered for broken xaml");
+		//this.assertCodeModel (CodeModel.ParserErrorEventArgs, getObjectFromEventStore (ParserErrorEventArgs));
 		//the obj doesn't live long enough to pass the test.
 	},
 };
