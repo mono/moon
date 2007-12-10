@@ -92,8 +92,7 @@ AC_MSG_CHECKING(Gtk+ 2.0)
 if pkg-config gtk+-2.0; then
    AC_MSG_RESULT(found)
 else
-   echo Gtk+ 2.0 development kit is missing
-   exit 1
+   AC_MSG_ERROR([Gtk+ 2.0 development kit is missing])
 fi
 
 AC_MSG_CHECKING(XRANDR extension)
@@ -113,9 +112,7 @@ AC_MSG_CHECKING(libavcodec, libavformat libswscale)
 if pkg-config libavcodec libavformat libswscale ; then
    AC_MSG_RESULT(found)
 else
-   echo ffmpeg and its associated libraries are not installed
-   echo You need libavcodec, libavformat and libswscale development kits
-   exit 1
+   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec, libavformat and libswscale development kits])
 fi
 
 if test $user_plugin = yes; then
@@ -142,8 +139,7 @@ AC_MSG_CHECKING(alsa)
 if pkg-config alsa ; then
    AC_MSG_RESULT(found)
 else
-   echo alsa development kit is missing
-   exit 1
+   AC_MSG_ERROR([alsa development kit is missing])
 fi
 
 #
@@ -153,16 +149,14 @@ AC_MSG_CHECKING(freetype2)
 if pkg-config freetype2; then
    AC_MSG_RESULT(found)
 else
-   echo freetype2 development kit is missing
-   exit 1
+   AC_MSG_ERROR([freetype2 development kit is missing])
 fi
 
 AC_MSG_CHECKING(fontconfig)
 if pkg-config fontconfig; then
    AC_MSG_RESULT(found)
 else
-   echo fontconfig development kit is missing
-   exit 1
+   AC_MSG_ERROR([fontconfig development kit is missing.])
 fi
 
 
@@ -181,32 +175,28 @@ AC_MSG_CHECKING(Mono)
 if pkg-config mono; then
    AC_MSG_RESULT(found)
 else
-   echo You are missing Mono
-   echo I was looking for mono.pc file
+   AC_MSG_ERROR([You are missing Mono.  I was looking for the mono.pc file])
 fi
 
 AC_MSG_CHECKING(Olive's Silverlight)
-if pkg-config silver; then
+if pkg-config silver silverdesktop; then
    AC_MSG_RESULT(found)
 else
-   echo You are missing Mono project Olive module with Silverlight support
-   echo I was looking for silver.pc file
+   AC_MSG_ERROR([You are missing Mono project Olive module with Silverlight support. I was looking for the silver.pc and silverdesktop.pc files])
 fi
 
 AC_MSG_CHECKING(gtk-sharp-2.0)
 if pkg-config gtk-sharp-2.0; then
    AC_MSG_RESULT(found)
 else
-   echo gtk-sharp bindings is missing
-   exit 1
+   AC_MSG_ERROR([gtk-sharp bindings is missing])
 fi
 
 AC_MSG_CHECKING(rsvg-sharp-2.0)
 if pkg-config rsvg-sharp-2.0; then
    AC_MSG_RESULT(found)
 else
-   echo rsvg-sharp bindings is missing
-   exit 1
+   AC_MSG_ERROR([rsvg-sharp bindings is missing])
 fi
 
 
@@ -225,8 +215,7 @@ for pc in $mozilla_nspr_pcs; do
 done
 
 if test -z $mozilla_nspr; then
-   echo You need to install the Mozilla NSPR development package.
-   exit 1
+   AC_MSG_ERROR([You need to install the Mozilla NSPR development package.])
 fi
 
 AC_MSG_CHECKING(Mozilla NSS pkg-config module name)
@@ -240,8 +229,7 @@ for pc in $mozilla_nss_pcs; do
 done
 
 if test -z $mozilla_nss; then
-   echo You need to install the Mozilla NSS development package.
-   exit 1
+   AC_MSG_ERROR([You need to install the Mozilla NSS development package.])
 fi
 
 AC_MSG_CHECKING(Mozilla XPCOM pkg-config module name)
@@ -255,8 +243,7 @@ for pc in $mozilla_xpcom_pcs; do
 done
 
 if test -z $mozilla_xpcom; then
-   echo You need to install the Mozilla XPCOM development package.
-   exit 1
+   AC_MSG_ERROR([You need to install the Mozilla XPCOM development package.])
 fi
 
 AC_MSG_CHECKING(Mozilla PLUGIN pkg-config module name)
@@ -270,8 +257,7 @@ for pc in $mozilla_plugin_pcs; do
 done
 
 if test -z $mozilla_plugin; then
-   echo You need to install the Mozilla PLUGIN development package.
-   exit 1
+   AC_MSG_ERROR([You need to install the Mozilla PLUGIN development package.])
 fi
 
 XPIDL=`pkg-config --variable=libdir $mozilla_xpcom`/xpidl

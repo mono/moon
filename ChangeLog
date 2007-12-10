@@ -1,3 +1,10 @@
+2007-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: use AC_MSG_ERROR for all these error messages
+	instead of echo + "exit 1". Also, make several more of the error
+	conditions (like missing silver.pc/silverdesktop.pc) fatal instead
+	of just echo's.
+
 2007-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Added largefile checks
