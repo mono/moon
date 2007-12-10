@@ -1,4 +1,4 @@
-DependencyObject = {
+var DependencyObject = {
 	name: "DependencyObject",
 
 	properties: ["Name"],
@@ -8,7 +8,7 @@ DependencyObject = {
 	events: []
 };
 
-Accessibility = {
+var Accessibility = {
 	name: "Accessibility",
 
 	parent: DependencyObject,
@@ -22,7 +22,7 @@ Accessibility = {
 	events: ["PerformAction"]
 };
 
-Downloader = {
+var Downloader = {
 	name: "Downloader",
 
 	parent: DependencyObject,
@@ -52,7 +52,7 @@ Downloader = {
 	]
 };
 
-UIElement = {
+var UIElement = {
 	name: "UIElement",
 
 	parent: DependencyObject,
@@ -98,7 +98,7 @@ UIElement = {
 	]
 };
 
-Canvas = {
+var Canvas = {
 	name: "Canvas",
 
 	parent: UIElement,
@@ -113,7 +113,7 @@ Canvas = {
 	]
 };
 
-Collection = {
+var Collection = {
 	name: "Collection",
 
 	parent: DependencyObject,
@@ -137,7 +137,7 @@ Collection = {
 	events: []
 };
 
-ColorKeyFrameCollection = {
+var ColorKeyFrameCollection = {
 	name: "ColorKeyFrameCollection",
 
 	parent: Collection,
@@ -147,7 +147,7 @@ ColorKeyFrameCollection = {
 	}
 };
 
-DoubleKeyFrameCollection = {
+var DoubleKeyFrameCollection = {
 	name: "DoubleKeyFrameCollection",
 
 	parent: Collection,
@@ -157,7 +157,7 @@ DoubleKeyFrameCollection = {
 	}
 };
 
-GeometryCollection = {
+var GeometryCollection = {
 	name: "GeometryCollection",
 
 	parent: Collection,
@@ -167,7 +167,7 @@ GeometryCollection = {
 	}
 };
 
-GradientStopCollection = {
+var GradientStopCollection = {
 	name: "GradientStopCollection",
 
 	parent: Collection,
@@ -177,7 +177,7 @@ GradientStopCollection = {
 	}
 };
 
-MediaAttributeCollection = {
+var MediaAttributeCollection = {
 	name: "MediaAttributeCollection",
 
 	parent: Collection,
@@ -192,7 +192,7 @@ MediaAttributeCollection = {
 	]
 };
 
-PathFigureCollection = {
+var PathFigureCollection = {
 	name: "PathFigureCollection",
 
 	parent: Collection,
@@ -202,7 +202,7 @@ PathFigureCollection = {
 	}
 };
 
-PathSegmentCollection = {
+var PathSegmentCollection = {
 	name: "PathSegmentCollection",
 
 	parent: Collection,
@@ -212,7 +212,7 @@ PathSegmentCollection = {
 	}
 };
 
-PointKeyFrameCollection = {
+var PointKeyFrameCollection = {
 	name: "PointKeyFrameCollection",
 
 	parent: Collection,
@@ -222,7 +222,7 @@ PointKeyFrameCollection = {
 	}
 };
 
-ResourceDictionary = {
+var ResourceDictionary = {
 	name: "ResourceDictionary",
 
 	parent: Collection,
@@ -232,7 +232,7 @@ ResourceDictionary = {
 	}
 };
 
-StrokeCollection = {
+var StrokeCollection = {
 	name: "StrokeCollection",
 
 	parent: Collection,
@@ -247,7 +247,7 @@ StrokeCollection = {
 	]
 };
 
-StylusPointCollection = {
+var StylusPointCollection = {
 	name: "StylusPointCollection",
 
 	parent: Collection,
@@ -263,7 +263,7 @@ StylusPointCollection = {
 	]
 };
 
-TimelineCollection = {
+var TimelineCollection = {
 	name: "TimelineCollection",
 
 	parent: Collection,
@@ -273,7 +273,7 @@ TimelineCollection = {
 	}
 };
 
-TimelineMarkerCollection = {
+var TimelineMarkerCollection = {
 	name: "TimelineMarkerCollection",
 
 	parent: Collection,
@@ -283,7 +283,7 @@ TimelineMarkerCollection = {
 	}
 };
 
-TransformCollection = {
+var TransformCollection = {
 	name: "TransformCollection",
 
 	parent: Collection,
@@ -293,7 +293,7 @@ TransformCollection = {
 	}
 };
 
-TriggerActionCollection = {
+var TriggerActionCollection = {
 	name: "TriggerActionCollection",
 
 	parent: Collection,
@@ -303,7 +303,7 @@ TriggerActionCollection = {
 	}
 };
 
-TriggerCollection = {
+var TriggerCollection = {
 	name: "TriggerCollection",
 
 	parent: Collection,
@@ -313,7 +313,7 @@ TriggerCollection = {
 	}
 };
 
-UIElementCollection = {
+var UIElementCollection = {
 	name: "UIElementCollection",
 
 	parent: Collection,
@@ -323,7 +323,7 @@ UIElementCollection = {
 	}
 };
 
-KeyFrame = {
+var KeyFrame = {
 	name: "KeyFrame",
 
 	parent: DependencyObject,
@@ -331,25 +331,25 @@ KeyFrame = {
 	properties: ["KeyTime", "Value"]
 };
 
-ColorKeyFrame = {
+var ColorKeyFrame = {
 	name: "ColorKeyFrame",
 
 	parent: KeyFrame
 }
 
-DoubleKeyFrame = {
+var DoubleKeyFrame = {
 	name: "DoubleKeyFrame",
 
 	parent: KeyFrame
 }
 
-PointKeyFrame = {
+var PointKeyFrame = {
 	name: "PointKeyFrame",
 
 	parent: KeyFrame
 }
 
-DiscreteColorKeyFrame = {
+var DiscreteColorKeyFrame = {
 	name: "DiscreteColorKeyFrame",
 
 	parent: ColorKeyFrame,
@@ -359,7 +359,7 @@ DiscreteColorKeyFrame = {
 	}
 }
 
-DiscreteDoubleKeyFrame = {
+var DiscreteDoubleKeyFrame = {
 	name: "DiscreteDoubleKeyFrame",
 
 	parent: DoubleKeyFrame,
@@ -369,7 +369,7 @@ DiscreteDoubleKeyFrame = {
 	}
 }
 
-DiscretePointKeyFrame = {
+var DiscretePointKeyFrame = {
 	name: "DiscretePointKeyFrame",
 
 	parent: PointKeyFrame,
@@ -379,7 +379,7 @@ DiscretePointKeyFrame = {
 	}
 }
 
-LinearColorKeyFrame = {
+var LinearColorKeyFrame = {
 	name: "LinearColorKeyFrame",
 
 	parent: ColorKeyFrame,
@@ -389,7 +389,7 @@ LinearColorKeyFrame = {
 	}
 }
 
-LinearDoubleKeyFrame = {
+var LinearDoubleKeyFrame = {
 	name: "LinearDoubleKeyFrame",
 
 	parent: DoubleKeyFrame,
@@ -399,7 +399,7 @@ LinearDoubleKeyFrame = {
 	}
 }
 
-LinearPointKeyFrame = {
+var LinearPointKeyFrame = {
 	name: "LinearPointKeyFrame",
 
 	parent: PointKeyFrame,
@@ -409,7 +409,7 @@ LinearPointKeyFrame = {
 	}
 }
 
-SplineColorKeyFrame = {
+var SplineColorKeyFrame = {
 	name: "SplineColorKeyFrame",
 
 	parent: ColorKeyFrame,
@@ -421,7 +421,7 @@ SplineColorKeyFrame = {
 	properties: ["KeySpline"]
 }
 
-SplineDoubleKeyFrame = {
+var SplineDoubleKeyFrame = {
 	name: "SplineDoubleKeyFrame",
 
 	parent: DoubleKeyFrame,
@@ -433,7 +433,7 @@ SplineDoubleKeyFrame = {
 	properties: ["KeySpline"]
 }
 
-SplinePointKeyFrame = {
+var SplinePointKeyFrame = {
 	name: "SplinePointKeyFrame",
 
 	parent: PointKeyFrame,
@@ -445,7 +445,7 @@ SplinePointKeyFrame = {
 	properties: ["KeySpline"]
 }
 
-Timeline = {
+var Timeline = {
 	name: "TimeLine",
 
 	parent: DependencyObject,
@@ -462,7 +462,7 @@ Timeline = {
 	]
 };
 
-TimelineGroup = {
+var TimelineGroup = {
 	name: "TimeLineGroup",
 
 	parent: Timeline,
@@ -474,7 +474,7 @@ TimelineGroup = {
 	properties: ["Children"]
 };
 
-Storyboard = {
+var Storyboard = {
 	name: "Storyboard",
 
 	parent: Timeline,
@@ -498,7 +498,7 @@ Storyboard = {
 	events: ["Completed"]
 };
 
-Animation = {
+var Animation = {
 	name: "Animation",
 
 	parent: Timeline,
@@ -506,7 +506,7 @@ Animation = {
 	properties: ["By", "From", "To"]
 };
 
-ColorAnimation = {
+var ColorAnimation = {
 	name: "ColorAnimation",
 
 	parent: Animation,
@@ -516,7 +516,7 @@ ColorAnimation = {
 	}
 };
 
-ColorAnimationUsingKeyFrames = {
+var ColorAnimationUsingKeyFrames = {
 	name: "ColorAnimationUsingKeyFrames",
 
 	parent: ColorAnimation,
@@ -528,7 +528,7 @@ ColorAnimationUsingKeyFrames = {
 	properties: ["KeyFrames"]
 };
 
-DoubleAnimation = {
+var DoubleAnimation = {
 	name: "DoubleAnimation",
 
 	parent: Animation,
@@ -538,7 +538,7 @@ DoubleAnimation = {
 	}
 };
 
-DoubleAnimationUsingKeyFrames = {
+var DoubleAnimationUsingKeyFrames = {
 	name: "DoubleAnimationUsingKeyFrames",
 
 	parent: DoubleAnimation,
@@ -550,7 +550,7 @@ DoubleAnimationUsingKeyFrames = {
 	properties: ["KeyFrames"]
 };
 
-PointAnimation = {
+var PointAnimation = {
 	name: "PointAnimation",
 
 	parent: Animation,
@@ -560,7 +560,7 @@ PointAnimation = {
 	}
 };
 
-PointAnimationUsingKeyFrames = {
+var PointAnimationUsingKeyFrames = {
 	name: "PointAnimationUsingKeyFrames",
 
 	parent: PointAnimation,
@@ -572,7 +572,7 @@ PointAnimationUsingKeyFrames = {
 	properties: ["KeyFrames"]
 };
 
-Brush = {
+var Brush = {
 	name: "Brush",
 
 	parent: DependencyObject,
@@ -584,7 +584,7 @@ Brush = {
 	]
 };
 
-ImageBrush = {
+var ImageBrush = {
 	name: "ImageBrush",
 
 	parent: Brush,
@@ -606,7 +606,7 @@ ImageBrush = {
 	events: ["DownloadProgressChanged"]
 };
 
-SolidColorBrush = {
+var SolidColorBrush = {
 	name: "SolidColorBrush",
 
 	parent: Brush,
@@ -618,7 +618,7 @@ SolidColorBrush = {
 	properties: ["Color"]
 };
 
-VideoBrush = {
+var VideoBrush = {
 	name: "VideoBrush",
 
 	parent: Brush,
@@ -633,7 +633,7 @@ VideoBrush = {
 	]
 };
 
-GradientBrush = {
+var GradientBrush = {
 	name: "GradientBrush",
 
 	parent: Brush,
@@ -646,7 +646,7 @@ GradientBrush = {
 	]
 };
 
-LinearGradientBrush = {
+var LinearGradientBrush = {
 	name: "LinearGradientBrush",
 
 	parent: GradientBrush,
@@ -661,7 +661,7 @@ LinearGradientBrush = {
 	]
 };
 
-RadialGradientBrush = {
+var RadialGradientBrush = {
 	name: "RadialGradientBrush",
 
 	parent: GradientBrush,
@@ -678,13 +678,13 @@ RadialGradientBrush = {
 	]
 };
 
-PathSegment = {
+var PathSegment = {
 	name: "PathSegment",
 
-	parent: DependencyObject,
+	parent: DependencyObject
 };
 
-ArcSegment = {
+var ArcSegment = {
 	name: "ArcSegment",
 
 	parent: PathSegment,
@@ -702,7 +702,7 @@ ArcSegment = {
 	]
 };
 
-BezierSegment = {
+var BezierSegment = {
 	name: "BezierSegment",
 
 	parent: PathSegment,
@@ -718,7 +718,7 @@ BezierSegment = {
 	]
 };
 
-LineSegment = {
+var LineSegment = {
 	name: "LineSegment",
 
 	parent: PathSegment,
@@ -730,7 +730,7 @@ LineSegment = {
 	properties: ["Point"]
 };
 
-PolyBezierSegment = {
+var PolyBezierSegment = {
 	name: "PolyBezierSegment",
 
 	parent: PathSegment,
@@ -744,7 +744,7 @@ PolyBezierSegment = {
 	]
 };
 
-PolyLineSegment = {
+var PolyLineSegment = {
 	name: "PolyLineSegment",
 
 	parent: PathSegment,
@@ -756,7 +756,7 @@ PolyLineSegment = {
 	properties: ["Points"]
 };
 
-PolyQuadraticBezierSegment = {
+var PolyQuadraticBezierSegment = {
 	name: "PolyQuadraticBezierSegment",
 
 	parent: PathSegment,
@@ -768,7 +768,7 @@ PolyQuadraticBezierSegment = {
 	properties: ["Points"]
 };
 
-QuadraticBezierSegment = {
+var QuadraticBezierSegment = {
 	name: "QuadraticBezierSegment",
 
 	parent: PathSegment,
@@ -783,7 +783,7 @@ QuadraticBezierSegment = {
 	]
 };
 
-TriggerAction = {
+var TriggerAction = {
 	name: "TriggerAction",
 
 	parent: DependencyObject,
@@ -793,7 +793,7 @@ TriggerAction = {
 	}
 };
 
-BeginStoryboard = {
+var BeginStoryboard = {
 	name: "BeginStoryboard",
 
 	parent: TriggerAction,
@@ -805,7 +805,7 @@ BeginStoryboard = {
 	properties: ["Storyboard"]
 };
 
-DrawingAttributes = {
+var DrawingAttributes = {
 	name: "DrawingAttributes",
 
 	parent: DependencyObject,
@@ -822,7 +822,7 @@ DrawingAttributes = {
 	]
 };
 
-Shape = {
+var Shape = {
 	name: "Shape",
 
 	parent: UIElement,
@@ -842,7 +842,7 @@ Shape = {
 	]
 };
 
-Ellipse = {
+var Ellipse = {
 	name: "Ellipse",
 
 	parent: Shape,
@@ -852,7 +852,7 @@ Ellipse = {
 	}
 };
 
-Path = {
+var Path = {
 	name: "Path",
 
 	parent: Shape,
@@ -864,7 +864,7 @@ Path = {
 	properties: ["Data"]
 };
 
-Polygon = {
+var Polygon = {
 	name: "Polygon",
 
 	parent: Shape,
@@ -876,7 +876,7 @@ Polygon = {
 	properties: ["FillRule"]
 };
 
-Polyline = {
+var Polyline = {
 	name: "Polyline",
 
 	parent: Shape,
@@ -888,7 +888,7 @@ Polyline = {
 	properties: ["FillRule"]
 };
 
-Rectangle = {
+var Rectangle = {
 	name: "Rectangle",
 
 	parent: Shape,
@@ -898,7 +898,7 @@ Rectangle = {
 	}
 };
 
-Geometry = {
+var Geometry = {
 	name: "Geometry",
 
 	parent: DependencyObject,
@@ -906,7 +906,7 @@ Geometry = {
 	properties: ["Transform"]
 };
 
-GeometryGroup = {
+var GeometryGroup = {
 	name: "GeometryGroup",
 
 	parent: Geometry,
@@ -918,7 +918,7 @@ GeometryGroup = {
 	properties: ["Children"]
 };
 
-EllipseGeometry = {
+var EllipseGeometry = {
 	name: "EllipseGeometry",
 
 	parent: Geometry,
@@ -934,7 +934,7 @@ EllipseGeometry = {
 	]
 };
 
-LineGeometry = {
+var LineGeometry = {
 	name: "LineGeometry",
 
 	parent: Geometry,
@@ -949,7 +949,7 @@ LineGeometry = {
 	]
 };
 
-PathGeometry = {
+var PathGeometry = {
 	name: "PathGeometry",
 
 	parent: Geometry,
@@ -964,7 +964,7 @@ PathGeometry = {
 	]
 };
 
-RectangleGeometry = {
+var RectangleGeometry = {
 	name: "RectangleGeometry",
 
 	parent: Geometry,
@@ -980,7 +980,7 @@ RectangleGeometry = {
 	]
 };
 
-EventTrigger = {
+var EventTrigger = {
 	name: "EventTrigger",
 
 	parent: DependencyObject,
@@ -995,7 +995,7 @@ EventTrigger = {
 	]
 };
 
-Glyphs = {
+var Glyphs = {
 	name: "Glyphs",
 
 	parent: UIElement,
@@ -1014,7 +1014,7 @@ Glyphs = {
 	]
 };
 
-GradientStop = {
+var GradientStop = {
 	name: "GradientStop",
 
 	parent: DependencyObject,
@@ -1029,7 +1029,7 @@ GradientStop = {
 	]
 };
 
-Image = {
+var Image = {
 	name: "Image",
 
 	parent: UIElement,
@@ -1050,7 +1050,7 @@ Image = {
 	]
 };
 
-InkPresenter = {
+var InkPresenter = {
 	name: "InkPresenter",
 
 	parent: Canvas,
@@ -1066,7 +1066,7 @@ InkPresenter = {
 	]
 };
 
-KeySpline = {
+var KeySpline = {
 	name: "KeySpline",
 
 	parent: DependencyObject,
@@ -1076,7 +1076,7 @@ KeySpline = {
 	}
 };
 
-Line = {
+var Line = {
 	name: "Line",
 
 	parent: Shape,
@@ -1093,7 +1093,7 @@ Line = {
 	]
 };
 
-LineBreak = {
+var LineBreak = {
 	name: "LineBreak",
 
 	parent: DependencyObject,
@@ -1113,7 +1113,7 @@ LineBreak = {
 	]
 };
 
-Run = {
+var Run = {
 	name: "Run",
 
 	parent: DependencyObject,
@@ -1133,7 +1133,7 @@ Run = {
 	]
 };
 
-Matrix = {
+var Matrix = {
 	name: "Matrix",
 
 	parent: DependencyObject,
@@ -1152,13 +1152,13 @@ Matrix = {
 	]
 };
 
-Transform = {
+var Transform = {
 	name: "Transform",
 
 	parent: DependencyObject
 };
 
-MatrixTransform = {
+var MatrixTransform = {
 	name: "MatrixTransform",
 
 	parent: Transform,
@@ -1170,7 +1170,7 @@ MatrixTransform = {
 	properties: ["Matrix"]
 };
 
-RotateTransform = {
+var RotateTransform = {
 	name: "RotateTransform",
 
 	parent: Transform,
@@ -1186,7 +1186,7 @@ RotateTransform = {
 	]
 };
 
-ScaleTransform = {
+var ScaleTransform = {
 	name: "ScaleTransform",
 
 	parent: Transform,
@@ -1203,7 +1203,7 @@ ScaleTransform = {
 	]
 };
 
-SkewTransform = {
+var SkewTransform = {
 	name: "SkewTransform",
 
 	parent: Transform,
@@ -1220,7 +1220,7 @@ SkewTransform = {
 	]
 };
 
-TransformGroup = {
+var TransformGroup = {
 	name: "TransformGroup",
 
 	parent: DependencyObject,
@@ -1232,7 +1232,7 @@ TransformGroup = {
 	properties: ["Children"]
 };
 
-TranslateTransform = {
+var TranslateTransform = {
 	name: "TranslateTransform",
 
 	parent: Transform,
@@ -1247,7 +1247,7 @@ TranslateTransform = {
 	]
 };
 
-MediaAttribute = {
+var MediaAttribute = {
 	name: "MediaAttribute",
 
 	parent: DependencyObject,
@@ -1259,7 +1259,7 @@ MediaAttribute = {
 	properties: ["Value"]
 };
 
-MediaElement = {
+var MediaElement = {
 	name: "MediaElement",
 
 	parent: UIElement,
@@ -1308,7 +1308,7 @@ MediaElement = {
 	]
 };
 
-PathFigure = {
+var PathFigure = {
 	name: "PathFigure",
 
 	parent: DependencyObject,
@@ -1324,7 +1324,7 @@ PathFigure = {
 	]
 };
 
-SilverlightPlugin = {
+var SilverlightPlugin = {
 	name: "SilverlightPlugin",
 
 	create: function (plugin) {
@@ -1359,7 +1359,7 @@ SilverlightPlugin = {
 	]
 };
 
-SilverlightPluginContent = {
+var SilverlightPluginContent = {
 	name: "SilverlightPluginContent",
 
 	create: function (plugin) {
@@ -1386,7 +1386,7 @@ SilverlightPluginContent = {
 	]
 };
 
-Stroke = {
+var Stroke = {
 	name: "Stroke",
 
 	parent: DependencyObject,
@@ -1406,7 +1406,7 @@ Stroke = {
 	]
 };
 
-StylusInfo = {
+var StylusInfo = {
 	name: "StylusInfo",
 
 	parent: DependencyObject,
@@ -1417,7 +1417,7 @@ StylusInfo = {
 	]
 };
 
-StylusPoint = {
+var StylusPoint = {
 	name: "StylusPoint",
 
 	parent: DependencyObject,
@@ -1433,7 +1433,7 @@ StylusPoint = {
 	]
 };
 
-TextBlock = {
+var TextBlock = {
 	name: "TextBlock",
 
 	parent: UIElement,
@@ -1459,7 +1459,7 @@ TextBlock = {
 	methods: ["SetFontSource"]
 };
 
-TimelineMarker = {
+var TimelineMarker = {
 	name: "TimelineMarker",
 
 	parent: DependencyObject,
@@ -1475,13 +1475,13 @@ TimelineMarker = {
 	]
 };
 
-EventArgs = {
+var EventArgs = {
 	name: "EventArgs",
 
 	parent: DependencyObject
 };
 
-KeyboardEventArgs  = {
+var KeyboardEventArgs  = {
 	name: "KeyboardEventArgs ",
 
 	parent: EventArgs,
@@ -1494,7 +1494,7 @@ KeyboardEventArgs  = {
 	]
 };
 
-MouseEventArgs  = {
+var MouseEventArgs  = {
 	name: "MouseEventArgs ",
 
 	parent: EventArgs,
@@ -1511,7 +1511,7 @@ MouseEventArgs  = {
 	]
 };
 
-ErrorEventArgs  = {
+var ErrorEventArgs  = {
 	name: "ErrorEventArgs ",
 
 	parent: EventArgs,
@@ -1523,7 +1523,7 @@ ErrorEventArgs  = {
 	]
 };
 
-ParserErrorEventArgs  = {
+var ParserErrorEventArgs  = {
 	name: "ParserErrorEventArgs ",
 
 	parent: ErrorEventArgs,
@@ -1537,7 +1537,7 @@ ParserErrorEventArgs  = {
 	]
 };
 
-RuntimeErrorEventArgs  = {
+var RuntimeErrorEventArgs  = {
 	name: "RuntimeErrorEventArgs ",
 
 	parent: ErrorEventArgs,

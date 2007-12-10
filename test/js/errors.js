@@ -87,35 +87,35 @@ Errors.AG_E_UNNAMED_RESOURCE = {
 Errors.AG_E_UNABLE_TO_PLAY = {
 	message: "AG_E_UNABLE_TO_PLAY",
 	type: ["mediaError"],
-	code: 3000,
+	code: 3000
 };
 
 Errors.AG_E_INVALID_FILE_FORMAT = {
 	message: "AG_E_INVALID_FILE_FORMAT",
 	type: ["mediaError", "imageError", "downloadError"],
-	code: 3001,
+	code: 3001
 };
 
 Errors.AG_E_NOT_FOUND = {
 	message: "AG_E_INVALID_FILE_FORMAT",
 	type: ["mediaError", "imageError"],
-	code: 3002,
+	code: 3002
 };
 
 Errors.AG_E_ABORT_FAILED = {
 	message: "AG_E_ABORT_FAILED",
 	type: ["downloadError"],
-	code: 4000,
+	code: 4000
 };
 
 Errors.AG_E_CONNECTION_ERROR = {
 	message: "AG_E_CONNECTION_ERROR",
 	type: ["downloadError"],
-	code: 4001,
+	code: 4001
 };
 
 Errors.AG_E_NETWORK_ERROR = {
 	message: "AG_E_NETWORK_ERROR",
 	type: ["downloadError"],
-	code: 4002,
+	code: 4002
 };

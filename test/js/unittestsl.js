@@ -9,32 +9,32 @@ Object.extend (Test.Unit.Testcase.prototype, {
 
 		for (var i = 0; i < array.length; i++) {
 			var slot = array [i];
-			assert (obj.hasOwnProperty (slot), model.name + " does not support " + slot);
+			this.assert (obj.hasOwnProperty (slot), model.name + " does not support " + slot);
 		}
 	}},
 
-	_classMatch: function (model, obj) { with (this) {
-		_slotsMatch (model, model.properties, obj);
-		_slotsMatch (model, model.methods, obj);
-		_slotsMatch (model, model.events, obj);
+	_classMatch: function (model, obj) {
+		this._slotsMatch (model, model.properties, obj);
+		this._slotsMatch (model, model.methods, obj);
+		this._slotsMatch (model, model.events, obj);
 
-		return model.parent ? _classMatch (model.parent, obj) : true;
-	}},
+		return model.parent ? this._classMatch (model.parent, obj) : true;
+	},
 
-	assertCodeModel: function (model) { with (this) {
+	assertCodeModel: function (model) {
 		var obj = null;
 		if (arguments [1])
 			obj = arguments [1];
 		else {
 			try {
-				obj = _createObject (model);
+				obj = this._createObject (model);
 			} catch (ex) {
-				fail ("Cannot create object of type " + model.name + ", " + ex.toString ());
+				this.fail ("Cannot create object of type " + model.name + ", " + ex);
 			}
 		}
 
-		return _classMatch (model, obj);
-	}},
+		return this._classMatch (model, obj);
+	},
 
 	assertException: function (error, code) {
 		try {
