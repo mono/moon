@@ -16,7 +16,7 @@
 #include "moon-mono.h"
 
 NPError
-NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
+NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved)
 {
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -32,7 +32,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char* arg
 }
 
 NPError
-NPP_Destroy (NPP instance, NPSavedData** save)
+NPP_Destroy (NPP instance, NPSavedData **save)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -47,7 +47,7 @@ NPP_Destroy (NPP instance, NPSavedData** save)
 }
 
 NPError
-NPP_SetWindow (NPP instance, NPWindow* window)
+NPP_SetWindow (NPP instance, NPWindow *window)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -57,7 +57,7 @@ NPP_SetWindow (NPP instance, NPWindow* window)
 }
 
 NPError
-NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
+NPP_NewStream (NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -67,7 +67,7 @@ NPP_NewStream (NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable,
 }
 
 NPError
-NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
+NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -77,7 +77,7 @@ NPP_DestroyStream (NPP instance, NPStream* stream, NPError reason)
 }
 
 void
-NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
+NPP_StreamAsFile (NPP instance, NPStream *stream, const char *fname)
 {
 	if (instance == NULL)
 		return;
@@ -86,8 +86,8 @@ NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 	plugin->StreamAsFile (stream, fname);
 }
 
-int32
-NPP_WriteReady (NPP instance, NPStream* stream)
+int32_t
+NPP_WriteReady (NPP instance, NPStream *stream)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -96,8 +96,8 @@ NPP_WriteReady (NPP instance, NPStream* stream)
 	return plugin->WriteReady (stream);
 }
 
-int32
-NPP_Write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer)
+int32_t
+NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -107,7 +107,7 @@ NPP_Write (NPP instance, NPStream* stream, int32 offset, int32 len, void* buffer
 }
 
 void
-NPP_Print (NPP instance, NPPrint* platformPrint)
+NPP_Print (NPP instance, NPPrint *platformPrint)
 {
 	if (instance == NULL)
 		return;
@@ -117,7 +117,7 @@ NPP_Print (NPP instance, NPPrint* platformPrint)
 }
 
 void
-NPP_URLNotify (NPP instance, const char* url, NPReason reason, void* notifyData)
+NPP_URLNotify (NPP instance, const char *url, NPReason reason, void *notifyData)
 {
 	if (instance == NULL)
 		return;
@@ -127,8 +127,8 @@ NPP_URLNotify (NPP instance, const char* url, NPReason reason, void* notifyData)
 }
 
 
-int16
-NPP_HandleEvent (NPP instance, void* event)
+int16_t
+NPP_HandleEvent (NPP instance, void *event)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;

@@ -28,7 +28,8 @@ static NPNetscapeFuncs MozillaFuncs;
 
 /*** Wrapper functions ********************************************************/
 
-void NPN_Version (int* plugin_major, int* plugin_minor, int* netscape_major, int* netscape_minor)
+void
+NPN_Version (int *plugin_major, int *plugin_minor, int *netscape_major, int *netscape_minor)
 {
 	*plugin_major = NP_VERSION_MAJOR;
 	*plugin_minor = NP_VERSION_MINOR;
@@ -49,49 +50,49 @@ NPN_SetValue (NPP instance, NPPVariable variable, void *value)
 }
 
 NPError
-NPN_GetURL (NPP instance, const char* url, const char* window)
+NPN_GetURL (NPP instance, const char *url, const char *window)
 {
 	return CallNPN_GetURLProc (MozillaFuncs.geturl, instance, url, window);
 }
 
 NPError
-NPN_GetURLNotify (NPP instance, const char* url,
-                          const char* window, void* notifyData)
+NPN_GetURLNotify (NPP instance, const char *url,
+		  const char *window, void *notifyData)
 {
 	return CallNPN_GetURLNotifyProc (MozillaFuncs.geturlnotify, instance,
-	                                url, window, notifyData);
+					 url, window, notifyData);
 }
 
 NPError
-NPN_PostURL (NPP instance, const char* url, const char* window,
-                     uint32 len, const char* buf, NPBool file)
+NPN_PostURL (NPP instance, const char *url, const char *window,
+	     uint32_t len, const char *buf, NPBool file)
 {
 	return CallNPN_PostURLProc (MozillaFuncs.posturl, instance, url, window, len, buf, file);
 }
 
 NPError
-NPN_PostURLNotify (NPP instance, const char* url, const char* window,
-                           uint32 len, const char* buf, NPBool file, void* notifyData)
+NPN_PostURLNotify (NPP instance, const char *url, const char *window,
+		   uint32_t len, const char *buf, NPBool file, void *notifyData)
 {
 	return CallNPN_PostURLNotifyProc (MozillaFuncs.posturlnotify, instance, url,
-	                                window, len, buf, file, notifyData);
+					  window, len, buf, file, notifyData);
 }
 
 NPError
-NPN_RequestRead (NPStream* stream, NPByteRange* rangeList)
+NPN_RequestRead (NPStream *stream, NPByteRange *rangeList)
 {
 	return CallNPN_RequestReadProc (MozillaFuncs.requestread, stream, rangeList);
 }
 
 NPError
-NPN_NewStream (NPP instance, NPMIMEType type, const char *window, NPStream** stream_ptr)
+NPN_NewStream (NPP instance, NPMIMEType type, const char *window, NPStream **stream_ptr)
 {
 	return CallNPN_NewStreamProc (MozillaFuncs.newstream, instance,
-	                            type, window, stream_ptr);
+				      type, window, stream_ptr);
 }
 
-int32
-NPN_Write (NPP instance, NPStream* stream, int32 len, void* buffer)
+int32_t
+NPN_Write (NPP instance, NPStream *stream, int32_t len, void *buffer)
 {
 	return CallNPN_WriteProc (MozillaFuncs.write, instance, stream, len, buffer);
 }
@@ -108,26 +109,26 @@ void NPN_Status (NPP instance, const char* message)
 		CallNPN_StatusProc (MozillaFuncs.status, instance, message);
 }
 
-const char*
+const char *
 NPN_UserAgent (NPP instance)
 {
 	return CallNPN_UserAgentProc (MozillaFuncs.uagent, instance);
 }
 
 void *
-NPN_MemAlloc (uint32 size)
+NPN_MemAlloc (uint32_t size)
 {
 	return CallNPN_MemAllocProc (MozillaFuncs.memalloc, size);
 }
 
 void
-NPN_MemFree (void* ptr)
+NPN_MemFree (void *ptr)
 {
 	CallNPN_MemFreeProc (MozillaFuncs.memfree, ptr);
 }
 
-uint32
-NPN_MemFlush (uint32 size)
+uint32_t
+NPN_MemFlush (uint32_t size)
 {
 	return CallNPN_MemFlushProc (MozillaFuncs.memflush, size);
 }
@@ -168,7 +169,7 @@ void
 NPN_GetStringIdentifiers (const NPUTF8 **names, int32_t nameCount, NPIdentifier *identifiers)
 {
 	CallNPN_GetStringIdentifiersProc (MozillaFuncs.getstringidentifiers,
-	                                names, nameCount, identifiers);
+					  names, nameCount, identifiers);
 }
 
 NPIdentifier
@@ -213,62 +214,63 @@ NPN_ReleaseObject (NPObject *obj)
 	return CallNPN_ReleaseObjectProc (MozillaFuncs.releaseobject, obj);
 }
 
-bool NPN_Invoke (NPP npp, NPObject* obj, NPIdentifier methodName,
-                 const NPVariant *args, uint32_t argCount, NPVariant *result)
+bool
+NPN_Invoke (NPP npp, NPObject *obj, NPIdentifier methodName,
+	    const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	return CallNPN_InvokeProc (MozillaFuncs.invoke, npp, obj, methodName, args, argCount, result);
 }
 
 bool
-NPN_InvokeDefault (NPP npp, NPObject* obj, const NPVariant *args,
-                        uint32_t argCount, NPVariant *result)
+NPN_InvokeDefault (NPP npp, NPObject *obj, const NPVariant *args,
+		   uint32_t argCount, NPVariant *result)
 {
 	return CallNPN_InvokeDefaultProc (MozillaFuncs.invokeDefault, npp, obj, args, argCount, result);
 }
 
 bool
-NPN_Evaluate (NPP npp, NPObject* obj, NPString *script, NPVariant *result)
+NPN_Evaluate (NPP npp, NPObject *obj, NPString *script, NPVariant *result)
 {
 	return CallNPN_EvaluateProc (MozillaFuncs.evaluate, npp, obj, script, result);
 }
 
 bool
-NPN_GetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName, NPVariant *result)
+NPN_GetProperty (NPP npp, NPObject *obj, NPIdentifier propertyName, NPVariant *result)
 {
 	return CallNPN_GetPropertyProc (MozillaFuncs.getproperty, npp, obj, propertyName, result);
 }
 
 bool
-NPN_SetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName,
-                      const NPVariant *value)
+NPN_SetProperty (NPP npp, NPObject *obj, NPIdentifier propertyName, const NPVariant *value)
 {
 	return CallNPN_SetPropertyProc (MozillaFuncs.setproperty, npp, obj, propertyName, value);
 }
 
 bool
-NPN_RemoveProperty (NPP npp, NPObject* obj, NPIdentifier propertyName)
+NPN_RemoveProperty (NPP npp, NPObject *obj, NPIdentifier propertyName)
 {
 	return CallNPN_RemovePropertyProc (MozillaFuncs.removeproperty, npp, obj, propertyName);
 }
 
 bool
-NPN_HasProperty (NPP npp, NPObject* obj, NPIdentifier propertyName)
+NPN_HasProperty (NPP npp, NPObject *obj, NPIdentifier propertyName)
 {
 	return CallNPN_HasPropertyProc (MozillaFuncs.hasproperty, npp, obj, propertyName);
 }
 
 bool
-NPN_HasMethod (NPP npp, NPObject* obj, NPIdentifier methodName)
+NPN_HasMethod (NPP npp, NPObject *obj, NPIdentifier methodName)
 {
 	return CallNPN_HasMethodProc (MozillaFuncs.hasmethod, npp, obj, methodName);
 }
 
-void NPN_ReleaseVariantValue(NPVariant *variant)
+void
+NPN_ReleaseVariantValue (NPVariant *variant)
 {
 	CallNPN_ReleaseVariantValueProc (MozillaFuncs.releasevariantvalue, variant);
 }
 
-void NPN_SetException(NPObject* obj, const NPUTF8 *message)
+void NPN_SetException (NPObject *obj, const NPUTF8 *message)
 {
 	CallNPN_SetExceptionProc (MozillaFuncs.setexception, obj, message);
 }
@@ -289,7 +291,7 @@ NPN_PopPopupsEnabledState (NPP instance)
 
 /*** These functions are located automagically by mozilla *********************/
 
-char*
+char *
 LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void)
 {
 	return NPP_GetMIMEDescription ();
@@ -326,16 +328,16 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 
 	// XEmbed ?
 	err = CallNPN_GetValueProc (mozilla_funcs->getvalue, NULL,
-								NPNVSupportsXEmbedBool,
-								(void *)&supportsXEmbed);
+				    NPNVSupportsXEmbedBool,
+				    (void *) &supportsXEmbed);
 
 	if (err != NPERR_NO_ERROR || supportsXEmbed != PR_TRUE)
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;
 
 	// GTK+ ?
 	err = CallNPN_GetValueProc (mozilla_funcs->getvalue, NULL,
-								NPNVToolkit,
-								(void *)&toolkit);
+				    NPNVToolkit,
+				    (void *) &toolkit);
 
 	if (err != NPERR_NO_ERROR || toolkit != NPNVGtk2)
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;

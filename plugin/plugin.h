@@ -19,15 +19,15 @@ class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
 
-typedef void plugin_unload_callback (PluginInstance* plugin);
+typedef void plugin_unload_callback (PluginInstance *plugin);
 
 class PluginInstance
 {
  private:
-  	uint16 mode;           // NP_EMBED, NP_FULL, or NP_BACKGROUND
+  	uint16_t mode;         // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
-	NPObject* rootobject;  // Mozilla jscript object wrapper
+	NPObject *rootobject;  // Mozilla jscript object wrapper
 	bool xembed_supported; // XEmbed Extension supported
 
 	GHashTable *wrapped_objects; // wrapped object cache
@@ -45,11 +45,12 @@ class PluginInstance
 	//
 	// The XAML loader, contains a handle to a MonoObject *
 	//
-	PluginXamlLoader* xaml_loader;
+	PluginXamlLoader *xaml_loader;
+	
 	//
 	// A (managed) callback to call when the plugin is unloaded.
 	//
-	plugin_unload_callback* plugin_unload;
+	plugin_unload_callback *plugin_unload;
 
 	// The name of the file that we are missing, and we requested to be loaded
 	char *vm_missing_file;
@@ -62,37 +63,38 @@ class PluginInstance
 	void SetPageURL ();
 
  public:
-	PluginInstance (NPP instance, uint16 mode);
+	PluginInstance (NPP instance, uint16_t mode);
 	~PluginInstance ();
-	void SetUnloadCallback (plugin_unload_callback* puc);
-	void Initialize (int argc, char* const argn[], char* const argv[]);
+	
+	void SetUnloadCallback (plugin_unload_callback *puc);
+	void Initialize (int argc, char *const argn[], char *const argv[]);
 	void Finalize ();
 
 	// Mozilla plugin related methods
 	NPError GetValue (NPPVariable variable, void *result);
 	NPError SetValue (NPNVariable variable, void *value);
-	NPError SetWindow (NPWindow* window);
-	NPError NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype);
-	NPError DestroyStream (NPStream* stream, NPError reason);
-	void StreamAsFile (NPStream* stream, const char* fname);
-	int32 WriteReady (NPStream* stream);
-	int32 Write (NPStream* stream, int32 offset, int32 len, void* buffer);
-	void UrlNotify (const char* url, NPReason reason, void* notifyData);
-	void Print (NPPrint* platformPrint);
-	int16 EventHandle (void* event);
+	NPError SetWindow (NPWindow *window);
+	NPError NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype);
+	NPError DestroyStream (NPStream *stream, NPError reason);
+	void StreamAsFile (NPStream *stream, const char *fname);
+	int32_t WriteReady (NPStream *stream);
+	int32_t Write (NPStream *stream, int32_t offset, int32_t len, void *buffer);
+	void UrlNotify (const char *url, NPReason reason, void *notifyData);
+	void Print (NPPrint *platformPrint);
+	int16 EventHandle (void *event);
 	bool JsRunOnload ();
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
-	void *LoadUrl (char *url, gint32 *length);
+	void *LoadUrl (char *url, int32_t *length);
 
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
 	void      RemoveWrappedObject (EventObject *obj);
-	NPObject* LookupWrappedObject (EventObject *obj);
+	NPObject *LookupWrappedObject (EventObject *obj);
 
 	void Properties ();
 
 	NPP getNPP () { return instance; }
 
-	static Downloader* CreateDownloader (PluginInstance* instance)
+	static Downloader *CreateDownloader (PluginInstance *instance)
 	{
 		if (instance) {
 			return instance->surface->CreateDownloader ();
@@ -124,8 +126,8 @@ class PluginInstance
 	MoonlightScriptControlObject *getRootObject ();
 	NPP getInstance ();
 
-	int32 getActualHeight ();
-	int32 getActualWidth ();
+	int32_t getActualHeight ();
+	int32_t getActualWidth ();
 
 	void getBrowserInformation (char **name, char **version,
 				    char **platform, char **userAgent,
@@ -161,17 +163,17 @@ class StreamNotify
 	};
 
 	StreamNotify () : type (NONE), pdata (NULL) {};
-	StreamNotify (void* data) : type (NONE), pdata (data) {};
+	StreamNotify (void *data) : type (NONE), pdata (data) {};
 	StreamNotify (StreamNotifyFlags type) : type (type), pdata (NULL) {};
-	StreamNotify (StreamNotifyFlags type, void* data) : type (type), pdata (data) {};
-	StreamNotify (StreamNotifyFlags type, DependencyObject* dob) : type (type), pdata (dob)
+	StreamNotify (StreamNotifyFlags type, void *data) : type (type), pdata (data) {};
+	StreamNotify (StreamNotifyFlags type, DependencyObject *dob) : type (type), pdata (dob)
 	{
 		base_ref (dob);
 	}
 	~StreamNotify ()
 	{
 		if (type == DOWNLOADER)
-			base_unref ((DependencyObject*) pdata);
+			base_unref ((DependencyObject *) pdata);
 	}
 
 	StreamNotifyFlags type;
@@ -180,42 +182,42 @@ class StreamNotify
 
 class PluginXamlLoader : public XamlLoader
 {
-	private:
-		PluginXamlLoader (const char* filename, const char* str, PluginInstance* plugin, Surface* surface);
-		bool InitializeLoader ();
-		PluginInstance* plugin;
-		bool initialized;
-		bool xaml_is_managed;
-
+private:
+	PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface);
+	bool InitializeLoader ();
+	PluginInstance *plugin;
+	bool initialized;
+	bool xaml_is_managed;
+	
 #if INCLUDE_MONO_RUNTIME
-		gpointer managed_loader;
+	gpointer managed_loader;
 #endif
-	public:
-		virtual ~PluginXamlLoader ();
-		const char* TryLoad (int *error);
-
-		static PluginXamlLoader* FromFilename (const char* filename, PluginInstance* plugin, Surface* surface)
-		{
-			return new PluginXamlLoader (filename, NULL, plugin, surface);
-		}
-		static PluginXamlLoader* FromStr (const char* str, PluginInstance* plugin, Surface* surface)
-		{
-			return new PluginXamlLoader (NULL, str, plugin, surface);
-		}
-
-		bool IsManaged () { return xaml_is_managed; }
-		virtual bool HookupEvent (void* target, const char* name, const char* value);
-		virtual bool LoadVM ();
+public:
+	virtual ~PluginXamlLoader ();
+	const char *TryLoad (int *error);
+	
+	static PluginXamlLoader *FromFilename (const char *filename, PluginInstance *plugin, Surface *surface)
+	{
+		return new PluginXamlLoader (filename, NULL, plugin, surface);
+	}
+	static PluginXamlLoader *FromStr (const char *str, PluginInstance *plugin, Surface *surface)
+	{
+		return new PluginXamlLoader (NULL, str, plugin, surface);
+	}
+	
+	bool IsManaged () { return xaml_is_managed; }
+	virtual bool HookupEvent (void *target, const char *name, const char *value);
+	virtual bool LoadVM ();
 };
 
 G_BEGIN_DECLS
 
-int32 plugin_instance_get_actual_width  (PluginInstance *instance);
-int32 plugin_instance_get_actual_height (PluginInstance *instance);
+int32_t plugin_instance_get_actual_width  (PluginInstance *instance);
+int32_t plugin_instance_get_actual_height (PluginInstance *instance);
 
 Surface *plugin_instance_get_surface (PluginInstance *instance);
 
-char* plugin_instance_get_init_params  (PluginInstance *instance);
+char *plugin_instance_get_init_params  (PluginInstance *instance);
 
 void plugin_instance_get_browser_information (PluginInstance *instance,
 					      char **name, char **version,
@@ -223,15 +225,16 @@ void plugin_instance_get_browser_information (PluginInstance *instance,
 					      bool *cookieEnabled);
 
 void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
-							bool *httpnet_access, bool *script_access);
+						   bool *httpnet_access, bool *script_access);
 
 void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
-void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
+void *plugin_instance_load_url (PluginInstance *instance, char *url, int32_t *length);
 
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
 uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
-void     plugin_set_unload_callback (PluginInstance* instance, plugin_unload_callback* puc);
-PluginXamlLoader* plugin_xaml_loader_from_str (const char* str, PluginInstance* plugin, Surface* surface);
+void     plugin_set_unload_callback (PluginInstance *instance, plugin_unload_callback *puc);
+PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
+
 G_END_DECLS
 
 #endif /* MOON_PLUGIN */
