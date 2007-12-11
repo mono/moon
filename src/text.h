@@ -140,7 +140,7 @@ class TextBlock : public FrameworkElement {
 	
 	void DownloaderComplete ();
 	
-	static void data_write (guchar *data, gsize n, gsize nn, void *closure);
+	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
@@ -259,7 +259,7 @@ class Glyphs : public FrameworkElement {
 	
 	void DownloaderComplete ();
 	
-	static void data_write (guchar *data, gsize n, gsize nn, void *closure);
+	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	

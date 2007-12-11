@@ -1178,8 +1178,11 @@ void
 Surface::drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
 {
 	Surface *s = (Surface *) user_data;
-
-        if (s->width != allocation->width || s->height != allocation->height){
+	
+	//printf ("Surface::size-allocate callback: current = %dx%d; new = %dx%d\n",
+	//	s->width, s->height, allocation->width, allocation->height);
+	
+        if (s->width != allocation->width || s->height != allocation->height) {
                 s->width = allocation->width;
                 s->height = allocation->height;
 		

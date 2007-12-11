@@ -1121,7 +1121,7 @@ TextBlock::SetValue (DependencyProperty *property, Value value)
 }
 
 void
-TextBlock::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+TextBlock::data_write (void *buf, int32_t offset, int32_t n, gpointer data)
 {
 	;
 }
@@ -1694,7 +1694,7 @@ Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, D
 }
 
 void
-Glyphs::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+Glyphs::data_write (void *buf, int32_t offset, int32_t n, gpointer data)
 {
 	;
 }

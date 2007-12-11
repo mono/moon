@@ -23,46 +23,45 @@ G_BEGIN_DECLS
 
 class Downloader;
 
-typedef void     (*downloader_write_func)(guchar *buf, gsize offset, gsize n, gpointer cb_data);
-typedef void     (*downloader_notify_size_func)(int64_t size, gpointer cb_data);
+typedef void     (*downloader_write_func) (void *buf, int32_t offset, int32_t n, gpointer cb_data);
+typedef void     (*downloader_notify_size_func) (int64_t size, gpointer cb_data);
 
-typedef gpointer (*downloader_create_state_func) (Downloader* dl);
+typedef gpointer (*downloader_create_state_func) (Downloader *dl);
 typedef void     (*downloader_destroy_state_func) (gpointer state);
-typedef void     (*downloader_open_func)(const char *verb, const char *uri, gpointer state);
-typedef void     (*downloader_send_func)(gpointer state);
-typedef void     (*downloader_abort_func)(gpointer state);
+typedef void     (*downloader_open_func) (const char *verb, const char *uri, gpointer state);
+typedef void     (*downloader_send_func) (gpointer state);
+typedef void     (*downloader_abort_func) (gpointer state);
 
 class Downloader : public DependencyObject {
  public:
+	// Properties
+	static DependencyProperty *DownloadProgressProperty;
+	static DependencyProperty *ResponseTextProperty;
+	static DependencyProperty *StatusProperty;
+	static DependencyProperty *StatusTextProperty;
+	static DependencyProperty *UriProperty;
+	
+	// Events you can AddHandler to
+	static int CompletedEvent;
+	static int DownloadProgressChangedEvent;
+	static int DownloadFailedEvent;
+	
 	Downloader ();
 	virtual ~Downloader ();
 
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
 
 	void Abort ();
-	void* GetResponseText (const char* Partname, uint64_t *size);
-	void Open (const char *verb, const char *URI);
+	void *GetResponseText (const char *Partname, uint64_t *size);
+	void Open (const char *verb, const char *uri);
 	void Send ();
-
-	static DependencyProperty *DownloadProgressProperty;
-	static DependencyProperty *ResponseTextProperty;
-	static DependencyProperty *StatusProperty;
-	static DependencyProperty *StatusTextProperty;
-	static DependencyProperty *UriProperty;
-
-	// Events you can AddHandler to
-	static int CompletedEvent;
-	static int DownloadProgressChangedEvent;
-	static int DownloadFailedEvent;
-
-
-
+	
 	// the following is stuff not exposed by C#/js, but is useful
 	// when writing unmanaged code for downloader implementations
 	// or data sinks.
 
-	char* GetResponseFile (const char *PartName);
-	void Write (guchar *buf, gsize offset, gsize n);
+	char *GetResponseFile (const char *PartName);
+	void Write (void *buf, int32_t offset, int32_t n);
 	void NotifyFinished (const char *fname);
 	void NotifyFailed (const char *msg);
 	void NotifySize (int64_t size);
@@ -125,7 +124,7 @@ class Downloader : public DependencyObject {
 	static downloader_send_func send_func;
 	static downloader_abort_func abort_func;
 
-	char * ll_downloader_get_response_file (const char *PartName);
+	char *ll_downloader_get_response_file (const char *PartName);
 	
 	gpointer context;
 };
@@ -141,13 +140,13 @@ void downloader_set_functions (downloader_create_state_func create_state,
 void  downloader_abort             (Downloader *dl);
 void *downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size);
 char *downloader_get_response_file (Downloader *dl, const char *PartName);
-void  downloader_open              (Downloader *dl, const char *verb, const char *URI);
+void  downloader_open              (Downloader *dl, const char *verb, const char *uri);
 void  downloader_send              (Downloader *dl);
 
 //
 // Used to push data to the consumer
 //
-void downloader_write           (Downloader *dl, guchar *buf, gsize offset, gsize n);
+void downloader_write           (Downloader *dl, void *buf, int32_t offset, int32_t n);
 void downloader_completed       (Downloader *dl, const char *filename);
 
 void downloader_notify_size     (Downloader *dl, int64_t size);

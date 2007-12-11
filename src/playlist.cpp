@@ -135,8 +135,9 @@ Playlist::on_downloader_complete (EventObject *sender, gpointer calldata, gpoint
 }
 
 void
-Playlist::on_downloader_data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+Playlist::on_downloader_data_write (void *buf, int32_t offset, int32_t n, gpointer data)
 {
+	
 }
 
 void

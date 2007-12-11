@@ -564,7 +564,7 @@ MediaElement::UpdateProgress ()
 }
 
 void 
-MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
+MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 {
 	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
 	
@@ -575,9 +575,9 @@ MediaElement::DataWrite (guchar *buf, gsize offset, gsize count)
 }
 
 void 
-MediaElement::data_write (guchar *buf, gsize offset, gsize count, gpointer data)
+MediaElement::data_write (void *buf, int32_t offset, int32_t n, gpointer data)
 {
-	((MediaElement *) data)->DataWrite (buf, offset, count);
+	((MediaElement *) data)->DataWrite (buf, offset, n);
 }
 
 void
@@ -1205,7 +1205,7 @@ Image::UpdateProgress ()
 }
 
 void
-Image::SetSource (DependencyObject *dl, const char* PartName)
+Image::SetSource (DependencyObject *dl, const char *PartName)
 {
 	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
 
@@ -1237,7 +1237,7 @@ Image::SetSource (DependencyObject *dl, const char* PartName)
 }
 
 void
-Image::PixbufWrite (guchar *buf, gsize offset, gsize count)
+Image::PixbufWrite (void *buf, int32_t offset, int32_t n)
 {
 	UpdateProgress ();
 }
@@ -1416,9 +1416,9 @@ Image::downloader_complete (EventObject *sender, gpointer calldata, gpointer clo
 }
 
 void
-Image::pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data)
+Image::pixbuf_write (void *buf, int32_t offset, int32_t n, gpointer data)
 {
-	((Image*)data)->PixbufWrite (buf, offset, count);
+	((Image *) data)->PixbufWrite (buf, offset, n);
 }
 
 void

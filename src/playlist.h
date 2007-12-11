@@ -173,10 +173,12 @@ private:
 
 	static void on_media_ended (EventObject *sender, gpointer calldata, gpointer userdata);
 	static void on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata);
-	static void on_downloader_data_write (guchar *buf, gsize offset, gsize count, gpointer data);
+	static void on_downloader_data_write (void *buf, int32_t offset, int32_t n, gpointer data);
 	static void on_downloader_size_notify (int64_t size, gpointer data);
+	
 protected:
 	virtual bool OpenInternal ();
+	
 public:
 	Playlist (MediaElement *element, const char *source_name, const char *file_name);
 	virtual ~Playlist ();

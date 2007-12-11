@@ -1,3 +1,9 @@
+2007-12-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp|h: Made the ::Write() method take the same
+	int-type args as the NPP_Write() function (which means int32 for
+	both offset and nbytes).
+
 2007-12-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* stylus.cpp: Fix JS unit tests for Stroke properties by having

@@ -69,10 +69,11 @@ class Image : public MediaBase {
 	void DownloaderAbort ();
 	
 	// downloader callbacks
-	void PixbufWrite (guchar *bug, gsize offset, gsize count);
+	void PixbufWrite (void *buf, int32_t offset, int32_t n);
 	void DownloaderComplete ();
 	void UpdateProgress ();
-	static void pixbuf_write (guchar *buf, gsize offset, gsize count, gpointer data);
+	
+	static void pixbuf_write (void *buf, int32_t offset, int32_t n, gpointer data);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
@@ -190,11 +191,11 @@ class MediaElement : public MediaBase {
 	MediaSource *source;
 	char *part_name;
 	
-	void DataWrite (guchar *data, gsize n, gsize nn);
+	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DownloaderAbort ();
 	void DownloaderComplete ();
 	
-	static void data_write (guchar *data, gsize n, gsize nn, void *closure);
+	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	

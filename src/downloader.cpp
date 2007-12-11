@@ -102,7 +102,7 @@ Downloader::Abort ()
 }
 
 void *
-Downloader::GetResponseText (const char* PartName, uint64_t *size)
+Downloader::GetResponseText (const char *PartName, uint64_t *size)
 {
 	FILE *f = NULL;
 	struct stat buf;
@@ -210,7 +210,7 @@ Downloader::ll_downloader_get_response_file (const char *PartName)
 	return file;
 }
 
-char*
+char *
 Downloader::GetResponseFile (const char *PartName)
 {
 	if (part_hash != NULL){
@@ -229,15 +229,16 @@ Downloader::GetResponseFile (const char *PartName)
 }
 
 void
-Downloader::Open (const char *verb, const char *URI)
+Downloader::Open (const char *verb, const char *uri)
 {
 	started = false;
 	g_free (failed_msg);
 	g_free (filename);
 	failed_msg = NULL;
 	filename = NULL;
-	SetValue (Downloader::UriProperty, Value(URI));
-	open_func (verb, URI, downloader_state);
+	
+	SetValue (Downloader::UriProperty, Value (uri));
+	open_func (verb, uri, downloader_state);
 }
 
 void
@@ -260,19 +261,22 @@ Downloader::Send ()
 // A zero write means that we are done
 //
 void
-Downloader::Write (guchar *buf, gsize offset, gsize n)
+Downloader::Write (void *buf, int32_t offset, int32_t n)
 {
-	// Update progress
-	total += n;
-	double p;
-	if (file_size >= 0)
-		p = total / (double) file_size;
-	else 
-		p = 0;
+	double progress;
 	
-	SetValue (Downloader::DownloadProgressProperty, Value (p));
+	// Update progress
+	if (n > 0)
+		total += n;
+	
+	if (file_size >= 0)
+		progress = total / (double) file_size;
+	else 
+		progress = 0;
+	
+	SetValue (Downloader::DownloadProgressProperty, Value (progress));
 	Emit (DownloadProgressChangedEvent);
-
+	
 	if (write)
 		write (buf, offset, n, consumer_closure);
 }
@@ -296,19 +300,19 @@ Downloader::NotifyFailed (const char *msg)
 	// dl->SetValue (Downloader::StatusProperty, Value (400))
 	// For some reason the status is 0, not updated on errors?
 	failed_msg = g_strdup (msg);
-	Emit (DownloadFailedEvent, (gpointer)msg);
+	Emit (DownloadFailedEvent, (gpointer) msg);
 }
 
 void
 Downloader::NotifySize (int64_t size)
 {
 	file_size = size;
-
+	
 	if (notify_size)
 		notify_size (size, consumer_closure);
-
+	
 	SetValue (Downloader::DownloadProgressProperty, Value (0.0));
-
+	
 	Emit (DownloadProgressChangedEvent);
 }
 
@@ -378,15 +382,15 @@ downloader_get_response_file (Downloader *dl, const char *PartName)
 
 
 void *
-downloader_get_response_text (Downloader *dl, const char* PartName, uint64_t *size)
+downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size)
 {
 	return dl->GetResponseText (PartName, size);
 }
 
 void
-downloader_open (Downloader *dl, const char *verb, const char *URI)
+downloader_open (Downloader *dl, const char *verb, const char *uri)
 {
-	dl->Open (verb, URI);
+	dl->Open (verb, uri);
 }
 
 void
@@ -398,7 +402,7 @@ downloader_send (Downloader *dl)
 	dl->Send ();
 }
 
-Downloader*
+Downloader *
 downloader_new (void)
 {
 	return new Downloader ();
@@ -416,7 +420,7 @@ void downloader_set_functions (downloader_create_state_func create_state,
 }
 
 void
-downloader_write (Downloader *dl, guchar *buf, gsize offset, gsize n)
+downloader_write (Downloader *dl, void *buf, int32_t offset, int32_t n)
 {
 	dl->Write (buf, offset, n);
 }
@@ -440,7 +444,7 @@ downloader_notify_size (Downloader *dl, int64_t size)
 }
 
 void 
-dummy_downloader_write (guchar *buf, gsize offset, gsize n, gpointer cb_data)
+dummy_downloader_write (void *buf, int32_t offset, int32_t n, gpointer cb_data)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
@@ -463,27 +467,34 @@ dummy_downloader_destroy_state (gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
+
 void
 dummy_downloader_open (const char *verb, const char *uri, gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
+
 void
 dummy_downloader_send (gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
+
 void
 dummy_downloader_abort (gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
-char*
+
+char *
 dummy_downloader_get_response_text (char *fname, char *part, gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 	return NULL;
 }
+
+
+
 DependencyProperty *Downloader::DownloadProgressProperty;
 DependencyProperty *Downloader::ResponseTextProperty;
 DependencyProperty *Downloader::StatusProperty;
@@ -511,4 +522,3 @@ downloader_init (void)
 				  dummy_downloader_send,
 				  dummy_downloader_abort, true);
 }
-
