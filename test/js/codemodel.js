@@ -448,7 +448,7 @@ CodeModel.SplinePointKeyFrame = {
 }
 
 CodeModel.Timeline = {
-	name: "TimeLine",
+	name: "Timeline",
 
 	parent: CodeModel.DependencyObject,
 
@@ -1334,18 +1334,13 @@ CodeModel.SilverlightPlugin = {
 	},
 
 	properties: [
-		"Accessibility",
-		"ActualHeight",
-		"ActualWidth",
 		"Background",
 		"EnableFramerateCounter",
 		"EnableHtmlAccess",
 		"EnableRedrawRegions",
-		"FullScreen",
 		"InitParams",
 		"IsLoaded",
 		"MaxFrameRate",
-		"Root",
 		"Source",
 		"Windowless"
 	],

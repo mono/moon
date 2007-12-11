@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Moonlight API test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script src="Silverlight.js" type="text/javascript"></script>
+  <script src="prototype.js" type="text/javascript"></script>
+  <script src="unittest.js" type="text/javascript"></script>
+  <script src="codemodel.js" type="text/javascript"></script>
+  <script src="unittestsl.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="test.css" type="text/css" />
+</head>
+<body>
+<h1>Moonlight API test file</h1>
+<p>
+  Test our api against the code model extracted from the Silverlight documentation.
+</p>
+<p>
+ <a href="api.html" style="color:black">General API</a>
+ &nbsp;|&nbsp;
+ <a href="api-ea.html" style="color:black">Events API</a>
+ &nbsp;|&nbsp;
+ <a href="errors.html" style="color:black">Errors</a>
+</p>
+
+<div id="MoonlightHost">
+	<script type="text/javascript">
+Silverlight.createObjectEx ({
+	source: "void.xaml",
+	parentElement: document.getElementById("MoonlightHost"),
+	id: "MoonlightControl",
+	properties: {
+		width: "1",
+		height: "1",
+		version: "1.0",
+		background: "#ffffff",
+		isWindowless: "false"
+	},
+	events: {
+		onError: null,
+		onLoad: null
+	}
+});
+	</script>
+</div>
+
+<div id="res">
+</div>
+
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
+
+var tabs = 0;
+
+function indent () { tabs += 1; }
+function dedent () { tabs -= 1; }
+
+function message (str) {
+	var message = "";
+	for (var i = 0; i < tabs; i++)
+		message += "&nbsp;";
+
+	message += str + "<br />";
+
+	$("res").innerHTML += message;
+}
+
+function default_val (obj) {
+	var t = typeof (obj);
+	if (t == "number")
+		return obj.toString ();
+	else if (t == "string")
+		return "\"" + obj + "\"";
+	else if (t == "object")
+		if (obj == null)
+			return "null";
+		else
+			return "\"" + obj.toString () + "\"";
+	else if (t == "boolean")
+		return obj.toString ();
+	else
+		return t;
+}
+
+function print_properties (model, obj) {
+	if (model.properties && model.properties.length) {
+		for (var i = 0; i < model.properties.length; i++) {
+			var name = model.properties [i];
+			try {
+				var prop = obj [name];
+				message ("regprop (CodeModel." + model.name + ", \"" + name + "\", \"" + typeof (prop) + "\", " + default_val (prop) + ");");
+				//message ("prop: " + name + ", value: " + prop + ", type: " + typeof (prop));
+			} catch (ex) {
+				message ("can't get property: " + name);
+				if (!ex) {
+					message ("was in " + model.name);
+				}
+			}
+		}
+	}
+
+	if (model.parent)
+		print_properties (model.parent, obj);
+}
+
+for (var slot in CodeModel) {
+	var model = CodeModel [slot];
+
+	if (!model.create)
+		continue;
+
+	try {
+		var obj = model.create ($("MoonlightControl"));
+		//message (model.name);
+	} catch (ex) {
+		//message ("can't create: " + model.name);
+		continue;
+	}
+
+	if (!model.properties)
+		continue;
+
+	//indent ();
+
+	print_properties (model, obj);
+
+	//dedent ();
+}
+</script>
+</body>
+</html>

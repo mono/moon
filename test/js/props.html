@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Moonlight API test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script src="Silverlight.js" type="text/javascript"></script>
+  <script src="prototype.js" type="text/javascript"></script>
+  <script src="unittest.js" type="text/javascript"></script>
+  <script src="codemodel.js" type="text/javascript"></script>
+  <script src="props.js" type="text/javascript"></script>
+  <script src="unittestsl.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="test.css" type="text/css" />
+</head>
+<body>
+<h1>Moonlight API test file</h1>
+<p>
+  Test the default values of the properties api against those extracted from Silverlight.
+</p>
+<p>
+ <a href="api.html" style="color:black">General API</a>
+ &nbsp;|&nbsp;
+ <a href="api-ea.html" style="color:black">Events API</a>
+ &nbsp;|&nbsp;
+ <a href="props.html" style="color:black">Properties default values</a>
+ &nbsp;|&nbsp;
+ <a href="errors.html" style="color:black">Errors</a>
+</p>
+
+<div id="MoonlightHost">
+	<script type="text/javascript">
+Silverlight.createObjectEx ({
+	source: "void.xaml",
+	parentElement: document.getElementById("MoonlightHost"),
+	id: "MoonlightControl",
+	properties: {
+		width: "1",
+		height: "1",
+		version: "1.0",
+		background: "#ffffff",
+		isWindowless: "false"
+	},
+	events: {
+		onError: null,
+		onLoad: null
+	}
+});
+	</script>
+</div>
+
+
+<!-- Log output -->
+<div id="testlog"> </div>
+
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
+var PropertiesTestSuite = Class.create ();
+PropertiesTestSuite.prototype = {
+	testAccessibility: function () {
+		this.assertDefaultValues (CodeModel.Accessibility);
+	},
+	testArcSegment: function () {
+		this.assertDefaultValues (CodeModel.ArcSegment);
+	},
+	testBeginStoryboard: function () {
+		this.assertDefaultValues (CodeModel.BeginStoryboard);
+	},
+	testBezierSegment: function () {
+		this.assertDefaultValues (CodeModel.BezierSegment);
+	},
+	testCanvas: function () {
+		this.assertDefaultValues (CodeModel.Canvas);
+	},
+	testColorAnimation: function () {
+		this.assertDefaultValues (CodeModel.ColorAnimation);
+	},
+	testColorAnimationUsingKeyFrames: function () {
+		this.assertDefaultValues (CodeModel.ColorAnimationUsingKeyFrames);
+	},
+	testColorKeyFrameCollection: function () {
+		this.assertDefaultValues (CodeModel.ColorKeyFrameCollection);
+	},
+	testDiscreteColorKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.DiscreteColorKeyFrame);
+	},
+	testDiscreteDoubleKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.DiscreteColorKeyFrame);
+	},
+	testDiscretePointKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.DiscretePointKeyFrame);
+	},
+	testDoubleAnimation: function () {
+		this.assertDefaultValues (CodeModel.DoubleAnimation);
+	},
+	testDoubleAnimationUsingKeyFrames: function () {
+		this.assertDefaultValues (CodeModel.DoubleAnimationUsingKeyFrames);
+	},
+	testDoubleKeyFrameCollection: function () {
+		this.assertDefaultValues (CodeModel.DoubleKeyFrameCollection);
+	},
+	testDownloader: function () {
+		this.assertDefaultValues (CodeModel.Downloader);
+	},
+	testDrawingAttributes: function () {
+		this.assertDefaultValues (CodeModel.DrawingAttributes);
+	},
+	testEllipse: function () {
+		this.assertDefaultValues (CodeModel.Ellipse);
+	},
+	testEllipseGeometry: function () {
+		this.assertDefaultValues (CodeModel.EllipseGeometry);
+	},
+	testEventTrigger: function () {
+		this.assertDefaultValues (CodeModel.EventTrigger);
+	},
+	testGeometryCollection: function () {
+		this.assertDefaultValues (CodeModel.GeometryCollection);
+	},
+	testGeometryGroup: function () {
+		this.assertDefaultValues (CodeModel.GeometryGroup);
+	},
+	testGlyphs: function () {
+		this.assertDefaultValues (CodeModel.Glyphs);
+	},
+	testGradientStop: function () {
+		this.assertDefaultValues (CodeModel.GradientStop);
+	},
+	testGradientStopCollection: function () {
+		this.assertDefaultValues (CodeModel.GradientStopCollection);
+	},
+	testImage: function () {
+		this.assertDefaultValues (CodeModel.Image);
+	},
+	testImageBrush: function () {
+		this.assertDefaultValues (CodeModel.ImageBrush);
+	},
+	testInkPresenter: function () {
+		this.assertDefaultValues (CodeModel.InkPresenter);
+	},
+	testKeySpline: function () {
+		this.assertDefaultValues (CodeModel.KeySpline);
+	},
+	testLine: function () {
+		this.assertDefaultValues (CodeModel.Line);
+	},
+	testLinearColorKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.LinearColorKeyFrame);
+	},
+	testLinearDoubleKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.LinearDoubleKeyFrame);
+	},
+	testLinearGradientBrush: function () {
+		this.assertDefaultValues (CodeModel.LinearGradientBrush);
+	},
+	testLinearPointKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.LinearPointKeyFrame);
+	},
+	testLineBreak: function () {
+		this.assertDefaultValues (CodeModel.LineBreak);
+	},
+	testLineGeometry: function () {
+		this.assertDefaultValues (CodeModel.LineGeometry);
+	},
+	testLineSegment: function () {
+		this.assertDefaultValues (CodeModel.LineSegment);
+	},
+	testMatrix: function () {
+		this.assertDefaultValues (CodeModel.Matrix);
+	},
+	testMatrixTransform: function () {
+		this.assertDefaultValues (CodeModel.MatrixTransform);
+	},
+	testMediaAttributeCollection: function () {
+		this.assertDefaultValues (CodeModel.MediaAttributeCollection);
+	},
+	testMediaElement: function () {
+		this.assertDefaultValues (CodeModel.MediaElement);
+	},
+	testPath: function () {
+		this.assertDefaultValues (CodeModel.Path);
+	},
+	testPathFigure: function () {
+		this.assertDefaultValues (CodeModel.PathFigure);
+	},
+	testPathGeometry: function () {
+		this.assertDefaultValues (CodeModel.PathGeometry);
+	},
+	testPathSegmentCollection: function () {
+		this.assertDefaultValues (CodeModel.PathSegmentCollection);
+	},
+	testPointAnimation: function () {
+		this.assertDefaultValues (CodeModel.PointAnimation);
+	},
+	testPointAnimationUsingKeyFrames: function () {
+		this.assertDefaultValues (CodeModel.PointAnimationUsingKeyFrames);
+	},
+	testPointKeyFrameCollection: function () {
+		this.assertDefaultValues (CodeModel.PointKeyFrameCollection);
+	},
+	testPolyBezierSegment: function () {
+		this.assertDefaultValues (CodeModel.PolyBezierSegment);
+	},
+	testPolygon: function () {
+		this.assertDefaultValues (CodeModel.Polygon);
+	},
+	testPolyline: function () {
+		this.assertDefaultValues (CodeModel.Polyline);
+	},
+	testPolyLineSegment: function () {
+		this.assertDefaultValues (CodeModel.PolyLineSegment);
+	},
+	testPolyQuadraticBezierSegment: function () {
+		this.assertDefaultValues (CodeModel.PolyQuadraticBezierSegment);
+	},
+	testQuadraticBezierSegment: function () {
+		this.assertDefaultValues (CodeModel.QuadraticBezierSegment);
+	},
+	testRadialGradientBrush: function () {
+		this.assertDefaultValues (CodeModel.RadialGradientBrush);
+	},
+	testRectangle: function () {
+		this.assertDefaultValues (CodeModel.Rectangle);
+	},
+	testRectangleGeometry: function () {
+		this.assertDefaultValues (CodeModel.RectangleGeometry);
+	},
+	testResourceDictionary: function () {
+		this.assertDefaultValues (CodeModel.ResourceDictionary);
+	},
+	testRotateTransform: function () {
+		this.assertDefaultValues (CodeModel.RotateTransform);
+	},
+	testRun: function () {
+		this.assertDefaultValues (CodeModel.Run);
+	},
+	testScaleTransform: function () {
+		this.assertDefaultValues (CodeModel.ScaleTransform);
+	},
+	testSilverlightPlugin: function () {
+		this.assertDefaultValues (CodeModel.SilverlightPlugin);
+	},
+	testSilverlightPluginContent: function () {
+		this.assertDefaultValues (CodeModel.SilverlightPluginContent);
+	},
+	testSkewTransform: function () {
+		this.assertDefaultValues (CodeModel.SkewTransform);
+	},
+	testSolidColorBrush: function () {
+		this.assertDefaultValues (CodeModel.SolidColorBrush);
+	},
+	testSplineColorKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.SplineColorKeyFrame);
+	},
+	testSplineDoubleKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.SplineDoubleKeyFrame);
+	},
+	testSplinePointKeyFrame: function () {
+		this.assertDefaultValues (CodeModel.SplinePointKeyFrame);
+	},
+	testStoryboard: function () {
+		this.assertDefaultValues (CodeModel.Storyboard);
+	},
+	testStroke: function () {
+		this.assertDefaultValues (CodeModel.Stroke);
+	},
+	testStrokeCollection: function () {
+		this.assertDefaultValues (CodeModel.StrokeCollection);
+	},
+	testStylusPoint: function () {
+		this.assertDefaultValues (CodeModel.StylusPoint);
+	},
+	testStylusPointCollection: function () {
+		this.assertDefaultValues (CodeModel.StylusPointCollection);
+	},
+	testTextBlock: function () {
+		this.assertDefaultValues (CodeModel.TextBlock);
+	},
+	testTimelineCollection: function () {
+		this.assertDefaultValues (CodeModel.TimelineCollection);
+	},
+	testTimelineMarker: function () {
+		this.assertDefaultValues (CodeModel.TimelineMarker);
+	},
+	testTimelineMarkerCollection: function () {
+		this.assertDefaultValues (CodeModel.TimelineMarkerCollection);
+	},
+	testTransformGroup: function () {
+		this.assertDefaultValues (CodeModel.TransformGroup);
+	},
+	testTransformCollection: function () {
+		this.assertDefaultValues (CodeModel.TransformCollection);
+	},
+	testTriggerActionCollection: function () {
+		this.assertDefaultValues (CodeModel.TriggerActionCollection);
+	},
+	testTriggerCollection: function () {
+		this.assertDefaultValues (CodeModel.TriggerCollection);
+	},
+	testVideoBrush: function () {
+		this.assertDefaultValues (CodeModel.VideoBrush);
+	},
+	testUIElementCollection: function () {
+		this.assertDefaultValues (CodeModel.UIElementCollection);
+	}
+};
+
+new Test.Unit.Runner (PropertiesTestSuite.prototype, 'testlog');
+</script>
+</body>
+</html>
