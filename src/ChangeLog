@@ -1,3 +1,8 @@
+2007-12-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* stylus.cpp: Fix JS unit tests for Stroke properties by having
+	a default DrawingAttributes inside the Stroke.
+
 2007-12-10  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h, dependencyobject.cpp: more event changes.

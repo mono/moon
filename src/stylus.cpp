@@ -108,6 +108,7 @@ stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure)
 Stroke::Stroke ()
 {
 	this->SetValue (Stroke::StylusPointsProperty, Value::CreateUnref (new StylusPointCollection ()));
+	this->SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnref (new DrawingAttributes ()));
 }
 
 Stroke*
