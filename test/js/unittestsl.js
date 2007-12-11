@@ -54,7 +54,7 @@ Object.extend (Test.Unit.Testcase.prototype, {
 					continue;
 
 				var val = obj [name];
-				this.assert (typeof (val) == prop.type, fullname + ": expected type: " + prop.type + ", found: " + typeof (val) + ", value: " + val);
+				this.assert (typeof (val) == prop.type, fullname + ": expected type: " + prop.type + ", found: " + typeof (val) + ", expected value: " + prop.valdef + ", found:" + val);
 				this.assert (val == this._getDefaultValue (prop), fullname + ": expected default value: " + prop.valdef + ", found: " + val);
 			}
 		}
