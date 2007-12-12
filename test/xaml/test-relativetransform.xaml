@@ -102,7 +102,7 @@
   </Rectangle>
   <Rectangle Canvas.Top="192" Canvas.Left="156" Width="63" Height="76">
    <Rectangle.Fill>
-    <RadialGradientBrush Center="0,0" GradientOrigin=".7,.7" RadiusX=".5" RadiusY=".5">
+    <RadialGradientBrush Center=".5,.5" GradientOrigin=".7,.7" RadiusX=".5" RadiusY=".5">
      <RadialGradientBrush.GradientStops>
       <GradientStop Color="Blue" Offset="0" />
       <GradientStop Color="Red" Offset="1" />
@@ -115,7 +115,7 @@
   </Rectangle>
   <Rectangle Canvas.Top="192" Canvas.Left="229" Width="63" Height="76">
    <Rectangle.Fill>
-    <RadialGradientBrush Center="0,0" GradientOrigin=".7,.7" RadiusX=".5" RadiusY=".5">
+    <RadialGradientBrush Center=".5,.5" GradientOrigin=".7,.7" RadiusX=".5" RadiusY=".5">
      <RadialGradientBrush.GradientStops>
       <GradientStop Color="Blue" Offset="0" />
       <GradientStop Color="Red" Offset="1" />
