@@ -1,3 +1,14 @@
+2007-12-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes toward bug #341853
+
+	* downloader.cpp (p_downloader_send): Check the return code from
+	NPN_GetURLNotify() as it will give us an error if the file doesn't
+	exist.
+
+	* plugin.cpp (UrlNotify): Call Downloader::NotifyFailed() on
+	error.
+
 2007-12-10  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: more event changes.  return

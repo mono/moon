@@ -3725,7 +3725,7 @@ browser_do_alert (PluginInstance *plugin, char *msg)
 
 
 void
-plugin_init_classes ()
+plugin_init_classes (void)
 {
 	MoonlightCollectionClass = new MoonlightCollectionType ();
 	MoonlightContentClass = new MoonlightContentType ();
@@ -3754,7 +3754,7 @@ plugin_init_classes ()
 }
 
 void
-plugin_destroy_classes ()
+plugin_destroy_classes (void)
 {
 
 	delete MoonlightCollectionClass; MoonlightCollectionClass = NULL;

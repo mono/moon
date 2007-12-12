@@ -18,8 +18,12 @@
 #include "plugin.h"
 
 
+G_BEGIN_DECLS
 void plugin_init_classes (void);
 void plugin_destroy_classes (void);
+
+void event_object_add_javascript_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
+G_END_DECLS
 
 typedef struct {
 	const char *name;
@@ -62,10 +66,6 @@ class EventListenerProxy : public List::Node {
 	static void timeline_marker_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure);
 };
-
-extern "C" {
-  void event_object_add_javascript_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
-}
 
 /*** MoonlightObjectClass **************************************************************/
 

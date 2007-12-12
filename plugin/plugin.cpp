@@ -240,7 +240,7 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
-PluginInstance::PluginInstance (NPP instance, uint16 mode)
+PluginInstance::PluginInstance (NPP instance, uint16_t mode)
 {
 	this->mode = mode;
 	this->instance = instance;
@@ -552,11 +552,10 @@ PluginInstance::JsRunOnload ()
 	return retval;
 }
 
-void
-downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);
+void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);
 
 NPError
-PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
+PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
   //	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
 
@@ -583,7 +582,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream* stream, NPBool seekable, u
 }
 
 NPError
-PluginInstance::DestroyStream (NPStream* stream, NPError reason)
+PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
 	return NPERR_NO_ERROR;
 }
@@ -717,8 +716,8 @@ PluginInstance::ReportException (char *msg, char *details, char **stack_trace, i
 //
 // Download URL synchronously using the browser and return its contents as a byte array.
 //
-void*
-PluginInstance::LoadUrl (char *url, gint32 *length)
+void *
+PluginInstance::LoadUrl (char *url, int32_t *length)
 {
 	NPObject *object = NULL;
 	NPVariant result;
@@ -794,7 +793,7 @@ PluginInstance::LoadUrl (char *url, gint32 *length)
 }
 
 void
-PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
+PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
   //	DEBUGMSG ("StreamAsFile: %s", fname);
 
@@ -807,9 +806,9 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	}
 
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
-		Downloader * dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
-
-		downloader_notify_finished (dl, fname);
+		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
+		
+		dl->NotifyFinished (fname);
 	}
 
 	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
@@ -831,7 +830,7 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 		if (vm_missing_file)
 			xaml_loader->RemoveMissing (vm_missing_file);
 
-		char* missing = vm_missing_file;
+		char *missing = vm_missing_file;
 		vm_missing_file = NULL;
 
 		if (reload) {
@@ -850,61 +849,87 @@ PluginInstance::StreamAsFile (NPStream* stream, const char* fname)
 	}
 }
 
-int32
-PluginInstance::WriteReady (NPStream* stream)
+int32_t
+PluginInstance::WriteReady (NPStream *stream)
 {
-	//DEBUGMSG ("WriteReady (%d)", stream->end);
-
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
-
+	
+	//DEBUGMSG ("WriteReady (%d)", stream->end);
+	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-		Downloader * dl = (Downloader *) notify->pdata;
-		downloader_notify_size (dl, stream->end);
+		Downloader *dl = (Downloader *) notify->pdata;
+		
+		dl->NotifySize (stream->end);
+		
 		return MAX_STREAM_SIZE;
 	}
-
+	
 	NPN_DestroyStream (instance, stream, NPRES_DONE);
-
-	return -1L;
+	
+	return -1;
 }
 
-int32
-PluginInstance::Write (NPStream* stream, int32 offset, int32 len, void* buffer)
+int32_t
+PluginInstance::Write (NPStream *stream, int32_t offset, int32_t len, void *buffer)
 {
-	//DEBUGMSG ("Write size: %d offset: %d len: %d", stream->end, offset, len);
-
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
-
+	
+	//DEBUGMSG ("Write size: %d offset: %d len: %d", stream->end, offset, len);
+	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-		Downloader * dl = (Downloader *) notify->pdata;
-		downloader_write (dl, (guchar*) buffer, 0, len);
+		Downloader *dl = (Downloader *) notify->pdata;
+		
+		dl->Write (buffer, offset, len);
 	}
-
+	
 	return len;
 }
 
 void
-PluginInstance::UrlNotify (const char* url, NPReason reason, void* notifyData)
+PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 {
-	StreamNotify* notify = STREAM_NOTIFY (notifyData);
-
-	if (reason == NPRES_DONE)
-		DEBUGMSG ("URL %s downloaded successfully.", url);
-	else
-		DEBUGMSG ("Download of URL %s failed: %i (%s)", url, reason, reason == NPRES_USER_BREAK ? "user break" : (reason == NPRES_NETWORK_ERR ? "network error" : "other error"));
-
+	StreamNotify *notify = STREAM_NOTIFY (notifyData);
+	
+	//if (reason == NPRES_DONE) {
+	//	DEBUGMSG ("URL %s downloaded successfully.", url);
+	//} else {
+	//	DEBUGMSG ("Download of URL %s failed: %i (%s)", url, reason,
+	//		  reason == NPRES_USER_BREAK ? "user break" :
+	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error"));
+	//}
+	
+	if (reason != NPRES_DONE) {
+		if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
+			Downloader *dl = (Downloader *) notify->pdata;
+			
+			switch (reason) {
+			case NPRES_USER_BREAK:
+				dl->NotifyFailed ("user aborted");
+				break;
+			case NPRES_NETWORK_ERR:
+				dl->NotifyFailed ("network error");
+				break;
+			default:
+				dl->NotifyFailed ("unknown error");
+				break;
+			}
+		} else {
+			printf ("UrlNotify: %s failed, but no downloader to notify\n", url);
+		}
+	}
+	
 	if (notify)
 		delete notify;
 }
 
 void
-PluginInstance::Print (NPPrint* platformPrint)
+PluginInstance::Print (NPPrint *platformPrint)
 {
 	// nothing to do.
 }
 
-int16
-PluginInstance::EventHandle (void* event)
+int16_t
+PluginInstance::EventHandle (void *event)
 {
 	return 0;
 }
@@ -1134,7 +1159,7 @@ PluginXamlLoader::LoadVM ()
 const char*
 PluginXamlLoader::TryLoad (int *error)
 {
-	DependencyObject* element;
+	DependencyObject *element;
 	Type::Kind element_type;
 
 	*error = 0;
@@ -1211,7 +1236,7 @@ PluginXamlLoader::InitializeLoader ()
 	return initialized;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char* filename, const char* str, PluginInstance* plugin, Surface* surface) : XamlLoader (filename, str, surface)
+PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface) : XamlLoader (filename, str, surface)
 {
 	this->plugin = plugin;
 	this->initialized = FALSE;
@@ -1231,10 +1256,8 @@ PluginXamlLoader::~PluginXamlLoader ()
 #endif
 }
 
-PluginXamlLoader*
-plugin_xaml_loader_from_str (const char* str, PluginInstance* plugin, Surface* surface)
+PluginXamlLoader *
+plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface)
 {
 	return PluginXamlLoader::FromStr (str, plugin, surface);
 }
-
-

@@ -51,8 +51,9 @@ NPP_SetWindow (NPP instance, NPWindow *window)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	return plugin->SetWindow (window);
 }
 
@@ -61,8 +62,9 @@ NPP_NewStream (NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable,
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	return plugin->NewStream (type, stream, seekable, stype);
 }
 
@@ -71,8 +73,9 @@ NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	return plugin->DestroyStream (stream, reason);
 }
 
@@ -81,8 +84,9 @@ NPP_StreamAsFile (NPP instance, NPStream *stream, const char *fname)
 {
 	if (instance == NULL)
 		return;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	plugin->StreamAsFile (stream, fname);
 }
 
@@ -91,8 +95,9 @@ NPP_WriteReady (NPP instance, NPStream *stream)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	return plugin->WriteReady (stream);
 }
 
@@ -101,8 +106,9 @@ NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *bu
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	return plugin->Write (stream, offset, len, buffer);
 }
 
@@ -111,8 +117,9 @@ NPP_Print (NPP instance, NPPrint *platformPrint)
 {
 	if (instance == NULL)
 		return;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	plugin->Print (platformPrint);
 }
 
@@ -121,8 +128,9 @@ NPP_URLNotify (NPP instance, const char *url, NPReason reason, void *notifyData)
 {
 	if (instance == NULL)
 		return;
-
+	
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	
 	plugin->UrlNotify (url, reason, notifyData);
 }
 
@@ -179,8 +187,8 @@ NPP_GetMIMEDescription (void)
 	return (char *) (MIME_TYPES_HANDLED);
 }
 
-void downloader_initialize ();
-void downloader_destroy ();
+void downloader_initialize (void);
+void downloader_destroy (void);
 
 static bool gtk_initialized = false;
 static bool runtime_initialized = false;

@@ -83,22 +83,48 @@ static void
 p_downloader_send (gpointer state)
 {
 	PluginDownloader *pd = (PluginDownloader *) state;
-
+	NPP_t *plugin = NULL;
+	
 	//	fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
 	//
-
-	NPP_t* plugin = NULL;
+	
 	if (pd && pd->dl && pd->dl->GetContext ()) {
 		// Get the context from the downloader.
-		plugin = ((PluginInstance*) pd->dl->GetContext ())->getInstance ();
+		plugin = ((PluginInstance *) pd->dl->GetContext ())->getInstance ();
 	} else if (plugin_instances && plugin_instances->data) {
 		// TODO: Review if we really should allowing download with the first plugin.
-		plugin = (NPP_t*) plugin_instances->data;
+		plugin = (NPP_t *) plugin_instances->data;
 		//printf ("DOWNLOADING WITH FIRST PLUGIN (%p), (Downloader->id: %i): %s\n", plugin, pd->dl->id, pd->uri);
 	}
+	
 	if (plugin && pd) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
-		NPN_GetURLNotify (plugin, pd->uri, NULL, notify);
+		Downloader *dl = (Downloader *) notify->pdata;
+		NPError err;
+		
+		if ((err = NPN_GetURLNotify (plugin, pd->uri, NULL, notify)) != NPERR_NO_ERROR) {
+			const char *msg;
+			
+			switch (err) {
+			case NPERR_GENERIC_ERROR:
+				msg = "generic error";
+				break;
+			case NPERR_OUT_OF_MEMORY_ERROR:
+				msg = "out of memory";
+				break;
+			case NPERR_INVALID_URL:
+				msg = "invalid url requested";
+				break;
+			case NPERR_FILE_NOT_FOUND:
+				msg = "file not found";
+				break;
+			default:
+				msg = "unknown error";
+				break;
+			}
+			
+			dl->NotifyFailed (msg);
+		}
 	}
 
 	//
