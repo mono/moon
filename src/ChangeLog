@@ -1,3 +1,7 @@
+2007-12-12  Stephane Delcroix  <sdelcroix@novll.com>
+
+	* brush.cpp: Fix RelativeTransform for RadialGradientBrush'es too.
+
 2007-12-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp|h: Made the ::Write() method take the same

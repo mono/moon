@@ -103,7 +103,7 @@ brush_set_transform (Brush *brush, Transform* transform)
 }
 
 void
-compute_relative_transform (cairo_matrix_t *matrix, double width, double height, Transform *relative_transform, bool invert)
+transform_get_absolute_transform (Transform *relative_transform, double width, double height, cairo_matrix_t *result)
 {
 	// note about de-relativisation of transforms
 	//
@@ -122,23 +122,21 @@ compute_relative_transform (cairo_matrix_t *matrix, double width, double height,
 	//
 	// end of note
 
-	cairo_matrix_t tm;
 	double rx, ry, tx, ty;
-	transform_get_transform (relative_transform, &tm);
-	//printf ("relative_transform       xx: %f, yx: %f, xy: %f, yy: %f, x0: %f, y0: %f\n", tm.xx, tm.yx, tm.xy, tm.yy, tm.x0, tm.y0);
-	if (tm.xx != 1.0) {
-		if (tm.yy - tm.xx*tm.yy + tm.xy*tm.yx + tm.xx != 1 ) {
-			ry = (tm.y0 - tm.xx * tm.y0 + tm.yx * tm.x0) / (1 - tm.xx - tm.yy + tm.yy * tm.yy - tm.xy * tm.yx);
-			rx = (tm.x0 + tm.xy * ry) / (1 - tm.xx);
+	transform_get_transform (relative_transform, result);
+	if (result->xx != 1.0) {
+		if (result->yy - result->xx*result->yy + result->xy*result->yx + result->xx != 1 ) {
+			ry = (result->y0 - result->xx * result->y0 + result->yx * result->x0) / (1 - result->xx - result->yy + result->yy * result->yy - result->xy * result->yx);
+			rx = (result->x0 + result->xy * ry) / (1 - result->xx);
 		} else { //yy - xxyy + xyyx + xx == 1
 			//indetermined case
 			rx = ry = 0;
 		}
 	} else { //xx == 1
-		if (tm.xy != 0) {
-			ry = -tm.x0 / tm.xy;
-			if (tm.yx != 0) {
-				rx = (tm.x0 * tm.yy / tm.xy - tm.y0 - tm.x0 / tm.xy) / tm.yx;
+		if (result->xy != 0) {
+			ry = -result->x0 / result->xy;
+			if (result->yx != 0) {
+				rx = (result->x0 * result->yy / result->xy - result->y0 - result->x0 / result->xy) / result->yx;
 			} else { //yx ==0
 				//indetermined case
 				rx = 0;					
@@ -152,12 +150,8 @@ compute_relative_transform (cairo_matrix_t *matrix, double width, double height,
 
 	tx = rx * width;
 	ty = ry * height;
-	tm.x0 = (1 - tm.xx) * tx - tm.xy * ty;
-	tm.y0 = (1 - tm.yy) * ty - tm.yx * tx;
-	//printf ("de-relativized_transform xx: %f, yx: %f, xy: %f, yy: %f, x0: %f, y0: %f\n", tm.xx, tm.yx, tm.xy, tm.yy, tm.x0, tm.y0);
-	if (invert)
-		cairo_matrix_invert (&tm);
-	cairo_matrix_multiply (matrix, &tm, matrix);	
+	result->x0 = (1 - result->xx) * tx - result->xy * ty;
+	result->y0 = (1 - result->yy) * ty - result->yx * tx;
 }
 
 /*
@@ -512,7 +506,9 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	
 	Transform *relative_transform = brush_get_relative_transform (this);
 	if (relative_transform) {
-		compute_relative_transform (&matrix, width, height, relative_transform, FALSE);
+		cairo_matrix_t tm;
+		transform_get_absolute_transform (relative_transform, width, height, &tm);
+		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
 	
 	cairo_matrix_invert (&matrix);
@@ -640,10 +636,14 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
 
-	//Transform *relative_transform = brush_get_relative_transform (this);
-	//if (relative_transform)
-	//	compute_relative_transform (&matrix, width, height, relative_transform, TRUE);
-	
+	Transform *relative_transform = brush_get_relative_transform (this);
+	if (relative_transform) {
+		cairo_matrix_t tm;
+		transform_get_absolute_transform (relative_transform, width, height, &tm);
+		// TODO - optimization, check for empty/identity matrix too ?
+		cairo_matrix_multiply (&matrix, &matrix, &tm);
+	}
+
 	cairo_status_t status = cairo_matrix_invert (&matrix);
 	if (status != CAIRO_STATUS_SUCCESS) {
 		printf ("Moonlight: Error inverting matrix falling back\n");
@@ -967,14 +967,17 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 	}
 
 	if (transform || relative_transform) {
-		cairo_matrix_t tm;
 		if (transform) {
+			cairo_matrix_t tm;
 			transform_get_transform (transform, &tm);
 			cairo_matrix_invert (&tm);
 			cairo_matrix_multiply (matrix, &tm, matrix);
 		}
 		if (relative_transform) {
-			compute_relative_transform (matrix, width, height, relative_transform, TRUE);
+			cairo_matrix_t tm;
+			transform_get_absolute_transform (relative_transform, width, height, &tm);
+			cairo_matrix_invert (&tm);
+			cairo_matrix_multiply (matrix, &tm, matrix);
 		}
 	}
 }
