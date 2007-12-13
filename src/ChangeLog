@@ -1,3 +1,9 @@
+2007-12-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp: Resume using cairo_stroke_extents in some cases
+	because we need very precise bounds for Fill to work properly.
+	This fix Sprawl's cowboy hat ribbon :-)
+
 2007-12-12  Stephane Delcroix  <sdelcroix@novll.com>
 
 	* brush.cpp: Fix RelativeTransform for RadialGradientBrush'es too.

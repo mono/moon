@@ -94,63 +94,24 @@ Geometry::OnPropertyChanged (DependencyProperty *prop)
 	NotifyAttachersOfPropertyChange (prop);
 }
 
-static void
-path_get_extents (cairo_path_t *path, double *min_x, double *min_y, double *max_x, double *max_y)
+static Rect
+path_get_bounds (Path *shape, cairo_path_t *path)
 {
 	if (!path)
-		return;
+		return Rect (0.0, 0.0, 0.0, 0.0);
 
-	double minx = G_MAXDOUBLE;
-	double miny = G_MAXDOUBLE;
-	double maxx = G_MINDOUBLE;
-	double maxy = G_MINDOUBLE;
+	double t = shape ? shape_get_stroke_thickness (shape) : 0.1;
 
-	// find origin (minimums) and actual width/height (maximums - minimums)
-	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
-		cairo_path_data_t *data = &path->data[i];
-		switch (data->header.type) {
-		case CAIRO_PATH_CURVE_TO:
-			// minimum
-			if (minx > data[3].point.x)
-				minx = data[3].point.x;
-			if (miny > data[3].point.y)
-				miny = data[3].point.y;
-			if (minx > data[2].point.x)
-				minx = data[2].point.x;
-			if (miny > data[2].point.y)
-				miny = data[2].point.y;
-			// maximum
-			if (maxx < data[3].point.x)
-				maxx = data[3].point.x;
-			if (maxy < data[3].point.y)
-				maxy = data[3].point.y;
-			if (maxx < data[2].point.x)
-				maxx = data[2].point.x;
-			if (maxy < data[2].point.y)
-				maxy = data[2].point.y;
-			/* fallthru */
-		case CAIRO_PATH_LINE_TO:
-		case CAIRO_PATH_MOVE_TO:
-			// minimum
-			if (minx > data[1].point.x)
-				minx = data[1].point.x;
-			if (miny > data[1].point.y)
-				miny = data[1].point.y;
-			// maximum
-			if (maxx < data[1].point.x)
-				maxx = data[1].point.x;
-			if (maxy < data[1].point.y)
-				maxy = data[1].point.y;
-			break;
-		case CAIRO_PATH_CLOSE_PATH:
-			break;
-		}
-	}
+	cairo_t* cr = measuring_context_create ();
+	cairo_set_line_width (cr, t);
+	cairo_append_path (cr, path);
 
-	if (min_x) *min_x = minx;
-	if (min_y) *min_y = miny;
-	if (max_x) *max_x = maxx;
-	if (max_y) *max_y = maxy;
+	double x1, y1, x2, y2;
+	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+
+	measuring_context_destroy (cr);
+
+	return Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
 }
 
 static void
@@ -183,14 +144,10 @@ path_stretch_adjust (Path *shape, cairo_path_t *path)
 	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
 	 * (resulting in something even more complex).
 	 */
-	double minx, maxx, miny, maxy;
-	path_get_extents (path, &minx, &miny, &maxx, &maxy);
+	Rect bounds = path_get_bounds (shape, path);
 
-	double actual_height = maxy - miny;
-	double actual_width = maxx - minx;
-
-	double sh = (vh && ((int)actual_height > 0.0)) ? (h / actual_height) : 1.0;
-	double sw = (vw && ((int)actual_width > 0.0)) ? (w / actual_width) : 1.0;
+	double sh = (vh && ((int)bounds.h > 0.0)) ? (h / bounds.h) : 1.0;
+	double sw = (vw && ((int)bounds.w > 0.0)) ? (w / bounds.w) : 1.0;
 	switch (stretch) {
 	case StretchFill:
 		break;
@@ -213,10 +170,10 @@ path_stretch_adjust (Path *shape, cairo_path_t *path)
 		cairo_path_data_t *data = &path->data[i];
 		switch (data->header.type) {
 		case CAIRO_PATH_CURVE_TO:
-			data[3].point.x -= minx;
-			data[3].point.y -= miny;
-			data[2].point.x -= minx;
-			data[2].point.y -= miny;
+			data[3].point.x -= bounds.x;
+			data[3].point.y -= bounds.y;
+			data[2].point.x -= bounds.x;
+			data[2].point.y -= bounds.y;
 			if (stretch_horz) {
 				data[3].point.x *= sw;
 				data[2].point.x *= sw;
@@ -228,8 +185,8 @@ path_stretch_adjust (Path *shape, cairo_path_t *path)
 			/* fallthru */
 		case CAIRO_PATH_LINE_TO:
 		case CAIRO_PATH_MOVE_TO:
-			data[1].point.x -= minx;
-			data[1].point.y -= miny;
+			data[1].point.x -= bounds.x;
+			data[1].point.y -= bounds.y;
 			if (stretch_horz)
 				data[1].point.x *= sw;
 			if (stretch_vert)
@@ -878,12 +835,7 @@ PathFigure::ComputeBounds (Path *shape)
 	if (!path || (path->cairo.num_data == 0))
 		Build (shape);
 
-	double minx, miny, maxx, maxy;
-	path_get_extents (&path->cairo, &minx, &miny, &maxx, &maxy);
-
-	Rect bounds = Rect (minx, miny, maxx - minx, maxy - miny);
-	double thickness = shape_get_stroke_thickness (shape);
-	return bounds.GrowBy (thickness / 2.0);
+	return path_get_bounds (shape, &path->cairo);
 }
 
 bool
