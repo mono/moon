@@ -118,7 +118,35 @@ Shape::~Shape ()
 bool
 Shape::NeedsClipping ()
 {
-	return (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill));
+	if (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill))
+		return true;
+
+	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
+	if (!ClipOnHeightAndWidth ())
+		return false;
+
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	if (!vh)
+		return false;
+
+	return (GetValueNoDefault (FrameworkElement::WidthProperty) != NULL);
+}
+
+bool
+Shape::MixedHeightWidth (Value **height, Value **width)
+{
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+
+	// nothing is drawn if only the width or only the height is specified
+	if ((!vw && vh) || (vw && !vh)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return true;
+	}
+
+	if (width) *width = vw;
+	if (height) *height = vh;
+	return false;
 }
 
 void
@@ -607,14 +635,9 @@ Ellipse::Ellipse ()
 void
 Ellipse::BuildPath ()
 {
-	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
-
-	// nothing is drawn if only the width or only the height is specified
-	if ((!width && height) || (width && !height)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
+	Value *height, *width;
+	if (Shape::MixedHeightWidth (&height, &width))
 		return;
-	}
 
 	Stretch stretch = shape_get_stretch (this);
 	double x = 0.0;
@@ -731,14 +754,9 @@ Rectangle::Rectangle ()
 void
 Rectangle::BuildPath ()
 {
-	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
-
-	// nothing is drawn if only the width or only the height is specified
-	if ((!width && height) || (width && !height)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
+	Value *height, *width;
+	if (Shape::MixedHeightWidth (&height, &width))
 		return;
-	}
 
 	Stretch stretch = shape_get_stretch (this);
 	double t = IsStroked () ? shape_get_stroke_thickness (this) : 0.0;
@@ -989,6 +1007,9 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 void
 Line::BuildPath ()
 {
+	if (Shape::MixedHeightWidth (NULL, NULL))
+		return;
+
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 	path = moon_path_renew (path, MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
@@ -1000,6 +1021,12 @@ Line::BuildPath ()
 void
 Line::ComputeBounds ()
 {
+	Value *vh, *vw;
+	if (Shape::MixedHeightWidth (&vh, &vw)) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
 	double thickness = shape_get_stroke_thickness (this);
 	if (thickness <= 0.0) {
 		bounds = Rect (0.0, 0.0, 0.0, 0.0);
@@ -1008,6 +1035,13 @@ Line::ComputeBounds ()
 
 	calc_line_bounds (line_get_x1 (this), line_get_x2 (this), line_get_y1 (this), line_get_y2 (this), thickness, &bounds);
 	
+	// if Height and Width are specified (they could be both missing)
+	// then we must clip the line those values
+	if (vh && vw) {
+		bounds.w = MIN (bounds.w, vw->AsDouble ());
+		bounds.h = MIN (bounds.h, vh->AsDouble ());
+	}
+
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
 						     IntersectBoundsWithClipPath (bounds, false));
 }
@@ -1228,14 +1262,20 @@ calc_line_bounds_with_joins (double x1, double y1, double x2, double y2, double 
 void
 Polygon::ComputeBounds ()
 {
-	bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	Value *vh, *vw;
+	if (Shape::MixedHeightWidth (&vh, &vw)) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+		return;
+	}
 
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
 
 	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2))
+	if (!points || (count < 2)) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
 		return;
+	}
 
 	double thickness = shape_get_stroke_thickness (this);
 	if (thickness == 0.0)
@@ -1294,6 +1334,14 @@ Polygon::ComputeBounds ()
 		bounds.y -= y0;
 	}
 
+	// if Height and Width are specified (they could be both missing)
+	// then we must clip the path those values, and this also defines
+	// *exactly* our bounds (whether we like them or not is another story)
+	if (vh && vw) {
+		bounds.w = vw->AsDouble ();
+		bounds.h = vh->AsDouble ();
+	}
+
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
 						     IntersectBoundsWithClipPath (bounds, false));
 }
@@ -1301,6 +1349,9 @@ Polygon::ComputeBounds ()
 void
 Polygon::BuildPath ()
 {
+	if (Shape::MixedHeightWidth (NULL, NULL))
+		return;
+
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
 
@@ -1453,14 +1504,20 @@ Polyline::GetFillRule ()
 void
 Polyline::ComputeBounds ()
 {
-	bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	Value *vh, *vw;
+	if (Shape::MixedHeightWidth (&vh, &vw)) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+		return;
+	}
 
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
 
 	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2))
+	if (!points || (count < 2)) {
+		bounds = Rect (0.0, 0.0, 0.0, 0.0);
 		return;
+	}
 
 	double thickness = shape_get_stroke_thickness (this);
 	if (thickness == 0.0)
@@ -1498,6 +1555,14 @@ Polyline::ComputeBounds ()
 		bounds.y -= points [0].y;
 	}
 
+	// if Height and Width are specified (they could be both missing)
+	// then we must clip the path those values, and this also defines
+	// *exactly* our bounds (whether we like them or not is another story)
+	if (vh && vw) {
+		bounds.w = vw->AsDouble ();
+		bounds.h = vh->AsDouble ();
+	}
+
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
 						     IntersectBoundsWithClipPath (bounds, false));
 }
@@ -1505,6 +1570,9 @@ Polyline::ComputeBounds ()
 void
 Polyline::BuildPath ()
 {
+	if (Shape::MixedHeightWidth (NULL, NULL))
+		return;
+
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
 
@@ -1631,75 +1699,60 @@ Path::GetFillRule ()
 	return geometry ? geometry_get_fill_rule (geometry) : Shape::GetFillRule ();
 }
 
-bool
-Path::NeedsClipping ()
-{
-	if (Shape::NeedsClipping ())
-		return true;
-
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	if (!vh)
-		return false;
-
-	return (GetValueNoDefault (FrameworkElement::WidthProperty) != NULL);
-}
-
 void
 Path::ComputeBounds ()
 {
-	// paths aren't drawn unless both Height and Width are specified (or missing)
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	if ((vh && !vw) || (!vh && vw)) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	bounds = Rect (0.0, 0.0, 0.0, 0.0);
+
+	Value *vh, *vw;
+	if (Shape::MixedHeightWidth (&vh, &vw))
 		return;
-	}
 
 	Geometry* geometry = path_get_data (this);
-	if (!geometry) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	if (!geometry)
 		return;
-	}
-
-	bounds = geometry->ComputeBounds (this);
-
-	Stretch stretch = shape_get_stretch (this);
-	if (stretch != StretchNone) {
-		double t = shape_get_stroke_thickness (this) * .5;
-		bounds.x = -t;
-		bounds.y = -t;
-
-		double vscale = vh ? (vh->AsDouble () / bounds.h) : 1.0;
-		double hscale = vw ? (vw->AsDouble () / bounds.w) : 1.0;
-		double scale; 
-
-		switch (stretch) {
-		case StretchUniform:
-			scale = MIN (vw ? vscale : hscale, vh ? hscale : vscale);
-			bounds.h = (int) ceil(bounds.h * scale);
-			bounds.w = (int) ceil(bounds.w * scale);
-			break;
-		case StretchUniformToFill:
-			scale = MAX (vw ? vscale : hscale, vh ? hscale : vscale);
-			bounds.h = (int) ceil(bounds.h * scale);
-			bounds.w = (int) ceil(bounds.w * scale);
-			break;
-		default:
-			// bounds are already set correctly
-			bounds.h = bounds.h * vscale;
-			bounds.w = bounds.w * hscale;
-			break;
-		}
-
-		bounds.w += 2 * t;
-		bounds.h += 2 * t;
-	}
 
 	// if Height and Width are specified (they could be both missing)
-	// then we must clip the path those values
+	// then we must clip the path those values, and this also defines
+	// *exactly* our bounds (whether we like them or not is another story)
 	if (vh && vw) {
-		bounds.w = MIN (bounds.w, vw->AsDouble ());
-		bounds.h = MIN (bounds.h, vh->AsDouble ());
+		bounds.w = vw->AsDouble ();
+		bounds.h = vh->AsDouble ();
+	} else {
+		bounds = geometry->ComputeBounds (this);
+
+		Stretch stretch = shape_get_stretch (this);
+		if (stretch != StretchNone) {
+			double t = shape_get_stroke_thickness (this) * 0.5;
+
+			bounds.x = -t;
+			bounds.y = -t;
+
+			double vscale = vh ? (vh->AsDouble () / bounds.h) : 1.0;
+			double hscale = vw ? (vw->AsDouble () / bounds.w) : 1.0;
+			double scale; 
+
+			switch (stretch) {
+			case StretchUniform:
+				scale = MIN (vw ? vscale : hscale, vh ? hscale : vscale);
+				bounds.h = (int) ceil(bounds.h * scale);
+				bounds.w = (int) ceil(bounds.w * scale);
+				break;
+			case StretchUniformToFill:
+				scale = MAX (vw ? vscale : hscale, vh ? hscale : vscale);
+				bounds.h = (int) ceil(bounds.h * scale);
+				bounds.w = (int) ceil(bounds.w * scale);
+				break;
+			default:
+				// bounds are already set correctly
+				bounds.h = bounds.h * vscale;
+				bounds.w = bounds.w * hscale;
+				break;
+			}
+
+			bounds.w += 2 * t;
+			bounds.h += 2 * t;
+		}
 	}
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,

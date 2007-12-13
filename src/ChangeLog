@@ -1,3 +1,9 @@
+2007-12-13  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp|h: Shortcut path bounds calculation when both Width
+	and Height are specified. Add same clipping rules to Line, 
+	Polyline and Polygon classes.
+
 2007-12-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp: Resume using cairo_stroke_extents in some cases

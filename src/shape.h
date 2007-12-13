@@ -82,7 +82,9 @@ class Shape : public FrameworkElement {
 	//
 	virtual void Draw (cairo_t *cr);
 	virtual void BuildPath () {};
-	virtual bool NeedsClipping ();
+	virtual bool ClipOnHeightAndWidth () { return false; }
+	bool NeedsClipping ();
+	bool MixedHeightWidth (Value **width, Value **height);
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
@@ -175,6 +177,7 @@ class Line : public Shape {
 	
 	virtual void BuildPath ();
 	virtual void ComputeBounds ();
+	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
@@ -216,6 +219,7 @@ class Polygon : public Shape {
 	virtual bool CanFill () { return true; }
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
+	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
@@ -247,6 +251,7 @@ class Polyline : public Shape {
 	virtual bool CanFill () { return true; }
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
+	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual FillRule GetFillRule ();
 
@@ -279,7 +284,7 @@ class Path : public Shape {
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
-	virtual bool NeedsClipping ();
+	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual bool CanFill () { return true; }
 	virtual FillRule GetFillRule ();
