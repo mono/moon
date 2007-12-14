@@ -450,7 +450,7 @@ PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *use
 	PluginInstance *plugin = (PluginInstance *) user_data;
 	char *msg;
 	
-	msg = g_strdup_printf ("Rendered %d frames in %.3fs = %.3f FPS\n",
+	msg = g_strdup_printf ("Rendered %d frames in %.3fs = %.3f FPS",
 			       nframes, nsecs, nframes / nsecs);
 	
 	NPN_Status (plugin->instance, msg);
