@@ -108,7 +108,8 @@ class Downloader : public DependencyObject {
 
 	char *filename;
 	char *failed_msg;
-	bool  started;
+	bool started;
+	bool aborted;
 	
 	// Set by the consumer
 	downloader_write_func       write;

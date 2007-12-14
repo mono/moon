@@ -1,3 +1,15 @@
+2007-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (Downloader::Abort): Don't abort if we've already
+	been aborted or been notified that we've failed (needed protection
+	for the Plugin downloader).
+	(Downloader::Send): Set aborted = false.
+	(Downloader::NotifyFailed): Don't do anything if we've already
+	been notified of failure for this download request.
+
+	* downloader.h (class Downloader): Keep track of aborted state as
+	well.
+
 2007-12-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* brush.cpp: Fix for bnc 346204: Set both Width and Height for Image if

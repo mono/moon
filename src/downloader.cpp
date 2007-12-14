@@ -68,6 +68,7 @@ Downloader::Downloader ()
 	filename = NULL;
 	failed_msg = NULL;
 	started = false;
+	aborted = false;
 	this->write = NULL;
 	file_size = -2;
 	total = 0;
@@ -98,7 +99,10 @@ Downloader::~Downloader ()
 void
 Downloader::Abort ()
 {
-	abort_func (downloader_state);
+	if (!aborted && !failed_msg) {
+		abort_func (downloader_state);
+		aborted = true;
+	}
 }
 
 void *
@@ -244,16 +248,21 @@ Downloader::Open (const char *verb, const char *uri)
 void
 Downloader::Send ()
 {
-	if (filename != NULL){
+	if (filename != NULL) {
+		// Consumer is re-sending a request which finished successfully.
 		NotifyFinished (filename);
 		return;
 	}
-	if (failed_msg != NULL){
+	
+	if (failed_msg != NULL) {
+		// Consumer is re-sending a request which failed.
 		Emit (DownloadFailedEvent, failed_msg);
 		return;
 	}
-
+	
 	started = true;
+	aborted = false;
+	
 	send_func (downloader_state);
 }
 
@@ -297,10 +306,18 @@ Downloader::NotifyFinished (const char *fname)
 void
 Downloader::NotifyFailed (const char *msg)
 {
+	/* if we've already been notified of failure, no-op */
+	if (failed_msg)
+		return;
+	
 	// dl->SetValue (Downloader::StatusProperty, Value (400))
 	// For some reason the status is 0, not updated on errors?
-	failed_msg = g_strdup (msg);
+	
 	Emit (DownloadFailedEvent, (gpointer) msg);
+	
+	// save the error in case someone else calls ::Send() on this
+	// downloader for the same uri.
+	failed_msg = g_strdup (msg);
 }
 
 void
@@ -398,7 +415,7 @@ downloader_send (Downloader *dl)
 {
 	if (!dl->Completed () && dl->Started ())
 		downloader_abort (dl);
-
+	
 	dl->Send ();
 }
 
@@ -408,14 +425,14 @@ downloader_new (void)
 	return new Downloader ();
 }
 
-void downloader_set_functions (downloader_create_state_func create_state,
-			       downloader_destroy_state_func destroy_state,
-			       downloader_open_func open,
-			       downloader_send_func send,
-			       downloader_abort_func abort)
+void
+downloader_set_functions (downloader_create_state_func create_state,
+			  downloader_destroy_state_func destroy_state,
+			  downloader_open_func open,
+			  downloader_send_func send,
+			  downloader_abort_func abort)
 {
-	Downloader::SetFunctions (create_state,
-				  destroy_state,
+	Downloader::SetFunctions (create_state, destroy_state,
 				  open, send, abort, false);
 }
 
