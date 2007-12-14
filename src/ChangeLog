@@ -1,3 +1,9 @@
+2007-12-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* shape.cpp: Fix Path::GetBrushSize to ensure the geometry has
+	been built before calling cairo_stroke_extents. This fix sample
+	http://designwithsilverlight.com/tutorials/photoGalleryWall/default.html
+
 2007-12-13  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp|h: Shortcut path bounds calculation when both Width

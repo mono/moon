@@ -1799,12 +1799,21 @@ Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Dep
 void
 Path::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	double x1, y1, x2, y2;
+	Geometry* geometry = path_get_data (this);
+	if (geometry) {
+		// in some cases it's possible that GetSizeForBrush will be called before the geometry is built
+		if (!geometry->IsBuilt ())
+			Draw (cr);
+
+		double x1, y1, x2, y2;
+		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
 	
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	
-	*height = fabs (y2 - y1);
-	*width = fabs (x2 - x1);
+		*height = fabs (y2 - y1);
+		*width = fabs (x2 - x1);
+	} else {
+		*height = 0.0;
+		*width = 0.0;
+	}
 }
 
 Geometry *
