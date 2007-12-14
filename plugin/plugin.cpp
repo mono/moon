@@ -435,7 +435,7 @@ PluginInstance::SetPageURL ()
 void
 PluginInstance::CreateWindow ()
 {
-	DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
+	//DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
 	//  GtkPlug container and surface inside
 	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
@@ -485,10 +485,12 @@ PluginInstance::UpdateSource ()
 
 	char *pos = strchr (this->source, '#');
 	if (pos) {
-		if (strlen(&pos[1]) > 0);
+		if (strlen (&pos[1]) > 0);
 			this->UpdateSourceByReference (&pos[1]);
 	} else {
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
+		
+		// FIXME: check for errors
 		NPN_GetURLNotify (this->instance, this->source, NULL, notify);
 	}
 }
@@ -557,17 +559,19 @@ void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stre
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
-  //	DEBUGMSG ("NewStream (%s) %s", this->source, stream->url);
-
+  	//DEBUGMSG ("NewStream (%s) %s\n", this->source, stream->url);
+	
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
 	}
-
+	
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
-		*stype = NP_ASFILE;
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
+		
 		downloader_set_stream_data ((Downloader *) notify->pdata, instance, stream);
+		*stype = NP_ASFILE;
+		
 		return NPERR_NO_ERROR;
 	}
 
@@ -605,9 +609,11 @@ PluginInstance::TryLoad ()
 		vm_missing_file = g_strdup (xaml_loader->TryLoad (&error));
 
 	//printf ("PluginInstance::TryLoad, vm_missing_file: %s, error: %i\n", vm_missing_file, error);
-
-	if (vm_missing_file != NULL){
+	
+	if (vm_missing_file != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
+		
+		// FIXME: check for errors
 		NPN_GetURLNotify (instance, vm_missing_file, NULL, notify);
 		return;
 	}
@@ -904,7 +910,7 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 			
 			switch (reason) {
 			case NPRES_USER_BREAK:
-				dl->NotifyFailed ("user aborted");
+				dl->NotifyFailed ("user break");
 				break;
 			case NPRES_NETWORK_ERR:
 				dl->NotifyFailed ("network error");
@@ -913,8 +919,6 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 				dl->NotifyFailed ("unknown error");
 				break;
 			}
-		} else {
-			printf ("UrlNotify: %s failed, but no downloader to notify\n", url);
 		}
 	}
 	
@@ -1156,7 +1160,7 @@ PluginXamlLoader::LoadVM ()
 // On error it sets the @error ref to 1
 // Returns the filename that we are missing
 //
-const char*
+const char *
 PluginXamlLoader::TryLoad (int *error)
 {
 	DependencyObject *element;

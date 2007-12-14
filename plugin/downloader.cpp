@@ -85,8 +85,7 @@ p_downloader_send (gpointer state)
 	PluginDownloader *pd = (PluginDownloader *) state;
 	NPP_t *plugin = NULL;
 	
-	//	fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
-	//
+	//fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
 	
 	if (pd && pd->dl && pd->dl->GetContext ()) {
 		// Get the context from the downloader.
@@ -142,14 +141,14 @@ static void
 p_downloader_abort (gpointer state)
 {
 	PluginDownloader *pd = (PluginDownloader *) state;
-
+	
 	if (downloader_shutdown)
 		return;
-
-	if (pd->npp && pd->stream)
+	
+	if (pd->npp && pd->stream) {
 		NPN_DestroyStream (pd->npp, pd->stream, NPRES_USER_BREAK);
-	else
-		fprintf (stderr, "moonlight-plugin: no stream available for downloader abort  %s\n", pd->uri);
+		pd->stream = NULL;
+	}
 }
 
 void
@@ -165,15 +164,15 @@ void
 downloader_initialize (void)
 {
 	downloader_set_functions (
-			p_downloader_create_state,
-			p_downloader_destroy_state,
-			p_downloader_open,
-			p_downloader_send,
-			p_downloader_abort);
+		p_downloader_create_state,
+		p_downloader_destroy_state,
+		p_downloader_open,
+		p_downloader_send,
+		p_downloader_abort);
 }
 
 void
-downloader_destroy ()
+downloader_destroy (void)
 {
 	downloader_shutdown = true;
 }

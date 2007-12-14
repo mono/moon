@@ -1,3 +1,13 @@
+2007-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (p_downloader_abort): Set pd->stream to NULL
+	after destroying it.
+
+	* plugin.cpp (PluginInstance::TryLoad): Added a comment that we
+	should check for errors returned by NPN_GetURLNotify().
+	(PluginInstance::UpdateSource): Same.
+	(PluginInstance::UrlNotify): Removed a printf.
+
 2007-12-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes toward bug #341853

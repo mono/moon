@@ -170,6 +170,7 @@ class StreamNotify
 	{
 		base_ref (dob);
 	}
+	
 	~StreamNotify ()
 	{
 		if (type == DOWNLOADER)
