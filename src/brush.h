@@ -144,10 +144,17 @@ void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 
 class ImageBrush : public TileBrush {
+
+	static void image_progress_changed (EventObject *sender, gpointer calldata, gpointer closure);
+	static void image_failed (EventObject *sender, gpointer calldata, gpointer closure);
+
 	Image *image;
  public:
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ImageSourceProperty;
+
+	static int DownloadProgressChangedEvent;
+	static int ImageFailedEvent;
 
 	ImageBrush ();
 	virtual ~ImageBrush ();

@@ -776,6 +776,9 @@ tile_brush_set_stretch (TileBrush *brush, Stretch stretch)
 DependencyProperty* ImageBrush::DownloadProgressProperty;
 DependencyProperty* ImageBrush::ImageSourceProperty;
 
+int ImageBrush::DownloadProgressChangedEvent = -1;
+int ImageBrush::ImageFailedEvent = -1;
+
 ImageBrush *
 image_brush_new (void)
 {
@@ -813,9 +816,25 @@ image_brush_set_source (ImageBrush *brush, DependencyObject *dl, const char *Par
 	brush->SetSource (dl, PartName);
 }
 
+void
+ImageBrush::image_progress_changed (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	((ImageBrush*)closure)->Emit (ImageBrush::DownloadProgressChangedEvent);
+}
+
+void
+ImageBrush::image_failed (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	((ImageBrush*)closure)->Emit (ImageBrush::ImageFailedEvent);
+}
+
 ImageBrush::ImageBrush ()
 {
 	image = new Image ();
+
+	image->AddHandler (MediaBase::DownloadProgressChangedEvent, image_progress_changed, this);
+	image->AddHandler (Image::ImageFailedEvent, image_failed, this);
+
 	image->brush = this;
 }
 
@@ -1301,4 +1320,8 @@ brush_init (void)
 
 	/* VisualBrush */
 	VisualBrush::VisualProperty = DependencyObject::Register (Type::VISUALBRUSH, "Visual", new Value (Type::VISUAL));
+
+	/* lookup events */
+	Type *t = Type::Find (Type::IMAGEBRUSH);
+	ImageBrush::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
 }

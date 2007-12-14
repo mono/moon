@@ -362,6 +362,10 @@ types_init_register_events (void)
 	t = Type::Find (Type::IMAGE);
 	t->RegisterEvent ("ImageFailed");
 
+	t = Type::Find (Type::IMAGEBRUSH);
+	t->RegisterEvent ("DownloadProgressChanged");
+	t->RegisterEvent ("ImageFailed");
+
 	t = Type::Find(Type::SURFACE);
 	t->RegisterEvent ("Resize");
 	t->RegisterEvent ("FullScreenChange");

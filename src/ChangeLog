@@ -1,3 +1,12 @@
+2007-12-14  Chris Toshok  <toshok@ximian.com>
+
+	* type.cpp.in, type.cpp (types_init_register_events): need to
+	register DownloadProgressChanged and ImageFailed events on
+	imagebrushes.
+
+	* brush.h, brush.cpp: same, and hook up the events from
+	ImageBrush's embedded image so that we can re-emit the events.
+	
 2007-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (Downloader::Abort): Don't abort if we've already
