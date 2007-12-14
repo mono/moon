@@ -18,7 +18,7 @@
 extern guint32 moonlight_flags;
 
 /* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
-static const gchar *moonlight_authors[] = {
+static const char *moonlight_authors[] = {
 	"Andreia Gaita <avidigal@novell.com>",
 	"Atsushi Enomoto <atsushi@ximian.com>",
 	"Chris Toshok <toshok@ximian.com>",
@@ -119,7 +119,7 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 GSList *plugin_instances = NULL;
 
 void
-plugin_set_unload_callback (PluginInstance* plugin, plugin_unload_callback* puc)
+plugin_set_unload_callback (PluginInstance *plugin, plugin_unload_callback *puc)
 {
 	if (!plugin) {
 		printf ("Trying to set plugin unload callback on a null plugin.\n");
@@ -178,6 +178,15 @@ bounding_boxes (GtkToggleButton *checkbox, gpointer user_data)
 		moonlight_flags &= ~RUNTIME_INIT_SHOW_BOUNDING_BOXES;
 }
 
+static void
+show_fps (GtkToggleButton *checkbox, gpointer user_data)
+{
+	if (gtk_toggle_button_get_active (checkbox))
+		moonlight_flags |= RUNTIME_INIT_SHOW_FPS;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_SHOW_FPS;
+}
+
 void
 PluginInstance::Properties ()
 {
@@ -234,6 +243,11 @@ PluginInstance::Properties ()
 	checkbox = gtk_check_button_new_with_label ("Show bounding boxes");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES);
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (bounding_boxes), NULL);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	
+	checkbox = gtk_check_button_new_with_label ("Show Frames Per Second");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_FPS);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (show_fps), NULL);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	g_signal_connect_swapped (dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
@@ -295,7 +309,7 @@ PluginInstance::~PluginInstance ()
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
 	// we might have another source of problems
 	//
-	fprintf (stderr, "Destroying the surface: %p, plugin: %p\n", surface, this);
+	//fprintf (stderr, "Destroying the surface: %p, plugin: %p\n", surface, this);
 	if (surface != NULL){
 		//gdk_error_trap_push ();
 		surface->unref ();
@@ -352,7 +366,6 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		if (!strcasecmp (argn[i], "background")) {
 			this->background = g_strdup (argv[i]);
 		}
-
 	}
 }
 
@@ -394,8 +407,7 @@ PluginInstance::SetWindow (NPWindow* window)
 		return NPERR_NO_ERROR;
 
 	NPN_GetValue(this->instance, NPNVSupportsXEmbedBool, &this->xembed_supported);
-	if (!this->xembed_supported)
-	{
+	if (!this->xembed_supported) {
 		DEBUGMSG ("*** XEmbed not supported");
 		return NPERR_GENERIC_ERROR;
 	}
@@ -433,6 +445,19 @@ PluginInstance::SetPageURL ()
 }
 
 void
+PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data)
+{
+	PluginInstance *plugin = (PluginInstance *) user_data;
+	char *msg;
+	
+	msg = g_strdup_printf ("Rendered %d frames in %.3fs = %.3f FPS\n",
+			       nframes, nsecs, nframes / nsecs);
+	
+	NPN_Status (plugin->instance, msg);
+	g_free (msg);
+}
+
+void
 PluginInstance::CreateWindow ()
 {
 	//DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
@@ -461,8 +486,9 @@ PluginInstance::CreateWindow ()
 	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
 	this->surface = new Surface (window->width, window->height);
+	this->surface->SetFPSReportFunc (ReportFPS, this);
 	this->surface->SetDownloaderContext (this);
-
+	
 	if (background) {
 		Color *c = color_from_str (background);
 		surface->SetBackgroundColor (c);

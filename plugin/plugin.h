@@ -61,7 +61,9 @@ class PluginInstance
 	void UpdateSourceByReference (const char *value);
 	void TryLoad ();
 	void SetPageURL ();
-
+	
+	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
+	
  public:
 	PluginInstance (NPP instance, uint16_t mode);
 	~PluginInstance ();

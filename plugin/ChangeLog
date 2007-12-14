@@ -1,5 +1,13 @@
 2007-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* plugin.cpp (PluginInstance::CreateWindow): Set the FPS report
+	callback.
+	(PluginInstance::Properties): Added FPS enable/disable properties.
+	(PluginInstance::ReportFPS): Report the FPS via the browser's
+	status widget.
+
+2007-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	* downloader.cpp (p_downloader_abort): Set pd->stream to NULL
 	after destroying it.
 
