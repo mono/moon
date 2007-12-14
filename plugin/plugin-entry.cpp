@@ -98,12 +98,12 @@ NPN_Write (NPP instance, NPStream *stream, int32_t len, void *buffer)
 }
 
 NPError
-NPN_DestroyStream (NPP instance, NPStream* stream, NPError reason)
+NPN_DestroyStream (NPP instance, NPStream *stream, NPError reason)
 {
 	return CallNPN_DestroyStreamProc (MozillaFuncs.destroystream, instance, stream, reason);
 }
 
-void NPN_Status (NPP instance, const char* message)
+void NPN_Status (NPP instance, const char *message)
 {
 	if (strstr (NPN_UserAgent (instance), "Firefox"))
 		CallNPN_StatusProc (MozillaFuncs.status, instance, message);
