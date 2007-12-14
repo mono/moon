@@ -44,16 +44,18 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_SHOW_EXPOSE           = 1 << 4,
 	RUNTIME_INIT_SHOW_CLIPPING         = 1 << 5,
 	RUNTIME_INIT_SHOW_BOUNDING_BOXES   = 1 << 6,
+	RUNTIME_INIT_SHOW_FPS              = 1 << 7,
 };
 
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT)
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_MICROSOFT_CODECS)
 
+class Surface;
+typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
 
 class Surface : public EventObject {
  public:
 	Surface (int width, int height);
-
 	virtual ~Surface ();
 
 	// allows you to redirect painting of the surface to an
@@ -61,12 +63,12 @@ class Surface : public EventObject {
 	void Paint (cairo_t *ctx, int x, int y, int width, int height);
 	void Paint (cairo_t *ctx, Region *);
 
-	void Attach (UIElement* toplevel);
+	void Attach (UIElement *toplevel);
 
 	void SetCursor (MouseCursor cursor);
 
 	bool SetMouseCapture (UIElement *capture);
-	UIElement* GetMouseCapture () { return capture_element; }
+	UIElement *GetMouseCapture () { return capture_element; }
 
 	void Resize (int width, int height);
 	int GetWidth () { return width; }
@@ -86,7 +88,7 @@ class Surface : public EventObject {
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
-	UIElement* GetCapturedElement () { return capture_element; }
+	UIElement *GetCapturedElement () { return capture_element; }
 
 	static int ResizeEvent;
 	static int FullScreenChangeEvent;
@@ -100,7 +102,7 @@ class Surface : public EventObject {
 	int GetActualWidth () { return width; }
 	int GetActualHeight () { return height; }
 
-	ClockGroup* GetClockGroup () { return clock_group; }
+	ClockGroup *GetClockGroup () { return clock_group; }
 
 	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
 	
@@ -114,19 +116,25 @@ class Surface : public EventObject {
 		return downloader;
 	}
 	
-	static Downloader *CreateDownloader (UIElement* element)
+	static Downloader *CreateDownloader (UIElement *element)
 	{
-		Surface *surface = NULL;
-		if (element) {
-			surface = element->GetSurface ();
-		}
+		Surface *surface = element ? element->GetSurface () : NULL;
+		
 		if (surface) {
 			return surface->CreateDownloader ();
 		} else {
-			printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n", element, GET_OBJ_ID (element));
+			//printf ("Surface::CreateDownloader (%p, ID: %i): "
+			//	"Unable to create contextual downloader.\n",
+			//	element, GET_OBJ_ID (element));
 			//print_stack_trace ();
 			return new Downloader ();
 		}
+	}
+	
+	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data)
+	{
+		fps_report = report;
+		fps_data = user_data;
 	}
 	
 private:
@@ -204,7 +212,13 @@ private:
 
 	int last_event_state;
 	double last_event_x, last_event_y;
-
+	
+	// Variables for reporting FPS
+	MoonlightFPSReportFunc fps_report;
+	int64_t fps_start;
+	int fps_nframes;
+	void *fps_data;
+	
 	void ConnectEvents (bool realization_signals);
 	void Realloc ();
 	void InitializeDrawingArea (GtkWidget *drawing_area);

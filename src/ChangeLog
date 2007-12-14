@@ -1,3 +1,15 @@
+2007-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (fps_report_default): Default printf FPS report
+	callback.
+	(Surface::render_cb): Use instance-local variables for keeping
+	track of FPS and use the report func if RUNTIME_INIT_SHOW_FPS bit
+	is set.
+
+	* runtime.h: Added a RUNTIME_INIT_SHOW_FPS flag
+	(class Surface): New method to set the FPS report callback for a
+	surface.
+
 2007-12-14  Chris Toshok  <toshok@ximian.com>
 
 	* type.cpp.in, type.cpp (types_init_register_events): need to

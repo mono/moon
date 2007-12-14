@@ -83,9 +83,17 @@ static struct {
 	{ "clipping=hide",     RUNTIME_INIT_SHOW_CLIPPING,         false },
 	{ "bbox=show",         RUNTIME_INIT_SHOW_BOUNDING_BOXES,   true  },
 	{ "bbox=hide",         RUNTIME_INIT_SHOW_BOUNDING_BOXES,   false },
+	{ "fps=show",          RUNTIME_INIT_SHOW_FPS,              true  },
+	{ "fps=hide",          RUNTIME_INIT_SHOW_FPS,              false },
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
+
+static void
+fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
+{
+	printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes, nsecs, nframes / nsecs);
+}
 
 cairo_t *
 runtime_cairo_create (GdkWindow *drawable)
@@ -102,8 +110,7 @@ runtime_cairo_create (GdkWindow *drawable)
 					   gdk_x11_drawable_get_xid (drawable),
 					   GDK_VISUAL_XVISUAL (visual),
 					   width, height);
-
-
+      
       cr = cairo_create (surface);
       cairo_surface_destroy (surface);
 			    
@@ -129,22 +136,22 @@ Surface::CreateSimilarSurface ()
 {
 	if (drawing_area == NULL || drawing_area->window == NULL)
 		return;
-		
-    cairo_t *ctx = runtime_cairo_create (drawing_area->window);
-
-    if (cairo_xlib){
-	cairo_destroy (cairo_xlib);
-    }
-
-    cairo_surface_t *xlib_surface = cairo_surface_create_similar (
-	   cairo_get_target (ctx), 
-	   CAIRO_CONTENT_COLOR_ALPHA,
-	   width, height);
-
-    cairo_destroy (ctx);
-
-    cairo_xlib = cairo_create (xlib_surface);
-    cairo_surface_destroy (xlib_surface);
+	
+	cairo_t *ctx = runtime_cairo_create (drawing_area->window);
+	
+	if (cairo_xlib){
+		cairo_destroy (cairo_xlib);
+	}
+	
+	cairo_surface_t *xlib_surface = cairo_surface_create_similar (
+		cairo_get_target (ctx), 
+		CAIRO_CONTENT_COLOR_ALPHA,
+		width, height);
+	
+	cairo_destroy (ctx);
+	
+	cairo_xlib = cairo_create (xlib_surface);
+	cairo_surface_destroy (xlib_surface);
 }
 
 
@@ -191,6 +198,12 @@ Surface::Surface(int w, int h)
 
 	full_screen_message = NULL;
 	source_location = NULL;
+	
+	fps_report = fps_report_default;
+	fps_data = NULL;
+	
+	fps_nframes = 0;
+	fps_start = 0;
 }
 
 Surface::~Surface ()
@@ -714,31 +727,31 @@ Surface::InitializeDrawingArea (GtkWidget *drawing_area)
 void
 Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	Surface *s = (Surface*) closure;
-	static int64_t start = 0;
-	static int nframes = 0;
+	Surface *s = (Surface *) closure;
 	int64_t now;
 	
-	if (start == 0)
-		start = get_now ();
+	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
+		s->fps_start = get_now ();
 	
 	gdk_window_process_updates (GTK_WIDGET (s->drawing_area)->window, FALSE);
 	
-	nframes++;
-	
-	if (false && (now = get_now ()) > (start + TIMESPANTICKS_IN_SECOND)) {
-		printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes,
-			(now - start) / TIMESPANTICKS_IN_SECOND_FLOAT,
-			nframes / ((now - start) / TIMESPANTICKS_IN_SECOND_FLOAT));
-		nframes = 0;
-		start = now;
+	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {
+		s->fps_nframes++;
+		
+		if ((now = get_now ()) > (s->fps_start + TIMESPANTICKS_IN_SECOND)) {
+			float nsecs = (now - s->fps_start) / TIMESPANTICKS_IN_SECOND_FLOAT;
+			
+			s->fps_report (s, s->fps_nframes, nsecs, s->fps_data);
+			s->fps_nframes = 0;
+			s->fps_start = now;
+		}
 	}
 }
 
 void
 Surface::update_input_cb (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	Surface *s = (Surface*)closure;
+	Surface *s = (Surface *) closure;
 
 	MouseCursor new_cursor = MouseCursorDefault;
 
