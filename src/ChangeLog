@@ -1,3 +1,8 @@
+2007-12-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* brush.cpp: Fix for bnc 346204: Set both Width and Height for Image if
+	only one (Width XOR Height) is provided.
+
 2007-12-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* shape.cpp: Fix Path::GetBrushSize to ensure the geometry has

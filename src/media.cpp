@@ -1257,12 +1257,18 @@ Image::DownloaderComplete ()
 	if (!ok)
 		return;
 
-	if (GetValueNoDefault (FrameworkElement::WidthProperty) == NULL)
+	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+
+	if (width == NULL && height == NULL) {
 		SetValue (FrameworkElement::WidthProperty, (double) surface->width);
-
-	if (GetValueNoDefault (FrameworkElement::HeightProperty) == NULL)
 		SetValue (FrameworkElement::HeightProperty, (double) surface->height);
-
+	}
+	if (width == NULL && height != NULL)
+		SetValue (FrameworkElement::WidthProperty, (double) surface->width * height->AsDouble () / (double)surface->height);
+	if (width != NULL && height == NULL)
+		SetValue (FrameworkElement::HeightProperty, (double) surface->height * width->AsDouble () / (double)surface->width);
+		
 	if (brush)
 		brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
 	else 
