@@ -135,7 +135,9 @@ Animation/*Timeline*/::AllocateClock()
 {
 	Clock *clock = new AnimationClock (this);
 	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
-				      FindName (Storyboard::GetTargetName(this)), Storyboard::GetTargetName (this), Storyboard::GetTargetProperty (this));
+				      Storyboard::GetTargetName(this) == NULL ? NULL : FindName (Storyboard::GetTargetName(this)),
+				      Storyboard::GetTargetName(this),
+				      Storyboard::GetTargetProperty (this));
 	clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
 	return clock;
