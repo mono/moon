@@ -1998,6 +1998,8 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 				string_to_npvariant ("", result);
 				return true;
 			}
+
+			NULL_TO_NPVARIANT (*result);
 			return true;
 		}
 
