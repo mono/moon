@@ -2515,9 +2515,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		int count = 0;
 		Point *points = point_array_from_str (str, &count);
 
-		if (!points)
-			return NULL;
-
 		v = new Value (points, count);
 		break;
 	}

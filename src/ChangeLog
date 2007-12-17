@@ -1,3 +1,8 @@
+2007-12-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Return an "empty" Value (not NULL) if no POINT_ARRAY
+	is provided. Fix testAllowEmptyPointsOnPoly[gon|line] JS tests.
+
 2007-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (fps_report_default): Default printf FPS report
