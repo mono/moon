@@ -74,7 +74,7 @@ AssortedTestSuite.prototype = {
 	},
 	testMatrixWithLessThanSixItems: function () {
 		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
-			$plugin ().content.createFromXaml ("<MatrixTransform Matrix='1,0,1' />");
+			var mt = $plugin ().content.createFromXaml ("<MatrixTransform Matrix='1,0,1' />");
 		});
 	},
 	testMatrixWithZeroItem: function () {
