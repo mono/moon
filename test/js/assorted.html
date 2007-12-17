@@ -2,20 +2,19 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>Moonlight Errors test file</title>
+  <title>Moonlight API test file</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <script src="js/Silverlight.js" type="text/javascript"></script>
   <script src="js/prototype.js" type="text/javascript"></script>
   <script src="js/unittest.js" type="text/javascript"></script>
   <script src="js/codemodel.js" type="text/javascript"></script>
-  <script src="js/errors.js" type="text/javascript"></script>
   <script src="js/unittestsl.js" type="text/javascript"></script>
   <link rel="stylesheet" href="css/test.css" type="text/css" />
 </head>
 <body>
 <h1>Moonlight API test file</h1>
 <p>
-  Test our error handling compared to the Silverlight documentation.
+  Test our api against the code model extracted from the Silverlight documentation.
 </p>
 <p>
  <a href="api.html" style="color:black">General API</a>
@@ -31,10 +30,6 @@
 
 <div id="MoonlightHost">
 	<script type="text/javascript">
-function pluginError (sender, args) {
-	alert (args);
-}
-
 Silverlight.createObjectEx ({
 	source: "xaml/void.xaml",
 	parentElement: document.getElementById("MoonlightHost"),
@@ -51,37 +46,29 @@ Silverlight.createObjectEx ({
 		onLoad: null
 	}
 });
+
+function $plugin() {
+	return document.getElementById ("MoonlightControl");
+}
 	</script>
 </div>
 
 <!-- Log output -->
 <div id="testlog"> </div>
 
-<script type="text/javascript">
-function getPlugin () {
-	return $("MoonlightControl");
-}
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
 
-getPlugin ().onError = pluginError;
 
-var ErrorsTestSuite = Class.create ();
-ErrorsTestSuite.prototype = {
-	testEmptyCreateFromXaml: function () {
-		this.assertException (Errors.AG_E_RUNTIME_METHOD, function () {
-			getPlugin ().content.createFromXaml ();
-		});
-	},
-	testDownloadGoogle: function () {
-		this.assertException (Errors.AG_E_RUNTIME_METHOD, function () {
-			var dl = CodeModel.Downloader.create (getPlugin ());
-			dl.open ("GET", "http://www.google.com/");
-			dl.send ();
-		});
+var AssortedTestSuite = Class.create ();
+AssortedTestSuite.prototype = {
+
+	testEmptyPointsOn: function () {
+		var poly = $plugin ().content.createFromXaml ("<Polygon Points=\"\" />");
 	}
 };
 
-new Test.Unit.Runner (ErrorsTestSuite.prototype, 'testlog');
+new Test.Unit.Runner (AssortedTestSuite.prototype, 'testlog');
 </script>
-
 </body>
 </html>
