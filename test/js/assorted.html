@@ -78,6 +78,9 @@ AssortedTestSuite.prototype = {
 			$plugin ().content.createFromXaml ("<MatrixTransform Matrix='1,0,1' />");
 		});
 	},
+	testMatrixWithZeroItem: function () {
+		$plugin ().content.createFromXaml ("<MatrixTransform Matrix='' />");
+	},
 	testAllowEmptyPointsOnPolygon: function () {
 		$plugin ().content.createFromXaml ("<Polygon Points='' />");
 	},
