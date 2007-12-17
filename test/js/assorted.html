@@ -65,6 +65,9 @@ AssortedTestSuite.prototype = {
 
 	testAllowEmptyPointsOnPolygon: function () {
 		$plugin ().content.createFromXaml ("<Polygon Points='' />");
+	},
+	testAllowEmptyPointsOnPolyline: function () {
+		$plugin ().content.createFromXaml ("<Polyline Points='' />");
 	}
 };
 

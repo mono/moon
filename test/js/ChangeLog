@@ -1,3 +1,8 @@
+2007-12-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* assorted.html: Duplicate existing testAllowEmptyPointsOnPolygon
+	for Polyline
+
 2007-12-06  Jb Evain  <jbevain@novell.com>
 
 	* check the js unit tests in.
