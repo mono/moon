@@ -1,5 +1,9 @@
 2007-12-17  Jb Evain  <jbevain@novell.com>
 
+	* xaml.cpp: fix testMatrixWithZeroItem test case.
+
+2007-12-17  Jb Evain  <jbevain@novell.com>
+
 	* type.cpp|h(.in), value.cpp|h(.in): remove the Matrix
 	value type, has SL exposes it as a DependencyObject.
 

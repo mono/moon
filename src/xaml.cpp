@@ -1575,7 +1575,7 @@ matrix_from_str (const char *str)
 	double *values = double_array_from_str (str, &count);
 
 	if (!values)
-		return NULL;
+		return new Matrix ();
 
 	if (count < 6) {
 		delete [] values;
