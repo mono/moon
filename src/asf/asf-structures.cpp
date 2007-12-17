@@ -676,6 +676,7 @@ void asf_multiple_payloads_dump (asf_multiple_payloads* obj)
 asf_script_command_entry** 
 asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 {
+	//printf ("asf_script_command::get_commands ().\n");
 	gint32 size_left = size;
 	gint32 size_requested = 0;
 	char** types = NULL;
@@ -683,8 +684,10 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 	asf_script_command_entry** result = NULL;
 	asf_script_command_entry* next = NULL;
 	
-	if (size == sizeof (asf_script_command))
+	if (size == sizeof (asf_script_command)) {
+		//printf ("asf_script_command::get_commands (), size = %i\n", size);
 		return NULL;
+	}
 	
 	size_left -= sizeof (asf_script_command);
 	
@@ -693,7 +696,7 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 		parser->AddError ("Data corruption in script command.");
 		goto failure;
 	}
-	size_left -= size_requested;
+
 	result = (asf_script_command_entry**) parser->MallocVerified (size_requested);
 	if (result == NULL)
 		goto failure;
@@ -703,7 +706,7 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 		parser->AddError ("Data corruption in script command.");
 		goto failure;
 	}
-	size_left -= size_requested;
+
 	types = (char**) parser->MallocVerified (size_requested);
 	if (types == NULL)
 		goto failure;
@@ -748,9 +751,11 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 		next = (asf_script_command_entry*) tmp;
 	}
 	
+	//printf ("asf_script_command::read_commands (): success, read %i commands and %i types.\n", command_count, command_type_count);
 	return result;
 	
 failure:
+	//printf ("asf_script_command::read_commands (): failure.\n");
 	g_free (result);
 	if (types != NULL) {
 		int i = -1;

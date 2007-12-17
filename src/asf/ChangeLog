@@ -1,3 +1,8 @@
+2007-12-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-structures.cpp: Don't subtract the size of the arrays from the total
+	  size left.
+
 2007-11-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* asf-ffmpeg.cpp (ffmpeg_asf_read_header): Fixed a compile error.
