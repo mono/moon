@@ -67,12 +67,12 @@ getPlugin ().onError = pluginError;
 var ErrorsTestSuite = Class.create ();
 ErrorsTestSuite.prototype = {
 	testEmptyCreateFromXaml: function () {
-		this.assertException (Errors.AG_E_RUNTIME_METHOD, function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
 			getPlugin ().content.createFromXaml ();
 		});
 	},
 	testDownloadGoogle: function () {
-		this.assertException (Errors.AG_E_RUNTIME_METHOD, function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
 			var dl = CodeModel.Downloader.create (getPlugin ());
 			dl.open ("GET", "http://www.google.com/");
 			dl.send ();

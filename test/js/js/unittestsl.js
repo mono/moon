@@ -76,12 +76,13 @@ Object.extend (Test.Unit.Testcase.prototype, {
 		this._checkModelValues (model, obj);
 	},
 
-	assertException: function (error, code) {
+	assertError: function (error, code) {
 		try {
 			code ();
 			this.fail ("Expected exception of type:" + error.message);
 		} catch (ex) {
-			this.assert (ex.indexOf (error.message) > -1, "Expected exception of type: " + error.message);
+			var message = typeof (ex) == "object" ? ex.message : ex;
+			this.assert (message.indexOf (error.message) > -1, "Expected exception of type: " + error.message);
 		}
-	},
+	}
 });

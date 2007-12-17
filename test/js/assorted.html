@@ -60,8 +60,6 @@ function $plugin() {
 
 <!-- Tests follow -->
 <script type="text/javascript" language="javascript" charset="utf-8">
-
-
 var AssortedTestSuite = Class.create ();
 AssortedTestSuite.prototype = {
 	testMatrixWithMoreThanSixItems: function () {
@@ -75,7 +73,7 @@ AssortedTestSuite.prototype = {
 		this.assertEqual (1, matrix.offsetY);
 	},
 	testMatrixWithLessThanSixItems: function () {
-		this.assertException (Errors.AG_E_RUNTIME_METHOD, function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
 			$plugin ().content.createFromXaml ("<MatrixTransform Matrix='1,0,1' />");
 		});
 	},
