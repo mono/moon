@@ -1566,33 +1566,34 @@ key_spline_from_str (const char *str, KeySpline **res)
 	return true;
 }
 
-// sepcial case, we return a Value, to avoid allocating/freeing a Matrix
-Value *
-matrix_value_from_str (const char *str)
+Matrix *
+matrix_from_str (const char *str)
 {
-	cairo_matrix_t matrix;
+	Matrix *matrix;
 	int count = 0;
-	
+
 	double *values = double_array_from_str (str, &count);
 
 	if (!values)
-		return false;
+		return NULL;
 
-	if (count == 6) {
-		matrix.xx = values [0];
-		matrix.yx = values [1];
-		matrix.xy = values [2];
-		matrix.yy = values [3];
-		matrix.x0 = values [4];
-		matrix.y0 = values [5];
-	} else {
+	if (count < 6) {
 		delete [] values;
 		return NULL;
 	}
-	
+
+	matrix = new Matrix ();
+
+	matrix_set_m11 (matrix, values [0]);
+	matrix_set_m12 (matrix, values [1]);
+	matrix_set_m21 (matrix, values [2]);
+	matrix_set_m22 (matrix, values [3]);
+	matrix_set_offset_x (matrix, values [4]);
+	matrix_set_offset_y (matrix, values [5]);
+
 	delete [] values;
-	
-	return new Value (&matrix);
+
+	return matrix;
 }
 
 
@@ -2519,20 +2520,25 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		break;
 	}
 	case Type::TRANSFORM: {
-		Value *mv = matrix_value_from_str (str);
+		Matrix *mv = matrix_from_str (str);
 
 		if (!mv)
 			return NULL;
 
 		MatrixTransform *t = new MatrixTransform ();
-		t->SetValue (MatrixTransform::MatrixProperty, mv->AsMatrix ());
+		t->SetValue (MatrixTransform::MatrixProperty, Value (mv));
 
 		v = new Value (t);
 		t->unref ();
 		break;
 	}
 	case Type::MATRIX: {
-		return matrix_value_from_str (str);
+		Matrix *matrix = matrix_from_str (str);
+		if (!matrix)
+			return NULL;
+
+		v = new Value (matrix);
+		matrix->unref ();
 		break;
 	}
 	case Type::GEOMETRY: {
@@ -3091,6 +3097,10 @@ xaml_init (void)
 
 	rdoe (dem, "TriggerCollection", col, Type::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
 	rdoe (dem, "TriggerActionCollection", col, Type::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
+	
+	/// Matrix
+
+	rdoe (dem, "Matrix", NULL, Type::MATRIX, (create_item_func) matrix_new);
 
 	///
 	/// Transforms

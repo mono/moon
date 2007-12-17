@@ -23,8 +23,6 @@ struct Rect;
 struct RepeatBehavior;
 struct Value;
 
-typedef cairo_matrix_t Matrix;
-
 class Type;
 class DependencyProperty;
 class Surface;
@@ -81,6 +79,7 @@ class LinearPointKeyFrame;
 class LineBreak;
 class LineGeometry;
 class LineSegment;
+class Matrix;
 class MatrixTransform;
 class MediaAttribute;
 class MediaAttributeCollection;
@@ -169,7 +168,6 @@ public:
 	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
-	Value (Matrix* matrix);
 	Value (Type::Kind k, gpointer npobj);
 
 	~Value ();
@@ -225,7 +223,6 @@ public:
 	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
 	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
-	Matrix*		AsMatrix ()	{ checked_get_exact (Type::MATRIX, NULL, u.matrix); }
 	gpointer	AsNPObj ()	{ checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
 
 	/* nullable primitives (all but bool) */
@@ -286,6 +283,7 @@ public:
 	LineBreak*                     AsLineBreak () { checked_get_subclass (Type::LINEBREAK, LineBreak) }
 	LineGeometry*                  AsLineGeometry () { checked_get_subclass (Type::LINEGEOMETRY, LineGeometry) }
 	LineSegment*                   AsLineSegment () { checked_get_subclass (Type::LINESEGMENT, LineSegment) }
+	Matrix*                        AsMatrix () { checked_get_subclass (Type::MATRIX, Matrix) }
 	MatrixTransform*               AsMatrixTransform () { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
 	MediaAttribute*                AsMediaAttribute () { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
 	MediaAttributeCollection*      AsMediaAttributeCollection () { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
@@ -376,7 +374,6 @@ public:
 		KeyTime *keytime;
 		PointArray *point_array;
 		DoubleArray *double_array;
-		Matrix* matrix;
 		gpointer npobj;
 	} u;
 

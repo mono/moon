@@ -80,10 +80,6 @@ Value::Value (const Value& v)
 	case Type::DOUBLE_ARRAY:
 		u.double_array->basic.refcount++;
 		break;
-	case Type::MATRIX:
-		u.matrix = (Matrix*) g_malloc (sizeof (Matrix));
-		memcpy (u.matrix, v.u.matrix, sizeof(Matrix));
-		break;
 	case Type::COLOR:
 		u.color = g_new (Color, 1);
 		*u.color = Color (*v.u.color);
@@ -231,14 +227,6 @@ Value::Value (double *values, int count)
 	u.double_array = double_array_new (count, values);
 }
 
-Value::Value (Matrix *matrix)
-{
-	Init ();
-	k = Type::MATRIX;
-	u.matrix = (Matrix*) g_malloc (sizeof (Matrix));
-	memcpy (u.matrix, matrix, sizeof (Matrix));
-}
-
 Value::Value (Type::Kind k, gpointer npobj)
 {
 	Init ();
@@ -262,9 +250,6 @@ Value::FreeValue ()
 	case Type::DOUBLE_ARRAY:
 		if (u.double_array != NULL && --u.double_array->basic.refcount == 0)
 			g_free (u.double_array);
-		break;
-	case Type::MATRIX:
-		g_free (u.matrix);
 		break;
 	case Type::COLOR:
 		g_free (u.color);
@@ -322,13 +307,7 @@ Value::ToString ()
 
 		g_string_append (str, "}");
 		break;
-	}		
-	case Type::MATRIX:
-		g_string_append_printf (str, "{ xx = %g, yx = %g, xy = %g, yy = %g, x0 = %g, y0 = %g }",
-					u.matrix->xx, u.matrix->yx, u.matrix->xy,
-					u.matrix->yy, u.matrix->x0, u.matrix->y0);
-		break;
-		
+	}
 	case Type::COLOR:
 		g_string_append_printf (str, "{%g/%g/%g/%g}", u.color->r, u.color->g, u.color->b, u.color->a);
 		break;

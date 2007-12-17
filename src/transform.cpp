@@ -360,14 +360,156 @@ skew_transform_get_center_y (SkewTransform *t)
 	return t->GetValue (SkewTransform::CenterYProperty)->AsDouble();
 }
 
+DependencyProperty *Matrix::M11Property;
+DependencyProperty *Matrix::M12Property;
+DependencyProperty *Matrix::M21Property;
+DependencyProperty *Matrix::M22Property;
+DependencyProperty *Matrix::OffsetXProperty;
+DependencyProperty *Matrix::OffsetYProperty;
 
+Matrix::Matrix ()
+{
+	cairo_matrix_init_identity (&matrix);
+}
+
+Value *
+Matrix::GetValue (DependencyProperty *prop)
+{
+	double value;
+
+	if (prop == Matrix::M11Property)
+		value = matrix.xx;
+	else if (prop == Matrix::M12Property)
+		value = matrix.yx;
+	else if (prop == Matrix::M21Property)
+		value = matrix.xy;
+	else if (prop == Matrix::M22Property)
+		value = matrix.yy;
+	else if (prop == Matrix::OffsetXProperty)
+		value = matrix.x0;
+	else if (prop == Matrix::OffsetYProperty)
+		value = matrix.y0;
+	else
+		return DependencyObject::GetValue (prop);
+	
+	return new Value (value);
+}
+
+void
+Matrix::SetValue (DependencyProperty *prop, Value value)
+{
+	DependencyObject::SetValue (prop, value);
+}
+
+void
+Matrix::SetValue (DependencyProperty *prop, Value *value)
+{
+	if (prop == Matrix::M11Property)
+		matrix.xx = value->AsDouble ();
+	else if (prop == Matrix::M12Property)
+		matrix.yx = value->AsDouble ();
+	else if (prop == Matrix::M21Property)
+		matrix.xy = value->AsDouble ();
+	else if (prop == Matrix::M22Property)
+		matrix.yy = value->AsDouble ();
+	else if (prop == Matrix::OffsetXProperty)
+		matrix.x0 = value->AsDouble ();
+	else if (prop == Matrix::OffsetYProperty)
+		matrix.y0 = value->AsDouble ();
+	else
+		DependencyObject::SetValue (prop, value);
+}
+
+cairo_matrix_t *
+Matrix::GetUnderlyingMatrix ()
+{
+	return &matrix;
+}
+
+Matrix *
+matrix_new ()
+{
+	return new Matrix ();
+}
+
+double
+matrix_get_m11 (Matrix *matrix)
+{
+	return matrix->GetValue (Matrix::M11Property)->AsDouble ();
+}
+
+void
+matrix_set_m11 (Matrix *matrix, double value)
+{
+	matrix->SetValue (Matrix::M11Property, Value (value));
+}
+
+double
+matrix_get_m12 (Matrix *matrix)
+{
+	return matrix->GetValue (Matrix::M12Property)->AsDouble ();
+}
+
+void
+matrix_set_m12 (Matrix *matrix, double value)
+{
+	matrix->SetValue (Matrix::M12Property, Value (value));
+}
+
+double
+matrix_get_m21 (Matrix *matrix)
+{
+	return matrix->GetValue (Matrix::M21Property)->AsDouble ();
+}
+
+void
+matrix_set_m21 (Matrix *matrix, double value)
+{
+	matrix->SetValue (Matrix::M21Property, Value (value));
+}
+
+double
+matrix_get_m22 (Matrix *matrix)
+{
+	return matrix->GetValue (Matrix::M22Property)->AsDouble ();
+}
+
+void
+matrix_set_m22 (Matrix *matrix, double value)
+{
+	matrix->SetValue (Matrix::M22Property, Value (value));
+}
+
+double
+matrix_get_offset_x (Matrix *matrix)
+{
+	return matrix->GetValue (Matrix::OffsetXProperty)->AsDouble ();
+}
+
+void
+matrix_set_offset_x (Matrix *matrix, double value)
+{
+	matrix->SetValue (Matrix::OffsetXProperty, Value (value));
+}
+
+double
+matrix_get_offset_y (Matrix *matrix)
+{
+	return matrix->GetValue (Matrix::OffsetYProperty)->AsDouble ();
+}
+
+void
+matrix_set_offset_y (Matrix *matrix, double value)
+{
+	matrix->SetValue (Matrix::OffsetYProperty, Value (value));
+}
 
 DependencyProperty* MatrixTransform::MatrixProperty;
 
 void
 MatrixTransform::UpdateTransform ()
 {
-	cairo_matrix_t* matrix = matrix_transform_get_matrix (this);
+	cairo_matrix_t* matrix = matrix_transform_get_matrix (this)->GetUnderlyingMatrix ();
 	if (matrix)
 		_matrix = *matrix;
 	else
@@ -384,14 +526,13 @@ matrix_transform_new (void)
 void
 matrix_transform_set_matrix (MatrixTransform *t, Matrix *matrix)
 {
-	t->SetValue (MatrixTransform::MatrixProperty, Value(matrix));
+	t->SetValue (MatrixTransform::MatrixProperty, Value (matrix));
 }
 
 Matrix *
 matrix_transform_get_matrix (MatrixTransform *t)
 {
-	Value *value = t->GetValue (MatrixTransform::MatrixProperty);
-	return (value ? value->AsMatrix() : NULL);
+	return t->GetValue (MatrixTransform::MatrixProperty)->AsMatrix();
 }
 
 DependencyProperty* TransformGroup::ChildrenProperty;
@@ -497,6 +638,14 @@ transform_init (void)
 	SkewTransform::AngleYProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "AngleY", new Value (0.0));
 	SkewTransform::CenterXProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "CenterX", new Value (0.0));
 	SkewTransform::CenterYProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "CenterY", new Value (0.0));
+	
+	/* Matrix fields */
+	Matrix::M11Property = DependencyObject::Register (Type::MATRIX, "M11", new Value (0.0));
+	Matrix::M12Property = DependencyObject::Register (Type::MATRIX, "M12", new Value (0.0));
+	Matrix::M21Property = DependencyObject::Register (Type::MATRIX, "M21", new Value (0.0));
+	Matrix::M22Property = DependencyObject::Register (Type::MATRIX, "M22", new Value (0.0));
+	Matrix::OffsetXProperty = DependencyObject::Register (Type::MATRIX, "OffsetX", new Value (0.0));
+	Matrix::OffsetYProperty = DependencyObject::Register (Type::MATRIX, "OffsetY", new Value (0.0));
 
 	/* MatrixTransform fields */
 	MatrixTransform::MatrixProperty = DependencyObject::Register (Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);

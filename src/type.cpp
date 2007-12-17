@@ -298,7 +298,6 @@ types_init_manually (void)
 	Type::RegisterType ("KeyTime", Type::KEYTIME, true);
 	Type::RegisterType ("double*", Type::DOUBLE_ARRAY, false);
 	Type::RegisterType ("Point*", Type::POINT_ARRAY, false);
-	Type::RegisterType ("Matrix", Type::MATRIX, true);
 	Type::RegisterType ("NPObj", Type::NPOBJ, false);
 	Type::RegisterType ("EventObject", Type::EVENTOBJECT, false);
 	Type::RegisterType ("TimeSource", Type::TIMESOURCE, Type::EVENTOBJECT);
@@ -447,6 +446,7 @@ types_init (void)
 	Type::RegisterType ("LineBreak", Type::LINEBREAK, Type::INLINE, (create_inst_func *) line_break_new, NULL);
 	Type::RegisterType ("LineGeometry", Type::LINEGEOMETRY, Type::GEOMETRY, (create_inst_func *) line_geometry_new, NULL);
 	Type::RegisterType ("LineSegment", Type::LINESEGMENT, Type::PATHSEGMENT, (create_inst_func *) line_segment_new, NULL);
+	Type::RegisterType ("Matrix", Type::MATRIX, Type::DEPENDENCY_OBJECT, (create_inst_func *) matrix_new, NULL);
 	Type::RegisterType ("MatrixTransform", Type::MATRIXTRANSFORM, Type::TRANSFORM, (create_inst_func *) matrix_transform_new, NULL);
 	Type::RegisterType ("MediaAttribute", Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, (create_inst_func *) media_attribute_new, NULL);
 	Type::RegisterType ("MediaAttributeCollection", Type::MEDIAATTRIBUTE_COLLECTION, Type::COLLECTION, (create_inst_func *) media_attribute_collection_new, NULL);

@@ -1,3 +1,15 @@
+2007-12-17  Jb Evain  <jbevain@novell.com>
+
+	* type.cpp|h(.in), value.cpp|h(.in): remove the Matrix
+	value type, has SL exposes it as a DependencyObject.
+
+	* transform.cpp|h: define and implement the
+	Matrix DependencyObject type.
+
+	* xaml.cpp: create a Matrix DO on a Matrix xaml element.
+	Also create such an object with the <MatrixTransform Matrix='...'>
+	syntax.
+
 2007-12-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Return an "empty" Value (not NULL) if no POINT_ARRAY

@@ -136,11 +136,47 @@ double skew_transform_get_center_x (SkewTransform *t);
 void   skew_transform_set_center_y (SkewTransform *t, double centerY);
 double skew_transform_get_center_y (SkewTransform *t);
 
+class Matrix : public DependencyObject {
+private:
+	cairo_matrix_t matrix;
+public:
+	static DependencyProperty *M11Property;
+	static DependencyProperty *M12Property;
+	static DependencyProperty *M21Property;
+	static DependencyProperty *M22Property;
+	static DependencyProperty *OffsetXProperty;
+	static DependencyProperty *OffsetYProperty;
+
+	Matrix ();
+
+	virtual Value *GetValue (DependencyProperty *prop);
+	virtual void SetValue (DependencyProperty *prop, Value value);
+	virtual void SetValue (DependencyProperty *prop, Value *value);
+
+	virtual Type::Kind GetObjectType () { return Type::MATRIX; }
+
+	cairo_matrix_t *GetUnderlyingMatrix ();
+};
+
+Matrix *matrix_new ();
+double matrix_get_m11 (Matrix *matrix);
+void matrix_set_m11 (Matrix *matrix, double value);
+double matrix_get_m12 (Matrix *matrix);
+void matrix_set_m12 (Matrix *matrix, double value);
+double matrix_get_m21 (Matrix *matrix);
+void matrix_set_m21 (Matrix *matrix, double value);
+double matrix_get_m22 (Matrix *matrix);
+void matrix_set_m22 (Matrix *matrix, double value);
+double matrix_get_offset_x (Matrix *matrix);
+void matrix_set_offset_x (Matrix *matrix, double value);
+double matrix_get_offset_y (Matrix *matrix);
+void matrix_set_offset_y (Matrix *matrix, double value);
+
 class MatrixTransform : public Transform {
  public:
 	static DependencyProperty* MatrixProperty;
 
-	MatrixTransform () { }
+	MatrixTransform () {}
 	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; };
 
 	/* these are dependency properties
