@@ -126,8 +126,10 @@ regprop (CodeModel.Shape, "StrokeStartLineCap", "string", "Flat");
 regprop (CodeModel.Shape, "StrokeThickness", "number", 1);
 
 regprop (CodeModel.Polygon, "FillRule", "string", "EvenOdd");
+regprop (CodeModel.Polygon, "Points", "object", "PointCollection");
 
 regprop (CodeModel.Polyline, "FillRule", "string", "EvenOdd");
+regprop (CodeModel.Polyline, "Points", "object", "PointCollection");
 
 regprop (CodeModel.GeometryGroup, "Children", "object", "GeometryCollection");
 

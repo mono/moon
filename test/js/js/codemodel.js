@@ -875,7 +875,7 @@ CodeModel.Polygon = {
 		return plugin.content.createFromXaml ("<Polygon />");
 	},
 
-	properties: ["FillRule"]
+	properties: ["FillRule", "Points"]
 };
 
 CodeModel.Polyline = {
@@ -887,7 +887,7 @@ CodeModel.Polyline = {
 		return plugin.content.createFromXaml ("<Polyline />");
 	},
 
-	properties: ["FillRule"]
+	properties: ["FillRule", "Points"]
 };
 
 CodeModel.Rectangle = {
