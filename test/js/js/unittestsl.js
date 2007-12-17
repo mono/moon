@@ -63,13 +63,17 @@ Object.extend (Test.Unit.Testcase.prototype, {
 	},
 
 	assertDefaultValues: function (model) {
-		try {
-			var obj = this._createObject (model);
-
-			this._checkModelValues (model, obj);
-		} catch (ex) {
-			this.fail ("Cannot create object of type " + model.name + ", " + ex);
+		var obj = null;
+		if (arguments [1])
+			obj = arguments [1];
+		else {
+			try {
+				var obj = this._createObject (model);
+			} catch (ex) {
+				this.fail ("Cannot create object of type " + model.name + ", " + ex);
+			}
 		}
+		this._checkModelValues (model, obj);
 	},
 
 	assertException: function (error, code) {

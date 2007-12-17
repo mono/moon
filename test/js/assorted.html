@@ -9,6 +9,7 @@
   <script src="js/unittest.js" type="text/javascript"></script>
   <script src="js/codemodel.js" type="text/javascript"></script>
   <script src="js/errors.js" type="text/javascript"></script>
+  <script src="js/props.js" type="text/javascript"></script>
   <script src="js/unittestsl.js" type="text/javascript"></script>
   <link rel="stylesheet" href="css/test.css" type="text/css" />
 </head>
@@ -79,7 +80,9 @@ AssortedTestSuite.prototype = {
 		});
 	},
 	testMatrixWithZeroItem: function () {
-		$plugin ().content.createFromXaml ("<MatrixTransform Matrix='' />");
+		var mt = $plugin ().content.createFromXaml ("<MatrixTransform Matrix='' />");
+		var matrix = mt.matrix;
+		this.assertDefaultValues (CodeModel.Matrix, matrix);
 	},
 	testAllowEmptyPointsOnPolygon: function () {
 		$plugin ().content.createFromXaml ("<Polygon Points='' />");
