@@ -63,8 +63,8 @@ function $plugin() {
 var AssortedTestSuite = Class.create ();
 AssortedTestSuite.prototype = {
 
-	testEmptyPointsOn: function () {
-		var poly = $plugin ().content.createFromXaml ("<Polygon Points=\"\" />");
+	testAllowEmptyPointsOnPolygon: function () {
+		$plugin ().content.createFromXaml ("<Polygon Points='' />");
 	}
 };
 
