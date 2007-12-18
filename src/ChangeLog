@@ -1,3 +1,8 @@
+2007-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Fix default color values for SolidColorBrush::Color and
+	GradientStop::Color properties (see js unit tests).
+
 2007-12-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: ReadASFMarkers: Read markers as well as script commands.
