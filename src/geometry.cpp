@@ -522,11 +522,6 @@ path_geometry_new ()
 	return new PathGeometry ();
 }
 
-PathGeometry::PathGeometry ()
-{
-	this->SetValue (PathGeometry::FiguresProperty, Value::CreateUnref (new PathFigureCollection ()));
-}
-
 void
 PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 {
