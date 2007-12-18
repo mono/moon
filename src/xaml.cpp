@@ -1652,7 +1652,7 @@ more_points_available (char **in)
 {
 	char *inptr = *in;
 	
-	while (g_ascii_isspace (*inptr))
+	while (g_ascii_isspace (*inptr) || *inptr == ',')
 		inptr++;
 	
 	*in = inptr;

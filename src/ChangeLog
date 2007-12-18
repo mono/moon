@@ -1,3 +1,7 @@
+2007-12-18  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* xaml.cpp: fix for bnc 348581.
+
 2007-12-18  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp: Fix default color values for SolidColorBrush::Color and
