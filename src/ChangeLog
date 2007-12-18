@@ -1,3 +1,11 @@
+2007-12-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: ReadASFMarkers: Read markers as well as script commands.
+	  Subtract the preroll value from the pts before adding the marker. Unref
+	  the created collection and markers when finished with them.
+	  AdvanceFrame: Always call CheckMarkers, even if we couldn't advance the
+	  frame (might be necessary if the last frame has a marker).
+
 2007-12-17  Jb Evain  <jbevain@novell.com>
 
 	* xaml.cpp: fix testMatrixWithZeroItem test case.

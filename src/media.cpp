@@ -261,44 +261,89 @@ int MediaElement::MediaOpenedEvent = -1;
 void
 MediaElement::ReadASFMarkers ()
 {
-	if (mplayer == NULL || mplayer->asf_parser == NULL || mplayer->asf_parser->script_command == NULL)
+	//printf ("MediaElement::ReadASFMarkers ()\n");
+
+	if (mplayer == NULL || mplayer->asf_parser == NULL || (mplayer->asf_parser->script_command == NULL && mplayer->asf_parser->marker == NULL)) {
+		//printf ("MediaElement::ReadASFMarkers (): not reading markers. mplayer = %p, asf_parser = %p, script_command = %p, marker = %p.\n", 
+		//	mplayer, 
+		//	mplayer ? mplayer->asf_parser : NULL, 
+		//	mplayer ? (mplayer->asf_parser ? mplayer->asf_parser->script_command : NULL) : NULL, 
+		//	mplayer ? (mplayer->asf_parser ? mplayer->asf_parser->marker : NULL) : NULL);
 		return;
+	}
 		
+	TimelineMarkerCollection *col = NULL;
+	int i = -1;
+	guint64 preroll = mplayer->asf_parser->file_properties->preroll;
+	
+	// Read the script commands
 	char **command_types = NULL;
 	asf_script_command_entry **commands = NULL;
 	asf_script_command *command = mplayer->asf_parser->script_command;
-	TimelineMarkerCollection *col = NULL;
-	int i = -1;
-	
-	commands = command->get_commands (mplayer->asf_parser, &command_types);
-	
-	if (commands == NULL)
-		goto cleanup;
+
+	if (command != NULL) {
+		commands = command->get_commands (mplayer->asf_parser, &command_types);
 		
-	if (command_types == NULL)
-		goto cleanup;
-		
+		if (command_types == NULL) {
+			printf ("MediaElement::ReadASFMarkers (): No command types.\n");
+			goto cleanup;
+		}
+	}
+
 	col = new TimelineMarkerCollection ();
 	
 	i = -1;
-	while (commands [++i] != NULL) {
+	while (commands != NULL && commands [++i] != NULL) {
 		asf_script_command_entry *entry = commands [i];
-		TimelineMarker *marker = new TimelineMarker ();
-		marker->SetValue (TimelineMarker::TextProperty, entry->get_name ());
+		int64_t pts = (entry->pts - preroll) * 10000;
+		char* text = entry->get_name ();
+		const char* type = "";
+		
 		if (entry->type_index + 1 <= command->command_type_count) {
-			marker->SetValue (TimelineMarker::TypeProperty, command_types [entry->type_index]);
-		} else {
-			marker->SetValue (TimelineMarker::TypeProperty, "");
+			type = command_types [entry->type_index];
 		}
-		//printf ("MediaElement::ReadMarkers () Added marker at %i (text: %s, type: %s)\n", entry->pts, entry->get_name (), command_types [entry->type_index]);
-		marker->SetValue (TimelineMarker::TimeProperty, Value ((int64_t) entry->pts * 10000, Type::TIMESPAN));
-		col->Add (marker);
+		
+		TimelineMarker *new_marker = new TimelineMarker ();
+		new_marker->SetValue (TimelineMarker::TextProperty, text);
+		new_marker->SetValue (TimelineMarker::TypeProperty, type);
+		new_marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
+		col->Add (new_marker);
+		
+		//printf ("MediaElement::ReadMarkers () Added script command at %llu (text: %s, type: %s)\n", pts, text, type);
+		
+		new_marker->unref ();
+		g_free (text);
+	}
+	
+	asf_marker *asf_marker;
+	asf_marker_entry* marker_entry;
+	
+	asf_marker = mplayer->asf_parser->marker;
+	if (asf_marker != NULL) {
+		for (i = 0; i < (int) asf_marker->marker_count; i++) {
+			marker_entry = asf_marker->get_entry (i);
+			int64_t pts = (marker_entry->pts - preroll * 10000);
+			char* text = marker_entry->get_marker_description ();
+			
+			TimelineMarker *new_marker = new TimelineMarker ();
+			new_marker->SetValue (TimelineMarker::TypeProperty, "Name");
+			new_marker->SetValue (TimelineMarker::TextProperty, text);
+			new_marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
+			col->Add (new_marker);
+			
+			//printf ("MediaElement::ReadMarkers () Added marker at %llu (text: %s, type: %s)\n", pts, text, "Name");
+		
+			new_marker->unref ();
+			g_free (text);
+		}
 	}
 	
 	// Docs says we overwrite whatever's been loaded already.
+	//printf ("MediaElement::ReadASFMarkers (): setting %i markers.\n", i);
 	SetValue (MarkersProperty, col);
 	
 cleanup:
+	col->unref ();
 	if (command_types) {
 		i = -1;
 		while (command_types [++i] != NULL)
@@ -346,6 +391,7 @@ MediaElement::CheckMarkers (int64_t from, int64_t to)
 		
 		if (pts >= from && pts <= to) {
 			marker->ref ();
+			//printf ("MediaElement::CheckMarkers (%llu, %llu): Found marker, text = %s.\n", from, to, marker->GetValue (TimelineMarker::TextProperty)->AsString ());
 			Emit (MarkerReachedEvent, marker);
 			marker->unref ();
 		}
@@ -358,24 +404,30 @@ bool
 MediaElement::AdvanceFrame ()
 {
 	int64_t position;
+	bool advanced;
 	
-	if (mplayer->AdvanceFrame ()) {
+	advanced = mplayer->AdvanceFrame ();
+
+	if ((position = mplayer->Position ()) < 0)
+		position = 0;
+	position *= TIMESPANTICKS_IN_SECOND / 1000;
+
+	if (advanced) {
 		updating = true;
-		if ((position = mplayer->Position ()) < 0)
-			position = 0;
-		position *= TIMESPANTICKS_IN_SECOND / 1000;
 		media_element_set_position (this, position);
-		CheckMarkers (previous_position, position);
-		previous_position = position;
 		updating = false;
-	} else {
+	}
+
+	CheckMarkers (previous_position, position);
+	previous_position = position + 1; // Add 1 to avoid the same position to be able to be both beginning and end of a range (otherwise the same marker might raise two events).
+
+	if (!advanced) {
 		if (source)
 			source->Stop (true);
 		Emit (MediaEndedEvent);
-		return false;
 	}
 	
-	return true;
+	return advanced;
 }
 
 gboolean
