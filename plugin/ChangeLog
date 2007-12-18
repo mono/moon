@@ -1,3 +1,8 @@
+2007-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: The plugin handle Color as an integer (see js 
+	unit tests).
+
 2007-12-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: The part parameter of MediaElement::SetSource is the

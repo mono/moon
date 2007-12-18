@@ -309,6 +309,14 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 		break;
 	}
 
+	case Type::COLOR: {
+		Color *c = v->AsColor ();
+		gint32 color = ((((gint32)(c->a * 255.0)) << 24) | (((gint32)(c->r * 255.0)) << 16) | 
+			(((gint32)(c->g * 255.0)) << 8) | ((gint32)(c->b * 255.0)));
+		INT32_TO_NPVARIANT (color, *result);
+		break;
+	}
+
 	/* more builtins.. */
 	default:
 		if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
