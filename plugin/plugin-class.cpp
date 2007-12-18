@@ -216,7 +216,7 @@ map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
 static const char *
 map_moon_id_to_event_name (int moon_id)
 {
-	char *name = NULL;
+	const char *name = NULL;
 
 	switch (moon_id) {
 	case MoonId_BufferingProgressChanged: name = "BufferingProgressChanged"; break;
@@ -2656,7 +2656,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("setSource");
 
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject*)NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
-		const char *part = STR_FROM_VARIANT (args [0]);
+		const char *part = STR_FROM_VARIANT (args [1]);
 
 		media->SetSource (downloader, part);
 
