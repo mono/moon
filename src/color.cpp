@@ -192,7 +192,7 @@ color_from_str (const char *name)
 		char g [3] = "FF";
 		char b [3] = "FF";
 
-		switch (len + 1) {
+		switch (len - 1) {
 		case 3:
 			// rgb
 			r [1] = r [0] = name [1];
