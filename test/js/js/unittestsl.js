@@ -1,4 +1,11 @@
 Object.extend (Test.Unit.Testcase.prototype, {
+
+	ignore: function () {
+		var message = arguments [0] || "ignored";
+		this.info (message);
+		this.pass ();
+	},
+
 	_createObject: function (model) {
 		return model.create (document.getElementById ("MoonlightControl"));
 	},
