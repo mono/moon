@@ -1,3 +1,8 @@
+2007-12-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Fix frame reading, previously we would skip everything in the
+	  queue of payloads except the first and second payload.
+
 2007-12-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.cpp: Don't subtract the size of the arrays from the total

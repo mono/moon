@@ -815,9 +815,9 @@ ASFFrameReader::Advance ()
 	size = payloads [0]->payload_data_length;
 	stream_number = StreamNumber ();
 	
-	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i.\n", 
-		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber ());
-	
+	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i, media_object_number = %u.\n", 
+		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber (), media_object_number);
+	//asf_single_payload_dump (payloads [0]);
 	current = first->next;
 	
 	Remove (first);
@@ -830,7 +830,7 @@ ASFFrameReader::Advance ()
 			// We went past the end, read another packet to get more data.
 			current = last; // go back to the last element.
 			if (!ReadMore ()) {
-				return true; // No more data, we've reached the end
+				goto end_frame; // No more data, we've reached the end
 			} else {
 				if (current == NULL) {
 					// There was no elements before reading more, our next element is the first one
@@ -841,10 +841,13 @@ ASFFrameReader::Advance ()
 			}
 		}
 		
+		ASF_LOG ("ASFFrameReader::Advance (): checking payload, stream: %i, media object number %i, size: %i\n", current->payload->stream_number, current->payload->media_object_number, current->payload->payload_data_length);
+		
 		if (current->payload->stream_number == stream_number) {
 			if (current->payload->media_object_number != media_object_number) {
 				// We've found the end of the current frame's payloads
-				return true;
+				ASF_LOG ("ASFFrameReader::Advance (): reached media object number %i (while reading %i).\n", current->payload->media_object_number, media_object_number);
+				goto end_frame;
 			}
 			
 			// Still in the current frame, so
@@ -861,14 +864,19 @@ ASFFrameReader::Advance ()
 			
 			// Remove it from the queue
 			ASFFrameReaderData* tmp = current;
-			current = current->prev;
+			current = current->next;
 			Remove (tmp);
+		} else {
+			current = current->next;
 		}
 		
-		if (current != NULL)
-			current = current->next;
+		ASF_LOG ("ASFFrameReader::Advance (): current is %p.\n", current);
 	}
 	
+end_frame:
+	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i, media_object_number = %u (advanced).\n", 
+		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber (), media_object_number);
+		
 	return true;
 }
 
