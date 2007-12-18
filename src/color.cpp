@@ -177,11 +177,14 @@ named_colors_t named_colors [] = {
  * If no color is found, Color.Transparent is returned.
  */
 Color*
-
 color_from_str (const char *name)
 {
 	if (!name)
 		return new Color (0x00FFFFFF);
+
+	int len = strlen (name);
+	if (len == 0)
+		return new Color (0x00000000);
 
 	if (name [0] == '#') {
 		char a [3] = "FF";
@@ -189,7 +192,7 @@ color_from_str (const char *name)
 		char g [3] = "FF";
 		char b [3] = "FF";
 
-		switch (strlen (name + 1)) {
+		switch (len + 1) {
 		case 3:
 			// rgb
 			r [1] = r [0] = name [1];
