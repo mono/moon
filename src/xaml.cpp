@@ -2377,7 +2377,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		d = g_ascii_strtod (str, &endptr);
 
 		if (errno || endptr == str || *endptr)
-			return NULL;
+			d = 0.0;
 
 		v = new Value (d);
 		break;
@@ -2505,9 +2505,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 	case Type::DOUBLE_ARRAY: {
 		int count = 0;
 		double *doubles = double_array_from_str (str, &count);
-
-		if (!doubles)
-			return NULL;
 
 		v = new Value (doubles, count);
 		break;

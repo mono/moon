@@ -1,3 +1,9 @@
+2007-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix unit test were empty string are parsed as 0.0,
+	foir doubles, and as an "empty" (but not NULL) Value for 
+	DOUBLE_ARRAY.
+
 2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp, media.h: Implement support for markers as a separate stream
