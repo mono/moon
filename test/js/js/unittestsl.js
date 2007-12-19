@@ -60,9 +60,18 @@ Object.extend (Test.Unit.Testcase.prototype, {
 				if (!prop)
 					continue;
 
-				var val = obj [name];
-				this.assert (typeof (val) == prop.type, fullname + ": expected type: " + prop.type + ", found: " + typeof (val) + ", expected value: " + prop.valdef + ", found: " + val);
-				this.assert (val == this._getDefaultValue (prop), fullname + ": expected default value: " + prop.valdef + ", found: " + val);
+				if (prop.type == "exception") {
+					try {
+						var val = obj [name];
+						this.fail ("expected exception when accessing: " + fullname);
+					} catch (ex) {
+						this.pass ();
+					}
+				} else {
+					var val = obj [name];
+					this.assert (typeof (val) == prop.type, fullname + ": expected type: " + prop.type + ", found: " + typeof (val) + ", expected value: " + prop.valdef + ", found: " + val);
+					this.assert (val == this._getDefaultValue (prop), fullname + ": expected default value: " + prop.valdef + ", found: " + val);
+				}
 			}
 		}
 

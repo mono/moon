@@ -41,6 +41,7 @@ regprop (CodeModel.UIElement, "IsHitTestVisible", "boolean", true);
 regprop (CodeModel.UIElement, "Opacity", "number", 1);
 regprop (CodeModel.UIElement, "OpacityMask", "object", null);
 regprop (CodeModel.UIElement, "RenderTransform", "object", null);
+regprop (CodeModel.UIElement, "RenderTransformOrigin", "exception");
 regprop (CodeModel.UIElement, "Resources", "object", "ResourceDictionary");
 regprop (CodeModel.UIElement, "Tag", "string", "");
 regprop (CodeModel.UIElement, "Triggers", "object", "TriggerCollection");
@@ -58,6 +59,8 @@ regprop (CodeModel.SplineColorKeyFrame, "KeySpline", "object", null);
 regprop (CodeModel.SplineDoubleKeyFrame, "KeySpline", "object", null);
 
 regprop (CodeModel.SplinePointKeyFrame, "KeySpline", "object", null);
+
+regprop (CodeModel.Storyboard, "Children", "exception");
 
 regprop (CodeModel.Timeline, "AutoReverse", "boolean", false);
 regprop (CodeModel.Timeline, "BeginTime", "object", null);
@@ -98,12 +101,34 @@ regprop (CodeModel.GradientBrush, "GradientStops", "object", "GradientStopCollec
 regprop (CodeModel.GradientBrush, "MappingMode", "string", "RelativeToBoundingBox");
 regprop (CodeModel.GradientBrush, "SpreadMethod", "string", "Pad");
 
+regprop (CodeModel.LinearGradientBrush, "StartPoint", "exception");
+regprop (CodeModel.LinearGradientBrush, "EndPoint", "exception");
+
 regprop (CodeModel.RadialGradientBrush, "RadiusX", "number", 0.5);
 regprop (CodeModel.RadialGradientBrush, "RadiusY", "number", 0.5);
+regprop (CodeModel.RadialGradientBrush, "Center", "exception");
+regprop (CodeModel.RadialGradientBrush, "GradientOrigin", "exception");
 
 regprop (CodeModel.ArcSegment, "IsLargeArc", "boolean", false);
 regprop (CodeModel.ArcSegment, "RotationAngle", "number", 0);
 regprop (CodeModel.ArcSegment, "SweepDirection", "string", "Counterclockwise");
+regprop (CodeModel.ArcSegment, "Point", "exception");
+regprop (CodeModel.ArcSegment, "Size", "exception");
+
+regprop (CodeModel.BezierSegment, "Point1", "exception");
+regprop (CodeModel.BezierSegment, "Point2", "exception");
+regprop (CodeModel.BezierSegment, "Point3", "exception");
+
+regprop (CodeModel.LineSegment, "Point", "exception");
+
+regprop (CodeModel.PolyBezierSegment, "Points", "exception");
+
+regprop (CodeModel.PolyLineSegment, "Points", "exception");
+
+regprop (CodeModel.PolyQuadraticBezierSegment, "Points", "exception");
+
+regprop (CodeModel.QuadraticBezierSegment, "Point1", "exception");
+regprop (CodeModel.QuadraticBezierSegment, "Point2", "exception");
 
 regprop (CodeModel.BeginStoryboard, "Storyboard", "object", null);
 
@@ -117,6 +142,7 @@ regprop (CodeModel.Path, "Data", "object", null);
 regprop (CodeModel.Shape, "Fill", "object", null);
 regprop (CodeModel.Shape, "Stretch", "string", "None");
 regprop (CodeModel.Shape, "Stroke", "object", null);
+regprop (CodeModel.Shape, "StrokeDashArray", "exception");
 regprop (CodeModel.Shape, "StrokeDashCap", "string", "Flat");
 regprop (CodeModel.Shape, "StrokeDashOffset", "number", 0);
 regprop (CodeModel.Shape, "StrokeEndLineCap", "string", "Flat");
@@ -137,12 +163,19 @@ regprop (CodeModel.Geometry, "Transform", "object", null);
 
 regprop (CodeModel.EllipseGeometry, "RadiusX", "number", 0);
 regprop (CodeModel.EllipseGeometry, "RadiusY", "number", 0);
+regprop (CodeModel.EllipseGeometry, "Center", "exception");
 
 regprop (CodeModel.PathGeometry, "Figures", "object", null);
 regprop (CodeModel.PathGeometry, "FillRule", "string", "EvenOdd");
 
 regprop (CodeModel.RectangleGeometry, "RadiusX", "number", 0);
 regprop (CodeModel.RectangleGeometry, "RadiusY", "number", 0);
+regprop (CodeModel.RectangleGeometry, "Rect", "exception");
+
+regprop (CodeModel.LineGeometry, "StartPoint", "exception");
+regprop (CodeModel.LineGeometry, "EndPoint", "exception");
+
+regprop (CodeModel.PathFigure, "StartPoint", "exception");
 
 regprop (CodeModel.EventTrigger, "Actions", "object", "TriggerActionCollection");
 regprop (CodeModel.EventTrigger, "RoutedEvent", "string", "");
