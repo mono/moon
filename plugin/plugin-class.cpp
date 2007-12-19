@@ -1415,8 +1415,8 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 			return true;
 		}
 		else {
-			// XXX the docs say we're supposed to throw an exception here,
-			// since downloader is the only type you can create.
+			THROW_JS_EXCEPTION ("createObject");
+
 			NULL_TO_NPVARIANT (*result);
 			return true;
 		}

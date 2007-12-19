@@ -1,3 +1,8 @@
+2007-12-20  Jb Evain  <jbevain@novell.com>
+
+	* plugin-class.cpp: throw if createObject is called
+	for something else than Downloader.
+
 2007-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp: The plugin handle Color as an integer (see js 
