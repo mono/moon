@@ -160,7 +160,7 @@ class PathGeometry : public Geometry {
  public:
 	static DependencyProperty* FiguresProperty;
 
-	PathGeometry () {};
+	PathGeometry () { SetValue (PathGeometry::FiguresProperty, Value::CreateUnref (new PathFigureCollection ())); }
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
