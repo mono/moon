@@ -1,3 +1,8 @@
+2007-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Add create_item_func for PathFigureCollection. This is 
+	now needed since it defaults to null and not an empty collection.
+
 2007-12-19  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* uielement.[h|cpp]: set a default value (0,0) for RenderTransformOrigin.

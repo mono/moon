@@ -3001,7 +3001,7 @@ xaml_init (void)
 	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Type::PATHGEOMETRY, (create_item_func) path_geometry_new);
 	pg->content_property = "Figures";
 
-	/*XamlElementInfo *pfc = */ rdoe (dem, "PathFigureCollection", col, Type::PATHFIGURE_COLLECTION, (create_item_func) NULL);
+	/*XamlElementInfo *pfc = */ rdoe (dem, "PathFigureCollection", col, Type::PATHFIGURE_COLLECTION, (create_item_func) path_figure_collection_new);
 
 	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Type::PATHFIGURE, (create_item_func) path_figure_new);
 	pf->content_property = "Segments";
