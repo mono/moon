@@ -182,6 +182,8 @@ class MediaElement : public MediaBase {
 	bool play_pending;
 	int64_t previous_position;
 	
+	TimelineMarkerCollection* streamed_markers;
+	
 	virtual void OnLoaded ();
 	
 	void UpdateProgress ();
@@ -201,6 +203,7 @@ class MediaElement : public MediaBase {
 	
 	void ReadASFMarkers ();
 	void CheckMarkers (int64_t from, int64_t to);
+	void CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection* col, bool remove);
 	
 public:
 	static DependencyProperty *AttributesProperty;
@@ -249,6 +252,8 @@ public:
 		return !(absolute_xform.xx == absolute_xform.yy /* no rotation */
 			 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */);
 	}
+	
+	void AddStreamedMarker (TimelineMarker* marker);
 	
 	static int BufferingProgressChangedEvent;
 	static int CurrentStateChangedEvent;

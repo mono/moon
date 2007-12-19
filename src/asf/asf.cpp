@@ -19,7 +19,7 @@ ASFParser::ASFParser (const char* filename)
 	ASF_LOG ("ASFParser::ASFParser ('%s'), this: %p.\n", filename, this);
 	source = new ASFFileSource (this, filename);
 	Initialize ();
-}
+}v
 
 ASFParser::ASFParser (ASFSource* src)
 {
@@ -42,6 +42,8 @@ ASFParser::Initialize ()
 	marker = NULL;
 	file_properties = NULL;
 	errors = NULL;
+	embedded_script_command = NULL;
+	embedded_script_command_state = NULL;
 	memset (stream_properties, 0, sizeof (asf_stream_properties*) * 127);
 }
 
@@ -708,8 +710,12 @@ ASFFrameReader::ASFFrameReader (ASFParser* p)
 	payloads_size = 0;
 	payloads = NULL;
 	eof = false;
+	
+	
+	script_command_stream_index = 0;
+	FindScriptCommandStream ();
 }
-
+	
 ASFFrameReader::~ASFFrameReader ()
 {
 	parser = NULL;
@@ -720,6 +726,22 @@ ASFFrameReader::~ASFFrameReader ()
 	while (payloads [++i] != NULL)
 		delete payloads [i];
 	g_free (payloads); payloads = NULL;
+}
+
+void
+ASFFrameReader::FindScriptCommandStream ()
+{
+	if (script_command_stream_index > 0)
+		return;
+		
+	for (int i = 1; i <= 127; i++) {
+		asf_stream_properties* stream = parser->GetStream (i);
+		//printf ("Checking guid of stream %i (%p): %s against %s\n", i, stream, stream == NULL ? "-" : asf_guid_tostring (&stream->stream_type), stream == NULL ? "-" : asf_guid_tostring (&asf_guids_media_command));
+		if (stream != NULL && asf_guid_compare (&stream->stream_type, &asf_guids_media_command)) {
+			script_command_stream_index = i;
+			break;
+		}
+	}
 }
 
 bool
@@ -792,6 +814,7 @@ ASFFrameReader::Seek (gint32 stream_number, gint64 pts)
 bool
 ASFFrameReader::Advance ()
 {
+start:
 	ASF_LOG ("ASFFrameReader::Advance ().\n");
 	// Clear the current list of payloads.
 	
@@ -888,10 +911,83 @@ ASFFrameReader::Advance ()
 	}
 	
 end_frame:
-	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i, media_object_number = %u (advanced).\n", 
-		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber (), media_object_number);
-		
+	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i, media_object_number = %u, script_command_stream_index = %u (advanced).\n", 
+		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber (), media_object_number, script_command_stream_index);
+
+	// Check if the current frame is a script command, in which case we must call the callback set in 
+	// the parser (and read another frame).
+	if (stream_number == script_command_stream_index) {
+		ReadScriptCommand ();
+		goto start;
+	}
+	
 	return true;
+}
+
+void
+ASFFrameReader::ReadScriptCommand ()
+{
+	guint64 pts;
+	char* text;
+	char* type;
+	gunichar2* data;
+	gunichar2* uni_type = NULL;
+	gunichar2* uni_text = NULL;
+	int text_length = 0;
+	int type_length = 0;
+	ASF_LOG ("ASFFrameReader::ReadScriptCommand (), size = %llu.\n", size);
+
+	if (parser->embedded_script_command == NULL) {
+		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): no callback set.\n");
+		return;
+	}
+
+	data = (gunichar2*)g_malloc (Size ());
+	
+	if (!Write (data)) {
+		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): couldn't read the data.\n");
+		return;
+	}
+	
+	uni_type = data;
+	pts = Pts ();
+	
+	// the data is two arrays of WCHARs (type and text), null terminated.
+	// loop through the data, counting characters and null characters
+	// there should be at least two null characters.
+	int null_count = 0;
+	
+	for (unsigned int i = 0; i < (size / sizeof (gunichar2)); i++) {
+		if (uni_text == NULL) {
+			type_length++;
+		} else {
+			text_length++;
+		}
+		if (*(data + i) == 0) {
+			null_count++;
+			if (uni_text == NULL) {
+				uni_text = data + i + 1;
+			} else {
+				break; // Found at least two nulls
+			}
+		}
+	}
+	
+	if (null_count >= 2) {
+		text = wchar_to_utf8 (uni_text, text_length);
+		type = wchar_to_utf8 (uni_type, type_length);
+		
+		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): sending script command to %p, type: '%s', text: '%s', pts: '%llu'.\n", parser->embedded_script_command, type, text, pts);
+		parser->embedded_script_command (parser->embedded_script_command_state, type, text, pts);
+		
+		g_free (text);
+		g_free (type);
+	} else {
+		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): didn't find 2 null characters in the data.\n");
+	}
+	
+	g_free (data);
+
 }
 
 bool

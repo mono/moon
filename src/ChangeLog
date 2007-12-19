@@ -1,3 +1,9 @@
+2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h: Implement support for markers as a separate stream
+	  (the demuxer will call a callback when it encounters any streamed
+	  markers).
+
 2007-12-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Add create_item_func for PathFigureCollection. This is 

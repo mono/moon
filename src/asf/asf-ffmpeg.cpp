@@ -68,6 +68,8 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 		return -1;
 	}
 	
+	parser->reader->FindScriptCommandStream ();
+	
 	// Parse stream properties
 	int index;
 //	asf_object* obj = NULL;

@@ -183,10 +183,13 @@ public:
 	gint64 Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
 	gint32 StreamNumber () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->stream_number : 0; }
 	
+	void FindScriptCommandStream ();
+	
 private:
 	ASFParser* parser;
 	
 	gint32 current_packet_index;
+	gint32 script_command_stream_index;
 	
 	// The queue of payloads we've built.
 	ASFFrameReaderData* first;
@@ -205,6 +208,8 @@ private:
 	bool ReadMore (); // Reads another packet and stuffs the payloads into our queue 
 	void RemoveAll (); // Deletes the entire queue of payloads (and deletes every element)
 	void Remove (ASFFrameReaderData* data); // Unlinks the payload from the queue and deletes it.
+	
+	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
 };
 
 class ASFParser {
@@ -262,6 +267,10 @@ public:
 	asf_file_properties* GetFileProperties ();
 	asf_object* GetHeaderObject (const asf_guid* guid);
 
+	// This callback is called whenever a script command payload is encountered while decoding.
+	typedef void embedded_script_command_callback (void* state, char* type, char* text, guint64 pts);
+	void* embedded_script_command_state;
+	embedded_script_command_callback* embedded_script_command;
 	
 	// The following fields are available only after ReadHeader is called.
 	

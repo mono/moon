@@ -1,5 +1,11 @@
 2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: Implement support for markers as a separate stream.
+	* asf-ffmpeg.cpp: Make the frame reader check if there are any script
+	  command streams.
+
+2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-ffmpeg.cpp: Don't pass any packets to ffmpeg from streams which hasn't
 	  been registered with ffmpeg.
 

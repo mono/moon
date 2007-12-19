@@ -258,10 +258,51 @@ int MediaElement::MediaEndedEvent = -1;
 int MediaElement::MediaFailedEvent = -1;
 int MediaElement::MediaOpenedEvent = -1;
 
+static void streamed_marker_callback (void* state, char* type, char* text, guint64 pts)
+{
+	MediaElement* me = (MediaElement*) state;
+	//printf ("embedded_script_callback (%p, %s, %s, %llu): id = %i.\n", state, type, text, pts, me->id);
+	
+	pts = (pts - me->mplayer->asf_parser->file_properties->preroll) * 10000;
+	
+	TimelineMarker* marker = new TimelineMarker ();
+	marker->SetValue (TimelineMarker::TextProperty, text);
+	marker->SetValue (TimelineMarker::TypeProperty, type);
+	marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
+	me->AddStreamedMarker (marker);
+	marker->unref ();
+}
+
+void
+MediaElement::AddStreamedMarker (TimelineMarker* marker)
+{
+	if (streamed_markers == NULL)
+		streamed_markers = new TimelineMarkerCollection ();
+	streamed_markers->Add (marker);
+}
+
 void
 MediaElement::ReadASFMarkers ()
 {
+	/*
+		We can get markers from several places:
+			- The header of the file, read before starting to play
+				- As a SCRIPT_COMMAND
+				- As a MARKER
+				They are both treated the same way, added into the timeline marker collection when the media is loaded.
+			- As data in the file (a separate stream whose type is ASF_COMMAND_MEDIA)
+				These markers show up while playing the file, and they don't show up in the timeline marker collection,
+				they only get to raise the MarkerReached event.
+				currently the demuxer will call the streamed_marker_callback when it encounters any of these.    
+	*/
+	
 	//printf ("MediaElement::ReadASFMarkers ()\n");
+	
+	if (mplayer != NULL && mplayer->asf_parser != NULL) {
+		// printf ("MediaElement::ReadASFMarkers (): setting callback.\n");
+		mplayer->asf_parser->embedded_script_command = streamed_marker_callback;
+		mplayer->asf_parser->embedded_script_command_state = this;
+	}
 
 	if (mplayer == NULL || mplayer->asf_parser == NULL || (mplayer->asf_parser->script_command == NULL && mplayer->asf_parser->marker == NULL)) {
 		//printf ("MediaElement::ReadASFMarkers (): not reading markers. mplayer = %p, asf_parser = %p, script_command = %p, marker = %p.\n", 
@@ -276,7 +317,7 @@ MediaElement::ReadASFMarkers ()
 	int i = -1;
 	guint64 preroll = mplayer->asf_parser->file_properties->preroll;
 	
-	// Read the script commands
+	// Read the SCRIPT COMMANDs
 	char **command_types = NULL;
 	asf_script_command_entry **commands = NULL;
 	asf_script_command *command = mplayer->asf_parser->script_command;
@@ -285,7 +326,7 @@ MediaElement::ReadASFMarkers ()
 		commands = command->get_commands (mplayer->asf_parser, &command_types);
 		
 		if (command_types == NULL) {
-			printf ("MediaElement::ReadASFMarkers (): No command types.\n");
+			//printf ("MediaElement::ReadASFMarkers (): No command types.\n");
 			goto cleanup;
 		}
 	}
@@ -315,6 +356,8 @@ MediaElement::ReadASFMarkers ()
 		g_free (text);
 	}
 	
+	
+	// Read the MARKERs
 	asf_marker *asf_marker;
 	asf_marker_entry* marker_entry;
 	
@@ -367,8 +410,15 @@ MediaElement::CheckMarkers (int64_t from, int64_t to)
 	if (val == NULL)
 		return;
 		
-	TimelineMarkerCollection *col = GetValue (MarkersProperty)->AsTimelineMarkerCollection ();
-	
+	CheckMarkers (from, to, val->AsTimelineMarkerCollection (), false);
+	CheckMarkers (from, to, streamed_markers, true);	
+}
+
+void
+MediaElement::CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection* col, bool remove)
+{
+	Value* val = NULL;
+
 	if (col == NULL)
 		return;
 	
@@ -396,7 +446,12 @@ MediaElement::CheckMarkers (int64_t from, int64_t to)
 			marker->unref ();
 		}
 		
-		node = (Collection::Node *) node->next;
+		Collection::Node *next = (Collection::Node *) node->next;
+		if (remove && pts <= to) { // Also delete markers we've passed by already
+			col->list->Remove (node);
+		}
+		
+		node = next;
 	}
 }
 
@@ -464,6 +519,7 @@ MediaElement::MediaElement ()
 	markers->unref ();
 	
 	previous_position = 0;
+	streamed_markers = NULL;
 }
 
 void
@@ -485,6 +541,11 @@ MediaElement::~MediaElement ()
 	
 	if (source)
 		delete source;
+	
+	if (streamed_markers) {
+		streamed_markers->unref ();
+		streamed_markers = NULL;
+	}
 	
 	delete mplayer;
 }
