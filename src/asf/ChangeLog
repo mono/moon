@@ -1,5 +1,10 @@
 2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf-ffmpeg.cpp: Don't pass any packets to ffmpeg from streams which hasn't
+	  been registered with ffmpeg.
+
+2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-structures.cpp: Fix memory leaks with debug code, and fix memory
 	  corruption when reading compressed payloads.
 	* asf-test.cpp: Return false if the parser has any errors.

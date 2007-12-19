@@ -210,10 +210,12 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	MoonASFContext *context = (MoonASFContext*) s->priv_data;
 	FFMPEGParser* parser = context->parser;
 	ASFFrameReader* reader = parser->reader;
+
+	do {	
+		if (!reader->Advance ())
+			return -1;
+	} while (parser->ConvertStreamIndex (reader->StreamNumber ()) < 0);
 	
-	if (!reader->Advance ())
-		return -1;
-		
 	AVPacket* pkt = new AVPacket ();
 	
 	av_new_packet (pkt, reader->Size ());
@@ -227,7 +229,6 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	if (reader->IsKeyFrame () || s->streams [pkt->stream_index]->codec->codec_type == CODEC_TYPE_AUDIO) {
 		pkt->flags |= PKT_FLAG_KEY;
 	}
-		
 	//AVPacket_dump (pkt, 1);
 	
 	*av_packet = *pkt; 
@@ -666,7 +667,7 @@ void AVPacket_dump (AVPacket* s, int t)
 {
 	char* tabs = g_strnfill (t, '\t');
 	char* tabs1 = g_strnfill (t-1, '\t');
-	FFMPEG_DUMP ("%sAVPacket: %p\n", tabs1, s);
+	FFMPEG_DUMP ("%sAVPacket: %s\n", tabs1, s == NULL ? "NULL" : "!NULL");
 	if (!s) return;
 	
 	FFMPEG_DUMP ("%spts = %llu\n", tabs, s->pts);
@@ -678,7 +679,7 @@ void AVPacket_dump (AVPacket* s, int t)
 	FFMPEG_DUMP ("%sduration = %i\n", tabs, s->duration);
 	FFMPEG_DUMP ("%sdestruct = %s\n", tabs, s->destruct == NULL ? "NULL" : "!NULL");
 	FFMPEG_DUMP ("%spriv = %s\n", tabs, s->priv == NULL ? "NULL" : "!NULL");
-	FFMPEG_DUMP ("%spos = %lld\n", tabs, s->pos);
+	// FFMPEG_DUMP ("%spos = %lld\n", tabs, s->pos); // Byte position in stream, demuxer dependent.
 
 	
 }
