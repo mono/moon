@@ -1,3 +1,8 @@
+2007-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* assorted.html: Add a bunch of test cases to check what happens when
+	empty attributes are used in xaml.
+
 2007-12-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* assorted.html: Duplicate existing testAllowEmptyPointsOnPolygon

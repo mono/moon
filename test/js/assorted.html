@@ -82,11 +82,464 @@ AssortedTestSuite.prototype = {
 		var matrix = mt.matrix;
 		this.assertDefaultValues (CodeModel.Matrix, matrix);
 	},
+// System.Windows.Shapes
+	testAllowEmptyX1OnLine: function () {
+		// this test fails on FF/SL "Failure: Line.X1: expected default value: 0, found: 1.0010069081221042e-38"
+		// but works under IE/SL and FF/ML (default value to 0). Strangely this works for Y1, X2 and Y2
+		var line = $plugin ().content.createFromXaml ("<Line X1='' />");
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.Line, line);
+		}
+	},
+	testAllowEmptyY1OnLine: function () {
+		var line = $plugin ().content.createFromXaml ("<Line Y1='' />");
+		this.assertDefaultValues (CodeModel.Line, line);
+	},
+	testAllowEmptyX2OnLine: function () {
+		var line = $plugin ().content.createFromXaml ("<Line X2='' />");
+		this.assertDefaultValues (CodeModel.Line, line);
+	},
+	testAllowEmptyY2OnLine: function () {
+		var line = $plugin ().content.createFromXaml ("<Line Y2='' />");
+		this.assertDefaultValues (CodeModel.Line, line);
+	},
+	testAllowEmptyDataOnPath: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var path = $plugin ().content.createFromXaml ("<Path Data='' />");
+		});
+	},
+	testAllowEmptyFillRuleOnPolygon: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var poly = $plugin ().content.createFromXaml ("<Polygon FillRule='' />");
+		});
+	},
 	testAllowEmptyPointsOnPolygon: function () {
-		$plugin ().content.createFromXaml ("<Polygon Points='' />");
+		var p = $plugin ().content.createFromXaml ("<Polygon Points='' />");
+		this.assertDefaultValues (CodeModel.Polygon, p);
+	},
+	testAllowEmptyFillRuleOnPolyline: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var poly = $plugin ().content.createFromXaml ("<Polyline FillRule='' />");
+		});
 	},
 	testAllowEmptyPointsOnPolyline: function () {
-		$plugin ().content.createFromXaml ("<Polyline Points='' />");
+		var p = $plugin ().content.createFromXaml ("<Polyline Points='' />");
+		this.assertDefaultValues (CodeModel.Polyline, p);
+	},
+	testAllowEmptyRadiusXOnRectangle: function () {
+		var rect = $plugin ().content.createFromXaml ("<Rectangle RadiusX='' />");
+		this.assertDefaultValues (CodeModel.Rectangle, rect);
+	},
+	testAllowEmptyRadiusYOnRectangle: function () {
+		var rect = $plugin ().content.createFromXaml ("<Rectangle RadiusY='' />");
+		this.assertDefaultValues (CodeModel.Rectangle, rect);
+	},
+	// testing Shape properties on Ellipse
+	testAllowEmptyFillOnEllipse: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<Ellipse Fill='' />");
+		});
+	},
+	testAllowEmptyStretchOnEllipse: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<Ellipse Stretch='' />");
+		});
+	},
+	testAllowEmptyStrokeOnEllipse: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<Ellipse Stroke='' />");
+		});
+	},
+	testAllowEmptyStrokeDashArrayOnEllipse: function () {
+		var e = $plugin ().content.createFromXaml ("<Ellipse StrokeDashArray='' />");
+		this.assertDefaultValues (CodeModel.Ellipse, e);
+	},
+	testAllowEmptyStrokeDashCapOnEllipse: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<Ellipse StrokeDashCap='' />");
+		});
+	},
+	testAllowEmptyStrokeDashOffsetOnEllipse: function () {
+		var e = $plugin ().content.createFromXaml ("<Ellipse StrokeDashOffset='' />");
+		this.assertDefaultValues (CodeModel.Ellipse, e);
+	},
+	testAllowEmptyStrokeEndLineCapOnEllipse: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<Ellipse StrokeEndLineCap='' />");
+		});
+	},
+	testAllowEmptyStrokeLineJoinOnEllipse: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<Ellipse StrokeLineJoin='' />");
+		});
+	},
+	testAllowEmptyStrokeMiterLimitOnEllipse: function () {
+		var e = $plugin ().content.createFromXaml ("<Ellipse StrokeMiterLimit='' />");
+		this.assertDefaultValues (CodeModel.Ellipse, e);
+	},
+	testAllowEmptyStrokeStartLineCapOnEllipse: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<Ellipse StrokeStartLineCap='' />");
+		});
+	},
+	testAllowEmptyStrokeThicknessOnEllipse: function () {
+		var e = $plugin ().content.createFromXaml ("<Ellipse StrokeThickness='' />");
+		this.assertDefaultValues (CodeModel.Ellipse, e);
+	},
+// System.Windows.Media
+	testAllowEmptyIsLargeArcOnArcSegment: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<ArcSegment IsLargeArc='' />");
+		});
+	},
+	testAllowEmptyPointOnArcSegment: function () {
+		var arc = $plugin ().content.createFromXaml ("<ArcSegment Point='' />");
+		this.assertDefaultValues (CodeModel.ArcSegment, arc);
+	},
+	testAllowEmptyRotationAngleOnArcSegment: function () {
+		var arc = $plugin ().content.createFromXaml ("<ArcSegment RotationAngle='' />");
+		this.assertDefaultValues (CodeModel.ArcSegment, arc);
+	},
+	testAllowEmptySizeOnArcSegment: function () {
+		var arc = $plugin ().content.createFromXaml ("<ArcSegment Size='' />");
+		this.assertDefaultValues (CodeModel.ArcSegment, arc);
+	},
+	testAllowEmptySweepDirectionOnArcSegment: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var e = $plugin ().content.createFromXaml ("<ArcSegment SweepDirection='' />");
+		});
+	},
+	testAllowEmptyPoint1OnBezierSegment: function () {
+		var bez = $plugin ().content.createFromXaml ("<BezierSegment Point1='' />");
+		this.assertDefaultValues (CodeModel.BezierSegment, bez);
+	},
+	testAllowEmptyPoint2OnBezierSegment: function () {
+		var bez = $plugin ().content.createFromXaml ("<BezierSegment Point2='' />");
+		this.assertDefaultValues (CodeModel.BezierSegment, bez);
+	},
+	testAllowEmptyPoint3OnBezierSegment: function () {
+		var bez = $plugin ().content.createFromXaml ("<BezierSegment Point3='' />");
+		this.assertDefaultValues (CodeModel.BezierSegment, bez);
+	},
+	// we use a SolidColorBrush to test (abstract) Brush properties
+	testAllowEmptyOpacityOnBrush: function () {
+		var b = $plugin ().content.createFromXaml ("<SolidColorBrush Opacity='' />");
+		// for both IE/SL and FF/ML this set opacity to 0.0 (different than the default 1.0 value)
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			// however FF/SL returns 1.0102051713717787e-38
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertEqual (0, b.Opacity);
+		}
+	},
+	testAllowEmptyRelativeTransformOnBrush: function () {
+		var b = $plugin ().content.createFromXaml ("<SolidColorBrush RelativeTransform='' />");
+		this.assertDefaultValues (CodeModel.Brush, b);
+	},
+	testAllowEmptyTransformOnBrush: function () {
+		var b = $plugin ().content.createFromXaml ("<SolidColorBrush Transform='' />");
+		this.assertDefaultValues (CodeModel.Brush, b);
+	},
+	testAllowEmptyCenterOnEllipseGeometry: function () {
+		var eg = $plugin ().content.createFromXaml ("<EllipseGeometry Center='' />");
+		this.assertDefaultValues (CodeModel.EllipseGeometry, eg);
+	},
+	testAllowEmptyRadiusXOnEllipseGeometry: function () {
+		var eg = $plugin ().content.createFromXaml ("<EllipseGeometry RadiusX='' />");
+		this.assertDefaultValues (CodeModel.EllipseGeometry, eg);
+	},
+	testAllowEmptyRadiusYOnEllipseGeometry: function () {
+		var eg = $plugin ().content.createFromXaml ("<EllipseGeometry RadiusY='' />");
+		this.assertDefaultValues (CodeModel.EllipseGeometry, eg);
+	},
+	// we use EllipseGeometry to test (abstract) Geometry properties
+	testAllowEmptyFillRuleOnGeometry: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var eg = $plugin ().content.createFromXaml ("<EllipseGeometry FillRule='' />");
+		});
+	},
+	testAllowEmptyTransformOnGeometry: function () {
+		var eg = $plugin ().content.createFromXaml ("<EllipseGeometry Transform='' />");
+		// the Transform is not null
+		this.assertNotNull (eg.Transform);
+	},
+	testAllowEmptyChildrenOnGeometryGroup: function () {
+		var eg = $plugin ().content.createFromXaml ("<GeometryGroup Children='' />");
+		this.assertDefaultValues (CodeModel.GeometryGroup, eg);
+	},
+	// we use LinearGradientBrush to test (abstract) GradientBrush properties
+	testAllowEmptyColorInterpolationModeOnGradientBrush: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var gb = $plugin ().content.createFromXaml ("<LinearGradientBrush ColorInterpolationMode='' />");
+		});
+	},
+	testAllowEmptyGradientStopsOnGradientBrush: function () {
+		var gb = $plugin ().content.createFromXaml ("<LinearGradientBrush GradientStops='' />");
+		this.assertDefaultValues (CodeModel.LinearGradientBrush, gb);
+	},
+	testAllowEmptyMappingModeOnGradientBrush: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var gb = $plugin ().content.createFromXaml ("<LinearGradientBrush MappingMode='' />");
+		});
+	},
+	testAllowEmptySpreadMethodOnGradientBrush: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var gb = $plugin ().content.createFromXaml ("<LinearGradientBrush SpreadMethod='' />");
+		});
+	},
+	testAllowEmptyColorOnGradientStop: function () {
+		var gs = $plugin ().content.createFromXaml ("<GradientStop Color='' />");
+		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 6881396 (0x690074)
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.GradientStop, gs);
+		}
+	},
+	testAllowEmptyOffsetOnGradientStop: function () {
+		var gs = $plugin ().content.createFromXaml ("<GradientStop Offset='' />");
+		this.assertDefaultValues (CodeModel.GradientStop, gs);
+	},
+	testAllowEmptyDownloadProgressOnImageBrush: function () {
+		var ib = $plugin ().content.createFromXaml ("<ImageBrush DownloadProgress='' />");
+		this.assertDefaultValues (CodeModel.ImageBrush, ib);
+	},
+	testAllowEmptyImageSourceOnImageBrush: function () {
+		var ib = $plugin ().content.createFromXaml ("<ImageBrush ImageSource='' />");
+		this.assertDefaultValues (CodeModel.ImageBrush, ib);
+	},
+	testAllowEmptyEndPointStopsOnLinearGradientBrush: function () {
+		var gb = $plugin ().content.createFromXaml ("<LinearGradientBrush EndPoint='' />");
+		this.assertDefaultValues (CodeModel.LinearGradientBrush, gb);
+	},
+	testAllowEmptyStartPointStopsOnLinearGradientBrush: function () {
+		var gb = $plugin ().content.createFromXaml ("<LinearGradientBrush StartPoint='' />");
+		this.assertDefaultValues (CodeModel.LinearGradientBrush, gb);
+	},
+	testAllowEmptyEndPointStopsOnLineGeometry: function () {
+		var lg = $plugin ().content.createFromXaml ("<LineGeometry EndPoint='' />");
+		this.assertDefaultValues (CodeModel.LineGeometry, lg);
+	},
+	testAllowEmptyStartPointStopsOnLineGeometry: function () {
+		var lg = $plugin ().content.createFromXaml ("<LineGeometry StartPoint='' />");
+		this.assertDefaultValues (CodeModel.LineGeometry, lg);
+	},
+	testAllowEmptyPointStopsOnLineSegment: function () {
+		var ls = $plugin ().content.createFromXaml ("<LineSegment Point='' />");
+		this.assertDefaultValues (CodeModel.LineSegment, ls);
+	},
+	testAllowEmptyValueOnMediaAttribute: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var ma = $plugin ().content.createFromXaml ("<MediaAttribute Value='' />");
+		});
+	},
+	testAllowEmptyIsClosedOnPathFigure: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var pf = $plugin ().content.createFromXaml ("<PathFigure IsClosed='' />");
+		});
+	},
+	testAllowEmptySegmentsOnPathFigure: function () {
+		var pf = $plugin ().content.createFromXaml ("<PathFigure Segments='' />");
+		this.assertDefaultValues (CodeModel.PathFigure, pf);
+	},
+	testAllowEmptyStartPointOnPathFigure: function () {
+		var pf = $plugin ().content.createFromXaml ("<PathFigure StartPoint='' />");
+		this.assertDefaultValues (CodeModel.PathFigure, pf);
+	},
+	testAllowEmptyFiguresOnPathGeometry: function () {
+		var pg = $plugin ().content.createFromXaml ("<PathGeometry Figures='' />");
+		// this creates the collection, which is null by default
+		this.assertNotNull (pg.Figures);
+	},
+	testAllowEmptyPointsOnPolyBezierSegment: function () {
+		var pbs = $plugin ().content.createFromXaml ("<PolyBezierSegment Points='' />");
+		this.assertDefaultValues (CodeModel.PolyBezierSegment, pbs);
+	},
+	testAllowEmptyPointsOnPolyLineSegment: function () {
+		var pls = $plugin ().content.createFromXaml ("<PolyLineSegment Points='' />");
+		this.assertDefaultValues (CodeModel.PolyLineSegment, pls);
+	},
+	testAllowEmptyPointsOnPolyQuadraticBezierSegment: function () {
+		var pqbs = $plugin ().content.createFromXaml ("<PolyQuadraticBezierSegment Points='' />");
+		this.assertDefaultValues (CodeModel.PolyQuadraticBezierSegment, pqbs);
+	},
+	testAllowEmptyPoint1OnQuadraticBezierSegment: function () {
+		var qbs = $plugin ().content.createFromXaml ("<QuadraticBezierSegment Point1='' />");
+		this.assertDefaultValues (CodeModel.QuadraticBezierSegment, qbs);
+	},
+	testAllowEmptyPoint2OnQuadraticBezierSegment: function () {
+		var qbs = $plugin ().content.createFromXaml ("<QuadraticBezierSegment Point2='' />");
+		this.assertDefaultValues (CodeModel.QuadraticBezierSegment, qbs);
+	},
+	testAllowEmptyCenterOnRadialGradientBrush: function () {
+		var rgb = $plugin ().content.createFromXaml ("<RadialGradientBrush Center='' />");
+		this.assertDefaultValues (CodeModel.RadialGradientBrush, rgb);
+	},
+	testAllowEmptyGradientOriginOnRadialGradientBrush: function () {
+		var rgb = $plugin ().content.createFromXaml ("<RadialGradientBrush GradientOrigin='' />");
+		this.assertDefaultValues (CodeModel.RadialGradientBrush, rgb);
+	},
+	testAllowEmptyRadiusXOnRadialGradientBrush: function () {
+		var rgb = $plugin ().content.createFromXaml ("<RadialGradientBrush RadiusX='' />");
+		this.assertDefaultValues (CodeModel.RadialGradientBrush, rgb);
+	},
+	testAllowEmptyRadiusYOnRadialGradientBrush: function () {
+		var rgb = $plugin ().content.createFromXaml ("<RadialGradientBrush RadiusY='' />");
+		this.assertDefaultValues (CodeModel.RadialGradientBrush, rgb);
+	},
+	testAllowEmptyRadiusXOnRectangleGeometry: function () {
+		var rg = $plugin ().content.createFromXaml ("<RectangleGeometry RadiusX='' />");
+		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 1.0101904577379033e-38
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.RectangleGeometry, rg);
+		}
+	},
+	testAllowEmptyRadiusYOnRectangleGeometry: function () {
+		var rg = $plugin ().content.createFromXaml ("<RectangleGeometry RadiusY='' />");
+		this.assertDefaultValues (CodeModel.RectangleGeometry, rg);
+	},
+	testAllowEmptyRectOnRectangleGeometry: function () {
+		var rg = $plugin ().content.createFromXaml ("<RectangleGeometry Rect='' />");
+		this.assertDefaultValues (CodeModel.RectangleGeometry, rg);
+	},
+	testAllowEmptyAngleOnRotateTransform: function () {
+		var rt = $plugin ().content.createFromXaml ("<RotateTransform Angle='' />");
+		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 1.0101904577379033e-38
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.RotateTransform, rt);
+		}
+	},
+	testAllowEmptyCenterXOnRotateTransform: function () {
+		var rt = $plugin ().content.createFromXaml ("<RotateTransform CenterX='' />");
+		this.assertDefaultValues (CodeModel.RotateTransform, rt);
+	},
+	testAllowEmptyCenterYOnRotateTransform: function () {
+		var rt = $plugin ().content.createFromXaml ("<RotateTransform CenterY='' />");
+		this.assertDefaultValues (CodeModel.RotateTransform, rt);
+	},
+	testAllowEmptyCenterXOnScaleTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<ScaleTransform CenterX='' />");
+		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 1.0101904577379033e-38
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.ScaleTransform, st);
+		}
+	},
+	testAllowEmptyCenterYOnScaleTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<ScaleTransform CenterY='' />");
+		this.assertDefaultValues (CodeModel.ScaleTransform, st);
+	},
+	testAllowEmptyScaleXOnScaleTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<ScaleTransform ScaleX='' />");
+		this.assertDefaultValues (CodeModel.ScaleTransform, st);
+	},
+	testAllowEmptyScaleYOnScaleTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<ScaleTransform ScaleY='' />");
+		this.assertDefaultValues (CodeModel.ScaleTransform, st);
+	},
+	testAllowEmptyAngleXOnSkewTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<SkewTransform AngleX='' />");
+		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 9.642727096589077e-39
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.SkewTransform, st);
+		}
+	},
+	testAllowEmptyAngleYOnSkewTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<SkewTransform AngleY='' />");
+		this.assertDefaultValues (CodeModel.SkewTransform, st);
+	},
+	testAllowEmptyCenterXOnSkewTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<SkewTransform CenterX='' />");
+		this.assertDefaultValues (CodeModel.SkewTransform, st);
+	},
+	testAllowEmptyCenterYOnSkewTransform: function () {
+		var st = $plugin ().content.createFromXaml ("<SkewTransform CenterY='' />");
+		this.assertDefaultValues (CodeModel.SkewTransform, st);
+	},
+	testAllowEmptyColorOnSolidColorBrush: function () {
+		var scb = $plugin ().content.createFromXaml ("<SolidColorBrush Color='' />");
+		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 7274573 (0x740073)
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.SolidColorBrush, scb);
+		}
+	},
+	// we use ImageBrush to test (abstract) TileBrush properties
+	testAllowEmptyAlignmentXOnTileBrush: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var tb = $plugin ().content.createFromXaml ("<ImageBrush AlignmentX='' />");
+		});
+	},
+	testAllowEmptyAlignmentYOnTileBrush: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var tb = $plugin ().content.createFromXaml ("<ImageBrush AlignmentY='' />");
+		});
+	},
+	testAllowEmptyStretchOnTileBrush: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var tb = $plugin ().content.createFromXaml ("<ImageBrush Stretch='' />");
+		});
+	},
+	testAllowEmptyChildrenOnTransformGroup: function () {
+		var st = $plugin ().content.createFromXaml ("<TransformGroup Children='' />");
+		this.assertDefaultValues (CodeModel.TransformGroup, st);
+	},
+	testAllowEmptyXOnTranslateTransform: function () {
+		var tt = $plugin ().content.createFromXaml ("<TranslateTransform X='' />");
+		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 9.642727096589077e-39
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense");
+		} else {
+			this.assertDefaultValues (CodeModel.TranslateTransform, tt);
+		}
+	},
+	testAllowEmptyYOnTranslateTransform: function () {
+		var tt = $plugin ().content.createFromXaml ("<TranslateTransform Y='' />");
+		this.assertDefaultValues (CodeModel.TranslateTransform, tt);
+	},
+	testAllowEmptySourceNameOnVideoBrush: function () {
+		var vb = $plugin ().content.createFromXaml ("<VideoBrush SourceName='' />");
+		this.assertDefaultValues (CodeModel.VideoBrush, vb);
+	},
+// System.Windows.Ink
+	testAllowEmptyColorOnDrawingAttributes: function () {
+		var da = $plugin ().content.createFromXaml ("<DrawingAttributes Color='' />");
+		// Color isn't the default transparent (-16777216) but random? on FF/SL and black (0) on IE/SL
+		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+			this.ignore ("ignored on FF/SL - value doesn't make sense (random?)");
+		} else {
+			this.assertEqual (0, da.Color);
+		}
+	},
+	testAllowEmptyHeightOnDrawingAttributes: function () {
+		var da = $plugin ().content.createFromXaml ("<DrawingAttributes Height='' />");
+		this.assertDefaultValues (CodeModel.DrawingAttributes, da);
+	},
+	testAllowEmptyOutlineColorOnDrawingAttributes: function () {
+		var da = $plugin ().content.createFromXaml ("<DrawingAttributes OutlineColor='' />");
+		this.assertDefaultValues (CodeModel.DrawingAttributes, da);
+	},
+	testAllowEmptyWidthOnDrawingAttributes: function () {
+		var da = $plugin ().content.createFromXaml ("<DrawingAttributes Width='' />");
+		this.assertDefaultValues (CodeModel.DrawingAttributes, da);
+	},
+	testAllowEmptyDrawingAttributesOnStroke: function () {
+		var s = $plugin ().content.createFromXaml ("<Stroke DrawingAttributes='' />");
+		this.assertDefaultValues (CodeModel.Stroke, s);
+	},
+	testAllowEmptyStylusPointsOnStroke: function () {
+		var s = $plugin ().content.createFromXaml ("<Stroke StylusPoints='' />");
+		this.assertDefaultValues (CodeModel.Stroke, s);
 	}
 };
 
