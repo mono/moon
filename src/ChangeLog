@@ -1,5 +1,7 @@
-2007-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+2007-12-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
+	* geometry.cpp: Fix Draw and ComputeBound to deal with the fact that
+	there's no default Figure collection. Fix Chess crasher.
 	* xaml.cpp: Fix unit test were empty string are parsed as 0.0,
 	foir doubles, and as an "empty" (but not NULL) Value for 
 	DOUBLE_ARRAY.

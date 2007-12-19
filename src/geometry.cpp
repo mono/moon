@@ -564,7 +564,11 @@ PathGeometry::Draw (Path *shape, cairo_t *cr)
 		cairo_transform (cr, &matrix);
 	}
 
-	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
+	Value *v = GetValue (PathGeometry::FiguresProperty);
+	if (!v)
+		return;
+
+	PathFigureCollection *children = v->AsPathFigureCollection();
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathFigure *pf = (PathFigure *) node->obj;
@@ -591,7 +595,11 @@ Rect
 PathGeometry::ComputeBounds (Path *shape)
 {
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
-	PathFigureCollection *children = GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection();
+	Value *v = GetValue (PathGeometry::FiguresProperty);
+	if (!v)
+		return bounds;
+
+	PathFigureCollection *children = v->AsPathFigureCollection();
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathFigure *pf = (PathFigure *) node->obj;
