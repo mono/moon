@@ -279,9 +279,10 @@ asf_error_correction_data::FillInAll (ASFParser* parser)
 
 void asf_error_correction_data_dump (asf_error_correction_data* obj)
 {
+	char* tostring = obj->tostring ();
 	ASF_DUMP ("ASF_ERROR_CORRECTION_DATA\n");
 	ASF_DUMP ("\tdata = 0x%X\n", (asf_dword) obj->data);
-	ASF_DUMP ("\tdata = 0b%s\n",  obj->tostring ());
+	ASF_DUMP ("\tdata = 0b%s\n",  tostring); g_free (tostring);
 	ASF_DUMP ("\t\tis_error_correction_present: %i\n", obj->is_error_correction_present ());
 	ASF_DUMP ("\t\tis_opaque_data_present: %i\n", obj->is_opaque_data_present ());
 	ASF_DUMP ("\t\tdata_length: %i\n", obj->get_data_length ());
@@ -522,8 +523,8 @@ asf_multiple_payloads::CountCompressedPayloads (ASFParser* parser, asf_single_pa
 	while (true) {
 		counter++;
 		size = *(data + offset);
-		offset += size;
-		if (offset > length) {
+		offset += (size + 1);
+		if (offset > length || size == 0) {
 			parser->AddError ("Compressed payloads are corrupted.");
 			return false;
 		} else if (offset == length) {
@@ -544,7 +545,7 @@ asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payl
 
 	for (int i = 0; i < count; i++) {
 		size = *(data + offset);
-		offset += size;
+		offset += 1;
 		
 		payload = new asf_single_payload ();
 		payloads [start_index + i] = payload;
@@ -561,7 +562,8 @@ asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payl
 		if (payload->payload_data == NULL) {
 			return false;
 		}
-		memcpy (data + offset, payload->payload_data, size);
+		memcpy (payload->payload_data, data + offset, size);
+		offset += size;
 	}
 	
 	return true;

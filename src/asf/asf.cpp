@@ -53,12 +53,14 @@ ASFParser::~ASFParser ()
 	source = NULL;
 		
 	if (errors) {
-		GSList* current = errors;
+		error* current = errors;
+		error* next = NULL;
 		while (current != NULL) {
-			g_free (current->data);
-			current = current->next;
+			next = current->next;
+			g_free (current->msg);
+			g_free (current);
+			current = next;
 		}
-		g_slist_free (errors);
 		errors = NULL;
 	}
 	
@@ -344,21 +346,33 @@ ASFParser::ReadHeader ()
 const char*
 ASFParser::GetLastError ()
 {
-	if (errors != NULL) {
-		return (const char*) errors->data;
+	error* last = errors;
+	while (last != NULL && last->next != NULL)
+		last = last->next;
+	if (last != NULL) {
+		return last->msg;
 	} else {
 		return NULL;
 	}
 }
 
 void
-ASFParser::AddError (const char* err)
+ASFParser::AddError (const char* msg)
 {	
-	ASF_LOG ("ASFParser::AddError ('%s').\n", err);
+	ASF_LOG ("ASFParser::AddError ('%s').\n", msg);
 	
-	// Don't use prepend, this is not a performance bottleneck,
-	// and it makes things easier to have the list chronologically ordered.
-	errors = g_slist_append (errors, (gpointer) g_strdup (err));
+	error* err = (error*) g_malloc0 (sizeof (error));
+	err->msg = g_strdup (msg);
+
+	error* last = errors;
+	while (last != NULL && last->next != NULL)
+		last = last->next;
+		
+	if (last == NULL) {
+		errors = err;
+	} else {
+		last->next = err;
+	}
 }
 
 void
@@ -397,7 +411,7 @@ guint64
 ASFParser::GetPacketOffset (gint32 packet_index)
 {
 	if (packet_index < 0 || (gint32) packet_index >= (gint32) file_properties->data_packet_count) {
-		AddError (g_strdup_printf ("ASFParser::GetPacketOffset (%i): Invalid packet index (there are %llu packets).", packet_index, file_properties->data_packet_count)); 
+//		AddError (g_strdup_printf ("ASFParser::GetPacketOffset (%i): Invalid packet index (there are %llu packets).", packet_index, file_properties->data_packet_count)); 
 		return 0;
 	}
 	

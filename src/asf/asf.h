@@ -281,7 +281,11 @@ public:
 	ASFSource* source; // The source used to read data.
 	
 private:
-	GSList* errors;
+	struct error {
+		char* msg;
+		error* next;
+	};
+	error* errors;
 };
 
 

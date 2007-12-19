@@ -309,11 +309,17 @@ test_file (const char* filename)
 	ObjectTracker::PrintStatus ("asf_single_payload");
 #endif
 
-	result = true;
-	
+	if (parser->GetLastError () != NULL) {
+		printf ("Errors were reported, last error is: '%s'.\n", parser->GetLastError ());
+		result = false;
+	} else {
+		result = true;
+	}
+		
 end:
 	printf ("test_file (%s): %s.\n", filename, result ? "OK" : "FAILED");
 	delete parser;
+	parser = NULL;
 	
 	return result;
 }

@@ -1,3 +1,12 @@
+2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-structures.cpp: Fix memory leaks with debug code, and fix memory
+	  corruption when reading compressed payloads.
+	* asf-test.cpp: Return false if the parser has any errors.
+	* asf.cpp, asf.h: ASFParser: use a custom list for the errors. Don't report
+	  any errors in GetPacketOffset, packet_index will be out of range when
+	  the end of a file is reached.
+
 2007-12-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Fix frame reading, previously we would skip everything in the
