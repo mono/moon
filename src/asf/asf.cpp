@@ -19,7 +19,7 @@ ASFParser::ASFParser (const char* filename)
 	ASF_LOG ("ASFParser::ASFParser ('%s'), this: %p.\n", filename, this);
 	source = new ASFFileSource (this, filename);
 	Initialize ();
-}v
+}
 
 ASFParser::ASFParser (ASFSource* src)
 {
