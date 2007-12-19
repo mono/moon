@@ -540,6 +540,18 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyStylusPointsOnStroke: function () {
 		var s = $plugin ().content.createFromXaml ("<Stroke StylusPoints='' />");
 		this.assertDefaultValues (CodeModel.Stroke, s);
+	},
+// handling properties that doesn't exists
+	testUnexistingPropertyOnStroke: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var s = $plugin ().content.createFromXaml ("<Stroke UnexistingProperty='' />");
+		});
+	},
+// handling element that doesn't exists
+	testUnexistingElement: function () {
+		this.assertError (Errors.AG_E_RUNTIME_METHOD, function () {
+			var s = $plugin ().content.createFromXaml ("<Moonlight />");
+		});
 	}
 };
 
