@@ -287,9 +287,7 @@ public:
 
 	Point GetRenderTransformOrigin () {
 		Value *vu = GetValue (UIElement::RenderTransformOriginProperty);
-		if (vu)
-			return *vu->AsPoint ();
-		return Point (0, 0);
+		return *vu->AsPoint ();
 	}
 
 	static DependencyProperty* RenderTransformProperty;

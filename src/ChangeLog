@@ -1,3 +1,7 @@
+2007-12-19  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* uielement.[h|cpp]: set a default value (0,0) for RenderTransformOrigin.
+
 2007-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* color.cpp: Handle empty string correctly in color_from_str. Unit 
