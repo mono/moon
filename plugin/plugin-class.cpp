@@ -155,7 +155,7 @@ enum PluginPropertyId {
 	MoonId_Open,
 	MoonId_GetResponseText,
 	MoonId_Send,
-
+	MoonId_AddStylusPoints,
 };
 
 static char*
@@ -955,14 +955,14 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 1)
 			THROW_JS_EXCEPTION ("getStylusPoints");
 
-		if (NPVARIANT_IS_OBJECT (args [1])) {
-			DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [1]);
+		if (NPVARIANT_IS_OBJECT (args [0])) {
+			DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [0]);
 			if (!dob->Is (Type::INKPRESENTER))
 				THROW_JS_EXCEPTION ("getStylusPoints");
 
 			// TODO: we don't have a way right now to collect
 			// the stylus points relative to an InkPresenter
-			MoonlightCollectionObject *collection = (MoonlightCollectionObject *) NPN_CreateObject (instance, MoonlightCollectionClass);
+			MoonlightCollectionObject *collection = (MoonlightCollectionObject *) NPN_CreateObject (instance, MoonlightStylusPointCollectionClass);
 			StylusPointCollection *points = new StylusPointCollection ();
 			collection->SetDependencyObject (points);
 			points->unref ();
@@ -2309,38 +2309,41 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	}
 	
 	/* for EventObject subclasses which have special plugin classes, check here */
-	if (Type::Find (obj->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
-		np_class = MoonlightCollectionClass;
-	else {
-		switch (obj->GetObjectType ()) {
-		case Type::STORYBOARD:
-			np_class = MoonlightStoryboardClass;
-			break;
-		case Type::MEDIAELEMENT:
-			np_class = MoonlightMediaElementClass;
-			break;
-		case Type::DOWNLOADER:
-			np_class = MoonlightDownloaderClass;
-			break;
-		case Type::CONTROL:
-			np_class = MoonlightControlClass;
-			break;
-		case Type::IMAGE:
-			np_class = MoonlightImageClass;
-			break;
-		case Type::IMAGEBRUSH:
-			np_class = MoonlightImageBrushClass;
-			break;
-		case Type::TEXTBLOCK:
-			np_class = MoonlightTextBlockClass;
-			break;
-		case Type::EVENTOBJECT:
-		case Type::SURFACE:
-			np_class = MoonlightEventObjectClass;
-			break;
-		default:
+	Type::Kind kind = obj->GetObjectType ();
+	switch (kind) {
+	case Type::STORYBOARD:
+		np_class = MoonlightStoryboardClass;
+		break;
+	case Type::MEDIAELEMENT:
+		np_class = MoonlightMediaElementClass;
+		break;
+	case Type::DOWNLOADER:
+		np_class = MoonlightDownloaderClass;
+		break;
+	case Type::CONTROL:
+		np_class = MoonlightControlClass;
+		break;
+	case Type::IMAGE:
+		np_class = MoonlightImageClass;
+		break;
+	case Type::IMAGEBRUSH:
+		np_class = MoonlightImageBrushClass;
+		break;
+	case Type::TEXTBLOCK:
+		np_class = MoonlightTextBlockClass;
+		break;
+	case Type::EVENTOBJECT:
+	case Type::SURFACE:
+		np_class = MoonlightEventObjectClass;
+		break;
+	case Type::STYLUSPOINT_COLLECTION:
+		np_class = MoonlightStylusPointCollectionClass;
+		break;
+	default:
+		if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
+			np_class = MoonlightCollectionClass;
+		else
 			np_class = MoonlightDependencyObjectClass;
-		}
 	}
 
 	depobj = (MoonlightEventObjectObject *) NPN_CreateObject (instance, np_class);
@@ -2915,6 +2918,49 @@ MoonlightStylusInfoType::MoonlightStylusInfoType ()
 }
 
 MoonlightStylusInfoType *MoonlightStylusInfoClass;
+
+/*** MoonlightStylusPointCollectionClass ****************************************/
+
+static NPObject *
+moonlight_stylus_point_collection_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightStylusPointCollectionObject (instance);
+}
+
+static const MoonNameIdMapping
+moonlight_stylus_point_collection_mapping [] = {
+	{ "addstyluspoints", MoonId_AddStylusPoints },
+};
+
+bool
+MoonlightStylusPointCollectionObject::Invoke (int id, NPIdentifier name,
+	const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	StylusPointCollection *col = (StylusPointCollection *) GetDependencyObject ();
+
+	switch (id) {
+	case MoonId_AddStylusPoints: {
+		if (!col || !args || argCount < 1)
+			return false;
+
+		MoonlightStylusPointCollectionObject *spco = (MoonlightStylusPointCollectionObject*) NPVARIANT_TO_OBJECT(args[0]);
+		double ret = col->AddStylusPoints ((StylusPointCollection*) spco->GetDependencyObject ());
+		DOUBLE_TO_NPVARIANT (ret, *result);
+		return true;
+	}
+	default:
+		return MoonlightCollectionObject::Invoke (id, name, args, argCount, result);
+	}
+}
+
+MoonlightStylusPointCollectionType::MoonlightStylusPointCollectionType ()
+{
+	AddMapping (moonlight_stylus_point_collection_mapping, COUNT (moonlight_stylus_point_collection_mapping));
+
+	allocate = moonlight_stylus_point_collection_allocate;
+}
+
+MoonlightStylusPointCollectionType *MoonlightStylusPointCollectionClass;
 
 /*** MoonlightDownloaderClass ***************************************************/
 
@@ -3765,6 +3811,7 @@ plugin_init_classes (void)
 	MoonlightSettingsClass = new MoonlightSettingsType ();
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
 	MoonlightStylusInfoClass = new MoonlightStylusInfoType ();
+	MoonlightStylusPointCollectionClass = new MoonlightStylusPointCollectionType ();
 	MoonlightTextBlockClass = new MoonlightTextBlockType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 }

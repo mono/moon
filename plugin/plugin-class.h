@@ -572,6 +572,26 @@ struct MoonlightStylusInfoObject : MoonlightDependencyObjectObject {
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
+/*** MoonlightStylusPointCollectionType *************************************/
+
+struct MoonlightStylusPointCollectionType : MoonlightCollectionType {
+	MoonlightStylusPointCollectionType ();
+};
+
+extern MoonlightStylusPointCollectionType *MoonlightStylusPointCollectionClass;
+
+struct MoonlightStylusPointCollectionObject : MoonlightCollectionObject {
+
+	MoonlightStylusPointCollectionObject (NPP instance)
+		: MoonlightCollectionObject (instance)
+	{
+		moonlight_type = Type::STYLUSPOINT_COLLECTION;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
+
 /*** MoonlightControl ***************************************************/
 
 struct MoonlightControlType : MoonlightDependencyObjectType {

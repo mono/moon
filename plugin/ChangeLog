@@ -1,3 +1,11 @@
+2007-12-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp|h: Add support for StylusPointCollection since 
+	it's a special case where a new method, AddStylusPoints, is 
+	introduced. Fix unit tests for StylusPointCollection but doesn't
+	solve bugs #349596 and 349598 because we don't capture the mouse
+	points.
+
 2007-12-20  Jb Evain  <jbevain@novell.com>
 
 	* plugin-class.cpp (MoonId_GetStylusPoints): return an
