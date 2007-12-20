@@ -10,20 +10,38 @@ Object.extend (Test.Unit.Testcase.prototype, {
 		return model.create (document.getElementById ("MoonlightControl"));
 	},
 
+	_respondTo: function (obj, slot) {
+		try {
+			if (typeof (obj) == "object" && obj ["hasOwnProperty"])
+				return obj.hasOwnProperty (slot);
+		} catch (ex) {}
+
+		try {
+			var s = obj [slot];
+			return true;
+		} catch (ex) {
+			return false;
+		}
+	},
+
 	_slotsMatch: function (model, array, obj) { with (this) {
 		if (!array)
 			return;
 
 		for (var i = 0; i < array.length; i++) {
 			var slot = array [i];
-			this.assert (obj.hasOwnProperty (slot), model.name + " does not support " + slot);
+			//this.assert (obj.hasOwnProperty (slot), model.name + " does not support " + slot);
+			this.assert (this._respondTo (obj, slot), model.name + " does not support " + slot);
 		}
 	}},
 
 	_classMatch: function (model, obj) {
 		this._slotsMatch (model, model.properties, obj);
-		this._slotsMatch (model, model.methods, obj);
-		this._slotsMatch (model, model.events, obj);
+
+		if (!Prototype.Browser.IE) {
+			this._slotsMatch (model, model.methods, obj);
+			this._slotsMatch (model, model.events, obj);
+		}
 
 		return model.parent ? this._classMatch (model.parent, obj) : true;
 	},
@@ -39,6 +57,9 @@ Object.extend (Test.Unit.Testcase.prototype, {
 				this.fail ("Cannot create object of type " + model.name + ", " + ex);
 			}
 		}
+
+		if (typeof (obj) == "object")
+			this.assertEqual (model.name, obj.toString ());
 
 		return this._classMatch (model, obj);
 	},

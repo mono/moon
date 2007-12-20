@@ -11,7 +11,7 @@ CodeModel.DependencyObject = {
 };
 
 CodeModel.Accessibility = {
-	name: "Accessibility",
+	name: "AccessibilityObject",
 
 	parent: CodeModel.DependencyObject,
 
@@ -316,7 +316,7 @@ CodeModel.TriggerCollection = {
 };
 
 CodeModel.UIElementCollection = {
-	name: "UIElementCollection",
+	name: "VisualCollection",
 
 	parent: CodeModel.Collection,
 
@@ -1334,15 +1334,11 @@ CodeModel.SilverlightPlugin = {
 	},
 
 	properties: [
-		"Background",
-		"EnableFramerateCounter",
-		"EnableHtmlAccess",
-		"EnableRedrawRegions",
+		"Content",
 		"InitParams",
 		"IsLoaded",
-		"MaxFrameRate",
 		"Source",
-		"Windowless"
+		"Settings"
 	],
 
 	methods: [
@@ -1356,8 +1352,26 @@ CodeModel.SilverlightPlugin = {
 	]
 };
 
+CodeModel.SilverlightPluginSettings = {
+	name: "Settings",
+
+	create: function (plugin) {
+		return plugin.settings;
+	},
+
+	properties: [
+		"Background",
+		"EnableFramerateCounter",
+		"EnableRedrawRegions",
+		"EnableHtmlAccess",
+		"MaxFramerate",
+		//"Version",
+		"Windowless"
+	]
+};
+
 CodeModel.SilverlightPluginContent = {
-	name: "SilverlightPluginContent",
+	name: "Content",
 
 	create: function (plugin) {
 		return plugin.content;
@@ -1479,7 +1493,7 @@ CodeModel.EventArgs = {
 };
 
 CodeModel.KeyboardEventArgs  = {
-	name: "KeyboardEventArgs ",
+	name: "KeyboardEventArgs",
 
 	parent: CodeModel.EventArgs,
 
@@ -1492,7 +1506,7 @@ CodeModel.KeyboardEventArgs  = {
 };
 
 CodeModel.MouseEventArgs  = {
-	name: "MouseEventArgs ",
+	name: "MouseEventArgs",
 
 	parent: CodeModel.EventArgs,
 

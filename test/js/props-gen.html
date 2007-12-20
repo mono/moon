@@ -91,10 +91,10 @@ function print_properties (model, obj) {
 			var name = model.properties [i];
 			try {
 				var prop = obj [name];
-				//message ("regprop (CodeModel." + model.name + ", \"" + name + "\", \"" + typeof (prop) + "\", " + default_val (prop) + ");");
+				message ("regprop (CodeModel." + model.name + ", \"" + name + "\", \"" + typeof (prop) + "\", " + default_val (prop) + ");");
 				//message ("prop: " + name + ", value: " + prop + ", type: " + typeof (prop));
 			} catch (ex) {
-				message ("regprop (CodeModel." + model.name + ", \"" + name + "\", \"exception\");");
+				//message ("regprop (CodeModel." + model.name + ", \"" + name + "\", \"exception\");");
 				if (!ex) {
 					message ("was in " + model.name);
 				}

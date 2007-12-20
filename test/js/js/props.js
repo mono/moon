@@ -270,22 +270,25 @@ regprop (CodeModel.MediaElement, "Volume", "number", 0.5);
 regprop (CodeModel.PathFigure, "IsClosed", "boolean", false);
 regprop (CodeModel.PathFigure, "Segments", "object", null);
 
-regprop (CodeModel.SilverlightPlugin, "Background", "undefined", undefined);
-regprop (CodeModel.SilverlightPlugin, "EnableFramerateCounter", "undefined", undefined);
-regprop (CodeModel.SilverlightPlugin, "EnableHtmlAccess", "undefined", undefined);
-regprop (CodeModel.SilverlightPlugin, "EnableRedrawRegions", "undefined", undefined);
-regprop (CodeModel.SilverlightPlugin, "FullScreen", "undefined", undefined);
 regprop (CodeModel.SilverlightPlugin, "InitParams", "string", "");
 regprop (CodeModel.SilverlightPlugin, "IsLoaded", "boolean", true);
 regprop (CodeModel.SilverlightPlugin, "MaxFrameRate", "undefined", undefined);
-regprop (CodeModel.SilverlightPlugin, "Source", "string", "void.xaml");
-regprop (CodeModel.SilverlightPlugin, "Windowless", "undefined", undefined);
+regprop (CodeModel.SilverlightPlugin, "Source", "string", "xaml/void.xaml");
+regprop (CodeModel.SilverlightPlugin, "Settings", "object", "Settings");
+regprop (CodeModel.SilverlightPlugin, "Content", "object", "Content");
 
 regprop (CodeModel.SilverlightPluginContent, "Accessibility", "object", "AccessibilityObject");
 regprop (CodeModel.SilverlightPluginContent, "ActualHeight", "number", 0);
 regprop (CodeModel.SilverlightPluginContent, "ActualWidth", "number", 0);
 regprop (CodeModel.SilverlightPluginContent, "FullScreen", "boolean", false);
 regprop (CodeModel.SilverlightPluginContent, "Root", "object", "Canvas");
+
+regprop (CodeModel.SilverlightPluginSettings, "Background", "string", "#ffffff");
+regprop (CodeModel.SilverlightPluginSettings, "EnableFramerateCounter", "boolean", false);
+regprop (CodeModel.SilverlightPluginSettings, "EnableRedrawRegions", "boolean", false);
+regprop (CodeModel.SilverlightPluginSettings, "EnableHtmlAccess", "boolean", true);
+regprop (CodeModel.SilverlightPluginSettings, "MaxFramerate", "number", 60);
+regprop (CodeModel.SilverlightPluginSettings, "Windowless", "boolean", false);
 
 regprop (CodeModel.Stroke, "DrawingAttributes", "object", "DrawingAttributes");
 regprop (CodeModel.Stroke, "StylusPoints", "object", "StylusPointCollection");
