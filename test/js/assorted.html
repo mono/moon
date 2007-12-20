@@ -87,7 +87,7 @@ AssortedTestSuite.prototype = {
 		// this test fails on FF/SL "Failure: Line.X1: expected default value: 0, found: 1.0010069081221042e-38"
 		// but works under IE/SL and FF/ML (default value to 0). Strangely this works for Y1, X2 and Y2
 		var line = $plugin ().content.createFromXaml ("<Line X1='' />");
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.Line, line);
@@ -227,7 +227,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyOpacityOnBrush: function () {
 		var b = $plugin ().content.createFromXaml ("<SolidColorBrush Opacity='' />");
 		// for both IE/SL and FF/ML this set opacity to 0.0 (different than the default 1.0 value)
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			// however FF/SL returns 1.0102051713717787e-38
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
@@ -292,7 +292,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyColorOnGradientStop: function () {
 		var gs = $plugin ().content.createFromXaml ("<GradientStop Color='' />");
 		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 6881396 (0x690074)
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.GradientStop, gs);
@@ -392,7 +392,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyRadiusXOnRectangleGeometry: function () {
 		var rg = $plugin ().content.createFromXaml ("<RectangleGeometry RadiusX='' />");
 		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 1.0101904577379033e-38
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.RectangleGeometry, rg);
@@ -409,7 +409,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyAngleOnRotateTransform: function () {
 		var rt = $plugin ().content.createFromXaml ("<RotateTransform Angle='' />");
 		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 1.0101904577379033e-38
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.RotateTransform, rt);
@@ -426,7 +426,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyCenterXOnScaleTransform: function () {
 		var st = $plugin ().content.createFromXaml ("<ScaleTransform CenterX='' />");
 		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 1.0101904577379033e-38
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.ScaleTransform, st);
@@ -447,7 +447,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyAngleXOnSkewTransform: function () {
 		var st = $plugin ().content.createFromXaml ("<SkewTransform AngleX='' />");
 		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 9.642727096589077e-39
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.SkewTransform, st);
@@ -468,7 +468,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyColorOnSolidColorBrush: function () {
 		var scb = $plugin ().content.createFromXaml ("<SolidColorBrush Color='' />");
 		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 7274573 (0x740073)
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.SolidColorBrush, scb);
@@ -497,7 +497,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyXOnTranslateTransform: function () {
 		var tt = $plugin ().content.createFromXaml ("<TranslateTransform X='' />");
 		// IE/SL and FF/ML returns the default (0) value, while FF/SL returns 9.642727096589077e-39
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense");
 		} else {
 			this.assertDefaultValues (CodeModel.TranslateTransform, tt);
@@ -515,7 +515,7 @@ AssortedTestSuite.prototype = {
 	testAllowEmptyColorOnDrawingAttributes: function () {
 		var da = $plugin ().content.createFromXaml ("<DrawingAttributes Color='' />");
 		// Color isn't the default transparent (-16777216) but random? on FF/SL and black (0) on IE/SL
-		if (Prototype.Browser.Gecko && (navigator.userAgent.indexOf ("Windows") > -1)) {
+		if (Browser.Gecko && Plugin.Silverlight) {
 			this.ignore ("ignored on FF/SL - value doesn't make sense (random?)");
 		} else {
 			this.assertEqual (0, da.Color);
