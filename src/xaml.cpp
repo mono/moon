@@ -2563,13 +2563,13 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 	inst->element_name = i->name;
 	inst->element_type = XamlElementInstance::ELEMENT;
 
+	DependencyProperty *dep = NULL;
+	XamlElementInstance *walk = p->current_element;
+
 	if (is_instance_of (inst, Type::COLLECTION)) {
 		// If we are creating a collection, try walking up the element tree,
 		// to find the parent that we belong to and using that instance for
 		// our collection, instead of creating a new one
-
-		XamlElementInstance *walk = p->current_element;
-		DependencyProperty *dep = NULL;
 
 		// We attempt to advance past the property setter, because we might be dealing with a
 		// content element
@@ -2587,13 +2587,21 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 
 		if (dep && dep->value_type == i->dependency_type) {
 			Value *v = ((DependencyObject * ) walk->item)->GetValue (dep);
-			if (v)
+			if (v) {
 				inst->item = v->AsCollection ();
+				dep = NULL;
+			}
+			// note: if !v then the default collection is NULL (e.g. PathFigureCollection)
 		}
 	}
 
 	if (!inst->item) {
 		inst->item = i->create_item ();
+
+		// in case we must store the collection into the parent
+		if (dep && dep->value_type == i->dependency_type)
+			((DependencyObject * ) walk->item)->SetValue (dep, new Value (inst->item));
+
 		if (p->loader)
 			inst->item->SetSurface (p->loader->GetSurface ());
 		p->AddCreatedElement (inst->item);

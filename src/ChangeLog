@@ -1,3 +1,10 @@
+2007-12-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.h: Remove hack for PathGeometry::FiguresProperty
+	* xaml.cpp: If a collection is null by default then we must call
+	parent->SetValue(dp, collection) or the collection, and it's 
+	contents, won't be available. Fix (correctly) Chess.
+
 2007-12-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp: Fix Draw and ComputeBound to deal with the fact that
