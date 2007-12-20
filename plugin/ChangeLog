@@ -1,5 +1,10 @@
 2007-12-20  Jb Evain  <jbevain@novell.com>
 
+	* plugin-class.cpp (MoonId_GetStylusPoints): return an
+	empty StylusPointCollection instead of doing non-sense.
+
+2007-12-20  Jb Evain  <jbevain@novell.com>
+
 	* plugin-class.cpp: throw if createObject is called
 	for something else than Downloader.
 

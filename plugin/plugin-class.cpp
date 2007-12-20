@@ -955,15 +955,21 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 1)
 			THROW_JS_EXCEPTION ("getStylusPoints");
 
-		if (NPVARIANT_IS_OBJECT (args [0])) {
-			DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [0]);
+		if (NPVARIANT_IS_OBJECT (args [1])) {
+			DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [1]);
 			if (!dob->Is (Type::INKPRESENTER))
 				THROW_JS_EXCEPTION ("getStylusPoints");
-			
-			InkPresenter *ip = (InkPresenter *) dob;
-			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, ink_presenter_get_strokes (ip)), *result);
+
+			// TODO: we don't have a way right now to collect
+			// the stylus points relative to an InkPresenter
+			MoonlightCollectionObject *collection = (MoonlightCollectionObject *) NPN_CreateObject (instance, MoonlightCollectionClass);
+			StylusPointCollection *points = new StylusPointCollection ();
+			collection->SetDependencyObject (points);
+			points->unref ();
+
+			OBJECT_TO_NPVARIANT (collection, *result);
 		}
-		
+
 		return true;
 	}
 	default:
