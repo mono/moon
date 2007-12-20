@@ -1,3 +1,8 @@
+2007-12-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* collection.cpp|h: Add missing method AddStylusPoints for 
+	StylusPointCollection
+
 2007-12-20  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.h: Remove hack for PathGeometry::FiguresProperty

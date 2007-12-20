@@ -768,6 +768,25 @@ stylus_point_collection_new (void)
 	return new StylusPointCollection ();
 }
 
+double
+stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection)
+{
+	return col->AddStylusPoints (stylusPointCollection);
+}
+
+double
+StylusPointCollection::AddStylusPoints (StylusPointCollection *stylusPointCollection)
+{
+	if (!stylusPointCollection)
+		return 1.0; // documented as such, needs testing
+
+	int count = collection_count (stylusPointCollection);
+	for (int i=0; i < count; i++) {
+		collection_add (this, collection_get_value_at (stylusPointCollection, i));
+	}
+	return collection_count (this) - 1;
+}
+
 TimelineMarkerCollection *
 timeline_marker_collection_new (void)
 {

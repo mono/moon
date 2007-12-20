@@ -135,6 +135,8 @@ class StylusPointCollection : public Collection {
 	StylusPointCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
+
+	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
 };
 
 class TimelineMarkerCollection : public Collection {
@@ -188,10 +190,12 @@ TriggerCollection *trigger_collection_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
 ResourceDictionary *resource_dictionary_new (void);
 StrokeCollection *stroke_collection_new (void);
-StylusPointCollection *stylus_point_collection_new (void);
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 GradientStopCollection *gradient_stop_collection_new (void);
 Inlines *inlines_new (void);
+
+StylusPointCollection *stylus_point_collection_new (void);
+double stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection);
 
 MediaAttributeCollection *media_attribute_collection_new (void);
 MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name);
