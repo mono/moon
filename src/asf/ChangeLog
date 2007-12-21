@@ -1,3 +1,7 @@
+2007-12-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-structures.h: Remove commented out code.
+
 2007-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: Implement support for markers as a separate stream.

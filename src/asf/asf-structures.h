@@ -296,7 +296,7 @@ struct asf_multiple_payloads {
 			return false;
 		
 		unsigned char* initial_destination = destination;
-		//asf_dword result = 0;
+
 		size_t size = 0;
 		int index = 0;
 		while (index < get_number_of_payloads () && payloads [index] != NULL) {
