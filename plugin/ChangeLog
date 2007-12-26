@@ -1,5 +1,10 @@
 2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin.cpp: PluginInstance::SetSource: don't check if we're setting the
+	  same source. Fixes #349592.
+
+2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin-class.cpp: Don't crash if surface->GetTopLevel returns null. Fixes
 	  #349816.
 

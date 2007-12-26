@@ -987,7 +987,7 @@ PluginInstance::LookupWrappedObject (EventObject *obj)
 void
 PluginInstance::setSource (const char *value)
 {
-	if (!value || (this->source && !strcasecmp (this->source, value)))
+	if (!value)
 		return;
 
 	this->source = (char *) NPN_MemAlloc (strlen (value) + 1);

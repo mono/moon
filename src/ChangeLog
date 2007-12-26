@@ -1,3 +1,8 @@
+2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.cpp: Null-initialize a field.
+	* dirty.cpp: Make DirtyNode keep a reference to the element it wraps.
+
 2007-12-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.h: Added, the start of the new media pipeline.

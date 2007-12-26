@@ -20,7 +20,19 @@ static List *up_dirty = NULL;
 
 class DirtyNode : public List::Node {
 public:
-	DirtyNode (UIElement *element) { this->element = element; }
+	DirtyNode (UIElement *element) 
+	{
+		this->element = element;
+		if (this->element)
+			this->element->ref ();
+	}
+	virtual ~DirtyNode ()
+	{
+		if (this->element) {
+			this->element->unref ();
+			this->element = NULL;
+		}
+	}
 
 	UIElement *element;
 };

@@ -74,6 +74,7 @@ Downloader::Downloader ()
 	total = 0;
 	part_hash = NULL;
 	context = NULL;
+	consumer_closure = NULL;
 }
 
 static void 
