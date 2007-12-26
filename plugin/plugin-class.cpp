@@ -1661,9 +1661,13 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 
 	case MoonId_Root: {
 		DependencyObject *top = plugin->surface->GetToplevel ();
-		MoonlightEventObjectObject *topobj = EventObjectCreateWrapper (instance, top);
+		if (top == NULL) {
+			NULL_TO_NPVARIANT (*result);
+		} else {
+			MoonlightEventObjectObject *topobj = EventObjectCreateWrapper (instance, top);
 
-		OBJECT_TO_NPVARIANT (topobj, *result);
+			OBJECT_TO_NPVARIANT (topobj, *result);
+		}
 		return true;
 	}
 	case NoMapping: {

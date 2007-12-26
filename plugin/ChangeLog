@@ -1,3 +1,8 @@
+2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Don't crash if surface->GetTopLevel returns null. Fixes
+	  #349816.
+
 2007-12-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp|h: Add support for StylusPointCollection since 
