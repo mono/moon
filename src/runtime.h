@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * runtime.h: Core surface and canvas definitions.
  *
@@ -108,6 +109,7 @@ class Surface : public EventObject {
 	
 	void SetDownloaderContext (gpointer context) { downloader_context = context; }
 	gpointer GetDownloaderContext () { return downloader_context; }
+	
 	Downloader *CreateDownloader () 
 	{
 		Downloader *downloader = new Downloader ();
@@ -120,15 +122,15 @@ class Surface : public EventObject {
 	{
 		Surface *surface = element ? element->GetSurface () : NULL;
 		
-		if (surface) {
+		if (surface)
 			return surface->CreateDownloader ();
-		} else {
-			//printf ("Surface::CreateDownloader (%p, ID: %i): "
-			//	"Unable to create contextual downloader.\n",
-			//	element, GET_OBJ_ID (element));
-			//print_stack_trace ();
-			return new Downloader ();
-		}
+		
+		//printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
+		//	element, GET_OBJ_ID (element));
+		
+		//print_stack_trace ();
+		
+		return new Downloader ();
 	}
 	
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data)
