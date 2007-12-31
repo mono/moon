@@ -359,7 +359,7 @@ MediaElement::ReadASFMarkers ()
 	
 	// Read the MARKERs
 	asf_marker *asf_marker;
-	asf_marker_entry* marker_entry;
+	const asf_marker_entry* marker_entry;
 	
 	asf_marker = mplayer->asf_parser->marker;
 	if (asf_marker != NULL) {

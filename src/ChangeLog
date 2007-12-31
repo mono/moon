@@ -1,3 +1,7 @@
+2007-12-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: Add const modifier 
+
 2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* downloader.cpp: Null-initialize a field.
