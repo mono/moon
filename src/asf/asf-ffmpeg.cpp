@@ -24,11 +24,25 @@ int ffmpeg_asf_probe(AVProbeData *pd)
 	FFMPEG_LOG ("ffmpeg_asf_probe (%p), filename: %s, buf: %p, buf_size: %i\n", pd, pd->filename, pd->buf, pd->buf_size);
 	
 	char* env = getenv ("MOON_DEMUXER");
+	bool use_ffmpeg = false;
 	if (env == NULL || *env == 0) {
+		use_ffmpeg = false;
+	} else if (strcasecmp (env, "false") != 0 || 
+			strcasecmp (env, "0") != 0 || 
+			strcasecmp (env, "no") != 0 ||
+			strcasecmp (env, "disable") != 0 ||
+			strcasecmp (env, "disabled") != 0 ||
+			strcasecmp (env, "ffmpeg") != 0) {
+		use_ffmpeg = true;
+	} else {
+		use_ffmpeg = false;
+	}
+	
+	if (use_ffmpeg) {
 		printf ("Using ffmpegs demuxer.\n");
 		return 0;
 	}
-	printf ("Using the moon demuxer.\n");
+	printf ("Using the moon demuxer. Set 'MOON_DEMUXER=false' to disable.\n");
 	
 	if ((size_t) pd->buf_size < sizeof (asf_guid))
 		return 0;
@@ -109,8 +123,8 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 
 		if (codec_type == CODEC_TYPE_AUDIO) {
 			FFMPEG_LOG ("Audio codec.\n");
-			WAVEFORMATEX* wave = asp->get_audio_data ();
-			WAVEFORMATEXTENSIBLE* wave_ex = wave->get_wave_format_extensible ();
+			const WAVEFORMATEX* wave = asp->get_audio_data ();
+			const WAVEFORMATEXTENSIBLE* wave_ex = wave->get_wave_format_extensible ();
 			if (wave != NULL) {
 				asf_dword id = wave->codec_id;
 				int data_size = asp->size - sizeof (asf_stream_properties) - sizeof (WAVEFORMATEX);
@@ -139,7 +153,7 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 				stream->codec->frame_size = 1;
 				FFMPEG_LOG ("Audio codec id: %i = %i.\n", stream->codec->codec_id, id);
 				switch (id) {
-				case 0X160:
+				case 0x160:
 					stream->codec->codec_id = CODEC_ID_WMAV1;
 					break;
 				case 0x161:
@@ -152,8 +166,8 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 			}
 		} else if (codec_type == CODEC_TYPE_VIDEO) {
 			FFMPEG_LOG ("Video codec.\n");
-			asf_video_stream_data* video_data = asp->get_video_data ();
-			BITMAPINFOHEADER* bmp;
+			const asf_video_stream_data* video_data = asp->get_video_data ();
+			const BITMAPINFOHEADER* bmp;
 //			asf_word id = 0;
 			if (video_data != NULL) {
 				bmp = video_data->get_bitmap_info_header ();
