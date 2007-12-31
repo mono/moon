@@ -1,5 +1,10 @@
 2007-12-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf-structures.h: Add some const modifiers to make intentions of a few
+	  functions clearer.
+
+2007-12-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-ffmpeg.cpp: Use our own demuxer by default.
 
 2007-12-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -42,16 +42,16 @@ struct WAVEFORMATEX {
 	asf_word bits_per_sample;
 	asf_word codec_specific_data_size;
 	
-	bool is_wave_format_extensible ()
+	bool is_wave_format_extensible () const
 	{
 		return codec_id == 0xFFFE && codec_specific_data_size >= 22;
 	}
 	
-	WAVEFORMATEXTENSIBLE* get_wave_format_extensible ()
+	const WAVEFORMATEXTENSIBLE* get_wave_format_extensible () const
 	{
 		if (!is_wave_format_extensible ())
 			return NULL;
-		return (WAVEFORMATEXTENSIBLE*) this;
+		return (const WAVEFORMATEXTENSIBLE*) this;
 	}
 };
 
@@ -79,11 +79,11 @@ struct BITMAPINFOHEADER {
 	asf_dword colors_used;
 	asf_dword important_colors_used;
 	
-	gint32 get_extra_data_size ()
+	gint32 get_extra_data_size () const
 	{
 		return size - sizeof (BITMAPINFOHEADER);
 	}
-	void* get_extra_data ()
+	void* get_extra_data () const
 	{
 		if (get_extra_data_size () <= 0)
 			return NULL;
@@ -97,11 +97,11 @@ struct asf_video_stream_data {
 	asf_byte flags;
 	asf_word format_data_size;
 	
-	BITMAPINFOHEADER* get_bitmap_info_header ()
+	const BITMAPINFOHEADER* get_bitmap_info_header () const
 	{
 		if (format_data_size < sizeof (BITMAPINFOHEADER))
 			return NULL;
-		return (BITMAPINFOHEADER*) (((char*) this) + sizeof (asf_video_stream_data));
+		return (const BITMAPINFOHEADER*) (((char*) this) + sizeof (asf_video_stream_data));
 	}
 };
 
@@ -415,6 +415,11 @@ struct asf_stream_properties : public asf_object {
 	{
 		return asf_guid_compare (&stream_type, &asf_guids_media_video);
 	}
+	
+	bool is_command ()
+	{
+		return asf_guid_compare (&stream_type, &asf_guids_media_command);
+	}
 
 	asf_dword get_stream_number () 
 	{
@@ -426,20 +431,20 @@ struct asf_stream_properties : public asf_object {
 		return flags & 1 << 15;
 	}
 	
-	WAVEFORMATEX* get_audio_data ()
+	const WAVEFORMATEX* get_audio_data ()
 	{
 		if (size < sizeof (WAVEFORMATEX) + sizeof (asf_stream_properties))
 			return NULL;
 			
-		return (WAVEFORMATEX*) (((char*) this) + sizeof (asf_stream_properties));
+		return (const WAVEFORMATEX*) (((char*) this) + sizeof (asf_stream_properties));
 	}
 	
-	asf_video_stream_data* get_video_data ()
+	const asf_video_stream_data* get_video_data ()
 	{
 		if (size < sizeof (asf_video_stream_data) + sizeof (asf_stream_properties))
 			return NULL;
 			
-		return (asf_video_stream_data*) (((char*) this) + sizeof (asf_stream_properties));
+		return (const asf_video_stream_data*) (((char*) this) + sizeof (asf_stream_properties));
 	}
 };
 
@@ -490,7 +495,7 @@ struct asf_marker_entry {
 	asf_dword flags;
 	asf_dword marker_description_length;
 		
-	char* get_marker_description ()
+	char* get_marker_description () const
 	{
 		char* result = NULL;
 		
@@ -517,7 +522,7 @@ struct asf_marker : public asf_object {
 		return result;
 	}
 	
-	asf_marker_entry* get_entry (guint32 index) 
+	const asf_marker_entry* get_entry (guint32 index) 
 	{
 		asf_marker_entry* result = NULL;
 		
