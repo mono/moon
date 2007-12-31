@@ -404,6 +404,15 @@ VisualCollection::VisualCollection ()
 VisualCollection::~VisualCollection ()
 {
 	g_ptr_array_free (z_sorted, true);
+	
+	Collection::Node *n;
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
+		UIElement* el = (UIElement*) n->obj;
+		if (el) {
+			el->SetVisualParent (NULL);
+			el->SetSurface (NULL);
+		}
+	}
 }
 
 class UIElementNode : public List::Node {

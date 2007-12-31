@@ -1,5 +1,13 @@
 2007-12-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* collection.cpp: Upon destruction on VisualCollection, remove the visual
+	  parent of all items.
+	* dependencyobject.h: Add weak_ref/unref and a comment explaining when and
+	  how to use them.
+	* dirty.cpp: Don't take a ref in DirtyNode.
+
+2007-12-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: Add const modifier 
 
 2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
