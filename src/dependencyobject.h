@@ -104,7 +104,7 @@ class EventObject {
 		if (weak_refs) {
 			int length = g_hash_table_size (weak_refs);
 			if (length > 0) {
-				printf ("Destroying id=%i with %i weak refs.\n", "?", id, length);
+				printf ("Destroying id=%i with %i weak refs.\n", id, length);
 				GList* list = g_hash_table_get_values (weak_refs);
 				GList* first = list;
 				while (list != NULL) {

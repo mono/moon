@@ -1,3 +1,7 @@
+2008-01-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.h: Remove warning.
+
 2007-12-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.h (CreateDownloader): Simplified.
