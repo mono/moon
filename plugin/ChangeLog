@@ -1,3 +1,10 @@
+2008-01-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (_set_dependency_property_value): For
+	non-object variants, we can easily get away with using a static
+	string buffer rather than using dynamically allocated strings to
+	hold our temp values.
+
 2007-12-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: PluginInstance::SetSource: don't check if we're setting the

@@ -1926,50 +1926,52 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 			DEBUG_WARN_NOTIMPLEMENTED ("unhandled object type in do.set_property");
 			return true;
 		}
-	}
-	else {
-		char *strvalue = NULL;
-
+	} else {
+		const char *strval = NULL;
+		char strbuf[64];
+		
 		if (NPVARIANT_IS_BOOLEAN (*value)) {
-			strvalue = g_strdup (NPVARIANT_TO_BOOLEAN (*value) ? "true" : "false");
-		}
-		else if (NPVARIANT_IS_INT32 (*value)) {
-			strvalue = g_strdup_printf ("%d", NPVARIANT_TO_INT32 (*value));
-		}
-		else if (NPVARIANT_IS_DOUBLE (*value)) {
-			strvalue = g_strdup_printf ("%g", NPVARIANT_TO_DOUBLE (*value));
-		}
-		else if (NPVARIANT_IS_STRING (*value)) {
-			strvalue = g_strdup (STR_FROM_VARIANT (*value));
-		}
-		else if (NPVARIANT_IS_NULL (*value)){
-			DEBUGMSG ("Setting NULL for (%s::%s)", dob->GetTypeName (), p->name);
-			if (p->value_type >= Type::DEPENDENCY_OBJECT){
+			if (NPVARIANT_TO_BOOLEAN (*value))
+				strcpy (strbuf, "true");
+			else
+				strcpy (strbuf, "false");
+			
+			strval = strbuf;
+		} else if (NPVARIANT_IS_INT32 (*value)) {
+			g_snprintf (strbuf, sizeof (strbuf), "%d", NPVARIANT_TO_INT32 (*value));
+			
+			strval = strbuf;
+		} else if (NPVARIANT_IS_DOUBLE (*value)) {
+			g_snprintf (strbuf, sizeof (strbuf), "%g", NPVARIANT_TO_DOUBLE (*value));
+			
+			strval = strbuf;
+		} else if (NPVARIANT_IS_STRING (*value)) {
+			strval = STR_FROM_VARIANT (*value);
+		} else if (NPVARIANT_IS_NULL (*value)) {
+			if (p->value_type >= Type::DEPENDENCY_OBJECT) {
 				DependencyObject *val = NULL;
-
+				
 				dob->SetValue (p, Value (val));
 			} else if (p->value_type == Type::STRING) {
 				char *val = NULL;
-
+				
 				dob->SetValue (p, Value (val));
-			} else
+			} else {
 				DEBUGWARN ("Setting NULL for unsupported type (%s::%s)", dob->GetTypeName (), p->name);
-
-
+			}
+			
 			return true;
-		}
-		else if (NPVARIANT_IS_VOID (*value)){
+		} else if (NPVARIANT_IS_VOID (*value)) {
 			DEBUGWARN ("unhandled variant type VOID in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
 			return true;
-		}
-		else {
+		} else {
 			DEBUGWARN ("unhandled variant type in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
 			return true;
 		}
-
-		xaml_set_property_from_str (dob, p, strvalue);
-
-		g_free (strvalue);
+		
+		g_assert (strval != NULL);
+		
+		xaml_set_property_from_str (dob, p, strval);
 	}
 
 	return true;
