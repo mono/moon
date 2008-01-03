@@ -1,3 +1,15 @@
+2008-01-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #350962
+
+	* media.cpp (MediaBase::OnPropertyChanged): Don't emit
+	DownloaderProgressChanged events anymore, leave that up to Image
+	and MediaElement classes so that we don't emit events when an
+	outside source changes the value.
+	(MediaElement::UpdateProgress): Emit the DownloaderProgressChanged
+	event if the proper download delta has occured.
+	(Image::UpdateProgress): Same.
+
 2008-01-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.h: Remove warning.
