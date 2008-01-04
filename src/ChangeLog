@@ -1,3 +1,10 @@
+2008-01-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp: EventObjects now use a List class for
+	event_lists rather than GSList which is far more costly for
+	appends.
+	(Emit): Reduce the number of linked-list iterations from 5 to 2.
+
 2008-01-04  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: completely overhaul the way we handle

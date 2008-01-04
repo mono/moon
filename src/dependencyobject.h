@@ -13,6 +13,7 @@
 #include "value.h"
 #include "enums.h"
 #include "debug.h"
+#include "list.h"
 
 #if STACK_DEBUG
 #define OBJECT_TRACKING 1
@@ -26,11 +27,11 @@
 
 class EventObject;
 
-typedef void (*EventHandler) (EventObject *sender, gpointer calldata, gpointer closure);
+typedef void (* EventHandler) (EventObject *sender, gpointer calldata, gpointer closure);
 
 struct EventList {
 	int current_token;
-	GSList *event_list;
+	List *event_list;
 };
 
 //
@@ -198,7 +199,7 @@ class EventObject {
 
  private:
 	void FreeHandlers ();
-
+	
 	EventList *events;
 };
 

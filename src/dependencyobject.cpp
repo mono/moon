@@ -56,9 +56,10 @@ EventObject::PrintStackTrace ()
 #endif
 
 // event handlers for c++
-struct EventClosure {
+class EventClosure : public List::Node {
+public:
 	EventClosure (EventHandler func, gpointer data, int token) { this->func = func; this->data = data; this->token = token; }
-
+	
 	EventHandler func;
 	gpointer data;
 	int token;
@@ -66,19 +67,17 @@ struct EventClosure {
 
 int EventObject::DestroyedEvent = -1;
 
-static void
-deleter (gpointer data)
-{
-	delete (EventClosure *) data;
-}
 
 void
 EventObject::FreeHandlers ()
 {
 	if (events) {
-		for (int i = 0; i < GetType()->GetEventCount(); i ++)
-			g_slist_foreach (events[i].event_list, (GFunc)deleter, NULL);
-		g_free (events);
+		int i, n = GetType ()->GetEventCount ();
+		
+		for (i = 0; i < n; i++)
+			delete events[i].event_list;
+		
+		delete [] events;
 	}
 }
 
@@ -102,15 +101,20 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
 		return -1;
 	}
-
+	
 	if (events == NULL) {
-		events = (EventList*)g_new0 (EventList, GetType()->GetEventCount());
+		int i, n = GetType ()->GetEventCount ();
+		
+		events = new EventList [n];
+		for (i = 0; i < n; i++) {
+			events[i].current_token = 0;
+			events[i].event_list = new List ();
+		}
 	}
-
-	int token = events[event_id].current_token ++;
-
-	events[event_id].event_list = g_slist_append (events[event_id].event_list,
-						      new EventClosure (handler, data, token));
+	
+	int token = events[event_id].current_token++;
+	
+	events[event_id].event_list->Append (new EventClosure (handler, data, token));
 	
 	return token;
 }
@@ -148,17 +152,19 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return;
 	}
-
+	
 	if (events == NULL)
 		return;
 	
-	for (GSList *l = events[event_id].event_list; l; l = l->next) {
-		EventClosure *closure = (EventClosure*)l->data;
+	EventClosure *closure = (EventClosure *) events[event_id].event_list->First ();
+	while (closure) {
 		if (closure->func == handler && closure->data == data) {
-			delete (EventClosure *) l->data;
-			events[event_id].event_list = g_slist_delete_link (events[event_id].event_list, l);
+			events[event_id].event_list->Unlink (closure);
+			delete closure;
 			break;
 		}
+		
+		closure = (EventClosure *) closure->next;
 	}
 }
 
@@ -169,17 +175,19 @@ EventObject::RemoveHandler (int event_id, int token)
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return;
 	}
-
+	
 	if (events == NULL)
 		return;
-
-	for (GSList *l = events[event_id].event_list; l; l = l->next) {
-		EventClosure *closure = (EventClosure*)l->data;
+	
+	EventClosure *closure = (EventClosure *) events[event_id].event_list->First ();
+	while (closure) {
 		if (closure->token == token) {
-			delete (EventClosure *) l->data;
-			events[event_id].event_list = g_slist_delete_link (events[event_id].event_list, l);
+			events[event_id].event_list->Unlink (closure);
+			delete closure;
 			break;
 		}
+		
+		closure = (EventClosure *) closure->next;
 	}
 }
 
@@ -204,32 +212,34 @@ EventObject::Emit (int event_id, gpointer calldata)
 		return;
 	}
 
-	if (events == NULL || events[event_id].event_list == NULL)
+	if (events == NULL || events[event_id].event_list->IsEmpty ())
 		return;
 	
-	/* XXX yuck. this is 5 passes over the same length list.
-
-	   1 for g_slist_copy
-	   1 to deep copy the EventClosures in the list's data
-	   1 to emit
-	   1 to free up the deep copies
-	   1 to free the list
-	*/
-
-	GSList *copy = g_slist_copy (events[event_id].event_list);
-	for (GSList *l = copy; l; l = l->next) {
-		EventClosure *orig = (EventClosure*)l->data;
-		l->data = new EventClosure (orig->func, orig->data, orig->token);
+	EventClosure *next, *closure = (EventClosure *) events[event_id].event_list->First ();
+	List *event_list = new List ();
+	
+	/* make a copy of the event-list to use for emitting */
+	while (closure) {
+		event_list->Append (new EventClosure (closure->func, closure->data, closure->token));
+		
+		closure = (EventClosure *) closure->next;
 	}
-
-	for (GSList *l = copy; l; l = l->next) {
-		EventClosure *closure = (EventClosure*)l->data;
-		if (closure && closure->func)
+	
+	/* emit the events using the copied list */
+	closure = (EventClosure *) event_list->First ();
+	while (closure) {
+		next = (EventClosure *) closure->next;
+		
+		if (closure->func)
 			closure->func (this, calldata, closure->data);
+		
+		event_list->Unlink (closure);
+		delete closure;
+		
+		closure = next;
 	}
-
-	g_slist_foreach (copy, (GFunc)deleter, NULL);
-	g_slist_free (copy);
+	
+	delete event_list;
 }
 
 void
