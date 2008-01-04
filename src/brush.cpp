@@ -819,7 +819,10 @@ image_brush_set_source (ImageBrush *brush, DependencyObject *dl, const char *Par
 void
 ImageBrush::image_progress_changed (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	((ImageBrush*)closure)->Emit (ImageBrush::DownloadProgressChangedEvent);
+	ImageBrush *brush = (ImageBrush*)closure;
+	double progress = brush->image->GetValue (Image::DownloadProgressProperty)->AsDouble();
+	brush->SetValue (ImageBrush::DownloadProgressProperty, Value (progress));
+	brush->Emit (ImageBrush::DownloadProgressChangedEvent);
 }
 
 void
@@ -1324,4 +1327,5 @@ brush_init (void)
 	/* lookup events */
 	Type *t = Type::Find (Type::IMAGEBRUSH);
 	ImageBrush::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
+	ImageBrush::ImageFailedEvent = t->LookupEvent ("ImageFailed");
 }

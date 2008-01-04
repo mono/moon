@@ -1,3 +1,20 @@
+2008-01-04  Chris Toshok  <toshok@ximian.com>
+
+	* media.h: add Image::DownloaderFailed.
+
+	* media.cpp (Image::UpdateProgress): make sure to qualify the
+	DownloadProgressProperty we lookup on the Downloader, since
+	without the Downloader:: it'll try to get
+	Image::DownloadProgressProperty, which will always return 0.0.
+	(Image::SetSource): use the static qualifier for
+	events (Downloader:: instead of downloader->).
+	(Image::DownloaderFailed): new method, emit our ImageFailedEvent.
+
+	* brush.cpp (ImageBrush::image_progress_changed): make sure to set
+	our ImageBrush::DownloadProgressProperty before emitting the
+	changed event.
+	(brush_init): lookup the ImageBrush::ImageFailedEvent.
+
 2008-01-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* runtime.cpp: Free background_color upon surface destruction. Fixes a minor

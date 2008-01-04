@@ -1315,7 +1315,7 @@ Image::CleanupSurface ()
 void
 Image::UpdateProgress ()
 {
-	double progress = downloader->GetValue (DownloadProgressProperty)->AsDouble ();
+	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
 	double current = GetValue (Image::DownloadProgressProperty)->AsDouble ();
 	
 	SetValue (Image::DownloadProgressProperty, Value (progress));
@@ -1342,7 +1342,8 @@ Image::SetSource (DependencyObject *dl, const char *PartName)
 
 	downloader = (Downloader*) dl;
 
-	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, this);
+	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 
 	if (downloader->Started () || downloader->Completed ()) {
 		if (downloader->Completed ())
@@ -1395,6 +1396,17 @@ Image::DownloaderComplete ()
 	else 
 		Invalidate ();
 }
+
+void
+Image::DownloaderFailed (const char *msg)
+{
+	ImageErrorEventArgs *ea = new ImageErrorEventArgs (msg);
+
+	Emit (ImageFailedEvent, ea);
+
+	delete ea;
+}
+
 
 #ifdef WORDS_BIGENDIAN
 #define set_pixel_bgra(pixel,index,b,g,r,a) do { \
@@ -1539,7 +1551,14 @@ Image::size_notify (int64_t size, gpointer data)
 void
 Image::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
 {
-	((Image*)closure)->DownloaderComplete ();
+	Image *image = (Image*)closure;
+	image->DownloaderComplete ();
+}
+
+void
+Image::downloader_failed (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	((Image*)closure)->DownloaderFailed ((const char *)calldata);
 }
 
 void
