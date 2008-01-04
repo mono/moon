@@ -664,11 +664,11 @@ MediaElement::UpdateProgress ()
 	if (progressive) {
 		double current = GetValue (MediaElement::DownloadProgressProperty)->AsDouble ();
 		
-		SetValue (MediaElement::DownloadProgressProperty, Value (progress));
-		
 		/* only emit an event if the delta is >= 0.05% */
-		if (progress == 1.0 || (progress - current) > 0.0005)
+		if (progress == 1.0 || (progress - current) > 0.0005) {
+			SetValue (MediaElement::DownloadProgressProperty, Value (progress));
 			Emit (MediaBase::DownloadProgressChangedEvent);
+		}
 	} else {
 		SetValue (MediaElement::BufferingProgressProperty, Value (progress));
 		

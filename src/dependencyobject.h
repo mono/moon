@@ -144,8 +144,7 @@ class EventObject {
 		g_atomic_int_inc (&refcount);
 		OBJECT_TRACK ("Ref", GetTypeName ());
 	}
-
-
+	
 	void unref ()
 	{
 		bool delete_me;

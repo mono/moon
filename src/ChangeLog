@@ -1,3 +1,10 @@
+2008-01-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (UpdateProgress): Don't SetValue() unless the delta
+	was large enough - otherwise we could get into a situation where
+	we never emit a progress changed event in a case where the data
+	trickles in at < 0.05%.
+
 2008-01-04  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp (Storyboard::HookupAnimationsRecurse): look back
@@ -23,9 +30,10 @@
 
 2008-01-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* runtime.cpp: Free background_color upon surface destruction. Fixes a minor
-	  leak.
-	* clock.cpp, clock.h: Free the tick_call_mutex upon destruction.
+	* runtime.cpp: Free background_color upon surface
+	  destruction. Fixes a minor leak.
+
+	* clock.cpp|h: Free the tick_call_mutex upon destruction.
 
 2008-01-03  Jeffrey Stedfast  <fejj@novell.com>
 
