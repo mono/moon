@@ -934,31 +934,31 @@ UIElementNode::~UIElementNode ()
 
 // I really wish C++ had anonymous delegates...
 static void
-emit_MouseLeftButtonDown (UIElement *element, int state, int x, int y)
+emit_MouseLeftButtonDown (UIElement *element, int state, double x, double y)
 {
 	element->EmitMouseLeftButtonDown (state, x, y);
 }
 
 static void
-emit_MouseLeftButtonUp (UIElement *element, int state, int x, int y)
+emit_MouseLeftButtonUp (UIElement *element, int state, double x, double y)
 {
 	element->EmitMouseLeftButtonUp (state, x, y);
 }
 
 static void
-emit_MouseMove (UIElement *element, int state, int x, int y)
+emit_MouseMove (UIElement *element, int state, double x, double y)
 {
 	element->EmitMouseMove (state, x, y);
 }
 
 static void
-emit_MouseEnter (UIElement *element, int state, int x, int y)
+emit_MouseEnter (UIElement *element, int state, double x, double y)
 {
 	element->EmitMouseEnter (state, x, y);
 }
 
 static void
-emit_MouseLeave (UIElement *element, int state, int x, int y)
+emit_MouseLeave (UIElement *element, int state, double x, double y)
 {
 	element->EmitMouseLeave ();
 }
@@ -1192,8 +1192,8 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 
 	s->SetCanFullScreen (true);
 
-	s->mouse_event_x = (int) button->x;
-	s->mouse_event_y = (int) button->y;
+	s->mouse_event_x = button->x;
+	s->mouse_event_y = button->y;
 	s->mouse_event_state = button->state;
 
 	s->HandleMouseEvent (emit_MouseLeftButtonUp, true, true, true,
@@ -1221,8 +1221,8 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 
 	s->SetCanFullScreen (true);
 	
-	s->mouse_event_x = (int) button->x;
-	s->mouse_event_y = (int) button->y;
+	s->mouse_event_x = button->x;
+	s->mouse_event_y = button->y;
 	s->mouse_event_state = button->state;
 
 	s->HandleMouseEvent (emit_MouseLeftButtonDown, true, true, true,
@@ -1239,22 +1239,26 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 {
 	Surface *s = (Surface *) data;
 
-	if (event->is_hint) {
-		int ix, iy;
-		GdkModifierType state;
-		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
-		s->mouse_event_x = ix;
-		s->mouse_event_y = iy;
-		s->mouse_event_state = state;
-	} else {
-		s->mouse_event_x = (int) event->x;
-		s->mouse_event_y = (int) event->y;
-
-		s->mouse_event_state = (GdkModifierType)event->state;
-	}
+	
+	s->mouse_event_x = event->x;
+	s->mouse_event_y = event->y;
+	s->mouse_event_state = (GdkModifierType)event->state;
 
 	s->HandleMouseEvent (emit_MouseMove, true, true, false,
 			     s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
+
+	if (event->is_hint) {
+#if GTK_CHECK_VERSION(2,12,0)
+	  if (gtk_check_version (2, 12, 0))
+	  	gdk_event_request_motions (event);
+	  else
+#endif
+	    {
+		int ix, iy;
+		GdkModifierType state;
+		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
+	    }    
+	}
 
 	s->UpdateCursorFromInputList ();
 
@@ -1267,8 +1271,8 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 	Surface *s = (Surface *) data;
 
 	if (event->type == GDK_ENTER_NOTIFY) {
-		s->mouse_event_x = (int) event->x;
-		s->mouse_event_y = (int) event->y;
+		s->mouse_event_x = event->x;
+		s->mouse_event_y = event->y;
 		s->mouse_event_state = event->state;
 		
 		s->HandleMouseEvent (emit_MouseMove, true, true, false,

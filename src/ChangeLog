@@ -1,3 +1,15 @@
+2008-01-04  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp: mostly switch all emit_* calls to take doubles, and
+	pass doubles around for button x/y.
+	(Surface::motion_notify_callback): if we're gtk > 2.12, use
+	gdk_event_request_motions (falling back to gdk_window_get_pointer
+	if not).  also, we can use the mouse_event_x/y from the event,
+	even when it's a hint.
+
+	* runtime.h: switch back to using doubles for everything mouse
+	event related.  Change MoonlightEventEmitFunc to take doubles.
+
 2008-01-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp|h: Make mouse_event_x/y ints rather than doubles

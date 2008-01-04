@@ -53,7 +53,7 @@ enum RuntimeInitFlags {
 
 class Surface;
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
-typedef void (* MoonlightEventEmitFunc) (UIElement *element, int state, int x, int y);
+typedef void (* MoonlightEventEmitFunc) (UIElement *element, int state, double x, double y);
 
 class Surface : public EventObject {
  public:
@@ -220,8 +220,8 @@ private:
 	int frames;
 
 	int mouse_event_state;
-	int mouse_event_x;
-	int mouse_event_y;
+	double mouse_event_x;
+	double mouse_event_y;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
