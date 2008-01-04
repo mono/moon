@@ -178,14 +178,18 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 	case Type::ANIMATIONCLOCK: {
 		AnimationClock *ac = (AnimationClock*)clock;
 
-		char *targetProperty = Storyboard::GetTargetProperty (ac->GetTimeline());
+		char *targetProperty = NULL;
+		for (Clock *c = ac; c; c = c->GetParent()) {
+			targetProperty = Storyboard::GetTargetProperty (c->GetTimeline());
+			if (targetProperty)
+				break;
+		}
 		if (!targetProperty) {
 			printf ("no target property\n");
 			return;
 		}
 
 		char *targetName = NULL;
-
 		for (Clock *c = ac; c; c = c->GetParent()) {
 			targetName = Storyboard::GetTargetName (c->GetTimeline());
 			if (targetName)

@@ -1,5 +1,11 @@
 2008-01-04  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp (Storyboard::HookupAnimationsRecurse): look back
+	up the clock hierarchy for the target property like we do with the
+	target name.
+
+2008-01-04  Chris Toshok  <toshok@ximian.com>
+
 	* media.h: add Image::DownloaderFailed.
 
 	* media.cpp (Image::UpdateProgress): make sure to qualify the
