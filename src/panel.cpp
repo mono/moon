@@ -476,6 +476,11 @@ Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 void
 Panel::OnPropertyChanged (DependencyProperty *prop)
 {
+	if (prop->type != Type::PANEL) {
+		FrameworkElement::OnPropertyChanged (prop);
+		return;
+	}
+
 	if (prop == Panel::ChildrenProperty) {
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 		
@@ -497,8 +502,8 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 		
 		Invalidate ();
 	}
-	else
-		FrameworkElement::OnPropertyChanged (prop);
+
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 void
