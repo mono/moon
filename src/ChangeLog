@@ -1,3 +1,30 @@
+2008-01-04  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: completely overhaul the way we handle
+	mouse events.  Instead of doing both hit testing and event
+	dispatch in one recursive tree traversal, we build up a list of
+	all elements that will bubble the event, and then use that list
+	along with the previous one to generate Enter/Leave events for the
+	elements that require it.  Also fix the way capture is done (it's
+	not handled until the end) and fix the Enter event dispatch when
+	you release mouse capture.
+
+	* uielement.h, uielement.cpp: rename the mouse events to match the
+	names used in C# and JS, as it's been singularly annoying to
+	remember that ButtonPressEvent -> MouseLeftButtonDown, etc.  Also
+	rename all the Handle* event methods to Emit*, as that's all they
+	do.  Make them nonvirtual, as the traversal and emission of the
+	events now happens in runtime.cpp.  Add a new virtual
+	method (HitTest), that is overridden by the container elements,
+	which appends elements that are going to bubble the event to the
+	list.
+
+	* panel.h, panel.cpp: remove all the Handle* methods, implement
+	HitTest.
+
+	* control.h, control.cpp: remove all the Handle* methods,
+	implement HitTest.
+
 2008-01-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (UpdateProgress): Don't SetValue() unless the delta

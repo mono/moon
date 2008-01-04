@@ -28,13 +28,13 @@ extern guint32 moonlight_flags;
 
 
 int UIElement::LoadedEvent = -1;
-int UIElement::MotionEvent = -1;
-int UIElement::ButtonPressEvent = -1;
-int UIElement::ButtonReleaseEvent = -1;
+int UIElement::MouseMoveEvent = -1;
+int UIElement::MouseLeftButtonDownEvent = -1;
+int UIElement::MouseLeftButtonUpEvent = -1;
 int UIElement::KeyDownEvent = -1;
 int UIElement::KeyUpEvent = -1;
-int UIElement::EnterEvent = -1;
-int UIElement::LeaveEvent = -1;
+int UIElement::MouseEnterEvent = -1;
+int UIElement::MouseLeaveEvent = -1;
 int UIElement::InvalidatedEvent = -1;
 int UIElement::GotFocusEvent = -1;
 int UIElement::LostFocusEvent = -1;
@@ -425,43 +425,46 @@ UIElement::Invalidate ()
 }
 
 void
-UIElement::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
+UIElement::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 {
-	if (cursor && *cursor == MouseCursorDefault)
-		*cursor = (MouseCursor)GetValue (UIElement::CursorProperty)->AsInt32();
-
-	MouseEventArgs e;
-	e.state = state;
-	e.x = x;
-	e.y = y;
-
-	Emit (MotionEvent, &e);
+	uielement_list->Prepend (new UIElementNode (el));
 }
 
 void
-UIElement::HandleButtonPress (cairo_t *cr, int state, double x, double y)
+UIElement::EmitMouseMove (int state, double x, double y)
 {
 	MouseEventArgs e;
 	e.state = state;
 	e.x = x;
 	e.y = y;
 
-	Emit (ButtonPressEvent, &e);
+	Emit (MouseMoveEvent, &e);
 }
 
 void
-UIElement::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
+UIElement::EmitMouseLeftButtonDown (int state, double x, double y)
 {
 	MouseEventArgs e;
 	e.state = state;
 	e.x = x;
 	e.y = y;
 
-	Emit (ButtonReleaseEvent, &e);
+	Emit (MouseLeftButtonDownEvent, &e);
 }
 
 void
-UIElement::HandleKeyDown (cairo_t *cr, int state, Key key, int platform_key_code)
+UIElement::EmitMouseLeftButtonUp (int state, double x, double y)
+{
+	MouseEventArgs e;
+	e.state = state;
+	e.x = x;
+	e.y = y;
+
+	Emit (MouseLeftButtonUpEvent, &e);
+}
+
+void
+UIElement::EmitKeyDown (int state, Key key, int platform_key_code)
 {
 	KeyboardEventArgs e;
 	e.state = state;
@@ -472,7 +475,7 @@ UIElement::HandleKeyDown (cairo_t *cr, int state, Key key, int platform_key_code
 }
 
 void
-UIElement::HandleKeyUp (cairo_t *cr, int state, Key key, int platform_key_code)
+UIElement::EmitKeyUp (int state, Key key, int platform_key_code)
 {
 	KeyboardEventArgs e;
 	e.state = state;
@@ -483,20 +486,20 @@ UIElement::HandleKeyUp (cairo_t *cr, int state, Key key, int platform_key_code)
 }
 
 void
-UIElement::Enter (cairo_t *cr, int state, double x, double y)
+UIElement::EmitMouseEnter (int state, double x, double y)
 {
 	MouseEventArgs e;
 	e.state = state;
 	e.x = x;
 	e.y = y;
 
-	Emit (EnterEvent, &e);
+	Emit (MouseEnterEvent, &e);
 }
 
 void
-UIElement::Leave ()
+UIElement::EmitMouseLeave ()
 {
-	Emit (LeaveEvent);
+	Emit (MouseLeaveEvent);
 }
 
 bool
@@ -514,9 +517,6 @@ UIElement::ReleaseMouseCapture ()
 {
 	Surface *s = GetSurface ();
 	if (s == NULL)
-		return;
-
-	if (s->GetMouseCapture() != this)
 		return;
 
 	s->SetMouseCapture (NULL);
@@ -648,13 +648,13 @@ uielement_init (void)
 	/* lookup events */
 	Type* t = Type::Find (Type::UIELEMENT);
 	UIElement::LoadedEvent = t->LookupEvent ("Loaded");
-	UIElement::MotionEvent = t->LookupEvent ("MouseMove");
-	UIElement::ButtonPressEvent = t->LookupEvent ("MouseLeftButtonDown");
-	UIElement::ButtonReleaseEvent = t->LookupEvent ("MouseLeftButtonUp");
+	UIElement::MouseMoveEvent = t->LookupEvent ("MouseMove");
+	UIElement::MouseLeftButtonDownEvent = t->LookupEvent ("MouseLeftButtonDown");
+	UIElement::MouseLeftButtonUpEvent = t->LookupEvent ("MouseLeftButtonUp");
 	UIElement::KeyDownEvent = t->LookupEvent ("KeyDown");
 	UIElement::KeyUpEvent = t->LookupEvent ("KeyUp");
-	UIElement::EnterEvent = t->LookupEvent ("MouseEnter");
-	UIElement::LeaveEvent = t->LookupEvent ("MouseLeave");
+	UIElement::MouseEnterEvent = t->LookupEvent ("MouseEnter");
+	UIElement::MouseLeaveEvent = t->LookupEvent ("MouseLeave");
 	UIElement::InvalidatedEvent = t->LookupEvent("Invalidated");
 	UIElement::GotFocusEvent = t->LookupEvent("GotFocus");
 	UIElement::LostFocusEvent = t->LookupEvent("LostFocus");

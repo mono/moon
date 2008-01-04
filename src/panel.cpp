@@ -417,7 +417,7 @@ Panel::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
 
 	// first a quick bounds check
 	if (!item->GetSubtreeBounds().PointInside (x, y))
- 		return false;
+		return false;
 
 	// then, if that passes, a more tailored shape check
 	return item->InsideObject (cr, x, y);
@@ -442,101 +442,31 @@ Panel::FindMouseOver (cairo_t *cr, double x, double y)
 }
 
 void
-Panel::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
+Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 {
-	Surface *s = GetSurface ();
-	UIElement *new_over;
-	bool captured = false;
+	/* in the interests of not calling FindMouseOver twice, this method
+	   cut & pastes from the bodies of both Panel::InsideObject and
+	   Panel::FindMouseOver */
 
-	if (s != NULL && s->GetCapturedElement () == this) {
-		captured = true;
-		new_over = this;
-	} else {
-		new_over = FindMouseOver (cr, x, y);
+	UIElement* mouseover = FindMouseOver (cr, x, y);
+
+	if (mouseover) {
+		uielement_list->Prepend (new UIElementNode (this));
+		mouseover->HitTest (cr, x, y, uielement_list);
 	}
-
-
-	if (new_over != mouse_over) {
-		if (mouse_over)
-			mouse_over->Leave ();
-
-		mouse_over = new_over;
-
-		if (mouse_over)
-			mouse_over->Enter (cr, state, x, y);
-	}
-
-	if (cursor && *cursor == MouseCursorDefault)
-		*cursor = (MouseCursor)GetValue (UIElement::CursorProperty)->AsInt32();
-
-	if (mouse_over)
-		mouse_over->HandleMotion (cr, state, x, y, cursor);
-
-	if (mouse_over || captured || InsideObject (cr, x, y))
-		FrameworkElement::HandleMotion (cr, state, x, y, NULL);
-}
-
-void
-Panel::HandleButtonPress (cairo_t *cr, int state, double x, double y)
-{
-	// XXX this is bad.  we should already know the mouse_over..
-	mouse_over = FindMouseOver (cr, x, y);
-
-	// not sure if this is correct, but we don't bother updating
-	// the current mouse_over here (and along with that, emitting
-	// enter/leave events).
-	if (mouse_over) {
-		if (mouse_over->GetSubtreeBounds().PointInside (x, y)
-		    && mouse_over->InsideObject (cr, x, y)) {
-
-			mouse_over->HandleButtonPress (cr, state, x, y);
+	else {
+		bool is_inside_clip = InsideClip (cr, x, y);
+		if (!is_inside_clip)
+			return;
+	
+		/* if we have explicitly set width/height, we check them */
+		if (FrameworkElement::InsideObject (cr, x, y)) {
+			/* we're inside, check if we're actually painting any background,
+			   or, we're just transparent due to no painting. */
+			if (panel_get_background (this) != NULL)
+				uielement_list->Prepend (new UIElementNode (this));
 		}
 	}
-
-	FrameworkElement::HandleButtonPress (cr, state, x, y);
-}
-
-void
-Panel::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
-{
-	// XXX look above in HandleButtonPress.  it updates mouse_over, but
-	// this doesn't.  figure out which we should do and make it
-	// consistent
-
-	// not sure if this is correct, but we don't bother updating
-	// the current mouse_over here (and along with that, emitting
-	// enter/leave events).
-	if (mouse_over) {
-		if (mouse_over->GetSubtreeBounds().PointInside (x, y)
-		    && mouse_over->InsideObject (cr, x, y)) {
-
-			mouse_over->HandleButtonRelease (cr, state, x, y);
-		}
-	}
-
-	FrameworkElement::HandleButtonRelease (cr, state, x, y);
-}
-
-void
-Panel::Enter (cairo_t *cr, int state, double x, double y)
-{
-	mouse_over = FindMouseOver (cr, x, y);
-
-	if (mouse_over)
-		mouse_over->Enter (cr, state, x, y);
-	  
-	FrameworkElement::Enter (cr, state, x, y);
-}
-
-void
-Panel::Leave ()
-{
-	if (mouse_over) {
-	       mouse_over->Leave ();
-	       mouse_over = NULL;
-	}
-
-	FrameworkElement::Leave ();
 }
 
 //

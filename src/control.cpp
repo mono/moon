@@ -98,44 +98,11 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-Control::HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor)
+Control::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 {
-	if (real_object)
-		real_object->HandleMotion (cr, state, x, y, cursor);
-	FrameworkElement::HandleMotion (cr, state, x, y, NULL);
-}
-
-void
-Control::HandleButtonPress (cairo_t *cr, int state, double x, double y)
-{
-	if (real_object)
-		real_object->HandleButtonPress (cr, state, x, y);
-	FrameworkElement::HandleButtonPress (cr, state, x, y);
-}
-
-void
-Control::HandleButtonRelease (cairo_t *cr, int state, double x, double y)
-{
-	if (real_object)
-		real_object->HandleButtonRelease (cr, state, x, y);
-	FrameworkElement::HandleButtonRelease (cr, state, x, y);
-}
-
-void 
-Control::Enter (cairo_t *cr, int state, double x, double y)
-{
-	if (real_object){
-		FrameworkElement::Enter (cr, state, x, y);
-		real_object->Enter (cr, state, x, y);
-	}
-}
-
-void 
-Control::Leave ()
-{
-	if (real_object){
-		real_object->Leave ();
-		FrameworkElement::Leave ();
+	if (InsideObject (cr, x, y)) {
+		uielement_list->Prepend (new UIElementNode (this));
+		real_object->HitTest (cr, x, y, uielement_list);
 	}
 }
 

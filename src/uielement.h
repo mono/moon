@@ -171,13 +171,26 @@ public:
 	// 
 	virtual Rect GetBounds () { return bounds; }
 
+	// 
+	// GetSubtreeBounds:
+	//   returns the bounding box including all sub-uielements.
+	//   implemented by containers.
+	// 
 	virtual Rect GetSubtreeBounds () { return bounds; }
+
 	//
 	// GetTransformFor
 	//   Obtains the affine transform for the given child, this is
 	//   implemented by containers
 
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
+
+
+	// HitTest
+	//   Accumulate a list of all elements that will generate an
+	//   event from this x,y. The first node in the list is the most
+	//   deeply nested node, the last node is the root.
+	virtual void HitTest (cairo_t *cr, double x, double y, List *uielement_list);
 
 	//
 	// Recomputes the bounding box, requests redraws, 
@@ -217,49 +230,47 @@ public:
 	}
 
 	//
-	// HandleMotion:
+	// EmitMouseMove:
 	//   handles an mouse motion event, and dispatches it to anyone that
 	//   might want it.
 	//
-	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
+	void EmitMouseMove (int state, double x, double y);
 
 	//
-	// HandleButtonPress:
+	// EmitMouseLeftButtonDown:
 	//   handles the button press event and dispatches it to all
-	//   the objects that might be interested in it (nested
-	//   objects).
+	//   the objects that might be interested in it.
 	//
-	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
+	void EmitMouseLeftButtonDown (int state, double x, double y);
 
 	//
-	// HandleButtonRelease:
+	// EmitMouseLeftButtonUp:
 	//   handles the button release event and dispatches it to all
-	//   the objects that might be interested in it (nested
-	//   objects).
+	//   the objects that might be interested in it.
 	//
-	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
+	void EmitMouseLeftButtonUp (int state, double x, double y);
 
 	//
-	// HandleKeyDown:
+	// EmitKeyDown:
 	//
-	virtual void HandleKeyDown (cairo_t *cr, int state, Key key, int platform_key_code);
+	void EmitKeyDown (int state, Key key, int platform_key_code);
 
 	//
-	// HandleKeyDown:
+	// EmitKeyUp:
 	//
-	virtual void HandleKeyUp (cairo_t *cr, int state, Key key, int platform_key_code);
+	void EmitKeyUp (int state, Key key, int platform_key_code);
 
 	//
-	// Enter:
+	// EmitMouseEnter:
 	//   Invoked when the mouse first enters this given object
 	//
-	virtual void Enter (cairo_t *cr, int state, double x, double y);
+	void EmitMouseEnter (int state, double x, double y);
 	
 	//
 	// Leave:
 	//   Invoke when the mouse leaves this given object
 	//
-	virtual void Leave ();
+	void EmitMouseLeave ();
 
 
 	//
@@ -305,13 +316,13 @@ public:
 
 	// Events you can AddHandler to
 	static int LoadedEvent;
-	static int MotionEvent;
-	static int ButtonPressEvent;
-	static int ButtonReleaseEvent;
+	static int MouseMoveEvent;
+	static int MouseLeftButtonDownEvent;
+	static int MouseLeftButtonUpEvent;
 	static int KeyDownEvent;
 	static int KeyUpEvent;
-	static int EnterEvent;
-	static int LeaveEvent;
+	static int MouseEnterEvent;
+	static int MouseLeaveEvent;
 	static int InvalidatedEvent;
 	static int GotFocusEvent;
 	static int LostFocusEvent;

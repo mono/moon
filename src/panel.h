@@ -39,15 +39,11 @@ class Panel : public FrameworkElement {
 
 	virtual UIElement* FindMouseOver (cairo_t *cr, double x, double y);
 
+	virtual void HitTest (cairo_t *cr, double x, double y, List *uielement_list);
+
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
-
-	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
-	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
-	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
-	virtual void Enter (cairo_t *cr, int state, double x, double y);
-	virtual void Leave ();
 
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;

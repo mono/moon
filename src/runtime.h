@@ -53,6 +53,7 @@ enum RuntimeInitFlags {
 
 class Surface;
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
+typedef void (* MoonlightEventEmitFunc) (UIElement *element, int state, int x, int y);
 
 class Surface : public EventObject {
  public:
@@ -69,7 +70,6 @@ class Surface : public EventObject {
 	void SetCursor (MouseCursor cursor);
 
 	bool SetMouseCapture (UIElement *capture);
-	UIElement *GetMouseCapture () { return capture_element; }
 
 	void Resize (int width, int height);
 	int GetWidth () { return width; }
@@ -88,8 +88,6 @@ class Surface : public EventObject {
 	GtkWidget *GetDrawingArea () { return drawing_area; }
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
-
-	UIElement *GetCapturedElement () { return capture_element; }
 
 	static int ResizeEvent;
 	static int FullScreenChangeEvent;
@@ -180,8 +178,17 @@ private:
 	// This currently can only be a canvas.
 	UIElement *toplevel;
 
-	// The element currently capturing the mouse
-	UIElement *capture_element;
+	// the list of elements (from most deeply nested to the
+	// toplevel) we've most recently sent a mouse event to.
+	List *input_list;
+
+	// is the mouse captured?  if it is, it'll be by the first element in input_list.
+	bool captured;
+	UIElement *pendingCapture;
+	bool pendingReleaseCapture;
+
+	// are we currently emitting a mouse event?
+	bool emittingMouseEvent;
 
 	// the currently shown cursor
 	MouseCursor cursor;
@@ -212,8 +219,8 @@ private:
 
 	int frames;
 
-	int last_event_state;
-	double last_event_x, last_event_y;
+	int mouse_event_state;
+	double mouse_event_x, mouse_event_y;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
@@ -237,6 +244,15 @@ private:
 	static void drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
 	static void drawing_area_destroyed (GtkWidget *w, gpointer data);
 	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data);
+
+	void FindFirstCommonElement (List *l1, int *index1,
+				     List *l2, int *index2);
+	void EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state, int x, int y, int end_idx);
+	void UpdateCursorFromInputList ();
+	void HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, int state, int x, int y);
+	void PerformCapture (UIElement *capture);
+	void PerformReleaseCapture ();
+
 	static gboolean motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data);
 	static gboolean crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data);
 	static gboolean key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data);
@@ -246,6 +262,16 @@ private:
 	static gboolean realized_callback (GtkWidget *widget, gpointer data);
 	static gboolean unrealized_callback (GtkWidget *widget, gpointer data);
 };
+
+/* for hit testing */
+class UIElementNode : public List::Node {
+public:
+	UIElement *uielement;
+		
+	UIElementNode (UIElement *el);
+	virtual ~UIElementNode ();
+};
+
 
 Surface *surface_new       (int width, int height);
 void     surface_resize    (Surface *s, int width, int height);

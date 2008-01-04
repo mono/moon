@@ -180,7 +180,8 @@ Surface::Surface(int w, int h)
 	normal_height = height;
 
 	toplevel = NULL;
-	capture_element = NULL;
+	input_list = new List ();
+	captured = false;
 
 	Realloc ();
 	
@@ -204,6 +205,10 @@ Surface::Surface(int w, int h)
 	
 	fps_nframes = 0;
 	fps_start = 0;
+
+	emittingMouseEvent = false;
+	pendingCapture = NULL;
+	pendingReleaseCapture = false;
 }
 
 Surface::~Surface ()
@@ -243,6 +248,9 @@ Surface::~Surface ()
 	clock_group->unref();
 	clock_group = NULL;
 
+	delete input_list;
+	input_list = NULL;
+
 	timeline->unref();
 	timeline = NULL;
 
@@ -265,22 +273,6 @@ Surface::~Surface ()
 	
 	delete background_color;
 	background_color = NULL;
-}
-
-bool
-Surface::SetMouseCapture (UIElement *capture)
-{
-	if (capture != NULL && capture_element != NULL)
-		return false;
-
-	capture_element = capture;
-
-	if (capture_element == NULL) {
-		// generate the proper Enter/Leave events here for the object
-		// under the mouse pointer
-	}
-
-	return true;
 }
 
 void
@@ -754,13 +746,12 @@ Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 void
 Surface::update_input_cb (EventObject *sender, gpointer calldata, gpointer closure)
 {
+#if notyet
 	Surface *s = (Surface *) closure;
 
-	MouseCursor new_cursor = MouseCursorDefault;
-
-	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
-	input_element->HandleMotion (s->cairo, s->last_event_state, s->last_event_x, s->last_event_y, &new_cursor);
-	s->SetCursor (new_cursor);
+	s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
+	s->UpdateCursorFromInputList ()
+#endif
 }
 
 gboolean
@@ -929,33 +920,343 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	return TRUE;
 }
 
+UIElementNode::UIElementNode (UIElement *el)
+{
+	uielement = el;
+	uielement->ref();
+}
+
+UIElementNode::~UIElementNode ()
+{
+	uielement->unref();
+	uielement = NULL;
+}
+
+// I really wish C++ had anonymous delegates...
+static void
+emit_MouseLeftButtonDown (UIElement *element, int state, int x, int y)
+{
+	element->EmitMouseLeftButtonDown (state, x, y);
+}
+
+static void
+emit_MouseLeftButtonUp (UIElement *element, int state, int x, int y)
+{
+	element->EmitMouseLeftButtonUp (state, x, y);
+}
+
+static void
+emit_MouseMove (UIElement *element, int state, int x, int y)
+{
+	element->EmitMouseMove (state, x, y);
+}
+
+static void
+emit_MouseEnter (UIElement *element, int state, int x, int y)
+{
+	element->EmitMouseEnter (state, x, y);
+}
+
+static void
+emit_MouseLeave (UIElement *element, int state, int x, int y)
+{
+	element->EmitMouseLeave ();
+}
+
+void
+Surface::PerformCapture (UIElement *capture)
+{
+	// "Capturing" the mouse pointer at an element forces us to
+	// use the path up the hierarchy from that element to the root
+	// as the input list, regardless of where the pointer actually
+	// is.
+
+	// XXX we should check if the input_list already starts at
+	// @capture.
+	List *new_input_list = new List();
+	while (capture) {
+		new_input_list->Append (new UIElementNode (capture));
+		capture = capture->GetVisualParent();
+	}
+
+	delete input_list;
+	input_list = new_input_list;
+	captured = true;
+	pendingCapture = NULL;
+}
+
+void
+Surface::PerformReleaseCapture ()
+{
+	// These need to be set before calling HandleMouseEvent as
+	// "captured" determines the input_list calculation, and
+	// "pendingReleaseCapture", when set, causes an infinite
+	// recursive loop.
+	captured = false;
+	pendingReleaseCapture = false;
+
+	// this causes any new elements we're over to be Enter'ed.  MS
+	// doesn't Leave the element that had the mouse captured,
+	// though.
+	HandleMouseEvent (NULL, false, true, false, mouse_event_state, mouse_event_x, mouse_event_y);
+}
+
+bool
+Surface::SetMouseCapture (UIElement *capture)
+{
+	if (capture != NULL && captured)
+		return false;
+
+	// we delay the actual capture/release until the end of the
+	// event bubbling.  need more testing on MS here to see what
+	// happens if through the course of a single event bubbling up
+	// to the root, one element captures and another releases.
+	// Our current implementation has it so that any "release"
+	// causes all captures to be ignored.
+	if (capture == NULL) {
+		if (emittingMouseEvent)
+			pendingReleaseCapture = true;
+		else
+			PerformReleaseCapture ();
+	}
+	else {
+		if (emittingMouseEvent) {
+			pendingCapture = capture;
+		}
+		else {
+			PerformCapture (capture);
+		}
+	}
+
+	return true;
+}
+
+void
+Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state, int x, int y, int end_idx)
+{
+	if (emitter == NULL)
+		return;
+
+	int idx;
+	UIElementNode *node;
+
+	if (end_idx == -1)
+		end_idx = list->Length();
+
+	emittingMouseEvent = true;
+	for (node = (UIElementNode*)list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
+		emitter (node->uielement, state, x, y);
+	}
+	emittingMouseEvent = false;
+}
+
+void
+Surface::FindFirstCommonElement (List *l1, int *index1,
+				 List *l2, int *index2)
+{
+	// we exploit the fact that for a list with any common
+	// elements, the lists will be identical from the first common
+	// element to the end of the lists.  So, we start from the
+	// last elements in both lists and walk backward to the start,
+	// looking for the first elements that don't match.
+	//
+	// this algorithm is O(MAX(n,m)), but it's unclear whether or
+	// not this is actually better than the O(n*m) approach, since
+	// the O(n*m) approach will often find a match on the first
+	// comparison (especially when the user is slowly moving the
+	// mouse around in the same element), and skip the rest.
+	int i1, i2;
+	UIElementNode *ui1, *ui2;
+
+	*index1 = -1;
+	*index2 = -1;
+
+	ui1 = (UIElementNode*)l1->Last();
+	i1 = l1->Length() - 1;
+
+	ui2 = (UIElementNode*)l2->Last();
+	i2 = l2->Length() - 1;
+
+	while (ui1 && ui2) {
+
+		if (ui1->uielement == ui2->uielement) {
+			*index1 = i1;
+			*index2 = i2;
+		}
+		else {
+			return;
+		}
+
+		ui1 = (UIElementNode*)ui1->prev;
+		ui2 = (UIElementNode*)ui2->prev;
+		i1--;
+		i2--;
+	}
+}
+
+void
+Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, int state, int x, int y)
+{
+	if (captured) {
+		// if the mouse is captured, the input_list doesn't ever
+		// change, and we don't emit enter/leave events.  just emit
+		// the event on the input_list.
+		EmitEventOnList (emitter, input_list, state, x, y, -1);
+	}
+	else {
+		int surface_index;
+		int new_index;
+
+		// Accumulate a new input_list, which contains the
+		// most deeply nested hit testable UIElement covering
+		// the point (x,y), and all visual parents up the
+		// hierarchy to the root.
+		List *new_input_list = new List ();
+		toplevel->HitTest (cairo, x, y, new_input_list);
+
+		// for 2 lists:
+		//   l1:  [a1, a2, a3, a4, ... ]
+		//   l2:  [b1, b2, b3, b4, ... ]
+		//
+		// For identical lists:
+		// 
+		//   only the primary event is emitted for all
+		//   elements of l2, in order.
+		//
+		// For lists that differ, Enter/Leave events must be
+		// emitted.
+		//
+		//   If the first few nodes in each list differ, and,
+		//   for instance bn == am, we know that [am...] ==
+		//   [bn...]
+		//
+		//   when emitting a given event on b1, MS generally
+		//   emits Leave events on [a1, a2, a3, ... am-1], and
+		//   Enter events on [b1, b2, ... bn-1].
+		//
+		//   For most event types, that's all that happens if
+		//   the lists differ.  For MouseLeftButtonDown (we
+		//   also do it for MouseLeftButtonUp), we also emit
+		//   the primary event on l2 after the enter/leave
+		//   events.
+		//
+		FindFirstCommonElement (input_list, &surface_index,
+					new_input_list, &new_index);
+
+		if (emit_leave)
+			EmitEventOnList (emit_MouseLeave, input_list, state, x, y, surface_index);
+
+		delete input_list;
+		input_list = new_input_list;
+
+		if (emit_enter)
+			EmitEventOnList (emit_MouseEnter, input_list, state, x, y, new_index);
+
+		if ((surface_index == 0 && new_index == 0) || force_emit) {
+			EmitEventOnList (emitter, input_list, state, x, y, -1);
+		}
+	}
+
+	// Perform any captures/releases that are pending after the
+	// event is bubbled.
+	if (pendingCapture)
+		PerformCapture (pendingCapture);
+	else if (pendingReleaseCapture)
+		PerformReleaseCapture ();
+}
+
+void
+Surface::UpdateCursorFromInputList ()
+{
+	MouseCursor new_cursor = MouseCursorDefault;
+	
+	// loop over the input list in order until we hit a node that
+	// has its cursor set to the non-default.
+	UIElementNode *node;
+	for (node = (UIElementNode*)input_list->First(); node; node = (UIElementNode*)node->next) {
+		new_cursor = (MouseCursor)node->uielement->GetValue (UIElement::CursorProperty)->AsInt32();
+		if (new_cursor != MouseCursorDefault)
+			break;
+	}
+
+	SetCursor (new_cursor);
+}
+
+gboolean
+Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	if (button->button != 1)
+		return FALSE;
+
+	s->SetCanFullScreen (true);
+
+	s->mouse_event_x = button->x;
+	s->mouse_event_y = button->y;
+	s->mouse_event_state = button->state;
+
+	s->HandleMouseEvent (emit_MouseLeftButtonUp, true, true, true,
+			     s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
+
+	s->UpdateCursorFromInputList ();
+	s->SetCanFullScreen (false);
+
+	// XXX MS appears to do this here, which is completely stupid.
+	if (s->captured)
+		s->PerformReleaseCapture ();
+
+	return TRUE;
+}
+
+gboolean
+Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	gtk_widget_grab_focus (widget);
+
+	if (button->button != 1)
+		return FALSE;
+
+	s->SetCanFullScreen (true);
+	
+	s->mouse_event_x = button->x;
+	s->mouse_event_y = button->y;
+	s->mouse_event_state = button->state;
+
+	s->HandleMouseEvent (emit_MouseLeftButtonDown, true, true, true,
+			     s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
+
+	s->UpdateCursorFromInputList ();
+	s->SetCanFullScreen (false);
+	
+	return TRUE;
+}
+
 gboolean
 Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
-	GdkModifierType state;
-	double x, y;
 
 	if (event->is_hint) {
 		int ix, iy;
-		gdk_window_get_pointer (event->window, &ix, &iy, &state);
-		x = ix;
-		y = iy;
+		GdkModifierType state;
+		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
+		s->mouse_event_x = ix;
+		s->mouse_event_y = iy;
+		s->mouse_event_state = state;
 	} else {
-		x = event->x;
-		y = event->y;
+		s->mouse_event_x = event->x;
+		s->mouse_event_y = event->y;
 
-		state = (GdkModifierType)event->state;
+		s->mouse_event_state = (GdkModifierType)event->state;
 	}
 
-	s->last_event_x = x;
-	s->last_event_y = y;
-	s->last_event_state = state;
+	s->HandleMouseEvent (emit_MouseMove, true, true, false,
+			     s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
 
-	MouseCursor new_cursor = MouseCursorDefault;
-	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
-	input_element->HandleMotion (s->cairo, state, x, y, &new_cursor);
-	s->SetCursor (new_cursor);
+	s->UpdateCursorFromInputList ();
 
 	return TRUE;
 }
@@ -966,28 +1267,33 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 	Surface *s = (Surface *) data;
 
 	if (event->type == GDK_ENTER_NOTIFY){
-		double x = event->x;
-		double y = event->y;
 
-		MouseCursor new_cursor = MouseCursorDefault;
+		s->mouse_event_x = event->x;
+		s->mouse_event_y = event->y;
+		s->mouse_event_state = event->state;
 
-		if (s->capture_element) {
-			s->capture_element->HandleMotion (s->cairo, event->state, x, y, &new_cursor);
-		}
-		else {
-		  	s->toplevel->HandleMotion (s->cairo, event->state, x, y, &new_cursor);
-			s->toplevel->Enter (s->cairo, event->state, x, y);
-		}
+		s->HandleMouseEvent (emit_MouseMove, true, true, false,
+				     s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
 
-		s->SetCursor (new_cursor);
-
-		s->last_event_x = x;
-		s->last_event_y = y;
-		s->last_event_state = event->state;
+		s->UpdateCursorFromInputList ();
 	
 	} else {
-		if (s->capture_element == NULL)
-			s->toplevel->Leave ();
+		// forceably emit MouseLeave on the current input
+		// list..  the "new" list computed by HandleMouseEvent
+		// should be the same as the current one since we pass
+		// in the same x,y but I'm not sure that's something
+		// we can rely on.
+		s->HandleMouseEvent (emit_MouseLeave, false, false, true,
+				     s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
+
+		// MS specifies that mouse capture is lost when you mouse out of the control
+		if (s->captured)
+			s->PerformReleaseCapture ();
+
+		// clear out the input list so we emit the right
+		// events when the pointer reenters the control.
+		delete s->input_list;
+		s->input_list = new List();
 	}
 
 	return TRUE;
@@ -1111,12 +1417,8 @@ Surface::key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 		return TRUE;
 
 	s->SetCanFullScreen (true);
-	// 
-	// I could not write a test that would send the output elsewhere, for now
-	// just send to the toplevel
-	//
-	s->toplevel->HandleKeyDown (s->cairo,
-				    key->state, gdk_keyval_to_key (key->keyval), key->hardware_keycode);
+	// key events are only ever delivered to the toplevel
+	s->toplevel->EmitKeyDown (key->state, gdk_keyval_to_key (key->keyval), key->hardware_keycode);
 				    
 	s->SetCanFullScreen (false);
 	
@@ -1132,63 +1434,14 @@ Surface::key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer dat
 		return TRUE;
 
 	s->SetCanFullScreen (true);
-	
-	// 
-	// I could not write a test that would send the output elsewhere, for now
-	// just send to the toplevel
-	//
-	s->toplevel->HandleKeyUp (s->cairo,
-				    key->state, gdk_keyval_to_key (key->keyval), key->hardware_keycode);
+
+	// key events are only ever delivered to the toplevel
+	s->toplevel->EmitKeyUp (key->state, gdk_keyval_to_key (key->keyval), key->hardware_keycode);
 				    				    
 	s->SetCanFullScreen (false);
 	
 	return TRUE;
 }
-
-gboolean
-Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	if (button->button != 1)
-		return FALSE;
-
-	s->SetCanFullScreen (true);
-	
-	double x = button->x;
-	double y = button->y;
-
-	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
-	input_element->HandleButtonRelease (s->cairo, button->state, x, y);
-	
-	s->SetCanFullScreen (false);
-	
-	return TRUE;
-}
-
-gboolean
-Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	gtk_widget_grab_focus (widget);
-
-	if (button->button != 1)
-		return FALSE;
-
-	s->SetCanFullScreen (true);
-	
-	double x = button->x;
-	double y = button->y;
-
-	UIElement *input_element = s->capture_element ? s->capture_element : s->toplevel;
-	input_element->HandleButtonPress (s->cairo, button->state, x, y);
-	
-	s->SetCanFullScreen (false);
-	
-	return FALSE;
-}
-
 
 void
 Surface::drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)

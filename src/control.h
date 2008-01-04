@@ -33,11 +33,8 @@ class Control : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual void HandleMotion (cairo_t *cr, int state, double x, double y, MouseCursor *cursor);
-	virtual void HandleButtonPress (cairo_t *cr, int state, double x, double y);
-	virtual void HandleButtonRelease (cairo_t *cr, int state, double x, double y);
-	virtual void Enter (cairo_t *cr, int state, double x, double y);
-	virtual void Leave ();
+
+	virtual void HitTest (cairo_t *cr, double x, double y, List *uielement_list);
 
 	virtual bool GetRenderVisible () { return real_object && real_object->GetRenderVisible(); }
 	virtual bool GetHitTestVisible () { return real_object && real_object->GetHitTestVisible(); }
