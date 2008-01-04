@@ -476,8 +476,6 @@ Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 void
 Panel::OnPropertyChanged (DependencyProperty *prop)
 {
-	FrameworkElement::OnPropertyChanged (prop);
-
 	if (prop == Panel::ChildrenProperty) {
 		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
 		
@@ -486,7 +484,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 				printf ("Warning we attached a property that was already attached\n");
 			newcol->closure = this;
 		}
-	} else if (prop == BackgroundProperty) {
+	} else if (prop == Panel::BackgroundProperty) {
 		if (background != NULL) {
 			background->Detach (NULL, this);
 			background->unref ();
@@ -499,6 +497,8 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 		
 		Invalidate ();
 	}
+	else
+		FrameworkElement::OnPropertyChanged (prop);
 }
 
 void

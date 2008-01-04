@@ -554,7 +554,7 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == ChildrenProperty) {
+	if (prop == TransformGroup::ChildrenProperty) {
 		TransformCollection *newcol = GetValue (prop)->AsTransformCollection();
 
 		if (newcol) {

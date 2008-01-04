@@ -400,7 +400,7 @@ MediaElement::CheckMarkers (int64_t from, int64_t to)
 	if (from == to)
 		return;
 	
-	Value *val = GetValue (MarkersProperty);
+	Value *val = GetValue (MediaElement::MarkersProperty);
 	
 	if (val == NULL)
 		return;

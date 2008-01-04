@@ -162,10 +162,10 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		
 		Invalidate ();
 	}
-	else if (prop == RenderTransformProperty || prop == RenderTransformOriginProperty) {
+	else if (prop == UIElement::RenderTransformProperty || prop == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
-	else if (prop == TriggersProperty) {
+	else if (prop == UIElement::TriggersProperty) {
 		Value *v = GetValue (prop);
 		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
 
@@ -176,7 +176,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 			newcol->closure = this;
 		}
 	}
-	else if (prop == ResourcesProperty) {
+	else if (prop == UIElement::ResourcesProperty) {
 		Value *v = GetValue (prop);
 		ResourceDictionary *newcol = v ? v->AsResourceDictionary() : NULL;
 
@@ -230,7 +230,7 @@ UIElement::ComputeTotalOpacity ()
 	if (GetVisualParent ())
 		GetVisualParent ()->ComputeTotalOpacity ();
 
-	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+	double local_opacity = GetValue (UIElement::OpacityProperty)->AsDouble();
 	total_opacity = local_opacity * (GetVisualParent () ? GetVisualParent ()->GetTotalOpacity () : 1.0);
 }
 
@@ -321,7 +321,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 bool 
 UIElement::InsideClip (cairo_t *cr, double x, double y)
 {
-	Value* clip_geometry = GetValue (ClipProperty);
+	Value* clip_geometry = GetValue (UIElement::ClipProperty);
 	Geometry* clip;
 	bool ret = false;
 	double nx = x;

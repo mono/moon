@@ -1332,7 +1332,7 @@ DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == KeyFramesProperty) {
+	if (prop == DoubleAnimationUsingKeyFrames::KeyFramesProperty) {
 		DoubleKeyFrameCollection *newcol = GetValue (prop)->AsDoubleKeyFrameCollection();
 
 		if (newcol) {
@@ -1461,7 +1461,7 @@ ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == KeyFramesProperty) {
+	if (prop == ColorAnimationUsingKeyFrames::KeyFramesProperty) {
 		ColorKeyFrameCollection *newcol = GetValue (prop)->AsColorKeyFrameCollection();
 
 		if (newcol) {
@@ -1587,7 +1587,7 @@ PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == KeyFramesProperty) {
+	if (prop == PointAnimationUsingKeyFrames::KeyFramesProperty) {
 		PointKeyFrameCollection *newcol = GetValue (prop)->AsPointKeyFrameCollection();
 
 		if (newcol) {

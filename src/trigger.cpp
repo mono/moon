@@ -28,7 +28,7 @@ EventTrigger::EventTrigger ()
 void
 EventTrigger::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop == ActionsProperty){
+	if (prop == EventTrigger::ActionsProperty){
 		TriggerActionCollection *newcol = GetValue (prop)->AsTriggerActionCollection();
 
 		if (newcol) {

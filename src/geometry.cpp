@@ -229,7 +229,7 @@ GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == ChildrenProperty) {
+	if (prop == GeometryGroup::ChildrenProperty) {
 		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
 
 		if (newcol) {
@@ -530,7 +530,7 @@ PathGeometry::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == FiguresProperty){
+	if (prop == PathGeometry::FiguresProperty){
 		PathFigureCollection *newcol = GetValue (prop)->AsPathFigureCollection();
 
 		if (newcol) {
@@ -776,7 +776,7 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == SegmentsProperty){
+	if (prop == PathFigure::SegmentsProperty){
 		PathSegmentCollection *newcol = GetValue (prop)->AsPathSegmentCollection();
 
 		if (newcol) {

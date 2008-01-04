@@ -1045,7 +1045,7 @@ DependencyProperty* DependencyObject::NameProperty;
 void
 DependencyObject::OnPropertyChanged (DependencyProperty *property)
 {
-	if (NameProperty == property) {
+	if (DependencyObject::NameProperty == property) {
 		NameScope *scope = FindNameScope ();
 		Value *v = GetValue (NameProperty);
 		if (scope && v)

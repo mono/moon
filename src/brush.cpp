@@ -1186,7 +1186,7 @@ DependencyProperty* VisualBrush::VisualProperty;
 void
 VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
-	UIElement *ui = (UIElement*)GetValue (VisualProperty)->AsVisual ();
+	UIElement *ui = (UIElement*)GetValue (VisualBrush::VisualProperty)->AsVisual ();
 	if (!ui) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.5);

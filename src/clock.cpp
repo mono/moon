@@ -1267,7 +1267,7 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == ChildrenProperty) {
+	if (prop == TimelineGroup::ChildrenProperty) {
 		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
 
 		if (newcol) {
@@ -1283,7 +1283,7 @@ TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
 ClockGroup *
 TimelineGroup::CreateClock ()
 {
-	TimelineCollection *collection = GetValue (ChildrenProperty)->AsTimelineCollection();
+	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection();
 	ClockGroup *group = new ClockGroup (this);
 	Collection::Node *node;
 	
@@ -1300,13 +1300,13 @@ TimelineGroup::CreateClock ()
 void
 TimelineGroup::AddChild (Timeline *child)
 {
-	GetValue (ChildrenProperty)->AsTimelineCollection()->Add (child);
+	GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection()->Add (child);
 }
 
 void
 TimelineGroup::RemoveChild (Timeline *child)
 {
-	GetValue (ChildrenProperty)->AsTimelineCollection()->Remove (child);
+	GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection()->Remove (child);
 }
 
 TimelineGroup *
@@ -1318,7 +1318,7 @@ timeline_group_new ()
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
-	TimelineCollection *collection = GetValue (ChildrenProperty)->AsTimelineCollection();
+	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection();
 	Collection::Node *node = (Collection::Node *) collection->list->First ();
 	Duration d = Duration::Automatic;
 	TimeSpan duration_span = 0;
