@@ -166,9 +166,10 @@ class EventObject {
 	//    Similar to C#'s is: it checks if this object is of this kind or 
 	//    a derived class.
 	
-	bool Is(Type::Kind k) {
+	bool Is (Type::Kind k)
+	{
 		return GetType ()->IsSubclassOf (k);
-	};
+	}
 
 	Type *GetType ()
 	{
