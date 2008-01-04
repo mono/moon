@@ -9,6 +9,8 @@
 	clear the target_object pointer when it gets destroyed.
 	(EventListenerProxy::get_wrapper_for_event_name): Use
 	g_ascii_strcasecmp() instead of g_strcasecmp().
+	(EventListenerProxy::~EventProxyListener): Disconnect from the
+	destroyed event and the other event if still hooked up.
 
 2008-01-03  Jeffrey Stedfast  <fejj@novell.com>
 

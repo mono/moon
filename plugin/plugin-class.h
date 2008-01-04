@@ -56,6 +56,7 @@ class EventListenerProxy : public List::Node {
 	char *event_name;
 
 	int token;
+	int dtoken;
 	int event_id;
 	EventObject *target_object;
 

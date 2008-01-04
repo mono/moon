@@ -402,6 +402,13 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 
 EventListenerProxy::~EventListenerProxy ()
 {
+	if (target_object) {
+		if (event_id != -1)
+			RemoveHandler ();
+		
+		target_object->RemoveHandler ("destroyed", dtoken);
+	}
+	
 	if (is_func)
 		NPN_ReleaseObject ((NPObject *) callback);
 	else
@@ -415,7 +422,7 @@ EventListenerProxy::AddHandler (EventObject *obj)
 {
 	target_object = obj;
 	
-	obj->AddHandler ("destroyed", on_target_object_destroyed, this);
+	dtoken = obj->AddHandler ("destroyed", on_target_object_destroyed, this);
 	
 	event_id = obj->GetType()->LookupEvent (event_name);
 	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this);
@@ -425,8 +432,10 @@ EventListenerProxy::AddHandler (EventObject *obj)
 void
 EventListenerProxy::RemoveHandler ()
 {
-	if (target_object && event_id != -1)
+	if (target_object && event_id != -1) {
 		target_object->RemoveHandler (event_id, token);
+		event_id = -1;
+	}
 }
 
 EventArgsWrapper
