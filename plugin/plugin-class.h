@@ -40,7 +40,7 @@ class EventListenerProxy : public List::Node {
 	~EventListenerProxy ();
 	int AddHandler (EventObject *obj);
 	void RemoveHandler ();
-	char* GetCallbackAsString ();
+	const char *GetCallbackAsString ();
 
 	int GetEventId () { return event_id; }
  private:
@@ -64,6 +64,7 @@ class EventListenerProxy : public List::Node {
 	static void mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void keyboard_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
 	static void timeline_marker_wrapper (NPP instance, gpointer calldata, NPVariant *value);
+	static void on_target_object_destroyed (EventObject *sender, gpointer calldata, gpointer closure);
 	static void proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure);
 };
 

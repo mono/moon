@@ -374,12 +374,13 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 // 	printf ("returning event listener proxy from %s - > %s\n", event_name, cb_name);
 }
 
-char *
+const char *
 EventListenerProxy::GetCallbackAsString ()
 {
 	if (is_func)
 		return "";
-	return (char *)callback;
+	
+	return (const char *)callback;
 }
 
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb)
@@ -408,11 +409,14 @@ EventListenerProxy::~EventListenerProxy ()
 	
 	g_free (event_name);
 }
-
+	
 int
 EventListenerProxy::AddHandler (EventObject *obj)
 {
 	target_object = obj;
+	
+	obj->AddHandler ("destroyed", on_target_object_destroyed, this);
+	
 	event_id = obj->GetType()->LookupEvent (event_name);
 	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this);
 	return token;
@@ -428,15 +432,15 @@ EventListenerProxy::RemoveHandler ()
 EventArgsWrapper
 EventListenerProxy::get_wrapper_for_event_name (const char *event_name)
 {
-	if (!g_strcasecmp ("mousemove", event_name) ||
-	    !g_strcasecmp ("mouseleftbuttonup", event_name) ||
-	    !g_strcasecmp ("mouseleftbuttondown", event_name) ||
-	    !g_strcasecmp ("mouseenter", event_name)) {
+	if (!g_ascii_strcasecmp ("mousemove", event_name) ||
+	    !g_ascii_strcasecmp ("mouseleftbuttonup", event_name) ||
+	    !g_ascii_strcasecmp ("mouseleftbuttondown", event_name) ||
+	    !g_ascii_strcasecmp ("mouseenter", event_name)) {
 
 		return mouse_event_wrapper;
-	} else if (!g_strcasecmp ("keydown", event_name) || !g_strcasecmp ("keyup", event_name)) {
+	} else if (!g_ascii_strcasecmp ("keydown", event_name) || !g_ascii_strcasecmp ("keyup", event_name)) {
 		return keyboard_event_wrapper;
-	} else if (!g_strcasecmp ("markerreached", event_name)) {
+	} else if (!g_ascii_strcasecmp ("markerreached", event_name)) {
 		return timeline_marker_wrapper;
 	} else
 		return default_wrapper;
@@ -477,6 +481,14 @@ EventListenerProxy::keyboard_event_wrapper (NPP instance, gpointer calldata, NPV
 	KeyboardEventArgsPopulate (jsea, ea);
 
 	OBJECT_TO_NPVARIANT (jsea, *value);
+}
+
+void
+EventListenerProxy::on_target_object_destroyed (EventObject *sender, gpointer calldata, gpointer closure)
+{
+	EventListenerProxy *proxy = (EventListenerProxy *) closure;
+	
+	proxy->target_object = NULL;
 }
 
 void
@@ -1410,7 +1422,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 
 		NPObject *obj = NULL;
 		const char *object_type = STR_FROM_VARIANT (args [0]);
-		if (!g_strcasecmp ("downloader", object_type)) {
+		if (!g_ascii_strcasecmp ("downloader", object_type)) {
 			PluginInstance *plugin = (PluginInstance*) instance->pdata;
 			Downloader *dl = PluginInstance::CreateDownloader (plugin);
 
@@ -1419,8 +1431,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 
 			OBJECT_TO_NPVARIANT (obj, *result);
 			return true;
-		}
-		else {
+		} else {
 			THROW_JS_EXCEPTION ("createObject");
 
 			NULL_TO_NPVARIANT (*result);

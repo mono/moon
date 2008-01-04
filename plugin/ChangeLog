@@ -1,3 +1,15 @@
+2008-01-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #348772
+
+	* plugin-class.cpp (EventListenerProxy::AddHandler): Add a handler
+	for the destroyed event too so that we can clear our target_object
+	pointer.
+	(EventListenerProxy::on_target_object_destroyed): New callback to
+	clear the target_object pointer when it gets destroyed.
+	(EventListenerProxy::get_wrapper_for_event_name): Use
+	g_ascii_strcasecmp() instead of g_strcasecmp().
+
 2008-01-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (_set_dependency_property_value): For
