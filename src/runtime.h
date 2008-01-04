@@ -220,7 +220,8 @@ private:
 	int frames;
 
 	int mouse_event_state;
-	double mouse_event_x, mouse_event_y;
+	int mouse_event_x;
+	int mouse_event_y;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;

@@ -1,5 +1,12 @@
 2008-01-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp|h: Make mouse_event_x/y ints rather than doubles
+	since the events that use them want them as ints anyway.
+	(button_release_callback): Cast the button->x/y doubles to int.
+	(button_press_callback): Same.
+	(motion_notify_callback): Cast event->x/y to int.
+	(crossing_notify_callback): Same.
+
 	* dependencyobject.cpp: EventObjects now use a List class for
 	event_lists rather than GSList which is far more costly for
 	appends.

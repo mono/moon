@@ -1192,8 +1192,8 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *button, gpo
 
 	s->SetCanFullScreen (true);
 
-	s->mouse_event_x = button->x;
-	s->mouse_event_y = button->y;
+	s->mouse_event_x = (int) button->x;
+	s->mouse_event_y = (int) button->y;
 	s->mouse_event_state = button->state;
 
 	s->HandleMouseEvent (emit_MouseLeftButtonUp, true, true, true,
@@ -1221,8 +1221,8 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 
 	s->SetCanFullScreen (true);
 	
-	s->mouse_event_x = button->x;
-	s->mouse_event_y = button->y;
+	s->mouse_event_x = (int) button->x;
+	s->mouse_event_y = (int) button->y;
 	s->mouse_event_state = button->state;
 
 	s->HandleMouseEvent (emit_MouseLeftButtonDown, true, true, true,
@@ -1247,8 +1247,8 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 		s->mouse_event_y = iy;
 		s->mouse_event_state = state;
 	} else {
-		s->mouse_event_x = event->x;
-		s->mouse_event_y = event->y;
+		s->mouse_event_x = (int) event->x;
+		s->mouse_event_y = (int) event->y;
 
 		s->mouse_event_state = (GdkModifierType)event->state;
 	}
@@ -1266,12 +1266,11 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 {
 	Surface *s = (Surface *) data;
 
-	if (event->type == GDK_ENTER_NOTIFY){
-
-		s->mouse_event_x = event->x;
-		s->mouse_event_y = event->y;
+	if (event->type == GDK_ENTER_NOTIFY) {
+		s->mouse_event_x = (int) event->x;
+		s->mouse_event_y = (int) event->y;
 		s->mouse_event_state = event->state;
-
+		
 		s->HandleMouseEvent (emit_MouseMove, true, true, false,
 				     s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
 
