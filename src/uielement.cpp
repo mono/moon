@@ -427,7 +427,7 @@ UIElement::Invalidate ()
 void
 UIElement::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 {
-	uielement_list->Prepend (new UIElementNode (el));
+	uielement_list->Prepend (new UIElementNode (this));
 }
 
 void
