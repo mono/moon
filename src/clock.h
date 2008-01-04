@@ -261,6 +261,7 @@ class TimeManager : public EventObject {
 	void ListClocks ();
  private:
 	TimeManager ();
+	~TimeManager ();
 
 	void AddGlibTimeout ();
 	void RemoveGlibTimeout ();

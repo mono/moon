@@ -262,6 +262,9 @@ Surface::~Surface ()
 	
 	DestroyDrawingArea (drawing_area);
 	drawing_area = NULL;
+	
+	delete background_color;
+	background_color = NULL;
 }
 
 bool

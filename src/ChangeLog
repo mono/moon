@@ -1,3 +1,9 @@
+2008-01-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.cpp: Free background_color upon surface destruction. Fixes a minor
+	  leak.
+	* clock.cpp, clock.h: Free the tick_call_mutex upon destruction.
+
 2008-01-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #350962

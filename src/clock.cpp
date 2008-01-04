@@ -250,6 +250,12 @@ TimeManager::TimeManager ()
 	first_tick = true;
 }
 
+TimeManager::~TimeManager ()
+{
+	g_mutex_free (tick_call_mutex);
+	tick_call_mutex = NULL;
+}
+
 void
 TimeManager::SetMaximumRefreshRate (int hz)
 {
