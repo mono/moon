@@ -118,12 +118,15 @@ Panel::ComputeBounds ()
 			}
 		}
 		bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children, true);
+	} else {
+		bounds_with_children = Rect (0,0,0,0);
 	}
 
 	Value *value = GetValue (Panel::BackgroundProperty);
-	if (value)
+	if (value) {
 		FrameworkElement::ComputeBounds ();
-	else
+		bounds_with_children = bounds_with_children.Union (bounds);
+	} else
 		bounds = Rect (0,0,0,0);
 
 #if DEBUG_BOUNDS
