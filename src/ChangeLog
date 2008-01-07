@@ -1,3 +1,9 @@
+2008-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Add NeedsLineCaps and NeedsLineJoin so some shapes,
+	that ignore those properties, can avoid setting them on the cairo
+	context.
+
 2008-01-04  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp: mostly switch all emit_* calls to take doubles, and

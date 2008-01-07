@@ -73,6 +73,14 @@ class Shape : public FrameworkElement {
 	virtual bool CanFill () { return false; }
 	virtual FillRule GetFillRule () { return FillRuleNonzero; }
 
+	// Stroke[Start|End]LineCap properties are ignored for some shapes
+	// e.g. Ellipse, Rectangle, Polygon and (closed) Path
+	virtual bool NeedsLineCaps () { return true; }
+
+	// StrokeLineJoin & StrokeMiterLimit properties are ignored for some shapes
+	// e.g. Ellipse, Rectangle (with rounded corners), Line
+	virtual bool NeedsLineJoin () { return true; }
+
 	//
 	// Draw: draws the Shape in the cairo context (affine transforms are set before this
 	// is called). 
@@ -130,6 +138,8 @@ class Ellipse : public Shape {
 
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
+	virtual bool NeedsLineCaps () { return false; }
+	virtual bool NeedsLineJoin () { return false; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -154,6 +164,9 @@ class Rectangle : public Shape {
 
 	bool GetRadius (double *rx, double *ry);
 	virtual bool CanFill () { return true; }
+	virtual bool NeedsLineCaps () { return false; }
+	// technically we could override NeedsLineJoin to check for round corners
+	// but that would be just as expensive as setting the unneeded values
 };
 
 Rectangle *rectangle_new          (void);
@@ -185,6 +198,7 @@ class Line : public Shape {
 	// virtual Point GetTransformOrigin ();
 
 	virtual bool IsFilled () { return false; }
+	virtual bool NeedsLineJoin () { return false; }
 };
 
 Line *line_new  (void);
@@ -217,6 +231,8 @@ class Polygon : public Shape {
 	virtual FillRule GetFillRule ();
 
 	virtual bool CanFill () { return true; }
+	virtual bool NeedsLineCaps () { return false; }
+
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
