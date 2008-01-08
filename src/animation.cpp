@@ -300,8 +300,8 @@ Storyboard::Begin ()
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
 	root_clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
-	root_clock->AddHandler (root_clock->CompletedEvent, invoke_completed, this);
 	root_clock->AddHandler (root_clock->CompletedEvent, teardown_clockgroup, this);
+	root_clock->AddHandler (root_clock->CompletedEvent, invoke_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.

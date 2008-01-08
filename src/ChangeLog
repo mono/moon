@@ -1,3 +1,13 @@
+2008-01-08  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp (Storyboard::Begin): simple change to fix a nasty
+	bug.  we need to add the teardown handler before the completed
+	handler.  otherwise cases where people were using a storyboard as
+	a timer would break - the completed handler would fire, the JS
+	would restart the storyboard, then the teardown handler would free
+	the new clock hierarchy.  Fixes the page animation in pageturn,
+	and gets the bubbles moving again in the SilverlightCLRBalls demo.
+
 2008-01-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* geometry.cpp (path_get_bounds): Cairo seems to break if the line
