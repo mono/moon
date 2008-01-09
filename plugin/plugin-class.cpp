@@ -476,8 +476,7 @@ EventListenerProxy::mouse_event_wrapper (NPP instance, gpointer calldata, NPVari
 {
 	MouseEventArgs *ea = (MouseEventArgs *) calldata;
 	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject *) NPN_CreateObject (instance, MoonlightMouseEventArgsClass);
-	jsea->x = ea->x;
-	jsea->y = ea->y;
+	jsea->SetEventArgs (ea);
 
 	OBJECT_TO_NPVARIANT (jsea, *value);
 }
@@ -897,12 +896,21 @@ mouse_event_allocate (NPP instance, NPClass *klass)
 }
 
 void
+MoonlightMouseEventArgsObject::SetEventArgs (MouseEventArgs *args)
+{
+	event_args = args;
+	event_args->ref ();
+}
+
+void
 MoonlightMouseEventArgsObject::Dispose ()
 {
 	MoonlightObject::Dispose ();
 
-	x = -1;
-	y = -1;
+	if (event_args) {
+		event_args->unref();
+		event_args = NULL;
+	}
 }
 
 static const MoonNameIdMapping
@@ -917,6 +925,8 @@ mouse_event_mapping[] = {
 bool
 MoonlightMouseEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
 {
+	int state = event_args->GetState ();
+
 	switch (id) {
 	case MoonId_Shift:
 		BOOLEAN_TO_NPVARIANT (state & GDK_SHIFT_MASK != 0, *result);
@@ -941,21 +951,25 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 1)
 			return true;
 
+		double x;
+		double y;
+
 		// The argument is an element
 		// to calculate the position with respect to (or null
 		// for screen space)
 
-		double _x = x;
-		double _y = y;
+		UIElement *el = NULL;
 
 		if (NPVARIANT_IS_OBJECT (args [0])) {
 			DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [0]);
 			if (dob->Is (Type::UIELEMENT))
-				uielement_transform_point ((UIElement*) dob, &_x, &_y);
+				el = (UIElement *)dob;
 		}
 
+		event_args->GetPosition (el, &x, &y);
+
 		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (instance, MoonlightPointClass);
-		point->point = Point (_x, _y);
+		point->point = Point (x, y);
 
 		OBJECT_TO_NPVARIANT (point, *result);
 
@@ -965,10 +979,10 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("getStylusInfo");
 
-		MoonlightStylusInfoObject *info = (MoonlightStylusInfoObject *) NPN_CreateObject (instance, MoonlightStylusInfoClass);
-		info->SetDependencyObject (stylus_info_get_current ());
-		
-		OBJECT_TO_NPVARIANT (info, *result);
+		StylusInfo *info = event_args->GetStylusInfo ();
+		MoonlightEventObjectObject *info_obj = EventObjectCreateWrapper (instance, info);
+		info->unref ();
+		OBJECT_TO_NPVARIANT (info_obj, *result);
 		
 		return true;
 	}
@@ -981,14 +995,10 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 			if (!dob->Is (Type::INKPRESENTER))
 				THROW_JS_EXCEPTION ("getStylusPoints");
 
-			// TODO: we don't have a way right now to collect
-			// the stylus points relative to an InkPresenter
-			MoonlightCollectionObject *collection = (MoonlightCollectionObject *) NPN_CreateObject (instance, MoonlightStylusPointCollectionClass);
-			StylusPointCollection *points = new StylusPointCollection ();
-			collection->SetDependencyObject (points);
+			StylusPointCollection *points = event_args->GetStylusPoints ((UIElement*)dob);
+			MoonlightEventObjectObject *col_obj = EventObjectCreateWrapper (instance, points);
 			points->unref ();
-
-			OBJECT_TO_NPVARIANT (collection, *result);
+			OBJECT_TO_NPVARIANT (col_obj, *result);
 		}
 
 		return true;
@@ -2361,6 +2371,9 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::EVENTOBJECT:
 	case Type::SURFACE:
 		np_class = MoonlightEventObjectClass;
+		break;
+	case Type::STYLUSINFO:
+		np_class = MoonlightStylusInfoClass;
 		break;
 	case Type::STYLUSPOINT_COLLECTION:
 		np_class = MoonlightStylusPointCollectionClass;

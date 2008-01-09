@@ -225,7 +225,7 @@ extern MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
 
 struct MoonlightMouseEventArgsObject : MoonlightObject {
 	MoonlightMouseEventArgsObject (NPP instance)
-	  : MoonlightObject (instance), state (0), x (-1), y (-1)
+	  : MoonlightObject (instance), event_args (NULL)
 	{
 	}
 
@@ -236,9 +236,9 @@ struct MoonlightMouseEventArgsObject : MoonlightObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
-	int state;
-	double x;
-	double y;
+	void SetEventArgs (MouseEventArgs *args);
+
+	MouseEventArgs *event_args;
 };
 
 /*** MoonlightMarkerReachedEventArgsClass ******************************************/

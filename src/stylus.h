@@ -41,8 +41,6 @@ void	stylus_info_set_device_type	(StylusInfo* stylus_info, TabletDeviceType type
 bool	stylus_info_get_inverted	(StylusInfo* stylus_info);
 void	stylus_info_set_inverted	(StylusInfo* stylus_info, bool inverted);
 
-StylusInfo *stylus_info_get_current ();
-
 class StylusPoint : public DependencyObject {
  public:
 	StylusPoint () { }

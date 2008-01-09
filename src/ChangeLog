@@ -1,3 +1,33 @@
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h, uielement.cpp: change all the Emit* methods that
+	deal with mouse events to take a GdkEvent instead of state/x/y,
+	and also change their calldata to a heap allocated MouseEventArgs,
+	which we unref after the emit.  This is because the pointer itself
+	is wrapped by the managed MouseEventArgs, and will be unref'ed in
+	~MouseEventArgs at some later time.
+
+	* runtime.h, runtime.cpp: change all the mouse events to pass
+	around the actual GdkEvent instead of the state/x/y.  This is due
+	to the fact that our MouseEventArgs class now wraps the GdkEvent,
+	so we can get at all the stylus/extension event stuff.
+
+	* stylus.h, stylus.cpp: remove stylus_get_current, as it's no
+	longer required.  We correctly create a StylusInfo instance from
+	the MouseEventArgs.
+
+	* Makefile.am (libmoon_la_SOURCES): add eventargs.cpp
+	(libmooninclude_headers): add eventargs.h
+
+	* libmoon.h: add eventargs.h.
+
+	* eventargs.h, eventargs.cpp: new files, splitting out the
+	KeyboardEventArgs and MouseEventArgs from uielement.h, and flesh
+	out MouseEventArgs, making it a refcounted object with enough
+	smarts to handle both the managed case and plugin case.  Include
+	all the stylus related code as well, so this *should* make all the
+	stylus requiring demos work.
+
 2008-01-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* geometry.cpp (path_get_bounds): My fix the other day wasn't

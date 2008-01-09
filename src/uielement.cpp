@@ -20,7 +20,7 @@
 #include "runtime.h"
 #include "geometry.h"
 #include "dirty.h"
-
+#include "eventargs.h"
 
 //#define DEBUG_INVALIDATE 0
 
@@ -431,36 +431,27 @@ UIElement::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 }
 
 void
-UIElement::EmitMouseMove (int state, double x, double y)
+UIElement::EmitMouseMove (GdkEvent *event)
 {
-	MouseEventArgs e;
-	e.state = state;
-	e.x = x;
-	e.y = y;
-
-	Emit (MouseMoveEvent, &e);
+	MouseEventArgs *e = new MouseEventArgs(event);
+	Emit (MouseMoveEvent, e);
+	e->unref ();
 }
 
 void
-UIElement::EmitMouseLeftButtonDown (int state, double x, double y)
+UIElement::EmitMouseLeftButtonDown (GdkEvent *event)
 {
-	MouseEventArgs e;
-	e.state = state;
-	e.x = x;
-	e.y = y;
-
-	Emit (MouseLeftButtonDownEvent, &e);
+	MouseEventArgs *e = new MouseEventArgs (event);
+	Emit (MouseLeftButtonDownEvent, e);
+	e->unref ();
 }
 
 void
-UIElement::EmitMouseLeftButtonUp (int state, double x, double y)
+UIElement::EmitMouseLeftButtonUp (GdkEvent *event)
 {
-	MouseEventArgs e;
-	e.state = state;
-	e.x = x;
-	e.y = y;
-
-	Emit (MouseLeftButtonUpEvent, &e);
+	MouseEventArgs *e = new MouseEventArgs (event);
+	Emit (MouseLeftButtonUpEvent, e);
+	e->unref ();
 }
 
 void
@@ -486,14 +477,11 @@ UIElement::EmitKeyUp (int state, Key key, int platform_key_code)
 }
 
 void
-UIElement::EmitMouseEnter (int state, double x, double y)
+UIElement::EmitMouseEnter (GdkEvent *event)
 {
-	MouseEventArgs e;
-	e.state = state;
-	e.x = x;
-	e.y = y;
-
-	Emit (MouseEnterEvent, &e);
+	MouseEventArgs *e = new MouseEventArgs (event);
+	Emit (MouseEnterEvent, e);
+	e->unref ();
 }
 
 void

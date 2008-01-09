@@ -53,7 +53,7 @@ enum RuntimeInitFlags {
 
 class Surface;
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
-typedef void (* MoonlightEventEmitFunc) (UIElement *element, int state, double x, double y);
+typedef void (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
  public:
@@ -219,9 +219,7 @@ private:
 
 	int frames;
 
-	int mouse_event_state;
-	double mouse_event_x;
-	double mouse_event_y;
+	GdkEvent *mouse_event;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
@@ -248,9 +246,10 @@ private:
 
 	void FindFirstCommonElement (List *l1, int *index1,
 				     List *l2, int *index2);
-	void EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state, double x, double y, int end_idx);
+	void EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx);
 	void UpdateCursorFromInputList ();
-	void HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, int state, double x, double y);
+	void HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit,
+			       GdkEvent *event);
 	void PerformCapture (UIElement *capture);
 	void PerformReleaseCapture ();
 

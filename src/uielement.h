@@ -20,18 +20,6 @@
 
 class Surface;
 
-struct KeyboardEventArgs {
-	int state;
-	int platformcode;
-	int key;
-};
-
-struct MouseEventArgs {
-	int state;
-	double x;
-	double y;
-};
-
 class UIElement : public Visual {
 	Brush *opacityMask;
 
@@ -234,21 +222,21 @@ public:
 	//   handles an mouse motion event, and dispatches it to anyone that
 	//   might want it.
 	//
-	void EmitMouseMove (int state, double x, double y);
+	void EmitMouseMove (GdkEvent *event);
 
 	//
 	// EmitMouseLeftButtonDown:
 	//   handles the button press event and dispatches it to all
 	//   the objects that might be interested in it.
 	//
-	void EmitMouseLeftButtonDown (int state, double x, double y);
+	void EmitMouseLeftButtonDown (GdkEvent *event);
 
 	//
 	// EmitMouseLeftButtonUp:
 	//   handles the button release event and dispatches it to all
 	//   the objects that might be interested in it.
 	//
-	void EmitMouseLeftButtonUp (int state, double x, double y);
+	void EmitMouseLeftButtonUp (GdkEvent *event);
 
 	//
 	// EmitKeyDown:
@@ -264,7 +252,7 @@ public:
 	// EmitMouseEnter:
 	//   Invoked when the mouse first enters this given object
 	//
-	void EmitMouseEnter (int state, double x, double y);
+	void EmitMouseEnter (GdkEvent *event);
 	
 	//
 	// Leave:
