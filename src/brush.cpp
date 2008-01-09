@@ -479,23 +479,29 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 {
 	Point *start = linear_gradient_brush_get_start_point (this);
 	Point *end = linear_gradient_brush_get_end_point (this);
-	double y0 = start ? (start->y * height) : 0.0;
-	double x0 = start ? (start->x * width) : 0.0;
-	double y1 = end ? (end->y * height) : height;
-	double x1 = end ? (end->x * width) : width;
-	
+	double x0, y0, x1, y1;
+
+	switch (gradient_brush_get_mapping_mode (this)) {
+	case BrushMappingModeAbsolute:
+		y0 = start ? start->y : 0.0;
+		x0 = start ? start->x : 0.0;
+		y1 = end ? end->y : height;
+		x1 = end ? end->x : width;
+		break;
+	case BrushMappingModeRelativeToBoundingBox:
+	default:
+		y0 = start ? (start->y * height) : 0.0;
+		x0 = start ? (start->x * width) : 0.0;
+		y1 = end ? (end->y * height) : height;
+		x1 = end ? (end->x * width) : width;
+		break;	
+	}
+
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 	
 	cairo_matrix_t matrix;
-	switch (gradient_brush_get_mapping_mode (this)) {
-	case BrushMappingModeAbsolute:
-		cairo_matrix_init (&matrix, 1.0 / width, 0, 0, 1.0 / height, 0, 0);
-		break;
-	case BrushMappingModeRelativeToBoundingBox:
-		cairo_matrix_init_identity (&matrix);
-		break;
-	}
-	
+	cairo_matrix_init_identity (&matrix);
+
 	Transform *transform = brush_get_transform (this);
 	if (transform) {
 		cairo_matrix_t tm;

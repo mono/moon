@@ -1,3 +1,8 @@
+2008-01-09  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* brush.cpp: fix (useless) derelativization for MappingmodeAbsolute
+	on LinearGradientBrush. Fixes bnc 346308 and lineargrad.xml.
+
 2008-01-08  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp (Storyboard::Begin): simple change to fix a nasty
