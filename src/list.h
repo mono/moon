@@ -36,6 +36,7 @@ protected:
 public:
 	// constructors
 	List ();
+	~List ();
 	
 	// properties
 	Node *First ();

@@ -31,6 +31,12 @@ List::List ()
 }
 
 
+List::~List ()
+{
+	Clear (true);
+}
+
+
 List::Node *
 List::First ()
 {
