@@ -1,3 +1,8 @@
+2008-01-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (Initialize): Use g_ascii_strcasecmp() so that we are
+	not locale dependent.
+
 2008-01-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #348772

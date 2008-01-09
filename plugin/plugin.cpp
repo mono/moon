@@ -344,27 +344,32 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			continue;
 
 		// initParams.
-		if (!strcasecmp (argn[i], "initParams")) {
+		if (!g_ascii_strcasecmp (argn[i], "initParams")) {
 			this->initParams = argv[i];
+			continue;
 		}
 
 		// onLoad.
-		if (!strcasecmp (argn[i], "onLoad")) {
+		if (!g_ascii_strcasecmp (argn[i], "onLoad")) {
 			this->onLoad = argv[i];
+			continue;
 		}
 
 		// onError.
-		if (!strcasecmp (argn[i], "onError")) {
+		if (!g_ascii_strcasecmp (argn[i], "onError")) {
 			this->onError = argv[i];
+			continue;
 		}
 
 		// Source url handle.
-		if (!strcasecmp (argn[i], "src") || !strcasecmp (argn[i], "source")) {
+		if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
 			this->source = argv[i];
+			continue;
 		}
 
-		if (!strcasecmp (argn[i], "background")) {
+		if (!g_ascii_strcasecmp (argn[i], "background")) {
 			this->background = g_strdup (argv[i]);
+			continue;
 		}
 	}
 }
@@ -546,7 +551,7 @@ PluginInstance::JsRunOnload ()
 	NPObject *object = NULL;
 	NPVariant result;
 	const char *expression = onLoad;
-
+	
 	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVWindowNPObject, &object)) {
 		DEBUGMSG ("*** Failed to get window object");
 		return false;
@@ -563,17 +568,15 @@ PluginInstance::JsRunOnload ()
 	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, toplevel);
 	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
 
-	if (NPN_Invoke (instance, object, NPID (expression),
-			args, 1, &result)) {
-
+	if (NPN_Invoke (instance, object, NPID (expression), args, 1, &result)) {
 		DEBUGMSG ("NPN_Invoke succeeded");
 		NPN_ReleaseVariantValue (&result);
 
 		retval = true;
-	}
-	else {
+	} else {
 		DEBUGMSG ("NPN_Invoke failed");
 	}
+	
 	NPN_ReleaseVariantValue (&args [0]);
 	NPN_ReleaseObject (object);
 
