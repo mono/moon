@@ -1043,11 +1043,6 @@ Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state,
 
 	emittingMouseEvent = true;
 	for (node = (UIElementNode*)list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		if (emitter == emit_MouseLeave)
-			printf ("emitting MouseLeave on %s\n", node->uielement->GetName ());
-		else if (emitter == emit_MouseEnter)
-			printf ("emitting MouseEnter on %s\n", node->uielement->GetName ());
-		
 		emitter (node->uielement, state, x, y);
 	}
 	emittingMouseEvent = false;
