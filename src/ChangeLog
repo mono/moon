@@ -1,3 +1,9 @@
+2008-01-09  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: If a property is a collection, don't assume that the
+	collection is already initialized (they used to always be), and
+	initialize the collection if needed. This fixes BNC 350893.
+
 2008-01-09  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* brush.cpp: fix (useless) derelativization for MappingmodeAbsolute
