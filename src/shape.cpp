@@ -217,11 +217,19 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	
 	if (stroke) {
 		double thickness = shape_get_stroke_thickness (this);
+		
+#if 0
+		// this optimization is broken wrt ComputeBoundsSlow since
+		// - thickness isn't checked there (fixed) and
+		// - the new_path clears the data for a cairo_fill_extents call anyway
+		//
+		// See bug #352188 for an example of what this breaks
 		if (thickness == 0) {
 			if (drawn)
 				cairo_new_path (cr);
 			return;
 		}
+#endif
 
 		if (IsDegenerate ())
 			cairo_set_line_width (cr, 1.0);

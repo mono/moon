@@ -248,9 +248,9 @@ private:
 
 	void FindFirstCommonElement (List *l1, int *index1,
 				     List *l2, int *index2);
-	void EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state, int x, int y, int end_idx);
+	void EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state, double x, double y, int end_idx);
 	void UpdateCursorFromInputList ();
-	void HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, int state, int x, int y);
+	void HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, int state, double x, double y);
 	void PerformCapture (UIElement *capture);
 	void PerformReleaseCapture ();
 

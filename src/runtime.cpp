@@ -139,9 +139,8 @@ Surface::CreateSimilarSurface ()
 	
 	cairo_t *ctx = runtime_cairo_create (drawing_area->window);
 	
-	if (cairo_xlib){
+	if (cairo_xlib)
 		cairo_destroy (cairo_xlib);
-	}
 	
 	cairo_surface_t *xlib_surface = cairo_surface_create_similar (
 		cairo_get_target (ctx), 
@@ -350,9 +349,8 @@ Surface::ConnectEvents (bool realization_signals)
 		gtk_signal_connect (GTK_OBJECT (drawing_area), "unrealize",
 				    G_CALLBACK (unrealized_callback), this);
 
-		if (GTK_WIDGET_REALIZED (drawing_area)){
+		if (GTK_WIDGET_REALIZED (drawing_area))
 			realized_callback (drawing_area, this);
-		}
 	}
 }
 
@@ -1032,7 +1030,7 @@ Surface::SetMouseCapture (UIElement *capture)
 }
 
 void
-Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state, int x, int y, int end_idx)
+Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state, double x, double y, int end_idx)
 {
 	if (emitter == NULL)
 		return;
@@ -1045,6 +1043,11 @@ Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, int state,
 
 	emittingMouseEvent = true;
 	for (node = (UIElementNode*)list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
+		if (emitter == emit_MouseLeave)
+			printf ("emitting MouseLeave on %s\n", node->uielement->GetName ());
+		else if (emitter == emit_MouseEnter)
+			printf ("emitting MouseEnter on %s\n", node->uielement->GetName ());
+		
 		emitter (node->uielement, state, x, y);
 	}
 	emittingMouseEvent = false;
@@ -1095,7 +1098,8 @@ Surface::FindFirstCommonElement (List *l1, int *index1,
 }
 
 void
-Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, int state, int x, int y)
+Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit,
+			   int state, double x, double y)
 {
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever
@@ -1113,7 +1117,7 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 		// hierarchy to the root.
 		List *new_input_list = new List ();
 		toplevel->HitTest (cairo, x, y, new_input_list);
-
+		
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
 		//   l2:  [b1, b2, b3, b4, ... ]

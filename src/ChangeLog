@@ -1,5 +1,20 @@
 2008-01-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	* geometry.cpp (path_get_bounds): My fix the other day wasn't
+	quite ideal. Instead of using a 0.1 line thickness when the
+	shape's StrokeThickness is 0, continue using that 0 thickness but
+	use cairo_fill_extents() instead. Also, when shape is null, ise a
+	0.0 thickness & cairo_fill_extents() as well.
+
+	* shape.cpp (DoDraw): Removed the if (thickness == 0) optimization
+	that breaks Paths with a StrokeThickness of 0. Fixes bug #352188.
+
+	* runtime.cpp (EmitEventOnList): Changed to take double x,y
+	coordinate arguments rather than int.
+	(HandleMouseEvent): Same.
+
+2008-01-09  Jeffrey Stedfast  <fejj@novell.com>
+
 	* list.cpp (List::~List): Added a dtor that deletes all nodes
 	currently in the list. This is doable now that List::Nodes are
 	classes where the node dtors can be overloaded.
