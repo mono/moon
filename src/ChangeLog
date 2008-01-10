@@ -1,3 +1,7 @@
+2008-10-10  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* pipeline.cpp: include config.h (fixes an ffmpeg-related build error)
+
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Surround with ifdef to conditionally include the new

@@ -10,6 +10,7 @@
  * 
  */
 
+#include "config.h"
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
 #include "uri.h"
