@@ -594,6 +594,48 @@ struct MoonlightStylusPointCollectionObject : MoonlightCollectionObject {
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 };
 
+
+/*** MoonlightStrokeCollectionType *************************************/
+
+struct MoonlightStrokeCollectionType : MoonlightCollectionType {
+	MoonlightStrokeCollectionType ();
+};
+
+extern MoonlightStrokeCollectionType *MoonlightStrokeCollectionClass;
+
+struct MoonlightStrokeCollectionObject : MoonlightCollectionObject {
+
+	MoonlightStrokeCollectionObject (NPP instance)
+		: MoonlightCollectionObject (instance)
+	{
+		moonlight_type = Type::STROKE_COLLECTION;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
+
+
+/*** MoonlightStrokeType *************************************/
+
+struct MoonlightStrokeType : MoonlightDependencyObjectType {
+	MoonlightStrokeType ();
+};
+
+extern MoonlightStrokeType *MoonlightStrokeClass;
+
+struct MoonlightStrokeObject : MoonlightDependencyObjectObject {
+
+	MoonlightStrokeObject (NPP instance)
+		: MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::STROKE;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+};
+
 /*** MoonlightControl ***************************************************/
 
 struct MoonlightControlType : MoonlightDependencyObjectType {

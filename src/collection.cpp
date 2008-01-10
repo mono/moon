@@ -771,6 +771,20 @@ stroke_collection_new (void)
 	return new StrokeCollection ();
 }
 
+Rect
+StrokeCollection::GetBounds ()
+{
+	// XXX
+	return Rect (0,0,0,0);
+}
+
+StrokeCollection*
+StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
+{
+	// XXX
+	return new StrokeCollection ();
+}
+
 StylusPointCollection *
 stylus_point_collection_new (void)
 {

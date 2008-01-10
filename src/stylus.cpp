@@ -100,6 +100,20 @@ Stroke::Stroke ()
 	this->SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnref (new DrawingAttributes ()));
 }
 
+Rect
+Stroke::GetBounds ()
+{
+	// XXX
+	return Rect (0,0,0,0);
+}
+
+bool
+Stroke::HitTest (StylusPointCollection *stylusPoints)
+{
+	// XXX
+	return false;
+}
+
 Stroke*
 stroke_new ()
 {

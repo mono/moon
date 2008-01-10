@@ -94,6 +94,9 @@ class Stroke : public DependencyObject {
 	
 	virtual Type::Kind GetObjectType () { return Type::STROKE; };
 
+	Rect GetBounds ();
+	bool HitTest (StylusPointCollection *stylusPoints);
+
 	static DependencyProperty* DrawingAttributesProperty;
 	static DependencyProperty* StylusPointsProperty;
 };

@@ -1,5 +1,11 @@
 2008-01-09  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.h, plugin-class.cpp: add two new wrapper types -
+	one for StrokeCollection and the other for Stroke, so that both of
+	them can implement their GetBounds and HitTest methods.
+	
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.h, plugin-class.cpp: a few changes with the
 	MoonlightMouseEventArgsObject.  It now wraps a MouseEventArgs*.
 	Translate all the property accesses and method calls into

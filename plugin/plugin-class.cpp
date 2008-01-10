@@ -156,6 +156,8 @@ enum PluginPropertyId {
 	MoonId_GetResponseText,
 	MoonId_Send,
 	MoonId_AddStylusPoints,
+	MoonId_GetBounds,
+	MoonId_HitTest,
 };
 
 static char*
@@ -2378,6 +2380,12 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::STYLUSPOINT_COLLECTION:
 		np_class = MoonlightStylusPointCollectionClass;
 		break;
+	case Type::STROKE_COLLECTION:
+		np_class = MoonlightStrokeCollectionClass;
+		break;
+	case Type::STROKE:
+		np_class = MoonlightStrokeClass;
+		break;
 	default:
 		if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
 			np_class = MoonlightCollectionClass;
@@ -3000,6 +3008,124 @@ MoonlightStylusPointCollectionType::MoonlightStylusPointCollectionType ()
 }
 
 MoonlightStylusPointCollectionType *MoonlightStylusPointCollectionClass;
+
+/*** MoonlightStrokeCollectionClass ****************************************/
+
+static NPObject *
+moonlight_stroke_collection_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightStrokeCollectionObject (instance);
+}
+
+static const MoonNameIdMapping
+moonlight_stroke_collection_mapping [] = {
+	{ "getbounds", MoonId_GetBounds },
+	{ "hittest", MoonId_HitTest }
+};
+
+bool
+MoonlightStrokeCollectionObject::Invoke (int id, NPIdentifier name,
+	const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	StrokeCollection *col = (StrokeCollection *) GetDependencyObject ();
+
+	switch (id) {
+	case MoonId_GetBounds: {
+		Rect r = col->GetBounds ();
+		Value v (r);
+		value_to_variant (this, &v, result);
+		return true;
+	}
+
+	case MoonId_HitTest: {
+		if (argCount < 1)
+			THROW_JS_EXCEPTION ("hitTest");
+
+		if (!NPVARIANT_IS_OBJECT (args [0]))
+			THROW_JS_EXCEPTION ("hitTest");
+
+		DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [0]);
+		if (!dob->Is (Type::STYLUSPOINT_COLLECTION))
+			THROW_JS_EXCEPTION ("hitTest");
+
+		StrokeCollection *hit_col = col->HitTest ((StylusPointCollection*)dob);
+
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, hit_col), *result);
+		return true;
+	}
+
+	default:
+		return MoonlightCollectionObject::Invoke (id, name, args, argCount, result);
+	}
+}
+
+MoonlightStrokeCollectionType::MoonlightStrokeCollectionType ()
+{
+	AddMapping (moonlight_stroke_collection_mapping, COUNT (moonlight_stroke_collection_mapping));
+
+	allocate = moonlight_stroke_collection_allocate;
+}
+
+MoonlightStrokeCollectionType *MoonlightStrokeCollectionClass;
+
+/*** MoonlightStrokeClass ****************************************/
+
+static NPObject *
+moonlight_stroke_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightStrokeObject (instance);
+}
+
+static const MoonNameIdMapping
+moonlight_stroke_mapping [] = {
+	{ "getbounds", MoonId_GetBounds },
+	{ "hittest", MoonId_HitTest }
+};
+
+bool
+MoonlightStrokeObject::Invoke (int id, NPIdentifier name,
+	const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	Stroke *stroke = (Stroke *) GetDependencyObject ();
+
+	switch (id) {
+	case MoonId_GetBounds: {
+		Rect r = stroke->GetBounds ();
+		Value v (r);
+		value_to_variant (this, &v, result);
+		return true;
+	}
+
+	case MoonId_HitTest: {
+		if (argCount < 1)
+			THROW_JS_EXCEPTION ("hitTest");
+
+		if (!NPVARIANT_IS_OBJECT (args [0]))
+			THROW_JS_EXCEPTION ("hitTest");
+
+		DependencyObject *dob = DEPENDENCY_OBJECT_FROM_VARIANT (args [0]);
+		if (!dob->Is (Type::STYLUSPOINT_COLLECTION))
+			THROW_JS_EXCEPTION ("hitTest");
+
+		BOOLEAN_TO_NPVARIANT (stroke->HitTest ((StylusPointCollection*)dob), *result);
+		return true;
+	}
+
+	default:
+		return MoonlightDependencyObjectObject::Invoke (id, name,
+								args, argCount,
+								result);
+	}
+}
+
+MoonlightStrokeType::MoonlightStrokeType ()
+{
+	AddMapping (moonlight_stroke_mapping, COUNT (moonlight_stroke_mapping));
+
+	allocate = moonlight_stroke_allocate;
+}
+
+MoonlightStrokeType *MoonlightStrokeClass;
 
 /*** MoonlightDownloaderClass ***************************************************/
 
@@ -3851,6 +3977,8 @@ plugin_init_classes (void)
 	MoonlightStoryboardClass = new MoonlightStoryboardType ();
 	MoonlightStylusInfoClass = new MoonlightStylusInfoType ();
 	MoonlightStylusPointCollectionClass = new MoonlightStylusPointCollectionType ();
+	MoonlightStrokeCollectionClass = new MoonlightStrokeCollectionType ();
+	MoonlightStrokeClass = new MoonlightStrokeType ();
 	MoonlightTextBlockClass = new MoonlightTextBlockType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 }
@@ -3877,6 +4005,9 @@ plugin_destroy_classes (void)
 	delete MoonlightSettingsClass; MoonlightSettingsClass = NULL;
 	delete MoonlightStoryboardClass; MoonlightStoryboardClass = NULL;
 	delete MoonlightStylusInfoClass; MoonlightStylusInfoClass = NULL;
+	delete MoonlightStylusPointCollectionClass; MoonlightStylusPointCollectionClass = NULL;
+	delete MoonlightStrokeCollectionClass; MoonlightStrokeCollectionClass = NULL;
+	delete MoonlightStrokeClass; MoonlightStrokeClass = NULL;
 	delete MoonlightTextBlockClass; MoonlightTextBlockClass = NULL;
 	delete MoonlightRectClass; MoonlightRectClass = NULL;
 	delete MoonlightPointClass; MoonlightPointClass = NULL;

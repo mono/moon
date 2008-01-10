@@ -128,6 +128,9 @@ class StrokeCollection : public Collection {
 	StrokeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
+
+	Rect GetBounds ();
+	StrokeCollection* HitTest (StylusPointCollection *stylusPoints);
 };
 
 class StylusPointCollection : public Collection {

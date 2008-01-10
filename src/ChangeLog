@@ -1,5 +1,13 @@
 2008-01-09  Chris Toshok  <toshok@ximian.com>
 
+	* collection.h, collection.cpp: add empty implementations of
+	StrokeCollection::GetBounds and StrokeCollection::HitTest.
+
+	* stylus.h, stylus.cpp: add empty implementations of
+	Stroke::GetBounds and Stroke::HitTest.
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h, uielement.cpp: change all the Emit* methods that
 	deal with mouse events to take a GdkEvent instead of state/x/y,
 	and also change their calldata to a heap allocated MouseEventArgs,
