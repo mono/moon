@@ -1,5 +1,15 @@
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Surround with ifdef to conditionally include the new
+	  MediaPlayer or not.
+	* Makefile.am: Added pipeline* and mplayer2.cpp.
+	* pipeline-ffmpeg.h, pipeline-ffmpeg.cpp: Added, support for using ffmpeg in
+	  the pipeline.
+	* pipeline.cpp, pipeline.h: Added.
+	* mplayer2.cpp: Added, a MediaPlayer that uses the new pipeline.
+
+2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* panel.cpp: Delete leaked region.
 
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 

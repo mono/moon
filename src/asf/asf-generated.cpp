@@ -24,6 +24,7 @@ void print_sizes () {
 	printf ("sizeof (asf_extended_content_description) = %i.\n", sizeof (asf_extended_content_description));
 	printf ("sizeof (asf_stream_bitrate_properties) = %i.\n", sizeof (asf_stream_bitrate_properties));
 	printf ("sizeof (asf_data) = %i.\n", sizeof (asf_data));
+	printf ("sizeof (asf_extended_stream_properties) = %i.\n", sizeof (asf_extended_stream_properties));
 	printf ("sizeof (asf_object) = %i.\n", sizeof (asf_object));
 }
 
@@ -56,6 +57,8 @@ bool asf_object_validate_exact (const asf_object* obj, ASFParser* parser)
 		return asf_stream_bitrate_properties_validate ((asf_stream_bitrate_properties*) obj, parser);
 	case ASF_DATA:
 		return asf_data_validate ((asf_data*) obj, parser);
+	case ASF_EXTENDED_STREAM_PROPERTIES:
+		return asf_extended_stream_properties_validate ((asf_extended_stream_properties*) obj, parser);
 	default:
 		parser->AddError (g_strdup_printf ("No validation implemented for %s.\n", asf_guid_get_name (&obj->id)));
 		return false;
@@ -103,16 +106,6 @@ void asf_stream_properties_dump (const asf_stream_properties* obj)
 	ASF_DUMP ("\terror_correction_data_length = %u\n", (asf_dword) obj->error_correction_data_length);
 	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
 	ASF_DUMP ("\treserved = %u\n", (asf_dword) obj->reserved);
-}
-
-void asf_header_extension_dump (const asf_header_extension* obj)
-{
-	ASF_DUMP ("ASF_HEADER_EXTENSION\n");
-	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	ASF_DUMP ("\tsize = %llu\n", obj->size);
-	ASF_DUMP ("\treserved1 = %s\n", asf_guid_tostring (&obj->reserved1));
-	ASF_DUMP ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
-	ASF_DUMP ("\tdata_size = %u\n", (asf_dword) obj->data_size);
 }
 
 void asf_codec_list_dump (const asf_codec_list* obj)
@@ -178,6 +171,28 @@ void asf_data_dump (const asf_data* obj)
 	ASF_DUMP ("\tfile_id = %s\n", asf_guid_tostring (&obj->file_id));
 	ASF_DUMP ("\tdata_packet_count = %llu\n", obj->data_packet_count);
 	ASF_DUMP ("\treserved = %u\n", (asf_dword) obj->reserved);
+}
+
+void asf_extended_stream_properties_dump (const asf_extended_stream_properties* obj)
+{
+	ASF_DUMP ("ASF_EXTENDED_STREAM_PROPERTIES\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tstart_time = %llu\n", obj->start_time);
+	ASF_DUMP ("\tend_time = %llu\n", obj->end_time);
+	ASF_DUMP ("\tdata_bitrate = %u\n", (asf_dword) obj->data_bitrate);
+	ASF_DUMP ("\tbuffer_size = %u\n", (asf_dword) obj->buffer_size);
+	ASF_DUMP ("\tinitial_buffer_fullness = %u\n", (asf_dword) obj->initial_buffer_fullness);
+	ASF_DUMP ("\talternate_data_bitrate = %u\n", (asf_dword) obj->alternate_data_bitrate);
+	ASF_DUMP ("\talternate_buffer_size = %u\n", (asf_dword) obj->alternate_buffer_size);
+	ASF_DUMP ("\talternate_initial_buffer_fullness = %u\n", (asf_dword) obj->alternate_initial_buffer_fullness);
+	ASF_DUMP ("\tmaximum_object_size = %u\n", (asf_dword) obj->maximum_object_size);
+	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
+	ASF_DUMP ("\tstream_number = %u\n", (asf_dword) obj->stream_number);
+	ASF_DUMP ("\tstream_language_id_index = %u\n", (asf_dword) obj->stream_language_id_index);
+	ASF_DUMP ("\taverage_time_per_frame = %llu\n", obj->average_time_per_frame);
+	ASF_DUMP ("\tstream_name_count = %u\n", (asf_dword) obj->stream_name_count);
+	ASF_DUMP ("\tpayload_extension_system_count = %u\n", (asf_dword) obj->payload_extension_system_count);
 }
 
 void asf_object_dump (const asf_object* obj)
@@ -252,6 +267,8 @@ void asf_object_dump_exact (const asf_object* obj)
 		asf_stream_bitrate_properties_dump ((asf_stream_bitrate_properties*) obj); break;
 	case ASF_DATA:
 		asf_data_dump ((asf_data*) obj); break;
+	case ASF_EXTENDED_STREAM_PROPERTIES:
+		asf_extended_stream_properties_dump ((asf_extended_stream_properties*) obj); break;
 	default:
 		asf_object_dump (obj); break;
 	}
@@ -437,6 +454,20 @@ bool asf_data_validate (const asf_data* obj, ASFParser* parser)
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 74) {
 		parser->AddError (g_strdup_printf ("Invalid size (expected >= 74, got %llu).\n", obj->size));
+		return false;
+	}
+	// TODO: More verifications?
+	return true;
+}
+
+bool asf_extended_stream_properties_validate (const asf_extended_stream_properties* obj, ASFParser* parser)
+{
+	if (!(asf_guid_validate (&obj->id, &asf_guids_extended_stream_properties, parser))) {
+		return false;
+	}
+	// FIXME: Verify that this size is correct.
+	if (obj->size < 112) {
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 112, got %llu).\n", obj->size));
 		return false;
 	}
 	// TODO: More verifications?

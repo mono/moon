@@ -9,7 +9,48 @@
  */
 #include <config.h>
 #include "asf.h"
+#include "../debug.h"
 
+
+/*
+ * ASFMediaSource
+ */
+
+ASFMediaSource::ASFMediaSource (ASFParser* parser, IMediaSource* source) : ASFSource (parser)
+{
+	this->source = source;
+}
+
+bool 
+ASFMediaSource::ReadInternal (void* destination, size_t bytes)
+{
+	return source->Read (destination, bytes);
+}
+
+bool 
+ASFMediaSource::SeekInternal (size_t offset, int mode)
+{
+	return source->Seek (offset, mode);
+}
+
+gint64 
+ASFMediaSource::Position ()
+{
+	return source->GetPosition ();
+}
+
+bool 
+ASFMediaSource::CanSeek ()
+{
+	return source->IsSeekable ();
+}
+
+bool 
+ASFMediaSource::Eof ()
+{
+	return source->Eof ();
+}
+	
 /*
 	ASFParser
 */
@@ -157,7 +198,7 @@ ASFParser::ReadPacket (ASFPacket* packet, gint32 packet_index)
 	if (packet_index >= 0) {
 		guint64 position = GetPacketOffset (packet_index);
 
-		if (position == 0 || !source->Seek (position, SEEK_SET))
+		if (position == 0 || (source->Position () != position && !source->Seek (position, SEEK_SET)))
 			return false;
 	}
 	
@@ -242,11 +283,14 @@ ASFParser::ReadHeader ()
 	
 	header = (asf_header*) MallocVerified (sizeof (asf_header));
 	if (header == NULL) {
+		ASF_LOG ("ASFParser::ReadHeader (): Malloc failed.\n");
 		return false;
 	}
 	
-	if (!source->Read (header, sizeof (asf_header)))
+	if (!source->Read (header, sizeof (asf_header))) {
+		ASF_LOG ("ASFParser::ReadHeader (): source->Read () failed.\n");
 		return false;
+	}
 		
 	asf_header_dump (header);
 
@@ -260,6 +304,8 @@ ASFParser::ReadHeader ()
 		AddError ("Data corruption in header.");
 		return false;
 	}
+	
+	ASF_LOG ("ASFParser::ReadHeader (): about to read streams...\n");
 	
 	bool any_streams = false;
 	for (guint32 i = 0; i < header->object_count; i++) {
@@ -814,6 +860,12 @@ ASFFrameReader::Seek (gint32 stream_number, gint64 pts)
 bool
 ASFFrameReader::Advance ()
 {
+	return Advance (0);
+}
+
+bool
+ASFFrameReader::Advance (gint32 desired_stream_number)
+{
 start:
 	ASF_LOG ("ASFFrameReader::Advance ().\n");
 	// Clear the current list of payloads.
@@ -841,26 +893,20 @@ start:
 			return false;
 	}
 	
-	gint32 payload_count = 1;
+	gint32 payload_count = 0;
 	guint32 media_object_number = 0;
 	ASFFrameReaderData* current = NULL;
-	gint32 stream_number = 0;
-	
-	payloads [0] = first->payload;
-	first->payload = NULL;
-	media_object_number = payloads [0]->media_object_number;
-	size = payloads [0]->payload_data_length;
-	stream_number = StreamNumber ();
-	
+
+	size = 0;
+
 	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i, media_object_number = %u.\n", 
 		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber (), media_object_number);
 	//asf_single_payload_dump (payloads [0]);
-	current = first->next;
-	
-	Remove (first);
+	current = first;
 	
 	while (true) {
-		// Loop through payloads until we find a payload with the same stream number.
+		// First loop through payloads until we find a payload with the requested stream number.
+		// Then continue looping through payloads until we find a payload with the same stream number.
 		// if the media number is different, no more payloads in the current frame,
 		// otherwise add the payload to the current frame's payloads and continue looping.
 		while (current == NULL) {
@@ -880,23 +926,30 @@ start:
 		
 		ASF_LOG ("ASFFrameReader::Advance (): checking payload, stream: %i, media object number %i, size: %i\n", current->payload->stream_number, current->payload->media_object_number, current->payload->payload_data_length);
 		
-		if (current->payload->stream_number == stream_number) {
-			if (current->payload->media_object_number != media_object_number) {
+		asf_single_payload* payload = current->payload;
+		
+		if (desired_stream_number == 0 || payload->stream_number == desired_stream_number) {
+			if (payload_count > 0 && payload->media_object_number != media_object_number) {
 				// We've found the end of the current frame's payloads
-				ASF_LOG ("ASFFrameReader::Advance (): reached media object number %i (while reading %i).\n", current->payload->media_object_number, media_object_number);
+				ASF_LOG ("ASFFrameReader::Advance (): reached media object number %i (while reading %i).\n", payload->media_object_number, media_object_number);
 				goto end_frame;
 			}
 			
-			// Still in the current frame, so
+			if (desired_stream_number == 0) {
+				desired_stream_number = payload->stream_number;
+			}
+			
+			media_object_number = payload->media_object_number;
+			
 			// add the payload to the current frame's payloads
 			payload_count++;
-			size += current->payload->payload_data_length;
+			size += payload->payload_data_length;
 			if (payload_count > payloads_size) {
 				if (!ResizeList (payload_count + 3)) {
 					return false;
 				}
 			}
-			payloads [payload_count - 1] = current->payload;
+			payloads [payload_count - 1] = payload;
 			current->payload = NULL;
 			
 			// Remove it from the queue
@@ -911,12 +964,16 @@ start:
 	}
 	
 end_frame:
-	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %i, media_object_number = %u, script_command_stream_index = %u (advanced).\n", 
-		size, IsKeyFrame () ? "true" : "false", Pts (), StreamNumber (), media_object_number, script_command_stream_index);
+/*
+	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, pts = %.5llu, stream# = %i, media_object_number = %.3u, script_command_stream_index = %u (advanced).", 
+		size, IsKeyFrame () ? "true " : "false", Pts (), StreamNumber (), media_object_number, script_command_stream_index);
 
+	dump_int_data (payloads [0]->payload_data, payloads [0]->payload_data_length, 4);
+	printf ("\n");
+*/
 	// Check if the current frame is a script command, in which case we must call the callback set in 
 	// the parser (and read another frame).
-	if (stream_number == script_command_stream_index) {
+	if (StreamNumber () == script_command_stream_index) {
 		ReadScriptCommand ();
 		goto start;
 	}

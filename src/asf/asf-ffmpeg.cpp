@@ -10,9 +10,12 @@
  */
  
 #include <config.h>
+
+#ifdef INCLUDE_FFMPEG
+
 #include <inttypes.h>
-#include "asf-ffmpeg.h"
 #include <stdlib.h>
+#include "asf-ffmpeg.h"
 
 #define MKTAG(a,b,c,d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -699,3 +702,45 @@ void AVPacket_dump (AVPacket* s, int t)
 
 	
 }
+
+void AVFrame_dump (AVFrame* s, int t)
+{
+	char* tabs = g_strnfill (t, '\t');
+	char* tabs1 = g_strnfill (t-1, '\t');
+	FFMPEG_DUMP ("%sAVFrame: %s\n", tabs1, s == NULL ? "NULL" : "!NULL");
+	if (!s) return;
+	
+	FFMPEG_DUMP ("%sdata = %s\n", tabs, s->data == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%slinesize = %i %i %i %i\n", tabs, s->linesize [0], s->linesize [1], s->linesize [2], s->linesize [3]);
+	FFMPEG_DUMP ("%sbase = %s\n", tabs, s->base == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%skey_frame = %i\n", tabs, s->key_frame);
+	FFMPEG_DUMP ("%spict_type = %i\n", tabs, s->pict_type);
+	FFMPEG_DUMP ("%spts = %lld\n", tabs, s->pts);
+	FFMPEG_DUMP ("%scoded_picture_number = %i\n", tabs, s->coded_picture_number);
+	FFMPEG_DUMP ("%sdisplay_picture_number = %i\n", tabs, s->display_picture_number);
+	FFMPEG_DUMP ("%squality = %i\n", tabs, s->quality);
+	FFMPEG_DUMP ("%sage = %i\n", tabs, s->age);
+	FFMPEG_DUMP ("%sreference = %i\n", tabs, s->reference);
+	FFMPEG_DUMP ("%sqscale_table = %s\n", tabs, s->qscale_table == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%sqstride = %i\n", tabs, s->qstride);
+	FFMPEG_DUMP ("%smbskip_table = %s\n", tabs, s->mbskip_table == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%smotion_val = %s\n", tabs, s->motion_val == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%smb_type = %s\n", tabs, s->mb_type == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%smotion_subsample_log2 = %i\n", tabs, (int) s->motion_subsample_log2);
+	FFMPEG_DUMP ("%sopaque = %s\n", tabs, s->opaque == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%serror = %llu %llu %llu %llu\n", tabs, s->error [0], s->error [1], s->error [2], s->error [3]);
+	FFMPEG_DUMP ("%stype = %i\n", tabs, s->type);
+	FFMPEG_DUMP ("%srepeat_pict = %i\n", tabs, s->repeat_pict);
+	FFMPEG_DUMP ("%sqscale_type = %i\n", tabs, s->qscale_type);
+	FFMPEG_DUMP ("%sinterlaced_frame = %i\n", tabs, s->interlaced_frame);
+	FFMPEG_DUMP ("%stop_field_first = %i\n", tabs, s->top_field_first);
+	FFMPEG_DUMP ("%span_scan = %s\n", tabs, s->pan_scan == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%spalette_has_changed = %i\n", tabs, s->palette_has_changed);
+	FFMPEG_DUMP ("%sbuffer_hints = %i\n", tabs, s->buffer_hints);
+	FFMPEG_DUMP ("%sdct_coeff = %s\n", tabs, s->dct_coeff == NULL ? "NULL" : "!NULL");
+	FFMPEG_DUMP ("%sref_index = %s\n", tabs, s->ref_index == NULL ? "NULL" : "!NULL");
+
+	
+}
+
+#endif // INCLUDE_FFMPEG

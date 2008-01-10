@@ -8,6 +8,8 @@
  *
  * See the LICENSE file included with the distribution for details.
  */
+ 
+#ifdef INCLUDE_FFMPEG
 
 #ifndef _ASF_FFMPEG_MOONLIGHT_H
 #define _ASF_FFMPEG_MOONLIGHT_H
@@ -33,6 +35,7 @@ void AVCodecContext_dump (AVCodecContext* s, int t);
 void AVPacket_dump (AVPacket* s, int t);
 void AVRational_dump (AVRational* s, int t);
 void AVRational_dump (AVRational s, int t);
+void AVFrame_dump (AVFrame* s, int t);
 char* AVRational_tostring (AVRational s);
 char* AVFrac_tostring (AVFrac s);
 
@@ -169,3 +172,5 @@ private:
 };
 
 #endif
+
+#endif // INCLUDE_FFMPEG

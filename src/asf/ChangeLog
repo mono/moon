@@ -1,3 +1,14 @@
+2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: ASFParser::ReadPacket: don't seek if we don't have to.
+	  Implement support for selecting which stream to get the frame for in
+	  ASFFrameReader::Advance. Added a ASFMediaSource to glue the ASFSource
+	  and a IMediaSource together.
+	* asf-ffmpeg.cpp, asf-ffmpeg.h: Only compile if INCLUDE_FFMPEG is defined.
+	* asf-generated.cpp, asf-generated.h, asf-structures.h, asf-structures.cpp:
+	  Implemented reading of extended header objects.
+	* asf-guids.h: Export the functions defined here.
+
 2007-12-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.h: Add some const modifiers to make intentions of a few

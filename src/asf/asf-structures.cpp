@@ -836,3 +836,37 @@ void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 	}
 }
 
+void asf_header_extension_dump (const asf_header_extension* obj)
+{
+	ASF_DUMP ("ASF_HEADER_EXTENSION\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\treserved1 = %s\n", asf_guid_tostring (&obj->reserved1));
+	ASF_DUMP ("\treserved2 = %u\n", (asf_dword) obj->reserved2);
+	ASF_DUMP ("\tdata_size = %u\n", (asf_dword) obj->data_size);
+	
+	asf_dword count = obj->get_object_count ();
+	asf_object** objects = obj->get_objects ();
+	
+	for (asf_dword i = 0; i < count; i++) {
+		ASF_DUMP ("\n\textended object #%i:\n", i);
+		asf_object_dump_exact (objects [i]);
+	}
+	ASF_DUMP ("\n\n");
+	g_free (objects);
+}
+
+bool asf_extended_stream_properties_validate (const asf_extended_stream_properties* obj, ASFParser* parser)
+{
+	if (!(asf_guid_validate (&obj->id, &asf_guids_extended_stream_properties, parser))) {
+		return false;
+	}
+	// FIXME: Verify that this size is correct.
+	if (obj->size < 112) {
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 112, got %llu).\n", obj->size));
+		return false;
+	}
+	// TODO: More verifications?
+	return true;
+}
+

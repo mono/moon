@@ -52,6 +52,8 @@ class ASFSource;
 #include "asf-structures.h"
 #include "asf-debug.h"
 
+#include "../pipeline.h"
+
 class ASFSource {
 protected:
 	virtual bool ReadInternal (void* destination, size_t bytes) = 0;
@@ -76,6 +78,21 @@ public:
 	virtual bool Eof () = 0;
 	
 	ASFParser* parser;
+};
+
+class ASFMediaSource : public ASFSource {
+public:
+	ASFMediaSource (ASFParser* parser, IMediaSource* source);
+	
+protected:
+	virtual bool ReadInternal (void* destination, size_t bytes);
+	virtual bool SeekInternal (size_t offset, int mode);	
+	virtual gint64 Position ();
+	virtual bool CanSeek ();
+	virtual bool Eof ();
+	
+private:
+	IMediaSource* source;
 };
 
 class ASFFileSource : public ASFSource {
@@ -174,6 +191,10 @@ public:
 	// Returns false if unsuccessful (if due to no more data, eof is set, otherwise some error occurred)
 	bool Advance ();
 	
+	// Advance to the next frame of the specified stream number
+	// stream_number = 0 means any stream
+	bool Advance (gint32 stream_number);
+	
 	// Write the frame's data to a the destination
 	bool Write (void* destination);
 	
@@ -221,7 +242,7 @@ private:
 
 public:
 	ASFParser (const char* filename);
-	ASFParser (ASFSource* source);
+	ASFParser (ASFSource* source); // The parser takes ownership of the source and will delete it when the parser is deleted.
 	virtual ~ASFParser ();
 	
 	bool ReadHeader (); // Reads the header of the asf file.

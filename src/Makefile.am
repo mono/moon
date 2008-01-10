@@ -41,6 +41,8 @@ libmooninclude_headers = \
 	namescope.h	\
 	openfile.h	\
 	panel.h		\
+	pipeline.h	\
+	pipeline-ffmpeg.h \
 	playlist.h	\
 	point.h		\
 	rect.h		\
@@ -90,9 +92,12 @@ libmoon_la_SOURCES = 	\
 	media.cpp	\
 	moon-path.c	\
 	mplayer.cpp	\
+	mplayer2.cpp	\
 	namescope.cpp	\
 	openfile.cpp	\
 	panel.cpp	\
+	pipeline.cpp \
+	pipeline-ffmpeg.cpp	\
 	point.cpp	\
 	playlist.cpp	\
 	rect.cpp	\

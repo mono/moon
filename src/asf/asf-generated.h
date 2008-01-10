@@ -35,8 +35,10 @@ struct asf_content_description;
 struct asf_extended_content_description;
 struct asf_stream_bitrate_properties;
 struct asf_data;
+struct asf_extended_stream_properties;
 
 class ASFSource;
+class ASFMediaSource;
 class ASFFileSource;
 class ASFPacket;
 class ASFFrameReader;
@@ -68,6 +70,7 @@ bool asf_content_description_validate (const asf_content_description* obj, ASFPa
 bool asf_extended_content_description_validate (const asf_extended_content_description* obj, ASFParser* parser);
 bool asf_stream_bitrate_properties_validate (const asf_stream_bitrate_properties* obj, ASFParser* parser);
 bool asf_data_validate (const asf_data* obj, ASFParser* parser);
+bool asf_extended_stream_properties_validate (const asf_extended_stream_properties* obj, ASFParser* parser);
 
 /* Debug functions */ 
 void asf_header_dump (const asf_header* obj);
@@ -82,6 +85,7 @@ void asf_content_description_dump (const asf_content_description* obj);
 void asf_extended_content_description_dump (const asf_extended_content_description* obj);
 void asf_stream_bitrate_properties_dump (const asf_stream_bitrate_properties* obj);
 void asf_data_dump (const asf_data* obj);
+void asf_extended_stream_properties_dump (const asf_extended_stream_properties* obj);
 void asf_object_dump (const asf_object* obj);
 void WAVEFORMATEX_dump (const WAVEFORMATEX* obj);
 void BITMAPINFOHEADER_dump (const BITMAPINFOHEADER* obj);

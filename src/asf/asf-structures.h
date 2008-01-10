@@ -452,8 +452,51 @@ struct asf_header_extension : public asf_object {
 	asf_guid reserved1;
 	asf_word reserved2;
 	asf_dword data_size;
-
-	// data follows.
+	
+	// data follows
+	
+	asf_dword get_object_count () const
+	{
+		asf_dword counter = 0;	
+		asf_qword read = 0;
+		char* cur = (char*) get_data ();
+		
+		if (data_size < 24)
+			return counter;
+			
+		while (read < data_size) {
+			asf_object* obj = (asf_object*) cur;
+			counter++;
+			read += obj->size;
+			cur += obj->size;
+		}
+		return counter;
+	}
+	
+	// NULL-terminated array of asf_objects
+	// Caller must free the array (but not the elements)
+	asf_object** get_objects () const
+	{
+		asf_dword count = get_object_count ();
+		if (count == 0)	
+			return NULL;
+			
+		asf_object** result = (asf_object**) g_malloc0 (sizeof (asf_object*) * (count + 1));
+		char* cur = (char*) get_data ();
+		
+		for (asf_dword i = 0; i < count; i++) {
+			asf_object* obj = (asf_object*) cur;
+			cur += obj->size;
+			result [i] = obj;
+		}
+		
+		return result;
+	}
+	
+	void* get_data () const
+	{
+		return (void*) ((char*) this + sizeof (asf_header_extension));
+	}
 };
 
 struct asf_codec_list : public asf_object {
@@ -579,6 +622,23 @@ struct asf_data : public asf_object {
 	asf_word reserved;
 };
 
+struct asf_extended_stream_properties : public asf_object {
+	asf_qword start_time;
+	asf_qword end_time;
+	asf_dword data_bitrate;
+	asf_dword buffer_size;
+	asf_dword initial_buffer_fullness;
+	asf_dword alternate_data_bitrate;
+	asf_dword alternate_buffer_size;
+	asf_dword alternate_initial_buffer_fullness;
+	asf_dword maximum_object_size;
+	asf_dword flags;
+	asf_word stream_number;
+	asf_word stream_language_id_index;
+	asf_qword average_time_per_frame;
+	asf_word stream_name_count;
+	asf_word payload_extension_system_count;
+};
 
 #pragma pack(pop)
 

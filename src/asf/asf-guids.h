@@ -286,6 +286,7 @@ static const asf_type_with_guid asf_types [] = {
 	{asf_guids_empty, ASF_LAST_TYPE, "ASF_LAST_TYPE"}
 };
 
+G_BEGIN_DECLS
 /* Misc funtions */
 bool asf_guid_compare (const asf_guid* a, const asf_guid* b);
 ASFTypes asf_get_guid_type (const asf_guid* guid);
@@ -293,6 +294,6 @@ const char* asf_guid_get_name (const asf_guid* guid);
 const char* asf_type_get_name (ASFTypes type);
 char* asf_guid_tostring (const asf_guid* obj);
 bool asf_guid_validate (const asf_guid* guid_actual, const asf_guid* guid_expected, ASFParser* parser);
-
+G_END_DECLS
 
 #endif
