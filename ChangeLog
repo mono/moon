@@ -1,3 +1,8 @@
+2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* configure.ac: Add a --with-ffmpeg option (defaults to yes). Don't check
+	  for ffmpeg's libraries unless --with-ffmpeg=yes.
+
 2008-01-04  Larry Ewing  <lewing@novell.com>
 
 	* src/panel.cpp (Panel::ComputeBounds): make sure we count the

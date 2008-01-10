@@ -57,6 +57,28 @@ if test "x$ac_cv_sys_file_offset_bits" != "xno"; then
    LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
 fi
 
+#
+# Check for ffmpeg
+#
+
+FFMPEG=yes
+AC_ARG_WITH(ffmpeg,[ --with-ffmpeg=yes,no   If you want to enable support for ffmpeg ],[
+	if test x$with_ffmpeg = xyes; then
+		FFMPEG=yes
+	fi
+	if test x$with_ffmpeg = xno; then
+		FFMPEG=no
+	fi
+])
+
+if test x$FFMPEG = xyes; then
+AC_DEFINE([INCLUDE_FFMPEG], [1], [Include support for ffmpeg])
+fi
+AM_CONDITIONAL(INCLUDE_FFMPEG, test x$FFMPEG = xyes)
+
+#
+# Check for mono
+#
 
 MONO_RUNTIME=yes
 AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable support for Silverlight 1.1],[
@@ -108,23 +130,25 @@ fi
 #
 # these come from ffmpeg
 #
-AC_MSG_CHECKING(libavcodec, libavformat libswscale)
-if pkg-config libavcodec libavformat libswscale ; then
-   AC_MSG_RESULT(found)
-else
-   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec, libavformat and libswscale development kits])
-fi
+if test x$FFMPEG = xyes; then
+	AC_MSG_CHECKING(libavcodec, libavformat libswscale)
+	if pkg-config libavcodec libavformat libswscale ; then
+	   AC_MSG_RESULT(found)
+	else
+	   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec, libavformat and libswscale development kits])
+	fi
 
-if test $user_plugin = yes; then
-avutil_libdir="$(pkg-config --variable=libdir libavutil)"
-swscale_libdir="$(pkg-config --variable=libdir libswscale)"
-avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
-avformat_libdir="$(pkg-config --variable=libdir libavformat)"
+	if test $user_plugin = yes; then
+	avutil_libdir="$(pkg-config --variable=libdir libavutil)"
+	swscale_libdir="$(pkg-config --variable=libdir libswscale)"
+	avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
+	avformat_libdir="$(pkg-config --variable=libdir libavformat)"
 
-AC_SUBST([avutil_libdir])
-AC_SUBST([swscale_libdir])
-AC_SUBST([avcodec_libdir])
-AC_SUBST([avformat_libdir])
+	AC_SUBST([avutil_libdir])
+	AC_SUBST([swscale_libdir])
+	AC_SUBST([avcodec_libdir])
+	AC_SUBST([avformat_libdir])
+fi # ffmpeg
 
 mono_libdir="$(pkg-config --variable=libdir mono)"
 mono_dlldir="$(pkg-config --variable=prefix mono)/lib"
@@ -266,7 +290,11 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
+if test x$FFMPEG = xyes; then
 FFMPEG_PKGS="libswscale libavcodec libavformat"
+else
+FFMPEG_PKGS=""
+fi
 
 CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
 CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
@@ -329,5 +357,6 @@ Moonlight configuration:
 
 	Support for 1.0: yes
 	Support for 1.1: $MONO_RUNTIME
+	Support for ffmpeg: $FFMPEG
 
 EOF
