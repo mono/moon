@@ -1,3 +1,9 @@
+2008-01-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Makefile.am: In order for building where builddir != srcdir to
+	work, we need to reference the docs directory as '$(srcdir)/docs/'
+	and not just 'docs/'
+
 2007-10-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* gtk.cs: Use the XamlLoader in the LoadFile overload as well. 
