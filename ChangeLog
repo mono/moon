@@ -1,5 +1,10 @@
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* moon.mdp: Deleted.
+	* moon.mds: Updated.
+
+2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* configure.ac: Add a --with-ffmpeg option (defaults to yes). Don't check
 	  for ffmpeg's libraries unless --with-ffmpeg=yes.
 

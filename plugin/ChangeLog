@@ -1,3 +1,7 @@
+2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Added.
+
 2008-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: add two new wrapper types -

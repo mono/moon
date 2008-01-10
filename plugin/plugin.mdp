@@ -1,0 +1,36 @@
+<Project name="plugin" fileversion="2.0" language="C" ctype="CProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CProjectConfiguration">
+      <Output directory="bin/Debug" output="plugin" />
+      <Build debugmode="True" target="Bin" />
+      <Execution runwithwarnings="True" consolepause="True" />
+      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP" ctype="CCompilationParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="CProjectConfiguration">
+      <Output directory="bin/Release" output="plugin" />
+      <Build debugmode="False" target="Bin" />
+      <Execution runwithwarnings="True" consolepause="True" />
+      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="3" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="MONODEVELOP" ctype="CCompilationParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="debug.js" subtype="Code" buildaction="Nothing" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="downloader.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="mono.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="moonlight.cs" subtype="Code" buildaction="Nothing" />
+    <File name="moonlight.h" subtype="Code" buildaction="Nothing" />
+    <File name="moon-mono.h" subtype="Code" buildaction="Nothing" />
+    <File name="plugin.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin.h" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-class.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-class.h" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-entry.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-glue.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-proxy.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="README" subtype="Code" buildaction="Nothing" />
+    <File name="TODO" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <compiler ctype="GccCompiler" />
+</Project>

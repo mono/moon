@@ -1,13 +1,17 @@
 <Combine name="moon" fileversion="2.0">
   <Configurations active="Default">
     <Configuration name="Default" ctype="CombineConfiguration">
-      <Entry build="True" name="moon" configuration="Default" />
+      <Entry build="True" name="src" configuration="Debug" />
+      <Entry build="True" name="plugin" configuration="Debug" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="moon" single="True">
+  <StartMode startupentry="src" single="True">
     <Execute type="None" entry="moon" />
+    <Execute type="None" entry="src" />
+    <Execute type="None" entry="plugin" />
   </StartMode>
   <Entries>
-    <Entry filename="./moon.mdp" />
+    <Entry filename="src/src.mdp" />
+    <Entry filename="plugin/plugin.mdp" />
   </Entries>
 </Combine>

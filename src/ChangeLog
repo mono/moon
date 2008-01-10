@@ -1,3 +1,7 @@
+2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Added.
+
 2008-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.h, stylus.cpp, collection.h, collection.cpp: fix

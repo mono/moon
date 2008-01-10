@@ -1,0 +1,144 @@
+<Project name="src" fileversion="2.0" language="CPP" ctype="CProject">
+  <Configurations>
+    <Configuration name="Debug" SourceDirectory="" ctype="CProjectConfiguration">
+      <Output directory="bin/Debug" output="src" />
+      <Build debugmode="True" target="Bin" />
+      <Execution runwithwarnings="True" consolepause="True" />
+      <CodeGeneration WarningLevel="All" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP" ctype="CCompilationParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="CProjectConfiguration">
+      <Output directory="bin/Release" output="src" />
+      <Build debugmode="False" target="Bin" />
+      <Execution runwithwarnings="True" consolepause="True" />
+      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="3" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="MONODEVELOP" ctype="CCompilationParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="animation.cpp" subtype="Code" buildaction="Compile" />
+    <File name="animation.h" subtype="Code" buildaction="Nothing" />
+    <File name="array.cpp" subtype="Code" buildaction="Compile" />
+    <File name="array.h" subtype="Code" buildaction="Nothing" />
+    <File name="brush.cpp" subtype="Code" buildaction="Compile" />
+    <File name="brush.h" subtype="Code" buildaction="Nothing" />
+    <File name="canvas.cpp" subtype="Code" buildaction="Compile" />
+    <File name="canvas.h" subtype="Code" buildaction="Nothing" />
+    <File name="clock.cpp" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="clock.h" subtype="Code" buildaction="Nothing" />
+    <File name="collection.cpp" subtype="Code" buildaction="Compile" />
+    <File name="collection.h" subtype="Code" buildaction="Nothing" />
+    <File name="color.cpp" subtype="Code" buildaction="Compile" />
+    <File name="color.h" subtype="Code" buildaction="Nothing" />
+    <File name="control.cpp" subtype="Code" buildaction="Compile" />
+    <File name="control.h" subtype="Code" buildaction="Nothing" />
+    <File name="debug.cpp" subtype="Code" buildaction="Compile" />
+    <File name="debug.h" subtype="Code" buildaction="Nothing" />
+    <File name="demo.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="dependencyobject.cpp" subtype="Code" buildaction="Compile" />
+    <File name="dependencyobject.h" subtype="Code" buildaction="Nothing" />
+    <File name="dirty.cpp" subtype="Code" buildaction="Compile" />
+    <File name="dirty.h" subtype="Code" buildaction="Nothing" />
+    <File name="downloader.cpp" subtype="Code" buildaction="Compile" />
+    <File name="downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="enums.h" subtype="Code" buildaction="Nothing" />
+    <File name="error.h" subtype="Code" buildaction="Nothing" />
+    <File name="ffstream.cpp" subtype="Code" buildaction="Compile" />
+    <File name="ffstream.h" subtype="Code" buildaction="Nothing" />
+    <File name="font.cpp" subtype="Code" buildaction="Compile" />
+    <File name="font.h" subtype="Code" buildaction="Nothing" />
+    <File name="frameworkelement.cpp" subtype="Code" buildaction="Compile" />
+    <File name="frameworkelement.h" subtype="Code" buildaction="Nothing" />
+    <File name="fullscreen.cs" subtype="Code" buildaction="Nothing" />
+    <File name="fullscreen.h" subtype="Code" buildaction="Nothing" />
+    <File name="fullscreen.sh" subtype="Code" buildaction="Nothing" />
+    <File name="fullscreen.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="garray-ext.cpp" subtype="Code" buildaction="Compile" />
+    <File name="garray-ext.h" subtype="Code" buildaction="Nothing" />
+    <File name="genkindcs.sh" subtype="Code" buildaction="Nothing" />
+    <File name="geometry.h" subtype="Code" buildaction="Nothing" />
+    <File name="geometry.cpp" subtype="Code" buildaction="Compile" />
+    <File name="libmoon.h" subtype="Code" buildaction="Nothing" />
+    <File name="list.cpp" subtype="Code" buildaction="Compile" />
+    <File name="list.h" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="mango.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mango.h" subtype="Code" buildaction="Nothing" />
+    <File name="media.cpp" subtype="Code" buildaction="Compile" />
+    <File name="media.h" subtype="Code" buildaction="Nothing" />
+    <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
+    <File name="moon-path.c" subtype="Code" buildaction="Compile" />
+    <File name="moon-path.h" subtype="Code" buildaction="Nothing" />
+    <File name="mplayer.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mplayer.h" subtype="Code" buildaction="Nothing" />
+    <File name="namescope.cpp" subtype="Code" buildaction="Compile" />
+    <File name="namescope.h" subtype="Code" buildaction="Nothing" />
+    <File name="openfile.cpp" subtype="Code" buildaction="Compile" />
+    <File name="openfile.h" subtype="Code" buildaction="Nothing" />
+    <File name="panel.cpp" subtype="Code" buildaction="Compile" />
+    <File name="panel.h" subtype="Code" buildaction="Nothing" />
+    <File name="playlist.cpp" subtype="Code" buildaction="Compile" />
+    <File name="playlist.h" subtype="Code" buildaction="Nothing" />
+    <File name="point.cpp" subtype="Code" buildaction="Compile" />
+    <File name="point.h" subtype="Code" buildaction="Nothing" />
+    <File name="rect.h" subtype="Code" buildaction="Nothing" />
+    <File name="rect.cpp" subtype="Code" buildaction="Compile" />
+    <File name="runtime.cpp" subtype="Code" buildaction="Compile" />
+    <File name="runtime.h" subtype="Code" buildaction="Nothing" />
+    <File name="shape.cpp" subtype="Code" buildaction="Compile" />
+    <File name="shape.h" subtype="Code" buildaction="Nothing" />
+    <File name="sizes.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="stylus.cpp" subtype="Code" buildaction="Compile" />
+    <File name="stylus.h" subtype="Code" buildaction="Nothing" />
+    <File name="text.cpp" subtype="Code" buildaction="Compile" />
+    <File name="text.h" subtype="Code" buildaction="Nothing" />
+    <File name="transform.cpp" subtype="Code" buildaction="Compile" />
+    <File name="transform.h" subtype="Code" buildaction="Nothing" />
+    <File name="trigger.cpp" subtype="Code" buildaction="Compile" />
+    <File name="trigger.h" subtype="Code" buildaction="Nothing" />
+    <File name="type.cpp.in" subtype="Code" buildaction="Nothing" />
+    <File name="type.cpp" subtype="Code" buildaction="Compile" />
+    <File name="type.h" subtype="Code" buildaction="Nothing" />
+    <File name="type.h.in" subtype="Code" buildaction="Nothing" />
+    <File name="typegen.cs" subtype="Code" buildaction="Nothing" />
+    <File name="typegen.sh" subtype="Code" buildaction="Nothing" />
+    <File name="uielement.cpp" subtype="Code" buildaction="Compile" />
+    <File name="uielement.h" subtype="Code" buildaction="Nothing" />
+    <File name="uri.cpp" subtype="Code" buildaction="Compile" />
+    <File name="uri.h" subtype="Code" buildaction="Nothing" />
+    <File name="value.cpp" subtype="Code" buildaction="Compile" />
+    <File name="value.h" subtype="Code" buildaction="Nothing" />
+    <File name="value.h.in" subtype="Code" buildaction="Nothing" />
+    <File name="visual.cpp" subtype="Code" buildaction="Compile" />
+    <File name="visual.h" subtype="Code" buildaction="Nothing" />
+    <File name="xaml.cpp" subtype="Code" buildaction="Compile" />
+    <File name="xaml.h" subtype="Code" buildaction="Nothing" />
+    <File name="zip/ioapi.c" subtype="Code" buildaction="Compile" />
+    <File name="zip/unzip.c" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf.cs" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf-ffmpeg.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf-ffmpeg.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf-generated.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf-generated.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf-guids.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf-guids.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf-structures.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf-structures.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="asf/Makefile" subtype="Code" buildaction="Nothing" />
+    <File name="zip/crypt.h" subtype="Code" buildaction="Nothing" />
+    <File name="zip/ioapi.h" subtype="Code" buildaction="Nothing" />
+    <File name="zip/unzip.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf-debug.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf-debug.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf-test.h" subtype="Code" buildaction="Nothing" />
+    <File name="asf/asf-test.cpp" subtype="Code" buildaction="Compile" />
+    <File name="pipeline.h" subtype="Code" buildaction="Nothing" />
+    <File name="pipeline.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mplayer2.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="pipeline-ffmpeg.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="pipeline-ffmpeg.h" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <compiler ctype="GppCompiler" />
+</Project>
