@@ -1,5 +1,10 @@
 2008-01-09  Chris Toshok  <toshok@ximian.com>
 
+	* stylus.h, stylus.cpp, collection.h, collection.cpp: fix
+	_get_bounds.
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
 	* collection.h, collection.cpp: add C wrappers for
 	StrokeCollection::GetBounds and ::HitTest.
 

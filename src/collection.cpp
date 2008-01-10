@@ -785,10 +785,10 @@ StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
 	return new StrokeCollection ();
 }
 
-Rect
-stroke_collection_get_bounds (StrokeCollection *col)
+void
+stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds)
 {
-	return col->GetBounds();
+	*bounds = col->GetBounds();
 }
 
 StrokeCollection* 

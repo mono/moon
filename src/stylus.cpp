@@ -144,10 +144,10 @@ stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection)
 	stroke->SetValue (Stroke::StylusPointsProperty, Value (collection));
 }
 
-Rect
-stroke_get_bounds (Stroke *stroke)
+void
+stroke_get_bounds (Stroke *stroke, Rect *bounds)
 {
-	return stroke->GetBounds ();
+	*bounds = stroke->GetBounds ();
 }
 
 bool

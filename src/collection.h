@@ -197,7 +197,7 @@ GradientStopCollection *gradient_stop_collection_new (void);
 Inlines *inlines_new (void);
 
 StrokeCollection *stroke_collection_new (void);
-Rect              stroke_collection_get_bounds (StrokeCollection *col);
+void              stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds);
 StrokeCollection *stroke_collection_hit_test (StrokeCollection *col, StylusPointCollection *stylusPointCollection);
 
 StylusPointCollection *stylus_point_collection_new (void);
