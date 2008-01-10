@@ -1,3 +1,8 @@
+2008-01-10  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::InitializeDrawingArea): activate all
+	devices that have a cursor associated with them.
+
 2008-10-10  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* pipeline.cpp: include config.h (fixes an ffmpeg-related build error)
