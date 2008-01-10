@@ -192,10 +192,13 @@ VisualCollection *visual_collection_new (void);
 TriggerCollection *trigger_collection_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
 ResourceDictionary *resource_dictionary_new (void);
-StrokeCollection *stroke_collection_new (void);
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 GradientStopCollection *gradient_stop_collection_new (void);
 Inlines *inlines_new (void);
+
+StrokeCollection *stroke_collection_new (void);
+Rect              stroke_collection_get_bounds (StrokeCollection *col);
+StrokeCollection *stroke_collection_hit_test (StrokeCollection *col, StylusPointCollection *stylusPointCollection);
 
 StylusPointCollection *stylus_point_collection_new (void);
 double stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection);

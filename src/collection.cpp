@@ -785,6 +785,19 @@ StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
 	return new StrokeCollection ();
 }
 
+Rect
+stroke_collection_get_bounds (StrokeCollection *col)
+{
+	return col->GetBounds();
+}
+
+StrokeCollection* 
+stroke_collection_hit_test (StrokeCollection* col, StylusPointCollection* stylusPointCollection)
+{
+	return col->HitTest (stylusPointCollection);
+}
+
+
 StylusPointCollection *
 stylus_point_collection_new (void)
 {

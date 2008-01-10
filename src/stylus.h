@@ -101,12 +101,13 @@ class Stroke : public DependencyObject {
 	static DependencyProperty* StylusPointsProperty;
 };
 
-Stroke* stroke_new ();
-DrawingAttributes* stroke_get_drawing_attributes (Stroke *stroke);
-void stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes);
+Stroke*                stroke_new ();
+DrawingAttributes*     stroke_get_drawing_attributes (Stroke *stroke);
+void                   stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes);
 StylusPointCollection* stroke_get_stylus_points (Stroke *stroke);
-void stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection);
-
+void                   stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection);
+Rect                   stroke_get_bounds (Stroke *stroke);
+bool                   stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection);
 
 class InkPresenter : public Canvas {
  public:

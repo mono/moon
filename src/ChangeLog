@@ -1,5 +1,12 @@
 2008-01-09  Chris Toshok  <toshok@ximian.com>
 
+	* collection.h, collection.cpp: add C wrappers for
+	StrokeCollection::GetBounds and ::HitTest.
+
+	* stylus.h, stylus.cpp: same deal for Stroke::
+	
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
 	* collection.h, collection.cpp: add empty implementations of
 	StrokeCollection::GetBounds and StrokeCollection::HitTest.
 

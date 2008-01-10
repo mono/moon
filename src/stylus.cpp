@@ -79,14 +79,12 @@ stylus_point_set_y (StylusPoint *stylus_point, double y)
 	stylus_point->SetValue (StylusPoint::YProperty, Value (y));
 }
 
-// NOTE: this seems unused in Silverlight (at least as far as rendering is concerned)
 double
 stylus_point_get_pressure_factor (StylusPoint *stylus_point)
 {
 	return stylus_point->GetValue (StylusPoint::PressureFactorProperty)->AsDouble();
 }
 
-// NOTE: this seems unused in Silverlight (at least as far as rendering is concerned)
 void
 stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure)
 {
@@ -132,6 +130,33 @@ stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes)
 {
 	stroke->SetValue (Stroke::DrawingAttributesProperty, Value (attributes));
 }
+
+StylusPointCollection*
+stroke_get_stylus_points (Stroke *stroke)
+{
+	Value *value = stroke->GetValue (Stroke::StylusPointsProperty);
+	return (value ? value->AsStylusPointCollection () : NULL);
+}
+
+void
+stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection)
+{
+	stroke->SetValue (Stroke::StylusPointsProperty, Value (collection));
+}
+
+Rect
+stroke_get_bounds (Stroke *stroke)
+{
+	return stroke->GetBounds ();
+}
+
+bool
+stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection)
+{
+	return stroke->HitTest (stylusPointCollection);
+}
+
+
 
 
 DrawingAttributes*
@@ -214,7 +239,6 @@ drawing_attributes_quick_render (cairo_t *cr, double thickness, Color *color, St
 	else
 		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
 
-	// NOTE: as far as I can see MS Silverlight doesn't use pressure to draw it's stylus points
 	cairo_set_line_width (cr, thickness);
 	cairo_stroke (cr);
 }
@@ -257,19 +281,6 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 	drawing_attributes_quick_render (cr, 2.0, NULL, collection);
 }
 
-
-StylusPointCollection*
-stroke_get_stylus_points (Stroke *stroke)
-{
-	Value *value = stroke->GetValue (Stroke::StylusPointsProperty);
-	return (value ? value->AsStylusPointCollection () : NULL);
-}
-
-void
-stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection)
-{
-	stroke->SetValue (Stroke::StylusPointsProperty, Value (collection));
-}
 
 InkPresenter::InkPresenter ()
 {
