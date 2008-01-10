@@ -1,5 +1,9 @@
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* panel.cpp: Delete leaked region.
+
+2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Added.
 
 2008-01-09  Chris Toshok  <toshok@ximian.com>

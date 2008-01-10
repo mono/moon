@@ -331,6 +331,7 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 #ifdef DEBUG_INVALIDATE
 			printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
 #endif
+			delete region;
 			continue;
 		}
 		
