@@ -1,3 +1,8 @@
+2008-01-10  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Remove reference to docs/Gtk.Moonlight.xml
+	because newer monodocer renames it.
+
 2008-01-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Makefile.am: In order for building where builddir != srcdir to
