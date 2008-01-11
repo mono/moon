@@ -1,5 +1,9 @@
 2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Remove stray character.
+
+2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer2.cpp, pipeline.cpp, pipeline.h, pipeline-ffmpeg.cpp,
 	  pipeline-ffmpeg.h: Code-cleanup.
 

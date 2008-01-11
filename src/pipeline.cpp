@@ -873,6 +873,3 @@ VideoStream::~VideoStream ()
 
 
 
-
-}
-
