@@ -1,3 +1,8 @@
+2008-01-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Add support for PenLineCapTriangle with a patched cairo.
+	See bug #345892 for the required cairo patch.
+
 2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Initialize Media too upon initialization.

@@ -44,6 +44,11 @@ convert_line_join (PenLineJoin pen_line_join)
 	}
 }
 
+/* NOTE: Triangle doesn't exist in Cairo - unless you patched it using https://bugzilla.novell.com/show_bug.cgi?id=345892 */
+#ifndef HAVE_CAIRO_LINE_CAP_TRIANGLE
+	#define CAIRO_LINE_CAP_TRIANGLE		 CAIRO_LINE_CAP_ROUND
+#endif
+
 static cairo_line_cap_t
 convert_line_cap (PenLineCap pen_line_cap)
 {
@@ -57,8 +62,9 @@ convert_line_cap (PenLineCap pen_line_cap)
 	case PenLineCapSquare:
 		return CAIRO_LINE_CAP_SQUARE;
 	case PenLineCapRound:
-	case PenLineCapTriangle: 		/* FIXME: Triangle doesn't exist in Cairo */
 		return CAIRO_LINE_CAP_ROUND;
+	case PenLineCapTriangle: 		
+		return CAIRO_LINE_CAP_TRIANGLE;
 	}
 }
 
