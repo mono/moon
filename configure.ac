@@ -77,6 +77,15 @@ fi
 AM_CONDITIONAL(INCLUDE_FFMPEG, test x$FFMPEG = xyes)
 
 #
+# Check for cairo "extensions"
+#
+
+# hackish but I couldn't get AC_EGREP_HEADER to work with our embedded cairo :(
+if cat cairo/src/cairo.h | grep CAIRO_LINE_CAP_TRIANGLE >/dev/null 2>&1; then
+	AC_DEFINE(HAVE_CAIRO_LINE_CAP_TRIANGLE,,Define if cairo has CAIRO_LINE_CAP_TRIANGLE as a cairo_line_cap_t enum member)
+fi
+
+#
 # Check for mono
 #
 

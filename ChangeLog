@@ -1,3 +1,8 @@
+2008-01-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* configure.ac: Enable PenLineCapTriangle if the embedded cairo is
+	patched to support it.
+
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moon.mdp: Deleted.
