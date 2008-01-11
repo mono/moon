@@ -378,7 +378,7 @@ public:
 	virtual MediaResult ReadHeader () = 0;
 	// Fills the uncompressed_data field in the frame with data.
 	virtual MediaResult ReadFrame (MediaFrame* frame) = 0;
-	
+	virtual MediaResult Seek (guint64 pts) = 0;
 	int GetStreamCount () { return stream_count; }
 	IMediaStream* GetStream (int index)
 	{
@@ -510,6 +510,7 @@ public:
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame* frame);
+	virtual MediaResult Seek (guint64 pts);
 	
 private:
 	ASFParser* parser;

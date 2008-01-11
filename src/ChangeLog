@@ -1,3 +1,12 @@
+2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer2.cpp, mplayer.h: Move the media variable from audio/video into
+	  mplayer.h where it belongs.
+	* pipeline.cpp, pipeline.h: Implement seeking.
+	* pipeline-ffmpeg.cpp: Copy decompressed data instead of using ffmpeg's data
+	  directly, since ffmpeg uses one single memory location for all decoded
+	  frames, causing us to always show the last decoded frame.
+
 2008-01-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Add support for PenLineCapTriangle with a patched cairo.

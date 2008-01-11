@@ -180,6 +180,12 @@ FfmpegDecoder::Cleanup (MediaFrame* frame)
 {
 	AVFrame* av_frame = (AVFrame*) frame->decoder_specific_data;
 	if (av_frame != NULL) {
+		if (av_frame->data [0] != frame->uncompressed_data_stride [0]) {
+			for (int i = 0; i < 4; i++) {
+				g_free (frame->uncompressed_data_stride [i]);
+				frame->uncompressed_data_stride [i] = NULL;
+			}
+		}
 		av_free (av_frame);
 		frame->decoder_specific_data = NULL;
 	}
@@ -222,8 +228,31 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 	//		uint8_t *rgb_dest[3] = { (uint8_t*) media_frame->uncompressed_data, NULL, NULL};
 	//		int rgb_stride [3] = { context->width * 4, 0, 0 };
 			
+			int plane_bytes [4];
+			int width = context->width;
+			int height = context->height;
+			switch (pixel_format) {
+			case MoonPixelFormatYUV420P:
+				plane_bytes [0] = height * frame->linesize [0];
+				plane_bytes [1] = height * frame->linesize [1] / 2;
+				plane_bytes [2] = height * frame->linesize [2] / 2;
+				plane_bytes [3] = 0;
+				break;
+			default:
+				plane_bytes [0] = 0;
+				plane_bytes [1] = 0;
+				plane_bytes [2] = 0;
+				plane_bytes [3] = 0;
+				break;
+			}
+			
 			for (int i = 0; i < 4; i++) {
-				media_frame->uncompressed_data_stride [i] = frame->data [i];
+				if (plane_bytes [i] != 0) {
+					media_frame->uncompressed_data_stride [i] = (guint8*) g_malloc0 (plane_bytes [i] + stream->min_padding);
+					memcpy (media_frame->uncompressed_data_stride [i], frame->data [i], plane_bytes [i]);
+				} else {
+					media_frame->uncompressed_data_stride [i] = frame->data [i];
+				}
 				media_frame->srcStride [i] = frame->linesize [i];
 			}
 			media_frame->srcSlideY = 0;

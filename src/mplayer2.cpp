@@ -101,7 +101,6 @@ Packet::~Packet ()
 
 
 struct Audio {
-	Media* media; // FIXME: Move to MPlayer
 	Queue *queue;
 	
 	pthread_mutex_t init_mutex;
@@ -166,7 +165,6 @@ Audio::Audio ()
 	
 	initial_pts = 0;
 	pts_per_frame = 0;
-	media = NULL;
 	
 	ufds = NULL;
 	nfds = 0;
@@ -184,7 +182,6 @@ Audio::~Audio ()
 }
 
 struct Video {
-	Media* media; // FIXME: Move to MPlayer 
 	Queue *queue;
 	
 	// input
@@ -192,7 +189,6 @@ struct Video {
 	IMediaDecoder *codec;
 	
 	// rendering
-	//struct SwsContext *scaler;
 	cairo_surface_t *surface;
 	uint8_t *rgb_buffer;
 	
@@ -212,14 +208,12 @@ Video::Video ()
 	stream = NULL;
 	codec = NULL;
 	
-	//scaler = NULL;
 	surface = NULL;
 	rgb_buffer = NULL;
 	
 	initial_pts = 0;
 	msec_per_frame = 0;
 	usec_to_pts = 0;
-	media = NULL;
 }
 
 Video::~Video ()
@@ -229,7 +223,6 @@ Video::~Video ()
 
 MediaPlayer::MediaPlayer ()
 {
-	
 	uri = NULL;
 	asf_parser = NULL;
 	
@@ -273,16 +266,14 @@ MediaPlayer::~MediaPlayer ()
 	pthread_cond_destroy (&pause_cond);
 	
 	g_free (uri);
+	uri = NULL;
 	
-	Media* media = NULL;
-	if (audio->media != NULL) {
-		media = audio->media;
-	} else if (video->media != NULL) {
-		media = video->media;
-	}
 	delete audio;
+	audio = NULL;
 	delete video;
+	video = NULL;
 	delete media;
+	media = NULL;
 }
 
 MediaResult
@@ -305,6 +296,7 @@ media_player_callback (MediaClosure* closure)
 		player->video->queue->Push (new Packet (frame));
 		return MEDIA_SUCCESS;
 	case MediaTypeAudio: // TODO: Add locking here.
+		printf ("Added audio packet, with pts: %lld\n", frame->pts);
 		player->audio->queue->Push (new Packet (frame));
 		return MEDIA_SUCCESS;
 	default:
@@ -336,9 +328,11 @@ MediaPlayer::Open (const char *uri)
 	result = media->Open (uri);
 	if (!MEDIA_SUCCEEDED (result)) {
 		fprintf (stderr, "MediaPlayer::Open ('%s'): cannot open uri: %i\n", uri, result);
+		delete media;
 		return false;
 	}
 	
+	this->media = media;
 	this->uri = g_strdup (uri);
 	opened = true;
 	
@@ -363,7 +357,6 @@ MediaPlayer::Open (const char *uri)
 			audio->stream_count++;
 			
 			audio->stream = (AudioStream*) stream;
-			audio->media = media;
 			
 			// starting time
 			if (stream->start_time >= 0)
@@ -373,7 +366,6 @@ MediaPlayer::Open (const char *uri)
 			printf ("audio initial_pts = %lld\n", audio->initial_pts);
 			break;
 		case MediaTypeVideo: 
-			video->media = media;
 			video->stream = (VideoStream*) stream;
 			
 			height = video->stream->height;
@@ -444,6 +436,10 @@ MediaPlayer::Open (const char *uri)
 		media->GetNextFrameAsync (video->stream);
 		media->GetNextFrameAsync (video->stream);
 		media->GetNextFrameAsync (video->stream);
+		media->GetNextFrameAsync (video->stream);
+		media->GetNextFrameAsync (video->stream);
+		media->GetNextFrameAsync (video->stream);
+		media->GetNextFrameAsync (video->stream);
 		
 		target_pts = video->initial_pts;
 		printf ("initial pts (according to video): %lld\n", target_pts);
@@ -469,14 +465,8 @@ MediaPlayer::Close ()
 		video->surface = NULL;
 	}
 	
-	// FIXME: free audio->stream and video->stream?
-	if (audio->media != NULL) {
-		delete audio->media;
-		audio->media = NULL;
-	} else if (video->media != NULL) {
-		delete video->media;
-		video->media = NULL;
-	}
+	delete media;
+	media = NULL;
 	
 	playing = false;
 	opened = false;
@@ -488,9 +478,7 @@ MediaPlayer::Close ()
 	audio->sample_size = 0;
 	audio->initial_pts = 0;
 	audio->pts_per_frame = 0;
-	audio->media = NULL;
 	
-	video->media = NULL;
 	video->stream = NULL;
 	video->codec = NULL;
 	video->initial_pts = 0;
@@ -623,7 +611,7 @@ MediaPlayer::AdvanceFrame ()
 			}
 			
 			delete pkt;
-			video->media->GetNextFrameAsync (video->stream); // Request another frame
+			media->GetNextFrameAsync (video->stream); // Request another frame
 			dropped++;
 			
 			// we are lagging behind, drop this frame
@@ -637,26 +625,14 @@ MediaPlayer::AdvanceFrame ()
 	video->queue->Unlock ();
 	
 	if (update) {
-		printf ("MediaPlayer::AdvanceFrame () (%i items in list, %i dropped) copying %i bytes to rgb buffer for current_pts = %lld (target_pts = %lld, pkt->pts = %lld), diff = %lld.\n", count, dropped, pkt->size, current_pts, target_pts, pkt->pts, target_pts - pkt->pts);
+		printf ("MediaPlayer::AdvanceFrame () (%.2i items in list, %.2i dropped) copying %i bytes to rgb buffer for current_pts = %lld (target_pts = %lld, pkt->pts = %lld), diff = %lld.\n", count, dropped, pkt->size, current_pts, target_pts, pkt->pts, target_pts - pkt->pts);
 		convert_to_rgb (video, pkt->frame);
 		//memcpy (video->rgb_buffer, pkt->data, pkt->size);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
-		video->media->GetNextFrameAsync (video->stream);
+		media->GetNextFrameAsync (video->stream);
+		if (count < 3) {
+			media->GetNextFrameAsync (video->stream);
+			printf ("Requested an extra frame.\n");
+		}
 		delete pkt;
 		return true;
 	}
@@ -668,18 +644,11 @@ void
 MediaPlayer::LoadVideoFrame ()
 {
 	bool update = false;
-	Media* media = NULL;
 	MediaFrame *frame = NULL;
 	
 	if (video->stream == NULL)
 		return;
-	
-	if (audio->media != NULL) {
-		media = audio->media;
-	} else {
-		media = video->media;
-	}
-	
+		
 	media->Seek (seek_pts);
 
 	while ((frame = media->GetNextFrame (video->stream)) != NULL) {
@@ -740,12 +709,8 @@ MediaPlayer::MediaEnded ()
 void
 media_player_enqueue_frames (MediaPlayer* mp)
 {
-	Media* media;
-	if (mp->audio->media != NULL)
-		media = mp->audio->media;
-	else
-		media = mp->video->media;
-		
+	Media* media = mp->media;
+	
 	if (mp->audio->stream != NULL) {
 		for (int i = 0; i < 10; i++)
 			media->GetNextFrameAsync (mp->audio->stream);
@@ -888,10 +853,8 @@ MediaPlayer::Stop ()
 	
 	playing = false;
 	
-	if (audio->media != NULL)
-		audio->media->Seek (0);
-	else
-		video->media->Seek (0);
+	if (media != NULL)
+		media->Seek (0);
 }
 
 bool
@@ -936,13 +899,13 @@ MediaPlayer::Seek (int64_t position)
 	
 	
 	StopThreads ();
-	video->media->DeleteQueue ();
+	media->DeleteQueue ();
 	
 	if (video->stream != NULL) {
 		seek_pts = position;
 		LoadVideoFrame ();
 	} else {
-		audio->media->Seek (position);
+		media->Seek (position);
 		seek_pts = position;
 	}
 	
@@ -1305,7 +1268,7 @@ audio_loop (void *data)
 			pthread_mutex_lock (&mplayer->target_pts_lock);
 			mplayer->target_pts += frame_pts;
 			pthread_mutex_unlock (&mplayer->target_pts_lock);
-			//printf ("calculated target_pts = %llu (frame_pts: %lld)\n", mplayer->target_pts, frame_pts);
+			printf ("calculated target_pts = %llu (frame_pts: %lld)\n", mplayer->target_pts, frame_pts);
 		} else {
 			// decode an audio packet
 			if (!audio->pkt && (pkt = (Packet *) audio->queue->Pop ())) {
@@ -1317,7 +1280,7 @@ audio_loop (void *data)
 				mplayer->target_pts = pkt->pts;
 				pthread_mutex_unlock (&mplayer->target_pts_lock);
 				printf ("setting target_pts to %llu\n", mplayer->target_pts);
-				audio->media->GetNextFrameAsync (audio->stream);
+				mplayer->media->GetNextFrameAsync (audio->stream);
 				//printf ("audio_loop, popped a packet, %i packets left. inleft: %i, inptr: %p\n", audio->queue->Length (), audio->inleft, audio->inptr);
 				
 				if (!audio_decode (audio)) {

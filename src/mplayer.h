@@ -17,6 +17,7 @@
 #include <pthread.h>
 
 #include "asf/asf.h"
+#include "pipeline.h"
 
 struct AVFormatContext;
 struct Audio;
@@ -24,6 +25,9 @@ struct Video;
 
 class MediaPlayer {
 public:
+#ifdef MOON_MEDIA
+	Media *media;
+#endif
 	char *uri;
 	ASFParser* asf_parser;
 	

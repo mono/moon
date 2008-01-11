@@ -163,6 +163,8 @@ Media::AddMessage (MediaResult result, char* msg)
 MediaResult
 Media::Seek (gint64 pts)
 {
+	return demuxer->Seek (pts);
+
 	return MEDIA_SUCCESS;
 }
 
@@ -521,6 +523,14 @@ ASFDemuxer::~ASFDemuxer ()
 }
 
 MediaResult
+ASFDemuxer::Seek (guint64 pts)
+{
+	if (parser->source->Seek (0, pts))
+		return MEDIA_SUCCESS;
+	return MEDIA_FAIL;
+}
+
+MediaResult
 ASFDemuxer::ReadHeader ()
 {
 	printf ("ASFDemuxer::ReadHeader ().\n");
@@ -858,14 +868,14 @@ FileSource::Seek (gint64 offset)
 bool
 FileSource::Seek (gint64 offset, int mode)
 {
-	printf ("FileSource::Seek (%llu, %i).\n", offset, mode);
+	//printf ("FileSource::Seek (%llu, %i).\n", offset, mode);
 	
 	int result = fseek (fd, offset, mode);
 	if (result != 0) {
 		media->AddMessage (MEDIA_SEEK_ERROR, g_strdup_printf ("Can't seek to offset %llu with mode %i in '%s': %s.\n", offset, mode, filename, strerror (errno)));
 		return false;
 	}
-	printf  ("fseek returned: %i, position: %llu\n", result, GetPosition ());
+	//printf  ("fseek returned: %i, position: %llu\n", result, GetPosition ());
 	return true;
 }
 
