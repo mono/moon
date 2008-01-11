@@ -369,7 +369,7 @@ TimeManager::Tick ()
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
-	//time_manager_list_clocks ();
+	//	time_manager_list_clocks ();
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan post_tick = source->GetNow();
@@ -489,6 +489,8 @@ time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data)
 void
 TimeManager::AddChild (Clock *child)
 {
+	child->GetNaturalDuration(); // ugh
+
 	child_clocks = g_list_append (child_clocks, child);
 	child->ref ();
 }
@@ -518,6 +520,8 @@ output_clock (Clock *clock, int level)
 	}
 
 	printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
+
+	printf ("%lld ", clock->GetBeginTime());
 
 	switch (clock->GetClockState()) {
 	case Clock::Active:
@@ -574,7 +578,8 @@ int Clock::CompletedEvent = -1;
 
 
 Clock::Clock (Timeline *tl)
-  : natural_duration (Duration::Automatic),
+  : calculated_natural_duration (false),
+    natural_duration (Duration::Automatic),
     state (Clock::Stopped),
     progress (0.0),
     current_time (0), last_time (0),
@@ -593,14 +598,6 @@ Clock::Clock (Timeline *tl)
 	if (timeline->HasBeginTime ())
 		begintime = timeline->GetBeginTime ();
 	/* otherwise it's filled in when we Begin the clock */
-
-	Duration *duration = timeline->GetDuration ();
-	if (duration->HasTimeSpan ()) {
-		natural_duration = *duration;
-	}
-	else {
-		natural_duration = timeline->GetNaturalDuration (this);
-	}
 }
 
 TimeSpan
@@ -619,6 +616,24 @@ Clock::GetLastParentTime ()
 		return parent_clock->GetLastTime();
 	else
 		return TimeManager::Instance()->GetLastTime();
+}
+
+Duration
+Clock::GetNaturalDuration ()
+{
+	if (!calculated_natural_duration) {
+		calculated_natural_duration = true;
+
+		Duration *duration = timeline->GetDuration ();
+		if (duration->HasTimeSpan ()) {
+			natural_duration = *duration;
+		}
+		else {
+			natural_duration = timeline->GetNaturalDuration (this);
+		}
+	}
+
+	return natural_duration;
 }
 
 void
@@ -873,12 +888,7 @@ Clock::Begin ()
 void
 Clock::ComputeBeginTime ()
 {
-	TimeSpan offset = 0;
-
-	if (timeline->HasBeginTime ())
-		offset = timeline->GetBeginTime ();
-
-	begin_time = GetParentTime() + offset;
+	begin_time = timeline->HasBeginTime() ? timeline->GetBeginTime() : 0;
 }
 
 void
@@ -964,6 +974,8 @@ ClockGroup::ClockGroup (TimelineGroup *timeline)
 void
 ClockGroup::AddChild (Clock *clock)
 {
+	clock->GetNaturalDuration(); // ugh
+
 	child_clocks = g_list_append (child_clocks, clock);
 	clock->ref ();
 	clock->SetParent (this);
@@ -999,7 +1011,7 @@ ClockGroup::Begin ()
 void
 ClockGroup::ComputeBeginTime ()
 {
-	Clock::ComputeBeginTime ();
+	begin_time = GetParentTime() + (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
 		c->ComputeBeginTime ();

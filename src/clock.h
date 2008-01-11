@@ -337,7 +337,7 @@ class Clock : public DependencyObject {
 	TimeSpan    GetCurrentTime ()     { return current_time; }
 	TimeSpan    GetLastTime ()        { return last_time; }
 	Timeline*   GetTimeline ()        { return timeline; }
-	Duration    GetNaturalDuration () { return natural_duration; }
+	Duration    GetNaturalDuration ();
 	bool        GetIsPaused ()        { return is_paused; }
 	bool        GetHasStarted ()      { return has_started; }
 	bool        GetWasStopped ()      { return was_stopped; }
@@ -401,6 +401,7 @@ class Clock : public DependencyObject {
 	};
 	void QueueEvent (int event) { queued_events |= event; }
 
+	bool calculated_natural_duration;
 	Duration natural_duration;
 
 	TimeSpan begintime;

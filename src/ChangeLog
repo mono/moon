@@ -1,3 +1,27 @@
+2008-01-11  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h (class Clock): add an instance
+	field (calculated_natural_duration).
+
+	* clock.cpp (Clock::ComputeBeginTime): don't include the parent's
+	current time here.  this was inflating animation begin time's in
+	some cases to be either very close to the parent's calculated
+	duration (or even after it).
+	(ClockGroup::ComputeBeginTime): don't chain up to
+	Clock::ComputeBeginTime.  clock groups in our system need to
+	include their parent time in their begin time.  There are only two
+	levels of clockgroups - storyboards, and the clockgroup we have
+	associated with a given surface (Which will be the parent of all
+	the storyboards running on that surface.)
+	(output_clock): print out the BeginTime of the clock.
+	(TimeManager::AddChild): I don't really like this, but we need to
+	force the calculation of the natural duration of the clock when
+	it's added to the hierarchy.
+	(ClockGroup::AddChild): same here.
+	(Clock::Clock): don't calculate the natural duration of the clock
+	here - when we instantiated a ClockGroup it was calculating the
+	duration before the child clocks were added.
+
 2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Seek on the frame reader, not on the source.
