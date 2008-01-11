@@ -1,3 +1,8 @@
+2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* configure.ac, README: Rename SL 1.1 to SL 2.0.
+	* INSTALL: Rename SL 1.1 to SL 2.0, add note about --with-ffmpeg.
+
 2008-01-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* configure.ac: Enable PenLineCapTriangle if the embedded cairo is

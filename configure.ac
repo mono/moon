@@ -90,7 +90,7 @@ fi
 #
 
 MONO_RUNTIME=yes
-AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable support for Silverlight 1.1],[
+AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable support for Silverlight 2.0],[
 	if test x$with_mono_runtime = xyes; then
 	      MONO_RUNTIME=yes
 	fi
@@ -100,7 +100,7 @@ AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable su
 ])
 
 if test $MONO_RUNTIME = yes; then
-AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (and enable Silverlight 1.1 plugin usage)])
+AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
 fi
 AM_CONDITIONAL(INCLUDE_MONO_RUNTIME, test $MONO_RUNTIME = yes)
 
@@ -365,7 +365,7 @@ cat <<EOF
 Moonlight configuration:
 
 	Support for 1.0: yes
-	Support for 1.1: $MONO_RUNTIME
+	Support for 2.0: $MONO_RUNTIME
 	Support for ffmpeg: $FFMPEG
 
 EOF

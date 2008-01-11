@@ -3,7 +3,7 @@ Moonlight: Core Support
 
 	To build Moonlight, you need to install a few dependencies for
 	the basic runtime engine (this is needed to support both API
-	profiles: Silverlight 1.0 and 1.1).
+	profiles: Silverlight 1.0 and 2.0).
 
    * Dependencies:
 		
@@ -28,7 +28,7 @@ Moonlight: Core Support
 	mozilla-based browser and follow the prompts.
 
 	Currently this only works properly when moonlight is built without
-	mono runtime (Silverlight 1.1) support (--without-mono-runtime).
+	mono runtime (Silverlight 2.0) support (--without-mono-runtime).
 
 Configuration Options
 =====================
@@ -60,17 +60,22 @@ Configuration Options
 
 	--with-mono-runtime=yes,no
 
-		By default Moonlight will build the 1.1 profile of Silverlight
+		By default Moonlight will build the 2.0 profile of Silverlight
 		and will try to link with Mono to provide the required managed
 		support.
 
 		Use this flag to disable support for Mono from your plugin build.
 
+	--with-ffmpeg=yes,no
 
-Moonlight: Silverlight 1.1 API support
+		By default Moonlight will build with media support using ffmpeg.
+
+		Use this flag to disable all use of ffmpeg.
+
+Moonlight: Silverlight 2.0 API support
 ======================================
 
-	If you want to support the Silverlight 1.1 API (managed
+	If you want to support the Silverlight 2.0 API (managed
 	support, this includes the Mono runtime and .NET APIs to run
 	apps) you will need in addition to:
 
