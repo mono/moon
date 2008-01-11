@@ -29,7 +29,6 @@
 G_BEGIN_DECLS
 #include <stdint.h>
 #include <limits.h>
-#include <swscale.h>
 G_END_DECLS
 
 #include "clock.h"
@@ -193,7 +192,7 @@ struct Video {
 	IMediaDecoder *codec;
 	
 	// rendering
-	struct SwsContext *scaler;
+	//struct SwsContext *scaler;
 	cairo_surface_t *surface;
 	uint8_t *rgb_buffer;
 	
@@ -213,7 +212,7 @@ Video::Video ()
 	stream = NULL;
 	codec = NULL;
 	
-	scaler = NULL;
+	//scaler = NULL;
 	surface = NULL;
 	rgb_buffer = NULL;
 	
@@ -275,13 +274,15 @@ MediaPlayer::~MediaPlayer ()
 	
 	g_free (uri);
 	
+	Media* media = NULL;
 	if (audio->media != NULL) {
-		delete audio->media;
+		media = audio->media;
 	} else if (video->media != NULL) {
-		delete video->media;
+		media = video->media;
 	}
 	delete audio;
 	delete video;
+	delete media;
 }
 
 MediaResult
@@ -380,10 +381,10 @@ MediaPlayer::Open (const char *uri)
 			
 			// for conversion to rgb32 format needed for rendering
 			video->rgb_buffer = (uint8_t *) g_malloc0 (width * height * 4);
-			video->scaler = sws_getContext (width, height, encoding->pixel_format,
+			/*video->scaler = sws_getContext (width, height, encoding->pixel_format,
 							width, height, PIX_FMT_RGB32,
 							SWS_BICUBIC, NULL, NULL, NULL);
-			
+			*/
 			// rendering surface
 			video->surface = cairo_image_surface_create_for_data (
 				video->rgb_buffer, CAIRO_FORMAT_ARGB32,

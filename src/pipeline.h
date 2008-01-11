@@ -111,6 +111,8 @@ typedef gint32 MediaResult;
 #define MEDIA_OUT_OF_MEMORY ((MediaResult) 10)
 #define MEDIA_DEMUXER_ERROR ((MediaResult) 11)
 #define MEDIA_CONVERTER_ERROR ((MediaResult) 12)
+#define MEDIA_UNKNOWN_CONVERTER ((MediaResult) 13)
+#define MEDIA_UNKNOWN_MEDIA_TYPE ((MediaResult) 14)
 
 #define MEDIA_SUCCEEDED(x) ((x == 0))
 
@@ -143,6 +145,38 @@ public:
 	// If no callback is set, returns MEDIA_NO_CALLBACK
 	MediaResult Call ();
 }; 
+
+/*
+ * *Info classes used to register codecs, demuxers and converters.
+ */
+
+class MediaInfo {
+public:
+	MediaInfo* next; // Used internally by Media.
+	MediaInfo () : next (NULL) {}
+	virtual ~MediaInfo () {}
+	virtual const char* GetName () { return "Unknown"; }
+};
+
+class DecoderInfo : public MediaInfo {
+public:
+	virtual bool Supports (const char* codec) = 0;
+	virtual IMediaDecoder* Create (Media* media, IMediaStream* stream) = 0;
+};
+
+class DemuxerInfo : public MediaInfo  {
+public:
+	// <buffer> points to the first <length> bytes of a file. 
+	// <length> is guaranteed to be at least 16 bytes.
+	virtual bool Supports (uint8_t* buffer, uint32_t length) = 0; 
+	virtual IMediaDemuxer* Create (Media* media) = 0;
+};
+
+class ConverterInfo : public MediaInfo  {
+public:
+	virtual bool Supports (MoonPixelFormat input, MoonPixelFormat output) = 0;
+	virtual IImageConverter* Create (Media* media, VideoStream* stream) = 0;
+};
 
 class Media {
 public:
@@ -192,6 +226,21 @@ public:
     
     void AddMessage (MediaResult result, const char* msg);
     void AddMessage (MediaResult result, char* msg);
+    
+    
+public:
+    // Registration functions
+    // This class takes ownership of the infos and will delete them (not free) when the Media is shutdown.
+    static void RegisterDemuxer (DemuxerInfo *info);
+    static void RegisterDecoder (DecoderInfo *info);
+    static void RegisterConverter (ConverterInfo *info);
+
+	static void Initialize ();
+	static void Shutdown ();
+private:
+	static DemuxerInfo* registered_demuxers;
+	static DecoderInfo* registered_decoders;
+	static ConverterInfo* registered_converters;
     
 private:
 	//	Called on another thread, loops the queue of requested frames 
@@ -310,11 +359,12 @@ public:
 	IMediaSource (Media* med) : media (med) {}
 	virtual ~IMediaSource () {}
 	virtual bool IsSeekable () = 0;
-	virtual bool Seek (gint64 position) = 0;
-	virtual bool Seek (gint64 position, int mode) = 0;
+	virtual bool Seek (gint64 offset) = 0; // Seeks to the offset from the current position
+	virtual bool Seek (gint64 offset, int mode) = 0;
 	virtual bool Read (void* buffer, guint32 size) = 0;
 	virtual bool Peek (void* buffer, guint32 size) = 0;
 	virtual guint64 GetPosition () = 0;
+	virtual void SetPosition (guint64 position) { Seek (position, SEEK_SET); }
 	virtual bool Eof () = 0;
 	
 protected:
@@ -465,6 +515,13 @@ private:
 	ASFParser* parser;
 	ASFFrameReader* reader;
 	gint32* stream_to_asf_index;
+};
+
+class ASFDemuxerInfo : public DemuxerInfo {
+public:
+	virtual bool Supports (uint8_t* buffer, uint32_t length); 
+	virtual IMediaDemuxer* Create (Media* media); 
+	virtual const char* GetName () { return "ASFDemuxer"; }
 };
 
 class ASFMarkerStream : public IMediaStream {

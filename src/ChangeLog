@@ -1,5 +1,12 @@
 2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: Initialize Media too upon initialization.
+	* pipeline.cpp, pipeline.h, pipeline-ffmpeg.cpp, pipeline-ffmpeg.h,
+	  mplayer2.cpp, mplayer.cpp: Implement registration of components, making
+	  it possible to completely remove ffmpeg.
+
+2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: Remove stray character.
 
 2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -12,6 +12,9 @@
 #include <config.h>
 #endif
 
+#include "pipeline.h"
+#ifndef MOON_MEDIA
+
 #include <glib.h>
 
 #include <poll.h>
@@ -34,13 +37,11 @@ G_END_DECLS
 
 #include "clock.h"
 #include "mplayer.h"
-#include "pipeline.h"
 //#include "stream.h"
 #include "asf/asf-ffmpeg.h"
 #include "runtime.h"
 #include "list.h"
 
-#ifndef MOON_MEDIA
 
 #if GLIB_SIZEOF_VOID_P == 8
 #define ALIGN(addr,size) (uint8_t *) (((uint64_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
@@ -593,8 +594,10 @@ MediaPlayer::AdvanceFrame ()
 	
 	video->queue->Unlock ();
 	
-	if (update)
+	if (update) {
+		//printf ("advancing to video frame with pts: %lld\n", current_pts);
 		convert_to_rgb (video, frame);
+	}
 	
 	if (frame != NULL) {
 		av_free (frame);

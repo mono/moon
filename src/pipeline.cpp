@@ -27,21 +27,24 @@
 #define CODEC_MP3	0x55
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
-					
+
+/*
+ * Media 
+ */
+DemuxerInfo* Media::registered_demuxers = NULL;
+DecoderInfo* Media::registered_decoders = NULL;
+ConverterInfo* Media::registered_converters = NULL;
+ 
 Media::Media (void* el) :
 		source (NULL), demuxer (NULL), element (NULL),
 		file_or_url (NULL), queued_requests (NULL),
 		queue_closure (NULL)
 {
-	//if (element)
-	//	element->ref ();
 }
 
 Media::~Media ()
 {
 	DeleteQueue ();
-	//if (element)
-	//	element->unref ();
 		
 	element = NULL;
 	delete source;
@@ -53,6 +56,95 @@ Media::~Media ()
 	
 	delete queue_closure;
 	queue_closure = NULL;
+}
+
+void
+Media::RegisterDemuxer (DemuxerInfo* info)
+{
+	printf ("Media::RegisterDecoder (%p)\n", info);
+	info->next = NULL;
+	if (registered_demuxers == NULL) {
+		registered_demuxers = info;
+	} else {
+		MediaInfo* current = registered_demuxers;
+		while (current->next != NULL)
+			current = current->next;
+		current->next = info;
+	}
+}
+
+void
+Media::RegisterConverter (ConverterInfo* info)
+{
+	printf ("Media::RegisterDecoder (%p)\n", info);
+	info->next = NULL;
+	if (registered_converters == NULL) {
+		registered_converters = info;
+	} else {
+		MediaInfo* current = registered_converters;
+		while (current->next != NULL)
+			current = current->next;
+		current->next = info;
+	}
+}
+
+void
+Media::RegisterDecoder (DecoderInfo* info)
+{
+	printf ("Media::RegisterDecoder (%p)\n", info);
+	info->next = NULL;
+	if (registered_decoders == NULL) {
+		registered_decoders = info;
+	} else {
+		MediaInfo* current = registered_decoders;
+		while (current->next != NULL)
+			current = current->next;
+		current->next = info;
+	}
+}
+
+void
+Media::Initialize ()
+{
+	// register stuff
+	Media::RegisterDemuxer (new ASFDemuxerInfo ());
+#ifdef INCLUDE_FFMPEG
+	register_ffmpeg ();
+#endif
+}
+
+void
+Media::Shutdown ()
+{
+	MediaInfo* current;
+	MediaInfo* next;
+	
+	current = registered_decoders;
+	while (current != NULL) {
+		next = current->next;
+		delete current;
+		current = next;
+	}
+	registered_decoders = NULL;
+	
+	current = registered_demuxers;
+	while (current != NULL) {
+		next = current->next;
+		delete current;
+		current = next;
+	}
+	registered_demuxers = NULL;
+	
+	
+	current = registered_converters;
+	while (current != NULL) {
+		next = current->next;
+		delete current;
+		current = next;
+	}
+	registered_converters = NULL;
+	
+	
 }
 
 void
@@ -141,15 +233,33 @@ Media::Open (IMediaSource* source)
 {
 	printf ("Media::Open ().\n");
 	
-	MediaResult result = MEDIA_FAIL;
+	MediaResult result = MEDIA_FAIL; // We return success if at least 1 stream could be opened correctly (has decoder and, if applicable, converter)
 
 	if (source == NULL) {
-		return MediaResult (MEDIA_INVALID_ARGUMENT);
+		return MEDIA_INVALID_ARGUMENT;
 	}
 	
-	// Determine the container format
-	// Hard-code our own demuxer for the moment.
-	demuxer = new ASFDemuxer (this);
+	// Select a demuxer
+	uint8_t buffer [16];
+	if (!source->Peek (&buffer [0], 16)) {
+		return MEDIA_FAIL;
+	}
+	
+	DemuxerInfo* current_demuxer = registered_demuxers;
+	while (current_demuxer != NULL && !current_demuxer->Supports (&buffer [0], 16)) {
+		printf ("Checking registered demuxer '%s' if it supports the media file '%s': no.\n", current_demuxer->GetName (), file_or_url);
+		current_demuxer = (DemuxerInfo*) current_demuxer->next;
+	}
+		
+	if (current_demuxer == NULL) {
+		AddMessage (MEDIA_UNKNOWN_MEDIA_TYPE, g_strdup_printf ("No demuxers registered to handle the media file '%s'.", file_or_url));
+		return MEDIA_UNKNOWN_MEDIA_TYPE;
+	} else {
+		printf ("Checking registered demuxer '%s' if it supports the media file '%s': yes.\n", current_demuxer->GetName (), file_or_url);
+		demuxer = current_demuxer->Create (this);
+	}
+	
+	// Found a demuxer
 	result = demuxer->ReadHeader ();
 	
 	if (!MEDIA_SUCCEEDED (result)) {
@@ -160,6 +270,8 @@ Media::Open (IMediaSource* source)
 	
 	printf ("Media::Open (): Starting to select codecs...\n");
 	
+	result = MEDIA_FAIL; // Only set to SUCCESS if at least 1 stream can be used
+	
 	// Select codecs for each stream
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		IMediaStream* stream = demuxer->GetStream (i);
@@ -169,52 +281,70 @@ Media::Open (IMediaSource* source)
 		const char* codec = stream->GetCodec ();
 		IMediaDecoder* decoder = NULL;
 		
-		printf ("Media::Open (%p): Selecting codec for codec %s, id %i.\n", source, codec, stream->codec_id);
-				
-		if (decoder == NULL) {
-			if (strcmp (codec, "wmv") == 0
-				|| strcmp (codec, "wma") == 0
-				|| strcmp (codec, "mp3") == 0
-				|| strcmp (codec, "vc1") == 0
-				|| strcmp (codec, "wmav2") == 0 
-				) {
-				decoder = new FfmpegDecoder (this, stream);
-			} else if (strcmp (codec, "ASFMARKER") == 0) {
-				decoder = new ASFMarkerDecoder (this, stream);
-			} else {
-				AddMessage (MEDIA_UNKNOWN_CODEC, g_strdup_printf ("Unknown codec: '%s'", codec));
-			}
-		}
+		printf ("Media::Open (): Selecting codec for codec %s, id %i.\n", codec, stream->codec_id);
 		
+		DecoderInfo* current_decoder = registered_decoders;
+		while (current_decoder != NULL && !current_decoder->Supports (codec)) {
+			printf ("Checking registered decoder '%s' if it supports codec '%s': no.\n", current_decoder->GetName (), codec);
+			current_decoder = (DecoderInfo*) current_decoder->next;
+		}
+
+		if (current_decoder == NULL) {
+			AddMessage (MEDIA_UNKNOWN_CODEC, g_strdup_printf ("Unknown codec: '%s'.", codec));	
+		} else {
+			printf ("Checking registered decoder '%s' if it supports codec '%s': yes.\n", current_decoder->GetName (), codec);
+			decoder = current_decoder->Create (this, stream);
+		}
+
 		if (decoder != NULL) {
 			result = decoder->Open ();
 			if (!MEDIA_SUCCEEDED (result)) {
 				delete decoder;
 				decoder = NULL;
 			}
+		}
 		
+		if (decoder != NULL) {
+			// Select converter for this stream
+			if (stream->GetType () == MediaTypeVideo && decoder->pixel_format != MoonPixelFormatRGB32) {
+				VideoStream* vs = (VideoStream*) stream;
+				IImageConverter* converter;
+				
+				ConverterInfo* current_conv = registered_converters;
+				while (current_conv != NULL && !current_conv->Supports (decoder->pixel_format, MoonPixelFormatRGB32)) {
+					printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': no.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					current_conv = (ConverterInfo*) current_conv->next;
+				}
+
+				if (current_conv == NULL) {
+					AddMessage (MEDIA_UNKNOWN_CONVERTER, g_strdup_printf ("Can't convert from %i to %i: No converter found.", vs->decoder->pixel_format, MoonPixelFormatRGB32));	
+				} else {
+					printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': yes.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					converter = current_conv->Create (this, vs);
+					converter->input_format = decoder->pixel_format;
+					converter->output_format = MoonPixelFormatRGB32;
+					if (!MEDIA_SUCCEEDED (converter->Open ())) {
+						delete converter;
+						converter = NULL;
+					}
+				}
+
+				if (converter != NULL) {				
+					vs->converter = converter;
+				} else {
+					delete decoder;
+					decoder = NULL;
+				}
+			}
+		}
 		
 		if (decoder != NULL) {
 			stream->SetDecoder (decoder);
-			
-			if (stream->GetType () == MediaTypeVideo) {
-				VideoStream* vs = (VideoStream*) stream;
-				IImageConverter* converter;
-				converter = new FfmpegConverter (this, vs);
-				converter->input_format = vs->decoder->pixel_format;
-				converter->output_format = MoonPixelFormatRGB32;
-				if (MEDIA_SUCCEEDED (converter->Open ())) {
-					// FIXME: What should happen if there's no available converter? No video?
-					vs->converter = converter;
-				} else {
-					delete converter;
-					converter = NULL;
-				}
-			}
-		}}
+			result = MEDIA_SUCCESS;
+		}
 	}
 	
-	return MEDIA_SUCCESS;
+	return result;
 }
 
 MediaFrame*
@@ -602,6 +732,29 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
 }
 
 /*
+ * ASFDemuxerInfo
+ */
+
+bool
+ASFDemuxerInfo::Supports (uint8_t* buffer, uint32_t length)
+{
+	if (length < 16)
+		return false;
+		
+	bool result = asf_guid_compare (&asf_guids_header, (asf_guid*) buffer);
+
+	printf ("ASFDemuxerInfo::Supports (%p, %u): probing result: %s\n", buffer, length, result ? "true" : "false");
+	
+	return result;
+}
+
+IMediaDemuxer*
+ASFDemuxerInfo::Create (Media* media)
+{
+	return new ASFDemuxer (media);
+} 
+
+/*
  *	FileSource
  */
 
@@ -672,9 +825,11 @@ FileSource::Read (void* buffer, guint32 size)
 bool
 FileSource::Peek (void* buffer, guint32 size)
 {
-	printf ("FileSource::Seek (%p, %u).\n", buffer, size);
-	printf ("FileSource::Peek (%p, %u): Not implemented.\n", buffer, size);
-	return false;
+	// Simple implementation of peek: save position, read bytes, restore position.
+	gint64 position = GetPosition ();
+	if (!Read (buffer, size))
+		return false;
+	return Seek (position, SEEK_SET);
 }
 
 guint64
@@ -693,22 +848,24 @@ FileSource::IsSeekable ()
 }
 
 bool
-FileSource::Seek (gint64 position)
+FileSource::Seek (gint64 offset)
 {
 	//printf ("FileSource::Seek (%llu).\n", position);
 	
-	return Seek (position, SEEK_CUR);
+	return Seek (offset, SEEK_CUR);
 }
 
 bool
-FileSource::Seek (gint64 position, int mode)
+FileSource::Seek (gint64 offset, int mode)
 {
-	//printf ("FileSource::Seek (%llu, %i).\n", position, mode);
+	printf ("FileSource::Seek (%llu, %i).\n", offset, mode);
 	
-	if (fseek (fd, position, mode) != 0) {
-		media->AddMessage (MEDIA_SEEK_ERROR, g_strdup_printf ("Can't seek to offset %llu with mode %i in '%s': %s.\n", position, mode,  filename, strerror (errno)));
+	int result = fseek (fd, offset, mode);
+	if (result != 0) {
+		media->AddMessage (MEDIA_SEEK_ERROR, g_strdup_printf ("Can't seek to offset %llu with mode %i in '%s': %s.\n", offset, mode, filename, strerror (errno)));
 		return false;
 	}
+	printf  ("fseek returned: %i, position: %llu\n", result, GetPosition ());
 	return true;
 }
 
@@ -797,7 +954,11 @@ MediaFrame::~MediaFrame ()
 	uncompressed_data = NULL;
 	
 	if (decoder_specific_data != NULL) {
-		stream->decoder->Cleanup (this);
+		if (stream != NULL && stream->decoder != NULL) { 
+			stream->decoder->Cleanup (this);
+		} else {
+			printf ("MediaFrame::~MediaFrame (): Couldn't call decoder->Cleanup.\n");
+		}
 	}
 }
 

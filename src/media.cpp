@@ -26,6 +26,7 @@
 #include "downloader.h"
 #include "playlist.h"
 #include "geometry.h"
+#include "pipeline.h"
 
 // still too ugly to be exposed in the header files ;-)
 cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
@@ -1831,4 +1832,8 @@ media_init (void)
 
 	t = Type::Find (Type::IMAGE);
 	Image::ImageFailedEvent = t->LookupEvent ("ImageFailed");
+	
+#ifdef MOON_MEDIA
+	Media::Initialize ();
+#endif
 }

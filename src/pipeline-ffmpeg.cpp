@@ -35,6 +35,7 @@ G_END_DECLS
 #include "debug.h"
 
 bool ffmpeg_initialized = false;
+bool ffmpeg_registered = false;
 
 void
 initialize_ffmpeg ()
@@ -48,6 +49,24 @@ initialize_ffmpeg ()
 	ffmpeg_initialized = true;
 }
 
+void
+register_ffmpeg ()
+{
+	initialize_ffmpeg ();
+	
+	if (ffmpeg_registered)
+		return;
+		
+	Media::RegisterConverter (new FfmpegConverterInfo ());
+	Media::RegisterDecoder (new FfmpegDecoderInfo ());
+	//Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
+	
+	ffmpeg_registered = true;
+}
+
+/*
+ * FfmpegDecoder
+ */
 
 FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream) 
 	: IMediaDecoder (media, stream),
@@ -156,6 +175,16 @@ FfmpegDecoder::~FfmpegDecoder ()
 	audio_buffer = NULL;
 }
 
+void
+FfmpegDecoder::Cleanup (MediaFrame* frame)
+{
+	AVFrame* av_frame = (AVFrame*) frame->decoder_specific_data;
+	if (av_frame != NULL) {
+		av_free (av_frame);
+		frame->decoder_specific_data = NULL;
+	}
+}
+
 MediaResult
 FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 {
@@ -173,7 +202,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 	//printf ("\n");
 	
 	if (stream->GetType () == MediaTypeVideo) {
-		VideoStream* vs = (VideoStream*) stream;
+	//	VideoStream* vs = (VideoStream*) stream;
 		
 		frame = avcodec_alloc_frame ();
 	
@@ -190,8 +219,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 			media_frame->uncompressed_size = context->width * context->height * 4;
 			media_frame->uncompressed_data = (uint8_t*) g_malloc (media_frame->uncompressed_size);
 			
-			uint8_t *rgb_dest[3] = { (uint8_t*) media_frame->uncompressed_data, NULL, NULL};
-			int rgb_stride [3] = { context->width * 4, 0, 0 };
+	//		uint8_t *rgb_dest[3] = { (uint8_t*) media_frame->uncompressed_data, NULL, NULL};
+	//		int rgb_stride [3] = { context->width * 4, 0, 0 };
 			
 			for (int i = 0; i < 4; i++) {
 				media_frame->uncompressed_data_stride [i] = frame->data [i];
@@ -234,6 +263,122 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 	}
 	
 	return MEDIA_SUCCESS;
+}
+
+/*
+ * FfmpegDecoderInfo
+ */
+
+bool
+FfmpegDecoderInfo::Supports (const char* codec)
+{
+	return avcodec_find_decoder_by_name (codec) != NULL;
+}
+
+IMediaDecoder*
+FfmpegDecoderInfo::Create (Media* media, IMediaStream* stream)
+{
+	return new FfmpegDecoder (media, stream);
+}
+
+
+/*
+ * FfmpegConverter
+ */
+
+FfmpegConverter::FfmpegConverter (Media* media, VideoStream* stream) : IImageConverter (media, stream)
+{
+	scaler = NULL;
+}
+
+FfmpegConverter::~FfmpegConverter ()
+{
+	if (scaler != NULL) {
+		sws_freeContext (scaler);
+		scaler = NULL;
+	}
+}
+
+PixelFormat 
+FfmpegConverter::ToFfmpegPixFmt (MoonPixelFormat format)
+{
+	switch (format) {
+	case MoonPixelFormatYUV420P: return PIX_FMT_YUV420P;  
+	case MoonPixelFormatRGB32: return PIX_FMT_RGB32;
+	default:
+		printf ("FfmpegConverter::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
+		return PIX_FMT_NONE;
+	}
+}
+
+MoonPixelFormat
+FfmpegConverter::ToMoonPixFmt (PixelFormat format)
+{
+	switch (format) {
+	case PIX_FMT_YUV420P: return MoonPixelFormatYUV420P;
+	case PIX_FMT_RGB32: return MoonPixelFormatRGB32;
+	default:
+		printf ("FfmpegConverter::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
+		return MoonPixelFormatNone;
+	};
+}
+
+MediaResult
+FfmpegConverter::Open ()
+{
+	PixelFormat in_format = ToFfmpegPixFmt (input_format);
+	PixelFormat out_format = ToFfmpegPixFmt (output_format);
+	
+	if (in_format == PIX_FMT_NONE) {
+		media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid input format.");
+		return MEDIA_CONVERTER_ERROR;
+	}
+	
+	if (out_format == PIX_FMT_NONE) {
+		media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid output format.");
+		return MEDIA_CONVERTER_ERROR;
+	}
+	
+	scaler = sws_getContext (stream->width, stream->height, in_format,
+			stream->width, stream->height, out_format,
+			SWS_BICUBIC, NULL, NULL, NULL);
+			
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+FfmpegConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride [])
+{
+	if (scaler == NULL) {
+		media->AddMessage (MEDIA_CONVERTER_ERROR, "Converter closed.");
+		return MEDIA_CONVERTER_ERROR;
+	}
+	
+	//printf ("converting...\n");
+
+	// There seems to be no documentation about what
+	// sws_scale's return value means.
+	sws_scale (scaler, src, srcStride, srcSlideY, srcSlideH, dest, dstStride);
+	
+	return MEDIA_SUCCESS;
+}
+
+
+/*
+ * FfmpegConverterInfo
+ */
+
+bool
+FfmpegConverterInfo::Supports (MoonPixelFormat input, MoonPixelFormat output)
+{
+	return FfmpegConverter::ToFfmpegPixFmt (input)  != PIX_FMT_NONE 
+		&& FfmpegConverter::ToFfmpegPixFmt (output) != PIX_FMT_NONE;
+}
+
+IImageConverter*
+FfmpegConverterInfo::Create (Media* media, VideoStream* stream)
+{
+	return new FfmpegConverter (media, stream);
 }
 
 #endif // INCLUDE_FFMPEG

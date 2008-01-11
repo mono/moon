@@ -9,7 +9,12 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
- 
+
+#ifdef INCLUDE_FFMPEG
+
+#ifndef __MOON_PIPELINE_FFMPEG__
+#define __MOON_PIPELINE_FFMPEG__
+
 #include <glib.h>
 #include <unistd.h>
 
@@ -25,6 +30,8 @@ G_END_DECLS
  
 #define AUDIO_BUFFER_SIZE (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
  
+void register_ffmpeg ();
+
 class FfmpegDemuxer : public IMediaDemuxer {
 public:
 	FfmpegDemuxer (Media* media) : IMediaDemuxer (media) {}
@@ -37,98 +44,42 @@ public:
 	
 	virtual MediaResult DecodeFrame (MediaFrame* frame);
 	virtual MediaResult Open ();
-	
-	virtual void Cleanup (MediaFrame* frame)
-	{
-		AVFrame* av_frame = (AVFrame*) frame->decoder_specific_data;
-		if (av_frame != NULL) {
-			av_free (av_frame);
-			frame->decoder_specific_data = NULL;
-		}
-	}
+	virtual void Cleanup (MediaFrame* frame);
 	
 private:
 	AVCodecContext *context;
 	uint8_t* audio_buffer;
 };
 
+class FfmpegDecoderInfo : public DecoderInfo {
+public:
+	virtual bool Supports (const char* codec);
+	virtual IMediaDecoder* Create (Media* media, IMediaStream* stream);
+	virtual const char* GetName () { return "FfmpegDecoder"; }
+};
+
 class FfmpegConverter : public IImageConverter {
 public:
-	FfmpegConverter (Media* media, VideoStream* stream) : IImageConverter (media, stream)
-	{
-		scaler = NULL;
-	}
+	FfmpegConverter (Media* media, VideoStream* stream);	
+	~FfmpegConverter ();
 	
-	~FfmpegConverter ()
-	{
-		if (scaler != NULL) {
-			sws_freeContext (scaler);
-			scaler = NULL;
-		}
-	}
+	MediaResult Open ();
+	MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride []);
 	
-	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format)
-	{
-		switch (format) {
-		case MoonPixelFormatYUV420P: return PIX_FMT_YUV420P;  
-		case MoonPixelFormatRGB32: return PIX_FMT_RGB32;
-		default:
-			printf ("FfmpegConverter::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
-			return PIX_FMT_NONE;
-		}
-	}
-	
-	static MoonPixelFormat ToMoonPixFmt (PixelFormat format)
-	{
-		switch (format) {
-		case PIX_FMT_YUV420P: return MoonPixelFormatYUV420P;
-		case PIX_FMT_RGB32: return MoonPixelFormatRGB32;
-		default:
-			printf ("FfmpegConverter::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
-			return MoonPixelFormatNone;
-		};
-	}
-	
-	MediaResult Open ()
-	{
-		PixelFormat in_format = ToFfmpegPixFmt (input_format);
-		PixelFormat out_format = ToFfmpegPixFmt (output_format);
-		
-		if (in_format == PIX_FMT_NONE) {
-			media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid input format.");
-			return MEDIA_CONVERTER_ERROR;
-		}
-		
-		if (out_format == PIX_FMT_NONE) {
-			media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid output format.");
-			return MEDIA_CONVERTER_ERROR;
-		}
-		
-		scaler = sws_getContext (stream->width, stream->height, in_format,
-				stream->width, stream->height, out_format,
-				SWS_BICUBIC, NULL, NULL, NULL);
-				
-		return MEDIA_SUCCESS;
-	}
-	
-	MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride [])
-	{
-		if (scaler == NULL) {
-			media->AddMessage (MEDIA_CONVERTER_ERROR, "Converter closed.");
-			return MEDIA_CONVERTER_ERROR;
-		}
-		
-		//printf ("converting...\n");
-	
-		// There seems to be no documentation about what
-		// sws_scale's return value means.
-		sws_scale (scaler, src, srcStride, srcSlideY, srcSlideH, dest, dstStride);
-		
-		return MEDIA_SUCCESS;
-	}
+	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format);	
+	static MoonPixelFormat ToMoonPixFmt (PixelFormat format);
 	
 private:
 	struct SwsContext *scaler;
 };
 
 
+class FfmpegConverterInfo : public ConverterInfo {
+public:
+	virtual bool Supports (MoonPixelFormat input, MoonPixelFormat output);
+	virtual IImageConverter* Create (Media* media, VideoStream* stream);
+	virtual const char* GetName () { return "FfmpegConverter"; }
+};
+
+#endif // __MOON_PIPELINE_FFMPEG__
+#endif // INCLUDE_FFMPEG
