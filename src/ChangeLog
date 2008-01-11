@@ -1,3 +1,9 @@
+2008-01-10  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::InitializeDrawingArea): realize the widget
+	before setting the extension events (lame api) and disable the
+	cursor test.
+
 2008-01-10  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::InitializeDrawingArea): activate all
