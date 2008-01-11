@@ -27,6 +27,11 @@ class MediaPlayer {
 public:
 #ifdef MOON_MEDIA
 	Media *media;
+	// The pts when we start playing (set when resuming playback to current pts, when starting to play to initial pts, and when seeking to the seeked pts)
+	// While playing it can be used to calculate the current pts (knowing the time)
+	guint64 start_pts;
+	guint64 initial_pts;
+	gint64 duration;
 #endif
 	char *uri;
 	ASFParser* asf_parser;
@@ -54,8 +59,9 @@ public:
 	pthread_mutex_t target_pts_lock;
 	int64_t current_pts;
 	int64_t target_pts;
+#ifndef MOON_MEDIA
 	int64_t seek_pts;
-	
+#endif
 	/* Public API */
 	
 	// read-only
@@ -93,6 +99,9 @@ public:
 	int GetAudioStreamCount ();
 	int GetAudioStreamIndex ();
 	bool HasVideo ();
+#ifdef MOON_MEDIA
+	bool HasAudio ();
+#endif
 	
 	double GetBalance ();
 	void SetBalance (double balance);

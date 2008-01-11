@@ -525,7 +525,7 @@ ASFDemuxer::~ASFDemuxer ()
 MediaResult
 ASFDemuxer::Seek (guint64 pts)
 {
-	if (parser->source->Seek (0, pts))
+	if (reader->Seek (0, pts))
 		return MEDIA_SUCCESS;
 	return MEDIA_FAIL;
 }

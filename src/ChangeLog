@@ -1,5 +1,11 @@
 2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Seek on the frame reader, not on the source.
+	* mplayer2.cpp, mplayer.h: Change all use of audio/video->stream != NULL to
+	  HasAudio/Video (). Fix seeking to actually work.
+
+2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer2.cpp, mplayer.h: Move the media variable from audio/video into
 	  mplayer.h where it belongs.
 	* pipeline.cpp, pipeline.h: Implement seeking.
