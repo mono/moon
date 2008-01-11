@@ -10,7 +10,7 @@
  * 
  */
 
-//#define MOON_MEDIA
+#define MOON_MEDIA
 
 #ifndef __MOON_PIPELINE_H_
 #define __MOON_PIPELINE_H_
@@ -114,24 +114,24 @@ typedef gint32 MediaResult;
 
 #define MEDIA_SUCCEEDED(x) ((x == 0))
 
-#define MEDIA_VIDEO 1
-#define MEDIA_AUDIO 2
-#define MEDIA_MARKER 3
+enum MoonPixelFormat {
+	MoonPixelFormatNone = 0,
+	MoonPixelFormatRGB32,
+	MoonPixelFormatYUV420P
+};
+
+enum MoonMediaType {
+	MediaTypeNone = 0,
+	MediaTypeVideo,
+	MediaTypeAudio,
+	MediaTypeMarker
+};
 
 typedef MediaResult MediaCallback (MediaClosure* closure);
 
-enum PIXEL_FORMAT {
-	PIXEL_FORMAT_NONE = 0,
-	PIXEL_FORMAT_RGB32 = 1,
-	PIXEL_FORMAT_YUV420P
-};
-
 class MediaClosure {
 public:
-	MediaClosure () : 
-		callback (NULL), frame (NULL), media (NULL), context (NULL)
-	{
-	}
+	MediaClosure ();
 	~MediaClosure ();
 	
 	MediaCallback* callback;
@@ -139,13 +139,9 @@ public:
 	Media* media;
 	void* context;
 	
-	MediaResult Call ()
-	{
-		if (callback)
-			return callback (this);
-			
-		return MEDIA_NOCALLBACK;
-	}
+	// Calls the callback and returns the callback's return value
+	// If no callback is set, returns MEDIA_NO_CALLBACK
+	MediaResult Call ();
 }; 
 
 class Media {
@@ -224,64 +220,40 @@ private:
  
 class MediaFrame {
 public:
+	~MediaFrame ();
+	MediaFrame ();
+	
 	IMediaStream* stream;
 	void* decoder_specific_data; // data specific to the decoder
 	guint64 pts; // Set by the demuxer
 	guint64 duration; // Set by the demuxer
-	//gint32 linesize; // ?
+
 	guint32 compressed_size; // Set by the demuxer
 	guint32 uncompressed_size; // Set by the decoder
 
 	void* compressed_data; // Set by the demuxer
 	void* uncompressed_data; // Set by the decoder
 
-	//int linesize [4];
-	guint8 *uncompressed_data_stride[4];
-	int srcSlideY;
-	int srcSlideH;
-	int srcStride [4];
+	guint8 *uncompressed_data_stride[4]; // Set by the decoder
+	int srcSlideY; // Set by the decoder
+	int srcSlideH; // Set by the decoder
+	int srcStride [4]; // Set by the decoder
 	
-	void printf ()
-	{
-		//::printf ("pts = %llu, duration = %llu, linesize = %i, %i, %i, %i, compressed_size = %u, uncompressed_size = %u, compressed_data = %p, uncompressed_data = %p", 
-		//	pts, duration, linesize [0], linesize [1], linesize [2], linesize [3], compressed_size, uncompressed_size, compressed_data, uncompressed_data);
-		//dump_data (compressed_data, compressed_size);
-		//dump_data (uncompressed_data, uncompressed_size);
-	}
-	
-	~MediaFrame ();
 };
 
 // Interfaces
 
 class IMediaObject {
 public:
-	IMediaObject (Media* med) : 
-		media (med), callback (NULL)
-	{
-	}
+	IMediaObject (Media* med);
+	virtual ~IMediaObject ();
 	
-	Media* GetMedia () { return media; }
 	//	Sets the callback to call when the frame is read
 	void SetFrameReadCallback (MediaClosure* callback);
 	
-	MediaResult ProcessFrame (MediaFrame* frame)
-	{
-		MediaResult result = ProcessFrameInternal (frame);
-		
-		if (!MEDIA_SUCCEEDED (result))
-			return result;
-			
-		if (callback)
-			return callback->Call ();
-			
-		return MEDIA_SUCCESS;
-	}
-	
-	
-	
+	Media* GetMedia () { return media; }
+
 protected:
-	virtual MediaResult ProcessFrameInternal (MediaFrame* frame) = 0;
 	Media* media;
 	
 private:
@@ -291,16 +263,11 @@ private:
 
 class IMediaStream  {
 public:
-	IMediaStream (Media* media) : 
-		extra_data (NULL), extra_data_size (NULL), codec_id (0), start_time (0),
-		msec_per_frame (0), duration (0), decoder (NULL), codec (NULL), min_padding (0),
-		index (-1)
-	{
-	}
+	IMediaStream (Media* media);
 	virtual ~IMediaStream ();
 
 	//	Video, Audio, Markers, etc.
-	virtual int GetType () = 0; 
+	virtual MoonMediaType GetType () = 0; 
 	IMediaDecoder* GetDecoder () { return decoder; }
 	void SetDecoder (IMediaDecoder* dec) { decoder = dec; }
 	//	If this stream is enabled (producing output). 
@@ -312,7 +279,6 @@ public:
 	//	User defined context value.
 	void* GetContext () { return context; }
 	void  SetContext (void* context) { this->context = context; }
-	
 	
 	void* extra_data;
 	int extra_data_size;
@@ -329,10 +295,10 @@ public:
 	// 0-based index of the stream in the media
 	// set by the demuxer, until then its value must be -1
 	int index; 
+	
 private:
 	bool enabled;
 	void* context;
-	IMediaObject* first_object;
 };
 
 
@@ -370,15 +336,7 @@ public:
 	}
 	
 protected:
-	void SetStreams (IMediaStream** streams, int count)
-	{
-		this->streams = streams;
-		this->stream_count = count;
-	}
-	virtual MediaResult ProcessFrameInternal (MediaFrame* frame)
-	{
-		return ReadFrame (frame);
-	}
+	void SetStreams (IMediaStream** streams, int count);
 	
 private:
 	int stream_count;
@@ -387,33 +345,25 @@ private:
 
 class IMediaDecoder {
 public:
-	IMediaDecoder (Media* media, IMediaStream* stream)
-	{
-		this->media = media;
-		this->stream = stream;
-	}
+	IMediaDecoder (Media* media, IMediaStream* stream);
 	virtual ~IMediaDecoder () {}
 	
 	virtual MediaResult DecodeFrame (MediaFrame* frame) = 0;
 	virtual MediaResult Open () = 0;
-	virtual void Cleanup (MediaFrame* frame) {}
-	PIXEL_FORMAT pixel_format; // The pixel format this codec outputs.
+	virtual void Cleanup (MediaFrame* frame) {} // If MediaFrame->decoder_specific_data is non-NULL, this method is called in ~MediaFrame.
+	
+	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream* stream;
 	Media* media;
-	
-protected:
-	virtual MediaResult ProcessFrameInternal (MediaFrame* frame)
-	{
-		return DecodeFrame (frame);
-	}
 };
 
+
+/*
+ * Inherit from this class to provide image converters (yuv->rgb for instance) 
+ */
 class IImageConverter {
 public:
-	IImageConverter (Media* med, VideoStream* str) : 
-		media (med), stream (str), input_format (PIXEL_FORMAT_NONE), output_format (PIXEL_FORMAT_NONE)
-	{
-	}
+	IImageConverter (Media* med, VideoStream* str);
 	virtual ~IImageConverter () {}
 	
 	virtual MediaResult Open () = 0;
@@ -421,8 +371,8 @@ public:
 	
 	Media* media;
 	VideoStream* stream;
-	PIXEL_FORMAT input_format;
-	PIXEL_FORMAT output_format;
+	MoonPixelFormat input_format;
+	MoonPixelFormat output_format;
 };
 
 // Implementations
@@ -471,46 +421,13 @@ public:
 	virtual bool Eof () { return false; }
 	
 };
- 
-class ASFDemuxer : public IMediaDemuxer {
-public:
-	ASFDemuxer (Media* media);
-	~ASFDemuxer ();
-	
-	virtual MediaResult ReadHeader ();
-	virtual MediaResult ReadFrame (MediaFrame* frame);
-	
-private:
-	ASFParser* parser;
-	ASFFrameReader* reader;
-	gint32* stream_to_asf_index;
-};
- 
-class MSDecoder : public IMediaDecoder {
-public:
-	MSDecoder (Media* media, IMediaStream* stream) : IMediaDecoder (media, stream) {}
-	virtual MediaResult Open ()
-	{
-	return MEDIA_FAIL;
-	}
-};
 
 class VideoStream : public IMediaStream {
 public:
-	VideoStream (Media* media) : IMediaStream (media),
-		width (0), height (0), msec_per_frame (0), initial_pts (0),
-		bits_per_sample (0), converter (NULL)
-	{}
-	virtual ~VideoStream ()
-	{
-		if (converter != NULL) {
-			delete converter;
-			converter = NULL;
-		}
-	}
-    int GetOutputFormat ();
-    
-	virtual int GetType () { return MEDIA_VIDEO; } 
+	VideoStream (Media* media);
+	virtual ~VideoStream ();
+	    
+	virtual MoonMediaType GetType () { return MediaTypeVideo; } 
     
     guint32 width;
     guint32 height;
@@ -524,19 +441,36 @@ class AudioStream : public IMediaStream {
 public:
 	AudioStream (Media* media) : IMediaStream (media) {}
 	
-    int GetOutputFormat ();
-	virtual int GetType () { return MEDIA_AUDIO; }
+	virtual MoonMediaType GetType () { return MediaTypeAudio; }
+	
 	int channels;
 	int sample_rate;
 	int bit_rate;
 	int block_align;
 	int bits_per_sample;
 };
- 
+
+/*
+ * ASF related implementations
+ */
+class ASFDemuxer : public IMediaDemuxer {
+public:
+	ASFDemuxer (Media* media);
+	~ASFDemuxer ();
+	
+	virtual MediaResult ReadHeader ();
+	virtual MediaResult ReadFrame (MediaFrame* frame);
+	
+private:
+	ASFParser* parser;
+	ASFFrameReader* reader;
+	gint32* stream_to_asf_index;
+};
+
 class ASFMarkerStream : public IMediaStream {
 public:
 	ASFMarkerStream (Media* media) : IMediaStream (media) {}
-	virtual int GetType () { return MEDIA_MARKER; } 
+	virtual MoonMediaType GetType () { return MediaTypeMarker; } 
 };
 
 class ASFMarkerDecoder : public IMediaDecoder {
@@ -545,5 +479,31 @@ public:
 	virtual MediaResult DecodeFrame (MediaFrame* frame) { return MEDIA_SUCCESS; }
 	virtual MediaResult Open () {return MEDIA_SUCCESS; }
 }; 
+
+/*
+ * Mp3 related implementations
+ */
+ 
+class Mp3Decoder : public IMediaDecoder {
+public:
+	Mp3Decoder (Media* media, IMediaStream* stream);
+	virtual ~Mp3Decoder ();
+	
+	virtual MediaResult DecodeFrame (MediaFrame* frame);
+	virtual MediaResult Open ();
+};
+
+/*
+ * MS related implementations
+ */
+
+class MSDecoder : public IMediaDecoder {
+public:
+	MSDecoder (Media* media, IMediaStream* stream) : IMediaDecoder (media, stream) {}
+	virtual MediaResult Open ()
+	{
+		return MEDIA_FAIL;
+	}
+};
 
 #endif

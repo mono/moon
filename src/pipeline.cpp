@@ -197,12 +197,12 @@ Media::Open (IMediaSource* source)
 		if (decoder != NULL) {
 			stream->SetDecoder (decoder);
 			
-			if (stream->GetType () == MEDIA_VIDEO) {
+			if (stream->GetType () == MediaTypeVideo) {
 				VideoStream* vs = (VideoStream*) stream;
 				IImageConverter* converter;
 				converter = new FfmpegConverter (this, vs);
 				converter->input_format = vs->decoder->pixel_format;
-				converter->output_format = PIXEL_FORMAT_RGB32;
+				converter->output_format = MoonPixelFormatRGB32;
 				if (MEDIA_SUCCEEDED (converter->Open ())) {
 					// FIXME: What should happen if there's no available converter? No video?
 					vs->converter = converter;
@@ -269,17 +269,17 @@ Media::FrameReaderLoop ()
 		if (queued_requests != NULL) {
 			// Find the first audio node
 			current = (Media::Node*) queued_requests->First ();
-			while (current != NULL && current->stream->GetType () != MEDIA_AUDIO) {
+			while (current != NULL && current->stream->GetType () != MediaTypeAudio) {
 				current = (Media::Node*) current->next;
 			}
-			if (current != NULL && current->stream->GetType () == MEDIA_AUDIO) {
+			if (current != NULL && current->stream->GetType () == MediaTypeAudio) {
 				node = current;
 			} else {
 				// No audio node, just get the first node
 				node = (Media::Node*) queued_requests->First ();
 			}
 			queued_requests->Unlink (node);
-			printf ("Media::FrameReaderLoop (): got a %s node, there are %i nodes left.\n", node->stream->GetType () == MEDIA_AUDIO ? "audio" : (node->stream->GetType () == MEDIA_VIDEO ? "video" : "unknown") , queued_requests->Length ());
+			LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): got a %s node, there are %i nodes left.\n", node->stream->GetType () == MediaTypeAudio ? "audio" : (node->stream->GetType () == MediaTypeVideo ? "video" : "unknown") , queued_requests->Length ());
 		}
 		pthread_mutex_unlock (&queue_mutex);
 		
@@ -715,16 +715,36 @@ FileSource::Seek (gint64 position, int mode)
 /*
  * MediaClosure
  */ 
- 
+
+MediaClosure::MediaClosure () : 
+	callback (NULL), frame (NULL), media (NULL), context (NULL)
+{
+}
+
 MediaClosure::~MediaClosure ()
 {
 	delete frame;
 	frame = NULL;
 }
 
+MediaResult
+MediaClosure::Call ()
+{
+	if (callback)
+		return callback (this);
+		
+	return MEDIA_NOCALLBACK;
+}
 /*
  * IMediaStream
  */
+
+IMediaStream::IMediaStream (Media* media) : 
+	extra_data (NULL), extra_data_size (NULL), codec_id (0), start_time (0),
+	msec_per_frame (0), duration (0), decoder (NULL), codec (NULL), min_padding (0),
+	index (-1), context (NULL)
+{
+}
 
 IMediaStream::~IMediaStream ()
 {
@@ -758,6 +778,17 @@ IMediaDemuxer::~IMediaDemuxer ()
  * MediaFrame
  */ 
  
+MediaFrame::MediaFrame () : 
+	stream (NULL), decoder_specific_data (NULL), 
+	pts (0), duration (0), compressed_size (0), uncompressed_size (0),
+	compressed_data (NULL), uncompressed_data (NULL), srcSlideY (0), srcSlideH (0)
+{
+	for (int i = 0; i < 4; i++) {
+		uncompressed_data_stride [i] = 0;  
+		srcStride [i] = 0;
+	}
+}
+ 
 MediaFrame::~MediaFrame ()
 {
 	g_free (compressed_data);
@@ -769,3 +800,79 @@ MediaFrame::~MediaFrame ()
 		stream->decoder->Cleanup (this);
 	}
 }
+
+/*
+ * IMediaObject
+ */
+ 
+IMediaObject::IMediaObject (Media* med) : 
+	media (med), callback (NULL)
+{
+}
+
+IMediaObject::~IMediaObject ()
+{
+}
+
+/*
+ * IMediaSource
+ */
+
+/*
+ * IMediaDemuxer
+ */
+
+void
+IMediaDemuxer::SetStreams (IMediaStream** streams, int count)
+{
+	this->streams = streams;
+	this->stream_count = count;
+}
+
+/*
+ * IMediaDecoder
+ */
+
+IMediaDecoder::IMediaDecoder (Media* media, IMediaStream* stream)
+{
+	this->media = media;
+	this->stream = stream;
+}
+
+/*
+ * IImageConverter
+ */
+
+IImageConverter::IImageConverter (Media* med, VideoStream* str) : 
+	media (med), stream (str), input_format (MoonPixelFormatNone), output_format (MoonPixelFormatNone)
+{
+}
+
+/*
+ * VideoStream
+ */
+
+
+VideoStream::VideoStream (Media* media) : IMediaStream (media),
+	width (0), height (0), msec_per_frame (0), initial_pts (0),
+	bits_per_sample (0), converter (NULL)
+{
+}
+
+VideoStream::~VideoStream ()
+{
+	if (converter != NULL) {
+		delete converter;
+		converter = NULL;
+	}
+}
+
+/*
+ * MediaClosure
+ */
+
+
+
+
+}
+

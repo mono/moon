@@ -1,3 +1,9 @@
+2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-ffmpeg.h: Fix warning.
+	* asf.cpp: If stream number is 0, don't try to handle it as a script
+	  command.
+
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: ASFParser::ReadPacket: don't seek if we don't have to.

@@ -43,8 +43,6 @@ initialize_ffmpeg ()
 		return;
 	
 	avcodec_init ();
-	
-	//av_register_all ();
 	avcodec_register_all ();
 		
 	ffmpeg_initialized = true;
@@ -72,11 +70,11 @@ FfmpegDecoder::Open ()
 	int ffmpeg_result = 0;
 	AVCodec *codec = NULL;
 	
-	printf ("FfmpegDecoder::Open ().\n");
+	//printf ("FfmpegDecoder::Open ().\n");
 	
 	codec = avcodec_find_decoder_by_name (stream->codec);
 	
-	printf ("FfmpegDecoder::Open (): Found codec: %p (id: '%s')\n", codec, stream->codec);
+	//printf ("FfmpegDecoder::Open (): Found codec: %p (id: '%s')\n", codec, stream->codec);
 	
 	if (codec == NULL) {
 		result = MEDIA_UNKNOWN_CODEC;
@@ -93,7 +91,7 @@ FfmpegDecoder::Open ()
 	}
 	
 	if (stream->extra_data_size > 0) {
-		printf ("FfmpegDecoder::Open (): Found %i bytes of extra data.\n", stream->extra_data_size);
+		//printf ("FfmpegDecoder::Open (): Found %i bytes of extra data.\n", stream->extra_data_size);
 		context->extradata_size = stream->extra_data_size;
 		context->extradata = (uint8_t*) av_mallocz (stream->extra_data_size + FF_INPUT_BUFFER_PADDING_SIZE + 100);
 		if (context->extradata == NULL) {
@@ -104,11 +102,11 @@ FfmpegDecoder::Open ()
 		memcpy (context->extradata, stream->extra_data, stream->extra_data_size);
 	}
 
-	if (stream->GetType () == MEDIA_VIDEO) {
+	if (stream->GetType () == MediaTypeVideo) {
 		VideoStream *vs = (VideoStream*) stream;
 		context->width = vs->width;
 		context->height = vs->height;
-	} else if (stream->GetType () == MEDIA_AUDIO) {
+	} else if (stream->GetType () == MediaTypeAudio) {
 		AudioStream *as = (AudioStream*) stream;
 		context->sample_rate = as->sample_rate;
 		context->channels = as->channels;
@@ -129,7 +127,7 @@ FfmpegDecoder::Open ()
 	
 	pixel_format = FfmpegConverter::ToMoonPixFmt (context->pix_fmt);
 		
-	printf ("FfmpegDecoder::Open (): Opened codec successfully.\n");
+	//printf ("FfmpegDecoder::Open (): Opened codec successfully.\n");
 	
 	return result;
 	
@@ -174,7 +172,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 	//media_frame->printf ();
 	//printf ("\n");
 	
-	if (stream->GetType () == MEDIA_VIDEO) {
+	if (stream->GetType () == MediaTypeVideo) {
 		VideoStream* vs = (VideoStream*) stream;
 		
 		frame = avcodec_alloc_frame ();
@@ -201,33 +199,15 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 			}
 			media_frame->srcSlideY = 0;
 			media_frame->srcSlideH = context->height;
-			
-			//if (frame->data == NULL || frame->data[1] == NULL || frame->data[2] == NULL)
-			//	return;
-			/*
-			struct SwsContext *scaler;
-			scaler = sws_getContext (context->width, context->height, context->pix_fmt,
-					context->width, context->height, PIX_FMT_RGB32,
-					SWS_BICUBIC, NULL, NULL, NULL);
-			sws_scale (scaler, frame->data, frame->linesize, 0,
-				   context->height, rgb_dest, rgb_stride);
-			sws_freeContext (scaler);
-			*/
-			//vs->converter->Convert (frame->data, frame->linesize, 0, context->height, rgb_dest, rgb_stride);
-			//vs->converter->Convert (media_frame->uncompressed_data_stride, media_frame->srcStride, media_frame->srcSlideY, media_frame->srcSlideH, rgb_dest, rgb_stride);
-			//uint8_t start = *(uint8_t*) frame->data;
-			//for (int i = 0; i < media_frame->uncompressed_size; i++) {
-			//	((uint8_t*) media_frame->uncompressed_data) [i] = start++;
-			//}
+			 // We can't free the frame until the data has been used, 
+			 // so save the frame in decoder_specific_data. 
+			 // This will cause FfmpegDecoder::Cleanup to be called 
+			 // when the MediaFrame is deleted.
 			media_frame->decoder_specific_data = frame;
 		} else {
-			printf ("FfmpegDecoder::DecodeFrame (%p): didn't get picture (%i), length = %i.\n", media_frame, got_picture, length);
+			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get picture (%i), length = %i.\n", media_frame, got_picture, length);
 		}
-		
-		//av_free (frame);
-	
-	} else if (stream->GetType () == MEDIA_AUDIO) {
-//		printf ("Audio decoding not implemented yet.");
+	} else if (stream->GetType () == MediaTypeAudio) {
 		int frame_size_ptr = AUDIO_BUFFER_SIZE;
 		length = avcodec_decode_audio2 (context, (int16_t*) audio_buffer, &frame_size_ptr, (uint8_t*) media_frame->compressed_data, media_frame->compressed_size);
 		//printf ("FfmpegDecoder::DecodeFrame (), length: %i, frame_size_ptr = %i\n", length, frame_size_ptr);
@@ -241,17 +221,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 			media_frame->uncompressed_size = frame_size_ptr;
 			media_frame->uncompressed_data = (uint8_t*) g_malloc (media_frame->uncompressed_size);
 			memcpy (media_frame->uncompressed_data, audio_buffer, media_frame->uncompressed_size);			
-
-			/*printf ("FfmpegDecoder::DecodeFrame (%p): got %i bytes of audio back (of %i bytes sent in):", media_frame, frame_size_ptr, media_frame->compressed_size);
-			printf (" In:  ");
-			dump_int_data (media_frame->compressed_data, media_frame->compressed_size, 4);
-			//printf ("\n");
-			printf (" Out: ");
-			dump_int_data (media_frame->uncompressed_data, media_frame->uncompressed_size, 4);
-			printf ("\n");
-				*/
 		} else {
-			printf ("FfmpegDecoder::DecodeFrame (%p): didn't get any audio back.\n", media_frame);
+			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get any audio back.\n", media_frame);
 		}
 		
 		if (length != media_frame->compressed_size) {
@@ -262,10 +233,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 		return MEDIA_FAIL;
 	}
 	
-	//AVFrame_dump (frame, 1);
-	
-	
 	return MEDIA_SUCCESS;
 }
 
 #endif // INCLUDE_FFMPEG
+

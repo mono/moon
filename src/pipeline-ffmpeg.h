@@ -67,25 +67,25 @@ public:
 		}
 	}
 	
-	static PixelFormat ToFfmpegPixFmt (PIXEL_FORMAT format)
+	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format)
 	{
 		switch (format) {
-		case PIXEL_FORMAT_YUV420P: return PIX_FMT_YUV420P;  
-		case PIXEL_FORMAT_RGB32: return PIX_FMT_RGB32;
+		case MoonPixelFormatYUV420P: return PIX_FMT_YUV420P;  
+		case MoonPixelFormatRGB32: return PIX_FMT_RGB32;
 		default:
 			printf ("FfmpegConverter::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
 			return PIX_FMT_NONE;
 		}
 	}
 	
-	static PIXEL_FORMAT ToMoonPixFmt (PixelFormat format)
+	static MoonPixelFormat ToMoonPixFmt (PixelFormat format)
 	{
 		switch (format) {
-		case PIX_FMT_YUV420P: return PIXEL_FORMAT_YUV420P;
-		case PIX_FMT_RGB32: return PIXEL_FORMAT_RGB32;
+		case PIX_FMT_YUV420P: return MoonPixelFormatYUV420P;
+		case PIX_FMT_RGB32: return MoonPixelFormatRGB32;
 		default:
 			printf ("FfmpegConverter::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
-			return PIXEL_FORMAT_NONE;
+			return MoonPixelFormatNone;
 		};
 	}
 	

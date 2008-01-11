@@ -971,9 +971,14 @@ end_frame:
 	dump_int_data (payloads [0]->payload_data, payloads [0]->payload_data_length, 4);
 	printf ("\n");
 */
+//	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, pts = %.5llu, stream# = %i, media_object_number = %.3u, script_command_stream_index = %u (advanced).\n", 
+//		size, IsKeyFrame () ? "true " : "false", Pts (), StreamNumber (), media_object_number, script_command_stream_index);
+
+
 	// Check if the current frame is a script command, in which case we must call the callback set in 
 	// the parser (and read another frame).
-	if (StreamNumber () == script_command_stream_index) {
+	if (StreamNumber () == script_command_stream_index && script_command_stream_index > 0) {
+		printf ("reading script command\n");
 		ReadScriptCommand ();
 		goto start;
 	}
