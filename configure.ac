@@ -226,10 +226,19 @@ fi
 AC_MSG_CHECKING(rsvg-sharp-2.0)
 if pkg-config rsvg-sharp-2.0; then
    AC_MSG_RESULT(found)
+   RSVG_SHARP="rsvg-sharp-2.0"
 else
-   AC_MSG_ERROR([rsvg-sharp bindings is missing])
+   AC_MSG_RESULT(not found)
+   AC_MSG_CHECKING(rsvg2-sharp-2.0)
+   if pkg-config rsvg2-sharp-2.0; then
+      AC_MSG_RESULT(found)
+      RSVG_SHARP="rsvg2-sharp-2.0"
+   else
+      AC_MSG_ERROR([rsvg-sharp bindings is missing])
+   fi
 fi
 
+AC_SUBST(RSVG_SHARP)
 
 MONO_PKGS="mono"
 
