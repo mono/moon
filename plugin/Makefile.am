@@ -56,11 +56,14 @@ if PLUGIN_INSTALL
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.js \
 				.libs/libmoonloader.so \
 				.libs/libmoonplugin.so \
-				$(top_builddir)/src/.libs/libmoon.so \
-				$(avformat_libdir)/libavformat.so
+				$(top_builddir)/src/.libs/libmoon.so
+
+if INCLUDE_FFMPEG
+novell_moonlight_xpi_CONTENTS += $(avformat_libdir)/libavformat.so
 				$(avutil_libdir)/libavutil.so \
 				$(swscale_libdir)/libswscale.so \
 				$(avcodec_libdir)/libavcodec.so
+endif INCLUDE_FFMPEG
 
 if INCLUDE_MONO_RUNTIME
 novell_moonlight_xpi_CONTENTS += moonlight.exe \
@@ -71,11 +74,13 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
 	-rm -f $@
 	-rm -rf .xpinstall/
 	mkdir -p .xpinstall/moonlight/
+if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/moonlight/
 	cp -L $(swscale_libdir)/libswscale.so .xpinstall/moonlight/
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/moonlight/
 	cp -L $(avformat_libdir)/libavformat.so .xpinstall/moonlight/
 	find .xpinstall -name \*.so -exec strip '{}' ';'
+endif INCLUDE_FFMPEG
 	cp -L $(srcdir)/install.js .xpinstall/
 	cp -L .libs/libmoonloader.so .xpinstall/
 	cp -L .libs/libmoonplugin.so .xpinstall/moonlight/

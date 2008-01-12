@@ -1,3 +1,8 @@
+2008-10-11  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* plugin-proxy.cpp: Add conditionals for ffmpeg inclusion
+	* Makefile.am: Respect ffmpeg inclusion in xpi install
+
 2008-01-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.mdp: Added.

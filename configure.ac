@@ -147,7 +147,6 @@ if test x$FFMPEG = xyes; then
 	   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec, libavformat and libswscale development kits])
 	fi
 
-	if test $user_plugin = yes; then
 	avutil_libdir="$(pkg-config --variable=libdir libavutil)"
 	swscale_libdir="$(pkg-config --variable=libdir libswscale)"
 	avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
@@ -166,7 +165,6 @@ mono_sysconfdir="$(pkg-config --variable=sysconfdir mono)"
 AC_SUBST([mono_libdir])
 AC_SUBST([mono_dlldir])
 AC_SUBST([mono_sysconfdir])
-fi
 
 AC_MSG_CHECKING(alsa)
 if pkg-config alsa ; then

@@ -1,3 +1,8 @@
+2008-01-11  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Fixed a problem with ifs that prevented --without-ffmpeg
+	working with --enable-user-plugin
+
 2008-01-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* configure.ac, README: Rename SL 1.1 to SL 2.0.

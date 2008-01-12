@@ -44,6 +44,7 @@ load (void)
 #if PLUGIN_INSTALL
 	plugin_path = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "libmoonplugin.so", NULL);
 
+#if INCLUDE_FFMPEG
 	// load libavutil
 	char *avutil_path = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "libavutil.so", NULL);
 	void *real_avutil = dlopen (avutil_path, RTLD_NOW | RTLD_GLOBAL);
@@ -79,6 +80,7 @@ load (void)
 		return FALSE;
 	}
 	g_free (avformat_path);
+#endif
 
 #if INCLUDE_MONO_RUNTIME
 	// load libmono
