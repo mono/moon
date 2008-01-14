@@ -114,7 +114,7 @@ typedef gint32 MediaResult;
 #define MEDIA_UNKNOWN_CONVERTER ((MediaResult) 13)
 #define MEDIA_UNKNOWN_MEDIA_TYPE ((MediaResult) 14)
 
-#define MEDIA_SUCCEEDED(x) ((x == 0))
+#define MEDIA_SUCCEEDED(x) ((x <= 0))
 
 enum MoonPixelFormat {
 	MoonPixelFormatNone = 0,

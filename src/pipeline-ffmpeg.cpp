@@ -167,6 +167,10 @@ FfmpegDecoder::~FfmpegDecoder ()
 		if (context->codec != NULL) {
 			avcodec_close (context);
 		}
+		if (context->extradata != NULL) {
+			av_free (context->extradata);
+			context->extradata = NULL;
+		}
 		av_free (context);
 		context = NULL;
 	}

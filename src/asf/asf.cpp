@@ -69,6 +69,12 @@ ASFParser::ASFParser (ASFSource* src)
 	Initialize ();
 }
 
+guint64
+ASFParser::GetPacketCount ()
+{
+	return file_properties->data_packet_count;
+}
+
 void
 ASFParser::Initialize ()
 {
@@ -1058,6 +1064,11 @@ ASFFrameReader::ReadMore ()
 	ASF_LOG ("ASFFrameReader::ReadMore ().\n");
 	
 	ASFPacket* packet = new ASFPacket ();
+	
+	if (current_packet_index >= parser->GetPacketCount ()) {
+		eof = true;
+		return false;
+	}
 	
 	if (!parser->ReadPacket (packet, current_packet_index)) {
 		ASF_LOG ("ASFFrameReader::ReadMore (): could not read more packets.\n");

@@ -150,7 +150,9 @@ Media::Shutdown ()
 void
 Media::AddMessage (MediaResult result, const char* msg)
 {
-	printf ("Media::AddMessage (%i, '%s').\n", result, msg);
+	if (!MEDIA_SUCCEEDED (result)) {
+		printf ("Media::AddMessage (%i, '%s').\n", result, msg);
+	}
 }
 
 void
@@ -440,7 +442,7 @@ Media::GetNextFrameAsync (IMediaStream* stream)
 {
 	//printf ("Media::GetNextFrameAsync (%p).\n", stream);
 	if (queued_requests == NULL) {
-		printf ("Media::GetNextFrameAsync (%p). Creating threads.\n", stream);
+		//printf ("Media::GetNextFrameAsync (%p). Creating threads.\n", stream);
 		queued_requests = new List ();
 		int result;
 		pthread_attr_t attribs;
@@ -449,13 +451,7 @@ Media::GetNextFrameAsync (IMediaStream* stream)
 		result = pthread_mutex_init (&queue_mutex, NULL);
 		result = pthread_cond_init (&queue_condition, NULL);
 		result = pthread_create (&queue_thread, &attribs, FrameReaderLoop, this); 	
-		result = pthread_attr_destroy (&attribs);
-		
-		int policy = 2;//sched_getscheduler (0);
-		int max = sched_get_priority_max (policy);
-		int min = sched_get_priority_min (policy);
-		printf ("Media::GetNextFrameAsync (%p). Policy: %i, max: %i, min: %i, fifi: %i, rr: %i, sporadic: %i, other: %i\n", stream, policy, max, min, SCHED_FIFO, SCHED_RR, -1, SCHED_OTHER);
-		
+		result = pthread_attr_destroy (&attribs);		
 	}
 	
 	pthread_mutex_lock (&queue_mutex);
@@ -717,14 +713,19 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
 	//printf ("\n");
 	
 	if (!reader->Advance (stream_to_asf_index [frame->stream->index])) {
-		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame.");
-		return MEDIA_DEMUXER_ERROR;
+		if (!reader->Eof ()) {
+			media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame.");
+			return MEDIA_DEMUXER_ERROR;
+		} else {
+			media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
+			return MEDIA_NO_MORE_DATA;
+		}
 	}
 	
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
 	frame->compressed_size = reader->Size ();
-	frame->compressed_data = g_malloc (reader->Size () + frame->stream->min_padding + 100);
+	frame->compressed_data = g_malloc0 (reader->Size () + frame->stream->min_padding);
 	if (frame->compressed_data == NULL) {
 		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
 		return MEDIA_OUT_OF_MEMORY;

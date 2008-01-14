@@ -10,6 +10,12 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+
+/*
+	TODO:
+		make 1 thread play all audio (and don't exit when audio finishes).
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -59,8 +65,8 @@ public:
 	IMediaStream* stream;
 	int duration;
 	int64_t pts;
-	size_t size;
-	uint8_t *data;
+	//size_t size;
+	//uint8_t *data;
 	
 	MediaFrame* frame;
 	
@@ -70,30 +76,30 @@ public:
 
 Packet::Packet (MediaFrame *pkt)
 {
-	size_t msize;
+	//size_t msize;
 	
 	stream = pkt->stream;
 	duration = pkt->duration;
-	size = pkt->uncompressed_size;
+	//size = pkt->uncompressed_size;
 	pts = pkt->pts;
 	
 	// pad to allow 32bit-word sized reads
-	msize = (size + 3) & ~0x3;
+	//msize = (size + 3) & ~0x3;
 	
 	// add another word as padding
-	msize += 4;
+	//msize += 4;
 	
-	data = (uint8_t *) g_malloc0 (msize);
-	memcpy (data, pkt->uncompressed_data, size);
-	memset (data + size, 0, msize - size);
+	//data = (uint8_t *) g_malloc0 (msize);
+	//memcpy (data, pkt->uncompressed_data, size);
+	//memset (data + size, 0, msize - size);
 	frame = pkt;
 }
 
 Packet::~Packet ()
 {
 	//printf ("Packet::~Packet () Deleting packet whose data ptr is: %p.\n", data);
-	g_free (data);
-	data = NULL;
+	//g_free (data);
+	//data = NULL;
 	
 	delete frame;
 	frame = NULL;
@@ -141,6 +147,9 @@ struct Audio {
 
 Audio::Audio ()
 {
+	pthread_mutex_init (&init_mutex, NULL);
+	pthread_cond_init (&init_cond, NULL);
+	
 	queue = new Queue ();
 	
 	pkt = NULL;
@@ -175,8 +184,10 @@ Audio::~Audio ()
 	g_free (ufds);
 	ufds = NULL;
 
-	if (pcm != NULL)
+	if (pcm != NULL) {
 		snd_pcm_close (pcm);
+		pcm = NULL;
+	}
 	
 	delete queue;
 }
@@ -299,7 +310,7 @@ media_player_callback (MediaClosure* closure)
 		player->video->queue->Push (new Packet (frame));
 		return MEDIA_SUCCESS;
 	case MediaTypeAudio: // TODO: Add locking here.
-		printf ("Added audio packet, with pts: %lld\n", frame->pts);
+		//printf ("Added audio packet, with pts: %lld\n", frame->pts);
 		player->audio->queue->Push (new Packet (frame));
 		return MEDIA_SUCCESS;
 	default:
@@ -394,7 +405,7 @@ MediaPlayer::Open (const char *uri)
 			// usec -> pts conversion
 			video->usec_to_pts = 1.0 / 1000.0;// / stream->msec_per_frame); // TODO: is this equivalent?? //  (double) encoding->time_base.num / (double) encoding->time_base.den;
 			//printf ("video initial_pts = %lld\n", video->initial_pts);
-			
+			printf ("video size: %i, %i\n", video->stream->width, video->stream->height);
 		default:
 			break;
 		}
@@ -560,7 +571,7 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	if (/*current_pts >= seek_pts && */current_pts >= target_pts) {
-		printf ("MediaPlayer::AdvanceFrame () we're ahead of playback (current_pts = %lld, seek_pts = xxx, target_pts = %lld).\n", current_pts, target_pts);
+		//printf ("MediaPlayer::AdvanceFrame () we're ahead of playback (current_pts = %lld, seek_pts = xxx, target_pts = %lld).\n", current_pts, target_pts);
 		return !eof;
 	}
 	
@@ -708,7 +719,7 @@ media_player_enqueue_frames (MediaPlayer* mp)
 guint
 MediaPlayer::Play (GSourceFunc callback, void *user_data)
 {
-	printf ("MediaPlayer::Play (), paused = %s, opened = %s, playing = %s\n", paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
+	//printf ("MediaPlayer::Play (), paused = %s, opened = %s, playing = %s\n", paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
 	if (!paused || !opened)
 		return 0;
 	
@@ -736,10 +747,10 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	start_pts = current_pts;
 	
 	if (HasVideo ()) {
-		printf ("MediaPlayer::Play (), timeout: %i\n", video->msec_per_frame);
+		//printf ("MediaPlayer::Play (), timeout: %i\n", video->msec_per_frame);
 		return TimeManager::Instance()->AddTimeout (video->msec_per_frame, callback, user_data);
 	} else {
-		printf ("MediaPlayer::Play (), timeout: 33 (no video)\n");
+		//printf ("MediaPlayer::Play (), timeout: 33 (no video)\n");
 		return TimeManager::Instance()->AddTimeout (33, callback, user_data);
 	}
 	return 0;
@@ -834,7 +845,7 @@ MediaPlayer::StopThreads ()
 void
 MediaPlayer::Stop ()
 {
-	printf ("MediaPlayer::Stop (), paused = %s, opened = %s, playing = %s\n", paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
+	//printf ("MediaPlayer::Stop (), paused = %s, opened = %s, playing = %s\n", paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
 	StopThreads ();
 	
 	playing = false;
@@ -1182,7 +1193,7 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 			outptr += (n * 2 * channels);
 			samples -= n;
 		} else if (n == -ESTRPIPE) {
-			printf ("snd_pcm_writei() returned -ESTRPIPE\n");
+			//printf ("snd_pcm_writei() returned -ESTRPIPE\n");
 			while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
 				sleep (1);
 			
@@ -1191,7 +1202,7 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 				snd_pcm_start (audio->pcm);
 			}
 		} else if (n == -EPIPE) {
-			printf ("snd_pcm_writei() returned -EPIPE (underrun)\n");
+			//printf ("snd_pcm_writei() returned -EPIPE (underrun)\n");
 			snd_pcm_prepare (audio->pcm);
 			//snd_pcm_start (audio->pcm);
 		}
@@ -1262,18 +1273,18 @@ audio_loop (void *data)
 			pthread_mutex_lock (&mplayer->target_pts_lock);
 			mplayer->target_pts += frame_pts;
 			pthread_mutex_unlock (&mplayer->target_pts_lock);
-			printf ("calculated target_pts = %llu (frame_pts: %lld)\n", mplayer->target_pts, frame_pts);
+			//printf ("calculated target_pts = %llu (frame_pts: %lld)\n", mplayer->target_pts, frame_pts);
 		} else {
 			// decode an audio packet
 			if (!audio->pkt && (pkt = (Packet *) audio->queue->Pop ())) {
-				audio->inleft = pkt->size;
-				audio->inptr = pkt->data;
+				audio->inleft = pkt->frame->uncompressed_size;
+				audio->inptr = (uint8_t*) pkt->frame->uncompressed_data;
 				audio->pkt = pkt;
 				
 				pthread_mutex_lock (&mplayer->target_pts_lock);
 				mplayer->target_pts = pkt->pts;
 				pthread_mutex_unlock (&mplayer->target_pts_lock);
-				printf ("setting target_pts to %llu\n", mplayer->target_pts);
+				//printf ("setting target_pts to %llu\n", mplayer->target_pts);
 				mplayer->media->GetNextFrameAsync (audio->stream);
 				//printf ("audio_loop, popped a packet, %i packets left. inleft: %i, inptr: %p\n", audio->queue->Length (), audio->inleft, audio->inptr);
 				

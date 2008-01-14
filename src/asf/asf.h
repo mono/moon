@@ -203,7 +203,7 @@ public:
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
 	gint64 Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
 	gint32 StreamNumber () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->stream_number : 0; }
-	
+	bool Eof () { return eof; } // EOF might be true even if there are more packets in the reader (if Advance () fails, and Eof () = true, then advance failed because of eof.
 	void FindScriptCommandStream ();
 	
 private:
@@ -280,6 +280,9 @@ public:
 	// Returns the packet index where the desired pts is found.
 	// Returns -1 on failure.
 	gint32 GetPacketIndexOfPts (gint32 stream_number, gint64 pts);
+
+	// The number of packets in the stream (0 if unknown).
+	guint64 GetPacketCount ();
 
 	// Field accessors
 	
