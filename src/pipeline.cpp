@@ -525,6 +525,10 @@ ASFDemuxer::~ASFDemuxer ()
 MediaResult
 ASFDemuxer::Seek (guint64 pts)
 {
+	if (reader == NULL) {
+		reader = new ASFFrameReader (parser);
+	}
+	
 	if (reader->Seek (0, pts))
 		return MEDIA_SUCCESS;
 	return MEDIA_FAIL;

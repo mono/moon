@@ -1,3 +1,8 @@
+2008-01-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: Fix crash with several web-sites (when seeking before
+	  reading anything).
+
 2008-01-11  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h (class Clock): add an instance
