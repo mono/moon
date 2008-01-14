@@ -1,5 +1,9 @@
 2008-01-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h, asf-ffmpeg.h, asf-structures.cpp: Fix warnings.
+
+2008-01-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: Add ASFParser::GetPacketCount, and when in ASFFrameReader
 	  when reading packets set eof to true if read all packets.
 

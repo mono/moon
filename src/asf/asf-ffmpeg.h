@@ -162,7 +162,7 @@ public:
 	virtual bool Eof () { return url_feof (buffer); }
 	virtual bool CanSeek () { return true; }
 	
-	virtual gint64 Position () 
+	virtual guint64 Position () 
 	{
 		return buffer ? (buffer->pos - (buffer->buf_end - buffer->buf_ptr)) : 0;
 	}

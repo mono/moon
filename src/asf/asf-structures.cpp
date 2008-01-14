@@ -775,8 +775,8 @@ failure:
 
 void asf_marker_entry_dump (const asf_marker_entry* obj)
 {
+#ifdef ASF_DUMPING
 	asf_marker_entry* o = (asf_marker_entry*) obj;
-	
 	ASF_DUMP ("\tASF_MARKER_ENTRY\n");
 	ASF_DUMP ("\t\toffset = %llu\n", obj->offset);
 	ASF_DUMP ("\t\tpts = %llu\n", obj->pts);
@@ -785,6 +785,7 @@ void asf_marker_entry_dump (const asf_marker_entry* obj)
 	ASF_DUMP ("\t\tflags = %i\n", obj->flags);
 	ASF_DUMP ("\t\tmarker_description_length = %i\n", o->marker_description_length);
 	ASF_DUMP ("\t\tmarker_description = %s\n", o->get_marker_description ());
+#endif
 }
 
 void asf_marker_dump (const asf_marker* obj)
@@ -807,6 +808,7 @@ void asf_marker_dump (const asf_marker* obj)
 
 void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 {
+#ifdef ASF_DUMPING
 	asf_script_command* o = (asf_script_command*) obj;
 	
 	ASF_DUMP ("ASF_SCRIPT_COMMAND\n");
@@ -834,6 +836,7 @@ void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 		ASF_DUMP ("\t\tname_length = %i\n", (asf_dword) entry->name_length);
 		ASF_DUMP ("\t\tname = %s\n", entry->get_name ());
 	}
+#endif
 }
 
 void asf_header_extension_dump (const asf_header_extension* obj)

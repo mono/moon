@@ -38,11 +38,13 @@ class ASFSource;
 
 #if DEBUG && log //|| true
 #define ASF_LOG(...) printf (__VA_ARGS__)
+#define ASF_LOGGING
 #else
 #define ASF_LOG(...)
 #endif
 #if DEBUG && dump //|| true
 #define ASF_DUMP(...) printf (__VA_ARGS__)
+#define ASF_DUMPING
 #else
 #define ASF_DUMP(...)
 #endif
@@ -73,7 +75,7 @@ public:
 	bool Seek (size_t offset); // Seeks to the offset from the current position
 	bool Seek (size_t offset, int mode); // Seeks to the offset, with the specified mode (SEEK_CUR, SEEK_END, SEEK_SET)
 	
-	virtual gint64 Position () = 0; // Returns the position within the source (may not apply if the source is not seekable)
+	virtual guint64 Position () = 0; // Returns the position within the source (may not apply if the source is not seekable)
 	virtual bool CanSeek () = 0;
 	virtual bool Eof () = 0;
 	
@@ -87,7 +89,7 @@ public:
 protected:
 	virtual bool ReadInternal (void* destination, size_t bytes);
 	virtual bool SeekInternal (size_t offset, int mode);	
-	virtual gint64 Position ();
+	virtual guint64 Position ();
 	virtual bool CanSeek ();
 	virtual bool Eof ();
 	
@@ -100,7 +102,7 @@ public:
 	ASFFileSource (ASFParser* parser, const char* filename);
 	virtual ~ASFFileSource ();
 	
-	virtual gint64 Position () { return fd == NULL ? 0 : ftell (fd); }
+	virtual guint64 Position () { return fd == NULL ? 0 : ftell (fd); }
 	virtual bool CanSeek () { return true; }
 	virtual bool Eof () { return fd == NULL ? false : feof (fd) != 0; }
 	

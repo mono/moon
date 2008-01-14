@@ -33,7 +33,7 @@ ASFMediaSource::SeekInternal (size_t offset, int mode)
 	return source->Seek (offset, mode);
 }
 
-gint64 
+guint64 
 ASFMediaSource::Position ()
 {
 	return source->GetPosition ();
@@ -1065,7 +1065,7 @@ ASFFrameReader::ReadMore ()
 	
 	ASFPacket* packet = new ASFPacket ();
 	
-	if (current_packet_index >= parser->GetPacketCount ()) {
+	if ((guint32) current_packet_index >= parser->GetPacketCount ()) {
 		eof = true;
 		return false;
 	}
