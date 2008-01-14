@@ -119,6 +119,7 @@ void
 Media::Initialize ()
 {
 	// register stuff
+	//Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
@@ -147,16 +148,13 @@ Media::Shutdown ()
 	}
 	registered_demuxers = NULL;
 	
-	
 	current = registered_converters;
 	while (current != NULL) {
 		next = current->next;
 		delete current;
 		current = next;
 	}
-	registered_converters = NULL;
-	
-	
+	registered_converters = NULL;	
 }
 
 void
@@ -247,35 +245,25 @@ Media::Open (const char* file_or_url)
 MediaResult
 Media::Open (IMediaSource* source)
 {
+	MediaResult result;
+	
 	printf ("Media::Open ().\n");
 	
-	MediaResult result = MEDIA_FAIL; // We return success if at least 1 stream could be opened correctly (has decoder and, if applicable, converter)
-
-	if (source == NULL) {
+	if (source == NULL)
 		return MEDIA_INVALID_ARGUMENT;
-	}
 	
 	// Select a demuxer
-	uint8_t buffer [16];
-	if (!source->Peek (&buffer [0], 16)) {
-		return MEDIA_FAIL;
-	}
+	DemuxerInfo *demuxerInfo = registered_demuxers;
+	while (demuxerInfo != NULL && !demuxerInfo->Supports (source))
+		demuxerInfo = (DemuxerInfo *) demuxerInfo->next;
 	
-	DemuxerInfo* current_demuxer = registered_demuxers;
-	while (current_demuxer != NULL && !current_demuxer->Supports (&buffer [0], 16)) {
-		printf ("Checking registered demuxer '%s' if it supports the media file '%s': no.\n", current_demuxer->GetName (), file_or_url);
-		current_demuxer = (DemuxerInfo*) current_demuxer->next;
-	}
-		
-	if (current_demuxer == NULL) {
+	if (demuxerInfo == NULL) {
 		AddMessage (MEDIA_UNKNOWN_MEDIA_TYPE, g_strdup_printf ("No demuxers registered to handle the media file '%s'.", file_or_url));
 		return MEDIA_UNKNOWN_MEDIA_TYPE;
-	} else {
-		printf ("Checking registered demuxer '%s' if it supports the media file '%s': yes.\n", current_demuxer->GetName (), file_or_url);
-		demuxer = current_demuxer->Create (this);
 	}
 	
 	// Found a demuxer
+	demuxer = demuxerInfo->Create (this);
 	result = demuxer->ReadHeader ();
 	
 	if (!MEDIA_SUCCEEDED (result)) {
@@ -323,8 +311,8 @@ Media::Open (IMediaSource* source)
 		if (decoder != NULL) {
 			// Select converter for this stream
 			if (stream->GetType () == MediaTypeVideo && decoder->pixel_format != MoonPixelFormatRGB32) {
-				VideoStream* vs = (VideoStream*) stream;
-				IImageConverter* converter;
+				VideoStream *vs = (VideoStream *) stream;
+				IImageConverter *converter = NULL;
 				
 				ConverterInfo* current_conv = registered_converters;
 				while (current_conv != NULL && !current_conv->Supports (decoder->pixel_format, MoonPixelFormatRGB32)) {
@@ -533,32 +521,33 @@ Media::DeleteQueue ()
  * ASFDemuxer
  */
 
-ASFDemuxer::ASFDemuxer (Media* media) : IMediaDemuxer (media),
-	parser (NULL), reader (NULL)
+ASFDemuxer::ASFDemuxer (Media* media) : IMediaDemuxer (media)
 {
+	stream_to_asf_index = NULL;
+	reader = NULL;
+	parser = NULL;
 }
 
 ASFDemuxer::~ASFDemuxer ()
 {
-	delete reader;
-	reader = NULL;
-	
-	delete parser;
-	parser = NULL;
-	
 	g_free (stream_to_asf_index);
-	stream_to_asf_index = NULL;
+	
+	if (reader)
+		delete reader;
+	
+	if (parser)
+		delete parser;
 }
 
 MediaResult
 ASFDemuxer::Seek (guint64 pts)
 {
-	if (reader == NULL) {
+	if (reader == NULL)
 		reader = new ASFFrameReader (parser);
-	}
 	
 	if (reader->Seek (0, pts))
 		return MEDIA_SUCCESS;
+	
 	return MEDIA_FAIL;
 }
 
@@ -827,9 +816,8 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
 	
-	if (reader == NULL) {
+	if (reader == NULL)
 		reader = new ASFFrameReader (parser);
-	}
 	
 	//printf ("ASFDemuxer::ReadFrame (%p) frame = ", frame);
 	//frame->printf ();
@@ -876,23 +864,334 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
  */
 
 bool
-ASFDemuxerInfo::Supports (uint8_t* buffer, uint32_t length)
+ASFDemuxerInfo::Supports (IMediaSource *source)
 {
-	if (length < 16)
+	uint8_t buffer[16];
+	
+	if (!source->Peek (buffer, 16))
 		return false;
-		
-	bool result = asf_guid_compare (&asf_guids_header, (asf_guid*) buffer);
-
-	printf ("ASFDemuxerInfo::Supports (%p, %u): probing result: %s\n", buffer, length, result ? "true" : "false");
+	
+	bool result = asf_guid_compare (&asf_guids_header, (asf_guid *) buffer);
+	
+	printf ("ASFDemuxerInfo::Supports (%p): probing result: %s\n", source,
+		result ? "true" : "false");
 	
 	return result;
 }
 
-IMediaDemuxer*
+IMediaDemuxer *
 ASFDemuxerInfo::Create (Media* media)
 {
 	return new ASFDemuxer (media);
-} 
+}
+
+
+/*
+ * Mp3Demuxer
+ */
+
+Mp3Demuxer::Mp3Demuxer (Media *media) : IMediaDemuxer (media)
+{
+	//reader = NULL;
+}
+
+Mp3Demuxer::~Mp3Demuxer ()
+{
+	//if (reader)
+	//	delete reader;
+}
+
+MediaResult
+Mp3Demuxer::Seek (guint64 pts)
+{
+	//if (reader == NULL)
+	//	reader = new Mp3FrameReader (parser);
+	
+	//if (reader->Seek (0, pts))
+	//	return MEDIA_SUCCESS;
+	
+	return MEDIA_FAIL;
+}
+
+
+struct MpegFrameHeader {
+	uint8_t version;
+	uint8_t layer;
+	
+	uint8_t padded;
+	uint8_t prot;
+	
+	int bit_rate;
+	int sample_rate;
+	int8_t channels;
+};
+
+static int mpeg1_bitrates[3][15] = {
+	/* version 1, layer 1 */
+	{ 0, 32, 48, 56, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448 },
+	/* version 1, layer 2 */
+	{ 0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384 },
+	/* version 1, layer 3 */
+	{ 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 },
+};
+
+static int mpeg2_bitrates[3][15] = {
+	/* version 2, layer 1 */
+	{ 0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256 },
+	/* version 2, layer 2 */
+	{ 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 },
+	/* version 2, layer 3 */
+	{ 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 }
+};
+
+static int
+mpeg_bitrate (MpegFrameHeader *mpeg, uint8_t bits)
+{
+	int i = (bits & 0xf0) >> 4;
+	
+	if (i > 14)
+		return -1;
+	
+	if (mpeg->version == 1)
+		mpeg->bit_rate = mpeg1_bitrates[mpeg->layer - 1][i];
+	else
+		mpeg->bit_rate = mpeg2_bitrates[mpeg->layer - 1][i];
+	
+	return 0;
+}
+
+static int mpeg_samplerates[2][3] = {
+	{ 44100, 48000, 32000 },
+	{ 22050, 24000, 16000 }
+};
+
+static int
+mpeg_samplerate (MpegFrameHeader *mpeg, uint8_t bits)
+{
+	int i = bits & 0x0c;
+	
+	if (i > 2)
+		return -1;
+	
+	mpeg->sample_rate = mpeg_samplerates[mpeg->version - 1][i];
+	
+	return 0;
+}
+
+static int
+mpeg_channels (MpegFrameHeader *mpeg, uint8_t bits)
+{
+	int mode = (bits >> 6) & 0x3;
+	
+	switch (mode) {
+	case 0: /* stereo */
+		mpeg->channels = 2;
+		break;
+	case 1: /* joint stereo */
+		mpeg->channels = 2;
+		break;
+	case 2: /* dual channel (2 mono channels) */
+		mpeg->channels = 2;
+		break;
+	case 3: /* mono */
+		mpeg->channels = 1;
+		break;
+	}
+	
+	return 0;
+}
+
+static int
+mpeg_parse_header (const uint8_t *buffer, MpegFrameHeader *mpeg)
+{
+	/* check that this is a valid MPEG sync header */
+	if (buffer[0] != 0xff || ((buffer[1] & 0xfa) != 0xfa))
+		return -1;
+	
+	// extract the MPEG version
+	if (buffer[1] & 0x08)
+		mpeg->version = 1;
+	else
+		mpeg->version = 2;
+	
+	// extract the MPEG layer
+	switch (buffer[1] & 0x06) {
+	case 0x02:
+		mpeg->layer = 3;
+		break;
+	case 0x04:
+		mpeg->layer = 2;
+		break;
+	case 0x06:
+		mpeg->layer = 1;
+		break;
+	default: /* 0x00 reserved */
+		return -1;
+	}
+	
+	// protection (via 16bit crc) bit
+	mpeg->prot = (buffer[1] & 0x01) == 0 ? 1 : 0;
+	
+	// extract the bit rate
+	if (mpeg_bitrate (mpeg, buffer[2]) == -1)
+		return -1;
+	
+	// extract the sample rate
+	if (mpeg_samplerate (mpeg, buffer[2]) == -1)
+		return -1;
+	
+	// check if the frame is padded
+	mpeg->padded = (buffer[2] & 0x2) ? 1 : 0;
+	
+	// extract the channel mode */
+	if (mpeg_channels (mpeg, buffer[3]) == -1)
+		return -1;
+	
+	return 0;
+}
+
+MediaResult
+Mp3Demuxer::ReadHeader ()
+{
+	IMediaSource *source = GetMedia ()->GetSource ();
+	IMediaStream **streams = NULL;
+	IMediaStream *stream;
+	MpegFrameHeader mpeg;
+	AudioStream *audio;
+	uint8_t buffer[10];
+	uint32_t size = 0;
+	int stream_count;
+	int i;
+	
+	printf ("Mp3Demuxer::ReadHeader ().\n");
+	
+	if (!source->Read (buffer, 10))
+		return MEDIA_INVALID_MEDIA;
+	
+	// Check for a leading ID3 tag
+	if (!strncmp ((const char *) buffer, "ID3", 3)) {
+		for (i = 0; i < 4; i++) {
+			if (buffer[6 + i] & 0x80)
+				return false;
+			
+			size = (size << 7) | buffer[6 + i];
+		}
+		
+		if ((buffer[5] & (1 << 4))) {
+			// add additional 10 bytes for footer
+			size += 20;
+		} else
+			size += 10;
+		
+		// skip over the ID3 tag
+		if (!source->Seek ((int64_t) size, SEEK_SET))
+			return MEDIA_INVALID_MEDIA;
+		
+		if (!source->Read (buffer, 4))
+			return MEDIA_INVALID_MEDIA;
+		
+		stream_start = (int64_t) size;
+	} else {
+		stream_start = 0;
+	}
+	
+	if (!source->Seek (stream_start, SEEK_SET))
+		return MEDIA_INVALID_MEDIA;
+	
+	memset ((void *) &mpeg, 0, sizeof (mpeg));
+	if (mpeg_parse_header (buffer, &mpeg) == -1)
+		return MEDIA_INVALID_MEDIA;
+	
+	stream = audio = new AudioStream (GetMedia ());
+	audio->codec_id = CODEC_MP3;
+	audio->codec = "mp3";
+	
+	audio->bit_rate = mpeg.bit_rate;
+	audio->channels = mpeg.channels;
+	audio->sample_rate = mpeg.sample_rate;
+	audio->block_align = 0;
+	audio->bits_per_sample = 0;
+	audio->extra_data = NULL;
+	audio->extra_data_size = 0;
+	
+	stream->start_time = 0;
+	
+	streams = g_new (IMediaStream *, 2);
+	streams[0] = stream;
+	streams[1] = NULL;
+	stream_count = 1;
+	
+	SetStreams (streams, stream_count);
+	
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+Mp3Demuxer::ReadFrame (MediaFrame *frame)
+{
+	// FIXME: implement me
+	return MEDIA_SUCCESS;
+}
+
+
+/*
+ * Mp3DemuxerInfo
+ */
+
+bool
+Mp3DemuxerInfo::Supports (IMediaSource *source)
+{
+	uint8_t buffer[10];
+	uint32_t size = 0;
+	int i;
+	
+	// peek at the first 10 bytes which is enough to contain
+	// either the mp3 frame header or an ID3 tag header
+	if (!source->Peek (buffer, 10))
+		return false;
+	
+	// Check for a leading ID3 tag
+	if (!strncmp ((const char *) buffer, "ID3", 3)) {
+		for (i = 0; i < 4; i++) {
+			if (buffer[6 + i] & 0x80)
+				return false;
+			
+			size = (size << 7) | buffer[6 + i];
+		}
+		
+		if ((buffer[5] & (1 << 4))) {
+			// add additional 10 bytes for footer
+			size += 20;
+		} else
+			size += 10;
+		
+		// skip over the ID3 tag
+		if (!source->Seek (size, SEEK_SET))
+			return false;
+		
+		// peek at the mp3 frame header
+		if (!source->Read (buffer, 4))
+			return false;
+		
+		if (!source->Seek (0, SEEK_SET))
+			return false;
+	}
+	
+	/* validate that this is an MPEG-1 Audio Layer 3 stream by
+	 * checking that the 32bit header matches the pattern:
+	 *
+	 * 1111 1111 1111 101* **** **** **** ****
+	 */
+	
+	return (buffer[0] == 0xff) && ((buffer[1] & 0xfa) == 0xfa);
+}
+
+IMediaDemuxer *
+Mp3DemuxerInfo::Create (Media *media)
+{
+	return new Mp3Demuxer (media);
+}
+
 
 /*
  *	FileSource
@@ -936,12 +1235,9 @@ FileSource::Read (void* buffer, guint32 size)
 	}
 
 	// Open the file if it hasn't been opened.
-	if (!fd) {
-		fd = fopen (filename, "rb");
-		if (!fd) {
-			media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Could not open the file '%s': %s.\n", filename, strerror (errno)));
-			return false;
-		}
+	if (!fd && !(fd = fopen (filename, "rb"))) {
+		media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Could not open the file '%s': %s.\n", filename, strerror (errno)));
+		return false;
 	}
 
 	// Read 
@@ -1037,7 +1333,7 @@ MediaClosure::Call ()
  */
 
 IMediaStream::IMediaStream (Media* media) : 
-	extra_data (NULL), extra_data_size (NULL), codec_id (0), start_time (0),
+	extra_data (NULL), extra_data_size (0), codec_id (0), start_time (0),
 	msec_per_frame (0), duration (0), decoder (NULL), codec (NULL), min_padding (0),
 	index (-1), context (NULL)
 {

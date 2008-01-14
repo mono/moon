@@ -1,3 +1,7 @@
+2008-01-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp: Partially implemented an mp3 demuxer.
+
 2008-01-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp, media.h, mplayer2.cpp, pipeline.cpp, pipeline.h: Make markers

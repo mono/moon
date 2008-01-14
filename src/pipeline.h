@@ -182,8 +182,8 @@ class DemuxerInfo : public MediaInfo  {
 public:
 	// <buffer> points to the first <length> bytes of a file. 
 	// <length> is guaranteed to be at least 16 bytes.
-	virtual bool Supports (uint8_t* buffer, uint32_t length) = 0; 
-	virtual IMediaDemuxer* Create (Media* media) = 0;
+	virtual bool Supports (IMediaSource *source) = 0; 
+	virtual IMediaDemuxer *Create (Media *media) = 0;
 };
 
 class ConverterInfo : public MediaInfo  {
@@ -387,14 +387,14 @@ public:
 	void* GetContext () { return context; }
 	void  SetContext (void* context) { this->context = context; }
 	
-	void* extra_data;
+	void *extra_data;
 	int extra_data_size;
 	int codec_id;
 	guint64 start_time;
 	gint32 msec_per_frame;
 	guint64 duration;
-	IMediaDecoder* decoder;
-	const char* codec;
+	IMediaDecoder *decoder;
+	const char *codec;
 	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
 	// Used by the demuxer when reading frames, ensures that there are at least min_padding extra bytes
 	// at the end of the frame data (all initialized to 0).
@@ -405,7 +405,7 @@ public:
 	
 private:
 	bool enabled;
-	void* context;
+	void *context;
 };
 
 
@@ -430,25 +430,24 @@ protected:
 };
 
 class IMediaDemuxer : public IMediaObject {
+	IMediaStream **streams;
+	int stream_count;
+	
 public:
-	IMediaDemuxer (Media* media) : IMediaObject (media) {}
+	IMediaDemuxer (Media *media) : IMediaObject (media) {}
 	virtual ~IMediaDemuxer ();
 	virtual MediaResult ReadHeader () = 0;
 	// Fills the uncompressed_data field in the frame with data.
-	virtual MediaResult ReadFrame (MediaFrame* frame) = 0;
+	virtual MediaResult ReadFrame (MediaFrame *frame) = 0;
 	virtual MediaResult Seek (guint64 pts) = 0;
 	int GetStreamCount () { return stream_count; }
-	IMediaStream* GetStream (int index)
+	IMediaStream *GetStream (int index)
 	{
 		return (index < 0 || index >= stream_count) ? NULL : streams [index];
 	}
 	
 protected:
-	void SetStreams (IMediaStream** streams, int count);
-	
-private:
-	int stream_count;
-	IMediaStream** streams;
+	void SetStreams (IMediaStream **streams, int count);
 };
 
 class IMediaDecoder {
@@ -547,7 +546,7 @@ public:
  
 class AudioStream : public IMediaStream {
 public:
-	AudioStream (Media* media) : IMediaStream (media) {}
+	AudioStream (Media *media) : IMediaStream (media) {}
 	
 	virtual MoonMediaType GetType () { return MediaTypeAudio; }
 	
@@ -562,28 +561,28 @@ public:
  * ASF related implementations
  */
 class ASFDemuxer : public IMediaDemuxer {
+	gint32 *stream_to_asf_index;
+	ASFFrameReader *reader;
+	ASFParser *parser;
+	
+	void ReadMarkers ();
+	
 public:
-	ASFDemuxer (Media* media);
+	ASFDemuxer (Media *media);
 	~ASFDemuxer ();
 	
 	virtual MediaResult ReadHeader ();
-	virtual MediaResult ReadFrame (MediaFrame* frame);
+	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (guint64 pts);
-	ASFParser* GetParser () { return parser; }
 	
-private:
-	void ReadMarkers ();
-
-	ASFParser* parser;
-	ASFFrameReader* reader;
-	gint32* stream_to_asf_index;
+	ASFParser *GetParser () { return parser; }
 };
 
 class ASFDemuxerInfo : public DemuxerInfo {
 public:
-	virtual bool Supports (uint8_t* buffer, uint32_t length); 
-	virtual IMediaDemuxer* Create (Media* media); 
-	virtual const char* GetName () { return "ASFDemuxer"; }
+	virtual bool Supports (IMediaSource *source);
+	virtual IMediaDemuxer *Create (Media *media); 
+	virtual const char *GetName () { return "ASFDemuxer"; }
 };
 
 class MarkerStream : public IMediaStream {
@@ -608,13 +607,43 @@ public:
 /*
  * Mp3 related implementations
  */
- 
+
+class Mp3Demuxer : public IMediaDemuxer {
+	//Mp3FrameReader *reader;
+	int64_t stream_start;
+	int version;
+	int layer;
+	
+public:
+	Mp3Demuxer (Media *media);
+	~Mp3Demuxer ();
+	
+	virtual MediaResult ReadHeader ();
+	virtual MediaResult ReadFrame (MediaFrame *frame);
+	virtual MediaResult Seek (guint64 pts);
+};
+
+class Mp3DemuxerInfo : public DemuxerInfo {
+public:
+	virtual bool Supports (IMediaSource *source);
+	virtual IMediaDemuxer *Create (Media *media); 
+	virtual const char *GetName () { return "Mp3Demuxer"; }
+};
+
+#if 0
+class Mp3MarkerStream : public IMediaStream {
+public:
+	Mp3MarkerStream (Media *media) : IMediaStream (media) {}
+	virtual MoonMediaType GetType () { return MediaTypeMarker; } 
+};
+#endif
+
 class Mp3Decoder : public IMediaDecoder {
 public:
-	Mp3Decoder (Media* media, IMediaStream* stream);
+	Mp3Decoder (Media *media, IMediaStream *stream);
 	virtual ~Mp3Decoder ();
 	
-	virtual MediaResult DecodeFrame (MediaFrame* frame);
+	virtual MediaResult DecodeFrame (MediaFrame *frame);
 	virtual MediaResult Open ();
 };
 
