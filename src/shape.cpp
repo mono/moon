@@ -172,7 +172,7 @@ Shape::Draw (cairo_t *cr)
 // to either get the bounding box from cairo, or to paint it
 //
 void 
-Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
+Shape::DoDraw (cairo_t *cr, bool do_op)
 {
 	if (IsEmpty ()) {
 		cairo_new_path (cr);
@@ -209,7 +209,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op, bool consider_fill)
 	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
 	// unless there is no stroke brush assigned, which requires us to fill and use cairo_fill_extents
 	// also not every shapes can be filled
-	if (!IsDegenerate () && (consider_fill || !stroke) && IsFilled ()) {
+	if (!IsDegenerate () && IsFilled ()) {
 		if (fill) {
 			Draw (cr);
 			drawn = true;
@@ -298,7 +298,7 @@ void
 Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	cairo_save (cr);
-	DoDraw (cr, true, true);
+	DoDraw (cr, true);
 	cairo_restore (cr);
 }
 
@@ -381,7 +381,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 
 	cairo_save (cr);
 	// don't do the operation but do consider filling
-	DoDraw (cr, false, true);
+	DoDraw (cr, false);
 	double nx = x;
 	double ny = y;
 

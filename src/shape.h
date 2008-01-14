@@ -34,7 +34,7 @@ cairo_fill_rule_t convert_fill_rule (FillRule fill_rule);
 class Shape : public FrameworkElement {
  protected:
 	Brush *stroke, *fill;
-	void DoDraw (cairo_t *cr, bool do_op, bool consider_fill);
+	void DoDraw (cairo_t *cr, bool do_op);
 
 	moon_path *path;
 	virtual void InvalidatePathCache (bool free = false);
