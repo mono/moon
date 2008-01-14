@@ -203,7 +203,7 @@ class MediaElement : public MediaBase {
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
-	void ReadASFMarkers ();
+	void ReadMarkers ();
 	void CheckMarkers (int64_t from, int64_t to);
 	void CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection* col, bool remove);
 	

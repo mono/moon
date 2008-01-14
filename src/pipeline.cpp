@@ -16,6 +16,7 @@
 #include "uri.h"
 #include "media.h"
 #include "asf/asf.h"
+#include "asf/asf-structures.h"
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -35,8 +36,8 @@ DemuxerInfo* Media::registered_demuxers = NULL;
 DecoderInfo* Media::registered_decoders = NULL;
 ConverterInfo* Media::registered_converters = NULL;
  
-Media::Media (void* el) :
-		source (NULL), demuxer (NULL), element (NULL),
+Media::Media () :
+		source (NULL), demuxer (NULL), markers (NULL),
 		file_or_url (NULL), queued_requests (NULL),
 		queue_closure (NULL)
 {
@@ -46,7 +47,6 @@ Media::~Media ()
 {
 	DeleteQueue ();
 		
-	element = NULL;
 	delete source;
 	source = NULL;
 	delete demuxer;
@@ -56,6 +56,18 @@ Media::~Media ()
 	
 	delete queue_closure;
 	queue_closure = NULL;
+	
+	delete markers;
+	markers = NULL;
+}
+
+List* 
+Media::GetMarkers ()
+{
+	if (markers == NULL)
+		markers = new List ();
+	
+	return markers;
 }
 
 void
@@ -550,6 +562,90 @@ ASFDemuxer::Seek (guint64 pts)
 	return MEDIA_FAIL;
 }
 
+void
+ASFDemuxer::ReadMarkers ()
+{
+	/*
+		We can get markers from several places:
+			- The header of the file, read before starting to play
+				- As a SCRIPT_COMMAND
+				- As a MARKER
+				They are both treated the same way, added into the timeline marker collection when the media is loaded.
+			- As data in the file (a separate stream whose type is ASF_COMMAND_MEDIA)
+				These markers show up while playing the file, and they don't show up in the timeline marker collection,
+				they only get to raise the MarkerReached event.
+				currently the demuxer will call the streamed_marker_callback when it encounters any of these.    
+	*/
+	
+	// Read the markers (if any)
+	int i = -1;
+	guint64 preroll = parser->file_properties->preroll;
+	List* markers = media->GetMarkers ();
+	
+	// Read the SCRIPT COMMANDs
+	char **command_types = NULL;
+	asf_script_command_entry **commands = NULL;
+	asf_script_command *command = parser->script_command;
+
+	if (command != NULL) {
+		commands = command->get_commands (parser, &command_types);
+		
+		if (command_types == NULL) {
+			//printf ("MediaElement::ReadASFMarkers (): No command types.\n");
+			goto cleanup;
+		}
+	}
+	
+	i = -1;
+	while (commands != NULL && commands [++i] != NULL) {
+		asf_script_command_entry *entry = commands [i];
+		int64_t pts = entry->pts; //(entry->pts - preroll) * 10000;
+		char* text = entry->get_name ();
+		const char* type = "";
+		
+		if (entry->type_index + 1 <= command->command_type_count) {
+			type = command_types [entry->type_index];
+		}
+		
+		markers->Append (new MediaMarker::Node (new MediaMarker (type, text, pts)));
+		
+		//printf ("MediaElement::ReadMarkers () Added script command at %llu (text: %s, type: %s)\n", pts, text, type);
+		
+		g_free (text);
+	}
+	
+	
+	// Read the MARKERs
+	asf_marker *asf_marker;
+	const asf_marker_entry* marker_entry;
+	
+	asf_marker = parser->marker;
+	if (asf_marker != NULL) {
+		for (i = 0; i < (int) asf_marker->marker_count; i++) {
+			marker_entry = asf_marker->get_entry (i);
+			int64_t pts = marker_entry->pts / 10000; // (marker_entry->pts - preroll * 10000);
+			char* text = marker_entry->get_marker_description ();
+			
+			markers->Append (new MediaMarker::Node (new MediaMarker ("Name", text, pts)));
+			
+			//printf ("MediaElement::ReadMarkers () Added marker at %llu (text: %s, type: %s)\n", pts, text, "Name");
+		
+			g_free (text);
+		}
+	}
+	
+		
+cleanup:
+	if (command_types) {
+		i = -1;
+		while (command_types [++i] != NULL)
+			g_free (command_types [i]);
+		g_free (command_types);
+	}
+	
+	g_free (commands);
+}
+
 MediaResult
 ASFDemuxer::ReadHeader ()
 {
@@ -572,6 +668,8 @@ ASFDemuxer::ReadHeader ()
 		goto failure;
 	}
 	
+	media->SetStartTime (asf_parser->file_properties->preroll);
+			
 	// Count the number of streams
 	stream_count = 0;
 	for (int i = 1; i <= 127; i++) {
@@ -657,23 +755,26 @@ ASFDemuxer::ReadHeader ()
 				}
 			}
 		} else if (stream_properties->is_command ()) {
-			ASFMarkerStream* marker = new ASFMarkerStream (GetMedia ());
+			MarkerStream* marker = new MarkerStream (GetMedia ());
 			stream = marker;
+			stream->codec = "asf-marker";
 		} else {
 			// Unknown stream, ignore it.
 		}
 		
 		if (stream != NULL) {
-			switch (stream->codec_id) {
-			case CODEC_WMV1: stream->codec = "wmv1"; break;
-			case CODEC_WMV2: stream->codec = "wmv2"; break;
-			case CODEC_WMV3: stream->codec = "wmv3"; break;
-			case CODEC_WMVA: stream->codec = "wmva"; break;
-			case CODEC_WVC1: stream->codec = "vc1"; break;
-			case CODEC_MP3: stream->codec = "mp3"; break;
-			case CODEC_WMAV1: stream->codec = "wmav1"; break;
-			case CODEC_WMAV2: stream->codec = "wmav2"; break;
-			default: stream->codec = "unknown"; break;
+			if (stream_properties->is_video () || stream_properties->is_audio ()) {
+				switch (stream->codec_id) {
+				case CODEC_WMV1: stream->codec = "wmv1"; break;
+				case CODEC_WMV2: stream->codec = "wmv2"; break;
+				case CODEC_WMV3: stream->codec = "wmv3"; break;
+				case CODEC_WMVA: stream->codec = "wmva"; break;
+				case CODEC_WVC1: stream->codec = "vc1"; break;
+				case CODEC_MP3: stream->codec = "mp3"; break;
+				case CODEC_WMAV1: stream->codec = "wmav1"; break;
+				case CODEC_WMAV2: stream->codec = "wmav2"; break;
+				default: stream->codec = "unknown"; break;
+				}
 			}
 			stream->start_time = asf_parser->file_properties->preroll;
 			streams [i] = stream;
@@ -695,6 +796,8 @@ ASFDemuxer::ReadHeader ()
 	SetStreams (streams, stream_count);
 	this->stream_to_asf_index = stream_to_asf_index;
 	this->parser = asf_parser;
+	
+	ReadMarkers ();
 	
 	return result;
 	
@@ -1069,5 +1172,48 @@ VideoStream::~VideoStream ()
  * MediaClosure
  */
 
+
+/*
+ * MediaMarker
+ */ 
+
+MediaMarker::MediaMarker (const char* type, const char* text, guint64 pts)
+{
+	this->type = g_strdup (type);
+	this->text = g_strdup (text);
+	this->pts = pts;
+}
+
+MediaMarker::~MediaMarker ()
+{
+	g_free (type);
+	type = NULL;
+	g_free (text);
+	text = NULL;
+}
+
+/*
+ * MarkerStream
+ */
+ 
+MarkerStream::MarkerStream (Media* media) 
+	: IMediaStream (media),
+	closure (NULL)
+{
+}
+
+MarkerStream::~MarkerStream ()
+{
+	delete closure;
+	closure = NULL;
+}
+
+void
+MarkerStream::SetCallback (MediaClosure* cl)
+{
+	if (closure != NULL)
+		delete closure;
+	closure = cl;
+}
 
 

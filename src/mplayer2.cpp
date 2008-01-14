@@ -16,7 +16,7 @@
 		jeff - make 1 thread play all audio (and don't exit when audio finishes).
 		make markers work again
 		write a progressive source
-		try decoding on main thread
+		done - try decoding on main thread
 		jeff - write an mp3 demuxer
 */
 
@@ -357,7 +357,7 @@ MediaPlayer::Open (const char *uri)
 	MediaResult result;
 	Media* media;
 	
-	media = new Media (NULL);
+	media = new Media ();
 	result = media->Open (uri);
 	if (!MEDIA_SUCCEEDED (result)) {
 		fprintf (stderr, "MediaPlayer::Open ('%s'): cannot open uri: %i\n", uri, result);

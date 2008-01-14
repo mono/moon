@@ -254,20 +254,27 @@ int MediaElement::MediaEndedEvent = -1;
 int MediaElement::MediaFailedEvent = -1;
 int MediaElement::MediaOpenedEvent = -1;
 
-static void streamed_marker_callback (void* state, char* type, char* text, guint64 pts)
+#ifdef MOON_MEDIA
+static MediaResult marker_callback (MediaClosure* closure)
 {
-	MediaElement* me = (MediaElement*) state;
-	//printf ("embedded_script_callback (%p, %s, %s, %llu): id = %i.\n", state, type, text, pts, me->id);
+	MediaElement* element = (MediaElement*) closure->context;
+	MediaMarker* marker = closure->marker;
 	
-	pts = (pts - me->mplayer->asf_parser->file_properties->preroll) * 10000;
+	if (marker == NULL)
+		return MEDIA_FAIL;
 	
-	TimelineMarker* marker = new TimelineMarker ();
-	marker->SetValue (TimelineMarker::TextProperty, text);
-	marker->SetValue (TimelineMarker::TypeProperty, type);
-	marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
-	me->AddStreamedMarker (marker);
-	marker->unref ();
+	guint64 pts = (marker->Pts () - closure->media->GetStartTime ()) * 10000;
+	
+	TimelineMarker* tl_marker = new TimelineMarker ();
+	tl_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
+	tl_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
+	tl_marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
+	element->AddStreamedMarker (tl_marker);
+	tl_marker->unref ();
+	
+	return MEDIA_SUCCESS;
 }
+#endif
 
 void
 MediaElement::AddStreamedMarker (TimelineMarker* marker)
@@ -278,119 +285,59 @@ MediaElement::AddStreamedMarker (TimelineMarker* marker)
 }
 
 void
-MediaElement::ReadASFMarkers ()
+MediaElement::ReadMarkers ()
 {
-	/*
-		We can get markers from several places:
-			- The header of the file, read before starting to play
-				- As a SCRIPT_COMMAND
-				- As a MARKER
-				They are both treated the same way, added into the timeline marker collection when the media is loaded.
-			- As data in the file (a separate stream whose type is ASF_COMMAND_MEDIA)
-				These markers show up while playing the file, and they don't show up in the timeline marker collection,
-				they only get to raise the MarkerReached event.
-				currently the demuxer will call the streamed_marker_callback when it encounters any of these.    
-	*/
-	
-	//printf ("MediaElement::ReadASFMarkers ()\n");
-	
-	if (mplayer != NULL && mplayer->asf_parser != NULL) {
-		// printf ("MediaElement::ReadASFMarkers (): setting callback.\n");
-		mplayer->asf_parser->embedded_script_command = streamed_marker_callback;
-		mplayer->asf_parser->embedded_script_command_state = this;
-	}
+#ifdef MOON_MEDIA
+	//printf ("MediaElement::ReadMarkers ()\n");
 
-	if (mplayer == NULL || mplayer->asf_parser == NULL || (mplayer->asf_parser->script_command == NULL && mplayer->asf_parser->marker == NULL)) {
-		//printf ("MediaElement::ReadASFMarkers (): not reading markers. mplayer = %p, asf_parser = %p, script_command = %p, marker = %p.\n", 
-		//	mplayer, 
-		//	mplayer ? mplayer->asf_parser : NULL, 
-		//	mplayer ? (mplayer->asf_parser ? mplayer->asf_parser->script_command : NULL) : NULL, 
-		//	mplayer ? (mplayer->asf_parser ? mplayer->asf_parser->marker : NULL) : NULL);
+	IMediaDemuxer* demuxer;
+	Media* media;
+	
+	if (mplayer == NULL || mplayer->media == NULL || mplayer->media->GetDemuxer () == NULL)
+		return;
+
+	media = mplayer->media;
+	demuxer = media->GetDemuxer ();
+
+	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
+		if (demuxer->GetStream (i)->GetType () == MediaTypeMarker) {
+			MarkerStream* stream = (MarkerStream*) demuxer->GetStream (i);
+			MediaClosure* closure = new MediaClosure ();
+			closure->callback = marker_callback;
+			closure->context = this;
+			closure->media = media;
+			stream->SetCallback (closure);
+			break;
+		}
+	}
+	
+	TimelineMarkerCollection *col = NULL;
+	MediaMarker::Node* current = (MediaMarker::Node*) media->GetMarkers ()->First ();
+	
+	if (current == NULL) {
+		//printf ("MediaElement::ReadMarkers (): no markers.\n");
 		return;
 	}
-		
-	TimelineMarkerCollection *col = NULL;
-	int i = -1;
-	guint64 preroll = mplayer->asf_parser->file_properties->preroll;
 	
-	// Read the SCRIPT COMMANDs
-	char **command_types = NULL;
-	asf_script_command_entry **commands = NULL;
-	asf_script_command *command = mplayer->asf_parser->script_command;
-
-	if (command != NULL) {
-		commands = command->get_commands (mplayer->asf_parser, &command_types);
-		
-		if (command_types == NULL) {
-			//printf ("MediaElement::ReadASFMarkers (): No command types.\n");
-			goto cleanup;
-		}
-	}
-
 	col = new TimelineMarkerCollection ();
-	
-	i = -1;
-	while (commands != NULL && commands [++i] != NULL) {
-		asf_script_command_entry *entry = commands [i];
-		int64_t pts = (entry->pts - preroll) * 10000;
-		char* text = entry->get_name ();
-		const char* type = "";
-		
-		if (entry->type_index + 1 <= command->command_type_count) {
-			type = command_types [entry->type_index];
-		}
-		
+	while (current != NULL) {
+		MediaMarker* marker = current->marker;
 		TimelineMarker *new_marker = new TimelineMarker ();
-		new_marker->SetValue (TimelineMarker::TextProperty, text);
-		new_marker->SetValue (TimelineMarker::TypeProperty, type);
-		new_marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
+		new_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
+		new_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
+		new_marker->SetValue (TimelineMarker::TimeProperty, Value ((marker->Pts () - media->GetStartTime ())* 10000, Type::TIMESPAN));
 		col->Add (new_marker);
-		
-		//printf ("MediaElement::ReadMarkers () Added script command at %llu (text: %s, type: %s)\n", pts, text, type);
-		
+		//printf ("MediaElement::ReadMarkers (): Adding marker with Text: '%s', Type: '%s', Pts: %llu\n", new_marker->GetValue (TimelineMarker::TextProperty)->AsString (), new_marker->GetValue (TimelineMarker::TypeProperty)->AsString (), new_marker->GetValue (TimelineMarker::TimeProperty)->AsTimeSpan ());
 		new_marker->unref ();
-		g_free (text);
-	}
-	
-	
-	// Read the MARKERs
-	asf_marker *asf_marker;
-	const asf_marker_entry* marker_entry;
-	
-	asf_marker = mplayer->asf_parser->marker;
-	if (asf_marker != NULL) {
-		for (i = 0; i < (int) asf_marker->marker_count; i++) {
-			marker_entry = asf_marker->get_entry (i);
-			int64_t pts = (marker_entry->pts - preroll * 10000);
-			char* text = marker_entry->get_marker_description ();
-			
-			TimelineMarker *new_marker = new TimelineMarker ();
-			new_marker->SetValue (TimelineMarker::TypeProperty, "Name");
-			new_marker->SetValue (TimelineMarker::TextProperty, text);
-			new_marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
-			col->Add (new_marker);
-			
-			//printf ("MediaElement::ReadMarkers () Added marker at %llu (text: %s, type: %s)\n", pts, text, "Name");
 		
-			new_marker->unref ();
-			g_free (text);
-		}
+		current = (MediaMarker::Node*) current->next;
 	}
 	
 	// Docs says we overwrite whatever's been loaded already.
-	//printf ("MediaElement::ReadASFMarkers (): setting %i markers.\n", i);
+	//printf ("MediaElement::ReadMarkers (): setting %i markers.\n", collection_count (col));
 	SetValue (MarkersProperty, col);
-	
-cleanup:
 	col->unref ();
-	if (command_types) {
-		i = -1;
-		while (command_types [++i] != NULL)
-			g_free (command_types [i]);
-		g_free (command_types);
-	}
-	
-	g_free (commands);
+#endif
 }
 
 void
@@ -434,6 +381,8 @@ MediaElement::CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection* 
 			return;
 			
 		int64_t pts = (int64_t) val->AsTimeSpan ();
+		
+		//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
 		if (pts >= from && pts <= to) {
 			marker->ref ();
@@ -744,7 +693,7 @@ MediaElement::DownloaderComplete ()
 	
 	UpdateProgress ();
 	
-	ReadASFMarkers ();
+	ReadMarkers ();
 	
 	Emit (MediaElement::MediaOpenedEvent);
 	

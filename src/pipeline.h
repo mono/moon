@@ -90,6 +90,7 @@ class MediaClosure;
 class MediaFrame;
 class VideoStream;
 class IImageConverter;
+class MediaMarker;
 
 #include "list.h"
 #include "asf/asf.h"
@@ -149,9 +150,10 @@ public:
 	~MediaClosure ();
 	
 	MediaCallback* callback;
-	MediaFrame* frame;
-	Media* media;
-	void* context;
+	MediaFrame* frame; // Set when this is the callback in Media::GetNextFrameAsync
+	Media* media; // Set when this is the callback in Media::GetNextFrameAsync
+	MediaMarker* marker; // Set when this is the callback in MarkerStream
+	void* context; // The property of whoever creates the closure.
 	
 	// Calls the callback and returns the callback's return value
 	// If no callback is set, returns MEDIA_NO_CALLBACK
@@ -192,7 +194,7 @@ public:
 
 class Media {
 public:
-	Media (void* element);
+	Media ();
 	~Media ();
 	
 	//	Opens the file using a FileSource
@@ -235,12 +237,19 @@ public:
 	
 	IMediaSource* GetSource () { return source; }
 	IMediaDemuxer* GetDemuxer () { return demuxer; }
-	void* GetElement () { return element; }
 	const char* GetFileOrUrl () { return file_or_url; }
     
     void AddMessage (MediaResult result, const char* msg);
     void AddMessage (MediaResult result, char* msg);
     
+    // A list of MediaMarker::Node.
+    // This is the list of markers found in the metadata/headers (not as a separate stream).
+    // Will never return NULL.
+    List* GetMarkers ();
+    
+    // If the start time is the same for all streams, the demuxer should set this value
+    guint64 GetStartTime () { return start_time; }
+    void SetStartTime (guint64 value) { start_time = value; } 
     
 public:
     // Registration functions
@@ -266,8 +275,10 @@ private:
 
 	IMediaSource* source;
 	IMediaDemuxer* demuxer;
-	void* element;
+	List* markers;
 	char* file_or_url;
+	guint64 start_time;
+	
 	
 	List* queued_requests;
 	pthread_t queue_thread;
@@ -313,6 +324,28 @@ public:
 	int srcSlideY; // Set by the decoder
 	int srcSlideH; // Set by the decoder
 	int srcStride [4]; // Set by the decoder
+};
+
+class MediaMarker {
+public:
+	MediaMarker (const char* type, const char* text, guint64 pts);
+	~MediaMarker ();
+	const char* Type () { return type; }
+	const char* Text () { return text; }
+	guint64 Pts () { return pts; }
+	
+private:
+	char* type;
+	char* text;
+	guint64 pts;
+	
+public:
+	class Node : public List::Node {
+	public:
+		Node (MediaMarker* m) : marker (m) {}
+		virtual ~Node () { delete marker; }
+		MediaMarker* marker;
+	};
 };
 
 // Interfaces
@@ -430,7 +463,7 @@ public:
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream* stream;
 	Media* media;
-};
+}; // Set when this is the callback in Media::GetNextFrameAsync
 
 
 /*
@@ -536,8 +569,11 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame* frame);
 	virtual MediaResult Seek (guint64 pts);
+	ASFParser* GetParser () { return parser; }
 	
 private:
+	void ReadMarkers ();
+
 	ASFParser* parser;
 	ASFFrameReader* reader;
 	gint32* stream_to_asf_index;
@@ -550,10 +586,16 @@ public:
 	virtual const char* GetName () { return "ASFDemuxer"; }
 };
 
-class ASFMarkerStream : public IMediaStream {
+class MarkerStream : public IMediaStream {
 public:
-	ASFMarkerStream (Media* media) : IMediaStream (media) {}
-	virtual MoonMediaType GetType () { return MediaTypeMarker; } 
+	MarkerStream (Media* media);
+	~MarkerStream ();
+	virtual MoonMediaType GetType () { return MediaTypeMarker; }
+	
+	void SetCallback (MediaClosure* closure);
+	
+private:
+	MediaClosure* closure;
 };
 
 class ASFMarkerDecoder : public IMediaDecoder {
