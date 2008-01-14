@@ -226,46 +226,58 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 		if (got_picture) {
 			//printf ("FfmpegDecoder::DecodeFrame (%p): got picture.\n", media_frame);
 
-			media_frame->uncompressed_size = context->width * context->height * 4;
-			media_frame->uncompressed_data = (uint8_t*) g_malloc (media_frame->uncompressed_size);
+			media_frame->AddState (FRAME_PLANAR);
 			
-	//		uint8_t *rgb_dest[3] = { (uint8_t*) media_frame->uncompressed_data, NULL, NULL};
-	//		int rgb_stride [3] = { context->width * 4, 0, 0 };
+			//media_frame->uncompressed_size = context->width * context->height * 4;
+			//media_frame->uncompressed_data = (uint8_t*) g_malloc (media_frame->uncompressed_size);
+			media_frame->uncompressed_size = 0;
+			media_frame->uncompressed_data = NULL;
 			
-			int plane_bytes [4];
-			int width = context->width;
-			int height = context->height;
-			switch (pixel_format) {
-			case MoonPixelFormatYUV420P:
-				plane_bytes [0] = height * frame->linesize [0];
-				plane_bytes [1] = height * frame->linesize [1] / 2;
-				plane_bytes [2] = height * frame->linesize [2] / 2;
-				plane_bytes [3] = 0;
-				break;
-			default:
-				plane_bytes [0] = 0;
-				plane_bytes [1] = 0;
-				plane_bytes [2] = 0;
-				plane_bytes [3] = 0;
-				break;
-			}
-			
-			for (int i = 0; i < 4; i++) {
-				if (plane_bytes [i] != 0) {
-					media_frame->uncompressed_data_stride [i] = (guint8*) g_malloc0 (plane_bytes [i] + stream->min_padding);
-					memcpy (media_frame->uncompressed_data_stride [i], frame->data [i], plane_bytes [i]);
-				} else {
-					media_frame->uncompressed_data_stride [i] = frame->data [i];
-				}
-				media_frame->srcStride [i] = frame->linesize [i];
-			}
 			media_frame->srcSlideY = 0;
 			media_frame->srcSlideH = context->height;
-			 // We can't free the frame until the data has been used, 
-			 // so save the frame in decoder_specific_data. 
-			 // This will cause FfmpegDecoder::Cleanup to be called 
-			 // when the MediaFrame is deleted.
-			media_frame->decoder_specific_data = frame;
+			
+			if (media_frame->IsCopyDecodedData ()) {
+				int plane_bytes [4];
+				int height = context->height;
+				switch (pixel_format) {
+				case MoonPixelFormatYUV420P:
+					plane_bytes [0] = height * frame->linesize [0];
+					plane_bytes [1] = height * frame->linesize [1] / 2;
+					plane_bytes [2] = height * frame->linesize [2] / 2;
+					plane_bytes [3] = 0;
+					break;
+				default:
+					printf ("FfmpegDecoder::DecodeFrame (): Unknown output format, can't calculate byte number.\n");
+					plane_bytes [0] = 0;
+					plane_bytes [1] = 0;
+					plane_bytes [2] = 0;
+					plane_bytes [3] = 0;
+					break;
+				}
+				
+				for (int i = 0; i < 4; i++) {
+					if (plane_bytes [i] != 0) {
+						media_frame->uncompressed_data_stride [i] = (guint8*) g_malloc0 (plane_bytes [i] + stream->min_padding);
+						memcpy (media_frame->uncompressed_data_stride [i], frame->data [i], plane_bytes [i]);
+					} else {
+						media_frame->uncompressed_data_stride [i] = frame->data [i];
+					}
+					media_frame->srcStride [i] = frame->linesize [i];
+				}
+				av_free (frame);
+				frame = NULL;
+			} else {
+				for (int i = 0; i < 4; i++) {
+					media_frame->uncompressed_data_stride [i] = frame->data [i];
+					media_frame->srcStride [i] = frame->linesize [i];
+				}
+				
+				 // We can't free the frame until the data has been used, 
+				 // so save the frame in decoder_specific_data. 
+				 // This will cause FfmpegDecoder::Cleanup to be called 
+				 // when the MediaFrame is deleted.
+				media_frame->decoder_specific_data = frame;
+			}
 		} else {
 			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get picture (%i), length = %i.\n", media_frame, got_picture, length);
 		}
@@ -294,6 +306,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 		media->AddMessage (MEDIA_FAIL, "Invalid media type.");
 		return MEDIA_FAIL;
 	}
+	
+	media_frame->AddState (FRAME_DECODED);
 	
 	return MEDIA_SUCCESS;
 }

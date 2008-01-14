@@ -47,8 +47,9 @@ public:
 	AVFormatContext *av_ctx;
 	
 	GThread *audio_thread;
+#ifndef MOON_MEDIA
 	GThread *io_thread;
-	
+#endif
 	Audio *audio;
 	Video *video;
 	

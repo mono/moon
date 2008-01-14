@@ -116,6 +116,18 @@ typedef gint32 MediaResult;
 
 #define MEDIA_SUCCEEDED(x) ((x <= 0))
 
+#define FRAME_PLANAR (1)
+#define FRAME_DECODED (2)
+#define FRAME_DEMUXED (4)
+#define FRAME_CONVERTED (8)
+// Set if the pipeline needs it's own copy of the decoded data
+// If this is not set, the decoder can keep one area of memory and always decode into
+// that area, just passing back a pointer to that area.
+// It is required to set this if the decoding is done on another thread
+// (otherwise the pipeline will always access the latest decoded frame, which almost never
+// is the frame you want to show).
+#define FRAME_COPY_DECODED_DATA (16) 
+
 enum MoonPixelFormat {
 	MoonPixelFormatNone = 0,
 	MoonPixelFormatRGB32,
@@ -211,10 +223,12 @@ public:
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
 	//	Returns the decoded frame
-	MediaFrame* GetNextFrame (IMediaStream* stream);
+	MediaResult GetNextFrame (MediaFrame* frame);
+	MediaResult GetNextFrame (MediaFrame* frame, int states); 
 	
 	//	Requests reading of the next frame
-	void GetNextFrameAsync (IMediaStream* stream);
+	void GetNextFrameAsync (MediaFrame* frame); 
+	void GetNextFrameAsync (MediaFrame* frame, int states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	void DeleteQueue (); // Deletes the queue and finishes the thread that's processing the queue.
 	void SetQueueCallback (MediaClosure* closure) { queue_closure = closure; }
@@ -263,31 +277,42 @@ private:
 	
 	class Node : public List::Node {
 	public:
-		IMediaStream* stream;
+		MediaFrame* frame;
+		int states;
 	};
 };
  
 class MediaFrame {
 public:
 	~MediaFrame ();
-	MediaFrame ();
+	MediaFrame (IMediaStream* stream);
+	
+	void AddState (gint32 state) { this->state |= state; } // There's no way of "going back" to an earlier state 
+	bool IsDecoded () { return (state & FRAME_DECODED) == FRAME_DECODED; }
+	bool IsDemuxed () { return (state & FRAME_DEMUXED) == FRAME_DEMUXED; }
+	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
+	bool IsPlanar () { return (state & FRAME_PLANAR) == FRAME_PLANAR; }
+	bool IsCopyDecodedData () { return (state & FRAME_COPY_DECODED_DATA) == FRAME_COPY_DECODED_DATA; }
 	
 	IMediaStream* stream;
 	void* decoder_specific_data; // data specific to the decoder
 	guint64 pts; // Set by the demuxer
 	guint64 duration; // Set by the demuxer
-
+	
+	gint32 state; // Current state of the frame
+	
 	guint32 compressed_size; // Set by the demuxer
-	guint32 uncompressed_size; // Set by the decoder
-
 	void* compressed_data; // Set by the demuxer
+	
+	// non-planar data
+	guint32 uncompressed_size; // Set by the decoder
 	void* uncompressed_data; // Set by the decoder
 
+	// planar data
 	guint8 *uncompressed_data_stride[4]; // Set by the decoder
 	int srcSlideY; // Set by the decoder
 	int srcSlideH; // Set by the decoder
 	int srcStride [4]; // Set by the decoder
-	
 };
 
 // Interfaces

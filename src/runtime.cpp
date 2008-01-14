@@ -1603,6 +1603,8 @@ runtime_init (guint32 flags)
 		printf ("*** Proceed at your own risk\n");
 	}
 	
+	flags |= RUNTIME_INIT_SHOW_FPS;
+	
 	// Allow the user to override the flags via his/her environment
 	if ((env = g_getenv ("MOONLIGHT_OVERRIDES"))) {
 		const char *flag = env;
@@ -1640,10 +1642,14 @@ runtime_init (guint32 flags)
 	}
 	
 #if OBJECT_TRACKING
-	printf ("Runtime created. Object tracking summary:\n");
-	printf ("\tObjects created: %i\n", EventObject::objects_created);
-	printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
-	printf ("\tDifference: %i\n", EventObject::objects_created - EventObject::objects_destroyed);
+	if (EventObject::objects_created == EventObject::objects_destroyed) {
+		printf ("Runtime created (no leaked objects so far).\n");
+	} else {
+		printf ("Runtime created. Object tracking summary:\n");
+		printf ("\tObjects created: %i\n", EventObject::objects_created);
+		printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
+		printf ("\tDifference: %i\n", EventObject::objects_created - EventObject::objects_destroyed);
+	}
 #endif
 
 	inited = true;
@@ -1742,26 +1748,30 @@ runtime_shutdown ()
 	DependencyObject::Shutdown ();
 
 #if OBJECT_TRACKING
-	printf ("Runtime destroyed. Object tracking summary:\n");
-	printf ("\tObjects created: %i\n", EventObject::objects_created);
-	printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
-	printf ("\tDifference: %i (%.1f%%)\n", EventObject::objects_created - EventObject::objects_destroyed, (100.0 * EventObject::objects_destroyed) / EventObject::objects_created);
+	if (EventObject::objects_created == EventObject::objects_destroyed) {
+		printf ("Runtime destroyed, no leaked objects.\n");
+	} else {
+		printf ("Runtime destroyed, with LEAKED objects:\n");
+		printf ("\tObjects created: %i\n", EventObject::objects_created);
+		printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
+		printf ("\tDifference: %i (%.1f%%)\n", EventObject::objects_created - EventObject::objects_destroyed, (100.0 * EventObject::objects_destroyed) / EventObject::objects_created);
 
-	GPtrArray* last_n = g_ptr_array_new ();
+		GPtrArray* last_n = g_ptr_array_new ();
 
-	g_hash_table_foreach (EventObject::objects_alive, accumulate_last_n, last_n);
+		g_hash_table_foreach (EventObject::objects_alive, accumulate_last_n, last_n);
 
- 	uint counter = 10;
-	counter = MIN(counter, last_n->len);
-	if (counter) {
-		printf ("\tOldest %d objects alive:\n", counter);
-		for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
-			EventObject* obj = (EventObject *) last_n->pdata[i];
-			printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->refcount);
+	 	uint counter = 10;
+		counter = MIN(counter, last_n->len);
+		if (counter) {
+			printf ("\tOldest %d objects alive:\n", counter);
+			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
+				EventObject* obj = (EventObject *) last_n->pdata[i];
+				printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->refcount);
+			}
 		}
-	}
 
-	g_ptr_array_free (last_n, true);
+		g_ptr_array_free (last_n, true);
+	}
 #endif
 
 	Type::Shutdown ();

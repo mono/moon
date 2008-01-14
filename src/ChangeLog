@@ -1,5 +1,15 @@
 2008-01-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.h: We don't need io_tread anymore, so remove it.
+	* mplayer2.cpp: We don't need io_tread anymore, so remove it. Add support
+	  for doing the decoding on the main thread with easy (in-code) switch.
+	  Comment out printfs, and remove dead/old/commented-out code.
+	* pipeline.cpp, pipeline.h, pipeline-ffmpeg.cpp: Add support for doing the
+	  decoding on the main thread with easy (in-code) switch.
+	* runtime.cpp: Don't print entire object tracking output if nothing leaked.
+
+2008-01-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* xaml.cpp: Unref a matrix object when we are done with it.
 	* mplayer2.cpp: Remove printf.
 

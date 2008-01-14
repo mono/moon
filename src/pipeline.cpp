@@ -351,30 +351,43 @@ Media::Open (IMediaSource* source)
 	return result;
 }
 
-MediaFrame*
-Media::GetNextFrame (IMediaStream* stream)
+MediaResult
+Media::GetNextFrame (MediaFrame* frame, int states)
 {
 	//printf ("Media::GetNextFrame (%p).\n", stream);
 	
-	MediaResult result = MEDIA_SUCCESS;
-	MediaFrame* frame = new MediaFrame ();
-	frame->stream = stream;
-	
-	result = demuxer->ReadFrame (frame);
-	if (!MEDIA_SUCCEEDED (result)) {
-		delete frame;
-		return NULL;
+	if (frame == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "frame is NULL.");
+		return MEDIA_INVALID_ARGUMENT;
 	}
 	
-	result = stream->decoder->DecodeFrame (frame);
+	MediaResult result = MEDIA_SUCCESS;
+	
+	if ((states & FRAME_DEMUXED) != FRAME_DEMUXED)
+		return result; // Nothing to do?
+		
+	result = demuxer->ReadFrame (frame);
 	if (!MEDIA_SUCCEEDED (result)) {
-		delete frame;
-		return NULL;
+		return result;
+	}
+	
+	if ((states & FRAME_DECODED) != FRAME_DECODED)
+		return result;
+	
+	result = frame->stream->decoder->DecodeFrame (frame);
+	if (!MEDIA_SUCCEEDED (result)) {
+		return result;
 	}
 	
 	//printf ("Media::GetNextFrame (%p) finished, size: %i.\n", stream, frame->uncompressed_size);
 	
-	return frame;
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+Media::GetNextFrame (MediaFrame* frame)
+{
+	return GetNextFrame (frame, FRAME_DEMUXED | FRAME_DECODED);
 }
 
 void* 
@@ -403,10 +416,10 @@ Media::FrameReaderLoop ()
 		if (queued_requests != NULL) {
 			// Find the first audio node
 			current = (Media::Node*) queued_requests->First ();
-			while (current != NULL && current->stream->GetType () != MediaTypeAudio) {
+			while (current != NULL && current->frame->stream->GetType () != MediaTypeAudio) {
 				current = (Media::Node*) current->next;
 			}
-			if (current != NULL && current->stream->GetType () == MediaTypeAudio) {
+			if (current != NULL && current->frame->stream->GetType () == MediaTypeAudio) {
 				node = current;
 			} else {
 				// No audio node, just get the first node
@@ -423,11 +436,11 @@ Media::FrameReaderLoop ()
 		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): processing node.\n");
 		
 		// Now demux and decode what we found and send it to who asked for it
-		MediaFrame* frame = GetNextFrame (node->stream);
-		if (frame != NULL) {
+		MediaResult result = GetNextFrame (node->frame, node->states);
+		if (MEDIA_SUCCEEDED (result)) {
 			MediaClosure *closure = new MediaClosure ();
 			memcpy (closure, queue_closure, sizeof (MediaClosure));
-			closure->frame = frame;
+			closure->frame = node->frame;
 			closure->Call ();
 			delete closure;
 		}
@@ -438,7 +451,13 @@ Media::FrameReaderLoop ()
 #include <sched.h>
 
 void
-Media::GetNextFrameAsync (IMediaStream* stream)
+Media::GetNextFrameAsync (MediaFrame* frame)
+{
+	Media::GetNextFrameAsync (frame, FRAME_DEMUXED | FRAME_DECODED);
+}
+
+void
+Media::GetNextFrameAsync (MediaFrame* frame, int states)
 {
 	//printf ("Media::GetNextFrameAsync (%p).\n", stream);
 	if (queued_requests == NULL) {
@@ -458,7 +477,8 @@ Media::GetNextFrameAsync (IMediaStream* stream)
 	
 	// Add another node to our queue.
 	Media::Node* node = new Media::Node ();
-	node->stream = stream;
+	node->frame = frame;
+	node->states = states;
 	queued_requests->Append (node);
 	
 	pthread_cond_signal (&queue_condition);
@@ -739,6 +759,8 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
 		return MEDIA_DEMUXER_ERROR;
 	}
 	
+	frame->AddState (FRAME_DEMUXED);
+	
 	//printf ("ASFDemuxer::ReadFrame (%p) frame = ", frame);
 	//frame->printf ();
 	//printf ("\n");
@@ -950,10 +972,10 @@ IMediaDemuxer::~IMediaDemuxer ()
  * MediaFrame
  */ 
  
-MediaFrame::MediaFrame () : 
-	stream (NULL), decoder_specific_data (NULL), 
-	pts (0), duration (0), compressed_size (0), uncompressed_size (0),
-	compressed_data (NULL), uncompressed_data (NULL), srcSlideY (0), srcSlideH (0)
+MediaFrame::MediaFrame (IMediaStream* str) : 
+	stream (str), decoder_specific_data (NULL), 
+	pts (0), duration (0), state (0), compressed_size (0), compressed_data (NULL),
+	uncompressed_size (0), uncompressed_data (NULL), srcSlideY (0), srcSlideH (0)
 {
 	for (int i = 0; i < 4; i++) {
 		uncompressed_data_stride [i] = 0;  
