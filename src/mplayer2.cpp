@@ -1298,7 +1298,7 @@ audio_loop (void *data)
 		}
 	}
 	
-	printf ("audio_loop (): exited.\n");
+	//printf ("audio_loop (): exited.\n");
 	
 	pthread_mutex_unlock (&mplayer->pause_mutex);
 	

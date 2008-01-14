@@ -2527,6 +2527,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 
 		v = new Value (t);
 		t->unref ();
+		mv->unref ();
 		break;
 	}
 	case Type::MATRIX: {
