@@ -11,15 +11,6 @@
  */
 
 
-/*
-	TODO:
-		jeff - make 1 thread play all audio (and don't exit when audio finishes).
-		make markers work again
-		write a progressive source
-		done - try decoding on main thread
-		jeff - write an mp3 demuxer
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -309,11 +300,10 @@ media_player_callback (MediaClosure* closure)
 	closure->frame = NULL;
 	
 	switch (stream->GetType ()) {
-	case MediaTypeVideo: // TODO: Add locking here.
+	case MediaTypeVideo:
 		player->video->queue->Push (new Packet (frame));
 		return MEDIA_SUCCESS;
-	case MediaTypeAudio: // TODO: Add locking here.
-		//printf ("Added audio packet, with pts: %lld\n", frame->pts);
+	case MediaTypeAudio: 
 		player->audio->queue->Push (new Packet (frame));
 		return MEDIA_SUCCESS;
 	default:
@@ -325,7 +315,11 @@ void
 media_player_enqueue_frames (MediaPlayer* mplayer, int audio_frames, int video_frames)
 {
 	for (int i = 0; i < audio_frames; i++) {
-		mplayer->media->GetNextFrameAsync (new MediaFrame (mplayer->audio->stream));
+		MediaFrame* frame = new MediaFrame (mplayer->audio->stream);
+		int states = FRAME_DEMUXED | FRAME_DECODED; // To decode on the main thread comment out FRAME_DECODED.
+		if ((states & FRAME_DECODED) == FRAME_DECODED)
+			frame->AddState (FRAME_COPY_DECODED_DATA);
+		mplayer->media->GetNextFrameAsync (frame, states);
 	}
 		
 	for (int i = 0; i < video_frames; i++) {
@@ -1258,7 +1252,7 @@ audio_loop (void *data)
 			continue;
 		}
 		
-		play = true; //mplayer->target_pts >= mplayer->seek_pts;
+		play = true;
 		
 		if ((frame_pts = audio_play (audio, play, ufds, ndfs)) > 0) {
 			// calculated pts
@@ -1270,6 +1264,11 @@ audio_loop (void *data)
 		} else {
 			// decode an audio packet
 			if (!audio->pkt && (pkt = (Packet *) audio->queue->Pop ())) {
+				if (!pkt->frame->IsDecoded ()) {
+					if (!MEDIA_SUCCEEDED (pkt->frame->stream->decoder->DecodeFrame (pkt->frame)))
+						continue;
+				}
+			
 				audio->inleft = pkt->frame->uncompressed_size;
 				audio->inptr = (uint8_t*) pkt->frame->uncompressed_data;
 				audio->pkt = pkt;
