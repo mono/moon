@@ -1,3 +1,8 @@
+2008-01-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer2.cpp: Remove dead code and variables, and only request audio/video
+	  frames if we have audio/video.
+
 2008-01-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer2.cpp: Get rid of extra member variables in Packet.

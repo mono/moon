@@ -70,9 +70,6 @@ Packet::Packet (MediaFrame *frame)
 
 Packet::~Packet ()
 {
-	//printf ("Packet::~Packet () Deleting packet whose data ptr is: %p.\n", data);
-	//g_free (data);
-	//data = NULL;
 	
 	delete frame;
 	frame = NULL;
@@ -97,7 +94,6 @@ struct Audio {
 	// input
 	int stream_count;
 	AudioStream *stream;
-	IMediaDecoder *codec;
 	
 	// buffering
 	uint8_t buffer[AUDIO_BUFLEN + 1];
@@ -136,8 +132,6 @@ Audio::Audio ()
 	stream_count = 0;
 	stream = NULL;
 	
-	codec = NULL;
-	
 	memset (buffer, 0, AUDIO_BUFLEN + 1);
 	outbuf = ALIGN (buffer, 2);
 	outptr = outbuf;
@@ -170,7 +164,6 @@ struct Video {
 	
 	// input
 	VideoStream *stream;
-	IMediaDecoder *codec;
 	
 	// rendering
 	cairo_surface_t *surface;
@@ -190,7 +183,6 @@ Video::Video ()
 	queue = new Queue ();
 	
 	stream = NULL;
-	codec = NULL;
 	
 	surface = NULL;
 	rgb_buffer = NULL;
@@ -235,7 +227,6 @@ MediaPlayer::MediaPlayer ()
 	pthread_mutex_init (&target_pts_lock, NULL);
 	current_pts = 0;
 	target_pts = 0;
-//	seek_pts = 0;
 	
 	height = 0;
 	width = 0;
@@ -287,29 +278,33 @@ media_player_enqueue_frames (MediaPlayer *mplayer, int audio_frames, int video_f
 {
 	MediaFrame *frame;
 	int states, i;
-	
-	for (i = 0; i < audio_frames; i++) {
-		frame = new MediaFrame (mplayer->audio->stream);
-		
-		// To decode on the main thread comment out FRAME_DECODED.
-		states = FRAME_DEMUXED | FRAME_DECODED;
-		
-		if ((states & FRAME_DECODED) == FRAME_DECODED)
-			frame->AddState (FRAME_COPY_DECODED_DATA);
-		
-		mplayer->media->GetNextFrameAsync (frame, states);
+
+	if (mplayer->HasAudio ()) {	
+		for (i = 0; i < audio_frames; i++) {
+			frame = new MediaFrame (mplayer->audio->stream);
+			
+			// To decode on the main thread comment out FRAME_DECODED.
+			states = FRAME_DEMUXED | FRAME_DECODED;
+			
+			if ((states & FRAME_DECODED) == FRAME_DECODED)
+				frame->AddState (FRAME_COPY_DECODED_DATA);
+			
+			mplayer->media->GetNextFrameAsync (frame, states);
+		}
 	}
 	
-	for (i = 0; i < video_frames; i++) {
-		frame = new MediaFrame (mplayer->video->stream);
-		
-		// To decode on the main thread comment out FRAME_DECODED.
-		states = FRAME_DEMUXED | FRAME_DECODED;
-		
-		if ((states & FRAME_DECODED) == FRAME_DECODED)
-			frame->AddState (FRAME_COPY_DECODED_DATA);
-		
-		mplayer->media->GetNextFrameAsync (frame, states);
+	if (mplayer->HasVideo ()) {
+		for (i = 0; i < video_frames; i++) {
+			frame = new MediaFrame (mplayer->video->stream);
+			
+			// To decode on the main thread comment out FRAME_DECODED.
+			states = FRAME_DEMUXED | FRAME_DECODED;
+			
+			if ((states & FRAME_DECODED) == FRAME_DECODED)
+				frame->AddState (FRAME_COPY_DECODED_DATA);
+			
+			mplayer->media->GetNextFrameAsync (frame, states);
+		}
 	}
 }
 
@@ -467,13 +462,11 @@ MediaPlayer::Close ()
 	
 	audio->stream_count = 0;
 	audio->stream = NULL;
-	audio->codec = NULL;
 	audio->sample_size = 0;
 	audio->initial_pts = 0;
 	audio->pts_per_frame = 0;
 	
 	video->stream = NULL;
-	video->codec = NULL;
 	video->initial_pts = 0;
 	video->msec_per_frame = 0;
 	video->usec_to_pts = 0;
