@@ -424,6 +424,9 @@ MediaPlayer::Open (const char *uri)
 		// 2 bytes per channel, we always calculate as 2-channel audio because it gets converted into such
 		audio->pts_per_frame = (buf_size * 2 * 2) / (encoding->sample_rate / 100);
 		
+		printf ("buf_size = %lu; sample_size = %lu; sample_rate = %lu, pts = %llu\n",
+			buf_size, audio->sample_size, encoding->sample_rate, audio->pts_per_frame);
+		
 		target_pts = audio->initial_pts;
 	}
 	
@@ -905,7 +908,7 @@ MediaPlayer::Position ()
 	
 //	printf ("MediaPlayer::Position (), position: %lld, audio->initialpts: %lld, video->initialpts = %lld, seek_pts = %lld, target_pts = %lld, paused = %s, opened = %s, playing = %s\n", position,
 //		audio->initial_pts, video->initial_pts, seek_pts, target_pts, paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
-		
+	
 	if (audio->pcm != NULL && audio->stream_id != -1)
 		return position - audio->initial_pts;
 	
@@ -920,7 +923,7 @@ MediaPlayer::Duration ()
 {
 //	printf ("MediaPlayer::Duration (), audio->stream->duration: %lld, video->stream->duration: %lld\n", audio->stream != NULL ? audio->stream->duration : -1,
 //			video->stream != NULL ? video->stream->duration : -1);
-			
+	
 	if (audio->pcm != NULL && audio->stream_id != -1)
 		return audio->stream->duration;
 	

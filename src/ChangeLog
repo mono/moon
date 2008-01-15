@@ -1,3 +1,7 @@
+2008-01-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp: Implemented mp3 demuxer.
+
 2008-01-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer2.cpp: Don't crash if Seek is called before Open.

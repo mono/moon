@@ -10,7 +10,11 @@
  * 
  */
 
-#include "config.h"
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
 #include "uri.h"
@@ -119,8 +123,8 @@ void
 Media::Initialize ()
 {
 	// register stuff
-	//Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
+	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
 #endif
@@ -160,24 +164,21 @@ Media::Shutdown ()
 void
 Media::AddMessage (MediaResult result, const char* msg)
 {
-	if (!MEDIA_SUCCEEDED (result)) {
+	if (!MEDIA_SUCCEEDED (result))
 		printf ("Media::AddMessage (%i, '%s').\n", result, msg);
-	}
 }
 
 void
-Media::AddMessage (MediaResult result, char* msg)
+Media::AddMessage (MediaResult result, char *msg)
 {
-	AddMessage (result, (const char*) msg);
+	AddMessage (result, (const char *) msg);
 	g_free (msg);
 }
 
 MediaResult
-Media::Seek (gint64 pts)
+Media::Seek (uint64_t pts)
 {
 	return demuxer->Seek (pts);
-
-	return MEDIA_SUCCESS;
 }
 
 MediaResult
@@ -352,7 +353,7 @@ Media::Open (IMediaSource* source)
 }
 
 MediaResult
-Media::GetNextFrame (MediaFrame* frame, int states)
+Media::GetNextFrame (MediaFrame *frame, int states)
 {
 	//printf ("Media::GetNextFrame (%p).\n", stream);
 	
@@ -367,17 +368,15 @@ Media::GetNextFrame (MediaFrame* frame, int states)
 		return result; // Nothing to do?
 		
 	result = demuxer->ReadFrame (frame);
-	if (!MEDIA_SUCCEEDED (result)) {
+	if (!MEDIA_SUCCEEDED (result))
 		return result;
-	}
 	
 	if ((states & FRAME_DECODED) != FRAME_DECODED)
 		return result;
 	
 	result = frame->stream->decoder->DecodeFrame (frame);
-	if (!MEDIA_SUCCEEDED (result)) {
+	if (!MEDIA_SUCCEEDED (result))
 		return result;
-	}
 	
 	//printf ("Media::GetNextFrame (%p) finished, size: %i.\n", stream, frame->uncompressed_size);
 	
@@ -385,16 +384,18 @@ Media::GetNextFrame (MediaFrame* frame, int states)
 }
 
 MediaResult
-Media::GetNextFrame (MediaFrame* frame)
+Media::GetNextFrame (MediaFrame *frame)
 {
 	return GetNextFrame (frame, FRAME_DEMUXED | FRAME_DECODED);
 }
 
-void* 
-Media::FrameReaderLoop (void* data)
+void * 
+Media::FrameReaderLoop (void *data)
 {
-	Media* media = (Media*) data;
+	Media *media = (Media *) data;
+	
 	media->FrameReaderLoop ();
+	
 	return NULL;
 }
 
@@ -405,7 +406,7 @@ Media::FrameReaderLoop ()
 {
 	LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop ().\n");
 	while (queued_requests != NULL) {
-		Media::Node* node = NULL, *current = NULL;
+		Media::Node *node = NULL, *current = NULL;
 		
 		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): entering mutex.\n");
 		// Wait until we have something in the queue
@@ -521,7 +522,7 @@ Media::DeleteQueue ()
  * ASFDemuxer
  */
 
-ASFDemuxer::ASFDemuxer (Media* media) : IMediaDemuxer (media)
+ASFDemuxer::ASFDemuxer (Media *media) : IMediaDemuxer (media)
 {
 	stream_to_asf_index = NULL;
 	reader = NULL;
@@ -540,7 +541,7 @@ ASFDemuxer::~ASFDemuxer ()
 }
 
 MediaResult
-ASFDemuxer::Seek (guint64 pts)
+ASFDemuxer::Seek (uint64_t pts)
 {
 	if (reader == NULL)
 		reader = new ASFFrameReader (parser);
@@ -567,15 +568,18 @@ ASFDemuxer::ReadMarkers ()
 	*/
 	
 	// Read the markers (if any)
+	List *markers = media->GetMarkers ();
+	//guint64 preroll = parser->file_properties->preroll;
+	const char *type;
+	uint64_t pts;
+	char *text;
 	int i = -1;
-	guint64 preroll = parser->file_properties->preroll;
-	List* markers = media->GetMarkers ();
 	
 	// Read the SCRIPT COMMANDs
 	char **command_types = NULL;
 	asf_script_command_entry **commands = NULL;
 	asf_script_command *command = parser->script_command;
-
+	
 	if (command != NULL) {
 		commands = command->get_commands (parser, &command_types);
 		
@@ -588,13 +592,14 @@ ASFDemuxer::ReadMarkers ()
 	i = -1;
 	while (commands != NULL && commands [++i] != NULL) {
 		asf_script_command_entry *entry = commands [i];
-		int64_t pts = entry->pts; //(entry->pts - preroll) * 10000;
-		char* text = entry->get_name ();
-		const char* type = "";
 		
-		if (entry->type_index + 1 <= command->command_type_count) {
+		text = entry->get_name ();
+		pts = entry->pts; //(entry->pts - preroll) * 10000;
+		
+		if (entry->type_index + 1 <= command->command_type_count)
 			type = command_types [entry->type_index];
-		}
+		else
+			type = "";
 		
 		markers->Append (new MediaMarker::Node (new MediaMarker (type, text, pts)));
 		
@@ -602,7 +607,6 @@ ASFDemuxer::ReadMarkers ()
 		
 		g_free (text);
 	}
-	
 	
 	// Read the MARKERs
 	asf_marker *asf_marker;
@@ -612,8 +616,9 @@ ASFDemuxer::ReadMarkers ()
 	if (asf_marker != NULL) {
 		for (i = 0; i < (int) asf_marker->marker_count; i++) {
 			marker_entry = asf_marker->get_entry (i);
-			int64_t pts = marker_entry->pts / 10000; // (marker_entry->pts - preroll * 10000);
-			char* text = marker_entry->get_marker_description ();
+			text = marker_entry->get_marker_description ();
+			
+			pts = marker_entry->pts / 10000; // (marker_entry->pts - preroll * 10000);
 			
 			markers->Append (new MediaMarker::Node (new MediaMarker ("Name", text, pts)));
 			
@@ -625,28 +630,23 @@ ASFDemuxer::ReadMarkers ()
 	
 		
 cleanup:
-	if (command_types) {
-		i = -1;
-		while (command_types [++i] != NULL)
-			g_free (command_types [i]);
-		g_free (command_types);
-	}
 	
+	g_strfreev (command_types);
 	g_free (commands);
 }
 
 MediaResult
 ASFDemuxer::ReadHeader ()
 {
-	printf ("ASFDemuxer::ReadHeader ().\n");
-	
 	MediaResult result = MEDIA_SUCCESS;
-	ASFSource* asf_source = new ASFMediaSource (NULL, GetMedia ()->GetSource ());
-	ASFParser* asf_parser = new ASFParser (asf_source);
-	gint32* stream_to_asf_index = NULL;
-	IMediaStream** streams = NULL;
+	ASFSource *asf_source = new ASFMediaSource (NULL, GetMedia ()->GetSource ());
+	ASFParser *asf_parser = new ASFParser (asf_source);
+	int32_t *stream_to_asf_index = NULL;
+	IMediaStream **streams = NULL;
 	int current_stream = 1;
 	int stream_count = 0;
+	
+	printf ("ASFDemuxer::ReadHeader ().\n");
 	
 	asf_source->parser = asf_parser;
 	
@@ -667,8 +667,8 @@ ASFDemuxer::ReadHeader ()
 	}
 	
 	current_stream = 1;
-	streams = (IMediaStream**) g_malloc0 (sizeof (IMediaStream*) * (stream_count + 1)); // End with a NULL element.
-	stream_to_asf_index = (gint32*) g_malloc0 (sizeof (gint32) * (stream_count + 1)); 
+	streams = (IMediaStream **) g_malloc0 (sizeof (IMediaStream *) * (stream_count + 1)); // End with a NULL element.
+	stream_to_asf_index = (int32_t *) g_malloc0 (sizeof (int32_t) * (stream_count + 1)); 
 
 	// Loop through all the streams and set stream-specific data	
 	for (int i = 0; i < stream_count; i++) {
@@ -836,15 +836,16 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
 	frame->compressed_size = reader->Size ();
-	frame->compressed_data = g_malloc0 (reader->Size () + frame->stream->min_padding);
+	frame->compressed_data = g_try_malloc (reader->Size () + frame->stream->min_padding);
 	if (frame->compressed_data == NULL) {
 		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
 		return MEDIA_OUT_OF_MEMORY;
 	}
+	
 	//printf ("ASFDemuxer::ReadFrame (%p), min_padding = %i\n", frame, frame->stream->min_padding);
-	if (frame->stream->min_padding > 0) {
-		memset ((char*) frame->compressed_data + reader->Size (), 0, frame->stream->min_padding); 
-	}
+	if (frame->stream->min_padding > 0)
+		memset ((char *) frame->compressed_data + reader->Size (), 0, frame->stream->min_padding); 
+	
 	if (!reader->Write (frame->compressed_data)) {
 		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
 		return MEDIA_DEMUXER_ERROR;
@@ -886,33 +887,10 @@ ASFDemuxerInfo::Create (Media* media)
 }
 
 
+
 /*
- * Mp3Demuxer
+ * MPEG Audio Demuxer
  */
-
-Mp3Demuxer::Mp3Demuxer (Media *media) : IMediaDemuxer (media)
-{
-	//reader = NULL;
-}
-
-Mp3Demuxer::~Mp3Demuxer ()
-{
-	//if (reader)
-	//	delete reader;
-}
-
-MediaResult
-Mp3Demuxer::Seek (guint64 pts)
-{
-	//if (reader == NULL)
-	//	reader = new Mp3FrameReader (parser);
-	
-	//if (reader->Seek (0, pts))
-	//	return MEDIA_SUCCESS;
-	
-	return MEDIA_FAIL;
-}
-
 
 struct MpegFrameHeader {
 uint8_t version:2;
@@ -933,20 +911,20 @@ uint8_t version:2;
 
 static int mpeg1_bitrates[3][15] = {
 	/* version 1, layer 1 */
-	{ 0, 32, 48, 56, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448 },
+	{ 0, 32000, 48000, 56000, 128000, 160000, 192000, 224000, 256000, 288000, 320000, 352000, 384000, 416000, 448000 },
 	/* version 1, layer 2 */
-	{ 0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384 },
+	{ 0, 32000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000, 384000 },
 	/* version 1, layer 3 */
-	{ 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 },
+	{ 0, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000 },
 };
 
 static int mpeg2_bitrates[3][15] = {
 	/* version 2, layer 1 */
-	{ 0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256 },
+	{ 0, 32000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 144000, 160000, 176000, 192000, 224000, 256000 },
 	/* version 2, layer 2 */
-	{ 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 },
+	{ 0, 8000, 16000, 24000, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 144000, 160000 },
 	/* version 2, layer 3 */
-	{ 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 }
+	{ 0, 8000, 16000, 24000, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 144000, 160000 }
 };
 
 static int
@@ -1038,7 +1016,7 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	}
 	
 	// protection (via 16bit crc) bit
-	mpeg->prot = (buffer[1] & 0x01) == 0 ? 1 : 0;
+	mpeg->prot = (buffer[1] & 0x01) ? 1 : 0;
 	
 	// extract the bit rate
 	if (mpeg_bitrate (mpeg, buffer[2]) == -1)
@@ -1061,11 +1039,121 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	return 0;
 }
 
+
+Mp3FrameReader::Mp3FrameReader (IMediaSource *source, int64_t start)
+{
+	stream_start = start;
+	stream = source;
+	
+	cur_pts = 0;
+}
+
+Mp3FrameReader::~Mp3FrameReader ()
+{
+	
+}
+
+bool
+Mp3FrameReader::Seek (uint64_t pts)
+{
+	if (pts == 0)
+		return stream->Seek (stream_start, SEEK_SET);
+	
+	// FIXME: do the math to figure out where in the file to seek to
+	
+	return false;
+}
+
+MediaResult
+Mp3FrameReader::ReadFrame (MediaFrame *frame)
+{
+	MpegFrameHeader mpeg;
+	uint8_t buffer[4];
+	uint32_t len;
+	
+	if (!stream->Read (buffer, 4))
+		return MEDIA_NO_MORE_DATA;
+	
+	memset ((void *) &mpeg, 0, sizeof (mpeg));
+	if (mpeg_parse_header (&mpeg, buffer) == -1)
+		return MEDIA_DEMUXER_ERROR;
+	
+	if (mpeg.layer == 1)
+		len = (((12 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded) * 4;
+	else
+		len = ((144 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded;
+	
+	if (mpeg.prot) {
+		// include 2 extra bytes for 16bit crc
+		len += 2;
+	}
+	
+	frame->compressed_size = len;
+	
+	if (mpeg.layer != 1 && !mpeg.padded)
+		frame->compressed_data = g_try_malloc (frame->compressed_size + 1);
+	else
+		frame->compressed_data = g_try_malloc (frame->compressed_size);
+	
+	if (frame->compressed_data == NULL) {
+		//media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
+		return MEDIA_OUT_OF_MEMORY;
+	}
+	
+	if (mpeg.layer != 1 && !mpeg.padded)
+		((uint8_t *) frame->compressed_data)[frame->compressed_size - 1] = 0;
+	
+	memcpy (frame->compressed_data, buffer, 4);
+	
+	if (!stream->Read (((uint8_t *) frame->compressed_data) + 4, len - 4)) {
+		//media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
+		return MEDIA_DEMUXER_ERROR;
+	}
+	
+	frame->pts = cur_pts;
+	
+	// FIXME: correctly calculate duration
+	//int sample_size = mpeg.layer > 1 ? 1152 : 384;
+	frame->duration = 0;
+	
+	frame->AddState (FRAME_DEMUXED);
+	
+	cur_pts += frame->duration;
+	
+	return MEDIA_SUCCESS;
+}
+
+
+/*
+ * Mp3Demuxer
+ */
+
+Mp3Demuxer::Mp3Demuxer (Media *media) : IMediaDemuxer (media)
+{
+	reader = NULL;
+}
+
+Mp3Demuxer::~Mp3Demuxer ()
+{
+	if (reader)
+		delete reader;
+}
+
+MediaResult
+Mp3Demuxer::Seek (uint64_t pts)
+{
+	if (reader && reader->Seek (pts))
+		return MEDIA_SUCCESS;
+	
+	return MEDIA_FAIL;
+}
+
 MediaResult
 Mp3Demuxer::ReadHeader ()
 {
 	IMediaSource *source = GetMedia ()->GetSource ();
 	IMediaStream **streams = NULL;
+	int64_t stream_start;
 	IMediaStream *stream;
 	MpegFrameHeader mpeg;
 	AudioStream *audio;
@@ -1073,8 +1161,6 @@ Mp3Demuxer::ReadHeader ()
 	uint32_t size = 0;
 	int stream_count;
 	int i;
-	
-	printf ("Mp3Demuxer::ReadHeader ().\n");
 	
 	if (!source->Read (buffer, 10))
 		return MEDIA_INVALID_MEDIA;
@@ -1113,6 +1199,8 @@ Mp3Demuxer::ReadHeader ()
 	if (mpeg_parse_header (&mpeg, buffer) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
+	reader = new Mp3FrameReader (source, stream_start);
+	
 	stream = audio = new AudioStream (GetMedia ());
 	audio->codec_id = CODEC_MP3;
 	audio->codec = "mp3";
@@ -1140,8 +1228,7 @@ Mp3Demuxer::ReadHeader ()
 MediaResult
 Mp3Demuxer::ReadFrame (MediaFrame *frame)
 {
-	// FIXME: implement me
-	return MEDIA_SUCCESS;
+	return reader->ReadFrame (frame);
 }
 
 
@@ -1218,11 +1305,8 @@ FileSource::FileSource (Media *media) :
 FileSource::~FileSource ()
 {
 	g_free (filename);
-	filename = NULL;
-	if (fd) {
+	if (fd)
 		fclose (fd);
-		fd = NULL;
-	}
 }
 
 bool
@@ -1270,16 +1354,18 @@ FileSource::Read (void* buffer, guint32 size)
 }
 
 bool
-FileSource::Peek (void* buffer, guint32 size)
+FileSource::Peek (void *buffer, uint32_t n)
 {
 	// Simple implementation of peek: save position, read bytes, restore position.
-	gint64 position = GetPosition ();
-	if (!Read (buffer, size))
+	int64_t position = GetPosition ();
+	
+	if (!Read (buffer, n))
 		return false;
+	
 	return Seek (position, SEEK_SET);
 }
 
-guint64
+int64_t
 FileSource::GetPosition ()
 {
 	//printf ("FileSource::GetPosition ().\n");
@@ -1295,7 +1381,7 @@ FileSource::IsSeekable ()
 }
 
 bool
-FileSource::Seek (gint64 offset)
+FileSource::Seek (int64_t offset)
 {
 	//printf ("FileSource::Seek (%llu).\n", position);
 	
@@ -1303,17 +1389,16 @@ FileSource::Seek (gint64 offset)
 }
 
 bool
-FileSource::Seek (gint64 offset, int mode)
+FileSource::Seek (int64_t offset, int mode)
 {
 	//printf ("FileSource::Seek (%llu, %i).\n", offset, mode);
 	
-	int result = fseek (fd, offset, mode);
-	if (result != 0) {
-		media->AddMessage (MEDIA_SEEK_ERROR, g_strdup_printf ("Can't seek to offset %llu with mode %i in '%s': %s.\n", offset, mode, filename, strerror (errno)));
-		return false;
-	}
-	//printf  ("fseek returned: %i, position: %llu\n", result, GetPosition ());
-	return true;
+	if (fseek (fd, offset, mode) == 0)
+		return true;
+	
+	media->AddMessage (MEDIA_SEEK_ERROR, g_strdup_printf ("Can't seek to offset %llu with mode %i in '%s': %s.\n",
+							      offset, mode, filename, strerror (errno)));
+	return false;
 }
 
 /*
@@ -1328,7 +1413,6 @@ MediaClosure::MediaClosure () :
 MediaClosure::~MediaClosure ()
 {
 	delete frame;
-	frame = NULL;
 }
 
 MediaResult
@@ -1343,22 +1427,30 @@ MediaClosure::Call ()
  * IMediaStream
  */
 
-IMediaStream::IMediaStream (Media* media) : 
-	extra_data (NULL), extra_data_size (0), codec_id (0), start_time (0),
-	msec_per_frame (0), duration (0), decoder (NULL), codec (NULL), min_padding (0),
-	index (-1), context (NULL)
+IMediaStream::IMediaStream (Media *media)
 {
+	context = NULL;
+	
+	extra_data_size = 0;
+	extra_data = NULL;
+	
+	msec_per_frame = 0;
+	start_time = 0;
+	duration = 0;
+	
+	decoder = NULL;
+	codec_id = 0;
+	codec = NULL;
+	
+	min_padding = 0;
+	index = -1;
 }
 
 IMediaStream::~IMediaStream ()
 {
 	delete decoder;
-	decoder = NULL;
 	
 	g_free (extra_data);
-	extra_data = NULL;
-	extra_data_size = 0;
-	
 }
 
 /*
@@ -1368,13 +1460,10 @@ IMediaStream::~IMediaStream ()
 IMediaDemuxer::~IMediaDemuxer ()
 {
 	if (streams != NULL) {
-		for (int i = 0; i < stream_count; i++) {
-			delete streams [i];
-			streams [i] = NULL;
-		}
+		for (int i = 0; i < stream_count; i++)
+			delete streams[i];
+		
 		g_free (streams);
-		streams = NULL;
-		stream_count = 0;
 	}
 }
 
@@ -1382,7 +1471,7 @@ IMediaDemuxer::~IMediaDemuxer ()
  * MediaFrame
  */ 
  
-MediaFrame::MediaFrame (IMediaStream* str) : 
+MediaFrame::MediaFrame (IMediaStream *str) : 
 	stream (str), decoder_specific_data (NULL), 
 	pts (0), duration (0), state (0), compressed_size (0), compressed_data (NULL),
 	uncompressed_size (0), uncompressed_data (NULL), srcSlideY (0), srcSlideH (0)
@@ -1396,9 +1485,7 @@ MediaFrame::MediaFrame (IMediaStream* str) :
 MediaFrame::~MediaFrame ()
 {
 	g_free (compressed_data);
-	compressed_data = NULL;
 	g_free (uncompressed_data);
-	uncompressed_data = NULL;
 	
 	if (decoder_specific_data != NULL) {
 		if (stream != NULL && stream->decoder != NULL) { 
@@ -1413,9 +1500,10 @@ MediaFrame::~MediaFrame ()
  * IMediaObject
  */
  
-IMediaObject::IMediaObject (Media* med) : 
-	media (med), callback (NULL)
+IMediaObject::IMediaObject (Media *media)
 {
+	this->callback = NULL;
+	this->media = media;
 }
 
 IMediaObject::~IMediaObject ()
@@ -1425,6 +1513,7 @@ IMediaObject::~IMediaObject ()
 /*
  * IMediaSource
  */
+
 
 /*
  * IMediaDemuxer
@@ -1441,7 +1530,7 @@ IMediaDemuxer::SetStreams (IMediaStream** streams, int count)
  * IMediaDecoder
  */
 
-IMediaDecoder::IMediaDecoder (Media* media, IMediaStream* stream)
+IMediaDecoder::IMediaDecoder (Media *media, IMediaStream *stream)
 {
 	this->media = media;
 	this->stream = stream;
@@ -1451,28 +1540,32 @@ IMediaDecoder::IMediaDecoder (Media* media, IMediaStream* stream)
  * IImageConverter
  */
 
-IImageConverter::IImageConverter (Media* med, VideoStream* str) : 
-	media (med), stream (str), input_format (MoonPixelFormatNone), output_format (MoonPixelFormatNone)
+IImageConverter::IImageConverter (Media *media, VideoStream *stream)
 {
+	output_format = MoonPixelFormatNone;
+	input_format = MoonPixelFormatNone;
+	this->stream = stream;
+	this->media = media;
 }
 
 /*
  * VideoStream
  */
 
-
-VideoStream::VideoStream (Media* media) : IMediaStream (media),
-	width (0), height (0), msec_per_frame (0), initial_pts (0),
-	bits_per_sample (0), converter (NULL)
+VideoStream::VideoStream (Media *media) : IMediaStream (media)
 {
+	converter = NULL;
+	bits_per_sample = 0;
+	msec_per_frame = 0;
+	initial_pts = 0;
+	height = 0;
+	width = 0;
 }
 
 VideoStream::~VideoStream ()
 {
-	if (converter != NULL) {
+	if (converter)
 		delete converter;
-		converter = NULL;
-	}
 }
 
 /*
@@ -1484,7 +1577,7 @@ VideoStream::~VideoStream ()
  * MediaMarker
  */ 
 
-MediaMarker::MediaMarker (const char* type, const char* text, guint64 pts)
+MediaMarker::MediaMarker (const char *type, const char *text, uint64_t pts)
 {
 	this->type = g_strdup (type);
 	this->text = g_strdup (text);
@@ -1494,33 +1587,28 @@ MediaMarker::MediaMarker (const char* type, const char* text, guint64 pts)
 MediaMarker::~MediaMarker ()
 {
 	g_free (type);
-	type = NULL;
 	g_free (text);
-	text = NULL;
 }
 
 /*
  * MarkerStream
  */
  
-MarkerStream::MarkerStream (Media* media) 
-	: IMediaStream (media),
-	closure (NULL)
+MarkerStream::MarkerStream (Media *media) : IMediaStream (media)
 {
+	closure = NULL;
 }
 
 MarkerStream::~MarkerStream ()
 {
 	delete closure;
-	closure = NULL;
 }
 
 void
-MarkerStream::SetCallback (MediaClosure* cl)
+MarkerStream::SetCallback (MediaClosure *closure)
 {
-	if (closure != NULL)
-		delete closure;
-	closure = cl;
+	if (this->closure)
+		delete this->closure;
+	
+	this->closure = closure;
 }
-
-
