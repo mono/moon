@@ -1,3 +1,7 @@
+2008-01-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer2.cpp: Get rid of extra member variables in Packet.
+
 2008-01-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer2.cpp: Implement audio decoding on the main thread as well.
