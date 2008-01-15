@@ -1276,14 +1276,28 @@ xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescop
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
 	char *start = (char*)xaml;
-
+	
 	if (!p) {
 #ifdef DEBUG_XAML
 		printf ("can not create parser\n");
 #endif
 		goto cleanup_and_return;
 	}
-
+	
+#if 0
+	if (true) {
+		static int id = 0;
+		char filename[64];
+		FILE *fp;
+		
+		sprintf (filename, "createFromXaml.%d.xaml", id++);
+		if ((fp = fopen (filename, "wt")) != NULL) {
+			fwrite (xaml, strlen (xaml), 1, fp);
+			fclose (fp);
+		}
+	}
+#endif
+	
 	parser_info = new XamlParserInfo (p, NULL);
 
 	parser_info->namescope->SetTemporary (!create_namescope);

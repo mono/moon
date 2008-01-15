@@ -1112,9 +1112,9 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	
 	frame->pts = cur_pts;
 	
-	// FIXME: correctly calculate duration
-	//int sample_size = mpeg.layer > 1 ? 1152 : 384;
-	frame->duration = 0;
+	// FIXME: is this right?
+	int sample_size = mpeg.layer > 1 ? 1152 : 384;
+	frame->duration = sample_size;
 	
 	frame->AddState (FRAME_DEMUXED);
 	
