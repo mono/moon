@@ -915,15 +915,20 @@ Mp3Demuxer::Seek (guint64 pts)
 
 
 struct MpegFrameHeader {
-	uint8_t version;
-	uint8_t layer;
+uint8_t version:2;
+	uint8_t layer:2;
 	
-	uint8_t padded;
-	uint8_t prot;
+	uint8_t copyright:1;
+	uint8_t original:1;
+	uint8_t padded:1;
+	uint8_t prot:1;
+	
+	uint8_t channels:6;
+	uint8_t intensity:1;
+	uint8_t ms:1;
 	
 	int bit_rate;
 	int sample_rate;
-	int8_t channels;
 };
 
 static int mpeg1_bitrates[3][15] = {
@@ -945,9 +950,9 @@ static int mpeg2_bitrates[3][15] = {
 };
 
 static int
-mpeg_bitrate (MpegFrameHeader *mpeg, uint8_t bits)
+mpeg_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
 {
-	int i = (bits & 0xf0) >> 4;
+	int i = (byte & 0xf0) >> 4;
 	
 	if (i > 14)
 		return -1;
@@ -966,9 +971,9 @@ static int mpeg_samplerates[2][3] = {
 };
 
 static int
-mpeg_samplerate (MpegFrameHeader *mpeg, uint8_t bits)
+mpeg_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
 {
-	int i = bits & 0x0c;
+	int i = byte & 0x0c;
 	
 	if (i > 2)
 		return -1;
@@ -979,9 +984,9 @@ mpeg_samplerate (MpegFrameHeader *mpeg, uint8_t bits)
 }
 
 static int
-mpeg_channels (MpegFrameHeader *mpeg, uint8_t bits)
+mpeg_channels (MpegFrameHeader *mpeg, uint8_t byte)
 {
-	int mode = (bits >> 6) & 0x3;
+	int mode = (byte >> 6) & 0x3;
 	
 	switch (mode) {
 	case 0: /* stereo */
@@ -998,11 +1003,14 @@ mpeg_channels (MpegFrameHeader *mpeg, uint8_t bits)
 		break;
 	}
 	
+	mpeg->intensity = (byte & 0x20) ? 1 : 0;
+	mpeg->ms = (byte & 0x10) ? 1 : 0;
+	
 	return 0;
 }
 
 static int
-mpeg_parse_header (const uint8_t *buffer, MpegFrameHeader *mpeg)
+mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 {
 	/* check that this is a valid MPEG sync header */
 	if (buffer[0] != 0xff || ((buffer[1] & 0xfa) != 0xfa))
@@ -1046,6 +1054,9 @@ mpeg_parse_header (const uint8_t *buffer, MpegFrameHeader *mpeg)
 	// extract the channel mode */
 	if (mpeg_channels (mpeg, buffer[3]) == -1)
 		return -1;
+	
+	mpeg->copyright = (buffer[3] & 0x08) ? 1 : 0;
+	mpeg->original = (buffer[3] & 0x04) ? 1 : 0;
 	
 	return 0;
 }
@@ -1099,7 +1110,7 @@ Mp3Demuxer::ReadHeader ()
 		return MEDIA_INVALID_MEDIA;
 	
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
-	if (mpeg_parse_header (buffer, &mpeg) == -1)
+	if (mpeg_parse_header (&mpeg, buffer) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
 	stream = audio = new AudioStream (GetMedia ());
