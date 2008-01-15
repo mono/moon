@@ -849,7 +849,7 @@ MediaPlayer::Seek (int64_t position)
 	if (audio->pcm != NULL && HasAudio ()) {
 		duration = audio->stream->duration;
 		initial_pts = audio->initial_pts;
-	} else {
+	} else if (HasVideo ()) {
 		duration = video->stream->duration;
 		initial_pts = video->initial_pts;
 	}
@@ -863,8 +863,10 @@ MediaPlayer::Seek (int64_t position)
 		position = initial_pts;
 	
 	StopThreads ();
-	media->DeleteQueue ();
-	media->Seek (position);
+	if (media != NULL) {
+		media->DeleteQueue ();
+		media->Seek (position);
+	}
 	
 	current_pts = position;
 	target_pts = position;

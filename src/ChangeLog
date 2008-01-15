@@ -1,5 +1,9 @@
 2008-01-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer2.cpp: Don't crash if Seek is called before Open.
+
+2008-01-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer2.cpp: Remove dead code and variables, and only request audio/video
 	  frames if we have audio/video.
 
