@@ -106,7 +106,6 @@ struct Audio {
 	int nfds;
 	
 	// sync
-	int64_t initial_pts;
 	uint64_t pts_per_frame;
 	
 	Audio ();
@@ -138,7 +137,6 @@ Audio::Audio ()
 	pcm = NULL;
 	sample_size = 0;
 	
-	initial_pts = 0;
 	pts_per_frame = 0;
 	
 	ufds = NULL;
@@ -347,16 +345,8 @@ MediaPlayer::Open (const char *uri)
 		
 		switch (stream->GetType ()) {
 		case MediaTypeAudio:
-			audio->stream_count++;
-			
+			audio->stream_count++;			
 			audio->stream = (AudioStream *) stream;
-			
-			// starting time
-			if (stream->start_time >= 0)
-				audio->initial_pts = stream->start_time;
-			else
-				printf ("audio start pts is invalid? %lld\n", stream->start_time);
-			printf ("audio initial_pts = %lld\n", audio->initial_pts);
 			break;
 		case MediaTypeVideo: 
 			video->stream = (VideoStream *) stream;
@@ -373,6 +363,7 @@ MediaPlayer::Open (const char *uri)
 				width, height, width * 4);
 			
 			// printf ("video size: %i, %i\n", video->stream->width, video->stream->height);
+			break;
 		default:
 			break;
 		}
@@ -400,7 +391,7 @@ MediaPlayer::Open (const char *uri)
 		// 2 bytes per channel, we always calculate as 2-channel audio because it gets converted into such
 		audio->pts_per_frame = (buf_size * 2 * 2) / (audio->stream->sample_rate / 100);
 		
-		target_pts = audio->initial_pts;
+		target_pts = audio->stream->start_time;
 		printf ("initial pts (according to audio): %lld\n", target_pts);
 	}
 	
@@ -441,7 +432,6 @@ MediaPlayer::Close ()
 	audio->stream_count = 0;
 	audio->stream = NULL;
 	audio->sample_size = 0;
-	audio->initial_pts = 0;
 	audio->pts_per_frame = 0;
 	
 	video->stream = NULL;
@@ -825,7 +815,7 @@ MediaPlayer::Seek (int64_t position)
 		*/
 	if (audio->pcm != NULL && HasAudio ()) {
 		duration = audio->stream->duration;
-		initial_pts = audio->initial_pts;
+		initial_pts = audio->stream->start_time;
 	} else if (HasVideo ()) {
 		duration = video->stream->duration;
 		initial_pts = video->stream->start_time;
@@ -887,7 +877,7 @@ MediaPlayer::Position ()
 		audio->initial_pts, video->initial_pts, seek_pts, target_pts, paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
 	*/	
 	if (audio->pcm != NULL && HasAudio ())
-		return position - audio->initial_pts;
+		return position - audio->stream->start_time;
 	
 	if (HasVideo ())
 		return position - video->stream->start_time;
