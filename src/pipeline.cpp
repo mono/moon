@@ -1063,8 +1063,8 @@ void
 Mp3FrameReader::AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate)
 {
 	if (used == avail) {
-		jmptab = (MpegFrame *) g_realloc (jmptab, avail + MPEG_JUMP_TABLE_GROW_SIZE);
 		avail += MPEG_JUMP_TABLE_GROW_SIZE;
+		jmptab = (MpegFrame *) g_realloc (jmptab, avail * sizeof (MpegFrame));
 	}
 	
 	jmptab[used].bit_rate = bit_rate;
@@ -1226,7 +1226,7 @@ Mp3FrameReader::SkipFrame ()
 	
 	bit_rate = mpeg.bit_rate;
 	
-	if (used > 0 && offset > jmptab[used - 1].offset)
+	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
 	if (mpeg.layer == 1)
@@ -1274,7 +1274,7 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	
 	bit_rate = mpeg.bit_rate;
 	
-	if (used > 0 && offset > jmptab[used - 1].offset)
+	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
 	if (mpeg.layer == 1)
@@ -1354,8 +1354,12 @@ Mp3Demuxer::ReadHeader ()
 	MpegFrameHeader mpeg;
 	AudioStream *audio;
 	uint8_t buffer[10];
+	uint32_t framelen;
+	uint64_t duration;
 	uint32_t size = 0;
+	uint32_t nframes;
 	int stream_count;
+	int64_t end;
 	int i;
 	
 	if (!source->Read (buffer, 10))
@@ -1388,6 +1392,11 @@ Mp3Demuxer::ReadHeader ()
 		stream_start = 0;
 	}
 	
+	if (!source->Seek (0, SEEK_END))
+		return MEDIA_INVALID_MEDIA;
+	
+	end = source->GetPosition ();
+	
 	if (!source->Seek (stream_start, SEEK_SET))
 		return MEDIA_INVALID_MEDIA;
 	
@@ -1395,12 +1404,30 @@ Mp3Demuxer::ReadHeader ()
 	if (mpeg_parse_header (&mpeg, buffer) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
+	// calculate the duration of the first frame
+	duration = (48000 / mpeg.sample_rate) * 8;
+	
+	// calculate the frame length
+	if (mpeg.layer == 1)
+		framelen = (((12 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded) * 4;
+	else
+		framelen = ((144 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded;
+	
+	if (mpeg.prot) {
+		// include 2 extra bytes for 16bit crc
+		framelen += 2;
+	}
+	
+	// estimate the number of frames
+	nframes = (end - stream_start) / framelen;
+	
 	reader = new Mp3FrameReader (source, stream_start);
 	
 	stream = audio = new AudioStream (GetMedia ());
 	audio->codec_id = CODEC_MP3;
 	audio->codec = "mp3";
 	
+	audio->duration = duration * nframes;
 	audio->bit_rate = mpeg.bit_rate;
 	audio->channels = mpeg.channels;
 	audio->sample_rate = mpeg.sample_rate;

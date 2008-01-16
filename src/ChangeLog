@@ -2,6 +2,7 @@
 
 	* pipeline.cpp: Implemented mpeg seeking support for
 	Mp3FrameReader and, thusly, Mp3Demuxer.
+	(Mp3Demuxer::ReadHeader): Calculate the duration of the stream.
 
 2008-01-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
