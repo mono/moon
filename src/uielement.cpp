@@ -538,16 +538,19 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	cairo_save (cr);
 
+	cairo_set_matrix (cr, &absolute_xform);
 	RenderClipPath (cr);
 
 	if (opacityMask || IS_TRANSLUCENT (total_opacity)) {
 		Rect r = GetSubtreeBounds ();
 		r.RoundOut ();
+		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		runtime_cairo_region (cr, region->gdkregion);
 		cairo_clip (cr);
 		cairo_rectangle (cr, r.x, r.y, r.w, r.h);
 		cairo_clip (cr);
+		cairo_restore (cr);
 	}
 
 	if (IS_TRANSLUCENT (total_opacity))
@@ -555,20 +558,21 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 
 	if (opacityMask != NULL) {
 		cairo_push_group (cr);
-		cairo_set_matrix (cr, &absolute_xform);
-		opacityMask->SetupBrush (cr, this);
-		cairo_fill (cr);
-		mask = cairo_pop_group (cr);
-		cairo_push_group (cr);
 	}
 
 	Render (cr, region);
 
 	if (opacityMask != NULL) {
-		cairo_pop_group_to_source (cr);
+		cairo_pattern_t *data = cairo_pop_group (cr);
+		opacityMask->SetupBrush (cr, this);
+		mask = cairo_get_source (cr);
+		cairo_pattern_reference (mask);
+		cairo_set_source (cr, data);
 		cairo_mask (cr, mask);
 		cairo_pattern_destroy (mask);
+		cairo_pattern_destroy (data);
 	}
+
 	if (IS_TRANSLUCENT (total_opacity)) {
 		cairo_pop_group_to_source (cr);
 		cairo_paint_with_alpha (cr, total_opacity);
