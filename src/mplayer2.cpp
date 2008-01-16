@@ -70,7 +70,6 @@ Packet::Packet (MediaFrame *frame)
 
 Packet::~Packet ()
 {
-	
 	delete frame;
 	frame = NULL;
 }
@@ -169,11 +168,6 @@ struct Video {
 	cairo_surface_t *surface;
 	uint8_t *rgb_buffer;
 	
-	// sync
-	int64_t initial_pts;
-	int msec_per_frame;
-	double usec_to_pts;
-	
 	Video ();
 	~Video ();
 };
@@ -186,10 +180,6 @@ Video::Video ()
 	
 	surface = NULL;
 	rgb_buffer = NULL;
-	
-	initial_pts = 0;
-	msec_per_frame = 0;
-	usec_to_pts = 0;
 }
 
 Video::~Video ()
@@ -382,19 +372,7 @@ MediaPlayer::Open (const char *uri)
 				video->rgb_buffer, CAIRO_FORMAT_ARGB32,
 				width, height, width * 4);
 			
-			// starting time
-			if (stream->start_time >= 0)
-				video->initial_pts = stream->start_time;
-			else
-				printf ("video start pts is invalid? %lld\n", stream->start_time);
-			
-			// msec per frame
-			video->msec_per_frame = 33; //stream->msec_per_frame;
-			
-			// usec -> pts conversion
-			video->usec_to_pts = 1.0 / 1000.0;// / stream->msec_per_frame); // TODO: is this equivalent?? //  (double) encoding->time_base.num / (double) encoding->time_base.den;
-			//printf ("video initial_pts = %lld\n", video->initial_pts);
-			printf ("video size: %i, %i\n", video->stream->width, video->stream->height);
+			// printf ("video size: %i, %i\n", video->stream->width, video->stream->height);
 		default:
 			break;
 		}
@@ -429,7 +407,7 @@ MediaPlayer::Open (const char *uri)
 	if (HasVideo ()) {
 		media_player_enqueue_frames (this, 0, 10);
 		
-		target_pts = video->initial_pts;
+		target_pts = video->stream->start_time;
 		printf ("initial pts (according to video): %lld\n", target_pts);
 	}
 	
@@ -467,9 +445,6 @@ MediaPlayer::Close ()
 	audio->pts_per_frame = 0;
 	
 	video->stream = NULL;
-	video->initial_pts = 0;
-	video->msec_per_frame = 0;
-	video->usec_to_pts = 0;
 	
 	pause_time = 0;
 	start_time = 0;
@@ -536,7 +511,7 @@ MediaPlayer::AdvanceFrame ()
 		uint64_t now = TimeManager::Instance()->GetCurrentTimeUsec();
 		
 		uint64_t elapsed_usec = now - start_time;
-		uint64_t elapsed_pts = (uint64_t) (elapsed_usec * video->usec_to_pts);
+		uint64_t elapsed_pts = (uint64_t) (elapsed_usec / 1000);
 		
 		target_pts = start_pts + elapsed_pts;
 		
@@ -727,7 +702,7 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	
 	if (HasVideo ()) {
 		//printf ("MediaPlayer::Play (), timeout: %i\n", video->msec_per_frame);
-		return TimeManager::Instance()->AddTimeout (video->msec_per_frame, callback, user_data);
+		return TimeManager::Instance()->AddTimeout (video->stream->msec_per_frame, callback, user_data);
 	} else {
 		//printf ("MediaPlayer::Play (), timeout: 33 (no video)\n");
 		return TimeManager::Instance()->AddTimeout (33, callback, user_data);
@@ -769,7 +744,7 @@ MediaPlayer::Pause ()
 void
 MediaPlayer::StopThreads ()
 {
-	int64_t initial_pts;
+	int64_t initial_pts = 0;
 	
 	stop = true;
 	
@@ -802,7 +777,9 @@ MediaPlayer::StopThreads ()
 	
 	audio->outptr = audio->outbuf;
 	
-	initial_pts = video->initial_pts;
+	if (HasVideo ()) {
+		initial_pts = video->stream->start_time;
+	}
 	
 	current_pts = initial_pts;
 	target_pts = initial_pts;
@@ -851,7 +828,7 @@ MediaPlayer::Seek (int64_t position)
 		initial_pts = audio->initial_pts;
 	} else if (HasVideo ()) {
 		duration = video->stream->duration;
-		initial_pts = video->initial_pts;
+		initial_pts = video->stream->start_time;
 	}
 	
 	duration += initial_pts;
@@ -913,7 +890,7 @@ MediaPlayer::Position ()
 		return position - audio->initial_pts;
 	
 	if (HasVideo ())
-		return position - video->initial_pts;
+		return position - video->stream->start_time;
 	
 	return position;
 }

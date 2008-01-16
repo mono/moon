@@ -1,3 +1,7 @@
+2008-01-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer2.cpp: Remove superfluous variables from Video.
+
 2008-01-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-path.c: Fix typo (but was same value).
