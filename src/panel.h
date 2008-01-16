@@ -48,7 +48,6 @@ class Panel : public FrameworkElement {
 	static DependencyProperty* ChildrenProperty;
 	static DependencyProperty* BackgroundProperty;
 
-	virtual void UpdateTotalOpacity ();
 	virtual void UpdateTotalRenderVisibility ();
 	virtual void UpdateTotalHitTestVisibility ();
 

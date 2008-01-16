@@ -20,15 +20,8 @@ enum DirtyType {
 	// DirtyBounds on the parent.
 	DirtyBounds         = 0x04,
 
-	// DirtyOpacity
-	//
-	// The opacity of the element needs ot be recomputed.
-	// Recomputes the opacity on this node and sets DirtyOpacity
-	// on all children.
-	DirtyOpacity        = 0x08,
-
-	DirtyRenderVisibility  = 0x10,
-	DirtyHitTestVisibility = 0x20,
+	DirtyRenderVisibility  = 0x08,
+	DirtyHitTestVisibility = 0x10,
 
 	// DirtyInvalidate
 	//
@@ -37,9 +30,9 @@ enum DirtyType {
 	// the surface.  Otherwise we pass the rect up to our parent
 	// (and union it in with the parent's dirty_rect), and set
 	// DirtyInvalidate on the parent.
-	DirtyInvalidate     = 0x40,
+	DirtyInvalidate     = 0x20,
 
-	DownDirtyState      = DirtyOpacity | DirtyLocalTransform | DirtyTransform | DirtyRenderVisibility | DirtyHitTestVisibility,
+	DownDirtyState      = DirtyLocalTransform | DirtyTransform | DirtyRenderVisibility | DirtyHitTestVisibility,
 	UpDirtyState        = DirtyBounds | DirtyInvalidate,
 
 	DirtyState          = DownDirtyState | UpDirtyState,

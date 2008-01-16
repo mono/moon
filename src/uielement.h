@@ -78,15 +78,11 @@ public:
 
 	virtual bool EnableAntiAlias() { return true; }
 
+	// UpdateTotalRenderVisibility:
+	//   Updates the opacity and render visibility on this item based on 
+	//   its parent's opacity and visibility as well as the value of its 
+	//   OpacityProperty and RenderVisibilityProperty.
 	//
-	// UpdateTotalOpacity:
-	//   Updates the opacity on this item based on its parent's
-	//   opacity as well as the value of its OpacityProperty.
-	//
-	virtual void UpdateTotalOpacity ();
-
-	void ComputeTotalOpacity ();
-
 	virtual void UpdateTotalRenderVisibility ();
 	void ComputeTotalRenderVisibility ();
 

@@ -75,7 +75,6 @@ UIElement::UIElement () : opacityMask(NULL), flags (UIElement::RENDER_VISIBLE | 
 	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 
 	ComputeLocalTransform ();
-	ComputeTotalOpacity ();
 	ComputeTotalRenderVisibility ();
 	ComputeTotalHitTestVisibility ();
 }
@@ -136,7 +135,7 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	}
 	  
 	if (prop == UIElement::OpacityProperty) {
-		UpdateTotalOpacity ();
+		UpdateTotalRenderVisibility ();
 	}
 	else if (prop == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
@@ -228,29 +227,17 @@ UIElement::UpdateTotalHitTestVisibility ()
 }
 
 void
-UIElement::UpdateTotalOpacity ()
-{
-	add_dirty_element (this, DirtyOpacity);
-}
-
-void
-UIElement::ComputeTotalOpacity ()
-{
-	if (GetVisualParent ())
-		GetVisualParent ()->ComputeTotalOpacity ();
-
-	double local_opacity = GetValue (OpacityProperty)->AsDouble();
-	//total_opacity = local_opacity * (GetVisualParent () ? GetVisualParent ()->GetTotalOpacity () : 1.0);
-	total_opacity = local_opacity;
-}
-
-void
 UIElement::ComputeTotalRenderVisibility ()
 {
 	if (GetVisualParent ())
 		GetVisualParent ()->ComputeTotalRenderVisibility ();
 
+
 	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
+
+	total_opacity = GetValue (OpacityProperty)->AsDouble();
+
+	visible = visible && !IS_INVISIBLE (total_opacity);
 
 	if (GetVisualParent ())
 		visible = visible && GetVisualParent ()->GetRenderVisible ();
@@ -397,7 +384,7 @@ UIElement::FullInvalidate (bool rendertransform)
 void
 UIElement::Invalidate (Rect r)
 {
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity))
+	if (!GetRenderVisible())
 		return;
 
 #ifdef DEBUG_INVALIDATE
@@ -418,7 +405,7 @@ UIElement::Invalidate (Rect r)
 void
 UIElement::Invalidate (Region *region)
 {
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity))
+	if (!GetRenderVisible())
 		return;
 
 	add_dirty_element (this, DirtyInvalidate);
@@ -532,7 +519,7 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 {
 	cairo_pattern_t *mask = NULL;
 
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
+	if (!GetRenderVisible() || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
 	
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);

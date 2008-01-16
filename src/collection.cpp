@@ -449,7 +449,6 @@ VisualCollection::VisualAdded (Visual *visual)
 	
 	item->SetVisualParent (panel);
 	item->UpdateTransform ();
-	item->UpdateTotalOpacity ();
 	item->UpdateTotalRenderVisibility ();
 	item->UpdateTotalHitTestVisibility ();
 	item->Invalidate ();

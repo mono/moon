@@ -139,7 +139,7 @@ Control::InitializeFromXaml (const char *xaml,
 	real_object->SetVisualParent (this);
 
 	real_object->Attach (NULL,this);
-	real_object->UpdateTotalOpacity ();
+	real_object->UpdateTotalRenderVisibility ();
 	real_object->UpdateTransform ();
 	UpdateBounds ();
 

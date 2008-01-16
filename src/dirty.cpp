@@ -160,33 +160,6 @@ process_dirty_elements ()
 					c->real_object->UpdateTotalHitTestVisibility();
 			}
 		}
-
-		if (el->dirty_flags & DirtyOpacity) {
-			el->dirty_flags &= ~DirtyOpacity;
-
-			el->UpdateBounds ();
-
-			el->Invalidate ();
-			el->ComputeTotalOpacity ();
-			el->Invalidate ();
-
-			if (el->Is (Type::PANEL)) {
-				Panel *p = (Panel*)el;
-				VisualCollection *children = p->GetChildren();
-
-				Collection::Node* n = (Collection::Node *) children->list->First ();
-				while (n != NULL) {
-					((UIElement *) n->obj)->UpdateTotalOpacity ();
-					n = (Collection::Node *) n->next;
-				}
-			}
-			else if (el->Is (Type::CONTROL)) {
-				Control *c = (Control*)el;
-				if (c->real_object)
-					c->real_object->UpdateTotalOpacity();
-			}
-		}
-
 		/*
 		** since we cache N's local (from N's parent to N)
 		** transform, we need to catch if we're changing

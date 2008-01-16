@@ -1,5 +1,14 @@
 2008-01-16  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp, uielement.h: 
+	* panel.cpp, panel.h: 
+	* collection.cpp, control.cpp: remove Compute/UpdateTotalOpacity.
+	Combine the opacity visibility check into the total render
+	visibility.  Make sure we compute/invalidate in all the same
+	places.
+
+	* dirty.cpp, dirty.h: remove all references to DirtyOpacity.
+
 	* uielement.cpp (UIElement::DoRender): make sure we don't reset
 	the coordinate system when setting up the clip calls in the
 	opacity and opacity mask cases.  Go back to using the brush

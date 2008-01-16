@@ -222,23 +222,8 @@ Panel::FindStartingElement (Region *region)
 }
 
 void
-Panel::UpdateTotalOpacity ()
-{
-	FrameworkElement::UpdateTotalOpacity ();
-}
-
-void
 Panel::UpdateTotalRenderVisibility ()
 {
-#if 1
-	// this really shouldn't need to be here, but our dirty code is broken
-	VisualCollection *children = GetChildren ();
-	for (guint i = 0; i < children->z_sorted->len; i++) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
-		item->UpdateTotalRenderVisibility ();
-	}
-#endif
-
 	FrameworkElement::UpdateTotalRenderVisibility ();
 }
 
