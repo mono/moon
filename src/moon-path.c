@@ -187,11 +187,11 @@ moon_line_to (moon_path *path, double x, double y)
 	}
 	
 	data[pos].header.type = CAIRO_PATH_LINE_TO;
-	data[pos].header.length = MOON_PATH_MOVE_TO_LENGTH;
+	data[pos].header.length = MOON_PATH_LINE_TO_LENGTH;
 	pos++;
 	data[pos].point.x = x;
 	data[pos].point.y = y;
-	path->cairo.num_data += MOON_PATH_MOVE_TO_LENGTH;
+	path->cairo.num_data += MOON_PATH_LINE_TO_LENGTH;
 }
 
 /**

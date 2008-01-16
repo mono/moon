@@ -1,3 +1,7 @@
+2008-01-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moon-path.c: Fix typo (but was same value).
+
 2008-01-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp: Implemented mp3 demuxer.
