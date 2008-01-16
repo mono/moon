@@ -1,0 +1,12 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+        <Canvas Opacity="0.5">
+      	        <Rectangle Fill="Red" StrokeThickness="10" Stroke="Green" Width="100" Height="100" />
+                <!-- this should be drawn over the previous rectangle (no blending) -->
+                <Rectangle Canvas.Left="50" Canvas.Top="50" Fill="Blue" Width="100"
+Height="100" />
+        </Canvas>
+	<!-- these should overlap -->
+	<Rectangle Opacity="0.5" Fill="Red" StrokeThickness="10" Stroke="Green" Width="100" Height="100" Canvas.Top="200"/>
+	<Rectangle Opacity="0.5" Canvas.Top="250" Canvas.Left="50" Fill="Blue" Width="100" Height="100" />
+</Canvas>
+
