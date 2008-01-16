@@ -991,14 +991,13 @@ mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 /* validate that this is an MPEG audio stream by checking that
  * the 32bit header matches the pattern:
  *
- * 1111 1111 1111 101* **** **** **** **** = 0xff 0xfa
- *                  ^
+ * 1111 1111 111* **** **** **** **** **** = 0xff 0xe0
  *
- * Note: if we want to support MPEG-2.5, we need to allow that bit to
- * be 0 (thus a mask of 0xf8 for the second byte), but I doubt we care
- * about version 2.5
+ * Use a mask of 0xffe6 (because bits 12 and 13 can both be 0 if it is
+ * MPEG 2.5). Compare the second byte > 0xe0 because one of the other
+ * masked bits has to be set (the Layer bits cannot both be 0).
  */
-#define is_mpeg_header(buffer) (buffer[0] == 0xff && ((buffer[1] & 0xfa) == 0xfa))
+#define is_mpeg_header(buffer) (buffer[0] == 0xff && ((buffer[1] & 0xe6) > 0xe0) && (buffer[1] & 0x18) != 0x08)
 
 
 static int
