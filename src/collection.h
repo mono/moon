@@ -123,25 +123,6 @@ class ResourceDictionary : public Collection {
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
-class StrokeCollection : public Collection {
- public:
-	StrokeCollection () {}
-	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::STROKE; }
-
-	Rect GetBounds ();
-	StrokeCollection* HitTest (StylusPointCollection *stylusPoints);
-};
-
-class StylusPointCollection : public Collection {
- public:
-	StylusPointCollection () {}
-	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
-
-	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
-};
-
 class TimelineMarkerCollection : public Collection {
  public:
 	TimelineMarkerCollection () {}
@@ -195,13 +176,6 @@ ResourceDictionary *resource_dictionary_new (void);
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 GradientStopCollection *gradient_stop_collection_new (void);
 Inlines *inlines_new (void);
-
-StrokeCollection *stroke_collection_new (void);
-void              stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds);
-StrokeCollection *stroke_collection_hit_test (StrokeCollection *col, StylusPointCollection *stylusPointCollection);
-
-StylusPointCollection *stylus_point_collection_new (void);
-double stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection);
 
 MediaAttributeCollection *media_attribute_collection_new (void);
 MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name);

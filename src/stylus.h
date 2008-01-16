@@ -15,6 +15,7 @@
 #define MOON_STYLUS_H
 
 #include "canvas.h"
+#include "collection.h"
 
 G_BEGIN_DECLS
 
@@ -61,6 +62,18 @@ void	stylus_point_set_y (StylusPoint *stylus_point, double y);
 double	stylus_point_get_pressure_factor (StylusPoint *stylus_point);
 void	stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure);
 
+class StylusPointCollection : public Collection {
+ public:
+	StylusPointCollection () {}
+	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
+
+	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
+};
+
+StylusPointCollection *stylus_point_collection_new (void);
+double stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection);
+
 class DrawingAttributes : public DependencyObject {
  public:
 	DrawingAttributes () { }
@@ -70,6 +83,9 @@ class DrawingAttributes : public DependencyObject {
 
 	void Render (cairo_t *cr, StylusPointCollection* collection);
 	static void RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointCollection* collection);
+
+	Rect ComputeBounds (StylusPointCollection *collection);
+	static Rect ComputeBoundsWithoutDrawingAttributes (StylusPointCollection* collection);
 
 	static DependencyProperty* ColorProperty;
 	static DependencyProperty* OutlineColorProperty;
@@ -108,6 +124,21 @@ StylusPointCollection* stroke_get_stylus_points (Stroke *stroke);
 void                   stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection);
 void                   stroke_get_bounds (Stroke *stroke, Rect* bounds);
 bool                   stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection);
+
+class StrokeCollection : public Collection {
+ public:
+	StrokeCollection () {}
+	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::STROKE; }
+
+	Rect GetBounds ();
+	StrokeCollection* HitTest (StylusPointCollection *stylusPoints);
+};
+
+StrokeCollection *stroke_collection_new (void);
+void              stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds);
+StrokeCollection *stroke_collection_hit_test (StrokeCollection *col, StylusPointCollection *stylusPointCollection);
+
 
 class InkPresenter : public Canvas {
  public:

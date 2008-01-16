@@ -19,6 +19,7 @@
 #include "animation.h"
 #include "transform.h"
 #include "namescope.h"
+#include "stylus.h"
 
 Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {
@@ -415,13 +416,6 @@ VisualCollection::~VisualCollection ()
 	}
 }
 
-class UIElementNode : public List::Node {
-public:
-	UIElement *item;
-	
-	UIElementNode (UIElement *v) : item (v) { }
-};
-
 static int
 UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 {
@@ -765,63 +759,8 @@ resource_dictionary_new (void)
 	return new ResourceDictionary ();
 }
 
-StrokeCollection *
-stroke_collection_new (void)
-{
-	return new StrokeCollection ();
-}
-
-Rect
-StrokeCollection::GetBounds ()
-{
-	// XXX
-	return Rect (0,0,0,0);
-}
-
-StrokeCollection*
-StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
-{
-	// XXX
-	return new StrokeCollection ();
-}
-
-void
-stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds)
-{
-	*bounds = col->GetBounds();
-}
-
-StrokeCollection* 
-stroke_collection_hit_test (StrokeCollection* col, StylusPointCollection* stylusPointCollection)
-{
-	return col->HitTest (stylusPointCollection);
-}
 
 
-StylusPointCollection *
-stylus_point_collection_new (void)
-{
-	return new StylusPointCollection ();
-}
-
-double
-stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection)
-{
-	return col->AddStylusPoints (stylusPointCollection);
-}
-
-double
-StylusPointCollection::AddStylusPoints (StylusPointCollection *stylusPointCollection)
-{
-	if (!stylusPointCollection)
-		return 1.0; // documented as such, needs testing
-
-	int count = collection_count (stylusPointCollection);
-	for (int i=0; i < count; i++) {
-		collection_add (this, collection_get_value_at (stylusPointCollection, i));
-	}
-	return collection_count (this) - 1;
-}
 
 TimelineMarkerCollection *
 timeline_marker_collection_new (void)

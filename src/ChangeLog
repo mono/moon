@@ -1,3 +1,20 @@
+2008-01-16  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.h, stylus.cpp: a few changes.  Move the
+	StylusPointCollection and StrokeCollection classes here from
+	collection.h/collection.cpp.  I didn't like the addition of
+	stylus.cpp logic in two places.  Convert Stroke::GetBounds use use
+	the new DrawingAttributes::ComputeBounds{WithoutDrawingAttributes}
+	methods, and build up the bounds for the StrokeCollection by
+	unioning all the Stroke bounds (these should be cached, but aren't
+	yet.)  StrokeCollection::HitTest has been implemented, just
+	looping over the strokes.  Stroke::HitTest is missing its guts at
+	the moment, since hit testing is going to be a little bit of a
+	pain for it.
+
+	* collection.h, collection.cpp: remove StylusPointCollection and
+	StrokeCollection.
+
 2008-01-16  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp, uielement.h: Rework the way we handle opacity to

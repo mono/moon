@@ -92,6 +92,32 @@ stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure)
 }
 
 
+StylusPointCollection *
+stylus_point_collection_new (void)
+{
+	return new StylusPointCollection ();
+}
+
+double
+stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection)
+{
+	return col->AddStylusPoints (stylusPointCollection);
+}
+
+double
+StylusPointCollection::AddStylusPoints (StylusPointCollection *stylusPointCollection)
+{
+	if (!stylusPointCollection)
+		return 1.0; // documented as such, needs testing
+
+	int count = collection_count (stylusPointCollection);
+	for (int i=0; i < count; i++) {
+		collection_add (this, collection_get_value_at (stylusPointCollection, i));
+	}
+	return collection_count (this) - 1;
+}
+
+
 Stroke::Stroke ()
 {
 	this->SetValue (Stroke::StylusPointsProperty, Value::CreateUnref (new StylusPointCollection ()));
@@ -101,14 +127,26 @@ Stroke::Stroke ()
 Rect
 Stroke::GetBounds ()
 {
-	// XXX
-	return Rect (0,0,0,0);
+	DrawingAttributes *da = stroke_get_drawing_attributes (this);
+	StylusPointCollection *spc = stroke_get_stylus_points (this);
+
+	if (da)
+		return da->ComputeBounds (spc);
+	else
+		return DrawingAttributes::ComputeBoundsWithoutDrawingAttributes (spc);
 }
 
 bool
 Stroke::HitTest (StylusPointCollection *stylusPoints)
 {
-	// XXX
+	Collection::Node *n;
+
+	Rect bounds = GetBounds();
+
+	for (n = (Collection::Node *) stylusPoints->list->First (); n; n = (Collection::Node *) n->next) {
+		StylusPoint *sp = (StylusPoint*)n->obj;
+	}
+
 	return false;
 }
 
@@ -154,6 +192,58 @@ bool
 stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection)
 {
 	return stroke->HitTest (stylusPointCollection);
+}
+
+
+
+StrokeCollection *
+stroke_collection_new (void)
+{
+	return new StrokeCollection ();
+}
+
+Rect
+StrokeCollection::GetBounds ()
+{
+	Rect r = Rect (0, 0, 0, 0);
+	
+	Collection::Node *n;
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next)
+		r = r.Union (((Stroke*)n->obj)->GetBounds());
+	
+	return r;
+}
+
+StrokeCollection*
+StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
+{
+	Collection::Node *n;
+
+	StrokeCollection *result = new StrokeCollection ();
+
+	if (stylusPoints->list->Length () == 0)
+		return result;
+
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
+		Stroke *s = (Stroke*)n->obj;
+
+		if (s->HitTest(hit_points))
+			result->Add (s);
+	}
+
+	return result;
+}
+
+void
+stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds)
+{
+	*bounds = col->GetBounds();
+}
+
+StrokeCollection* 
+stroke_collection_hit_test (StrokeCollection* col, StylusPointCollection* stylusPointCollection)
+{
+	return col->HitTest (stylusPointCollection);
 }
 
 
@@ -281,6 +371,19 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 	drawing_attributes_quick_render (cr, 2.0, NULL, collection);
 }
 
+Rect
+DrawingAttributes::ComputeBounds (StylusPointCollection *stylusPointCollection)
+{
+	// XXX
+	return Rect (0,0,0,0);
+}
+
+Rect
+DrawingAttributes::ComputeBoundsWithoutDrawingAttributes (StylusPointCollection *stylusPointCollection)
+{
+	// XXX
+	return Rect (0,0,0,0);
+}
 
 InkPresenter::InkPresenter ()
 {
