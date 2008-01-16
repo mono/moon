@@ -1030,7 +1030,7 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	mpeg->padded = (buffer[2] & 0x2) ? 1 : 0;
 	
 	// extract the channel mode */
-	if (mpeg_channels (mpeg, buffer[3]) == -1)
+	if (mpeg_parse_channels (mpeg, buffer[3]) == -1)
 		return -1;
 	
 	mpeg->copyright = (buffer[3] & 0x08) ? 1 : 0;
