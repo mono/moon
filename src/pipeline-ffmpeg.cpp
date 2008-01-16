@@ -264,20 +264,17 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 					}
 					media_frame->srcStride [i] = frame->linesize [i];
 				}
-				av_free (frame);
-				frame = NULL;
 			} else {
 				for (int i = 0; i < 4; i++) {
 					media_frame->uncompressed_data_stride [i] = frame->data [i];
 					media_frame->srcStride [i] = frame->linesize [i];
 				}
-				
-				 // We can't free the frame until the data has been used, 
-				 // so save the frame in decoder_specific_data. 
-				 // This will cause FfmpegDecoder::Cleanup to be called 
-				 // when the MediaFrame is deleted.
-				media_frame->decoder_specific_data = frame;
 			}
+			 // We can't free the frame until the data has been used, 
+			 // so save the frame in decoder_specific_data. 
+			 // This will cause FfmpegDecoder::Cleanup to be called 
+			 // when the MediaFrame is deleted.
+			media_frame->decoder_specific_data = frame;
 		} else {
 			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get picture (%i), length = %i.\n", media_frame, got_picture, length);
 		}

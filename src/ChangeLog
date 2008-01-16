@@ -1,3 +1,7 @@
+2008-01-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer2.cpp, pipeline-ffmpeg.cpp: Plug a leak.
+
 2008-01-16  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp, uielement.h: 

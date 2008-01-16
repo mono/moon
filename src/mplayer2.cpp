@@ -591,6 +591,7 @@ MediaPlayer::AdvanceFrame ()
 			media_player_enqueue_frames (this, 0, 1);
 			printf ("Requested an extra frame.\n");
 		}
+		delete pkt;
 		return true;
 	}
 	
