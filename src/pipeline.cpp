@@ -943,9 +943,10 @@ mpeg_parse_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
 	return 0;
 }
 
-static int mpeg_samplerates[2][3] = {
-	{ 44100, 48000, 32000 },
-	{ 22050, 24000, 16000 }
+static int mpeg_samplerates[3][3] = {
+	{ 44100, 48000, 32000 },  // version 1
+	{ 22050, 24000, 16000 },  // version 2
+	{ 11025, 12000,  8000 }   // version 2.5
 };
 
 static int
@@ -987,18 +988,39 @@ mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 	return 0;
 }
 
+/* validate that this is an MPEG audio stream by checking that
+ * the 32bit header matches the pattern:
+ *
+ * 1111 1111 1111 101* **** **** **** **** = 0xff 0xfa
+ *                  ^
+ *
+ * Note: if we want to support MPEG-2.5, we need to allow that bit to
+ * be 0 (thus a mask of 0xf8 for the second byte), but I doubt we care
+ * about version 2.5
+ */
+#define is_mpeg_header(buffer) (buffer[0] == 0xff && ((buffer[1] & 0xfa) == 0xfa))
+
+
 static int
 mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 {
-	/* check that this is a valid MPEG sync header */
-	if (buffer[0] != 0xff || ((buffer[1] & 0xfa) != 0xfa))
+	if (!is_mpeg_header (buffer))
 		return -1;
 	
 	// extract the MPEG version
-	if (buffer[1] & 0x08)
-		mpeg->version = 1;
-	else
+	switch ((buffer[1] >> 3) & 0x3) {
+	case 0: /* MPEG Version 2.5 */
+		mpeg->version = 3;
+		break;
+	case 1: /* reserved */
+		return -1;
+	case 2: /* MPEG Version 2 */
 		mpeg->version = 2;
+		break;
+	case 3: /* MPEG Version 1 */
+		mpeg->version = 1;
+		break;
+	}
 	
 	// extract the MPEG layer
 	switch (buffer[1] & 0x06) {
@@ -1038,6 +1060,14 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	
 	return 0;
 }
+
+static int mpeg_block_sizes[3][3] = {
+	{ 384, 1152, 1152 },  // version 1
+	{ 384, 1152,  576 },  // version 2
+	{ 384, 1152,  576 }   // version 2.5
+};
+
+#define mpeg_block_size(mpeg) mpeg_block_sizes[(mpeg)->version - 1][(mpeg)->layer - 1]
 
 static uint32_t
 mpeg_frame_length (MpegFrameHeader *mpeg)
@@ -1428,8 +1458,8 @@ Mp3Demuxer::ReadHeader ()
 	audio->bit_rate = mpeg.bit_rate;
 	audio->channels = mpeg.channels;
 	audio->sample_rate = mpeg.sample_rate;
-	audio->block_align = 0;
-	audio->bits_per_sample = 0;
+	audio->block_align = mpeg_block_size (&mpeg);
+	audio->bits_per_sample = mpeg.layer == 1 ? 32 : 8;
 	audio->extra_data = NULL;
 	audio->extra_data_size = 0;
 	
@@ -1495,13 +1525,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 			return false;
 	}
 	
-	/* validate that this is an MPEG-1 Audio Layer 3 stream by
-	 * checking that the 32bit header matches the pattern:
-	 *
-	 * 1111 1111 1111 101* **** **** **** ****
-	 */
-	
-	return (buffer[0] == 0xff) && ((buffer[1] & 0xfa) == 0xfa);
+	return is_mpeg_header (buffer);
 }
 
 IMediaDemuxer *
