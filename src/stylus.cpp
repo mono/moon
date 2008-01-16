@@ -227,7 +227,7 @@ StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
 	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
 		Stroke *s = (Stroke*)n->obj;
 
-		if (s->HitTest(hit_points))
+		if (s->HitTest(stylusPoints))
 			result->Add (s);
 	}
 
