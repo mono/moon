@@ -928,7 +928,7 @@ static int mpeg2_bitrates[3][15] = {
 };
 
 static int
-mpeg_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
+mpeg_parse_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
 {
 	int i = (byte & 0xf0) >> 4;
 	
@@ -949,7 +949,7 @@ static int mpeg_samplerates[2][3] = {
 };
 
 static int
-mpeg_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
+mpeg_parse_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
 {
 	int i = byte & 0x0c;
 	
@@ -962,7 +962,7 @@ mpeg_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
 }
 
 static int
-mpeg_channels (MpegFrameHeader *mpeg, uint8_t byte)
+mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 {
 	int mode = (byte >> 6) & 0x3;
 	
@@ -1019,11 +1019,11 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	mpeg->prot = (buffer[1] & 0x01) ? 1 : 0;
 	
 	// extract the bit rate
-	if (mpeg_bitrate (mpeg, buffer[2]) == -1)
+	if (mpeg_parse_bitrate (mpeg, buffer[2]) == -1)
 		return -1;
 	
 	// extract the sample rate
-	if (mpeg_samplerate (mpeg, buffer[2]) == -1)
+	if (mpeg_parse_samplerate (mpeg, buffer[2]) == -1)
 		return -1;
 	
 	// check if the frame is padded
@@ -1038,6 +1038,28 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	
 	return 0;
 }
+
+static uint32_t
+mpeg_frame_length (MpegFrameHeader *mpeg)
+{
+	uint32_t len;
+	
+	// calculate the frame length
+	if (mpeg->layer == 1)
+		len = (((12 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded) * 4;
+	else
+		len = ((144 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
+	
+	if (mpeg->prot) {
+		// include 2 extra bytes for 16bit crc
+		len += 2;
+	}
+	
+	return len;
+}
+
+#define mpeg_frame_duration(mpeg) (48000000 / (mpeg)->sample_rate) * 8
+
 
 #define MPEG_JUMP_TABLE_GROW_SIZE 16
 
@@ -1217,8 +1239,6 @@ Mp3FrameReader::SkipFrame ()
 	if (mpeg_parse_header (&mpeg, buffer) == -1)
 		return false;
 	
-	duration = (48000 / mpeg.sample_rate) * 8;
-	
 	if (mpeg.bit_rate == 0) {
 		// use the most recently specified bit rate
 		mpeg.bit_rate = bit_rate;
@@ -1226,18 +1246,12 @@ Mp3FrameReader::SkipFrame ()
 	
 	bit_rate = mpeg.bit_rate;
 	
+	duration = mpeg_frame_duration (&mpeg);
+	
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	if (mpeg.layer == 1)
-		len = (((12 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded) * 4;
-	else
-		len = ((144 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded;
-	
-	if (mpeg.prot) {
-		// include 2 extra bytes for 16bit crc
-		len += 2;
-	}
+	len = mpeg_frame_length (&mpeg);
 	
 	if (!stream->Seek ((int64_t) (len - 4), SEEK_CUR))
 		return false;
@@ -1265,8 +1279,6 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	if (mpeg_parse_header (&mpeg, buffer) == -1)
 		return MEDIA_DEMUXER_ERROR;
 	
-	duration = (48000 / mpeg.sample_rate) * 8;
-	
 	if (mpeg.bit_rate == 0) {
 		// use the most recently specified bit rate
 		mpeg.bit_rate = bit_rate;
@@ -1274,19 +1286,12 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	
 	bit_rate = mpeg.bit_rate;
 	
+	duration = mpeg_frame_duration (&mpeg);
+	
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	if (mpeg.layer == 1)
-		len = (((12 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded) * 4;
-	else
-		len = ((144 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded;
-	
-	if (mpeg.prot) {
-		// include 2 extra bytes for 16bit crc
-		len += 2;
-	}
-	
+	len = mpeg_frame_length (&mpeg);
 	frame->compressed_size = len;
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
@@ -1354,11 +1359,11 @@ Mp3Demuxer::ReadHeader ()
 	MpegFrameHeader mpeg;
 	AudioStream *audio;
 	uint8_t buffer[10];
-	uint32_t framelen;
 	uint64_t duration;
 	uint32_t size = 0;
 	uint32_t nframes;
 	int stream_count;
+	uint32_t len;
 	int64_t end;
 	int i;
 	
@@ -1405,21 +1410,13 @@ Mp3Demuxer::ReadHeader ()
 		return MEDIA_INVALID_MEDIA;
 	
 	// calculate the duration of the first frame
-	duration = (48000 / mpeg.sample_rate) * 8;
+	duration = mpeg_frame_duration (&mpeg);
 	
 	// calculate the frame length
-	if (mpeg.layer == 1)
-		framelen = (((12 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded) * 4;
-	else
-		framelen = ((144 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded;
-	
-	if (mpeg.prot) {
-		// include 2 extra bytes for 16bit crc
-		framelen += 2;
-	}
+	len = mpeg_frame_length (&mpeg);
 	
 	// estimate the number of frames
-	nframes = (end - stream_start) / framelen;
+	nframes = (end - stream_start) / len;
 	
 	reader = new Mp3FrameReader (source, stream_start);
 	
