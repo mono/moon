@@ -1,3 +1,8 @@
+2008-01-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp: Implemented mpeg seeking support for
+	Mp3FrameReader and, thusly, Mp3Demuxer.
+
 2008-01-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer2.cpp: Remove a superfluous variable from Audio.
@@ -20,8 +25,8 @@
 
 2008-01-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* mplayer2.cpp: Remove dead code and variables, and only request audio/video
-	  frames if we have audio/video.
+	* mplayer2.cpp: Remove dead code and variables, and only request
+	audio/video frames if we have audio/video.
 
 2008-01-15  Jeffrey Stedfast  <fejj@novell.com>
 

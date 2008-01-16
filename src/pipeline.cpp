@@ -893,7 +893,7 @@ ASFDemuxerInfo::Create (Media* media)
  */
 
 struct MpegFrameHeader {
-uint8_t version:2;
+	uint8_t version:2;
 	uint8_t layer:2;
 	
 	uint8_t copyright:1;
@@ -905,8 +905,8 @@ uint8_t version:2;
 	uint8_t intensity:1;
 	uint8_t ms:1;
 	
-	int bit_rate;
-	int sample_rate;
+	int32_t bit_rate;
+	int32_t sample_rate;
 };
 
 static int mpeg1_bitrates[3][15] = {
@@ -1039,37 +1039,224 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	return 0;
 }
 
+#define MPEG_JUMP_TABLE_GROW_SIZE 16
 
 Mp3FrameReader::Mp3FrameReader (IMediaSource *source, int64_t start)
 {
+	jmptab = g_new (MpegFrame, MPEG_JUMP_TABLE_GROW_SIZE);
+	avail = MPEG_JUMP_TABLE_GROW_SIZE;
+	used = 0;
+	
 	stream_start = start;
 	stream = source;
 	
+	bit_rate = 0;
 	cur_pts = 0;
 }
 
 Mp3FrameReader::~Mp3FrameReader ()
 {
+	g_free (jmptab);
+}
+
+void
+Mp3FrameReader::AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate)
+{
+	if (used == avail) {
+		jmptab = (MpegFrame *) g_realloc (jmptab, avail + MPEG_JUMP_TABLE_GROW_SIZE);
+		avail += MPEG_JUMP_TABLE_GROW_SIZE;
+	}
 	
+	jmptab[used].bit_rate = bit_rate;
+	jmptab[used].offset = offset;
+	jmptab[used].pts = pts;
+	jmptab[used].dur = dur;
+	
+	used++;
+}
+
+/**
+ * MID:
+ * @lo: the low bound
+ * @hi: the high bound
+ *
+ * Finds the midpoint between positive integer values, @lo and @hi.
+ *
+ * Notes: Typically expressed as '(@lo + @hi) / 2', this is incorrect
+ * when @lo and @hi are sufficiently large enough that combining them
+ * would overflow their integer type. To work around this, we use the
+ * formula, '@lo + ((@hi - @lo) / 2)', thus preventing this problem
+ * from occuring.
+ *
+ * Returns the midpoint between @lo and @hi (rounded down).
+ **/
+#define MID(lo, hi) (lo + ((hi - lo) >> 1))
+
+uint32_t
+Mp3FrameReader::MpegFrameSearch (uint64_t pts)
+{
+	uint64_t start, end;
+	uint32_t hi = used - 1;
+	uint32_t m = hi >> 1;
+	uint32_t lo = 0;
+	
+	do {
+		end = start = jmptab[m].pts;
+		end += jmptab[m].dur;
+		
+		if (pts > end) {
+			lo = m + 1;
+		} else if (pts < start) {
+			hi = m;
+		} else {
+			if (pts == end) {
+				// pts should be exactly the beginning of the next frame
+				m++;
+			}
+			
+			break;
+		}
+		
+		m = MID (lo, hi);
+	} while (lo < hi);
+	
+	return m;
 }
 
 bool
 Mp3FrameReader::Seek (uint64_t pts)
 {
-	if (pts == 0)
-		return stream->Seek (stream_start, SEEK_SET);
+	int64_t offset = stream->GetPosition ();
+	int32_t bit_rate = this->bit_rate;
+	uint64_t cur_pts = this->cur_pts;
+	uint32_t frame;
 	
-	// FIXME: do the math to figure out where in the file to seek to
+	if (pts == cur_pts)
+		return true;
+	
+	if (pts == 0) {
+		if (!stream->Seek (stream_start, SEEK_SET))
+			goto exception;
+		
+		bit_rate = 0;
+		cur_pts = 0;
+		
+		return true;
+	}
+	
+	// if we are seeking to some place we've been, then we can use our jump table
+	if (used > 0 && pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
+		if (pts >= jmptab[used - 1].pts) {
+			if (!stream->Seek (jmptab[used - 1].offset, SEEK_SET))
+				goto exception;
+			
+			this->bit_rate = jmptab[used - 1].bit_rate;
+			this->cur_pts = jmptab[used - 1].pts;
+			
+			return true;
+		}
+		
+		// search for our requested pts
+		frame = MpegFrameSearch (pts);
+		
+		g_assert (frame < used);
+		
+		if (!stream->Seek (jmptab[frame].offset, SEEK_SET))
+			goto exception;
+		
+		this->bit_rate = jmptab[frame].bit_rate;
+		this->cur_pts = jmptab[frame].pts;
+		
+		return true;
+	}
+	
+	// keep skipping frames until we read to (or past) the requested pts
+	while (this->cur_pts < pts) {
+		if (!SkipFrame ())
+			goto exception;
+	}
+	
+	// pts requested is at the start of the next frame in the stream
+	if (this->cur_pts == pts)
+		return true;
+	
+	// pts requested was non-key frame, need to seek back to the most recent key frame
+	if (!stream->Seek (jmptab[used - 1].offset, SEEK_SET))
+		goto exception;
+	
+	this->bit_rate = jmptab[used - 1].bit_rate;
+	this->cur_pts = jmptab[used - 1].pts;
+	
+	return true;
+	
+exception:
+	
+	// restore FrameReader to previous state
+	stream->Seek (offset, SEEK_SET);
+	this->bit_rate = bit_rate;
+	this->cur_pts = cur_pts;
 	
 	return false;
+}
+
+bool
+Mp3FrameReader::SkipFrame ()
+{
+	MpegFrameHeader mpeg;
+	uint32_t duration;
+	uint8_t buffer[4];
+	int64_t offset;
+	uint32_t len;
+	
+	offset = stream->GetPosition ();
+	
+	if (!stream->Read (buffer, 4))
+		return false;
+	
+	memset ((void *) &mpeg, 0, sizeof (mpeg));
+	if (mpeg_parse_header (&mpeg, buffer) == -1)
+		return false;
+	
+	duration = (48000 / mpeg.sample_rate) * 8;
+	
+	if (mpeg.bit_rate == 0) {
+		// use the most recently specified bit rate
+		mpeg.bit_rate = bit_rate;
+	}
+	
+	bit_rate = mpeg.bit_rate;
+	
+	if (used > 0 && offset > jmptab[used - 1].offset)
+		AddFrameIndex (offset, cur_pts, duration, bit_rate);
+	
+	if (mpeg.layer == 1)
+		len = (((12 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded) * 4;
+	else
+		len = ((144 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded;
+	
+	if (mpeg.prot) {
+		// include 2 extra bytes for 16bit crc
+		len += 2;
+	}
+	
+	if (!stream->Seek ((int64_t) (len - 4), SEEK_CUR))
+		return false;
+	
+	cur_pts += duration;
+	
+	return true;
 }
 
 MediaResult
 Mp3FrameReader::ReadFrame (MediaFrame *frame)
 {
 	MpegFrameHeader mpeg;
+	uint32_t duration;
 	uint8_t buffer[4];
+	int64_t offset;
 	uint32_t len;
+	
+	offset = stream->GetPosition ();
 	
 	if (!stream->Read (buffer, 4))
 		return MEDIA_NO_MORE_DATA;
@@ -1077,6 +1264,18 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
 	if (mpeg_parse_header (&mpeg, buffer) == -1)
 		return MEDIA_DEMUXER_ERROR;
+	
+	duration = (48000 / mpeg.sample_rate) * 8;
+	
+	if (mpeg.bit_rate == 0) {
+		// use the most recently specified bit rate
+		mpeg.bit_rate = bit_rate;
+	}
+	
+	bit_rate = mpeg.bit_rate;
+	
+	if (used > 0 && offset > jmptab[used - 1].offset)
+		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
 	if (mpeg.layer == 1)
 		len = (((12 * mpeg.bit_rate) / mpeg.sample_rate) + mpeg.padded) * 4;
@@ -1111,14 +1310,11 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	}
 	
 	frame->pts = cur_pts;
-	
-	// FIXME: is this right?
-	int sample_size = mpeg.layer > 1 ? 1152 : 384;
-	frame->duration = sample_size;
+	frame->duration = duration;
 	
 	frame->AddState (FRAME_DEMUXED);
 	
-	cur_pts += frame->duration;
+	cur_pts += duration;
 	
 	return MEDIA_SUCCESS;
 }

@@ -607,10 +607,30 @@ public:
  * Mp3 related implementations
  */
 
+struct MpegFrame {
+	int64_t offset;
+	uint64_t pts;
+	uint32_t dur;
+	
+	// this is needed in case this frame did not specify it's own
+	// bit rate which is possible for MPEG-1 Layer 3 audio.
+	int32_t bit_rate;
+};
+
 class Mp3FrameReader {
 	IMediaSource *stream;
 	int64_t stream_start;
 	uint64_t cur_pts;
+	int32_t bit_rate;
+	
+	MpegFrame *jmptab;
+	uint32_t avail;
+	uint32_t used;
+	
+	uint32_t MpegFrameSearch (uint64_t pts);
+	void AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate);
+	
+	bool SkipFrame ();
 	
 public:
 	Mp3FrameReader (IMediaSource *source, int64_t start);
