@@ -467,7 +467,6 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-	RenderClipPath (cr);
 	Paint (cr);
 	cairo_restore (cr);
 }
@@ -1554,7 +1553,6 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-	RenderClipPath (cr);
 	
 	fill->SetupBrush (cr, this);
 	

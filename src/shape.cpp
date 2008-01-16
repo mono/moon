@@ -181,8 +181,6 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 
 	cairo_set_matrix (cr, &absolute_xform);
 
-	RenderClipPath (cr);
-
 // 	printf ("Draw, xform: %g %g %g %g %g %g\n", 
 // 		absolute_xform.xy,
 // 		absolute_xform.xx,

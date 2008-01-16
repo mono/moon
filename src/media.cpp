@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#define USE_OPT_INDIRECT_COMPOSE 1
 #define USE_OPT_REGION_CLIP 1
-#define DRAW_INCORRECTLY 0
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -29,7 +27,6 @@
 #include "pipeline.h"
 
 // still too ugly to be exposed in the header files ;-)
-cairo_pattern_t *image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity);
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
 					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform, Transform *relative_transform);
 
@@ -533,15 +530,8 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	Stretch stretch = media_base_get_stretch (this);
 	double h = framework_element_get_height (this);
 	double w = framework_element_get_width (this);
-	double pattern_opacity = 1.0;
-        double render_opacity = GetTotalOpacity ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
-	
-#if USE_OPT_INDIRECT_COMPOSE
-	pattern_opacity = render_opacity;
-	render_opacity = 1.0;
-#endif
 	
 	if (!(surface = mplayer->GetSurface ()))
 		return;
@@ -556,11 +546,8 @@ MediaElement::Render (cairo_t *cr, Region *region)
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	
 	cairo_set_matrix (cr, &absolute_xform);
+	pattern = cairo_pattern_create_for_surface (surface);	
 
-	RenderClipPath (cr);
-	
-	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, pattern_opacity);
-	
 	if (recalculate_matrix) {
 		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch,
 						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
@@ -573,6 +560,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_pattern_destroy (pattern);
 	
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+
 #if USE_OPT_REGION_CLIP	
 	cairo_identity_matrix (cr);
 	runtime_cairo_region (cr, region->gdkregion);
@@ -583,26 +571,10 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
 
-	// NOTE: Some servers seem to have extreme perfomance issues
-	// when paint_with_alpha (cr, 1.0) is called even accidentally
-	if (render_opacity < 1.0) {
-		cairo_new_path (cr);
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_clip (cr);
-		cairo_paint_with_alpha (cr, render_opacity);
-	} else {
-#if DRAW_INCORRECTLY
-		cairo_new_path (cr);
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_clip (cr);
-		cairo_paint (cr);
-#else
-		cairo_new_path (cr);
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_fill (cr);
-#endif
-	}
-	
+	cairo_new_path (cr);
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_fill (cr);
+
 	cairo_restore (cr);
 }
 
@@ -932,9 +904,6 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		recalculate_matrix = true;
 	} else if (prop == MediaElement::PositionProperty) {
 		if (mplayer->IsPlaying() && mplayer->HasVideo ()) {
-			double opacity = GetTotalOpacity ();
-			
-			if (opacity > 0.0f)
 				Invalidate ();
 		}
 	} else if (prop == MediaElement::VolumeProperty) {
@@ -1208,8 +1177,6 @@ Image::Image ()
     surface (NULL),
     part_name(NULL),
     pattern (NULL),
-    pattern_opacity (1.0),
-    opacity_stability_count (0),
     brush (NULL)
 {
 }
@@ -1239,7 +1206,6 @@ Image::CleanupPattern ()
 		cairo_pattern_destroy (pattern);
 		pattern = NULL;
 	}
-	pattern_opacity = 1.0;
 }
 
 void
@@ -1545,90 +1511,17 @@ Image::Render (cairo_t *cr, Region *region)
 
 	cairo_save (cr);
 
-	cairo_set_matrix (cr, &absolute_xform);
-
-	RenderClipPath (cr);
-
 	Stretch stretch = media_base_get_stretch (this);
-
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
-
-#define OPACITY_STABILITY_MAX 5
-
-	double render_opacity = GetTotalOpacity ();
-	double opacity = 1.0;
-
-	// Here we count the number of times we've been called with the
-	// same opacity and if it is greater than OPACITY_STABILITY_MAX we
-	// render the image to a temporary surface at that opacity, otherwise
-	// we render directly.  The purpose here is to handle opacity animations
-	// with a fair amount of grace while avoiding the overhead of constantly
-	// adding another alpha pass when rendering stable scenes.
-
-	if (render_opacity != pattern_opacity) {
-		opacity_stability_count = 0;
-		pattern_opacity = render_opacity;
-		cairo_pattern_destroy (pattern);
-		pattern = NULL;
-	} else {
-		opacity_stability_count ++;
-		if (opacity_stability_count >= OPACITY_STABILITY_MAX) {
-			opacity_stability_count = OPACITY_STABILITY_MAX;
-			opacity = render_opacity;
-			render_opacity = 1.0;
-		}
-	}
-
-	if (!pattern || (opacity_stability_count >= OPACITY_STABILITY_MAX && (floor (pattern_opacity * 255) != floor (opacity * 255)))) {
-		// don't share surfaces until they are of the correct type
-		if (pattern && !surface->xlib_surface_created) {
-			cairo_pattern_destroy (pattern);
-			pattern = NULL;
-		}
-		
-		if (pattern) {
-			cairo_surface_t *dest = NULL;
-			cairo_pattern_get_surface (pattern, &dest);
-			
-			// If the pattern holds a temporary surface that meets our needs use it.
-			// It is safe to assume if the pattern is there that it is the right size
-			// because changing the source will invalidate the cached surface.
-			//
-			// NOTE: the opacity stability check above means this case is essentially
-			// never encountered it is left here future where we may use a different
-			// method of testing for animated properties.
-			if (surface->cairo != dest && opacity < 1.0) {
-				//g_warning ("sharing (%f, %f)", opacity, pattern_opacity);
-				cairo_t *temp = cairo_create (dest);
-				cairo_set_source_surface (temp, surface->cairo, 0, 0);
-
-				cairo_set_operator (temp, CAIRO_OPERATOR_SOURCE);
-				cairo_pattern_set_filter (cairo_get_source (temp), CAIRO_FILTER_FAST);
-				
-				cairo_paint_with_alpha (temp, opacity);
-
-				cairo_destroy (temp);
-			} else {
-				cairo_pattern_destroy (pattern);
-				pattern = NULL;
-			}
-		}
-		
-		if (!pattern) {
-			//g_warning ("new pattern %f", opacity);
-			pattern = image_brush_create_pattern (cr, surface->cairo, surface->width, surface->height, opacity);
-		}
-		
-		if (opacity_stability_count >= OPACITY_STABILITY_MAX)
-			pattern_opacity = opacity;
-	}
+	if (!pattern)
+		pattern = cairo_pattern_create_for_surface (surface->cairo);
 
 	cairo_matrix_t matrix;
 	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
 		AlignmentXCenter, AlignmentYCenter, NULL, NULL);
-	
+
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
 
@@ -1638,15 +1531,10 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_clip (cr);
 #endif
 	cairo_set_matrix (cr, &absolute_xform);
+	
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_fill (cr);
 
-	if (render_opacity < 1.0) {
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_clip (cr);
-		cairo_paint_with_alpha (cr, render_opacity);
-	} else {
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_fill (cr);
-	}
 	cairo_restore (cr);
 }
 
@@ -1659,7 +1547,6 @@ Image::ComputeBounds ()
 								   
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
 						     IntersectBoundsWithClipPath (box, false));
-// no-op	bounds.GrowBy (1);
 }
 
 Point

@@ -377,7 +377,12 @@ MediaPlayer::Open (const char *uri)
 			
 			// rendering surface
 			video->surface = cairo_image_surface_create_for_data (
-				video->rgb_buffer, CAIRO_FORMAT_ARGB32,
+				video->rgb_buffer,
+#if USE_OPT_RGB24
+				CAIRO_FORMAT_RGB24,
+#else
+				CAIRO_FORMAT_ARGB32,
+#endif
 				width, height, width * 4);
 			
 			// starting time

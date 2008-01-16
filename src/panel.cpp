@@ -161,7 +161,6 @@ Panel::FindStartingElement (Region *region)
 	    || !GetRenderVisible () 
 	    || GetValue (UIElement::ClipProperty) != NULL
 	    || uielement_get_opacity_mask (this) != NULL
-	    || GetTotalOpacity () < .990
 	    )
 		return -1;
 
@@ -170,13 +169,9 @@ Panel::FindStartingElement (Region *region)
 		// if the exposed rectangle is completely within the bounds
 		// of a child that has opacity == 1.0 and lacks an opacity
 		// mask, we start rendering from there.
-		if (item->GetTotalOpacity () > GetTotalOpacity ())
-			g_warning ("Moonlight bug: child opacity greater than parent");
-
 		if (item->GetRenderVisible ()
 		    && item->GetValue (UIElement::ClipProperty) == NULL
 		    && (item->absolute_xform.yx == 0 && item->absolute_xform.xy == 0) /* no skew */
-		    && item->GetTotalOpacity () >= .990
 		    && uielement_get_opacity_mask (item) == NULL
 		    && clip.IntersectsWith (item->GetBounds ().RoundOut ())
 		    && region->RectIn (item->GetBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_IN
@@ -229,15 +224,6 @@ Panel::FindStartingElement (Region *region)
 void
 Panel::UpdateTotalOpacity ()
 {
-#if 1
-	// this really shouldn't need to be here, but our dirty code is broken
-	VisualCollection *children = GetChildren ();
-	for (guint i = 0; i < children->z_sorted->len; i++) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
-		item->UpdateTotalOpacity ();
-	}
-#endif
-
 	FrameworkElement::UpdateTotalOpacity ();
 }
 
@@ -274,13 +260,11 @@ Panel::UpdateTotalHitTestVisibility ()
 void
 Panel::Render (cairo_t *cr, Region *region)
 {
-	//if (!GetRenderVisible () || GetTotalOpacity () <= 0.0)
-	//	return;
+	if (!GetRenderVisible ())
+		return;
 
 	cairo_save (cr);  // for UIElement::ClipProperty
-
 	cairo_set_matrix (cr, &absolute_xform);
-	RenderClipPath (cr);
 
 	Value *value = GetValue (Panel::BackgroundProperty);
 	if (value) {
@@ -299,7 +283,6 @@ Panel::Render (cairo_t *cr, Region *region)
 	}
 
 	RenderChildren (cr, region);
-
 	cairo_restore (cr);
 }
 
@@ -324,12 +307,10 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 		Region *region = new Region (item->GetSubtreeBounds());
 		region->Intersect (clipped_region);
 
-		if (!item->GetRenderVisible() 
-		    || item->GetTotalOpacity () == 0.0 
-		    || gdk_region_empty (region->gdkregion)
-		    ) {
+		if (!item->GetRenderVisible ()
+		    || gdk_region_empty (region->gdkregion)) {
 #ifdef DEBUG_INVALIDATE
-			printf ("skipping invisible object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
+			printf ("skipping offscreen object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
 #endif
 			delete region;
 			continue;
@@ -357,18 +338,8 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 		// 				item->GetBounds().x, item->GetBounds().y, item->GetBounds().w, item->GetBounds().h,
 		// 				inter.x, inter.y, inter.w, inter.h);
 		
+		item->DoRender (cr, region);
 
-		//Type::Kind type = item->GetObjectType();
-		//if (type == Type::PANEL || type == Type::CANVAS)
-			item->DoRender (cr, region);
-			//else {
-			//cairo_save (cr);
-			////Region zone = Region (region->ClipBox ());
-			//runtime_cairo_region (cr,region->gdkregion);
-			//cairo_clip (cr);
-			//item->DoRender (cr, region);
-			//cairo_restore (cr);
-			//}
 #if CAIRO_CLIP
 #if TIME_CLIP
 		STARTTIMER(endclip, "cairo clip teardown");

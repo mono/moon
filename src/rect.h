@@ -120,6 +120,11 @@ struct Rect {
 	{
 		return !(*this == rect);
 	}
+
+	void Draw (cairo_t *cr) 
+	{
+		cairo_rectangle (cr, x, y, w, h);
+	}
 };
 
 class Region {
@@ -145,6 +150,19 @@ public:
 
 	Rect ClipBox ();
 	GdkOverlapType RectIn (Rect rect);
+
+	void Draw (cairo_t *cr)
+	{
+		int i, count;
+		GdkRectangle *rects;
+	
+		gdk_region_get_rectangles (gdkregion, &rects, &i);
+		
+		for (count = 0; count < i; count++)
+			cairo_rectangle (cr, rects [count].x, rects [count].y, rects [count].width, rects [count].height);
+		
+		g_free (rects);
+	}
 };
      
 G_BEGIN_DECLS

@@ -161,13 +161,7 @@ transform_get_absolute_transform (Transform *relative_transform, double width, d
 double
 Brush::GetTotalOpacity (UIElement *uielement)
 {
-	double opacity = uielement ? uielement->GetTotalOpacity () : 1.0;
-
-	double brush_opacity = brush_get_opacity (this);
-	if (brush_opacity < 1.0)
-		opacity *= brush_opacity;
-
-	return opacity;
+	return brush_get_opacity (this);
 }
 
 void
@@ -221,11 +215,8 @@ SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement)
 {
 	Color *color = solid_color_brush_get_color (this);
 	
-	// apply UIElement opacity and Brush opacity on color's alpha
-	double alpha = color->a * GetTotalOpacity (uielement);
-	
-	cairo_set_source_rgba (cr, color->r, color->g, color->b, alpha);
-	
+	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
+
 	// [Relative]Transform do not apply to solid color brush
 }
 
@@ -386,9 +377,6 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 	Collection::Node *node;
 	
 	// TODO - ColorInterpolationModeProperty is ignored (map to ?)
-
-	double opacity = GetTotalOpacity (uielement);
-
 	if (single) {
 		// if a single color is shown (e.g. start == end point) Cairo will,
 		// by default, use the start color while SL use the end color
@@ -406,8 +394,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		double offset = gradient_stop_get_offset (stop);
 		if (offset >= 0.0) {
 			Color *color = gradient_stop_get_color (stop);
-			double alpha = (opacity < 1.0) ? color->a * opacity : color->a;
-			cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
+			cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a);
 			n++;
 		} else if (n < 2) {
 			// we don't have enough stops so we might need the negative one
@@ -430,8 +417,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		// add it to the mix
 		double offset = gradient_stop_get_offset (negative);
 		Color *color = gradient_stop_get_color (negative);
-		double alpha = (opacity < 1.0) ? color->a * opacity : color->a;
-		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, alpha);
+		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a);
 	}
 }
 
@@ -900,34 +886,6 @@ cairo_surface_t *image_brush_create_similar (cairo_t *cairo, int width, int heig
 #endif
 }
 
-// ripped apart to be reusable for Image and VideoBrush classes
-cairo_pattern_t *
-image_brush_create_pattern (cairo_t *cairo, cairo_surface_t *surface, int sw, int sh, double opacity)
-{
-	cairo_pattern_t *pattern;
-
-	if (opacity < 1.0) {
-		cairo_surface_t *blending = image_brush_create_similar (cairo, sw, sh);
-
-		cairo_t *cr = cairo_create (blending);
-		cairo_set_source_surface (cr, surface, 0.0, 0.0);
-
-		//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
-
-		cairo_paint_with_alpha (cr, opacity);
-		cairo_destroy (cr);
-		
-		pattern = cairo_pattern_create_for_surface (blending);
-
-		cairo_surface_destroy (blending);
-	} else {
-		pattern = cairo_pattern_create_for_surface (surface);
-	}
-	
-	return pattern;
-}
-
 void
 image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
 	Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform, Transform *relative_transform)
@@ -1020,21 +978,17 @@ ImageBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 		return;
 	}
 	
-// MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
-	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
-	
 	Stretch stretch = tile_brush_get_stretch (this);
 	
 	AlignmentX ax = tile_brush_get_alignment_x (this);
 	AlignmentY ay = tile_brush_get_alignment_y (this);
 	
 	Transform *transform = brush_get_transform (this);
-
 	Transform *relative_transform = brush_get_relative_transform (this);
-
-	cairo_pattern_t *pattern = image_brush_create_pattern (cr, surface, image->GetWidth (), image->GetHeight (), opacity);
-	
 	cairo_matrix_t matrix;
+
+	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
+
 	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetWidth (), image->GetHeight (), stretch, ax, ay, transform, relative_transform);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
@@ -1074,7 +1028,6 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
-	double opacity;
 	
 	if (media == NULL) {
 		DependencyObject *obj;
@@ -1104,12 +1057,8 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 		return;
 	}
 	
-	if (uielement)
-		opacity = uielement->GetTotalOpacity ();
-	else
-		opacity = 1.0;
-	
-	pattern = image_brush_create_pattern (cr, surface, mplayer->width, mplayer->height, opacity);
+	pattern = cairo_pattern_create_for_surface (surface);
+
 	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->width, mplayer->height, stretch, ax, ay, transform, relative_transform);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
@@ -1212,9 +1161,6 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 	ui->Render (surface_cr, 0, 0, (int)bounds.w , (int)bounds.h);
 	cairo_destroy (surface_cr);
 	
-// MS BUG ? the ImageBrush Opacity is ignored, only the Opacity from UIElement is considered
-	double opacity = (uielement ? uielement->GetTotalOpacity () : 1.0);
-	
 	Stretch stretch = tile_brush_get_stretch (this);
 	
 	AlignmentX ax = tile_brush_get_alignment_x (this);
@@ -1223,8 +1169,7 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 	Transform *transform = brush_get_transform (this);
 	Transform *relative_transform = brush_get_relative_transform (this);
 	
- 	cairo_pattern_t *pattern = image_brush_create_pattern (cr, surface, (int)bounds.w, (int)bounds.h, opacity);
-
+ 	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
 	cairo_matrix_t matrix;
  	image_brush_compute_pattern_matrix (&matrix, width, height,
 					    (int)bounds.w, (int)bounds.h,

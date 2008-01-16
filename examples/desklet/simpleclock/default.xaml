@@ -43,7 +43,7 @@
   <Canvas x:Name="clockcanvas" Width="310" Height="100">
       <TextBlock x:Name="hour" Text="12" FontSize="68" Foreground="#fff" Canvas.Left="28" Canvas.Top="15"/>
       <TextBlock x:Name="dotcover" Text=":" FontSize="68" Foreground="#fff" Canvas.Left="108" Canvas.Top="10"/>
-      <TextBlock x:Name="minute" Text="00" FontSize="68" Foreground="#fff" Canvas.Left="124 " Canvas.Top="15"/>
+      <TextBlock x:Name="minute" Text="00" FontSize="68" Foreground="#fff" Canvas.Left="124" Canvas.Top="15"/>
     
       <TextBlock x:Name="ampm" Text="am" FontSize="24" Foreground="#fff" Canvas.Left="240" Canvas.Top="25"/>
 

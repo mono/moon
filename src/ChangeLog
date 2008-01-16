@@ -1,3 +1,19 @@
+2008-01-16  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp, uielement.h: Rework the way we handle opacity to
+	operate like the reference platform by removing the concept of
+	TotalOpacity and instead using push/pop group and paint_with
+	alpha.  See test-sibling-opacity.xaml for an example.  Handle
+	clipping in DoRender rather than in every subclass because we want
+	the clip path active before calling push/pop so that the temporary
+	surface is bounded.
+	* brush.cpp, panel.cpp: remove GetTotalOpacity references.
+	* media.cpp, media.h: cleanup the complicated render logic now
+	that things are handled in uielement.
+	* shape.cpp, text.cpp: remove RenderClipPath calls.
+
+	* rect.cpp, rect.h: add draw methods.
+
 2008-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp: Implemented mpeg seeking support for

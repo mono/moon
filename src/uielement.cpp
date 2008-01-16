@@ -23,6 +23,15 @@
 #include "eventargs.h"
 
 //#define DEBUG_INVALIDATE 0
+#define QUANTUM_ALPHA 1
+
+#if QUANTUM_ALPHA
+#define IS_TRANSLUCENT(x) (x * 255 < 254.5)
+#define IS_INVISIBLE(x) (x * 255 < .5)
+#else
+#define IS_TRANSLUCENT(x) (x < 1.0)
+#define IS_INVISIBLE(x) (x <= 0.0)
+#endif
 
 extern guint32 moonlight_flags;
 
@@ -230,8 +239,9 @@ UIElement::ComputeTotalOpacity ()
 	if (GetVisualParent ())
 		GetVisualParent ()->ComputeTotalOpacity ();
 
-	double local_opacity = GetValue (UIElement::OpacityProperty)->AsDouble();
-	total_opacity = local_opacity * (GetVisualParent () ? GetVisualParent ()->GetTotalOpacity () : 1.0);
+	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+	//total_opacity = local_opacity * (GetVisualParent () ? GetVisualParent ()->GetTotalOpacity () : 1.0);
+	total_opacity = local_opacity;
 }
 
 void
@@ -387,7 +397,7 @@ UIElement::FullInvalidate (bool rendertransform)
 void
 UIElement::Invalidate (Rect r)
 {
-	if (!GetRenderVisible() || total_opacity <= 0.0)
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity))
 		return;
 
 #ifdef DEBUG_INVALIDATE
@@ -408,7 +418,7 @@ UIElement::Invalidate (Rect r)
 void
 UIElement::Invalidate (Region *region)
 {
-	if (!GetRenderVisible() || total_opacity <= 0.0)
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity))
 		return;
 
 	add_dirty_element (this, DirtyInvalidate);
@@ -522,34 +532,49 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 {
 	cairo_pattern_t *mask = NULL;
 
-	if (!GetRenderVisible() || total_opacity == 0.0 || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
 	
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
-	if (opacityMask != NULL) {
-		cairo_save (cr);
+	cairo_save (cr);
+
+	RenderClipPath (cr);
+
+	if (opacityMask || IS_TRANSLUCENT (total_opacity)) {
 		Rect r = GetSubtreeBounds ();
 		r.RoundOut ();
 		cairo_identity_matrix (cr);
+		runtime_cairo_region (cr, region->gdkregion);
+		cairo_clip (cr);
 		cairo_rectangle (cr, r.x, r.y, r.w, r.h);
 		cairo_clip (cr);
-		RenderClipPath (cr);
-		
+	}
+
+	if (IS_TRANSLUCENT (total_opacity))
+		cairo_push_group (cr);
+
+	if (opacityMask != NULL) {
+		cairo_push_group (cr);
+		cairo_set_matrix (cr, &absolute_xform);
 		opacityMask->SetupBrush (cr, this);
-		mask = cairo_get_source (cr);
-		cairo_pattern_reference (mask);
+		cairo_fill (cr);
+		mask = cairo_pop_group (cr);
 		cairo_push_group (cr);
 	}
-	
+
 	Render (cr, region);
 
 	if (opacityMask != NULL) {
 		cairo_pop_group_to_source (cr);
 		cairo_mask (cr, mask);
 		cairo_pattern_destroy (mask);
-		cairo_restore (cr);
 	}
-
+	if (IS_TRANSLUCENT (total_opacity)) {
+		cairo_pop_group_to_source (cr);
+		cairo_paint_with_alpha (cr, total_opacity);
+	}
+	cairo_restore (cr);
+	
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {

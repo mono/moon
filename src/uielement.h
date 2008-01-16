@@ -87,10 +87,6 @@ public:
 
 	void ComputeTotalOpacity ();
 
-	// GetTotalOpacity
-	//   Get the cumulative opacity of this element, including all it's parents
-	double GetTotalOpacity () { return total_opacity; }
-
 	virtual void UpdateTotalRenderVisibility ();
 	void ComputeTotalRenderVisibility ();
 

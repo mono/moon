@@ -98,9 +98,6 @@ class Image : public MediaBase {
 	
 	// pattern caching
 	cairo_pattern_t *pattern;
-	double pattern_opacity;
-	int opacity_stability_count;
-	
  public:
 	Image ();
 	virtual ~Image ();
