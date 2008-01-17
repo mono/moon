@@ -1,3 +1,19 @@
+2008-01-17  Chris Toshok  <toshok@ximian.com>
+
+	* rect.h (Rect::Transform): new method, allows for transforming a
+	rectangle by a cairo_matrix_t, used with transforming the stroke
+	bounds back to screen space using the InkPresenter's
+	absolute_xform.
+
+	* stylus.cpp, stylus.h: deal with collection changed notifications
+	on Stroke::StylusPointsProperty and on
+	InkPresenter::StrokesProperty, and correctly invalidate a stroke's
+	bounds.  The bounds of a stroke needs to be looked at - right now
+	it's in the coordinate space of the InkPresenter, and so it needs
+	to be transformed back to screen space before invalidating.  Need
+	to check if MS uses screen space for a stroke's bounds (seems
+	likely they do, but this was easier to code.)
+
 2008-01-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* list.cpp (Wait): Added.

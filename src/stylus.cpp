@@ -110,11 +110,10 @@ StylusPointCollection::AddStylusPoints (StylusPointCollection *stylusPointCollec
 	if (!stylusPointCollection)
 		return 1.0; // documented as such, needs testing
 
-	int count = collection_count (stylusPointCollection);
-	for (int i=0; i < count; i++) {
-		collection_add (this, collection_get_value_at (stylusPointCollection, i));
-	}
-	return collection_count (this) - 1;
+	for (Collection::Node *n = (Collection::Node *) stylusPointCollection->list->First (); n; n = (Collection::Node *) n->next)
+		Add (n->obj);
+
+	return list->Length () - 1;
 }
 
 
@@ -122,18 +121,21 @@ Stroke::Stroke ()
 {
 	this->SetValue (Stroke::StylusPointsProperty, Value::CreateUnref (new StylusPointCollection ()));
 	this->SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnref (new DrawingAttributes ()));
+
+	bounds = Rect (0,0,0,0);
+	old_bounds = Rect (0,0,0,0);
 }
 
 Rect
 Stroke::GetBounds ()
 {
-	DrawingAttributes *da = stroke_get_drawing_attributes (this);
-	StylusPointCollection *spc = stroke_get_stylus_points (this);
+	return bounds;
+}
 
-	if (da)
-		return da->ComputeBounds (spc);
-	else
-		return DrawingAttributes::ComputeBoundsWithoutDrawingAttributes (spc);
+Rect
+Stroke::GetOldBounds ()
+{
+	return old_bounds;
 }
 
 bool
@@ -148,6 +150,83 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	}
 
 	return false;
+}
+
+void
+Stroke::AddStylusPointToBounds (StylusPoint *stylus_point)
+{
+	DrawingAttributes *da = stroke_get_drawing_attributes (this);
+	double height, width;
+
+	if (da) {
+		height = drawing_attributes_get_height (da) + 4.0;
+		width = drawing_attributes_get_width (da) + 4.0;
+	}
+	else {
+		height = width = 6.0;
+
+	}
+	printf ("stylus point at %g %g\n",
+		stylus_point_get_x (stylus_point),
+		stylus_point_get_y (stylus_point));
+
+	bounds = bounds.Union (Rect (stylus_point_get_x (stylus_point) - width / 2,
+				     stylus_point_get_y (stylus_point) - height / 2,
+				     width, height));
+}
+
+void
+Stroke::ComputeBounds ()
+{
+	bounds = Rect (0,0,0,0);
+
+	StylusPointCollection *spc = stroke_get_stylus_points (this);
+	if (!spc)
+		return;
+
+	Collection::Node *cnp;
+	for (cnp = (Collection::Node *) spc->list->First (); cnp != NULL; cnp = (Collection::Node *) cnp->next)
+		AddStylusPointToBounds ((StylusPoint*)cnp->obj);
+}
+
+void
+Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	old_bounds = bounds;
+
+	switch (type) {
+	case CollectionChangeTypeItemAdded:
+		AddStylusPointToBounds ((StylusPoint*)obj);
+		break;
+	case CollectionChangeTypeItemRemoved:
+	case CollectionChangeTypeItemChanged:
+	case CollectionChangeTypeChanged:
+		ComputeBounds ();
+		break;
+	}
+
+	NotifyAttachersOfPropertyChange (Stroke::StylusPointsProperty);
+}
+
+void
+Stroke::OnPropertyChanged (DependencyProperty *prop)
+{
+	if (prop->type != Type::STROKE) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
+
+	if (prop == Stroke::StylusPointsProperty) {
+		Collection *newcol = GetValue (prop)->AsCollection();
+		
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
+		}
+	}
+
+	NotifyAttachersOfPropertyChange (prop);
 }
 
 Stroke*
@@ -371,20 +450,6 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 	drawing_attributes_quick_render (cr, 2.0, NULL, collection);
 }
 
-Rect
-DrawingAttributes::ComputeBounds (StylusPointCollection *stylusPointCollection)
-{
-	// XXX
-	return Rect (0,0,0,0);
-}
-
-Rect
-DrawingAttributes::ComputeBoundsWithoutDrawingAttributes (StylusPointCollection *stylusPointCollection)
-{
-	// XXX
-	return Rect (0,0,0,0);
-}
-
 InkPresenter::InkPresenter ()
 {
 	this->SetValue (InkPresenter::StrokesProperty, Value::CreateUnref (new StrokeCollection ()));
@@ -427,13 +492,45 @@ InkPresenter::RenderChildren (cairo_t *cr, Region *region)
 	}
 }
 
-bool
-InkPresenter::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child)
+void
+InkPresenter::OnPropertyChanged (DependencyProperty *prop)
 {
-	if (prop == StrokesProperty)
-		return true;
+	if (prop->type != Type::INKPRESENTER) {
+		Canvas::OnPropertyChanged (prop);
+		return;
+	}
 
-	return Canvas::OnChildPropertyChanged (prop, child);
+	if (prop == InkPresenter::StrokesProperty) {
+		Collection *newcol = GetValue (prop)->AsCollection();
+		
+		if (newcol) {
+			if (newcol->closure)
+				printf ("Warning we attached a property that was already attached\n");
+			newcol->closure = this;
+		}
+	}
+
+	NotifyAttachersOfPropertyChange (prop);
+}
+
+void
+InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	switch (type) {
+	case CollectionChangeTypeItemAdded:
+	case CollectionChangeTypeItemRemoved:
+	case CollectionChangeTypeItemChanged: {
+		Rect ink_bounds = GetBounds();
+		Stroke *stroke = (Stroke*)obj;
+		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
+		if (type == CollectionChangeTypeItemChanged)
+			Invalidate (stroke->GetOldBounds().Transform (&absolute_xform));
+		break;
+	}
+	case CollectionChangeTypeChanged:
+		Invalidate ();
+		break;
+	}
 }
 
 InkPresenter*

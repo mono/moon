@@ -111,6 +111,32 @@ struct Rect {
 		return gdk;
 	}
 
+	Rect Transform (cairo_matrix_t *xform)
+	{
+		double p1x, p1y;
+		double p2x, p2y;
+
+		p1x = x;
+		p1y = y;
+
+		p2x = x + w;
+		p2y = y + h;
+
+		cairo_matrix_transform_point (xform, &p1x, &p1y);
+		cairo_matrix_transform_point (xform, &p2y, &p2y);
+
+		double left, right;
+		double top, bottom;
+
+		left = p1x > p2x ? p2x : p1x;
+		right = p1x > p2x ? p1x : p2x;
+
+		top = p1y > p2y ? p2y : p1y;
+		bottom = p1y > p2y ? p1y : p2y;
+
+		return Rect (left, top, right - left, bottom - top);
+	}
+
 	bool operator == (const Rect &rect)
 	{
 		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
