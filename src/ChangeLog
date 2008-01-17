@@ -1,3 +1,19 @@
+2008-01-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (Mp3FrameReader::ReadFrame): If we fail to read an
+	MPEG header, set MediaFrame->event to EOF. Same if we can't read
+	the frame data.
+	(Media::GetNextFrame): Don't try to decode the frame if it is an
+	event.
+	(ASFDemuxer::ReadFrame): If we reach EOF, set MediaFrame->event to
+	EOF.
+
+	* mplayer2.cpp (media_player_callback): pts is allowed to be 0.
+	(AdvanceFrame): Handle EOF frame events.
+	(audio_loop): Handle EOF frame events.
+
+	* list.cpp (Wait): Added.
+
 2008-01-17  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.cpp (InkPresenter::OnCollectionChanged): we need to
@@ -19,10 +35,6 @@
 	to be transformed back to screen space before invalidating.  Need
 	to check if MS uses screen space for a stroke's bounds (seems
 	likely they do, but this was easier to code.)
-
-2008-01-17  Jeffrey Stedfast  <fejj@novell.com>
-
-	* list.cpp (Wait): Added.
 
 2008-01-17  Jeffrey Stedfast  <fejj@novell.com>
 

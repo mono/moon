@@ -129,6 +129,11 @@ typedef int32_t MediaResult;
 // is the frame you want to show).
 #define FRAME_COPY_DECODED_DATA (1 << 7) 
 
+enum FrameEvent {
+	FrameEventNone,
+	FrameEventEOF
+};
+
 enum MoonPixelFormat {
 	MoonPixelFormatNone = 0,
 	MoonPixelFormatRGB32,
@@ -226,11 +231,11 @@ public:
 	//	Requests the decoder to decode the frame
 	//	Returns the decoded frame
 	MediaResult GetNextFrame (MediaFrame *frame);
-	MediaResult GetNextFrame (MediaFrame *frame, uint8_t states); 
+	MediaResult GetNextFrame (MediaFrame *frame, uint16_t states); 
 	
 	//	Requests reading of the next frame
 	void GetNextFrameAsync (MediaFrame *frame); 
-	void GetNextFrameAsync (MediaFrame *frame, uint8_t states); 
+	void GetNextFrameAsync (MediaFrame *frame, uint16_t states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	void DeleteQueue (); // Deletes the queue and finishes the thread that's processing the queue.
 	void SetQueueCallback (MediaClosure *closure) { queue_closure = closure; }
@@ -289,7 +294,7 @@ private:
 	class Node : public List::Node {
 	public:
 		MediaFrame *frame;
-		uint8_t states;
+		uint16_t states;
 	};
 };
  
@@ -298,7 +303,7 @@ public:
 	~MediaFrame ();
 	MediaFrame (IMediaStream *stream);
 	
-	void AddState (uint8_t state) { this->state |= state; } // There's no way of "going back" to an earlier state 
+	void AddState (uint16_t state) { this->state |= state; } // There's no way of "going back" to an earlier state 
 	bool IsDecoded () { return (state & FRAME_DECODED) == FRAME_DECODED; }
 	bool IsDemuxed () { return (state & FRAME_DEMUXED) == FRAME_DEMUXED; }
 	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
@@ -310,7 +315,8 @@ public:
 	uint64_t pts; // Set by the demuxer
 	uint64_t duration; // Set by the demuxer
 	
-	uint8_t state; // Current state of the frame
+	uint16_t state; // Current state of the frame
+	uint16_t event; // special frame event if non-0
 	
 	// The demuxer sets these to the encoded data which the
 	// decoder then uses and replaces with the decoded data.

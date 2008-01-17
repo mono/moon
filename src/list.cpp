@@ -339,14 +339,14 @@ List::ForEach (NodeAction action, void *data)
 Queue::Queue ()
 {
 	pthread_mutex_init (&lock, NULL);
-	pthread_cond_init (&cond, NULL);
+	//pthread_cond_init (&cond, NULL);
 	list = new List ();
 }
 
 Queue::~Queue ()
 {
 	pthread_mutex_destroy (&lock);
-	pthread_cond_destroy (&cond);
+	//pthread_cond_destroy (&cond);
 	delete list;
 }
 
@@ -387,7 +387,7 @@ Queue::Push (List::Node *node)
 {
 	Lock ();
 	list->Append (node);
-	pthread_cond_signal (&cond);
+	//pthread_cond_signal (&cond);
 	Unlock ();
 }
 

@@ -234,7 +234,7 @@ media_player_callback (MediaClosure *closure)
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame->stream;
 	
-	if (closure->frame == NULL || closure->frame->pts == 0)
+	if (closure->frame == NULL)
 		return MEDIA_SUCCESS;
 	
 	closure->frame = NULL;
@@ -509,18 +509,26 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	if (current_pts >= target_pts) {
-		//printf ("MediaPlayer::AdvanceFrame () we're ahead of playback (current_pts = %lld, seek_pts = xxx, target_pts = %lld).\n", current_pts, target_pts);
+		// we are ahead of playback
 		return !eof;
-	}
+	} else if (eof)
+		return false;
 	
 	video->queue->Lock ();
 	
 	list = video->queue->LinkedList ();
 	
-	int count = list->Length ();
-	int dropped = 0;
-	
 	if ((pkt = (Packet *) list->First ())) {
+		if (pkt->frame->event == FrameEventEOF) {
+			list->Unlink (pkt);
+			delete pkt;
+			eof = true;
+			
+			video->queue->Unlock ();
+			
+			return false;
+		}
+		
 		do {
 			// always decode the frame or we get glitches in the screen
 			frame = pkt->frame;
@@ -530,57 +538,58 @@ MediaPlayer::AdvanceFrame ()
 			npkt = (Packet *) pkt->next;
 			
 			current_pts = frame->pts;
-			//printf ("MediaPlayer::AdvanceFrame (): got video frame with pts %lld, frame->pts = %lld, queue length: %i\n", pkt->pts, pkt->frame->pts, list->Length ());
 			list->Unlink (pkt);
 			
 			media_player_enqueue_frames (this, 0, 1);	
-			
-			//printf ("MediaPlayer::AdvanceFrame (): got video frame with pts %lld, frame->pts = %lld, queue length: %i\n", pkt->pts, pkt->frame->pts, list->Length ());
 			
 			if (!frame->IsDecoded ()) {
 				//printf ("MediaPlayer::AdvanceFrame (): decoding on main thread.\n");
 				MediaResult result = stream->decoder->DecodeFrame (frame);
 				
 				if (!MEDIA_SUCCEEDED (result)) {
-					update = false;
 					printf ("MediaPlayer::AdvanceFrame (): Couldn't decode frame.\n");
+					update = false;
 				}
 			}
 			
 			if (update && current_pts >= target_pts) {
 				// we are in sync (or ahead) of audio playback
-				//printf ("MediaPlayer::AdvanceFrame () we are in sync (or ahead) of audio playback (current_pts = %lld, seek_pts = %lld, target_pts = %lld).\n", current_pts, seek_pts, target_pts);
 				break;
 			}
 			
 			if (!npkt) {
 				// no more packets in queue, this frame is the most recent we have available
-				//printf ("MediaPlayer::AdvanceFrame () no more packets in queue (current_pts = %lld, seek_pts = %lld, target_pts = %lld).\n", current_pts, seek_pts, target_pts);
 				break;
 			}
 			
-			delete pkt;
-			dropped++;
+			if (npkt->frame->event == FrameEventEOF) {
+				// We've reached the EOF, current frame is the most recent we can render
+				list->Unlink (npkt);
+				delete npkt;
+				eof = true;
+				break;
+			}
 			
 			// we are lagging behind, drop this frame
-			//printf ("MediaPlayer::AdvanceFrame () we are lagging behind, drop this frame (current_pts = %lld, seek_pts = %lld, target_pts = %lld).\n", current_pts, seek_pts, target_pts);
 			frame = NULL;
+			delete pkt;
 			
 			pkt = npkt;
 		} while (pkt);
 	}
 	
+	int nframes_left = list->Length ();
+	
 	video->queue->Unlock ();
 	
 	if (update && frame) {
-		//printf ("MediaPlayer::AdvanceFrame () (%.2i items in list, %.2i dropped) copying ? bytes to rgb buffer for current_pts = %lld (target_pts = %lld, pkt->frame->pts = %lld), diff = %lld.\n", count, dropped, current_pts, target_pts, pkt-frame->>pts, target_pts - pkt->frame->pts);
 		render_frame (this, frame);
 		//memcpy (video->rgb_buffer, pkt->data, pkt->size);
-		if (count < 10) {
-			media_player_enqueue_frames (this, 0, 1);
-			printf ("Requested an extra frame.\n");
-		}
+		if (nframes_left < 10)
+			media_player_enqueue_frames (this, 0, 10 - nframes_left);
+		
 		delete pkt;
+		
 		return true;
 	}
 	
@@ -1105,7 +1114,6 @@ audio_loop (void *data)
 	uint32_t inleft;
 	uint8_t *inptr;
 	uint32_t n;
-	bool play;
 	int ndfs;
 	
 	outend = audio->outbuf + AUDIO_BUFLEN;
@@ -1142,9 +1150,8 @@ audio_loop (void *data)
 			continue;
 		}
 		
-		play = true;
-		
-		if ((frame_pts = audio_play (audio, play, ufds, ndfs)) > 0) {
+		if ((frame_pts = audio_play (audio, true, ufds, ndfs)) > 0) {
+			printf ("played an audio frame\n");
 			// calculated pts
 			//printf ("frame_pts = %llu\n", frame_pts);
 			pthread_mutex_lock (&mplayer->target_pts_lock);
@@ -1156,6 +1163,9 @@ audio_loop (void *data)
 				// decode an audio packet
 				stream = pkt->frame->stream;
 				frame = pkt->frame;
+				
+				if (frame->event == FrameEventEOF)
+					break;
 				
 				if (!frame->IsDecoded ())
 					stream->decoder->DecodeFrame (frame);
@@ -1170,9 +1180,10 @@ audio_loop (void *data)
 				
 				media_player_enqueue_frames (mplayer, 1, 0);
 			} else if (!pkt) {
-				// need to either wait for a packet to
-				// be queued or break if the audio
-				// stream is complete...
+				// need to either wait for another
+				// audio packet to be queued
+				//audio->queue->Wait ();
+				printf ("waiting for audio packet\n");
 			}
 			
 			if (pkt != NULL) {
@@ -1199,7 +1210,7 @@ audio_loop (void *data)
 		}
 	}
 	
-	//printf ("audio_loop (): exited.\n");
+	printf ("audio_loop (): exited.\n");
 	
 	if (pkt != NULL)
 		delete pkt;

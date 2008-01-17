@@ -353,7 +353,7 @@ Media::Open (IMediaSource* source)
 }
 
 MediaResult
-Media::GetNextFrame (MediaFrame *frame, uint8_t states)
+Media::GetNextFrame (MediaFrame *frame, uint16_t states)
 {
 	//printf ("Media::GetNextFrame (%p).\n", stream);
 	
@@ -374,9 +374,13 @@ Media::GetNextFrame (MediaFrame *frame, uint8_t states)
 	if ((states & FRAME_DECODED) != FRAME_DECODED)
 		return result;
 	
-	result = frame->stream->decoder->DecodeFrame (frame);
-	if (!MEDIA_SUCCEEDED (result))
-		return result;
+	if (frame->event == 0) {
+		result = frame->stream->decoder->DecodeFrame (frame);
+		if (!MEDIA_SUCCEEDED (result))
+			return result;
+	} else {
+		frame->AddState (FRAME_DECODED);
+	}
 	
 	//printf ("Media::GetNextFrame (%p) finished, size: %i.\n", stream, frame->buflen);
 	
@@ -413,21 +417,28 @@ Media::FrameReaderLoop ()
 		pthread_mutex_lock (&queue_mutex);
 		while (queued_requests != NULL && queued_requests->IsEmpty ())
 			pthread_cond_wait (&queue_condition, &queue_mutex);
+		
 		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): got something.\n");
+		
 		if (queued_requests != NULL) {
 			// Find the first audio node
-			current = (Media::Node*) queued_requests->First ();
+			current = (Media::Node *) queued_requests->First ();
 			while (current != NULL && current->frame->stream->GetType () != MediaTypeAudio) {
-				current = (Media::Node*) current->next;
+				current = (Media::Node *) current->next;
 			}
+			
 			if (current != NULL && current->frame->stream->GetType () == MediaTypeAudio) {
 				node = current;
 			} else {
 				// No audio node, just get the first node
 				node = (Media::Node*) queued_requests->First ();
 			}
+			
 			queued_requests->Unlink (node);
-			LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): got a %s node, there are %i nodes left.\n", node->stream->GetType () == MediaTypeAudio ? "audio" : (node->stream->GetType () == MediaTypeVideo ? "video" : "unknown") , queued_requests->Length ());
+			LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): got a %s node, there are %i nodes left.\n",
+					     node->stream->GetType () == MediaTypeAudio ? "audio" :
+					     (node->stream->GetType () == MediaTypeVideo ? "video" : "unknown"),
+					     queued_requests->Length ());
 		}
 		pthread_mutex_unlock (&queue_mutex);
 		
@@ -449,6 +460,7 @@ Media::FrameReaderLoop ()
 	}
 	LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): exiting.\n");
 }
+
 #include <sched.h>
 
 void
@@ -458,7 +470,7 @@ Media::GetNextFrameAsync (MediaFrame *frame)
 }
 
 void
-Media::GetNextFrameAsync (MediaFrame *frame, uint8_t states)
+Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 {
 	//printf ("Media::GetNextFrameAsync (%p).\n", stream);
 	if (queued_requests == NULL) {
@@ -477,7 +489,7 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint8_t states)
 	pthread_mutex_lock (&queue_mutex);
 	
 	// Add another node to our queue.
-	Media::Node* node = new Media::Node ();
+	Media::Node *node = new Media::Node ();
 	node->frame = frame;
 	node->states = states;
 	queued_requests->Append (node);
@@ -812,7 +824,7 @@ failure:
 }
 
 MediaResult
-ASFDemuxer::ReadFrame (MediaFrame* frame)
+ASFDemuxer::ReadFrame (MediaFrame *frame)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
 	
@@ -829,6 +841,7 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
 			return MEDIA_DEMUXER_ERROR;
 		} else {
 			media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
+			frame->event = FrameEventEOF;
 			return MEDIA_NO_MORE_DATA;
 		}
 	}
@@ -882,7 +895,7 @@ ASFDemuxerInfo::Supports (IMediaSource *source)
 }
 
 IMediaDemuxer *
-ASFDemuxerInfo::Create (Media* media)
+ASFDemuxerInfo::Create (Media *media)
 {
 	return new ASFDemuxer (media);
 }
@@ -1302,8 +1315,11 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	
 	offset = stream->GetPosition ();
 	
-	if (!stream->Read (buffer, 4))
+	if (!stream->Read (buffer, 4)) {
+		frame->AddState (FRAME_DEMUXED);
+		frame->event = FrameEventEOF;
 		return MEDIA_NO_MORE_DATA;
+	}
 	
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
 	if (mpeg_parse_header (&mpeg, buffer) == -1)
@@ -1329,20 +1345,16 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	else
 		frame->buffer = (uint8_t *) g_try_malloc (frame->buflen);
 	
-	if (frame->buffer == NULL) {
-		//media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
+	if (frame->buffer == NULL)
 		return MEDIA_OUT_OF_MEMORY;
-	}
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
 		frame->buffer[frame->buflen - 1] = 0;
 	
 	memcpy (frame->buffer, buffer, 4);
 	
-	if (!stream->Read (frame->buffer + 4, len - 4)) {
-		//media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
-		return MEDIA_DEMUXER_ERROR;
-	}
+	if (!stream->Read (frame->buffer + 4, len - 4))
+		frame->event = FrameEventEOF;
 	
 	frame->pts = cur_pts;
 	frame->duration = duration;
@@ -1350,6 +1362,9 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	frame->AddState (FRAME_DEMUXED);
 	
 	cur_pts += duration;
+	
+	if (frame->event == FrameEventEOF)
+		return MEDIA_NO_MORE_DATA;
 	
 	return MEDIA_SUCCESS;
 }
@@ -1556,45 +1571,47 @@ FileSource::~FileSource ()
 bool
 FileSource::Eof ()
 {
-	printf ("FileSource::Eof ().\n");
-	printf ("FileSource::Eof (): Not implemented.\n");
-	return false;
+	if (fd)
+		return feof (fd) != 0;
+	
+	return true;
 }
 
 bool
-FileSource::Read (void* buffer, guint32 size)
+FileSource::Read (void *buffer, uint32_t n)
 {
+	size_t nread;
+	
 	//printf ("FileSource::Read (%p, %u).\n", buffer, size);
 	
-	size_t bytes_read;
-	
 	if (buffer == NULL) {
-		media->AddMessage (MEDIA_INVALID_ARGUMENT, g_strdup_printf ("FileSource::Read (%p, %u): buffer\n", buffer, size));
+		fprintf (stderr, "FileSource::Read (%p, %u): buffer\n", buffer, n);
 		return false;
 	}
-
+	
 	// Open the file if it hasn't been opened.
 	if (!fd && !(fd = fopen (filename, "rb"))) {
-		media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Could not open the file '%s': %s.\n", filename, strerror (errno)));
+		fprintf (stderr, "FileSource::Read (%p, %u): could not open `%s': %s.\n",
+			 buffer, n, filename, strerror (errno));
 		return false;
 	}
-
-	// Read 
-	bytes_read = fread (buffer, 1, size, fd);
 	
-	// Report any errors
-	if (bytes_read != size) {
-		if (ferror (fd) != 0) {
-			media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Could not read from the file '%s': %s.\n", filename, strerror (errno)));
-		} else if (feof (fd) != 0) {
-			media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Reached end of file prematurely of the file '%s'.\n", filename));
-		} else {
-			media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Unspecified error while reading the file '%s'.\n", filename));
-		}
-		return false;
+	// Read
+	if ((nread = fread (buffer, 1, n, fd)) == n)
+		return true;
+	
+	if (ferror (fd) != 0) {
+		fprintf (stderr, "FileSource::Read (%p, %u): only managed to read %u bytes from `%s': %s.\n",
+			 buffer, n, nread, filename, strerror (errno));
+	} else if (feof (fd) != 0) {
+		fprintf (stderr, "FileSource::Read (%p, %u): only managed to read %u bytes from `%s': end of file reached.\n",
+			 buffer, n, nread, filename);
+	} else {
+		fprintf (stderr, "FileSource::Read (%p, %u): only managed to read %u bytes from `%s': unknown error.\n",
+			 buffer, n, nread, filename);
 	}
-
-	return true;
+	
+	return false;
 }
 
 bool
@@ -1619,29 +1636,24 @@ FileSource::GetPosition ()
 bool
 FileSource::IsSeekable ()
 {
-	printf ("FileSource::IsSeekable ().\n");
-	
 	return true;
 }
 
 bool
 FileSource::Seek (int64_t offset)
 {
-	//printf ("FileSource::Seek (%llu).\n", position);
-	
 	return Seek (offset, SEEK_CUR);
 }
 
 bool
 FileSource::Seek (int64_t offset, int mode)
 {
-	//printf ("FileSource::Seek (%llu, %i).\n", offset, mode);
-	
 	if (fseek (fd, offset, mode) == 0)
 		return true;
 	
-	media->AddMessage (MEDIA_SEEK_ERROR, g_strdup_printf ("Can't seek to offset %llu with mode %i in '%s': %s.\n",
-							      offset, mode, filename, strerror (errno)));
+	fprintf (stderr, "FileSource::Seek (%lld, %d) on `%s' failed: %s.\n",
+		 offset, mode, filename, strerror (errno));
+	
 	return false;
 }
 
@@ -1726,6 +1738,7 @@ MediaFrame::MediaFrame (IMediaStream *stream)
 	buffer = NULL;
 	buflen = 0;
 	state = 0;
+	event = 0;
 	
 	for (int i = 0; i < 4; i++) {
 		data_stride[i] = 0;  
