@@ -537,9 +537,8 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	if (IS_TRANSLUCENT (total_opacity))
 		cairo_push_group (cr);
 
-	if (opacityMask != NULL) {
+	if (opacityMask != NULL)
 		cairo_push_group (cr);
-	}
 
 	Render (cr, region);
 
