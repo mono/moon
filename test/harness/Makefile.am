@@ -76,6 +76,7 @@ MOON_TESTS= \
 	../xaml/test-shape-rectangle-stroke.xaml \
 	../xaml/test-shape-rectangle.xaml \
 	../xaml/test-shape-styles.xaml \
+	../xaml/test-sibling-opacity.xaml \
 	../xaml/test-solidbrush-opacity.xaml \
 	../xaml/test-textblock-content.xaml \
 	../xaml/test-textblock.xaml \
