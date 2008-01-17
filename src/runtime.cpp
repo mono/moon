@@ -724,10 +724,10 @@ Surface::InitializeDrawingArea (GtkWidget *drawing_area)
 	for (GList *l = gdk_devices_list(); l; l = l->next) {
 		GdkDevice *device = GDK_DEVICE(l->data);
 
-		// It seems like we should check for a cursor but testing
-		// contradicts that.
-		//if (device->has_cursor)
+#if THIS_NOLONGER_BREAKS_LARRYS_MOUSE
+		//if (!device->has_cursor)
 		gdk_device_set_mode (device, GDK_MODE_SCREEN);
+#endif
 	}
 
 	GTK_WIDGET_SET_FLAGS (drawing_area, GTK_CAN_FOCUS);
