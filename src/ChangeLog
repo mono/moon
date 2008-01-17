@@ -1,5 +1,11 @@
 2008-01-17  Chris Toshok  <toshok@ximian.com>
 
+	* stylus.cpp (InkPresenter::OnCollectionChanged): we need to
+	invalidate the old bounds of the stroke for ItemRemoved as well as
+	ItemChanged.
+
+2008-01-17  Chris Toshok  <toshok@ximian.com>
+
 	* rect.h (Rect::Transform): new method, allows for transforming a
 	rectangle by a cairo_matrix_t, used with transforming the stroke
 	bounds back to screen space using the InkPresenter's
