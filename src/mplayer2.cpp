@@ -1151,7 +1151,6 @@ audio_loop (void *data)
 		}
 		
 		if ((frame_pts = audio_play (audio, true, ufds, ndfs)) > 0) {
-			printf ("played an audio frame\n");
 			// calculated pts
 			//printf ("frame_pts = %llu\n", frame_pts);
 			pthread_mutex_lock (&mplayer->target_pts_lock);
@@ -1182,8 +1181,6 @@ audio_loop (void *data)
 			} else if (!pkt) {
 				// need to either wait for another
 				// audio packet to be queued
-				//audio->queue->Wait ();
-				printf ("waiting for audio packet\n");
 			}
 			
 			if (pkt != NULL) {
@@ -1210,7 +1207,7 @@ audio_loop (void *data)
 		}
 	}
 	
-	printf ("audio_loop (): exited.\n");
+	//printf ("audio_loop (): exited.\n");
 	
 	if (pkt != NULL)
 		delete pkt;

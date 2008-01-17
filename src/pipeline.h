@@ -198,6 +198,35 @@ public:
 };
 
 class Media {
+	static ConverterInfo *registered_converters;
+	static DemuxerInfo *registered_demuxers;
+	static DecoderInfo *registered_decoders;
+	
+	class Node : public List::Node {
+	public:
+		MediaFrame *frame;
+		uint16_t states;
+	};
+	
+	List *queued_requests;
+	pthread_t queue_thread;
+	pthread_cond_t queue_condition;
+	pthread_mutex_t queue_mutex;
+	MediaClosure *queue_closure;
+	
+	char *file_or_url;
+	IMediaSource *source;
+	IMediaDemuxer *demuxer;
+	List *markers;
+	uint64_t start_time;
+	
+	//	Called on another thread, loops the queue of requested frames 
+	//	and calls GetNextFrame and FrameReadCallback.
+	//	If there are any requests for audio frames in the queue
+	//	they are always (and all of them) satisfied before any video frame request.
+	void FrameReaderLoop ();
+	static void *FrameReaderLoop (void *data);
+	
 public:
 	Media ();
 	~Media ();
@@ -265,43 +294,12 @@ public:
 	
 	static void Initialize ();
 	static void Shutdown ();
-	
-private:
-	static DemuxerInfo *registered_demuxers;
-	static DecoderInfo *registered_decoders;
-	static ConverterInfo *registered_converters;
-    
-private:
-	//	Called on another thread, loops the queue of requested frames 
-	//	and calls GetNextFrame and FrameReadCallback.
-	//	If there are any requests for audio frames in the queue
-	//	they are always (and all of them) satisfied before any video frame request.
-	void FrameReaderLoop ();
-	static void *FrameReaderLoop (void *data);
-	
-	IMediaSource *source;
-	IMediaDemuxer *demuxer;
-	List *markers;
-	char *file_or_url;
-	uint64_t start_time;
-	
-	List *queued_requests;
-	pthread_t queue_thread;
-	pthread_cond_t queue_condition;
-	pthread_mutex_t queue_mutex;
-	MediaClosure *queue_closure;
-	
-	class Node : public List::Node {
-	public:
-		MediaFrame *frame;
-		uint16_t states;
-	};
 };
  
 class MediaFrame {
 public:
-	~MediaFrame ();
 	MediaFrame (IMediaStream *stream);
+	~MediaFrame ();
 	
 	void AddState (uint16_t state) { this->state |= state; } // There's no way of "going back" to an earlier state 
 	bool IsDecoded () { return (state & FRAME_DECODED) == FRAME_DECODED; }
