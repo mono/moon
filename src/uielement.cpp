@@ -335,10 +335,7 @@ UIElement::InsideClip (cairo_t *cr, double x, double y)
 
 	clip->Draw (NULL, cr);
 
-	cairo_matrix_t inverse = absolute_xform;
-	cairo_matrix_invert (&inverse);
-
-	cairo_matrix_transform_point (&inverse, &nx, &ny);
+	uielement_transform_point (this, &nx, &ny);
 
 	if (cairo_in_stroke (cr, nx, ny) || (clip->IsFilled () && cairo_in_fill (cr, nx, ny)))
 		ret = true;
