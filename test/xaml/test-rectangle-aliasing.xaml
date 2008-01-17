@@ -1,0 +1,6 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+        <!-- the edges of the rectangles should be pixel aligned shouldn't they? -->
+	<Rectangle Opacity="0.5" Fill="Red" Width="100" Height="100" Canvas.Top="200" Canvas.Left="20" />
+	<Rectangle Opacity="0.5" Canvas.Top="250" Canvas.Left="50" Fill="Blue" Width="100" Height="100" />
+</Canvas>
+
