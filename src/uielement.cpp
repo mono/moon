@@ -229,18 +229,16 @@ UIElement::UpdateTotalHitTestVisibility ()
 void
 UIElement::ComputeTotalRenderVisibility ()
 {
-	if (GetVisualParent ())
-		GetVisualParent ()->ComputeTotalRenderVisibility ();
-
-
 	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
 
 	total_opacity = GetValue (OpacityProperty)->AsDouble();
 
 	visible = visible && !IS_INVISIBLE (total_opacity);
 
-	if (GetVisualParent ())
+	if (visible && GetVisualParent ()) {
+		GetVisualParent ()->ComputeTotalRenderVisibility ();
 		visible = visible && GetVisualParent ()->GetRenderVisible ();
+	}
 
 	if (visible)
 		flags |= UIElement::TOTAL_RENDER_VISIBLE;
