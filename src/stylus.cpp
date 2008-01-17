@@ -166,10 +166,6 @@ Stroke::AddStylusPointToBounds (StylusPoint *stylus_point)
 		height = width = 6.0;
 
 	}
-	printf ("stylus point at %g %g\n",
-		stylus_point_get_x (stylus_point),
-		stylus_point_get_y (stylus_point));
-
 	bounds = bounds.Union (Rect (stylus_point_get_x (stylus_point) - width / 2,
 				     stylus_point_get_y (stylus_point) - height / 2,
 				     width, height));
