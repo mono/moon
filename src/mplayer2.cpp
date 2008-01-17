@@ -693,7 +693,7 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	
 	if (HasVideo ()) {
 		//printf ("MediaPlayer::Play (), timeout: %i\n", video->msec_per_frame);
-		return TimeManager::Instance()->AddTimeout (video->stream->msec_per_frame, callback, user_data);
+		return TimeManager::Instance()->AddTimeout (MAX (video->stream->msec_per_frame, 1000 / 60), callback, user_data);
 	} else {
 		//printf ("MediaPlayer::Play (), timeout: 33 (no video)\n");
 		return TimeManager::Instance()->AddTimeout (33, callback, user_data);

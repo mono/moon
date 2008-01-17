@@ -1,3 +1,7 @@
+2008-01-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer2.cpp: Max out video frame rate at 60fps.
+
 2008-01-17  Fernando Herrera  <fherrera@novell.com>
 
 	* panel.cpp: Reorder based on ZIndex when a new item is added.
