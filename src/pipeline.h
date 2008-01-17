@@ -438,7 +438,7 @@ protected:
 	void SetStreams (IMediaStream **streams, int count);
 	
 public:
-	IMediaDemuxer (Media *media) : IMediaObject (media) {}
+	IMediaDemuxer (Media *media) : IMediaObject (media), streams (NULL), stream_count (0) {}
 	virtual ~IMediaDemuxer ();
 	
 	virtual MediaResult ReadHeader () = 0;

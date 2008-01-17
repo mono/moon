@@ -1,3 +1,8 @@
+2008-01-17  Chris Toshok  <toshok@ximian.com>
+
+	* pipeline.h (class IMediaDemuxer): initializer streams and
+	stream_count so we don't crash on ltbennett.com.
+
 2008-01-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (Mp3FrameReader::ReadFrame): If we fail to read an
