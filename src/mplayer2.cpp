@@ -444,29 +444,28 @@ MediaPlayer::Close ()
 //
 
 static void
-render_frame (MediaPlayer* mplayer, MediaFrame *frame)
+render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 {
-	Video* video = mplayer->video;
+	VideoStream *stream = (VideoStream *) frame->stream;
+	Video *video = mplayer->video;
 	
 	if (!frame->IsPlanar ()) {
 		// Just copy the data
-		memcpy (video->rgb_buffer, frame->uncompressed_data, MIN (frame->uncompressed_size, (guint32) (mplayer->width * mplayer->height * 4)));
+		memcpy (video->rgb_buffer, frame->buffer, MIN (frame->buflen, (uint32_t) (mplayer->width * mplayer->height * 4)));
 		return;
 	}
 	
-	if (frame->uncompressed_data_stride == NULL || 
-		frame->uncompressed_data_stride[1] == NULL || 
-		frame->uncompressed_data_stride[2] == NULL) {
+	if (frame->data_stride == NULL || 
+		frame->data_stride[1] == NULL || 
+		frame->data_stride[2] == NULL) {
 		return;
 	}
 	
-	uint8_t *rgb_dest[3] = { video->rgb_buffer, NULL, NULL};
+	uint8_t *rgb_dest[3] = { video->rgb_buffer, NULL, NULL };
 	int rgb_stride [3] = { video->stream->width * 4, 0, 0 };
 	
-//	printf ("converting %p, %p, %p, %p, %p\n", frame->uncompressed_data_stride, frame->uncompressed_data_stride [0],
-//	 frame->uncompressed_data_stride [1], frame->uncompressed_data_stride [2], frame->uncompressed_data_stride [3]);
-	((VideoStream*) frame->stream)->converter->Convert (frame->uncompressed_data_stride, frame->srcStride, frame->srcSlideY, frame->srcSlideH, rgb_dest, rgb_stride);
-
+	stream->converter->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
+				    frame->srcSlideH, rgb_dest, rgb_stride);
 }
 
 bool
@@ -1166,8 +1165,8 @@ audio_loop (void *data)
 				pthread_mutex_unlock (&mplayer->target_pts_lock);
 				//printf ("setting target_pts to %llu\n", mplayer->target_pts);
 				
-				inptr = (uint8_t *) frame->uncompressed_data;
-				inleft = frame->uncompressed_size;
+				inleft = frame->buflen;
+				inptr = frame->buffer;
 				
 				media_player_enqueue_frames (mplayer, 1, 0);
 			} else if (!pkt) {

@@ -1,3 +1,16 @@
+2008-01-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer2.cpp: Updated for MediaFrame changes.
+
+	* pipeline-ffmpeg.cc: Updated for MediaFrame changes.
+
+	* pipeline.cpp: Instead of having a compressed_data and
+	uncompressed_data field, simply have a 'buffer' field that gets
+	reused by both the demuxer and the decoder. The decoder will set
+	the buffer to the compressed data and the decoder will, once
+	finished decoding, free the buffer and then update it to point to
+	the decoded data. This reduces memory overhead.
+
 2008-01-17  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::InsideClip): use

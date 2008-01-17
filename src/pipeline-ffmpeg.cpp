@@ -180,43 +180,40 @@ FfmpegDecoder::~FfmpegDecoder ()
 }
 
 void
-FfmpegDecoder::Cleanup (MediaFrame* frame)
+FfmpegDecoder::Cleanup (MediaFrame *frame)
 {
-	AVFrame* av_frame = (AVFrame*) frame->decoder_specific_data;
+	AVFrame *av_frame = (AVFrame *) frame->decoder_specific_data;
+	
 	if (av_frame != NULL) {
-		if (av_frame->data [0] != frame->uncompressed_data_stride [0]) {
-			for (int i = 0; i < 4; i++) {
-				g_free (frame->uncompressed_data_stride [i]);
-				frame->uncompressed_data_stride [i] = NULL;
-			}
+		if (av_frame->data[0] != frame->data_stride[0]) {
+			for (int i = 0; i < 4; i++)
+				g_free (frame->data_stride[i]);
 		}
-		av_free (av_frame);
+		
 		frame->decoder_specific_data = NULL;
+		av_free (av_frame);
 	}
 }
 
 MediaResult
-FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
+FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 {
-	//printf ("FfmpegDecoder::DecodeFrame (%p).\n", media_frame);
+	AVFrame *frame = NULL;
+	int got_picture = 0;
+	int length = 0;
+	
+	//printf ("FfmpegDecoder::DecodeFrame (%p).\n", mf);
 	
 	if (context == NULL)
 		return MEDIA_FAIL;
 	
-	AVFrame* frame = NULL;
-	int got_picture = 0;
-	int length = 0;
-
-	//printf ("FfmpegDecoder::DecodeFrame (%p): ", media_frame);
-	//media_frame->printf ();
+	//printf ("FfmpegDecoder::DecodeFrame (%p): ", mf);
+	//mf->printf ();
 	//printf ("\n");
 	
 	if (stream->GetType () == MediaTypeVideo) {
-	//	VideoStream* vs = (VideoStream*) stream;
-		
 		frame = avcodec_alloc_frame ();
-	
-		length = avcodec_decode_video (context, frame, &got_picture, (uint8_t*) media_frame->compressed_data, media_frame->compressed_size);
+		length = avcodec_decode_video (context, frame, &got_picture, mf->buffer, mf->buflen);
 		
 		if (length < 0) {
 			media->AddMessage (MEDIA_CODEC_ERROR, "Error while decoding frame.");
@@ -224,21 +221,21 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 		}
 		
 		if (got_picture) {
-			//printf ("FfmpegDecoder::DecodeFrame (%p): got picture.\n", media_frame);
-
-			media_frame->AddState (FRAME_PLANAR);
+			//printf ("FfmpegDecoder::DecodeFrame (%p): got picture.\n", mf);
 			
-			//media_frame->uncompressed_size = context->width * context->height * 4;
-			//media_frame->uncompressed_data = (uint8_t*) g_malloc (media_frame->uncompressed_size);
-			media_frame->uncompressed_size = 0;
-			media_frame->uncompressed_data = NULL;
+			mf->AddState (FRAME_PLANAR);
 			
-			media_frame->srcSlideY = 0;
-			media_frame->srcSlideH = context->height;
+			g_free (mf->buffer);
+			mf->buffer = NULL;
+			mf->buflen = 0;
 			
-			if (media_frame->IsCopyDecodedData ()) {
-				int plane_bytes [4];
+			mf->srcSlideY = 0;
+			mf->srcSlideH = context->height;
+			
+			if (mf->IsCopyDecodedData ()) {
 				int height = context->height;
+				int plane_bytes [4];
+				
 				switch (pixel_format) {
 				case MoonPixelFormatYUV420P:
 					plane_bytes [0] = height * frame->linesize [0];
@@ -257,54 +254,55 @@ FfmpegDecoder::DecodeFrame (MediaFrame* media_frame)
 				
 				for (int i = 0; i < 4; i++) {
 					if (plane_bytes [i] != 0) {
-						media_frame->uncompressed_data_stride [i] = (guint8*) g_malloc0 (plane_bytes [i] + stream->min_padding);
-						memcpy (media_frame->uncompressed_data_stride [i], frame->data [i], plane_bytes [i]);
+						mf->data_stride [i] = (uint8_t *) g_malloc (plane_bytes[i] + stream->min_padding);
+						memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
 					} else {
-						media_frame->uncompressed_data_stride [i] = frame->data [i];
+						mf->data_stride[i] = frame->data[i];
 					}
-					media_frame->srcStride [i] = frame->linesize [i];
+					
+					mf->srcStride[i] = frame->linesize[i];
 				}
 			} else {
 				for (int i = 0; i < 4; i++) {
-					media_frame->uncompressed_data_stride [i] = frame->data [i];
-					media_frame->srcStride [i] = frame->linesize [i];
+					mf->data_stride[i] = frame->data[i];
+					mf->srcStride[i] = frame->linesize[i];
 				}
 			}
-			 // We can't free the frame until the data has been used, 
-			 // so save the frame in decoder_specific_data. 
-			 // This will cause FfmpegDecoder::Cleanup to be called 
-			 // when the MediaFrame is deleted.
-			media_frame->decoder_specific_data = frame;
+			
+			// We can't free the frame until the data has been used, 
+			// so save the frame in decoder_specific_data. 
+			// This will cause FfmpegDecoder::Cleanup to be called 
+			// when the MediaFrame is deleted.
+			mf->decoder_specific_data = frame;
 		} else {
-			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get picture (%i), length = %i.\n", media_frame, got_picture, length);
+			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get picture (%i), length = %i.\n", mf, got_picture, length);
 		}
 	} else if (stream->GetType () == MediaTypeAudio) {
-		int frame_size_ptr = AUDIO_BUFFER_SIZE;
-		length = avcodec_decode_audio2 (context, (int16_t*) audio_buffer, &frame_size_ptr, (uint8_t*) media_frame->compressed_data, media_frame->compressed_size);
-		//printf ("FfmpegDecoder::DecodeFrame (), length: %i, frame_size_ptr = %i\n", length, frame_size_ptr);
+		int frame_size = AUDIO_BUFFER_SIZE;
 		
-		if (length < 0) {
+		length = avcodec_decode_audio2 (context, (int16_t *) audio_buffer, &frame_size, mf->buffer, mf->buflen);
+		
+		if (length < 0 || (uint32_t) frame_size < mf->buflen) {
 			media->AddMessage (MEDIA_CODEC_ERROR, "Error while decoding frame.");
 			return MEDIA_CODEC_ERROR;
 		}
 		
-		if (frame_size_ptr > 0) {
-			media_frame->uncompressed_size = frame_size_ptr;
-			media_frame->uncompressed_data = (uint8_t*) g_malloc (media_frame->uncompressed_size);
-			memcpy (media_frame->uncompressed_data, audio_buffer, media_frame->uncompressed_size);			
-		} else {
-			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get any audio back.\n", media_frame);
-		}
+		g_free (mf->buffer);
 		
-		if (length != media_frame->compressed_size) {
-			//printf ("FfmpegDecoder::DecodeFrame (%p): audio decoder didn't use all the input data, had %i bytes, used %i bytes.\n", media_frame, media_frame->compressed_size, length);
+		if (frame_size > 0) {
+			mf->buffer = (uint8_t *) g_malloc (frame_size);
+			memcpy (mf->buffer, audio_buffer, frame_size);
+			mf->buflen = frame_size;
+		} else {
+			mf->buffer = NULL;
+			mf->buflen = 0;
 		}
 	} else {
 		media->AddMessage (MEDIA_FAIL, "Invalid media type.");
 		return MEDIA_FAIL;
 	}
 	
-	media_frame->AddState (FRAME_DECODED);
+	mf->AddState (FRAME_DECODED);
 	
 	return MEDIA_SUCCESS;
 }

@@ -117,17 +117,17 @@ typedef int32_t MediaResult;
 
 #define MEDIA_SUCCEEDED(x) ((x <= 0))
 
-#define FRAME_PLANAR (1)
-#define FRAME_DECODED (2)
-#define FRAME_DEMUXED (4)
-#define FRAME_CONVERTED (8)
+#define FRAME_PLANAR (1 << 0)
+#define FRAME_DECODED (1 << 1)
+#define FRAME_DEMUXED (1 << 2)
+#define FRAME_CONVERTED (1 << 3)
 // Set if the pipeline needs it's own copy of the decoded data
 // If this is not set, the decoder can keep one area of memory and always decode into
 // that area, just passing back a pointer to that area.
 // It is required to set this if the decoding is done on another thread
 // (otherwise the pipeline will always access the latest decoded frame, which almost never
 // is the frame you want to show).
-#define FRAME_COPY_DECODED_DATA (16) 
+#define FRAME_COPY_DECODED_DATA (1 << 7) 
 
 enum MoonPixelFormat {
 	MoonPixelFormatNone = 0,
@@ -226,11 +226,11 @@ public:
 	//	Requests the decoder to decode the frame
 	//	Returns the decoded frame
 	MediaResult GetNextFrame (MediaFrame *frame);
-	MediaResult GetNextFrame (MediaFrame *frame, int states); 
+	MediaResult GetNextFrame (MediaFrame *frame, uint8_t states); 
 	
 	//	Requests reading of the next frame
 	void GetNextFrameAsync (MediaFrame *frame); 
-	void GetNextFrameAsync (MediaFrame *frame, int states); 
+	void GetNextFrameAsync (MediaFrame *frame, uint8_t states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	void DeleteQueue (); // Deletes the queue and finishes the thread that's processing the queue.
 	void SetQueueCallback (MediaClosure *closure) { queue_closure = closure; }
@@ -284,12 +284,12 @@ private:
 	pthread_t queue_thread;
 	pthread_cond_t queue_condition;
 	pthread_mutex_t queue_mutex;
-	MediaClosure* queue_closure;
+	MediaClosure *queue_closure;
 	
 	class Node : public List::Node {
 	public:
 		MediaFrame *frame;
-		uint32_t states;
+		uint8_t states;
 	};
 };
  
@@ -298,7 +298,7 @@ public:
 	~MediaFrame ();
 	MediaFrame (IMediaStream *stream);
 	
-	void AddState (uint32_t state) { this->state |= state; } // There's no way of "going back" to an earlier state 
+	void AddState (uint8_t state) { this->state |= state; } // There's no way of "going back" to an earlier state 
 	bool IsDecoded () { return (state & FRAME_DECODED) == FRAME_DECODED; }
 	bool IsDemuxed () { return (state & FRAME_DEMUXED) == FRAME_DEMUXED; }
 	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
@@ -310,17 +310,15 @@ public:
 	uint64_t pts; // Set by the demuxer
 	uint64_t duration; // Set by the demuxer
 	
-	uint32_t state; // Current state of the frame
+	uint8_t state; // Current state of the frame
 	
-	uint32_t compressed_size; // Set by the demuxer
-	void *compressed_data; // Set by the demuxer
-	
-	// non-planar data
-	uint32_t uncompressed_size; // Set by the decoder
-	void *uncompressed_data; // Set by the decoder
+	// The demuxer sets these to the encoded data which the
+	// decoder then uses and replaces with the decoded data.
+	uint8_t *buffer;
+	uint32_t buflen;
 	
 	// planar data
-	uint8_t *uncompressed_data_stride[4]; // Set by the decoder
+	uint8_t *data_stride[4]; // Set by the decoder
 	int srcSlideY; // Set by the decoder
 	int srcSlideH; // Set by the decoder
 	int srcStride[4]; // Set by the decoder

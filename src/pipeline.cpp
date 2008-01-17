@@ -353,7 +353,7 @@ Media::Open (IMediaSource* source)
 }
 
 MediaResult
-Media::GetNextFrame (MediaFrame *frame, int states)
+Media::GetNextFrame (MediaFrame *frame, uint8_t states)
 {
 	//printf ("Media::GetNextFrame (%p).\n", stream);
 	
@@ -366,7 +366,7 @@ Media::GetNextFrame (MediaFrame *frame, int states)
 	
 	if ((states & FRAME_DEMUXED) != FRAME_DEMUXED)
 		return result; // Nothing to do?
-		
+	
 	result = demuxer->ReadFrame (frame);
 	if (!MEDIA_SUCCEEDED (result))
 		return result;
@@ -378,7 +378,7 @@ Media::GetNextFrame (MediaFrame *frame, int states)
 	if (!MEDIA_SUCCEEDED (result))
 		return result;
 	
-	//printf ("Media::GetNextFrame (%p) finished, size: %i.\n", stream, frame->uncompressed_size);
+	//printf ("Media::GetNextFrame (%p) finished, size: %i.\n", stream, frame->buflen);
 	
 	return MEDIA_SUCCESS;
 }
@@ -452,13 +452,13 @@ Media::FrameReaderLoop ()
 #include <sched.h>
 
 void
-Media::GetNextFrameAsync (MediaFrame* frame)
+Media::GetNextFrameAsync (MediaFrame *frame)
 {
 	Media::GetNextFrameAsync (frame, FRAME_DEMUXED | FRAME_DECODED);
 }
 
 void
-Media::GetNextFrameAsync (MediaFrame* frame, int states)
+Media::GetNextFrameAsync (MediaFrame *frame, uint8_t states)
 {
 	//printf ("Media::GetNextFrameAsync (%p).\n", stream);
 	if (queued_requests == NULL) {
@@ -835,18 +835,19 @@ ASFDemuxer::ReadFrame (MediaFrame* frame)
 	
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
-	frame->compressed_size = reader->Size ();
-	frame->compressed_data = g_try_malloc (reader->Size () + frame->stream->min_padding);
-	if (frame->compressed_data == NULL) {
+	frame->buflen = reader->Size ();
+	frame->buffer = (uint8_t *) g_try_malloc (frame->buflen + frame->stream->min_padding);
+	
+	if (frame->buffer == NULL) {
 		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
 		return MEDIA_OUT_OF_MEMORY;
 	}
 	
 	//printf ("ASFDemuxer::ReadFrame (%p), min_padding = %i\n", frame, frame->stream->min_padding);
 	if (frame->stream->min_padding > 0)
-		memset ((char *) frame->compressed_data + reader->Size (), 0, frame->stream->min_padding); 
+		memset (frame->buffer + frame->buflen, 0, frame->stream->min_padding); 
 	
-	if (!reader->Write (frame->compressed_data)) {
+	if (!reader->Write (frame->buffer)) {
 		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
 		return MEDIA_DEMUXER_ERROR;
 	}
@@ -1321,24 +1322,24 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
 	len = mpeg_frame_length (&mpeg);
-	frame->compressed_size = len;
+	frame->buflen = len;
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
-		frame->compressed_data = g_try_malloc (frame->compressed_size + 1);
+		frame->buffer = (uint8_t *) g_try_malloc (frame->buflen + 1);
 	else
-		frame->compressed_data = g_try_malloc (frame->compressed_size);
+		frame->buffer = (uint8_t *) g_try_malloc (frame->buflen);
 	
-	if (frame->compressed_data == NULL) {
+	if (frame->buffer == NULL) {
 		//media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
 		return MEDIA_OUT_OF_MEMORY;
 	}
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
-		((uint8_t *) frame->compressed_data)[frame->compressed_size - 1] = 0;
+		frame->buffer[frame->buflen - 1] = 0;
 	
-	memcpy (frame->compressed_data, buffer, 4);
+	memcpy (frame->buffer, buffer, 4);
 	
-	if (!stream->Read (((uint8_t *) frame->compressed_data) + 4, len - 4)) {
+	if (!stream->Read (frame->buffer + 4, len - 4)) {
 		//media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
 		return MEDIA_DEMUXER_ERROR;
 	}
@@ -1714,28 +1715,34 @@ IMediaDemuxer::~IMediaDemuxer ()
  * MediaFrame
  */ 
  
-MediaFrame::MediaFrame (IMediaStream *str) : 
-	stream (str), decoder_specific_data (NULL), 
-	pts (0), duration (0), state (0), compressed_size (0), compressed_data (NULL),
-	uncompressed_size (0), uncompressed_data (NULL), srcSlideY (0), srcSlideH (0)
+MediaFrame::MediaFrame (IMediaStream *stream)
 {
+	decoder_specific_data = NULL;
+	this->stream = stream;
+	
+	duration = 0;
+	pts = 0;
+	
+	buffer = NULL;
+	buflen = 0;
+	state = 0;
+	
 	for (int i = 0; i < 4; i++) {
-		uncompressed_data_stride [i] = 0;  
-		srcStride [i] = 0;
+		data_stride[i] = 0;  
+		srcStride[i] = 0;
 	}
+	
+	srcSlideY = 0;
+	srcSlideH = 0;
 }
  
 MediaFrame::~MediaFrame ()
 {
-	g_free (compressed_data);
-	g_free (uncompressed_data);
+	g_free (buffer);
 	
 	if (decoder_specific_data != NULL) {
-		if (stream != NULL && stream->decoder != NULL) { 
+		if (stream != NULL && stream->decoder != NULL)
 			stream->decoder->Cleanup (this);
-		} else {
-			printf ("MediaFrame::~MediaFrame (): Couldn't call decoder->Cleanup.\n");
-		}
 	}
 }
 
