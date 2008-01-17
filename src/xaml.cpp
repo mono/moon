@@ -1000,8 +1000,10 @@ end_element_handler (void *data, const char *el)
 		List::Node *walk = info->current_element->children->First ();
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk;
-			if (info->current_element->parent)
+			if (info->current_element->parent) {
 				info->current_element->parent->info->set_property (info, info->current_element->parent,	info->current_element, child);
+				break;
+			}
 			walk = walk->next;
 		}
 		break;
