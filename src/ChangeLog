@@ -26,6 +26,12 @@
 	* text.cpp (TextBlock::InsideObject): use
 	uielement_transform_point instead of duplicating it.
 
+2008-01-17  Larry Ewing  <lewing@novell.com>
+	
+	* shape.cpp (Rectangle::BuildPath): fix the origin calculation for
+	unstroked rectangles (see test-rectangle-aliasing.xaml).  Suggest
+	more rectangle testing after this.
+
 2008-01-17  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: After setting a property stop walking up the element

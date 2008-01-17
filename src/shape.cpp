@@ -889,10 +889,9 @@ Rectangle::BuildPath ()
 		break;
 	}
 
-	if ((!IsStroked () || (t != 0.0)) && compute_origin) {
-		x = t / 2.0;
-		y = x - 0.5;
-	}
+	if (compute_origin && (!IsStroked () || (t != 1.0)))
+		x = y = t / 2.0;
+
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 shape:
