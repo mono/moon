@@ -249,13 +249,12 @@ UIElement::ComputeTotalRenderVisibility ()
 void
 UIElement::ComputeTotalHitTestVisibility ()
 {
-	if (GetVisualParent ())
-		GetVisualParent ()->ComputeTotalHitTestVisibility ();
-
 	bool visible = (flags & UIElement::HIT_TEST_VISIBLE) != 0;
 
-	if (GetVisualParent ())
+	if (visible && GetVisualParent ()) {
+		GetVisualParent ()->ComputeTotalHitTestVisibility ();
 		visible = visible && GetVisualParent ()->GetHitTestVisible ();
+	}
 
 	if (visible)
 		flags |= UIElement::TOTAL_HIT_TEST_VISIBLE;
