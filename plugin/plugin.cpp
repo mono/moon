@@ -223,7 +223,7 @@ PluginInstance::Properties ()
 	snprintf (buffer, sizeof (buffer), "%dpx", getActualHeight ());
 	table_add (table, buffer, 1, row++);
 	table_add (table, background, 1, row++);
-	table_add (table, xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)", 1, row++);
+	table_add (table, xaml_loader == NULL ? "(Unknown)" : (xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)"), 1, row++);
 	table_add (table, windowless ? "yes" : "no", 1, row++);
 	
 	// Runtime debug options
