@@ -70,6 +70,7 @@ public:
 class Queue {
 protected:
 	pthread_mutex_t lock;
+	pthread_cond_t cond;
 	List *list;
 	
 public:
@@ -89,6 +90,8 @@ public:
 	
 	void Lock ();
 	void Unlock ();
+	
+	void Wait ();
 	
 	// accessing the internal linked list directly requires manual Locking/Unlocking.
 	List *LinkedList ();
