@@ -1,3 +1,11 @@
+2008-01-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer2.cpp (audio_decode): Removed as it is no longer really
+	needed.
+	(audio_loop): We can't assume that an entire decoded audio packet
+	will fit into the audio output buffer in a single shot, break it
+	up if needed.
+
 2008-01-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer2.cpp: Max out video frame rate at 60fps.

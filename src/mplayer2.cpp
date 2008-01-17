@@ -50,7 +50,6 @@ G_END_DECLS
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
 static uint64_t audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds);
-static bool 	audio_decode (Audio *audio);
 static void    *audio_loop (void *data);
 
 extern guint32 moonlight_flags;
@@ -80,11 +79,6 @@ struct Audio {
 	
 	pthread_mutex_t init_mutex;
 	pthread_cond_t init_cond;
-	
-	// Packet left from previous decode loop
-	Packet *pkt;
-	uint32_t inleft;
-	uint8_t *inptr;
 	
 	double balance;
 	double volume;
@@ -118,10 +112,6 @@ Audio::Audio ()
 	pthread_cond_init (&init_cond, NULL);
 	
 	queue = new Queue ();
-	
-	pkt = NULL;
-	inleft = 0;
-	inptr = NULL;
 	
 	balance = 0.0f;
 	volume = 1.0f;
@@ -266,7 +256,7 @@ media_player_enqueue_frames (MediaPlayer *mplayer, int audio_frames, int video_f
 {
 	MediaFrame *frame;
 	int states, i;
-
+	
 	if (mplayer->HasAudio ()) {	
 		for (i = 0; i < audio_frames; i++) {
 			frame = new MediaFrame (mplayer->audio->stream);
@@ -750,15 +740,6 @@ MediaPlayer::StopThreads ()
 		audio_thread = NULL;
 	}
 	
-	// de-queue audio/video packets
-	if (audio->pkt != NULL) {
-		delete audio->pkt;
-		audio->pkt = NULL;
-		
-		audio->inptr = NULL;
-		audio->inleft = 0;
-	}
-	
 	audio->queue->Clear (true);
 	video->queue->Clear (true);
 	
@@ -820,6 +801,9 @@ MediaPlayer::Seek (int64_t position)
 	} else if (HasVideo ()) {
 		duration = video->stream->duration;
 		initial_pts = video->stream->start_time;
+	} else {
+		initial_pts = 0;
+		duration = 0;
 	}
 	
 	duration += initial_pts;
@@ -974,56 +958,6 @@ MediaPlayer::SetVolume (double volume)
 
 // Audio playback thread
 
-//// Returns true if finished decoding, false otherwise
-static bool
-audio_decode (Audio *audio)
-{
-	int32_t frame_size = audio->sample_size * audio->stream->channels * 2;
-	uint8_t *outbuf;
-	int outlen = 0;
-	int n;
-	
-	/* Note: an audio packet can contain multiple audio frames */
-	
-	while (audio->inleft > 0) {
-		// TODO: Remove alignment
-		outbuf = ALIGN (audio->outptr, 2);
-		outlen = (audio->outbuf + AUDIO_BUFLEN) - outbuf;
-		
-		memcpy (outbuf, audio->inptr, audio->inleft);
-		//printf ("audio_decode (), copied %i bytes.\n", audio->inleft);
-		n = audio->inleft;
-		
-		if (n > 0) {
-			audio->inleft -= n;
-			audio->inptr += n;
-			
-			// append the newly decoded buffer to the end of the
-			// remaining audio buffer from our previous loop
-			// (if re-alignment was required).
-			if (outbuf > audio->outptr) {
-				//printf ("audio_decode (): memmove, outbuf: %p, outlen: %p\n", outbuf, outlen);
-				memmove (audio->outptr, outbuf, outlen);
-			}
-			audio->outptr += n;
-		} else if (n == 0) {
-			/* complete or out of room in outbuf */
-			break;
-		} else {
-			//printf ("audio_decode error: %d\n", n);
-			// pad frame with silence
-			if ((n = (audio->outptr - audio->outbuf) % frame_size) > 0) {
-				memset (audio->outptr, 0, n);
-				audio->outptr += n;
-			}
-			
-			return true;
-		}
-	}
-	
-	return audio->inleft == 0;
-}
-
 static int
 pcm_poll (snd_pcm_t *pcm, struct pollfd *ufds, int nfds)
 {
@@ -1161,16 +1095,23 @@ finished:
 static void *
 audio_loop (void *data)
 {
-	//printf ("audio_loop (): started.\n");
 	MediaPlayer *mplayer = (MediaPlayer *) data;
 	Audio *audio = mplayer->audio;
 	struct pollfd *ufds = NULL;
 	IMediaStream *stream;
 	uint64_t frame_pts;
+	Packet *pkt = NULL;
 	MediaFrame *frame;
-	Packet *pkt;
+	uint8_t *outend;
+	uint32_t inleft;
+	uint8_t *inptr;
+	uint32_t n;
 	bool play;
 	int ndfs;
+	
+	outend = audio->outbuf + AUDIO_BUFLEN;
+	inptr = NULL;
+	inleft = 0;
 	
 	pthread_mutex_lock (&mplayer->audio->init_mutex);
 	
@@ -1212,38 +1153,57 @@ audio_loop (void *data)
 			pthread_mutex_unlock (&mplayer->target_pts_lock);
 			//printf ("calculated target_pts = %llu (frame_pts: %lld)\n", mplayer->target_pts, frame_pts);
 		} else {
-			// decode an audio packet
-			if (!audio->pkt && (pkt = (Packet *) audio->queue->Pop ())) {
+			if (!pkt && (pkt = (Packet *) audio->queue->Pop ())) {
+				// decode an audio packet
 				stream = pkt->frame->stream;
 				frame = pkt->frame;
 				
-				if (!frame->IsDecoded ()) {
-					if (!MEDIA_SUCCEEDED (stream->decoder->DecodeFrame (frame)))
-						continue;
-				}
-				
-				audio->inleft = frame->uncompressed_size;
-				audio->inptr = (uint8_t *) frame->uncompressed_data;
-				audio->pkt = pkt;
+				if (!frame->IsDecoded ())
+					stream->decoder->DecodeFrame (frame);
 				
 				pthread_mutex_lock (&mplayer->target_pts_lock);
 				mplayer->target_pts = frame->pts;
 				pthread_mutex_unlock (&mplayer->target_pts_lock);
 				//printf ("setting target_pts to %llu\n", mplayer->target_pts);
+				
+				inptr = (uint8_t *) frame->uncompressed_data;
+				inleft = frame->uncompressed_size;
+				
 				media_player_enqueue_frames (mplayer, 1, 0);
-				//printf ("audio_loop, popped a packet, %i packets left. inleft: %i, inptr: %p\n", audio->queue->Length (), audio->inleft, audio->inptr);
-				
-				if (!audio_decode (audio))
-					printf ("audio_loop (), decode failed.\n");
-				
-				delete audio->pkt;
-				audio->pkt = NULL;
+			} else if (!pkt) {
+				// need to either wait for a packet to
+				// be queued or break if the audio
+				// stream is complete...
 			}
 			
+			if (pkt != NULL) {
+				// calculate how much room in the output buffer we have
+				n = (outend - audio->outptr);
+				
+				if (inleft <= n) {
+					// blit the remainder of the decompressed audio frame
+					memcpy (audio->outptr, inptr, inleft);
+					audio->outptr += inleft;
+					
+					inptr = NULL;
+					inleft = 0;
+					delete pkt;
+					pkt = NULL;
+				} else {
+					// blit what we can...
+					memcpy (audio->outptr, inptr, n);
+					audio->outptr += n;
+					inleft -= n;
+					inptr += n;
+				}
+			}
 		}
 	}
 	
 	//printf ("audio_loop (): exited.\n");
+	
+	if (pkt != NULL)
+		delete pkt;
 	
 	pthread_mutex_unlock (&mplayer->pause_mutex);
 	
