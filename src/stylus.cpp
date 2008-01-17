@@ -516,7 +516,6 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 	case CollectionChangeTypeItemAdded:
 	case CollectionChangeTypeItemRemoved:
 	case CollectionChangeTypeItemChanged: {
-		Rect ink_bounds = GetBounds();
 		Stroke *stroke = (Stroke*)obj;
 		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
 		if (type == CollectionChangeTypeItemChanged)
