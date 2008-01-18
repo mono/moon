@@ -1,0 +1,16 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polyline Stroke="Blue"   Fill="Green" Points="10,10 110,10 110,110 10,110" />
+	<Polyline Stroke="Purple" Fill="Red"   Points="110,110 210,110 210,210 110,210 110,110" />
+
+	<!-- Polylines are clipped to the specified Height and Width if both are present -->
+	<Canvas Canvas.Top="220">
+		<Polyline Stroke="Blue"   Fill="Green" Height="20" Width="20" Points="10,10 110,10 110,110 10,110" />
+		<Polyline Stroke="Purple" Fill="Red"   Height="150" Width="150" Points="110,110 210,110 210,210 110,210 110,110" />
+	</Canvas>
+
+	<!-- Polylines are not rendered if only Height or Width are specified -->
+	<Canvas Canvas.Left="220">
+		<Polyline Stroke="Blue"   Fill="Green" Height="20" Points="10,10 110,10 110,110 10,110" />
+		<Polyline Stroke="Purple" Fill="Red"   Width="150" Points="110,110 210,110 210,210 110,210 110,110" />
+	</Canvas>
+</Canvas>

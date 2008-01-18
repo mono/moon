@@ -1,0 +1,29 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Line Stroke="Red" StrokeThickness="10" X1="10" Y1="10" X2="10" Y2="100" />
+	<Line Stroke="Orange" StrokeThickness="10" X1="20" Y1="10" X2="20" Y2="100" />
+	<Line Stroke="Yellow" StrokeThickness="10" X1="30" Y1="10" X2="30" Y2="100" />
+	<Line Stroke="Green" StrokeThickness="10" X1="40" Y1="10" X2="40" Y2="100" />
+	<Line Stroke="Blue" StrokeThickness="10" X1="50" Y1="10" X2="50" Y2="100" />
+	<Line Stroke="Purple" StrokeThickness="10" X1="60" Y1="10" X2="60" Y2="100" />
+
+	<!-- Line are clipped to the specified Height and Width if both are present -->
+	<Canvas Canvas.Top="120">
+		<!-- MS SL seems buggy here - reported as http://silverlight.net/forums/t/7562.aspx -->
+		<Line Stroke="Red"    Width="10" Height="50" StrokeThickness="10" X1="10" Y1="10" X2="10" Y2="100" />
+		<Line Stroke="Orange" Width="20" Height="50" StrokeThickness="10" X1="20" Y1="10" X2="20" Y2="100" />
+		<Line Stroke="Yellow" Width="30" Height="50" StrokeThickness="10" X1="30" Y1="10" X2="30" Y2="100" />
+		<Line Stroke="Green"  Width="40" Height="50" StrokeThickness="10" X1="40" Y1="10" X2="40" Y2="100" />
+		<Line Stroke="Blue"   Width="50" Height="50" StrokeThickness="10" X1="50" Y1="10" X2="50" Y2="100" />
+		<Line Stroke="Purple" Width="60" Height="50" StrokeThickness="10" X1="60" Y1="10" X2="60" Y2="100" />
+	</Canvas>
+
+	<!-- Line are not rendered if only Height or Width are specified -->
+	<Canvas Canvas.Left="120">
+		<Line Stroke="Red"    Height="50" StrokeThickness="10" X1="10" Y1="10" X2="10" Y2="100" />
+		<Line Stroke="Orange" Width="100" StrokeThickness="10" X1="20" Y1="10" X2="20" Y2="100" />
+		<Line Stroke="Yellow" Height="50" StrokeThickness="10" X1="30" Y1="10" X2="30" Y2="100" />
+		<Line Stroke="Green"  Width="100" StrokeThickness="10" X1="40" Y1="10" X2="40" Y2="100" />
+		<Line Stroke="Blue"   Height="50" StrokeThickness="10" X1="50" Y1="10" X2="50" Y2="100" />
+		<Line Stroke="Purple" Width="100" StrokeThickness="10" X1="60" Y1="10" X2="60" Y2="100" />
+	</Canvas>
+</Canvas>

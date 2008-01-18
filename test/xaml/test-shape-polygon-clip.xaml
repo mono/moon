@@ -1,0 +1,16 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polygon Stroke="Blue" StrokeThickness="2" Points="10,10 110,10 110,110 10,110" />
+	<Polygon Stroke="Purple" StrokeDashArray="2" Fill="Red" Points="110,110 210,110 210,210 110,210 110,110" />
+
+	<!-- Polygons are clipped to the specified Height and Width if both are present -->
+	<Canvas Canvas.Top="220">
+		<Polygon Stroke="Blue"   StrokeThickness="2" Height="20" Width="20" Points="10,10 110,10 110,110 10,110" />
+		<Polygon Stroke="Purple" StrokeDashArray="2" Fill="Red" Height="150" Width="150" Points="110,110 210,110 210,210 110,210 110,110" />
+	</Canvas>
+
+	<!-- Polygons are not rendered if only Height or Width are specified -->
+	<Canvas Canvas.Left="220">
+		<Polygon Stroke="Blue"   StrokeThickness="2" Height="20" Points="10,10 110,10 110,110 10,110" />
+		<Polygon Stroke="Purple" StrokeDashArray="2" Fill="Red" Width="150" Points="110,110 210,110 210,210 110,210 110,110" />
+	</Canvas>
+</Canvas>

@@ -1,0 +1,15 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- Data is 80x80 -->
+	<Path StrokeThickness="10" Stroke="Black" Data="M 10,10 L 90,10 L 90,90 L 10,90 Z" />
+
+	<!-- Data is 80x80, Stretch is Fill, so Path Top and Left are moved to 0,0 -->
+	<Path Canvas.Top="100" StrokeThickness="10" Stroke="Black" Stretch="Fill" Data="M 10,10 L 90,10 L 90,90 L 10,90 Z" />
+
+	<!-- Data is smaller 80x80 than the specified Width 120 and Height 90
+		so the shape is scaled up to 120x90 -->
+	<Path Canvas.Top="200" StrokeThickness="10" Stroke="Black" Width="120" Height="90" Stretch="Fill" Data="M 10,10 L 90,10 L 90,90 L 10,90 Z" />
+
+	<!-- Data is bigger 80x80 than the specified Width 50 and Height 30
+		so the shape is scaled down to 50x30 -->
+	<Path Canvas.Top="300" StrokeThickness="10" Stroke="Black" Width="50" Height="30" Stretch="Fill" Data="M 10,10 L 90,10 L 90,90 L 10,90 Z" />
+</Canvas>
