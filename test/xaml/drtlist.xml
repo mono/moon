@@ -1,113 +1,111 @@
 <DRTList>
-  <Test id="2"
+   <Test id="1"
+	inputFile="nested-canvas-empty.xaml"
+	masterFile10="../harness/masters/nested-canvas-emptyMaster.png"
+   />
+   <Test id="2"
+	inputFile="nested-canvas.xaml"
+	masterFile10="../harness/masters/nested-canvasMaster.png"
+   />
+   <Test id="3"
 	inputFile="points-torture.xaml"
 	masterFile10="../harness/masters/points-tortureMaster.png"
    />
-   <Test id="3"
-	inputFile="test-45-bounding-box.xaml"
-	masterFile10="../harness/masters/test-45-bounding-boxMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
-   />
    <Test id="4"
+	inputFile="test-45-bounding-box.xaml"
+	masterFile10="../harness/masters/test-45-bounding-boxMaster.png"
+   />
+   <Test id="5"
 	inputFile="test-animation-beginstoryboard-empty.xaml"
-	masterFile10="../harness/masters/test-animation-beginstoryboard-emptyMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-animation-beginstoryboard-emptyMaster.png"
    />
    <Test id="6"
-	inputFile="test-animation-ellipse-stroke.xaml"
-	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-animation-begintimes.xaml"
+	masterFile10="../harness/masters/test-animation-begintimesMaster.png"
    />
    <Test id="7"
-	inputFile="test-animation-ellipse.xaml"
-	masterFile10="../harness/masters/test-animation-ellipseMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-animation-ellipse-stroke.xaml"
+	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.png"
    />
    <Test id="8"
-	inputFile="test-animation-line-bounds.xaml"
-	masterFile10="../harness/masters/test-animation-line-boundsMaster.tif"
-	captureSpecifier="300,15"
-        ignore="true"
+	inputFile="test-animation-ellipse.xaml"
+	masterFile10="../harness/masters/test-animation-ellipseMaster.png"
    />
    <Test id="9"
-	inputFile="test-animation-line.xaml"
-	masterFile10="../harness/masters/test-animation-lineMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-animation-line-bounds.xaml"
+	masterFile10="../harness/masters/test-animation-line-boundsMaster.png"
    />
    <Test id="10"
-	inputFile="test-animation-path-smoothbezier-stroke.xaml"
-	masterFile10="../harness/masters/test-animation-path-smoothbezier-strokeMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-animation-line.xaml"
+	masterFile10="../harness/masters/test-animation-lineMaster.png"
    />
    <Test id="11"
-	inputFile="test-animation-polygon-bounds.xaml"
-	masterFile10="../harness/masters/test-animation-polygon-boundsMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-animation-path-smoothbezier-stroke.xaml"
+	masterFile10="../harness/masters/test-animation-path-smoothbezier-strokeMaster.png"
    />
    <Test id="12"
-	inputFile="test-animation-polyline-bounds.xaml"
-	masterFile10="../harness/masters/test-animation-polyline-boundsMaster.tif"
-	captureSpecifier="300,15"
-        ignore="true"
+	inputFile="test-animation-polygon-bounds.xaml"
+	masterFile10="../harness/masters/test-animation-polygon-boundsMaster.png"
    />
    <Test id="13"
-	inputFile="test-animation-text.xaml"
-	masterFile10="../harness/masters/test-animation-textMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-animation-polyline-bounds.xaml"
+	masterFile10="../harness/masters/test-animation-polyline-boundsMaster.png"
    />
    <Test id="14"
+	inputFile="test-animation-text.xaml"
+	masterFile10="../harness/masters/test-animation-textMaster.png"
+   />
+   <Test id="15"
 	inputFile="test-brush-linear-negative.xaml"
 	masterFile10="../harness/masters/test-brush-linear-negativeMaster.png"
    />
-   <Test id="15"
+   <Test id="16"
 	inputFile="test-brush-linear-points.xaml"
 	masterFile10="../harness/masters/test-brush-linear-pointsMaster.png"
    />
-   <Test id="16"
+   <Test id="17"
 	inputFile="test-brush-linear.xaml"
 	masterFile10="../harness/masters/test-brush-linearMaster.png"
    />
-   <Test id="17"
+   <Test id="18"
 	inputFile="test-brush-radial.xaml"
 	masterFile10="../harness/masters/test-brush-radialMaster.png"
    />
-   <Test id="18"
+   <Test id="19"
 	inputFile="test-canvas-inside-canvas.xaml"
 	masterFile10="../harness/masters/test-canvas-inside-canvasMaster.png"
    />
-   <Test id="19"
-	inputFile="test-color-animation-using-keyframes.xaml"
-	masterFile10="../harness/masters/test-color-animation-using-keyframesMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
-   />
    <Test id="20"
-	inputFile="test-color-animation.xaml"
-	masterFile10="../harness/masters/test-color-animationMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-color-animation-using-keyframes.xaml"
+	masterFile10="../harness/masters/test-color-animation-using-keyframesMaster.png"
    />
    <Test id="21"
+	inputFile="test-color-animation.xaml"
+	masterFile10="../harness/masters/test-color-animationMaster.png"
+   />
+   <Test id="22"
 	inputFile="test-colors.xaml"
 	masterFile10="../harness/masters/test-colorsMaster.png"
    />
+   <Test id="23"
+	inputFile="test-custom-element.xaml"
+	masterFile10="../harness/masters/test-custom-elementMaster.png"
+   />
    <Test id="24"
+	inputFile="test-custom-namespace.xaml"
+	masterFile10="../harness/masters/test-custom-namespaceMaster.png"
+   />
+   <Test id="25"
 	inputFile="test-double-keyspline-animation.xaml"
-	masterFile10="../harness/masters/test-double-keyspline-animationMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-double-keyspline-animationMaster.png"
    />
    <Test id="26"
 	inputFile="test-geometry-collection.xaml"
 	masterFile10="../harness/masters/test-geometry-collectionMaster.png"
+   />
+   <Test id="27"
+	inputFile="test-image.xaml"
+	masterFile10="../harness/masters/test-imageMaster.png"
    />
    <Test id="28"
 	inputFile="test-imagebrush-opacity.xaml"
@@ -115,9 +113,7 @@
    />
    <Test id="29"
 	inputFile="test-imagebrush-transform.xaml"
-	masterFile10="../harness/masters/test-imagebrush-transformMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-imagebrush-transformMaster.png"
    />
    <Test id="30"
 	inputFile="test-imagebrush.xaml"
@@ -139,21 +135,21 @@
 	inputFile="test-inkpresenter.xaml"
 	masterFile10="../harness/masters/test-inkpresenterMaster.png"
    />
+   <Test id="35"
+	inputFile="test-mediaelement-clip.xaml"
+	masterFile10="../harness/masters/test-mediaelement-clipMaster.png"
+   />
    <Test id="36"
 	inputFile="test-monkey.xaml"
 	masterFile10="../harness/masters/test-monkeyMaster.png"
    />
    <Test id="37"
 	inputFile="test-opacity-mask.xaml"
-	masterFile10="../harness/masters/test-opacity-maskMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-opacity-maskMaster.png"
    />
    <Test id="38"
 	inputFile="test-path-ellipse-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-path-ellipse-renderxoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-path-ellipse-renderxoriginMaster.png"
    />
    <Test id="39"
 	inputFile="test-path-ellipse-stretch.xaml"
@@ -213,9 +209,7 @@
    />
    <Test id="53"
 	inputFile="test-path-line-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-path-line-renderxoriginMaster.tif"
-        captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-path-line-renderxoriginMaster.png"
    />
    <Test id="54"
 	inputFile="test-path-line-stretch.xaml"
@@ -231,9 +225,7 @@
    />
    <Test id="57"
 	inputFile="test-path-rectangle-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-path-rectangle-renderxoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-path-rectangle-renderxoriginMaster.png"
    />
    <Test id="58"
 	inputFile="test-path-rectangle-round-stroke.xaml"
@@ -253,9 +245,7 @@
    />
    <Test id="62"
 	inputFile="test-path-segments-arc-2.xaml"
-	masterFile10="../harness/masters/test-path-segments-arc-2Master.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-path-segments-arc-2Master.png"
    />
    <Test id="63"
 	inputFile="test-path-segments-arc-degenerate.xaml"
@@ -305,146 +295,236 @@
 	inputFile="test-path-smoothquadraticbezier.xaml"
 	masterFile10="../harness/masters/test-path-smoothquadraticbezierMaster.png"
    />
-   <Test id="77"
+   <Test id="75"
 	inputFile="test-property-path.xaml"
-	masterFile10="../harness/masters/test-property-pathMaster.tif"
-        captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-property-pathMaster.png"
+   />
+   <Test id="76"
+	inputFile="test-rectangle-aliasing.xaml"
+	masterFile10="../harness/masters/test-rectangle-aliasingMaster.png"
+   />
+   <Test id="77"
+	inputFile="test-relativetransform.xaml"
+	masterFile10="../harness/masters/test-relativetransformMaster.png"
    />
    <Test id="78"
-	inputFile="test-relativetransform.xaml"
-	masterFile10="../harness/masters/test-relativetransformMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-render-xorigin.xaml"
+	masterFile10="../harness/masters/test-render-xoriginMaster.png"
    />
    <Test id="79"
-	inputFile="test-render-xorigin.xaml"
-	masterFile10="../harness/masters/test-render-xoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
-   />
-   <Test id="80"
 	inputFile="test-resource-collection.xaml"
 	masterFile10="../harness/masters/test-resource-collectionMaster.png"
    />
-   <Test id="81"
+   <Test id="80"
 	inputFile="test-rtol.xaml"
 	masterFile10="../harness/masters/test-rtolMaster.png"
    />
-   <Test id="83"
+   <Test id="81"
+	inputFile="test-seekable-storyboard.xaml"
+	masterFile10="../harness/masters/test-seekable-storyboardMaster.png"
+   />
+   <Test id="82"
 	inputFile="test-set-inherited-property-elements.xaml"
 	masterFile10="../harness/masters/test-set-inherited-property-elementsMaster.png"
    />
-   <Test id="84"
+   <Test id="83"
 	inputFile="test-shape-ellipse-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-shape-ellipse-renderxoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-shape-ellipse-renderxoriginMaster.png"
    />
-   <Test id="85"
+   <Test id="84"
 	inputFile="test-shape-ellipse-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-stretchMaster.png"
    />
-   <Test id="86"
+   <Test id="85"
 	inputFile="test-shape-ellipse-stroke-2.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-stroke-2Master.png"
    />
-   <Test id="87"
+   <Test id="86"
 	inputFile="test-shape-ellipse-stroke.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-strokeMaster.png"
    />
-   <Test id="88"
+   <Test id="87"
 	inputFile="test-shape-ellipse.xaml"
 	masterFile10="../harness/masters/test-shape-ellipseMaster.png"
    />
-   <Test id="89"
+   <Test id="88"
 	inputFile="test-shape-line-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-shape-line-renderxoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-shape-line-renderxoriginMaster.png"
    />
-   <Test id="90"
+   <Test id="89"
 	inputFile="test-shape-line-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-line-stretchMaster.png"
    />
-   <Test id="91"
+   <Test id="90"
 	inputFile="test-shape-line-stroke-bounds.xaml"
 	masterFile10="../harness/masters/test-shape-line-stroke-boundsMaster.png"
    />
-   <Test id="92"
+   <Test id="91"
 	inputFile="test-shape-line-stroke.xaml"
 	masterFile10="../harness/masters/test-shape-line-strokeMaster.png"
    />
-   <Test id="93"
+   <Test id="92"
 	inputFile="test-shape-line.xaml"
 	masterFile10="../harness/masters/test-shape-lineMaster.png"
    />
-   <Test id="94"
+   <Test id="93"
 	inputFile="test-shape-negative.xaml"
 	masterFile10="../harness/masters/test-shape-negativeMaster.png"
    />
-   <Test id="97"
+   <Test id="94"
+	inputFile="test-shape-opacity.xaml"
+	masterFile10="../harness/masters/test-shape-opacityMaster.png"
+   />
+   <Test id="95"
+	inputFile="test-shape-polygon-lines.xaml"
+	masterFile10="../harness/masters/test-shape-polygon-linesMaster.png"
+   />
+   <Test id="96"
 	inputFile="test-shape-polygon-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-shape-polygon-renderxoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	masterFile10="../harness/masters/test-shape-polygon-renderxoriginMaster.png"
+   />
+   <Test id="97"
+	inputFile="test-shape-polygon-stretch.xaml"
+	masterFile10="../harness/masters/test-shape-polygon-stretchMaster.png"
+   />
+   <Test id="98"
+	inputFile="test-shape-polygon-stroke.xaml"
+	masterFile10="../harness/masters/test-shape-polygon-strokeMaster.png"
+   />
+   <Test id="99"
+	inputFile="test-shape-polygon.xaml"
+	masterFile10="../harness/masters/test-shape-polygonMaster.png"
+   />
+   <Test id="100"
+	inputFile="test-shape-polyline-bounds.xaml"
+	masterFile10="../harness/masters/test-shape-polyline-boundsMaster.png"
+   />
+   <Test id="101"
+	inputFile="test-shape-polyline-lines.xaml"
+	masterFile10="../harness/masters/test-shape-polyline-linesMaster.png"
+   />
+   <Test id="102"
+	inputFile="test-shape-polyline-renderxorigin.xaml"
+	masterFile10="../harness/masters/test-shape-polyline-renderxoriginMaster.png"
    />
    <Test id="103"
-	inputFile="test-shape-polyline-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-shape-polyline-renderxoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-shape-polyline-stretch.xaml"
+	masterFile10="../harness/masters/test-shape-polyline-stretchMaster.png"
+   />
+   <Test id="104"
+	inputFile="test-shape-polyline-stroke.xaml"
+	masterFile10="../harness/masters/test-shape-polyline-strokeMaster.png"
+   />
+   <Test id="105"
+	inputFile="test-shape-polyline.xaml"
+	masterFile10="../harness/masters/test-shape-polylineMaster.png"
+   />
+   <Test id="106"
+	inputFile="test-shape-rectangle-matrix.xaml"
+	masterFile10="../harness/masters/test-shape-rectangle-matrixMaster.png"
+   />
+   <Test id="107"
+	inputFile="test-shape-rectangle-renderxorigin.xaml"
+	masterFile10="../harness/masters/test-shape-rectangle-renderxoriginMaster.png"
    />
    <Test id="108"
-	inputFile="test-shape-rectangle-renderxorigin.xaml"
-	masterFile10="../harness/masters/test-shape-rectangle-renderxoriginMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-shape-rectangle-round-stroke.xaml"
+	masterFile10="../harness/masters/test-shape-rectangle-round-strokeMaster.png"
+   />
+   <Test id="109"
+	inputFile="test-shape-rectangle-stretch.xaml"
+	masterFile10="../harness/masters/test-shape-rectangle-stretchMaster.png"
+   />
+   <Test id="110"
+	inputFile="test-shape-rectangle-stroke.xaml"
+	masterFile10="../harness/masters/test-shape-rectangle-strokeMaster.png"
+   />
+   <Test id="111"
+	inputFile="test-shape-rectangle.xaml"
+	masterFile10="../harness/masters/test-shape-rectangleMaster.png"
+   />
+   <Test id="112"
+	inputFile="test-shape-styles.xaml"
+	masterFile10="../harness/masters/test-shape-stylesMaster.png"
+   />
+   <Test id="113"
+	inputFile="test-sibling-opacity.xaml"
+	masterFile10="../harness/masters/test-sibling-opacityMaster.png"
+   />
+   <Test id="114"
+	inputFile="test-solidbrush-opacity.xaml"
+	masterFile10="../harness/masters/test-solidbrush-opacityMaster.png"
+   />
+   <Test id="115"
+	inputFile="test-string-property.xaml"
+	masterFile10="../harness/masters/test-string-propertyMaster.png"
+   />
+   <Test id="116"
+	inputFile="test-text-animation.xaml"
+	masterFile10="../harness/masters/test-text-animationMaster.png"
+   />
+   <Test id="117"
+	inputFile="test-text-runs.xaml"
+	masterFile10="../harness/masters/test-text-runsMaster.png"
+   />
+   <Test id="118"
+	inputFile="test-textblock-brush-runs.xaml"
+	masterFile10="../harness/masters/test-textblock-brush-runsMaster.png"
+   />
+   <Test id="119"
+	inputFile="test-textblock-content.xaml"
+	masterFile10="../harness/masters/test-textblock-contentMaster.png"
+   />
+   <Test id="120"
+	inputFile="test-textblock-examples.xaml"
+	masterFile10="../harness/masters/test-textblock-examplesMaster.png"
+   />
+   <Test id="121"
+	inputFile="test-textblock.xaml"
+	masterFile10="../harness/masters/test-textblockMaster.png"
+   />
+   <Test id="122"
+	inputFile="test-transform-group-empty.xaml"
+	masterFile10="../harness/masters/test-transform-group-emptyMaster.png"
    />
    <Test id="123"
-	inputFile="test-transform-group-empty.xaml"
-	masterFile10="../harness/masters/test-transform-group-emptyMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-transform-group.xaml"
+	masterFile10="../harness/masters/test-transform-groupMaster.png"
+   />
+   <Test id="124"
+	inputFile="test-transform-matrix.xaml"
+	masterFile10="../harness/masters/test-transform-matrixMaster.png"
    />
    <Test id="125"
-	inputFile="test-transform-matrix.xaml"
-	masterFile10="../harness/masters/test-transform-matrixMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-transform-skew.xaml"
+	masterFile10="../harness/masters/test-transform-skewMaster.png"
    />
    <Test id="126"
-	inputFile="test-transform-skew.xaml"
-	masterFile10="../harness/masters/test-transform-skewMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-trigger-action-collection.xaml"
+	masterFile10="../harness/masters/test-trigger-action-collectionMaster.png"
    />
    <Test id="127"
-	inputFile="test-trigger-action-collection.xaml"
-	masterFile10="../harness/masters/test-trigger-action-collectionMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
+	inputFile="test-trigger-collection.xaml"
+	masterFile10="../harness/masters/test-trigger-collectionMaster.png"
    />
    <Test id="128"
-	inputFile="test-trigger-collection.xaml"
-	masterFile10="../harness/masters/test-trigger-collectionMaster.tif"
-	captureSpecifier="300,15"
-	ignore="true"
-   />
-   <Test id="129"
 	inputFile="test-videobrush-text.xaml"
 	masterFile10="../harness/masters/test-videobrush-textMaster.png"
-	ignore="true"
+   />
+   <Test id="129"
+	inputFile="test-videobrush.xaml"
+	masterFile10="../harness/masters/test-videobrushMaster.png"
+   />
+   <Test id="130"
+	inputFile="test-zero-scale-animation.xaml"
+	masterFile10="../harness/masters/test-zero-scale-animationMaster.png"
    />
    <Test id="131"
-	inputFile="test-zero-scale-animation.xaml"
-	masterFile10="../harness/masters/test-zero-scale-animationMaster.tif"
-        captureSpecifier="300,15"
-	ignore="true"
-   />
-   <Test id="132"
 	inputFile="test-zindex.xaml"
 	masterFile10="../harness/masters/test-zindexMaster.png"
    />
+   <Test id="132"
+	inputFile="video-player.xaml"
+	masterFile10="../harness/masters/video-playerMaster.png"
+   />
 </DRTList>
-
