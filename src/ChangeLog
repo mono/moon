@@ -1,3 +1,10 @@
+2008-01-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: KeyFrameCollections can be specified in the xaml if
+	they are in a property element.
+	- When searching for collections, use is subclass instead of
+	making them be the same type, so derivied collections can be used.
+	
 2008-01-17  Chris Toshok  <toshok@ximian.com>
 
 	* pipeline.h (class IMediaDemuxer): initializer streams and
