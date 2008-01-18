@@ -1,0 +1,23 @@
+<!-- afaik the following properties are ignored by silverlight for Polygon
+	* StrokeStartLineCap
+	* StrokeEndLineCap
+-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- original (repeated 4 times on a column to complete array) -->
+	<Polygon Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="10" />
+	<Polygon Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="70" />
+	<Polygon Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="130" />
+	<Polygon Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="190" />
+
+	<!-- StrokeStartLineCap -->
+	<Polygon Points="0,0 0,30 50,30" StrokeStartLineCap="Flat"     Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="10" />
+	<Polygon Points="0,0 0,30 50,30" StrokeStartLineCap="Round"    Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="70" />
+	<Polygon Points="0,0 0,30 50,30" StrokeStartLineCap="Square"   Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="130" />
+	<Polygon Points="0,0 0,30 50,30" StrokeStartLineCap="Triangle" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="190" />
+
+	<!-- StrokeEndLineCap -->
+	<Polygon Points="0,0 0,30 50,30" StrokeEndLineCap="Flat"     Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="10" />
+	<Polygon Points="0,0 0,30 50,30" StrokeEndLineCap="Round"    Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="70" />
+	<Polygon Points="0,0 0,30 50,30" StrokeEndLineCap="Square"   Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="130" />
+	<Polygon Points="0,0 0,30 50,30" StrokeEndLineCap="Triangle" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="190" />
+</Canvas>

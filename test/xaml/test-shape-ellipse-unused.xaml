@@ -1,0 +1,50 @@
+<!-- afaik the following properties are ignored by silverlight for Ellipse
+	* StrokeStartLineCap, 
+	* StrokeEndLineCap, 
+	* StrokeLineJoin
+	* StrokeMiterLimit
+-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- original (repeated 4 times on a column to complete array) -->
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="10"  Width="50" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="70"  Width="50" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="130" Width="50" Height="30" />
+	<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="190" Width="50" Height="30" />
+
+	<!-- StrokeStartLineCap -->
+	<Ellipse StrokeStartLineCap="Flat"     Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="10"  Width="50" Height="30" />
+	<Ellipse StrokeStartLineCap="Round"    Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="70"  Width="50" Height="30" />
+	<Ellipse StrokeStartLineCap="Square"   Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="130" Width="50" Height="30" />
+	<Ellipse StrokeStartLineCap="Triangle" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="70" Canvas.Top="190" Width="50" Height="30" />
+
+	<!-- StrokeEndLineCap -->
+	<Ellipse StrokeEndLineCap="Flat"     Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="10"  Width="50" Height="30" />
+	<Ellipse StrokeEndLineCap="Round"    Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="70"  Width="50" Height="30" />
+	<Ellipse StrokeEndLineCap="Square"   Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="130" Width="50" Height="30" />
+	<Ellipse StrokeEndLineCap="Triangle" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="130" Canvas.Top="190" Width="50" Height="30" />
+
+	<!-- StrokeLineJoin -->
+	<Ellipse StrokeLineJoin="Bevel" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="190" Canvas.Top="10"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Miter" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="190" Canvas.Top="70"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Round" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="190" Canvas.Top="130" Width="50" Height="30" />
+	<!-- repeated to complex array -->
+	<Ellipse StrokeLineJoin="Round" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="190" Canvas.Top="190" Width="50" Height="30" />
+
+	<!-- StrokeLineJoin="Bevel" + StrokeMiterLimit -->
+	<Ellipse StrokeLineJoin="Bevel" StrokeMiterLimit="0"  Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="250" Canvas.Top="10"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Bevel" StrokeMiterLimit="10" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="250" Canvas.Top="70"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Bevel" StrokeMiterLimit="20" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="250" Canvas.Top="130" Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Bevel" StrokeMiterLimit="99" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="250" Canvas.Top="190" Width="50" Height="30" />
+
+	<!-- StrokeLineJoin="Miter" + StrokeMiterLimit -->
+	<Ellipse StrokeLineJoin="Miter" StrokeMiterLimit="0"  Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="310" Canvas.Top="10"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Miter" StrokeMiterLimit="10" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="310" Canvas.Top="70"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Miter" StrokeMiterLimit="20" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="310" Canvas.Top="130" Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Miter" StrokeMiterLimit="99" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="310" Canvas.Top="190" Width="50" Height="30" />
+
+	<!-- StrokeLineJoin="Round" + StrokeMiterLimit -->
+	<Ellipse StrokeLineJoin="Round" StrokeMiterLimit="0"  Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="370" Canvas.Top="10"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Round" StrokeMiterLimit="10" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="370" Canvas.Top="70"  Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Round" StrokeMiterLimit="20" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="370" Canvas.Top="130" Width="50" Height="30" />
+	<Ellipse StrokeLineJoin="Round" StrokeMiterLimit="99" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="370" Canvas.Top="190" Width="50" Height="30" />
+</Canvas>

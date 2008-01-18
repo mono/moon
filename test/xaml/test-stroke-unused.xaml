@@ -1,0 +1,180 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+<!-- StrokeStartLineCap, StrokeEndLineCap, StrokeLineJoin and StrokeMiterLimit are NOT used for Ellipse -->
+	<Ellipse Canvas.Left="0"  Width="10" Height="40" Stroke="Red" StrokeThickness="3" />
+	<Ellipse Canvas.Left="20" Width="10" Height="40" StrokeStartLineCap="Flat" Stroke="Red" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="40" Width="10" Height="40" StrokeStartLineCap="Round" Stroke="Red" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="60" Width="10" Height="40" StrokeStartLineCap="Square" Stroke="Red" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="80" Width="10" Height="40" StrokeStartLineCap="Triangle" Stroke="Red" StrokeThickness="3"/>
+
+	<Ellipse Canvas.Left="100" Width="10" Height="40" Stroke="Green" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="120" Width="10" Height="40" StrokeEndLineCap="Flat" Stroke="Green" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="140" Width="10" Height="40" StrokeEndLineCap="Round" Stroke="Green" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="160" Width="10" Height="40" StrokeEndLineCap="Square" Stroke="Green" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="180" Width="10" Height="40" StrokeEndLineCap="Triangle" Stroke="Green" StrokeThickness="3"/>
+
+	<Ellipse Canvas.Left="200" Width="10" Height="40" Stroke="Blue" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="220" Width="10" Height="40" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stroke="Blue" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="240" Width="10" Height="40" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Blue" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="260" Width="10" Height="40" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Stroke="Blue" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="280" Width="10" Height="40" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="Blue" StrokeThickness="3"/>
+
+	<Ellipse Canvas.Left="300" Width="10" Height="40" Stroke="Black" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="320" Width="10" Height="40" StrokeLineJoin="Bevel" Stroke="Black" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="340" Width="10" Height="40" StrokeLineJoin="Miter" Stroke="Black" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="360" Width="10" Height="40" StrokeLineJoin="Miter" StrokeMiterLimit="20" Stroke="Black" StrokeThickness="3"/>
+	<Ellipse Canvas.Left="380" Width="10" Height="40" StrokeLineJoin="Round" Stroke="Black" StrokeThickness="3"/>
+
+<!-- StrokeStartLineCap and StrokeEndLineCap are used by Line -->
+	<Line Canvas.Top="50" Canvas.Left="0"  X1="5" Y1="0" X2="5" Y2="40" Stroke="Red" StrokeThickness="3" />
+	<Line Canvas.Top="50" Canvas.Left="20" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Flat" Stroke="Red" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="40" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Round" Stroke="Red" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="60" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Square" Stroke="Red" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="80" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Triangle" Stroke="Red" StrokeThickness="3"/>
+
+	<Line Canvas.Top="50" Canvas.Left="100" X1="5" Y1="0" X2="5" Y2="40" Stroke="Green" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="120" X1="5" Y1="0" X2="5" Y2="40" StrokeEndLineCap="Flat" Stroke="Green" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="140" X1="5" Y1="0" X2="5" Y2="40" StrokeEndLineCap="Round" Stroke="Green" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="160" X1="5" Y1="0" X2="5" Y2="40" StrokeEndLineCap="Square" Stroke="Green" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="180" X1="5" Y1="0" X2="5" Y2="40" StrokeEndLineCap="Triangle" Stroke="Green" StrokeThickness="3"/>
+
+	<Line Canvas.Top="50" Canvas.Left="200" X1="5" Y1="0" X2="5" Y2="40" Stroke="Blue" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="220" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stroke="Blue" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="240" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Blue" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="260" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Stroke="Blue" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="280" X1="5" Y1="0" X2="5" Y2="40" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="Blue" StrokeThickness="3"/>
+
+<!-- StrokeLineJoin and StrokeMiterLimit are NOT used for Line -->
+	<Line Canvas.Top="50" Canvas.Left="300" X1="5" Y1="0" X2="5" Y2="40" Stroke="Black" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="320" X1="5" Y1="0" X2="5" Y2="40" StrokeLineJoin="Bevel" Stroke="Black" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="340" X1="5" Y1="0" X2="5" Y2="40" StrokeLineJoin="Miter" Stroke="Black" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="360" X1="5" Y1="0" X2="5" Y2="40" StrokeLineJoin="Miter" StrokeMiterLimit="20" Stroke="Black" StrokeThickness="3"/>
+	<Line Canvas.Top="50" Canvas.Left="380" X1="5" Y1="0" X2="5" Y2="40" StrokeLineJoin="Round" Stroke="Black" StrokeThickness="3"/>
+
+<!-- StrokeStartLineCap and StrokeEndLineCap are NOT used by Rectangle -->
+	<Rectangle Canvas.Top="100" Canvas.Left="0"  Width="10" Height="40" Stroke="Red" StrokeThickness="3" />
+	<Rectangle Canvas.Top="100" Canvas.Left="20" Width="10" Height="40" StrokeStartLineCap="Flat" Stroke="Red" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="40" Width="10" Height="40" StrokeStartLineCap="Round" Stroke="Red" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="60" Width="10" Height="40" StrokeStartLineCap="Square" Stroke="Red" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="80" Width="10" Height="40" StrokeStartLineCap="Triangle" Stroke="Red" StrokeThickness="3"/>
+
+	<Rectangle Canvas.Top="100" Canvas.Left="100" Width="10" Height="40" Stroke="Green" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="120" Width="10" Height="40" StrokeEndLineCap="Flat" Stroke="Green" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="140" Width="10" Height="40" StrokeEndLineCap="Round" Stroke="Green" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="160" Width="10" Height="40" StrokeEndLineCap="Square" Stroke="Green" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="180" Width="10" Height="40" StrokeEndLineCap="Triangle" Stroke="Green" StrokeThickness="3"/>
+
+	<Rectangle Canvas.Top="100" Canvas.Left="200" Width="10" Height="40" Stroke="Blue" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="220" Width="10" Height="40" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stroke="Blue" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="240" Width="10" Height="40" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Blue" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="260" Width="10" Height="40" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Stroke="Blue" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="280" Width="10" Height="40" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="Blue" StrokeThickness="3"/>
+
+<!-- StrokeLineJoin and StrokeMiterLimit are used by Rectangle -->
+	<Rectangle Canvas.Top="100" Canvas.Left="300" Width="10" Height="40" Stroke="Black" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="320" Width="10" Height="40" StrokeLineJoin="Bevel" Stroke="Black" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="340" Width="10" Height="40" StrokeLineJoin="Miter" Stroke="Black" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="360" Width="10" Height="40" StrokeLineJoin="Miter" StrokeMiterLimit="20" Stroke="Black" StrokeThickness="3"/>
+	<Rectangle Canvas.Top="100" Canvas.Left="380" Width="10" Height="40" StrokeLineJoin="Round" Stroke="Black" StrokeThickness="3"/>
+
+<!-- StrokeStartLineCap and StrokeEndLineCap are NOT used for Polyline -->
+	<Polygon Canvas.Top="150" Canvas.Left="0"  Points="0,0 10,0 0,40 10,40" Stroke="Red" StrokeThickness="3" />
+	<Polygon Canvas.Top="150" Canvas.Left="20" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Flat" Stroke="Red" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="40" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Round" Stroke="Red" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="60" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Square" Stroke="Red" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="80" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Triangle" Stroke="Red" StrokeThickness="3"/>
+
+	<Polygon Canvas.Top="150" Canvas.Left="100" Points="0,0 10,0 0,40 10,40" Stroke="Green" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="120" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Flat" Stroke="Green" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="140" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Round" Stroke="Green" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="160" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Square" Stroke="Green" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="180" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Triangle" Stroke="Green" StrokeThickness="3"/>
+
+	<Polygon Canvas.Top="150" Canvas.Left="200" Points="0,0 10,0 0,40 10,40" Stroke="Blue" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="220" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stroke="Blue" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="240" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Blue" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="260" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Stroke="Blue" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="280" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="Blue" StrokeThickness="3"/>
+
+<!-- StrokeLineJoin and StrokeMiterLimit are used for Polyline -->
+	<Polygon Canvas.Top="150" Canvas.Left="300" Points="0,0 10,0 0,40 10,40" Stroke="Black" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="320" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Bevel" Stroke="Black" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="340" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Miter" Stroke="Black" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="360" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Miter" StrokeMiterLimit="20" Stroke="Black" StrokeThickness="3"/>
+	<Polygon Canvas.Top="150" Canvas.Left="380" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Round" Stroke="Black" StrokeThickness="3"/>
+
+<!-- StrokeStartLineCap, StrokeEndLineCap, StrokeLineJoin and StrokeMiterLimit are used for Polyline -->
+	<Polyline Canvas.Top="200" Canvas.Left="0"  Points="0,0 10,0 0,40 10,40" Stroke="Red" StrokeThickness="3" />
+	<Polyline Canvas.Top="200" Canvas.Left="20" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Flat" Stroke="Red" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="40" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Round" Stroke="Red" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="60" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Square" Stroke="Red" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="80" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Triangle" Stroke="Red" StrokeThickness="3"/>
+
+	<Polyline Canvas.Top="200" Canvas.Left="100" Points="0,0 10,0 0,40 10,40" Stroke="Green" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="120" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Flat" Stroke="Green" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="140" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Round" Stroke="Green" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="160" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Square" Stroke="Green" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="180" Points="0,0 10,0 0,40 10,40" StrokeEndLineCap="Triangle" Stroke="Green" StrokeThickness="3"/>
+
+	<Polyline Canvas.Top="200" Canvas.Left="200" Points="0,0 10,0 0,40 10,40" Stroke="Blue" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="220" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stroke="Blue" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="240" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Blue" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="260" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Stroke="Blue" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="280" Points="0,0 10,0 0,40 10,40" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="Blue" StrokeThickness="3"/>
+
+	<Polyline Canvas.Top="200" Canvas.Left="300" Points="0,0 10,0 0,40 10,40" Stroke="Black" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="320" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Bevel" Stroke="Black" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="340" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Miter" Stroke="Black" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="360" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Miter" StrokeMiterLimit="20" Stroke="Black" StrokeThickness="3"/>
+	<Polyline Canvas.Top="200" Canvas.Left="380" Points="0,0 10,0 0,40 10,40" StrokeLineJoin="Round" Stroke="Black" StrokeThickness="3"/>
+
+
+	<Path Canvas.Top="250" Canvas.Left="0"  Data="M0,0 L10,0 L0,40 L10,40" Stroke="Red" StrokeThickness="3" />
+	<Path Canvas.Top="250" Canvas.Left="20" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Flat" Stroke="Red" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="40" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Round" Stroke="Red" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="60" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Square" Stroke="Red" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="80" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Triangle" Stroke="Red" StrokeThickness="3"/>
+
+	<Path Canvas.Top="250" Canvas.Left="100" Data="M0,0 L10,0 L0,40 L10,40" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="120" Data="M0,0 L10,0 L0,40 L10,40" StrokeEndLineCap="Flat" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="140" Data="M0,0 L10,0 L0,40 L10,40" StrokeEndLineCap="Round" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="160" Data="M0,0 L10,0 L0,40 L10,40" StrokeEndLineCap="Square" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="180" Data="M0,0 L10,0 L0,40 L10,40" StrokeEndLineCap="Triangle" Stroke="Green" StrokeThickness="3"/>
+
+	<Path Canvas.Top="250" Canvas.Left="200" Data="M0,0 L10,0 L0,40 L10,40" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="220" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="240" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="260" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="280" Data="M0,0 L10,0 L0,40 L10,40" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="Blue" StrokeThickness="3"/>
+
+	<Path Canvas.Top="250" Canvas.Left="300" Data="M0,0 L10,0 L0,40 L10,40" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="320" Data="M0,0 L10,0 L0,40 L10,40" StrokeLineJoin="Bevel" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="340" Data="M0,0 L10,0 L0,40 L10,40" StrokeLineJoin="Miter" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="360" Data="M0,0 L10,0 L0,40 L10,40" StrokeLineJoin="Miter" StrokeMiterLimit="20" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="250" Canvas.Left="380" Data="M0,0 L10,0 L0,40 L10,40" StrokeLineJoin="Round" Stroke="Black" StrokeThickness="3"/>
+
+
+	<Path Canvas.Top="300" Canvas.Left="0"  Data="M0,0 L10,0 L0,40 L10,40 Z" Stroke="Red" StrokeThickness="3" />
+	<Path Canvas.Top="300" Canvas.Left="20" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Flat" Stroke="Red" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="40" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Round" Stroke="Red" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="60" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Square" Stroke="Red" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="80" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Triangle" Stroke="Red" StrokeThickness="3"/>
+
+	<Path Canvas.Top="300" Canvas.Left="100" Data="M0,0 L10,0 L0,40 L10,40 Z" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="120" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeEndLineCap="Flat" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="140" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeEndLineCap="Round" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="160" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeEndLineCap="Square" Stroke="Green" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="180" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeEndLineCap="Triangle" Stroke="Green" StrokeThickness="3"/>
+
+	<Path Canvas.Top="300" Canvas.Left="200" Data="M0,0 L10,0 L0,40 L10,40 Z" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="220" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="240" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="260" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Stroke="Blue" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="280" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="Blue" StrokeThickness="3"/>
+
+	<Path Canvas.Top="300" Canvas.Left="300" Data="M0,0 L10,0 L0,40 L10,40 Z" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="320" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeLineJoin="Bevel" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="340" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeLineJoin="Miter" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="360" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeLineJoin="Miter" StrokeMiterLimit="20" Stroke="Black" StrokeThickness="3"/>
+	<Path Canvas.Top="300" Canvas.Left="380" Data="M0,0 L10,0 L0,40 L10,40 Z" StrokeLineJoin="Round" Stroke="Black" StrokeThickness="3"/>
+</Canvas>

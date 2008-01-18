@@ -1,0 +1,10 @@
+<!-- afaik the following properties are ignored by silverlight for Polyline
+	(none)
+-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- original (repeated 4 times on a column to complete array) -->
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="10"  Width="50" Height="30" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="70"  Width="50" Height="30" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="130" Width="50" Height="30" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="190" Width="50" Height="30" />
+</Canvas>

@@ -1,0 +1,50 @@
+<!-- afaik the following properties are ignored by silverlight for Rectangle (round corners)
+	* StrokeStartLineCap, 
+	* StrokeEndLineCap, 
+	* StrokeLineJoin
+	* StrokeMiterLimit
+-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- original (repeated 4 times on a column to complete array) -->
+	<Rectangle Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="10" Canvas.Top="10"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="10" Canvas.Top="70"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="10" Canvas.Top="130" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="10" Canvas.Top="190" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+
+	<!-- StrokeStartLineCap -->
+	<Rectangle StrokeStartLineCap="Flat"     Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="70" Canvas.Top="10"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeStartLineCap="Round"    Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="70" Canvas.Top="70"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeStartLineCap="Square"   Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="70" Canvas.Top="130" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeStartLineCap="Triangle" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="70" Canvas.Top="190" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+
+	<!-- StrokeEndLineCap -->
+	<Rectangle StrokeEndLineCap="Flat"     Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="130" Canvas.Top="10"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeEndLineCap="Round"    Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="130" Canvas.Top="70"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeEndLineCap="Square"   Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="130" Canvas.Top="130" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeEndLineCap="Triangle" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="130" Canvas.Top="190" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+
+	<!-- StrokeLineJoin -->
+	<Rectangle StrokeLineJoin="Bevel" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="190" Canvas.Top="10"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Miter" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="190" Canvas.Top="70"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Round" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="190" Canvas.Top="130" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<!-- repeated to complex array -->
+	<Rectangle StrokeLineJoin="Round" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="190" Canvas.Top="190" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+
+	<!-- StrokeLineJoin="Bevel" + StrokeMiterLimit -->
+	<Rectangle StrokeLineJoin="Bevel" StrokeMiterLimit="0" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="250" Canvas.Top="10"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Bevel" StrokeMiterLimit="1" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="250" Canvas.Top="70"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Bevel" StrokeMiterLimit="2" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="250" Canvas.Top="130" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Bevel" StrokeMiterLimit="9" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="250" Canvas.Top="190" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+
+	<!-- StrokeLineJoin="Miter" + StrokeMiterLimit -->
+	<Rectangle StrokeLineJoin="Miter" StrokeMiterLimit="0" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="310" Canvas.Top="10"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Miter" StrokeMiterLimit="1" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="310" Canvas.Top="70"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Miter" StrokeMiterLimit="2" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="310" Canvas.Top="130" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Miter" StrokeMiterLimit="9" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="310" Canvas.Top="190" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+
+	<!-- StrokeLineJoin="Round" + StrokeMiterLimit -->
+	<Rectangle StrokeLineJoin="Round" StrokeMiterLimit="0" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="370" Canvas.Top="10"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Round" StrokeMiterLimit="1" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="370" Canvas.Top="70"  Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Round" StrokeMiterLimit="2" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="370" Canvas.Top="130" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+	<Rectangle StrokeLineJoin="Round" StrokeMiterLimit="9" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="10" Canvas.Left="370" Canvas.Top="190" Width="50" Height="30" RadiusX="10" RadiusY="5" />
+</Canvas>

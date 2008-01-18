@@ -1,0 +1,10 @@
+<!-- afaik the following properties are ignored by silverlight for Path
+	(none, actually depends on the geometry rendered)
+-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- original (repeated 4 times on a column to complete array) -->
+	<Path Data="M0,0 L0,30 L50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="10" />
+	<Path Data="M0,0 L0,30 L50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="70" />
+	<Path Data="M0,0 L0,30 L50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="130" />
+	<Path Data="M0,0 L0,30 L50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="190" />
+</Canvas>
