@@ -230,15 +230,17 @@ void
 UIElement::ComputeTotalRenderVisibility ()
 {
 	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
+	bool parent_visible = true;
 
 	total_opacity = GetValue (OpacityProperty)->AsDouble();
 
-	visible = visible && !IS_INVISIBLE (total_opacity);
-
-	if (visible && GetVisualParent ()) {
+	if ((visible || !IS_INVISIBLE (total_opacity)) && GetVisualParent ()) {
 		GetVisualParent ()->ComputeTotalRenderVisibility ();
-		visible = visible && GetVisualParent ()->GetRenderVisible ();
+		parent_visible = visible && GetVisualParent ()->GetRenderVisible ();
+		total_opacity *= GetVisualParent ()->total_opacity;
 	}
+
+	visible = visible && parent_visible;
 
 	if (visible)
 		flags |= UIElement::TOTAL_RENDER_VISIBLE;
@@ -378,7 +380,7 @@ UIElement::FullInvalidate (bool rendertransform)
 void
 UIElement::Invalidate (Rect r)
 {
-	if (!GetRenderVisible())
+	if (!GetRenderVisible() || IS_INVISIBLE(total_opacity))
 		return;
 
 #ifdef DEBUG_INVALIDATE
@@ -399,7 +401,7 @@ UIElement::Invalidate (Rect r)
 void
 UIElement::Invalidate (Region *region)
 {
-	if (!GetRenderVisible())
+	if (!GetRenderVisible () || IS_INVISIBLE (total_opacity))
 		return;
 
 	add_dirty_element (this, DirtyInvalidate);
@@ -512,8 +514,9 @@ void
 UIElement::DoRender (cairo_t *cr, Region *region)
 {
 	cairo_pattern_t *mask = NULL;
+	double local_opacity = GetValue (OpacityProperty)->AsDouble();
 
-	if (!GetRenderVisible() || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
 	
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
@@ -522,7 +525,7 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	cairo_set_matrix (cr, &absolute_xform);
 	RenderClipPath (cr);
 
-	if (opacityMask || IS_TRANSLUCENT (total_opacity)) {
+	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		Rect r = GetSubtreeBounds ();
 		r.RoundOut ();
 		cairo_save (cr);
@@ -534,7 +537,7 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 		cairo_restore (cr);
 	}
 
-	if (IS_TRANSLUCENT (total_opacity))
+	if (IS_TRANSLUCENT (local_opacity))
 		cairo_push_group (cr);
 
 	if (opacityMask != NULL)
@@ -553,9 +556,9 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 		cairo_pattern_destroy (data);
 	}
 
-	if (IS_TRANSLUCENT (total_opacity)) {
+	if (IS_TRANSLUCENT (local_opacity)) {
 		cairo_pop_group_to_source (cr);
-		cairo_paint_with_alpha (cr, total_opacity);
+		cairo_paint_with_alpha (cr, local_opacity);
 	}
 	cairo_restore (cr);
 	

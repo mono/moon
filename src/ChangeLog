@@ -1,3 +1,9 @@
+2008-01-18  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp: compute total_opacity for invalidation logic but
+	use local_opacity for drawing.  This fixes monotones grid.xaml and
+	some hit test regressions.
+
 2008-01-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: KeyFrameCollections can be specified in the xaml if

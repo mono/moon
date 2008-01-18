@@ -245,10 +245,7 @@ Panel::UpdateTotalHitTestVisibility ()
 void
 Panel::Render (cairo_t *cr, Region *region)
 {
-	if (!GetRenderVisible ())
-		return;
-
-	cairo_save (cr);  // for UIElement::ClipProperty
+	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 
 	Value *value = GetValue (Panel::BackgroundProperty);
