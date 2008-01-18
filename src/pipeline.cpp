@@ -77,7 +77,7 @@ Media::GetMarkers ()
 void
 Media::RegisterDemuxer (DemuxerInfo* info)
 {
-	printf ("Media::RegisterDecoder (%p)\n", info);
+	printf ("Media::RegisterDemuxer (%p)\n", info);
 	info->next = NULL;
 	if (registered_demuxers == NULL) {
 		registered_demuxers = info;
@@ -92,7 +92,7 @@ Media::RegisterDemuxer (DemuxerInfo* info)
 void
 Media::RegisterConverter (ConverterInfo* info)
 {
-	printf ("Media::RegisterDecoder (%p)\n", info);
+	printf ("Media::RegisterConverter (%p)\n", info);
 	info->next = NULL;
 	if (registered_converters == NULL) {
 		registered_converters = info;
