@@ -1,6 +1,3 @@
-AAACFLAGS = -O0 -g
-CXXFLAGS = -O0 -g
-
 libmoonincludedir=$(includedir)/libmoon
 
 noinst_PROGRAMS = demo sizes parsertest
