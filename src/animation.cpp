@@ -1755,6 +1755,27 @@ animation_destroy ()
 }
 
 /* The nullable setters/getters for the various animation types */
+#define SET_NULLABLE_FUNC(t) \
+static void SetNullable##t##Prop (DependencyObject *obj, DependencyProperty *prop, t *pv) \
+{ \
+	if (!pv) \
+		obj->SetValue (prop, NULL); \
+	else \
+		obj->SetValue (prop, Value(*pv)); \
+}
+
+#define NULLABLE_GETSET_IMPL(klass,prop,t,T) \
+void klass::Set##prop (t v) { Set##prop (&v); } \
+void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
+t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->As##T () : NULL; }
+
+#define NULLABLE_PRIM_GETSET_IMPL(klass,prop,t,T) \
+void klass::Set##prop (t v) { Set##prop (&v); } \
+void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
+t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->AsNullable##T () : NULL; }
+
+
+
 SET_NULLABLE_FUNC(double)
 SET_NULLABLE_FUNC(Color)
 SET_NULLABLE_FUNC(Point)

@@ -1,3 +1,17 @@
+2008-01-19  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp: the remaining macros (SET_NULLABLE_FUNC and
+	NULLABLE_{PRIM_}GETSET_IMPL) are moved here, right before their
+	use.
+
+	* animation.h: clean this file up by removing all those disgusting
+	macros.  for the DECL macros, just expand them here, as having the
+	methods listed in the class declaration is a good thing.
+
+	* collection.cpp (collection_new): remove the switch statement
+	from here and use Type::CreateInstance instead.  this largely
+	removes the need to be including extra headers (like animation.h).
+
 2008-01-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp, mplayer.cpp, mplayer2.cpp, Makefile.am, pipeline.h: Remove all

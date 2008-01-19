@@ -181,31 +181,6 @@ class Animation/*Timeline*/ : public Timeline {
 };
 
 
-#define NULLABLE_GETSET_DECL(prop, t) \
-void Set##prop (t v); \
-void Set##prop (t* pv); \
-t* Get##prop ()
-
-#define SET_NULLABLE_FUNC(t) \
-static void SetNullable##t##Prop (DependencyObject *obj, DependencyProperty *prop, t *pv) \
-{ \
-  if (!pv) \
-    obj->SetValue (prop, NULL); \
-  else \
-    obj->SetValue (prop, Value(*pv)); \
-}
-
-#define NULLABLE_GETSET_IMPL(klass,prop,t,T) \
-void klass::Set##prop (t v) { Set##prop (&v); } \
-void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
-t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->As##T () : NULL; }
-
-#define NULLABLE_PRIM_GETSET_IMPL(klass,prop,t,T) \
-void klass::Set##prop (t v) { Set##prop (&v); } \
-void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
-t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->AsNullable##T () : NULL; }
-
-
 class DoubleAnimation : public Animation/*Timeline*/ {
  public:
 	DoubleAnimation ();
@@ -215,9 +190,17 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty* FromProperty;
 	static DependencyProperty* ToProperty;
 
-	NULLABLE_GETSET_DECL(By, double);
-	NULLABLE_GETSET_DECL(From, double);
-	NULLABLE_GETSET_DECL(To, double);
+	double *GetBy ();
+	void    SetBy (double* pv);
+	void    SetBy (double v);
+
+	double *GetFrom ();
+	void    SetFrom (double* pv);
+	void    SetFrom (double v);
+
+	double *GetTo ();
+	void    SetTo (double* pv);
+	void    SetTo (double v);
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
@@ -233,9 +216,17 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty* FromProperty;
 	static DependencyProperty* ToProperty;
 
-	NULLABLE_GETSET_DECL(By, Color);
-	NULLABLE_GETSET_DECL(From, Color);
-	NULLABLE_GETSET_DECL(To, Color);
+	Color *GetBy ();
+	void   SetBy (Color* pv);
+	void   SetBy (Color v);
+
+	Color *GetFrom ();
+	void   SetFrom (Color* pv);
+	void   SetFrom (Color v);
+
+	Color *GetTo ();
+	void   SetTo (Color* pv);
+	void   SetTo (Color v);
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
@@ -251,9 +242,17 @@ class PointAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty* FromProperty;
 	static DependencyProperty* ToProperty;
 
-	NULLABLE_GETSET_DECL(By, Point);
-	NULLABLE_GETSET_DECL(From, Point);
-	NULLABLE_GETSET_DECL(To, Point);
+	Point *GetBy ();
+	void   SetBy (Point* pv);
+	void   SetBy (Point v);
+
+	Point *GetFrom ();
+	void   SetFrom (Point* pv);
+	void   SetFrom (Point v);
+
+	Point *GetTo ();
+	void   SetTo (Point* pv);
+	void   SetTo (Point v);
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
@@ -330,7 +329,10 @@ class DoubleKeyFrame : public KeyFrame {
  public:
 	DoubleKeyFrame ();
 	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME; };
-	NULLABLE_GETSET_DECL (Value, double);
+
+	double *GetValue ();
+	void    SetValue (double* pv);
+	void    SetValue (double v);
 
 	static DependencyProperty *ValueProperty;
 };
@@ -340,7 +342,9 @@ class ColorKeyFrame : public KeyFrame {
 	ColorKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::COLORKEYFRAME; };
 
-	NULLABLE_GETSET_DECL(Value, Color);
+	Color *GetValue ();
+	void   SetValue (Color* pv);
+	void   SetValue (Color v);
 
 	static DependencyProperty *ValueProperty;
 };
@@ -350,7 +354,9 @@ class PointKeyFrame : public KeyFrame {
 	PointKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::POINTKEYFRAME; };
 
-	NULLABLE_GETSET_DECL(Value, Point);
+	Point *GetValue ();
+	void   SetValue (Point* pv);
+	void   SetValue (Point v);
 
 	static DependencyProperty *ValueProperty;
 };

@@ -15,11 +15,10 @@
 #include "collection.h"
 #include "panel.h"
 #include "geometry.h"
-#include "brush.h"
-#include "animation.h"
+#include "media.h"
 #include "transform.h"
+#include "trigger.h"
 #include "namescope.h"
-#include "stylus.h"
 
 Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {
@@ -696,43 +695,15 @@ MediaAttributeCollection::GetItemByName (const char *name)
 Collection *
 collection_new (Type::Kind kind)
 {
-	switch (kind) {
-	case Type::GEOMETRY_COLLECTION:
-		return new GeometryCollection ();
-	case Type::GRADIENTSTOP_COLLECTION:
-		return new GradientStopCollection ();
-	case Type::INLINES:
-		return new Inlines ();
-	case Type::KEYFRAME_COLLECTION:
-		return new KeyFrameCollection ();
-	case Type::MEDIAATTRIBUTE_COLLECTION:
-		return new MediaAttributeCollection ();
-	case Type::PATHFIGURE_COLLECTION:
-		return new PathFigureCollection ();
-	case Type::PATHSEGMENT_COLLECTION:
-		return new PathSegmentCollection ();
-	case Type::RESOURCE_DICTIONARY:
-		return new ResourceDictionary ();
-	case Type::STROKE_COLLECTION:
-		return new StrokeCollection ();
-	case Type::STYLUSPOINT_COLLECTION:
-		return new StylusPointCollection ();
-	case Type::TIMELINE_COLLECTION:
-		return new TimelineCollection ();
-	case Type::TIMELINEMARKER_COLLECTION:
-		return new TimelineMarkerCollection ();
-	case Type::TRANSFORM_COLLECTION:
-		return new TransformCollection ();
-	case Type::TRIGGER_COLLECTION:
-		return new TriggerCollection ();
-	case Type::TRIGGERACTION_COLLECTION:
-		return new TriggerActionCollection ();
-	case Type::VISUAL_COLLECTION:
-		return new VisualCollection ();
-	default:
-		return NULL;
+	Type *t = Type::Find (kind);
+	if (!t->IsSubclassOf (Type::COLLECTION)) {
+	    g_warning ("create_collection passed non-collection type");
+	    return NULL;
 	}
+
+	return (Collection*)t->CreateInstance();
 }
+
 
 VisualCollection *
 visual_collection_new (void)
