@@ -21,26 +21,6 @@ EventTrigger::EventTrigger ()
 	this->SetValue (EventTrigger::ActionsProperty, Value::CreateUnref (new TriggerActionCollection ()));
 }
 
-//
-// Intercept any changes to the actions property and mirror that into our
-// own variable
-//
-void
-EventTrigger::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop == EventTrigger::ActionsProperty){
-		TriggerActionCollection *newcol = GetValue (prop)->AsTriggerActionCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
 void
 EventTrigger::SetTarget (DependencyObject *target)
 {

@@ -309,17 +309,6 @@ line_break_new (void)
 
 DependencyProperty *Run::TextProperty;
 
-void
-Run::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::RUN) {
-		Inline::OnPropertyChanged (prop);
-		return;
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
 Run *
 run_new (void)
 {
@@ -874,14 +863,6 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		// handled elsewhere
 		dirty = true;
 	} else if (prop == TextBlock::InlinesProperty) {
-		Inlines *newcol = GetValue (prop)->AsInlines ();
-		
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-		
 		dirty = true;
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {

@@ -555,14 +555,6 @@ TransformGroup::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	if (prop == TransformGroup::ChildrenProperty) {
-		TransformCollection *newcol = GetValue (prop)->AsTransformCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-
 		need_update = true;
 	}
 

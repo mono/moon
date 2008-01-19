@@ -1,5 +1,46 @@
 2008-01-19  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::OnPropertyChanged): remove the
+	handling of TriggersProperty and ResourcesProperty's closure.
+
+	* trigger.cpp, trigger.h: remove EventTrigger's OnPropertyChanged
+	method.
+
+	* transform.cpp (TransformGroup::OnPropertyChanged): remove
+	handling of ChildrenProperty's closure.
+
+	* text.cpp, text.h: remove Run::OnPropertyChanged, and also remove
+	the handling of Inlines->closure from TextBlock.
+
+	* stylus.cpp, stylus.h: remove a couple of OnPropertyChanged
+	methods (InkPresenter and Stroke).
+
+	* panel.cpp (Panel::OnPropertyChanged): remove handling of the
+	ChildProperty's closure here.
+
+	* media.cpp, media.h: remove the unnecessary
+	MediaBase::OnPropertyChanged.
+
+	* geometry.cpp, geometry.h: remove a few OnPropertyChanged
+	methods (GeometryGroup, PathGeometry, and PathSegment.)
+
+	* clock.cpp, clock.h: remove TimelineGroup::OnPropertyChanged.
+
+	* brush.cpp, brush.h: remove the unnecessary
+	Brush::OnPropertyChanged and GradientBrush::OnPropertyChanged.
+
+	* animation.cpp, animation.h: remove all the
+	*AnimationUsingKeyFrames::OnPropertyChanged methods, since all
+	they did was deal with collection closures.
+
+	* dependencyobject.cpp (DependencyObject::SetValue): factor out
+	the "collection->closure" setting code from all the
+	OnPropertyChanged methods sprinkled around and put it here.  Also,
+	set collection->closure to NULL on the old value (something the
+	old code didn't do).
+
+2008-01-19  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp: the remaining macros (SET_NULLABLE_FUNC and
 	NULLABLE_{PRIM_}GETSET_IMPL) are moved here, right before their
 	use.

@@ -413,28 +413,41 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	    (current_value != NULL && value == NULL) ||
 	    (current_value != NULL && value != NULL && *current_value != *value)) {
 
-		if (current_value != NULL && current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
-			DependencyObject *dob = current_value->AsDependencyObject();
+		// detach from the existing value if there is one
+		if (current_value) {
+			if (current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
+				DependencyObject *dob = current_value->AsDependencyObject();
 
-			if (dob != NULL)
-				dob->Detach (property, this);
+				if (dob != NULL)
+					dob->Detach (property, this);
+			}
+
+			if (Type::Find(current_value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
+				Collection *col = current_value->AsCollection ();
+				if (col)
+					col->closure = NULL;
+			}
 		}
 
-		Value *store;
-		if (value == NULL) {
-			store = NULL;
-		} else {
-			store = new Value (*value);
-		}
+		// store the new value in the hash
+		g_hash_table_insert (current_values, property, value ? new Value (*value) : NULL);
 
-		g_hash_table_insert (current_values, property, store);
-
+		// and attach to the new value
 		if (value) {
 			if (value->GetKind () >= Type::DEPENDENCY_OBJECT){
 				DependencyObject *dob = value->AsDependencyObject();
 				
 				if (dob != NULL)
 					dob->Attach (property, this);
+			}
+
+			if (Type::Find(value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
+				Collection *col = value->AsCollection ();
+				if (col) {
+					if (col->closure)
+						g_warning ("Collection added as property of more than 1 dependency object");
+					col->closure = this;
+				}
 			}
 		}
 

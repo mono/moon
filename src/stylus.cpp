@@ -204,27 +204,6 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, Depende
 	NotifyAttachersOfPropertyChange (Stroke::StylusPointsProperty);
 }
 
-void
-Stroke::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::STROKE) {
-		DependencyObject::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == Stroke::StylusPointsProperty) {
-		Collection *newcol = GetValue (prop)->AsCollection();
-		
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
 Stroke*
 stroke_new ()
 {
@@ -486,27 +465,6 @@ InkPresenter::RenderChildren (cairo_t *cr, Region *region)
 			DrawingAttributes::RenderWithoutDrawingAttributes (cr, spc);
 		}
 	}
-}
-
-void
-InkPresenter::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::INKPRESENTER) {
-		Canvas::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == InkPresenter::StrokesProperty) {
-		Collection *newcol = GetValue (prop)->AsCollection();
-		
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

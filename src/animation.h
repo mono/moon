@@ -479,8 +479,6 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
@@ -502,8 +500,6 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
@@ -523,8 +519,6 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
-
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	virtual void Resolve ();
 

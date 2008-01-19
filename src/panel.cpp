@@ -435,15 +435,7 @@ Panel::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == Panel::ChildrenProperty) {
-		VisualCollection *newcol = GetValue (prop)->AsVisualCollection();
-		
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	} else if (prop == Panel::BackgroundProperty) {
+	if (prop == Panel::BackgroundProperty) {
 		if (background != NULL) {
 			background->Detach (NULL, this);
 			background->unref ();

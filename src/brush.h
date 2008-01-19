@@ -62,7 +62,6 @@ class Brush : public DependencyObject {
 
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 	
 	double GetTotalOpacity (UIElement *uielement);
 };
@@ -110,7 +109,6 @@ class GradientBrush : public Brush {
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	virtual void SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bool single = false);
 };

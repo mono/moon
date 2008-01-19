@@ -188,22 +188,6 @@ Brush::SetupBrush (cairo_t *cr, UIElement *uielement)
 	SetupBrush (cr, uielement, w, h);
 }
 
-void
-Brush::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::BRUSH) {
-		DependencyObject::OnPropertyChanged (prop);
-		return;
-	}
-
-	//
-	// If any of our properties change, we have to notify our
-	// owners that they must repaint (all of our properties have
-	// a visible effect
-	//
-	NotifyAttachersOfPropertyChange (prop);
-}
-
 //
 // SolidColorBrush
 //
@@ -337,27 +321,6 @@ gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method)
 GradientBrush::GradientBrush ()
 {
 	this->SetValue (GradientBrush::GradientStopsProperty, Value::CreateUnref (new GradientStopCollection ()));
-}
-
-void
-GradientBrush::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::GRADIENTBRUSH) {
-		Brush::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == GradientBrush::GradientStopsProperty) {
-		GradientStopCollection *newcol = GetValue (prop)->AsGradientStopCollection();
-		
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

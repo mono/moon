@@ -173,28 +173,6 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 	else if (prop == UIElement::RenderTransformProperty || prop == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
-	else if (prop == UIElement::TriggersProperty) {
-		Value *v = GetValue (prop);
-		TriggerCollection *newcol = v ?  v->AsTriggerCollection() : NULL;
-
-		if (newcol) {
-			if  (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-				
-			newcol->closure = this;
-		}
-	}
-	else if (prop == UIElement::ResourcesProperty) {
-		Value *v = GetValue (prop);
-		ResourceDictionary *newcol = v ? v->AsResourceDictionary() : NULL;
-
-		if (newcol) {
-			if  (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-				
-			newcol->closure = this;
-		}
-	}
 
 	NotifyAttachersOfPropertyChange (prop);
 }

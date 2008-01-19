@@ -226,27 +226,6 @@ GeometryGroup::GeometryGroup ()
 }
 
 void
-GeometryGroup::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::GEOMETRYGROUP) {
-		Geometry::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == GeometryGroup::ChildrenProperty) {
-		GeometryCollection *newcol = GetValue (prop)->AsGeometryCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
-void
 GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
 	NotifyAttachersOfPropertyChange (prop);
@@ -527,27 +506,6 @@ path_geometry_new ()
 }
 
 void
-PathGeometry::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::PATHGEOMETRY) {
-		Geometry::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == PathGeometry::FiguresProperty){
-		PathFigureCollection *newcol = GetValue (prop)->AsPathFigureCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
-void
 PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
 	// PathGeometry only has one collection, so let's save the hash lookup
@@ -780,16 +738,6 @@ PathFigure::OnPropertyChanged (DependencyProperty *prop)
 		return;
 	}
 
-	if (prop == PathFigure::SegmentsProperty){
-		PathSegmentCollection *newcol = GetValue (prop)->AsPathSegmentCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
 	if (path)
 		moon_path_clear (path);
 	NotifyAttachersOfPropertyChange (prop);
@@ -881,21 +829,6 @@ void
 path_figure_set_start_point (PathFigure *path_figure, Point *point)
 {
 	path_figure->SetValue (PathFigure::StartPointProperty, Value (*point));
-}
-
-//
-// PathSegment
-//
-
-void
-PathSegment::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type == Type::DEPENDENCY_OBJECT) {
-		DependencyObject::OnPropertyChanged (prop);
-		return;
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
 }
 
 //

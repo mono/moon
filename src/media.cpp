@@ -43,12 +43,6 @@ MediaBase::MediaBase ()
 {
 }
 
-void
-MediaBase::OnPropertyChanged (DependencyProperty *prop)
-{
-	FrameworkElement::OnPropertyChanged (prop);
-}
-
 MediaBase *
 media_base_new (void)
 {

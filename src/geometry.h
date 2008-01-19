@@ -85,7 +85,6 @@ class GeometryGroup : public Geometry {
 	GeometryGroup ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 
@@ -163,7 +162,6 @@ class PathGeometry : public Geometry {
 	PathGeometry () {}
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path);
@@ -256,8 +254,6 @@ class PathSegment : public DependencyObject {
 
 	virtual void Append (moon_path *path) {}
 	virtual int GetSize () { return 0; }
-
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 //

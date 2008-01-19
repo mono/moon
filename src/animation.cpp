@@ -1325,27 +1325,6 @@ DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
 }
 
 void
-DoubleAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::DOUBLEANIMATIONUSINGKEYFRAMES) {
-		DoubleAnimation::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == DoubleAnimationUsingKeyFrames::KeyFramesProperty) {
-		DoubleKeyFrameCollection *newcol = GetValue (prop)->AsDoubleKeyFrameCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
-void
 DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 {
 	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
@@ -1454,27 +1433,6 @@ ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
 }
 
 void
-ColorAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::COLORANIMATIONUSINGKEYFRAMES) {
-		ColorAnimation::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == ColorAnimationUsingKeyFrames::KeyFramesProperty) {
-		ColorKeyFrameCollection *newcol = GetValue (prop)->AsColorKeyFrameCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
-void
 ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 {
 	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
@@ -1577,27 +1535,6 @@ PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 
 PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
 {
-}
-
-void
-PointAnimationUsingKeyFrames::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::POINTANIMATIONUSINGKEYFRAMES) {
-		PointAnimation::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == PointAnimationUsingKeyFrames::KeyFramesProperty) {
-		PointKeyFrameCollection *newcol = GetValue (prop)->AsPointKeyFrameCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
 }
 
 void

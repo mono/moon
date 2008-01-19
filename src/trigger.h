@@ -32,8 +32,6 @@ class EventTrigger : public DependencyObject {
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-
 	static DependencyProperty* RoutedEventProperty;
 	static DependencyProperty* ActionsProperty;
 

@@ -1271,27 +1271,6 @@ TimelineGroup::~TimelineGroup ()
 {
 }
 
-void
-TimelineGroup::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::TIMELINEGROUP) {
-		Timeline::OnPropertyChanged (prop);
-		return;
-	}
-
-	if (prop == TimelineGroup::ChildrenProperty) {
-		TimelineCollection *newcol = GetValue (prop)->AsTimelineCollection();
-
-		if (newcol) {
-			if (newcol->closure)
-				printf ("Warning we attached a property that was already attached\n");
-			newcol->closure = this;
-		}
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
 ClockGroup *
 TimelineGroup::CreateClock ()
 {

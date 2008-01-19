@@ -46,8 +46,6 @@ public:
 	
 	MediaBase ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
-	
-	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
 
 MediaBase *media_base_new (void);
