@@ -20,6 +20,7 @@
 #include <pthread.h>
 
 #include "debug.h"
+#include "value.h"
 
 /*
  *	Should be capable of:
@@ -121,6 +122,13 @@ typedef int32_t MediaResult;
 #define FRAME_DECODED (1 << 1)
 #define FRAME_DEMUXED (1 << 2)
 #define FRAME_CONVERTED (1 << 3)
+
+enum MoonSourceType {
+	MoonFileSource = 1,
+	MoonLiveSource = 2,
+	MoonProgressiveSource = 3
+};
+
 // Set if the pipeline needs it's own copy of the decoded data
 // If this is not set, the decoder can keep one area of memory and always decode into
 // that area, just passing back a pointer to that area.
@@ -198,15 +206,19 @@ public:
 };
 
 class Media {
-	static ConverterInfo *registered_converters;
-	static DemuxerInfo *registered_demuxers;
-	static DecoderInfo *registered_decoders;
-	
-	class Node : public List::Node {
+private:
+	class WorkNode : public List::Node {
 	public:
 		MediaFrame *frame;
 		uint16_t states;
+		uint64_t seek_pts; // Seek to this pts. If frame is NULL, then this is valid and what the FrameReaderLoop should do
+		WorkNode () : frame (NULL), states (0), seek_pts (0) {}
 	};
+	
+	static ConverterInfo *registered_converters;
+	static DemuxerInfo *registered_demuxers;
+	static DecoderInfo *registered_decoders;
+
 	
 	List *queued_requests;
 	pthread_t queue_thread;
@@ -219,6 +231,7 @@ class Media {
 	IMediaDemuxer *demuxer;
 	List *markers;
 	uint64_t start_time;
+	bool opened;
 	
 	//	Called on another thread, loops the queue of requested frames 
 	//	and calls GetNextFrame and FrameReadCallback.
@@ -226,16 +239,14 @@ class Media {
 	//	they are always (and all of them) satisfied before any video frame request.
 	void FrameReaderLoop ();
 	static void *FrameReaderLoop (void *data);
+	void EnqueueWork (WorkNode *work);	
 	
 public:
 	Media ();
 	~Media ();
 	
-	//	Opens the file using a FileSource
-	MediaResult OpenFile (char *file);
-	
-	//	Opens the file using a LiveSource
-	MediaResult OpenURL (char *url);
+	// 1. Initialize the media with a file or url (this does not read any data, but it creates the source objects and prepares for downloading content, if necessary).
+	// 2. Open it (this reads headers and initializes streams)
 	
 	//	If it's a file, just open it with FileStream.
 	//	If it's a url:
@@ -243,18 +254,19 @@ public:
 	//	 http(s)://	try to open with ProgressiveStream, fallback to LiveStream
 	//   file://	try to open with FileSource
 	//	 others://	no idea (FIXME).
-	MediaResult Open (const char *file_or_url); 
+	MediaResult Initialize (const char *file_or_url); 
 	
-	//	Opens the file
 	//	Determines the container type and selects a demuxer
 	//	- Default is to use our own ASF demuxer (if it's an ASF file), otherwise use ffmpeg (if available). Overridable by the environment variable MOONLIGHT_OVERRIDES, set demuxer=ffmpeg to force the ffmpeg demuxer.
 	//	Makes the demuxer read the data header and fills in stream info, etc.
 	//	Selects decoders according to stream info.
 	//	- Default is Media *media to use MS decoder if available, otherwise ffmpeg. Overridable by MOONLIGHT_OVERRIDES, set codec=ffmpeg to force the ffmpeg decoder.
-	MediaResult Open (IMediaSource *source);
+	MediaResult Open (); // Should only be called if Initialize has already been called (which will create the source)
+	MediaResult Open (IMediaSource *source); // Called if you have your own source
 	
 	// Seeks to the specified pts (if seekable).
 	MediaResult Seek (uint64_t pts);
+	MediaResult SeekAsync (uint64_t pts);
 	
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
@@ -270,8 +282,10 @@ public:
 	void SetQueueCallback (MediaClosure *closure) { queue_closure = closure; }
 	
 	IMediaSource *GetSource () { return source; }
+	void SetSource (IMediaSource *value) { source = value; }
 	IMediaDemuxer *GetDemuxer () { return demuxer; }
 	const char *GetFileOrUrl () { return file_or_url; }
+	void SetFileOrUrl (const char *value);
 	
 	void AddMessage (MediaResult result, const char *msg);
 	void AddMessage (MediaResult result, char *msg);
@@ -285,6 +299,7 @@ public:
 	uint64_t GetStartTime () { return start_time; }
 	void SetStartTime (uint64_t value) { start_time = value; } 
 	
+	bool IsOpened () { return opened; }
 public:
 	// Registration functions
 	// This class takes ownership of the infos and will delete them (not free) when the Media is shutdown.
@@ -420,14 +435,20 @@ public:
 	IMediaSource (Media *med) : media (med) {}
 	virtual ~IMediaSource () {}
 	
+	// Initializes this stream (and if it succeeds, it can be read from later on).
+	// streams based on remote content (live/progress) should contact the server
+	// and try to start downloading content
+	// file streams should try to open the file
+	virtual MediaResult Initialize () = 0; 
 	virtual bool IsSeekable () = 0;
 	virtual bool Seek (int64_t offset) = 0; // Seeks to the offset from the current position
 	virtual bool Seek (int64_t offset, int mode) = 0;
 	virtual bool Read (void *buffer, uint32_t n) = 0;
 	virtual bool Peek (void *buffer, uint32_t n) = 0;
-	virtual int64_t GetPosition () = 0;
+	virtual uint64_t GetPosition () = 0;
 	virtual void SetPosition (int64_t position) { Seek (position, SEEK_SET); }
 	virtual bool Eof () = 0;
+	virtual MoonSourceType GetType () = 0;
 };
 
 class IMediaDemuxer : public IMediaObject {
@@ -494,39 +515,90 @@ class FileSource : public IMediaSource {
 	
 public:
 	FileSource (Media *media);
+	FileSource (Media *media, const char *filename);
 	~FileSource ();
 	
+	virtual MediaResult Initialize (); 
 	virtual bool IsSeekable ();
 	virtual bool Seek (int64_t position);
 	virtual bool Seek (int64_t position, int mode);
 	virtual bool Read (void *buffer, uint32_t n);
 	virtual bool Peek (void *buffer, uint32_t n);
-	virtual int64_t GetPosition ();
+	virtual uint64_t GetPosition ();
 	virtual bool Eof ();
+	virtual MoonSourceType GetType () { return MoonFileSource; }
+	const char *GetFileName () { return filename; }
 };
 
-class ProgressiveSource : public FileSource {
+class ProgressiveSource : public IMediaSource {
+private:
+	char* filename;
+	int file;
+	uint64_t write_position;
+	uint64_t notified_size;
+	int wait_count; // Counter of how many threads are waiting in WaitForPosition
+	bool size_notified;
+	bool cancel_wait;
+	pthread_mutex_t write_mutex;
+	pthread_cond_t write_condition;
+	
 public:
-	ProgressiveSource (Media *media) : FileSource (media) {}
-	virtual ~ProgressiveSource () {}
+	ProgressiveSource (Media *media);
+	virtual ~ProgressiveSource ();
+
 		
+	virtual MediaResult Initialize (); 
 	// The size of the currently available data
 	void SetCurrentSize (long size);
 	// The total size of the file (might not be available)
 	void SetTotalSize (long size);
+
+	// Blocks until the position have data
+	// Returns false if failure (one possibility being that the requested position is beyond the end of the file)
+	bool WaitForPosition (uint64_t position);
+	// Wakes up WaitForPosition to check if the position has been reached, or if the wait should be cancelled
+	bool WakeUp ();
+	bool WakeUp (bool lock); // lock: set to false if the write_lock is already acquired by the caller
+	bool IsWaiting ();
+	// Cancels any pending waits
+	void CancelWait (); 
+	uint64_t GetWritePosition ();
+	void Lock ();
+	void Unlock ();
+
+	virtual bool IsSeekable ();
+	virtual bool Seek (int64_t offset);
+	virtual bool Seek (int64_t offset, int mode);
+	virtual bool Read (void* buffer, uint32_t size);
+	virtual bool Peek (void* buffer, uint32_t size);
+	virtual uint64_t GetPosition ();
+	virtual bool Eof ();
+	virtual MoonSourceType GetType () { return MoonProgressiveSource; }
+	
+	void Write (void *buf, int32_t offset, int32_t n);
+	void NotifySize (int64_t size);
+	const char* GetFilename () { return filename; }
+	
+private:
+	void Close ();
+
+	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
+	static void notify_size (int64_t size, gpointer cb_data);
 };
 
 class LiveSource : public IMediaSource {
 public:
 	LiveSource (Media *media) : IMediaSource (media) {}
 	
+	virtual MediaResult Initialize () { return MEDIA_FAIL; } 
 	virtual bool IsSeekable () { return false; }
 	virtual bool Seek (int64_t position) { return false; }
 	virtual bool Seek (int64_t position, int mode) { return false; }
 	virtual bool Read (void *buffer, uint32_t n) { return false; }
 	virtual bool Peek (void *buffer, uint32_t n) { return false; }
-	virtual int64_t GetPosition () { return 0; }
+	virtual uint64_t GetPosition () { return 0; }
 	virtual bool Eof () { return false; }
+	virtual MoonSourceType GetType () { return MoonLiveSource; }
 };
 
 class VideoStream : public IMediaStream {

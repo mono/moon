@@ -15,6 +15,7 @@
 
 #include "downloader.h"
 #include "media.h"
+#include "pipeline.h"
 
 class PlaylistContent {
 private:
@@ -168,6 +169,7 @@ private:
 	bool OpenCurrentSource ();
 	void OnMediaEnded ();
 	void OnMediaDownloaded ();
+	FileSource *GetFileSource () { return (FileSource*) GetSource (); }
 
 	void PopulateMediaAttributes ();
 
@@ -180,7 +182,7 @@ protected:
 	virtual bool OpenInternal ();
 	
 public:
-	Playlist (MediaElement *element, const char *source_name, const char *file_name);
+	Playlist (MediaElement *element, const char *source_name, FileSource *source);
 	virtual ~Playlist ();
 
 	virtual void Play ();
@@ -190,7 +192,7 @@ public:
 
 	void AddEntry (PlaylistEntry *entry);
 
-	static bool IsPlaylistFile (const char *file_name);
+	static bool IsPlaylistFile (IMediaSource *source);
 };
 
 class PlaylistParser {

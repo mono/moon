@@ -19,23 +19,17 @@
 #include "asf/asf.h"
 #include "pipeline.h"
 
-struct AVFormatContext;
 struct Audio;
 struct Video;
 
 class MediaPlayer {
 public:
-#ifdef MOON_MEDIA
 	Media *media;
 	// The pts when we start playing (set when resuming playback to current pts, when starting to play to initial pts, and when seeking to the seeked pts)
 	// While playing it can be used to calculate the current pts (knowing the time)
 	guint64 start_pts;
 	guint64 initial_pts;
 	gint64 duration;
-#endif
-	char *uri;
-	ASFParser* asf_parser;
-	
 	pthread_mutex_t pause_mutex;
 	pthread_cond_t pause_cond;
 	bool paused;
@@ -43,13 +37,7 @@ public:
 	bool playing;
 	bool stop;
 	bool eof;
-	
-	AVFormatContext *av_ctx;
-	
 	GThread *audio_thread;
-#ifndef MOON_MEDIA
-	GThread *io_thread;
-#endif
 	Audio *audio;
 	Video *video;
 	
@@ -60,9 +48,6 @@ public:
 	pthread_mutex_t target_pts_lock;
 	int64_t current_pts;
 	int64_t target_pts;
-#ifndef MOON_MEDIA
-	int64_t seek_pts;
-#endif
 	/* Public API */
 	
 	// read-only
@@ -77,7 +62,7 @@ public:
 	void Render (cairo_t *cr);
 	cairo_surface_t *GetSurface ();
 	
-	bool Open (const char *uri);
+	bool Open (Media *media);
 	void Close ();
 	
 	bool IsPlaying ();
@@ -100,9 +85,7 @@ public:
 	int GetAudioStreamCount ();
 	int GetAudioStreamIndex ();
 	bool HasVideo ();
-#ifdef MOON_MEDIA
 	bool HasAudio ();
-#endif
 	
 	double GetBalance ();
 	void SetBalance (double balance);

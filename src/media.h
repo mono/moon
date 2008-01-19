@@ -131,9 +131,9 @@ class MediaSource {
 protected:
 	MediaElement *element;
 	char *source_name;
-	char *file_name;
+	IMediaSource *source;
 	
-	MediaSource (MediaElement *element, const char *source_name, const char *file_name);
+	MediaSource (MediaElement *element, const char *source_name, IMediaSource *source);
 	
 	MediaPlayer *GetMediaPlayer ();
 	
@@ -143,7 +143,7 @@ public:
 	virtual ~MediaSource ();
 	
 	const char *GetSourceName ();
-	const char *GetFileName ();
+	IMediaSource *GetSource ();
 	
 	virtual bool Open ();
 	virtual void Play () = 0;
@@ -151,7 +151,7 @@ public:
 	virtual void Stop (bool media_ended) = 0;
 	virtual void Close () = 0;
 	
-	static MediaSource *CreateSource (MediaElement *element, const char *source_name, const char *file_name);
+	static MediaSource *CreateSource (MediaElement *element, const char *source_name, IMediaSource *source);
 };
 
 class SingleMedia : public MediaSource {
@@ -162,7 +162,7 @@ private:
 protected:
 	virtual bool OpenInternal ();
 public:
-	SingleMedia (MediaElement *element, const char *source_name, const char *file_name);
+	SingleMedia (MediaElement *element, const char *source_name, IMediaSource *source);
 	virtual ~SingleMedia ();
 	
 	virtual void Play ();
@@ -173,9 +173,47 @@ public:
 
 
 class MediaElement : public MediaBase {
+public:
+	// SetSource () is called
+	// - We start downloading the content. => 'Opening'
+	// When x bytes have been downloaded and there's no PartName 
+	// - try to open the media (i.e. read the header)
+	// - if successful, emit MediaOpened, and do buffered download => 'Buffering', otherwise normal download
+	// When buffered download has finished
+	// - start playing the file (if autoplay) => 'Playing', otherwise => 'Paused'
+	// When normal download has finished
+	// - try to open the media and emit MediaOpened/MediaFailed => Error
+	// - start playing the file (if autoplay) => 'Playing', otherwise => 'Paused'
+	
+	// 
+	// Relevant links:
+	// http://msdn2.microsoft.com/en-us/library/bb980165.aspx (MediaElement States)
+	enum State {
+		// The default state
+		Closed,
+		// After setting a source, and until we have enough data to read the headers, we are 'Opening'
+		Opening,
+		// When the headers are read, switch to 'Buffering' (unless the entire file has been downloaded)
+		Buffering,
+		// When finished buffering or downloading, start 'Playing'. 
+		// We might change automatically to 'Buffering' if we run out of data.
+		Playing,
+		Paused,
+		Stopped,
+		Error
+	};
+private:
+	State state;
+	State previous_state; // this is used to know what to do after a Buffering state finishes
+	bool waiting_for_loaded;
+	bool tried_buffering; // When enough of a file has been downloaded to try to open and buffer it, and the open fails, don't try again.
+	bool download_complete;
+	bool disable_buffering; // If SetSource is called with a Downloader that has started, disable buffering (since can't get the start of the file).
+	ProgressiveSource *downloaded_file; // This contains the downloaded data.
+	Media *media;
+
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
-	bool progressive;
 	bool updating;
 	bool loaded;
 	bool play_pending;
@@ -189,12 +227,20 @@ class MediaElement : public MediaBase {
 	
 	// downloader methods/data
 	Downloader *downloader;
-	MediaSource *source;
+	//MediaSource *source;
 	char *part_name;
 	
+	void Cleanup (bool recreate);
 	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DownloaderAbort ();
 	void DownloaderComplete ();
+	void BufferingComplete ();
+	// Try to open the media (i.e. read the headers).
+	void TryOpen ();
+	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
+	void MediaOpened (Media *media);
+	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
+	void MediaFailed ();
 	
 	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
 	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
@@ -245,6 +291,17 @@ public:
 	void Pause ();
 	void Play ();
 	void Stop ();
+	
+	// State methods
+	bool IsClosed () { return state == Closed; }
+	bool IsOpening () { return state == Opening; }
+	bool IsBuffering () { return state == Buffering; }
+	bool IsPlaying () { return state == Playing; }
+	bool IsPaused () { return state == Paused; }
+	bool IsStopped () { return state == Stopped; }
+	void SetState (State new_state);
+	State GetState () { return state; }
+	static const char* GetStateName (State state);
 	
 	virtual bool EnableAntiAlias ()
 	{

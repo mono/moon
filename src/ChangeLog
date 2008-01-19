@@ -1,3 +1,20 @@
+2008-01-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.h, media.cpp: MediaElement: make this a state machine to follow the
+	  behaviour specified in MSDN. Implement buffering of media files.
+	  MediaSource (and derived): take a IMediaSource instead of a filename.
+	* mplayer.h, mplayer2.cpp: Make Open take a Media instead of a filename.
+	  Remove all MOON_MEDIA ifdefs, too many changes to support both versions
+	  now. Make seeking async.
+	* pipeline.cpp, pipeline.h: Changed the FrameReaderLoop into a more general
+	  worker thread, seeking can now be done there too. Implement
+	  ProgressiveSource.
+	* playlist.cpp: Change IsPlaylistFile to peek the file instead of checking
+	  the file extension. MediaSource (and derived): take a IMediaSource
+	  instead of a filename.
+	* playlist.h: MediaSource (and derived): take a IMediaSource instead of a
+	  filename.
+
 2008-01-18  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp: compute total_opacity for invalidation logic but

@@ -20,8 +20,8 @@
 
 // Playlist
 
-Playlist::Playlist (MediaElement *element, const char *source_name, const char *file_name)
-	: MediaSource (element, source_name, file_name)
+Playlist::Playlist (MediaElement *element, const char *source_name, FileSource *source)
+	: MediaSource (element, source_name, source)
 {
 	entries = new List ();
 	current_entry = NULL;
@@ -45,7 +45,7 @@ Playlist::Parse ()
 	gsize len;
 	bool error;
 
-	if (!g_file_get_contents (file_name, &text, &len, NULL))
+	if (!g_file_get_contents (GetFileSource ()->GetFileName (), &text, &len, NULL))
 		return false;
 
 	PlaylistParser *parser = new PlaylistParser (this);
@@ -86,7 +86,7 @@ Playlist::OnMediaDownloaded ()
 
 	printf ("OnMediaDownloaded, file: %s\n", file_name);
 
-	MediaSource *source = MediaSource::CreateSource (element, current_entry->GetSourceName (), file_name);
+	MediaSource *source = MediaSource::CreateSource (element, current_entry->GetSourceName (), GetSource ());
 	current_entry->SetSource (source);
 	if (!source->Open ())
 		return;
@@ -98,26 +98,16 @@ Playlist::OnMediaDownloaded ()
 }
 
 bool
-Playlist::IsPlaylistFile (const char * file_name)
+Playlist::IsPlaylistFile (IMediaSource *source)
 {
-	static const char *exts [] = {".asx", ".wax", ".wvx", ".wmx"};
-
-	char *file_name_lower; 
-
-	if (!file_name)
+	static const char *asx_header = "<ASX VERSION=\"3.0\">";
+	int asx_header_length = 19;
+	char buffer [20];
+	
+	if (!source->Peek (buffer, asx_header_length))
 		return false;
-
-	file_name_lower = g_ascii_strdown (file_name, -1);
-
-	for (int i = 0; i < 4; i++) {
-		if (g_str_has_suffix (file_name_lower, exts [i])) {
-			g_free (file_name_lower);
-			return true;
-		}
-	}
-
-	g_free (file_name_lower);
-	return false;
+		
+	return strncmp (asx_header, buffer, asx_header_length) == 0;
 }
 
 void

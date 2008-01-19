@@ -21,6 +21,10 @@
 #include "media.h"
 #include "asf/asf.h"
 #include "asf/asf-structures.h"
+#include "runtime.h"
+
+#include <fcntl.h>
+#include <pthread.h>
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -41,9 +45,10 @@ DecoderInfo* Media::registered_decoders = NULL;
 ConverterInfo* Media::registered_converters = NULL;
  
 Media::Media () :
-		source (NULL), demuxer (NULL), markers (NULL),
-		file_or_url (NULL), queued_requests (NULL),
-		queue_closure (NULL)
+		queued_requests (NULL),	queue_closure (NULL), 
+		file_or_url (NULL), source (NULL), 
+		demuxer (NULL), markers (NULL),
+		start_time (0), opened (false)
 {
 }
 
@@ -65,6 +70,14 @@ Media::~Media ()
 	markers = NULL;
 }
 
+void
+Media::SetFileOrUrl (const char *value)
+{
+	if (file_or_url)
+		g_free (file_or_url);
+	file_or_url = g_strdup (value);
+}
+
 List* 
 Media::GetMarkers ()
 {
@@ -77,7 +90,7 @@ Media::GetMarkers ()
 void
 Media::RegisterDemuxer (DemuxerInfo* info)
 {
-	printf ("Media::RegisterDemuxer (%p)\n", info);
+	//printf ("Media::RegisterDemuxer (%p - %s)\n", info, info->GetName ());
 	info->next = NULL;
 	if (registered_demuxers == NULL) {
 		registered_demuxers = info;
@@ -92,7 +105,7 @@ Media::RegisterDemuxer (DemuxerInfo* info)
 void
 Media::RegisterConverter (ConverterInfo* info)
 {
-	printf ("Media::RegisterConverter (%p)\n", info);
+	//printf ("Media::RegisterConverter (%p)\n", info);
 	info->next = NULL;
 	if (registered_converters == NULL) {
 		registered_converters = info;
@@ -107,7 +120,7 @@ Media::RegisterConverter (ConverterInfo* info)
 void
 Media::RegisterDecoder (DecoderInfo* info)
 {
-	printf ("Media::RegisterDecoder (%p)\n", info);
+	//printf ("Media::RegisterDecoder (%p)\n", info);
 	info->next = NULL;
 	if (registered_decoders == NULL) {
 		registered_decoders = info;
@@ -178,13 +191,29 @@ Media::AddMessage (MediaResult result, char *msg)
 MediaResult
 Media::Seek (uint64_t pts)
 {
-	return demuxer->Seek (pts);
+	if (demuxer)
+		return demuxer->Seek (pts);
+
+	return MEDIA_FAIL;
 }
 
 MediaResult
-Media::Open (const char* file_or_url)
+Media::SeekAsync (uint64_t pts)
 {
-	printf ("Media::Open ('%s').\n", file_or_url);
+	if (demuxer == NULL)
+		return MEDIA_FAIL;
+	
+	Media::WorkNode *work = new Media::WorkNode ();
+	work->seek_pts = pts;
+	EnqueueWork (work);
+	
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+Media::Initialize (const char* file_or_url)
+{
+	printf ("Media::Initialize ('%s').\n", file_or_url);
 	
 	Uri* uri = new Uri ();
 	MediaResult result = MEDIA_FAIL;
@@ -198,25 +227,25 @@ Media::Open (const char* file_or_url)
 			result = MEDIA_INVALID_PROTOCOL;
 		} else if (strcmp (uri->protocol, "mms") == 0) {
 			source = new LiveSource (this);
-			result = Open (source);
+			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
 				printf ("Media::Open ('%s'): live source failed, trying progressive source.\n", file_or_url);
 				delete source;
 				source = new ProgressiveSource (this);
-				result = Open (source);
+				result = source->Initialize ();
 			}
 		} else if (strcmp (uri->protocol, "http") == 0 || strcmp (uri->protocol, "https") == 0) {
 			source = new ProgressiveSource (this);
-			result = Open (source);
+			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
 				printf ("Media::Open ('%s'): progressive source failed, trying live source.\n", file_or_url);
 				delete source;
 				source = new LiveSource (this);
-				result = Open (source);
+				result = source->Initialize ();
 			}
 		} else if (strcmp (uri->protocol, "file") == 0) {
 			source = new FileSource (this),
-			result = Open (source);
+			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
 				printf ("Media::Open ('%s'): file source failed.\n", file_or_url);
 			}
@@ -227,7 +256,7 @@ Media::Open (const char* file_or_url)
 		// FIXME: Is it safe to assume that if the path cannot be parsed as an uri it is a filename?
 		printf ("Media::Open ('%s'): uri parsing failed, assuming source is a filename.\n", file_or_url);
 		source = new FileSource (this);	
-		result = Open (source);
+		result = source->Initialize ();
 	}
 	
 	delete uri;
@@ -244,19 +273,42 @@ Media::Open (const char* file_or_url)
 }
 
 MediaResult
+Media::Open ()
+{
+	if (source == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "Media::Initialize () hasn't been called (or didn't succeed).");
+		return MEDIA_INVALID_ARGUMENT;
+	}
+	
+	if (IsOpened ()) {
+		AddMessage (MEDIA_FAIL, "Media::Open () has already been called.");
+		return MEDIA_FAIL;
+	}
+	
+	return Open (source);
+}
+
+MediaResult
 Media::Open (IMediaSource* source)
 {
 	MediaResult result;
 	
 	printf ("Media::Open ().\n");
 	
-	if (source == NULL)
+	if (source == NULL || IsOpened ()) // Initialize wasn't called (or didn't succeed) or already open.
 		return MEDIA_INVALID_ARGUMENT;
+	
+	this->source = source;
 	
 	// Select a demuxer
 	DemuxerInfo *demuxerInfo = registered_demuxers;
-	while (demuxerInfo != NULL && !demuxerInfo->Supports (source))
+	while (demuxerInfo != NULL) {
+		if (demuxerInfo->Supports (source))
+			break;
+		
+		//printf ("Media::Open (): '%s' can't handle this media.\n", demuxerInfo->GetName ());
 		demuxerInfo = (DemuxerInfo *) demuxerInfo->next;
+	}
 	
 	if (demuxerInfo == NULL) {
 		AddMessage (MEDIA_UNKNOWN_MEDIA_TYPE, g_strdup_printf ("No demuxers registered to handle the media file '%s'.", file_or_url));
@@ -349,6 +401,8 @@ Media::Open (IMediaSource* source)
 		}
 	}
 	
+	opened = true;
+	
 	return result;
 }
 
@@ -359,6 +413,11 @@ Media::GetNextFrame (MediaFrame *frame, uint16_t states)
 	
 	if (frame == NULL) {
 		AddMessage (MEDIA_INVALID_ARGUMENT, "frame is NULL.");
+		return MEDIA_INVALID_ARGUMENT;
+	}
+	
+	if (frame->stream == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "frame->stream is NULL.");
 		return MEDIA_INVALID_ARGUMENT;
 	}
 	
@@ -410,7 +469,7 @@ Media::FrameReaderLoop ()
 {
 	LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop ().\n");
 	while (queued_requests != NULL) {
-		Media::Node *node = NULL, *current = NULL;
+		Media::WorkNode *node = NULL, *current = NULL;
 		
 		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): entering mutex.\n");
 		// Wait until we have something in the queue
@@ -422,16 +481,16 @@ Media::FrameReaderLoop ()
 		
 		if (queued_requests != NULL) {
 			// Find the first audio node
-			current = (Media::Node *) queued_requests->First ();
-			while (current != NULL && current->frame->stream->GetType () != MediaTypeAudio) {
-				current = (Media::Node *) current->next;
+			current = (Media::WorkNode*) queued_requests->First ();
+			while (current != NULL && current->frame != NULL && current->frame->stream->GetType () != MediaTypeAudio) {
+				current = (Media::WorkNode*) current->next;
 			}
 			
-			if (current != NULL && current->frame->stream->GetType () == MediaTypeAudio) {
+			if (current != NULL && current->frame != NULL && current->frame->stream->GetType () == MediaTypeAudio) {
 				node = current;
 			} else {
 				// No audio node, just get the first node
-				node = (Media::Node*) queued_requests->First ();
+				node = (Media::WorkNode*) queued_requests->First ();
 			}
 			
 			queued_requests->Unlink (node);
@@ -447,14 +506,18 @@ Media::FrameReaderLoop ()
 		
 		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): processing node.\n");
 		
-		// Now demux and decode what we found and send it to who asked for it
-		MediaResult result = GetNextFrame (node->frame, node->states);
-		if (MEDIA_SUCCEEDED (result)) {
-			MediaClosure *closure = new MediaClosure ();
-			memcpy (closure, queue_closure, sizeof (MediaClosure));
-			closure->frame = node->frame;
-			closure->Call ();
-			delete closure;
+		if (node->frame != NULL) {
+			// Now demux and decode what we found and send it to who asked for it
+			MediaResult result = GetNextFrame (node->frame, node->states);
+			if (MEDIA_SUCCEEDED (result)) {
+				MediaClosure *closure = new MediaClosure ();
+				memcpy (closure, queue_closure, sizeof (MediaClosure));
+				closure->frame = node->frame;
+				closure->Call ();
+				delete closure;
+			}
+		} else { // Or seek if that was what was requested.
+			Seek (node->seek_pts);
 		}
 		delete node;
 	}
@@ -472,9 +535,28 @@ Media::GetNextFrameAsync (MediaFrame *frame)
 void
 Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 {
-	//printf ("Media::GetNextFrameAsync (%p).\n", stream);
+	if (frame == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "frame is NULL.");
+		return;
+	}
+	
+	if (frame->stream == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "frame->stream is NULL.");
+		return;
+	}
+	
+	Media::WorkNode *node = new Media::WorkNode ();
+	node->frame = frame;
+	node->states = states;
+	EnqueueWork (node);
+}
+
+void
+Media::EnqueueWork (Media::WorkNode	 *work)
+{
+	//printf ("Media::EnqueueWork (%p).\n", stream);
 	if (queued_requests == NULL) {
-		//printf ("Media::GetNextFrameAsync (%p). Creating threads.\n", stream);
+		//printf ("Media::EnqueueWork (%p). Creating threads.\n", stream);
 		queued_requests = new List ();
 		int result;
 		pthread_attr_t attribs;
@@ -488,11 +570,7 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 	
 	pthread_mutex_lock (&queue_mutex);
 	
-	// Add another node to our queue.
-	Media::Node *node = new Media::Node ();
-	node->frame = frame;
-	node->states = states;
-	queued_requests->Append (node);
+	queued_requests->Append (work);
 	
 	pthread_cond_signal (&queue_condition);
 	
@@ -502,18 +580,23 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 void
 Media::ClearQueue ()
 {
-	printf ("Media::ClearQueue ().\n");
+	//printf ("Media::ClearQueue ().\n");
 	if (queued_requests != NULL) {
 		pthread_mutex_lock (&queue_mutex);
 		queued_requests->Clear (true);
 		pthread_mutex_unlock (&queue_mutex);
+	}
+	
+	if (source->GetType () == MoonProgressiveSource) {
+		ProgressiveSource* ps = (ProgressiveSource*) source;
+		ps->CancelWait ();
 	}
 }
 
 void
 Media::DeleteQueue ()
 {
-	printf ("Media::DeleteQueue ().\n");
+	//printf ("Media::DeleteQueue ().\n");
 	if (queued_requests != NULL) {
 		pthread_mutex_lock (&queue_mutex);
 		queued_requests->Clear (true);
@@ -522,10 +605,19 @@ Media::DeleteQueue ()
 		pthread_cond_signal (&queue_condition);
 		pthread_mutex_unlock (&queue_mutex);
 		
+		if (source->GetType () == MoonProgressiveSource) {
+			ProgressiveSource* ps = (ProgressiveSource*) source;
+			ps->CancelWait ();
+		}
 		pthread_join (queue_thread, NULL);
 		pthread_mutex_destroy (&queue_mutex);
 		pthread_cond_destroy (&queue_condition);
 		pthread_detach (queue_thread);
+	}
+	
+	if (source != NULL && source->GetType () == MoonProgressiveSource) {
+		ProgressiveSource* ps = (ProgressiveSource*) source;
+		ps->CancelWait ();
 	}
 }
 
@@ -1561,11 +1653,35 @@ FileSource::FileSource (Media *media) :
 	fd = NULL;
 }
 
+FileSource::FileSource (Media *media, const char *filename) :
+	IMediaSource (media)
+{
+	this->filename = g_strdup (filename);
+	fd = NULL;
+}
+
 FileSource::~FileSource ()
 {
 	g_free (filename);
 	if (fd)
 		fclose (fd);
+}
+
+MediaResult 
+FileSource::Initialize ()
+{
+	if (fd) {
+		media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("The file stream '%s' has already been initialized.", filename));
+		return MEDIA_FILE_ERROR;
+	}
+	
+	// Open the file
+	if (!(fd = fopen (filename, "rb"))) {
+		media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Could not open the file '%s': %s.", filename, strerror (errno)));
+		return MEDIA_FILE_ERROR;
+	}
+	
+	return MEDIA_SUCCESS;
 }
 
 bool
@@ -1590,10 +1706,10 @@ FileSource::Read (void *buffer, uint32_t n)
 	}
 	
 	// Open the file if it hasn't been opened.
-	if (!fd && !(fd = fopen (filename, "rb"))) {
-		fprintf (stderr, "FileSource::Read (%p, %u): could not open `%s': %s.\n",
-			 buffer, n, filename, strerror (errno));
-		return false;
+	if (!fd) {
+		// Initialize should probably already have been called, but handle this case anyway.
+		if (!MEDIA_SUCCEEDED (Initialize ()))
+			return false;
 	}
 	
 	// Read
@@ -1618,7 +1734,7 @@ bool
 FileSource::Peek (void *buffer, uint32_t n)
 {
 	// Simple implementation of peek: save position, read bytes, restore position.
-	int64_t position = GetPosition ();
+	uint64_t position = GetPosition ();
 	
 	if (!Read (buffer, n))
 		return false;
@@ -1626,7 +1742,7 @@ FileSource::Peek (void *buffer, uint32_t n)
 	return Seek (position, SEEK_SET);
 }
 
-int64_t
+uint64_t
 FileSource::GetPosition ()
 {
 	//printf ("FileSource::GetPosition ().\n");
@@ -1875,3 +1991,359 @@ MarkerStream::SetCallback (MediaClosure *closure)
 	
 	this->closure = closure;
 }
+
+/*
+ * ProgressiveSource
+ */
+
+ProgressiveSource::ProgressiveSource (Media* media)
+ : IMediaSource (media), filename (NULL), 
+ 	write_position (0), notified_size (0), wait_count (0),
+ 	size_notified (false), cancel_wait (false)
+{
+	pthread_mutex_init (&write_mutex, NULL);
+	pthread_cond_init (&write_condition, NULL);
+
+	Initialize ();
+}
+
+ProgressiveSource::~ProgressiveSource ()
+{
+	//printf ("ProgressiveSource::~ProgressiveSource ()\n");
+	Close ();
+	
+	pthread_cond_destroy (&write_condition);
+	pthread_mutex_destroy (&write_mutex);
+}
+
+bool
+ProgressiveSource::IsWaiting ()
+{
+	return g_atomic_int_get (&wait_count) != 0;
+}
+
+bool
+ProgressiveSource::WakeUp ()
+{
+	return WakeUp (true);
+}
+
+bool
+ProgressiveSource::WakeUp (bool lock)
+{
+	if (lock)
+		Lock ();
+	pthread_cond_signal (&write_condition);
+	if (lock)
+		Unlock ();
+	return true;
+}
+
+void
+ProgressiveSource::Close ()
+{
+	
+	if (file != 0) {
+		close (file);
+		file = 0;
+	}
+	
+	if (filename != NULL) {
+		unlink (filename);
+		g_free (filename);
+		filename = NULL;
+	}
+	
+	write_position = 0;
+	notified_size = 0;
+	size_notified = false;
+}
+
+void
+ProgressiveSource::Lock ()
+{
+	int result = pthread_mutex_lock (&write_mutex);
+	if (result != 0)
+		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Could not lock progressive file writer mutex: %s", strerror (result)));
+}
+
+void
+ProgressiveSource::Unlock ()
+{
+	pthread_mutex_unlock (&write_mutex);
+}
+
+MediaResult
+ProgressiveSource::Initialize ()
+{
+	// printf ("ProgressiveSource::StartDownload ()\n");
+	Close ();
+	
+	char filename [L_tmpnam + 1];
+	
+	memset (filename, 0, L_tmpnam + 1);
+	
+	// Create the temporary file where we store the data
+	do {
+		char* name = tmpnam_r (filename);
+		if (name == NULL) {
+			if (media)
+				media->AddMessage (MEDIA_FAIL, "Could not create local temporary file.");
+			return false;
+		}
+
+		file = open (filename, O_RDWR | O_EXCL | O_CREAT, S_IRUSR | S_IWUSR);
+		if (file == -1) {
+			if (errno == EMFILE) { // Too many open files. This would make for a nice hang test.
+				return MEDIA_FAIL;
+			}
+		}
+	} while (file == -1);
+	
+	this->filename = g_strdup (filename);
+	
+	// Ready to be written to
+	
+	return MEDIA_SUCCESS;
+}
+
+void
+ProgressiveSource::Write (void *buf, int32_t offset, int32_t n)
+{
+	//printf ("ProgressiveSource::Write (%p, %i, %i)\n", buf, offset, n);
+	guint64 read_position = 0;
+	ssize_t written = 0;
+	ssize_t total = 0;
+
+	Lock ();
+
+	if (file == 0) {
+		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
+		goto cleanup;
+	}
+	
+	if (n == 0) {
+		// We've got the entire file, update the size
+		//printf ("ProgressiveSource::Write (%p, %i, %i): We've got the entire file, final size: %lld (earlier notified size: %lld)\n", buf, offset, n, write_position, notified_size);
+		size_notified = true;
+		notified_size = write_position;
+		goto cleanup;
+	}
+	
+	// Save the current position
+	read_position = lseek (file, 0, SEEK_CUR);
+	
+	// Seek to the write position
+	if (lseek (file, offset, SEEK_SET) != offset) {
+		goto cleanup;
+	}
+	
+	while ((written = ::write (file, total + (char*) buf, n - total)) > 0) {
+		//printf ("ProgressiveSource::Write (%p, %i, %i): Wrote %i bytes.\n", buf, offset, n, written);
+		total += written;
+		if (total >= n)
+			break;
+	}
+	
+	write_position += total;
+	
+	if (written == -1) {
+		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("progressive source couldn't write more data: %s", strerror (errno)));
+	}
+	
+	//printf ("ProgressiveSource::Write (%p, %i, %i): New write position: %lld\n", buf, offset, n, write_position);
+	
+	if (IsWaiting ()) {
+		WakeUp (false);
+	}
+	
+	// Restore the current position
+	lseek (file, read_position, SEEK_SET);
+	
+cleanup:
+	Unlock ();
+}
+
+void
+ProgressiveSource::NotifySize (int64_t size)
+{
+	//printf ("ProgressiveSource::NotifySize (%llu)\n", size);
+	notified_size = size;
+	size_notified = true;
+}
+
+bool
+ProgressiveSource::WaitForPosition (uint64_t position)
+{
+	bool result = false;
+	
+	g_atomic_int_inc (&wait_count);
+	
+	Lock ();
+	while (true) {
+		if (cancel_wait) {
+			cancel_wait = false; // FIXME: This doesn't work if there are more than one thread waiting at the same time
+			goto cleanup;
+		}
+		
+		if (size_notified && position > notified_size) {
+			goto cleanup;
+		}
+		
+		if (write_position > position) {
+			result = true;
+			goto cleanup;
+		}
+		
+		// By the time this method is called, we might not need to wait, so the wait goes
+		// after all the checks.
+		printf ("Going to sleep...\n");
+		pthread_cond_wait (&write_condition, &write_mutex);
+	}
+	
+cleanup:
+	Unlock ();
+	
+	g_atomic_int_dec_and_test (&wait_count);
+	
+	return result;
+}
+
+void
+ProgressiveSource::CancelWait ()
+{
+	Lock ();
+	cancel_wait = true;
+	WakeUp (false);
+	Unlock ();
+}
+
+bool
+ProgressiveSource::IsSeekable ()
+{
+	return true;
+}
+
+bool
+ProgressiveSource::Seek (int64_t offset)
+{
+	return Seek (offset, SEEK_CUR);
+}
+
+bool
+ProgressiveSource::Seek (gint64 offset, int mode)
+{
+	bool result = false;
+	
+	if (file == 0) {
+		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
+		return false;
+	}
+	
+	Lock ();
+	
+	// Calculate the position from the mode and offset.
+	uint64_t position;
+	switch (mode) {
+	case SEEK_CUR: position = GetPosition () + offset; break;
+	case SEEK_SET: position = offset; break;
+	default:
+		// Due to the fact that many times we do not know the size of the file, it does not make sense to support SEEK_END
+		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Invalid seek mode: %i", mode));
+		return false;
+	}
+	
+	// Seeked beyond end of file?
+	if (size_notified && notified_size < position) {
+		media->AddMessage (MEDIA_FAIL, "Seek beyond eof.");
+		result = false;
+		goto cleanup;
+	}
+	
+	// If the requested position isn't downloaded yet, wait for it to be.
+	if (position > write_position) {
+		printf ("ProgressiveSource::Seek (%lld): Seeked beyond written size (%lld)\n", position, write_position);
+		Unlock ();
+		if (!(WaitForPosition (position))) {
+			return false;
+		}
+		Lock ();
+	}
+	
+	// Finally seek to where we want to be
+	result = lseek (file, position, SEEK_SET) == (off_t) position;
+
+cleanup:
+	Unlock ();
+	return result;
+}
+
+bool
+ProgressiveSource::Read (void* buffer, guint32 size)
+{
+	bool result = false;
+	
+	if (file == 0) {
+		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
+		return false;
+	}
+	
+	Lock ();
+	
+	// Check if requested more data than what has been downloaded
+	uint64_t end = GetPosition () + size;
+	//printf ("ProgressiveSource::Read (%.8p, %.4u): end: %.6llu, write_position: %.7llu, bytes before stop: %llu\n", buffer, size, end, write_position, write_position - end);
+	if (end > write_position) {
+		//printf ("ProgressiveSource::Read (%p, %u): Read beyond written size (%lld)\n", buffer, size, write_position);
+		Unlock ();
+		if (!(WaitForPosition (end))) {
+			return false;
+		}
+		Lock ();		
+	}
+	
+	result = read (file, buffer, size) == (ssize_t) size; 
+	
+	Unlock ();
+	return result;
+}
+
+bool
+ProgressiveSource::Peek (void* buffer, guint32 size)
+{
+	// Simple implementation of peek: save position, read bytes, restore position.
+	uint64_t position = GetPosition ();
+	
+	if (!Read (buffer, size))
+		return false;
+	
+	return Seek (position, SEEK_SET);
+}
+
+uint64_t
+ProgressiveSource::GetPosition ()
+{
+	return lseek (file, 0, SEEK_CUR);
+}
+
+bool
+ProgressiveSource::Eof ()
+{
+	printf ("ProgressiveSource::Eof ().\n");
+	printf ("ProgressiveSource::Eof (): Not implemented.\n");
+	return false;
+}
+
+uint64_t
+ProgressiveSource::GetWritePosition ()
+{
+	int64_t result;
+	Lock ();
+	result = write_position;
+	Unlock ();
+	return result;
+}
+
+
+
+
