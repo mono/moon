@@ -8,12 +8,13 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#if 0
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include "pipeline.h"
-#ifndef MOON_MEDIA
 
 #include <glib.h>
 
@@ -1334,4 +1335,4 @@ io_loop (void *data)
 	return NULL;
 }
 
-#endif // MOON_MEDIA
+#endif // #if 0

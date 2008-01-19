@@ -1,3 +1,5 @@
+AAACFLAGS = -O0 -g
+CXXFLAGS = -O0 -g
 
 libmoonincludedir=$(includedir)/libmoon
 
@@ -91,7 +93,6 @@ libmoon_la_SOURCES = 	\
 	mango.cpp	\
 	media.cpp	\
 	moon-path.c	\
-	mplayer.cpp	\
 	mplayer2.cpp	\
 	namescope.cpp	\
 	openfile.cpp	\

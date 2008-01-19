@@ -38,8 +38,6 @@ G_END_DECLS
 #include "runtime.h"
 #include "list.h"
 
-#ifdef MOON_MEDIA
-
 #if GLIB_SIZEOF_VOID_P == 8
 #define ALIGN(addr,size) (uint8_t *) (((uint64_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
 #else
@@ -1204,4 +1202,3 @@ audio_loop (void *data)
 	return NULL;
 }
 
-#endif // MOON_MEDIA

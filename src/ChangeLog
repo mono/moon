@@ -1,5 +1,11 @@
 2008-01-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp, mplayer.cpp, mplayer2.cpp, Makefile.am, pipeline.h: Remove all
+	  MOON_MEDIA ifdefs and completely disable the old mplayer.cpp
+	* src.mdp: Updated.
+
+2008-01-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.h, media.cpp: MediaElement: make this a state machine to follow the
 	  behaviour specified in MSDN. Implement buffering of media files.
 	  MediaSource (and derived): take a IMediaSource instead of a filename.

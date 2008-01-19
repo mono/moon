@@ -273,7 +273,6 @@ MediaElement::GetStateName (State state)
 	}
 }
 
-#ifdef MOON_MEDIA
 static MediaResult marker_callback (MediaClosure* closure)
 {
 	MediaElement* element = (MediaElement*) closure->context;
@@ -293,7 +292,6 @@ static MediaResult marker_callback (MediaClosure* closure)
 	
 	return MEDIA_SUCCESS;
 }
-#endif
 
 void
 MediaElement::AddStreamedMarker (TimelineMarker* marker)
@@ -306,7 +304,6 @@ MediaElement::AddStreamedMarker (TimelineMarker* marker)
 void
 MediaElement::ReadMarkers ()
 {
-#ifdef MOON_MEDIA
 	//printf ("MediaElement::ReadMarkers ()\n");
 
 	IMediaDemuxer* demuxer;
@@ -356,7 +353,6 @@ MediaElement::ReadMarkers ()
 	//printf ("MediaElement::ReadMarkers (): setting %i markers.\n", collection_count (col));
 	SetValue (MarkersProperty, col);
 	col->unref ();
-#endif
 }
 
 void
@@ -1948,7 +1944,5 @@ media_init (void)
 	t = Type::Find (Type::IMAGE);
 	Image::ImageFailedEvent = t->LookupEvent ("ImageFailed");
 	
-#ifdef MOON_MEDIA
 	Media::Initialize ();
-#endif
 }

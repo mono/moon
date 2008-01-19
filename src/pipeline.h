@@ -10,8 +10,6 @@
  * 
  */
 
-#define MOON_MEDIA
-
 #ifndef __MOON_PIPELINE_H_
 #define __MOON_PIPELINE_H_
 
