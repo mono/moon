@@ -47,7 +47,7 @@ G_END_DECLS
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
-static uint64_t audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds);
+static uint64_t audio_play (Audio *audio, struct pollfd *ufds, int nfds);
 static void    *audio_loop (void *data);
 
 extern guint32 moonlight_flags;
@@ -547,7 +547,9 @@ MediaPlayer::AdvanceFrame ()
 			}
 			
 			if (npkt->frame->event == FrameEventEOF) {
-				// We've reached the EOF, current frame is the most recent we can render
+				// We've reached the EOF, current
+				// frame is the most recent we can
+				// render
 				list->Unlink (npkt);
 				delete npkt;
 				eof = true;
@@ -562,12 +564,9 @@ MediaPlayer::AdvanceFrame ()
 		} while (pkt);
 	}
 	
-	int nframes_left = list->Length ();
-	
 	video->queue->Unlock ();
 	
 	if (update && frame) {
-		//printf ("MediaPlayer::AdvanceFrame () (%.2i items in list, %.2i dropped) copying ? bytes to rgb buffer for current_pts = %lld (target_pts = %lld, pkt->frame->pts = %lld), diff = %lld.\n", count, dropped, current_pts, target_pts, frame->pts, target_pts - frame->pts);
 		render_frame (this, frame);
 		delete pkt;
 		
@@ -738,9 +737,8 @@ MediaPlayer::StopThreads ()
 	
 	audio->outptr = audio->outbuf;
 	
-	if (HasVideo ()) {
+	if (HasVideo ())
 		initial_pts = video->stream->start_time;
-	}
 	
 	current_pts = initial_pts;
 	target_pts = initial_pts;
@@ -969,10 +967,10 @@ pcm_poll (snd_pcm_t *pcm, struct pollfd *ufds, int nfds)
 
 // Returns the frame pts or 0 if insufficient audio data
 static uint64_t
-audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
+audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 {
 	int frame_size, samples, outlen, channels, n;
-	uint8_t *outptr;
+	uint8_t *outbuf, *outptr;
 	
 	channels = audio->stream->channels;
 	frame_size = audio->sample_size * channels * 2;
@@ -980,16 +978,21 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 	samples = audio->sample_size;
 	outptr = audio->outbuf;
 	
-	//printf ("audio_play (%p, %s, %p, %i) outlen: %i, frame_size: %i, samples: %i, channels: %i, muted: %s.\n", audio, play ? "true" : "false", ufds, nfds, 
-	//	outlen, frame_size, samples, channels, audio->muted ? "true" : "false");
-	
 	// make sure we have enough data to play a frame of audio
-	if (outlen < frame_size)
+	if (outlen < frame_size) {
+		outbuf = ALIGN (audio->buffer, 2);
+		
+		if (outlen > 0) {
+			// make room for more audio to be buffered
+			memmove (outbuf, audio->outbuf, outlen);
+			audio->outptr = outbuf + outlen;
+		} else {
+			audio->outptr = outbuf;
+		}
+		
+		audio->outbuf = outbuf;
+		
 		return 0;
-	
-	if (!play) {
-		outptr += samples * 2 * channels;
-		goto finished;
 	}
 	
 	if (!audio->muted) {
@@ -1042,18 +1045,10 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 			}
 		}
 		
-		//printf ("audio_play (): about to write...\n");
-		n = snd_pcm_writei (audio->pcm, outptr, samples);
-		/*printf ("audio_play (): wrote %i samples, n: %i, bytes: %i (1: %.8X, 2: %.8X, 3: %.8X, 4: %.8X) \n", samples, n, n * 2 * channels, 
-			*(int*) outptr,
-			*(1 + (int*) outptr),
-			*(2 + (int*) outptr),
-			*(3 + (int*) outptr));*/
-		if (n > 0) {
+		if ((n = snd_pcm_writei (audio->pcm, outptr, samples)) > 0) {
 			outptr += (n * 2 * channels);
 			samples -= n;
 		} else if (n == -ESTRPIPE) {
-			//printf ("snd_pcm_writei() returned -ESTRPIPE\n");
 			while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
 				sleep (1);
 			
@@ -1062,23 +1057,11 @@ audio_play (Audio *audio, bool play, struct pollfd *ufds, int nfds)
 				snd_pcm_start (audio->pcm);
 			}
 		} else if (n == -EPIPE) {
-			//printf ("snd_pcm_writei() returned -EPIPE (underrun)\n");
 			snd_pcm_prepare (audio->pcm);
-			//snd_pcm_start (audio->pcm);
 		}
 	}
 	
-finished:
-	
-	if (outptr < audio->outptr) {
-		// make room for more audio to be buffered
-		outlen = audio->outptr - outptr;
-		memmove (audio->outbuf, outptr, outlen);
-		audio->outptr = audio->outbuf + outlen;
-	} else {
-		// no more buffered audio data
-		audio->outptr = audio->outbuf;
-	}
+	audio->outbuf = outptr;
 	
 	return audio->pts_per_frame;
 }
@@ -1133,13 +1116,11 @@ audio_loop (void *data)
 			continue;
 		}
 		
-		if ((frame_pts = audio_play (audio, true, ufds, ndfs)) > 0) {
+		if ((frame_pts = audio_play (audio, ufds, ndfs)) > 0) {
 			// calculated pts
-			//printf ("frame_pts = %llu\n", frame_pts);
 			pthread_mutex_lock (&mplayer->target_pts_lock);
 			mplayer->target_pts += frame_pts;
 			pthread_mutex_unlock (&mplayer->target_pts_lock);
-			//printf ("calculated target_pts = %llu (frame_pts: %lld)\n", mplayer->target_pts, frame_pts);
 		} else {
 			if (!pkt && (pkt = (Packet *) audio->queue->Pop ())) {
 				// decode an audio packet
@@ -1201,4 +1182,3 @@ audio_loop (void *data)
 	
 	return NULL;
 }
-

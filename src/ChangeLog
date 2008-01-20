@@ -1,3 +1,10 @@
+2008-01-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mplayer2.cpp (audio_play): Get rid of the 'play' argument. Also
+	don't memmove() data unless we don't have enough to play a single
+	frame. Instead, what we'll do is keep progressing audio->outbuf as
+	we play it.
+
 2008-01-19  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::OnPropertyChanged): remove the
