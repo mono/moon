@@ -970,13 +970,13 @@ static uint64_t
 audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 {
 	int frame_size, samples, outlen, channels, n;
-	uint8_t *outbuf, *outptr;
+	uint8_t *outbuf;
 	
 	channels = audio->stream->channels;
 	frame_size = audio->sample_size * channels * 2;
 	outlen = audio->outptr - audio->outbuf;
 	samples = audio->sample_size;
-	outptr = audio->outbuf;
+	outbuf = audio->outbuf;
 	
 	// make sure we have enough data to play a frame of audio
 	if (outlen < frame_size) {
@@ -999,7 +999,7 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 		//printf ("audio: volume: %f, balance: %f\n", audio->volume, audio->balance);
 		// set balance/volume
 		int16_t volume = (uint16_t) (audio->volume * 8192);
-		int16_t *inptr = (int16_t *) audio->outbuf;
+		int16_t *inptr = (int16_t *) outbuf;
 		int16_t leftvol, rightvol;
 		int32_t vol;
 		
@@ -1021,7 +1021,7 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 			*inptr++ = (int16_t) CLAMP (vol, -32768, 32767);
 		}
 	} else {
-		memset (audio->outbuf, 0, frame_size);
+		memset (outbuf, 0, frame_size);
 	}
 	
 	// play only 1 frame
@@ -1045,8 +1045,8 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 			}
 		}
 		
-		if ((n = snd_pcm_writei (audio->pcm, outptr, samples)) > 0) {
-			outptr += (n * 2 * channels);
+		if ((n = snd_pcm_writei (audio->pcm, outbuf, samples)) > 0) {
+			outbuf += (n * 2 * channels);
 			samples -= n;
 		} else if (n == -ESTRPIPE) {
 			while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
@@ -1061,7 +1061,7 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 		}
 	}
 	
-	audio->outbuf = outptr;
+	audio->outbuf = outbuf;
 	
 	return audio->pts_per_frame;
 }
