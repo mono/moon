@@ -1026,7 +1026,6 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 	
 	// play only 1 frame
 	while (samples > 0) {
-		//printf ("audio_play () samples: %i\n", samples);
 		if (pcm_poll (audio->pcm, ufds, nfds) != 0) {
 			switch (snd_pcm_state (audio->pcm)) {
 			case SND_PCM_STATE_XRUN:
@@ -1037,27 +1036,30 @@ audio_play (Audio *audio, struct pollfd *ufds, int nfds)
 				printf ("SND_PCM_STATE_SUSPENDED\n");
 				while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
 					sleep (1);
-				if (n < 0)
+				
+				if (n < 0) {
 					snd_pcm_prepare (audio->pcm);
+					snd_pcm_start (audio->pcm);
+				}
 				break;
 			default:
 				break;
 			}
-		}
-		
-		if ((n = snd_pcm_writei (audio->pcm, outbuf, samples)) > 0) {
-			outbuf += (n * 2 * channels);
-			samples -= n;
-		} else if (n == -ESTRPIPE) {
-			while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
-				sleep (1);
-			
-			if (n < 0) {
+		} else {
+			if ((n = snd_pcm_writei (audio->pcm, outbuf, samples)) > 0) {
+				outbuf += (n * 2 * channels);
+				samples -= n;
+			} else if (n == -ESTRPIPE) {
+				while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
+					sleep (1);
+				
+				if (n < 0) {
+					snd_pcm_prepare (audio->pcm);
+					snd_pcm_start (audio->pcm);
+				}
+			} else if (n == -EPIPE) {
 				snd_pcm_prepare (audio->pcm);
-				snd_pcm_start (audio->pcm);
 			}
-		} else if (n == -EPIPE) {
-			snd_pcm_prepare (audio->pcm);
 		}
 	}
 	
