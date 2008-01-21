@@ -151,12 +151,11 @@ Downloader::GetResponseText (const char *PartName, uint64_t *size)
 char *
 Downloader::ll_downloader_get_response_file (const char *PartName)
 {
-	int fd = -1;
-	char buffer [32*1024];
-	char name [L_tmpnam + 1];
-	char *file = NULL;
-	FILE *f = NULL;
-
+	char buffer[32 * 1024];
+	char *tmpname = NULL;
+	FILE *fp;
+	int fd;
+	
 	if (filename == NULL)
 		return NULL;
 
@@ -180,39 +179,49 @@ Downloader::ll_downloader_get_response_file (const char *PartName)
 	// 
 	// Create the file where the content is extracted
 	//
-	do {
-		file = tmpnam_r (name);
-		if (file == NULL)
-			goto leave1;
-
-		fd = open (file, O_WRONLY | O_EXCL | O_CREAT, S_IRUSR | S_IWUSR);
-	} while (fd == -1);
-
-	f = fdopen (fd, "w");
+	tmpname = g_build_filename (g_get_tmp_dir (), "MoonlightDownloaderStream.XXXXXX", NULL);
+	if ((fd = g_mkstemp (tmpname)) == -1) {
+		g_free (tmpname);
+		tmpname = NULL;
+		goto leave1;
+	}
+	
+	if (!(fp = fdopen (fd, "w"))) {
+		unlink (tmpname);
+		g_free (tmpname);
+		tmpname = NULL;
+		close (fd);
+		goto leave1;
+	}
+	
 	int n;
 	do {
 		n = unzReadCurrentFile (zipfile, buffer, sizeof (buffer));
-		if (n < 0){
-			unlink (file);
-			file = NULL;
-			goto leave1;
+		if (n < 0) {
+			unlink (tmpname);
+			g_free (tmpname);
+			tmpname = NULL;
+			goto leave2;
 		}
-		if (n != 0 && fwrite (buffer, n, 1, f) != 1){
-			unlink (file);
-			file = NULL;
-			goto leave1;
+		
+		if (n != 0 && fwrite (buffer, n, 1, fp) != 1) {
+			unlink (tmpname);
+			g_free (tmpname);
+			tmpname = NULL;
+			goto leave2;
 		}
 	} while (n > 0);
-
- leave1:
+	
+leave2:
+	fclose (fp);
+	
+leave1:
 	unzCloseCurrentFile (zipfile);
- leave:
-	fclose (f);
+	
+leave:
 	unzClose (zipfile);
-
-	if (file != NULL)
-		return g_strdup (file);
-	return file;
+	
+	return tmpname;
 }
 
 char *

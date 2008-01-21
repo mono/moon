@@ -1,5 +1,8 @@
 2008-01-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp (ll_downloader_get_response_file): Fixed to use
+	mkstemp() rather than tmpnam_r() and also simplified.
+
 	* pipeline.cpp: Fixed various things about the progressive stream.
 
 2008-01-19  Jeffrey Stedfast  <fejj@novell.com>
