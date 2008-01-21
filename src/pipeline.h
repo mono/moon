@@ -748,6 +748,18 @@ public:
 	}
 };
 
+class NullMp3DecoderInfo : public DecoderInfo {
+public:
+	virtual bool Supports (const char *codec) { return !strcmp (codec, "mp3"); };
+	
+	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream)
+	{
+		return new NullMp3Decoder (media, stream);
+	}
+};
+
+
+
 /*
  * MS related implementations
  */

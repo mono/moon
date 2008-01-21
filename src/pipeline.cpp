@@ -137,7 +137,7 @@ Media::Initialize ()
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
 #else
-	Media::RegisterDecoder (new NullMp3Decoder ());
+	Media::RegisterDecoder (new NullMp3DecoderInfo ());
 #endif
 }
 

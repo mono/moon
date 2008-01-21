@@ -56,7 +56,7 @@ register_ffmpeg ()
 	
 	if (ffmpeg_registered)
 		return;
-		
+	
 	Media::RegisterConverter (new FfmpegConverterInfo ());
 	Media::RegisterDecoder (new FfmpegDecoderInfo ());
 	//Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
