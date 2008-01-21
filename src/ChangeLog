@@ -1,3 +1,8 @@
+2008-01-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp, mplayer2.cpp, Makefile.am: Deleted mplayer.cpp and moved
+	  mplayer2.cpp to mplayer.cpp.
+
 2008-01-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (ll_downloader_get_response_file): Fixed to use
