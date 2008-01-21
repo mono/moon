@@ -2168,7 +2168,7 @@ ProgressiveSource::WaitForPosition (int64_t position)
 		
 		// By the time this method is called, we might not need to wait, so the wait goes
 		// after all the checks.
-		printf ("Going to sleep...\n");
+		//printf ("Going to sleep...\n");
 		pthread_cond_wait (&write_condition, &write_mutex);
 	}
 	

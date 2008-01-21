@@ -1,5 +1,9 @@
 2008-01-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Remove printf.
+
+2008-01-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Remove mplayer2.cpp from here too.
 
 2008-01-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
