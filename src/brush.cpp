@@ -4,6 +4,7 @@
  * Author:
  *   Miguel de Icaza (miguel@novell.com)
  *   Sebastien Pouliot (spouliot@novell.com)
+ *   Stephane Delcroix (sdelcroix@novell.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
