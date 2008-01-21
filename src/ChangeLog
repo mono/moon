@@ -1,3 +1,13 @@
+2008-01-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (Mp3FrameReader::ReadFrame): If the bitrate was
+	unspecified, encode the bitrate back into the header so that if we
+	are using the NullMp3Decoder, it will know how to handle
+	it. Probably also needed for any actual Mp3 decoders as well since
+	it won't reliably be able to keep track of variable-bitrate
+	streams otherwise since it wouldn't know if/when we seek.
+	(NullMp3Decoder::DecodeFrame): Implemented.
+
 2008-01-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Remove printf.

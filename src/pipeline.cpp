@@ -25,6 +25,7 @@
 
 #include <fcntl.h>
 #include <pthread.h>
+#include <sched.h>
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -40,9 +41,9 @@
 /*
  * Media 
  */
-DemuxerInfo* Media::registered_demuxers = NULL;
-DecoderInfo* Media::registered_decoders = NULL;
-ConverterInfo* Media::registered_converters = NULL;
+DemuxerInfo *Media::registered_demuxers = NULL;
+DecoderInfo *Media::registered_decoders = NULL;
+ConverterInfo *Media::registered_converters = NULL;
  
 Media::Media () :
 		queued_requests (NULL),	queue_closure (NULL), 
@@ -55,19 +56,14 @@ Media::Media () :
 Media::~Media ()
 {
 	DeleteQueue ();
-		
+	
 	delete source;
-	source = NULL;
 	delete demuxer;
-	demuxer = NULL;
 	g_free (file_or_url);
-	file_or_url = NULL;
 	
 	delete queue_closure;
-	queue_closure = NULL;
 	
 	delete markers;
-	markers = NULL;
 }
 
 void
@@ -78,7 +74,7 @@ Media::SetFileOrUrl (const char *value)
 	file_or_url = g_strdup (value);
 }
 
-List* 
+List * 
 Media::GetMarkers ()
 {
 	if (markers == NULL)
@@ -88,7 +84,7 @@ Media::GetMarkers ()
 }
 
 void
-Media::RegisterDemuxer (DemuxerInfo* info)
+Media::RegisterDemuxer (DemuxerInfo *info)
 {
 	//printf ("Media::RegisterDemuxer (%p - %s)\n", info, info->GetName ());
 	info->next = NULL;
@@ -103,14 +99,14 @@ Media::RegisterDemuxer (DemuxerInfo* info)
 }
 
 void
-Media::RegisterConverter (ConverterInfo* info)
+Media::RegisterConverter (ConverterInfo *info)
 {
 	//printf ("Media::RegisterConverter (%p)\n", info);
 	info->next = NULL;
 	if (registered_converters == NULL) {
 		registered_converters = info;
 	} else {
-		MediaInfo* current = registered_converters;
+		MediaInfo *current = registered_converters;
 		while (current->next != NULL)
 			current = current->next;
 		current->next = info;
@@ -118,14 +114,14 @@ Media::RegisterConverter (ConverterInfo* info)
 }
 
 void
-Media::RegisterDecoder (DecoderInfo* info)
+Media::RegisterDecoder (DecoderInfo *info)
 {
 	//printf ("Media::RegisterDecoder (%p)\n", info);
 	info->next = NULL;
 	if (registered_decoders == NULL) {
 		registered_decoders = info;
 	} else {
-		MediaInfo* current = registered_decoders;
+		MediaInfo *current = registered_decoders;
 		while (current->next != NULL)
 			current = current->next;
 		current->next = info;
@@ -140,14 +136,16 @@ Media::Initialize ()
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
+#else
+	Media::RegisterDecoder (new NullMp3Decoder ());
 #endif
 }
 
 void
 Media::Shutdown ()
 {
-	MediaInfo* current;
-	MediaInfo* next;
+	MediaInfo *current;
+	MediaInfo *next;
 	
 	current = registered_decoders;
 	while (current != NULL) {
@@ -175,7 +173,7 @@ Media::Shutdown ()
 }
 
 void
-Media::AddMessage (MediaResult result, const char* msg)
+Media::AddMessage (MediaResult result, const char *msg)
 {
 	if (!MEDIA_SUCCEEDED (result))
 		printf ("Media::AddMessage (%i, '%s').\n", result, msg);
@@ -211,7 +209,7 @@ Media::SeekAsync (uint64_t pts)
 }
 
 MediaResult
-Media::Initialize (const char* file_or_url)
+Media::Initialize (const char *file_or_url)
 {
 	printf ("Media::Initialize ('%s').\n", file_or_url);
 	
@@ -289,7 +287,7 @@ Media::Open ()
 }
 
 MediaResult
-Media::Open (IMediaSource* source)
+Media::Open (IMediaSource *source)
 {
 	MediaResult result;
 	
@@ -523,8 +521,6 @@ Media::FrameReaderLoop ()
 	}
 	LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): exiting.\n");
 }
-
-#include <sched.h>
 
 void
 Media::GetNextFrameAsync (MediaFrame *frame)
@@ -1049,6 +1045,29 @@ mpeg_parse_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
 	return 0;
 }
 
+static uint8_t
+mpeg_encode_bitrate (MpegFrameHeader *mpeg, int bit_rate)
+{
+	int i;
+	
+	if (mpeg->version == 1) {
+		for (i = 1; i < 15; i++) {
+			if (mpeg1_bitrates[mpeg->layer - 1][i] == bit_rate)
+				break;
+		}
+	} else {
+		for (i = 1; i < 15; i++) {
+			if (mpeg2_bitrates[mpeg->layer - 1][i] == bit_rate)
+				break;
+		}
+	}
+	
+	if (i == 15)
+		return 0;
+	
+	return ((i << 4) & 0xf0);
+}
+
 static int mpeg_samplerates[3][3] = {
 	{ 44100, 48000, 32000 },  // version 1
 	{ 22050, 24000, 16000 },  // version 2
@@ -1192,6 +1211,8 @@ mpeg_frame_length (MpegFrameHeader *mpeg)
 	
 	return len;
 }
+
+#define mpeg_frame_size(mpeg) (((mpeg)->bit_rate * (mpeg)->channels * mpeg_block_size (mpeg)) / (mpeg)->sample_rate)
 
 #define mpeg_frame_duration(mpeg) (48000000 / (mpeg)->sample_rate) * 8
 
@@ -1420,6 +1441,9 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	if (mpeg.bit_rate == 0) {
 		// use the most recently specified bit rate
 		mpeg.bit_rate = bit_rate;
+		
+		// re-encode the bitrate into the header
+		buffer[2] |= mpeg_encode_bitrate (&mpeg, bit_rate);
 	}
 	
 	bit_rate = mpeg.bit_rate;
@@ -1643,18 +1667,36 @@ Mp3DemuxerInfo::Create (Media *media)
 
 
 /*
+ * NullMp3Decoder
+ */
+MediaResult
+NullMp3Decoder::DecodeFrame (MediaFrame *frame)
+{
+	MpegFrameHeader mpeg;
+	
+	mpeg_parse_header (&mpeg, frame->buffer);
+	g_free (frame->buffer);
+	
+	frame->buflen = mpeg_frame_size (&mpeg);
+	frame->buffer = (uint8_t *) g_malloc0 (frame->buflen);
+	
+	frame->AddState (FRAME_DECODED);
+	
+	return MEDIA_SUCCESS;
+}
+
+
+/*
  *	FileSource
  */
 
-FileSource::FileSource (Media *media) :
-	IMediaSource (media)
+FileSource::FileSource (Media *media) : IMediaSource (media)
 {
 	filename = g_strdup (media->GetFileOrUrl ());
 	fd = NULL;
 }
 
-FileSource::FileSource (Media *media, const char *filename) :
-	IMediaSource (media)
+FileSource::FileSource (Media *media, const char *filename) : IMediaSource (media)
 {
 	this->filename = g_strdup (filename);
 	fd = NULL;

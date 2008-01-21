@@ -736,21 +736,16 @@ public:
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 
-#if 0
-class Mp3MarkerStream : public IMediaStream {
+class NullMp3Decoder : public IMediaDecoder {
 public:
-	Mp3MarkerStream (Media *media) : IMediaStream (media) {}
-	virtual MoonMediaType GetType () { return MediaTypeMarker; } 
-};
-#endif
-
-class Mp3Decoder : public IMediaDecoder {
-public:
-	Mp3Decoder (Media *media, IMediaStream *stream);
-	virtual ~Mp3Decoder ();
+	NullMp3Decoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
 	
 	virtual MediaResult DecodeFrame (MediaFrame *frame);
-	virtual MediaResult Open ();
+	
+	virtual MediaResult Open ()
+	{
+		return MEDIA_SUCCESS;
+	}
 };
 
 /*
