@@ -134,7 +134,6 @@
     <File name="asf/asf-test.cpp" subtype="Code" buildaction="Compile" />
     <File name="pipeline.h" subtype="Code" buildaction="Nothing" />
     <File name="pipeline.cpp" subtype="Code" buildaction="Compile" />
-    <File name="mplayer2.cpp" subtype="Code" buildaction="Nothing" />
     <File name="pipeline-ffmpeg.cpp" subtype="Code" buildaction="Nothing" />
     <File name="pipeline-ffmpeg.h" subtype="Code" buildaction="Nothing" />
   </Contents>
