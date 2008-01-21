@@ -298,7 +298,8 @@ public:
 	void SetStartTime (uint64_t value) { start_time = value; } 
 	
 	bool IsOpened () { return opened; }
-public:
+	
+	
 	// Registration functions
 	// This class takes ownership of the infos and will delete them (not free) when the Media is shutdown.
 	static void RegisterDemuxer (DemuxerInfo *info);
@@ -443,7 +444,7 @@ public:
 	virtual bool Seek (int64_t offset, int mode) = 0;
 	virtual bool Read (void *buffer, uint32_t n) = 0;
 	virtual bool Peek (void *buffer, uint32_t n) = 0;
-	virtual uint64_t GetPosition () = 0;
+	virtual int64_t GetPosition () = 0;
 	virtual void SetPosition (int64_t position) { Seek (position, SEEK_SET); }
 	virtual bool Eof () = 0;
 	virtual MoonSourceType GetType () = 0;
@@ -516,87 +517,90 @@ public:
 	FileSource (Media *media, const char *filename);
 	~FileSource ();
 	
+	virtual MoonSourceType GetType () { return MoonFileSource; }
+	
+	const char *GetFileName () { return filename; }
+	
 	virtual MediaResult Initialize (); 
 	virtual bool IsSeekable ();
+	virtual int64_t GetPosition ();
 	virtual bool Seek (int64_t position);
 	virtual bool Seek (int64_t position, int mode);
 	virtual bool Read (void *buffer, uint32_t n);
 	virtual bool Peek (void *buffer, uint32_t n);
-	virtual uint64_t GetPosition ();
 	virtual bool Eof ();
-	virtual MoonSourceType GetType () { return MoonFileSource; }
-	const char *GetFileName () { return filename; }
 };
 
 class ProgressiveSource : public IMediaSource {
-private:
-	char* filename;
-	int file;
-	uint64_t write_position;
-	uint64_t notified_size;
-	int wait_count; // Counter of how many threads are waiting in WaitForPosition
-	bool size_notified;
-	bool cancel_wait;
-	pthread_mutex_t write_mutex;
 	pthread_cond_t write_condition;
+	pthread_mutex_t write_mutex;
+	bool cancel_wait;
+	int wait_count; // Counter of how many threads are waiting in WaitForPosition
+	
+	int64_t write_position;
+	int64_t notified_size;
+	bool size_notified;
+	
+	char *filename;
+	int fd;
+	
+	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
+	static void notify_size (int64_t size, gpointer cb_data);
 	
 public:
 	ProgressiveSource (Media *media);
 	virtual ~ProgressiveSource ();
-
-		
+	
+	virtual MoonSourceType GetType () { return MoonProgressiveSource; }
+	
 	virtual MediaResult Initialize (); 
+	
 	// The size of the currently available data
-	void SetCurrentSize (long size);
+	void SetCurrentSize (int64_t size);
+	
 	// The total size of the file (might not be available)
-	void SetTotalSize (long size);
-
+	void SetTotalSize (int64_t size);
+	
 	// Blocks until the position have data
 	// Returns false if failure (one possibility being that the requested position is beyond the end of the file)
-	bool WaitForPosition (uint64_t position);
+	bool WaitForPosition (int64_t position);
 	// Wakes up WaitForPosition to check if the position has been reached, or if the wait should be cancelled
 	bool WakeUp ();
 	bool WakeUp (bool lock); // lock: set to false if the write_lock is already acquired by the caller
 	bool IsWaiting ();
 	// Cancels any pending waits
 	void CancelWait (); 
-	uint64_t GetWritePosition ();
+	int64_t GetWritePosition ();
 	void Lock ();
 	void Unlock ();
-
+	
 	virtual bool IsSeekable ();
+	virtual int64_t GetPosition ();
 	virtual bool Seek (int64_t offset);
 	virtual bool Seek (int64_t offset, int mode);
-	virtual bool Read (void* buffer, uint32_t size);
-	virtual bool Peek (void* buffer, uint32_t size);
-	virtual uint64_t GetPosition ();
+	virtual bool Read (void *buffer, uint32_t size);
+	virtual bool Peek (void *buffer, uint32_t size);
 	virtual bool Eof ();
-	virtual MoonSourceType GetType () { return MoonProgressiveSource; }
 	
-	void Write (void *buf, int32_t offset, int32_t n);
+	void Write (void *buf, int64_t offset, int32_t n);
 	void NotifySize (int64_t size);
-	const char* GetFilename () { return filename; }
-	
-private:
-	void Close ();
-
-	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
-	static void notify_size (int64_t size, gpointer cb_data);
+	const char *GetFilename () { return filename; }
 };
 
 class LiveSource : public IMediaSource {
 public:
 	LiveSource (Media *media) : IMediaSource (media) {}
 	
+	virtual MoonSourceType GetType () { return MoonLiveSource; }
+	
 	virtual MediaResult Initialize () { return MEDIA_FAIL; } 
 	virtual bool IsSeekable () { return false; }
+	virtual int64_t GetPosition () { return 0; }
 	virtual bool Seek (int64_t position) { return false; }
 	virtual bool Seek (int64_t position, int mode) { return false; }
 	virtual bool Read (void *buffer, uint32_t n) { return false; }
 	virtual bool Peek (void *buffer, uint32_t n) { return false; }
-	virtual uint64_t GetPosition () { return 0; }
 	virtual bool Eof () { return false; }
-	virtual MoonSourceType GetType () { return MoonLiveSource; }
 };
 
 class VideoStream : public IMediaStream {

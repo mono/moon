@@ -1,3 +1,7 @@
+2008-01-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp: Fixed various things about the progressive stream.
+
 2008-01-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mplayer2.cpp (audio_play): Get rid of the 'play' argument. Also

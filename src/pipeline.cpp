@@ -1734,7 +1734,7 @@ bool
 FileSource::Peek (void *buffer, uint32_t n)
 {
 	// Simple implementation of peek: save position, read bytes, restore position.
-	uint64_t position = GetPosition ();
+	int64_t position = GetPosition ();
 	
 	if (!Read (buffer, n))
 		return false;
@@ -1742,7 +1742,7 @@ FileSource::Peek (void *buffer, uint32_t n)
 	return Seek (position, SEEK_SET);
 }
 
-uint64_t
+int64_t
 FileSource::GetPosition ()
 {
 	//printf ("FileSource::GetPosition ().\n");
@@ -1996,24 +1996,37 @@ MarkerStream::SetCallback (MediaClosure *closure)
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media* media)
- : IMediaSource (media), filename (NULL), 
- 	write_position (0), notified_size (0), wait_count (0),
- 	size_notified (false), cancel_wait (false)
+ProgressiveSource::ProgressiveSource (Media *media) : IMediaSource (media)
 {
 	pthread_mutex_init (&write_mutex, NULL);
 	pthread_cond_init (&write_condition, NULL);
-
+	cancel_wait = false;
+	wait_count = 0;
+	
+	size_notified = false;
+	notified_size = 0;
+	
+	write_position = 0;
+	
+	filename = NULL;
+	fd = -1;
+	
 	Initialize ();
 }
 
 ProgressiveSource::~ProgressiveSource ()
 {
 	//printf ("ProgressiveSource::~ProgressiveSource ()\n");
-	Close ();
-	
 	pthread_cond_destroy (&write_condition);
 	pthread_mutex_destroy (&write_mutex);
+	
+	if (fd != -1)
+		close (fd);
+	
+	if (filename != NULL) {
+		unlink (filename);
+		g_free (filename);
+	}
 }
 
 bool
@@ -2040,26 +2053,6 @@ ProgressiveSource::WakeUp (bool lock)
 }
 
 void
-ProgressiveSource::Close ()
-{
-	
-	if (file != 0) {
-		close (file);
-		file = 0;
-	}
-	
-	if (filename != NULL) {
-		unlink (filename);
-		g_free (filename);
-		filename = NULL;
-	}
-	
-	write_position = 0;
-	notified_size = 0;
-	size_notified = false;
-}
-
-void
 ProgressiveSource::Lock ()
 {
 	int result = pthread_mutex_lock (&write_mutex);
@@ -2076,39 +2069,19 @@ ProgressiveSource::Unlock ()
 MediaResult
 ProgressiveSource::Initialize ()
 {
-	// printf ("ProgressiveSource::StartDownload ()\n");
-	Close ();
-	
-	char filename [L_tmpnam + 1];
-	
-	memset (filename, 0, L_tmpnam + 1);
-	
-	// Create the temporary file where we store the data
-	do {
-		char* name = tmpnam_r (filename);
-		if (name == NULL) {
-			if (media)
-				media->AddMessage (MEDIA_FAIL, "Could not create local temporary file.");
-			return false;
-		}
-
-		file = open (filename, O_RDWR | O_EXCL | O_CREAT, S_IRUSR | S_IWUSR);
-		if (file == -1) {
-			if (errno == EMFILE) { // Too many open files. This would make for a nice hang test.
-				return MEDIA_FAIL;
-			}
-		}
-	} while (file == -1);
-	
-	this->filename = g_strdup (filename);
-	
-	// Ready to be written to
+	filename = g_build_filename (g_get_tmp_dir (), "MoonlightMediaStream.XXXXXX", NULL);
+	if ((fd = g_mkstemp (filename)) == -1) {
+		g_free (filename);
+		filename = NULL;
+		
+		return MEDIA_FAIL;
+	}
 	
 	return MEDIA_SUCCESS;
 }
 
 void
-ProgressiveSource::Write (void *buf, int32_t offset, int32_t n)
+ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 {
 	//printf ("ProgressiveSource::Write (%p, %i, %i)\n", buf, offset, n);
 	guint64 read_position = 0;
@@ -2117,7 +2090,7 @@ ProgressiveSource::Write (void *buf, int32_t offset, int32_t n)
 
 	Lock ();
 
-	if (file == 0) {
+	if (fd == -1) {
 		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
 		goto cleanup;
 	}
@@ -2131,14 +2104,14 @@ ProgressiveSource::Write (void *buf, int32_t offset, int32_t n)
 	}
 	
 	// Save the current position
-	read_position = lseek (file, 0, SEEK_CUR);
+	read_position = lseek (fd, 0, SEEK_CUR);
 	
 	// Seek to the write position
-	if (lseek (file, offset, SEEK_SET) != offset) {
+	if (lseek (fd, offset, SEEK_SET) != offset) {
 		goto cleanup;
 	}
 	
-	while ((written = ::write (file, total + (char*) buf, n - total)) > 0) {
+	while ((written = ::write (fd, total + (char *) buf, n - total)) > 0) {
 		//printf ("ProgressiveSource::Write (%p, %i, %i): Wrote %i bytes.\n", buf, offset, n, written);
 		total += written;
 		if (total >= n)
@@ -2147,18 +2120,16 @@ ProgressiveSource::Write (void *buf, int32_t offset, int32_t n)
 	
 	write_position += total;
 	
-	if (written == -1) {
+	if (written == -1)
 		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("progressive source couldn't write more data: %s", strerror (errno)));
-	}
 	
 	//printf ("ProgressiveSource::Write (%p, %i, %i): New write position: %lld\n", buf, offset, n, write_position);
 	
-	if (IsWaiting ()) {
+	if (IsWaiting ())
 		WakeUp (false);
-	}
 	
 	// Restore the current position
-	lseek (file, read_position, SEEK_SET);
+	lseek (fd, read_position, SEEK_SET);
 	
 cleanup:
 	Unlock ();
@@ -2173,7 +2144,7 @@ ProgressiveSource::NotifySize (int64_t size)
 }
 
 bool
-ProgressiveSource::WaitForPosition (uint64_t position)
+ProgressiveSource::WaitForPosition (int64_t position)
 {
 	bool result = false;
 	
@@ -2231,11 +2202,11 @@ ProgressiveSource::Seek (int64_t offset)
 }
 
 bool
-ProgressiveSource::Seek (gint64 offset, int mode)
+ProgressiveSource::Seek (int64_t offset, int mode)
 {
 	bool result = false;
 	
-	if (file == 0) {
+	if (fd == -1) {
 		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
 		return false;
 	}
@@ -2243,7 +2214,7 @@ ProgressiveSource::Seek (gint64 offset, int mode)
 	Lock ();
 	
 	// Calculate the position from the mode and offset.
-	uint64_t position;
+	int64_t position;
 	switch (mode) {
 	case SEEK_CUR: position = GetPosition () + offset; break;
 	case SEEK_SET: position = offset; break;
@@ -2271,19 +2242,19 @@ ProgressiveSource::Seek (gint64 offset, int mode)
 	}
 	
 	// Finally seek to where we want to be
-	result = lseek (file, position, SEEK_SET) == (off_t) position;
-
+	result = lseek (fd, position, SEEK_SET) == (off_t) position;
+	
 cleanup:
 	Unlock ();
 	return result;
 }
 
 bool
-ProgressiveSource::Read (void* buffer, guint32 size)
+ProgressiveSource::Read (void *buffer, uint32_t size)
 {
 	bool result = false;
 	
-	if (file == 0) {
+	if (fd == -1) {
 		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
 		return false;
 	}
@@ -2291,7 +2262,7 @@ ProgressiveSource::Read (void* buffer, guint32 size)
 	Lock ();
 	
 	// Check if requested more data than what has been downloaded
-	uint64_t end = GetPosition () + size;
+	int64_t end = GetPosition () + size;
 	//printf ("ProgressiveSource::Read (%.8p, %.4u): end: %.6llu, write_position: %.7llu, bytes before stop: %llu\n", buffer, size, end, write_position, write_position - end);
 	if (end > write_position) {
 		//printf ("ProgressiveSource::Read (%p, %u): Read beyond written size (%lld)\n", buffer, size, write_position);
@@ -2302,17 +2273,17 @@ ProgressiveSource::Read (void* buffer, guint32 size)
 		Lock ();		
 	}
 	
-	result = read (file, buffer, size) == (ssize_t) size; 
+	result = read (fd, buffer, size) == (ssize_t) size; 
 	
 	Unlock ();
 	return result;
 }
 
 bool
-ProgressiveSource::Peek (void* buffer, guint32 size)
+ProgressiveSource::Peek (void *buffer, uint32_t size)
 {
 	// Simple implementation of peek: save position, read bytes, restore position.
-	uint64_t position = GetPosition ();
+	int64_t position = GetPosition ();
 	
 	if (!Read (buffer, size))
 		return false;
@@ -2320,10 +2291,10 @@ ProgressiveSource::Peek (void* buffer, guint32 size)
 	return Seek (position, SEEK_SET);
 }
 
-uint64_t
+int64_t
 ProgressiveSource::GetPosition ()
 {
-	return lseek (file, 0, SEEK_CUR);
+	return lseek (fd, 0, SEEK_CUR);
 }
 
 bool
@@ -2334,7 +2305,7 @@ ProgressiveSource::Eof ()
 	return false;
 }
 
-uint64_t
+int64_t
 ProgressiveSource::GetWritePosition ()
 {
 	int64_t result;
@@ -2343,7 +2314,3 @@ ProgressiveSource::GetWritePosition ()
 	Unlock ();
 	return result;
 }
-
-
-
-
