@@ -420,14 +420,8 @@ UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 {
 	int z1 = (*((UIElement **) ui1))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
 	int z2 = (*((UIElement **) ui2))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
-	int zdiff = z1 - z2;
-	
-	if (zdiff == 0)
-		return 0;
-	else if (zdiff < 0)
-		return -1;
-	else
-		return 1;
+
+	return z1 - z2;
 }
 
 void

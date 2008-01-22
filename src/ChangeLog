@@ -1,5 +1,10 @@
 2008-01-22  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp (UIElementZIndexComparer): the magnitude of the
+	return value doesn't matter, only the sign.
+
+2008-01-22  Chris Toshok  <toshok@ximian.com>
+
 	* media.cpp (Image::InsideObject): if we have no surface (the
 	image hasn't been loaded), we aren't HitTestVisible.
 
