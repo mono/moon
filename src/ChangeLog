@@ -1,3 +1,8 @@
+2008-01-22  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* pipeline.cpp: include unistd.h, fixes a build error introduced in
+	r93311 when building without-ffmpeg
+
 2008-01-22  Larry Ewing  <lewing@novell.com>
 
 	* clock.cpp: reduce delta to 1/100 of a second and fix a bug in

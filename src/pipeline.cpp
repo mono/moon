@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <sched.h>
+#include <unistd.h>
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
