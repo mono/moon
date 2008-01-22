@@ -55,6 +55,7 @@ bsearch (GPtrArray *array, bool stable, GCompareFunc cmp, void *item)
 		m = MID (lo, hi);
 		if ((c = cmp (&item, &array->pdata[m])) > 0) {
 			lo = m + 1;
+			m = lo;
 		} else if (c < 0) {
 			hi = m;
 		} else if (stable) {

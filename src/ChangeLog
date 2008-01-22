@@ -1,3 +1,8 @@
+2008-01-22  Chris Toshok  <toshok@ximian.com>
+
+	* garray-ext.cpp (bsearch): fix this so the g_array_insert_sorted
+	function works.
+
 2008-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (TryOpen): Don't leak Media objects. Also make sure to
