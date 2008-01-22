@@ -1845,6 +1845,15 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 	NotifyAttachersOfPropertyChange (prop);
 }
 
+bool
+Image::InsideObject (cairo_t *cr, double x, double y)
+{
+	if (!surface)
+		return false;
+
+	return FrameworkElement::InsideObject (cr, x, y);
+}
+
 Image *
 image_new (void)
 {

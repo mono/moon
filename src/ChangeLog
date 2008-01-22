@@ -1,5 +1,12 @@
 2008-01-22  Chris Toshok  <toshok@ximian.com>
 
+	* media.cpp (Image::InsideObject): if we have no surface (the
+	image hasn't been loaded), we aren't HitTestVisible.
+
+	* media.h (class Image): add InsideObject override.
+
+2008-01-22  Chris Toshok  <toshok@ximian.com>
+
 	* panel.cpp (Panel::OnCollectionChanged): remove the fix for
 	#353954 as its redundant after the previous commit.
 
