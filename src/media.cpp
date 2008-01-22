@@ -152,13 +152,12 @@ MediaSource *
 MediaSource::CreateSource (MediaElement *element, const char *source_name, IMediaSource *source)
 {
 	if (Playlist::IsPlaylistFile (source)) {
-		if (source->GetType () == MoonFileSource) {
-			return new Playlist (element, source_name, (FileSource*) source);
-		} else {
+		if (source->GetType () == MediaSourceTypeFile)
+			return new Playlist (element, source_name, (FileSource *) source);
+		else
 			return NULL;
-		}
 	}
-
+	
 	return new SingleMedia (element, source_name, source);
 }
 
@@ -832,35 +831,39 @@ MediaElement::TryOpen ()
 		waiting_for_loaded = true;
 		return;
 	}
-	/*
-	if (source != NULL) { // This should not happen
-		printf ("MediaElement::TryOpen (): there's already a previous source.");
-		delete source;
-		source = NULL;
-	}
-	*/
-	IMediaSource *file_src = NULL;
-	Media *media = new Media ();
 	
 	if (download_complete) {
 		char *filename = downloader_get_response_file (downloader, part_name);
-		file_src = new FileSource (media, filename);
+		Media *media = new Media ();
+		IMediaSource *source;
+		
+		source = new FileSource (media, filename);
 		g_free (filename);
-		if (!MEDIA_SUCCEEDED (media->Open (file_src))) {
-			MediaFailed ();
-		} else {
-			MediaOpened (media);
-			SetState (Paused);
-			//printf ("MediaElement::TryOpen (): download is complete and media opened successfully.\n");
-			
-			if (play_pending || media_element_get_auto_play (this)) {
-				//printf ("MediaElement::TryOpen (): we'll now start playing.\n");
-				Play ();
+		
+		if (MEDIA_SUCCEEDED (source->Initialize ())) {
+			if (MEDIA_SUCCEEDED (media->Open (source))) {
+				MediaOpened (media);
+				SetState (Paused);
+				//printf ("MediaElement::TryOpen (): download is complete and media opened successfully.\n");
+				
+				if (play_pending || media_element_get_auto_play (this)) {
+					//printf ("MediaElement::TryOpen (): we'll now start playing.\n");
+					Play ();
+				} else {
+					Pause ();
+					Invalidate ();
+				}
 			} else {
-				Pause ();
-				Invalidate ();
+				MediaFailed ();
+				delete source;
+				delete media;
 			}
+		} else {
+			MediaFailed ();
+			delete source;
+			delete media;
 		}
+		
 		// If we have a downloaded file ourselves, delete it, we no longer need it.
 		delete downloaded_file;
 		downloaded_file = NULL;
@@ -869,13 +872,15 @@ MediaElement::TryOpen ()
 	} else if (!tried_buffering) {
 		// don't try to buffer again, wait until the file is downloaded.
 	} else {
+		Media *media = new Media ();
+		
 		if (MEDIA_SUCCEEDED (media->Open (downloaded_file))) {
 			printf ("MediaElement::TryOpen (): download is not complete, but media was opened successfully and we'll now start buffering.\n");
 			MediaOpened (media);
 			SetState (Buffering);
 		} else {
-			media->SetSource (NULL);
 			downloaded_file->Seek (0, SEEK_SET); // Seek back to the beginning of the file
+			delete media;
 		}
 	}
 	

@@ -1,3 +1,22 @@
+2008-01-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (TryOpen): Don't leak Media objects. Also make sure to
+	call Initialize() on the file source.
+
+	* pipeline.cpp (IMediaSource): Read() now returns the number of
+	bytes read rather than true/false and does nto guarantee that all
+	of the data was read. Added a ReadAll() method which does what the
+	old Read() method did.
+	(FileSource): Rewritten to do our own buffering which allows for
+	nice optimizations for Peek() and Seek().
+	(ProgressiveSource): Also rewritten.
+
+	* asf/asf.cpp: Updated to use IMediaSource::ReadAll()
+
+	* asf/asf-guids.h: Moved all of the guids into asf-guids.cpp and
+	just made them extern in the ehader, this way we don't duplicate
+	those values in each source file that includes this header.
+
 2008-01-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: First part of DoDraw refactoring. Pass all 

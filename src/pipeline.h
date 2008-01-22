@@ -121,10 +121,10 @@ typedef int32_t MediaResult;
 #define FRAME_DEMUXED (1 << 2)
 #define FRAME_CONVERTED (1 << 3)
 
-enum MoonSourceType {
-	MoonFileSource = 1,
-	MoonLiveSource = 2,
-	MoonProgressiveSource = 3
+enum MediaSourceType {
+	MediaSourceTypeFile = 1,
+	MediaSourceTypeLive = 2,
+	MediaSourceTypeProgressive = 3
 };
 
 // Set if the pipeline needs it's own copy of the decoded data
@@ -422,34 +422,6 @@ public:
 	int index; 
 };
 
-
-// read data, with the possibility of returning a 'wait a bit, need more data first' error value. 
-// Another way is to always do the read/demux/decode stuff on another thread, 
-// in which case we can block here
-class IMediaSource {
-protected:
-	Media *media;
-	
-public:
-	IMediaSource (Media *med) : media (med) {}
-	virtual ~IMediaSource () {}
-	
-	// Initializes this stream (and if it succeeds, it can be read from later on).
-	// streams based on remote content (live/progress) should contact the server
-	// and try to start downloading content
-	// file streams should try to open the file
-	virtual MediaResult Initialize () = 0; 
-	virtual bool IsSeekable () = 0;
-	virtual bool Seek (int64_t offset) = 0; // Seeks to the offset from the current position
-	virtual bool Seek (int64_t offset, int mode) = 0;
-	virtual bool Read (void *buffer, uint32_t n) = 0;
-	virtual bool Peek (void *buffer, uint32_t n) = 0;
-	virtual int64_t GetPosition () = 0;
-	virtual void SetPosition (int64_t position) { Seek (position, SEEK_SET); }
-	virtual bool Eof () = 0;
-	virtual MoonSourceType GetType () = 0;
-};
-
 class IMediaDemuxer : public IMediaObject {
 	IMediaStream **streams;
 	int stream_count;
@@ -506,43 +478,86 @@ public:
 	virtual MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t *dest[], int dstStride []) = 0;
 };
 
+// read data, with the possibility of returning a 'wait a bit, need more data first' error value. 
+// Another way is to always do the read/demux/decode stuff on another thread, 
+// in which case we can block here
+class IMediaSource {
+protected:
+	Media *media;
+	
+public:
+	IMediaSource (Media *med) : media (med) {}
+	virtual ~IMediaSource () {}
+	
+	// Initializes this stream (and if it succeeds, it can be read from later on).
+	// streams based on remote content (live/progress) should contact the server
+	// and try to start downloading content
+	// file streams should try to open the file
+	virtual MediaResult Initialize () = 0;
+	virtual MediaSourceType GetType () = 0;
+	
+	virtual bool IsSeekable () = 0;
+	virtual int64_t GetPosition () = 0;
+	virtual void SetPosition (int64_t position) { Seek (position, SEEK_SET); }
+	virtual bool Seek (int64_t offset) = 0; // Seeks to the offset from the current position
+	virtual bool Seek (int64_t offset, int mode) = 0;
+	virtual int32_t Read (void *buf, uint32_t n) = 0;
+	virtual bool ReadAll (void *buf, uint32_t n) = 0;
+	virtual bool Peek (void *buf, uint32_t n) = 0;
+	virtual bool Eof () = 0;
+};
+
 // Implementations
  
 class FileSource : public IMediaSource {
 	char *filename;
-	FILE *fd;
+	int64_t pos;
+	int fd;
+	
+	char buffer[4096];
+	uint32_t buflen;
+	char *bufptr;
+	
+	bool eof;
 	
 public:
 	FileSource (Media *media);
 	FileSource (Media *media, const char *filename);
 	~FileSource ();
 	
-	virtual MoonSourceType GetType () { return MoonFileSource; }
+	virtual MediaResult Initialize (); 
+	virtual MediaSourceType GetType () { return MediaSourceTypeFile; }
 	
 	const char *GetFileName () { return filename; }
 	
-	virtual MediaResult Initialize (); 
 	virtual bool IsSeekable ();
 	virtual int64_t GetPosition ();
 	virtual bool Seek (int64_t position);
 	virtual bool Seek (int64_t position, int mode);
-	virtual bool Read (void *buffer, uint32_t n);
-	virtual bool Peek (void *buffer, uint32_t n);
+	virtual int32_t Read (void *buf, uint32_t n);
+	virtual bool ReadAll (void *buf, uint32_t n);
+	virtual bool Peek (void *buf, uint32_t n);
 	virtual bool Eof ();
 };
 
 class ProgressiveSource : public IMediaSource {
-	pthread_cond_t write_condition;
 	pthread_mutex_t write_mutex;
+	pthread_cond_t write_cond;
 	bool cancel_wait;
 	int wait_count; // Counter of how many threads are waiting in WaitForPosition
 	
-	int64_t write_position;
-	int64_t notified_size;
-	bool size_notified;
+	int64_t write_pos;
+	int64_t size;
 	
 	char *filename;
+	int64_t pos;
 	int fd;
+	
+	char buffer[4096];
+	uint32_t buflen;
+	char *bufptr;
+	
+	bool eof;
 	
 	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
 	static void notify_size (int64_t size, gpointer cb_data);
@@ -551,9 +566,10 @@ public:
 	ProgressiveSource (Media *media);
 	virtual ~ProgressiveSource ();
 	
-	virtual MoonSourceType GetType () { return MoonProgressiveSource; }
-	
 	virtual MediaResult Initialize (); 
+	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
+	
+	const char *GetFilename () { return filename; }
 	
 	// The size of the currently available data
 	void SetCurrentSize (int64_t size);
@@ -578,27 +594,28 @@ public:
 	virtual int64_t GetPosition ();
 	virtual bool Seek (int64_t offset);
 	virtual bool Seek (int64_t offset, int mode);
-	virtual bool Read (void *buffer, uint32_t size);
-	virtual bool Peek (void *buffer, uint32_t size);
+	virtual int32_t Read (void *buf, uint32_t size);
+	virtual bool ReadAll (void *buf, uint32_t size);
+	virtual bool Peek (void *buf, uint32_t size);
 	virtual bool Eof ();
 	
 	void Write (void *buf, int64_t offset, int32_t n);
 	void NotifySize (int64_t size);
-	const char *GetFilename () { return filename; }
 };
 
 class LiveSource : public IMediaSource {
 public:
 	LiveSource (Media *media) : IMediaSource (media) {}
 	
-	virtual MoonSourceType GetType () { return MoonLiveSource; }
+	virtual MediaResult Initialize () { return MEDIA_FAIL; }
+	virtual MediaSourceType GetType () { return MediaSourceTypeLive; }
 	
-	virtual MediaResult Initialize () { return MEDIA_FAIL; } 
 	virtual bool IsSeekable () { return false; }
 	virtual int64_t GetPosition () { return 0; }
 	virtual bool Seek (int64_t position) { return false; }
 	virtual bool Seek (int64_t position, int mode) { return false; }
-	virtual bool Read (void *buffer, uint32_t n) { return false; }
+	virtual int32_t Read (void *buffer, uint32_t n) { return -1; }
+	virtual bool ReadAll (void *buffer, uint32_t n) { return false; }
 	virtual bool Peek (void *buffer, uint32_t n) { return false; }
 	virtual bool Eof () { return false; }
 };

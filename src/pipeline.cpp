@@ -584,8 +584,8 @@ Media::ClearQueue ()
 		pthread_mutex_unlock (&queue_mutex);
 	}
 	
-	if (source->GetType () == MoonProgressiveSource) {
-		ProgressiveSource* ps = (ProgressiveSource*) source;
+	if (source->GetType () == MediaSourceTypeProgressive) {
+		ProgressiveSource *ps = (ProgressiveSource *) source;
 		ps->CancelWait ();
 	}
 }
@@ -602,18 +602,19 @@ Media::DeleteQueue ()
 		pthread_cond_signal (&queue_condition);
 		pthread_mutex_unlock (&queue_mutex);
 		
-		if (source->GetType () == MoonProgressiveSource) {
-			ProgressiveSource* ps = (ProgressiveSource*) source;
+		if (source->GetType () == MediaSourceTypeProgressive) {
+			ProgressiveSource *ps = (ProgressiveSource *) source;
 			ps->CancelWait ();
 		}
+		
 		pthread_join (queue_thread, NULL);
 		pthread_mutex_destroy (&queue_mutex);
 		pthread_cond_destroy (&queue_condition);
 		pthread_detach (queue_thread);
 	}
 	
-	if (source != NULL && source->GetType () == MoonProgressiveSource) {
-		ProgressiveSource* ps = (ProgressiveSource*) source;
+	if (source != NULL && source->GetType () == MediaSourceTypeProgressive) {
+		ProgressiveSource *ps = (ProgressiveSource *) source;
 		ps->CancelWait ();
 	}
 }
@@ -1389,7 +1390,7 @@ Mp3FrameReader::SkipFrame ()
 	
 	offset = stream->GetPosition ();
 	
-	if (!stream->Read (buffer, 4))
+	if (!stream->ReadAll (buffer, 4))
 		return false;
 	
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
@@ -1429,7 +1430,7 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	
 	offset = stream->GetPosition ();
 	
-	if (!stream->Read (buffer, 4)) {
+	if (!stream->ReadAll (buffer, 4)) {
 		frame->AddState (FRAME_DEMUXED);
 		frame->event = FrameEventEOF;
 		return MEDIA_NO_MORE_DATA;
@@ -1470,7 +1471,7 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	
 	memcpy (frame->buffer, buffer, 4);
 	
-	if (!stream->Read (frame->buffer + 4, len - 4))
+	if (!stream->ReadAll (frame->buffer + 4, len - 4))
 		frame->event = FrameEventEOF;
 	
 	frame->pts = cur_pts;
@@ -1529,7 +1530,7 @@ Mp3Demuxer::ReadHeader ()
 	int64_t end;
 	int i;
 	
-	if (!source->Read (buffer, 10))
+	if (!source->ReadAll (buffer, 10))
 		return MEDIA_INVALID_MEDIA;
 	
 	// Check for a leading ID3 tag
@@ -1551,7 +1552,7 @@ Mp3Demuxer::ReadHeader ()
 		if (!source->Seek ((int64_t) size, SEEK_SET))
 			return MEDIA_INVALID_MEDIA;
 		
-		if (!source->Read (buffer, 4))
+		if (!source->ReadAll (buffer, 4))
 			return MEDIA_INVALID_MEDIA;
 		
 		stream_start = (int64_t) size;
@@ -1650,7 +1651,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 			return false;
 		
 		// peek at the mp3 frame header
-		if (!source->Read (buffer, 4))
+		if (!source->ReadAll (buffer, 4))
 			return false;
 		
 		if (!source->Seek (0, SEEK_SET))
@@ -1694,108 +1695,57 @@ NullMp3Decoder::DecodeFrame (MediaFrame *frame)
 FileSource::FileSource (Media *media) : IMediaSource (media)
 {
 	filename = g_strdup (media->GetFileOrUrl ());
-	fd = NULL;
+	bufptr = buffer;
+	buflen = 0;
+	pos = -1;
+	fd = -1;
+	
+	eof = true;
 }
 
 FileSource::FileSource (Media *media, const char *filename) : IMediaSource (media)
 {
 	this->filename = g_strdup (filename);
-	fd = NULL;
+	bufptr = buffer;
+	buflen = 0;
+	pos = -1;
+	fd = -1;
+	
+	eof = true;
 }
 
 FileSource::~FileSource ()
 {
 	g_free (filename);
-	if (fd)
-		fclose (fd);
+	if (fd != -1)
+		close (fd);
 }
 
 MediaResult 
 FileSource::Initialize ()
 {
-	if (fd) {
-		media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("The file stream '%s' has already been initialized.", filename));
-		return MEDIA_FILE_ERROR;
-	}
+	if (fd != -1)
+		return MEDIA_SUCCESS;
 	
-	// Open the file
-	if (!(fd = fopen (filename, "rb"))) {
-		media->AddMessage (MEDIA_FILE_ERROR, g_strdup_printf ("Could not open the file '%s': %s.", filename, strerror (errno)));
+	if ((fd = open (filename, O_LARGEFILE | O_RDONLY)) == -1)
 		return MEDIA_FILE_ERROR;
-	}
+	
+	eof = false;
+	pos = 0;
 	
 	return MEDIA_SUCCESS;
-}
-
-bool
-FileSource::Eof ()
-{
-	if (fd)
-		return feof (fd) != 0;
-	
-	return true;
-}
-
-bool
-FileSource::Read (void *buffer, uint32_t n)
-{
-	size_t nread;
-	
-	//printf ("FileSource::Read (%p, %u).\n", buffer, size);
-	
-	if (buffer == NULL) {
-		fprintf (stderr, "FileSource::Read (%p, %u): buffer\n", buffer, n);
-		return false;
-	}
-	
-	// Open the file if it hasn't been opened.
-	if (!fd) {
-		// Initialize should probably already have been called, but handle this case anyway.
-		if (!MEDIA_SUCCEEDED (Initialize ()))
-			return false;
-	}
-	
-	// Read
-	if ((nread = fread (buffer, 1, n, fd)) == n)
-		return true;
-	
-	if (ferror (fd) != 0) {
-		fprintf (stderr, "FileSource::Read (%p, %u): only managed to read %u bytes from `%s': %s.\n",
-			 buffer, n, nread, filename, strerror (errno));
-	} else if (feof (fd) != 0) {
-		fprintf (stderr, "FileSource::Read (%p, %u): only managed to read %u bytes from `%s': end of file reached.\n",
-			 buffer, n, nread, filename);
-	} else {
-		fprintf (stderr, "FileSource::Read (%p, %u): only managed to read %u bytes from `%s': unknown error.\n",
-			 buffer, n, nread, filename);
-	}
-	
-	return false;
-}
-
-bool
-FileSource::Peek (void *buffer, uint32_t n)
-{
-	// Simple implementation of peek: save position, read bytes, restore position.
-	int64_t position = GetPosition ();
-	
-	if (!Read (buffer, n))
-		return false;
-	
-	return Seek (position, SEEK_SET);
-}
-
-int64_t
-FileSource::GetPosition ()
-{
-	//printf ("FileSource::GetPosition ().\n");
-	return fd == NULL ? 0 : ftell (fd);
 }
 
 bool
 FileSource::IsSeekable ()
 {
 	return true;
+}
+
+int64_t
+FileSource::GetPosition ()
+{
+	return pos;
 }
 
 bool
@@ -1807,14 +1757,599 @@ FileSource::Seek (int64_t offset)
 bool
 FileSource::Seek (int64_t offset, int mode)
 {
-	if (fseek (fd, offset, mode) == 0)
+	uint64_t n;
+	
+	if (fd == -1)
+		return false;
+	
+	switch (mode) {
+	case SEEK_CUR:
+		if (offset == 0)
+			return true;
+		
+		/* convert to SEEK_SET */
+		if ((offset = pos + offset) < 0)
+			return false;
+		
+		/* fall thru... */
+	case SEEK_SET:
+		if (pos == offset)
+			return true;
+		
+		if (offset < 0)
+			return false;
+		
+		if ((n = (offset - pos)) <= buflen) {
+			/* just advance thru the pre-buffered data */
+			pos = offset;
+			bufptr += n;
+			buflen -= n;
+			
+			return true;
+		}
+		
+		/* we are now forced to do an actual seek */
+		if (lseek (fd, offset, SEEK_SET) == -1)
+			return false;
+		
+		pos = offset;
+		eof = false;
+		
+		bufptr = buffer;
+		buflen = 0;
+		
 		return true;
-	
-	fprintf (stderr, "FileSource::Seek (%lld, %d) on `%s' failed: %s.\n",
-		 offset, mode, filename, strerror (errno));
-	
-	return false;
+	case SEEK_END:
+		/* I doubt this code path ever gets hit, so we'll just
+		 * do things the easy way... to hell with any
+		 * optimizations. */
+		if (lseek (fd, offset, SEEK_END) == -1)
+			return false;
+		
+		pos = offset;
+		eof = false;
+		
+		bufptr = buffer;
+		buflen = 0;
+		
+		return true;
+	default:
+		return false;
+	}
 }
+
+/* non-interruptable read() */
+static ssize_t
+noint_read (int fd, char *buf, size_t n)
+{
+	ssize_t nread;
+	
+	do {
+		nread = read (fd, buf, n);
+	} while (nread == -1 && errno == EINTR);
+	
+	return nread;
+}
+
+int32_t
+FileSource::Read (void *buf, uint32_t n)
+{
+	ssize_t r, nread = 0;
+	
+	if (fd == -1) {
+		errno = EINVAL;
+		return -1;
+	}
+	
+	do {
+		if ((r = MIN (buflen, n)) > 0) {
+			/* copy what we can from our existing buffer */
+			memcpy (((char *) buf) + nread, bufptr, r);
+			bufptr += r;
+			buflen -= r;
+			nread += r;
+			pos += r;
+			n -= r;
+		}
+		
+		if (n > 0) {
+			/* buffer more data */
+			if ((r = noint_read (fd, buffer, sizeof (buffer))) > 0)
+				buflen = (uint32_t) r;
+			
+			bufptr = buffer;
+			
+			if (r == -1 && nread == 0)
+				return -1;
+			
+			if (r == 0) {
+				eof = true;
+				break;
+			}
+		}
+	} while (n > 0);
+	
+	return nread;
+}
+
+bool
+FileSource::ReadAll (void *buf, uint32_t n)
+{
+	int32_t nread;
+	
+	if ((nread = Read (buf, n)) == -1 || ((uint32_t) nread) < n)
+		return false;
+	
+	return true;
+}
+
+bool
+FileSource::Peek (void *buf, uint32_t n)
+{
+	ssize_t r;
+	
+	if (fd == -1)
+		return false;
+	
+	if (n > sizeof (buffer)) {
+		/* we can't handle a peek of this size */
+		return false;
+	}
+	
+	if (buflen < n) {
+		/* need to buffer more data */
+		memmove (buffer, bufptr, buflen);
+		bufptr = buffer;
+		
+		do {
+			if ((r = noint_read (fd, bufptr + buflen, n - buflen)) == 0) {
+				eof = true;
+				break;
+			} else if (r == -1)
+				break;
+			
+			buflen += r;
+		} while (buflen < n);
+	}
+	
+	if (buflen < n) {
+		/* can't peek as much data as requested... */
+		return false;
+	}
+	
+	memcpy (((char *) buf), bufptr, n);
+	
+	return true;
+}
+
+bool
+FileSource::Eof ()
+{
+	return eof;
+}
+
+
+/*
+ * ProgressiveSource
+ */
+
+ProgressiveSource::ProgressiveSource (Media *media) : IMediaSource (media)
+{
+	pthread_mutex_init (&write_mutex, NULL);
+	pthread_cond_init (&write_cond, NULL);
+	cancel_wait = false;
+	wait_count = 0;
+	
+	write_pos = 0;
+	size = -1;
+	
+	filename = NULL;
+	pos = -1;
+	fd = -1;
+	
+	bufptr = buffer;
+	buflen = 0;
+	
+	eof = true;
+	
+	Initialize ();
+}
+
+ProgressiveSource::~ProgressiveSource ()
+{
+	pthread_mutex_destroy (&write_mutex);
+	pthread_cond_destroy (&write_cond);
+	
+	if (fd != -1)
+		close (fd);
+	
+	if (filename != NULL) {
+		unlink (filename);
+		g_free (filename);
+	}
+}
+
+MediaResult
+ProgressiveSource::Initialize ()
+{
+	if (filename != NULL)
+		return MEDIA_SUCCESS;
+	
+	filename = g_build_filename (g_get_tmp_dir (), "MoonlightMediaStream.XXXXXX", NULL);
+	if ((fd = g_mkstemp (filename)) == -1) {
+		g_free (filename);
+		filename = NULL;
+		
+		return MEDIA_FAIL;
+	}
+	
+	eof = false;
+	pos = 0;
+	
+	return MEDIA_SUCCESS;
+}
+
+bool
+ProgressiveSource::IsWaiting ()
+{
+	return g_atomic_int_get (&wait_count) != 0;
+}
+
+bool
+ProgressiveSource::WakeUp ()
+{
+	return WakeUp (true);
+}
+
+bool
+ProgressiveSource::WakeUp (bool lock)
+{
+	if (lock)
+		Lock ();
+	pthread_cond_signal (&write_cond);
+	if (lock)
+		Unlock ();
+	return true;
+}
+
+void
+ProgressiveSource::Lock ()
+{
+	int result = pthread_mutex_lock (&write_mutex);
+	if (result != 0)
+		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Could not lock progressive file writer mutex: %s", strerror (result)));
+}
+
+void
+ProgressiveSource::Unlock ()
+{
+	pthread_mutex_unlock (&write_mutex);
+}
+
+static ssize_t
+write_all (int fd, char *buf, size_t len)
+{
+	size_t nwritten = 0;
+	ssize_t n;
+	
+	do {
+		do {
+			n = write (fd, buf + nwritten, len - nwritten);
+		} while (n == -1 && (errno == EINTR || errno == EAGAIN));
+		
+		if (n > 0)
+			nwritten += n;
+	} while (n != -1 && nwritten < len);
+	
+	if (n == -1)
+		return -1;
+	
+	return nwritten;
+}
+
+void
+ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
+{
+	ssize_t nwritten;
+	
+	if (fd == -1) {
+		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
+		return;
+	}
+	
+	Lock ();
+	
+	if (n == 0) {
+		// We've got the entire file, update the size
+		size = write_pos;
+		goto cleanup;
+	}
+	
+	// Seek to the write position
+	if (lseek (fd, offset, SEEK_SET) != offset)
+		goto cleanup;
+	
+	if ((nwritten = write_all (fd, (char *) buf, n)) > 0)
+		write_pos += nwritten;
+	
+	if (IsWaiting ())
+		WakeUp (false);
+	
+	// Restore the current position
+	lseek (fd, pos, SEEK_SET);
+	
+cleanup:
+	
+	Unlock ();
+}
+
+void
+ProgressiveSource::NotifySize (int64_t size)
+{
+	this->size = size;
+}
+
+bool
+ProgressiveSource::WaitForPosition (int64_t position)
+{
+	bool result = false;
+	
+	g_atomic_int_inc (&wait_count);
+	
+	Lock ();
+	while (true) {
+		if (cancel_wait) {
+			// FIXME: This doesn't work if there are more than one thread waiting at the same time
+			cancel_wait = false;
+			goto cleanup;
+		}
+		
+		if (size >= 0 && position > size) {
+			/* we're waiting on a position that will never become available */
+			goto cleanup;
+		}
+		
+		if (write_pos > position) {
+			result = true;
+			goto cleanup;
+		}
+		
+		// By the time this method is called, we might not need to wait, so the wait goes
+		// after all the checks.
+		//printf ("Going to sleep...\n");
+		pthread_cond_wait (&write_cond, &write_mutex);
+	}
+	
+cleanup:
+	Unlock ();
+	
+	g_atomic_int_dec_and_test (&wait_count);
+	
+	return result;
+}
+
+void
+ProgressiveSource::CancelWait ()
+{
+	Lock ();
+	cancel_wait = true;
+	WakeUp (false);
+	Unlock ();
+}
+
+bool
+ProgressiveSource::IsSeekable ()
+{
+	return true;
+}
+
+int64_t
+ProgressiveSource::GetPosition ()
+{
+	return pos;
+}
+
+bool
+ProgressiveSource::Seek (int64_t offset)
+{
+	return Seek (offset, SEEK_CUR);
+}
+
+bool
+ProgressiveSource::Seek (int64_t offset, int mode)
+{
+	bool result = false;
+	
+	if (fd == -1) {
+		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
+		return false;
+	}
+	
+	Lock ();
+	
+	// Calculate the position from the mode and offset.
+	int64_t position;
+	
+	switch (mode) {
+	case SEEK_CUR: position = GetPosition () + offset; break;
+	case SEEK_SET: position = offset; break;
+	default:
+		// Due to the fact that many times we do not know the size of the file, it does not make sense to support SEEK_END
+		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Invalid seek mode: %i", mode));
+		return false;
+	}
+	
+	// Seeked beyond end of file?
+	if (size >= 0 && position > size) {
+		media->AddMessage (MEDIA_FAIL, "Seek beyond eof.");
+		result = false;
+		goto cleanup;
+	}
+	
+	// If the requested position isn't downloaded yet, wait for it to be.
+	if (position > write_pos) {
+		printf ("ProgressiveSource::Seek (%lld): Seeked beyond written size (%lld)\n", position, write_pos);
+		Unlock ();
+		if (!(WaitForPosition (position)))
+			return false;
+		Lock ();
+	}
+	
+	// Finally seek to where we want to be
+	if ((result = lseek (fd, position, SEEK_SET) != -1)) {
+		/* update state */
+		pos = position;
+		
+		bufptr = buffer;
+		buflen = 0;
+		
+		eof = false;
+	}
+	
+cleanup:
+	
+	Unlock ();
+	
+	return result;
+}
+
+int32_t
+ProgressiveSource::Read (void *buf, uint32_t n)
+{
+	ssize_t r, nread = 0;
+	
+	if (fd == -1) {
+		errno = EINVAL;
+		return -1;
+	}
+	
+	do {
+		if ((r = MIN (buflen, n)) > 0) {
+			/* copy what we can from our existing buffer */
+			memcpy (((char *) buf) + nread, bufptr, r);
+			bufptr += r;
+			buflen -= r;
+			nread += r;
+			pos += r;
+			n -= r;
+		}
+		
+		if (n > 0) {
+			/* buffer more data */
+			if ((r = noint_read (fd, buffer, sizeof (buffer))) > 0)
+				buflen = (uint32_t) r;
+			
+			bufptr = buffer;
+			
+			if (r == -1 && nread == 0) {
+				Unlock ();
+				return -1;
+			}
+			
+			if (r == 0) {
+				eof = true;
+				break;
+			}
+		}
+	} while (n > 0);
+	
+	return nread;
+}
+
+bool
+ProgressiveSource::ReadAll (void *buf, uint32_t n)
+{
+	bool need_wait;
+	int32_t nread;
+	
+	if (fd == -1) {
+		errno = EINVAL;
+		return false;
+	}
+	
+	Lock ();
+	need_wait = pos + n > write_pos;
+	Unlock ();
+	
+	if (need_wait) {
+		/* wait for all of the requested data to become available */
+		if (!(WaitForPosition (pos + n)))
+			return false;
+	}
+	
+	if ((nread = Read (buf, n)) == -1 || (uint32_t) nread < n)
+		return false;
+	
+	return true;
+}
+
+bool
+ProgressiveSource::Peek (void *buf, uint32_t n)
+{
+	bool need_wait;
+	ssize_t r;
+	
+	if (fd == -1)
+		return false;
+	
+	if (n > sizeof (buffer)) {
+		/* we can't handle a peek of this size */
+		return false;
+	}
+	
+	Lock ();
+	need_wait = pos + n > write_pos;
+	Unlock ();
+	
+	if (need_wait) {
+		/* wait for all of the requested data to become available */
+		if (!(WaitForPosition (pos + n)))
+			return false;
+	}
+	
+	if (buflen < n) {
+		/* need to buffer more data */
+		memmove (buffer, bufptr, buflen);
+		bufptr = buffer;
+		
+		do {
+			if ((r = noint_read (fd, bufptr + buflen, n - buflen)) == 0) {
+				eof = true;
+				break;
+			} else if (r == -1)
+				break;
+			
+			buflen += r;
+		} while (buflen < n);
+	}
+	
+	if (buflen < n) {
+		/* can't peek as much data as requested... */
+		return false;
+	}
+	
+	memcpy (((char *) buf), bufptr, n);
+	
+	return true;
+}
+
+bool
+ProgressiveSource::Eof ()
+{
+	return eof;
+}
+
+int64_t
+ProgressiveSource::GetWritePosition ()
+{
+	int64_t result;
+	Lock ();
+	result = write_pos;
+	Unlock ();
+	return result;
+}
+
+
 
 /*
  * MediaClosure
@@ -2035,325 +2570,3 @@ MarkerStream::SetCallback (MediaClosure *closure)
 	this->closure = closure;
 }
 
-/*
- * ProgressiveSource
- */
-
-ProgressiveSource::ProgressiveSource (Media *media) : IMediaSource (media)
-{
-	pthread_mutex_init (&write_mutex, NULL);
-	pthread_cond_init (&write_condition, NULL);
-	cancel_wait = false;
-	wait_count = 0;
-	
-	size_notified = false;
-	notified_size = 0;
-	
-	write_position = 0;
-	
-	filename = NULL;
-	fd = -1;
-	
-	Initialize ();
-}
-
-ProgressiveSource::~ProgressiveSource ()
-{
-	//printf ("ProgressiveSource::~ProgressiveSource ()\n");
-	pthread_cond_destroy (&write_condition);
-	pthread_mutex_destroy (&write_mutex);
-	
-	if (fd != -1)
-		close (fd);
-	
-	if (filename != NULL) {
-		unlink (filename);
-		g_free (filename);
-	}
-}
-
-bool
-ProgressiveSource::IsWaiting ()
-{
-	return g_atomic_int_get (&wait_count) != 0;
-}
-
-bool
-ProgressiveSource::WakeUp ()
-{
-	return WakeUp (true);
-}
-
-bool
-ProgressiveSource::WakeUp (bool lock)
-{
-	if (lock)
-		Lock ();
-	pthread_cond_signal (&write_condition);
-	if (lock)
-		Unlock ();
-	return true;
-}
-
-void
-ProgressiveSource::Lock ()
-{
-	int result = pthread_mutex_lock (&write_mutex);
-	if (result != 0)
-		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Could not lock progressive file writer mutex: %s", strerror (result)));
-}
-
-void
-ProgressiveSource::Unlock ()
-{
-	pthread_mutex_unlock (&write_mutex);
-}
-
-MediaResult
-ProgressiveSource::Initialize ()
-{
-	filename = g_build_filename (g_get_tmp_dir (), "MoonlightMediaStream.XXXXXX", NULL);
-	if ((fd = g_mkstemp (filename)) == -1) {
-		g_free (filename);
-		filename = NULL;
-		
-		return MEDIA_FAIL;
-	}
-	
-	return MEDIA_SUCCESS;
-}
-
-void
-ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
-{
-	//printf ("ProgressiveSource::Write (%p, %i, %i)\n", buf, offset, n);
-	guint64 read_position = 0;
-	ssize_t written = 0;
-	ssize_t total = 0;
-
-	Lock ();
-
-	if (fd == -1) {
-		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
-		goto cleanup;
-	}
-	
-	if (n == 0) {
-		// We've got the entire file, update the size
-		//printf ("ProgressiveSource::Write (%p, %i, %i): We've got the entire file, final size: %lld (earlier notified size: %lld)\n", buf, offset, n, write_position, notified_size);
-		size_notified = true;
-		notified_size = write_position;
-		goto cleanup;
-	}
-	
-	// Save the current position
-	read_position = lseek (fd, 0, SEEK_CUR);
-	
-	// Seek to the write position
-	if (lseek (fd, offset, SEEK_SET) != offset) {
-		goto cleanup;
-	}
-	
-	while ((written = ::write (fd, total + (char *) buf, n - total)) > 0) {
-		//printf ("ProgressiveSource::Write (%p, %i, %i): Wrote %i bytes.\n", buf, offset, n, written);
-		total += written;
-		if (total >= n)
-			break;
-	}
-	
-	write_position += total;
-	
-	if (written == -1)
-		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("progressive source couldn't write more data: %s", strerror (errno)));
-	
-	//printf ("ProgressiveSource::Write (%p, %i, %i): New write position: %lld\n", buf, offset, n, write_position);
-	
-	if (IsWaiting ())
-		WakeUp (false);
-	
-	// Restore the current position
-	lseek (fd, read_position, SEEK_SET);
-	
-cleanup:
-	Unlock ();
-}
-
-void
-ProgressiveSource::NotifySize (int64_t size)
-{
-	//printf ("ProgressiveSource::NotifySize (%llu)\n", size);
-	notified_size = size;
-	size_notified = true;
-}
-
-bool
-ProgressiveSource::WaitForPosition (int64_t position)
-{
-	bool result = false;
-	
-	g_atomic_int_inc (&wait_count);
-	
-	Lock ();
-	while (true) {
-		if (cancel_wait) {
-			cancel_wait = false; // FIXME: This doesn't work if there are more than one thread waiting at the same time
-			goto cleanup;
-		}
-		
-		if (size_notified && position > notified_size) {
-			goto cleanup;
-		}
-		
-		if (write_position > position) {
-			result = true;
-			goto cleanup;
-		}
-		
-		// By the time this method is called, we might not need to wait, so the wait goes
-		// after all the checks.
-		//printf ("Going to sleep...\n");
-		pthread_cond_wait (&write_condition, &write_mutex);
-	}
-	
-cleanup:
-	Unlock ();
-	
-	g_atomic_int_dec_and_test (&wait_count);
-	
-	return result;
-}
-
-void
-ProgressiveSource::CancelWait ()
-{
-	Lock ();
-	cancel_wait = true;
-	WakeUp (false);
-	Unlock ();
-}
-
-bool
-ProgressiveSource::IsSeekable ()
-{
-	return true;
-}
-
-bool
-ProgressiveSource::Seek (int64_t offset)
-{
-	return Seek (offset, SEEK_CUR);
-}
-
-bool
-ProgressiveSource::Seek (int64_t offset, int mode)
-{
-	bool result = false;
-	
-	if (fd == -1) {
-		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
-		return false;
-	}
-	
-	Lock ();
-	
-	// Calculate the position from the mode and offset.
-	int64_t position;
-	switch (mode) {
-	case SEEK_CUR: position = GetPosition () + offset; break;
-	case SEEK_SET: position = offset; break;
-	default:
-		// Due to the fact that many times we do not know the size of the file, it does not make sense to support SEEK_END
-		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Invalid seek mode: %i", mode));
-		return false;
-	}
-	
-	// Seeked beyond end of file?
-	if (size_notified && notified_size < position) {
-		media->AddMessage (MEDIA_FAIL, "Seek beyond eof.");
-		result = false;
-		goto cleanup;
-	}
-	
-	// If the requested position isn't downloaded yet, wait for it to be.
-	if (position > write_position) {
-		printf ("ProgressiveSource::Seek (%lld): Seeked beyond written size (%lld)\n", position, write_position);
-		Unlock ();
-		if (!(WaitForPosition (position))) {
-			return false;
-		}
-		Lock ();
-	}
-	
-	// Finally seek to where we want to be
-	result = lseek (fd, position, SEEK_SET) == (off_t) position;
-	
-cleanup:
-	Unlock ();
-	return result;
-}
-
-bool
-ProgressiveSource::Read (void *buffer, uint32_t size)
-{
-	bool result = false;
-	
-	if (fd == -1) {
-		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
-		return false;
-	}
-	
-	Lock ();
-	
-	// Check if requested more data than what has been downloaded
-	int64_t end = GetPosition () + size;
-	//printf ("ProgressiveSource::Read (%.8p, %.4u): end: %.6llu, write_position: %.7llu, bytes before stop: %llu\n", buffer, size, end, write_position, write_position - end);
-	if (end > write_position) {
-		//printf ("ProgressiveSource::Read (%p, %u): Read beyond written size (%lld)\n", buffer, size, write_position);
-		Unlock ();
-		if (!(WaitForPosition (end))) {
-			return false;
-		}
-		Lock ();		
-	}
-	
-	result = read (fd, buffer, size) == (ssize_t) size; 
-	
-	Unlock ();
-	return result;
-}
-
-bool
-ProgressiveSource::Peek (void *buffer, uint32_t size)
-{
-	// Simple implementation of peek: save position, read bytes, restore position.
-	int64_t position = GetPosition ();
-	
-	if (!Read (buffer, size))
-		return false;
-	
-	return Seek (position, SEEK_SET);
-}
-
-int64_t
-ProgressiveSource::GetPosition ()
-{
-	return lseek (fd, 0, SEEK_CUR);
-}
-
-bool
-ProgressiveSource::Eof ()
-{
-	printf ("ProgressiveSource::Eof ().\n");
-	printf ("ProgressiveSource::Eof (): Not implemented.\n");
-	return false;
-}
-
-int64_t
-ProgressiveSource::GetWritePosition ()
-{
-	int64_t result;
-	Lock ();
-	result = write_position;
-	Unlock ();
-	return result;
-}

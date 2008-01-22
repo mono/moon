@@ -24,7 +24,7 @@ ASFMediaSource::ASFMediaSource (ASFParser* parser, IMediaSource* source) : ASFSo
 bool 
 ASFMediaSource::ReadInternal (void* destination, size_t bytes)
 {
-	return source->Read (destination, bytes);
+	return source->ReadAll (destination, bytes);
 }
 
 bool 
@@ -185,7 +185,10 @@ ASFParser::ReadObject (asf_object* obj)
 	memcpy (result, obj, sizeof (asf_object));
 
 	if (obj->size > sizeof (asf_object)) {
-		source->Read (((char*) result) + sizeof (asf_object), obj->size - sizeof (asf_object));
+		if (!source->Read (((char*) result) + sizeof (asf_object), obj->size - sizeof (asf_object))) {
+			g_free (result);
+			return NULL;
+		}
 	}
 	
 	if (!asf_object_validate_exact (result, this)) {
@@ -316,14 +319,11 @@ ASFParser::ReadHeader ()
 	bool any_streams = false;
 	for (guint32 i = 0; i < header->object_count; i++) {
 		asf_object tmp;
-		if (!source->Read (&tmp, sizeof (asf_object))) {
+		if (!source->Read (&tmp, sizeof (asf_object)))
 			return false;
-		}
 		
-		header_objects [i] = ReadObject (&tmp);
-		if (header_objects [i] == NULL) {
+		if (!(header_objects [i] = ReadObject (&tmp)))
 			return false;
-		}
 		
 		if (asf_guid_compare (&asf_guids_stream_properties, &header_objects [i]->id)) {
 			asf_stream_properties* stream = (asf_stream_properties*) header_objects [i];
