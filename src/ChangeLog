@@ -1,3 +1,15 @@
+2008-01-22  Larry Ewing  <lewing@novell.com>
+
+	* clock.cpp: Tweak clock timing and smoothing.  Increase timer
+	priority so that ticks get deliver when we want them this doesn't
+	change the smoothing calculation but it can raise the actual fps
+	by assuring all our clocks are delivered.  Change smoothing alpha
+	from 0.3 to 0.03 to improve noise immunity.  Don't reset the timer
+	unless our new calculated timeout differs from our old by at least
+	1/50 of a second.  Resetting the clock on every tick had the
+	effect adding the drawing time to the tick time for every tick
+	since the timeout starts over at zero.
+
 2008-01-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (Mp3FrameReader::ReadFrame): If the bitrate was

@@ -168,7 +168,7 @@ SystemTimeSource::Start ()
 	if (gtk_timeout != -1)
 		return;
 
-	gtk_timeout = gtk_timeout_add (frequency, SystemTimeSource::tick_timeout, this);
+	gtk_timeout = g_timeout_add_full (G_PRIORITY_HIGH, frequency, SystemTimeSource::tick_timeout, this, NULL);
 }
 
 void
@@ -385,8 +385,7 @@ TimeManager::Tick ()
 	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
 	*/
 #if USE_SMOOTHING
-#define SMOOTHING_ALPHA 0.30 /* we probably want to play with this value some.. - toshok */
-
+#define SMOOTHING_ALPHA 0.03 /* we probably want to play with this value some.. - toshok */
 
 	TimeSpan xt = post_tick - pre_tick;
 
@@ -401,16 +400,20 @@ TimeManager::Tick ()
 	TimeSpan current_smoothed = (TimeSpan)(SMOOTHING_ALPHA * xt + (1 - SMOOTHING_ALPHA) * previous_smoothed);
 
 	/* current_smoothed now contains the prediction for what our next delay should be */
-
-	current_timeout = current_smoothed / 10000;
-	if (current_timeout < FPS_TO_DELAY (max_fps))
-		current_timeout = FPS_TO_DELAY (max_fps);
-	else if (current_timeout > FPS_TO_DELAY (MINIMUM_FPS))
-		current_timeout = FPS_TO_DELAY (MINIMUM_FPS);
+	
+	
+	int suggested_timeout = current_smoothed / 10000;
+	if (suggested_timeout < FPS_TO_DELAY (max_fps))
+		suggested_timeout= FPS_TO_DELAY (max_fps);
+	else if (suggested_timeout > FPS_TO_DELAY (MINIMUM_FPS))
+		suggested_timeout = FPS_TO_DELAY (MINIMUM_FPS);
 
 	//	printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
-
-	source->SetTimerFrequency (current_timeout);
+	
+	if (ABS(suggested_timeout - current_timeout) > 20) {
+		source->SetTimerFrequency (current_timeout);
+		current_timeout = suggested_timeout;
+	}
 
 	previous_smoothed = current_smoothed;
 
