@@ -36,6 +36,16 @@ class Shape : public FrameworkElement {
 	Brush *stroke, *fill;
 	void DoDraw (cairo_t *cr, bool do_op);
 
+	void SetupLineCaps (cairo_t *cr);
+	void SetupLineJoinMiter (cairo_t *cr);
+	virtual bool SetupLine (cairo_t* cr);
+	bool SetupDashes (cairo_t *cr, double thickness);
+	bool Fill (cairo_t *cr, bool do_op);
+	void Stroke (cairo_t *cr, bool do_op);
+	void Clip (cairo_t *cr);
+	virtual bool DrawShape (cairo_t *cr, bool do_op) = 0;
+//	virtual bool DrawDegenerateShape (cairo_t *cr, bool do_op) = 0;
+
 	moon_path *path;
 	virtual void InvalidatePathCache (bool free = false);
  public: 
@@ -68,18 +78,9 @@ class Shape : public FrameworkElement {
 	// new virtual methods for shapes
 	//
 	
-	virtual bool IsFilled () { return fill; }
 	virtual bool IsStroked () { return stroke; }
 	virtual bool CanFill () { return false; }
 	virtual FillRule GetFillRule () { return FillRuleNonzero; }
-
-	// Stroke[Start|End]LineCap properties are ignored for some shapes
-	// e.g. Ellipse, Rectangle, Polygon and (closed) Path
-	virtual bool NeedsLineCaps () { return true; }
-
-	// StrokeLineJoin & StrokeMiterLimit properties are ignored for some shapes
-	// e.g. Ellipse, Rectangle (with rounded corners), Line
-	virtual bool NeedsLineJoin () { return true; }
 
 	//
 	// Draw: draws the Shape in the cairo context (affine transforms are set before this
@@ -132,14 +133,14 @@ void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 // Ellipse
 //
 class Ellipse : public Shape {
+ protected:
+	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
 	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
-	virtual bool NeedsLineCaps () { return false; }
-	virtual bool NeedsLineJoin () { return false; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 };
@@ -151,6 +152,8 @@ Ellipse *ellipse_new (void);
 // Rectangle class 
 // 
 class Rectangle : public Shape {
+ protected:
+	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
@@ -164,9 +167,6 @@ class Rectangle : public Shape {
 
 	bool GetRadius (double *rx, double *ry);
 	virtual bool CanFill () { return true; }
-	virtual bool NeedsLineCaps () { return false; }
-	// technically we could override NeedsLineJoin to check for round corners
-	// but that would be just as expensive as setting the unneeded values
 };
 
 Rectangle *rectangle_new          (void);
@@ -180,6 +180,8 @@ void       rectangle_set_radius_y (Rectangle *rectangle, double value);
 // Line class 
 // 
 class Line : public Shape {
+ protected:
+	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
 	static DependencyProperty* X1Property;
 	static DependencyProperty* Y1Property;
@@ -196,9 +198,6 @@ class Line : public Shape {
 
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
-
-	virtual bool IsFilled () { return false; }
-	virtual bool NeedsLineJoin () { return false; }
 };
 
 Line *line_new  (void);
@@ -216,6 +215,8 @@ void line_set_y2 (Line *line, double value);
 // Polygon
 //
 class Polygon : public Shape {
+ protected:
+	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
@@ -231,7 +232,6 @@ class Polygon : public Shape {
 	virtual FillRule GetFillRule ();
 
 	virtual bool CanFill () { return true; }
-	virtual bool NeedsLineCaps () { return false; }
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
@@ -252,6 +252,8 @@ void		polygon_set_points	(Polygon *polygon, Point* points, int count);
 // Polyline
 //
 class Polyline : public Shape {
+ protected:
+	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
@@ -286,6 +288,9 @@ void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 // Path
 //
 class Path : public Shape {
+ protected:
+	virtual bool SetupLine (cairo_t* cr);
+	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
 	static DependencyProperty* DataProperty;
 

@@ -1,10 +1,11 @@
 /*
  * shape.cpp: This match the classes inside System.Windows.Shapes
  *
- * Author:
+ * Authors:
  *   Miguel de Icaza (miguel@novell.com)
+ *   Sebastien Pouliot  <sebastien@ximian.com>
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -122,23 +123,6 @@ Shape::~Shape ()
 }
 
 bool
-Shape::NeedsClipping ()
-{
-	if (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill))
-		return true;
-
-	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
-	if (!ClipOnHeightAndWidth ())
-		return false;
-
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	if (!vh)
-		return false;
-
-	return (GetValueNoDefault (FrameworkElement::WidthProperty) != NULL);
-}
-
-bool
 Shape::MixedHeightWidth (Value **height, Value **width)
 {
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
@@ -167,17 +151,128 @@ Shape::Draw (cairo_t *cr)
 //	moon_path_display (path);
 }
 
+// break up operations so we can exclude optional stuff, like:
+// * StrokeStartLineCap & StrokeEndLineCap
+// * StrokeLineJoin & StrokeMiterLimit
+// * Fill
+
+bool
+Shape::SetupLine (cairo_t* cr)
+{
+	double thickness = shape_get_stroke_thickness (this);
+	// check if something will be drawn or return 
+	// note: override this method if cairo is used to compute bounds
+	if (thickness == 0)
+		return false;
+
+	if (IsDegenerate ())
+		cairo_set_line_width (cr, 1.0);
+	else
+		cairo_set_line_width (cr, thickness);
+
+	return SetupDashes (cr, thickness);
+}
+
+bool
+Shape::SetupDashes (cairo_t *cr, double thickness)
+{
+	int count = 0;
+	double *dashes = shape_get_stroke_dash_array (this, &count);
+	if (dashes && (count > 0)) {
+		// FIXME: cairo doesn't support line cap for dashes - see #345894
+
+		double offset = shape_get_stroke_dash_offset (this) * thickness;
+
+		// NOTE: special case - if we continue cairo will stops drawing!
+		if ((count == 1) && (*dashes == 0.0))
+			return false;
+
+		// multiply dashes length with thickness
+		double *dmul = new double [count];
+		for (int i=0; i < count; i++) {
+			dmul [i] = dashes [i] * thickness;
+		}
+		cairo_set_dash (cr, dmul, count, offset);
+		delete [] dmul;
+	} else {
+		cairo_set_dash (cr, NULL, 0, 0.0);
+	}
+	return true;
+}
+
+void
+Shape::SetupLineCaps (cairo_t *cr)
+{
+	// FIXME: cairo doesn't have separate line cap for the start and end - see #345888
+	PenLineCap cap = shape_get_stroke_end_line_cap (this);
+	if (cap == PenLineCapFlat) {
+		cap = shape_get_stroke_start_line_cap (this);
+	}
+	cairo_set_line_cap (cr, convert_line_cap (cap));
+}
+
+void
+Shape::SetupLineJoinMiter (cairo_t *cr)
+{
+	cairo_set_line_join (cr, convert_line_join (shape_get_stroke_line_join (this)));
+	cairo_set_miter_limit (cr, shape_get_stroke_miter_limit (this));
+}
+
+// returns true if the path is set on the cairo, false if not
+bool
+Shape::Fill (cairo_t *cr, bool do_op)
+{
+	if (!fill)
+		return false;
+
+	Draw (cr);
+	if (do_op) {
+		fill->SetupBrush (cr, this);
+		cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
+		cairo_fill_preserve (cr);
+	}
+	return true;
+}
+
+void
+Shape::Stroke (cairo_t *cr, bool do_op)
+{
+	if (do_op) {
+		stroke->SetupBrush (cr, this);
+		if (IsDegenerate ())
+			cairo_fill_preserve (cr);
+		cairo_stroke (cr);
+	}
+}
+
+void
+Shape::Clip (cairo_t *cr)
+{
+	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
+	if (ClipOnHeightAndWidth () || (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill))) {
+		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+		if (!vh)
+			return;
+		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+		if (!vw)
+			return;
+
+		cairo_rectangle (cr, 0, 0, vw->AsDouble (), vh->AsDouble ());
+		cairo_clip (cr);
+		cairo_new_path (cr);
+	}
+}
+
 //
 // This routine is useful for Shape derivatives: it can be used
 // to either get the bounding box from cairo, or to paint it
 //
-void 
+void
 Shape::DoDraw (cairo_t *cr, bool do_op)
 {
-	if (IsEmpty ()) {
-		cairo_new_path (cr);
-		return;
-	}
+	// quick out if, when building the path, we detected a empty shape
+	if (IsEmpty ())
+		goto cleanpath;
 
 	cairo_set_matrix (cr, &absolute_xform);
 
@@ -189,107 +284,21 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 // 		absolute_xform.x0,
 // 		absolute_xform.y0);
 
-	bool drawn = false;
+	Clip (cr);
 
-	// we need to use clipping to implement StretchUniformToFill and paths that includes Height and Width
-	if (NeedsClipping ()) {
-		double w = framework_element_get_width (this);
-		if (w > 0.0) {
-			double h = framework_element_get_height (this);
-			if (h > 0.0) {
-				cairo_rectangle (cr, 0, 0, w, h);
-				cairo_clip (cr);
-				cairo_new_path (cr);
-			}
-		}
-	}
-
-	// getting bounds, using cairo_stroke_extents, doesn't requires us to fill (consider_fill)
-	// unless there is no stroke brush assigned, which requires us to fill and use cairo_fill_extents
-	// also not every shapes can be filled
-	if (!IsDegenerate () && IsFilled ()) {
-		if (fill) {
-			Draw (cr);
-			drawn = true;
-			if (do_op) {
-				fill->SetupBrush (cr, this);
-				cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
-				cairo_fill_preserve (cr);
-			}
-		}
-	}
-	
-	if (stroke) {
-		double thickness = shape_get_stroke_thickness (this);
-		
-#if 0
-		// this optimization is broken wrt ComputeBoundsSlow since
-		// - thickness isn't checked there (fixed) and
-		// - the new_path clears the data for a cairo_fill_extents call anyway
-		//
-		// See bug #352188 for an example of what this breaks
-		if (thickness == 0) {
-			if (drawn)
-				cairo_new_path (cr);
+	// if building the path detected a degenerate case
+	if (IsDegenerate ()) {
+		// FIXME: needs a DrawDegenerateShape to get more control over output
+		if (DrawShape (cr, do_op))
 			return;
-		}
-#endif
-
-		if (IsDegenerate ())
-			cairo_set_line_width (cr, 1.0);
-		else
-			cairo_set_line_width (cr, thickness);
-
-		int count = 0;
-		double *dashes = shape_get_stroke_dash_array (this, &count);
-		if (dashes && (count > 0)) {
-			/* FIXME: cairo doesn't support line cap for dashes */
-			double offset = shape_get_stroke_dash_offset (this) * thickness;
-			// special case or cairo stops drawing
-			if ((count == 1) && (*dashes == 0.0)) {
-				if (drawn)
-					cairo_new_path (cr);
-				return;
-			}
-
-			// multiply dashes length with thickness
-			double *dmul = new double [count];
-			for (int i=0; i < count; i++) {
-				dmul [i] = dashes [i] * thickness;
-			}
-			cairo_set_dash (cr, dmul, count, offset);
-			delete [] dmul;
-		} else {
-			cairo_set_dash (cr, NULL, 0, 0.0);
-		}
-
-		if (NeedsLineJoin ()) {
-			cairo_set_line_join (cr, convert_line_join (shape_get_stroke_line_join (this)));
-			cairo_set_miter_limit (cr, shape_get_stroke_miter_limit (this));
-		}
-
-		if (NeedsLineCaps ()) {
-			/* FIXME: cairo doesn't have separate line cap for the start and end */
-			PenLineCap cap = shape_get_stroke_end_line_cap (this);
-			if (cap == PenLineCapFlat) {
-				cap = shape_get_stroke_start_line_cap (this);
-			}
-			cairo_set_line_cap (cr, convert_line_cap (cap));
-		}
-
-		if (!drawn)
-			Draw (cr);
-		if (do_op) {
-			stroke->SetupBrush (cr, this);
-			if (IsDegenerate ())
-				cairo_fill_preserve (cr);
-			cairo_stroke (cr);
-		}
+	} else {
+		if (DrawShape (cr, do_op))
+			return;
 	}
-	else {
-		if (drawn && do_op)
-			cairo_new_path (cr);
-	}
+
+cleanpath:
+	if (do_op)
+		cairo_new_path (cr);
 }
 
 void
@@ -643,6 +652,27 @@ Ellipse::Ellipse ()
 	SetValue (Shape::StretchProperty, Value (StretchFill));
 }
 
+// The Ellipse shape can be drawn while ignoring properties:
+// * Shape::StrokeStartLineCap
+// * Shape::StrokeEndLineCap
+// * Shape::StrokeLineJoin
+// * Shape::StrokeMiterLimit
+bool
+Ellipse::DrawShape (cairo_t *cr, bool do_op)
+{
+	bool drawn = Fill (cr, do_op);
+
+	if (!stroke)
+		return drawn;
+	if (!SetupLine (cr))
+		return drawn;
+
+	if (!drawn)
+		Draw (cr);
+	Stroke (cr, do_op);
+	return true; 
+}
+
 void
 Ellipse::BuildPath ()
 {
@@ -755,6 +785,32 @@ DependencyProperty* Rectangle::RadiusYProperty;
 Rectangle::Rectangle ()
 {
 	SetValue (Shape::StretchProperty, Value (StretchFill));
+}
+
+// The Rectangle shape can be drawn while ignoring properties:
+// * Shape::StrokeStartLineCap
+// * Shape::StrokeEndLineCap
+// * Shape::StrokeLineJoin	[for rounded-corner rectangles only]
+// * Shape::StrokeMiterLimit	[for rounded-corner rectangles only]
+bool
+Rectangle::DrawShape (cairo_t *cr, bool do_op)
+{
+	bool drawn = Fill (cr, do_op);
+
+	if (!stroke)
+		return drawn;
+
+	if (!SetupLine (cr))
+		return drawn;
+
+	// FIXME: is it worth checking for round-corners ?
+	SetupLineJoinMiter (cr);
+
+	// Draw if the path wasn't drawn by the Fill call
+	if (!drawn)
+		Draw (cr);
+	Stroke (cr, do_op);
+	return true; 
 }
 
 /*
@@ -989,6 +1045,26 @@ DependencyProperty* Line::Y1Property;
 DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
+// The Line shape can be drawn while ignoring properties:
+// * Shape::StrokeLineJoin
+// * Shape::StrokeMiterLimit
+// * Shape::Fill
+bool
+Line::DrawShape (cairo_t *cr, bool do_op)
+{
+	// no need to clear path since none has been drawn to cairo
+	if (!stroke)
+		return false; 
+
+	if (!SetupLine (cr))
+		return false;
+	SetupLineCaps (cr);
+
+	Draw (cr);
+	Stroke (cr, do_op);
+	return true; 
+}
+
 static void
 calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
 {
@@ -1152,6 +1228,26 @@ FillRule
 Polygon::GetFillRule ()
 {
 	return polygon_get_fill_rule (this);
+}
+
+// The Polygon shape can be drawn while ignoring properties:
+// * Shape::StrokeStartLineCap
+// * Shape::StrokeEndLineCap
+bool
+Polygon::DrawShape (cairo_t *cr, bool do_op)
+{
+	bool drawn = Fill (cr, do_op);
+
+	if (!stroke)
+		return drawn; 
+
+	if (!SetupLine (cr))
+		return drawn;
+	SetupLineJoinMiter (cr);
+
+	Draw (cr);
+	Stroke (cr, do_op);
+	return true;
 }
 
 // special case when a polygon has a single line in it (it's drawn longer than it should)
@@ -1505,6 +1601,63 @@ polygon_new (void)
 DependencyProperty* Polyline::FillRuleProperty;
 DependencyProperty* Polyline::PointsProperty;
 
+// The Polyline shape can be drawn while ignoring NO properties
+bool
+Polyline::DrawShape (cairo_t *cr, bool do_op)
+{
+	bool drawn = Fill (cr, do_op);
+
+	if (!stroke)
+		return drawn; 
+
+	if (!SetupLine (cr))
+		return drawn;
+	SetupLineJoinMiter (cr);
+
+	// here we hack around #345888 where Cairo doesn't support different start and end linecaps
+	PenLineCap start = shape_get_stroke_start_line_cap (this);
+	PenLineCap end = shape_get_stroke_end_line_cap (this);
+	if (do_op && (start != end)){
+		// the previous fill, if needed, has preserved the path
+		if (drawn)
+			cairo_new_path (cr);
+
+		// since Draw may not have been called (e.g. no Fill) we must ensure the path was built
+		if (!drawn || !path || (path->cairo.num_data == 0))
+			BuildPath ();
+
+		cairo_path_data_t *data = path->cairo.data;
+		int length = path->cairo.num_data;
+		// we need to treat a single line scenario differently (like Line::DrawShape)
+		if (length <= MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH) {
+			// note: this means either no, one or two points
+// TODO (right now a straight line is drawn (without caps)
+		} else {
+			// draw line #1 with start cap
+			cairo_set_line_cap (cr, convert_line_cap (start));
+			cairo_move_to (cr, data[1].point.x, data[1].point.y);
+			cairo_line_to (cr, data[3].point.x, data[3].point.y);
+			Stroke (cr, do_op);
+
+			// draw last line with end cap
+			cairo_set_line_cap (cr, convert_line_cap (end));
+			cairo_move_to (cr, data[length - 3].point.x, data[length - 3].point.y);
+			cairo_line_to (cr, data[length - 1].point.x, data[length - 1].point.y);
+			Stroke (cr, do_op);
+		}
+
+		// now all lines (including first and last) will be drawn with no caps
+		// note: important for IsInside and other stuff depending on Cairo context
+		cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+	} else {
+		cairo_set_line_cap (cr, convert_line_cap (start));
+	}
+
+	Draw (cr);
+	Stroke (cr, do_op);
+	return true;
+}
+
 FillRule
 Polyline::GetFillRule ()
 {
@@ -1701,6 +1854,39 @@ polyline_new (void)
 //
 
 DependencyProperty* Path::DataProperty;
+
+bool
+Path::SetupLine (cairo_t* cr)
+{
+	// we cannot use the thickness==0 optimization (like Shape::SetupLine provides)
+	// since we'll be using cairo to compute the path's bounds later
+	// see bug #352188 for an example of what this breaks
+	double thickness = IsDegenerate () ? 1.0 : shape_get_stroke_thickness (this);
+	cairo_set_line_width (cr, thickness);
+	return SetupDashes (cr, thickness);
+}
+
+// The Polygon shape can be drawn while ignoring properties:
+// * none 
+// FIXME: actually it depends on the geometry, another level of optimization awaits ;-)
+// e.g. close geometries don't need to setup line caps, 
+//	line join/miter	don't applies to curve, like EllipseGeometry
+bool
+Path::DrawShape (cairo_t *cr, bool do_op)
+{
+	bool drawn = Shape::Fill (cr, do_op);
+	if (stroke) {
+		if (!SetupLine (cr))
+			return drawn;	// return if we have a path in the cairo_t
+		SetupLineCaps (cr);
+		SetupLineJoinMiter (cr);
+
+		if (!drawn)
+			Draw (cr);
+		Stroke (cr, do_op);
+	}
+	return true;
+}
 
 FillRule
 Path::GetFillRule ()

@@ -1,3 +1,9 @@
+2008-01-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: First part of DoDraw refactoring. Pass all 
+	regression tests from harness (moon versus moon) but it's possible
+	that some degenerated cases (without test cases) regress.
+
 2008-01-22  Larry Ewing  <lewing@novell.com>
 
 	* clock.cpp: initalize the smoothing to max framerate, the first
