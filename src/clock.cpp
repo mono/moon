@@ -410,8 +410,8 @@ TimeManager::Tick ()
 
 	//	printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
 	
-	if (ABS(suggested_timeout - current_timeout) > 20) {
-		source->SetTimerFrequency (current_timeout);
+	if (ABS(suggested_timeout - current_timeout) > 10) {
+		source->SetTimerFrequency (suggested_timeout);
 		current_timeout = suggested_timeout;
 	}
 

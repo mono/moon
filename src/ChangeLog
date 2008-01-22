@@ -1,5 +1,10 @@
 2008-01-22  Larry Ewing  <lewing@novell.com>
 
+	* clock.cpp: reduce delta to 1/100 of a second and fix a bug in
+	previous commit.
+
+2008-01-22  Larry Ewing  <lewing@novell.com>
+
 	* clock.cpp: Tweak clock timing and smoothing.  Increase timer
 	priority so that ticks get deliver when we want them this doesn't
 	change the smoothing calculation but it can raise the actual fps
