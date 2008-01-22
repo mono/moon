@@ -10,8 +10,6 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#define USE_OPT_REGION_CLIP 1
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -630,7 +628,6 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	if (!EnableAntiAlias ())
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	
-	cairo_set_matrix (cr, &absolute_xform);
 	pattern = cairo_pattern_create_for_surface (surface);	
 
 	if (recalculate_matrix) {
@@ -646,15 +643,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
 
-#if USE_OPT_REGION_CLIP	
-	cairo_identity_matrix (cr);
-	runtime_cairo_region (cr, region->gdkregion);
-	cairo_clip (cr);
-#endif
 	cairo_set_matrix (cr, &absolute_xform);
-
-	cairo_pattern_set_matrix (pattern, &matrix);
-	cairo_set_source (cr, pattern);
 
 	cairo_new_path (cr);
 	cairo_rectangle (cr, 0, 0, w, h);
@@ -1794,11 +1783,6 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
 
-#if USE_OPT_REGION_CLIP
-	cairo_identity_matrix (cr);
-	runtime_cairo_region (cr, region->gdkregion);
-	cairo_clip (cr);
-#endif
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	cairo_rectangle (cr, 0, 0, w, h);
