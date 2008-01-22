@@ -1,3 +1,9 @@
+2008-01-22  Larry Ewing  <lewing@novell.com>
+
+	* clock.cpp: initalize the smoothing to max framerate, the first
+	frame is quite likely the slowest frame we'll ever draw.  Bump
+	error delta back up to 1/50th.
+
 2008-01-22  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (MediaElement::Render): a little cairo cleanup, and

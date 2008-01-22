@@ -386,13 +386,14 @@ TimeManager::Tick ()
 	*/
 #if USE_SMOOTHING
 #define SMOOTHING_ALPHA 0.03 /* we probably want to play with this value some.. - toshok */
+#define TIMEOUT_ERROR_DELTA 20 /* how far off of the current_timeout can we be */
 
 	TimeSpan xt = post_tick - pre_tick;
 
 	/* the s(0) case */
 	if (first_tick) {
 		first_tick = false;
-		previous_smoothed = xt;
+		previous_smoothed = FPS_TO_DELAY (max_fps);
 		return;
 	}
 
@@ -410,7 +411,7 @@ TimeManager::Tick ()
 
 	//	printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
 	
-	if (ABS(suggested_timeout - current_timeout) > 10) {
+	if (ABS(suggested_timeout - current_timeout) > TIMEOUT_ERROR_DELTA) {
 		source->SetTimerFrequency (suggested_timeout);
 		current_timeout = suggested_timeout;
 	}
