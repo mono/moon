@@ -3,8 +3,8 @@
 	* pipeline.cpp (FileSource::Seek): Also optimize seeking backwards
 	if within our pre-buffered bounds.
 	(ProgressiveSource::Write): When restoring position state, use the
-	proper offset (e.g. the offset of the beginning of our
-	pre-buffered block).
+	proper offset (e.g. the offset of the end of our pre-buffered
+	block).
 
 2008-01-22  Chris Toshok  <toshok@ximian.com>
 

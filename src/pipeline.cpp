@@ -15,6 +15,16 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+
+#include <pthread.h>
+#include <sched.h>
+
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
 #include "uri.h"
@@ -23,10 +33,6 @@
 #include "asf/asf-structures.h"
 #include "runtime.h"
 
-#include <fcntl.h>
-#include <pthread.h>
-#include <sched.h>
-#include <unistd.h>
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -2077,7 +2083,7 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 		WakeUp (false);
 	
 	// Restore the current position
-	lseek (fd, pos - (bufptr - buffer), SEEK_SET);
+	lseek (fd, pos + buflen, SEEK_SET);
 	
 cleanup:
 	
