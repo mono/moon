@@ -469,9 +469,8 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, Dependen
 	switch (type) {
 	case CollectionChangeTypeItemAdded:
 		// we could do some optimization here
-		GetChildren()->ResortByZIndex ();
-	case CollectionChangeTypeItemRemoved:
 	case CollectionChangeTypeChanged:
+	case CollectionChangeTypeItemRemoved:
 		UpdateBounds (true);
 		break;
 	case CollectionChangeTypeItemChanged:

@@ -1,5 +1,10 @@
 2008-01-22  Chris Toshok  <toshok@ximian.com>
 
+	* panel.cpp (Panel::OnCollectionChanged): remove the fix for
+	#353954 as its redundant after the previous commit.
+
+2008-01-22  Chris Toshok  <toshok@ximian.com>
+
 	* garray-ext.cpp (bsearch): fix this so the g_array_insert_sorted
 	function works.
 
