@@ -1779,8 +1779,9 @@ FileSource::Seek (int64_t offset, int mode)
 		if (offset < 0)
 			return false;
 		
-		if ((n = (offset - pos)) <= buflen) {
-			/* just advance thru the pre-buffered data */
+		n = (offset - pos);
+		if ((n >= 0 && n <= buflen) || (n < 0 && (-n) <= (bufptr - buffer))) {
+			/* the position is within our pre-buffered data */
 			pos = offset;
 			bufptr += n;
 			buflen -= n;
@@ -2076,7 +2077,7 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 		WakeUp (false);
 	
 	// Restore the current position
-	lseek (fd, pos, SEEK_SET);
+	lseek (fd, pos - (bufptr - buffer), SEEK_SET);
 	
 cleanup:
 	
