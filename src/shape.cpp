@@ -241,7 +241,12 @@ Shape::Stroke (cairo_t *cr, bool do_op)
 		stroke->SetupBrush (cr, this);
 		if (IsDegenerate ())
 			cairo_fill_preserve (cr);
+#if DONT_STROKE_DEGENERATES		
+		else 
+			cairo_stroke (cr);
+#else
 		cairo_stroke (cr);
+#endif
 	}
 }
 
@@ -1899,56 +1904,77 @@ void
 Path::ComputeBounds ()
 {
 	bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	cairo_matrix_init_identity (&stretch_transform);
 
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
 		return;
 
 	Geometry* geometry = path_get_data (this);
-	if (!geometry)
+	if (!geometry) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
+	}
 
-	// if Height and Width are specified (they could be both missing)
-	// then we must clip the path those values, and this also defines
-	// *exactly* our bounds (whether we like them or not is another story)
-	if (vh && vw) {
-		bounds.w = vw->AsDouble ();
-		bounds.h = vh->AsDouble ();
-	} else {
-		bounds = geometry->ComputeBounds (this);
+	double w = vw ? vw->AsDouble () : 0.0;
+	double h = vh ? vh->AsDouble () : 0.0;
+	
+	if ((h < 0.0) || (w < 0.0)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
 
-		Stretch stretch = shape_get_stretch (this);
-		if (stretch != StretchNone) {
-			double t = shape_get_stroke_thickness (this) * 0.5;
+	if (vh && (h <= 0.0) || vw && (w <= 0.0)) { 
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
+	
+	bounds = geometry->ComputeBounds (this);
+	
+	h = (h == 0.0) ? bounds.h : h;
+	w = (w == 0.0) ? bounds.w : w;
 
-			bounds.x = -t;
-			bounds.y = -t;
+	if (h <= 0.0 || w <= 0.0) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return;
+	}
 
-			double vscale = vh ? (vh->AsDouble () / bounds.h) : 1.0;
-			double hscale = vw ? (vw->AsDouble () / bounds.w) : 1.0;
-			double scale; 
+	// Compute the transformation we use for stretching
 
-			switch (stretch) {
-			case StretchUniform:
-				scale = MIN (vw ? vscale : hscale, vh ? hscale : vscale);
-				bounds.h = (int) ceil(bounds.h * scale);
-				bounds.w = (int) ceil(bounds.w * scale);
-				break;
-			case StretchUniformToFill:
-				scale = MAX (vw ? vscale : hscale, vh ? hscale : vscale);
-				bounds.h = (int) ceil(bounds.h * scale);
-				bounds.w = (int) ceil(bounds.w * scale);
-				break;
-			default:
-				// bounds are already set correctly
-				bounds.h = bounds.h * vscale;
-				bounds.w = bounds.w * hscale;
-				break;
-			}
-
-			bounds.w += 2 * t;
-			bounds.h += 2 * t;
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch != StretchNone) {
+		double sh = h / bounds.h;
+		double sw = w / bounds.w;
+		switch (stretch) {
+		case StretchFill:
+			break;
+		case StretchUniform:
+			sw = sh = (sw < sh) ? sw : sh;
+			break;
+		case StretchUniformToFill:
+			sw = sh = (sw > sh) ? sw : sh;
+			break;
+		case StretchNone:
+			/* not reached */
+		break;
 		}
+		
+		cairo_matrix_scale (&stretch_transform, sw, sh);
+		cairo_matrix_translate (&stretch_transform, -bounds.x, -bounds.y);
+		
+		// Double check our math
+		cairo_matrix_t test = stretch_transform;
+		if (cairo_matrix_invert (&test)) {
+			cairo_matrix_init_identity (&stretch_transform);
+			g_warning ("Unable to compute stretch transform %f %f %f %f \n", sw, sh, bounds.x, bounds.y);
+		}		
+	}
+
+	bounds = bounding_rect_for_transformed_rect (&stretch_transform, bounds);
+		
+	if (vh && vw) {
+		bounds.w = MIN (bounds.w, vw->AsDouble ());
+		bounds.h = MIN (bounds.h, vh->AsDouble ());
 	}
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
@@ -1964,7 +1990,10 @@ Path::Draw (cairo_t *cr)
 	if (!geometry)
 		return;
 
+	cairo_save (cr);
+	cairo_transform (cr, &stretch_transform);
 	geometry->Draw (this, cr);
+	cairo_restore (cr);
 }
 
 void

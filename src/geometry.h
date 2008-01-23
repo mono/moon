@@ -38,7 +38,6 @@ class Geometry : public DependencyObject {
 	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; };
 */
 	moon_path *path;
-	void StretchAdjust (Path *shape);
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* TransformProperty;

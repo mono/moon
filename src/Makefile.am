@@ -4,7 +4,7 @@ noinst_PROGRAMS = demo sizes parsertest
 
 lib_LTLIBRARIES = libmoon.la
 
-INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24
+INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1
 
 libmooninclude_headers = \
 	animation.h	\

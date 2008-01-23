@@ -291,6 +291,7 @@ class Path : public Shape {
  protected:
 	virtual bool SetupLine (cairo_t* cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
+	cairo_matrix_t stretch_transform;
  public:
 	static DependencyProperty* DataProperty;
 

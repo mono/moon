@@ -73,14 +73,12 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 		cairo_transform (cr, &matrix);
 	}
 
-	if (!path || (path->cairo.num_data == 0)) {
+	if (!path || (path->cairo.num_data == 0))
 		Build (shape);
-		// note: shape can be NULL when Geometry is used for clipping
-		if (shape)
-			StretchAdjust (shape);
-	}
+
 	if (path)
 		cairo_append_path (cr, &path->cairo);
+
 }
 
 void
@@ -116,96 +114,6 @@ path_get_bounds (Path *shape, cairo_path_t *path)
 	measuring_context_destroy (cr);
 
 	return Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
-}
-
-static void
-path_stretch_adjust (Path *shape, cairo_path_t *path)
-{
-	if (!path) {
-		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	// we draw only if both height and width are specified (or missing)
-	Value *vh = shape->GetValueNoDefault (FrameworkElement::HeightProperty);
-	Value *vw = shape->GetValueNoDefault (FrameworkElement::WidthProperty);
-	if ((vh && !vw) || (!vh && vw)) {
-		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	double w = vw ? vw->AsDouble () : 0.0;
-	double h = vh ? vh->AsDouble () : 0.0;
-	if ((w < 0.0) || (h < 0.0)) {
-		shape->SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	Stretch stretch = shape_get_stretch (shape);
-	if (stretch == StretchNone)
-		return;
-
-	/* NOTE: this looks complex but avoid a *lot* of changes in geometry 
-	 * (resulting in something even more complex).
-	 */
-	Rect bounds = path_get_bounds (shape, path);
-
-	double sh = (vh && ((int)bounds.h > 0.0)) ? (h / bounds.h) : 1.0;
-	double sw = (vw && ((int)bounds.w > 0.0)) ? (w / bounds.w) : 1.0;
-	switch (stretch) {
-	case StretchFill:
-		break;
-	case StretchUniform:
-		sw = sh = (sw < sh) ? sw : sh;
-		break;
-	case StretchUniformToFill:
-		sw = sh = (sw > sh) ? sw : sh;
-		break;
-	case StretchNone:
-		/* not reached */
-		break;
-	}
-
-	bool stretch_horz = (vw || (sw != 1.0));
-	bool stretch_vert = (vh || (sh != 1.0));
-
-	// substract origin (min[x|y]) and scale to requested dimensions (if specified)
-	for (int i=0; i < path->num_data; i+= path->data[i].header.length) {
-		cairo_path_data_t *data = &path->data[i];
-		switch (data->header.type) {
-		case CAIRO_PATH_CURVE_TO:
-			data[3].point.x -= bounds.x;
-			data[3].point.y -= bounds.y;
-			data[2].point.x -= bounds.x;
-			data[2].point.y -= bounds.y;
-			if (stretch_horz) {
-				data[3].point.x *= sw;
-				data[2].point.x *= sw;
-			}
-			if (stretch_vert) {
-				data[3].point.y *= sh;
-				data[2].point.y *= sh;
-			}
-			/* fallthru */
-		case CAIRO_PATH_LINE_TO:
-		case CAIRO_PATH_MOVE_TO:
-			data[1].point.x -= bounds.x;
-			data[1].point.y -= bounds.y;
-			if (stretch_horz)
-				data[1].point.x *= sw;
-			if (stretch_vert)
-				data[1].point.y *= sh;
-			break;
-		case CAIRO_PATH_CLOSE_PATH:
-			break;
-		}
-	}
-}
-
-void
-Geometry::StretchAdjust (Path *shape)
-{
-	path_stretch_adjust (shape, &path->cairo);
 }
 
 //
@@ -260,20 +168,6 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 		if (!geometry->IsBuilt ())
 			geometry->Build (shape);
 		cairo_append_path (cr, geometry->GetCairoPath ());
-	}
-
-	// can be NULL for clipping
-	if (!shape)
-		return;
-
-	Stretch stretch = shape_get_stretch (shape);
-	if (stretch != StretchNone) {
-		// Group must be processed as a single item
-		cairo_path_t* cp = cairo_copy_path (cr);
-		path_stretch_adjust (shape, cp);
-		cairo_new_path (cr);
-		cairo_append_path (cr, cp);
-		cairo_path_destroy (cp);
 	}
 }
 
@@ -513,8 +407,6 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 		NotifyAttachersOfPropertyChange (PathGeometry::FiguresProperty);
 }
 
-// FIXME: we should cache the path in the group (i.e. a Build method) to avoid
-// rebuilding and reapplying the strech every time
 void
 PathGeometry::Draw (Path *shape, cairo_t *cr)
 {
@@ -538,19 +430,6 @@ PathGeometry::Draw (Path *shape, cairo_t *cr)
 			pf->Build (shape);
 		cairo_append_path (cr, pf->GetCairoPath ());
 	}
-
-	// can be NULL for clipping
-	if (!shape)
-		return;
-
-	Stretch stretch = shape_get_stretch (shape);
-	if (stretch != StretchNone) {
-		cairo_path_t* cp = cairo_copy_path (cr);
-		path_stretch_adjust (shape, cp);
-		cairo_new_path (cr);
-		cairo_append_path (cr, cp);
-		cairo_path_destroy (cp);
-	}
 }
 
 Rect
@@ -571,7 +450,7 @@ PathGeometry::ComputeBounds (Path *shape)
 //g_warning ("PathGeometry::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
 	// some AA glitches occurs when no stroke is present or when drawning unfilled curves
 	// (e.g. arcs) adding 1.0 will cover the extra pixels used by Cairo's AA
-	return bounds.GrowBy (1.0);
+	return bounds;
 }
 
 PathFigureCollection *
@@ -791,6 +670,7 @@ PathFigure::ComputeBounds (Path *shape)
 		Build (shape);
 
 	return path_get_bounds (shape, &path->cairo);
+
 }
 
 bool
