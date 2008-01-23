@@ -1,0 +1,23 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- Start Only -->
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="10"  StrokeStartLineCap="Flat" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="70"  StrokeStartLineCap="Round" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="130" StrokeStartLineCap="Square" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="10" Canvas.Top="190" StrokeStartLineCap="Triangle" />
+
+	<!-- End Only -->
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="100" Canvas.Top="10"  StrokeEndLineCap="Flat" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="100" Canvas.Top="70"  StrokeEndLineCap="Round" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="100" Canvas.Top="130" StrokeEndLineCap="Square" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="100" Canvas.Top="190" StrokeEndLineCap="Triangle" />
+
+	<!-- Mixed -->
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="200" Canvas.Top="10"  StrokeStartLineCap="Round" StrokeEndLineCap="Square" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="200" Canvas.Top="70"  StrokeStartLineCap="Round" StrokeEndLineCap="Triangle" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="200" Canvas.Top="130" StrokeStartLineCap="Square" StrokeEndLineCap="Round" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="200" Canvas.Top="190" StrokeStartLineCap="Square" StrokeEndLineCap="Triangle" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="300" Canvas.Top="10"  StrokeStartLineCap="Triangle" StrokeEndLineCap="Round" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="300" Canvas.Top="70"  StrokeStartLineCap="Triangle" StrokeEndLineCap="Square" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="300" Canvas.Top="130" StrokeStartLineCap="Flat" StrokeEndLineCap="Square" />
+	<Polyline Points="0,0 0,30 50,30" Fill="#000000" Stroke="#FF00FF" Stretch="Fill" StrokeThickness="5" Canvas.Left="300" Canvas.Top="190" StrokeStartLineCap="Flat" StrokeEndLineCap="Triangle" />
+</Canvas>
