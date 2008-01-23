@@ -191,7 +191,7 @@ struct asf_payload_parsing_information {
 
 // struct with variable length fields (all but the first field)
 struct asf_single_payload {
-	asf_byte stream_number;
+	asf_byte stream_id;
 	bool is_key_frame;
 	asf_dword media_object_number;
 	asf_dword offset_into_media_object;
@@ -223,7 +223,7 @@ struct asf_single_payload {
 	
 	asf_single_payload () 
 	{
-		stream_number = 0; media_object_number = 0; offset_into_media_object = 0;
+		stream_id = 0; media_object_number = 0; offset_into_media_object = 0;
 		replicated_data_length = 0; replicated_data = 0; payload_data_length = 0;
 		payload_data = 0; presentation_time = 0;
 	}
@@ -236,26 +236,24 @@ struct asf_multiple_payloads {
 	asf_byte payload_flags;
 	
 	asf_single_payload** payloads;
-	gint32 payloads_size;
+	int payloads_size;
 	
 	int get_number_of_payloads () { return payloads_size; }
 	int get_payload_length_type () { return (payload_flags & 0xC0) >> 6; }
 	
-	bool ResizeList (ASFParser* parser, gint32 requested_size);
+	bool ResizeList (ASFParser* parser, int requested_size);
 	bool FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi);
-	bool ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, gint32 count, gint32 start_index);
-	gint32 CountCompressedPayloads (ASFParser* parser, asf_single_payload* first); // Returns 0 on failure, values > 0 on success.
+	bool ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, int count, int start_index);
+	int CountCompressedPayloads (ASFParser* parser, asf_single_payload* first); // Returns 0 on failure, values > 0 on success.
 	
 	asf_multiple_payloads () { payload_flags = 0; payloads = NULL; payloads_size = 0;}
 	
 	~asf_multiple_payloads () 
 	{
 		if (payloads) {
-			int i = -1;
-			while (payloads [++i] != NULL)
-				delete payloads [i];
+			for (int i = 0; payloads[i]; i++)
+				delete payloads[i];
 			g_free (payloads);
-			payloads = NULL;
 		}
 	}
 	
@@ -265,32 +263,32 @@ struct asf_multiple_payloads {
 			return 0;
 			
 		asf_byte result = 0;
-		int index = 0;
-		while (index < get_number_of_payloads () && payloads [index] != NULL) {
-			int current = payloads [index]->stream_number;
+		
+		for (int i = 0; i < get_number_of_payloads () && payloads[i]; i++) {
+			asf_byte current = payloads[i]->stream_id;
 			result = current > result ? current : result;
-			index++;
 		}
+		
 		return result;
 	}
 	
-	asf_dword get_stream_size (asf_byte stream_number)
+	asf_dword get_stream_size (asf_byte stream_id)
 	{
 		if (!payloads)
 			return 0;
-
+		
 		asf_dword result = 0;
 		int index = 0;
 		while (index < get_number_of_payloads () && payloads [index] != NULL) {
-			if (payloads [index]->stream_number == stream_number) {
+			if (payloads [index]->stream_id == stream_id)
 				result += payloads [index]->payload_data_length;
-			}
+			
 			index++;
 		}
 		return result;
 	}
 	
-	bool write_payload_data (asf_byte stream_number, unsigned char* destination, size_t max_size)
+	bool write_payload_data (asf_byte stream_id, unsigned char *destination, size_t max_size)
 	{
 		if (!payloads)
 			return false;
@@ -300,7 +298,7 @@ struct asf_multiple_payloads {
 		size_t size = 0;
 		int index = 0;
 		while (index < get_number_of_payloads () && payloads [index] != NULL) {
-			if (payloads [index]->stream_number == stream_number) {
+			if (payloads[index]->stream_id == stream_id) {
 				size = payloads [index]->payload_data_length;
 				g_assert ((size_t) (destination - initial_destination) + size  <= max_size);
 				memcpy (destination, payloads [index]->payload_data, size);
@@ -311,33 +309,35 @@ struct asf_multiple_payloads {
 		return true;
 	}
 	
-	asf_dword get_presentation_time (asf_byte stream_number)
+	asf_dword get_presentation_time (asf_byte stream_id)
 	{
 		if (!payloads)
 			return 0;
-			
+		
 		int index = 0;
 		while (index < get_number_of_payloads () && payloads [index] != NULL) {
-			if (payloads [index]->stream_number == stream_number) {
+			if (payloads[index]->stream_id == stream_id)
 				return payloads [index]->get_presentation_time ();
-			}
+			
 			index++;
 		}
 		
 		return 0;
 	}
 		
-	bool is_key_frame (asf_dword stream_index)
+	bool is_key_frame (asf_dword stream_id)
 	{
 		if (payloads == NULL)
 			return false;
-			
+		
 		int index = 0;
 		while (payloads [index] != NULL) {
-			if (payloads [index]->stream_number == stream_index)
+			if (payloads[index]->stream_id == stream_id)
 				return payloads [index]->is_key_frame;
+			
 			index++;
 		}
+		
 		return false;
 	}
 	
@@ -421,7 +421,7 @@ struct asf_stream_properties : public asf_object {
 		return asf_guid_compare (&stream_type, &asf_guids_media_command);
 	}
 
-	asf_dword get_stream_number () 
+	asf_dword get_stream_id () 
 	{
 		return flags & 0x7F;
 	}
@@ -588,7 +588,7 @@ struct asf_marker : public asf_object {
 
 struct asf_bitrate_mutual_exclusion : public asf_object {
 	asf_guid exclusion_type;
-	asf_word stream_number_count;
+	asf_word stream_count;
 	
 	// data follows
 };
@@ -633,7 +633,7 @@ struct asf_extended_stream_properties : public asf_object {
 	asf_dword alternate_initial_buffer_fullness;
 	asf_dword maximum_object_size;
 	asf_dword flags;
-	asf_word stream_number;
+	asf_word stream_id;
 	asf_word stream_language_id_index;
 	asf_qword average_time_per_frame;
 	asf_word stream_name_count;

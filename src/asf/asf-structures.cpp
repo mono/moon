@@ -352,14 +352,14 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 {	
 	ASFSource* source = parser->source;
 	
-	if (!source->Read (&stream_number, 1))
+	if (!source->Read (&stream_id, 1))
 		return false;
 	
-	is_key_frame = stream_number & 0x80;
-	stream_number = stream_number & 0x7F;
+	is_key_frame = stream_id & 0x80;
+	stream_id = stream_id & 0x7F;
 	
-	if (!source->parser->IsValidStream (stream_number)) {
-		ASF_LOG ("asf_single_payload::FillInAll: Invalid stream number (%i).\n", (asf_dword) stream_number);
+	if (!source->parser->IsValidStream (stream_id)) {
+		ASF_LOG ("asf_single_payload::FillInAll: Invalid stream number (%d).\n", (int) stream_id);
 		return false;
 	}
 	
@@ -536,7 +536,7 @@ asf_multiple_payloads::CountCompressedPayloads (ASFParser* parser, asf_single_pa
 }
 
 bool
-asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, gint32 count, gint32 start_index)
+asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, int count, int start_index)
 {
 	asf_byte* data = first->payload_data;
 	asf_byte size = 0;
@@ -550,7 +550,7 @@ asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payl
 		payload = new asf_single_payload ();
 		payloads [start_index + i] = payload;
 		
-		payload->stream_number = first->stream_number;
+		payload->stream_id = first->stream_id;
 		payload->is_key_frame = first->is_key_frame;
 		payload->media_object_number = first->media_object_number + i;
 		payload->offset_into_media_object = 0;

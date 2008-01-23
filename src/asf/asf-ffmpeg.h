@@ -133,27 +133,22 @@ public:
 		this->buffer = buffer;
 	}
 	
-	virtual ~FFMPEGSource ()
-	{
-		buffer = NULL;
-	}
+	virtual ~FFMPEGSource () { };
 	
 	ByteIOContext* GetBuffer ()
 	{
 		return buffer;
 	}
 	
-	virtual bool ReadInternal (void* destination, size_t bytes)
+	virtual bool ReadInternal (void* destination, uint32_t bytes)
 	{
 		int result;
 		result = get_buffer (buffer, (unsigned char*) destination, (int) bytes);
 		return result != 0; // Is this correct
 	}
 	
-	virtual bool SeekInternal (size_t offset, int mode)
+	virtual bool SeekInternal (int64_t offset, int mode)
 	{
-		//printf ("FFMPEGSource::Seek (%i, %i).\n", offset, mode);
-		
 		int64_t result = url_fseek (buffer, offset, mode);
 		
 		return result; // Is this correct?
@@ -162,7 +157,7 @@ public:
 	virtual bool Eof () { return url_feof (buffer); }
 	virtual bool CanSeek () { return true; }
 	
-	virtual guint64 Position () 
+	virtual int64_t Position () 
 	{
 		return buffer ? (buffer->pos - (buffer->buf_end - buffer->buf_ptr)) : 0;
 	}

@@ -1,3 +1,12 @@
+2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* asf-structures.cpp|h: Fixed lots of integer-type
+	usage (e.g. don't use a size_t when it should be an int64_t, etc).
+
+	* asf-ffmpeg.cpp|h: Same.
+
+	* asf.cpp|h: Here too.
+
 2008-01-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h, asf-ffmpeg.h, asf-structures.cpp: Fix warnings.

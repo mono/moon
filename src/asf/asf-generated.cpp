@@ -123,7 +123,7 @@ void asf_bitrate_mutual_exclusion_dump (const asf_bitrate_mutual_exclusion* obj)
 	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
 	ASF_DUMP ("\tsize = %llu\n", obj->size);
 	ASF_DUMP ("\texclusion_type = %s\n", asf_guid_tostring (&obj->exclusion_type));
-	ASF_DUMP ("\tstream_number_count = %u\n", (asf_dword) obj->stream_number_count);
+	ASF_DUMP ("\tstream_count = %u\n", (asf_dword) obj->stream_count);
 }
 
 void asf_error_correction_dump (const asf_error_correction* obj)
@@ -188,7 +188,7 @@ void asf_extended_stream_properties_dump (const asf_extended_stream_properties* 
 	ASF_DUMP ("\talternate_initial_buffer_fullness = %u\n", (asf_dword) obj->alternate_initial_buffer_fullness);
 	ASF_DUMP ("\tmaximum_object_size = %u\n", (asf_dword) obj->maximum_object_size);
 	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
-	ASF_DUMP ("\tstream_number = %u\n", (asf_dword) obj->stream_number);
+	ASF_DUMP ("\tstream_id = %u\n", (asf_dword) obj->stream_id);
 	ASF_DUMP ("\tstream_language_id_index = %u\n", (asf_dword) obj->stream_language_id_index);
 	ASF_DUMP ("\taverage_time_per_frame = %llu\n", obj->average_time_per_frame);
 	ASF_DUMP ("\tstream_name_count = %u\n", (asf_dword) obj->stream_name_count);

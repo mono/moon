@@ -17,11 +17,11 @@
 #include <errno.h>
 #include <inttypes.h>
 
-typedef guint8 asf_byte;
-typedef guint16 asf_wchar; 
-typedef guint16 asf_word;
-typedef guint32 asf_dword;
-typedef guint64 asf_qword;
+typedef uint8_t asf_byte;
+typedef uint16_t asf_wchar; 
+typedef uint16_t asf_word;
+typedef uint32_t asf_dword;
+typedef uint64_t asf_qword;
 
 struct asf_guid;
 struct asf_object;
@@ -58,88 +58,86 @@ class ASFSource;
 
 class ASFSource {
 protected:
-	virtual bool ReadInternal (void* destination, size_t bytes) = 0;
-	virtual bool SeekInternal (size_t offset, int mode) = 0;
+	virtual bool ReadInternal (void *buf, uint32_t n) = 0;
+	virtual bool SeekInternal (int64_t offset, int mode) = 0;
 	
 public: 
-	ASFSource (ASFParser* parser);
+	ASFSource (ASFParser *parser);
 	virtual ~ASFSource ();
 	
 	// Reads the number of the specified encoded length (0-3)
 	// encoded length 3 = read 4 bytes, rest equals encoded length and #bytes
 	// into the destionation.
-	bool ReadEncoded (gint32 encoded_length, guint32* destionation);	
+	bool ReadEncoded (uint32_t encoded_length, uint32_t *dest);	
 	
-	bool Read (void* destination, size_t bytes); // Reads the requested number of bytes into the destination
-
-	bool Seek (size_t offset); // Seeks to the offset from the current position
-	bool Seek (size_t offset, int mode); // Seeks to the offset, with the specified mode (SEEK_CUR, SEEK_END, SEEK_SET)
+	bool Read (void *buf, size_t n); // Reads the requested number of bytes into the destination
 	
-	virtual guint64 Position () = 0; // Returns the position within the source (may not apply if the source is not seekable)
+	bool Seek (int64_t offset); // Seeks to the offset from the current position
+	bool Seek (int64_t offset, int mode); // Seeks to the offset, with the specified mode (SEEK_CUR, SEEK_END, SEEK_SET)
+	
+	virtual int64_t Position () = 0; // Returns the position within the source (may not apply if the source is not seekable)
 	virtual bool CanSeek () = 0;
 	virtual bool Eof () = 0;
 	
-	ASFParser* parser;
+	ASFParser *parser;
 };
 
 class ASFMediaSource : public ASFSource {
-public:
-	ASFMediaSource (ASFParser* parser, IMediaSource* source);
-	
+	IMediaSource *source;
+
 protected:
-	virtual bool ReadInternal (void* destination, size_t bytes);
-	virtual bool SeekInternal (size_t offset, int mode);	
-	virtual guint64 Position ();
+	virtual bool ReadInternal (void *buf, uint32_t n);
+	virtual bool SeekInternal (int64_t offset, int mode);	
+	virtual int64_t Position ();
 	virtual bool CanSeek ();
 	virtual bool Eof ();
 	
-private:
-	IMediaSource* source;
+public:
+	ASFMediaSource (ASFParser *parser, IMediaSource *source);
 };
 
 class ASFFileSource : public ASFSource {
+	char *filename;
+	FILE *fd;
+	
+protected:
+	virtual bool ReadInternal (void *buf, uint32_t n);
+	virtual bool SeekInternal (int64_t offset, int mode);
+	
 public:
-	ASFFileSource (ASFParser* parser, const char* filename);
+	ASFFileSource (ASFParser *parser, const char *filename);
 	virtual ~ASFFileSource ();
 	
-	virtual guint64 Position () { return fd == NULL ? 0 : ftell (fd); }
+	virtual int64_t Position () { return fd == NULL ? 0 : ftell (fd); }
 	virtual bool CanSeek () { return true; }
 	virtual bool Eof () { return fd == NULL ? false : feof (fd) != 0; }
 	
-	const char* GetFileName () { return filename; }
-	
-protected:
-	virtual bool ReadInternal (void* destination, size_t bytes);
-	virtual bool SeekInternal (size_t offset, int mode);
-	
-private:
-	char* filename;
-	FILE* fd;
+	const char *GetFileName () { return filename; }
 };
 
 class ASFPacket {
+	int64_t position; // The position of this packet. -1 if not known.
+	int index; // The index of this packet. -1 if not known.
+	
 public:
 	ASFPacket ();	
 	virtual ~ASFPacket ();
 	
-	gint32 GetPayloadCount (); // Returns the number of payloads in this packet.
-	asf_single_payload* GetPayload (gint32 index /* 0 based */);
-	gint64 GetPts (gint32 stream_number /* 1 - 127 */); // Gets the pts of the first payload.
-	asf_single_payload* GetFirstPayload (gint32 stream_number /* 1 - 127 */); // Gets the index first payload of the specified stream.
+	asf_multiple_payloads *payloads; // The payloads in this packet
 	
-	asf_multiple_payloads* payloads; // The payloads in this packet
-
-private:
-	gint32 index; // The index of this packet. -1 if not known.
-	gint64 position; // The position of this packet. -1 if not known.		
+	int GetPayloadCount (); // Returns the number of payloads in this packet.
+	asf_single_payload *GetPayload (int index /* 0 based */);
+	
+	int64_t GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload.
+	asf_single_payload *GetFirstPayload (int stream_id /* 1 - 127 */); // Gets the index first payload of the specified stream.
 };
 
 struct ASFFrameReaderData {
-	asf_single_payload* payload;
-	ASFFrameReaderData* prev;
-	ASFFrameReaderData* next;
+	asf_single_payload *payload;
+	ASFFrameReaderData *prev;
+	ASFFrameReaderData *next;
 	
-	ASFFrameReaderData (asf_single_payload* load) 
+	ASFFrameReaderData (asf_single_payload *load) 
 	{
 		payload = load;
 		prev = NULL;
@@ -179,149 +177,158 @@ struct ASFFrameReaderData {
 */
 
 class ASFFrameReader {
+	ASFParser *parser;
+	
+	int current_packet_index;
+	int script_command_stream_index;
+	
+	// The queue of payloads we've built.
+	ASFFrameReaderData *first;
+	ASFFrameReaderData *last;
+	
+	// A list of the payloads in the current frame
+	asf_single_payload **payloads;
+	int payloads_size;
+	
+	// Information about the current frame.
+	uint64_t size;
+	
+	bool eof;
+	
+	bool ResizeList (int size); // Resizes the list of payloads to the requested size. 
+	bool ReadMore (); // Reads another packet and stuffs the payloads into our queue 
+	void RemoveAll (); // Deletes the entire queue of payloads (and deletes every element)
+	void Remove (ASFFrameReaderData *data); // Unlinks the payload from the queue and deletes it.
+	
+	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
+	
 public:
-	ASFFrameReader (ASFParser* parser);
+	ASFFrameReader (ASFParser *parser);
 	virtual ~ASFFrameReader ();
 	
 	// Can we seek?
 	bool CanSeek () { return true; }
 	
 	// Seek to the frame with the provided pts 
-	bool Seek (gint32 stream_number, gint64 pts);
+	bool Seek (int stream_id, int64_t pts);
 	
 	// Advance to the next frame
 	// Returns false if unsuccessful (if due to no more data, eof is set, otherwise some error occurred)
 	bool Advance ();
 	
 	// Advance to the next frame of the specified stream number
-	// stream_number = 0 means any stream
-	bool Advance (gint32 stream_number);
+	// stream_id = 0 means any stream
+	bool Advance (int stream_id);
 	
 	// Write the frame's data to a the destination
-	bool Write (void* destination);
+	bool Write (void *dest);
 	
 	// Information about the current frame
-	guint64 Size () { return size; }
+	uint64_t Size () { return size; }
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
-	gint64 Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
-	gint32 StreamNumber () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->stream_number : 0; }
+	int64_t Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
+	int StreamId () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->stream_id : 0; }
 	bool Eof () { return eof; } // EOF might be true even if there are more packets in the reader (if Advance () fails, and Eof () = true, then advance failed because of eof.
 	void FindScriptCommandStream ();
-	
-private:
-	ASFParser* parser;
-	
-	gint32 current_packet_index;
-	gint32 script_command_stream_index;
-	
-	// The queue of payloads we've built.
-	ASFFrameReaderData* first;
-	ASFFrameReaderData* last;
-	
-	// A list of the payloads in the current frame
-	asf_single_payload** payloads;
-	gint32 payloads_size;
-	
-	// Information about the current frame.
-	guint64 size;
-	
-	bool eof;
-	
-	bool ResizeList (gint32 size); // Resizes the list of payloads to the requested size. 
-	bool ReadMore (); // Reads another packet and stuffs the payloads into our queue 
-	void RemoveAll (); // Deletes the entire queue of payloads (and deletes every element)
-	void Remove (ASFFrameReaderData* data); // Unlinks the payload from the queue and deletes it.
-	
-	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
 };
 
 class ASFParser {
 private:
+	struct error {
+		error *next;
+		char *msg;
+	};
+	
+	error *errors;
+	
 	void Initialize ();
 	bool ReadData ();
-	asf_object* ReadObject (asf_object* guid);
-	void SetStream (gint32 stream_index, asf_stream_properties* stream);
-
+	asf_object *ReadObject (asf_object *guid);
+	void SetStream (int stream_id, asf_stream_properties *stream);
+	
 public:
-	ASFParser (const char* filename);
-	ASFParser (ASFSource* source); // The parser takes ownership of the source and will delete it when the parser is deleted.
+	ASFParser (const char *filename);
+	ASFParser (ASFSource *source); // The parser takes ownership of the source and will delete it when the parser is deleted.
 	virtual ~ASFParser ();
 	
-	bool ReadHeader (); // Reads the header of the asf file.
-	bool ReadPacket (ASFPacket* packet); // Reads the packet at the current position.
+	bool ReadHeader ();
+	bool ReadPacket (ASFPacket *packet);
+	
 	// Seeks to the packet index (as long as the packet index >= 0), then reads it.
 	// If the packet index is < 0, then just read at the current position
-	bool ReadPacket (ASFPacket* packet, gint32 packet_index); 
+	bool ReadPacket (ASFPacket *packet, int packet_index); 
 	
-	bool VerifyHeaderDataSize (guint64 size); // Verifies that the requested size is a size that can be inside the header.
-	void* Malloc (gint32 size); // Allocates the requested memory and verifies that the size can actually be contained within the header. Reports an Out of Memory error if the memory can't be allocated, and returns NULL
-	void* MallocVerified (gint32 size); // Allocates the requested memory (no size checking), reports an Out of Memory error if the memory can't be allocated, and returns NULL
-
+	// Verifies that the requested size is a size that can be inside the header.
+	bool VerifyHeaderDataSize (uint32_t size);
+	
+	// Allocates the requested memory (no size checking), reports
+	// an Out of Memory error if the memory can't be allocated, and returns
+	// NULL
+	void *MallocVerified (uint32_t size);
+	
+	// Allocates the requested memory and verifies that the size
+	// can actually be contained within the header. Reports an Out of Memory
+	// error if the memory can't be allocated, and returns NULL
+	void *Malloc (uint32_t size);
+	
 	// Error handling
-	const char* GetLastError (); // Returns the last error (NULL if no errors have been reported)
-	void AddError (const char* err); // Makes a copy of the provided error string.
-	void AddError (char* err); // Frees the provided error string (allows you to do things like: AddError (g_strdup_printf ("error #%i", 2)))
-
+	const char *GetLastError ();
+	void AddError (const char *err);
+	void AddError (char *err);
+	
 	// Stream index: valid values range from 1 to 127
 	// If the stream_index doesn't specify a valid stream (for whatever reason), NULL is returned.
-	asf_stream_properties* GetStream (gint32 stream_index);
+	asf_stream_properties *GetStream (int stream_index);
 	
 	// Checks if the stream_index (range 1 - 127) is a valid stream index in the asf file.
-	bool IsValidStream (gint32 stream_index);
+	bool IsValidStream (int stream_index);
 	
 	// Returns 0 on failure, otherwise the offset of the packet index.
-	guint64 GetPacketOffset (gint32 packet_index);
+	int64_t GetPacketOffset (int packet_index);
 	
 	// Returns the index of the packet at the specified offset (from the beginning of the file)
-	gint32 GetPacketIndex (guint64 offset);
+	int GetPacketIndex (int64_t offset);
 	
 	// Searches the header objects for the specified guid
 	// returns -1 if nothing is found.
-	int GetHeaderObjectIndex (const asf_guid* guid, int start = 0);
+	int GetHeaderObjectIndex (const asf_guid *guid, int start = 0);
 	
 	// Returns the packet index where the desired pts is found.
 	// Returns -1 on failure.
-	gint32 GetPacketIndexOfPts (gint32 stream_number, gint64 pts);
-
+	int GetPacketIndexOfPts (int stream_id, int64_t pts);
+	
 	// The number of packets in the stream (0 if unknown).
-	guint64 GetPacketCount ();
-
+	uint64_t GetPacketCount ();
+	
 	// Field accessors
 	
-	asf_header* GetHeader ();
-	asf_object* GetHeader (int index);
-	asf_file_properties* GetFileProperties ();
-	asf_object* GetHeaderObject (const asf_guid* guid);
-
+	asf_header *GetHeader ();
+	asf_object *GetHeader (int index);
+	asf_file_properties *GetFileProperties ();
+	asf_object *GetHeaderObject (const asf_guid *guid);
+	
 	// This callback is called whenever a script command payload is encountered while decoding.
-	typedef void embedded_script_command_callback (void* state, char* type, char* text, guint64 pts);
-	void* embedded_script_command_state;
-	embedded_script_command_callback* embedded_script_command;
+	typedef void embedded_script_command_callback (void *state, char *type, char *text, int64_t pts);
+	embedded_script_command_callback *embedded_script_command;
+	void *embedded_script_command_state;
 	
 	// The following fields are available only after ReadHeader is called.
 	
-	asf_header* header;
-	asf_object** header_objects;
-	asf_file_properties* file_properties;
-	asf_header_extension* header_extension;
-	asf_stream_properties* stream_properties [127];
-	asf_marker* marker;
-	asf_script_command* script_command;
+	asf_header *header;
+	asf_object **header_objects;
+	asf_file_properties *file_properties;
+	asf_header_extension *header_extension;
+	asf_stream_properties *stream_properties[127];
+	asf_marker *marker;
+	asf_script_command *script_command;
 	
-	asf_data* data;
-	guint64 data_offset; // location of data object
-	guint64 packet_offset; // location of the beginning of the first packet
-	guint64 packet_offset_end; // location of the end of the last packet
-
-	ASFSource* source; // The source used to read data.
+	asf_data *data;
+	int64_t data_offset; // location of data object
+	int64_t packet_offset; // location of the beginning of the first packet
+	int64_t packet_offset_end; // location of the end of the last packet
 	
-private:
-	struct error {
-		char* msg;
-		error* next;
-	};
-	error* errors;
+	ASFSource *source; // The source used to read data.
 };
 
 
-#endif
+#endif /* _ASF_MOONLIGHT_H */

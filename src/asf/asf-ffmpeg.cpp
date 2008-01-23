@@ -116,8 +116,8 @@ int ffmpeg_asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
 		av_set_pts_info(stream, 32, 1, 1000);
 		stream->priv_data = parser;
 		stream->codec->codec_type = codec_type;
-		stream->id = asp->get_stream_number ();
-		parser->AddStreamIndex (s->nb_streams - 1, asp->get_stream_number ());
+		stream->id = asp->get_stream_id ();
+		parser->AddStreamIndex (s->nb_streams - 1, asp->get_stream_id ());
 		stream->start_time = file_properties->preroll;
 		
 		if (!file_properties->is_broadcast ()) {
@@ -233,15 +233,15 @@ int ffmpeg_asf_read_packet(AVFormatContext *s, AVPacket *av_packet)
 	do {	
 		if (!reader->Advance ())
 			return -1;
-	} while (parser->ConvertStreamIndex (reader->StreamNumber ()) < 0);
+	} while (parser->ConvertStreamIndex (reader->StreamId ()) < 0);
 	
 	AVPacket* pkt = new AVPacket ();
 	
 	av_new_packet (pkt, reader->Size ());
-		
+	
 	pkt->pts = reader->Pts ();
 	pkt->dts = pkt->pts;
-	pkt->stream_index = parser->ConvertStreamIndex (reader->StreamNumber ()); 
+	pkt->stream_index = parser->ConvertStreamIndex (reader->StreamId ()); 
 	pkt->pos = parser->source->Position ();
 	pkt->size = reader->Size ();
 	reader->Write (pkt->data);
