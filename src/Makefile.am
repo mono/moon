@@ -10,7 +10,6 @@ libmooninclude_headers = \
 	animation.h	\
 	array.h		\
 	asf/asf.h		\
-	asf/asf-ffmpeg.h	\
 	asf/asf-generated.h	\
 	asf/asf-guids.h	\
 	asf/asf-structures.h	\
@@ -65,7 +64,6 @@ libmoon_la_SOURCES = 	\
 	animation.cpp	\
 	array.cpp	\
 	asf/asf.cpp		\
-	asf/asf-ffmpeg.cpp	\
 	asf/asf-generated.cpp	\
 	asf/asf-guids.cpp	\
 	asf/asf-structures.cpp	\
