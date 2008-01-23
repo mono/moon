@@ -1,3 +1,13 @@
+2008-01-23  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.cpp, stylus.h: initial hit testing stuff.  right now the
+	only tests that are implemented are endcap (ellipse) vs. point,
+	and segment vs. segment (although this one isn't the full test, as
+	we're using the stroke line, as opposed to the exterior lines
+	created by the ellipse pen tracing that line).
+
+	* rect.h: add PointInside (Point p).
+	
 2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline-ffmpeg.cpp: Don't #include "asf/asf-ffmpeg.h" anymore,

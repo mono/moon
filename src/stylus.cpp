@@ -139,14 +139,263 @@ Stroke::GetOldBounds ()
 }
 
 bool
-Stroke::HitTest (StylusPointCollection *stylusPoints)
+Stroke::HitTestEndcapSegment (Point c,
+			      double w, double h,
+			      Point p1, Point p2)
+{
+#if DEBUG_HITTEST
+	printf ("HitTestEndcapSegment: (%g,%g / %g, %g) hits segment (%g,%g  - %g,%g)?\n",
+		c.x, c.y,
+		w, h,
+		p1.x, p1.y,
+		p2.x, p2.y);
+#endif
+
+	return false;
+}
+
+static bool
+intersect_line_2d (Point p1, Point p2, Point p3, Point p4)
+{
+	// taken from http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
+	// line segments are p1 - p2 and p3 - p4
+
+	double denom = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);
+
+	if (denom == 0) // they're parallel
+		return false;
+
+	double ua = (p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x);
+	ua /= denom;
+	if (ua >= 0 && ua <= 1)
+		return true;
+
+	double ub = (p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x);
+	ub /= denom;
+	if (ub >= 0 && ub <= 1)
+		return true;
+
+	return false;
+}
+
+bool
+Stroke::HitTestSegmentSegment (Point stroke_p1, Point stroke_p2,
+			       double w, double h,
+			       Point p1, Point p2)
+{
+#if DEBUG_HITTEST
+	printf ("HitTestSegmentSegment: (%g,%g - %g,%g / %g, %g) hits segment (%g,%g - %g,%g) ?\n",
+		stroke_p1.x, stroke_p1.y,
+		stroke_p2.x, stroke_p2.y,
+		w, h,
+		p1.x, p1.y,
+		p2.x, p2.y);
+#endif
+	bool rv = intersect_line_2d (stroke_p1, stroke_p2, p1, p2);
+#if DEBUG_HITTEST
+	printf (" + %s\n", rv ? "TRUE" : "FALSE");
+#endif
+	return rv;
+}
+
+bool
+Stroke::HitTestEndcapPoint (Point c,
+			    double w, double h,
+			    Point p)
+{
+#if DEBUG_HITTEST
+	printf ("HitTestEndcapPoint: (%g,%g / %g, %g) hits point %g,%g ?\n",
+		c.x, c.y,
+		w, h,
+		p.x, p.y);
+#endif
+
+	Point dp = p - c;
+	double a, b;
+
+	if (w > h) {
+		a = w / 2;
+		b = h / 2;
+	}
+	else {
+		a = h / 2;
+		b = w / 2;
+	}
+
+	bool rv = ((dp.x * dp.x) / (a * a) + (dp.y * dp.y) / (b * b)) < 1;
+#if DEBUG_HITTEST
+	printf (" + %s\n", rv ? "TRUE" : "FALSE");
+#endif
+	return rv;
+}
+
+bool
+Stroke::HitTestSegmentPoint (Point stroke_p1, Point stroke_p2,
+			     double w, double h,
+			     Point p)
+{
+#if DEBUG_HITTEST
+	printf ("HitTestSegment: (%g,%g - %g,%g / %g, %g) hits point (%g,%g) ?\n",
+		stroke_p1.x, stroke_p1.y,
+		stroke_p2.x, stroke_p2.y,
+		w, h,
+		p.x, p.y);
+#endif
+
+	return false;
+}
+			      
+
+bool
+Stroke::HitTestSegment (Point p1, Point p2, double w, double h, StylusPointCollection *stylusPoints)
 {
 	Collection::Node *n;
+	StylusPoint *sp;
 
-	Rect bounds = GetBounds();
+	if (HitTestEndcap (p1, w, h, stylusPoints))
+		return true;
+
+	if (HitTestEndcap (p2, w, h, stylusPoints))
+		return true;
 
 	for (n = (Collection::Node *) stylusPoints->list->First (); n; n = (Collection::Node *) n->next) {
-		StylusPoint *sp = (StylusPoint*)n->obj;
+		sp = (StylusPoint*)n->obj;
+
+		if (n->next == NULL) {
+			Point p (stylus_point_get_x (sp),
+				 stylus_point_get_y (sp));
+
+			if (!bounds.PointInside (p))
+				continue;
+
+			if (HitTestSegmentPoint (p1, p2,
+						 w, h,
+						 p))
+				return true;
+		}
+		else  {
+			n = (Collection::Node *) n->next;
+			StylusPoint *next_sp = (StylusPoint*)n->obj;
+
+			Point p (stylus_point_get_x (sp),
+				 stylus_point_get_y (sp));
+			Point next_p (stylus_point_get_x (next_sp),
+				      stylus_point_get_y (next_sp));
+
+			if (!bounds.PointInside (p)
+			    && !bounds.PointInside (next_p))
+				continue;
+
+			if (HitTestSegmentSegment (p1, p2,
+						   w, h,
+						   p, next_p))
+				return true;
+		}
+	}
+
+	return false;
+}
+
+bool
+Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylusPoints)
+{
+	Collection::Node *n;
+	StylusPoint *sp;
+
+	for (n = (Collection::Node *) stylusPoints->list->First (); n; n = (Collection::Node *) n->next) {
+		sp = (StylusPoint*)n->obj;
+		if (n->next == NULL) {
+			Point p (stylus_point_get_x (sp),
+				 stylus_point_get_y (sp));
+
+			if (!bounds.PointInside (p))
+				continue;
+
+			if (HitTestEndcapPoint (p,
+						w, h,
+						Point (stylus_point_get_x (sp),
+						       stylus_point_get_y (sp))))
+			  return true;
+		}
+		else  {
+			n = (Collection::Node *) n->next;
+			StylusPoint *next_sp = (StylusPoint*)n->obj;
+
+			Point p (stylus_point_get_x (sp),
+				 stylus_point_get_y (sp));
+			Point next_p (stylus_point_get_x (next_sp),
+				      stylus_point_get_y (next_sp));
+
+			if (!bounds.PointInside (p)
+			    && !bounds.PointInside (next_p))
+				continue;
+
+			if (HitTestEndcapSegment (p,
+						  w, h,
+						  Point (stylus_point_get_x (sp),
+							 stylus_point_get_y (sp)),
+						  Point (stylus_point_get_x (next_sp),
+							 stylus_point_get_y (next_sp))))
+				return true;
+		}
+	}
+
+	return false;
+}
+
+bool
+Stroke::HitTest (StylusPointCollection *stylusPoints)
+{
+	StylusPointCollection *myStylusPoints = stroke_get_stylus_points (this);
+
+	if (myStylusPoints->list->Length() == 0) {
+		printf ("no points in the collection, returning false!\n");
+		return false;
+	}
+
+	DrawingAttributes *da = stroke_get_drawing_attributes (this);
+	Collection::Node *n;
+	StylusPoint *sp;
+
+	double height, width;
+
+	if (da) {
+		height = drawing_attributes_get_height (da) + 4.0;
+		width = drawing_attributes_get_width (da) + 4.0;
+	}
+	else {
+		height = width = 6.0;
+
+	}
+
+	/* test the beginning endcap */
+	n = (Collection::Node *) myStylusPoints->list->First ();
+	sp = (StylusPoint*)n->obj;
+	if (HitTestEndcap (Point (stylus_point_get_x (sp),
+				  stylus_point_get_y (sp)),
+			   width, height, stylusPoints))
+		return true;
+
+	/* test all the interior line segments */
+	StylusPoint *prev_point = sp;
+	for (n = (Collection::Node *)n->next; n; n = (Collection::Node *) n->next) {
+		sp = (StylusPoint*)n->obj;
+		if (HitTestSegment (Point (stylus_point_get_x (prev_point),
+					   stylus_point_get_y (prev_point)),
+				    Point (stylus_point_get_x (sp),
+					   stylus_point_get_y (sp)),
+				    width, height, stylusPoints))
+			return true;
+	}
+
+	/* the the ending endcap */
+	if (myStylusPoints->list->Length() > 1) {
+		n = (Collection::Node *) myStylusPoints->list->Last ();
+		sp = (StylusPoint*)n->obj;
+		if (HitTestEndcap (Point (stylus_point_get_x (sp),
+					  stylus_point_get_y (sp)),
+				   width, height, stylusPoints))
+			return true;
 	}
 
 	return false;

@@ -122,6 +122,14 @@ class Stroke : public DependencyObject {
 
 	void AddStylusPointToBounds (StylusPoint *stylus_point);
 	void ComputeBounds ();
+
+	bool HitTestEndcapSegment (Point c, double w, double h, Point p1, Point p2);
+	bool HitTestEndcapPoint (Point c, double w, double h, Point p1);
+	bool HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylusPoints);
+
+	bool HitTestSegmentSegment (Point stroke_p1, Point stroke_p2, double w, double h, Point p1, Point p2);
+	bool HitTestSegmentPoint (Point stroke_p1, Point stroke_p2, double w, double h, Point p1);
+	bool HitTestSegment (Point stroke_p1, Point stroke_p2, double w, double h, StylusPointCollection *stylusPoints);
 };
 
 Stroke*                stroke_new ();

@@ -14,6 +14,8 @@
 #include <math.h>
 #include <gtk/gtk.h>
 
+#include "point.h"
+
 // map to System.Windows.Rect
 struct Rect {
  public:
@@ -39,6 +41,11 @@ struct Rect {
 	bool PointInside (double px, double py)
 	{
 		return px > x && px < (x + w) && py > y && py < (y + h);
+	}
+
+	bool PointInside (Point p)
+	{
+		return p.x > x && p.x < (x + w) && p.y > y && p.y < (y + h);
 	}
 
 	bool IntersectsWith (const Rect& rect)
