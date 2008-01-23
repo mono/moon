@@ -946,14 +946,17 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 		TryOpen ();
 	} else {
 		downloaded_file = new ProgressiveSource (mplayer->media);
+		
+		// FIXME: error check Initialize()
+		downloaded_file->Initialize ();
+		
 		downloader->SetWriteFunc (data_write, size_notify, this);
 		// This is what actually triggers the download
 		downloader->Send ();
 	}
 	
-	if (!download_complete) {
+	if (!download_complete)
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-	}
 	
 	Invalidate ();	
 }

@@ -1828,6 +1828,7 @@ FileSource::Seek (int64_t offset, int mode)
 		
 		return true;
 	default:
+		// invalid 'whence' argument
 		return false;
 	}
 }
@@ -2145,59 +2146,52 @@ ProgressiveSource::CancelWait ()
 bool
 ProgressiveSource::Seek (int64_t offset, int mode)
 {
-	bool result = false;
+	bool need_wait;
 	
-	if (fd == -1) {
-		media->AddMessage (MEDIA_INVALID_ARGUMENT, "File has not been opened.");
+	if (fd == -1)
+		return false;
+	
+	switch (mode) {
+	case SEEK_SET:
+		// no-op, offset is already relative to BOF
+		break;
+	case SEEK_CUR:
+		offset += pos;
+		break;
+	case SEEK_END:
+		if (size == -1) {
+			// we don't know the stream size, so cannot perform this seek
+			return false;
+		}
+		
+		if (offset > 0) {
+			// attempting to seek beyond eof
+			return false;
+		}
+		
+		offset += size;
+		break;
+	default:
+		// invalid 'whence' argument
+		return false;
+	}
+	
+	if (offset < 0) {
+		// attempting to seek to an invalid position
 		return false;
 	}
 	
 	Lock ();
-	
-	// Calculate the position from the mode and offset.
-	int64_t position;
-	
-	switch (mode) {
-	case SEEK_CUR: position = GetPosition () + offset; break;
-	case SEEK_SET: position = offset; break;
-	default:
-		// Due to the fact that many times we do not know the size of the file, it does not make sense to support SEEK_END
-		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Invalid seek mode: %i", mode));
-		return false;
-	}
-	
-	// Seeked beyond end of file?
-	if (size >= 0 && position > size) {
-		media->AddMessage (MEDIA_FAIL, "Seek beyond eof.");
-		result = false;
-		goto cleanup;
-	}
-	
-	// If the requested position isn't downloaded yet, wait for it to be.
-	if (position > write_pos) {
-		printf ("ProgressiveSource::Seek (%lld): Seeked beyond written size (%lld)\n", position, write_pos);
-		Unlock ();
-		if (!(WaitForPosition (position)))
-			return false;
-		Lock ();
-	}
-	
-	// Finally seek to where we want to be
-	if ((result = lseek (fd, position, SEEK_SET) != -1)) {
-		/* update state */
-		pos = position;
-		
-		bufptr = buffer;
-		buflen = 0;
-		
-		eof = false;
-	}
-	
-cleanup:
-	
+	need_wait = offset > write_pos;
 	Unlock ();
 	
-	return result;
+	if (need_wait) {
+		/* wait for all of the requested data to become available */
+		if (!(WaitForPosition (offset)))
+			return false;
+	}
+	
+	return FileSource::Seek (offset, SEEK_SET);
 }
 
 bool

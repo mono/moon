@@ -1,5 +1,12 @@
 2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (SetSource): Initialize the ProgressiveSource.
+
+	* pipeline.cpp (ProgressiveSource::Seek): Simplified by calling
+	parent class's implementation.
+
+2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pipeline.cpp|h: ProgressiveSource now inherits from FileSource.
 
 2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
