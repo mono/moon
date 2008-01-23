@@ -510,6 +510,7 @@ public:
 // Implementations
  
 class FileSource : public IMediaSource {
+protected:
 	char *filename;
 	int64_t pos;
 	int fd;
@@ -540,7 +541,7 @@ public:
 	virtual bool Eof ();
 };
 
-class ProgressiveSource : public IMediaSource {
+class ProgressiveSource : public FileSource {
 	pthread_mutex_t write_mutex;
 	pthread_cond_t write_cond;
 	bool cancel_wait;
@@ -548,16 +549,6 @@ class ProgressiveSource : public IMediaSource {
 	
 	int64_t write_pos;
 	int64_t size;
-	
-	char *filename;
-	int64_t pos;
-	int fd;
-	
-	char buffer[4096];
-	uint32_t buflen;
-	char *bufptr;
-	
-	bool eof;
 	
 	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
 	static void notify_size (int64_t size, gpointer cb_data);
@@ -568,8 +559,6 @@ public:
 	
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
-	
-	const char *GetFilename () { return filename; }
 	
 	// The size of the currently available data
 	void SetCurrentSize (int64_t size);
@@ -590,14 +579,9 @@ public:
 	void Lock ();
 	void Unlock ();
 	
-	virtual bool IsSeekable ();
-	virtual int64_t GetPosition ();
-	virtual bool Seek (int64_t offset);
 	virtual bool Seek (int64_t offset, int mode);
-	virtual int32_t Read (void *buf, uint32_t size);
 	virtual bool ReadAll (void *buf, uint32_t size);
 	virtual bool Peek (void *buf, uint32_t size);
-	virtual bool Eof ();
 	
 	void Write (void *buf, int64_t offset, int32_t n);
 	void NotifySize (int64_t size);

@@ -1,5 +1,9 @@
 2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pipeline.cpp|h: ProgressiveSource now inherits from FileSource.
+
+2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pipeline.cpp (FileSource::Read): Optimized a bit more for cases
 	where the caller is trying to read a block larger than our
 	internal buffer.

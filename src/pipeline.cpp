@@ -1711,7 +1711,11 @@ FileSource::FileSource (Media *media) : IMediaSource (media)
 
 FileSource::FileSource (Media *media, const char *filename) : IMediaSource (media)
 {
-	this->filename = g_strdup (filename);
+	if (filename)
+		this->filename = g_strdup (filename);
+	else
+		this->filename = NULL;
+	
 	bufptr = buffer;
 	buflen = 0;
 	pos = -1;
@@ -1948,26 +1952,14 @@ FileSource::Eof ()
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media) : IMediaSource (media)
+ProgressiveSource::ProgressiveSource (Media *media) : FileSource (media, NULL)
 {
 	pthread_mutex_init (&write_mutex, NULL);
 	pthread_cond_init (&write_cond, NULL);
 	cancel_wait = false;
 	wait_count = 0;
-	
 	write_pos = 0;
 	size = -1;
-	
-	filename = NULL;
-	pos = -1;
-	fd = -1;
-	
-	bufptr = buffer;
-	buflen = 0;
-	
-	eof = true;
-	
-	Initialize ();
 }
 
 ProgressiveSource::~ProgressiveSource ()
@@ -1975,13 +1967,8 @@ ProgressiveSource::~ProgressiveSource ()
 	pthread_mutex_destroy (&write_mutex);
 	pthread_cond_destroy (&write_cond);
 	
-	if (fd != -1)
-		close (fd);
-	
-	if (filename != NULL) {
+	if (filename != NULL)
 		unlink (filename);
-		g_free (filename);
-	}
 }
 
 MediaResult
@@ -1990,7 +1977,7 @@ ProgressiveSource::Initialize ()
 	if (filename != NULL)
 		return MEDIA_SUCCESS;
 	
-	filename = g_build_filename (g_get_tmp_dir (), "MoonlightMediaStream.XXXXXX", NULL);
+	filename = g_build_filename (g_get_tmp_dir (), "MoonlightProgressiveStream.XXXXXX", NULL);
 	if ((fd = g_mkstemp (filename)) == -1) {
 		g_free (filename);
 		filename = NULL;
@@ -2153,24 +2140,6 @@ ProgressiveSource::CancelWait ()
 }
 
 bool
-ProgressiveSource::IsSeekable ()
-{
-	return true;
-}
-
-int64_t
-ProgressiveSource::GetPosition ()
-{
-	return pos;
-}
-
-bool
-ProgressiveSource::Seek (int64_t offset)
-{
-	return Seek (offset, SEEK_CUR);
-}
-
-bool
 ProgressiveSource::Seek (int64_t offset, int mode)
 {
 	bool result = false;
@@ -2228,60 +2197,10 @@ cleanup:
 	return result;
 }
 
-int32_t
-ProgressiveSource::Read (void *buf, uint32_t n)
-{
-	ssize_t r, nread = 0;
-	
-	if (fd == -1) {
-		errno = EINVAL;
-		return -1;
-	}
-	
-	while (n > 0) {
-		if ((r = MIN (buflen, n)) > 0) {
-			/* copy what we can from our existing buffer */
-			memcpy (((char *) buf) + nread, bufptr, r);
-			bufptr += r;
-			buflen -= r;
-			nread += r;
-			pos += r;
-			n -= r;
-		}
-		
-		if (n >= sizeof (buffer)) {
-			/* bypass intermediate buffer */
-			bufptr = buffer;
-			if ((r = noint_read (fd, ((char *) buf) + nread, n)) > 0) {
-				nread += r;
-				pos += r;
-				n -= r;
-			}
-		} else if (n > 0) {
-			/* buffer more data */
-			if ((r = noint_read (fd, buffer, sizeof (buffer))) > 0)
-				buflen = (uint32_t) r;
-			
-			bufptr = buffer;
-		}
-		
-		if (r == -1 && nread == 0)
-			return -1;
-		
-		if (r == 0) {
-			eof = true;
-			break;
-		}
-	}
-	
-	return nread;
-}
-
 bool
 ProgressiveSource::ReadAll (void *buf, uint32_t n)
 {
 	bool need_wait;
-	int32_t nread;
 	
 	if (fd == -1) {
 		errno = EINVAL;
@@ -2298,17 +2217,13 @@ ProgressiveSource::ReadAll (void *buf, uint32_t n)
 			return false;
 	}
 	
-	if ((nread = Read (buf, n)) == -1 || (uint32_t) nread < n)
-		return false;
-	
-	return true;
+	return FileSource::ReadAll (buf, n);
 }
 
 bool
 ProgressiveSource::Peek (void *buf, uint32_t n)
 {
 	bool need_wait;
-	ssize_t r;
 	
 	if (fd == -1)
 		return false;
@@ -2328,36 +2243,7 @@ ProgressiveSource::Peek (void *buf, uint32_t n)
 			return false;
 	}
 	
-	if (buflen < n) {
-		/* need to buffer more data */
-		memmove (buffer, bufptr, buflen);
-		bufptr = buffer;
-		
-		do {
-			if ((r = noint_read (fd, bufptr + buflen, n - buflen)) == 0) {
-				eof = true;
-				break;
-			} else if (r == -1)
-				break;
-			
-			buflen += r;
-		} while (buflen < n);
-	}
-	
-	if (buflen < n) {
-		/* can't peek as much data as requested... */
-		return false;
-	}
-	
-	memcpy (((char *) buf), bufptr, n);
-	
-	return true;
-}
-
-bool
-ProgressiveSource::Eof ()
-{
-	return eof;
+	return FileSource::Peek (buf, n);
 }
 
 int64_t
