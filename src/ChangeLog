@@ -1,3 +1,9 @@
+2008-01-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Add support for different PenLineCap on Line (part 
+	of #345888). Fix Polyline when a single segment is used (removed 
+	TODO). Avoid extra work when a start/end PenLineCap is Flat (default)
+
 2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (SetSource): Initialize the ProgressiveSource.

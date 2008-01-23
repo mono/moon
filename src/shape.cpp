@@ -1050,6 +1050,63 @@ DependencyProperty* Line::Y1Property;
 DependencyProperty* Line::X2Property;
 DependencyProperty* Line::Y2Property;
 
+#define LINECAP_SMALL_OFFSET	0.1
+
+// Draw the start and end line caps, if not flat. This doesn't draw the line itself
+// note: function shared with single-segment Polyline
+static void
+line_draw_caps (cairo_t *cr, Shape* shape, double x1, double y1, PenLineCap start, double x2, double y2, PenLineCap end)
+{
+	double sx1, sx2, sy1, sy2;
+	if (x1 == x2) {
+		// vertical line
+		sx1 = x1;
+		sx2 = x2;
+		if (y1 > y2) {
+			sy1 = y1 + LINECAP_SMALL_OFFSET;
+			sy2 = y2 - LINECAP_SMALL_OFFSET;
+		} else {
+			sy1 = y1 - LINECAP_SMALL_OFFSET;
+			sy2 = y2 + LINECAP_SMALL_OFFSET;
+		}
+	} else if (y1 == y2) {
+		// horizontal line
+		sy1 = y1;
+		sy2 = y2;
+		if (x1 > x2) {
+			sx1 = x1 + LINECAP_SMALL_OFFSET;
+			sx2 = x2 - LINECAP_SMALL_OFFSET;
+		} else {
+			sx1 = x1 - LINECAP_SMALL_OFFSET;
+			sx2 = x2 + LINECAP_SMALL_OFFSET;
+		}
+	} else {
+		double m = fabs ((y1 - y2) / (x1 - x2));
+		if (x1 > x2) {
+			sx1 = x1 + LINECAP_SMALL_OFFSET;
+			sx2 = x2 - LINECAP_SMALL_OFFSET;
+		} else {
+			sx1 = x1 - LINECAP_SMALL_OFFSET;
+			sx2 = x2 + LINECAP_SMALL_OFFSET;
+		}
+		sy1 = m * sx1 + y1 - (m * x1);
+		sy2 = m * sx2 + y2 - (m * x2);
+	}
+
+	if (start != PenLineCapFlat) {
+		cairo_set_line_cap (cr, convert_line_cap (start));
+		cairo_move_to (cr, x1, y1);
+		cairo_line_to (cr, sx1, sy1);
+		shape->Stroke (cr, true);
+	}
+	if (end != PenLineCapFlat) {
+		cairo_set_line_cap (cr, convert_line_cap (end));
+		cairo_move_to (cr, x2, y2);
+		cairo_line_to (cr, sx2, sy2);
+		shape->Stroke (cr, true);
+	}
+}
+
 // The Line shape can be drawn while ignoring properties:
 // * Shape::StrokeLineJoin
 // * Shape::StrokeMiterLimit
@@ -1063,7 +1120,19 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 
 	if (!SetupLine (cr))
 		return false;
-	SetupLineCaps (cr);
+
+	// here we hack around #345888 where Cairo doesn't support different start and end linecaps
+	PenLineCap start = shape_get_stroke_start_line_cap (this);
+	PenLineCap end = shape_get_stroke_end_line_cap (this);
+	if (do_op && (start != end)) {
+		// draw start and end line caps
+		line_draw_caps (cr, this, line_get_x1 (this), line_get_y1 (this), start, 
+			line_get_x2 (this), line_get_y2 (this), end);
+
+		cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+	} else {
+		cairo_set_line_cap (cr, convert_line_cap (start));
+	}
 
 	Draw (cr);
 	Stroke (cr, do_op);
@@ -1633,22 +1702,25 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 
 		cairo_path_data_t *data = path->cairo.data;
 		int length = path->cairo.num_data;
-		// we need to treat a single line scenario differently (like Line::DrawShape)
-		if (length <= MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH) {
-			// note: this means either no, one or two points
-// TODO (right now a straight line is drawn (without caps)
-		} else {
+		// single point polylines are not rendered
+		if (length == MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH) {
+			// draw a single line
+			line_draw_caps (cr, this, data[1].point.x, data[1].point.y, start, data[3].point.x, data[3].point.y, end);
+		} else if (length > MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH) {
 			// draw line #1 with start cap
-			cairo_set_line_cap (cr, convert_line_cap (start));
-			cairo_move_to (cr, data[1].point.x, data[1].point.y);
-			cairo_line_to (cr, data[3].point.x, data[3].point.y);
-			Stroke (cr, do_op);
-
+			if (start != PenLineCapFlat) {
+				cairo_set_line_cap (cr, convert_line_cap (start));
+				cairo_move_to (cr, data[1].point.x, data[1].point.y);
+				cairo_line_to (cr, data[3].point.x, data[3].point.y);
+				Stroke (cr, true);
+			}
 			// draw last line with end cap
-			cairo_set_line_cap (cr, convert_line_cap (end));
-			cairo_move_to (cr, data[length - 3].point.x, data[length - 3].point.y);
-			cairo_line_to (cr, data[length - 1].point.x, data[length - 1].point.y);
-			Stroke (cr, do_op);
+			if (end != PenLineCapFlat) {
+				cairo_set_line_cap (cr, convert_line_cap (end));
+				cairo_move_to (cr, data[length - 3].point.x, data[length - 3].point.y);
+				cairo_line_to (cr, data[length - 1].point.x, data[length - 1].point.y);
+				Stroke (cr, true);
+			}
 		}
 
 		// now all lines (including first and last) will be drawn with no caps

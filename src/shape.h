@@ -3,8 +3,9 @@
  *
  * Author:
  *   Miguel de Icaza (miguel@novell.com)
+ *   Sebastien Pouliot  <sebastien@ximian.com>
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -41,7 +42,6 @@ class Shape : public FrameworkElement {
 	virtual bool SetupLine (cairo_t* cr);
 	bool SetupDashes (cairo_t *cr, double thickness);
 	bool Fill (cairo_t *cr, bool do_op);
-	void Stroke (cairo_t *cr, bool do_op);
 	void Clip (cairo_t *cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op) = 0;
 //	virtual bool DrawDegenerateShape (cairo_t *cr, bool do_op) = 0;
@@ -92,6 +92,7 @@ class Shape : public FrameworkElement {
 	virtual void Draw (cairo_t *cr);
 	virtual void BuildPath () {};
 	virtual bool ClipOnHeightAndWidth () { return false; }
+	void Stroke (cairo_t *cr, bool do_op);
 	bool NeedsClipping ();
 	bool MixedHeightWidth (Value **width, Value **height);
 
