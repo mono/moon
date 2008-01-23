@@ -10,9 +10,9 @@ Moonlight: Core Support
 	You must install ffmpeg, from:
 
 		svn://svn.mplayerhq.hu/ffmpeg/trunk
-		Revision: 9167 is known to work
+		Revision: 10885 is known to work
 
-		svn co -r 9167 svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg
+		svn co -r 10885 svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg
 
 		Then configure/make/make install
 
