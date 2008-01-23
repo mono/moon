@@ -1737,6 +1737,9 @@ FileSource::Initialize ()
 	if (fd != -1)
 		return MEDIA_SUCCESS;
 	
+	if (filename == NULL)
+		return MEDIA_FILE_ERROR;
+	
 	if ((fd = open (filename, O_LARGEFILE | O_RDONLY)) == -1)
 		return MEDIA_FILE_ERROR;
 	
