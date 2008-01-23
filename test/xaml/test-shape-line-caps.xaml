@@ -1,0 +1,85 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<!-- Start Only -->
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="10" Y1="10" X2="40"  Y2="40" StrokeStartLineCap="Flat" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="30" Y1="10" X2="60"  Y2="40" StrokeStartLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="50" Y1="10" X2="80"  Y2="40" StrokeStartLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="70" Y1="10" X2="100" Y2="40" StrokeStartLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="110" Y1="10" X2="110" Y2="40" StrokeStartLineCap="Flat" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="130" Y1="10" X2="130" Y2="40" StrokeStartLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="150" Y1="10" X2="150" Y2="40" StrokeStartLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="170" Y1="10" X2="170" Y2="40" StrokeStartLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="10" X2="220" Y2="10" StrokeStartLineCap="Flat" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="20" X2="220" Y2="20" StrokeStartLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="30" X2="220" Y2="30" StrokeStartLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="40" X2="220" Y2="40" StrokeStartLineCap="Triangle" />
+
+	<!-- End Only -->
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="10" Y1="50" X2="40"  Y2="80" StrokeEndLineCap="Flat" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="30" Y1="50" X2="60"  Y2="80" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="50" Y1="50" X2="80"  Y2="80" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="70" Y1="50" X2="100" Y2="80" StrokeEndLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="110" Y1="50" X2="110" Y2="80" StrokeEndLineCap="Flat" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="130" Y1="50" X2="130" Y2="80" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="150" Y1="50" X2="150" Y2="80" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="170" Y1="50" X2="170" Y2="80" StrokeEndLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="50" X2="220" Y2="50" StrokeEndLineCap="Flat" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="60" X2="220" Y2="60" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="70" X2="220" Y2="70" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="80" X2="220" Y2="80" StrokeEndLineCap="Triangle" />
+
+	<!-- Mixed -->
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="10" Y1="90" X2="40"  Y2="120" StrokeStartLineCap="Round" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="30" Y1="90" X2="60"  Y2="120" StrokeStartLineCap="Round" StrokeEndLineCap="Triangle" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="50" Y1="90" X2="80"  Y2="120" StrokeStartLineCap="Square" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="70" Y1="90" X2="100" Y2="120" StrokeStartLineCap="Square" StrokeEndLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="110" Y1="90" X2="110" Y2="120" StrokeStartLineCap="Round" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="130" Y1="90" X2="130" Y2="120" StrokeStartLineCap="Round" StrokeEndLineCap="Triangle" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="150" Y1="90" X2="150" Y2="120" StrokeStartLineCap="Square" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="170" Y1="90" X2="170" Y2="120" StrokeStartLineCap="Square" StrokeEndLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="90" X2="220" Y2="90" StrokeStartLineCap="Round" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="100" X2="220" Y2="100" StrokeStartLineCap="Round" StrokeEndLineCap="Triangle" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="110" X2="220" Y2="110" StrokeStartLineCap="Square" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="120" X2="220" Y2="120" StrokeStartLineCap="Square" StrokeEndLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="10" Y1="130" X2="40"  Y2="160" StrokeStartLineCap="Triangle" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="30" Y1="130" X2="60"  Y2="160" StrokeStartLineCap="Triangle" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="50" Y1="130" X2="80"  Y2="160" StrokeStartLineCap="Flat" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="70" Y1="130" X2="100" Y2="160" StrokeStartLineCap="Flat" StrokeEndLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="110" Y1="130" X2="110" Y2="160" StrokeStartLineCap="Triangle" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="130" Y1="130" X2="130" Y2="160" StrokeStartLineCap="Triangle" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="150" Y1="130" X2="150" Y2="160" StrokeStartLineCap="Flat" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="170" Y1="130" X2="170" Y2="160" StrokeStartLineCap="Flat" StrokeEndLineCap="Triangle" />
+
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="130" X2="220" Y2="130" StrokeStartLineCap="Triangle" StrokeEndLineCap="Round" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="140" X2="220" Y2="140" StrokeStartLineCap="Triangle" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="150" X2="220" Y2="150" StrokeStartLineCap="Flat" StrokeEndLineCap="Square" />
+	<Line Stroke="#FF00FF" StrokeThickness="5" X1="190" Y1="160" X2="220" Y2="160" StrokeStartLineCap="Flat" StrokeEndLineCap="Triangle" />
+
+	<!-- Polylines with a single segment also renders like a line -->
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="220" Canvas.Top="0" StrokeStartLineCap="Flat" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="240" Canvas.Top="0" StrokeStartLineCap="Round" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="260" Canvas.Top="0" StrokeStartLineCap="Square" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="280" Canvas.Top="0" StrokeStartLineCap="Triangle" />
+
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="220" Canvas.Top="40" StrokeEndLineCap="Flat" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="240" Canvas.Top="40" StrokeEndLineCap="Round" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="260" Canvas.Top="40" StrokeEndLineCap="Square" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="280" Canvas.Top="40" StrokeEndLineCap="Triangle" />
+
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="220" Canvas.Top="80" StrokeStartLineCap="Round" StrokeEndLineCap="Square" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="240" Canvas.Top="80" StrokeStartLineCap="Round" StrokeEndLineCap="Triangle" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="260" Canvas.Top="80" StrokeStartLineCap="Square" StrokeEndLineCap="Round" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="280" Canvas.Top="80" StrokeStartLineCap="Square" StrokeEndLineCap="Triangle" />
+
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="220" Canvas.Top="120" StrokeStartLineCap="Triangle" StrokeEndLineCap="Round" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="240" Canvas.Top="120" StrokeStartLineCap="Triangle" StrokeEndLineCap="Square" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="260" Canvas.Top="120" StrokeStartLineCap="Flat" StrokeEndLineCap="Square" />
+	<Polyline Points="10,40 40,10" Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Canvas.Left="280" Canvas.Top="120" StrokeStartLineCap="Flat" StrokeEndLineCap="Triangle" />
+</Canvas>
