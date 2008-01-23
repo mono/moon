@@ -1763,7 +1763,7 @@ FileSource::Seek (int64_t offset)
 bool
 FileSource::Seek (int64_t offset, int mode)
 {
-	uint64_t n;
+	int64_t n;
 	
 	if (fd == -1)
 		return false;
@@ -1848,7 +1848,7 @@ FileSource::Read (void *buf, uint32_t n)
 		return -1;
 	}
 	
-	do {
+	while (n > 0) {
 		if ((r = MIN (buflen, n)) > 0) {
 			/* copy what we can from our existing buffer */
 			memcpy (((char *) buf) + nread, bufptr, r);
@@ -1859,22 +1859,30 @@ FileSource::Read (void *buf, uint32_t n)
 			n -= r;
 		}
 		
-		if (n > 0) {
+		if (n >= sizeof (buffer)) {
+			/* bypass intermediate buffer */
+			bufptr = buffer;
+			if ((r = noint_read (fd, ((char *) buf) + nread, n)) > 0) {
+				nread += r;
+				pos += r;
+				n -= r;
+			}
+		} else if (n > 0) {
 			/* buffer more data */
 			if ((r = noint_read (fd, buffer, sizeof (buffer))) > 0)
 				buflen = (uint32_t) r;
 			
 			bufptr = buffer;
-			
-			if (r == -1 && nread == 0)
-				return -1;
-			
-			if (r == 0) {
-				eof = true;
-				break;
-			}
 		}
-	} while (n > 0);
+		
+		if (r == -1 && nread == 0)
+			return -1;
+		
+		if (r == 0) {
+			eof = true;
+			break;
+		}
+	}
 	
 	return nread;
 }
@@ -2230,7 +2238,7 @@ ProgressiveSource::Read (void *buf, uint32_t n)
 		return -1;
 	}
 	
-	do {
+	while (n > 0) {
 		if ((r = MIN (buflen, n)) > 0) {
 			/* copy what we can from our existing buffer */
 			memcpy (((char *) buf) + nread, bufptr, r);
@@ -2241,24 +2249,30 @@ ProgressiveSource::Read (void *buf, uint32_t n)
 			n -= r;
 		}
 		
-		if (n > 0) {
+		if (n >= sizeof (buffer)) {
+			/* bypass intermediate buffer */
+			bufptr = buffer;
+			if ((r = noint_read (fd, ((char *) buf) + nread, n)) > 0) {
+				nread += r;
+				pos += r;
+				n -= r;
+			}
+		} else if (n > 0) {
 			/* buffer more data */
 			if ((r = noint_read (fd, buffer, sizeof (buffer))) > 0)
 				buflen = (uint32_t) r;
 			
 			bufptr = buffer;
-			
-			if (r == -1 && nread == 0) {
-				Unlock ();
-				return -1;
-			}
-			
-			if (r == 0) {
-				eof = true;
-				break;
-			}
 		}
-	} while (n > 0);
+		
+		if (r == -1 && nread == 0)
+			return -1;
+		
+		if (r == 0) {
+			eof = true;
+			break;
+		}
+	}
 	
 	return nread;
 }

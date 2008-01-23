@@ -1,3 +1,11 @@
+2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (FileSource::Read): Optimized a bit more for cases
+	where the caller is trying to read a block larger than our
+	internal buffer.
+	(FileSource::Seek): Fixed 'n' to be an int64_t rather than a
+	uint64_t (which is needed in the case of seeking backwards).
+
 2008-01-22  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp, shape.h: Move the stretch logic out of geometry.cpp
