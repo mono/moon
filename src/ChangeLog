@@ -1,3 +1,8 @@
+2008-01-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline-ffmpeg.cpp: Don't #include "asf/asf-ffmpeg.h" anymore,
+	it's no longer part of the build.
+
 2008-01-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Add support for different PenLineCap on Line (part 

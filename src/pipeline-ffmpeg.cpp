@@ -31,7 +31,6 @@ G_END_DECLS
 
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
-#include "asf/asf-ffmpeg.h"
 #include "debug.h"
 
 bool ffmpeg_initialized = false;
