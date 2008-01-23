@@ -22,7 +22,7 @@ void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
 // Converts from ASF's WCHAR fields to a utf8 string.
 // The returned string must be freed with g_free.
 G_BEGIN_DECLS
-char* wchar_to_utf8 (void* unicode, guint32 length);
+char* wchar_to_utf8 (void* unicode, uint32_t length);
 G_END_DECLS
 
 #define ASF_DECODE_PACKED_SIZE(x) ((x == 3 ? 4 : x))
@@ -79,7 +79,7 @@ struct BITMAPINFOHEADER {
 	asf_dword colors_used;
 	asf_dword important_colors_used;
 	
-	gint32 get_extra_data_size () const
+	int get_extra_data_size () const
 	{
 		return size - sizeof (BITMAPINFOHEADER);
 	}
@@ -203,7 +203,7 @@ struct asf_single_payload {
 	
 	bool FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
 	
-	guint8 get_presentation_time_delta ()
+	uint8_t get_presentation_time_delta ()
 	{
 		if (replicated_data_length == 1) {
 			return *payload_data;
@@ -211,7 +211,7 @@ struct asf_single_payload {
 		return 0;
 	}
 	
-	gint64 get_presentation_time ()
+	int64_t get_presentation_time ()
 	{
 		return presentation_time;
 	}
@@ -537,7 +537,7 @@ struct asf_marker_entry {
 	asf_dword send_time;
 	asf_dword flags;
 	asf_dword marker_description_length;
-		
+	
 	char* get_marker_description () const
 	{
 		char* result = NULL;
@@ -565,7 +565,7 @@ struct asf_marker : public asf_object {
 		return result;
 	}
 	
-	const asf_marker_entry* get_entry (guint32 index) 
+	const asf_marker_entry* get_entry (uint32_t index) 
 	{
 		asf_marker_entry* result = NULL;
 		
@@ -573,10 +573,10 @@ struct asf_marker : public asf_object {
 			return NULL;
 		
 		asf_marker_entry* tmp = (asf_marker_entry*) (sizeof (asf_marker) + name_length + (char*) this);	
-		for (guint32 i = 0; i < index; i++) {
+		for (uint32_t i = 0; i < index; i++) {
 			char* next = (char*) tmp;
 			next += sizeof (asf_marker_entry);
-			next += (tmp->marker_description_length * sizeof (guint16));
+			next += (tmp->marker_description_length * sizeof (uint16_t));
 			tmp = (asf_marker_entry*) next;
 		}
 		result = tmp;

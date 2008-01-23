@@ -11,7 +11,7 @@
 #include "asf.h"
 
 char*
-wchar_to_utf8 (void* unicode, guint32 length)
+wchar_to_utf8 (void* unicode, uint32_t length)
 {
 	char* result = NULL;
 	
@@ -72,7 +72,7 @@ asf_file_properties_validate (const asf_file_properties* obj, ASFParser* parser)
 	if (obj->min_packet_size != obj->max_packet_size) {
 		// This is not logical at all, but it's what the spec says.
 		// besides, our code depends on it (it makes a few minor things easier).
-		parser->AddError (g_strdup_printf ("The min packet size (%i) is different from the max packet size (%i).\n", obj->min_packet_size, obj->max_packet_size));
+		parser->AddError (g_strdup_printf ("The min packet size (%d) is different from the max packet size (%d).\n", obj->min_packet_size, obj->max_packet_size));
 		return false;
 	}
 
@@ -283,10 +283,10 @@ void asf_error_correction_data_dump (asf_error_correction_data* obj)
 	ASF_DUMP ("ASF_ERROR_CORRECTION_DATA\n");
 	ASF_DUMP ("\tdata = 0x%X\n", (asf_dword) obj->data);
 	ASF_DUMP ("\tdata = 0b%s\n",  tostring); g_free (tostring);
-	ASF_DUMP ("\t\tis_error_correction_present: %i\n", obj->is_error_correction_present ());
-	ASF_DUMP ("\t\tis_opaque_data_present: %i\n", obj->is_opaque_data_present ());
-	ASF_DUMP ("\t\tdata_length: %i\n", obj->get_data_length ());
-	ASF_DUMP ("\t\tlength_type: %i\n", obj->get_error_correction_length_type ());
+	ASF_DUMP ("\t\tis_error_correction_present: %d\n", obj->is_error_correction_present ());
+	ASF_DUMP ("\t\tis_opaque_data_present: %d\n", obj->is_opaque_data_present ());
+	ASF_DUMP ("\t\tdata_length: %d\n", obj->get_data_length ());
+	ASF_DUMP ("\t\tlength_type: %d\n", obj->get_error_correction_length_type ());
 	ASF_DUMP ("\tfirst = %X\n", (asf_dword) obj->first);
 	
 	ASF_DUMP ("\tsecond = %X\n", (asf_dword) obj->second);
@@ -331,15 +331,15 @@ void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
 {
 	ASF_DUMP ("ASF_PAYLOAD_PARSING_INFORMATION\n");
 	ASF_DUMP ("\tlength_type_flags = %X\n", (asf_dword) obj->length_type_flags);
-	ASF_DUMP ("\t\tmultiple_payloads_present = %i\n", obj->is_multiple_payloads_present ());
-	ASF_DUMP ("\t\tsequence_type = %i\n", obj->get_sequence_type ());
-	ASF_DUMP ("\t\tpadding_length_type = %i\n", obj->get_padding_length_type ());
-	ASF_DUMP ("\t\tpacket_length_type = %i\n", obj->get_packet_length_type ());
+	ASF_DUMP ("\t\tmultiple_payloads_present = %d\n", obj->is_multiple_payloads_present ());
+	ASF_DUMP ("\t\tsequence_type = %d\n", obj->get_sequence_type ());
+	ASF_DUMP ("\t\tpadding_length_type = %d\n", obj->get_padding_length_type ());
+	ASF_DUMP ("\t\tpacket_length_type = %d\n", obj->get_packet_length_type ());
 	ASF_DUMP ("\tproperty_flags = %X\n", (asf_dword) obj->property_flags);
-	ASF_DUMP ("\t\treplicated_data_length_type = %i\n", obj->get_replicated_data_length_type ());
-	ASF_DUMP ("\t\toffset_into_media_object_length_type = %i\n", obj->get_offset_into_media_object_length_type ());
-	ASF_DUMP ("\t\tmedia_object_number_length_type = %i\n", obj->get_media_object_number_length_type ());
-	ASF_DUMP ("\t\tstream_number_length_type = %i\n", obj->get_stream_number_length_type ());
+	ASF_DUMP ("\t\treplicated_data_length_type = %d\n", obj->get_replicated_data_length_type ());
+	ASF_DUMP ("\t\toffset_into_media_object_length_type = %d\n", obj->get_offset_into_media_object_length_type ());
+	ASF_DUMP ("\t\tmedia_object_number_length_type = %d\n", obj->get_media_object_number_length_type ());
+	ASF_DUMP ("\t\tstream_number_length_type = %d\n", obj->get_stream_number_length_type ());
 	ASF_DUMP ("\tpacket_length = %u\n", (asf_dword) obj->packet_length);
 	ASF_DUMP ("\tsequence = %u\n", (asf_dword) obj->sequence);
 	ASF_DUMP ("\tpadding_length = %u\n", (asf_dword) obj->padding_length);
@@ -381,7 +381,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 		return false;
 	
 	if (replicated_data_length >= 2 && replicated_data_length < 7) {
-		source->parser->AddError (g_strdup_printf ("Invalid replicated data length: %i", replicated_data_length));
+		source->parser->AddError (g_strdup_printf ("Invalid replicated data length: %d", replicated_data_length));
 		return false;
 	} 
 		
@@ -428,11 +428,11 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 		payload_length -= replicated_data_length;
 		// minus the Padding Length.
 		payload_length -= ppi.padding_length;
-		ASF_LOG ("payload_length: %i. packet_length: %i, ppi.get_struct_size: %i, replicated_data_length: %i, padding_length: %i, ecd.get_struct_size: %i\n",
+		ASF_LOG ("payload_length: %d. packet_length: %d, ppi.get_struct_size: %d, replicated_data_length: %d, padding_length: %d, ecd.get_struct_size: %d\n",
 			payload_length, ppi.packet_length, ppi.get_struct_size (), replicated_data_length, ppi.padding_length, ecd->get_struct_size ());
 			
 		if (payload_length < 0) {
-			source->parser->AddError (g_strdup_printf ("Invalid payload length: %i", payload_length));
+			source->parser->AddError (g_strdup_printf ("Invalid payload length: %d", payload_length));
 			return false;
 		} 
 		
@@ -482,7 +482,7 @@ asf_single_payload_dump (asf_single_payload* obj)
 }
 
 bool
-asf_multiple_payloads::ResizeList (ASFParser* parser, gint32 requested_size)
+asf_multiple_payloads::ResizeList (ASFParser* parser, int requested_size)
 {
 	if (requested_size <= payloads_size)
 		return true;
@@ -506,14 +506,14 @@ asf_multiple_payloads::ResizeList (ASFParser* parser, gint32 requested_size)
 	return true;
 }
 
-gint32 
+int 
 asf_multiple_payloads::CountCompressedPayloads (ASFParser* parser, asf_single_payload* payload)
 {
 	asf_byte* data = payload->payload_data;
 	asf_dword length = payload->payload_data_length;
 	asf_byte size = 0;
-	guint32 offset = 0;
-	gint32 counter = 0;
+	uint32_t offset = 0;
+	int counter = 0;
 	
 	if (data == NULL) {
 		parser->AddError ("Compressed payload is corrupted.");
@@ -540,7 +540,7 @@ asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payl
 {
 	asf_byte* data = first->payload_data;
 	asf_byte size = 0;
-	guint32 offset = 0;
+	uint32_t offset = 0;
 	asf_single_payload* payload = NULL;
 
 	for (int i = 0; i < count; i++) {
@@ -573,7 +573,7 @@ bool
 asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi)
 {
 	ASFSource* source = parser->source;
-	gint32 count;
+	int count;
 	
 	if (ppi.is_multiple_payloads_present ()) {		
 		if (!source->Read (&payload_flags, 1))
@@ -582,7 +582,7 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 		count = payload_flags & 0x3F; // number of payloads is encoded in a byte, no need to check for extreme values.
 		
 		if (count <= 0) {
-			source->parser->AddError (g_strdup_printf ("Invalid number of payloads: %i", count));
+			source->parser->AddError (g_strdup_printf ("Invalid number of payloads: %d", count));
 			return false;
 		}
 
@@ -590,9 +590,9 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 			return false;
 		}
 		
-		ASF_LOG ("asf_multiple_payloads::FillInAll (): Reading %i payloads...\n", count); 
+		ASF_LOG ("asf_multiple_payloads::FillInAll (): Reading %d payloads...\n", count); 
 		
-		gint32 current_index = 0;
+		int current_index = 0;
 		for (int i = 0; i < count; i++) {
 			payloads [current_index] = new asf_single_payload ();
 			
@@ -601,7 +601,7 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 			
 			if (payloads [current_index]->is_compressed ()) {
 				asf_single_payload* first = payloads [current_index];
-				gint32 number = CountCompressedPayloads (parser, first);
+				int number = CountCompressedPayloads (parser, first);
 				if (number <= 0) {
 					return false;
 				}
@@ -614,7 +614,7 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 				delete first;
 			}
 			
-			ASF_DUMP ("-Payload #%i:\n", current_index + 1);
+			ASF_DUMP ("-Payload #%d:\n", current_index + 1);
 			asf_single_payload_dump (payloads [current_index]);
 			
 			current_index++;
@@ -627,7 +627,7 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 		}
 		
 		if (payload->is_compressed ()) {
-			gint32 counter = 0;
+			int counter = 0;
 			
 			counter = CountCompressedPayloads (parser, payload);
 			if (counter <= 0) {
@@ -661,13 +661,13 @@ void asf_multiple_payloads_dump (asf_multiple_payloads* obj)
 {
 	ASF_DUMP ("ASF_MULTIPLE_PAYLOADS\n");
 	ASF_DUMP ("\tpayload_flags = %u\n", (asf_dword) obj->payload_flags);
-	ASF_DUMP ("\t\tnumber of payloads = %i\n", obj->get_number_of_payloads ());
-	ASF_DUMP ("\t\tpayload_length_type = %i\n", obj->get_payload_length_type ());
+	ASF_DUMP ("\t\tnumber of payloads = %d\n", obj->get_number_of_payloads ());
+	ASF_DUMP ("\t\tpayload_length_type = %d\n", obj->get_payload_length_type ());
 	
 	if (obj->payloads) {
 		int i = 0;
 		while (obj->payloads [i] != NULL) {
-			ASF_DUMP ("\tpayload #%i:\n", i + 1);
+			ASF_DUMP ("\tpayload #%d:\n", i + 1);
 			asf_single_payload_dump (obj->payloads [i++]);
 		}
 	} else {
@@ -679,15 +679,15 @@ asf_script_command_entry**
 asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 {
 	//printf ("asf_script_command::get_commands ().\n");
-	gint32 size_left = size;
-	gint32 size_requested = 0;
+	int size_left = size;
+	int size_requested = 0;
 	char** types = NULL;
 	char* start = NULL;
 	asf_script_command_entry** result = NULL;
 	asf_script_command_entry* next = NULL;
 	
 	if (size == sizeof (asf_script_command)) {
-		//printf ("asf_script_command::get_commands (), size = %i\n", size);
+		//printf ("asf_script_command::get_commands (), size = %d\n", size);
 		return NULL;
 	}
 	
@@ -718,7 +718,7 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 
 	// Walk past by the command type table.
 	start = (sizeof (asf_script_command) + (char*) this);
-	for (gint32 i = 0; i < command_type_count; i++) {
+	for (int i = 0; i < command_type_count; i++) {
 		asf_word length = * (asf_word*) start;
 		
 		// Verify data
@@ -736,7 +736,7 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 	
 	// Fill in the commands table
 	next = (asf_script_command_entry*) start;
-	for (gint32 i = 0; i < command_count; i++) {
+	for (int i = 0; i < command_count; i++) {
 		result [i] = next;
 		
 		char* tmp = (char*) next;
@@ -753,15 +753,14 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 		next = (asf_script_command_entry*) tmp;
 	}
 	
-	//printf ("asf_script_command::read_commands (): success, read %i commands and %i types.\n", command_count, command_type_count);
+	//printf ("asf_script_command::read_commands (): success, read %d commands and %d types.\n", command_count, command_type_count);
 	return result;
 	
 failure:
 	//printf ("asf_script_command::read_commands (): failure.\n");
 	g_free (result);
 	if (types != NULL) {
-		int i = -1;
-		while (types [++i] != NULL)
+		for (int i = 0; types[i]; i++)
 			g_free (types [i]);
 		g_free (types);
 	}
@@ -780,10 +779,10 @@ void asf_marker_entry_dump (const asf_marker_entry* obj)
 	ASF_DUMP ("\tASF_MARKER_ENTRY\n");
 	ASF_DUMP ("\t\toffset = %llu\n", obj->offset);
 	ASF_DUMP ("\t\tpts = %llu\n", obj->pts);
-	ASF_DUMP ("\t\tentry_length = %i\n", (asf_dword) obj->entry_length);
-	ASF_DUMP ("\t\tsend_time = %i\n", obj->send_time);
-	ASF_DUMP ("\t\tflags = %i\n", obj->flags);
-	ASF_DUMP ("\t\tmarker_description_length = %i\n", o->marker_description_length);
+	ASF_DUMP ("\t\tentry_length = %d\n", (asf_dword) obj->entry_length);
+	ASF_DUMP ("\t\tsend_time = %d\n", obj->send_time);
+	ASF_DUMP ("\t\tflags = %d\n", obj->flags);
+	ASF_DUMP ("\t\tmarker_description_length = %d\n", o->marker_description_length);
 	ASF_DUMP ("\t\tmarker_description = %s\n", o->get_marker_description ());
 #endif
 }
@@ -801,7 +800,7 @@ void asf_marker_dump (const asf_marker* obj)
 	ASF_DUMP ("\tname_length = %u\n", (asf_dword) obj->name_length);
 	ASF_DUMP ("\tname = %s\n", o->get_name ());
 	
-	for (guint32 i = 0; i < obj->marker_count; i++) {
+	for (uint32_t i = 0; i < obj->marker_count; i++) {
 		asf_marker_entry_dump (o->get_entry (i));
 	}
 }
@@ -810,6 +809,7 @@ void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 {
 #ifdef ASF_DUMPING
 	asf_script_command* o = (asf_script_command*) obj;
+	uint32_t i;
 	
 	ASF_DUMP ("ASF_SCRIPT_COMMAND\n");
 	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
@@ -823,17 +823,17 @@ void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 	
 	entries = o->get_commands (parser, &command_types);
 	
-	for (guint32 i = 0; i < obj->command_type_count; i++) {
-		ASF_DUMP ("\tASF_SCRIPT_COMMAND_TYPE #%i\n", i);
+	for (i = 0; i < obj->command_type_count; i++) {
+		ASF_DUMP ("\tASF_SCRIPT_COMMAND_TYPE #%d\n", i);
 		ASF_DUMP ("\t\tname = %s\n", command_types [i]);
 	}
 	
-	for (guint32 i = 0; i < obj->command_count; i++) {
-		ASF_DUMP ("\tASF_SCRIPT_COMMAND #%i\n", i);
+	for (i = 0; i < obj->command_count; i++) {
+		ASF_DUMP ("\tASF_SCRIPT_COMMAND #%u\n", i);
 		asf_script_command_entry* entry = entries [i];
-		ASF_DUMP ("\t\tpts = %i\n", entry->pts);
-		ASF_DUMP ("\t\ttype_index = %i\n", (asf_dword) entry->type_index);
-		ASF_DUMP ("\t\tname_length = %i\n", (asf_dword) entry->name_length);
+		ASF_DUMP ("\t\tpts = %llu\n", entry->pts);
+		ASF_DUMP ("\t\ttype_index = %d\n", (asf_dword) entry->type_index);
+		ASF_DUMP ("\t\tname_length = %d\n", (asf_dword) entry->name_length);
 		ASF_DUMP ("\t\tname = %s\n", entry->get_name ());
 	}
 #endif
@@ -852,7 +852,7 @@ void asf_header_extension_dump (const asf_header_extension* obj)
 	asf_object** objects = obj->get_objects ();
 	
 	for (asf_dword i = 0; i < count; i++) {
-		ASF_DUMP ("\n\textended object #%i:\n", i);
+		ASF_DUMP ("\n\textended object #%d:\n", i);
 		asf_object_dump_exact (objects [i]);
 	}
 	ASF_DUMP ("\n\n");
