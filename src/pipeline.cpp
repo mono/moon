@@ -194,7 +194,7 @@ Media::AddMessage (MediaResult result, char *msg)
 }
 
 MediaResult
-Media::Seek (uint64_t pts)
+Media::Seek (int64_t pts)
 {
 	if (demuxer)
 		return demuxer->Seek (pts);
@@ -203,7 +203,7 @@ Media::Seek (uint64_t pts)
 }
 
 MediaResult
-Media::SeekAsync (uint64_t pts)
+Media::SeekAsync (int64_t pts)
 {
 	if (demuxer == NULL)
 		return MEDIA_FAIL;
@@ -649,7 +649,7 @@ ASFDemuxer::~ASFDemuxer ()
 }
 
 MediaResult
-ASFDemuxer::Seek (uint64_t pts)
+ASFDemuxer::Seek (int64_t pts)
 {
 	if (reader == NULL)
 		reader = new ASFFrameReader (parser);
@@ -679,7 +679,7 @@ ASFDemuxer::ReadMarkers ()
 	List *markers = media->GetMarkers ();
 	//guint64 preroll = parser->file_properties->preroll;
 	const char *type;
-	uint64_t pts;
+	int64_t pts;
 	char *text;
 	int i = -1;
 	
@@ -697,23 +697,24 @@ ASFDemuxer::ReadMarkers ()
 		}
 	}
 	
-	i = -1;
-	while (commands != NULL && commands [++i] != NULL) {
-		asf_script_command_entry *entry = commands [i];
-		
-		text = entry->get_name ();
-		pts = entry->pts; //(entry->pts - preroll) * 10000;
-		
-		if (entry->type_index + 1 <= command->command_type_count)
-			type = command_types [entry->type_index];
-		else
-			type = "";
-		
-		markers->Append (new MediaMarker::Node (new MediaMarker (type, text, pts)));
-		
-		//printf ("MediaElement::ReadMarkers () Added script command at %llu (text: %s, type: %s)\n", pts, text, type);
-		
-		g_free (text);
+	if (commands != NULL) {
+		for (i = 0; commands[i]; i++) {
+			asf_script_command_entry *entry = commands [i];
+			
+			text = entry->get_name ();
+			pts = entry->pts; //(entry->pts - preroll) * 10000;
+			
+			if (entry->type_index + 1 <= command->command_type_count)
+				type = command_types [entry->type_index];
+			else
+				type = "";
+			
+			markers->Append (new MediaMarker::Node (new MediaMarker (type, text, pts)));
+			
+			//printf ("MediaElement::ReadMarkers () Added script command at %llu (text: %s, type: %s)\n", pts, text, type);
+			
+			g_free (text);
+		}
 	}
 	
 	// Read the MARKERs
@@ -1246,7 +1247,7 @@ Mp3FrameReader::~Mp3FrameReader ()
 }
 
 void
-Mp3FrameReader::AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate)
+Mp3FrameReader::AddFrameIndex (int64_t offset, int64_t pts, uint32_t dur, int32_t bit_rate)
 {
 	if (used == avail) {
 		avail += MPEG_JUMP_TABLE_GROW_SIZE;
@@ -1279,9 +1280,9 @@ Mp3FrameReader::AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32
 #define MID(lo, hi) (lo + ((hi - lo) >> 1))
 
 uint32_t
-Mp3FrameReader::MpegFrameSearch (uint64_t pts)
+Mp3FrameReader::MpegFrameSearch (int64_t pts)
 {
-	uint64_t start, end;
+	int64_t start, end;
 	uint32_t hi = used - 1;
 	uint32_t m = hi >> 1;
 	uint32_t lo = 0;
@@ -1310,11 +1311,11 @@ Mp3FrameReader::MpegFrameSearch (uint64_t pts)
 }
 
 bool
-Mp3FrameReader::Seek (uint64_t pts)
+Mp3FrameReader::Seek (int64_t pts)
 {
 	int64_t offset = stream->GetPosition ();
 	int32_t bit_rate = this->bit_rate;
-	uint64_t cur_pts = this->cur_pts;
+	int64_t cur_pts = this->cur_pts;
 	uint32_t frame;
 	
 	if (pts == cur_pts)
@@ -1510,7 +1511,7 @@ Mp3Demuxer::~Mp3Demuxer ()
 }
 
 MediaResult
-Mp3Demuxer::Seek (uint64_t pts)
+Mp3Demuxer::Seek (int64_t pts)
 {
 	if (reader && reader->Seek (pts))
 		return MEDIA_SUCCESS;
@@ -2438,7 +2439,7 @@ VideoStream::~VideoStream ()
  * MediaMarker
  */ 
 
-MediaMarker::MediaMarker (const char *type, const char *text, uint64_t pts)
+MediaMarker::MediaMarker (const char *type, const char *text, int64_t pts)
 {
 	this->type = g_strdup (type);
 	this->text = g_strdup (text);

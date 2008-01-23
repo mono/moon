@@ -209,7 +209,7 @@ private:
 	public:
 		MediaFrame *frame;
 		uint16_t states;
-		uint64_t seek_pts; // Seek to this pts. If frame is NULL, then this is valid and what the FrameReaderLoop should do
+		int64_t seek_pts; // Seek to this pts. If frame is NULL, then this is valid and what the FrameReaderLoop should do
 		WorkNode () : frame (NULL), states (0), seek_pts (0) {}
 	};
 	
@@ -263,8 +263,8 @@ public:
 	MediaResult Open (IMediaSource *source); // Called if you have your own source
 	
 	// Seeks to the specified pts (if seekable).
-	MediaResult Seek (uint64_t pts);
-	MediaResult SeekAsync (uint64_t pts);
+	MediaResult Seek (int64_t pts);
+	MediaResult SeekAsync (int64_t pts);
 	
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
@@ -324,7 +324,7 @@ public:
 	
 	IMediaStream *stream;
 	void *decoder_specific_data; // data specific to the decoder
-	uint64_t pts; // Set by the demuxer
+	int64_t pts; // Set by the demuxer
 	uint64_t duration; // Set by the demuxer
 	
 	uint16_t state; // Current state of the frame
@@ -343,7 +343,7 @@ public:
 };
 
 class MediaMarker {
-	uint64_t pts;
+	int64_t pts;
 	char *type;
 	char *text;
 	
@@ -355,12 +355,12 @@ public:
 		MediaMarker *marker;
 	};
 	
-	MediaMarker (const char *type, const char *text, uint64_t pts);
+	MediaMarker (const char *type, const char *text, int64_t pts);
 	~MediaMarker ();
 	
 	const char *Type () { return type; }
 	const char *Text () { return text; }
-	uint64_t Pts () { return pts; }
+	int64_t Pts () { return pts; }
 };
 
 // Interfaces
@@ -436,7 +436,7 @@ public:
 	virtual MediaResult ReadHeader () = 0;
 	// Fills the uncompressed_data field in the frame with data.
 	virtual MediaResult ReadFrame (MediaFrame *frame) = 0;
-	virtual MediaResult Seek (guint64 pts) = 0;
+	virtual MediaResult Seek (int64_t pts) = 0;
 	int GetStreamCount () { return stream_count; }
 	IMediaStream *GetStream (int index)
 	{
@@ -609,7 +609,7 @@ public:
 	IImageConverter *converter; // This stream has the ownership of the converter, it will be deleted upon destruction.
 	uint32_t bits_per_sample;
 	uint32_t msec_per_frame;
-	uint64_t initial_pts;
+	int64_t initial_pts;
 	uint32_t height;
 	uint32_t width;
 	
@@ -648,7 +648,7 @@ public:
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
-	virtual MediaResult Seek (uint64_t pts);
+	virtual MediaResult Seek (int64_t pts);
 	
 	ASFParser *GetParser () { return parser; }
 };
@@ -686,8 +686,8 @@ public:
 
 struct MpegFrame {
 	int64_t offset;
-	uint64_t pts;
 	uint32_t dur;
+	int64_t pts;
 	
 	// this is needed in case this frame did not specify it's own
 	// bit rate which is possible for MPEG-1 Layer 3 audio.
@@ -697,15 +697,15 @@ struct MpegFrame {
 class Mp3FrameReader {
 	IMediaSource *stream;
 	int64_t stream_start;
-	uint64_t cur_pts;
 	int32_t bit_rate;
+	int64_t cur_pts;
 	
 	MpegFrame *jmptab;
 	uint32_t avail;
 	uint32_t used;
 	
-	uint32_t MpegFrameSearch (uint64_t pts);
-	void AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate);
+	uint32_t MpegFrameSearch (int64_t pts);
+	void AddFrameIndex (int64_t offset, int64_t pts, uint32_t dur, int32_t bit_rate);
 	
 	bool SkipFrame ();
 	
@@ -713,7 +713,7 @@ public:
 	Mp3FrameReader (IMediaSource *source, int64_t start);
 	~Mp3FrameReader ();
 	
-	bool Seek (uint64_t pts);
+	bool Seek (int64_t pts);
 	
 	MediaResult ReadFrame (MediaFrame *frame);
 };
@@ -727,7 +727,7 @@ public:
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
-	virtual MediaResult Seek (uint64_t pts);
+	virtual MediaResult Seek (int64_t pts);
 };
 
 class Mp3DemuxerInfo : public DemuxerInfo {
