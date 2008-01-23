@@ -55,13 +55,6 @@ ASFMediaSource::Eof ()
 	ASFParser
 */
 
-ASFParser::ASFParser (const char *filename)
-{
-	ASF_LOG ("ASFParser::ASFParser ('%s'), this: %p.\n", filename, this);
-	source = new ASFFileSource (this, filename);
-	Initialize ();
-}
-
 ASFParser::ASFParser (ASFSource *src)
 {
 	ASF_LOG ("ASFParser::ASFParser ('%p'), this: %p.\n", src, this);
@@ -558,70 +551,6 @@ ASFParser::GetHeader (int index)
 	return header_objects [index];
 }
 
-
-/*
-	ASFFileSource
-*/
-
-ASFFileSource::ASFFileSource (ASFParser *parser, const char *filename) : ASFSource (parser)
-{
-	this->filename = g_strdup (filename);
-	fd = NULL;
-}
-
-ASFFileSource::~ASFFileSource ()
-{
-	g_free (filename);
-	if (fd)
-		fclose (fd);
-}
-
-bool
-ASFFileSource::SeekInternal (int64_t offset, int mode)
-{
-	if (fseek (fd, offset, mode) != 0) {
-		parser->AddError (g_strdup_printf ("Can't seek to offset %lld with mode %d in '%s': %s.\n",
-						   offset, mode, filename, strerror (errno)));
-		return false;
-	}
-	
-	return true;
-}
-
-bool
-ASFFileSource::ReadInternal (void *dest, uint32_t bytes)
-{
-	size_t bytes_read;
-	
-	if (dest == NULL) {
-		parser->AddError ("Out of memory.\n");
-		return false;
-	}
-
-	if (!fd) {
-		fd = fopen (filename, "rb");
-		if (!fd) {
-			parser->AddError (g_strdup_printf ("Could not open the file '%s': %s.\n",
-							   filename, strerror (errno)));
-			return false;
-		}
-	}
-
-	bytes_read = fread (dest, 1, bytes, fd);
-	
-	if (bytes_read != bytes) {
-		if (ferror (fd) != 0) {
-			parser->AddError (g_strdup_printf ("Could not read from the file '%s': %s.\n", filename, strerror (errno)));
-		} else if (feof (fd) != 0) {
-			parser->AddError (g_strdup_printf ("Reached end of file prematurely of the file '%s'.\n", filename));
-		} else {
-			parser->AddError (g_strdup_printf ("Unspecified error while reading the file '%s'.\n", filename));
-		}
-		return false;
-	}
-
-	return true;
-}
 
 /*
 	ASFSource

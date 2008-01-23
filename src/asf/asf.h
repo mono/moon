@@ -96,25 +96,6 @@ public:
 	ASFMediaSource (ASFParser *parser, IMediaSource *source);
 };
 
-class ASFFileSource : public ASFSource {
-	char *filename;
-	FILE *fd;
-	
-protected:
-	virtual bool ReadInternal (void *buf, uint32_t n);
-	virtual bool SeekInternal (int64_t offset, int mode);
-	
-public:
-	ASFFileSource (ASFParser *parser, const char *filename);
-	virtual ~ASFFileSource ();
-	
-	virtual int64_t Position () { return fd == NULL ? 0 : ftell (fd); }
-	virtual bool CanSeek () { return true; }
-	virtual bool Eof () { return fd == NULL ? false : feof (fd) != 0; }
-	
-	const char *GetFileName () { return filename; }
-};
-
 class ASFPacket {
 	int64_t position; // The position of this packet. -1 if not known.
 	int index; // The index of this packet. -1 if not known.
@@ -247,8 +228,8 @@ private:
 	void SetStream (int stream_id, asf_stream_properties *stream);
 	
 public:
-	ASFParser (const char *filename);
-	ASFParser (ASFSource *source); // The parser takes ownership of the source and will delete it when the parser is deleted.
+	// The parser takes ownership of the source and will delete it when the parser is deleted.
+	ASFParser (ASFSource *source);
 	virtual ~ASFParser ();
 	
 	bool ReadHeader ();

@@ -17,93 +17,8 @@
 #include "asf-test.h"
 #include "asf.h"
 
-char*
-create_new_file_name (const char* prefix, const char* number_format, const char* suffix);
 
-int
-main (int argc, char *argv [])
-{
-	if (argc < 2) {
-		printf ("ASF tester.\n");
-		printf ("-test\n");
-		printf ("  -test:<filename>\n");
-		printf ("-corrupt\n");
-		printf ("  -in:<filename>\n");
-		printf ("  -out:<filename>\n");
-		printf ("  -test:<filename>\n");
-		printf ("  -corruption:<number>\n");
-		printf ("  -replay\n");
-		return 0;
-	}
-
-	char *in = NULL, *out = NULL, *log = NULL, *test = NULL;
-	int corruption = 20000;
-	bool replay = false;
-	bool do_test = false, do_corrupt = false;
-	int result = 1;
-	
-	for (int i = 1; i < argc; i++) {
-		char* arg = argv [i];
-		
-		if (strcmp (arg, "-test") == 0) {
-			do_test = true;
-		} else if (strcmp (arg, "-corrupt") == 0) {
-			do_corrupt = true;
-		} else if (g_str_has_prefix (arg, "-in:")) { // required for corrupt
-			in = arg + 4;
-		} else if (g_str_has_prefix (arg, "-out:")) {  // for corrupt
-			out = g_strdup (arg + 5);
-		} else if (g_str_has_prefix (arg, "-log:")) { // for corrupt
-			log = g_strdup (arg + 5);
-		} else if (g_str_has_prefix (arg, "-test:")) { // required for test (automatically tests)
-			test = arg + 6;
-			do_test = true;
-		} else if (g_str_has_prefix (arg, "-corruption:")) {  // for corrupt (automatically corrupts)
-			corruption = atoi (arg + 12);
-			do_corrupt = true;
-		} else if (g_str_has_prefix (arg, "-replay")) { // for corrupt
-			replay = true;
-		} else {
-			fprintf (stderr, "Unknown option: %s\n", arg);
-			return 1;
-		}
-	}
-
-	if (do_corrupt) {
-		if (out == NULL) {
-			out = create_new_file_name (in, "%.3i", ".wmv");
-		}
-
-		if (log == NULL) {
-			log = g_strdup_printf ("%s.log", out);
-		}
-
-		if (!corrupt_file (in, out, log, replay, corruption)) {
-			goto cleanup;
-		}
-		
-		if (test == NULL) {
-			test = out;
-		}
-	}
-	
-	if (do_test && !test_file (test)) {
-		goto cleanup;
-	}
-
-	result = 0;
-	
-cleanup:
-	g_free (out);
-	g_free (log);
-	
-	out = NULL;
-	log = NULL;
-	
-	return result;
-}
-
-char*
+static char*
 create_new_file_name (const char* prefix, const char* number_format, const char* suffix)
 {
 	char* result = NULL;
@@ -125,7 +40,7 @@ create_new_file_name (const char* prefix, const char* number_format, const char*
 	return result;
 }
 
-bool
+static bool
 corrupt_file (const char* input_filename, const char* output_filename, const char* log_filename, bool replay, double corruption)
 {
 	printf ("corrupt_file (%s, %s, %s, %s, %f)\n", input_filename, output_filename, log_filename, replay ? "true" : "false", corruption);
@@ -273,7 +188,7 @@ cleanup:
 	return result;
 }
 
-bool
+static bool
 test_file (const char* filename)
 {	
 	printf ("test_file (%s)\n", filename);
@@ -282,8 +197,15 @@ test_file (const char* filename)
 	ASFParser* parser = NULL;
 	ASFPacket* packet = NULL;
 	ASFFrameReader* reader = NULL;
+	ASFSource *asf_src;
+	FileSource *fs;
 	
-	parser = new ASFParser (filename);
+	fs = new FileSource (NULL, filename);
+	fs->Initialize ();
+	
+	asf_src = new ASFMediaSource (NULL, fs);
+	
+	parser = new ASFParser (asf_src);
 	if (!parser->ReadHeader ()) {
 		printf ("test_file (%s): read header failed.\n", filename);
 		goto end;
@@ -324,4 +246,87 @@ end:
 	return result;
 }
 
+
+int
+main (int argc, char *argv [])
+{
+	if (argc < 2) {
+		printf ("ASF tester.\n");
+		printf ("-test\n");
+		printf ("  -test:<filename>\n");
+		printf ("-corrupt\n");
+		printf ("  -in:<filename>\n");
+		printf ("  -out:<filename>\n");
+		printf ("  -test:<filename>\n");
+		printf ("  -corruption:<number>\n");
+		printf ("  -replay\n");
+		return 0;
+	}
+
+	char *in = NULL, *out = NULL, *log = NULL, *test = NULL;
+	int corruption = 20000;
+	bool replay = false;
+	bool do_test = false, do_corrupt = false;
+	int result = 1;
+	
+	for (int i = 1; i < argc; i++) {
+		char* arg = argv [i];
+		
+		if (strcmp (arg, "-test") == 0) {
+			do_test = true;
+		} else if (strcmp (arg, "-corrupt") == 0) {
+			do_corrupt = true;
+		} else if (g_str_has_prefix (arg, "-in:")) { // required for corrupt
+			in = arg + 4;
+		} else if (g_str_has_prefix (arg, "-out:")) {  // for corrupt
+			out = g_strdup (arg + 5);
+		} else if (g_str_has_prefix (arg, "-log:")) { // for corrupt
+			log = g_strdup (arg + 5);
+		} else if (g_str_has_prefix (arg, "-test:")) { // required for test (automatically tests)
+			test = arg + 6;
+			do_test = true;
+		} else if (g_str_has_prefix (arg, "-corruption:")) {  // for corrupt (automatically corrupts)
+			corruption = atoi (arg + 12);
+			do_corrupt = true;
+		} else if (g_str_has_prefix (arg, "-replay")) { // for corrupt
+			replay = true;
+		} else {
+			fprintf (stderr, "Unknown option: %s\n", arg);
+			return 1;
+		}
+	}
+
+	if (do_corrupt) {
+		if (out == NULL) {
+			out = create_new_file_name (in, "%.3i", ".wmv");
+		}
+
+		if (log == NULL) {
+			log = g_strdup_printf ("%s.log", out);
+		}
+
+		if (!corrupt_file (in, out, log, replay, corruption)) {
+			goto cleanup;
+		}
+		
+		if (test == NULL) {
+			test = out;
+		}
+	}
+	
+	if (do_test && !test_file (test)) {
+		goto cleanup;
+	}
+
+	result = 0;
+	
+cleanup:
+	g_free (out);
+	g_free (log);
+	
+	out = NULL;
+	log = NULL;
+	
+	return result;
+}
 
