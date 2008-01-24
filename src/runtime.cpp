@@ -1111,6 +1111,19 @@ Surface::FindFirstCommonElement (List *l1, int *index1,
 void
 Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
 {
+	// we can end up here if mozilla pops up the JS timeout
+	// dialog.  The problem is that JS might have registered a
+	// handler for the event we're going to emit, so when we end
+	// up tripping the timeout while in JS, mozilla pops up the
+	// dialog, which causes a crossing-notify event to be emitted.
+	// This causes HandleMouseEvent to be called, and the original
+	// input_list is deleted.  the crossing-notify event is
+	// handled, then we return to the event that tripped the
+	// timeout, we crash.
+	if (emittingMouseEvent) {
+		return;
+	}
+
 	if (event == NULL)
 		return;
 

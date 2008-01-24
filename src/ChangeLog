@@ -1,5 +1,11 @@
 2008-01-23  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::HandleMouseEvent): don't crash when we
+	re-enter HandleMouseEvent, which can happen when that stupid JS
+	timeout dialog pops up.
+
+2008-01-23  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::SetMouseCapture): this fails not only if
 	there's an existing capture, but also if there's a pending
 	capture (so if both a parent and child capture on the same event,
