@@ -903,7 +903,7 @@ end_frame:
 	printf ("\n");
 */
 //	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, pts = %.5llu, stream# = %i, media_object_number = %.3u, script_command_stream_index = %u (advanced).\n", 
-//		size, IsKeyFrame () ? "true " : "false", Pts (), StreamNumber (), media_object_number, script_command_stream_index);
+//		size, IsKeyFrame () ? "true " : "false", Pts (), StreamId (), media_object_number, script_command_stream_index);
 
 
 	// Check if the current frame is a script command, in which case we must call the callback set in 

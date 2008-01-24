@@ -108,7 +108,7 @@ corrupt_file (const char* input_filename, const char* output_filename, const cha
 	}
 	srand (time (0));
 	
-	guint8 byte;
+	uint8_t byte;
 	int random_value;
 	
 	while (fread (&byte, 1, 1, in) == 1) {
@@ -116,7 +116,7 @@ corrupt_file (const char* input_filename, const char* output_filename, const cha
 		random_value = rand ();
 		total++;
 		
-		guint8 c [2];
+		uint8_t c [2];
 		unsigned int cc = 1;
 
 		c [0] = byte;
@@ -134,12 +134,12 @@ corrupt_file (const char* input_filename, const char* output_filename, const cha
 				case 1: // write garbage
 					trashed++;
 					cc = 1;
-					c [0] ^= (guint8) rand ();
+					c [0] ^= (uint8_t) rand ();
 					break;
 				case 2: // write an extra byte
 					added++;
 					cc = 2;
-					c [1] = (guint8) rand ();
+					c [1] = (uint8_t) rand ();
 					break;
 				case 3: // write an extra byte (copying)
 					added++;

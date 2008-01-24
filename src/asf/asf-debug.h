@@ -13,7 +13,6 @@
 
 #if DEBUG
 
-#include <glib.h>
 #include <stdio.h>
 
 class ObjectTracker {
@@ -42,7 +41,7 @@ public:
 		}
 		
 		if (list != NULL) {
-			guint count = g_hash_table_size (list);
+			int32_t count = g_hash_table_size (list);
 			if (count == 0) {
 				printf ("ObjectTracking::PrintStatus (%s): No unfreed objects.\n", tn);
 			} else {

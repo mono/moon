@@ -722,7 +722,7 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 		asf_word length = * (asf_word*) start;
 		
 		// Verify data
-		size_requested = sizeof (asf_word) + sizeof (guint16) * length;
+		size_requested = sizeof (asf_word) + sizeof (uint16_t) * length;
 		if (size_requested > size_left) {
 			parser->AddError ("Data corruption in script command.");
 			goto failure;
@@ -741,9 +741,9 @@ asf_script_command::get_commands (ASFParser* parser, char*** command_types)
 		
 		char* tmp = (char*) next;
 		tmp += sizeof (asf_script_command_entry);
-		tmp += (next->name_length * sizeof (guint16));
+		tmp += (next->name_length * sizeof (uint16_t));
 		
-		size_requested = sizeof (asf_script_command_entry) + next->name_length * sizeof (guint16);
+		size_requested = sizeof (asf_script_command_entry) + next->name_length * sizeof (uint16_t);
 		if (size_requested > size_left) {
 			parser->AddError ("Data corruption in script command.");
 			goto failure;
