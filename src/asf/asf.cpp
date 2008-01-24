@@ -477,7 +477,7 @@ ASFParser::GetPacketIndex (int64_t offset)
 }
 
 int
-ASFParser::GetPacketIndexOfPts (int stream_id, int64_t pts)
+ASFParser::GetPacketIndexOfPts (int stream_id, uint64_t pts)
 {
 	ASFPacket *packet = NULL;
 	int result = 0;
@@ -486,9 +486,9 @@ ASFParser::GetPacketIndexOfPts (int stream_id, int64_t pts)
 	// greater than the one we're looking for.
 	
 	while (ReadPacket (packet, result)) {
-		int64_t current_pts = packet->GetPts (stream_id);
+		uint64_t current_pts = packet->GetPts (stream_id);
 		
-		if (current_pts < 0) // Can't read pts for some reason.
+		if (current_pts == ULLONG_MAX) // Can't read pts for some reason.
 			return -1;
 		
 		if (current_pts > pts) // We've found the packet after the one we're looking for
@@ -646,15 +646,15 @@ ASFPacket::GetPayload (int index /* 0 based */)
 	return NULL;
 }
 
-int64_t
+uint64_t
 ASFPacket::GetPts (int stream_id)
 {
 	if (!payloads)
-		return -1;
+		return ULLONG_MAX;
 	
 	asf_single_payload *first = GetFirstPayload (stream_id);
 	if (!first)
-		return -1;
+		return ULLONG_MAX;
 	
 	return first->get_presentation_time ();
 }
@@ -704,6 +704,7 @@ ASFFrameReader::~ASFFrameReader ()
 	
 	for (int i = 0; payloads[i]; i++)
 		delete payloads[i];
+	
 	g_free (payloads);
 }
 
@@ -751,9 +752,9 @@ ASFFrameReader::ResizeList (int size)
 }
 
 bool
-ASFFrameReader::Seek (int stream_id, int64_t pts)
+ASFFrameReader::Seek (int stream_id, uint64_t pts)
 {
-	//printf ("ASFFrameReader::Seek (%d, %lld).\n", stream_id, pts);
+	//printf ("ASFFrameReader::Seek (%d, %llu).\n", stream_id, pts);
 	
 	if (!CanSeek ())
 		return false;
@@ -769,17 +770,17 @@ ASFFrameReader::Seek (int stream_id, int64_t pts)
 	RemoveAll ();
 	
 	while (Advance (stream_id)) {
-		//printf ("ASFFrameReader::Seek (%d, %lld): Checking pts: %lld\n", stream_id, pts, Pts ());
+		//printf ("ASFFrameReader::Seek (%d, %llu): Checking pts: %llu\n", stream_id, pts, Pts ());
 		if (Pts () > pts) {
-			//printf ("ASFFrameReader::Seek (%d, %lld): Found pts: %lld\n", stream_id, pts, Pts ());
+			//printf ("ASFFrameReader::Seek (%d, %llu): Found pts: %llu\n", stream_id, pts, Pts ());
 			if (IsKeyFrame ()) {
-				//printf ("ASFFrameReader::Seek (%d, %lld): Found a key frame\n", stream_id, pts);
+				//printf ("ASFFrameReader::Seek (%d, %llu): Found a key frame\n", stream_id, pts);
 				found = true;
 			} else if (false) {
-				//printf ("ASFFrameReader::Seek (%d, %lld): Checking for audio frame..\n", stream_id, pts);
+				//printf ("ASFFrameReader::Seek (%d, %llu): Checking for audio frame..\n", stream_id, pts);
 				asf_stream_properties* asp = parser->GetStream (StreamId ());
 				found = asp->is_audio ();
-				//printf ("ASFFrameReader::Seek (%d, %lld): Checking for audio frame: %s\n", stream_id, pts, found ? "true" : "false");
+				//printf ("ASFFrameReader::Seek (%d, %llu): Checking for audio frame: %s\n", stream_id, pts, found ? "true" : "false");
 			}
 			if (found)
 				break;
@@ -792,7 +793,7 @@ ASFFrameReader::Seek (int stream_id, int64_t pts)
 		return false;
 	}
 	
-	//printf ("ASFFrameReader::Seek (%d, %lld): Counted to %i.\n", stream_id, pts, counter);
+	//printf ("ASFFrameReader::Seek (%d, %llu): Counted to %d.\n", stream_id, pts, counter);
 		
 	current_packet_index = 0;
 	RemoveAll ();
@@ -801,7 +802,7 @@ ASFFrameReader::Seek (int stream_id, int64_t pts)
 		if (!Advance (stream_id)) {
 			return false;
 		}
-		//printf ("ASFFrameReader::Seek (%d, %lld): Counting: %i, pts: %lld, size: %i.\n", stream_id, pts, counter, Pts (), Size ());
+		//printf ("ASFFrameReader::Seek (%d, %lld): Counting: %i, pts: %llu, size: %i.\n", stream_id, pts, counter, Pts (), Size ());
 	}
 	
 	// Don't return any frames before the pts we seeked to.
@@ -809,7 +810,7 @@ ASFFrameReader::Seek (int stream_id, int64_t pts)
 	// has frames with pts below this one.
 	first_pts = pts; 
 	
-	//printf ("ASFFrameReader::Seek (%d, %lld): Found the requested pts, we're now at: %lld.\n", stream_id, pts, Pts ());
+	//printf ("ASFFrameReader::Seek (%d, %llu): Found the requested pts, we're now at: %llu.\n", stream_id, pts, Pts ());
 	
 	return true;
 }
@@ -855,7 +856,7 @@ start:
 	
 	size = 0;
 	
-	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %lld, stream# = %d, media_object_number = %u.\n", 
+	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %d, media_object_number = %u.\n", 
 		 size, IsKeyFrame () ? "true" : "false", Pts (), StreamId (), media_object_number);
 	//asf_single_payload_dump (payloads [0]);
 	current = first;
@@ -948,7 +949,7 @@ end_frame:
 void
 ASFFrameReader::ReadScriptCommand ()
 {
-	int64_t pts;
+	uint64_t pts;
 	char *text;
 	char *type;
 	gunichar2 *data;

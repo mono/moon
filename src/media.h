@@ -202,14 +202,26 @@ public:
 		Stopped,
 		Error
 	};
+	
 private:
 	State state;
-	State previous_state; // this is used to know what to do after a Buffering state finishes
+	
+	// this is used to know what to do after a Buffering state finishes
+	State previous_state;
+	
 	bool waiting_for_loaded;
-	bool tried_buffering; // When enough of a file has been downloaded to try to open and buffer it, and the open fails, don't try again.
+	
+	// When enough of a file has been downloaded to try to open
+	// and buffer it, and the open fails, don't try again.
+	bool tried_buffering;
+	
 	bool download_complete;
-	bool disable_buffering; // If SetSource is called with a Downloader that has started, disable buffering (since can't get the start of the file).
-	ProgressiveSource *downloaded_file; // This contains the downloaded data.
+	
+	// If SetSource is called with a Downloader that has started,
+	// disable buffering (since can't get the start of the file).
+	bool disable_buffering;
+	
+	ProgressiveSource *downloaded_file;
 	Media *media;
 
 	bool recalculate_matrix;
@@ -217,9 +229,9 @@ private:
 	bool updating;
 	bool loaded;
 	bool play_pending;
-	int64_t previous_position;
+	uint64_t previous_position;
 	
-	TimelineMarkerCollection* streamed_markers;
+	TimelineMarkerCollection *streamed_markers;
 	
 	virtual void OnLoaded ();
 	
@@ -235,6 +247,7 @@ private:
 	void DownloaderAbort ();
 	void DownloaderComplete ();
 	void BufferingComplete ();
+	
 	// Try to open the media (i.e. read the headers).
 	void TryOpen ();
 	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
@@ -248,9 +261,10 @@ private:
 	
 	void ReadMarkers ();
 	void CheckMarkers (int64_t from, int64_t to);
-	void CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection* col, bool remove);
+	void CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection *col, bool remove);
 	
 public:
+	// properties
 	static DependencyProperty *AttributesProperty;
 	static DependencyProperty *AudioStreamCountProperty;
 	static DependencyProperty *AudioStreamIndexProperty;
@@ -269,12 +283,20 @@ public:
 	static DependencyProperty *PositionProperty;
 	static DependencyProperty *VolumeProperty;
 	
-	bool AdvanceFrame ();
-	MediaPlayer *mplayer;
+	// events
+	static int BufferingProgressChangedEvent;
+	static int CurrentStateChangedEvent;
+	static int MarkerReachedEvent;
+	static int MediaEndedEvent;
+	static int MediaFailedEvent;
+	static int MediaOpenedEvent;
 	
 	MediaElement ();
 	virtual ~MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
+	
+	bool AdvanceFrame ();
+	MediaPlayer *mplayer;
 	
 	// overrides
 	virtual void Render (cairo_t *cr, Region *region);
@@ -299,9 +321,11 @@ public:
 	bool IsPlaying () { return state == Playing; }
 	bool IsPaused () { return state == Paused; }
 	bool IsStopped () { return state == Stopped; }
+	
 	void SetState (State new_state);
 	State GetState () { return state; }
-	static const char* GetStateName (State state);
+	
+	static const char *GetStateName (State state);
 	
 	virtual bool EnableAntiAlias ()
 	{
@@ -309,14 +333,7 @@ public:
 			 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */);
 	}
 	
-	void AddStreamedMarker (TimelineMarker* marker);
-	
-	static int BufferingProgressChangedEvent;
-	static int CurrentStateChangedEvent;
-	static int MarkerReachedEvent;
-	static int MediaEndedEvent;
-	static int MediaFailedEvent;
-	static int MediaOpenedEvent;
+	void AddStreamedMarker (TimelineMarker *marker);
 };
 
 MediaElement *media_element_new (void);

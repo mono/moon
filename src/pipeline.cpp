@@ -194,7 +194,7 @@ Media::AddMessage (MediaResult result, char *msg)
 }
 
 MediaResult
-Media::Seek (int64_t pts)
+Media::Seek (uint64_t pts)
 {
 	if (demuxer)
 		return demuxer->Seek (pts);
@@ -203,7 +203,7 @@ Media::Seek (int64_t pts)
 }
 
 MediaResult
-Media::SeekAsync (int64_t pts)
+Media::SeekAsync (uint64_t pts)
 {
 	if (demuxer == NULL)
 		return MEDIA_FAIL;
@@ -537,6 +537,8 @@ Media::GetNextFrameAsync (MediaFrame *frame)
 void
 Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 {
+	MoonWorkType type;
+	
 	if (frame == NULL) {
 		AddMessage (MEDIA_INVALID_ARGUMENT, "frame is NULL.");
 		return;
@@ -547,12 +549,18 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 		return;
 	}
 	
-	MoonWorkType type;
 	switch (frame->stream->GetType ()) {
-	case MediaTypeAudio: type = WorkTypeAudio; break;
-	case MediaTypeVideo: type = WorkTypeVideo; break;
-	case MediaTypeMarker: type = WorkTypeMarker; break;
+	case MediaTypeAudio:
+		type = WorkTypeAudio;
+		break;
+	case MediaTypeVideo:
+		type = WorkTypeVideo;
+		break;
+	case MediaTypeMarker:
+		type = WorkTypeMarker;
+		break;
 	case MediaTypeNone:
+	default:
 		AddMessage (MEDIA_INVALID_ARGUMENT, "The frame's stream is of an unknown type.");
 		return;
 	}
@@ -689,7 +697,7 @@ ASFDemuxer::~ASFDemuxer ()
 }
 
 MediaResult
-ASFDemuxer::Seek (int64_t pts)
+ASFDemuxer::Seek (uint64_t pts)
 {
 	if (reader == NULL)
 		reader = new ASFFrameReader (parser);
@@ -705,6 +713,7 @@ ASFDemuxer::Seek (int64_t pts)
 			break;
 		}
 	}
+	
 	if (reader->Seek (stream_id, pts))
 		return MEDIA_SUCCESS;
 	
@@ -730,7 +739,7 @@ ASFDemuxer::ReadMarkers ()
 	List *markers = media->GetMarkers ();
 	//guint64 preroll = parser->file_properties->preroll;
 	const char *type;
-	int64_t pts;
+	uint64_t pts;
 	char *text;
 	int i = -1;
 	
@@ -1298,7 +1307,7 @@ Mp3FrameReader::~Mp3FrameReader ()
 }
 
 void
-Mp3FrameReader::AddFrameIndex (int64_t offset, int64_t pts, uint32_t dur, int32_t bit_rate)
+Mp3FrameReader::AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate)
 {
 	if (used == avail) {
 		avail += MPEG_JUMP_TABLE_GROW_SIZE;
@@ -1331,9 +1340,9 @@ Mp3FrameReader::AddFrameIndex (int64_t offset, int64_t pts, uint32_t dur, int32_
 #define MID(lo, hi) (lo + ((hi - lo) >> 1))
 
 uint32_t
-Mp3FrameReader::MpegFrameSearch (int64_t pts)
+Mp3FrameReader::MpegFrameSearch (uint64_t pts)
 {
-	int64_t start, end;
+	uint64_t start, end;
 	uint32_t hi = used - 1;
 	uint32_t m = hi >> 1;
 	uint32_t lo = 0;
@@ -1362,11 +1371,11 @@ Mp3FrameReader::MpegFrameSearch (int64_t pts)
 }
 
 bool
-Mp3FrameReader::Seek (int64_t pts)
+Mp3FrameReader::Seek (uint64_t pts)
 {
 	int64_t offset = stream->GetPosition ();
 	int32_t bit_rate = this->bit_rate;
-	int64_t cur_pts = this->cur_pts;
+	uint64_t cur_pts = this->cur_pts;
 	uint32_t frame;
 	
 	if (pts == cur_pts)
@@ -1562,7 +1571,7 @@ Mp3Demuxer::~Mp3Demuxer ()
 }
 
 MediaResult
-Mp3Demuxer::Seek (int64_t pts)
+Mp3Demuxer::Seek (uint64_t pts)
 {
 	if (reader && reader->Seek (pts))
 		return MEDIA_SUCCESS;
@@ -2490,7 +2499,7 @@ VideoStream::~VideoStream ()
  * MediaMarker
  */ 
 
-MediaMarker::MediaMarker (const char *type, const char *text, int64_t pts)
+MediaMarker::MediaMarker (const char *type, const char *text, uint64_t pts)
 {
 	this->type = g_strdup (type);
 	this->text = g_strdup (text);

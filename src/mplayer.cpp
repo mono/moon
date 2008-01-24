@@ -457,7 +457,7 @@ MediaPlayer::AdvanceFrame ()
 	MediaFrame *frame = NULL;
 	IMediaStream *stream;
 	bool update = false;
-	int64_t target_pts;
+	uint64_t target_pts;
 	List *list;
 	
 	if (paused) {
@@ -713,7 +713,7 @@ MediaPlayer::Pause ()
 void
 MediaPlayer::StopThreads ()
 {
-	int64_t initial_pts = 0;
+	uint64_t initial_pts;
 	
 	stop = true;
 	
@@ -737,8 +737,12 @@ MediaPlayer::StopThreads ()
 	
 	audio->outptr = audio->outbuf;
 	
-	if (HasVideo ())
+	if (audio->pcm != NULL && HasAudio ())
+		initial_pts = audio->stream->start_time;
+	else if (HasVideo ())
 		initial_pts = video->stream->start_time;
+	else
+		initial_pts = 0;
 	
 	current_pts = initial_pts;
 	target_pts = initial_pts;
@@ -750,7 +754,6 @@ MediaPlayer::StopThreads ()
 void
 MediaPlayer::Stop ()
 {
-	//printf ("MediaPlayer::Stop (), paused = %s, opened = %s, playing = %s\n", paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
 	StopThreads ();
 	
 	playing = false;
@@ -769,21 +772,14 @@ MediaPlayer::CanSeek ()
 }
 
 void
-MediaPlayer::Seek (int64_t position)
+MediaPlayer::Seek (uint64_t position)
 {
-	//printf ("MediaPlayer::Seek (%lld), paused = %s, opened = %s, playing = %s\n", position, paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
-	int64_t initial_pts, duration;
+	uint64_t initial_pts, duration;
 	bool resume = !paused;
 	
 	if (!CanSeek ())
 		return;
 	
-	/*printf ("MediaPlayer::Seek (), audio-duration: %lld, audio-initialpts: %lld, video-duration: %lld, video-initial-pts: %lld\n",
-		HasAudio () ? audio->stream->duration : 0,
-		HasAudio () ? audio->initial_pts : 0,
-		HasVideo () ? video->stream->duration : 0,
-		HasVideo () ? video->initial_pts : 0);
-		*/
 	if (audio->pcm != NULL && HasAudio ()) {
 		duration = audio->stream->duration;
 		initial_pts = audio->stream->start_time;
@@ -817,7 +813,7 @@ MediaPlayer::Seek (int64_t position)
 		//TODO: LoadVideoFrame ();
 	}
 	
-	//printf ("MediaPlayer::Seek (%lld) (playing: %s)\n", position, playing ? "true" : "false");
+	//printf ("MediaPlayer::Seek (%llu) (playing: %s)\n", position, playing ? "true" : "false");
 	
 	if (playing) {
 		media_player_enqueue_frames (this, 1, 1);
@@ -842,14 +838,11 @@ MediaPlayer::Seek (int64_t position)
 	}
 }
 
-int64_t
+uint64_t
 MediaPlayer::Position ()
 {
-	int64_t position = target_pts;
-/*
-	printf ("MediaPlayer::Position (), position: %lld, audio->initialpts: %lld, video->initialpts = %lld, seek_pts = %lld, target_pts = %lld, paused = %s, opened = %s, playing = %s\n", position,
-		audio->initial_pts, video->initial_pts, seek_pts, target_pts, paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
-	*/	
+	uint64_t position = target_pts;
+	
 	if (audio->pcm != NULL && HasAudio ())
 		return position - audio->stream->start_time;
 	
@@ -859,12 +852,9 @@ MediaPlayer::Position ()
 	return position;
 }
 
-int64_t
+uint64_t
 MediaPlayer::Duration ()
 {
-	//printf ("MediaPlayer::Duration (), audio->stream->duration: %lld, video->stream->duration: %lld\n", HasAudio () ? audio->stream->duration : -1,
-	//		HasVideo () ? video->stream->duration : -1);
-	
 	if (audio->pcm != NULL && HasAudio ())
 		return audio->stream->duration;
 	

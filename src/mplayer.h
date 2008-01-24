@@ -27,9 +27,10 @@ public:
 	Media *media;
 	// The pts when we start playing (set when resuming playback to current pts, when starting to play to initial pts, and when seeking to the seeked pts)
 	// While playing it can be used to calculate the current pts (knowing the time)
-	guint64 start_pts;
-	guint64 initial_pts;
-	gint64 duration;
+	uint64_t start_pts;
+	uint64_t initial_pts;
+	uint64_t duration;
+	
 	pthread_mutex_t pause_mutex;
 	pthread_cond_t pause_cond;
 	bool paused;
@@ -37,6 +38,7 @@ public:
 	bool playing;
 	bool stop;
 	bool eof;
+	
 	GThread *audio_thread;
 	Audio *audio;
 	Video *video;
@@ -46,8 +48,9 @@ public:
 	uint64_t start_time;  
 	
 	pthread_mutex_t target_pts_lock;
-	int64_t current_pts;
-	int64_t target_pts;
+	uint64_t current_pts;
+	uint64_t target_pts;
+	
 	/* Public API */
 	
 	// read-only
@@ -74,9 +77,9 @@ public:
 	void Stop ();
 	
 	bool CanSeek ();
-	void Seek (int64_t position);
-	int64_t Position ();
-	int64_t Duration ();
+	void Seek (uint64_t position);
+	uint64_t Position ();
+	uint64_t Duration ();
 	
 	void Mute ();
 	void UnMute ();

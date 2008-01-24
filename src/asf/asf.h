@@ -108,7 +108,7 @@ public:
 	int GetPayloadCount (); // Returns the number of payloads in this packet.
 	asf_single_payload *GetPayload (int index /* 0 based */);
 	
-	int64_t GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload.
+	uint64_t GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload.
 	asf_single_payload *GetFirstPayload (int stream_id /* 1 - 127 */); // Gets the index first payload of the specified stream.
 };
 
@@ -160,7 +160,7 @@ class ASFFrameReader {
 	ASFParser *parser;
 	
 	// The first pts that should be returned, any frames with pts below this one will be dropped.
-	int64_t first_pts;
+	uint64_t first_pts;
 	
 	int current_packet_index;
 	int script_command_stream_index;
@@ -193,7 +193,7 @@ public:
 	bool CanSeek () { return true; }
 	
 	// Seek to the frame with the provided pts 
-	bool Seek (int stream_id, int64_t pts);
+	bool Seek (int stream_id, uint64_t pts);
 	
 	// Advance to the next frame
 	// Returns false if unsuccessful (if due to no more data, eof is set, otherwise some error occurred)
@@ -209,13 +209,13 @@ public:
 	// Information about the current frame
 	uint64_t Size () { return size; }
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
-	int64_t Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
+	uint64_t Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
 	int StreamId () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->stream_id : 0; }
 	bool Eof () { return eof; } // EOF might be true even if there are more packets in the reader (if Advance () fails, and Eof () = true, then advance failed because of eof).
 	void FindScriptCommandStream ();
 	
 	// Index 
-	uint32_t FrameSearch (int64_t pts);
+	uint32_t FrameSearch (uint64_t pts);
 	// Adds the current frame to the index.
 	void AddFrameIndex ();
 };
@@ -283,7 +283,7 @@ public:
 	
 	// Returns the packet index where the desired pts is found.
 	// Returns -1 on failure.
-	int GetPacketIndexOfPts (int stream_id, int64_t pts);
+	int GetPacketIndexOfPts (int stream_id, uint64_t pts);
 	
 	// The number of packets in the stream (0 if unknown).
 	uint64_t GetPacketCount ();
@@ -296,7 +296,7 @@ public:
 	asf_object *GetHeaderObject (const asf_guid *guid);
 	
 	// This callback is called whenever a script command payload is encountered while decoding.
-	typedef void embedded_script_command_callback (void *state, char *type, char *text, int64_t pts);
+	typedef void embedded_script_command_callback (void *state, char *type, char *text, uint64_t pts);
 	embedded_script_command_callback *embedded_script_command;
 	void *embedded_script_command_state;
 	
