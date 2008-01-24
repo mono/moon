@@ -1,5 +1,12 @@
 2008-01-23  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::SetMouseCapture): this fails not only if
+	there's an existing capture, but also if there's a pending
+	capture (so if both a parent and child capture on the same event,
+	the child gets it.)  Fixes dragging things around in ink journal.
+
+2008-01-23  Chris Toshok  <toshok@ximian.com>
+
 	* stylus.cpp, stylus.h: initial hit testing stuff.  right now the
 	only tests that are implemented are endcap (ellipse) vs. point,
 	and segment vs. segment (although this one isn't the full test, as

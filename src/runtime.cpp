@@ -1018,7 +1018,7 @@ Surface::PerformReleaseCapture ()
 bool
 Surface::SetMouseCapture (UIElement *capture)
 {
-	if (capture != NULL && captured)
+	if (capture != NULL && (captured || pendingCapture))
 		return false;
 
 	// we delay the actual capture/release until the end of the
