@@ -692,6 +692,7 @@ ASFFrameReader::ASFFrameReader (ASFParser *p)
 	payloads = NULL;
 	eof = false;
 	
+	first_pts = parser->GetFileProperties ()->preroll;
 	
 	script_command_stream_index = 0;
 	FindScriptCommandStream ();
@@ -752,7 +753,7 @@ ASFFrameReader::ResizeList (int size)
 bool
 ASFFrameReader::Seek (int stream_id, int64_t pts)
 {
-	ASF_LOG ("ASFFrameReader::Seek (%d, %lld).\n", stream_id, pts);
+	//printf ("ASFFrameReader::Seek (%d, %lld).\n", stream_id, pts);
 	
 	if (!CanSeek ())
 		return false;
@@ -762,30 +763,53 @@ ASFFrameReader::Seek (int stream_id, int64_t pts)
 	// then we seek again from the first frame until the number of frames counted - 1.	
 	
 	int counter = 0;
-	bool found = true;
+	bool found = true; // <- This is broken...
 	
 	current_packet_index = 0;
 	RemoveAll ();
 	
-	while (Advance ()) {
-		if (Pts () > pts && IsKeyFrame ()) {
-			found = true;
-			break;
+	while (Advance (stream_id)) {
+		//printf ("ASFFrameReader::Seek (%d, %lld): Checking pts: %lld\n", stream_id, pts, Pts ());
+		if (Pts () > pts) {
+			//printf ("ASFFrameReader::Seek (%d, %lld): Found pts: %lld\n", stream_id, pts, Pts ());
+			if (IsKeyFrame ()) {
+				//printf ("ASFFrameReader::Seek (%d, %lld): Found a key frame\n", stream_id, pts);
+				found = true;
+			} else if (false) {
+				//printf ("ASFFrameReader::Seek (%d, %lld): Checking for audio frame..\n", stream_id, pts);
+				asf_stream_properties* asp = parser->GetStream (StreamId ());
+				found = asp->is_audio ();
+				//printf ("ASFFrameReader::Seek (%d, %lld): Checking for audio frame: %s\n", stream_id, pts, found ? "true" : "false");
+			}
+			if (found)
+				break;
 		}
 		counter++;
 	}
 	
-	if (!found)
+	if (!found) {
+		//printf ("ASFFrameReader::Seek (%d, %lld): Didn't find the requested pts.\n", stream_id, pts);
 		return false;
+	}
 	
+	//printf ("ASFFrameReader::Seek (%d, %lld): Counted to %i.\n", stream_id, pts, counter);
+		
 	current_packet_index = 0;
 	RemoveAll ();
 	
 	while (counter-- > 0) {
-		if (!Advance ()) {
+		if (!Advance (stream_id)) {
 			return false;
 		}
+		//printf ("ASFFrameReader::Seek (%d, %lld): Counting: %i, pts: %lld, size: %i.\n", stream_id, pts, counter, Pts (), Size ());
 	}
+	
+	// Don't return any frames before the pts we seeked to.
+	// This might happen if we found the requested pts in stream #1, but stream #2 
+	// has frames with pts below this one.
+	first_pts = pts; 
+	
+	//printf ("ASFFrameReader::Seek (%d, %lld): Found the requested pts, we're now at: %lld.\n", stream_id, pts, Pts ());
 	
 	return true;
 }
@@ -860,7 +884,11 @@ start:
 		
 		asf_single_payload* payload = current->payload;
 		
-		if (stream_id == 0 || payload->stream_id == stream_id) {
+		if (false && payload->presentation_time < first_pts) {
+			ASFFrameReaderData* tmp = current;
+			current = current->next;
+			Remove (tmp);
+		} else if (stream_id == 0 || payload->stream_id == stream_id) {
 			if (payload_count > 0 && payload->media_object_number != media_object_number) {
 				// We've found the end of the current frame's payloads
 				ASF_LOG ("ASFFrameReader::Advance (): reached media object number %i (while reading %i).\n", payload->media_object_number, media_object_number);

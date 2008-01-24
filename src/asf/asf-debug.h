@@ -14,6 +14,8 @@
 #if DEBUG
 
 #include <stdio.h>
+#include <stdint.h>
+#include <glib.h>
 
 class ObjectTracker {
 public:

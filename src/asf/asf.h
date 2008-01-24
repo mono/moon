@@ -27,7 +27,6 @@ struct asf_guid;
 struct asf_object;
 
 class ASFParser;
-class ASFFileSource;
 class ASFSource;
 
 #define ASF_ERROR_VAL(fail, ...) { fprintf (stderr, __VA_ARGS__); return fail; }
@@ -70,7 +69,7 @@ public:
 	// into the destionation.
 	bool ReadEncoded (uint32_t encoded_length, uint32_t *dest);	
 	
-	bool Read (void *buf, size_t n); // Reads the requested number of bytes into the destination
+	bool Read (void *buf, uint32_t n); // Reads the requested number of bytes into the destination
 	
 	bool Seek (int64_t offset); // Seeks to the offset from the current position
 	bool Seek (int64_t offset, int mode); // Seeks to the offset, with the specified mode (SEEK_CUR, SEEK_END, SEEK_SET)
@@ -132,33 +131,36 @@ struct ASFFrameReaderData {
 };
 
 /*
-	The data in an ASF file has the following structure:
-		Data
-			Packets
-				Payload(s)
-					Chunks of Media objects
-	
-	The problem is that one chunk of "Media object data" can span several payloads (and packets),
-	and the pieces may come unordered, like this:
-	
-	- first 25% of media object #1 for stream #1
-	- first 25% of media object #1 for stream #2
-	- first 25% of media object #1 for stream #3
-	- middle 50% of media object #1 for stream #2
-	- last 75% of media object #1 for stream #1
-	=> we have now all the data for the first media object of stream #1
-	
-	This class implements a reader that allows the consumer to just call Advance() and then get the all data
-	for each "Media object" (here called "Frame", since it's shorter, and in general it corresponds
-	to a frame of video/audio, etc, even though the ASF spec states that it can be just about anything)
-	in one convenient Write () call.
-	
-	We keep reading payloads until we have all the data for a frame, the payloads currently not wanted are 
-	kept in a queue until the next Advance ().
-*/
+ *	The data in an ASF file has the following structure:
+ *		Data
+ *			Packets
+ *				Payload(s)
+ *					Chunks of Media objects
+ *	
+ *	The problem is that one chunk of "Media object data" can span several payloads (and packets),
+ *	and the pieces may come unordered, like this:
+ *	
+ *	- first 25% of media object #1 for stream #1
+ *	- first 25% of media object #1 for stream #2
+ *	- first 25% of media object #1 for stream #3
+ *	- middle 50% of media object #1 for stream #2
+ *	- last 75% of media object #1 for stream #1
+ *	=> we have now all the data for the first media object of stream #1
+ *	
+ *	This class implements a reader that allows the consumer to just call Advance() and then get the all data
+ *	for each "Media object" (here called "Frame", since it's shorter, and in general it corresponds
+ *	to a frame of video/audio, etc, even though the ASF spec states that it can be just about anything)
+ *	in one convenient Write () call.
+ *	
+ *	We keep reading payloads until we have all the data for a frame, the payloads currently not wanted are 
+ *	kept in a queue until the next Advance ().
+ */
 
 class ASFFrameReader {
 	ASFParser *parser;
+	
+	// The first pts that should be returned, any frames with pts below this one will be dropped.
+	int64_t first_pts;
 	
 	int current_packet_index;
 	int script_command_stream_index;
@@ -209,8 +211,13 @@ public:
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
 	int64_t Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
 	int StreamId () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->stream_id : 0; }
-	bool Eof () { return eof; } // EOF might be true even if there are more packets in the reader (if Advance () fails, and Eof () = true, then advance failed because of eof.
+	bool Eof () { return eof; } // EOF might be true even if there are more packets in the reader (if Advance () fails, and Eof () = true, then advance failed because of eof).
 	void FindScriptCommandStream ();
+	
+	// Index 
+	uint32_t FrameSearch (int64_t pts);
+	// Adds the current frame to the index.
+	void AddFrameIndex ();
 };
 
 class ASFParser {

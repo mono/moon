@@ -1,8 +1,9 @@
-ASF_COMPILER_ARGUMENTS=-MMD -Wall -g -O0 -DDEBUG -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I../.. -I.prec -c
+ASF_COMPILER_ARGUMENTS=-MMD -Wall -g -O0 -DDEBUG -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I../.. -I.prec -c --coverage
+ASF_DUMP_ARGUMENTS=-Ddump -DDEBUG -Dlog
 ASF_BIN=asf
 
 default: asf-generated.h compile
-	g++ -o $(ASF_BIN) asf.o asf-generated.o asf-guids.o asf-structures.o asf-debug.o asf-test.o -lglib-2.0
+	g++ -o $(ASF_BIN) asf.o asf-generated.o asf-guids.o asf-structures.o asf-debug.o asf-test.o -lglib-2.0 -lgcov
 
 compile:
 	g++ $(ASF_COMPILER_ARGUMENTS) asf.cpp -o asf.o
@@ -32,3 +33,12 @@ generate: asf.h asf.cs
 corrupt: default
 	valgrind --tool=memcheck -v --leak-check=full --log-file=v.log --smc-check=all $(ASF_BIN) -in:a.wmv -test -corruption:2000
 
+asf-dump:
+	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS)  asf.cpp -o asf-d.o
+	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-generated.cpp -o asf-generated-d.o
+	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-guids.cpp -o asf-guids-d.o
+	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-structures.cpp -o asf-structures-d.o
+	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-debug.cpp -o asf-debug-d.o
+	g++ $(ASF_COMPILER_ARGUMENTS)                       asf-test.cpp -o asf-test-d.o	
+	g++ -o $(ASF_BIN)-dump asf-d.o asf-generated-d.o asf-guids-d.o asf-structures-d.o asf-debug-d.o asf-test-d.o -lglib-2.0 -lgcov
+	

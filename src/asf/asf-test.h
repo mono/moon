@@ -22,15 +22,15 @@
 	corruption:			introduce corruption approximately once every X bytes.
 */
 
-bool
-corrupt_file (const char* input_filename, const char* output_filename, const char* log_filename, bool replay, double corruption);
+//bool
+//corrupt_file (const char* input_filename, const char* output_filename, const char* log_filename, bool replay, double corruption);
 
 /*
 	Tries to do everything possible with the file (parses everything, reads all packets, frames, etc).
 */
 
-bool
-test_file (const char* file);
+//bool
+//test_file (const char* file);
 
 
 

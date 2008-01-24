@@ -1,5 +1,9 @@
 2008-01-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.h: Fix comment to follow coding style. Fix ASFSource::Read signature.
+
+2008-01-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-ffmpeg.cpp, asf-ffmpeg.h: Removed, no longer needed.
 	* asf-generated.h, asf.cpp: Updated.
 	* asf-structures.cpp, asf-test.cpp, asf-debug.h: Use int*_t consistently.
