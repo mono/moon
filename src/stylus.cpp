@@ -13,6 +13,7 @@
 
 #include <config.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "stylus.h"
 #include "collection.h"
@@ -151,7 +152,27 @@ Stroke::HitTestEndcapSegment (Point c,
 		p2.x, p2.y);
 #endif
 
-	return false;
+
+	double m = (p2.x - p1.x)/p2.y - p1.y;
+	double b_ = p1.y - m * p1.x;
+
+	double a, b;
+	if (w > h) {
+		a = w / 2;
+		b = h / 2;
+	}
+	else {
+		a = h / 2;
+		b = w / 2;
+	}
+
+	double aq = (m*m) / (b*b) + 1 / (a*a);
+	double cq = b_ * b_ - b * b;
+
+	double discr =  -4 * aq * cq;
+
+	/* discr == 0 means 1 intersection point, discr > 0 means 2 */
+	return discr >= 0;
 }
 
 static bool
@@ -178,6 +199,61 @@ intersect_line_2d (Point p1, Point p2, Point p3, Point p4)
 	return false;
 }
 
+// given the line segment between @p1 and @p2, with an ellipse with
+// width = @w and height = @h centered at point @p, return the left
+// (lesser x coordinate if the x's are different, and lesser y
+// coordinate if they're the same) and right (greater x coordinate, or
+// greater y coordinate) intersection points of the line through the
+// same point @p but perpendicular to line @p2 - @p1.
+static void
+calc_perpendicular_intersection_points (Point p1, Point p2,
+					Point p,
+					double w, double h,
+					Point *left_point, Point *right_point)
+{
+	if (p2.y == p1.y) { // horizontal line
+		*left_point = Point (p.x, p.y - h / 2);
+		*right_point = Point (p.x, p.y + h / 2);
+	}
+	else if (p2.x == p1.x) { // vertical line
+		*left_point = Point (p.x - w / 2, p.y);
+		*right_point = Point (p.x + w / 2, p.y);
+	}
+	else {
+		// slope of the perpendicular line
+		double m = -(p2.x - p1.x)/p2.y - p1.y;
+
+		double a, b;
+		if (w > h) {
+			a = w / 2;
+			b = h / 2;
+		}
+		else {
+			a = h / 2;
+			b = w / 2;
+		}
+
+		double aq = (m*m) / (b*b) + 1 / (a*a);
+
+		double discr =  4 * aq;
+
+		if (discr <= 0) {
+			g_warning ("should never happen, there should always be two roots");
+			*left_point = p;
+			*right_point = p;
+		}
+		else {
+			double sqrt_discr = sqrt (discr);
+
+			double root = (sqrt_discr) / (2 * aq);
+
+			*left_point = Point (-root + p.x, (-root * m) + p.y);
+			*right_point = Point (root + p.x, (root * m) + p.y);
+		}
+
+	}
+}
+
 bool
 Stroke::HitTestSegmentSegment (Point stroke_p1, Point stroke_p2,
 			       double w, double h,
@@ -191,11 +267,18 @@ Stroke::HitTestSegmentSegment (Point stroke_p1, Point stroke_p2,
 		p1.x, p1.y,
 		p2.x, p2.y);
 #endif
-	bool rv = intersect_line_2d (stroke_p1, stroke_p2, p1, p2);
-#if DEBUG_HITTEST
-	printf (" + %s\n", rv ? "TRUE" : "FALSE");
-#endif
-	return rv;
+	Point left_stroke_p1, right_stroke_p1;
+	Point left_stroke_p2, right_stroke_p2;
+
+	calc_perpendicular_intersection_points (stroke_p1, stroke_p2, stroke_p1, w, h, &left_stroke_p1, &right_stroke_p1);
+	calc_perpendicular_intersection_points (stroke_p1, stroke_p2, stroke_p2, w, h, &left_stroke_p2, &right_stroke_p2);
+
+	if (intersect_line_2d (left_stroke_p1, left_stroke_p2, p1, p2))
+		return true;
+	if (intersect_line_2d (right_stroke_p1, right_stroke_p2, p1, p2))
+		return true;
+
+	return false;
 }
 
 bool

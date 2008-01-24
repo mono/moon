@@ -1,3 +1,11 @@
+2008-01-24  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.cpp (Stroke::HitTestEndcapSegment): implement.
+	(calc_perpendicular_intersection_points): new method.
+	(Stroke::HitTestSegmentSegment): use
+	calc_perpendicular_intersection_points to give us the end points
+	of the outer line segments, and use those for hit testing.
+
 2008-01-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (UpdateProgress): When switching to Buffering mode,
