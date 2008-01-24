@@ -485,7 +485,7 @@ MediaElement::Cleanup (bool recreate)
 	download_complete = false;
 	waiting_for_loaded = false;
 	updating = false;
-	// play_pending = false; // Sites break if we reset this too..
+	// play_pending = false; // Halo breaks if we reset this too..
 	tried_buffering = false;
 	previous_position = 0;
 	
@@ -951,12 +951,14 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 		downloaded_file->Initialize ();
 		
 		downloader->SetWriteFunc (data_write, size_notify, this);
-		// This is what actually triggers the download
-		downloader->Send ();
 	}
 	
 	if (!download_complete)
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		
+	// This is what actually triggers the download
+	if (downloaded_file != NULL)
+		downloader->Send ();
 	
 	Invalidate ();	
 }

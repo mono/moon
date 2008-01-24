@@ -1,3 +1,8 @@
+2008-01-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaElement::SetSource: only trigger the download after we've
+	  attached to the CompletedEvent.
+
 2008-01-23  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::HandleMouseEvent): don't crash when we
