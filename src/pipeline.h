@@ -590,6 +590,7 @@ public:
 	void SetCurrentSize (int64_t size);
 	
 	// The total size of the file (might not be available)
+	int64_t GetTotalSize () { return size; }
 	void SetTotalSize (int64_t size);
 	
 	// Blocks until the position have data

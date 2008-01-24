@@ -1,3 +1,11 @@
+2008-01-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (UpdateProgress): When switching to Buffering mode,
+	save the position where we're currently at in the file so that we
+	can use that as a reference point when calculating progress. Also,
+	pause the MPlayer so that audio won't continue to play while we're
+	waiting for buffering to complete. Fixes bug #356051.
+
 2008-01-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Avoid calls to cairo_in_[stroke|fill] if no stroke 
@@ -5,16 +13,17 @@
 
 2008-01-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* pipeline.cpp, pipeline.h: Create a more general worker thread, and use
-	  unions to save some space in WorkItem. In the ASFDemuxer, when seeking,
-	  we need to seek to the audio stream, since that's what we're using to
-	  sync against (if we have audio).
+	* pipeline.cpp, pipeline.h: Create a more general worker thread,
+	and use unions to save some space in WorkItem. In the ASFDemuxer,
+	when seeking, we need to seek to the audio stream, since that's
+	what we're using to sync against (if we have audio).
+	  
 	* list.cpp, list.h: Added List::InsertBefore.
 
 2008-01-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* media.cpp: MediaElement::SetSource: only trigger the download after we've
-	  attached to the CompletedEvent.
+	* media.cpp: MediaElement::SetSource: only trigger the download
+	after we've attached to the CompletedEvent.
 
 2008-01-23  Chris Toshok  <toshok@ximian.com>
 

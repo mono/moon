@@ -252,9 +252,9 @@ int MediaElement::MediaEndedEvent = -1;
 int MediaElement::MediaFailedEvent = -1;
 int MediaElement::MediaOpenedEvent = -1;
 
-const char* media_element_states [] = {"Closed", "Opening", "Buffering", "Playing", "Paused", "Stopped", "Error", NULL};
+const char *media_element_states[] = { "Closed", "Opening", "Buffering", "Playing", "Paused", "Stopped", "Error", NULL };
 
-const char*
+const char *
 MediaElement::GetStateName (State state)
 {
 	if ((int) state >= 0 && (int) state <= Error) { 
@@ -264,17 +264,17 @@ MediaElement::GetStateName (State state)
 	}
 }
 
-static MediaResult marker_callback (MediaClosure* closure)
+static MediaResult marker_callback (MediaClosure *closure)
 {
-	MediaElement* element = (MediaElement*) closure->context;
-	MediaMarker* marker = closure->marker;
+	MediaElement *element = (MediaElement *) closure->context;
+	MediaMarker *marker = closure->marker;
 	
 	if (marker == NULL)
 		return MEDIA_FAIL;
 	
-	guint64 pts = (marker->Pts () - closure->media->GetStartTime ()) * 10000;
+	uint64_t pts = (marker->Pts () - closure->media->GetStartTime ()) * 10000;
 	
-	TimelineMarker* tl_marker = new TimelineMarker ();
+	TimelineMarker *tl_marker = new TimelineMarker ();
 	tl_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
 	tl_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
 	tl_marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
@@ -285,7 +285,7 @@ static MediaResult marker_callback (MediaClosure* closure)
 }
 
 void
-MediaElement::AddStreamedMarker (TimelineMarker* marker)
+MediaElement::AddStreamedMarker (TimelineMarker *marker)
 {
 	if (streamed_markers == NULL)
 		streamed_markers = new TimelineMarkerCollection ();
@@ -295,10 +295,8 @@ MediaElement::AddStreamedMarker (TimelineMarker* marker)
 void
 MediaElement::ReadMarkers ()
 {
-	//printf ("MediaElement::ReadMarkers ()\n");
-
-	IMediaDemuxer* demuxer;
-	Media* media;
+	IMediaDemuxer *demuxer;
+	Media *media;
 	
 	if (mplayer == NULL || mplayer->media == NULL || mplayer->media->GetDemuxer () == NULL)
 		return;
@@ -308,8 +306,8 @@ MediaElement::ReadMarkers ()
 
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		if (demuxer->GetStream (i)->GetType () == MediaTypeMarker) {
-			MarkerStream* stream = (MarkerStream*) demuxer->GetStream (i);
-			MediaClosure* closure = new MediaClosure ();
+			MarkerStream *stream = (MarkerStream *) demuxer->GetStream (i);
+			MediaClosure *closure = new MediaClosure ();
 			closure->callback = marker_callback;
 			closure->context = this;
 			closure->media = media;
@@ -319,7 +317,7 @@ MediaElement::ReadMarkers ()
 	}
 	
 	TimelineMarkerCollection *col = NULL;
-	MediaMarker::Node* current = (MediaMarker::Node*) media->GetMarkers ()->First ();
+	MediaMarker::Node *current = (MediaMarker::Node *) media->GetMarkers ()->First ();
 	
 	if (current == NULL) {
 		//printf ("MediaElement::ReadMarkers (): no markers.\n");
@@ -332,12 +330,11 @@ MediaElement::ReadMarkers ()
 		TimelineMarker *new_marker = new TimelineMarker ();
 		new_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
 		new_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
-		new_marker->SetValue (TimelineMarker::TimeProperty, Value ((marker->Pts () - media->GetStartTime ())* 10000, Type::TIMESPAN));
+		new_marker->SetValue (TimelineMarker::TimeProperty, Value ((marker->Pts () - media->GetStartTime ()) * 10000, Type::TIMESPAN));
 		col->Add (new_marker);
-		//printf ("MediaElement::ReadMarkers (): Adding marker with Text: '%s', Type: '%s', Pts: %llu\n", new_marker->GetValue (TimelineMarker::TextProperty)->AsString (), new_marker->GetValue (TimelineMarker::TypeProperty)->AsString (), new_marker->GetValue (TimelineMarker::TimeProperty)->AsTimeSpan ());
 		new_marker->unref ();
 		
-		current = (MediaMarker::Node*) current->next;
+		current = (MediaMarker::Node *) current->next;
 	}
 	
 	// Docs says we overwrite whatever's been loaded already.
@@ -347,10 +344,8 @@ MediaElement::ReadMarkers ()
 }
 
 void
-MediaElement::CheckMarkers (int64_t from, int64_t to)
+MediaElement::CheckMarkers (uint64_t from, uint64_t to)
 {
-	//printf ("MediaElement::CheckMarkers (%llu, %llu)\n", from, to);
-	
 	if (from == to)
 		return;
 	
@@ -364,41 +359,41 @@ MediaElement::CheckMarkers (int64_t from, int64_t to)
 }
 
 void
-MediaElement::CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection* col, bool remove)
+MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove)
 {
+	Collection::Node *node, *next;
+	TimelineMarker *marker;
 	Value *val = NULL;
-
+	uint64_t pts;
+	
 	if (col == NULL)
 		return;
 	
 	// We might want to use a more intelligent algorithm here, 
 	// this code only loops through all markers on every frame.
 	
-	Collection::Node *node = (Collection::Node *) col->list->First ();
+	node = (Collection::Node *) col->list->First ();
 	while (node != NULL) {
-		TimelineMarker *marker = (TimelineMarker *) node->obj;
-		
-		if (marker == NULL)
+		if (!(marker = (TimelineMarker *) node->obj))
 			return;
 		
-		val = marker->GetValue (TimelineMarker::TimeProperty);
-		
-		if (val == NULL)
+		if (!(val = marker->GetValue (TimelineMarker::TimeProperty)))
 			return;
-			
-		int64_t pts = (int64_t) val->AsTimeSpan ();
+		
+		pts = (uint64_t) val->AsTimeSpan ();
 		
 		//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
 		if (pts >= from && pts <= to) {
 			marker->ref ();
-			//printf ("MediaElement::CheckMarkers (%llu, %llu): Found marker, text = %s.\n", from, to, marker->GetValue (TimelineMarker::TextProperty)->AsString ());
 			Emit (MarkerReachedEvent, marker);
 			marker->unref ();
 		}
 		
-		Collection::Node *next = (Collection::Node *) node->next;
-		if (remove && pts <= to) { // Also delete markers we've passed by already
+		next = (Collection::Node *) node->next;
+		
+		if (remove && pts <= to) {
+			// Also delete markers we've passed by already
 			col->list->Remove (node);
 		}
 		
@@ -460,6 +455,7 @@ MediaElement::MediaElement ()
 	part_name = NULL;
 	mplayer = NULL;
 	loaded = false;
+	
 	Cleanup (true);
 }
 
@@ -467,11 +463,12 @@ void
 MediaElement::Cleanup (bool recreate)
 {
 	if (media != NULL) {
-		if (media->GetSource () == downloaded_file) {
+		if (media->GetSource () == downloaded_file)
 			downloaded_file = NULL;
-		}
+		
 		if (mplayer != NULL && mplayer->media != media)
 			delete media;
+		
 		media = NULL;
 	}
 	
@@ -495,6 +492,7 @@ MediaElement::Cleanup (bool recreate)
 		DownloaderAbort ();
 	downloader = NULL;
 	
+	buffering_start = 0;
 	delete downloaded_file;
 	downloaded_file = NULL;
 	
@@ -653,48 +651,58 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 }
 
+
+// TODO: make BUFFERING_SIZE configurable
+#define BUFFERING_SIZE (1024 * 1024)
+
+
 void
 MediaElement::UpdateProgress ()
 {
+	double progress, current;
+	bool emit = false;
+	
 	//printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
 	
 	if (downloaded_file != NULL && !IsBuffering () && downloaded_file->IsWaiting ()) {
 		// We're waiting for more data, switch to the 'Buffering' state.
 		//printf ("MediaElement::UpdateProgress (): Switching to 'Buffering'.\n");
+		SetValue (MediaElement::BufferingProgressProperty, Value (0.0));
+		buffering_start = downloaded_file->GetPosition ();
 		SetState (Buffering);
+		mplayer->Pause ();
+		emit = true;
 	}
-
-	//printf ("UpdateProgress (): progress = %f, buffer_progress = %f, current = %f, buffer_current = %f, update_buffer = %s\n", progress, buffer_progress, current, buffer_current, update_buffer ? "true" : "false");
 	
-	// BufferingProgressChangedEvent and DownloadProgressChangedEvent aren't both emitted,
-	// it's either one or the other.
 	// CHECK: if buffering, will DownloadCompletedEvent be emitted?
-
+	
 	if (IsBuffering ()) {
-		int buffer_size = 1024 * 1024; // TODO: Honor BufferTimeProperty
-		double progress = (downloaded_file->GetWritePosition () - downloaded_file->GetPosition ()) / (double) buffer_size;
-		double current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
+		int64_t pos = downloaded_file->GetWritePosition ();
+		int64_t size = downloaded_file->GetTotalSize ();
+		int64_t buffer_size = BUFFERING_SIZE;
+		
+		if (size != -1 && (size - pos) < BUFFERING_SIZE)
+			buffer_size = size - pos;
+		
+		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
+		if ((progress = ((double) (pos - buffering_start)) / buffer_size) > 1.0)
+			progress = 1.0;
+		
 		// Emit the event if it's 100%, or a change of at least 0.05%
-		bool emit_event = (progress == 1.0 && current != 1.0) || (fabs(progress - current) >= 0.0005);
-
-		progress = MIN (1.0, progress); // Don't allow progress > 1.0
-
-		if (emit_event) {
+		if (emit || progress == 1.0 || (progress - current) >= 0.0005) {
 			SetValue (MediaElement::BufferingProgressProperty, Value (progress));
 			Emit (MediaElement::BufferingProgressChangedEvent);
 		}
 		
-		if (progress == 1.0) {
+		if (progress == 1.0)
 			BufferingComplete ();
-		}
 	} else { 
 		// FIXME: Do we emit DownloadProgressChangedEvent if we're playing the media?
-		double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
-		double current = GetValue (MediaElement::DownloadProgressProperty)->AsDouble ();
+		progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
+		current = GetValue (MediaElement::DownloadProgressProperty)->AsDouble ();
+		
 		// Emit the event if it's 100%, or a change of at least 0.05%
-		bool emit_event = (progress == 1.0 && current != 1.0) || (progress - current) >= 0.0005;
-
-		if (emit_event) {
+		if (progress == 1.0 || (progress - current) >= 0.0005) {
 			SetValue (MediaElement::DownloadProgressProperty, Value (progress));
 			Emit (MediaBase::DownloadProgressChangedEvent);
 		}
@@ -704,25 +712,28 @@ MediaElement::UpdateProgress ()
 void
 MediaElement::SetState (State new_state)
 {
-	//printf ("MediaElement::SetState ('%s'). Current state: %s, Previous state: %s\n", GetStateName (new_state), GetStateName (state), GetStateName (previous_state));
+	const char *name;
+	
 	if (new_state == Buffering && downloaded_file == NULL) {
 		// The code assumes that if Buffering then downloaded_file isn't NULL
 		// (crashes might occur if this took place)
 		// So don't allow it to happen.
-		fprintf (stderr, "MediaElement::SetState (%d): Trying to change to 'Buffering' but there's no file to save buffered data to.\n", new_state);
+		fprintf (stderr, "MediaElement::SetState (%d): Trying to change to 'Buffering' "
+			 "but there's no file to save buffered data to.\n", new_state);
 		return;
 	}
-
+	
 	if (state != new_state) {
 		previous_state = state;
-		const char* state_name = GetStateName (new_state);
-		if (state_name == NULL) {
+		if (!(name = GetStateName (new_state))) {
 			printf ("MediaElement::SetState (%d) state is not valid.\n", new_state);
 			return;
 		}
+		
 		//printf ("MediaElement::SetState (%d): New state: %s\n", new_state, state_name);
+		
 		state = new_state;
-		media_element_set_current_state (this, state_name);		
+		media_element_set_current_state (this, name);		
 	}
 }
 

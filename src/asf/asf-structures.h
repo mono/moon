@@ -211,7 +211,7 @@ struct asf_single_payload {
 		return 0;
 	}
 	
-	int64_t get_presentation_time ()
+	uint64_t get_presentation_time ()
 	{
 		return presentation_time;
 	}

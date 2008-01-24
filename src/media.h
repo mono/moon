@@ -221,9 +221,11 @@ private:
 	// disable buffering (since can't get the start of the file).
 	bool disable_buffering;
 	
+	int64_t buffering_start;
+	
 	ProgressiveSource *downloaded_file;
 	Media *media;
-
+	
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
 	bool updating;
@@ -260,8 +262,8 @@ private:
 	static void size_notify (int64_t size, gpointer data);
 	
 	void ReadMarkers ();
-	void CheckMarkers (int64_t from, int64_t to);
-	void CheckMarkers (int64_t from, int64_t to, TimelineMarkerCollection *col, bool remove);
+	void CheckMarkers (uint64_t from, uint64_t to);
+	void CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove);
 	
 public:
 	// properties

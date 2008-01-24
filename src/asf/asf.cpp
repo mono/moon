@@ -488,11 +488,11 @@ ASFParser::GetPacketIndexOfPts (int stream_id, uint64_t pts)
 	while (ReadPacket (packet, result)) {
 		uint64_t current_pts = packet->GetPts (stream_id);
 		
-		if (current_pts == ULLONG_MAX) // Can't read pts for some reason.
-			return -1;
-		
-		if (current_pts > pts) // We've found the packet after the one we're looking for
-			return result - 1; // return the previous one.
+		if (current_pts > pts) {
+			// We've found the packet after the one we're
+			// looking for: return the previous one.
+			return result - 1;
+		}
 		
 		result++;
 	}
@@ -649,12 +649,13 @@ ASFPacket::GetPayload (int index /* 0 based */)
 uint64_t
 ASFPacket::GetPts (int stream_id)
 {
-	if (!payloads)
-		return ULLONG_MAX;
+	asf_single_payload *first;
 	
-	asf_single_payload *first = GetFirstPayload (stream_id);
-	if (!first)
-		return ULLONG_MAX;
+	if (!payloads)
+		return 0;
+	
+	if (!(first = GetFirstPayload (stream_id)))
+		return 0;
 	
 	return first->get_presentation_time ();
 }
