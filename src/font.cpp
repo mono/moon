@@ -180,7 +180,7 @@ TextFont::TextFont (FcPattern *pattern, const char *name)
 			break;
 		}
 		
-		d(fprintf (stderr, "* Falling back to Sans...\n"));
+		d(fprintf (stderr, "\t* falling back to Sans...\n"));
 		
 		sans = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "sans",
 				       FC_PIXEL_SIZE, FcTypeDouble, size,
