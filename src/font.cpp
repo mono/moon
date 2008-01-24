@@ -22,6 +22,9 @@
 #include FT_OUTLINE_H
 
 
+#define d(x) x
+
+
 struct GlyphBitmap {
 	cairo_surface_t *surface;
 	unsigned char *buffer;
@@ -139,7 +142,7 @@ static const FT_Matrix invert_y = {
 
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
 
-TextFont::TextFont (FcPattern *pattern)
+TextFont::TextFont (FcPattern *pattern, const char *name)
 {
 	FcChar8 *filename = NULL;
 	FcPattern *matched, *sans;
@@ -147,6 +150,8 @@ TextFont::TextFont (FcPattern *pattern)
 	FcResult result;
 	double size;
 	int id;
+	
+	d(fprintf (stderr, "Attempting to load %s\n", name));
 	
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
 	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
@@ -157,19 +162,25 @@ TextFont::TextFont (FcPattern *pattern)
 		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 			goto fail;
 		
-		//printf ("loading font from `%s'\n", filename);
+		d(fprintf (stderr, "\t* loading font from `%s'\n", filename));
 		
 		if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 			goto fail;
+		
+		d(fprintf (stderr, "\t* using font index=%d\n", id));
 		
 		if (FT_New_Face (libft2, (const char *) filename, id, &face) == 0)
 			break;
 		
 	fail:
+		d(fprintf (stderr, "\t* failed.\n"));
+		
 		if (retried) {
 			face = NULL;
 			break;
 		}
+		
+		d(fprintf (stderr, "* Falling back to Sans...\n"));
 		
 		sans = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "sans",
 				       FC_PIXEL_SIZE, FcTypeDouble, size,
@@ -228,7 +239,7 @@ TextFont::~TextFont ()
 }
 
 TextFont *
-TextFont::Load (FcPattern *pattern)
+TextFont::Load (FcPattern *pattern, const char *name)
 {
 	TextFont *font;
 	
@@ -237,7 +248,7 @@ TextFont::Load (FcPattern *pattern)
 		return font;
 	}
 	
-	return new TextFont (pattern);
+	return new TextFont (pattern, name);
 }
 
 void
@@ -763,11 +774,14 @@ TextFont *
 TextFontDescription::GetFont ()
 {
 	FcPattern *pattern;
+	char *name = NULL;
 	
 	if (font == NULL) {
+		d(name = ToString ());
 		pattern = CreatePattern ();
-		font = TextFont::Load (pattern);
+		font = TextFont::Load (pattern, name);
 		FcPatternDestroy (pattern);
+		d(g_free (name));
 	}
 	
 	if (font)
@@ -1013,7 +1027,9 @@ TextFontDescription::ToString ()
 		g_string_append (str, "font:");
 		g_string_append (str, filename);
 		g_string_append_printf (str, "?index=%d", index);
-		g_string_append (str, "?family=");
+		
+		if (set & FontMaskFamily)
+			g_string_append (str, "?family=");
 	}
 	
 	if (set & FontMaskFamily) {
