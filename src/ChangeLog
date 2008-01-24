@@ -1,3 +1,8 @@
+2008-01-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Avoid calls to cairo_in_[stroke|fill] if no stroke 
+	(or fill) are present for the shape.
+
 2008-01-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, pipeline.h: Create a more general worker thread, and use
