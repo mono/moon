@@ -1,3 +1,9 @@
+2008-01-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (EventListenerProxy::AddHandler): use the event
+	id instead of the name for the destroyed event, and also don't try
+	to add an event that doesn't exist for a given type.
+
 2008-10-11  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* plugin-proxy.cpp: Add conditionals for ffmpeg inclusion

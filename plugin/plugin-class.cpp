@@ -424,9 +424,16 @@ EventListenerProxy::AddHandler (EventObject *obj)
 {
 	target_object = obj;
 	
-	dtoken = obj->AddHandler ("destroyed", on_target_object_destroyed, this);
+	dtoken = obj->AddHandler (EventObject::DestroyedEvent, on_target_object_destroyed, this);
 	
 	event_id = obj->GetType()->LookupEvent (event_name);
+
+	if (event_id == -1) {
+		printf ("object of type `%s' does not provide an event named `%s'\n",
+			obj->GetTypeName(), event_name);
+		return -1;
+	}
+
 	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this);
 	return token;
 }
