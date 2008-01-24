@@ -574,54 +574,54 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 void
 Media::EnqueueWork (MediaWork *work)
 {
+	pthread_attr_t attribs;
+	MediaWork *current;
+	
 	//printf ("Media::EnqueueWork (%p).\n", stream);
 	if (queued_requests == NULL) {
 		//printf ("Media::EnqueueWork (%p). Creating threads.\n", stream);
 		queued_requests = new List ();
-		int result;
-		pthread_attr_t attribs;
-		result = pthread_attr_init (&attribs);
-		result = pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
-		result = pthread_mutex_init (&queue_mutex, NULL);
-		result = pthread_cond_init (&queue_condition, NULL);
-		result = pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
-		result = pthread_attr_destroy (&attribs);		
+		
+		pthread_attr_init (&attribs);
+		pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
+		
+		pthread_mutex_init (&queue_mutex, NULL);
+		pthread_cond_init (&queue_condition, NULL);
+		
+		pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
+		pthread_attr_destroy (&attribs);		
 	}
 	
 	pthread_mutex_lock (&queue_mutex);
 	
-	if (queued_requests->First () == NULL) {
-		queued_requests->Append (work);
-	} else {
+	if (queued_requests->First ()) {
 		switch (work->type) {
-		case WorkTypeSeek: {
+		case WorkTypeSeek:
 			// Only have one seek request in the queue, and make
 			// sure to have it first.
-			MediaWork *current = (MediaWork*) queued_requests->First ();
-			if (current->type == WorkTypeSeek) {
+			current = (MediaWork *) queued_requests->First ();
+			if (current->type == WorkTypeSeek)
 				queued_requests->Remove (current);
-			}
+			
 			queued_requests->Prepend (work);
 			break;
-		}
 		case WorkTypeAudio:
 		case WorkTypeVideo:
-		case WorkTypeMarker: {
+		case WorkTypeMarker:
 			// Insert the work just before work with less priority.
-			MediaWork *current = (MediaWork*) queued_requests->First ();
+			current = (MediaWork*) queued_requests->First ();
 			while (current != NULL && work->type >= current->type)
-				current = (MediaWork*) current->next;
+				current = (MediaWork *) current->next;
 			
-			if (current == NULL) {
-				queued_requests->Append (work);
-			} else {
+			if (current)
 				queued_requests->InsertBefore (work, current);
-			}
+			else
+				queued_requests->Append (work);
 			break;
 		}
-		}
+	} else {
+		queued_requests->Append (work);
 	}
-	
 	
 	pthread_cond_signal (&queue_condition);
 	
