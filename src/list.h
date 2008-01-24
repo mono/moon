@@ -50,6 +50,7 @@ public:
 	Node *Append (Node *node);
 	Node *Prepend (Node *node);
 	Node *Insert (Node *node, int index);
+	Node *InsertBefore (Node *node, Node *before);
 	
 	Node *Replace (Node *node, int index);
 	

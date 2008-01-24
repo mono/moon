@@ -208,8 +208,8 @@ Media::SeekAsync (int64_t pts)
 	if (demuxer == NULL)
 		return MEDIA_FAIL;
 	
-	Media::WorkNode *work = new Media::WorkNode ();
-	work->seek_pts = pts;
+	MediaWork *work = new MediaWork (WorkTypeSeek);
+	work->data.seek_pts = pts;
 	EnqueueWork (work);
 	
 	return MEDIA_SUCCESS;
@@ -458,11 +458,11 @@ Media::GetNextFrame (MediaFrame *frame)
 }
 
 void * 
-Media::FrameReaderLoop (void *data)
+Media::WorkerLoop (void *data)
 {
 	Media *media = (Media *) data;
 	
-	media->FrameReaderLoop ();
+	media->WorkerLoop ();
 	
 	return NULL;
 }
@@ -470,36 +470,29 @@ Media::FrameReaderLoop (void *data)
 #define LOG_FRAMEREADERLOOP(x, ...)// printf (x, __VA_ARGS__);
 
 void
-Media::FrameReaderLoop ()
+Media::WorkerLoop ()
 {
-	LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop ().\n");
+	LOG_FRAMEREADERLOOP ("Media::WorkerLoop ().\n", 0);
 	while (queued_requests != NULL) {
-		Media::WorkNode *node = NULL, *current = NULL;
+		MediaWork *node = NULL;
 		
-		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): entering mutex.\n");
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): entering mutex.\n", 0);
+
 		// Wait until we have something in the queue
 		pthread_mutex_lock (&queue_mutex);
 		while (queued_requests != NULL && queued_requests->IsEmpty ())
 			pthread_cond_wait (&queue_condition, &queue_mutex);
 		
-		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): got something.\n");
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got something.\n", 0);
 		
 		if (queued_requests != NULL) {
 			// Find the first audio node
-			current = (Media::WorkNode*) queued_requests->First ();
-			while (current != NULL && current->frame != NULL && current->frame->stream->GetType () != MediaTypeAudio) {
-				current = (Media::WorkNode*) current->next;
-			}
+			node = (MediaWork*) queued_requests->First ();
+
+			if (node != NULL)
+				queued_requests->Unlink (node);
 			
-			if (current != NULL && current->frame != NULL && current->frame->stream->GetType () == MediaTypeAudio) {
-				node = current;
-			} else {
-				// No audio node, just get the first node
-				node = (Media::WorkNode*) queued_requests->First ();
-			}
-			
-			queued_requests->Unlink (node);
-			LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): got a %s node, there are %i nodes left.\n",
+			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got a %s node, there are %i nodes left.\n",
 					     node->stream->GetType () == MediaTypeAudio ? "audio" :
 					     (node->stream->GetType () == MediaTypeVideo ? "video" : "unknown"),
 					     queued_requests->Length ());
@@ -509,24 +502,30 @@ Media::FrameReaderLoop ()
 		if (node == NULL)
 			continue; // Found nothing, continue waiting.
 		
-		LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): processing node.\n");
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processing node.\n");
 		
-		if (node->frame != NULL) {
+		switch (node->type) {
+		case WorkTypeSeek:
+			//printf ("Media::WorkerLoop (): Seeking, current count: %i\n", queued_requests->Length ());
+			Seek (node->data.seek_pts);
+			break;
+		case WorkTypeAudio:
+		case WorkTypeVideo:
+		case WorkTypeMarker:
 			// Now demux and decode what we found and send it to who asked for it
-			MediaResult result = GetNextFrame (node->frame, node->states);
+			MediaResult result = GetNextFrame (node->data.frame.frame, node->data.frame.states);
 			if (MEDIA_SUCCEEDED (result)) {
 				MediaClosure *closure = new MediaClosure ();
 				memcpy (closure, queue_closure, sizeof (MediaClosure));
-				closure->frame = node->frame;
+				closure->frame = node->data.frame.frame;
 				closure->Call ();
 				delete closure;
 			}
-		} else { // Or seek if that was what was requested.
-			Seek (node->seek_pts);
+			break;
 		}
 		delete node;
 	}
-	LOG_FRAMEREADERLOOP ("Media::FrameReaderLoop (): exiting.\n");
+	LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): exiting.\n", 0);
 }
 
 void
@@ -548,14 +547,24 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 		return;
 	}
 	
-	Media::WorkNode *node = new Media::WorkNode ();
-	node->frame = frame;
-	node->states = states;
+	MoonWorkType type;
+	switch (frame->stream->GetType ()) {
+	case MediaTypeAudio: type = WorkTypeAudio; break;
+	case MediaTypeVideo: type = WorkTypeVideo; break;
+	case MediaTypeMarker: type = WorkTypeMarker; break;
+	case MediaTypeNone:
+		AddMessage (MEDIA_INVALID_ARGUMENT, "The frame's stream is of an unknown type.");
+		return;
+	}
+	
+	MediaWork *node = new MediaWork (type);
+	node->data.frame.frame = frame;
+	node->data.frame.states = states;
 	EnqueueWork (node);
 }
 
 void
-Media::EnqueueWork (Media::WorkNode	 *work)
+Media::EnqueueWork (MediaWork *work)
 {
 	//printf ("Media::EnqueueWork (%p).\n", stream);
 	if (queued_requests == NULL) {
@@ -567,13 +576,44 @@ Media::EnqueueWork (Media::WorkNode	 *work)
 		result = pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
 		result = pthread_mutex_init (&queue_mutex, NULL);
 		result = pthread_cond_init (&queue_condition, NULL);
-		result = pthread_create (&queue_thread, &attribs, FrameReaderLoop, this); 	
+		result = pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
 		result = pthread_attr_destroy (&attribs);		
 	}
 	
 	pthread_mutex_lock (&queue_mutex);
 	
-	queued_requests->Append (work);
+	if (queued_requests->First () == NULL) {
+		queued_requests->Append (work);
+	} else {
+		switch (work->type) {
+		case WorkTypeSeek: {
+			// Only have one seek request in the queue, and make
+			// sure to have it first.
+			MediaWork *current = (MediaWork*) queued_requests->First ();
+			if (current->type == WorkTypeSeek) {
+				queued_requests->Remove (current);
+			}
+			queued_requests->Prepend (work);
+			break;
+		}
+		case WorkTypeAudio:
+		case WorkTypeVideo:
+		case WorkTypeMarker: {
+			// Insert the work just before work with less priority.
+			MediaWork *current = (MediaWork*) queued_requests->First ();
+			while (current != NULL && work->type >= current->type)
+				current = (MediaWork*) current->next;
+			
+			if (current == NULL) {
+				queued_requests->Append (work);
+			} else {
+				queued_requests->InsertBefore (work, current);
+			}
+			break;
+		}
+		}
+	}
+	
 	
 	pthread_cond_signal (&queue_condition);
 	
@@ -654,7 +694,18 @@ ASFDemuxer::Seek (int64_t pts)
 	if (reader == NULL)
 		reader = new ASFFrameReader (parser);
 	
-	if (reader->Seek (0, pts))
+	
+	// If there's any audio stream, we need to seek to that stream
+	// 
+	int stream_id = 0;
+	for (int i = 1; i <= 127; i++) {
+		asf_stream_properties *asp = parser->GetStream (i);
+		if (asp != NULL && asp->is_audio ()) {
+			stream_id = i;
+			break;
+		}
+	}
+	if (reader->Seek (stream_id, pts))
 		return MEDIA_SUCCESS;
 	
 	return MEDIA_FAIL;

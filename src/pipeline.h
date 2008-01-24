@@ -153,6 +153,20 @@ enum MoonMediaType {
 	MediaTypeMarker
 };
 
+enum MoonWorkType {
+	// The order is important, the most important work comes first (lowest number).
+	
+	// Seek is most important (as it will invalidate all other work), 
+	// and will always be put first in the queue.
+	// No more than one seek request should be in the queue at the same time either.
+	WorkTypeSeek = 1, 
+	// All audio work is done before any video work, since glitches in the audio is worse 
+	// than glitches in the video.
+	WorkTypeAudio = 2, 
+	WorkTypeVideo = 3,
+	WorkTypeMarker = 4
+};
+
 typedef MediaResult MediaCallback (MediaClosure *closure);
 
 class MediaClosure {
@@ -203,21 +217,33 @@ public:
 	virtual IImageConverter *Create (Media *media, VideoStream *stream) = 0;
 };
 
-class Media {
-private:
-	class WorkNode : public List::Node {
-	public:
-		MediaFrame *frame;
-		uint16_t states;
-		int64_t seek_pts; // Seek to this pts. If frame is NULL, then this is valid and what the FrameReaderLoop should do
-		WorkNode () : frame (NULL), states (0), seek_pts (0) {}
-	};
+class MediaWork : public List::Node {
+public:
+	MoonWorkType type;
+	union {
+		int64_t seek_pts;
+		struct {
+			MediaFrame *frame;
+			uint16_t states;
+		} frame;
+	} data;
 	
+	MediaWork (MoonWorkType tp) 
+	{
+		type = tp;
+		data.seek_pts = 0;
+		data.frame.frame = NULL;
+		data.frame.states = 0;
+	}
+	virtual ~MediaWork () {}
+};
+
+class Media {
+private:	
 	static ConverterInfo *registered_converters;
 	static DemuxerInfo *registered_demuxers;
 	static DecoderInfo *registered_decoders;
 
-	
 	List *queued_requests;
 	pthread_t queue_thread;
 	pthread_cond_t queue_condition;
@@ -235,9 +261,9 @@ private:
 	//	and calls GetNextFrame and FrameReadCallback.
 	//	If there are any requests for audio frames in the queue
 	//	they are always (and all of them) satisfied before any video frame request.
-	void FrameReaderLoop ();
-	static void *FrameReaderLoop (void *data);
-	void EnqueueWork (WorkNode *work);	
+	void WorkerLoop ();
+	static void *WorkerLoop (void *data);
+	void EnqueueWork (MediaWork *work);	
 	
 public:
 	Media ();

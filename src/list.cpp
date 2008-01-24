@@ -166,6 +166,22 @@ List::Insert (List::Node *node, int index)
 	return node;
 }
 
+List::Node *
+List::InsertBefore (List::Node *node, List::Node *before)
+{
+	node->next = before;
+	node->prev = before->prev;
+	
+	if (before->prev != NULL) {
+		before->prev->next = node;
+	} else {
+		head = node;
+	}
+	before->prev = node;
+	
+	return node;
+}
+
 
 List::Node *
 List::Replace (List::Node *node, int index)
