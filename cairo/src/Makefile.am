@@ -280,8 +280,8 @@ libcairo_la_LIBADD = $(CAIRO_LIBS) $(CAIRO_LDADD)
 
 libcairo_la_DEPENDENCIES = $(cairo_def_dependency)
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = cairo.pc $(backend_pkgconfigs)
+#pkgconfigdir = $(libdir)/pkgconfig
+noinst_DATA = cairo.pc $(backend_pkgconfigs)
 DISTCLEANFILES = $(backend_pkgconfigs)
 EXTRA_DIST = cairo-backend.pc.in
 $(backend_pkgconfigs): $(top_srcdir)/configure
