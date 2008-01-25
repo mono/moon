@@ -675,11 +675,16 @@ MediaElement::UpdateProgress ()
 	// CHECK: if buffering, will DownloadCompletedEvent be emitted?
 	
 	if (IsBuffering ()) {
+		int64_t wait_pos = downloaded_file->GetWaitPosition ();
 		int64_t pos = downloaded_file->GetWritePosition ();
 		int64_t size = downloaded_file->GetTotalSize ();
 		int64_t buffer_size = BUFFERING_SIZE;
 		
-		if (size != -1 && (size - pos) < BUFFERING_SIZE)
+		if (wait_pos > pos + buffer_size) {
+			// If the position the stream is waiting for is beyond the default
+			// buffer size, use that position to calculate the buffer size.
+			buffer_size = wait_pos - pos;
+		} else if (size != -1 && (size - pos) < buffer_size)
 			buffer_size = size - pos;
 		
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();

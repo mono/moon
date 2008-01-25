@@ -2146,6 +2146,7 @@ ProgressiveSource::WaitForPosition (int64_t position)
 	g_atomic_int_inc (&wait_count);
 	
 	Lock ();
+	wait_pos = position;
 	while (true) {
 		if (cancel_wait) {
 			// FIXME: This doesn't work if there are more than one thread waiting at the same time
@@ -2284,6 +2285,16 @@ ProgressiveSource::Peek (void *buf, uint32_t n)
 	}
 	
 	return FileSource::Peek (buf, n);
+}
+
+int64_t
+ProgressiveSource::GetWaitPosition ()
+{
+	int64_t result;
+	Lock ();
+	result = wait_pos;
+	Unlock ();
+	return result;
 }
 
 int64_t

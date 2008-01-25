@@ -1,5 +1,12 @@
 2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h, pipeline.cpp: ProgressiveSource: Make the position we're
+	  waiting for publicly available.
+	* media.cpp: UpdateProgress: use the position the file is waiting for to
+	  calculate the buffer size (if it would exceed the default buffer size).
+
+2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.h: Add some descriptive comments.
 
 2008-01-25  Sebastien Pouliot  <sebastien@ximian.com>

@@ -562,6 +562,7 @@ class ProgressiveSource : public FileSource {
 	int wait_count; // Counter of how many threads are waiting in WaitForPosition
 	
 	int64_t write_pos;
+	int64_t wait_pos;
 	int64_t size;
 	
 	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
@@ -591,6 +592,7 @@ public:
 	// Cancels any pending waits
 	void CancelWait (); 
 	int64_t GetWritePosition ();
+	int64_t GetWaitPosition ();
 	void Lock ();
 	void Unlock ();
 	
