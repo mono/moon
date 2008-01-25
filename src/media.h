@@ -244,7 +244,7 @@ private:
 	//MediaSource *source;
 	char *part_name;
 	
-	void Cleanup (bool recreate);
+	void Cleanup ();
 	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DownloaderAbort ();
 	void DownloaderComplete ();

@@ -81,8 +81,7 @@ public:
 	uint64_t Position ();
 	uint64_t Duration ();
 	
-	void Mute ();
-	void UnMute ();
+	void SetMuted (bool muted);
 	bool IsMuted ();
 	
 	int GetAudioStreamCount ();
@@ -95,9 +94,11 @@ public:
 	
 	double GetVolume ();
 	void SetVolume (double volume);
+	void SetTargetPts (uint64_t pts);
+	uint64_t GetTargetPts ();
+	void IncTargetPts (uint64_t value);
 	
 private:
-	
 	void StopThreads ();
 };
 

@@ -71,7 +71,7 @@ FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream)
 	: IMediaDecoder (media, stream),
 	audio_buffer (NULL)
 {
-	printf ("FfmpegDecoder::FfmpegDecoder (%p, %p).\n", media, stream);
+	//printf ("FfmpegDecoder::FfmpegDecoder (%p, %p).\n", media, stream);
 	
 	if (stream->min_padding < FF_INPUT_BUFFER_PADDING_SIZE)
 		stream->min_padding = FF_INPUT_BUFFER_PADDING_SIZE;

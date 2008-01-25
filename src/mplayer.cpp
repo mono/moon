@@ -1,5 +1,5 @@
 /*
- * mplayer2.cpp: 
+ * mplayer.cpp: 
  *
  * Authors
  * 	Jeffrey Stedfast <fejj@novell.com>
@@ -215,7 +215,6 @@ MediaPlayer::~MediaPlayer ()
 	
 	delete audio;
 	delete video;
-	delete media;
 }
 
 MediaResult
@@ -283,7 +282,7 @@ MediaPlayer::Open (Media *media)
 	IMediaDecoder *encoding;
 	IMediaStream *stream;
 
-	//printf ("MediaPlayer2::Open ().\n");
+	//printf ("MediaPlayer::Open ().\n");
 
 	if (media == NULL) {
 		printf ("MediaPlayer::Open (): media is NULL.\n");
@@ -362,14 +361,14 @@ MediaPlayer::Open (Media *media)
 		// 2 bytes per channel, we always calculate as 2-channel audio because it gets converted into such
 		audio->pts_per_frame = (buf_size * 2 * 2) / (audio->stream->sample_rate / 100);
 		
-		target_pts = audio->stream->start_time;
+		SetTargetPts (audio->stream->start_time);
 		//printf ("initial pts (according to audio): %lld\n", target_pts);
 	}
 	
 	if (HasVideo ()) {
 		media_player_enqueue_frames (this, 0, 10);
 		
-		target_pts = video->stream->start_time;
+		SetTargetPts (video->stream->start_time);
 		//printf ("initial pts (according to video): %lld\n", target_pts);
 	}
 	
@@ -393,7 +392,6 @@ MediaPlayer::Close ()
 		video->surface = NULL;
 	}
 	
-	delete media;
 	media = NULL;
 	
 	playing = false;
@@ -413,7 +411,6 @@ MediaPlayer::Close ()
 	current_pts = 0;
 	target_pts = 0;
 	start_pts = 0;
-//	seek_pts = 0;
 	
 	height = 0;
 	width = 0;
@@ -476,17 +473,15 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = start_pts + elapsed_pts;
 		
 		// (no need to lock since there's no audio thread) pthread_mutex_lock (&target_pts_lock);
-		this->target_pts = target_pts;
+		SetTargetPts (target_pts);
 		// pthread_mutex_unlock (&target_pts_lock);
 	} else if (!HasVideo ()) {
 		// No video, return false if we've reached the end of the audio or true otherwise
 		return !MediaEnded ();
 	} else {
 		// use target_pts as set by audio thread
-		pthread_mutex_lock (&target_pts_lock);
-		target_pts = this->target_pts;
+		target_pts = GetTargetPts ();
 		//printf ("AdvanceFrame (), syncing to audio, target_pts: %lld\n", target_pts);
-		pthread_mutex_unlock (&target_pts_lock);
 	}
 	
 	if (current_pts >= target_pts) {
@@ -710,6 +705,32 @@ MediaPlayer::Pause ()
 		pthread_mutex_lock (&pause_mutex);
 }
 
+uint64_t
+MediaPlayer::GetTargetPts ()
+{
+	uint64_t result;
+	pthread_mutex_lock (&target_pts_lock);
+	result = target_pts;
+	pthread_mutex_unlock (&target_pts_lock);
+	return result;
+}
+
+void
+MediaPlayer::SetTargetPts (uint64_t pts)
+{
+	pthread_mutex_lock (&target_pts_lock);
+	target_pts = pts;
+	pthread_mutex_unlock (&target_pts_lock);
+}
+
+void
+MediaPlayer::IncTargetPts (uint64_t value)
+{
+	pthread_mutex_lock (&target_pts_lock);
+	target_pts += value;
+	pthread_mutex_unlock (&target_pts_lock);
+}
+
 void
 MediaPlayer::StopThreads ()
 {
@@ -745,7 +766,6 @@ MediaPlayer::StopThreads ()
 		initial_pts = 0;
 	
 	current_pts = initial_pts;
-	target_pts = initial_pts;
 	
 	stop = false;
 	eof = false;
@@ -754,6 +774,7 @@ MediaPlayer::StopThreads ()
 void
 MediaPlayer::Stop ()
 {
+	//printf ("MediaPlayer::Stop (), paused = %s, opened = %s, playing = %s\n", paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false");
 	StopThreads ();
 	
 	playing = false;
@@ -762,6 +783,8 @@ MediaPlayer::Stop ()
 		media->ClearQueue ();
 		media->SeekAsync (0);
 	}
+	
+	SetTargetPts (initial_pts);
 }
 
 bool
@@ -774,6 +797,7 @@ MediaPlayer::CanSeek ()
 void
 MediaPlayer::Seek (uint64_t position)
 {
+	//printf ("MediaPlayer::Seek (%lld), paused = %s, opened = %s, playing = %s, current position: %lld\n", position, paused ? "true" : "false", opened ? "true" : "false", playing ? "true" : "false", Position ());
 	uint64_t initial_pts, duration;
 	bool resume = !paused;
 	
@@ -806,7 +830,7 @@ MediaPlayer::Seek (uint64_t position)
 	}
 	
 	current_pts = position;
-	target_pts = position;
+	SetTargetPts (position);
 	start_pts = position;
 	
 	if (HasVideo ()) {
@@ -841,7 +865,7 @@ MediaPlayer::Seek (uint64_t position)
 uint64_t
 MediaPlayer::Position ()
 {
-	uint64_t position = target_pts;
+	uint64_t position = GetTargetPts ();
 	
 	if (audio->pcm != NULL && HasAudio ())
 		return position - audio->stream->start_time;
@@ -865,15 +889,9 @@ MediaPlayer::Duration ()
 }
 
 void
-MediaPlayer::Mute ()
+MediaPlayer::SetMuted (bool value)
 {
-	audio->muted = true;
-}
-
-void
-MediaPlayer::UnMute ()
-{
-	audio->muted = false;
+	audio->muted = value;
 }
 
 bool
@@ -1110,9 +1128,7 @@ audio_loop (void *data)
 		
 		if ((frame_pts = audio_play (audio, ufds, ndfs)) > 0) {
 			// calculated pts
-			pthread_mutex_lock (&mplayer->target_pts_lock);
-			mplayer->target_pts += frame_pts;
-			pthread_mutex_unlock (&mplayer->target_pts_lock);
+			mplayer->IncTargetPts (frame_pts);
 		} else {
 			if (!pkt && (pkt = (Packet *) audio->queue->Pop ())) {
 				// decode an audio packet
@@ -1125,10 +1141,7 @@ audio_loop (void *data)
 				if (!frame->IsDecoded ())
 					stream->decoder->DecodeFrame (frame);
 				
-				pthread_mutex_lock (&mplayer->target_pts_lock);
-				mplayer->target_pts = frame->pts;
-				pthread_mutex_unlock (&mplayer->target_pts_lock);
-				//printf ("setting target_pts to %llu\n", mplayer->target_pts);
+				mplayer->SetTargetPts (frame->pts);
 				
 				inleft = frame->buflen;
 				inptr = frame->buffer;

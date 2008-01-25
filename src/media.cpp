@@ -456,24 +456,36 @@ MediaElement::MediaElement ()
 	mplayer = NULL;
 	loaded = false;
 	
-	Cleanup (true);
+	Cleanup ();
+	
+	mplayer = new MediaPlayer ();
+	
+	SetValue (MediaElement::AttributesProperty, Value::CreateUnref (new MediaAttributeCollection ()));		
+	SetValue (MediaElement::MarkersProperty, Value::CreateUnref (new TimelineMarkerCollection ()));
+}
+
+MediaElement::~MediaElement ()
+{
+	Cleanup ();
+	
+	delete mplayer;
 }
 
 void
-MediaElement::Cleanup (bool recreate)
-{
+MediaElement::Cleanup ()
+{	
+	if (mplayer != NULL)
+		mplayer->Close ();
+
 	if (media != NULL) {
+		// Media will delete its source upon destruction
+		// so clear out our reference if they're the same.
 		if (media->GetSource () == downloaded_file)
 			downloaded_file = NULL;
 		
-		if (mplayer != NULL && mplayer->media != media)
-			delete media;
-		
+		delete media;
 		media = NULL;
 	}
-	
-	delete mplayer;
-	mplayer = NULL;
 	
 	state = Closed;
 	previous_state = Closed;
@@ -498,53 +510,34 @@ MediaElement::Cleanup (bool recreate)
 	
 	g_free (part_name);
 	part_name = NULL;
-/*	
-	delete source;
-	source = NULL;
-*/
+
 	if (streamed_markers)
 		streamed_markers->unref ();
 	streamed_markers = NULL;
+
+	Value *val;
+	val = GetValue (MediaElement::MarkersProperty);
+	if (val != NULL && val->AsCollection () != NULL)
+		val->AsCollection ()->Clear ();
 	
-	if (recreate) {
-		mplayer = new MediaPlayer ();
-		mplayer->SetBalance (media_element_get_balance (this));
-		mplayer->SetVolume (media_element_get_volume (this));
-		
-		MediaAttributeCollection *attrs = new MediaAttributeCollection ();
-		media_element_set_attributes (this, attrs);
-		attrs->unref ();
-		
-		TimelineMarkerCollection *markers = new TimelineMarkerCollection ();
-		media_element_set_markers (this, markers);
-		markers->unref ();
-	}
+	val = GetValue (MediaElement::AttributesProperty);
+	if (val != NULL && val->AsCollection () != NULL)
+		val->AsCollection ()->Clear ();
 }
 
 void
 MediaElement::DownloaderAbort ()
 {
 	if (downloader) {
-		//Value *value = downloader->GetValue (Downloader::UriProperty);
-		//printf ("aborting downloader for %s\n", value ? value->AsString () : "(null)");
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;
 	}
 }
 
-MediaElement::~MediaElement ()
-{
-	Cleanup (false);
-}
-
 void
 MediaElement::MediaOpened (Media *media)
 {
-	if (mplayer != NULL)
-		delete mplayer;
-	
-	mplayer = new MediaPlayer ();
 	mplayer->Open (media);
 	this->media = media;
 	
@@ -557,6 +550,10 @@ MediaElement::MediaOpened (Media *media)
 	media_element_set_natural_video_height (this, mplayer->height);
 	media_element_set_natural_video_width (this, mplayer->width);
 	
+	mplayer->SetMuted (media_element_get_is_muted (this));
+	mplayer->SetVolume (media_element_get_volume (this));
+	mplayer->SetBalance (media_element_get_balance (this));
+
 	Emit (MediaElement::MediaOpenedEvent);
 }
 
@@ -652,7 +649,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 }
 
 
-// TODO: make BUFFERING_SIZE configurable
+// TODO: Honor BufferTimeProperty and calculate the buffering size from that.
 #define BUFFERING_SIZE (1024 * 1024)
 
 
@@ -917,7 +914,10 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		Play ();
+		if (media_element_get_auto_play (this) || play_pending)
+			Play ();
+		else
+			Pause ();
 		break;
 	case Opening:
 		// The media couldn't be buffered for some reason
@@ -936,7 +936,7 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 {
 	g_return_if_fail (dl->GetObjectType () == Type::DOWNLOADER);
 		
-	Cleanup (true);
+	Cleanup ();
 	
 	downloader = (Downloader *) dl;
 	downloader->ref ();
@@ -1152,11 +1152,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
 	} else if (prop == MediaElement::IsMutedProperty) {
-		bool muted = media_element_get_is_muted (this);
-		if (!muted)
-			mplayer->UnMute ();
-		else
-			mplayer->Mute ();
+		mplayer->SetMuted (media_element_get_is_muted (this));
 	} else if (prop == MediaElement::MarkersProperty) {
 		// FIXME: keep refs to these?
 	} else if (prop == MediaElement::NaturalDurationProperty) {

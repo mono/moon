@@ -1,5 +1,17 @@
 2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Updated.
+	* pipeline-ffmpeg.cpp: Commented out printf.
+	* pipeline.h, pipeline.cpp: Removed some dead code. Made all interfaces
+	  inherit from IMediaObject, and put the media field there. Commented out
+	  printfs.
+	* mplayer.h, mplayer.cpp: Unified Mute and UnMute into SetMuted to simplify
+	  code a bit. Encapsulated target_pts handling into separate methods.
+	* media.h, media.cpp: Create one and only one MediaPlayer for the life-time
+	  of the MediaElement. If not AutoPlay is set, then pause instead of play.
+
+2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp, pipeline.h: Media: Don't create the worker thread upon first
 	  usage, but on construction, and finish it upon destruction. Fixes race
 	  between creating and destructing the thread.

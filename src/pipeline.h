@@ -390,8 +390,6 @@ public:
 // Interfaces
 
 class IMediaObject {
-	MediaClosure *callback;
-	
 protected:
 	Media *media;
 	
@@ -399,14 +397,11 @@ public:
 	IMediaObject (Media *med);
 	virtual ~IMediaObject ();
 	
-	// Sets the callback to call when the frame is read
-	void SetFrameReadCallback (MediaClosure *callback);
-	
 	Media *GetMedia () { return media; }
 };
 
 
-class IMediaStream  {
+class IMediaStream : public IMediaObject {
 	void *context;
 	bool enabled;
 	
@@ -468,7 +463,7 @@ public:
 	}
 };
 
-class IMediaDecoder {
+class IMediaDecoder : public IMediaObject {
 public:
 	IMediaDecoder (Media *media, IMediaStream *stream);
 	virtual ~IMediaDecoder () {}
@@ -481,19 +476,17 @@ public:
 	
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
-	Media *media;
 }; // Set when this is the callback in Media::GetNextFrameAsync
 
 
 /*
  * Inherit from this class to provide image converters (yuv->rgb for instance) 
  */
-class IImageConverter {
+class IImageConverter : public IMediaObject {
 public:
 	MoonPixelFormat output_format;
 	MoonPixelFormat input_format;
 	VideoStream *stream;
-	Media *media;
 	
 	IImageConverter (Media *media, VideoStream *stream);
 	virtual ~IImageConverter () {}
@@ -505,12 +498,9 @@ public:
 // read data, with the possibility of returning a 'wait a bit, need more data first' error value. 
 // Another way is to always do the read/demux/decode stuff on another thread, 
 // in which case we can block here
-class IMediaSource {
-protected:
-	Media *media;
-	
+class IMediaSource : public IMediaObject {
 public:
-	IMediaSource (Media *med) : media (med) {}
+	IMediaSource (Media *media) : IMediaObject (media) {}
 	virtual ~IMediaSource () {}
 	
 	// Initializes this stream (and if it succeeds, it can be read from later on).

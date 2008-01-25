@@ -115,8 +115,6 @@
     <File name="asf/asf.cpp" subtype="Code" buildaction="Compile" />
     <File name="asf/asf.cs" subtype="Code" buildaction="Nothing" />
     <File name="asf/asf.h" subtype="Code" buildaction="Nothing" />
-    <File name="asf/asf-ffmpeg.cpp" subtype="Code" buildaction="Compile" />
-    <File name="asf/asf-ffmpeg.h" subtype="Code" buildaction="Nothing" />
     <File name="asf/asf-generated.cpp" subtype="Code" buildaction="Compile" />
     <File name="asf/asf-generated.h" subtype="Code" buildaction="Nothing" />
     <File name="asf/asf-guids.cpp" subtype="Code" buildaction="Compile" />

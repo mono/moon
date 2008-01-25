@@ -324,7 +324,7 @@ Media::Open (IMediaSource *source)
 {
 	MediaResult result;
 	
-	printf ("Media::Open ().\n");
+	//printf ("Media::Open ().\n");
 	
 	if (source == NULL || IsOpened ()) // Initialize wasn't called (or didn't succeed) or already open.
 		return MEDIA_INVALID_ARGUMENT;
@@ -354,9 +354,9 @@ Media::Open (IMediaSource *source)
 		return result;
 	}
 	
-	printf ("Media::Open (): Found %i streams in this source.\n", demuxer->GetStreamCount ());
+	//printf ("Media::Open (): Found %i streams in this source.\n", demuxer->GetStreamCount ());
 	
-	printf ("Media::Open (): Starting to select codecs...\n");
+	//printf ("Media::Open (): Starting to select codecs...\n");
 	
 	result = MEDIA_FAIL; // Only set to SUCCESS if at least 1 stream can be used
 	
@@ -369,18 +369,18 @@ Media::Open (IMediaSource *source)
 		const char* codec = stream->GetCodec ();
 		IMediaDecoder* decoder = NULL;
 		
-		printf ("Media::Open (): Selecting codec for codec %s, id %i.\n", codec, stream->codec_id);
+		//printf ("Media::Open (): Selecting codec for codec %s, id %i.\n", codec, stream->codec_id);
 		
 		DecoderInfo* current_decoder = registered_decoders;
 		while (current_decoder != NULL && !current_decoder->Supports (codec)) {
-			printf ("Checking registered decoder '%s' if it supports codec '%s': no.\n", current_decoder->GetName (), codec);
+			//printf ("Checking registered decoder '%s' if it supports codec '%s': no.\n", current_decoder->GetName (), codec);
 			current_decoder = (DecoderInfo*) current_decoder->next;
 		}
 
 		if (current_decoder == NULL) {
 			AddMessage (MEDIA_UNKNOWN_CODEC, g_strdup_printf ("Unknown codec: '%s'.", codec));	
 		} else {
-			printf ("Checking registered decoder '%s' if it supports codec '%s': yes.\n", current_decoder->GetName (), codec);
+			//printf ("Checking registered decoder '%s' if it supports codec '%s': yes.\n", current_decoder->GetName (), codec);
 			decoder = current_decoder->Create (this, stream);
 		}
 
@@ -400,14 +400,14 @@ Media::Open (IMediaSource *source)
 				
 				ConverterInfo* current_conv = registered_converters;
 				while (current_conv != NULL && !current_conv->Supports (decoder->pixel_format, MoonPixelFormatRGB32)) {
-					printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': no.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					//printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': no.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
 					current_conv = (ConverterInfo*) current_conv->next;
 				}
 
 				if (current_conv == NULL) {
 					AddMessage (MEDIA_UNKNOWN_CONVERTER, g_strdup_printf ("Can't convert from %i to %i: No converter found.", vs->decoder->pixel_format, MoonPixelFormatRGB32));	
 				} else {
-					printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': yes.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					//printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': yes.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
 					converter = current_conv->Create (this, vs);
 					converter->input_format = decoder->pixel_format;
 					converter->output_format = MoonPixelFormatRGB32;
@@ -2324,7 +2324,7 @@ MediaClosure::Call ()
  * IMediaStream
  */
 
-IMediaStream::IMediaStream (Media *media)
+IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 {
 	context = NULL;
 	
@@ -2406,7 +2406,6 @@ MediaFrame::~MediaFrame ()
  
 IMediaObject::IMediaObject (Media *media)
 {
-	this->callback = NULL;
 	this->media = media;
 }
 
@@ -2434,9 +2433,8 @@ IMediaDemuxer::SetStreams (IMediaStream** streams, int count)
  * IMediaDecoder
  */
 
-IMediaDecoder::IMediaDecoder (Media *media, IMediaStream *stream)
+IMediaDecoder::IMediaDecoder (Media *media, IMediaStream *stream) : IMediaObject (media)
 {
-	this->media = media;
 	this->stream = stream;
 }
 
@@ -2444,12 +2442,11 @@ IMediaDecoder::IMediaDecoder (Media *media, IMediaStream *stream)
  * IImageConverter
  */
 
-IImageConverter::IImageConverter (Media *media, VideoStream *stream)
+IImageConverter::IImageConverter (Media *media, VideoStream *stream) : IMediaObject (media)
 {
 	output_format = MoonPixelFormatNone;
 	input_format = MoonPixelFormatNone;
 	this->stream = stream;
-	this->media = media;
 }
 
 /*
