@@ -58,12 +58,38 @@ Media::Media () :
 		demuxer (NULL), markers (NULL),
 		start_time (0), opened (false)
 {
+	pthread_attr_t attribs;
+	queued_requests = new List ();
+	
+	pthread_attr_init (&attribs);
+	pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
+	
+	pthread_mutex_init (&queue_mutex, NULL);
+	pthread_cond_init (&queue_condition, NULL);
+	
+	pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
+	pthread_attr_destroy (&attribs);
 }
 
 Media::~Media ()
 {
-	DeleteQueue ();
+	pthread_mutex_lock (&queue_mutex);
+	queued_requests->Clear (true);
+	delete queued_requests;
+	queued_requests = NULL;
+	pthread_cond_signal (&queue_condition);
+	pthread_mutex_unlock (&queue_mutex);
 	
+	if (source->GetType () == MediaSourceTypeProgressive) {
+		ProgressiveSource *ps = (ProgressiveSource *) source;
+		ps->CancelWait ();
+	}
+	
+	pthread_join (queue_thread, NULL);
+	pthread_mutex_destroy (&queue_mutex);
+	pthread_cond_destroy (&queue_condition);
+	pthread_detach (queue_thread);
+		
 	delete source;
 	delete demuxer;
 	g_free (file_or_url);
@@ -574,23 +600,9 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 void
 Media::EnqueueWork (MediaWork *work)
 {
-	pthread_attr_t attribs;
 	MediaWork *current;
 	
 	//printf ("Media::EnqueueWork (%p).\n", stream);
-	if (queued_requests == NULL) {
-		//printf ("Media::EnqueueWork (%p). Creating threads.\n", stream);
-		queued_requests = new List ();
-		
-		pthread_attr_init (&attribs);
-		pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
-		
-		pthread_mutex_init (&queue_mutex, NULL);
-		pthread_cond_init (&queue_condition, NULL);
-		
-		pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
-		pthread_attr_destroy (&attribs);		
-	}
 	
 	pthread_mutex_lock (&queue_mutex);
 	
@@ -643,36 +655,6 @@ Media::ClearQueue ()
 		ps->CancelWait ();
 	}
 }
-
-void
-Media::DeleteQueue ()
-{
-	//printf ("Media::DeleteQueue ().\n");
-	if (queued_requests != NULL) {
-		pthread_mutex_lock (&queue_mutex);
-		queued_requests->Clear (true);
-		delete queued_requests;
-		queued_requests = NULL;
-		pthread_cond_signal (&queue_condition);
-		pthread_mutex_unlock (&queue_mutex);
-		
-		if (source->GetType () == MediaSourceTypeProgressive) {
-			ProgressiveSource *ps = (ProgressiveSource *) source;
-			ps->CancelWait ();
-		}
-		
-		pthread_join (queue_thread, NULL);
-		pthread_mutex_destroy (&queue_mutex);
-		pthread_cond_destroy (&queue_condition);
-		pthread_detach (queue_thread);
-	}
-	
-	if (source != NULL && source->GetType () == MediaSourceTypeProgressive) {
-		ProgressiveSource *ps = (ProgressiveSource *) source;
-		ps->CancelWait ();
-	}
-}
-
 
 /*
  * ASFDemuxer

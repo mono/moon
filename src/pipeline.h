@@ -18,7 +18,6 @@
 #include <pthread.h>
 
 #include "debug.h"
-#include "value.h"
 
 /*
  *	Should be capable of:
@@ -302,7 +301,6 @@ public:
 	void GetNextFrameAsync (MediaFrame *frame); 
 	void GetNextFrameAsync (MediaFrame *frame, uint16_t states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
-	void DeleteQueue (); // Deletes the queue and finishes the thread that's processing the queue.
 	void SetQueueCallback (MediaClosure *closure) { queue_closure = closure; }
 	
 	IMediaSource *GetSource () { return source; }

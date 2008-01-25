@@ -1,3 +1,9 @@
+2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: Media: Don't create the worker thread upon first
+	  usage, but on construction, and finish it upon destruction. Fixes race
+	  between creating and destructing the thread.
+
 2008-01-24  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.cpp (Stroke::HitTestEndcapSegment): implement.
