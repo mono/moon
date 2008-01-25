@@ -797,7 +797,7 @@ ASFDemuxer::ReadHeader ()
 	int current_stream = 1;
 	int stream_count = 0;
 	
-	printf ("ASFDemuxer::ReadHeader ().\n");
+	//printf ("ASFDemuxer::ReadHeader ().\n");
 	
 	asf_source->parser = asf_parser;
 	
@@ -1027,8 +1027,8 @@ ASFDemuxerInfo::Supports (IMediaSource *source)
 	
 	bool result = asf_guid_compare (&asf_guids_header, (asf_guid *) buffer);
 	
-	printf ("ASFDemuxerInfo::Supports (%p): probing result: %s\n", source,
-		result ? "true" : "false");
+	//printf ("ASFDemuxerInfo::Supports (%p): probing result: %s\n", source,
+	//	result ? "true" : "false");
 	
 	return result;
 }

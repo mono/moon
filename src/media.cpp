@@ -878,8 +878,8 @@ MediaElement::TryOpen ()
 		Media *media = new Media ();
 		
 		if (MEDIA_SUCCEEDED (media->Open (downloaded_file))) {
-			printf ("MediaElement::TryOpen (): download is not complete, but media was "
-				"opened successfully and we'll now start buffering.\n");
+//			printf ("MediaElement::TryOpen (): download is not complete, but media was "
+//				"opened successfully and we'll now start buffering.\n");
 			MediaOpened (media);
 			SetState (Buffering);
 		} else {
