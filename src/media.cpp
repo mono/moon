@@ -142,10 +142,10 @@ MediaSource::Open ()
 	media_element_set_natural_duration (element, Duration (mplayer->Duration () * TIMESPANTICKS_IN_SECOND / 1000));
 	media_element_set_natural_video_height (element, mplayer->height);
 	media_element_set_natural_video_width (element, mplayer->width);
+	
+	return true;
 */
 	return false;
-
-	return true;
 }
 
 MediaSource *
@@ -863,8 +863,6 @@ MediaElement::TryOpen ()
 		if (MEDIA_SUCCEEDED (source->Initialize ())) {
 			if (MEDIA_SUCCEEDED (media->Open (source))) {
 				MediaOpened (media);
-				SetState (Paused);
-				//printf ("MediaElement::TryOpen (): download is complete and media opened successfully.\n");
 				
 				if ((flags & PlayRequested) || media_element_get_auto_play (this)) {
 					//printf ("MediaElement::TryOpen (): we'll now start playing.\n");
