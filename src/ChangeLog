@@ -1,5 +1,13 @@
 2008-01-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pipeline.cpp (WaitForPosition): Only update wait_pos if it is
+	greater than the current wait_pos.
+
+	* media.cpp (UpdateProgress): Use the buffering_start position
+	rather than the current write position to calculate buffer_size.
+
+2008-01-25  Jeffrey Stedfast  <fejj@novell.com>
+
 	* media.cpp (TryOpen): When download is complete and we
 	successfully open the media, don't set the state to Paused - this
 	breaks Halo3 if the video is cached.

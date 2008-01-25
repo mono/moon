@@ -686,12 +686,14 @@ MediaElement::UpdateProgress ()
 		int64_t size = downloaded_file->GetTotalSize ();
 		int64_t buffer_size = BUFFERING_SIZE;
 		
-		if (wait_pos > pos + buffer_size) {
+		if ((buffering_start + buffer_size) < wait_pos) {
 			// If the position the stream is waiting for is beyond the default
 			// buffer size, use that position to calculate the buffer size.
-			buffer_size = wait_pos - pos;
-		} else if (size != -1 && (size - pos) < buffer_size)
-			buffer_size = size - pos;
+			buffer_size = wait_pos - buffering_start;
+		} else if (size != -1 && (buffering_start + buffer_size) < size) {
+			// there's less than BUFFERING_SIZE data left to buffer
+			buffer_size = size - buffering_start;
+		}
 		
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
 		if ((progress = ((double) (pos - buffering_start)) / buffer_size) > 1.0)
@@ -1108,14 +1110,14 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 		mplayer->Seek (position * 1000 / TIMESPANTICKS_IN_SECOND);
 		Invalidate ();
 		
+		if (IsStopped ())
+			SetState (Paused);
+		
 		if (position != value->AsTimeSpan ()) {
 			v = Value (position, Type::TIMESPAN);
 			MediaBase::SetValue (prop, &v);
 			return;
 		}
-		
-		if (IsStopped ())
-			SetState (Paused);
 	}
 	
 	MediaBase::SetValue (prop, value);

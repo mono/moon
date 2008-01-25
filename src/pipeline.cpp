@@ -52,14 +52,21 @@ DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
  
-Media::Media () :
-		queued_requests (NULL),	queue_closure (NULL), 
-		file_or_url (NULL), source (NULL), 
-		demuxer (NULL), markers (NULL),
-		start_time (0), opened (false)
+Media::Media ()
 {
 	pthread_attr_t attribs;
+	
 	queued_requests = new List ();
+	queue_closure = NULL;
+	
+	file_or_url = NULL;
+	source = NULL;
+	
+	demuxer = NULL;
+	markers = NULL;
+	
+	start_time = 0;
+	opened = false;
 	
 	pthread_attr_init (&attribs);
 	pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
@@ -224,7 +231,7 @@ Media::Seek (uint64_t pts)
 {
 	if (demuxer)
 		return demuxer->Seek (pts);
-
+	
 	return MEDIA_FAIL;
 }
 
@@ -503,7 +510,7 @@ Media::WorkerLoop ()
 		MediaWork *node = NULL;
 		
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): entering mutex.\n", 0);
-
+		
 		// Wait until we have something in the queue
 		pthread_mutex_lock (&queue_mutex);
 		while (queued_requests != NULL && queued_requests->IsEmpty ())
@@ -513,16 +520,17 @@ Media::WorkerLoop ()
 		
 		if (queued_requests != NULL) {
 			// Find the first audio node
-			node = (MediaWork*) queued_requests->First ();
-
+			node = (MediaWork *) queued_requests->First ();
+			
 			if (node != NULL)
 				queued_requests->Unlink (node);
 			
-			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got a %s node, there are %i nodes left.\n",
+			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got a %s node, there are %d nodes left.\n",
 					     node->stream->GetType () == MediaTypeAudio ? "audio" :
 					     (node->stream->GetType () == MediaTypeVideo ? "video" : "unknown"),
 					     queued_requests->Length ());
 		}
+		
 		pthread_mutex_unlock (&queue_mutex);
 		
 		if (node == NULL)
@@ -532,7 +540,7 @@ Media::WorkerLoop ()
 		
 		switch (node->type) {
 		case WorkTypeSeek:
-			//printf ("Media::WorkerLoop (): Seeking, current count: %i\n", queued_requests->Length ());
+			//printf ("Media::WorkerLoop (): Seeking, current count: %d\n", queued_requests->Length ());
 			Seek (node->data.seek_pts);
 			break;
 		case WorkTypeAudio:
@@ -549,8 +557,10 @@ Media::WorkerLoop ()
 			}
 			break;
 		}
+		
 		delete node;
 	}
+	
 	LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): exiting.\n", 0);
 }
 
@@ -621,7 +631,7 @@ Media::EnqueueWork (MediaWork *work)
 		case WorkTypeVideo:
 		case WorkTypeMarker:
 			// Insert the work just before work with less priority.
-			current = (MediaWork*) queued_requests->First ();
+			current = (MediaWork *) queued_requests->First ();
 			while (current != NULL && work->type >= current->type)
 				current = (MediaWork *) current->next;
 			
@@ -683,7 +693,6 @@ ASFDemuxer::Seek (uint64_t pts)
 {
 	if (reader == NULL)
 		reader = new ASFFrameReader (parser);
-	
 	
 	// If there's any audio stream, we need to seek to that stream
 	// 
@@ -2146,7 +2155,10 @@ ProgressiveSource::WaitForPosition (int64_t position)
 	g_atomic_int_inc (&wait_count);
 	
 	Lock ();
-	wait_pos = position;
+	
+	if (position > wait_pos)
+		wait_pos = position;
+	
 	while (true) {
 		if (cancel_wait) {
 			// FIXME: This doesn't work if there are more than one thread waiting at the same time
