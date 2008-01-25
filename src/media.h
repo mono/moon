@@ -24,6 +24,7 @@ G_BEGIN_DECLS
 #include "brush.h"
 #include "frameworkelement.h"
 
+
 class MediaAttribute : public DependencyObject {
  public:
 	static DependencyProperty *ValueProperty;
@@ -35,6 +36,7 @@ class MediaAttribute : public DependencyObject {
 MediaAttribute *media_attribute_new (void);
 const char *media_attribute_get_value (MediaAttribute *attribute);
 void media_attribute_set_value (MediaAttribute *attribute, const char *value);
+
 
 class MediaBase : public FrameworkElement {
 public:
@@ -57,6 +59,7 @@ void    media_base_set_stretch (MediaBase *media, Stretch value);
 
 void   media_base_set_download_progress (MediaBase *media, double progress);
 double media_base_get_download_progress (MediaBase *media);
+
 
 class Image : public MediaBase {
 	bool create_xlib_surface;
@@ -96,7 +99,8 @@ class Image : public MediaBase {
 	
 	// pattern caching
 	cairo_pattern_t *pattern;
- public:
+
+public:
 	Image ();
 	virtual ~Image ();
 	
@@ -127,6 +131,7 @@ class Image : public MediaBase {
 Image *image_new (void);
 void   image_set_source (Image *img, DependencyObject *Downloader, const char *PartName);
 
+
 class MediaSource {
 protected:
 	MediaElement *element;
@@ -154,13 +159,15 @@ public:
 	static MediaSource *CreateSource (MediaElement *element, const char *source_name, IMediaSource *source);
 };
 
+
 class SingleMedia : public MediaSource {
-private:
 	guint advance_frame_timeout_id;
 	
 	void ClearTimeout ();
+	
 protected:
 	virtual bool OpenInternal ();
+	
 public:
 	SingleMedia (MediaElement *element, const char *source_name, IMediaSource *source);
 	virtual ~SingleMedia ();
@@ -174,29 +181,10 @@ public:
 
 class MediaElement : public MediaBase {
 public:
-	// SetSource () is called
-	// - We start downloading the content. => 'Opening'
-	// When x bytes have been downloaded and there's no PartName 
-	// - try to open the media (i.e. read the header)
-	// - if successful, emit MediaOpened, and do buffered download => 'Buffering', otherwise normal download
-	// When buffered download has finished
-	// - start playing the file (if autoplay) => 'Playing', otherwise => 'Paused'
-	// When normal download has finished
-	// - try to open the media and emit MediaOpened/MediaFailed => Error
-	// - start playing the file (if autoplay) => 'Playing', otherwise => 'Paused'
-	
-	// 
-	// Relevant links:
-	// http://msdn2.microsoft.com/en-us/library/bb980165.aspx (MediaElement States)
-	enum State {
-		// The default state
+	enum MediaElementState {
 		Closed,
-		// After setting a source, and until we have enough data to read the headers, we are 'Opening'
 		Opening,
-		// When the headers are read, switch to 'Buffering' (unless the entire file has been downloaded)
 		Buffering,
-		// When finished buffering or downloading, start 'Playing'. 
-		// We might change automatically to 'Buffering' if we run out of data.
 		Playing,
 		Paused,
 		Stopped,
@@ -204,79 +192,48 @@ public:
 	};
 	
 private:
+	
 	// The current state of the media element.
-	State state;
+	MediaElementState state;
 	
 	// this is used to know what to do after a Buffering state finishes
-	State previous_state;
+	MediaElementState prev_state;
 	
-	// we can't do anything until OnLoaded has been called
-	// so track if it has been called, and if we're waiting
-	// for it to be called
-	bool loaded; 
-	bool waiting_for_loaded;
-	
-	// When enough of a file has been downloaded to try to open
-	// and buffer it, and the open fails, don't try again.
-	bool tried_buffering;
-	
-	// Don't try to buffer if the download is already finished.
-	bool download_complete;
-	
-	// If SetSource is called with a Downloader that has started,
-	// disable buffering (since can't get the start of the file).
-	bool disable_buffering;
-	
-	// Halo seems to require this
-	// set to true the Play () is called before the media has 
-	// been opened, and causes Play () to be called when the
-	// media has been loaded.
-	bool play_pending;
-	
-	// The position property is not
-	// updated as we're playing, it's updated when 
-	// requested in GetValue, and only then the current
-	// position is saved in SetValue.
-	// This should however not cause SetValue's handling
-	// of the position property to do anything, so keep
-	// track of when we're setting the position property
-	// ourselves.
-	bool updating;
+	uint32_t flags;
 	
 	int64_t buffering_start;
 	
-	ProgressiveSource *downloaded_file;
-	Media *media;
-	
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
+	
+	TimelineMarkerCollection *streamed_markers;
 	
 	// When checking if a marker has been reached, we need to 
 	// know the last time the check was made, to see if 
 	// the marker's pts hit the region.
 	uint64_t previous_position;
 	
-	TimelineMarkerCollection *streamed_markers;
-	
-	virtual void OnLoaded ();
-	
-	void UpdateProgress ();
-	
 	// downloader methods/data
+	ProgressiveSource *downloaded_file;
 	Downloader *downloader;
-	//MediaSource *source;
 	char *part_name;
+	Media *media;
 	
-	void Cleanup ();
 	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DownloaderAbort ();
 	void DownloaderComplete ();
 	void BufferingComplete ();
+	void UpdateProgress ();
+	
+	void Reinitialize ();
+	virtual void OnLoaded ();
 	
 	// Try to open the media (i.e. read the headers).
 	void TryOpen ();
+	
 	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
 	void MediaOpened (Media *media);
+	
 	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
 	void MediaFailed ();
 	
@@ -347,9 +304,10 @@ public:
 	bool IsPaused () { return state == Paused; }
 	bool IsStopped () { return state == Stopped; }
 	
-	void SetState (State new_state);
-	State GetState () { return state; }
-	static const char *GetStateName (State state);
+	static const char *GetStateName (MediaElementState state);
+	
+	MediaElementState GetState () { return state; }
+	void SetState (MediaElementState state);
 	
 	virtual bool EnableAntiAlias ()
 	{

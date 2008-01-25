@@ -1,3 +1,8 @@
+2008-01-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp|h: Consolidated all of the bool state variables into a
+	single bitfield.
+
 2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.h, pipeline.cpp: ProgressiveSource: Make the position we're
