@@ -455,6 +455,7 @@ MediaElement::MediaElement ()
 	part_name = NULL;
 	mplayer = NULL;
 	loaded = false;
+	play_pending = false;
 	
 	Cleanup ();
 	
@@ -788,6 +789,11 @@ MediaElement::BufferingComplete ()
 	
 	switch (previous_state) {
 	case Opening: // Start playback
+		if (media_element_get_auto_play (this) || play_pending)
+			Play ();
+		else 
+			Pause ();
+		return;
 	case Playing: // Restart playback
 		Play ();
 		return;
