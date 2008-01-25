@@ -277,13 +277,16 @@ CAIRO_LIBS=$CAIRO_NONPKGCONFIG_LIBS
 
 dnl ===========================================================================
 
-PIXMAN_VERSION="0.9.4"
-PIXMAN_REQUIRES="pixman-1 >= $PIXMAN_VERSION"
-PKG_CHECK_MODULES(pixman, $PIXMAN_REQUIRES, ,
-	[AC_MSG_ERROR([pixman >= $PIXMAN_VERSION is required
-(http://cairographics.org/releases/)])])
+#PIXMAN_VERSION="0.9.4"
+#PIXMAN_REQUIRES="pixman-1 >= $PIXMAN_VERSION"
+#PKG_CHECK_MODULES(pixman, $PIXMAN_REQUIRES, ,
+#	[AC_MSG_ERROR([pixman >= $PIXMAN_VERSION is required
+#(http://cairographics.org/releases/)])])
 
-CAIRO_REQUIRES="$PIXMAN_REQUIRES $CAIRO_REQUIRES"
+pixman_CFLAGS='-I$(top_srcdir)/../pixman/pixman'
+pixman_LIBS='$(top_builddir)/../pixman/pixman/libpixman-1.la'
+
+#CAIRO_REQUIRES="$PIXMAN_REQUIRES $CAIRO_REQUIRES"
 CAIRO_CFLAGS="$pixman_CFLAGS $CAIRO_CFLAGS"
 CAIRO_LIBS="$pixman_LIBS $CAIRO_LIBS"
 
