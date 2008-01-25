@@ -25,11 +25,6 @@ struct Video;
 class MediaPlayer {
 public:
 	Media *media;
-	// The pts when we start playing (set when resuming playback to current pts, when starting to play to initial pts, and when seeking to the seeked pts)
-	// While playing it can be used to calculate the current pts (knowing the time)
-	uint64_t start_pts;
-	uint64_t initial_pts;
-	uint64_t duration;
 	
 	pthread_mutex_t pause_mutex;
 	pthread_cond_t pause_cond;
@@ -44,10 +39,10 @@ public:
 	Video *video;
 	
 	// sync
-	uint64_t pause_time;
 	uint64_t start_time;  
 	
 	pthread_mutex_t target_pts_lock;
+	uint64_t initial_pts;
 	uint64_t current_pts;
 	uint64_t target_pts;
 	
