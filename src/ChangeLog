@@ -1,7 +1,7 @@
 2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* media.cpp: Initialize play_pending, and when buffering is finished, only
-	  play if autoplay or play_pending is true.
+	* media.cpp: Initialize play_pending, and when buffering is
+	  finished, only play if autoplay or play_pending is true.
 
 2008-01-25  Jeffrey Stedfast  <fejj@novell.com>
 
@@ -15,14 +15,20 @@
 2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.
+
 	* pipeline-ffmpeg.cpp: Commented out printf.
-	* pipeline.h, pipeline.cpp: Removed some dead code. Made all interfaces
-	  inherit from IMediaObject, and put the media field there. Commented out
-	  printfs.
-	* mplayer.h, mplayer.cpp: Unified Mute and UnMute into SetMuted to simplify
-	  code a bit. Encapsulated target_pts handling into separate methods.
-	* media.h, media.cpp: Create one and only one MediaPlayer for the life-time
-	  of the MediaElement. If not AutoPlay is set, then pause instead of play.
+
+	* pipeline.h, pipeline.cpp: Removed some dead code. Made all
+	interfaces inherit from IMediaObject, and put the media field
+	there. Commented out printfs.
+
+	* mplayer.h, mplayer.cpp: Unified Mute and UnMute into SetMuted to
+	simplify code a bit. Encapsulated target_pts handling into
+	separate methods.
+
+	* media.h, media.cpp: Create one and only one MediaPlayer for the
+	life-time of the MediaElement. If not AutoPlay is set, then pause
+	instead of play.
 
 2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
