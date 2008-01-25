@@ -1,3 +1,10 @@
+2008-01-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Merge UIElement::InsideClip inside Shape::InsideObject
+	instead of calling it since it can reduce some heavy cairo calls 
+	(cairo_in_*), if there's a clip, otherwise it won't affect 
+	performance.
+
 2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Initialize play_pending, and when buffering is

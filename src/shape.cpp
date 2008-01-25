@@ -386,22 +386,25 @@ Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 bool
 Shape::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (!InsideClip (cr, x, y))
-		return false;
-
 	cairo_save (cr);
+	
+	Value* clip_geometry = GetValue (UIElement::ClipProperty);
+	if (clip_geometry) {
+		Geometry* clip = clip_geometry->AsGeometry ();
+		if (clip) {
+			clip->Draw (NULL, cr);
+			cairo_clip (cr);
+		}
+	}
+
 	// don't do the operation but do consider filling
 	DoDraw (cr, false);
-	double nx = x;
-	double ny = y;
-
-	uielement_transform_point (this, &nx ,&ny);
+	uielement_transform_point (this, &x ,&y);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
-	bool ret = ((stroke && cairo_in_stroke (cr, nx, ny)) || (fill && CanFill () && cairo_in_fill (cr, nx, ny)));
-	
-	cairo_new_path (cr);
+	bool ret = ((stroke && cairo_in_stroke (cr, x, y)) || (fill && CanFill () && cairo_in_fill (cr, x, y)));
 
+	cairo_new_path (cr);
 	cairo_restore (cr);
 
 	return ret;

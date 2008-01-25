@@ -4,7 +4,7 @@
  * Author:
  *	Sebastien Pouliot  <sebastien@ximian.com>
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -27,22 +27,24 @@ G_BEGIN_DECLS
 //
 class Geometry : public DependencyObject {
  protected:
-/*	enum GeometryFlags {
-		GEOMETRY_NORMAL     = 0x01,	// normal drawing
-		GEOMETRY_DEGENERATE = 0x02,	// degenerate drawing, use the Stroke brush for filling
-		GEOMETRY_MASK       = 0x02
+	enum GeometryFlags {
+		GEOMETRY_NORMAL		= 0x01,	// normal drawing
+		GEOMETRY_DEGENERATE	= 0x02,	// degenerate drawing, use the Stroke brush for filling
+		GEOMETRY_NEEDS_FILL	= 0x04,	// filling, if specified, is needed (e.g. LineGeometry doesn't need it)
+		GEOMETRY_NEEDS_CAPS	= 0x08,	// Stroke[Start|End]LineCap
+		GEOMETRY_NEEDS_JOIN	= 0x10,	// StrokeLineJoin, StrokeMiterLimit
+		GEOMETRY_MASK		= GEOMETRY_NORMAL | GEOMETRY_DEGENERATE | GEOMETRY_NEEDS_FILL | GEOMETRY_NEEDS_CAPS | GEOMETRY_NEEDS_JOIN
 	};
-
-	int flags;
 	bool IsDegenerate () { return (flags & Geometry::GEOMETRY_DEGENERATE); };
 	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; };
-*/
+
+	int flags;
 	moon_path *path;
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* TransformProperty;
 
-	Geometry () : path (NULL) {};
+	Geometry () : flags (GEOMETRY_NORMAL), path (NULL) {};
 	virtual ~Geometry ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
