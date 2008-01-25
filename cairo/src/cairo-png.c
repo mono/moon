@@ -88,20 +88,24 @@ convert_data_to_bytes (png_structp png, png_row_infop row_info, png_bytep data)
  * return.
  */
 static void
-png_simple_error_callback (png_structp png_save_ptr,
+png_simple_error_callback (png_structp png,
 	                   png_const_charp error_msg)
 {
-    cairo_status_t *error = png_get_error_ptr (png_save_ptr);
+    cairo_status_t *error = png_get_error_ptr (png);
 
     /* default to the most likely error */
     if (*error == CAIRO_STATUS_SUCCESS)
 	*error = _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
-    longjmp (png_save_ptr->jmpbuf, 1);
+#ifdef PNG_SETJMP_SUPPORTED
+    longjmp (png_jmpbuf (png), 1);
+#endif
+
+    /* if we get here, then we have to choice but to abort ... */
 }
 
 static void
-png_simple_warning_callback (png_structp png_save_ptr,
+png_simple_warning_callback (png_structp png,
 	                     png_const_charp error_msg)
 {
 }
@@ -158,8 +162,10 @@ write_png (cairo_surface_t	*surface,
 	goto BAIL3;
     }
 
+#ifdef PNG_SETJMP_SUPPORTED
     if (setjmp (png_jmpbuf (png)))
 	goto BAIL3;
+#endif
 
     png_set_write_fn (png, closure, write_func, NULL);
 
@@ -269,8 +275,14 @@ cairo_surface_write_to_png (cairo_surface_t	*surface,
     cairo_status_t status;
 
     fp = fopen (filename, "wb");
-    if (fp == NULL)
-	return _cairo_error (CAIRO_STATUS_WRITE_ERROR);
+    if (fp == NULL) {
+	switch (errno) {
+	case ENOMEM:
+	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	default:
+	    return _cairo_error (CAIRO_STATUS_WRITE_ERROR);
+	}
+    }
 
     status = write_png (surface, stdio_write_func, fp);
 
@@ -370,7 +382,7 @@ static cairo_surface_t *
 read_png (png_rw_ptr	read_func,
 	  void		*closure)
 {
-    cairo_surface_t *surface = (cairo_surface_t*) &_cairo_surface_nil;
+    cairo_surface_t *surface;
     png_struct *png = NULL;
     png_info *info;
     png_byte *data = NULL;
@@ -386,21 +398,26 @@ read_png (png_rw_ptr	read_func,
                                   &status,
 	                          png_simple_error_callback,
 	                          png_simple_warning_callback);
-    if (png == NULL)
+    if (png == NULL) {
+	surface = _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto BAIL;
+    }
 
     info = png_create_info_struct (png);
-    if (info == NULL)
+    if (info == NULL) {
+	surface = _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto BAIL;
+    }
 
     png_set_read_fn (png, closure, read_func);
 
     status = CAIRO_STATUS_SUCCESS;
+#ifdef PNG_SETJMP_SUPPORTED
     if (setjmp (png_jmpbuf (png))) {
-	if (status != CAIRO_STATUS_NO_MEMORY)
-	    surface = (cairo_surface_t*) &_cairo_surface_nil_read_error;
+	surface = _cairo_surface_create_in_error (status);
 	goto BAIL;
     }
+#endif
 
     png_read_info (png, info);
 
@@ -446,12 +463,16 @@ read_png (png_rw_ptr	read_func,
 
     pixel_size = 4;
     data = _cairo_malloc_abc (png_height, png_width, pixel_size);
-    if (data == NULL)
+    if (data == NULL) {
+	surface = _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto BAIL;
+    }
 
     row_pointers = _cairo_malloc_ab (png_height, sizeof (char *));
-    if (row_pointers == NULL)
+    if (row_pointers == NULL) {
+	surface = _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto BAIL;
+    }
 
     for (i = 0; i < png_height; i++)
         row_pointers[i] = &data[i * png_width * pixel_size];
@@ -476,9 +497,6 @@ read_png (png_rw_ptr	read_func,
     if (png)
 	png_destroy_read_struct (&png, &info, NULL);
 
-    if (surface->status)
-	_cairo_error_throw (surface->status);
-
     return surface;
 }
 
@@ -492,7 +510,7 @@ stdio_read_func (png_structp png, png_bytep data, png_size_t size)
 	size_t ret = fread (data, 1, size, fp);
 	size -= ret;
 	data += ret;
-	if (size && ferror (fp)) {
+	if (size && (feof (fp) || ferror (fp))) {
 	    cairo_status_t *error = png_get_error_ptr (png);
 	    *error = _cairo_error (CAIRO_STATUS_READ_ERROR);
 	    png_error (png, NULL);
@@ -524,17 +542,19 @@ cairo_image_surface_create_from_png (const char *filename)
 
     fp = fopen (filename, "rb");
     if (fp == NULL) {
+	cairo_status_t status;
 	switch (errno) {
 	case ENOMEM:
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return (cairo_surface_t*) &_cairo_surface_nil;
+	    status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    break;
 	case ENOENT:
-	    _cairo_error_throw (CAIRO_STATUS_FILE_NOT_FOUND);
-	    return (cairo_surface_t*) &_cairo_surface_nil_file_not_found;
+	    status = _cairo_error (CAIRO_STATUS_FILE_NOT_FOUND);
+	    break;
 	default:
-	    _cairo_error_throw (CAIRO_STATUS_READ_ERROR);
-	    return (cairo_surface_t*) &_cairo_surface_nil_read_error;
+	    status = _cairo_error (CAIRO_STATUS_READ_ERROR);
+	    break;
 	}
+	return _cairo_surface_create_in_error (status);
     }
 
     surface = read_png (stdio_read_func, fp);

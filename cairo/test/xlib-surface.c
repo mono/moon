@@ -28,7 +28,6 @@
 
 #include "cairo.h"
 #include "cairo-xlib.h"
-#include "cairo-xlib-xrender.h"
 #include "cairo-test.h"
 
 #include "cairo-boilerplate-xlib.h"

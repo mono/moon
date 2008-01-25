@@ -59,6 +59,8 @@ cairo 1.6 (scheduled for July 2007, targeting firefox and GNOME)
  • David Turner's cairo-ft rewrite. (behdad)
    http://david.freetype.org/cairo/
 
+ • Make cairo-ft respect FC_FT_FACE pattern element. (behdad)
+
  • Change from 16.16 to 24.8 (or so) for fixed-point storage (cworth)
 
  • Implement a faster lookup-table-based rasterizer (cworth)
@@ -93,7 +95,7 @@ cairo 1.6 (scheduled for July 2007, targeting firefox and GNOME)
 
  • New text API that allows for perfect text extraction in PDF (behdad)
 
- • Set PS Level for the PS backend (adrianj)
+ ✓ Set PS Level for the PS backend (adrianj)
 
  ✓ EPS output from the PS backend (adrianj)
 

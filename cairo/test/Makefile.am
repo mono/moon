@@ -1,124 +1,141 @@
 SUBDIRS=pdiff .
 
 # Here are all the tests that are run unconditionally
-TESTS = 			\
-a8-mask				\
-big-trap			\
-caps-joins			\
-caps-joins-alpha		\
-caps-sub-paths			\
-clip-all			\
-clip-fill-rule			\
-clip-fill-rule-pixel-aligned	\
-clip-nesting			\
-clip-operator			\
-clip-push-group			\
-clip-twice			\
-close-path			\
-composite-integer-translate-source \
-composite-integer-translate-over \
-composite-integer-translate-over-repeat \
-copy-path			\
-create-for-stream		\
-create-from-png			\
-create-from-png-stream		\
-dash-caps-joins			\
-dash-no-dash			\
-dash-offset-negative		\
-dash-scale			\
-dash-zero-length		\
-dash-state			\
-degenerate-path			\
-device-offset			\
-device-offset-positive		\
-extend-pad			\
-fill-and-stroke			\
-fill-and-stroke-alpha		\
-fill-and-stroke-alpha-add	\
-fill-degenerate-sort-order	\
-fill-missed-stop		\
-fill-rule			\
-filter-nearest-offset		\
-font-face-get-type		\
-font-matrix-translation		\
-glyph-cache-pressure		\
-get-and-set			\
-get-clip                        \
-get-group-target		\
-get-path-extents                \
-gradient-alpha			\
-infinite-join			\
-in-fill-empty-trapezoid		\
-invalid-matrix			\
-leaky-dash			\
-leaky-polygon			\
-line-width			\
-line-width-scale		\
-line-width-zero			\
-linear-gradient			\
-linear-gradient-reflect		\
-long-lines			\
-mask				\
-mask-alpha			\
-mask-ctm			\
-mask-surface-ctm		\
-move-to-show-surface		\
-new-sub-path			\
-nil-surface			\
-operator-clear			\
-operator-source			\
-over-above-source		\
-over-around-source		\
-over-below-source		\
-over-between-source		\
-paint				\
-paint-repeat			\
-paint-source-alpha		\
-paint-with-alpha		\
-pattern-get-type		\
-pattern-getters			\
-pixman-rotate			\
-radial-gradient			\
-random-intersections		\
-rectangle-rounding-error	\
-rectilinear-stroke		\
-rgb24-ignore-alpha		\
-rotate-image-surface-paint	\
-scale-down-source-surface-paint	\
-scale-source-surface-paint	\
-select-font-face		\
-select-font-no-show-text	\
-self-copy			\
-self-intersecting		\
-set-source			\
-show-text-current-point		\
-skew-extreme			\
-solid-pattern-cache-stress	\
-source-clip			\
-source-clip-scale		\
-source-surface-scale-paint	\
-surface-finish-twice		\
-surface-pattern			\
-surface-pattern-big-scale-down  \
-surface-pattern-scale-down	\
-surface-pattern-scale-up	\
-text-antialias-gray		\
-text-antialias-none		\
-text-antialias-subpixel		\
-text-cache-crash		\
-text-pattern			\
-text-rotate			\
-text-zero-len			\
-transforms			\
-translate-show-surface		\
-trap-clip			\
-truetype-tables			\
-unantialiased-shapes		\
-unbounded-operator		\
-user-data			\
-rel-path                        \
-push-group			\
-zero-alpha
+TESTS =							\
+a1-image-sample$(EXEEXT)				\
+a1-traps-sample$(EXEEXT)				\
+a8-mask$(EXEEXT)					\
+big-trap$(EXEEXT)					\
+caps-joins$(EXEEXT)					\
+caps-joins-alpha$(EXEEXT)				\
+caps-sub-paths$(EXEEXT)					\
+clip-all$(EXEEXT)					\
+clip-empty$(EXEEXT)					\
+clip-fill-rule$(EXEEXT)					\
+clip-fill-rule-pixel-aligned$(EXEEXT)			\
+clip-nesting$(EXEEXT)					\
+clip-operator$(EXEEXT)					\
+clip-push-group$(EXEEXT)				\
+clip-twice$(EXEEXT)					\
+clip-zero$(EXEEXT)					\
+close-path$(EXEEXT)					\
+composite-integer-translate-source$(EXEEXT)		\
+composite-integer-translate-over$(EXEEXT)		\
+composite-integer-translate-over-repeat$(EXEEXT)	\
+copy-path$(EXEEXT)					\
+create-for-stream$(EXEEXT)				\
+create-from-png$(EXEEXT)				\
+create-from-png-stream$(EXEEXT)				\
+dash-caps-joins$(EXEEXT)				\
+dash-curve$(EXEEXT)					\
+dash-no-dash$(EXEEXT)					\
+dash-offset-negative$(EXEEXT)				\
+dash-scale$(EXEEXT)					\
+dash-state$(EXEEXT)					\
+dash-zero-length$(EXEEXT)				\
+degenerate-path$(EXEEXT)				\
+degenerate-pen$(EXEEXT)					\
+device-offset$(EXEEXT)					\
+device-offset-positive$(EXEEXT)				\
+extend-pad$(EXEEXT)					\
+extend-pad-similar$(EXEEXT)				\
+extend-reflect$(EXEEXT)					\
+extend-reflect-similar$(EXEEXT)				\
+extend-repeat$(EXEEXT)					\
+extend-repeat-similar$(EXEEXT)				\
+fill-and-stroke$(EXEEXT)				\
+fill-and-stroke-alpha$(EXEEXT)				\
+fill-and-stroke-alpha-add$(EXEEXT)			\
+fill-degenerate-sort-order$(EXEEXT)			\
+fill-missed-stop$(EXEEXT)				\
+fill-rule$(EXEEXT)					\
+filter-nearest-offset$(EXEEXT)				\
+font-face-get-type$(EXEEXT)				\
+font-matrix-translation$(EXEEXT)			\
+font-options$(EXEEXT)					\
+glyph-cache-pressure$(EXEEXT)				\
+get-and-set$(EXEEXT)					\
+get-clip$(EXEEXT)					\
+get-group-target$(EXEEXT)				\
+get-path-extents$(EXEEXT)				\
+gradient-alpha$(EXEEXT)					\
+gradient-zero-stops$(EXEEXT)				\
+infinite-join$(EXEEXT)					\
+in-fill-empty-trapezoid$(EXEEXT)			\
+in-fill-trapezoid$(EXEEXT)			\
+invalid-matrix$(EXEEXT)					\
+leaky-dash$(EXEEXT)					\
+leaky-polygon$(EXEEXT)					\
+line-width$(EXEEXT)					\
+line-width-scale$(EXEEXT)				\
+line-width-zero$(EXEEXT)				\
+linear-gradient$(EXEEXT)				\
+linear-gradient-reflect$(EXEEXT)			\
+long-lines$(EXEEXT)					\
+mask$(EXEEXT)						\
+mask-alpha$(EXEEXT)					\
+mask-ctm$(EXEEXT)					\
+mask-surface-ctm$(EXEEXT)				\
+meta-surface-pattern$(EXEEXT)				\
+miter-precision$(EXEEXT)				\
+move-to-show-surface$(EXEEXT)				\
+new-sub-path$(EXEEXT)					\
+nil-surface$(EXEEXT)					\
+operator-clear$(EXEEXT)					\
+operator-source$(EXEEXT)				\
+over-above-source$(EXEEXT)				\
+over-around-source$(EXEEXT)				\
+over-below-source$(EXEEXT)				\
+over-between-source$(EXEEXT)				\
+paint$(EXEEXT)						\
+paint-repeat$(EXEEXT)					\
+paint-source-alpha$(EXEEXT)				\
+paint-with-alpha$(EXEEXT)				\
+pattern-get-type$(EXEEXT)				\
+pattern-getters$(EXEEXT)				\
+pixman-rotate$(EXEEXT)					\
+push-group$(EXEEXT)					\
+radial-gradient$(EXEEXT)				\
+random-intersections$(EXEEXT)				\
+rectangle-rounding-error$(EXEEXT)			\
+rectilinear-miter-limit$(EXEEXT)			\
+rectilinear-stroke$(EXEEXT)				\
+rel-path$(EXEEXT)					\
+rgb24-ignore-alpha$(EXEEXT)				\
+rotate-image-surface-paint$(EXEEXT)			\
+scale-down-source-surface-paint$(EXEEXT)		\
+scale-source-surface-paint$(EXEEXT)			\
+select-font-face$(EXEEXT)				\
+select-font-no-show-text$(EXEEXT)			\
+self-copy$(EXEEXT)					\
+self-intersecting$(EXEEXT)				\
+set-source$(EXEEXT)					\
+show-text-current-point$(EXEEXT)			\
+skew-extreme$(EXEEXT)					\
+solid-pattern-cache-stress$(EXEEXT)			\
+source-clip$(EXEEXT)					\
+source-clip-scale$(EXEEXT)				\
+source-surface-scale-paint$(EXEEXT)			\
+surface-finish-twice$(EXEEXT)				\
+surface-pattern$(EXEEXT)				\
+surface-pattern-big-scale-down$(EXEEXT)			\
+surface-pattern-scale-down$(EXEEXT)			\
+surface-pattern-scale-up$(EXEEXT)			\
+text-antialias-gray$(EXEEXT)				\
+text-antialias-none$(EXEEXT)				\
+text-antialias-subpixel$(EXEEXT)			\
+text-cache-crash$(EXEEXT)				\
+text-pattern$(EXEEXT)					\
+text-rotate$(EXEEXT)					\
+text-zero-len$(EXEEXT)					\
+transforms$(EXEEXT)					\
+translate-show-surface$(EXEEXT)				\
+trap-clip$(EXEEXT)					\
+truetype-tables$(EXEEXT)				\
+unantialiased-shapes$(EXEEXT)				\
+unbounded-operator$(EXEEXT)				\
+user-data$(EXEEXT)					\
+zero-alpha$(EXEEXT)
 
 # XXX: Here are some existing tests that are currently disabled for
 # one reason or another. They can still be built and run (manually)
@@ -160,49 +177,49 @@ zero-alpha
 #	suite, (in spite of the XFAIL status of the test). So maybe
 #	that's just a bug in the test rig that should just consider
 #	the abort an XFAIL like any other.
-DISABLED_TESTS =		\
-extend-reflect			\
-show-glyphs-many		\
-text-glyph-range
+DISABLED_TESTS =			\
+show-glyphs-many$(EXEEXT)		\
+text-glyph-range$(EXEEXT)
 
 # Then we have a collection of tests that are only run if certain
 # features are compiled into cairo
 if HAVE_PTHREAD
-TESTS += pthread-show-text
+TESTS += pthread-show-text$(EXEEXT)
 endif
 
 if CAIRO_HAS_FT_FONT
-TESTS += bitmap-font
-TESTS += ft-font-create-for-ft-face
-TESTS += ft-text-vertical-layout-type1
-TESTS += ft-text-vertical-layout-type3
-TESTS += ft-text-antialias-none
+TESTS += bitmap-font$(EXEEXT)
+TESTS += ft-font-create-for-ft-face$(EXEEXT)
+TESTS += ft-text-vertical-layout-type1$(EXEEXT)
+TESTS += ft-text-vertical-layout-type3$(EXEEXT)
+TESTS += ft-text-antialias-none$(EXEEXT)
 endif
 
 if CAIRO_HAS_SVG_SURFACE
-TESTS += svg-surface svg-clip
+TESTS += svg-surface$(EXEEXT)
+TESTS += svg-clip$(EXEEXT)
 endif
 
 if CAIRO_HAS_PDF_SURFACE
-TESTS += pdf-features
+TESTS += pdf-features$(EXEEXT)
 endif
 
 if CAIRO_HAS_PS_SURFACE
-TESTS += ps-features
+TESTS += ps-features$(EXEEXT)
 endif
 
 if CAIRO_HAS_XLIB_SURFACE
-TESTS += xlib-surface
+TESTS += xlib-surface$(EXEEXT)
 endif
 
 if CAIRO_HAS_MULTI_PAGE_SURFACES
-TESTS += multi-page
+TESTS += multi-page$(EXEEXT)
 endif
 
 if CAIRO_HAS_SVG_SURFACE
 if CAIRO_HAS_PDF_SURFACE
 if CAIRO_HAS_PS_SURFACE
-TESTS += fallback-resolution
+TESTS += fallback-resolution$(EXEEXT)
 endif
 endif
 endif
@@ -219,21 +236,28 @@ REFERENCE_IMAGES = \
 	caps-joins-ref.png	\
 	caps-sub-paths-ref.png	\
 	clip-all-ref.png	\
+	clip-empty-ref.png	\
 	clip-fill-rule-pixel-aligned-ref.png	\
 	clip-fill-rule-pixel-aligned-rgb24-ref.png	\
 	clip-fill-rule-ps-argb32-ref.png	\
+	clip-fill-rule-ps-rgb24-ref.png		\
 	clip-fill-rule-ref.png	\
 	clip-fill-rule-rgb24-ref.png	\
 	clip-nesting-ps-argb32-ref.png	\
+	clip-nesting-ps-rgb24-ref.png	\
 	clip-nesting-quartz-ref.png	\
 	clip-nesting-quartz-rgb24-ref.png	\
 	clip-nesting-ref.png	\
 	clip-nesting-rgb24-ref.png	\
 	clip-operator-ref.png	\
+	clip-operator-ps-argb32-ref.png	\
 	clip-operator-rgb24-ref.png	\
+	clip-push-group-ps-argb32-ref.png	\
+	clip-push-group-ps-rgb24-ref.png	\
 	clip-push-group-quartz-ref.png	\
 	clip-push-group-ref.png	\
 	clip-twice-ps-argb32-ref.png	\
+	clip-twice-ps-rgb24-ref.png	\
 	clip-twice-quartz-ref.png	\
 	clip-twice-quartz-rgb24-ref.png	\
 	clip-twice-ref.png	\
@@ -243,22 +267,30 @@ REFERENCE_IMAGES = \
 	composite-integer-translate-over-repeat-ref.png	\
 	composite-integer-translate-source-ref.png	\
 	copy-path-ps-argb32-ref.png	\
+	copy-path-ps-rgb24-ref.png	\
 	copy-path-ref.png	\
 	create-from-png-ref.png	\
 	create-from-png-stream-ref.png	\
 	dash-caps-joins-ps-argb32-ref.png	\
+	dash-caps-joins-ps-rgb24-ref.png	\
 	dash-caps-joins-quartz-ref.png	\
 	dash-caps-joins-ref.png	\
+	dash-curve-ref.png	\
 	dash-no-dash-ref.png	\
 	dash-offset-negative-ref.png	\
 	dash-scale-ps-argb32-ref.png	\
+	dash-scale-ps-rgb24-ref.png	\
 	dash-scale-ref.png	\
 	dash-state-ps-argb32-ref.png	\
+	dash-state-ps-rgb24-ref.png	\
 	dash-state-ref.png	\
 	dash-zero-length-ps-argb32-ref.png	\
 	dash-zero-length-ref.png	\
 	dash-zero-length-rgb24-ref.png	\
+	degenerate-pen-ref.png		\
+	degenerate-pen-ps-argb32-ref.png	\
 	degenerate-path-ps-argb32-ref.png	\
+	degenerate-path-ps-rgb24-ref.png	\
 	degenerate-path-ref.png	\
 	degenerate-path-rgb24-ref.png	\
 	device-offset-positive-ref.png	\
@@ -266,12 +298,17 @@ REFERENCE_IMAGES = \
 	device-offset-ref.png	\
 	device-offset-rgb24-ref.png	\
 	extend-pad-ref.png	\
+	extend-pad-similar-ref.png	\
 	extend-reflect-ref.png	\
+	extend-reflect-similar-ref.png	\
+	extend-repeat-ref.png	\
+	extend-repeat-similar-ref.png	\
 	fill-and-stroke-alpha-add-quartz-ref.png	\
 	fill-and-stroke-alpha-add-ref.png	\
 	fill-and-stroke-alpha-quartz-ref.png	\
 	fill-and-stroke-alpha-ref.png	\
 	fill-and-stroke-ps-argb32-ref.png	\
+	fill-and-stroke-ps-rgb24-ref.png	\
 	fill-and-stroke-quartz-ref.png	\
 	fill-and-stroke-quartz-rgb24-ref.png	\
 	fill-and-stroke-ref.png	\
@@ -281,6 +318,7 @@ REFERENCE_IMAGES = \
 	fill-degenerate-sort-order-ref.png	\
 	fill-degenerate-sort-order-rgb24-ref.png	\
 	fill-missed-stop-ps-argb32-ref.png	\
+	fill-missed-stop-ps-rgb24-ref.png	\
 	fill-missed-stop-ref.png	\
 	fill-missed-stop-rgb24-ref.png	\
 	fill-rule-ps-argb32-ref.png	\
@@ -290,6 +328,7 @@ REFERENCE_IMAGES = \
 	fill-rule-rgb24-ref.png	\
 	filter-nearest-offset-ref.png	\
 	font-matrix-translation-ps-argb32-ref.png	\
+	font-matrix-translation-ps-rgb24-ref.png	\
 	font-matrix-translation-ref.png	\
 	font-matrix-translation-svg-ref.png	\
 	ft-text-antialias-none-ps-argb32-ref.png	\
@@ -302,17 +341,25 @@ REFERENCE_IMAGES = \
 	ft-text-vertical-layout-type3-svg-ref.png	\
 	get-group-target-ref.png	\
 	glyph-cache-pressure-ref.png	\
+	gradient-alpha-ps-argb32-ref.png	\
+	gradient-alpha-ps-rgb24-ref.png	\
 	gradient-alpha-ref.png	\
 	gradient-alpha-rgb24-ref.png	\
+	gradient-zero-stops-ref.png	\
+	gradient-zero-stops-rgb24-ref.png	\
 	infinite-join-ref.png	\
 	leaky-dash-ps-argb32-ref.png	\
+	leaky-dash-ps-rgb24-ref.png	\
 	leaky-dash-ref.png	\
 	leaky-polygon-ref.png	\
 	linear-gradient-reflect-ref.png	\
+	linear-gradient-ps-argb32-ref.png	\
+	linear-gradient-ps-rgb24-ref.png	\
 	linear-gradient-ref.png	\
 	linear-gradient-svg-ref.png	\
 	line-width-ref.png	\
 	line-width-scale-ps-argb32-ref.png	\
+	line-width-scale-ps-rgb24-ref.png	\
 	line-width-scale-ref.png	\
 	long-lines-ref.png	\
 	mask-alpha-ref.png	\
@@ -325,9 +372,14 @@ REFERENCE_IMAGES = \
 	mask-surface-ctm-ref.png	\
 	mask-surface-ctm-rgb24-ref.png	\
 	mask-surface-ctm-svg-argb32-ref.png	\
+	mask-svg-rgb24-ref.png	\
 	mask-svg-argb32-ref.png	\
+	meta-surface-pattern-ref.png		\
+	meta-surface-pattern-rgb24-ref.png	\
+	miter-precision-ref.png \
 	move-to-show-surface-ref.png	\
 	new-sub-path-ps-argb32-ref.png	\
+	new-sub-path-ps-rgb24-ref.png	\
 	new-sub-path-quartz-ref.png	\
 	new-sub-path-quartz-rgb24-ref.png	\
 	new-sub-path-ref.png	\
@@ -338,6 +390,8 @@ REFERENCE_IMAGES = \
 	operator-clear-quartz-rgb24-ref.png	\
 	operator-clear-ref.png	\
 	operator-clear-rgb24-ref.png	\
+	operator-source-ps-argb32-ref.png	\
+	operator-source-ps-rgb24-ref.png	\
 	operator-source-ref.png	\
 	operator-source-rgb24-ref.png	\
 	over-above-source-ps-argb32-ref.png       \
@@ -360,6 +414,8 @@ REFERENCE_IMAGES = \
 	paint-with-alpha-ref.png	\
 	paint-with-alpha-svg-ref.png	\
 	pattern-getters-ref.png	\
+	pixman-rotate-ps-argb32-ref.png	\
+	pixman-rotate-ps-rgb24-ref.png	\
 	pixman-rotate-ref.png	\
 	pixman-rotate-rgb24-ref.png	\
 	push-group-ref.png	\
@@ -368,16 +424,20 @@ REFERENCE_IMAGES = \
 	radial-gradient-ref.png	\
 	radial-gradient-svg-ref.png	\
 	random-intersections-ps-argb32-ref.png	\
+	random-intersections-ps-rgb24-ref.png	\
 	random-intersections-ref.png	\
 	rgb24-ignore-alpha-ref.png \
 	rectangle-rounding-error-ref.png	\
+	rectilinear-miter-limit-ref.png		\
 	rectilinear-stroke-ref.png	\
 	rel-path-quartz-ref.png	\
 	rel-path-quartz-rgb24-ref.png	\
+	rel-path-ps-rgb24-ref.png	\
 	rel-path-ref.png	\
 	rel-path-rgb24-ref.png	\
 	rotate-image-surface-paint-pdf-argb32-ref.png	\
 	rotate-image-surface-paint-ps-argb32-ref.png	\
+	rotate-image-surface-paint-ps-rgb24-ref.png	\
 	rotate-image-surface-paint-ref.png	\
 	rotate-image-surface-paint-svg-ref.png	\
 	scale-down-source-surface-paint-ref.png	\
@@ -398,10 +458,13 @@ REFERENCE_IMAGES = \
 	skew-extreme-ref.png \
 	source-clip-ref.png	\
 	source-clip-scale-quartz-ref.png	\
+	source-clip-scale-ps-argb32-ref.png	\
+	source-clip-scale-ps-rgb24-ref.png	\
 	source-clip-scale-ref.png	\
 	source-clip-scale-svg-ref.png	\
 	source-surface-scale-paint-ref.png	\
 	source-surface-scale-paint-rgb24-ref.png	\
+	surface-pattern-big-scale-down-ref.png	\
 	surface-pattern-pdf-argb32-ref.png	\
 	surface-pattern-ps-argb32-ref.png	\
 	surface-pattern-ref.png	\
@@ -417,11 +480,14 @@ REFERENCE_IMAGES = \
 	text-antialias-subpixel-ref.png	\
 	text-glyph-range-ref.png	\
 	text-glyph-range-rgb24-ref.png	\
+	text-pattern-ps-argb32-ref.png	\
+	text-pattern-ps-rgb24-ref.png	\
 	text-pattern-ref.png	\
 	text-pattern-rgb24-ref.png	\
 	text-pattern-svg-argb32-ref.png	\
 	text-pattern-svg-rgb24-ref.png	\
 	text-rotate-ps-argb32-ref.png	\
+	text-rotate-ps-rgb24-ref.png	\
 	text-rotate-ref.png	\
 	text-rotate-svg-ref.png	\
 	text-zero-len-ref.png	\
@@ -430,6 +496,7 @@ REFERENCE_IMAGES = \
 	trap-clip-quartz-ref.png	\
 	trap-clip-quartz-rgb24-ref.png	\
 	trap-clip-ps-argb32-ref.png	\
+	trap-clip-ps-rgb24-ref.png	\
 	trap-clip-ref.png	\
 	trap-clip-rgb24-ref.png	\
 	unantialiased-shapes-ref.png	\
@@ -456,28 +523,47 @@ $(REFERENCE_IMAGES)
 #
 # Also, any test listed here should call cairo_test_expect_failure and
 # provide an explanation for the expected failure.
-XFAIL_TESTS =			\
-a8-mask				\
-big-trap			\
-extend-pad			\
-filter-nearest-offset		\
-long-lines			\
-self-intersecting		\
-surface-pattern			\
-surface-pattern-big-scale-down  \
-surface-pattern-scale-down	\
-surface-pattern-scale-up
+XFAIL_TESTS =					\
+a8-mask$(EXEEXT)				\
+big-trap$(EXEEXT)				\
+extend-pad$(EXEEXT)				\
+extend-pad-similar$(EXEEXT)			\
+filter-nearest-offset$(EXEEXT)			\
+long-lines$(EXEEXT)				\
+self-intersecting$(EXEEXT)			\
+surface-pattern$(EXEEXT)			\
+surface-pattern-big-scale-down$(EXEEXT)		\
+surface-pattern-scale-down$(EXEEXT)		\
+surface-pattern-scale-up$(EXEEXT)
 
 # Any test that doesn't generate a log file goes here
 NOLOG_TESTS =			\
-create-for-stream		\
-user-data			\
-svg-surface			\
-svg-clip			\
+fallback-resolution		\
+font-options			\
+multi-page			\
 pdf-features			\
 ps-features			\
-multi-page			\
-fallback-resolution
+svg-clip			\
+svg-surface			\
+user-data
+
+# A hook that summarises the failures
+check: AM_MAKEFLAGS+=-k
+check-local:
+	@FAILED_TESTS=""; \
+	for t in $(TESTS:$(EXEEXT)=.log); do \
+	    if grep -e '\<FAIL\>' $$t >/dev/null 2>&1; then \
+		FAILED_TESTS="$$FAILED_TESTS $${t%.log}"; \
+	    fi; \
+	done; \
+	if test -n "$$FAILED_TESTS"; then \
+	    echo "Failed tests:"; \
+	    for t in $$FAILED_TESTS; do \
+		echo -n "     $$t: "; \
+		grep -e '\<FAIL\>' $$t.log | sed -e 's/.*TARGET: \([^ ]*\).*/\1/' | sort | uniq | tr '\n' ' '; \
+		echo; \
+	    done; \
+	fi
 
 check_PROGRAMS =
 EXTRA_PROGRAMS =
@@ -548,7 +634,7 @@ EXTRA_PROGRAMS += $(TESTS) $(DISABLED_TESTS)
 TARGETS = $(CAIRO_TEST_TARGET)
 TARGETS_EXCLUDE = $(CAIRO_TEST_TARGET_EXCLUDE)
 
-TESTS_ENVIRONMENT = CAIRO_XFAIL_TESTS="$(XFAIL_TESTS)" CAIRO_TEST_TARGET="$(TARGETS)" CAIRO_TEST_TARGET_EXCLUDE="$(TARGETS_EXCLUDE)"
+TESTS_ENVIRONMENT = CAIRO_XFAIL_TESTS="$(XFAIL_TESTS:$(EXEEXT)=)" CAIRO_TEST_TARGET="$(TARGETS)" CAIRO_TEST_TARGET_EXCLUDE="$(TARGETS_EXCLUDE)"
 
 EXTRA_VALGRIND_FLAGS = $(CAIRO_EXTRA_VALGRIND_FLAGS)
 VALGRIND_FLAGS = \
@@ -577,11 +663,11 @@ clean-local:
 # Check tests under valgrind
 # Saves log to valgrind-log
 check-valgrind:
-	$(MAKE) $(AM_MAKEFLAGS) check TESTS_ENVIRONMENT='$(TESTS_ENVIRONMENT) $(top_srcdir)/libtool --mode=execute valgrind $(VALGRIND_FLAGS)' 2>&1 | tee valgrind-log
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS_ENVIRONMENT='$(TESTS_ENVIRONMENT) $(top_builddir)/libtool --mode=execute valgrind $(VALGRIND_FLAGS)' 2>&1 | tee valgrind-log
 
 # The following definitions both should work.
-#FAILED_TESTS = `grep -l '\<FAIL\>' $(TESTS:=.log) 2>/dev/null | sed -e 's/[.]log$$//' | xargs echo`
-FAILED_TESTS = `grep -l '\<FAIL\>' $(TESTS:=.log) 2>/dev/null | tr '\n' ' ' | sed -e 's/[.]log  */ /g; s/^ //; s/ $$//'`
+#FAILED_TESTS = `grep -l '\<FAIL\>' $(TESTS:$(EXEEXT)=.log) 2>/dev/null | sed -e 's/[.]log$$//' | xargs echo`
+FAILED_TESTS = `grep -l '\<FAIL\>' $(TESTS:$(EXEEXT)=.log) 2>/dev/null | tr '\n' ' ' | sed -e 's/[.]log  */ /g; s/^ //; s/ $$//'`
 
 recheck = check TESTS="$(FAILED_TESTS)"
 
@@ -606,7 +692,7 @@ retest:
 # Make index.html with no dependency tracking.
 html:
 	@echo Creating index.html
-	@perl $(srcdir)/make-html.pl $(TESTS:=.log) > index.html
+	@perl $(srcdir)/make-html.pl $(TESTS:$(EXEEXT)=.log) > index.html
 
 # Make index.html with no dependency tracking, containing only the failed tests.
 rehtml:
@@ -620,7 +706,7 @@ NOLOG_TESTS_LOG = $(NOLOG_TESTS:=.log)
 $(NOLOG_TESTS_LOG):
 	echo dummy > $@
 
-index.html: $(srcdir)/make-html.pl $(TESTS:=.log)
+index.html: $(srcdir)/make-html.pl $(TESTS:$(EXEEXT)=.log)
 	@echo Creating index.html
 	@perl $^ > $@
 
@@ -631,8 +717,16 @@ check-ref-dups:
 
 # Not exactly the best script in the world...
 check-ref-missing:
-	@for i in *-ref.png; do\
-	    echo ${REFERENCE_IMAGES} | grep -sq $$i || echo $$i; \
-	done
+	@missing=""; \
+	for i in `git ls-files *-ref.png`; do \
+	    echo ${REFERENCE_IMAGES} | grep -sq $$i || missing="$$missing $$i" ; \
+	done ; \
+	if test -n "$$missing"; then \
+		echo "Some reference files are not included in the distribution." ;\
+		echo "Missing from REFERENCE_IMAGES:$$missing" ; \
+		exit 1; \
+	fi
 
-.PHONY: check-valgrind test recheck retest html rehtml check-ref-dups check-ref-missing
+release-verify-sane-tests: check-ref-missing
+
+.PHONY: check-valgrind test recheck retest html rehtml check-ref-dups check-ref-missing release-verify-sane-tests

@@ -1,3 +1,12 @@
+  - Add a general way of dealing with architecture specific
+    fast-paths.  The current idea is to have each operation that can
+    be optimized is called through a function pointer that is
+    initially set to an initialization function that is responsible for
+    setting the function pointer to the appropriate fast-path.
+
+  - Get rid of the switch-of-doom; replace it with a big table
+    describing the various fast paths.
+
   - Go through things marked FIXME
 
   - Add calls to prepare and finish access where necessary.  grep for
@@ -25,11 +34,6 @@
     idea Vlad wants 32 bit regions for Cairo. This will break X server
     ABI, but should otherwise be mostly harmless, though a
     pixman_region_get_boxes16() may be useful.
-
-  - Make source clipping optional.
-      - done: source clipping happens through an indirection.
-	still needs to make the indirection settable. (And call it
-        from X)
 
   - Consider optimizing the 8/16 bit solid fills in pixman-util.c by
     storing more than one value at a time.
@@ -78,10 +82,22 @@
     It may make sense to have a PIXMAN_TYPE_YUV, and then use the
     channel bits to specify the exact subtype.
 
+    Another possibility is to add 
+
+      	  PIXMAN_TYPE_ARGB_W
+	  PIXMAN_TYPE_ARGB_WW
+    
+    where the channel widths would get 16 and 32 added to them,
+    respectively.
+
     What about color spaces such a linear vs. srGB etc.?
 
-
 done:
+
+- Make source clipping optional.
+    - done: source clipping happens through an indirection.
+        still needs to make the indirection settable. (And call it
+        from X)
 
 - Run cairo test suite; fix bugs
 	- one bug in source-scale-clip

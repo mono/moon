@@ -110,6 +110,7 @@ cairo_type1_font_create (cairo_scaled_font_subset_t  *scaled_font_subset,
         goto fail;
 
     _cairo_array_init (&font->contents, sizeof (unsigned char));
+    font->output = NULL;
 
     *subset_return = font;
 
@@ -465,7 +466,13 @@ cairo_type1_font_write_charstrings (cairo_type1_font_t    *font,
             goto fail;
         charstring_encrypt (&data);
         length = _cairo_array_num_elements (&data);
-        _cairo_output_stream_printf (encrypted_output, "/g%d %d RD ", i, length);
+	if (font->scaled_font_subset->glyph_names != NULL) {
+	    _cairo_output_stream_printf (encrypted_output, "/%s %d RD ",
+					 font->scaled_font_subset->glyph_names[i],
+					 length);
+	} else {
+	    _cairo_output_stream_printf (encrypted_output, "/g%d %d RD ", i, length);
+	}
         _cairo_output_stream_write (encrypted_output,
                                     _cairo_array_index (&data, 0),
                                     length);
@@ -527,8 +534,14 @@ cairo_type1_font_write_header (cairo_type1_font_t *font,
                                  "} readonly def\n"
                                  "/Encoding 256 array\n"
 				 "0 1 255 {1 index exch /.notdef put} for\n");
-    for (i = 0; i < font->scaled_font_subset->num_glyphs; i++)
-        _cairo_output_stream_printf (font->output, "dup %d /g%d put\n", i, i);
+    for (i = 1; i < font->scaled_font_subset->num_glyphs; i++) {
+	if (font->scaled_font_subset->glyph_names != NULL) {
+	    _cairo_output_stream_printf (font->output, "dup %d /%s put\n",
+					 i, font->scaled_font_subset->glyph_names[i]);
+	} else {
+	    _cairo_output_stream_printf (font->output, "dup %d /g%d put\n", i, i);
+	}
+    }
     _cairo_output_stream_printf (font->output,
                                  "readonly def\n"
                                  "currentdict end\n"
@@ -588,10 +601,8 @@ cairo_type1_font_write_private_dict (cairo_type1_font_t *font,
         cairo_type1_write_stream_encrypted,
         NULL,
         font);
-    if (encrypted_output == NULL) {
-	status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
-	goto fail;
-    }
+    if (_cairo_output_stream_get_status (encrypted_output))
+	return  _cairo_output_stream_destroy (encrypted_output);
 
     /* Note: the first four spaces at the start of this private dict
      * are the four "random" bytes of plaintext required by the
@@ -684,6 +695,8 @@ cairo_type1_font_generate (cairo_type1_font_t *font, const char *name)
 	return status;
 
     font->output = _cairo_output_stream_create (cairo_type1_write_stream, NULL, font);
+    if (_cairo_output_stream_get_status (font->output))
+	return _cairo_output_stream_destroy (font->output);
 
     status = cairo_type1_font_write (font, name);
     if (status)
@@ -697,12 +710,13 @@ cairo_type1_font_generate (cairo_type1_font_t *font, const char *name)
 static cairo_status_t
 cairo_type1_font_destroy (cairo_type1_font_t *font)
 {
-    cairo_status_t status;
+    cairo_status_t status = CAIRO_STATUS_SUCCESS;
 
     free (font->widths);
     cairo_scaled_font_destroy (font->type1_scaled_font);
     _cairo_array_fini (&font->contents);
-    status = _cairo_output_stream_destroy (font->output);
+    if (font->output)
+	status = _cairo_output_stream_destroy (font->output);
     free (font);
 
     return status;

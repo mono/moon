@@ -128,7 +128,8 @@ be used.</para>
 </simpara></listitem></varlistentry>
 <varlistentry><term><parameter>options</parameter>&nbsp;:</term>
 <listitem><simpara> options to use when getting metrics for the font and
-          rendering with it.
+          rendering with it. A <link linkend="NULL:CAPS"><literal>NULL</literal></link> pointer will be interpreted as
+          meaning the default options.
 </simpara></listitem></varlistentry>
 <varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a newly created <link linkend="cairo-scaled-font-t"><type>cairo_scaled_font_t</type></link>. Destroy with
  <link linkend="cairo-scaled-font-destroy"><function>cairo_scaled_font_destroy()</function></link>

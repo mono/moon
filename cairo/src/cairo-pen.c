@@ -323,7 +323,13 @@ _cairo_pen_find_active_cw_vertex_index (cairo_pen_t *pen,
 	    break;
     }
 
-    assert (i < pen->num_vertices);
+    /* If the desired slope cannot be found between any of the pen
+     * vertices, then we must have a degenerate pen, (such as a pen
+     * that's been transformed to a line). In that case, we consider
+     * the first pen vertex as the appropriate clockwise vertex.
+     */
+    if (i == pen->num_vertices)
+	i = 0;
 
     *active = i;
 }
@@ -350,6 +356,14 @@ _cairo_pen_find_active_ccw_vertex_index (cairo_pen_t *pen,
 	    && _cairo_slope_clockwise (&pen->vertices[i].slope_cw, &slope_reverse))
 	    break;
     }
+
+    /* If the desired slope cannot be found between any of the pen
+     * vertices, then we must have a degenerate pen, (such as a pen
+     * that's been transformed to a line). In that case, we consider
+     * the last pen vertex as the appropriate counterclockwise vertex.
+     */
+    if (i < 0)
+	i = pen->num_vertices - 1;
 
     *active = i;
 }

@@ -31,6 +31,7 @@
                                                          <link linkend="cairo-format-t">cairo_format_t</link> format,
                                                          <link linkend="int">int</link> width,
                                                          <link linkend="int">int</link> height);
+<link linkend="cairo-surface-t">cairo_surface_t</link>*    <link linkend="cairo-win32-printing-surface-create">cairo_win32_printing_surface_create</link> (<link linkend="HDC:CAPS">HDC</link> hdc);
 <link linkend="HDC:CAPS">HDC</link>                 <link linkend="cairo-win32-surface-get-dc">cairo_win32_surface_get_dc</link>          (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface);
 <link linkend="cairo-surface-t">cairo_surface_t</link>*    <link linkend="cairo-win32-surface-get-image">cairo_win32_surface_get_image</link>       (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface);
 </synopsis>
@@ -127,6 +128,29 @@ bitmap will be uninitialized.</para>
 </simpara></listitem></varlistentry>
 </variablelist><para role="since">Since  1.4
 </para></refsect2>
+<refsect2>
+<title><anchor id="cairo-win32-printing-surface-create" role="function"/>cairo_win32_printing_surface_create ()</title>
+<indexterm><primary>cairo_win32_printing_surface_create</primary></indexterm><programlisting><link linkend="cairo-surface-t">cairo_surface_t</link>*    cairo_win32_printing_surface_create (<link linkend="HDC:CAPS">HDC</link> hdc);</programlisting>
+<para>
+Creates a cairo surface that targets the given DC.  The DC will be
+queried for its initial clip extents, and this will be used as the
+size of the cairo surface.  The DC should be a printing DC;
+antialiasing will be ignored, and GDI will be used as much as
+possible to draw to the surface.
+</para>
+<para>
+The returned surface will be wrapped using the paginated surface to
+provide correct complex rendering behaviour; <link linkend="show-page"><function>show_page()</function></link> and
+associated methods must be used for correct output.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hdc</parameter>&nbsp;:</term>
+<listitem><simpara> the DC to create a surface for
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the newly created surface
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
 <refsect2>
 <title><anchor id="cairo-win32-surface-get-dc" role="function" condition="since:1.2"/>cairo_win32_surface_get_dc ()</title>
 <indexterm role="1.2"><primary>cairo_win32_surface_get_dc</primary></indexterm><programlisting><link linkend="HDC:CAPS">HDC</link>                 cairo_win32_surface_get_dc          (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface);</programlisting>

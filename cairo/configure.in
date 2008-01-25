@@ -1,4 +1,4 @@
-AC_PREREQ(2.54)
+AC_PREREQ(2.58)
 
 dnl cairo package version number, (as distinct from shared library version)
 dnl For the minor number: odd => unstable series
@@ -7,33 +7,35 @@ dnl For the micro number: odd => in-progress development (from git)
 dnl			  even => tar-file snapshot or release
 m4_define(cairo_version_major, 1)
 m4_define(cairo_version_minor, 5)
-m4_define(cairo_version_micro, 1)
+m4_define(cairo_version_micro, 7)
 
 AC_INIT([cairo],
-      cairo_version_major.cairo_version_minor.cairo_version_micro-e5b01e6,
+      cairo_version_major.cairo_version_minor.cairo_version_micro,
       [http://bugs.freedesktop.org/enter_bug.cgi?product=cairo])
 AC_CONFIG_SRCDIR(src/cairo.h)
 AC_CONFIG_HEADERS(config.h)
 
 dnl automake 1.8 requires autoconf 2.58
 dnl automake 1.7 requires autoconf 2.54
-AM_INIT_AUTOMAKE([1.7])
+dnl automake < 1.8 does not handle TESTS=some-test$(EXEXT) as used
+dnl in test/Makefile.am and perf/Makefile.am
+AM_INIT_AUTOMAKE([1.8])
 
 dnl ===========================================================================
 
 # libtool shared library version
 
 # Increment if the interface has additions, changes, removals.
-LT_CURRENT=13
+LT_CURRENT=15
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
-LT_REVISION=5
+LT_REVISION=0
 
 # Increment if any interfaces have been added; set to 0
 # if any interfaces have been removed. removal has
 # precedence over adding, so set to 0 if both happened.
-LT_AGE=11
+LT_AGE=13
 
 dnl ===========================================================================
 
@@ -87,7 +89,7 @@ AC_DEFUN([_CHECK_FUNCS_WITH_FLAGS],
 
 dnl ===========================================================================
 
-AC_CHECK_FUNCS(vasnprintf)
+AC_CHECK_FUNCS(vasnprintf ctime_r drand48)
 	
 dnl ===========================================================================
 dnl
@@ -102,6 +104,27 @@ AC_TRY_LINK([int atomic_add(int i) { return __sync_fetch_and_add (&i, 1); }], []
   )
 
 AC_MSG_RESULT([$cairo_atomic_primitives])
+
+AC_MSG_CHECKING([whether atomic ops require a memory barrier])
+case $host_cpu in
+    i?86)
+	cairo_atomic_op_needs_memory_barrier="no"
+	;;
+    x86_64)
+	cairo_atomic_op_needs_memory_barrier="no"
+	;;
+    arm*)
+	cairo_atomic_op_needs_memory_barrier="no"
+	;;
+    *)
+	cairo_atomic_op_needs_memory_barrier="yes"
+	;;
+esac
+if test "x$cairo_atomic_op_needs_memory_barrier" = "xyes"; then
+    AC_DEFINE_UNQUOTED(CAIRO_ATOMIC_OP_NEEDS_MEMORY_BARRIER, 1,
+		       [whether Cairo needs memory barriers around atomic ops])
+fi
+AC_MSG_RESULT([$cairo_atomic_op_needs_memory_barrier])
 
 dnl ===========================================================================
 
@@ -254,17 +277,13 @@ CAIRO_LIBS=$CAIRO_NONPKGCONFIG_LIBS
 
 dnl ===========================================================================
 
-#PIXMAN_VERSION="0.9.4"
-#PIXMAN_REQUIRES="pixman-1 >= $PIXMAN_VERSION"
-#PKG_CHECK_MODULES(pixman, $PIXMAN_REQUIRES, ,
-#	[AC_MSG_ERROR([pixman >= $PIXMAN_VERSION is required
-#(http://xorg.freedesktop.org/releases/individual/lib/pixman-$PIXMAN_VERSION.tar.gz)])])
+PIXMAN_VERSION="0.9.4"
+PIXMAN_REQUIRES="pixman-1 >= $PIXMAN_VERSION"
+PKG_CHECK_MODULES(pixman, $PIXMAN_REQUIRES, ,
+	[AC_MSG_ERROR([pixman >= $PIXMAN_VERSION is required
+(http://cairographics.org/releases/)])])
 
-#CAIRO_REQUIRES="$PIXMAN_REQUIRES $CAIRO_REQUIRES"
-
-pixman_CFLAGS='-I$(top_srcdir)/../pixman/pixman'
-pixman_LIBS='$(top_builddir)/../pixman/pixman/libpixman-1.la'
-
+CAIRO_REQUIRES="$PIXMAN_REQUIRES $CAIRO_REQUIRES"
 CAIRO_CFLAGS="$pixman_CFLAGS $CAIRO_CFLAGS"
 CAIRO_LIBS="$pixman_LIBS $CAIRO_LIBS"
 
@@ -346,6 +365,20 @@ CAIRO_BACKEND_ENABLE(win32, Microsoft Windows, win32, WIN32_SURFACE, auto, [
 CAIRO_BACKEND_ENABLE(win32_font, Microsoft Windows font, win32-font, WIN32_FONT, auto, [
   use_win32_font=$use_win32
 ])
+
+test_win32_printing=no
+if test "x$use_win32" = "xyes"; then
+  AC_CHECK_PROG(GS, gs, gs)
+  if test "$GS"; then
+    AC_DEFINE([CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE], 1, [Define to 1 if the Win32 Printing backend can be tested (needs ghostscript)])
+    test_win32_printing="yes"
+  else
+    AC_MSG_WARN([Win32 Printing backend will not be tested since ghostscript is not available])
+    test_win32_printing="no (requires ghostscript)"
+  fi
+fi
+
+AM_CONDITIONAL(CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE, test "x$test_win32_printing" = "xyes")
 
 dnl ===========================================================================
 
@@ -465,8 +498,8 @@ dnl ===========================================================================
 # freetype2.pc in the release.
 #
 # FreeType versions come in three forms:
-#   release (such as 2.1.5)
-#   libtool (such as 9.4.3) (returned by freetype-config and pkg-config)
+#   release (such as 2.1.9)
+#   libtool (such as 9.7.3) (returned by freetype-config and pkg-config)
 #   platform-specific/soname (such as 6.3.4)
 # and they recommend you never use the platform-specific version
 # (see docs/VERSION.DLL in freetype2 sources)
@@ -474,15 +507,16 @@ dnl ===========================================================================
 # Set these as appropriate:
 
 # release number - for information only
-FREETYPE_MIN_RELEASE=2.1.0
+FREETYPE_MIN_RELEASE=2.1.9
 # libtool-specific version - this is what is checked
-FREETYPE_MIN_VERSION=8.0.2
+FREETYPE_MIN_VERSION=9.7.3
 
 CAIRO_BACKEND_ENABLE(ft, FreeType font, freetype, FT_FONT, auto, [
   ft_REQUIRES="fontconfig"
   PKG_CHECK_MODULES(FONTCONFIG, $ft_REQUIRES,
-		    [_CHECK_FUNCS_WITH_FLAGS(FcFini, [$FONTCONFIG_CFLAGS], [$FONTCONFIG_LIBS])],
-		    [AC_MSG_RESULT(no); use_ft="no (requires fontconfig"])
+		    [_CHECK_FUNCS_WITH_FLAGS(FcFini, [$FONTCONFIG_CFLAGS], [$FONTCONFIG_LIBS],,
+		    [AC_MSG_RESULT(no); use_ft="no (requires fontconfig)"])],
+		    [AC_MSG_RESULT(no); use_ft="no (requires fontconfig)"])
 
   if test "x$use_ft" = "xyes"; then
     PKG_CHECK_MODULES(FREETYPE, freetype2 >= $FREETYPE_MIN_VERSION,
@@ -592,9 +626,10 @@ test_pdf=no
 if test "x$use_pdf" = "xyes"; then
   poppler_DEPENDENCY="poppler-glib >= $POPPLER_VERSION_REQUIRED"
   PKG_CHECK_MODULES(POPPLER, $poppler_DEPENDENCY pango gtk+-2.0,
+		    [_CHECK_FUNCS_WITH_FLAGS(poppler_page_render_to_pixbuf, [$POPPLER_CFLAGS], [$POPPLER_LIBS],
                     [test_pdf=yes],
-		    [AC_MSG_RESULT(no)
-		     test_pdf="no (requires $poppler_DEPENDENCY)"])
+		    [AC_MSG_RESULT(no); test_pdf="no (requires $poppler_DEPENDENCY)"])],
+		    [AC_MSG_RESULT(no); test_pdf="no (requires $poppler_DEPENDENCY)"])
   if test "x$test_pdf" = "xyes"; then
     AC_DEFINE([CAIRO_CAN_TEST_PDF_SURFACE], 1, [Define to 1 if the PDF backend can be tested (need poppler and other dependencies for pdf2png)])
   else
@@ -621,9 +656,10 @@ test_svg=no
 if test "x$use_svg" = "xyes"; then
   librsvg_DEPENDENCY="librsvg-2.0 >= $LIBRSVG_VERSION_REQUIRED"
   PKG_CHECK_MODULES(LIBRSVG, $librsvg_DEPENDENCY gdk-2.0,
+		    [_CHECK_FUNCS_WITH_FLAGS(rsvg_pixbuf_from_file, [$LIBRSVG_CFLAGS], [$LIBRSVG_LIBS],
                     [test_svg=yes],
-		    [AC_MSG_RESULT(no)
-		     test_svg="no (requires $librsvg_DEPENDENCY)"])
+		    [AC_MSG_RESULT(no); test_svg="no (requires $librsvg_DEPENDENCY)"])],
+		    [AC_MSG_RESULT(no); test_svg="no (requires $librsvg_DEPENDENCY)"])
   if test "x$test_svg" = "xyes"; then
     AC_DEFINE([CAIRO_CAN_TEST_SVG_SURFACE], 1, [Define to 1 if the SVG backend can be tested])
   else
@@ -804,6 +840,7 @@ AC_MSG_RESULT($have_mmx_intrinsics)
 
 dnl ===========================================================================
 
+cairo_has_lcov=no
 AC_ARG_ENABLE(gcov,
   AS_HELP_STRING([--enable-gcov],
 		 [Enable gcov]),
@@ -851,6 +888,8 @@ if test "x$use_gcov" = "xyes"; then
       AC_MSG_ERROR([$ltp_msg])
       LTP="exit 0;"
       ;;
+    *)
+      cairo_has_lcov=yes
   esac
 
   if test -z "$LTP_GENHTML"; then
@@ -870,6 +909,7 @@ dnl  PHP_ADD_MAKEFILE_FRAGMENT($abs_srcdir/Makefile.gcov, $abs_srcdir)
   CAIRO_CFLAGS="$CAIRO_CFLAGS -O0 -fprofile-arcs -ftest-coverage"
   CAIRO_LDADD="$CAIRO_LDADD -lgcov"
 fi
+AM_CONDITIONAL(CAIRO_HAS_LCOV, test "x$cairo_has_lcov" = "xyes")
 
 dnl ===========================================================================
 
@@ -958,7 +998,15 @@ _EOF
 ])
 AC_CONFIG_FILES([
 Makefile
+boilerplate/Makefile
 src/Makefile
+test/Makefile
+test/pdiff/Makefile
+perf/Makefile
+util/Makefile
+doc/Makefile
+doc/public/Makefile
+doc/public/version.xml
 src/cairo.pc
 ])
 
@@ -966,8 +1014,9 @@ AC_OUTPUT
 
 dnl ===========================================================================
 
+V="$CAIRO_VERSION_MAJOR.$CAIRO_VERSION_MINOR.$CAIRO_VERSION_MICRO"
 echo ""
-echo "cairo will be compiled with the following surface backends:"
+echo "cairo (version $V) will be compiled with the following surface backends:"
 echo "  image:         yes (always builtin)"
 echo "  Xlib:          $use_xlib"
 echo "  Xlib Xrender:  $use_xlib_xrender"
@@ -996,6 +1045,9 @@ echo "  test surfaces: $use_test_surfaces"
 echo "  ps testing:    $test_ps"
 echo "  pdf testing:   $test_pdf"
 echo "  svg testing:   $test_svg"
+if test x"$use_win32" = "xyes"; then
+	echo "  win32 printing testing:    $test_win32_printing"
+fi
 echo ""
 echo "using CFLAGS:"
 echo $CAIRO_CFLAGS
@@ -1030,7 +1082,7 @@ if test x"$use_quartz" = "xyes" ; then
    echo "$WARNING_MESSAGE" | sed 's/@BACKEND@/Quartz/'
 fi
 
-if test x"$use_quartz" = "xyes" ; then
+if test x"$use_atsui" = "xyes" ; then
    echo "$WARNING_MESSAGE" | sed 's/@BACKEND@/ATSUI/'
 fi
 

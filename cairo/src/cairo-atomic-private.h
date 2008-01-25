@@ -51,9 +51,6 @@ typedef int cairo_atomic_int_t;
 
 # define _cairo_atomic_int_inc(x) ((void) __sync_fetch_and_add(x, 1))
 # define _cairo_atomic_int_dec_and_test(x) (__sync_fetch_and_add(x, -1) == 1)
-# define _cairo_atomic_int_get(x) (*x)
-# define _cairo_atomic_int_set(x, value) ((*x) = value)
-
 # define _cairo_atomic_int_cmpxchg(x, oldv, newv) __sync_val_compare_and_swap (x, oldv, newv)
 
 #else
@@ -71,15 +68,28 @@ cairo_private cairo_bool_t
 _cairo_atomic_int_dec_and_test (int *x);
 
 cairo_private int
+_cairo_atomic_int_cmpxchg (int *x, int oldv, int newv);
+
+#endif
+
+
+#ifdef CAIRO_ATOMIC_OP_NEEDS_MEMORY_BARRIER
+
+# include "cairo-compiler-private.h"
+
+cairo_private int
 _cairo_atomic_int_get (int *x);
 
 cairo_private void
 _cairo_atomic_int_set (int *x, int value);
 
-cairo_private int
-_cairo_atomic_int_cmpxchg (int *x, int oldv, int newv);
+#else
+
+# define _cairo_atomic_int_get(x) (*x)
+# define _cairo_atomic_int_set(x, value) ((*x) = value)
 
 #endif
+
 
 #define _cairo_status_set_error(status, err) do { \
     /* hide compiler warnings about cairo_status_t != int (gcc treats its as \

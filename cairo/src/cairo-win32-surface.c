@@ -67,7 +67,6 @@
 #endif
 
 #define PELS_72DPI  ((LONG)(72. / 0.0254))
-#define NIL_SURFACE ((cairo_surface_t*)&_cairo_surface_nil)
 
 static const cairo_surface_backend_t cairo_win32_surface_backend;
 
@@ -91,7 +90,7 @@ _cairo_win32_print_gdi_error (const char *context)
 			 NULL,
 			 last_error,
 			 MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-			 (LPTSTR) &lpMsgBuf,
+			 (LPSTR) &lpMsgBuf,
 			 0, NULL)) {
 	fprintf (stderr, "%s: Unknown GDI error", context);
     } else {
@@ -333,10 +332,8 @@ _cairo_win32_surface_create_for_dc (HDC             original_dc,
     int rowstride;
 
     surface = malloc (sizeof (cairo_win32_surface_t));
-    if (surface == NULL) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return NIL_SURFACE;
-    }
+    if (surface == NULL)
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 
     status = _create_dc_and_bitmap (surface, original_dc, format,
 				    width, height,
@@ -346,10 +343,9 @@ _cairo_win32_surface_create_for_dc (HDC             original_dc,
 
     surface->image = cairo_image_surface_create_for_data (bits, format,
 							  width, height, rowstride);
-    if (surface->image->status) {
-	status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    status = surface->image->status;
+    if (status)
 	goto FAIL;
-    }
 
     surface->format = format;
 
@@ -365,7 +361,7 @@ _cairo_win32_surface_create_for_dc (HDC             original_dc,
     _cairo_surface_init (&surface->base, &cairo_win32_surface_backend,
 			 _cairo_content_from_format (format));
 
-    return (cairo_surface_t *)surface;
+    return &surface->base;
 
  FAIL:
     if (surface->bitmap) {
@@ -373,10 +369,9 @@ _cairo_win32_surface_create_for_dc (HDC             original_dc,
 	DeleteObject (surface->bitmap);
 	DeleteDC (surface->dc);
     }
-    if (surface)
-	free (surface);
+    free (surface);
 
-    return NIL_SURFACE;
+    return _cairo_surface_create_in_error (status);
 }
 
 static cairo_surface_t *
@@ -745,7 +740,7 @@ _composite_alpha_blend (cairo_win32_surface_t *dst,
 	if (VER_PLATFORM_WIN32_WINDOWS != os.dwPlatformId ||
 	    os.dwMajorVersion != 4 || os.dwMinorVersion != 10)
 	{
-	    HMODULE msimg32_dll = LoadLibrary ("msimg32");
+	    HMODULE msimg32_dll = LoadLibraryA ("msimg32");
 
 	    if (msimg32_dll != NULL)
 		alpha_blend = (cairo_alpha_blend_func_t)GetProcAddress (msimg32_dll,
@@ -1720,8 +1715,7 @@ cairo_win32_surface_create (HDC hdc)
     if (clipBoxType == ERROR) {
 	_cairo_win32_print_gdi_error ("cairo_win32_surface_create");
 	/* XXX: Can we make a more reasonable guess at the error cause here? */
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return NIL_SURFACE;
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
     }
 
     if (GetDeviceCaps(hdc, TECHNOLOGY) == DT_RASDISPLAY) {
@@ -1738,18 +1732,15 @@ cairo_win32_surface_create (HDC hdc)
 	    format = CAIRO_FORMAT_A1;
 	else {
 	    _cairo_win32_print_gdi_error("cairo_win32_surface_create(bad BITSPIXEL)");
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return NIL_SURFACE;
+	    return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
 	}
     } else {
 	format = CAIRO_FORMAT_RGB24;
     }
 
     surface = malloc (sizeof (cairo_win32_surface_t));
-    if (surface == NULL) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return NIL_SURFACE;
-    }
+    if (surface == NULL)
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 
     surface->image = NULL;
     surface->format = format;
@@ -1837,7 +1828,7 @@ cairo_win32_surface_create_with_ddb (HDC hdc,
     HBITMAP saved_dc_bitmap;
 
     if (format != CAIRO_FORMAT_RGB24)
-	return NIL_SURFACE;
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
 /* XXX handle these eventually
 	format != CAIRO_FORMAT_A8 ||
 	format != CAIRO_FORMAT_A1)
@@ -1853,7 +1844,7 @@ cairo_win32_surface_create_with_ddb (HDC hdc,
     ddb_dc = CreateCompatibleDC (hdc);
     if (ddb_dc == NULL) {
 	_cairo_win32_print_gdi_error("CreateCompatibleDC");
-	new_surf = (cairo_win32_surface_t*) NIL_SURFACE;
+	new_surf = (cairo_win32_surface_t*) _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto FINISH;
     }
 
@@ -1866,7 +1857,7 @@ cairo_win32_surface_create_with_ddb (HDC hdc,
 	 * video memory is probably exhausted.
 	 */
 	_cairo_win32_print_gdi_error("CreateCompatibleBitmap");
-	new_surf = (cairo_win32_surface_t*) NIL_SURFACE;
+	new_surf = (cairo_win32_surface_t*) _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto FINISH;
     }
 

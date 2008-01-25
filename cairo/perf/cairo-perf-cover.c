@@ -103,7 +103,7 @@ set_source_similar_surface_rgb (cairo_t	*cr,
 {
     cairo_surface_t *source;
 
-    source = cairo_surface_create_similar (cairo_get_target (cr),
+    source = cairo_surface_create_similar (cairo_get_group_target (cr),
 					   CAIRO_CONTENT_COLOR,
 					   width, height);
     init_and_set_source_surface (cr, source, width, height);
@@ -118,7 +118,7 @@ set_source_similar_surface_rgba (cairo_t	*cr,
 {
     cairo_surface_t *source;
 
-    source = cairo_surface_create_similar (cairo_get_target (cr),
+    source = cairo_surface_create_similar (cairo_get_group_target (cr),
 					   CAIRO_CONTENT_COLOR_ALPHA,
 					   width, height);
     init_and_set_source_surface (cr, source, width, height);

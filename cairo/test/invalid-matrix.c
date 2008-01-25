@@ -77,7 +77,7 @@ if ((status) == CAIRO_STATUS_SUCCESS) {							\
 
     cairo_matrix_init_identity (&identity);
 
-    target = cairo_get_target (cr);
+    target = cairo_get_group_target (cr);
 
     /* test cairo_transform with invalid matrix */
     cr2 = cairo_create (target);

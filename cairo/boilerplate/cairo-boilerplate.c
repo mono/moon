@@ -57,7 +57,7 @@
 #if CAIRO_HAS_XCB_SURFACE
 #include "cairo-boilerplate-xcb-private.h"
 #endif
-#if CAIRO_HAS_XLIB_XRENDER_SURFACE
+#if CAIRO_HAS_XLIB_SURFACE
 #include "cairo-boilerplate-xlib-private.h"
 #endif
 
@@ -222,6 +222,19 @@ static cairo_boilerplate_target_t targets[] =
     { "win32", CAIRO_SURFACE_TYPE_WIN32, CAIRO_CONTENT_COLOR_ALPHA, 0,
       _cairo_boilerplate_win32_create_surface,
       cairo_surface_write_to_png },
+#if CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE
+    { "win32-printing", CAIRO_SURFACE_TYPE_WIN32_PRINTING,
+      CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED, 0,
+      _cairo_boilerplate_win32_printing_create_surface,
+      _cairo_boilerplate_win32_printing_surface_write_to_png,
+      _cairo_boilerplate_win32_printing_cleanup,
+      NULL, TRUE },
+    { "win32-printing", CAIRO_INTERNAL_SURFACE_TYPE_META, CAIRO_CONTENT_COLOR, 0,
+      _cairo_boilerplate_win32_printing_create_surface,
+      _cairo_boilerplate_win32_printing_surface_write_to_png,
+      _cairo_boilerplate_win32_printing_cleanup,
+      NULL, TRUE },
+#endif
 #endif
 #if CAIRO_HAS_XCB_SURFACE
     /* Acceleration architectures may make the results differ by a
@@ -262,16 +275,7 @@ static cairo_boilerplate_target_t targets[] =
       _cairo_boilerplate_ps_surface_write_to_png,
       _cairo_boilerplate_ps_cleanup,
       NULL, TRUE },
-
-    /* XXX: We expect type image here only due to a limitation in
-     * the current PS/meta-surface code. A PS surface is
-     * "naturally" COLOR_ALPHA, so the COLOR-only variant goes
-     * through create_similar in _cairo_boilerplate_ps_create_surface which results
-     * in the similar surface being used as a source. We do not yet
-     * have source support for PS/meta-surfaces, so the
-     * create_similar path for all paginated surfaces currently
-     * returns an image surface.*/
-    { "ps", CAIRO_SURFACE_TYPE_IMAGE, CAIRO_CONTENT_COLOR, 0,
+    { "ps", CAIRO_INTERNAL_SURFACE_TYPE_META, CAIRO_CONTENT_COLOR, 0,
       _cairo_boilerplate_ps_create_surface,
       _cairo_boilerplate_ps_surface_write_to_png,
       _cairo_boilerplate_ps_cleanup,

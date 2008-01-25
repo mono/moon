@@ -40,6 +40,41 @@ Rendering PostScript documents
 @Returns: 
 
 
+<!-- ##### FUNCTION cairo_ps_surface_restrict_to_level ##### -->
+<para>
+
+</para>
+
+@surface: 
+@level: 
+
+
+<!-- ##### ENUM cairo_ps_level_t ##### -->
+<para>
+
+</para>
+
+@CAIRO_PS_LEVEL_2: 
+@CAIRO_PS_LEVEL_3: 
+
+<!-- ##### FUNCTION cairo_ps_get_levels ##### -->
+<para>
+
+</para>
+
+@levels: 
+@num_levels: 
+
+
+<!-- ##### FUNCTION cairo_ps_level_to_string ##### -->
+<para>
+
+</para>
+
+@level: 
+@Returns: 
+
+
 <!-- ##### FUNCTION cairo_ps_surface_set_eps ##### -->
 <para>
 

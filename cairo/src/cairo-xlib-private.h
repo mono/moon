@@ -33,16 +33,12 @@
 #ifndef CAIRO_XLIB_PRIVATE_H
 #define CAIRO_XLIB_PRIVATE_H
 
-#include "cairoint.h"
-
 #include "cairo-xlib.h"
 
 #include "cairo-compiler-private.h"
 #include "cairo-freelist-private.h"
+#include "cairo-mutex-private.h"
 #include "cairo-reference-count-private.h"
-#include "cairo-xlib-xrender-private.h"
-
-#include <X11/Xutil.h> /* for XDestroyImage */
 
 typedef struct _cairo_xlib_display cairo_xlib_display_t;
 typedef struct _cairo_xlib_hook cairo_xlib_hook_t;
@@ -70,6 +66,7 @@ struct _cairo_xlib_display {
 
     cairo_freelist_t hook_freelist;
     cairo_xlib_hook_t *close_display_hooks;
+    unsigned int buggy_repeat :1;
     unsigned int closed :1;
 };
 

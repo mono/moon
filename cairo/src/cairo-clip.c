@@ -54,6 +54,8 @@ _cairo_clip_init (cairo_clip_t *clip, cairo_surface_t *target)
     else
 	clip->mode = CAIRO_CLIP_MODE_MASK;
 
+    clip->all_clipped = FALSE;
+
     clip->surface = NULL;
     clip->surface_rect.x = 0;
     clip->surface_rect.y = 0;
@@ -73,6 +75,8 @@ _cairo_clip_init_copy (cairo_clip_t *clip, cairo_clip_t *other)
 {
     clip->mode = other->mode;
 
+    clip->all_clipped = other->all_clipped;
+
     clip->surface = cairo_surface_reference (other->surface);
     clip->surface_rect = other->surface_rect;
 
@@ -81,12 +85,12 @@ _cairo_clip_init_copy (cairo_clip_t *clip, cairo_clip_t *other)
     _cairo_region_init (&clip->region);
 
     if (other->has_region) {
-	if (_cairo_region_copy (&clip->region, &other->region) !=
-            CAIRO_STATUS_SUCCESS)
-        {
+	cairo_status_t status;
+	status = _cairo_region_copy (&clip->region, &other->region);
+	if (status) {
 	    _cairo_region_fini (&clip->region);
 	    cairo_surface_destroy (clip->surface);
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return status;
 	}
         clip->has_region = TRUE;
     } else {
@@ -94,13 +98,15 @@ _cairo_clip_init_copy (cairo_clip_t *clip, cairo_clip_t *other)
     }
 
     clip->path = _cairo_clip_path_reference (other->path);
-    
+
     return CAIRO_STATUS_SUCCESS;
 }
 
 void
 _cairo_clip_reset (cairo_clip_t *clip)
 {
+    clip->all_clipped = FALSE;
+
     /* destroy any existing clip-region artifacts */
     cairo_surface_destroy (clip->surface);
     clip->surface = NULL;
@@ -121,9 +127,19 @@ _cairo_clip_reset (cairo_clip_t *clip)
     clip->path = NULL;
 }
 
+static void
+_cairo_clip_set_all_clipped (cairo_clip_t *clip, cairo_surface_t *target)
+{
+    _cairo_clip_reset (clip);
+
+    clip->all_clipped = TRUE;
+    clip->serial = _cairo_surface_allocate_clip_serial (target);
+}
+
+
 static cairo_status_t
 _cairo_clip_path_intersect_to_rectangle (cairo_clip_path_t       *clip_path,
-   				         cairo_rectangle_int_t   *rectangle)
+				         cairo_rectangle_int_t   *rectangle)
 {
     while (clip_path) {
         cairo_status_t status;
@@ -161,9 +177,14 @@ _cairo_clip_intersect_to_rectangle (cairo_clip_t            *clip,
     if (!clip)
 	return CAIRO_STATUS_SUCCESS;
 
+    if (clip->all_clipped) {
+	*rectangle = clip->surface_rect;
+	return CAIRO_STATUS_SUCCESS;
+    }
+
     if (clip->path) {
         cairo_status_t status;
-        
+
         status = _cairo_clip_path_intersect_to_rectangle (clip->path,
                                                           rectangle);
         if (status)
@@ -202,6 +223,18 @@ _cairo_clip_intersect_to_region (cairo_clip_t      *clip,
 
     if (!clip)
 	return CAIRO_STATUS_SUCCESS;
+
+    if (clip->all_clipped) {
+	cairo_region_t clip_rect;
+
+	_cairo_region_init_rect (&clip_rect, &clip->surface_rect);
+
+	status = _cairo_region_intersect (region, &clip_rect, region);
+
+	_cairo_region_fini (&clip_rect);
+
+	return status;
+    }
 
     if (clip->path) {
 	/* Intersect clip path into region. */
@@ -243,6 +276,9 @@ _cairo_clip_combine_to_surface (cairo_clip_t                  *clip,
 {
     cairo_pattern_union_t pattern;
     cairo_status_t status;
+
+    if (clip->all_clipped)
+	return CAIRO_STATUS_SUCCESS;
 
     _cairo_pattern_init_for_surface (&pattern.surface, clip->surface);
 
@@ -324,6 +360,7 @@ _cairo_clip_path_destroy (cairo_clip_path_t *clip_path)
     free (clip_path);
 }
 
+
 static cairo_int_status_t
 _cairo_clip_intersect_region (cairo_clip_t    *clip,
 			      cairo_traps_t   *traps,
@@ -331,6 +368,9 @@ _cairo_clip_intersect_region (cairo_clip_t    *clip,
 {
     cairo_region_t region;
     cairo_int_status_t status;
+
+    if (clip->all_clipped)
+	return CAIRO_STATUS_SUCCESS;
 
     if (clip->mode != CAIRO_CLIP_MODE_REGION)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
@@ -363,6 +403,9 @@ _cairo_clip_intersect_region (cairo_clip_t    *clip,
     clip->serial = _cairo_surface_allocate_clip_serial (target);
     _cairo_region_fini (&region);
 
+    if (! _cairo_region_not_empty (&clip->region))
+	_cairo_clip_set_all_clipped (clip, target);
+
     return status;
 }
 
@@ -377,6 +420,9 @@ _cairo_clip_intersect_mask (cairo_clip_t      *clip,
     cairo_rectangle_int_t surface_rect, target_rect;
     cairo_surface_t *surface;
     cairo_status_t status;
+
+    if (clip->all_clipped)
+	return CAIRO_STATUS_SUCCESS;
 
     /* Represent the clip as a mask surface.  We create a new surface
      * the size of the intersection of the old mask surface and the
@@ -395,20 +441,30 @@ _cairo_clip_intersect_mask (cairo_clip_t      *clip,
     if (!status)
 	_cairo_rectangle_intersect (&surface_rect, &target_rect);
 
+    if (surface_rect.width == 0 || surface_rect.height == 0) {
+	surface = NULL;
+	status = CAIRO_STATUS_SUCCESS;
+	if (clip->surface != NULL)
+	    cairo_surface_destroy (clip->surface);
+	goto DONE;
+    }
+
+    _cairo_pattern_init_solid (&pattern.solid, CAIRO_COLOR_WHITE,
+			       CAIRO_CONTENT_COLOR);
     surface = _cairo_surface_create_similar_solid (target,
 						   CAIRO_CONTENT_ALPHA,
 						   surface_rect.width,
 						   surface_rect.height,
 						   CAIRO_COLOR_WHITE,
-						   NULL);
-    if (surface->status)
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+						   &pattern.base);
+    if (surface->status) {
+	_cairo_pattern_fini (&pattern.base);
+	return surface->status;
+    }
 
     /* Render the new clipping path into the new mask surface. */
 
     _cairo_traps_translate (traps, -surface_rect.x, -surface_rect.y);
-    _cairo_pattern_init_solid (&pattern.solid, CAIRO_COLOR_WHITE,
-			       CAIRO_CONTENT_COLOR);
 
     status = _cairo_surface_composite_trapezoids (CAIRO_OPERATOR_IN,
 						  &pattern.base,
@@ -456,9 +512,13 @@ _cairo_clip_intersect_mask (cairo_clip_t      *clip,
 	cairo_surface_destroy (clip->surface);
     }
 
+ DONE:
     clip->surface = surface;
     clip->surface_rect = surface_rect;
     clip->serial = _cairo_surface_allocate_clip_serial (target);
+
+    if (surface_rect.width == 0 || surface_rect.height == 0)
+	_cairo_clip_set_all_clipped (clip, target);
 
     return status;
 }
@@ -473,6 +533,15 @@ _cairo_clip_clip (cairo_clip_t       *clip,
 {
     cairo_status_t status;
     cairo_traps_t traps;
+
+    if (clip->all_clipped)
+	return CAIRO_STATUS_SUCCESS;
+
+    /* catch the empty clip path */
+    if (! path->has_current_point) {
+	_cairo_clip_set_all_clipped (clip, target);
+	return CAIRO_STATUS_SUCCESS;
+    }
 
     status = _cairo_clip_intersect_path (clip,
 					 path, fill_rule, tolerance,
@@ -508,6 +577,9 @@ _cairo_clip_translate (cairo_clip_t  *clip,
                        cairo_fixed_t  tx,
                        cairo_fixed_t  ty)
 {
+    if (clip->all_clipped)
+	return;
+
     if (clip->has_region) {
         _cairo_region_translate (&clip->region,
                                  _cairo_fixed_integer_part (tx),
@@ -632,12 +704,15 @@ _cairo_clip_int_rect_to_user (cairo_gstate_t *gstate,
     return is_tight;
 }
 
-cairo_private cairo_rectangle_list_t*
+cairo_rectangle_list_t *
 _cairo_clip_copy_rectangle_list (cairo_clip_t *clip, cairo_gstate_t *gstate)
 {
     cairo_rectangle_list_t *list;
     cairo_rectangle_t *rectangles = NULL;
-    int n_boxes;
+    int n_boxes = 0;
+
+    if (clip->all_clipped)
+	goto DONE;
 
     if (clip->path || clip->surface)
 	return (cairo_rectangle_list_t*) &_cairo_rectangles_not_representable;
@@ -646,7 +721,7 @@ _cairo_clip_copy_rectangle_list (cairo_clip_t *clip, cairo_gstate_t *gstate)
 	cairo_box_int_t *boxes;
         int i;
 
-	if (_cairo_region_get_boxes (&clip->region, &n_boxes, &boxes) != CAIRO_STATUS_SUCCESS)
+	if (_cairo_region_get_boxes (&clip->region, &n_boxes, &boxes))
 	    return (cairo_rectangle_list_t*) &_cairo_rectangles_nil;
 
 	if (n_boxes) {
@@ -690,13 +765,14 @@ _cairo_clip_copy_rectangle_list (cairo_clip_t *clip, cairo_gstate_t *gstate)
 	}
     }
 
+ DONE:
     list = malloc (sizeof (cairo_rectangle_list_t));
     if (list == NULL) {
         free (rectangles);
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
         return (cairo_rectangle_list_t*) &_cairo_rectangles_nil;
     }
-    
+
     list->status = CAIRO_STATUS_SUCCESS;
     list->rectangles = rectangles;
     list->num_rectangles = n_boxes;

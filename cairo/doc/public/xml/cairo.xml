@@ -479,23 +479,25 @@ group.</para>
 <title><anchor id="cairo-get-group-target" role="function" condition="since:1.2"/>cairo_get_group_target ()</title>
 <indexterm role="1.2"><primary>cairo_get_group_target</primary></indexterm><programlisting><link linkend="cairo-surface-t">cairo_surface_t</link>*    cairo_get_group_target              (<link linkend="cairo-t">cairo_t</link> *cr);</programlisting>
 <para>
-Gets the target surface for the current group as started by the
-most recent call to <link linkend="cairo-push-group"><function>cairo_push_group()</function></link> or
-<link linkend="cairo-push-group-with-content"><function>cairo_push_group_with_content()</function></link>.
+Gets the current destination surface for the context. This is either
+the original target surface as passed to <link linkend="cairo-create"><function>cairo_create()</function></link> or the target
+surface for the current group as started by the most recent call to
+<link linkend="cairo-push-group"><function>cairo_push_group()</function></link> or <link linkend="cairo-push-group-with-content"><function>cairo_push_group_with_content()</function></link>.
 </para>
 <para>
-This function will return NULL if called "outside" of any group
-rendering blocks, (that is, after the last balancing call to
-<link linkend="cairo-pop-group"><function>cairo_pop_group()</function></link> or <link linkend="cairo-pop-group-to-source"><function>cairo_pop_group_to_source()</function></link>).</para>
+This function will always return a valid pointer, but the result
+can be a "nil" surface if <parameter>cr</parameter> is already in an error state,
+(ie. <link linkend="cairo-status"><function>cairo_status()</function></link> <literal>!=</literal> <link linkend="CAIRO-STATUS-SUCCESS:CAPS"><literal>CAIRO_STATUS_SUCCESS</literal></link>).
+A nil surface is indicated by <link linkend="cairo-surface-status"><function>cairo_surface_status()</function></link>
+<literal>!=</literal> <link linkend="CAIRO-STATUS-SUCCESS:CAPS"><literal>CAIRO_STATUS_SUCCESS</literal></link>.</para>
 <para>
 
 </para><variablelist role="params">
 <varlistentry><term><parameter>cr</parameter>&nbsp;:</term>
 <listitem><simpara> a cairo context
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the target group surface, or NULL if none.  This
-object is owned by cairo. To keep a reference to it, you must call
-<link linkend="cairo-surface-reference"><function>cairo_surface_reference()</function></link>.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the target surface. This object is owned by cairo. To
+keep a reference to it, you must call <link linkend="cairo-surface-reference"><function>cairo_surface_reference()</function></link>.
 
 </simpara></listitem></varlistentry>
 </variablelist><para role="since">Since  1.2
@@ -1495,10 +1497,15 @@ See <link linkend="cairo-set-fill-rule"><function>cairo_set_fill_rule()</functio
                                                          <link linkend="double">double</link> *y2);</programlisting>
 <para>
 Computes a bounding box in user coordinates covering the area that
-would be affected by a <link linkend="cairo-fill"><function>cairo_fill()</function></link> operation given the current path
-and fill parameters. If the current path is empty, returns an empty
-rectangle (0,0, 0,0). Surface dimensions and clipping are not taken
-into account.
+would be affected, (the "inked" area), by a <link linkend="cairo-fill"><function>cairo_fill()</function></link> operation
+given the current path and fill parameters. If the current path is
+empty, returns an empty rectangle ((0,0), (0,0)). Surface
+dimensions and clipping are not taken into account.
+</para>
+<para>
+Contrast with <link linkend="cairo-path-extents"><function>cairo_path_extents()</function></link>, which is similar, but returns
+non-zero extents for some paths no inked area, (such as a simple
+line segment).
 </para>
 <para>
 See <link linkend="cairo-fill"><function>cairo_fill()</function></link>, <link linkend="cairo-set-fill-rule"><function>cairo_set_fill_rule()</function></link> and <link linkend="cairo-fill-preserve"><function>cairo_fill_preserve()</function></link>.</para>
@@ -1699,8 +1706,22 @@ See <link linkend="cairo-set-line-width"><function>cairo_set_line_width()</funct
                                                          <link linkend="double">double</link> *y2);</programlisting>
 <para>
 Computes a bounding box in user coordinates covering the area that
-would be affected by a <link linkend="cairo-stroke"><function>cairo_stroke()</function></link> operation operation given the
-current path and stroke parameters. If the current path is empty,</para>
+would be affected, (the "inked" area), by a <link linkend="cairo-stroke"><function>cairo_stroke()</function></link>
+operation operation given the current path and stroke
+parameters. If the current path is empty, returns an empty
+rectangle ((0,0), (0,0)). Surface dimensions and clipping are not
+taken into account.
+</para>
+<para>
+Note that if the line width is set to exactly zero, then
+cairo_stroke_extents will return an empty rectangle. Contrast with
+<link linkend="cairo-path-extents"><function>cairo_path_extents()</function></link> which can be used to compute the non-empty
+bounds as the line width approaches zero.
+</para>
+<para>
+See <link linkend="cairo-stroke"><function>cairo_stroke()</function></link>, <link linkend="cairo-set-line-width"><function>cairo_set_line_width()</function></link>, <link linkend="cairo-set-line-join"><function>cairo_set_line_join()</function></link>,
+<link linkend="cairo-set-line-cap"><function>cairo_set_line_cap()</function></link>, <link linkend="cairo-set-dash"><function>cairo_set_dash()</function></link>, and
+<link linkend="cairo-stroke-preserve"><function>cairo_stroke_preserve()</function></link>.</para>
 <para>
 
 </para><variablelist role="params">

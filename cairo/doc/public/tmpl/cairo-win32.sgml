@@ -49,6 +49,15 @@ Microsoft Windows surface support
 @Returns: 
 
 
+<!-- ##### FUNCTION cairo_win32_printing_surface_create ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@Returns: 
+
+
 <!-- ##### FUNCTION cairo_win32_surface_get_dc ##### -->
 <para>
 

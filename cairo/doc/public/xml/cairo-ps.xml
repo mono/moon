@@ -30,6 +30,12 @@
                                                          <link linkend="void">void</link> *closure,
                                                          <link linkend="double">double</link> width_in_points,
                                                          <link linkend="double">double</link> height_in_points);
+<link linkend="void">void</link>                <link linkend="cairo-ps-surface-restrict-to-level">cairo_ps_surface_restrict_to_level</link>  (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface,
+                                                         <link linkend="cairo-ps-level-t">cairo_ps_level_t</link> level);
+enum                <link linkend="cairo-ps-level-t">cairo_ps_level_t</link>;
+<link linkend="void">void</link>                <link linkend="cairo-ps-get-levels">cairo_ps_get_levels</link>                 (<link linkend="cairo-ps-level-t">cairo_ps_level_t</link> const **levels,
+                                                         <link linkend="int">int</link> *num_levels);
+const <link linkend="char">char</link>*         <link linkend="cairo-ps-level-to-string">cairo_ps_level_to_string</link>            (<link linkend="cairo-ps-level-t">cairo_ps_level_t</link> level);
 <link linkend="void">void</link>                <link linkend="cairo-ps-surface-set-eps">cairo_ps_surface_set_eps</link>            (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface,
                                                          <link linkend="cairo-bool-t">cairo_bool_t</link> eps);
 <link linkend="cairo-bool-t">cairo_bool_t</link>        <link linkend="cairo-ps-surface-get-eps">cairo_ps_surface_get_eps</link>            (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface);
@@ -138,6 +144,92 @@ occurs. You can use <link linkend="cairo-surface-status"><function>cairo_surface
 
 </simpara></listitem></varlistentry>
 </variablelist><para role="since">Since  1.2
+</para></refsect2>
+<refsect2>
+<title><anchor id="cairo-ps-surface-restrict-to-level" role="function" condition="since:1.6"/>cairo_ps_surface_restrict_to_level ()</title>
+<indexterm role="1.6"><primary>cairo_ps_surface_restrict_to_level</primary></indexterm><programlisting><link linkend="void">void</link>                cairo_ps_surface_restrict_to_level  (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface,
+                                                         <link linkend="cairo-ps-level-t">cairo_ps_level_t</link> level);</programlisting>
+<para>
+Restricts the generated PostSript file to <parameter>level</parameter>. See
+<link linkend="cairo-ps-get-levels"><function>cairo_ps_get_levels()</function></link> for a list of available level values that
+can be used here.
+</para>
+<para>
+This function should only be called before any drawing operations
+have been performed on the given surface. The simplest way to do
+this is to call this function immediately after creating the
+surface.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>surface</parameter>&nbsp;:</term>
+<listitem><simpara> a PostScript <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>level</parameter>&nbsp;:</term>
+<listitem><simpara> PostScript level
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  1.6
+</para></refsect2>
+<refsect2>
+<title><anchor id="cairo-ps-level-t" role="enum"/>enum cairo_ps_level_t</title>
+<indexterm><primary>cairo_ps_level_t</primary></indexterm><programlisting>typedef enum _cairo_ps_level {
+    CAIRO_PS_LEVEL_2,
+    CAIRO_PS_LEVEL_3
+} cairo_ps_level_t;
+</programlisting>
+<para>
+<link linkend="cairo-ps-level-t"><type>cairo_ps_level_t</type></link> is used to describe the language level of the
+PostScript Language Reference that a generated PostScript file will
+conform to.</para>
+<para>
+
+</para><variablelist role="enum">
+<varlistentry>
+<term><anchor id="CAIRO-PS-LEVEL-2:CAPS" role="constant"/><literal>CAIRO_PS_LEVEL_2</literal></term>
+<listitem><simpara> The language level 2 of the PostScript specification.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="CAIRO-PS-LEVEL-3:CAPS" role="constant"/><literal>CAIRO_PS_LEVEL_3</literal></term>
+<listitem><simpara> The language level 3 of the PostScript specification.
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="cairo-ps-get-levels" role="function" condition="since:1.6"/>cairo_ps_get_levels ()</title>
+<indexterm role="1.6"><primary>cairo_ps_get_levels</primary></indexterm><programlisting><link linkend="void">void</link>                cairo_ps_get_levels                 (<link linkend="cairo-ps-level-t">cairo_ps_level_t</link> const **levels,
+                                                         <link linkend="int">int</link> *num_levels);</programlisting>
+<para>
+Used to retrieve the list of supported levels. See
+<link linkend="cairo-ps-surface-restrict-to-level"><function>cairo_ps_surface_restrict_to_level()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>levels</parameter>&nbsp;:</term>
+<listitem><simpara> supported level list
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>num_levels</parameter>&nbsp;:</term>
+<listitem><simpara> list length
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  1.6
+</para></refsect2>
+<refsect2>
+<title><anchor id="cairo-ps-level-to-string" role="function" condition="since:1.6"/>cairo_ps_level_to_string ()</title>
+<indexterm role="1.6"><primary>cairo_ps_level_to_string</primary></indexterm><programlisting>const <link linkend="char">char</link>*         cairo_ps_level_to_string            (<link linkend="cairo-ps-level-t">cairo_ps_level_t</link> level);</programlisting>
+<para>
+Get the string representation of the given <parameter>level</parameter> id. This function
+will return NULL if <parameter>level</parameter> id isn't valid. See <link linkend="cairo-ps-get-levels"><function>cairo_ps_get_levels()</function></link>
+for a way to get the list of valid level ids.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>level</parameter>&nbsp;:</term>
+<listitem><simpara> a level id
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the string associated to given level.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  1.6
 </para></refsect2>
 <refsect2>
 <title><anchor id="cairo-ps-surface-set-eps" role="function" condition="since:1.6"/>cairo_ps_surface_set_eps ()</title>

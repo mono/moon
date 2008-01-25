@@ -22,6 +22,7 @@ endif
 if CAIRO_HAS_PDF_SURFACE
 libcairo_pdf_headers = cairo-pdf.h
 libcairo_pdf_sources = cairo-pdf-surface.c cairo-pdf-surface-private.h \
+	               cairo-pdf-operators.c cairo-pdf-operators-private.h \
 		       cairo-deflate-stream.c
 libcairo_font_subset_sources =	$(font_subset_sources)
 backend_pkgconfigs += cairo-pdf.pc
@@ -46,7 +47,7 @@ libcairo_test_sources = test-fallback-surface.c test-fallback-surface.h \
 endif
 
 if CAIRO_HAS_XLIB_SURFACE
-libcairo_xlib_headers = cairo-xlib.h cairo-xlib-xrender.h
+libcairo_xlib_headers = cairo-xlib.h
 libcairo_xlib_sources = cairo-xlib-surface.c \
 			cairo-xlib-surface-private.h \
 			cairo-xlib-display.c \
@@ -73,12 +74,13 @@ libcairo_quartz_sources = cairo-quartz-surface.c cairo-quartz-private.h
 backend_pkgconfigs += cairo-quartz.pc
 endif
 
+libcairo_win32_sources =
 if OS_WIN32
+libcairo_win32_sources += cairo-win32.c
 export_symbols = -export-symbols cairo.def
 cairo_def_dependency = cairo.def
 endif
 
-libcairo_win32_sources =
 if CAIRO_HAS_WIN32_SURFACE
 libcairo_win32_headers = cairo-win32.h
 libcairo_win32_sources += cairo-win32-surface.c cairo-win32-printing-surface.c cairo-win32-private.h
@@ -101,7 +103,7 @@ libcairo_beos_headers = cairo-beos.h
 libcairo_beos_sources += cairo-beos-surface.cpp
 backend_pkgconfigs += cairo-beos.pc
 
-BEOS_LTLIB = libcairo_beos.la
+#noinst_LTLIBRARIES = libcairo_beos.la
 libcairo_beos_la_SOURCES = $(libcairo_beos_sources)
 # BeOS system headers trigger this warning
 libcairo_beos_la_CXXFLAGS = -Wno-multichar
@@ -164,7 +166,7 @@ noinst_HEADERS =			\
 nodist_noinst_HEADERS =		\
 	cairo-features.h
 
-noinst_LTLIBRARIES = libcairo.la $(BEOS_LTLIB)
+noinst_LTLIBRARIES = libcairo.la
 
 libcairo_la_base_sources =			\
 	cairo.c					\
@@ -200,7 +202,6 @@ libcairo_la_base_sources =			\
 	cairo-mutex.c				\
 	cairo-mutex-private.h			\
 	cairo-mutex-type-private.h		\
-	cairo-operator.c			\
 	cairo-path.c				\
 	cairo-path-private.h			\
 	cairo-path-bounds.c			\
@@ -232,6 +233,7 @@ libcairo_la_base_sources =			\
 	cairo-output-stream-private.h		\
 	cairo-wideint.c				\
 	cairo-wideint-private.h			\
+	cairo-wideint-type-private.h		\
 	cairo-meta-surface.c			\
 	cairo-meta-surface-private.h		\
 	cairo-paginated-private.h		\
@@ -262,6 +264,7 @@ libcairo_la_base_sources =			\
 libcairo_la_special_sources =			\
 	cairo-cache-private.h			\
 	cairo-fixed-private.h			\
+	cairo-fixed-type-private.h		\
 	cairo-mutex-list-private.h		\
 	cairo-types-private.h
 
@@ -273,12 +276,12 @@ libcairo_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined $(export_symbol
 
 libcairo_la_CFLAGS = -I$(srcdir) $(CAIRO_CFLAGS)
 
-libcairo_la_LIBADD = $(CAIRO_LIBS) $(BEOS_LTLIB) $(CAIRO_LDADD)
+libcairo_la_LIBADD = $(CAIRO_LIBS) $(CAIRO_LDADD)
 
-libcairo_la_DEPENDENCIES = $(cairo_def_dependency) $(BEOS_LTLIB)
+libcairo_la_DEPENDENCIES = $(cairo_def_dependency)
 
-#pkgconfigdir = $(libdir)/pkgconfig
-noinst_DATA = cairo.pc $(backend_pkgconfigs)
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = cairo.pc $(backend_pkgconfigs)
 DISTCLEANFILES = $(backend_pkgconfigs)
 EXTRA_DIST = cairo-backend.pc.in
 $(backend_pkgconfigs): $(top_srcdir)/configure
@@ -292,7 +295,7 @@ cairo-features.h:
 	cd $(top_builddir) && ./config.status src/cairo-features.h
 
 CLEANFILES = cairo.def
-cairo.def: $(cairoinclude_HEADERS)
+cairo.def: $(cairo_headers) cairo-features.h
 	@echo Generating $@
 	@(echo EXPORTS; \
 	(cd $(srcdir); cat $(cairo_headers) || echo 'cairo_ERROR ()' ) | \
@@ -315,9 +318,15 @@ install-data-local:
 	  false ;									\
         fi
 
-TESTS_ENVIRONMENT = srcdir="$(srcdir)"
+TESTS_ENVIRONMENT = srcdir="$(srcdir)" MAKE="$(MAKE)"
 TESTS = check-def.sh check-plt.sh check-headers.sh check-cairoint.sh
-EXTRA_DIST += $(TESTS)
+EXTRA_DIST += $(TESTS) check-has-hidden-symbols.c
+DISTCLEANFILES += check-has-hidden-symbols.i
+
+# The pre-processed result is used by check-{def,plt}.sh to determine whether
+# cairo has been compiled with symbol hiding.
+.c.i: $(cairoinclude_HEADERS) $(nodist_cairoinclude_HEADERS) cairoint.h $(top_builddir)/config.h
+	$(CPP) -DHAVE_CONFIG_H -I$(top_builddir) -I. $(libcairo_la_CFLAGS) $< -o $@
 
 SPARSE = sparse
 sparse:

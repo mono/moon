@@ -69,6 +69,14 @@ The work involved is similar the work described above for new bugs.
 The only distinction is that the test is expected to pass so it
 should not be added to the XFAIL_TESTS list.
 
+While working on a test
+-----------------------
+Before a bugfix or feature is ready, it may be useful to compare
+output from different builds. For convenience, you can set
+CAIRO_REF_DIR to point at a previous test directory, relative
+to the current test directory, and any previous output will be
+used by preference as reference images.
+
 
 When a bug is fixed
 -------------------

@@ -28,8 +28,13 @@
 #include "cairo-boilerplate-xlib.h"
 #include "cairo-boilerplate-xlib-private.h"
 
+#include <cairo-xlib.h>
+#if CAIRO_HAS_XLIB_XRENDER_SURFACE
 #include <cairo-xlib-xrender.h>
+#endif
 #include <cairo-xlib-surface-private.h>
+
+#include <X11/Xutil.h> /* for XDestroyImage */
 
 typedef struct _xlib_target_closure
 {
@@ -50,6 +55,17 @@ _cairo_boilerplate_xlib_synchronize (void *closure)
 	XDestroyImage (ximage);
 }
 
+static cairo_bool_t
+_cairo_boilerplate_xlib_check_screen_size (Display	*dpy,
+	                                   int		 screen,
+					   int		 width,
+					   int		 height)
+{
+    Screen *scr = XScreenOfDisplay (dpy, screen);
+    return width <= WidthOfScreen (scr) && height <= HeightOfScreen (scr);
+}
+
+#if CAIRO_HAS_XLIB_XRENDER_SURFACE
 /* For the xlib backend we distinguish between TEST and PERF mode in a
  * couple of ways.
  *
@@ -109,18 +125,6 @@ _cairo_boilerplate_xlib_test_create_surface (Display			*dpy,
 							  xrender_format,
 							  width, height);
 }
-
-
-static cairo_bool_t
-_cairo_boilerplate_xlib_check_screen_size (Display	*dpy,
-	                                   int		 screen,
-					   int		 width,
-					   int		 height)
-{
-    Screen *scr = XScreenOfDisplay (dpy, screen);
-    return width <= WidthOfScreen (scr) && height <= HeightOfScreen (scr);
-}
-
 
 static cairo_surface_t *
 _cairo_boilerplate_xlib_perf_create_surface (Display			*dpy,
@@ -210,6 +214,7 @@ _cairo_boilerplate_xlib_create_surface (const char			 *name,
     else /* mode == CAIRO_BOILERPLATE_MODE_PERF */
 	return _cairo_boilerplate_xlib_perf_create_surface (dpy, content, width, height, xtc);
 }
+#endif
 
 /* The xlib-fallback target differs from the xlib target in two ways:
  *

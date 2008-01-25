@@ -110,7 +110,7 @@ path_get_bounds (Path *shape, cairo_path_t *path)
 		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
 	else
 		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
-	
+
 	measuring_context_destroy (cr);
 
 	return Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));

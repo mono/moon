@@ -225,19 +225,22 @@ test_surface (const char                 *backend,
     return CAIRO_TEST_SUCCESS;
 }
 
-
 int
 main (void)
 {
     cairo_test_status_t status = CAIRO_TEST_SUCCESS;
     cairo_test_status_t test_status;
+    const char test_name[] = "create-for-stream";
 
-    cairo_test_init ("create-for-stream");
+    cairo_test_init (test_name);
 
 #if CAIRO_HAS_PS_SURFACE
     test_status = test_surface ("ps", "create-for-stream.ps",
 			        cairo_ps_surface_create,
 			        cairo_ps_surface_create_for_stream);
+    cairo_test_log ("TEST: %s TARGET: %s RESULT: %s\n",
+		    test_name, "ps",
+		    test_status ? "FAIL" : "PASS");
     if (status == CAIRO_TEST_SUCCESS)
 	status = test_status;
 #endif
@@ -246,6 +249,9 @@ main (void)
     test_status = test_surface ("pdf", "create-for-stream.pdf",
 			        cairo_pdf_surface_create,
 			        cairo_pdf_surface_create_for_stream);
+    cairo_test_log ("TEST: %s TARGET: %s RESULT: %s\n",
+		    test_name, "pdf",
+		    test_status ? "FAIL" : "PASS");
     if (status == CAIRO_TEST_SUCCESS)
 	status = test_status;
 #endif
@@ -254,6 +260,9 @@ main (void)
     test_status = test_surface ("svg", "create-for-stream.svg",
 			        cairo_svg_surface_create,
 			        cairo_svg_surface_create_for_stream);
+    cairo_test_log ("TEST: %s TARGET: %s RESULT: %s\n",
+		    test_name, "svg",
+		    test_status ? "FAIL" : "PASS");
     if (status == CAIRO_TEST_SUCCESS)
 	status = test_status;
 #endif

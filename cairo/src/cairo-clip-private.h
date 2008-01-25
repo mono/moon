@@ -53,6 +53,8 @@ struct _cairo_clip_path {
 struct _cairo_clip {
     cairo_clip_mode_t mode;
 
+    cairo_bool_t all_clipped;
+
     /*
      * Mask-based clipping for cases where the backend
      * clipping isn't sufficiently able.

@@ -205,6 +205,22 @@ _cairo_stroker_face_clockwise (cairo_stroke_face_t *in, cairo_stroke_face_t *out
     return _cairo_slope_clockwise (&in_slope, &out_slope);
 }
 
+/**
+ * _cairo_slope_compare_sgn
+ *
+ * Return -1, 0 or 1 depending on the relative slopes of
+ * two lines.
+ */
+static int
+_cairo_slope_compare_sgn (double dx1, double dy1, double dx2, double dy2)
+{
+    double  c = (dx1 * dy2 - dx2 * dy1);
+
+    if (c > 0) return 1;
+    if (c < 0) return -1;
+    return 0;
+}
+
 static cairo_status_t
 _cairo_stroker_join (cairo_stroker_t *stroker, cairo_stroke_face_t *in, cairo_stroke_face_t *out)
 {
@@ -273,18 +289,47 @@ _cairo_stroker_join (cairo_stroker_t *stroker, cairo_stroke_face_t *in, cairo_st
 			      (-in->usr_vector.y * out->usr_vector.y));
 	double	ml = stroker->style->miter_limit;
 
-	/*
-	 * Check the miter limit -- lines meeting at an acute angle
+	/* Check the miter limit -- lines meeting at an acute angle
 	 * can generate long miters, the limit converts them to bevel
 	 *
-	 * We want to know when the miter is within the miter limit.
-	 * That's straightforward to specify:
+	 * Consider the miter join formed when two line segments
+	 * meet at an angle psi:
 	 *
-	 *	secant (psi / 2) <= ml
+	 *	   /.\
+	 *	  /. .\
+	 *	 /./ \.\
+	 *	/./psi\.\
 	 *
-	 * where psi is the angle between in and out
+	 * We can zoom in on the right half of that to see:
 	 *
-	 *				secant(psi/2) = 1/sin(psi/2)
+	 *	    |\
+	 *	    | \ psi/2
+	 *	    |  \
+	 *	    |   \
+	 *	    |    \
+	 *	    |     \
+	 * 	  miter    \
+	 *	 length     \
+	 *	    |        \
+	 *	    |        .\
+	 *	    |    .     \
+	 *	    |.   line   \
+	 *	     \    width  \
+	 *	      \           \
+	 *
+	 *
+	 * The right triangle in that figure, (the line-width side is
+	 * shown faintly with three '.' characters), gives us the
+	 * following expression relating miter length, angle and line
+	 * width:
+	 *
+	 *	1 /sin (psi/2) = miter_length / line_width
+	 *
+	 * The right-hand side of this relationship is the same ratio
+	 * in which the miter limit (ml) is expressed. We want to know
+	 * when the miter length is within the miter limit. That is
+	 * when the following condition holds:
+	 *
 	 *	1/sin(psi/2) <= ml
 	 *	1 <= ml sin(psi/2)
 	 *	1 <= ml² sin²(psi/2)
@@ -301,12 +346,16 @@ _cairo_stroker_join (cairo_stroker_t *stroker, cairo_stroke_face_t *in, cairo_st
 	 *	2 <= ml² (1 - in · out)
 	 *
 	 */
-	if (2 <= ml * ml * (1 - in_dot_out)) {
+	if (2 <= ml * ml * (1 - in_dot_out))
+	{
 	    double		x1, y1, x2, y2;
 	    double		mx, my;
 	    double		dx1, dx2, dy1, dy2;
 	    cairo_point_t	outer;
 	    cairo_point_t	quad[4];
+	    double		ix, iy;
+	    double		fdx1, fdy1, fdx2, fdy2;
+	    double		mdx, mdy;
 
 	    /*
 	     * we've got the points already transformed to device
@@ -344,17 +393,46 @@ _cairo_stroker_join (cairo_stroker_t *stroker, cairo_stroke_face_t *in, cairo_st
 		mx = (my - y2) * dx2 / dy2 + x2;
 
 	    /*
-	     * Draw the quadrilateral
+	     * When the two outer edges are nearly parallel, slight
+	     * perturbations in the position of the outer points of the lines
+	     * caused by representing them in fixed point form can cause the
+	     * intersection point of the miter to move a large amount. If
+	     * that moves the miter intersection from between the two faces,
+	     * then draw a bevel instead.
 	     */
-	    outer.x = _cairo_fixed_from_double (mx);
-	    outer.y = _cairo_fixed_from_double (my);
 
-	    quad[0] = in->point;
-	    quad[1] = *inpt;
-	    quad[2] = outer;
-	    quad[3] = *outpt;
+	    ix = _cairo_fixed_to_double (in->point.x);
+	    iy = _cairo_fixed_to_double (in->point.y);
 
-	    return _cairo_traps_tessellate_convex_quad (stroker->traps, quad);
+	    /* slope of one face */
+	    fdx1 = x1 - ix; fdy1 = y1 - iy;
+
+	    /* slope of the other face */
+	    fdx2 = x2 - ix; fdy2 = y2 - iy;
+
+	    /* slope from the intersection to the miter point */
+	    mdx = mx - ix; mdy = my - iy;
+
+	    /*
+	     * Make sure the miter point line lies between the two
+	     * faces by comparing the slopes
+	     */
+	    if (_cairo_slope_compare_sgn (fdx1, fdy1, mdx, mdy) !=
+		_cairo_slope_compare_sgn (fdx2, fdy2, mdx, mdy))
+	    {
+		/*
+		 * Draw the quadrilateral
+		 */
+		outer.x = _cairo_fixed_from_double (mx);
+		outer.y = _cairo_fixed_from_double (my);
+
+		quad[0] = in->point;
+		quad[1] = *inpt;
+		quad[2] = outer;
+		quad[3] = *outpt;
+
+		return _cairo_traps_tessellate_convex_quad (stroker->traps, quad);
+	    }
 	}
 	/* fall through ... */
     }
@@ -804,7 +882,7 @@ _cairo_stroker_curve_to (void *closure,
 
     status = _cairo_spline_init (&spline, a, b, c, d);
     if (status == CAIRO_INT_STATUS_DEGENERATE)
-	return CAIRO_STATUS_SUCCESS;
+	return _cairo_stroker_line_to (closure, d);
 
     status = _cairo_pen_init_copy (&pen, &stroker->pen);
     if (status)
@@ -888,7 +966,7 @@ _cairo_stroker_curve_to_dashed (void *closure,
 
     status = _cairo_spline_init (&spline, a, b, c, d);
     if (status == CAIRO_INT_STATUS_DEGENERATE)
-	return CAIRO_STATUS_SUCCESS;
+	return _cairo_stroker_line_to_dashed (closure, d);
 
     /* If the line width is so small that the pen is reduced to a
        single point, then we have nothing to do. */
@@ -1279,6 +1357,12 @@ _cairo_path_fixed_stroke_rectilinear (cairo_path_fixed_t	*path,
     if (path->has_curve_to)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
     if (stroke_style->line_join	!= CAIRO_LINE_JOIN_MITER)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+    /* If the miter limit turns right angles into bevels, then we
+     * can't use this optimization. Remember, the ratio is
+     * 1/sin(ɸ/2). So the cutoff is 1/sin(π/4.0) or ⎷2,
+     * which we round for safety. */
+    if (stroke_style->miter_limit < M_SQRT2)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
     if (stroke_style->dash)
 	return CAIRO_INT_STATUS_UNSUPPORTED;

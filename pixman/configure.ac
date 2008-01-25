@@ -42,7 +42,7 @@ AC_PREREQ([2.57])
 
 m4_define([pixman_major], 0)
 m4_define([pixman_minor], 9)
-m4_define([pixman_micro], 5)
+m4_define([pixman_micro], 6)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -83,13 +83,31 @@ if test "x$GCC" = "xyes"; then
   *) CFLAGS="$CFLAGS -Wall" ;;
   esac fi changequote([,])dnl
 
+dnl =========================================================================
+dnl -fvisibility stuff
+
+have_gcc4=no
+AC_MSG_CHECKING(for -fvisibility)
+AC_COMPILE_IFELSE([
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+#else
+#error Need GCC 4.0 for visibility
+#endif
+int main () { return 0; } 
+], have_gcc4=yes)
+
+if test "x$have_gcc4" = "xyes"; then
+   CFLAGS="$CFLAGS -fvisibility=hidden"
+fi
+AC_MSG_RESULT($have_gcc4)
+
 dnl ===========================================================================
 dnl Check for MMX
 
-MMX_CFLAGS="-mmmx -msse -Winline --param inline-unit-growth=10000 --param large-function-growth=10000"
+MMX_CFLAGS="-mmmx -Winline --param inline-unit-growth=10000 --param large-function-growth=10000"
 
 have_mmx_intrinsics=no
-AC_MSG_CHECKING(For MMX/SSE intrinsics in the compiler)
+AC_MSG_CHECKING(whether to use MMX intrinsics)
 xserver_save_CFLAGS=$CFLAGS
 CFLAGS="$CFLAGS $MMX_CFLAGS"
 AC_COMPILE_IFELSE([
@@ -97,10 +115,8 @@ AC_COMPILE_IFELSE([
 #error "Need GCC >= 3.4 for MMX intrinsics"
 #endif
 #include <mmintrin.h>
-#include <xmmintrin.h>
 int main () {
     __m64 v = _mm_cvtsi32_si64 (1);
-    v = _mm_shuffle_pi16 (v, _MM_SHUFFLE(3, 3, 3, 3));
     return _mm_cvtsi64_si32 (v);
 }], have_mmx_intrinsics=yes)
 CFLAGS=$xserver_save_CFLAGS
@@ -111,11 +127,46 @@ if test $have_mmx_intrinsics = yes ; then
 else
    MMX_CFLAGS=
 fi
-AC_SUBST(MMX_CFLAGS)
 
 AM_CONDITIONAL(USE_MMX, test $have_mmx_intrinsics = yes)
 
+dnl =======================================================
+
+dnl GCC 4.2 when compiling with -msse will generate SSE instructions
+dnl on its own.  This means anything compiled with -mss can only be
+dnl run after a runtime check for SSE.  Unfortunately, since we still
+dnl need to support MMX-but-not-SSE (such as the OLPC), this means we
+dnl can only use SSE when compiling for x86-64 (where SSE is always
+dnl supported).
+
+have_sse_intrinsics=no
+AC_MSG_CHECKING(whether to use SSE intrinsics)
+xserver_save_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS -msse $MMX_CFLAGS"
+
+AC_COMPILE_IFELSE([
+#if !defined(__amd64__) && !defined(__x86_64__)
+#error "Need x86-64 for SSE"
+#endif
+#include <mmintrin.h>
+#include <xmmintrin.h>
+int main () {
+    __m64 v = _mm_cvtsi32_si64 (1);
+    v = _mm_shuffle_pi16 (v, _MM_SHUFFLE(3, 3, 3, 3));
+    return _mm_cvtsi64_si32 (v);
+}], have_sse_intrinsics=yes)
+CFLAGS=$xserver_save_CFLAGS
+AC_MSG_RESULT($have_sse_intrinsics)
+
+if test $have_sse_intrinsics = yes ; then
+   AC_DEFINE(USE_SSE, 1, [use SSE compiler intrinsics])
+   MMX_CFLAGS="-msse $MMX_CFLAGS"
+fi
+
+AM_CONDITIONAL(USE_SSE, test $have_sse_intrinsics = yes)
+
 dnl ========================================================
+AC_SUBST(MMX_CFLAGS)
 
 PKG_CHECK_MODULES(GTK, [gtk+-2.0], [HAVE_GTK=yes], [HAVE_GTK=no])
 AM_CONDITIONAL(HAVE_GTK, [test "x$HAVE_GTK" = xyes])
@@ -127,4 +178,5 @@ AC_SUBST(DEP_LIBS)
 		  
 AC_OUTPUT([pixman-1.pc
            Makefile
-	   pixman/Makefile])
+	   pixman/Makefile
+	   test/Makefile])
