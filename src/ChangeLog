@@ -1,3 +1,7 @@
+2008-01-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.h: Add some descriptive comments.
+
 2008-01-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Merge UIElement::InsideClip inside Shape::InsideObject

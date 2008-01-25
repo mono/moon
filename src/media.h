@@ -204,22 +204,44 @@ public:
 	};
 	
 private:
+	// The current state of the media element.
 	State state;
 	
 	// this is used to know what to do after a Buffering state finishes
 	State previous_state;
 	
+	// we can't do anything until OnLoaded has been called
+	// so track if it has been called, and if we're waiting
+	// for it to be called
+	bool loaded; 
 	bool waiting_for_loaded;
 	
 	// When enough of a file has been downloaded to try to open
 	// and buffer it, and the open fails, don't try again.
 	bool tried_buffering;
 	
+	// Don't try to buffer if the download is already finished.
 	bool download_complete;
 	
 	// If SetSource is called with a Downloader that has started,
 	// disable buffering (since can't get the start of the file).
 	bool disable_buffering;
+	
+	// Halo seems to require this
+	// set to true the Play () is called before the media has 
+	// been opened, and causes Play () to be called when the
+	// media has been loaded.
+	bool play_pending;
+	
+	// The position property is not
+	// updated as we're playing, it's updated when 
+	// requested in GetValue, and only then the current
+	// position is saved in SetValue.
+	// This should however not cause SetValue's handling
+	// of the position property to do anything, so keep
+	// track of when we're setting the position property
+	// ourselves.
+	bool updating;
 	
 	int64_t buffering_start;
 	
@@ -228,9 +250,10 @@ private:
 	
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
-	bool updating;
-	bool loaded;
-	bool play_pending;
+	
+	// When checking if a marker has been reached, we need to 
+	// know the last time the check was made, to see if 
+	// the marker's pts hit the region.
 	uint64_t previous_position;
 	
 	TimelineMarkerCollection *streamed_markers;
@@ -326,7 +349,6 @@ public:
 	
 	void SetState (State new_state);
 	State GetState () { return state; }
-	
 	static const char *GetStateName (State state);
 	
 	virtual bool EnableAntiAlias ()
