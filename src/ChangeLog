@@ -1,3 +1,12 @@
+2008-01-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (MediaElement::TryOpen): In the DownloadComplete case,
+	set the state to Buffering so that calling Play() will actually
+	start playing the media (if the file was local, then we'll be in
+	the Opening state which means that calling Play() will only note
+	that a Play action was requested, but won't actually play the
+	media).
+
 2008-01-26  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Set the encoding when we are reading files also.

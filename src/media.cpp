@@ -740,7 +740,7 @@ MediaElement::SetState (MediaElementState state)
 			return;
 		}
 		
-		//printf ("MediaElement::SetState (%d): New state: %s\n", new_state, state_name);
+		//printf ("MediaElement::SetState (%d): New state: %s\n", state, state_name);
 		
 		prev_state = this->state;
 		this->state = state;
@@ -867,12 +867,17 @@ MediaElement::TryOpen ()
 				MediaOpened (media);
 				
 				if ((flags & PlayRequested) || media_element_get_auto_play (this)) {
-					//printf ("MediaElement::TryOpen (): we'll now start playing.\n");
+					if (state == Opening) {
+						prev_state = Opening;
+						state = Buffering;
+					}
+					
 					Play ();
 				} else {
 					Pause ();
-					Invalidate ();
 				}
+				
+				Invalidate ();
 			} else {
 				MediaFailed ();
 				delete source;
