@@ -1,3 +1,7 @@
+2008-01-26  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Set the encoding when we are reading files also.
+
 2008-01-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (WaitForPosition): Only update wait_pos if it is
