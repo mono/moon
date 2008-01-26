@@ -1194,7 +1194,7 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 		goto cleanup_and_return;
 	}
 
-	p = XML_ParserCreateNS (NULL, '|');
+	p = XML_ParserCreateNS ("utf-8", '|');
 
 	if (!p) {
 #ifdef DEBUG_XAML
