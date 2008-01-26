@@ -725,28 +725,20 @@ MediaElement::SetState (MediaElementState state)
 {
 	const char *name;
 	
-	if (state == Buffering && downloaded_file == NULL) {
-		// The code assumes that if Buffering then downloaded_file isn't NULL
-		// (crashes might occur if this took place)
-		// So don't allow it to happen.
-		fprintf (stderr, "MediaElement::SetState (%d): Trying to change to 'Buffering' "
-			 "but there's no file to save buffered data to.\n", state);
+	if (this->state == state)
+		return;
+	
+	if (!(name = GetStateName (state))) {
+		printf ("MediaElement::SetState (%d) state is not valid.\n", state);
 		return;
 	}
 	
-	if (this->state != state) {
-		if (!(name = GetStateName (state))) {
-			printf ("MediaElement::SetState (%d) state is not valid.\n", state);
-			return;
-		}
-		
-		//printf ("MediaElement::SetState (%d): New state: %s\n", state, state_name);
-		
-		prev_state = this->state;
-		this->state = state;
-		
-		media_element_set_current_state (this, name);		
-	}
+	//printf ("MediaElement::SetState (%d): New state: %s\n", state, state_name);
+	
+	prev_state = this->state;
+	this->state = state;
+	
+	media_element_set_current_state (this, name);		
 }
 
 void 
@@ -865,17 +857,12 @@ MediaElement::TryOpen ()
 		if (MEDIA_SUCCEEDED (source->Initialize ())) {
 			if (MEDIA_SUCCEEDED (media->Open (source))) {
 				MediaOpened (media);
+				SetState (Buffering);
 				
-				if ((flags & PlayRequested) || media_element_get_auto_play (this)) {
-					if (state == Opening) {
-						prev_state = Opening;
-						state = Buffering;
-					}
-					
+				if ((flags & PlayRequested) || media_element_get_auto_play (this))
 					Play ();
-				} else {
+				else
 					Pause ();
-				}
 				
 				Invalidate ();
 			} else {

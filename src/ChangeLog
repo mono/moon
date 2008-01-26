@@ -6,6 +6,8 @@
 	the Opening state which means that calling Play() will only note
 	that a Play action was requested, but won't actually play the
 	media).
+	(MediaElement::SetState): Don't check for downloaded_file == NULL,
+	it might fail in the above case.
 
 2008-01-26  Jackson Harper  <jackson@ximian.com>
 
