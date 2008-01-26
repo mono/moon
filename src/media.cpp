@@ -657,7 +657,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 
 
 // TODO: Honor BufferTimeProperty and calculate the buffering size from that.
-#define BUFFERING_SIZE (1024 * 1024)
+#define BUFFERING_SIZE (5 * 1024 * 1024)
 
 
 void
@@ -758,7 +758,7 @@ MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 		downloaded_file->Write (buf, offset, n);
 		
  		// FIXME: How much do we actually have to download in order to try to open the file?
-		if (!(flags & BufferingMedia) && offset > 1024 && (part_name == NULL || part_name[0] == 0))
+		if (!(flags & BufferingMedia) && offset > 16384 && (part_name == NULL || part_name[0] == 0))
 			TryOpen ();
 	}
 	
