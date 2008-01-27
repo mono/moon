@@ -87,7 +87,7 @@ Media::~Media ()
 	pthread_cond_signal (&queue_condition);
 	pthread_mutex_unlock (&queue_mutex);
 	
-	if (source->GetType () == MediaSourceTypeProgressive) {
+	if (source && source->GetType () == MediaSourceTypeProgressive) {
 		ProgressiveSource *ps = (ProgressiveSource *) source;
 		ps->CancelWait ();
 	}
@@ -96,10 +96,10 @@ Media::~Media ()
 	pthread_mutex_destroy (&queue_mutex);
 	pthread_cond_destroy (&queue_condition);
 	pthread_detach (queue_thread);
-		
+	
+	g_free (file_or_url);
 	delete source;
 	delete demuxer;
-	g_free (file_or_url);
 	
 	delete queue_closure;
 	
@@ -336,8 +336,6 @@ Media::Open (IMediaSource *source)
 	if (source == NULL || IsOpened ()) // Initialize wasn't called (or didn't succeed) or already open.
 		return MEDIA_INVALID_ARGUMENT;
 	
-	this->source = source;
-	
 	// Select a demuxer
 	DemuxerInfo *demuxerInfo = registered_demuxers;
 	while (demuxerInfo != NULL) {
@@ -349,17 +347,35 @@ Media::Open (IMediaSource *source)
 	}
 	
 	if (demuxerInfo == NULL) {
-		AddMessage (MEDIA_UNKNOWN_MEDIA_TYPE, g_strdup_printf ("No demuxers registered to handle the media file '%s'.", file_or_url));
+		const char *source_name = file_or_url;
+		
+		if (!source_name) {
+			switch (source->GetType ()) {
+			case MediaSourceTypeProgressive:
+			case MediaSourceTypeFile:
+				source_name = ((FileSource *) source)->GetFileName ();
+				break;
+			case MediaSourceTypeLive:
+				source_name = "live source";
+				break;
+			default:
+				source_name = "unknown source";
+				break;
+			}
+		}
+		
+		AddMessage (MEDIA_UNKNOWN_MEDIA_TYPE,
+			    g_strdup_printf ("No demuxers registered to handle the media source `%s'.",
+					     source_name));
 		return MEDIA_UNKNOWN_MEDIA_TYPE;
 	}
 	
 	// Found a demuxer
-	demuxer = demuxerInfo->Create (this);
+	demuxer = demuxerInfo->Create (this, source);
 	result = demuxer->ReadHeader ();
 	
-	if (!MEDIA_SUCCEEDED (result)) {
+	if (!MEDIA_SUCCEEDED (result))
 		return result;
-	}
 	
 	//printf ("Media::Open (): Found %i streams in this source.\n", demuxer->GetStreamCount ());
 	
@@ -369,28 +385,30 @@ Media::Open (IMediaSource *source)
 	
 	// Select codecs for each stream
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
-		IMediaStream* stream = demuxer->GetStream (i);
+		IMediaStream *stream = demuxer->GetStream (i);
 		if (stream == NULL)
 			return MEDIA_INVALID_STREAM;
 		
-		const char* codec = stream->GetCodec ();
-		IMediaDecoder* decoder = NULL;
+		const char *codec = stream->GetCodec ();
+		IMediaDecoder *decoder = NULL;
 		
 		//printf ("Media::Open (): Selecting codec for codec %s, id %i.\n", codec, stream->codec_id);
 		
-		DecoderInfo* current_decoder = registered_decoders;
+		DecoderInfo *current_decoder = registered_decoders;
 		while (current_decoder != NULL && !current_decoder->Supports (codec)) {
-			//printf ("Checking registered decoder '%s' if it supports codec '%s': no.\n", current_decoder->GetName (), codec);
+			//printf ("Checking registered decoder '%s' if it supports codec '%s': no.\n",
+			//	current_decoder->GetName (), codec);
 			current_decoder = (DecoderInfo*) current_decoder->next;
 		}
 
 		if (current_decoder == NULL) {
 			AddMessage (MEDIA_UNKNOWN_CODEC, g_strdup_printf ("Unknown codec: '%s'.", codec));	
 		} else {
-			//printf ("Checking registered decoder '%s' if it supports codec '%s': yes.\n", current_decoder->GetName (), codec);
+			//printf ("Checking registered decoder '%s' if it supports codec '%s': yes.\n",
+			//	current_decoder->GetName (), codec);
 			decoder = current_decoder->Create (this, stream);
 		}
-
+		
 		if (decoder != NULL) {
 			result = decoder->Open ();
 			if (!MEDIA_SUCCEEDED (result)) {
@@ -407,14 +425,18 @@ Media::Open (IMediaSource *source)
 				
 				ConverterInfo* current_conv = registered_converters;
 				while (current_conv != NULL && !current_conv->Supports (decoder->pixel_format, MoonPixelFormatRGB32)) {
-					//printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': no.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					//printf ("Checking whether '%s' supports input '%d' and output '%d': no.\n",
+					//	current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
 					current_conv = (ConverterInfo*) current_conv->next;
 				}
-
+				
 				if (current_conv == NULL) {
-					AddMessage (MEDIA_UNKNOWN_CONVERTER, g_strdup_printf ("Can't convert from %i to %i: No converter found.", vs->decoder->pixel_format, MoonPixelFormatRGB32));	
+					AddMessage (MEDIA_UNKNOWN_CONVERTER,
+						    g_strdup_printf ("Can't convert from %d to %d: No converter found.",
+								     vs->decoder->pixel_format, MoonPixelFormatRGB32));	
 				} else {
-					//printf ("Checking registered converter '%s' if it supports input '%i' and output '%i': yes.\n", current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					//printf ("Checking whether '%s' supports input '%d' and output '%d': yes.\n",
+					//	current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
 					converter = current_conv->Create (this, vs);
 					converter->input_format = decoder->pixel_format;
 					converter->output_format = MoonPixelFormatRGB32;
@@ -423,8 +445,8 @@ Media::Open (IMediaSource *source)
 						converter = NULL;
 					}
 				}
-
-				if (converter != NULL) {				
+				
+				if (converter != NULL) {
 					vs->converter = converter;
 				} else {
 					delete decoder;
@@ -439,7 +461,10 @@ Media::Open (IMediaSource *source)
 		}
 	}
 	
-	opened = true;
+	if (result == MEDIA_SUCCESS) {
+		this->source = source;
+		opened = true;
+	}
 	
 	return result;
 }
@@ -670,7 +695,7 @@ Media::ClearQueue ()
  * ASFDemuxer
  */
 
-ASFDemuxer::ASFDemuxer (Media *media) : IMediaDemuxer (media)
+ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
 {
 	stream_to_asf_index = NULL;
 	reader = NULL;
@@ -799,7 +824,7 @@ MediaResult
 ASFDemuxer::ReadHeader ()
 {
 	MediaResult result = MEDIA_SUCCESS;
-	ASFSource *asf_source = new ASFMediaSource (NULL, GetMedia ()->GetSource ());
+	ASFSource *asf_source = new ASFMediaSource (NULL, source);
 	ASFParser *asf_parser = new ASFParser (asf_source);
 	int32_t *stream_to_asf_index = NULL;
 	IMediaStream **streams = NULL;
@@ -1043,9 +1068,9 @@ ASFDemuxerInfo::Supports (IMediaSource *source)
 }
 
 IMediaDemuxer *
-ASFDemuxerInfo::Create (Media *media)
+ASFDemuxerInfo::Create (Media *media, IMediaSource *source)
 {
-	return new ASFDemuxer (media);
+	return new ASFDemuxer (media, source);
 }
 
 
@@ -1550,7 +1575,7 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
  * Mp3Demuxer
  */
 
-Mp3Demuxer::Mp3Demuxer (Media *media) : IMediaDemuxer (media)
+Mp3Demuxer::Mp3Demuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
 {
 	reader = NULL;
 }
@@ -1573,7 +1598,6 @@ Mp3Demuxer::Seek (uint64_t pts)
 MediaResult
 Mp3Demuxer::ReadHeader ()
 {
-	IMediaSource *source = GetMedia ()->GetSource ();
 	IMediaStream **streams = NULL;
 	int64_t stream_start;
 	IMediaStream *stream;
@@ -1720,9 +1744,9 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 }
 
 IMediaDemuxer *
-Mp3DemuxerInfo::Create (Media *media)
+Mp3DemuxerInfo::Create (Media *media, IMediaSource *source)
 {
-	return new Mp3Demuxer (media);
+	return new Mp3Demuxer (media, source);
 }
 
 

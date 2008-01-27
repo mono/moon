@@ -207,7 +207,7 @@ public:
 	// <buffer> points to the first <length> bytes of a file. 
 	// <length> is guaranteed to be at least 16 bytes.
 	virtual bool Supports (IMediaSource *source) = 0; 
-	virtual IMediaDemuxer *Create (Media *media) = 0;
+	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source) = 0;
 };
 
 class ConverterInfo : public MediaInfo  {
@@ -394,7 +394,7 @@ protected:
 	Media *media;
 	
 public:
-	IMediaObject (Media *med);
+	IMediaObject (Media *media);
 	virtual ~IMediaObject ();
 	
 	Media *GetMedia () { return media; }
@@ -422,7 +422,7 @@ public:
 	
 	//	User defined context value.
 	void *GetContext () { return context; }
-	void  SetContext (void* context) { this->context = context; }
+	void  SetContext (void *context) { this->context = context; }
 	
 	void *extra_data;
 	int extra_data_size;
@@ -446,10 +446,18 @@ class IMediaDemuxer : public IMediaObject {
 	int stream_count;
 	
 protected:
+	IMediaSource *source;
+	
 	void SetStreams (IMediaStream **streams, int count);
 	
 public:
-	IMediaDemuxer (Media *media) : IMediaObject (media), streams (NULL), stream_count (0) {}
+	IMediaDemuxer (Media *media, IMediaSource *source) : IMediaObject (media)
+	{
+		this->source = source;
+		stream_count = 0;
+		streams = NULL;
+	}
+	
 	virtual ~IMediaDemuxer ();
 	
 	virtual MediaResult ReadHeader () = 0;
@@ -660,7 +668,7 @@ class ASFDemuxer : public IMediaDemuxer {
 	void ReadMarkers ();
 	
 public:
-	ASFDemuxer (Media *media);
+	ASFDemuxer (Media *media, IMediaSource *source);
 	~ASFDemuxer ();
 	
 	virtual MediaResult ReadHeader ();
@@ -673,7 +681,7 @@ public:
 class ASFDemuxerInfo : public DemuxerInfo {
 public:
 	virtual bool Supports (IMediaSource *source);
-	virtual IMediaDemuxer *Create (Media *media); 
+	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source); 
 	virtual const char *GetName () { return "ASFDemuxer"; }
 };
 
@@ -739,7 +747,7 @@ class Mp3Demuxer : public IMediaDemuxer {
 	Mp3FrameReader *reader;
 	
 public:
-	Mp3Demuxer (Media *media);
+	Mp3Demuxer (Media *media, IMediaSource *source);
 	~Mp3Demuxer ();
 	
 	virtual MediaResult ReadHeader ();
@@ -750,7 +758,7 @@ public:
 class Mp3DemuxerInfo : public DemuxerInfo {
 public:
 	virtual bool Supports (IMediaSource *source);
-	virtual IMediaDemuxer *Create (Media *media); 
+	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source); 
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 

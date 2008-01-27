@@ -1,3 +1,10 @@
+2008-01-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp: IMediaDemuxer ctors now take an IMediaSource
+	argument to use in place of media->GetSource().
+	(Media::Open): Don't set this->source unless we successfully open
+	the source.
+
 2008-01-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::TryOpen): In the DownloadComplete case,

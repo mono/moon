@@ -34,7 +34,7 @@ void register_ffmpeg ();
 
 class FfmpegDemuxer : public IMediaDemuxer {
 public:
-	FfmpegDemuxer (Media* media) : IMediaDemuxer (media) {}
+	FfmpegDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source) {}
 };
  
 class FfmpegDecoder : public IMediaDecoder {
