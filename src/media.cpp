@@ -657,7 +657,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 
 
 // TODO: Honor BufferTimeProperty and calculate the buffering size from that.
-#define BUFFERING_SIZE (5 * 1024 * 1024)
+#define BUFFERING_SIZE (2 * 1024 * 1024)
 
 
 void
