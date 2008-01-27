@@ -690,7 +690,7 @@ MediaElement::UpdateProgress ()
 			// If the position the stream is waiting for is beyond the default
 			// buffer size, use that position to calculate the buffer size.
 			buffer_size = wait_pos - buffering_start;
-		} else if (size != -1 && (buffering_start + buffer_size) < size) {
+		} else if (size != -1 && (buffering_start + buffer_size) > size) {
 			// there's less than BUFFERING_SIZE data left to buffer
 			buffer_size = size - buffering_start;
 		}
@@ -747,7 +747,7 @@ MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 	//printf ("MediaElement::DataWrite (%p, %d, %d)\n", buf, offset, n);
 	
 	if (downloaded_file != NULL) {
-		downloaded_file->Write (buf, offset, n);
+		downloaded_file->Write (buf, (int64_t) offset, n);
 		
  		// FIXME: How much do we actually have to download in order to try to open the file?
 		if (!(flags & BufferingMedia) && offset > 16384 && (part_name == NULL || part_name[0] == 0))

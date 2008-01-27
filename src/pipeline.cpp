@@ -2065,6 +2065,7 @@ ProgressiveSource::Initialize ()
 		return MEDIA_FAIL;
 	}
 	
+	wait_pos = 0;
 	eof = false;
 	pos = 0;
 	
@@ -2256,7 +2257,7 @@ ProgressiveSource::Seek (int64_t offset, int mode)
 		return false;
 	}
 	
-	if (offset < 0) {
+	if (offset < 0 || (size != -1 && offset > size)) {
 		// attempting to seek to an invalid position
 		return false;
 	}
@@ -2285,7 +2286,7 @@ ProgressiveSource::ReadAll (void *buf, uint32_t n)
 	}
 	
 	Lock ();
-	need_wait = pos + n > write_pos;
+	need_wait = (pos + n) > write_pos;
 	Unlock ();
 	
 	if (need_wait) {
@@ -2311,7 +2312,7 @@ ProgressiveSource::Peek (void *buf, uint32_t n)
 	}
 	
 	Lock ();
-	need_wait = pos + n > write_pos;
+	need_wait = (pos + n) > write_pos;
 	Unlock ();
 	
 	if (need_wait) {
