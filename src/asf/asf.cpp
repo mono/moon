@@ -728,11 +728,13 @@ ASFFrameReader::ASFFrameReader (ASFParser *p, int s)
 ASFFrameReader::~ASFFrameReader ()
 {
 	RemoveAll ();
-	
-	for (int i = 0; payloads[i]; i++)
-		delete payloads[i];
-	
-	g_free (payloads);
+
+	if (payloads != NULL) {	
+		for (int i = 0; payloads[i]; i++)
+			delete payloads[i];
+		
+		g_free (payloads);
+	}
 }
 
 bool

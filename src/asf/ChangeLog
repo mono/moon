@@ -1,5 +1,9 @@
 2008-01-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Add a null check.
+
+2008-01-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: Create a frame reader per stream. Simplifies a bit the
 	  reader, as well as it allows us to ignore unwanted streams correctly.
 	  Create a better seek implementation, and started work on an index.
