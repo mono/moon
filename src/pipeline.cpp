@@ -1624,6 +1624,63 @@ Mp3Demuxer::Seek (uint64_t pts)
 	return MEDIA_FAIL;
 }
 
+static int64_t
+FindMpegHeader (IMediaSource *source, int64_t start)
+{
+	uint8_t buf[4096], *inbuf, *inend;
+	register uint8_t *inptr;
+	int64_t offset = 0;
+	int32_t n = 0;
+	
+	if (!source->Seek (start, SEEK_SET))
+		return -1;
+	
+	inbuf = buf;
+	
+	do {
+		if ((n = source->Read (inbuf, sizeof (buf) - n)) <= 0)
+			return -1;
+		
+		inend = inbuf + n;
+		inptr = buf;
+		
+		if ((inend - inptr) < 4)
+			return -1;
+		
+		do {
+			/* mpeg audio sync header begins with a 0xff */
+			while (inptr < inend && *inptr != 0xff)
+				inptr++;
+			
+			if (inptr == inend)
+				break;
+			
+			/* found a 0xff byte... could be a frame header */
+			if ((inptr + 3) < inend) {
+				if (is_mpeg_header (inptr))
+					return start + offset + (inptr - buf);
+				
+				/* not an mpeg audio sync header */
+				inptr++;
+			} else {
+				/* not enough data to check */
+				break;
+			}
+		} while (inptr < inend);
+		
+		if ((n = (inend - inptr)) > 0) {
+			/* save the remaining bytes */
+			memmove (buf, inptr, n);
+		}
+		
+		offset += (inptr - buf);
+		
+		/* if we scan more than 16k, this surely isn't an mp3... */
+	} while (offset < 16384);
+	
+	return -1;
+}
+
 MediaResult
 Mp3Demuxer::ReadHeader ()
 {
@@ -1659,38 +1716,42 @@ Mp3Demuxer::ReadHeader ()
 		} else
 			size += 10;
 		
-		// skip over the ID3 tag
-		if (!source->Seek ((int64_t) size, SEEK_SET))
-			return MEDIA_INVALID_MEDIA;
-		
-		if (!source->ReadAll (buffer, 4))
-			return MEDIA_INVALID_MEDIA;
-		
+		// MPEG stream data starts at the end of the ID3 tag
 		stream_start = (int64_t) size;
 	} else {
 		stream_start = 0;
 	}
 	
-	if (!source->Seek (0, SEEK_END))
+	// There can be an "arbitrary" amount of garbage at the
+	// beginning of an mp3 stream, so we need to find the first
+	// MPEG sync header by scanning.
+	if ((stream_start = FindMpegHeader (source, stream_start)) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
-	end = source->GetPosition ();
-	
 	if (!source->Seek (stream_start, SEEK_SET))
+		return MEDIA_INVALID_MEDIA;
+	
+	if (!source->Peek (buffer, 4))
 		return MEDIA_INVALID_MEDIA;
 	
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
 	if (mpeg_parse_header (&mpeg, buffer) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
-	// calculate the duration of the first frame
-	duration = mpeg_frame_duration (&mpeg);
-	
-	// calculate the frame length
-	len = mpeg_frame_length (&mpeg);
-	
-	// estimate the number of frames
-	nframes = (end - stream_start) / len;
+	if ((end = source->GetSize ()) != -1) {
+		// calculate the duration of the first frame
+		duration = mpeg_frame_duration (&mpeg);
+		
+		// calculate the frame length
+		len = mpeg_frame_length (&mpeg);
+		
+		// estimate the number of frames
+		nframes = (end - stream_start) / len;
+		
+		duration *= nframes;
+	} else {
+		duration = 0;
+	}
 	
 	reader = new Mp3FrameReader (source, stream_start);
 	
@@ -1698,7 +1759,7 @@ Mp3Demuxer::ReadHeader ()
 	audio->codec_id = CODEC_MP3;
 	audio->codec = "mp3";
 	
-	audio->duration = duration * nframes;
+	audio->duration = duration;
 	audio->bit_rate = mpeg.bit_rate;
 	audio->channels = mpeg.channels;
 	audio->sample_rate = mpeg.sample_rate;
@@ -1858,6 +1919,17 @@ bool
 FileSource::IsSeekable ()
 {
 	return true;
+}
+
+int64_t
+FileSource::GetSize ()
+{
+	struct stat st;
+	
+	if (fd == -1 || fstat (fd, &st) == -1)
+		return -1;
+	
+	return st.st_size;
 }
 
 int64_t

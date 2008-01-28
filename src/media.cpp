@@ -695,7 +695,7 @@ MediaElement::UpdateProgress ()
 	if (IsBuffering ()) {
 		int64_t wait_pos = downloaded_file->GetWaitPosition ();
 		int64_t pos = downloaded_file->GetWritePosition ();
-		int64_t size = downloaded_file->GetTotalSize ();
+		int64_t size = downloaded_file->GetSize ();
 		int64_t buffer_size = BUFFERING_SIZE;
 		
 		if ((buffering_start + buffer_size) < wait_pos) {

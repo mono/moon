@@ -535,6 +535,7 @@ public:
 	virtual int32_t Read (void *buf, uint32_t n) = 0;
 	virtual bool ReadAll (void *buf, uint32_t n) = 0;
 	virtual bool Peek (void *buf, uint32_t n) = 0;
+	virtual int64_t GetSize () = 0;
 	virtual bool Eof () = 0;
 };
 
@@ -569,6 +570,7 @@ public:
 	virtual int32_t Read (void *buf, uint32_t n);
 	virtual bool ReadAll (void *buf, uint32_t n);
 	virtual bool Peek (void *buf, uint32_t n);
+	virtual int64_t GetSize ();
 	virtual bool Eof ();
 };
 
@@ -596,7 +598,6 @@ public:
 	void SetCurrentSize (int64_t size);
 	
 	// The total size of the file (might not be available)
-	int64_t GetTotalSize () { return size; }
 	void SetTotalSize (int64_t size);
 	
 	// Blocks until the position have data
@@ -616,6 +617,7 @@ public:
 	virtual bool Seek (int64_t offset, int mode);
 	virtual bool ReadAll (void *buf, uint32_t size);
 	virtual bool Peek (void *buf, uint32_t size);
+	virtual int64_t GetSize () { return size; }
 	
 	void Write (void *buf, int64_t offset, int32_t n);
 	void NotifySize (int64_t size);
@@ -635,6 +637,7 @@ public:
 	virtual int32_t Read (void *buffer, uint32_t n) { return -1; }
 	virtual bool ReadAll (void *buffer, uint32_t n) { return false; }
 	virtual bool Peek (void *buffer, uint32_t n) { return false; }
+	virtual int64_t GetSize () { return -1; }
 	virtual bool Eof () { return false; }
 };
 
