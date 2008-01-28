@@ -328,6 +328,19 @@ Media::Open ()
 }
 
 MediaResult
+Media::OpenAsync (IMediaSource *source, MediaClosure *closure)
+{
+	MediaWork *work = new MediaWork (WorkTypeOpen);
+	work->data.open.source = source;
+	work->data.open.closure = closure;
+	closure->media = this;
+	
+	EnqueueWork (work);
+	
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
 Media::Open (IMediaSource *source)
 {
 	MediaResult result;
@@ -531,6 +544,8 @@ Media::WorkerLoop (void *data)
 void
 Media::WorkerLoop ()
 {
+	MediaResult result;
+	
 	LOG_FRAMEREADERLOOP ("Media::WorkerLoop ().\n", 0);
 	while (queued_requests != NULL) {
 		MediaWork *node = NULL;
@@ -567,10 +582,9 @@ Media::WorkerLoop ()
 		switch (node->type) {
 		case WorkTypeSeek:
 			//printf ("Media::WorkerLoop (): Seeking, current count: %d\n", queued_requests->Length ());
-			bool seek_result;
-			seek_result = Seek (node->data.seek.seek_pts);
+			result = Seek (node->data.seek.seek_pts);
 			if (node->data.seek.closure != NULL) {
-				node->data.seek.closure->result = seek_result ? MEDIA_SUCCESS : MEDIA_FAIL;
+				node->data.seek.closure->result = result ? MEDIA_SUCCESS : MEDIA_FAIL;
 				node->data.seek.closure->Call ();
 				delete node->data.seek.closure;
 				node->data.seek.closure = NULL;
@@ -580,13 +594,22 @@ Media::WorkerLoop ()
 		case WorkTypeVideo:
 		case WorkTypeMarker:
 			// Now demux and decode what we found and send it to who asked for it
-			MediaResult result = GetNextFrame (node->data.frame.frame, node->data.frame.states);
+			result = GetNextFrame (node->data.frame.frame, node->data.frame.states);
 			if (MEDIA_SUCCEEDED (result)) {
 				MediaClosure *closure = new MediaClosure ();
 				memcpy (closure, queue_closure, sizeof (MediaClosure));
 				closure->frame = node->data.frame.frame;
 				closure->Call ();
 				delete closure;
+			}
+			break;
+		case WorkTypeOpen:
+			result = Open (node->data.open.source);
+			if (node->data.open.closure != NULL) {
+				node->data.open.closure->result = result;
+				node->data.open.closure->Call ();
+				delete node->data.open.closure;
+				node->data.open.closure = NULL;
 			}
 			break;
 		}
@@ -672,6 +695,9 @@ Media::EnqueueWork (MediaWork *work)
 				queued_requests->InsertBefore (work, current);
 			else
 				queued_requests->Append (work);
+			break;
+		case WorkTypeOpen:
+			queued_requests->Prepend (work);
 			break;
 		}
 	} else {
@@ -2354,7 +2380,7 @@ ProgressiveSource::GetWritePosition ()
  */ 
 
 MediaClosure::MediaClosure () : 
-	callback (NULL), frame (NULL), media (NULL), context (NULL)
+	callback (NULL), frame (NULL), media (NULL), context (NULL), result (0)
 {
 }
 

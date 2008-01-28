@@ -154,16 +154,17 @@ enum MoonMediaType {
 
 enum MoonWorkType {
 	// The order is important, the most important work comes first (lowest number).
-	
 	// Seek is most important (as it will invalidate all other work), 
 	// and will always be put first in the queue.
 	// No more than one seek request should be in the queue at the same time either.
 	WorkTypeSeek = 1, 
 	// All audio work is done before any video work, since glitches in the audio is worse 
 	// than glitches in the video.
-	WorkTypeAudio = 2, 
-	WorkTypeVideo = 3,
-	WorkTypeMarker = 4
+	WorkTypeAudio, 
+	WorkTypeVideo,
+	WorkTypeMarker,
+	// No other work should be in the queue until this has finished, so priority doesn't matter.
+	WorkTypeOpen
 };
 
 typedef MediaResult MediaCallback (MediaClosure *closure);
@@ -178,7 +179,9 @@ public:
 	Media *media; // Set when this is the callback in Media::GetNextFrameAsync
 	MediaMarker *marker; // Set when this is the callback in MarkerStream
 	void *context; // The property of whoever creates the closure.
-	MediaResult result;  // Set when this is a seek callback, contains the result of the seek
+	// Set when this is a seek callback, contains the result of the seek
+	// also set for OpenAsync.
+	MediaResult result;
 	// Calls the callback and returns the callback's return value
 	// If no callback is set, returns MEDIA_NO_CALLBACK
 	MediaResult Call ();
@@ -228,15 +231,16 @@ public:
 			MediaFrame *frame;
 			uint16_t states;
 		} frame;
+		struct {
+			IMediaSource *source;
+			MediaClosure *closure;
+		} open;
 	} data;
 	
 	MediaWork (MoonWorkType tp) 
 	{
 		type = tp;
-		data.seek.seek_pts = 0;
-		data.seek.closure = NULL;
-		data.frame.frame = NULL;
-		data.frame.states = 0;
+		memset (&data, 0, sizeof (data));
 	}
 	virtual ~MediaWork () {}
 };
@@ -290,6 +294,7 @@ public:
 	//	- Default is Media *media to use MS decoder if available, otherwise ffmpeg. Overridable by MOONLIGHT_OVERRIDES, set codec=ffmpeg to force the ffmpeg decoder.
 	MediaResult Open (); // Should only be called if Initialize has already been called (which will create the source)
 	MediaResult Open (IMediaSource *source); // Called if you have your own source
+	MediaResult OpenAsync (IMediaSource *source, MediaClosure *closure);
 	
 	// Seeks to the specified pts (if seekable).
 	MediaResult Seek (uint64_t pts);

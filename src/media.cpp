@@ -261,7 +261,8 @@ enum MediaElementFlags {
 	DisableBuffering  = (1 << 4),  // set if we cannot give useful buffering progress
 	DownloadComplete  = (1 << 5),  // set if the download is complete
 	UpdatingPosition  = (1 << 6),  // set if we are updating the PositionProperty as opposed to someone else
-	RecalculateMatrix = (1 << 7)   // set if the patern matrix needs to be recomputed
+	RecalculateMatrix = (1 << 7),  // set if the patern matrix needs to be recomputed
+	WaitingForOpen    = (1 << 8)   // set if we've called OpenAsync on a media and we're waiting for the result	
 };
 
 
@@ -465,12 +466,15 @@ media_element_advance_frame (void *user_data)
 
 MediaElement::MediaElement ()
 {
+	pthread_mutex_init (&open_mutex, NULL);
+
 	streamed_markers = NULL;
 	downloaded_file = NULL;
 	downloader = NULL;
 	part_name = NULL;
 	mplayer = NULL;
 	media = NULL;
+	closure = NULL;
 	flags = 0;
 	
 	Reinitialize ();
@@ -486,6 +490,7 @@ MediaElement::~MediaElement ()
 	Reinitialize ();
 	
 	delete mplayer;
+	pthread_mutex_destroy (&open_mutex);
 }
 
 void
@@ -504,6 +509,10 @@ MediaElement::Reinitialize ()
 		
 		delete media;
 		media = NULL;
+	}
+	if (closure) {
+		delete closure;
+		closure = NULL;
 	}
 	
 	flags = (flags & (Loaded | PlayRequested)) | RecalculateMatrix;
@@ -736,7 +745,7 @@ MediaElement::SetState (MediaElementState state)
 		return;
 	}
 	
-	//printf ("MediaElement::SetState (%d): New state: %s\n", state, state_name);
+	//printf ("MediaElement::SetState (%d): New state: %s\n", state, GetStateName (state));
 	
 	prev_state = this->state;
 	this->state = state;
@@ -753,7 +762,7 @@ MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 		downloaded_file->Write (buf, (int64_t) offset, n);
 		
  		// FIXME: How much do we actually have to download in order to try to open the file?
-		if (!(flags & BufferingFailed) && IsOpening () && offset > 16384 && (part_name == NULL || part_name[0] == 0))
+		if (!(flags & BufferingFailed) && IsOpening () && offset > 1024 && (part_name == NULL || part_name[0] == 0))
 			TryOpen ();
 	}
 	
@@ -817,6 +826,49 @@ MediaElement::BufferingComplete ()
 	}
 }
 
+MediaResult
+media_element_open_callback (MediaClosure *closure)
+{
+	MediaElement *element = (MediaElement*) closure->context;
+	if (element != NULL) {
+		pthread_mutex_lock (&element->open_mutex);
+		// the closure will be deleted when we return from this function,
+		// so make a copy of the data.
+		element->closure = new MediaClosure ();
+		memcpy (element->closure, closure, sizeof (MediaClosure));
+		pthread_mutex_unlock (&element->open_mutex);
+		// We need to call TryOpenFinished on the main thread, so 
+		TimeManager::Instance ()->AddTimeout (0, MediaElement::TryOpenFinished, element);
+		base_unref_delayed (element);
+	}
+	return MEDIA_SUCCESS;
+}
+
+gboolean
+MediaElement::TryOpenFinished (void *user_data)
+{
+	// No locking should be necessary here, since we can't have another open request pending.
+	MediaElement *element = (MediaElement*) user_data;
+	MediaClosure *closure = element->closure;
+	element->closure = NULL;
+	element->flags &= ~WaitingForOpen;
+	
+	printf ("MediaElement::TryOpenFinished (), result: %i\n", closure->result);
+	if (MEDIA_SUCCEEDED (closure->result)) {
+		printf ("MediaElement::TryOpen (): download is not complete, but media was "
+			"opened successfully and we'll now start buffering.\n");
+		element->MediaOpened (closure->media);
+		element->SetState (Buffering);
+	} else {
+		element->flags |=  BufferingFailed;
+		// Seek back to the beginning of the file
+		element->downloaded_file->Seek (0, SEEK_SET);
+		delete closure->media;
+		closure->media = NULL;
+	}
+	return false;
+}
+
 void
 MediaElement::TryOpen ()
 {
@@ -846,6 +898,10 @@ MediaElement::TryOpen ()
 	if (!(flags & Loaded)) {
 		//printf ("MediaElement::TryOpen (): We're not loaded, so wait until then.\n");
 		flags |= TryOpenOnLoaded;
+		return;
+	}
+	
+	if (flags & WaitingForOpen) {
 		return;
 	}
 	
@@ -887,19 +943,16 @@ MediaElement::TryOpen ()
 	} else if (part_name != NULL && part_name[0] != 0) {
 		// PartName is set, we can't buffer, download the entire file.
 	} else if (!(flags & BufferingFailed)) {
+		flags |= WaitingForOpen;
+		
 		Media *media = new Media ();
 		
-		if (MEDIA_SUCCEEDED (media->Open (downloaded_file))) {
-			//printf ("MediaElement::TryOpen (): download is not complete, but media was "
-			//	"opened successfully and we'll now start buffering.\n");
-			MediaOpened (media);
-			SetState (Buffering);
-		} else {
-			flags |=  BufferingFailed;
-			// Seek back to the beginning of the file
-			downloaded_file->Seek (0, SEEK_SET);
-			delete media;
-		}
+		MediaClosure *closure = new MediaClosure ();
+		closure->callback = media_element_open_callback;
+		closure->media = media;
+		closure->context = this;
+		this->ref (); // The closure might survive us, so keep us alive until the callback has been called.
+		media->OpenAsync (downloaded_file, closure);
 	}
 	
 	// FIXME: specify which audio stream index the player should use

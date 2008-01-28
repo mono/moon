@@ -304,6 +304,10 @@ public:
 	bool IsPaused () { return state == Paused; }
 	bool IsStopped () { return state == Stopped; }
 	
+	pthread_mutex_t open_mutex; // Used when accessing closure.
+	MediaClosure *closure;
+	static gboolean TryOpenFinished (void *user_data);
+	
 	static const char *GetStateName (MediaElementState state);
 	
 	MediaElementState GetState () { return state; }
