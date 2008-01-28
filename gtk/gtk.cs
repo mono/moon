@@ -162,6 +162,21 @@ public class GtkSilver : EventBox {
 		MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
 			GetMethod ("SurfaceAttach", BindingFlags.Static | BindingFlags.NonPublic);
 		m.Invoke (null, new object [] { surface, canvas });
+		c = canvas;
+	}
+
+	Canvas c;
+	
+	/// <summary>
+	///    The currently attached Canvas.
+	/// </summary>
+	/// <remarks>
+	///   This returns the instance of the currently attached Canvas.
+	/// </remarks>
+	public Canvas Canvas {
+		get {
+			return c;
+		}
 	}
 
 	/// <summary>
