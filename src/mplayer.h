@@ -33,6 +33,7 @@ public:
 	bool playing;
 	bool stop;
 	bool eof;
+	bool seeking;
 	
 	GThread *audio_thread;
 	Audio *audio;
@@ -55,7 +56,10 @@ public:
 	MediaPlayer ();
 	~MediaPlayer ();
 	
-	bool AdvanceFrame ();
+	// Returns true if advanced at least one frame.
+	// A false return value does not say anything about why it didn't advance
+	// (No need to advance, eof, seeking, etc). 
+	bool AdvanceFrame (); 
 	void LoadVideoFrame ();
 	void Render (cairo_t *cr);
 	cairo_surface_t *GetSurface ();
@@ -69,10 +73,12 @@ public:
 	bool CanPause ();
 	bool IsPaused ();
 	void Pause ();
+	void PauseInternal (bool pause);
 	void Stop ();
 	
 	bool CanSeek ();
 	void Seek (uint64_t position);
+	void SeekInternal (uint64_t position);
 	uint64_t Position ();
 	uint64_t Duration ();
 	

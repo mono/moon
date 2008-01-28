@@ -178,7 +178,7 @@ public:
 	Media *media; // Set when this is the callback in Media::GetNextFrameAsync
 	MediaMarker *marker; // Set when this is the callback in MarkerStream
 	void *context; // The property of whoever creates the closure.
-	
+	MediaResult result;  // Set when this is a seek callback, contains the result of the seek
 	// Calls the callback and returns the callback's return value
 	// If no callback is set, returns MEDIA_NO_CALLBACK
 	MediaResult Call ();
@@ -220,7 +220,10 @@ class MediaWork : public List::Node {
 public:
 	MoonWorkType type;
 	union {
-		uint64_t seek_pts;
+		struct {
+			uint64_t seek_pts;
+			MediaClosure *closure;
+		} seek;
 		struct {
 			MediaFrame *frame;
 			uint16_t states;
@@ -230,7 +233,8 @@ public:
 	MediaWork (MoonWorkType tp) 
 	{
 		type = tp;
-		data.seek_pts = 0;
+		data.seek.seek_pts = 0;
+		data.seek.closure = NULL;
 		data.frame.frame = NULL;
 		data.frame.states = 0;
 	}
@@ -289,7 +293,7 @@ public:
 	
 	// Seeks to the specified pts (if seekable).
 	MediaResult Seek (uint64_t pts);
-	MediaResult SeekAsync (uint64_t pts);
+	MediaResult SeekAsync (uint64_t pts, MediaClosure *closure);
 	
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
@@ -662,7 +666,7 @@ public:
  */
 class ASFDemuxer : public IMediaDemuxer {
 	int32_t *stream_to_asf_index;
-	ASFFrameReader *reader;
+	ASFFrameReader **readers;
 	ASFParser *parser;
 	
 	void ReadMarkers ();

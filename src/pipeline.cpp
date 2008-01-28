@@ -236,13 +236,14 @@ Media::Seek (uint64_t pts)
 }
 
 MediaResult
-Media::SeekAsync (uint64_t pts)
+Media::SeekAsync (uint64_t pts, MediaClosure *closure)
 {
 	if (demuxer == NULL)
 		return MEDIA_FAIL;
 	
 	MediaWork *work = new MediaWork (WorkTypeSeek);
-	work->data.seek_pts = pts;
+	work->data.seek.seek_pts = pts;
+	work->data.seek.closure = closure;
 	EnqueueWork (work);
 	
 	return MEDIA_SUCCESS;
@@ -566,7 +567,14 @@ Media::WorkerLoop ()
 		switch (node->type) {
 		case WorkTypeSeek:
 			//printf ("Media::WorkerLoop (): Seeking, current count: %d\n", queued_requests->Length ());
-			Seek (node->data.seek_pts);
+			bool seek_result;
+			seek_result = Seek (node->data.seek.seek_pts);
+			if (node->data.seek.closure != NULL) {
+				node->data.seek.closure->result = seek_result ? MEDIA_SUCCESS : MEDIA_FAIL;
+				node->data.seek.closure->Call ();
+				delete node->data.seek.closure;
+				node->data.seek.closure = NULL;
+			}
 			break;
 		case WorkTypeAudio:
 		case WorkTypeVideo:
@@ -698,7 +706,7 @@ Media::ClearQueue ()
 ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
 {
 	stream_to_asf_index = NULL;
-	reader = NULL;
+	readers = NULL;
 	parser = NULL;
 }
 
@@ -706,8 +714,11 @@ ASFDemuxer::~ASFDemuxer ()
 {
 	g_free (stream_to_asf_index);
 	
-	if (reader)
-		delete reader;
+	if (readers != NULL) {
+		for (int i = 0; i < GetStreamCount (); i++)
+			delete readers [i];
+		g_free (readers);
+	}
 	
 	if (parser)
 		delete parser;
@@ -716,21 +727,16 @@ ASFDemuxer::~ASFDemuxer ()
 MediaResult
 ASFDemuxer::Seek (uint64_t pts)
 {
-	if (reader == NULL)
-		reader = new ASFFrameReader (parser);
+	bool result = true;
 	
-	// If there's any audio stream, we need to seek to that stream
-	// 
-	int stream_id = 0;
-	for (int i = 1; i <= 127; i++) {
-		asf_stream_properties *asp = parser->GetStream (i);
-		if (asp != NULL && asp->is_audio ()) {
-			stream_id = i;
-			break;
-		}
+	if (readers == NULL)
+		return MEDIA_FAIL;
+	
+	for (int i = 0; i < GetStreamCount (); i++) {
+		result &= readers [i]->Seek (pts);
 	}
-	
-	if (reader->Seek (stream_id, pts))
+		
+	if (result)
 		return MEDIA_SUCCESS;
 	
 	return MEDIA_FAIL;
@@ -753,7 +759,6 @@ ASFDemuxer::ReadMarkers ()
 	
 	// Read the markers (if any)
 	List *markers = media->GetMarkers ();
-	//guint64 preroll = parser->file_properties->preroll;
 	const char *type;
 	uint64_t pts;
 	char *text;
@@ -971,6 +976,10 @@ ASFDemuxer::ReadHeader ()
 	this->stream_to_asf_index = stream_to_asf_index;
 	this->parser = asf_parser;
 	
+	readers = (ASFFrameReader**) g_malloc0 (sizeof (ASFFrameReader*) * (stream_count + 1));
+	for (int i = 0; i < stream_count; i++)
+		readers [i] = new ASFFrameReader (parser, stream_to_asf_index [i]);
+			
 	ReadMarkers ();
 	
 	return result;
@@ -1000,15 +1009,13 @@ MediaResult
 ASFDemuxer::ReadFrame (MediaFrame *frame)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
-	
-	if (reader == NULL)
-		reader = new ASFFrameReader (parser);
+	ASFFrameReader *reader = readers [frame->stream->index];
 	
 	//printf ("ASFDemuxer::ReadFrame (%p) frame = ", frame);
 	//frame->printf ();
 	//printf ("\n");
 	
-	if (!reader->Advance (stream_to_asf_index [frame->stream->index])) {
+	if (!reader->Advance ()) {
 		if (!reader->Eof ()) {
 			media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame.");
 			return MEDIA_DEMUXER_ERROR;
@@ -1039,10 +1046,6 @@ ASFDemuxer::ReadFrame (MediaFrame *frame)
 	}
 	
 	frame->AddState (FRAME_DEMUXED);
-	
-	//printf ("ASFDemuxer::ReadFrame (%p) frame = ", frame);
-	//frame->printf ();
-	//printf ("\n");
 	
 	return MEDIA_SUCCESS;
 }
@@ -2134,7 +2137,7 @@ void
 ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 {
 	ssize_t nwritten;
-	
+	//printf ("ProgressiveSource::Write (%p, %lld, %i)\n", buf, offset, n);
 	if (fd == -1) {
 		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
 		return;

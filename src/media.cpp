@@ -257,7 +257,7 @@ enum MediaElementFlags {
 	Loaded            = (1 << 0),  // set once OnLoaded has been called
 	TryOpenOnLoaded   = (1 << 1),  // set if OnLoaded should call TryOpen
 	PlayRequested     = (1 << 2),  // set if Play() has been requested prior to being ready
-	BufferingMedia    = (1 << 3),  // set if TryOpen() succeeded and we are now buffering
+	BufferingFailed   = (1 << 3),  // set if TryOpen failed to buffer the media.
 	DisableBuffering  = (1 << 4),  // set if we cannot give useful buffering progress
 	DownloadComplete  = (1 << 5),  // set if the download is complete
 	UpdatingPosition  = (1 << 6),  // set if we are updating the PositionProperty as opposed to someone else
@@ -425,6 +425,9 @@ MediaElement::AdvanceFrame ()
 	if (!IsPlaying ())
 		return false;
 	
+	if (!mplayer->HasVideo ())
+		return false;
+	
 	advanced = mplayer->AdvanceFrame ();
 	
 	position = mplayer->Position () * (TIMESPANTICKS_IN_SECOND / 1000);
@@ -443,13 +446,13 @@ MediaElement::AdvanceFrame ()
 	// might raise two events).
 	previous_position = position + 1;
 	
-	if (!advanced) {
+	if (!advanced && mplayer->eof) {
 		mplayer->Stop ();
 		SetState (Stopped);
 		Emit (MediaEndedEvent);
 	}
 	
-	return advanced;
+	return !IsStopped ();
 }
 
 gboolean
@@ -750,7 +753,7 @@ MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 		downloaded_file->Write (buf, (int64_t) offset, n);
 		
  		// FIXME: How much do we actually have to download in order to try to open the file?
-		if (!(flags & BufferingMedia) && offset > 16384 && (part_name == NULL || part_name[0] == 0))
+		if (!(flags & BufferingFailed) && IsOpening () && offset > 16384 && (part_name == NULL || part_name[0] == 0))
 			TryOpen ();
 	}
 	
@@ -883,16 +886,16 @@ MediaElement::TryOpen ()
 		}
 	} else if (part_name != NULL && part_name[0] != 0) {
 		// PartName is set, we can't buffer, download the entire file.
-	} else if (!(flags & BufferingMedia)) {
+	} else if (!(flags & BufferingFailed)) {
 		Media *media = new Media ();
 		
 		if (MEDIA_SUCCEEDED (media->Open (downloaded_file))) {
 			//printf ("MediaElement::TryOpen (): download is not complete, but media was "
 			//	"opened successfully and we'll now start buffering.\n");
-			flags |= BufferingMedia;
 			MediaOpened (media);
 			SetState (Buffering);
 		} else {
+			flags |=  BufferingFailed;
 			// Seek back to the beginning of the file
 			downloaded_file->Seek (0, SEEK_SET);
 			delete media;

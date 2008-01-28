@@ -108,7 +108,7 @@ public:
 	int GetPayloadCount (); // Returns the number of payloads in this packet.
 	asf_single_payload *GetPayload (int index /* 0 based */);
 	
-	uint64_t GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload.
+	uint64_t GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload. 0 if no payloads.
 	asf_single_payload *GetFirstPayload (int stream_id /* 1 - 127 */); // Gets the index first payload of the specified stream.
 };
 
@@ -130,6 +130,14 @@ struct ASFFrameReaderData {
 	}
 };
 
+#define INVALID_START_PTS ((uint64_t) -1)
+
+struct ASFFrameReaderIndex {
+	uint64_t start_pts;
+	uint64_t end_pts;
+	int32_t packet_index;
+	int8_t stream;
+};
 /*
  *	The data in an ASF file has the following structure:
  *		Data
@@ -161,9 +169,12 @@ class ASFFrameReader {
 	
 	// The first pts that should be returned, any frames with pts below this one will be dropped.
 	uint64_t first_pts;
+	// Only return key frames. Reset after we've returned a key frame.
+	bool key_frames_only;
+	int stream_number; // The stream this reader is reading for 
 	
-	int current_packet_index;
-	int script_command_stream_index;
+	int32_t current_packet_index;
+	int32_t script_command_stream_index;
 	
 	// The queue of payloads we've built.
 	ASFFrameReaderData *first;
@@ -178,6 +189,10 @@ class ASFFrameReader {
 	
 	bool eof;
 	
+	// Index data
+	int32_t index_size; // The number of items in the index.
+	ASFFrameReaderIndex *index; // A table of ASFFrameReaderIndexes.
+	
 	bool ResizeList (int size); // Resizes the list of payloads to the requested size. 
 	bool ReadMore (); // Reads another packet and stuffs the payloads into our queue 
 	void RemoveAll (); // Deletes the entire queue of payloads (and deletes every element)
@@ -186,22 +201,18 @@ class ASFFrameReader {
 	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
 	
 public:
-	ASFFrameReader (ASFParser *parser);
+	ASFFrameReader (ASFParser *parser, int stream_index);
 	virtual ~ASFFrameReader ();
 	
 	// Can we seek?
 	bool CanSeek () { return true; }
 	
 	// Seek to the frame with the provided pts 
-	bool Seek (int stream_id, uint64_t pts);
+	bool Seek (uint64_t pts);
 	
 	// Advance to the next frame
 	// Returns false if unsuccessful (if due to no more data, eof is set, otherwise some error occurred)
 	bool Advance ();
-	
-	// Advance to the next frame of the specified stream number
-	// stream_id = 0 means any stream
-	bool Advance (int stream_id);
 	
 	// Write the frame's data to a the destination
 	bool Write (void *dest);
@@ -210,14 +221,18 @@ public:
 	uint64_t Size () { return size; }
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
 	uint64_t Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
-	int StreamId () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->stream_id : 0; }
+	int StreamId () { return stream_number; }
 	bool Eof () { return eof; } // EOF might be true even if there are more packets in the reader (if Advance () fails, and Eof () = true, then advance failed because of eof).
 	void FindScriptCommandStream ();
 	
-	// Index 
-	uint32_t FrameSearch (uint64_t pts);
+	// Index, returns the packet index of where the frame is.
+	// returns -1 if not found in the index.
+	int32_t FrameSearch (uint64_t pts);
+
 	// Adds the current frame to the index.
 	void AddFrameIndex ();
+	bool IsAudio ();
+	bool IsAudio (int stream);
 };
 
 class ASFParser {
@@ -271,6 +286,10 @@ public:
 	// Checks if the stream_index (range 1 - 127) is a valid stream index in the asf file.
 	bool IsValidStream (int stream_index);
 	
+	// Returns the sequential stream index (range 1 - 127) from the specified stream index (range 1 - 127)
+	// Example: The file has streams #2, #5, #9, the sequential numbers would be 1, 2 and 3.
+	int GetSequentialStreamNumber (int stream_index);
+	
 	// Returns 0 on failure, otherwise the offset of the packet index.
 	int64_t GetPacketOffset (int packet_index);
 	
@@ -287,6 +306,9 @@ public:
 	
 	// The number of packets in the stream (0 if unknown).
 	uint64_t GetPacketCount ();
+	
+	// The number of streams
+	int GetStreamCount ();
 	
 	// Field accessors
 	

@@ -1,3 +1,13 @@
+2008-01-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaElement::AdvanceFrame: Only stop if the media player
+	  reached eof and couldn't advance.
+	* mplayer.cpp, mplayer.h: Add a seeking flag, allows us to skip frames we
+	  get while we're waiting for a seek to happen. Implement a better pause
+	  algorithm, the previous one was flawed and dead-locked once in a while.
+	* pipeline.cpp, pipeline.h: Media: Add a callback to async seek. ASFDemuxer:
+	  Create one frame reader for each stream.
+
 2008-01-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::UpdateProgress): Check (pos +
