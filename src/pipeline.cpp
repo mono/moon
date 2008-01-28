@@ -1326,6 +1326,8 @@ mpeg_frame_length (MpegFrameHeader *mpeg)
 	return len;
 }
 
+#define MPEG_FRAME_LENGTH_MAX (((144 * 160000) / 8000) + 1)
+
 #define mpeg_frame_size(mpeg) (((mpeg)->bit_rate * (mpeg)->channels * mpeg_block_size (mpeg)) / (mpeg)->sample_rate)
 
 #define mpeg_frame_duration(mpeg) (48000000 / (mpeg)->sample_rate) * 8
@@ -1661,7 +1663,7 @@ FindMpegHeader (IMediaSource *source, int64_t start)
 			
 			/* found a 0xff byte... could be a frame header */
 			if ((inptr + 3) < inend) {
-				if (mpeg_parse_header (&mpeg, inptr) && mpeg.bit_rate && mpeg.sample_rate) {
+				if (mpeg_parse_header (&mpeg, inptr) && mpeg.bit_rate) {
 					/* validate that this is really an MPEG frame header by calculating the
 					 * position of the next frame header and checking that it looks like a
 					 * valid frame header too */
@@ -1669,7 +1671,7 @@ FindMpegHeader (IMediaSource *source, int64_t start)
 					pos = source->GetPosition ();
 					
 					if (source->Seek (start + offset + len, SEEK_SET) && source->ReadAll (hdr, 4)
-					    && mpeg_parse_header (&mpeg, hdr) && mpeg.bit_rate && mpeg.sample_rate) {
+					    && mpeg_parse_header (&mpeg, hdr) && mpeg.bit_rate) {
 						/* everything checks out A-OK */
 						return start + offset;
 					}
@@ -1693,8 +1695,8 @@ FindMpegHeader (IMediaSource *source, int64_t start)
 			memmove (buf, inptr, n);
 		}
 		
-		/* if we scan more than 16k, this surely isn't an mp3... */
-	} while (offset < 16384);
+		/* if we scan more than 'MPEG_FRAME_LENGTH_MAX' bytes, this is unlikely to be an mpeg audio stream */
+	} while (offset < MPEG_FRAME_LENGTH_MAX);
 	
 	return -1;
 }
