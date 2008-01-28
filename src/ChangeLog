@@ -1,10 +1,19 @@
 2008-01-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pipeline.cpp (FindMpegHeader): Validate that the sequence is
+	actually an mpeg frame header by parsing it and calculating its'
+	length and checking that another frame header starts where we
+	expect it.
+	(Mp3DemuxerInfo::Supports): We need to use FindMpegHeader() here
+	too.
+
+2008-01-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pipeline.cpp (FindMpegHeader): Scan over binary garbage and find
 	an MPEG sync header.
-	(ReadHeader): Use FindMpegHeader() and also use IMediaSource's new
-	GetSize() method to help calculate media duration as opposed to
-	seeking to the end.
+	(Mp3Demuxer::ReadHeader): Use FindMpegHeader() and also use
+	IMediaSource's new GetSize() method to help calculate media
+	duration as opposed to seeking to the end.
 
 2008-01-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 

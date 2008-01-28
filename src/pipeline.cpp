@@ -1143,20 +1143,20 @@ static int mpeg2_bitrates[3][15] = {
 	{ 0, 8000, 16000, 24000, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 144000, 160000 }
 };
 
-static int
+static bool
 mpeg_parse_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
 {
 	int i = (byte & 0xf0) >> 4;
 	
 	if (i > 14)
-		return -1;
+		return false;
 	
 	if (mpeg->version == 1)
 		mpeg->bit_rate = mpeg1_bitrates[mpeg->layer - 1][i];
 	else
 		mpeg->bit_rate = mpeg2_bitrates[mpeg->layer - 1][i];
 	
-	return 0;
+	return true;
 }
 
 static uint8_t
@@ -1188,20 +1188,20 @@ static int mpeg_samplerates[3][3] = {
 	{ 11025, 12000,  8000 }   // version 2.5
 };
 
-static int
+static bool
 mpeg_parse_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
 {
 	int i = byte & 0x0c;
 	
 	if (i > 2)
-		return -1;
+		return false;
 	
 	mpeg->sample_rate = mpeg_samplerates[mpeg->version - 1][i];
 	
-	return 0;
+	return true;
 }
 
-static int
+static bool
 mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 {
 	int mode = (byte >> 6) & 0x3;
@@ -1224,7 +1224,7 @@ mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 	mpeg->intensity = (byte & 0x20) ? 1 : 0;
 	mpeg->ms = (byte & 0x10) ? 1 : 0;
 	
-	return 0;
+	return true;
 }
 
 /* validate that this is an MPEG audio stream by checking that
@@ -1239,11 +1239,11 @@ mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 #define is_mpeg_header(buffer) (buffer[0] == 0xff && ((buffer[1] & 0xe6) > 0xe0) && (buffer[1] & 0x18) != 0x08)
 
 
-static int
+static bool
 mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 {
 	if (!is_mpeg_header (buffer))
-		return -1;
+		return false;
 	
 	// extract the MPEG version
 	switch ((buffer[1] >> 3) & 0x3) {
@@ -1251,7 +1251,7 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 		mpeg->version = 3;
 		break;
 	case 1: /* reserved */
-		return -1;
+		return false;
 	case 2: /* MPEG Version 2 */
 		mpeg->version = 2;
 		break;
@@ -1272,31 +1272,31 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 		mpeg->layer = 1;
 		break;
 	default: /* 0x00 reserved */
-		return -1;
+		return false;
 	}
 	
 	// protection (via 16bit crc) bit
 	mpeg->prot = (buffer[1] & 0x01) ? 1 : 0;
 	
 	// extract the bit rate
-	if (mpeg_parse_bitrate (mpeg, buffer[2]) == -1)
-		return -1;
+	if (!mpeg_parse_bitrate (mpeg, buffer[2]))
+		return false;
 	
 	// extract the sample rate
-	if (mpeg_parse_samplerate (mpeg, buffer[2]) == -1)
-		return -1;
+	if (!mpeg_parse_samplerate (mpeg, buffer[2]))
+		return false;
 	
 	// check if the frame is padded
 	mpeg->padded = (buffer[2] & 0x2) ? 1 : 0;
 	
 	// extract the channel mode */
-	if (mpeg_parse_channels (mpeg, buffer[3]) == -1)
-		return -1;
+	if (!mpeg_parse_channels (mpeg, buffer[3]))
+		return false;
 	
 	mpeg->copyright = (buffer[3] & 0x08) ? 1 : 0;
 	mpeg->original = (buffer[3] & 0x04) ? 1 : 0;
 	
-	return 0;
+	return true;
 }
 
 static int mpeg_block_sizes[3][3] = {
@@ -1506,7 +1506,7 @@ Mp3FrameReader::SkipFrame ()
 		return false;
 	
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
-	if (mpeg_parse_header (&mpeg, buffer) == -1)
+	if (!mpeg_parse_header (&mpeg, buffer))
 		return false;
 	
 	if (mpeg.bit_rate == 0) {
@@ -1549,7 +1549,7 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	}
 	
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
-	if (mpeg_parse_header (&mpeg, buffer) == -1)
+	if (!mpeg_parse_header (&mpeg, buffer))
 		return MEDIA_DEMUXER_ERROR;
 	
 	if (mpeg.bit_rate == 0) {
@@ -1627,10 +1627,12 @@ Mp3Demuxer::Seek (uint64_t pts)
 static int64_t
 FindMpegHeader (IMediaSource *source, int64_t start)
 {
-	uint8_t buf[4096], *inbuf, *inend;
+	uint8_t buf[4096], hdr[4], *inbuf, *inend;
 	register uint8_t *inptr;
-	int64_t offset = 0;
+	MpegFrameHeader mpeg;
+	int64_t pos, offset = 0;
 	int32_t n = 0;
+	uint32_t len;
 	
 	if (!source->Seek (start, SEEK_SET))
 		return -1;
@@ -1649,18 +1651,36 @@ FindMpegHeader (IMediaSource *source, int64_t start)
 		
 		do {
 			/* mpeg audio sync header begins with a 0xff */
-			while (inptr < inend && *inptr != 0xff)
+			while (inptr < inend && *inptr != 0xff) {
+				offset++;
 				inptr++;
+			}
 			
 			if (inptr == inend)
 				break;
 			
 			/* found a 0xff byte... could be a frame header */
 			if ((inptr + 3) < inend) {
-				if (is_mpeg_header (inptr))
-					return start + offset + (inptr - buf);
+				if (mpeg_parse_header (&mpeg, inptr) && mpeg.bit_rate && mpeg.sample_rate) {
+					/* validate that this is really an MPEG frame header by calculating the
+					 * position of the next frame header and checking that it looks like a
+					 * valid frame header too */
+					len = mpeg_frame_length (&mpeg);
+					pos = source->GetPosition ();
+					
+					if (source->Seek (start + offset + len, SEEK_SET) && source->ReadAll (hdr, 4)
+					    && mpeg_parse_header (&mpeg, hdr) && mpeg.bit_rate && mpeg.sample_rate) {
+						/* everything checks out A-OK */
+						return start + offset;
+					}
+					
+					/* restore state */
+					if (pos == -1 || !source->Seek (pos, SEEK_SET))
+						return -1;
+				}
 				
 				/* not an mpeg audio sync header */
+				offset++;
 				inptr++;
 			} else {
 				/* not enough data to check */
@@ -1672,8 +1692,6 @@ FindMpegHeader (IMediaSource *source, int64_t start)
 			/* save the remaining bytes */
 			memmove (buf, inptr, n);
 		}
-		
-		offset += (inptr - buf);
 		
 		/* if we scan more than 16k, this surely isn't an mp3... */
 	} while (offset < 16384);
@@ -1698,14 +1716,14 @@ Mp3Demuxer::ReadHeader ()
 	int64_t end;
 	int i;
 	
-	if (!source->ReadAll (buffer, 10))
+	if (!source->Peek (buffer, 10))
 		return MEDIA_INVALID_MEDIA;
 	
 	// Check for a leading ID3 tag
 	if (!strncmp ((const char *) buffer, "ID3", 3)) {
 		for (i = 0; i < 4; i++) {
 			if (buffer[6 + i] & 0x80)
-				return false;
+				return MEDIA_INVALID_MEDIA;
 			
 			size = (size << 7) | buffer[6 + i];
 		}
@@ -1735,7 +1753,7 @@ Mp3Demuxer::ReadHeader ()
 		return MEDIA_INVALID_MEDIA;
 	
 	memset ((void *) &mpeg, 0, sizeof (mpeg));
-	if (mpeg_parse_header (&mpeg, buffer) == -1)
+	if (!mpeg_parse_header (&mpeg, buffer))
 		return MEDIA_INVALID_MEDIA;
 	
 	if ((end = source->GetSize ()) != -1) {
@@ -1794,6 +1812,7 @@ Mp3Demuxer::ReadFrame (MediaFrame *frame)
 bool
 Mp3DemuxerInfo::Supports (IMediaSource *source)
 {
+	int64_t stream_start = 0;
 	uint8_t buffer[10];
 	uint32_t size = 0;
 	int i;
@@ -1819,18 +1838,14 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 			size += 10;
 		
 		// skip over the ID3 tag
-		if (!source->Seek (size, SEEK_SET))
-			return false;
-		
-		// peek at the mp3 frame header
-		if (!source->ReadAll (buffer, 4))
-			return false;
-		
-		if (!source->Seek (0, SEEK_SET))
-			return false;
+		stream_start = (int64_t) size;
 	}
 	
-	return is_mpeg_header (buffer);
+	stream_start = FindMpegHeader (source, stream_start);
+	
+	source->Seek (0, SEEK_SET);
+	
+	return stream_start != -1;
 }
 
 IMediaDemuxer *
@@ -2199,9 +2214,7 @@ ProgressiveSource::WakeUp (bool lock)
 void
 ProgressiveSource::Lock ()
 {
-	int result = pthread_mutex_lock (&write_mutex);
-	if (result != 0)
-		media->AddMessage (MEDIA_FAIL, g_strdup_printf ("Could not lock progressive file writer mutex: %s", strerror (result)));
+	pthread_mutex_lock (&write_mutex);
 }
 
 void
@@ -2235,6 +2248,7 @@ void
 ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 {
 	ssize_t nwritten;
+	
 	//printf ("ProgressiveSource::Write (%p, %lld, %i)\n", buf, offset, n);
 	if (fd == -1) {
 		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
