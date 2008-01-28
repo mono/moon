@@ -14,6 +14,7 @@
 #include "plugin-class.h"
 #include "moon-mono.h"
 #include "downloader.h"
+#include "plugin-downloader.h"
 
 extern guint32 moonlight_flags;
 
@@ -583,8 +584,6 @@ PluginInstance::JsRunOnload ()
 	return retval;
 }
 
-void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);
-
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
@@ -617,6 +616,9 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, u
 NPError
 PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
+	PluginDownloader *pd = (PluginDownloader*) stream->pdata;
+	if (pd != NULL)
+		pd->StreamDestroyed ();
 	return NPERR_NO_ERROR;
 }
 

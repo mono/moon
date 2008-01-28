@@ -44,13 +44,13 @@ libmoonplugin_la_SOURCES = \
 	moon-mono.h		\
 	plugin.cpp		\
 	plugin.h		\
+	plugin-downloader.cpp	\
 	plugin-entry.cpp 	\
 	plugin-glue.cpp 	\
 	plugin-class.cpp 	\
 	plugin-class.h 	\
 	browser-http.h	\
-	browser-http.cpp	\
-	downloader.cpp
+	browser-http.cpp
 
 if PLUGIN_INSTALL
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.js \

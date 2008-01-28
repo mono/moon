@@ -14,6 +14,7 @@
 #include "plugin.h"
 #include "plugin-class.h"
 #include "moon-mono.h"
+#include "plugin-downloader.h"
 
 NPError
 NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved)
@@ -186,9 +187,6 @@ NPP_GetMIMEDescription (void)
 {
 	return (char *) (MIME_TYPES_HANDLED);
 }
-
-void downloader_initialize (void);
-void downloader_destroy (void);
 
 static bool gtk_initialized = false;
 static bool runtime_initialized = false;

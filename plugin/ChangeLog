@@ -1,3 +1,16 @@
+2008-01-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.cpp, plugin-downloader.cpp, plugin-downloader.h: Renamed
+	  downloader.cpp to plugin-downloader.cpp and added a header file for it.
+	  Set downloader_shutdown to false upon initialization, makes aborting
+	  actually work. Save the PluginDownloader in the stream, so that we can
+	  inform the PluginDownloader when the stream is destroyed.
+	* plugin.mdp, Makefile.am: Updated.
+	* plugin.cpp: Include plugin-downloader.h and remove unnecessary method
+	  declarations. Inform the PluginDownloader when a stream is destroyed.
+	* plugin-glue.cpp: Include plugin-downloader.h and remove unnecessary method
+	  declarations. 
+
 2008-01-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (EventListenerProxy::AddHandler): use the event
