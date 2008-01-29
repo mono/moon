@@ -1,3 +1,7 @@
+2008-01-28  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: added plugin-downloader.h to dist
+
 2008-01-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* downloader.cpp, plugin-downloader.cpp, plugin-downloader.h: Renamed

@@ -45,6 +45,7 @@ libmoonplugin_la_SOURCES = \
 	plugin.cpp		\
 	plugin.h		\
 	plugin-downloader.cpp	\
+	plugin-downloader.h	\
 	plugin-entry.cpp 	\
 	plugin-glue.cpp 	\
 	plugin-class.cpp 	\
