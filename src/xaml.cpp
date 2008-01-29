@@ -18,6 +18,8 @@
 #include <expat.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <unistd.h>
+
 
 #include "xaml.h"
 #include "error.h"

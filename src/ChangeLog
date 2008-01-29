@@ -1,5 +1,9 @@
 2008-01-29  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: pull in unistd.h
+
+2008-01-29  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Properly handle utf-16, converting it to utf-8 so
 	expat doesn't choke.
 
