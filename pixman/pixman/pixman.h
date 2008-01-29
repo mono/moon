@@ -70,6 +70,7 @@ SOFTWARE.
 #define PIXMAN_H__
 
 #include "pixman-embed.h"
+
 /*
  * Standard integers
  */

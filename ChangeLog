@@ -1,3 +1,8 @@
+2008-01-29  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* pixman, cairo: Synced with vendor branches following procedure outlined at
+	http://svnbook.red-bean.com/en/1.4/svn.advanced.vendorbr.html
+
 2008-01-28  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* pixman, cairo: Disable distribution of unneeded cairo and pixman stuff

@@ -103,10 +103,10 @@ libcairo_beos_headers = cairo-beos.h
 libcairo_beos_sources += cairo-beos-surface.cpp
 backend_pkgconfigs += cairo-beos.pc
 
-#noinst_LTLIBRARIES = libcairo_beos.la
-libcairo_beos_la_SOURCES = $(libcairo_beos_sources)
+#BEOS_LTLIB = libcairo_beos.la
+#libcairo_beos_la_SOURCES = $(libcairo_beos_sources)
 # BeOS system headers trigger this warning
-libcairo_beos_la_CXXFLAGS = -Wno-multichar
+#libcairo_beos_la_CXXFLAGS = -Wno-multichar
 endif
 
 if CAIRO_HAS_GLITZ_SURFACE

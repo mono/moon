@@ -1,4 +1,4 @@
-noinst_LTLIBRARIES = libpixman-1.la $(MMX_LTLIB)
+noinst_LTLIBRARIES = libpixman-1.la
 libpixman_1_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
 libpixman_1_la_LIBADD = @DEP_LIBS@ -lm
 libpixman_1_la_SOURCES =		\
@@ -23,7 +23,7 @@ noinst_HEADERS = pixman.h
 
 # mmx code
 if USE_MMX
-MMX_LTLIB = libpixman-mmx.la
+noinst_LTLIBRARIES += libpixman-mmx.la
 libpixman_mmx_la_SOURCES = \
 	pixman-mmx.c \
 	pixman-mmx.h
