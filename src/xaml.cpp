@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <expat.h>
 #include <ctype.h>
+#include <fcntl.h>
 
 #include "xaml.h"
 #include "error.h"
@@ -36,6 +37,8 @@
 #include "runtime.h"
 
 #define READ_BUFFER 1024
+#define BOM (gunichar2) 0xFEFF
+
 
 static GHashTable *enum_map = NULL;
 
@@ -1175,33 +1178,35 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 		       Type::Kind *element_type)
 {
 	DependencyObject *res = NULL;
-	FILE *fp;
+	int fd;
 	char buffer [READ_BUFFER];
 	int len, done;
 	XamlParserInfo *parser_info = NULL;
 	XML_Parser p = NULL;
+	bool is_utf16 = false;
+	gunichar2 bom;
+	int offset = 0;
+
 
 #ifdef DEBUG_XAML
 	printf ("attemtping to load xaml file: %s\n", xaml_file);
 #endif
 	
-	fp = fopen (xaml_file, "r+");
+	fd = open (xaml_file, O_RDONLY);
 
-	if (!fp) {
+	if (fd == -1) {
 #ifdef DEBUG_XAML
 		printf ("can not open file\n");
 #endif
 		goto cleanup_and_return;
 	}
 
-	p = XML_ParserCreateNS ("utf-8", '|');
+	p = XML_ParserCreateNS ("UTF-8", '|');
 
 	if (!p) {
 #ifdef DEBUG_XAML
 		printf ("can not create parser\n");
 #endif
-		fclose (fp);
-		fp = NULL;
 		goto cleanup_and_return;
 	}
 
@@ -1226,14 +1231,48 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	XML_SetProcessingInstructionHandler (p, proc_handler);
 	*/
 
-	done = 0;
-	while (!done) {
-		len = fread (buffer, 1, READ_BUFFER, fp);
-		done = feof (fp);
-		if (!XML_Parse (p, buffer, len, done)) {
+	len = read (fd, &bom, sizeof (gunichar2));
+	if (len != 2) {
+		goto cleanup_and_return;
+	} else if (bom == BOM) {
+		is_utf16 = true;
+	} else {
+		buffer [0] = bom & 0x00FF;
+		buffer [1] = (bom >> 8);
+		offset = 2;
+	}
+
+	while ((len = read (fd, buffer + offset, READ_BUFFER - offset)) != 0) {
+		gchar* converted = NULL;
+		gchar* use_buffer;
+
+		if (is_utf16) {
+			glong new_len;
+			glong used_len;
+
+			converted = g_utf16_to_utf8 ((const gunichar2 *) buffer, len / 2, &used_len, &new_len, NULL);
+			use_buffer = converted;
+
+			int diff = len - (used_len * sizeof (gunichar2));
+			if (diff != 0) {
+				for (int i = 0; i < diff; i++)
+					buffer [i] = buffer [len - diff + i];
+			}
+			offset = diff;
+			len = (int) new_len;
+		} else {
+			len += offset;
+			use_buffer = buffer;
+			offset = 0;
+		}
+
+		if (!XML_Parse (p, use_buffer, len, len == 0)) {
 			expat_parser_error (parser_info, XML_GetErrorCode (p));
 			goto cleanup_and_return;
 		}
+
+		if (converted)
+			g_free (converted);
 	}
 
 #ifdef DEBUG_XAML
@@ -1260,8 +1299,8 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 		loader->error_args = parser_info->error_args;
 	}
 
-	if (fp)
-		fclose (fp);
+	if (fd != -1)
+		close (fd);
 	if (p)
 		XML_ParserFree (p);
 	if (parser_info)

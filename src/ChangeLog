@@ -1,3 +1,8 @@
+2008-01-29  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Properly handle utf-16, converting it to utf-8 so
+	expat doesn't choke.
+
 2008-01-28  Chris Toshok  <toshok@ximian.com>
 
 	* brush.cpp (VisualBrush::SetupBrush): RoundOut doesn't update
