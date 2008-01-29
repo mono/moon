@@ -1001,15 +1001,7 @@ _EOF
 ])
 AC_CONFIG_FILES([
 Makefile
-boilerplate/Makefile
 src/Makefile
-test/Makefile
-test/pdiff/Makefile
-perf/Makefile
-util/Makefile
-doc/Makefile
-doc/public/Makefile
-doc/public/version.xml
 src/cairo.pc
 ])
 

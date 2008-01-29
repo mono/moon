@@ -1,4 +1,4 @@
-DIST_SUBDIRS = src boilerplate test perf doc util
+DIST_SUBDIRS = src #boilerplate test perf doc util
 SUBDIRS = src #doc
 # libpng is required for our test programs
 if CAIRO_HAS_PNG_FUNCTIONS

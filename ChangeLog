@@ -1,3 +1,7 @@
+2008-01-28  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* pixman, cairo: Disable distribution of unneeded cairo and pixman stuff
+
 2008-01-12  Geoff Norton  <gnorton@novell.com>
 
 	* configure.ac: Enable support for rsvg2-sharp if rsvg-sharp is 
