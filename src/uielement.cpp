@@ -504,8 +504,7 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	RenderClipPath (cr);
 
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
-		Rect r = GetSubtreeBounds ();
-		r.RoundOut ();
+		Rect r = GetSubtreeBounds ().RoundOut();
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
 		runtime_cairo_region (cr, region->gdkregion);

@@ -1114,8 +1114,7 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 	
 	// XXX we should cache the surface so that it can be
 	// used multiple times without having to re-render each time.
-	Rect bounds = ui->GetSubtreeBounds();
-	bounds.RoundOut ();
+	Rect bounds = ui->GetSubtreeBounds().RoundOut ();
 
 	surface = image_brush_create_similar (cr,
 					      (int)bounds.w, 

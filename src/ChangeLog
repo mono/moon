@@ -1,3 +1,10 @@
+2008-01-28  Chris Toshok  <toshok@ximian.com>
+
+	* brush.cpp (VisualBrush::SetupBrush): RoundOut doesn't update
+	inplace, it returns the new rect.
+
+	* uielement.cpp (UIElement::DoRender): same change.
+
 2008-01-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (FindMpegHeader): Validate that the sequence is
