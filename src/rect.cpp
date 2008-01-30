@@ -58,7 +58,7 @@ bounding_rect_for_transformed_rect (cairo_matrix_t *transform, Rect rect)
 	return Rect (l, t, r-l, b-t);
 }
 
-Region::Region () : gdkregion (NULL)
+Region::Region ()
 { 
 	gdkregion = gdk_region_new (); 
 }
@@ -84,6 +84,12 @@ Region::~Region ()
 {
 	gdk_region_destroy (gdkregion);
 	gdkregion = NULL;
+}
+
+bool
+Region::IsEmpty ()
+{
+	return gdk_region_empty (gdkregion);
 }
 
 void 
@@ -123,6 +129,20 @@ Region::Intersect (Rect rect)
 {
 	Region tmp = Region (rect);
 	Intersect (&tmp);
+}
+
+
+void
+Region::Subtract (Region *region)
+{
+	gdk_region_subtract (gdkregion, region->gdkregion);
+}
+
+void
+Region::Subtract (Rect rect)
+{
+	Region tmp = Region (rect);
+	Subtract (&tmp);
 }
 
 void

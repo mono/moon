@@ -1,3 +1,92 @@
+2008-01-30  Chris Toshok  <toshok@ximian.com>
+
+	* mplayer.h (class MediaPlayer): add rendered_frame.
+
+	* mplayer.cpp (MediaPlayer::MediaPlayer): init rendered_frame to
+	false.
+	(MediaPlayer::Close): reset rendered_frame.
+	(render_frame): set rendered_frame to true if we've successfully
+	copied data into the video surface.
+
+	* media.cpp (Image::CreateSurface): set CachedSurface::has_alpha
+	to the pixbuf's has_alpha if USE_OPT_RGB24.
+
+	* media.h (class Image): make the CachedSurface type and the
+	instance field "surface" public, so the front to back stuff can
+	get at it.  Also, add "has_alpha" to it, since once the xlib
+	surface has been created, we lose that information.
+
+	* control.cpp (Control::FrontToBack): nothing to do but call
+	FrontToBack on real_object.
+
+	* control.h (class Control): add override for FrontToBack.
+
+	* panel.cpp (Panel::FindStartingElement): get rid of this crap.
+	it was broken and the wrong way to implement it.
+	(Panel::Render): remove the RenderChildren call here, we do it in
+	PostRender (and only if we're not rendering front to back)
+	(Panel::PostRender): if we aren't rendering front to back, call
+	RenderChildren.
+	(Panel::RenderChildren): remove references to FindStartingElement.
+	(Panel::FrontToBack): this method is a little more complicated
+	than UIElement::FrontToBack owing to the fact that we're
+	flattening things to a list.  We need to prepend a "cleanup node"
+	first, before calling FrontToBack on our children, to do the
+	Panel::PostRender stuff after our children have been rendered.  We
+	remove this cleanup node if none of the children have added
+	themselves to the list, and our bounds (without the children)
+	don't intersect the expose region.  We apply the same logic to
+	removing our rectangular bounds as the UIElement code does, but
+	also have to take into account our background brush.  We punt if
+	any part of it is transparent, and only handle SolidColorBrush and
+	GradientBrush subclasses.
+
+	* panel.h (class Panel): override UIElement:: FrontToBack,
+	PreRender, and PostRender.
+
+	* uielement.cpp (UIElement::DoRender): factor out most of the guts
+	of this method so it can be used in either front-to-back or
+	back-to-front.  Make sure to pass "false" as the front-to-back arg
+	for PreRender and PostRender.
+	(UIElement::FrontToBack): calculate the intersection of the expose
+	region and our bounds.  Add this region to the front of the render
+	list, and then do some calculating to decide if we should remove
+	it from consideration by elements lower than us in the display.
+	Things like "are we opaque", "have we been rotated or skewed, such
+	that our rectangular shape no longer fills the bounds entirely",
+	stuff like that.  We further limit subtracting in element type
+	specific ways - right now just for MediaElement and Image with
+	certain constraints (images can't have alpha, media elements must
+	have a frame rendered, both types must fill their rectangle, etc).
+	If everything passes, we remove our bounds from the expose region.
+	(UIElement::PreRender): new method, do the things that DoRender
+	used to do before calling Render.
+	(UIElement::PostRender): new method, do the things that DoRender
+	used to do after calling Render.
+
+	* uielement.h: move the IS_TRANSLUCENT/IS_INVISIBLE #defines here
+	so they can be used in panel.cpp.  Also, add 3 new virtual
+	methods (FrontToBack, PreRender, PostRender) as well as two
+	callback methods to invoke the 2 latter ones.
+
+	* runtime.cpp (overrides): add "render=ftb" and "render=btf"
+	overrides (with btf the default) corresponding to
+	RUNTIME_INIT_RENDER_FRONT_TO_BACK.
+	(Surface::Paint): add support for front-to-back rendering.  If
+	it's enabled, make a FrontToBack pass on the fullscreen message
+	and the toplevel element.  This populates the render list with a
+	back to front ordered list of elements to paint, along with the
+	regions they need repainted.  If the render list is empty for some
+	reason (or if the user didn't select ftb rendering), we fall back
+	to back to back-to-front rendering at the toplevel.
+	(RenderNode::RenderNode): add ctor/dtor for RenderNode.
+
+	* runtime.h: add the RenderNode class, used by the front to back
+	rendering.
+
+	* rect.h, rect.cpp: add IsEmpty() and two overloads of Subtract()
+	to Region.
+
 2008-01-30  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Strip leading whitespace from xaml files.

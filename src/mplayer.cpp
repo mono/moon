@@ -180,6 +180,7 @@ MediaPlayer::MediaPlayer ()
 	stop = false;
 	eof = false;
 	seeking = false;
+	rendered_frame = false;
 	
 	audio_thread = NULL;
 	
@@ -414,6 +415,8 @@ MediaPlayer::Close ()
 	
 	height = 0;
 	width = 0;
+
+	rendered_frame = false;
 }
 
 //
@@ -430,6 +433,7 @@ render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 	if (!frame->IsPlanar ()) {
 		// Just copy the data
 		memcpy (video->rgb_buffer, frame->buffer, MIN (frame->buflen, (uint32_t) (mplayer->width * mplayer->height * 4)));
+		mplayer->rendered_frame = true;
 		return;
 	}
 	
@@ -444,6 +448,7 @@ render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 	
 	stream->converter->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
 				    frame->srcSlideH, rgb_dest, rgb_stride);
+	mplayer->rendered_frame = true;
 }
 
 bool

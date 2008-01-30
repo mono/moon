@@ -39,6 +39,8 @@ public:
 	Audio *audio;
 	Video *video;
 	
+	bool rendered_frame;
+
 	// sync
 	uint64_t start_time;  
 	

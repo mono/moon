@@ -23,15 +23,6 @@
 #include "eventargs.h"
 
 //#define DEBUG_INVALIDATE 0
-#define QUANTUM_ALPHA 1
-
-#if QUANTUM_ALPHA
-#define IS_TRANSLUCENT(x) (x * 255 < 254.5)
-#define IS_INVISIBLE(x) (x * 255 < .5)
-#else
-#define IS_TRANSLUCENT(x) (x < 1.0)
-#define IS_INVISIBLE(x) (x <= 0.0)
-#endif
 
 extern guint32 moonlight_flags;
 
@@ -491,12 +482,80 @@ UIElement::ComputeBounds ()
 void
 UIElement::DoRender (cairo_t *cr, Region *region)
 {
-	cairo_pattern_t *mask = NULL;
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->RectIn (GetSubtreeBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
+		return;
+
+#if FRONT_TO_BACK_STATS
+	GetSurface()->uielements_rendered_back_to_front ++;
+#endif
+
+	PreRender (cr, region, false);
+
+	Render (cr, region);
+
+	PostRender (cr, region, false);
+}
+
+void
+UIElement::FrontToBack (Region *surface_region, List *render_list)
+{
 	double local_opacity = GetValue (OpacityProperty)->AsDouble();
 
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->RectIn (GetSubtreeBounds()) == GDK_OVERLAP_RECTANGLE_OUT)
+	if (!GetRenderVisible ()
+	    || IS_INVISIBLE (total_opacity)) {
 		return;
-	
+	}
+
+	Region* self_region = new Region (surface_region->gdkregion);
+	self_region->Intersect (bounds.RoundOut());  // note the RoundOut here.
+	if (!self_region->IsEmpty()) {
+		render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
+
+		bool subtract = (GetValue (UIElement::ClipProperty) == NULL
+				 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
+				 && opacityMask == NULL
+				 && !IS_TRANSLUCENT (local_opacity));
+
+		// element type specific checks
+		if (subtract) {
+			if (Is (Type::MEDIAELEMENT)) {
+				MediaElement *me = (MediaElement*)this;
+				subtract = (strcmp (media_element_get_current_state (me), "Buffering")
+					    && me->mplayer
+					    && me->mplayer->rendered_frame
+					    && ((me->mplayer->width == me->GetBounds().w
+						 && me->mplayer->height == me->GetBounds().h)
+						||
+						(media_base_get_stretch (me) == StretchFill
+						 || media_base_get_stretch (me) == StretchUniformToFill)));
+			}
+			else if (Is (Type::IMAGE)) {
+				Image *image = (Image*)this;
+				subtract = (image->surface
+					    && !image->surface->has_alpha
+					    && ((image->GetWidth() == image->GetBounds().w
+						 && image->GetHeight() == image->GetBounds().h)
+						||
+						(media_base_get_stretch (image) == StretchFill
+						 || media_base_get_stretch (image) == StretchUniformToFill)));
+			}
+			// XXX more stuff here for non-panel subclasses...
+			else {
+				subtract = false;
+			}
+		}
+
+		if (subtract)
+			surface_region->Subtract (bounds); // note the lack of RoundOut here.
+
+	}
+}
+
+void
+UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
+{
+	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	cairo_save (cr);
 
@@ -519,10 +578,15 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 
 	if (opacityMask != NULL)
 		cairo_push_group (cr);
+}
 
-	Render (cr, region);
+void
+UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
+{
+	double local_opacity = GetValue (OpacityProperty)->AsDouble();
 
 	if (opacityMask != NULL) {
+		cairo_pattern_t *mask;
 		cairo_pattern_t *data = cairo_pop_group (cr);
 		opacityMask->SetupBrush (cr, this);
 		mask = cairo_get_source (cr);
@@ -540,7 +604,7 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 	
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
-	
+
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
 		cairo_save (cr);
 		cairo_new_path (cr);
@@ -568,6 +632,18 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 		cairo_stroke (cr);
 		cairo_restore (cr);
 	}
+}
+
+void
+UIElement::CallPreRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back)
+{
+	element->PreRender (cr, region, front_to_back);
+}
+
+void
+UIElement::CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back)
+{
+	element->PostRender (cr, region, front_to_back);
 }
 
 void

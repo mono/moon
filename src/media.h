@@ -82,19 +82,6 @@ class Image : public MediaBase {
 	
 	Downloader *downloader;
 	
-	struct CachedSurface {
-		int ref_cnt;
-		
-		char *fname;
-		cairo_surface_t *cairo;
-		bool xlib_surface_created;
-		GdkPixbuf *backing_pixbuf;
-		
-		int width;
-		int height;
-	};
-	
-	CachedSurface *surface;
 	char *part_name;
 	
 	// pattern caching
@@ -122,6 +109,22 @@ public:
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	ImageBrush *brush;
+
+	struct CachedSurface {
+		int ref_cnt;
+		
+		char *fname;
+		cairo_surface_t *cairo;
+		bool xlib_surface_created;
+		GdkPixbuf *backing_pixbuf;
+		
+		bool has_alpha;
+		int width;
+		int height;
+	};
+	
+
+	CachedSurface *surface;
 	
 	static GHashTable *surface_cache;
 	

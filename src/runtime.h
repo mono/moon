@@ -28,6 +28,8 @@ G_BEGIN_DECLS
 #include "list.h"
 #include "downloader.h"
 
+#define FRONT_TO_BACK_STATS 0
+
 #define TIMERS 0
 #if TIMERS
 #define STARTTIMER(id,str) TimeSpan id##_t_start = get_now(); printf ("timing of '%s' started at %lld\n", str, id##_t_start)
@@ -46,6 +48,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_SHOW_CLIPPING         = 1 << 5,
 	RUNTIME_INIT_SHOW_BOUNDING_BOXES   = 1 << 6,
 	RUNTIME_INIT_SHOW_FPS              = 1 << 7,
+	RUNTIME_INIT_RENDER_FRONT_TO_BACK  = 1 << 8
 };
 
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT)
@@ -136,6 +139,11 @@ class Surface : public EventObject {
 		fps_report = report;
 		fps_data = user_data;
 	}
+
+#if FRONT_TO_BACK_STATS
+	int uielements_rendered_front_to_back;
+	int uielements_rendered_back_to_front;
+#endif
 	
 private:
 	gpointer downloader_context;
@@ -270,6 +278,21 @@ public:
 		
 	UIElementNode (UIElement *el);
 	virtual ~UIElementNode ();
+};
+
+/* for rendering */
+typedef void (*RenderFunc) (cairo_t *ctx, UIElement *uielement, Region *region, bool front_to_back);
+class RenderNode : public List::Node {
+public:
+	UIElement *uielement;
+	Region *region;
+	bool render_element;
+	RenderFunc pre_render;
+	RenderFunc post_render;
+
+	RenderNode (UIElement *el, Region *region, bool render_element, RenderFunc pre, RenderFunc post);
+
+	virtual ~RenderNode ();
 };
 
 

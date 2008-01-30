@@ -30,6 +30,13 @@ Control::Render (cairo_t *cr, Region *region)
 		real_object->DoRender (cr, region);
 }
 
+void
+Control::FrontToBack (Region *surface_region, List *render_list)
+{
+	if (real_object)
+		return real_object->FrontToBack (surface_region, render_list);
+}
+
 void 
 Control::ComputeBounds ()
 {

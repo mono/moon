@@ -638,7 +638,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 		h = (double) mplayer->height;
 		w = (double) mplayer->width;
 	}
-	
+
 	cairo_save (cr);
 	if (!EnableAntiAlias ())
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
@@ -1778,6 +1778,9 @@ Image::CreateSurface (const char *fname)
 								      surface->height,
 								      gdk_pixbuf_get_rowstride (pixbuf));
 
+#if USE_OPT_RGB24
+		surface->has_alpha = has_alpha;
+#endif
 		g_hash_table_insert (surface_cache, surface->fname, surface);
 	}
 

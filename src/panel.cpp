@@ -142,84 +142,6 @@ Panel::ComputeBounds ()
 static int level = 0;
 
 //#define DEBUG_INVALIDATE 1
-//#define USE_STARTING_ELEMENT 1
-
-
-
-int
-Panel::FindStartingElement (Region *region)
-{
-#if USE_STARTING_ELEMENT
-	VisualCollection *children = GetChildren ();
-	Rect clip = region->ClipBox ().RoundOut ();
-	
-	gint i = children->z_sorted->len;
-	if (i < 2)
-		return -1;
-
-	if (!clip.IntersectsWith (GetBounds().RoundOut())
-	    || !GetRenderVisible () 
-	    || GetValue (UIElement::ClipProperty) != NULL
-	    || uielement_get_opacity_mask (this) != NULL
-	    )
-		return -1;
-
-	for (i --; i >= 0; i --) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
-		// if the exposed rectangle is completely within the bounds
-		// of a child that has opacity == 1.0 and lacks an opacity
-		// mask, we start rendering from there.
-		if (item->GetRenderVisible ()
-		    && item->GetValue (UIElement::ClipProperty) == NULL
-		    && (item->absolute_xform.yx == 0 && item->absolute_xform.xy == 0) /* no skew */
-		    && uielement_get_opacity_mask (item) == NULL
-		    && clip.IntersectsWith (item->GetBounds ().RoundOut ())
-		    && region->RectIn (item->GetBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_IN
-		    ) {
-			// there are actually some more type
-			// specific checks required.  we need
-			// to fulsrther limit it to elements
-			// which are truly rectangular to
-			// begin with (images, panels,
-			// mediaelements), and which aren't
-			// rotated/skewed.  also, make sure
-			// panel backgrounds are
-			// non-translucent.
-			Type::Kind type = item->GetObjectType();
-
-			if (type == Type::PANEL || type == Type::CANVAS || type == Type::INKPRESENTER) {
-				bool panel_works = false;
-#if 1
-				Brush *bg = panel_get_background ((Panel*)item);
-				if (bg && bg->GetObjectType() == Type::SOLIDCOLORBRUSH) {
-					Color *c = solid_color_brush_get_color ((SolidColorBrush*)bg);
-					if (c && c->a == 1.0) {
-						/* we're good */
-						panel_works = true;
-					}
-				}
-#endif
-
-				if (!panel_works) {
-					/* look one level down and see if
-					** there's a child of this the child
-					** panel that completely encompasses
-					** the rectangle.
-					*/
-					if (-1 == ((Panel*)item)->FindStartingElement (region))
-						continue;
-				}
-			}
-			else if (type != Type::MEDIAELEMENT) {
-				continue;
-			}
-			return i;
-		}
-	}
-#endif
-
-	return -1;
-}
 
 void
 Panel::UpdateTotalRenderVisibility ()
@@ -242,10 +164,15 @@ Panel::UpdateTotalHitTestVisibility ()
 	FrameworkElement::UpdateTotalHitTestVisibility ();
 }
 
+static bool
+use_front_to_back (Panel *panel)
+{
+	return panel->GetChildren ()->list->Length() < 25;
+}
+
 void
 Panel::Render (cairo_t *cr, Region *region)
 {
-	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 
 	Value *value = GetValue (Panel::BackgroundProperty);
@@ -263,10 +190,19 @@ Panel::Render (cairo_t *cr, Region *region)
 			cairo_fill (cr);
 		}
 	}
-
-	RenderChildren (cr, region);
-	cairo_restore (cr);
 }
+
+void
+Panel::PostRender (cairo_t *cr, Region *region, bool front_to_back)
+{
+	// if we didn't render front to back, then render the children here
+	if (!front_to_back || !use_front_to_back (this)) {
+		RenderChildren (cr, region);
+	}
+
+	UIElement::PostRender (cr, region, front_to_back);
+}
+
 
 void
 Panel::RenderChildren (cairo_t *cr, Region *parent_region)
@@ -275,15 +211,9 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 
 	Region *clipped_region = new Region (bounds_with_children);
 	clipped_region->Intersect (parent_region);
-	gint start_element = FindStartingElement (clipped_region);
-	
-	if (start_element <= 0)
-		start_element = 0;
-	else
-		printf ("start_element = %d\n", start_element);
 
 	cairo_identity_matrix (cr);
-	for (guint i = start_element; i < children->z_sorted->len; i++) {
+	for (guint i = 0; i < children->z_sorted->len; i++) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
 		
 		Region *region = new Region (item->GetSubtreeBounds());
@@ -336,6 +266,108 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 	}
 
 	delete clipped_region;
+}
+
+void
+Panel::FrontToBack (Region *surface_region, List *render_list)
+{
+	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+
+	if (surface_region->RectIn (bounds_with_children.RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
+		return;
+
+	if (!GetRenderVisible ()
+	    || IS_INVISIBLE (local_opacity))
+		return;
+
+	if (!use_front_to_back (this)) {
+		Region *self_region = new Region (surface_region->gdkregion);
+		self_region->Intersect (bounds_with_children.RoundOut());
+		// we need to include our children in this one, since
+		// we'll be rendering them in the PostRender method.
+		if (!self_region->IsEmpty())
+			render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(),
+							      UIElement::CallPreRender, UIElement::CallPostRender));
+		// don't remove the region from surface_region because
+		// there are likely holes in it
+		return;
+	}
+
+	RenderNode *panel_cleanup_node = new RenderNode (this, NULL, false, NULL, UIElement::CallPostRender);
+	
+	render_list->Prepend (panel_cleanup_node);
+
+	VisualCollection *children = GetChildren ();
+	for (guint i = children->z_sorted->len; i > 0; i--) {
+		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
+
+		item->FrontToBack (surface_region, render_list);
+	}
+
+	Region *self_region = new Region (surface_region->gdkregion);
+	self_region->Intersect (bounds.RoundOut ()); // note the RoundOut
+
+	if (self_region->IsEmpty() && render_list->First() == panel_cleanup_node) {
+		/* we don't intersect the surface region, and none of
+		   our children did either, remove the cleanup node */
+		render_list->Remove (render_list->First());
+		delete self_region;
+		return;
+	}
+
+	render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
+
+	if (!self_region->IsEmpty()) {
+
+		bool subtract = (GetValue (UIElement::ClipProperty) == NULL
+				 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
+				 && uielement_get_opacity_mask (this) == NULL
+				 && !IS_TRANSLUCENT (local_opacity));
+
+		if (subtract) {
+			Value *brush_value = GetValue (Panel::BackgroundProperty);
+			if (brush_value
+			    && brush_value->AsBrush()) {
+
+				double background_alpha = 0.0;
+				Brush *brush = brush_value->AsBrush();
+
+				if (brush->Is(Type::SOLIDCOLORBRUSH)) {
+
+					SolidColorBrush *scb = (SolidColorBrush*)brush;
+					Color *c = scb->GetColor();
+					background_alpha = c->a;
+				}
+				else if (brush->Is(Type::GRADIENTBRUSH)) {
+					GradientStopCollection *stops = gradient_brush_get_gradient_stops ((GradientBrush*)brush);
+
+					if (stops->list->Length() > 0) {
+						background_alpha = 1.0;
+
+						Collection::Node *cn;
+						for (cn = (Collection::Node *) children->list->First ();
+						     cn != NULL;
+						     cn = (Collection::Node *) cn->next) {
+
+							GradientStop *stop = (GradientStop*)cn->obj;
+							Color* c = gradient_stop_get_color (stop);
+							if (c->a < background_alpha)
+								background_alpha = c->a;
+						}
+					}
+				}
+
+				subtract = !IS_TRANSLUCENT (background_alpha);
+			}
+			else {
+				// no background defined
+				subtract = false;
+			}
+		}
+
+ 		if (subtract)
+			surface_region->Subtract (bounds); // note the lack of RoundOut here.
+	}
 }
 
 bool

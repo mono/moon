@@ -85,6 +85,8 @@ static struct {
 	{ "bbox=hide",         RUNTIME_INIT_SHOW_BOUNDING_BOXES,   false },
 	{ "fps=show",          RUNTIME_INIT_SHOW_FPS,              true  },
 	{ "fps=hide",          RUNTIME_INIT_SHOW_FPS,              false },
+	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },
+	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false  }
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
@@ -454,14 +456,72 @@ Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 void
 Surface::Paint (cairo_t *ctx, Region *region)
 {
+#if FRONT_TO_BACK_STATS
+	uielements_rendered_front_to_back = 0;
+	uielements_rendered_back_to_front = 0;
+#endif
+
 	if (is_anything_dirty())
 		process_dirty_elements();
-	
-	toplevel->DoRender (ctx, region);
-	
-	if (full_screen_message) {
-		full_screen_message->DoRender (ctx, region);
+
+	bool did_front_to_back = false;
+
+	List *render_list = new List ();
+	Region *copy = new Region (region->gdkregion);
+
+	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+		if (full_screen_message)
+			full_screen_message->FrontToBack (copy, render_list);
+
+		toplevel->FrontToBack (copy, render_list);
+
+		if (render_list->IsEmpty()) {
+			g_warning ("error building up render list - region corresponds to no UIElement intersections");
+		}
+		else {
+			Region *empty_region = new Region ();
+
+			RenderNode *node;
+			while ((node = (RenderNode*)render_list->First())) {
+				Region *r = node->region ? node->region : empty_region;
+				UIElement *ui = node->uielement;
+			 
+#if FRONT_TO_BACK_STATS
+				uielements_rendered_front_to_back ++;
+#endif
+ 
+				if (node->pre_render)
+					node->pre_render (ctx, ui, r, true);
+
+				if (node->render_element)
+					ui->Render (ctx, r);
+
+				if (node->post_render)
+					node->post_render (ctx, ui, r, true);
+
+				render_list->Remove (node);
+			}
+
+			did_front_to_back = true;
+			delete empty_region;
+		}
+
+		delete render_list;
+		delete copy;
 	}
+	
+	if (!did_front_to_back) {
+		toplevel->DoRender (ctx, region);
+
+		if (full_screen_message) {
+			full_screen_message->DoRender (ctx, region);
+		}
+	}
+
+#if FRONT_TO_BACK_STATS
+	printf ("UIElements rendered front-to-back: %d\n", uielements_rendered_front_to_back);
+	printf ("UIElements rendered back-to-front: %d\n", uielements_rendered_back_to_front);
+#endif
 }
 
 //
@@ -932,6 +992,32 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 
 	
 	return TRUE;
+}
+
+RenderNode::RenderNode (UIElement *el,
+			Region *region,
+			bool render_element,
+			RenderFunc pre,
+			RenderFunc post)
+
+{
+	uielement = el;
+	uielement->ref();
+	this->region = region;
+	this->render_element = render_element;
+	this->pre_render = pre;
+	this->post_render = post;
+}
+
+RenderNode::~RenderNode ()
+{
+	if (uielement) {
+		uielement->unref ();
+		uielement = NULL;
+	}
+
+	if (region)
+		delete region;
 }
 
 UIElementNode::UIElementNode (UIElement *el)

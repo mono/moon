@@ -18,6 +18,16 @@
 #include "rect.h"
 #include "list.h"
 
+#define QUANTUM_ALPHA 1
+
+#if QUANTUM_ALPHA
+#define IS_TRANSLUCENT(x) (x * 255 < 254.5)
+#define IS_INVISIBLE(x) (x * 255 < .5)
+#else
+#define IS_TRANSLUCENT(x) (x < 1.0)
+#define IS_INVISIBLE(x) (x <= 0.0)
+#endif
+
 class Surface;
 
 class UIElement : public Visual {
@@ -121,6 +131,13 @@ public:
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
 	void DoRender (cairo_t *cr, Region *region);
+
+	virtual void FrontToBack (Region *surface_region, List *render_list);
+	virtual void PreRender (cairo_t *cr, Region *region, bool front_to_back);
+	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
+
+	static void CallPreRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
+	static void CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
 
 	//
 	// GetSizeForBrush:

@@ -171,6 +171,8 @@ public:
 	
 	~Region ();
 
+	bool IsEmpty ();
+
 	void Union (Rect rect);
 	void Union (GdkRegion *region);
 	void Union (GdkRectangle *rect);
@@ -178,6 +180,9 @@ public:
 
 	void Intersect (Region *region);
 	void Intersect (Rect rect);
+
+	void Subtract (Region *region);
+	void Subtract (Rect rect);
 
 	void GetRectangles (GdkRectangle **rects, int *count);
 
