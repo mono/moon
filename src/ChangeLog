@@ -1,3 +1,7 @@
+2008-01-30  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add support for ucs4.
+
 2008-01-29  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: pull in unistd.h

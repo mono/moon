@@ -38,8 +38,10 @@
 #include "stylus.h"
 #include "runtime.h"
 
+
 #define READ_BUFFER 1024
 #define BOM (gunichar2) 0xFEFF
+#define ANTIBOM (gunichar2) 0xFFFE
 
 
 static GHashTable *enum_map = NULL;
@@ -1175,17 +1177,38 @@ xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembl
 	g_free (buffer);
 }
 
+static void
+utf16_to_be (gunichar2 *utf)
+{
+	gunichar2 *s;
+
+	for (s = utf; *s != '\0'; s++)
+		*s = GUINT16_SWAP_LE_BE (*s);
+}
+
+static void
+utf32_to_be (gunichar *utf)
+{
+	gunichar *s;
+
+	for (s = utf; *s != '\0'; s++)
+		*s = GUINT32_SWAP_LE_BE (*s);
+}
+
+
 DependencyObject *
 xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_namescope,
 		       Type::Kind *element_type)
 {
 	DependencyObject *res = NULL;
-	int fd;
-	char buffer [READ_BUFFER];
-	int len, done;
 	XamlParserInfo *parser_info = NULL;
 	XML_Parser p = NULL;
+	char buffer [READ_BUFFER];
+	int fd;
+	int len;	
 	bool is_utf16 = false;
+	bool is_utf32 = false;
+	bool is_le = false;
 	gunichar2 bom;
 	int offset = 0;
 
@@ -1238,6 +1261,22 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 		goto cleanup_and_return;
 	} else if (bom == BOM) {
 		is_utf16 = true;
+	} else if (bom == ANTIBOM) {
+		is_utf16 = true;
+		is_le = true;
+	} else if (bom == 0x0000) {
+		read (fd, &bom, sizeof (gunichar2));
+
+		if (len != 2)
+			goto cleanup_and_return;
+
+		if (bom == BOM)
+			is_utf32 = true;
+		else if (bom == ANTIBOM) {
+			is_utf32 = true;
+			is_le = true;
+		}
+		
 	} else {
 		buffer [0] = bom & 0x00FF;
 		buffer [1] = (bom >> 8);
@@ -1246,29 +1285,39 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 
 	while ((len = read (fd, buffer + offset, READ_BUFFER - offset)) != 0) {
 		gchar* converted = NULL;
-		gchar* use_buffer;
+		gchar* utf8_buffer;
 
 		if (is_utf16) {
 			glong new_len;
 			glong used_len;
 
-			converted = g_utf16_to_utf8 ((const gunichar2 *) buffer, len / 2, &used_len, &new_len, NULL);
-			use_buffer = converted;
+			if (is_le)
+				utf16_to_be ((gunichar2 *) buffer);
 
-			int diff = len - (used_len * sizeof (gunichar2));
-			if (diff != 0) {
-				for (int i = 0; i < diff; i++)
-					buffer [i] = buffer [len - diff + i];
-			}
-			offset = diff;
+			converted = g_utf16_to_utf8 ((const gunichar2 *) buffer, len / sizeof (gunichar2), &used_len, &new_len, NULL);
+			utf8_buffer = converted;
+
+			offset = 0;
+			len = (int) new_len;
+		} else if (is_utf32) {
+			glong new_len;
+			glong used_len;
+
+			if (is_le)
+				utf32_to_be ((gunichar *) (buffer + offset));
+
+			converted = g_ucs4_to_utf8 ((const gunichar *) buffer, len / sizeof (gunichar), &used_len, &new_len, NULL);
+			utf8_buffer = converted;
+
+			offset = 0;
 			len = (int) new_len;
 		} else {
 			len += offset;
-			use_buffer = buffer;
+			utf8_buffer = buffer;
 			offset = 0;
 		}
 
-		if (!XML_Parse (p, use_buffer, len, len == 0)) {
+		if (!XML_Parse (p, utf8_buffer, len, len == 0)) {
 			expat_parser_error (parser_info, XML_GetErrorCode (p));
 			goto cleanup_and_return;
 		}
