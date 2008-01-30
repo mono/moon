@@ -57,6 +57,14 @@ class XNamespace;
 static DefaultNamespace *default_namespace = NULL;
 static XNamespace *x_namespace = NULL;
 
+
+const char* default_namespace_names [] = {
+	"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
+	"http://schemas.microsoft.com/client/2007",
+	"http://schemas.microsoft.com/xps/2005/06",
+};
+
+
 typedef DependencyObject *(*create_item_func) (void);
 typedef XamlElementInstance *(*create_element_instance_func) (XamlParserInfo *p, XamlElementInfo *i);
 typedef void  (*add_child_func) (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
@@ -1078,15 +1086,19 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	if (p->error_args)
 		return;
 
-	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml/presentation", uri) ||
-			!strcmp ("http://schemas.microsoft.com/client/2007", uri)) {
+	for (int i = 0; default_namespace_names [i]; i++) {
 
-		if (prefix)
-			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
-					g_strdup_printf  ("It is illegal to add a prefix (xmlns:%s) to the default namespace.\n", prefix));
+		if (!strcmp (default_namespace_names [i], uri)) {
+			if (prefix)
+				return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
+						g_strdup_printf  ("It is illegal to add a prefix (xmlns:%s) to the default namespace.\n", prefix));
 
-		g_hash_table_insert (p->namespace_map, g_strdup (uri), default_namespace);
-	} else if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)) {
+			g_hash_table_insert (p->namespace_map, g_strdup (uri), default_namespace);
+			return;
+		}
+	}
+		
+	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)) {
 
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
