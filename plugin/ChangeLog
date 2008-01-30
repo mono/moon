@@ -1,3 +1,8 @@
+2008-01-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Handle the case where js sets Timespan seconds using an
+	  int value.
+
 2008-01-28  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: added plugin-downloader.h to dist

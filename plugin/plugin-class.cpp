@@ -876,7 +876,13 @@ MoonlightTimeSpan::SetProperty (int id, NPIdentifier, const NPVariant *value)
 		return true;
 
 	case MoonId_Seconds:
-		timespan = TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
+		if (NPVARIANT_IS_INT32 (*value)) {
+			timespan = TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value));
+		} else if (NPVARIANT_IS_DOUBLE (*value)) {
+			timespan = TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
+		} else {
+			return false;
+		}
 		return true;
 
 	default:
