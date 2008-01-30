@@ -1221,6 +1221,7 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	bool is_utf16 = false;
 	bool is_utf32 = false;
 	bool is_le = false;
+	bool first_read = true;
 	gunichar2 bom;
 	int offset = 0;
 
@@ -1329,13 +1330,22 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 			offset = 0;
 		}
 
-		if (!XML_Parse (p, utf8_buffer, len, len == 0)) {
+		int ws = 0;
+		if (first_read) {
+			// Remove preceding white space
+			while (utf8_buffer [ws] && isspace (utf8_buffer [ws]))
+				ws++;
+		}
+
+		if (!XML_Parse (p, utf8_buffer + ws, len - ws, len == 0)) {
 			expat_parser_error (parser_info, XML_GetErrorCode (p));
 			goto cleanup_and_return;
 		}
 
 		if (converted)
 			g_free (converted);
+
+		first_read = false;
 	}
 
 #ifdef DEBUG_XAML

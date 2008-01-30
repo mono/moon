@@ -1,5 +1,9 @@
 2008-01-30  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Strip leading whitespace from xaml files.
+	
+2008-01-30  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Handle more names for the default namespace.
 
 2008-01-30  Jackson Harper  <jackson@ximian.com>
