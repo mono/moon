@@ -47,6 +47,10 @@ Silverlight.createObjectEx ({
 		onLoad: null
 	}
 });
+
+function $plugin() {
+	return document.getElementById ("MoonlightControl");
+}
 	</script>
 </div>
 
@@ -105,6 +109,27 @@ PropertiesTestSuite.prototype = {
 	},
 	testDrawingAttributes: function () {
 		this.assertDefaultValues (CodeModel.DrawingAttributes);
+	},
+	testNonDOPropertyChaining: function () {
+		var da = $plugin ().content.createFromXaml ("<TimelineMarker />");
+		this.assertEqual (null, da.Time);
+		da.Time = "0";
+		this.assertEqual (0.0, da.Time.seconds);
+		da.Time.seconds = 1;
+		this.assertEqual (1.0, da.Time.seconds);
+		da.Time.seconds = 1.1;
+		this.assertEqual (1.1, Math.round (da.Time.seconds * 1000) / 1000);
+	},
+	testTimeSpan: function () {
+		var da = $plugin ().content.createFromXaml ("<TimelineMarker />");
+		this.assertEqual (null, da.Time);
+		da.Time = "0";
+		var ts = da.Time;
+		this.assertEqual (0.0, ts.seconds);
+		ts.seconds = 1;
+		this.assertEqual (1.0, ts.seconds);
+		ts.seconds = 1.1;
+		this.assertEqual (1.1, Math.round (ts.seconds * 1000) / 1000);
 	},
 	testEllipse: function () {
 		this.assertDefaultValues (CodeModel.Ellipse);
@@ -177,6 +202,10 @@ PropertiesTestSuite.prototype = {
 	},
 	testMediaElement: function () {
 		this.assertDefaultValues (CodeModel.MediaElement);
+	},
+	testMediaElementBufferingTime: function () {
+		var da = $plugin ().content.createFromXaml ("<MediaElement />");
+		this.assertEqual (5.0, da.BufferingTime.seconds);
 	},
 	testPath: function () {
 		this.assertDefaultValues (CodeModel.Path);

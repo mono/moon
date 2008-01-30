@@ -1,3 +1,7 @@
+2008-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* props.html: More tests.
+
 2007-12-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* assorted.html: Add a bunch of test cases to check what happens when
