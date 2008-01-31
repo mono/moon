@@ -62,8 +62,10 @@ class Brush : public DependencyObject {
 
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
-	
-	double GetTotalOpacity (UIElement *uielement);
+
+	// returns true if OpacityProperty == 1.0.
+	// subclasses override this to deal with their local coloring
+	virtual bool IsOpaque ();
 };
 
 Brush *		brush_new			(void);
@@ -89,6 +91,8 @@ class SolidColorBrush : public Brush {
 
 	Color *GetColor ();
 	void   SetColor (Color *color);
+
+	virtual bool IsOpaque ();
 };
 
 SolidColorBrush	*solid_color_brush_new (void);
@@ -111,6 +115,8 @@ class GradientBrush : public Brush {
 
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	virtual void SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bool single = false);
+
+	virtual bool IsOpaque ();
 };
 
 GradientBrush* gradient_brush_new (void);
@@ -163,6 +169,8 @@ class ImageBrush : public TileBrush {
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void SetSurface (Surface *surface);
+
+	virtual bool IsOpaque ();
 };
 
 ImageBrush* image_brush_new (void);
@@ -186,6 +194,8 @@ public:
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+
+	virtual bool IsOpaque ();
 };
 
 VideoBrush *video_brush_new (void);
@@ -277,6 +287,8 @@ class VisualBrush : public TileBrush {
 
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
+
+	virtual bool IsOpaque ();
 };
 
 VisualBrush	*visual_brush_new (void);

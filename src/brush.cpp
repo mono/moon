@@ -155,14 +155,10 @@ transform_get_absolute_transform (Transform *relative_transform, double width, d
 	result->y0 = (1 - result->yy) * ty - result->yx * tx;
 }
 
-/*
- * Combine UIElement Opacity (including all parents) with Brush Opacity
- * NOTE: sadly we cannot handle Opacity at this level, each brush sub-type needs to handle it
- */
-double
-Brush::GetTotalOpacity (UIElement *uielement)
+bool
+Brush::IsOpaque ()
 {
-	return brush_get_opacity (this);
+	return !IS_TRANSLUCENT (brush_get_opacity (this));
 }
 
 void
@@ -234,6 +230,12 @@ void
 SolidColorBrush::SetColor (Color *color)
 {
 	SetValue (SolidColorBrush::ColorProperty, Value (*color));
+}
+
+bool
+SolidColorBrush::IsOpaque ()
+{
+	return Brush::IsOpaque() && !IS_TRANSLUCENT (GetColor()->a);
 }
 
 Color *
@@ -383,6 +385,30 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		Color *color = gradient_stop_get_color (negative);
 		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a);
 	}
+}
+
+bool
+GradientBrush::IsOpaque ()
+{
+	if (!Brush::IsOpaque())
+		return false;
+
+	GradientStopCollection *stops = gradient_brush_get_gradient_stops (this);
+
+	if (stops->list->Length() > 0) {
+		Collection::Node *cn;
+		for (cn = (Collection::Node *) stops->list->First ();
+		     cn != NULL;
+		     cn = (Collection::Node *) cn->next) {
+
+			GradientStop *stop = (GradientStop*)cn->obj;
+			Color* c = gradient_stop_get_color (stop);
+			if (IS_TRANSLUCENT (c->a))
+				return false;
+		}
+	}
+
+	return true;
 }
 
 //
@@ -844,6 +870,13 @@ ImageBrush::OnPropertyChanged (DependencyProperty *prop)
 	NotifyAttachersOfPropertyChange (prop);
 }
 
+bool
+ImageBrush::IsOpaque ()
+{
+	// XXX punt for now and return false here.
+	return false;
+}
+
 cairo_surface_t *image_brush_create_similar (cairo_t *cairo, int width, int height)
 {
 #if USE_OPT_IMAGE_ONLY
@@ -1081,6 +1114,13 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *ob
 	TileBrush::OnSubPropertyChanged (prop, obj, subprop);
 }
 
+bool
+VideoBrush::IsOpaque ()
+{
+	// XXX punt for now and return false here.
+	return false;
+}
+
 VideoBrush *
 video_brush_new (void)
 {
@@ -1174,6 +1214,14 @@ VisualBrush::OnPropertyChanged (DependencyProperty *prop)
 
 	NotifyAttachersOfPropertyChange (prop);
 }
+
+bool
+VisualBrush::IsOpaque ()
+{
+	// XXX punt for now and return false here.
+	return false;
+}
+
 
 Visual *
 visual_brush_get_visual (VisualBrush *visual_brush)
