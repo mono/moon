@@ -1,5 +1,17 @@
 2008-01-31  Chris Toshok  <toshok@ximian.com>
 
+	* panel.h, panel.cpp: rename use_back_to_front to UseBackToFront
+	and add it to the class, protected so subclasses can get at it.
+
+	* stylus.cpp (InkPresenter::PostRender): given the ordering
+	required, we have to c&p some of Panel::PostRender here to render
+	the children.  Chaining up to Canvas::PostRender at the start of
+	the method would have caused the translucency/opacity mask code in
+	UIElement::PostRender to be executed *before* we rendered our
+	strokes.
+
+2008-01-31  Chris Toshok  <toshok@ximian.com>
+
 	* stylus.h, stylus.cpp (InkPresenter::PostRender): rename
 	RenderChildren to this, and chain up to Canvas::PostRender here,
 	which will do the RenderChildren call if it needs to.

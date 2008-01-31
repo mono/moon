@@ -21,6 +21,9 @@ class Panel : public FrameworkElement {
 	//
 	UIElement *mouse_over;
 
+ protected:
+	bool UseBackToFront ();
+
  public:
 	Panel ();
 	virtual ~Panel ();

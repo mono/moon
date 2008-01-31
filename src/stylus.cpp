@@ -765,7 +765,10 @@ InkPresenter::InkPresenter ()
 void
 InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
-	Canvas::PostRender (cr, region, front_to_back);
+	// if we didn't render front to back, then render the children here
+	if (!front_to_back || !UseBackToFront ()) {
+		RenderChildren (cr, region);
+	}
 
 	Value* value = GetValue (InkPresenter::StrokesProperty);
 	if (!value)
@@ -796,6 +799,8 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 			DrawingAttributes::RenderWithoutDrawingAttributes (cr, spc);
 		}
 	}
+
+	UIElement::PostRender (cr, region, front_to_back);
 }
 
 void

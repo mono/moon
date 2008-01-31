@@ -164,10 +164,10 @@ Panel::UpdateTotalHitTestVisibility ()
 	FrameworkElement::UpdateTotalHitTestVisibility ();
 }
 
-static bool
-use_front_to_back (Panel *panel)
+bool
+Panel::UseBackToFront ()
 {
-	return panel->GetChildren ()->list->Length() < 25;
+	return GetChildren ()->list->Length() < 25;
 }
 
 void
@@ -196,7 +196,7 @@ void
 Panel::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
 	// if we didn't render front to back, then render the children here
-	if (!front_to_back || !use_front_to_back (this)) {
+	if (!front_to_back || !UseBackToFront ()) {
 		RenderChildren (cr, region);
 	}
 
@@ -280,7 +280,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	    || IS_INVISIBLE (local_opacity))
 		return;
 
-	if (!use_front_to_back (this)) {
+	if (!UseBackToFront ()) {
 		Region *self_region = new Region (surface_region->gdkregion);
 		self_region->Intersect (bounds_with_children.RoundOut());
 		// we need to include our children in this one, since
