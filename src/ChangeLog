@@ -2,6 +2,9 @@
 
 	* pipeline.cpp (mpeg_parse_samplerate): Doh, need to bitshift the
 	value.
+	(FindMpegHeader): Now takes an MpegFrameHeader argument, no sense
+	having our caller re-parse the header.
+	(Mp3Demuxer::ReadHeader): Updated.
 
 2008-01-31  Stephane Delcroix  <sdelcroix@novell.com>
 

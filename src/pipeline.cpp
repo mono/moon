@@ -1642,12 +1642,12 @@ Mp3Demuxer::Seek (uint64_t pts)
 }
 
 static int64_t
-FindMpegHeader (IMediaSource *source, int64_t start)
+FindMpegHeader (MpegFrameHeader *mpeg, IMediaSource *source, int64_t start)
 {
 	uint8_t buf[4096], hdr[4], *inbuf, *inend;
 	register uint8_t *inptr;
-	MpegFrameHeader mpeg;
 	int64_t pos, offset = 0;
+	MpegFrameHeader next;
 	int32_t n = 0;
 	uint32_t len;
 	
@@ -1678,15 +1678,15 @@ FindMpegHeader (IMediaSource *source, int64_t start)
 			
 			/* found a 0xff byte... could be a frame header */
 			if ((inptr + 3) < inend) {
-				if (mpeg_parse_header (&mpeg, inptr) && mpeg.bit_rate) {
+				if (mpeg_parse_header (mpeg, inptr) && mpeg->bit_rate) {
 					/* validate that this is really an MPEG frame header by calculating the
 					 * position of the next frame header and checking that it looks like a
 					 * valid frame header too */
-					len = mpeg_frame_length (&mpeg);
+					len = mpeg_frame_length (mpeg);
 					pos = source->GetPosition ();
 					
-					if (source->Seek (start + offset + len, SEEK_SET) && source->ReadAll (hdr, 4)
-					    && mpeg_parse_header (&mpeg, hdr) && mpeg.bit_rate) {
+					if (source->Seek (start + offset + len, SEEK_SET) && source->Peek (hdr, 4)
+					    && mpeg_parse_header (&next, hdr) && next.bit_rate) {
 						/* everything checks out A-OK */
 						return start + offset;
 					}
@@ -1760,17 +1760,10 @@ Mp3Demuxer::ReadHeader ()
 	// There can be an "arbitrary" amount of garbage at the
 	// beginning of an mp3 stream, so we need to find the first
 	// MPEG sync header by scanning.
-	if ((stream_start = FindMpegHeader (source, stream_start)) == -1)
+	if ((stream_start = FindMpegHeader (&mpeg, source, stream_start)) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
 	if (!source->Seek (stream_start, SEEK_SET))
-		return MEDIA_INVALID_MEDIA;
-	
-	if (!source->Peek (buffer, 4))
-		return MEDIA_INVALID_MEDIA;
-	
-	memset ((void *) &mpeg, 0, sizeof (mpeg));
-	if (!mpeg_parse_header (&mpeg, buffer))
 		return MEDIA_INVALID_MEDIA;
 	
 	if ((end = source->GetSize ()) != -1) {
@@ -1828,6 +1821,7 @@ bool
 Mp3DemuxerInfo::Supports (IMediaSource *source)
 {
 	int64_t stream_start = 0;
+	MpegFrameHeader mpeg;
 	uint8_t buffer[10];
 	uint32_t size = 0;
 	int i;
@@ -1856,7 +1850,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 		stream_start = (int64_t) size;
 	}
 	
-	stream_start = FindMpegHeader (source, stream_start);
+	stream_start = FindMpegHeader (&mpeg, source, stream_start);
 	
 	source->Seek (0, SEEK_SET);
 	
