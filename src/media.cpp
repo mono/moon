@@ -479,7 +479,7 @@ MediaElement::MediaElement ()
 	
 	Reinitialize ();
 	
-	mplayer = new MediaPlayer ();
+	mplayer = new MediaPlayer (this);
 	
 	SetValue (MediaElement::AttributesProperty, Value::CreateUnref (new MediaAttributeCollection ()));		
 	SetValue (MediaElement::MarkersProperty, Value::CreateUnref (new TimelineMarkerCollection ()));
@@ -1533,10 +1533,10 @@ int Image::ImageFailedEvent = -1;
 Image::Image ()
   : create_xlib_surface (true),
     downloader (NULL),
-    surface (NULL),
     part_name(NULL),
     pattern (NULL),
-    brush (NULL)
+    brush (NULL),
+    surface (NULL)
 {
 }
 

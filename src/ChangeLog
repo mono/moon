@@ -1,3 +1,8 @@
+2008-01-31  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp (MediaElement::MediaElement): fix build.
+	(Image::Image): fix initialization order to quiet g++.
+
 2008-01-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp, mplayer.h: Render: removed, not used. LoadVideoFrame:
