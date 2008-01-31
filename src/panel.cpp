@@ -220,7 +220,7 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 		region->Intersect (clipped_region);
 
 		if (!item->GetRenderVisible ()
-		    || gdk_region_empty (region->gdkregion)) {
+		    || region->IsEmpty()) {
 #ifdef DEBUG_INVALIDATE
 			printf ("skipping offscreen object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
 #endif
@@ -238,7 +238,7 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 		// at the very least we need to clip based on the expose area.
 		// there's also a UIElement::ClipProperty
 		
-		runtime_cairo_region (cr,region->gdkregion);
+		region->Draw (cr);
 		cairo_clip (cr);
 #if TIME_CLIP
 		ENDTIMER(clip, "cairo clip setup");
@@ -281,7 +281,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		return;
 
 	if (!UseBackToFront ()) {
-		Region *self_region = new Region (surface_region->gdkregion);
+		Region *self_region = new Region (surface_region);
 		self_region->Intersect (bounds_with_children.RoundOut());
 		// we need to include our children in this one, since
 		// we'll be rendering them in the PostRender method.
@@ -304,7 +304,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		item->FrontToBack (surface_region, render_list);
 	}
 
-	Region *self_region = new Region (surface_region->gdkregion);
+	Region *self_region = new Region (surface_region);
 	self_region->Intersect (bounds.RoundOut ()); // note the RoundOut
 
 	if (self_region->IsEmpty() && render_list->First() == panel_cleanup_node) {

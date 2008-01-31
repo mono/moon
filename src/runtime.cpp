@@ -120,20 +120,6 @@ runtime_cairo_create (GdkWindow *drawable)
 }
 
 void
-runtime_cairo_region (cairo_t *cr, GdkRegion *region)
-{
-	int i, count;
-	GdkRectangle *rects;
-	
-	gdk_region_get_rectangles (region, &rects, &i);
-
-	for (count = 0; count < i; count++)
-		cairo_rectangle (cr, rects [count].x, rects [count].y, rects [count].width, rects [count].height);
-	
-	g_free (rects);
-}
-
-void
 Surface::CreateSimilarSurface ()
 {
 	if (drawing_area == NULL || drawing_area->window == NULL)
@@ -918,7 +904,7 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 					 widget->allocation.x - event->area.x, 
 					 widget->allocation.y - event->area.y);
 
-	runtime_cairo_region (ctx, region->gdkregion);
+	region->Draw (ctx);
 	cairo_clip (ctx);
 	//
 	// These are temporary while we change this to paint at the offset position
@@ -944,7 +930,7 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 
 	if (s->transparent) {
 		cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
-		runtime_cairo_region (ctx, region->gdkregion);
+		region->Draw (ctx);
 		cairo_paint (ctx);
 
 		cairo_set_source_rgba (ctx,
@@ -965,7 +951,7 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	s->Paint (ctx, region);
 
 	if (RENDER_EXPOSE) {
-		runtime_cairo_region (ctx, region->gdkregion);
+		region->Draw (ctx);
 		cairo_set_line_width (ctx, 2.0);
 		cairo_set_source_rgb (ctx, (double)(s->frames % 2), (double)((s->frames + 1) % 2), (double)((s->frames / 3) % 2));
 		cairo_stroke (ctx);

@@ -316,7 +316,6 @@ uint32_t runtime_html_timer_timeout_add (int32_t interval, GSourceFunc callback,
 void     runtime_html_timer_timeout_stop (uint32_t source_id);
 
 void runtime_shutdown (void);
-void runtime_cairo_region (cairo_t *cr, GdkRegion *region);
 
 gboolean strcase_equal (gconstpointer  v1, gconstpointer  v2);
 guint strcase_hash     (gconstpointer v);

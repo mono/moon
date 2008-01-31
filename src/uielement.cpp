@@ -19,6 +19,7 @@
 #include "transform.h"
 #include "runtime.h"
 #include "geometry.h"
+#include "shape.h"
 #include "dirty.h"
 #include "eventargs.h"
 
@@ -506,7 +507,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		return;
 	}
 
-	Region* self_region = new Region (surface_region->gdkregion);
+	Region* self_region = new Region (surface_region);
 	self_region->Intersect (bounds.RoundOut());  // note the RoundOut here.
 	if (!self_region->IsEmpty()) {
 		render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
@@ -539,6 +540,37 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 						(media_base_get_stretch (image) == StretchFill
 						 || media_base_get_stretch (image) == StretchUniformToFill)));
 			}
+#if notyet
+			else if (Is (Type::RECTANGLE)) {
+				// if we're going to subtract anything we'll
+				// do it in here, so set this to false so that
+				// it doesn't happen later.
+				subtract = false;
+
+
+				Rectangle *rectangle = (Rectangle*)this;
+				Brush *fill = shape_get_fill (rectangle);
+
+				if (fill != NULL && fill->IsOpaque()) {
+					/* make it a little easier - only consider the rectangle inside the corner radii.
+					   we're also a little more conservative than we need to be, regarding stroke
+					   thickness. */
+					double xr = (rectangle->GetValue(Rectangle::RadiusXProperty)->AsDouble() +
+						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble());
+					double yr = (rectangle->GetValue(Rectangle::RadiusYProperty)->AsDouble() +
+						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble());
+
+					Rect r = bounds.GrowBy (-xr, -yr).RoundIn();
+
+					Region *inner_rect_region = new Region (self_region);
+					inner_rect_region->Intersect (r);
+					if (!inner_rect_region->IsEmpty()) {
+						surface_region->Subtract (inner_rect_region);
+					}
+					delete inner_rect_region;
+				}
+			}
+#endif
 			// XXX more stuff here for non-panel subclasses...
 			else {
 				subtract = false;
@@ -546,7 +578,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		}
 
 		if (subtract)
-			surface_region->Subtract (bounds); // note the lack of RoundOut here.
+			surface_region->Subtract (bounds);
 
 	}
 }
@@ -566,7 +598,7 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 		Rect r = GetSubtreeBounds ().RoundOut();
 		cairo_save (cr);
 		cairo_identity_matrix (cr);
-		runtime_cairo_region (cr, region->gdkregion);
+		region->Draw (cr);
 		cairo_clip (cr);
 		cairo_rectangle (cr, r.x, r.y, r.w, r.h);
 		cairo_clip (cr);

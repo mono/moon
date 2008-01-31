@@ -1,5 +1,19 @@
 2008-01-31  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h, runtime.cpp: remove runtime_cairo_region (we can just
+	use Region::Draw instead).
+
+	* panel.cpp: remove references to runtime_cairo_region, and switch
+	to the new Region* copy ctor.  also, use Region::IsEmpty instead
+	of gdk_region_empty.
+
+	* uielement.cpp: more region cleanup, removing references to
+	GdkRegion in favor of our Region class.  Also, commit (ifdef'ed
+	out until the rendering glitch is fixed) the rectangle back to
+	front special case code.
+
+2008-01-31  Chris Toshok  <toshok@ximian.com>
+
 	* rect.cpp (Region::Region): new overload which takes a Region*,
 	so we don't have to access ->gdkregion everywhere when we copy a
 	region.
