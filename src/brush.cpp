@@ -565,13 +565,15 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 void
 RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
+	Point offset = uielement->GetOrigin ();
+
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
-	double ox = (origin ? origin->x : 0.5);
-	double oy = (origin ? origin->y : 0.5);
+	double ox = (origin ? origin->x : 0.5) + offset.x/width;
+	double oy = (origin ? origin->y : 0.5) + offset.y/height;
 	
 	Point *center = radial_gradient_brush_get_center (this);
-	double cx = (center ? center->x : 0.5);
-	double cy = (center ? center->y : 0.5);
+	double cx = (center ? center->x : 0.5) + offset.x/width;
+	double cy = (center ? center->y : 0.5) + offset.y/height;
 	
 	double rx = radial_gradient_brush_get_radius_x (this);
 	double ry = radial_gradient_brush_get_radius_y (this);
