@@ -16,6 +16,7 @@
 #include "visual.h"
 #include "point.h"
 #include "rect.h"
+#include "region.h"
 #include "list.h"
 
 #define QUANTUM_ALPHA 1

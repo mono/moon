@@ -10,6 +10,8 @@
 #ifndef __MOON_POINT_H__
 #define __MOON_POINT_H__
 
+#include <glib.h>
+
 struct Point {
 public:
 	double x, y;
