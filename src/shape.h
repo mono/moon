@@ -306,6 +306,7 @@ class Path : public Shape {
 	virtual void Draw (cairo_t *cr);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual Point GetOrigin ();
 	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 

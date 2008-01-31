@@ -430,6 +430,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Point *start = linear_gradient_brush_get_start_point (this);
 	Point *end = linear_gradient_brush_get_end_point (this);
 	double x0, y0, x1, y1;
+	Point p = uielement->GetOrigin ();
 
 	switch (gradient_brush_get_mapping_mode (this)) {
 	case BrushMappingModeAbsolute:
@@ -447,6 +448,9 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		break;	
 	}
 
+	x0 += p.x; y0+= p.y;
+	x1 += p.x; y1+= p.y;
+	
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 	
 	cairo_matrix_t matrix;

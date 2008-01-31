@@ -2114,6 +2114,13 @@ Path::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	}
 }
 
+Point
+Path::GetOrigin ()
+{
+	Rect b = GetBounds ();
+	return Point (b.x, b.y);
+}
+
 Geometry *
 path_get_data (Path *path)
 {
