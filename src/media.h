@@ -204,7 +204,6 @@ private:
 	
 	uint32_t flags;
 	
-	int64_t buffering_start;
 	
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
@@ -220,7 +219,11 @@ private:
 	ProgressiveSource *downloaded_file;
 	Downloader *downloader;
 	char *part_name;
+	uint64_t buffering_start; // The last write position in the file when we started buffering
+	uint64_t buffering_pts; // The pts we're waiting for
 	Media *media;
+	
+	int advance_frame_timeout_id;
 	
 	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DownloaderAbort ();

@@ -42,12 +42,11 @@ public:
 	bool rendered_frame;
 
 	// sync
-	uint64_t start_time;  
-	
 	pthread_mutex_t target_pts_lock;
-	uint64_t initial_pts;
-	uint64_t current_pts;
-	uint64_t target_pts;
+	uint64_t start_time; // 100-nanosecond units (pts)
+	uint64_t duration; // 100-nanosecond units (pts)
+	uint64_t current_pts; // 100-nanosecond units (pts)
+	uint64_t target_pts; // 100-nanosecond units (pts)
 	
 	/* Public API */
 	
@@ -79,8 +78,8 @@ public:
 	void Stop ();
 	
 	bool CanSeek ();
-	void Seek (uint64_t position);
-	void SeekInternal (uint64_t position);
+	void Seek (uint64_t pts /* 100-nanosecond units (pts) */);
+	void SeekInternal (uint64_t pts/* 100-nanosecond units (pts) */);
 	uint64_t Position ();
 	uint64_t Duration ();
 	

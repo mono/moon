@@ -199,7 +199,7 @@ struct asf_single_payload {
 	asf_byte* replicated_data;
 	asf_dword payload_data_length;
 	asf_byte* payload_data;
-	asf_dword presentation_time;
+	asf_dword presentation_time; // milliseconds
 	
 	bool FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
 	
@@ -375,9 +375,9 @@ struct asf_file_properties : public asf_object {
 	asf_qword file_size;
 	asf_qword creation_date;
 	asf_qword data_packet_count;
-	asf_qword play_duration;
-	asf_qword send_duration;
-	asf_qword preroll;
+	asf_qword play_duration; // 100-nanosecond units (pts)
+	asf_qword send_duration; // 100-nanosecond units (pts)
+	asf_qword preroll; // milliseconds
 	asf_dword flags;
 	asf_dword min_packet_size;
 	asf_dword max_packet_size;
@@ -507,7 +507,7 @@ struct asf_codec_list : public asf_object {
 };
 
 struct asf_script_command_entry {
-	asf_dword pts;
+	asf_dword pts; // milliseconds
 	asf_word type_index;
 	asf_word name_length;
 	
@@ -532,9 +532,9 @@ struct asf_script_command : public asf_object {
 
 struct asf_marker_entry {
 	asf_qword offset;
-	asf_qword pts;
+	asf_qword pts; // 100-nanosecond units (pts)
 	asf_word entry_length;
-	asf_dword send_time;
+	asf_dword send_time; // milliseconds
 	asf_dword flags;
 	asf_dword marker_description_length;
 	

@@ -190,7 +190,6 @@ MediaPlayer::MediaPlayer ()
 	start_time = 0;
 	
 	pthread_mutex_init (&target_pts_lock, NULL);
-	initial_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
 	
@@ -358,21 +357,14 @@ MediaPlayer::Open (Media *media)
 		
 		// 2 bytes per channel, we always calculate as 2-channel audio because it gets converted into such
 		audio->pts_per_frame = (buf_size * 2 * 2) / (audio->stream->sample_rate / 100);
-		
-		// audio drives the pipeline
-		initial_pts = audio->stream->start_time;
-	} else if (HasVideo ()) {
-		// video drives the pipeline
-		initial_pts = video->stream->start_time;
-	} else {
-		initial_pts = 0;
 	}
 	
 	if (HasVideo ())
 		media_player_enqueue_frames (this, 0, 1);
 	
-	current_pts = initial_pts;
-	target_pts = initial_pts;
+	current_pts = 0;
+	target_pts = 0;
+	duration = media->GetDemuxer ()->GetDuration ();
 	
 	return true;
 }
@@ -409,7 +401,7 @@ MediaPlayer::Close ()
 	
 	start_time = 0;
 	
-	initial_pts = 0;
+	duration = 0;
 	current_pts = 0;
 	target_pts = 0;
 	
@@ -483,20 +475,14 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = GetTargetPts ();	
 	} else {
 		// no audio to sync to
-		uint64_t now = TimeManager::Instance ()->GetCurrentTimeUsec ();
+		uint64_t now = TimeSpan_ToPts (TimeManager::Instance ()->GetCurrentTime ());
+		uint64_t elapsed_pts = now - start_time;
 		
-		uint64_t elapsed_usec = now - start_time;
-		uint64_t elapsed_pts = (uint64_t) (elapsed_usec / 1000);
-		
-		target_pts = initial_pts + elapsed_pts;
+		target_pts = elapsed_pts;
 		
 		this->target_pts = target_pts;
 	}
 	
-	if (current_pts >= target_pts) {
-		// we are ahead of playback
-		return false;
-	}
 	
 	video->queue->Lock ();
 	
@@ -568,6 +554,7 @@ MediaPlayer::AdvanceFrame ()
 	video->queue->Unlock ();
 	
 	if (update && frame) {
+		//printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu.\n", frame->pts);
 		render_frame (this, frame);
 		delete pkt;
 		
@@ -663,7 +650,8 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	
 	PauseInternal (false);
 	
-	start_time = TimeManager::Instance ()->GetCurrentTimeUsec ();
+	start_time = TimeSpan_ToPts (TimeManager::Instance ()->GetCurrentTime ());
+	seeking = false;
 	
 	media_player_enqueue_frames (this, 1, 1);
 		
@@ -763,8 +751,8 @@ MediaPlayer::StopThreads ()
 	
 	audio->outptr = audio->outbuf;
 	
-	current_pts = initial_pts;
-	target_pts = initial_pts;
+	current_pts = 0;
+	target_pts = 0;
 	
 	stop = false;
 	eof = false;
@@ -775,11 +763,12 @@ media_player_seek_callback (MediaClosure *closure)
 {
 	MediaPlayer *mplayer = (MediaPlayer*) closure->context;
 	mplayer->seeking = false;
+	mplayer->current_pts = 0;
 	return MEDIA_SUCCESS;
 }
 
 void
-MediaPlayer::SeekInternal (uint64_t position)
+MediaPlayer::SeekInternal (uint64_t pts)
 {
 	if (media == NULL)
 		return;
@@ -789,7 +778,7 @@ MediaPlayer::SeekInternal (uint64_t position)
 	closure->callback = media_player_seek_callback;
 	closure->context = this;
 	media->ClearQueue ();
-	media->SeekAsync (position, closure);
+	media->SeekAsync (pts, closure);
 }
 
 void
@@ -809,9 +798,9 @@ MediaPlayer::CanSeek ()
 }
 
 void
-MediaPlayer::Seek (uint64_t position)
+MediaPlayer::Seek (uint64_t pts)
 {
-	uint64_t duration;
+	uint64_t duration = Duration ();
 	bool resume = !paused;
 	
 	if (!CanSeek ())
@@ -819,20 +808,14 @@ MediaPlayer::Seek (uint64_t position)
 	
 	seeking = true;
 	
-	duration = Duration ();
-	
-	duration += initial_pts;
-	position += initial_pts;
-	
-	if (position > duration)
-		position = duration;
-	else if (position < initial_pts)
-		position = initial_pts;
+	if (pts > duration)
+		pts = duration;
 	
 	StopThreads ();
-	SeekInternal (position);
+	SeekInternal (pts);
 	
-	target_pts = position;
+	current_pts = pts;
+	target_pts = pts;
 	
 	if (HasVideo ()) {
 		//TODO: LoadVideoFrame ();
@@ -851,7 +834,7 @@ MediaPlayer::Seek (uint64_t position)
 		
 		if (resume) {
 			// Resume playback
-			start_time = TimeManager::Instance ()->GetCurrentTimeUsec ();
+			start_time = TimeManager::Instance ()->GetCurrentTime ();
 			
 			PauseInternal (false);
 		}
@@ -861,27 +844,13 @@ MediaPlayer::Seek (uint64_t position)
 uint64_t
 MediaPlayer::Position ()
 {
-	uint64_t position = GetTargetPts ();
-	
-	if (audio->pcm != NULL && HasAudio ())
-		return position - audio->stream->start_time;
-	
-	if (HasVideo ())
-		return position - video->stream->start_time;
-	
-	return position;
+	return GetTargetPts ();
 }
 
 uint64_t
 MediaPlayer::Duration ()
 {
-	if (audio->pcm != NULL && HasAudio ())
-		return audio->stream->duration;
-	
-	if (HasVideo ())
-		return video->stream->duration;
-	
-	return 0;
+	return duration;
 }
 
 void

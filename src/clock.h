@@ -13,9 +13,20 @@
 #ifndef MOON_CLOCK_H
 #define MOON_CLOCK_H
 
+#include <stdint.h>
 #include "collection.h"
 
 G_BEGIN_DECLS
+
+/*
+ * Time units:
+ *  TimeSpan: signed int64 value, 100-nanosecond units (10 000 000 ticks per second)
+ *  Pts: unsigned int64 value, same units as TimeSpan
+ *  Milliseconds
+ *  Seconds
+ */ 
+ 
+typedef uint64_t TimePts;
 
 #define TIMESPANTICKS_IN_SECOND 10000000
 #define TIMESPANTICKS_IN_SECOND_FLOAT 10000000.0
@@ -26,6 +37,11 @@ G_BEGIN_DECLS
 #define TimeSpan_FromSecondsFloat(s)  ((TimeSpan)((s) * TIMESPANTICKS_IN_SECOND_FLOAT))
 #define TimeSpan_ToSecondsFloat(s)  (((TimeSpan)(s)) / TIMESPANTICKS_IN_SECOND_FLOAT)
 
+#define TimeSpan_ToPts(s)	((uint64_t) (s))
+#define TimeSpan_FromPts(s)	((TimeSpan) (s))
+
+#define MilliSeconds_ToPts(s) ((uint64_t) (s) * 10000)
+#define MilliSeconds_FromPts(s) ((s) / 10000)
 
 // misc types
 typedef gint32 FillBehavior;

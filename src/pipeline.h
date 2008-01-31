@@ -90,9 +90,6 @@ class VideoStream;
 class IImageConverter;
 class MediaMarker;
 
-#include "list.h"
-#include "asf/asf.h"
-
 typedef int32_t MediaResult;
 
 #define MEDIA_NOCALLBACK ((MediaResult) 0)
@@ -119,6 +116,7 @@ typedef int32_t MediaResult;
 #define FRAME_DECODED (1 << 1)
 #define FRAME_DEMUXED (1 << 2)
 #define FRAME_CONVERTED (1 << 3)
+#define FRAME_KEYFRAME (1 << 4)
 
 enum MediaSourceType {
 	MediaSourceTypeFile = 1,
@@ -168,6 +166,9 @@ enum MoonWorkType {
 };
 
 typedef MediaResult MediaCallback (MediaClosure *closure);
+
+#include "list.h"
+#include "asf/asf.h"
 
 class MediaClosure {
 public:
@@ -261,7 +262,6 @@ private:
 	IMediaSource *source;
 	IMediaDemuxer *demuxer;
 	List *markers;
-	uint64_t start_time;
 	bool opened;
 	
 	//	Called on another thread, loops the queue of requested frames 
@@ -326,10 +326,6 @@ public:
 	// Will never return NULL.
 	List *GetMarkers ();
 	
-	// If the start time is the same for all streams, the demuxer should set this value
-	uint64_t GetStartTime () { return start_time; }
-	void SetStartTime (uint64_t value) { start_time = value; } 
-	
 	bool IsOpened () { return opened; }
 	
 	
@@ -354,6 +350,7 @@ public:
 	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
 	bool IsPlanar () { return (state & FRAME_PLANAR) == FRAME_PLANAR; }
 	bool IsCopyDecodedData () { return (state & FRAME_COPY_DECODED_DATA) == FRAME_COPY_DECODED_DATA; }
+	bool IsKeyFrame () { return (state & FRAME_KEYFRAME) == FRAME_KEYFRAME; }
 	
 	IMediaStream *stream;
 	void *decoder_specific_data; // data specific to the decoder
@@ -376,7 +373,7 @@ public:
 };
 
 class MediaMarker {
-	uint64_t pts;
+	uint64_t pts; // 100-nanosecond units (pts)
 	char *type;
 	char *text;
 	
@@ -436,9 +433,8 @@ public:
 	void *extra_data;
 	int extra_data_size;
 	int codec_id;
-	uint64_t start_time;
+	uint64_t duration; // 100-nanosecond units (pts)
 	int32_t msec_per_frame;
-	uint64_t duration;
 	IMediaDecoder *decoder;
 	const char *codec;
 	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
@@ -460,13 +456,7 @@ protected:
 	void SetStreams (IMediaStream **streams, int count);
 	
 public:
-	IMediaDemuxer (Media *media, IMediaSource *source) : IMediaObject (media)
-	{
-		this->source = source;
-		stream_count = 0;
-		streams = NULL;
-	}
-	
+	IMediaDemuxer (Media *media, IMediaSource *source);
 	virtual ~IMediaDemuxer ();
 	
 	virtual MediaResult ReadHeader () = 0;
@@ -474,10 +464,21 @@ public:
 	virtual MediaResult ReadFrame (MediaFrame *frame) = 0;
 	virtual MediaResult Seek (uint64_t pts) = 0;
 	int GetStreamCount () { return stream_count; }
-	IMediaStream *GetStream (int index)
-	{
-		return (index < 0 || index >= stream_count) ? NULL : streams [index];
-	}
+	// Calculates a position for the pts
+	// Might return an estimated value, 
+	// if so 'estimate' will be true upon return.
+	// Must return the size of the file if pts is after the
+	// end of the media.
+	// The position returned is the last position in the file 
+	// that is required to play/render all the frames/streams 
+	// with the specified pts, guaranteeing that the demuxer
+	// won't seek to/read from a position after the returned
+	// position when getting frames of the specified pts.
+	// (if it's an estimate then the guarantee cannot be made of course)
+	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate) = 0;
+	IMediaStream *GetStream (int index);
+	// Gets the longest duration from all the streams
+	virtual uint64_t GetDuration (); // 100-nanosecond units (pts)
 };
 
 class IMediaDecoder : public IMediaObject {
@@ -686,6 +687,7 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
+	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
 	
 	ASFParser *GetParser () { return parser; }
 };
@@ -765,6 +767,7 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
+	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate) { return -1; }
 };
 
 class Mp3DemuxerInfo : public DemuxerInfo {

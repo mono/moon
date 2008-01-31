@@ -1,3 +1,18 @@
+2008-01-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.h: Added macros to convert between pts, milliseconds and timespans.
+	* media.cpp, media.h: MediaElement: Updated to normalized pts (starting at
+	  0). Use the new macros when converting between time formats. Remove the
+	  AdvanceFrame timeout upon reinitialization. Implement a better buffering
+	  algorithm (and honor the BufferingTime property).
+	* mplayer.cpp, mplayer.h: Remove initial_pts, everything coming from the
+	  pipeline is now normalized to start at 0. Use the new macros when
+	  converting between time formats.
+	* pipeline.cpp, pipeline.h: Normalize all pts to start at 0, and remove
+	  start_time/initial_pts handling. Added Demuxer::GetPositionOfPts to
+	  estimate the position of a pts. ProgressiveSource::CancelWait: only
+	  cancel if we're waiting, and then wait until actually cancelled.
+
 2008-01-31  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.cpp:

@@ -65,7 +65,6 @@ Media::Media ()
 	demuxer = NULL;
 	markers = NULL;
 	
-	start_time = 0;
 	opened = false;
 	
 	pthread_attr_init (&attribs);
@@ -566,9 +565,7 @@ Media::WorkerLoop ()
 			if (node != NULL)
 				queued_requests->Unlink (node);
 			
-			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got a %s node, there are %d nodes left.\n",
-					     node->stream->GetType () == MediaTypeAudio ? "audio" :
-					     (node->stream->GetType () == MediaTypeVideo ? "video" : "unknown"),
+			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got a node, there are %d nodes left.\n",
 					     queued_requests->Length ());
 		}
 		
@@ -750,22 +747,41 @@ ASFDemuxer::~ASFDemuxer ()
 		delete parser;
 }
 
+int64_t
+ASFDemuxer::GetPositionOfPts (uint64_t pts, bool *estimate)
+{
+	int64_t result = -1;
+	bool e = false;
+	
+	*estimate = false;
+	
+	for (int i = 0; i < GetStreamCount (); i++) {
+		result = MAX (result, readers [i]->GetPositionOfPts (pts, &e));
+		if (e)
+			*estimate = true;
+	}
+	
+	return result;
+}
+
 MediaResult
 ASFDemuxer::Seek (uint64_t pts)
 {
 	bool result = true;
 	
+	//printf ("ASFDemuxer::Seek (%llu)\n", pts);
+	
 	if (readers == NULL)
 		return MEDIA_FAIL;
 	
+	if (GetStreamCount () <= 0)
+		return MEDIA_SUCCESS;
+		
 	for (int i = 0; i < GetStreamCount (); i++) {
 		result &= readers [i]->Seek (pts);
 	}
 		
-	if (result)
-		return MEDIA_SUCCESS;
-	
-	return MEDIA_FAIL;
+	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 void
@@ -787,6 +803,7 @@ ASFDemuxer::ReadMarkers ()
 	List *markers = media->GetMarkers ();
 	const char *type;
 	uint64_t pts;
+	uint64_t preroll_pts = MilliSeconds_ToPts (parser->GetFileProperties ()->preroll);
 	char *text;
 	int i = -1;
 	
@@ -809,7 +826,7 @@ ASFDemuxer::ReadMarkers ()
 			asf_script_command_entry *entry = commands [i];
 			
 			text = entry->get_name ();
-			pts = entry->pts; //(entry->pts - preroll) * 10000;
+			pts = MilliSeconds_ToPts (entry->pts) - preroll_pts;
 			
 			if (entry->type_index + 1 <= command->command_type_count)
 				type = command_types [entry->type_index];
@@ -834,7 +851,7 @@ ASFDemuxer::ReadMarkers ()
 			marker_entry = asf_marker->get_entry (i);
 			text = marker_entry->get_marker_description ();
 			
-			pts = marker_entry->pts / 10000; // (marker_entry->pts - preroll * 10000);
+			pts = marker_entry->pts - preroll_pts;
 			
 			markers->Append (new MediaMarker::Node (new MediaMarker ("Name", text, pts)));
 			
@@ -856,7 +873,7 @@ ASFDemuxer::ReadHeader ()
 {
 	MediaResult result = MEDIA_SUCCESS;
 	ASFSource *asf_source = new ASFMediaSource (NULL, source);
-	ASFParser *asf_parser = new ASFParser (asf_source);
+	ASFParser *asf_parser = new ASFParser (asf_source, media);
 	int32_t *stream_to_asf_index = NULL;
 	IMediaStream **streams = NULL;
 	int current_stream = 1;
@@ -873,8 +890,6 @@ ASFDemuxer::ReadHeader ()
 		goto failure;
 	}
 	
-	media->SetStartTime (asf_parser->file_properties->preroll);
-			
 	// Count the number of streams
 	stream_count = 0;
 	for (int i = 1; i <= 127; i++) {
@@ -981,11 +996,10 @@ ASFDemuxer::ReadHeader ()
 				default: stream->codec = "unknown"; break;
 				}
 			}
-			stream->start_time = asf_parser->file_properties->preroll;
 			streams [i] = stream;
 			stream->index = i;			
 			if (!asf_parser->file_properties->is_broadcast ()) {
-				stream->duration = asf_parser->file_properties->play_duration / 10000 - stream->start_time;
+				stream->duration = asf_parser->file_properties->play_duration - MilliSeconds_ToPts (asf_parser->file_properties->preroll);
 			}
 			stream_to_asf_index [i] = current_stream;
 		}
@@ -1004,7 +1018,7 @@ ASFDemuxer::ReadHeader ()
 	
 	readers = (ASFFrameReader**) g_malloc0 (sizeof (ASFFrameReader*) * (stream_count + 1));
 	for (int i = 0; i < stream_count; i++)
-		readers [i] = new ASFFrameReader (parser, stream_to_asf_index [i]);
+		readers [i] = new ASFFrameReader (parser, stream_to_asf_index [i], this);
 			
 	ReadMarkers ();
 	
@@ -1036,24 +1050,25 @@ ASFDemuxer::ReadFrame (MediaFrame *frame)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
 	ASFFrameReader *reader = readers [frame->stream->index];
+	MediaResult result;
 	
-	//printf ("ASFDemuxer::ReadFrame (%p) frame = ", frame);
-	//frame->printf ();
-	//printf ("\n");
 	
-	if (!reader->Advance ()) {
-		if (!reader->Eof ()) {
-			media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame.");
-			return MEDIA_DEMUXER_ERROR;
-		} else {
-			media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
-			frame->event = FrameEventEOF;
-			return MEDIA_NO_MORE_DATA;
-		}
+	result = reader->Advance ();
+	if (result == MEDIA_NO_MORE_DATA) {
+		media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
+		frame->event = FrameEventEOF;
+		return MEDIA_NO_MORE_DATA;
+	}
+	
+	if (!MEDIA_SUCCEEDED (result)) {
+		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame.");
+		return result;
 	}
 	
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
+	if (reader->IsKeyFrame ())
+		frame->AddState (FRAME_KEYFRAME);
 	frame->buflen = reader->Size ();
 	frame->buffer = (uint8_t *) g_try_malloc (frame->buflen + frame->stream->min_padding);
 	
@@ -1788,8 +1803,6 @@ Mp3Demuxer::ReadHeader ()
 	audio->extra_data = NULL;
 	audio->extra_data_size = 0;
 	
-	stream->start_time = 0;
-	
 	streams = g_new (IMediaStream *, 2);
 	streams[0] = stream;
 	streams[1] = NULL;
@@ -2294,6 +2307,8 @@ ProgressiveSource::WaitForPosition (int64_t position)
 {
 	bool result = false;
 	
+	//printf ("%p ProgressiveSource::WaitForPosition (%lld). wait_pos: %lld, write_pos: %lld\n", this, position, position, write_pos);
+	
 	g_atomic_int_inc (&wait_count);
 	
 	Lock ();
@@ -2303,8 +2318,7 @@ ProgressiveSource::WaitForPosition (int64_t position)
 	
 	while (true) {
 		if (cancel_wait) {
-			// FIXME: This doesn't work if there are more than one thread waiting at the same time
-			cancel_wait = false;
+			//printf ("ProgressiveSource::WaitForPosition (%lld): cancelled\n", position);
 			goto cleanup;
 		}
 		
@@ -2320,11 +2334,18 @@ ProgressiveSource::WaitForPosition (int64_t position)
 		
 		// By the time this method is called, we might not need to wait, so the wait goes
 		// after all the checks.
-		//printf ("Going to sleep...\n");
+		//printf ("%p ProgressiveSource::WaitForPosition (%lld). wait_pos: %lld, write_pos: %lld\n", this, position, wait_pos, write_pos);
 		pthread_cond_wait (&write_cond, &write_mutex);
 	}
 	
 cleanup:
+	//printf ("%p ProgressiveSource::WaitForPosition (%lld). wait_pos: %lld, write_pos: %lld, result: %s\n", this, position, wait_pos, write_pos, result ? "true" : "false");
+	if (cancel_wait) {
+		cancel_wait = false;
+		// Wake up CancelWait (), which is waiting for us to finish.
+		WakeUp (false);
+	}
+	wait_pos = 0;
 	Unlock ();
 	
 	g_atomic_int_dec_and_test (&wait_count);
@@ -2335,9 +2356,14 @@ cleanup:
 void
 ProgressiveSource::CancelWait ()
 {
+	//printf ("%p ProgressiveSource::CancelWait () wait_pos: %lld.\n", this, wait_pos);
 	Lock ();
-	cancel_wait = true;
-	WakeUp (false);
+	if (IsWaiting ()) {
+		cancel_wait = true;
+		WakeUp (false);
+		while (cancel_wait)
+			pthread_cond_wait (&write_cond, &write_mutex);
+	}
 	Unlock ();
 }
 
@@ -2485,6 +2511,7 @@ MediaClosure::Call ()
 		
 	return MEDIA_NOCALLBACK;
 }
+
 /*
  * IMediaStream
  */
@@ -2497,7 +2524,6 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 	extra_data = NULL;
 	
 	msec_per_frame = 0;
-	start_time = 0;
 	duration = 0;
 	
 	decoder = NULL;
@@ -2519,6 +2545,13 @@ IMediaStream::~IMediaStream ()
  * IMediaDemuxer
  */ 
  
+IMediaDemuxer::IMediaDemuxer (Media *media, IMediaSource *source) : IMediaObject (media)
+{
+	this->source = source;
+	stream_count = 0;
+	streams = NULL;
+}
+
 IMediaDemuxer::~IMediaDemuxer ()
 {
 	if (streams != NULL) {
@@ -2527,6 +2560,21 @@ IMediaDemuxer::~IMediaDemuxer ()
 		
 		g_free (streams);
 	}
+}
+
+uint64_t
+IMediaDemuxer::GetDuration ()
+{
+	uint64_t result = 0;
+	for (int i = 0; i < GetStreamCount (); i++)
+		result = MAX (result, GetStream (i)->duration);
+	return result;
+}
+
+IMediaStream*
+IMediaDemuxer::GetStream (int index)
+{
+	return (index < 0 || index >= stream_count) ? NULL : streams [index];
 }
 
 /*

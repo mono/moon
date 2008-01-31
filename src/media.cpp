@@ -288,7 +288,7 @@ marker_callback (MediaClosure *closure)
 	if (marker == NULL)
 		return MEDIA_FAIL;
 	
-	uint64_t pts = (marker->Pts () - closure->media->GetStartTime ()) * 10000;
+	uint64_t pts = marker->Pts ();
 	
 	TimelineMarker *tl_marker = new TimelineMarker ();
 	tl_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
@@ -346,7 +346,7 @@ MediaElement::ReadMarkers ()
 		TimelineMarker *new_marker = new TimelineMarker ();
 		new_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
 		new_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
-		new_marker->SetValue (TimelineMarker::TimeProperty, Value ((marker->Pts () - media->GetStartTime ()) * 10000, Type::TIMESPAN));
+		new_marker->SetValue (TimelineMarker::TimeProperty, Value (TimeSpan_FromPts (marker->Pts ()), Type::TIMESPAN));
 		col->Add (new_marker);
 		new_marker->unref ();
 		
@@ -420,7 +420,7 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection
 bool
 MediaElement::AdvanceFrame ()
 {
-	uint64_t position;
+	uint64_t position; // pts
 	bool advanced;
 	
 	if (!IsPlaying ())
@@ -430,13 +430,12 @@ MediaElement::AdvanceFrame ()
 		return false;
 	
 	advanced = mplayer->AdvanceFrame ();
-	
-	position = mplayer->Position () * (TIMESPANTICKS_IN_SECOND / 1000);
+	position = mplayer->Position ();
 	
 	if (advanced) {
 		//printf ("MediaElement::AdvanceFrame (): advanced, setting position to: %lld\n", position);
 		flags |= UpdatingPosition;
-		media_element_set_position (this, position);
+		media_element_set_position (this, TimeSpan_FromPts (position));
 		flags &= ~UpdatingPosition;
 	}
 	
@@ -476,6 +475,7 @@ MediaElement::MediaElement ()
 	media = NULL;
 	closure = NULL;
 	flags = 0;
+	advance_frame_timeout_id = 0; // Couldn't find any documentation about which id would be invalid, assuming 0 is an invalid id. 
 	
 	Reinitialize ();
 	
@@ -515,6 +515,12 @@ MediaElement::Reinitialize ()
 		closure = NULL;
 	}
 	
+	if (advance_frame_timeout_id != 0) {
+		printf ("MediaElement::Reinitialize (): removing timeout\n");
+		TimeManager::Instance ()->RemoveTimeout (advance_frame_timeout_id);
+		advance_frame_timeout_id = 0;
+	}
+	
 	flags = (flags & (Loaded | PlayRequested)) | RecalculateMatrix;
 	prev_state = Closed;
 	state = Closed;
@@ -529,6 +535,7 @@ MediaElement::Reinitialize ()
 	}
 	
 	buffering_start = 0;
+	buffering_pts = 0;
 	
 	if (streamed_markers)
 		streamed_markers->unref ();
@@ -565,7 +572,7 @@ MediaElement::MediaOpened (Media *media)
 	media_element_set_can_seek (this, mplayer->CanSeek ());
 	media_element_set_can_pause (this, mplayer->CanPause ());
 	media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
-	media_element_set_natural_duration (this, Duration (mplayer->Duration () * TIMESPANTICKS_IN_SECOND / 1000));
+	media_element_set_natural_duration (this, Duration (TimeSpan_FromPts (mplayer->Duration ())));
 	media_element_set_natural_video_height (this, mplayer->height);
 	media_element_set_natural_video_width (this, mplayer->width);
 	
@@ -667,11 +674,6 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 }
 
-
-// TODO: Honor BufferTimeProperty and calculate the buffering size from that.
-#define BUFFERING_SIZE (2 * 1024 * 1024)
-
-
 void
 MediaElement::UpdateProgress ()
 {
@@ -680,11 +682,15 @@ MediaElement::UpdateProgress ()
 	
 	//printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
 	
+	if (state & WaitingForOpen)
+		return;
+	
 	if (downloaded_file != NULL && !IsBuffering () && downloaded_file->IsWaiting ()) {
 		// We're waiting for more data, switch to the 'Buffering' state.
-		//printf ("MediaElement::UpdateProgress (): Switching to 'Buffering'.\n");
+		//printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', we're waiting for %lld\n", downloaded_file->GetWaitPosition ());
 		SetValue (MediaElement::BufferingProgressProperty, Value (0.0));
-		buffering_start = downloaded_file->GetPosition ();
+		buffering_start = downloaded_file->GetWritePosition ();
+		buffering_pts = mplayer->Position ();
 		SetState (Buffering);
 		mplayer->Pause ();
 		emit = true;
@@ -693,23 +699,45 @@ MediaElement::UpdateProgress ()
 	// CHECK: if buffering, will DownloadCompletedEvent be emitted?
 	
 	if (IsBuffering ()) {
-		int64_t wait_pos = downloaded_file->GetWaitPosition ();
-		int64_t pos = downloaded_file->GetWritePosition ();
+		bool estimate;
 		int64_t size = downloaded_file->GetSize ();
-		int64_t buffer_size = BUFFERING_SIZE;
+		int64_t buffering_time = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
+		int64_t write_pos = downloaded_file->GetWritePosition ();
+		int64_t wait_pos = media == NULL ? 0 : media->GetDemuxer ()->GetPositionOfPts (buffering_pts + buffering_time, &estimate);
+		int64_t buffer_size = wait_pos - buffering_start;
+		int64_t buffered_size = write_pos - buffering_start;
 		
-		if ((buffering_start + buffer_size) < wait_pos) {
-			// If the position the stream is waiting for is beyond the default
-			// buffer size, use that position to calculate the buffer size.
-			buffer_size = wait_pos - buffering_start;
-		} else if (size != -1 && (buffering_start + buffer_size) > size) {
-			// there's less than BUFFERING_SIZE data left to buffer
-			buffer_size = size - buffering_start;
+		if (wait_pos > size && size >= 0)
+			wait_pos = size;
+		
+		if (wait_pos < write_pos) {
+			if (estimate) {
+				// Just wait a bit more, estimate is clearly wrong.
+				buffer_size = 1024 * 16;
+				wait_pos = write_pos + buffer_size;
+			} else {
+				// 100% done
+				wait_pos = write_pos;
+				buffered_size = buffer_size; 
+			}
 		}
 		
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
-		if ((progress = ((double) (pos - buffering_start)) / buffer_size) > 1.0)
+		
+		if ((progress = ((double) buffered_size) / buffer_size) > 1.0)
 			progress = 1.0;
+		/*	
+		printf ("MediaElement::UpdateProgress (), write_pos: %lld, size: %lld, wait_pos: %lld, "
+					"buffer size: %lld, buffered_size: %lld, estimate: %s, buffering start: %lld, progress: %.2f, current: %.2f\n",
+			write_pos, size, wait_pos, buffer_size, buffered_size, estimate ? "true" : "false", buffering_start, progress, current);
+		*/
+
+		if (current > progress) {
+			// Given that the calculated position we're waiting for might be an estimate
+			// the buffering progress might go down when the estimate gets better.
+			// In this case don't emit any events
+			emit = false;
+		}
 		
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (emit || progress == 1.0 || (progress - current) >= 0.0005) {
@@ -853,12 +881,13 @@ MediaElement::TryOpenFinished (void *user_data)
 	element->closure = NULL;
 	element->flags &= ~WaitingForOpen;
 	
-	printf ("MediaElement::TryOpenFinished (), result: %i\n", closure->result);
 	if (MEDIA_SUCCEEDED (closure->result)) {
 		printf ("MediaElement::TryOpen (): download is not complete, but media was "
 			"opened successfully and we'll now start buffering.\n");
-		element->MediaOpened (closure->media);
+		element->buffering_pts = 0;
+		element->buffering_start = closure->media->GetSource ()->GetPosition (); // FIXME: This should be the end of the header/start of data
 		element->SetState (Buffering);
+		element->MediaOpened (closure->media);
 	} else {
 		element->flags |=  BufferingFailed;
 		// Seek back to the beginning of the file
@@ -980,7 +1009,7 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		if ((flags & PlayRequested) || media_element_get_auto_play (this))
+		if ((flags & PlayRequested) || prev_state == Playing || media_element_get_auto_play (this))
 			Play ();
 		else
 			Pause ();
@@ -1072,7 +1101,7 @@ MediaElement::Play ()
 	case Buffering:
 	case Paused:
 	case Stopped: // docs: start playing
-		mplayer->Play (media_element_advance_frame, this);
+		advance_frame_timeout_id = mplayer->Play (media_element_advance_frame, this);
 		flags &= ~PlayRequested;
 		SetState (Playing);
 		break;
@@ -1105,7 +1134,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 {
 	if (prop == MediaElement::PositionProperty) {
 		uint64_t position = mplayer->Position ();
-		Value v = Value (position * TIMESPANTICKS_IN_SECOND / 1000, Type::TIMESPAN);
+		Value v = Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 		
 		flags |= UpdatingPosition;
 		SetValue (prop, &v);
@@ -1154,8 +1183,9 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 		else if (position < 0)
 			position = 0;
 		
-		// position is in ticks, while mplayer expects time in milliseconds.
-		mplayer->Seek (position * 1000 / TIMESPANTICKS_IN_SECOND);
+		// position is a timespan, while mplayer expects time pts
+		buffering_pts = TimeSpan_ToPts (position); 
+		mplayer->Seek (TimeSpan_ToPts (position));
 		Invalidate ();
 		
 		if (IsStopped ())
@@ -1213,7 +1243,7 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 	} else if (prop == MediaElement::BufferingProgressProperty) {
 		Emit (BufferingProgressChangedEvent);
 	} else if (prop == MediaElement::BufferingTimeProperty) {
-		// FIXME: set the buffering time
+		// nothing to do here
 	} else if (prop == MediaElement::CanPauseProperty) {
 		// read-only property
 	} else if (prop == MediaElement::CanSeekProperty) {
@@ -1978,7 +2008,7 @@ media_init (void)
 	MediaElement::AutoPlayProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
 	MediaElement::BalanceProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
 	MediaElement::BufferingProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
-	MediaElement::BufferingTimeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingTime", Type::TIMESPAN);
+	MediaElement::BufferingTimeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5), Type::TIMESPAN));
 	MediaElement::CanPauseProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanPause", new Value (false));
 	MediaElement::CanSeekProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanSeek", new Value (false));
 	MediaElement::CurrentStateProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CurrentState", Type::STRING);

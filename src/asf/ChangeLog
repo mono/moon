@@ -1,3 +1,12 @@
+2008-01-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: ASFFrameReader: Implement an index and use it when
+	  seeking. Implement GetPositionOfPts to estimate the file position of a
+	  pts. AdvanceFrame: Normalize all pts to start at 0, skip partial
+	  payloads (might happen when seeking)
+	* asf-structures.h: Added comments to fields representing some sort of time
+	  or duration stating the units.
+
 2008-01-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Add a null check.

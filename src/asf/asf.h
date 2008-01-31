@@ -54,6 +54,7 @@ class ASFSource;
 #include "asf-debug.h"
 
 #include "../pipeline.h"
+#include "../clock.h"
 
 class ASFSource {
 protected:
@@ -135,8 +136,6 @@ struct ASFFrameReaderData {
 struct ASFFrameReaderIndex {
 	uint64_t start_pts;
 	uint64_t end_pts;
-	int32_t packet_index;
-	int8_t stream;
 };
 /*
  *	The data in an ASF file has the following structure:
@@ -165,6 +164,7 @@ struct ASFFrameReaderIndex {
  */
 
 class ASFFrameReader {
+	IMediaDemuxer *demuxer;
 	ASFParser *parser;
 	
 	// The first pts that should be returned, any frames with pts below this one will be dropped.
@@ -173,7 +173,7 @@ class ASFFrameReader {
 	bool key_frames_only;
 	int stream_number; // The stream this reader is reading for 
 	
-	int32_t current_packet_index;
+	int32_t current_packet_index; // The index of the next packet that will be read when ReadMore is called.
 	int32_t script_command_stream_index;
 	
 	// The queue of payloads we've built.
@@ -186,22 +186,21 @@ class ASFFrameReader {
 	
 	// Information about the current frame.
 	uint64_t size;
-	
-	bool eof;
+	uint64_t pts;
 	
 	// Index data
 	int32_t index_size; // The number of items in the index.
 	ASFFrameReaderIndex *index; // A table of ASFFrameReaderIndexes.
 	
 	bool ResizeList (int size); // Resizes the list of payloads to the requested size. 
-	bool ReadMore (); // Reads another packet and stuffs the payloads into our queue 
+	MediaResult ReadMore (); // Reads another packet and stuffs the payloads into our queue 
 	void RemoveAll (); // Deletes the entire queue of payloads (and deletes every element)
 	void Remove (ASFFrameReaderData *data); // Unlinks the payload from the queue and deletes it.
 	
 	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
 	
 public:
-	ASFFrameReader (ASFParser *parser, int stream_index);
+	ASFFrameReader (ASFParser *parser, int stream_index, IMediaDemuxer *demuxer);
 	virtual ~ASFFrameReader ();
 	
 	// Can we seek?
@@ -211,8 +210,7 @@ public:
 	bool Seek (uint64_t pts);
 	
 	// Advance to the next frame
-	// Returns false if unsuccessful (if due to no more data, eof is set, otherwise some error occurred)
-	bool Advance ();
+	MediaResult Advance ();
 	
 	// Write the frame's data to a the destination
 	bool Write (void *dest);
@@ -220,14 +218,17 @@ public:
 	// Information about the current frame
 	uint64_t Size () { return size; }
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
-	uint64_t Pts () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->get_presentation_time () : 0; }
+	uint64_t Pts () { return pts; }
 	int StreamId () { return stream_number; }
-	bool Eof () { return eof; } // EOF might be true even if there are more packets in the reader (if Advance () fails, and Eof () = true, then advance failed because of eof).
+	bool Eof ();
 	void FindScriptCommandStream ();
 	
 	// Index, returns the packet index of where the frame is.
 	// returns -1 if not found in the index.
 	int32_t FrameSearch (uint64_t pts);
+
+	int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
+	int32_t GetPacketIndexOfPts (uint64_t pts, bool *estimate);
 
 	// Adds the current frame to the index.
 	void AddFrameIndex ();
@@ -248,10 +249,11 @@ private:
 	bool ReadData ();
 	asf_object *ReadObject (asf_object *guid);
 	void SetStream (int stream_id, asf_stream_properties *stream);
+	Media *media;
 	
 public:
 	// The parser takes ownership of the source and will delete it when the parser is deleted.
-	ASFParser (ASFSource *source);
+	ASFParser (ASFSource *source, Media *media);
 	virtual ~ASFParser ();
 	
 	bool ReadHeader ();
@@ -312,6 +314,7 @@ public:
 	
 	// Field accessors
 	
+	Media *GetMedia ();
 	asf_header *GetHeader ();
 	asf_object *GetHeader (int index);
 	asf_file_properties *GetFileProperties ();

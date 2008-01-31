@@ -10,6 +10,7 @@
 #include <config.h>
 #include "asf.h"
 #include "../debug.h"
+#include "../clock.h"
 
 
 /*
@@ -55,10 +56,11 @@ ASFMediaSource::Eof ()
 	ASFParser
 */
 
-ASFParser::ASFParser (ASFSource *src)
+ASFParser::ASFParser (ASFSource *src, Media *m)
 {
 	ASF_LOG ("ASFParser::ASFParser ('%p'), this: %p.\n", src, this);
 	source = src;
+	media = m;
 	Initialize ();
 }
 
@@ -66,6 +68,12 @@ uint64_t
 ASFParser::GetPacketCount ()
 {
 	return file_properties->data_packet_count;
+}
+
+Media*
+ASFParser::GetMedia ()
+{
+	return media;
 }
 
 int 
@@ -215,8 +223,10 @@ ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 	if (packet_index >= 0) {
 		int64_t position = GetPacketOffset (packet_index);
 		
-		if (position == 0 || (source->Position () != position && !source->Seek (position, SEEK_SET)))
+		if (position == 0 || (source->Position () != position && !source->Seek (position, SEEK_SET))) {
+			//printf ("ASFParser::ReadPacket (%p, %i): position is 0 or seek failed (position: %lld).\n", packet, packet_index, position); 
 			return false;
+		}
 	}
 	
 	return ASFParser::ReadPacket (packet);
@@ -702,21 +712,22 @@ ASFPacket::GetFirstPayload (int stream_id /* 1 - 127 */)
 	ASFFrameReader
 */
 
-ASFFrameReader::ASFFrameReader (ASFParser *p, int s)
+ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d)
 {
 	stream_number = s;
 	parser = p;
+	demuxer = d;
 	first = NULL;
 	last = NULL;
 	size = 0;
+	pts = 0;
 	payloads = NULL;
 	current_packet_index = CanSeek () ? 0 : -1;
 	
 	payloads_size = 0;
 	payloads = NULL;
-	eof = false;
 	
-	first_pts = parser->GetFileProperties ()->preroll;
+	first_pts = 0;
 	
 	script_command_stream_index = 0;
 	FindScriptCommandStream ();
@@ -736,6 +747,11 @@ ASFFrameReader::~ASFFrameReader ()
 		g_free (payloads);
 	}
 }
+bool
+ASFFrameReader::Eof ()
+{
+	return (uint32_t) current_packet_index >= parser->GetPacketCount ();
+}
 
 bool
 ASFFrameReader::IsAudio ()
@@ -753,19 +769,11 @@ ASFFrameReader::IsAudio (int stream)
 void
 ASFFrameReader::AddFrameIndex ()
 {
-#if 0
 	// No need to create an index if we can't seek.
 	if (!CanSeek ())
 		return;
 		
-	// Only index key frames and audio frames.
-	if (!IsKeyFrame () && !IsAudio ())
-		return;
-	
-	int stream_count = parser->GetStreamCount ();
 	int64_t packet_count = parser->GetPacketCount ();
-	int sequential_stream = parser->GetSequentialStreamNumber (StreamId ());
-	int m;
 	
 	// Create the index.
 	if (index_size == 0) {
@@ -776,11 +784,8 @@ ASFFrameReader::AddFrameIndex ()
 			return;
 		}
 		
-		// Max size here is 0xFFFF packets * 127 streams * 21 bytes per index = 174.781.845 bytes
-		// However it's not normal with 127 streams per file, normal is max 3, which gives max 4.128.705 bytes.
-		// Still quite much though.
-		
-		index_size = packet_count * stream_count;
+		// Max size here is 0xFFFF packets * 16 bytes per index = 1.048.560 bytes
+		index_size = packet_count;
 		index = (ASFFrameReaderIndex*) g_malloc0 (index_size * sizeof (ASFFrameReaderIndex));
 		
 		//printf ("ASFFrameReader::AddFrameIndex (): Created index: stream_count: %i, packet_count: %lld, index_size: %i, item size: %i, gives index size: %i bytes\n", stream_count, packet_count, index_size, sizeof (ASFFrameReaderIndex), index_size * sizeof (ASFFrameReaderIndex));
@@ -790,47 +795,24 @@ ASFFrameReader::AddFrameIndex ()
 			return;
 		}
 		
-		for (int i = 0; i < stream_count; i++) {	
-			for (int k = 0; k < (int) packet_count; k++) {
-				m = i * packet_count + k;
-				index [m].packet_index = k + 1;
-				index [m].stream = i + 1;
-				index [m].start_pts = INVALID_START_PTS;
-			}
+		for (int i = 0; i < (int) packet_count; i++) {
+			index [i].start_pts = INVALID_START_PTS;
 		}
 	}
 	
-	m = (sequential_stream - 1) * packet_count + (current_packet_index - 1);
-	if (index [m].stream != sequential_stream || index [m].packet_index != current_packet_index) {
-		//printf ("ASFFrameReader::AddFrameIndex (): can't calculate.\n");
+	int k = current_packet_index;
+	uint64_t current_start = index [k].start_pts;
+	index [k].start_pts = MIN (index [k].start_pts, Pts ());
+	index [k].end_pts = MAX (index [k].end_pts, Pts ());
+	if (k > 1 && current_start != INVALID_START_PTS) {
+		index [k].start_pts = MAX (index [k - 1].end_pts, current_start);		
 	}
-	uint64_t current_start = index [m].start_pts;
-	index [m].start_pts = MIN (index [m].start_pts, Pts ());
-	index [m].end_pts = MAX (index [m].end_pts, Pts ());
-	if (current_packet_index > 1 && current_start != INVALID_START_PTS) {
-		m = (sequential_stream - 1) * packet_count + (current_packet_index - 2);
-		index [m].end_pts = MAX (index [m].end_pts, current_start);		
-	}
-#endif
 }
 
 int32_t
 ASFFrameReader::FrameSearch (uint64_t pts)
 {
-#if 0
-	int sequential_stream = parser->GetSequentialStreamNumber (stream_number);
-	int m = (sequential_stream - 1) * (current_packet_index - 1);
-	//int64_t packet_count = parser->GetPacketCount ();
-	
-	if (m < 0 || m >= index_size) {
-		//printf ("ASFFrameReader::FrameSearch (%llu): out of index?\n", pts);
-		return -1;
-	}
-	
 	for (int i = 0; i < index_size; i++) {
-		if (index [i].stream != stream_number)
-			continue;
-		
 		//printf ("ASFFrameReader::FrameSearch (%llu): Checking start_pts: %llu, end_pts: %llu, pi: %i\n", pts, index [i].start_pts, index [i].end_pts, index [i].packet_index);
 		
 		if (index [i].start_pts == INVALID_START_PTS)
@@ -843,7 +825,7 @@ ASFFrameReader::FrameSearch (uint64_t pts)
 		
 		if (index [i].start_pts <= pts && index [i].end_pts >= pts) {
 			//printf ("ASFFrameReader::FrameSearch (%llu): found packet index: %i.\n", pts, index [i].packet_index);
-			return index [i].packet_index;
+			return i;
 		}
 		
 	}
@@ -851,9 +833,6 @@ ASFFrameReader::FrameSearch (uint64_t pts)
 	//printf ("ASFFrameReader::FrameSearch (%llud): searched entire index and didn't find anything.\n", pts);
 			
 	return -1;
-#else
-	return -1;	
-#endif
 }
 
 void
@@ -907,72 +886,87 @@ ASFFrameReader::Seek (uint64_t pts)
 	if (!CanSeek ())
 		return false;
 	
+	// We know 0 is at the beginning of the media, so optimize this case
+	if (pts == 0) {
+		current_packet_index = 0;
+		first_pts = 0;
+		key_frames_only = false;
+		RemoveAll ();
+		return true;
+	}
+
 	// Now this is an algorithm that might need some optimization.
 	// We just read until we find what we want.
 	
-	int counter = 0;
 	bool found = false;
+	bool estimate;
+	MediaResult result;
 	
-//	int64_t pi = FrameSearch (pts);
-//	if (pi != 0) {
-		//printf ("ASFFrameReader::Seek (%d, %lld): found packet index: %lld\n", stream_id, pts, pi);
-//	}
-	
-	// Ffmpeg is somewhat weird on this, we need to seek to the frame before the key-frame we want to see
-	int32_t previous_packet_index = 0;
-	int32_t pi_before_key = 0;
-	int32_t last_packet_index = 0; // The last packet index which had a key frame and pts below the requested one
-	int64_t key_frame_pts = 0; // The last key frame with pts below the requested one
-	int64_t pts_before_key = 0;
-	int64_t last_pts = 0;
+	int32_t start_pi = GetPacketIndexOfPts (pts, &estimate);
+	int32_t kf_packet_index = -1; // The last packet index which had a key frame and pts below the requested one
+	uint64_t kf_pts = 0; // The last key frame with pts below the requested one
 	
 	first_pts = 0;
 	key_frames_only = false;
-	current_packet_index = 0;
+
+	current_packet_index = start_pi;
 	RemoveAll ();
 	
-	while (Advance ()) {
-		//printf ("ASFFrameReader::Seek (%d, %llu): Checking pts: %llu, last_packet_index = %i, key_frame_pts = %llu\n", stream_number, pts, Pts (), last_packet_index, key_frame_pts);
+	while (true) {
+		result = Advance ();
+		if (result == MEDIA_NO_MORE_DATA)
+			break;
+		if (!MEDIA_SUCCEEDED (result))
+			break;
+			
+		//printf ("ASFFrameReader::Seek (%d, %llu): Checking pts: %llu, last_packet_index = %i, key_frame_pts = %llu\n", 
+		//	stream_number, pts, Pts (), kf_packet_index, kf_pts);
 		if (Pts () > pts) {
-			//printf ("ASFFrameReader::Seek (%d, %llu): Found pts: %llu, last_packet_index = %i, key_frame_pts = %llu\n", stream_number, pts, Pts (), last_packet_index, key_frame_pts);
+			if (kf_packet_index == -1 && start_pi > 0) {
+				// We haven't found a key frame yet, go back to one packet before the first one we tried and try again
+				current_packet_index = --start_pi;
+				RemoveAll ();
+				continue;
+			}
+			//printf ("ASFFrameReader::Seek (%d, %llu): Found pts: %llu, kf_packet_index = %i, kf_pts = %llu\n", stream_number, pts, Pts (), kf_packet_index, kf_pts);
 			found = true;
 			break;
 		} else if (IsKeyFrame () || IsAudio ()) {
-			pi_before_key = previous_packet_index;
-			pts_before_key = last_pts;
-			last_packet_index = current_packet_index - 1;
-			key_frame_pts = Pts ();
+			kf_pts = Pts ();
+			kf_packet_index = current_packet_index - 1;
 		}
-		previous_packet_index = current_packet_index - 1;
-		last_pts = Pts ();
-		counter++;
 	}
 	
 	if (!found) {
-		//printf ("ASFFrameReader::Seek (%d, %lld): Didn't find the requested pts.\n", stream_id, pts);
+		//printf ("ASFFrameReader::Seek (%d, %lld): Didn't find the requested pts. (Audio stream: %s), Pts: %llu\n", stream_number, pts, IsAudio () ? "true" : "false", Pts ());
 		return false;
 	}
 		
 	// Don't return any frames before the pts we seeked to.
-	first_pts = pts_before_key; 
 	key_frames_only = true;
-	current_packet_index = MAX (0, pi_before_key);
+	first_pts = kf_pts; 
+	current_packet_index = MAX (0, kf_packet_index);
 	RemoveAll ();
 
-	//printf ("ASFFrameReader::Seek (%d, %llu): Seeked to packet index %i with key frame pts %llu.\n", stream_number, pts, last_packet_index, key_frame_pts);
+	//printf ("ASFFrameReader::Seek (%d, %llu): Seeked to packet index %i with first pts %llu.\n", stream_number, pts, current_packet_index, first_pts);
 	
 	return true;
 }
 
-bool
+MediaResult
 ASFFrameReader::Advance ()
 {
 start:
-	bool result = true;
+	MediaResult result = MEDIA_SUCCESS;
+	MediaResult read_result;
+	int payload_count = 0;
+	uint32_t media_object_number = 0;
+	uint64_t current_pts = 0;
+	ASFFrameReaderData* current = NULL;
 	
 	ASF_LOG ("ASFFrameReader::Advance ().\n");
-	// Clear the current list of payloads.
 	
+	// Clear the current list of payloads.
 	// Most streams has at least once a media object spanning two payloads.
 	// so we allocate space for two (+ NULL at the end).
 	if (payloads == NULL) {
@@ -989,33 +983,40 @@ start:
 	}
 	
 	if (first == NULL) {
-		if (!ReadMore ())
-			return false;
-		if (first == NULL)
-			return false;
+		read_result = ReadMore ();
+		if (read_result == MEDIA_NO_MORE_DATA || !MEDIA_SUCCEEDED (read_result)) {
+			//printf ("ASFFrameReader::Advance (): couldn't read more (%i).\n", read_result);
+			return read_result;
+		}
+		if (first == NULL) {
+			//printf ("ASFFrameReader::Advance (): No more packets\n");
+			return MEDIA_NO_MORE_DATA;
+		}
 	}
 	
-	int payload_count = 0;
-	uint32_t media_object_number = 0;
-	ASFFrameReaderData* current = NULL;
-	
 	size = 0;
+	current = first;
+	pts = 0;
 	
 	ASF_LOG ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %llu, stream# = %d, media_object_number = %u.\n", 
 		 size, IsKeyFrame () ? "true" : "false", Pts (), StreamId (), media_object_number);
-	//asf_single_payload_dump (payloads [0]);
-	current = first;
 	
 	while (true) {
-		// First loop through payloads until we find a payload with the requested stream number.
-		// Then continue looping through payloads until we find a payload with the same stream number.
-		// if the media number is different, no more payloads in the current frame,
-		// otherwise add the payload to the current frame's payloads and continue looping.
+		// Loop through payloads until we find a payload with the different media number
+		// than the first payload in the queue.
+		
 		while (current == NULL) {
-			// We went past the end, read another packet to get more data.
+			// We went past the end of the payloads, read another packet to get more data.
 			current = last; // go back to the last element.
-			if (!ReadMore ()) {
-				result = false;
+
+			if (Eof ()) {
+				//printf ("ASFFrameReader::Advance (): No more data\n");
+				return MEDIA_NO_MORE_DATA;
+			}
+			
+			read_result = ReadMore ();
+			if (read_result == MEDIA_NO_MORE_DATA || !MEDIA_SUCCEEDED (read_result)) {
+				result = read_result;
 				goto end_frame; // No more data, we've reached the end
 			} else {
 				if (current == NULL) {
@@ -1030,8 +1031,9 @@ start:
 		ASF_LOG ("ASFFrameReader::Advance (): checking payload, stream: %d, media object number %d, size: %d\n", current->payload->stream_id, current->payload->media_object_number, current->payload->payload_data_length);
 		
 		asf_single_payload* payload = current->payload;
+		current_pts = MilliSeconds_ToPts (payload->get_presentation_time () - parser->GetFileProperties ()->preroll);
 		
-		if (payload->presentation_time < first_pts) {
+		if (current_pts < first_pts) {
 			ASFFrameReaderData* tmp = current;
 			current = current->next;
 			Remove (tmp);
@@ -1049,12 +1051,22 @@ start:
 				continue;
 			}
 			
-			key_frames_only = false;
+			if (payload_count == 0 && payload->offset_into_media_object != 0) {
+				// This frame isn't complete, it's probably split over several packets.
+				ASF_LOG ("ASFFrameReader::Advance (): skipping incomplete frame, pts: %llu, offset into media object: %i.\n", payload->get_presentation_time (), payload->offset_into_media_object);
+				ASFFrameReaderData *tmp = current;
+				current = current->next;
+				Remove (tmp);
+				continue;
+			}
 			
+			key_frames_only = false;			
 			media_object_number = payload->media_object_number;
 			
 			// add the payload to the current frame's payloads
 			payload_count++;
+			if (payload_count == 1)
+				this->pts = current_pts;
 			size += payload->payload_data_length;
 			if (payload_count > payloads_size) {
 				if (!ResizeList (payload_count + 3)) {
@@ -1081,8 +1093,8 @@ end_frame:
 	dump_int_data (payloads [0]->payload_data, payloads [0]->payload_data_length, 4);
 	printf ("\n");
 */
-//	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, pts = %.5llu, stream# = %i, media_object_number = %.3u, script_command_stream_index = %u (advanced).\n", 
-//		size, IsKeyFrame () ? "true " : "false", Pts (), StreamId (), media_object_number, script_command_stream_index);
+//	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu, pts = %.5u, stream# = %i, media_object_number = %.3u, script_command_stream_index = %u (advanced).\n", 
+//		size, IsKeyFrame () ? "true " : "false", Pts (), payloads [0]->presentation_time, StreamId (), media_object_number, script_command_stream_index);
 
 
 	// Check if the current frame is a script command, in which case we must call the callback set in 
@@ -1093,8 +1105,85 @@ end_frame:
 		goto start;
 	}
 	
-	//AddFrameIndex ();
+	AddFrameIndex ();
 
+	return result;
+}
+
+int64_t
+ASFFrameReader::GetPositionOfPts (uint64_t pts, bool *estimate)
+{
+	return parser->GetPacketOffset (GetPacketIndexOfPts (pts, estimate));
+}
+
+int32_t
+ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
+{
+	//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p)\n", pts, estimate);
+	
+	int64_t average = 0; // average duration per packet
+	int32_t counter = 0;
+	int32_t last_good_pi = 0;
+	uint64_t last_good_pts = 0;
+	uint64_t duration = 0;
+	uint64_t total_duration = 0;
+	int32_t result = 0;
+	int32_t packet_index = 0;
+	
+	*estimate = false;
+	
+	if (pts == 0) {
+		return 0;
+	}
+
+	total_duration = parser->GetFileProperties ()->play_duration - MilliSeconds_ToPts (parser->GetFileProperties ()->preroll);
+	if (pts >= total_duration) {
+		return parser->GetPacketCount () - 1;
+	}
+	
+	packet_index = FrameSearch (pts);
+	
+	if (packet_index >= 0) {
+		//printf ("ASFFrameReader::GetPositionOfPts (%llu, %p): Found pts in index, position: %lld, pi: %i\n", pts, estimate, parser->GetPacketOffset (packet_index), packet_index);
+		return packet_index;
+	}
+	
+	*estimate = true;
+	
+	for (int i = 0; i < index_size; i++) {
+		if (!(index [i].start_pts != INVALID_START_PTS && index [i].end_pts > index [i].start_pts))
+			continue;
+		
+		if (index [i].start_pts >= pts)
+			break;
+		
+		last_good_pi = i;
+		last_good_pts = index [i].start_pts;
+		
+		duration = index [i].end_pts - index [i].start_pts;
+		counter++;
+		average = (average / (double) counter) * (counter - 1) + (duration / (double) counter);
+			
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): Calculated average %llu after pi: %i, duration: %llu, start_pts: %llu, end_pts: %llu\n", pts, estimate, average, i, duration, index [i].start_pts, index [i].end_pts);
+	}
+	
+	if (average == 0) {
+		// calculate packet index from duration
+		uint64_t duration = MAX (1, parser->GetFileProperties ()->play_duration - MilliSeconds_ToPts (parser->GetFileProperties ()->preroll));
+		double percent = MAX (0, pts / (double) duration);
+		result = percent * parser->GetPacketCount ();
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): No average, calculated by percent %.2f, pi: %i, pts: %llu, preroll: %llu\n", pts, estimate, percent, pi, pts, preroll);
+	} else {
+		// calculate packet index from the last known packet index / pts and average pts per packet index
+		last_good_pts = MIN (last_good_pts, pts);
+		result = last_good_pi + (pts - last_good_pts) / average;
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): Calculated by averate %llu, last_good_pts: %llu, pi: %i\n", pts, estimate, average, last_good_pts, pi);
+	}
+	
+	result = MAX (0, result);
+	result = MIN (result + 1, (int64_t) parser->GetPacketCount () - 1);
+	
+	//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): Final position: %lld of pi: %i. Total packets: %llu, total duration: %llu\n", pts, estimate, parser->GetPacketOffset (pi), pi, parser->GetFileProperties ()->data_packet_count, parser->GetFileProperties ()->play_duration);
 	return result;
 }
 
@@ -1164,7 +1253,7 @@ ASFFrameReader::ReadScriptCommand ()
 
 }
 
-bool
+MediaResult
 ASFFrameReader::ReadMore ()
 {
 	ASF_LOG ("ASFFrameReader::ReadMore ().\n");
@@ -1174,30 +1263,30 @@ ASFFrameReader::ReadMore ()
 	
 	do {
 		packet = new ASFPacket ();
-		if ((uint32_t) current_packet_index >= parser->GetPacketCount ()) {
-			eof = true;
-			return false;
+		if (Eof ()) {
+			ASF_LOG ("ASFFrameReader::ReadMore (): eof\n");
+			return MEDIA_NO_MORE_DATA;
 		}
 		
 		if (!parser->ReadPacket (packet, current_packet_index)) {
 			ASF_LOG ("ASFFrameReader::ReadMore (): could not read more packets.\n");
 			delete packet;
-			return false;
+			return MEDIA_FAIL;
 		}
 		
-		if (CanSeek ())
-			current_packet_index++;
+		current_packet_index++;
 		
 		asf_single_payload** payloads = packet->payloads->steal_payloads ();
 		int i = -1;
 		while (payloads [++i] != NULL) {
 			if (payloads [i]->stream_id != stream_number) {
+				ASF_LOG ("ASFFrameReader::ReadMore (): skipped: stream: %i, added pts: %llu\n", stream_number, payloads [i]->get_presentation_time ());
 				delete payloads [i];
 				continue;
 			}
 			// Append the payload at the end of the queue of payloads.
 			ASFFrameReaderData* node = new ASFFrameReaderData (payloads [i]);
-			ASF_LOG ("ASFFrameReader::ReadMore (): stream: %i, added pts: %llu\n", stream_number, payloads [i]->get_presentation_time ());
+			ASF_LOG ("ASFFrameReader::ReadMore (): added:  stream: %i, added pts: %llu\n", stream_number, payloads [i]->get_presentation_time ());
 			if (first == NULL) {
 				first = node;
 				last = node;
@@ -1215,7 +1304,7 @@ ASFFrameReader::ReadMore ()
 		delete packet;
 	} while (payloads_added == 0);
 	
-	return true;
+	return MEDIA_SUCCESS;
 }
 
 bool
