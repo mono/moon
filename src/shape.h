@@ -235,6 +235,7 @@ class Polygon : public Shape {
 	virtual bool CanFill () { return true; }
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual Point GetOrigin ();
 	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
@@ -269,6 +270,7 @@ class Polyline : public Shape {
 
 	virtual bool CanFill () { return true; }
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual Point GetOrigin ();
 	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 

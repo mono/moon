@@ -1617,6 +1617,14 @@ Polygon::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	*width = fabs (x2 - x1);
 }
 
+Point
+Polygon::GetOrigin ()
+{
+	Rect b = GetBounds ();
+	return Point (b.x, b.y);
+}
+
+
 FillRule
 polygon_get_fill_rule (Polygon *polygon)
 {
@@ -1882,6 +1890,13 @@ Polyline::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	
 	*height = fabs (y2 - y1);
 	*width = fabs (x2 - x1);
+}
+
+Point
+Polyline::GetOrigin ()
+{
+	Rect b = GetBounds ();
+	return Point (b.x, b.y);
 }
 
 FillRule
