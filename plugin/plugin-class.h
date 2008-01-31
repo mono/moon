@@ -265,6 +265,8 @@ struct MoonlightMarkerReachedEventArgsObject : MoonlightObject {
 	}
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
 	TimelineMarker* marker;
 };

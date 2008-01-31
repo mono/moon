@@ -1055,7 +1055,8 @@ MoonlightMarkerReachedEventArgsObject::Dispose ()
 
 static const MoonNameIdMapping
 marker_reached_event_mapping[] = {
-	{ "marker", MoonId_Marker }
+	{ "marker", MoonId_Marker },
+	{ "tostring", MoonId_ToString }
 };
 
 bool
@@ -1072,6 +1073,19 @@ MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier, NPVari
 	}
 }
 
+bool
+MoonlightMarkerReachedEventArgsObject::Invoke (int id, NPIdentifier name,
+		     const NPVariant *args, uint32_t argCount, NPVariant *result)
+ {
+ 	switch (id) {
+	case MoonId_ToString: {
+		string_to_npvariant ("TimelineMarkerEventArgs", result);
+		return true;
+	}
+	default:
+		return false;
+ 	}
+ }
 MoonlightMarkerReachedEventArgsType::MoonlightMarkerReachedEventArgsType ()
 {
 	allocate = marker_reached_event_allocate;
