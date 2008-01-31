@@ -20,6 +20,7 @@
 
 #include <glib.h>
 #include <unistd.h>
+#include <pthread.h>
 
 G_BEGIN_DECLS
 #include <stdint.h>
@@ -35,6 +36,8 @@ G_END_DECLS
 
 bool ffmpeg_initialized = false;
 bool ffmpeg_registered = false;
+
+pthread_mutex_t ffmpeg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void
 initialize_ffmpeg ()
@@ -69,7 +72,7 @@ register_ffmpeg ()
 
 FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream) 
 	: IMediaDecoder (media, stream),
-	audio_buffer (NULL)
+	audio_buffer (NULL), has_delayed_frame (false)
 {
 	//printf ("FfmpegDecoder::FfmpegDecoder (%p, %p).\n", media, stream);
 	
@@ -89,6 +92,8 @@ FfmpegDecoder::Open ()
 	AVCodec *codec = NULL;
 	
 	//printf ("FfmpegDecoder::Open ().\n");
+	
+	pthread_mutex_lock (&ffmpeg_mutex);
 	
 	codec = avcodec_find_decoder_by_name (stream->codec);
 	
@@ -147,6 +152,8 @@ FfmpegDecoder::Open ()
 		
 	//printf ("FfmpegDecoder::Open (): Opened codec successfully.\n");
 	
+	pthread_mutex_unlock (&ffmpeg_mutex);
+	
 	return result;
 	
 failure:
@@ -157,11 +164,15 @@ failure:
 		av_free (context);
 		context = NULL;
 	}
+	pthread_mutex_unlock (&ffmpeg_mutex);
+	
 	return result;
 }
 
 FfmpegDecoder::~FfmpegDecoder ()
 {
+	pthread_mutex_lock (&ffmpeg_mutex);
+	
 	if (context != NULL) {
 		if (context->codec != NULL) {
 			avcodec_close (context);
@@ -176,6 +187,8 @@ FfmpegDecoder::~FfmpegDecoder ()
 	
 	av_free (audio_buffer);
 	audio_buffer = NULL;
+	
+	pthread_mutex_unlock (&ffmpeg_mutex);
 }
 
 void
@@ -206,83 +219,90 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 	if (context == NULL)
 		return MEDIA_FAIL;
 	
-	//printf ("FfmpegDecoder::DecodeFrame (%p): ", mf);
-	//mf->printf ();
-	//printf ("\n");
-	
 	if (stream->GetType () == MediaTypeVideo) {
 		frame = avcodec_alloc_frame ();
+		
+		if (mf->IsKeyFrame ())
+			printf ("FfmpegDecoder::DecodeFrame (): decoded key frame\n");
+		
 		length = avcodec_decode_video (context, frame, &got_picture, mf->buffer, mf->buflen);
 		
-		if (length < 0) {
-			media->AddMessage (MEDIA_CODEC_ERROR, "Error while decoding frame.");
-			return MEDIA_CODEC_ERROR;
+		if (length < 0 || !got_picture) {
+			// This is normally because the codec is a delayed codec,
+			// the first decoding request doesn't give any result,
+			// then every subsequent request returns the previous frame.
+			// TODO: Find a way to get the last frame out of ffmpeg
+			// (requires passing NULL as buffer and 0 as buflen)
+			if (has_delayed_frame) {
+				media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding frame (got length: %i).", length));
+				return MEDIA_CODEC_ERROR;
+			} else {
+				//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding frame (got length: %i), delaying.", length));
+				has_delayed_frame = true;
+				return MEDIA_CODEC_DELAYED;
+			}
 		}
 		
-		if (got_picture) {
-			//printf ("FfmpegDecoder::DecodeFrame (%p): got picture.\n", mf);
+		//printf ("FfmpegDecoder::DecodeFrame (%p): got picture.\n", mf);
+		
+		mf->AddState (FRAME_PLANAR);
+		
+		g_free (mf->buffer);
+		mf->buffer = NULL;
+		mf->buflen = 0;
+		
+		mf->srcSlideY = 0;
+		mf->srcSlideH = context->height;
+		
+		if (mf->IsCopyDecodedData ()) {
+			int height = context->height;
+			int plane_bytes [4];
 			
-			mf->AddState (FRAME_PLANAR);
-			
-			g_free (mf->buffer);
-			mf->buffer = NULL;
-			mf->buflen = 0;
-			
-			mf->srcSlideY = 0;
-			mf->srcSlideH = context->height;
-			
-			if (mf->IsCopyDecodedData ()) {
-				int height = context->height;
-				int plane_bytes [4];
-				
-				switch (pixel_format) {
-				case MoonPixelFormatYUV420P:
-					plane_bytes [0] = height * frame->linesize [0];
-					plane_bytes [1] = height * frame->linesize [1] / 2;
-					plane_bytes [2] = height * frame->linesize [2] / 2;
-					plane_bytes [3] = 0;
-					break;
-				default:
-					printf ("FfmpegDecoder::DecodeFrame (): Unknown output format, can't calculate byte number.\n");
-					plane_bytes [0] = 0;
-					plane_bytes [1] = 0;
-					plane_bytes [2] = 0;
-					plane_bytes [3] = 0;
-					break;
-				}
-				
-				for (int i = 0; i < 4; i++) {
-					if (plane_bytes [i] != 0) {
-						mf->data_stride [i] = (uint8_t *) g_malloc (plane_bytes[i] + stream->min_padding);
-						memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
-					} else {
-						mf->data_stride[i] = frame->data[i];
-					}
-					
-					mf->srcStride[i] = frame->linesize[i];
-				}
-			} else {
-				for (int i = 0; i < 4; i++) {
-					mf->data_stride[i] = frame->data[i];
-					mf->srcStride[i] = frame->linesize[i];
-				}
+			switch (pixel_format) {
+			case MoonPixelFormatYUV420P:
+				plane_bytes [0] = height * frame->linesize [0];
+				plane_bytes [1] = height * frame->linesize [1] / 2;
+				plane_bytes [2] = height * frame->linesize [2] / 2;
+				plane_bytes [3] = 0;
+				break;
+			default:
+				printf ("FfmpegDecoder::DecodeFrame (): Unknown output format, can't calculate byte number.\n");
+				plane_bytes [0] = 0;
+				plane_bytes [1] = 0;
+				plane_bytes [2] = 0;
+				plane_bytes [3] = 0;
+				break;
 			}
 			
-			// We can't free the frame until the data has been used, 
-			// so save the frame in decoder_specific_data. 
-			// This will cause FfmpegDecoder::Cleanup to be called 
-			// when the MediaFrame is deleted.
-			mf->decoder_specific_data = frame;
+			for (int i = 0; i < 4; i++) {
+				if (plane_bytes [i] != 0) {
+					mf->data_stride [i] = (uint8_t *) g_malloc (plane_bytes[i] + stream->min_padding);
+					memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
+				} else {
+					mf->data_stride[i] = frame->data[i];
+				}
+				
+				mf->srcStride[i] = frame->linesize[i];
+			}
 		} else {
-			//printf ("FfmpegDecoder::DecodeFrame (%p): didn't get picture (%i), length = %i.\n", mf, got_picture, length);
+			for (int i = 0; i < 4; i++) {
+				mf->data_stride[i] = frame->data[i];
+				mf->srcStride[i] = frame->linesize[i];
+			}
 		}
+		
+		// We can't free the frame until the data has been used, 
+		// so save the frame in decoder_specific_data. 
+		// This will cause FfmpegDecoder::Cleanup to be called 
+		// when the MediaFrame is deleted.
+		mf->decoder_specific_data = frame;
 	} else if (stream->GetType () == MediaTypeAudio) {
 		int frame_size = AUDIO_BUFFER_SIZE;
 		
 		length = avcodec_decode_audio2 (context, (int16_t *) audio_buffer, &frame_size, mf->buffer, mf->buflen);
 		
 		if (length < 0 || (uint32_t) frame_size < mf->buflen) {
-			media->AddMessage (MEDIA_CODEC_ERROR, "Error while decoding frame.");
+			media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
 			return MEDIA_CODEC_ERROR;
 		}
 		

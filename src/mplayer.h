@@ -34,6 +34,13 @@ public:
 	bool stop;
 	bool eof;
 	bool seeking;
+	bool load_frame; // If we're waiting for a frame to show immediately
+	// after seeking, we don't want to show any frames until the video has synced with
+	// the audio. Since the video seeks to key frames, and there can be several seconds
+	// between key frames, after seeking we will decode video as fast as possible to 
+	// catch up with the audio.
+	bool caught_up_with_seek;
+	MediaElement *element;
 	
 	GThread *audio_thread;
 	Audio *audio;
@@ -54,15 +61,14 @@ public:
 	int width, height;
 	bool opened;
 	
-	MediaPlayer ();
+	MediaPlayer (MediaElement *element);
 	~MediaPlayer ();
 	
 	// Returns true if advanced at least one frame.
 	// A false return value does not say anything about why it didn't advance
 	// (No need to advance, eof, seeking, etc). 
 	bool AdvanceFrame (); 
-	void LoadVideoFrame ();
-	void Render (cairo_t *cr);
+	bool LoadVideoFrame ();
 	cairo_surface_t *GetSurface ();
 	
 	bool Open (Media *media);

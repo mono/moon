@@ -1,5 +1,11 @@
 2008-01-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: ASFFrameReader: (Advance) Return the last payload when reaching
+	  the end of the stream. (Seek) save the packet index of the key frame as
+	  it was before Advance was called, not after.
+
+2008-01-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: ASFFrameReader: Implement an index and use it when
 	  seeking. Implement GetPositionOfPts to estimate the file position of a
 	  pts. AdvanceFrame: Normalize all pts to start at 0, skip partial

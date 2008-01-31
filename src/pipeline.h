@@ -109,6 +109,7 @@ typedef int32_t MediaResult;
 #define MEDIA_CONVERTER_ERROR ((MediaResult) 12)
 #define MEDIA_UNKNOWN_CONVERTER ((MediaResult) 13)
 #define MEDIA_UNKNOWN_MEDIA_TYPE ((MediaResult) 14)
+#define MEDIA_CODEC_DELAYED ((MediaResult) 15)
 
 #define MEDIA_SUCCEEDED(x) ((x <= 0))
 
@@ -117,20 +118,19 @@ typedef int32_t MediaResult;
 #define FRAME_DEMUXED (1 << 2)
 #define FRAME_CONVERTED (1 << 3)
 #define FRAME_KEYFRAME (1 << 4)
-
-enum MediaSourceType {
-	MediaSourceTypeFile = 1,
-	MediaSourceTypeLive = 2,
-	MediaSourceTypeProgressive = 3
-};
-
 // Set if the pipeline needs it's own copy of the decoded data
 // If this is not set, the decoder can keep one area of memory and always decode into
 // that area, just passing back a pointer to that area.
 // It is required to set this if the decoding is done on another thread
 // (otherwise the pipeline will always access the latest decoded frame, which almost never
 // is the frame you want to show).
-#define FRAME_COPY_DECODED_DATA (1 << 7) 
+#define FRAME_COPY_DECODED_DATA (1 << 5) 
+
+enum MediaSourceType {
+	MediaSourceTypeFile = 1,
+	MediaSourceTypeLive = 2,
+	MediaSourceTypeProgressive = 3
+};
 
 enum FrameEvent {
 	FrameEventNone,
@@ -491,7 +491,8 @@ public:
 	
 	// If MediaFrame->decoder_specific_data is non-NULL, this method is called in ~MediaFrame.
 	virtual void Cleanup (MediaFrame *frame) {}
-	
+	virtual void CleanState () {}
+	virtual bool HasDelayedFrame () { return false; }
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
 }; // Set when this is the callback in Media::GetNextFrameAsync

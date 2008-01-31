@@ -1,3 +1,16 @@
+2008-01-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp, mplayer.h: Render: removed, not used. LoadVideoFrame:
+	  implemented again. Added an ugly caught_up_with_seek value, used to
+	  determine if video is late due to a seek, in which case it shouldn't
+	  show any frames (fixes #356053).
+	* pipeline.cpp, pipeline.h: Added IMediaDecoder::CleanState and
+	  HasDelayedFrame.
+	* pipeline-ffmpeg.cpp: Implemented FfmpegDecoder::CleanState and
+	  HasDelayedFrame. Use a mutex to serialize access to avcodec_open.
+	* pipeline-ffmpeg.h: Implemented FfmpegDecoder::CleanState and
+	  HasDelayedFrame.
+
 2008-01-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (mpeg_parse_samplerate): Doh, need to bitshift the

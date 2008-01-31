@@ -45,10 +45,12 @@ public:
 	virtual MediaResult DecodeFrame (MediaFrame* frame);
 	virtual MediaResult Open ();
 	virtual void Cleanup (MediaFrame* frame);
-	
+	virtual void CleanState () { has_delayed_frame = false; }
+	virtual bool HasDelayedFrame () {return has_delayed_frame; }
 private:
 	AVCodecContext *context;
 	uint8_t* audio_buffer;
+	bool has_delayed_frame;
 };
 
 class FfmpegDecoderInfo : public DecoderInfo {

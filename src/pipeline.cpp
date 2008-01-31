@@ -1052,7 +1052,6 @@ ASFDemuxer::ReadFrame (MediaFrame *frame)
 	ASFFrameReader *reader = readers [frame->stream->index];
 	MediaResult result;
 	
-	
 	result = reader->Advance ();
 	if (result == MEDIA_NO_MORE_DATA) {
 		media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
