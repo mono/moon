@@ -326,47 +326,17 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 		if (subtract) {
 			Value *brush_value = GetValue (Panel::BackgroundProperty);
-			if (brush_value
-			    && brush_value->AsBrush()) {
-
-				double background_alpha = 0.0;
-				Brush *brush = brush_value->AsBrush();
-
-				if (brush->Is(Type::SOLIDCOLORBRUSH)) {
-
-					SolidColorBrush *scb = (SolidColorBrush*)brush;
-					Color *c = scb->GetColor();
-					background_alpha = c->a;
-				}
-				else if (brush->Is(Type::GRADIENTBRUSH)) {
-					GradientStopCollection *stops = gradient_brush_get_gradient_stops ((GradientBrush*)brush);
-
-					if (stops->list->Length() > 0) {
-						background_alpha = 1.0;
-
-						Collection::Node *cn;
-						for (cn = (Collection::Node *) children->list->First ();
-						     cn != NULL;
-						     cn = (Collection::Node *) cn->next) {
-
-							GradientStop *stop = (GradientStop*)cn->obj;
-							Color* c = gradient_stop_get_color (stop);
-							if (c->a < background_alpha)
-								background_alpha = c->a;
-						}
-					}
-				}
-
-				subtract = !IS_TRANSLUCENT (background_alpha);
+			if (brush_value && brush_value->AsBrush()) {
+				subtract = brush_value->AsBrush()->IsOpaque ();
 			}
 			else {
-				// no background defined
+				// no background brush defined
 				subtract = false;
 			}
 		}
 
  		if (subtract)
-			surface_region->Subtract (bounds); // note the lack of RoundOut here.
+			surface_region->Subtract (bounds);
 	}
 }
 

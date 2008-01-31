@@ -1,5 +1,8 @@
 2008-01-31  Chris Toshok  <toshok@ximian.com>
 
+	* panel.cpp (Panel::FrontToBack): simplify this a bunch with
+	Brush::IsOpaque.
+
 	* brush.h (class Brush): remove GetTotalOpacity() which wasn't
 	being used anywhere, and add IsOpaque() so that we can use it from
 	the new front-to-back stuff (instead of duplicating code in Panel
