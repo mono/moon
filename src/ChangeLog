@@ -1,5 +1,11 @@
 2008-01-31  Chris Toshok  <toshok@ximian.com>
 
+	* stylus.h, stylus.cpp (InkPresenter::PostRender): rename
+	RenderChildren to this, and chain up to Canvas::PostRender here,
+	which will do the RenderChildren call if it needs to.
+
+2008-01-31  Chris Toshok  <toshok@ximian.com>
+
 	* panel.cpp (Panel::FrontToBack): simplify this a bunch with
 	Brush::IsOpaque.
 

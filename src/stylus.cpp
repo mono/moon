@@ -763,10 +763,9 @@ InkPresenter::InkPresenter ()
 }
 
 void
-InkPresenter::RenderChildren (cairo_t *cr, Region *region)
+InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
-	// Canvas elements are supported inside the InkPresenter
-	Panel::RenderChildren (cr, region);
+	Canvas::PostRender (cr, region, front_to_back);
 
 	Value* value = GetValue (InkPresenter::StrokesProperty);
 	if (!value)
