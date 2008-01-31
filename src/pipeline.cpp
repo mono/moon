@@ -1206,7 +1206,7 @@ static int mpeg_samplerates[3][3] = {
 static bool
 mpeg_parse_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
 {
-	int i = byte & 0x0c;
+	int i = (byte >> 2) & 0x03;
 	
 	if (i > 2)
 		return false;
