@@ -1,5 +1,15 @@
 2008-01-31  Chris Toshok  <toshok@ximian.com>
 
+	* rect.cpp (Region::Region): new overload which takes a Region*,
+	so we don't have to access ->gdkregion everywhere when we copy a
+	region.
+
+	* rect.h (struct Rect): add a GrowBy method that takes both x and
+	y deltas, and have the 1 parameter version call it.
+	(class Region): add a copy ctor that takes a Region*.
+
+2008-01-31  Chris Toshok  <toshok@ximian.com>
+
 	* panel.h, panel.cpp: rename use_back_to_front to UseBackToFront
 	and add it to the class, protected so subclasses can get at it.
 

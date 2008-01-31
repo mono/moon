@@ -80,6 +80,11 @@ Region::Region (GdkRegion *region)
 	gdkregion = gdk_region_copy (region);
 }
 
+Region::Region (Region *region)
+{
+	gdkregion = gdk_region_copy (region->gdkregion);
+}
+
 Region::~Region ()
 {
 	gdk_region_destroy (gdkregion);

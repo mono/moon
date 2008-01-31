@@ -94,15 +94,20 @@ struct Rect {
 		return result;
 	}
 
-	Rect GrowBy (double d)
+	Rect GrowBy (double xd, double yd)
 	{
 		Rect result = *this;
-		result.x -= d;
-		result.y -= d;
-		result.w += 2*d;
-		result.h += 2*d;
+		result.x -= xd;
+		result.y -= yd;
+		result.w += 2*xd;
+		result.h += 2*yd;
 
 		return result;
+	}
+
+	Rect GrowBy (double d)
+	{
+		return GrowBy (d, d);
 	}
 
 	GdkRectangle 
@@ -167,6 +172,7 @@ public:
 	Region ();
 	Region (Rect rect);
 	Region (GdkRegion *region);
+	Region (Region *region);
 	Region (double x, double y, double width, double height);
 	
 	~Region ();
