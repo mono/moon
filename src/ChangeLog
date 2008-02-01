@@ -1,3 +1,12 @@
+2008-02-01  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* uielement.h:
+	* shape.h:
+	* shape.cpp: rename GetOringin into GetOriginPoint
+
+	* brush.cpp: implement a bad origin computation (based on bounds)
+	for Shape::Path
+
 2008-02-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (Mp3Demuxer::GetPositionOfPts): Implemented.

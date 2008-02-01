@@ -146,9 +146,9 @@ public:
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 
 	//
-	// GetOrigin:
+	// GetOriginPoint:
 	//   Gets real origin, required e.g. for lineargradientbrushes on Path
-	virtual Point GetOrigin ()
+	virtual Point GetOriginPoint ()
 	{
 		return Point (0.0, 0.0);
 	}

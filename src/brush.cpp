@@ -459,7 +459,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Point *end = linear_gradient_brush_get_end_point (this);
 	double x0, y0, x1, y1;
 	cairo_matrix_t offset_matrix; 
-	Point p = uielement->GetOrigin ();
+	Point p = uielement->GetOriginPoint ();
 
 	switch (gradient_brush_get_mapping_mode (this)) {
 	case BrushMappingModeAbsolute:
@@ -596,7 +596,7 @@ radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
 void
 RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
-	Point offset = uielement->GetOrigin ();
+	Point offset = uielement->GetOriginPoint ();
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
 	double ox = (origin ? origin->x : 0.5);
 	double oy = (origin ? origin->y : 0.5);

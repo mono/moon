@@ -35,6 +35,7 @@ cairo_fill_rule_t convert_fill_rule (FillRule fill_rule);
 class Shape : public FrameworkElement {
  protected:
 	Brush *stroke, *fill;
+	Point origin;
 	void DoDraw (cairo_t *cr, bool do_op);
 
 	void SetupLineCaps (cairo_t *cr);
@@ -73,7 +74,9 @@ class Shape : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
-	virtual Point GetOrigin ();
+	virtual Point GetOriginPoint () {
+		return origin;
+	}
 	
 	//
 	// new virtual methods for shapes

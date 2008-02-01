@@ -106,6 +106,7 @@ Shape::Shape ()
 	stroke = NULL;
 	fill = NULL;
 	path = NULL;
+	origin = Point (0, 0);
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 }
 
@@ -382,52 +383,6 @@ Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 
 	*height = h;
 	*width = w;
-}
-
-#define min(X, Y)  ((X) < (Y) ? (X) : (Y))
-Point
-Shape::GetOrigin ()
-{
-	int i = 0;
-	double x, y;
-	cairo_path_t *c_path;
-	
-	if (!path || (path->cairo.num_data == 0))
-		return Point (0,0);
-	
-	c_path = &path->cairo;
-	for (; i < c_path->num_data; i+= c_path->data[i].header.length) {
-	cairo_path_data_t *data = &c_path->data[i];
-		switch (data->header.type) {
-		case CAIRO_PATH_CURVE_TO:
-			if (i == 0) {
-				x = data[1].point.x; 
-				y = data[1].point.y; 
-			} else {
-				x = min (x, data[1].point.x);
-				y = min (y, data[1].point.y);
-			}
-			x = min (x, data[2].point.x);
-			y = min (y, data[2].point.y);
-			x = min (x, data[3].point.x);
-			y = min (y, data[3].point.y);
-			break;
-		case CAIRO_PATH_LINE_TO:
-		case CAIRO_PATH_MOVE_TO:
-			if (i == 0) {
-				x = data[1].point.x; 
-				y = data[1].point.y; 
-			} else {
-				x = min (x, data[1].point.x);
-				y = min (y, data[1].point.y);
-			}
-			break;
-		default:
-			break;
-		}
-
-	return Point (x, y);
-	}
 }
 
 bool
@@ -1226,6 +1181,7 @@ Line::BuildPath ()
 	moon_line_to (path, line_get_x2 (this), line_get_y2 (this));
 }
 
+#define min(X, Y)  ((X) < (Y) ? (X) : (Y))
 void
 Line::ComputeBounds ()
 {
@@ -1242,7 +1198,9 @@ Line::ComputeBounds ()
 	}
 
 	calc_line_bounds (line_get_x1 (this), line_get_x2 (this), line_get_y1 (this), line_get_y2 (this), thickness, &bounds);
-	
+	origin.x = min (line_get_x1 (this), line_get_x2 (this));
+	origin.y = min (line_get_y1 (this), line_get_y2 (this));
+
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the line those values
 	if (vh && vw) {
@@ -1509,13 +1467,15 @@ Polygon::ComputeBounds ()
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
-	double x0 = points [0].x;
-	double y0 = points [0].y;
+	double x0 = origin.x = points [0].x;
+	double y0 = origin.y = points [0].y;
 	double x1, y1;
 
 	if (count == 2) {
 		x1 = points [1].x;
 		y1 = points [1].y;
+		origin.x = min (origin.x, points[1].x);
+		origin.y = min (origin.y, points[1].y);
 
 		polygon_extend_line (&x0, &x1, &y0, &y1, thickness);
 		calc_line_bounds (x0, x1, y0, y1, thickness, &bounds);
@@ -1528,6 +1488,10 @@ Polygon::ComputeBounds ()
 		double y2 = points [1].y;
 		double x3 = points [2].x;
 		double y3 = points [2].y;
+		origin.x = min (origin.x, points[2].x);
+		origin.y = min (origin.y, points[2].y);
+		origin.x = min (origin.x, points[3].x);
+		origin.y = min (origin.y, points[3].y);
 
 		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 		for (i = 3; i < count; i++) {
@@ -1537,6 +1501,8 @@ Polygon::ComputeBounds ()
 			y2 = y3;
 			x3 = points [i].x;
 			y3 = points [i].y;
+			origin.x = min (origin.x, points[i].x);
+			origin.y = min (origin.y, points[i].y);
 			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 		}
 		// a polygon is a closed shape (unless it's a line)
@@ -1811,23 +1777,29 @@ Polyline::ComputeBounds ()
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
-	double x1 = points [0].x;
-	double y1 = points [0].y;
-
+	double x1 = origin.x = points [0].x;
+	double y1 = origin.y = points [0].y;
+	
 	if (count == 2) {
 		// this is a "simple" line (move to + line to)
 		double x2 = points [1].x;
 		double y2 = points [1].y;
+		origin.x = min (origin.x,  points [1].x);
+		origin.y = min (origin.y,  points [1].y);
 		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
 	} else {
 		// FIXME: we're too big for large thickness and/or steep angle
 		Rect line_bounds;
 		double x2 = points [1].x;
 		double y2 = points [1].y;
+		origin.x = min (origin.x,  points [1].x);
+		origin.y = min (origin.y,  points [1].y);
 		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
 		for (i = 2; i < count; i++) {
 			double x3 = points [i].x;
 			double y3 = points [i].y;
+			origin.x = min (origin.x,  points [i].x);
+			origin.y = min (origin.y,  points [i].y);
 			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 			x1 = x2;
 			y1 = y2;
@@ -2052,7 +2024,7 @@ Path::ComputeBounds ()
 	}
 	
 	bounds = geometry->ComputeBounds (this);
-	
+
 	h = (h == 0.0) ? bounds.h : h;
 	w = (w == 0.0) ? bounds.w : w;
 
@@ -2101,6 +2073,9 @@ Path::ComputeBounds ()
 
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
 						     IntersectBoundsWithClipPath (bounds, false));
+	//FIXME
+	origin = Point (bounds.x, bounds.y);
+		
 }
 
 void
