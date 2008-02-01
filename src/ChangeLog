@@ -1,3 +1,11 @@
+2008-02-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (Mp3Demuxer::GetPositionOfPts): Implemented.
+	(FileSource::Peek): As before, only read as much as we need - but
+	don't clobber what we had prebuffered, only clobber as much as w
+	need to in order to make room for the new data - this way we make
+	it more efficient to seek backward later (if need be).
+
 2008-02-01  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.h:

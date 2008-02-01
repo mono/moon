@@ -1541,6 +1541,63 @@ Mp3FrameReader::MpegFrameSearch (uint64_t pts)
 	return m;
 }
 
+int64_t
+Mp3FrameReader::GetPositionOfPts (uint64_t pts, bool *estimate)
+{
+	int64_t offset = stream->GetPosition ();
+	int32_t bit_rate = this->bit_rate;
+	uint64_t cur_pts = this->cur_pts;
+	int64_t pos = -1;
+	uint32_t frame;
+	
+	if (pts == cur_pts) {
+		*estimate = false;
+		return offset;
+	}
+	
+	// if we are seeking to some place we've been, then we can use our jump table
+	if (used > 0 && pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
+		if (pts >= jmptab[used - 1].pts) {
+			*estimate = pts > jmptab[used - 1].pts;
+			
+			return jmptab[used - 1].offset;
+		}
+		
+		// search for our requested pts
+		frame = MpegFrameSearch (pts);
+		
+		g_assert (frame < used);
+		
+		*estimate = pts > jmptab[frame - 1].pts;
+		
+		return jmptab[frame - 1].offset;
+	}
+	
+	// keep skipping frames until we read to (or past) the requested pts
+	while (this->cur_pts < pts) {
+		if (!SkipFrame ())
+			goto out;
+	}
+	
+	// pts requested is at the start of the next frame in the stream
+	if (this->cur_pts == pts) {
+		pos = stream->GetPosition ();
+		*estimate = false;
+	} else {
+		*estimate = pts > jmptab[used - 1].pts;
+		pos = jmptab[used - 1].offset;
+	}
+	
+out:
+	
+	// restore FrameReader to previous state
+	stream->Seek (offset, SEEK_SET);
+	this->bit_rate = bit_rate;
+	this->cur_pts = cur_pts;
+	
+	return pos;
+}
+
 bool
 Mp3FrameReader::Seek (uint64_t pts)
 {
@@ -1747,6 +1804,15 @@ Mp3Demuxer::Seek (uint64_t pts)
 		return MEDIA_SUCCESS;
 	
 	return MEDIA_FAIL;
+}
+
+int64_t
+Mp3Demuxer::GetPositionOfPts (uint64_t pts, bool *estimate)
+{
+	if (reader)
+		return reader->GetPositionOfPts (pts, estimate);
+	
+	return -1;
 }
 
 static int64_t
@@ -2236,6 +2302,7 @@ FileSource::ReadAll (void *buf, uint32_t n)
 bool
 FileSource::Peek (void *buf, uint32_t n)
 {
+	uint32_t need, used, avail, shift;
 	ssize_t r;
 	
 	if (fd == -1)
@@ -2248,17 +2315,23 @@ FileSource::Peek (void *buf, uint32_t n)
 	
 	if (buflen < n) {
 		/* need to buffer more data */
-		memmove (buffer, bufptr, buflen);
-		bufptr = buffer;
+		used = (bufptr + buflen) - buffer;
+		avail = sizeof (buffer) - used;
+		need = n - buflen;
+		
+		shift = need - avail;
+		memmove (buffer, buffer + shift, used - shift);
+		bufptr -= shift;
 		
 		do {
-			if ((r = noint_read (fd, bufptr + buflen, n - buflen)) == 0) {
+			if ((r = noint_read (fd, bufptr + buflen, need)) == 0) {
 				eof = true;
 				break;
 			} else if (r == -1)
 				break;
 			
 			buflen += r;
+			need -= r;
 		} while (buflen < n);
 	}
 	

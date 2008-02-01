@@ -757,6 +757,8 @@ public:
 	bool Seek (uint64_t pts);
 	
 	MediaResult ReadFrame (MediaFrame *frame);
+	
+	int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
 };
 
 class Mp3Demuxer : public IMediaDemuxer {
@@ -770,7 +772,7 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
-	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate) { return -1; }
+	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
 };
 
 class Mp3DemuxerInfo : public DemuxerInfo {
