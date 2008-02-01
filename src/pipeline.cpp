@@ -1457,12 +1457,14 @@ mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource 
 
 #define MPEG_JUMP_TABLE_GROW_SIZE 16
 
-Mp3FrameReader::Mp3FrameReader (IMediaSource *source, int64_t start, bool xing)
+Mp3FrameReader::Mp3FrameReader (IMediaSource *source, int64_t start, uint32_t frame_len, uint32_t frame_duration, bool xing)
 {
 	jmptab = g_new (MpegFrame, MPEG_JUMP_TABLE_GROW_SIZE);
 	avail = MPEG_JUMP_TABLE_GROW_SIZE;
 	used = 0;
 	
+	this->frame_dur = frame_duration;
+	this->frame_len = frame_len;
 	this->xing = xing;
 	
 	stream_start = start;
@@ -1542,58 +1544,46 @@ Mp3FrameReader::MpegFrameSearch (uint64_t pts)
 }
 
 int64_t
-Mp3FrameReader::GetPositionOfPts (uint64_t pts, bool *estimate)
+Mp3FrameReader::EstimatePtsPosition (uint64_t pts, bool *estimate)
 {
-	int64_t offset = stream->GetPosition ();
-	int32_t bit_rate = this->bit_rate;
-	uint64_t cur_pts = this->cur_pts;
-	int64_t pos = -1;
 	uint32_t frame;
+	int64_t pos;
+	uint64_t n;
 	
 	if (pts == cur_pts) {
 		*estimate = false;
-		return offset;
+		
+		return stream->GetPosition ();
 	}
 	
-	// if we are seeking to some place we've been, then we can use our jump table
-	if (used > 0 && pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
-		if (pts >= jmptab[used - 1].pts) {
-			*estimate = pts > jmptab[used - 1].pts;
+	// if the pts requested is some place we've been, then we can use our jump table
+	if (used > 0) {
+		if (pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
+			*estimate = false;
 			
-			return jmptab[used - 1].offset;
+			if (pts >= jmptab[used - 1].pts)
+				return jmptab[used - 1].offset;
+			
+			// search for our requested pts
+			frame = MpegFrameSearch (pts);
+			
+			g_assert (frame < used);
+			
+			return jmptab[frame - 1].offset;
 		}
 		
-		// search for our requested pts
-		frame = MpegFrameSearch (pts);
-		
-		g_assert (frame < used);
-		
-		*estimate = pts > jmptab[frame - 1].pts;
-		
-		return jmptab[frame - 1].offset;
-	}
-	
-	// keep skipping frames until we read to (or past) the requested pts
-	while (this->cur_pts < pts) {
-		if (!SkipFrame ())
-			goto out;
-	}
-	
-	// pts requested is at the start of the next frame in the stream
-	if (this->cur_pts == pts) {
-		pos = stream->GetPosition ();
-		*estimate = false;
+		// estimate based on last known pts/offset
+		n = (pts - jmptab[used - 1].pts) / frame_dur;
+		pos = jmptab[used - 1].offset + (frame_len * n);
 	} else {
-		*estimate = pts > jmptab[used - 1].pts;
-		pos = jmptab[used - 1].offset;
+		// estimate based on ctor frame len/duration
+		pos = stream_start + (frame_len * (pts / frame_dur));
 	}
 	
-out:
+	// FIXME: Xing mp3's sometimes have a pts table encoded in the
+	// first frame... should use that data if available.
 	
-	// restore FrameReader to previous state
-	stream->Seek (offset, SEEK_SET);
-	this->bit_rate = bit_rate;
-	this->cur_pts = cur_pts;
+	*estimate = true;
 	
 	return pos;
 }
@@ -1809,8 +1799,8 @@ Mp3Demuxer::Seek (uint64_t pts)
 int64_t
 Mp3Demuxer::GetPositionOfPts (uint64_t pts, bool *estimate)
 {
-	if (reader)
-		return reader->GetPositionOfPts (pts, estimate);
+	if (reader != NULL)
+		return reader->EstimatePtsPosition (pts, estimate);
 	
 	return -1;
 }
@@ -1950,10 +1940,10 @@ Mp3Demuxer::ReadHeader ()
 		return MEDIA_INVALID_MEDIA;
 	
 	if (vbr.type == MpegNoVBRHeader) {
+		// calculate the frame length
+		len = mpeg_frame_length (&mpeg, false);
+		
 		if ((end = source->GetSize ()) != -1) {
-			// calculate the frame length
-			len = mpeg_frame_length (&mpeg, false);
-			
 			// estimate the number of frames
 			nframes = (end - stream_start) / len;
 		} else {
@@ -1963,22 +1953,21 @@ Mp3Demuxer::ReadHeader ()
 		if (vbr.type == MpegXingHeader)
 			xing = true;
 		
+		// calculate the frame length
+		len = mpeg_frame_length (&mpeg, xing);
 		nframes = vbr.nframes;
 	}
 	
 	// calculate the duration of the first frame
 	duration = mpeg_frame_duration (&mpeg);
 	
-	// estimate the duration of the entire stream
-	duration *= nframes;
-	
-	reader = new Mp3FrameReader (source, stream_start, xing);
+	reader = new Mp3FrameReader (source, stream_start, len, duration, xing);
 	
 	stream = audio = new AudioStream (GetMedia ());
 	audio->codec_id = CODEC_MP3;
 	audio->codec = "mp3";
 	
-	audio->duration = duration;
+	audio->duration = duration * nframes;
 	audio->bit_rate = mpeg.bit_rate;
 	audio->channels = mpeg.channels;
 	audio->sample_rate = mpeg.sample_rate;

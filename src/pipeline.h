@@ -731,6 +731,8 @@ struct MpegFrame {
 class Mp3FrameReader {
 	IMediaSource *stream;
 	int64_t stream_start;
+	uint32_t frame_dur;
+	uint32_t frame_len;
 	uint64_t cur_pts;
 	int32_t bit_rate;
 	bool xing;
@@ -745,14 +747,14 @@ class Mp3FrameReader {
 	bool SkipFrame ();
 	
 public:
-	Mp3FrameReader (IMediaSource *source, int64_t start, bool xing);
+	Mp3FrameReader (IMediaSource *source, int64_t start, uint32_t frame_len, uint32_t frame_duration, bool xing);
 	~Mp3FrameReader ();
 	
 	bool Seek (uint64_t pts);
 	
 	MediaResult ReadFrame (MediaFrame *frame);
 	
-	int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
+	int64_t EstimatePtsPosition (uint64_t pts, bool *estimate);
 };
 
 class Mp3Demuxer : public IMediaDemuxer {
