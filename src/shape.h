@@ -73,6 +73,7 @@ class Shape : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
+	virtual Point GetOrigin ();
 	
 	//
 	// new virtual methods for shapes
@@ -235,7 +236,6 @@ class Polygon : public Shape {
 	virtual bool CanFill () { return true; }
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual Point GetOrigin ();
 	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
@@ -270,7 +270,6 @@ class Polyline : public Shape {
 
 	virtual bool CanFill () { return true; }
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual Point GetOrigin ();
 	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
@@ -308,7 +307,6 @@ class Path : public Shape {
 	virtual void Draw (cairo_t *cr);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual Point GetOrigin ();
 	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 

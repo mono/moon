@@ -4,6 +4,7 @@
  * Authors:
  *   Miguel de Icaza (miguel@novell.com)
  *   Sebastien Pouliot  <sebastien@ximian.com>
+ *   Stephane Delcroix  <sdelcroix@novell.com>
  *
  * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
@@ -381,6 +382,52 @@ Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 
 	*height = h;
 	*width = w;
+}
+
+#define min(X, Y)  ((X) < (Y) ? (X) : (Y))
+Point
+Shape::GetOrigin ()
+{
+	int i = 0;
+	double x, y;
+	cairo_path_t *c_path;
+	
+	if (!path || (path->cairo.num_data == 0))
+		return Point (0,0);
+	
+	c_path = &path->cairo;
+	for (; i < c_path->num_data; i+= c_path->data[i].header.length) {
+	cairo_path_data_t *data = &c_path->data[i];
+		switch (data->header.type) {
+		case CAIRO_PATH_CURVE_TO:
+			if (i == 0) {
+				x = data[1].point.x; 
+				y = data[1].point.y; 
+			} else {
+				x = min (x, data[1].point.x);
+				y = min (y, data[1].point.y);
+			}
+			x = min (x, data[2].point.x);
+			y = min (y, data[2].point.y);
+			x = min (x, data[3].point.x);
+			y = min (y, data[3].point.y);
+			break;
+		case CAIRO_PATH_LINE_TO:
+		case CAIRO_PATH_MOVE_TO:
+			if (i == 0) {
+				x = data[1].point.x; 
+				y = data[1].point.y; 
+			} else {
+				x = min (x, data[1].point.x);
+				y = min (y, data[1].point.y);
+			}
+			break;
+		default:
+			break;
+		}
+
+	return Point (x, y);
+	}
 }
 
 bool
@@ -1617,14 +1664,6 @@ Polygon::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	*width = fabs (x2 - x1);
 }
 
-Point
-Polygon::GetOrigin ()
-{
-	Rect b = GetBounds ();
-	return Point (b.x, b.y);
-}
-
-
 FillRule
 polygon_get_fill_rule (Polygon *polygon)
 {
@@ -1892,12 +1931,7 @@ Polyline::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	*width = fabs (x2 - x1);
 }
 
-Point
-Polyline::GetOrigin ()
-{
-	Rect b = GetBounds ();
-	return Point (b.x, b.y);
-}
+
 
 FillRule
 polyline_get_fill_rule (Polyline *polyline)
@@ -2127,13 +2161,6 @@ Path::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 		*height = 0.0;
 		*width = 0.0;
 	}
-}
-
-Point
-Path::GetOrigin ()
-{
-	Rect b = GetBounds ();
-	return Point (b.x, b.y);
 }
 
 Geometry *

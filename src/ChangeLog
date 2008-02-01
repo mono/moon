@@ -1,3 +1,11 @@
+2008-02-01  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* shape.h:
+	* shape.cpp: define GettOrigin at the Shape level, compute GetOrigin
+	from the path data instead of from bounds.
+
+	* brush.cpp: translate the brushes with a translation matrix.
+
 2008-02-01  Larry Ewing  <lewing@novell.com>
 
 	* brush.cpp: Make sure we use the brush opacity when computing the

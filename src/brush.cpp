@@ -458,6 +458,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Point *start = linear_gradient_brush_get_start_point (this);
 	Point *end = linear_gradient_brush_get_end_point (this);
 	double x0, y0, x1, y1;
+	cairo_matrix_t offset_matrix; 
 	Point p = uielement->GetOrigin ();
 
 	switch (gradient_brush_get_mapping_mode (this)) {
@@ -476,9 +477,6 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		break;	
 	}
 
-	x0 += p.x; y0+= p.y;
-	x1 += p.x; y1+= p.y;
-	
 	cairo_pattern_t *pattern = cairo_pattern_create_linear (x0, y0, x1, y1);
 	
 	cairo_matrix_t matrix;
@@ -498,7 +496,12 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		transform_get_absolute_transform (relative_transform, width, height, &tm);
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
-	
+
+	if (p.x != 0.0 && p.y != 0.0) {
+		cairo_matrix_init_translate (&offset_matrix, p.x, p.y);
+		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
+	}
+
 	cairo_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
@@ -594,14 +597,14 @@ void
 RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	Point offset = uielement->GetOrigin ();
-
 	Point *origin = radial_gradient_brush_get_gradientorigin (this);
-	double ox = (origin ? origin->x : 0.5) + offset.x/width;
-	double oy = (origin ? origin->y : 0.5) + offset.y/height;
+	double ox = (origin ? origin->x : 0.5);
+	double oy = (origin ? origin->y : 0.5);
+	cairo_matrix_t offset_matrix; 
 	
 	Point *center = radial_gradient_brush_get_center (this);
-	double cx = (center ? center->x : 0.5) + offset.x/width;
-	double cy = (center ? center->y : 0.5) + offset.y/height;
+	double cx = (center ? center->x : 0.5);
+	double cy = (center ? center->y : 0.5);
 	
 	double rx = radial_gradient_brush_get_radius_x (this);
 	double ry = radial_gradient_brush_get_radius_y (this);
@@ -632,6 +635,11 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		transform_get_absolute_transform (relative_transform, width, height, &tm);
 		// TODO - optimization, check for empty/identity matrix too ?
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
+	}
+
+	if (offset.x != 0.0 && offset.y != 0.0) {
+		cairo_matrix_init_translate (&offset_matrix, offset.x, offset.y);
+		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
 	}
 
 	cairo_status_t status = cairo_matrix_invert (&matrix);
