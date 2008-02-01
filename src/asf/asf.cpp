@@ -734,6 +734,7 @@ ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d)
 	
 	index = NULL;
 	index_size = 0;
+	key_frames_only = false;
 }
 
 ASFFrameReader::~ASFFrameReader ()

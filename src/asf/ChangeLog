@@ -1,3 +1,7 @@
+2008-02-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Initialize key_frames_only.
+
 2008-01-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: ASFFrameReader: (Advance) Return the last payload when reaching
