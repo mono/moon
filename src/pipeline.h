@@ -739,6 +739,7 @@ class Mp3FrameReader {
 	int64_t stream_start;
 	uint64_t cur_pts;
 	int32_t bit_rate;
+	bool xing;
 	
 	MpegFrame *jmptab;
 	uint32_t avail;
@@ -750,7 +751,7 @@ class Mp3FrameReader {
 	bool SkipFrame ();
 	
 public:
-	Mp3FrameReader (IMediaSource *source, int64_t start);
+	Mp3FrameReader (IMediaSource *source, int64_t start, bool xing);
 	~Mp3FrameReader ();
 	
 	bool Seek (uint64_t pts);
@@ -760,6 +761,7 @@ public:
 
 class Mp3Demuxer : public IMediaDemuxer {
 	Mp3FrameReader *reader;
+	bool xing;
 	
 public:
 	Mp3Demuxer (Media *media, IMediaSource *source);

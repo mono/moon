@@ -1139,6 +1139,17 @@ struct MpegFrameHeader {
 	int32_t sample_rate;
 };
 
+enum MpegVBRHeaderType {
+	MpegNoVBRHeader,
+	MpegXingHeader,
+	MpegVBRIHeader
+};
+
+struct MpegVBRHeader {
+	MpegVBRHeaderType type;
+	uint32_t nframes;
+};
+
 static int mpeg1_bitrates[3][15] = {
 	/* version 1, layer 1 */
 	{ 0, 32000, 48000, 56000, 128000, 160000, 192000, 224000, 256000, 288000, 320000, 352000, 384000, 416000, 448000 },
@@ -1218,7 +1229,7 @@ mpeg_parse_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
 static bool
 mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 {
-	int mode = (byte >> 6) & 0x3;
+	int mode = (byte >> 6) & 0x03;
 	
 	switch (mode) {
 	case 0: /* stereo */
@@ -1256,11 +1267,13 @@ mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 static bool
 mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 {
+	int layer;
+	
 	if (!is_mpeg_header (buffer))
 		return false;
 	
 	// extract the MPEG version
-	switch ((buffer[1] >> 3) & 0x3) {
+	switch ((buffer[1] >> 3) & 0x03) {
 	case 0: /* MPEG Version 2.5 */
 		mpeg->version = 3;
 		break;
@@ -1275,19 +1288,10 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	}
 	
 	// extract the MPEG layer
-	switch (buffer[1] & 0x06) {
-	case 0x02:
-		mpeg->layer = 3;
-		break;
-	case 0x04:
-		mpeg->layer = 2;
-		break;
-	case 0x06:
-		mpeg->layer = 1;
-		break;
-	default: /* 0x00 reserved */
+	if ((layer = (4 - ((buffer[1] >> 1) & 0x03))) == 4)
 		return false;
-	}
+	
+	mpeg->layer = layer;
 	
 	// protection (via 16bit crc) bit
 	mpeg->prot = (buffer[1] & 0x01) ? 1 : 0;
@@ -1301,7 +1305,7 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 		return false;
 	
 	// check if the frame is padded
-	mpeg->padded = (buffer[2] & 0x2) ? 1 : 0;
+	mpeg->padded = (buffer[2] & 0x02) ? 1 : 0;
 	
 	// extract the channel mode */
 	if (!mpeg_parse_channels (mpeg, buffer[3]))
@@ -1322,17 +1326,19 @@ static int mpeg_block_sizes[3][3] = {
 #define mpeg_block_size(mpeg) mpeg_block_sizes[(mpeg)->version - 1][(mpeg)->layer - 1]
 
 static uint32_t
-mpeg_frame_length (MpegFrameHeader *mpeg)
+mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 {
 	uint32_t len;
 	
 	// calculate the frame length
 	if (mpeg->layer == 1)
 		len = (((12 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded) * 4;
-	else
+	else if (mpeg->version == 1)
 		len = ((144 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
+	else
+		len = ((72 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
 	
-	if (mpeg->prot) {
+	if (mpeg->prot && !xing) {
 		// include 2 extra bytes for 16bit crc
 		len += 2;
 	}
@@ -1340,20 +1346,124 @@ mpeg_frame_length (MpegFrameHeader *mpeg)
 	return len;
 }
 
-#define MPEG_FRAME_LENGTH_MAX (((144 * 160000) / 8000) + 1)
+#define MPEG_FRAME_LENGTH_MAX ((((144 * 160000) / 8000) + 1) + 2)
 
 #define mpeg_frame_size(mpeg) (((mpeg)->bit_rate * (mpeg)->channels * mpeg_block_size (mpeg)) / (mpeg)->sample_rate)
 
 #define mpeg_frame_duration(mpeg) (48000000 / (mpeg)->sample_rate) * 8
 
+#if 0
+static void
+mpeg_print_info (MpegFrameHeader *mpeg)
+{
+	const char *version;
+	
+	switch (mpeg->version) {
+	case 1:
+		version = "1";
+		break;
+	case 2:
+		version = "2";
+		break;
+	default:
+		version = "2.5";
+		break;
+	}
+	
+	printf ("MPEG-%s Audio Layer %d; %d Hz, %d ch, %d kbit\n",
+		version, mpeg->layer, mpeg->sample_rate, mpeg->channels,
+		mpeg->bit_rate / 1000);
+	
+	printf ("\t16bit crc=%s; padded=%s\n", mpeg->prot ? "true" : "false",
+		mpeg->padded ? "true" : "false");
+	
+	printf ("\tframe length = %u bytes\n", mpeg_frame_length (mpeg, false));
+}
+#endif
+
+static int
+mpeg_xing_header_offset (MpegFrameHeader *mpeg)
+{
+	if (mpeg->version == 1)
+		return mpeg->channels == 1 ? 21 : 36;
+	else
+		return mpeg->channels == 1 ? 13 : 21;
+}
+
+#define mpeg_vbri_header_offset 36
+
+static bool
+mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, int64_t pos)
+{
+	uint32_t nframes = 0, size = 0, len;
+	uint8_t buffer[24], *bufptr;
+	int64_t offset;
+	int i;
+	
+	// first, check for a Xing header
+	offset = mpeg_xing_header_offset (mpeg);
+	if (!source->Seek (pos + offset, SEEK_SET))
+		return false;
+	
+	if (!source->Peek (buffer, 16))
+		return false;
+	
+	if (!strncmp ((const char *) buffer, "Xing", 4)) {
+		bufptr = buffer + 8;
+		if (buffer[7] & 0x01) {
+			// decode the number of frames
+			for (i = 0; i < 4; i++)
+				nframes = (nframes << 8) | *bufptr++;
+		} if (buffer[7] & 0x02) {
+			for (i = 0, size = 0; i < 4; i++)
+				size = (size << 8) | *bufptr++;
+			
+			// calculate the frame length
+			len = mpeg_frame_length (mpeg, true);
+			
+			// estimate the number of frames
+			nframes = size / len;
+		}
+		
+		vbr->type = MpegXingHeader;
+		vbr->nframes = nframes;
+		
+		return true;
+	}
+	
+	// check for a Fraunhofer VBRI header
+	offset = mpeg_vbri_header_offset;
+	if (!source->Seek (pos + offset, SEEK_SET))
+		return false;
+	
+	if (!source->Peek (buffer, 24))
+		return false;
+	
+	if (!strncmp ((const char *) buffer, "VBRI", 4)) {
+		// decode the number of frames
+		bufptr = buffer + 14;
+		for (i = 0; i < 4; i++)
+			nframes = (nframes << 8) | *bufptr++;
+		
+		vbr->type = MpegVBRIHeader;
+		vbr->nframes = nframes;
+		
+		return true;
+	}
+	
+	return false;
+}
+
 
 #define MPEG_JUMP_TABLE_GROW_SIZE 16
 
-Mp3FrameReader::Mp3FrameReader (IMediaSource *source, int64_t start)
+Mp3FrameReader::Mp3FrameReader (IMediaSource *source, int64_t start, bool xing)
 {
 	jmptab = g_new (MpegFrame, MPEG_JUMP_TABLE_GROW_SIZE);
 	avail = MPEG_JUMP_TABLE_GROW_SIZE;
 	used = 0;
+	
+	this->xing = xing;
 	
 	stream_start = start;
 	stream = source;
@@ -1518,10 +1628,9 @@ Mp3FrameReader::SkipFrame ()
 	
 	offset = stream->GetPosition ();
 	
-	if (!stream->ReadAll (buffer, 4))
+	if (!stream->Peek (buffer, 4))
 		return false;
 	
-	memset ((void *) &mpeg, 0, sizeof (mpeg));
 	if (!mpeg_parse_header (&mpeg, buffer))
 		return false;
 	
@@ -1537,7 +1646,7 @@ Mp3FrameReader::SkipFrame ()
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	len = mpeg_frame_length (&mpeg);
+	len = mpeg_frame_length (&mpeg, xing);
 	
 	if (!stream->Seek ((int64_t) (len - 4), SEEK_CUR))
 		return false;
@@ -1564,7 +1673,6 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 		return MEDIA_NO_MORE_DATA;
 	}
 	
-	memset ((void *) &mpeg, 0, sizeof (mpeg));
 	if (!mpeg_parse_header (&mpeg, buffer))
 		return MEDIA_DEMUXER_ERROR;
 	
@@ -1583,7 +1691,7 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	len = mpeg_frame_length (&mpeg);
+	len = mpeg_frame_length (&mpeg, xing);
 	frame->buflen = len;
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
@@ -1623,6 +1731,7 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 Mp3Demuxer::Mp3Demuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
 {
 	reader = NULL;
+	xing = false;
 }
 
 Mp3Demuxer::~Mp3Demuxer ()
@@ -1641,11 +1750,11 @@ Mp3Demuxer::Seek (uint64_t pts)
 }
 
 static int64_t
-FindMpegHeader (MpegFrameHeader *mpeg, IMediaSource *source, int64_t start)
+FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, int64_t start)
 {
 	uint8_t buf[4096], hdr[4], *inbuf, *inend;
+	int64_t pos, offset = start;
 	register uint8_t *inptr;
-	int64_t pos, offset = 0;
 	MpegFrameHeader next;
 	int32_t n = 0;
 	uint32_t len;
@@ -1681,13 +1790,20 @@ FindMpegHeader (MpegFrameHeader *mpeg, IMediaSource *source, int64_t start)
 					/* validate that this is really an MPEG frame header by calculating the
 					 * position of the next frame header and checking that it looks like a
 					 * valid frame header too */
-					len = mpeg_frame_length (mpeg);
+					len = mpeg_frame_length (mpeg, false);
 					pos = source->GetPosition ();
 					
-					if (source->Seek (start + offset + len, SEEK_SET) && source->Peek (hdr, 4)
+					if (vbr && mpeg_check_vbr_headers (mpeg, vbr, source, offset)) {
+						if (vbr->type == MpegXingHeader)
+							len = mpeg_frame_length (mpeg, true);
+						
+						return offset + len;
+					}
+					
+					if (source->Seek (offset + len, SEEK_SET) && source->Peek (hdr, 4)
 					    && mpeg_parse_header (&next, hdr) && next.bit_rate) {
 						/* everything checks out A-OK */
-						return start + offset;
+						return offset;
 					}
 					
 					/* restore state */
@@ -1710,7 +1826,7 @@ FindMpegHeader (MpegFrameHeader *mpeg, IMediaSource *source, int64_t start)
 		}
 		
 		/* if we scan more than 'MPEG_FRAME_LENGTH_MAX' bytes, this is unlikely to be an mpeg audio stream */
-	} while (offset < MPEG_FRAME_LENGTH_MAX);
+	} while ((offset - start) < MPEG_FRAME_LENGTH_MAX);
 	
 	return -1;
 }
@@ -1724,6 +1840,7 @@ Mp3Demuxer::ReadHeader ()
 	MpegFrameHeader mpeg;
 	AudioStream *audio;
 	uint8_t buffer[10];
+	MpegVBRHeader vbr;
 	uint64_t duration;
 	uint32_t size = 0;
 	uint32_t nframes;
@@ -1759,28 +1876,37 @@ Mp3Demuxer::ReadHeader ()
 	// There can be an "arbitrary" amount of garbage at the
 	// beginning of an mp3 stream, so we need to find the first
 	// MPEG sync header by scanning.
-	if ((stream_start = FindMpegHeader (&mpeg, source, stream_start)) == -1)
+	vbr.type = MpegNoVBRHeader;
+	if ((stream_start = FindMpegHeader (&mpeg, &vbr, source, stream_start)) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
 	if (!source->Seek (stream_start, SEEK_SET))
 		return MEDIA_INVALID_MEDIA;
 	
-	if ((end = source->GetSize ()) != -1) {
-		// calculate the duration of the first frame
-		duration = mpeg_frame_duration (&mpeg);
-		
-		// calculate the frame length
-		len = mpeg_frame_length (&mpeg);
-		
-		// estimate the number of frames
-		nframes = (end - stream_start) / len;
-		
-		duration *= nframes;
+	if (vbr.type == MpegNoVBRHeader) {
+		if ((end = source->GetSize ()) != -1) {
+			// calculate the frame length
+			len = mpeg_frame_length (&mpeg, false);
+			
+			// estimate the number of frames
+			nframes = (end - stream_start) / len;
+		} else {
+			nframes = 0;
+		}
 	} else {
-		duration = 0;
+		if (vbr.type == MpegXingHeader)
+			xing = true;
+		
+		nframes = vbr.nframes;
 	}
 	
-	reader = new Mp3FrameReader (source, stream_start);
+	// calculate the duration of the first frame
+	duration = mpeg_frame_duration (&mpeg);
+	
+	// estimate the duration of the entire stream
+	duration *= nframes;
+	
+	reader = new Mp3FrameReader (source, stream_start, xing);
 	
 	stream = audio = new AudioStream (GetMedia ());
 	audio->codec_id = CODEC_MP3;
@@ -1823,6 +1949,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 	MpegFrameHeader mpeg;
 	uint8_t buffer[10];
 	uint32_t size = 0;
+	MpegVBRHeader vbr;
 	int i;
 	
 	// peek at the first 10 bytes which is enough to contain
@@ -1849,7 +1976,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 		stream_start = (int64_t) size;
 	}
 	
-	stream_start = FindMpegHeader (&mpeg, source, stream_start);
+	stream_start = FindMpegHeader (&mpeg, &vbr, source, stream_start);
 	
 	source->Seek (0, SEEK_SET);
 	

@@ -1,3 +1,8 @@
+2008-02-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (FindMpegHeader): Now checks for Xing and
+	Fraunhofer VBRI headers.
+
 2008-01-31  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h: include region.h
