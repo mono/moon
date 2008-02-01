@@ -464,17 +464,11 @@ public:
 	virtual MediaResult ReadFrame (MediaFrame *frame) = 0;
 	virtual MediaResult Seek (uint64_t pts) = 0;
 	int GetStreamCount () { return stream_count; }
-	// Calculates a position for the pts
-	// Might return an estimated value, 
-	// if so 'estimate' will be true upon return.
-	// Must return the size of the file if pts is after the
-	// end of the media.
-	// The position returned is the last position in the file 
-	// that is required to play/render all the frames/streams 
-	// with the specified pts, guaranteeing that the demuxer
-	// won't seek to/read from a position after the returned
-	// position when getting frames of the specified pts.
-	// (if it's an estimate then the guarantee cannot be made of course)
+	// Estimate a position for the pts.
+	// This value is used when calculating the buffering progress percentage
+	// (as well as determining when to stop buffering)
+	// This method will be called on the main thread, so it can't
+	// do anything that might block (such as read/seek ahead).
 	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate) = 0;
 	IMediaStream *GetStream (int index);
 	// Gets the longest duration from all the streams
