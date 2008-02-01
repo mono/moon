@@ -195,8 +195,9 @@ void
 SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement)
 {
 	Color *color = solid_color_brush_get_color (this);
-	
-	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
+	double opacity = brush_get_opacity (this);
+
+	cairo_set_source_rgba (cr, color->r, color->g, color->b, opacity * color->a);
 
 	// [Relative]Transform do not apply to solid color brush
 }
@@ -341,6 +342,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 	GradientSpreadMethod gsm = gradient_brush_get_spread (this);
 	cairo_pattern_set_extend (pattern, convert_gradient_spread_method (gsm));
 	Collection::Node *node;
+	double opacity = brush_get_opacity (this);
 	
 	// TODO - ColorInterpolationModeProperty is ignored (map to ?)
 	if (single) {
@@ -360,7 +362,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		double offset = gradient_stop_get_offset (stop);
 		if (offset >= 0.0) {
 			Color *color = gradient_stop_get_color (stop);
-			cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a);
+			cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a * opacity);
 			n++;
 		} else if (n < 2) {
 			// we don't have enough stops so we might need the negative one
@@ -383,7 +385,7 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		// add it to the mix
 		double offset = gradient_stop_get_offset (negative);
 		Color *color = gradient_stop_get_color (negative);
-		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a);
+		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a * opacity);
 	}
 }
 

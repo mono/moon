@@ -1,3 +1,8 @@
+2008-02-01  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp: Make sure we use the brush opacity when computing the
+	color stops.
+
 2008-02-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (FindMpegHeader): Now checks for Xing and
