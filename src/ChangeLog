@@ -2,6 +2,7 @@
 
 	* pipeline.cpp (FileSource::Peek): Only memmove() if we have data
 	to move.
+	(FileSource::Peek): Slightly better fix.
 
 2008-02-01  Jeffrey Stedfast  <fejj@novell.com>
 

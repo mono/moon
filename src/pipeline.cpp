@@ -2304,14 +2304,24 @@ FileSource::Peek (void *buf, uint32_t n)
 	
 	if (buflen < n) {
 		/* need to buffer more data */
-		need = n - buflen;
 		if (bufptr > buffer) {
 			used = (bufptr + buflen) - buffer;
 			avail = sizeof (buffer) - used;
-			shift = need - avail;
+			need = n - buflen;
 			
-			memmove (buffer, buffer + shift, used - shift);
-			bufptr -= shift;
+			if (avail < need) {
+				/* make room for 'need' more bytes */
+				shift = need - avail;
+				memmove (buffer, buffer + shift, used - shift);
+				bufptr -= shift;
+			} else {
+				/* request 'avail' more bytes so we
+				 * can hopefully fill our buffer */
+				need = avail;
+			}
+		} else {
+			/* nothing in our buffer, fill 'er up */
+			need = sizeof (buffer);
 		}
 		
 		do {
