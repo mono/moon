@@ -1,3 +1,8 @@
+2008-02-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (FileSource::Peek): Only memmove() if we have data
+	to move.
+
 2008-02-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (Mp3Demuxer::GetPositionOfPts): Reimplemented to

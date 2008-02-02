@@ -2304,13 +2304,15 @@ FileSource::Peek (void *buf, uint32_t n)
 	
 	if (buflen < n) {
 		/* need to buffer more data */
-		used = (bufptr + buflen) - buffer;
-		avail = sizeof (buffer) - used;
 		need = n - buflen;
-		
-		shift = need - avail;
-		memmove (buffer, buffer + shift, used - shift);
-		bufptr -= shift;
+		if (bufptr > buffer) {
+			used = (bufptr + buflen) - buffer;
+			avail = sizeof (buffer) - used;
+			shift = need - avail;
+			
+			memmove (buffer, buffer + shift, used - shift);
+			bufptr -= shift;
+		}
 		
 		do {
 			if ((r = noint_read (fd, bufptr + buflen, need)) == 0) {
