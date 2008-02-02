@@ -88,11 +88,12 @@ class MonoOpen {
 	{
 		 Widget w = (Widget)sender;
 	    
-		 Cairo.Context ctx = CompositeHelper.Create (w.GdkWindow);
-		 ctx.Operator = Cairo.Operator.Source;
-		 ctx.Color = new Cairo.Color (1.0, 1.0, 1.0, 0.0);
-		 CompositeHelper.Region (ctx, expose_args.Event.Region);
-		 ctx.Fill ();
+		 using (Cairo.Context ctx = CompositeHelper.Create (w.GdkWindow)){
+		 	ctx.Operator = Cairo.Operator.Source;
+		 	ctx.Color = new Cairo.Color (1.0, 1.0, 1.0, 0.0);
+		 	CompositeHelper.Region (ctx, expose_args.Event.Region);
+		 	ctx.Fill ();
+		}
 	}
 
 	static bool can_dragging = false;
