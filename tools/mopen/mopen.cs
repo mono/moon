@@ -250,17 +250,15 @@ class MonoOpen {
 	//
 	static int DoLoad (string file, ArrayList args)
 	{
-		if (file.EndsWith (".xaml"))
-			return LoadXaml (file, args);
-
 		//
 		// Here:
 		//    implement loading the DLL or executanle, search in path perhaps?
 		//
 		if (file.EndsWith (".dll")){
+			return 1;
 		}
 
-		return 1;
+		return LoadXaml (file, args);
 	}
 	
 	static int Main (string [] args)
