@@ -39,6 +39,16 @@ using System.Windows;
 
 namespace Moonlight {
 
+	/// <summary>
+	///   Implements the XAML loader for managed code.
+	/// </summary>
+	/// <remarks>
+	///   This class is used to load a XAML file that contains
+	///   managed code.
+	///
+	///   A new AppDomain is created to host the content, so each new
+	///   file lives in a separate domain. 
+	/// </remarks>
 	public class Loader {
 
 		delegate void PluginUnloadCallback (IntPtr plugin);
@@ -46,11 +56,25 @@ namespace Moonlight {
 		[DllImport ("moonplugin")]
 		static extern void plugin_set_unload_callback (IntPtr plugin, PluginUnloadCallback puc);
 
+		//
+		// Tracks a list of callbacks to invoke on domain
+		// unload, indexed by the plugin handle
+		//
 		static Dictionary<IntPtr, PluginUnloadCallback> callbacks = new Dictionary<IntPtr, PluginUnloadCallback> ();
+
+		//
+		// Tracks all the created domains, it is indexed by
+		// the plugin handle (IntPtr value).
+		//
 		static Dictionary<IntPtr, AppDomain> domains = new Dictionary<IntPtr, AppDomain> ();
 
+		//
+		// Points to the XamlLoader for this plugin, this is a
+		// MarshalByRef object which points to the actual
+		// loader on the individual domain.
+		//
 		Mono.Xaml.XamlLoader rl;
-
+		
 		// [DONE] 1. Load XAML file 
 		// 2. Make sure XAML file exposes a few new properites:
 		//    a. Loaded  (this is the method to call)
@@ -61,6 +85,9 @@ namespace Moonlight {
 		// 6. Run the method
 		// 7. If none of those properties are there, we can return
 
+		/// <summary>
+		///   Creates a new Loader for a XAML file.
+		/// </summary>
 		public static Loader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			try {
@@ -99,7 +126,12 @@ namespace Moonlight {
 		Loader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			AppDomain domain = GetDomain (plugin);
-			
+
+			//
+			// Mono.Xaml.Loader is defined in agmono, the actual
+			// instance of Mono.Xaml.ManagedXamlLoader is defined
+			// as an internal class in agclr's Mono namespace
+			//
 			rl = (Mono.Xaml.XamlLoader) Helper.CreateInstanceAndUnwrap (
 				domain, typeof (DependencyObject).Assembly.FullName, "Mono.Xaml.ManagedXamlLoader");
 
