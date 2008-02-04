@@ -806,7 +806,8 @@ ASFFrameReader::AddFrameIndex (uint64_t packet_index)
 		}
 	}
 	
-	int k = MAX (packet_index, index_size - 1);
+	// index_size can't be 0 here.
+	uint32_t k = MAX (packet_index, index_size - 1);
 	uint64_t current_start = index [k].start_pts;
 	index [k].start_pts = MIN (index [k].start_pts, Pts ());
 	index [k].end_pts = MAX (index [k].end_pts, Pts ());
@@ -815,10 +816,10 @@ ASFFrameReader::AddFrameIndex (uint64_t packet_index)
 	}
 }
 
-int32_t
+uint32_t
 ASFFrameReader::FrameSearch (uint64_t pts)
 {
-	for (int i = 0; i < index_size; i++) {
+	for (uint32_t i = 0; i < index_size; i++) {
 		//printf ("ASFFrameReader::FrameSearch (%llu): Checking start_pts: %llu, end_pts: %llu, pi: %i\n", pts, index [i].start_pts, index [i].end_pts, index [i].packet_index);
 		
 		if (index [i].start_pts == INVALID_START_PTS)
@@ -826,7 +827,7 @@ ASFFrameReader::FrameSearch (uint64_t pts)
 			
 		if (index [i].start_pts > pts) {
 			//printf ("ASFFrameReader::FrameSearch (%llu): index not created for the desired pts (found starting pts after the requested one)\n", pts);
-			return -1;
+			return UINT32_MAX;
 		}
 		
 		if (index [i].start_pts <= pts && index [i].end_pts >= pts) {
@@ -1161,14 +1162,14 @@ ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
 	
 	packet_index = FrameSearch (pts);
 	
-	if (packet_index >= 0) {
+	if (packet_index != UINT32_MAX) {
 		//printf ("ASFFrameReader::GetPositionOfPts (%llu, %p): Found pts in index, position: %lld, pi: %i\n", pts, estimate, parser->GetPacketOffset (packet_index), packet_index);
 		return packet_index;
 	}
 	
 	*estimate = true;
 	
-	for (int i = 0; i < index_size; i++) {
+	for (uint32_t i = 0; i < index_size; i++) {
 		if (!(index [i].start_pts != INVALID_START_PTS && index [i].end_pts > index [i].start_pts))
 			continue;
 		

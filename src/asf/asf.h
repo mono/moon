@@ -189,7 +189,7 @@ class ASFFrameReader {
 	uint64_t pts;
 	
 	// Index data
-	int32_t index_size; // The number of items in the index.
+	uint32_t index_size; // The number of items in the index.
 	ASFFrameReaderIndex *index; // A table of ASFFrameReaderIndexes.
 	
 	bool ResizeList (int size); // Resizes the list of payloads to the requested size. 
@@ -224,8 +224,8 @@ public:
 	void FindScriptCommandStream ();
 	
 	// Index, returns the packet index of where the frame is.
-	// returns -1 if not found in the index.
-	int32_t FrameSearch (uint64_t pts);
+	// returns UINT32_MAX if not found in the index.
+	uint32_t FrameSearch (uint64_t pts);
 
 	int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
 	uint64_t GetPacketIndexOfPts (uint64_t pts, bool *estimate);
