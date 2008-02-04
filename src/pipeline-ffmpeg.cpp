@@ -222,9 +222,6 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 	if (stream->GetType () == MediaTypeVideo) {
 		frame = avcodec_alloc_frame ();
 		
-		if (mf->IsKeyFrame ())
-			printf ("FfmpegDecoder::DecodeFrame (): decoded key frame\n");
-		
 		length = avcodec_decode_video (context, frame, &got_picture, mf->buffer, mf->buflen);
 		
 		if (length < 0 || !got_picture) {
