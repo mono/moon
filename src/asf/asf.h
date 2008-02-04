@@ -173,7 +173,7 @@ class ASFFrameReader {
 	bool key_frames_only;
 	int stream_number; // The stream this reader is reading for 
 	
-	int32_t current_packet_index; // The index of the next packet that will be read when ReadMore is called.
+	uint64_t current_packet_index; // The index of the next packet that will be read when ReadMore is called.
 	int32_t script_command_stream_index;
 	
 	// The queue of payloads we've built.
@@ -228,10 +228,10 @@ public:
 	int32_t FrameSearch (uint64_t pts);
 
 	int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
-	int32_t GetPacketIndexOfPts (uint64_t pts, bool *estimate);
+	uint64_t GetPacketIndexOfPts (uint64_t pts, bool *estimate);
 
 	// Adds the current frame to the index.
-	void AddFrameIndex ();
+	void AddFrameIndex (uint64_t packet_index);
 	bool IsAudio ();
 	bool IsAudio (int stream);
 };
@@ -293,18 +293,17 @@ public:
 	int GetSequentialStreamNumber (int stream_index);
 	
 	// Returns 0 on failure, otherwise the offset of the packet index.
-	int64_t GetPacketOffset (int packet_index);
+	int64_t GetPacketOffset (uint64_t packet_index);
 	
 	// Returns the index of the packet at the specified offset (from the beginning of the file)
-	int GetPacketIndex (int64_t offset);
+	uint64_t GetPacketIndex (int64_t offset);
 	
 	// Searches the header objects for the specified guid
 	// returns -1 if nothing is found.
 	int GetHeaderObjectIndex (const asf_guid *guid, int start = 0);
 	
 	// Returns the packet index where the desired pts is found.
-	// Returns -1 on failure.
-	int GetPacketIndexOfPts (int stream_id, uint64_t pts);
+	uint64_t GetPacketIndexOfPts (int stream_id, uint64_t pts);
 	
 	// The number of packets in the stream (0 if unknown).
 	uint64_t GetPacketCount ();

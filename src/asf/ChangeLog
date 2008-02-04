@@ -1,3 +1,8 @@
+2008-02-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: Make packet index a uint64. When adding an index entry,
+	  cap the packet index to the size of the index (fixes a crash).
+
 2008-02-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Initialize key_frames_only.
