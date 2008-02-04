@@ -792,6 +792,11 @@ ASFFrameReader::AddFrameIndex (uint64_t packet_index)
 		
 		// Max size here is 0xFFFF packets * 16 bytes per index = 1.048.560 bytes
 		index_size = packet_count;
+		
+		// Don't create any indices if there are no packets. 
+		if (index_size == 0)
+			return;
+		
 		index = (ASFFrameReaderIndex*) g_malloc0 (index_size * sizeof (ASFFrameReaderIndex));
 		
 		//printf ("ASFFrameReader::AddFrameIndex (): Created index: stream_count: %i, packet_count: %lld, index_size: %i, item size: %i, gives index size: %i bytes\n", stream_count, packet_count, index_size, sizeof (ASFFrameReaderIndex), index_size * sizeof (ASFFrameReaderIndex));
@@ -805,7 +810,7 @@ ASFFrameReader::AddFrameIndex (uint64_t packet_index)
 			index [i].start_pts = INVALID_START_PTS;
 		}
 	}
-	
+	 
 	// index_size can't be 0 here.
 	uint32_t k = MAX (packet_index, index_size - 1);
 	uint64_t current_start = index [k].start_pts;

@@ -1,5 +1,9 @@
 2008-02-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Don't create an index if we have a media with 0 packets.
+
+2008-02-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: Fix more signedness problems.
 
 2008-02-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
