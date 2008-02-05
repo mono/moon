@@ -12,11 +12,13 @@ populate_tree_from_xaml (UIElement *el, GtkTreeStore *store, GtkTreeIter *parent
 
 	GtkTreeIter iter;
 
-	gtk_tree_store_insert_with_values (store, &iter, parent, -1,
-					   0, el->GetName() ? el->GetName() : "",
-					   1, el->GetTypeName(),
-					   2, el,
-					   -1);
+	gtk_tree_store_append (store, &iter, parent);
+
+	gtk_tree_store_set (store, &iter,
+			    0, el->GetName() ? el->GetName() : "",
+			    1, el->GetTypeName(),
+			    2, el,
+			    -1);
 
 	if (el->Is(Type::PANEL)) {
 		VisualCollection *children = ((Panel*)el)->GetChildren ();
