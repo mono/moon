@@ -616,7 +616,7 @@ moon_merge (moon_path *path, moon_path *subpath)
 	g_return_if_fail (path != NULL);
 	g_return_if_fail (subpath != NULL);
 	
-	if (!CHECK_SPACE (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH)) {
+	if (!CHECK_SPACE (path, subpath->cairo.num_data)) {
 		while (n < pos + subpath->cairo.num_data)
 			n <<= 1;
 		
