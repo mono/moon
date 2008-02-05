@@ -1,5 +1,16 @@
 2008-02-05  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (libmoonplugin_la_SOURCES): add plugin-debug.h/cpp
+
+	* plugin-debug.h, plugin.cpp: for now, just a gtk treeview with a
+	snapshot of the xaml hierarchy.  selecting an item in the tree
+	puts a rectangle around the element in the plugin.
+
+	* plugin.cpp (plugin_show_menu): if debug is enabled, add the
+	debug menu item.
+
+2008-02-05  Chris Toshok  <toshok@ximian.com>
+
 	* moonlight.h: don't #define DEBUG here.  it's a config.h deal.
 
 2008-02-04  Jackson Harper  <jackson@ximian.com>

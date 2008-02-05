@@ -12,6 +12,7 @@
 
 #include "plugin.h"
 #include "plugin-class.h"
+#include "plugin-debug.h"
 #include "moon-mono.h"
 #include "downloader.h"
 #include "plugin-downloader.h"
@@ -85,6 +86,12 @@ plugin_show_menu (PluginInstance *plugin)
 	menu_item = gtk_menu_item_new_with_label ("Properties");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_properties), plugin);
+
+#ifdef DEBUG
+	menu_item = gtk_menu_item_new_with_label ("Debug");
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug), plugin);
+#endif
 
 	gtk_widget_show_all (menu);
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
