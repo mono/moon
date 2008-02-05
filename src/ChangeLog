@@ -1,3 +1,9 @@
+2008-02-05  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::FrontToBack): enable the rectangle
+	code, and make sure to round in the bounds we're subtracting.
+	this was causing the flashing white border on silverlight.net/fox.
+
 2008-02-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Use existing MIN macro. Use local variables when

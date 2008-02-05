@@ -540,7 +540,6 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 						(media_base_get_stretch (image) == StretchFill
 						 || media_base_get_stretch (image) == StretchUniformToFill)));
 			}
-#if notyet
 			else if (Is (Type::RECTANGLE)) {
 				// if we're going to subtract anything we'll
 				// do it in here, so set this to false so that
@@ -570,7 +569,6 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 					delete inner_rect_region;
 				}
 			}
-#endif
 			// XXX more stuff here for non-panel subclasses...
 			else {
 				subtract = false;
@@ -578,7 +576,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		}
 
 		if (subtract)
-			surface_region->Subtract (bounds);
+			surface_region->Subtract (bounds.RoundIn());
 
 	}
 }
