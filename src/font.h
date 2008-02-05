@@ -118,7 +118,9 @@ class TextFont {
 	
 	GlyphInfo *glyphs;
 	
-	TextFont (FcPattern *pattern, const char *name);
+	TextFont (FcPattern *pattern, bool fromFile, const char *name);
+	
+	bool OpenZipArchiveFont (FcPattern *pattern, const char *path);
 	
 	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
@@ -130,7 +132,7 @@ public:
 	void ref ();
 	void unref ();
 	
-	static TextFont *Load (FcPattern *pattern, const char *name);
+	static TextFont *Load (FcPattern *pattern, bool fromFile, const char *name);
 	
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
 	GlyphInfo *GetGlyphInfoByIndex (uint32_t index);

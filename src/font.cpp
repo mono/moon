@@ -13,10 +13,18 @@
 #endif
 
 #include <glib.h>
+#include <glib/gstdio.h>
+
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
+#include "zip/unzip.h"
 #include "moon-path.h"
+#include "list.h"
 #include "font.h"
 
 #include FT_OUTLINE_H
@@ -34,12 +42,73 @@ struct GlyphBitmap {
 	int top;
 };
 
+struct FontStyleInfo {
+	int weight;
+	int width;
+	int slant;
+};
+
+struct FontPackFile : public List::Node {
+	GPtrArray *faces;
+	char *path;
+	
+	FontPackFile (const char *path);
+	~FontPackFile ();
+};
+
+struct FontPackFileFace {
+	FontPackFile *file;
+	FontStyleInfo style;
+	char *family_name;
+	int index;
+	
+	FontPackFileFace (FontPackFile *file, FT_Face face);
+	
+	~FontPackFileFace ()
+	{
+		g_free (family_name);
+	}
+};
+
+struct FontPack {
+	List *fonts;
+	char *key;
+	char *dir;
+	
+	FontPack (const char *key)
+	{
+		this->key = g_strdup (key);
+		fonts = new List ();
+		dir = NULL;
+	}
+	
+	~FontPack ()
+	{
+		delete fonts;
+		
+		if (dir != NULL) {
+			g_rmdir (dir);
+			g_free (dir);
+		}
+		
+		g_free (key);
+	}
+	
+	void CacheFileInfo (const char *filename, FT_Face face);
+};
 
 static GHashTable *font_cache = NULL;
+static GHashTable *fontpacks = NULL;
 static bool initialized = false;
 static FT_Library libft2;
 static double dpi;
 
+
+static void
+fontpack_delete (FontPack *pack)
+{
+	delete pack;
+}
 
 void
 font_init (void)
@@ -56,6 +125,8 @@ font_init (void)
 	
 	font_cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
 	
+	fontpacks = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) fontpack_delete);
+	
 	pattern = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "Sans",
 				  FC_SIZE, FcTypeDouble, 10.0, NULL);
 	
@@ -65,6 +136,20 @@ font_init (void)
 	FcPatternDestroy (pattern);
 	
 	initialized = true;
+}
+
+void
+font_shutdown (void)
+{
+	if (!initialized)
+		return;
+	
+	g_hash_table_destroy (font_cache);
+	g_hash_table_destroy (fontpacks);
+	
+	FT_Done_FreeType (libft2);
+	
+	initialized = false;
 }
 
 static int
@@ -134,6 +219,129 @@ fc_stretch (FontStretches stretch)
 	}
 }
 
+
+static struct {
+	const char *name;
+	int value;
+} style_weights[] = {
+	{ "Ultra Light", FC_WEIGHT_ULTRALIGHT },
+	{ "Light",       FC_WEIGHT_LIGHT      },
+	{ "Semi Bold",   FC_WEIGHT_DEMIBOLD   },
+	{ "Ultra Bold",  FC_WEIGHT_ULTRABOLD  },
+	{ "Medium",      FC_WEIGHT_MEDIUM     },
+	{ "Bold",        FC_WEIGHT_BOLD       },
+	{ "Black",       FC_WEIGHT_BLACK      }
+};
+
+static int
+style_weight_parse (const char *style)
+{
+	unsigned int i;
+	
+	if (style) {
+		for (i = 0; i < G_N_ELEMENTS (style_weights); i++) {
+			if (strstr (style, style_weights[i].name))
+				return style_weights[i].value;
+		}
+	}
+	
+	return FC_WEIGHT_NORMAL;
+}
+
+static struct {
+	const char *name;
+	int value;
+} style_widths[] = {
+	{ "Ultra Condensed", FC_WIDTH_ULTRACONDENSED },
+	{ "Extra Condensed", FC_WIDTH_EXTRACONDENSED },
+	{ "Semi Condensed",  FC_WIDTH_SEMICONDENSED  },
+	{ "Condensed",       FC_WIDTH_CONDENSED      },
+	{ "Ultra Expanded",  FC_WIDTH_ULTRAEXPANDED  },
+	{ "Extra Expanded",  FC_WIDTH_EXTRAEXPANDED  },
+	{ "Semi Expanded",   FC_WIDTH_SEMIEXPANDED   },
+	{ "Expanded",        FC_WIDTH_EXPANDED       }
+};
+
+static int
+style_width_parse (const char *style)
+{
+	unsigned int i;
+	
+	if (style) {
+		for (i = 0; i < G_N_ELEMENTS (style_widths); i++) {
+			if (strstr (style, style_widths[i].name))
+				return style_widths[i].value;
+		}
+	}
+	
+	return FC_WIDTH_NORMAL;
+}
+
+static struct {
+	const char *name;
+	int value;
+} style_slants[] = {
+	{ "Oblique", FC_SLANT_OBLIQUE },
+	{ "Italic",  FC_SLANT_ITALIC  }
+};
+
+static int
+style_slant_parse (const char *style)
+{
+	unsigned int i;
+	
+	if (style) {
+		for (i = 0; i < G_N_ELEMENTS (style_slants); i++) {
+			if (strstr (style, style_slants[i].name))
+				return style_slants[i].value;
+		}
+	}
+	
+	return FC_SLANT_ROMAN;
+}
+
+static void
+style_info_parse (const char *style, FontStyleInfo *info)
+{
+	info->weight = style_weight_parse (style);
+	info->width = style_width_parse (style);
+	info->slant = style_slant_parse (style);
+}
+
+static const char *
+style_name (FontStyleInfo *style, char *namebuf)
+{
+	char *p;
+	uint i;
+	
+	strcpy (namebuf, "Regular");
+	p = namebuf;
+	
+	for (i = 0; i < G_N_ELEMENTS (style_widths); i++) {
+		if (style_widths[i].value == style->width) {
+			p = g_stpcpy (p, style_widths[i].name);
+			break;
+		}
+	}
+	
+	for (i = 0; i < G_N_ELEMENTS (style_weights); i++) {
+		if (style_weights[i].value == style->weight) {
+			p = g_stpcpy (p, style_weights[i].name);
+			break;
+		}
+	}
+	
+	for (i = 0; i < G_N_ELEMENTS (style_slants); i++) {
+		if (style_slants[i].value == style->slant) {
+			p = g_stpcpy (p, style_slants[i].name);
+			break;
+		}
+	}
+	
+	return namebuf;
+}
+
+
 static const FT_Matrix invert_y = {
         65535, 0,
         0, -65535,
@@ -142,56 +350,432 @@ static const FT_Matrix invert_y = {
 
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
 
-TextFont::TextFont (FcPattern *pattern, const char *name)
+static bool
+mktmpname (char *buf, size_t sz, const char *base)
 {
-	FcChar8 *filename = NULL;
-	FcPattern *matched, *sans;
-	bool retried = false;
+	char *outend = buf + (sz - 8);
+	const char *inptr = base;
+	char *outptr = buf;
+	
+	if (sz < 8)
+		return false;
+	
+	while (*inptr && outptr < outend)
+		*outptr++ = *inptr++;
+	
+	strcpy (outptr, ".XXXXXX");
+	
+	return true;
+}
+
+static bool
+ExtractFile (unzFile zip, int fd)
+{
+	int nwritten, nread;
+	char buf[4096];
+	ssize_t n;
+	
+	do {
+		n = 0;
+		if ((nread = unzReadCurrentFile (zip, buf, sizeof (buf))) > 0) {
+			nwritten = 0;
+			
+			do {
+				do {
+					n = write (fd, buf + nwritten, nread - nwritten);
+				} while (n == -1 && errno == EINTR);
+				
+				if (n == -1)
+					break;
+				
+				nwritten += n;
+			} while (nwritten < nread);
+			
+			if (n == -1)
+				break;
+		}
+	} while (nread > 0);
+	
+	if (nread != 0 || n == -1 || fsync (fd) == -1) {
+		close (fd);
+		
+		return false;
+	}
+	
+	close (fd);
+	
+	return true;
+}
+
+static char *
+my_mkdtemp (char *tmpdir)
+{
+	char *path, *xxx;
+	size_t n;
+	
+	if ((n = strlen (tmpdir)) < 6)
+		return NULL;
+	
+	xxx = tmpdir + (n - 6);
+	if (strcmp (xxx, "XXXXXX") != 0)
+		return NULL;
+	
+	do {
+		if (!(path = mktemp (tmpdir)))
+			return NULL;
+		
+		if (g_mkdir_with_parents (tmpdir, 0700) != -1)
+			break;
+		
+		if (errno != EEXIST) {
+			// don't bother trying again...
+			return NULL;
+		}
+		
+		// that path already exists, try a new one...
+		strcpy (xxx, "XXXXXX");
+	} while (1);
+	
+	return tmpdir;
+}
+
+FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face)
+{
+	style_info_parse (face->style_name, &style);
+	family_name = g_strdup (face->family_name);
+	index = face->face_index;
+	this->file = file;
+}
+
+FontPackFile::FontPackFile (const char *path)
+{
+	this->path = g_strdup (path);
+	faces = NULL;
+}
+
+FontPackFile::~FontPackFile ()
+{
+	if (faces != NULL) {
+		FontPackFileFace *face;
+		
+		for (uint i = 0; i < faces->len; i++) {
+			face = (FontPackFileFace *) faces->pdata[i];
+			delete face;
+		}
+		
+		g_ptr_array_free (faces, true);
+	}
+	
+	unlink (path);
+}
+
+void
+FontPack::CacheFileInfo (const char *filename, FT_Face face)
+{
+	int i = 0, nfaces = face->num_faces;
+	FontPackFileFace *fface;
+	FontPackFile *file;
+	
+	file = new FontPackFile (filename);
+	file->faces = g_ptr_array_new ();
+	
+	do {
+		if (i > 0 && FT_New_Face (libft2, filename, i, &face) != 0)
+			break;
+		
+		fface = new FontPackFileFace (file, face);
+		g_ptr_array_add (file->faces, fface);
+		
+		FT_Done_Face (face);
+		i++;
+	} while (i < nfaces);
+	
+	fonts->Append (file);
+}
+
+static FontPack *
+ExtractFontPack (const char *path)
+{
+	FontPack *pack = NULL;
+	char filename[256];
+	unz_file_info info;
+	GString *packdir;
+	const char *name;
+	FT_Face face;
+	unzFile zip;
+	size_t n;
+	int fd;
+	
+	if (!(zip = unzOpen (path))) {
+		// guess it's not a zip archive, afterall.
+		return NULL;
+	}
+	
+	if (unzGoToFirstFile (zip) != UNZ_OK) {
+		unzClose (zip);
+		return NULL;
+	}
+	
+	// get the zip file's base name
+	if (!(name = strrchr (path, '/')))
+		name = path;
+	else
+		name++;
+	
+	// create a tmpdir to extract the fonts to
+	packdir = g_string_new (g_get_tmp_dir ());
+	g_string_append_c (packdir, '/');
+	g_string_append (packdir, name);
+	g_string_append (packdir, ".XXXXXX");
+	
+	if (!my_mkdtemp (packdir->str)) {
+		g_string_free (packdir, true);
+		unzClose (zip);
+		return NULL;
+	}
+	
+	g_string_append_c (packdir, '/');
+	n = packdir->len;
+	
+	do {
+		if (unzOpenCurrentFile (zip) != UNZ_OK)
+			break;
+		
+		unzGetCurrentFileInfo (zip, &info, filename, sizeof (filename),
+				       NULL, 0, NULL, 0);
+		
+		d(fprintf (stderr, "\t\t* extracting %s...\n", filename));
+		
+		g_string_append (packdir, filename);
+		
+		// we first try using the file's original name...
+		fd = open (packdir->str, O_WRONLY | O_CREAT | O_EXCL, 0600);
+		if (fd == -1 && errno == EEXIST) {
+			// there must be several files in the archive with the same name?
+			g_string_append (packdir, ".XXXXXX");
+			fd = g_mkstemp (packdir->str);
+		}
+		
+		if (fd != -1) {
+			if (ExtractFile (zip, fd) && FT_New_Face (libft2, packdir->str, 0, &face) == 0) {
+				// this is a valid font file...
+				if (pack == NULL)
+					pack = new FontPack (path);
+				
+				// cache font info
+				pack->CacheFileInfo (packdir->str, face);
+			} else {
+				// failed to extract or not a font file, delete it
+				unlink (packdir->str);
+			}
+		}
+		
+		g_string_truncate (packdir, n);
+		unzCloseCurrentFile (zip);
+	} while (unzGoToNextFile (zip) == UNZ_OK);
+	
+	unzClose (zip);
+	
+	if (pack == NULL) {
+		g_rmdir (packdir->str);
+		g_string_free (packdir, true);
+		return NULL;
+	}
+	
+	g_string_truncate (packdir, n);
+	pack->dir = packdir->str;
+	
+	g_string_free (packdir, false);
+	
+	return pack;
+}
+
+
+struct FontFaceSimilarity {
+	FontPackFileFace *face;
+	int weight;
+	int width;
+	int slant;
+};
+
+
+bool
+TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path)
+{
+	char stylebuf1[128], stylebuf2[128];
+	FontFaceSimilarity similar;
+	FontPackFileFace *fface;
+	FcChar8 *family_name;
+	FontStyleInfo style;
+	FontPackFile *file;
+	FontPack *pack;
+	uint i;
+	
+	if (FcPatternGetString (pattern, FC_FAMILY, 0, &family_name) != FcResultMatch)
+		return false;
+	
+	if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &style.weight) != FcResultMatch)
+		return false;
+	
+	if (FcPatternGetInteger (pattern, FC_WIDTH, 0, &style.width) != FcResultMatch)
+		return false;
+	
+	if (FcPatternGetInteger (pattern, FC_SLANT, 0, &style.slant) != FcResultMatch)
+		return false;
+	
+	if (!(pack = (FontPack *) g_hash_table_lookup (fontpacks, path))) {
+		d(fprintf (stderr, "\t* opening zip archive...\n"));
+		if (!(pack = ExtractFontPack (path)))
+			return false;
+		
+		g_hash_table_insert (fontpacks, pack->key, pack);
+	} else {
+		d(fprintf (stderr, "\t* reusing an extracted zip archive...\n"));
+	}
+	
+	similar.weight = INT_MAX;
+	similar.width = INT_MAX;
+	similar.slant = INT_MAX;
+	similar.face = NULL;
+	
+	file = (FontPackFile *) pack->fonts->First ();
+	while (file != NULL) {
+		for (i = 0; i < file->faces->len; i++) {
+			fface = (FontPackFileFace *) file->faces->pdata[i];
+			if (!fface->family_name)
+				continue;
+			
+			d(fprintf (stderr, "\t\t* checking if '%s' matches '%s'... ", fface->family_name, family_name));
+			if (strcmp ((const char *) family_name, fface->family_name) != 0) {
+				d(fprintf (stderr, "no\n"));
+				continue;
+			}
+			
+			d(fprintf (stderr, "yes\n\t\t* checking if '%s' matches '%s'... ",
+				   style_name (&fface->style, stylebuf1), style_name (&style, stylebuf2)));
+			
+			if (fface->style.weight == style.weight &&
+			    fface->style.width == style.width &&
+			    fface->style.slant == style.slant) {
+				// found an exact match
+				d(fprintf (stderr, "yes\n"));
+				goto found;
+			}
+			
+			// not an exact match, but similar...
+			if (abs (fface->style.weight - style.weight) < similar.weight &&
+			    abs (fface->style.width - style.width) < similar.width &&
+			    abs (fface->style.slant - style.slant) < similar.slant) {
+				d(fprintf (stderr, "no, but is the closest match so far\n"));
+				similar.weight = abs (fface->style.weight - style.weight);
+				similar.width = abs (fface->style.width - style.width);
+				similar.slant = abs (fface->style.slant - style.slant);
+				similar.face = fface;
+			} else {
+				d(fprintf (stderr, "no\n"));
+			}
+		}
+		
+		file = (FontPackFile *) file->next;
+	}
+	
+	// we were unable to find an exact match...
+	
+	if (similar.face == NULL) {
+		// no similar fonts, I guess we just fail?
+		return false;
+	}
+	
+	// use the closest match...
+	file = similar.face->file;
+	fface = similar.face;
+	
+found:
+	
+	d(fprintf (stderr, "\t\t* using font '%s, %s'\n", fface->family_name, style_name (&fface->style, stylebuf1)));
+	
+	return FT_New_Face (libft2, file->path, fface->index, &face) == 0;
+}
+
+TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *name)
+{
+	const char *fallback_fonts[] = { "Lucida Sans Unicode", "Lucida Sans", "Sans" };
+	FcChar8 *family = NULL, *filename = NULL;
+	FcPattern *matched, *fallback;
+	uint attempt = 0;
 	FcResult result;
+	FT_Error err;
 	double size;
 	int id;
 	
-	d(fprintf (stderr, "Attempting to load %s\n", name));
+	d(fprintf (stderr, "\nAttempting to load %s\n", name));
 	
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
 	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
 	FcPatternReference (pattern);
 	matched = pattern;
 	
-	while (true) {
+	do {
 		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 			goto fail;
-		
-		d(fprintf (stderr, "\t* loading font from `%s'\n", filename));
 		
 		if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 			goto fail;
 		
-		d(fprintf (stderr, "\t* using font index=%d\n", id));
-		
-		if (FT_New_Face (libft2, (const char *) filename, id, &face) == 0)
+		d(fprintf (stderr, "\t* loading font from `%s' (index=%d)... ", filename, id));
+		if ((err = FT_New_Face (libft2, (const char *) filename, id, &face)) == 0) {
+			d(fprintf (stderr, "success!\n"));
 			break;
+		} else {
+			d(fprintf (stderr, "failed :(\n"));
+		}
+		
+		if (fromFile && err == FT_Err_Unknown_File_Format) {
+			// fromFile indicates that an absolute path was given...
+			// check if it is a zipped font collection.
+			if (OpenZipArchiveFont (pattern, (const char *) filename)) {
+				d(fprintf (stderr, "\t* success!\n"));
+				break;
+			}
+			
+			fromFile = false;
+			
+			// We couldn't find the font in the zip archive, but if the pattern
+			// has a family specified then try checking if we have a font that
+			// matches it on the system.
+			if (FcPatternGetString (matched, FC_FAMILY, 0, &family) == FcResultMatch) {
+				d(fprintf (stderr, "\t* falling back to specified family, %s...\n", family));
+				fallback = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, family,
+							   FC_PIXEL_SIZE, FcTypeDouble, size,
+							   FC_DPI, FcTypeDouble, dpi, NULL);
+				
+				FcPatternDestroy (matched);
+				matched = FcFontMatch (NULL, fallback, &result);
+				FcPatternDestroy (fallback);
+				filename = NULL;
+				continue;
+			}
+		}
 		
 	fail:
 		d(fprintf (stderr, "\t* failed.\n"));
 		
-		if (retried) {
-			face = NULL;
-			break;
+		if (attempt < G_N_ELEMENTS (fallback_fonts)) {
+			d(fprintf (stderr, "\t* falling back to %s...\n", fallback_fonts[attempt]));
+			
+			fallback = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, fallback_fonts[attempt],
+						   FC_PIXEL_SIZE, FcTypeDouble, size,
+						   FC_DPI, FcTypeDouble, dpi, NULL);
+			
+			FcPatternDestroy (matched);
+			matched = FcFontMatch (NULL, fallback, &result);
+			FcPatternDestroy (fallback);
+			filename = NULL;
 		}
 		
-		d(fprintf (stderr, "\t* falling back to Sans...\n"));
-		
-		sans = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "sans",
-				       FC_PIXEL_SIZE, FcTypeDouble, size,
-				       FC_DPI, FcTypeDouble, dpi, NULL);
-		
-		FcPatternDestroy (matched);
-		matched = FcFontMatch (NULL, sans, &result);
-		FcPatternDestroy (sans);
-		filename = NULL;
-		retried = true;
-	}
+		face = NULL;
+		attempt++;
+	} while (attempt <= G_N_ELEMENTS (fallback_fonts));
 	
 	FcPatternDestroy (matched);
 	
@@ -239,7 +823,7 @@ TextFont::~TextFont ()
 }
 
 TextFont *
-TextFont::Load (FcPattern *pattern, const char *name)
+TextFont::Load (FcPattern *pattern, bool fromFile, const char *name)
 {
 	TextFont *font;
 	
@@ -248,7 +832,7 @@ TextFont::Load (FcPattern *pattern, const char *name)
 		return font;
 	}
 	
-	return new TextFont (pattern, name);
+	return new TextFont (pattern, fromFile, name);
 }
 
 void
@@ -739,7 +1323,9 @@ TextFontDescription::CreatePattern ()
 	if (set & FontMaskFilename) {
 		FcPatternAddString (pattern, FC_FILE, (FcChar8 *) filename);
 		FcPatternAddInteger (pattern, FC_INDEX, index);
-	} else {
+	}
+	
+	if (!(set & FontMaskFilename) || (set & FontMaskFamily)) {
 		families = g_strsplit (GetFamily (), ",", -1);
 		for (i = 0; families[i]; i++)
 			FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) g_strstrip (families[i]));
@@ -779,7 +1365,7 @@ TextFontDescription::GetFont ()
 	if (font == NULL) {
 		d(name = ToString ());
 		pattern = CreatePattern ();
-		font = TextFont::Load (pattern, name);
+		font = TextFont::Load (pattern, (set & FontMaskFilename), name);
 		FcPatternDestroy (pattern);
 		d(g_free (name));
 	}
