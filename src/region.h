@@ -15,9 +15,9 @@
 #include "rect.h"
 
 class Region {
-public:
 	GdkRegion *gdkregion;
 
+public:
 	Region ();
 	Region (Rect rect);
 	Region (GdkRegion *region);
@@ -40,6 +40,8 @@ public:
 	void Subtract (Rect rect);
 
 	void GetRectangles (GdkRectangle **rects, int *count);
+
+	void Offset (int dx, int dy);
 
 	Rect ClipBox ();
 	GdkOverlapType RectIn (Rect rect);

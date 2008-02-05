@@ -106,6 +106,12 @@ Region::Subtract (Rect rect)
 }
 
 void
+Region::Offset (int dx, int dy)
+{
+	gdk_region_offset (gdkregion, dx, dy);
+}
+
+void
 Region::GetRectangles (GdkRectangle **rects, int *count)
 {
 	gdk_region_get_rectangles (gdkregion, rects, count);
