@@ -1,5 +1,13 @@
 2008-02-05  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.h, plugin.cpp: add a label to the properties dialog that
+	shows the fps message.
+
+	* plugin-debug.cpp (selection_changed): invalidate a large enough
+	rectangle so that the selection disappears.
+
+2008-02-05  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (libmoonplugin_la_SOURCES): add plugin-debug.h/cpp
 
 	* plugin-debug.h, plugin.cpp: for now, just a gtk treeview with a

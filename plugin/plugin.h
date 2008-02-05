@@ -42,6 +42,8 @@ class PluginInstance
 
 	bool windowless;
 
+	GtkWidget *properties_fps_label;
+
 	//
 	// The XAML loader, contains a handle to a MonoObject *
 	//
@@ -63,7 +65,8 @@ class PluginInstance
 	void SetPageURL ();
 	
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
-	
+	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
+
  public:
 	PluginInstance (NPP instance, uint16_t mode);
 	~PluginInstance ();

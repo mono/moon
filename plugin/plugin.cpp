@@ -196,6 +196,13 @@ show_fps (GtkToggleButton *checkbox, gpointer user_data)
 }
 
 void
+PluginInstance::properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin)
+{
+	plugin->properties_fps_label = NULL;
+	gtk_widget_destroy (dialog);
+}
+
+void
 PluginInstance::Properties ()
 {
 	GtkWidget *dialog, *table, *checkbox;
@@ -214,7 +221,7 @@ PluginInstance::Properties ()
 	gtk_box_pack_start (vbox, title ("Properties"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
 	
-	table = gtk_table_new (9, 2, TRUE);
+	table = gtk_table_new (11, 2, TRUE);
 	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
 	
 	table_add (table, "Source:", 0, row++);
@@ -234,6 +241,11 @@ PluginInstance::Properties ()
 	table_add (table, xaml_loader == NULL ? "(Unknown)" : (xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)"), 1, row++);
 	table_add (table, windowless ? "yes" : "no", 1, row++);
 	
+	row++;
+	properties_fps_label = gtk_label_new ("");
+	gtk_misc_set_alignment (GTK_MISC (properties_fps_label), 0.0, 0.5);
+	gtk_table_attach (GTK_TABLE(table), properties_fps_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
+
 	// Runtime debug options
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
@@ -257,8 +269,8 @@ PluginInstance::Properties ()
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_FPS);
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (show_fps), NULL);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	g_signal_connect_swapped (dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
+
+	g_signal_connect (dialog, "response", G_CALLBACK (properties_dialog_response), this);
 	gtk_widget_show_all (dialog);
 }
 
@@ -267,6 +279,8 @@ PluginInstance::PluginInstance (NPP instance, uint16_t mode)
 	this->mode = mode;
 	this->instance = instance;
 	this->window = NULL;
+
+	this->properties_fps_label = NULL;
 
 	this->rootobject = NULL;
 
@@ -467,6 +481,11 @@ PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *use
 			       nframes, nsecs, nframes / nsecs);
 	
 	NPN_Status (plugin->instance, msg);
+
+	if (plugin->properties_fps_label) {
+		gtk_label_set_text (GTK_LABEL (plugin->properties_fps_label), msg);
+	}
+
 	g_free (msg);
 }
 

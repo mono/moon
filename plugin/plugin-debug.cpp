@@ -41,8 +41,9 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 	UIElement *el;
 
 	if (plugin->surface->debug_selected_element) {
-	  plugin->surface->debug_selected_element->Invalidate ();
-		plugin->surface->debug_selected_element->unref ();
+		UIElement *el = plugin->surface->debug_selected_element;
+		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
+		el->unref ();
 		plugin->surface->debug_selected_element = NULL;
 	}
 
@@ -58,7 +59,7 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 
 	if (el) {
 		printf ("%p selected, name = %s, type = %s\n", el, el->GetName(), el->GetTypeName());
-		el->Invalidate ();
+		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
 		el->ref ();
 		plugin->surface->debug_selected_element = el;
 	}
