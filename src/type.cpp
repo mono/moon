@@ -305,7 +305,7 @@ types_init_manually (void)
 	Type::RegisterType ("SystemTimeSource", Type::SYSTEMTIMESOURCE, Type::TIMESOURCE);
 	Type::RegisterType ("TimeManager", Type::TIMEMANAGER, Type::EVENTOBJECT);
 	Type::RegisterType ("Surface", Type::SURFACE, Type::EVENTOBJECT);
-#if DEBUG
+#if 0 && DEBUG
 	for (int i = 1; i < Type::LASTTYPE; i++) {
 		if (Type::types [i] != NULL)
 			continue;
