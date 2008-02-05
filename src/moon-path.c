@@ -595,8 +595,8 @@ moon_get_origin (moon_path *path, double *ox, double *oy)
 		}
 	}
 
-	if (*ox) *ox = x;
-	if (*oy) *oy = y;
+	if (ox) *ox = x;
+	if (oy) *oy = y;
 }
 
 /**
