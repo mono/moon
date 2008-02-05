@@ -156,7 +156,7 @@ Downloader::GetResponseText (const char *PartName, uint64_t *size)
 char *
 Downloader::ll_downloader_get_response_file (const char *PartName)
 {
-	char *tmpname = NULL;
+	char *name, *tmpname = NULL;
 	unzFile zipfile;
 	int fd;
 	
@@ -177,22 +177,34 @@ Downloader::ll_downloader_get_response_file (const char *PartName)
 		return NULL;
 	}
 	
-	// create a tmp file...
-	tmpname = g_build_filename (g_get_tmp_dir (), "MoonlightDownloaderStream.XXXXXX", NULL);
-	if ((fd = g_mkstemp (tmpname)) == -1) {
+	// open the requested part within the zip file
+	if (unzOpenCurrentFile (zipfile) != UNZ_OK) {
 		unzClose (zipfile);
-		g_free (tmpname);
 		return NULL;
+	}
+	
+	// create a tmp file...
+	name = g_strdup_printf ("%s.XXXXXX", PartName);
+	tmpname = g_build_filename (g_get_tmp_dir (), name, NULL);
+	g_free (name);
+	
+	if ((fd = g_mkstemp (tmpname)) == -1) {
+		g_free (tmpname);
+		tmpname = NULL;
+		goto done;
 	}
 	
 	// extract the file from the zip archive... (closes the fd on success and fail)
 	if (!ExtractFile (zipfile, fd)) {
-		unzClose (zipfile);
 		unlink (tmpname);
 		g_free (tmpname);
-		return NULL;
+		tmpname = NULL;
+		goto done;
 	}
 	
+done:
+	
+	unzCloseCurrentFile (zipfile);
 	unzClose (zipfile);
 	
 	return tmpname;
