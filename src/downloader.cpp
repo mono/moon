@@ -33,18 +33,23 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
+
 #include <config.h>
-#include <string.h>
+
 #include <gtk/gtk.h>
-#include <malloc.h>
-#include <glib.h>
+
 #include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+
 #include "downloader.h"
 #include "zip/unzip.h"
+#include "utils.h"
 
 //
 // Downloader
@@ -151,74 +156,43 @@ Downloader::GetResponseText (const char *PartName, uint64_t *size)
 char *
 Downloader::ll_downloader_get_response_file (const char *PartName)
 {
-	char buffer[32 * 1024];
 	char *tmpname = NULL;
-	FILE *fp;
+	unzFile zipfile;
 	int fd;
 	
 	if (filename == NULL)
 		return NULL;
-
+	
 	// Null or empty, get the original file.
 	if (PartName == NULL || *PartName == 0)
 		return g_strdup (filename);
-
-	//
-	// Open zip file
-	//
-	unzFile zipfile = unzOpen (filename);
-	if (zipfile == NULL)
+	
+	// open the zip archive...
+	if (!(zipfile = unzOpen (filename)))
 		return NULL;
-
-	if (unzLocateFile (zipfile, PartName, 0) != UNZ_OK)
-		goto leave;
-
-	if (unzOpenCurrentFile (zipfile) != UNZ_OK)
-		goto leave;
-
-	// 
-	// Create the file where the content is extracted
-	//
+	
+	// locate the file we want to extract...
+	if (unzLocateFile (zipfile, PartName, 0) != UNZ_OK) {
+		unzClose (zipfile);
+		return NULL;
+	}
+	
+	// create a tmp file...
 	tmpname = g_build_filename (g_get_tmp_dir (), "MoonlightDownloaderStream.XXXXXX", NULL);
 	if ((fd = g_mkstemp (tmpname)) == -1) {
+		unzClose (zipfile);
 		g_free (tmpname);
-		tmpname = NULL;
-		goto leave1;
+		return NULL;
 	}
 	
-	if (!(fp = fdopen (fd, "w"))) {
+	// extract the file from the zip archive... (closes the fd on success and fail)
+	if (!ExtractFile (zipfile, fd)) {
+		unzClose (zipfile);
 		unlink (tmpname);
 		g_free (tmpname);
-		tmpname = NULL;
-		close (fd);
-		goto leave1;
+		return NULL;
 	}
 	
-	int n;
-	do {
-		n = unzReadCurrentFile (zipfile, buffer, sizeof (buffer));
-		if (n < 0) {
-			unlink (tmpname);
-			g_free (tmpname);
-			tmpname = NULL;
-			goto leave2;
-		}
-		
-		if (n != 0 && fwrite (buffer, n, 1, fp) != 1) {
-			unlink (tmpname);
-			g_free (tmpname);
-			tmpname = NULL;
-			goto leave2;
-		}
-	} while (n > 0);
-	
-leave2:
-	fclose (fp);
-	
-leave1:
-	unzCloseCurrentFile (zipfile);
-	
-leave:
 	unzClose (zipfile);
 	
 	return tmpname;

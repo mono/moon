@@ -11,6 +11,7 @@
 #define __MOON_COLLECTION_H__
 
 #include "dependencyobject.h"
+#include "utils.h"
 #include "list.h"
 
 //

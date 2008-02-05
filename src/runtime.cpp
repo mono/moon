@@ -47,7 +47,7 @@
 #include "xaml.h"
 #include "dirty.h"
 #include "fullscreen.h"
-#include "garray-ext.h"
+#include "utils.h"
 
 
 //#define DEBUG_INVALIDATE 1

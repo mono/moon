@@ -11,7 +11,6 @@
 
 #include <gtk/gtk.h>
 
-#include "garray-ext.h"
 #include "collection.h"
 #include "panel.h"
 #include "geometry.h"
@@ -19,6 +18,7 @@
 #include "transform.h"
 #include "trigger.h"
 #include "namescope.h"
+#include "utils.h"
 
 Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {

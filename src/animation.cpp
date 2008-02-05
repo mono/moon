@@ -18,10 +18,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "garray-ext.h"
 #include "animation.h"
 #include "color.h"
 #include "runtime.h"
+#include "utils.h"
 
 #define LERP(f,t,p) ((f) + ((t) - (f)) * (p))
 

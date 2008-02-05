@@ -24,6 +24,7 @@
 
 #include "zip/unzip.h"
 #include "moon-path.h"
+#include "utils.h"
 #include "list.h"
 #include "font.h"
 
@@ -31,6 +32,14 @@
 
 
 #define d(x) x
+
+
+static const FT_Matrix invert_y = {
+        65535, 0,
+        0, -65535,
+};
+
+#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
 
 
 struct GlyphBitmap {
@@ -342,103 +351,6 @@ style_name (FontStyleInfo *style, char *namebuf)
 }
 
 
-static const FT_Matrix invert_y = {
-        65535, 0,
-        0, -65535,
-};
-
-
-#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
-
-static bool
-mktmpname (char *buf, size_t sz, const char *base)
-{
-	char *outend = buf + (sz - 8);
-	const char *inptr = base;
-	char *outptr = buf;
-	
-	if (sz < 8)
-		return false;
-	
-	while (*inptr && outptr < outend)
-		*outptr++ = *inptr++;
-	
-	strcpy (outptr, ".XXXXXX");
-	
-	return true;
-}
-
-static bool
-ExtractFile (unzFile zip, int fd)
-{
-	int nwritten, nread;
-	char buf[4096];
-	ssize_t n;
-	
-	do {
-		n = 0;
-		if ((nread = unzReadCurrentFile (zip, buf, sizeof (buf))) > 0) {
-			nwritten = 0;
-			
-			do {
-				do {
-					n = write (fd, buf + nwritten, nread - nwritten);
-				} while (n == -1 && errno == EINTR);
-				
-				if (n == -1)
-					break;
-				
-				nwritten += n;
-			} while (nwritten < nread);
-			
-			if (n == -1)
-				break;
-		}
-	} while (nread > 0);
-	
-	if (nread != 0 || n == -1 || fsync (fd) == -1) {
-		close (fd);
-		
-		return false;
-	}
-	
-	close (fd);
-	
-	return true;
-}
-
-static char *
-my_mkdtemp (char *tmpdir)
-{
-	char *path, *xxx;
-	size_t n;
-	
-	if ((n = strlen (tmpdir)) < 6)
-		return NULL;
-	
-	xxx = tmpdir + (n - 6);
-	if (strcmp (xxx, "XXXXXX") != 0)
-		return NULL;
-	
-	do {
-		if (!(path = mktemp (tmpdir)))
-			return NULL;
-		
-		if (g_mkdir_with_parents (tmpdir, 0700) != -1)
-			break;
-		
-		if (errno != EEXIST) {
-			// don't bother trying again...
-			return NULL;
-		}
-		
-		// that path already exists, try a new one...
-		strcpy (xxx, "XXXXXX");
-	} while (1);
-	
-	return tmpdir;
-}
-
 FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face)
 {
 	style_info_parse (face->style_name, &style);
@@ -528,7 +440,7 @@ ExtractFontPack (const char *path)
 	g_string_append (packdir, name);
 	g_string_append (packdir, ".XXXXXX");
 	
-	if (!my_mkdtemp (packdir->str)) {
+	if (!make_tmpdir (packdir->str)) {
 		g_string_free (packdir, true);
 		unzClose (zip);
 		return NULL;

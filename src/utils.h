@@ -1,5 +1,5 @@
 /*
- * garray-ext.h: 
+ * utils.h: 
  *
  * Author: Jeffrey Stedfast <fejj@novell.com>
  *
@@ -14,9 +14,15 @@
 
 #include <glib.h>
 
+#include "zip/unzip.h"
+
 G_BEGIN_DECLS
 
 void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
+
+bool ExtractFile (unzFile zip, int fd);
+
+char *make_tmpdir (char *tmpdir);
 
 G_END_DECLS
 

@@ -29,7 +29,6 @@ libmooninclude_headers = \
 	font.h		\
 	frameworkelement.h \
 	fullscreen.h	\
-	garray-ext.h	\
 	geometry.h	\
 	list.h		\
 	mango.h		\
@@ -54,6 +53,7 @@ libmooninclude_headers = \
 	type.h		\
 	uielement.h	\
 	uri.h		\
+	utils.h		\
 	value.h		\
 	visual.h	\
 	xaml.h		\
@@ -83,7 +83,6 @@ libmoon_la_SOURCES = 	\
 	eventargs.cpp	\
 	font.cpp	\
 	frameworkelement.cpp	\
-	garray-ext.cpp	\
 	geometry.cpp	\
 	list.cpp	\
 	mango.cpp	\
@@ -108,6 +107,7 @@ libmoon_la_SOURCES = 	\
 	type.cpp	\
 	uielement.cpp	\
 	uri.cpp		\
+	utils.cpp	\
 	value.cpp	\
 	visual.cpp	\
 	xaml.cpp	\

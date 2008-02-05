@@ -1,5 +1,15 @@
 2008-02-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp (Downloader::ll_downloader_get_response_file):
+	Simplified by using the new ExtractFile utility function from
+	utils.cpp.
+
+	* font.cpp: Moved ExtractFile() and make_tmpdir() into utils.cpp
+
+	* utils.cpp: New collection of utility functions.
+
+2008-02-05  Jeffrey Stedfast  <fejj@novell.com>
+
 	* font.cpp: If a font is requested from a zip archive, extract the
 	contents and try to figure out which font is the closest match to
 	the one requested. Fixes bug #356044.
