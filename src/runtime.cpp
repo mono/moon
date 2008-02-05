@@ -197,6 +197,10 @@ Surface::Surface(int w, int h)
 	emittingMouseEvent = false;
 	pendingCapture = NULL;
 	pendingReleaseCapture = false;
+
+#ifdef DEBUG
+	debug_selected_element = NULL;
+#endif
 }
 
 Surface::~Surface ()
@@ -453,7 +457,7 @@ Surface::Paint (cairo_t *ctx, Region *region)
 	bool did_front_to_back = false;
 
 	List *render_list = new List ();
-	Region *copy = new Region (region->gdkregion);
+	Region *copy = new Region (region);
 
 	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
 		if (full_screen_message)
@@ -495,7 +499,7 @@ Surface::Paint (cairo_t *ctx, Region *region)
 		delete render_list;
 		delete copy;
 	}
-	
+
 	if (!did_front_to_back) {
 		toplevel->DoRender (ctx, region);
 
@@ -507,6 +511,23 @@ Surface::Paint (cairo_t *ctx, Region *region)
 #if FRONT_TO_BACK_STATS
 	printf ("UIElements rendered front-to-back: %d\n", uielements_rendered_front_to_back);
 	printf ("UIElements rendered back-to-front: %d\n", uielements_rendered_back_to_front);
+#endif
+
+#ifdef DEBUG
+		if (debug_selected_element) {
+			Rect bounds = debug_selected_element->GetSubtreeBounds();
+// 			printf ("debug_selected_element is %s\n", debug_selected_element->GetName());
+// 			printf ("bounds is %g %g %g %g\n", bounds.x, bounds.y, bounds.w, bounds.h);
+			cairo_save (ctx);
+			//RenderClipPath (ctx);
+			cairo_new_path (ctx);
+			cairo_identity_matrix (ctx);
+			cairo_set_source_rgba (ctx, 1.0, 0.5, 0.2, 1.0);
+			cairo_set_line_width (ctx, 1);
+			cairo_rectangle (ctx, bounds.x, bounds.y, bounds.w, bounds.h);
+			cairo_stroke (ctx);
+			cairo_restore (ctx);
+		}
 #endif
 }
 
@@ -898,7 +919,7 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	GdkPixmap *pixmap = gdk_pixmap_new (widget->window, MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
 	cairo_t *ctx = runtime_cairo_create (pixmap);
 	Region *region = new Region (event->region);
-	gdk_region_offset (region->gdkregion, -widget->allocation.x, -widget->allocation.y);
+	region->Offset (-widget->allocation.x, -widget->allocation.y);
 
 	cairo_surface_set_device_offset (cairo_get_target (ctx),
 					 widget->allocation.x - event->area.x, 

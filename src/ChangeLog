@@ -1,5 +1,11 @@
 2008-02-05  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h, runtime.cpp: add support for a "selected" element
+	when in debug mode.  Also, make use of the Region methods instead
+	of using region->gdkregion, which is private now.
+
+2008-02-05  Chris Toshok  <toshok@ximian.com>
+
 	* region.h, region.cpp (class Region): add Offset().
 
 2008-02-05  Sebastien Pouliot  <sebastien@ximian.com>

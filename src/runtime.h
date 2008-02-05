@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 #include "list.h"
 #include "downloader.h"
 
+
 #define FRONT_TO_BACK_STATS 0
 
 #define TIMERS 0
@@ -144,7 +145,11 @@ class Surface : public EventObject {
 	int uielements_rendered_front_to_back;
 	int uielements_rendered_back_to_front;
 #endif
-	
+
+#ifdef DEBUG
+	UIElement *debug_selected_element;
+#endif
+
 private:
 	gpointer downloader_context;
 	
