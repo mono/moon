@@ -185,6 +185,19 @@ GeometryGroup::ComputeBounds (Path *path)
 	return bounds;
 }
 
+Point
+Geometry::GetOriginPoint (Path *shape)
+{
+	double x = 0.0;
+	double y = 0.0;
+
+	if (!path || (path->cairo.num_data == 0))
+		Build (shape);
+
+	moon_get_origin (path, &x, &y);
+	return Point (x, y);
+}
+
 GeometryCollection*
 geometry_group_get_children (GeometryGroup *geometry_group)
 {
@@ -408,19 +421,13 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 }
 
 void
-PathGeometry::Draw (Path *shape, cairo_t *cr)
+PathGeometry::Build (Path *shape)
 {
-	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
-	Transform* transform = geometry_get_transform (this);
-	if (transform) {
-		cairo_matrix_t matrix;
-		transform->GetTransform (&matrix);
-		cairo_transform (cr, &matrix);
-	}
-
 	Value *v = GetValue (PathGeometry::FiguresProperty);
 	if (!v)
 		return;
+
+	path = moon_path_renew (path, 0);
 
 	PathFigureCollection *children = v->AsPathFigureCollection();
 	Collection::Node *node = (Collection::Node *) children->list->First ();
@@ -428,7 +435,7 @@ PathGeometry::Draw (Path *shape, cairo_t *cr)
 		PathFigure *pf = (PathFigure *) node->obj;
 		if (!pf->IsBuilt ())
 			pf->Build (shape);
-		cairo_append_path (cr, pf->GetCairoPath ());
+		moon_merge (path, pf->path);
 	}
 }
 
@@ -599,7 +606,6 @@ path_figure_new ()
 PathFigure::PathFigure ()
 {
 	path = NULL;
-	path_size = 0;
 	this->SetValue (PathFigure::SegmentsProperty, Value::CreateUnref (new PathSegmentCollection ()));
 }
 
@@ -638,7 +644,7 @@ PathFigure::Build (Path *shape)
 	PathSegmentCollection *children = GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection ();
 	Collection::Node *node;
 
-	path_size = MOON_PATH_MOVE_TO_LENGTH;
+	int path_size = MOON_PATH_MOVE_TO_LENGTH;
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathSegment *ps = (PathSegment *) node->obj;
@@ -670,7 +676,6 @@ PathFigure::ComputeBounds (Path *shape)
 		Build (shape);
 
 	return path_get_bounds (shape, &path->cairo);
-
 }
 
 bool

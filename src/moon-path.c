@@ -547,6 +547,89 @@ moon_close_path (moon_path *path)
 }
 
 /**
+ * moon_get_origin
+ * @path: a #moon_path
+ * @ox: a pointer to the double for the minimal X value of the path
+ * @oy: a pointer to the double for the minimal Y value of the path
+ *
+ * Get the origin point of the path.
+ **/
+void
+moon_get_origin (moon_path *path, double *ox, double *oy)
+{
+	int i = 0;
+	double x = 0.0, y = 0.0;
+	cairo_path_t *c_path;
+
+	g_return_if_fail (path != NULL);
+
+	c_path = &path->cairo;
+	for (; i < c_path->num_data; i+= c_path->data[i].header.length) {
+		cairo_path_data_t *data = &c_path->data[i];
+		switch (data->header.type) {
+		case CAIRO_PATH_CURVE_TO:
+			if (i == 0) {
+				x = data[1].point.x; 
+				y = data[1].point.y; 
+			} else {
+				x = MIN (x, data[1].point.x);
+				y = MIN (y, data[1].point.y);
+			}
+			x = MIN (x, data[2].point.x);
+			y = MIN (y, data[2].point.y);
+			x = MIN (x, data[3].point.x);
+			y = MIN (y, data[3].point.y);
+			break;
+		case CAIRO_PATH_LINE_TO:
+		case CAIRO_PATH_MOVE_TO:
+			if (i == 0) {
+				x = data[1].point.x; 
+				y = data[1].point.y; 
+			} else {
+				x = MIN (x, data[1].point.x);
+				y = MIN (y, data[1].point.y);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (*ox) *ox = x;
+	if (*oy) *oy = y;
+}
+
+/**
+ * moon_merge:
+ * @path: a #moon_path
+ * @subpath: the #moon_path to merge into path
+ *
+ * Merge 'subpath' into 'path'.
+ **/
+void
+moon_merge (moon_path *path, moon_path *subpath)
+{
+	cairo_path_data_t *data = path->cairo.data;
+	int pos = path->cairo.num_data;
+	int n = 1;
+	
+	g_return_if_fail (path != NULL);
+	g_return_if_fail (subpath != NULL);
+	
+	if (!CHECK_SPACE (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH)) {
+		while (n < pos + subpath->cairo.num_data)
+			n <<= 1;
+		
+		data = g_realloc (data, sizeof (cairo_path_data_t) * n);
+		path->cairo.data = data;
+		path->allocated = n;
+	}
+
+	memcpy (&data [pos], subpath->cairo.data, subpath->cairo.num_data * sizeof (cairo_path_data_t));
+	path->cairo.num_data += subpath->cairo.num_data;
+}
+
+/**
  * cairo_path_display:
  * @path: a #cairo_path_t
  *

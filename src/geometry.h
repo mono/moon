@@ -53,6 +53,8 @@ class Geometry : public DependencyObject {
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path) { return Rect (0.0, 0.0, 0.0, 0.0); };
 
+	virtual Point GetOriginPoint (Path *path);
+
 	virtual bool IsFilled () { return true; };
 
 	virtual void Build (Path *path) {}
@@ -157,6 +159,8 @@ PathFigureCollection* path_figure_collection_new ();
 //
 /* @ContentProperty="Figures" */
 class PathGeometry : public Geometry {
+ protected:
+	virtual void Build (Path *path);
  public:
 	static DependencyProperty* FiguresProperty;
 
@@ -164,7 +168,6 @@ class PathGeometry : public Geometry {
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
-	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path);
 
 	// this is an element-by-element decision
@@ -216,13 +219,12 @@ PathSegmentCollection* path_segment_collection_new ();
 //
 /* @ContentProperty="Segments" */
 class PathFigure : public DependencyObject {
- protected:
-	int path_size;
-	moon_path *path;
  public:
 	static DependencyProperty* IsClosedProperty;
 	static DependencyProperty* SegmentsProperty;
 	static DependencyProperty* StartPointProperty;
+
+	moon_path *path;
 
 	PathFigure ();
 	virtual ~PathFigure ();

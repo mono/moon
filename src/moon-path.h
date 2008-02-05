@@ -54,6 +54,8 @@ void		moon_ellipse (moon_path *path, double x, double y, double w, double h);
 void		moon_rectangle (moon_path *path, double x, double y, double w, double h);
 void		moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h, double radius_x, double radius_y);
 void		moon_close_path (moon_path *path);
+void		moon_get_origin (moon_path *path, double *ox, double *oy);
+void		moon_merge (moon_path *path, moon_path *subpath);
 
 // for debugging purpose
 void		cairo_path_display (cairo_path_t *path);

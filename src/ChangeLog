@@ -1,3 +1,12 @@
+2008-02-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp|h: PathGeometry does a Build (not a Draw) to 
+	populate it's moon_path (like others) so the data can always be 
+	used.
+	* moon-path.c|h: Add moon_get_origin to get the minimal X and Y
+	from a moon_path (Stephane) and moon_merge to merge a subpath into
+	a main path.
+
 2008-02-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline-ffmpeg.cpp: Remove another printf.
