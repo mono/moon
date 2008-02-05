@@ -2497,11 +2497,16 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	case MoonId_Remove: {
 		if (argCount < 1)
 			THROW_JS_EXCEPTION ("remove");
-		
+
+		if (NPVARIANT_IS_NULL (args [0])) {
+			BOOLEAN_TO_NPVARIANT (false, *result);
+			return true;
+		}
+
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]);
-		col->Remove (el->GetDependencyObject ());
+		bool res = col->Remove (el->GetDependencyObject ());
 		
-		VOID_TO_NPVARIANT (*result);
+		BOOLEAN_TO_NPVARIANT (res, *result);
 		
 		return true;
 	}
@@ -2510,9 +2515,14 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("removeAt");
 		
 		int index = NPVARIANT_TO_INT32 (args [0]);
+
+		if (index < 0 || index >= col->list->Length ())
+			THROW_JS_EXCEPTION ("removeAt");
+
+		Collection::Node *n = (Collection::Node *) col->list->Index (index);
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, n->obj), *result);
+
 		col->RemoveAt (index);
-		
-		VOID_TO_NPVARIANT (*result);
 		
 		return true;
 	}
