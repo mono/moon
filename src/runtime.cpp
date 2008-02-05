@@ -1841,7 +1841,7 @@ accumulate_last_n (gpointer key,
 #endif
 
 void
-runtime_shutdown ()
+runtime_shutdown (void)
 {
 	if (!inited)
 		return;
@@ -1850,6 +1850,8 @@ runtime_shutdown ()
 	
 	animation_destroy ();
 	text_destroy ();
+	font_shutdown ();
+	
 	TimeManager::Instance()->Shutdown ();
 	DependencyObject::Shutdown ();
 

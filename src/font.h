@@ -85,6 +85,7 @@ enum FontMask {
 
 G_BEGIN_DECLS
 void font_init (void);
+void font_shutdown (void);
 G_END_DECLS
 
 struct GlyphBitmap;
