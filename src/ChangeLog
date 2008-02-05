@@ -1,3 +1,8 @@
+2008-02-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Use existing MIN macro. Use local variables when
+	available.
+
 2008-02-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* fullscreen.cs, fullscreen.sh: Tool to generate fullscreen.h

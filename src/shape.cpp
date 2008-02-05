@@ -1181,7 +1181,6 @@ Line::BuildPath ()
 	moon_line_to (path, line_get_x2 (this), line_get_y2 (this));
 }
 
-#define min(X, Y)  ((X) < (Y) ? (X) : (Y))
 void
 Line::ComputeBounds ()
 {
@@ -1197,9 +1196,14 @@ Line::ComputeBounds ()
 		return;
 	}
 
-	calc_line_bounds (line_get_x1 (this), line_get_x2 (this), line_get_y1 (this), line_get_y2 (this), thickness, &bounds);
-	origin.x = min (line_get_x1 (this), line_get_x2 (this));
-	origin.y = min (line_get_y1 (this), line_get_y2 (this));
+	double x1 = line_get_x1 (this);
+	double y1 = line_get_y1 (this);
+	double x2 = line_get_x2 (this);
+	double y2 = line_get_y2 (this);
+
+	calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
+	origin.x = MIN (x1, x2);
+	origin.y = MIN (y1, y2);
 
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the line those values
@@ -1474,8 +1478,8 @@ Polygon::ComputeBounds ()
 	if (count == 2) {
 		x1 = points [1].x;
 		y1 = points [1].y;
-		origin.x = min (origin.x, points[1].x);
-		origin.y = min (origin.y, points[1].y);
+		origin.x = MIN (origin.x, points[1].x);
+		origin.y = MIN (origin.y, points[1].y);
 
 		polygon_extend_line (&x0, &x1, &y0, &y1, thickness);
 		calc_line_bounds (x0, x1, y0, y1, thickness, &bounds);
@@ -1488,10 +1492,8 @@ Polygon::ComputeBounds ()
 		double y2 = points [1].y;
 		double x3 = points [2].x;
 		double y3 = points [2].y;
-		origin.x = min (origin.x, points[2].x);
-		origin.y = min (origin.y, points[2].y);
-		origin.x = min (origin.x, points[3].x);
-		origin.y = min (origin.y, points[3].y);
+		origin.x = MIN (origin.x, MIN (x2, x3));
+		origin.y = MIN (origin.y, MIN (y2, y3));
 
 		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 		for (i = 3; i < count; i++) {
@@ -1501,8 +1503,8 @@ Polygon::ComputeBounds ()
 			y2 = y3;
 			x3 = points [i].x;
 			y3 = points [i].y;
-			origin.x = min (origin.x, points[i].x);
-			origin.y = min (origin.y, points[i].y);
+			origin.x = MIN (origin.x, x3);
+			origin.y = MIN (origin.y, y3);
 			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 		}
 		// a polygon is a closed shape (unless it's a line)
@@ -1784,22 +1786,22 @@ Polyline::ComputeBounds ()
 		// this is a "simple" line (move to + line to)
 		double x2 = points [1].x;
 		double y2 = points [1].y;
-		origin.x = min (origin.x,  points [1].x);
-		origin.y = min (origin.y,  points [1].y);
+		origin.x = MIN (origin.x, x2);
+		origin.y = MIN (origin.y, y2);
 		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
 	} else {
 		// FIXME: we're too big for large thickness and/or steep angle
 		Rect line_bounds;
 		double x2 = points [1].x;
 		double y2 = points [1].y;
-		origin.x = min (origin.x,  points [1].x);
-		origin.y = min (origin.y,  points [1].y);
+		origin.x = MIN (origin.x, x2);
+		origin.y = MIN (origin.y, y2);
 		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
 		for (i = 2; i < count; i++) {
 			double x3 = points [i].x;
 			double y3 = points [i].y;
-			origin.x = min (origin.x,  points [i].x);
-			origin.y = min (origin.y,  points [i].y);
+			origin.x = MIN (origin.x, x3);
+			origin.y = MIN (origin.y, y3);
 			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
 			x1 = x2;
 			y1 = y2;
