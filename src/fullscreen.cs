@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 class convert {
 	static int Main (string [] args)
@@ -31,7 +32,16 @@ class convert {
 			dest.Add ("#define FULLSCREEN_MESSAGE \\");
 
 			for (int i = 0; i < source.Length; i++) {
-				dest.Add ("\"" + source [i].Replace ("\"", "\\\"") + "\\n\" \\");
+				int j;
+				StringBuilder sb = new StringBuilder ();
+				/* put the leading whitespace in the file */
+				for (j = 0; j < source[i].Length; j ++) {
+					if (!Char.IsWhiteSpace (source[i], j))
+						break;
+				}
+				if (j > 0) sb.Append (source[i].Substring (0, j));
+				sb.Append ("\"" + source [i].Substring (j).Replace ("\"", "\\\"") + (source[i][source[i].Length-1] == '>' ? "" : " ") + "\" \\");
+				dest.Add (sb.ToString());
 			}
 			dest.Add ("\"\"");
 			dest.Add ("");
