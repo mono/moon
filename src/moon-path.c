@@ -137,11 +137,11 @@ moon_get_current_point (moon_path *path, double *x, double *y)
 void
 moon_move_to (moon_path *path, double x, double y)
 {
+	g_return_if_fail (path != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
 	
 	if (!CHECK_SPACE (path, MOON_PATH_MOVE_TO_LENGTH)) {
 		while (n < pos + MOON_PATH_MOVE_TO_LENGTH)
@@ -171,11 +171,11 @@ moon_move_to (moon_path *path, double x, double y)
 void
 moon_line_to (moon_path *path, double x, double y)
 {
+	g_return_if_fail (path != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
 	
 	if (!CHECK_SPACE (path, MOON_PATH_LINE_TO_LENGTH)) {
 		while (n < pos + MOON_PATH_LINE_TO_LENGTH)
@@ -206,11 +206,11 @@ moon_line_to (moon_path *path, double x, double y)
 void
 moon_curve_to (moon_path *path, double x1, double y1, double x2, double y2, double x3, double y3)
 {
+	g_return_if_fail (path != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
 	
 	if (!CHECK_SPACE (path, MOON_PATH_CURVE_TO_LENGTH)) {
 		while (n < pos + MOON_PATH_CURVE_TO_LENGTH)
@@ -249,6 +249,8 @@ moon_curve_to (moon_path *path, double x1, double y1, double x2, double y2, doub
 void
 moon_ellipse (moon_path *path, double x, double y, double w, double h)
 {
+	g_return_if_fail (path != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	double rx = w / 2.0;
@@ -258,8 +260,6 @@ moon_ellipse (moon_path *path, double x, double y, double w, double h)
 	double brx = ARC_TO_BEZIER * rx;
 	double bry = ARC_TO_BEZIER * ry;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
 	
 	if (!CHECK_SPACE (path, MOON_PATH_ELLIPSE_LENGTH)) {
 		while (n < pos + MOON_PATH_ELLIPSE_LENGTH)
@@ -343,11 +343,11 @@ moon_ellipse (moon_path *path, double x, double y, double w, double h)
 void
 moon_rectangle (moon_path *path, double x, double y, double w, double h)
 {
+	g_return_if_fail (path != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
 	
 	if (!CHECK_SPACE (path, MOON_PATH_RECTANGLE_LENGTH)) {
 		while (n < pos + MOON_PATH_RECTANGLE_LENGTH)
@@ -403,11 +403,11 @@ moon_rectangle (moon_path *path, double x, double y, double w, double h)
 void
 moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h, double radius_x, double radius_y)
 {
+	g_return_if_fail (path != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
 	
 	if (!CHECK_SPACE (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH)) {
 		while (n < pos + MOON_PATH_ROUNDED_RECTANGLE_LENGTH)
@@ -526,11 +526,11 @@ moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h,
 void
 moon_close_path (moon_path *path)
 {
+	g_return_if_fail (path != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
 	
 	if (!CHECK_SPACE (path, MOON_PATH_CLOSE_PATH_LENGTH)) {
 		while (n < pos + MOON_PATH_CLOSE_PATH_LENGTH)
@@ -557,11 +557,11 @@ moon_close_path (moon_path *path)
 void
 moon_get_origin (moon_path *path, double *ox, double *oy)
 {
+	g_return_if_fail (path != NULL);
+
 	int i = 0;
 	double x = 0.0, y = 0.0;
 	cairo_path_t *c_path;
-
-	g_return_if_fail (path != NULL);
 
 	c_path = &path->cairo;
 	for (; i < c_path->num_data; i+= c_path->data[i].header.length) {
@@ -609,12 +609,12 @@ moon_get_origin (moon_path *path, double *ox, double *oy)
 void
 moon_merge (moon_path *path, moon_path *subpath)
 {
+	g_return_if_fail (path != NULL);
+	g_return_if_fail (subpath != NULL);
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	int n = 1;
-	
-	g_return_if_fail (path != NULL);
-	g_return_if_fail (subpath != NULL);
 	
 	if (!CHECK_SPACE (path, subpath->cairo.num_data)) {
 		while (n < pos + subpath->cairo.num_data)
