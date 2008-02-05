@@ -2484,9 +2484,9 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 
 	switch (id) {
 	case MoonId_Add: {
-		if (argCount < 1)
+		if (argCount < 1 || NPVARIANT_IS_NULL (args [0]))
 			THROW_JS_EXCEPTION ("add");
-		
+
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]);
 		col->Add (el->GetDependencyObject ());
 		
@@ -2517,9 +2517,14 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_Insert: {
-		if (argCount < 2)
+		if (argCount < 1 || NPVARIANT_IS_NULL (args [1]))
 			THROW_JS_EXCEPTION ("insert");
-		
+
+		if (argCount < 2) {
+			VOID_TO_NPVARIANT (*result);
+			return true;
+		}
+
 		int index = NPVARIANT_TO_INT32 (args[0]);
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args[1]);
 		
@@ -2542,11 +2547,16 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	case MoonId_GetItem: {
 		if (argCount < 1)
 			THROW_JS_EXCEPTION ("getItem");
-		
+
 		int index = NPVARIANT_TO_INT32 (args[0]);
-		
-		if (index < 0 || index >= col->list->Length ())
+
+		if (index < 0)
 			THROW_JS_EXCEPTION ("getItem");
+
+		if (index >= col->list->Length ()) {
+			NULL_TO_NPVARIANT (*result);
+			return true;
+		}
 		
 		Collection::Node *n = (Collection::Node *) col->list->Index (index);
 		
