@@ -320,7 +320,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	if (!self_region->IsEmpty()) {
 
 		bool subtract = (GetValue (UIElement::ClipProperty) == NULL
-				 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
+				 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
 				 && uielement_get_opacity_mask (this) == NULL
 				 && !IS_TRANSLUCENT (local_opacity));
 
