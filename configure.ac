@@ -9,6 +9,11 @@ AC_HEADER_STDC
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
+# from berkman the genius
+changequote(,)dnl
+LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
+changequote([,])dnl
+
 PKG_PROG_PKG_CONFIG
 
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
@@ -55,6 +60,23 @@ fi
 
 if test "x$ac_cv_sys_file_offset_bits" != "xno"; then
    LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
+fi
+
+#
+# Debugging support
+#
+
+DEBUG=yes
+AC_ARG_WITH(debug, [ --with-debug=yes,no.   If you want to enable debug support (default=yes)],[
+	if test x$with_ffmpeg = xyes; then
+		DEBUG=yes
+	fi
+	if test x$with_ffmpeg = xno; then
+		DEBUG=no
+	fi
+])
+if test x$DEBUG = xyes; then
+AC_DEFINE([DEBUG], [1], [Include debugging support])
 fi
 
 #

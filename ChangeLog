@@ -1,3 +1,7 @@
+2007-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: add debug support stuff.
+	
 2008-01-29  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* pixman, cairo: Synced with vendor branches following procedure outlined at

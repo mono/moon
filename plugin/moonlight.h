@@ -31,9 +31,6 @@
 
 #include "libmoon.h"
 
-// Definitions
-#define DEBUG
-
 // Plugin information
 #define PLUGIN_NAME         "Silverlight Plug-In"
 #define PLUGIN_VERSION      "0.99.0"

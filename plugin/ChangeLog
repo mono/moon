@@ -1,3 +1,7 @@
+2008-02-05  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.h: don't #define DEBUG here.  it's a config.h deal.
+
 2008-02-04  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: Fix some of the parameter checking to match
