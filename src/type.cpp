@@ -64,10 +64,8 @@ Type::Type (const char *name, Type::Kind type, Type::Kind parent)
 
 Type::~Type()
 {
-	if (event_name_hash) {
-		g_hash_table_foreach (event_name_hash, (GHFunc)g_free, NULL);
+	if (event_name_hash)
 		g_hash_table_destroy (event_name_hash);
-	}
 
 	event_name_hash = NULL;
 
@@ -75,10 +73,19 @@ Type::~Type()
 }
 
 void
+Type::HideEvent (const char *event_name)
+{
+	if (event_name_hash)
+		g_hash_table_remove (event_name_hash, event_name);
+}
+
+void
 Type::RegisterEvent (const char *event_name)
 {
 	if (event_name_hash == NULL)
-		event_name_hash = g_hash_table_new (strcase_hash, strcase_equal);
+		event_name_hash = g_hash_table_new_full (strcase_hash, strcase_equal,
+							 (GDestroyNotify)g_free,
+							 NULL);
 
 	g_hash_table_insert (event_name_hash, g_strdup (event_name), GINT_TO_POINTER (local_event_count++));
 }
@@ -88,10 +95,10 @@ Type::LookupEvent (const char *event_name)
 {
 	gpointer key, value;
 	if (event_name_hash &&
-                        g_hash_table_lookup_extended (event_name_hash,
-					event_name,
-					&key,
-					&value)) {
+	    g_hash_table_lookup_extended (event_name_hash,
+					  event_name,
+					  &key,
+					  &value)) {
 
 		return GPOINTER_TO_INT (value) + GetEventBase();
 	}
@@ -382,6 +389,9 @@ types_init_register_events (void)
 	t->RegisterEvent ("Invalidated");
 	t->RegisterEvent ("GotFocus");
 	t->RegisterEvent ("LostFocus");
+
+	t = Type::Find(Type::COLLECTION);
+	t->RegisterEvent ("__moonlight_CollectionChanged");
 }
 
 //

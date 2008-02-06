@@ -22,6 +22,12 @@
 //
 class Collection : public DependencyObject {
  public:
+	struct ChangeEventArgs {
+		CollectionChangeType type;
+		DependencyObject *obj;
+		DependencyProperty *prop;
+	};
+
 	class Node : public List::Node {
 	public:
 		DependencyObject *obj, *parent;
@@ -54,7 +60,12 @@ class Collection : public DependencyObject {
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 
+	void EmitChanged (CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+
 	static DependencyProperty *CountProperty;
+
+	// Events you can AddHandler to
+	static int ChangedEvent;
 };
 
 bool CollectionNodeFinder (List::Node *n, void *data);

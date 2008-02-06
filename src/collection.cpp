@@ -44,7 +44,6 @@ CollectionNodeFinder (List::Node *n, void *data)
 	return cn->obj == (DependencyObject *) data;
 }
 
-
 Collection::Collection ()
 {
 	list = new List ();
@@ -61,6 +60,19 @@ Collection::~Collection ()
 
 	list->Clear(true);
 	delete list;
+}
+
+void
+Collection::EmitChanged (CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+{
+	Collection::ChangeEventArgs args;
+	args.type = type;
+	args.obj = obj;
+	args.prop = prop;
+	Emit (ChangedEvent, &args);
+
+	if (closure)
+		closure->OnCollectionChanged (this, type, obj, prop);
 }
 
 bool
@@ -94,7 +106,7 @@ Collection::Add (DependencyObject *data)
 			}
 		}
 
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
 	}
 
 	return true;
@@ -122,7 +134,7 @@ Collection::Insert (int index, DependencyObject *data)
 				con_ns->MergeTemporaryScope (ns);
 		}
 
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
 	}
 
 	return true;
@@ -131,11 +143,9 @@ Collection::Insert (int index, DependencyObject *data)
 void
 Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
 {
-	if (closure) {
-		/* unfortunately OnSubPropertyChanged doesn't give us
-		   enough info to fill in the obj parameter here */
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemChanged, obj, subprop);
-	}
+	/* unfortunately OnSubPropertyChanged doesn't give us
+	   enough info to fill in the obj parameter here */
+	EmitChanged (CollectionChangeTypeItemChanged, obj, subprop);
 }
 
 DependencyObject *
@@ -154,8 +164,8 @@ Collection::SetVal (int index, DependencyObject *data)
 	old->obj->Detach (NULL, this);
 	
 	if (closure) {
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, old->obj, NULL);
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemAdded, data, NULL);
+		EmitChanged (CollectionChangeTypeItemRemoved, old->obj, NULL);
+		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
 	}
 
 	DependencyObject *obj = old->obj;
@@ -193,7 +203,7 @@ Collection::Remove (DependencyObject *data)
 				con_ns->UnmergeTemporaryScope (ns);
 		}
 
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, data, NULL);
+		EmitChanged (CollectionChangeTypeItemRemoved, data, NULL);
 	}
 	
 	delete n;
@@ -222,7 +232,7 @@ Collection::RemoveAt (int index)
 				con_ns->UnmergeTemporaryScope (ns);
 		}
 
-		closure->OnCollectionChanged (this, CollectionChangeTypeItemRemoved, n->obj, NULL);
+		EmitChanged (CollectionChangeTypeItemRemoved, n->obj, NULL);
 	}
 	
 	delete n;
@@ -248,16 +258,22 @@ Collection::Clear ()
 
 	list->Clear (true);
 
-	if (closure)
-		closure->OnCollectionChanged (this, CollectionChangeTypeChanged, NULL, NULL);
+	EmitChanged (CollectionChangeTypeChanged, NULL, NULL);
 }
 
 DependencyProperty *Collection::CountProperty;
+
+int Collection::ChangedEvent = -1;
 
 void
 collection_init (void)
 {
 	Collection::CountProperty = DependencyObject::Register (Type::COLLECTION, "Count", Type::INT32);
+
+	Type *t = Type::Find (Type::COLLECTION);
+	Collection::ChangedEvent = t->LookupEvent ("__moonlight_CollectionChanged");
+	// make this event inaccessible to javascript.
+	t->HideEvent ("__moonlight_CollectionChanged");
 }
 
 bool

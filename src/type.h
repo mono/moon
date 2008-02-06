@@ -187,6 +187,7 @@ public:
 	char *name;
 	bool value_type;
 
+	void HideEvent (const char *event_name);
 	void RegisterEvent (const char *event_name);
 	int LookupEvent (const char *event_name);
 	int GetEventCount ();
