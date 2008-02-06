@@ -1,3 +1,9 @@
+2008-02-06  Michael Dominic K.  <mdk@mdk.am> 
+
+	* configure.ac: Configure embedded cairo with '--diable-png' since now
+	we're using the GdkPixbuf PNG writer in xaml2png. Saves us some runtime
+	memory. Fixes: #348071.
+
 2007-12-10  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: add debug support stuff.
