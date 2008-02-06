@@ -752,6 +752,8 @@ ASFFrameReader::~ASFFrameReader ()
 		
 		g_free (payloads);
 	}
+	
+	g_free (index);
 }
 bool
 ASFFrameReader::Eof ()

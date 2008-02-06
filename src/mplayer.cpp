@@ -472,12 +472,11 @@ bool
 MediaPlayer::AdvanceFrame ()
 {
 	//printf ("MediaPlayer::AdvanceFrame ()\n");
-	Packet *pkt = NULL, *npkt = NULL;
+	Packet *pkt = NULL;
 	MediaFrame *frame = NULL;
 	IMediaStream *stream;
 	bool update = false;
 	uint64_t target_pts;
-	List *list;
 	
 	load_frame = false;
 	
@@ -510,76 +509,48 @@ MediaPlayer::AdvanceFrame ()
 		this->target_pts = target_pts;
 	}
 	
-	
-	video->queue->Lock ();
-	
-	list = video->queue->LinkedList ();
-	
-	if ((pkt = (Packet *) list->First ())) {
+	while ((pkt = (Packet *) video->queue->Pop ())) {
 		if (pkt->frame->event == FrameEventEOF) {
-			list->Unlink (pkt);
 			delete pkt;
 			eof = true;
-			
-			video->queue->Unlock ();
-			
 			return false;
 		}
 		
-		do {
-			// always decode the frame or we get glitches in the screen
-			frame = pkt->frame;
-			stream = frame->stream;
-			update = true;
+		// always decode the frame or we get glitches in the screen
+		frame = pkt->frame;
+		stream = frame->stream;
+		update = true;
+
+		current_pts = frame->pts;
+		
+		media_player_enqueue_frames (this, 0, 1);	
+		
+		if (!frame->IsDecoded ()) {
+			//printf ("MediaPlayer::AdvanceFrame (): decoding on main thread.\n");
+			MediaResult result = stream->decoder->DecodeFrame (frame);
 			
-			npkt = (Packet *) pkt->next;
-			
-			current_pts = frame->pts;
-			list->Unlink (pkt);
-			
-			media_player_enqueue_frames (this, 0, 1);	
-			
-			if (!frame->IsDecoded ()) {
-				//printf ("MediaPlayer::AdvanceFrame (): decoding on main thread.\n");
-				MediaResult result = stream->decoder->DecodeFrame (frame);
-				
-				if (!MEDIA_SUCCEEDED (result)) {
-					printf ("MediaPlayer::AdvanceFrame (): Couldn't decode frame.\n");
-					update = false;
-				}
+			if (!MEDIA_SUCCEEDED (result)) {
+				printf ("MediaPlayer::AdvanceFrame (): Couldn't decode frame.\n");
+				update = false;
 			}
-			
-			if (update && current_pts >= target_pts) {
-				caught_up_with_seek = true;
-				// we are in sync (or ahead) of audio playback
-				break;
-			}
-			
-			if (!npkt) {
-				// no more packets in queue, this frame is the most recent we have available
-				media_player_enqueue_frames (this, 0, 1);
-				break;
-			}
-			
-			if (npkt->frame->event == FrameEventEOF) {
-				// We've reached the EOF, current
-				// frame is the most recent we can
-				// render
-				list->Unlink (npkt);
-				delete npkt;
-				eof = true;
-				break;
-			}
-			
-			// we are lagging behind, drop this frame
-			frame = NULL;
-			delete pkt;
-			
-			pkt = npkt;
-		} while (pkt);
+		}
+		
+		if (update && current_pts >= target_pts) {
+			caught_up_with_seek = true;
+			// we are in sync (or ahead) of audio playback
+			break;
+		}
+		
+		if (video->queue->IsEmpty ()) {
+			// no more packets in queue, this frame is the most recent we have available
+			media_player_enqueue_frames (this, 0, 1);
+			break;
+		}
+		
+		// we are lagging behind, drop this frame
+		frame = NULL;
+		delete pkt;
 	}
-	
-	video->queue->Unlock ();
 	
 	if (update && frame && caught_up_with_seek) {
 		//printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu.\n", frame->pts);

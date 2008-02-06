@@ -1,5 +1,9 @@
 2008-02-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Free the index upon destruction.
+
+2008-02-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp: Fix MIN/MAX confusion.
 
 2008-02-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 

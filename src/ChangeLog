@@ -1,3 +1,10 @@
+2008-02-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: Simplify our advance frame loop: don't lock the queue during
+	  the entire loop, only when fetching packets. This allows packets to
+	  arrive from the pipeline while in the loop (especially noticable when
+	  decoding the video inside the loop).
+
 2008-02-06  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::FrontToBack): use the media state
