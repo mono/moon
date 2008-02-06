@@ -1,5 +1,13 @@
 2008-02-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: AdvanceFrame: Create a target_pts range, if we're within the
+	  range, draw the current frame. If we're ahead of the range, do nothing
+	  (fixes some video/audio sync problems), and if we're behind drop frames.
+	  The range makes sure that we paint every frame even when the audio loop
+	  doesn't update the target pts as often as we're drawing video.
+
+2008-02-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* panel.cpp, runtime.cpp: Fix warnings.
 
 2008-02-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 

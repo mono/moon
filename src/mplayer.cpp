@@ -468,6 +468,8 @@ render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 	mplayer->rendered_frame = true;
 }
 
+#define DEBUG_AF 0
+
 bool
 MediaPlayer::AdvanceFrame ()
 {
@@ -475,20 +477,23 @@ MediaPlayer::AdvanceFrame ()
 	Packet *pkt = NULL;
 	MediaFrame *frame = NULL;
 	IMediaStream *stream;
+	uint64_t target_pts = 0;
+	uint64_t target_pts_start = 0;
+	uint64_t target_pts_end = 0;
+	uint64_t target_pts_delta = MilliSeconds_ToPts (100);
 	bool update = false;
-	uint64_t target_pts;
+	
+#if DEBUG_AF
+	int skipped = 0;
+#endif
 	
 	load_frame = false;
 	
-	if (paused) {
-		// shouldn't happen, but just in case
-		printf ("WARNING: MediaPlayer::AdvanceFrame() called when paused\n");
+	if (paused)
 		return false;
-	}
 	
-	if (seeking) {
+	if (seeking)
 		return false;
-	}
 	
 	if (eof)
 		return false;
@@ -509,6 +514,17 @@ MediaPlayer::AdvanceFrame ()
 		this->target_pts = target_pts;
 	}
 	
+	target_pts_start = target_pts_delta > target_pts ? 0 : target_pts - target_pts_delta;
+	target_pts_end = target_pts + target_pts_delta;
+	
+	if (current_pts >= target_pts_end && caught_up_with_seek) {
+#if DEBUG_AF
+		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu, target_pts: %llu, delta: %llu, diff: %lld).\n",
+			current_pts, target_pts, target_pts_delta, current_pts - target_pts);
+#endif
+		return false;
+	}
+		
 	while ((pkt = (Packet *) video->queue->Pop ())) {
 		if (pkt->frame->event == FrameEventEOF) {
 			delete pkt;
@@ -519,9 +535,8 @@ MediaPlayer::AdvanceFrame ()
 		// always decode the frame or we get glitches in the screen
 		frame = pkt->frame;
 		stream = frame->stream;
-		update = true;
-
 		current_pts = frame->pts;
+		update = true;
 		
 		media_player_enqueue_frames (this, 0, 1);	
 		
@@ -530,12 +545,12 @@ MediaPlayer::AdvanceFrame ()
 			MediaResult result = stream->decoder->DecodeFrame (frame);
 			
 			if (!MEDIA_SUCCEEDED (result)) {
-				printf ("MediaPlayer::AdvanceFrame (): Couldn't decode frame.\n");
+				printf ("MediaPlayer::AdvanceFrame (): Couldn't decode frame (%i)\n", result);
 				update = false;
 			}
 		}
 		
-		if (update && current_pts >= target_pts) {
+		if (update && current_pts >= target_pts_start) {
 			caught_up_with_seek = true;
 			// we are in sync (or ahead) of audio playback
 			break;
@@ -548,12 +563,18 @@ MediaPlayer::AdvanceFrame ()
 		}
 		
 		// we are lagging behind, drop this frame
+#if DEBUG_AF
+		printf ("MediaPlayer::AdvanceFrame (): skipped frame with pts %llu, target pts: %llu, diff: %lld, milliseconds: %lld\n", frame->pts, target_pts, target_pts - frame->pts, MilliSeconds_FromPts ((target_pts - frame->pts)));
+		skipped++;
+#endif
 		frame = NULL;
 		delete pkt;
 	}
 	
 	if (update && frame && caught_up_with_seek) {
-		//printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu.\n", frame->pts);
+#if DEBUG_AF
+		printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, caught_up_with_seek: %s, skipped frames: %i)\n", frame->pts, target_pts, current_pts, caught_up_with_seek ? "true" : "false", skipped);
+#endif
 		render_frame (this, frame);
 		delete pkt;
 		
