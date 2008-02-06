@@ -1,0 +1,167 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+	<Rectangle Width="240" Height="80" >
+	<Rectangle.Fill>
+		<RadialGradientBrush>
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Left="240">
+	<Rectangle.Fill>
+		<RadialGradientBrush Mappingmode="Absolute" Center="120, 40" GradientOrigin="120, 40" RadiusX="120" RadiusY="40" >
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="80">
+	<Rectangle.Fill>
+		<RadialGradientBrush RadiusX="0.16666">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="80" Canvas.Left="240">
+	<Rectangle.Fill>
+		<RadialGradientBrush MappingMode="Absolute" Center="120,40"  GradientOrigin="120, 40" RadiusX="40" RadiusY="40">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="160">
+	<Rectangle.Fill>
+		<RadialGradientBrush Center=".8, .8">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>	
+	<Rectangle Width="240" Height="80" Canvas.Top="160" Canvas.Left="240">
+	<Rectangle.Fill>
+		<RadialGradientBrush MappingMode="Absolute" Center="192, 64" GradientOrigin="120, 40" RadiusX="120" RadiusY="40" >
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="240">
+	<Rectangle.Fill>
+		<RadialGradientBrush Center=".8, .8" RadiusY="1.5">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="240" Canvas.Left="240">
+	<Rectangle.Fill>
+		<RadialGradientBrush MappingMode="Absolute" Center="192, 64" GradientOrigin="120, 40" RadiusX="120" RadiusY="120">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="320">
+	<Rectangle.Fill>
+		<RadialGradientBrush Center=".8,.8" GradientOrigin=".9,.9" RadiusY="1.5">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="320" Canvas.Left="240">
+	<Rectangle.Fill>
+		<RadialGradientBrush MappingMode="Absolute" Center="192, 64" GradientOrigin="216, 72" RadiusX="120" RadiusY="120">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Width="240" Height="80" Canvas.Top="400" Canvas.Left="240">
+	<Rectangle.Fill>
+		<RadialGradientBrush Mappingmode="Absolute">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.05" Color="Green" />
+				<GradientStop Offset="0.25" Color="Blue" />
+				<GradientStop Offset="0.5" Color="Yellow" />
+				<GradientStop Offset="0.75" Color="Blue" />
+				<GradientStop Offset="0.95" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+</Canvas>
