@@ -16,7 +16,7 @@
 	</Rectangle>
 	<Rectangle Width="240" Height="80" Canvas.Left="240">
 	<Rectangle.Fill>
-		<RadialGradientBrush Mappingmode="Absolute" Center="120, 40" GradientOrigin="120, 40" RadiusX="120" RadiusY="40" >
+		<RadialGradientBrush MappingMode="Absolute" Center="120, 40" GradientOrigin="120, 40" RadiusX="120" RadiusY="40" >
 			<RadialGradientBrush.GradientStops>
 				<GradientStop Offset="0" Color="Red" />
 				<GradientStop Offset="0.05" Color="Green" />
