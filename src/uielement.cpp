@@ -521,7 +521,8 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		if (subtract) {
 			if (Is (Type::MEDIAELEMENT)) {
 				MediaElement *me = (MediaElement*)this;
-				subtract = (strcmp (media_element_get_current_state (me), "Buffering")
+				subtract = (media_element_get_current_state (me)
+					    && strcmp (media_element_get_current_state (me), "Buffering")
 					    && me->mplayer
 					    && me->mplayer->rendered_frame
 					    && ((me->mplayer->width == me->GetBounds().w
