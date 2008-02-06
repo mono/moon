@@ -609,15 +609,19 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	double rx = radial_gradient_brush_get_radius_x (this);
 	double ry = radial_gradient_brush_get_radius_y (this);
 	
-	cairo_pattern_t *pattern = cairo_pattern_create_radial (ox, oy, 0.0, cx, cy, ry);
-	
+	cairo_pattern_t *pattern = cairo_pattern_create_radial (ox/rx, oy/ry, 0.0, cx/rx, cy/ry, 1);
+
 	cairo_matrix_t matrix;
 	switch (gradient_brush_get_mapping_mode (this)) {
 	case BrushMappingModeAbsolute:
-		cairo_matrix_init_identity (&matrix);
+		cairo_matrix_init_translate (&matrix, cx, cy);
+		cairo_matrix_scale (&matrix, rx, ry);
+		cairo_matrix_translate (&matrix, -cx/rx, -cy/ry);
 		break;
 	case BrushMappingModeRelativeToBoundingBox:
-		cairo_matrix_init (&matrix, width * rx / ry, 0, 0, height, 0, 0);
+		cairo_matrix_init_translate (&matrix, cx * width, cy * height);
+		cairo_matrix_scale (&matrix, width * rx, height * ry );
+		cairo_matrix_translate (&matrix, -cx/rx, -cy/ry);
 		break;
 	}
 	
