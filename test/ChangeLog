@@ -1,3 +1,9 @@
+2008-02-06  Michael Dominic K.  <mdk@mdk.am> 
+
+	* test/harness/xaml2png.cpp: Use GdkPixbuf to save the PNG instead of the
+	cairo png saver. Makes it faster by skipping the post-save png loading
+	step to strip metadata.
+
 2007-11-05  Larry Ewing  <lewing@novell.com>
 
 	* xaml/test-path-group-stretch.xaml: add some stretched paths with

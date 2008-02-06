@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <libmoon.h>
 #include <cairo.h>
 #include <fcntl.h>
@@ -103,21 +104,60 @@ downloader_abort (gpointer state)
 }
 
 void
-strip_metadata (const char *png_filename)
-{
-	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (png_filename, NULL);
-	unlink (png_filename);
-	gdk_pixbuf_save (pixbuf, png_filename, "png", NULL, NULL);
-	g_object_unref (pixbuf);
-}
-
-void
 fill_background (Surface *s, cairo_t *cr)
 {
 	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 	cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0);
 	cairo_rectangle (cr, 0, 0, s->GetWidth(), s->GetHeight());
 	cairo_paint (cr);
+}
+
+GdkPixbuf*
+surface_to_pixbuf (cairo_surface_t *s)
+{
+	int stride = cairo_image_surface_get_stride (s);
+	int w = cairo_image_surface_get_width (s);
+	int h = cairo_image_surface_get_height (s);
+	const unsigned char *orig_data = cairo_image_surface_get_data (s);
+	unsigned char *new_data = (unsigned char *) g_malloc (stride * h);
+	unsigned char *out = new_data;
+	int x;
+	int y;
+
+	// Unmultiply the alpha
+	for (y = 0; y < h; y++) {
+		guint32 *in = (guint32 *) (orig_data + (y * stride));
+		for (x = 0; x < w; x++) {
+			int alpha = (*in & 0xff000000) >> 24;
+			out [3] = alpha;
+
+			if (alpha == 0) {
+				out [0] = 0;
+				out [1] = 0;
+				out [2] = 0;
+			} else {
+			        out [0] = (((*in & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
+				out [1] = (((*in & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
+				out [2] = (((*in & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
+			}
+
+			out += 4;
+			in ++;
+		}
+	}
+
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data (new_data, GDK_COLORSPACE_RGB,
+						      TRUE, 8, w, h, w * 4,
+						      (GdkPixbufDestroyNotify) g_free, NULL);
+	return pixbuf;
+}
+
+void
+write_surface_to_png (cairo_surface_t *s, const char *fname)
+{
+	GdkPixbuf *pixbuf = surface_to_pixbuf (s);
+	gdk_pixbuf_save (pixbuf, fname, "png", NULL, NULL);
+	gdk_pixbuf_unref (pixbuf);
 }
 
 void
@@ -166,9 +206,8 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 			s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
 
 			char *timestamped_filename = g_strdup_printf ("%s-%lld", output_prefix, t);
-			cairo_surface_write_to_png (surf, timestamped_filename);
+			write_surface_to_png (surf, timestamped_filename);
 
-			strip_metadata (timestamped_filename);
 			g_free (timestamped_filename);
 
 			t += delta_t;
@@ -179,9 +218,7 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 
 		s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
 
-		cairo_surface_write_to_png (surf, output_prefix);
-
-		strip_metadata (output_prefix);
+		write_surface_to_png (surf, output_prefix);
 	}
 
 	cairo_surface_destroy (surf);
