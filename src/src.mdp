@@ -1,6 +1,6 @@
 <Project name="src" fileversion="2.0" language="CPP" ctype="CProject">
-  <Configurations>
-    <Configuration name="Debug" SourceDirectory="" ctype="CProjectConfiguration">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="src" />
       <Build debugmode="True" target="Bin" />
       <Execution runwithwarnings="True" consolepause="True" />
@@ -50,8 +50,6 @@
     <File name="fullscreen.h" subtype="Code" buildaction="Nothing" />
     <File name="fullscreen.sh" subtype="Code" buildaction="Nothing" />
     <File name="fullscreen.xaml" subtype="Code" buildaction="Nothing" />
-    <File name="garray-ext.cpp" subtype="Code" buildaction="Compile" />
-    <File name="garray-ext.h" subtype="Code" buildaction="Nothing" />
     <File name="genkindcs.sh" subtype="Code" buildaction="Nothing" />
     <File name="geometry.h" subtype="Code" buildaction="Nothing" />
     <File name="geometry.cpp" subtype="Code" buildaction="Compile" />
@@ -134,6 +132,13 @@
     <File name="pipeline.cpp" subtype="Code" buildaction="Compile" />
     <File name="pipeline-ffmpeg.cpp" subtype="Code" buildaction="Nothing" />
     <File name="pipeline-ffmpeg.h" subtype="Code" buildaction="Nothing" />
+    <File name="utils.cpp" subtype="Code" buildaction="Compile" />
+    <File name="utils.h" subtype="Code" buildaction="Nothing" />
+    <File name="region.h" subtype="Code" buildaction="Nothing" />
+    <File name="region.cpp" subtype="Code" buildaction="Compile" />
+    <File name="eventargs.h" subtype="Code" buildaction="Nothing" />
+    <File name="eventargs.cpp" subtype="Code" buildaction="Compile" />
+    <File name="alpha-premul-table.inc" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
