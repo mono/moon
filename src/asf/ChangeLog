@@ -1,3 +1,7 @@
+2008-02-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Fix MIN/MAX confusion.
+
 2008-02-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Don't create an index if we have a media with 0 packets.

@@ -1205,7 +1205,7 @@ ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
 	}
 	
 	result = MAX (0, result);
-	result = MIN (result, MIN (0, parser->GetPacketCount () - 1));
+	result = MIN (result, MAX (0, parser->GetPacketCount () - 1));
 	
 	//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): Final position: %lld of pi: %i. Total packets: %llu, total duration: %llu\n", pts, estimate, parser->GetPacketOffset (pi), pi, parser->GetFileProperties ()->data_packet_count, parser->GetFileProperties ()->play_duration);
 	return result;
