@@ -1,3 +1,7 @@
+2008-02-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* panel.cpp, runtime.cpp: Fix warnings.
+
 2008-02-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Simplify our advance frame loop: don't lock the queue during

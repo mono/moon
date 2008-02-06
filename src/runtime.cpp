@@ -789,9 +789,9 @@ Surface::InitializeDrawingArea (GtkWidget *drawing_area)
 	gtk_widget_set_extension_events (drawing_area, GDK_EXTENSION_EVENTS_CURSOR);
 	/* we need to explicitly enable the devices */
 	for (GList *l = gdk_devices_list(); l; l = l->next) {
-		GdkDevice *device = GDK_DEVICE(l->data);
 
 #if THIS_NOLONGER_BREAKS_LARRYS_MOUSE
+		GdkDevice *device = GDK_DEVICE(l->data);
 		//if (!device->has_cursor)
 		gdk_device_set_mode (device, GDK_MODE_SCREEN);
 #endif

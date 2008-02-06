@@ -70,15 +70,17 @@ Panel::~Panel ()
 	}
 }
 
-#define DEBUG_BOUNDS 0
+#define DEBUG_BOUNDS 1
 #define CAIRO_CLIP 0
 
+#if DEBUG_BOUNDS
 static void space (int n)
 {
 	for (int i = 0; i < n; i++)
 		putchar (' ');
 }
 static int levelb = 0;
+#endif
 
 void
 Panel::ComputeBounds ()
@@ -137,9 +139,6 @@ Panel::ComputeBounds ()
 	levelb -= 4;
 #endif
 }
-
-
-static int level = 0;
 
 //#define DEBUG_INVALIDATE 1
 
