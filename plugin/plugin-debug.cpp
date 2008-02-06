@@ -81,6 +81,7 @@ plugin_debug (PluginInstance *plugin)
 
 	GtkWidget *tree_win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (tree_win), "Xaml contents");
+	gtk_window_set_default_size (GTK_WINDOW (tree_win), 300, 400);
 
 	GtkTreeStore *tree_store = gtk_tree_store_new (3,
 						       G_TYPE_STRING,
@@ -118,6 +119,9 @@ plugin_debug (PluginInstance *plugin)
 	gtk_tree_view_column_add_attribute (col, renderer, "text", 1);
 
 	GtkWidget *scrolled = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
+					GTK_POLICY_AUTOMATIC,
+					GTK_POLICY_AUTOMATIC);
 
 	gtk_container_add (GTK_CONTAINER (scrolled), tree_view);
 	gtk_container_add (GTK_CONTAINER (tree_win), scrolled);
