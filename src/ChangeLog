@@ -1,3 +1,9 @@
+2008-02-06  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::FrontToBack): use the media state
+	accessors, and don't exclude Buffering state - we could be
+	buffering with a frame rendered.
+
 2008-02-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Keep track if a rectangle has radii or not.

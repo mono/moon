@@ -521,8 +521,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		if (subtract) {
 			if (Is (Type::MEDIAELEMENT)) {
 				MediaElement *me = (MediaElement*)this;
-				subtract = (media_element_get_current_state (me)
-					    && strcmp (media_element_get_current_state (me), "Buffering")
+				subtract = (!me->IsClosed ()
 					    && me->mplayer
 					    && me->mplayer->rendered_frame
 					    && ((me->mplayer->width == me->GetBounds().w
@@ -546,7 +545,6 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 				// do it in here, so set this to false so that
 				// it doesn't happen later.
 				subtract = false;
-
 
 				Rectangle *rectangle = (Rectangle*)this;
 				Brush *fill = shape_get_fill (rectangle);
@@ -578,7 +576,6 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 		if (subtract)
 			surface_region->Subtract (bounds.RoundIn());
-
 	}
 }
 
