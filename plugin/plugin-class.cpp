@@ -361,6 +361,36 @@ variant_to_value (const NPVariant *v, Value **result)
 	}
 }
 
+enum DependencyObjectClassNames {
+	COLLECTION_CLASS,
+	CONTROL_CLASS,
+	DEPENDENCY_OBJECT_CLASS,
+	DOWNLOADER_CLASS,
+	IMAGE_BRUSH_CLASS,
+	IMAGE_CLASS,
+	MEDIA_ELEMENT_CLASS,
+	STORYBOARD_CLASS,
+	STYLUS_INFO_CLASS,
+	STYLUS_POINT_COLLECTION_CLASS,
+	STROKE_COLLECTION_CLASS,
+	STROKE_CLASS,
+	TEXT_BLOCK_CLASS,
+
+	DEPENDENCY_OBJECT_CLASS_NAMES_LAST
+};
+
+NPClass* dependency_object_classes [DEPENDENCY_OBJECT_CLASS_NAMES_LAST];
+
+static bool
+npobject_is_dependency_object (NPObject *obj)
+{
+	for (int i = 0; i < DEPENDENCY_OBJECT_CLASS_NAMES_LAST; i++) {
+		if (dependency_object_classes [i] == obj->_class)
+			return true;
+	}
+	return false;
+}
+
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const char *cb_name)
 {
 	this->instance = instance;
@@ -2168,7 +2198,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("equals");
 
 		NPObject *o = NPVARIANT_TO_OBJECT (args[0]);
-		if (o->_class != MoonlightDependencyObjectClass)
+		if (!npobject_is_dependency_object (o))
 			BOOLEAN_TO_NPVARIANT (false, *result);
 		else {
 			MoonlightDependencyObjectObject *obj = (MoonlightDependencyObjectObject *) o;
@@ -2306,7 +2336,6 @@ MoonlightDependencyObjectType::MoonlightDependencyObjectType ()
 	AddMapping (moonlight_dependency_object_mapping, COUNT (moonlight_dependency_object_mapping));
 }
 
-MoonlightDependencyObjectType *MoonlightDependencyObjectClass;
 
 
 /*** MoonlightEventObjectClass ***************************************************/
@@ -2377,47 +2406,47 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	Type::Kind kind = obj->GetObjectType ();
 	switch (kind) {
 	case Type::STORYBOARD:
-		np_class = MoonlightStoryboardClass;
+		np_class = dependency_object_classes [STORYBOARD_CLASS];
 		break;
 	case Type::MEDIAELEMENT:
-		np_class = MoonlightMediaElementClass;
+		np_class = dependency_object_classes [MEDIA_ELEMENT_CLASS];
 		break;
 	case Type::DOWNLOADER:
-		np_class = MoonlightDownloaderClass;
+		np_class = dependency_object_classes [DOWNLOADER_CLASS];
 		break;
 	case Type::CONTROL:
-		np_class = MoonlightControlClass;
+		np_class = dependency_object_classes [CONTROL_CLASS];
 		break;
 	case Type::IMAGE:
-		np_class = MoonlightImageClass;
+		np_class = dependency_object_classes [IMAGE_CLASS];
 		break;
 	case Type::IMAGEBRUSH:
-		np_class = MoonlightImageBrushClass;
+		np_class = dependency_object_classes [IMAGE_BRUSH_CLASS];
 		break;
 	case Type::TEXTBLOCK:
-		np_class = MoonlightTextBlockClass;
+		np_class = dependency_object_classes [TEXT_BLOCK_CLASS];
 		break;
 	case Type::EVENTOBJECT:
 	case Type::SURFACE:
 		np_class = MoonlightEventObjectClass;
 		break;
 	case Type::STYLUSINFO:
-		np_class = MoonlightStylusInfoClass;
+		np_class = dependency_object_classes [STYLUS_INFO_CLASS];
 		break;
 	case Type::STYLUSPOINT_COLLECTION:
-		np_class = MoonlightStylusPointCollectionClass;
+		np_class = dependency_object_classes [STYLUS_POINT_COLLECTION_CLASS];
 		break;
 	case Type::STROKE_COLLECTION:
-		np_class = MoonlightStrokeCollectionClass;
+		np_class = dependency_object_classes [STROKE_COLLECTION_CLASS];
 		break;
 	case Type::STROKE:
-		np_class = MoonlightStrokeClass;
+		np_class = dependency_object_classes [STROKE_CLASS];
 		break;
 	default:
 		if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
-			np_class = MoonlightCollectionClass;
+			np_class = dependency_object_classes [COLLECTION_CLASS];
 		else
-			np_class = MoonlightDependencyObjectClass;
+			np_class = dependency_object_classes [DEPENDENCY_OBJECT_CLASS];
 	}
 
 	depobj = (MoonlightEventObjectObject *) NPN_CreateObject (instance, np_class);
@@ -2502,6 +2531,9 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			BOOLEAN_TO_NPVARIANT (false, *result);
 			return true;
 		}
+
+		if (!npobject_is_dependency_object (NPVARIANT_TO_OBJECT (args [0])))
+			THROW_JS_EXCEPTION ("remove");
 
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]);
 		bool res = col->Remove (el->GetDependencyObject ());
@@ -2601,8 +2633,6 @@ MoonlightCollectionType::MoonlightCollectionType ()
 	allocate = moonlight_collection_allocate;
 }
 
-MoonlightCollectionType *MoonlightCollectionClass;
-
 
 /*** MoonlightStoryboardClass ***************************************************/
 
@@ -2697,7 +2727,6 @@ MoonlightStoryboardType::MoonlightStoryboardType ()
 	allocate = moonlight_storyboard_allocate;
 }
 
-MoonlightStoryboardType *MoonlightStoryboardClass;
 
 /*** MoonlightMediaElementClass ***************************************************/
 
@@ -2790,7 +2819,6 @@ MoonlightMediaElementType::MoonlightMediaElementType ()
 	allocate = moonlight_media_element_allocate;
 }
 
-MoonlightMediaElementType *MoonlightMediaElementClass;
 
 /*** MoonlightImageClass ***************************************************/
 
@@ -2847,7 +2875,6 @@ MoonlightImageType::MoonlightImageType ()
 	allocate = moonlight_image_allocate;
 }
 
-MoonlightImageType *MoonlightImageClass;
 
 /*** MoonlightImageBrushClass ***************************************************/
 
@@ -2904,8 +2931,6 @@ MoonlightImageBrushType::MoonlightImageBrushType ()
 	allocate = moonlight_image_brush_allocate;
 }
 
-MoonlightImageBrushType *MoonlightImageBrushClass;
-
 
 /*** MoonlightTextBlockClass ***************************************************/
 
@@ -2956,7 +2981,6 @@ MoonlightTextBlockType::MoonlightTextBlockType ()
 	allocate = moonlight_text_block_allocate;
 }
 
-MoonlightTextBlockType *MoonlightTextBlockClass;
 
 /*** MoonlightStylusInfoClass ***************************************************/
 
@@ -3011,7 +3035,6 @@ MoonlightStylusInfoType::MoonlightStylusInfoType ()
 	allocate = moonlight_stylus_info_allocate;
 }
 
-MoonlightStylusInfoType *MoonlightStylusInfoClass;
 
 /*** MoonlightStylusPointCollectionClass ****************************************/
 
@@ -3054,7 +3077,6 @@ MoonlightStylusPointCollectionType::MoonlightStylusPointCollectionType ()
 	allocate = moonlight_stylus_point_collection_allocate;
 }
 
-MoonlightStylusPointCollectionType *MoonlightStylusPointCollectionClass;
 
 /*** MoonlightStrokeCollectionClass ****************************************/
 
@@ -3113,7 +3135,6 @@ MoonlightStrokeCollectionType::MoonlightStrokeCollectionType ()
 	allocate = moonlight_stroke_collection_allocate;
 }
 
-MoonlightStrokeCollectionType *MoonlightStrokeCollectionClass;
 
 /*** MoonlightStrokeClass ****************************************/
 
@@ -3172,7 +3193,6 @@ MoonlightStrokeType::MoonlightStrokeType ()
 	allocate = moonlight_stroke_allocate;
 }
 
-MoonlightStrokeType *MoonlightStrokeClass;
 
 /*** MoonlightDownloaderClass ***************************************************/
 
@@ -3300,7 +3320,6 @@ MoonlightDownloaderType::MoonlightDownloaderType ()
 	allocate = moonlight_downloader_allocate;
 }
 
-MoonlightDownloaderType *MoonlightDownloaderClass;
 
 /*** MoonlightControlClass ***************************************************/
 
@@ -3393,7 +3412,6 @@ MoonlightControlType::MoonlightControlType ()
 	allocate = moonlight_control_allocate;
 }
 
-MoonlightControlType *MoonlightControlClass;
 
 
 /*** MoonlightScriptableObjectClass ***************************************************/
@@ -4001,19 +4019,32 @@ browser_do_alert (PluginInstance *plugin, char *msg)
 void
 plugin_init_classes (void)
 {
-	MoonlightCollectionClass = new MoonlightCollectionType ();
+	/*
+	 * All classes that derive from MoonlightDependencyObject should be stored in the dependency_object_classes
+	 * array, so that we can verify arguments passed from JS code are valid dependency objects, and not random
+	 * JS objects.  ie element.children.add (new Array ())
+	 */
+
+	dependency_object_classes [COLLECTION_CLASS] = new MoonlightCollectionType ();
+	dependency_object_classes [CONTROL_CLASS] = new MoonlightControlType ();
+	dependency_object_classes [DEPENDENCY_OBJECT_CLASS] = new MoonlightDependencyObjectType ();
+	dependency_object_classes [DOWNLOADER_CLASS] = new MoonlightDownloaderType ();
+	dependency_object_classes [IMAGE_BRUSH_CLASS] = new MoonlightImageBrushType ();
+	dependency_object_classes [IMAGE_CLASS] = new MoonlightImageType ();
+	dependency_object_classes [MEDIA_ELEMENT_CLASS] = new MoonlightMediaElementType ();
+	dependency_object_classes [STORYBOARD_CLASS] = new MoonlightStoryboardType ();
+	dependency_object_classes [STYLUS_INFO_CLASS] = new MoonlightStylusInfoType ();
+	dependency_object_classes [STYLUS_POINT_COLLECTION_CLASS] = new MoonlightStylusPointCollectionType ();
+	dependency_object_classes [STROKE_COLLECTION_CLASS] = new MoonlightStrokeCollectionType ();
+	dependency_object_classes [STROKE_CLASS] = new MoonlightStrokeType ();
+	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
+
 	MoonlightContentClass = new MoonlightContentType ();
-	MoonlightControlClass = new MoonlightControlType ();
-	MoonlightDependencyObjectClass = new MoonlightDependencyObjectType ();
-	MoonlightDownloaderClass = new MoonlightDownloaderType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
 	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
 	MoonlightEventObjectClass = new MoonlightEventObjectType ();
-	MoonlightImageBrushClass = new MoonlightImageBrushType ();
-	MoonlightImageClass = new MoonlightImageType ();
 	MoonlightKeyboardEventArgsClass = new MoonlightKeyboardEventArgsType ();
 	MoonlightMarkerReachedEventArgsClass = new MoonlightMarkerReachedEventArgsType ();
-	MoonlightMediaElementClass = new MoonlightMediaElementType ();
 	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
 	MoonlightObjectClass = new MoonlightObjectType ();
 	MoonlightPointClass = new MoonlightPointType ();
@@ -4021,41 +4052,26 @@ plugin_init_classes (void)
 	MoonlightScriptableObjectClass = new MoonlightScriptableObjectType ();
 	MoonlightScriptControlClass = new MoonlightScriptControlType ();
 	MoonlightSettingsClass = new MoonlightSettingsType ();
-	MoonlightStoryboardClass = new MoonlightStoryboardType ();
-	MoonlightStylusInfoClass = new MoonlightStylusInfoType ();
-	MoonlightStylusPointCollectionClass = new MoonlightStylusPointCollectionType ();
-	MoonlightStrokeCollectionClass = new MoonlightStrokeCollectionType ();
-	MoonlightStrokeClass = new MoonlightStrokeType ();
-	MoonlightTextBlockClass = new MoonlightTextBlockType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 }
 
 void
 plugin_destroy_classes (void)
 {
+	for (int i = 0; i < DEPENDENCY_OBJECT_CLASS_NAMES_LAST; i++) {
+		delete dependency_object_classes [i];
+		dependency_object_classes [i] = NULL;
+	}
 
-	delete MoonlightCollectionClass; MoonlightCollectionClass = NULL;
 	delete MoonlightContentClass; MoonlightContentClass = NULL;
-	delete MoonlightControlClass; MoonlightControlClass = NULL;
 	delete MoonlightEventObjectClass; MoonlightEventObjectClass = NULL;
-	delete MoonlightDependencyObjectClass; MoonlightDependencyObjectClass = NULL;
-	delete MoonlightDownloaderClass; MoonlightDownloaderClass = NULL;
 	delete MoonlightErrorEventArgsClass; MoonlightErrorEventArgsClass = NULL;
-	delete MoonlightImageBrushClass; MoonlightImageBrushClass = NULL;
-	delete MoonlightImageClass; MoonlightImageClass = NULL;
-	delete MoonlightMediaElementClass; MoonlightMediaElementClass = NULL;
 	delete MoonlightMouseEventArgsClass; MoonlightMouseEventArgsClass = NULL;
 	delete MoonlightKeyboardEventArgsClass; MoonlightKeyboardEventArgsClass = NULL;
 	delete MoonlightObjectClass; MoonlightObjectClass = NULL;
 	delete MoonlightScriptableObjectClass; MoonlightScriptableObjectClass = NULL;
 	delete MoonlightScriptControlClass; MoonlightScriptControlClass = NULL;
 	delete MoonlightSettingsClass; MoonlightSettingsClass = NULL;
-	delete MoonlightStoryboardClass; MoonlightStoryboardClass = NULL;
-	delete MoonlightStylusInfoClass; MoonlightStylusInfoClass = NULL;
-	delete MoonlightStylusPointCollectionClass; MoonlightStylusPointCollectionClass = NULL;
-	delete MoonlightStrokeCollectionClass; MoonlightStrokeCollectionClass = NULL;
-	delete MoonlightStrokeClass; MoonlightStrokeClass = NULL;
-	delete MoonlightTextBlockClass; MoonlightTextBlockClass = NULL;
 	delete MoonlightRectClass; MoonlightRectClass = NULL;
 	delete MoonlightPointClass; MoonlightPointClass = NULL;
 	delete MoonlightDurationClass; MoonlightDurationClass = NULL;

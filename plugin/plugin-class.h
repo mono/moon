@@ -391,7 +391,7 @@ extern MoonlightEventObjectObject* EventObjectCreateWrapper (NPP instance, Event
 struct MoonlightDependencyObjectType : MoonlightEventObjectType {
 	MoonlightDependencyObjectType ();
 };
-extern MoonlightDependencyObjectType *MoonlightDependencyObjectClass;
+
 
 struct MoonlightDependencyObjectObject : public MoonlightEventObjectObject
 {
@@ -429,7 +429,6 @@ extern MoonlightDependencyObjectObject* DependencyObjectCreateWrapper (NPP insta
 struct MoonlightCollectionType : MoonlightDependencyObjectType {
 	MoonlightCollectionType ();
 };
-extern MoonlightCollectionType* MoonlightCollectionClass;
 
 struct MoonlightCollectionObject : public MoonlightDependencyObjectObject {
 	MoonlightCollectionObject (NPP instance) : MoonlightDependencyObjectObject (instance)
@@ -449,8 +448,6 @@ struct MoonlightStoryboardType : MoonlightDependencyObjectType {
 	MoonlightStoryboardType ();
 };
 
-extern MoonlightStoryboardType* MoonlightStoryboardClass;
-
 struct MoonlightStoryboardObject : MoonlightDependencyObjectObject {
 	MoonlightStoryboardObject (NPP instance)
 	  : MoonlightDependencyObjectObject (instance)
@@ -468,7 +465,6 @@ struct MoonlightMediaElementType : MoonlightDependencyObjectType {
 	MoonlightMediaElementType ();
 };
 
-extern MoonlightMediaElementType* MoonlightMediaElementClass;
 
 struct MoonlightMediaElementObject : MoonlightDependencyObjectObject {
 	MoonlightMediaElementObject (NPP instance)
@@ -487,7 +483,6 @@ struct MoonlightImageType : MoonlightDependencyObjectType {
 	MoonlightImageType ();
 };
 
-extern MoonlightImageType* MoonlightImageClass;
 
 struct MoonlightImageObject : MoonlightDependencyObjectObject {
 	MoonlightImageObject (NPP instance)
@@ -506,7 +501,6 @@ struct MoonlightImageBrushType : MoonlightDependencyObjectType {
 	MoonlightImageBrushType ();
 };
 
-extern MoonlightImageBrushType* MoonlightImageBrushClass;
 
 struct MoonlightImageBrushObject : MoonlightDependencyObjectObject {
 	MoonlightImageBrushObject (NPP instance)
@@ -525,7 +519,6 @@ struct MoonlightDownloaderType : MoonlightDependencyObjectType {
 	MoonlightDownloaderType ();
 };
 
-extern MoonlightDownloaderType* MoonlightDownloaderClass;
 
 struct MoonlightDownloaderObject : public MoonlightDependencyObjectObject {
 	MoonlightDownloaderObject (NPP instance) : MoonlightDependencyObjectObject (instance)
@@ -544,7 +537,6 @@ struct MoonlightTextBlockType : MoonlightDependencyObjectType {
 	MoonlightTextBlockType ();
 };
 
-extern MoonlightTextBlockType* MoonlightTextBlockClass;
 
 struct MoonlightTextBlockObject : MoonlightDependencyObjectObject {
 	MoonlightTextBlockObject (NPP instance)
@@ -563,7 +555,6 @@ struct MoonlightStylusInfoType : MoonlightDependencyObjectType {
 	MoonlightStylusInfoType ();
 };
 
-extern MoonlightStylusInfoType *MoonlightStylusInfoClass;
 
 struct MoonlightStylusInfoObject : MoonlightDependencyObjectObject {
 
@@ -582,7 +573,6 @@ struct MoonlightStylusPointCollectionType : MoonlightCollectionType {
 	MoonlightStylusPointCollectionType ();
 };
 
-extern MoonlightStylusPointCollectionType *MoonlightStylusPointCollectionClass;
 
 struct MoonlightStylusPointCollectionObject : MoonlightCollectionObject {
 
@@ -603,7 +593,6 @@ struct MoonlightStrokeCollectionType : MoonlightCollectionType {
 	MoonlightStrokeCollectionType ();
 };
 
-extern MoonlightStrokeCollectionType *MoonlightStrokeCollectionClass;
 
 struct MoonlightStrokeCollectionObject : MoonlightCollectionObject {
 
@@ -624,7 +613,6 @@ struct MoonlightStrokeType : MoonlightDependencyObjectType {
 	MoonlightStrokeType ();
 };
 
-extern MoonlightStrokeType *MoonlightStrokeClass;
 
 struct MoonlightStrokeObject : MoonlightDependencyObjectObject {
 
@@ -644,7 +632,6 @@ struct MoonlightControlType : MoonlightDependencyObjectType {
 	MoonlightControlType ();
 };
 
-extern MoonlightControlType* MoonlightControlClass;;
 
 struct MoonlightControlObject : MoonlightDependencyObjectObject {
 	MoonlightControlObject (NPP instance) : MoonlightDependencyObjectObject (instance)

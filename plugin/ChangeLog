@@ -1,3 +1,11 @@
+2008-02-06  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp|h: Store all MoonlightDependencyObject classes
+	in an array so that we can easily check if a type passed in from
+	JS is actually a DO.
+	- Add one check to verify that an object is a DO, I am sure we
+	will need many more.
+
 2008-02-06  Fernando Herrera  <fherrera@novell.com>
 
 	* plugin-debug.cpp: set default size and scroll bars policy in the
