@@ -69,7 +69,8 @@ public:
 		SHAPE_EMPTY      = 0x20,	// there's is nothing to draw, the cached path may be NULL
 		SHAPE_NORMAL     = 0x40,	// normal drawing
 		SHAPE_DEGENERATE = 0x80,	// degenerate drawing, use the Stroke brush for filling
-		SHAPE_MASK       = (SHAPE_EMPTY | SHAPE_NORMAL | SHAPE_DEGENERATE)
+		SHAPE_RADII      = 0x100,
+		SHAPE_MASK       = (SHAPE_EMPTY | SHAPE_NORMAL | SHAPE_DEGENERATE | SHAPE_RADII)
 	};
 	
 	int flags;

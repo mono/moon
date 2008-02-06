@@ -811,8 +811,8 @@ Rectangle::DrawShape (cairo_t *cr, bool do_op)
 	if (!SetupLine (cr))
 		return drawn;
 
-	// FIXME: is it worth checking for round-corners ?
-	SetupLineJoinMiter (cr);
+	if (!HasRadii ())
+		SetupLineJoinMiter (cr);
 
 	// Draw if the path wasn't drawn by the Fill call
 	if (!drawn)
@@ -961,6 +961,7 @@ Rectangle::BuildPath ()
 shape:
 	// rounded-corner rectangle ?
 	if (round) {
+		AddShapeFlags (UIElement::SHAPE_RADII);
 		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
 		moon_rounded_rectangle (path, x, y, w, h, radius_x, radius_y);
 	} else {

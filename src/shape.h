@@ -107,7 +107,9 @@ class Shape : public FrameworkElement {
 	bool IsEmpty () { return (flags & UIElement::SHAPE_EMPTY); };
 	bool IsNormal () { return (flags & UIElement::SHAPE_NORMAL); };
 	bool IsDegenerate () { return (flags & UIElement::SHAPE_DEGENERATE); };
+	bool HasRadii () { return (flags & UIElement::SHAPE_RADII); };
 	void SetShapeFlags (UIElementFlags sf) { flags &= ~UIElement::SHAPE_MASK; flags |= sf; };
+	void AddShapeFlags (UIElementFlags sf) { flags |= sf; };
 };
 
 Brush	       *shape_get_fill			(Shape *shape);
