@@ -70,7 +70,7 @@ Panel::~Panel ()
 	}
 }
 
-#define DEBUG_BOUNDS 1
+#define DEBUG_BOUNDS 0
 #define CAIRO_CLIP 0
 
 #if DEBUG_BOUNDS
