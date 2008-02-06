@@ -134,8 +134,15 @@ class gen {
 						contprops [c.Trim ()] = next_content_property;
 					}
 				}
-				if (p != null && p != string.Empty) 
-					bases.Add (c.Trim (), p.Trim ());
+				if (p != null && p != string.Empty)  {
+					if (bases.ContainsKey (c.Trim())) {
+						Console.WriteLine ("Adding {0} -> {1} more than once to `bases' collection",
+								   c.Trim (), p.Trim ());
+					}
+					else {
+						bases.Add (c.Trim (), p.Trim ());
+					}
+				}
 
 				next_content_property = null;
 			}
