@@ -1,4 +1,4 @@
-<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="600">
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
 	<Rectangle Canvas.Left="100" Height="50" Width="200" >
 	<Rectangle.Fill>
 		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -98,7 +98,7 @@
 	</Path>
 	<Rectangle Canvas.Left="300" Height="50" Width="200" >
 	<Rectangle.Fill>
-		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+		<RadialGradientBrush >
 			<RadialGradientBrush.GradientStops>
 				<GradientStop Offset="0" Color="Red" />
 				<GradientStop Offset="0.15" Color="Green" />
@@ -111,7 +111,7 @@
 	</Rectangle>
 	<Polyline Points="300,50 500,50 500,100 300,100 300,50" >
 	<Polyline.Fill>
-		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+		<RadialGradientBrush >
 			<RadialGradientBrush.GradientStops>
 				<GradientStop Offset="0" Color="Red" />
 				<GradientStop Offset="0.15" Color="Green" />
@@ -124,7 +124,7 @@
 	</Polyline>
 	<Polyline Points="300,100 500,100 500,150 300,150 300,100" >
 	<Polyline.Fill>
-		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+		<RadialGradientBrush >
 			<RadialGradientBrush.GradientStops>
 				<GradientStop Offset="0" Color="Red" />
 				<GradientStop Offset="0.15" Color="Green" />
@@ -140,7 +140,7 @@
 	</Polyline>
 	<Rectangle Canvas.Left="300" Canvas.Top="150" Height="50" Width="200" >
 	<Rectangle.Fill>
-		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+		<RadialGradientBrush >
 			<RadialGradientBrush.GradientStops>
 				<GradientStop Offset="0" Color="Red" />
 				<GradientStop Offset="0.15" Color="Green" />
@@ -156,7 +156,7 @@
 	</Rectangle>
 	<Path Data="M300,200 L500,200 L500,250 L300,250 Z" >
 	<Path.Fill>
-		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+		<RadialGradientBrush >
 			<RadialGradientBrush.GradientStops>
 				<GradientStop Offset="0" Color="Red" />
 				<GradientStop Offset="0.15" Color="Green" />
