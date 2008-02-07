@@ -53,7 +53,7 @@ class Shape : public FrameworkElement {
 	virtual Rect ComputeShapeBounds ();
 	virtual Rect ComputeLargestRectangle ();
 	
-	Rect shape_bounds;
+	Rect extents;
  public: 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;

@@ -319,9 +319,9 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 Shape::ComputeBounds ()
 {
-	hape_bounds = ComputeShapeBounds ();
+	extents = ComputeShapeBounds ();
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-		       IntersectBoundsWithClipPath (shape_bounds, false));
+		       IntersectBoundsWithClipPath (extents, false));
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 }
 
@@ -363,8 +363,8 @@ Shape::ComputeLargestRectangle ()
 void
 Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*height = shape_bounds.h;
-	*width = shape_bounds.w;
+	*height = extents.h;
+	*width = extents.w;
 }
 
 bool

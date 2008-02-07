@@ -1,7 +1,7 @@
 2008-02-07  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp: cache the results of CompouteShapeBounds in
-	shape_bounds rect, use that value in GetSizeForBrush.
+	extents rect, use that value in GetSizeForBrush.
 
 2008-02-07  Jeffrey Stedfast  <fejj@novell.com>
 
