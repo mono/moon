@@ -319,45 +319,45 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 Shape::ComputeBounds ()
 {
-	bounds = Rect (0,0,0,0);
+	Rect shape_bounds = ComputeShapeBounds ();
+	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
+		       IntersectBoundsWithClipPath (shape_bounds, false));
+	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
+}
 
+Rect
+Shape::ComputeShapeBounds ()
+{
 	if (IsEmpty ())
-		return;
+		return Rect ();
 
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
-#if FALSE
-	Stretch stretch = shape_get_stretch (this);
-	switch (stretch) {
-	case StretchUniform:
-		w = h = (w < h) ? w : h;
-		break;
-	case StretchUniformToFill:
-		w = h = (w > h) ? w : h;
-		break;
-	case StretchFill:
-		/* nothing needed here.  the assignment of w/h above
-		   is correct for this case. */
-		break;
-	case StretchNone:
-		break;
-	}
-#endif
+	if ((w == 0.0) && (h == 0.0))
+		return Rect ();
 
-	if (w != 0.0 && h != 0.0) {
-		double t = shape_get_stroke_thickness (this) * .5;
+	double t = shape_get_stroke_thickness (this) * .5;
 
-		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-		       IntersectBoundsWithClipPath (Rect (-t, -t, w + 2 * t, h + 2 * t), false));
+	return Rect (-t, -t, w + 2 * t, h + 2 * t);
+}
 
-		//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
-	}
+Rect
+Shape::ComputeLargestRectangleBounds ()
+{
+	Rect largest = ComputeLargestRectangle ();
+	if (largest.IsEmpty ())
+		return largest;
 
-	/* standard "grow the rectangle by enough to cover our
-	   asses because of cairo's floating point rendering"
-	   thing */
-// no-op	bounds.GrowBy(1);
+	return bounding_rect_for_transformed_rect (&absolute_xform,
+						    IntersectBoundsWithClipPath (largest, false));
+}
+
+Rect
+Shape::ComputeLargestRectangle ()
+{
+	// by default the largest rectangle that fits into a shape is empty
+	return Rect ();
 }
 
 void
@@ -765,6 +765,15 @@ shape:
 	// note: both moon_rounded_rectangle and moon_ellipse close the path
 }
 
+Rect
+Ellipse::ComputeLargestRectangle ()
+{
+	double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	double x = (GetValue (FrameworkElement::WidthProperty)->AsDouble () - t) * cos (M_PI_2);
+	double y = (GetValue (FrameworkElement::HeightProperty)->AsDouble () - t) * sin (M_PI_2);
+	Rect largest = ComputeShapeBounds ().GrowBy (-x, -y).RoundIn ();
+}
+
 void
 Ellipse::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -1007,10 +1016,22 @@ Rectangle::GetRadius (double *rx, double *ry)
 	return ((*rx != 0.0) && (*ry != 0.0));
 }
 
+Rect
+Rectangle::ComputeLargestRectangle ()
+{
+	double x = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	double y = x;
+	if (HasRadii ()) {
+		x += GetValue (Rectangle::RadiusXProperty)->AsDouble ();
+		y += GetValue (Rectangle::RadiusYProperty)->AsDouble ();
+	}
+	return ComputeShapeBounds ().GrowBy (-x, -y).RoundIn ();
+}
+
 double
 rectangle_get_radius_x (Rectangle *rectangle)
 {
-	return rectangle->GetValue (Rectangle::RadiusXProperty)->AsDouble();
+	return rectangle->GetValue (Rectangle::RadiusXProperty)->AsDouble ();
 }
 
 void
@@ -1182,39 +1203,36 @@ Line::BuildPath ()
 	moon_line_to (path, line_get_x2 (this), line_get_y2 (this));
 }
 
-void
-Line::ComputeBounds ()
+Rect
+Line::ComputeShapeBounds ()
 {
+	Rect shape_bounds = Rect ();
+
 	Value *vh, *vw;
-	if (Shape::MixedHeightWidth (&vh, &vw)) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-		return;
-	}
+	if (Shape::MixedHeightWidth (&vh, &vw))
+		return shape_bounds;
 
 	double thickness = shape_get_stroke_thickness (this);
-	if (thickness <= 0.0) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-		return;
-	}
+	if (thickness <= 0.0)
+		return shape_bounds;
 
 	double x1 = line_get_x1 (this);
 	double y1 = line_get_y1 (this);
 	double x2 = line_get_x2 (this);
 	double y2 = line_get_y2 (this);
 
-	calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
+	calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 	origin.x = MIN (x1, x2);
 	origin.y = MIN (y1, y2);
 
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the line those values
 	if (vh && vw) {
-		bounds.w = MIN (bounds.w, vw->AsDouble ());
-		bounds.h = MIN (bounds.h, vh->AsDouble ());
+		shape_bounds.w = MIN (shape_bounds.w, vw->AsDouble ());
+		shape_bounds.h = MIN (shape_bounds.h, vh->AsDouble ());
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
-						     IntersectBoundsWithClipPath (bounds, false));
+	return shape_bounds;
 }
 
 void
@@ -1450,23 +1468,21 @@ calc_line_bounds_with_joins (double x1, double y1, double x2, double y2, double 
 	}
 }
 
-void
-Polygon::ComputeBounds ()
+Rect
+Polygon::ComputeShapeBounds ()
 {
+	Rect shape_bounds = Rect ();
+
 	Value *vh, *vw;
-	if (Shape::MixedHeightWidth (&vh, &vw)) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-		return;
-	}
+	if (Shape::MixedHeightWidth (&vh, &vw))
+		return shape_bounds;
 
 	int i, count = 0;
 	Point *points = polygon_get_points (this, &count);
 
 	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2)) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-		return;
-	}
+	if (!points || (count < 2))
+		return shape_bounds;
 
 	double thickness = shape_get_stroke_thickness (this);
 	if (thickness == 0.0)
@@ -1483,10 +1499,10 @@ Polygon::ComputeBounds ()
 		origin.y = MIN (origin.y, points[1].y);
 
 		polygon_extend_line (&x0, &x1, &y0, &y1, thickness);
-		calc_line_bounds (x0, x1, y0, y1, thickness, &bounds);
+		calc_line_bounds (x0, x1, y0, y1, thickness, &shape_bounds);
 	} else {
-		bounds.x = x1 = x0;
-		bounds.y = y1 = y0;
+		shape_bounds.x = x1 = x0;
+		shape_bounds.y = y1 = y0;
 		// FIXME: we're too big for large thickness and/or steep angle
 		Rect line_bounds;
 		double x2 = points [1].x;
@@ -1496,7 +1512,7 @@ Polygon::ComputeBounds ()
 		origin.x = MIN (origin.x, MIN (x2, x3));
 		origin.y = MIN (origin.y, MIN (y2, y3));
 
-		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
+		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 		for (i = 3; i < count; i++) {
 			x1 = x2;
 			y1 = y2;
@@ -1506,7 +1522,7 @@ Polygon::ComputeBounds ()
 			y3 = points [i].y;
 			origin.x = MIN (origin.x, x3);
 			origin.y = MIN (origin.y, y3);
-			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
+			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 		}
 		// a polygon is a closed shape (unless it's a line)
 		x1 = x2;
@@ -1515,7 +1531,7 @@ Polygon::ComputeBounds ()
 		y2 = y3;
 		x3 = x0;
 		y3 = y0;
-		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
+		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 
 		x1 = points [count-1].x;
 		y1 = points [count-1].y;
@@ -1523,24 +1539,23 @@ Polygon::ComputeBounds ()
 		y2 = y0;
 		x3 = points [1].x;
 		y3 = points [1].y;
-		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
+		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 	}
 
 	if (shape_get_stretch (this) != StretchNone) {
-		bounds.x -= x0;
-		bounds.y -= y0;
+		shape_bounds.x -= x0;
+		shape_bounds.y -= y0;
 	}
 
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the path those values, and this also defines
 	// *exactly* our bounds (whether we like them or not is another story)
 	if (vh && vw) {
-		bounds.w = vw->AsDouble ();
-		bounds.h = vh->AsDouble ();
+		shape_bounds.w = vw->AsDouble ();
+		shape_bounds.h = vh->AsDouble ();
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
-						     IntersectBoundsWithClipPath (bounds, false));
+	return shape_bounds;
 }
 
 void
@@ -1758,23 +1773,21 @@ Polyline::GetFillRule ()
 	return polyline_get_fill_rule (this);
 }
 
-void
-Polyline::ComputeBounds ()
+Rect
+Polyline::ComputeShapeBounds ()
 {
+	Rect shape_bounds = Rect ();
+
 	Value *vh, *vw;
-	if (Shape::MixedHeightWidth (&vh, &vw)) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-		return;
-	}
+	if (Shape::MixedHeightWidth (&vh, &vw))
+		return shape_bounds;
 
 	int i, count = 0;
 	Point *points = polyline_get_points (this, &count);
 
 	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2)) {
-		bounds = Rect (0.0, 0.0, 0.0, 0.0);
-		return;
-	}
+	if (!points || (count < 2))
+		return shape_bounds;
 
 	double thickness = shape_get_stroke_thickness (this);
 	if (thickness == 0.0)
@@ -1789,7 +1802,7 @@ Polyline::ComputeBounds ()
 		double y2 = points [1].y;
 		origin.x = MIN (origin.x, x2);
 		origin.y = MIN (origin.y, y2);
-		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
+		calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 	} else {
 		// FIXME: we're too big for large thickness and/or steep angle
 		Rect line_bounds;
@@ -1797,37 +1810,36 @@ Polyline::ComputeBounds ()
 		double y2 = points [1].y;
 		origin.x = MIN (origin.x, x2);
 		origin.y = MIN (origin.y, y2);
-		calc_line_bounds (x1, x2, y1, y2, thickness, &bounds);
+		calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 		for (i = 2; i < count; i++) {
 			double x3 = points [i].x;
 			double y3 = points [i].y;
 			origin.x = MIN (origin.x, x3);
 			origin.y = MIN (origin.y, y3);
-			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &bounds);
+			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 			x1 = x2;
 			y1 = y2;
 			x2 = x3;
 			y2 = y3;
 		}
 		calc_line_bounds (x1, x2, y1, y2, thickness, &line_bounds);
-		bounds = bounds.Union (line_bounds);
+		shape_bounds = shape_bounds.Union (line_bounds);
 	}
 
 	if (shape_get_stretch (this) != StretchNone) {
-		bounds.x -= points [0].x;
-		bounds.y -= points [0].y;
+		shape_bounds.x -= points [0].x;
+		shape_bounds.y -= points [0].y;
 	}
 
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the path those values, and this also defines
 	// *exactly* our bounds (whether we like them or not is another story)
 	if (vh && vw) {
-		bounds.w = vw->AsDouble ();
-		bounds.h = vh->AsDouble ();
+		shape_bounds.w = vw->AsDouble ();
+		shape_bounds.h = vh->AsDouble ();
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
-						     IntersectBoundsWithClipPath (bounds, false));
+	return shape_bounds;
 }
 
 void
@@ -1997,20 +2009,20 @@ Path::GetFillRule ()
 	return geometry ? geometry_get_fill_rule (geometry) : Shape::GetFillRule ();
 }
 
-void
-Path::ComputeBounds ()
+Rect
+Path::ComputeShapeBounds ()
 {
-	bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	Rect shape_bounds = Rect ();
 	cairo_matrix_init_identity (&stretch_transform);
 
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
-		return;
+		return shape_bounds;
 
 	Geometry* geometry = path_get_data (this);
 	if (!geometry) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
+		return shape_bounds;
 	}
 
 	double w = vw ? vw->AsDouble () : 0.0;
@@ -2018,30 +2030,30 @@ Path::ComputeBounds ()
 	
 	if ((h < 0.0) || (w < 0.0)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
+		return shape_bounds;
 	}
 
 	if (vh && (h <= 0.0) || vw && (w <= 0.0)) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
+		return shape_bounds;
 	}
 	
-	bounds = geometry->ComputeBounds (this);
+	shape_bounds = geometry->ComputeBounds (this);
 
-	h = (h == 0.0) ? bounds.h : h;
-	w = (w == 0.0) ? bounds.w : w;
+	h = (h == 0.0) ? shape_bounds.h : h;
+	w = (w == 0.0) ? shape_bounds.w : w;
 
 	if (h <= 0.0 || w <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
+		return shape_bounds;
 	}
 
 	// Compute the transformation we use for stretching
 
 	Stretch stretch = shape_get_stretch (this);
 	if (stretch != StretchNone) {
-		double sh = h / bounds.h;
-		double sw = w / bounds.w;
+		double sh = h / shape_bounds.h;
+		double sw = w / shape_bounds.w;
 		switch (stretch) {
 		case StretchFill:
 			break;
@@ -2057,28 +2069,26 @@ Path::ComputeBounds ()
 		}
 		
 		cairo_matrix_scale (&stretch_transform, sw, sh);
-		cairo_matrix_translate (&stretch_transform, -bounds.x, -bounds.y);
+		cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
 		
 		// Double check our math
 		cairo_matrix_t test = stretch_transform;
 		if (cairo_matrix_invert (&test)) {
 			cairo_matrix_init_identity (&stretch_transform);
-			g_warning ("Unable to compute stretch transform %f %f %f %f \n", sw, sh, bounds.x, bounds.y);
+			g_warning ("Unable to compute stretch transform %f %f %f %f \n", sw, sh, shape_bounds.x, shape_bounds.y);
 		}		
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&stretch_transform, bounds);
+	shape_bounds = bounding_rect_for_transformed_rect (&stretch_transform, shape_bounds);
 		
 	if (vh && vw) {
-		bounds.w = MIN (bounds.w, vw->AsDouble ());
-		bounds.h = MIN (bounds.h, vh->AsDouble ());
+		shape_bounds.w = MIN (shape_bounds.w, vw->AsDouble ());
+		shape_bounds.h = MIN (shape_bounds.h, vh->AsDouble ());
 	}
 
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     IntersectBoundsWithClipPath (bounds, false));
 	//FIXME
-	origin = Point (bounds.x, bounds.y);
-		
+	origin = Point (shape_bounds.x, shape_bounds.y);
+	return shape_bounds;
 }
 
 void

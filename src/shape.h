@@ -49,6 +49,9 @@ class Shape : public FrameworkElement {
 
 	moon_path *path;
 	virtual void InvalidatePathCache (bool free = false);
+
+	virtual Rect ComputeShapeBounds ();
+	virtual Rect ComputeLargestRectangle ();
  public: 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;
@@ -74,9 +77,9 @@ class Shape : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
-	virtual Point GetOriginPoint () {
-		return origin;
-	}
+	virtual Point GetOriginPoint () { return origin; }
+
+	Rect ComputeLargestRectangleBounds ();
 	
 	//
 	// new virtual methods for shapes
@@ -142,6 +145,7 @@ void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 class Ellipse : public Shape {
  protected:
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
+	virtual Rect ComputeLargestRectangle ();
  public:
 	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
@@ -169,11 +173,12 @@ class Rectangle : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
 
 	virtual void BuildPath ();
+	virtual bool CanFill () { return true; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	bool GetRadius (double *rx, double *ry);
-	virtual bool CanFill () { return true; }
+	virtual Rect ComputeLargestRectangle ();
 };
 
 Rectangle *rectangle_new          (void);
@@ -189,6 +194,7 @@ void       rectangle_set_radius_y (Rectangle *rectangle, double value);
 class Line : public Shape {
  protected:
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
+	virtual Rect ComputeShapeBounds ();
  public:
 	static DependencyProperty* X1Property;
 	static DependencyProperty* Y1Property;
@@ -198,7 +204,6 @@ class Line : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::LINE; };
 	
 	virtual void BuildPath ();
-	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -224,6 +229,7 @@ void line_set_y2 (Line *line, double value);
 class Polygon : public Shape {
  protected:
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
+	virtual Rect ComputeShapeBounds ();
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
@@ -241,7 +247,6 @@ class Polygon : public Shape {
 	virtual bool CanFill () { return true; }
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -261,6 +266,7 @@ void		polygon_set_points	(Polygon *polygon, Point* points, int count);
 class Polyline : public Shape {
  protected:
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
+	virtual Rect ComputeShapeBounds ();
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
@@ -275,7 +281,6 @@ class Polyline : public Shape {
 
 	virtual bool CanFill () { return true; }
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual FillRule GetFillRule ();
@@ -298,6 +303,8 @@ class Path : public Shape {
  protected:
 	virtual bool SetupLine (cairo_t* cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
+	virtual Rect ComputeShapeBounds ();
+
 	cairo_matrix_t stretch_transform;
  public:
 	static DependencyProperty* DataProperty;
@@ -312,7 +319,6 @@ class Path : public Shape {
 	virtual void Draw (cairo_t *cr);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void ComputeBounds ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual bool CanFill () { return true; }

@@ -1,3 +1,12 @@
+2008-02-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Split ComputeBounds to avoid calling functions 
+	bounding_rect_for_transformed_rect and IntersectBoundsWithClipPath
+	inside each shape. This will enable us to reuse the non-transformed
+	value elsewhere too. This also fix (for me) the origin point that
+	caused problems for some brushes. Started implementing methods 
+	ComputeLargestRectangle[Bounds] to optimize drawing.
+
 2008-02-06  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.cpp (FrameworkElement::GetSizeForBrush): we
