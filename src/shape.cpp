@@ -771,7 +771,7 @@ Ellipse::ComputeLargestRectangle ()
 	double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
 	double x = (GetValue (FrameworkElement::WidthProperty)->AsDouble () - t) * cos (M_PI_2);
 	double y = (GetValue (FrameworkElement::HeightProperty)->AsDouble () - t) * sin (M_PI_2);
-	Rect largest = ComputeShapeBounds ().GrowBy (-x, -y).RoundIn ();
+	return ComputeShapeBounds ().GrowBy (-x, -y).RoundIn ();
 }
 
 void
