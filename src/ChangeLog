@@ -1,3 +1,11 @@
+2008-02-06  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.cpp (FrameworkElement::GetSizeForBrush): we
+	want the untransformed size of the element.  otherwise we end up
+	with a pattern matrix that scales things too large given that
+	we're also scaling the element.  Fixes fullscreen mode in halo3
+	and /fox video players (bug #335845).
+
 2008-02-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: AdvanceFrame: Create a target_pts range, if we're within the
