@@ -14,6 +14,7 @@
 #include <config.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #include <gtk/gtk.h>
 
 #include "color.h"
@@ -171,6 +172,31 @@ named_colors_t named_colors [] = {
 	{ NULL, 0 }
 };
 
+/* Safely read next double from string checking for NULL's
+ * etc. Returns 0.0 if can't read. Modifies passed str to point
+ * at next character after the coma (,) following the number
+ * (if it makes sense). */
+static double
+read_next_double (char **str)
+{
+	if (str == NULL)
+		return 0.0;
+
+	char *iter = *str;
+
+	if (iter) {
+		double v = strtod (iter, &iter);
+		if (iter)
+			iter = strchr (iter, ',');
+		if (iter)
+			iter++;
+		*str = iter;
+		return v;
+	} else {
+		return 0.0;
+	}
+}
+
 /**
  * see: http://msdn2.microsoft.com/en-us/library/system.windows.media.solidcolorbrush.aspx
  *
@@ -226,7 +252,28 @@ color_from_str (const char *name)
 	}
 
 	if (name [0] == 's' && name [1] == 'c' && name [2] == '#') {
-		/* TODO */
+		char *iter = (char *) name + 3;
+		double a = read_next_double (&iter);
+		double r = read_next_double (&iter);
+		double g = read_next_double (&iter);
+		double b = read_next_double (&iter);
+
+		/* Clamp values. scRGB theoretically supports negative numbers
+		 * ('darker than black') as a refference to another source but here
+		 * it doesn't make too much sense. */
+		r = MIN (1.0, r); r = MAX (0.0, r);
+		g = MIN (1.0, g); g = MAX (0.0, g);
+		b = MIN (1.0, b); b = MAX (0.0, b);
+		a = MIN (1.0, a); a = MAX (0.0, a);
+
+		/* NOTE: This is not a fully accurate scRGB -> sRGB conversion.
+		 * The real stuff has slightly different/more complex band shaping.
+		 * But I'd call it "good enough" for now. */
+		r = powf (r, 0.4545);
+		g = powf (g, 0.46);
+		b = powf (b, 0.4545);
+
+		return new Color (r, g, b, a);
 	}
 
 	for (int i = 0; named_colors [i].name; i++) {

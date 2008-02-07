@@ -1,3 +1,11 @@
+2008-02-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/color.cpp: Added support to parse scRGB-style color specificators
+	(sc#), see #345931. The scRGB -> sRGB conversion is a bit simplified but
+	should produce accurate-enough colors for most uses.
+
+	http://silverlight.net/quickstarts/silverlight10/controls.aspx now works.
+
 2008-02-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Split ComputeBounds to avoid calling functions 
